@@ -101,7 +101,7 @@ public class VectorResultContentProvider implements IVirtualTableContentProvider
 		return reader != null ? reader.getEntryBySimtime(time, after) : null;
 	}
 	
-	public OutputVectorEntry getElementByEventNumber(int eventNumber, boolean after) {
+	public OutputVectorEntry getElementByEventNumber(long eventNumber, boolean after) {
 		return reader != null ? reader.getEntryByEventnum(eventNumber, after) : null;
 	}
 	

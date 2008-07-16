@@ -12,11 +12,11 @@ import org.omnetpp.scave.model.Chart;
 public class ChartDataPoint extends ChartLine {
 	
 	private int index;
-	private int eventNum;
+	private long eventNum;
 	private BigDecimal preciseX;
 	private double x,y;
 	
-	public ChartDataPoint(Chart chart, int series, String seriesKey, long id, int index, int eventNum,
+	public ChartDataPoint(Chart chart, int series, String seriesKey, long id, int index, long eventNum,
 			BigDecimal preciseX, double x, double y, ResultFileManager manager) {
 		super(chart, series, seriesKey, id, manager);
 		this.index = index;
@@ -30,7 +30,7 @@ public class ChartDataPoint extends ChartLine {
 		return index;
 	}
 
-	public int getEventNum() {
+	public long getEventNum() {
 		return eventNum;
 	}
 

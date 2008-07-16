@@ -100,7 +100,7 @@ public class VectorBrowserView extends ViewWithMessagePart {
 			viewer.scrollToElement(entry);
 	}
 	
-	public void gotoEvent(int eventNumber) {
+	public void gotoEvent(long eventNumber) {
 		OutputVectorEntry entry = contentProvider.getElementByEventNumber(eventNumber, true);
 		if (entry != null)
 			viewer.scrollToElement(entry);
@@ -359,7 +359,7 @@ public class VectorBrowserView extends ViewWithMessagePart {
 				if (targetAddr != null) {
 					switch (target) {
 					case Line: view.gotoLine((Integer)targetAddr); break;
-					case Event: view.gotoEvent((Integer)targetAddr); break;
+					case Event: view.gotoEvent((Long)targetAddr); break;
 					case Time: view.gotoTime((BigDecimal)targetAddr); break;
 					}
 				}
@@ -369,10 +369,12 @@ public class VectorBrowserView extends ViewWithMessagePart {
 		public Object parseTarget(String str) {
 			try
 			{
-				if (target == GotoTarget.Time)
-					return BigDecimal.parse(str);
-				else
-					return Integer.parseInt(str);
+				switch (target) {
+				case Time: return BigDecimal.parse(str);
+				case Line: return Integer.parseInt(str);
+				case Event: return Long.parseLong(str);
+				default: return null;
+				}
 			} catch (Exception e) {
 				return null;
 			}

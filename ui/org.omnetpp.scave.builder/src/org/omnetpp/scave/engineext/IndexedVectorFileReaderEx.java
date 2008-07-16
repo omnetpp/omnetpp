@@ -24,7 +24,7 @@ public class IndexedVectorFileReaderEx extends IndexedVectorFileReader {
 	}
 
 	@Override
-	public OutputVectorEntry getEntryByEventnum(int eventNum, boolean after) {
+	public OutputVectorEntry getEntryByEventnum(long eventNum, boolean after) {
 		return copy(super.getEntryByEventnum(eventNum, after));
 	}
 

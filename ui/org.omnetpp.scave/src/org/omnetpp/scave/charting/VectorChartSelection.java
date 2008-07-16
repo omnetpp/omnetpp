@@ -29,7 +29,7 @@ public class VectorChartSelection implements IChartSelection {
 	private long id;
 	// attributes of the selected data point
 	private int index;
-	private int eventNum;
+	private long eventNum;
 	private BigDecimal preciseX;
 	private double x,y;
 	
@@ -41,7 +41,7 @@ public class VectorChartSelection implements IChartSelection {
 		this.key = dataset.getSeriesKey(series);
 		this.id = dataset instanceof VectorDataset ? ((VectorDataset)dataset).getID(series) : -1L;
 		this.index = point.index;
-		this.eventNum = -1; // TODO set eventNum
+		this.eventNum = -1L; // TODO set eventNum
 		this.preciseX = dataset.getPreciseX(series, index);
 		this.x = dataset.getX(series, index);
 		this.y = dataset.getY(series, index);
@@ -63,7 +63,7 @@ public class VectorChartSelection implements IChartSelection {
 		return index;
 	}
 
-	public int getEventNum() {
+	public long getEventNum() {
 		return eventNum;
 	}
 
