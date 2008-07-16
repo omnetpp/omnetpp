@@ -40,7 +40,6 @@ public class AddSelectedToDatasetAction extends AbstractScaveAction {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	protected void doRun(final ScaveEditor editor, IStructuredSelection selection) {
 		FilteredDataPanel activePanel = editor.getBrowseDataPage().getActivePanel();
 		if (activePanel == null)

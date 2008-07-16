@@ -28,7 +28,6 @@ public class CreateTempChartAction extends AbstractScaveAction {
 		setImageDescriptor(ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_PLOT));
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	protected void doRun(ScaveEditor editor, IStructuredSelection selection) {
 		FilteredDataPanel activePanel = editor.getBrowseDataPage().getActivePanel();

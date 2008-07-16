@@ -195,9 +195,8 @@ public class ScaveModelUtil {
 	/**
 	 * Returns the names of result types.
 	 */
-	@SuppressWarnings("unchecked")
 	public static String[] getResultTypeNames() {
-		return getEnumNames((List<ResultType>)ResultType.VALUES);
+		return getEnumNames(ResultType.VALUES);
 	}
 
 	/**

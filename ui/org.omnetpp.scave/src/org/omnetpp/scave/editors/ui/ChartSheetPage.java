@@ -171,7 +171,6 @@ public class ChartSheetPage extends ScaveEditorPage {
 		chartsArea.redraw();
 	}
 	
-	@SuppressWarnings("unchecked")
 	private void initialize() {
 		// set up UI
 		setPageTitle("Charts: " + getChartSheetName(chartsheet));

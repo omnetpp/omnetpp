@@ -189,9 +189,8 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 			loadFile(file);
 	}
 
-	@SuppressWarnings("unchecked")
 	private void partitionInputFiles(List<InputFile> files, List<InputFile> wildcards) {
-		for (InputFile inputfile : (List<InputFile>)inputs.getInputs()) {
+		for (InputFile inputfile : inputs.getInputs()) {
 			if (containsWildcard(inputfile.getName()))
 				wildcards.add(inputfile);
 			else
