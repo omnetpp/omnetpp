@@ -139,7 +139,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 
 		EventLogEntry eventLogEntry = eventLogEntryReference.getEventLogEntry(eventLogInput);
 		contextEvent = eventLogEntry.getEvent();
-		int eventNumber = contextEvent.getEventNumber();
+		long eventNumber = contextEvent.getEventNumber();
 		BigDecimal simulationTime = contextEvent.getSimulationTime();
 		boolean isEventLogEntry = eventLogEntry instanceof EventEntry;
 
@@ -437,7 +437,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 		return null;
 	}
 
-	private BeginSendEntry findBeginSendEntry(int previousEventNumber, int messageId) {
+	private BeginSendEntry findBeginSendEntry(long previousEventNumber, int messageId) {
 		if (previousEventNumber != -1) {
 			IEvent event = eventLogInput.getEventLog().getEventForEventNumber(previousEventNumber);
 	

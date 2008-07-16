@@ -112,9 +112,9 @@ public class EventLogTableEditor extends EventLogEditor implements INavigationLo
 	}
 	
 	public class EventLogTableLocation implements INavigationLocation {
-		private int eventNumber;
+		private long eventNumber;
 		
-		public EventLogTableLocation(int eventNumber) {
+		public EventLogTableLocation(long eventNumber) {
 			this.eventNumber = eventNumber;
 		}
 
@@ -160,7 +160,7 @@ public class EventLogTableEditor extends EventLogEditor implements INavigationLo
 		}
 
 		public void saveState(IMemento memento) {
-			memento.putInteger("EventNumber", eventNumber);
+			memento.putString("EventNumber", Long.toString(eventNumber));
 		}
 
 		public void setInput(Object input) {
@@ -171,27 +171,34 @@ public class EventLogTableEditor extends EventLogEditor implements INavigationLo
 			// void
 		}
 
-		@Override
-		public int hashCode() {
-			final int PRIME = 31;
-			int result = 1;
-			result = PRIME * result + eventNumber;
-			return result;
-		}
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + getOuterType().hashCode();
+            result = prime * result + (int) (eventNumber ^ (eventNumber >>> 32));
+            return result;
+        }
 
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			final EventLogTableLocation other = (EventLogTableLocation) obj;
-			if (eventNumber != other.eventNumber)
-				return false;
-			return true;
-		}
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            EventLogTableLocation other = (EventLogTableLocation) obj;
+            if (!getOuterType().equals(other.getOuterType()))
+                return false;
+            if (eventNumber != other.eventNumber)
+                return false;
+            return true;
+        }
+
+        private EventLogTableEditor getOuterType() {
+            return EventLogTableEditor.this;
+        }
 	}
 
 	public INavigationLocation createEmptyNavigationLocation() {

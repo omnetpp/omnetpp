@@ -14,7 +14,7 @@ import org.omnetpp.eventlog.engine.IEventLog;
  *  
  * @author andras
  */
-public class EventLogSelection implements IEventLogSelection, IVirtualTableSelection<Integer>, IStructuredSelection, Cloneable {
+public class EventLogSelection implements IEventLogSelection, IVirtualTableSelection<Long>, IStructuredSelection, Cloneable {
 	/**
 	 * The input where this selection is.
 	 */
@@ -23,16 +23,16 @@ public class EventLogSelection implements IEventLogSelection, IVirtualTableSelec
 	/**
 	 * The selected event numbers.
 	 */
-	protected List<Integer> eventNumbers;
+	protected List<Long> eventNumbers;
 
-	public EventLogSelection(EventLogInput eventLogInput, List<Integer> eventNumbers) {
+	public EventLogSelection(EventLogInput eventLogInput, List<Long> eventNumbers) {
 		Assert.isTrue(eventLogInput != null);
 		Assert.isTrue(eventNumbers != null);
 		this.eventLogInput = eventLogInput;
 		this.eventNumbers = eventNumbers;
 	}
 
-	public List<Integer> getElements() {
+	public List<Long> getElements() {
 		return eventNumbers;
 	}
 
@@ -48,11 +48,11 @@ public class EventLogSelection implements IEventLogSelection, IVirtualTableSelec
 		return eventLogInput;
 	}
 
-	public List<Integer> getEventNumbers() {
+	public List<Long> getEventNumbers() {
 		return eventNumbers;
 	}
 
-	public Integer getFirstEventNumber() {
+	public Long getFirstEventNumber() {
 		return eventNumbers.isEmpty() ? null : eventNumbers.get(0);
 	}
 
@@ -62,8 +62,8 @@ public class EventLogSelection implements IEventLogSelection, IVirtualTableSelec
 
 	@Override
 	public EventLogSelection clone() {
-		ArrayList<Integer> list = new ArrayList<Integer>();
-		for (Integer e : eventNumbers)
+		ArrayList<Long> list = new ArrayList<Long>();
+		for (Long e : eventNumbers)
 			list.add(e);
 		return new EventLogSelection(this.eventLogInput, list);
 	}
@@ -90,7 +90,7 @@ public class EventLogSelection implements IEventLogSelection, IVirtualTableSelec
 			return eventNumbers.get(0);
 	}
 
-	public Iterator<Integer> iterator() {
+	public Iterator<Long> iterator() {
 		return eventNumbers.iterator();
 	}
 
@@ -102,7 +102,7 @@ public class EventLogSelection implements IEventLogSelection, IVirtualTableSelec
 		return eventNumbers.toArray();
 	}
 
-	public List<Integer> toList() {
+	public List<Long> toList() {
 		return eventNumbers;
 	}
 }

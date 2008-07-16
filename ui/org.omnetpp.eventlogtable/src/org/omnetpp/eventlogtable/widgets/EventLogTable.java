@@ -210,7 +210,7 @@ public class EventLogTable
 			return null;
 		else {
 			List<EventLogEntryReference> selectionElements = getSelectionElements();
-			ArrayList<Integer> selectionEvents = new ArrayList<Integer>();
+			ArrayList<Long> selectionEvents = new ArrayList<Long>();
 
 			if (selectionElements != null)
     			for (EventLogEntryReference selectionElement : selectionElements)
@@ -229,7 +229,7 @@ public class EventLogTable
 		List<EventLogEntryReference> eventLogEntries = new ArrayList<EventLogEntryReference>();
 
 		IEventLog eventLog = eventLogSelection.getEventLogInput().getEventLog();
-		for (Integer eventNumber : eventLogSelection.getEventNumbers())
+		for (Long eventNumber : eventLogSelection.getEventNumbers())
 			eventLogEntries.add(new EventLogEntryReference(eventLog.getEventForEventNumber(eventNumber).getEventEntry()));
 
 		super.setSelection(new VirtualTableSelection<EventLogEntryReference>(eventLogSelection.getEventLogInput(), eventLogEntries));
@@ -495,7 +495,7 @@ public class EventLogTable
 
 class EventLogTableState implements Serializable {
 	private static final long serialVersionUID = 1L;
-	public int topVisibleEventNumber;
+	public long topVisibleEventNumber;
 	public int lineFilterMode;
 	public String customFilter;
     public EventLogTable.TypeMode typeMode;

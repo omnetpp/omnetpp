@@ -99,14 +99,14 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
 		graphics.fillRectangle(rect.x, 0, rect.right() - rect.x, getHeight());
 		
 		SequenceChartFacade sequenceChartFacade = sequenceChart.getInput().getSequenceChartFacade();
-		int endEventNumber = sequenceChartFacade.Event_getEventNumber(endEventPtr);
+		long endEventNumber = sequenceChartFacade.Event_getEventNumber(endEventPtr);
 
 		// draw axis as a colored thick line with labels representing values
 		// two phases: first draw the background and after that draw the values
 		for (int phase = 0; phase < 2; phase++) {
 			for (int i = startIndex; i < endIndex; i++) {
-				int eventNumber = getEventNumber(i);
-				int nextEventNumber = Math.min(endEventNumber, (i == size - 1) ? endEventNumber : getEventNumber(i + 1));
+			    long eventNumber = getEventNumber(i);
+				long nextEventNumber = Math.min(endEventNumber, (i == size - 1) ? endEventNumber : getEventNumber(i + 1));
 
 				if (eventNumber == -1 || nextEventNumber == -1)
 					continue;
@@ -184,7 +184,7 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
 		int index = -1;
 		int left = 0;
 		int right = getDataLength();
-		int eventNumber = sequenceChart.getInput().getSequenceChartFacade().Event_getEventNumber(eventPtr);
+		long eventNumber = sequenceChart.getInput().getSequenceChartFacade().Event_getEventNumber(eventPtr);
 
 		while (left <= right) {
 	        int mid = (right + left) / 2;

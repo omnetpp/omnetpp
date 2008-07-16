@@ -55,15 +55,15 @@ public class EventLogFilterParameters implements Serializable {
 
 	public boolean enableTraceFilter;
 
-	public int lowerEventNumberLimit = -1;
+	public long lowerEventNumberLimit = -1;
 
-	public int upperEventNumberLimit = -1;
+	public long upperEventNumberLimit = -1;
 	
 	public BigDecimal lowerSimulationTimeLimit;
 	
 	public BigDecimal upperSimulationTimeLimit;
 
-	public int tracedEventNumber = -1;
+	public long tracedEventNumber = -1;
 
 	public boolean traceCauses = true;
 
@@ -153,14 +153,14 @@ public class EventLogFilterParameters implements Serializable {
              enableModuleIdFilter);
     }
 
-	public int getFirstEventNumber() {
+	public long getFirstEventNumber() {
 		IEventLog eventLog = eventLogInput.getEventLog();
 
-		int lowerTraceEventNumberLimit1 = -1;
+		long lowerTraceEventNumberLimit1 = -1;
 		if (enableTraceFilter && tracedEventNumber != -1 && causeEventNumberDelta != -1)
 			lowerTraceEventNumberLimit1 = tracedEventNumber - causeEventNumberDelta;
 
-		int lowerTraceEventNumberLimit2 = -1;
+		long lowerTraceEventNumberLimit2 = -1;
 		if (enableTraceFilter && tracedEventNumber != -1 && causeSimulationTimeDelta != null) {
 			IEvent event = eventLog.getEventForEventNumber(tracedEventNumber);
 			event = eventLog.getLastEventNotAfterSimulationTime(new org.omnetpp.common.engine.BigDecimal(event.getSimulationTime().doubleValue() - causeSimulationTimeDelta.doubleValue()));
@@ -169,7 +169,7 @@ public class EventLogFilterParameters implements Serializable {
 				lowerTraceEventNumberLimit2 = event.getEventNumber();
 		}
 
-		int lowerEventNumberForSimulationTimeLimit = -1;
+		long lowerEventNumberForSimulationTimeLimit = -1;
 		if (enableSimulationTimeFilter && lowerSimulationTimeLimit != null) {
 			IEvent event = eventLog.getLastEventNotAfterSimulationTime(org.omnetpp.common.engine.BigDecimal.parse(lowerSimulationTimeLimit.toPlainString()));
 
@@ -177,7 +177,7 @@ public class EventLogFilterParameters implements Serializable {
 				lowerEventNumberForSimulationTimeLimit = event.getEventNumber();
 		}
 
-		int lowerEventNumberLimit = -1;
+		long lowerEventNumberLimit = -1;
 		if (enableEventNumberFilter && this.lowerEventNumberLimit != -1)
 			lowerEventNumberLimit = this.lowerEventNumberLimit;
 
@@ -185,14 +185,14 @@ public class EventLogFilterParameters implements Serializable {
 						Math.max(lowerTraceEventNumberLimit1, lowerTraceEventNumberLimit2));
 	}
 
-	public int getLastEventNumber() {
+	public long getLastEventNumber() {
 		IEventLog eventLog = eventLogInput.getEventLog();
 
-		int upperTraceEventNumberLimit1 = Integer.MAX_VALUE;
+		long upperTraceEventNumberLimit1 = Long.MAX_VALUE;
 		if (enableTraceFilter && tracedEventNumber != -1 && consequenceEventNumberDelta != -1)
 			upperTraceEventNumberLimit1 = tracedEventNumber + consequenceEventNumberDelta;
 
-		int upperTraceEventNumberLimit2 = Integer.MAX_VALUE;
+		long upperTraceEventNumberLimit2 = Long.MAX_VALUE;
 		if (enableTraceFilter && tracedEventNumber != -1 && consequenceSimulationTimeDelta != null) {
 			IEvent event = eventLog.getEventForEventNumber(tracedEventNumber);
 			event = eventLog.getFirstEventNotBeforeSimulationTime(new org.omnetpp.common.engine.BigDecimal(event.getSimulationTime().doubleValue() + consequenceSimulationTimeDelta.doubleValue()));
@@ -201,7 +201,7 @@ public class EventLogFilterParameters implements Serializable {
 				upperTraceEventNumberLimit2 = event.getEventNumber();
 		}
 
-		int upperEventNumberForSimulationTimeLimit = Integer.MAX_VALUE;
+		long upperEventNumberForSimulationTimeLimit = Long.MAX_VALUE;
 		if (enableSimulationTimeFilter && upperSimulationTimeLimit != null) {
 			IEvent event = eventLog.getFirstEventNotBeforeSimulationTime(org.omnetpp.common.engine.BigDecimal.parse(upperSimulationTimeLimit.toPlainString()));
 
@@ -209,14 +209,14 @@ public class EventLogFilterParameters implements Serializable {
 				upperEventNumberForSimulationTimeLimit = event.getEventNumber();
 		}
 
-		int upperEventNumberLimit = Integer.MAX_VALUE;
+		long upperEventNumberLimit = Long.MAX_VALUE;
 		if (enableEventNumberFilter && this.upperEventNumberLimit != -1)
 			upperEventNumberLimit = this.upperEventNumberLimit;
 
-		int limit = Math.min(Math.min(upperEventNumberLimit, upperEventNumberForSimulationTimeLimit),
+		long limit = Math.min(Math.min(upperEventNumberLimit, upperEventNumberForSimulationTimeLimit),
 				             Math.min(upperTraceEventNumberLimit1, upperTraceEventNumberLimit2));
 		
-		if (limit == Integer.MAX_VALUE)
+		if (limit == Long.MAX_VALUE)
 			return -1;
 		else
 			return limit;

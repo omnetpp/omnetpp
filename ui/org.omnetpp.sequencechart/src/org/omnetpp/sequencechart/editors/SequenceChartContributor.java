@@ -138,6 +138,8 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 
     protected SequenceChartAction showAxesWithoutEventsAction;
 
+    protected SequenceChartAction showTransmissionDurationsAction;
+
     protected SequenceChartAction increaseSpacingAction;
 
 	protected SequenceChartAction decreaseSpacingAction;
@@ -183,6 +185,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
         this.showZeroSimulationTimeRegionsAction = createShowZeroSimulationTimeRegionsAction();
         this.showAxisLabelsAction = createShowAxisLabelsAction();
         this.showAxesWithoutEventsAction = createShowAxesWithoutEventsAction();
+        this.showTransmissionDurationsAction = createShowTransmissionDurationsAction();
 		this.increaseSpacingAction = createIncreaseSpacingAction();
 		this.decreaseSpacingAction = createDecreaseSpacingAction();
         this.defaultZoomAction = createDefaultZoomAction();
@@ -305,6 +308,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                 subMenuManager.add(showZeroSimulationTimeRegionsAction);
                 subMenuManager.add(showAxisLabelsAction);
                 subMenuManager.add(showAxesWithoutEventsAction);
+                subMenuManager.add(showTransmissionDurationsAction);
 
                 menuManager.add(separatorAction);
 				menuManager.add(increaseSpacingAction);
@@ -952,6 +956,21 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
             @Override
             public void update() {
                 setChecked(sequenceChart.getShowAxesWithoutEvents());
+            }
+        };
+    }
+    
+    private SequenceChartAction createShowTransmissionDurationsAction() {
+        return new SequenceChartAction("Show Transmission Durations", Action.AS_CHECK_BOX) {
+            @Override
+            public void run() {
+                sequenceChart.setShowTransmissionDurations(!sequenceChart.getShowTransmissionDurations());
+                update();
+            }
+            
+            @Override
+            public void update() {
+                setChecked(sequenceChart.getShowTransmissionDurations());
             }
         };
     }

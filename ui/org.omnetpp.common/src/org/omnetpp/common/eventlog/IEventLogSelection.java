@@ -27,10 +27,10 @@ public interface IEventLogSelection extends ISelection {
 	 * The list of selected event numbers. The returned list MUST NOT be modified
 	 * by clients. Never returns null. 
 	 */
-	public List<Integer> getEventNumbers();
+	public List<Long> getEventNumbers();
 
 	/**
 	 * Returns the first event number in the selection, or null.
 	 */
-	public Integer getFirstEventNumber();
+	public Long getFirstEventNumber();
 }

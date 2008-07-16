@@ -200,12 +200,12 @@ public class HoverSupport {
 		String hoverText = hoverTextProvider.getHoverTextFor(control, x, y, preferredSize);
 		if (hoverText != null) {
 			hoverControl = getHoverControlCreator().createInformationControl(control.getShell());
-			configureControl(hoverControl, hoverText, control.toDisplay(x, y), preferredSize);
 			hoverControl.addDisposeListener(new DisposeListener() {
 				public void widgetDisposed(DisposeEvent e) {  //XXX issue: this doesn't always get called on Linux; see note in removeHover() too
 					hoverControl = null;
 				}
 			});
+            configureControl(hoverControl, hoverText, control.toDisplay(x, y), preferredSize);
 		}
 	}
 

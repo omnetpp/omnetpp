@@ -184,6 +184,8 @@ public class FilterEventLogDialog
 					}
 					else if (parameterFieldType == int.class)
 						unparseInt((Text)guiField.get(this), parameterField.getInt(filterParameters));
+                    else if (parameterFieldType == long.class)
+                        unparseLong((Text)guiField.get(this), parameterField.getLong(filterParameters));
 					else if (parameterFieldType == BigDecimal.class)
 						unparseBigDecimal((Text)guiField.get(this), (BigDecimal)parameterField.get(filterParameters));
 					else if (parameterFieldType == String.class)
@@ -195,6 +197,10 @@ public class FilterEventLogDialog
 							unparseIntArray((AbstractEditableList)guiControl, (int[])parameterField.get(filterParameters));
 						else if (guiControl instanceof CheckboxTableViewer)
 							unparseIntArray((CheckboxTableViewer)guiControl, (int[])parameterField.get(filterParameters));
+						else if (guiControl instanceof AbstractEditableList)
+                            unparseLongArray((AbstractEditableList)guiControl, (long[])parameterField.get(filterParameters));
+                        else if (guiControl instanceof CheckboxTableViewer)
+                            unparseLongArray((CheckboxTableViewer)guiControl, (long[])parameterField.get(filterParameters));
 						else if (guiControl instanceof ModuleTreeViewer)
 							unparseModuleNameIdArray((ModuleTreeViewer)guiControl, (int[])parameterField.get(filterParameters));
 						else
@@ -237,6 +243,11 @@ public class FilterEventLogDialog
 			text.setText(String.valueOf(value));
 	}
 	
+    private void unparseLong(Text text, long value) {
+        if (value != -1)
+            text.setText(String.valueOf(value));
+    }
+    
 	private void unparseBigDecimal(Text text, BigDecimal value) {
 		if (value != null)
 			text.setText(value.toString());
@@ -268,6 +279,28 @@ public class FilterEventLogDialog
 			checkboxTableViewer.setCheckedElements(integerValues);
 		}
 	}
+
+    private void unparseLongArray(AbstractEditableList editableList, long[] values) {
+        if (values != null) {
+            String[] stringValues = new String[values.length];
+
+            for (int i = 0; i < values.length; i++)
+                stringValues[i] = String.valueOf(values[i]);
+            
+            editableList.setItems(stringValues);
+        }
+    }
+
+    private void unparseLongArray(CheckboxTableViewer checkboxTableViewer, long[] values) {
+        if (values != null) {
+            Long[] longValues = new Long[values.length];
+
+            for (int i = 0; i < values.length; i++)
+                longValues[i] = values[i];
+
+            checkboxTableViewer.setCheckedElements(longValues);
+        }
+    }
 
     private void unparseEnabledIntArray(EditableCheckboxList editableCheckboxList, EnabledInt[] enabledInts) {
         if (enabledInts != null) {
@@ -325,6 +358,8 @@ public class FilterEventLogDialog
 					}
 					else if (parameterFieldType == int.class)
 						parameterField.setInt(filterParameters, parseInt((Text)guiField.get(this)));
+                    else if (parameterFieldType == long.class)
+                        parameterField.setLong(filterParameters, parseLong((Text)guiField.get(this)));
 					else if (parameterFieldType == BigDecimal.class)
 						parameterField.set(filterParameters, parseBigDecimal((Text)guiField.get(this)));
 					else if (parameterFieldType == String.class)
@@ -334,10 +369,14 @@ public class FilterEventLogDialog
 
 						if (guiControl instanceof AbstractEditableList)
 							parameterField.set(filterParameters, parseIntArray((AbstractEditableList)guiControl));
+                        else if (guiControl instanceof CheckboxTableViewer)
+                            parameterField.set(filterParameters, parseIntArray((CheckboxTableViewer)guiField.get(this)));
+                        else if (guiControl instanceof AbstractEditableList)
+                            parameterField.set(filterParameters, parseLongArray((AbstractEditableList)guiControl));
+                        else if (guiControl instanceof CheckboxTableViewer)
+                            parameterField.set(filterParameters, parseLongArray((CheckboxTableViewer)guiField.get(this)));
 						else if (guiControl instanceof ModuleTreeViewer)
 							parameterField.set(filterParameters, parseModuleNameIdArray((ModuleTreeViewer)guiField.get(this)));
-						else if (guiControl instanceof CheckboxTableViewer)
-							parameterField.set(filterParameters, parseIntArray((CheckboxTableViewer)guiField.get(this)));
 						else
 							throw new RuntimeException("Unknown gui field type");
 					}
@@ -379,6 +418,13 @@ public class FilterEventLogDialog
 			return -1;
 	}
 	
+    private long parseLong(Text text) {
+        if (text.getText().length() != 0)
+            return Long.parseLong(text.getText());
+        else
+            return -1;
+    }
+    
 	private BigDecimal parseBigDecimal(Text text) {
 		if (text.getText().length() != 0)
 			return new BigDecimal(text.getText());
@@ -409,6 +455,26 @@ public class FilterEventLogDialog
 		
 		return values;
 	}
+
+    private long[] parseLongArray(AbstractEditableList editableList) {
+        String[] stringValues = editableList.getItems();
+        long[] longValues = new long[stringValues.length];
+
+        for (int i = 0; i < stringValues.length; i++)
+            longValues[i] = Long.parseLong(stringValues[i]);
+
+        return longValues;
+    }
+    
+    private long[] parseLongArray(CheckboxTableViewer checkBoxTableViewer) {
+        Object[] elements = checkBoxTableViewer.getCheckedElements();
+        long[] values = new long[elements.length];
+        
+        for (int i = 0; i < elements.length; i++)
+            values[i] = (Long)elements[i];
+        
+        return values;
+    }
 
     private EnabledInt[] parseEnabledIntArray(EditableCheckboxList editableCheckboxList) {
         String[] stringValues = editableCheckboxList.getItems();

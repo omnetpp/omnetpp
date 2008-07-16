@@ -68,6 +68,7 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.TimeUtils;
 import org.omnetpp.common.virtualtable.IVirtualContentWidget;
 import org.omnetpp.eventlog.engine.BeginSendEntry;
+import org.omnetpp.eventlog.engine.EventLogEntry;
 import org.omnetpp.eventlog.engine.EventLogMessageEntry;
 import org.omnetpp.eventlog.engine.FilteredEventLog;
 import org.omnetpp.eventlog.engine.FilteredMessageDependency;
@@ -77,6 +78,7 @@ import org.omnetpp.eventlog.engine.IMessageDependency;
 import org.omnetpp.eventlog.engine.IMessageDependencyList;
 import org.omnetpp.eventlog.engine.ModuleCreatedEntry;
 import org.omnetpp.eventlog.engine.PtrVector;
+import org.omnetpp.eventlog.engine.SendDirectEntry;
 import org.omnetpp.eventlog.engine.SequenceChartFacade;
 import org.omnetpp.scave.engine.FileRun;
 import org.omnetpp.scave.engine.ResultFile;
@@ -192,6 +194,7 @@ public class SequenceChart
     private boolean showZeroSimulationTimeRegions = true;
     private boolean showAxisLabels = true;
     private boolean showAxesWithoutEvents = false;
+    private boolean showTransmissionDurations = true;
 
     private AxisOrderingMode axisOrderingMode = AxisOrderingMode.MODULE_ID; // specifies the ordering mode of axes
 
@@ -245,7 +248,7 @@ public class SequenceChart
 	private boolean followSelection = true;
 
 	private ArrayList<SelectionListener> selectionListenerList = new ArrayList<SelectionListener>(); // SWT selection listeners
-	private List<Integer> selectionEventNumbers = new ArrayList<Integer>(); // the selection
+	private List<Long> selectionEventNumbers = new ArrayList<Long>(); // the selection
     private ListenerList selectionChangedListeners = new ListenerList(); // list of selection change listeners (type ISelectionChangedListener).
 
 	/*************************************************************************************
@@ -559,6 +562,21 @@ public class SequenceChart
     public void setShowAxesWithoutEvents(boolean showAxesWithoutEvents) {
         this.showAxesWithoutEvents = showAxesWithoutEvents;
         clearAxisModules();
+    }
+    
+    /**
+     * Shows/hides transmission durations.
+     */
+    public boolean getShowTransmissionDurations() {
+        return showTransmissionDurations;
+    }
+
+    /**
+     * Returns whether axes without events are shown on the chart.
+     */
+    public void setShowTransmissionDurations(boolean showTransmissionDurations) {
+        this.showTransmissionDurations = showTransmissionDurations;
+        clearCanvasCacheAndRedraw();
     }
 
     /**
@@ -1254,7 +1272,7 @@ public class SequenceChart
 
 	public void eventLogFiltered() {
 		eventLog = eventLogInput.getEventLog();
-		int timelineCoordinateSystemOriginEventNumber = sequenceChartFacade.getTimelineCoordinateSystemOriginEventNumber();
+		long timelineCoordinateSystemOriginEventNumber = sequenceChartFacade.getTimelineCoordinateSystemOriginEventNumber();
 
 		if (timelineCoordinateSystemOriginEventNumber != -1) {
 			FilteredEventLog filteredEventLog = (FilteredEventLog)eventLogInput.getEventLog();
@@ -2350,8 +2368,8 @@ public class SequenceChart
 		long endEventPtr = eventPtrRange[1];
 
 		if (startEventPtr != 0 && endEventPtr != 0) {
-			int startEventNumber = sequenceChartFacade.Event_getEventNumber(startEventPtr);
-			int endEventNumber = sequenceChartFacade.Event_getEventNumber(endEventPtr);
+		    long startEventNumber = sequenceChartFacade.Event_getEventNumber(startEventPtr);
+			long endEventNumber = sequenceChartFacade.Event_getEventNumber(endEventPtr);
 
 			graphics.setAntialias(SWT.ON);
 
@@ -2360,7 +2378,7 @@ public class SequenceChart
 				graphics.setLineStyle(SWT.LINE_SOLID);
 			    graphics.setForegroundColor(EVENT_SELECTION_COLOR);
 
-			    for (int selectedEventNumber : selectionEventNumbers)
+			    for (long selectedEventNumber : selectionEventNumbers)
 			    	if (startEventNumber <= selectedEventNumber && selectedEventNumber <= endEventNumber)
 			    	    drawSelectionMarks(graphics, eventLog.getEventForEventNumber(selectedEventNumber));
 			}
@@ -2380,8 +2398,8 @@ public class SequenceChart
 				long endEventPtr = eventPtrRange[1];
 
 				if (startEventPtr != 0 && endEventPtr != 0) {
-					int startEventNumber = sequenceChartFacade.Event_getEventNumber(startEventPtr);
-					int endEventNumber = sequenceChartFacade.Event_getEventNumber(endEventPtr);
+				    long startEventNumber = sequenceChartFacade.Event_getEventNumber(startEventPtr);
+					long endEventNumber = sequenceChartFacade.Event_getEventNumber(endEventPtr);
 
 					graphics.setLineStyle(SWT.LINE_SOLID);
 				    graphics.setForegroundColor(EVENT_BOOKMARK_COLOR);
@@ -2469,10 +2487,10 @@ public class SequenceChart
 		// calculate pixel coordinates for message arrow endings
 		long beginSendEntryPtr = sequenceChartFacade.MessageDependency_getBeginSendEntry(messageDependencyPtr);
 		int messageId = beginSendEntryPtr == 0 ? 0 : sequenceChartFacade.EventLogEntry_getMessageId(beginSendEntryPtr);
-		int startEventNumber = sequenceChartFacade.Event_getEventNumber(startEventPtr);
-		int endEventNumber = sequenceChartFacade.Event_getEventNumber(endEventPtr);
-		int causeEventNumber = sequenceChartFacade.Event_getEventNumber(causeEventPtr);
-		int consequenceEventNumber = sequenceChartFacade.Event_getEventNumber(consequenceEventPtr);
+		long startEventNumber = sequenceChartFacade.Event_getEventNumber(startEventPtr);
+		long endEventNumber = sequenceChartFacade.Event_getEventNumber(endEventPtr);
+		long causeEventNumber = sequenceChartFacade.Event_getEventNumber(causeEventPtr);
+		long consequenceEventNumber = sequenceChartFacade.Event_getEventNumber(consequenceEventPtr);
         int invalid = -Integer.MAX_VALUE;
         int x1 = invalid, y1 = isInitializationEvent(causeEventPtr) ? getInitializationEventYViewportCoordinate(messageDependencyPtr) : getEventYViewportCoordinate(causeEventPtr);
         int x2 = invalid, y2 = getEventYViewportCoordinate(consequenceEventPtr);
@@ -2540,7 +2558,7 @@ public class SequenceChart
 		    if (!showSelfMessages)
 		        return false;
 
-			int eventNumberDelta = messageId + sequenceChartFacade.Event_getEventNumber(consequenceEventPtr) - sequenceChartFacade.Event_getEventNumber(causeEventPtr);
+		    long eventNumberDelta = messageId + consequenceEventNumber - causeEventNumber;
 			int numberOfPossibleEllipseHeights = Math.max(1, (int)Math.round((getAxisSpacing() - fontHeight) / (fontHeight + 10)));
 			int halfEllipseHeight = (int)Math.max(getAxisSpacing() * (eventNumberDelta % numberOfPossibleEllipseHeights + 1) / (numberOfPossibleEllipseHeights + 1), MINIMUM_HALF_ELLIPSE_HEIGHT);
 
@@ -2562,18 +2580,17 @@ public class SequenceChart
 					return lineContainsPoint(x1, y1, x2, y2, fitX, fitY, tolerance);
 			}
 			else {
-				int quarterEllipseWidth = LONG_MESSAGE_ARROW_WIDTH;
 				boolean showArrowHeads = this.showArrowHeads;
 				int xm, ym = y1 - halfEllipseHeight;
 
 				// cause is too far away
 				if (x1 == invalid) {
-					x1 = x2 - quarterEllipseWidth * 2;
-					xm = x1 + quarterEllipseWidth;
+					x1 = x2 - LONG_MESSAGE_ARROW_WIDTH * 2;
+					xm = x1 + LONG_MESSAGE_ARROW_WIDTH;
 
 					// draw quarter ellipse starting with a horizontal straight line from the left
-					Rectangle.SINGLETON.setLocation(x2 - quarterEllipseWidth * 2, ym);
-					Rectangle.SINGLETON.setSize(quarterEllipseWidth * 2, halfEllipseHeight * 2);
+					Rectangle.SINGLETON.setLocation(x2 - LONG_MESSAGE_ARROW_WIDTH * 2, ym);
+					Rectangle.SINGLETON.setSize(LONG_MESSAGE_ARROW_WIDTH * 2, halfEllipseHeight * 2);
 
 					if (graphics != null) {
 						graphics.drawArc(Rectangle.SINGLETON, 0, 90);
@@ -2589,12 +2606,12 @@ public class SequenceChart
 				}
 				// consequence is too far away
 				else if (x2 == invalid) {
-					x2 = x1 + quarterEllipseWidth * 2;
-					xm = x1 + quarterEllipseWidth;
+					x2 = x1 + LONG_MESSAGE_ARROW_WIDTH * 2;
+					xm = x1 + LONG_MESSAGE_ARROW_WIDTH;
 
 					// draw quarter ellipse ending in a horizontal straight line to the right
 					Rectangle.SINGLETON.setLocation(x1, ym);
-					Rectangle.SINGLETON.setSize(quarterEllipseWidth * 2, halfEllipseHeight * 2);
+					Rectangle.SINGLETON.setSize(LONG_MESSAGE_ARROW_WIDTH * 2, halfEllipseHeight * 2);
 
 					if (graphics != null) {
 						graphics.drawArc(Rectangle.SINGLETON, 90, 90);
@@ -2658,16 +2675,15 @@ public class SequenceChart
 			}
 		}
 		else {
-			int tooLongLineWidth = LONG_MESSAGE_ARROW_WIDTH;
 			int y = (y2 + y1) / 2;
 			Color arrowHeadFillColor = null;
 
 			// cause is too far away
 			if (x1 == invalid) {
-				x1 = x2 - tooLongLineWidth * 2;
+				x1 = x2 - LONG_MESSAGE_ARROW_WIDTH * 2;
 
 				if (graphics != null) {
-					int xm = x2 - tooLongLineWidth;
+					int xm = x2 - LONG_MESSAGE_ARROW_WIDTH;
 					graphics.drawLine(xm, y, x2, y2);
 					graphics.setLineStyle(SWT.LINE_DOT);
 					graphics.drawLine(x1, y1, xm, y);
@@ -2675,10 +2691,13 @@ public class SequenceChart
 			}
 			// consequence is too far away
 			else if (x2 == invalid) {
-				x2 = x1 + tooLongLineWidth * 2;
+				x2 = x1 + LONG_MESSAGE_ARROW_WIDTH * 2;
 
 				if (graphics != null) {
-					int xm = x1 + tooLongLineWidth;
+                    if (showTransmissionDurations)
+                        drawTransmissionDuration(graphics, causeEventPtr, consequenceEventPtr, beginSendEntryPtr, x1, y1, x2, y2);
+
+                    int xm = x1 + LONG_MESSAGE_ARROW_WIDTH;
 					graphics.drawLine(x1, y1, xm, y);
 					graphics.setLineStyle(SWT.LINE_DOT);
 					graphics.drawLine(xm, y, x2, y2);
@@ -2689,7 +2708,12 @@ public class SequenceChart
 			else {
 				if (graphics != null) {
 					if (x1 != x2 || vlineBuffer.vlineContainsNewPixel(x1, y1, y2))
-						graphics.drawLine(x1, y1, x2, y2);
+					{
+					    if (showTransmissionDurations)
+					        drawTransmissionDuration(graphics, causeEventPtr, consequenceEventPtr, beginSendEntryPtr, x1, y1, x2, y2);
+
+					    graphics.drawLine(x1, y1, x2, y2);
+					}
 				}
 			}
 
@@ -2706,7 +2730,7 @@ public class SequenceChart
 			    int mx = (x1 + x2) / 2;
 			    int my = (y1 + y2) / 2;
 			    int rowCount = Math.min(7, Math.max(1, Math.abs(y2 - y1) / fontHeight - 8));
-			    int rowIndex = ((messageId + causeEventNumber + consequenceEventNumber) % rowCount) - rowCount / 2;
+			    int rowIndex = ((int)(messageId + causeEventNumber + consequenceEventNumber) % rowCount) - rowCount / 2;
 			    int dy = rowIndex * fontHeight;
 			    int dx = y2 == y1 ? 0 : (int)((double)(x2 - x1) / (y2 - y1) * dy);
                 mx += dx;
@@ -2720,6 +2744,85 @@ public class SequenceChart
 
 		return false;
 	}
+
+	/**
+	 * Draws a semi-transparent region to represent a transmission duration.
+	 */
+    private void drawTransmissionDuration(Graphics graphics, long causeEventPtr, long consequenceEventPtr, long beginSendEntryPtr, int x1, int y1, int x2, int y2) {
+        BeginSendEntry beginSendEntry = (BeginSendEntry)sequenceChartFacade.EventLogEntry_getEventLogEntry(beginSendEntryPtr);
+        int index = beginSendEntry.getEntryIndex();
+        EventLogEntry entry = beginSendEntry.getEvent().getEventLogEntry(index + 1);
+
+        if (entry instanceof SendDirectEntry) {
+            SendDirectEntry sendDirectEntry = (SendDirectEntry)entry;
+            org.omnetpp.common.engine.BigDecimal t = sendDirectEntry.getTransmissionDelay();
+            
+            if (!t.equals(org.omnetpp.common.engine.BigDecimal.getZero())) {
+                int x3 = getViewportCoordinateForTimelineCoordinate(
+                            sequenceChartFacade.getTimelineCoordinateForSimulationTimeAndEventInModule(
+                                sequenceChartFacade.Event_getSimulationTime(causeEventPtr).add(t), 
+                                sequenceChartFacade.Event_getModuleId(causeEventPtr)));
+                int x4 = getViewportCoordinateForTimelineCoordinate(
+                            sequenceChartFacade.getTimelineCoordinateForSimulationTimeAndEventInModule(
+                                sequenceChartFacade.Event_getSimulationTime(consequenceEventPtr).add(t), 
+                                sequenceChartFacade.Event_getModuleId(consequenceEventPtr)));
+                int xLimit = getViewportWidth();
+                boolean fade = false;
+
+                if (x3 - x1 > xLimit) {
+                    x3 = x1 + LONG_MESSAGE_ARROW_WIDTH;
+                    fade = true;
+                }
+
+                if (x4 - x2 > xLimit) {
+                    x4 = x2 + LONG_MESSAGE_ARROW_WIDTH;
+                    fade = true;
+                }
+
+                // create the polygon
+                int[] points = new int[8];
+                points[0] = x1;
+                points[1] = y1;
+                points[2] = x2;
+                points[3] = y2;
+                points[4] = x4;
+                points[5] = y2;
+                points[6] = x3;
+                points[7] = y1;
+                
+                // draw it
+                graphics.pushState();
+                graphics.setAlpha(50);
+                graphics.setBackgroundColor(graphics.getForegroundColor());
+
+                if (fade) {
+                    graphics.fillPolygon(points);
+
+                    points[0] += LONG_MESSAGE_ARROW_WIDTH;
+                    points[2] += LONG_MESSAGE_ARROW_WIDTH;
+                    points[4] += LONG_MESSAGE_ARROW_WIDTH;
+                    points[6] += LONG_MESSAGE_ARROW_WIDTH;
+
+                    int numberOfStrips = 4;
+                    int s = LONG_MESSAGE_ARROW_WIDTH / numberOfStrips;
+
+                    for (int i = 0; i < numberOfStrips; i++) {
+                        if (i % 2 == 1)
+                            graphics.fillPolygon(points);
+
+                        points[0] += s;
+                        points[2] += s;
+                        points[4] = points[2] + s;
+                        points[6] = points[0] + s;
+                    }
+                }
+                else
+                    graphics.fillPolygon(points);
+                
+                graphics.popState();
+            }
+        }
+    }
 
 	/**
 	 * Draws a message arrow label with the corresponding message line color.
@@ -2770,8 +2873,8 @@ public class SequenceChart
 		double dx = x2 - x1;
 		double dy = y2 - y1;
 		double length = Math.sqrt(dx * dx + dy * dy);
+        dx /= length;
 		dy /= length;
-		dx /= length;
 		float angle = (float)(180 * Math.atan2(dy, dx) / Math.PI);
 
 		Transform transform = new Transform(null);
@@ -3279,7 +3382,7 @@ public class SequenceChart
 							ArrayList<IEvent> events = new ArrayList<IEvent>();
 
 							if ((me.stateMask & SWT.MOD1)!=0) // CTRL key extends selection
-								for (Integer eventNumber : selectionEventNumbers)
+								for (Long eventNumber : selectionEventNumbers)
 									events.add(eventLog.getEventForEventNumber(eventNumber));
 
 							collectStuffUnderMouse(me.x, me.y, events, null);
@@ -3305,7 +3408,7 @@ public class SequenceChart
 			}
 
 			private void updateSelectionEvents(ArrayList<IEvent> events, boolean fireSelection) {
-                ArrayList<Integer> eventNumbers = new ArrayList<Integer>();
+                ArrayList<Long> eventNumbers = new ArrayList<Long>();
                 for (IEvent event : events)
                     eventNumbers.add(event.getEventNumber());
 
@@ -3864,14 +3967,14 @@ public class SequenceChart
 			return null;
 	}
 
-	public List<Integer> getSelectionEventNumbers() {
+	public List<Long> getSelectionEventNumbers() {
 		return selectionEventNumbers;
 	}
 
     public List<IEvent> getSelectionEvents() {
         ArrayList<IEvent> events = new ArrayList<IEvent>();
         
-        for (Integer eventNumber : selectionEventNumbers)
+        for (Long eventNumber : selectionEventNumbers)
             events.add(eventLog.getEventForEventNumber(eventNumber));
         
         return events;
@@ -3973,7 +4076,7 @@ public class SequenceChart
 class SequenceChartState implements Serializable {
 	private static final long serialVersionUID = 1L;
 	public int viewportTop;
-	public int fixPointEventNumber;
+	public long fixPointEventNumber;
 	public int fixPointViewportCoordinate;
 	public double pixelPerTimelineCoordinate;
 	public AxisState[] axisStates;

@@ -6,7 +6,7 @@ import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
 
 public class EventLogEntryReference {
-	private int eventNumber;
+	private long eventNumber;
 
 	private int eventEntryIndex;
 
@@ -17,7 +17,7 @@ public class EventLogEntryReference {
 		Assert.isTrue(eventNumber != -1 && eventEntryIndex != -1);
 	}
 
-	public int getEventNumber() {
+	public long getEventNumber() {
 		return eventNumber;
 	}
 	
@@ -50,28 +50,28 @@ public class EventLogEntryReference {
 		return "#" + eventNumber + ":" + eventEntryIndex;
 	}
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + eventEntryIndex;
-		result = prime * result + eventNumber;
-		return result;
-	}
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + eventEntryIndex;
+        result = prime * result + (int) (eventNumber ^ (eventNumber >>> 32));
+        return result;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		final EventLogEntryReference other = (EventLogEntryReference) obj;
-		if (eventEntryIndex != other.eventEntryIndex)
-			return false;
-		if (eventNumber != other.eventNumber)
-			return false;
-		return true;
-	}
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        EventLogEntryReference other = (EventLogEntryReference) obj;
+        if (eventEntryIndex != other.eventEntryIndex)
+            return false;
+        if (eventNumber != other.eventNumber)
+            return false;
+        return true;
+    }
 }

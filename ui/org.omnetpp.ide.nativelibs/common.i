@@ -52,6 +52,7 @@ int strdictcmp(const char *s1, const char *s2);
 
 /* -------------------- BigDecimal -------------------------- */
 
+
 %ignore _I64_MAX_DIGITS;
 %ignore BigDecimal::BigDecimal();
 %ignore BigDecimal::str(char*);
@@ -81,6 +82,11 @@ int strdictcmp(const char *s1, const char *s2);
 %rename(greaterOrEqual) BigDecimal::operator>=;
 %rename(toString) BigDecimal::str;
 %rename(doubleValue) BigDecimal::dbl;
+
+%extend BigDecimal {
+   const BigDecimal add(const BigDecimal& x) {return *self + x;}
+   const BigDecimal subtract(const BigDecimal& x) {return *self - x;}
+}
 
 SWIG_JAVABODY_METHODS(public, public, BigDecimal)
 
