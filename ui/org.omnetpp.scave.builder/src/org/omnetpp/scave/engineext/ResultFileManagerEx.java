@@ -107,6 +107,12 @@ public class ResultFileManagerEx extends ResultFileManager {
 		checkDeleted();
 		return wrap(super.getAllVectors());
 	}
+	
+	@Override
+	public IDList getAllItems() {
+		checkDeleted();
+		return wrap(super.getAllItems());
+	}
 
 	@Override
 	public IDList getScalarsInFileRun(FileRun fileRun) {
