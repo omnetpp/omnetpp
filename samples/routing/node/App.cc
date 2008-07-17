@@ -26,7 +26,7 @@ class App : public cSimpleModule
     int myAddress;
     std::vector<int> destAddresses;
     cPar *sendIATime;
-    int packetLengthBytes;
+    cPar *packetLengthBytes;
 
     // state
     cMessage *generatePacket;
@@ -61,7 +61,7 @@ App::~App()
 void App::initialize()
 {
     myAddress = par("address");
-    packetLengthBytes = par("packetLength");
+    packetLengthBytes = &par("packetLength");
     sendIATime = &par("sendIaTime");  // volatile parameter
     pkCounter = 0;
     pkReceived = 0;
@@ -96,7 +96,7 @@ void App::handleMessage(cMessage *msg)
         ev << "generating packet " << pkname << endl;
 
         Packet *pk = new Packet(pkname);
-        pk->setByteLength(packetLengthBytes);
+        pk->setByteLength(packetLengthBytes->longValue());
         pk->setSrcAddr(myAddress);
         pk->setDestAddr(destAddress);
         send(pk,"out");

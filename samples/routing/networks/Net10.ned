@@ -21,7 +21,7 @@ network Net10
         channel C extends DatarateChannel
         {
             parameters:
-                delay = 0.1ms;
+                delay = uniform(0.1ms, 1ms);
                 datarate = 1Mbps;
         }
     submodules:
