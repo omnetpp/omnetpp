@@ -92,7 +92,7 @@ TokenRingMAC::~TokenRingMAC()
 
 void TokenRingMAC::activity()
 {
-    gate("phyIn")->getFromGate()->setDeliverOnReceptionStart(true); //FIXME getFromGate shuold NOT be needed!!!!!!!!
+    gate("phyIn")->setDeliverOnReceptionStart(true);
 
     dataRate = par("dataRate");     // 4 or 16 Mbit/s
     tokenHoldingTime = par("THT");   // typically 10ms

@@ -293,6 +293,20 @@ cGate *cGate::getDestinationGate() const
     return const_cast<cGate *>(g);
 }
 
+void cGate::setDeliverOnReceptionStart(bool d)
+{
+    if (!getOwnerModule()->isSimple())
+        throw cRuntimeError(this, "setDeliverOnReceptionStart() may only be invoked on a simple module gate");
+    if (getType() != INPUT)
+        throw cRuntimeError(this, "setDeliverOnReceptionStart() may only be invoked on an input gate");
+
+    // set b1 on pos
+    if (d)
+        pos|=2;
+    else
+        pos&=~2;
+}
+
 bool cGate::deliver(cMessage *msg, simtime_t t)
 {
     if (togatep==NULL)

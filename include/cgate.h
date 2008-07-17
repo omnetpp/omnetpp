@@ -308,16 +308,16 @@ class SIM_API cGate : public cObject, noncopyable
     cChannel *getChannel() const  {return channelp;}
 
     /**
-     * Usually only makes sense on input gates which are connected to
-     * channel with data rate. Messages with nonzero length then have a
-     * nonzero transmission duration (and thus, reception duration on the other
+     * This method may only be invoked on input gates of simple modules.
+     * Messages with nonzero length then have a nonzero
+     * transmission duration (and thus, reception duration on the other
      * side of the connection). By default, the delivery of the message
      * to the module marks the end of the reception. Setting this bit will cause
      * the channel to deliver the message to the module at the start of the
      * reception. The duration that the reception will take can be extracted
      * from the message object, by its getDuration() method.
      */
-    void setDeliverOnReceptionStart(bool d) {if (d) pos|=2; else pos&=~2;}
+    void setDeliverOnReceptionStart(bool d);
 
     /**
      * Returns whether messages delivered through this gate will mark the
