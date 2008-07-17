@@ -15,7 +15,7 @@
 *--------------------------------------------------------------*/
 
 #include <stdlib.h>
-#include <string.h>
+#include <utility>
 #include "platmisc.h"
 #include "scaveutils.h"
 
@@ -114,6 +114,25 @@ std::string unquoteString(const char *str)
     else
         result = str;
     return result;
+}
+
+const std::string *StringPool::insert(const std::string& str)
+{
+	if (!lastInsertedPtr || *lastInsertedPtr!=str)
+	{
+		std::pair<std::set<std::string>::iterator,bool> p = pool.insert(str);
+		lastInsertedPtr = &(*p.first);
+	}
+    return lastInsertedPtr;
+}
+
+const std::string *StringPool::find(const std::string& str) const
+{
+	if (lastInsertedPtr && *lastInsertedPtr==str)
+		return lastInsertedPtr;
+
+	std::set<std::string>::const_iterator it = pool.find(str);
+	return it != pool.end() ? &(*it) : NULL;
 }
 
 NAMESPACE_END

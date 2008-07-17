@@ -137,13 +137,6 @@ ResultFileManager::~ResultFileManager()
     classNames.clear();
 }
 
-const std::string *ResultFileManager::stringSetFindOrInsert(StringSet& set, const std::string& str)
-{
-	std::pair<StringSet::iterator,bool> p = set.insert(str);
-	StringSet::iterator m = p.first;
-    return &(*m);
-}
-
 ResultFileList ResultFileManager::getFiles() const
 {
     ResultFileList out;
@@ -452,15 +445,13 @@ ID ResultFileManager::getItemByName(FileRun *fileRunRef, const char *module, con
     if (!fileRunRef || !module || !name)
         return 0;
 
-    StringSet::const_iterator m = moduleNames.find(module);
-    if (m==moduleNames.end())
+    const std::string *moduleNameRef = moduleNames.find(module);
+    if (!moduleNameRef)
         return 0;
-    const std::string *moduleNameRef = &(*m);
 
-    StringSet::const_iterator n = names.find(name);
-    if (n==names.end())
+    const std::string *nameRef = names.find(name);
+    if (!nameRef)
         return 0;
-    const std::string *nameRef = &(*n);
 
     ScalarResults& scalarResults = fileRunRef->fileRef->scalarResults;
     for (int i=0; i<(int)scalarResults.size(); i++)
@@ -741,26 +732,11 @@ FileRun *ResultFileManager::addFileRun(ResultFile *file, Run *run)
 int ResultFileManager::addScalar(FileRun *fileRunRef, const char *moduleName,
                                   const char *scalarName, double value)
 {
-//    static std::string *lastInsertedModuleRef = NULL;
-
     ScalarResult scalar;
     scalar.fileRunRef = fileRunRef;
 
-    // lines in omnetpp.sca are usually grouped by module, we can exploit this for efficiency
-// broken concept: load scalars, load vectors with new module names, load scalars -> dangling pointer
-// TODO: create string pool for module names, and add this improvement to it
-//    if (lastInsertedModuleRef && *lastInsertedModuleRef==moduleName)
-//    {
-//        scalar.moduleNameRef = lastInsertedModuleRef;
-//    }
-//    else
-//    {
-//        std::string *m = stringSetFindOrInsert(moduleNames, std::string(moduleName));
-//        scalar.moduleNameRef = lastInsertedModuleRef = m;
-//    }
-
-    scalar.moduleNameRef = stringSetFindOrInsert(moduleNames, std::string(moduleName));
-    scalar.nameRef = stringSetFindOrInsert(names, std::string(scalarName));
+    scalar.moduleNameRef = moduleNames.insert(moduleName);
+    scalar.nameRef = names.insert(scalarName);
     scalar.value = value;
 
     ScalarResults &scalars = fileRunRef->fileRef->scalarResults;
@@ -773,8 +749,8 @@ int ResultFileManager::addVector(FileRun *fileRunRef, int vectorId, const char *
     VectorResult vector;
     vector.fileRunRef = fileRunRef;
     vector.vectorId = vectorId;
-    vector.moduleNameRef = stringSetFindOrInsert(moduleNames, std::string(moduleName));
-    vector.nameRef = stringSetFindOrInsert(names, std::string(vectorName));
+    vector.moduleNameRef = moduleNames.insert(moduleName);
+    vector.nameRef = names.insert(vectorName);
     vector.columns = columns;
     vector.stat = Statistics(-1, dblNaN, dblNaN, dblNaN, dblNaN);
     VectorResults &vectors = fileRunRef->fileRef->vectorResults;
@@ -788,8 +764,8 @@ int ResultFileManager::addHistogram(FileRun *fileRunRef, const char *moduleName,
     HistogramResult histogram;
     histogram.attributes = attrs;
     histogram.fileRunRef = fileRunRef;
-    histogram.moduleNameRef = stringSetFindOrInsert(moduleNames, std::string(moduleName));
-    histogram.nameRef = stringSetFindOrInsert(names, std::string(histogramName));
+    histogram.moduleNameRef = moduleNames.insert(moduleName);
+    histogram.nameRef = names.insert(histogramName);
     histogram.stat = stat;
     HistogramResults &histograms = fileRunRef->fileRef->histogramResults;
     histograms.push_back(histogram);
@@ -818,7 +794,7 @@ ID ResultFileManager::addComputedVector(int vectorId, const char *name, const ch
     newVector.computation = computation;
     newVector.columns = vector.columns;
     newVector.moduleNameRef = vector.moduleNameRef;
-    newVector.nameRef = stringSetFindOrInsert(names, name);
+    newVector.nameRef = names.insert(name);
     newVector.fileRunRef = fileRunRef;
     newVector.attributes = attributes;
     newVector.stat = Statistics(-1, dblNaN, dblNaN, dblNaN, dblNaN);
@@ -1202,8 +1178,8 @@ void ResultFileManager::loadVectorsFromIndex(const char *filename, ResultFile *f
         vectorResult.fileRunRef = fileRunRef;
         vectorResult.attributes = StringMap(vectorRef->attributes);
         vectorResult.vectorId = vectorRef->vectorId;
-        vectorResult.moduleNameRef = stringSetFindOrInsert(moduleNames, vectorRef->moduleName);
-        vectorResult.nameRef = stringSetFindOrInsert(names, vectorRef->name);
+        vectorResult.moduleNameRef = moduleNames.insert(vectorRef->moduleName);
+        vectorResult.nameRef = names.insert(vectorRef->name);
         vectorResult.columns = vectorRef->columns;
         vectorResult.startEventNum = vectorRef->startEventNum;
         vectorResult.endEventNum = vectorRef->endEventNum;

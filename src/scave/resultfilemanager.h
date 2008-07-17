@@ -247,9 +247,9 @@ class SCAVE_API ResultFileManager
     FileRunList fileRunList;
 
     // module names and variable names are stringpooled to conserve space
-    StringSet moduleNames;
-    StringSet names;
-    StringSet classNames; // currently not used
+    StringPool moduleNames;
+    StringPool names;
+    StringPool classNames; // currently not used
 
     ComputedIDCache computedIDCache;
 
@@ -290,8 +290,6 @@ class SCAVE_API ResultFileManager
     enum {SCALAR=1, VECTOR=2, HISTOGRAM=4}; // must be 1,2,4,8 etc, because of IDList::getItemTypes()
 
   private:
-    static const std::string *stringSetFindOrInsert(StringSet& set, const std::string& str);
-
     // ID: 1 bit computed, 7 bit type, 24 bit fileid, 32 bit pos
     static bool _computed(ID id) { return (id >> 63) != 0; }
     static int _type(ID id)   {return (id >> 56) & 0x7fUL;}
