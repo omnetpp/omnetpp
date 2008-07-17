@@ -29,6 +29,7 @@
 #include "filewriter.h"
 #include "arraybuilder.h"
 #include "export.h"
+#include "fields.h"
 #include "stringutil.h"
 #include "scaveutils.h"
 
@@ -429,7 +430,7 @@ int summaryCommand(int argc, char **argv)
     else if (opt_config)
     {
     	const RunList &runs = manager.getRuns();
-    	result = manager.getUniqueRunAttributeValues(runs, "configname"); // TODO RunAttribute::CONFIG
+    	result = manager.getUniqueRunAttributeValues(runs, RunAttribute::CONFIGNAME);
     }
 
     if (result != NULL)

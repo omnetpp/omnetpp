@@ -1036,7 +1036,7 @@ void ResultFileManager::processLine(char **vec, int numTokens, sParseContext &ct
         HistogramResult &histogram = ctx.fileRef->histogramResults[ctx.lastResultItemIndex];
         histogram.addBin(lower_bound, value);
     }
-    if (vec[0][0]=='a' && !strcmp(vec[0],"attr"))
+    else if (vec[0][0]=='a' && !strcmp(vec[0],"attr"))
     {
         CHECK(numTokens>=3, "invalid result file: 'attr <name> <value>' expected");
 
