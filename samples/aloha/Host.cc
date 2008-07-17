@@ -51,7 +51,7 @@ void Host::initialize()
     if (ev.isGUI())
         getDisplayString().setTagArg("t",2,"#808000");
 
-    scheduleAt(iaTime->doubleValue(), endTxEvent);
+    scheduleAt(getNextTransmissionTime(), endTxEvent);
 }
 
 
@@ -88,17 +88,7 @@ void Host::handleMessage(cMessage *msg)
         state = IDLE;
 
         // schedule next sending
-        if (!isSlotted)
-        {
-            scheduleAt(simTime()+iaTime->doubleValue(), endTxEvent);
-        }
-        else
-        {
-            // align time of next transmission to a slot boundary
-            simtime_t t = simTime()+iaTime->doubleValue();
-            t = slotTime * ceil(t/slotTime);
-            scheduleAt(t, endTxEvent);
-        }
+        scheduleAt(getNextTransmissionTime(), endTxEvent);
 
         // update network graphics
         if (ev.isGUI())
@@ -111,6 +101,17 @@ void Host::handleMessage(cMessage *msg)
     {
         error("invalid state");
     }
+}
+
+simtime_t Host::getNextTransmissionTime()
+{
+    simtime_t t = simTime()+iaTime->doubleValue();
+
+    if (!isSlotted)
+        return t;
+    else
+        // align time of next transmission to a slot boundary
+        return slotTime * ceil(t/slotTime);
 }
 
 }; //namespace

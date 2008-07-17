@@ -41,6 +41,7 @@ class Host : public cSimpleModule
   protected:
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
+    simtime_t getNextTransmissionTime();
 };
 
 }; //namespace
