@@ -180,6 +180,7 @@ class cGate extends cNoncopyableOwnedObject
     int id @group(general) @hint(gate id, unique within this module);
     bool isVector @getter(isVector) @group(general) @hint(whether this gate is part of a gate vector);
     int index @group(general) @hint(if vector: index of this gate within its gate vector);
+    bool deliverOnReceptionStart @group(general) @hint(only for simple module input gates, and if message transmission duration is nonzero: whether messages arriving on this gate will be given to the module at the start or the end of the reception);
 
     bool isBusy @getter(isBusy) @group(general) @hint(only if the connection has a channel with nonzero datarate);
     simtime_t transmissionFinishTime @group(general) @hint(only if the connection has a channel with nonzero datarate);
