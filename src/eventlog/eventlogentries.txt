@@ -124,7 +124,8 @@ BS BeginSendEntry // beginning to send a message
 
 ES EndSendEntry // prediction of the arrival of a message
 {
-   t simtime_t arrivalTime // when the message will arrive to its destination module
+   t simtime_t arrivalTime        // when the message will arrive to its destination module
+   is bool isReceptionStart false // true indicates the message arrives with the first bit
 }
 
 SD SendDirectEntry // sending a message directly to a destination gate
@@ -134,7 +135,6 @@ SD SendDirectEntry // sending a message directly to a destination gate
    dg int destGateId                // id of the gate at the destination module to which the message is being sent
    pd simtime_t propagationDelay  0 // propagation delay that is while the message is propagated through the connection
    td simtime_t transmissionDelay 0 // transmission delay that is while the whole message is sent from the source gate
-   is bool isReceptionStart true
 }
 
 SH SendHopEntry // sending a message through a connection identified by its source module and gate id
@@ -143,7 +143,6 @@ SH SendHopEntry // sending a message through a connection identified by its sour
    sg int senderGateId              // id of the gate at the source module from which the message is being sent
    pd simtime_t propagationDelay  0 // propagation delay that is while the message is propagated through the connection
    td simtime_t transmissionDelay 0 // transmission delay that is while the whole message is sent from the source gate
-   is bool isReceptionStart false
 }
 
 DM DeleteMessageEntry // deleting a message
@@ -151,3 +150,4 @@ DM DeleteMessageEntry // deleting a message
    id int messageId                        // id of the message being deleted
    pe eventnumber_t previousEventNumber -1 // event number from which the message being deleted was sent or -1 if the message was sent from initialize
 }
+
