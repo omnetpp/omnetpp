@@ -604,13 +604,13 @@ void cSimulation::doOneEvent(cSimpleModule *mod)
         // get event to be handled (note: it becomes owned by the target module)
         cMessage *msg = msgQueue.removeFirst();
 
+        // notify the environment about the event (writes eventlog, etc.)
+        EVCB.simulationEvent(msg);
+
         // store arrival event number of this message; it is useful input for the
         // sequence chart tool if the message doesn't get immediately deleted or
         // sent out again
         msg->setPreviousEventNumber(event_num);
-
-        // notify the environment about the event (writes eventlog, etc.)
-        EVCB.simulationEvent(msg);
 
         if (!mod->initialized())
             throw cRuntimeError(mod, "Module not initialized (did you forget to invoke "

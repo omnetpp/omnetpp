@@ -149,13 +149,6 @@ eventnumber_t MessageDependency::getConsequenceEventNumber()
             // TODO: LONG RUNNING OPERATION
             while (event)
             {
-                if (!event)
-                {
-                    // end of file
-                    consequenceEventNumber = EVENT_NOT_YET_REACHED;
-                    break;
-                }
-
                 if (event->getCauseEventNumber() == getCauseEventNumber() &&
                     event->getMessageId() == getCauseMessageId())
                 {
@@ -174,6 +167,10 @@ eventnumber_t MessageDependency::getConsequenceEventNumber()
 
                 event = event->getNextEvent();
             }
+
+            // end of file
+            if (!event)
+                consequenceEventNumber = EVENT_NOT_YET_REACHED;
         }
     }
 

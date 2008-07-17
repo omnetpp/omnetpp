@@ -247,7 +247,7 @@ void EventlogFileManager::messageSendHop(cMessage *msg, cGate *srcGate, simtime_
     if (isEventLogRecordingEnabled)
     {
         EventLogWriter::recordSendHopEntry_sm_sg_pd_td_is(feventlog,
-            srcGate->getOwnerModule()->getId(), srcGate->getId(), transmissionDelay, propagationDelay, isStart);
+            srcGate->getOwnerModule()->getId(), srcGate->getId(), propagationDelay, transmissionDelay, isStart);
     }
 }
 
