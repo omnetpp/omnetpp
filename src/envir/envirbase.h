@@ -151,9 +151,9 @@ class ENVIR_API EnvirBase : public cEnvir
     virtual void messageScheduled(cMessage *msg);
     virtual void messageCancelled(cMessage *msg);
     virtual void beginSend(cMessage *msg);
-    virtual void messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay, bool isStart);
+    virtual void messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay);
     virtual void messageSendHop(cMessage *msg, cGate *srcGate);
-    virtual void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay, bool isStart);
+    virtual void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay);
     virtual void endSend(cMessage *msg);
     virtual void messageDeleted(cMessage *msg);
     virtual void moduleReparented(cModule *module, cModule *oldparent);

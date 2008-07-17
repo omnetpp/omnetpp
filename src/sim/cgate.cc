@@ -297,7 +297,7 @@ bool cGate::deliver(cMessage *msg, simtime_t t)
 {
     if (togatep==NULL)
     {
-        getOwnerModule()->arrived(msg, getId(), t);
+        getOwnerModule()->arrived(msg, this, t);
         return true;
     }
     else

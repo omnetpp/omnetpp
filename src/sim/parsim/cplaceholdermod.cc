@@ -32,7 +32,7 @@ cPlaceholderModule::~cPlaceholderModule()
 {
 }
 
-void cPlaceholderModule::arrived(cMessage *msg, int n, simtime_t t)
+void cPlaceholderModule::arrived(cMessage *msg, cGate *ongate, simtime_t t)
 {
     throw cRuntimeError(this, "internal error: arrived() called");
 }

@@ -35,7 +35,7 @@ class SIM_API cCompoundModule : public cModule //implies noncopyable
     virtual void doBuildInside();
 
     // internal use
-    virtual void arrived(cMessage *msg,int n,simtime_t t);
+    virtual void arrived(cMessage *msg, cGate *ongate, simtime_t t);
 
   public:
     /** @name Constructors, destructor, assignment. */

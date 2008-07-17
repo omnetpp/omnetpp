@@ -223,13 +223,13 @@ void EventlogFileManager::messageCancelled(cMessage *msg)
     }
 }
 
-void EventlogFileManager::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay, bool isStart)
+void EventlogFileManager::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay)
 {
     if (isEventLogRecordingEnabled)
     {
-        EventLogWriter::recordSendDirectEntry_sm_dm_dg_pd_td_is(feventlog,
+        EventLogWriter::recordSendDirectEntry_sm_dm_dg_pd_td(feventlog,
             msg->getSenderModuleId(), toGate->getOwnerModule()->getId(), toGate->getId(),
-            propagationDelay, transmissionDelay, isStart);
+            propagationDelay, transmissionDelay);
     }
 }
 
@@ -242,12 +242,12 @@ void EventlogFileManager::messageSendHop(cMessage *msg, cGate *srcGate)
     }
 }
 
-void EventlogFileManager::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay, bool isStart)
+void EventlogFileManager::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay)
 {
     if (isEventLogRecordingEnabled)
     {
-        EventLogWriter::recordSendHopEntry_sm_sg_pd_td_is(feventlog,
-            srcGate->getOwnerModule()->getId(), srcGate->getId(), propagationDelay, transmissionDelay, isStart);
+        EventLogWriter::recordSendHopEntry_sm_sg_pd_td(feventlog,
+            srcGate->getOwnerModule()->getId(), srcGate->getId(), transmissionDelay, propagationDelay);
     }
 }
 
@@ -255,7 +255,7 @@ void EventlogFileManager::endSend(cMessage *msg)
 {
     if (isEventLogRecordingEnabled)
     {
-        EventLogWriter::recordEndSendEntry_t(feventlog, msg->getArrivalTime());
+        EventLogWriter::recordEndSendEntry_t_is(feventlog, msg->getArrivalTime(), msg->isReceptionStart());
     }
 }
 

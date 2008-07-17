@@ -1139,9 +1139,9 @@ void Tkenv::beginSend(cMessage *msg)
     EnvirBase::beginSend(msg);
 }
 
-void Tkenv::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay, bool isStart)
+void Tkenv::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay)
 {
-    EnvirBase::messageSendDirect(msg, toGate, propagationDelay, transmissionDelay, isStart);
+    EnvirBase::messageSendDirect(msg, toGate, propagationDelay, transmissionDelay);
 }
 
 void Tkenv::messageSendHop(cMessage *msg, cGate *srcGate)
@@ -1149,9 +1149,9 @@ void Tkenv::messageSendHop(cMessage *msg, cGate *srcGate)
     EnvirBase::messageSendHop(msg, srcGate);
 }
 
-void Tkenv::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay, bool isStart)
+void Tkenv::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay)
 {
-    EnvirBase::messageSendHop(msg, srcGate, propagationDelay, transmissionDelay, isStart);
+    EnvirBase::messageSendHop(msg, srcGate, propagationDelay, transmissionDelay);
 }
 
 void Tkenv::endSend(cMessage *msg)

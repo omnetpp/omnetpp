@@ -815,10 +815,10 @@ void EnvirBase::messageCancelled(cMessage *msg)
         eventlogmgr->messageCancelled(msg);
 }
 
-void EnvirBase::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay, bool isStart)
+void EnvirBase::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay)
 {
     if (eventlogmgr)
-        eventlogmgr->messageSendDirect(msg, toGate, propagationDelay, transmissionDelay, isStart);
+        eventlogmgr->messageSendDirect(msg, toGate, propagationDelay, transmissionDelay);
 }
 
 void EnvirBase::messageSendHop(cMessage *msg, cGate *srcGate)
@@ -827,10 +827,10 @@ void EnvirBase::messageSendHop(cMessage *msg, cGate *srcGate)
         eventlogmgr->messageSendHop(msg, srcGate);
 }
 
-void EnvirBase::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay, bool isStart)
+void EnvirBase::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay)
 {
     if (eventlogmgr)
-        eventlogmgr->messageSendHop(msg, srcGate, propagationDelay, transmissionDelay, isStart);
+        eventlogmgr->messageSendHop(msg, srcGate, propagationDelay, transmissionDelay);
 }
 
 void EnvirBase::endSend(cMessage *msg)

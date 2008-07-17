@@ -82,7 +82,7 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
 
   protected:
     // internal use
-    virtual void arrived(cMessage *msg,int n,simtime_t t);
+    virtual void arrived(cMessage *msg, cGate *ongate, simtime_t t);
 
     // internal: sets the module id.
     virtual void setId(int n);
@@ -308,6 +308,8 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
      * dedicated gates for receiving via sendDirect(). You cannot have a gate
      * which receives messages via both connections and sendDirect().
      *
+     * The time the message gets delivered to the receiver depends on the
+     * deliverOnReceptionStart....TODO
      * XXX refine, e.g. cover duration and inputGate.setDeliverOnReceptionStart() !!!
      */
     int sendDirect(cMessage *msg, simtime_t propagationDelay, simtime_t duration, cGate *inputGate);

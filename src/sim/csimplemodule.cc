@@ -400,7 +400,6 @@ int cSimpleModule::sendDelayed(cMessage *msg, simtime_t delay, cGate *outgate)
     simtime_t delayEndTime = simTime()+delay;
     msg->setSentFrom(this, outgate->getId(), delayEndTime);
     msg->setDuration(0);
-    msg->setReceptionStart(false);  //FIXME modify sendDirect in the same way!!!
 
     EVCB.beginSend(msg);
     bool keepit = outgate->deliver(msg, delayEndTime);
@@ -499,11 +498,9 @@ int cSimpleModule::sendDirect(cMessage *msg, simtime_t propdelay, simtime_t tran
     msg->setSentFrom(this, -1, simTime());
 
     EVCB.beginSend(msg);
-    bool isstart = togate->getDeliverOnReceptionStart();
     msg->setDuration(transmdelay);
-    msg->setReceptionStart(isstart);
-    EVCB.messageSendDirect(msg, togate, propdelay, transmdelay, isstart);
-    bool keepit = togate->deliver(msg, simTime() + propdelay + (isstart ? 0 : transmdelay));
+    EVCB.messageSendDirect(msg, togate, propdelay, transmdelay);
+    bool keepit = togate->deliver(msg, simTime() + propdelay);
     if (!keepit)
     {
         delete msg; //FIXME problem: tell tkenv somehow that msg has been deleted, otherwise animation will crash
@@ -585,15 +582,17 @@ void cSimpleModule::cancelAndDelete(cMessage *msg)
         delete cancelEvent(msg);
 }
 
-void cSimpleModule::arrived(cMessage *msg, int ongate, simtime_t t)
+void cSimpleModule::arrived(cMessage *msg, cGate *ongate, simtime_t t)
 {
     if (isTerminated())
-        throw cRuntimeError(eMODFIN,getFullPath().c_str());
+        throw cRuntimeError(eMODFIN, getFullPath().c_str());
     if (t < simTime())
-        throw cRuntimeError("causality violation: message `%s' arrival time %s at module `%s' "
+        throw cRuntimeError("Causality violation: message `%s' arrival time %s at module `%s' "
                             "is earlier than current simulation time",
                             msg->getName(), SIMTIME_STR(t), getFullPath().c_str());
-    msg->setArrival(this, ongate, t);
+    bool isStart = ongate->getDeliverOnReceptionStart();
+    msg->setReceptionStart(isStart);
+    msg->setArrival(this, ongate->getId(), isStart ? t : t + msg->getDuration());
     simulation.insertMsg(msg);
 }
 

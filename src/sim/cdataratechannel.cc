@@ -124,6 +124,12 @@ bool cDatarateChannel::deliver(cMessage *msg, simtime_t t)
     if (flags & FL_ISDISABLED)
         return false;
 
+    if (msg->getDuration() != SIMTIME_ZERO)
+        throw cRuntimeError(this, "Message (%s)%s already has a duration set; there "
+            "may be more than one channel with data rate in the connection path, or "
+            "it was sent with a sendDirect() call that specified duration as well",
+            msg->getClassName(), msg->getName());
+
     // must wait until previous transmissions end
     if (txfinishtime > t)
         throw cRuntimeError("Error sending message (%s)%s on gate %s: gate is currently "
@@ -136,18 +142,13 @@ bool cDatarateChannel::deliver(cMessage *msg, simtime_t t)
     cGate *nextgate = getFromGate()->getToGate();
 
     simtime_t duration = 0;
-    bool isstart = false;
 
     // datarate modeling
     if (flags & FL_DATARATE_NONZERO)
     {
         duration = msg->getBitLength() / datarateparam;
-        isstart = nextgate->getDeliverOnReceptionStart();
         msg->setDuration(duration);
-        msg->setReceptionStart(isstart);
-        if (!isstart)
-            t += duration;
-        txfinishtime = t;
+        txfinishtime = t + duration;
     }
 
     // propagation delay modeling
@@ -169,7 +170,7 @@ bool cDatarateChannel::deliver(cMessage *msg, simtime_t t)
 
     // FIXME: this is not reusable this way in custom channels, put it into a base class function with the next line (levy)
     // i.e use template method...?
-    EVCB.messageSendHop(msg, getFromGate(), delayparam, duration, isstart);
+    EVCB.messageSendHop(msg, getFromGate(), delayparam, duration);
 
     // hand over msg to next gate
     return nextgate->deliver(msg, t);

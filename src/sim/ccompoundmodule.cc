@@ -52,14 +52,13 @@ void cCompoundModule::doBuildInside()
     getModuleType()->buildInside(this);
 }
 
-void cCompoundModule::arrived(cMessage *msg, int g, simtime_t)
+void cCompoundModule::arrived(cMessage *msg, cGate *ongate, simtime_t)
 {
-    cGate *gt = gate(g);
     throw cRuntimeError("Gate `%s' of compound module (%s)%s is not connected on the %s, "
                         "upon arrival of message (%s)%s",
-                        gt->getFullName(),
+                        ongate->getFullName(),
                         getClassName(), getFullPath().c_str(),
-                        (gt->isConnectedOutside() ? "inside" : "outside"),
+                        (ongate->isConnectedOutside() ? "inside" : "outside"),
                         msg->getClassName(), msg->getName());
 }
 
