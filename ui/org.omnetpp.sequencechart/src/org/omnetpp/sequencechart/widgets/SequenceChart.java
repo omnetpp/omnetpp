@@ -79,6 +79,7 @@ import org.omnetpp.eventlog.engine.IMessageDependencyList;
 import org.omnetpp.eventlog.engine.ModuleCreatedEntry;
 import org.omnetpp.eventlog.engine.PtrVector;
 import org.omnetpp.eventlog.engine.SendDirectEntry;
+import org.omnetpp.eventlog.engine.SendHopEntry;
 import org.omnetpp.eventlog.engine.SequenceChartFacade;
 import org.omnetpp.scave.engine.FileRun;
 import org.omnetpp.scave.engine.ResultFile;
@@ -778,12 +779,12 @@ public class SequenceChart
 
 	public void scrollToBegin() {
 		if (!eventLogInput.isCanceled() && !eventLog.isEmpty())
-			scrollToElement(eventLog.getFirstEvent(), 0);
+			scrollToElement(eventLog.getFirstEvent(), EVENT_SELECTION_RADIUS * 2);
 	}
 
 	public void scrollToEnd() {
 		if (!eventLogInput.isCanceled() && !eventLog.isEmpty()) {
-			scrollToElement(eventLog.getLastEvent(), getViewportWidth());
+			scrollToElement(eventLog.getLastEvent(), getViewportWidth() - EVENT_SELECTION_RADIUS * 2);
 			followEnd = true;
 		}
 	}
@@ -2750,21 +2751,38 @@ public class SequenceChart
 	 */
     private void drawTransmissionDuration(Graphics graphics, long causeEventPtr, long consequenceEventPtr, long beginSendEntryPtr, int x1, int y1, int x2, int y2) {
         BeginSendEntry beginSendEntry = (BeginSendEntry)sequenceChartFacade.EventLogEntry_getEventLogEntry(beginSendEntryPtr);
-        int index = beginSendEntry.getEntryIndex();
-        EventLogEntry entry = beginSendEntry.getEvent().getEventLogEntry(index + 1);
+        int index = beginSendEntry.getEntryIndex() + 1;
+        IEvent event = beginSendEntry.getEvent();
 
-        if (entry instanceof SendDirectEntry) {
-            SendDirectEntry sendDirectEntry = (SendDirectEntry)entry;
-            org.omnetpp.common.engine.BigDecimal t = sendDirectEntry.getTransmissionDelay();
-            
-            if (!t.equals(org.omnetpp.common.engine.BigDecimal.getZero())) {
+        // TODO: handle isReceptionStart flag
+        while (index < event.getNumEventLogEntries()) {
+            EventLogEntry entry = event.getEventLogEntry(index++);
+            boolean isReceptionStart;
+            org.omnetpp.common.engine.BigDecimal t = null;
+
+            if (entry instanceof SendDirectEntry) {
+                SendDirectEntry sendDirectEntry = (SendDirectEntry)entry;
+                t = sendDirectEntry.getTransmissionDelay();
+                isReceptionStart = sendDirectEntry.getIsReceptionStart();
+            }
+            else if (entry instanceof SendHopEntry) {
+                SendHopEntry sendHopEntry = (SendHopEntry)entry;
+                t = sendHopEntry.getTransmissionDelay();
+                isReceptionStart = sendHopEntry.getIsReceptionStart();
+            }
+            else
+                break;
+
+            if (t != null && !t.equals(org.omnetpp.common.engine.BigDecimal.getZero())) {
                 int x3 = getViewportCoordinateForTimelineCoordinate(
                             sequenceChartFacade.getTimelineCoordinateForSimulationTimeAndEventInModule(
                                 sequenceChartFacade.Event_getSimulationTime(causeEventPtr).add(t), 
                                 sequenceChartFacade.Event_getModuleId(causeEventPtr)));
                 int x4 = getViewportCoordinateForTimelineCoordinate(
                             sequenceChartFacade.getTimelineCoordinateForSimulationTimeAndEventInModule(
-                                sequenceChartFacade.Event_getSimulationTime(consequenceEventPtr).add(t), 
+                                isReceptionStart ? 
+                                    sequenceChartFacade.Event_getSimulationTime(consequenceEventPtr).add(t) : 
+                                    sequenceChartFacade.Event_getSimulationTime(consequenceEventPtr).subtract(t), 
                                 sequenceChartFacade.Event_getModuleId(consequenceEventPtr)));
                 int xLimit = getViewportWidth();
                 boolean fade = false;
@@ -2781,13 +2799,13 @@ public class SequenceChart
 
                 // create the polygon
                 int[] points = new int[8];
-                points[0] = x1;
+                points[0] = isReceptionStart ? x1 : x3;
                 points[1] = y1;
                 points[2] = x2;
                 points[3] = y2;
                 points[4] = x4;
                 points[5] = y2;
-                points[6] = x3;
+                points[6] = isReceptionStart ? x3 : x1;
                 points[7] = y1;
                 
                 // draw it
