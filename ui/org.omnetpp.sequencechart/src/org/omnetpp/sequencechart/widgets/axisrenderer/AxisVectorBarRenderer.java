@@ -289,7 +289,7 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
 		return data.getX(index);
 	}
 	
-	public int getEventNumber(int index)
+	public long getEventNumber(int index)
 	{
 		return data.getEventNumber(index);
 	}

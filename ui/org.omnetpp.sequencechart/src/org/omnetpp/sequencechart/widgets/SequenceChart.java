@@ -68,6 +68,7 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.TimeUtils;
 import org.omnetpp.common.virtualtable.IVirtualContentWidget;
 import org.omnetpp.eventlog.engine.BeginSendEntry;
+import org.omnetpp.eventlog.engine.EndSendEntry;
 import org.omnetpp.eventlog.engine.EventLogEntry;
 import org.omnetpp.eventlog.engine.EventLogMessageEntry;
 import org.omnetpp.eventlog.engine.FilteredEventLog;
@@ -2753,37 +2754,33 @@ public class SequenceChart
         BeginSendEntry beginSendEntry = (BeginSendEntry)sequenceChartFacade.EventLogEntry_getEventLogEntry(beginSendEntryPtr);
         int index = beginSendEntry.getEntryIndex() + 1;
         IEvent event = beginSendEntry.getEvent();
+        EndSendEntry endSendEntry = event.getEndSendEntry(beginSendEntry);
+        boolean isReceptionStart = endSendEntry.getIsReceptionStart();
 
-        // TODO: handle isReceptionStart flag
         while (index < event.getNumEventLogEntries()) {
             EventLogEntry entry = event.getEventLogEntry(index++);
-            boolean isReceptionStart;
-            org.omnetpp.common.engine.BigDecimal t = null;
+            org.omnetpp.common.engine.BigDecimal t;
 
-            if (entry instanceof SendDirectEntry) {
-                SendDirectEntry sendDirectEntry = (SendDirectEntry)entry;
-                t = sendDirectEntry.getTransmissionDelay();
-                isReceptionStart = sendDirectEntry.getIsReceptionStart();
-            }
-            else if (entry instanceof SendHopEntry) {
-                SendHopEntry sendHopEntry = (SendHopEntry)entry;
-                t = sendHopEntry.getTransmissionDelay();
-                isReceptionStart = sendHopEntry.getIsReceptionStart();
-            }
+            if (entry instanceof SendDirectEntry)
+                t = ((SendDirectEntry)entry).getTransmissionDelay();
+            else if (entry instanceof SendHopEntry)
+                t = ((SendHopEntry)entry).getTransmissionDelay();
             else
                 break;
 
-            if (t != null && !t.equals(org.omnetpp.common.engine.BigDecimal.getZero())) {
-                int x3 = getViewportCoordinateForTimelineCoordinate(
-                            sequenceChartFacade.getTimelineCoordinateForSimulationTimeAndEventInModule(
-                                sequenceChartFacade.Event_getSimulationTime(causeEventPtr).add(t), 
-                                sequenceChartFacade.Event_getModuleId(causeEventPtr)));
-                int x4 = getViewportCoordinateForTimelineCoordinate(
-                            sequenceChartFacade.getTimelineCoordinateForSimulationTimeAndEventInModule(
-                                isReceptionStart ? 
-                                    sequenceChartFacade.Event_getSimulationTime(consequenceEventPtr).add(t) : 
-                                    sequenceChartFacade.Event_getSimulationTime(consequenceEventPtr).subtract(t), 
-                                sequenceChartFacade.Event_getModuleId(consequenceEventPtr)));
+            if (!t.equals(org.omnetpp.common.engine.BigDecimal.getZero())) {
+                org.omnetpp.common.engine.BigDecimal t3 = sequenceChartFacade.Event_getSimulationTime(causeEventPtr).add(t);
+                org.omnetpp.common.engine.BigDecimal t4 = isReceptionStart ? 
+                    sequenceChartFacade.Event_getSimulationTime(consequenceEventPtr).add(t) : 
+                    sequenceChartFacade.Event_getSimulationTime(consequenceEventPtr).subtract(t);
+                    
+                org.omnetpp.common.engine.BigDecimal lastEventSimulationTime = eventLog.getLastEvent().getSimulationTime();
+
+                if (t3.greater(lastEventSimulationTime) || t4.greater(lastEventSimulationTime))
+                    break;
+
+                int x3 = getViewportCoordinateForTimelineCoordinate(sequenceChartFacade.getTimelineCoordinateForSimulationTimeAndEventInModule(t3, sequenceChartFacade.Event_getModuleId(causeEventPtr)));
+                int x4 = getViewportCoordinateForTimelineCoordinate(sequenceChartFacade.getTimelineCoordinateForSimulationTimeAndEventInModule(t4, sequenceChartFacade.Event_getModuleId(consequenceEventPtr)));
                 int xLimit = getViewportWidth();
                 boolean fade = false;
 
@@ -2838,6 +2835,7 @@ public class SequenceChart
                     graphics.fillPolygon(points);
                 
                 graphics.popState();
+                break;
             }
         }
     }
