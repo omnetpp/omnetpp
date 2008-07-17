@@ -346,6 +346,10 @@ int strdictcmp(const char *s1, const char *s2);
 
 /* ------------- resultfilemanager.h  ----------------- */
 %ignore ResultFileManager::dump;
+%ignore ResultFileManager::uncheckedGetItem;
+%ignore ResultFileManager::uncheckedGetScalar;
+%ignore ResultFileManager::uncheckedGetVector;
+%ignore ResultFileManager::uncheckedGetHisotgram;
 %ignore VectorResult::stat;
 %ignore ResultFile::id;
 %ignore ResultFile::scalarResults;

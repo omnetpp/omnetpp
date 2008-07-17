@@ -52,7 +52,6 @@ public class ScaveMarkers {
 	/**
 	 * Utility function to add markers to a file.
 	 */
-	@SuppressWarnings("unchecked")
 	public static void addMarker(final IFile file, final String type, final int severity, final String message, final int line) {
 
         // taken from MarkerUtilities see. Eclipse FAQ 304

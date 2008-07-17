@@ -386,24 +386,6 @@ public class ResultFileManagerEx extends ResultFileManager {
 	}
 
 	@Override
-	public ResultItem uncheckedGetItem(long id) {
-		checkDeleted();
-		return super.uncheckedGetItem(id);
-	}
-
-	@Override
-	public ScalarResult uncheckedGetScalar(long id) {
-		checkDeleted();
-		return super.uncheckedGetScalar(id);
-	}
-
-	@Override
-	public VectorResult uncheckedGetVector(long id) {
-		checkDeleted();
-		return super.uncheckedGetVector(id);
-	}
-
-	@Override
 	protected Object clone() throws CloneNotSupportedException {
 		checkDeleted();
 		return super.clone();
