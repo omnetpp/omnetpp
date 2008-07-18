@@ -14,9 +14,15 @@ import org.eclipse.ui.INavigationLocationProvider;
 import org.eclipse.ui.IPathEditorInput;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
+import org.eclipse.ui.views.properties.IPropertySheetPage;
+import org.eclipse.ui.views.properties.IPropertySource;
+import org.eclipse.ui.views.properties.IPropertySourceProvider;
+import org.eclipse.ui.views.properties.PropertySheetPage;
 import org.omnetpp.eventlog.engine.EventLog;
+import org.omnetpp.eventlog.engine.EventLogEntry;
 import org.omnetpp.eventlog.engine.EventLogFacade;
 import org.omnetpp.eventlog.engine.FileReader;
+import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
 import org.omnetpp.eventlog.engine.SimulationBeginEntry;
 
@@ -29,6 +35,8 @@ public abstract class EventLogEditor extends EditorPart implements INavigationLo
 	protected EventLogInput eventLogInput;
 
 	protected INavigationLocation lastLocation;
+	
+	protected PropertySheetPage propertySheetPage;
 
 	public IEventLog getEventLog() {
 		return eventLogInput.getEventLog();
@@ -71,6 +79,39 @@ public abstract class EventLogEditor extends EditorPart implements INavigationLo
 		IEventLog eventLog = new EventLog(new FileReader(logFileName, /* EventLog will delete it */false));
 		eventLogInput = new EventLogInput(file, eventLog);
 	}
+
+    @Override
+    @SuppressWarnings("unchecked")
+	public Object getAdapter(Class key) {
+        if (key.equals(IPropertySheetPage.class)) {
+            if (propertySheetPage == null) {
+                propertySheetPage = new PropertySheetPage();
+                propertySheetPage.setPropertySourceProvider(new IPropertySourceProvider() {
+                    public IPropertySource getPropertySource(Object object) {
+                        // TODO: kill this case and let the others live as soon as
+                        // IEventLogSelection does not return the event numbers only and we can get more than that here
+                        if (object instanceof Long) {
+                            IEvent event = eventLogInput.getEventLog().getEventForEventNumber((Long)object);
+                            
+                            if (event != null)
+                                return new EventLogEntryPropertySource(event.getEventEntry());
+                        }
+                        else if (object instanceof EventLogEntry)
+                            return new EventLogEntryPropertySource((EventLogEntry)object);
+                        else if (object instanceof IEvent)
+                            return new EventLogEntryPropertySource(((IEvent)object).getEventEntry());
+
+                        return null;
+                    }
+                });
+            }
+
+            return propertySheetPage;
+        }
+        else {
+            return super.getAdapter(key);
+        }
+    }
 
     @Override
 	public String getTitleToolTip() {

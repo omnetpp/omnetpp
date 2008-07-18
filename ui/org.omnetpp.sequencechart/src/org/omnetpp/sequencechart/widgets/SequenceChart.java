@@ -2697,7 +2697,7 @@ public class SequenceChart
 
 				if (graphics != null) {
                     if (showTransmissionDurations)
-                        drawTransmissionDuration(graphics, causeEventPtr, consequenceEventPtr, beginSendEntryPtr, x1, y1, x2, y2);
+                        drawTransmissionDuration(graphics, causeEventPtr, consequenceEventPtr, beginSendEntryPtr, x1, y1, x2, y2, true);
 
                     int xm = x1 + LONG_MESSAGE_ARROW_WIDTH;
 					graphics.drawLine(x1, y1, xm, y);
@@ -2712,7 +2712,7 @@ public class SequenceChart
 					if (x1 != x2 || vlineBuffer.vlineContainsNewPixel(x1, y1, y2))
 					{
 					    if (showTransmissionDurations)
-					        drawTransmissionDuration(graphics, causeEventPtr, consequenceEventPtr, beginSendEntryPtr, x1, y1, x2, y2);
+					        drawTransmissionDuration(graphics, causeEventPtr, consequenceEventPtr, beginSendEntryPtr, x1, y1, x2, y2, false);
 
 					    graphics.drawLine(x1, y1, x2, y2);
 					}
@@ -2750,7 +2750,7 @@ public class SequenceChart
 	/**
 	 * Draws a semi-transparent region to represent a transmission duration.
 	 */
-    private void drawTransmissionDuration(Graphics graphics, long causeEventPtr, long consequenceEventPtr, long beginSendEntryPtr, int x1, int y1, int x2, int y2) {
+    private void drawTransmissionDuration(Graphics graphics, long causeEventPtr, long consequenceEventPtr, long beginSendEntryPtr, int x1, int y1, int x2, int y2, boolean splitArrow) {
         BeginSendEntry beginSendEntry = (BeginSendEntry)sequenceChartFacade.EventLogEntry_getEventLogEntry(beginSendEntryPtr);
         int index = beginSendEntry.getEntryIndex() + 1;
         IEvent event = beginSendEntry.getEvent();
@@ -2759,16 +2759,16 @@ public class SequenceChart
 
         while (index < event.getNumEventLogEntries()) {
             EventLogEntry entry = event.getEventLogEntry(index++);
-            org.omnetpp.common.engine.BigDecimal t;
+            org.omnetpp.common.engine.BigDecimal t = null;
 
             if (entry instanceof SendDirectEntry)
                 t = ((SendDirectEntry)entry).getTransmissionDelay();
             else if (entry instanceof SendHopEntry)
                 t = ((SendHopEntry)entry).getTransmissionDelay();
-            else
+            else if (!(entry instanceof EventLogMessageEntry))
                 break;
 
-            if (!t.equals(org.omnetpp.common.engine.BigDecimal.getZero())) {
+            if (t != null && !t.equals(org.omnetpp.common.engine.BigDecimal.getZero())) {
                 org.omnetpp.common.engine.BigDecimal t3 = sequenceChartFacade.Event_getSimulationTime(causeEventPtr).add(t);
                 org.omnetpp.common.engine.BigDecimal t4 = isReceptionStart ? 
                     sequenceChartFacade.Event_getSimulationTime(consequenceEventPtr).add(t) : 
@@ -2776,22 +2776,24 @@ public class SequenceChart
                     
                 org.omnetpp.common.engine.BigDecimal lastEventSimulationTime = eventLog.getLastEvent().getSimulationTime();
 
-                if (t3.greater(lastEventSimulationTime) || t4.greater(lastEventSimulationTime))
+                if (t3.greater(lastEventSimulationTime) || t4.greater(lastEventSimulationTime) || t4.less(org.omnetpp.common.engine.BigDecimal.getZero()))
                     break;
 
                 int x3 = getViewportCoordinateForTimelineCoordinate(sequenceChartFacade.getTimelineCoordinateForSimulationTimeAndEventInModule(t3, sequenceChartFacade.Event_getModuleId(causeEventPtr)));
                 int x4 = getViewportCoordinateForTimelineCoordinate(sequenceChartFacade.getTimelineCoordinateForSimulationTimeAndEventInModule(t4, sequenceChartFacade.Event_getModuleId(consequenceEventPtr)));
                 int xLimit = getViewportWidth();
-                boolean fade = false;
+                boolean drawStrips = false;
 
-                if (x3 - x1 > xLimit) {
+                if (isReceptionStart && (x3 - x1 > xLimit || x4 - x2 > xLimit)) {
                     x3 = x1 + LONG_MESSAGE_ARROW_WIDTH;
-                    fade = true;
+                    x4 = x2 + LONG_MESSAGE_ARROW_WIDTH;
+                    drawStrips = true;
                 }
 
-                if (x4 - x2 > xLimit) {
-                    x4 = x2 + LONG_MESSAGE_ARROW_WIDTH;
-                    fade = true;
+                if (splitArrow && !isReceptionStart) {
+                    x4 = x2 - LONG_MESSAGE_ARROW_WIDTH;
+                    x3 = x1 + LONG_MESSAGE_ARROW_WIDTH;
+                    drawStrips = true;
                 }
 
                 // create the polygon
@@ -2810,13 +2812,15 @@ public class SequenceChart
                 graphics.setAlpha(50);
                 graphics.setBackgroundColor(graphics.getForegroundColor());
 
-                if (fade) {
+                if (drawStrips) {
                     graphics.fillPolygon(points);
 
-                    points[0] += LONG_MESSAGE_ARROW_WIDTH;
-                    points[2] += LONG_MESSAGE_ARROW_WIDTH;
-                    points[4] += LONG_MESSAGE_ARROW_WIDTH;
-                    points[6] += LONG_MESSAGE_ARROW_WIDTH;
+                    if (isReceptionStart) {
+                        points[0] += LONG_MESSAGE_ARROW_WIDTH;
+                        points[2] += LONG_MESSAGE_ARROW_WIDTH;
+                        points[4] += LONG_MESSAGE_ARROW_WIDTH;
+                        points[6] += LONG_MESSAGE_ARROW_WIDTH;
+                    }
 
                     int numberOfStrips = 4;
                     int s = LONG_MESSAGE_ARROW_WIDTH / numberOfStrips;
