@@ -66,6 +66,7 @@ enum ErrorCode
     eSTKLOW,
     eSTOPSIMRCVD,
     ePARAMSNOTREADY,
+    eGATEID,
     eUSER
 };
 

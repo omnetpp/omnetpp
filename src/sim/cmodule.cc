@@ -403,36 +403,43 @@ cGate::Desc *cModule::gateDesc(const char *gatename, char& suffix) const
     return descv + descIndex;
 }
 
+#define ENSURE(x)  if (!(x)) throw cRuntimeError(this, eGATEID, id)
+
 cGate *cModule::gate(int id)
 {
+    // To make sense of the following code, see comment in cgate.cc,
+    // titled "Interpretation of gate Ids".
     unsigned int h = id & GATEID_HMASK;
     if (h==0) {
+        // scalar gate
         unsigned int descIndex = id>>1;
-        if (descIndex >= (unsigned int) descvSize)
-            return NULL; //XXX as assert? FIXME docu says we should throw an error!!!
+        ENSURE(descIndex < (unsigned int) descvSize);
         cGate::Desc *desc = descv + descIndex;
-        ASSERT(desc->namep); // not deleted -- FIXME maybe we'll need readable error messages instead! or return NULL!
-        ASSERT(!desc->isVector()); //FIXME too many asserts here?
-        ASSERT((id&1)==0 ? desc->getType()!=cGate::OUTPUT : desc->getType()!=cGate::INPUT);
-        //return (id&1)==0 ? desc->inputgate : desc->outputgate;
+        ENSURE(desc->namep); // not deleted
+        ENSURE(!desc->isVector());
+        ENSURE((id&1)==0 ? desc->getType()!=cGate::OUTPUT : desc->getType()!=cGate::INPUT);
         cGate *g = (id&1)==0 ? desc->inputgate : desc->outputgate;
-        ASSERT((id&1)==(g->pos&1));
+        ENSURE((id&1)==(g->pos&1));
         return g;
     }
     else {
+        // vector gate
         unsigned int descIndex = (h>>GATEID_LBITS)-1;
-        if (descIndex >= (unsigned int) descvSize)
-            return NULL;  //FIXME error/assert instead
+        ENSURE(descIndex < (unsigned int) descvSize);
         cGate::Desc *desc = descv + descIndex;
-        ASSERT(desc->namep); // not deleted
-        unsigned int index = id & (GATEID_LMASK>>1);
-        //FIXME assert isvector, type, etc
-        if (index>=(unsigned int)desc->gateSize())
-            return NULL;  //FIXME error/assert instead
+        ENSURE(desc->namep); // not deleted
+        ENSURE(desc->isVector());
         bool isOutput = id & (1<<(GATEID_LBITS-1));  // L's MSB
+        ENSURE(isOutput ? desc->getType()!=cGate::INPUT : desc->getType()!=cGate::OUTPUT);
+        unsigned int index = id & (GATEID_LMASK>>1);
+        if (index >= (unsigned int)desc->gateSize())
+            throw cRuntimeError(this, "Invalid gate Id %d: size of %s[] is only %d, so index %d (from the Id) is out of bounds",
+                                      id, desc->nameFor(isOutput ? cGate::OUTPUT : cGate::INPUT), desc->gateSize(), index);
         return isOutput ? desc->outputgatev[index] : desc->inputgatev[index];
     }
 }
+
+#undef ENSURE
 
 void cModule::addGate(const char *gatename, cGate::Type type, bool isVector)
 {
@@ -495,9 +502,9 @@ void cModule::setGateSize(const char *gatename, int newSize)
     cGate::Type type = desc->getType();
 
     // we need to allocate more (to have good gate++ performance) but we
-    // don't want to store the capacity -- so we'll always calculated the
+    // don't want to store the capacity -- so we'll always calculate the
     // capacity from the current size (by rounding it up to the nearest
-    // multiple of 2, 4, 16, 64.
+    // multiple of 2, 4, 16, 64).
     int oldCapacity = cGate::Desc::capacityFor(oldSize);
     int newCapacity = cGate::Desc::capacityFor(newSize);
 
@@ -511,13 +518,13 @@ void cModule::setGateSize(const char *gatename, int newSize)
             if (type!=cGate::OUTPUT) {
                 cGate *gate = desc->inputgatev[i];
                 if (gate->getFromGate() || gate->getToGate())
-                    throw cRuntimeError(this,"setGateSize(): Cannot shrink gate vector, gate %s already connected", gate->getFullPath().c_str());
+                    throw cRuntimeError(this,"setGateSize(): Cannot shrink gate vector %s[] to size %d, gate %s still connected", gatename, newSize, gate->getFullPath().c_str());
                 EVCB.gateDeleted(gate);
             }
             if (type!=cGate::INPUT) {
                 cGate *gate = desc->outputgatev[i];
                 if (gate->getFromGate() || gate->getToGate())
-                    throw cRuntimeError(this,"setGateSize(): Cannot shrink gate vector, gate %s already connected", gate->getFullPath().c_str());
+                    throw cRuntimeError(this,"setGateSize(): Cannot shrink gate vector %s[] to size %d, gate %s still connected", gatename, newSize, gate->getFullPath().c_str());
                 EVCB.gateDeleted(gate);
             }
 

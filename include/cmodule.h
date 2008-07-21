@@ -598,7 +598,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
     virtual int findGate(const char *gatename, int index=-1) const;
 
     /**
-     * Returns a gate by its ID. It throws an error for invalid (stale) IDs.
+     * Returns a gate by its ID. It throws an error for invalid (or stale) IDs.
      *
      * Note: as of \opp 4.0, gate IDs are no longer small integers and are
      * not suitable for enumerating all gates of a module. Use GateIterator
@@ -607,7 +607,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
     virtual cGate *gate(int id);
 
     /**
-     * Returns a gate by its ID. It throws an error for invalid (stale) IDs.
+     * Returns a gate by its ID. It throws an error for invalid (or stale) IDs.
      *
      * Note: as of \opp 4.0, gate IDs are no longer small integers and are
      * not suitable for enumerating all gates of a module. Use GateIterator

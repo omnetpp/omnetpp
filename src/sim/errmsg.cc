@@ -61,6 +61,7 @@ const char *cErrorMessages::get(ErrorCode e)
       case eSTATECHG:  return "FSM: state changed during state entry code (now in state %s)";
       case eSTOPSIMRCVD: return "Simulation stopped by partition %d: %s";
       case ePARAMSNOTREADY: return "Attempt to access component parameters too early, they have not been set up yet";
+      case eGATEID:    return "Invalid gate ID %d";
       case eUSER:      return "User error: %s";
       default:         return "<missing error text>";
     }

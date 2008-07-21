@@ -109,6 +109,7 @@ class SIM_API cGate : public cObject, noncopyable
         bool inUse() const {return namep!=NULL;}
         Type getType() const {return namep->type;}
         bool isVector() const {return size>=0;}
+        const char *nameFor(Type t) const {return (t==INOUT||namep->type!=INOUT) ? namep->name.c_str() : t==INPUT ? namep->namei.c_str() : namep->nameo.c_str();}
         int indexOf(const cGate *g) const {return (g->pos>>2)==-1 ? 0 : g->pos>>2;}
         bool deliverOnReceptionStart(const cGate *g) const {return g->pos&2;}
         Type getTypeOf(const cGate *g) const {return (g->pos&1)==0 ? INPUT : OUTPUT;}
