@@ -15,6 +15,7 @@
 *--------------------------------------------------------------*/
 
 #include <stdlib.h>
+#include <string.h>
 #include <utility>
 #include "platmisc.h"
 #include "scaveutils.h"

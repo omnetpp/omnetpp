@@ -39,8 +39,6 @@ USING_NAMESPACE
 
 Register_Class(cTopology);
 
-const double cTopology::INFINITY = HUGE_VAL;
-
 
 cTopology::LinkIn *cTopology::Node::getLinkIn(int i)
 {
