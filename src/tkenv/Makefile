@@ -186,6 +186,7 @@ $O/inspector.o: inspector.cc \
   ../../include/cqueue.h \
   ../../include/cwatch.h \
   ../../include/cclassfactory.h \
+  ../../include/cdataratechannel.h \
   ../../include/cmathfunction.h \
   ../envir/eventlogfilemgr.h \
   ../../include/cconfigkey.h \
@@ -213,7 +214,6 @@ $O/inspector.o: inspector.cc \
   tkdefs.h \
   ../../include/cobject.h \
   ../../include/cnedfunction.h \
-  ../../include/cbasicchannel.h \
   ../envir/bootenv.h \
   ../../include/cstringpool.h \
   ../../include/cdefaultlist.h \
@@ -291,6 +291,7 @@ $O/inspfactory.o: inspfactory.cc \
   ../../include/coutvector.h \
   ../../include/cclassfactory.h \
   ../../include/cmathfunction.h \
+  ../../include/cdataratechannel.h \
   ../envir/eventlogfilemgr.h \
   ../../include/simtime.h \
   ../../include/cgate.h \
@@ -317,7 +318,6 @@ $O/inspfactory.o: inspfactory.cc \
   tkdefs.h \
   ../../include/cobject.h \
   ../../include/cnedfunction.h \
-  ../../include/cbasicchannel.h \
   ../envir/bootenv.h \
   inspfactory.h \
   ../../include/cstringpool.h \
@@ -371,6 +371,7 @@ $O/layouterenv.o: layouterenv.cc \
   ../../include/coutvector.h \
   ../../include/cqueue.h \
   ../../include/cclassfactory.h \
+  ../../include/cdataratechannel.h \
   ../../include/cmathfunction.h \
   ../envir/eventlogfilemgr.h \
   ../../include/cgate.h \
@@ -389,7 +390,6 @@ $O/layouterenv.o: layouterenv.cc \
   ../../include/cdisplaystring.h \
   ../../include/cobject.h \
   tkdefs.h \
-  ../../include/cbasicchannel.h \
   ../../include/cstringpool.h \
   ../../include/cdensityestbase.h \
   ../../include/cdefaultlist.h \
@@ -434,6 +434,7 @@ $O/modinsp.o: modinsp.cc \
   ../../include/coutvector.h \
   ../../include/cqueue.h \
   ../../include/cclassfactory.h \
+  ../../include/cdataratechannel.h \
   ../../include/cmathfunction.h \
   ../envir/eventlogfilemgr.h \
   ../../include/cgate.h \
@@ -452,7 +453,6 @@ $O/modinsp.o: modinsp.cc \
   ../../include/cdisplaystring.h \
   ../../include/cobject.h \
   tkdefs.h \
-  ../../include/cbasicchannel.h \
   ../envir/bootenv.h \
   inspfactory.h \
   ../../include/cstringpool.h \
@@ -525,6 +525,7 @@ $O/objinsp.o: objinsp.cc \
   ../../include/coutvector.h \
   ../../include/cclassfactory.h \
   ../../include/cmathfunction.h \
+  ../../include/cdataratechannel.h \
   ../envir/eventlogfilemgr.h \
   ../../include/simtime.h \
   ../../include/cgate.h \
@@ -551,7 +552,6 @@ $O/objinsp.o: objinsp.cc \
   tkdefs.h \
   ../../include/cobject.h \
   ../../include/cnedfunction.h \
-  ../../include/cbasicchannel.h \
   ../envir/bootenv.h \
   inspfactory.h \
   ../../include/cstringpool.h \
@@ -736,6 +736,7 @@ $O/tkenv.o: tkenv.cc \
   ../../include/coutvector.h \
   ../../include/cqueue.h \
   ../../include/cclassfactory.h \
+  ../../include/cdataratechannel.h \
   ../../include/cmathfunction.h \
   ../envir/eventlogfilemgr.h \
   ../../include/cgate.h \
@@ -755,7 +756,6 @@ $O/tkenv.o: tkenv.cc \
   ../../include/cdisplaystring.h \
   ../../include/cobject.h \
   tkdefs.h \
-  ../../include/cbasicchannel.h \
   inspfactory.h \
   ../envir/bootenv.h \
   ../../include/cstringpool.h \

@@ -190,8 +190,10 @@ $O/eventlogfacade.o: eventlogfacade.cc \
   ../common/filereader.h \
   ieventlog.h
 $O/eventlogindex.o: eventlogindex.cc \
+  eventlogentry.h \
   ../common/commondefs.h \
   eventlogindex.h \
+  ../common/matchexpression.h \
   eventlogdefs.h \
   ../common/commonutil.h \
   ../common/exception.h \

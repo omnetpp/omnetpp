@@ -107,6 +107,7 @@ $O/enumstr.o: enumstr.cc \
   commondefs.h \
   enumstr.h
 $O/exception.o: exception.cc \
+  commonutil.h \
   commondefs.h \
   exception.h
 $O/expression.o: expression.cc \
