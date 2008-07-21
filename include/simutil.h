@@ -36,9 +36,6 @@ class cComponent;
 // logically belongs to csimulation.h but must be here because of declaration order
 enum {CTX_BUILD, CTX_INITIALIZE, CTX_EVENT, CTX_FINISH};
 
-// windows.h defines min() and max() as macros
-#undef min
-#undef max
 
 #ifdef USE_DOUBLE_SIMTIME
 /**

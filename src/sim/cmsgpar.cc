@@ -944,7 +944,7 @@ cMsgPar& cMsgPar::operator=(const cMsgPar& val)
     changedflag = val.changedflag;
 
     // this line is supposed to copy the whole data area.
-    memcpy( &ss, &val.ss, Max(sizeof(ss), sizeof(func)) );
+    memcpy( &ss, &val.ss, std::max(sizeof(ss), sizeof(func)) );
 
     if (typechar=='S' && !ss.sht)
     {

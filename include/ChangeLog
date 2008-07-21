@@ -271,6 +271,9 @@
 
 	- cPacket removed
 
+	- removed macros Min() and Max(), use std::min/std::max instead (<algorithm>);
+	  also removed sgn()
+
 	- cStringTokenizer: added asIntVector() and asDoubleVector() methods; TODO testing
 
 	- cXMLElement, xmldoc(): mini-XPath expressions made more tolerant to whitespace

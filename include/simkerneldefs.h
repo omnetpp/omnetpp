@@ -50,11 +50,6 @@
 #define PI        3.141592653589793
 #endif
 
-#ifndef Min
-#define Min(a,b)     ( (a)<(b) ? (a) : (b) )
-#define Max(a,b)     ( (a)>(b) ? (a) : (b) )
-#endif
-
 #ifndef NDEBUG
 #define ASSERT(expr) \
   ((void) ((expr) ? 0 : (opp_error("ASSERT: condition %s false in function %s, %s line %d", \

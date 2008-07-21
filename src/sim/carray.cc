@@ -20,6 +20,7 @@
 *--------------------------------------------------------------*/
 
 #include <string.h>  // memcmp, memcpy, memset
+#include <algorithm>  // min, max
 #include "carray.h"
 #include "globals.h"
 #include "cexception.h"
@@ -98,8 +99,8 @@ cArray::cArray(const char *name, int cap, int dt) :
 cOwnedObject( name )
 {
     setFlag(FL_TKOWNERSHIP,true);
-    delta = Max(1,dt);
-    capacity = Max(cap,0);
+    delta = std::max(1,dt);
+    capacity = std::max(cap,0);
     firstfree = 0;
     last = -1;
     vect = new cObject *[capacity];
@@ -228,7 +229,7 @@ int cArray::add(cObject *obj)
     {
         vect[firstfree] = obj;
         retval = firstfree;
-        last = Max(last,firstfree);
+        last = std::max(last,firstfree);
         do {
             firstfree++;
         } while (firstfree<=last && vect[firstfree]!=NULL);
@@ -262,7 +263,7 @@ int cArray::addAt(int m, cObject *obj)
         vect[m] = obj;
         if (obj->isOwnedObject() && getTakeOwnership())
             take((cOwnedObject *)obj);
-        last = Max(m,last);
+        last = std::max(m,last);
         if (firstfree==m)
             do {
                 firstfree++;
@@ -387,7 +388,7 @@ cObject *cArray::remove(int m)
         return NULL;
 
     cObject *obj = vect[m]; vect[m] = NULL;
-    firstfree = Min(firstfree, m);
+    firstfree = std::min(firstfree, m);
     if (m==last)
         do {
             last--;
