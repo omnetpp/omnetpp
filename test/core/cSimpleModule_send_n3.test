@@ -1,0 +1,11 @@
+%description:
+send(): test "no such gate" error
+
+%activity:
+send(new cMessage(), "qwerty", 99);
+
+%exitcode: 1
+
+%contains: stdout
+send()/sendDelayed(): no such gate: `qwerty[99]'
+

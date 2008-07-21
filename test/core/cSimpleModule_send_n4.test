@@ -1,0 +1,11 @@
+%description:
+send(): test "no such gate" error
+
+%activity:
+send(new cMessage(), 12345);
+
+%exitcode: 1
+
+%contains: stdout
+send()/sendDelayed(): Invalid gate ID 12345
+
