@@ -55,9 +55,6 @@
 #define Max(a,b)     ( (a)>(b) ? (a) : (b) )
 #endif
 
-#define sgn(x)       ((x)==0 ? 0 : ((x)<0 ? -1 : 1))
-
-
 #ifndef NDEBUG
 #define ASSERT(expr) \
   ((void) ((expr) ? 0 : (opp_error("ASSERT: condition %s false in function %s, %s line %d", \

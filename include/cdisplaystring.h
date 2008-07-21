@@ -27,9 +27,6 @@
 NAMESPACE_BEGIN
 
 
-#define MAXARGS 16
-
-
 /**
  * Class for storage and easy manipulation of display strings. Display strings
  * are used to control the graphical presentation of network elements
@@ -65,12 +62,16 @@ NAMESPACE_BEGIN
 class SIM_API cDisplayString
 {
   private:
+    enum { MAXARGS = 16 };  // maximum number of arguments per tag
+
+    // holds one tag
     struct Tag {
        char *name;
        int numargs;
        char *args[MAXARGS];
        Tag() {name=NULL; numargs=0;}
     };
+
     char *buffer;       // holds pieces of display string (sliced with zeroes)
     char *bufferend;    // points to last byte of buffer allocated
     Tag *tags;          // table of tags

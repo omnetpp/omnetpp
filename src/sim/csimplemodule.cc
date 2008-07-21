@@ -32,6 +32,7 @@
 #include "cqueue.h"
 #include "cenvir.h"
 #include "cexception.h"
+#include "commonutil.h"
 
 USING_NAMESPACE
 
@@ -280,16 +281,16 @@ void cSimpleModule::halt()
     throw cStackCleanupException();
 }
 
+#define BUFLEN 512
+
 void cSimpleModule::error(const char *fmt...) const
 {
-    va_list va;
-    va_start(va, fmt);
-    char buf[256];
-    vsprintf(buf,fmt,va);
-    va_end(va);
-
-    throw cRuntimeError(eUSER,buf);
+    char buf[BUFLEN];
+    VSNPRINTF(buf, BUFLEN, fmt);
+    throw cRuntimeError(eUSER, buf);
 }
+
+#undef BUFLEN
 
 //---------
 

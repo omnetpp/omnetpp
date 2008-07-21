@@ -13,8 +13,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef CCONFIGREADER_H_
-#define CCONFIGREADER_H_
+#ifndef __CCONFIGREADER_H
+#define __CCONFIGREADER_H
 
 #include "simkerneldefs.h"
 

@@ -31,10 +31,6 @@ NAMESPACE_BEGIN
 
 class cPar;
 
-#ifndef INFINITY
-#define INFINITY  HUGE_VAL
-#endif
-
 
 /**
  * Routing support. The cTopology class was designed primarily to support
@@ -63,6 +59,8 @@ class SIM_API cTopology : public cOwnedObject
     class Link;
     class LinkIn;
     class LinkOut;
+
+    static const double INFINITY;
 
     /**
      * Supporting class for cTopology, represents a node in the graph.

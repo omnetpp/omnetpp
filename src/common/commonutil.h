@@ -39,6 +39,17 @@
 #endif
 #endif
 
+
+#define VSNPRINTF(buffer, buflen, formatarg) \
+    VSNPRINTF2(buffer, buflen, formatarg, formatarg)
+
+#define VSNPRINTF2(buffer, buflen, lastarg, format) \
+    va_list va; \
+    va_start(va, lastarg); \
+    vsnprintf(buffer, buflen, format, va); \
+    buffer[buflen-1] = '\0'; \
+    va_end(va);
+
 /**
  * Sets locale to Posix ("C"). Needed because we want to read/write real numbers
  * with "." as decimal separator always (and not "," used by some locales).
@@ -46,7 +57,10 @@
  */
 COMMON_API void setPosixLocale();
 
-//XXX docu
+/**
+ * Debugging aid: prints a message on entering/leaving methods; message
+ * gets indented according to call depth. See TRACE macro.
+ */
 class COMMON_API DebugCall
 {
   private:
@@ -76,11 +90,11 @@ uint64 readCPUTimeStampCounter();
  * in the GUI code.
  */
 #define NONREENTRANT_PARSER() \
-  static bool active = false; \
-  struct Guard { \
+    static bool active = false; \
+    struct Guard { \
       Guard() {if (active) throw opp_runtime_error("non-reentrant parser invoked again while parsing"); active=true;} \
       ~Guard() {active=false;} \
-  } __guard;
+    } __guard;
 
 
 #endif

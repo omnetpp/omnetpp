@@ -45,7 +45,7 @@ COMMON_API bool opp_isblank(const char *txt);
 // The following few inline functions are present in the simkernel's utils.h too;
 // define them conditionally to prevent clashes.
 //
-#ifndef __SIM_UTIL_H
+#ifndef __SIMUTIL_H
 
 /**
  * Same as the standard strlen() function, except that does not crash
@@ -88,7 +88,7 @@ inline int opp_strcmp(const char *s1, const char *s2)
     else
         return (s2 && *s2) ? -1 : 0;
 }
-#endif //__SIM_UTIL_H
+#endif //__SIMUTIL_H
 
 /**
  * Removes any leading and trailing whitespace.

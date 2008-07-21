@@ -17,17 +17,11 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
+#include "commonutil.h"
 #include "nederror.h"
 #include "nedelement.h"
 
 NAMESPACE_BEGIN
-
-#define VSPRINTF_MESSAGE(formatstring)  \
-    va_list va; \
-    va_start(va, formatstring); \
-    char message[1024]; \
-    vsprintf(message, formatstring, va); \
-    va_end(va);
 
 
 void NEDErrorStore::doAdd(NEDElement *context, const char *loc, int severity, const char *message)
@@ -55,39 +49,47 @@ void NEDErrorStore::doAdd(NEDElement *context, const char *loc, int severity, co
    }
 }
 
+#define BUFLEN  1024
+
 void NEDErrorStore::addError(NEDElement *context, const char *messagefmt, ...)
 {
-    VSPRINTF_MESSAGE(messagefmt);
+    char message[BUFLEN];
+    VSNPRINTF(message, BUFLEN, messagefmt);
     doAdd(context, NULL, NED_SEVERITY_ERROR, message);
 }
 
 void NEDErrorStore::addError(const char *location, const char *messagefmt, ...)
 {
-    VSPRINTF_MESSAGE(messagefmt);
+    char message[BUFLEN];
+    VSNPRINTF(message, BUFLEN, messagefmt);
     doAdd(NULL, location, NED_SEVERITY_ERROR, message);
 }
 
 void NEDErrorStore::addWarning(NEDElement *context, const char *messagefmt, ...)
 {
-    VSPRINTF_MESSAGE(messagefmt);
+    char message[BUFLEN];
+    VSNPRINTF(message, BUFLEN, messagefmt);
     doAdd(context, NULL, NED_SEVERITY_WARNING, message);
 }
 
 void NEDErrorStore::addWarning(const char *location, const char *messagefmt, ...)
 {
-    VSPRINTF_MESSAGE(messagefmt);
+    char message[BUFLEN];
+    VSNPRINTF(message, BUFLEN, messagefmt);
     doAdd(NULL, location, NED_SEVERITY_WARNING, message);
 }
 
 void NEDErrorStore::add(NEDElement *context, int severity, const char *messagefmt, ...)
 {
-    VSPRINTF_MESSAGE(messagefmt);
+    char message[BUFLEN];
+    VSNPRINTF(message, BUFLEN, messagefmt);
     doAdd(context, NULL, severity, message);
 }
 
 void NEDErrorStore::add(const char *location, int severity, const char *messagefmt, ...)
 {
-    VSPRINTF_MESSAGE(messagefmt);
+    char message[BUFLEN];
+    VSNPRINTF(message, BUFLEN, messagefmt);
     doAdd(NULL, location, severity, message);
 }
 
@@ -152,7 +154,8 @@ const char *NEDErrorStore::severityName(int severity)
 
 void NEDInternalError(const char *file, int line, NEDElement *context, const char *messagefmt, ...)
 {
-    VSPRINTF_MESSAGE(messagefmt);
+    char message[BUFLEN];
+    VSNPRINTF(message, BUFLEN, messagefmt);
 
     const char *loc = context ? context->getSourceLocation() : NULL;
     if (loc)

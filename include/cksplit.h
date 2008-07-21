@@ -28,10 +28,6 @@
 NAMESPACE_BEGIN
 
 
-// K: the grid size of the algorithm
-#define K 2
-
-
 /**
  * Implements k-split, an adaptive histogram-like density estimation
  * algorithm.
@@ -41,7 +37,12 @@ NAMESPACE_BEGIN
  */
 class SIM_API cKSplit : public cDensityEstBase
 {
-   public:
+  public:
+    /**
+     * K is the grid size of the algorithm. It must be 2, or a >=3 odd number.
+     */
+    enum { K = 2 };
+
     /**
      * Supporting struct for cKSplit. Represents one grid in the k-split
      * data structure.

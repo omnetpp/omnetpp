@@ -21,8 +21,6 @@
 
 NAMESPACE_BEGIN
 
-#define SHORTSTR  27
-
 class  cStatistic;
 class  cXMLElement;
 
@@ -57,24 +55,26 @@ class SIM_API cMsgPar : public cOwnedObject
     static const char *possibletypes;
 
   private:
+    enum { SHORTSTR_MAXLEN = 27 };
+
     char typechar;     // S/B/L/D/F/T/P/O
     bool changedflag;
     bool tkownership;
 
     union {
-       struct { bool sht; char *str;            } ls;   // S:long string
-       struct { bool sht; char str[SHORTSTR+1]; } ss;   // S:short str
-       struct { long val;                       } lng;  // L:long,B:bool
-       struct { double val;                     } dbl;  // D:double
+       struct { bool sht; char *str;  } ls;   // S:long string
+       struct { bool sht; char str[SHORTSTR_MAXLEN+1]; } ss;  // S:short str
+       struct { long val;             } lng;  // L:long,B:bool
+       struct { double val;           } dbl;  // D:double
        struct { MathFunc f; int argc;
-                double p1,p2,p3,p4;             } func; // F:math function
-       struct { cStatistic *res;                } dtr;  // T:distribution
+                double p1,p2,p3,p4;   } func; // F:math function
+       struct { cStatistic *res;      } dtr;  // T:distribution
        struct { void *ptr;
                 VoidDelFunc delfunc;
                 VoidDupFunc dupfunc;
-                size_t itemsize;                } ptr;  // P:void* pointer
-       struct { cOwnedObject *obj;              } obj;  // O:object pointer
-       struct { cXMLElement *node;              } xmlp; // M:XML element pointer
+                size_t itemsize;      } ptr;  // P:void* pointer
+       struct { cOwnedObject *obj;    } obj;  // O:object pointer
+       struct { cXMLElement *node;    } xmlp; // M:XML element pointer
     };
 
   private:
@@ -430,17 +430,17 @@ class SIM_API cMsgPar : public cOwnedObject
     /**
      * Equivalent to setBoolValue().
      */
-    cMsgPar& operator=(bool b)          {return setBoolValue(b);}
+    cMsgPar& operator=(bool b)  {return setBoolValue(b);}
 
     /**
      * Equivalent to setStringValue().
      */
-    cMsgPar& operator=(const char *s)   {return setStringValue(s);}
+    cMsgPar& operator=(const char *s)  {return setStringValue(s);}
 
     /**
      * Converts the argument to long, and calls setLongValue().
      */
-    cMsgPar& operator=(char c)          {return setLongValue((long)c);}
+    cMsgPar& operator=(char c)  {return setLongValue((long)c);}
 
     /**
      * Converts the argument to long, and calls setLongValue().
@@ -450,7 +450,7 @@ class SIM_API cMsgPar : public cOwnedObject
     /**
      * Converts the argument to long, and calls setLongValue().
      */
-    cMsgPar& operator=(int i)           {return setLongValue((long)i);}
+    cMsgPar& operator=(int i)  {return setLongValue((long)i);}
 
     /**
      * Converts the argument to long, and calls setLongValue().
@@ -470,7 +470,7 @@ class SIM_API cMsgPar : public cOwnedObject
     /**
      * Equivalent to setLongValue().
      */
-    cMsgPar& operator=(long l)          {return setLongValue(l);}
+    cMsgPar& operator=(long l)  {return setLongValue(l);}
 
     /**
      * Converts the argument to long, and calls setLongValue().
@@ -480,22 +480,22 @@ class SIM_API cMsgPar : public cOwnedObject
     /**
      * Equivalent to setDoubleValue().
      */
-    cMsgPar& operator=(double d)        {return setDoubleValue(d);}
+    cMsgPar& operator=(double d)  {return setDoubleValue(d);}
 
     /**
      * Converts the argument to double, and calls setDoubleValue().
      */
-    cMsgPar& operator=(long double d)   {return setDoubleValue((double)d);}
+    cMsgPar& operator=(long double d)  {return setDoubleValue((double)d);}
 
     /**
      * Equivalent to setPointerValue().
      */
-    cMsgPar& operator=(void *ptr)       {return setPointerValue(ptr);}
+    cMsgPar& operator=(void *ptr)  {return setPointerValue(ptr);}
 
     /**
      * Equivalent to setObjectValue().
      */
-    cMsgPar& operator=(cOwnedObject *obj)    {return setObjectValue(obj);}
+    cMsgPar& operator=(cOwnedObject *obj)  {return setObjectValue(obj);}
 
     /**
      * Equivalent to setXMLValue().
@@ -505,7 +505,7 @@ class SIM_API cMsgPar : public cOwnedObject
     /**
      * Equivalent to boolValue().
      */
-    operator bool()          {return boolValue();}
+    operator bool()  {return boolValue();}
 
     /**
      * Equivalent to stringValue().
@@ -515,7 +515,7 @@ class SIM_API cMsgPar : public cOwnedObject
     /**
      * Calls longValue() and converts the result to char.
      */
-    operator char()          {return (char)longValue();}
+    operator char()  {return (char)longValue();}
 
     /**
      * Calls longValue() and converts the result to unsigned char.
@@ -525,7 +525,7 @@ class SIM_API cMsgPar : public cOwnedObject
     /**
      * Calls longValue() and converts the result to int.
      */
-    operator int()           {return (int)longValue();}
+    operator int()  {return (int)longValue();}
 
     /**
      * Calls longValue() and converts the result to unsigned int.
@@ -545,7 +545,7 @@ class SIM_API cMsgPar : public cOwnedObject
     /**
      * Equivalent to longValue().
      */
-    operator long()          {return longValue();}
+    operator long()  {return longValue();}
 
     /**
      * Calls longValue() and converts the result to unsigned long.
@@ -555,35 +555,27 @@ class SIM_API cMsgPar : public cOwnedObject
     /**
      * Equivalent to doubleValue().
      */
-    operator double()        {return doubleValue();}
+    operator double()  {return doubleValue();}
 
     /**
      * Calls doubleValue() and converts the result to long double.
      */
-    operator long double()   {return doubleValue();}
+    operator long double()  {return doubleValue();}
 
     /**
      * Equivalent to pointerValue().
      */
-    operator void *()        {return pointerValue();}
+    operator void *()  {return pointerValue();}
 
     /**
      * Equivalent to getObjectValue().
      */
-    operator cOwnedObject *()     {return getObjectValue();}
+    operator cOwnedObject *()  {return getObjectValue();}
 
     /**
      * Equivalent to xmlValue().
      */
-    operator cXMLElement *() {return xmlValue();}
-    //@}
-
-    /** @name Compare function */
-    //@{
-    /**
-     * Compares two cMsgPars by their value if they are numeric.
-     */
-    static int cmpbyvalue(cOwnedObject *one, cOwnedObject *other);
+    operator cXMLElement *()  {return xmlValue();}
     //@}
 };
 

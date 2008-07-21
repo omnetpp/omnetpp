@@ -41,11 +41,6 @@ NAMESPACE_BEGIN
 Register_Class(cKSplit);
 
 
-#if K<2 || (K>2 && K==2*(K/2))
-#  error "K must be 2 or a >=3 odd number"
-#endif
-
-
 //----
 // Cell division criteria - they are used to decide whether a cell should be split.
 
@@ -87,6 +82,9 @@ cKSplit::cKSplit(const cKSplit& r) : cDensityEstBase()
 
 cKSplit::cKSplit(const char *name) : cDensityEstBase(name)
 {
+    if (K<2 || (K>2 && K!=2*(int)(K/2)+1))
+        throw cRuntimeError("cKSplit: K must be 2 or a >=3 odd number");
+
     num_cells = 0;
 
     critfunc = critfunc_depth;

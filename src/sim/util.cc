@@ -22,6 +22,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include "commonutil.h"
 #include "unitconversion.h"
 #include "opp_ctype.h"
 #include "simutil.h"
@@ -163,35 +164,26 @@ char *opp_strprettytrunc(char *dest, const char *src, unsigned maxlen)
 
 //----
 
+#define BUFLEN 512
+
 void opp_error(ErrorCode errorcode...)
 {
-    va_list va;
-    va_start(va, errorcode);
-    char message[512];
-    vsprintf(message, cErrorMessages::get(errorcode), va);
-    va_end(va);
-
+    char message[BUFLEN];
+    VSNPRINTF2(message, BUFLEN, errorcode, cErrorMessages::get(errorcode));
     throw cRuntimeError(errorcode, message);
 }
 
 void opp_error(const char *msgformat...)
 {
-    va_list va;
-    va_start(va, msgformat);
-    char message[512];
-    vsprintf(message, msgformat, va);
-    va_end(va);
-
+    char message[BUFLEN];
+    VSNPRINTF(message, BUFLEN, msgformat);
     throw cRuntimeError(eUSER, message);
 }
 
 void opp_warning(ErrorCode errorcode...)
 {
-    va_list va;
-    va_start(va, errorcode);
-    char message[512];
-    vsprintf(message, cErrorMessages::get(errorcode),va);
-    va_end(va);
+    char message[BUFLEN];
+    VSNPRINTF2(message, BUFLEN, errorcode, cErrorMessages::get(errorcode));
 
     if (!simulation.getContextModule())
     {
@@ -206,11 +198,8 @@ void opp_warning(ErrorCode errorcode...)
 
 void opp_warning(const char *msgformat...)
 {
-    va_list va;
-    va_start(va, msgformat);
-    char message[512];
-    vsprintf(message,msgformat,va);
-    va_end(va);
+    char message[BUFLEN];
+    VSNPRINTF(message, BUFLEN, msgformat);
 
     if (!simulation.getContextModule())
     {
@@ -225,25 +214,19 @@ void opp_warning(const char *msgformat...)
 
 void opp_terminate(ErrorCode errorcode...)
 {
-    va_list va;
-    va_start(va, errorcode);
-    char message[512];
-    vsprintf(message, cErrorMessages::get(errorcode),va);
-    va_end(va);
-
+    char message[BUFLEN];
+    VSNPRINTF2(message, BUFLEN, errorcode, cErrorMessages::get(errorcode));
     throw cTerminationException(errorcode,message);
 }
 
 void opp_terminate(const char *msgformat...)
 {
-    va_list va;
-    va_start(va, msgformat);
-    char message[512];
-    vsprintf(message,msgformat,va);
-    va_end(va);
-
+    char message[BUFLEN];
+    VSNPRINTF(message, BUFLEN, msgformat);
     throw cTerminationException(message);
 }
+
+#undef BUFLEN
 
 //----
 

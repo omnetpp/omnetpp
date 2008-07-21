@@ -18,8 +18,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CCOMMBUFFER_H__
-#define __CCOMMBUFFER_H__
+#ifndef __CCOMMBUFFER_H
+#define __CCOMMBUFFER_H
 
 #include "cobject.h"
 #include "simtime.h"

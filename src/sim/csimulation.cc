@@ -22,8 +22,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <string.h>    // strcpy
-#include <stdio.h>     // vsprintf()
+#include <string.h>
+#include <stdio.h>
 #include "cmodule.h"
 #include "csimplemodule.h"
 #include "cmessage.h"

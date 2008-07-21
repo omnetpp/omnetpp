@@ -28,6 +28,7 @@
 #include "cmodule.h"
 #include "cenvir.h"
 #include "cconfiguration.h"
+#include "commonutil.h"
 
 USING_NAMESPACE
 
@@ -119,7 +120,7 @@ void cException::init(const cObject *where, ErrorCode errorcode, const char *fmt
     //  - if object is the module itself: skip
     //  - if object is local in module: use getFullName()
     //  - if object is somewhere else: use getFullPath()
-    buffer[0]='\0';
+    buffer[0] = '\0';
     if (where && where!=simulation.getContext())
     {
         // try: if context's fullpath is same as module fullpath + object fullname, no need to print path
@@ -128,7 +129,7 @@ void cException::init(const cObject *where, ErrorCode errorcode, const char *fmt
         sprintf(buffer, "(%s)%s: ", where->getClassName(), needpath ? where->getFullPath().c_str() : where->getFullName());
     }
 
-    vsprintf(buffer+strlen(buffer),fmt,va);
+    vsprintf(buffer+strlen(buffer),fmt,va);  //FIXME use vsnprintf!!!
     msg = buffer;
 
     // store context

@@ -16,6 +16,7 @@
 *--------------------------------------------------------------*/
 
 #include "opp_ctype.h"
+#include "commonutil.h"  //vsnprintf
 #include "eventlogfilemgr.h"
 #include "eventlogwriter.h"
 #include "stringtokenizer.h"
@@ -274,7 +275,8 @@ void EventlogFileManager::componentMethodBegin(cComponent *from, cComponent *to,
         if (from->isModule() && to->isModule())
         {
             static char methodText[MAX_METHODCALL];
-            vsprintf(methodText, methodFmt, va);
+            vsnprintf(methodText, MAX_METHODCALL, methodFmt, va);
+            methodText[MAX_METHODCALL-1] = '\0';
             EventLogWriter::recordModuleMethodBeginEntry_sm_tm_m(feventlog,
                 ((cModule *)from)->getId(), ((cModule *)to)->getId(), methodText);
         }

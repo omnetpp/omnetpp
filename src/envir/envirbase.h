@@ -49,6 +49,9 @@ class cParsimSynchronizer;
 // note: this maximum actually not enforced anywhere
 #define MAX_OBJECTFULLPATH  1024
 
+// maximum length of string passed in Enter_Method() (longer strings will be truncated)
+#define MAX_METHODCALL 1024
+
 
 /**
  * Abstract base class for the user interface. Concrete user interface

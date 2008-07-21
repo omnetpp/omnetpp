@@ -16,8 +16,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __SIM_UTIL_H
-#define __SIM_UTIL_H
+#ifndef __SIMUTIL_H
+#define __SIMUTIL_H
 
 #include <string.h>  // for strlen, etc.
 #include <stdarg.h>  // for va_list
@@ -36,7 +36,7 @@ class cComponent;
 // logically belongs to csimulation.h but must be here because of declaration order
 enum {CTX_BUILD, CTX_INITIALIZE, CTX_EVENT, CTX_FINISH};
 
-// windows.h defines getMin() and getMax() as macros
+// windows.h defines min() and max() as macros
 #undef min
 #undef max
 
@@ -190,14 +190,9 @@ SIM_API void opp_terminate(ErrorCode errcode,...);
 SIM_API void opp_terminate(const char *msg,...);
 //@}
 
-//==========================================================================
-
-// INTERNAL: return name of a C++ type -- correcting quirks of various compilers.
+// INTERNAL: returns the name of a C++ type, correcting the quirks of various compilers.
 SIM_API const char *opp_typename(const std::type_info& t);
 
-//==========================================================================
-
-#define MAX_METHODCALL 1024
 
 /**
  * Denotes module class member function as callable from other modules.

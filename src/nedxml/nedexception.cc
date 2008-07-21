@@ -17,27 +17,26 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
+#include "commonutil.h"
 #include "nedexception.h"
 #include "nedelement.h"
 
 NAMESPACE_BEGIN
 
-#define VSPRINTF_MESSAGE(formatstring)  \
-    va_list va; \
-    va_start(va, formatstring); \
-    char message[1024]; \
-    vsprintf(message, formatstring, va); \
-    va_end(va);
+
+#define BUFLEN 1024
 
 NEDException::NEDException(const char *messagefmt...) : std::runtime_error("")
 {
-    VSPRINTF_MESSAGE(messagefmt);
+    char message[BUFLEN];
+    VSNPRINTF(message, BUFLEN, messagefmt);
     errormsg = message;
 }
 
 NEDException::NEDException(NEDElement *context, const char *messagefmt...) : std::runtime_error("")
 {
-    VSPRINTF_MESSAGE(messagefmt);
+    char message[BUFLEN];
+    VSNPRINTF(message, BUFLEN, messagefmt);
 
     const char *loc = context ? context->getSourceLocation() : NULL;
     if (loc)
@@ -47,7 +46,6 @@ NEDException::NEDException(NEDElement *context, const char *messagefmt...) : std
     else
         errormsg = message;
 }
-
 
 NAMESPACE_END
 

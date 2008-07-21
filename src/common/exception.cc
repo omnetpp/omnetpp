@@ -17,19 +17,16 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include "exception.h"
+#include "commonutil.h"
 
 USING_NAMESPACE
 
 
-opp_runtime_error::opp_runtime_error(const char *message, ...) : std::runtime_error("")
+opp_runtime_error::opp_runtime_error(const char *messagefmt, ...) : std::runtime_error("")
 {
-    va_list va;
-    va_start(va, message);
-    char messagebuf[1024];
-    vsprintf(messagebuf,message,va);
-    va_end(va);
-
-    errormsg = messagebuf;
+    char buf[1024];
+    VSNPRINTF(buf, 1024, messagefmt);
+    errormsg = buf;
 }
 
 

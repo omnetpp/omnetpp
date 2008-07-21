@@ -361,7 +361,7 @@ cMsgPar& cMsgPar::setStringValue(const char *s)
      typechar = 'S';
      if (!s)
          {ls.sht=true; *ss.str='\0';}
-     else if ((ls.sht=(strlen(s)<=SHORTSTR))!=0)
+     else if ((ls.sht=(strlen(s)<=SHORTSTR_MAXLEN))!=0)
          strcpy(ss.str, s);
      else
          ls.str = opp_strdup(s);
@@ -976,12 +976,6 @@ cMsgPar& cMsgPar::operator=(const cMsgPar& val)
     return *this;
 }
 
-
-int cMsgPar::cmpbyvalue(cOwnedObject *one, cOwnedObject *other)
-{
-    double x = (double)(*(cMsgPar*)one)-(double)(*(cMsgPar*)other);
-    return sgn(x);
-}
 
 void cMsgPar::convertToConst ()
 {

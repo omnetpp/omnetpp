@@ -1177,7 +1177,8 @@ void Tkenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const
     updateGraphicalInspectorsBeforeAnimation();
 
     static char methodText[MAX_METHODCALL];
-    vsprintf(methodText, methodFmt, va);
+    vsnprintf(methodText, MAX_METHODCALL, methodFmt, va);
+    methodText[MAX_METHODCALL-1] = '\0';
 
     cModule *from = (cModule *)fromComp;
     cModule *to = (cModule *)toComp;

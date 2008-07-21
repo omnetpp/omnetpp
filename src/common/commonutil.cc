@@ -33,12 +33,8 @@ int DebugCall::depth;
 
 DebugCall::DebugCall(const char *fmt,...)
 {
-    va_list va;
-    va_start(va, fmt);
     char buf[1024];
-    vsprintf(buf,fmt,va);
-    va_end(va);
-
+    VSNPRINTF(buf, 1024, fmt);
     funcname = buf;
     printf("%*s ++ %s\n", depth++*2, "", funcname.c_str());
 }

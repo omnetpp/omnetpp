@@ -17,6 +17,8 @@
 *--------------------------------------------------------------*/
 
 #include "cenvir.h"
+#include "commonutil.h"
+
 
 cEnvir *evPtr;
 
@@ -75,17 +77,13 @@ void cEnvir::flushLastLine()
 // it also makes the following functions non-reentrant, but we don't need
 // them to be reentrant anyway.
 //
-#define ENVIR_TEXTBUF_LEN 1024
-static char buffer[ENVIR_TEXTBUF_LEN];
+#define BUFLEN 1024
+static char staticbuf[BUFLEN];
 
 void cEnvir::printfmsg(const char *fmt,...)
 {
-    va_list va;
-    va_start(va, fmt);
-    vsprintf(buffer, fmt, va);  //FIXME use vsnprintf
-    va_end(va);
-
-    putsmsg(buffer);
+    VSNPRINTF(staticbuf, BUFLEN, fmt);
+    putsmsg(staticbuf);
 }
 
 int cEnvir::printf(const char *fmt,...)
@@ -95,22 +93,19 @@ int cEnvir::printf(const char *fmt,...)
 
     va_list va;
     va_start(va, fmt);
-    int len = vsprintf(buffer, fmt, va);  //FIXME use vsnprintf
+    int len = vsnprintf(staticbuf, BUFLEN, fmt, va);
+    staticbuf[BUFLEN-1] = '\0';
     va_end(va);
 
     // route it through streambuf to preserve ordering
-    out.rdbuf()->sputn(buffer, len);
+    out.rdbuf()->sputn(staticbuf, len);
     return len;
 }
 
 bool cEnvir::askYesNo(const char *fmt,...)
 {
-    va_list va;
-    va_start(va, fmt);
-    vsprintf(buffer, fmt, va);  //FIXME use vsnprintf
-    va_end(va);
-
-    return askyesno(buffer);
+    VSNPRINTF(staticbuf, BUFLEN, fmt);
+    return askyesno(staticbuf);
 }
 
 
