@@ -129,7 +129,8 @@ void cException::init(const cObject *where, ErrorCode errorcode, const char *fmt
         sprintf(buffer, "(%s)%s: ", where->getClassName(), needpath ? where->getFullPath().c_str() : where->getFullName());
     }
 
-    vsprintf(buffer+strlen(buffer),fmt,va);  //FIXME use vsnprintf!!!
+    vsnprintf(buffer+strlen(buffer), BUFLEN-strlen(buffer), fmt, va);
+    buffer[BUFLEN] = '\0';
     msg = buffer;
 
     // store context
