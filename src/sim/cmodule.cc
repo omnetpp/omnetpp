@@ -399,7 +399,7 @@ cGate::Desc *cModule::gateDesc(const char *gatename, char& suffix) const
 {
     int descIndex = findGateDesc(gatename, suffix);
     if (descIndex<0)
-        throw cRuntimeError(this, "no such gate: `%s'", gatename);
+        throw cRuntimeError(this, "no such gate or gate vector: `%s'", gatename);
     return descv + descIndex;
 }
 
