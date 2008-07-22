@@ -139,22 +139,22 @@ DEF(substring, "SL/L->S", "string", "", {  // Note: substring(str,index[,length]
 })
 
 DEF(substringBefore, "SS->S", "string", "", {
-    unsigned int pos = argv[0].s.find(argv[1].s);
+    size_t pos = argv[0].s.find(argv[1].s);
     return pos==std::string::npos ? "" : argv[0].s.substr(0,pos);
 })
 
 DEF(substringAfter, "SS->S", "string", "", {
-    unsigned int pos = argv[0].s.find(argv[1].s);
+    size_t pos = argv[0].s.find(argv[1].s);
     return pos==std::string::npos ? "" : argv[0].s.substr(pos+argv[1].s.size());
 })
 
 DEF(substringBeforeLast, "SS->S", "string", "", {
-    unsigned int pos = argv[0].s.rfind(argv[1].s);
+    size_t pos = argv[0].s.rfind(argv[1].s);
     return pos==std::string::npos ? "" : argv[0].s.substr(0,pos);
 })
 
 DEF(substringAfterLast, "SS->S", "string", "", {
-    unsigned int pos = argv[0].s.rfind(argv[1].s);
+    size_t pos = argv[0].s.rfind(argv[1].s);
     return pos==std::string::npos ? "" : argv[0].s.substr(pos+argv[1].s.size());
 })
 
@@ -178,16 +178,18 @@ DEF(replace, "SSS/L->S", "string", "", {
     std::string str = argv[0].s;
     std::string& search = argv[1].s;
     std::string& replacement = argv[2].s;
-    int index = 0;
+    size_t index = 0;
     if (argc==4) {
-        index = (int)argv[3].dbl;
-        if (index<0 || index>(int)str.size())
+        if (argv[3].dbl < 0)
+            throw cRuntimeError("replace(): start index is negative");
+        index = (size_t)argv[3].dbl;
+        if (index > str.size())
             throw cRuntimeError("replace(): start index out of bounds");
     }
 
-    unsigned int searchSize = search.size();
-    unsigned int replacementSize = replacement.size();
-    while ((index = str.find(search, index)) != (int)std::string::npos) {
+    size_t searchSize = search.size();
+    size_t replacementSize = replacement.size();
+    while ((index = str.find(search, index)) != std::string::npos) {
         str.replace(index, searchSize, replacement);
         index += replacementSize - searchSize + 1;
     }
@@ -198,15 +200,17 @@ DEF(replaceFirst, "SSS/L->S", "string", "", {
     std::string str = argv[0].s;
     std::string& search = argv[1].s;
     std::string& replacement = argv[2].s;
-    int index = 0;
+    size_t index = 0;
     if (argc==4) {
-        index = (int)argv[3].dbl;
-        if (index<0 || index>(int)str.size())
+        if (argv[3].dbl < 0)
+            throw cRuntimeError("replaceFirst(): start index is negative");
+        index = (size_t)argv[3].dbl;
+        if (index > str.size())
             throw cRuntimeError("replaceFirst(): start index out of bounds");
     }
 
-    unsigned int searchSize = search.size();
-    if ((index = str.find(search, index)) != (int)std::string::npos)
+    size_t searchSize = search.size();
+    if ((index = str.find(search, index)) != std::string::npos)
         str.replace(index, searchSize, replacement);
     return str;
 })
