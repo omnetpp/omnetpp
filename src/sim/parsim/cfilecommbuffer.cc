@@ -189,7 +189,7 @@ void cFileCommBuffer::pack(const opp_string& d)
 
 void cFileCommBuffer::pack(SimTime d)
 {
-    pack(d.raw());
+    pack((opp_long_long)d.raw());
 }
 
 void cFileCommBuffer::pack(const char *d, int size)

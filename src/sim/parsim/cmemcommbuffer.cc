@@ -145,7 +145,7 @@ void cMemCommBuffer::pack(const opp_string& d)
 
 void cMemCommBuffer::pack(SimTime d)
 {
-    pack(d.raw());
+    pack((opp_long_long)d.raw());
 }
 
 void cMemCommBuffer::pack(const char *d, int size)

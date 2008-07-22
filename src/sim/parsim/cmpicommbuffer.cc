@@ -153,7 +153,7 @@ void cMPICommBuffer::pack(const opp_string& d)
 
 void cMPICommBuffer::pack(SimTime d)
 {
-    pack(d.raw());
+    pack((opp_long_long)d.raw());
 }
 
 void cMPICommBuffer::pack(const char *d, int size)
