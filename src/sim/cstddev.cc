@@ -49,6 +49,10 @@ Register_Class(cStdDev);
 Register_Class(cWeightedStdDev);
 
 
+static const double zero = 0.0;
+static const double nan = zero/zero;
+
+
 cStdDev::cStdDev(const char *s) : cStatistic(s)
 {
     num_vals = 0L;
@@ -164,16 +168,13 @@ void cStdDev::merge(const cStatistic *other)
 
 double cStdDev::getVariance() const
 {
-    if (num_vals<=1)
-        return 0.0;
+    if (num_vals <= 1)
+        return nan;
     else
     {
         // note: no check for division by zero, we prefer to return Inf or NaN
         double devsqr = (sqrsum_vals - sum_vals*sum_vals/num_vals)/(num_vals-1);
-        if (devsqr<=0)
-            return 0.0;
-        else
-            return devsqr;
+        return devsqr<0 ? 0 : devsqr;
     }
 }
 
@@ -344,9 +345,14 @@ void cWeightedStdDev::clearResult()
 
 double cWeightedStdDev::getVariance() const
 {
-    // note: no check for division by zero, we prefer to return Inf or NaN
-    double denominator = sum_weights * sum_weights - sum_squared_weights;
-    return (sum_weights * sum_weights_squared_vals - sum_weighted_vals * sum_weighted_vals) / denominator;
+    if (num_vals <= 1)
+        return nan;
+    else
+    {
+        // note: no check for division by zero, we prefer to return Inf or NaN
+        double denominator = sum_weights * sum_weights - sum_squared_weights;
+        return (sum_weights * sum_weights_squared_vals - sum_weighted_vals * sum_weighted_vals) / denominator;
+    }
 }
 
 void cWeightedStdDev::saveToFile(FILE *f) const
