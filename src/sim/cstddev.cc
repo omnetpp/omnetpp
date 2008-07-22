@@ -49,8 +49,8 @@ Register_Class(cStdDev);
 Register_Class(cWeightedStdDev);
 
 
-static const double zero = 0.0;
-static const double nan = zero/zero;
+static double zero = 0.0;
+static double NaN = zero/zero;
 
 
 cStdDev::cStdDev(const char *s) : cStatistic(s)
@@ -169,7 +169,7 @@ void cStdDev::merge(const cStatistic *other)
 double cStdDev::getVariance() const
 {
     if (num_vals <= 1)
-        return nan;
+        return NaN;
     else
     {
         // note: no check for division by zero, we prefer to return Inf or NaN
@@ -346,7 +346,7 @@ void cWeightedStdDev::clearResult()
 double cWeightedStdDev::getVariance() const
 {
     if (num_vals <= 1)
-        return nan;
+        return NaN;
     else
     {
         // note: no check for division by zero, we prefer to return Inf or NaN
