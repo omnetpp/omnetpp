@@ -16,10 +16,10 @@ ev << (short)42 << endl;
 ev << (unsigned short)42 << endl;
 ev << (int)1111 << endl;
 ev << (unsigned int)1111 << endl;
-ev << (long)3333333333L << endl;
-ev << (unsigned long)3333333333L << endl;
-ev << (int64)43214321 << endl;
-ev << (uint64)43214321 << endl;
+ev << (1L << 30) << endl;
+ev << (1UL << 31) << endl;
+ev << ((int64)1 << 62) << endl;
+ev << ((uint64)1 << 63) << endl;
 
 ev << (float)1.23 << endl;
 ev << 1.23 << endl;
@@ -38,10 +38,10 @@ A
 42
 1111
 1111
--961633963
-3333333333
-43214321
-43214321
+1073741824
+2147483648
+4611686018427387904
+9223372036854775808
 1.23
 1.23
 .

@@ -53,6 +53,7 @@ collect(0,5);
 collect(1,0);
 collect(5,0);
 
+%subst: /-?1\.#INF/inf/
 %subst: /-?1\.#IND/nan/
 %subst: /-?1\.#QNAN/nan/
 
@@ -68,9 +69,9 @@ a+b n=0 w=0 S=0 SS=0 min=0 max=0 mean=0 stddev=nan var=nan
 ref n=0 w=0 S=0 SS=0 min=0 max=0 mean=0 stddev=nan var=nan
 ---
 a n=0 w=0 S=0 SS=0 min=0 max=0 mean=0 stddev=nan var=nan
-b n=1 w=1.93166 S=2.64556 SS=6.99897 min=2.64556 max=2.64556 mean=2.64556 stddev=1.#INF var=1.#INF
-a+b n=1 w=1.93166 S=2.64556 SS=6.99897 min=2.64556 max=2.64556 mean=2.64556 stddev=1.#INF var=1.#INF
-ref n=1 w=1.93166 S=2.64556 SS=6.99897 min=2.64556 max=2.64556 mean=2.64556 stddev=1.#INF var=1.#INF
+b n=1 w=1.93166 S=2.64556 SS=6.99897 min=2.64556 max=2.64556 mean=2.64556 stddev=inf var=inf
+a+b n=1 w=1.93166 S=2.64556 SS=6.99897 min=2.64556 max=2.64556 mean=2.64556 stddev=inf var=inf
+ref n=1 w=1.93166 S=2.64556 SS=6.99897 min=2.64556 max=2.64556 mean=2.64556 stddev=inf var=inf
 ---
 a n=0 w=0 S=0 SS=0 min=0 max=0 mean=0 stddev=nan var=nan
 b n=5 w=12.8125 S=24.3524 SS=151.245 min=0.187898 max=7.74234 mean=5.19716 stddev=3.18406 var=10.1382
