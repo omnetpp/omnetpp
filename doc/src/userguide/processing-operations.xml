@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<!DOCTYPE table PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+    "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<table id='processing-operations'>
+  <title>Processing operations</title>
+  <tgroup cols='2'>
+    <colspec colwidth='1.2in'/>
+    <colspec colwidth='3*'/>
+    <thead><row><entry>Name</entry><entry>Description</entry></row></thead>
+    <tbody>
+      <row><entry>add</entry><entry>Adds a constant to the input: <emphasis>y<superscript>out</superscript><subscript>k</subscript> = y<subscript>k</subscript> + c</emphasis></entry></row>
+      <row><entry>compare</entry><entry>Compares value against a threshold, and optionally replaces it with a constant</entry></row>
+      <row><entry>crop</entry><entry>Discards values outside the [t1, t2] interval</entry></row>
+      <row><entry>difference</entry><entry>Substracts the previous value from every value: <emphasis>y<superscript>out</superscript><subscript>k</subscript> = y<subscript>k</subscript> - y<subscript>k-1</subscript></emphasis></entry></row>
+      <row><entry>diffquot</entry><entry>Calculates the difference quotient of every value and the subsequent one: <emphasis>y<superscript>out</superscript><subscript>k</subscript> = (y<subscript>k+1</subscript>-y<subscript>k</subscript>) / (t<subscript>k+1</subscript>-t<subscript>k</subscript>)</emphasis></entry></row>
+      <row><entry>divide-by</entry><entry>Divides input by a constant: <emphasis>y<superscript>out</superscript><subscript>k</subscript> = y<subscript>k</subscript> / a</emphasis></entry></row>
+      <row><entry>divtime</entry><entry>Divides input by the current time: <emphasis>y<superscript>out</superscript><subscript>k</subscript> = y<subscript>k</subscript> / t<subscript>k</subscript></emphasis></entry></row>
+      <row><entry>expression</entry><entry>Evaluates an arbitrary expression. Use t for time, y for value, and tprev, yprev for the previous values.</entry></row>
+      <row><entry>integrate</entry><entry>Integrates the input as a step function (sample-hold or backward-sample-hold) or with linear interpolation</entry></row>
+      <row><entry>lineartrend</entry><entry>Adds linear component to input series: <emphasis>y<superscript>out</superscript><subscript>k</subscript> = y<subscript>k</subscript> + a * t<subscript>k</subscript></emphasis></entry></row>
+      <row><entry>mean</entry><entry>Calculates mean on (0,t)</entry></row>
+      <row><entry>modulo</entry><entry>Computes input modulo a constant: <emphasis>y<superscript>out</superscript><subscript>k</subscript> = y<subscript>k</subscript> % a</emphasis></entry></row>
+      <row><entry>movingavg</entry><entry>Applies the exponentially weighted moving average filter: <emphasis>y<superscript>out</superscript><subscript>k</subscript> = y<superscript>out</superscript><subscript>k-1</subscript> + alpha*(y<subscript>k</subscript>-y<superscript>out</superscript><subscript>k-1</subscript>)</emphasis></entry></row>
+      <row><entry>multiply-by</entry><entry>Multiplies input by a constant: <emphasis>y<superscript>out</superscript><subscript>k</subscript> = a * y<subscript>k</subscript></emphasis></entry></row>
+      <row><entry>nop</entry><entry>Does nothing</entry></row>
+      <row><entry>removerepeats</entry><entry>Removes repeated y values</entry></row>
+      <row><entry>slidingwinavg</entry><entry>Replaces every value with the mean of values in the window: <emphasis>y<superscript>out</superscript><subscript>k</subscript> = SUM(y<subscript>i</subscript>,i=k-winsize+1..k)/winsize</emphasis></entry></row>
+      <row><entry>sum</entry><entry>Sums up values: <emphasis>y<superscript>out</superscript><subscript>k</subscript> = SUM(y<subscript>i</subscript>, i=0..k)</emphasis></entry></row>
+      <row><entry>timeavg</entry><entry>Calculates the time average of the input (integral divided by time)</entry></row>
+      <row><entry>timediff</entry><entry>Returns the difference in time between this and the previous value: <emphasis>y<superscript>out</superscript><subscript>k</subscript> = t<subscript>k</subscript> - t<subscript>k-1</subscript></emphasis></entry></row>
+      <row><entry>timeshift</entry><entry>Shifts the input series in time by a constant: <emphasis>t<superscript>out</superscript><subscript>k</subscript> = t<subscript>k</subscript> + dt</emphasis></entry></row>
+      <row><entry>timetoserial</entry><entry>Replaces time values with their index: <emphasis>t<superscript>out</superscript><subscript>k</subscript> = k</emphasis></entry></row>
+      <row><entry>winavg</entry><entry>Calculates batched average: replaces every `winsize' input values with their mean. Time is the time of the first value in the batch.</entry></row>
+    </tbody>
+  </tgroup>
+</table>

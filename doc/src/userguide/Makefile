@@ -16,10 +16,17 @@ pdf:   chart-properties.xml processing-operations.xml
 	rm tmp.fo tmp.xml
 	cp userguide.pdf ../..
 
+# the following target should be called manually because it depends on binary file (scavetool) which is 
+# created only later durnig the run of the automatic build script.
+# Re-run this target if any of the chart properties change in the CHART_POP_DIR, and check in the results 
+# into the repository
+
+generate-tables: chart-properties processing-operations
+
 CHART_PROP_DIR = ../../../ui/org.omnetpp.scave/src/org/omnetpp/scave/charting/properties
 
-chart-properties.xml: generate.pl $(CHART_PROP_DIR)/*Properties.java
-	perl generate.pl chart-properties $(CHART_PROP_DIR) >$@
+chart-properties: generate.pl $(CHART_PROP_DIR)/*Properties.java
+	perl generate.pl chart-properties $(CHART_PROP_DIR) >chart-properties.xml
 
-processing-operations.xml: generate.pl
-	perl generate.pl processing-operations >$@
+processing-operations: generate.pl
+	perl generate.pl processing-operations >processing-operations.xml
