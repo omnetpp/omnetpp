@@ -351,7 +351,8 @@ double cWeightedStdDev::getVariance() const
     {
         // note: no check for division by zero, we prefer to return Inf or NaN
         double denominator = sum_weights * sum_weights - sum_squared_weights;
-        return (sum_weights * sum_weights_squared_vals - sum_weighted_vals * sum_weighted_vals) / denominator;
+        double var = (sum_weights * sum_weights_squared_vals - sum_weighted_vals * sum_weighted_vals) / denominator;
+        return var<0 ? 0 : var;
     }
 }
 
