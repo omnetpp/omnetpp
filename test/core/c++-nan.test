@@ -31,6 +31,7 @@ ev << ".\n";
 
 %subst: /-?1\.#IND/nan/
 %subst: /-?1\.#QNAN/nan/
+%subst: /-?:NaN/:nan/
 
 %contains: stdout
 nan:nan
