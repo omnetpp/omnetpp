@@ -1,0 +1,102 @@
+%description:
+Test channel packet error rate
+
+%file: test.ned
+
+channel MyConn extends ned.DatarateChannel
+{
+    parameters:
+        per = 0.2;
+}
+
+simple Node1
+{
+    gates:
+        output out;
+}
+
+simple Node2
+{
+    gates:
+        input in;
+}
+
+network Test
+{
+    submodules:
+        node1: Node1;
+        node2: Node2;
+    connections:
+        node1.out --> MyConn --> node2.in;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+namespace @TESTNAME@ {
+
+#define NUM_MSGS           2000
+#define PACKET_ERROR_RATE   0.2
+
+class Node1 : public cSimpleModule
+{
+  public:
+    Node1() : cSimpleModule(16384) { }
+    virtual void activity();
+};
+
+Define_Module(Node1);
+
+void Node1::activity()
+{
+    for (int i=0; i<NUM_MSGS; i++)
+    {
+        cMessage *msg = new cMessage();
+        send(msg, "out");
+        wait(exponential(1.0));
+    }
+}
+
+
+class Node2 : public cSimpleModule
+{
+    int numErrors;
+
+  public:
+    Node2() : cSimpleModule(16384) { }
+    virtual void activity();
+    virtual void finish();
+};
+
+Define_Module(Node2);
+
+void Node2::activity()
+{
+    numErrors = 0;
+
+    for(;;)
+    {
+        cMessage *msg = receive();
+        if (msg->hasBitError())
+            numErrors++;
+        delete msg;
+    }
+}
+
+void Node2::finish()
+{
+    double erate = numErrors / (double)NUM_MSGS;
+    ev << "error rate: measured: " << erate << ", expected: " << PACKET_ERROR_RATE << endl;
+
+    if (fabs(erate-PACKET_ERROR_RATE) > PACKET_ERROR_RATE/10)
+        throw cRuntimeError("wrong packet error rate");
+    ev << "OK\n";
+}
+
+}; //namespace
+
+%contains: stdout
+error rate: measured: 0.2065, expected: 0.2
+OK
+

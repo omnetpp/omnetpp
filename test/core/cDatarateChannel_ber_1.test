@@ -97,16 +97,21 @@ void Node2::finish()
     {
         double exp_erate = 1-pow(1-BIT_ERROR_RATE, len);
         double erate = (double)errors[len] / (double)NUM_MSGS;
-        ev << "msg len: " << len << endl;
-        ev << "error rate: measured: " << erate << ", expected: " << exp_erate << endl;
+        ev << "msglen: " << len << ", error rate: measured: " << erate << ", expected: " << exp_erate << endl;
 
         if (fabs(erate-exp_erate) > exp_erate/10)
-            ev << "wrong error rate!" << endl;
+            throw cRuntimeError("wrong bit error rate");
     }
+    ev << "OK\n";
 }
 
 }; //namespace
 
-%not-contains: stdout
-wrong error rate
+%contains: stdout
+msglen: 0, error rate: measured: 0, expected: 0
+msglen: 1, error rate: measured: 0.0985, expected: 0.1
+msglen: 2, error rate: measured: 0.1935, expected: 0.19
+msglen: 3, error rate: measured: 0.281, expected: 0.271
+msglen: 4, error rate: measured: 0.3375, expected: 0.3439
+OK
 
