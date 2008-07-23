@@ -169,8 +169,10 @@ void cFileCommBuffer::pack(double d)
 
 void cFileCommBuffer::pack(long double d)
 {
+    // packing as double because "%Lg" does not work on MinGW, see
+    // http://www.mingw.org/MinGWiki/index.php/long%20double
     extendBufferFor(30);
-    STORE("ld %Lg",d);
+    STORE("ld %g",(double)d);
 }
 
 // pack a string
@@ -376,7 +378,11 @@ void cFileCommBuffer::unpack(double& d)
 
 void cFileCommBuffer::unpack(long double& d)
 {
-    EXTRACT("ld %Lg",d);
+    // packing as double because "%Lg" does not work on MinGW, see
+    // http://www.mingw.org/MinGWiki/index.php/long%20double
+    double tmp;
+    EXTRACT("ld %lg",tmp);
+    d = tmp;
 }
 
 // unpack a string
