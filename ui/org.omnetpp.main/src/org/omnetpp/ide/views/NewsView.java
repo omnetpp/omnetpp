@@ -14,7 +14,7 @@ import org.eclipse.ui.part.ViewPart;
  */
 
 public class NewsView extends ViewPart {
-	public static final String BASE_URL = "http://localhost/rhornig";
+	public static final String BASE_URL = "http://omnetpp.org/ide";
 	public static final String NEWS_URL = BASE_URL + "/news";
 	protected String urlToShow = NEWS_URL;
 	protected Browser browser; 

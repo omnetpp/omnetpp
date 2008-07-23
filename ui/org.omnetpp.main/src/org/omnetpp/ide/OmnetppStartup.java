@@ -38,7 +38,7 @@ import org.omnetpp.ide.views.NewsView;
  */
 public class OmnetppStartup implements IStartup {
 
-    private static final String VERSION = "4.0.0";
+    private static final String VERSION = "4.0.0b3";
     private static final String VERSIONS_URL = NewsView.BASE_URL + "/versions";
 	private static final String LATESTVERSION_URL = VERSIONS_URL + "/latest";
 	public static final String SAMPLES_DIR = "samples";
@@ -92,11 +92,8 @@ public class OmnetppStartup implements IStartup {
 			    				IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 			    				IWorkbenchPage workbenchPage = activeWorkbenchWindow == null ? null : activeWorkbenchWindow.getActivePage();
 			    				if (workbenchPage != null) {
-			    					NewsView newsView = (NewsView)workbenchPage.findView(IConstants.NEWS_VIEW_ID);
-			    					if (newsView != null) {
-			    						newsView.setURL(VERSIONS_URL);
-			    						workbenchPage.showView(IConstants.NEWS_VIEW_ID);
-			    					}
+			    					NewsView newsView = (NewsView)workbenchPage.showView(IConstants.NEWS_VIEW_ID);
+		    						newsView.setURL(VERSIONS_URL);
 			    				}
 			    			} 
 			    			catch (PartInitException e) {
