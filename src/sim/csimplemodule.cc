@@ -148,7 +148,7 @@ void cSimpleModule::activate(void *p)
         if (after_cleanup_transfer_to)
             simulation.transferTo(after_cleanup_transfer_to);
         else
-            simulation.transferToMain();  //FIXME turn this into transferTo(NULL)?
+            simulation.transferToMain();
         fprintf(stderr, "INTERNAL ERROR: switch to the fiber of a module already terminated");
         abort();
     }
