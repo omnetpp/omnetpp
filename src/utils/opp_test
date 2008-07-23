@@ -578,7 +578,7 @@ sub testcase_run()
                     }
 
                     # do it
-                    $txt =~ s/(?g$flags)$searchstring/$replacement/;
+                    $txt =~ s/(?$flags)$searchstring/$replacement/g;
                 }
             }
 
