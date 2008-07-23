@@ -9,7 +9,7 @@ class Noisy {
 
 %activity:
 Noisy noisy;
-receive();
+receive();  // simulation will end inside receive(), because of "no more events"
 
 %contains: stdout
 Noisy destructor called
