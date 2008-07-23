@@ -39,6 +39,7 @@ ev << "-" << endl;
 %subst: /-?1\.#INF/inf/ 
 %subst: /-?1\.#IND/nan/ 
 %subst: /-?1\.#QNAN/nan/
+%subst: /-?NaN/nan/
 
 %contains-regex: stdout
 n=0:w=0:S=0:SS=0:min=0:max=0:mean=0:stddev=nan:var=nan

@@ -51,6 +51,7 @@ collect(5,0);
 %subst: /-?1\.#INF/inf/ 
 %subst: /-?1\.#IND/nan/ 
 %subst: /-?1\.#QNAN/nan/
+%subst: /-?NaN/nan/
 
 %contains: stdout
 a n=10 w=10 S=113.006 SS=1282.08 min=10.1183 max=12.2897 mean=11.3006 stddev=0.748762 var=0.560645
