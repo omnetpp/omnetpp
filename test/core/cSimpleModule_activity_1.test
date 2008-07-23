@@ -9,6 +9,8 @@ class Noisy {
 
 %activity:
 Noisy noisy;
+(void)noisy;
+
 receive();  // simulation will end inside receive(), because of "no more events"
 
 %contains: stdout
