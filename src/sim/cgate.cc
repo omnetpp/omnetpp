@@ -227,7 +227,7 @@ cChannel *cGate::connectTo(cGate *g, cChannel *chan, bool leaveUninitialized)
     // Heuristics: if parent module is not yet initialized, we expect that
     // this channel will be initialized as part of it, so don't do it here;
     // otherwise initialize the channel now.
-    if (chan && !leaveUninitialized && chan->getParentModule()->initialized())
+    if (chan && !leaveUninitialized && (!chan->getParentModule() || chan->getParentModule()->initialized()))
         chan->callInitialize();
 
     return chan;
