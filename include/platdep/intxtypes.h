@@ -16,6 +16,8 @@
 #ifndef __INTXTYPES_H
 #define __INTXTYPES_H
 
+#include <limits.h>   // __WORDSIZE
+
 //XXX we may need to determine HAVE_STDINT_H in configure
 #if defined SWIG || defined _MSC_VER
 #define HAVE_STDINT_H 0
@@ -153,8 +155,14 @@
 // Note: %I64d is only used with VC++ 7.1 and MinGW gcc 3.4.x; once we
 // drop support for these compilers, this macro can be dropped altogether
 //
+// Note2: on 64-bit platforms, gcc defines int64_t to be long, so
+// we need to use %ld (%lld generates warnings). We recognize 64-bit
+// platforms by __WORDSIZE (from <bits/wordsize.h>, #included by <limits.h>)
+//
 #if defined(_MSC_VER) || defined(__MINGW32__)
 #   define INT64_PRINTF_FORMAT   "I64"
+#elif __WORDSIZE == 64
+#   define INT64_PRINTF_FORMAT   "l"
 #else
 #   define INT64_PRINTF_FORMAT   "ll"
 #endif
