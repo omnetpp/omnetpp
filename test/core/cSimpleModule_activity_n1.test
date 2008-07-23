@@ -1,0 +1,43 @@
+%description:
+Test what happens if coroutine cannot be created
+
+%file: test.ned
+
+simple Simple
+{
+}
+
+network Test
+{
+    submodules:
+        a[1000000]: Simple;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+namespace @TESTNAME@ {
+
+class Simple : public cSimpleModule
+{
+  public:
+    Simple() : cSimpleModule(16384) { }
+    virtual void activity();
+};
+
+Define_Module(Simple);
+
+void Simple::activity()
+{
+    ev << "hello" << endl;
+}
+
+}; //namespace
+
+%exitcode: 1
+
+%contains-regex: stdout
+Error in module .*: Cannot create coroutine
+
+

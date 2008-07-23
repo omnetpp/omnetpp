@@ -1,43 +1,15 @@
 %description:
-Test what happens if coroutine cannot be created
+Test that activity stack gets cleaned up properly after simulation stops 
+with "no more events"
 
-%file: test.ned
-
-simple Simple
-{
-}
-
-network Test
-{
-    submodules:
-        a[1000000]: Simple;
-}
-
-%file: test.cc
-
-#include <omnetpp.h>
-
-namespace @TESTNAME@ {
-
-class Simple : public cSimpleModule
-{
-  public:
-    Simple() : cSimpleModule(16384) { }
-    virtual void activity();
+%global:
+class Noisy {
+  public: ~Noisy() {ev << "Noisy destructor called\n";}
 };
 
-Define_Module(Simple);
+%activity:
+Noisy noisy;
+receive();
 
-void Simple::activity()
-{
-    ev << "hello" << endl;
-}
-
-}; //namespace
-
-%exitcode: 1
-
-%contains-regex: stdout
-Error in module .*: Cannot create coroutine
-
-
+%contains: stdout
+Noisy destructor called
