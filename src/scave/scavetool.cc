@@ -139,7 +139,7 @@ static void loadFiles(ResultFileManager &manager, const std::vector<std::string>
             fprintf(stdout, "Exception: %s\n", e.what());
         }
     }
-    if (verbose) printf("%d file(s) loaded\n", manager.getFiles().size());
+    if (verbose) printf("%d file(s) loaded\n", (int)manager.getFiles().size());
 }
 
 int filterCommand(int argc, char **argv)

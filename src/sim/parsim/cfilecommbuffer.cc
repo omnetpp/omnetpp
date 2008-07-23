@@ -39,7 +39,7 @@ Register_Class(cFileCommBuffer);
 #define STOREARRAY(type,d,size)   {memcpy(mBuffer+mMsgSize,d,size*sizeof(type)); mMsgSize+=size*sizeof(type);}
 #define EXTRACTARRAY(type,d,size) {memcpy(d,mBuffer+mPosition,size*sizeof(type)); mPosition+=size*sizeof(type);}
 
-#define LL  INT64_PRINTF_FORMAT
+#define LL  LONGLONG_PRINTF_FORMAT
 
 
 // helper: match type (i.e. "i " from "i 134")
