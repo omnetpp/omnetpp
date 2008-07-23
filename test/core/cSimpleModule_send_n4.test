@@ -7,5 +7,5 @@ send(new cMessage(), 12345);
 %exitcode: 1
 
 %contains: stdout
-send()/sendDelayed(): Invalid gate ID 12345
+send()/sendDelayed(): Invalid gate Id 12345
 
