@@ -573,7 +573,7 @@ sub testcase_run()
                         return;
                     }
                     if (!($flags =~ /^[ism]*$/)) {
-                        unresolved($testfilename, "wrong subst rule: invalid flags '$flag': only 'i', 's' and 'm' supported ('g' is implicit)");
+                        unresolved($testfilename, "wrong subst rule: invalid flags '$flags': only 'i', 's' and 'm' supported ('g' is implicit)");
                         return;
                     }
 
