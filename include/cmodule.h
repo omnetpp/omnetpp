@@ -582,9 +582,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * gate "gatename" or "gatename[]" exists (no matter if the gate vector size
      * is currently zero). When invoked with an index, it returns whether the
      * concrete "gatename[index]" gate exists (gatename being a vector gate).
-     * Gate names with the "$i" or "$o" suffix are also accepted. The presence
-     * of the index parameter decides whether a vector or a scalar gate will be
-     * looked for.
+     * Gate names with the "$i" or "$o" suffix are also accepted.
      */
     virtual bool hasGate(const char *gatename, int index=-1) const;
 
@@ -659,6 +657,17 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * method of any gate object.
      */
     virtual int gateSize(const char *gatename) const;
+
+    /**
+     * For vector gates, it returns the ID of gate 0 in the vector, even if the
+     * gate size is currently zero. All gates in the vector can be accessed
+     * by ID = gateBaseId + index. For scalar gates, it returns the ID of the
+     * gate. If there is no such gate or gate vector, an error gets thrown.
+     *
+     * Note: Gate IDs are guaranteed to be stable, i.e. they do not change if
+     * the gate vector gets resized, or other gates get added/removed.
+     */
+    virtual int gateBaseId(const char *gatename) const;
 
     /**
      * For compound modules, it checks if all gates are connected inside

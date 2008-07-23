@@ -1,0 +1,91 @@
+%description:
+Test that gates in a gate vector can be accessed by id=baseId+index,
+and that ids out of range generate proper error messages.
+
+%global:
+static void printGates(cModule *mod, const char *gatename)
+{
+    int baseId = mod->gate(gatename,0)->getId();
+    int size = mod->gateSize(gatename);
+    for (int i=-3; i<size+3; i++) {
+        ev << i << ": ";
+        try {
+            cGate *g = mod->gate(baseId+i);
+            ev << g->getFullName() << "\n";
+        }
+        catch (std::exception& e) {
+            ev << e.what() << "\n";
+        }
+    }
+    ev << "\n";
+}
+
+%activity:
+addGate("out", cGate::OUTPUT, true);
+setGateSize("out", 5);
+printGates(this, "out");
+
+addGate("in", cGate::INPUT, true);
+setGateSize("in", 1);
+printGates(this, "in");
+
+addGate("g", cGate::INOUT, true);
+setGateSize("g", 8);
+printGates(this, "g$i");
+printGates(this, "g$o");
+
+//uncomment to make the test insensitive to concrete IDs:
+//%subst: /[0-9][0-9][0-9]+/NNN/
+
+%contains: stdout
+-3: Invalid gate Id 1572861
+-2: Invalid gate Id 1572862
+-1: Invalid gate Id 1572863
+0: out[0]
+1: out[1]
+2: out[2]
+3: out[3]
+4: out[4]
+5: Invalid gate Id 1572869: size of `out[]' is only 5, so index 5 (deduced from the Id) is out of bounds
+6: Invalid gate Id 1572870: size of `out[]' is only 5, so index 6 (deduced from the Id) is out of bounds
+7: Invalid gate Id 1572871: size of `out[]' is only 5, so index 7 (deduced from the Id) is out of bounds
+
+-3: Invalid gate Id 2097149
+-2: Invalid gate Id 2097150
+-1: Invalid gate Id 2097151
+0: in[0]
+1: Invalid gate Id 2097153: size of `in[]' is only 1, so index 1 (deduced from the Id) is out of bounds
+2: Invalid gate Id 2097154: size of `in[]' is only 1, so index 2 (deduced from the Id) is out of bounds
+3: Invalid gate Id 2097155: size of `in[]' is only 1, so index 3 (deduced from the Id) is out of bounds
+
+-3: Invalid gate Id 3145725
+-2: Invalid gate Id 3145726
+-1: Invalid gate Id 3145727
+0: g$i[0]
+1: g$i[1]
+2: g$i[2]
+3: g$i[3]
+4: g$i[4]
+5: g$i[5]
+6: g$i[6]
+7: g$i[7]
+8: Invalid gate Id 3145736: size of `g$i[]' is only 8, so index 8 (deduced from the Id) is out of bounds
+9: Invalid gate Id 3145737: size of `g$i[]' is only 8, so index 9 (deduced from the Id) is out of bounds
+10: Invalid gate Id 3145738: size of `g$i[]' is only 8, so index 10 (deduced from the Id) is out of bounds
+
+-3: Invalid gate Id 3670013
+-2: Invalid gate Id 3670014
+-1: Invalid gate Id 3670015
+0: g$o[0]
+1: g$o[1]
+2: g$o[2]
+3: g$o[3]
+4: g$o[4]
+5: g$o[5]
+6: g$o[6]
+7: g$o[7]
+8: Invalid gate Id 3670024: size of `g$o[]' is only 8, so index 8 (deduced from the Id) is out of bounds
+9: Invalid gate Id 3670025: size of `g$o[]' is only 8, so index 9 (deduced from the Id) is out of bounds
+10: Invalid gate Id 3670026: size of `g$o[]' is only 8, so index 10 (deduced from the Id) is out of bounds
+
+

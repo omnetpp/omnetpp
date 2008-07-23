@@ -432,9 +432,14 @@ cGate *cModule::gate(int id)
         bool isOutput = id & (1<<(GATEID_LBITS-1));  // L's MSB
         ENSURE(isOutput ? desc->getType()!=cGate::INPUT : desc->getType()!=cGate::OUTPUT);
         unsigned int index = id & (GATEID_LMASK>>1);
-        if (index >= (unsigned int)desc->gateSize())
-            throw cRuntimeError(this, "Invalid gate Id %d: size of %s[] is only %d, so index %d (from the Id) is out of bounds",
-                                      id, desc->nameFor(isOutput ? cGate::OUTPUT : cGate::INPUT), desc->gateSize(), index);
+        if (index >= (unsigned int)desc->gateSize()) {
+            // try to issue a useful error message if gate was likely produced as baseId+index
+            if (index<100000)
+                throw cRuntimeError(this, "Invalid gate Id %d: size of `%s[]' is only %d, so index %d (deduced from the Id) is out of bounds",
+                                          id, desc->nameFor(isOutput ? cGate::OUTPUT : cGate::INPUT), desc->gateSize(), index);
+            else
+                throw cRuntimeError(this, eGATEID, id); // id probably just plain garbage
+        }
         return isOutput ? desc->outputgatev[index] : desc->inputgatev[index];
     }
 }
@@ -585,6 +590,27 @@ int cModule::gateSize(const char *gatename) const
     return desc->gateSize();
 }
 
+int cModule::gateBaseId(const char *gatename) const
+{
+    char suffix;
+    int descIndex = findGateDesc(gatename, suffix);
+    if (descIndex<0)
+        throw cRuntimeError(this, "gateBaseId(): no such gate or gate vector: `%s'", gatename);
+    const cGate::Desc *desc = descv+descIndex;
+    if (desc->getType()==cGate::INOUT && !suffix)
+        throw cRuntimeError(this, "gateBaseId(): inout gate `%s' cannot be referenced without $i/$o suffix", gatename);
+    bool isInput = (suffix=='i' || desc->getType()==cGate::INPUT);
+
+    // To make sense of the following code, see comment in cgate.cc,
+    // titled "Interpretation of gate Ids".
+    int id;
+    if (!desc->isVector())
+        id = (descIndex<<1) | (isInput?0:1);
+    else
+        id = ((descIndex+1)<<GATEID_LBITS) | ((isInput?0:1)<<(GATEID_LBITS-1));
+    return id;
+}
+
 cGate *cModule::gate(const char *gatename, int index)
 {
     char suffix;
@@ -606,7 +632,7 @@ cGate *cModule::gate(const char *gatename, int index)
         if (index<0)
             throw cRuntimeError(this, "%s when accessing vector gate `%s", (index==-1?"No gate index specified":"Negative gate index specified"), gatename);
         if (index>=desc->size)
-            throw cRuntimeError(this, "Gate index %d out of range when accessing vector gate `%s[]' (size %d)", index, gatename, desc->size);
+            throw cRuntimeError(this, "Gate index %d out of range when accessing vector gate `%s[]' with size %d", index, gatename, desc->size);
         return isInput ? desc->inputgatev[index] : desc->outputgatev[index];
     }
 }

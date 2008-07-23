@@ -1,6 +1,10 @@
 %description:
 Stress test for gate manipulation: create, delete, set size, etc.
-Also tests all gate access functions in cModule (positive test cases only).
+Also tests GateIterator, and all gate access functions in cModule (positive
+test cases only).
+
+Also tests that gate Ids are stable (resize or anything does not change them),
+and unique (Ids of deleted gates do not get reused).
 
 %file: test.ned
 
@@ -31,7 +35,7 @@ class Node : public cSimpleModule
 {
   private:
     int counter;
-    std::set<std::string> createdNames;
+    std::map<std::string,int> gateIds; // name->id map
     std::set<std::string> currentNames;
     std::set<std::string> deletedNames;
     int numGates; // total gate count
@@ -43,6 +47,7 @@ class Node : public cSimpleModule
     void deleteRandomGate();
     void setRandomGateSize();
     void testGateIterator();
+    void checkAllGateIds();
     void createTestGate(const char *gatename, cGate::Type type, bool isVector);
     void checkOneGate(const char *gatename, cGate::Type type, int size=-1, int index=-1);
     void deleteTestGate(const char *gatename);
@@ -61,15 +66,19 @@ void Node::createTestGate(const char *gatename, cGate::Type type, bool isVector)
     if (!isVector)
         numGates += (type==cGate::INOUT) ? 2 : 1;
 
-    createdNames.insert(gatename);
     currentNames.insert(gatename);
 
     if (type==cGate::INOUT) {
         ASSERT(gateType(gatename)==type);
-        checkOneGate((std::string(gatename)+"$i").c_str(), cGate::INPUT, isVector ? 0 : -1);
-        checkOneGate((std::string(gatename)+"$o").c_str(), cGate::OUTPUT, isVector ? 0 : -1);
+        std::string namei = std::string(gatename)+"$i";
+        std::string nameo = std::string(gatename)+"$o";
+        gateIds[namei] = gateBaseId(namei.c_str());
+        gateIds[nameo] = gateBaseId(nameo.c_str());
+        checkOneGate(namei.c_str(), cGate::INPUT, isVector ? 0 : -1);
+        checkOneGate(nameo.c_str(), cGate::OUTPUT, isVector ? 0 : -1);
     }
     else {
+        gateIds[gatename] = gateBaseId(gatename);
         checkOneGate(gatename, type, isVector ? 0 : -1);
     }
 }
@@ -196,6 +205,38 @@ void Node::testGateIterator()
     ASSERT(n == numGates);
 }
 
+void Node::checkAllGateIds()
+{
+    //
+    // check gate IDs:
+    //  1. when a gate still exists, it must be accessible by the same ID (IDs must be stable)
+    //  2. when a gate was deleted, no gate should be accesible at its ID (ie IDs must not be reused)
+    //
+
+    //ev <<"checking " << gateIds.size() << " gates\n";
+    std::map<std::string,int>::iterator it;
+    for (it=gateIds.begin(); it!=gateIds.end(); it++)
+    {
+        const char *gatename = it->first.c_str();
+        int id = it->second;
+
+        bool exists = hasGate(gatename);
+
+        cGate *g = NULL;
+        try { g = gate(id); } catch(std::exception& e) { }
+
+        if (g && id!=g->getId())
+            throw cRuntimeError("gate(id) and g->getId() inconsistent!");
+        if (g && !g->isName(gatename))
+            throw cRuntimeError("found another gate under the same ID -- IDs get reused???");
+
+        if (exists && gateSize(gatename)!=0 && g==NULL)
+            throw cRuntimeError("gate not found by old ID -- IDs change???");
+        if (!exists && g!=NULL)
+            throw cRuntimeError("found a gate with the ID of a deleted gate -- IDs get reused???");
+    }
+}
+
 std::string Node::chooseRandom(const std::set<std::string>& names)
 {
     int k = intrand(names.size());
@@ -217,6 +258,7 @@ void Node::activity()
             case 2: setRandomGateSize(); break;
         }
         testGateIterator();
+        checkAllGateIds();
     }
     ev << "done.\n";
 }
@@ -227,7 +269,7 @@ void Node::activity()
 %inifile: test.ini
 [General]
 network = Test
-debug-on-errors = true
+#debug-on-errors = true
 cmdenv-express-mode = false
 
 %contains: stdout
