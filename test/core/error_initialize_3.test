@@ -16,4 +16,4 @@ class Foo : public cSimpleModule
 
 Define_Module(Foo);
 
-%exitcode: 3
+%exitcode: 3 143

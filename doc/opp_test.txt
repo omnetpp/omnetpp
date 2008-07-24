@@ -121,28 +121,38 @@ boilerplate C++ and NED code manually. There are three other ways to proceed:
   all NED and C++ code (and also additional data files if you need them).
 
 Note that since all sources are compiled into a single test executable,
-actions have to be taken to prevent accidental name clashes among test
-cases. One has currently two choices to achieve this (yes, namespaces will be
-used for this purpose soon):
- - the string @TESTNAME@ will be replaced with the test case name everywhere
-   in the sources, so if you use names like @TESTNAME@_Module, they will be
-   unique;
+actions have to be taken to prevent accidental name clashes between C++
+symbols in different test cases. As a rule of thumb, C++ symbols should
+be put into the namespace named after the test case. This is done 
+automatically for the %activity, %module, %global blocks, but for %file 
+blocks, the test author should manually insert the namespace:
+   namespace @TESTNAME@ {
+   ...
+   };
+The string @TESTNAME@ will be replaced with the test case name. Since it
+gets substituted everywhere (C++, NED, msg and ini files), you can also 
+write things like @TESTNAME@_function(), or printf("this is @TESTNAME@").
 
-What needs to be prefixed?
- - module name, channel names, network names (but not submodule names)
- - C++ class names (but not their members)
- - global variables, if there are any (one should avoid them if possible)
- - module and file names as arguments to the %module, %file, etc. entries (!)
+Note: In OMNeT++ 3.x versions of opp_test, the syntaxes {} and {foo} had
+special meaning: they were abbreviations of @TESTNAME@ and @TESTNAME@_foo,
+respectively. This syntax is not supported any more, and occurrences in old
+test cases should be replaced with explicit @TESTNAME@ macros.
 
 A test case is unresolved if the test program cannot be executed at all, the
 output cannot be read, or if the test case declares so. The latter is done
 by printing #UNRESOLVED or #UNRESOLVED:some-explanation on the standard
 output, at the beginning of the line.
 
-Note: In OMNeT++ 3.x versions of opp_test, the syntaxes {} and {foo} had
-special meaning: they were abbreviations of @TESTNAME@ and @TESTNAME@_foo,
-respectively. This syntax is not supported any more, and occurrences in old
-test cases should be replaced with explicit @TESTNAME@ macros.
+It is possible to apply text substitutions to the output before it is matched
+against expected output. This is done with %subst directive; there can be
+more than one %subst in a test file. It takes a regex to search for, 
+replacement text, and flags, in the /search/replace/flags syntax. Flags
+can be empty or a combination of the letters i, m, and s, for case-insensitive,
+multi-line or single-string match (see perl regex documentation.) %subst
+was primarily invented to deal with differences in printf output across
+platforms and compilers: different compilers print infinite and not-a-number
+in different ways: 1.#INF, inf, Inf, -1.#IND, nan, NaN etc. With %subst
+they can be brought to a common form.
 
 The full list of possible % entries in a test file:
 
@@ -174,8 +184,11 @@ Test case components:
    %inifile: [<inifile-name>]
    <inifile-contents>
 
+Preprocessing the output before matching:
+   %subst: /searchregex/replacestring/flags
+
 Conditions for PASS:
-   %exitcode: <numeric-exit-code>
+   %exitcode: <one-or-more-numeric-exit-codes>
 
    %ignore-exitcode: 1
 

@@ -499,7 +499,7 @@ sub testcase_run()
         } else {
             if ($values{'ignore-exitcode(1)'}) {
                 print "  ignoring exitcode\n" if ($debug);
-            } elsif ($exitcode == $values{'exitcode(1)'}) {
+            } elsif ($values{'exitcode(1)'} =~ /\b$exitcode\b/) {
                 print "  exitcode ok ($exitcode)\n" if ($debug);
             } elsif ($values{'exitcode(1)'} ne '') {
                 fail($testfilename, "test program returned exit code $exitcode instead of $values{'exitcode(1)'}");
@@ -578,7 +578,7 @@ sub testcase_run()
                     }
 
                     # do it
-                    $txt =~ s/(?$flags)$searchstring/$replacement/g;
+                    $txt =~ s/(?$flags)$searchstring/$replacement/g;  #note: g cannot be written as (?g)
                 }
             }
 
