@@ -78,6 +78,12 @@
 	- dynamic gate creating changed:
 	    - removed cGate::setOwnerModule() and setIndex()
 	    - XXX describe what's instead
+	- added setDeliverOnReceptionStart() flag, which may be invoked only on
+	  simple module input gates
+	- transmissionFinishes() renamed to getTransmissionFinishTime()
+	- gates that have the @loose or @directIn property set in the NED file
+	  may remain unconnected (ie no error will be raised, even if 
+	  "allowunconnected" is not specified in the connections section)
 
 	Channels:
 	- channels became first-class citizens: they have a common base class
@@ -85,7 +91,7 @@
 	  finish() protocol, and so on.
 	- cBasicChannel renamed to cDatarateChannel
 	- removed delay(), setDelay(), error(), setError(), dataRate(),
-	  setDataRate() methods from cGate; use methods from the gate's channel 
+	  setDataRate() methods from cGate: please use methods from the gate's channel 
 	  instead: check_and_cast<cDatarateChannel *>(gate->channel())->setDelay(0.1);
 	  or use generic component parameter access instead: gate->channel()->par("delay")=0.1.
         - "error" parameter renamed to "ber" (bit error rate or BER, cDatarateChannel methods 
@@ -104,6 +110,11 @@
 	         a.out --> { delay=default(0); } --> b.in;
 	   (2) add <fromgate-fullpath>.channel.<paramname> = <value> into the ini file, e.g.:
 	         **.a.out.channel.delay = 10ms
+	- now a connection path may only contain one cDatarateChannel (more precisely,
+	  only one channel whose supportsDatarate() method returns true)
+	- likewise, a sendDirect() call with nonzero duration may only be sent onto
+	  a gate whose connection path does NOT contain any cDatarateChannel (or
+	  channel whose supportsDatarate() method returns true)
 
 	Dynamic module/channel creation:
 	- finalizeParameters() must be called (for channels, this reads input params from omnetpp.ini;
@@ -320,6 +331,9 @@
 	  addBitLength()
 	- removed two static methods of limited usefulness: cmpbydelivtime(), 
 	  cmpbypriority().
+	- added getDuration() and isReceptionStart() methods, which are related
+	  to the last send over a channel with datarate, and to cGate's 
+	  deliverOnReceptionStart flag.
 	
 	Statistics classes:
 	- cStatistic: renamed samples() to count(). This affects cStdDev, 

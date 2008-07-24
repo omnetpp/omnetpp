@@ -25,6 +25,5 @@ network Aloha
             txRate = txRate;
             slotTime = slotTime;
         }
-    connections allowunconnected:
 }
 

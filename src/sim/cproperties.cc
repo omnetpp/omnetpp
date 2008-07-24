@@ -91,6 +91,15 @@ cProperty *cProperties::get(const char *name, const char *index) const
     return NULL;
 }
 
+bool cProperties::getAsBool(const char *name, const char *index) const
+{
+    cProperty *prop = get(name, index);
+    if (!prop)
+        return false;
+    const char *value = prop->getValue(cProperty::DEFAULTKEY, 0);
+    return opp_strcmp(value, "false")==0 ? false : true;
+}
+
 void cProperties::add(cProperty *p)
 {
     if (islocked)

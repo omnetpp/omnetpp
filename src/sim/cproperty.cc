@@ -202,7 +202,7 @@ const std::vector<const char *>& cProperty::getKeys() const
     return keyv;
 }
 
-bool cProperty::hasKey(const char *key) const
+bool cProperty::containsKey(const char *key) const
 {
     return findKey(key)!=-1;
 }
@@ -254,27 +254,32 @@ void cProperty::setNumValues(const char *key, int size)
         v[i] = stringPool.get("");
 }
 
-const char *cProperty::getValue(const char *key, int k) const
+const char *cProperty::getValue(const char *key, int index) const
 {
-    CharPtrVector& v = getValuesVector(key);
-    if (k<0 || k>=(int)v.size())
-        return "";
-    return v[k];
+    if (!key)
+        key = "";
+    int k = findKey(key);
+    if (k==-1)
+        return NULL;
+    const CharPtrVector& v = valuesv[k];
+    if (index<0 || index>=(int)v.size())
+        return NULL;
+    return v[index];
 }
 
-void cProperty::setValue(const char *key, int k, const char *value)
+void cProperty::setValue(const char *key, int index, const char *value)
 {
     if (isLocked())
         throw cRuntimeError(this, eLOCKED);
     if (!value)
         value = "";
     CharPtrVector& v = getValuesVector(key);
-    if (k<0)
-        throw cRuntimeError(this, "negative property value index %d for key `%s'", k, key);
-    if (k>=(int)v.size())
-        setNumValues(key, k+1);
-    stringPool.release(v[k]);
-    v[k] = stringPool.get(value);
+    if (index<0)
+        throw cRuntimeError(this, "negative property value index %d for key `%s'", index, key);
+    if (index>=(int)v.size())
+        setNumValues(key, index+1);
+    stringPool.release(v[index]);
+    v[index] = stringPool.get(value);
 }
 
 void cProperty::erase(const char *key)

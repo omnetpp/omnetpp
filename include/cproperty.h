@@ -169,9 +169,9 @@ class SIM_API cProperty : public cNamedObject
 
     /**
      * Returns true if the property contains the given key. Specify ""
-     * for the default key.
+     * or DEFAULTKEY for the default key.
      */
-    virtual bool hasKey(const char *key) const;
+    virtual bool containsKey(const char *key) const;
 
     /**
      * Adds the given key to the property. Has no effect if the key already
@@ -181,7 +181,7 @@ class SIM_API cProperty : public cNamedObject
 
     /**
      * Returns the number of values for the given key in the property.
-     * Specify "" for the default key.
+     * Specify "" or DEFAULTKEY for the default key.
      *
      * Throws an error of the given key does not exist.
      */
@@ -189,29 +189,31 @@ class SIM_API cProperty : public cNamedObject
 
     /**
      * Expands or trims the list of values for the given key in the property,
-     * by discarding elements or adding "" elements. Specify "" for the default
-     * key. Note that simply setting an element above getNumValues(key) will also
-     * expand the list.
+     * by discarding elements or adding "" elements. Specify "" or DEFAULTKEY
+     * for the default key. Note that simply setting an element above
+     * getNumValues(key) will also expand the list.
      *
      * Throws an error of the given key does not exist.
      */
     virtual void setNumValues(const char *key, int size);
 
     /**
-     * Returns the kth value for the given key in the property.
-     * Specify "" for the default key. For k>getNumValues(key), it returns "".  XXX why not NULL?
+     * Returns the indexth value for the given key in the property.
+     * Specify "" or DEFAULTKEY for the default key. If the key
+     * does not exist or the index is out of bounds, NULL is returned.
      */
-    //XXX should return NULL/"" if key does not exist? currently it's an error
-    virtual const char *getValue(const char *key, int k=0) const;
+    virtual const char *getValue(const char *key, int index=0) const;
 
     /**
-     * Replaces a value for the given key in the property. Specify "" for
-     * the default key. cProperty will create its own copy of the string passed.
-     * k may be greater than getNumValues(k), which will cause the values list,
-     * to expand, the new elements filled with "".
+     * Replaces a value for the given key in the property. Specify "" or
+     * DEFAULTKEY for the default key. cProperty will create its own copy
+     * of the string passed. index may be greater than getNumValues(key);
+     * that will cause the values list to expand, the new elements filled with "".
+     *
+     * Throws an error of the given key does not exist, or the index is
+     * negative.
      */
-    //XXX create key if does not exist?
-    virtual void setValue(const char *key, int k, const char *value);
+    virtual void setValue(const char *key, int index, const char *value);
 
     /**
      * Erases the given key and all its values.

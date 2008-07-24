@@ -267,7 +267,7 @@ void cNEDDeclaration::updateProperty(PropertyElement *propNode, cProperty *prop)
     {
         PropertyKeyElement *propKeyNode = (PropertyKeyElement *)child;
         const char *key = propKeyNode->getName();
-        if (!prop->hasKey(key))
+        if (!prop->containsKey(key))
             prop->addKey(key);
 
         // collect values
@@ -300,7 +300,7 @@ void cNEDDeclaration::updateDisplayProperty(PropertyElement *propNode, cProperty
     const char *newdisplaystring = literalNode->getValue();
 
     // if old display string is empty, just set it
-    if (!prop->hasKey(cProperty::DEFAULTKEY))
+    if (!prop->containsKey(cProperty::DEFAULTKEY))
         prop->addKey(cProperty::DEFAULTKEY);
     if (prop->getNumValues(cProperty::DEFAULTKEY)==0)
     {

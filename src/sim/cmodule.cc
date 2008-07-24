@@ -36,9 +36,6 @@
 
 USING_NAMESPACE
 
-//XXX rewrite to use Desc& not Desc* ?
-//XXX clean up gate(int id)
-//XXX revise "FIXME" error messages
 
 //TODO consider:
 //  call cGate::clearFullnamePool() between events, and add to doc:
@@ -887,12 +884,15 @@ bool cModule::checkInternalConnections() const
 {
     // Note: This routine only checks if all gates are connected or not.
     // It does NOT check where and how they are connected!
+    // To allow a gate go unconnected, annotate it with @loose or @directIn.
 
     // check this compound module if its inside is connected ok
     for (GateIterator i(this); !i.end(); i++)
     {
        cGate *g = i();
-       if (g->size()!=0 && !g->isConnectedInside())
+       if (g->size()!=0 && !g->isConnectedInside() &&
+           g->getProperties()->getAsBool("loose")==false &&
+           g->getProperties()->getAsBool("directIn")==false)
             throw cRuntimeError(this,"Gate `%s' is not connected to submodule (or output gate of same module)", g->getFullPath().c_str());
     }
 
@@ -903,7 +903,9 @@ bool cModule::checkInternalConnections() const
         for (GateIterator i(m); !i.end(); i++)
         {
             cGate *g = i();
-            if (g->size()!=0 && !g->isConnectedOutside())
+            if (g->size()!=0 && !g->isConnectedOutside() &&
+                g->getProperties()->getAsBool("loose")==false &&
+                g->getProperties()->getAsBool("directIn")==false)
                 throw cRuntimeError(this,"Gate `%s' is not connected to sibling or parent module", g->getFullPath().c_str());
         }
     }

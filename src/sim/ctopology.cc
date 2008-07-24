@@ -135,7 +135,7 @@ static bool selectByProperty(cModule *mod, void *data)
     cProperty *prop = mod->getProperties()->get(d->name);
     if (!prop)
         return false;
-    const char *value = prop->hasKey(cProperty::DEFAULTKEY) ? prop->getValue(cProperty::DEFAULTKEY, 0) : NULL;
+    const char *value = prop->getValue(cProperty::DEFAULTKEY, 0);
     if (d->value)
         return opp_strcmp(value, d->value)==0;
     else

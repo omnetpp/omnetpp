@@ -15,6 +15,6 @@ simple Server
     parameters:
         @display("i=device/antennatower_l");
     gates:
-        input in;
+        input in @directIn;
 }
 

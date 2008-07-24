@@ -128,6 +128,19 @@ class SIM_API cProperties : public cObject
     virtual cProperty *get(const char *name, const char *index=NULL) const;
 
     /**
+     * Returns the property as a boolean. If the property is missing,
+     * this method returns false; otherwise, only the first value in the
+     * default key ("") is examined. If it is "false", this method returns
+     * false; in all other cases (missing, empty, some other value) it
+     * returns true.
+     *
+     * Examples:  @foo: true, @foo(): true, @foo(false): false,
+     * @foo(true): true, @foo(any): true, @foo(a=x,b=y,c=z): true;
+     * @foo(somekey=false): true (!).
+     */
+    virtual bool getAsBool(const char *name, const char *index=NULL) const;
+
+    /**
      * Returns unique indices for a property. Name and index correspond to the
      * NED syntax <tt>\@propertyname[index](keys-and-values)</tt>.
      * The strings in the returned array do not need to be deallocated and
