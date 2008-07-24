@@ -855,9 +855,17 @@ cModule *cNEDNetworkBuilder::resolveModuleForConnection(cModule *parentmodp, con
 std::string cNEDNetworkBuilder::getChannelTypeName(cModule *parentmodp, cGate *srcgate, ChannelSpecElement *channelspec, const char *channelname)
 {
     std::string channeltypename;
-    if (opp_isempty(channelspec->getLikeType())) {
-        //TODO create cIdealChannel if there are no parameters?
-        channeltypename = opp_isempty(channelspec->getType()) ? "ned.DatarateChannel" : channelspec->getType();
+    if (opp_isempty(channelspec->getLikeType()))
+    {
+        if (!opp_isempty(channelspec->getType())) {
+            channeltypename = channelspec->getType();
+        }
+        else {
+            ParametersElement *channelparams = channelspec->getFirstParametersChild();
+            bool hasparams = channelparams && channelparams->getFirstParamChild();
+            // create cIdealChannel if there are no parameters
+            channeltypename = hasparams ? "ned.DatarateChannel" : "ned.IdealChannel";
+        }
     }
     else
     {
