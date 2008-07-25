@@ -3,17 +3,6 @@
 <plugin>
 
    <extension
-         name="Image Exporter Extension"
-         point="de.unikassel.imageexport.imageExporters">
-      <imageExporter
-            class="org.omnetpp.imageexport.PNGImageExporter"
-            description="PNG - Portable Network Graphics"
-            extension="png"
-            id="org.omnetpp.imageexport.pngImageExporter"
-            name="PNG Image Exporter">
-      </imageExporter>
-   </extension>
-   <extension
          point="de.unikassel.imageexport.figureProviders">
       <figureProvider
             class="org.omnetpp.imageexport.NedFigureProvider"

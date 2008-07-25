@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Imageexport Plug-in
+Bundle-Name: OMNeT++ Image Export Plug-in
 Bundle-SymbolicName: org.omnetpp.imageexport;singleton:=true
 Bundle-Version: 4.0.0.qualifier
 Bundle-Vendor: OpenSim Ltd.

@@ -50,7 +50,6 @@ import org.omnetpp.common.util.ProcessUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ide.preferences.OmnetppPreferencePage;
 import org.omnetpp.imageexport.NedFigureProvider;
-import org.omnetpp.imageexport.PNGImageExporter;
 import org.omnetpp.msg.editor.highlight.MsgCodeColorizerScanner;
 import org.omnetpp.msg.editor.highlight.MsgDocColorizerScanner;
 import org.omnetpp.msg.editor.highlight.MsgPrivateDocColorizerScanner;
@@ -92,6 +91,7 @@ import org.w3c.dom.NodeList;
 
 import de.unikassel.imageexport.exporters.ImageExporter;
 import de.unikassel.imageexport.exporters.ImageExporterDescriptor;
+import de.unikassel.imageexport.exporters.PNGImageExporter;
 import de.unikassel.imageexport.wizards.ExportImagesOfDiagramFilesOperation;
 
 /**

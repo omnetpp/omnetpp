@@ -1,4 +1,4 @@
-<project name="org.omnetpp.product" default="build-omnetpp">
+<project name="org.omnetpp.product" default="omnetpp">
         <property environment="env" /> 
 	<property file="build.properties" />
 	
@@ -75,6 +75,9 @@
 		<include name="**/*.properties"/>
 		<include name="**/*.product"/>
 	    </replace>	
+	    <replace dir="${buildDirectory}" token="IS_COMMERCIAL = false;" value="IS_COMMERCIAL = true;">
+		<include name="**/*.java"/>
+	    </replace>	
 	    <copy file="${buildDirectory}/plugins/org.omnetpp.product/omnest-ide.product" tofile="${buildDirectory}/plugins/org.omnetpp.product/ide.product"/>
 	    <move file="${buildDirectory}/plugins/org.omnetpp.main/splash-omnest.bmp" tofile="${buildDirectory}/plugins/org.omnetpp.main/splash.bmp"/>
     	</target>
@@ -84,14 +87,14 @@
 	    <copy file="${buildDirectory}/plugins/org.omnetpp.product/omnetpp-ide.product" tofile="${buildDirectory}/plugins/org.omnetpp.product/ide.product"/>
     	</target>
 	
-	<target name="build-omnetpp" depends="clean, init-omnetpp, pde-build" >
+	<target name="omnetpp" depends="clean, init-omnetpp, pde-build" >
 	    <!-- special handling of the 64 bit linux executable -->
 	    <copy file="${eclipseLocation}/eclipse64" tofile="${buildDirectory}/tmp/${archivePrefix}/omnetpp64"/>
 	    <chmod file="${buildDirectory}/tmp/${archivePrefix}/omnetpp64" perm="755"/>
 	    <delete file="${buildDirectory}/tmp/${archivePrefix}/libcairo-swt.so" />
 	</target>
 	
-	<target name="build-omnest" depends="clean, init-omnest, pde-build" >
+	<target name="omnest" depends="clean, init-omnest, pde-build" >
 	    <!-- special handling of the 64 bit linux executable -->
 	    <copy file="${eclipseLocation}/eclipse64" tofile="${buildDirectory}/tmp/${archivePrefix}/omnest64"/>
 	    <chmod file="${buildDirectory}/tmp/${archivePrefix}/omnest64" perm="755"/>
