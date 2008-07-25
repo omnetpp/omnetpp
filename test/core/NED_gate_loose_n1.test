@@ -1,0 +1,26 @@
+%description:
+Test that a compound module gate needs to be connected to a submodule,
+EVEN if @loose is specified! (@loose only affects outside connections)
+
+%file: test.ned
+
+module Node
+{
+    gates:
+        output out @loose;
+}
+
+network Test
+{
+    submodules:
+        node: Node;
+}
+
+%file: test.cc
+
+%exitcode: 1
+
+%contains: stdout
+Gate `Test.node.out' is not connected to a submodule
+
+

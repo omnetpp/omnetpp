@@ -14,7 +14,7 @@ module Node
         output out11 @directIn;
         output out12 @directIn();
         output out13 @directIn(true);
-    //connections allowunconnected:
+    connections allowunconnected:
 }
 
 network Test
