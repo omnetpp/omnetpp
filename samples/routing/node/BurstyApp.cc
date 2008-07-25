@@ -127,7 +127,7 @@ void BurstyApp::processTimer(cMessage *msg)
             scheduleAt(simTime() + d, startStopBurst);
 
             // display message, restore normal icon color
-            ev << "sleeping for " << d << "s\n";
+            EV << "sleeping for " << d << "s\n";
             bubble("burst ended, sleeping");
             getDisplayString().setTagArg("i",1,"");
             break;
@@ -138,7 +138,7 @@ void BurstyApp::processTimer(cMessage *msg)
             scheduleAt(simTime() + d, startStopBurst);
 
             // display message, turn icon yellow
-            ev << "starting burst of duration " << d << "s\n";
+            EV << "starting burst of duration " << d << "s\n";
             bubble("burst started");
             getDisplayString().setTagArg("i",1,"yellow");
 
@@ -151,7 +151,7 @@ void BurstyApp::processTimer(cMessage *msg)
         case FSM_Enter(ACTIVE):
             // schedule next sending
             d = sendIATime->doubleValue();
-            ev << "next sending in " << d << "s\n";
+            EV << "next sending in " << d << "s\n";
             scheduleAt(simTime() + d, sendMessage);
             break;
 
@@ -185,7 +185,7 @@ void BurstyApp::generatePacket()
 
     char pkname[40];
     sprintf(pkname,"pk-%d-to-%d-#%d", myAddress, destAddress, pkCounter++);
-    ev << "generating packet " << pkname << endl;
+    EV << "generating packet " << pkname << endl;
 
     Packet *pk = new Packet(pkname);
     pk->setByteLength(packetLengthBytes->longValue());
@@ -198,7 +198,7 @@ void BurstyApp::processPacket(cMessage *msg)
 {
     // update statistics and delete message
     simtime_t eed = simTime()-msg->getCreationTime();
-    ev << "Received " << msg->getName() << ", end-to-end delay: " << eed << "sec" << endl;
+    EV << "Received " << msg->getName() << ", end-to-end delay: " << eed << "sec" << endl;
     delete msg;
 
     numReceived++;

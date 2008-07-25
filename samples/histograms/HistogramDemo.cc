@@ -36,17 +36,17 @@ void HistogramDemo::activity()
     int i=0;
     WATCH(i);
 
-    ev << "Creating 5 distribution approximation objects, of types:\n";
-    ev << "cDoubleHistogram, cLongHistogram, cVarHistogram, cPSquare, cKSplit.\n";
-    ev << "Parameters:\n";
-    ev << " number of cells: " << numCells << endl;
-    ev << (useFixedRange ? " range: [0,100)" : "automatic range estimation") << endl;
+    EV << "Creating 5 distribution approximation objects, of types:\n";
+    EV << "cDoubleHistogram, cLongHistogram, cVarHistogram, cPSquare, cKSplit.\n";
+    EV << "Parameters:\n";
+    EV << " number of cells: " << numCells << endl;
+    EV << (useFixedRange ? " range: [0,100)" : "automatic range estimation") << endl;
     if (!useFixedRange)
     {
-        ev << " observations used for range estimation: " << numFirstVals << endl;
-        ev << " range will be extended by " << rangeExtFactor << " times" << endl;
+        EV << " observations used for range estimation: " << numFirstVals << endl;
+        EV << " range will be extended by " << rangeExtFactor << " times" << endl;
     }
-    ev << endl;
+    EV << endl;
 
     cDoubleHistogram dblhist("DoubleHistogram", numCells);
     cLongHistogram longhist("LongHistogram", numCells);
@@ -81,21 +81,21 @@ void HistogramDemo::activity()
         fclose(f);
     }
 
-    ev << "If Tkenv is used (it is the default), you may click the Contents tab\n"
+    EV << "If Tkenv is used (it is the default), you may click the Contents tab\n"
           "of the module inspector window, and double-click the items to open\n"
           "graphical inspector for the distributions.\n\n";
-    ev << "An alternative is to load 'inspect.lst' by selecting Options|Load inspector list\n"
+    EV << "An alternative is to load 'inspect.lst' by selecting Options|Load inspector list\n"
           "from the menu; this will also open the inspector windows.\n";
 
-    ev << endl;
+    EV << endl;
     wait(0);
 
-    ev << "Filling objects with " << numObs << " random observations...\n";
-    ev << "(exponential(30) with P=0.5 and normal(80, 10) with P=0.5)\n";
+    EV << "Filling objects with " << numObs << " random observations...\n";
+    EV << "(exponential(30) with P=0.5 and normal(80, 10) with P=0.5)\n";
     for (i=0; i<numObs; i++)
     {
         double d = (intrand(2)==0) ? exponential(30) : normal(80, 10);
-        ev << " adding " << d << endl;
+        EV << " adding " << d << endl;
 
         longhist.collect( d );
         dblhist.collect( d );
@@ -106,21 +106,21 @@ void HistogramDemo::activity()
         wait(1);
     }
 
-    ev << endl;
-    ev << "Cells in ksplit:\n";
+    EV << endl;
+    EV << "Cells in ksplit:\n";
     for (i=0; i<ksplit.getNumCells(); i++)
     {
-        ev << " cell " << i << ":";
-        ev << " [" << ksplit.getBasepoint(i) << "," << ksplit.getBasepoint(i+1) << "]";
-        ev << "  n=" << ksplit.getCellValue(i);
-        ev << "  PDF=" << ksplit.getCellPDF(i) << endl;
+        EV << " cell " << i << ":";
+        EV << " [" << ksplit.getBasepoint(i) << "," << ksplit.getBasepoint(i+1) << "]";
+        EV << "  n=" << ksplit.getCellValue(i);
+        EV << "  PDF=" << ksplit.getCellPDF(i) << endl;
     }
 
-    ev << endl;
-    ev << "Writing snapshot file...\n";
+    EV << endl;
+    EV << "Writing snapshot file...\n";
     snapshot(this);
 
-    ev << "Saving all four objects to `hist.dat'...\n";
+    EV << "Saving all four objects to `hist.dat'...\n";
     f = fopen("hist.dat","w");
     longhist.saveToFile(f);
     dblhist.saveToFile(f);

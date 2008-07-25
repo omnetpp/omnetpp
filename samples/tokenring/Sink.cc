@@ -32,15 +32,13 @@ class Sink : public cSimpleModule
     cKSplit endToEndDelayKS;
     cPSquare endToEndDelayPS;
 
-    bool debug;
-
   protected:
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
     virtual void finish();
 };
 
-Define_Module( Sink );
+Define_Module(Sink);
 
 
 void Sink::initialize()
@@ -50,20 +48,14 @@ void Sink::initialize()
     endToEndDelayKS.setName("End-to-End Delay histogram (K-split)");
     endToEndDelayKS.setRangeAutoUpper(0.0, 100, 2.0);
     endToEndDelayPS.setName("End-to-End Delay histogram (P2)");
-
-    debug=true;
-    WATCH(debug);
 }
 
 void Sink::handleMessage(cMessage *msg)
 {
     simtime_t eed = simTime() - msg->getCreationTime();
-    if (debug)
-    {
-        ev << "Received app. data: \"" << msg->getName() << "\", "
-              "length=" << msg->getBitLength()/8 << "bytes, " <<
-              "end-to-end delay=" << eed << endl;
-    }
+    EV << "Received app. data: \"" << msg->getName() << "\", "
+          "length=" << msg->getByteLength() << "bytes, " <<
+          "end-to-end delay=" << eed << endl;
 
     // record statistics to output vector file and histograms
     endToEndDelay.record(eed);

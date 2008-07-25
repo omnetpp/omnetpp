@@ -31,7 +31,7 @@ class Generator : public cSimpleModule
     virtual void activity();
 };
 
-Define_Module( Generator );
+Define_Module(Generator);
 
 
 void Generator::activity()
@@ -41,11 +41,6 @@ void Generator::activity()
     cPar& interArrivalTime = par("interArrivalTime"); // take by ref since it can be random
     cPar& messageLength = par("messageLength"); // take by ref since it can be random
     int myAddress = par("address");
-
-    bool debug=true;
-    WATCH(debug);
-
-    char msgname[30];
 
     for (int i=0; i<numMessages; i++)
     {
@@ -57,18 +52,16 @@ void Generator::activity()
         if (dest>=myAddress) dest++;
 
         // create message
+        char msgname[30];
         sprintf(msgname, "app%d-data%d", myAddress, i);
         TRApplicationData *msg = new TRApplicationData(msgname);
         msg->setDestination(dest);
-        msg->setBitLength(8*length); // length is measured in bits
+        msg->setByteLength(length);
         msg->setData("here's some application data...");
 
         // send message on gate "out", which is connected to the Token Ring MAC
-        if (debug)
-        {
-            ev << "Generated application data to send: \"" << msgname << "\", "
-                  "length=" << length << " bytes, dest=" << dest << endl;
-        }
+        EV << "Generated application data to send: \"" << msgname << "\", "
+              "length=" << length << " bytes, dest=" << dest << endl;
         send(msg, "out");
 
         // wait between messages. Note that interArrivalTime is a reference to the module

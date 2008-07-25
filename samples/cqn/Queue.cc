@@ -125,13 +125,13 @@ void Queue::initialize()
 
 simtime_t Queue::startService(cMessage *msg)
 {
-    ev << "Starting service of " << msg->getName() << endl;
+    EV << "Starting service of " << msg->getName() << endl;
     return par("serviceTime").doubleValue();
 }
 
 void Queue::endService(cMessage *msg)
 {
-    ev << "Completed service of " << msg->getName() << endl;
+    EV << "Completed service of " << msg->getName() << endl;
     send( msg, "out" );
 }
 

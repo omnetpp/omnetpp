@@ -52,12 +52,12 @@ void cMySQLOutputVectorManager::openDB()
 {
     // connect
     const char *prefix = ev.getConfig()->getAsString(CFGID_MYSQLOUTVECTORMGR_CONNECTPREFIX);
-    ev << getClassName() << " connecting to MySQL database";
-    if (prefix && prefix[0]) ev << " using " << prefix << "-* config entries";
-    ev << "...";
+    EV << getClassName() << " connecting to MySQL database";
+    if (prefix && prefix[0]) EV << " using " << prefix << "-* config entries";
+    EV << "...";
     mysql = mysql_init(NULL);
     opp_mysql_connectToDB(mysql, ev.getConfig(), prefix);
-    ev << " OK\n";
+    EV << " OK\n";
 
     commitFreq = ev.getConfig()->getAsInt(CFGID_MYSQLOUTVECTORMGR_COMMIT_FREQ);
     insertCount = 0;

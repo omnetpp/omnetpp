@@ -94,7 +94,7 @@ void Queue::handleMessage(cMessage *msg)
             // check for container capacity
             if (capacity >=0 && queue.length() >= capacity)
             {
-                ev << "Capacity full! Job dropped.\n";
+                EV << "Capacity full! Job dropped.\n";
                 if (ev.isGUI()) bubble("Dropped!");
                 droppedStats.record(++droppedJobs);
                 delete job;
@@ -156,14 +156,14 @@ simtime_t Queue::startService(Job *job)
     simtime_t d = simTime() - job->getTimestamp();
     job->setTotalQueueingTime(job->getTotalQueueingTime() + d);
     queueingTimeStats.record(d);
-    ev << "Starting service of " << job->getName() << endl;
+    EV << "Starting service of " << job->getName() << endl;
     job->setTimestamp();
     return par("serviceTime").doubleValue();
 }
 
 void Queue::endService(Job *job)
 {
-    ev << "Finishing service of " << job->getName() << endl;
+    EV << "Finishing service of " << job->getName() << endl;
     simtime_t d = simTime() - job->getTimestamp();
     job->setTotalServiceTime(job->getTotalServiceTime() + d);
     send(job, "out");

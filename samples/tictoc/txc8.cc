@@ -58,7 +58,7 @@ void Tic8::initialize()
     timeoutEvent = new cMessage("timeoutEvent");
 
     // Generate and send initial message.
-    ev << "Sending initial message\n";
+    EV << "Sending initial message\n";
     message = generateNewMessage();
     sendCopyOf(message);
     scheduleAt(simTime()+timeout, timeoutEvent);
@@ -70,18 +70,18 @@ void Tic8::handleMessage(cMessage *msg)
     {
         // If we receive the timeout event, that means the packet hasn't
         // arrived in time and we have to re-send it.
-        ev << "Timeout expired, resending message and restarting timer\n";
+        EV << "Timeout expired, resending message and restarting timer\n";
         sendCopyOf(message);
         scheduleAt(simTime()+timeout, timeoutEvent);
     }
     else // message arrived
     {
         // Acknowledgement received!
-        ev << "Received: " << msg->getName() << "\n";
+        EV << "Received: " << msg->getName() << "\n";
         delete msg;
 
         // Also delete the stored message and cancel the timeout event.
-        ev << "Timer cancelled.\n";
+        EV << "Timer cancelled.\n";
         cancelEvent(timeoutEvent);
         delete message;
 
@@ -124,13 +124,13 @@ void Toc8::handleMessage(cMessage *msg)
 {
     if (uniform(0,1) < 0.1)
     {
-        ev << "\"Losing\" message " << msg << endl;
+        EV << "\"Losing\" message " << msg << endl;
         bubble("message lost");
         delete msg;
     }
     else
     {
-        ev << msg << " received, sending back an acknowledgement.\n";
+        EV << msg << " received, sending back an acknowledgement.\n";
         delete msg;
         send(new cMessage("ack"), "out");
     }

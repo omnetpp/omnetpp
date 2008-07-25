@@ -46,12 +46,12 @@ void cMySQLConfigReader::initializeFrom(cConfiguration *cfg)
 
     // connect
     const char *prefix = cfg->getAsString(CFGID_MYSQLCONFIGURATION_CONNECTPREFIX);
-    ev << getClassName() << " connecting to MySQL database";
-    if (prefix && prefix[0]) ev << " using " << prefix << "-* config entries";
-    ev << "...";
+    EV << getClassName() << " connecting to MySQL database";
+    if (prefix && prefix[0]) EV << " using " << prefix << "-* config entries";
+    EV << "...";
     MYSQL *mysql = mysql_init(NULL);
     opp_mysql_connectToDB(mysql, cfg, prefix);
-    ev << " OK\n";
+    EV << " OK\n";
 
     // read the contents, then close the database
     copyExistingConfig(cfg);

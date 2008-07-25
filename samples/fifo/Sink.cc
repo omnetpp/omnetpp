@@ -37,7 +37,7 @@ void Sink::initialize()
 void Sink::handleMessage(cMessage *msg)
 {
     simtime_t d = simTime()-msg->getCreationTime();
-    ev << "Received " << msg->getName() << ", queueing time: " << d << "sec" << endl;
+    EV << "Received " << msg->getName() << ", queueing time: " << d << "sec" << endl;
     qstats.collect( d );
     qtime.record( d );
     delete msg;
@@ -45,10 +45,10 @@ void Sink::handleMessage(cMessage *msg)
 
 void Sink::finish()
 {
-    ev << "Total jobs processed: " << qstats.getCount() << endl;
-    ev << "Avg queueing time:    " << qstats.getMean() << endl;
-    ev << "Max queueing time:    " << qstats.getMax() << endl;
-    ev << "Standard deviation:   " << qstats.getStddev() << endl;
+    EV << "Total jobs processed: " << qstats.getCount() << endl;
+    EV << "Avg queueing time:    " << qstats.getMean() << endl;
+    EV << "Max queueing time:    " << qstats.getMax() << endl;
+    EV << "Standard deviation:   " << qstats.getStddev() << endl;
 }
 
 }; //namespace

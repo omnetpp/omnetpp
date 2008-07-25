@@ -74,12 +74,12 @@ void cMySQLNetBuilder::initialize()
 {
     // connect
     const char *prefix = par("connectPrefix");
-    ev << getClassName() << " connecting to MySQL database";
-    if (prefix && prefix[0]) ev << " using " << prefix << "-* config entries";
-    ev << "...";
+    EV << getClassName() << " connecting to MySQL database";
+    if (prefix && prefix[0]) EV << " using " << prefix << "-* config entries";
+    EV << "...";
     MYSQL *mysql = mysql_init(NULL);
     opp_mysql_connectToDB(mysql, ev.getConfig(), prefix);
-    ev << " OK\n";
+    EV << " OK\n";
 
     // do the job, and close the database
     const char *modName = par("parentModule");
@@ -141,7 +141,7 @@ void cMySQLNetBuilder::readAndBuild(MYSQL *mysql, const char *networkName, cModu
         const char *name = row[1];
         const char *modtypename = row[2];
         const char *dispstr = row[3];
-        ev << "NODE id=" << nodeid << " name=" << name << " type=" << modtypename << "\n";
+        EV << "NODE id=" << nodeid << " name=" << name << " type=" << modtypename << "\n";
 
         // create module
         cModuleType *modtype = findModuleType(modtypename);

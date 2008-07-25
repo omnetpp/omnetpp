@@ -47,7 +47,7 @@ void Txc9::handleMessage(cMessage *msg)
     if (getIndex()==3)
     {
         // Message arrived.
-        ev << "Message " << msg << " arrived.\n";
+        EV << "Message " << msg << " arrived.\n";
         delete msg;
     }
     else
@@ -64,7 +64,7 @@ void Txc9::forwardMessage(cMessage *msg)
     int n = gateSize("out");
     int k = intuniform(0,n-1);
 
-    ev << "Forwarding message " << msg << " on port out[" << k << "]\n";
+    EV << "Forwarding message " << msg << " on port out[" << k << "]\n";
     send(msg, "out", k);
 }
 

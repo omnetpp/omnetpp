@@ -64,7 +64,7 @@ void Host::handleMessage(cMessage *msg)
         // generate packet and schedule timer when it ends
         char pkname[40];
         sprintf(pkname,"pk-%d-#%d", getId(), pkCounter++);
-        ev << "generating packet " << pkname << endl;
+        EV << "generating packet " << pkname << endl;
 
         state = TRANSMIT;
 

@@ -81,7 +81,7 @@ void ExtHTTPClient::handleSocketEvent()
     if (!endHeader)
         return;
     std::string header = std::string(recvBuffer, endHeader-recvBuffer);
-    //ev << header;
+    //EV << header;
 
     // remove HTTP header from buffer
     if (endHeader == recvBuffer+numRecvBytes)

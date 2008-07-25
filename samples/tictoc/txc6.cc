@@ -52,7 +52,7 @@ void Txc6::initialize()
 
     if (strcmp("tic", getName()) == 0)
     {
-        ev << "Scheduling first send to t=5.0s\n";
+        EV << "Scheduling first send to t=5.0s\n";
         scheduleAt(5.0, event);
         tictocMsg = new cMessage("tictocMsg");
     }
@@ -62,7 +62,7 @@ void Txc6::handleMessage(cMessage *msg)
 {
     if (msg==event)
     {
-        ev << "Wait period is over, sending back message\n";
+        EV << "Wait period is over, sending back message\n";
         send(tictocMsg, "out");
         tictocMsg = NULL;
     }
@@ -71,7 +71,7 @@ void Txc6::handleMessage(cMessage *msg)
         // "Lose" the message with 0.1 probability:
         if (uniform(0,1) < 0.1)
         {
-            ev << "\"Losing\" message\n";
+            EV << "\"Losing\" message\n";
             delete msg;
         }
         else
@@ -81,7 +81,7 @@ void Txc6::handleMessage(cMessage *msg)
             // we'll get a different delay every time.
             simtime_t delay = par("delayTime");
 
-            ev << "Message arrived, starting to wait " << delay << " secs...\n";
+            EV << "Message arrived, starting to wait " << delay << " secs...\n";
             tictocMsg = msg;
             scheduleAt(simTime()+delay, event);
         }

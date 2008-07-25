@@ -72,7 +72,7 @@ void Server::handleMessage(cMessage *msg)
         int k = selectionStrategy->select();
         if (k >= 0)
         {
-            ev << "requesting job from queue " << k << endl;
+            EV << "requesting job from queue " << k << endl;
             cGate *gate = selectionStrategy->selectableGate(k);
             check_and_cast<PQueue *>(gate->getOwnerModule())->request(gate->getIndex());
         }

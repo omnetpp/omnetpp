@@ -25,13 +25,13 @@ void HTTPServer::initialize()
 
 simtime_t HTTPServer::startService(cMessage *msg)
 {
-    ev << "Starting service of " << msg->getName() << endl;
+    EV << "Starting service of " << msg->getName() << endl;
     return par("serviceTime").doubleValue();
 }
 
 void HTTPServer::endService(cMessage *msg)
 {
-    ev << "Completed service of " << msg->getName() << endl;
+    EV << "Completed service of " << msg->getName() << endl;
 
     HTTPMsg *httpMsg = check_and_cast<HTTPMsg *>(msg);
 
@@ -54,17 +54,17 @@ std::string HTTPServer::processHTTPCommand(const char *httpReqHeader)
     std::string::size_type pos = header.find("\r\n");
     if (pos==std::string::npos)
     {
-        ev << "Bad HTTP request\n";
+        EV << "Bad HTTP request\n";
         return std::string("Bad request 400\r\n");
     }
 
     std::string cmd(header,0,pos);
-    ev << "Received: " << cmd << "\n";
+    EV << "Received: " << cmd << "\n";
 
     // we only accept GET
     if (cmd.length()<4 || cmd.compare(0,4,"GET "))
     {
-        ev << "Wrong HTTP verb, only GET is supported\n";
+        EV << "Wrong HTTP verb, only GET is supported\n";
         return std::string("501 Not Implemented\r\n");
     }
 
@@ -116,7 +116,7 @@ std::string HTTPServer::getContentFor(const char *uri)
     std::string content(buffer, size);
     delete [] buffer;
 
-    ev << "URI=" << uri << " ---> " << content << "\n";
+    EV << "URI=" << uri << " ---> " << content << "\n";
     htdocs[uri] = content;
     return content;
 }

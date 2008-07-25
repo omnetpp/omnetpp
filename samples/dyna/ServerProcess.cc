@@ -39,7 +39,7 @@ void ServerProcess::activity()
     DynaDataPacket *datapk;
 
     // receive the CONN_REQ we were created to handle
-    ev << "Started, waiting for DYNA_CONN_REQ\n";
+    EV << "Started, waiting for DYNA_CONN_REQ\n";
     pk = (DynaPacket *) receive();
     clientAddr = pk->getSrcAddress();
     ownAddr = pk->getDestAddress();
@@ -50,7 +50,7 @@ void ServerProcess::activity()
     setName(buf);
 
     // respond to CONN_REQ by CONN_ACK
-    ev << "client is addr=" << clientAddr << ", sending DYNA_CONN_ACK\n";
+    EV << "client is addr=" << clientAddr << ", sending DYNA_CONN_ACK\n";
     pk->setName("DYNA_CONN_ACK");
     pk->setKind(DYNA_CONN_ACK);
     pk->setSrcAddress(ownAddr);
@@ -61,7 +61,7 @@ void ServerProcess::activity()
     // process data packets until DISC_REQ comes
     for(;;)
     {
-        ev << "waiting for DATA(query) (or DYNA_DISC_REQ)\n";
+        EV << "waiting for DATA(query) (or DYNA_DISC_REQ)\n";
         pk = (DynaPacket *) receive();
         int type = pk->getKind();
 
@@ -73,10 +73,10 @@ void ServerProcess::activity()
 
         datapk = (DynaDataPacket *) pk;
 
-        ev << "got DATA(query), processing...\n";
+        EV << "got DATA(query), processing...\n";
         wait( (double)processingTime );
 
-        ev << "sending DATA(result)\n";
+        EV << "sending DATA(result)\n";
         datapk->setName("DATA(result)");
         datapk->setKind(DYNA_DATA);
         datapk->setSrcAddress(ownAddr);
@@ -86,14 +86,14 @@ void ServerProcess::activity()
     }
 
     // connection teardown in response to DISC_REQ
-    ev << "got DYNA_DISC_REQ, sending DYNA_DISC_ACK\n";
+    EV << "got DYNA_DISC_REQ, sending DYNA_DISC_ACK\n";
     pk->setName("DYNA_DISC_ACK");
     pk->setKind(DYNA_DISC_ACK);
     pk->setSrcAddress(ownAddr);
     pk->setDestAddress(clientAddr);
     sendDirect(pk, serverOutGate);
 
-    ev << "exiting\n";
+    EV << "exiting\n";
     deleteModule();
 }
 

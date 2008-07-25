@@ -17,13 +17,13 @@ Define_Module(TelnetServer);
 
 simtime_t TelnetServer::startService(cMessage *msg)
 {
-    ev << "Starting service of " << msg->getName() << endl;
+    EV << "Starting service of " << msg->getName() << endl;
     return par("serviceTime").doubleValue();
 }
 
 void TelnetServer::endService(cMessage *msg)
 {
-    ev << "Completed service of " << msg->getName() << endl;
+    EV << "Completed service of " << msg->getName() << endl;
 
     TelnetPkt *telnetPkt = check_and_cast<TelnetPkt *>(msg);
 

@@ -145,7 +145,7 @@ void TokenRingMAC::activity()
             token = (TRToken *)msg;
             if (debug)
             {
-                ev << "Token arrived (we can keep it for THT=" << tokenHoldingTime << ")" << endl;
+                EV << "Token arrived (we can keep it for THT=" << tokenHoldingTime << ")" << endl;
                 if (ev.isGUI())
                 {
                     getParentModule()->getDisplayString().setTagArg("i",1,"gold");
@@ -168,7 +168,7 @@ void TokenRingMAC::activity()
                     // no time left for this packet
                     if (debug)
                     {
-                        ev << "Data packet \"" << data->getName() << "\" cannot be sent within THT, skipping" << endl;
+                        EV << "Data packet \"" << data->getName() << "\" cannot be sent within THT, skipping" << endl;
                     }
                     break;
                 }
@@ -192,7 +192,7 @@ void TokenRingMAC::activity()
 
                 if (debug)
                 {
-                    ev << "Began transmitting \"" << data->getName() << "\""
+                    EV << "Began transmitting \"" << data->getName() << "\""
                           " in frame \"" << frame->getName() << "\"" << endl;
                 }
                 send(frame, "phyOut");
@@ -205,14 +205,14 @@ void TokenRingMAC::activity()
 
                 if (debug)
                 {
-                    ev << "End transmission " << transmStartTime << endl;
+                    EV << "End transmission " << transmStartTime << endl;
                 }
             }
 
             // release token
             if (debug)
             {
-                ev << "Releasing token." << endl;
+                EV << "Releasing token." << endl;
                 if (ev.isGUI())
                 {
                     getParentModule()->getDisplayString().setTagArg("i",1,"");
@@ -279,7 +279,7 @@ void TokenRingMAC::storeDataPacket(TRApplicationData *msg)
 {
     if (debug)
     {
-        ev << "App data received from higher layer: \"" << msg->getName() << "\", "
+        EV << "App data received from higher layer: \"" << msg->getName() << "\", "
               "length=" << msg->getBitLength()/8 << "bytes" << endl;
     }
 
@@ -291,7 +291,7 @@ void TokenRingMAC::storeDataPacket(TRApplicationData *msg)
     {
         if (debug)
         {
-            ev << "Queue full, DROPPED!" << endl;
+            EV << "Queue full, DROPPED!" << endl;
         }
         delete msg;
         numPacketsToSendDropped++;
@@ -310,7 +310,7 @@ void TokenRingMAC::storeDataPacket(TRApplicationData *msg)
 
     if (debug)
     {
-        ev << "Enqueued, queue length=" << sendQueue.length() << endl;
+        EV << "Enqueued, queue length=" << sendQueue.length() << endl;
     }
 
 }
@@ -319,7 +319,7 @@ void TokenRingMAC::beginReceiveFrame(TRFrame *frame)
 {
     if (debug)
     {
-        ev << "Received beginning of frame \"" << frame->getName() << "\"" << endl;
+        EV << "Received beginning of frame \"" << frame->getName() << "\"" << endl;
     }
 
     ASSERT(frame->isReceptionStart());
@@ -333,10 +333,10 @@ void TokenRingMAC::beginReceiveFrame(TRFrame *frame)
     {
         if (debug)
         {
-            ev << "We are the destination: as soon as we fully received the frame," << endl;
-            ev << "we'll pass up a copy of the payload \"" <<
+            EV << "We are the destination: as soon as we fully received the frame," << endl;
+            EV << "we'll pass up a copy of the payload \"" <<
                   frame->getEncapsulatedMsg()->getName() << "\" to the higher layer." << endl;
-            ev << "Frame will be extracted from the ring by the sender." << endl;
+            EV << "Frame will be extracted from the ring by the sender." << endl;
         }
 
         // some sanity check: because of rounding errors in double arithmetic,
@@ -352,7 +352,7 @@ void TokenRingMAC::beginReceiveFrame(TRFrame *frame)
 
             if (debug)
             {
-                ev << "'recvEnd' event should have occurred already, do it now" << endl;
+                EV << "'recvEnd' event should have occurred already, do it now" << endl;
             }
 
             // then remedy the situation
@@ -382,7 +382,7 @@ void TokenRingMAC::beginReceiveFrame(TRFrame *frame)
     {
         if (debug)
         {
-            ev << "Arrived back to sender, stripping it out of the ring" << endl;
+            EV << "Arrived back to sender, stripping it out of the ring" << endl;
         }
         delete frame;
     }
@@ -390,7 +390,7 @@ void TokenRingMAC::beginReceiveFrame(TRFrame *frame)
     {
         if (debug)
         {
-            ev << "Forwarding to next station" << endl;
+            EV << "Forwarding to next station" << endl;
         }
         send(frame, "phyOut");
     }
@@ -400,22 +400,22 @@ void TokenRingMAC::endReceiveFrame(cMessage *data)
 {
     if (debug)
     {
-        ev << "End receiving frame containing \"" << data->getName() << "\", passing up to higher layer." << endl;
+        EV << "End receiving frame containing \"" << data->getName() << "\", passing up to higher layer." << endl;
     }
     send(data, "toHL");
 }
 
 void TokenRingMAC::finish()
 {
-    ev << "Module: " << getFullPath() << endl;
-    ev << "Total packets received from higher layer: " << numPacketsToSend << endl;
-    ev << "Higher layer still in queue: " << sendQueue.length() << endl;
-    ev << "Higher layer packets dropped: " << numPacketsToSendDropped << endl;
+    EV << "Module: " << getFullPath() << endl;
+    EV << "Total packets received from higher layer: " << numPacketsToSend << endl;
+    EV << "Higher layer still in queue: " << sendQueue.length() << endl;
+    EV << "Higher layer packets dropped: " << numPacketsToSendDropped << endl;
     if (numPacketsToSend>sendQueue.length())
     {
-        ev << "Percentage dropped: " << (100*numPacketsToSendDropped/(numPacketsToSend-sendQueue.length())) << "%" << endl;
+        EV << "Percentage dropped: " << (100*numPacketsToSendDropped/(numPacketsToSend-sendQueue.length())) << "%" << endl;
     }
-    ev << endl;
+    EV << endl;
 }
 
 

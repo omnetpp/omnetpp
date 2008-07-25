@@ -128,13 +128,13 @@ bool cSocketRTScheduler::receiveWithTimeout(long usec)
             int nBytes = recv(connSocket, bufPtr, bufLeft, 0);
             if (nBytes==SOCKET_ERROR)
             {
-                ev << "cSocketRTScheduler: socket error " << sock_errno() << "\n";
+                EV << "cSocketRTScheduler: socket error " << sock_errno() << "\n";
                 closesocket(connSocket);
                 connSocket = INVALID_SOCKET;
             }
             else if (nBytes == 0)
             {
-                ev << "cSocketRTScheduler: socket closed by the client\n";
+                EV << "cSocketRTScheduler: socket closed by the client\n";
                 if (shutdown(connSocket, SHUT_WR) == SOCKET_ERROR)
                     throw cRuntimeError("cSocketRTScheduler: shutdown() failed");
                 closesocket(connSocket);
@@ -143,7 +143,7 @@ bool cSocketRTScheduler::receiveWithTimeout(long usec)
             else
             {
                 // schedule notificationMsg for the interface module
-                ev << "cSocketRTScheduler: received " << nBytes << " bytes\n";
+                EV << "cSocketRTScheduler: received " << nBytes << " bytes\n";
                 (*numBytesPtr) += nBytes;
 
                 timeval curTime;
@@ -164,7 +164,7 @@ bool cSocketRTScheduler::receiveWithTimeout(long usec)
             connSocket = accept(listenerSocket, (sockaddr*)&sinRemote, (socklen_t*)&addrSize);
             if (connSocket==INVALID_SOCKET)
                 throw cRuntimeError("cSocketRTScheduler: accept() failed");
-            ev << "cSocketRTScheduler: connected!\n";
+            EV << "cSocketRTScheduler: connected!\n";
         }
     }
     return false;

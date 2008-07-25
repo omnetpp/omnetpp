@@ -54,7 +54,7 @@ void Tic7::initialize()
     timeoutEvent = new cMessage("timeoutEvent");
 
     // Generate and send initial message.
-    ev << "Sending initial message\n";
+    EV << "Sending initial message\n";
     cMessage *msg = new cMessage("tictocMsg");
     send(msg, "out");
     scheduleAt(simTime()+timeout, timeoutEvent);
@@ -66,7 +66,7 @@ void Tic7::handleMessage(cMessage *msg)
     {
         // If we receive the timeout event, that means the packet hasn't
         // arrived in time and we have to re-send it.
-        ev << "Timeout expired, resending message and restarting timer\n";
+        EV << "Timeout expired, resending message and restarting timer\n";
         cMessage *msg = new cMessage("tictocMsg");
         send(msg, "out");
         scheduleAt(simTime()+timeout, timeoutEvent);
@@ -75,7 +75,7 @@ void Tic7::handleMessage(cMessage *msg)
     {
         // Acknowledgement received -- delete the stored message and cancel
         // the timeout event.
-        ev << "Timer cancelled.\n";
+        EV << "Timer cancelled.\n";
         cancelEvent(timeoutEvent);
 
         // Ready to send another one.
@@ -101,13 +101,13 @@ void Toc7::handleMessage(cMessage *msg)
 {
     if (uniform(0,1) < 0.1)
     {
-        ev << "\"Losing\" message.\n";
+        EV << "\"Losing\" message.\n";
         bubble("message lost");  // making animation more informative...
         delete msg;
     }
     else
     {
-        ev << "Sending back same message as acknowledgement.\n";
+        EV << "Sending back same message as acknowledgement.\n";
         send(msg, "out");
     }
 }

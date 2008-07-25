@@ -69,7 +69,7 @@ void Txc5::initialize()
         // We don't start right away, but instead send an message to ourselves
         // (a "self-message") -- we'll do the first sending when it arrives
         // back to us, at t=5.0s simulated time.
-        ev << "Scheduling first send to t=5.0s\n";
+        EV << "Scheduling first send to t=5.0s\n";
         tictocMsg = new cMessage("tictocMsg");
         scheduleAt(5.0, event);
     }
@@ -86,7 +86,7 @@ void Txc5::handleMessage(cMessage *msg)
     {
         // The self-message arrived, so we can send out tictocMsg and NULL out
         // its pointer so that it doesn't confuse us later.
-        ev << "Wait period is over, sending back message\n";
+        EV << "Wait period is over, sending back message\n";
         send(tictocMsg, "out");
         tictocMsg = NULL;
     }
@@ -96,7 +96,7 @@ void Txc5::handleMessage(cMessage *msg)
         // be the tic-toc message arriving from our partner. We remember its
         // pointer in the tictocMsg variable, then schedule our self-message
         // to come back to us in 1s simulated time.
-        ev << "Message arrived, starting to wait 1 sec...\n";
+        EV << "Message arrived, starting to wait 1 sec...\n";
         tictocMsg = msg;
         scheduleAt(simTime()+1.0, event);
     }

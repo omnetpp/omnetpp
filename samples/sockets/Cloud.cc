@@ -37,7 +37,7 @@ void Cloud::handleMessage(cMessage *msg)
     // determine destination address
     NetPkt *pkt = check_and_cast<NetPkt *>(msg);
     int dest = pkt->getDestAddress();
-    ev << "Relaying packet to addr=" << dest << endl;
+    EV << "Relaying packet to addr=" << dest << endl;
 
     // send msg to destination after the delay
     sendDelayed(pkt, propDelay, "g$o", dest);

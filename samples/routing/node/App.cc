@@ -93,7 +93,7 @@ void App::handleMessage(cMessage *msg)
 
         char pkname[40];
         sprintf(pkname,"pk-%d-to-%d-#%ld", myAddress, destAddress, pkCounter++);
-        ev << "generating packet " << pkname << endl;
+        EV << "generating packet " << pkname << endl;
 
         Packet *pk = new Packet(pkname);
         pk->setByteLength(packetLengthBytes->longValue());
@@ -108,7 +108,7 @@ void App::handleMessage(cMessage *msg)
     {
         // Handle incoming packet
         Packet *pk = check_and_cast<Packet *>(msg);
-        ev << "received packet " << pk->getName() << " after " << pk->getHopCount() << "hops" << endl;
+        EV << "received packet " << pk->getName() << " after " << pk->getHopCount() << "hops" << endl;
         hopCounts.collect(pk->getHopCount());
         pkReceived++;
         delete pk;

@@ -44,7 +44,7 @@ void Switch::activity()
         // send msg to destination
         DynaPacket *pk = check_and_cast<DynaPacket *>(msg);
         int dest = pk->getDestAddress();
-        ev << "Relaying msg to addr=" << dest << "\n";
+        EV << "Relaying msg to addr=" << dest << "\n";
         send(msg, "port$o", dest);
 
         // display status: normal=queue empty, yellow=queued packets; red=queue overflow
@@ -54,7 +54,7 @@ void Switch::activity()
         // model finite queue size
         while (queue.length() > queueMaxLen)
         {
-            ev << "Buffer overflow, discarding " << queue.front()->getName() << endl;
+            EV << "Buffer overflow, discarding " << queue.front()->getName() << endl;
             delete queue.pop();
         }
     }

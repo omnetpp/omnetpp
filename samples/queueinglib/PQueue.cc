@@ -66,7 +66,7 @@ void PQueue::handleMessage(cMessage *msg)
     // check for container capacity
     if (capacity >=0 && queue.length() >= capacity)
     {
-        ev << "Queue full! Job dropped.\n";
+        EV << "Queue full! Job dropped.\n";
         if (ev.isGUI()) bubble("Dropped!");
         droppedStats.record(++droppedJobs);
         delete msg;

@@ -53,18 +53,18 @@ void Client::activity()
         if (ev.isGUI()) getDisplayString().setTagArg("i",1,"green");
 
         // connection setup
-        ev << "sending DYNA_CONN_REQ\n";
+        EV << "sending DYNA_CONN_REQ\n";
         connReq = new DynaPacket("DYNA_CONN_REQ", DYNA_CONN_REQ);
         connReq->setSrcAddress(ownAddr);
         connReq->setDestAddress(serverAddr);
         send( connReq, "port$o" );
 
-        ev << "waiting for DYNA_CONN_ACK\n";
+        EV << "waiting for DYNA_CONN_ACK\n";
         connAck = (DynaPacket *) receive( timeout );
         if (connAck==NULL)
             goto broken;
         serverprocId = connAck->getServerProcId();
-        ev << "got DYNA_CONN_ACK, my server process is ID="
+        EV << "got DYNA_CONN_ACK, my server process is ID="
            << serverprocId << endl;
         delete connAck;
 
@@ -78,7 +78,7 @@ void Client::activity()
         actNumQuery = (long)numQuery;
         for (i=0; i<actNumQuery; i++)
         {
-            ev << "sending DATA(query)\n";
+            EV << "sending DATA(query)\n";
             query = new DynaDataPacket("DATA(query)", DYNA_DATA);
             query->setSrcAddress(ownAddr);
             query->setDestAddress(serverAddr);
@@ -86,11 +86,11 @@ void Client::activity()
             query->setPayload("query");
             send(query, "port$o");
 
-            ev << "waiting for DATA(result)\n";
+            EV << "waiting for DATA(result)\n";
             answer = (DynaDataPacket *) receive( timeout );
             if (answer==NULL)
                  goto broken;
-            ev << "got DATA(result)\n";
+            EV << "got DATA(result)\n";
             delete answer;
 
             wait( (double)queryIaTime );
@@ -99,18 +99,18 @@ void Client::activity()
         if (ev.isGUI()) getDisplayString().setTagArg("i",1,"blue");
 
         // connection teardown
-        ev << "sending DYNA_DISC_REQ\n";
+        EV << "sending DYNA_DISC_REQ\n";
         discReq = new DynaPacket("DYNA_DISC_REQ", DYNA_DISC_REQ);
         discReq->setSrcAddress(ownAddr);
         discReq->setDestAddress(serverAddr);
         discReq->setServerProcId(serverprocId);
         send(discReq, "port$o");
 
-        ev << "waiting for DYNA_DISC_ACK\n";
+        EV << "waiting for DYNA_DISC_ACK\n";
         discAck = (DynaPacket *) receive( timeout );
         if (discAck==NULL)
             goto broken;
-        ev << "got DYNA_DISC_ACK\n";
+        EV << "got DYNA_DISC_ACK\n";
         delete discAck;
 
         if (ev.isGUI()) bubble("Disconnected!");
@@ -119,7 +119,7 @@ void Client::activity()
 
         // error handling
     broken:
-        ev << "Timeout, connection broken!\n";
+        EV << "Timeout, connection broken!\n";
         if (ev.isGUI()) bubble("Connection broken!");
     }
 }

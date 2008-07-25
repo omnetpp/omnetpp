@@ -72,7 +72,7 @@ void Txc12::handleMessage(cMessage *msg)
     {
         // Message arrived
         int hopcount = ttmsg->getHopCount();
-        ev << "Message " << ttmsg << " arrived after " << hopcount << " hops.\n";
+        EV << "Message " << ttmsg << " arrived after " << hopcount << " hops.\n";
         bubble("ARRIVED, starting new one!");
 
         // update statistics.
@@ -83,9 +83,9 @@ void Txc12::handleMessage(cMessage *msg)
         delete ttmsg;
 
         // Generate another one.
-        ev << "Generating another message: ";
+        EV << "Generating another message: ";
         TicTocMsg12 *newmsg = generateMessage();
-        ev << newmsg << endl;
+        EV << newmsg << endl;
         forwardMessage(newmsg);
         numSent++;
     }
@@ -123,19 +123,19 @@ void Txc12::forwardMessage(TicTocMsg12 *msg)
     int n = gateSize("out");
     int k = intuniform(0,n-1);
 
-    ev << "Forwarding message " << msg << " on port out[" << k << "]\n";
+    EV << "Forwarding message " << msg << " on port out[" << k << "]\n";
     send(msg, "out", k);
 }
 
 void Txc12::finish()
 {
     // This function is called by OMNeT++ at the end of the simulation.
-    ev << "Sent:     " << numSent << endl;
-    ev << "Received: " << numReceived << endl;
-    ev << "Hop count, min:    " << hopCountStats.getMin() << endl;
-    ev << "Hop count, max:    " << hopCountStats.getMax() << endl;
-    ev << "Hop count, mean:   " << hopCountStats.getMean() << endl;
-    ev << "Hop count, stddev: " << hopCountStats.getStddev() << endl;
+    EV << "Sent:     " << numSent << endl;
+    EV << "Received: " << numReceived << endl;
+    EV << "Hop count, min:    " << hopCountStats.getMin() << endl;
+    EV << "Hop count, max:    " << hopCountStats.getMax() << endl;
+    EV << "Hop count, mean:   " << hopCountStats.getMean() << endl;
+    EV << "Hop count, stddev: " << hopCountStats.getStddev() << endl;
 
     recordScalar("#sent", numSent);
     recordScalar("#received", numReceived);

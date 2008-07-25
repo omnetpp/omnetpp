@@ -60,15 +60,15 @@ void Txc11::handleMessage(cMessage *msg)
     {
         // Message arrived
         int hopcount = ttmsg->getHopCount();
-        ev << "Message " << ttmsg << " arrived after " << hopcount << " hops.\n";
+        EV << "Message " << ttmsg << " arrived after " << hopcount << " hops.\n";
         numReceived++;
         delete ttmsg;
         bubble("ARRIVED, starting new one!");
 
         // Generate another one.
-        ev << "Generating another message: ";
+        EV << "Generating another message: ";
         TicTocMsg11 *newmsg = generateMessage();
-        ev << newmsg << endl;
+        EV << newmsg << endl;
         forwardMessage(newmsg);
         numSent++;
 
@@ -109,7 +109,7 @@ void Txc11::forwardMessage(TicTocMsg11 *msg)
     int n = gateSize("out");
     int k = intuniform(0,n-1);
 
-    ev << "Forwarding message " << msg << " on port out[" << k << "]\n";
+    EV << "Forwarding message " << msg << " on port out[" << k << "]\n";
     send(msg, "out", k);
 }
 

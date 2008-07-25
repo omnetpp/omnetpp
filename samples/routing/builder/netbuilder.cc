@@ -88,7 +88,7 @@ void NetBuilder::buildNetwork(cModule *parent)
         long nodeid = atol(tokens[0].c_str());
         const char *name = tokens[1].c_str();
         const char *modtypename = tokens[2].c_str();
-        ev << "NODE id=" << nodeid << " name=" << name << " type=" << modtypename << "\n";
+        EV << "NODE id=" << nodeid << " name=" << name << " type=" << modtypename << "\n";
 
         // create module
         cModuleType *modtype = cModuleType::find(modtypename);

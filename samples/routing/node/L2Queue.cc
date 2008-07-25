@@ -89,7 +89,7 @@ void L2Queue::startTransmitting(cMessage *msg)
 {
     if (ev.isGUI()) displayStatus(true);
 
-    ev << "Starting transmission of " << msg << endl;
+    EV << "Starting transmission of " << msg << endl;
     send(msg, "line$o");
 
     // The schedule an event for the time when last bit will leave the gate.
@@ -102,7 +102,7 @@ void L2Queue::handleMessage(cMessage *msg)
     if (msg==endTransmissionEvent)
     {
         // Transmission finished, we can start next one.
-        ev << "Transmission finished.\n";
+        EV << "Transmission finished.\n";
         if (ev.isGUI()) displayStatus(false);
         if (!queue.empty())
         {
@@ -122,20 +122,20 @@ void L2Queue::handleMessage(cMessage *msg)
             // We are currently busy, so just queue up the packet.
             if (frameCapacity && queue.length()>=frameCapacity)
             {
-                ev << "Received " << msg << " but transmitter busy and queue full: discarding\n";
+                EV << "Received " << msg << " but transmitter busy and queue full: discarding\n";
                 numFramesDropped++;
                 delete msg;
             }
             else
             {
-                ev << "Received " << msg << " but transmitter busy: queueing up\n";
+                EV << "Received " << msg << " but transmitter busy: queueing up\n";
                 queue.insert(msg);
             }
         }
         else
         {
             // We are idle, so we can start transmitting right away.
-            ev << "Received " << msg << endl;
+            EV << "Received " << msg << endl;
             startTransmitting(msg);
         }
     }

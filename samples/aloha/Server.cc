@@ -74,7 +74,7 @@ void Server::handleMessage(cMessage *msg)
 {
     if (msg==endRxEvent)
     {
-        ev << "reception finished\n";
+        EV << "reception finished\n";
         channelBusy = false;
 
         // update statistics
@@ -110,7 +110,7 @@ void Server::handleMessage(cMessage *msg)
         simtime_t endReceptionTime = simTime() + msg->getDuration();
         if (!channelBusy)
         {
-            ev << "started receiving\n";
+            EV << "started receiving\n";
             recvStartTime = simTime();
             channelBusy = true;
             scheduleAt(endReceptionTime, endRxEvent);
@@ -123,7 +123,7 @@ void Server::handleMessage(cMessage *msg)
         }
         else
         {
-            ev << "another frame arrived while receiving -- collision!\n";
+            EV << "another frame arrived while receiving -- collision!\n";
 
             collidedFrames++;
             if (currentCollisionNumFrames==0)
@@ -156,12 +156,12 @@ void Server::handleMessage(cMessage *msg)
 
 void Server::finish()
 {
-    ev << "duration: " << simTime() << endl;
-    ev << "total frames: " << totalFrames << endl;
-    ev << "collided frames: " << collidedFrames << endl;
-    ev << "total receive time: " << totalReceiveTime << endl;
-    ev << "total collision time: " << totalCollisionTime << endl;
-    ev << "channel utilization: " << currentChannelUtilization << endl;
+    EV << "duration: " << simTime() << endl;
+    EV << "total frames: " << totalFrames << endl;
+    EV << "collided frames: " << collidedFrames << endl;
+    EV << "total receive time: " << totalReceiveTime << endl;
+    EV << "total collision time: " << totalCollisionTime << endl;
+    EV << "channel utilization: " << currentChannelUtilization << endl;
 
     recordScalar("duration", simTime());
     recordScalar("total frames", totalFrames);

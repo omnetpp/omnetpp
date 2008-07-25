@@ -50,7 +50,7 @@ void Routing::initialize()
     std::vector<std::string> nedTypes;
     nedTypes.push_back(getParentModule()->getNedTypeName());
     topo->extractByNedTypeName(nedTypes);
-    ev << "cTopology found " << topo->getNumNodes() << " nodes\n";
+    EV << "cTopology found " << topo->getNumNodes() << " nodes\n";
 
     cTopology::Node *thisNode = topo->getNodeFor(getParentModule());
 
@@ -66,7 +66,7 @@ void Routing::initialize()
         int gateIndex = parentModuleGate->getIndex();
         int address = topo->getNode(i)->getModule()->par("address");
         rtable[address] = gateIndex;
-        ev << "  towards address " << address << " gateIndex is " << gateIndex << endl;
+        EV << "  towards address " << address << " gateIndex is " << gateIndex << endl;
     }
     delete topo;
 }
@@ -78,7 +78,7 @@ void Routing::handleMessage(cMessage *msg)
 
     if (destAddr == myAddress)
     {
-        ev << "local delivery of packet " << pk->getName() << endl;
+        EV << "local delivery of packet " << pk->getName() << endl;
         send(pk, "localOut");
         return;
     }
@@ -86,13 +86,13 @@ void Routing::handleMessage(cMessage *msg)
     RoutingTable::iterator it = rtable.find(destAddr);
     if (it==rtable.end())
     {
-        ev << "address " << destAddr << " unreachable, discarding packet " << pk->getName() << endl;
+        EV << "address " << destAddr << " unreachable, discarding packet " << pk->getName() << endl;
         delete pk;
         return;
     }
 
     int outGateIndex = (*it).second;
-    ev << "forwarding packet " << pk->getName() << " on gate index " << outGateIndex << endl;
+    EV << "forwarding packet " << pk->getName() << " on gate index " << outGateIndex << endl;
     pk->setHopCount(pk->getHopCount()+1);
 
     send(pk, "out", outGateIndex);
