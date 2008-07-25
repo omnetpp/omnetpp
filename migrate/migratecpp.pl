@@ -65,6 +65,8 @@ while (<LISTFILE>)
     $txt =~ s/\bcPar( +[A-Za-z])/cMsgPar\1/mg;   # message params are no longer cPar but cMsgPar
     $txt =~ s/\bnew +cPar\b/new cMsgPar/mg;
 
+    $txt =~ s!^(# *define +EV +.*)$!//$1 ==> EV is now part of <omnetpp.h>!mg;
+
     # rename cPar methods
     $txt =~ s/\bsetFromText\b/parse/mg;
     $txt =~ s/\bgetAsText\b/str/mg;
