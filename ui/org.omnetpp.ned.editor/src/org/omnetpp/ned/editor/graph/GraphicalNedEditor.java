@@ -742,7 +742,7 @@ public class GraphicalNedEditor
 		//", ConsistencyProblemMaxCumulatedSeverity:" + fileElement.getConsistencyProblemMaxCumulatedSeverity();
 
 		String nedCode = StringUtils.stripLeadingCommentLines(element.getNEDSource().trim(), "//");
-		hoverText += "<br/><br/>" + "<i>Source:</i><pre>" + StringUtils.quoteForHtml(nedCode) + "</pre>";
+		hoverText += "<br/><br/>" + "<i>Source:</i><pre>" + StringUtils.quoteForHtml(StringUtils.abbreviate(nedCode, 1000)) + "</pre>";
 
 		outPreferredSize.preferredWidth = Math.max(300, 7*(5+StringUtils.getMaximumLineLength(nedCode)));
 

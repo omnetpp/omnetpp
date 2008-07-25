@@ -306,7 +306,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         }
     }
 
-	public IMarker[] getMarkersForElement(INEDElement node) {
+	public IMarker[] getMarkersForElement(INEDElement node, int limit) {
 		try {
             IFile file = getNedFile(node.getContainingNedFileElement());
 			List<IMarker> result = new ArrayList<IMarker>();
@@ -314,6 +314,10 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 				int elementId = marker.getAttribute(NEDMarkerErrorStore.NEDELEMENT_ID, -1);
 				if (elementId != -1 && node.findElementWithId(elementId) != null)
 					result.add(marker);
+				
+				// skip the remaining after reaching limit
+				if (result.size() >= limit)
+					break;
 			}
 			return result.toArray(new IMarker[]{});
 		}

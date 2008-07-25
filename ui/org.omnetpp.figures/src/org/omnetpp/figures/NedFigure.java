@@ -95,23 +95,23 @@ abstract public class NedFigure extends Figure implements IDirectEditSupport {
     /**
      * Display a "problem" image decoration on the submodule.
      * @param maxSeverity  any of the IMarker.SEVERITY_xxx constants, or -1 for none
-     * @param text the text to be displayed as a tooltip
+     * @param textProvider callback to get the text to be displayed as a tooltip on hover event 
      */
-    public void setProblemDecoration(int maxSeverity, String text) {
+    public void setProblemDecoration(int maxSeverity, TooltipFigure.ITextProvider textProvider) {
         Image image = NedFigure.getProblemImageFor(maxSeverity);
         if (image != null)
             problemMarkerFigure.setImage(image);
         problemMarkerFigure.setVisible(image != null);
 
         // set a tooltip text
-        if (StringUtils.isEmpty(text)) {
+        if (textProvider == null) {
             problemMarkerFigure.setToolTip(null);
             problemMarkerTooltipFigure = null;
         }
         else {
             problemMarkerTooltipFigure = new TooltipFigure();
             problemMarkerFigure.setToolTip(problemMarkerTooltipFigure);
-            problemMarkerTooltipFigure.setText(text);
+            problemMarkerTooltipFigure.setTextProvider(textProvider);
         }
         invalidate();
     }

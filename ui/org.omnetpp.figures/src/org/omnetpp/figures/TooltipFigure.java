@@ -15,6 +15,12 @@ import org.eclipse.draw2d.text.TextFlow;
  */
 public class TooltipFigure extends FlowPage {
 
+	public interface ITextProvider {
+		String getTooltipText();
+	}
+	
+	private ITextProvider textProvider;
+	private String text;
     private final TextFlow textFlow;
 
     public TooltipFigure() {
@@ -35,16 +41,31 @@ public class TooltipFigure extends FlowPage {
      * Returns the text inside the TextFlow.
      */
     public String getText() {
-        return textFlow.getText();
+        return text;
     }
 
     /**
      * Sets the text of the TextFlow to the given value.
      */
     public void setText(String newText) {
-        textFlow.setText(newText);
+        text = newText;
     }
 
+    /**
+     * Sets the text provider callback. It is used only if no text is directly set on the figure.
+     */
+    public void setTextProvider(ITextProvider textProvider) {
+		this.textProvider = textProvider;
+	}
+
+	@Override
+    public void repaint() {
+    	// set the textFlow content from the text field or from textProvider if no text was directly provided
+		if (textFlow != null)
+			textFlow.setText(text != null ? text : (textProvider != null ? textProvider.getTooltipText() : null));
+    	super.repaint();
+    }
+    
     @Override
     public Dimension getPreferredSize(int w, int h) {
         Dimension d = super.getPreferredSize(-1, -1);

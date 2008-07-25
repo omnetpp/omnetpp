@@ -97,9 +97,10 @@ public interface INEDTypeResolver {
 	 * IMPORTANT: Do NOT use this method to check whether an element actually
 	 * contains errors! Markers are written out in a background job, and there's
 	 * no guarantee that IFile already contains them. Use getMaxProblemSeverity()
-	 * and the likes from INEDElement instead.
+	 * and the likes from INEDElement instead. This method will return the maximum
+	 * of "limit" markers (to constraint the CPU usage for elements containing a lot of errors)
 	 */
-    public IMarker[] getMarkersForElement(INEDElement node);
+    public IMarker[] getMarkersForElement(INEDElement node, int limit);
 
     /**
      * Returns a INEDElement at the given file/line/column. Returns null if no
