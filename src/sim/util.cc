@@ -318,7 +318,7 @@ cMethodCallContextSwitcher::cMethodCallContextSwitcher(const cComponent *newCont
   cContextSwitcher(newContext)
 {
     if (notifyEnvir && newContext!=callerContext)
-        EVCB.componentMethodBegin(callerContext, const_cast<cComponent *>(newContext), "", dummy_va);
+        EVCB.componentMethodBegin(callerContext, const_cast<cComponent *>(newContext), NULL, dummy_va);
 }
 
 void cMethodCallContextSwitcher::methodCall(const char *methodFmt,...)

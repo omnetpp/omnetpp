@@ -254,6 +254,7 @@ class SIM_API cEnvir
      * Notifies the environment that one component (module) called a member
      * function of another component. This hook enables a graphical user
      * interface to animate the method call in the network diagram.
+     * Pass methodFmt==NULL for Enter_Method_Silent.
      */
     virtual void componentMethodBegin(cComponent *from, cComponent *to, const char *methodFmt, va_list va) = 0;
 

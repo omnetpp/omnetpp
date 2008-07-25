@@ -24,7 +24,7 @@
  * into sections. This class does not try to make sense of section/key names.
  *
  * The default implementation is InifileReader, but other variants (e.g. those
- * reading the configuration from a database) can also be implemented.
+ * that read the configuration from a database) can also be implemented.
  */
 class cConfigurationReader
 {

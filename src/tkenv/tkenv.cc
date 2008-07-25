@@ -1171,8 +1171,11 @@ void Tkenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const
     if (!animating || !opt_anim_methodcalls)
         return;
 
+    if (!methodFmt)
+       return;  // Enter_Method_Silent
+
     if (!fromComp->isModule() || !toComp->isModule())
-        return; // not yet animated
+        return;  // calls to/from channels are not yet animated
 
     updateGraphicalInspectorsBeforeAnimation();
 

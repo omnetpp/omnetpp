@@ -274,9 +274,14 @@ void EventlogFileManager::componentMethodBegin(cComponent *from, cComponent *to,
     {
         if (from->isModule() && to->isModule())
         {
-            static char methodText[MAX_METHODCALL];
-            vsnprintf(methodText, MAX_METHODCALL, methodFmt, va);
-            methodText[MAX_METHODCALL-1] = '\0';
+            const char *methodText = "";  // for the Enter_Method_Silent case
+            if (methodFmt)
+            {
+                static char methodTextBuf[MAX_METHODCALL];
+                vsnprintf(methodTextBuf, MAX_METHODCALL, methodFmt, va);
+                methodTextBuf[MAX_METHODCALL-1] = '\0';
+                methodText = methodTextBuf;
+            }
             EventLogWriter::recordModuleMethodBeginEntry_sm_tm_m(feventlog,
                 ((cModule *)from)->getId(), ((cModule *)to)->getId(), methodText);
         }
