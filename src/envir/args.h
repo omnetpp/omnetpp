@@ -92,7 +92,8 @@ class ENVIR_API ArgList
     const char *optionValue(char c, int k=0) const;
 
     /**
-     * Returns long options (those that begin with '--'), as key-value pairs.
+     * Returns long options (those that begin with '--'), as key-value pairs;
+     * keys do not contain the leading '--'.
      */
     std::map<std::string,std::string> getLongOptions() const;
 

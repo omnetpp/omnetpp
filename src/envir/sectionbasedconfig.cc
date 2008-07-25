@@ -98,6 +98,23 @@ void SectionBasedConfiguration::setConfigurationReader(cConfigurationReader *ini
     nullEntry.setBaseDirectory(ini->getDefaultBaseDirectory());
 }
 
+void SectionBasedConfiguration::setCommandLineConfigOptions(const std::map<std::string,std::string>& options)
+{
+    commandLineOptions.clear();
+    for (StringMap::const_iterator it=options.begin(); it!=options.end(); it++)
+    {
+        // validate the key, then store the option
+        const char *key = it->first.c_str();
+        const char *value = it->second.c_str();
+        cConfigKey *e = lookupConfigKey(key);
+        if (!e)
+            throw cRuntimeError("Unknown command-line configuration option: --%s", key);
+        if (e->isPerObject())
+            throw cRuntimeError("Per-object configuration options cannot be specified on the command line: --%s", key);
+        commandLineOptions.push_back(KeyValue1(NULL, key, value));
+    }
+}
+
 void SectionBasedConfiguration::clear()
 {
     // note: this gets called between activateConfig() calls, so "ini" must NOT be NULL'ed out here
@@ -111,7 +128,7 @@ void SectionBasedConfiguration::clear()
 
 void SectionBasedConfiguration::initializeFrom(cConfiguration *conf)
 {
-    //XXX
+    throw cRuntimeError("SectionBasedConfiguration: initializeFrom() not supported");
 }
 
 const char *SectionBasedConfiguration::getFileName() const
@@ -234,6 +251,10 @@ void SectionBasedConfiguration::activateConfig(const char *configName, int runNu
     // walk the list of fallback sections, and add entries to our tables
     // (config[] and params[]). Meanwhile, substitute the iteration values.
     // Note: entries added first will have precedence over those added later.
+    for (int i=0; i < (int)commandLineOptions.size(); i++)
+    {
+        addEntry(commandLineOptions[i]);
+    }
     for (int i=0; i < (int)sectionChain.size(); i++)
     {
         int sectionId = sectionChain[i];

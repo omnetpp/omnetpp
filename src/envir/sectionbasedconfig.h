@@ -52,7 +52,7 @@ class ENVIR_API SectionBasedConfiguration : public cConfiguration
         std::string key;
         std::string value;
         KeyValue1() {basedirRef = &nullbasedir;}
-        KeyValue1(const std::string *bd, const char *k, const char *v) {basedirRef = bd; key = k; value = v;}
+        KeyValue1(const std::string *bd, const char *k, const char *v) {basedirRef = bd?bd:&nullbasedir; key = k; value = v;}
 
         // virtual functions implementing the KeyValue interface
         virtual const char *getKey() const   {return key.c_str();}
@@ -61,6 +61,7 @@ class ENVIR_API SectionBasedConfiguration : public cConfiguration
     };
 
     cConfigurationReader *ini;
+    std::vector<KeyValue1> commandLineOptions;
     std::string activeConfig;
     int activeRunNumber;
     std::string runId;
@@ -206,6 +207,15 @@ class ENVIR_API SectionBasedConfiguration : public cConfiguration
      * should be passed with this method.
      */
     virtual void setConfigurationReader(cConfigurationReader *ini);
+
+    /**
+     * Specifies config options passed on the command line. These options
+     * are global (effective for all configs), cannot be per-object options,
+     * and take precedence over the ones read from the ini file (i.e. from
+     * cConfigurationReader). This method immediately validates the option
+     * names, and thows an error for unrecogized/unacceptable ones.
+     */
+    virtual void setCommandLineConfigOptions(const std::map<std::string,std::string>& options);
 
     /** @name Methods that implement the cConfiguration interface. */
     //@{
