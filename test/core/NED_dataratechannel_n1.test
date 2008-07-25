@@ -1,0 +1,40 @@
+%description:
+Test that ONLY one DatarateChannel per connection path is allowed.
+
+%file: test.ned
+
+module Node
+{
+    gates:
+        inout g;
+    connections allowunconnected:
+}
+
+module Compound
+{
+    gates:
+        inout g;
+    submodules:
+        node: Node;
+    connections:
+        node.g <--> {datarate=1Gbps;} <--> g;
+}
+
+network Test
+{
+    submodules:
+        c1: Compound;
+        c2: Compound;
+    connections:
+        c1.g <--> c2.g;
+}
+
+%file: test.cc
+// prevent "no object files" linker error if test is run alone
+
+%exitcode: 1
+
+%contains: stdout
+More than one channel with data rate found in the connection path between gates Test.c2.node.g$o and Test.c1.node.g$i
+
+
