@@ -72,6 +72,23 @@ extern SIM_API cEnvir *evPtr;
 
 
 /**
+ * <tt>EV&lt;&lt;</tt> can be used instead of <tt>ev&lt;&lt;</tt> to make
+ * logging more efficient. An example:
+ * <pre>
+ * EV << "Packet " << msg->getName() << " received\n";
+ * </pre>
+ *
+ * <tt>EV</tt> utilizes cEnvir::isDisabled() to check whether the logged text
+ * is going to be printed/stored anywhere, or just gets discarded; in the
+ * latter case the <tt>&lt;&lt;</tt> operators do not get evaluated at all,
+ * making the log statement effectively a zero cost operation.
+ *
+ * @ingroup Envir
+ */
+#define EV  ev.isDisabled()?ev:ev   /*Note: deliberately NO parens*/
+
+
+/**
  * cEnvir represents the "environment" of the simulation. cEnvir
  * is a common facade for the Cmdenv and Tkenv user interfaces (and any
  * other future user interface).
@@ -267,12 +284,13 @@ class SIM_API cEnvir
     virtual void moduleDeleted(cModule *module) = 0;
 
     /**
-     * TODO:
+     * Notifies the environment that a gates was created.
      */
     virtual void gateCreated(cGate *newgate) = 0;
 
     /**
-     * TODO:
+     * Notifies the environment that a gates was (more precisely: is being)
+     * deleted.
      */
     virtual void gateDeleted(cGate *gate) = 0;
 
@@ -381,10 +399,9 @@ class SIM_API cEnvir
      *     if (!ev.isDisabled())  ev << "Packet " << msg->getName() << " received";
      * </pre>
      *
-     * The following version may also be useful (it makes use of the fact that <<
-     * binds stronger than ?:)
+     * which can be abbreviated with the <tt>EV</tt> macro:
+     *
      * <pre>
-     *     \#define EV  ev.isDisabled()?ev:ev
      *     EV << "Packet " << msg->getName() << " received";
      * </pre>
      */
