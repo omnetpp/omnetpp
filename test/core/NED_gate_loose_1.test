@@ -10,12 +10,10 @@ module Node
         output out1 @loose;
         output out2 @loose();
         output out3 @loose(true);
-        output out4 @loose(true);
 
         output out11 @directIn;
         output out12 @directIn();
         output out13 @directIn(true);
-        output out14 @directIn(true);
     //connections allowunconnected:
 }
 
