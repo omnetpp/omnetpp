@@ -9,6 +9,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
+import org.omnetpp.common.IConstants;
 import org.omnetpp.common.util.ProcessUtils;
 import org.omnetpp.ide.OmnetppMainPlugin;
 
@@ -44,8 +45,11 @@ public class OmnetppPreferencePage
 	public void createFieldEditors() {
 	    // FIXME naming is not correct - not install location)
 		addField(new DirectoryFieldEditor(OmnetppPreferencePage.OMNETPP_ROOT, "OMNeT++ install location:", getFieldEditorParent()));
-		addField(new LookupFileFieldEditor(DOXYGEN_EXECUTABLE, "Doxygen executable path:", getFieldEditorParent()));
-        addField(new LookupFileFieldEditor(GRAPHVIZ_DOT_EXECUTABLE, "GraphViz Dot executable path:", getFieldEditorParent()));
+		// supported only in the commercial build
+		if (IConstants.IS_COMMERCIAL) {
+			addField(new LookupFileFieldEditor(DOXYGEN_EXECUTABLE, "Doxygen executable path:", getFieldEditorParent()));
+			addField(new LookupFileFieldEditor(GRAPHVIZ_DOT_EXECUTABLE, "GraphViz Dot executable path:", getFieldEditorParent()));
+		}
 	}
 
 	/* (non-Javadoc)
@@ -55,12 +59,16 @@ public class OmnetppPreferencePage
 	}
 
     public static boolean isGraphvizDotAvailable() {
+    	if (!IConstants.IS_COMMERCIAL)
+    		return false;
         IPreferenceStore store = OmnetppMainPlugin.getDefault().getPreferenceStore();
         String graphvizDotExecutablePath = store.getString(OmnetppPreferencePage.GRAPHVIZ_DOT_EXECUTABLE);
         return graphvizDotExecutablePath != null && new File(ProcessUtils.lookupExecutable(graphvizDotExecutablePath)).exists();
     }
 
     public static boolean isDoxygenAvailable() {
+    	if (!IConstants.IS_COMMERCIAL)
+    		return false;
         IPreferenceStore store = OmnetppMainPlugin.getDefault().getPreferenceStore();
         String doxyExecutablePath = store.getString(OmnetppPreferencePage.DOXYGEN_EXECUTABLE);
         return doxyExecutablePath != null && new File(ProcessUtils.lookupExecutable(doxyExecutablePath)).exists();
