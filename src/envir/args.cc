@@ -33,30 +33,30 @@ ArgList::ArgList(int ac, char *av[], const char *sp)
     spec = sp;
 }
 
-void ArgList::checkArgs()
+void ArgList::checkArgs() const
 {
     const char *dummy;
     getOpt(0, 0, dummy, true);
 }
 
-bool ArgList::isValidOption(char c)
+bool ArgList::isValidOption(char c) const
 {
     return strchr(spec.c_str(), c) != NULL;
 }
 
-bool ArgList::hasArg(char c)
+bool ArgList::hasArg(char c) const
 {
     const char *p = strchr(spec.c_str(), c);
     return p && (*(p+1)==':' || *(p+1)=='?');
 }
 
-bool ArgList::hasOptionalArg(char c)
+bool ArgList::hasOptionalArg(char c) const
 {
     const char *p = strchr(spec.c_str(), c);
     return p && *(p+1)=='?';
 }
 
-bool ArgList::getOpt(char c, int k, const char *&value, bool validate)
+bool ArgList::getOpt(char c, int k, const char *&value, bool validate) const
 {
     value = NULL;
 
@@ -116,13 +116,20 @@ bool ArgList::getOpt(char c, int k, const char *&value, bool validate)
     }
 }
 
-bool ArgList::optionGiven(char c)
+std::vector<const char *> ArgList::getLongOptions() const
+{
+    std::vector<const char *> result;
+    //FIXME TODO...
+    return result;
+}
+
+bool ArgList::optionGiven(char c) const
 {
     const char *dummy;
     return getOpt(c, 0, dummy, false);
 }
 
-const char *ArgList::optionValue(char c, int k)
+const char *ArgList::optionValue(char c, int k) const
 {
     const char *value;
     getOpt(c, k, value, false);
@@ -130,7 +137,7 @@ const char *ArgList::optionValue(char c, int k)
     return value;
 }
 
-const char *ArgList::argument(int k)
+const char *ArgList::argument(int k) const
 {
     const char *value;
     getOpt(0, k, value, false);

@@ -21,6 +21,7 @@
 #define __ARGS_H
 
 #include <string>
+#include <vector>
 #include "envirdefs.h"
 
 NAMESPACE_BEGIN
@@ -57,7 +58,7 @@ class ENVIR_API ArgList
      * An option character in this string can be followed by a colon (`:')
      * to indicate that it takes a required argument. If the option
      * character is followed by a question mark ('?'), it means that
-     * the argument is optional, that is, it not be an error to specify
+     * the argument is optional, that is, it should not be an error to specify
      * the option as the last argument (ie followed by nothing).
      * '?' is probably ONLY useful with -h.
      */
@@ -71,19 +72,25 @@ class ENVIR_API ArgList
     /**
      * Returns true if the given option is present on the command line.
      */
-    bool optionGiven(char c);
+    bool optionGiven(char c) const;
 
     /**
      * Returns the value of the given option. If there are more than one
      * occurrences, k specifies which one to return. Returns NULL if not
      * found.
      */
-    const char *optionValue(char c, int k=0);
+    const char *optionValue(char c, int k=0) const;
+
+    /**
+     * Returns long options (those that begin with '--'), in a vector
+     * as key-value-key-value...
+     */
+    std::vector<const char *> getLongOptions() const;
 
     /**
      * Returns the kth non-option argument. Returns NULL if k is out of range.
      */
-    const char *argument(int k);
+    const char *argument(int k) const;
 
     /**
      * Returns the original argc.
@@ -98,5 +105,6 @@ class ENVIR_API ArgList
 
 NAMESPACE_END
 
-
 #endif
+
+

@@ -146,6 +146,10 @@ int BootEnv::run(int argc, char *argv[], cConfiguration *cfg)
         for (int k=(args->optionValue('f',0) ? 0 : 1); (fname=args->argument(k))!=NULL; k++)
             inifile->readFile(fname);
 
+        // add the inifile options specified on the command line
+        std::vector<const char *> v = args->getLongOptions();
+        //TODO...
+
         // activate [General] section so that we can read global settings from it
         bootconfig = new SectionBasedConfiguration();
         bootconfig->setConfigurationReader(inifile);
