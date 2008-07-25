@@ -126,8 +126,8 @@ int BootEnv::run(int argc, char *argv[], cConfiguration *cfg)
         verifyIntTypes();
 
         // args
-        args = new ArgList(argc, argv, "h?f:u:l:c:r:p:n:x:gG");
-        args->checkArgs();
+        args = new ArgList();
+        args->parse(argc, argv, "h?f:u:l:c:r:p:n:x:gG");
 
         //
         // First, load the ini file. It might contain the name of the user interface
@@ -147,7 +147,6 @@ int BootEnv::run(int argc, char *argv[], cConfiguration *cfg)
             inifile->readFile(fname);
 
         // add the inifile options specified on the command line
-        std::vector<const char *> v = args->getLongOptions();
         //TODO...
 
         // activate [General] section so that we can read global settings from it

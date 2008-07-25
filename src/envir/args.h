@@ -22,6 +22,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 #include "envirdefs.h"
 
 NAMESPACE_BEGIN
@@ -37,6 +38,10 @@ class ENVIR_API ArgList
     char **argv;
     std::string spec;
 
+    std::map<char,std::vector<std::string> > shortOpts;
+    std::map<std::string,std::string> longOpts;
+    std::vector<std::string> params;
+
   private:
     // looks up spec for the given option
     bool isValidOption(char c) const;
@@ -50,9 +55,17 @@ class ENVIR_API ArgList
     // if char c == 0, returns kth argument not kth option
     bool getOpt(char c, int k, const char *&value, bool validate) const;
 
+    // fills in shortOpts, longOpts and params from argc+argv
+    void parse();
+
   public:
     /**
-     * Constructor takes argc, argv, and a getopt()-like specification
+     * Ctor
+     */
+    ArgList();
+
+    /**
+     * Takes argc, argv, and a getopt()-like specification
      * of single-letter options. The spec argument is a string that
      * specifies the option characters that are valid for this program.
      * An option character in this string can be followed by a colon (`:')
@@ -61,13 +74,10 @@ class ENVIR_API ArgList
      * the argument is optional, that is, it should not be an error to specify
      * the option as the last argument (ie followed by nothing).
      * '?' is probably ONLY useful with -h.
-     */
-    ArgList(int argc, char *argv[], const char *spec);
-
-    /**
+     *
      * Throws an exception if there are unrecognized options
      */
-    void checkArgs() const;
+    void parse(int argc, char *argv[], const char *spec);
 
     /**
      * Returns true if the given option is present on the command line.
@@ -82,10 +92,9 @@ class ENVIR_API ArgList
     const char *optionValue(char c, int k=0) const;
 
     /**
-     * Returns long options (those that begin with '--'), in a vector
-     * as key-value-key-value...
+     * Returns long options (those that begin with '--'), as key-value pairs.
      */
-    std::vector<const char *> getLongOptions() const;
+    std::map<std::string,std::string> getLongOptions() const;
 
     /**
      * Returns the kth non-option argument. Returns NULL if k is out of range.

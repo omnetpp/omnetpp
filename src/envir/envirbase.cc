@@ -166,7 +166,8 @@ EnvirBase::~EnvirBase()
 
 int EnvirBase::run(int argc, char *argv[], cConfiguration *configobject)
 {
-    args = new ArgList(argc, argv, "h?f:u:l:c:r:p:n:x:gG");  //TODO share spec with BootEnv!
+    args = new ArgList();
+    args->parse(argc, argv, "h?f:u:l:c:r:p:n:x:gG");  //TODO share spec with BootEnv!
     cfg = configobject;
 
     setup();

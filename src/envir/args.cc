@@ -26,17 +26,69 @@
 USING_NAMESPACE
 
 
-ArgList::ArgList(int ac, char *av[], const char *sp)
+ArgList::ArgList()
 {
-    argc = ac;
-    argv = av;
-    spec = sp;
+    argc = 0;
+    argv = NULL;
 }
 
-void ArgList::checkArgs() const
+void ArgList::parse(int argc, char *argv[], const char *spec)
 {
-    const char *dummy;
-    getOpt(0, 0, dummy, true);
+    this->argc = argc;
+    this->argv = argv;
+    this->spec = spec;
+
+    int i;
+    for (i=1; i<argc; i++)
+    {
+        if (strcmp(argv[i], "--")==0)
+        {
+            // end of options
+            i++;
+            break;
+        }
+        if (argv[i][0]=='-' && argv[i][1]=='-')
+        {
+            // long option
+            if (i==argc-1)
+                throw opp_runtime_error("command-line option %s is missing required argument", argv[i]);
+            longOpts[argv[i]+2] = argv[i+1];
+            i++;
+        }
+        else if (argv[i][0]=='-')
+        {
+            // short option
+            char c = argv[i][1];
+            if (!isValidOption(c))
+                throw opp_runtime_error("invalid command-line option %s, try -h for help", argv[i]);
+
+            std::vector<std::string>& v = shortOpts[c]; // get or create map element
+            if (hasArg(c))
+            {
+                if (argv[i][2])
+                    v.push_back(argv[i]+2);
+                else if (i < argc-1)
+                    v.push_back(argv[++i]);
+                else if (!hasOptionalArg(c))
+                    throw opp_runtime_error("command-line option %s is missing required argument", argv[i]);
+            }
+            else {
+                if (argv[i][2])
+                    throw opp_runtime_error("command-line option -%c expects no argument", argv[i][1]);
+            }
+        }
+        else
+        {
+            // end of options
+            break;
+        }
+    }
+
+    // store the rest of the args
+    for (; i<argc; i++)
+    {
+        params.push_back(argv[i]);
+    }
 }
 
 bool ArgList::isValidOption(char c) const
@@ -56,93 +108,27 @@ bool ArgList::hasOptionalArg(char c) const
     return p && *(p+1)=='?';
 }
 
-bool ArgList::getOpt(char c, int k, const char *&value, bool validate) const
+std::map<std::string,std::string> ArgList::getLongOptions() const
 {
-    value = NULL;
-
-    // loop through the options
-    int i;
-    bool inoptions = true;
-    for (i=1; i<argc; i++)
-    {
-        // break if we reached the end of the options, hitting either a
-        // non-option argument (no leading '-') or '--'.
-        const char *argstr = argv[i];
-        if (argstr[0]!='-' || !argstr[1])
-            {inoptions=false; break;}  // end of options
-        if (strcmp(argstr, "--")==0)
-            {inoptions=false; ++i; break;}  // end of options
-
-        // check if this option is a valid one, and if this is the one we're searching for
-        if (validate && !isValidOption(argstr[1]))
-            throw opp_runtime_error("invalid command-line option %s, try -h for help", argstr);
-        if (c && argstr[1]==c)
-            if (k-- == 0)
-                break; // found the kth 'c' option
-
-        // skip value of this option in argv if it has one
-        if (hasArg(argstr[1]) && !argstr[2])
-            i++;
-        if (validate && i>=argc && !hasOptionalArg(argstr[1]))
-            throw opp_runtime_error("command-line option -%c is missing required argument", argstr[1]);
-
-    }
-    if (i>=argc)
-        return false; // no such option or argument
-
-    // finished scanning options; if we looked for one, we can return it
-    if (c)
-    {
-        if (!inoptions)
-            return false; // option not found
-
-        // store value if it has one
-        if (hasArg(c))
-        {
-            if (argv[i][2])
-                value = argv[i]+2;  // -oFOO syntax
-            else if (i!=argc-1)
-                value = argv[i+1];  // -o FOO syntax
-        }
-        return true;
-    }
-    else
-    {
-        // rest of argv is arguments; return the kth one
-        if (i+k >= argc)
-            return false;
-        value = argv[i+k];
-        return true;
-    }
-}
-
-std::vector<const char *> ArgList::getLongOptions() const
-{
-    std::vector<const char *> result;
-    //FIXME TODO...
-    return result;
+    return longOpts;
 }
 
 bool ArgList::optionGiven(char c) const
 {
-    const char *dummy;
-    return getOpt(c, 0, dummy, false);
+    return shortOpts.find(c)!=shortOpts.end();
 }
 
 const char *ArgList::optionValue(char c, int k) const
 {
-    const char *value;
-    getOpt(c, k, value, false);
-    //printf("DBG: -%c option #%d = `%s'\n", c, k, value);
-    return value;
+    if (shortOpts.find(c)==shortOpts.end())
+        return NULL;
+    const std::vector<std::string>& v = shortOpts.find(c)->second; // VC++ has problems with shortOpts[c]
+    return (k>=0 && k<(int)v.size()) ? v[k].c_str() : NULL;
 }
 
 const char *ArgList::argument(int k) const
 {
-    const char *value;
-    getOpt(0, k, value, false);
-    //printf("DBG: arg #%d = `%s'\n", k, value);
-    return value;
+    return (k>=0 && k<(int)params.size()) ? params[k].c_str() : NULL;
 }
 
 
