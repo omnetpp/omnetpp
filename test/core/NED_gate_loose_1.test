@@ -1,0 +1,32 @@
+%description:
+Test that gates annotated with @loose or @directIn do not
+need to be connected.
+
+%file: test.ned
+
+module Node
+{
+    gates:
+        output out1 @loose;
+        output out2 @loose();
+        output out3 @loose(true);
+        output out4 @loose(true);
+
+        output out11 @directIn;
+        output out12 @directIn();
+        output out13 @directIn(true);
+        output out14 @directIn(true);
+    //connections allowunconnected:
+}
+
+network Test
+{
+    submodules:
+        node: Node;
+}
+
+%file: test.cc
+
+%exitcode: 0
+
+
