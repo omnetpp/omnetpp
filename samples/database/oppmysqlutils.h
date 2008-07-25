@@ -6,7 +6,7 @@
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2005 Andras Varga
+  Copyright (C) 1992-2008 Andras Varga
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -37,7 +37,7 @@
  * Please refer to the MySQL documentation about their meanings.
  *
  * If a prefix is given (not NULL or the empty string), then the above
- * config entry names are prefixed with it. That is, with prefix="homepc", 
+ * config entry names are prefixed with it. That is, with prefix="homepc",
  * the configuration is searched for the following entries:
  *
  * <pre>
@@ -75,8 +75,8 @@ void opp_mysql_assignSTRING(MYSQL_BIND& bind, char *buf, const char *s);
 
 /**
  * Substitutes all occurrences of substring with value in query, and returns
- * the number of replacements. The mysql arg should hold a valid database 
- * connection -- it is needed because the escaping depends on the character 
+ * the number of replacements. The mysql arg should hold a valid database
+ * connection -- it is needed because the escaping depends on the character
  * set in use by the server.
  *
  * Example:

@@ -1,7 +1,7 @@
 //
 // This file is part of an OMNeT++/OMNEST simulation example.
 //
-// Copyright (C) 2003-2005 Andras Varga
+// Copyright (C) 2003-2008 Andras Varga
 //
 // This file is distributed WITHOUT ANY WARRANTY. See the file
 // `license' for details on this and other legal matters.
