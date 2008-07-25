@@ -1,0 +1,52 @@
+%description:
+Test that one DatarateChannel per connection path is allowed,
+and additionally there may be display strings, IdealChannels
+etc in the path.
+
+%file: test.ned
+
+module Node
+{
+    gates:
+        inout g1;
+        inout g2;
+        inout g3;
+        inout G1;
+        inout G2;
+    connections allowunconnected:
+}
+
+module Compound
+{
+    gates:
+        inout g1;
+        inout g2;
+        inout g3;
+        inout G1;
+        inout G2;
+    submodules:
+        node: Node;
+    connections:
+        node.g1 <--> g1;
+        node.g2 <--> {@display("m=s");} <--> g2;
+        node.g3 <--> ned.IdealChannel <--> g3;
+        node.G1 <--> ned.DatarateChannel <--> G1;
+        node.G2 <--> {datarate=1Gbps;} <--> G2;
+}
+
+network Test
+{
+    submodules:
+        c1: Compound;
+        c2: Compound;
+    connections allowunconnected:
+        c1.g1 <--> {datarate=1Gbps;} <--> c2.g1;
+        c1.g2 <--> {datarate=1Gbps;} <--> c2.g2;
+        c1.g3 <--> {datarate=1Gbps;} <--> c2.g3;
+}
+
+%file: test.cc
+// prevent "no object files" linker error if test is run alone
+
+%exitcode: 0
+
