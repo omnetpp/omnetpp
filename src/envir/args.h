@@ -39,16 +39,16 @@ class ENVIR_API ArgList
 
   private:
     // looks up spec for the given option
-    bool isValidOption(char c);
+    bool isValidOption(char c) const;
 
     // looks up spec for the given option, and returns true if it has an arg
-    bool hasArg(char c);
+    bool hasArg(char c) const;
 
     // looks up spec for the given option, and returns true if it has an optional arg
-    bool hasOptionalArg(char c);
+    bool hasOptionalArg(char c) const;
 
     // if char c == 0, returns kth argument not kth option
-    bool getOpt(char c, int k, const char *&value, bool validate);
+    bool getOpt(char c, int k, const char *&value, bool validate) const;
 
   public:
     /**
@@ -67,7 +67,7 @@ class ENVIR_API ArgList
     /**
      * Throws an exception if there are unrecognized options
      */
-    void checkArgs();
+    void checkArgs() const;
 
     /**
      * Returns true if the given option is present on the command line.
