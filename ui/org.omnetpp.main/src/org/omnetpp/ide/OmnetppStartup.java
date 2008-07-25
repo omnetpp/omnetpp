@@ -39,8 +39,8 @@ import org.omnetpp.ide.views.NewsView;
 public class OmnetppStartup implements IStartup {
 
     private static final String VERSION = "4.0.0b3";
-    private static final String VERSIONS_URL = NewsView.BASE_URL + "/versions";
-	private static final String LATESTVERSION_URL = VERSIONS_URL + "/latest";
+    private static final String VERSIONS_URL = NewsView.BASE_URL + "versions/";
+	private static final String LATESTVERSION_URL = VERSIONS_URL + "latest/";
 	public static final String SAMPLES_DIR = "samples";
 
     /*
