@@ -1,0 +1,12 @@
+%description:
+Test that cGate::deliverOnReceptionStart() may NOT be invoked on an output gate
+
+%activity:
+addGate("out", cGate::OUTPUT);
+gate("out")->setDeliverOnReceptionStart(true);
+
+%exitcode: 1
+
+%contains: stdout
+setDeliverOnReceptionStart() may only be invoked on an input gate
+
