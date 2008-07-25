@@ -887,13 +887,13 @@ bool cModule::checkInternalConnections() const
     // To allow a gate go unconnected, annotate it with @loose or @directIn.
 
     // check this compound module if its inside is connected ok
+    // Note: checking of the inner side of compound module gates
+    // cannot be turned off with @loose
     for (GateIterator i(this); !i.end(); i++)
     {
        cGate *g = i();
-       if (g->size()!=0 && !g->isConnectedInside() &&
-           g->getProperties()->getAsBool("loose")==false &&
-           g->getProperties()->getAsBool("directIn")==false)
-            throw cRuntimeError(this,"Gate `%s' is not connected to submodule (or output gate of same module)", g->getFullPath().c_str());
+       if (g->size()!=0 && !g->isConnectedInside())
+            throw cRuntimeError(this,"Gate `%s' is not connected to a submodule (or internally to another gate of the same module)", g->getFullPath().c_str());
     }
 
     // check submodules
