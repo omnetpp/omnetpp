@@ -67,13 +67,15 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
 	//    Box box;
 	//#endif
 
+    private static int TIMEOUT = 15000;  // 15 sec timeout for the layouter
+    int maxIterations;
+
     boolean haveFixedNode;
     boolean haveAnchoredNode;
     boolean allNodesAreFixed;
 
     int minx, miny, maxx, maxy;
 
-    int maxIterations;
     double repulsiveForce;
     double attractionForce;
 
@@ -211,6 +213,8 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
 
 	@Override
 	public void execute() {
+        long startMillis = System.currentTimeMillis();
+		
 	    if (nodes.isEmpty() || allNodesAreFixed)
 	        return;
 
@@ -277,8 +281,9 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
 	    doColoring();
 
 	    // now the real job -- stop if max moved distance is <0.05 at least 20 times in a row
+	    // or we spent more time on layouting then the preset timeout
 	    int i, maxdcounter=0;
-	    for (i=1; i<maxIterations && maxdcounter<20; i++)
+	    for (i=1; i<maxIterations && maxdcounter<20 && (System.currentTimeMillis()-startMillis)<TIMEOUT; i++)
 	    {
 	        double maxd = relax();
 
