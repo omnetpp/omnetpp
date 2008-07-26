@@ -63,6 +63,9 @@ class ENVIR_API cAkaroaRNG : public cRNG
     virtual ~cAkaroaRNG() {}
 
     /** Sets up the RNG. */
+    virtual void initialize(int runNumber, int rngId, int numRngs,
+                            int parsimProcId, int parsimNumPartitions,
+                            cConfiguration *cfg)
     virtual void initialize(int runNumber, int id, int numRngs, cConfiguration *cfg);
 
     /** Tests correctness of the RNG */

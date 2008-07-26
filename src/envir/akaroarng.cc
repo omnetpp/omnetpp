@@ -33,10 +33,12 @@ USING_NAMESPACE
 Register_Class(cAkaroaRNG);
 
 
-void cAkaroaRNG::initialize(int runNumber, int id, int numRngs, cConfiguration *cfg)
+void cAkaroaRNG::initialize(int runNumber, int rngId, int numRngs,
+                            int parsimProcId, int parsimNumPartitions,
+                            cConfiguration *cfg)
 {
     // no manual seeding, and only one RNG stream
-    if (numRngs!=1 || id!=0)
+    if (numRngs!=1 || rngId!=0 || parsimNumPartitions>1)
         throw cRuntimeError("cAkaroaRNG: Akaroa supports only one RNG stream, use num-rngs=1 setting");
 }
 
