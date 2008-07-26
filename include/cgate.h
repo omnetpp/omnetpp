@@ -332,18 +332,41 @@ class SIM_API cGate : public cObject, noncopyable
 
     /** @name Transmission state. */
     //@{
+    /**
+     * Usually invoked on an output gate, this method returns <i>the</i>
+     * channel in the connection path that supports datarate (as determined
+     * by cChannel::supportsDatarate(); it is guaranteed that there can be
+     * at most one such channel per path). If there is no suh channel,
+     * an error is thrown.
+     *
+     * This method only checks the segment of the connection path that
+     * <i>starts</i> at this gate, so, for example, it is an error to invoke
+     * it on a simple module input gate.
+     *
+     * Note: this method searches the connection path linearly, so at
+     * performance-critical places it may be better to cache its return
+     * value (provided that connections are not removed or created dynamically
+     * during simulation.)
+     */
+    cChannel *getDatarateChannel() const;
 
     /**
-     * If the gate has a channel subclassed from cDatarateChannel,
-     * the methods calls isBusy() on it and returns the result.
-     * Otherwise, it returns false.
+     * Usually only meaningful on an output gate, this method returns
+     * whether the datarate channel in the connection path starting at
+     * this gate is currently transmitting. If there is no datarate channel
+     * in the path, this method throws an error.
+     *
+     * It is equivalent to <tt>getDatarateChannel()->isBusy()</tt>.
      */
     bool isBusy() const;
 
     /**
-     * If the gate has a channel, the method invokes and returns the result of
-     * getTransmissionFinishTime() on the channel; otherwise it returns the
-     * current simulation time.
+     * Usually only meaningful on an output gate, this method returns
+     * when the datarate channel in the connection path starting at
+     * this gate will finish transmitting. If there is no datarate channel
+     * in the path, this method throws an error.
+     *
+     * It is equivalent to <tt>getDatarateChannel()->getTransmissionFinishTime()</tt>.
      */
     simtime_t getTransmissionFinishTime() const;
     //@}

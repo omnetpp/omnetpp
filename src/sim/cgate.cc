@@ -332,15 +332,34 @@ bool cGate::deliver(cMessage *msg, simtime_t t)
     }
 }
 
+cChannel *cGate::getDatarateChannel() const
+{
+    for (const cGate *g=this; g->togatep!=NULL; g=g->togatep)
+        if (g->channelp && g->channelp->supportsDatarate())
+            return g->channelp;
+
+    // datarate channel not found, try to issue a helpful error message
+    if (togatep)
+        throw cRuntimeError("No datarate channel found in the connection path "
+                            "between gates %s and %s", getFullPath().c_str(),
+                            getDestinationGate()->getFullPath().c_str());
+    else if (getType()==OUTPUT)
+        throw cRuntimeError("No datarate channel found: gate %s is not connected",
+                            getFullPath().c_str());
+    else
+        throw cRuntimeError(this, "getDatarateChannel(): cannot be invoked on a "
+                            "simple module input gate (or a compound module "
+                            "input gate which is not connected on the inside)");
+}
+
 bool cGate::isBusy() const
 {
-    cDatarateChannel *ch = dynamic_cast<cDatarateChannel *>(channelp);
-    return ch ? ch->isBusy() : false;
+    return getDatarateChannel()->isBusy();
 }
 
 simtime_t cGate::getTransmissionFinishTime() const
 {
-    return channelp ? channelp->getTransmissionFinishTime() : simulation.getSimTime();
+    return getDatarateChannel()->getTransmissionFinishTime();
 }
 
 bool cGate::pathContains(cModule *mod, int gate)

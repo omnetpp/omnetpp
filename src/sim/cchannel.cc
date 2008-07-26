@@ -161,6 +161,12 @@ cProperties *cChannel::getProperties() const
     return props;
 }
 
+bool cChannel::isBusy() const
+{
+    // a default implementation
+    return simTime() < getTransmissionFinishTime();
+}
+
 //----
 
 bool cIdealChannel::deliver(cMessage *msg, simtime_t t)
@@ -168,11 +174,6 @@ bool cIdealChannel::deliver(cMessage *msg, simtime_t t)
     // just hand over msg to next gate
     EVCB.messageSendHop(msg, getFromGate());
     return getFromGate()->getToGate()->deliver(msg, t);
-}
-
-simtime_t cIdealChannel::getTransmissionFinishTime() const
-{
-    return simulation.getSimTime();
 }
 
 

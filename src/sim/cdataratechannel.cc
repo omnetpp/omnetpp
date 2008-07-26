@@ -113,11 +113,6 @@ void cDatarateChannel::setDisabled(bool d)
     par("disabled").setBoolValue(d);
 }
 
-bool cDatarateChannel::isBusy() const
-{
-    return simulation.getSimTime() < txfinishtime;
-}
-
 bool cDatarateChannel::deliver(cMessage *msg, simtime_t t)
 {
     // if channel is disabled, signal that message should be deleted

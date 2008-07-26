@@ -161,13 +161,23 @@ class SIM_API cChannel : public cComponent //implies noncopyable
     virtual bool deliver(cMessage *msg, simtime_t at) = 0;
 
     /**
-     * Returns the simulation time the sender gate will finish transmitting.
-     * The return value is only meaningful if isBusy() is true.
+     * For channels that support datarate: Returns the simulation time
+     * the sender gate will finish transmitting. If the gate is not
+     * currently transmitting, the result is undefined but less or equal
+     * the current simulation time.
      *
-     * Transmission time of a message depends on the message length
-     * and the data rate assigned to the channel.
+     * @see supportsDatarate(), isBusy(), cDatarateChannel
      */
     virtual simtime_t getTransmissionFinishTime() const = 0;
+
+    /**
+     * For channels that support datarate: Returns whether the sender gate
+     * is currently transmitting, ie. whether transmissionFinishTime()
+     * is greater than the current simulation time.
+     *
+     * @see supportsDatarate(), getTransmissionFinishTime(), cDatarateChannel
+     */
+    virtual bool isBusy() const;
     //@}
 };
 
@@ -208,9 +218,14 @@ class SIM_API cIdealChannel : public cChannel //implies noncopyable
     virtual bool supportsDatarate() const {return false;}
 
     /**
-     * This implementation just returns the current simulation time.
+     * Returns zero.
      */
-    virtual simtime_t getTransmissionFinishTime() const;
+    virtual simtime_t getTransmissionFinishTime() const {return 0;}
+
+    /**
+     * Returns false.
+     */
+    virtual bool isBusy() const {return false;}
     //@}
 };
 

@@ -17,7 +17,7 @@
 #define __CDATARATECHANNEL_H
 
 #include "cchannel.h"
-#include "cpar.h"
+#include "csimulation.h"
 
 NAMESPACE_BEGIN
 
@@ -162,24 +162,22 @@ class SIM_API cDatarateChannel : public cChannel //implies noncopyable
 
     /** @name Transmission state. */
     //@{
-
-    /**
-     * Returns whether the sender gate is currently transmitting.
-     * Transmission time of a message depends on the message length
-     * and the data rate assigned to the channel.
-     *
-     * If no data rate is assigned to the channel, the result is false.
-     */
-    virtual bool isBusy() const;
-
     /**
      * Returns the simulation time the sender gate will finish transmitting.
-     * The return value is only meaningful if isBusy() is true.
+     * If the gate is not currently transmitting, the result is undefined but
+     * less or equal the current simulation time.
      *
-     * Transmission time of a message depends on the message length
+     * The transmission duration of a message depends on the message length
      * and the data rate assigned to the channel.
      */
     virtual simtime_t getTransmissionFinishTime() const {return txfinishtime;}
+
+    /**
+     * Returns whether the sender gate is currently transmitting, ie. whether
+     * transmissionFinishTime() is greater than the current simulation time.
+     */
+    virtual bool isBusy() const {return simTime() < txfinishtime;}
+
     //@}
 
     /** @name Internally used methods. */
