@@ -1,0 +1,29 @@
+#!/bin/sh
+#
+# Detects the platform and architecture, and starts the IDE with the right launcher
+#
+IDEDIR=`dirname $0`/../ide                                                                                        
+cd $IDEDIR                                                                                                        
+PLATFORM=`uname -sm`
+LAUNCHER=omnest
+
+echo Starting the OMNEST IDE...
+
+case $PLATFORM in 
+*MINGW*)
+	./${LAUNCHER}.exe & 
+        ;; 
+*Linux*x86_64*) 
+	./${LAUNCHER}64 & 
+        ;; 
+*Linux*) 
+	./$LAUNCHER & 
+        ;; 
+*Darwin*)
+	open ${LAUNCHER}.app
+        ;; 
+*) 
+	echo OMNEST IDE is supported only on: Linux 32/64bit, Windows 32bit, MacOS X Intel/PPC
+	exit 1
+        ;; 
+esac

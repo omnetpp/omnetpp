@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.omnetpp.ide.academic"
-      label="OMNeT++ IDE - Academic version"
+      label="OMNeT++ IDE - Academic Edition"
       version="4.0.0.qualifier"
       provider-name="OpenSim Ltd."
       plugin="org.omnetpp.main"

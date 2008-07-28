@@ -67,20 +67,23 @@
 	<!-- prepare for a commercial build / replace OMNeT++ strings to OMNEST etc. -->	
 	<target name="init-omnest" depends="init">
 	    <replace dir="${buildDirectory}" token="OMNeT++" value="OMNEST">
-		<include name="**/*.java"/>
-		<include name="**/*.htm" />
-		<include name="**/*.html"/>
-		<include name="**/*.xml"/>
-		<include name="**/MANIFEST.MF"/>
-		<include name="**/*.properties"/>
-		<include name="**/*.product"/>
+		  	<include name="**/*.java"/>
+		  	<include name="**/*.htm" />
+			<include name="**/*.html"/>
+			<include name="**/*.xml"/>
+			<include name="**/MANIFEST.MF"/>
+			<include name="**/*.properties"/>
+			<include name="**/*.product"/>
 	    </replace>	
-	    <replace dir="${buildDirectory}" token="IS_COMMERCIAL = false;" value="IS_COMMERCIAL = true;">
-		<include name="**/*.java"/>
+	    <replace dir="${buildDirectory}" token="Academic Edition, not for commercial use" value="Commercial Edition">
+			<include name="**/*.xml"/>
+	    </replace>	
+		<replace dir="${buildDirectory}" token="IS_COMMERCIAL = false;" value="IS_COMMERCIAL = true;">
+			<include name="**/*.java"/>
 	    </replace>	
 	    <copy file="${buildDirectory}/plugins/org.omnetpp.product/omnest-ide.product" tofile="${buildDirectory}/plugins/org.omnetpp.product/ide.product"/>
 	    <move file="${buildDirectory}/plugins/org.omnetpp.main/splash-omnest.bmp" tofile="${buildDirectory}/plugins/org.omnetpp.main/splash.bmp"/>
-    	</target>
+    </target>
 	
 	<!-- prepare for academic build / throw out commercial features etc. -->	
 	<target name="init-omnetpp" depends="init">
