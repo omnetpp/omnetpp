@@ -130,8 +130,8 @@ class EVENTLOG_API EventLogIndex
         virtual void synchronize(FileReader::FileChangedState change);
         eventnumber_t getFirstEventNumber();
         eventnumber_t getLastEventNumber();
-        simtime_t& getFirstSimulationTime();
-        simtime_t& getLastSimulationTime();
+        simtime_t getFirstSimulationTime();
+        simtime_t getLastSimulationTime();
         file_offset_t getFirstEventOffset();
         file_offset_t getLastEventOffset();
         void ensureFirstEventAndLastEventCached();

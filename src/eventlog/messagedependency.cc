@@ -17,6 +17,7 @@
 #include "eventlogdefs.h"
 #include "ievent.h"
 #include "ieventlog.h"
+#include "event.h"
 #include "eventlogentry.h"
 #include "messagedependency.h"
 
@@ -116,7 +117,7 @@ IEvent *MessageDependency::getCauseEvent()
         return eventLog->getEventForEventNumber(causeEventNumber);
 }
 
-simtime_t& MessageDependency::getCauseSimulationTime()
+simtime_t MessageDependency::getCauseSimulationTime()
 {
     return getCauseEvent()->getSimulationTime();
 }
@@ -187,7 +188,7 @@ IEvent *MessageDependency::getConsequenceEvent()
         return eventLog->getEventForEventNumber(consequenceEventNumber);
 }
 
-simtime_t& MessageDependency::getConsequenceSimulationTime()
+simtime_t MessageDependency::getConsequenceSimulationTime()
 {
     if (consequenceEventNumber >= 0)
         return getConsequenceEvent()->getSimulationTime();

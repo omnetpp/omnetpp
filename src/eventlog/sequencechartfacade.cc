@@ -117,9 +117,9 @@ void SequenceChartFacade::setTimelineMode(TimelineMode timelineMode)
         relocateTimelineCoordinateSystem(eventLog->getEventForEventNumber(timelineCoordinateOriginEventNumber));
 }
 
-double SequenceChartFacade::Event_getTimelineCoordinate(ptr_t ptr)
+double SequenceChartFacade::IEvent_getTimelineCoordinate(ptr_t ptr)
 {
-    EVENT_PTR(ptr);
+    IEVENT_PTR(ptr);
     return getTimelineCoordinate((IEvent*)ptr);
 }
 
@@ -135,7 +135,7 @@ double SequenceChartFacade::getTimelineCoordinateDelta(double simulationTimeDelt
 
 double SequenceChartFacade::getTimelineCoordinate(ptr_t ptr, double lowerTimelineCoordinateCalculationLimit, double upperTimelineCoordinateCalculationLimit)
 {
-    EVENT_PTR(ptr);
+    IEVENT_PTR(ptr);
     return getTimelineCoordinate((IEvent *)ptr, lowerTimelineCoordinateCalculationLimit, upperTimelineCoordinateCalculationLimit);
 }
 

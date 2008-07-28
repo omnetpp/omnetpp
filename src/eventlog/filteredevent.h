@@ -82,7 +82,7 @@ class EVENTLOG_API FilteredEvent : public IEvent
         virtual EventLogMessageEntry *getEventLogMessage(int index) { return getEvent()->getEventLogMessage(index); }
 
         virtual eventnumber_t getEventNumber() { return eventNumber; }
-        virtual simtime_t& getSimulationTime() { return getEvent()->getSimulationTime(); }
+        virtual simtime_t getSimulationTime() { return getEvent()->getSimulationTime(); }
         virtual int getModuleId() { return getEvent()->getModuleId(); }
         virtual long getMessageId() { return getEvent()->getMessageId(); }
         virtual eventnumber_t getCauseEventNumber() { return getEvent()->getCauseEventNumber(); }

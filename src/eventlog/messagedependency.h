@@ -49,8 +49,8 @@ class EVENTLOG_API IMessageDependency
         virtual eventnumber_t getConsequenceEventNumber() = 0;
         virtual IEvent *getConsequenceEvent() = 0;
 
-        virtual simtime_t& getCauseSimulationTime() = 0;
-        virtual simtime_t& getConsequenceSimulationTime() = 0;
+        virtual simtime_t getCauseSimulationTime() = 0;
+        virtual simtime_t getConsequenceSimulationTime() = 0;
         virtual BeginSendEntry *getBeginSendEntry() = 0;
         virtual BeginSendEntry *getCauseBeginSendEntry() = 0;
         virtual BeginSendEntry *getConsequenceBeginSendEntry() = 0;
@@ -104,8 +104,8 @@ class EVENTLOG_API MessageDependency : public IMessageDependency
 
         virtual BeginSendEntry *getBeginSendEntry() { return isReuse ? getConsequenceBeginSendEntry() : getCauseBeginSendEntry(); }
 
-        virtual simtime_t& getCauseSimulationTime();
-        virtual simtime_t& getConsequenceSimulationTime();
+        virtual simtime_t getCauseSimulationTime();
+        virtual simtime_t getConsequenceSimulationTime();
 
         long getCauseMessageId() { return getCauseBeginSendEntry()->messageId; }
         long getConsequenceMessageId() { return getConsequenceBeginSendEntry()->messageId; }
@@ -139,8 +139,8 @@ class EVENTLOG_API FilteredMessageDependency : public IMessageDependency
         virtual eventnumber_t getConsequenceEventNumber() { return endMessageDependency->getConsequenceEventNumber(); }
         virtual IEvent *getConsequenceEvent();
 
-        virtual simtime_t& getCauseSimulationTime() { return beginMessageDependency->getCauseSimulationTime(); };
-        virtual simtime_t& getConsequenceSimulationTime() { return endMessageDependency->getConsequenceSimulationTime(); };
+        virtual simtime_t getCauseSimulationTime() { return beginMessageDependency->getCauseSimulationTime(); };
+        virtual simtime_t getConsequenceSimulationTime() { return endMessageDependency->getConsequenceSimulationTime(); };
         virtual BeginSendEntry *getBeginSendEntry() { return isReuse ? getConsequenceBeginSendEntry() : getCauseBeginSendEntry(); }
         virtual BeginSendEntry *getCauseBeginSendEntry();
         virtual BeginSendEntry *getConsequenceBeginSendEntry();

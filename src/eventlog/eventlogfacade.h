@@ -23,9 +23,14 @@
 NAMESPACE_BEGIN
 
 #define PTR(ptr) if (ptr == 0) throw opp_runtime_error("NULL ptr exception");
-#define EVENT_PTR(ptr) PTR(ptr) Assert(dynamic_cast<IEvent *>((IEvent *)ptr));
-#define EVENTLOGENTRY_PTR(ptr) PTR(ptr) Assert(dynamic_cast<EventLogEntry *>((EventLogEntry *)ptr));
-#define MESSAGE_DEPENDENCY_PTR(ptr) PTR(ptr) Assert(dynamic_cast<IMessageDependency *>((IMessageDependency *)ptr));
+#define IEVENT_PTR(ptr) PTR(ptr) Assert(dynamic_cast<IEvent *>((IEvent *)ptr));
+#define EVENT_LOG_ENTRY_PTR(ptr) PTR(ptr) Assert(dynamic_cast<EventLogEntry *>((EventLogEntry *)ptr));
+#define BEGIN_SEND_ENTRY_PTR(ptr) PTR(ptr) Assert(dynamic_cast<BeginSendEntry *>((BeginSendEntry *)ptr));
+#define END_SEND_ENTRY_PTR(ptr) PTR(ptr) Assert(dynamic_cast<EndSendEntry *>((EndSendEntry *)ptr));
+#define MODULE_CREATED_ENTRY_PTR(ptr) PTR(ptr) Assert(dynamic_cast<ModuleCreatedEntry *>((ModuleCreatedEntry *)ptr));
+#define IMESSAGE_DEPENDENCY_PTR(ptr) PTR(ptr) Assert(dynamic_cast<IMessageDependency *>((IMessageDependency *)ptr));
+#define MESSAGE_DEPENDENCY_PTR(ptr) PTR(ptr) Assert(dynamic_cast<MessageDependency *>((MessageDependency *)ptr));
+#define FILTERED_MESSAGE_DEPENDENCY_PTR(ptr) PTR(ptr) Assert(dynamic_cast<FilteredMessageDependency *>((FilteredMessageDependency *)ptr));
 
 /**
  * A class that makes it possible to extract info about events, without
@@ -46,39 +51,45 @@ class EVENTLOG_API EventLogFacade
         void setEventLog(IEventLog *eventLog) { Assert(eventLog); this->eventLog = eventLog; }
         virtual void synchronize(FileReader::FileChangedState change);
 
-        IEvent* Event_getEvent(ptr_t ptr);
-        ptr_t Event_getNonFilteredEvent(ptr_t ptr);
-        ptr_t Event_getEventForEventNumber(eventnumber_t eventNumber);
-        ptr_t Event_getNonFilteredEventForEventNumber(eventnumber_t eventNumber);
-        ptr_t Event_getPreviousEvent(ptr_t ptr);
-        ptr_t Event_getNextEvent(ptr_t ptr);
-        eventnumber_t Event_getEventNumber(ptr_t ptr);
-        simtime_t& Event_getSimulationTime(ptr_t ptr);
-        double Event_getSimulationTimeAsDouble(ptr_t ptr);
-        int Event_getModuleId(ptr_t ptr);
-        int Event_getNumCauses(ptr_t ptr);
-        int Event_getNumConsequences(ptr_t ptr);
-        ptr_t Event_getCause(ptr_t ptr, int index);
-        ptr_t Event_getConsequence(ptr_t ptr, int index);
-        bool Event_isSelfMessageProcessingEvent(ptr_t ptr);
+        IEvent* IEvent_getEvent(ptr_t ptr);
+        ptr_t IEvent_getNonFilteredEvent(ptr_t ptr);
+        ptr_t IEvent_getEventForEventNumber(eventnumber_t eventNumber);
+        ptr_t IEvent_getNonFilteredEventForEventNumber(eventnumber_t eventNumber);
+        ptr_t IEvent_getPreviousEvent(ptr_t ptr);
+        ptr_t IEvent_getNextEvent(ptr_t ptr);
+        eventnumber_t IEvent_getEventNumber(ptr_t ptr);
+        simtime_t IEvent_getSimulationTime(ptr_t ptr);
+        double IEvent_getSimulationTimeAsDouble(ptr_t ptr);
+        int IEvent_getModuleId(ptr_t ptr);
+        int IEvent_getNumCauses(ptr_t ptr);
+        int IEvent_getNumConsequences(ptr_t ptr);
+        ptr_t IEvent_getCause(ptr_t ptr, int index);
+        ptr_t IEvent_getConsequence(ptr_t ptr, int index);
+        bool IEvent_isSelfMessageProcessingEvent(ptr_t ptr);
 
         EventLogEntry *EventLogEntry_getEventLogEntry(ptr_t ptr);
         int EventLogEntry_getContextModuleId(ptr_t ptr);
-        bool EventLogEntry_isSelfMessage(ptr_t ptr);
-        int EventLogEntry_getMessageId(ptr_t ptr);
-        const char *EventLogEntry_getModuleFullPath(ptr_t ptr);
 
-        IMessageDependency *MessageDependency_getMessageDependency(ptr_t ptr);
-        const char *MessageDependency_getMessageName(ptr_t ptr);
+        bool BeginSendEntry_isSelfMessage(ptr_t ptr);
+        int BeginSendEntry_getMessageId(ptr_t ptr);
+        ptr_t BeginSendEntry_getEndSendEntry(ptr_t ptr);
+        simtime_t BeginSendEntry_getTransmissionDelay(ptr_t ptr);
+        bool EndSendEntry_isReceptionStart(ptr_t ptr);
+
+        const char *ModuleCreatedEntry_getModuleFullPath(ptr_t ptr);
+
+        IMessageDependency *IMessageDependency_getMessageDependency(ptr_t ptr);
+        const char *IMessageDependency_getMessageName(ptr_t ptr);
+        bool IMessageDependency_getIsReuse(ptr_t ptr);
+        bool IMessageDependency_isFilteredMessageDependency(ptr_t ptr);
+        ptr_t IMessageDependency_getCauseEvent(ptr_t ptr);
+        ptr_t IMessageDependency_getConsequenceEvent(ptr_t ptr);
+        ptr_t IMessageDependency_getBeginSendEntry(ptr_t ptr);
+        simtime_t IMessageDependency_getCauseSimulationTime(ptr_t ptr);
+        simtime_t IMessageDependency_getConsequenceSimulationTime(ptr_t ptr);
+
         const char *FilteredMessageDependency_getBeginMessageName(ptr_t ptr);
         const char *FilteredMessageDependency_getEndMessageName(ptr_t ptr);
-        bool MessageDependency_getIsReuse(ptr_t ptr);
-        bool MessageDependency_isFilteredMessageDependency(ptr_t ptr);
-        ptr_t MessageDependency_getCauseEvent(ptr_t ptr);
-        ptr_t MessageDependency_getConsequenceEvent(ptr_t ptr);
-        ptr_t MessageDependency_getBeginSendEntry(ptr_t ptr);
-        simtime_t& MessageDependency_getCauseSimulationTime(ptr_t ptr);
-        simtime_t& MessageDependency_getConsequenceSimulationTime(ptr_t ptr);
 };
 
 NAMESPACE_END
