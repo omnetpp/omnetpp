@@ -218,6 +218,8 @@ typedef std::vector<std::string> StringVector;
 
 typedef std::map<std::pair<ComputationID, ID> , ID> ComputedIDCache;
 
+class CmpBase;
+
 /**
  * Loads and efficiently stores OMNeT++ output scalar files and output
  * vector files. (Actual vector contents in vector files are not read
@@ -231,6 +233,7 @@ typedef std::map<std::pair<ComputationID, ID> , ID> ComputedIDCache;
 class SCAVE_API ResultFileManager
 {
     friend class IDList;  // _type()
+    friend class CmpBase; // uncheckedGet...()
   private:
     // List of files loaded. This vector can have holes (NULLs) in it due to
     // unloaded files. The "id" field of ResultFile is the index into this vector.
@@ -316,6 +319,12 @@ class SCAVE_API ResultFileManager
     template <class T>
     void collectIDs(IDList &result, std::vector<T> ResultFile::* vec, int type) const;
 
+    // unchecked getters are only for internal use by CmpBase in idlist.cc
+    const ResultItem& uncheckedGetItem(ID id) const;
+    const ScalarResult& uncheckedGetScalar(ID id) const;
+    const VectorResult& uncheckedGetVector(ID id) const;
+    const HistogramResult& uncheckedGetHistogram(ID id) const;
+
   public:
     ResultFileManager();
     ~ResultFileManager();
@@ -357,12 +366,6 @@ class SCAVE_API ResultFileManager
     IDList getScalarsInFileRun(FileRun *fileRun) const;
     IDList getVectorsInFileRun(FileRun *fileRun) const;
     IDList getHistogramsInFileRun(FileRun *fileRun) const;
-
-    // unchecked getters are only for internal use by IDList
-    const ResultItem& uncheckedGetItem(ID id) const;
-    const ScalarResult& uncheckedGetScalar(ID id) const;
-    const VectorResult& uncheckedGetVector(ID id) const;
-    const HistogramResult& uncheckedGetHistogram(ID id) const;
 
     /**
      * Get a filtered subset of the input set (of scalars or vectors).

@@ -35,7 +35,7 @@ public class FilterHints {
 	public FilterHints(ResultFileManager manager, ResultType type) {
 		this(manager, ScaveModelUtil.getAllIDs(manager, type));
 	}
-
+	
 	public FilterHints(ResultFileManager manager, IDList idlist) {
 		ResultFileList fileList = manager.getUniqueFiles(idlist);
 		RunList runList = manager.getUniqueRuns(idlist);

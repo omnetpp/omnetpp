@@ -203,6 +203,10 @@ class CmpBase : public std::binary_function<ID, ID, bool> {
        ResultFileManager *mgr;
        bool less(const std::string& a, const std::string& b)
           {return strdictcmp(a.c_str(), b.c_str()) < 0;}
+       const ResultItem& uncheckedGetItem(ID id) const { return mgr->uncheckedGetItem(id); }
+       const ScalarResult& uncheckedGetScalar(ID id) const { return mgr->uncheckedGetScalar(id); }
+       const VectorResult& uncheckedGetVector(ID id) const { return mgr->uncheckedGetVector(id); }
+       const HistogramResult& uncheckedGetHistogram(ID id) const { return mgr->uncheckedGetHistogram(id); }
     public:
         CmpBase(ResultFileManager *m) {mgr = m;}
 };
@@ -265,20 +269,20 @@ void IDList::sortByRunAndFile(ResultFileManager *mgr, bool ascending)
         bool operator()(const ID a, const ID b) {return method;} \
     };
 
-CMP(DirectoryLess, less(mgr->uncheckedGetItem(a).fileRunRef->fileRef->directory, mgr->uncheckedGetItem(b).fileRunRef->fileRef->directory))
-CMP(FileNameLess, less(mgr->uncheckedGetItem(a).fileRunRef->fileRef->fileName, mgr->uncheckedGetItem(b).fileRunRef->fileRef->fileName))
-CMP(RunLess, less(mgr->uncheckedGetItem(a).fileRunRef->runRef->runName, mgr->uncheckedGetItem(b).fileRunRef->runRef->runName))
-CMP(ModuleLess, less(*(mgr->uncheckedGetItem(a).moduleNameRef), *(mgr->uncheckedGetItem(b).moduleNameRef)))
-CMP(NameLess, less(*(mgr->uncheckedGetItem(a).nameRef), *(mgr->uncheckedGetItem(b).nameRef)))
-CMP(ValueLess, mgr->uncheckedGetScalar(a).value < mgr->uncheckedGetScalar(b).value)
-CMP(VectorIdLess, mgr->uncheckedGetVector(a).vectorId < mgr->uncheckedGetVector(b).vectorId)
-CMP(CountLess, mgr->uncheckedGetVector(a).getCount() < mgr->uncheckedGetVector(b).getCount())
-CMP(MeanLess, mgr->uncheckedGetVector(a).getMean() < mgr->uncheckedGetVector(b).getMean())
-CMP(StddevLess, mgr->uncheckedGetVector(a).getStddev() < mgr->uncheckedGetVector(b).getStddev())
-CMP(MinLess, mgr->uncheckedGetVector(a).getMin() < mgr->uncheckedGetVector(b).getMin())
-CMP(MaxLess, mgr->uncheckedGetVector(a).getMax() < mgr->uncheckedGetVector(b).getMax())
-CMP(StartTimeLess, mgr->uncheckedGetVector(a).startTime < mgr->uncheckedGetVector(b).startTime)
-CMP(EndTimeLess, mgr->uncheckedGetVector(a).endTime < mgr->uncheckedGetVector(b).endTime)
+CMP(DirectoryLess, less(uncheckedGetItem(a).fileRunRef->fileRef->directory, uncheckedGetItem(b).fileRunRef->fileRef->directory))
+CMP(FileNameLess, less(uncheckedGetItem(a).fileRunRef->fileRef->fileName, uncheckedGetItem(b).fileRunRef->fileRef->fileName))
+CMP(RunLess, less(uncheckedGetItem(a).fileRunRef->runRef->runName, uncheckedGetItem(b).fileRunRef->runRef->runName))
+CMP(ModuleLess, less(*(uncheckedGetItem(a).moduleNameRef), *(uncheckedGetItem(b).moduleNameRef)))
+CMP(NameLess, less(*(uncheckedGetItem(a).nameRef), *(uncheckedGetItem(b).nameRef)))
+CMP(ValueLess, uncheckedGetScalar(a).value < uncheckedGetScalar(b).value)
+CMP(VectorIdLess, uncheckedGetVector(a).vectorId < uncheckedGetVector(b).vectorId)
+CMP(CountLess, uncheckedGetVector(a).getCount() < uncheckedGetVector(b).getCount())
+CMP(MeanLess, uncheckedGetVector(a).getMean() < uncheckedGetVector(b).getMean())
+CMP(StddevLess, uncheckedGetVector(a).getStddev() < uncheckedGetVector(b).getStddev())
+CMP(MinLess, uncheckedGetVector(a).getMin() < uncheckedGetVector(b).getMin())
+CMP(MaxLess, uncheckedGetVector(a).getMax() < uncheckedGetVector(b).getMax())
+CMP(StartTimeLess, uncheckedGetVector(a).startTime < uncheckedGetVector(b).startTime)
+CMP(EndTimeLess, uncheckedGetVector(a).endTime < uncheckedGetVector(b).endTime)
 
 void IDList::sortByDirectory(ResultFileManager *mgr, bool ascending)
 {
@@ -443,8 +447,8 @@ class RunAttributeLess : public CmpBase {
         RunAttributeLess(ResultFileManager* m, const char* attrName)
             : CmpBase(m), attrName(attrName) {}
         bool operator()(ID a, ID b) {
-            const char* aValue = mgr->uncheckedGetItem(a).fileRunRef->runRef->getAttribute(attrName);
-            const char* bValue = mgr->uncheckedGetItem(b).fileRunRef->runRef->getAttribute(attrName);
+            const char* aValue = uncheckedGetItem(a).fileRunRef->runRef->getAttribute(attrName);
+            const char* bValue = uncheckedGetItem(b).fileRunRef->runRef->getAttribute(attrName);
             return ((aValue && bValue) ? less(aValue, bValue) : aValue!=NULL);
         }
 };
