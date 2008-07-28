@@ -99,7 +99,7 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
 		graphics.fillRectangle(rect.x, 0, rect.right() - rect.x, getHeight());
 		
 		SequenceChartFacade sequenceChartFacade = sequenceChart.getInput().getSequenceChartFacade();
-		long endEventNumber = sequenceChartFacade.Event_getEventNumber(endEventPtr);
+		long endEventNumber = sequenceChartFacade.IEvent_getEventNumber(endEventPtr);
 
 		// draw axis as a colored thick line with labels representing values
 		// two phases: first draw the background and after that draw the values
@@ -111,8 +111,8 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
 				if (eventNumber == -1 || nextEventNumber == -1)
 					continue;
 			
-				long eventPtr = sequenceChartFacade.Event_getEventForEventNumber(eventNumber);
-				long nextEventPtr = sequenceChartFacade.Event_getEventForEventNumber(nextEventNumber);
+				long eventPtr = sequenceChartFacade.IEvent_getEventForEventNumber(eventNumber);
+				long nextEventPtr = sequenceChartFacade.IEvent_getEventForEventNumber(nextEventNumber);
 
 				int x1 = Integer.MAX_VALUE;
 				int x2 = Integer.MAX_VALUE;
@@ -121,8 +121,8 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
 				if (eventPtr != 0)
 					x1 = sequenceChart.getViewportCoordinateForTimelineCoordinate(sequenceChartFacade.getTimelineCoordinate(eventPtr));
 				else {
-					eventPtr = sequenceChartFacade.Event_getNonFilteredEventForEventNumber(eventNumber);
-					double eventSimulationTime = sequenceChartFacade.Event_getSimulationTimeAsDouble(eventPtr);
+					eventPtr = sequenceChartFacade.IEvent_getNonFilteredEventForEventNumber(eventNumber);
+					double eventSimulationTime = sequenceChartFacade.IEvent_getSimulationTimeAsDouble(eventPtr);
 					double eventTimelineCoordinate = sequenceChartFacade.getTimelineCoordinateForSimulationTime(eventSimulationTime, false);
 
 					if (eventTimelineCoordinate == sequenceChartFacade.getTimelineCoordinateForSimulationTime(eventSimulationTime, true))
@@ -132,8 +132,8 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
 				if (nextEventPtr != 0)
 					x2 = sequenceChart.getViewportCoordinateForTimelineCoordinate(sequenceChartFacade.getTimelineCoordinate(nextEventPtr));
 				else {
-					nextEventPtr = sequenceChartFacade.Event_getNonFilteredEventForEventNumber(nextEventNumber);
-					double nextEventSimulationTime = sequenceChartFacade.Event_getSimulationTimeAsDouble(nextEventPtr);
+					nextEventPtr = sequenceChartFacade.IEvent_getNonFilteredEventForEventNumber(nextEventNumber);
+					double nextEventSimulationTime = sequenceChartFacade.IEvent_getSimulationTimeAsDouble(nextEventPtr);
 					double nextEventTimelineCoordinate = sequenceChartFacade.getTimelineCoordinateForSimulationTime(nextEventSimulationTime, false);
 
 					if (nextEventTimelineCoordinate == sequenceChartFacade.getTimelineCoordinateForSimulationTime(nextEventSimulationTime, true))
@@ -184,7 +184,7 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
 		int index = -1;
 		int left = 0;
 		int right = getDataLength();
-		long eventNumber = sequenceChart.getInput().getSequenceChartFacade().Event_getEventNumber(eventPtr);
+		long eventNumber = sequenceChart.getInput().getSequenceChartFacade().IEvent_getEventNumber(eventPtr);
 
 		while (left <= right) {
 	        int mid = (right + left) / 2;

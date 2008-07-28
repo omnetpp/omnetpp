@@ -552,7 +552,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 					if (consequences.size() == 1) {
                         IMessageDependency consequence = consequences.get(0);
                         
-                        if (!eventLogTable.getEventLogTableFacade().MessageDependency_getIsReuse(consequence.getCPtr())) {
+                        if (!eventLogTable.getEventLogTableFacade().IMessageDependency_getIsReuse(consequence.getCPtr())) {
                             IEvent consequenceEvent = consequence.getConsequenceEvent();
                             
                             if (consequenceEvent != null)
@@ -563,7 +563,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
     					for (int i = 0; i < consequences.size(); i++) {
     						IMessageDependency consequence = consequences.get(i);
     
-    						if (!eventLogTable.getEventLogTableFacade().MessageDependency_getIsReuse(consequence.getCPtr()) &&
+    						if (!eventLogTable.getEventLogTableFacade().IMessageDependency_getIsReuse(consequence.getCPtr()) &&
     							consequence.getBeginSendEntry().equals(eventLogEntry))
     						{
     							IEvent consequenceEvent = consequence.getConsequenceEvent();
@@ -603,7 +603,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 					for (int i = 0; i < causes.size(); i++) {
 						IMessageDependency cause = causes.get(i);
 
-						if (eventLogTable.getEventLogTableFacade().MessageDependency_getIsReuse(cause.getCPtr()) &&
+						if (eventLogTable.getEventLogTableFacade().IMessageDependency_getIsReuse(cause.getCPtr()) &&
 							cause.getBeginSendEntry().equals(eventLogEntry)) {
 							IEvent causeEvent = cause.getCauseEvent();
 							
@@ -640,7 +640,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 					for (int i = 0; i < consequences.size(); i++) {
 						IMessageDependency consequence = consequences.get(i);
 
-						if (eventLogTable.getEventLogTableFacade().MessageDependency_getIsReuse(consequence.getCPtr())) {
+						if (eventLogTable.getEventLogTableFacade().IMessageDependency_getIsReuse(consequence.getCPtr())) {
 							BeginSendEntry beginSendEntry = consequence.getConsequenceBeginSendEntry();
 							
 							if (beginSendEntry != null)

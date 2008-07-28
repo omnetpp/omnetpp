@@ -501,7 +501,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 	}
 
     private void drawModuleFullPath(ModuleCreatedEntry moduleCreatedEntry) {
-        drawText(eventLogInput.getEventLogTableFacade().EventLogEntry_getModuleFullPath(moduleCreatedEntry.getCPtr()), NAME_COLOR, true);
+        drawText(eventLogInput.getEventLogTableFacade().ModuleCreatedEntry_getModuleFullPath(moduleCreatedEntry.getCPtr()), NAME_COLOR, true);
     }
 
     private void drawModuleFullName(ModuleCreatedEntry moduleCreatedEntry) {
