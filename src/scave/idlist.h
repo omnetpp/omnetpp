@@ -54,6 +54,10 @@ class SCAVE_API IDList
         void checkIntegrityAllVectors(ResultFileManager *mgr) const;
         void checkIntegrityAllHistograms(ResultFileManager *mgr) const;
 
+        template <class T> void sortBy(ResultFileManager *mgr, bool ascending, T& comparator);
+        template <class T> void sortScalarsBy(ResultFileManager *mgr, bool ascending, T& comparator);
+        template <class T> void sortVectorsBy(ResultFileManager *mgr, bool ascending, T& comparator);
+
     public:
         IDList()  {v = new V;}
         IDList(unsigned int sz)  {v = new V(sz);}
