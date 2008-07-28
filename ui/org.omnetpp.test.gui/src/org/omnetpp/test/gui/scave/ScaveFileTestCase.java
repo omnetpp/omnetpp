@@ -178,11 +178,12 @@ public class ScaveFileTestCase
 	protected String createRun(int runNumber) {
 		return String.format(
 				"run run-%1$d\n" +
-				"attr run-number %1$d\n" +
-				"attr config config-%1$d\n" +
+				"attr runnumber %1$d\n" +
+				"attr configname config-%1$d\n" +
 				"attr experiment %1$d\n" +
 				"attr measurement %1$d\n" +
-				"attr replication %1$d\n",
+				"attr replication %1$d\n" +
+				"attr seedset %1$d\n",
 				runNumber);
 	}
 	

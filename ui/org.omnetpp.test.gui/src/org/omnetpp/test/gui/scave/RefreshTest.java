@@ -154,7 +154,7 @@ public class RefreshTest extends ScaveFileTestCase {
 		for (int i = 0; i < runNumbers.length; i++) {
 			content[i] = n(String.format("experiment \"%d\"", runNumbers[i]),
 								n(String.format("measurement \"%d\"", runNumbers[i]),
-									n(String.format("replication \"%d\"", runNumbers[i]),
+									n(String.format("replication \"%1$d\" (seedset=#%1$d)", runNumbers[i]),
 										n(String.format("run \"run-%d\"", runNumbers[i]),
 											n(String.format("/project/test-%d.sca", runNumbers[i])),
 											n(String.format("/project/test-%d.vec", runNumbers[i]))))));

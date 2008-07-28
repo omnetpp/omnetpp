@@ -82,13 +82,13 @@ public class InputsPageTest extends ScaveFileTestCase {
 		return 	forest(
 					n("experiment \"1\"",
 						n("measurement \"1\"",
-							n("replication \"1\"",
+							n("replication \"1\" (seedset=#1)",
 								n("run \"run-1\"",
 									n("/project/test-inputspage.sca"),
 									n("/project/test-inputspage.vec"))))),
 					n("experiment \"2\"",
 						n("measurement \"2\"",
-							n("replication \"2\"",
+							n("replication \"2\" (seedset=#2)",
 								n("run \"run-2\"",
 									n("/project/test-inputspage.sca")))))
 				);
@@ -141,11 +141,13 @@ public class InputsPageTest extends ScaveFileTestCase {
 			"attr experiment 1\n" +
 			"attr measurement 1\n" +
 			"attr replication 1\n" +
+			"attr seedset 1\n" +
 			"scalar module-1 scalar-1 1\n" +
 			"run run-2\n" +
 			"attr experiment 1\n" +
 			"attr measurement 1\n" +
 			"attr replication 2\n" +
+			"attr seedset 2\n" +
 			"scalar module-1 scalar-1 2\n");
 		createFile(
 			"test-inputspage.vec",
@@ -154,6 +156,7 @@ public class InputsPageTest extends ScaveFileTestCase {
 			"attr experiment 1\n" +
 			"attr measurement 1\n" +
 			"attr replication 1\n" +
+			"attr seedset 1\n" +
 			"vector 1 module-2 vector-2 TV\n" +
 			"1	0.0	1.0\n" +
 			"1	1.0	2.0\n");
