@@ -380,12 +380,6 @@ public class ResultFileManagerEx extends ResultFileManager {
 	}
 
 	@Override
-	public HistogramResult uncheckedGetHistogram(long id) {
-		checkDeleted();
-		return super.uncheckedGetHistogram(id);
-	}
-
-	@Override
 	protected Object clone() throws CloneNotSupportedException {
 		checkDeleted();
 		return super.clone();
