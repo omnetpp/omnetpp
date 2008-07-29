@@ -396,6 +396,8 @@ public class EventLogInput extends FileEditorInput
         if (debug)
             System.out.println("Notifying listeners about the content being overwritten in the event log");
 
+        moduleTreeRoot = null;
+
         for (IEventLogChangeListener listener : eventLogChangeListeners)
             listener.eventLogOverwritten();
 

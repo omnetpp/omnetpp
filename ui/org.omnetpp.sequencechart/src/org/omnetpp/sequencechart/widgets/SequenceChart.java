@@ -1237,11 +1237,11 @@ public class SequenceChart
 	}
 
     public void eventLogOverwritten() {
+        clearAxisModules();
         eventLogChanged();
     }
 
     private void eventLogChanged() {
-        // TODO: what if the axes modules also change, revert all state to the new log file
         if (!eventLog.isEmpty() && 
             (sequenceChartFacade.getTimelineCoordinateSystemOriginEventNumber() == -1 ||
              sequenceChartFacade.getTimelineCoordinateSystemOriginEvent() == null))
