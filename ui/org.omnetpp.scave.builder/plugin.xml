@@ -11,7 +11,7 @@
    </extension>
    <extension
          id="scaveproblem"
-         name="Scave Problem"
+         name="Result File Problem"
          point="org.eclipse.core.resources.markers">
       <persistent value="false"/> 
       <super type="org.eclipse.core.resources.problemmarker"/> 
