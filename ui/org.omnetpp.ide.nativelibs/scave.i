@@ -160,13 +160,6 @@ namespace std {
    %template(RunList) vector<Run*>;
    %template(ResultFileList) vector<ResultFile*>;
    %template(FileRunList) vector<FileRun*>;
-   %template(IntSet) set<int>;
-
-   specialize_std_map_on_both(int,,,,int,,,);
-
-   %template(IntIntMap) map<int,int>;
-
-   %template(IntVector) vector<int>;
    %template(DoubleVector) vector<double>;
    %template(XYDatasetVector) vector<XYDataset>;
 };
