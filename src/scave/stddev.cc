@@ -16,6 +16,7 @@
 *--------------------------------------------------------------*/
 
 #include <math.h>
+#include "scaveutils.h"
 #include "channel.h"
 #include "stddev.h"
 
@@ -23,6 +24,7 @@ USING_NAMESPACE
 
 
 StddevNode::StddevNode()
+	: num_vals(0), min_vals(dblNaN), max_vals(dblNaN), sum_vals(0.0), sqrsum_vals(0.0)
 {
 }
 
