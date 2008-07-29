@@ -2089,8 +2089,14 @@ public class SequenceChart
 					org.omnetpp.common.engine.BigDecimal simulationTime = sequenceChartFacade.IEvent_getSimulationTime(eventPtr);
 					org.omnetpp.common.engine.BigDecimal previousSimulationTime = sequenceChartFacade.IEvent_getSimulationTime(previousEventPtr);
 
-					if (simulationTime.equals(previousSimulationTime) && x != previousX)
-						graphics.fillRectangle(previousX, Rectangle.SINGLETON.y, x - previousX, Rectangle.SINGLETON.height);
+					if (simulationTime.equals(previousSimulationTime) && x != previousX) {
+                        // KLUDGE: fix SWG fillRectange bug and cut down big coordinates with clipping
+                        int width = x - previousX;
+                        int right = Rectangle.SINGLETON.x + Rectangle.SINGLETON.width;
+                        if (width > right)
+                            width = right;
+						graphics.fillRectangle(previousX, Rectangle.SINGLETON.y, width, Rectangle.SINGLETON.height);
+					}
 				}
 
 				previousEventPtr = eventPtr;
