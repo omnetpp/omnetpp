@@ -2510,7 +2510,7 @@ public class SequenceChart
         }
         
         // calculate pixel coordinates for message arrow endings
-        int invalid = -Integer.MAX_VALUE;
+        int invalid = Integer.MAX_VALUE;
         int x1 = invalid, y1 = isInitializationEvent(causeEventPtr) ? getInitializationEventYViewportCoordinate(messageDependencyPtr) : getEventYViewportCoordinate(causeEventPtr);
         int x2 = invalid, y2 = getEventYViewportCoordinate(consequenceEventPtr);
         int fontHeight = font.getFontData()[0].getHeight();
@@ -2556,9 +2556,10 @@ public class SequenceChart
                     x1 = invalid;
             }
         }
-
-        // at least one of the events must be in range
-        Assert.isTrue(x1 != invalid || x2 != invalid);
+        
+        // at least one of the events must be in range or we don't draw anything
+        if (x1 == invalid && x2 == invalid)
+            return false;
 
 		// line color and style depends on message kind
 		if (graphics != null) {
