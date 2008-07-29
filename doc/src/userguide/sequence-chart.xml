@@ -487,7 +487,7 @@
       </para>
       <informaltable>
 	<tgroup cols="2">
-	  <colspec colwidth="130"/>
+	  <colspec colwidth="170"/>
 	  <colspec/>
 	  <tbody>
 	    <row valign="middle">
@@ -543,6 +543,22 @@
 	      <entry>virtual message send; zigzag arrow</entry>
 	    </row>
 	    <row valign="middle">
+	      <entry><icon file="pictures/SequenceChart-Legend-TransmissionDuration-ReceptionAtStart.png"/> (blue paralellogram)</entry>
+	      <entry>transmission duration; reception at start</entry>
+	    </row>
+	    <row valign="middle">
+	      <entry><icon file="pictures/SequenceChart-Legend-TransmissionDuration-ReceptionAtEnd.png"/> (blue paralellogram)</entry>
+	      <entry>transmission duration; reception at end</entry>
+	    </row>
+	    <row valign="middle">
+	      <entry><icon file="pictures/SequenceChart-Legend-SplitTransmissionDuration-ReceptionAtStart.png"/> (blue strips)</entry>
+	      <entry>split transmission duration; reception at start</entry>
+	    </row>
+	    <row valign="middle">
+	      <entry><icon file="pictures/SequenceChart-Legend-SplitTransmissionDuration-ReceptionAtEnd.png"/> (blue strips)</entry>
+	      <entry>split transmission duration; reception at end</entry>
+	    </row>
+	    <row valign="middle">
 	      <entry><icon file="pictures/SequenceChart-Legend-MessageName.png"/></entry>
 	      <entry>message name</entry>
 	    </row>
@@ -551,7 +567,7 @@
 	      <entry>zero simulation time region</entry>
 	    </row>
 	    <row valign="middle">
-	      <entry><icon file="pictures/SequenceChart-Legend-SimulationTimeHairline.png"/></entry>
+	      <entry><icon file="pictures/SequenceChart-Legend-SimulationTimeHairline.png"/> (dashed gray line)</entry>
 	      <entry>simulation time hairline</entry>
 	    </row>
 	  </tbody>
