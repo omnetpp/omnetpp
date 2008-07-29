@@ -2068,6 +2068,7 @@ public class SequenceChart
 
 	private void drawZeroSimulationTimeRegions(Graphics graphics, long startEventPtr, long endEventPtr) {
 		long previousEventPtr = -1;
+		Rectangle r = new Rectangle();
 		graphics.getClip(Rectangle.SINGLETON);
 		graphics.setBackgroundColor(ZERO_SIMULATION_TIME_REGION_COLOR);
 
@@ -2091,11 +2092,10 @@ public class SequenceChart
 
 					if (simulationTime.equals(previousSimulationTime) && x != previousX) {
                         // KLUDGE: fix SWG fillRectange bug and cut down big coordinates with clipping
-                        int width = x - previousX;
-                        int right = Rectangle.SINGLETON.x + Rectangle.SINGLETON.width;
-                        if (width > right)
-                            width = right;
-						graphics.fillRectangle(previousX, Rectangle.SINGLETON.y, width, Rectangle.SINGLETON.height);
+                        r.setLocation(previousX, Rectangle.SINGLETON.y);
+                        r.setSize(x - previousX, Rectangle.SINGLETON.height);
+                        r.intersect(Rectangle.SINGLETON);
+						graphics.fillRectangle(r);
 					}
 				}
 
