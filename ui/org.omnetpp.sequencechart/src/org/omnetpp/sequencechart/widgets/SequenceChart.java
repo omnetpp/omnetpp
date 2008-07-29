@@ -196,11 +196,11 @@ public class SequenceChart
 
     private AxisOrderingMode axisOrderingMode = AxisOrderingMode.MODULE_ID; // specifies the ordering mode of axes
 
-	private HoverSupport hoverSupport;
+    private HoverSupport hoverSupport;
+    private RubberbandSupport rubberbandSupport;
 
 	private boolean isDragging; // indicates ongoing drag operation
 	private int dragStartX = -1, dragStartY = -1, dragDeltaX, dragDeltaY; // temporary variables for drag handling
-	private long dragStartTime;
 
 	private ArrayList<BigDecimal> ticks; // a list of simulation times drawn on the axis as tick marks
 	private BigDecimal tickPrefix; // the common part of all ticks on the gutter
@@ -305,7 +305,7 @@ public class SequenceChart
 			}
     	});
 
-		new RubberbandSupport(this, SWT.MOD1) {
+    	rubberbandSupport = new RubberbandSupport(this, SWT.MOD1) {
 			@Override
 			public void rubberBandSelectionMade(org.eclipse.swt.graphics.Rectangle r) {
 				zoomToRectangle(new org.eclipse.draw2d.geometry.Rectangle(r));
@@ -1899,6 +1899,9 @@ public class SequenceChart
 	        }
 
 	        graphics.translate(0, -GUTTER_HEIGHT);
+
+	        rubberbandSupport.drawRubberband(gc);
+
 	        graphics.dispose();
 		}
 	}
@@ -2696,12 +2699,16 @@ public class SequenceChart
 					int xm = x2 - LONG_MESSAGE_ARROW_WIDTH;
 
 					if (transmissionDelay != null) {
-                        drawTransmissionDuration(graphics, causeEventPtr, consequenceEventPtr, transmissionDelay, isReceptionStart, x1, y1, x2, y2, true, true);
-                        
                         if (!isReceptionStart) {
                             xm -= LONG_MESSAGE_ARROW_WIDTH / 2;
                             x1 -= LONG_MESSAGE_ARROW_WIDTH;
                         }
+                        else {
+                            xm += LONG_MESSAGE_ARROW_WIDTH / 2;
+                            x1 += LONG_MESSAGE_ARROW_WIDTH;
+                        }
+
+                        drawTransmissionDuration(graphics, causeEventPtr, consequenceEventPtr, transmissionDelay, isReceptionStart, x1, y1, x2, y2, true, true);
                     }
 
                     graphics.drawLine(xm, y, x2, y2);
@@ -2717,12 +2724,16 @@ public class SequenceChart
 				    int xm = x1 + LONG_MESSAGE_ARROW_WIDTH;
 
 				    if (transmissionDelay != null) {
-			            drawTransmissionDuration(graphics, causeEventPtr, consequenceEventPtr, transmissionDelay, isReceptionStart, x1, y1, x2, y2, true, false);
-
-			            if (!isReceptionStart) {
-    			            xm += LONG_MESSAGE_ARROW_WIDTH / 2;
+                        if (!isReceptionStart) {
+                            xm += LONG_MESSAGE_ARROW_WIDTH / 2;
                             x2 += LONG_MESSAGE_ARROW_WIDTH;
-			            }
+                        }
+                        else {
+                            xm -= LONG_MESSAGE_ARROW_WIDTH / 2;
+                            x2 -= LONG_MESSAGE_ARROW_WIDTH;
+                        }
+
+                        drawTransmissionDuration(graphics, causeEventPtr, consequenceEventPtr, transmissionDelay, isReceptionStart, x1, y1, x2, y2, true, false);
                     }
 
 					graphics.drawLine(x1, y1, xm, y);
@@ -2774,6 +2785,7 @@ public class SequenceChart
 
 	/**
 	 * Draws a semi-transparent region to represent a transmission duration.
+	 * The coordinates specify the arrow that will be draw on top of the transmission duration area.
 	 */
     private boolean drawTransmissionDuration(Graphics graphics, long causeEventPtr, long consequenceEventPtr, org.omnetpp.common.engine.BigDecimal transmissionDelay, boolean isReceptionStart, int x1, int y1, int x2, int y2, boolean splitArrow, boolean endingSplit) {
         int causeModuleId = sequenceChartFacade.IEvent_getModuleId(causeEventPtr);
@@ -2800,9 +2812,23 @@ public class SequenceChart
             drawStrips = true;
         }
 
-        if (splitArrow && !isReceptionStart) {
-            x4 = x2 - LONG_MESSAGE_ARROW_WIDTH;
-            x3 = x1 + LONG_MESSAGE_ARROW_WIDTH;
+        if (splitArrow) {
+            if (isReceptionStart) {
+                x3 = x1 + LONG_MESSAGE_ARROW_WIDTH;
+                x4 = x2 + LONG_MESSAGE_ARROW_WIDTH;
+            }
+            else {
+                if (endingSplit) {
+                    x3 = x1 + LONG_MESSAGE_ARROW_WIDTH * 2;
+                    x4 = x2 - LONG_MESSAGE_ARROW_WIDTH;
+                    x1 += LONG_MESSAGE_ARROW_WIDTH;
+                }
+                else {
+                    x3 = x1 + LONG_MESSAGE_ARROW_WIDTH;
+                    x4 = x2 - LONG_MESSAGE_ARROW_WIDTH * 2;
+                    x2 -= LONG_MESSAGE_ARROW_WIDTH;
+                }
+            }
             drawStrips = true;
         }
 
@@ -3396,7 +3422,6 @@ public class SequenceChart
 					if (e.button == 1) {
 						dragStartX = e.x;
 						dragStartY = e.y;
-						dragStartTime = System.currentTimeMillis();
 					}
 				}
 			}
@@ -3408,7 +3433,7 @@ public class SequenceChart
 						if (!isDragging) {
 							ArrayList<IEvent> events = new ArrayList<IEvent>();
 
-							if ((me.stateMask & SWT.MOD1)!=0) // CTRL key extends selection
+							if ((me.stateMask & SWT.MOD1) != 0) // CTRL key extends selection
 								for (Long eventNumber : selectionEventNumbers)
 									events.add(eventLog.getEventForEventNumber(eventNumber));
 
@@ -3416,20 +3441,10 @@ public class SequenceChart
 							
 							updateSelectionEvents(events, false);
 						}
-						else if (System.currentTimeMillis() - dragStartTime < 500){
-							ArrayList<IMessageDependency> messageDependencies = new ArrayList<IMessageDependency>();
-							collectStuffUnderMouse(me.x, me.y, null, messageDependencies);
-
-							if (messageDependencies.size() == 1) {
-								IMessageDependency messageDependency = messageDependencies.get(0);
-								gotoElement(dragDeltaX > 0 ? messageDependency.getConsequenceEvent() : messageDependency.getCauseEvent());
-							}
-						}
 					}
 
 					setCursor(null); // restore cursor at end of drag
 					dragStartX = dragStartY = -1;
-					dragStartTime = -1;
 					isDragging = false;
 				}
 			}
