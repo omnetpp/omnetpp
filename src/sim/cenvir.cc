@@ -18,12 +18,10 @@
 
 #include "cenvir.h"
 #include "commonutil.h"
+#include "ccomponent.h"  // for DummyEnv
 
 
-cEnvir *evPtr;
-
-
-/*
+/**
  * The std::streambuf class used by cEnvir's ostream. It redirects writes to
  * cEnvir::sputn(s,n). Flush is done at the end of each line, meanwhile
  * writes are buffered in a stringbuf.
@@ -107,5 +105,121 @@ bool cEnvir::askYesNo(const char *fmt,...)
     VSNPRINTF(staticbuf, BUFLEN, fmt);
     return askyesno(staticbuf);
 }
+
+//----
+
+/**
+ * A dummy implementation of cEnvir, only provided so that one
+ * can use simulation library classes outside simulations, that is,
+ * in programs that only link with the simulation library (<i>sim_std</i>)
+ * and not with the <i>envir</i>, <i>cmdenv</i>, <i>tkenv</i>,
+ * etc. libraries.
+ *
+ * Many simulation library classes make calls to <i>ev</i> methods,
+ * which would crash if <tt>evPtr</tt> was NULL; one example is
+ * cObject's destructor which contains an <tt>ev.objectDeleted()</tt>.
+ * The solution provided here is that <tt>evPtr</tt> is initialized
+ * to point to a DummyEnv instance, thus enabling library classes to work.
+ *
+ * DummyEnv methods either do nothing, or throw an "unsupported method"
+ * exception, so DummyEnv is only useful for the most basic usage scenarios.
+ * For anything more complicated, <tt>evPtr</tt> must be set in <tt>main()</tt>
+ * to point to a proper cEnvir implementation, like the Cmdenv or
+ * Tkenv classes. (The <i>envir</i> library provides a <tt>main()</tt>
+ * which does exactly that.)
+ *
+ * @ingroup Envir
+ */
+class DummyEnv : public cEnvir
+{
+  protected:
+    void unsupported() const {throw opp_runtime_error("DummyEnv: unsupported method called");}
+
+    virtual void sputn(const char *s, int n) {::fwrite(s,1,n,stdout);}
+    virtual void putsmsg(const char *msg) {::printf("\n<!> %s\n\n", msg);}
+    virtual bool askyesno(const char *msg)  {unsupported(); return false;}
+
+  public:
+    // constructor, destructor
+    DummyEnv() {}
+    virtual ~DummyEnv() {}
+
+    // life cycle
+    virtual int run(int argc, char *argv[], cConfiguration *cfg) {unsupported();return 0;}
+
+    // eventlog callback interface
+    virtual void objectDeleted(cObject *object) {}
+    virtual void simulationEvent(cMessage *msg)  {}
+    virtual void messageSent_OBSOLETE(cMessage *msg, cGate *directToGate=NULL)  {}
+    virtual void messageScheduled(cMessage *msg)  {}
+    virtual void messageCancelled(cMessage *msg)  {}
+    virtual void beginSend(cMessage *msg)  {}
+    virtual void messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay)  {}
+    virtual void messageSendHop(cMessage *msg, cGate *srcGate)  {}
+    virtual void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay)  {}
+    virtual void endSend(cMessage *msg)  {}
+    virtual void messageDeleted(cMessage *msg)  {}
+    virtual void moduleReparented(cModule *module, cModule *oldparent)  {}
+    virtual void componentMethodBegin(cComponent *from, cComponent *to, const char *methodFmt, va_list va)  {}
+    virtual void componentMethodEnd()  {}
+    virtual void moduleCreated(cModule *newmodule)  {}
+    virtual void moduleDeleted(cModule *module)  {}
+    virtual void gateCreated(cGate *newgate)  {}
+    virtual void gateDeleted(cGate *gate)  {}
+    virtual void connectionCreated(cGate *srcgate)  {}
+    virtual void connectionDeleted(cGate *srcgate)  {}
+    virtual void displayStringChanged(cComponent *component)  {}
+    virtual void undisposedObject(cObject *obj) {}
+
+     // configuration, model parameters
+    virtual void readParameter(cPar *parameter)  {unsupported();}
+    virtual bool isModuleLocal(cModule *parentmod, const char *modname, int index)  {return true;}
+    virtual cXMLElement *getXMLDocument(const char *filename, const char *path=NULL)  {unsupported(); return NULL;}
+    virtual unsigned getExtraStackForEnvir() const  {return 0;}
+    virtual cConfiguration *getConfig()  {unsupported(); return NULL;}
+    virtual bool isGUI() const  {return false;}
+
+    // UI functions (see also protected ones)
+    virtual void bubble(cComponent *component, const char *text)  {}
+    virtual std::string gets(const char *prompt, const char *defaultreply=NULL)  {unsupported(); return "";}
+    virtual cEnvir& flush()  {::fflush(stdout); return *this;}
+
+    // RNGs
+    virtual int getNumRNGs() const {return 0;}
+    virtual cRNG *getRNG(int k)  {unsupported(); return NULL;}
+    virtual void getRNGMappingFor(cComponent *component)  {component->setRNGMap(0,NULL);}
+
+    // output vectors
+    virtual void *registerOutputVector(const char *modulename, const char *vectorname)  {return NULL;}
+    virtual void deregisterOutputVector(void *vechandle)  {}
+    virtual void setVectorAttribute(void *vechandle, const char *name, const char *value)  {}
+    virtual bool recordInOutputVector(void *vechandle, simtime_t t, double value)  {return false;}
+
+    // output scalars
+    virtual void recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes=NULL)  {}
+    virtual void recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=NULL)  {}
+
+    // snapshot file
+    virtual std::ostream *getStreamForSnapshot()  {unsupported(); return NULL;}
+    virtual void releaseStreamForSnapshot(std::ostream *os)  {unsupported();}
+
+    // misc
+    virtual int getArgCount() const  {unsupported(); return 0;}
+    virtual char **getArgVector() const  {unsupported(); return NULL;}
+    virtual int getParsimProcId() const {return 0;}
+    virtual int getParsimNumPartitions() const {return 1;}
+    virtual const char *getRunId() const  {unsupported(); return NULL;}
+    virtual unsigned long getUniqueNumber()  {unsupported(); return 0;}
+    virtual bool idle()  {return false;}
+};
+
+static DummyEnv dummyEnv;
+
+/**
+ * Pointer to the simulation's environment. Initially points to a DummyEnv,
+ * which should be overwritten in main() for anything serious.
+ */
+cEnvir *evPtr = &dummyEnv;
+
 
 
