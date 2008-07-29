@@ -269,132 +269,266 @@ CMP(MaxLess, uncheckedGetVector(a).getMax() < uncheckedGetVector(b).getMax())
 CMP(StartTimeLess, uncheckedGetVector(a).startTime < uncheckedGetVector(b).startTime)
 CMP(EndTimeLess, uncheckedGetVector(a).endTime < uncheckedGetVector(b).endTime)
 
-template <class T>
-void IDList::sortBy(ResultFileManager *mgr, bool ascending, T& comparator)
-{
-    checkIntegrity(mgr);
-    // optimization: maybe it's sorted the other way round, so we reverse it to speed up sorting
-    if (v->size()>=2 && comparator(v->at(0), v->at(v->size()-1))!=ascending)
-       reverse();
-    if (ascending)
-        std::sort(v->begin(), v->end(), comparator);
-    else
-        std::sort(v->begin(), v->end(), flipArgs(comparator));
-
-}
-
-template <class T>
-void IDList::sortScalarsBy(ResultFileManager *mgr, bool ascending, T& comparator)
-{
-    checkIntegrityAllScalars(mgr);
-    // optimization: maybe it's sorted the other way round, so we reverse it to speed up sorting
-    if (v->size()>=2 && comparator(v->at(0), v->at(v->size()-1))!=ascending)
-       reverse();
-    if (ascending)
-        std::sort(v->begin(), v->end(), comparator);
-    else
-        std::sort(v->begin(), v->end(), flipArgs(comparator));
-
-}
-
-template <class T>
-void IDList::sortVectorsBy(ResultFileManager *mgr, bool ascending, T& comparator)
-{
-    checkIntegrityAllVectors(mgr);
-    // optimization: maybe it's sorted the other way round, so we reverse it to speed up sorting
-    if (v->size()>=2 && comparator(v->at(0), v->at(v->size()-1))!=ascending)
-       reverse();
-    if (ascending)
-        std::sort(v->begin(), v->end(), comparator);
-    else
-        std::sort(v->begin(), v->end(), flipArgs(comparator));
-
-}
+//template <class T>
+//void IDList::sortBy(ResultFileManager *mgr, bool ascending, T& comparator)
+//{
+//    checkIntegrity(mgr);
+//    // optimization: maybe it's sorted the other way round, so we reverse it to speed up sorting
+//    if (v->size()>=2 && comparator(v->at(0), v->at(v->size()-1))!=ascending)
+//       reverse();
+//    if (ascending)
+//        std::sort(v->begin(), v->end(), comparator);
+//    else
+//        std::sort(v->begin(), v->end(), flipArgs(comparator));
+//}
+//
+//template <class T>
+//void IDList::sortScalarsBy(ResultFileManager *mgr, bool ascending, T& comparator)
+//{
+//    checkIntegrityAllScalars(mgr);
+//    // optimization: maybe it's sorted the other way round, so we reverse it to speed up sorting
+//    if (v->size()>=2 && comparator(v->at(0), v->at(v->size()-1))!=ascending)
+//       reverse();
+//    if (ascending)
+//        std::sort(v->begin(), v->end(), comparator);
+//    else
+//        std::sort(v->begin(), v->end(), flipArgs(comparator));
+//}
+//
+//template <class T>
+//void IDList::sortVectorsBy(ResultFileManager *mgr, bool ascending, T& comparator)
+//{
+//    checkIntegrityAllVectors(mgr);
+//    // optimization: maybe it's sorted the other way round, so we reverse it to speed up sorting
+//    if (v->size()>=2 && comparator(v->at(0), v->at(v->size()-1))!=ascending)
+//       reverse();
+//    if (ascending)
+//        std::sort(v->begin(), v->end(), comparator);
+//    else
+//        std::sort(v->begin(), v->end(), flipArgs(comparator));
+//}
 
 
 void IDList::sortByFileAndRun(ResultFileManager *mgr, bool ascending)
 {
-	sortBy(mgr, ascending, FileAndRunLess(mgr));
+	//sortBy(mgr, ascending, FileAndRunLess(mgr));
+    checkIntegrity(mgr);
+    // optimization: maybe it's sorted the other way round, so we reverse it to speed up sorting
+    if (v->size()>=2 && FileAndRunLess(mgr)(v->at(0), v->at(v->size()-1))!=ascending)
+       reverse();
+    if (ascending)
+        std::sort(v->begin(), v->end(), FileAndRunLess(mgr));
+    else
+        std::sort(v->begin(), v->end(), flipArgs(FileAndRunLess(mgr)));
 }
 
 void IDList::sortByRunAndFile(ResultFileManager *mgr, bool ascending)
 {
-	sortBy(mgr, ascending, RunAndFileLess(mgr));
+	//sortBy(mgr, ascending, RunAndFileLess(mgr));
+    checkIntegrity(mgr);
+    // optimization: maybe it's sorted the other way round, so we reverse it to speed up sorting
+    if (v->size()>=2 && RunAndFileLess(mgr)(v->at(0), v->at(v->size()-1))!=ascending)
+       reverse();
+    if (ascending)
+        std::sort(v->begin(), v->end(), RunAndFileLess(mgr));
+    else
+        std::sort(v->begin(), v->end(), flipArgs(RunAndFileLess(mgr)));
 }
 
 void IDList::sortByDirectory(ResultFileManager *mgr, bool ascending)
 {
-	sortBy(mgr, ascending, DirectoryLess(mgr));
+	//sortBy(mgr, ascending, DirectoryLess(mgr));
+    checkIntegrity(mgr);
+    // optimization: maybe it's sorted the other way round, so we reverse it to speed up sorting
+    if (v->size()>=2 && DirectoryLess(mgr)(v->at(0), v->at(v->size()-1))!=ascending)
+       reverse();
+    if (ascending)
+        std::sort(v->begin(), v->end(), DirectoryLess(mgr));
+    else
+        std::sort(v->begin(), v->end(), flipArgs(DirectoryLess(mgr)));
 }
 
 void IDList::sortByFileName(ResultFileManager *mgr, bool ascending)
 {
-	sortBy(mgr, ascending, FileNameLess(mgr));
+	//sortBy(mgr, ascending, FileNameLess(mgr));
+    checkIntegrity(mgr);
+    // optimization: maybe it's sorted the other way round, so we reverse it to speed up sorting
+    if (v->size()>=2 && FileNameLess(mgr)(v->at(0), v->at(v->size()-1))!=ascending)
+       reverse();
+    if (ascending)
+        std::sort(v->begin(), v->end(), FileNameLess(mgr));
+    else
+        std::sort(v->begin(), v->end(), flipArgs(FileNameLess(mgr)));
 }
 
 void IDList::sortByRun(ResultFileManager *mgr, bool ascending)
 {
-	sortBy(mgr, ascending, RunLess(mgr));
+	//sortBy(mgr, ascending, RunLess(mgr));
+    checkIntegrity(mgr);
+    // optimization: maybe it's sorted the other way round, so we reverse it to speed up sorting
+    if (v->size()>=2 && RunLess(mgr)(v->at(0), v->at(v->size()-1))!=ascending)
+       reverse();
+    if (ascending)
+        std::sort(v->begin(), v->end(), RunLess(mgr));
+    else
+        std::sort(v->begin(), v->end(), flipArgs(RunLess(mgr)));
 }
 
 void IDList::sortByModule(ResultFileManager *mgr, bool ascending)
 {
-	sortBy(mgr, ascending, ModuleLess(mgr));
+	//sortBy(mgr, ascending, ModuleLess(mgr));
+    checkIntegrity(mgr);
+    // optimization: maybe it's sorted the other way round, so we reverse it to speed up sorting
+    if (v->size()>=2 && ModuleLess(mgr)(v->at(0), v->at(v->size()-1))!=ascending)
+       reverse();
+    if (ascending)
+        std::sort(v->begin(), v->end(), ModuleLess(mgr));
+    else
+        std::sort(v->begin(), v->end(), flipArgs(ModuleLess(mgr)));
 }
 
 void IDList::sortByName(ResultFileManager *mgr, bool ascending)
 {
-	sortBy(mgr, ascending, NameLess(mgr));
+	//sortBy(mgr, ascending, NameLess(mgr));
+    checkIntegrity(mgr);
+    // optimization: maybe it's sorted the other way round, so we reverse it to speed up sorting
+    if (v->size()>=2 && NameLess(mgr)(v->at(0), v->at(v->size()-1))!=ascending)
+       reverse();
+    if (ascending)
+        std::sort(v->begin(), v->end(), NameLess(mgr));
+    else
+        std::sort(v->begin(), v->end(), flipArgs(NameLess(mgr)));
 }
 
 void IDList::sortScalarsByValue(ResultFileManager *mgr, bool ascending)
 {
-	sortScalarsBy(mgr, ascending, ValueLess(mgr));
+	//sortScalarsBy(mgr, ascending, ValueLess(mgr));
+    checkIntegrityAllScalars(mgr);
+    // optimization: maybe it's sorted the other way round, so we reverse it to speed up sorting
+    if (v->size()>=2 && ValueLess(mgr)(v->at(0), v->at(v->size()-1))!=ascending)
+       reverse();
+    if (ascending)
+        std::sort(v->begin(), v->end(), ValueLess(mgr));
+    else
+        std::sort(v->begin(), v->end(), flipArgs(ValueLess(mgr)));
 }
 
 void IDList::sortVectorsByVectorId(ResultFileManager *mgr, bool ascending)
 {
-	sortVectorsBy(mgr, ascending, VectorIdLess(mgr));
+//	sortVectorsBy(mgr, ascending, VectorIdLess(mgr));
+    checkIntegrityAllVectors(mgr);
+    // optimization: maybe it's sorted the other way round, so we reverse it to speed up sorting
+    if (v->size()>=2 && VectorIdLess(mgr)(v->at(0), v->at(v->size()-1))!=ascending)
+       reverse();
+    if (ascending)
+        std::sort(v->begin(), v->end(), VectorIdLess(mgr));
+    else
+        std::sort(v->begin(), v->end(), flipArgs(VectorIdLess(mgr)));
 }
 
 
 void IDList::sortVectorsByLength(ResultFileManager *mgr, bool ascending)
 {
-	sortVectorsBy(mgr, ascending, CountLess(mgr));
+	//sortVectorsBy(mgr, ascending, CountLess(mgr));
+    checkIntegrityAllVectors(mgr);
+    // optimization: maybe it's sorted the other way round, so we reverse it to speed up sorting
+    if (v->size()>=2 && CountLess(mgr)(v->at(0), v->at(v->size()-1))!=ascending)
+       reverse();
+    if (ascending)
+        std::sort(v->begin(), v->end(), CountLess(mgr));
+    else
+        std::sort(v->begin(), v->end(), flipArgs(CountLess(mgr)));
+
 }
 
 void IDList::sortVectorsByMean(ResultFileManager *mgr, bool ascending)
 {
-	sortVectorsBy(mgr, ascending, MeanLess(mgr));
+	//sortVectorsBy(mgr, ascending, MeanLess(mgr));
+    checkIntegrityAllVectors(mgr);
+    // optimization: maybe it's sorted the other way round, so we reverse it to speed up sorting
+    if (v->size()>=2 && MeanLess(mgr)(v->at(0), v->at(v->size()-1))!=ascending)
+       reverse();
+    if (ascending)
+        std::sort(v->begin(), v->end(), MeanLess(mgr));
+    else
+        std::sort(v->begin(), v->end(), flipArgs(MeanLess(mgr)));
 }
 
 void IDList::sortVectorsByStdDev(ResultFileManager *mgr, bool ascending)
 {
-	sortVectorsBy(mgr, ascending, StddevLess(mgr));
+	//sortVectorsBy(mgr, ascending, StddevLess(mgr));
+    checkIntegrityAllVectors(mgr);
+    // optimization: maybe it's sorted the other way round, so we reverse it to speed up sorting
+    if (v->size()>=2 && StddevLess(mgr)(v->at(0), v->at(v->size()-1))!=ascending)
+       reverse();
+    if (ascending)
+        std::sort(v->begin(), v->end(), StddevLess(mgr));
+    else
+        std::sort(v->begin(), v->end(), flipArgs(StddevLess(mgr)));
 }
 
 void IDList::sortVectorsByMin(ResultFileManager *mgr, bool ascending)
 {
-	sortVectorsBy(mgr, ascending, MinLess(mgr));
+	//sortVectorsBy(mgr, ascending, MinLess(mgr));
+    checkIntegrityAllVectors(mgr);
+    // optimization: maybe it's sorted the other way round, so we reverse it to speed up sorting
+    if (v->size()>=2 && MinLess(mgr)(v->at(0), v->at(v->size()-1))!=ascending)
+       reverse();
+    if (ascending)
+        std::sort(v->begin(), v->end(), MinLess(mgr));
+    else
+        std::sort(v->begin(), v->end(), flipArgs(MinLess(mgr)));
 }
 
 void IDList::sortVectorsByMax(ResultFileManager *mgr, bool ascending)
 {
-	sortVectorsBy(mgr, ascending, MaxLess(mgr));
+	//sortVectorsBy(mgr, ascending, MaxLess(mgr));
+    checkIntegrityAllVectors(mgr);
+    // optimization: maybe it's sorted the other way round, so we reverse it to speed up sorting
+    if (v->size()>=2 && MaxLess(mgr)(v->at(0), v->at(v->size()-1))!=ascending)
+       reverse();
+    if (ascending)
+        std::sort(v->begin(), v->end(), MaxLess(mgr));
+    else
+        std::sort(v->begin(), v->end(), flipArgs(MaxLess(mgr)));
 }
 
 void IDList::sortVectorsByStartTime(ResultFileManager *mgr, bool ascending)
 {
-	sortVectorsBy(mgr, ascending, StartTimeLess(mgr));
+	//sortVectorsBy(mgr, ascending, StartTimeLess(mgr));
+    checkIntegrityAllVectors(mgr);
+    // optimization: maybe it's sorted the other way round, so we reverse it to speed up sorting
+    if (v->size()>=2 && StartTimeLess(mgr)(v->at(0), v->at(v->size()-1))!=ascending)
+       reverse();
+    if (ascending)
+        std::sort(v->begin(), v->end(), StartTimeLess(mgr));
+    else
+        std::sort(v->begin(), v->end(), flipArgs(StartTimeLess(mgr)));
 }
 
 void IDList::sortVectorsByEndTime(ResultFileManager *mgr, bool ascending)
 {
-	sortVectorsBy(mgr, ascending, EndTimeLess(mgr));
+	//sortVectorsBy(mgr, ascending, EndTimeLess(mgr));
+    checkIntegrityAllVectors(mgr);
+    // optimization: maybe it's sorted the other way round, so we reverse it to speed up sorting
+    if (v->size()>=2 && EndTimeLess(mgr)(v->at(0), v->at(v->size()-1))!=ascending)
+       reverse();
+    if (ascending)
+        std::sort(v->begin(), v->end(), EndTimeLess(mgr));
+    else
+        std::sort(v->begin(), v->end(), flipArgs(EndTimeLess(mgr)));
 }
 
 void IDList::sortByRunAttribute(ResultFileManager *mgr, const char* runAttribute, bool ascending) {
-	sortBy(mgr, ascending, RunAttributeLess(mgr, runAttribute));
+	//sortBy(mgr, ascending, RunAttributeLess(mgr, runAttribute));
+    checkIntegrity(mgr);
+    // optimization: maybe it's sorted the other way round, so we reverse it to speed up sorting
+    if (v->size()>=2 && RunAttributeLess(mgr, runAttribute)(v->at(0), v->at(v->size()-1))!=ascending)
+       reverse();
+    if (ascending)
+        std::sort(v->begin(), v->end(), RunAttributeLess(mgr, runAttribute));
+    else
+        std::sort(v->begin(), v->end(), flipArgs(RunAttributeLess(mgr, runAttribute)));
 }
 
 void IDList::reverse()
