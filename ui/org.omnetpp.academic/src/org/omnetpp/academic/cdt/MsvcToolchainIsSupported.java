@@ -1,4 +1,4 @@
-package org.omnetpp.cdt.academic;
+package org.omnetpp.academic.cdt;
 
 import org.eclipse.cdt.managedbuilder.core.IManagedIsToolChainSupported;
 import org.eclipse.cdt.managedbuilder.core.IToolChain;

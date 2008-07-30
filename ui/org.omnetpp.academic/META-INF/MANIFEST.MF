@@ -4,5 +4,8 @@ Bundle-Name: OMNeT++ Dummy Plug-in
 Bundle-SymbolicName: org.omnetpp.academic;singleton:=true
 Bundle-Version: 4.0.0.qualifier
 Bundle-Vendor: OpenSim Ltd.
-Require-Bundle: org.eclipse.core.runtime,
+Require-Bundle: org.eclipse.ui;bundle-version="3.4.0",
+ org.eclipse.core.runtime,
  org.eclipse.cdt.managedbuilder.core
+Bundle-ActivationPolicy: lazy
+Bundle-Activator: org.omnetpp.academic.Activator

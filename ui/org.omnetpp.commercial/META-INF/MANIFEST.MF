@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: OMNeT++ Commercial Plug-in
+Bundle-SymbolicName: org.omnetpp.commercial;singleton:=true
+Bundle-Version: 4.0.0.qualifier
+Bundle-Activator: org.omnetpp.commercial.Activator
+Bundle-Vendor: OpenSim Ltd.
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-ActivationPolicy: lazy
