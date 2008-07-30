@@ -8,6 +8,7 @@ package org.omnetpp.scave.model.presentation;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -95,6 +96,24 @@ import org.eclipse.ui.PartInitException;
  * @generated
  */
 public class ScaveModelModelWizard extends Wizard implements INewWizard {
+	/**
+	 * The supported extensions for created files.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public static final List<String> FILE_EXTENSIONS =
+		Collections.unmodifiableList(Arrays.asList(ScaveEditPlugin.INSTANCE.getString("_UI_ScaveModelEditorFilenameExtensions").split("\\s*,\\s*")));
+
+	/**
+	 * A formatted list of supported file extensions, suitable for display.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public static final String FORMATTED_FILE_EXTENSIONS =
+		ScaveEditPlugin.INSTANCE.getString("_UI_ScaveModelEditorFilenameExtensions").replaceAll("\\s*,\\s*", ", ");
+
 	/**
 	 * This caches an instance of the model package.
 	 * <!-- begin-user-doc -->
@@ -315,21 +334,15 @@ public class ScaveModelModelWizard extends Wizard implements INewWizard {
 		@Override
 		protected boolean validatePage() {
 			if (super.validatePage()) {
-				// Make sure the file ends in ".scavemodel".
-				//
-				String requiredExt = ScaveEditPlugin.INSTANCE.getString("_UI_ScaveModelEditorFilenameExtension");
-				String enteredExt = new Path(getFileName()).getFileExtension();
-				if (enteredExt == null || !enteredExt.equals(requiredExt)) {
-					setErrorMessage(ScaveEditPlugin.INSTANCE.getString("_WARN_FilenameExtension", new Object [] { requiredExt }));
+				String extension = new Path(getFileName()).getFileExtension();
+				if (extension == null || !FILE_EXTENSIONS.contains(extension)) {
+					String key = FILE_EXTENSIONS.size() > 1 ? "_WARN_FilenameExtensions" : "_WARN_FilenameExtension";
+					setErrorMessage(ScaveEditPlugin.INSTANCE.getString(key, new Object [] { FORMATTED_FILE_EXTENSIONS }));
 					return false;
 				}
-				else {
-					return true;
-				}
+				return true;
 			}
-			else {
-				return false;
-			}
+			return false;
 		}
 
 		/**
@@ -563,7 +576,7 @@ public class ScaveModelModelWizard extends Wizard implements INewWizard {
 		newFileCreationPage = new ScaveModelModelWizardNewFileCreationPage("Whatever", selection);
 		newFileCreationPage.setTitle(ScaveEditPlugin.INSTANCE.getString("_UI_ScaveModelModelWizard_label"));
 		newFileCreationPage.setDescription(ScaveEditPlugin.INSTANCE.getString("_UI_ScaveModelModelWizard_description"));
-		newFileCreationPage.setFileName(ScaveEditPlugin.INSTANCE.getString("_UI_ScaveModelEditorFilenameDefaultBase") + "." + ScaveEditPlugin.INSTANCE.getString("_UI_ScaveModelEditorFilenameExtension"));
+		newFileCreationPage.setFileName(ScaveEditPlugin.INSTANCE.getString("_UI_ScaveModelEditorFilenameDefaultBase") + "." + FILE_EXTENSIONS.get(0));
 		addPage(newFileCreationPage);
 
 		// Try and get the resource selection to determine a current directory for the file dialog.
@@ -590,7 +603,7 @@ public class ScaveModelModelWizard extends Wizard implements INewWizard {
 					// Make up a unique new name here.
 					//
 					String defaultModelBaseFilename = ScaveEditPlugin.INSTANCE.getString("_UI_ScaveModelEditorFilenameDefaultBase");
-					String defaultModelFilenameExtension = ScaveEditPlugin.INSTANCE.getString("_UI_ScaveModelEditorFilenameExtension");
+					String defaultModelFilenameExtension = FILE_EXTENSIONS.get(0);
 					String modelFilename = defaultModelBaseFilename + "." + defaultModelFilenameExtension;
 					for (int i = 1; ((IContainer)selectedResource).findMember(modelFilename) != null; ++i) {
 						modelFilename = defaultModelBaseFilename + i + "." + defaultModelFilenameExtension;
