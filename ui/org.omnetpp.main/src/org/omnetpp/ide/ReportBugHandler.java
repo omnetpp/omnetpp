@@ -18,12 +18,6 @@ public class ReportBugHandler extends AbstractHandler {
 	private static final String BUGTRACKER_URL = "http://bugs.omnetpp.org";
 
 	/**
-	 * The constructor.
-	 */
-	public ReportBugHandler() {
-	}
-
-	/**
 	 * the command has been executed, so extract extract the needed information
 	 * from the application context.
 	 */

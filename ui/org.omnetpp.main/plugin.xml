@@ -139,8 +139,7 @@
                class="org.omnetpp.ide.ToggleNatureAction"
                enablesFor="+"
                id="org.omnetpp.ide.addRemoveNatureAction"
-               label="Add/Remove OMNeT++ Support"
-               menubarPath="additions">
+               label="Add/Remove OMNeT++ Support">
          </action>
       </objectContribution>
    </extension>
@@ -236,17 +235,11 @@
          point="org.eclipse.ui.commands">
       <command
             categoryId="org.eclipse.ui.category.help"
+            defaultHandler="org.omnetpp.ide.ReportBugHandler"
             description="Report a bug or enhancement in the OMNeT++ bugtracker"
             id="org.omnetpp.main.commands.reportBug"
             name="Report Bug or Enhancement...">
       </command>
-   </extension>
-   <extension
-         point="org.eclipse.ui.handlers">
-      <handler
-            class="org.omnetpp.ide.ReportBugHandler"
-            commandId="org.omnetpp.main.commands.reportBug">
-      </handler>
    </extension>
    <extension
          point="org.eclipse.ui.menus">
