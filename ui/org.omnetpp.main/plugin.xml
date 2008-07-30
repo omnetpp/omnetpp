@@ -30,12 +30,7 @@
 				value="%introDescription-samples"/>
     <property
           name="aboutText"
-          value="OMNEST Integrated Development Environment.
-
-Version: {featureVersion}
-
-Copyright (C) 2005, 2008 OpenSim Ltd.
-For more info, please visit http://www.omnetpp.org"/>
+          value="OMNEST Integrated Development Environment.&#x0A;&#x0A;Version: {featureVersion}&#x0A;&#x0A;Copyright (C) 2005, 2008 OpenSim Ltd.&#x0A;For more info, please visit http://www.omnetpp.org"/>
     <property
           name="aboutImage"
           value="icons/omnest128.gif"/>

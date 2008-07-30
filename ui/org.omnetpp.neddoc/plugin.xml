@@ -4,30 +4,20 @@
 
    <extension
          point="org.eclipse.ui.commands">
-      <category
-            name="Neddoc Category"
-            id="org.omnetpp.neddoc.commands.category">
-      </category>
       <command
-            name="Generate neddoc"
-            categoryId="org.omnetpp.neddoc.commands.category"
-            id="org.omnetpp.neddoc.commands.neddocCommand">
+            categoryId="org.eclipse.ui.category.project"
+            defaultHandler="org.omnetpp.neddoc.GenerateNeddocHandler"
+            id="org.omnetpp.neddoc.commands.neddocCommand"
+            name="Generate NED Documentation...">
       </command>
-   </extension>
-   <extension
-         point="org.eclipse.ui.handlers">
-      <handler
-            commandId="org.omnetpp.neddoc.commands.neddocCommand"
-            class="org.omnetpp.neddoc.GenerateNeddocHandler">
-      </handler>
    </extension>
    <extension
          point="org.eclipse.ui.bindings">
       <key
             commandId="org.omnetpp.neddoc.commands.neddocCommand"
-            contextId="org.eclipse.ui.contexts.window"
-            sequence="M1+6"
-            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">
+            contextId="org.eclipse.ui.contexts.actionSet"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+D">
       </key>
    </extension>
    <extension
@@ -39,27 +29,35 @@
             <command
                   commandId="org.omnetpp.neddoc.commands.neddocCommand"
                  icon="icons/full/etool16/neddoc.gif"
-                  tooltip="Generate neddoc"
+                  tooltip="Generate NED Documantation..."
                   id="org.omnetpp.neddoc.toolbars.neddocCommand">
             </command>
          </toolbar>
       </menuContribution>
-   </extension>
-   <extension
-         point="org.eclipse.ui.popupMenus">
-      <objectContribution
-            adaptable="true"
-            id="org.omnetpp.neddoc.generateNeddoc"
-            nameFilter="*"
-            objectClass="org.eclipse.core.resources.IProject">
-         <action
-               class="org.omnetpp.neddoc.GenerateNeddocAction"
-               enablesFor="+"
-               id="org.omnetpp.ide.generateNeddoc"
-               label="Generate neddoc"
-               menubarPath="additions">
-         </action>
-      </objectContribution>
+      <menuContribution
+            locationURI="menu:project?after=build.ext">
+         <command
+               commandId="org.omnetpp.neddoc.commands.neddocCommand"
+               icon="icons/full/etool16/neddoc.gif"
+               id="genneddoc">
+         </command>
+      </menuContribution>
+      <menuContribution
+            locationURI="popup:org.eclipse.ui.popup.any?before=additions">
+         <command
+               commandId="org.omnetpp.neddoc.commands.neddocCommand">
+            <visibleWhen>
+               <with
+                     variable="activeMenuSelection">
+                  <iterate>
+                     <adapt
+                           type="org.eclipse.core.resources.IProject">
+                     </adapt>
+                  </iterate>
+               </with>
+            </visibleWhen>
+         </command>
+      </menuContribution>
    </extension>
    <extension
          point="org.eclipse.ui.propertyPages">

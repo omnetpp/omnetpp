@@ -7,7 +7,7 @@
       plugin="org.omnetpp.main"
       os="linux,macosx,win32"
       ws="carbon,gtk,win32"
-      arch="x86,x86_64">
+      arch="ppc,x86,x86_64">
 
    <description url="http://www.omnetpp.org/">
       This is an Integrated Development Environment for the OMNeT++

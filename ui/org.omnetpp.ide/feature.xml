@@ -6,7 +6,7 @@
       provider-name="OpenSim Ltd."
       os="linux,macosx,win32"
       ws="carbon,gtk,win32"
-      arch="x86,x86_64">
+      arch="ppc,x86,x86_64">
 
    <url>
       <update label="OMNeT++ IDE Update Site" url="http://www.omnetpp.org/update/omnetpp"/>
