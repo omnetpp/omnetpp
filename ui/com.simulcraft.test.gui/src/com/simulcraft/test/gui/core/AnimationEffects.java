@@ -209,7 +209,7 @@ public class AnimationEffects  {
                 int shellStyle = SWT.RESIZE | SWT.TOOL;
                 int style = SWT.NONE;
                 if (BrowserInformationControl.isAvailable(parent))
-                    return new BrowserInformationControl(parent, shellStyle, style);
+                    return new BrowserInformationControl(parent, null, true);
                 else
                     return new DefaultInformationControl(parent, shellStyle, style, new HTMLTextPresenter(false));
             }
