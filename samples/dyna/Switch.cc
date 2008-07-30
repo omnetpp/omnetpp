@@ -22,7 +22,7 @@ class Switch : public cSimpleModule
     virtual void activity();
 };
 
-Define_Module( Switch );
+Define_Module(Switch);
 
 void Switch::activity()
 {

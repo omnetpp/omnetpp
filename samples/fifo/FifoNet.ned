@@ -17,7 +17,7 @@ network FifoNet
             parameters:
                 @display("p=89,100");
         }
-        fifo: BitFifo {
+        fifo: Fifo {
             parameters:
                 @display("p=209,100");
         }

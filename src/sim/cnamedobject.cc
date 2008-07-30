@@ -137,6 +137,7 @@ void cNamedObject::parsimPack(cCommBuffer *buffer)
     throw cRuntimeError(this,eNOPARSIM);
 #else
     buffer->pack(getName());
+    buffer->pack(flags);
 #endif
 }
 
@@ -148,6 +149,7 @@ void cNamedObject::parsimUnpack(cCommBuffer *buffer)
     opp_string tmp;
     buffer->unpack(tmp);
     setName(tmp.buffer());
+    buffer->unpack(flags);
 #endif
 }
 

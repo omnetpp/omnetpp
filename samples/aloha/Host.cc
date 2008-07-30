@@ -75,7 +75,7 @@ void Host::handleMessage(cMessage *msg)
             getDisplayString().setTagArg("t",0,"TRANSMIT");
         }
 
-        cMessage *pk = new cMessage(pkname);
+        cPacket *pk = new cPacket(pkname);
         pk->setBitLength(pkLenBits->longValue());
         simtime_t duration = pk->getBitLength() / txRate;
         sendDirect(pk, radioDelay, duration, server->gate("in"));

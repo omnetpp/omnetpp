@@ -10,7 +10,7 @@
 //
 // Packet type that can be relayed by a Cloud.
 //
-message NetPkt
+packet NetPkt
 {
     int srcAddress;
     int destAddress;

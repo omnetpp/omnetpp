@@ -18,7 +18,7 @@ enum TRTypes
 //
 // Application data.
 //
-message TRApplicationData
+packet TRApplicationData
 {
     int destination;
     string data;
@@ -28,7 +28,7 @@ message TRApplicationData
 //
 // The token.
 //
-message TRToken
+packet TRToken
 {
 };
 
@@ -36,7 +36,7 @@ message TRToken
 //
 // Data frame on the Token Ring LAN.
 //
-message TRFrame
+packet TRFrame
 {
     int source;
     int destination;

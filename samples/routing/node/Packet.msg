@@ -11,7 +11,7 @@
 //
 // Represents a packet in the network.
 //
-message Packet
+packet Packet
 {
     int srcAddr;
     int destAddr;

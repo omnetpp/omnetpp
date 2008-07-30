@@ -84,9 +84,9 @@ void cPacketQueue::parsimUnpack(cCommBuffer *buffer)
 void cPacketQueue::msgAdd(cOwnedObject *obj)
 {
     if (obj) {
-        cMessage *msg = dynamic_cast<cMessage *>(obj);
+        cPacket *msg = dynamic_cast<cPacket *>(obj);
         if (!msg)
-            throw cRuntimeError(this, "insert(): (%s)%s is not a cMessage", obj->getClassName(), obj->getFullName());
+            throw cRuntimeError(this, "insert(): (%s)%s is not a cPacket", obj->getClassName(), obj->getFullName());
         bitlength += msg->getBitLength();
     }
 }
@@ -109,17 +109,17 @@ void cPacketQueue::insertAfter(cOwnedObject *where, cOwnedObject *msg)
     cQueue::insertAfter(where, msg);
 }
 
-cMessage *cPacketQueue::remove(cOwnedObject *msg)
+cPacket *cPacketQueue::remove(cOwnedObject *msg)
 {
-    cMessage *msg1 = (cMessage *)cQueue::remove(msg);
+    cPacket *msg1 = (cPacket *)cQueue::remove(msg);
     if (msg)
         bitlength -= msg1->getBitLength();
     return msg1;
 }
 
-cMessage *cPacketQueue::pop()
+cPacket *cPacketQueue::pop()
 {
-    cMessage *msg = (cMessage *)cQueue::pop();
+    cPacket *msg = (cPacket *)cQueue::pop();
     if (msg)
         bitlength -= msg->getBitLength();
     return msg;

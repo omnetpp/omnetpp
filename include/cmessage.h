@@ -65,6 +65,10 @@ enum eMessageKind
 #define MAX_PARSIM_PARTITIONS  32768 // srcprocid in cMessage
 
 
+#ifdef WITHOUT_CPACKET
+#undef cMessage
+#endif
+
 /**
  * The message class in \opp. cMessage objects may represent events,
  * messages, packets (frames, cells, etc) or other entities in a simulation.
@@ -101,27 +105,17 @@ enum eMessageKind
  *
  * @ingroup SimCore
  */
+//XXX optimize? are there too many useless fields, like created,frommod,fromgate (note: sendtime and tstamp *do* actually get used in practice)
 class SIM_API cMessage : public cOwnedObject
 {
     friend class cMessageHeap;
 
   private:
-    enum { FL_ISRECEPTIONSTART = 2};  //TODO also FL_BITERROR
-    //XXX optimize: are there too many useless fields??? like created,frommod,fromgate (note: sendtime and tstamp do actually get used)
-
     // note: fields are in an order that maximizes packing (minimizes sizeof(cMessage))
-    int64 len;                 // length of message -- used for bit error and transmissing delay modeling
     short msgkind;             // message kind -- 0>= user-defined meaning, <0 reserved
     short prior;               // priority -- used for scheduling msgs with equal times
-    bool error;                // bit error occurred during transmission (Note: may go into cNamedObject::flags)
-    unsigned char sharecount;  // num of msgs MINUS ONE that have this message encapsulated.
-                               // 0: not shared (not encapsulated or encapsulated in one message);
-                               // 1: shared once (shared among two messages);
-                               // 2: shared twice (shared among three messages); etc.
-                               // max sharecount is 255 (after that, a new msg is created).
     short srcprocid;           // reserved for use by parallel execution: id of source partition
     cArray *parlistp;          // ptr to list of parameters
-    cMessage *encapmsg;        // ptr to encapsulated msg
     cObject *ctrlp;            // ptr to "control info"
     void *contextptr;          // a stored pointer -- user-defined meaning, used with self-messages
 
@@ -129,7 +123,6 @@ class SIM_API cMessage : public cOwnedObject
     int tomod, togate;         // dest. module and gate IDs -- set internally
     simtime_t created;         // creation time -- set be constructor
     simtime_t sent,delivd;     // time of sending & delivery -- set internally
-    simtime_t duration;        // transmission duration on last channel with datarate
     simtime_t tstamp;          // time stamp -- user-defined meaning
 
     int heapindex;             // used by cMessageHeap (-1 if not on heap)
@@ -149,18 +142,6 @@ class SIM_API cMessage : public cOwnedObject
     // internal: create parlist
     void _createparlist();
 
-    // internal: if encapmsg is shared (sharecount>0), creates a private copy for this msg,
-    // and in any case it sets encapmsg's owner to be this object. This method
-    // has to be called before any operation on encapmsg, to prevent trouble
-    // that may arise from accessing shared message instances. E.g. without calling
-    // _detachEncapMsg(), encapmsg's ownerp is unpredictable (may be any previous owner,
-    // possibly not even existing any more) which makes even a call to its getFullPath()
-    // method dangerous.
-    void _detachEncapMsg();
-
-    // internal: delete encapmsg, paying attention to its sharecount (assumes encapmsg!=NULL)
-    void _deleteEncapMsg();
-
   public:
     // internal: returns the event number which scheduled this event, or the event in which
     // this message was last delivered to a module. Stored for recording into the event log file.
@@ -169,19 +150,8 @@ class SIM_API cMessage : public cOwnedObject
     // internal: sets previousEventNumber.
     void setPreviousEventNumber(eventnumber_t num) {prev_event_num = num;}
 
-    // internal convenience method: returns the getId() of the innermost encapsulated message,
-    // or itself if there's no encapsulated message
-    long getEncapsulationId() const;
-
-    // internal convenience method: returns getTreeId() of the innermost encapsulated message,
-    // or itself if there's no encapsulated message
-    long getEncapsulationTreeId() const;
-
     // internal: used by cMessageHeap.
     unsigned long getInsertOrder() const {return insertordr;}
-
-    // internal: only to be used by test cases
-    int getShareCount() const {return sharecount;}
 
     // internal: called by the simulation kernel as part of the send(),
     // scheduleAt() calls to set the values returned by the
@@ -202,12 +172,6 @@ class SIM_API cMessage : public cOwnedObject
     // by the getArrivalTime() method
     void setArrivalTime(simtime_t t);
 
-    // internal: sets the message duration; called by channel objects and sendDirect
-    void setDuration(simtime_t d) {duration = d;}
-
-    // internal: sets the isReceptionStart() flag
-    void setReceptionStart(bool b) {setFlag(FL_ISRECEPTIONSTART, b);}
-
     // internal: used by the parallel simulation kernel.
     void setSrcProcId(int procId) {srcprocid = (short)procId;}
 
@@ -226,7 +190,7 @@ class SIM_API cMessage : public cOwnedObject
     /**
      * Constructor.
      */
-    explicit cMessage(const char *name=NULL, short kind=0, int64 length=0, short priority=0, bool errorflag=false);
+    explicit cMessage(const char *name=NULL, short kind=0);
 
     /**
      * Destructor.
@@ -239,6 +203,12 @@ class SIM_API cMessage : public cOwnedObject
      */
     cMessage& operator=(const cMessage& msg);
     //@}
+
+    /**
+     * Returns whether the current class is subclass of cPacket.
+     * The cMessage implementation returns false.
+     */
+    virtual bool isPacket() const {return false;}
 
     /** @name Redefined cObject member functions. */
     //@{
@@ -300,45 +270,6 @@ class SIM_API cMessage : public cOwnedObject
     void setPriority(short p)  {prior=p;}
 
     /**
-     * Sets message length (in bits). When the message is sent through a
-     * channel, message length affects transmission delay and the probability
-     * of setting the bit error flag.
-     */
-    void setBitLength(int64 l);
-
-    /**
-     * Sets message length (bytes). This is just a convenience function which
-     * invokes setBitLength() with 8*l as argument. The caller must take care
-     * that the result does not overflow (i.e. fits into an int64).
-     */
-    void setByteLength(int64 l)  {setBitLength(l<<3);}
-
-    /**
-     * Changes message length by the given value (bits). This is useful for
-     * modeling encapsulation/decapsulation. (See also encapsulate() and
-     * decapsulate().) The caller must take care that the result does not
-     * overflow (i.e. fits into an int64).
-     *
-     * The value may be negative (message length may be decreased too).
-     * If the resulting length would be negative, the method throws a
-     * cRuntimeError.
-     */
-    void addBitLength(int64 delta);
-
-    /**
-     * Changes message length by the given value (bytes). This is just a
-     * convenience function which invokes addBitLength() with 8*l as argument.
-     * The caller must take care that the result does not overflow (i.e.
-     * fits into an int64).
-     */
-    void addByteLength(int64 delta)  {addBitLength(delta<<3);}
-
-    /**
-     * Set bit error flag.
-     */
-    void setBitError(bool err) {error=err;}
-
-    /**
      * Sets the message's time stamp to the current simulation time.
      */
     void setTimestamp() {tstamp=simulation.getSimTime();}
@@ -391,22 +322,6 @@ class SIM_API cMessage : public cOwnedObject
      * Returns the message priority.
      */
     short getPriority() const  {return prior;}
-
-    /**
-     * Returns the message length (in bits).
-     */
-    int64 getBitLength() const  {return len;}
-
-    /**
-     * Returns the message length in bytes, that is, bitlength/8. If bitlength
-     * is not a multiple of 8, the result is rounded up.
-     */
-    int64 getByteLength() const  {return (len+7)>>3;}
-
-    /**
-     * Returns true if bit error flag is set, false otherwise.
-     */
-    bool hasBitError() const {return error;}
 
     /**
      * Returns the message's time stamp.
@@ -580,40 +495,6 @@ class SIM_API cMessage : public cOwnedObject
     cObject *removeObject(cObject *p)  {return getParList().remove(p);}
     //@}
 
-    /** @name Message encapsulation. */
-    //@{
-
-    /**
-     * Encapsulates msg in the message. msg->getBitLength() is increased by the
-     * length of the encapsulated message.
-     *
-     * IMPORTANT NOTE: IT IS FORBIDDEN TO KEEP A POINTER TO A MESSAGE
-     * AFTER IT WAS ENCAPSULATED. For performance reasons, encapsulated
-     * messages are reference counted, meaning that the encapsulated
-     * message is not duplicated when you duplicate a message, but rather,
-     * both (all) copies share the same message instance. Any change done
-     * to the encapsulated message would affect other messages as well.
-     * Decapsulation (and even calling getEncapsulatedMsg()) will create an
-     * own (non-shared) copy of the message.
-     */
-    void encapsulate(cMessage *msg);
-
-    /**
-     * Decapsulates a message from the message object. The length of
-     * the message will be decreased accordingly, except if it was zero.
-     * If the length would become negative, cRuntimeError is thrown.
-     */
-    cMessage *decapsulate();
-
-    /**
-     * Returns a pointer to the encapsulated message, or NULL.
-     *
-     * IMPORTANT: see notes at encapsulate() about reference counting
-     * of encapsulated messages.
-     */
-    cMessage *getEncapsulatedMsg() const;
-    //@}
-
     /** @name Sending/arrival information. */
     //@{
 
@@ -725,22 +606,6 @@ class SIM_API cMessage : public cOwnedObject
     bool arrivedOn(const char *gatename, int gateindex) const;
 
     /**
-     * XXX Transmission duration on the last channel with datarate...
-     *
-     * @see isReceptionStart(), getArrivalTime()
-     */
-    simtime_t getDuration() const {return duration;}
-
-    /**
-     * Tells whether this message represents the start or the end of the
-     * reception, provided the message has nonzero length and it travelled
-     * through a channel with nonzero data rate.
-     *
-     * @see getArrivalTime(), getDuration()
-     */
-    bool isReceptionStart() const {return flags & FL_ISRECEPTIONSTART;}
-
-    /**
      * Returns a unique message identifier assigned upon message creation.
      */
     long getId() const {return msgid;}
@@ -791,8 +656,241 @@ class SIM_API cMessage : public cOwnedObject
     //@}
 };
 
-NAMESPACE_END
+/**
+ * XXX
+ */
+class SIM_API cPacket : public cMessage
+{
+  private:
+    enum {
+        FL_ISRECEPTIONSTART = 2,
+        FL_BITERROR = 4,
+    };
+    int64 len;            // length of message -- used for bit error and transmissing delay modeling
+    simtime_t duration;   // transmission duration on last channel with datarate
+    cPacket *encapmsg;    // ptr to encapsulated msg
+    unsigned char sharecount;  // num of msgs MINUS ONE that have this message encapsulated.
+                               // 0: not shared (not encapsulated or encapsulated in one message);
+                               // 1: shared once (shared among two messages);
+                               // 2: shared twice (shared among three messages); etc.
+                               // max sharecount is 255 (after that, a new msg is created).
 
+  public:
+    // internal: sets the message duration; called by channel objects and sendDirect
+    void setDuration(simtime_t d) {duration = d;}
+
+    // internal: sets the isReceptionStart() flag
+    void setReceptionStart(bool b) {setFlag(FL_ISRECEPTIONSTART, b);}
+
+    // internal convenience method: returns the getId() of the innermost encapsulated message,
+    // or itself if there's no encapsulated message
+    long getEncapsulationId() const;
+
+    // internal convenience method: returns getTreeId() of the innermost encapsulated message,
+    // or itself if there's no encapsulated message
+    long getEncapsulationTreeId() const;
+
+    // internal: if encapmsg is shared (sharecount>0), creates a private copy for this msg,
+    // and in any case it sets encapmsg's owner to be this object. This method
+    // has to be called before any operation on encapmsg, to prevent trouble
+    // that may arise from accessing shared message instances. E.g. without calling
+    // _detachEncapMsg(), encapmsg's ownerp is unpredictable (may be any previous owner,
+    // possibly not even existing any more) which makes even a call to its getFullPath()
+    // method dangerous.
+    void _detachEncapMsg();
+
+    // internal: delete encapmsg, paying attention to its sharecount (assumes encapmsg!=NULL)
+    void _deleteEncapMsg();
+
+  public:
+    /** @name Constructors, destructor, assignment */
+    //@{
+    /**
+     * Copy constructor.
+     */
+    cPacket(const cPacket& msg);
+
+    /**
+     * Constructor.
+     */
+    explicit cPacket(const char *name=NULL, short kind=0, int64 length=0);
+
+    /**
+     * Destructor
+     */
+    virtual ~cPacket();
+
+    /**
+     * Assignment operator. Duplication and the assignment operator work all right with cMessage.
+     * The name member doesn't get copied; see cNamedObject's operator=() for more details.
+     */
+    cPacket& operator=(const cPacket& msg);
+    //@}
+
+    /** @name Redefined cObject member functions. */
+    //@{
+
+    /**
+     * Creates and returns an exact copy of this object.
+     * See cObject for more details.
+     */
+    virtual cPacket *dup() const  {return new cPacket(*this);}
+
+    /**
+     * Produces a one-line description of object contents.
+     * See cObject for more details.
+     */
+    virtual std::string info() const;
+
+    /**
+     * Produces a multi-line description of the object's contents.
+     * See cObject for more details.
+     */
+    virtual std::string detailedInfo() const;
+
+    /**
+     * Calls v->visit(this) for each contained object.
+     * See cObject for more details.
+     */
+    virtual void forEachChild(cVisitor *v);
+
+    /**
+     * Serializes the object into an MPI send buffer
+     * Used by the simulation kernel for parallel execution.
+     * See cObject for more details.
+     */
+    virtual void parsimPack(cCommBuffer *buffer);
+
+    /**
+     * Deserializes the object from an MPI receive buffer
+     * Used by the simulation kernel for parallel execution.
+     * See cObject for more details.
+     */
+    virtual void parsimUnpack(cCommBuffer *buffer);
+
+    /**
+     * Returns true.
+     */
+    virtual bool isPacket() const {return true;}
+    //@}
+
+    /** @name Length and bit error flag */
+    //@{
+    /**
+     * Sets message length (in bits). When the message is sent through a
+     * channel, message length affects transmission delay and the probability
+     * of setting the bit error flag.
+     */
+    void setBitLength(int64 l);
+
+    /**
+     * Sets message length (bytes). This is just a convenience function which
+     * invokes setBitLength() with 8*l as argument. The caller must take care
+     * that the result does not overflow (i.e. fits into an int64).
+     */
+    void setByteLength(int64 l)  {setBitLength(l<<3);}
+
+    /**
+     * Changes message length by the given value (bits). This is useful for
+     * modeling encapsulation/decapsulation. (See also encapsulate() and
+     * decapsulate().) The caller must take care that the result does not
+     * overflow (i.e. fits into an int64).
+     *
+     * The value may be negative (message length may be decreased too).
+     * If the resulting length would be negative, the method throws a
+     * cRuntimeError.
+     */
+    void addBitLength(int64 delta);
+
+    /**
+     * Changes message length by the given value (bytes). This is just a
+     * convenience function which invokes addBitLength() with 8*l as argument.
+     * The caller must take care that the result does not overflow (i.e.
+     * fits into an int64).
+     */
+    void addByteLength(int64 delta)  {addBitLength(delta<<3);}
+
+    /**
+     * Returns the message length (in bits).
+     */
+    int64 getBitLength() const  {return len;}
+
+    /**
+     * Returns the message length in bytes, that is, bitlength/8. If bitlength
+     * is not a multiple of 8, the result is rounded up.
+     */
+    int64 getByteLength() const  {return (len+7)>>3;}
+
+    /**
+     * Sets the bit error flag.
+     */
+    void setBitError(bool e) {setFlag(FL_BITERROR,e);}
+
+    /**
+     * Returns the bit error flag.
+     */
+    bool hasBitError() const {return flags&FL_BITERROR;}
+    //@}
+
+    /** @name Message encapsulation. */
+    //@{
+
+    /**
+     * Encapsulates msg in the message. msg->getBitLength() is increased by the
+     * length of the encapsulated message.
+     *
+     * IMPORTANT NOTE: IT IS FORBIDDEN TO KEEP A POINTER TO A MESSAGE
+     * AFTER IT WAS ENCAPSULATED. For performance reasons, encapsulated
+     * messages are reference counted, meaning that the encapsulated
+     * message is not duplicated when you duplicate a message, but rather,
+     * both (all) copies share the same message instance. Any change done
+     * to the encapsulated message would affect other messages as well.
+     * Decapsulation (and even calling getEncapsulatedMsg()) will create an
+     * own (non-shared) copy of the message.
+     */
+    void encapsulate(cPacket *msg);
+
+    /**
+     * Decapsulates a message from the message object. The length of
+     * the message will be decreased accordingly, except if it was zero.
+     * If the length would become negative, cRuntimeError is thrown.
+     */
+    cPacket *decapsulate();
+
+    /**
+     * Returns a pointer to the encapsulated message, or NULL.
+     *
+     * IMPORTANT: see notes at encapsulate() about reference counting
+     * of encapsulated messages.
+     */
+    cPacket *getEncapsulatedMsg() const;    // FIXME getEncapsulatedPacket()?
+    //@}
+
+    /** @name Transmission state */
+    //@{
+    /**
+     * XXX Transmission duration on the last channel with datarate...
+     *
+     * @see isReceptionStart(), getArrivalTime()
+     */
+    simtime_t getDuration() const {return duration;}
+
+    /**
+     * Tells whether this message represents the start or the end of the
+     * reception, provided the message has nonzero length and it travelled
+     * through a channel with nonzero data rate.
+     *
+     * @see getArrivalTime(), getDuration()
+     */
+    bool isReceptionStart() const {return flags & FL_ISRECEPTIONSTART;}
+    //@}
+};
+
+#ifdef WITHOUT_CPACKET
+#define cMessage cPacket /* restore #define in simkerneldefs.h */
+#endif
+
+NAMESPACE_END
 
 #endif
 

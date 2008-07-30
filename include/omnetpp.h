@@ -104,11 +104,6 @@
 #include "compat.h"
 #include "platdep/intxtypes.h"
 
-NAMESPACE_BEGIN
-
-NAMESPACE_END
-
-
 #endif
 
 

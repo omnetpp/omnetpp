@@ -105,9 +105,11 @@ void Server::handleMessage(cMessage *msg)
     }
     else
     {
+        cPacket *pkt = check_and_cast<cPacket *>(msg);
+
         totalFrames++;
-        ASSERT(msg->isReceptionStart());
-        simtime_t endReceptionTime = simTime() + msg->getDuration();
+        ASSERT(pkt->isReceptionStart());
+        simtime_t endReceptionTime = simTime() + pkt->getDuration();
         if (!channelBusy)
         {
             EV << "started receiving\n";
@@ -149,7 +151,7 @@ void Server::handleMessage(cMessage *msg)
             }
         }
         channelBusy = true;
-        delete msg;
+        delete pkt;
     }
 }
 

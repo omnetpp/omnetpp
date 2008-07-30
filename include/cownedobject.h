@@ -111,6 +111,7 @@ class SIM_API cOwnedObject : public cNamedObject
     friend class cDefaultList;
     friend class cSimulation;
     friend class cMessage;  // because of refcounting business
+    friend class cPacket;   // because of refcounting business
 
   private:
     cObject *ownerp;   // owner pointer

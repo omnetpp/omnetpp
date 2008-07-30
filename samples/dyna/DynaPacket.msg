@@ -17,14 +17,14 @@ enum DynaPacketType
     DYNA_DATA = 4;
 };
 
-message DynaPacket
+packet DynaPacket
 {
     int srcAddress;
     int destAddress;
     int serverProcId;
 };
 
-message DynaDataPacket extends DynaPacket
+packet DynaDataPacket extends DynaPacket
 {
     string payload;
 };

@@ -267,7 +267,7 @@ sub processFile()
     $reservedwords = 'abstract|allowunconnected|ancestor|anytype|bool|channelinterface|channel|char'
         . '|class|connections|const|cplusplus|datarate|default|delay|display|double|do|endchannel'
         . '|endfor|endmodule|endnetwork|endsimple|enum|error|extends|false|fields|for|function'
-        . '|gatesizes|gates|if|import|index|inout|input|interface|int|like|long|message|module'
+        . '|gatesizes|gates|if|import|index|inout|input|interface|int|like|long|message|packet|module'
         . '|network|nocheck|noncobject|cpolymorphic|numeric|on|output|package|parameters|properties|property'
         . '|readonly|ref|short|simple|sizeof|string|struct|submodules|this|to|true|typename|types'
         . '|unsigned|where|withcppclass|xmldoc|xml|float|int8|int16|int32|int64|uint8|uint16|uint32|uint64'
@@ -318,7 +318,7 @@ sub processFile()
     }
 
     # parse type announcements in ned text
-    while ($msg =~ s/(struct|cobject|noncobject|class|class\s+noncobject|class\s+cpolymorphic|message)\s+([A-Za-z_][A-Za-z0-9_]*)\s*;//s)
+    while ($msg =~ s/(struct|cobject|noncobject|class|class\s+noncobject|class\s+cpolymorphic|message|packet)\s+([A-Za-z_][A-Za-z0-9_]*)\s*;//s)
     {
         $class = $2;
         $type0 = $1;
@@ -331,7 +331,7 @@ sub processFile()
         } elsif ($type0 eq 'noncobject') {
             print "$filename: Warning: 'noncobject' is deprecated, write 'class noncobject' instead\n";
             $type = 'foreignclass';
-        } elsif ($type0 eq 'class' or $type0 eq 'message') {
+        } elsif ($type0 eq 'class' or $type0 eq 'message' or $type0 eq 'packet') {
             $type = 'cobject';
         } elsif ($type0 =~ /class\s+noncobject/) {
             $type = 'foreignclass';
@@ -488,14 +488,14 @@ sub processFile()
         }
     }
 
-    # parse message/class/struct definitions
-    while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
+    # parse message/packet/class/struct definitions
+    while ($msg =~ s/(message|packet|class|struct)\s+(.+?)\s*{(.*?)};?//s)
     {
         #
         # parse message { ... } syntax
         #
         $source = $&;
-        $keyword = $1;  # 'message' or 'class' or 'struct'
+        $keyword = $1;  # 'message', 'packet', 'class' or 'struct'
         $msghdr = $2;   # must be "<name>" or "<name> extends <name>"
         $body = $3;
 
@@ -841,7 +841,7 @@ sub prepareForCodeGeneration
         $classtype = 'cobject'; # hardcoded
     }
     elsif ($msgbase eq '') {
-        if ($keyword eq 'message') {
+        if ($keyword eq 'message' or $keyword eq 'packet') {
             $classtype = 'cobject';
         } elsif ($keyword eq 'class') {
             $classtype = 'cpolymorphic'; # Note: we never generate non-cObject classes
@@ -895,6 +895,8 @@ sub prepareForCodeGeneration
             $msgbaseclass = '';
         } elsif ($keyword eq 'message') {
             $msgbaseclass = 'cMessage';
+        } elsif ($keyword eq 'packet') {
+            $msgbaseclass = 'cPacket';
         } elsif ($keyword eq 'class') {
             $msgbaseclass = 'cObject';  # note: all classes we generate subclass from cObject!
         } elsif ($keyword eq 'struct') {
@@ -1074,7 +1076,7 @@ sub generateClass
         print H " * {\n";
         print H " *   public:\n";
         if ($classtype eq "cobject") {
-            if ($keyword eq "message") {
+            if ($keyword eq "message" or $keyword eq "packet") {
                 print H " *     $realmsgclass(const char *name=NULL, int kind=0) : $msgclass(name,kind) {}\n";
             } else {
                 print H " *     $realmsgclass(const char *name=NULL) : $msgclass(name) {}\n";
@@ -1134,7 +1136,7 @@ sub generateClass
         print H "  public:\n";
     }
     if ($classtype eq "cobject") {
-        if ($keyword eq "message") {
+        if ($keyword eq "message" or $keyword eq "packet") {
             print H "    $msgclass(const char *name=NULL, int kind=0);\n";
         } else {
             print H "    $msgclass(const char *name=NULL);\n";
@@ -1199,7 +1201,7 @@ sub generateClass
     }
 
     if ($classtype eq "cobject") {
-        if ($keyword eq "message") {
+        if ($keyword eq "message" or $keyword eq "packet") {
             # CAREFUL when assigning values to existing members gets implemented!
             # The msg kind passed to the ctor should take priority!!!
             print CC "$msgclass\:\:$msgclass(const char *name, int kind) : $msgbaseclass(name,kind)\n";

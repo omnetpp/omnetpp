@@ -11,7 +11,7 @@
 //
 // Represents a packet in the network.
 //
-message HCPacket
+packet HCPacket
 {
     int srcAddress;
     int destAddress;

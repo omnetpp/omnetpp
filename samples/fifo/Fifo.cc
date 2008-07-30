@@ -12,31 +12,15 @@
 
 namespace fifo {
 
-Define_Module(PacketFifo);
+Define_Module(Fifo);
 
-simtime_t PacketFifo::startService(cMessage *msg)
+simtime_t Fifo::startService(cMessage *msg)
 {
     EV << "Starting service of " << msg->getName() << endl;
     return par("serviceTime");
 }
 
-void PacketFifo::endService(cMessage *msg)
-{
-    EV << "Completed service of " << msg->getName() << endl;
-    send( msg, "out" );
-}
-
-//----
-
-Define_Module(BitFifo);
-
-simtime_t BitFifo::startService(cMessage *msg)
-{
-    EV << "Starting service of " << msg->getName() << endl;
-    return msg->getBitLength() / (double)par("bitsPerSec");
-}
-
-void BitFifo::endService(cMessage *msg)
+void Fifo::endService(cMessage *msg)
 {
     EV << "Completed service of " << msg->getName() << endl;
     send( msg, "out" );

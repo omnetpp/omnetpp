@@ -43,6 +43,15 @@
 #endif
 
 //
+// WITHOUT_CPACKET turns on a compatibility mode, where older models that use
+// cMessage instead of cMessage for network packets can be compiled; this
+// feature may make porting existing models to 4.0 easier.
+//
+#ifdef WITHOUT_CPACKET
+#define cMessage cPacket
+#endif
+
+//
 // other common defines
 //
 

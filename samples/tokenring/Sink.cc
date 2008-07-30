@@ -52,9 +52,10 @@ void Sink::initialize()
 
 void Sink::handleMessage(cMessage *msg)
 {
-    simtime_t eed = simTime() - msg->getCreationTime();
-    EV << "Received app. data: \"" << msg->getName() << "\", "
-          "length=" << msg->getByteLength() << "bytes, " <<
+    cPacket *pkt = check_and_cast<cPacket *>(msg);
+    simtime_t eed = simTime() - pkt->getCreationTime();
+    EV << "Received app. data: \"" << pkt->getName() << "\", "
+          "length=" << pkt->getByteLength() << "bytes, " <<
           "end-to-end delay=" << eed << endl;
 
     // record statistics to output vector file and histograms
@@ -62,8 +63,8 @@ void Sink::handleMessage(cMessage *msg)
     endToEndDelayKS.collect(eed);
     endToEndDelayPS.collect(eed);
 
-    // message no longer needed
-    delete msg;
+    // packet no longer needed
+    delete pkt;
 }
 
 void Sink::finish()

@@ -11,7 +11,7 @@
 //
 // Single-server queue, service rate independent of message length
 //
-simple PacketFifo
+simple Fifo
 {
     parameters:
         volatile double serviceTime @unit(s);
@@ -20,19 +20,3 @@ simple PacketFifo
         input in;
         output out;
 }
-
-
-//
-// Single-server queue, service rate based on message length
-//
-simple BitFifo
-{
-    parameters:
-        volatile double bitsPerSec @unit(bps);
-        @display("i=block/queue;q=queue");
-    gates:
-        input in;
-        output out;
-}
-
-

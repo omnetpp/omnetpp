@@ -44,18 +44,17 @@ Source::~Source()
 void Source::initialize()
 {
     sendMessageEvent = new cMessage("sendMessageEvent");
-    scheduleAt(0.0, sendMessageEvent);
+    scheduleAt(simTime(), sendMessageEvent);
 }
 
 void Source::handleMessage(cMessage *msg)
 {
     ASSERT(msg==sendMessageEvent);
 
-    cMessage *m = new cMessage("job");
-    m->setBitLength((long)par("msgLength"));
-    send(m, "out");
+    cMessage *job = new cMessage("job");
+    send(job, "out");
 
-    scheduleAt(simTime()+(double)par("sendIaTime"), sendMessageEvent);
+    scheduleAt(simTime()+par("sendIaTime").doubleValue(), sendMessageEvent);
 }
 
 }; //namespace

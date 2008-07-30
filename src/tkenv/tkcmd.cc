@@ -665,7 +665,7 @@ int getObjectField_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
    } else if (!strcmp(field,"length")) {
        if (dynamic_cast<cMessage *>(object)) {
            char buf[20];
-           sprintf(buf,"%"INT64_PRINTF_FORMAT"d", dynamic_cast<cMessage *>(object)->getBitLength());
+           sprintf(buf,"%"INT64_PRINTF_FORMAT"d", dynamic_cast<cPacket *>(object)->getBitLength());
            Tcl_SetResult(interp, buf, TCL_VOLATILE);
        } else if (dynamic_cast<cQueue *>(object)) {
            char buf[20];

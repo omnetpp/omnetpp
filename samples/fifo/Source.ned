@@ -9,14 +9,13 @@
 
 
 //
-// Generates jobs (messages) with the given interarrival time and length.
-// Both can be random variates, returning different values for each job.
+// Generates jobs (messages) with the given interarrival time,
+// which can be a random variate.
 //
 simple Source
 {
     parameters:
         volatile double sendIaTime @unit(s);
-        volatile int msgLength @unit(b);  // in bits
         @display("i=block/source");
     gates:
         output out;

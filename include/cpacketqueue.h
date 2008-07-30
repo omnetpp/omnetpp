@@ -25,7 +25,7 @@ NAMESPACE_BEGIN
 
 
 /**
- * A queue class specialized for cMessage objects.
+ * A queue class specialized for cPacket objects.
  *
  * @ingroup Containers
  */
@@ -98,7 +98,7 @@ class SIM_API cPacketQueue : public cQueue
     /**
      * Adds an element to the back of the queue. Trying to insert a
      * NULL pointer is an error (throws cRuntimeError). The given
-     * object must be an instance of cMessage.
+     * object must be an instance of cPacket.
      */
     virtual void insert(cOwnedObject *msg);
 
@@ -106,7 +106,7 @@ class SIM_API cPacketQueue : public cQueue
      * Inserts exactly before the given object. If the given position
      * does not exist or if you try to insert a NULL pointer,
      * cRuntimeError is thrown. The given object must be an instance
-     * of cMessage.
+     * of cPacket.
      */
     virtual void insertBefore(cOwnedObject *where, cOwnedObject *msg);
 
@@ -114,29 +114,29 @@ class SIM_API cPacketQueue : public cQueue
      * Inserts exactly after the given object. If the given position
      * does not exist or if you try to insert a NULL pointer,
      * cRuntimeError is thrown. The given object must be an instance
-     * of cMessage.
+     * of cPacket.
      */
     virtual void insertAfter(cOwnedObject *where, cOwnedObject *msg);
 
     /**
      * Unlinks and returns the object given. If the object is not in the
      * queue, NULL pointer is returned. The given object must be an instance
-     * of cMessage.
+     * of cPacket.
      */
-    virtual cMessage *remove(cOwnedObject *msg);
+    virtual cPacket *remove(cOwnedObject *msg);
 
     /**
      * Unlinks and returns the front element in the queue. If the queue
      * is empty, cRuntimeError is thrown.
      */
-    virtual cMessage *pop();
+    virtual cPacket *pop();
     //@}
 
     /** @name Query functions. */
     //@{
     /**
      * Returns the total size of the messages in the queue, in bits.
-     * This is the sum of the message bit lengths; see cMessage::getBitLength().
+     * This is the sum of the message bit lengths; see cPacket::getBitLength().
      */
     int64 getBitLength() const  {return bitlength;}
 
@@ -151,21 +151,21 @@ class SIM_API cPacketQueue : public cQueue
      * This is the element to be return by pop().
      * Returns NULL if the queue is empty.
      */
-    virtual cMessage *front() const  {return (cMessage *)cQueue::front();}
+    virtual cPacket *front() const  {return (cPacket *)cQueue::front();}
 
     /**
      * Returns pointer to the last (back) element in the queue.
      * This is the element most recently added by insert().
      * Returns NULL if the queue is empty.
      */
-    virtual cMessage *back() const  {return (cMessage *)cQueue::back();}
+    virtual cPacket *back() const  {return (cPacket *)cQueue::back();}
 
     /**
      * Returns the ith element in the queue, or NULL if i is out of range.
      * get(0) returns the front element. This method performs linear
      * search.
      */
-    cMessage *get(int i) const  {return (cMessage *)cQueue::get(i);}
+    cPacket *get(int i) const  {return (cPacket *)cQueue::get(i);}
     //@}
 };
 

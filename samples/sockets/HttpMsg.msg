@@ -11,7 +11,7 @@ cplusplus {{
 #include "NetPkt_m.h"
 }};
 
-message NetPkt;
+packet NetPkt;
 
 //
 // Message class for representing a HTTP request or reply.
@@ -21,7 +21,7 @@ message NetPkt;
 // and also ignore the fact that long requests and replies may span
 // several packets in real life).
 //
-message HTTPMsg extends NetPkt
+packet HTTPMsg extends NetPkt
 {
     string payload;
 };

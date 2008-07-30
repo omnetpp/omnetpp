@@ -28,6 +28,7 @@ cplusplus
 #endif
 
 USING_NAMESPACE
+
 //
 // Register enums from the sim. kernel
 //
@@ -213,13 +214,9 @@ class cMessage extends cOwnedObject
 {
     short kind @group(message) @editable @hint(generic user-settable attribute, usually carries "type" or "role" of message);
     short priority @group(message) @editable @hint(controls delivery order of messages with equal timestamps);
-    int64 bitLength @group(message) @editable @hint(simulated length of the message in bits, affects transmission time and probability of bit errors when sent through a channel);
-    int64 byteLength @group(message) @editable @hint(length in bytes, i.e. length in bits divided by eight);
-    bool hasBitError @getter(hasBitError) @group(message) @setter(setBitError) @editable @hint(signals that a bit error occurred when the message was sent through a channel with nonzero bit error rate);
     string displayString @group(message) @hint(controls appearance of the message in GUI);
     cArray parList @group(obsolete) @hint(use of "parList" should be replaced with message subclassing in the few models that still use it);
 
-    cMessage *encapsulatedMsg @hint(used with protocol stacks: stores an encapsulated higher-layer packet);
     cObject *controlInfo @hint(used with protocol stacks: carries extra information when a packet is sent between protocol layers);
 
     bool isScheduled @getter(isScheduled) @group(sending) @hint(whether self-message is currently scheduled, or message currently is in transit);
@@ -227,8 +224,6 @@ class cMessage extends cOwnedObject
     simtime_t creationTime @group(sending) @hint(simulation time the message was created);
     simtime_t sendingTime @group(sending) @hint(simulation time of the current or last sending/scheduling of the message);
     simtime_t arrivalTime @group(sending) @hint(simulation time the message will be/was delivered to the destination module);
-    bool isReceptionStart @getter(isReceptionStart) @group(sending) @hint(when duration is nonzero: whether this message represents the start or the end of the frame reception);
-    simtime_t duration @group(sending) @hint(transmission time over a channel with datarate);
     simtime_t timestamp @group(sending) @editable @hint(user-settable timestamp for generic use);
 
     int senderModuleId @group(sending) @hint(ID of the module performing the current or last send/schedule operation);
@@ -242,6 +237,16 @@ class cMessage extends cOwnedObject
     cGate *arrivalGate @group(sending) @hint(arrival gate for current or last sending -- NULL for self-messages);
 
     //XXX various IDs
+}
+
+class cPacket extends cMessage
+{
+    int64 bitLength @group(message) @editable @hint(simulated length of the message in bits, affects transmission time and probability of bit errors when sent through a channel);
+    int64 byteLength @group(message) @editable @hint(length in bytes, i.e. length in bits divided by eight);
+    bool hasBitError @getter(hasBitError) @group(message) @setter(setBitError) @editable @hint(signals that a bit error occurred when the message was sent through a channel with nonzero bit error rate);
+    cMessage *encapsulatedMsg @hint(used with protocol stacks: stores an encapsulated higher-layer packet);
+    bool isReceptionStart @getter(isReceptionStart) @group(sending) @hint(when duration is nonzero: whether this message represents the start or the end of the frame reception);
+    simtime_t duration @group(sending) @hint(transmission time over a channel with datarate);
 }
 
 //----

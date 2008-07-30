@@ -267,7 +267,7 @@ void cSimpleModule::setId(int n)
     cModule::setId(n);
 
     if (timeoutmsg)
-        timeoutmsg->setArrival(this,n);
+        timeoutmsg->setArrival(this, n);
 }
 
 void cSimpleModule::halt()
@@ -400,7 +400,8 @@ int cSimpleModule::sendDelayed(cMessage *msg, simtime_t delay, cGate *outgate)
     // set message parameters and send it
     simtime_t delayEndTime = simTime()+delay;
     msg->setSentFrom(this, outgate->getId(), delayEndTime);
-    msg->setDuration(0);
+    if (msg->isPacket())
+        ((cPacket *)msg)->setDuration(0);
 
     EVCB.beginSend(msg);
     bool keepit = outgate->deliver(msg, delayEndTime);
@@ -499,7 +500,11 @@ int cSimpleModule::sendDirect(cMessage *msg, simtime_t propdelay, simtime_t tran
     msg->setSentFrom(this, -1, simTime());
 
     EVCB.beginSend(msg);
-    msg->setDuration(transmdelay);
+    if (msg->isPacket())
+        ((cPacket *)msg)->setDuration(transmdelay);
+    else if (transmdelay!=SIMTIME_ZERO)
+        throw cRuntimeError("sendDirect(): cannot send non-packet message (%s)%s when nonzero duration is specified",
+                            msg->getClassName(), msg->getName());
     EVCB.messageSendDirect(msg, togate, propdelay, transmdelay);
     bool keepit = togate->deliver(msg, simTime() + propdelay);
     if (!keepit)
@@ -591,9 +596,16 @@ void cSimpleModule::arrived(cMessage *msg, cGate *ongate, simtime_t t)
         throw cRuntimeError("Causality violation: message `%s' arrival time %s at module `%s' "
                             "is earlier than current simulation time",
                             msg->getName(), SIMTIME_STR(t), getFullPath().c_str());
+    msg->setArrival(this, ongate->getId());
     bool isStart = ongate->getDeliverOnReceptionStart();
-    msg->setReceptionStart(isStart);
-    msg->setArrival(this, ongate->getId(), isStart ? t : t + msg->getDuration());
+    if (msg->isPacket()) {
+        cPacket *pkt = (cPacket *)msg;
+        pkt->setReceptionStart(isStart);
+        pkt->setArrivalTime(isStart ? t : t + pkt->getDuration());
+    }
+    else {
+        msg->setArrivalTime(t);
+    }
     simulation.insertMsg(msg);
 }
 

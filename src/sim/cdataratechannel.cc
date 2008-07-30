@@ -119,12 +119,6 @@ bool cDatarateChannel::deliver(cMessage *msg, simtime_t t)
     if (flags & FL_ISDISABLED)
         return false;
 
-    if (msg->getDuration() != SIMTIME_ZERO)
-        throw cRuntimeError(this, "Message (%s)%s already has a duration set; there "
-            "may be more than one channel with data rate in the connection path, or "
-            "it was sent with a sendDirect() call that specified duration as well",
-            msg->getClassName(), msg->getName());
-
     // must wait until previous transmissions end
     if (txfinishtime > t)
         throw cRuntimeError("Error sending message (%s)%s on gate %s: gate is currently "
@@ -141,9 +135,18 @@ bool cDatarateChannel::deliver(cMessage *msg, simtime_t t)
     // datarate modeling
     if (flags & FL_DATARATE_NONZERO)
     {
-        duration = msg->getBitLength() / datarateparam;
-        msg->setDuration(duration);
-        txfinishtime = t + duration;
+        if (msg->isPacket())
+        {
+            cPacket *pkt = (cPacket *)msg;
+            if (pkt->getDuration() != SIMTIME_ZERO)
+                throw cRuntimeError(this, "Packet (%s)%s already has a duration set; there "
+                    "may be more than one channel with data rate in the connection path, or "
+                    "it was sent with a sendDirect() call that specified duration as well",
+                    pkt->getClassName(), pkt->getName());
+            duration = pkt->getBitLength() / datarateparam;
+            pkt->setDuration(duration);
+            txfinishtime = t + duration;
+        }
     }
 
     // propagation delay modeling
@@ -155,12 +158,16 @@ bool cDatarateChannel::deliver(cMessage *msg, simtime_t t)
     // bit error modeling
     if (flags & (FL_BER_NONZERO | FL_PER_NONZERO))
     {
-        if (flags & FL_BER_NONZERO)
-            if (dblrand() < 1.0 - pow(1.0-berparam, (double)msg->getBitLength()))
-                msg->setBitError(true);
-        if (flags & FL_PER_NONZERO)
-            if (dblrand() < perparam)
-                msg->setBitError(true);
+        if (msg->isPacket())
+        {
+            cPacket *pkt = (cPacket *)msg;
+            if (flags & FL_BER_NONZERO)
+                if (dblrand() < 1.0 - pow(1.0-berparam, (double)pkt->getBitLength()))
+                    pkt->setBitError(true);
+            if (flags & FL_PER_NONZERO)
+                if (dblrand() < perparam)
+                    pkt->setBitError(true);
+        }
     }
 
     // FIXME: this is not reusable this way in custom channels, put it into a base class function with the next line (levy)

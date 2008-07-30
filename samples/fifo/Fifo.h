@@ -16,19 +16,9 @@
 namespace fifo {
 
 /**
- * Single-server queue with given service time.
+ * Single-server queue with a given service time.
  */
-class PacketFifo : public AbstractFifo
-{
-  protected:
-    virtual simtime_t startService(cMessage *msg);
-    virtual void endService(cMessage *msg);
-};
-
-/**
- * Single-server queue with service time based on message length.
- */
-class BitFifo : public AbstractFifo
+class Fifo : public AbstractFifo
 {
   protected:
     virtual simtime_t startService(cMessage *msg);
