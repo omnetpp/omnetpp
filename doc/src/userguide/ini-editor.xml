@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
-<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
-    "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<!DOCTYPE chapter SYSTEM "custom-docbook.dtd">
 
 <chapter id="ini-editor">
   <title>Editing INI Files</title>
@@ -17,9 +16,11 @@
       the available configuration options.
     </para>
     <note>
+      <para>
       The syntax and features of ini files have changed since OMNeT++ 3.x as well.
       These changes are summarized in the document titled "Configuring Simulations in
       OMNeT++ 4.0." TBD
+      </para>
     </note>
     <para>
       The Inifile Editor is a dual-mode editor: the configuration can be edited using
@@ -31,35 +32,143 @@
 
   <sect1>
     <title>Creating INI files</title>
-    <para>wizard… TBD</para>
+    <para>To create a new ini file, choose
+      <menuchoice>
+        <guimenu>File</guimenu>
+        <guisubmenu>New</guisubmenu>
+        <guimenuitem>Initialization File</guimenuitem>
+      </menuchoice> from the menu. It opens a wizard where you can enter the 
+      name of the new file and select the name of the network to be configured.
+    </para>
+    <picture file="pictures/INI-NewWizard.png">New Initialization File dialog</picture>
   </sect1>
 
   <sect1>
     <title>Using the INI File Editor</title>
+    <para>
+      The ini file editor has two modes. The <emphasis>Source</emphasis> mode provides a text editor
+      with syntax highlighting and content assist. In the <emphasis>Form</emphasis> mode you can
+      edit the configuration by entering the values in a form. You can switch between the modes
+      by selecting the tabs at the bottom of the editor.
+    </para>
     <sect2>
       <title>Editing in form mode</title>
+      <para><!-- TODO move this para to overview? -->
+        The ini file contains the configuration of simulation runs. The content of the ini file
+        is divided into sections. In the simplest case, each parameters are set in the General
+        section. If you want to create several configurations in the same ini file you can
+        create named Config sections and refer them with the -c option when starting the simulation.
+        <!-- TODO: iteration vars? -->
+        The Config sections inherit the settings from the General section or from other
+        Config sections. This way you can factor out the common settings into a "base" configuration.
+      </para>
+      <para>
+        On the first page of form editor you can edit the sections. The section are displayed 
+        as a tree, the nodes inherit settings from their parent. You can use drag and drop
+        to reorganize the sections. The selected section can be deleted, edited or a new child added to it.
+        <!-- TODO context menu: Add missing keys -->
+      </para>
+      <picture file="pictures/INI-FormEditor.png">Editing ini file sections</picture>
+      <para>
+        The Config sections have a name and optionally a description. You can specify a fallback
+        section other than General. If the network name is not inherited it can be given too.
+      </para>
+      <picture file="pictures/INI-NewSection.png">Creating new ini file section</picture>
+      <para>
+        On the Parameters page of the form editor you can set module parameters. First you have to
+        select the section the parameters stored into. After selecting the section from the list,
+        the form shows the name of the edited network and the fallback section.
+        The table below the list box shows current settings of the section and all its ancestor
+        sections. You can move setting by dragging them. If you click in the table cell you can
+        edit the parameter name (or pattern), its value and the comment attached to it.
+        <keycombo><keycap>Ctrl</keycap><keycap>Space</keycap></keycombo> brings up a content assist.
+        If you hover over a table row, the parameter is described in the appearing tooltip.
+      </para>
+      <picture file="pictures/INI-FormEditor3.png">Editing module parameters</picture>
+      <para>
+        New parameters can be added one by one by pressing the <guibutton>New</guibutton> button and
+        filling the new table row. If you press the <guibutton>Add...</guibutton> button, you
+        can add the missing parameters at once. 
+      </para>
+      <para>
+        The rest of the settings does not belong to modules, for example configuration of 
+        random number generators, output vectors, simulation time limit. These settings
+        can be edited from the forms listed under the Configuration node. If the field
+        has a default value and it is not set then the default value is displayed in gray.
+        If its value is set you can reset the default value by pressing the <guibutton>Reset</guibutton>
+        button. These fields are usually set in the General section. If you want to specify
+        them in a Config section, press the <icon name="expand.png"/> button and add a section specific
+        value to the opening table. If the table contains the Generic section only, then it can
+        be collapsed again by pressing the <icon name="collapse.png"/> button. Some fields can be
+        specified in the General section only, so they do not have a <icon name="expand.png"/> button
+        next to them.
+      </para>
+      <picture file="pictures/INI-FormEditor2.png">Editing general configuration</picture>
     </sect2>
     <sect2>
       <title>Editing in text mode</title>
-      <para />
+      <para>
+        TODO
+      </para>
+      <picture file="pictures/INI-TextEditor.png">Editing the INI file in text mode</picture>
+      <sect3>
+        <title>Opening old INI files</title>
+        <para>
+          When you open an INI file with the old format, the editor offers to convert
+          it to the new format. It creates Config sections from Run sections,
+          and renames old parameters.
+        </para>
+      </sect3>
+      <sect3>
+        <title>Content assist</title>
+        <para>
+          If you press <keycombo><keycap>Ctrl</keycap><keycap>Space</keycap></keycombo>,
+          you can get a list of proposals valid at the insertion point. The list may
+          contain section names, general options, and parameter names and values
+          of the modules of the configured network.
+        </para>
+      </sect3>
+      <sect3>
+        <title>Add unassigned parameters</title>
+        <para>
+          You can add the names of unassigned module parameters to a Config section by choosing
+          <guimenuitem>Add Missing keys...</guimenuitem> from the context menu.
+        </para>
+      </sect3>
+      <sect3>
+        <title>Comments</title>
+        <para>
+          To comment out the selected lines press <keycombo><keycap>Ctrl</keycap><keycap>/</keycap></keycombo>.
+          To remove the comment press <keycombo><keycap>Ctrl</keycap><keycap>/</keycap></keycombo> again.
+        </para>
+      </sect3>
+      <sect3>
+        <title>Navigation</title>
+        <para>
+          If you press the <keycap>Ctrl</keycap> key and click on a module parameter name,
+          then the declaration of the parameter will be shown in the NED editor.           
+        </para>
+      </sect3>
     </sect2>
   </sect1>
+
+  <!-- TODO examples? -->  
 
   <sect1>
     <title>Associated Views</title>
     <para>
       There are several views related to the INI editor. These views can be displayed (if
-      not already open) by choosing Window|Show View in the menu.
+      not already open) by choosing
+      <menuchoice><guimenu>Window</guimenu><guisubmenu> Show View</guisubmenu></menuchoice>
+      in the menu.
     </para>
     <sect2>
       <title>Outline View</title>
       <para>
-        The Outline View allows an overview of the current NED file. Clicking on an
-        element will focus the corresponding element in the text or graphical view. In
-        graphical view, it has limited editing functionality. You can delete an object
-        here (right click/delete), and the order of elements can be rearranged by dragging
-        them.
+        The Outline View allows an overview of the sections in the current INI file. Clicking on an
+        section will focus the corresponding element in the text or form view.
       </para>
+      <picture file="pictures/INI-OutlineView.png">Outline View showing the content of an INI file</picture>
     </sect2>
     <sect2>
       <title>Problems View</title>
@@ -73,18 +182,32 @@
       <title>Module Hierarchy View</title>
       <para>
         The Module Hierarchy View shows the contained submodules, several levels deep.
+        It also display the module parameters, and where its value comes from (ini file,
+        ned file or unassigned).
+        <!-- TODO: legend -->
       </para>
     </sect2>
     <sect2>
       <title>NED Inheritance View</title>
-      <para>TBD</para>
+      <para>
+        The NED Inheritance View shows the inheritance tree of the network configured in the
+        selected section.
+      </para>
     </sect2>
     <sect2>
       <title>Parameters View</title>
       <para>
-        The Parameters View shows parameters of the selected module, including inherited
-        parameters.
+        The Parameters View shows parameters of the selected section, including inherited
+        parameters. It also displays the parameters that are unassigned in the configuration.
+        When the <icon name="filter.png"/> toggle button on the toolbar is on, then
+        all parameters are displayed, otherwise only the unassigned ones.
       </para>
+      <para>
+        If you want to fix the content of the view, press the <icon name="unpin.gif"/> button.
+        Then selecting a parameter in the view navigates to the location where the parameter is
+        set.
+      </para>
+      <picture file="pictures/INI-ParametersView.png">Parameters View</picture>
     </sect2>
   </sect1>
 </chapter>
