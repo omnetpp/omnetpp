@@ -22,15 +22,4 @@
        genModel = "model/scave.genmodel" />
   </extension>
 
-  <extension point = "org.eclipse.ui.editors">
-    <editor
-        id = "org.omnetpp.scave.model.presentation.ScaveModelEditorID"
-        name = "%_UI_ScaveModelEditor_label"
-        icon = "icons/full/obj16/ScaveModelModelFile.gif"
-        extensions = "scavemodel"
-        class = "org.omnetpp.scave.model.presentation.ScaveModelEditor"
-        contributorClass="org.omnetpp.scave.model.presentation.ScaveModelActionBarContributor" >
-    </editor>
-  </extension>
-
 </plugin>
