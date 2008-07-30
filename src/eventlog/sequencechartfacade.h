@@ -38,7 +38,7 @@ class EVENTLOG_API SequenceChartFacade : public EventLogFacade
     protected:
         long timelineCoordinateSystemVersion;
         eventnumber_t timelineCoordinateOriginEventNumber;
-        double timelineCoordinateOriginSimulationTime;
+        simtime_t timelineCoordinateOriginSimulationTime;
         eventnumber_t timelineCoordinateRangeStartEventNumber;
         eventnumber_t timelineCoordinateRangeEndEventNumber;
         TimelineMode timelineMode;
@@ -82,13 +82,13 @@ class EVENTLOG_API SequenceChartFacade : public EventLogFacade
          * Timeline coordinate can be given in the range (-infinity, +infinity).
          * Simulation time will be in the range [0, lastEventSimulationTime].
          */
-        double getSimulationTimeForTimelineCoordinate(double timelineCoordinate, bool upperLimit = false);
+        simtime_t getSimulationTimeForTimelineCoordinate(double timelineCoordinate, bool upperLimit = false);
         /**
          * Simulation time must be in the range [0, lastEventSimulationTime].
          * Timeline coordinate will be in the range [0, lastEventTimelineCoordinate] if the
          * timeline origin is at the first event.
          */
-        double getTimelineCoordinateForSimulationTime(double simulationTime, bool upperLimit = false);
+        double getTimelineCoordinateForSimulationTime(simtime_t simulationTime, bool upperLimit = false);
         double getTimelineCoordinateForSimulationTimeAndEventInModule(simtime_t simulationTime, int moduleId);
 
         std::vector<ptr_t> *getIntersectingMessageDependencies(ptr_t startEventPtr, ptr_t endEventPtr);
@@ -96,9 +96,9 @@ class EVENTLOG_API SequenceChartFacade : public EventLogFacade
     protected:
         void extractSimulationTimesAndTimelineCoordinates(
             IEvent *event, IEvent *&nextEvent,
-            double &eventSimulationTime, double &eventTimelineCoordinate,
-            double &nextEventSimulationTime, double &nextEventTimelineCoordinate,
-            double &simulationTimeDelta, double &timelineCoordinateDelta);
+            simtime_t &eventSimulationTime, double &eventTimelineCoordinate,
+            simtime_t &nextEventSimulationTime, double &nextEventTimelineCoordinate,
+            simtime_t &simulationTimeDelta, double &timelineCoordinateDelta);
 };
 
 NAMESPACE_END
