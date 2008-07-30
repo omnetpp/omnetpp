@@ -97,7 +97,7 @@ class NEDXML_API NEDTypeInfo
     virtual NEDElement *getTree() const;
 
     /** Returns the NEDElement tree where super types have been flattened */
-    virtual NEDElement *getFlattenedTree() const;
+    virtual NEDElement *getFlattenedTree() const; //XXX this is a BAD idea, get rid of it!
 
     /** The NED type resolver this type is registered in */
     NEDResourceCache *getResolver() const  {return resolver;}
