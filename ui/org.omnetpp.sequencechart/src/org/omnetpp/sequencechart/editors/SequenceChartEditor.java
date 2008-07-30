@@ -112,11 +112,11 @@ public class SequenceChartEditor extends EventLogEditor implements INavigationLo
 	
 	public class SequenceChartLocation implements INavigationLocation {
 		// TODO: ambiguous when restored
-		private double startSimulationTime;
+		private org.omnetpp.common.engine.BigDecimal startSimulationTime;
 
-		private double endSimulationTime;
+		private org.omnetpp.common.engine.BigDecimal endSimulationTime;
 		
-		public SequenceChartLocation(double startSimulationTime, double endSimulationTime) {
+		public SequenceChartLocation(org.omnetpp.common.engine.BigDecimal startSimulationTime, org.omnetpp.common.engine.BigDecimal endSimulationTime) {
 			this.startSimulationTime = startSimulationTime;
 			this.endSimulationTime = endSimulationTime;
 		}
@@ -161,37 +161,49 @@ public class SequenceChartEditor extends EventLogEditor implements INavigationLo
 			// void
 		}
 
-		@Override
-		public int hashCode() {
-			final int PRIME = 31;
-			int result = 1;
-			long temp;
-			temp = Double.doubleToLongBits(endSimulationTime);
-			result = PRIME * result + (int) (temp ^ (temp >>> 32));
-			temp = Double.doubleToLongBits(startSimulationTime);
-			result = PRIME * result + (int) (temp ^ (temp >>> 32));
-			return result;
-		}
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + getOuterType().hashCode();
+            result = prime * result + ((endSimulationTime == null) ? 0 : endSimulationTime.hashCode());
+            result = prime * result + ((startSimulationTime == null) ? 0 : startSimulationTime.hashCode());
+            return result;
+        }
 
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			final SequenceChartLocation other = (SequenceChartLocation) obj;
-			if (Double.doubleToLongBits(endSimulationTime) != Double.doubleToLongBits(other.endSimulationTime))
-				return false;
-			if (Double.doubleToLongBits(startSimulationTime) != Double.doubleToLongBits(other.startSimulationTime))
-				return false;
-			return true;
-		}
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            SequenceChartLocation other = (SequenceChartLocation) obj;
+            if (!getOuterType().equals(other.getOuterType()))
+                return false;
+            if (endSimulationTime == null) {
+                if (other.endSimulationTime != null)
+                    return false;
+            }
+            else if (!endSimulationTime.equals(other.endSimulationTime))
+                return false;
+            if (startSimulationTime == null) {
+                if (other.startSimulationTime != null)
+                    return false;
+            }
+            else if (!startSimulationTime.equals(other.startSimulationTime))
+                return false;
+            return true;
+        }
+
+        private SequenceChartEditor getOuterType() {
+            return SequenceChartEditor.this;
+        }
 	}
 
 	public INavigationLocation createEmptyNavigationLocation() {
-		return new SequenceChartLocation(0, Double.NaN);
+		return new SequenceChartLocation(org.omnetpp.common.engine.BigDecimal.getZero(), org.omnetpp.common.engine.BigDecimal.getNaN());
 	}
 
 	@Override

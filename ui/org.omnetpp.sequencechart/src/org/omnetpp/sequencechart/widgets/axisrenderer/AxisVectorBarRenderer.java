@@ -119,25 +119,25 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
 
 				// check for events being filtered out
 				if (eventPtr != 0)
-					x1 = sequenceChart.getViewportCoordinateForTimelineCoordinate(sequenceChartFacade.getTimelineCoordinate(eventPtr));
+					x1 = (int)sequenceChart.getViewportCoordinateForTimelineCoordinate(sequenceChartFacade.getTimelineCoordinate(eventPtr));
 				else {
 					eventPtr = sequenceChartFacade.IEvent_getNonFilteredEventForEventNumber(eventNumber);
-					double eventSimulationTime = sequenceChartFacade.IEvent_getSimulationTimeAsDouble(eventPtr);
+					org.omnetpp.common.engine.BigDecimal eventSimulationTime = sequenceChartFacade.IEvent_getSimulationTime(eventPtr);
 					double eventTimelineCoordinate = sequenceChartFacade.getTimelineCoordinateForSimulationTime(eventSimulationTime, false);
 
 					if (eventTimelineCoordinate == sequenceChartFacade.getTimelineCoordinateForSimulationTime(eventSimulationTime, true))
-						x1 = sequenceChart.getViewportCoordinateForTimelineCoordinate(eventTimelineCoordinate);
+						x1 = (int)sequenceChart.getViewportCoordinateForTimelineCoordinate(eventTimelineCoordinate);
 				}
 
 				if (nextEventPtr != 0)
-					x2 = sequenceChart.getViewportCoordinateForTimelineCoordinate(sequenceChartFacade.getTimelineCoordinate(nextEventPtr));
+					x2 = (int)sequenceChart.getViewportCoordinateForTimelineCoordinate(sequenceChartFacade.getTimelineCoordinate(nextEventPtr));
 				else {
 					nextEventPtr = sequenceChartFacade.IEvent_getNonFilteredEventForEventNumber(nextEventNumber);
-					double nextEventSimulationTime = sequenceChartFacade.IEvent_getSimulationTimeAsDouble(nextEventPtr);
+					org.omnetpp.common.engine.BigDecimal nextEventSimulationTime = sequenceChartFacade.IEvent_getSimulationTime(nextEventPtr);
 					double nextEventTimelineCoordinate = sequenceChartFacade.getTimelineCoordinateForSimulationTime(nextEventSimulationTime, false);
 
 					if (nextEventTimelineCoordinate == sequenceChartFacade.getTimelineCoordinateForSimulationTime(nextEventSimulationTime, true))
-						x2 = sequenceChart.getViewportCoordinateForTimelineCoordinate(nextEventSimulationTime);
+						x2 = (int)sequenceChart.getViewportCoordinateForTimelineCoordinate(nextEventTimelineCoordinate);
 				}
 				
 				if (x1 == Integer.MAX_VALUE || x2 == Integer.MAX_VALUE)
@@ -231,7 +231,7 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
 	/**
 	 * Returns the index having less or greater or equal simulation time in the data array depending on the given flag.
 	 */
-	public int getIndex(double simulationTime, boolean before)
+	public int getIndex(org.omnetpp.common.engine.BigDecimal simulationTime, boolean before)
 	{
 		int index = -1;
 		int left = 0;
@@ -252,7 +252,7 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
 	        	index = mid;
 	        	break;
 	        }
-            else if (simulationTime < getSimulationTime(mid))
+            else if (simulationTime.less(getSimulationTime(mid)))
 	            right = mid - 1;
 	        else
 	            left = mid + 1;
@@ -260,12 +260,12 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
 
 		if (left > right)
 			if (before)
-				if (simulationTime < getSimulationTime(left))
+				if (simulationTime.less(getSimulationTime(left)))
 					index = left - 1;
 				else
 					index = left;
 			else
-				if (simulationTime > getSimulationTime(right))
+				if (simulationTime.greater(getSimulationTime(right)))
 					index = right + 1;
 				else
 					index = right;
@@ -273,8 +273,8 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
 		if (index < 0 || index >= getDataLength())
 			return -1;
 		else {
-			Assert.isTrue((before && getSimulationTime(index) < simulationTime) ||
-						  (!before && getSimulationTime(index) > simulationTime));
+			Assert.isTrue((before && getSimulationTime(index).less(simulationTime)) ||
+						  (!before && getSimulationTime(index).greater(simulationTime)));
 			return index;
 		}
 	}
@@ -284,9 +284,9 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
 		return data.length();
 	}
 
-	public double getSimulationTime(int index)
+	public org.omnetpp.common.engine.BigDecimal getSimulationTime(int index)
 	{
-		return data.getX(index);
+		return data.getPreciseX(index);
 	}
 	
 	public long getEventNumber(int index)

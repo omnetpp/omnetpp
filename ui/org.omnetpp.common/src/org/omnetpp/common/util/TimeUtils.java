@@ -44,16 +44,28 @@ public class TimeUtils {
 		String s1 = time1.toPlainString();
 		String s2 = time2.toPlainString();
 		StringBuffer common = new StringBuffer();
+		
+		// make sure decimal points are there
+		if (s1.indexOf('.') == -1)
+		    s1 = s1 + ".";
+        if (s2.indexOf('.') == -1)
+            s2 = s2 + ".";
 
 		int len = Math.min(s1.length(), s2.length());
 		boolean matches = true;
 		boolean decimalPointFound = false;
 
 		for (int i = 0; i < len; i++) {
-			if (s1.charAt(i) == '.' || s2.charAt(i) == '.')
-				decimalPointFound = true;
+		    char c1 = s1.charAt(i);
+		    char c2 = s2.charAt(i);
+			if (c1 == '.' || c2 == '.') {
+			    if (c1 != c2)
+			        break;
+			    else
+			        decimalPointFound = true;
+			}
 
-			if (matches && s1.charAt(i) == s2.charAt(i))
+			if (matches && c1 == c2)
 				common.append(s1.charAt(i));
 			else {
 				matches = false;

@@ -14,41 +14,61 @@ public final class LargeRect {
 	public long height;
 
 	/**
+	 * Default constructor.
+	 */
+	public LargeRect () {
+	}
+
+	/**
 	 * Construct a new instance of this class given the 
 	 * x, y, width and height values.
 	 */
 	public LargeRect (long x, long y, long width, long height) {
-		this.x = x;
-		this.y = y;
-		this.width = width;
-		this.height = height;
+	    setLocation(x, y);
+	    setSize(width, height);
 	}
 
 	/**
 	 * Construct a copy of the given rectangle.
 	 */
 	public LargeRect (LargeRect r) {
-		this.x = r.x;
-		this.y = r.y;
-		this.width = r.width;
-		this.height = r.height;
+        this(r.x, r.y, r.width, r.height);
 	}
 
 	/**
 	 * Construct a copy of the given rectangle.
 	 */
 	public LargeRect (Rectangle r) {
-		this.x = r.x;
-		this.y = r.y;
-		this.width = r.width;
-		this.height = r.height;
+        this(r.x, r.y, r.width, r.height);
 	}
 
-	long right() {
+    public LargeRect(org.eclipse.draw2d.geometry.Rectangle r) {
+        this(r.x, r.y, r.width, r.height);
+    }
+
+    public void setLocation(long x, long y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    public void setSize(long width, long height) {
+        this.width = width;
+        this.height = height;
+    }
+
+    public long left() {
+        return x;
+    }
+
+	public long right() {
 		return x + width;
 	}
 
-	long bottom() {
+    public long top() {
+        return y;
+    }
+
+	public long bottom() {
 		return y + height;
 	}
 

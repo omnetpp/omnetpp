@@ -510,7 +510,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 
 									private double oldNonLinearFocus;
 									
-									private double[] oldLeftRightSimulationTimeRange;
+									private org.omnetpp.common.engine.BigDecimal[] oldLeftRightSimulationTimeRange;
 									
 									private Label minimumLabel;
 
@@ -781,7 +781,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 
         eventLogInput.runWithProgressMonitor(new Runnable() {
             public void run() {
-                double centerSimulationTime = -1.0;
+                org.omnetpp.common.engine.BigDecimal centerSimulationTime = org.omnetpp.common.engine.BigDecimal.getMinusOne();
 
                 if (!wasCanceled)
                     centerSimulationTime = sequenceChart.getViewportCenterSimulationTime();
@@ -807,7 +807,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 
         eventLogInput.runWithProgressMonitor(new Runnable() {
             public void run() {
-                double centerSimulationTime = -1.0;
+                org.omnetpp.common.engine.BigDecimal centerSimulationTime = org.omnetpp.common.engine.BigDecimal.getMinusOne();
 
                 if (!wasCanceled)
                     centerSimulationTime = sequenceChart.getViewportCenterSimulationTime();
@@ -1045,7 +1045,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 		return new SequenceChartAction("Center", Action.AS_PUSH_BUTTON) {
 			@Override
 			public void run() {
-				sequenceChart.scrollToSimulationTimeWithCenter(event.getSimulationTime().doubleValue());
+				sequenceChart.scrollToSimulationTimeWithCenter(event.getSimulationTime());
 			}
 		};
 	}

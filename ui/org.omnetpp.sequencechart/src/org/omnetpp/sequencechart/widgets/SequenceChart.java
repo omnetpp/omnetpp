@@ -53,6 +53,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.omnetpp.common.canvas.CachingCanvas;
+import org.omnetpp.common.canvas.LargeRect;
 import org.omnetpp.common.canvas.RubberbandSupport;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.eventlog.EventLogInput;
@@ -176,7 +177,7 @@ public class SequenceChart
 	private SequenceChartFacade sequenceChartFacade; // helpful C++ facade on eventlog
     private SequenceChartContributor sequenceChartContributor; // for popup menu
 
-	private int fixPointViewportCoordinate; // the viewport coordinate of the coordinate system's origin event stored in the facade
+	private long fixPointViewportCoordinate; // the viewport coordinate of the coordinate system's origin event stored in the facade
 
 	private double pixelPerTimelineUnit = 0; // horizontal zoom factor
 
@@ -590,7 +591,7 @@ public class SequenceChart
 	 * after changing the timeline coordinate system.
 	 */
 	public void setTimelineMode(TimelineMode timelineMode) {
-		double[] leftRightSimulationTimes = getViewportSimulationTimeRange();
+	    org.omnetpp.common.engine.BigDecimal[] leftRightSimulationTimes = getViewportSimulationTimeRange();
 		sequenceChartFacade.setTimelineMode(timelineMode.ordinal());
 		setViewportSimulationTimeRange(leftRightSimulationTimes);
 	}
@@ -622,36 +623,36 @@ public class SequenceChart
 	/**
 	 * Returns the currently visible range of simulation times as an array of two doubles.
 	 */
-	public double[] getViewportSimulationTimeRange()
+	public org.omnetpp.common.engine.BigDecimal[] getViewportSimulationTimeRange()
 	{
-		return new double[] {getViewportLeftSimulationTime(), getViewportRightSimulationTime()};
+		return new org.omnetpp.common.engine.BigDecimal[] {getViewportLeftSimulationTime(), getViewportRightSimulationTime()};
 	}
 
 	/**
 	 * Sets the range of visible simulation times as an array of two doubles.
 	 */
-	public void setViewportSimulationTimeRange(double[] leftRightSimulationTimes) {
+	public void setViewportSimulationTimeRange(org.omnetpp.common.engine.BigDecimal[] leftRightSimulationTimes) {
 		zoomToSimulationTimeRange(leftRightSimulationTimes[0], leftRightSimulationTimes[1]);
 	}
 
 	/**
 	 * Returns the smallest visible simulation time.
 	 */
-	public double getViewportLeftSimulationTime() {
+	public org.omnetpp.common.engine.BigDecimal getViewportLeftSimulationTime() {
 		return getSimulationTimeForViewportCoordinate(0);
 	}
 
 	/**
 	 * Returns the simulation time visible at the canvas's center.
 	 */
-	public double getViewportCenterSimulationTime() {
+	public org.omnetpp.common.engine.BigDecimal getViewportCenterSimulationTime() {
 		return getSimulationTimeForViewportCoordinate(getViewportWidth() / 2);
 	}
 
 	/**
 	 * Returns the biggest visible simulation time.
 	 */
-	public double getViewportRightSimulationTime() {
+	public org.omnetpp.common.engine.BigDecimal getViewportRightSimulationTime() {
 		return getSimulationTimeForViewportCoordinate(getViewportWidth());
 	}
 
@@ -659,7 +660,7 @@ public class SequenceChart
 	 * SCROLLING, GOTOING
 	 */
 
-	protected void relocateFixPoint(IEvent event, int fixPointViewportCoordinate) {
+	protected void relocateFixPoint(IEvent event, long fixPointViewportCoordinate) {
 		this.fixPointViewportCoordinate = fixPointViewportCoordinate;
         invalidAxisModules = true;
 
@@ -669,12 +670,12 @@ public class SequenceChart
             sequenceChartFacade.undefineTimelineCoordinateSystem();
 
 		if (eventLog != null && !eventLog.isEmpty()) {
-			if (eventLog.getLastEvent().getSimulationTime().doubleValue() <= getSimulationTimeForViewportCoordinate(getViewportWidth())) {
+			if (eventLog.getLastEvent().getSimulationTime().lessOrEqual(getSimulationTimeForViewportCoordinate(getViewportWidth()))) {
 				this.fixPointViewportCoordinate = getViewportWidth();
 				sequenceChartFacade.relocateTimelineCoordinateSystem(eventLog.getLastEvent());
 			}
 
-			if (getSimulationTimeForViewportCoordinate(0) < 0) {
+			if (getSimulationTimeForViewportCoordinate(0).less(org.omnetpp.common.engine.BigDecimal.getZero())) {
 				this.fixPointViewportCoordinate = 0;
 				sequenceChartFacade.relocateTimelineCoordinateSystem(eventLog.getFirstEvent());
 			}
@@ -871,8 +872,8 @@ public class SequenceChart
 	/**
 	 * Scroll the canvas making the simulation time visible at the center.
 	 */
-	public void scrollToSimulationTimeWithCenter(double time) {
-		scrollHorizontal(getViewportCoordinateForSimulationTime(time) - getViewportWidth() / 2);
+	public void scrollToSimulationTimeWithCenter(org.omnetpp.common.engine.BigDecimal simulationTime) {
+		scrollHorizontal(getViewportCoordinateForSimulationTime(simulationTime) - getViewportWidth() / 2);
 		redraw();
 	}
 
@@ -956,9 +957,9 @@ public class SequenceChart
 	public void zoomBy(final double zoomFactor) {
 		eventLogInput.runWithProgressMonitor(new Runnable() {
 			public void run() {
-				double time = getViewportCenterSimulationTime();
+			    org.omnetpp.common.engine.BigDecimal simulationTime = getViewportCenterSimulationTime();
 				setPixelPerTimelineUnit(getPixelPerTimelineUnit() * zoomFactor);
-				scrollToSimulationTimeWithCenter(time);
+				scrollToSimulationTimeWithCenter(simulationTime);
 			}
 		});
 	}
@@ -981,10 +982,10 @@ public class SequenceChart
 	/**
 	 * Scroll the canvas so to make start and end simulation times visible.
 	 */
-	public void zoomToSimulationTimeRange(final double startSimulationTime, final double endSimulationTime) {
+	public void zoomToSimulationTimeRange(final org.omnetpp.common.engine.BigDecimal startSimulationTime, final org.omnetpp.common.engine.BigDecimal endSimulationTime) {
 		eventLogInput.runWithProgressMonitor(new Runnable() {
 			public void run() {
-				if (!Double.isNaN(endSimulationTime) && startSimulationTime != endSimulationTime) {
+				if (!endSimulationTime.isNaN() && !startSimulationTime.equals(endSimulationTime)) {
 					double timelineUnitDelta = sequenceChartFacade.getTimelineCoordinateForSimulationTime(endSimulationTime) - sequenceChartFacade.getTimelineCoordinateForSimulationTime(startSimulationTime);
 
 					if (timelineUnitDelta > 0)
@@ -999,12 +1000,12 @@ public class SequenceChart
 	/**
 	 * Scroll the canvas so to make start and end simulation times visible, but leave some pixels free on both sides.
 	 */
-	public void zoomToSimulationTimeRange(double startSimulationTime, double endSimulationTime, int pixelInset) {
+	public void zoomToSimulationTimeRange(org.omnetpp.common.engine.BigDecimal startSimulationTime, org.omnetpp.common.engine.BigDecimal endSimulationTime, int pixelInset) {
 		if (pixelInset > 0) {
 			// NOTE: we can't go directly there, so here is an approximation
 			for (int i = 0; i < 3; i++) {
-				double newStartSimulationTime = getSimulationTimeForViewportCoordinate(getViewportCoordinateForSimulationTime(startSimulationTime) - pixelInset);
-				double newEndSimulationTime = getSimulationTimeForViewportCoordinate(getViewportCoordinateForSimulationTime(endSimulationTime) + pixelInset);
+			    org.omnetpp.common.engine.BigDecimal newStartSimulationTime = getSimulationTimeForViewportCoordinate(getViewportCoordinateForSimulationTime(startSimulationTime) - pixelInset);
+			    org.omnetpp.common.engine.BigDecimal newEndSimulationTime = getSimulationTimeForViewportCoordinate(getViewportCoordinateForSimulationTime(endSimulationTime) + pixelInset);
 
 				zoomToSimulationTimeRange(newStartSimulationTime, newEndSimulationTime);
 			}
@@ -1014,13 +1015,13 @@ public class SequenceChart
 	}
 
 	public void zoomToMessageDependency(IMessageDependency messageDependency) {
-		zoomToSimulationTimeRange(messageDependency.getCauseEvent().getSimulationTime().doubleValue(), messageDependency.getConsequenceEvent().getSimulationTime().doubleValue(), (int)(getViewportWidth() * 0.1));
+		zoomToSimulationTimeRange(messageDependency.getCauseEvent().getSimulationTime(), messageDependency.getConsequenceEvent().getSimulationTime(), (int)(getViewportWidth() * 0.1));
 	}
 
 	/**
 	 * Scroll the canvas to make the value at the given simulation time visible at once.
 	 */
-	public void zoomToAxisValue(ModuleTreeItem axisModule, double simulationTime) {
+	public void zoomToAxisValue(ModuleTreeItem axisModule, org.omnetpp.common.engine.BigDecimal simulationTime) {
 		for (int i = 0; i < getAxisModules().size(); i++)
 			if (getAxisModules().get(i) == axisModule) {
 				IAxisRenderer axisRenderer = getAxisRenderers()[i];
@@ -2068,35 +2069,31 @@ public class SequenceChart
 
 	private void drawZeroSimulationTimeRegions(Graphics graphics, long startEventPtr, long endEventPtr) {
 		long previousEventPtr = -1;
-		Rectangle r = new Rectangle();
 		graphics.getClip(Rectangle.SINGLETON);
+        LargeRect clip = new LargeRect(Rectangle.SINGLETON);
+        LargeRect r = new LargeRect();
 		graphics.setBackgroundColor(ZERO_SIMULATION_TIME_REGION_COLOR);
 
 		if (startEventPtr != 0 && endEventPtr != 0) {
 			// draw rectangle before the very beginning of the simulation
-			int x = Rectangle.SINGLETON.x;
-			if (getSimulationTimeForViewportCoordinate(x) == 0) {
-				int startX = getViewportCoordinateForSimulationTime(0, true);
+			long x = clip.x;
+			if (getSimulationTimeForViewportCoordinate(x).equals(org.omnetpp.common.engine.BigDecimal.getZero())) {
+				long startX = getViewportCoordinateForSimulationTime(org.omnetpp.common.engine.BigDecimal.getZero(), true);
 
 				if (x != startX)
-					graphics.fillRectangle(x, Rectangle.SINGLETON.y, startX - x, Rectangle.SINGLETON.height);
+                    fillZeroSimulationTimeRegion(graphics, r, clip, x, startX - x);
 			}
 
 			// draw rectangles where simulation time has not elapsed between events
 			for (long eventPtr = startEventPtr;; eventPtr = sequenceChartFacade.IEvent_getNextEvent(eventPtr)) {
 				if (previousEventPtr != -1) {
 					x = getEventXViewportCoordinate(eventPtr);
-					int previousX = getEventXViewportCoordinate(previousEventPtr);
+					long previousX = getEventXViewportCoordinate(previousEventPtr);
 					org.omnetpp.common.engine.BigDecimal simulationTime = sequenceChartFacade.IEvent_getSimulationTime(eventPtr);
 					org.omnetpp.common.engine.BigDecimal previousSimulationTime = sequenceChartFacade.IEvent_getSimulationTime(previousEventPtr);
 
-					if (simulationTime.equals(previousSimulationTime) && x != previousX) {
-                        // KLUDGE: fix SWG fillRectange bug and cut down big coordinates with clipping
-                        r.setLocation(previousX, Rectangle.SINGLETON.y);
-                        r.setSize(x - previousX, Rectangle.SINGLETON.height);
-                        r.intersect(Rectangle.SINGLETON);
-						graphics.fillRectangle(r);
-					}
+					if (simulationTime.equals(previousSimulationTime) && x != previousX)
+	                    fillZeroSimulationTimeRegion(graphics, r, clip, previousX, x - previousX);
 				}
 
 				previousEventPtr = eventPtr;
@@ -2107,15 +2104,23 @@ public class SequenceChart
 
 			// draw rectangle after the very end of the simulation
 			if (sequenceChartFacade.IEvent_getNextEvent(endEventPtr) == 0) {
-				x = Rectangle.SINGLETON.right();
-				int endX = getEventXViewportCoordinate(endEventPtr);
+				x = clip.right();
+				long endX = getEventXViewportCoordinate(endEventPtr);
 
 				if (x != endX)
-					graphics.fillRectangle(endX, Rectangle.SINGLETON.y, x - endX, Rectangle.SINGLETON.height);
+				    fillZeroSimulationTimeRegion(graphics, r, clip, endX, x - endX);
 			}
 		}
 		else
 			graphics.fillRectangle(Rectangle.SINGLETON);
+	}
+	
+	private void fillZeroSimulationTimeRegion(Graphics graphics, LargeRect r, LargeRect clip, long x, long width) {
+        // KLUDGE: fix SWG fillRectange overflow bug and cut down big coordinates with clipping
+        r.setLocation(x, clip.y);
+        r.setSize(width, clip.height);
+        r.intersect(clip);
+        graphics.fillRectangle((int)r.x, (int)r.y, (int)r.width, (int)r.height);
 	}
 
 	/**
@@ -2162,15 +2167,15 @@ public class SequenceChart
 	 */
 	private void drawEvents(Graphics graphics, long startEventPtr, long endEventPtr) {
 		if (startEventPtr != 0 && endEventPtr != 0) {
-			HashMap<Integer,Integer> axisYtoLastX = new HashMap<Integer, Integer>();
+			HashMap<Integer, Integer> axisYtoLastX = new HashMap<Integer, Integer>();
 
 			for (long eventPtr = startEventPtr;; eventPtr = sequenceChartFacade.IEvent_getNextEvent(eventPtr)) {
                 if (isInitializationEvent(eventPtr))
 			        drawEvent(graphics, eventPtr);
 			    else {
-	                int x = getEventXViewportCoordinate(eventPtr);
-    				int y = getEventYViewportCoordinate(eventPtr);
-    				Integer lastX = axisYtoLastX.get(y);
+	                int x = (int)getEventXViewportCoordinate(eventPtr);
+	                int y = (int)getEventYViewportCoordinate(eventPtr);
+	                Integer lastX = axisYtoLastX.get(y);
     
     				// performance optimization: don't draw event if there's one already drawn exactly there
     				if (lastX == null || lastX.intValue() != x) {
@@ -2186,7 +2191,7 @@ public class SequenceChart
 	}
 
 	private void drawEvent(Graphics graphics, long eventPtr) {
-        int x = getEventXViewportCoordinate(eventPtr);
+        int x = (int)getEventXViewportCoordinate(eventPtr);
 
         if (isInitializationEvent(eventPtr)) {
 	        for (int i = 0; i < sequenceChartFacade.IEvent_getNumConsequences(eventPtr); i++) {
@@ -2262,8 +2267,8 @@ public class SequenceChart
 		for (BigDecimal tick : ticks) {
 			// BigDecimal to double conversions loose precision both in Java and C++ but we must stick to the one in C++
 			// so that strange problems do not occur (think of comparing the tick's time to the last known simulation time)
-			double simulationTime = Math.min(tick.doubleValue(), endSimulationTime);
-			drawTick(graphics, viewportHeigth, TICK_LINE_COLOR, GUTTER_BACKGROUND_COLOR, tick, getViewportCoordinateForSimulationTime(simulationTime), false);
+			org.omnetpp.common.engine.BigDecimal simulationTime = new org.omnetpp.common.engine.BigDecimal(Math.min(tick.doubleValue(), endSimulationTime));
+			drawTick(graphics, viewportHeigth, TICK_LINE_COLOR, GUTTER_BACKGROUND_COLOR, tick, (int)getViewportCoordinateForSimulationTime(simulationTime), false);
 		}
 	}
 
@@ -2430,7 +2435,7 @@ public class SequenceChart
 	}
     
     private void drawSelectionMarks(Graphics graphics, IEvent event) {
-        int x = getEventXViewportCoordinate(event.getCPtr());
+        int x = (int)getEventXViewportCoordinate(event.getCPtr());
 
         if (isInitializationEvent(event)) {
             long eventPtr = event.getCPtr();
@@ -2510,6 +2515,7 @@ public class SequenceChart
         }
         
         // calculate pixel coordinates for message arrow endings
+        // TODO what about integer overflow in (int) casts? now that we have converted to long
         int invalid = Integer.MAX_VALUE;
         int x1 = invalid, y1 = isInitializationEvent(causeEventPtr) ? getInitializationEventYViewportCoordinate(messageDependencyPtr) : getEventYViewportCoordinate(causeEventPtr);
         int x2 = invalid, y2 = getEventYViewportCoordinate(consequenceEventPtr);
@@ -2519,30 +2525,30 @@ public class SequenceChart
         double timelineCoordinateLimit = getMaximumMessageDependencyDisplayWidth() / getPixelPerTimelineUnit();
         if (consequenceEventNumber < startEventNumber || endEventNumber < consequenceEventNumber) {
             // consequence event is out of drawn message dependency range 
-        	x1 = getEventXViewportCoordinate(causeEventPtr);
+        	x1 = (int)getEventXViewportCoordinate(causeEventPtr);
         	double causeTimelineCoordinate = sequenceChartFacade.getTimelineCoordinate(causeEventPtr);
         	double consequenceTimelineCoordinate = sequenceChartFacade.getTimelineCoordinate(consequenceEventPtr, -Double.MAX_VALUE, causeTimelineCoordinate + timelineCoordinateLimit);
 
         	if (Double.isNaN(consequenceTimelineCoordinate) || consequenceTimelineCoordinate > causeTimelineCoordinate + timelineCoordinateLimit)
   		  		x2 = invalid;
   		  	else
-  	        	x2 = getEventXViewportCoordinate(consequenceEventPtr);
+  	        	x2 = (int)getEventXViewportCoordinate(consequenceEventPtr);
         }
         else if (causeEventNumber < startEventNumber || endEventNumber < causeEventNumber) {
             // cause event is out of drawn message dependency range 
-        	x2 = getEventXViewportCoordinate(consequenceEventPtr);
+        	x2 = (int)getEventXViewportCoordinate(consequenceEventPtr);
         	double consequenceTimelineCoordinate = sequenceChartFacade.getTimelineCoordinate(consequenceEventPtr);
         	double causeTimelineCoordinate = sequenceChartFacade.getTimelineCoordinate(causeEventPtr, consequenceTimelineCoordinate - timelineCoordinateLimit, Double.MAX_VALUE);
 
         	if (Double.isNaN(causeTimelineCoordinate) || causeTimelineCoordinate < consequenceTimelineCoordinate - timelineCoordinateLimit)
   		  		x1 = invalid;
   		  	else
-  	        	x1 = getEventXViewportCoordinate(causeEventPtr);
+  	        	x1 = (int)getEventXViewportCoordinate(causeEventPtr);
         }
         else {
             // both events are inside
-            x1 = getEventXViewportCoordinate(causeEventPtr);
-            x2 = getEventXViewportCoordinate(consequenceEventPtr);
+            x1 = (int)getEventXViewportCoordinate(causeEventPtr);
+            x2 = (int)getEventXViewportCoordinate(consequenceEventPtr);
 
             double causeTimelineCoordinate = sequenceChartFacade.getTimelineCoordinate(causeEventPtr);
             double consequenceTimelineCoordinate = sequenceChartFacade.getTimelineCoordinate(consequenceEventPtr);
@@ -2808,8 +2814,8 @@ public class SequenceChart
         if (t3.greater(lastEventSimulationTime) || t4.greater(lastEventSimulationTime) || t4.less(org.omnetpp.common.engine.BigDecimal.getZero()))
             return isReceptionStart;
 
-        int x3 = getViewportCoordinateForTimelineCoordinate(sequenceChartFacade.getTimelineCoordinateForSimulationTimeAndEventInModule(t3, causeModuleId));
-        int x4 = getViewportCoordinateForTimelineCoordinate(sequenceChartFacade.getTimelineCoordinateForSimulationTimeAndEventInModule(t4, consequenceModuleId));
+        int x3 = (int)getViewportCoordinateForTimelineCoordinate(sequenceChartFacade.getTimelineCoordinateForSimulationTimeAndEventInModule(t3, causeModuleId));
+        int x4 = (int)getViewportCoordinateForTimelineCoordinate(sequenceChartFacade.getTimelineCoordinateForSimulationTimeAndEventInModule(t4, consequenceModuleId));
         int xLimit = getViewportWidth();
         boolean drawStrips = false;
 
@@ -2989,7 +2995,7 @@ public class SequenceChart
 	 * Utility function to determine event range we need to draw.
 	 * Returns an array of size 2 with the two event pointers.
 	 */
-	protected long[] getFirstLastEventForPixelRange(int x1, int x2) {
+	protected long[] getFirstLastEventForPixelRange(long x1, long x2) {
 		if (eventLog == null || eventLog.getApproximateNumberOfEvents() == 0)
 			return new long[] {0, 0};
 
@@ -3049,8 +3055,8 @@ public class SequenceChart
         return sequenceChartFacade.EventLogEntry_getContextModuleId(beginSendEntryPtr);
     }
 
-	public int getEventXViewportCoordinate(long eventPtr) {
-		return (int)(sequenceChartFacade.IEvent_getTimelineCoordinate(eventPtr) * getPixelPerTimelineUnit() + fixPointViewportCoordinate);
+	public long getEventXViewportCoordinate(long eventPtr) {
+	    return getViewportCoordinateForTimelineCoordinate(sequenceChartFacade.IEvent_getTimelineCoordinate(eventPtr));
 	}
 
 	public int getEventYViewportCoordinate(long eventPtr) {
@@ -3093,16 +3099,16 @@ public class SequenceChart
 		}
 		else {
 			// tries to put ticks constant distance from each other measured in pixels
-			int modX = fixPointViewportCoordinate % TICK_SPACING;
-			int tleft = modX - TICK_SPACING;
-			int tright = modX + viewportWidth + TICK_SPACING;
+			long modX = fixPointViewportCoordinate % TICK_SPACING;
+			long tleft = modX - TICK_SPACING;
+			long tright = modX + viewportWidth + TICK_SPACING;
 
 			IEvent lastEvent = eventLog.getLastEvent();
 
 			if (lastEvent != null) {
 				BigDecimal endSimulationTime = lastEvent.getSimulationTime().toBigDecimal();
 
-				for (int t = tleft; t < tright; t += TICK_SPACING) {
+				for (long t = tleft; t < tright; t += TICK_SPACING) {
 					BigDecimal tick = calculateTick(t, TICK_SPACING / 2);
 
 					if (tick.compareTo(BigDecimal.ZERO) >= 0 && tick.compareTo(endSimulationTime) <= 0)
@@ -3116,128 +3122,88 @@ public class SequenceChart
 	 * Calculates a single tick near simulation time. The range and position is defined in terms of viewport pixels.
 	 * Minimizes the number of digits to have a short tick label and returns the simulation time to be printed.
 	 */
-	private BigDecimal calculateTick(int x, double tickRange) {
+	private BigDecimal calculateTick(long x, double tickRange) {
 		IEvent lastEvent = eventLog.getLastEvent();
 
 		if (lastEvent == null)
 			return BigDecimal.ZERO;
 
-		// query the last simulation time so that times after that will never appear
-		double lastSimulationTimeAsDouble = lastEvent.getSimulationTime().doubleValue();
-		BigDecimal lastSimulationTime = lastEvent.getSimulationTime().toBigDecimal();
-
 		// query the simulation time for the given coordinate
-		double simulationTimeAsDouble = getSimulationTimeForViewportCoordinate(x);
-		BigDecimal simulationTime = simulationTimeAsDouble == lastSimulationTimeAsDouble ? lastSimulationTime : new BigDecimal(simulationTimeAsDouble);
+		BigDecimal simulationTime = getSimulationTimeForViewportCoordinate(x).toBigDecimal();
 
 		// defines the range of valid simulation times for the given tick range
-		double minSimulationTimeAsDouble = getSimulationTimeForViewportCoordinate(x - tickRange / 2);
-		double maxSimulationTimeAsDouble = getSimulationTimeForViewportCoordinate(x + tickRange / 2);
-		BigDecimal tMin = simulationTimeAsDouble == lastSimulationTimeAsDouble ? lastSimulationTime : new BigDecimal(minSimulationTimeAsDouble);
-		BigDecimal tMax = simulationTimeAsDouble == lastSimulationTimeAsDouble ? lastSimulationTime : new BigDecimal(maxSimulationTimeAsDouble);
+		BigDecimal tMin = getSimulationTimeForViewportCoordinate(x - tickRange / 2).toBigDecimal();
+		BigDecimal tMax = getSimulationTimeForViewportCoordinate(x + tickRange / 2).toBigDecimal();
 
 		// check some invariants
 		Assert.isTrue(tMin.compareTo(simulationTime) <= 0);
 		Assert.isTrue(tMax.compareTo(simulationTime) >= 0);
 		Assert.isTrue(tMin.compareTo(tMax) <= 0);
+	
+		// the idea is to round the simulation time to the shortest (in terms of digits) value
+		// as long as it still fits into the range of min and max
+		// number of digits
+		int tMinPrecision = tMin.stripTrailingZeros().precision();
+		int tMaxPrecision = tMax.stripTrailingZeros().precision();
+		int tDeltaPrecision = tMax.subtract(tMin).stripTrailingZeros().precision();
+		int precision = Math.max(1, 1 + Math.max(tMinPrecision - tDeltaPrecision, tMaxPrecision - tDeltaPrecision));
+		// establish initial rounding contexts
+		MathContext mcMin = new MathContext(precision, RoundingMode.FLOOR);
+		MathContext mcMax = new MathContext(precision, RoundingMode.CEILING);
+		BigDecimal tRoundedMin = simulationTime;
+		BigDecimal tRoundedMax = simulationTime;
+		BigDecimal tBestRoundedMin = simulationTime;
+		BigDecimal tBestRoundedMax = simulationTime;
 
-		if (minSimulationTimeAsDouble == maxSimulationTimeAsDouble) {
-			long[] eventPtrRange = getFirstLastEventForPixelRange(x, x);
-			long startEventPtr = eventPtrRange[0];
-			long endEventPtr = eventPtrRange[1];
-			int count = 0;
+		// decrease precision and check if values still fit in range
+		do
+		{
+			if (mcMin.getPrecision() > 0) {
+				tRoundedMin = simulationTime.round(mcMin);
 
-			// find out the precise simulation time for the zero simulation time range around the given viewport pixel
-			for (long eventPtr = startEventPtr;; eventPtr = sequenceChartFacade.IEvent_getNextEvent(eventPtr)) {
-				count++;
+				if (tRoundedMin.compareTo(tMin) > 0)
+					tBestRoundedMin = tRoundedMin;
 
-				if (eventPtr == endEventPtr)
-					break;
+				mcMin = new MathContext(mcMin.getPrecision() - 1, RoundingMode.FLOOR);
 			}
 
-			if (minSimulationTimeAsDouble == 0)
-				return BigDecimal.ZERO; // the very beginning
-			else if (count == 1)
-				return sequenceChartFacade.IEvent_getSimulationTime(startEventPtr).toBigDecimal();
-			else if (count == 1) {
-				// find the one which is closer
-				double startSimulationTime = sequenceChartFacade.IEvent_getSimulationTime(startEventPtr).doubleValue();
-				double endSimulationTime = sequenceChartFacade.IEvent_getSimulationTime(endEventPtr).doubleValue();
+			if (mcMax.getPrecision() > 0) {
+				tRoundedMax = simulationTime.round(mcMax);
 
-				if (Math.abs(minSimulationTimeAsDouble - startSimulationTime) < Math.abs(endSimulationTime - minSimulationTimeAsDouble))
-					return sequenceChartFacade.IEvent_getSimulationTime(startEventPtr).toBigDecimal();
-				else
-					return sequenceChartFacade.IEvent_getSimulationTime(endEventPtr).toBigDecimal();
+				if (tRoundedMax.compareTo(tMax) < 0)
+					tBestRoundedMin = tRoundedMax;
+
+				mcMax = new MathContext(mcMax.getPrecision() - 1, RoundingMode.CEILING);
 			}
-			else
-				return sequenceChartFacade.IEvent_getSimulationTime(sequenceChartFacade.IEvent_getNextEvent(startEventPtr)).toBigDecimal();
 		}
+		while (mcMin.getPrecision() > 0 || mcMax.getPrecision() > 0);
+
+		// the last digit might be still rounded to 2 or 5
+		tBestRoundedMin = calculateTickBestLastDigit(tBestRoundedMin, tMin, tMax);
+		tBestRoundedMax = calculateTickBestLastDigit(tBestRoundedMax, tMin, tMax);
+
+		// find the best solution by looking at the number of digits and the last digit
+		if (tBestRoundedMin.precision() < tBestRoundedMax.precision())
+			return tBestRoundedMin;
+		else if (tBestRoundedMin.precision() > tBestRoundedMax.precision())
+			return tBestRoundedMax;
 		else {
-			// the idea is to round the simulation time to the shortest (in terms of digits) value
-			// as long as it still fits into the range of min and max
-			// number of digits
-			int tMinPrecision = tMin.stripTrailingZeros().precision();
-			int tMaxPrecision = tMax.stripTrailingZeros().precision();
-			int tDeltaPrecision = tMax.subtract(tMin).stripTrailingZeros().precision();
-			int precision = Math.max(1, 1 + Math.max(tMinPrecision - tDeltaPrecision, tMaxPrecision - tDeltaPrecision));
-			// establish initial rounding contexts
-			MathContext mcMin = new MathContext(precision, RoundingMode.FLOOR);
-			MathContext mcMax = new MathContext(precision, RoundingMode.CEILING);
-			BigDecimal tRoundedMin = simulationTime;
-			BigDecimal tRoundedMax = simulationTime;
-			BigDecimal tBestRoundedMin = simulationTime;
-			BigDecimal tBestRoundedMax = simulationTime;
+			String sBestMin = tBestRoundedMin.toPlainString();
+			String sBestMax = tBestRoundedMax.toPlainString();
 
-			// decrease precision and check if values still fit in range
-			do
-			{
-				if (mcMin.getPrecision() > 0) {
-					tRoundedMin = simulationTime.round(mcMin);
-
-					if (tRoundedMin.compareTo(tMin) > 0)
-						tBestRoundedMin = tRoundedMin;
-
-					mcMin = new MathContext(mcMin.getPrecision() - 1, RoundingMode.FLOOR);
-				}
-
-				if (mcMax.getPrecision() > 0) {
-					tRoundedMax = simulationTime.round(mcMax);
-
-					if (tRoundedMax.compareTo(tMax) < 0)
-						tBestRoundedMin = tRoundedMax;
-
-					mcMax = new MathContext(mcMax.getPrecision() - 1, RoundingMode.CEILING);
-				}
-			}
-			while (mcMin.getPrecision() > 0 || mcMax.getPrecision() > 0);
-
-			// the last digit might be still rounded to 2 or 5
-			tBestRoundedMin = calculateTickBestLastDigit(tBestRoundedMin, tMin, tMax);
-			tBestRoundedMax = calculateTickBestLastDigit(tBestRoundedMax, tMin, tMax);
-
-			// find the best solution by looking at the number of digits and the last digit
-			if (tBestRoundedMin.precision() < tBestRoundedMax.precision())
+			if (sBestMin.charAt(sBestMin.length() - 1) == '5')
 				return tBestRoundedMin;
-			else if (tBestRoundedMin.precision() > tBestRoundedMax.precision())
+
+			if (sBestMax.charAt(sBestMax.length() - 1) == '5')
 				return tBestRoundedMax;
-			else {
-				String sBestMin = tBestRoundedMin.toPlainString();
-				String sBestMax = tBestRoundedMax.toPlainString();
 
-				if (sBestMin.charAt(sBestMin.length() - 1) == '5')
-					return tBestRoundedMin;
-
-				if (sBestMax.charAt(sBestMax.length() - 1) == '5')
-					return tBestRoundedMax;
-
-				if ((sBestMin.charAt(sBestMin.length() - 1) - '0') % 2 == 0)
-					return tBestRoundedMin;
-
-				if ((sBestMax.charAt(sBestMin.length() - 1) - '0') % 2 == 0)
-					return tBestRoundedMax;
-
+			if ((sBestMin.charAt(sBestMin.length() - 1) - '0') % 2 == 0)
 				return tBestRoundedMin;
-			}
+
+			if ((sBestMax.charAt(sBestMin.length() - 1) - '0') % 2 == 0)
+				return tBestRoundedMax;
+
+			return tBestRoundedMin;
 		}
 	}
 
@@ -3266,50 +3232,50 @@ public class SequenceChart
     /**
      * Translates viewport pixel x coordinate to simulation time lower limit.
      */
-    public double getSimulationTimeForViewportCoordinate(int x) {
+    public org.omnetpp.common.engine.BigDecimal getSimulationTimeForViewportCoordinate(long x) {
         return getSimulationTimeForViewportCoordinate(x, false);
     }
 
 	/**
 	 * Translates viewport pixel x coordinate to simulation time.
 	 */
-	public double getSimulationTimeForViewportCoordinate(int x, boolean upperLimit) {
+	public org.omnetpp.common.engine.BigDecimal getSimulationTimeForViewportCoordinate(long x, boolean upperLimit) {
 		return sequenceChartFacade.getSimulationTimeForTimelineCoordinate(getTimelineCoordinateForViewportCoordinate(x), upperLimit);
 	}
 
     /**
      * Translates viewport pixel x coordinate to simulation time lower limit.
      */
-    public double getSimulationTimeForViewportCoordinate(double x) {
+    public org.omnetpp.common.engine.BigDecimal getSimulationTimeForViewportCoordinate(double x) {
         return getSimulationTimeForViewportCoordinate(x, false);
     }
 
     /**
 	 * Translates viewport pixel x coordinate to simulation time.
 	 */
-	public double getSimulationTimeForViewportCoordinate(double x, boolean upperLimit) {
+	public org.omnetpp.common.engine.BigDecimal getSimulationTimeForViewportCoordinate(double x, boolean upperLimit) {
 		return sequenceChartFacade.getSimulationTimeForTimelineCoordinate(getTimelineCoordinateForViewportCoordinate(x), upperLimit);
 	}
 
     /**
      * Translates simulation time to viewport pixel x coordinate lower limit.
      */
-    public int getViewportCoordinateForSimulationTime(double t) {
+    public long getViewportCoordinateForSimulationTime(org.omnetpp.common.engine.BigDecimal t) {
         return getViewportCoordinateForSimulationTime(t, false);
     }
 
     /**
 	 * Translates simulation time to viewport pixel x coordinate.
 	 */
-	public int getViewportCoordinateForSimulationTime(double t, boolean upperLimit) {
-		Assert.isTrue(t >= 0);
-		return (int)(Math.round(sequenceChartFacade.getTimelineCoordinateForSimulationTime(t, upperLimit) * getPixelPerTimelineUnit()) + fixPointViewportCoordinate);
+	public long getViewportCoordinateForSimulationTime(org.omnetpp.common.engine.BigDecimal t, boolean upperLimit) {
+		Assert.isTrue(t.greaterOrEqual(org.omnetpp.common.engine.BigDecimal.getZero()));
+		return Math.round(sequenceChartFacade.getTimelineCoordinateForSimulationTime(t, upperLimit) * getPixelPerTimelineUnit()) + fixPointViewportCoordinate;
 	}
 
 	/**
 	 * Translates from viewport pixel x coordinate to timeline coordinate, using pixelPerTimelineCoordinate.
 	 */
-	public double getTimelineCoordinateForViewportCoordinate(int x) {
+	public double getTimelineCoordinateForViewportCoordinate(long x) {
 	    Assert.isTrue(getPixelPerTimelineUnit() > 0);
 		return (x - fixPointViewportCoordinate) / getPixelPerTimelineUnit();
 	}
@@ -3325,9 +3291,8 @@ public class SequenceChart
 	/**
 	 * Translates timeline coordinate to viewport pixel x coordinate, using pixelPerTimelineCoordinate.
 	 */
-	public int getViewportCoordinateForTimelineCoordinate(double t) {
-		long x = Math.round(t * getPixelPerTimelineUnit()) + fixPointViewportCoordinate;
-    	return (int)x;
+	public long getViewportCoordinateForTimelineCoordinate(double t) {
+		return Math.round(t * getPixelPerTimelineUnit()) + fixPointViewportCoordinate;
 	}
 
 	/*************************************************************************************
@@ -3537,20 +3502,22 @@ public class SequenceChart
 		ModuleTreeItem axisModule = findAxisAt(y);
 		if (axisModule != null) {
 			String res = getAxisText(axisModule, true) + "<br/>";
-			res += "t = " + calculateTick(x, 1).toPlainString();
 
 			if (!eventLog.isEmpty()) {
 				IEvent event = sequenceChartFacade.getLastEventNotAfterTimelineCoordinate(getTimelineCoordinateForViewportCoordinate(x));
 
 				if (event != null)
-					res += ", just after event #" + event.getEventNumber();
+					res += "t = " + getSimulationTimeForViewportCoordinate(x) + ", just after event #" + event.getEventNumber();
 			}
 
 			return res;
 		}
 
 		// absolutely nothing to say
-		return null;
+		if (debug)
+		    return "Timeline coordinate: " + getTimelineCoordinateForViewportCoordinate(x) + " Simulation time: " + getSimulationTimeForViewportCoordinate(x);
+		else
+		    return null;
 	}
 
 	/**
@@ -3705,6 +3672,9 @@ public class SequenceChart
 			result += getMessageIdText(beginSendEntry, formatted);
 		}
 
+		if (debug)
+		    result += "<br/>Timeline Coordinate: " + sequenceChartFacade.getTimelineCoordinate(event);
+
 		return result;
 	}
 
@@ -3751,7 +3721,7 @@ public class SequenceChart
 						// check events
 			            if (events != null && startEventPtr != 0 && endEventPtr != 0) {
 			            	for (long eventPtr = startEventPtr;; eventPtr = sequenceChartFacade.IEvent_getNextEvent(eventPtr)) {
-			            	    int x = getEventXViewportCoordinate(eventPtr);
+			            	    int x = (int)getEventXViewportCoordinate(eventPtr);
 
 			            	    if (isInitializationEvent(eventPtr)) {
 			                        for (int i = 0; i < sequenceChartFacade.IEvent_getNumConsequences(eventPtr); i++) {
@@ -4126,7 +4096,7 @@ class SequenceChartState implements Serializable {
 	private static final long serialVersionUID = 1L;
 	public int viewportTop;
 	public long fixPointEventNumber;
-	public int fixPointViewportCoordinate;
+	public long fixPointViewportCoordinate;
 	public double pixelPerTimelineCoordinate;
 	public AxisState[] axisStates;
 	public SequenceChart.TimelineMode timelineMode;
