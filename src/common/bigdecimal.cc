@@ -44,6 +44,23 @@ BigDecimal BigDecimal::PositiveInfinity(1, INT_MAX);
 BigDecimal BigDecimal::NegativeInfinity(-1, INT_MAX);
 BigDecimal BigDecimal::Nil;
 
+PowersOfTenInitializer initializer;
+
+PowersOfTenInitializer::PowersOfTenInitializer()
+{
+    int64 power = 1;
+    for (int i = 0; i < sizeof(powersOfTen) / sizeof(*powersOfTen); i++) {
+        powersOfTen[i] = power;
+        power *= 10;
+    }
+
+    double negativePower = 1;
+    for (int i = 0; i < sizeof(negativePowersOfTen) / sizeof(*negativePowersOfTen); i++) {
+        negativePowersOfTen[i] = negativePower;
+        negativePower /= 10.0;
+    }
+}
+
 void BigDecimal::normalize()
 {
     // special values
@@ -286,19 +303,7 @@ double BigDecimal::dbl() const
             throw opp_runtime_error("BigDecimal::dbl(): received Nil."); // XXX should return NaN?
     }
 
-    double d = (double)intVal;
-    int s = scale;
-    while (s > 0)
-    {
-        d *= 10.0;
-        s--;
-    }
-    while (s < 0)
-    {
-        d /= 10.0;
-        s++;
-    }
-    return d;
+    return (double)intVal * negativePowersOfTen[-scale];
 }
 
 std::string BigDecimal::str() const
@@ -478,3 +483,66 @@ const BigDecimal BigDecimal::parse(const char *s, const char *&endp)
     return BigDecimal(sign*intVal, scale);
 }
 
+const BigDecimal operator+(const BigDecimal& x, const BigDecimal& y)
+{
+    // 1. try to add exactly
+    int scale = std::min(x.scale, y.scale);
+    int xm = x.scale - scale;
+    int ym = y.scale - scale;
+ 
+    const int NUMPOWERS = sizeof(powersOfTen) / sizeof(*powersOfTen); 
+
+    if (!x.isSpecial() && !y.isSpecial() && 0 <= xm && xm < NUMPOWERS && 0 <= ym && ym < NUMPOWERS)
+    {
+        int64 xmp = powersOfTen[xm];
+        int64 xv = x.intVal * xmp;
+
+        if (xv / xmp == x.intVal) {
+            int64 ymp = powersOfTen[ym];
+            int64 yv = y.intVal * ymp;
+
+            if (yv / ymp == y.intVal) {
+                bool sameSign = haveSameSign(xv, yv);
+                int64 intVal = xv + yv;
+
+                if (!sameSign || haveSameSign(intVal, yv))
+                    return BigDecimal(intVal, scale);
+            }
+        }
+    }
+
+    // 2. add with precision loss
+    return BigDecimal(x.dbl()+y.dbl());
+}
+
+const BigDecimal operator-(const BigDecimal& x, const BigDecimal& y)
+{
+    // 1. try to subtract exactly
+    int scale = std::min(x.scale, y.scale);
+    int xm = x.scale - scale;
+    int ym = y.scale - scale;
+ 
+    const int NUMPOWERS = sizeof(powersOfTen) / sizeof(*powersOfTen); 
+
+    if (!x.isSpecial() && !y.isSpecial() && 0 <= xm && xm < NUMPOWERS && 0 <= ym && ym < NUMPOWERS)
+    {
+        int64 xmp = powersOfTen[xm];
+        int64 xv = x.intVal * xmp;
+
+        if (xv / xmp == x.intVal) {
+            int64 ymp = powersOfTen[ym];
+            int64 yv = y.intVal * ymp;
+
+            if (yv / ymp == y.intVal) {
+                bool differentSign = !haveSameSign(xv, yv);
+                int64 intVal = xv - yv;
+
+                if (!differentSign || !haveSameSign(intVal, yv))
+                    return BigDecimal(intVal, scale);
+            }
+        }
+    }
+
+    // 2. subtract with precision loss
+    return BigDecimal(x.dbl()-y.dbl());
+}
