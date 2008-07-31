@@ -15,7 +15,7 @@
 *--------------------------------------------------------------*/
 
 %token NAMESPACE CPLUSPLUS CPLUSPLUSBODY
-%token MESSAGE CLASS STRUCT ENUM NONCOBJECT
+%token MESSAGE PACKET CLASS STRUCT ENUM NONCOBJECT
 %token EXTENDS FIELDS PROPERTIES ABSTRACT READONLY
 
 %token NAME
@@ -100,9 +100,11 @@ static struct MSG2ParserState
     StructDeclElement *structdecl;
     ClassDeclElement *classdecl;
     MessageDeclElement *messagedecl;
+    PacketDeclElement *packetdecl;
     EnumDeclElement *enumdecl;
     EnumElement *enump;
     MessageElement *messagep;
+    PacketElement *packetp;
     ClassElement *classp;
     StructElement *structp;
     NEDElement *msgclassorstruct;
@@ -141,12 +143,15 @@ definition
         | struct_decl
         | class_decl
         | message_decl
+        | packet_decl
         | enum_decl
 
         | enum
                 { if (np->getStoreSourceFlag()) ps.enump->setSourceCode(toString(@1)); }
         | message
                 { if (np->getStoreSourceFlag()) ps.messagep->setSourceCode(toString(@1)); }
+        | packet
+                { if (np->getStoreSourceFlag()) ps.packetp->setSourceCode(toString(@1)); }
         | class
                 { if (np->getStoreSourceFlag()) ps.classp->setSourceCode(toString(@1)); }
         | struct
@@ -219,6 +224,15 @@ message_decl
                 }
         ;
 
+packet_decl
+        : PACKET NAME ';'
+                {
+                  ps.packetdecl = (PacketDeclElement *)createElementWithTag(NED_PACKET_DECL, ps.msgfile );
+                  ps.packetdecl->setName(toString(@2));
+                  storeBannerAndRightComments(ps.packetdecl,@1,@2);
+                }
+        ;
+
 enum_decl
         : ENUM NAME ';'
                 {
@@ -287,6 +301,11 @@ message
                 { storeTrailingComment(ps.messagep,@$); }
         ;
 
+packet
+        : packet_header body
+                { storeTrailingComment(ps.packetp,@$); }
+        ;
+
 class
         : class_header body
                 { storeTrailingComment(ps.classp,@$); }
@@ -310,6 +329,22 @@ message_header
                   ps.messagep->setName(toString(@2));
                   ps.messagep->setExtendsName(toString(@4));
                   storeBannerAndRightComments(ps.messagep,@1,@4);
+                }
+        ;
+
+packet_header
+        : PACKET NAME '{'
+                {
+                  ps.msgclassorstruct = ps.packetp = (PacketElement *)createElementWithTag(NED_PACKET, ps.msgfile );
+                  ps.packetp->setName(toString(@2));
+                  storeBannerAndRightComments(ps.packetp,@1,@2);
+                }
+        | PACKET NAME EXTENDS NAME '{'
+                {
+                  ps.msgclassorstruct = ps.packetp = (PacketElement *)createElementWithTag(NED_PACKET, ps.msgfile );
+                  ps.packetp->setName(toString(@2));
+                  ps.packetp->setExtendsName(toString(@4));
+                  storeBannerAndRightComments(ps.packetp,@1,@4);
                 }
         ;
 

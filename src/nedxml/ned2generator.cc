@@ -962,6 +962,13 @@ void NED2Generator::doMessageDecl(MessageDeclElement *node, const char *indent, 
     OUT << getTrailingComment(node);
 }
 
+void NED2Generator::doPacketDecl(PacketDeclElement *node, const char *indent, bool islast, const char *)
+{
+    OUT << getBannerComment(node, indent);
+    OUT << indent << "packet " << node->getName() << ";" << getRightComment(node);
+    OUT << getTrailingComment(node);
+}
+
 void NED2Generator::doEnumDecl(EnumDeclElement *node, const char *indent, bool islast, const char *)
 {
     OUT << getBannerComment(node, indent);
@@ -1012,6 +1019,19 @@ void NED2Generator::doMessage(MessageElement *node, const char *indent, bool isl
     OUT << getTrailingComment(node);
 }
 
+void NED2Generator::doPacket(PacketElement *node, const char *indent, bool islast, const char *)
+{
+    OUT << getBannerComment(node, indent);
+    OUT << indent << "packet " << node->getName();
+    if (!opp_isempty(node->getExtendsName()))
+        OUT << " extends " << node->getExtendsName();
+    OUT << getRightComment(node);
+    OUT << indent << "{\n";
+    doMsgClassOrStructBody(node, indent);
+    OUT << indent << "}";
+    OUT << getTrailingComment(node);
+}
+
 void NED2Generator::doClass(ClassElement *node, const char *indent, bool islast, const char *)
 {
     OUT << getBannerComment(node, indent);
@@ -1039,7 +1059,7 @@ void NED2Generator::doStruct(StructElement *node, const char *indent, bool islas
 
 void NED2Generator::doMsgClassOrStructBody(NEDElement *node, const char *indent)
 {
-    // "node" must be a MessageElement, ClassElement or StructElement
+    // "node" must be a PacketElement, MessageElement, ClassElement or StructElement
     generateChildren(node, increaseIndent(indent));
 
     //if (msgfileVersion!=1)
@@ -1174,6 +1194,8 @@ void NED2Generator::generateNedItem(NEDElement *node, const char *indent, bool i
             doClassDecl((ClassDeclElement *)node, indent, islast, arg); break;
         case NED_MESSAGE_DECL:
             doMessageDecl((MessageDeclElement *)node, indent, islast, arg); break;
+        case NED_PACKET_DECL:
+            doPacketDecl((PacketDeclElement *)node, indent, islast, arg); break;
         case NED_ENUM_DECL:
             doEnumDecl((EnumDeclElement *)node, indent, islast, arg); break;
         case NED_ENUM:
@@ -1184,6 +1206,8 @@ void NED2Generator::generateNedItem(NEDElement *node, const char *indent, bool i
             doEnumField((EnumFieldElement *)node, indent, islast, arg); break;
         case NED_MESSAGE:
             doMessage((MessageElement *)node, indent, islast, arg); break;
+        case NED_PACKET:
+            doPacket((PacketElement *)node, indent, islast, arg); break;
         case NED_CLASS:
             doClass((ClassElement *)node, indent, islast, arg); break;
         case NED_STRUCT:

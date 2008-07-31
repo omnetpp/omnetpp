@@ -173,6 +173,8 @@ void NEDCppGenerator::generateItem(NEDElement *node, const char *indent, int mod
                     doEnumField((EnumFieldElement *)node, newindent, mode, arg); break;
                 case NED_MESSAGE:
                     doMessage((MessageElement *)node, newindent, mode, arg); break;
+                case NED_PACKET:
+                    doPacket((PacketElement *)node, newindent, mode, arg); break;
                 case NED_CLASS:
                     doClass((ClassElement *)node, newindent, mode, arg); break;
                 case NED_STRUCT:

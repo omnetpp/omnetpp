@@ -682,6 +682,10 @@ void NEDSyntaxValidator::validateElement(MessageDeclElement *node)
 {
 }
 
+void NEDSyntaxValidator::validateElement(PacketDeclElement *node)
+{
+}
+
 void NEDSyntaxValidator::validateElement(EnumDeclElement *node)
 {
 }
@@ -699,6 +703,10 @@ void NEDSyntaxValidator::validateElement(EnumFieldElement *node)
 }
 
 void NEDSyntaxValidator::validateElement(MessageElement *node)
+{
+}
+
+void NEDSyntaxValidator::validateElement(PacketElement *node)
 {
 }
 

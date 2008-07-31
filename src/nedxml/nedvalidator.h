@@ -90,11 +90,13 @@ class NEDXML_API NEDValidatorBase
     virtual void validateElement(StructDeclElement *node) = 0;
     virtual void validateElement(ClassDeclElement *node) = 0;
     virtual void validateElement(MessageDeclElement *node) = 0;
+    virtual void validateElement(PacketDeclElement *node) = 0;
     virtual void validateElement(EnumDeclElement *node) = 0;
     virtual void validateElement(EnumElement *node) = 0;
     virtual void validateElement(EnumFieldsElement *node) = 0;
     virtual void validateElement(EnumFieldElement *node) = 0;
     virtual void validateElement(MessageElement *node) = 0;
+    virtual void validateElement(PacketElement *node) = 0;
     virtual void validateElement(ClassElement *node) = 0;
     virtual void validateElement(StructElement *node) = 0;
     virtual void validateElement(FieldElement *node) = 0;

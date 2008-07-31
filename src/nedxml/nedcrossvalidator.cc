@@ -384,6 +384,10 @@ void NEDCrossValidator::validateElement(MessageDeclElement *node)
 {
 }
 
+void NEDCrossValidator::validateElement(PacketDeclElement *node)
+{
+}
+
 void NEDCrossValidator::validateElement(EnumDeclElement *node)
 {
 }
@@ -406,6 +410,15 @@ void NEDCrossValidator::validateElement(EnumFieldElement *node)
 }
 
 void NEDCrossValidator::validateElement(MessageElement *node)
+{
+    // check extends-name
+    const char *baseClassName = node->getExtendsName();
+    NEDElement *baseClass = getClassDeclaration(baseClassName);
+    if (!baseClass)
+        errors->addError(node, "unknown base class '%s'",baseClassName);
+}
+
+void NEDCrossValidator::validateElement(PacketElement *node)
 {
     // check extends-name
     const char *baseClassName = node->getExtendsName();

@@ -2957,19 +2957,19 @@ MessageDeclElement *MsgFileElement::getFirstMessageDeclChild() const
     return (MessageDeclElement *)getFirstChildWithTag(NED_MESSAGE_DECL);
 }
 
+PacketDeclElement *MsgFileElement::getFirstPacketDeclChild() const
+{
+    return (PacketDeclElement *)getFirstChildWithTag(NED_PACKET_DECL);
+}
+
 EnumDeclElement *MsgFileElement::getFirstEnumDeclChild() const
 {
     return (EnumDeclElement *)getFirstChildWithTag(NED_ENUM_DECL);
 }
 
-EnumElement *MsgFileElement::getFirstEnumChild() const
+StructElement *MsgFileElement::getFirstStructChild() const
 {
-    return (EnumElement *)getFirstChildWithTag(NED_ENUM);
-}
-
-MessageElement *MsgFileElement::getFirstMessageChild() const
-{
-    return (MessageElement *)getFirstChildWithTag(NED_MESSAGE);
+    return (StructElement *)getFirstChildWithTag(NED_STRUCT);
 }
 
 ClassElement *MsgFileElement::getFirstClassChild() const
@@ -2977,9 +2977,19 @@ ClassElement *MsgFileElement::getFirstClassChild() const
     return (ClassElement *)getFirstChildWithTag(NED_CLASS);
 }
 
-StructElement *MsgFileElement::getFirstStructChild() const
+MessageElement *MsgFileElement::getFirstMessageChild() const
 {
-    return (StructElement *)getFirstChildWithTag(NED_STRUCT);
+    return (MessageElement *)getFirstChildWithTag(NED_MESSAGE);
+}
+
+PacketElement *MsgFileElement::getFirstPacketChild() const
+{
+    return (PacketElement *)getFirstChildWithTag(NED_PACKET);
+}
+
+EnumElement *MsgFileElement::getFirstEnumChild() const
+{
+    return (EnumElement *)getFirstChildWithTag(NED_ENUM);
 }
 
 NamespaceElement::NamespaceElement()
@@ -3305,6 +3315,70 @@ MessageDeclElement *MessageDeclElement::getNextMessageDeclSibling() const
 }
 
 CommentElement *MessageDeclElement::getFirstCommentChild() const
+{
+    return (CommentElement *)getFirstChildWithTag(NED_COMMENT);
+}
+
+PacketDeclElement::PacketDeclElement()
+{
+    applyDefaults();
+}
+
+PacketDeclElement::PacketDeclElement(NEDElement *parent) : NEDElement(parent)
+{
+    applyDefaults();
+}
+
+int PacketDeclElement::getNumAttributes() const
+{
+    return 1;
+}
+
+const char *PacketDeclElement::getAttributeName(int k) const
+{
+    switch (k) {
+        case 0: return "name";
+        default: return 0;
+    }
+}
+
+const char *PacketDeclElement::getAttribute(int k) const
+{
+    switch (k) {
+        case 0: return name.c_str();
+        default: return 0;
+    }
+}
+
+void PacketDeclElement::setAttribute(int k, const char *val)
+{
+    switch (k) {
+        case 0: name = val; break;
+        default: ;
+    }
+}
+
+const char *PacketDeclElement::getAttributeDefault(int k) const
+{
+    switch (k) {
+        case 0: return NULL;
+        default: return 0;
+    }
+}
+
+PacketDeclElement *PacketDeclElement::dup() const
+{
+    PacketDeclElement *element = new PacketDeclElement();
+    element->name = this->name;
+    return element;
+}
+
+PacketDeclElement *PacketDeclElement::getNextPacketDeclSibling() const
+{
+    return (PacketDeclElement *)getNextSiblingWithTag(NED_PACKET_DECL);
+}
+
+CommentElement *PacketDeclElement::getFirstCommentChild() const
 {
     return (CommentElement *)getFirstChildWithTag(NED_COMMENT);
 }
@@ -3665,6 +3739,90 @@ PropertyElement *MessageElement::getFirstPropertyChild() const
 }
 
 FieldElement *MessageElement::getFirstFieldChild() const
+{
+    return (FieldElement *)getFirstChildWithTag(NED_FIELD);
+}
+
+PacketElement::PacketElement()
+{
+    applyDefaults();
+}
+
+PacketElement::PacketElement(NEDElement *parent) : NEDElement(parent)
+{
+    applyDefaults();
+}
+
+int PacketElement::getNumAttributes() const
+{
+    return 3;
+}
+
+const char *PacketElement::getAttributeName(int k) const
+{
+    switch (k) {
+        case 0: return "name";
+        case 1: return "extends-name";
+        case 2: return "source-code";
+        default: return 0;
+    }
+}
+
+const char *PacketElement::getAttribute(int k) const
+{
+    switch (k) {
+        case 0: return name.c_str();
+        case 1: return extendsName.c_str();
+        case 2: return sourceCode.c_str();
+        default: return 0;
+    }
+}
+
+void PacketElement::setAttribute(int k, const char *val)
+{
+    switch (k) {
+        case 0: name = val; break;
+        case 1: extendsName = val; break;
+        case 2: sourceCode = val; break;
+        default: ;
+    }
+}
+
+const char *PacketElement::getAttributeDefault(int k) const
+{
+    switch (k) {
+        case 0: return NULL;
+        case 1: return "";
+        case 2: return "";
+        default: return 0;
+    }
+}
+
+PacketElement *PacketElement::dup() const
+{
+    PacketElement *element = new PacketElement();
+    element->name = this->name;
+    element->extendsName = this->extendsName;
+    element->sourceCode = this->sourceCode;
+    return element;
+}
+
+PacketElement *PacketElement::getNextPacketSibling() const
+{
+    return (PacketElement *)getNextSiblingWithTag(NED_PACKET);
+}
+
+CommentElement *PacketElement::getFirstCommentChild() const
+{
+    return (CommentElement *)getFirstChildWithTag(NED_COMMENT);
+}
+
+PropertyElement *PacketElement::getFirstPropertyChild() const
+{
+    return (PropertyElement *)getFirstChildWithTag(NED_PROPERTY);
+}
+
+FieldElement *PacketElement::getFirstFieldChild() const
 {
     return (FieldElement *)getFirstChildWithTag(NED_FIELD);
 }
@@ -4051,11 +4209,13 @@ NEDElement *NEDElementFactory::createElementWithTag(const char *tagname)
     if (tagname[0]=='s' && !strcmp(tagname,"struct-decl"))  return new StructDeclElement();
     if (tagname[0]=='c' && !strcmp(tagname,"class-decl"))  return new ClassDeclElement();
     if (tagname[0]=='m' && !strcmp(tagname,"message-decl"))  return new MessageDeclElement();
+    if (tagname[0]=='p' && !strcmp(tagname,"packet-decl"))  return new PacketDeclElement();
     if (tagname[0]=='e' && !strcmp(tagname,"enum-decl"))  return new EnumDeclElement();
     if (tagname[0]=='e' && !strcmp(tagname,"enum"))  return new EnumElement();
     if (tagname[0]=='e' && !strcmp(tagname,"enum-fields"))  return new EnumFieldsElement();
     if (tagname[0]=='e' && !strcmp(tagname,"enum-field"))  return new EnumFieldElement();
     if (tagname[0]=='m' && !strcmp(tagname,"message"))  return new MessageElement();
+    if (tagname[0]=='p' && !strcmp(tagname,"packet"))  return new PacketElement();
     if (tagname[0]=='c' && !strcmp(tagname,"class"))  return new ClassElement();
     if (tagname[0]=='s' && !strcmp(tagname,"struct"))  return new StructElement();
     if (tagname[0]=='f' && !strcmp(tagname,"field"))  return new FieldElement();
@@ -4106,11 +4266,13 @@ NEDElement *NEDElementFactory::createElementWithTag(int tagcode)
         case NED_STRUCT_DECL: return new StructDeclElement();
         case NED_CLASS_DECL: return new ClassDeclElement();
         case NED_MESSAGE_DECL: return new MessageDeclElement();
+        case NED_PACKET_DECL: return new PacketDeclElement();
         case NED_ENUM_DECL: return new EnumDeclElement();
         case NED_ENUM: return new EnumElement();
         case NED_ENUM_FIELDS: return new EnumFieldsElement();
         case NED_ENUM_FIELD: return new EnumFieldElement();
         case NED_MESSAGE: return new MessageElement();
+        case NED_PACKET: return new PacketElement();
         case NED_CLASS: return new ClassElement();
         case NED_STRUCT: return new StructElement();
         case NED_FIELD: return new FieldElement();

@@ -165,6 +165,17 @@ void NEDCppGenerator::doMessage(MessageElement *node, const char *, int, const c
     delete [] fld;
 }
 
+void NEDCppGenerator::doPacket(MessageElement *node, const char *, int, const char *)
+{
+    ClassDesc cld;
+    FieldDesc *fld;
+    int numfields;
+    prepareForCodeGeneration(node, cld, fld, numfields);
+    generateClass(cld, fld, numfields);
+    generateDescriptorClass(cld, fld, numfields);
+    delete [] fld;
+}
+
 void NEDCppGenerator::doClass(ClassElement *node, const char *, int, const char *)
 {
     ClassDesc cld;

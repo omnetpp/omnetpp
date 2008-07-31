@@ -75,11 +75,13 @@ void  NEDValidatorBase::validateElement(NEDElement *node)
             case NED_STRUCT_DECL: validateElement((StructDeclElement *) node); break;
             case NED_CLASS_DECL: validateElement((ClassDeclElement *) node); break;
             case NED_MESSAGE_DECL: validateElement((MessageDeclElement *) node); break;
+            case NED_PACKET_DECL: validateElement((PacketDeclElement *) node); break;
             case NED_ENUM_DECL: validateElement((EnumDeclElement *) node); break;
             case NED_ENUM: validateElement((EnumElement *) node); break;
             case NED_ENUM_FIELDS: validateElement((EnumFieldsElement *) node); break;
             case NED_ENUM_FIELD: validateElement((EnumFieldElement *) node); break;
             case NED_MESSAGE: validateElement((MessageElement *) node); break;
+            case NED_PACKET: validateElement((PacketElement *) node); break;
             case NED_CLASS: validateElement((ClassElement *) node); break;
             case NED_STRUCT: validateElement((StructElement *) node); break;
             case NED_FIELD: validateElement((FieldElement *) node); break;

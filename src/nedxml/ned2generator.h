@@ -159,11 +159,13 @@ class NEDXML_API NED2Generator
     void doStructDecl(StructDeclElement *node, const char *indent, bool islast, const char *);
     void doClassDecl(ClassDeclElement *node, const char *indent, bool islast, const char *);
     void doMessageDecl(MessageDeclElement *node, const char *indent, bool islast, const char *);
+    void doPacketDecl(PacketDeclElement *node, const char *indent, bool islast, const char *);
     void doEnumDecl(EnumDeclElement *node, const char *indent, bool islast, const char *);
     void doEnum(EnumElement *node, const char *indent, bool islast, const char *);
     void doEnumFields(EnumFieldsElement *node, const char *indent, bool islast, const char *);
     void doEnumField(EnumFieldElement *node, const char *indent, bool islast, const char *);
     void doMessage(MessageElement *node, const char *indent, bool islast, const char *);
+    void doPacket(PacketElement *node, const char *indent, bool islast, const char *);
     void doClass(ClassElement *node, const char *indent, bool islast, const char *);
     void doStruct(StructElement *node, const char *indent, bool islast, const char *);
     void doField(FieldElement *node, const char *indent, bool islast, const char *);

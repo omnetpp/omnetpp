@@ -395,7 +395,7 @@ void NEDDTDValidator::validateElement(MsgFileElement *node)
 {
     Choice choices[] = {
         {{NED_COMMENT, NED_NULL}, '*'},
-        {{NED_NAMESPACE, NED_PROPERTY_DECL, NED_PROPERTY, NED_CPLUSPLUS, NED_STRUCT_DECL, NED_CLASS_DECL, NED_MESSAGE_DECL, NED_ENUM_DECL, NED_ENUM, NED_MESSAGE, NED_CLASS, NED_STRUCT, NED_NULL}, '*'},
+        {{NED_NAMESPACE, NED_PROPERTY_DECL, NED_PROPERTY, NED_CPLUSPLUS, NED_STRUCT_DECL, NED_CLASS_DECL, NED_MESSAGE_DECL, NED_PACKET_DECL, NED_ENUM_DECL, NED_STRUCT, NED_CLASS, NED_MESSAGE, NED_PACKET, NED_ENUM, NED_NULL}, '*'},
     };
     checkSeqOfChoices(node, choices, sizeof(choices)/sizeof(Choice));
 
@@ -451,6 +451,16 @@ void NEDDTDValidator::validateElement(MessageDeclElement *node)
     checkNameAttribute(node, "name");
 }
 
+void NEDDTDValidator::validateElement(PacketDeclElement *node)
+{
+    int tags[] = {NED_COMMENT, NED_NULL};
+    char mult[] = {'*', 0};
+    checkSequence(node, tags, mult);
+
+    checkRequiredAttribute(node, "name");
+    checkNameAttribute(node, "name");
+}
+
 void NEDDTDValidator::validateElement(EnumDeclElement *node)
 {
     int tags[] = {NED_COMMENT, NED_NULL};
@@ -491,6 +501,19 @@ void NEDDTDValidator::validateElement(EnumFieldElement *node)
 }
 
 void NEDDTDValidator::validateElement(MessageElement *node)
+{
+    Choice choices[] = {
+        {{NED_COMMENT, NED_NULL}, '*'},
+        {{NED_PROPERTY, NED_FIELD, NED_NULL}, '*'},
+    };
+    checkSeqOfChoices(node, choices, sizeof(choices)/sizeof(Choice));
+
+    checkRequiredAttribute(node, "name");
+    checkNameAttribute(node, "name");
+    checkNameAttribute(node, "extends-name");
+}
+
+void NEDDTDValidator::validateElement(PacketElement *node)
 {
     Choice choices[] = {
         {{NED_COMMENT, NED_NULL}, '*'},

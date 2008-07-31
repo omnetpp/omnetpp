@@ -159,6 +159,7 @@ class NEDXML_API NEDCppGenerator
     void doEnumFields(EnumFieldsElement *node, const char *indent, int mode, const char *);
     void doEnumField(EnumFieldElement *node, const char *indent, int mode, const char *);
     void doMessage(MessageElement *node, const char *, int, const char *);
+    void doPacket(PacketElement *node, const char *, int, const char *);
     void doClass(ClassElement *node, const char *, int, const char *);
     void doStruct(StructElement *node, const char *, int, const char *);
     void prepareForCodeGeneration(NEDElement *node, ClassDesc& cld, FieldDesc *&fld, int& numfields);

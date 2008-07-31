@@ -64,11 +64,13 @@ class CplusplusElement;
 class StructDeclElement;
 class ClassDeclElement;
 class MessageDeclElement;
+class PacketDeclElement;
 class EnumDeclElement;
 class EnumElement;
 class EnumFieldsElement;
 class EnumFieldElement;
 class MessageElement;
+class PacketElement;
 class ClassElement;
 class StructElement;
 class FieldElement;
@@ -122,11 +124,13 @@ enum NEDElementCode {
     NED_STRUCT_DECL,
     NED_CLASS_DECL,
     NED_MESSAGE_DECL,
+    NED_PACKET_DECL,
     NED_ENUM_DECL,
     NED_ENUM,
     NED_ENUM_FIELDS,
     NED_ENUM_FIELD,
     NED_MESSAGE,
+    NED_PACKET,
     NED_CLASS,
     NED_STRUCT,
     NED_FIELD,
@@ -1957,8 +1961,9 @@ class NEDXML_API LiteralElement : public NEDElement
  * GENERATED CLASS. Represents the \<msg-file\> XML element in memory. DTD declaration:
  * 
  * <pre>
- * \<!ELEMENT msg-file (comment*, (namespace|property-decl|property|cplusplus|struct-decl|class-decl|message-decl|enum-decl|
- *                      enum|message|class|struct)*)\>
+ * \<!ELEMENT msg-file (comment*, (namespace|property-decl|property|cplusplus|
+ *                     struct-decl|class-decl|message-decl|packet-decl|enum-decl|
+ *                     struct|class|message|packet|enum)*)\>
  * \<!ATTLIST msg-file
  *      filename            CDATA     \#IMPLIED
  *      version             CDATA     "2"\>
@@ -2009,11 +2014,13 @@ class NEDXML_API MsgFileElement : public NEDElement
     virtual StructDeclElement *getFirstStructDeclChild() const;
     virtual ClassDeclElement *getFirstClassDeclChild() const;
     virtual MessageDeclElement *getFirstMessageDeclChild() const;
+    virtual PacketDeclElement *getFirstPacketDeclChild() const;
     virtual EnumDeclElement *getFirstEnumDeclChild() const;
-    virtual EnumElement *getFirstEnumChild() const;
-    virtual MessageElement *getFirstMessageChild() const;
-    virtual ClassElement *getFirstClassChild() const;
     virtual StructElement *getFirstStructChild() const;
+    virtual ClassElement *getFirstClassChild() const;
+    virtual MessageElement *getFirstMessageChild() const;
+    virtual PacketElement *getFirstPacketChild() const;
+    virtual EnumElement *getFirstEnumChild() const;
     //@}
 };
 
@@ -2252,6 +2259,53 @@ class NEDXML_API MessageDeclElement : public NEDElement
     void setName(const char * val)  {name = val;}
 
     virtual MessageDeclElement *getNextMessageDeclSibling() const;
+    virtual CommentElement *getFirstCommentChild() const;
+    //@}
+};
+
+/**
+ * GENERATED CLASS. Represents the \<packet-decl\> XML element in memory. DTD declaration:
+ * 
+ * <pre>
+ * \<!ELEMENT packet-decl (comment*)\>
+ * \<!ATTLIST packet-decl
+ *      name                NMTOKEN   \#REQUIRED\>
+ * </pre>
+ * 
+ * @ingroup Data
+ */
+class NEDXML_API PacketDeclElement : public NEDElement
+{
+  private:
+    std::string name;
+  public:
+    /** @name Constructors, destructor */
+    //@{
+    PacketDeclElement();
+    PacketDeclElement(NEDElement *parent);
+    virtual ~PacketDeclElement() {}
+    //@}
+
+    /** @name Redefined NEDElement methods, incl. generic access to attributes */
+    //@{
+    virtual const char *getTagName() const {return "packet-decl";}
+    virtual int getTagCode() const {return NED_PACKET_DECL;}
+    virtual int getNumAttributes() const;
+    virtual const char *getAttributeName(int k) const;
+    virtual const char *getAttribute(int k) const;
+    virtual const char *getAttribute(const char *name) const {return NEDElement::getAttribute(name);} // needed because of a C++ language quirk
+    virtual void setAttribute(int k, const char *val);
+    virtual void setAttribute(const char *name, const char *val) {NEDElement::setAttribute(name, val);} // ditto
+    virtual const char *getAttributeDefault(int k) const;
+    virtual PacketDeclElement *dup() const;
+    //@}
+
+    /** @name Typed access to attributes, children and siblings */
+    //@{
+    const char * getName() const  {return name.c_str();}
+    void setName(const char * val)  {name = val;}
+
+    virtual PacketDeclElement *getNextPacketDeclSibling() const;
     virtual CommentElement *getFirstCommentChild() const;
     //@}
 };
@@ -2505,6 +2559,63 @@ class NEDXML_API MessageElement : public NEDElement
     void setSourceCode(const char * val)  {sourceCode = val;}
 
     virtual MessageElement *getNextMessageSibling() const;
+    virtual CommentElement *getFirstCommentChild() const;
+    virtual PropertyElement *getFirstPropertyChild() const;
+    virtual FieldElement *getFirstFieldChild() const;
+    //@}
+};
+
+/**
+ * GENERATED CLASS. Represents the \<packet\> XML element in memory. DTD declaration:
+ * 
+ * <pre>
+ * \<!ELEMENT packet (comment*, (property|field)*)\>
+ * \<!ATTLIST packet
+ *      name                NMTOKEN   \#REQUIRED
+ *      extends-name        NMTOKEN   \#IMPLIED
+ *      source-code         CDATA     \#IMPLIED\>
+ * </pre>
+ * 
+ * @ingroup Data
+ */
+class NEDXML_API PacketElement : public NEDElement
+{
+  private:
+    std::string name;
+    std::string extendsName;
+    std::string sourceCode;
+  public:
+    /** @name Constructors, destructor */
+    //@{
+    PacketElement();
+    PacketElement(NEDElement *parent);
+    virtual ~PacketElement() {}
+    //@}
+
+    /** @name Redefined NEDElement methods, incl. generic access to attributes */
+    //@{
+    virtual const char *getTagName() const {return "packet";}
+    virtual int getTagCode() const {return NED_PACKET;}
+    virtual int getNumAttributes() const;
+    virtual const char *getAttributeName(int k) const;
+    virtual const char *getAttribute(int k) const;
+    virtual const char *getAttribute(const char *name) const {return NEDElement::getAttribute(name);} // needed because of a C++ language quirk
+    virtual void setAttribute(int k, const char *val);
+    virtual void setAttribute(const char *name, const char *val) {NEDElement::setAttribute(name, val);} // ditto
+    virtual const char *getAttributeDefault(int k) const;
+    virtual PacketElement *dup() const;
+    //@}
+
+    /** @name Typed access to attributes, children and siblings */
+    //@{
+    const char * getName() const  {return name.c_str();}
+    void setName(const char * val)  {name = val;}
+    const char * getExtendsName() const  {return extendsName.c_str();}
+    void setExtendsName(const char * val)  {extendsName = val;}
+    const char * getSourceCode() const  {return sourceCode.c_str();}
+    void setSourceCode(const char * val)  {sourceCode = val;}
+
+    virtual PacketElement *getNextPacketSibling() const;
     virtual CommentElement *getFirstCommentChild() const;
     virtual PropertyElement *getFirstPropertyChild() const;
     virtual FieldElement *getFirstFieldChild() const;

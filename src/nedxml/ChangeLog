@@ -1,3 +1,8 @@
+2008-07-31  Andras Varga
+
+	* added "packet" keyword to msg files. It is like "message", except 
+	that it generates "cPacket" as base class
+
 2008-07-14  Andras Varga
 
 	* ned1.lex, ned2.lex, msg2.lex: accept UTF-8 BOM mark (EF BB BF).

@@ -69,6 +69,7 @@ USING_NAMESPACE
 "cplusplus"             { countChars(); return CPLUSPLUS; }
 "struct"                { countChars(); return STRUCT; }
 "message"               { countChars(); return MESSAGE; }
+"packet"                { countChars(); return PACKET; }
 "class"                 { countChars(); return CLASS; }
 "noncobject"            { countChars(); return NONCOBJECT; }
 "enum"                  { countChars(); return ENUM; }
