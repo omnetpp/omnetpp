@@ -5,13 +5,13 @@ test cPacketQueue basic operation
 
 cPacketQueue q;
 
-q.insert(new cMessage("one", 0, 10));
+q.insert(new cPacket("one", 0, 10));
 ev << q.info() << "\n";
 
-q.insert(new cMessage("two", 0, 200));
+q.insert(new cPacket("two", 0, 200));
 ev << q.info() << "\n";
 
-q.insert(new cMessage("three", 0, 3000));
+q.insert(new cPacket("three", 0, 3000));
 ev << q.info() << "\n";
 
 cPacketQueue copy;

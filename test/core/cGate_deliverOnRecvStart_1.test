@@ -20,16 +20,16 @@ gate("out")->connectTo(gate("in"), channel);
 gate("in")->setDeliverOnReceptionStart(true);
 
 {
-    cMessage *msg = new cMessage();
-    msg->setBitLength(1500);  // so duration=1.5s
+    cPacket *pkt = new cPacket();
+    pkt->setBitLength(1500);  // so duration=1.5s
 
-    send(msg, "out");
+    send(pkt, "out");
     ev << "after sending, t=" << simTime() << ": output gate busy=" << gate("out")->isBusy()
        << " txFinishTime=" << gate("out")->getTransmissionFinishTime() << "\n";
 
-    cMessage *msg2 = receive();
-    ev << "after receive, t=" << simTime() << ": msg: duration=" << msg2->getDuration()
-       << " isRecStart=" << msg2->isReceptionStart() << "\n";
+    cPacket *pkt2 = check_and_cast<cPacket *>(receive());
+    ev << "after receive, t=" << simTime() << ": pkt: duration=" << pkt2->getDuration()
+       << " isRecStart=" << pkt2->isReceptionStart() << "\n";
     ev << "  output gate: busy=" << gate("out")->isBusy()
        << " txFinishTime=" << gate("out")->getTransmissionFinishTime() << "\n";
 }
@@ -43,16 +43,16 @@ gate("in")->setDeliverOnReceptionStart(false);
 
 // (block copied from above)
 {
-    cMessage *msg = new cMessage();
-    msg->setBitLength(1500);  // so duration=1.5s
+    cPacket *pkt = new cPacket();
+    pkt->setBitLength(1500);  // so duration=1.5s
 
-    send(msg, "out");
+    send(pkt, "out");
     ev << "after sending, t=" << simTime() << ": output gate busy=" << gate("out")->isBusy()
        << " txFinishTime=" << gate("out")->getTransmissionFinishTime() << "\n";
 
-    cMessage *msg2 = receive();
-    ev << "after receive, t=" << simTime() << ": msg: duration=" << msg2->getDuration()
-       << " isRecStart=" << msg2->isReceptionStart() << "\n";
+    cPacket *pkt2 = check_and_cast<cPacket *>(receive());
+    ev << "after receive, t=" << simTime() << ": pkt: duration=" << pkt2->getDuration()
+       << " isRecStart=" << pkt2->isReceptionStart() << "\n";
     ev << "  output gate: busy=" << gate("out")->isBusy()
        << " txFinishTime=" << gate("out")->getTransmissionFinishTime() << "\n";
 }
@@ -62,11 +62,11 @@ ev << ".\n";
 %contains-regex: stdout
 after sending, t=0: output gate busy=1 txFinishTime=1.5
 .*
-after receive, t=0.1: msg: duration=1.5 isRecStart=1
+after receive, t=0.1: pkt: duration=1.5 isRecStart=1
   output gate: busy=1 txFinishTime=1.5
 .*
 after sending, t=1.5: output gate busy=1 txFinishTime=3
 .*
-after receive, t=3.1: msg: duration=1.5 isRecStart=0
+after receive, t=3.1: pkt: duration=1.5 isRecStart=0
   output gate: busy=0 txFinishTime=3
 .

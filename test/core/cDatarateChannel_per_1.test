@@ -52,8 +52,8 @@ void Node1::activity()
 {
     for (int i=0; i<NUM_MSGS; i++)
     {
-        cMessage *msg = new cMessage();
-        send(msg, "out");
+        cPacket *pkt = new cPacket();
+        send(pkt, "out");
         wait(exponential(1.0));
     }
 }
@@ -77,10 +77,10 @@ void Node2::activity()
 
     for(;;)
     {
-        cMessage *msg = receive();
-        if (msg->hasBitError())
+        cPacket *pkt = check_and_cast<cPacket *>(receive());
+        if (pkt->hasBitError())
             numErrors++;
-        delete msg;
+        delete pkt;
     }
 }
 

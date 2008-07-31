@@ -1,22 +1,22 @@
 %description:
-Tests cMessage.addBitLength().
+Tests cPacket.addBitLength().
 
 %activity:
-cMessage msg("msg");
+cPacket pkt("pkt");
 
-ev << msg.getBitLength() << endl;
+ev << pkt.getBitLength() << endl;
 
-msg.addBitLength(100);
-ev << msg.getBitLength() << endl;
+pkt.addBitLength(100);
+ev << pkt.getBitLength() << endl;
 
-msg.addBitLength(50);
-ev << msg.getBitLength() << endl;
+pkt.addBitLength(50);
+ev << pkt.getBitLength() << endl;
 
-msg.addBitLength(-10);
-ev << msg.getBitLength() << endl;
+pkt.addBitLength(-10);
+ev << pkt.getBitLength() << endl;
 
-msg.addBitLength(-300);
-ev << msg.getBitLength() << endl;
+pkt.addBitLength(-300);
+ev << pkt.getBitLength() << endl;
 
 %exitcode: 1
 

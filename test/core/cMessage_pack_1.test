@@ -1,5 +1,5 @@
 %description:
-Tests cMessage.parsimPack/parsimUnpack.
+Tests cPacket.parsimPack/parsimUnpack.
 
 %includes:
 #include <string.h>
@@ -11,7 +11,7 @@ Tests cMessage.parsimPack/parsimUnpack.
 
 cFileCommBuffer *buffer = new cFileCommBuffer();
 
-cMessage msg("msg");
+cPacket msg("msg");
 msg.setKind(5);
 msg.setPriority(8);
 msg.setBitLength(1500);
@@ -19,7 +19,7 @@ msg.setBitError(false);
 msg.setTimestamp(0.2234);
 msg.parsimPack(buffer);
 
-cMessage msg2("tmp");
+cPacket msg2("tmp");
 msg2.parsimUnpack(buffer);
 ev << "isBufferEmpty:" << buffer->isBufferEmpty() << endl;
 

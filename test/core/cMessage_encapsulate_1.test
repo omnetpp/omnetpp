@@ -1,12 +1,12 @@
 %description:
-Tests if encapsulated message can be retrieved with cMessage.encapsulate().
+Tests if encapsulated message can be retrieved with cPacket.encapsulate().
 
 %activity:
-cMessage *payload = new cMessage;
-cMessage *frame = new cMessage;
+cPacket *payload = new cPacket;
+cPacket *frame = new cPacket;
 
 frame->encapsulate(payload);
-cMessage *payload2 = frame->decapsulate();
+cPacket *payload2 = frame->decapsulate();
 
 ev << "payload==payload2: " << (payload==payload2) << endl;
 

@@ -49,9 +49,9 @@ void Node1::activity()
 {
     for (int i=0; i<100; i++)
     {
-        cMessage *msg = new cMessage();
-        msg->setBitLength((long)exponential(1000));  // delay should not depend on message length
-        send(msg, "out");
+        cPacket *pkt = new cPacket();
+        pkt->setBitLength((long)exponential(1000));  // delay should not depend on message length
+        send(pkt, "out");
         wait(exponential(1.0));
     }
 }
@@ -72,12 +72,12 @@ void Node2::activity()
 {
     for(;;)
     {
-        cMessage *msg = receive();
-        simtime_t delay = simTime() - msg->getSendingTime();
+        cPacket *pkt = check_and_cast<cPacket *>(receive());
+        simtime_t delay = simTime() - pkt->getSendingTime();
         ev << "delay=" << delay << ", (diff-0.004)=" << (delay-0.004) << endl;
         if (fabs(SIMTIME_DBL(delay-0.004)) > 1e-14)
             ev << "wrong delay" << endl;
-        delete msg;
+        delete pkt;
     }
 }
 

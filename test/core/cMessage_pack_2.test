@@ -1,5 +1,5 @@
 %description:
-Tests cMessage.parsimPack/parsimUnpack and msg encapsulation.
+Tests cPacket.parsimPack/parsimUnpack and msg encapsulation.
 
 %includes:
 #include <string.h>
@@ -11,15 +11,15 @@ Tests cMessage.parsimPack/parsimUnpack and msg encapsulation.
 
 cFileCommBuffer *buffer = new cFileCommBuffer();
 
-cMessage *payload = new cMessage("payload");
+cPacket *payload = new cPacket("payload");
 payload->setBitLength(123);
 
-cMessage msg("msg");
+cPacket msg("msg");
 msg.setBitLength(1500);
 msg.encapsulate(payload);
 msg.parsimPack(buffer);
 
-cMessage msg2("tmp");
+cPacket msg2("tmp");
 msg2.parsimUnpack(buffer);
 ev << "isBufferEmpty:" << buffer->isBufferEmpty() << endl;
 
@@ -27,7 +27,7 @@ PRINT(msg2.getName());
 PRINT(msg2.getBitLength());
 PRINT(msg2.getEncapsulatedMsg()==NULL);
 
-cMessage *payload2 = msg2.decapsulate();
+cPacket *payload2 = msg2.decapsulate();
 PRINT(payload2->getName());
 PRINT(payload2->getBitLength());
 

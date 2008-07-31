@@ -47,7 +47,7 @@ void Sender::activity()
    gate("out")->reconnectWith(ch);
 
    // send message
-   cMessage *msg = new cMessage();
+   cPacket *msg = new cPacket();
    send(msg, "out");
 }
 
@@ -63,7 +63,7 @@ Define_Module(Receiver);
 void Receiver::activity()
 {
    cMessage *msg = receive();
-   simtime_t diff = simTime() - msg->getTimestamp();
+   simtime_t diff = simTime() - msg->getSendingTime();
    ev << "diff: " << diff << endl;
 }
 

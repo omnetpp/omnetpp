@@ -48,9 +48,9 @@ Define_Module(Node1);
 
 void Node1::initialize()
 {
-    cMessage *msg = new cMessage();
-    msg->setBitLength(100); // so transmission time = 0.1s
-    send(msg, "out");
+    cPacket *pkt = new cPacket();
+    pkt->setBitLength(100); // so transmission time = 0.1s
+    send(pkt, "out");
 }
 
 void Node1::handleMessage(cMessage *msg)

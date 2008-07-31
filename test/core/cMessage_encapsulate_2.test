@@ -1,11 +1,11 @@
 %description:
-Tests message length behaviour with cMessage.encapsulate().
+Tests message length behaviour with cPacket.encapsulate().
 
 %activity:
-cMessage *payload = new cMessage;
+cPacket *payload = new cPacket;
 payload->setBitLength(128);
 
-cMessage *frame = new cMessage;
+cPacket *frame = new cPacket;
 frame->setBitLength(32);
 
 frame->encapsulate(payload);

@@ -55,9 +55,9 @@ void Node1::activity()
     // send packets
     for (int i=0; i<5; i++)
     {
-        cMessage *msg = new cMessage("msg");
-        msg->setBitLength(10);
-        send(msg, "out");
+        cPacket *pkt = new cPacket("pkt");
+        pkt->setBitLength(10);
+        send(pkt, "out");
         wait(1);
     }
     ev << "done\n";

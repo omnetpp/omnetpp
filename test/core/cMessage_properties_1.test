@@ -1,9 +1,9 @@
 %description:
-Tests the following properties of cMessage:
+Tests the following properties of cPacket:
 message kind, priority, length, bit error, timestamp, context pointer
 
 %activity:
-cMessage msg("msg");
+cPacket msg("msg");
 int dummy;
 
 msg.setKind(10);

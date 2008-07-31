@@ -50,7 +50,7 @@ Define_Module(Node1);
 
 void Node1::activity()
 {
-    cMessage *msg;
+    cPacket *pkt;
     cGate *g = gate("out");
 
     PRINTGATESTATE();
@@ -59,26 +59,26 @@ void Node1::activity()
 
     PRINTGATESTATE();
 
-    msg = new cMessage("msg1");
-    msg->setBitLength(500);
-    send(msg, g);
+    pkt = new cPacket("pkt1");
+    pkt->setBitLength(500);
+    send(pkt, g);
 
     PRINTGATESTATE();
 
     wait(1.0);
     PRINTGATESTATE();
 
-    msg = new cMessage("msg2");
-    msg->setBitLength(300);
-    send(msg, g);
+    pkt = new cPacket("pkt2");
+    pkt->setBitLength(300);
+    send(pkt, g);
 
     PRINTGATESTATE();
     wait(0.004);
     PRINTGATESTATE();
 
-    msg = new cMessage("msg3");
-    msg->setBitLength(200);
-    send(msg, g);
+    pkt = new cPacket("pkt3");
+    pkt->setBitLength(200);
+    send(pkt, g);
 
     wait(0.002);
     PRINTGATESTATE();
@@ -119,11 +119,11 @@ cmdenv-event-banners = false
 t=0: busy:0, finishes:0
 t=1: busy:0, finishes:0
 t=1: busy:1, finishes:1.005
-t=1.105: msg1 arrived
+t=1.105: pkt1 arrived
 t=2: busy:0, finishes:1.005
 t=2: busy:1, finishes:2.003
 t=2.004: busy:0, finishes:2.003
 t=2.006: busy:0, finishes:2.006
-t=2.103: msg2 arrived
-t=2.106: msg3 arrived
+t=2.103: pkt2 arrived
+t=2.106: pkt3 arrived
 t=3.006: busy:0, finishes:2.006

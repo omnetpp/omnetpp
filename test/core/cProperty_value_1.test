@@ -4,7 +4,7 @@ Tests cProperty keys and values
 %global:
 #include <string.h>
 #define PRINTINFO     ev << prop->info() << "\n";
-#define PRINTKEY(k)   ev << "key(" << k << "): has=" << (prop->hasKey(k)?"yes":"no") << " len=" << (prop->hasKey(k) ? prop->getNumValues(k) : -1) << "\n";
+#define PRINTKEY(k)   ev << "key(" << k << "): has=" << (prop->containsKey(k)?"yes":"no") << " len=" << (prop->containsKey(k) ? prop->getNumValues(k) : -1) << "\n";
 
 %activity:
 //__asm int 3;
