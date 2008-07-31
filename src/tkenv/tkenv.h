@@ -115,7 +115,7 @@ class TKENV_API Tkenv : public EnvirBase
       eventnumber_t rununtil_event;// event number in current "Run Until" execution, or zero
       cModule *rununtil_module;    // stop before and after events in this module; ignored with EXPRESS mode
 
-      bool stopsimulation_flag;    // flag to signal that simulation must be stopped (STOP button pressed in the UI)
+      bool stopsimulation_flag;    // indicates that the simulation should be stopped (STOP button pressed in the UI)
 
       typedef std::list<TInspector*> TInspectorList;
       TInspectorList inspectors;   // list of inspector objects

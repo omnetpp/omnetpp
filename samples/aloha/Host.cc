@@ -84,7 +84,7 @@ void Host::handleMessage(cMessage *msg)
     }
     else if (state==TRANSMIT)
     {
-        // endTxEvent signals end of transmission
+        // endTxEvent indicates end of transmission
         state = IDLE;
 
         // schedule next sending

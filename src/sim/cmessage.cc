@@ -577,8 +577,8 @@ void cPacket::encapsulate(cPacket *msg)
     {
         if (msg->getOwner()!=simulation.getContextSimpleModule())
             throw cRuntimeError(this,"encapsulate(): not owner of message (%s)%s, owner is (%s)%s",
-                                    msg->getClassName(), msg->getFullName(),
-                                    msg->getOwner()->getClassName(), msg->getOwner()->getFullPath().c_str());
+                                msg->getClassName(), msg->getFullName(),
+                                msg->getOwner()->getClassName(), msg->getOwner()->getFullPath().c_str());
         take(encapmsg = msg);
 #ifdef REFCOUNTING
         ASSERT(encapmsg->sharecount==0);
@@ -594,7 +594,7 @@ cPacket *cPacket::decapsulate()
     if (len>0)
         len -= encapmsg->len;
     if (len<0)
-        throw cRuntimeError(this,"decapsulate(): msg length is smaller than encapsulated msg length");
+        throw cRuntimeError(this,"decapsulate(): packet length is smaller than encapsulated packet");
 
 #ifdef REFCOUNTING
     if (encapmsg->sharecount>0)
@@ -602,7 +602,7 @@ cPacket *cPacket::decapsulate()
         encapmsg->sharecount--;
         if (encapmsg->ownerp == this)
             encapmsg->ownerp = NULL;
-        cPacket *msg = (cPacket *)encapmsg->dup();
+        cPacket *msg = encapmsg->dup();
         encapmsg = NULL;
         return msg;
     }

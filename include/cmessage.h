@@ -692,14 +692,14 @@ class SIM_API cPacket : public cMessage
         FL_ISRECEPTIONSTART = 2,
         FL_BITERROR = 4,
     };
-    int64 len;            // length of the message -- used for bit error and transmissing delay modeling
+    int64 len;            // length of the packet -- used for bit error and transmissing delay modeling
     simtime_t duration;   // transmission duration on last channel with datarate
     cPacket *encapmsg;    // ptr to the encapsulated message
-    unsigned char sharecount;  // num of msgs MINUS ONE that have this message encapsulated.
+    unsigned char sharecount;  // num of messages MINUS ONE that have this message encapsulated.
                                // 0: not shared (not encapsulated or encapsulated in one message);
                                // 1: shared once (shared among two messages);
                                // 2: shared twice (shared among three messages); etc.
-                               // max sharecount is 255 (after that, a new msg is created).
+                               // max sharecount is 255 (after that, a new packet is created).
 
   public:
     // internal: sets the message duration; called by channel objects and sendDirect
@@ -716,7 +716,7 @@ class SIM_API cPacket : public cMessage
     // or itself if there's no encapsulated message
     long getEncapsulationTreeId() const;
 
-    // internal: if encapmsg is shared (sharecount>0), creates a private copy for this msg,
+    // internal: if encapmsg is shared (sharecount>0), creates a private copy for this packet,
     // and in any case it sets encapmsg's owner to be this object. This method
     // has to be called before any operation on encapmsg, to prevent trouble
     // that may arise from accessing shared message instances. E.g. without calling
@@ -734,7 +734,7 @@ class SIM_API cPacket : public cMessage
     /**
      * Copy constructor.
      */
-    cPacket(const cPacket& msg);
+    cPacket(const cPacket& packet);
 
     /**
      * Constructor.
@@ -750,7 +750,7 @@ class SIM_API cPacket : public cMessage
      * Assignment operator. Duplication and the assignment operator work all right with cMessage.
      * The name member doesn't get copied; see cNamedObject's operator=() for more details.
      */
-    cPacket& operator=(const cPacket& msg);
+    cPacket& operator=(const cPacket& packet);
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -803,33 +803,33 @@ class SIM_API cPacket : public cMessage
     /** @name Length and bit error flag */
     //@{
     /**
-     * Sets message length (in bits). When the message is sent through a
-     * channel, message length affects transmission delay and the probability
-     * of setting the bit error flag.
+     * Sets packet length (in bits). When the packet is sent through a
+     * channel, packet length affects the transmission duration and the
+     * probability of setting the bit error flag.
      */
     void setBitLength(int64 l);
 
     /**
-     * Sets message length (bytes). This is just a convenience function which
+     * Sets packet length (bytes). This is just a convenience function which
      * invokes setBitLength() with 8*l as argument. The caller must take care
      * that the result does not overflow (i.e. fits into an int64).
      */
     void setByteLength(int64 l)  {setBitLength(l<<3);}
 
     /**
-     * Changes message length by the given value (bits). This is useful for
+     * Changes packet length by the given value (bits). This is useful for
      * modeling encapsulation/decapsulation. (See also encapsulate() and
      * decapsulate().) The caller must take care that the result does not
      * overflow (i.e. fits into an int64).
      *
-     * The value may be negative (message length may be decreased too).
+     * The value may be negative (packet length may be decreased too).
      * If the resulting length would be negative, the method throws a
      * cRuntimeError.
      */
     void addBitLength(int64 delta);
 
     /**
-     * Changes message length by the given value (bytes). This is just a
+     * Changes packet length by the given value (bytes). This is just a
      * convenience function which invokes addBitLength() with 8*l as argument.
      * The caller must take care that the result does not overflow (i.e.
      * fits into an int64).
@@ -837,12 +837,12 @@ class SIM_API cPacket : public cMessage
     void addByteLength(int64 delta)  {addBitLength(delta<<3);}
 
     /**
-     * Returns the message length (in bits).
+     * Returns the packet length (in bits).
      */
     int64 getBitLength() const  {return len;}
 
     /**
-     * Returns the message length in bytes, that is, bitlength/8. If bitlength
+     * Returns the packet length in bytes, that is, bitlength/8. If bitlength
      * is not a multiple of 8, the result is rounded up.
      */
     int64 getByteLength() const  {return (len+7)>>3;}
@@ -862,51 +862,55 @@ class SIM_API cPacket : public cMessage
     //@{
 
     /**
-     * Encapsulates msg in the message. msg->getBitLength() is increased by the
-     * length of the encapsulated message.
+     * Encapsulates packet in the packet. The packet length gets increased
+     * by the length of the encapsulated packet.
      *
      * IMPORTANT NOTE: IT IS FORBIDDEN TO KEEP A POINTER TO A MESSAGE
      * AFTER IT WAS ENCAPSULATED. For performance reasons, encapsulated
-     * messages are reference counted, meaning that the encapsulated
-     * message is not duplicated when you duplicate a message, but rather,
-     * both (all) copies share the same message instance. Any change done
-     * to the encapsulated message would affect other messages as well.
+     * packets are reference counted, meaning that the encapsulated
+     * packet is not duplicated when you duplicate a packet, but rather,
+     * both (all) copies share the same packet instance. Any change done
+     * to the encapsulated packet would affect other packets as well.
      * Decapsulation (and even calling getEncapsulatedMsg()) will create an
-     * own (non-shared) copy of the message.
+     * own (non-shared) copy of the packet.
      */
-    void encapsulate(cPacket *msg);
+    void encapsulate(cPacket *packet);
 
     /**
-     * Decapsulates a message from the message object. The length of
-     * the message will be decreased accordingly, except if it was zero.
-     * If the length would become negative, cRuntimeError is thrown.
+     * Decapsulates a packet from the packet object. The length of
+     * this packet will be decreased by the length of the encapsulated
+     * packet, except if it was zero. If the length would become
+     * negative, cRuntimeError is thrown.
      */
     cPacket *decapsulate();
 
     /**
-     * Returns a pointer to the encapsulated message, or NULL.
+     * Returns a pointer to the encapsulated packet, or NULL if there
+     * is no encapsulated packet.
      *
      * IMPORTANT: see notes at encapsulate() about reference counting
-     * of encapsulated messages.
+     * of encapsulated packets.
      */
-    cPacket *getEncapsulatedMsg() const;    // FIXME getEncapsulatedPacket()?
+    cPacket *getEncapsulatedMsg() const;    // XXX rename to getEncapsulatedPacket()?
     //@}
 
     /** @name Transmission state */
     //@{
     /**
-     * XXX Transmission duration on the last channel with datarate...
+     * Returns the transmission duration after the packet was sent through
+     * a channel with data rate.
      *
-     * @see isReceptionStart(), getArrivalTime()
+     * @see isReceptionStart(), getArrivalTime(), cDatarateChannel
      */
     simtime_t getDuration() const {return duration;}
 
     /**
-     * Tells whether this message represents the start or the end of the
-     * reception, provided the message has nonzero length and it travelled
-     * through a channel with nonzero data rate.
+     * Tells whether this packet represents the start or the end of the
+     * reception, provided the packet has nonzero length and it travelled
+     * through a channel with nonzero data rate. This can be configured
+     * on the receiving gate (see cGate::setDeliverOnReceptionStart()).
      *
-     * @see getArrivalTime(), getDuration()
+     * @see getArrivalTime(), getDuration(), cDatarateChannel
      */
     bool isReceptionStart() const {return flags & FL_ISRECEPTIONSTART;}
     //@}

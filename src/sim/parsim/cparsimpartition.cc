@@ -141,7 +141,7 @@ void cParsimPartition::connectRemoteGates()
             char *gateName;
             int gateIndex;
 
-            // unpack a gate -- modId==-1 signals end of packet
+            // unpack a gate -- modId==-1 indicates end of packet
             buffer->unpack(remoteModId);
             if (remoteModId==-1)
                 break;
