@@ -33,25 +33,24 @@ void Delay::initialize()
 
 void Delay::handleMessage(cMessage *msg)
 {
-    Job *job = check_and_cast<Job *>(msg);
+    Job *job = check_and_cast<Job *>(job);
 
-    if (!msg->isSelfMessage())
+    if (!job->isSelfMessage())
     {
-        job->setTimestamp();
+        // if it is not a self-message, send it to ourselves with a delay
         currentlyStored++;
-        // if it is not a selfmessage, send it to ourselves with a delay
         double delay = par("delay");
-        scheduleAt( simTime() + delay, msg );
+        scheduleAt(simTime() + delay, job);
     }
     else
     {
         job->setDelayCount(job->getDelayCount()+1);
-        simtime_t d = simTime() - job->getTimestamp();
+        simtime_t d = simTime() - job->getSendingTime();
         job->setTotalDelayTime(job->getTotalDelayTime() + d);
 
         // if it was a self message (ie. we have already delayed) so we send it out
         currentlyStored--;
-        send(msg, "out");
+        send(job, "out");
     }
 
     sizeStats.record(currentlyStored);

@@ -61,7 +61,7 @@ void Server::handleMessage(cMessage *msg)
     if (msg==endServiceMsg)
     {
         ASSERT(jobServiced!=NULL);
-        simtime_t d = simTime() - jobServiced->getTimestamp();
+        simtime_t d = simTime() - endServiceMsg->getSendingTime();
         jobServiced->setTotalServiceTime(jobServiced->getTotalServiceTime() + d);
         send(jobServiced, "out");
         jobServiced = NULL;
@@ -83,7 +83,6 @@ void Server::handleMessage(cMessage *msg)
             error("job arrived while already servicing one");
 
         jobServiced = check_and_cast<Job *>(msg);
-        jobServiced->setTimestamp();
 
         simtime_t serviceTime = par("serviceTime");
         scheduleAt(simTime()+serviceTime, endServiceMsg);
