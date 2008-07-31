@@ -129,8 +129,8 @@ class COMMON_API BigDecimal
     bool operator<=(const BigDecimal& x) const  {CHK(*this, x); return *this == x || *this < x;}
     bool operator>=(const BigDecimal& x) const  {CHK(*this, x); return *this == x || *this > x;}
 
-    friend const BigDecimal operator+(const BigDecimal& x, const BigDecimal& y);
-    friend const BigDecimal operator-(const BigDecimal& x, const BigDecimal& y);
+    COMMON_API friend const BigDecimal operator+(const BigDecimal& x, const BigDecimal& y);
+    COMMON_API friend const BigDecimal operator-(const BigDecimal& x, const BigDecimal& y);
 
     friend const BigDecimal operator*(const BigDecimal& x, double d);
     friend const BigDecimal operator*(double d, const BigDecimal& x);
@@ -206,7 +206,7 @@ class COMMON_API BigDecimal
     //@}
 };
 
-static bool haveSameSign(int64 a, int64 b) { return (a^b) >= 0; }
+inline bool haveSameSign(int64 a, int64 b) { return (a^b) >= 0; }
 
 inline const BigDecimal operator*(const BigDecimal& x, double d)
 {
