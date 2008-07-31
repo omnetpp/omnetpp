@@ -1,5 +1,5 @@
 %description:
-Tests copying of cMessage by op=, dup(), copy ctor().
+Tests copying of cPacket by op=, dup(), copy ctor().
 
 TODO: check copying of param array too
 
@@ -10,31 +10,35 @@ TODO: check copying of param array too
 
 #define CHECK(cond)  if (!(cond)) {throw cRuntimeError("BUG at line %d, failed condition %s", __LINE__, #cond);}
 
-cMessage *msg = new cMessage("msg");
+cPacket *msg = new cPacket("msg");
 int dummy;
 
 msg->setKind(10);
 msg->setPriority(3);
+msg->setBitLength(456);
+msg->setBitError(true);
 msg->setTimestamp(2.434);
 msg->setContextPointer(&dummy);
 
-cMessage *copies[3];
-copies[0] = new cMessage(*msg);
+cPacket *copies[3];
+copies[0] = new cPacket(*msg);
 
 copies[1] = msg->dup();
 
-copies[2] = new cMessage();
+copies[2] = new cPacket();
 copies[2]->setName(msg->getName()); // op= doesn't copy name string
 *copies[2] = *msg;
 
 for (int i=0; i<3; i++)
 {
     ev << i << endl;
-    cMessage *cc = copies[i];
+    cPacket *cc = copies[i];
 
     CHECK(!strcmp(cc->getName(), msg->getName()));
     CHECK(cc->getKind()==msg->getKind());
     CHECK(cc->getPriority()==msg->getPriority());
+    CHECK(cc->getBitLength()==msg->getBitLength());
+    CHECK(cc->hasBitError()==msg->hasBitError());
     CHECK(cc->getTimestamp()==msg->getTimestamp());
     CHECK(cc->getContextPointer()==msg->getContextPointer());
 
