@@ -728,6 +728,9 @@ class SIM_API cPacket : public cMessage
     // internal: delete encapmsg, paying attention to its sharecount (assumes encapmsg!=NULL)
     void _deleteEncapMsg();
 
+    // internal: only to be used by test cases
+    int getShareCount() const {return sharecount;}
+
   public:
     /** @name Constructors, destructor, assignment */
     //@{
