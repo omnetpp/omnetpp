@@ -72,6 +72,7 @@ import org.omnetpp.ned.model.ex.MessageElementEx;
 import org.omnetpp.ned.model.ex.ModuleInterfaceElementEx;
 import org.omnetpp.ned.model.ex.MsgFileElementEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
+import org.omnetpp.ned.model.ex.PacketElementEx;
 import org.omnetpp.ned.model.ex.ParamElementEx;
 import org.omnetpp.ned.model.ex.PropertyElementEx;
 import org.omnetpp.ned.model.ex.SimpleModuleElementEx;
@@ -713,6 +714,7 @@ public class DocumentationGenerator {
             withGeneratingTypeIndexHTMLFile("all modules", IModuleTypeElement.class);
             generateNetworkIndex();
             withGeneratingTypeIndexHTMLFile("messages", MessageElementEx.class);
+            withGeneratingTypeIndexHTMLFile("packets", PacketElementEx.class);
             withGeneratingTypeIndexHTMLFile("classes", ClassElementEx.class);
             withGeneratingTypeIndexHTMLFile("structs", StructElementEx.class);
             withGeneratingTypeIndexHTMLFile("enums", EnumElementEx.class);
@@ -741,6 +743,8 @@ public class DocumentationGenerator {
         generateNavigationBarLink("networks", where);
         out(" - ");
         generateNavigationBarLink("messages", where);
+        out(" - ");
+        generateNavigationBarLink("packets", where);
         out(" - ");
         generateNavigationBarLink("classes", where);
         out(" - ");
@@ -1433,7 +1437,7 @@ public class DocumentationGenerator {
                 withGeneratingHTMLFile("full-msg-usage-diagram.html", new Runnable() {
                     public void run() throws Exception {
                         out("<h2 class=\"comptitle\">Full MSG Usage Diagram</h2>\r\n" +
-                            "<p>The following diagram shows usage relationships between messages, classes and structs.\r\n" +
+                            "<p>The following diagram shows usage relationships between messages, packets, classes and structs.\r\n" +
                             "Unresolved types are missing from the diagram.</p>\r\n");
                         generateUsageDiagram(msgTypeElements, "full-msg-usage-diagram.png", "full-msg-usage-diagram.map");
                     }
@@ -1445,7 +1449,7 @@ public class DocumentationGenerator {
                 withGeneratingHTMLFile("full-msg-inheritance-diagram.html", new Runnable() {
                     public void run() throws Exception {
                         out("<h2 class=\"comptitle\">Full MSG Inheritance Diagram</h2>\r\n" +
-                            "<p>The following diagram shows the inheritance hierarchy between messages, classes and structs.\r\n" +
+                            "<p>The following diagram shows the inheritance hierarchy between messages, packets, classes and structs.\r\n" +
                             "Unresolved types are missing from the diagram.</p>\r\n");
                         generateInheritanceDiagram(msgTypeElements, "full-msg-inheritance-diagram.png", "full-msg-inheritance-diagram.map");
                     }
@@ -1901,6 +1905,8 @@ public class DocumentationGenerator {
                 else if (typeElement instanceof ChannelInterfaceElementEx)
                     color = highlight ? "#90ff90" : "#d0ffd0";
                 else if (typeElement instanceof MessageElementEx)
+                    color = highlight ? "#fff700" : "#fffcaf";
+                else if (typeElement instanceof PacketElementEx)
                     color = highlight ? "#fff700" : "#fffcaf";
                 else if (typeElement instanceof ClassElementEx)
                     color = highlight ? "#fff700" : "#fffcaf";

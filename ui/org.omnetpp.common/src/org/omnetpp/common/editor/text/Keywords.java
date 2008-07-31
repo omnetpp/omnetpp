@@ -41,7 +41,7 @@ public class Keywords {
 	
 	public final static String[] MSG_TYPE_KEYWORDS = {"abstract", "readonly", "bool", "char", "short", "int", "long", "double", "unsigned", "string"};
 
-	public final static String[] MSG_KEYWORDS = {"cplusplus", "struct", "message", "class", "noncobject", "enum", "extends"};
+	public final static String[] MSG_KEYWORDS = {"cplusplus", "struct", "message", "packet", "class", "noncobject", "enum", "extends"};
 
 	public final static String[] MSG_SECTION_KEYWORDS = {  "properties", "fields"};
 

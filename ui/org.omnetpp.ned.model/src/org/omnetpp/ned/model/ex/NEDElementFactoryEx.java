@@ -39,6 +39,8 @@ public class NEDElementFactoryEx extends NEDElementFactory {
             return new MsgFileElementEx(parent);
         if (tagname.equals(MessageElementEx.getStaticTagName()))
             return new MessageElementEx(parent);
+        if (tagname.equals(PacketElementEx.getStaticTagName()))
+            return new PacketElementEx(parent);
         if (tagname.equals(ClassElementEx.getStaticTagName()))
             return new ClassElementEx(parent);
         if (tagname.equals(StructElementEx.getStaticTagName()))
@@ -78,6 +80,8 @@ public class NEDElementFactoryEx extends NEDElementFactory {
             return new MsgFileElementEx(parent);
         if (tagcode==NED_MESSAGE)
             return new MessageElementEx(parent);
+        if (tagcode==NED_PACKET)
+            return new PacketElementEx(parent);
         if (tagcode==NED_CLASS)
             return new ClassElementEx(parent);
         if (tagcode==NED_STRUCT)
