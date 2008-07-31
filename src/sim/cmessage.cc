@@ -361,16 +361,19 @@ void cMessage::setArrivalTime(simtime_t t)
 
 //----
 
-cPacket::cPacket(const cPacket& msg) : cMessage(msg)
+cPacket::cPacket(const cPacket& pkt) : cMessage(pkt)
 {
     encapmsg = NULL;
+    sharecount = 0;
+    operator=(pkt);
 }
 
-cPacket::cPacket(const char *name, short k, int64 len) : cMessage(name, k)
+cPacket::cPacket(const char *name, short k, int64 l) : cMessage(name, k)
 {
-    len = 0;
+    len = l;
     encapmsg = NULL;
     duration = 0;
+    sharecount = 0;
 }
 
 cPacket::~cPacket()

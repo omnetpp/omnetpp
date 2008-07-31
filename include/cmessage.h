@@ -695,11 +695,11 @@ class SIM_API cPacket : public cMessage
     int64 len;            // length of the packet -- used for bit error and transmissing delay modeling
     simtime_t duration;   // transmission duration on last channel with datarate
     cPacket *encapmsg;    // ptr to the encapsulated message
-    unsigned char sharecount;  // num of messages MINUS ONE that have this message encapsulated.
+    unsigned short sharecount; // num of messages MINUS ONE that have this message encapsulated.
                                // 0: not shared (not encapsulated or encapsulated in one message);
                                // 1: shared once (shared among two messages);
                                // 2: shared twice (shared among three messages); etc.
-                               // max sharecount is 255 (after that, a new packet is created).
+                               // on reaching max sharecount a new packet gets created
 
   public:
     // internal: sets the message duration; called by channel objects and sendDirect
