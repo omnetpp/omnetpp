@@ -203,8 +203,9 @@
 **
 -->
 
-<!ELEMENT msg-file (comment*, (namespace|property-decl|property|cplusplus|struct-decl|class-decl|message-decl|enum-decl|
-                     enum|message|class|struct)*)>
+<!ELEMENT msg-file (comment*, (namespace|property-decl|property|cplusplus|
+                    struct-decl|class-decl|message-decl|packet-decl|enum-decl|
+                    struct|class|message|packet|enum)*)>
 
 <!ATTLIST msg-file
      filename            CDATA     #IMPLIED
@@ -233,6 +234,10 @@
 <!ATTLIST message-decl
      name                NMTOKEN   #REQUIRED>
 
+<!ELEMENT packet-decl (comment*)>
+<!ATTLIST packet-decl
+     name                NMTOKEN   #REQUIRED>
+
 <!ELEMENT enum-decl (comment*)>
 <!ATTLIST enum-decl
      name                NMTOKEN   #REQUIRED>
@@ -256,6 +261,12 @@
 
 <!ELEMENT message (comment*, (property|field)*)>
 <!ATTLIST message
+     name                NMTOKEN   #REQUIRED
+     extends-name        NMTOKEN   #IMPLIED
+     source-code         CDATA     #IMPLIED>
+
+<!ELEMENT packet (comment*, (property|field)*)>
+<!ATTLIST packet
      name                NMTOKEN   #REQUIRED
      extends-name        NMTOKEN   #IMPLIED
      source-code         CDATA     #IMPLIED>
