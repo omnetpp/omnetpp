@@ -19,6 +19,7 @@ import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.SWTGraphics;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.gmf.runtime.draw2d.ui.render.awt.internal.svg.export.GraphicsSVG;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.util.SafeRunnable;
@@ -52,6 +53,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.ScrollBar;
+import org.omnetpp.common.IConstants;
 import org.omnetpp.common.canvas.CachingCanvas;
 import org.omnetpp.common.canvas.LargeRect;
 import org.omnetpp.common.canvas.RubberbandSupport;
@@ -164,7 +166,7 @@ public class SequenceChart
 	private static final int EVENT_SELECTION_RADIUS = 10; // radius of event selection mark circle
 	private static final int TICK_SPACING = 100; // space between ticks in pixels
 	private static final int AXIS_OFFSET = 20;  // extra y distance before and after first and last axes
-	private static final int GUTTER_HEIGHT = 17; // height of top and bottom gutter
+	public static final int GUTTER_HEIGHT = 17; // height of top and bottom gutter
 
 	private static Font font = JFaceResources.getDefaultFont();
 
@@ -1924,14 +1926,13 @@ public class SequenceChart
     }
 
 	protected Point getTextExtent(Graphics graphics, String string) {
-// TODO factor out to the optional org.omnetpp.imageexport plugin		
-//		if (graphics instanceof GraphicsSVG) {
-//			java.awt.Graphics g = ((GraphicsSVG)graphics).getSVGGraphics2D();
-//			java.awt.geom.Rectangle2D r = g.getFontMetrics().getStringBounds(string, g);
-//
-//			return new Point((int)Math.ceil(r.getWidth()), (int)Math.ceil(r.getHeight()));
-//		}
-//		else {
+		if (IConstants.IS_COMMERCIAL && graphics instanceof GraphicsSVG) {
+			java.awt.Graphics g = ((GraphicsSVG)graphics).getSVGGraphics2D();
+			java.awt.geom.Rectangle2D r = g.getFontMetrics().getStringBounds(string, g);
+
+			return new Point((int)Math.ceil(r.getWidth()), (int)Math.ceil(r.getHeight()));
+		}
+		else {
 			try {
 				SWTGraphics g = (SWTGraphics) graphics;
 				Class<SWTGraphics> cls = SWTGraphics.class;
@@ -1945,7 +1946,7 @@ public class SequenceChart
 			catch (Exception e) {
 				throw new RuntimeException(e);
 			}
-//		}
+		}
 	}
 
 	protected void drawCancelMessage(Graphics graphics) {
