@@ -71,37 +71,38 @@ enum eMessageKind
 
 /**
  * The message class in \opp. cMessage objects may represent events,
- * messages, packets (frames, cells, etc) or other entities in a simulation.
+ * messages, jobs or other entities in a simulation. To represent network
+ * packets, use the cPacket subclass.
  *
- * Messages may be: scheduled (to arrive back at the same module at a later
+ * Messages may be scheduled (to arrive back at the same module at a later
  * time), cancelled, sent out on a gate, or sent directly to another module;
  * all via methods of cSimpleModule.
  *
- * cMessage can be assigned a name (a property inherited from cOwnedObject);
- * other attributes include message kind, length, priority,
- * error flag and time stamp. Arrival time and gate is also stored.
- * cMessage supports encapsulation, and messages may be cloned with the
- * dup() function. The control info field facilitates modelling communication
- * between protocol layers. The context pointer field makes it easier to
- * work with several timers (self-messages) at a time.
+ * cMessage can be assigned a name (a property inherited from cNamedObject);
+ * other attributes include message kind, priority, and time stamp.
+ * Messages may be cloned with the dup() function. The control info field
+ * facilitates modelling communication between protocol layers. The context
+ * pointer field makes it easier to work with several timers (self-messages)
+ * at a time. A message also stores information about its last sending,
+ * including sending time, arrival time, arrival module and gate.
+ *
  * Useful methods are isSelfMessage(), which tells apart self-messages from
  * messages received from other modules, and isScheduled(), which returns
  * whether a self-message is currently scheduled.
  *
- * Further fields can be added to cMessage via message declarations (.msg files)
+ * Further fields can be added to cMessage via message declaration files (.msg)
  * which are translated into C++ classes. An example message declaration:
  *
  * \code
- * message NetwPkt
+ * message Job
  * {
  *    fields:
- *        int destAddr = -1; // destination address
- *        int srcAddr = -1;  // source address
- *        int ttl =  32;     // time to live
+ *        string label;
+ *        int color = -1;
  * }
  * \endcode
  *
- * @see cSimpleModule, cQueue
+ * @see cSimpleModule, cQueue, cPacket
  *
  * @ingroup SimCore
  */
@@ -656,8 +657,33 @@ class SIM_API cMessage : public cOwnedObject
     //@}
 };
 
+
 /**
- * XXX
+ * A subclass of cMessage that can be used to represent packets (frames,
+ * datagrams, application messages, etc). cPacket adds length (measured in
+ * bits or bytes), bit error flag, and encapsulation capability to cMessage.
+ * Length and bit error flag are significant when the packet travels through
+ * a cDatarateChannel or another channel that supports data rate and/or
+ * error modelling.
+ *
+ * cPacket is rarely used "as is". Typically the user wants to subclass it
+ * to create specific packet types for various protocols being modelled.
+ * The most convenient way to do that are via message declaration files
+ * (.msg), which are translated into C++ classes.
+ * An example message declaration:
+ *
+ * \code
+ * packet Datagram
+ * {
+ *     int destAddr = -1; // destination address
+ *     int srcAddr = -1;  // source address
+ *     int ttl =  32;     // time to live
+ * }
+ * \endcode
+ *
+ * @see cSimpleModule, cDatarateChannel, cPacketQueue
+ *
+ * @ingroup SimCore
  */
 class SIM_API cPacket : public cMessage
 {
@@ -666,9 +692,9 @@ class SIM_API cPacket : public cMessage
         FL_ISRECEPTIONSTART = 2,
         FL_BITERROR = 4,
     };
-    int64 len;            // length of message -- used for bit error and transmissing delay modeling
+    int64 len;            // length of the message -- used for bit error and transmissing delay modeling
     simtime_t duration;   // transmission duration on last channel with datarate
-    cPacket *encapmsg;    // ptr to encapsulated msg
+    cPacket *encapmsg;    // ptr to the encapsulated message
     unsigned char sharecount;  // num of msgs MINUS ONE that have this message encapsulated.
                                // 0: not shared (not encapsulated or encapsulated in one message);
                                // 1: shared once (shared among two messages);
