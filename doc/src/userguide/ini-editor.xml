@@ -19,14 +19,17 @@
       <para>
       The syntax and features of ini files have changed since OMNeT++ 3.x as well.
       These changes are summarized in the document titled "Configuring Simulations in
-      OMNeT++ 4.0." TBD
+      OMNeT++ 4.0." TBD <!-- olink? -->
       </para>
     </note>
     <para>
-      The Inifile Editor is a dual-mode editor: the configuration can be edited using
+      The INI file Editor is a dual-mode editor: the configuration can be edited using
       forms and dialogs, or as plain text. Forms are organized around topics like general
-      setup, Cmdenv, Tkenv, output files, extensions and so on. Connected with the NED
-      editor… TBD
+      setup, Cmdenv, Tkenv, output files, extensions and so on. The text editor provides
+      syntax highlighting and content assist. Several views can display information
+      useful when editing the INI file. For example you can see the errors in the current
+      INI file or all the available module parameters in one view. You can easily
+      navigate from the module parameters to their declaration in the NED file.
     </para>
   </sect1>
 
@@ -78,8 +81,8 @@
         On the Parameters page of the form editor you can set module parameters. First you have to
         select the section the parameters stored into. After selecting the section from the list,
         the form shows the name of the edited network and the fallback section.
-        The table below the list box shows current settings of the section and all its ancestor
-        sections. You can move setting by dragging them. If you click in the table cell you can
+        The table below the list box shows current settings of the section and all other sections
+        it inherits from. You can move the parameters by dragging them. If you click in the table cell you can
         edit the parameter name (or pattern), its value and the comment attached to it.
         <keycombo><keycap>Ctrl</keycap><keycap>Space</keycap></keycombo> brings up a content assist.
         If you hover over a table row, the parameter is described in the appearing tooltip.
@@ -87,7 +90,9 @@
       <picture file="pictures/INI-FormEditor3.png">Editing module parameters</picture>
       <para>
         New parameters can be added one by one by pressing the <guibutton>New</guibutton> button and
-        filling the new table row. If you press the <guibutton>Add...</guibutton> button, you
+        filling the new table row. The selected parameters can be removed with the
+        <guibutton>Remove</guibutton> button.
+        If you press the <guibutton>Add...</guibutton> button, you
         can add the missing parameters at once. 
       </para>
       <para>
@@ -108,7 +113,7 @@
     <sect2>
       <title>Editing in text mode</title>
       <para>
-        TODO
+        
       </para>
       <picture file="pictures/INI-TextEditor.png">Editing the INI file in text mode</picture>
       <sect3>
@@ -184,8 +189,21 @@
         The Module Hierarchy View shows the contained submodules, several levels deep.
         It also display the module parameters, and where its value comes from (ini file,
         ned file or unassigned).
-        <!-- TODO: legend -->
       </para>
+      <table>
+        <title>Legend of icons before module parameters</title>
+        <tgroup cols="2">
+          <colspec colwidth='0.25in'/>
+          <colspec colwidth='2*'/>
+          <tbody>
+            <row><entry><icon name="par_unassigned.png"/></entry><entry>has no value (unassigned)</entry></row>
+            <row><entry><icon name="par_ini.png"/></entry><entry>set in the INI file</entry></row>
+            <row><entry><icon name="par_ned.png"/></entry><entry>set in the NED file</entry></row>
+            <row><entry><icon name="par_neddefault.png"/></entry><entry>NED default applied (apply-default=true)</entry></row>
+            <row><entry><icon name="par_inineddefault.png"/></entry><entry>set in the INI file to the same value as NED default</entry></row>
+          </tbody>
+        </tgroup>
+      </table>
     </sect2>
     <sect2>
       <title>NED Inheritance View</title>
