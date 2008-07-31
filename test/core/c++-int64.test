@@ -1,12 +1,13 @@
 %description:
-Test the int64 data type and its printf format. The trend is
-long long and %lld, but not all compilers support it yet.
+Test the int64 data type and its printf format. The trend is long long 
+and %lld (on 32-bit archs), but not all compilers support it yet.
 
                 64-bit integer type    printf format
-Linux gcc 4.1        long long             %"LL"d
-MinGW (gcc3.4.5)     long long            %I64d (!!!)
-Visual C++ 7.1        __int64              %I64d
-Visual C++ 8.0+         both                both
+Linux gcc 4.1/32     long long              %lld
+Linux gcc 4.1/64       long (!)             %ld (!)
+MinGW (gcc3.4.5)     long long              %I64d (!)
+Visual C++ 7.1        __int64               %I64d
+Visual C++ 8.0+   long long, __int64      %lld, %I64d
 
 %activity:
 #define LL  INT64_PRINTF_FORMAT
