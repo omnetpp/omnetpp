@@ -18,6 +18,5 @@ Require-Bundle: org.eclipse.ui,
  org.omnetpp.ned.editor,
  org.omnetpp.msg.editor,
  org.omnetpp.ide.nativelibs,
- de.unikassel.imageexport,
- org.omnetpp.imageexport
+ de.unikassel.imageexport
 Eclipse-LazyStart: true

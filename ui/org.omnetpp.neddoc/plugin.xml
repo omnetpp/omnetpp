@@ -12,15 +12,6 @@
       </command>
    </extension>
    <extension
-         point="org.eclipse.ui.bindings">
-      <key
-            commandId="org.omnetpp.neddoc.commands.neddocCommand"
-            contextId="org.eclipse.ui.contexts.actionSet"
-            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
-            sequence="M1+D">
-      </key>
-   </extension>
-   <extension
          point="org.eclipse.ui.menus">
       <menuContribution
             locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">

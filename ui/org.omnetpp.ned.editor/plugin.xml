@@ -175,4 +175,5 @@
             parentId="org.eclipse.ui.textEditorScope">
       </context>
    </extension>
+
 </plugin>

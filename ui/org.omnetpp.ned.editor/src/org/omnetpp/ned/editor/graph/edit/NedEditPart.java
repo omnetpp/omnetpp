@@ -12,8 +12,6 @@ import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.eclipse.gef.tools.DirectEditManager;
 import org.eclipse.jface.viewers.ICellEditorValidator;
 import org.eclipse.jface.viewers.TextCellEditor;
-
-import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.figures.NedFigure;
 import org.omnetpp.figures.TooltipFigure;
 import org.omnetpp.figures.misc.IDirectEditSupport;
@@ -164,4 +162,11 @@ extends AbstractGraphicalEditPart implements IReadOnlySupport, IModelProvider
 	 * Returns the type name that must be opened if the user double clicks the module
 	 */
 	protected abstract INEDElement getNEDElementToOpen();
+
+	
+	@Override
+	public Object getAdapter(Class key) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

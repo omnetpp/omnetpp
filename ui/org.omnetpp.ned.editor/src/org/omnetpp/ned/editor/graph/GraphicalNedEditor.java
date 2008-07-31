@@ -65,6 +65,7 @@ import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.MultiPageEditorSite;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
+import org.omnetpp.common.IConstants;
 import org.omnetpp.common.editor.ShowViewAction;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverTextProvider;
@@ -79,6 +80,7 @@ import org.omnetpp.ned.editor.graph.actions.ChooseIconAction;
 import org.omnetpp.ned.editor.graph.actions.ConvertToNewFormatAction;
 import org.omnetpp.ned.editor.graph.actions.CopyAction;
 import org.omnetpp.ned.editor.graph.actions.CutAction;
+import org.omnetpp.ned.editor.graph.actions.ExportImageAction;
 import org.omnetpp.ned.editor.graph.actions.GNEDContextMenuProvider;
 import org.omnetpp.ned.editor.graph.actions.GNEDSelectAllAction;
 import org.omnetpp.ned.editor.graph.actions.GNEDToggleSnapToGeometryAction;
@@ -419,10 +421,12 @@ public class GraphicalNedEditor
         registry.registerAction(action);
         getSelectionActions().add(action.getId());
 
-//        action = new ExportImageAction(this);
-//        registry.registerAction(action);
-//        getSelectionActions().add(action.getId());
-
+        if (IConstants.IS_COMMERCIAL) {
+        	action = new ExportImageAction(this);
+        	registry.registerAction(action);
+        	getSelectionActions().add(action.getId());
+        }
+        
         action = new ChooseIconAction(this);
         registry.registerAction(action);
         getSelectionActions().add(action.getId());

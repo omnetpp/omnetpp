@@ -2,4 +2,33 @@
 <?eclipse version="3.2"?>
 <plugin>
 
+   <extension
+         point="de.unikassel.imageexport.figureProviders">
+      <figureProvider
+            class="org.omnetpp.ned.editor.graph.misc.NedFigureProvider"
+            extensions="ned"
+            id="org.omnetpp.imageexport.nedFigureProvider"
+            name="NED Figure Provider">
+      </figureProvider>
+   </extension>
+   <extension
+         name="Image Export Wizards"
+         point="org.eclipse.ui.exportWizards">
+      <wizard
+            category="org.omnetpp.exportWizards"
+            class="de.unikassel.imageexport.wizards.ExportImagesOfDiagramFilesWizard"
+            id="org.omnetpp.ned.editor.wizard.ExportImagesOfDiagramFilesWizard"
+            name="Images from NED Files">
+         <description>Export compound module images from NED files.</description>
+         <selection class="org.eclipse.core.resources.IResource" name="*.ned"/>
+      </wizard>
+      <wizard
+            category="org.omnetpp.exportWizards"
+            class="de.unikassel.imageexport.wizards.ExportImageOfCurrentDiagramWizard"
+            id="org.omnetpp.ned.editor.wizard.ExportImageOfCurrentDiagramWizard"
+            name="Image of Selected Compound modules">
+         <description>Export selected compound module images.</description>
+         <selection class="org.omnetpp.ned.editor.graph.edit.CompoundModuleEditPart"/>
+      </wizard>
+   </extension>
 </plugin>
