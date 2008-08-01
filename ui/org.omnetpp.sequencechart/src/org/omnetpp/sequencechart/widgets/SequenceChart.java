@@ -1291,7 +1291,12 @@ public class SequenceChart
 			}
 		}
 
-		sequenceChartContributor.update();
+		// remove selected events that are not visible in the filter
+        for (long selectedEventNumber : new ArrayList<Long>(selectionEventNumbers))
+            if (eventLog.getEventForEventNumber(selectedEventNumber) == null)
+                selectionEventNumbers.remove(selectionEventNumbers);
+
+        sequenceChartContributor.update();
         clearAxisModules();
 	}
 
@@ -2582,6 +2587,7 @@ public class SequenceChart
 
 		// test if self-message
         if (y1 == y2) {
+            // FIXME: this filters out non self messages too, e.g. filtered and returns to same module
 		    if (!showSelfMessages)
 		        return false;
 
