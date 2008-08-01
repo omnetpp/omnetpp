@@ -266,6 +266,8 @@ public class EventLogInput extends FileEditorInput
             filteredEventLog.setMaximumConsequenceDepth(eventLogFilterParameters.maximumDepthOfMessageDependencies);
             filteredEventLog.setMaximumNumberOfCauses(eventLogFilterParameters.maximumNumberOfMessageDependencies);
             filteredEventLog.setMaximumNumberOfConsequences(eventLogFilterParameters.maximumNumberOfMessageDependencies);
+            filteredEventLog.setMaximumCauseCollectionTime(eventLogFilterParameters.maximumMessageDependencyCollectionTime);
+            filteredEventLog.setMaximumConsequenceCollectionTime(eventLogFilterParameters.maximumMessageDependencyCollectionTime);
 		}
 
 		// enable is handled in filter parameters

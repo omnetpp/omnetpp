@@ -109,7 +109,9 @@ public class EventLogFilterParameters implements Serializable {
 	
 	public int maximumDepthOfMessageDependencies = 15;
 	
-	public static class EnabledInt implements Serializable {
+    public int maximumMessageDependencyCollectionTime = 100;
+
+    public static class EnabledInt implements Serializable {
         private static final long serialVersionUID = 1L;
         
         public EnabledInt(boolean enabled, int value) {

@@ -153,9 +153,11 @@ public class FilterEventLogDialog
 
     private Button collectMessageReuses;
 
+    private Text maximumDepthOfMessageDependencies;
+
     private Text maximumNumberOfMessageDependencies;
 
-    private Text maximumDepthOfMessageDependencies;
+    private Text maximumMessageDependencyCollectionTime;
 
     private Text filterDescription;
 
@@ -696,18 +698,22 @@ public class FilterEventLogDialog
             @Override
             public void checkStateChanged(boolean checked) {
                 collectMessageReuses.setEnabled(checked);
-                maximumNumberOfMessageDependencies.setEnabled(checked);
                 maximumDepthOfMessageDependencies.setEnabled(checked);
+                maximumNumberOfMessageDependencies.setEnabled(checked);
+                maximumMessageDependencyCollectionTime.setEnabled(checked);
             }
         };
 
         collectMessageReuses = createCheckbox(panel, "Collect message reuse dependencies", "Message reuses will be followed when collecting dependencies between events far away on the consequence chain", 2);
 
-        Label label = createLabel(panel, "Maximum number of message dependencies:", "Collecting message dependencies will stop at this limit for each event", 1);
+        Label label = createLabel(panel, "Maximum depth of message dependencies:", "Collecting message dependencies will not look deeper into the cause/consequence chain than this limit (separately for each event)", 1);
+        maximumDepthOfMessageDependencies = createText(panel, label.getToolTipText(), 1);
+        
+        label = createLabel(panel, "Maximum number of message dependencies:", "Collecting message dependencies will stop at this limit for each event", 1);
         maximumNumberOfMessageDependencies = createText(panel, label.getToolTipText(), 1);
 
-        label = createLabel(panel, "Maximum depth of message dependencies:", "Collecting message dependencies will not look deeper into the cause/consequence chain than this limit", 1);
-        maximumDepthOfMessageDependencies = createText(panel, label.getToolTipText(), 1);
+        label = createLabel(panel, "Maximum message dependency collection time:", "Collecting message dependencies will stop after the specified amount of time (in milliseconds) for each event", 1);
+        maximumMessageDependencyCollectionTime = createText(panel, label.getToolTipText(), 1);
 
         return enableCollectionLimits;
 	}
