@@ -27,6 +27,7 @@ FilteredEventLog::FilteredEventLog(IEventLog *eventLog)
     collectMessageReuses = true;
     maximumNumberOfCauses = maximumNumberOfConsequences = 5;
     maximumCauseDepth = maximumConsequenceDepth = 15;
+    maximumCauseCollectionTime = maximumConsequenceCollectionTime = 100;
 
     // trace filter parameters
     tracedEventNumber = -1;

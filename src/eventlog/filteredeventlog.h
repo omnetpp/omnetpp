@@ -73,8 +73,10 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         bool collectMessageReuses; // if false message reuse dependencies will not be collected
         int maximumCauseDepth; // maximum depth of message dependencies considered when collecting causes
         int maximumNumberOfCauses; // maximum number of message dependencies collected for a single event
+        int maximumCauseCollectionTime; // in milliseconds
         int maximumConsequenceDepth; // maximum depth of message dependencies considered when collecting consequences
         int maximumNumberOfConsequences; // maximum number of message dependencies collected for a single event
+        int maximumConsequenceCollectionTime; // in milliseconds
 
         // internal state
         typedef std::map<eventnumber_t, FilteredEvent *> EventNumberToFilteredEventMap;
@@ -128,11 +130,15 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         void setMaximumCauseDepth(int maximumCauseDepth) { this->maximumCauseDepth = maximumCauseDepth; }
         int getMaximumNumberOfCauses() { return maximumNumberOfCauses; }
         void setMaximumNumberOfCauses(int maximumNumberOfCauses) { this->maximumNumberOfCauses = maximumNumberOfCauses; }
+        int getMaximumCauseCollectionTime() { return maximumCauseCollectionTime; }
+        void setMaximumCauseCollectionTime(int maximumCauseCollectionTime) { this->maximumCauseCollectionTime = maximumCauseCollectionTime; }
 
         int getMaximumConsequenceDepth() { return maximumConsequenceDepth; }
         void setMaximumConsequenceDepth(int maximumConsequenceDepth) { this->maximumConsequenceDepth = maximumConsequenceDepth; }
         int getMaximumNumberOfConsequences() { return maximumNumberOfConsequences; }
         void setMaximumNumberOfConsequences(int maximumNumberOfConsequences) { this->maximumNumberOfConsequences = maximumNumberOfConsequences; }
+        int getMaximumConsequenceCollectionTime() { return maximumConsequenceCollectionTime; }
+        void setMaximumConsequenceCollectionTime(int maximumConsequenceCollectionTime) { this->maximumConsequenceCollectionTime = maximumConsequenceCollectionTime; }
 
         bool matchesFilter(IEvent *event);
         bool matchesModuleCreatedEntry(ModuleCreatedEntry *moduleCreatedEntry);
