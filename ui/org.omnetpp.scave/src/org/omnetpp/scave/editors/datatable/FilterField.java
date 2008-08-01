@@ -12,6 +12,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.fieldassist.ContentAssistCommandAdapter;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
+import org.omnetpp.common.contentassist.ContentProposal;
 import org.omnetpp.scave.model2.FilterHints;
 
 public class FilterField {
@@ -42,7 +43,7 @@ public class FilterField {
 		commandAdapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_IGNORE);
 		commandAdapter.addContentProposalListener(new IContentProposalListener() {
 			public void proposalAccepted(IContentProposal proposal) {
-				FilterContentProposalProvider.ContentProposal filterProposal = (FilterContentProposalProvider.ContentProposal)proposal;
+				ContentProposal filterProposal = (ContentProposal)proposal;
 				contentAdapter.replaceControlContents(
 						getText(),
 						filterProposal.getStartIndex(),

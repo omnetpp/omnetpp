@@ -11,6 +11,8 @@ import java.util.Set;
 
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
+import org.eclipse.jface.fieldassist.ContentProposalAdapter;
+import org.eclipse.jface.fieldassist.TextContentAdapter;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
@@ -41,12 +43,15 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.fieldassist.ContentAssistCommandAdapter;
+import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.omnetpp.common.eventlog.EventLogFilterParameters.EnabledInt;
 import org.omnetpp.common.ui.AbstractEditableList;
 import org.omnetpp.common.ui.EditableCheckboxList;
 import org.omnetpp.common.ui.GenericTreeContentProvider;
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.eventlog.engine.BeginSendEntry;
 import org.omnetpp.eventlog.engine.IEventLog;
 import org.omnetpp.eventlog.engine.ModuleCreatedEntry;
 import org.omnetpp.eventlog.engine.ModuleCreatedEntryList;
@@ -765,8 +770,8 @@ public class FilterEventLogDialog
             }
         });
 
-		Label label = createLabel(panel, "Expression:", null, 1); //FIXME content assist!! tooltip!!!!
-		moduleFilterExpression = createText(panel, null, 1);
+		Label label = createLabel(panel, "Expression:", null, 1);
+		moduleFilterExpression = createTextWithProposals(panel, "A Match Expression for the Raw data present in the eventlog lines (MC) where modules are created", 1, ModuleCreatedEntry.class);
 
 		// module class name filter
         IEventLog eventLog = eventLogInput.getEventLog();
@@ -862,8 +867,8 @@ public class FilterEventLogDialog
             }
         });
 
-        Label label = createLabel(panel, "Expression:", null, 1);  //FIXME tooltip!!!
-		messageFilterExpression = createText(panel, null, 1);
+        Label label = createLabel(panel, "Expression:", null, 1);
+		messageFilterExpression = createTextWithProposals(panel, "A Match Expression for the Raw data present in the eventlog lines (BS) where messages are sent", 1, BeginSendEntry.class);
 
 		// message class name filter
         IEventLog eventLog = eventLogInput.getEventLog();
@@ -1087,6 +1092,14 @@ public class FilterEventLogDialog
 	    return text;
 	}
 	
+    protected Text createTextWithProposals(Composite parent, String tooltip, int hspan, Class<?> clazz) {
+        Text text = createText(parent, tooltip, hspan);
+        ContentAssistCommandAdapter commandAdapter = new ContentAssistCommandAdapter(text, new TextContentAdapter(), new EventLogEntryProposalProvider(clazz),
+            ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS, "( ".toCharArray(), true);
+        commandAdapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_REPLACE);
+        return text;
+    }
+    
     protected void updateFilterDescription() {
         if (filterDescription != null) {
             EventLogFilterParameters filterParameters = new EventLogFilterParameters(eventLogInput);

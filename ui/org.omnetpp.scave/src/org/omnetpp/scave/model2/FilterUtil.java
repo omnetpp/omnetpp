@@ -15,16 +15,17 @@ import java.util.Set;
 
 import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.engine.Common;
+import org.omnetpp.common.util.MatchExpressionSyntax;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.common.util.MatchExpressionSyntax.INodeVisitor;
+import org.omnetpp.common.util.MatchExpressionSyntax.Node;
+import org.omnetpp.common.util.MatchExpressionSyntax.Token;
+import org.omnetpp.common.util.MatchExpressionSyntax.TokenType;
 import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.Run;
 import org.omnetpp.scave.engine.RunAttribute;
-import org.omnetpp.scave.model2.FilterSyntax.INodeVisitor;
-import org.omnetpp.scave.model2.FilterSyntax.Node;
-import org.omnetpp.scave.model2.FilterSyntax.Token;
-import org.omnetpp.scave.model2.FilterSyntax.TokenType;
 
 /**
  * Parsing and assembling filter patterns. Filter patterns containing OR, NOT or
@@ -167,7 +168,7 @@ public class FilterUtil {
 	public static boolean isANDPattern(String pattern) {
 		if (!isValidPattern(pattern))
 			return false; // a bogus pattern is not an "AND" pattern
-		Node node = FilterSyntax.parseFilter(pattern);
+		Node node = MatchExpressionSyntax.parseFilter(pattern);
 		FilterNodeVisitor visitor = new FilterNodeVisitor();
 		node.accept(visitor);
 		return visitor.isANDPattern;
@@ -176,7 +177,7 @@ public class FilterUtil {
 	private void parseFields(String pattern) {
 		// Note: here we allow non-AND patterns which cannot be represented, but 
 		// at least the fields can be extracted.
-		Node node = FilterSyntax.parseFilter(pattern);
+		Node node = MatchExpressionSyntax.parseFilter(pattern);
 		FilterNodeVisitor visitor = new FilterNodeVisitor();
 		node.accept(visitor);
 		for (Map.Entry<String,String> entry : visitor.fields.entrySet()) {

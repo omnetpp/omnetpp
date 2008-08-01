@@ -518,7 +518,7 @@ public class EventLogInput extends FileEditorInput
 			eventLogProgress();
 
 			if (eventLogProgressManager.isCanceled())
-				throw new LongRunningOperationCanceled("A long running operation from the progress monitor was cancelled by the user");
+				throw new LongRunningOperationCanceled("A long running operation was cancelled by the user from the progress monitor");
 		}
 	}
 	

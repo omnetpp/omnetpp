@@ -801,6 +801,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
     private void removeFilter() {
         final EventLogInput eventLogInput = sequenceChart.getInput();
         final boolean wasCanceled = eventLogInput.isCanceled();
+        eventLogInput.resetCanceled();
 
         eventLogInput.runWithProgressMonitor(new Runnable() {
             public void run() {
