@@ -168,6 +168,8 @@ double SequenceChartFacade::getTimelineCoordinate(IEvent *event, double lowerTim
                     // TODO: LONG RUNNING OPERATION
                     // does a linear search towards the event to calculate the non linear timeline coordinate
                     do {
+                        eventLog->progress();
+
                         Assert(currentEvent);
                         previousEvent = currentEvent;
                         currentEvent = forward ? currentEvent->getNextEvent() : currentEvent->getPreviousEvent();
@@ -251,7 +253,10 @@ IEvent *SequenceChartFacade::getEventForNonLinearTimelineCoordinate(double timel
     // does a linear search towards requested non linear timeline coordinate
     while (currentEvent && (forward ? getTimelineCoordinate(currentEvent) < timelineCoordinate :
                                       timelineCoordinate <= getTimelineCoordinate(currentEvent)))
+    {
+        eventLog->progress();
         currentEvent = forward ? currentEvent->getNextEvent() : currentEvent->getPreviousEvent();
+    }
 
     return currentEvent;
 }
@@ -499,6 +504,7 @@ std::vector<ptr_t> *SequenceChartFacade::getIntersectingMessageDependencies(ptr_
     // this might take a while if start and end events are far away from each other
     // if not, then some dependencies will not be included
     for (IEvent *event = startEvent;; event = event->getNextEvent()) {
+        eventLog->progress();
         IMessageDependencyList *causes = event->getCauses();
 
         for (IMessageDependencyList::iterator it = causes->begin(); it != causes->end(); it++) {

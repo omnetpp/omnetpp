@@ -389,7 +389,6 @@ IMessageDependencyList *Event::getConsequences()
 
 Event *Event::getReuserEvent(int &beginSendEntryNumber)
 {
-    eventLog->progress();
     Event *current = this;
 
     // TODO: LONG RUNNING OPERATION
@@ -398,6 +397,8 @@ Event *Event::getReuserEvent(int &beginSendEntryNumber)
     // TODO: the limit on this loop should be configurable
     int maxLookAhead = 1000;
     while (current && maxLookAhead--) {
+        eventLog->progress();
+
         for (beginSendEntryNumber = 0; beginSendEntryNumber < (int)current->eventLogEntries.size(); beginSendEntryNumber++)
         {
             EventLogEntry *eventLogEntry = current->eventLogEntries[beginSendEntryNumber];

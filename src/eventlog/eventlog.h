@@ -79,7 +79,7 @@ class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
 
         virtual ProgressMonitor setProgressMonitor(ProgressMonitor newProgressMonitor);
         virtual void setProgressCallInterval(double seconds) { progressCallInterval = (long)(seconds * CLOCKS_PER_SEC); lastProgressCall = clock(); }
-        void progress(); // notify monitor
+        virtual void progress();
 
         void parseInitializationLogEntries();
 

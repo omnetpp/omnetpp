@@ -109,6 +109,8 @@ FilteredEvent *FilteredEvent::getCauseEvent()
         // this might read all events backward if none of the causes matches the filter
         while (causeEvent)
         {
+            filteredEventLog->progress();
+
             if (causeEvent->getEventNumber() < filteredEventLog->getFirstEventNumber())
                 return NULL;
 
@@ -145,6 +147,8 @@ IMessageDependency *FilteredEvent::getCause()
             // this might read all events backward if none of the causes matches the filter
             while (causeEvent && (messageDependency = causeEvent->getCause()))
             {
+                filteredEventLog->progress();
+
                 if (causeEvent->getEventNumber() < filteredEventLog->getFirstEventNumber())
                     return NULL;
 
@@ -181,6 +185,7 @@ IMessageDependencyList *FilteredEvent::getCauses()
         // TODO: LONG RUNNING OPERATION
         // this is recursive and might take some time
         while (!todoList.empty()) {
+            filteredEventLog->progress();
             BreadthSearchItem searchItem = todoList.front();
             todoList.pop_front();
 
@@ -235,6 +240,7 @@ IMessageDependencyList *FilteredEvent::getConsequences()
         // TODO: LONG RUNNING OPERATION
         // this is recursive and might take some time
         while (!todoList.empty()) {
+            filteredEventLog->progress();
             BreadthSearchItem searchItem = todoList.front();
             todoList.pop_front();
 

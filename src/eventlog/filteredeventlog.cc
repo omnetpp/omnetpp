@@ -511,6 +511,7 @@ FilteredEvent *FilteredEventLog::getMatchingEventInDirection(IEvent *event, bool
     // if none of firstEventNumber, lastEventNumber, stopEventNumber is set this might take a while
     while (event)
     {
+        eventLog->progress();
         int eventNumber = event->getEventNumber();
 
         if (matchesFilter(event))
@@ -546,6 +547,7 @@ FilteredEvent *FilteredEventLog::getMatchingEventInDirection(IEvent *event, bool
 // this does a recursive depth search
 bool FilteredEventLog::isCauseOfTracedEvent(IEvent *cause)
 {
+    eventLog->progress();
     EventNumberToBooleanMap::iterator it = eventNumberToTraceableEventFlagMap.find(cause->getEventNumber());
 
     // check cache
@@ -588,6 +590,8 @@ bool FilteredEventLog::isCauseOfTracedEvent(IEvent *cause)
 // this does a recursive depth search
 bool FilteredEventLog::isConsequenceOfTracedEvent(IEvent *consequence)
 {
+    eventLog->progress();
+    
     if (!traceSelfMessages && consequence->isSelfMessageProcessingEvent())
         return false;
 

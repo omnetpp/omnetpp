@@ -73,6 +73,10 @@ class EVENTLOG_API IEventLog
          * Set the minimum interval between progress callbacks for long running event log operations.
          */
         virtual void setProgressCallInterval(double seconds) = 0;
+        /**
+         * Progress notification. May be used to cancel long running operations.
+         */
+        virtual void progress() = 0;
 
         /**
          * Synchorizes state when the underlying log file has been changed.

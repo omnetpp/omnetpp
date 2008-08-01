@@ -150,6 +150,8 @@ eventnumber_t MessageDependency::getConsequenceEventNumber()
             // TODO: LONG RUNNING OPERATION
             while (event)
             {
+                eventLog->progress();
+
                 if (event->getCauseEventNumber() == getCauseEventNumber() &&
                     event->getMessageId() == getCauseMessageId())
                 {
