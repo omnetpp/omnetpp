@@ -40,6 +40,8 @@ class EVENTLOG_API IMessageDependency
 
         static bool corresponds(IMessageDependency *dependency1, IMessageDependency *dependency2);
         bool getIsReuse() { return isReuse; }
+        virtual bool isSelfMessageReuse() = 0;
+        virtual bool isStoredMessageReuse() = 0;
 
         virtual IMessageDependency *duplicate(IEventLog *eventLog) = 0;
 
@@ -88,6 +90,9 @@ class EVENTLOG_API MessageDependency : public IMessageDependency
         MessageDependency(IEventLog *eventLog, bool isReuse, eventnumber_t eventNumber, int beginSendEntryNumber);
         virtual ~MessageDependency() {}
 
+        virtual bool isSelfMessageReuse();
+        virtual bool isStoredMessageReuse();
+
         virtual MessageDependency *duplicate(IEventLog *eventLog);
 
         virtual eventnumber_t getCauseEventNumber();
@@ -128,6 +133,10 @@ class EVENTLOG_API FilteredMessageDependency : public IMessageDependency
     public:
         FilteredMessageDependency(IEventLog *eventLog, bool isReuse, IMessageDependency *beginMessageDependency, IMessageDependency *endMessageDependency);
         ~FilteredMessageDependency();
+
+        virtual bool isSelfMessageReuse() { return false; }
+        virtual bool isStoredMessageReuse() { return false; }
+
         virtual FilteredMessageDependency *duplicate(IEventLog *eventLog);
 
         IMessageDependency *getBeginMessageDependency() { return beginMessageDependency; }

@@ -208,6 +208,37 @@ simtime_t MessageDependency::getConsequenceSimulationTime()
     }
 }
 
+bool MessageDependency::isSelfMessageReuse()
+{
+    if (!isReuse)
+        return false;
+    else {
+        IEvent *causeEvent = getCauseEvent();
+        IEvent *consequenceEvent = getConsequenceEvent();
+        BeginSendEntry *beginSendEntry = getConsequenceBeginSendEntry();
+
+        return causeEvent && consequenceEvent && beginSendEntry &&
+            causeEvent->getModuleId() == consequenceEvent->getModuleId() &&
+            consequenceEvent->isSelfMessage(beginSendEntry);
+    }
+
+}
+
+bool MessageDependency::isStoredMessageReuse()
+{
+    if (!isReuse)
+        return false;
+    else {
+        IEvent *causeEvent = getCauseEvent();
+        IEvent *consequenceEvent = getConsequenceEvent();
+        BeginSendEntry *beginSendEntry = getConsequenceBeginSendEntry();
+
+        return causeEvent && consequenceEvent && beginSendEntry &&
+            causeEvent->getModuleId() == consequenceEvent->getModuleId() &&
+            !consequenceEvent->isSelfMessage(beginSendEntry);
+    }
+}
+
 bool MessageDependency::equals(IMessageDependency *other)
 {
     MessageDependency *otherMessageDependency = dynamic_cast<MessageDependency *>(other);

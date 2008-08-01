@@ -210,10 +210,22 @@ const char *EventLogFacade::IMessageDependency_getMessageName(ptr_t ptr)
     return ((IMessageDependency*)ptr)->getBeginSendEntry()->messageFullName;
 }
 
-bool EventLogFacade::IMessageDependency_getIsReuse(ptr_t ptr)
+bool EventLogFacade::IMessageDependency_isReuse(ptr_t ptr)
 {
     IMESSAGE_DEPENDENCY_PTR(ptr);
     return ((IMessageDependency*)ptr)->getIsReuse();
+}
+
+bool EventLogFacade::IMessageDependency_isSelfMessageReuse(ptr_t ptr)
+{
+    MESSAGE_DEPENDENCY_PTR(ptr);
+    return ((MessageDependency*)ptr)->isSelfMessageReuse();
+}
+
+bool EventLogFacade::IMessageDependency_isStoredMessageReuse(ptr_t ptr)
+{
+    MESSAGE_DEPENDENCY_PTR(ptr);
+    return ((MessageDependency*)ptr)->isStoredMessageReuse();
 }
 
 bool EventLogFacade::IMessageDependency_isFilteredMessageDependency(ptr_t ptr)

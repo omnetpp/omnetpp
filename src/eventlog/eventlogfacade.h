@@ -80,7 +80,9 @@ class EVENTLOG_API EventLogFacade
 
         IMessageDependency *IMessageDependency_getMessageDependency(ptr_t ptr);
         const char *IMessageDependency_getMessageName(ptr_t ptr);
-        bool IMessageDependency_getIsReuse(ptr_t ptr);
+        bool IMessageDependency_isReuse(ptr_t ptr);
+        bool IMessageDependency_isSelfMessageReuse(ptr_t ptr);
+        bool IMessageDependency_isStoredMessageReuse(ptr_t ptr);
         bool IMessageDependency_isFilteredMessageDependency(ptr_t ptr);
         ptr_t IMessageDependency_getCauseEvent(ptr_t ptr);
         ptr_t IMessageDependency_getConsequenceEvent(ptr_t ptr);
