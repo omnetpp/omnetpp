@@ -190,7 +190,8 @@ public class SequenceChart
 	private boolean showArrowHeads = true; // show or hide arrow heads
 	private boolean showMessageNames = true; // show or hide message names
     private boolean showSelfMessages = true; // show or hide self message arrows
-	private boolean showReuseMessages = false; // show or hide reuse message arrows
+    private boolean showSelfMessageReuses = false; // show or hide self message reuse arrows
+	private boolean showOtherMessageReuses = true; // show or hide reuse message arrows
 	private boolean showEventNumbers = true;
     private boolean showZeroSimulationTimeRegions = true;
     private boolean showAxisLabels = true;
@@ -478,17 +479,32 @@ public class SequenceChart
 	/**
 	 * Returns whether reuse messages are shown on the chart.
 	 */
-	public boolean getShowReuseMessages() {
-		return showReuseMessages;
+	public boolean getShowOtherMessageReuses() {
+		return showOtherMessageReuses;
 	}
 
 	/**
 	 * Shows/Hides reuse messages.
 	 */
-	public void setShowReuseMessages(boolean showReuseMessages) {
-		this.showReuseMessages = showReuseMessages;
+	public void setShowOtherMessageReuses(boolean showOtherMessageReuses) {
+		this.showOtherMessageReuses = showOtherMessageReuses;
 		clearCanvasCacheAndRedraw();
 	}
+
+    /**
+     * Returns whether reuse messages are shown on the chart.
+     */
+    public boolean getShowSelfMessageReuses() {
+        return showSelfMessageReuses;
+    }
+
+    /**
+     * Shows/Hides reuse messages.
+     */
+    public void setShowSelfMessageReuses(boolean showSelfMessageReuses) {
+        this.showSelfMessageReuses = showSelfMessageReuses;
+        clearCanvasCacheAndRedraw();
+    }
 
 	/**
 	 * Returns whether event numbers are shown on the chart.
@@ -2049,9 +2065,9 @@ public class SequenceChart
 			if (debug && !eventLog.isEmpty())
 				System.out.println("Redrawing events from: " + sequenceChartFacade.IEvent_getEventNumber(startEventPtr) + " to: " + sequenceChartFacade.IEvent_getEventNumber(endEventPtr));
 
-			if (showZeroSimulationTimeRegions)
+            if (showZeroSimulationTimeRegions)
 			    drawZeroSimulationTimeRegions(graphics, startEventPtr, endEventPtr);
-
+			
 			drawAxes(graphics, startEventPtr, endEventPtr);
 	        drawMessageDependencies(graphics);
 	        drawEvents(graphics, startEventPtr, endEventPtr);
@@ -2233,7 +2249,7 @@ public class SequenceChart
 		graphics.fillOval(x - 2, y - 3, 6, 8);
 		graphics.setLineStyle(SWT.LINE_SOLID);
 		graphics.drawOval(x - 2, y - 3, 5, 7);
-
+		
 		if (showEventNumbers) {
 			graphics.setFont(font);
 			drawText(graphics, "#" + sequenceChartFacade.IEvent_getEventNumber(eventPtr), x + 3, y + 3 + getAxisRenderers()[axisModuleIndex].getHeight() / 2);
@@ -2495,8 +2511,11 @@ public class SequenceChart
 		long causeEventPtr = sequenceChartFacade.IMessageDependency_getCauseEvent(messageDependencyPtr);
 		long consequenceEventPtr = sequenceChartFacade.IMessageDependency_getConsequenceEvent(messageDependencyPtr);
 
-		if (sequenceChartFacade.IMessageDependency_getIsReuse(messageDependencyPtr) && !showReuseMessages)
+		if (sequenceChartFacade.IMessageDependency_isReuse(messageDependencyPtr) && !showOtherMessageReuses)
 			return false;
+		
+		if (sequenceChartFacade.IMessageDependency_isSelfMessageReuse(messageDependencyPtr) && !showSelfMessageReuses)
+		    return false;
 
 		// events may be omitted from the log
 		if (causeEventPtr == 0 || consequenceEventPtr == 0)
@@ -2575,7 +2594,7 @@ public class SequenceChart
 
 		// line color and style depends on message kind
 		if (graphics != null) {
-			if (sequenceChartFacade.IMessageDependency_getIsReuse(messageDependencyPtr)) {
+			if (sequenceChartFacade.IMessageDependency_isReuse(messageDependencyPtr)) {
 				graphics.setForegroundColor(MESSAGE_REUSE_COLOR);
 				graphics.setLineDash(DOTTED_LINE_PATTERN); // SWT.LINE_DOT style is not what we want
 			}

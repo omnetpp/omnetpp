@@ -148,8 +148,10 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 	protected SequenceChartAction showMessageNamesAction;
 
     protected SequenceChartAction showSelfMessagesAction;
+
+    protected SequenceChartAction showSelfMessageReusesAction;
 	
-	protected SequenceChartAction showReuseMessagesAction;
+	protected SequenceChartAction showOtherMessageReusesAction;
 
 	protected SequenceChartAction showArrowHeadsAction;
 
@@ -201,7 +203,8 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 		this.showEventNumbersAction = createShowEventNumbersAction();
 		this.showMessageNamesAction = createShowMessageNamesAction();
         this.showSelfMessagesAction = createShowSelfMessagesAction();
-		this.showReuseMessagesAction = createShowReuseMessagesAction();
+		this.showOtherMessageReusesAction = createShowOtherMessageReusesAction();
+		this.showSelfMessageReusesAction = createShowSelfMessageReusesAction();
 		this.showArrowHeadsAction = createShowArrowHeadsAction();
         this.showZeroSimulationTimeRegionsAction = createShowZeroSimulationTimeRegionsAction();
         this.showAxisLabelsAction = createShowAxisLabelsAction();
@@ -326,7 +329,8 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                 subMenuManager.add(showEventNumbersAction);
                 subMenuManager.add(showMessageNamesAction);
                 subMenuManager.add(showSelfMessagesAction);
-                subMenuManager.add(showReuseMessagesAction);
+                subMenuManager.add(showOtherMessageReusesAction);
+                subMenuManager.add(showSelfMessageReusesAction);
                 subMenuManager.add(showArrowHeadsAction);
                 subMenuManager.add(showZeroSimulationTimeRegionsAction);
                 subMenuManager.add(showAxisLabelsAction);
@@ -372,7 +376,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
         toolBarManager.add(separatorAction);
 		toolBarManager.add(showEventNumbersAction);
 		toolBarManager.add(showMessageNamesAction);
-        toolBarManager.add(showReuseMessagesAction);
+        toolBarManager.add(showOtherMessageReusesAction);
 		toolBarManager.add(separatorAction);
 		toolBarManager.add(increaseSpacingAction);
 		toolBarManager.add(decreaseSpacingAction);
@@ -909,17 +913,32 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 		};
 	}
 	
-    private SequenceChartAction createShowReuseMessagesAction() {
-        return new SequenceChartAction("Show Reuse Messages", Action.AS_CHECK_BOX, SequenceChartPlugin.getImageDescriptor(IMAGE_SHOW_REUSE_MESSAGES)) {
+    private SequenceChartAction createShowOtherMessageReusesAction() {
+        return new SequenceChartAction("Show Other Message Reuses", Action.AS_CHECK_BOX, SequenceChartPlugin.getImageDescriptor(IMAGE_SHOW_REUSE_MESSAGES)) {
             @Override
             public void run() {
-                sequenceChart.setShowReuseMessages(!sequenceChart.getShowReuseMessages());
+                sequenceChart.setShowOtherMessageReuses(!sequenceChart.getShowOtherMessageReuses());
                 update();
             }
             
             @Override
             public void update() {
-                setChecked(sequenceChart.getShowReuseMessages());
+                setChecked(sequenceChart.getShowOtherMessageReuses());
+            }
+        };
+    }
+    
+    private SequenceChartAction createShowSelfMessageReusesAction() {
+        return new SequenceChartAction("Show Self Message Reuses", Action.AS_CHECK_BOX, SequenceChartPlugin.getImageDescriptor(IMAGE_SHOW_REUSE_MESSAGES)) {
+            @Override
+            public void run() {
+                sequenceChart.setShowSelfMessageReuses(!sequenceChart.getShowSelfMessageReuses());
+                update();
+            }
+            
+            @Override
+            public void update() {
+                setChecked(sequenceChart.getShowSelfMessageReuses());
             }
         };
     }
