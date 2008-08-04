@@ -3034,12 +3034,12 @@ is implemented as \fname{new cArray(*this)}).
 % void cMessage::encapsulate(cMessage *msg)
 % {
 %     if (encapmsg)
-%        throw new cRuntimeException(this,"encapsulate(): another message already encapsulated");
+%        throw cRuntimeException(this,"encapsulate(): another message already encapsulated");
 %
 %    if (msg)
 %    {
 %        if (msg->getOwner()!=&(simulation.getContextSimpleModule()->locals))
-%            throw new cRuntimeException(this,"encapsulate(): not owner of message");
+%            throw cRuntimeException(this,"encapsulate(): not owner of message");
 %        take( encapmsg = msg );
 %        len += encapmsg->len;
 %    }

@@ -568,10 +568,9 @@ a \ttt{mypacket.msg} file with the following contents:
 \begin{Verbatim}[commandchars=\\\{\}]
 \tbf{message} MyPacket
 \{
-    \tbf{fields}:
-       \tbf{int} srcAddress;
-       \tbf{int} destAddress;
-       \tbf{int} hops = 32;
+     \tbf{int} srcAddress;
+     \tbf{int} destAddress;
+     \tbf{int} hops = 32;
 \};
 \end{Verbatim}
 
@@ -704,10 +703,9 @@ You can describe messages with the following syntax:
 \begin{Verbatim}[commandchars=\\\{\}]
 \tbf{message} FooPacket
 \{
-    \tbf{fields}:
-        \tbf{int} sourceAddress;
-        \tbf{int} destAddress;
-        \tbf{bool} hasPayload;
+    \tbf{int} sourceAddress;
+    \tbf{int} destAddress;
+    \tbf{bool} hasPayload;
 \};
 \end{Verbatim}
 
@@ -768,10 +766,9 @@ You can initialize field values with the following syntax:
 \begin{Verbatim}[commandchars=\\\{\}]
 \tbf{message} FooPacket
 \{
-   \tbf{fields}:
-        \tbf{int} sourceAddress = 0;
-        \tbf{int} destAddress = 0;
-        \tbf{bool} hasPayload = false;
+    \tbf{int} sourceAddress = 0;
+    \tbf{int} destAddress = 0;
+    \tbf{bool} hasPayload = false;
 \};
 \end{Verbatim}
 
@@ -789,8 +786,7 @@ Example:
 \begin{Verbatim}[commandchars=\\\{\}]
 \tbf{message} FooPacket
 \{
-  \tbf{fields}:
-      \tbf{int} payloadType \tbf{enum}(PayloadTypes);
+    \tbf{int} payloadType \tbf{enum}(PayloadTypes);
 \};
 \end{Verbatim}
 
@@ -804,8 +800,7 @@ You can specify fixed size arrays:
 \begin{Verbatim}[commandchars=\\\{\}]
 \tbf{message} FooPacket
 \{
-    \tbf{fields}:
-        \tbf{long} route[4];
+    \tbf{long} route[4];
 \};
 \end{Verbatim}
 
@@ -829,8 +824,7 @@ to be a dynamic array:
 \begin{Verbatim}[commandchars=\\\{\}]
 \tbf{message} FooPacket
 \{
-   \tbf{fields}:
-       \tbf{long} route[];
+    \tbf{long} route[];
 \};
 \end{Verbatim}
 
@@ -859,8 +853,7 @@ You can declare string-valued fields with the following syntax:
 \begin{Verbatim}[commandchars=\\\{\}]
 \tbf{message} FooPacket
 \{
-   \tbf{fields}:
-       \tbf{string} hostName;
+    \tbf{string} hostName;
 \};
 \end{Verbatim}
 
@@ -880,8 +873,7 @@ which is treated as an array of any other type. For example,
 \begin{Verbatim}[commandchars=\\\{\}]
 \tbf{message} FooPacket
 \{
-   \tbf{fields}:
-       \tbf{char} chars[10];
+    \tbf{char} chars[10];
 \};
 \end{Verbatim}
 
@@ -922,8 +914,7 @@ explicitly specify the base class using the \fname{extends} keyword:
 \begin{Verbatim}[commandchars=\\\{\}]
 \tbf{message} FooPacket \tbf{extends} FooBase
 \{
-    \tbf{fields}:
-        ...
+    ...
 \};
 \end{Verbatim}
 
@@ -962,8 +953,7 @@ To create a class with those methods, you have to explicitly write
 \begin{Verbatim}[commandchars=\\\{\}]
 \tbf{class} MyClass \tbf{extends} cOwnedObject
 \{
-    \tbf{fields}:
-        ...
+    ...
 \};
 \end{Verbatim}
 
@@ -981,9 +971,8 @@ The syntax is similar to that of defining messages:
 \begin{Verbatim}[commandchars=\\\{\}]
 \tbf{struct} MyStruct
 \{
-    \tbf{fields}:
-        \tbf{char} array[10];
-        \tbf{short} version;
+    \tbf{char} array[10];
+    \tbf{short} version;
 \};
 \end{Verbatim}
 
@@ -1036,8 +1025,7 @@ you can write the following:
 \begin{Verbatim}[commandchars=\\\{\}]
 \tbf{message} FooPacket
 \{
-   \tbf{fields}:
-       IPAddress src;
+    IPAddress src;
 \};
 \end{Verbatim}
 
@@ -1323,9 +1311,8 @@ See the following message declaration:
 \begin{Verbatim}[commandchars=\\\{\}]
 \tbf{struct} Item
 \{
-    \tbf{fields}:
-        \tbf{int} a;
-        \tbf{double} b;
+    \tbf{int} a;
+    \tbf{double} b;
 \}
 
 \tbf{message} STLMessage
@@ -1375,8 +1362,8 @@ class STLMessage : public STLMessage_Base
     // bar methods
     virtual void setBarArraySize(unsigned int size) {}
     virtual unsigned int getBarArraySize() const {return bar.size();}
-    virtual Item& getBar(unsigned int k) {throw new cRuntimeException("sorry");}
-    virtual void setBar(unsigned int k, const Item& bar) {throw new cRuntimeException("sorry");}
+    virtual Item& getBar(unsigned int k) {throw cRuntimeException("sorry");}
+    virtual void setBar(unsigned int k, const Item& bar) {throw cRuntimeException("sorry");}
     virtual void barPush(const Item& abar) {bar.push(abar);}
     virtual void barPop() {bar.pop();}
     virtual Item& barTop() {return bar.top();}

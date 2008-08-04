@@ -257,18 +257,18 @@ scale exponent.
 
 Earlier versions of \opp used \ttt{double} for simulation time. To facilitate
 porting existing models to \opp 4.0 or later, \opp can be compiled to use
-\ttt{double} for \ttt{simtime_t}. To enable this mode, define the
-\ttt{USE_DOUBLE_SIMTIME} preprocessor macro during compiling \opp
+\ttt{double} for \ttt{simtime\_t}. To enable this mode, define the
+\ttt{USE\_DOUBLE\_SIMTIME} preprocessor macro during compiling \opp
 and the simulation models. There are also several macros that can be used
-in simulation models to make them compile with both \ttt{simtime_t}'s:
-\fmac{SIMTIME_STR()} which converts simulation time to a \ttt{const char *}
+in simulation models to make them compile with both \ttt{simtime\_t}'s:
+\fmac{SIMTIME\_STR()} which converts simulation time to a \ttt{const char *}
 (this macro can be used inside \ttt{printf}'s);
-\fmac{SIMTIME_DBL(t)} which converts simulation time to \ttt{double};
-\fmac{SIMTIME_RAW(t)} which returns the underlying \ttt{int64} or \ttt{double};
-\fmac{STR_SIMTIME(s)} which converts string to simulation time; and
-\fmac{SIMTIME_TTOA(buf,t)} which converts simulation time to string,
+\fmac{SIMTIME\_DBL(t)} which converts simulation time to \ttt{double};
+\fmac{SIMTIME\_RAW(t)} which returns the underlying \ttt{int64} or \ttt{double};
+\fmac{STR\_SIMTIME(s)} which converts string to simulation time; and
+\fmac{SIMTIME\_TTOA(buf,t)} which converts simulation time to string,
 and places the result into the given buffer. \fmac{MAXTIME} is
-also defined correctly for both \ttt{simtime_t} types.
+also defined correctly for both \ttt{simtime\_t} types.
 
 \begin{note}
    Why did \opp switch to \ttt{int64}-based simulation time?
@@ -2505,46 +2505,43 @@ One can assign the parameter a string which contains all values
 in a textual form (for example, \ttt{"0 1.234 3.95 5.467"}), then
 parse this string in the simple module.
 
-The \cclass{cStringTokenizer} class can be quite helpful for this
+The \cclass{cStringTokenizer} class can be quite useful for this
 purpose. The constructor accepts a string, which it regards as
 a sequence of tokens (words) separated by delimiter characters
-(by default, spaces). Then, calling the \fname{nextToken()} method
-several times will return the tokens one by one. After the
-last token, it returns \ttt{NULL}.
+(by default, spaces). Then you can either enumerate the tokens
+and process them one by one (\fname{hasMoreTokens()}, \fname{nextToken()}),
+or use one of the \cclass{cStringTokenizer} convenience methods to convert
+them into a vector of strings (\fname{asVector()}), integers (\fname{asIntVector()}),
+or \ttt{double}s (\fname{asDoubleVector()}).
 
-For example, you can parse a string containing a sequence of integers
-into a vector using the following code:
+The latter methods can be used like this:
 
 \begin{verbatim}
-const char *str = "34 42 13 46 72 41"; // input
-std::vector<int> numbers;  // array to hold the result
+const char *str = "aa bb cc";
+std::vector<std::string> v = cStringTokenizer().asVector();
 
-cStringTokenizer tokenizer(str);
-const char *token;
-while ((token = tokenizer.nextToken())!=NULL)
-    numbers.push_back(atoi(token));   // convert and store
+const char *str = "34 42 13 46 72 41";
+std::vector<int> v = cStringTokenizer().asIntVector();
+
+const char *str = "0.4311 0.7402 0.7134";
+std::vector<double> v = cStringTokenizer().asDoubleVector();
 \end{verbatim}
 
-The class also has a \fname{hasMoreTokens()} method, so the above
-code can also be written as
+The following example processes the string by enumerating the tokens:
 
 \begin{verbatim}
-...
+const char *str = "3.25 1.83 34 X 19.8"; // input
+
+std::vector<double> result;
 cStringTokenizer tokenizer(str);
 while (tokenizer.hasMoreTokens())
-    numbers.push_back(atoi(tokenizer.nextToken()));
-\end{verbatim}
-
-For converting \ttt{long}s and \ttt{double}s, replace \ttt{atoi()}
-with \ttt{atol()} and \ttt{atof()}, respectively.
-
-For storing the tokens in a string vector, the \cclass{cStringTokenizer}
-class has a convenience function named \fname{asVector()}, so conversion
-can be done in just one line of code:
-
-\begin{verbatim}
-const char *str = "34 42 13 46 72 41";
-std::vector<std::string> strVec = cStringTokenizer(str).asVector();
+{
+    const char *token = tokenizer.nextToken();
+    if (strcmp(token, "X")==0)
+        result.push_back(DEFAULT_VALUE);
+    else
+        result.push_back(atof(token));
+}
 \end{verbatim}
 
 
