@@ -149,7 +149,7 @@ cMessage *copy = new cMessage( *msg );
 
 
 The two are equivalent. The resulting message is an exact copy
-of the original, including message parameters (\cclass{cPar} or other
+of the original, including message parameters (\cclass{cMsgPar} or other
 object types) and encapsulated messages.
 
 
@@ -453,7 +453,7 @@ if (msg->hasObject("pklenDistr"))
 \end{verbatim}
 
 You should take care that names of the attached objects do not
-clash with each other or with \cclass{cPar} parameter names
+clash with each other or with \cclass{cMsgPar} parameter names
 (see next section).
 If you do not attach anything to the message and do not call the
 \fname{getParList()} function, the internal \cclass{cArray} object
@@ -462,8 +462,8 @@ This saves both storage and execution time.
 
 You can attach non-object types (or non-\cclass{cOwnedObject} objects) to
 the message\index{message!attaching non-object types} by using
-\cclass{cPar}'s \ttt{void*} pointer 'P') type (see later in the description
-of \cclass{cPar}). An example:
+\cclass{cMsgPar}'s \ttt{void*} pointer 'P') type (see later in the description
+of \cclass{cMsgPar}). An example:
 
 \begin{verbatim}
 struct conn_t *conn = new conn_t; // conn_t is a C struct
@@ -480,31 +480,44 @@ The preferred way of extending messages with new data fields is to use
 message definitions (see section \ref{ch:messages:message-definitions}).
 
 The old, deprecated way of adding new fields to messages is via
-attaching \cclass{cPar} objects.
+attaching \cclass{cMsgPar} objects.
 There are several downsides of this approach, the worst being
-large memory and execution time overhead. \fname{cPar}'s are
+large memory and execution time overhead. \fname{cMsgPar}'s are
 heavy-weight and fairly complex objects themselves.
-It has been reported that using \cclass{cPar} message parameters
+It has been reported that using \cclass{cMsgPar} message parameters
 might account for a large part of execution time, sometimes as much as 80\%.
-Using \cclass{cPar}s is also error-prone because \fname{cPar} objects
+Using \cclass{cMsgPar}s is also error-prone because \fname{cMsgPar} objects
 have to be added dynamically and individually to each message object.
 In contrast, subclassing benefits from static type checking:
 if you mistype the name of a field in the C++ code, already the compiler
 can detect the mistake.
 
+If you still need \cclass{cMsgPar}s for some reason, here's a short summary.
+At the sender side you can add a new named parameter to the message
+with the \fname{addPar()} member function, then set its value with
+one of the methods \fname{setBoolValue()}, \fname{setLongValue()},
+\fname{setStringValue()}, \fname{setDoubleValue()}, \fname{setPointerValue()},
+\fname{setObjectValue()}, and \fname{setXMLValue()}. There are also overloaded
+assignment operators for the corresponding C/C++ types.
 
-However, if you still need to use cPars, here's a short summary
-how you can do it. You add a new parameter to the message with the
-\fname{addPar()} member function, and get back a reference
-to the parameter object with the \fname{par()} member function.
-\fname{hasPar()} tells you if the message has a
-given parameter or not.
-Message parameters can be accessed also by index in the parameter
-array. The \fname{findPar()} function returns the index of a parameter
-or -1 if the parameter cannot be found. The parameter can then be
-accessed using an overloaded \fname{par()} function.
+At the receiver side, you can look up the parameter object on the message
+by name and obtain a reference to it with the \fname{par()} member function.
+\fname{hasPar()} can be used to check first whether the message object has a parameter
+object with the given name. Then the value can be read with the methods
+\fname{boolValue()}, \fname{longValue()}, \fname{stringValue()},
+\fname{doubleValue()}, \fname{pointerValue()}, \fname{objectValue()},
+\fname{xmlValue()}, or by using the provided overloaded type cast operators.
 
-Example:
+Example usage:
+
+\begin{verbatim}
+msg->addPar("destAddr");
+msg->par("destAddr").setLongValue(168);
+...
+long destAddr = msg->par("destAddr").longValue();
+\end{verbatim}
+
+Or, using overloaded operators:
 
 \begin{verbatim}
 msg->addPar("destAddr");
@@ -512,19 +525,6 @@ msg->par("destAddr") = 168;
 ...
 long destAddr = msg->par("destAddr");
 \end{verbatim}
-
-%%
-%% hide old examples...
-%%
-%%\ begin{verbatim}
-%%if  (msg->hasPar("destAddr")) {
-%%   long destAddr = msg->par("destAddr");
-%%   ...
-%%}
-%%int index = msg->findPar("destAddr");
-%%long destAddr = msg->par(index);
-%%\ end{verbatim}
-%%
 
 
 \section{Message definitions}
@@ -1573,8 +1573,10 @@ msg->power = 10.0;
 ...
 \end{verbatim}
 
-You'd notice one drawback of this solution when you try to use
-Tkenv for debugging. While \fname{cPar}-based message parameters can be viewed in
+%% FIXME remove this section?
+
+You'll notice one drawback of this solution when you try to use
+Tkenv for debugging. While \fname{cMsgPar}-based message parameters can be viewed in
 message inspector windows, fields added via subclassing do not appear
 there. The reason is that Tkenv, being just another C++ library in your
 simulation program, doesn't know about your C++ instance variables.
