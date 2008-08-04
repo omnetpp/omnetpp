@@ -206,7 +206,7 @@ output scalars are more useful.
 
 \subsection{Format of output scalar files}
 
-Scalar results are recorded with \fname{recordScalar()} calls,
+Scalar results are recorded with \fname{record()} calls,
 usually from the \ttt{finish()} methods of modules, with code like this:
 
 \begin{verbatim}
@@ -266,9 +266,9 @@ scalar "lan.hostA.mac" "simulated time"             235.678665
 [...]
 \end{verbatim}
 
-Every \fname{recordScalar()} call generates one "scalar" line in the file.
+Every \fname{record()} call generates one "scalar" line in the file.
 (If you record statistics objects (\cclass{cStatictic} subclasses
-such as \cclass{cStdDev}) via their \fname{recordScalar()} methods,
+such as \cclass{cStdDev}) via their \fname{record()} methods,
 they'll generate several lines: mean, standard deviation, etc.)
 In addition, several simulation runs can record their results into a single file --
 this facilitates comparing them, creating x-y plots

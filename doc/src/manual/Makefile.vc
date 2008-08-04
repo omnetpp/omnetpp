@@ -78,7 +78,7 @@ pdf: $(ALLTEX) $(PDFPICS) figures/*.png
 	$(PERL) ltoh.pl $<
 
 html : $(HTMCHAPTERS) omnest.thtml omnetpp.thtml prephtml2 ltoh.specs ltoh.pl
-	#FIXME use tmp dir
+	:#FIXME use tmp dir
 	@echo. > usman.tmp
 	for %%i in ($(HTMCHAPTERS)) do type %i >> usman.tmp
 	$(PERL) prephtml2 usman.tmp

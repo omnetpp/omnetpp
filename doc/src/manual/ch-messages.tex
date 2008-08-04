@@ -98,7 +98,7 @@ Once a message has been created, its data members can be changed by the followin
 
 \begin{verbatim}
 msg->setKind( kind );
-msg->setLength( length );
+msg->setBitLength( length );
 msg->setByteLength( lengthInBytes );
 msg->setPriority( priority );
 msg->setBitError( err );
@@ -112,21 +112,21 @@ the priority\index{message!priority}, the error
 flag\index{message!error flag} and the time stamp\index{message!time
   stamp}. The \fname{setTimeStamp()} function without any argument
 sets the time stamp to the current simulation time.
-\fname{setByteLength()} sets the same length field as \fname{setLength()},
+\fname{setByteLength()} sets the same length field as \fname{setBitLength()},
 only the parameters gets internally multiplied by 8.
 
 The values can be obtained by the following functions:
 
 \begin{verbatim}
-int k       = msg->kind();
-int p       = msg->priority();
-int l       = msg->length();
-int lb      = msg->byteLength();
+int k       = msg->getKind();
+int p       = msg->getPriority();
+int l       = msg->getBitLength();
+int lb      = msg->getByteLength();
 bool b      = msg->hasBitError();
-simtime_t t = msg->timestamp();
+simtime_t t = msg->getTimestamp();
 \end{verbatim}
 
-\fname{byteLength()} also reads the length field as \fname{length()},
+\fname{getByteLength()} also reads the length field as \fname{length()},
 but the result gets divided by 8 and rounded up.
 
 
@@ -181,21 +181,21 @@ as well as its arrival time. While the message is scheduled, arrival
 time is the time it will be delivered to the module.
 
 \begin{Verbatim}[commandchars=\\\{\}]
-simtime_t \fname{creationTime()}
-simtime_t \fname{sendingTime()};
-simtime_t \fname{arrivalTime()};
+simtime_t \fname{getCreationTime()}
+simtime_t \fname{getSendingTime()};
+simtime_t \fname{getArrivalTime()};
 \end{Verbatim}
 
 \subsubsection{Context pointer}
 
 \cclass{cMessage} contains a \ttt{void*} pointer which is
 set/returned by the \fname{setContextPointer()} and
-\fname{contextPointer()} functions:
+\fname{getContextPointer()} functions:
 
 \begin{verbatim}
 void *context =...;
 msg->setContextPointer( context );
-void *context2 = msg->contextPointer();
+void *context2 = msg->getContextPointer();
 \end{verbatim}
 
 
@@ -220,19 +220,19 @@ The following methods can tell where the message came from and
 where it arrived (or will arrive if it is currently scheduled or under way.)
 
 \begin{Verbatim}[commandchars=\\\{\}]
-int \fname{senderModuleId()};
-int \fname{senderGateId()};
-int \fname{arrivalModuleId()};
-int \fname{arrivalGateId()};
+int \fname{getSenderModuleId()};
+int \fname{getSenderGateId()};
+int \fname{getArrivalModuleId()};
+int \fname{getArrivalGateId()};
 \end{Verbatim}
 
 The following methods are just convenience functions which build
 on the ones above.
 
 \begin{Verbatim}[commandchars=\\\{\}]
-cModule *\fname{senderModule()};
-cGate *\fname{senderGate()};
-cGate *\fname{arrivalGate()};
+cModule *\fname{getSenderModule()};
+cGate *\fname{getSenderGate()};
+cGate *\fname{getArrivalGate()};
 \end{Verbatim}
 
 And there are further convenience functions to tell whether
@@ -248,9 +248,9 @@ The following methods return message creation time and the last sending
 and arrival times.
 
 \begin{Verbatim}[commandchars=\\\{\}]
-simtime_t \fname{creationTime()}
-simtime_t \fname{sendingTime()};
-simtime_t \fname{arrivalTime()};
+simtime_t \fname{getCreationTime()}
+simtime_t \fname{getSendingTime()};
+simtime_t \fname{getArrivalTime()};
 \end{Verbatim}
 
 \subsubsection{Control info}
@@ -277,12 +277,12 @@ purpose:
 
 \begin{Verbatim}[commandchars=\\\{\}]
 void \fname{setControlInfo(cObject *controlInfo)};
-cObject *\fname{controlInfo()};
+cObject *\fname{getControlInfo()};
 cObject *\fname{removeControlInfo()};
 \end{Verbatim}
 
 When a "command" is associated with the message sending (such as
-TCP OPEN, SEND, CLOSE, etc), the message kind field (\ttt{kind()},
+TCP OPEN, SEND, CLOSE, etc), the message kind field (\ttt{getKind()},
 \ttt{setKind()} methods of \ttt{cMessage}) should carry the command code.
 When the command doesn't involve a data packet (e.g.
 TCP CLOSE command), a dummy packet (empty \ttt{cMessage}) can be sent.
@@ -333,7 +333,7 @@ userdata->setByteLength(2048);  // 2K
 cMessage *tcpseg = new cMessage("tcp");
 tcpseg->setByteLength(24);
 tcpseg->encapsulate(userdata);
-ev << tcpseg->byteLength() << endl; // --> 2048+24 = 2072
+ev << tcpseg->getByteLength() << endl; // --> 2048+24 = 2072
 \end{verbatim}
 
 A message can only hold one encapsulated message at a time. The
@@ -351,7 +351,7 @@ cMessage *userdata = tcpseg->decapsulate();
 except if it was zero. If the length would become negative, an
 error occurs.
 
-The \fname{encapsulatedMsg()} function returns a pointer to the encapsulated
+The \fname{getEncapsulatedMsg()} function returns a pointer to the encapsulated
 message, or \ttt{NULL} if no message was encapsulated.
 
 \subsubsection{Reference counting}
@@ -376,7 +376,7 @@ MAC address doesn't match in the first place.
 The reference counting mechanism works transparently. However, there
 is one implication: \tbf{one must not change anything in a message
 that is encapsulated into another!} That is,
-\fname{encapsulatedMsg()} should be viewed as if it returned a
+\fname{getEncapsulatedMsg()} should be viewed as if it returned a
 pointer to a read-only object (it returns a \ttt{const} pointer
 indeed), for quite obvious reasons: the encapsulated message may be
 shared between several messages, and any change would affect those
@@ -456,7 +456,7 @@ You should take care that names of the attached objects do not
 clash with each other or with \cclass{cPar} parameter names
 (see next section).
 If you do not attach anything to the message and do not call the
-\fname{parList()} function, the internal \cclass{cArray} object
+\fname{getParList()} function, the internal \cclass{cArray} object
 will not be created.
 This saves both storage and execution time.
 
@@ -954,8 +954,8 @@ only the \fname{class} keyword is used instead of \fname{message}.
 Slightly different code is generated for classes that are rooted in
 \fname{cOwnedObject} than for those which are not.
 If there is no \ttt{extends}, the generated class will not be
-derived from \fname{cOwnedObject}, thus it will not have \fname{name()},
-\fname{className()}, etc. methods.
+derived from \fname{cOwnedObject}, thus it will not have \fname{getName()},
+\fname{getClassName()}, etc. methods.
 To create a class with those methods, you have to explicitly write
 \ttt{extends cOwnedObject}.
 
@@ -1156,7 +1156,7 @@ void FooPacket::setPayloadLength(int payloadLength)
 {
     int diff = payloadLength - this->payloadLength;
     this->payloadLength = payloadLength;
-    setLength(length() + diff);
+    setBitLength(length() + diff);
 }
 \end{verbatim}
 
@@ -1243,7 +1243,7 @@ class FooPacket : public FooPacket_Base
 void FooPacket::setPayloadLength(int newlength)
 {
     // adjust message length
-    setLength(length()-getPayloadLength()+newlength);
+    setBitLength(length()-getPayloadLength()+newlength);
 
     // set the new length
     FooPacket_Base::setPayloadLength(newlength);
@@ -1355,7 +1355,7 @@ class STLMessage : public STLMessage_Base
 
   public:
     STLMessage(const char *name=NULL, int kind=0) : STLMessage_Base(name,kind) {}
-    STLMessage(const STLMessage& other) : STLMessage_Base(other.name()) {operator=(other);}
+    STLMessage(const STLMessage& other) : STLMessage_Base(other.getName()) {operator=(other);}
     STLMessage& operator=(const STLMessage& other) {
         if (&other==this) return *this;
         STLMessage_Base::operator=(other);
@@ -1623,7 +1623,7 @@ class RadioMsgDescriptor : public Descriptor
 
 Then you have to inform Tkenv that a \fname{RadioMsgDescriptor} exists and that it
 should be used whenever Tkenv finds messages of type \fname{RadioMsg} (as it is
-currently implemented, whenever the object's \fname{className()} method returns
+currently implemented, whenever the object's \fname{getClassName()} method returns
 \ttt{"RadioMsg"}). So when you inspect a \fname{RadioMsg} in your simulation, Tkenv
 can use \fname{RadioMsgDescriptor} to extract and display the values of
 the \fname{freq} and \fname{power} variables.

@@ -240,7 +240,7 @@ static cModule *FIFO__create(const char *name, cModule *parentmod)
 }
 
 EXECUTE_ON_STARTUP( FIFO__mod,
-    modtypes.instance()->add(
+    modtypes.getInstance()->add(
        new cModuleType("FIFO","FIFO",(ModuleCreateFunc)FIFO__create)
     );
 )
@@ -401,7 +401,7 @@ The following plugin interfaces are supported:
      option lets you replace \ttt{omnetpp.ini} with some other implementation,
      e.g. database input.}
    \item{\cclass{cOutputScalarManager}. It handles recording the scalar output data,
-     output via the cModule::recordScalar() family of functions.
+     output via the cModule::record() family of functions.
      The default output scalar manager is \cclass{cFileOutputScalarManager},
      defined in the Envir library.}
    \item{\cclass{cOutputVectorManager}. It handles recording the output
@@ -441,7 +441,7 @@ documented in section \ref{sec:ch-run-sim:general-section}.
 
 \subsubsection{How plugin classes can access the configuration}
 
-The configuration is available to plugin classes via the \fname{config()}
+The configuration is available to plugin classes via the \fname{getConfig()}
 method of \cclass{cEnvir}, which returns a pointer to the configuration
 object (\cclass{cConfiguration}). This enables plugin classes to have
 their own config entries.
@@ -450,7 +450,7 @@ An example which reads the \ttt{parsim-debug} boolean entry from the
 \ttt{[General]} section, with \ttt{true} as default:
 
 \begin{verbatim}
-bool debug = ev.config()->getAsBool("General", "parsim-debug", true);
+bool debug = ev.getConfig()->getAsBool("General", "parsim-debug", true);
 \end{verbatim}
 
 

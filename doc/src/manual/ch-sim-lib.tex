@@ -49,7 +49,7 @@ Classes in the {\opp} simulation library are derived from \cclass{cOwnedObject}.
 Functionality and conventions that come from \cclass{cOwnedObject}:
 \begin{itemize}
   \item{name attribute}
-  \item{\fname{className()} member and other member functions giving textual
+  \item{\fname{getClassName()} member and other member functions giving textual
     information about the object}
   \item{conventions for assignment, copying, duplicating the object}
   \item{ownership\index{ownership} control for containers derived from \cclass{cOwnedObject}}
@@ -74,20 +74,20 @@ For example, the \textit{length} attribute of the \cclass{cMessage} class can
 be set and read like this:
 
 \begin{verbatim}
-msg->setLength(1024);
-length = msg->length();
+msg->setBitLength(1024);
+length = msg->getBitLength();
 \end{verbatim}
 
 
-\subsection{className()}
+\subsection{getClassName()}
 \label{sec:sim-lib:classname}
 
 
-For each class, the \fname{className()} member function returns the class
+For each class, the \fname{getClassName()} member function returns the class
 name as a string:
 
 \begin{verbatim}
-const char *classname = msg->className(); // returns "cMessage"
+const char *classname = msg->getClassName(); // returns "cMessage"
 \end{verbatim}
 
 
@@ -112,7 +112,7 @@ You can get a pointer to the internally stored copy of the name
 string like this:
 
 \begin{verbatim}
-const char *name = timeoutMsg->name(); // --> "timeout"
+const char *name = timeoutMsg->getName(); // --> "timeout"
 \end{verbatim}
 
 For convenience and efficiency reasons, the empty string \ttt{""}
@@ -120,50 +120,50 @@ and \ttt{NULL} are treated as equivalent by library objects.
 That is, \ttt{""} is stored as \ttt{NULL} but returned as \ttt{""}.
 If you create a message object with either \ttt{NULL}
 or \ttt{""} as name string, it will be stored as \ttt{NULL}
-and \fname{name()} will return a pointer to a static \ttt{""}.
+and \fname{getName()} will return a pointer to a static \ttt{""}.
 
 \begin{verbatim}
 cMessage *msg = new cMessage(NULL, <additional args>);
-const char *str = msg->name(); // --> returns ""
+const char *str = msg->getName(); // --> returns ""
 \end{verbatim}
 
 
-\subsection{fullName() and fullPath()}
+\subsection{getFullName() and getFullPath()}
 \label{sec:sim-lib:fullname-and-fullpath}
 
 
 Objects have two more member functions which return strings
-based on object names: \fname{fullName()} and \fname{fullPath()}.
+based on object names: \fname{getFullName()} and \fname{getFullPath()}.
 For gates and modules which are part of gate or module vectors,
-\fname{fullName()} returns the name with the index in brackets.
+\fname{getFullName()} returns the name with the index in brackets.
 That is, for a module \ttt{node[3]} in the submodule vector \ttt{node[10]}
-\fname{name()} returns \ttt{"node"}, and \fname{fullName()} returns \ttt{"node[3]"}.
-For other objects, \fname{fullName()} is the same as \fname{name()}.
+\fname{getName()} returns \ttt{"node"}, and \fname{getFullName()} returns \ttt{"node[3]"}.
+For other objects, \fname{getFullName()} is the same as \fname{getName()}.
 
-\fname{fullPath()} returns \fname{fullName()}, prepended with the
-parent or owner object's \fname{fullPath()} and separated by a dot.
+\fname{getFullPath()} returns \fname{getFullName()}, prepended with the
+parent or owner object's \fname{getFullPath()} and separated by a dot.
 That is, if the \ttt{node[3]} module above is in the compound module
-\ttt{"net.subnet1"}, its \fname{fullPath()} method will return
+\ttt{"net.subnet1"}, its \fname{getFullPath()} method will return
 \ttt{"net.subnet1.node[3]"}.
 
 \begin{verbatim}
-ev << this->name();     // --> "node"
-ev << this->fullName(); // --> "node[3]"
-ev << this->fullPath(); // --> "net.subnet1.node[3]"
+ev << this->getName();     // --> "node"
+ev << this->getFullName(); // --> "node[3]"
+ev << this->getFullPath(); // --> "net.subnet1.node[3]"
 \end{verbatim}
 
-\fname{className()}, \fname{fullName()} and \fname{fullPath()}
+\fname{getClassName()}, \fname{getFullName()} and \fname{getFullPath()}
 are extensively used on the graphical runtime environment Tkenv,
 and also appear in error messages.
 
-\fname{name()} and \fname{fullName()} return \ttt{const char *} pointers,
-and \fname{fullPath()} returns \ttt{std::string}. This makes no difference
-with \ttt{ev<<}, but when \fname{fullPath()} is used as a \ttt{"\%s"} argument
-to \fname{sprintf()} you have to write \ttt{fullPath().c\_str()}.
+\fname{getName()} and \fname{getFullName()} return \ttt{const char *} pointers,
+and \fname{getFullPath()} returns \ttt{std::string}. This makes no difference
+with \ttt{ev<<}, but when \fname{getFullPath()} is used as a \ttt{"\%s"} argument
+to \fname{sprintf()} you have to write \ttt{getFullPath().c\_str()}.
 
 \begin{verbatim}
 char buf[100];
-sprintf("msg is '%80s'", msg->fullPath().c_str()); // note c_str()
+sprintf("msg is '%80s'", msg->getFullPath().c_str()); // note c_str()
 \end{verbatim}
 
 
@@ -236,9 +236,9 @@ filled in using subsequent arguments.
 An example:
 
 \begin{verbatim}
-if (msg->controlInfo()==NULL)
+if (msg->getControlInfo()==NULL)
     opp_error("message (%s)%s has no control info attached",
-              msg->className(), msg->name());
+              msg->getClassName(), msg->getName());
 \end{verbatim}
 
 
@@ -275,13 +275,13 @@ from \ttt{omnetpp.ini} and it is more convenient to view, using Tkenv.
 
 One can save CPU cycles by making logging statements conditional
 on whether the output actually gets displayed or recorded anywhere.
-The \ttt{ev.disabled()} call returns true when \ttt{ev<<} output is disabled,
+The \ttt{ev.isDisabled()} call returns true when \ttt{ev<<} output is disabled,
 such as in Tkenv or Cmdenv ``express'' mode. Thus, one can write code like
 this:
 
 \begin{verbatim}
-if (!ev.disabled())
-    ev << "Packet " << msg->name() << " received\n";
+if (!ev.isDisabled())
+    ev << "Packet " << msg->getName() << " received\n";
 \end{verbatim}
 
 A more sophisticated implementation of the same idea is to define
@@ -289,13 +289,13 @@ an \ttt{EV} macro which can be used in logging statements instead of
 \ttt{ev}. The definition:
 
 \begin{verbatim}
-#define EV  ev.disabled()?std::cout:ev
+//#define EV  ev.isDisabled()?std::cout:ev ==> EV is now part of <omnetpp.h>
 \end{verbatim}
 
 And after that, one would simply write \ttt{EV<<} instead of \ttt{ev<<}.
 
 \begin{verbatim}
-EV << "Packet " << msg->name() << " received\n";
+EV << "Packet " << msg->getName() << " received\n";
 \end{verbatim}
 
 The slightly tricky definition of \ttt{EV} makes use of the fact
@@ -467,19 +467,19 @@ double prob = genk_dblrand(k);    // ""
 \end{verbatim}
 
 The underlying RNG objects are subclassed from \cclass{cRNG},
-and they can be accessed via \cclass{cModule}'s \fname{rng()} method.
-The argument to \fname{rng()} is a local RNG number which will undergo
+and they can be accessed via \cclass{cModule}'s \fname{getRNG()} method.
+The argument to \fname{getRNG()} is a local RNG number which will undergo
 RNG mapping.
 
 \begin{verbatim}
-cRNG *rng1 = rng(1);
+cRNG *rng1 = getRNG(1);
 \end{verbatim}
 
 \cclass{cRNG} contains the methods implementing the above \fname{intrand()}
 and \fname{dblrand()} functions. The \cclass{cRNG} interface also allows
 you to access the ``raw'' 32-bit random numbers generated by the RNG
 and to learn their ranges (\ttt{intRand()}, \ttt{intRandMax()}) as well as
-to query the number of random numbers generated (\ttt{numbersDrawn()}).
+to query the number of random numbers generated (\ttt{getNumbersDrawn()}).
 
 
 \subsection{Random variates}
@@ -608,8 +608,8 @@ There are other functions dealing with insertion and removal.  The
 new item exactly before and after a specified one, regardless of the
 ordering function.
 
-The \fname{tail()} and \fname{head()} functions return pointers to the objects
-at the tail and head of the queue, without affecting queue contents.
+The \fname{front()} and \fname{back()} functions return pointers to the objects
+at the front and back of the queue, without affecting queue contents.
 
 The \fname{pop()} function can be used to remove items from the
 tail of the queue, and the \fname{remove()} function can be
@@ -699,7 +699,7 @@ cArray array("array");
 Adding an object at the first free index:
 
 \begin{verbatim}
-cPar *p = new cPar("par");
+cPar *p = new cMsgPar("par");
 int index = array.add( p );
 \end{verbatim}
 
@@ -708,7 +708,7 @@ Adding an object at a given index (if the index is occupied,
 you'll get an error message):
 
 \begin{verbatim}
-cPar *p = new cPar("par");
+cPar *p = new cMsgPar("par");
 int index = array.addAt(5,p);
 \end{verbatim}
 
@@ -765,7 +765,7 @@ for (int i=0; i<array.items(); i++)
   if (array[i]) // is this position used?
   {
     cOwnedObject *obj = array[i];
-    ev << obj->name() << endl;
+    ev << obj->getName() << endl;
   }
 }
 \end{verbatim}
@@ -863,7 +863,7 @@ There are also overloaded assignment operators for C++ primitive types,
 \ttt{const char *}, and \ttt{cXMLElement *}.
 
 \begin{verbatim}
-cPar pp("pp");
+cMsgPar pp("pp");
 pp = 12;
 pp = 2.7371;
 pp = "one two three";
@@ -888,7 +888,7 @@ to enter the value interactively.
 Examples:
 
 \begin{verbatim}
-cPar foo("foo");
+cMsgPar foo("foo");
 foo.setPrompt("Enter foo value:");
 foo.setInput(true);   // make it an input parameter
 
@@ -912,18 +912,18 @@ for programming simulation models.
 % These section got dumped in 3.0, they can be digged out from the CVS if needed.
 %
 
-\subsection{cPar storage types}
+\subsection{cMsgPar storage types}
 
 \cclass{cPar} supports the basic data types (long, double, bool, string, XML) via
 several \textit{storage types}. Storage types are internally
 identified by type characters. The type character is
-returned by the \fname{type()} method.
+returned by the \fname{getType()} method.
 
 Example:
 
 \begin{verbatim}
-cPar par = 10L;
-char typechar = par.type(); // returns storage type 'L'
+cMsgPar par = 10L;
+char typechar = par.getType(); // returns storage type 'L'
 \end{verbatim}
 
 The all \cclass{cPar} data types and are summarized in the table below.
@@ -1040,12 +1040,12 @@ member function.\\\hline
 %% ROW 10
 O & object pointer &
 \ttt{setObjectValue(cOwnedObject*); \linebreak
-cOwnedObject *\fname{objectValue()}; \linebreak
+cOwnedObject *\fname{getObjectValue()}; \linebreak
 op cOwnedObject *(); \linebreak
 op=(cOwnedObject *);}
 &
 {\raggedright pointer to an object derived from \cclass{cOwnedObject}.
-Ownership management is done through \fname{takeOwnership()}.}\\\hline
+Ownership management is done through \fname{getTakeOwnership()}.}\\\hline
 %% ROW 11
 I & indirect value &
 \ttt{setRedirection(cPar*); \linebreak
@@ -1054,7 +1054,7 @@ cPar *\fname{redirection()}; \linebreak
 \fname{cancelRedirection()};}
 &
 {\raggedright value is redirected to another \cclass{cPar} object. All value setting
-and reading operates on the other \cclass{cPar}; even the \fname{type()} function
+and reading operates on the other \cclass{cPar}; even the \fname{getType()} function
 will return the type in the other \cclass{cPar} (so you'll never get 'I'
 as the type). This redirection can only be broken with the \fname{cancelRedirection()}
 member function. Module parameters taken by \ttt{ref} use this mechanism.}\\\hline
@@ -1150,7 +1150,7 @@ You can also specify that the parameter must have a certain value
 for the module to be included in the graph:
 
 \begin{verbatim}
-cPar yes = "yes";
+cMsgPar yes = "yes";
 topo.extractByParameter( "includeInTopo", &yes );
 \end{verbatim}
 
@@ -1163,7 +1163,7 @@ does not use the \ttt{void*} pointer):
 \begin{verbatim}
 int selectFunction(cModule *mod, void *)
 {
-  return mod->parentModule() == simulation.systemModule();
+  return mod->getParentModule() == simulation.getSystemModule();
 }
 
 topo.extractFromNetwork( selectFunction, NULL );
@@ -1182,26 +1182,26 @@ Once you have the topology extracted, you can start exploring
 it. Consider the following code (we'll explain it shortly):
 
 \begin{verbatim}
-for (int i=0; i<topo.nodes(); i++)
+for (int i=0; i<topo.getNumNodes(); i++)
 {
-  cTopology::Node *node = topo.node(i);
-  ev << "Node i=" << i << " is " << node->module()->fullPath() << endl;
-  ev << " It has " << node->outLinks() << " conns to other nodes\n";
-  ev << " and " << node->inLinks() << " conns from other nodes\n";
+  cTopology::Node *node = topo.getNode(i);
+  ev << "Node i=" << i << " is " << node->getModule()->getFullPath() << endl;
+  ev << " It has " << node->getNumOutLinks() << " conns to other nodes\n";
+  ev << " and " << node->getNumInLinks() << " conns from other nodes\n";
 
   ev << " Connections to other modules are:\n";
-  for (int j=0; j<node->outLinks(); j++)
+  for (int j=0; j<node->getNumOutLinks(); j++)
   {
-    cTopology::Node *neighbour = node->out(j)->remoteNode();
-    cGate *gate = node->out(j)->localGate();
-    ev << " " << neighbour->module()->fullPath()
-       << " through gate " << gate->fullName() << endl;
+    cTopology::Node *neighbour = node->getLinkOut(j)->getRemoteNode();
+    cGate *gate = node->getLinkOut(j)->getLocalGate();
+    ev << " " << neighbour->getModule()->getFullPath()
+       << " through gate " << gate->getFullName() << endl;
   }
 }
 \end{verbatim}
 
-The \fname{nodes()} member function (1st line) returns the number of
-nodes in the graph, and node(i) returns a pointer to the \textit{i}th
+The \fname{getNumNodes()} member function (1st line) returns the number of
+nodes in the graph, and getNode(i) returns a pointer to the \textit{i}th
 node, an \cclass{cTopology::Node} structure.
 
 
@@ -1209,28 +1209,28 @@ The correspondence between a graph node and a module can be obtained
 by:
 
 \begin{verbatim}
-cTopology::Node *node = topo.nodeFor( module );
-cModule *module = node->module();
+cTopology::Node *node = topo.getNodeFor( module );
+cModule *module = node->getModule();
 \end{verbatim}
 
 
-The \fname{nodeFor()} member function returns a pointer to the graph
+The \fname{getNodeFor()} member function returns a pointer to the graph
 node for a given module. (If the module is not in the graph, it
-returns \ttt{NULL}). \fname{nodeFor()} uses binary search within the
+returns \ttt{NULL}). \fname{getNodeFor()} uses binary search within the
 \cclass{cTopology} object so it is fast enough.
 
 
 \cclass{cTopology::Node}'s other member functions let you determine the
-connections of this node: \fname{inLinks()}, \fname{outLinks()} return
+connections of this node: \fname{getNumInLinks()}, \fname{getNumOutLinks()} return
 the number of connections, \ttt{in(i)} and
 \ttt{out(i)} return pointers to graph edge objects.
 
 
 By calling member functions of the graph edge object, you can
-determine the modules and gates involved. The \fname{remoteNode()}
+determine the modules and gates involved. The \fname{getRemoteNode()}
 function returns the other end of the connection, and
-\fname{localGate()}, \fname{remoteGate()}, \fname{localGateId()} and
-\fname{remoteGateId()} return the gate pointers and ids of the gates
+\fname{getLocalGate()}, \fname{getRemoteGate()}, \fname{getLocalGateId()} and
+\fname{getRemoteGateId()} return the gate pointers and ids of the gates
 involved. (Actually, the implementation is a bit tricky here: the same
 graph edge object \cclass{cTopology::Link} is returned either as
 \cclass{cTopology::LinkIn} or as \cclass{cTopology::LinkOut} so that ``remote''
@@ -1255,8 +1255,8 @@ the shortest path looks like this:
 
 \begin{verbatim}
 cModule *targetmodulep =...;
-cTopology::Node *targetnode = topo.nodeFor( targetmodulep );
-topo.unweightedSingleShortestPathsTo( targetnode );
+cTopology::Node *targetnode = topo.getNodeFor( targetmodulep );
+topo.calculateUnweightedSingleShortestPathsTo( targetnode );
 \end{verbatim}
 
 
@@ -1264,59 +1264,59 @@ This performs the Dijkstra algorithm\index{Dijkstra algorithm} and
 stores the result in the \cclass{cTopology} object. The result can
 then be extracted using \cclass{cTopology} and
 \ttt{cTopology::Node}\index{cTopology::Node} methods.  Naturally, each call to
-\fname{unweightedSingleShortestPathsTo()} overwrites the results of
+\fname{calculateUnweightedSingleShortestPathsTo()} overwrites the results of
 the previous call.
 
 Walking along the path from our module to the target node:
 
 \begin{verbatim}
-cTopology::Node *node = topo.nodeFor( this );
+cTopology::Node *node = topo.getNodeFor( this );
 
 if (node == NULL)
 {
-  ev < "We (" << fullPath() << ") are not included in the topology.\n";
+  ev < "We (" << getFullPath() << ") are not included in the topology.\n";
 }
-else if (node->paths()==0)
+else if (node->getNumPaths()==0)
 {
   ev << "No path to destination.\n";
 }
 else
 {
-  while (node != topo.targetNode())
+  while (node != topo.getTargetNode())
   {
-    ev << "We are in " << node->module()->fullPath() << endl;
-    ev << node->distanceToTarget() << " hops to go\n";
-    ev << "There are " << node->paths()
+    ev << "We are in " << node->getModule()->getFullPath() << endl;
+    ev << node->getDistanceToTarget() << " hops to go\n";
+    ev << "There are " << node->getNumPaths()
        << " equally good directions, taking the first one\n";
-    cTopology::LinkOut *path = node->path(0);
-    ev << "Taking gate " << path->localGate()->fullName()
-       << " we arrive in " << path->remoteNode()->module()->fullPath()
-       << " on its gate " << path->remoteGate()->fullName() << endl;
-    node = path->remoteNode();
+    cTopology::LinkOut *path = node->getPath(0);
+    ev << "Taking gate " << path->getLocalGate()->getFullName()
+       << " we arrive in " << path->getRemoteNode()->getModule()->getFullPath()
+       << " on its gate " << path->getRemoteGate()->getFullName() << endl;
+    node = path->getRemoteNode();
   }
 }
 \end{verbatim}
 
 
-The purpose of the \fname{distanceToTarget()} member function of a
+The purpose of the \fname{getDistanceToTarget()} member function of a
 node is self-explanatory. In the unweighted case, it returns the
-number of hops. The \fname{paths()} member function returns the number
+number of hops. The \fname{getNumPaths()} member function returns the number
 of edges which are part of a shortest path, and
 \fname[path()]{path(i)} returns the \textit{i}th edge of them as
 \cclass{cTopology::LinkOut}. If the shortest paths were created by the
 \fname[SingleShortestPaths()]{...SingleShortestPaths()} function,
-\fname{paths()} will always return 1 (or 0 if the target is not
+\fname{getNumPaths()} will always return 1 (or 0 if the target is not
 reachable), that is, only one of the several possible shortest paths
 are found.  The
 \fname[MultiShortestPathsTo()]{...MultiShortestPathsTo()} functions
 find all paths, at increased run-time cost. The \cclass{cTopology}'s
-\fname{targetNode()} function returns the target node of the last
+\fname{getTargetNode()} function returns the target node of the last
 shortest path search.
 
 You can enable/disable nodes or edges in the graph. This is done by
 calling their \fname{enable()} or \fname{disable()} member functions.
 Disabled nodes or edges are ignored by the shortest paths calculation
-algorithm. The \fname{enabled()} member function returns the state of
+algorithm. The \fname{isEnabled()} member function returns the state of
 a node or edge in the topology graph.
 
 One usage of \fname{disable()} is when you want to determine in how many
@@ -1327,16 +1327,16 @@ you must disable the current node to prevent the shortest paths
 from going through it:
 
 \begin{verbatim}
-cTopology::Node *thisnode = topo.nodeFor( this );
+cTopology::Node *thisnode = topo.getNodeFor( this );
 thisnode->disable();
-topo.unweightedSingleShortestPathsTo( targetnode );
+topo.calculateUnweightedSingleShortestPathsTo( targetnode );
 thisnode->enable();
 
-for (int j=0; j<thisnode->outLinks(); j++)
+for (int j=0; j<thisnode->getNumOutLinks(); j++)
 {
-  cTopology::LinkOut *link = thisnode->out(i);
-  ev << "Through gate " << link->localGate()->fullName() << " : "
-     << 1 + link->remoteNode()->distanceToTarget() << " hops" << endl;
+  cTopology::LinkOut *link = thisnode->getLinkOut(i);
+  ev << "Through gate " << link->getLocalGate()->getFullName() << " : "
+     << 1 + link->getRemoteNode()->getDistanceToTarget() << " hops" << endl;
 }
 \end{verbatim}
 
@@ -1392,9 +1392,9 @@ There are several statistic and result collection classes:
 One can insert an observation into a statistic object with the
 \fname{collect()} function or the \texttt{+=} operator (they are
 equivalent).  \cclass{cStdDev} has the following methods for getting
-statistics out of the object: \fname{samples()}, \fname{min()},
-\fname{max()}, \fname{mean()}, \fname{stddev()}, \fname{variance()},
-\fname{sum()}, \fname{sqrSum()} with the obvious meanings. An example
+statistics out of the object: \fname{getCount()}, \fname{getMin()},
+\fname{getMax()}, \fname{getMean()}, \fname{getStddev()}, \fname{getVariance()},
+\fname{getSum()}, \fname{getSqrSum()} with the obvious meanings. An example
 usage for \cclass{cStdDev}:
 
 \begin{verbatim}
@@ -1403,12 +1403,12 @@ cStdDev stat("stat");
 for (int i=0; i<10; i++)
   stat.collect( normal(0,1) );
 
-long numSamples = stat.samples();
-double smallest = stat.min(),
-       largest = stat.max();
-double mean = stat.mean(),
-       standardDeviation = stat.stddev(),
-       variance = stat.variance();
+long numSamples = stat.getCount();
+double smallest = stat.getMin(),
+       largest = stat.getMax();
+double mean = stat.getMean(),
+       standardDeviation = stat.getStddev(),
+       variance = stat.getVariance();
 \end{verbatim}
 
 
@@ -1473,13 +1473,13 @@ range.
 
 After the cells have been set up, collection can go on.
 
-The \fname{transformed()} function returns \textit{true} when the cells have
+The \fname{isTransformed()} function returns \textit{true} when the cells have
 already been set up. You can force range estimation and setting
 up the cells by calling the \fname{transform()} function.
 
 The observations that fall outside the histogram range will be counted
 as underflows and overflows. The number of underflows and overflows
-are returned by the \fname{underflowCell()} and \fname{overflowCell()}
+are returned by the \fname{getUnderflowCell()} and \fname{getOverflowCell()}
 member functions.
 
 \begin{figure}[htbp]
@@ -1503,13 +1503,13 @@ as a histogram.
 
 
 There are three member functions to explicitly return cell boundaries
-and the number of observations is each cell. \fname{cells()} returns
-the number of cells, \fname[basepoint()]{basepoint(int k)} returns the
-\textit{k}th base point, \fname[cell()]{cell(int k)} returns the
+and the number of observations is each cell. \fname{getNumCells()} returns
+the number of cells, \fname[getBasepoint()]{getBasepoint(int k)} returns the
+\textit{k}th base point, \fname[getCellValue()]{getCellValue(int k)} returns the
 number of observations in cell \textit{k}, and
-\fname[cellPDF()]{cellPDF(int k)} returns the PDF value in the cell
-(i.e. between \fname[basepoint()]{basepoint(k)} and
-\fname[basepoint()]{basepoint(k+1)}).  These functions work for all
+\fname[getCellPDF()]{getCellPDF(int k)} returns the PDF value in the cell
+(i.e. between \fname[getBasepoint()]{getBasepoint(k)} and
+\fname[getBasepoint()]{getBasepoint(k+1)}).  These functions work for all
 histogram types, plus \cclass{cPSquare} and \cclass{cKSplit}.
 
 \begin{figure}[htbp]
@@ -1522,18 +1522,18 @@ histogram types, plus \cclass{cPSquare} and \cclass{cKSplit}.
 An example:
 
 \begin{verbatim}
-long n = histogram.samples();
-for (int i=0; i<histogram.cells(); i++)
+long n = histogram.getCount();
+for (int i=0; i<histogram.getNumCells(); i++)
 {
-  double cellWidth = histogram.basepoint(i+1)-histogram.basepoint(i);
-  int count = histogram.cell(i);
-  double pdf = histogram.cellPDF(i);
+  double cellWidth = histogram.getBasepoint(i+1)-histogram.getBasepoint(i);
+  int count = histogram.getCellValue(i);
+  double pdf = histogram.getCellPDF(i);
   //...
 }
 \end{verbatim}
 
 
-The \fname[pdf()]{pdf(x)} and \fname[cdf()]{cdf(x)} member functions
+The \fname[getPDF()]{getPDF(x)} and \fname[getCDF()]{getCDF(x)} member functions
 return the value of the Probability Density Function and the Cumulated
 Density Function at a given \textit{x}, respectively.
 
@@ -1555,7 +1555,7 @@ double rnd = histogram.random();
 You can also wrap the distribution object in a \cclass{cPar}:
 
 \begin{verbatim}
-cPar rndPar("rndPar");
+cMsgPar rndPar("rndPar");
 rndPar.setDoubleValue(&histogram);
 \end{verbatim}
 
@@ -1786,22 +1786,22 @@ void rangeExtension( bool enabled );
 
 
 \begin{verbatim}
-int treeDepth();
-int treeDepth(sGrid& grid);
+int getTreeDepth();
+int getTreeDepth(cKSplit::Grid& grid);
 \end{verbatim}
 
 \begin{verbatim}
-double realCellValue(sGrid& grid, int cell);
+double getRealCellValue(cKSplit::Grid& grid, int cell);
 void printGrids();
 \end{verbatim}
 
 \begin{verbatim}
-sGrid& grid(int k);
-sGrid& rootGrid();
+cKSplit::Grid& getGrid(int k);
+cKSplit::Grid& getRootGrid();
 \end{verbatim}
 
 \begin{verbatim}
-struct sGrid
+struct cKSplit::Grid
 {
   int parent;   // index of parent grid
   int reldepth; // depth = (reldepth - rootgrid's reldepth)
@@ -1852,8 +1852,8 @@ to the attached objects:
 \begin{verbatim}
 addTransientDetection(cTransientDetection *object);
 addAccuracyDetection(cAccuracyDetection *object);
-cTransientDetection *transientDetectionObject();
-cAccuracyDetection *accuracyDetectionObject();
+cTransientDetection *getTransientDetectionObject();
+cAccuracyDetection *getAccuracyDetectionObject();
 \end{verbatim}
 
 
@@ -1939,7 +1939,7 @@ void Sink::initialize()
 
 void Sink::handleMessage(cMessage *msg)
 {
-    simtime_t eed = simTime() - msg->creationTime();
+    simtime_t eed = simTime() - msg->getCreationTime();
     endToEndDelayVec.record(eed);
     delete msg;
 }
@@ -1983,7 +1983,7 @@ value per simulation run. You can use output scalars
     way to produce \textit{Throughput vs. Offered Load} plots.}
 \end{itemize}
 
-Output scalars are recorded with the \fname{recordScalar()} method of
+Output scalars are recorded with the \fname{record()} method of
 \cclass{cSimpleModule}, and you'll usually want to insert this code
 into the \fname{finish()} function. An example:
 
@@ -1995,7 +1995,7 @@ void Transmitter::finish()
 }
 \end{verbatim}
 
-You can record whole statistics objects by calling their \fname{recordScalar()}
+You can record whole statistics objects by calling their \fname{record()}
 methods, declared as part of \cclass{cStatistic}. In the following example
 we create a \ttt{Sink} module which calculates the mean, standard
 deviation, minimum and maximum values of a variable, and records them at the
@@ -2021,7 +2021,7 @@ void Sink::initialize()
 
 void Sink::handleMessage(cMessage *msg)
 {
-    simtime_t eed = simTime() - msg->creationTime();
+    simtime_t eed = simTime() - msg->getCreationTime();
     eedStats.collect(eed);
     delete msg;
 }
@@ -2029,7 +2029,7 @@ void Sink::handleMessage(cMessage *msg)
 void Sink::finish()
 {
     recordScalar("Simulation duration", simTime());
-    eedStats.recordScalar();
+    eedStats.record();
 }
 \end{verbatim}
 
@@ -2466,13 +2466,13 @@ such a local variable, it may be preserved intact and {\opp} does not
 detect the stack violation.
 
 To be able to make a good guess about stack size, you can use
-the \fname{stackUsage()} call which tells you how much stack the module
+the \fname{getStackUsage()} call which tells you how much stack the module
 actually uses. It is most conveniently called from \fname{finish()}:
 
 \begin{verbatim}
 void FooModule::finish()
 {
-  ev << stackUsage() <<  "bytes of stack used\n";
+  ev << getStackUsage() <<  "bytes of stack used\n";
 }
 \end{verbatim}
 
@@ -2483,7 +2483,7 @@ envir/omnetapp.h), which is currently 8K for Cmdenv and at least 16K
 for Tkenv.
   \footnote{The actual value is platform-dependent.}
 
-\fname{stackUsage()}also works by checking the existence of predefined
+\fname{getStackUsage()}also works by checking the existence of predefined
 byte patterns in the stack area, so it is also subject to the above
 effect with local variables.
 
@@ -2555,7 +2555,7 @@ The following methods \textbf{must} be implemented:
         for a class \ttt{X}: \ttt{X(const X\&)}. The copy constructor is used
         whenever an object is duplicated. The usual implementation of
         the copy constructor is to initialize the base class with the
-        name (\fname{name()}) of the other object it receives, then call the
+        name (\fname{getName()}) of the other object it receives, then call the
         assignment operator (see below).}
   \item{\textit{Destructor}.}
   \item{\textit{Duplication function,} \fname{cObject *dup() const}.
@@ -2702,7 +2702,7 @@ You need to call \fname{take()} for \cclass{cOwnedObject}-based data members.
 
 
 \begin{verbatim}
-NewClass::NewClass(const NewClass& other) : cOwnedObject(other.name())
+NewClass::NewClass(const NewClass& other) : cOwnedObject(other.getName())
 {
     array = new double[10];
     msg = NULL;
@@ -2714,7 +2714,7 @@ NewClass::NewClass(const NewClass& other) : cOwnedObject(other.name())
 The copy constructor relies on the assignment operator. Because
 by convention the assignment operator does not copy the
 name member, it is passed here to the base class constructor.
-(Alternatively, we could have written \ttt{setName(other.name())}
+(Alternatively, we could have written \ttt{setName(other.getName())}
 into the function body.)
 
 Note that pointer members have to be initialized (to \ttt{NULL} or to an
@@ -2727,7 +2727,7 @@ You need to call \fname{take()} for \cclass{cOwnedObject}-based data members.
 NewClass::~NewClass()
 {
     delete [] array;
-    if (msg->owner()==this)
+    if (msg->getOwner()==this)
         delete msg;
 }
 \end{verbatim}
@@ -2759,11 +2759,11 @@ NewClass& NewClass::operator=(const NewClass& other)
         array[i] = other.array[i];
 
     queue = other.queue;
-    queue.setName(other.queue.name());
+    queue.setName(other.queue.getName());
 
-    if (msg && msg->owner()==this)
+    if (msg && msg->getOwner()==this)
         delete msg;
-    if (other.msg && other.msg->owner()==const_cast<cMessage*>(&other))
+    if (other.msg && other.msg->getOwner()==const_cast<cMessage*>(&other))
         take(msg = (cMessage *)other.msg->dup());
     else
         msg = other.msg;
@@ -2859,13 +2859,13 @@ the message in another one, the encapsulating message will become
 the owner. When you decapsulate it again, the currently active
 simple module becomes the owner.
 
-The \fname{owner()} method, defined in \cclass{cOwnedObject}, returns the
+The \fname{getOwner()} method, defined in \cclass{cOwnedObject}, returns the
 owner of the object:
 
 \begin{verbatim}
-cOwnedObject *o = msg->owner();
-ev << "Owner of " << msg->name() << " is: " <<
-   << "(" << o->className() << ") " << o->fullPath() << endl;
+cOwnedObject *o = msg->getOwner();
+ev << "Owner of " << msg->getName() << " is: " <<
+   << "(" << o->getClassName() << ") " << o->getFullPath() << endl;
 \end{verbatim}
 
 The other direction, enumerating the objects owned can be implemented with
@@ -2880,7 +2880,7 @@ keeping track of the owner and the list of objects owned also
 serves other purposes in {\opp}:
 
 \begin{itemize}
-    \item{enables methods like \ttt{fullPath()} to be implemented.}
+    \item{enables methods like \ttt{getFullPath()} to be implemented.}
 
     \item{prevents certain types of programming errors, namely,
     those associated with wrong ownership handling.}
@@ -2939,7 +2939,7 @@ to store messages or other \cclass{cOwnedObject}-based objects.
 (array and linked list) to store the objects which are inserted
 into them. However, they do \textit{not} necessarily own all of these
 objects.  (Whether they own an object or not can be determined
-from that object's \fname{owner()} pointer.)
+from that object's \fname{getOwner()} pointer.)
 
 The default behaviour of \cclass{cQueue} and \cclass{cArray} is
 to take ownership of the objects inserted.
@@ -2962,7 +2962,7 @@ void cQueue::insert(cOwnedObject *obj)
     ...
 
     // take ownership if needed
-    if (takeOwnership())
+    if (getTakeOwnership())
         take(obj);
 
 }
@@ -2990,7 +2990,7 @@ When you remove an object from a queue or array, the ownership
 is expected to be transferred to the simple module's local objects list.
 This is acomplished by the \fname{drop()} function, which transfers the
 ownership to the object's default owner.
-\fname{defaultOwner()} is a virtual method returning \ttt{cOwnedObject*}
+\fname{getDefaultOwner()} is a virtual method returning \ttt{cOwnedObject*}
 defined in \cclass{cOwnedObject}, and its implementation returns
 the currently executing simple module's local object list.
 
@@ -3006,7 +3006,7 @@ cOwnedObject *cQueue::remove(cOwnedObject *obj)
     ...
 
     // release ownership if needed
-    if (obj->owner()==this)
+    if (obj->getOwner()==this)
         drop(obj);
 
     return obj;
@@ -3023,7 +3023,7 @@ all messages it contains \textit{and} owns will also be deleted.
 
 The destructor should delete all data structures the object allocated.
 From the contained objects, only the owned ones are deleted -- that is,
-where \ttt{obj->owner()==this}.
+where \ttt{obj->getOwner()==this}.
 
 
 \subsubsection{Object copying}
@@ -3064,7 +3064,7 @@ is implemented as \fname{new cArray(*this)}).
 %
 %    if (msg)
 %    {
-%        if (msg->owner()!=&(simulation.contextSimpleModule()->locals))
+%        if (msg->getOwner()!=&(simulation.getContextSimpleModule()->locals))
 %            throw new cRuntimeException(this,"encapsulate(): not owner of message");
 %        take( encapmsg = msg );
 %        len += encapmsg->len;

@@ -684,7 +684,7 @@ void FFGenerator::handleMessage(cMessage *msg)
     ASSERT(msg==sendMessageEvent);
 
     cMessage *m = new cMessage("packet");
-    m->setLength(par("msgLength"));
+    m->setBitLength(par("msgLength"));
     send(m, "out");
     numSent++;
 
@@ -1767,9 +1767,9 @@ output format by undefining \ttt{FSM\_Print()} after including
 
 \begin{verbatim}
 #define FSM_Print(fsm,exiting)
-  (ev << "FSM " << (fsm).name()
+  (ev << "FSM " << (fsm).getName()
       << ((exiting) ? ": leaving state " : ": entering state ")
-      << (fsm).stateName() << endl)
+      << (fsm).getStateName() << endl)
 \end{verbatim}
 
 
@@ -1889,7 +1889,7 @@ void BurstyGenerator::handleMessage(cMessage *msg)
       sprintf( msgname, "job-%d", ++i);
       ev << "Generating " << msgname << endl;
       cMessage *job = new cMessage(msgname);
-      job->setLength( (long) *msgLength );
+      job->setBitLength( (long) *msgLength );
       job->setTimestamp();
       send( job, "out" );
       // return to ACTIVE
@@ -1982,7 +1982,7 @@ it is modeled as described earlier in this manual, in
 section \ref{ch:simple-modules:packet-transmission}.
 
 If you want to have full control over the transmission process,
-you'll probably need the \fname{isBusy()} and \fname{transmissionFinishes()}
+you'll probably need the \fname{isBusy()} and \fname{getTransmissionFinishTime()}
 member functions of \cclass{cGate}. They are described in section
 \ref{ch:simple-modules:cgate-transmission-state}.
 
@@ -2147,7 +2147,7 @@ In other words, the module needs dedicated gates for receiving via \ttt{sendDire
 An example:
 
 \begin{verbatim}
-cModule *destinationModule = parentModule()->submodule("node2");
+cModule *destinationModule = getParentModule()->getSubmodule("node2");
 double delay = truncnormal(0.005, 0.0001);
 sendDirect(new cMessage("packet"), delay, destinationModule, "inputGate");
 \end{verbatim}
@@ -2383,7 +2383,7 @@ can specify simulation time and CPU time limits\index{simulation time
 
 
 If you want your simulation to stop if it detects an error condition,
-you can call the \fname{error()} member function of \cclass{cModule}.
+you can call the \fname{getBitErrorRate()} member function of \cclass{cModule}.
 It is used like \fname{printf()}:
 
 \begin{verbatim}
@@ -2537,13 +2537,13 @@ The \fname{isVector()} member function can be used to determine if a
 gate belongs to a gate vector or not.
 
 Given a gate pointer, you can use the \fname{size()} and
-\fname{index()} member functions of \cclass{cGate} to determine the
+\fname{getIndex()} member functions of \cclass{cGate} to determine the
 size of the gate vector\index{gate!vector size} and the
 index\index{gate!vector index} of the gate within the vector:
 
 \begin{verbatim}
 int size2 = outvec5gate->size(); // --> size of outvec[]
-int index = outvec5gate->index(); // --> 5 (it is gate 5 in the vector)
+int index = outvec5gate->getIndex(); // --> 5 (it is gate 5 in the vector)
 \end{verbatim}
 
 Instead of \ttt{gate->size()}, you can also call the \fname{gateSize()}
@@ -2553,16 +2553,16 @@ method of \cclass{cModule}, which does the same:
 int size2 = gateSize("out");
 \end{verbatim}
 
-For non-vector gates, \fname{size()} returns 1 and \fname{index()} returns 0.
+For non-vector gates, \fname{size()} returns 1 and \fname{getIndex()} returns 0.
 
 Zero-size gate vectors are represented with a placeholder gate whose
 \fname{size()} method returns zero and cannot be connected.
 
-The \fname{type()} member function returns a character, 'I' for input
+The \fname{getType()} member function returns a character, 'I' for input
 gates and 'O' for output gates:
 
 \begin{verbatim}
-char type = outgate->type() // --> 'O'
+char type = outgate->getType() // --> 'O'
 \end{verbatim}
 
 
@@ -2570,11 +2570,11 @@ char type = outgate->type() // --> 'O'
 
 Module gates (input and output, single and vector) are stored in an
 array within their modules. The gate's position in the array is called
-the \textit{gate ID}. The gate ID\index{gate!id} is returned by the \fname{id()}
+the \textit{gate ID}. The gate ID\index{gate!id} is returned by the \fname{getId()}
 member function:
 
 \begin{verbatim}
-int id = outgate->id();
+int id = outgate->getId();
 \end{verbatim}
 
 For a module with input gates \ttt{fromApp} and \ttt{in[3]} and output gates
@@ -2603,7 +2603,7 @@ of \ttt{toApp} and \ttt{status}, the array may look like this:
 
 The array may have empty slots. Gate vectors are guaranteed to
 occupy contiguous IDs, thus it is legal to calculate the
-ID of \textit{gate[k]} as \ttt{gate("gate",0).id()+k}.
+ID of \textit{gate[k]} as \ttt{gate("gate",0).getId()+k}.
 
 Message sending and receiving functions accept both gate names
 and gate IDs; the functions using gate IDs are a bit faster.
@@ -2627,18 +2627,18 @@ bit error rate) are represented by the channel object, which
 is available via the source gate of the connection.
 
 \begin{verbatim}
-cChannel *chan = outgate->channel();
+cChannel *chan = outgate->getChannel();
 \end{verbatim}
 
 \cclass{cChannel} is a small base class. All interesting attributes are
-part of its subclass \cclass{cBasicChannel}, so you have to cast the pointer
+part of its subclass \cclass{cDatarateChannel}, so you have to cast the pointer
 before getting to the delay, error and data rate values.
 
 \begin{verbatim}
-cBasicChannel *chan = check_and_cast<cBasicChannel *>(outgate->channel());
-double d = chan->delay();
-double e = chan->error();
-double r = chan->datarate();
+cDatarateChannel *chan = check_and_cast<cDatarateChannel *>(outgate->getChannel());
+double d = chan->getDelay();
+double e = chan->getBitErrorRate();
+double r = chan->getDatarate();
 \end{verbatim}
 
 You can also change the channel attributes with the corresponding
@@ -2654,10 +2654,10 @@ begun transmission yet.
 
 The \fname{isBusy()} member function returns whether the gate
 is currently transmitting, and if so, the
-\fname{transmissionFinishes()} member function
+\fname{getTransmissionFinishTime()} member function
 returns the simulation time when the gate is going to finish
 transmitting. (If the gate in not currently transmitting,
-\fname{transmissionFinishes()} returns the simulation time
+\fname{getTransmissionFinishTime()} returns the simulation time
 when it finished its last transmission.)
 
 The semantics have been described in section
@@ -2671,7 +2671,7 @@ packet->setByteLength(1024);  // 1K
 
 if (gate("TxGate")->isBusy()) // if gate is busy, wait until it
 {                             // becomes free
-  wait( gate("TxGate")->transmissionFinishes() - simTime());
+  wait( gate("TxGate")->getTransmissionFinishTime() - simTime());
 }
 send( packet, "TxGate");
 \end{verbatim}
@@ -2683,7 +2683,7 @@ condition\index{gate!busy condition}. You could use the following
 code:
 
 \begin{verbatim}
-if (gate("mygate")->toGate()->isBusy())
+if (gate("mygate")->getToGate()->isBusy())
   //...
 \end{verbatim}
 
@@ -2697,9 +2697,9 @@ simulation, the changes will affect only the messages that are
 
 The \fname{isConnected()} member function returns whether
 the gate is connected. If the gate is an output gate, the gate to
-which it is connected is obtained by the \fname{toGate()}
+which it is connected is obtained by the \fname{getToGate()}
 member function. For input gates, the function is
-\fname{fromGate()}.
+\fname{getFromGate()}.
 
 %
 % TBD figure
@@ -2709,10 +2709,10 @@ member function. For input gates, the function is
 cGate *gate = gate("somegate");
 if (gate->isConnected())
 {
-  cGate *othergate = (gate->type()=='O') ?
-                     gate->toGate() : gate->fromGate();
+  cGate *othergate = (gate->getType()=='O') ?
+                     gate->getToGate() : gate->getFromGate();
 
-  ev << "gate is connected to: " << othergate->fullPath() << endl;
+  ev << "gate is connected to: " << othergate->getFullPath() << endl;
 }
 else
 {
@@ -2722,38 +2722,38 @@ else
 
 
 An alternative to \fname{isConnected()} is to check the return value
-of \fname{toGate()} or \fname{fromGate()}. The following code is fully equivalent
+of \fname{getToGate()} or \fname{getFromGate()}. The following code is fully equivalent
 to the one above:
 
 \begin{verbatim}
 cGate *gate = gate("somegate");
-cGate *othergate = (gate->type()=='O') ?
-                   gate->toGate() : gate->fromGate();
+cGate *othergate = (gate->getType()=='O') ?
+                   gate->getToGate() : gate->getFromGate();
 if (othergate)
-  ev << "gate is connected to: " << othergate->fullPath() << endl;
+  ev << "gate is connected to: " << othergate->getFullPath() << endl;
 else
   ev << "gate not connected" << endl;
 \end{verbatim}
 
 To find out to which simple module a given output
 gate leads finally\index{gate!destination}, you would have to walk
-along the path like this (the \fname{ownerModule()} member function
+along the path like this (the \fname{getOwnerModule()} member function
 returns the module to which the gate belongs):
 
 \begin{verbatim}
 cGate *gate = gate("out");
-while (gate->toGate()!=NULL)
+while (gate->getToGate()!=NULL)
 {
-  gate = gate->toGate();
+  gate = gate->getToGate();
 }
 
-cModule *destmod = gate->ownerModule();
+cModule *destmod = gate->getOwnerModule();
 \end{verbatim}
 
 
 but luckily, there are two convenience functions which do that:
-\fname{sourceGate()} and
-\fname{destinationGate()}.
+\fname{getSourceGate()} and
+\fname{getDestinationGate()}.
 
 
 
@@ -2766,11 +2766,11 @@ but luckily, there are two convenience functions which do that:
 
 
 If a module is part of a module vector\index{module!vector}, the
-\fname{index()} and \fname{size()} member functions can be used to
+\fname{getIndex()} and \fname{size()} member functions can be used to
 query its index and the vector size:
 
 \begin{verbatim}
-ev << "This is module [" << module->index() <<
+ev << "This is module [" << module->getIndex() <<
       "] in a vector of size [" << module->size() << "].\n";
 \end{verbatim}
 
@@ -2779,11 +2779,11 @@ ev << "This is module [" << module->index() <<
 
 
 Each module in the network has a unique ID that is returned by the
-\fname{id()} member function. The module ID\index{module!id} is used
+\fname{getId()} member function. The module ID\index{module!id} is used
 internally by the simulation kernel to identify modules.
 
 \begin{verbatim}
-int myModuleId = id();
+int myModuleId = getId();
 \end{verbatim}
 
 If you know the module ID, you can ask the simulation object
@@ -2791,7 +2791,7 @@ If you know the module ID, you can ask the simulation object
 
 \begin{verbatim}
 int id = 100;
-cModule *mod = simulation.module( id );
+cModule *mod = simulation.getModule( id );
 \end{verbatim}
 
 
@@ -2805,21 +2805,21 @@ module later.
 
 
 The surrounding compound module can be accessed by the
-\fname{parentModule()} member function:
+\fname{getParentModule()} member function:
 
 \begin{verbatim}
-cModule *parent = parentModule();
+cModule *parent = getParentModule();
 \end{verbatim}
 
 For example, the parameters of the parent module are accessed
 like this:
 
 \begin{verbatim}
-double timeout = parentModule()->par( "timeout" );
+double timeout = getParentModule()->par( "timeout" );
 \end{verbatim}
 
 
-\cclass{cModule}'s \fname{findSubmodule()} and \fname{submodule()}
+\cclass{cModule}'s \fname{findSubmodule()} and \fname{getSubmodule()}
 member functions make it possible to look up the module's submodules
 by name\index{module!submodule!lookup} (or name+index if the submodule
 is in a module vector). The first one returns the numeric module ID of
@@ -2828,21 +2828,21 @@ submodule is not found, they return -1 or NULL, respectively.
 
 \begin{verbatim}
 int submodID = compoundmod->findSubmodule("child",5);
-cModule *submod = compoundmod->submodule("child",5);
+cModule *submod = compoundmod->getSubmodule("child",5);
 \end{verbatim}
 
 
-The \fname{moduleByRelativePath()} member function can be used to find
+The \fname{getModuleByRelativePath()} member function can be used to find
 a submodule nested deeper than one level below. For example,
 
 \begin{verbatim}
-compoundmod->moduleByRelativePath("child[5].grandchild");
+compoundmod->getModuleByRelativePath("child[5].grandchild");
 \end{verbatim}
 
 would give the same results as
 
 \begin{verbatim}
-compoundmod->submodule("child",5)->submodule("grandchild");
+compoundmod->getSubmodule("child",5)->getSubmodule("grandchild");
 \end{verbatim}
 
 (Provided that \ttt{child[5]} does exist, because otherwise the second
@@ -2850,7 +2850,7 @@ version would crash with an access violation because of the NULL
 pointer dereference.)
 
 
-The \cclass{cSimulation}::\fname{moduleByPath()} function is similar
+The \cclass{cSimulation}::\fname{getModuleByPath()} function is similar
 to \cclass{cModule}'s \fname{moduleByRelative\-Path()} function, and it
 starts the search at the top-level module.
 
@@ -2864,9 +2864,9 @@ use \cclass{cSubModIterator}.
 For example:
 
 \begin{verbatim}
-for (cSubModIterator iter(*parentModule()); !iter.end(); iter++)
+for (cSubModIterator iter(*getParentModule()); !iter.end(); iter++)
 {
-  ev << iter()->fullName();
+  ev << iter()->getFullName();
 }
 \end{verbatim}
 
@@ -2874,16 +2874,16 @@ for (cSubModIterator iter(*parentModule()); !iter.end(); iter++)
 
 
 The above method can also be used to iterate along a module
-vector\index{module!vector!iteration}, since the \fname{name()}
+vector\index{module!vector!iteration}, since the \fname{getName()}
 function returns the same for all modules:
 
 \begin{verbatim}
-for (cSubModIterator iter(*parentModule()); !iter.end(); iter++)
+for (cSubModIterator iter(*getParentModule()); !iter.end(); iter++)
 {
-  if (iter()->isName(name())) // if iter() is in the same
+  if (iter()->isName(getName())) // if iter() is in the same
                               // vector as this module
   {
-    int itsIndex = iter()->index();
+    int itsIndex = iter()->getIndex();
     // do something to it
   }
 }
@@ -2894,15 +2894,15 @@ for (cSubModIterator iter(*parentModule()); !iter.end(); iter++)
 
 
 To determine the module at the other end of a connection, use
-\cclass{cGate}'s \fname{fromGate()}, \fname{toGate()} and
-\fname{ownerModule()} functions. For example:
+\cclass{cGate}'s \fname{getFromGate()}, \fname{getToGate()} and
+\fname{getOwnerModule()} functions. For example:
 
 \begin{verbatim}
-cModule *neighbour = gate( "outputgate" )->toGate()->ownerModule();
+cModule *neighbour = gate( "outputgate" )->getToGate()->getOwnerModule();
 \end{verbatim}
 
 
-For input gates, you would use \fname{fromGate()} instead of \fname{toGate()}.
+For input gates, you would use \fname{getFromGate()} instead of \fname{getToGate()}.
 
 
 \section{Direct method calls between modules}
@@ -2924,7 +2924,7 @@ work. Two issues need to be mentioned, however:
 \end{itemize}
 
 Typically, the called module is in the same compound module as the caller,
-so the \fname{parentModule()} and \fname{submodule()} methods of
+so the \fname{getParentModule()} and \fname{getSubmodule()} methods of
 \cclass{cModule} can be used to get a \ttt{cModule*} pointer to the
 called module. (Further ways to obtain the pointer are described
 in the section \ref{ch:simple-modules:walking-module-hieararchy}.)
@@ -2934,7 +2934,7 @@ of the module, so that its methods become visible.
 This makes the following code:
 
 \begin{verbatim}
-cModule *calleeModule = parentModule()->submodule("callee");
+cModule *calleeModule = getParentModule()->getSubmodule("callee");
 Callee *callee = check_and_cast<Callee *>(calleeModule);
 callee->doSomething();
 \end{verbatim}
@@ -3057,7 +3057,7 @@ into the FES\index{FES}, and these messages should be processed
 The first step, finding the factory object:
 
 \begin{verbatim}
-cModuleType *moduleType = findModuleType("WirelessNode");
+cModuleType *moduleType = cModuleType::get("WirelessNode");
 \end{verbatim}
 
 
@@ -3100,7 +3100,7 @@ If the previous simple form cannot be used. There are 5 steps:
   \item{call function that builds out submodules and finalizes the
     module}
   \item{call function that creates activation message(s) for the new
-    simple module(s)}
+    simple getModule(s)}
 \end{enumerate}
 Each step (except for Step 3.) can be done with one line of code.
 
@@ -3110,7 +3110,7 @@ See the following example, where Step 3 is omitted:
 
 \begin{verbatim}
 // find factory object
-cModuleType *moduleType = findModuleType("WirelessNode");
+cModuleType *moduleType = cModuleType::get("WirelessNode");
 
 // create (possibly compound) module and build its submodules (if any)
 cModule *module = moduleType->create("node", this);
@@ -3126,7 +3126,7 @@ the code goes between the \fname{create()} and
 
 \begin{verbatim}
 // create
-cModuleType *moduleType = findModuleType("WirelessNode");
+cModuleType *moduleType = cModuleType::get("WirelessNode");
 cModule *module = moduleType->create("node", this);
 
 // set up parameters and gate sizes before we set up its submodules
@@ -3209,7 +3209,7 @@ to the direction of the arrow in NED files.
 As an example, we create two modules and connect them in both directions:
 
 \begin{verbatim}
-cModuleType *moduleType = findModuleType("TicToc");
+cModuleType *moduleType = cModuleType::get("TicToc");
 cModule *a = modtype->createScheduleInit("a",this);
 cModule *b = modtype->createScheduleInit("b",this);
 
@@ -3220,19 +3220,19 @@ b->gate("out")->connectTo(a->gate("in"));
 \fname{connectTo()} also accepts a channel object as an
 additional, optional argument. Channels are subclassed from
 \cclass{cChannel}. Almost always you'll want use an instance of
-\cclass{cBasicChannel} as channel -- this is the one that supports
+\cclass{cDatarateChannel} as channel -- this is the one that supports
 delay\index{channel!delay}, bit error rate \index{channel!error}
 and data rate\index{channel!datarate}. The channel object will
 be owned by the source gate of the connection, and you cannot
 reuse the same channel object with several connections.
 
-\cclass{cBasicChannel} has \fname{setDelay()}, \fname{setError()}
+\cclass{cDatarateChannel} has \fname{setDelay()}, \fname{setBitErrorRate()}
 and \fname{setDatarate()} methods to set up the channel attributes.
 
 An example that sets up a channel with a delay:
 
 \begin{verbatim}
-cBasicChannel *channel = new cBasicChannel("channel");
+cDatarateChannel *channel = new cDatarateChannel("channel");
 channel->setDelay(0.001);
 
 a->gate("out")->connectTo(b->gate("in"), channel); // a,b are modules

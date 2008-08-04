@@ -101,11 +101,11 @@ Examples:
 \subsection{Message display strings}
 
 Message objects do not store a display string by default, but you can redefine
-the \cclass{cMessage}'s \fname{displayString()} method and make it return
+the \cclass{cMessage}'s \fname{getDisplayString()} method and make it return
 one.
 
 \begin{verbatim}
-const char *CustomPacket::displayString() const
+const char *CustomPacket::getDisplayString() const
 {
     return "i=msg/packet_vs";
 }
@@ -313,20 +313,20 @@ Display strings are stored in \cclass{cDisplayString} objects inside
 modules and gates. \cclass{cDisplayString} also lets you manipulate the string.
 
 To get a pointer to the \cclass{cDisplayString} object, you can call
-the module's \fname{displayString()} method:
+the module's \fname{getDisplayString()} method:
 
 \begin{Verbatim}
-cDisplayString *dispStr = displayString();
+cDisplayString *dispStr = getDisplayString();
 \end{Verbatim}
 
 %FIXME finish!
 
 \begin{Verbatim}
-cDisplayString *bgDispStr = parentModule()->backgroundDisplayString();
+cDisplayString *bgDispStr = getParentModule()->backgroundDisplayString();
 \end{Verbatim}
 
 \begin{Verbatim}
-cDisplayString *gateDispStr = gate("out")->displayString();
+cDisplayString *gateDispStr = gate("out")->getDisplayString();
 \end{Verbatim}
 
 %FIXME The \cclass{cDisplayString} utility class lets..
@@ -352,7 +352,7 @@ dispStr->insertTag("x");
 dispStr->setTagArg("x",0,"joe");
 dispStr->setTagArg("x",2,"jim");
 dispStr->setTagArg("p",0,"beta");
-ev << dispStr->getString();  // result: "x=joe,,jim;a=1,2;p=beta,,3"
+ev << dispStr->str();  // result: "x=joe,,jim;a=1,2;p=beta,,3"
 \end{verbatim}
 
 
