@@ -52,7 +52,7 @@ typedef unsigned long ptr_t;
 
 typedef int64 eventnumber_t;
 #define EVENTNUMBER_PRINTF_FORMAT INT64_PRINTF_FORMAT
-inline int64 abs(int64 a)
+inline int64 abs64(int64 a)
 {
    return a < 0 ? -a : a;
 }

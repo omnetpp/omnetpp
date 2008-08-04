@@ -58,7 +58,7 @@ IEvent *IEventLog::getNeighbourEvent(IEvent *event, eventnumber_t distance)
     Assert(event);
     eventnumber_t neighbourEventNumber = event->getEventNumber() + distance;
 
-    if (lastNeighbourEvent && lastNeighbourEventNumber != -1 && abs(neighbourEventNumber - lastNeighbourEventNumber) < abs(distance))
+    if (lastNeighbourEvent && lastNeighbourEventNumber != -1 && abs64(neighbourEventNumber - lastNeighbourEventNumber) < abs64(distance))
         return getNeighbourEvent(lastNeighbourEvent, neighbourEventNumber - lastNeighbourEventNumber);
 
     while (event != NULL && distance != 0)
