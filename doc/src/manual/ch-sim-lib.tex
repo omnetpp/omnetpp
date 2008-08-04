@@ -756,11 +756,11 @@ delete array.remove( index );
 
 
 \cclass{cArray} has no iterator, but it is easy to loop through all the
-indices with an integer variable. The \fname{items()} member function
+indices with an integer variable. The \fname{size()} member function
 returns the largest index plus one.
 
 \begin{verbatim}
-for (int i=0; i<array.items(); i++)
+for (int i=0; i<array.size(); i++)
 {
   if (array[i]) // is this position used?
   {
@@ -1364,8 +1364,8 @@ There are several statistic and result collection classes:
 \cclass{cStatistic}.
 
 \begin{itemize}
-  \item{\cclass{cStdDev} keeps number of samples, mean, standard
-    deviation, minimum and maximum value etc.}
+  \item{\cclass{cStdDev} keeps the count, mean, standard
+    deviation, minimum and maximum value etc of the observations.}
   \item{\cclass{cWeightedStdDev} is similar to \cclass{cStdDev}, but
     accepts weighted observations. \cclass{cWeightedStdDev} can be used
     for example to calculate time average. It is the only weighted
@@ -1509,8 +1509,11 @@ the number of cells, \fname[getBasepoint()]{getBasepoint(int k)} returns the
 number of observations in cell \textit{k}, and
 \fname[getCellPDF()]{getCellPDF(int k)} returns the PDF value in the cell
 (i.e. between \fname[getBasepoint()]{getBasepoint(k)} and
-\fname[getBasepoint()]{getBasepoint(k+1)}).  These functions work for all
-histogram types, plus \cclass{cPSquare} and \cclass{cKSplit}.
+\fname[getBasepoint()]{getBasepoint(k+1)}).
+The \fname[getCellInfo()]{getCellInfo(k)} method returns multiple data
+(cell bounds, counter, relatile frequency) packed together in a struct.
+These functions work for all histogram types, plus \cclass{cPSquare}
+and \cclass{cKSplit}.
 
 \begin{figure}[htbp]
   \begin{center}
@@ -2389,35 +2392,6 @@ end
 
 It is possible that the format of the snapshot file will change to XML
 in future {\opp} releases.
-
-
-
-\subsection{Breakpoints}
-
-\textbf{With activity() only!} In those user interfaces which support
-debugging, breakpoints stop execution and the state of the simulation
-can be examined.
-
-You can set a breakpoint\index{breakpoint} inserting a
-\fname{breakpoint()} call into the source:
-
-\begin{verbatim}
-for(;;)
-{
-    cMessage *msg = receive();
-    breakpoint("before-processing");
-    breakpoint("before-send");
-    send( reply_msg, "out" );
-    //..
-}
-\end{verbatim}
-
-
-In user interfaces that do not support debugging, \fname{breakpoint()}
-calls are simply ignored.
-
-
-
 
 
 % \subsection{Disabling warnings}
