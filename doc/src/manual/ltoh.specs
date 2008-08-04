@@ -54,8 +54,6 @@ htmlfile_spec := $BASE.htm
 :b/e	:\begin{description}:<dl>:</>:
 :b/e	:\begin{multques}(\{[^\}]*\})*:<ol>:</>:
 :b/e	:\begin{document}:::
-:b/e	:\begin{tabular}:\begin{tabular}:\end{tabular}:
-:b/e	:\begin{longtable}:\begin{longtable}:\end{longtable}:
 :b/e	:\begin{quote}:<blockquote>:</>:
 :b/e	:\begin{verse}:<blockquote>:</>:
 :comm	:\ldots:...::
@@ -132,6 +130,8 @@ htmlfile_spec := $BASE.htm
 :comm   :\bibitem(\[(.*?)\])?{(.*?)}:<a name="bib-$3"></a>[$2]&nbsp;&nbsp;::
 :comm   :\newblock:::
 :comm   :\em:::
+:comm   :\pm:+/-::
+:comm   :\neq:!=::
 :comm   :\c{S}:S::
 :comm   :\u{g}:g::
 :comm   :\fpar(\[.*?\])?{(.*?)}:<tt>$2</tt>::
@@ -151,5 +151,6 @@ htmlfile_spec := $BASE.htm
 :b/e	:\begin{Verbatim}(\[.*?\])?:<pre>:</pre>:
 :b/e	:\begin{sloppypar}:<p>:</p>:
 :b/e	:\begin{thebibliography}(\{.*?\})?:<H1>References</H1>::
+:b/e	:\begin{note}:<ul><b>NOTE</b><br>:</ul>:
 
 

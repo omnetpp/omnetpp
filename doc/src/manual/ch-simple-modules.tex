@@ -199,11 +199,15 @@ attribute of messages.
 
 \subsection{Simulation time}
 
-Simulation time in {\opp} is represented by the C++ type \fvar{simtime\_t}.
+The current simulation time can be obtained with the \ttt{simTime()} function.
 
-\ttt{simtime\_t} is a typedef to \ttt{SimTime} class, which stores simulation
-time in a 64-bit integer, using decimal fixed-point representation. The scale
-exponent can be between chosen between -18 and 0, and it has global effect.
+Simulation time in {\opp} is represented by the C++ type \fvar{simtime\_t},
+which is by default a typedef to the \ttt{SimTime} class.
+\ttt{SimTime} class stores simulation time in a 64-bit integer,
+using decimal fixed-point representation. The resolution is controlled
+by the \textit{scale exponent} global configuration variable, that is,
+\ttt{SimTime} instances have the same resolution. The exponent can be
+between chosen between -18 (attosecond resolution) and 0 (seconds).
 Some exponents with the ranges they provide are shown in the following table.
 
 \begin{center}
@@ -225,22 +229,56 @@ Note that although simulation time cannot be negative, it is still useful to
 be able to represent negative numbers, because they often arise
 during the evaluation of arithmetic expressions.
 
-\begin{note}
-   Earlier \opp used \ttt{double} for simulation time, but this was less than
-   ideal. In floating point, large values can only be represented with less
-   precision, and this caused very real problems in some long simulations.
-   Non-associativity (often $(x+y)+z \neq x+(y+z)$, see~\cite{Goldberg91what})
-   and accumulating rounding errors meant that two \ttt{double} simulation
-   times could not be reliably compared for equality.
-
-   \opp can still be compiled with \ttt{simtime\_t} defined as \ttt{double},
-   which can occasionally be useful when porting older simulations.
-\end{note}
-
 The \ttt{SimTime} class performs additions and substractions as 64-bit integer
 operations. Integer overflows are checked, and will cause the simulation to
 stop with an error message. Other operations (multiplication, division, etc)
 are performed in \ttt{double}, then converted back to integer.
+
+There is no implicit conversion from \ttt{SimTime} to \ttt{double}, mostly
+because it would conflict with overloaded arithmetic operations of \ttt{SimTime};
+use the \fname{dbl()} method of \ttt{Simtime} to convert. To reduce the
+need for \fname{dbl()}, several functions and methods have overloaded variants
+that directly accept \ttt{SimTime}, for example \fname{fabs()}, \fname{fmod()},
+\fname{ceil()}, \fname{floor()}, \fname{uniform()}, \fname{exponential()}, and
+\fname{normal()}.
+
+\begin{note}
+   Converting a \ttt{SimTime} to \ttt{double} may lose precision, because
+   \ttt{double} has only a 52-bit mantissa.
+\end{note}
+
+Other useful methods of \ttt{SimTime} include \fname{str()}
+which returns the value as a string; \fname{parse()} which converts a
+string to \ttt{SimTime}; \fname{raw()} which returns the
+underlying \ttt{int64} value; \fname{getScaleExp()} which returns the
+global scale exponent; and \fname{getMaxTime} which returns the
+maximum simulation time that can be represented at the current
+scale exponent.
+
+Earlier versions of \opp used \ttt{double} for simulation time. To facilitate
+porting existing models to \opp 4.0 or later, \opp can be compiled to use
+\ttt{double} for \ttt{simtime_t}. To enable this mode, define the
+\ttt{USE_DOUBLE_SIMTIME} preprocessor macro during compiling \opp
+and the simulation models. There are also several macros that can be used
+in simulation models to make them compile with both \ttt{simtime_t}'s:
+\fmac{SIMTIME_STR()} which converts simulation time to a \ttt{const char *}
+(this macro can be used inside \ttt{printf}'s);
+\fmac{SIMTIME_DBL(t)} which converts simulation time to \ttt{double};
+\fmac{SIMTIME_RAW(t)} which returns the underlying \ttt{int64} or \ttt{double};
+\fmac{STR_SIMTIME(s)} which converts string to simulation time; and
+\fmac{SIMTIME_TTOA(buf,t)} which converts simulation time to string,
+and places the result into the given buffer. \fmac{MAXTIME} is
+also defined correctly for both \ttt{simtime_t} types.
+
+\begin{note}
+   Why did \opp switch to \ttt{int64}-based simulation time?
+   \ttt{double}'s mantissa is only 52 bits long, and this caused
+   problems in long simulations that relied on fine-grained timing,
+   for example MAC protocols. Other problems were the accumulation of
+   rounding errors, and non-associativity (often $(x+y)+z \neq x+(y+z)$, see
+   ~\cite{Goldberg91what}) which meant that two \ttt{double} simulation
+   times could not be reliably compared for equality.
+\end{note}
 
 
 \subsection{FES implementation}

@@ -698,7 +698,7 @@ sub do_tables {
         my($origline) = $arr->[$i];
         my($line) = $origline;          #
         fyi(9, "Tables orig-line $i: $origline");
-        if ($origline =~ /\\begin\{[A-Za-z]*longtable[A-Za-z]*\}/) {
+        if ($origline =~ /\\begin\{[A-Za-z]*(longtable|tabular)[A-Za-z]*\}/) {
             $line =~ s/(\\\\)? \s* \\[ch]line.*//x;
             $line = mark_braces_one_line("{", "}", $line);
             fyi(9, "Tables delim-line $i: $line");
@@ -724,10 +724,10 @@ sub do_tables {
             $tlev ++;
             $endrow = 1;
             $colnum = 0;
-            $line =~ s/\\begin\{longtable[A-Za-z]*\}\{.*\}/$tabletag/;
+            $line =~ s/\\begin\{(longtable|tabular)[A-Za-z]*\}\{.*\}/$tabletag/;
             fyi(9, "line =-> $line");
             fyi(7, "Table with $#cols+1 columns.  Aligns = @cols");
-        } elsif ($line =~ s:\\end{longtable[A-Za-z]*}:</table>: ) {
+        } elsif ($line =~ s:\\end{(longtable|tabular)[A-Za-z]*}:</table>: ) {
             $tlev --;
             @cols = ();
         } elsif ($tlev > 0) {
