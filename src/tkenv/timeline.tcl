@@ -31,7 +31,7 @@ proc redraw_timeline {} {
     set fesrange [opp_sortfesandgetrange]
     set fesmin [lindex $fesrange 0]
     set fesmax [lindex $fesrange 1]
-        if [expr $fesmin!=0 && $fesmax!=0] {
+    if [expr $fesmin!=0 && $fesmax!=0] {
         set fesminexp [expr int(floor(log10($fesmin)))]
         set fesmaxexp [expr int(ceil(log10($fesmax)))]
         if {$fesminexp < $minexp && $fesminexp > -10} {set minexp $fesminexp}
