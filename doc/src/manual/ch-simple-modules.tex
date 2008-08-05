@@ -1602,6 +1602,7 @@ end-of-simulation events were dropped in favour of \fname{finish()}
 
 
 \subsection{handleParameterChange()}
+\label{sec:handleParameterChange}
 
 The \fname{handleParameterChange()} method was added in {\opp} 3.2,
 and it gets called by the simulation kernel when a module parameter changes.
@@ -2457,14 +2458,18 @@ long numJobs = par("numJobs").longValue();
 double processingDelay = par("processingDelay"); // using operator double()
 \end{verbatim}
 
+Note that \cclass{cPar} has two methods for returning string value:
+\fname{stringValue()} which returns \ttt{const char *}, and
+\fname{stdstringValue()} which returns \ttt{std::string}.
+For volatile parameters, only \fname{stdstringValue()} may be used,
+but otherwise the two are interchangeable.
+
 If you use the \ttt{par("foo")} parameter in expressions (such as
 \ttt{4*par("foo")+2}), the C++ compiler may be unable to decide
 between overloaded operators and report ambiguity. In that case
 you have to clarify by adding either an explicit cast
 (\ttt{(double)par("foo")} or \ttt{(long)par("foo")}) or use
 the \ttt{doubleValue()} or \ttt{longValue()} methods.
-
-FIXME enumerating parameters etc.
 
 
 \subsection{Volatile and non-volatile parameters}
@@ -2477,7 +2482,7 @@ random packet generation interval, and get values like \ttt{exponential(1.0)}
 
 In contrast, non-volatile NED parameters are constants, and reading their
 values multiple times is guaranteed to yield the same value. When a non-volatile
-parameter is assigned a random value like \ttt{exponential(1.0)}, it will get
+parameter is assigned a random value like \ttt{exponential(1.0)}, it gets
 evaluated once at the beginning of the simulation and replaced with the result,
 so all reads will get same (randomly generated) value.
 
@@ -2543,13 +2548,6 @@ void Source::handleMessage(cMessage *msg)
 \end{verbatim}
 
 
-\subsection {stringValue() vs stdstringValue()}
-
-\cclass{cPar} contains two methods for returning string value:
-\fname{stringValue()} that return \ttt{const char *}, and
-\fname{stdstringValue()} which returns \ttt{std::string}.
-For volatile parameters, only the second one may be used...FIXME
-
 \subsection{Changing a parameter's value}
 
 Parameter values can be changed from the program, during execution.
@@ -2569,7 +2567,8 @@ overloaded assignment operators for various types including \ttt{bool},
 \ttt{cXMLElement *}.
 
 To let a module get notified about parameter changes, override
-its \fname{handleParameterChange()} method.   %%FIXME add link
+its \fname{handleParameterChange()} method, see
+\ref{sec:handleParameterChange}.
 
 
 \subsection{Further cPar methods}
@@ -2581,28 +2580,41 @@ static method. The enum values are \ttt{BOOL}, \ttt{DOUBLE}, \ttt{LONG},
 \ttt{STRING} and \ttt{XML}; and since the enum is an inner type,
 they usually have to be qualified with \ttt{cPar::}.
 
-An example:
-
-\begin{verbatim}
-cPar& p = par("foo");
-ev << "parameter name: " << p.getName() << "\n";
-ev << "type:" << cPar::getTypeName(p.getType()) << "\n";
-\end{verbatim}
-
 \fname{isVolatile()} returns whether the parameter was declared volatile
 in the NED file. \fname{isNumeric()} returns true if the parameter
 type is double or long.
 
-The \fname{str()} method converts the value to a string; if the parameter...
-%    cProperties *getProperties() const;
-%    const char *getUnit() const;
+The \fname{str()} method returns the parameter's value in a string form.
+If the parameter contains an expression, then the string representation
+of the expression gets returned.
 
-FIXME Further methods....  Expressions etc...
+An example usage of the above methods:
+
+\begin{verbatim}
+int n = getNumParams();
+for (int i=0; i<n; i++)
+{
+    cPar& p = par(i);
+    ev << "parameter: " << p.getName() << "\n";
+    ev << "  type:" << cPar::getTypeName(p.getType()) << "\n";
+    ev << "  contains:" << p.str() << "\n";
+}
+\end{verbatim}
+
+The NED properties of a parameter can be accessed with the \fname{getProperties()}
+method that returns a pointer to the \cclass{cProperties} object that stores
+the properties of this parameter. Specifically, \fname{getUnit()} returns
+the physical unit associated with the parameter (\ttt{@unit} property in NED).
+
+Further \cclass{cPar} methods and related classes like \cclass{cExpression} and
+\cclass{cDynamicExpression} are used by the NED infrastructure to set up and
+assign parameters. They are documented in the \tbf{API Reference}, but
+they are normally of little interest for users.
 
 
 \subsection{Emulating parameter arrays}
 
-As of version 3.2, {\opp} does not support parameter arrays,
+As of version 4.0, {\opp} does not support parameter arrays,
 but in practice they can be emulated using string parameters.
 One can assign the parameter a string which contains all values
 in a textual form (for example, \ttt{"0 1.234 3.95 5.467"}), then
