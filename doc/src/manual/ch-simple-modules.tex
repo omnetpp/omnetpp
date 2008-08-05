@@ -2241,7 +2241,7 @@ The \fname{wait()} function suspends the execution of the module for
 a given amount of simulation time (a \textit{delta}).
 
 \begin{verbatim}
-wait( delay );
+wait(delay);
 \end{verbatim}
 
 In other simulation software, \fname{wait()} is often called \textit{hold}.
@@ -2252,11 +2252,11 @@ to be prepared for arriving messages, for example message generators.
 An example:
 
 \begin{verbatim}
-for(;;)
+for (;;)
 {
   // wait for a (potentially random amount of) time, specified
-  // in the interArrivalTime module parameter
-  wait( par("interArrivalTime") );
+  // in the interArrivalTime volatile module parameter
+  wait(par("interArrivalTime").doubleValue());
 
   // generate and send message
   ...
@@ -2431,143 +2431,30 @@ or exclamation mark) in the error text; it will be added by {\opp}.
 
 
 
+
+
 \section{Accessing module parameters}
 \label{ch:simple-modules:parameters}
 
-Module parameters can be accessed\index{module!accessing parameters}
+Module parameters declared in NED files are represented with the \cclass{cPar}
+class at runtime, and be accessed\index{module!accessing parameters}
 by calling the \fname{par()} member function of \cclass{cModule}:
 
 \begin{verbatim}
 cPar& delayPar = par("delay");
 \end{verbatim}
 
-The \cclass{cPar} class is a general value-storing object. It supports
-type casts to numeric types, so parameter values can be read
-like this:
+\cclass{cPar}'s value can be read with methods that correspond to
+the parameter's NED type: \fname{boolValue()}, \fname{longValue()},
+\fname{doubleValue()}, \fname{stringValue()}, \fname{stdstringValue()},
+\fname{xmlValue()}.
+There are also overloaded type cast operators for the corresponding types
+(\ttt{bool}; integer types including \ttt{int}, \ttt{long}, etc;
+\ttt{double}; \ttt{const char *}; \ttt{cXMLElement *}).
 
 \begin{verbatim}
-int numTasks = par("numTasks");
-double processingDelay = par("processingDelay");
-\end{verbatim}
-
-If the parameter was declared \textit{volatile} in the NED file
-or its value is expected to change at runtime (for example by other modules),
-the code should to store a reference or a pointer to the \cclass{cPar} object,
-and re-read the value each time it is needed.
-
-\begin{verbatim}
-cPar& waitTime = par("waitTime");
-for(;;)
-{
-    //...
-    wait((double)waitTime);
-}
-\end{verbatim}
-
-If the \ttt{waitTime} parameter is volatile and it was given a random value
-(e.g. \ttt{exponential(1.0)}) in the NED source or the ini file, the above
-code results in a different delay each time.
-
-Parameter values can also be changed from the program, during
-execution.
-
-The \cclass{cPar} class is discussed in more detail in the next section.
-
-
-\subsection{The cPar module parameter class}
-
-Module parameters are represented as \cclass{cPar} objects.
-The module parameter name is the \cclass{cPar} object's name (\fname{getName()}),
-and the object can store any parameter type supported by the NED language:
-long, double, bool, string and XML config file reference.
-
-%    \footnote{\cclass{cPar} can no longer be used for message parameters;
-%    a separate class, \cclass{cMsgPar} has been created for that purpose.}
-%
-%
-%    Type getType() const;
-%
-%    /**
-%     * Returns the given type as a string.
-%     */
-%    static const char *getTypeName(Type t);
-%
-%    /**
-%     * Returns true if the stored value is of a numeric type.
-%     */
-%    bool isNumeric() const;
-%
-%    /**
-%     * Returns true if this parameter is marked in the NED file as "volatile".
-%     * This flag affects the operation of setExpression().
-%     */
-%    bool isVolatile() const;
-%
-%    /**
-%     * Returns false if the stored value is a constant, and true if it is
-%     * an expression. (It is not examined whether the expression yields
-%     * a constant value.)
-%     */
-%    bool isExpression() const;
-%
-%    /**
-%     * Returns true if the parameter value expression is shared among several
-%     * modules to save memory. This flag is purely informational, and whether
-%     * a parameter is shared or not does not affect operation at all.
-%     */
-%    bool isShared() const;
-%
-%    /**
-%     * Returns false if the parameter does not have any value assigned yet.
-%     * This methods should return true any time during simulation or initialization,
-%     * because all module parameters get assigned during network setup.
-%     */
-%    bool hasValue() const;
-%
-%    /**
-%     * Return the properties for this parameter. Properties cannot be changed
-%     * at runtime.
-%     */
-%    cProperties *getProperties() const;
-%    //@}
-
-\cclass{cMsgPar} several methods for setting and accessing the value:
-\fname{setBoolValue()}, \fname{setLongValue()}, \fname{setStringValue()},
-\fname{setDoubleValue()}, \fname{setXMLValue()}; and
-\fname{boolValue()}, \fname{longValue()}, \fname{stringValue()},
-\fname{doubleValue()}, \fname{xmlValue()}.
-There are also overloaded type cast and assignment operators for C/C++
-primitive types including \ttt{bool}, \ttt{int}, \ttt{long}, \ttt{double},
-\ttt{const char *}, and also for \ttt{cXMLElement *}.
-
-
-\subsection{Reading the value}
-
-\cclass{cPar} has a number of methods for getting the parameter's value:
-
-\begin{verbatim}
-bool boolValue();
-long longValue();
-const char *stringValue();
-double doubleValue();
-cXMLElement *xmlValue();
-\end{verbatim}
-
-There are also overloaded type cast operators for C/C++ primitive types
-including \ttt{bool}, \ttt{int}, \ttt{long}, \ttt{double}, \ttt{const char *},
-and also for \ttt{cXMLElement *}.
-    \footnote{\cclass{cPar} also supports the \ttt{void *} and \ttt{cOwnedObject *} types,
-    but these types were used primarily for message parameters before
-    message definitions (section \ref{ch:messages:message-definitions})
-    got supported, and you cannot create such module parameters from NED.}
-
-Thus, any of the following ways would work to store a parameter's value in
-a variable:
-
-\begin{verbatim}
-double foo = par("foo").doubleValue();
-double foo = (double) par("foo");
-double foo = par("foo");
+long numJobs = par("numJobs").longValue();
+double processingDelay = par("processingDelay"); // using operator double()
 \end{verbatim}
 
 If you use the \ttt{par("foo")} parameter in expressions (such as
@@ -2577,209 +2464,141 @@ you have to clarify by adding either an explicit cast
 (\ttt{(double)par("foo")} or \ttt{(long)par("foo")}) or use
 the \ttt{doubleValue()} or \ttt{longValue()} methods.
 
-The \fname{isConstant()} method can be used to determine whether a
-\cclass{cPar} stores a constant, or an expression that may produce a different
-value every time the object is read, such as \ttt{1+exponential(0.5)}.
+FIXME enumerating parameters etc.
 
 
-\subsection{Changing the value}
+\subsection{Volatile and non-volatile parameters}
 
-There are many ways to set a \cclass{cPar}'s value. One is the \ttt{set...Value()}
-member functions:
+A parameter can be declared \ttt{volatile} in the NED file. The \ttt{volatile}
+modifier indicates that a parameter is re-read every time a value is needed
+during simulation. Volatile parameters typically are used for things like
+random packet generation interval, and get values like \ttt{exponential(1.0)}
+(numbers drawn from the exponential distribution with mean 1.0).
 
-\begin{verbatim}
-cPar& foo = par("foo");
-foo.setLongValue(12);
-foo.setDoubleValue(2.7371);
-foo.setStringValue("one two three");
-\end{verbatim}
+In contrast, non-volatile NED parameters are constants, and reading their
+values multiple times is guaranteed to yield the same value. When a non-volatile
+parameter is assigned a random value like \ttt{exponential(1.0)}, it will get
+evaluated once at the beginning of the simulation and replaced with the result,
+so all reads will get same (randomly generated) value.
 
-There are also overloaded assignment operators for C++ primitive types,
-\ttt{const char *}, and \ttt{cXMLElement *}.
-
-\begin{verbatim}
-cMsgPar pp("pp");
-pp = 12;
-pp = 2.7371;
-pp = "one two three";
-\end{verbatim}
-
-The \cclass{cPar} object makes its own copy of the string, so the
-original one does not need to be preserved. Short strings (less than
-\ensuremath{\sim}20 chars) are handled more efficiently because they
-are stored in the object's memory space (and are not dynamically
-allocated).
-
-\cclass{cPar} can also store other types which yield numeric
-results such as function with constant args;
-they will be mentioned in the next section.
-
-For numeric and string types, an input flag\index{input flag} can be
-set. In this case, when the object's value is first used, the
-parameter value will be searched for in the configuration (ini)
-file\index{ini file}; if it is not found there, the user will be offered
-to enter the value interactively.
-
-Examples:
+The typical usage for non-volatile parameters is to read them in the
+\fname{initialize()} method of the module class, and store the values
+in class variables for easy access later:
 
 \begin{verbatim}
-cMsgPar foo("foo");
-foo.setPrompt("Enter foo value:");
-foo.setInput(true);   // make it an input parameter
+class Source : public cSimpleModule
+{
+  protected:
+    long numJobs;
+    virtual void initialize();
+    ...
+};
 
-double d = (double)foo; // the user will be prompted HERE
+void Source::initialize()
+{
+    numJobs = par("numJobs");
+    ...
+}
 \end{verbatim}
 
-Further \ttt{set..()} functions to assign other storage types,
-e.g. double function with constant args (MathFuncNoArgs, MathFunc1Args, etc),
-reverse Polish expression, compiled expressions based on
-\cclass{cDoubleExpression}, random distribution based on a
-\cclass{cStatistic}'s \fname{random()} method, pointer to \cclass{cOwnedObject},
-etc. are listed in the next section; however, they are rarely useful
-for programming simulation models.
-
-\subsection{cPar storage types}
-
-\cclass{cPar} supports the basic data types (long, double, bool, string, XML) via
-several \textit{storage types}. Storage types are internally
-identified by type characters. The type character is
-returned by the \fname{getType()} method.
-
-Example:
+\ttt{volatile} parameters need to be re-read every time the value is needed.
+For example, a parameter that represents a random packet generation interval
+may be used like this:
 
 \begin{verbatim}
-cMsgPar par = 10L;
-char typechar = par.getType(); // returns storage type 'L'
+void Source::handleMessage(cMessage *msg)
+{
+    ...
+    scheduleAt(simTime() + par("interval").doubleValue(), timerMsg);
+    ...
+}
 \end{verbatim}
 
-The all \cclass{cPar} data types and are summarized in the table below.
-The \fname{isNumeric()} function tells whether the object
-stores a data types which allows the \fname{doubleValue()} method
-to be called.
+This code looks up the the parameter by name every time. This lookup
+can be spared by storing the parameter object's pointer in a class variable,
+resulting in the following code:
 
-\begin{longtable}{|p{0.7cm}|p{1.2cm}|p{5.2cm}|p{6cm}|}
-\hline
-% ROW 1
-\tabheadcol
-\textbf{Type\linebreak char} &
-\textbf{Storage\linebreak type} &
-\textbf{Member functions} &
-\textbf{Description}\\
-\hline
-%% ROW 1
-BOOL &  boolean &
-\ttt{setBoolValue(bool); \linebreak
-bool \fname{boolValue()}; \linebreak
-op \fname{bool()}; \linebreak
-op=(bool);} &
-boolean value. Can also be retrieved from the object as long  (0 or 1).\\\hline
-%% ROW 2
-LONG & long int &
-\ttt{setLongValue(long); \linebreak
-long \fname{longValue()}; \linebreak
-op \fname{long()}; \linebreak
-op=(long);} &
-signed long integer value. Can also be retrieved from the object
-as double.\\\hline
-%% ROW 3
-DOUBLE & double &
-\ttt{setDoubleValue(double); \linebreak
-double \fname{doubleValue()}; \linebreak
-op \fname{double()}; \linebreak
-op=(double);} &
-double-precision floating point value.\\\hline
-%% ROW 4
-STRING &  string &
-\ttt{setStringValue( \linebreak
-\hspace*{0.3cm}  const char *); \linebreak
-const char * \linebreak
-\hspace*{0.3cm} \fname{stringValue()}; \linebreak
-op const char *(); \linebreak
-op=(const char *);} &
-{\raggedright
-string value.}\\\hline
-%% ROW 5
-XML & XML &
-\ttt{setXMLValue( \linebreak
-\hspace*{0.3cm} \cclass{cXMLElement} *node); \linebreak
-\cclass{cXMLElement} *\fname{xmlValue}()}; \linebreak
-op \fname{cXMLElement*()};
-&
-Reference to an XML element in an XML config file.
-\\\hline
-\end{longtable}
+\begin{verbatim}
+class Source : public cSimpleModule
+{
+  protected:
+    cPar *intervalp;
+    virtual void initialize();
+    virtual void handleMessage(cMessage *msg);
+    ...
+};
 
-%
-%    /**
-%     * Return the properties for this parameter. Properties cannot be changed
-%     * at runtime.
-%     */
+void Source::initialize()
+{
+    intervalp = &par("interval");
+    ...
+}
+
+void Source::handleMessage(cMessage *msg)
+{
+    ...
+    scheduleAt(simTime() + intervalp->doubleValue(), timerMsg);
+    ...
+}
+\end{verbatim}
+
+
+\subsection {stringValue() vs stdstringValue()}
+
+\cclass{cPar} contains two methods for returning string value:
+\fname{stringValue()} that return \ttt{const char *}, and
+\fname{stdstringValue()} which returns \ttt{std::string}.
+For volatile parameters, only the second one may be used...FIXME
+
+\subsection{Changing a parameter's value}
+
+Parameter values can be changed from the program, during execution.
+This is rarely needed, but may be useful for some scenarios.
+
+\begin{note}
+    The parameter's type cannot be changed at runtime -- it must
+    remain the type declared in the NED file. It is also not possible
+    to add or remove module parameters at runtime.
+\end{note}
+
+The methods to set the parameter value are \fname{setBoolValue()},
+\fname{setLongValue()}, \fname{setStringValue()},
+\fname{setDoubleValue()}, \fname{setXMLValue()}. There are also
+overloaded assignment operators for various types including \ttt{bool},
+\ttt{int}, \ttt{long}, \ttt{double}, \ttt{const char *}, and
+\ttt{cXMLElement *}.
+
+To let a module get notified about parameter changes, override
+its \fname{handleParameterChange()} method.   %%FIXME add link
+
+
+\subsection{Further cPar methods}
+
+The parameter's name and type are returned by the \fname{getName()} and
+\fname{getType()} methods. The latter returns a value from an enum,
+which can be converted to a readable string with the \fname{getTypeName()}
+static method. The enum values are \ttt{BOOL}, \ttt{DOUBLE}, \ttt{LONG},
+\ttt{STRING} and \ttt{XML}; and since the enum is an inner type,
+they usually have to be qualified with \ttt{cPar::}.
+
+An example:
+
+\begin{verbatim}
+cPar& p = par("foo");
+ev << "parameter name: " << p.getName() << "\n";
+ev << "type:" << cPar::getTypeName(p.getType()) << "\n";
+\end{verbatim}
+
+\fname{isVolatile()} returns whether the parameter was declared volatile
+in the NED file. \fname{isNumeric()} returns true if the parameter
+type is double or long.
+
+The \fname{str()} method converts the value to a string; if the parameter...
 %    cProperties *getProperties() const;
-%    //@}
-%
-%    /** @name Setter functions. Note that overloaded assignment operators also exist. */
-%    //@{
-%    cPar& setBoolValue(bool b);
-%    cPar& setLongValue(long l);
-%    cPar& setDoubleValue(double d);
-%    cPar& setStringValue(const char *s);
-%    cPar& setStringValue(const std::string& s)  {setStringValue(s.c_str()); return *this;}
-%    cPar& setXMLValue(cXMLElement *node);
-%
-%    /**
-%     * Sets the value to the given expression. This object will assume
-%     * the responsibility to delete the expression object.
-%     *
-%     * Note: if the parameter is marked as non-volatile (isVolatile()==false),
-%     * one should not set an expression as value. This is not enforced
-%     * by cPar though.
-%     */
-%    cPar& setExpression(cExpression *e);
-%    //@}
-%
-%    /** @name Getter functions. Note that overloaded conversion operators also exist. */
-%    //@{
-%    bool boolValue() const;
-%    long longValue() const;
-%    double doubleValue() const;
 %    const char *getUnit() const;
-%    const char *stringValue() const;
-%    std::string stdstringValue() const;
-%    cXMLElement *xmlValue() const;
-%
-%    /**
-%     * Returns pointer to the expression stored by the object, or NULL.
-%     */
-%    cExpression *getExpression() const;
-%    //@}
-%
-%    /** @name Miscellaneous utility functions. */
-%    //@{
-%    void read();
-%
-%    /**
-%     * For non-const values, replaces the stored expression with its
-%     * evaluation.
-%     */
-%    void convertToConst();
-%
-%    /**
-%     * Returns the value in text form.
-%     */
-%    std::string str() const;
-%
-%    /**
-%     * Converts the value from string, and stores the result.
-%     * If the text cannot be parsed, an exception is thrown, which
-%     * can be caught as std::runtime_error& if necessary.
-%     */
-%    void parse(const char *text);
-%    //@}
-%
-%    /** @name Overloaded assignment and conversion operators. */
-%    //@{
-%    //@}
-%
+
+FIXME Further methods....  Expressions etc...
+
 
 \subsection{Emulating parameter arrays}
 
