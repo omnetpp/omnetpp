@@ -297,163 +297,6 @@ ever need to care about that.
 
 
 
-\section{Packet transmission modeling}
-\label{ch:simple-modules:packet-transmission}
-
-\subsection{Delay, bit error rate, data rate}
-
-Connections can be assigned three parameters, which facilitate
-the modeling of communication networks, but can be useful for
-other models too:
-\begin{itemize}
-  \item{propagation delay (sec)\index{channel!delay}}
-  \item{bit error rate (errors/bit)\index{channel!error}}
-  \item{data rate (bits/sec)\index{channel!datarate}}
-\end{itemize}
-
-
-Each of these parameters is optional. One can specify link parameters
-individually for each connection, or define link types (also
-called \textit{channel} \textit{types}) once and use them throughout the
-whole model.
-
-The \textit{propagation delay} is the amount of time the arrival of
-the message is delayed by when it travels through the channel.
-Propagation delay is specified in seconds.
-
-The \textit{bit error rate} has influence on the transmission of messages
-through the channel. The bit error rate (\textit{ber}) is the probability that
-a bit is incorrectly transmitted. Thus, the probability that
-a message of \textit{n} bits length is transferred without bit errors is:\\
-
-$P_{no bit error} = (1 - ber)^length$
-
-The message has an error flag which is set in case of transmission
-errors.
-
-The \textit{data rate} is specified in bits/second, and it is used
-for transmission delay calculation. The sending time of the message
-normally corresponds to the transmission of the first bit, and
-the arrival time of the message corresponds to the reception
-of the last bit (Fig. \ref{fig:ch-overview:message-transm}).
-
-\begin{figure}[htbp]
-\begin{center}
-\includegraphics[width=4.301in, height=2.417in]{figures/usmanFig4}
-\caption{Message transmission}
-\label{fig:ch-overview:message-transm}
-\end{center}
-\end{figure}
-
-The above model may not be suitable to model all protocols. In Token Ring
-and FDDI, stations start to repeat bits before the whole frame arrives;
-in other words, frames ``flow through'' the stations, being delayed only a few bits.
-In such cases, the data rate modeling feature of {\opp} cannot be used.
-
-If a message travels along a path, passing through successive links and
-compound modules, the model behaves as if each module waited until the
-last bit of the message arrives and only started its transmission
-afterwards.
-(Fig. \ref{fig:ch-overview:msg-multiple-ch}).
-
-\begin{figure}[htbp]
-\begin{center}
-\includegraphics[width=3.330in, height=2.692in]{figures/usmanFig5}
-\caption{Message sending over multiple channels}
-\label{fig:ch-overview:msg-multiple-ch}
-\end{center}
-\end{figure}
-
-Since the above effect is usually not the desired one, typically
-you will want to assign data rate to only one connection in the
-path.
-
-
-\subsection{Multiple transmissions on links}
-
-If a data rate\index{data rate} is specified for a connection, a message
-will have a certain nonzero transmission time\index{transmission
-  time}, depending on the length of the connection. This implies that
-a message that is passsing through an output gate, ``reserves'' the gate
-for a given period (``it is being transmitted'').
-
-\begin{figure}[htbp]
-  \begin{center}
-    \includegraphics[width=2.315in, height=1.015in]{figures/usmanFig9}
-    \caption{Connection with a data rate}
-    \label{fig:ch-simple-modules:conn-w-data-rate}
-  \end{center}
-\end{figure}
-
-While a message is under transmission, other messages have to wait
-until the transmission is completed. The module sends another message while the
-gate is busy, a runtime error will be thrown.
-
-The {\opp} class library provides functions to check
-whether a certain output gate is transmitting and find out when when
-it finishes transmission.
-
-If the connection with a data rate is not directly connected
-to the simple module's output gate but is the second
-one in the path, you have to check the second gate's busy
-condition\index{gate!busy condition}.
-
-\begin{note}
-   In \opp versions prior to 4.0, sending on a busy gate was permitted, and
-   messages got implicitly queued up. The behaviour of the simulation kernel
-   was changed because in practice, sending on a busy gate was more often result
-   of a programming error than calculated behaviour.
-\end{note}
-
-
-\subsubsection{Implementation of message sending}
-
-Message sending is implemented like this: the arrival time\index{arrival time}
-and the bit error\index{bit error} flag of a message are calculated right inside
-the \fname{send()} call, then the message gets inserted into the FES\index{FES}
-with the calculated arrival time. The message does \textit{not} get scheduled
-individually for each link. This implementation was chosen because of its
-run-time efficiency.
-
-\begin{note}
-   The consequence of this implementation is that any change in the
-   channel's parameters (delay, bit rate, bit error rate) will only affect
-   messages \textit{sent} after the change. Messages already under way will not
-   be influenced by the change.
-
-   This is not a huge problem in practice, but if it is important to model
-   channels with changing parameters, the solution is to insert simple modules
-   into the path to ensure strict scheduling.
-\end{note}
-
-
-\subsubsection{The approach of some other simulators}
-
-Note that some simulators (e.g. OPNET) assign \textit{packet queues}
-to input gates (ports), and messages sent are buffered at the
-destination module (or the remote end of the link) until they are
-received by the destination module. With that approach, events and
-messages are separate entities, that is, a \textit{send} operation
-includes placing the message in the packet queue \textit{and} scheduling
-an event, which signals the arrival of the packet. In some implementations,
-output gates also have packet queues where packets will be buffered until
-the channel is ready (available for transmission).
-
-{\opp} gates\index{gate} don't have associated queues. The place
-where sent but not yet received messages are buffered in the
-FES\index{FES}.  {\opp}'s approach is potentially faster
-than the solution mentioned above because it doesn't have the
-enqueue/dequeue overhead and also spares an event creation. The
-drawback is, that changes to channel parameters do not take effect
-immediately.
-
-In {\opp} one can implement \textit{point-to-point transmitter} modules
-with packet queues if needed. For example, the INET Framework
-follows this approach.
-
-
-
-
 \section{Defining simple module types}
 
 \subsection{Overview}
@@ -2008,22 +1851,244 @@ every 5 simulated seconds:
 int outGateId = findGate("outGate");
 while(true)
 {
-  send(new cMessage("packet"), outGateId);
+  send(new cMessage("job"), outGateId);
   wait(5);
 }
 \end{verbatim}
 
 
-\subsubsection{Modeling packet transmissions}
+\subsection{Packet transmissions}
+\label{ch:simple-modules:packet-transmission}
 
-If you're sending messages over a link that has (nonzero) data rate,
-it is modeled as described earlier in this manual, in
-section \ref{ch:simple-modules:packet-transmission}.
+When a message is sent out on a gate, it usually travels through
+a series of connections until it arrives at the destination module.
+We call this series of connections a \textit{connection path} or
+simply \textit{path}.
 
-If you want to have full control over the transmission process,
-you'll probably need the \fname{isBusy()} and \fname{getTransmissionFinishTime()}
-member functions of \cclass{cGate}. They are described in section
-\ref{ch:simple-modules:cgate-transmission-state}.
+Several connections in the path may have an associated channel,
+but there can be only one channel per path that models nonzero
+transmission duration. This channel is called the
+\textit{transmission channel}.
+
+\subsubsection{Transmitting a packet}
+
+The first packet can be simply send out on the output gate. However,
+subsequent packets may only be sent when the transmission channel
+is free, that is, it has finished transmitting earlier packets.
+
+You can get a pointer to the transmission channel by calling the
+\fname{getDatarateChannel()} method on the output gate.
+The channel's \fname{isBusy()} and \fname{getTransmissionFinishTime()}
+methods can tell you whether a channel is currently transmitting,
+and when the transmission is going to finish. (When the latter is
+less or equal the current simulation time, the channel is free.)
+If the channel is currently busy, a timer (self-message) needs to
+be scheduled, and the packet should be stored until then, for example
+in a queue.
+
+The output gate also has \fname{isBusy()} and \fname{getTransmissionFinishTime()}
+methods, which are basically shortcuts to \ttt{getDatarateChannel()->isBusy()}
+and \ttt{getDatarateChannel()->getTransmissionFinishTime()}. When performance
+is important, it is recommended to obtain a pointer to the transmission
+channel once, and then call \fname{isBusy()} and \fname{getTransmissionFinishTime()}
+on the cached channel pointer.
+
+An incomplete code example to illustrate the above process:
+
+\begin{verbatim}
+simtime_t txfinishTime = gate("out")->getTransmissionFinishTime();
+if (txfinishTime <= simTime())
+    send(pkt, "out");
+else
+    scheduleAt(txFinishTime, timerMsg); // also: remember pkt,
+    // and ensure that when timerMsg expires, it will get sent out
+\end{verbatim}
+
+
+\subsubsection{Receiving a packet}
+
+Normally the packet object gets delivered to the destination module
+at the simulation time that corresponds to finishing the reception
+of the message (ie. the arrival of its last bit). However, the receiver
+module may change this, by "reprogramming" the receiver gate with
+the \fname{setDeliverOnReceptionStart()} method:
+
+\begin{verbatim}
+gate("in")->setDeliverOnReceptionStart(true);
+\end{verbatim}
+
+This method may only be called on simple module input gates, and it
+instructs the simulation kernel to give arriving packets to the
+receiver module when reception \textit{begins} not ends, that is,
+on arrival of the first bit of the message.
+\fname{getDeliverOnReceptionStart()} only needs to be called once,
+so it is usually done in the \fname{initialize()} method of the module.
+
+When a packet gets delivered to the module, the packet's
+\fname{isReceptionStart()} method can be called to determine
+whether it corresponds to the start or end of the reception
+process (it should be the same as the \fname{getDeliverOnReceptionStart()}
+flag of the input gate), and \fname{getDuration()} returns the transmission
+duration.
+
+
+\subsection{Delay, data rate, bit error rate, packet error rate}
+
+FIXME revise!
+
+Connections can be assigned three parameters, which facilitate
+the modeling of communication networks, but can be useful for
+other models too:
+\begin{itemize}
+  \item{propagation delay (sec)\index{channel!delay}}
+  \item{bit error rate (errors/bit)\index{channel!error}}
+  \item{data rate (bits/sec)\index{channel!datarate}}
+\end{itemize}
+
+
+Each of these parameters is optional. One can specify link parameters
+individually for each connection, or define link types (also
+called \textit{channel} \textit{types}) once and use them throughout the
+whole model.
+
+The \textit{propagation delay} is the amount of time the arrival of
+the message is delayed by when it travels through the channel.
+Propagation delay is specified in seconds.
+
+The \textit{bit error rate} has influence on the transmission of messages
+through the channel. The bit error rate (\textit{ber}) is the probability that
+a bit is incorrectly transmitted. Thus, the probability that
+a message of \textit{n} bits length is transferred without bit errors is:\\
+
+$P_{no bit error} = (1 - ber)^length$
+
+The message has an error flag which is set in case of transmission
+errors.
+
+The \textit{data rate} is specified in bits/second, and it is used
+for transmission delay calculation. The sending time of the message
+normally corresponds to the transmission of the first bit, and
+the arrival time of the message corresponds to the reception
+of the last bit (Fig. \ref{fig:ch-overview:message-transm}).
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=4.301in, height=2.417in]{figures/usmanFig4}
+\caption{Message transmission}
+\label{fig:ch-overview:message-transm}
+\end{center}
+\end{figure}
+
+The above model may not be suitable to model all protocols. In Token Ring
+and FDDI, stations start to repeat bits before the whole frame arrives;
+in other words, frames ``flow through'' the stations, being delayed only a few bits.
+In such cases, the data rate modeling feature of {\opp} cannot be used.
+
+If a message travels along a path, passing through successive links and
+compound modules, the model behaves as if each module waited until the
+last bit of the message arrives and only started its transmission
+afterwards.
+(Fig. \ref{fig:ch-overview:msg-multiple-ch}).
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=3.330in, height=2.692in]{figures/usmanFig5}
+\caption{Message sending over multiple channels}
+\label{fig:ch-overview:msg-multiple-ch}
+\end{center}
+\end{figure}
+
+Since the above effect is usually not the desired one, typically
+you will want to assign data rate to only one connection in the
+path.
+
+
+\subsubsection{Multiple transmissions on links}
+
+If a data rate\index{data rate} is specified for a connection, a message
+will have a certain nonzero transmission time\index{transmission
+  time}, depending on the length of the connection. This implies that
+a message that is passsing through an output gate, ``reserves'' the gate
+for a given period (``it is being transmitted'').
+
+\begin{figure}[htbp]
+  \begin{center}
+    \includegraphics[width=2.315in, height=1.015in]{figures/usmanFig9}
+    \caption{Connection with a data rate}
+    \label{fig:ch-simple-modules:conn-w-data-rate}
+  \end{center}
+\end{figure}
+
+While a message is under transmission, other messages have to wait
+until the transmission is completed. The module sends another message while the
+gate is busy, a runtime error will be thrown.
+
+The {\opp} class library provides functions to check
+whether a certain output gate is transmitting and find out when when
+it finishes transmission.
+
+If the connection with a data rate is not directly connected
+to the simple module's output gate but is the second
+one in the path, you have to check the second gate's busy
+condition\index{gate!busy condition}.
+
+\begin{note}
+   In \opp versions prior to 4.0, sending on a busy gate was permitted, and
+   messages got implicitly queued up. The behaviour of the simulation kernel
+   was changed because in practice, sending on a busy gate was more often result
+   of a programming error than calculated behaviour.
+\end{note}
+
+
+\subsubsection{Implementation of message sending}
+
+Message sending is implemented like this: the arrival time\index{arrival time}
+and the bit error\index{bit error} flag of a message are calculated right inside
+the \fname{send()} call, then the message gets inserted into the FES\index{FES}
+with the calculated arrival time. The message does \textit{not} get scheduled
+individually for each link. This implementation was chosen because of its
+run-time efficiency.
+
+\begin{note}
+   The consequence of this implementation is that any change in the
+   channel's parameters (delay, bit rate, bit error rate) will only affect
+   messages \textit{sent} after the change. Messages already under way will not
+   be influenced by the change.
+
+   This is not a huge problem in practice, but if it is important to model
+   channels with changing parameters, the solution is to insert simple modules
+   into the path to ensure strict scheduling.
+\end{note}
+
+
+\subsubsection{The approach of some other simulators}
+
+Note that some simulators (e.g. OPNET) assign \textit{packet queues}
+to input gates (ports), and messages sent are buffered at the
+destination module (or the remote end of the link) until they are
+received by the destination module. With that approach, events and
+messages are separate entities, that is, a \textit{send} operation
+includes placing the message in the packet queue \textit{and} scheduling
+an event, which signals the arrival of the packet. In some implementations,
+output gates also have packet queues where packets will be buffered until
+the channel is ready (available for transmission).
+
+{\opp} gates\index{gate} don't have associated queues. The place
+where sent but not yet received messages are buffered in the
+FES\index{FES}.  {\opp}'s approach is potentially faster
+than the solution mentioned above because it doesn't have the
+enqueue/dequeue overhead and also spares an event creation. The
+drawback is, that changes to channel parameters do not take effect
+immediately.
+
+In {\opp} one can implement \textit{point-to-point transmitter} modules
+with packet queues if needed. For example, the INET Framework
+follows this approach.
+
+
+
+
+
 
 
 
