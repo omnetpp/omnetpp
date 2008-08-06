@@ -1,7 +1,7 @@
 #! /bin/sh
-# 
+#
 # usage: runtest [<testfile>...]
-# without args, runs all *.test files in the current directory   
+# without args, runs all *.test files in the current directory
 #
 
 MAKE=make
@@ -12,10 +12,11 @@ if [ ! -d work ];  then mkdir work; fi
 rm -rf work/lib
 cp -pPR lib work/       # OSX dos not support cp -a
 export NEDPATH=.:../lib
+EXTRA_INCLUDES="-I../../../src/sim/parsim -I../../../src/envir -I../../../src/common -I../../../include/platdep"
 
 opp_test -g $OPT -v $TESTFILES || exit 1
 echo
-(cd work; opp_makemake -f --deep --no-deep-includes; $MAKE) || exit 1
+(cd work; opp_makemake -f --deep --no-deep-includes $EXTRA_INCLUDES; $MAKE) || exit 1
 echo
 opp_test -r $OPT -v $TESTFILES || exit 1
 echo

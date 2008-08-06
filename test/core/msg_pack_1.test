@@ -8,38 +8,55 @@ message TestMessage {
     double d;
     string s;
 
-    int iv[];
-    double dv[];
-    string sv[];
+    int iv[3];
+    double dv[2];
+    string sv[2];
 }
 
 
 %includes:
 #include <string.h>
-#include "../src/sim/parsim/cfilecommbuffer.h"
+#include "cfilecommbuffer.h" // src/sim/parsim
+#include "objectprinter.h"   // src/envir
 #include "test_m.h"
 
 %activity:
 
-#define PRINT(X)  ev << #X << ":" << (X) << endl
-
-cFileCommBuffer *buffer = new cFileCommBuffer();
-
+// create and pack
 TestMessage msg("msg");
 msg.setI(23);
 msg.setD(3.14);
 msg.setS("Hello");
-FIXME vector too!
+msg.setIv(0, 100);
+msg.setIv(1, 200);
+msg.setIv(2, 300);
+msg.setDv(0, 1.23);
+msg.setDv(1, 2.66);
+msg.setSv(0, "first");
+msg.setSv(1, "second");
+
+cFileCommBuffer *buffer = new cFileCommBuffer();
 msg.parsimPack(buffer);
 
+// unpack and print
 TestMessage msg2("tmp");
 msg2.parsimUnpack(buffer);
 ev << "isBufferEmpty:" << buffer->isBufferEmpty() << endl;
-PRINT(msg2.getI());
-PRINT(msg2.getD());
-PRINT(msg2.getS());
-ev << ".";
+
+ev << ObjectPrinter("*:declaredOn(TestMessage)",4).printObjectToString(&msg2);
 
 %contains: stdout
 isBufferEmpty:1
-TBD
+class TestMessage {
+    int i = 23
+    double d = 3.140000
+    string s = Hello
+    int iv[0] = 100
+    int iv[1] = 200
+    int iv[2] = 300
+    double dv[0] = 1.230000
+    double dv[1] = 2.660000
+    string sv[0] = first
+    string sv[1] = second
+}
+
