@@ -16,8 +16,8 @@ message TestMessage {
 
 %includes:
 #include <string.h>
-#include "cfilecommbuffer.h" // src/sim/parsim
-#include "objectprinter.h"   // src/envir
+#include "cfilecommbuffer.h" // from src/sim/parsim
+#include "objectprinter.h"   // from src/envir
 #include "test_m.h"
 
 %activity:
