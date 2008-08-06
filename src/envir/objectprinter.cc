@@ -22,6 +22,7 @@
 #include "cgate.h"
 #include "cclassdescriptor.h"
 #include "commonutil.h"
+#include "stringtokenizer.h"
 #include "objectprinter.h"
 
 USING_NAMESPACE
@@ -47,6 +48,44 @@ static bool defaultRecurseInto(void *object, cClassDescriptor *descriptor, int f
 }
 
 //----
+
+ObjectPrinter::ObjectPrinter(const char *objectFieldMatcherPattern, int indentSize)
+{
+    std::vector<MatchExpression> objectMatchExpressions;
+    std::vector<std::vector<MatchExpression> > fieldNameMatchExpressionsList;
+
+    StringTokenizer tokenizer(objectFieldMatcherPattern, "|"); // TODO: use ; when it does not mean comment anymore
+    std::vector<std::string> patterns = tokenizer.asVector();
+
+    for (int i = 0; i < (int)patterns.size(); i++) {
+        char *objectPattern = (char *)patterns[i].c_str();
+        char *fieldNamePattern = strchr(objectPattern, ':');
+
+        if (fieldNamePattern) {
+            *fieldNamePattern = '\0';
+            StringTokenizer fieldNameTokenizer(fieldNamePattern + 1, ",");
+            std::vector<std::string> fieldNamePatterns = fieldNameTokenizer.asVector();
+            std::vector<MatchExpression> fieldNameMatchExpressions;
+
+            for (int j = 0; j < (int)fieldNamePatterns.size(); j++)
+                fieldNameMatchExpressions.push_back(MatchExpression(fieldNamePatterns[j].c_str(), false, true, true));
+
+            fieldNameMatchExpressionsList.push_back(fieldNameMatchExpressions);
+        }
+        else {
+            std::vector<MatchExpression> fieldNameMatchExpressions;
+            fieldNameMatchExpressions.push_back(MatchExpression("*", false, true, true));
+            fieldNameMatchExpressionsList.push_back(fieldNameMatchExpressions);
+        }
+
+        objectMatchExpressions.push_back(MatchExpression(objectPattern, false, true, true));
+    }
+
+    Assert(objectMatchExpressions.size() == fieldNameMatchExpressionsList.size());
+    this->objectMatchExpressions = objectMatchExpressions;
+    this->fieldNameMatchExpressionsList = fieldNameMatchExpressionsList;
+    this->indentSize = indentSize;
+}
 
 ObjectPrinter::ObjectPrinter(std::vector<MatchExpression> &objectMatchExpressions,
                              std::vector<std::vector<MatchExpression> > &fieldNameMatchExpressionsList,

@@ -19,7 +19,6 @@
 #include "commonutil.h"  //vsnprintf
 #include "eventlogfilemgr.h"
 #include "eventlogwriter.h"
-#include "stringtokenizer.h"
 #include "cconfigkey.h"
 #include "fileutil.h"
 #include "cconfiguration.h"
@@ -83,37 +82,7 @@ void EventlogFileManager::setup()
     const char *eventLogMessageDetailPattern = ev.getConfig()->getAsCustom(CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN);
 
     if (eventLogMessageDetailPattern) {
-        std::vector<MatchExpression> objectMatchExpressions;
-        std::vector<std::vector<MatchExpression> > fieldNameMatchExpressionsList;
-
-        StringTokenizer tokenizer(eventLogMessageDetailPattern, "|"); // TODO: use ; when it does not mean comment anymore
-        std::vector<std::string> patterns = tokenizer.asVector();
-
-        for (int i = 0; i < (int)patterns.size(); i++) {
-            char *objectPattern = (char *)patterns[i].c_str();
-            char *fieldNamePattern = strchr(objectPattern, ':');
-
-            if (fieldNamePattern) {
-                *fieldNamePattern = '\0';
-                StringTokenizer fieldNameTokenizer(fieldNamePattern + 1, ",");
-                std::vector<std::string> fieldNamePatterns = fieldNameTokenizer.asVector();
-                std::vector<MatchExpression> fieldNameMatchExpressions;
-
-                for (int j = 0; j < (int)fieldNamePatterns.size(); j++)
-                    fieldNameMatchExpressions.push_back(MatchExpression(fieldNamePatterns[j].c_str(), false, true, true));
-
-                fieldNameMatchExpressionsList.push_back(fieldNameMatchExpressions);
-            }
-            else {
-                std::vector<MatchExpression> fieldNameMatchExpressions;
-                fieldNameMatchExpressions.push_back(MatchExpression("*", false, true, true));
-                fieldNameMatchExpressionsList.push_back(fieldNameMatchExpressions);
-            }
-
-            objectMatchExpressions.push_back(MatchExpression(objectPattern, false, true, true));
-        }
-
-        objectPrinter = new ObjectPrinter(objectMatchExpressions, fieldNameMatchExpressionsList, 3);
+        objectPrinter = new ObjectPrinter(eventLogMessageDetailPattern, 3);
     }
 
     // setup eventlog recording intervals

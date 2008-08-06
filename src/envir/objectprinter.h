@@ -41,13 +41,36 @@ class ENVIR_API ObjectPrinter
 
     public:
         /**
-         * FIXME Levy: pls document parameters and operation
+         * Pattern syntax is that of the "eventlog-message-detail-pattern"
+         * configuration entry -- see documentation there.
+         *
+         * Just some examples here:
+         * "*":
+         *     captures all fields of all messages
+         * "*Msg | *Packet":
+         *     captures all fields of classes named AnythingMsg or AnythingPacket
+         * "*Frame:*Address,*Id":
+         *     captures all fields named anythingAddress and anythingId from
+         *     objects of any class named AnythingFrame
+         * "MyMessage:declaredOn(MyMessage)":
+         *     captures instances of MyMessage recording the fields
+         *     declared on the MyMessage class
+         * "*:(not declaredOn(cMessage) and not declaredOn(cNamedObject) and
+         * not declaredOn(cObject))":
+         *     records user-defined fields from all objects
+         */
+        ObjectPrinter(const char *pattern, int indentSize);
+
+        /**
+         * Accepts the parsed form of the pattern string.
+         * Size of the two vectors must be the same.
          */
         ObjectPrinter(std::vector<MatchExpression> &objectMatchExpressions,
                       std::vector<std::vector<MatchExpression> > &fieldNameMatchExpressionsList,
                       int indentSize);
 
         void printObjectToStream(std::ostream& ostream, cObject *object);
+
         std::string printObjectToString(cObject *object);
 
     protected:
