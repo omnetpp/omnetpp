@@ -138,7 +138,7 @@ one and keeping a copy). This can be done in the same way as
 for any other {\opp} object:
 
 \begin{verbatim}
-cMessage *copy = (cMessage *) msg->dup();
+cMessage *copy = msg->dup();
 \end{verbatim}
 
 or
@@ -1206,7 +1206,7 @@ class FooPacket : public FooPacket_Base
     FooPacket(const FooPacket& other) : FooPacket_Base(other) {}
     FooPacket& operator=(const FooPacket& other)
         {FooPacket_Base::operator=(other); return *this;}
-    virtual cObject *dup() {return new FooPacket(*this);}
+    virtual FooPacket *dup() {return new FooPacket(*this);}
 };
 
 Register_Class(FooPacket);
@@ -1350,7 +1350,7 @@ class STLMessage : public STLMessage_Base
         bar = other.bar;
         return *this;
     }
-    virtual cObject *dup() {return new STLMessage(*this);}
+    virtual STLMessage *dup() {return new STLMessage(*this);}
 
     // foo methods
     virtual void setFooArraySize(unsigned int size) {}

@@ -197,6 +197,8 @@ rules apply:
 \textit{Priority}\index{message!priority} is a user-assigned integer
 attribute of messages.
 
+
+
 \subsection{Simulation time}
 
 The current simulation time can be obtained with the \ttt{simTime()} function.
@@ -244,7 +246,7 @@ that directly accept \ttt{SimTime}, for example \fname{fabs()}, \fname{fmod()},
 
 \begin{note}
    Converting a \ttt{SimTime} to \ttt{double} may lose precision, because
-   \ttt{double} has only a 52-bit mantissa.
+   \ttt{double} only has a 52-bit mantissa.
 \end{note}
 
 Other useful methods of \ttt{SimTime} include \fname{str()}
@@ -255,18 +257,22 @@ global scale exponent; and \fname{getMaxTime} which returns the
 maximum simulation time that can be represented at the current
 scale exponent.
 
+\subsubsection{Compatibility}
+
 Earlier versions of \opp used \ttt{double} for simulation time. To facilitate
 porting existing models to \opp 4.0 or later, \opp can be compiled to use
 \ttt{double} for \ttt{simtime\_t}. To enable this mode, define the
 \ttt{USE\_DOUBLE\_SIMTIME} preprocessor macro during compiling \opp
-and the simulation models. There are also several macros that can be used
-in simulation models to make them compile with both \ttt{simtime\_t}'s:
-\fmac{SIMTIME\_STR()} which converts simulation time to a \ttt{const char *}
-(this macro can be used inside \ttt{printf}'s);
-\fmac{SIMTIME\_DBL(t)} which converts simulation time to \ttt{double};
-\fmac{SIMTIME\_RAW(t)} which returns the underlying \ttt{int64} or \ttt{double};
-\fmac{STR\_SIMTIME(s)} which converts string to simulation time; and
-\fmac{SIMTIME\_TTOA(buf,t)} which converts simulation time to string,
+and the simulation models.
+
+There are several macros that can be used in simulation models to make
+them compile with both \ttt{double} and \ttt{SimTime} simulation time:
+\fmac{SIMTIME\_STR()} converts simulation time to a \ttt{const char *}
+(can be used in \ttt{printf} argument lists);
+\fmac{SIMTIME\_DBL(t)} converts simulation time to \ttt{double};
+\fmac{SIMTIME\_RAW(t)} returns the underlying \ttt{int64} or \ttt{double};
+\fmac{STR\_SIMTIME(s)} converts string to simulation time; and
+\fmac{SIMTIME\_TTOA(buf,t)} converts simulation time to string,
 and places the result into the given buffer. \fmac{MAXTIME} is
 also defined correctly for both \ttt{simtime\_t} types.
 
@@ -1516,987 +1522,6 @@ void ModifiedTransportProtocol::recalculateTimeout()
 \end{verbatim}
 
 
-\section{Finite State Machines in {\opp}}
-
-\subsubsection{Overview}
-
-
-Finite State Machines\index{finite state machine} (FSMs)\index{FSM}
-can make life with \fname{handleMessage()} easier. {\opp} provides a
-class and a set of macros to build FSMs. {\opp}'s FSMs work very much
-like OPNET's or SDL's.
-
-
-The key points are:
-\begin{itemize}
-\item{There are two kinds of states:
-    \textit{transient}\index{transient states} and
-    \textit{steady}\index{steady states}. At each event (that is, at
-    each call to \fname{handleMessage()}), the FSM transitions out of
-    the current (\textit{steady}) state, undergoes a series of state
-    changes (runs through a number of \textit{transient} states), and
-    finally arrives at another \textit{steady} state. Thus between two
-    events, the system is always in one of the steady states.
-    Transient states are therefore not really a must -- they exist
-    only to group actions to be taken during a transition in a
-    convenient way.}
-\item{You can assign program code to handle entering and leaving a state
-    (known as entry/exit code)\index{entry code}\index{exit code}.
-    Staying in the same state is handled as leaving and re-entering
-    the state.}
-\item{Entry code should not modify the state (this is verified by
-    {\opp}).  State changes (transitions) must be put into the exit
-    code.}
-\end{itemize}
-
-{\opp}'s FSMs \textit{can} be nested\index{FSM!nested}. This means
-that any state (or rather, its entry or exit code) may contain a
-further full-fledged \fmac{FSM\_Switch()} (see below). This allows you
-to introduce sub-states and thereby bring some structure into the
-state space if it would become too large.
-
-
-\subsubsection{The FSM API}
-
-
-FSM state is stored in an object of type \cclass{cFSM}. The possible states
-are defined by an enum; the enum is also a place to define, which
-state is transient and which is steady. In the following example, SLEEP
-and ACTIVE are steady states and SEND is transient (the numbers
-in parentheses must be unique within the state type and they are used
-for constructing the numeric IDs for the states):
-
-\begin{verbatim}
-enum {
-  INIT = 0,
-  SLEEP = FSM_Steady(1),
-  ACTIVE = FSM_Steady(2),
-  SEND = FSM_Transient(1),
-};
-\end{verbatim}
-
-
-
-The actual FSM is embedded in a switch-like statement,
-\fmac{FSM\_Switch()}, where you have cases for entering and leaving
-each state:
-
-
-\begin{Verbatim}[commandchars=\\\{\}]
-FSM_Switch(fsm)
-\{
-  case FSM_Exit(\textit{state1}):
-    //...
-    break;
-  case FSM_Enter(\textit{state1}):
-    //...
-    break;
-  case FSM_Exit(\textit{state2}):
-    //...
-    break;
-  case FSM_Enter(\textit{state2}):
-    //...
-    break;
-  //...
-\};
-\end{Verbatim}
-
-
-State transitions\index{state transition} are done via calls to
-\fmac{FSM\_Goto()}, which simply stores the new state in the
-\cclass{cFSM} object:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-FSM_Goto(fsm,\textit{newState});
-\end{Verbatim}
-
-The FSM starts from the state with the numeric code 0; this state
-is conventionally named INIT.
-
-
-\subsubsection{Debugging FSMs}
-
-FSMs can log their state transitions \ttt{ev}\index{ev},
-with the output looking like this:
-
-\begin{verbatim}
-...
-FSM GenState: leaving state SLEEP
-FSM GenState: entering state ACTIVE
-...
-FSM GenState: leaving state ACTIVE
-FSM GenState: entering state SEND
-FSM GenState: leaving state SEND
-FSM GenState: entering state ACTIVE
-...
-FSM GenState: leaving state ACTIVE
-FSM GenState: entering state SLEEP
-...
-\end{verbatim}
-
-To enable the above output, you have to \ttt{\#define FSM\_DEBUG}\index{FSM\_DEBUG}
-before including \ttt{omnetpp.h}.
-
-\begin{Verbatim}[commandchars=\\\{\}]
-#define FSM_DEBUG    // enables debug output from FSMs
-#include <omnetpp.h>
-\end{Verbatim}
-
-The actual logging is done via the \fmac{FSM\_Print()} macro.
-It is currently defined as follows, but you can change the
-output format by undefining \ttt{FSM\_Print()} after including
-\ttt{omnetpp.ini} and providing a new definition instead.
-
-\begin{verbatim}
-#define FSM_Print(fsm,exiting)
-  (ev << "FSM " << (fsm).getName()
-      << ((exiting) ? ": leaving state " : ": entering state ")
-      << (fsm).getStateName() << endl)
-\end{verbatim}
-
-
-\subsubsection{Implementation}
-
-
-The \fmac{FSM\_Switch()} is a macro. It expands to a \fname{switch()}
-statement embedded in a \fname{for()} loop which repeats until the
-FSM\index{FSM} reaches a steady state. (The actual code is rather
-scary, but if you're dying to see it, it is in \texttt{cfsm.h}.)
-
-Infinite loops are avoided by counting state transitions: if
-an FSM goes through 64 transitions without reaching a steady
-state, the simulation will terminate with an error message.
-
-
-\subsubsection{An example}
-
-
-Let us write another bursty generator. It will have two
-states, SLEEP and ACTIVE. In the SLEEP state, the module does
-nothing. In the ACTIVE state, it sends messages with a given
-inter-arrival time. The code was taken from the Fifo2 sample
-simulation.
-
-
-\begin{Verbatim}[commandchars=\\\{\}]
-#define FSM_DEBUG
-#include <omnetpp.h>
-
-class BurstyGenerator : public cSimpleModule
-\{
-  protected:
-    // parameters
-    double sleepTimeMean;
-    double burstTimeMean;
-    double sendIATime;
-    cPar *msgLength;
-
-    // FSM and its states
-    cFSM fsm;
-    enum \{
-      INIT = 0,
-      SLEEP = FSM_Steady(1),
-      ACTIVE = FSM_Steady(2),
-      SEND = FSM_Transient(1),
-    \};
-
-    // variables used
-    int i;
-    cMessage *startStopBurst;
-    cMessage *sendMessage;
-
-    // the virtual functions
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
-\};
-
-Define_Module(BurstyGenerator);
-
-void BurstyGenerator::initialize()
-\{
-    fsm.setName("fsm");
-    sleepTimeMean = par("sleepTimeMean");
-    burstTimeMean = par("burstTimeMean");
-    sendIATime = par("sendIATime");
-    msgLength = &par("msgLength");
-    i = 0;
-    WATCH(i); // always put watches in initialize()
-    startStopBurst = new cMessage("startStopBurst");
-    sendMessage = new cMessage("sendMessage");
-    scheduleAt(0.0,startStopBurst);
-\}
-
-void BurstyGenerator::handleMessage(cMessage *msg)
-\{
-  FSM_Switch(fsm)
- \{
-    case FSM_Exit(INIT):
-      // transition to SLEEP state
-      FSM_Goto(fsm,SLEEP);
-      break;
-    case FSM_Enter(SLEEP):
-      // schedule end of sleep period (start of next burst)
-      scheduleAt(simTime()+exponential(sleepTimeMean),
-                 startStopBurst);
-    break;
-    case FSM_Exit(SLEEP):
-      // schedule end of this burst
-      scheduleAt(simTime()+exponential(burstTimeMean),
-                 startStopBurst);
-      // transition to ACTIVE state:
-      if (msg!=startStopBurst) \{
-        error("invalid event in state ACTIVE");
-      \}
-      FSM_Goto(fsm,ACTIVE);
-      break;
-    case FSM_Enter(ACTIVE):
-      // schedule next sending
-      scheduleAt(simTime()+exponential(sendIATime), sendMessage);
-    break;
-    case FSM_Exit(ACTIVE):
-      // transition to either SEND or SLEEP
-      if (msg==sendMessage) \{
-        FSM_Goto(fsm,SEND);
-      \} else if (msg==startStopBurst) \{
-        cancelEvent(sendMessage);
-        FSM_Goto(fsm,SLEEP);
-      \} else \{
-        error("invalid event in state ACTIVE");
-      \}
-      break;
-    case FSM_Exit(SEND):
-    \{
-      // generate and send out job
-      char msgname[32];
-      sprintf( msgname, "job-%d", ++i);
-      ev << "Generating " << msgname << endl;
-      cMessage *job = new cMessage(msgname);
-      job->setBitLength( (long) *msgLength );
-      job->setTimestamp();
-      send( job, "out" );
-      // return to ACTIVE
-      FSM_Goto(fsm,ACTIVE);
-      break;
-    \}
-  \}
-\}
-\end{Verbatim}
-
-
-
-
-
-\section{Sending and receiving messages}
-\label{ch:simple-modules:sending-and-receiving}
-
-On an abstract level, an {\opp} simulation model is a set of
-simple modules that communicate with each other via message passing.
-The essence of simple modules is that they create, send, receive,
-store, modify, schedule and destroy messages -- everything else
-is supposed to facilitate this task, and collect statistics
-about what was going on.
-
-Messages in {\opp} are instances of the \ttt{cMessage} class or
-one of its subclasses. Message objects are created using the C++
-\ttt{new} operator and destroyed using the \ttt{delete} operator
-when they are no longer needed. During their lifetimes,
-messages travel between modules via gates and connections
-(or are sent directly, bypassing the connections), or
-they are scheduled by and delivered to modules,
-representing internal events of that module.
-
-Messages are described in detail in chapter \ref{cha:messages}.
-At this point, all we need to know about them is that they are
-referred to as \ttt{cMessage *} pointers. Message objects
-can be given descriptive names (a \ttt{const char *} string)
-that often helps in debugging the simulation. The message
-name string can be specified in the constructor, so it
-should not surprise you if you see something like
-\ttt{new cMessage("token")} in the examples below.
-
-
-
-\subsection{Sending messages}
-
-Once created, a message object can be sent through an
-output gate\index{output!gate} using one of the following functions:
-
-\begin{verbatim}
-send(cMessage *msg, const char *gateName, int index=0);
-send(cMessage *msg, int gateId);
-send(cMessage *msg, cGate *gate);
-\end{verbatim}
-
-In the first function, the argument \ttt{gateName} is the name of
-the gate the message has to be sent through. If this gate is
-a vector gate, \ttt{index} determines though which particular output
-gate this has to be done; otherwise, the \ttt{index} argument is not
-needed.
-
-The second and third functions use the gate Id and the pointer to the gate
-object. They are faster than the first one because they don't have to
-search through the gate array.
-
-Examples:
-
-\begin{verbatim}
-send(msg, "outGate");
-send(msg, "outGates", i); // send via outGates[i]
-\end{verbatim}
-
-The following code example creates and sends messages
-every 5 simulated seconds:
-
-\begin{verbatim}
-int outGateId = findGate("outGate");
-while(true)
-{
-  send(new cMessage("job"), outGateId);
-  wait(5);
-}
-\end{verbatim}
-
-
-\subsection{Packet transmissions}
-\label{ch:simple-modules:packet-transmission}
-
-When a message is sent out on a gate, it usually travels through
-a series of connections until it arrives at the destination module.
-We call this series of connections a \textit{connection path} or
-simply \textit{path}.
-
-Several connections in the path may have an associated channel,
-but there can be only one channel per path that models nonzero
-transmission duration. This channel is called the
-\textit{transmission channel}.
-
-\subsubsection{Transmitting a packet}
-
-The first packet can be simply send out on the output gate. However,
-subsequent packets may only be sent when the transmission channel
-is free, that is, it has finished transmitting earlier packets.
-
-You can get a pointer to the transmission channel by calling the
-\fname{getDatarateChannel()} method on the output gate.
-The channel's \fname{isBusy()} and \fname{getTransmissionFinishTime()}
-methods can tell you whether a channel is currently transmitting,
-and when the transmission is going to finish. (When the latter is
-less or equal the current simulation time, the channel is free.)
-If the channel is currently busy, a timer (self-message) needs to
-be scheduled, and the packet should be stored until then, for example
-in a queue.
-
-The output gate also has \fname{isBusy()} and \fname{getTransmissionFinishTime()}
-methods, which are basically shortcuts to \ttt{getDatarateChannel()->isBusy()}
-and \ttt{getDatarateChannel()->getTransmissionFinishTime()}. When performance
-is important, it is recommended to obtain a pointer to the transmission
-channel once, and then call \fname{isBusy()} and \fname{getTransmissionFinishTime()}
-on the cached channel pointer.
-
-An incomplete code example to illustrate the above process:
-
-\begin{verbatim}
-simtime_t txfinishTime = gate("out")->getTransmissionFinishTime();
-if (txfinishTime <= simTime())
-    send(pkt, "out");
-else
-    scheduleAt(txFinishTime, timerMsg); // also: remember pkt,
-    // and ensure that when timerMsg expires, it will get sent out
-\end{verbatim}
-
-
-\subsubsection{Receiving a packet}
-
-Normally the packet object gets delivered to the destination module
-at the simulation time that corresponds to finishing the reception
-of the message (ie. the arrival of its last bit). However, the receiver
-module may change this, by "reprogramming" the receiver gate with
-the \fname{setDeliverOnReceptionStart()} method:
-
-\begin{verbatim}
-gate("in")->setDeliverOnReceptionStart(true);
-\end{verbatim}
-
-This method may only be called on simple module input gates, and it
-instructs the simulation kernel to give arriving packets to the
-receiver module when reception \textit{begins} not ends, that is,
-on arrival of the first bit of the message.
-\fname{getDeliverOnReceptionStart()} only needs to be called once,
-so it is usually done in the \fname{initialize()} method of the module.
-
-When a packet gets delivered to the module, the packet's
-\fname{isReceptionStart()} method can be called to determine
-whether it corresponds to the start or end of the reception
-process (it should be the same as the \fname{getDeliverOnReceptionStart()}
-flag of the input gate), and \fname{getDuration()} returns the transmission
-duration.
-
-
-\subsection{Delay, data rate, bit error rate, packet error rate}
-
-FIXME revise!
-
-Connections can be assigned three parameters, which facilitate
-the modeling of communication networks, but can be useful for
-other models too:
-\begin{itemize}
-  \item{propagation delay (sec)\index{channel!delay}}
-  \item{bit error rate (errors/bit)\index{channel!error}}
-  \item{data rate (bits/sec)\index{channel!datarate}}
-\end{itemize}
-
-
-Each of these parameters is optional. One can specify link parameters
-individually for each connection, or define link types (also
-called \textit{channel} \textit{types}) once and use them throughout the
-whole model.
-
-The \textit{propagation delay} is the amount of time the arrival of
-the message is delayed by when it travels through the channel.
-Propagation delay is specified in seconds.
-
-The \textit{bit error rate} has influence on the transmission of messages
-through the channel. The bit error rate (\textit{ber}) is the probability that
-a bit is incorrectly transmitted. Thus, the probability that
-a message of \textit{n} bits length is transferred without bit errors is:\\
-
-$P_{no bit error} = (1 - ber)^length$
-
-The message has an error flag which is set in case of transmission
-errors.
-
-The \textit{data rate} is specified in bits/second, and it is used
-for transmission delay calculation. The sending time of the message
-normally corresponds to the transmission of the first bit, and
-the arrival time of the message corresponds to the reception
-of the last bit (Fig. \ref{fig:ch-overview:message-transm}).
-
-\begin{figure}[htbp]
-\begin{center}
-\includegraphics[width=4.301in, height=2.417in]{figures/usmanFig4}
-\caption{Message transmission}
-\label{fig:ch-overview:message-transm}
-\end{center}
-\end{figure}
-
-The above model may not be suitable to model all protocols. In Token Ring
-and FDDI, stations start to repeat bits before the whole frame arrives;
-in other words, frames ``flow through'' the stations, being delayed only a few bits.
-In such cases, the data rate modeling feature of {\opp} cannot be used.
-
-If a message travels along a path, passing through successive links and
-compound modules, the model behaves as if each module waited until the
-last bit of the message arrives and only started its transmission
-afterwards.
-(Fig. \ref{fig:ch-overview:msg-multiple-ch}).
-
-\begin{figure}[htbp]
-\begin{center}
-\includegraphics[width=3.330in, height=2.692in]{figures/usmanFig5}
-\caption{Message sending over multiple channels}
-\label{fig:ch-overview:msg-multiple-ch}
-\end{center}
-\end{figure}
-
-Since the above effect is usually not the desired one, typically
-you will want to assign data rate to only one connection in the
-path.
-
-
-\subsubsection{Multiple transmissions on links}
-
-If a data rate\index{data rate} is specified for a connection, a message
-will have a certain nonzero transmission time\index{transmission
-  time}, depending on the length of the connection. This implies that
-a message that is passsing through an output gate, ``reserves'' the gate
-for a given period (``it is being transmitted'').
-
-\begin{figure}[htbp]
-  \begin{center}
-    \includegraphics[width=2.315in, height=1.015in]{figures/usmanFig9}
-    \caption{Connection with a data rate}
-    \label{fig:ch-simple-modules:conn-w-data-rate}
-  \end{center}
-\end{figure}
-
-While a message is under transmission, other messages have to wait
-until the transmission is completed. The module sends another message while the
-gate is busy, a runtime error will be thrown.
-
-The {\opp} class library provides functions to check
-whether a certain output gate is transmitting and find out when when
-it finishes transmission.
-
-If the connection with a data rate is not directly connected
-to the simple module's output gate but is the second
-one in the path, you have to check the second gate's busy
-condition\index{gate!busy condition}.
-
-\begin{note}
-   In \opp versions prior to 4.0, sending on a busy gate was permitted, and
-   messages got implicitly queued up. The behaviour of the simulation kernel
-   was changed because in practice, sending on a busy gate was more often result
-   of a programming error than calculated behaviour.
-\end{note}
-
-
-\subsubsection{Implementation of message sending}
-
-Message sending is implemented like this: the arrival time\index{arrival time}
-and the bit error\index{bit error} flag of a message are calculated right inside
-the \fname{send()} call, then the message gets inserted into the FES\index{FES}
-with the calculated arrival time. The message does \textit{not} get scheduled
-individually for each link. This implementation was chosen because of its
-run-time efficiency.
-
-\begin{note}
-   The consequence of this implementation is that any change in the
-   channel's parameters (delay, bit rate, bit error rate) will only affect
-   messages \textit{sent} after the change. Messages already under way will not
-   be influenced by the change.
-
-   This is not a huge problem in practice, but if it is important to model
-   channels with changing parameters, the solution is to insert simple modules
-   into the path to ensure strict scheduling.
-\end{note}
-
-
-\subsubsection{The approach of some other simulators}
-
-Note that some simulators (e.g. OPNET) assign \textit{packet queues}
-to input gates (ports), and messages sent are buffered at the
-destination module (or the remote end of the link) until they are
-received by the destination module. With that approach, events and
-messages are separate entities, that is, a \textit{send} operation
-includes placing the message in the packet queue \textit{and} scheduling
-an event, which signals the arrival of the packet. In some implementations,
-output gates also have packet queues where packets will be buffered until
-the channel is ready (available for transmission).
-
-{\opp} gates\index{gate} don't have associated queues. The place
-where sent but not yet received messages are buffered in the
-FES\index{FES}.  {\opp}'s approach is potentially faster
-than the solution mentioned above because it doesn't have the
-enqueue/dequeue overhead and also spares an event creation. The
-drawback is, that changes to channel parameters do not take effect
-immediately.
-
-In {\opp} one can implement \textit{point-to-point transmitter} modules
-with packet queues if needed. For example, the INET Framework
-follows this approach.
-
-
-
-
-
-
-
-
-\subsection{Broadcasts and retransmissions}
-
-When you implement broadcasts or retransmissions, two frequently
-occurring tasks in protocol simulation, you might feel tempted
-to use the same message in multiple \fname{send()} operations.
-Do not do it -- you cannot send the same message object multiple times.
-The solution in such cases is duplicating the message.
-
-\subsubsection{Broadcasting messages}
-
-In your model, you may need to broadcast a message to several destinations.
-Broadcast can be implemented in a simple module by sending out copies
-of the same message, for example on every gate of a gate vector.
-As described above, you cannot use the same message pointer for
-in all \fname{send()} calls -- what you have to do instead is
-create copies (duplicates) of the message object and send them.
-
-Example:
-
-\begin{verbatim}
-for (int i=0; i<n; i++)
-{
-    cMessage *copy = (cMessage *) msg->dup();
-    send(copy, "out", i);
-}
-delete msg;
-\end{verbatim}
-
-You might have noticed that copying the message for the last gate is
-redundant (we could send out the original message),
-so it can be optimized out like this:
-
-\begin{verbatim}
-for (int i=0; i<n-1; i++)   // note n-1 instead of n
-{
-    cMessage *copy = (cMessage *) msg->dup();
-    send(copy, "out", i);
-}
-send(msg, "out", n-1);  // send original on last gate
-\end{verbatim}
-
-
-\subsubsection{Retransmissions}
-
-Many communication protocols involve retransmissions of packets (frames).
-When implementing retransmissions, you cannot just hold a pointer
-to the same message object and send it again and again -- you'd get
-the \textit{not owner of message} error on the first resend.
-
-Instead, whenever it comes to (re)transmission, you should create and
-send copies of the message, and retain the original.
-When you are sure there will not be any more retransmission,
-you can delete the original message.
-
-Creating and sending a copy:
-
-\begin{verbatim}
-// (re)transmit packet:
-cMessage *copy = (cMessage *) packet->dup();
-send(copy, "out");
-\end{verbatim}
-
-and finally (when no more retransmissions will occur):
-
-\begin{verbatim}
-delete packet;
-\end{verbatim}
-
-
-\subsubsection{Why?}
-
-A message is like any real world object -- it cannot be at two places
-at the same time. Once you've sent it, the message object
-no longer belongs to the module: it is taken over by the simulation kernel,
-and will eventually be delivered to the destination module.
-The sender module should not even refer to its pointer any more.
-Once the message arrived in the destination module, that module
-will have full authority over it -- it can send it on,
-destroy it immediately, or store it for further handling.
-The same applies to messages that have been scheduled -- they
-belong to the simulation kernel until they are delivered back to
-the module.
-
-To enforce the rules above, all message sending functions
-check that you actually own the message you are about to send.
-If the message is with another module, it is currently scheduled or
-in a queue etc., you'll get a runtime error: \textit{not owner of message}.
-  \footnote{The feature does not increase runtime overhead significantly, because
-  it uses the object ownership\index{ownership} management (described in
-  Section \ref{sec:ch-sim-lib:ownership-management});
-  it merely checks that the owner of the message is the module that
-  wants to send it.}
-
-
-
-\subsection{Delayed sending}
-
-It is often needed to model a delay (processing time, etc.) immediately
-followed by message sending. In {\opp}, it is possible to implement
-it like this:
-
-\begin{verbatim}
-wait( someDelay );
-send( msg, "outgate" );
-\end{verbatim}
-
-
-If the module needs to react to messages that arrive during the delay,
-\fname{wait()} cannot be used and the timer mechanism described in
-Section \ref{sec:ch-simple-modules:self-messages}, ``Self-messages'', would
-need to be employed.
-
-
-There is also a more straightforward method than those mentioned above:
-delayed sending\index{delayed sending}. Delayed sending can be achieved
-by using one of these functions:
-
-\begin{verbatim}
-sendDelayed(cMessage *msg, double delay, const char *gateName, int index);
-sendDelayed(cMessage *msg, double delay, int gateId);
-sendDelayed(cMessage *msg, double delay, cGate *gate);
-\end{verbatim}
-
-The arguments are the same as for \fname{send()}, except for the extra \textit{delay}
-parameter. The effect of the function is the same as if the module
-had kept the message for the delay interval and sent it afterwards.
-That is, the sending time of the message will be the current
-simulation time (time at the \fname{sendDelayed()} call) plus the delay.
-The delay value must be non-negative.
-
-Example:
-
-\begin{verbatim}
-sendDelayed(msg, 0.005, "outGate");
-\end{verbatim}
-
-
-
-\subsection{Direct message sending}
-
-Sometimes it is necessary or convenient to ignore gates/connections
-and send a message directly to a remote destination module. The \fname{sendDirect()}
-function does that:
-
-\begin{verbatim}
-sendDirect(cMessage *msg, double delay, cModule *mod, int gateId)
-sendDirect(cMessage *msg, double delay, cModule *mod, const char *gateName, int index=-1)
-sendDirect(cMessage *msg, double delay, cGate *gate)
-\end{verbatim}
-
-In addition to the message and a delay, it also takes the destination module
-and gate. The gate should be an \textit{input} gate and should not be connected.
-In other words, the module needs dedicated gates for receiving via \ttt{sendDirect()}.
-(Note: For leaving a gate unconnected in a compound module, you'll need to specify
-\ttt{connections nocheck:} instead of plain \ttt{connections:} in the NED file.)
-
-An example:
-
-\begin{verbatim}
-cModule *destinationModule = getParentModule()->getSubmodule("node2");
-double delay = truncnormal(0.005, 0.0001);
-sendDirect(new cMessage("packet"), delay, destinationModule, "inputGate");
-\end{verbatim}
-
-At the destination module, there is no difference between messages received
-directly and those received over connections.
-
-
-
-\subsection{Receiving messages}
-
-\textbf{With activity() only!} The message receiving functions can
-only be used in the \fname{activity()} function,
-\fname{handleMessage()} gets received messages in its argument list.
-
-Messages are received using the \fname{receive()} function.
-\fname{receive()} is a member of \cclass{cSimpleModule}.
-
-\begin{verbatim}
-cMessage *msg = receive();
-\end{verbatim}
-
-The \fname{receive()} function accepts an optional \textit{timeout}
-parameter\index{receive!timeout}. (This is a \textit{delta}, not an
-absolute simulation time.) If an appropriate message doesn't arrive
-within the timeout period, the function returns a NULL pointer.
-    \footnote{Putaside-queue and the functions \ttt{receiveOn()},
-    \ttt{receiveNew()}, and \ttt{receiveNewOn()} were deprecated
-    in {\opp} 2.3 and removed in {\opp} 3.0.}
-
-\begin{verbatim}
-simtime_t timeout = 3.0;
-cMessage *msg = receive( timeout );
-
-if (msg==NULL)
-{
-    ...   // handle timeout
-}
-else
-{
-    ...  // process message
-}
-\end{verbatim}
-
-
-
-\subsection{The wait() function}
-
-\textbf{With activity() only!} The \fname{wait()} function's implementation
-contains a \fname{receive()} call which cannot be used in \fname{handleMessage()}.
-
-The \fname{wait()} function suspends the execution of the module for
-a given amount of simulation time (a \textit{delta}).
-
-\begin{verbatim}
-wait(delay);
-\end{verbatim}
-
-In other simulation software, \fname{wait()} is often called \textit{hold}.
-Internally, the \fname{wait()} function is implemented by a
-\fname{scheduleAt()} followed by a \fname{receive()}.
-The \fname{wait()} function is very convenient in modules that do not need
-to be prepared for arriving messages, for example message generators.
-An example:
-
-\begin{verbatim}
-for (;;)
-{
-  // wait for a (potentially random amount of) time, specified
-  // in the interArrivalTime volatile module parameter
-  wait(par("interArrivalTime").doubleValue());
-
-  // generate and send message
-  ...
-}
-\end{verbatim}
-
-It is a runtime error if a message arrives during the wait interval.
-If you expect messages to arrive during the wait period, you can
-use the \fname{waitAndEnqueue()} function. It takes a pointer to a queue object
-(of class \cclass{cQueue}, described in chapter \ref{cha:the-simulation-library})
-in addition to the wait interval. Messages that arrive during the
-wait interval will be accumulated in the queue, so you can
-process them after the \fname{waitAndEnqueue()} call returned.
-
-\begin{verbatim}
-cQueue queue("queue");
-...
-waitAndEnqueue(waitTime, &queue);
-if (!queue.empty())
-{
-  // process messages arrived during wait interval
-  ...
-}
-\end{verbatim}
-
-
-\subsection{Modeling events using self-messages}
-\label{sec:ch-simple-modules:self-messages}
-
-In most simulation models it is necessary to implement timers,
-or schedule events that occur at some point in the future.
-For example, when a packet is sent by a communications protocol model,
-it has to schedule an event that would occur when a timeout expires,
-because it will have to resent the packet then.
-As another example, suppose you want to write a model of a server which
-processes jobs from a queue. Whenever it begins processing
-a job, the server model will want to schedule an event to occur
-when the job finishes processing, so that it can begin processing
-the next job.
-
-In {\opp} you solve such tasks by letting the simple module
-send a message to itself; the message would be delivered
-to the simple module at a later point of time. Messages used
-this way are called self-messages\index{self-message}.
-Self-messages are used to model events which occur within the module.
-
-\subsubsection{Scheduling an event}
-
-The module can send a message to itself using the \fname{scheduleAt()} function.
-\fname{scheduleAt()} accepts an \textit{absolute} simulation time,
-usually calculated as \fname{simTime()}+\textit{delta}:
-
-\begin{verbatim}
-scheduleAt(absoluteTime, msg);
-scheduleAt(simtime()+delta, msg);
-\end{verbatim}
-
-Self-messages are delivered to the module in the same way as other
-messages (via the usual receive calls or \fname{handleMessage()});
-the module may call the \fname{isSelfMessage()} member of any received
-message to determine if it is a self-message.
-
-As an example, here's how you could implement your own \fname{wait()}
-function in an \fname{activity()} simple module, if the simulation kernel
-didn't provide it already:
-
-%
-%TBD
-%This looks like a pointless thing to do... Is there no better example?
-%The kernel DOES after all, have a Wait() function built in...
-%Of course, this is low priority.
-%Gabor
-%
-
-\begin{verbatim}
-cMessage *msg = new cMessage();
-scheduleAt(simtime()+waitTime, msg);
-cMessage *recvd = receive();
-if (recvd!=msg)
-   // hmm, some other event occurred meanwhile: error!
-...
-\end{verbatim}
-
-You can determine if a message is currently in the FES\index{FES}
-by calling its \fname{isScheduled()} member:
-
-\begin{verbatim}
-if (msg->isScheduled())
-  // currently scheduled
-else
-  // not scheduled
-\end{verbatim}
-
-
-\subsubsection{Re-scheduling an event}
-
-If you want to reschedule an event which is currently scheduled to a different
-simulation time, first you have to cancel it using \fname{cancelEvent()}.
-
-
-\subsubsection{Cancelling an event}
-
-Scheduled self-messages can be cancelled\index{self-message!cancelling}
-\index{message!cancelling} (removed from the FES\index{FES}).
-This is particularly useful because self-messages are often used
-to model timers.
-
-\begin{verbatim}
-cancelEvent( msg );
-\end{verbatim}
-
-The \fname{cancelEvent()} function takes a pointer to the message to
-be cancelled, and also returns the same pointer. After having it
-cancelled, you may delete the message or reuse it in the next
-\fname{scheduleAt()} calls. \fname{cancelEvent()} gives an error if
-the message is not in the FES\index{FES}.
-
-
-\subsubsection{Implementing timers}
-
-The following example shows how to implement timers:
-
-\begin{verbatim}
-cMessage *timeoutEvent = new cMessage("timeout");
-
-scheduleAt(simTime()+10.0, timeoutEvent);
-//...
-
-cMessage *msg = receive();
-if (msg == timeoutEvent)
-{
-  // timeout expired
-}
-else
-{
-  // other message has arrived, timer can be cancelled now:
-  delete cancelEvent(timeoutEvent);
-}
-\end{verbatim}
-
-
-
-
-
-\subsection{Stopping the simulation}
-
-\subsubsection{Normal termination}
-
-You can finish the simulation with the \fname{endSimulation()} function:
-
-\begin{verbatim}
-endSimulation();
-\end{verbatim}
-
-\fname{endSimulation()} is rarely needed in practice because you
-can specify simulation time and CPU time limits\index{simulation time limits}
-in the ini file (see later).
-
-\subsubsection{Stopping on errors}
-
-If you want your simulation to stop if it detects an error condition,
-you can call the \fname{error()} member function of \cclass{cModule}.
-Its argument list is similar to \fname{printf()}:
-
-\begin{verbatim}
-if (windowSize<1)
-  error("Invalid window size %d; must be >=1", windowSize);
-\end{verbatim}
-
-Do not include a newline (``{\textbackslash}n'') or punctuation (period
-or exclamation mark) in the error text; it will be added by {\opp}.
-
-
-
 
 
 \section{Accessing module parameters}
@@ -2970,6 +1995,997 @@ but luckily, there are two convenience functions which do that:
 \fname{getSourceGate()} and
 \fname{getDestinationGate()}.
 
+
+
+
+
+
+
+\section{Sending and receiving messages}
+\label{ch:simple-modules:sending-and-receiving}
+
+On an abstract level, an {\opp} simulation model is a set of
+simple modules that communicate with each other via message passing.
+The essence of simple modules is that they create, send, receive,
+store, modify, schedule and destroy messages -- everything else
+is supposed to facilitate this task, and collect statistics
+about what was going on.
+
+Messages in {\opp} are instances of the \ttt{cMessage} class or
+one of its subclasses. Message objects are created using the C++
+\ttt{new} operator and destroyed using the \ttt{delete} operator
+when they are no longer needed. During their lifetimes,
+messages travel between modules via gates and connections
+(or are sent directly, bypassing the connections), or
+they are scheduled by and delivered to modules,
+representing internal events of that module.
+
+Messages are described in detail in chapter \ref{cha:messages}.
+At this point, all we need to know about them is that they are
+referred to as \ttt{cMessage *} pointers. Message objects
+can be given descriptive names (a \ttt{const char *} string)
+that often helps in debugging the simulation. The message
+name string can be specified in the constructor, so it
+should not surprise you if you see something like
+\ttt{new cMessage("token")} in the examples below.
+
+
+
+\subsection{Sending messages}
+
+Once created, a message object can be sent through an
+output gate\index{output!gate} using one of the following functions:
+
+\begin{verbatim}
+send(cMessage *msg, const char *gateName, int index=0);
+send(cMessage *msg, int gateId);
+send(cMessage *msg, cGate *gate);
+\end{verbatim}
+
+In the first function, the argument \ttt{gateName} is the name of
+the gate the message has to be sent through. If this gate is
+a vector gate, \ttt{index} determines though which particular output
+gate this has to be done; otherwise, the \ttt{index} argument is not
+needed.
+
+The second and third functions use the gate Id and the pointer to the gate
+object. They are faster than the first one because they don't have to
+search through the gate array.
+
+Examples:
+
+\begin{verbatim}
+send(msg, "outGate");
+send(msg, "outGates", i); // send via outGates[i]
+\end{verbatim}
+
+The following code example creates and sends messages
+every 5 simulated seconds:
+
+\begin{verbatim}
+int outGateId = findGate("outGate");
+while(true)
+{
+  send(new cMessage("job"), outGateId);
+  wait(5);
+}
+\end{verbatim}
+
+
+\subsection{Packet transmissions}
+\label{ch:simple-modules:packet-transmission}
+
+When a message is sent out on a gate, it usually travels through
+a series of connections until it arrives at the destination module.
+We call this series of connections a \textit{connection path} or
+simply \textit{path}.
+
+Several connections in the path may have an associated channel,
+but there can be only one channel per path that models nonzero
+transmission duration. This channel is called the
+\textit{transmission channel}.
+
+\subsubsection{Transmitting a packet}
+
+The first packet can be simply send out on the output gate. However,
+subsequent packets may only be sent when the transmission channel
+is free, that is, it has finished transmitting earlier packets.
+
+You can get a pointer to the transmission channel by calling the
+\fname{getDatarateChannel()} method on the output gate.
+The channel's \fname{isBusy()} and \fname{getTransmissionFinishTime()}
+methods can tell you whether a channel is currently transmitting,
+and when the transmission is going to finish. (When the latter is
+less or equal the current simulation time, the channel is free.)
+If the channel is currently busy, a timer (self-message) needs to
+be scheduled, and the packet should be stored until then, for example
+in a queue.
+
+The output gate also has \fname{isBusy()} and \fname{getTransmissionFinishTime()}
+methods, which are basically shortcuts to \ttt{getDatarateChannel()->isBusy()}
+and \ttt{getDatarateChannel()->getTransmissionFinishTime()}. When performance
+is important, it is recommended to obtain a pointer to the transmission
+channel once, and then call \fname{isBusy()} and \fname{getTransmissionFinishTime()}
+on the cached channel pointer.
+
+An incomplete code example to illustrate the above process:
+
+\begin{verbatim}
+simtime_t txfinishTime = gate("out")->getTransmissionFinishTime();
+if (txfinishTime <= simTime())
+    send(pkt, "out");
+else
+    scheduleAt(txFinishTime, timerMsg); // also: remember pkt,
+    // and ensure that when timerMsg expires, it will get sent out
+\end{verbatim}
+
+
+\subsubsection{Receiving a packet}
+
+Normally the packet object gets delivered to the destination module
+at the simulation time that corresponds to finishing the reception
+of the message (ie. the arrival of its last bit). However, the receiver
+module may change this, by "reprogramming" the receiver gate with
+the \fname{setDeliverOnReceptionStart()} method:
+
+\begin{verbatim}
+gate("in")->setDeliverOnReceptionStart(true);
+\end{verbatim}
+
+This method may only be called on simple module input gates, and it
+instructs the simulation kernel to give arriving packets to the
+receiver module when reception \textit{begins} not ends, that is,
+on arrival of the first bit of the message.
+\fname{getDeliverOnReceptionStart()} only needs to be called once,
+so it is usually done in the \fname{initialize()} method of the module.
+
+When a packet gets delivered to the module, the packet's
+\fname{isReceptionStart()} method can be called to determine
+whether it corresponds to the start or end of the reception
+process (it should be the same as the \fname{getDeliverOnReceptionStart()}
+flag of the input gate), and \fname{getDuration()} returns the transmission
+duration.
+
+
+\subsection{Delay, data rate, bit error rate, packet error rate}
+
+FIXME revise!
+
+Connections can be assigned three parameters, which facilitate
+the modeling of communication networks, but can be useful for
+other models too:
+\begin{itemize}
+  \item{propagation delay (sec)\index{channel!delay}}
+  \item{bit error rate (errors/bit)\index{channel!error}}
+  \item{data rate (bits/sec)\index{channel!datarate}}
+\end{itemize}
+
+
+Each of these parameters is optional. One can specify link parameters
+individually for each connection, or define link types (also
+called \textit{channel} \textit{types}) once and use them throughout the
+whole model.
+
+The \textit{propagation delay} is the amount of time the arrival of
+the message is delayed by when it travels through the channel.
+Propagation delay is specified in seconds.
+
+The \textit{bit error rate} has influence on the transmission of messages
+through the channel. The bit error rate (\textit{ber}) is the probability that
+a bit is incorrectly transmitted. Thus, the probability that
+a message of \textit{n} bits length is transferred without bit errors is:\\
+
+$P_{no bit error} = (1 - ber)^length$
+
+The message has an error flag which is set in case of transmission
+errors.
+
+The \textit{data rate} is specified in bits/second, and it is used
+for transmission delay calculation. The sending time of the message
+normally corresponds to the transmission of the first bit, and
+the arrival time of the message corresponds to the reception
+of the last bit (Fig. \ref{fig:ch-overview:message-transm}).
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=4.301in, height=2.417in]{figures/usmanFig4}
+\caption{Message transmission}
+\label{fig:ch-overview:message-transm}
+\end{center}
+\end{figure}
+
+The above model may not be suitable to model all protocols. In Token Ring
+and FDDI, stations start to repeat bits before the whole frame arrives;
+in other words, frames ``flow through'' the stations, being delayed only a few bits.
+In such cases, the data rate modeling feature of {\opp} cannot be used.
+
+If a message travels along a path, passing through successive links and
+compound modules, the model behaves as if each module waited until the
+last bit of the message arrives and only started its transmission
+afterwards.
+(Fig. \ref{fig:ch-overview:msg-multiple-ch}).
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=3.330in, height=2.692in]{figures/usmanFig5}
+\caption{Message sending over multiple channels}
+\label{fig:ch-overview:msg-multiple-ch}
+\end{center}
+\end{figure}
+
+Since the above effect is usually not the desired one, typically
+you will want to assign data rate to only one connection in the
+path.
+
+
+\subsubsection{Multiple transmissions on links}
+
+If a data rate\index{data rate} is specified for a connection, a message
+will have a certain nonzero transmission time\index{transmission
+  time}, depending on the length of the connection. This implies that
+a message that is passsing through an output gate, ``reserves'' the gate
+for a given period (``it is being transmitted'').
+
+\begin{figure}[htbp]
+  \begin{center}
+    \includegraphics[width=2.315in, height=1.015in]{figures/usmanFig9}
+    \caption{Connection with a data rate}
+    \label{fig:ch-simple-modules:conn-w-data-rate}
+  \end{center}
+\end{figure}
+
+While a message is under transmission, other messages have to wait
+until the transmission is completed. The module sends another message while the
+gate is busy, a runtime error will be thrown.
+
+The {\opp} class library provides functions to check
+whether a certain output gate is transmitting and find out when when
+it finishes transmission.
+
+If the connection with a data rate is not directly connected
+to the simple module's output gate but is the second
+one in the path, you have to check the second gate's busy
+condition\index{gate!busy condition}.
+
+\begin{note}
+   In \opp versions prior to 4.0, sending on a busy gate was permitted, and
+   messages got implicitly queued up. The behaviour of the simulation kernel
+   was changed because in practice, sending on a busy gate was more often result
+   of a programming error than calculated behaviour.
+\end{note}
+
+
+\subsubsection{Implementation of message sending}
+
+Message sending is implemented like this: the arrival time\index{arrival time}
+and the bit error\index{bit error} flag of a message are calculated right inside
+the \fname{send()} call, then the message gets inserted into the FES\index{FES}
+with the calculated arrival time. The message does \textit{not} get scheduled
+individually for each link. This implementation was chosen because of its
+run-time efficiency.
+
+\begin{note}
+   The consequence of this implementation is that any change in the
+   channel's parameters (delay, bit rate, bit error rate) will only affect
+   messages \textit{sent} after the change. Messages already under way will not
+   be influenced by the change.
+
+   This is not a huge problem in practice, but if it is important to model
+   channels with changing parameters, the solution is to insert simple modules
+   into the path to ensure strict scheduling.
+\end{note}
+
+
+\subsubsection{The approach of some other simulators}
+
+Note that some simulators (e.g. OPNET) assign \textit{packet queues}
+to input gates (ports), and messages sent are buffered at the
+destination module (or the remote end of the link) until they are
+received by the destination module. With that approach, events and
+messages are separate entities, that is, a \textit{send} operation
+includes placing the message in the packet queue \textit{and} scheduling
+an event, which signals the arrival of the packet. In some implementations,
+output gates also have packet queues where packets will be buffered until
+the channel is ready (available for transmission).
+
+{\opp} gates\index{gate} don't have associated queues. The place
+where sent but not yet received messages are buffered in the
+FES\index{FES}.  {\opp}'s approach is potentially faster
+than the solution mentioned above because it doesn't have the
+enqueue/dequeue overhead and also spares an event creation. The
+drawback is, that changes to channel parameters do not take effect
+immediately.
+
+In {\opp} one can implement \textit{point-to-point transmitter} modules
+with packet queues if needed. For example, the INET Framework
+follows this approach.
+
+
+
+
+\subsection{Broadcasts and retransmissions}
+
+When you implement broadcasts or retransmissions, two frequently
+occurring tasks in protocol simulation, you might feel tempted
+to use the same message in multiple \fname{send()} operations.
+Do not do it -- you cannot send the same message object multiple times.
+The solution in such cases is duplicating the message.
+
+\subsubsection{Broadcasting messages}
+
+In your model, you may need to broadcast a message to several destinations.
+Broadcast can be implemented in a simple module by sending out copies
+of the same message, for example on every gate of a gate vector.
+As described above, you cannot use the same message pointer for
+in all \fname{send()} calls -- what you have to do instead is
+create copies (duplicates) of the message object and send them.
+
+Example:
+
+\begin{verbatim}
+for (int i=0; i<n; i++)
+{
+    cMessage *copy = msg->dup();
+    send(copy, "out", i);
+}
+delete msg;
+\end{verbatim}
+
+You might have noticed that copying the message for the last gate is
+redundant (we could send out the original message),
+so it can be optimized out like this:
+
+\begin{verbatim}
+for (int i=0; i<n-1; i++)   // note n-1 instead of n
+{
+    cMessage *copy = msg->dup();
+    send(copy, "out", i);
+}
+send(msg, "out", n-1);  // send original on last gate
+\end{verbatim}
+
+
+\subsubsection{Retransmissions}
+
+Many communication protocols involve retransmissions of packets (frames).
+When implementing retransmissions, you cannot just hold a pointer
+to the same message object and send it again and again -- you'd get
+the \textit{not owner of message} error on the first resend.
+
+Instead, whenever it comes to (re)transmission, you should create and
+send copies of the message, and retain the original.
+When you are sure there will not be any more retransmission,
+you can delete the original message.
+
+Creating and sending a copy:
+
+\begin{verbatim}
+// (re)transmit packet:
+cMessage *copy = packet->dup();
+send(copy, "out");
+\end{verbatim}
+
+and finally (when no more retransmissions will occur):
+
+\begin{verbatim}
+delete packet;
+\end{verbatim}
+
+
+\subsubsection{Why?}
+
+A message is like any real world object -- it cannot be at two places
+at the same time. Once you've sent it, the message object
+no longer belongs to the module: it is taken over by the simulation kernel,
+and will eventually be delivered to the destination module.
+The sender module should not even refer to its pointer any more.
+Once the message arrived in the destination module, that module
+will have full authority over it -- it can send it on,
+destroy it immediately, or store it for further handling.
+The same applies to messages that have been scheduled -- they
+belong to the simulation kernel until they are delivered back to
+the module.
+
+To enforce the rules above, all message sending functions
+check that you actually own the message you are about to send.
+If the message is with another module, it is currently scheduled or
+in a queue etc., you'll get a runtime error: \textit{not owner of message}.
+  \footnote{The feature does not increase runtime overhead significantly, because
+  it uses the object ownership\index{ownership} management (described in
+  Section \ref{sec:ch-sim-lib:ownership-management});
+  it merely checks that the owner of the message is the module that
+  wants to send it.}
+
+
+
+\subsection{Delayed sending}
+
+It is often needed to model a delay (processing time, etc.) immediately
+followed by message sending. In {\opp}, it is possible to implement
+it like this:
+
+\begin{verbatim}
+wait( someDelay );
+send( msg, "outgate" );
+\end{verbatim}
+
+
+If the module needs to react to messages that arrive during the delay,
+\fname{wait()} cannot be used and the timer mechanism described in
+Section \ref{sec:ch-simple-modules:self-messages}, ``Self-messages'', would
+need to be employed.
+
+
+There is also a more straightforward method than those mentioned above:
+delayed sending\index{delayed sending}. Delayed sending can be achieved
+by using one of these functions:
+
+\begin{verbatim}
+sendDelayed(cMessage *msg, double delay, const char *gateName, int index);
+sendDelayed(cMessage *msg, double delay, int gateId);
+sendDelayed(cMessage *msg, double delay, cGate *gate);
+\end{verbatim}
+
+The arguments are the same as for \fname{send()}, except for the extra \textit{delay}
+parameter. The effect of the function is the same as if the module
+had kept the message for the delay interval and sent it afterwards.
+That is, the sending time of the message will be the current
+simulation time (time at the \fname{sendDelayed()} call) plus the delay.
+The delay value must be non-negative.
+
+Example:
+
+\begin{verbatim}
+sendDelayed(msg, 0.005, "outGate");
+\end{verbatim}
+
+
+
+\subsection{Direct message sending}
+
+Sometimes it is necessary or convenient to ignore gates/connections
+and send a message directly to a remote destination module. The \fname{sendDirect()}
+function does that:
+
+\begin{verbatim}
+sendDirect(cMessage *msg, double delay, cModule *mod, int gateId)
+sendDirect(cMessage *msg, double delay, cModule *mod, const char *gateName, int index=-1)
+sendDirect(cMessage *msg, double delay, cGate *gate)
+\end{verbatim}
+
+In addition to the message and a delay, it also takes the destination module
+and gate. The gate should be an \textit{input} gate and should not be connected.
+In other words, the module needs dedicated gates for receiving via \ttt{sendDirect()}.
+(Note: For leaving a gate unconnected in a compound module, you'll need to specify
+\ttt{connections nocheck:} instead of plain \ttt{connections:} in the NED file.)
+
+An example:
+
+\begin{verbatim}
+cModule *destinationModule = getParentModule()->getSubmodule("node2");
+double delay = truncnormal(0.005, 0.0001);
+sendDirect(new cMessage("packet"), delay, destinationModule, "inputGate");
+\end{verbatim}
+
+At the destination module, there is no difference between messages received
+directly and those received over connections.
+
+
+
+\subsection{Receiving messages}
+
+\textbf{With activity() only!} The message receiving functions can
+only be used in the \fname{activity()} function,
+\fname{handleMessage()} gets received messages in its argument list.
+
+Messages are received using the \fname{receive()} function.
+\fname{receive()} is a member of \cclass{cSimpleModule}.
+
+\begin{verbatim}
+cMessage *msg = receive();
+\end{verbatim}
+
+The \fname{receive()} function accepts an optional \textit{timeout}
+parameter\index{receive!timeout}. (This is a \textit{delta}, not an
+absolute simulation time.) If an appropriate message doesn't arrive
+within the timeout period, the function returns a NULL pointer.
+    \footnote{Putaside-queue and the functions \ttt{receiveOn()},
+    \ttt{receiveNew()}, and \ttt{receiveNewOn()} were deprecated
+    in {\opp} 2.3 and removed in {\opp} 3.0.}
+
+\begin{verbatim}
+simtime_t timeout = 3.0;
+cMessage *msg = receive( timeout );
+
+if (msg==NULL)
+{
+    ...   // handle timeout
+}
+else
+{
+    ...  // process message
+}
+\end{verbatim}
+
+
+
+\subsection{The wait() function}
+
+\textbf{With activity() only!} The \fname{wait()} function's implementation
+contains a \fname{receive()} call which cannot be used in \fname{handleMessage()}.
+
+The \fname{wait()} function suspends the execution of the module for
+a given amount of simulation time (a \textit{delta}).
+
+\begin{verbatim}
+wait(delay);
+\end{verbatim}
+
+In other simulation software, \fname{wait()} is often called \textit{hold}.
+Internally, the \fname{wait()} function is implemented by a
+\fname{scheduleAt()} followed by a \fname{receive()}.
+The \fname{wait()} function is very convenient in modules that do not need
+to be prepared for arriving messages, for example message generators.
+An example:
+
+\begin{verbatim}
+for (;;)
+{
+  // wait for a (potentially random amount of) time, specified
+  // in the interArrivalTime volatile module parameter
+  wait(par("interArrivalTime").doubleValue());
+
+  // generate and send message
+  ...
+}
+\end{verbatim}
+
+It is a runtime error if a message arrives during the wait interval.
+If you expect messages to arrive during the wait period, you can
+use the \fname{waitAndEnqueue()} function. It takes a pointer to a queue object
+(of class \cclass{cQueue}, described in chapter \ref{cha:the-simulation-library})
+in addition to the wait interval. Messages that arrive during the
+wait interval will be accumulated in the queue, so you can
+process them after the \fname{waitAndEnqueue()} call returned.
+
+\begin{verbatim}
+cQueue queue("queue");
+...
+waitAndEnqueue(waitTime, &queue);
+if (!queue.empty())
+{
+  // process messages arrived during wait interval
+  ...
+}
+\end{verbatim}
+
+
+\subsection{Modeling events using self-messages}
+\label{sec:ch-simple-modules:self-messages}
+
+In most simulation models it is necessary to implement timers,
+or schedule events that occur at some point in the future.
+For example, when a packet is sent by a communications protocol model,
+it has to schedule an event that would occur when a timeout expires,
+because it will have to resent the packet then.
+As another example, suppose you want to write a model of a server which
+processes jobs from a queue. Whenever it begins processing
+a job, the server model will want to schedule an event to occur
+when the job finishes processing, so that it can begin processing
+the next job.
+
+In {\opp} you solve such tasks by letting the simple module
+send a message to itself; the message would be delivered
+to the simple module at a later point of time. Messages used
+this way are called self-messages\index{self-message}.
+Self-messages are used to model events which occur within the module.
+
+\subsubsection{Scheduling an event}
+
+The module can send a message to itself using the \fname{scheduleAt()} function.
+\fname{scheduleAt()} accepts an \textit{absolute} simulation time,
+usually calculated as \fname{simTime()}+\textit{delta}:
+
+\begin{verbatim}
+scheduleAt(absoluteTime, msg);
+scheduleAt(simtime()+delta, msg);
+\end{verbatim}
+
+Self-messages are delivered to the module in the same way as other
+messages (via the usual receive calls or \fname{handleMessage()});
+the module may call the \fname{isSelfMessage()} member of any received
+message to determine if it is a self-message.
+
+As an example, here's how you could implement your own \fname{wait()}
+function in an \fname{activity()} simple module, if the simulation kernel
+didn't provide it already:
+
+%
+%TBD
+%This looks like a pointless thing to do... Is there no better example?
+%The kernel DOES after all, have a Wait() function built in...
+%Of course, this is low priority.
+%Gabor
+%
+
+\begin{verbatim}
+cMessage *msg = new cMessage();
+scheduleAt(simtime()+waitTime, msg);
+cMessage *recvd = receive();
+if (recvd!=msg)
+   // hmm, some other event occurred meanwhile: error!
+...
+\end{verbatim}
+
+You can determine if a message is currently in the FES\index{FES}
+by calling its \fname{isScheduled()} member:
+
+\begin{verbatim}
+if (msg->isScheduled())
+  // currently scheduled
+else
+  // not scheduled
+\end{verbatim}
+
+
+\subsubsection{Re-scheduling an event}
+
+If you want to reschedule an event which is currently scheduled to a different
+simulation time, first you have to cancel it using \fname{cancelEvent()}.
+
+
+\subsubsection{Cancelling an event}
+
+Scheduled self-messages can be cancelled\index{self-message!cancelling}
+\index{message!cancelling} (removed from the FES\index{FES}).
+This is particularly useful because self-messages are often used
+to model timers.
+
+\begin{verbatim}
+cancelEvent( msg );
+\end{verbatim}
+
+The \fname{cancelEvent()} function takes a pointer to the message to
+be cancelled, and also returns the same pointer. After having it
+cancelled, you may delete the message or reuse it in the next
+\fname{scheduleAt()} calls. \fname{cancelEvent()} gives an error if
+the message is not in the FES\index{FES}.
+
+
+\subsubsection{Implementing timers}
+
+The following example shows how to implement timers:
+
+\begin{verbatim}
+cMessage *timeoutEvent = new cMessage("timeout");
+
+scheduleAt(simTime()+10.0, timeoutEvent);
+//...
+
+cMessage *msg = receive();
+if (msg == timeoutEvent)
+{
+  // timeout expired
+}
+else
+{
+  // other message has arrived, timer can be cancelled now:
+  delete cancelEvent(timeoutEvent);
+}
+\end{verbatim}
+
+
+
+
+
+\section{Stopping the simulation}
+
+\subsection{Normal termination}
+
+You can finish the simulation with the \fname{endSimulation()} function:
+
+\begin{verbatim}
+endSimulation();
+\end{verbatim}
+
+\fname{endSimulation()} is rarely needed in practice because you
+can specify simulation time and CPU time limits\index{simulation time limits}
+in the ini file (see later).
+
+\subsection{Raising errors}
+
+If your simulation encounters an error condition, you can throw a
+\ttt{cRuntimeError} exception to terminate the simulation with
+an error message (and in case of Cmdenv, a nonzero exit code).
+The \ttt{cRuntimeError} class has a constructor whose argument list
+is similar to \fname{printf()}:
+
+\begin{verbatim}
+if (windowSize<1)
+    throw cRuntimeError("Invalid window size %d; must be >=1", windowSize);
+\end{verbatim}
+
+Do not include a newline (``{\textbackslash}n'') or punctuation (period
+or exclamation mark) in the error text; it will be added by {\opp}.
+
+You can achieve the same effect by calling the \fname{error()} method of
+\cclass{cModule}.
+
+\begin{verbatim}
+if (windowSize<1)
+    error("Invalid window size %d; must be >=1", windowSize);
+\end{verbatim}
+
+Of course, the \fname{error()} method can only be used when a module pointer
+is available.
+
+
+
+\section{Finite State Machines in {\opp}}
+
+\subsubsection{Overview}
+
+
+Finite State Machines\index{finite state machine} (FSMs)\index{FSM}
+can make life with \fname{handleMessage()} easier. {\opp} provides a
+class and a set of macros to build FSMs. {\opp}'s FSMs work very much
+like OPNET's or SDL's.
+
+
+The key points are:
+\begin{itemize}
+\item{There are two kinds of states:
+    \textit{transient}\index{transient states} and
+    \textit{steady}\index{steady states}. At each event (that is, at
+    each call to \fname{handleMessage()}), the FSM transitions out of
+    the current (\textit{steady}) state, undergoes a series of state
+    changes (runs through a number of \textit{transient} states), and
+    finally arrives at another \textit{steady} state. Thus between two
+    events, the system is always in one of the steady states.
+    Transient states are therefore not really a must -- they exist
+    only to group actions to be taken during a transition in a
+    convenient way.}
+\item{You can assign program code to handle entering and leaving a state
+    (known as entry/exit code)\index{entry code}\index{exit code}.
+    Staying in the same state is handled as leaving and re-entering
+    the state.}
+\item{Entry code should not modify the state (this is verified by
+    {\opp}).  State changes (transitions) must be put into the exit
+    code.}
+\end{itemize}
+
+{\opp}'s FSMs \textit{can} be nested\index{FSM!nested}. This means
+that any state (or rather, its entry or exit code) may contain a
+further full-fledged \fmac{FSM\_Switch()} (see below). This allows you
+to introduce sub-states and thereby bring some structure into the
+state space if it would become too large.
+
+
+\subsubsection{The FSM API}
+
+
+FSM state is stored in an object of type \cclass{cFSM}. The possible states
+are defined by an enum; the enum is also a place to define, which
+state is transient and which is steady. In the following example, SLEEP
+and ACTIVE are steady states and SEND is transient (the numbers
+in parentheses must be unique within the state type and they are used
+for constructing the numeric IDs for the states):
+
+\begin{verbatim}
+enum {
+  INIT = 0,
+  SLEEP = FSM_Steady(1),
+  ACTIVE = FSM_Steady(2),
+  SEND = FSM_Transient(1),
+};
+\end{verbatim}
+
+
+
+The actual FSM is embedded in a switch-like statement,
+\fmac{FSM\_Switch()}, where you have cases for entering and leaving
+each state:
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+FSM_Switch(fsm)
+\{
+  case FSM_Exit(\textit{state1}):
+    //...
+    break;
+  case FSM_Enter(\textit{state1}):
+    //...
+    break;
+  case FSM_Exit(\textit{state2}):
+    //...
+    break;
+  case FSM_Enter(\textit{state2}):
+    //...
+    break;
+  //...
+\};
+\end{Verbatim}
+
+
+State transitions\index{state transition} are done via calls to
+\fmac{FSM\_Goto()}, which simply stores the new state in the
+\cclass{cFSM} object:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+FSM_Goto(fsm,\textit{newState});
+\end{Verbatim}
+
+The FSM starts from the state with the numeric code 0; this state
+is conventionally named INIT.
+
+
+\subsubsection{Debugging FSMs}
+
+FSMs can log their state transitions \ttt{ev}\index{ev},
+with the output looking like this:
+
+\begin{verbatim}
+...
+FSM GenState: leaving state SLEEP
+FSM GenState: entering state ACTIVE
+...
+FSM GenState: leaving state ACTIVE
+FSM GenState: entering state SEND
+FSM GenState: leaving state SEND
+FSM GenState: entering state ACTIVE
+...
+FSM GenState: leaving state ACTIVE
+FSM GenState: entering state SLEEP
+...
+\end{verbatim}
+
+To enable the above output, you have to \ttt{\#define FSM\_DEBUG}\index{FSM\_DEBUG}
+before including \ttt{omnetpp.h}.
+
+\begin{Verbatim}[commandchars=\\\{\}]
+#define FSM_DEBUG    // enables debug output from FSMs
+#include <omnetpp.h>
+\end{Verbatim}
+
+The actual logging is done via the \fmac{FSM\_Print()} macro.
+It is currently defined as follows, but you can change the
+output format by undefining \ttt{FSM\_Print()} after including
+\ttt{omnetpp.ini} and providing a new definition instead.
+
+\begin{verbatim}
+#define FSM_Print(fsm,exiting)
+  (ev << "FSM " << (fsm).getName()
+      << ((exiting) ? ": leaving state " : ": entering state ")
+      << (fsm).getStateName() << endl)
+\end{verbatim}
+
+
+\subsubsection{Implementation}
+
+
+The \fmac{FSM\_Switch()} is a macro. It expands to a \fname{switch()}
+statement embedded in a \fname{for()} loop which repeats until the
+FSM\index{FSM} reaches a steady state. (The actual code is rather
+scary, but if you're dying to see it, it is in \texttt{cfsm.h}.)
+
+Infinite loops are avoided by counting state transitions: if
+an FSM goes through 64 transitions without reaching a steady
+state, the simulation will terminate with an error message.
+
+
+\subsubsection{An example}
+
+
+Let us write another bursty generator. It will have two
+states, SLEEP and ACTIVE. In the SLEEP state, the module does
+nothing. In the ACTIVE state, it sends messages with a given
+inter-arrival time. The code was taken from the Fifo2 sample
+simulation.
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+#define FSM_DEBUG
+#include <omnetpp.h>
+
+class BurstyGenerator : public cSimpleModule
+\{
+  protected:
+    // parameters
+    double sleepTimeMean;
+    double burstTimeMean;
+    double sendIATime;
+    cPar *msgLength;
+
+    // FSM and its states
+    cFSM fsm;
+    enum \{
+      INIT = 0,
+      SLEEP = FSM_Steady(1),
+      ACTIVE = FSM_Steady(2),
+      SEND = FSM_Transient(1),
+    \};
+
+    // variables used
+    int i;
+    cMessage *startStopBurst;
+    cMessage *sendMessage;
+
+    // the virtual functions
+    virtual void initialize();
+    virtual void handleMessage(cMessage *msg);
+\};
+
+Define_Module(BurstyGenerator);
+
+void BurstyGenerator::initialize()
+\{
+    fsm.setName("fsm");
+    sleepTimeMean = par("sleepTimeMean");
+    burstTimeMean = par("burstTimeMean");
+    sendIATime = par("sendIATime");
+    msgLength = &par("msgLength");
+    i = 0;
+    WATCH(i); // always put watches in initialize()
+    startStopBurst = new cMessage("startStopBurst");
+    sendMessage = new cMessage("sendMessage");
+    scheduleAt(0.0,startStopBurst);
+\}
+
+void BurstyGenerator::handleMessage(cMessage *msg)
+\{
+  FSM_Switch(fsm)
+  \{
+    case FSM_Exit(INIT):
+      // transition to SLEEP state
+      FSM_Goto(fsm,SLEEP);
+      break;
+    case FSM_Enter(SLEEP):
+      // schedule end of sleep period (start of next burst)
+      scheduleAt(simTime()+exponential(sleepTimeMean),
+                 startStopBurst);
+    break;
+    case FSM_Exit(SLEEP):
+      // schedule end of this burst
+      scheduleAt(simTime()+exponential(burstTimeMean),
+                 startStopBurst);
+      // transition to ACTIVE state:
+      if (msg!=startStopBurst) \{
+        error("invalid event in state ACTIVE");
+      \}
+      FSM_Goto(fsm,ACTIVE);
+      break;
+    case FSM_Enter(ACTIVE):
+      // schedule next sending
+      scheduleAt(simTime()+exponential(sendIATime), sendMessage);
+    break;
+    case FSM_Exit(ACTIVE):
+      // transition to either SEND or SLEEP
+      if (msg==sendMessage) \{
+        FSM_Goto(fsm,SEND);
+      \} else if (msg==startStopBurst) \{
+        cancelEvent(sendMessage);
+        FSM_Goto(fsm,SLEEP);
+      \} else \{
+        error("invalid event in state ACTIVE");
+      \}
+      break;
+    case FSM_Exit(SEND):
+    \{
+      // generate and send out job
+      char msgname[32];
+      sprintf( msgname, "job-%d", ++i);
+      ev << "Generating " << msgname << endl;
+      cMessage *job = new cMessage(msgname);
+      job->setBitLength( (long) *msgLength );
+      job->setTimestamp();
+      send( job, "out" );
+      // return to ACTIVE
+      FSM_Goto(fsm,ACTIVE);
+      break;
+    \}
+  \}
+\}
+\end{Verbatim}
 
 
 

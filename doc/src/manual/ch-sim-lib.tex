@@ -173,15 +173,13 @@ sprintf("msg is '%80s'", msg->getFullPath().c_str()); // note c_str()
 The \fname{dup()} member function creates an exact copy of the
 object\index{object!copy}, duplicating\index{object!duplication}
 contained objects also if necessary. This is especially useful in the
-case of message objects. \fname{dup()} returns a pointer of type
-\cclass[cOwnedObject]{cOwnedObject*}, so it needs to be cast to the proper type:
+case of message objects.
 
 \begin{verbatim}
-cMessage *copyMsg = (cMessage *) msg->dup();
+cMessage *copy = msg->dup();
 \end{verbatim}
 
-
-\fname{dup()} works by calling the copy constructor, which in
+\fname{dup()} delegates to the copy constructor, which in
 turn relies on the assignment operator between objects.
 \fname{operator=()} can be used to copy contents of an object into
 another object of the same type. This is a deep copy: object
@@ -189,6 +187,12 @@ contained in the object will also be duplicated if necessary.
 \fname{operator=()} does not copy the name string -- this task is done
 by the copy constructor\index{copy constructor}.
 
+\begin{note}
+    Since the \opp 4.0 version, \fname{dup()} returns a pointer to
+    the same type as the object itself, and not a \ttt{cObject*}.
+    This is made possible by a relatively new C++ feature called
+    \textit{covariant return types}.
+\end{note}
 
 \subsection{Iterators}
 
@@ -2256,7 +2260,7 @@ The following methods \textbf{must} be implemented:
         name (\fname{getName()}) of the other object it receives, then call the
         assignment operator (see below).}
   \item{\textit{Destructor}.}
-  \item{\textit{Duplication function,} \fname{cObject *dup() const}.
+  \item{\textit{Duplication function,} \fname{X *dup() const}.
         It should create and return an exact duplicate of the object.
         It is usually a one-line function, implemented with the help
         of the \ttt{new} operator and the copy constructor.}
@@ -2271,7 +2275,7 @@ either via pointers or as data member, the following function \textbf{should}
 be implemented:
 
 \begin{itemize}
-  \item{\textit{Iteration function,} \ttt{void forEachChild(cVisitor * v)}.
+  \item{\textit{Iteration function,} \ttt{void forEachChild(cVisitor *v)}.
         The implementation should call the function passed
         for each object it contains via pointer or as data member;
         see the API Reference on \cclass{cOwnedObject} on how to implement
@@ -2362,7 +2366,7 @@ class NewClass : public cOwnedObject
     NewClass(const char *name=NULL, int d=0);
     NewClass(const NewClass& other);
     virtual ~NewClass();
-    virtual cObject *dup() const;
+    virtual NewClass *dup() const;
     NewClass& operator=(const NewClass& other);
 
     virtual void forEachChild(cVisitor *v);
@@ -2436,7 +2440,7 @@ are owned by the object -- details will be covered in section
 \ref{sec:ch-sim-lib:ownership-management}.
 
 \begin{verbatim}
-cObject *NewClass::dup() const
+NewClass *NewClass::dup() const
 {
     return new NewClass(*this);
 }
@@ -2462,7 +2466,7 @@ NewClass& NewClass::operator=(const NewClass& other)
     if (msg && msg->getOwner()==this)
         delete msg;
     if (other.msg && other.msg->getOwner()==const_cast<cMessage*>(&other))
-        take(msg = (cMessage *)other.msg->dup());
+        take(msg = other.msg->dup());
     else
         msg = other.msg;
     return *this;
