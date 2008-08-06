@@ -1,0 +1,81 @@
+%description:
+Tests parsimPack/parsimUnpack for generated classes
+
+%file: test.msg
+
+cplusplus {{
+typedef std::vector<int> IntVector;
+typedef std::list<int> IntList;
+typedef std::set<int> IntSet;
+typedef std::map<int,double> IntDoubleMap;
+}}
+
+class noncobject IntVector;
+class noncobject IntList;
+class noncobject IntSet;
+class noncobject IntDoubleMap;
+
+message TestMessage {
+    IntVector v;
+    IntList l;
+    IntSet s;
+    IntDoubleMap m;
+}
+
+
+%includes:
+#include <string.h>
+#include "../src/sim/parsim/cfilecommbuffer.h"
+#include "test_m.h"
+
+%activity:
+
+#define PRINT(X)  ev << #X << ":" << (X) << endl
+
+cFileCommBuffer *buffer = new cFileCommBuffer();
+
+TestMessage msg("msg");
+
+msg.getV().push_back(1);
+msg.getV().push_back(5);
+
+msg.getL().push_back(99);
+msg.getL().push_back(54);
+msg.getL().push_back(63);
+
+msg.getS().insert(888);
+msg.getS().insert(123);
+
+msg.getM()[3] = 3.14;
+msg.getM()[2] = 2.71;
+
+msg.parsimPack(buffer);
+
+TestMessage msg2("tmp");
+msg2.parsimUnpack(buffer);
+ev << "isBufferEmpty:" << buffer->isBufferEmpty() << endl;
+
+ev << "v:";
+for (IntVector::iterator it=msg2.getV().begin(); it!=msg.getV().end(); it++)
+    ev << " " << *it;
+ev << "\n";
+
+ev << "l:";
+for (IntList::iterator it=msg2.getL().begin(); it!=msg.getL().end(); it++)
+    ev << " " << *it;
+ev << "\n";
+
+ev << "s:";
+for (IntSet::iterator it=msg2.getS().begin(); it!=msg.getS().end(); it++)
+    ev << " " << *it;
+ev << "\n";
+
+ev << "m:";
+for (IntDoubleMap::iterator it=msg2.getM().begin(); it!=msg.getM().end(); it++)
+    ev << " " << it->first << ":" << it->second;
+ev << "\n";
+
+
+%contains: stdout
+isBufferEmpty:1
+TBD
