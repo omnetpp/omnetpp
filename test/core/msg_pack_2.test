@@ -1,0 +1,59 @@
+%description:
+Tests parsimPack/parsimUnpack for generated classes
+
+%file: test.msg
+
+struct Struct {
+    int x;
+    int y;
+};
+
+message TestMessage {
+    Struct s;
+    Struct sv[];
+}
+
+
+%includes:
+#include <string.h>
+#include "../src/sim/parsim/cfilecommbuffer.h"
+#include "test_m.h"
+
+%activity:
+
+#define PRINT(X)  ev << #X << ":" << (X) << endl
+
+cFileCommBuffer *buffer = new cFileCommBuffer();
+
+TestMessage msg("msg");
+...
+msg.parsimPack(buffer);
+
+TestMessage msg2("tmp");
+msg2.parsimUnpack(buffer);
+ev << "isBufferEmpty:" << buffer->isBufferEmpty() << endl;
+
+ev << "v:";
+for (IntVector::iterator it=msg2.getV().begin(); it!=msg.getV().end(); it++)
+    ev << " " << *it;
+ev << "\n";
+
+ev << "l:";
+for (IntList::iterator it=msg2.getL().begin(); it!=msg.getL().end(); it++)
+    ev << " " << *it;
+ev << "\n";
+
+ev << "s:";
+for (IntSet::iterator it=msg2.getS().begin(); it!=msg.getS().end(); it++)
+    ev << " " << *it;
+ev << "\n";
+
+ev << "m:";
+for (IntDoubleMap::iterator it=msg2.getM().begin(); it!=msg.getM().end(); it++)
+    ev << " " << it->first << ":" << it->second;
+ev << "\n";
+
+
+%contains: stdout
+isBufferEmpty:1
+TBD

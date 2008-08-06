@@ -29,6 +29,7 @@ TestMessage msg("msg");
 msg.setI(23);
 msg.setD(3.14);
 msg.setS("Hello");
+FIXME vector too!
 msg.parsimPack(buffer);
 
 TestMessage msg2("tmp");
