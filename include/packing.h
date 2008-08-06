@@ -16,6 +16,10 @@
 #ifndef __PACKING_H
 #define __PACKING_H
 
+#include <vector>
+#include <list>
+#include <set>
+#include <map>
 #include "ccommbuffer.h"
 
 NAMESPACE_BEGIN
@@ -56,16 +60,114 @@ DOPACKING(opp_string,&)
 // Default pack/unpack function for arrays
 //
 template<typename T>
-void doPacking(cCommBuffer *b, const T *t, int n) {
+void doPacking(cCommBuffer *b, const T *t, int n)
+{
     for (int i=0; i<n; i++)
         doPacking(b, t[i]);
 }
 
 template<typename T>
-void doUnpacking(cCommBuffer *b, T *t, int n) {
+void doUnpacking(cCommBuffer *b, T *t, int n)
+{
     for (int i=0; i<n; i++)
         doUnpacking(b, t[i]);
 }
+
+
+//
+// Packing/unpacking an std::vector
+// Note: pack doesn't use "const", as the template rule somehow doesn't fire then
+//
+template<typename T, typename A>
+void doPacking(cCommBuffer *buffer, std::vector<T,A>& v)
+{
+    doPacking(buffer, (int)v.size());
+    for (int i=0; i<v.size(); i++)
+        doPacking(buffer, v[i]);
+}
+
+template<typename T, typename A>
+void doUnpacking(cCommBuffer *buffer, std::vector<T,A>& v)
+{
+    int n;
+    doUnpacking(buffer, n);
+    v.resize(n);
+    for (int i=0; i<n; i++)
+        doUnpacking(buffer, v[i]);
+}
+
+
+//
+// Packing/unpacking an std::list
+//
+template<typename T, typename A>
+void doPacking(cCommBuffer *buffer, std::list<T,A>& l)
+{
+    doPacking(buffer, (int)l.size());
+    for (std::list<T,A>::const_iterator it = l.begin(); it != l.end(); it++)
+        doPacking(buffer, *it);
+}
+
+template<typename T, typename A>
+void doUnpacking(cCommBuffer *buffer, std::list<T,A>& l)
+{
+    int n;
+    doUnpacking(buffer, n);
+    for (int i=0; i<n; i++) {
+        l.push_back(T());
+        doUnpacking(buffer, l.back());
+    }
+}
+
+//
+// Packing/unpacking an std::set
+//
+template<typename T, typename Tr, typename A>
+void doPacking(cCommBuffer *buffer, std::set<T,Tr,A>& s)
+{
+    doPacking(buffer, (int)s.size());
+    for (std::set<T,Tr,A>::const_iterator it = s.begin(); it != s.end(); it++)
+        doPacking(buffer, *it);
+}
+
+template<typename T, typename Tr, typename A>
+void doUnpacking(cCommBuffer *buffer, std::set<T,Tr,A>& s)
+{
+    int n;
+    doUnpacking(buffer, n);
+    for (int i=0; i<n; i++) {
+        T x;
+        doUnpacking(buffer, x);
+        s.insert(x);
+    }
+}
+
+//
+// Packing/unpacking an std::map
+//
+template<typename K, typename V, typename Tr, typename A>
+void doPacking(cCommBuffer *buffer, std::map<K,V,Tr,A>& m)
+{
+    doPacking(buffer, (int)m.size());
+    for (std::map<K,V,Tr,A>::const_iterator it = m.begin(); it != m.end(); it++) {
+        doPacking(buffer, it->first);
+        doPacking(buffer, it->second);
+    }
+}
+
+template<typename K, typename V, typename Tr, typename A>
+void doUnpacking(cCommBuffer *buffer, std::map<K,V,Tr,A>& m)
+{
+    int n;
+    doUnpacking(buffer, n);
+    for (int i=0; i<n; i++) {
+        K k; V v;
+        doUnpacking(buffer, k);
+        doUnpacking(buffer, v);
+        m[k] = v;
+    }
+}
+
 
 NAMESPACE_END
 
