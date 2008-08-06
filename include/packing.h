@@ -62,7 +62,7 @@ DOPACKING(opp_string,&)
 // Default pack/unpack function for arrays
 //
 template<typename T>
-void doPacking(cCommBuffer *b, const T *t, int n)
+void doPacking(cCommBuffer *b, /*const*/ T *t, int n)
 {
     for (int i=0; i<n; i++)
         doPacking(b, t[i]);
