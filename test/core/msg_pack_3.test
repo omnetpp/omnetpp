@@ -3,6 +3,8 @@ Tests parsimPack/parsimUnpack for generated classes
 
 %file: test.msg
 
+namespace @TESTNAME@;
+
 cplusplus {{
 typedef std::vector<int> IntVector;
 typedef std::list<int> IntList;
@@ -25,14 +27,13 @@ message TestMessage {
 
 %includes:
 #include <string.h>
-#include "../src/sim/parsim/cfilecommbuffer.h"
+#include "cfilecommbuffer.h" // from src/sim/parsim
+#include "objectprinter.h"   // from src/envir
 #include "test_m.h"
 
 %activity:
 
 #define PRINT(X)  ev << #X << ":" << (X) << endl
-
-cFileCommBuffer *buffer = new cFileCommBuffer();
 
 TestMessage msg("msg");
 
@@ -49,6 +50,7 @@ msg.getS().insert(123);
 msg.getM()[3] = 3.14;
 msg.getM()[2] = 2.71;
 
+cFileCommBuffer *buffer = new cFileCommBuffer();
 msg.parsimPack(buffer);
 
 TestMessage msg2("tmp");
@@ -56,26 +58,29 @@ msg2.parsimUnpack(buffer);
 ev << "isBufferEmpty:" << buffer->isBufferEmpty() << endl;
 
 ev << "v:";
-for (IntVector::iterator it=msg2.getV().begin(); it!=msg.getV().end(); it++)
+for (IntVector::iterator it=msg2.getV().begin(); it!=msg2.getV().end(); it++)
     ev << " " << *it;
 ev << "\n";
 
 ev << "l:";
-for (IntList::iterator it=msg2.getL().begin(); it!=msg.getL().end(); it++)
+for (IntList::iterator it=msg2.getL().begin(); it!=msg2.getL().end(); it++)
     ev << " " << *it;
 ev << "\n";
 
 ev << "s:";
-for (IntSet::iterator it=msg2.getS().begin(); it!=msg.getS().end(); it++)
+for (IntSet::iterator it=msg2.getS().begin(); it!=msg2.getS().end(); it++)
     ev << " " << *it;
 ev << "\n";
 
 ev << "m:";
-for (IntDoubleMap::iterator it=msg2.getM().begin(); it!=msg.getM().end(); it++)
+for (IntDoubleMap::iterator it=msg2.getM().begin(); it!=msg2.getM().end(); it++)
     ev << " " << it->first << ":" << it->second;
 ev << "\n";
 
-
 %contains: stdout
 isBufferEmpty:1
-TBD
+v: 1 5
+l: 99 54 63
+s: 123 888
+m: 2:2.71 3:3.14
+

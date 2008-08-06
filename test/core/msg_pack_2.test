@@ -3,6 +3,8 @@ Tests parsimPack/parsimUnpack for generated classes
 
 %file: test.msg
 
+namespace @TESTNAME@;
+
 struct Struct {
     int i;
     string s;
@@ -44,4 +46,18 @@ ev << ObjectPrinter("*:declaredOn(TestMessage)",4).printObjectToString(&msg2);
 
 %contains: stdout
 isBufferEmpty:1
-TBD
+class TestMessage {
+    Struct s = struct Struct {
+        int i = 53
+        string s = Hello
+    }
+    Struct sv[0] = struct Struct {
+        int i = 17
+        string s = first
+    }
+    Struct sv[1] = struct Struct {
+        int i = 26
+        string s = second
+    }
+}
+

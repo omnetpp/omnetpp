@@ -3,6 +3,8 @@ Tests parsimPack/parsimUnpack for generated classes
 
 %file: test.msg
 
+namespace @TESTNAME@;
+
 message TestMessage {
     int i;
     double d;
