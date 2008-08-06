@@ -1722,9 +1722,13 @@ or \ttt{double}s (\fname{asDoubleVector()}).
 The latter methods can be used like this:
 
 \begin{verbatim}
-const char *str = "aa bb cc";
-std::vector<std::string> v = cStringTokenizer().asVector();
+const char *vstr = par("v").stringValue(); // e.g. "aa bb cc";
+std::vector<std::string> v = cStringTokenizer(vstr).asVector();
+\end{verbatim}
 
+and
+
+\begin{verbatim}
 const char *str = "34 42 13 46 72 41";
 std::vector<int> v = cStringTokenizer().asIntVector();
 
@@ -1757,106 +1761,203 @@ while (tokenizer.hasMoreTokens())
 \subsection{Gate objects}
 
 
-Module gates\index{gate} are \cclass{cGate} objects. Gate objects
-know whether, and to which gate they are connected. They can also be
-queried on the parameters of the link (delay, data rate, etc.)
+Module gates\index{gate} are represented by \cclass{cGate} objects.
+Gate objects know to which other gates they are connected, and
+what are the channel objects associated with the links.
 
-The \fname{gate()} member function of \cclass{cModule} returns a
-pointer to a \cclass{cGate} object, and an overloaded form of the
-function lets you access elements of a vector gate:
+\subsubsection{Accessing gates by name}
 
-\begin{verbatim}
-cGate *outgate = gate("out");
-cGate *outvec5gate = gate("outvec",5);
-\end{verbatim}
-
-For gate vectors\index{gate!vector}, the first form returns the first gate in the
-vector (at index 0).
-
-The \fname{isVector()} member function can be used to determine if a
-gate belongs to a gate vector or not.
-
-Given a gate pointer, you can use the \fname{size()} and
-\fname{getIndex()} member functions of \cclass{cGate} to determine the
-size of the gate vector\index{gate!vector size} and the
-index\index{gate!vector index} of the gate within the vector:
+The \cclass{cModule} class has a number of member functions that
+deal with gates. You can look up a gate by name using the \fname{gate()}
+method:
 
 \begin{verbatim}
-int size2 = outvec5gate->size(); // --> size of outvec[]
-int index = outvec5gate->getIndex(); // --> 5 (it is gate 5 in the vector)
+cGate *outGate = gate("out");
 \end{verbatim}
 
-Instead of \ttt{gate->size()}, you can also call the \fname{gateSize()}
-method of \cclass{cModule}, which does the same:
+This works for input and output gates. However, when a gate was declared
+\ttt{inout} in NED, it is actually represented by the simulation kernel
+with two gates, so the above call would result in a \textit{gate not found}
+error. The \fname{gate()} method needs to be told whether the input or
+the output half of the gate you need. This can be done by appending
+the \ttt{"\$i"} or \ttt{"\$o"} to the gate name. The following example
+retrieves the two gates for the inout gate \ttt{"g"}:
 
 \begin{verbatim}
-int size2 = gateSize("out");
+cGate *gIn = gate("g$i");
+cGate *gOut = gate("g$o");
 \end{verbatim}
 
-For non-vector gates, \fname{size()} returns 1 and \fname{getIndex()} returns 0.
-
-Zero-size gate vectors are represented with a placeholder gate whose
-\fname{size()} method returns zero and cannot be connected.
-
-The \fname{getType()} member function returns a character, 'I' for input
-gates and 'O' for output gates:
+Another way is to use the \fname{gateHalf()} function, which takes
+the inout gate's name plus either \ttt{cGate::INPUT} or \ttt{cGate::OUTPUT}:
 
 \begin{verbatim}
-char type = outgate->getType() // --> 'O'
+cGate *gIn = gateHalf("g", cGate::INPUT);
+cGate *gOut = gateHalf("g", cGate::OUTPUT);
 \end{verbatim}
+
+These methods throw an error if the gate does not exist, so they cannot
+be used to determine whether the module has a particular gate.
+The \fname{hasGate()} method can be used then. An example:
+
+\begin{verbatim}
+if (hasGate("optOut"))
+   send(new cMessage(), "optOut");
+\end{verbatim}
+
+A gate can also be identified and looked up by a numeric gate ID.
+You can get the ID from the gate itself (\fname{getId()} method),
+or from the module by gate name (\fname{findGate()} method).
+The \fname{gate()} method also has an overloaded variant which
+returns the gate from the gate ID.
+
+\begin{verbatim}
+int gateId = gate("in")->getId();  // or:
+int gateId = findGate("in");
+\end{verbatim}
+
+As gate IDs are more useful with gate vectors, we'll cover them
+in detail in a later section.
+
+
+\subsubsection{Gate vectors}
+
+Gate vectors possess one \cclass{cGate} object per element.
+To access individual gates in the vector, you need to call
+the \fname{gate()} function with an additional \textit{index}
+parameter. The index should be between zero and \textit{size}-1.
+The size of the gate vector can be read with the \fname{gateSize()}
+method. The following example iterates through all elements in the
+gate vector:
+
+\begin{verbatim}
+for (int i=0; i<gateSize("out"); i++) {
+    cGate *gate = gate("out", i);
+    //...
+}
+\end{verbatim}
+
+A gate vector cannot have ``holes'' in it, that is, \fname{gate()}
+never returns \ttt{NULL} or throws an error if the gate vector exists
+and the index is within bounds.
+
+For inout gates, \fname{gateSize()} may be called with or without
+the \ttt{"\$i"}/\ttt{"\$o"} suffix, and returns the same number.
+
+The \fname{hasGate()} method may be used both with and without an
+index, and they mean two different things: without an index it tells
+the existence of a gate vector with the given name, regardless of its
+size (it returns \ttt{true} for an existing vector even if its size
+is currently zero!); with an index it also examines whether the index
+is within the bounds.
 
 
 \subsubsection{Gate IDs}
 
-Module gates (input and output, single and vector) are stored in an
-array within their modules. The gate's position in the array is called
-the \textit{gate ID}. The gate ID\index{gate!id} is returned by the \fname{getId()}
-member function:
+A gate can also be accessed by its ID. A very important property of gate IDs
+is that \textit{the ID of gate $k$ in a gate vector equals the ID of gate $0$ plus the index}.
+This allows you to efficiently access any gate in a gate vector, because
+retrieving a gate by ID is more efficient than by name and index.
+The index of the first gate can be obtained with \ttt{gate("out",0)->getId()},
+but it is better to use a dedicated method, \fname{gateBaseId()},
+which also works if the gate size is zero.
+
+Two further important properties of gate IDs: they are \textit{stable}
+and \textit{unique} (within the module). By stable we mean that the ID
+of a gate never changes; and by unique we not only mean that at any
+given time no two gates have the same IDs, but also that IDs of deleted
+gates do not get reused later, so gate IDs are unique in the lifetime
+of a simulation run.
+
+\begin{note}
+    Earlier versions of \opp did not have these guarantees -- resizing
+    a gate vector could cause its ID range to be relocated, if it
+    would have overlapped with the ID range of other gate vectors.
+    \opp 4.0 solves the same problem by interpreting the gate ID
+    as a bitfield, basically containing bits that identify the gate name,
+    and other bits that hold the index. This also means that the theoretical
+    upper limit for a gate size is now smaller, albeit it is still
+    big enough so that it can be safely ignored for practical purposes.
+\end{note}
+
+The following example iterates through a gate vector, using IDs:
 
 \begin{verbatim}
-int id = outgate->getId();
+int baseId = getBaseId("out");
+int size = gateSize("out");
+for (int i=0; i<size; i++) {
+    cGate *gate = gate(baseId + i);
+    //...
+}
 \end{verbatim}
 
-For a module with input gates \ttt{fromApp} and \ttt{in[3]} and output gates
-of \ttt{toApp} and \ttt{status}, the array may look like this:
 
-\begin{longtable}{|c|c|c|}
-\hline
-% ROW 1
-\tabheadcol
-\textbf{ID} & \textbf{dir} & \textbf{name[index]}\\\hline
-% ROW 2
-0 & \textit{input} & \ttt{fromApp} \\\hline
-% ROW 3
-1 & \textit{output} & \ttt{toApp} \\\hline
-% ROW 4
-2 & \multicolumn{2}{c|}{\textit{empty}}\\\hline
-% ROW 5
-3 & \textit{input} & \ttt{in[0]}\\\hline
-% ROW 6
-4 & \textit{input} & \ttt{in[1]}\\\hline
-% ROW 7
-5 & \textit{input} & \ttt{in[2]}\\\hline
-% ROW 8
-6 & \textit{output} & \ttt{status}\\\hline
-\end{longtable}
+\subsubsection{Enumerating all gates}
 
-The array may have empty slots. Gate vectors are guaranteed to
-occupy contiguous IDs, thus it is legal to calculate the
-ID of \textit{gate[k]} as \ttt{gate("gate",0).getId()+k}.
+If you need to go through all gates of a module, there are
+two possibilities. One is invoking the \fname{getGateNames()} method
+that returns the names of all gates and gate vectors the module
+has; then you can call \fname{isGateVector(name)} to determine
+whether individual names identify a scalar gate or a gate vector;
+then gate vectors can be enumerated by index. Also, for inout
+gates \fname{getGateNames()} returns the base name without the
+\ttt{"\$i"}/\ttt{"\$o"} suffix, so the two directions
+need to be handled separately. The \fname{gateType(name)} method
+can be used to test whether a gate is inout, output or inout
+(it returns \ttt{cGate::INOUT}, \ttt{cGate::INPUT}, or
+\ttt{cGate::OUTPUT}).
 
-Message sending and receiving functions accept both gate names
-and gate IDs; the functions using gate IDs are a bit faster.
-Gate IDs do not change during execution, so it is often worth
-retrieving them in advance and using them instead of gate names.
-
-You can also obtain gate IDs with the \fname{findGate()}
-member of \cclass{cModule}:
+Clearly, the above solution can be quite hairy. An alternative is to use
+the \cclass{GateIterator} class provided by \cclass{cModule}.
+It goes like this:
 
 \begin{verbatim}
-int id1 = findGate("out");
-int id2 = findGate("outvect",5);
+for (cModule::GateIterator i(this); !i.end(); i++) {
+    cGate *gate = i();
+    ...
+}
 \end{verbatim}
+
+Where \ttt{this} denotes the module whose gates are being enumerated
+(it can be replaced by any \ttt{cModule *} variable).
+
+\begin{note}
+    In earlier \opp versions, gate IDs used to be small integers, so
+    it made sense to iterate over all gates of a module by enumerating
+    all IDs from zero to a maximum, skipping the holes (\ttt{NULL}s).
+    This is no longer the case with \opp 4.0 and later versions.
+    Moreover, the \fname{gate()} method now throws an error when called
+    with an invalid ID, and not just returns \ttt{NULL}.
+\end{note}
+
+
+\subsubsection{Adding and deleting gates}
+
+FIXME
+
+%    /**
+%     * Deletes a gate, gate pair, or gate vector. Note: individual gates
+%     * in a gate vector and one side of an inout gate (i.e. "foo$i")
+%     * cannot be deleted. IDs of deleted gates will not be reused later.
+%     */
+%    virtual void deleteGate(const char *gatename);
+
+
+\subsubsection{cGate methods}
+
+The \fname{getName()} method of \cclass{cGate} returns the name of the
+gate or gate vector. If you need a string that contains the gate index
+as well, \fname{getFullName()} is what you want. If you also want to
+include the hierarchical name of the owner module, call \fname{getFullPath()}.
+
+The \fname{getType()} method of \cclass{cGate} returns the gate type,
+either \ttt{cGate::INPUT} or \ttt{cGate::OUTPUT}. (It cannot return
+\ttt{cGate::INOUT}, because an inout gate is represented by a pair
+of \cclass{cGate}s.) The \fname{isVector()}, \fname{getIndex()},
+\fname{getVectorSize()}, \fname{getId()} method names speak for themselves.
+\fname{size()} is an alias to \fname{getVectorSize()}.
+
+Further methods... FIXME
 
 
 
@@ -2332,16 +2433,15 @@ delete msg;
 \end{verbatim}
 
 You might have noticed that copying the message for the last gate is
-redundant (we could send out the original message),
-so it can be optimized out like this:
+redundant: we can just send out the original message there.
+Also, we can utilize gate IDs to spare looking up the gate by name
+for each send operation. The optimized version of the code looks
+like this:
 
 \begin{verbatim}
-for (int i=0; i<n-1; i++)   // note n-1 instead of n
-{
-    cMessage *copy = msg->dup();
-    send(copy, "out", i);
-}
-send(msg, "out", n-1);  // send original on last gate
+int outGateBaseId = gateBaseId("out");
+for (int i=0; i<n; i++)
+    send(i==n-1 ? msg : msg->dup(), outGateBaseId+i);
 \end{verbatim}
 
 
@@ -2405,8 +2505,8 @@ followed by message sending. In {\opp}, it is possible to implement
 it like this:
 
 \begin{verbatim}
-wait( someDelay );
-send( msg, "outgate" );
+wait(someDelay);
+send(msg, "outgate");
 \end{verbatim}
 
 
