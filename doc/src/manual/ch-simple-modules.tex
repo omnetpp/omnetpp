@@ -1933,14 +1933,23 @@ Where \ttt{this} denotes the module whose gates are being enumerated
 
 \subsubsection{Adding and deleting gates}
 
-FIXME
+Although rarely needed, it is possible to add and remove gates during
+simulation. You can add scalar gates and gate vectors, change the size of
+gate vectors, and remove scalar gates and whole gate vectors.
+It is not possible to remove individual random gates from a gate vector,
+to remove one half of an inout gate (e.g. \ttt{"gate\$o"}), or to set
+different gate vector sizes on the two halves of an inout gate vector.
 
-%    /**
-%     * Deletes a gate, gate pair, or gate vector. Note: individual gates
-%     * in a gate vector and one side of an inout gate (i.e. "foo$i")
-%     * cannot be deleted. IDs of deleted gates will not be reused later.
-%     */
-%    virtual void deleteGate(const char *gatename);
+The \cclass{cModule} methods for adding and removing gates are
+\fname{addGate(name,type,isvector=false)} and \fname{deleteGate(name)}.
+Gate vector size can be changed by using \fname{setGateSize(name,size)}.
+None of these methods accept \ttt{"\$i"} / \ttt{"\$o"} suffix in gate names.
+
+\begin{note}
+    When memory efficiency is of concern, it is useful to know that
+    in \opp 4.0 and later, a gate vector will consume significantly less
+    memory than the same number of individual scalar gates.
+\end{note}
 
 
 \subsubsection{cGate methods}
