@@ -258,6 +258,11 @@ class SIM_API cGate : public cObject, noncopyable
     Type getType() const  {return desc->getTypeOf(this);}
 
     /**
+     * Returns the given type as a string.
+     */
+    static const char *getTypeName(Type t);
+
+    /**
      * Returns a pointer to the owner module of the gate.
      */
     cModule *getOwnerModule() const;
