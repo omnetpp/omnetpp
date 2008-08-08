@@ -196,6 +196,16 @@ int cGate::getId() const
     return id;
 }
 
+const char *cGate::getTypeName(Type t)
+{
+    switch (t) {
+        case INPUT: return "input";
+        case OUTPUT: return "output";
+        case INOUT: return "inout";
+        default: return "(unknown type)";
+    }
+}
+
 cProperties *cGate::getProperties() const
 {
     cComponent *component = check_and_cast<cComponent *>(getOwner());
