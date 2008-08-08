@@ -35,14 +35,30 @@ ALLTEX = usman.tex title.tex $(TEXCHAPTERS)
 HTMCHAPTERS = $(TEXCHAPTERS:.tex=.htm)
 
 # must list all SVGs because nmake is broken and has no wildcard functionality
-SVGPICS = figures\cqn-model.svg figures\cqn-partitioning.svg figures\nonblocking-crit.svg \
-         figures\pairwise.svg figures\parsim-arch.svg figures\partitioning.svg \
-         figures\placeholders.svg figures\placeholders2.svg figures\usmanFig10.svg \
-         figures\usmanFig12.svg figures\usmanFig13.svg figures\usmanFig14.svg \
-         figures\usmanFig15.svg figures\usmanFig16.svg figures\usmanFig17.svg \
-         figures\usmanFig18.svg figures\usmanFig2.svg figures\usmanFig3.svg \
-         figures\usmanFig4.svg figures\usmanFig5.svg figures\usmanFig7.svg \
-         figures\usmanFig8.svg figures\usmanFig9.svg
+SVGPICS = \
+         figures\architecture.svg \
+         figures\build.svg \
+         figures\connections.svg \
+         figures\cqn-model.svg \
+         figures\cqn-partitioning.svg \
+         figures\histogramrange.svg \
+         figures\histogramcells.svg \
+         figures\hypercube.svg \
+         figures\ksplit1.svg \
+         figures\ksplit2.svg \
+         figures\modules.svg \
+         figures\nonblocking-crit.svg \
+         figures\pairwise.svg \
+         figures\parsim-arch.svg \
+         figures\partitioning.svg \
+         figures\placeholders.svg \
+         figures\placeholders2.svg \
+         figures\queue.svg \
+         figures\transmission.svg \
+         figures\usmanFig13.svg \
+         figures\usmanFig5.svg \
+         figures\usmanFig7.svg \
+         figures\usmanFig9.svg
 PDFPICS = $(SVGPICS:.svg=.pdf)
 
 # an imperfect attempt to filter out less important warnings...
