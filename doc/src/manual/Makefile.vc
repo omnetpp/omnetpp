@@ -41,6 +41,7 @@ SVGPICS = \
          figures\connections.svg \
          figures\cqn-model.svg \
          figures\cqn-partitioning.svg \
+         figures\gates.svg \
          figures\histogramrange.svg \
          figures\histogramcells.svg \
          figures\hypercube.svg \

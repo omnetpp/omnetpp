@@ -574,7 +574,7 @@ are inserted at its head and elements are removed at its tail.
 
 \begin{figure}[htbp]
   \begin{center}
-    \includegraphics[width=3.703in, height=1.303in]{figures/queue}
+    \includegraphics{figures/queue}
     \caption{cQueue: insertion and removal}
     \label{fig:ch-sim-lib:cqueue}
   \end{center}
@@ -592,11 +592,11 @@ cMessage *msg;
 for (int i=0; i<10; i++)
 {
   msg = new cMessage;
-  queue.insert( msg );
+  queue.insert(msg);
 }
 
 // remove messages
-while( ! queue.empty() )
+while(!queue.empty())
 {
   msg = (cMessage *)queue.pop();
   delete msg;
@@ -620,7 +620,7 @@ tail of the queue, and the \fname{remove()} function can be
 used to remove any item known by its pointer from the queue:
 
 \begin{verbatim}
-queue.remove( msg );
+queue.remove(msg);
 \end{verbatim}
 
 

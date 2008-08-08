@@ -1966,6 +1966,9 @@ of \cclass{cGate}s.) The \fname{isVector()}, \fname{getIndex()},
 \fname{getVectorSize()}, \fname{getId()} method names speak for themselves.
 \fname{size()} is an alias to \fname{getVectorSize()}.
 
+The \fname{getOwnerModule()} method returns the module the gate object
+belongs to.
+
 To illustrate these methods, we expand the gate iterator example
 to print some information about each gate:
 
@@ -1994,155 +1997,60 @@ following sections.
 
 Simple module gates have normally one connection attached. Compound module
 gates, however, need to be connected both inside and outside of the
-module to be useful.
+module to be useful. A series of connections (joined with compound
+module gates) is called a path. A path is directed, and it normally
+starts at an output gate of a simple module, ends at an input gate
+of a simple module, and passes through several compound module gates.
 
-\cclass{cGate} has two methods
+Every \cclass{cGate} object contains pointers to the previous gate
+and the next gate in the path, so a path can be thought of as a double-linked
+list. The two pointers are returned by the \fname{getToGate()} and
+\fname{getFromGate()} methods, where \textit{to} and \textit{from}
+refer to the direction of the arrow, as illustrated on figure
+\ref{fig:ch-simple-modules:gates}.
 
-                                from               to
-Simple module output gate        NULL      sibling module input gate, or
-                                           parent module output gate
-Simple module input gate   sibling module output gate,
-                           or parent module input gate  NULL
-Comound module output gate
-Compound module input gate
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics{figures/gates}
+\caption{(a) simple module output gate, (b) compound module output gate,
+         (c) simple module input gate, (d) compound module input gate}
+\label{fig:ch-simple-modules:gates}
+\end{center}
+\end{figure}
 
+The start and end gates of the path can be found with the \fname{getSourceGate()}
+and \fname{getDestinationGate()} methods, which simply follow the \textit{from} /
+\textit{to} pointers until they return \ttt{NULL}.
 
+The \fname{isConnectedOutside()} and \fname{isConnectedInside()} methods
+return whether a gate is connected on the outside or on the inside. They
+examine either the \textit{from} or the \textit{to} pointer, depending on the
+gate type (input or output). Again, see figure \ref{fig:ch-simple-modules:gates}
+for an illustration.
 
-The \fname{isConnected()} member function returns whether
-the gate is connected. If the gate is an output gate, the gate to
-which it is connected is obtained by the \fname{getToGate()}
-member function. For input gates, the function is
-\fname{getFromGate()}.
+The \fname{isConnected()} method is a bit different: it returns true if the gate
+is \textit{fully} connected, that is, for a compound module gate
+both inside and outside, and for a simple module gate, outside.
 
-%
-% TBD figure
-%
-
-\begin{verbatim}
-cGate *gate = gate("somegate");
-if (gate->isConnected())
-{
-  cGate *othergate = (gate->getType()=='O') ?
-                     gate->getToGate() : gate->getFromGate();
-
-  ev << "gate is connected to: " << othergate->getFullPath() << endl;
-}
-else
-{
-  ev << "gate not connected" << endl;
-}
-\end{verbatim}
-
-
-An alternative to \fname{isConnected()} is to check the return value
-of \fname{getToGate()} or \fname{getFromGate()}. The following code is fully equivalent
-to the one above:
+The following code prints the name of the gate a simple module gate is
+connected to:
 
 \begin{verbatim}
 cGate *gate = gate("somegate");
-cGate *othergate = (gate->getType()=='O') ?
-                   gate->getToGate() : gate->getFromGate();
-if (othergate)
-  ev << "gate is connected to: " << othergate->getFullPath() << endl;
+cGate *otherGate = gate->getType()==cGate::OUTPUT ? gate->getToGate() :
+                                                    gate->getFromGate();
+if (otherGate)
+  ev << "gate is connected to: " << otherGate->getFullPath() << endl;
 else
   ev << "gate not connected" << endl;
 \end{verbatim}
 
-To find out to which simple module a given output
-gate leads finally\index{gate!destination}, you would have to walk
-along the path like this (the \fname{getOwnerModule()} member function
-returns the module to which the gate belongs):
-
-\begin{verbatim}
-cGate *gate = gate("out");
-while (gate->getToGate()!=NULL)
-{
-  gate = gate->getToGate();
-}
-
-cModule *destmod = gate->getOwnerModule();
-\end{verbatim}
-
-but luckily, there are two convenience functions which do that:
-\fname{getSourceGate()} and
-\fname{getDestinationGate()}.
 
 
+\subsection{The connection's channel}
 
-
-\subsection{Connection parameters}
-
-Connection attributes (propagation delay, transmission data rate,
-bit error rate) are represented by the channel object, which
-is available via the source gate of the connection.
-
-\begin{verbatim}
-cChannel *chan = outgate->getChannel();
-\end{verbatim}
-
-\cclass{cChannel} is a small base class. All interesting attributes are
-part of its subclass \cclass{cDatarateChannel}, so you have to cast the pointer
-before getting to the delay, error and data rate values.
-
-\begin{verbatim}
-cDatarateChannel *chan = check_and_cast<cDatarateChannel *>(outgate->getChannel());
-double d = chan->getDelay();
-double e = chan->getBitErrorRate();
-double r = chan->getDatarate();
-\end{verbatim}
-
-You can also change the channel attributes with the corresponding
-\ttt{setXXX()} functions. Note, however, that (as it was explained in
-section \ref{ch:simple-modules:packet-transmission})
-changes will not affect messages already sent, even if they have not
-begun transmission yet.
-
-
-
-\subsection{Transmission state}
-\label{ch:simple-modules:cgate-transmission-state}
-
-The \fname{isBusy()} member function returns whether the gate
-is currently transmitting, and if so, the
-\fname{getTransmissionFinishTime()} member function
-returns the simulation time when the gate is going to finish
-transmitting. (If the gate in not currently transmitting,
-\fname{getTransmissionFinishTime()} returns the simulation time
-when it finished its last transmission.)
-
-The semantics have been described in section
-\ref{ch:simple-modules:packet-transmission}.
-
-An example:
-
-\begin{verbatim}
-cMessage *packet = new cMessage("DATA");
-packet->setByteLength(1024);  // 1K
-
-if (gate("TxGate")->isBusy()) // if gate is busy, wait until it
-{                             // becomes free
-  wait( gate("TxGate")->getTransmissionFinishTime() - simTime());
-}
-send( packet, "TxGate");
-\end{verbatim}
-
-If the connection with a data rate is not directly connected
-to the simple module's output gate but is the second
-one in the path, you have to check the second gate's busy
-condition\index{gate!busy condition}. You could use the following
-code:
-
-\begin{verbatim}
-if (gate("mygate")->getToGate()->isBusy())
-  //...
-\end{verbatim}
-
-Note that if data rates change\index{data rate change} during the
-simulation, the changes will affect only the messages that are
-\textit{sent} after the change.
-
-
-
+dsfsdfdfdsf
+FIXME
 
 
 
@@ -2444,6 +2352,78 @@ immediately.
 In {\opp} one can implement \textit{point-to-point transmitter} modules
 with packet queues if needed. For example, the INET Framework
 follows this approach.
+
+
+
+
+--------------------------
+FIXME TODO
+
+Connection attributes (propagation delay, transmission data rate,
+bit error rate) are represented by the channel object, which
+is available via the source gate of the connection.
+
+\begin{verbatim}
+cChannel *chan = outgate->getChannel();
+\end{verbatim}
+
+\cclass{cChannel} is a small base class. All interesting attributes are
+part of its subclass \cclass{cDatarateChannel}, so you have to cast the pointer
+before getting to the delay, error and data rate values.
+
+\begin{verbatim}
+cDatarateChannel *chan = check_and_cast<cDatarateChannel *>(outgate->getChannel());
+double d = chan->getDelay();
+double e = chan->getBitErrorRate();
+double r = chan->getDatarate();
+\end{verbatim}
+
+You can also change the channel attributes with the corresponding
+\ttt{setXXX()} functions. Note, however, that (as it was explained in
+section \ref{ch:simple-modules:packet-transmission})
+changes will not affect messages already sent, even if they have not
+begun transmission yet.
+
+\subsubsection{Channel transmission state}
+\label{ch:simple-modules:cgate-transmission-state}
+
+The \fname{isBusy()} member function returns whether the gate
+is currently transmitting, and if so, the
+\fname{getTransmissionFinishTime()} member function
+returns the simulation time when the gate is going to finish
+transmitting. (If the gate in not currently transmitting,
+\fname{getTransmissionFinishTime()} returns the simulation time
+when it finished its last transmission.)
+
+An example:
+
+\begin{verbatim}
+cMessage *packet = new cMessage("DATA");
+packet->setByteLength(1024);  // 1K
+
+if (gate("TxGate")->isBusy()) // if gate is busy, wait until it
+{                             // becomes free
+  wait( gate("TxGate")->getTransmissionFinishTime() - simTime());
+}
+send( packet, "TxGate");
+\end{verbatim}
+
+If the connection with a data rate is not directly connected
+to the simple module's output gate but is the second
+one in the path, you have to check the second gate's busy
+condition\index{gate!busy condition}. You could use the following
+code:
+
+\begin{verbatim}
+if (gate("mygate")->getToGate()->isBusy())
+  //...
+\end{verbatim}
+
+Note that if data rates change\index{data rate change} during the
+simulation, the changes will affect only the messages that are
+\textit{sent} after the change.
+
+
 
 
 
