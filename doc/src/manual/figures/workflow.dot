@@ -1,0 +1,26 @@
+digraph g {
+	node [shape = "ellipse"];
+	ned [label = "NED sources"];
+	ini [label = "omnetpp.ini"];
+	cc  [label = "C++ sources"];
+	m_cc [label = "*_m.cc/.h"];
+	msg [label = "MSG sources"];
+	result [label = "Result files"];
+	prog [label = "Simulation program"];
+
+	opp_msgc [shape = "rectangle", label = "opp_msgc"];
+	linking [shape = "rectangle", label = "Compiling and linking"];
+	running [shape = "rectangle", label = "Running"];
+
+	msg -> opp_msgc -> m_cc;
+
+	m_cc -> linking;
+	cc -> linking;
+	libs -> linking;
+
+	linking -> prog;
+	prog -> running;
+	ned -> running;
+	ini -> running;
+	running -> result;
+};

@@ -2003,10 +2003,12 @@ starts at an output gate of a simple module, ends at an input gate
 of a simple module, and passes through several compound module gates.
 
 Every \cclass{cGate} object contains pointers to the previous gate
-and the next gate in the path, so a path can be thought of as a double-linked
-list. The two pointers are returned by the \fname{getToGate()} and
-\fname{getFromGate()} methods, where \textit{to} and \textit{from}
-refer to the direction of the arrow, as illustrated on figure
+and the next gate in the path (returned by the \fname{getPreviousGate()}
+and \fname{getNextGate()} methods), so a path can be thought of as
+a double-linked list.
+
+The use of the \textit{previous gate} / \textit{next gate} pointers
+with various gate types is illustrated on figure
 \ref{fig:ch-simple-modules:gates}.
 
 \begin{figure}[htbp]
@@ -2018,9 +2020,9 @@ refer to the direction of the arrow, as illustrated on figure
 \end{center}
 \end{figure}
 
-The start and end gates of the path can be found with the \fname{getSourceGate()}
-and \fname{getDestinationGate()} methods, which simply follow the \textit{from} /
-\textit{to} pointers until they return \ttt{NULL}.
+The start and end gates of the path can be found with the \fname{getPathStartGate()}
+and \fname{getPathEndGate()} methods, which simply follow the \textit{previous gate} /
+\textit{next gate} pointers until they return \ttt{NULL}.
 
 The \fname{isConnectedOutside()} and \fname{isConnectedInside()} methods
 return whether a gate is connected on the outside or on the inside. They
@@ -2037,8 +2039,8 @@ connected to:
 
 \begin{verbatim}
 cGate *gate = gate("somegate");
-cGate *otherGate = gate->getType()==cGate::OUTPUT ? gate->getToGate() :
-                                                    gate->getFromGate();
+cGate *otherGate = gate->getType()==cGate::OUTPUT ? gate->getNextGate() :
+                                                    gate->getPreviousGate();
 if (otherGate)
   ev << "gate is connected to: " << otherGate->getFullPath() << endl;
 else
@@ -2415,7 +2417,7 @@ condition\index{gate!busy condition}. You could use the following
 code:
 
 \begin{verbatim}
-if (gate("mygate")->getToGate()->isBusy())
+if (gate("out")->getNextGate()->isBusy())
   //...
 \end{verbatim}
 
@@ -3247,17 +3249,16 @@ for (cSubModIterator iter(*getParentModule()); !iter.end(); iter++)
 
 \subsubsection{Walking along links}
 
-
 To determine the module at the other end of a connection, use
-\cclass{cGate}'s \fname{getFromGate()}, \fname{getToGate()} and
+\cclass{cGate}'s \fname{getPreviousGate()}, \fname{getNextGate()} and
 \fname{getOwnerModule()} functions. For example:
 
 \begin{verbatim}
-cModule *neighbour = gate( "outputgate" )->getToGate()->getOwnerModule();
+cModule *neighbour = gate("out")->getNextGate()->getOwnerModule();
 \end{verbatim}
 
-
-For input gates, you would use \fname{getFromGate()} instead of \fname{getToGate()}.
+For input gates, you would use \fname{getPreviousGate()} instead of
+\fname{getNextGate()}.
 
 
 \section{Direct method calls between modules}
