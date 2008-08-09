@@ -272,7 +272,7 @@ cChannelType *cChannelType::getIdealChannel()
     return idealChannelType;
 }
 
-cChannelType *cChannelType::getDatarateChannel()
+cChannelType *cChannelType::getTransmissionChannel()
 {
     if (!datarateChannelType) {
         datarateChannelType = find("ned.DatarateChannel");
@@ -288,7 +288,7 @@ cIdealChannel *cChannelType::createIdealChannel(const char *name)
 
 cDatarateChannel *cChannelType::createDatarateChannel(const char *name)
 {
-    return dynamic_cast<cDatarateChannel *>(getDatarateChannel()->create(name));
+    return dynamic_cast<cDatarateChannel *>(getTransmissionChannel()->create(name));
 }
 
 

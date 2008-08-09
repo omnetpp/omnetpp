@@ -289,7 +289,7 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
     /**
      * Send a message directly to another module.
      *
-     * If the gate is further connected (i.e. getToGate()!=NULL), the
+     * If the gate is further connected (i.e. getNextGate()!=NULL), the
      * message will follow the connections that start at that gate.
      * For example, when sending to an input gate of a compound module,
      * the message will follow the connections to the inside of the compound module.
@@ -300,11 +300,11 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
      * to a single output gate of their parent module.
      *
      * It is not permitted to send to a gate of a compound module which is not
-     * further connected (i.e. getToGate()==NULL), as this would cause the message
+     * further connected (i.e. getNextGate()==NULL), as this would cause the message
      * to arrive at a compound module.
      *
      * Also, it is not permitted to send to a gate which is otherwise connected
-     * i.e. where getFromGate()!=NULL. This means that modules MUST have
+     * i.e. where getPreviousGate()!=NULL. This means that modules MUST have
      * dedicated gates for receiving via sendDirect(). You cannot have a gate
      * which receives messages via both connections and sendDirect().
      *

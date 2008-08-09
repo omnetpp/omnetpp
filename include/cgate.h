@@ -129,8 +129,8 @@ class SIM_API cGate : public cObject, noncopyable
                 // rest (pos>>2): array index, or -1 if scalar gate
 
     cChannel *channelp; // channel object (if exists)
-    cGate *fromgatep;   // previous and next gate in the path
-    cGate *togatep;
+    cGate *prevgatep;   // previous and next gate in the path
+    cGate *nextgatep;
 
   protected:
     // internal: constructor is protected because only cModule is allowed to create instances
@@ -308,7 +308,7 @@ class SIM_API cGate : public cObject, noncopyable
 
     /**
      * Returns the channel object attached to this gate, or NULL if there's
-     * no channel. This is the channel between this gate and this->getToGate(),
+     * no channel. This is the channel between this gate and this->getNextGate(),
      * that is, channels are stored on the "from" side of the connections.
      */
     cChannel *getChannel() const  {return channelp;}
@@ -340,7 +340,7 @@ class SIM_API cGate : public cObject, noncopyable
     /**
      * Usually invoked on an output gate, this method returns <i>the</i>
      * channel in the connection path that supports datarate (as determined
-     * by cChannel::supportsDatarate(); it is guaranteed that there can be
+     * by cChannel::isTransmissionChannel(); it is guaranteed that there can be
      * at most one such channel per path). If there is no suh channel,
      * an error is thrown.
      *
@@ -353,7 +353,7 @@ class SIM_API cGate : public cObject, noncopyable
      * value (provided that connections are not removed or created dynamically
      * during simulation.)
      */
-    cChannel *getDatarateChannel() const;
+    cChannel *getTransmissionChannel() const;
 
     /**
      * Usually only meaningful on an output gate, this method returns
@@ -361,7 +361,7 @@ class SIM_API cGate : public cObject, noncopyable
      * this gate is currently transmitting. If there is no datarate channel
      * in the path, this method throws an error.
      *
-     * It is equivalent to <tt>getDatarateChannel()->isBusy()</tt>.
+     * It is equivalent to <tt>getTransmissionChannel()->isBusy()</tt>.
      */
     bool isBusy() const;
 
@@ -371,7 +371,7 @@ class SIM_API cGate : public cObject, noncopyable
      * this gate will finish transmitting. If there is no datarate channel
      * in the path, this method throws an error.
      *
-     * It is equivalent to <tt>getDatarateChannel()->getTransmissionFinishTime()</tt>.
+     * It is equivalent to <tt>getTransmissionChannel()->getTransmissionFinishTime()</tt>.
      */
     simtime_t getTransmissionFinishTime() const;
     //@}
@@ -384,26 +384,26 @@ class SIM_API cGate : public cObject, noncopyable
      * contains this gate, or a NULL pointer if this gate is the first one in the path.
      * (E.g. for a simple module output gate, this function will return NULL.)
      */
-    cGate *getFromGate() const {return fromgatep;}
+    cGate *getPreviousGate() const {return prevgatep;}
 
     /**
      * Returns the next gate in the series of connections (the path) that
      * contains this gate, or a NULL pointer if this gate is the last one in the path.
      * (E.g. for a simple module input gate, this function will return NULL.)
      */
-    cGate *getToGate() const   {return togatep;}
+    cGate *getNextGate() const   {return nextgatep;}
 
     /**
      * Return the ultimate source of the series of connections
      * (the path) that contains this gate.
      */
-    cGate *getSourceGate() const;
+    cGate *getPathStartGate() const;
 
     /**
      * Return the ultimate destination of the series of connections
      * (the path) that contains this gate.
      */
-    cGate *getDestinationGate() const;
+    cGate *getPathEndGate() const;
 
     /**
      * Determines if a given module is in the path containing this gate.
@@ -414,8 +414,8 @@ class SIM_API cGate : public cObject, noncopyable
      * Returns true if the gate is connected outside (i.e. to one of its
      * sibling modules or to the parent module).
      *
-     * This means that for an input gate, getFromGate() must be non-NULL; for an output
-     * gate, getToGate() must be non-NULL.
+     * This means that for an input gate, getPreviousGate() must be non-NULL; for an output
+     * gate, getNextGate() must be non-NULL.
      */
     bool isConnectedOutside() const;
 
@@ -423,8 +423,8 @@ class SIM_API cGate : public cObject, noncopyable
      * Returns true if the gate (of a compound module) is connected inside
      * (i.e. to one of its submodules).
      *
-     * This means that for an input gate, getToGate() must be non-NULL; for an output
-     * gate, getFromGate() must be non-NULL.
+     * This means that for an input gate, getNextGate() must be non-NULL; for an output
+     * gate, getPreviousGate() must be non-NULL.
      */
     bool isConnectedInside() const;
 

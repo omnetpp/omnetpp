@@ -56,9 +56,9 @@ SelectionStrategy *SelectionStrategy::create(const char *algName, cSimpleModule 
 cGate *SelectionStrategy::selectableGate(int i)
 {
     if (isInputGate)
-        return hostModule->gate("in", i)->getFromGate();
+        return hostModule->gate("in", i)->getPreviousGate();
     else
-        return hostModule->gate("out", i)->getToGate();
+        return hostModule->gate("out", i)->getNextGate();
 }
 
 bool SelectionStrategy::isSelectable(cModule *module)

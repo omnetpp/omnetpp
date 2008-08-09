@@ -48,7 +48,7 @@ std::string cProxyGate::info() const
 
 bool cProxyGate::deliver(cMessage *msg, simtime_t t)
 {
-    ASSERT(togatep==NULL);
+    ASSERT(nextgatep==NULL);
     ASSERT(partition!=NULL);
     if (remoteProcId==-1)
         throw cRuntimeError(this, "cannot deliver message '%s': not connected to remote gate", msg->getName());

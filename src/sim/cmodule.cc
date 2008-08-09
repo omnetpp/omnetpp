@@ -91,10 +91,10 @@ cModule::~cModule()
     for (GateIterator i(this); !i.end(); i++)
     {
         cGate *gate = i();
-        if (gate->getToGate() && gate->getToGate()->getFromGate()==gate)
+        if (gate->getNextGate() && gate->getNextGate()->getPreviousGate()==gate)
            gate->disconnect();
-        if (gate->getFromGate() && gate->getFromGate()->getToGate()==gate)
-           gate->getFromGate()->disconnect();
+        if (gate->getPreviousGate() && gate->getPreviousGate()->getNextGate()==gate)
+           gate->getPreviousGate()->disconnect();
     }
 
     // delete all gates
@@ -252,7 +252,7 @@ void cModule::disposeGateObject(cGate *gate, bool checkConnected)
 {
     if (gate)
     {
-        if (checkConnected && (gate->getFromGate() || gate->getToGate()))
+        if (checkConnected && (gate->getPreviousGate() || gate->getNextGate()))
             throw cRuntimeError(this, "Cannot delete gate `%s', it is still connected", gate->getFullName());
         EVCB.gateDeleted(gate);
         delete gate;
@@ -519,13 +519,13 @@ void cModule::setGateSize(const char *gatename, int newSize)
             // check & notify
             if (type!=cGate::OUTPUT) {
                 cGate *gate = desc->inputgatev[i];
-                if (gate->getFromGate() || gate->getToGate())
+                if (gate->getPreviousGate() || gate->getNextGate())
                     throw cRuntimeError(this,"setGateSize(): Cannot shrink gate vector %s[] to size %d, gate %s still connected", gatename, newSize, gate->getFullPath().c_str());
                 EVCB.gateDeleted(gate);
             }
             if (type!=cGate::INPUT) {
                 cGate *gate = desc->outputgatev[i];
-                if (gate->getFromGate() || gate->getToGate())
+                if (gate->getPreviousGate() || gate->getNextGate())
                     throw cRuntimeError(this,"setGateSize(): Cannot shrink gate vector %s[] to size %d, gate %s still connected", gatename, newSize, gate->getFullPath().c_str());
                 EVCB.gateDeleted(gate);
             }

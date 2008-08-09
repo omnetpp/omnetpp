@@ -113,6 +113,14 @@ void cDatarateChannel::setDisabled(bool d)
     par("disabled").setBoolValue(d);
 }
 
+simtime_t cDatarateChannel::calculateDuration(cMessage *msg) const
+{
+    if (flags & FL_DATARATE_NONZERO && msg->isPacket())
+        return ((cPacket *)msg)->getBitLength() / datarateparam;
+    else
+        return SIMTIME_ZERO;
+}
+
 bool cDatarateChannel::deliver(cMessage *msg, simtime_t t)
 {
     // if channel is disabled, signal that message should be deleted
@@ -126,9 +134,9 @@ bool cDatarateChannel::deliver(cMessage *msg, simtime_t t)
                             "simple module to only send when the previous transmission has "
                             "already finished, using cGate::getTransmissionFinishTime(), scheduleAt(), "
                             "and possibly a cQueue for storing messages waiting to be transmitted",
-                            msg->getClassName(), msg->getFullName(), getFromGate()->getFullPath().c_str());
+                            msg->getClassName(), msg->getFullName(), getSourceGate()->getFullPath().c_str());
 
-    cGate *nextgate = getFromGate()->getToGate();
+    cGate *nextgate = getSourceGate()->getNextGate();
 
     simtime_t duration = 0;
 
@@ -172,7 +180,7 @@ bool cDatarateChannel::deliver(cMessage *msg, simtime_t t)
 
     // FIXME: this is not reusable this way in custom channels, put it into a base class function with the next line (levy)
     // i.e use template method...?
-    EVCB.messageSendHop(msg, getFromGate(), delayparam, duration);
+    EVCB.messageSendHop(msg, getSourceGate(), delayparam, duration);
 
     // hand over msg to next gate
     return nextgate->deliver(msg, t);

@@ -361,7 +361,7 @@ int cSimpleModule::sendDelayed(cMessage *msg, simtime_t delay, cGate *outgate)
        throw cRuntimeError("send()/sendDelayed(): gate pointer is NULL");
     if (outgate->getType()==cGate::INPUT)
        throw cRuntimeError("send()/sendDelayed(): cannot send via an input gate (`%s')", outgate->getFullName());
-    if (!outgate->getToGate())  // NOTE: without this error check, msg would become self-message
+    if (!outgate->getNextGate())  // NOTE: without this error check, msg would become self-message
        throw cRuntimeError("send()/sendDelayed(): gate `%s' not connected", outgate->getFullName());
     if (msg==NULL)
         throw cRuntimeError("send()/sendDelayed(): message pointer is NULL");
@@ -458,7 +458,7 @@ int cSimpleModule::sendDirect(cMessage *msg, simtime_t propdelay, simtime_t tran
     // with several submodules sending to a single output gate of their parent module.
     if (togate==NULL)
         throw cRuntimeError("sendDirect(): destination gate pointer is NULL");
-    if (togate->getFromGate())
+    if (togate->getPreviousGate())
         throw cRuntimeError("sendDirect(): module must have dedicated gate(s) for receiving via sendDirect()"
                             " (\"from\" side of dest. gate `%s' should NOT be connected)",togate->getFullPath().c_str());
     if (propdelay<0 || transmdelay<0)

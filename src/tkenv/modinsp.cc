@@ -439,7 +439,7 @@ void TGraphicalModWindow::refreshLayout()
         for (cModule::GateIterator i(mod); !i.end(); i++)
         {
             cGate *gate = i();
-            cGate *destgate = gate->getToGate();
+            cGate *destgate = gate->getNextGate();
             if (gate->getType()==(parent ? cGate::INPUT : cGate::OUTPUT) && destgate)
             {
                 cModule *destmod = destgate->getOwnerModule();
@@ -533,7 +533,7 @@ void TGraphicalModWindow::redrawModules()
         for (cModule::GateIterator i(mod); !i.end(); i++)
         {
             cGate *gate = i();
-            cGate *dest_gate = gate->getToGate();
+            cGate *dest_gate = gate->getNextGate();
             if (gate->getType()==(parent ? cGate::INPUT: cGate::OUTPUT) && dest_gate!=NULL)
             {
                 char gateptr[32], srcptr[32], destptr[32], indices[32];
@@ -585,9 +585,9 @@ void TGraphicalModWindow::redrawMessages()
          cGate *arrivalGate = msg()->getArrivalGate();
 
          // if arrivalgate is connected, msg arrived on a connection, otherwise via sendDirect()
-         if (arrivalGate->getFromGate())
+         if (arrivalGate->getPreviousGate())
          {
-             cGate *gate = arrivalGate->getFromGate();
+             cGate *gate = arrivalGate->getPreviousGate();
              CHK(Tcl_VarEval(interp, "graphmodwin_draw_message_on_gate ",
                              canvas, " ",
                              ptrToStr(gate), " ",
@@ -1001,8 +1001,8 @@ int TGraphicalModWindow::getSubmodQLen(Tcl_Interp *interp, int argc, const char 
 //    }
 //    setLabel(".nb.info.trfinish.e", g->getTransmissionFinishTime());
 //
-//    setInspectButton(".nb.info.from", g->getFromGate(), true, INSP_DEFAULT);
-//    setInspectButton(".nb.info.to", g->getToGate(), true, INSP_DEFAULT);
+//    setInspectButton(".nb.info.from", g->getPreviousGate(), true, INSP_DEFAULT);
+//    setInspectButton(".nb.info.to", g->getNextGate(), true, INSP_DEFAULT);
 // }
 //
 // void TGateInspector::writeBack()
@@ -1075,7 +1075,7 @@ int TGraphicalGateWindow::redraw(Tcl_Interp *interp, int, const char **)
    int xsiz = 0;
    char prevdir = ' ';
    cGate *g;
-   for (g = gate->getSourceGate(); g!=NULL; g=g->getToGate(),k++)
+   for (g = gate->getPathStartGate(); g!=NULL; g=g->getNextGate(),k++)
    {
         if (g->getType()==prevdir)
              xsiz += (g->getType()==cGate::OUTPUT) ? 1 : -1;
@@ -1102,12 +1102,12 @@ int TGraphicalGateWindow::redraw(Tcl_Interp *interp, int, const char **)
    }
 
    // draw connections
-   for (g = gate->getSourceGate(); g->getToGate()!=NULL; g=g->getToGate())
+   for (g = gate->getPathStartGate(); g->getNextGate()!=NULL; g=g->getNextGate())
    {
         cChannel *channel = g->getChannel();
         char srcgateptr[32], destgateptr[32];
         ptrToStr(g,srcgateptr);
-        ptrToStr(g->getToGate(),destgateptr);
+        ptrToStr(g->getNextGate(),destgateptr);
         cChannel *chan = g->getChannel();
         const char *dispstr = (chan && chan->hasDisplayString()) ? chan->getDisplayString().str() : "";
         CHK(Tcl_VarEval(interp, "draw_conn ",
@@ -1136,7 +1136,7 @@ void TGraphicalGateWindow::update()
 
    // loop through all messages in the event queue
    CHK(Tcl_VarEval(interp, canvas, " delete msg msgname", NULL));
-   cGate *destgate = gate->getDestinationGate();
+   cGate *destgate = gate->getPathEndGate();
    for (cMessageHeap::Iterator msg(simulation.msgQueue); !msg.end(); msg++)
    {
       char gateptr[32], msgptr[32];
@@ -1145,7 +1145,7 @@ void TGraphicalGateWindow::update()
       if (msg()->getArrivalGate()== destgate)
       {
          cGate *gate = msg()->getArrivalGate();
-         if (gate) gate = gate->getFromGate();
+         if (gate) gate = gate->getPreviousGate();
          if (gate)
          {
              CHK(Tcl_VarEval(interp, "graphmodwin_draw_message_on_gate ",

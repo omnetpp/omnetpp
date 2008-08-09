@@ -99,10 +99,10 @@ void cParsimPartition::connectRemoteGates()
                 cGate *g = i();
                 // if this is a normal output gate which leads to a simple module,
                 // send the input gate where it is connected.
-                if (g->getType()==cGate::OUTPUT && g->getToGate() &&
-                    g->getDestinationGate()->getOwnerModule()->isSimple())
+                if (g->getType()==cGate::OUTPUT && g->getNextGate() &&
+                    g->getPathEndGate()->getOwnerModule()->isSimple())
                 {
-                    cGate *ing = g->getToGate();
+                    cGate *ing = g->getNextGate();
                     // pack gate "address" here
                     buffer->pack(ing->getOwnerModule()->getId());
                     buffer->pack(ing->getId());
@@ -218,7 +218,7 @@ void cParsimPartition::processReceivedMessage(cMessage *msg, int destModuleId, i
                              destGateId, destModuleId, msg->getName(), sourceProcId);
 
     // do our best to set the source gate (the gate of a cPlaceholderModule)
-    cGate *srcg = g->getSourceGate();
+    cGate *srcg = g->getPathStartGate();
     msg->setSentFrom(srcg->getOwnerModule(), srcg->getId(), msg->getSendingTime());
 
     // deliver it to the "destination" gate of the connection -- the channel

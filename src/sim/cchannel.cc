@@ -40,7 +40,7 @@ Register_Class(cIdealChannel);
 
 cChannel::cChannel(const char *name) : cComponent(name)
 {
-    fromgatep = NULL;
+    srcgatep = NULL;
 }
 
 cChannel::~cChannel()
@@ -76,7 +76,7 @@ void cChannel::parsimUnpack(cCommBuffer *buffer)
 
 void cChannel::finalizeParameters()
 {
-    if (!fromgatep)
+    if (!srcgatep)
         throw cRuntimeError(this,"finalizeParameters() may only be called when the channel is already installed on a connection");
     cComponent::finalizeParameters();
 }
@@ -141,12 +141,12 @@ void cChannel::callFinish()
 cModule *cChannel::getParentModule() const
 {
     // find which (compound) module contains this connection
-    if (!fromgatep)
+    if (!srcgatep)
         return NULL;
-    cModule *ownerMod = fromgatep->getOwnerModule();
+    cModule *ownerMod = srcgatep->getOwnerModule();
     if (!ownerMod)
         return NULL;
-    return fromgatep->getType()==cGate::INPUT ? ownerMod : ownerMod->getParentModule();
+    return srcgatep->getType()==cGate::INPUT ? ownerMod : ownerMod->getParentModule();
 }
 
 cProperties *cChannel::getProperties() const
@@ -172,8 +172,8 @@ bool cChannel::isBusy() const
 bool cIdealChannel::deliver(cMessage *msg, simtime_t t)
 {
     // just hand over msg to next gate
-    EVCB.messageSendHop(msg, getFromGate());
-    return getFromGate()->getToGate()->deliver(msg, t);
+    EVCB.messageSendHop(msg, getSourceGate());
+    return getSourceGate()->getNextGate()->deliver(msg, t);
 }
 
 

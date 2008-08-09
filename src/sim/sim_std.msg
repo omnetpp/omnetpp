@@ -187,12 +187,12 @@ class cGate extends cNoncopyableOwnedObject
     simtime_t transmissionFinishTime @group(general) @hint(only if the connection has a channel with nonzero datarate);
 
     cChannel *channel @group(connection) @hint(channel object associated with the connection);
-    cGate *toGate @group(connection) @hint(the gate this one is connected to -- for output gates this points out of this module, and for input gates it points inside);
-    cGate *fromGate @group(connection) @hint(the gate whose "toGate" is this gate -- note that "from" and "to" correspond to the direction of messages);
-    cGate *sourceGate @group(connection) @hint(the last gate in the "fromGate->fromGate->fromGate..." chain);
-    cGate *destinationGate @group(connection) @hint(the last gate in the "toGate->toGate->toGate..." chain);
-    bool isConnectedOutside @getter(isConnectedOutside) @group(connection) @hint(for an output gate this checks toGate, and fromGate for an input gate);
-    bool isConnectedInside @getter(isConnectedInside) @group(connection) @hint(for an input gate this checks toGate, and fromGate for an output gate);
+    cGate *previousGate @group(connection) @hint(the gate this one is connected to -- for output gates this points out of this module, and for input gates it points inside);
+    cGate *nextGate @group(connection) @hint(the gate whose "previousGate" is this gate -- note that "previous" and "next" correspond to the direction of messages);
+    cGate *pathStartGate @group(connection) @hint(the last gate in the "previousGate->previousGate->previousGate..." chain);
+    cGate *pathEndGate @group(connection) @hint(the last gate in the "nextGate->nextGate->nextGate..." chain);
+    bool isConnectedOutside @getter(isConnectedOutside) @group(connection) @hint(for an output gate this checks nextGate, and previousGate for an input gate);
+    bool isConnectedInside @getter(isConnectedInside) @group(connection) @hint(for an input gate this checks nextGate, and previousGate for an output gate);
     bool isConnected @getter(isConnected) @group(connection) @hint(whether the gate is fully connected -- both inside and outside for a compound module gate, and outside for a simple module gate);
     bool isPathOK @getter(isPathOK) @group(connection) @hint(the chain of connections is OK if it starts and ends at a simple module);
 }

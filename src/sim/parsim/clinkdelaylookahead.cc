@@ -76,10 +76,10 @@ void cLinkDelayLookahead::startRun()
                 // FIXME leave out gates from other cPlaceholderModules
                 cGate *g = i();
                 cProxyGate *pg  = dynamic_cast<cProxyGate *>(g);
-                if (pg && pg->getFromGate() && pg->getRemoteProcId()>=0)
+                if (pg && pg->getPreviousGate() && pg->getRemoteProcId()>=0)
                 {
                     // check we have a delay on this link (it gives us lookahead)
-                    cGate *fromg  = pg->getFromGate();
+                    cGate *fromg  = pg->getPreviousGate();
                     cChannel *chan = fromg->getChannel();
                     cDatarateChannel *datarateChan = dynamic_cast<cDatarateChannel *>(chan);
                     simtime_t linkDelay = datarateChan ? datarateChan->getDelay() : 0.0;

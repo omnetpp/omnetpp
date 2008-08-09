@@ -92,7 +92,7 @@ cGate::cGate()
 {
     desc = NULL;
     pos = 0;
-    fromgatep = togatep = NULL;
+    prevgatep = nextgatep = NULL;
     channelp = NULL;
 }
 
@@ -151,9 +151,9 @@ std::string cGate::info() const
     cChannel const *chan;
 
     if (getType()==OUTPUT)
-        {arrow = "--> "; g = togatep; conng = this; chan = channelp; }
+        {arrow = "--> "; g = nextgatep; conng = this; chan = channelp; }
     else if (getType()==INPUT)
-        {arrow = "<-- "; g = fromgatep; conng = fromgatep; chan = fromgatep ? fromgatep->channelp : NULL;}
+        {arrow = "<-- "; g = prevgatep; conng = prevgatep; chan = prevgatep ? prevgatep->channelp : NULL;}
     else
         ASSERT(0);  // a cGate is never INOUT
 
@@ -216,16 +216,16 @@ cProperties *cGate::getProperties() const
 
 cChannel *cGate::connectTo(cGate *g, cChannel *chan, bool leaveUninitialized)
 {
-    if (togatep)
+    if (nextgatep)
         throw cRuntimeError(this, "connectTo(): gate already connected");
     if (!g)
         throw cRuntimeError(this, "connectTo(): destination gate cannot be NULL pointer");
-    if (g->fromgatep)
+    if (g->prevgatep)
         throw cRuntimeError(this, "connectTo(): destination gate already connected");
 
     // build new connection
-    togatep = g;
-    togatep->fromgatep = this;
+    nextgatep = g;
+    nextgatep->prevgatep = this;
     if (chan)
         installChannel(chan);
 
@@ -247,20 +247,20 @@ void cGate::installChannel(cChannel *chan)
 {
     ASSERT(channelp==NULL && chan!=NULL);
     channelp = chan;
-    channelp->setFromGate(this);
+    channelp->setSourceGate(this);
     take(channelp);
 }
 
 void cGate::disconnect()
 {
-    if (!togatep) return;
+    if (!nextgatep) return;
 
     // notify envir that old conn gets removed
     EVCB.connectionDeleted(this);
 
     // remove connection
-    togatep->fromgatep = NULL;
-    togatep = NULL;
+    nextgatep->prevgatep = NULL;
+    nextgatep = NULL;
 
     // and channel object
     dropAndDelete(channelp);
@@ -270,36 +270,36 @@ void cGate::disconnect()
 void cGate::checkChannels() const
 {
     int n = 0;
-    for (const cGate *g=getSourceGate(); g->togatep!=NULL; g=g->togatep)
-        if (g->channelp && g->channelp->supportsDatarate())
+    for (const cGate *g=getPathStartGate(); g->nextgatep!=NULL; g=g->nextgatep)
+        if (g->channelp && g->channelp->isTransmissionChannel())
             n++;
     if (n>1)
         throw cRuntimeError("More than one channel with data rate found in the "
                             "connection path between gates %s and %s",
-                            getSourceGate()->getFullPath().c_str(),
-                            getDestinationGate()->getFullPath().c_str());
+                            getPathStartGate()->getFullPath().c_str(),
+                            getPathEndGate()->getFullPath().c_str());
 }
 
 cChannel *cGate::reconnectWith(cChannel *channel, bool leaveUninitialized)
 {
-    cGate *otherGate = getToGate();
+    cGate *otherGate = getNextGate();
     if (!otherGate)
         throw cRuntimeError(this, "reconnectWith(): gate must be already connected");
     disconnect();
     return connectTo(otherGate, channel, leaveUninitialized);
 }
 
-cGate *cGate::getSourceGate() const
+cGate *cGate::getPathStartGate() const
 {
     const cGate *g;
-    for (g=this; g->fromgatep!=NULL; g=g->fromgatep);
+    for (g=this; g->prevgatep!=NULL; g=g->prevgatep);
     return const_cast<cGate *>(g);
 }
 
-cGate *cGate::getDestinationGate() const
+cGate *cGate::getPathEndGate() const
 {
     const cGate *g;
-    for (g=this; g->togatep!=NULL; g=g->togatep);
+    for (g=this; g->nextgatep!=NULL; g=g->nextgatep);
     return const_cast<cGate *>(g);
 }
 
@@ -319,7 +319,7 @@ void cGate::setDeliverOnReceptionStart(bool d)
 
 bool cGate::deliver(cMessage *msg, simtime_t t)
 {
-    if (togatep==NULL)
+    if (nextgatep==NULL)
     {
         getOwnerModule()->arrived(msg, this, t);
         return true;
@@ -337,49 +337,49 @@ bool cGate::deliver(cMessage *msg, simtime_t t)
         else
         {
             EVCB.messageSendHop(msg, this);
-            return togatep->deliver(msg, t);
+            return nextgatep->deliver(msg, t);
         }
     }
 }
 
-cChannel *cGate::getDatarateChannel() const
+cChannel *cGate::getTransmissionChannel() const
 {
-    for (const cGate *g=this; g->togatep!=NULL; g=g->togatep)
-        if (g->channelp && g->channelp->supportsDatarate())
+    for (const cGate *g=this; g->nextgatep!=NULL; g=g->nextgatep)
+        if (g->channelp && g->channelp->isTransmissionChannel())
             return g->channelp;
 
     // datarate channel not found, try to issue a helpful error message
-    if (togatep)
+    if (nextgatep)
         throw cRuntimeError("No datarate channel found in the connection path "
                             "between gates %s and %s", getFullPath().c_str(),
-                            getDestinationGate()->getFullPath().c_str());
+                            getPathEndGate()->getFullPath().c_str());
     else if (getType()==OUTPUT)
         throw cRuntimeError("No datarate channel found: gate %s is not connected",
                             getFullPath().c_str());
     else
-        throw cRuntimeError(this, "getDatarateChannel(): cannot be invoked on a "
+        throw cRuntimeError(this, "getTransmissionChannel(): cannot be invoked on a "
                             "simple module input gate (or a compound module "
                             "input gate which is not connected on the inside)");
 }
 
 bool cGate::isBusy() const
 {
-    return getDatarateChannel()->isBusy();
+    return getTransmissionChannel()->isBusy();
 }
 
 simtime_t cGate::getTransmissionFinishTime() const
 {
-    return getDatarateChannel()->getTransmissionFinishTime();
+    return getTransmissionChannel()->getTransmissionFinishTime();
 }
 
 bool cGate::pathContains(cModule *mod, int gate)
 {
     cGate *g;
 
-    for (g=this; g!=NULL; g=g->fromgatep)
+    for (g=this; g!=NULL; g=g->prevgatep)
         if (g->getOwnerModule()==mod && (gate==-1 || g->getId()==gate))
             return true;
-    for (g=togatep; g!=NULL; g=g->togatep)
+    for (g=nextgatep; g!=NULL; g=g->nextgatep)
         if (g->getOwnerModule()==mod && (gate==-1 || g->getId()==gate))
             return true;
     return false;
@@ -388,17 +388,17 @@ bool cGate::pathContains(cModule *mod, int gate)
 bool cGate::isConnectedOutside() const
 {
     if (getType()==INPUT)
-        return fromgatep!=NULL;
+        return prevgatep!=NULL;
     else
-        return togatep!=NULL;
+        return nextgatep!=NULL;
 }
 
 bool cGate::isConnectedInside() const
 {
     if (getType()==INPUT)
-        return togatep!=NULL;
+        return nextgatep!=NULL;
     else
-        return fromgatep!=NULL;
+        return prevgatep!=NULL;
 }
 
 bool cGate::isConnected() const
@@ -406,15 +406,15 @@ bool cGate::isConnected() const
     // for compound modules, both inside and outside must be non-NULL,
     // for simple modules, only check outside.
     if (!getOwnerModule()->isSimple())
-        return fromgatep!=NULL && togatep!=NULL;
+        return prevgatep!=NULL && nextgatep!=NULL;
     else
         return isConnectedOutside();
 }
 
 bool cGate::isPathOK() const
 {
-    return getSourceGate()->getOwnerModule()->isSimple() &&
-           getDestinationGate()->getOwnerModule()->isSimple();
+    return getPathStartGate()->getOwnerModule()->isSimple() &&
+           getPathEndGate()->getOwnerModule()->isSimple();
 }
 
 cDisplayString& cGate::getDisplayString()

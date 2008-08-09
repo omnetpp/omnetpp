@@ -300,14 +300,16 @@ class SIM_API cChannelType : public cComponentType
     static cChannelType *get(const char *qname);
 
     /**
-     * Equivalent to <tt>cChannelType::get("ned.IdealChannel")</tt>, but more efficient.
+     * Equivalent to <tt>cChannelType::get("ned.IdealChannel")</tt>,
+     * but more efficient.
      */
     static cChannelType *getIdealChannel();
 
     /**
-     * Equivalent to <tt>cChannelType::get("ned.DatarateChannel")</tt>, but more efficient.
+     * Equivalent to <tt>cChannelType::get("ned.DatarateChannel")</tt>,
+     * but more efficient.
      */
-    static cChannelType *getDatarateChannel();
+    static cChannelType *getTransmissionChannel();
 
     //FIXME comments
     static cIdealChannel *createIdealChannel(const char *name);

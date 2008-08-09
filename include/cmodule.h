@@ -249,7 +249,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
     virtual bool initializeChannels(int stage);
 
     // internal: called when a message arrives at a gate which is no further
-    // connected (that is, getToGate() is NULL)
+    // connected (that is, getNextGate() is NULL)
     virtual void arrived(cMessage *msg, cGate *ongate, simtime_t t) = 0;
 
     // internal: sets the module ID. Called as part of the module creation process.

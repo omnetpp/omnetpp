@@ -1081,7 +1081,7 @@ void Tkenv::simulationEvent(cMessage *msg)
 
         // if arrivalgate is connected, msg arrived on a connection, otherwise via sendDirect()
         updateGraphicalInspectorsBeforeAnimation();
-        if (arrivalGate->getFromGate())
+        if (arrivalGate->getPreviousGate())
         {
             animateDelivery(msg);
         }
@@ -1371,7 +1371,7 @@ void Tkenv::displayStringChanged(cComponent *component)
 
 void Tkenv::channelDisplayStringChanged(cChannel *channel)
 {
-    cGate *gate = channel->getFromGate();
+    cGate *gate = channel->getSourceGate();
 
     // notify module inspector which displays connection
     cModule *notifymodule;
@@ -1430,7 +1430,7 @@ void Tkenv::animateSend(cMessage *msg, cGate *fromgate, cGate *togate)
     cGate *g = fromgate;
     cGate *arrivalgate = togate;
 
-    while (g && g->getToGate())
+    while (g && g->getNextGate())
     {
         cModule *mod = g->getOwnerModule();
         if (g->getType()==cGate::OUTPUT) mod = mod->getParentModule();
@@ -1438,7 +1438,7 @@ void Tkenv::animateSend(cMessage *msg, cGate *fromgate, cGate *togate)
         TInspector *insp = findInspector(mod,INSP_GRAPHICAL);
         if (insp)
         {
-            int lastgate = (g->getToGate()==arrivalgate);
+            int lastgate = (g->getNextGate()==arrivalgate);
             CHK(Tcl_VarEval(interp, "graphmodwin_animate_on_conn ",
                                     insp->windowName(), " ",
                                     msgptr, " ",
@@ -1446,7 +1446,7 @@ void Tkenv::animateSend(cMessage *msg, cGate *fromgate, cGate *togate)
                                     (lastgate?"beg":"thru"),
                                     NULL));
         }
-        g = g->getToGate();
+        g = g->getNextGate();
     }
 }
 
@@ -1618,7 +1618,7 @@ void Tkenv::animateDelivery(cMessage *msg)
     // find suitable inspectors and do animate the message...
     cGate *g = msg->getArrivalGate();
     ASSERT(g);
-    g = g->getFromGate();
+    g = g->getPreviousGate();
     ASSERT(g);
 
     cModule *mod = g->getOwnerModule();

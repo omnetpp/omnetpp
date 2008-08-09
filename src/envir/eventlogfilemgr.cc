@@ -331,7 +331,7 @@ void EventlogFileManager::connectionCreated(cGate *srcgate)
 {
     if (isEventLogRecordingEnabled)
     {
-        cGate *destgate = srcgate->getToGate();
+        cGate *destgate = srcgate->getNextGate();
         EventLogWriter::recordConnectionCreatedEntry_sm_sg_dm_dg(feventlog,
             srcgate->getOwnerModule()->getId(), srcgate->getId(), destgate->getOwnerModule()->getId(), destgate->getId());  //XXX channel, channel attributes, etc
     }
@@ -359,7 +359,7 @@ void EventlogFileManager::displayStringChanged(cComponent *component)
         else if (dynamic_cast<cChannel *>(component))
         {
             cChannel *channel = (cChannel *)component;
-            cGate *gate = channel->getFromGate();
+            cGate *gate = channel->getSourceGate();
             EventLogWriter::recordConnectionDisplayStringChangedEntry_sm_sg_d(feventlog,
                 gate->getOwnerModule()->getId(), gate->getId(), channel->getDisplayString().str());
         }

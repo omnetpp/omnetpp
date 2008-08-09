@@ -89,7 +89,7 @@ class SIM_API cDatarateChannel : public cChannel //implies noncopyable
     /**
      * Returns true.
      */
-    virtual bool supportsDatarate() const {return true;}
+    virtual bool isTransmissionChannel() const {return true;}
 
     /**
      * Sets the propagation delay of the channel, in seconds.
@@ -162,6 +162,11 @@ class SIM_API cDatarateChannel : public cChannel //implies noncopyable
 
     /** @name Transmission state. */
     //@{
+    /**
+     * Returns the message length in bits divided by the datarate.
+     */
+    virtual simtime_t calculateDuration(cMessage *msg) const;
+
     /**
      * Returns the simulation time the sender gate will finish transmitting.
      * If the gate is not currently transmitting, the result is undefined but

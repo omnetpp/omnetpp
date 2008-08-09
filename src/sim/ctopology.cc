@@ -242,7 +242,7 @@ void cTopology::extractFromNetwork(bool (*selfunc)(cModule *,void *), void *data
             // follow path
             cGate *src_gate = gate;
             do {
-                gate = gate->getToGate();
+                gate = gate->getNextGate();
             }
             while(gate && !selfunc(gate->getOwnerModule(),data));
 

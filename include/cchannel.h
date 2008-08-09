@@ -37,12 +37,12 @@ class cMessage;
 class SIM_API cChannel : public cComponent //implies noncopyable
 {
   protected:
-    cGate *fromgatep; // gate the channel is attached to
-    int connId;       // for cChannelType::getConnectionProperties()
+    cGate *srcgatep; // gate the channel is attached to
+    int connId;      // for cChannelType::getConnectionProperties()
 
   public:
     // internal: called from cGate
-    void setFromGate(cGate *g) {fromgatep=g;}
+    void setSourceGate(cGate *g) {srcgatep=g;}
 
     // internal: sets connId
     void setConnectionId(int id) {connId = id;}
@@ -142,12 +142,12 @@ class SIM_API cChannel : public cComponent //implies noncopyable
     /**
      * Returns the gate this channel is attached to.
      */
-    cGate *getFromGate() const  {return fromgatep;}
+    cGate *getSourceGate() const  {return srcgatep;}
 
     /**
      * XXX ilyenbol csak 1 lehet a path-ban
      */
-    virtual bool supportsDatarate() const = 0;
+    virtual bool isTransmissionChannel() const = 0;
     //@}
 
     /** @name Channel functionality */
@@ -161,12 +161,21 @@ class SIM_API cChannel : public cComponent //implies noncopyable
     virtual bool deliver(cMessage *msg, simtime_t at) = 0;
 
     /**
-     * For channels that support datarate: Returns the simulation time
+     * For transmission channels: Calculates the transmission duration
+     * of the message with the current channel configuration (datarate, etc).
+     * Does not check or modify channel state.
+     *
+     * @see isTransmissionChannel(), cDatarateChannel
+     */
+    virtual simtime_t calculateDuration(cMessage *msg) const = 0;
+
+    /**
+     * For transmission channels: Returns the simulation time
      * the sender gate will finish transmitting. If the gate is not
-     * currently transmitting, the result is undefined but less or equal
+     * currently transmitting, the result is unspecified but less or equal
      * the current simulation time.
      *
-     * @see supportsDatarate(), isBusy(), cDatarateChannel
+     * @see isTransmissionChannel(), isBusy(), cDatarateChannel
      */
     virtual simtime_t getTransmissionFinishTime() const = 0;
 
@@ -175,7 +184,7 @@ class SIM_API cChannel : public cComponent //implies noncopyable
      * is currently transmitting, ie. whether transmissionFinishTime()
      * is greater than the current simulation time.
      *
-     * @see supportsDatarate(), getTransmissionFinishTime(), cDatarateChannel
+     * @see isTransmissionChannel(), getTransmissionFinishTime(), cDatarateChannel
      */
     virtual bool isBusy() const;
     //@}
@@ -215,7 +224,12 @@ class SIM_API cIdealChannel : public cChannel //implies noncopyable
     /**
      * Returns false.
      */
-    virtual bool supportsDatarate() const {return false;}
+    virtual bool isTransmissionChannel() const {return false;}
+
+    /**
+     * Returns zero.
+     */
+    virtual simtime_t calculateDuration(cMessage *msg) const {return 0;}
 
     /**
      * Returns zero.
