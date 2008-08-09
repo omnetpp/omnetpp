@@ -17,9 +17,8 @@
 //
 simple TokenRingMAC
 {
-    parameters:      //FIXME remove dataRate
-        double dataRate @unit(bps); // data rate; standard values are 4 or 16 Mbps.
-        double THT @unit(s); // Token Holding Time, as defined in the protocol.
+    parameters:
+        double tokenHoldingTime @unit(s); // Token Holding Time, as defined in the protocol.
         int address; // MAC address of this station, modeled with an integer.
         int queueMaxLen; // max queue size in packets.
         @display("i=block/queue;q=sendQueue");

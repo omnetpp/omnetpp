@@ -19,14 +19,14 @@ network TokenRing
 {
     parameters:
         int numStations @prompt("Number of stations in the ring") = default(5);
-        double THT @unit(s) = default(20ms);
+        double tokenHoldingTime @unit(s) = default(20ms);
         double dataRate @unit(bps) = 4 Mbps; // Token Ring data rate
         double cableDelay @unit(s) = 1us; // Delay of the cable connecting adjacent stations
     submodules:
         station[numStations]: Station {
             parameters:
                 address = index;
-                THT = THT;
+                tokenHoldingTime = tokenHoldingTime;
                 dataRate = dataRate;
                 numStations = numStations;
                 @display("p=80,80,ring");
