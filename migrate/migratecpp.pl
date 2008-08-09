@@ -154,6 +154,13 @@ while (<LISTFILE>)
     $txt =~ s/(\.|->)out\(/$1getLinkOut(/mg;
     $txt =~ s/(\.|->)path\(/$1getPath(/mg;
 
+    # cGate, cChannel
+    $txt =~ s/[cC]h[a-zA-Z0-9()]*->getFromGate\(\)/getSourceGate()/mg;  #channel
+    $txt =~ s/\bgetFromGate\(\)/getPreviousGate()/mg;
+    $txt =~ s/\bgetToGate\(\)/getNextGate()/mg;
+    #$txt =~ s/\bgetSourceGate\(\)/getPathStartGate()/mg; -- would conflict with new cChannel method
+    $txt =~ s/\bgetDestinationGate\(\)/getPathEndGate()/mg;
+
     # ancient stuff, from compat.h
     $txt =~ s/\bcKSplitIterator\b/cKSplit::Iterator/mg;
     $txt =~ s/\bsGrid\b/cKSplit::Grid/mg;
@@ -289,3 +296,4 @@ print "\nConversion done. You may safely re-run this script as many times as you
 print "cObject note: only change a cObject occurrence to cOwnedObject, if:\n";
 print "   (1) cObject is not already the result of a cPolymorphic->cObject conversion, and\n";
 print "   (2) you are REALLY sure you need cOwnedObject there, with its name string and other overhead.\n";
+

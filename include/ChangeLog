@@ -9,20 +9,20 @@
 
 	General:
 	- "get" verb added to the names of nearly all getter methods; notable
-	   exceptions are STL-like names like size(), empty(), length(), 
+	   exceptions are STL-like names like size(), empty(), length(),
 	   end(), str(), c_str(); par() and gate() methods of cModule;
-           boolValue(), longValue(), stringValue() etc methods of cPar 
-           (already consistent with Java); info(), detailedInfo(); 
+           boolValue(), longValue(), stringValue() etc methods of cPar
+           (already consistent with Java); info(), detailedInfo();
            intRand(), dblRand() and other cRNG methods.
-	   Methods returning bools begin with "is", "has", "contains" or a 
+	   Methods returning bools begin with "is", "has", "contains" or a
 	   similar verb. [Change voted on the mailing list]
 
 	- <omnetpp.h> now provides the C99 integer types and limit macros,
 	  even on systems that don't have <stdint.h> (for example, MSVC does
 	  not have it). This includes int8_t, uint8_t,..int64_t, uint64_t types;
           INT8_MAX, UINT64_MAX, etc. In addition, it also provides shorter names
-          (int8, uint8,...); they are provided as macros, so if they collide 
-          with definitions in some external code, they can be undefined after 
+          (int8, uint8,...); they are provided as macros, so if they collide
+          with definitions in some external code, they can be undefined after
           including <omnetpp.h>.
 
 	Simulation time:
@@ -33,7 +33,7 @@
 	  been added that take simtime_t.
 	- simtimeToStr(), strToSimtime() are no longer (use SimTime methods
 	  instead, or the compatibility macros described below!)
-	- simTime() moved out of the cSimpleModule class (i.e. it became a 
+	- simTime() moved out of the cSimpleModule class (i.e. it became a
 	  global function; it invokes simulation.getSimTime())
 
 	Simtime compatibility mode:
@@ -69,20 +69,23 @@
 	  it would have to return two cGate* pointers)
 	- gate("xxx") now throws error if gate is not found, instead of returning NULL
 	- gate("xxx") now won't return gate "xxx[0]"
-	- gate("out")->size() does not work, because gate("out") throws an error 
-	  ("not found") if "out" is a vector gate; gate("out",0)->size() will work, 
+	- gate("out")->size() does not work, because gate("out") throws an error
+	  ("not found") if "out" is a vector gate; gate("out",0)->size() will work,
 	  but only if out[] is of nonzero size (otherwise you'll get the "gate out[0]
 	  not found" error). Best is to use gateSize("out"), a cModule member function.
 	- removed setTo(), setFrom() methods; use connectTo() instead!
 	- isRouteOK() renamed to isPathOK()
+	- fromGate()/toGate() renamed to getPreviousGate()/getNextGate()
+	- sourceGate()/destinationGate() renamed to getPathStartGate()/getPathEndGate()
 	- dynamic gate creating changed:
 	    - removed cGate::setOwnerModule() and setIndex()
 	    - XXX describe what's instead
 	- added setDeliverOnReceptionStart() flag, which may be invoked only on
 	  simple module input gates
+	- added getTransmissionChannel() which returns *the* transmission channel in the path
 	- transmissionFinishes() renamed to getTransmissionFinishTime()
 	- gates that have the @loose or @directIn property set in the NED file
-	  may remain unconnected (ie no error will be raised, even if 
+	  may remain unconnected (ie no error will be raised, even if
 	  "allowunconnected" is not specified in the connections section)
 
 	Channels:
@@ -90,31 +93,33 @@
 	  (cComponent) with cModule, they participate in the initialize()/
 	  finish() protocol, and so on.
 	- cBasicChannel renamed to cDatarateChannel
+	- added calculateDuration(cMessage *msg) method into channels
 	- removed delay(), setDelay(), error(), setError(), dataRate(),
-	  setDataRate() methods from cGate: please use methods from the gate's channel 
+	  setDataRate() methods from cGate: please use methods from the gate's channel
 	  instead: check_and_cast<cDatarateChannel *>(gate->channel())->setDelay(0.1);
 	  or use generic component parameter access instead: gate->channel()->par("delay")=0.1.
-        - "error" parameter renamed to "ber" (bit error rate or BER, cDatarateChannel methods 
-          getBitErrorRate/setBitErrorRate)
-        - added "per" parameter (packet error rate or PER, cDatarateChannel methods 
-          getPacketErrorRate/setPacketErrorRate)
+	- "error" parameter renamed to "ber" (bit error rate or BER, cDatarateChannel methods
+	  getBitErrorRate/setBitErrorRate)
+	- added "per" parameter (packet error rate or PER, cDatarateChannel methods
+	  getPacketErrorRate/setPacketErrorRate)
 	- added cIdealChannel which lets messages through without any change
 	  and without any delay.
-	- breaking change in cDatarateChannel behaviour: implicit queueing is 
-	  no longer supported: sending on a busy gate (that is, when simTime() < 
-	  gate->transmissionFinishTime()) results in an error. Thus, using a 
-	  special transmitter module (with an internal queue) is now sort of 
+	- getFromGate() renamed to getSourceGate()
+	- breaking change in cDatarateChannel behaviour: implicit queueing is
+	  no longer supported: sending on a busy gate (that is, when simTime() <
+	  gate->transmissionFinishTime()) results in an error. Thus, using a
+	  special transmitter module (with an internal queue) is now sort of
 	  mandatory when channels with data rate are in use.
 	- setting channel parameters from the ini file:
-	   (1) make the parameter input, e.g.: 
+	   (1) make the parameter input, e.g.:
 	         a.out --> { delay=default(0); } --> b.in;
 	   (2) add <fromgate-fullpath>.channel.<paramname> = <value> into the ini file, e.g.:
 	         **.a.out.channel.delay = 10ms
 	- now a connection path may only contain one cDatarateChannel (more precisely,
-	  only one channel whose supportsDatarate() method returns true)
+	  only one channel whose isTransmissionChannel() method returns true)
 	- likewise, a sendDirect() call with nonzero duration may only be sent onto
 	  a gate whose connection path does NOT contain any cDatarateChannel (or
-	  channel whose supportsDatarate() method returns true)
+	  channel whose isTransmissionChannel() method returns true)
 
 	Dynamic module/channel creation:
 	- finalizeParameters() must be called (for channels, this reads input params from omnetpp.ini;
@@ -138,7 +143,7 @@
 
 	cOutVector:
 	- removed half-hearted tuple=2 support from cOutVector and underlying infrastructure
-	- added methods for metadata annotation: setEnum(), setUnit(), setType(), 
+	- added methods for metadata annotation: setEnum(), setUnit(), setType(),
 	  setInterpolationMode(), setMin(), setMax()
 
 	cQueue:
@@ -146,7 +151,7 @@
 	  because of head/tail change, iterator direction and meaning of insertBefore/insertAfter
 	  has changed
 	- boolean flag to specify ascending/descending order removed
-	- compat.h typedef cQueueIterator removed, as iterator semantic was changed in a 
+	- compat.h typedef cQueueIterator removed, as iterator semantic was changed in a
 	  non-compatible way anyway
 
 	New class: cPacketQueue
@@ -157,12 +162,12 @@
 	Display strings:
 	- connection display string is now stored in the channel, not the source gate
 	- setDisplayString() methods removed
-	- displayString() delegates to channel()->displayString(); if there's 
+	- displayString() delegates to channel()->displayString(); if there's
 	  no channel, it creates a cIdealChannel
-	- module and channel display string access functions are now in the common 
+	- module and channel display string access functions are now in the common
 	  base class, cComponent
 	- display string objects are now only created (from @display) when first accessed
-	
+
 	Gross renaming: cObject became cOwnedObject, cPolymorphic became cObject;
 	- cNamedObject introduced in between.
 	- cArray, cQueue still handle cObject (old cPolymorphic), i.e. they can work
@@ -183,13 +188,13 @@
 	- added isPlaceholder() to cModule
 	- cPlaceHolderModule: renamed to cPlaceholderModule (lowercase h)
 	- gate handling reorganized, so that gate IDs are stable (do not change
-	  when the gate vector gets resized). Gate IDs are now interpreted as a 
-	  bitfield, so they cannot be used for iterating over all gates of a 
+	  when the gate vector gets resized). Gate IDs are now interpreted as a
+	  bitfield, so they cannot be used for iterating over all gates of a
 	  module; cModule::GateIterator was introduced for this purpose.
 	- gates() removed, as gate IDs are no longer integers in the 0..gates()-1
 	  interval (use the new cModule::GateIterator for enumerating the gates).
 	- added gateNames() method
-	- className() for cModule (or cComponent in general) no longer lies 
+	- className() for cModule (or cComponent in general) no longer lies
 	  the NED type name, but returns the real C++ class name
 
 	Message parameters:
@@ -207,7 +212,7 @@
 
 	cMessageHeap:
 	- renamed getFirst() to removeFirst(), and get(cMessage*) to remove(cMessage*)
-	
+
 	cPar implementation changed
 
 	cPar, etc:
@@ -217,10 +222,10 @@
 	NOTE: inconsistency with INET Framework: IPAddress, IPv6Address, MACAddress: str()
 
 	cEnvir refactoring:
-	- motivation: break sim_std.dll dependence on envir.dll (mainly the 
+	- motivation: break sim_std.dll dependence on envir.dll (mainly the
 	  "ev" global variable)
 	- "ev" is no longer a variable, but a macro which expands to (*evPtr)
-	- cEnvir no longer subclasses from std::ostream, but instead redirects 
+	- cEnvir no longer subclasses from std::ostream, but instead redirects
 	  all ev<< calls to an internal std::ostream instance
 	- cEnvir is no longer a concrete class, but an abstract base class with
 	  lots of pure virtual methods
@@ -250,8 +255,8 @@
 	- cModule: deprecated methods phase(), setPhase() removed
 
 	- removed writeContents() altogether
-	
-	- removed min(double,double), max(double,double), equal(double,double,double). 
+
+	- removed min(double,double), max(double,double), equal(double,double,double).
 	  Use std::min and std::max instead.
 
 	- snapshot file became XML
@@ -329,15 +334,15 @@
 	  number, message id, message tree id, etc.
 	- methods associated with "length" renamed: getBitLength(), setBitLength(),
 	  addBitLength()
-	- removed two static methods of limited usefulness: cmpbydelivtime(), 
+	- removed two static methods of limited usefulness: cmpbydelivtime(),
 	  cmpbypriority().
 	- added getDuration() and isReceptionStart() methods, which are related
-	  to the last send over a channel with datarate, and to cGate's 
+	  to the last send over a channel with datarate, and to cGate's
 	  deliverOnReceptionStart flag.
-	
+
 	Statistics classes:
-	- cStatistic: renamed samples() to count(). This affects cStdDev, 
-	  cWeightedStdDev and basically all statistics classes (they all 
+	- cStatistic: renamed samples() to count(). This affects cStdDev,
+	  cWeightedStdDev and basically all statistics classes (they all
 	  inherit from cStatistic)
 	- cWeightedStdDev: implemented stddev(); also fixed min() and max()
 	  (they bogusly returned min/max of the weight*value products).
@@ -345,9 +350,9 @@
         - cStatistic: added 3 new functions, to access values underlying weighted
           statistics: weightedSum(), sqrSumWeights(), weightedSqrSum()
         - cStatistic: added isWeighted()
-        - cStatistic: added merge(cStatistic *) for aggregating statistics, 
+        - cStatistic: added merge(cStatistic *) for aggregating statistics,
           and implemented it in subclasses
-        - cDensityEstBase etc: transformed() renamed to isTransformed(); 
+        - cDensityEstBase etc: transformed() renamed to isTransformed();
           added setCellSize()
         - cLongHistogram: revised the way histogram cells are set up. Now it
           throws an error if all given constraints cannot be satisfied (so that
@@ -358,8 +363,8 @@
           in a type-safe way (without void* casts)
         - extractByModuleType() not longer exists, use the new extractByNedTypeName()
           method instead. Code like
-            topo.extractByModuleType("Host", "Router", NULL); 
-          should be replaced by something like 
+            topo.extractByModuleType("Host", "Router", NULL);
+          should be replaced by something like
             topo.extractByModuleType(cStringTokenizer("Host Router").asVector());
         - extractByParameter() arg list changed
 
