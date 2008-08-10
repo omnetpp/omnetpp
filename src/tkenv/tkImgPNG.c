@@ -2023,7 +2023,7 @@ PNGDecode(Tcl_Interp* interp, PNGImage* pPNG, Tcl_Obj* format,
 	 * space for the image being parsed.
 	 */
 
-	Tk_PhotoExpand(imageHandle, destX + pPNG -> mWidth,
+	Tk_PhotoExpand(INTERP_IF_TK85 imageHandle, destX + pPNG -> mWidth,
 		destY + pPNG -> mHeight);
 
 	/*
