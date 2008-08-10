@@ -251,8 +251,24 @@ module Node
 \}
 \end{Verbatim}
 
-Compound module types like \ttt{Node} are composed of one or more submodules,
-listed under the \ttt{submodules:} section of the declaration.
+A compound module type, like simple modules, may have parameters and gates.
+Our \ttt{Node} module contains an \ttt{address} parameter, plus a
+\textit{gate vector} of unspecified size, named \ttt{port}.
+The actual gate vector size will be determined implicitly by the number
+of neighbours when we create a network from nodes of this type.
+The type of \ttt{port[]} is \ttt{inout}, which basically means that
+each gate is in fact a pair of gates, an input and an output gate;
+they can also be addressed individually if needed, as \ttt{port\$i} and
+\ttt{port\$o} (or rather, \ttt{port\$i[$k$]} and \ttt{port\$o[$k$]},
+because now we have a gate vector.) Gate vectors can also be created with
+a specified size, or be set to a fixed size at the place
+of instantiating the module.
+
+The point of compound modules is to serve as a container for other
+modules. Our \ttt{Node} compound module type has an \ttt{app} and
+a \ttt{routing} \textit{submodule}, plus a \ttt{queue[]} \textit{submodule vector}
+that contains one \ttt{L2Queue} module for each port, as specified by
+\ttt{[sizeof(port)]}.
 Any module type (simple or compound module) can be used as a submodule.
 Like simple modules, compound modules can also have gates and parameters,
 and they can be used wherever simple modules can be used.
@@ -260,28 +276,30 @@ and they can be used wherever simple modules can be used.
 It is useful to think about compound modules as ``cardboard boxes''
 that help you organize your simulation model and bring structure into
 it. No active behaviour is associated with compound modules -- they
-are simply for grouping modules into larger components that can
-can be used either as a model (see section \ref{sec:ch-ned-lang:network})
+are simply meant for grouping modules into larger units that can
+can be used either as a model (a \textit{network}, see later)
 or as a building block for other compound modules.
 
-Submodules may use parameters of the compound module.
-They may be connected with each other and/or with
-the compound module itself.
+Syntactically, a submodule may have a curly brace block as body, where
+it is possible to assign its parameters (see \ttt{address} in the example),
+set the size of gate vectors, or to add properties like the display string
+(\ttt{@display}). Display strings specified here will be merged with the
+display string from the type to get the effective display string.
+The \ttt{"p="} tag used here means position on the canvas.
 
-XXX submodule vector! gate vector!
+Connections are listed under the \ttt{connections} section of the
+declaration. Not surprisingly, input and output gates are
+connected with a normal arrow, and inout gates with a double-headed
+arrow ``\ttt{<-->}''. Submodule vectors and gate vectors can be
+connected with the familiar \ttt{for} syntax. Nesting and conditional
+connections (\ttt{if}), although not shown here, are also possible.
+Normally, NED checks that all gates be connected, but this can also
+be turned off (\ttt{connections allowunconnected}).
 
-A compound module definition\index{module!compound!definition} looks
-similar to a simple\index{module!simple} module definition:
-it has \ttt{gates} and \ttt{parameters} sections.
-There are two additional sections, \ttt{submodules} and
-\ttt{connections}.
+All sections in a compound module declaration (\ttt{parameters},
+\ttt{gates}, \ttt{submodules}, \ttt{connections}) are optional.
 
-Connections...  XXX elaborate -->, <-->, "for" etc.
-
-All sections (\ttt{parameters}, \ttt{gates}, \ttt{submodules},
-\ttt{connections}) are optional.
-
-Then finally we define a network, which consists of a few nodes that
+Now, we finally define the network, which consists of a few nodes that
 are connected with lines:
 
 \begin{Verbatim}[commandchars=\\\{\}]
@@ -298,7 +316,7 @@ network Net10
             parameters:
                 address = index;
         \}
-    connections allowunconnected:
+    connections:
         rte[0].port++ <--> C <--> rte[1].port++;
         rte[0].port++ <--> C <--> rte[3].port++;
         rte[1].port++ <--> C <--> rte[2].port++;
@@ -325,6 +343,8 @@ in the config file (\ttt{omnetpp.ini}).
 Naturally, only modules that have no gates can be a network.
 
 A network is basically a compound module.
+
+XXX channels, inner types, gate++
 
 XXX @isNetwork
 
@@ -580,7 +600,7 @@ Example:
 
 Channels types resemble simple modules in the sense that they need an underlying
 C++ class to function, the NED declaration itself is not enough. Our
-\ttt{Backbone} channel inherits this C++ class from \ttt{ned.BasicChannel}.
+\ttt{Backbone} channel inherits this C++ class from \ttt{ned.DatarateChannel}.
 
 FIXME @class, @namespace
 
@@ -588,7 +608,7 @@ A channel definition specifies a connection type of some given characteristics.
 Let us see an example channel:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-channel Backbone extends ned.BasicChannel
+channel Backbone extends ned.DatarateChannel
 \{
     parameters:
         delay = 2ms;
@@ -602,9 +622,9 @@ channel Backbone extends ned.BasicChannel
 \end{note}
 
 Our \ttt{Backbone} channel type extends (subclasses, builds upon) the
-\ttt{ned.BasicChannel} channel type. (In the latter name, \ttt{ned} is the
-package name, and \ttt{BasicChannel} is the actual type name.)
-\ttt{ned.BasicChannel} is a built-in NED type, and it declares four parameters:
+\ttt{ned.DatarateChannel} channel type. (In the latter name, \ttt{ned} is the
+package name, and \ttt{DatarateChannel} is the actual type name.)
+\ttt{ned.DatarateChannel} is a built-in NED type, and it declares four parameters:
 \ttt{delay} (propagation delay), \ttt{error} (bit error rate), \ttt{datarate}
 (channel bandwidth, used for calculating transmission time of a packet), and
 \ttt{disabled} (a boolean parameter).
@@ -615,7 +635,7 @@ package name, and \ttt{BasicChannel} is the actual type name.)
     network simulations.
 \end{note}
 
-\ttt{ned.BasicChannel} initializes these parameters to provide an ideal channel
+\ttt{ned.DatarateChannel} initializes these parameters to provide an ideal channel
 (zero delay and bit error rate, infinite data rate). In the above
 declaration, we override \ttt{delay} and \ttt{datarate} to get our custom
 channel.
@@ -628,7 +648,7 @@ does nothing but let the message though without any change or delay.
 % It is also possible to add new parameters. . .
 %
 % \begin{Verbatim}[commandchars=\\\{\}]
-% channel Backbone extends ned.BasicChannel
+% channel Backbone extends ned.DatarateChannel
 % \{
 %     double cost;
 %     double length @unit(m);
@@ -696,9 +716,9 @@ creates the connections needed for a binary tree.
 Note that not every gate of the modules will be connected. By default,
 an unconnected gate produces a run-time error message when the
 simulation is started, but this error message is turned off here with
-the \fpar[ned!keywords!nocheck]{nocheck} modifier.  Consequently, it
-is the simple modules' responsibility not to send on a gate which is
-not leading anywhere.
+the \fpar[ned!keywords!allowunconnected]{allowunconnected} modifier.
+Consequently, it is the simple modules' responsibility not to send
+on a gate which is not leading anywhere.
 
 An alert reader might notice that there is a better alternative
 to the above code. Each node except the ones at the lowest level
@@ -745,7 +765,7 @@ random subgraph of a full graph:
 \}
 \end{Verbatim}
 
-Note the use of the \fpar[ned!keywords!nocheck]{nocheck} modifier
+Note the use of the \fpar[ned!keywords!allowunconnected]{allowunconnected} modifier
 here too, to turn off error messages given by the network setup code
 for unconnected gates.
 
@@ -981,19 +1001,19 @@ All the above is achieved via the \fpar[ned!keywords!like]{like} keyword.
 The syntax is the following:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\tbf{module} RoutingTestNetwork
+\tbf{module} RoutingTestNetwork \{
     \tbf{parameters}:
-        routingNodeType: \tbf{string}; // should hold the name
-                                  // of an existing module type
+        \tbf{string} routingNodeType; // should hold the name
+                                      // of an existing module type
     \tbf{gates}: //...
     \tbf{submodules}:
-        node1: routingNodeType \tbf{like} RoutingNode;
-        node2: routingNodeType \tbf{like} RoutingNode;
+        node1: <routingNodeType> \tbf{like} IRoutingNode;
+        node2: <routingNodeType> \tbf{like} IRoutingNode;
         //...
-    \tbf{connections nocheck}:
+    \tbf{connections allowunconnected}:
         node1.out0 --> node2.in0;
         //...
-\tbf{endmodule}
+\}
 \end{Verbatim}
 
 The \ttt{RoutingNode} module type does not need to be implemented in
@@ -1311,19 +1331,20 @@ double average(double a, double b)
 Define_Function(average, 2);
 \end{verbatim}
 
-
 The number 2 means that the \fname{average()} function has 2
-arguments.  After this, the \fname{average()} function can be used in
+arguments. After this, the \fname{average()} function can be used in
 NED files:
 
-
 \begin{Verbatim}[commandchars=\\\{\}]
-\tbf{module} Compound
-    \tbf{parameter}: a,b;
+\tbf{module} Compound \{
+    \tbf{parameters}:
+        double a;
+        double b;
     \tbf{submodules}:
-        proc: Processor
-            \tbf{parameters}: av = average(a,b);
-\tbf{endmodule}
+        proc: Processor \{
+            avg = average(a,b);
+        \}
+\}
 \end{Verbatim}
 
 
@@ -1334,6 +1355,8 @@ to register the wrapper function with the \fname{Define\_Function2()} macro
 which allows a function to be registered with a name different from the
 name of the function that implements it. You can do the same
 if the return value differs from \ttt{double}.
+
+FIXME the new way...
 
 \begin{verbatim}
 #include <omnetpp.h>

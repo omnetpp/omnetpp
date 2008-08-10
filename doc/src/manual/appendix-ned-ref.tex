@@ -92,7 +92,7 @@ The grammar of the NED language can be found in Appendix
 \label{ch-ned-ref:sec:built-in-defs}
 
 The NED language has the following built-in definitions, all in the \ttt{ned}
-package: channels \ttt{IdealChannel} and \ttt{BasicChannel}, and module
+package: channels \ttt{IdealChannel} and \ttt{DatarateChannel}, and module
 interfaces \ttt{IBidirectionalChannel} and \ttt{IUnidirectionalChannel}; the
 latter two are reserved for future use.
 
@@ -109,12 +109,13 @@ channel IdealChannel {
     @class(cIdealChannel);
 }
 
-channel BasicChannel {
+channel DatarateChannel {
     @class(cDatarateChannel);
     bool disabled = false;
     double delay = 0s @unit(s);
-    double error = 0;
     double datarate = 0bps @unit(bps);
+    double ber = 0;
+    double per = 0;
 }
 
 moduleinterface IBidirectionalChannel {
