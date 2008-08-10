@@ -51,8 +51,20 @@ USING_NAMESPACE
 using std::string;
 
 
-//----------------------------------------------------------------
-// Command functions:
+//
+// Handle Tk_PhotoPutBlock signature change in Tk 8.5:
+// "Added interp argument to these functions and made them return
+// a standard Tcl result, with error indicating memory allocation
+// failure instead of panic()ing."
+// See Tk ChangeLog entry from 2003-03-06 by Donal K. Fellows
+//
+#if TK_MAJOR_VERSION>8 || (TK_MAJOR_VERSION==8 && TK_MINOR_VERSION>=5)
+#define TK85_INTERP interp,
+#else
+#define TK85_INTERP
+#endif
+
+// command functions
 int newNetwork_cmd(ClientData, Tcl_Interp *, int, const char **);
 int newRun_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getConfigNames_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -1827,7 +1839,7 @@ int resizeImage_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    // tkImgPhoto.c Tk source file...
    //
    Tk_PhotoHandle destimghandle = Tk_FindPhoto(interp, TCLCONST(destimgname));
-   Tk_PhotoPutBlock(destimghandle, &destimg, 0, 0, destimg.width, destimg.height, TK_PHOTO_COMPOSITE_SET);
+   Tk_PhotoPutBlock(TK85_INTERP destimghandle, &destimg, 0, 0, destimg.width, destimg.height, TK_PHOTO_COMPOSITE_SET);
 
    return TCL_OK;
 }
