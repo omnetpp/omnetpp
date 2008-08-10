@@ -96,22 +96,16 @@ The nodes are routers themselves as well, and the network is connected
 by 1 megabit/sec lines. We assume that the application uses datagram-based
 communication, so that we can leave out the transport layer from the model.
 
-We will express this model in terms of simple and compound modules, gates,
-connections and so on, as introduced in the previous chapter.
-
 Our simulation model will look like this:
 
 TODO screenshot of one node
 TODO screenshot of the network
 
-Let us build the model bottom-up. First we define the components
-that will make up a network node. We need an application; a module
-that performs network layer functions including routing; and
-a module that queues up packets before they are sent up to the
-line.
-
-The following NED code would be in files with \ttt{.ned} suffix.
-Curly brace syntax...
+Let us build the model bottom-up. First we define the simple module
+types that will make up a network node. We need an application;
+a module that performs network layer functions including routing;
+and a module that queues up packets before they are transmitted on the
+line. A NED file that declares them would look like this:
 
 \begin{Verbatim}[commandchars=\\\{\}]
 simple App
@@ -151,47 +145,75 @@ simple L2Queue
 \}
 \end{Verbatim}
 
-Simple modules are the basic building blocks for other (compound)
-modules.
+It would also be possible (moreover, recommended) to put the above three
+simple module declarations into separate \ttt{.ned} files: \ttt{App.ned},
+\ttt{Routing.ned} and \ttt{L2Queue.ned}. Note that the NED language uses
+the familiar curly brace syntax, and ``\ttt{//}'' to denote comments.
 
+Let us see the first simple module type declaration. It declares a
+\textit{module type} named \ttt{App}, which has four \textit{parameters}
+called \ttt{address}, \ttt{destAddresses}, \ttt{sendIaTime} and \ttt{packetLength},
+and also two \textit{gates} named \ttt{in} and \ttt{out}. The argument of
+\ttt{@display()} is called a \textit{display string}, and it defines
+the default rendering of the module in graphical environments;
+\ttt{"i=..."} defines the default icon.
 
-Let us see the first declaration of the three.
-It declares a simple module named \ttt{App}, which has four parameters
-\ttt{address};  // local node address
-        string destAddresses;  // destination addresses
-        volatile double sendIaTime @unit(s) = default(exponential(1s));
-                               // time between generating packets
-        volatile int packetLength @unit(byte);  // length of one packet
+\begin{note}
+    Note that the module type names (\ttt{App}, \ttt{Routing}, \ttt{L2Queue})
+    begin with a capital letter, and parameter and gate names begin with
+    lowercase -- this is the recommended naming convention. Capitalization
+    matters because the language is case sensitive.
+\end{note}
 
-\ttt{capacity} and \ttt{serviceTime}, and two gates \ttt{in} and \ttt{out}. The
-lines starting with ``\ttt{//}'' are comments.
+Notice that the declarations don't contain any code to define the operation
+of the application (routing algorithm, queue) itself:
+that part is expressed in C++. By default, \opp looks for a
+C++ class of the same name (so here, \ttt{App}, \ttt{Routing} and {L2Queue}),
+although this gets slightly more complicated if C++ namespaces or
+NED packages are involved, and the user can also explicitly specify
+which C++ class to use.
 
-Note that the module name (\ttt{Queue}) begins with a capital letter, and
-parameter and gate names (\ttt{capacity}, \ttt{serviceTime}, \ttt{in},
-\ttt{out}) begin with lowercase. This is the recommended naming convention.
-(Capitalization matters because the language is case sensitive).
+\ttt{App}'s parameters are of various data types (\ttt{int}, \ttt{double},
+\ttt{string}) and some of them are also declared \ttt{volatile}. Parameters
+can be read into C++ variables of similar types, and can be used by the
+algorithm that drives the simple module. \ttt{volatile} practically means
+that the parameter can be used as a source of random numbers.
 
-Notice that this declaration doesn't contain any code to define the operation
-of the queue itself: that part is expressed in C++. By default, \opp looks for a
-C++ class of the same name (so here, \ttt{Queue}), although this gets slightly
-more complicated if C++ namespaces or NED packages are present, and the user
-can also explicitly specify which C++ class to use.
+\begin{note}
+    With constructs like \ttt{exponential(1s)} assigned to the \ttt{sendIaTime}
+    parameter in this example, \ttt{volatile} effectively means that
+    there is no need to ever hardcode the distribution (e.g. "normal")
+    into the C++ code, or to use multiple parameters to pass its mean,
+    standard deviation etc into the C++ code. A single parameter can
+    encapsulate all details, and can provide any random variable.
+\end{note}
+
+The \ttt{@unit(s)} and \ttt{@unit(byte)} bits declare the physical unit
+for the parameter. Values assigned to parameters must have the same or
+compatible unit, i.e. \ttt{@unit(s)} accepts milliseconds, nanoseconds,
+minutes, hours, etc., and \ttt{@unit(byte)} accepts kilobytes, megabytes,
+etc. as well.
+
+Generally, \ttt{@}-words like \ttt{@unit} and \ttt{@display} are called
+\textit{properties} in NED, and they are used to annotate various objects
+with metadata. Properties can be attached to parameters, gates, modules,
+connections and other objects.
 
 Both the \ttt{parameters:} and \ttt{gates:} sections in the simple module are
-optional.
+optional, that is, they can be left out if there's no parameter or gate.
 
 Simple modules can be extended (or specialized) via subclassing. This will be
-discussed in section FIXME.
+discussed in section \ref{sec:ch-ned-lang:inheritance}.
 
 Comments in the NED source also serve a purpose in addition to making
-the NED source more readable: in the \opp IDE they get displayed at various places (tooltips,
-content assist, etc), and become part of the documentation extracted from the
-NED files. The NED documentation system, not completely unlike \textit{JavaDoc}
+the NED source more readable: in the \opp IDE they get displayed
+at various places (tooltips, content assist, etc), and become part
+of the documentation extracted from the NED files.
+The NED documentation system, not unlike \textit{JavaDoc}
 or \textit{Doxygen}, will be described in Chapter \ref{cha:neddoc}.
 
-
-Now we assemble the above components into a compound module type that
-represents a network node:
+Now that we've learned enough about simple modules, we assemble our components
+into a compound module type that represents a network node:
 
 \begin{Verbatim}[commandchars=\\\{\}]
 module Node
@@ -229,7 +251,8 @@ module Node
 \}
 \end{Verbatim}
 
-Compound modules are modules that are composed of one or more submodules.
+Compound module types like \ttt{Node} are composed of one or more submodules,
+listed under the \ttt{submodules:} section of the declaration.
 Any module type (simple or compound module) can be used as a submodule.
 Like simple modules, compound modules can also have gates and parameters,
 and they can be used wherever simple modules can be used.
@@ -241,17 +264,19 @@ are simply for grouping modules into larger components that can
 can be used either as a model (see section \ref{sec:ch-ned-lang:network})
 or as a building block for other compound modules.
 
-By convention, module type names begin with upper-case letters.
-
 Submodules may use parameters of the compound module.
 They may be connected with each other and/or with
 the compound module itself.
+
+XXX submodule vector! gate vector!
 
 A compound module definition\index{module!compound!definition} looks
 similar to a simple\index{module!simple} module definition:
 it has \ttt{gates} and \ttt{parameters} sections.
 There are two additional sections, \ttt{submodules} and
 \ttt{connections}.
+
+Connections...  XXX elaborate -->, <-->, "for" etc.
 
 All sections (\ttt{parameters}, \ttt{gates}, \ttt{submodules},
 \ttt{connections}) are optional.
@@ -297,13 +322,20 @@ The simulation program that uses those NED files will be
 able to run any of them; you typically select the desired one
 in the config file (\ttt{omnetpp.ini}).
 
-Naturally, only module that has no gates can be a network.
+Naturally, only modules that have no gates can be a network.
+
+A network is basically a compound module.
+
+XXX @isNetwork
 
 
 
 \section{Parameters}
 \label{sec:ch-ned-lang:simple-module-param}
 \index{module!parameters}
+
+Parameters are variables that belong to a module. Simple module
+parameters can be queried and used by simple module algorithms.
 
 app:
         int address;  // local node address
@@ -358,32 +390,8 @@ replaced with a constant at the start of the simulation.
     chosen randomly at the beginning of the simulation.
 \end{note}
 
-Parameters are variables that belong to a module. Simple module
-parameters can be queried and used by simple module algorithms.
-For example, a module called \ttt{TrafficGen} may have a parameter
-called \ttt{numOfMessages} that determines how many messages it
-should generate.
-
-Parameters are identified by names.
-By convention, parameter names begin with lower-case letters.
-
-Parameters are declared by listing their names in the
+Parameters are declared by listing their names with a type in the
 \ttt{parameters:} section of a module description.
-The parameter type can optionally be specified as \ttt{numeric},
-\ttt{numeric const} (or simply \ttt{const}), \ttt{bool}, \ttt{string},
-or \ttt{xml}. If the parameter type is omitted, \ttt{numeric} is assumed.
-
-Example:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-\tbf{simple} TrafficGen
-    \tbf{parameters}:
-        interarrivalTime,
-        numOfMessages : \tbf{const},
-        address : \tbf{string};
-    \tbf{gates}: //...
-\}
-\end{Verbatim}
 
 Parameters are assigned from NED (when the module is used as a building block
 of a larger compound module) or from the config file \ttt{omnetpp.ini}.
@@ -480,9 +488,11 @@ syntactical similarity of \ttt{@display} to \ttt{@unit} is not accidental; they
 are both metadata annotations (\textit{properties} in \opp), recognized and
 treated specially by the runtime.
 
+keys, values, value lists...
+
 \ttt{@isNetwork(true)}...
 
-FIXME @class, @namespace
+FIXME @isNetwork; @class, @namespace; @loose or @directIn; @prompt, @unit,...
 
 
 \section{Gates}
@@ -854,8 +864,7 @@ only in one bit of the binary representations of the node indices
 
 
 The hypercube topology\index{topology!hypercube} template is the
-following (it can be placed into a separate file, e.g \ttt{hypercube.ned}):
-
+following (it can be placed into a separate file, e.g \ttt{Hypercube.ned}):
 
 \begin{Verbatim}[commandchars=\\\{\}]
 \tbf{simple} Node \{
@@ -912,10 +921,12 @@ different values to nodetype, such as \ttt{"WormholeRoutingNode"},
 
 
 \section{Inheritance}
+\label{sec:ch-ned-lang:inheritance}
 
 Single inheritance is supported between modules, ie. you can further
 specialize the above module:
 
+XXX
 
 
 \section{Interfaces, and submodule/channel type as parameter}
