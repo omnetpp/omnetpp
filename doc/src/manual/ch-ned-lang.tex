@@ -85,53 +85,235 @@ other system like SQL databases, and so on.
 \end{note}
 
 
-\section{NED files}
+\section{Simple modules, compound modules, networks}
 
-NED files have the \ttt{.ned} file name suffix. The location of the files
-matter as well, because the NED language has a package structure similar to
-Java, where the subdirectory corresponds to the package. More about this in
-section FIXME.
+In this section we introduce the NED language via a complete and
+reasonably real-life example: a communication network.
 
+Our hypothetical network consists of nodes. One each node there's an
+application running which generates packets at random intervals.
+The nodes are routers themselves as well, and the network is connected
+by 1 megabit/sec lines. We assume that the application uses datagram-based
+communication, so that we can leave out the transport layer from the model.
 
-\section{Simple modules}
+We will express this model in terms of simple and compound modules, gates,
+connections and so on, as introduced in the previous chapter.
 
-Simple modules are the basic building blocks for other (compound)
-modules. An example simple module declaration:
+Our simulation model will look like this:
 
-%% FIXME TODO syntax highlight here and everywhere
+TODO screenshot of one node
+TODO screenshot of the network
+
+Let us build the model bottom-up. First we define the components
+that will make up a network node. We need an application; a module
+that performs network layer functions including routing; and
+a module that queues up packets before they are sent up to the
+line.
+
+The following NED code would be in files with \ttt{.ned} suffix.
+Curly brace syntax...
 
 \begin{Verbatim}[commandchars=\\\{\}]
-//
-// A queue with a built-in server
-//
-simple Queue
+simple App
 \{
     parameters:
-        @display("i=block/queue;q=queue");
-        int capacity = default(-1);  // use -1 for unlimited
-        volatile double serviceTime @unit(s);
+        int address;  // local node address
+        string destAddresses;  // destination addresses
+        volatile double sendIaTime @unit(s) = default(exponential(1s));
+                               // time between generating packets
+        volatile int packetLength @unit(byte);  // length of one packet
+        @display("i=block/browser");
+    gates:
+        input in;
+        output out;
+\}
+
+simple Routing
+\{
+    parameters:
+        @display("i=block/switch");
     gates:
         input in[];
+        output out[];
+        input localIn;
+        output localOut;
+\}
+
+simple L2Queue
+\{
+    parameters:
+        int frameCapacity = default(0); // max queue length; 0 means no limit
+        @display("i=block/queue;q=queue");
+    gates:
+        input in;
         output out;
+        inout line;
 \}
 \end{Verbatim}
 
-This declares a simple module named \ttt{Queue}, which has two parameters
+Simple modules are the basic building blocks for other (compound)
+modules.
+
+
+Let us see the first declaration of the three.
+It declares a simple module named \ttt{App}, which has four parameters
+\ttt{address};  // local node address
+        string destAddresses;  // destination addresses
+        volatile double sendIaTime @unit(s) = default(exponential(1s));
+                               // time between generating packets
+        volatile int packetLength @unit(byte);  // length of one packet
+
 \ttt{capacity} and \ttt{serviceTime}, and two gates \ttt{in} and \ttt{out}. The
 lines starting with ``\ttt{//}'' are comments.
 
 Note that the module name (\ttt{Queue}) begins with a capital letter, and
 parameter and gate names (\ttt{capacity}, \ttt{serviceTime}, \ttt{in},
 \ttt{out}) begin with lowercase. This is the recommended naming convention.
-(Capitalization matters because the language is case sensitive). It is also
-the recommended practice to have one module per file, and the file name to be
-the same as the module name (plus \ttt{.ned}).
+(Capitalization matters because the language is case sensitive).
 
 Notice that this declaration doesn't contain any code to define the operation
 of the queue itself: that part is expressed in C++. By default, \opp looks for a
 C++ class of the same name (so here, \ttt{Queue}), although this gets slightly
 more complicated if C++ namespaces or NED packages are present, and the user
 can also explicitly specify which C++ class to use.
+
+Both the \ttt{parameters:} and \ttt{gates:} sections in the simple module are
+optional.
+
+Simple modules can be extended (or specialized) via subclassing. This will be
+discussed in section FIXME.
+
+Comments in the NED source also serve a purpose in addition to making
+the NED source more readable: in the \opp IDE they get displayed at various places (tooltips,
+content assist, etc), and become part of the documentation extracted from the
+NED files. The NED documentation system, not completely unlike \textit{JavaDoc}
+or \textit{Doxygen}, will be described in Chapter \ref{cha:neddoc}.
+
+
+Now we assemble the above components into a compound module type that
+represents a network node:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+module Node
+\{
+    parameters:
+        int address;
+        @display("i=misc/node_vs,gold");
+    gates:
+        inout port[];
+    submodules:
+        app: App \{
+            parameters:
+                address = address;
+                @display("p=140,60");
+        \}
+        routing: Routing \{
+            parameters:
+                @display("p=140,130");
+            gates:
+                in[sizeof(port)];
+                out[sizeof(port)];
+        \}
+        queue[sizeof(port)]: L2Queue \{
+            parameters:
+                @display("p=80,200,row");
+        \}
+    connections:
+        routing.localOut --> app.in;
+        routing.localIn <-- app.out;
+        for i=0..sizeof(port)-1 \{
+            routing.out[i] --> queue[i].in;
+            routing.in[i] <-- queue[i].out;
+            queue[i].line <--> port[i];
+        \}
+\}
+\end{Verbatim}
+
+Compound modules are modules that are composed of one or more submodules.
+Any module type (simple or compound module) can be used as a submodule.
+Like simple modules, compound modules can also have gates and parameters,
+and they can be used wherever simple modules can be used.
+
+It is useful to think about compound modules as ``cardboard boxes''
+that help you organize your simulation model and bring structure into
+it. No active behaviour is associated with compound modules -- they
+are simply for grouping modules into larger components that can
+can be used either as a model (see section \ref{sec:ch-ned-lang:network})
+or as a building block for other compound modules.
+
+By convention, module type names begin with upper-case letters.
+
+Submodules may use parameters of the compound module.
+They may be connected with each other and/or with
+the compound module itself.
+
+A compound module definition\index{module!compound!definition} looks
+similar to a simple\index{module!simple} module definition:
+it has \ttt{gates} and \ttt{parameters} sections.
+There are two additional sections, \ttt{submodules} and
+\ttt{connections}.
+
+All sections (\ttt{parameters}, \ttt{gates}, \ttt{submodules},
+\ttt{connections}) are optional.
+
+Then finally we define a network, which consists of a few nodes that
+are connected with lines:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+network Net10
+\{
+    types:
+        channel C extends ned.DatarateChannel \{
+            parameters:
+                delay = uniform(0.1ms, 1ms);
+                datarate = 1Mbps;
+        \}
+    submodules:
+        rte[10]: Node \{
+            parameters:
+                address = index;
+        \}
+    connections allowunconnected:
+        rte[0].port++ <--> C <--> rte[1].port++;
+        rte[0].port++ <--> C <--> rte[3].port++;
+        rte[1].port++ <--> C <--> rte[2].port++;
+        rte[1].port++ <--> C <--> rte[4].port++;
+        rte[3].port++ <--> C <--> rte[4].port++;
+        rte[3].port++ <--> C <--> rte[8].port++;
+        rte[4].port++ <--> C <--> rte[5].port++;
+        rte[4].port++ <--> C <--> rte[7].port++;
+        rte[5].port++ <--> C <--> rte[6].port++;
+        rte[5].port++ <--> C <--> rte[1].port++;
+        rte[6].port++ <--> C <--> rte[7].port++;
+        rte[6].port++ <--> C <--> rte[9].port++;
+        rte[7].port++ <--> C <--> rte[8].port++;
+        rte[7].port++ <--> C <--> rte[2].port++;
+        rte[9].port++ <--> C <--> rte[1].port++;
+\}
+\end{Verbatim}
+
+There can be several network definitions in your NED file or NED files.
+The simulation program that uses those NED files will be
+able to run any of them; you typically select the desired one
+in the config file (\ttt{omnetpp.ini}).
+
+Naturally, only module that has no gates can be a network.
+
+
+
+\section{Parameters}
+\label{sec:ch-ned-lang:simple-module-param}
+\index{module!parameters}
+
+app:
+        int address;  // local node address
+        string destAddresses;  // destination addresses
+        volatile double sendIaTime @unit(s) = default(exponential(1s));
+                               // time between generating packets
+        volatile int packetLength @unit(byte);  // length of one packet
+        @display("i=block/browser");
+
+
 
 The \ttt{capacity} parameter is created with the type \ttt{int}, and
 \ttt{serviceTime} with \ttt{double}. Other NED parameter types include
@@ -176,6 +358,118 @@ replaced with a constant at the start of the simulation.
     chosen randomly at the beginning of the simulation.
 \end{note}
 
+Parameters are variables that belong to a module. Simple module
+parameters can be queried and used by simple module algorithms.
+For example, a module called \ttt{TrafficGen} may have a parameter
+called \ttt{numOfMessages} that determines how many messages it
+should generate.
+
+Parameters are identified by names.
+By convention, parameter names begin with lower-case letters.
+
+Parameters are declared by listing their names in the
+\ttt{parameters:} section of a module description.
+The parameter type can optionally be specified as \ttt{numeric},
+\ttt{numeric const} (or simply \ttt{const}), \ttt{bool}, \ttt{string},
+or \ttt{xml}. If the parameter type is omitted, \ttt{numeric} is assumed.
+
+Example:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\tbf{simple} TrafficGen
+    \tbf{parameters}:
+        interarrivalTime,
+        numOfMessages : \tbf{const},
+        address : \tbf{string};
+    \tbf{gates}: //...
+\}
+\end{Verbatim}
+
+Parameters are assigned from NED (when the module is used as a building block
+of a larger compound module) or from the config file \ttt{omnetpp.ini}.
+\ttt{omnetpp.ini} is described in Chapter \ref{cha:run-sim}.
+
+
+\subsection{Random parameters and const}
+\label{sec:ch-ned-lang:const}
+\index{const}
+\index{module!parameters!const}
+
+Numeric parameters can be set to return random numbers, uniformly
+distributed or from various distributions. For example, setting a
+parameter to \ttt{truncnormal(2,0.8)} would return a new random number
+from the truncated normal distribution with mean 2.0 and standard deviation 0.8
+every time the parameter is read from the simple module (from C++ code).
+For example, this is useful for specifying interarrival times for generated
+packets or jobs.
+
+You may want the initial parameter value to be chosen randomly, but not
+to change it afterwards. This can be achieved with declaring the parameter
+to be \ttt{const}. \ttt{const} parameters will be evaluated only once
+at the beginning of the simulation then set to a constant value.
+
+It is recommended to mark every parameter with \ttt{const} unless
+you really want to make use of the random numbers feature.
+
+
+
+If the module type used as submodule has parameters, you can assign
+values to them in the \ttt{parameters} section of the submodule
+declaration.
+As a value you can use a constant (such as \ttt{42} or
+\ttt{"www.foo.org"}), various parameters (most commonly, parameters
+of the compound module), or write an arbitrary expression containing
+the above.
+
+It is not mandatory to mention and assign all parameters.
+Unassigned parameters can get their values at runtime: either from
+the configuration file (\ttt{omnetpp.ini}), or if the value
+isn't there either, the simulator will prompt you to enter it
+interactively. Indeed, for flexibility reasons it is often very useful
+not to ``hardcode'' parameter values in the NED file,
+but to leave them to \ttt{omnetpp.ini} where they can be
+changed more easily.
+
+The expression syntax \index{ned!expressions} is very similar to C.
+Expressions may contain constants (literals) and parameters of the
+compound module being defined. Parameters can be passed by value
+or by reference. The latter means that the expression is evaluated
+at runtime each time its value is accessed (e.g. from simple module
+code), opening up interesting possibilities for the modeler.
+You can also refer to parameters of the already defined submodules,
+with the syntax \ttt{submodule.parametername}
+(or \ttt{submodule[index].parametername}).
+
+
+\subsection{XML parameters}
+\index{xml}
+\index{module!parameters!xml}
+
+Sometimes modules need more complex input than simple module parameters
+can describe. Then you'd put these parameters into an external config file,
+and let the modules read and process the file. You'd pass the file name
+to the modules in a string parameter.
+
+These days, XML is increasingly becoming a standard format for configuration
+files as well, so you might as well describe your configuration in XML.
+From the 3.0 version, {\opp} contains built-in support for XML config files.
+
+{\opp} wraps the XML parser (LibXML, Expat, etc.), reads and DTD-validates
+the file (if the XML document contains a DOCTYPE), caches the file
+(so that if you refer to it from several modules, it'll still be loaded
+only once), lets you pick parts of the document via an XPath-subset notation,
+and presents the contents to you in a DOM-like object tree.
+
+This machinery can be accessed via the NED parameter type \ttt{xml}, and the
+\ttt{xmldoc()} operator. You can point \ttt{xml}-type module parameters
+to a specific XML file (or to an element inside an XML file) via the
+\ttt{xmldoc()} operator. You can assign \ttt{xml} parameters both from NED
+and from \ttt{omnetpp.ini}.
+
+
+
+\section{Properties}
+
 So far we have neglected the \ttt{@display} line in the above code. It is called
 \textit{display string}, and specifies how the module appears in the animation.
 This particular display string specifies a default icon
@@ -185,6 +479,14 @@ strings may specify position, color, arrangement, etc. of modules. The
 syntactical similarity of \ttt{@display} to \ttt{@unit} is not accidental; they
 are both metadata annotations (\textit{properties} in \opp), recognized and
 treated specially by the runtime.
+
+\ttt{@isNetwork(true)}...
+
+FIXME @class, @namespace
+
+
+\section{Gates}
+
 
 Gates are the connection points of modules. \opp has three types of gates:
 \textit{input}, \textit{output} and \textit{inout}, the latter being essentially
@@ -203,22 +505,74 @@ instantiate this module type) create as many gates as they want.
     \textit{port}: router port, TCP port, I/O port, etc.
 \end{note}
 
-Parameters and gates will be discussed in detail in section FIXME.
-Both the \ttt{parameters:} and \ttt{gates:} sections in the simple module are
-optional.
 
-Simple modules can be extended (or specialized) via subclassing. This will be
-discussed in section FIXME.
 
-Comments in the NED source also serve a purpose in addition to making
-the NED source more readable: in the \opp IDE they get displayed at various places (tooltips,
-content assist, etc), and become part of the documentation extracted from the
-NED files. The NED documentation system, not completely unlike \textit{JavaDoc}
-or \textit{Doxygen}, will be described in Chapter \ref{cha:neddoc}.
+Gates are the connection points of modules. The starting and
+ending points of the connections between modules are gates. {\opp}
+supports simplex (one-directional) connections, so there are
+input and output gates. Messages are sent through
+output gates and received through input gates.
+
+Gates are identified by their names.
+By convention, gate names begin with lower-case letters.
+
+Gate vectors are supported: a gate vector\index{gate!vector}
+contains a number of single gates.
+
+Gates are declared by listing their names in the
+\fpar[ned!keywords!gates]{gates:} section of a module description. An
+empty bracket pair [] denotes a gate vector\index{gate!vector}.
+Elements of the vector are numbered from zero.
+
+
+The sizes of gate vectors are given later, when the module is used as
+a building block of a compound module type. Thus, every instance of
+the module can have gate vectors of different sizes.
+
+
+\section{Submodules}
+
+Submodules\index{module!submodule} are defined in the
+\fpar[ned!keywords!submodules]{submodules:} section of a compound
+module declaration. Submodules are identified by names.
+By convention, submodule names begin with lower-case letters.
+
+Submodules are instances of a module type, either simple
+or compound -- there is no distinction. The module type
+must be known to the NED compiler, that is, it must have appeared
+earlier in the same NED file or have been imported from another
+NED file.
+
+It is possible to define vectors of submodules, and the
+size of the vector may come from a parameter value.
+
+When defining submodules, you can assign values to their
+parameters, and if the corresponding module type has gate vectors,
+you have to specify their sizes.
+
+
+\subsubsection{Submodule vectors}
+
+It is possible to create an array\index{module!array} of
+submodules\index{submodule|see{module}} (a module
+vector\index{module!vector}).  This is done with an expression between
+brackets right behind the module type name. The expression can refer
+to module parameters. A zero value as module count is also allowed.
+
+Example:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+    node[2*size+1]: Node;
+\end{Verbatim}
+
+
+\section{Connections, channels}
+
+Channels types resemble simple modules in the sense that they need an underlying
+C++ class to function, the NED declaration itself is not enough. Our
+\ttt{Backbone} channel inherits this C++ class from \ttt{ned.BasicChannel}.
 
 FIXME @class, @namespace
-
-\section{Channels}
 
 A channel definition specifies a connection type of some given characteristics.
 Let us see an example channel:
@@ -274,563 +628,377 @@ does nothing but let the message though without any change or delay.
 % \end{Verbatim}
 
 
-Channels types resemble simple modules in the sense that they need an underlying
-C++ class to function, the NED declaration itself is not enough. Our
-\ttt{Backbone} channel inherits this C++ class from \ttt{ned.BasicChannel}.
 
-FIXME @class, @namespace
+\section{More about connections}
 
+\subsection{More examples}
 
-\section{Compound modules}
+\subsubsection{Chain}
 
-Compound modules are modules that are composed of one or more submodules.
-Any module type (simple or compound module) can be used as a submodule.
-Like simple modules, compound modules can also have gates and parameters,
-and they can be used wherever simple modules can be used.
-
-It is useful to think about compound modules as ``cardboard boxes''
-that help you organize your simulation model and bring structure into
-it. No active behaviour is associated with compound modules -- they
-are simply for grouping modules into larger components that can
-can be used either as a model (see section \ref{sec:ch-ned-lang:network})
-or as a building block for other compound modules.
-
-By convention, module type names begin with upper-case letters.
-
-Submodules may use parameters of the compound module.
-They may be connected with each other and/or with
-the compound module itself.
-
-A compound module definition\index{module!compound!definition} looks
-similar to a simple\index{module!simple} module definition:
-it has \ttt{gates} and \ttt{parameters} sections.
-There are two additional sections, \ttt{submodules} and
-\ttt{connections}.
-
-Let us see a compound module from the \textit{Routing} example simulation:
+One can create a chain\index{chain} of modules like this:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-module Node
-\{
-    parameters:
-        int address;
-        @display("i=misc/node_vs,gold");
-    gates:
-        inout port[];
-    submodules:
-        app: App \{
-            parameters:
-                address = address;
-                @display("p=140,60");
+\tbf{module} Chain
+    \tbf{parameters}:
+        int count;
+    \tbf{submodules}:
+        node[count] : Node \{
+            \tbf{gates}:
+                in[index==0 || index==count-1 ? 1 : 2];
+                out[index==0 || index==count-1 ? 1 : 2];
         \}
-        routing: Routing \{
-            parameters:
-                @display("p=140,130");
-            gates:
-                in[sizeof(port)];
-                out[sizeof(port)];
-        \}
-        queue[sizeof(port)]: L2Queue \{
-            parameters:
-                @display("p=80,200,row");
-        \}
-    connections:
-        routing.localOut --> app.in;
-        routing.localIn <-- app.out;
-        for i=0..sizeof(port)-1 \{
-            routing.out[i] --> queue[i].in;
-            routing.in[i] <-- queue[i].out;
-            queue[i].line <--> port[i];
+    \tbf{connections}:
+        \tbf{for} i = 0..count-2 \{
+            node[i].out[i!=0 ? 1 : 0] --> node[i+1].in[0];
+            node[i].in[i!=0 ? 1 : 0] <-- node[i+1].out[0];
         \}
 \}
 \end{Verbatim}
 
-All sections (\ttt{parameters}, \ttt{gates}, \ttt{submodules},
-\ttt{connections}) are optional.
 
-\subsection{Compound module parameters and gates}
+\subsubsection{Binary Tree}
 
-Parameters\index{module!compound!parameters} and gates \index{gate}
-for compound modules are declared and work in the same way
-as with simple modules, described in sections
-\ref{sec:ch-ned-lang:simple-module-param}
-and \ref{sec:ch-ned-lang:simple-module-gates}.
-
-Typically, compound module parameters are passed to submodules and
-used for initializing their parameters.
-
-Parameters can also be used in defining the internal structure of
-the compound module: the number of submodules and sizes of gate vectors
-can be defined with the help of parameters, and parameters can
-also be used in defining the connections inside the compound module.
-As a practical example, you can create a \ttt{Router} compound module
-with a variable number of ports, specified in a \ttt{numOfPorts} parameter.
-
-Parameters affecting the internal structure should not be declared
-\ttt{volatile}, as it may lead to unexpected results.
-
-\subsection{Submodules}
-
-Submodules\index{module!submodule} are defined in the
-\fpar[ned!keywords!submodules]{submodules:} section of a compound
-module declaration. Submodules are identified by names.
-By convention, submodule names begin with lower-case letters.
-
-Submodules are instances of a module type, either simple
-or compound -- there is no distinction. The module type
-must be known to the NED compiler, that is, it must have appeared
-earlier in the same NED file or have been imported from another
-NED file.
-
-It is possible to define vectors of submodules, and the
-size of the vector may come from a parameter value.
-
-When defining submodules, you can assign values to their
-parameters, and if the corresponding module type has gate vectors,
-you have to specify their sizes.
-
-
-Example:
+One can use conditional connections to build a binary tree\index{binary tree}.
+The following NED code loops through all possible node pairs, and
+creates the connections needed for a binary tree.
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\tbf{module} CompoundModule
-    //...
-    \tbf{submodules}:
-        submodule1: ModuleType1
-            \tbf{parameters}:
-                //...
-            \tbf{gatesizes}:
-                //...
-        submodule2: ModuleType2
-            \tbf{parameters}:
-                //...
-            \tbf{gatesizes}:
-                //...
-\tbf{endmodule}
-\end{Verbatim}
-
-
-\subsubsection{Submodule vectors}
-
-
-It is possible to create an array\index{module!array} of
-submodules\index{submodule|see{module}} (a module
-vector\index{module!vector}).  This is done with an expression between
-brackets right behind the module type name. The expression can refer
-to module parameters. A zero value as module count is also allowed.
-
-Example:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-\tbf{module} CompoundModule
-    \tbf{parameters}:
-        size: \tbf{const};
-    \tbf{submodules}:
-        submod1: Node[3]
-            //...
-        submod2: Node[size]
-            //...
-        submod3: Node[2*size+1]
-            //...
-\tbf{endmodule}
-\end{Verbatim}
-
-
-\subsection{Assigning values to submodule parameters}
-
-\index{module!submodule!parameters}
-
-If the module type used as submodule has parameters, you can assign
-values to them in the \ttt{parameters} section of the submodule
-declaration.
-As a value you can use a constant (such as \ttt{42} or
-\ttt{"www.foo.org"}), various parameters (most commonly, parameters
-of the compound module), or write an arbitrary expression containing
-the above.
-
-It is not mandatory to mention and assign all parameters.
-Unassigned parameters can get their values at runtime: either from
-the configuration file (\ttt{omnetpp.ini}), or if the value
-isn't there either, the simulator will prompt you to enter it
-interactively. Indeed, for flexibility reasons it is often very useful
-not to ``hardcode'' parameter values in the NED file,
-but to leave them to \ttt{omnetpp.ini} where they can be
-changed more easily.
-
-
-Example:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-\tbf{module} CompoundModule
-    \tbf{parameters}:
-        param1: numeric,
-        param2: numeric,
-        useParam1: bool;
-    \tbf{submodules}:
-        submodule1: Node
-            \tbf{parameters}:
-                p1 = 10,
-                p2 = param1+param2,
-                p3 = useParam1==true ? param1 : param2;
-        //...
-\tbf{endmodule}
-\end{Verbatim}
-
-
-The expression syntax \index{ned!expressions} is very similar to C.
-Expressions may contain constants (literals) and parameters of the
-compound module being defined. Parameters can be passed by value
-or by reference. The latter means that the expression is evaluated
-at runtime each time its value is accessed (e.g. from simple module
-code), opening up interesting possibilities for the modeler.
-You can also refer to parameters of the already defined submodules,
-with the syntax \ttt{submodule.parametername}
-(or \ttt{submodule[index].parametername}).
-
-Expressions are described in detail in section \ref{ch-ned-lang:sec:expressions}.
-
-
-\subsubsection{The \ttt{input} keyword}
-\label{sec:ch-ned-lang:input}
-
-When a parameter does not receive a value inside NED files or in
-the configuration file (\ttt{omnetpp.ini}), the user will be prompted
-to enter its value at the beginning of the simulation.
-If you plan to make use of interactive prompting, you can specify
-a prompt text and a default value.
-
-The syntax is the following:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-   parameters:
-      numCPUs = \tbf{input}(10, "Number of processors?"), // default value, prompt
-      processingTime = \tbf{input}(10ms), // prompt text
-      cacheSize = input;
-\end{Verbatim}
-
-The third version is actually the same as leaving out the parameter
-from the list of assignments, but you can use it to make it explicit
-that you do not want to assign a value from the NED file.
-
-
-\subsection{Defining sizes of submodule gate vectors}
-
-\index{module!gate sizes}
-\index{gate!vector!size}
-
-The sizes of gate vectors are defined with the
-\fpar[ned!keywords!gatesizes]{gatesizes} keyword.  Gate vector sizes
-can be given as constants, parameters or expressions.
-
-An example:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-\tbf{simple} Node
+\tbf{simple} BinaryTreeNode \{
     \tbf{gates}:
-        \tbf{in}: inputs[];
-        \tbf{out}: outputs[];
-\tbf{endsimple}
+        \tbf{input} fromupper;
+        \tbf{output} downleft;
+        \tbf{output} downright;
+\}
 
-\tbf{module} CompoundModule
+\tbf{module} BinaryTree \{
     \tbf{parameters}:
-        numPorts: \tbf{const};
+        int height;
     \tbf{submodules}:
-        node1: Node
-            \tbf{gatesizes}:
-                inputs[2], outputs[2];
-        node2: Node
-            \tbf{gatesizes}:
-                inputs[numPorts], outputs[numPorts];
-        //...
-\tbf{endmodule}
+        node[2^height-1]: BinaryTreeNode;
+    \tbf{connections} \tbf{allowunconnected}:
+        \tbf{for} i = 0..2^height-2, j = 0..2^height-2 \{
+            node[i].downleft --> node[j].fromupper \tbf{if} j==2*i+1;
+            node[i].downright --> node[j].fromupper \tbf{if} j==2*i+2;
+        \}
+\}
 \end{Verbatim}
 
-% TBD: show in[sizeof(in)] construct as well
+Note that not every gate of the modules will be connected. By default,
+an unconnected gate produces a run-time error message when the
+simulation is started, but this error message is turned off here with
+the \fpar[ned!keywords!nocheck]{nocheck} modifier.  Consequently, it
+is the simple modules' responsibility not to send on a gate which is
+not leading anywhere.
 
-\ttt{gatesizes} is not mandatory.
-If you omit \ttt{gatesizes} for a gate vector, it will be created with zero size.
-
-One reason for omitting \ttt{gatesizes} is that you'll want to use
-the \ttt{gate++} (``extend gate vector with a new gate'') notation later in the
-\ttt{connections} section.
-
-
-
-\subsection{Connections}
-
-The compound module definition specifies how the gates of the compound
-module and its immediate sub-modules are connected\index{connection}.
-
-You can connect two submodules or a submodule with its enclosing
-compound module. (For completeness, you can also connect two gates
-of the compound module on the inside, but this is rarely needed).
-This means that NED does not permit connections that span
-multiple levels of hierarchy -- this restriction
-enforces compound modules to be self-contained, and thus promotes
-reusability. Gate directions must also be observed,
-that is, you cannot connect two output gates or two input gates.
-
-Only one-to-one connections are supported, so a particular gate may only
-be used occur in one connection. One-to-many and many-to-one
-connections can be achieved using simple modules that duplicate
-messages or merge message flows. The rationale is that wherever
-such fan-in or fan-out occurs in a model, it is usually associated
-with some processing anyway that makes it necessary to use
-simple modules.
-
-Connections\index{ned!connections} are specified in the
-\fpar[ned!keywords!connections]{connections:} section of a compound
-module definition. It lists the connections, separated by semicolons.
-
-Example:
+An alert reader might notice that there is a better alternative
+to the above code. Each node except the ones at the lowest level
+of the tree has to be connected to exactly two nodes,
+so we can use a single loop to create the connections.
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\tbf{module} CompoundModule
-    \tbf{parameters}: //...
-    \tbf{gates}: //...
-    \tbf{submodules}: //...
-    \tbf{connections}:
-        node1.output --> node2.input;
-        node1.input <-- node2.output;
-        //...
-\tbf{endmodule}
-\end{Verbatim}
-
-The source gate can be an output gate of a submodule or an input
-gate of the compound module, and the destination gate can be
-an input gate of a submodule or an output gate of the compound
-module. The arrow can point either left-to-right or right-to-left.
-
-The \textit{gate++} notation allows you to extend a gate vector
-with new gates, without having to declare the vector size in advance
-with \ttt{gatesizes}. This feature is very convenient for connecting
-nodes of a network:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-\tbf{simple} Node
-    \tbf{gates}:
-        \tbf{in}: in[];
-        \tbf{out}: out[];
-\tbf{endsimple}
-
-\tbf{module} SmallNet
+\tbf{module} BinaryTree2 \{
+    \tbf{parameters}:
+        int height;
     \tbf{submodules}:
-        node: Node[6];
-    \tbf{connections}:
-        node[0].out++ --> node[1].in++;
-        node[0].in++ <-- node[1].out++;
-
-        node[1].out++ --> node[2].in++;
-        node[1].in++ <-- node[2].out++;
-
-        node[1].out++ --> node[4].in++;
-        node[1].in++ <-- node[4].out++;
-
-        node[3].out++ --> node[4].in++;
-        node[3].in++ <-- node[4].out++;
-
-        node[4].out++ --> node[5].in++;
-        node[4].in++ <-- node[5].out++;
-\tbf{endmodule}
+        node[2^height-1]: BinaryTreeNode;
+    \tbf{connections} \tbf{allowunconnected}:
+        \tbf{for} i=0..2^(height-1)-2 \{
+            node[i].downleft --> node[2*i+1].fromupper;
+            node[i].downright --> node[2*i+2].fromupper;
+        \}
+\}
 \end{Verbatim}
 
 
-A connection:
+\subsubsection{Random graph}
 
-\begin{itemize}
-  \item{may have attributes (delay, bit error rate or data rate) or
-        use a named channel;}
-  \item{may occur inside a for-loop (to create multiple connections);}
-  \item{may be conditional.}
-\end{itemize}
-
-These connection types are described in the following sections.
-
-
-\subsubsection{Single connections and channels}
-
-\index{ned!connections}
-\index{connection}
-
-If you do not specify a channel\index{channel}, the connection will have
-no propagation delay, no transmission delay and no bit errors:
-
-\begin{verbatim}
-    node1.outGate --> node2.inGate;
-\end{verbatim}
-
-You can specify a channel by its name\index{channel!name}:
-\begin{verbatim}
-    node1.outGate --> Fiber --> node2.inGate;
-\end{verbatim}
-
-In this case, the NED sources must contain the definition of
-the channel.
-
-One can also specify the channel parameters directly\index{channel!parameters}:
-\begin{verbatim}
-    node1.outGate --> error 1e-9 delay 0.001 --> node2.inGate;
-\end{verbatim}
-
-Either of the parameters can be omitted and they can be in any
-order.
-
-
-\subsubsection{Loop connections}
-
-
-If submodule or gate vectors are used, it is possible to create
-more than one connection with one statement. This is termed a \textit{multiple}
-or \textit{loop connection}\index{connection!loop}.
-
-A multiple connection is created with the \fpar[ned!keywords!for]{for}
-statement:
+Conditional connections can also be used to generate random
+topologies\index{topology!random}.  The following code generates a
+random subgraph of a full graph:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\tbf{for} i=0..4 \tbf{do}
-    node1.outGate[i] --> node2[i].inGate
-\tbf{endfor};
+\tbf{module} RandomGraph \{
+    \tbf{parameters}:
+        int count;
+        double connectedness; // 0.0<x<1.0
+    \tbf{submodules}:
+        node[count]: Node \{
+            \tbf{gates}:
+                \tbf{in}[count];
+                \tbf{out}[count];
+        \}
+    \tbf{connections} \tbf{allowunconnected}:
+        \tbf{for} i=0..count-1, j=0..count-1 \{
+            node[i].out[j] --> node[j].in[i]
+                \tbf{if} i!=j && uniform(0,1)<connectedness;
+        \}
+\}
 \end{Verbatim}
 
+Note the use of the \fpar[ned!keywords!nocheck]{nocheck} modifier
+here too, to turn off error messages given by the network setup code
+for unconnected gates.
 
-The result of the above loop connection can be illustrated as
-depicted in Fig. \ref{fig:ch-ned-lang:loop-connection}.
+
+\subsection{Design patterns for compound modules}
+
+\index{module!compound!patterns}
+\index{topology!patterns}
+
+Several approaches can be used when you want to create complex
+topologies which have a regular structure; three of them are
+described below.
+
+
+\subsubsection{`Subgraph of a Full Graph'}
+
+
+This pattern takes a subset of the connections of a full graph.  A
+condition is used to ``carve out'' the necessary interconnection from
+the full graph:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+for i=0..N-1, j=0..N-1 \{
+    node[i].out[...] --> node[j].in[...] if condition(i,j);
+\}
+\end{Verbatim}
+
+The RandomGraph compound module (presented earlier) is an example of
+this pattern, but the pattern can generate any graph where an
+appropriate \textit{condition(i,j)} can be formulated. For example,
+when generating a tree\index{topology!tree} structure, the condition
+would return whether node \textit{j} is a child of node \textit{i} or
+vica versa.
+
+Though this pattern is very general, its usage can be prohibitive if
+the \textit{N} number of nodes is high and the graph is sparse (it has
+much fewer connections that $N^2$). The following
+two patterns do not suffer from this drawback.
+
+
+\subsubsection{`Connections of Each Node'}
+
+The pattern loops through all nodes and creates the necessary
+connections for each one. It can be generalized like this:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+for i=0..Nnodes, j=0..Nconns(i)-1 \{
+    node[i].out[j] --> node[rightNodeIndex(i,j)].in[j];
+\}
+\end{Verbatim}
+
+The Hypercube\index{topology!hypercube} compound module (to be
+presented later) is a clear example of this approach. BinaryTree can
+also be regarded as an example of this pattern where the inner j loop
+is unrolled.
+
+The applicability of this pattern depends on how easily the \textit{rightNodeIndex(i,j)}
+function can be formulated.
+
+
+\subsubsection{`Enumerate All Connections'}
+
+
+A third pattern is to list all connections within a loop:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+for i=0..Nconnections-1 \{
+    node[leftNodeIndex(i)].out[...] --> node[rightNodeIndex(i)].in[...];
+\}
+\end{Verbatim}
+
+The pattern can be used if \textit{leftNodeIndex(i)} and \textit{rightNodeIndex(i)}
+mapping functions can be sufficiently formulated.
+
+The Serial module is an example of this approach where the mapping
+functions are extremely simple: \textit{leftNodeIndex(i)=i} and \textit{rightNodeIndex(i)=i+1}.
+The pattern can also be used to create a random subset of a full
+graph with a fixed number of connections.
+
+In the case of irregular structures where none of the above patterns
+can be employed, you can resort to specifying constant submodule/gate
+vector sizes and explicitly listing all connections, like you
+would do it in most existing simulators.
+
+
+
+
+\subsection{Topology templates}
+\label{sec:ch-ned-lang:topology-templates}
+
+Topology templates are nothing more than compound modules where one or
+more submodule types are left as parameters (using the
+\fpar[ned!keywords!like]{like} phrase of the NED language).  You can
+write such modules which implement mesh\index{topology!mesh},
+hypercube\index{topology!hypercube},
+butterfly\index{topology!butterfly}, perfect
+shuffle\index{topology!perfect shuffle} or other topologies, and you
+can use them wherever needed in you simulations.  With topology
+templates\index{topology!templates}, you can reuse
+\textit{interconnection structure}.
+
+
+The concept is demonstrated on a network with hypercube interconnection.
+When building an N-dimension hypercube, we can exploit the fact
+that each node is connected to N others which differ from it
+only in one bit of the binary representations of the node indices
+(see Fig. \ref{fig:ch-ned-lang:hypercube-topology}).
 
 \begin{figure}[htbp]
-\begin{center}
-\includegraphics[width=4.625in, height=1.297in]{figures/usmanFig7}
-\caption{Loop connection}
-\label{fig:ch-ned-lang:loop-connection}
-\end{center}
+  \begin{center}
+    \includegraphics[width=2.111in, height=1.285in]{figures/hypercube}
+    \caption{Hypercube topology}
+    \label{fig:ch-ned-lang:hypercube-topology}
+  \end{center}
 \end{figure}
 
 
-One can place several connections in the body of the
-\fpar[ned!keywords!for]{for} statement, separated by semicolons.
+The hypercube topology\index{topology!hypercube} template is the
+following (it can be placed into a separate file, e.g \ttt{hypercube.ned}):
 
-One can create nested loops\index{ned!nested for statements}
-by specifying more than one indices in the \ttt{for} statement,
-with the first variable forming the outermost loop.
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\tbf{for} i=0..4, j=0..4 \tbf{do}
-    //...
-\tbf{endfor};
-\end{Verbatim}
+\tbf{simple} Node \{
+    \tbf{gates}:
+        \tbf{output} out[];
+        \tbf{input} in[];
+\}
 
-One can also use an index in the lower and upper bound expressions
-of the subsequent indices:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-\tbf{for} i=0..3, j=i+1..4 \tbf{do}
-    //...
-\tbf{endfor};
-\end{Verbatim}
-
-
-\subsubsection{Conditional connections}
-
-\index{connection!conditional}
-
-Creation of a connection can be made conditional, using the \ttt{if}
-keyword:
-
-\index{ned!keywords!if}
-
-\begin{Verbatim}[commandchars=\\\{\}]
-\tbf{for} i=0..n \tbf{do}
-    node1.outGate[i] --> node2[i].inGate \tbf{if} i\%2==0;
-\tbf{endfor};
-\end{Verbatim}
-
-The \ttt{if} condition is evaluated for each connection
-(in the above example, for each \textit{i} value), and the
-decision is made individually each time whether to create the
-the connection or not. In the above example we connected every
-second gate. Conditions may also use random variables, as
-shown in the next section.
-
-
-\subsubsection{The nocheck modifier}
-
-By default, NED requires that all gates be connected. Since this
-check can be inconvenient at times, it can be turned off
-using the \fpar[ned!keywords!nocheck]{nocheck} modifier.
-
-The following example generates a random subgraph of a full graph.
-
-\begin{Verbatim}[commandchars=\\\{\}]
-\tbf{module} RandomConnections
-    \tbf{parameters}: //..
-    \tbf{gates}: //..
-    \tbf{submodules}: //..
-    \tbf{connections} \tbf{nocheck}:
-        \tbf{for} i=0..n-1, j=0..n-1 \tbf{do}
-            node[i].out[j] --> node[j].in[i] \tbf{if} uniform(0,1)<0.3;
-        \tbf{endfor};
-\tbf{endmodule}
-\end{Verbatim}
-
-When using \fpar[ned!keywords!nocheck]{nocheck}, it is the
-simple modules' responsibility not to send messages on gates
-that are not connected.
-
-
-\section{Networks}
-\label{sec:ch-ned-lang:network}
-\index{ned!network definition}
-
-A \textit{network} is nothing else than a module type (simple or compound
-module) which is a self-contained simulation model itself.
-
-A module type becomes a network by adding the \ttt{@isNetwork(true)} property
-to it. Examples:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-module FifoNet
-\{
-    parameters: // this is optional
-        @isNetwork(true);
-    submodules:
-        src: Source;
-        fifo: Fifo;
-        sink: Sink;
-    connections:
-        src.out --> fifo.in;
-        fifo.out --> sink.in;
+\tbf{module} Hypercube \{
+    \tbf{parameters}:
+        int dim;
+        string nodetype;
+    \tbf{submodules}:
+        node[2{\textasciicircum}dim]: <nodetype> \tbf{like} Node \{
+        \tbf{gates}:
+            out[dim];
+            in[dim];
+        \}
+    \tbf{connections}:
+        \tbf{for} i=0..2^dim-1, j=0..dim-1 \{
+            node[i].out[j] --> node[i # 2^j].in[j]; // # is bitwise XOR
+        \}
 \}
 \end{Verbatim}
 
-Since a compound module with \ttt{@isNetwork(true)} occurs very frequently, there
-is a shortcut for it: the \ttt{network} keyword. Thus, the above example can be
-somewhat shortened to:
+When you create an actual hypercube, you substitute the name
+of an existing module type (e.g. \ttt{"Hypercube\_PE"}) for the nodetype
+parameter. The module type implements the algorithm the user
+wants to simulate and it must have the same gates that the Node
+type has. The topology template code can be used through importing
+the file:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-network FifoNet
-\{
-    submodules:
-        src: Source;
-        fifo: Fifo;
-        sink: Sink;
-    connections:
-        src.out --> fifo.in;
-        fifo.out --> sink.in;
+\tbf{simple} Hypercube_PE \{
+    \tbf{gates}:
+         \tbf{output} out[];
+         \tbf{input} in[];
+\}
+
+\tbf{network} HypercubeX extends Hypercube \{
+    \tbf{parameters}:
+        dim = 4;
+        nodetype = "Hypercube_PE";
 \}
 \end{Verbatim}
 
-There can be several network definitions in your NED file or NED files.
-The simulation program that uses those NED files will be
-able to run any of them; you typically select the desired one
-in the config file (\ttt{omnetpp.ini}).
+If you put the nodetype parameter to the ini file, you can use the
+same simulation model to test e.g. several routing algorithms in a
+hypercube, each algorithm implemented with a different
+simple module type -- you just have to supply
+different values to nodetype, such as \ttt{"WormholeRoutingNode"},
+\ttt{"DeflectionRoutingNode"}, etc.
 
-Naturally, only module that has no gates can be a network.
 
 
 \section{Inheritance}
 
 Single inheritance is supported between modules, ie. you can further
 specialize the above module:
-FIXME TODO
+
+
+
+\section{Interfaces, and submodule/channel type as parameter}
+\label{sec:ch-ned-lang:like}
+
+Sometimes it is convenient to make the name of a submodule type a parameter,
+so that one can easily `plug in' any module there.
+
+For example, assume the purpose of your simulation study is
+to compare different routing algorithms. Suppose you programmed
+the needed routing algorithms as simple modules: \ttt{DistVecRoutingNode},
+\ttt{AntNetRouting1Node}, \ttt{AntNetRouting2Node}, etc.
+You have also created the network topology as a compound module
+called \ttt{RoutingTestNetwork}, which will serve as a testbed for your routing
+algorithms. Currently, \ttt{RoutingTestNetwork} has \ttt{DistVecRoutingNode}
+hardcoded (all submodules are of this type), but you want
+to be able to switch to other routing algorithms easily.
+
+NED gives you the possibility to add a string-valued parameter,
+say \ttt{routingNodeType} to the \ttt{RoutingTestNetwork} compound module.
+Then you can tell NED that types of the submodules inside \ttt{RoutingTestNetwork}
+are not of any fixed module type, but contained in the \ttt{routingNodeType}
+parameter. That is all -- now you are free to assign any of
+the \ttt{"DistVecRoutingNode"}, \ttt{"AntNetRouting1Node"} or
+\ttt{"AntNetRouting2Node"} string constants to this parameter
+(you can do that in NED, in the config file (\ttt{omnetpp.ini}),
+or even enter it interactively),
+and your network will use the routing algorithm you chose.
+
+If you specify a wrong value, say \ttt{"FooBarRoutingNode"}
+when you have no \ttt{FooBarRoutingNode} module implemented,
+you'll get a runtime error at the beginning of the simulation:
+\textit{module type definition not found}.
+
+Inside the \ttt{RoutingTestNetwork} module you assign parameter values
+and connect the gates of the routing modules. To provide some degree
+of type safety, NED wants to make sure you didn't misspell
+parameter or gate names and you used them correctly.
+To be able to do such checks, NED requires some help from you:
+you have to name an existing module type (say \ttt{RoutingNode})
+and promise NED that all modules you're going you specify
+in the \ttt{routingNodeType} parameter will have (at least) the same
+parameters and gates as the \ttt{RoutingNode} module.
+  \footnote{If you like, the above solution somewhat similar to polymorphism
+  in object-oriented languages -- \ttt{RoutingNode} is like a
+  ``base class'', \ttt{DistVecRoutingNode} and \ttt{AntNetRouting1Node}
+  are like ``derived classes'', and the \ttt{routingNodeType} parameter
+  is like a ``pointer to a base class'' which may be downcast to specific
+  types.}
+
+All the above is achieved via the \fpar[ned!keywords!like]{like} keyword.
+The syntax is the following:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\tbf{module} RoutingTestNetwork
+    \tbf{parameters}:
+        routingNodeType: \tbf{string}; // should hold the name
+                                  // of an existing module type
+    \tbf{gates}: //...
+    \tbf{submodules}:
+        node1: routingNodeType \tbf{like} RoutingNode;
+        node2: routingNodeType \tbf{like} RoutingNode;
+        //...
+    \tbf{connections nocheck}:
+        node1.out0 --> node2.in0;
+        //...
+\tbf{endmodule}
+\end{Verbatim}
+
+The \ttt{RoutingNode} module type does not need to be implemented in
+C++, because no instance of it is created; it is merely used
+to check the correctness of the NED file.
+
+On the other hand, the actual module types that will be substituted
+(e.g. \ttt{DistVecRoutingNode}, \ttt{AntNetRouting1Node},etc.)
+do not need to be declared in the NED files.
+
+The \fpar[ned!keywords!like]{like} phrase lets you create families
+of modules that serve similar purposes and implement the same interface
+(they have the same gates and parameters)
+and to use them interchangeably in NED files.
+
+
 
 \section{Packages}
 
@@ -838,6 +1006,8 @@ To address increasingly common name collisions in NED files,
 \opp 4.0 introduces a package feature for NED. The solution
 is roughly modelled after Java's packages, with minor enhancements.
 
+It is also recommended practice to have one module per file,
+and the file name to be the same as the module name (plus \ttt{.ned}).
 
 \subsection{Packages, imports}
 
@@ -947,8 +1117,6 @@ The algorithm for parametric channel types works in the same way.
 Simple (unqualified) names are tried with the same package as the
 ini file is in (provided it's in a NED directory).
 
-
-
 \subsection{The NEDPATH environment variable}
 
 A simulation may need NED files from several "NED source folders".
@@ -993,153 +1161,121 @@ In one project, one may only refer to NED files in the same project
 or dependent projects.
 
 
-\section{Inner types}
-FIXME TODO
-
-\section{Interfaces}
-FIXME TODO
-
-\section{Metadata annotations}
-FIXME TODO
 
 
-\section{Parameters}
-\label{sec:ch-ned-lang:simple-module-param}
-\index{module!parameters}
+\section{XML as alternative representation of NED}
 
+To increase interoperability, NED files (and also message definition files)
+have an XML representation. Any NED file can be converted to XML, and
+any XML file which corresponds to the NED DTD can be converted to NED.
+  \footnote{DTD stands for Document Type Descriptor, and it defines
+  a "grammar" for XML files. More info can be found on the W3C web site,
+  www.w3.org.}
 
-Parameters are variables that belong to a module. Simple module
-parameters can be queried and used by simple module algorithms.
-For example, a module called \ttt{TrafficGen} may have a parameter
-called \ttt{numOfMessages} that determines how many messages it
-should generate.
+XML is well suited for machine processing. For example, stylesheet
+transformations (XSLT) can be used to extract information from NED files,
+or the other way round, create NED files from external info present in
+XML form. One practical application of XML is the \fprog{opp\_neddoc}
+documentation generation tool which is described in Chapter \ref{cha:neddoc}.
 
-Parameters are identified by names.
-By convention, parameter names begin with lower-case letters.
+The \fprog{nedtool} program (which also translates NED to C++ code)
+can be used to convert between NED and XML.
 
-Parameters are declared by listing their names in the
-\ttt{parameters:} section of a module description.
-The parameter type can optionally be specified as \ttt{numeric},
-\ttt{numeric const} (or simply \ttt{const}), \ttt{bool}, \ttt{string},
-or \ttt{xml}. If the parameter type is omitted, \ttt{numeric} is assumed.
+Converting a NED file to XML:
 
-Example:
+\begin{verbatim}
+nedtool -x wireless.ned
+\end{verbatim}
 
-\begin{Verbatim}[commandchars=\\\{\}]
-\tbf{simple} TrafficGen
-    \tbf{parameters}:
-        interarrivalTime,
-        numOfMessages : \tbf{const},
-        address : \tbf{string};
-    \tbf{gates}: //...
-\tbf{endsimple}
-\end{Verbatim}
+It generates \ttt{wireless\_n.xml}.
+Several switches control the exact content and details
+of the resulting XML as well as the amount of checks
+made on the input.
 
-Parameters are assigned from NED (when the module is used as a building block
-of a larger compound module) or from the config file \ttt{omnetpp.ini}.
-\ttt{omnetpp.ini} is described in Chapter \ref{cha:run-sim}.
+Converting the XML representation back to NED:
 
+\begin{verbatim}
+nedtool -n wireless.xml
+\end{verbatim}
 
-\subsection{Random parameters and const}
-\label{sec:ch-ned-lang:const}
-\index{const}
-\index{module!parameters!const}
+The result is \ttt{wireless\_n.ned}.
 
-Numeric parameters can be set to return random numbers, uniformly
-distributed or from various distributions. For example, setting a
-parameter to \ttt{truncnormal(2,0.8)} would return a new random number
-from the truncated normal distribution with mean 2.0 and standard deviation 0.8
-every time the parameter is read from the simple module (from C++ code).
-For example, this is useful for specifying interarrival times for generated
-packets or jobs.
+Using nedtool as NED compiler to generate C++ code:
 
-You may want the initial parameter value to be chosen randomly, but not
-to change it afterwards. This can be achieved with declaring the parameter
-to be \ttt{const}. \ttt{const} parameters will be evaluated only once
-at the beginning of the simulation then set to a constant value.
+\begin{verbatim}
+nedtool wireless.ned
+\end{verbatim}
 
-It is recommended to mark every parameter with \ttt{const} unless
-you really want to make use of the random numbers feature.
+The resulting code is more compact than the
+one created by \fprog{nedtool}'s predecessor \fprog{nedc}.
+As a result, \fprog{nedtool}-created \ttt{\_n.cc}
+C++ files compile much faster.
 
+You can generate C++ code from the XML format as well:
 
-\subsection{XML parameters}
-\index{xml}
-\index{module!parameters!xml}
-
-Sometimes modules need more complex input than simple module parameters
-can describe. Then you'd put these parameters into an external config file,
-and let the modules read and process the file. You'd pass the file name
-to the modules in a string parameter.
-
-These days, XML is increasingly becoming a standard format for configuration
-files as well, so you might as well describe your configuration in XML.
-From the 3.0 version, {\opp} contains built-in support for XML config files.
-
-{\opp} wraps the XML parser (LibXML, Expat, etc.), reads and DTD-validates
-the file (if the XML document contains a DOCTYPE), caches the file
-(so that if you refer to it from several modules, it'll still be loaded
-only once), lets you pick parts of the document via an XPath-subset notation,
-and presents the contents to you in a DOM-like object tree.
-
-This machinery can be accessed via the NED parameter type \ttt{xml}, and the
-\ttt{xmldoc()} operator. You can point \ttt{xml}-type module parameters
-to a specific XML file (or to an element inside an XML file) via the
-\ttt{xmldoc()} operator. You can assign \ttt{xml} parameters both from NED
-and from \ttt{omnetpp.ini}.
+\begin{verbatim}
+nedtool wireless.xml
+\end{verbatim}
 
 
 
+\section{Large networks}
 
-\section{Gates}
-\label{sec:ch-ned-lang:simple-module-gates}
+There are situations when using hand-written NED files to describe
+network topology is inconvenient, for example when
+the topology information comes from
+an external source\index{topology!external source} like
+a network management program.
 
-\index{gate}
-\index{module!simple!gates}
+In such case, you have two possibilities:
 
-Gates are the connection points of modules. The starting and
-ending points of the connections between modules are gates. {\opp}
-supports simplex (one-directional) connections, so there are
-input and output gates. Messages are sent through
-output gates and received through input gates.
+\begin{enumerate}
+  \item{generating NED files from data files}
+  \item{building the network from C++ code}
+\end{enumerate}
 
-Gates are identified by their names.
-By convention, gate names begin with lower-case letters.
+The two solutions have different advantages and disadvantages.
+The first is more useful in the model development phase, while
+the second one is better for writing larger scale, more productized
+simulation programs. In the next sections we examine both methods.
 
-Gate vectors are supported: a gate vector\index{gate!vector}
-contains a number of single gates.
 
-Gates are declared by listing their names in the
-\fpar[ned!keywords!gates]{gates:} section of a module description. An
-empty bracket pair [] denotes a gate vector\index{gate!vector}.
-Elements of the vector are numbered from zero.
 
-Examples:
+\subsection{Generating NED files}
 
-\begin{Verbatim}[commandchars=\\\{\}]
-\tbf{simple} NetworkInterface
-    \tbf{parameters}: //...
-    \tbf{gates}:
-        \tbf{in}:  fromPort, fromHigherLayer;
-        \tbf{out}: toPort, toHigherLayer;
-\tbf{endsimple}
 
-\tbf{simple} RoutingUnit
-    \tbf{parameters}: //...
-    \tbf{gates}:
-        \tbf{in}:  output[];
-        \tbf{out}: input[];
-\tbf{endsimple}
-\end{Verbatim}
+Text processing programs like \fprog{awk} or \fprog{perl} are
+excellent tools to read in textual data files and generate NED files
+from them\index{ned!file generation}.  Perl also has extensions to
+access SQL databases, so it can also be used if the network topology
+is stored in a database.
 
-The sizes of gate vectors are given later, when the module is used as
-a building block of a compound module type. Thus, every instance of
-the module can have gate vectors of different sizes.
+The advantage is that the necessary \fprog{awk} or \fprog{perl}
+program can be written in a relatively short time, and it is
+inexpensive to maintain afterwards: if the structure of the data files
+change, the NED-creating program can be easily modified. The
+resulting NED files can either be translated by \fprog{nedtool}
+into C++ and compiled in, or loaded dynamically.
 
-\section{Expressions}
 
-NED expressions have a C-like syntax, with
+\subsection{Building the network from C++ code}
 
-\subsection{Defining new functions}
+Another alternative is to write C++ code which becomes part of the
+simulation executable. The code would read the topology data from data
+files or a database, and build the network directly, using
+dynamic module creation (to be described later, in section
+\ref{ch:simple-modules:dynamic-module-creation}).
+The code which you need to write would be similar to the \ttt{*\_n.cc}
+files output by \fprog{nedtool}.
+
+Since writing such code is more complex than letting perl generate
+NED files, this method is recommended when the simulation program
+has to be somewhat more productized, for example when {\opp}
+and the simulation model is embedded into a larger program, e.g.
+a network design tool.
+
+
+\section{Extending NED with new functions}
 \index{ned!functions}
 \label{sec:ch-ned-lang:defining-functions}
 
@@ -1202,539 +1338,6 @@ static double _wrap_factorial(double k)
 }
 
 Define_Function2(factorial, _wrap_factorial, 1);
-\end{verbatim}
-
-
-\section{Submodule type as parameter}
-\label{sec:ch-ned-lang:like}
-
-Sometimes it is convenient to make the name of a submodule type a parameter,
-so that one can easily `plug in' any module there.
-
-For example, assume the purpose of your simulation study is
-to compare different routing algorithms. Suppose you programmed
-the needed routing algorithms as simple modules: \ttt{DistVecRoutingNode},
-\ttt{AntNetRouting1Node}, \ttt{AntNetRouting2Node}, etc.
-You have also created the network topology as a compound module
-called \ttt{RoutingTestNetwork}, which will serve as a testbed for your routing
-algorithms. Currently, \ttt{RoutingTestNetwork} has \ttt{DistVecRoutingNode}
-hardcoded (all submodules are of this type), but you want
-to be able to switch to other routing algorithms easily.
-
-NED gives you the possibility to add a string-valued parameter,
-say \ttt{routingNodeType} to the \ttt{RoutingTestNetwork} compound module.
-Then you can tell NED that types of the submodules inside \ttt{RoutingTestNetwork}
-are not of any fixed module type, but contained in the \ttt{routingNodeType}
-parameter. That is all -- now you are free to assign any of
-the \ttt{"DistVecRoutingNode"}, \ttt{"AntNetRouting1Node"} or
-\ttt{"AntNetRouting2Node"} string constants to this parameter
-(you can do that in NED, in the config file (\ttt{omnetpp.ini}),
-or even enter it interactively),
-and your network will use the routing algorithm you chose.
-
-If you specify a wrong value, say \ttt{"FooBarRoutingNode"}
-when you have no \ttt{FooBarRoutingNode} module implemented,
-you'll get a runtime error at the beginning of the simulation:
-\textit{module type definition not found}.
-
-Inside the \ttt{RoutingTestNetwork} module you assign parameter values
-and connect the gates of the routing modules. To provide some degree
-of type safety, NED wants to make sure you didn't misspell
-parameter or gate names and you used them correctly.
-To be able to do such checks, NED requires some help from you:
-you have to name an existing module type (say \ttt{RoutingNode})
-and promise NED that all modules you're going you specify
-in the \ttt{routingNodeType} parameter will have (at least) the same
-parameters and gates as the \ttt{RoutingNode} module.
-  \footnote{If you like, the above solution somewhat similar to polymorphism
-  in object-oriented languages -- \ttt{RoutingNode} is like a
-  ``base class'', \ttt{DistVecRoutingNode} and \ttt{AntNetRouting1Node}
-  are like ``derived classes'', and the \ttt{routingNodeType} parameter
-  is like a ``pointer to a base class'' which may be downcast to specific
-  types.}
-
-All the above is achieved via the \fpar[ned!keywords!like]{like} keyword.
-The syntax is the following:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-\tbf{module} RoutingTestNetwork
-    \tbf{parameters}:
-        routingNodeType: \tbf{string}; // should hold the name
-                                  // of an existing module type
-    \tbf{gates}: //...
-    \tbf{submodules}:
-        node1: routingNodeType \tbf{like} RoutingNode;
-        node2: routingNodeType \tbf{like} RoutingNode;
-        //...
-    \tbf{connections nocheck}:
-        node1.out0 --> node2.in0;
-        //...
-\tbf{endmodule}
-\end{Verbatim}
-
-The \ttt{RoutingNode} module type does not need to be implemented in
-C++, because no instance of it is created; it is merely used
-to check the correctness of the NED file.
-
-On the other hand, the actual module types that will be substituted
-(e.g. \ttt{DistVecRoutingNode}, \ttt{AntNetRouting1Node},etc.)
-do not need to be declared in the NED files.
-
-The \fpar[ned!keywords!like]{like} phrase lets you create families
-of modules that serve similar purposes and implement the same interface
-(they have the same gates and parameters)
-and to use them interchangeably in NED files.
-
-
-\section{Parameterized compound modules}
-
-\index{module!compound}
-
-With the help of conditional parameter and gatesize blocks and
-conditional connections\index{connection!conditional}, one can
-create complex topologies.
-
-
-\subsection{Examples}
-
-\subsubsection{Example 1: Router}
-
-The following example contains a router module with the number of
-ports taken as parameter. The compound module is built using three
-module types: Application, RoutingModule, DataLink. We assume that
-their definition is in a separate NED file which we will import.
-
-\begin{Verbatim}[commandchars=\\\{\}]
-\tbf{import} "modules";
-
-\tbf{module} Router
-    \tbf{parameters}:
-        rteProcessingDelay, rteBuffersize,
-        numOfPorts: \tbf{const};
-    \tbf{gates}:
-        \tbf{in}: inputPorts[];
-        \tbf{out}: outputPorts[];
-    \tbf{submodules}:
-        localUser: Application;
-        routing: RoutingUnit
-            \tbf{parameters}:
-                processingDelay = rteProcessingDelay,
-                buffersize = rteBuffersize;
-            \tbf{gatesizes}:
-                input[numOfPorts+1],
-                output[numOfPorts+1];
-        portIf: PPPNetworkInterface[numOfPorts]
-            \tbf{parameters}:
-                retryCount = 5,
-                windowSize = 2;
-    \tbf{connections}:
-        \tbf{for} i=0..numOfPorts-1 \tbf{do}
-            routing.output[i] --> portIf[i].fromHigherLayer;
-            routing.input[i] <-- portIf[i].toHigherLayer;
-            portIf[i].toPort --> outputPorts[i];
-            portIf[i].fromPort <-- inputPorts[i];
-        \tbf{endfor};
-        routing.output[numOfPorts] --> localUser.input;
-        routing.input[numOfPorts] <-- localUser.output;
-\tbf{endmodule}
-\end{Verbatim}
-
-
-\subsubsection{Example 2: Chain}
-
-
-For example, one can create a chain\index{chain} of modules like this:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-\tbf{module} Chain
-    \tbf{parameters}: count: \tbf{const};
-    \tbf{submodules}:
-        node : Node [count]
-            \tbf{gatesizes}:
-                in[2], out[2];
-            \tbf{gatesizes} \tbf{if} index==0 || index==count-1:
-                in[1], out[1];
-    \tbf{connections}:
-        \tbf{for} i = 0..count-2 \tbf{do}
-            node[i].out[i!=0 ? 1 : 0] --> node[i+1].in[0];
-            node[i].in[i!=0 ? 1 : 0] <-- node[i+1].out[0];
-        \tbf{endfor};
-\tbf{endmodule}
-\end{Verbatim}
-
-
-\subsubsection{Example 3: Binary Tree}
-
-
-One can use conditional connections to build a binary tree\index{binary tree}.
-The following NED code loops through all possible node pairs, and
-creates the connections needed for a binary tree.
-
-\begin{Verbatim}[commandchars=\\\{\}]
-\tbf{simple} BinaryTreeNode
-    \tbf{gates}:
-        \tbf{in}: fromupper;
-        \tbf{out}: downleft;
-        \tbf{out}: downright;
-\tbf{endsimple}
-
-\tbf{module} BinaryTree
-    \tbf{parameters}:
-        height: \tbf{const};
-    \tbf{submodules}:
-        node: BinaryTreeNode [ 2^height-1 ];
-    \tbf{connections} \tbf{nocheck}:
-        \tbf{for} i = 0..2^height-2, j = 0..2^height-2 \tbf{do}
-            node[i].downleft --> node[j].fromupper \tbf{if} j==2*i+1;
-            node[i].downright --> node[j].fromupper \tbf{if} j==2*i+2;
-        \tbf{endfor};
-\tbf{endmodule}
-\end{Verbatim}
-
-Note that not every gate of the modules will be connected. By default,
-an unconnected gate produces a run-time error message when the
-simulation is started, but this error message is turned off here with
-the \fpar[ned!keywords!nocheck]{nocheck} modifier.  Consequently, it
-is the simple modules' responsibility not to send on a gate which is
-not leading anywhere.
-
-An alert reader might notice that there is a better alternative
-to the above code. Each node except the ones at the lowest level
-of the tree has to be connected to exactly two nodes,
-so we can use a single loop to create the connections.
-
-\begin{Verbatim}[commandchars=\\\{\}]
-\tbf{module} BinaryTree2
-    \tbf{parameters}:
-        height: \tbf{const};
-    \tbf{submodules}:
-        node: BinaryTreeNode [ 2^height-1 ];
-    \tbf{connections} \tbf{nocheck}:
-        \tbf{for} i=0..2^(height-1)-2 \tbf{do}
-            node[i].downleft --> node[2*i+1].fromupper;
-            node[i].downright --> node[2*i+2].fromupper;
-        \tbf{endfor};
-\tbf{endmodule}
-\end{Verbatim}
-
-
-
-\subsubsection{Example 4: Random graph}
-
-Conditional connections can also be used to generate random
-topologies\index{topology!random}.  The following code generates a
-random subgraph of a full graph:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-\tbf{module} RandomGraph
-    \tbf{parameters}:
-        count: \tbf{const},
-        connectedness; // 0.0<x<1.0
-    \tbf{submodules}:
-        node: Node [count];
-            \tbf{gatesizes}: \tbf{in}[count], \tbf{out}[count];
-    \tbf{connections} \tbf{nocheck}:
-        \tbf{for} i=0..count-1, j=0..count-1 \tbf{do}
-            node[i].out[j] --> node[j].in[i]
-                \tbf{if} i!=j && uniform(0,1)<connectedness;
-        \tbf{endfor};
-\tbf{endmodule}
-\end{Verbatim}
-
-Note the use of the \fpar[ned!keywords!nocheck]{nocheck} modifier
-here too, to turn off error messages given by the network setup code
-for unconnected gates.
-
-
-\subsection{Design patterns for compound modules}
-
-\index{module!compound!patterns}
-\index{topology!patterns}
-
-Several approaches can be used when you want to create complex
-topologies which have a regular structure; three of them are
-described below.
-
-
-\subsubsection{`Subgraph of a Full Graph'}
-
-
-This pattern takes a subset of the connections of a full graph.  A
-condition is used to ``carve out'' the necessary interconnection from
-the full graph:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-for i=0..N-1, j=0..N-1 do
-    node[i].out[...] --> node[j].in[...] if condition(i,j);
-endfor;
-\end{Verbatim}
-
-The RandomGraph compound module (presented earlier) is an example of
-this pattern, but the pattern can generate any graph where an
-appropriate \textit{condition(i,j)} can be formulated. For example,
-when generating a tree\index{topology!tree} structure, the condition
-would return whether node \textit{j} is a child of node \textit{i} or
-vica versa.
-
-Though this pattern is very general, its usage can be prohibitive if
-the \textit{N} number of nodes is high and the graph is sparse (it has
-much fewer connections that $N^2$). The following
-two patterns do not suffer from this drawback.
-
-
-\subsubsection{`Connections of Each Node'}
-
-The pattern loops through all nodes and creates the necessary
-connections for each one. It can be generalized like this:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-for i=0..Nnodes, j=0..Nconns(i)-1 do
-    node[i].out[j] --> node[rightNodeIndex(i,j)].in[j];
-endfor;
-\end{Verbatim}
-
-The Hypercube\index{topology!hypercube} compound module (to be
-presented later) is a clear example of this approach. BinaryTree can
-also be regarded as an example of this pattern where the inner j loop
-is unrolled.
-
-The applicability of this pattern depends on how easily the \textit{rightNodeIndex(i,j)}
-function can be formulated.
-
-
-\subsubsection{`Enumerate All Connections'}
-
-
-A third pattern is to list all connections within a loop:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-for i=0..Nconnections-1 do
-    node[leftNodeIndex(i)].out[...] --> node[rightNodeIndex(i)].in[...];
-endfor;
-\end{Verbatim}
-
-The pattern can be used if \textit{leftNodeIndex(i)} and \textit{rightNodeIndex(i)}
-mapping functions can be sufficiently formulated.
-
-The Serial module is an example of this approach where the mapping
-functions are extremely simple: \textit{leftNodeIndex(i)=i} and \textit{rightNodeIndex(i)=i+1}.
-The pattern can also be used to create a random subset of a full
-graph with a fixed number of connections.
-
-In the case of irregular structures where none of the above patterns
-can be employed, you can resort to specifying constant submodule/gate
-vector sizes and explicitly listing all connections, like you
-would do it in most existing simulators.
-
-
-
-
-\subsection{Topology templates}
-\label{sec:ch-ned-lang:topology-templates}
-
-
-\subsubsection{Overview}
-
-
-Topology templates are nothing more than compound modules where one or
-more submodule types are left as parameters (using the
-\fpar[ned!keywords!like]{like} phrase of the NED language).  You can
-write such modules which implement mesh\index{topology!mesh},
-hypercube\index{topology!hypercube},
-butterfly\index{topology!butterfly}, perfect
-shuffle\index{topology!perfect shuffle} or other topologies, and you
-can use them wherever needed in you simulations.  With topology
-templates\index{topology!templates}, you can reuse
-\textit{interconnection structure}.
-
-
-
-\subsubsection{An example: hypercube}
-
-
-The concept is demonstrated on a network with hypercube interconnection.
-When building an N-dimension hypercube, we can exploit the fact
-that each node is connected to N others which differ from it
-only in one bit of the binary representations of the node indices
-(see Fig. \ref{fig:ch-ned-lang:hypercube-topology}).
-
-\begin{figure}[htbp]
-  \begin{center}
-    \includegraphics[width=2.111in, height=1.285in]{figures/hypercube}
-    \caption{Hypercube topology}
-    \label{fig:ch-ned-lang:hypercube-topology}
-  \end{center}
-\end{figure}
-
-
-The hypercube topology\index{topology!hypercube} template is the
-following (it can be placed into a separate file, e.g \ttt{hypercube.ned}):
-
-
-\begin{Verbatim}[commandchars=\\\{\}]
-\tbf{simple} Node
-    \tbf{gates}:
-        \tbf{out}: out[];
-        \tbf{in}: in[];
-\tbf{endsimple}
-
-\tbf{module} Hypercube
-    \tbf{parameters}:
-        dim, nodetype;
-    \tbf{submodules}:
-        node: nodetype[2{\textasciicircum}dim] \tbf{like} Node
-        \tbf{gatesizes}:
-            out[dim], in[dim];
-    \tbf{connections}:
-        \tbf{for} i=0..2^dim-1, j=0..dim-1 \tbf{do}
-            node[i].out[j] --> node[i # 2^j].in[j]; // # is bitwise XOR
-        \tbf{endfor};
-\tbf{endmodule}
-\end{Verbatim}
-
-
-
-When you create an actual hypercube, you substitute the name
-of an existing module type (e.g. \ttt{"Hypercube\_PE"}) for the nodetype
-parameter. The module type implements the algorithm the user
-wants to simulate and it must have the same gates that the Node
-type has. The topology template code can be used through importing
-the file:
-
-
-\begin{Verbatim}[commandchars=\\\{\}]
-\tbf{import} "hypercube.ned";
-
-\tbf{simple} Hypercube_PE
-    \tbf{gates}: \tbf{out}: out[]; \tbf{in}: in[];
-\tbf{endsimple}
-
-\tbf{network} hypercube: Hypercube
-    \tbf{parameters}:
-        dim = 4,
-        nodetype = "Hypercube_PE";
-\tbf{endnetwork}
-\end{Verbatim}
-
-
-
-If you put the nodetype parameter to the ini file, you can use the
-same simulation model to test e.g. several routing algorithms in a
-hypercube, each algorithm implemented with a different
-simple module type -- you just have to supply
-different values to nodetype, such as \ttt{"WormholeRoutingNode"},
-\ttt{"DeflectionRoutingNode"}, etc.
-
-
-
-\section{Large networks}
-
-There are situations when using hand-written NED files to describe
-network topology is inconvenient, for example when
-the topology information comes from
-an external source\index{topology!external source} like
-a network management program.
-
-In such case, you have two possibilities:
-
-\begin{enumerate}
-  \item{generating NED files from data files}
-  \item{building the network from C++ code}
-\end{enumerate}
-
-The two solutions have different advantages and disadvantages.
-The first is more useful in the model development phase, while
-the second one is better for writing larger scale, more productized
-simulation programs. In the next sections we examine both methods.
-
-
-
-\subsection{Generating NED files}
-
-
-Text processing programs like \fprog{awk} or \fprog{perl} are
-excellent tools to read in textual data files and generate NED files
-from them\index{ned!file generation}.  Perl also has extensions to
-access SQL databases, so it can also be used if the network topology
-is stored in a database.
-
-The advantage is that the necessary \fprog{awk} or \fprog{perl}
-program can be written in a relatively short time, and it is
-inexpensive to maintain afterwards: if the structure of the data files
-change, the NED-creating program can be easily modified. The
-resulting NED files can either be translated by \fprog{nedtool}
-into C++ and compiled in, or loaded dynamically.
-
-
-\subsection{Building the network from C++ code}
-
-Another alternative is to write C++ code which becomes part of the
-simulation executable. The code would read the topology data from data
-files or a database, and build the network directly, using
-dynamic module creation (to be described later, in section
-\ref{ch:simple-modules:dynamic-module-creation}).
-The code which you need to write would be similar to the \ttt{*\_n.cc}
-files output by \fprog{nedtool}.
-
-Since writing such code is more complex than letting perl generate
-NED files, this method is recommended when the simulation program
-has to be somewhat more productized, for example when {\opp}
-and the simulation model is embedded into a larger program, e.g.
-a network design tool.
-
-
-\section{XML binding for NED files}
-
-To increase interoperability, NED files (and also message definition files)
-have an XML representation. Any NED file can be converted to XML, and
-any XML file which corresponds to the NED DTD can be converted to NED.
-  \footnote{DTD stands for Document Type Descriptor, and it defines
-  a "grammar" for XML files. More info can be found on the W3C web site,
-  www.w3.org.}
-
-XML is well suited for machine processing. For example, stylesheet
-transformations (XSLT) can be used to extract information from NED files,
-or the other way round, create NED files from external info present in
-XML form. One practical application of XML is the \fprog{opp\_neddoc}
-documentation generation tool which is described in Chapter \ref{cha:neddoc}.
-
-The \fprog{nedtool} program (which also translates NED to C++ code)
-can be used to convert between NED and XML.
-
-Converting a NED file to XML:
-
-\begin{verbatim}
-nedtool -x wireless.ned
-\end{verbatim}
-
-It generates \ttt{wireless\_n.xml}.
-Several switches control the exact content and details
-of the resulting XML as well as the amount of checks
-made on the input.
-
-Converting the XML representation back to NED:
-
-\begin{verbatim}
-nedtool -n wireless.xml
-\end{verbatim}
-
-The result is \ttt{wireless\_n.ned}.
-
-Using nedtool as NED compiler to generate C++ code:
-
-\begin{verbatim}
-nedtool wireless.ned
-\end{verbatim}
-
-The resulting code is more compact than the
-one created by \fprog{nedtool}'s predecessor \fprog{nedc}.
-As a result, \fprog{nedtool}-created \ttt{\_n.cc}
-C++ files compile much faster.
-
-You can generate C++ code from the XML format as well:
-
-\begin{verbatim}
-nedtool wireless.xml
 \end{verbatim}
 
 %%% Local Variables:

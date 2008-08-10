@@ -37,7 +37,6 @@ HTMCHAPTERS = $(TEXCHAPTERS:.tex=.htm)
 # must list all SVGs because nmake is broken and has no wildcard functionality
 SVGPICS = \
          figures\architecture.svg \
-         figures\build.svg \
          figures\connections.svg \
          figures\cqn-model.svg \
          figures\cqn-partitioning.svg \
@@ -56,6 +55,7 @@ SVGPICS = \
          figures\placeholders2.svg \
          figures\queue.svg \
          figures\transmission.svg \
+         figures\workflow.svg \
          figures\usmanFig13.svg \
          figures\usmanFig5.svg \
          figures\usmanFig7.svg \

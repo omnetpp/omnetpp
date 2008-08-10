@@ -1,26 +1,33 @@
 digraph g {
+        fontsize=12; size="5,5";
+
 	node [shape = "ellipse"];
-	ned [label = "NED sources"];
-	ini [label = "omnetpp.ini"];
 	cc  [label = "C++ sources"];
-	m_cc [label = "*_m.cc/.h"];
-	msg [label = "MSG sources"];
-	result [label = "Result files"];
+	m_cc [label = "*_m.cc/h files"];
+	msg [label = "MSG files"];
+	ned [label = "NED files"];
+	ini [label = "omnetpp.ini"];
+	libs [label = "Simulation kernel and\nuser interface libraries"];
 	prog [label = "Simulation program"];
+	result [label = "Result files"];
 
 	opp_msgc [shape = "rectangle", label = "opp_msgc"];
 	linking [shape = "rectangle", label = "Compiling and linking"];
 	running [shape = "rectangle", label = "Running"];
 
+        { rank=same; cc; msg; }
+
 	msg -> opp_msgc -> m_cc;
-
-	m_cc -> linking;
 	cc -> linking;
+	m_cc -> linking;
 	libs -> linking;
-
 	linking -> prog;
 	prog -> running;
 	ned -> running;
 	ini -> running;
 	running -> result;
+
+	//edge [style=invis];
+        //cc -> msg -> ned -> ini;
+
 };
