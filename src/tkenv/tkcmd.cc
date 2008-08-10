@@ -59,9 +59,9 @@ using std::string;
 // See Tk ChangeLog entry from 2003-03-06 by Donal K. Fellows
 //
 #if TK_MAJOR_VERSION>8 || (TK_MAJOR_VERSION==8 && TK_MINOR_VERSION>=5)
-#define TK85_INTERP interp,
+#define INTERP_IF_TK85 interp,
 #else
-#define TK85_INTERP
+#define INTERP_IF_TK85
 #endif
 
 // command functions
@@ -1839,7 +1839,7 @@ int resizeImage_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    // tkImgPhoto.c Tk source file...
    //
    Tk_PhotoHandle destimghandle = Tk_FindPhoto(interp, TCLCONST(destimgname));
-   Tk_PhotoPutBlock(TK85_INTERP destimghandle, &destimg, 0, 0, destimg.width, destimg.height, TK_PHOTO_COMPOSITE_SET);
+   Tk_PhotoPutBlock(INTERP_IF_TK85 destimghandle, &destimg, 0, 0, destimg.width, destimg.height, TK_PHOTO_COMPOSITE_SET);
 
    return TCL_OK;
 }

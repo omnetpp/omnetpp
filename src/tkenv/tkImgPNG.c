@@ -20,6 +20,22 @@
 #include "tcl.h"
 #include "tk.h"
 
+/*
+ * Change by Andras:
+ *
+ * Handle Tk_PhotoPutBlock signature change in Tk 8.5:
+ * "Added interp argument to these functions and made them return
+ * a standard Tcl result, with error indicating memory allocation
+ * failure instead of panic()ing."
+ * See Tk ChangeLog entry from 2003-03-06 by Donal K. Fellows
+ * --
+ */
+#if TK_MAJOR_VERSION>8 || (TK_MAJOR_VERSION==8 && TK_MINOR_VERSION>=5)
+#define INTERP_IF_TK85 interp,
+#else
+#define INTERP_IF_TK85
+#endif
+
 /* Every PNG image starts with the following 8-byte signature */
 
 static const Byte	gspPNGSignature[]	= { 137, 80, 78, 71, 13, 10, 26, 10 };
@@ -2149,7 +2165,7 @@ PNGDecode(Tcl_Interp* interp, PNGImage* pPNG, Tcl_Obj* format,
 		}
 	}
 
-	Tk_PhotoPutBlock(imageHandle, &pPNG -> mBlock, destX, destY,
+	Tk_PhotoPutBlock(INTERP_IF_TK85 imageHandle, &pPNG -> mBlock, destX, destY,
 		pPNG -> mBlock.width, pPNG -> mBlock.height, TK_PHOTO_COMPOSITE_SET);
 
 	return TCL_OK;
