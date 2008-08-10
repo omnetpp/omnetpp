@@ -39,14 +39,15 @@ and channels may add new parameters, gates, and (in the case of compound
 modules) new submodules and connections. They may set existing parameters
 to a specific value, and also set the gate size of a gate vector. This
 makes it possible, for example, to take a \ttt{GenericTCPClientApp} module
-and derive an \ttt{FTPApp} from it by setting certain parameters to a fixed
-value; or derive a \ttt{WebClientHost} compound module from a
+and derive an \ttt{FTPClientApp} from it by setting certain parameters to a fixed
+value; or to derive a \ttt{WebClientHost} compound module from a
 \ttt{BaseHost} compound module by adding a \ttt{WebClientApp} submodule and
 connecting it to the inherited \ttt{TCP} submodule.
 
-\item[Packages] To address name clashes between different models and to
-simplify specifying which NED files are needed by a specific simulation
-model, the NED language features a Java-like package structure.
+\item[Packages] The NED language features a Java-like package structure,
+to reduce the risk of name clashes between different models. \ttt{NEDPATH}
+(similar to Java's \ttt{CLASSPATH}) was also introduced to make it easier
+to specify dependencies among simulation models.
 
 \item[Inner types] Channel types and module types used locally by a
 compound module can be defined within the compound module, in order to
@@ -346,6 +347,14 @@ A network is basically a compound module.
 
 XXX channels, inner types, gate++
 
+XXX How do parameters get their value? and they can get values from NED code,
+from the configuration (ini files, see FIXME), or interactively from the user.
+It is also possible to give them a default value (see
+\ttt{default(-1)} in the example), which gets assigned to the parameter if a
+matching \ttt{apply-default=true} line is found in the configuration.
+
+XXX add example ini file here!!!
+
 XXX @isNetwork
 
 
@@ -357,20 +366,10 @@ XXX @isNetwork
 Parameters are variables that belong to a module. Simple module
 parameters can be queried and used by simple module algorithms.
 
-app:
-        int address;  // local node address
-        string destAddresses;  // destination addresses
-        volatile double sendIaTime @unit(s) = default(exponential(1s));
-                               // time between generating packets
-        volatile int packetLength @unit(byte);  // length of one packet
-        @display("i=block/browser");
+Parameters can be of type \ttt{double}, \ttt{int}, \ttt{bool}, \ttt{string}
+and \ttt{xml}; and they can be declared \ttt{volatile}.
 
-
-
-The \ttt{capacity} parameter is created with the type \ttt{int}, and
-\ttt{serviceTime} with \ttt{double}. Other NED parameter types include
-\ttt{bool}, \ttt{string} and \ttt{xml}. Parameters can be read from C++ code,
-and they can get values from NED code, from the configuration (ini files, see
+Parameters can get values from NED code, from the configuration (ini files, see
 FIXME), or interactively from the user. It is also possible to give them a default value (see
 \ttt{default(-1)} in the example), which gets assigned to the parameter if a
 matching \ttt{apply-default=true} line is found in the configuration.
@@ -494,6 +493,7 @@ to a specific XML file (or to an element inside an XML file) via the
 \ttt{xmldoc()} operator. You can assign \ttt{xml} parameters both from NED
 and from \ttt{omnetpp.ini}.
 
+XXX add a complete example!
 
 
 \section{Properties}
@@ -946,7 +946,11 @@ different values to nodetype, such as \ttt{"WormholeRoutingNode"},
 Single inheritance is supported between modules, ie. you can further
 specialize the above module:
 
-XXX
+XXX simple module inheritance
+
+XXX compound module inheritance
+
+
 
 
 \section{Interfaces, and submodule/channel type as parameter}
