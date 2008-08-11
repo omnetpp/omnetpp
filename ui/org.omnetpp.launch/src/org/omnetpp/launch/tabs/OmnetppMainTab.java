@@ -50,6 +50,7 @@ import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.ui.SizeConstraint;
+import org.omnetpp.common.ui.ToggleLink;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.model.InifileParser;
 import org.omnetpp.inifile.editor.model.ParseException;
@@ -109,10 +110,12 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
         Composite comp = SWTFactory.createComposite(parent, 1, 1, GridData.FILL_HORIZONTAL);
         createWorkingDirGroup(comp, 1);
 		createSimulationGroup(comp, 1);
-        createConfigurationGroup(comp, 1);
         createUIGroup(comp, 1);
-        createAdditionalGroup(comp, 1);
-        createOptionsGroup(comp, 1);
+
+        Composite advancedGroup = createAdvancedGroup(comp, 1);
+        ToggleLink more = new ToggleLink(comp, SWT.NONE);
+        more.setControls(new Control[] { advancedGroup });
+
         setControl(comp);
     }
 
@@ -762,7 +765,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
 
     // ********************************************************************
     // dialog UI control creation and layout
-    public void createWorkingDirGroup(Composite parent, int colSpan) {
+    public Group createWorkingDirGroup(Composite parent, int colSpan) {
         Group group = SWTFactory.createGroup(parent, "Working directory", 3, colSpan, GridData.FILL_HORIZONTAL);
         setControl(group);
         workingDirText = SWTFactory.createSingleText(group, 1);
@@ -781,19 +784,20 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
                 handleWorkingDirVariablesButtonSelected();
         	}
         });
+        return group;
     }
 
-    protected void createSimulationGroup(Composite parent, int colSpan) {
-        Composite comp = SWTFactory.createGroup(parent, "Simulation Program", 3, colSpan, GridData.FILL_HORIZONTAL);
-        GridLayout ld = (GridLayout)comp.getLayout();
+    protected Composite createSimulationGroup(Composite parent, int colSpan) {
+        Composite composite = SWTFactory.createGroup(parent, "Simulation", 4, colSpan, GridData.FILL_HORIZONTAL);
+        GridLayout ld = (GridLayout)composite.getLayout();
         ld.marginHeight = 1;
 
-		SWTFactory.createLabel(comp, "Executable:",1);
+		SWTFactory.createLabel(composite, "Executable:",1);
 
-		fProgText = SWTFactory.createSingleText(comp, 1);
+		fProgText = SWTFactory.createSingleText(composite, 2);
 		fProgText.addModifyListener(this);
 
-		Button fBrowseForBinaryButton = SWTFactory.createPushButton(comp, "Browse...", null);
+		Button fBrowseForBinaryButton = SWTFactory.createPushButton(composite, "Browse...", null);
 		fBrowseForBinaryButton.addSelectionListener(new SelectionAdapter() {
 			@Override
             public void widgetSelected(SelectionEvent evt) {
@@ -801,37 +805,13 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
 			}
 		});
 
-		SWTFactory.createLabel(comp, "Dynamic libraries:", 1);
+        SWTFactory.createLabel(composite, "Ini file(s):", 1);
 
-        fLibraryText = SWTFactory.createSingleText(comp, 1);
-        fLibraryText.setToolTipText("DLLs or shared libraries to load (without extension, relative to the working directory)");
-        fLibraryText.addModifyListener(this);
-
-        Button browseLibrariesButton = SWTFactory.createPushButton(comp, "Browse...", null);
-        browseLibrariesButton.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent evt) {
-                handleBrowseLibrariesButtonSelected();
-            }
-        });
-
-        SWTFactory.createLabel(comp, "NED Source Path:", 1);
-        fNedPathText = SWTFactory.createSingleText(comp, 2);
-        fNedPathText.setToolTipText("Specify the directories where NED files are read from (relative to the first selected INI file). " +
-        		"If left empty, calculates the path automatically from the project settings.");
-        fNedPathText.addModifyListener(this);
-    }
-
-    protected void createConfigurationGroup(Composite parent, int colSpan) {
-		Composite comp = SWTFactory.createGroup(parent, "Configuration", 4, colSpan, GridData.FILL_HORIZONTAL);
-
-        SWTFactory.createLabel(comp, "Initialization file(s):", 1);
-
-        fInifileText = SWTFactory.createSingleText(comp, 2);
+        fInifileText = SWTFactory.createSingleText(composite, 2);
         fInifileText.setToolTipText("The INI file(s) defining parameters and configuration blocks (default: omnetpp.ini, relative to the working directory)");
         fInifileText.addModifyListener(this);
 
-        Button browseInifileButton = SWTFactory.createPushButton(comp, "Browse...", null);
+        Button browseInifileButton = SWTFactory.createPushButton(composite, "Browse...", null);
         browseInifileButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent evt) {
@@ -839,17 +819,17 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
             }
         });
 
-        SWTFactory.createLabel(comp, "Configuration name:",1);
+        SWTFactory.createLabel(composite, "Config name:",1);
 
-        fConfigCombo = SWTFactory.createCombo(comp, SWT.BORDER | SWT.READ_ONLY, 3, new String[] {});
-		fConfigCombo.setToolTipText("The configuration from the INI file that should be executed");
-		fConfigCombo.setVisibleItemCount(10);
-		fConfigCombo.addModifyListener(this);
+        fConfigCombo = SWTFactory.createCombo(composite, SWT.BORDER | SWT.READ_ONLY, 3, new String[] {});
+        fConfigCombo.setToolTipText("The configuration from the INI file that should be executed");
+        fConfigCombo.setVisibleItemCount(10);
+        fConfigCombo.addModifyListener(this);
 
-		SWTFactory.createLabel(comp, "Run number:",1);
+        SWTFactory.createLabel(composite, "Run number:",1);
 
-		int runSPan = debugLaunchMode ? 3 : 1;
-        fRunText = SWTFactory.createSingleText(comp, runSPan);
+        int runSpan = debugLaunchMode ? 3 : 1;
+        fRunText = SWTFactory.createSingleText(composite, runSpan);
         fRunText.addModifyListener(this);
         HoverSupport hover = new HoverSupport();
         hover.adapt(fRunText, new IHoverTextProvider() {
@@ -863,14 +843,57 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
 
         // parallel execution is not possible under CDT
         if (!debugLaunchMode) {
-            SWTFactory.createLabel(comp, "Processes to run in parallel:", 1);
-            fParallelismSpinner = new Spinner(comp, SWT.BORDER);
+            SWTFactory.createLabel(composite, "Processes to run in parallel:", 1);
+            fParallelismSpinner = new Spinner(composite, SWT.BORDER);
             fParallelismSpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
             fParallelismSpinner.setMinimum(1);
             fParallelismSpinner.addModifyListener(this);
         }
+        
+        return composite;
     }
 
+    protected Composite createAdvancedGroup(Composite parent, int colSpan) {
+        Composite composite = SWTFactory.createGroup(parent, "Advanced", 3, colSpan, GridData.FILL_HORIZONTAL);
+        GridLayout ld = (GridLayout)composite.getLayout();
+        ld.marginHeight = 1;
+
+        SWTFactory.createLabel(composite, "Dynamic libraries:", 1);
+
+        fLibraryText = SWTFactory.createSingleText(composite, 1);
+        fLibraryText.setToolTipText("DLLs or shared libraries to load (without extension, relative to the working directory)");
+        fLibraryText.addModifyListener(this);
+
+        Button browseLibrariesButton = SWTFactory.createPushButton(composite, "Browse...", null);
+        browseLibrariesButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent evt) {
+                handleBrowseLibrariesButtonSelected();
+            }
+        });
+
+        SWTFactory.createLabel(composite, "NED Source Path:", 1);
+        fNedPathText = SWTFactory.createSingleText(composite, 2);
+        fNedPathText.setToolTipText("Directories where NED files are read from (relative to the first selected INI file). " +
+                "Leave empty for automatic setting.");
+        fNedPathText.addModifyListener(this);
+
+        SWTFactory.createLabel(composite, "Additional arguments:", 1);
+        fAdditionalText = SWTFactory.createSingleText(composite, 2);
+        fAdditionalText.setToolTipText("Specify additional command line arguments");
+        fAdditionalText.addModifyListener(this);
+
+        fShowDebugViewButton = SWTFactory.createCheckButton(composite, "Show Debug View on Launch", null, false, 3);
+        fShowDebugViewButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent evt) {
+                updateLaunchConfigurationDialog();
+            }
+        });
+
+        return composite;
+    }
+    
     protected void createUIGroup(Composite parent, int colSpan) {
     	SelectionAdapter selectionAdapter = new SelectionAdapter() {
     		@Override
@@ -903,31 +926,5 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
         fOtherEnvText = SWTFactory.createSingleText(comp, 1);
         fOtherEnvText.setToolTipText("Specify the custom environment name");
         fOtherEnvText.addModifyListener(this);
-    }
-
-    protected void createAdditionalGroup(Composite parent, int colSpan) {
-        Composite comp = SWTFactory.createComposite(parent, 2, colSpan, GridData.FILL_HORIZONTAL);
-        GridLayout ld = (GridLayout)comp.getLayout();
-        ld.marginHeight = 1;
-
-        SWTFactory.createLabel(comp, "Additional arguments:", 1);
-        fAdditionalText = SWTFactory.createSingleText(comp, 1);
-        fAdditionalText.setToolTipText("Specify additional command line arguments");
-        fAdditionalText.addModifyListener(this);
-    }
-
-    protected void createOptionsGroup(Composite parent, int colSpan) {
-        Composite mainComp =  SWTFactory.createComposite(parent, 3,colSpan,GridData.FILL_HORIZONTAL);
-        GridLayout ld = (GridLayout)mainComp.getLayout();
-        ld.marginHeight = 1;
-
-        fShowDebugViewButton = SWTFactory.createCheckButton(mainComp, "Show Debug View on Launch", null, false, 3);
-        // FIXME do we need it ????
-        fShowDebugViewButton.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent evt) {
-                updateLaunchConfigurationDialog();
-            }
-        });
     }
 }
