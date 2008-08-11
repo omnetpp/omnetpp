@@ -7,8 +7,11 @@ import org.eclipse.core.runtime.Platform;
 
 
 /**
- * Based on MingwEnvironmentVariableSupplier from CDT 5.0.
- * Note: we cannot extend CDT's class because it is not exported from the plugin.
+ * We use the same toolchain for gcc on all platforms, so we need a combined
+ * environment variable supplier that works on all platforms. As of CDT 5.0,
+ * CDT contains a MingwEnvironmentVariableSupplier but no supplier for other platforms
+ * (except Cygwin which we don't support). So here we invoke the MinGW one if platform 
+ * is win32, and do nothing in other cases.
  * 
  * @author Andras
  */
