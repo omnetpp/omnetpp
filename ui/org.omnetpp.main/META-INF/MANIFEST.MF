@@ -14,7 +14,21 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.variables,
  org.eclipse.ui.navigator
 Eclipse-LazyStart: true
-Export-Package: org.omnetpp.ide,
- org.omnetpp.ide.preferences,
- org.omnetpp.ide.properties,
- org.omnetpp.ide.wizard
+Export-Package: org.omnetpp.ide;
+  uses:="org.eclipse.jface.action,
+   org.eclipse.ui,
+   org.eclipse.core.resources,
+   org.eclipse.jface.viewers,
+   org.eclipse.ui.plugin,
+   org.osgi.framework,
+   org.eclipse.core.commands",
+ org.omnetpp.ide.preferences;uses:="org.eclipse.jface.preference,org.eclipse.ui,org.eclipse.core.runtime.preferences",
+ org.omnetpp.ide.properties;uses:="org.eclipse.ui.dialogs,org.eclipse.swt.widgets",
+ org.omnetpp.ide.variables;uses:="org.eclipse.core.variables",
+ org.omnetpp.ide.views;uses:="org.eclipse.ui.part,org.eclipse.swt.widgets,org.eclipse.swt.browser",
+ org.omnetpp.ide.wizard;
+  uses:="org.eclipse.jface.wizard,
+   org.eclipse.ui,
+   org.eclipse.core.resources,
+   org.eclipse.jface.viewers,
+   org.eclipse.ui.dialogs"
