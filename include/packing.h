@@ -105,7 +105,7 @@ template<typename T, typename A>
 void doPacking(cCommBuffer *buffer, /*const*/ std::list<T,A>& l)
 {
     doPacking(buffer, (int)l.size());
-    for (std::list<T,A>::const_iterator it = l.begin(); it != l.end(); it++)
+    for (typename std::list<T,A>::const_iterator it = l.begin(); it != l.end(); it++)
         doPacking(buffer, *it);
 }
 
@@ -127,7 +127,7 @@ template<typename T, typename Tr, typename A>
 void doPacking(cCommBuffer *buffer, /*const*/ std::set<T,Tr,A>& s)
 {
     doPacking(buffer, (int)s.size());
-    for (std::set<T,Tr,A>::const_iterator it = s.begin(); it != s.end(); it++)
+    for (typename std::set<T,Tr,A>::const_iterator it = s.begin(); it != s.end(); it++)
         doPacking(buffer, *it);
 }
 
@@ -150,7 +150,7 @@ template<typename K, typename V, typename Tr, typename A>
 void doPacking(cCommBuffer *buffer, /*const*/ std::map<K,V,Tr,A>& m)
 {
     doPacking(buffer, (int)m.size());
-    for (std::map<K,V,Tr,A>::const_iterator it = m.begin(); it != m.end(); it++) {
+    for (typename std::map<K,V,Tr,A>::const_iterator it = m.begin(); it != m.end(); it++) {
         doPacking(buffer, it->first);
         doPacking(buffer, it->second);
     }
