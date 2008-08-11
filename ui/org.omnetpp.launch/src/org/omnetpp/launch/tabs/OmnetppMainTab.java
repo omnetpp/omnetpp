@@ -110,7 +110,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
         Composite comp = SWTFactory.createComposite(parent, 1, 1, GridData.FILL_HORIZONTAL);
         createWorkingDirGroup(comp, 1);
 		createSimulationGroup(comp, 1);
-        createUIGroup(comp, 1);
+        //createUIRadioButtons(comp, 1);
 
         Composite advancedGroup = createAdvancedGroup(comp, 1);
         ToggleLink more = new ToggleLink(comp, SWT.NONE);
@@ -849,6 +849,8 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
             fParallelismSpinner.setMinimum(1);
             fParallelismSpinner.addModifyListener(this);
         }
+       
+        createUIRadioButtons(composite, 3);
         
         return composite;
     }
@@ -894,7 +896,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
         return composite;
     }
     
-    protected void createUIGroup(Composite parent, int colSpan) {
+    protected void createUIRadioButtons(Composite parent, int colSpan) {
     	SelectionAdapter selectionAdapter = new SelectionAdapter() {
     		@Override
     		public void widgetSelected(SelectionEvent e) {
@@ -903,6 +905,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
     	};
 
         Composite comp = SWTFactory.createComposite(parent, 6, colSpan, GridData.FILL_HORIZONTAL);
+        ((GridLayout)comp.getLayout()).marginWidth = 0;
 
         SWTFactory.createLabel(comp, "User interface:", 1);
 
