@@ -66,7 +66,7 @@ import org.omnetpp.launch.LaunchPlugin;
  *
  * @author rhornig
  */
-public class OmnetppMainTab extends AbstractLaunchConfigurationTab
+public class OmnetppMainTab extends AbstractLaunchConfigurationTab 
     implements ModifyListener {
 
 	// UI widgets
@@ -87,12 +87,16 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
     protected Text fNedPathText;
     protected Spinner fParallelismSpinner;
     protected Button fDefaultEnvButton;
-    protected Button fCmdEnvButton;
-    protected Button fTkEnvButton;
+    protected Button fCmdenvButton;
+    protected Button fTkenvButton;
     protected Button fOtherEnvButton;
     protected Text fOtherEnvText;
     protected Text fLibraryText;
     protected Text fAdditionalText;
+
+    protected Button fEventLogDefaultButton;
+    protected Button fEventLogYesButton;
+    protected Button fEventLogNoButton;
 
 	private ILaunchConfiguration config;
 	private boolean updateDialogStateInProgress = false;
@@ -110,7 +114,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
         Composite comp = SWTFactory.createComposite(parent, 1, 1, GridData.FILL_HORIZONTAL);
         createWorkingDirGroup(comp, 1);
 		createSimulationGroup(comp, 1);
-        //createUIRadioButtons(comp, 1);
+		createOptionsGroup(comp, 1);
 
         Composite advancedGroup = createAdvancedGroup(comp, 1);
         ToggleLink more = new ToggleLink(comp, SWT.NONE);
@@ -118,9 +122,6 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
 
         setControl(comp);
     }
-
-    // dynamic behavior
-    private enum ArgType {INI, CONFIG, RUN, UI, LIB, NEDPATH, UNKNOWN};
 
     public void initializeFrom(ILaunchConfiguration config) {
     	this.config = config;
@@ -135,101 +136,80 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
             fShowDebugViewButton.setSelection(config.getAttribute(IOmnetppLaunchConstants.ATTR_SHOWDEBUGVIEW, false));
 
             // simulation parameters block init
-            ArgType nextType = ArgType.UNKNOWN;
+            // FIXME breaks if there are quoted strings with spaces
             String args[] = StringUtils.split(config.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS, ""));
             String restArgs = "";        // the rest of the arguments we cannot recognize
-            String iniArgs = "", libArgs = "", configArg="", runArg="", uiArg ="", nedPathArg ="";
+            String iniArgs = "", libArgs = "", configArg="", uiArg ="", nedPathArg ="", recordEventlogArg = "";
             for (int i=0; i<args.length; ++i) {
-                switch (nextType) {
-                    case INI:
-                        iniArgs += args[i]+" ";
-                        nextType = ArgType.UNKNOWN;
-                        continue;
-                    case LIB:
-                        libArgs += args[i]+" ";
-                        nextType = ArgType.UNKNOWN;
-                        continue;
-                    case CONFIG:
-                        configArg = args[i];
-                        nextType = ArgType.UNKNOWN;
-                        continue;
-                    case RUN:
-                        runArg = args[i];
-                        nextType = ArgType.UNKNOWN;
-                        continue;
-                    case UI:
-                        uiArg = args[i];
-                        nextType = ArgType.UNKNOWN;
-                        continue;
-                    case NEDPATH:
-                        nedPathArg = args[i];
-                        nextType = ArgType.UNKNOWN;
-                        continue;
-                }
-
                 if ("-f".equals(args[i]))
-                    nextType = ArgType.INI;
+                    iniArgs += tolerantGet(args,++i) + " ";
                 else if ("-c".equals(args[i]))
-                    nextType = ArgType.CONFIG;
+                    configArg = tolerantGet(args,++i);
                 else if ("-r".equals(args[i]))
-                    nextType = ArgType.RUN;
+                    ; // not handled
                 else if ("-u".equals(args[i]))
-                    nextType = ArgType.UI;
+                    uiArg = tolerantGet(args,++i);
                 else if ("-l".equals(args[i]))
-                    nextType = ArgType.LIB;
+                    libArgs += tolerantGet(args,++i) + " ";
                 else if ("-n".equals(args[i]))
-                    nextType = ArgType.NEDPATH;
-                else {
-                    nextType = ArgType.UNKNOWN;
-                    restArgs += args[i]+" ";
-                }
+                    nedPathArg = tolerantGet(args,++i);
+                else if ("--record-eventlog".equals(args[i]))
+                    recordEventlogArg = tolerantGet(args,++i);
+                else if (args[i].equals("--"))
+                    ; //TODO we should handle this as "end-of-options"
+                else if (args[i].startsWith("--"))
+                    restArgs += args[i] + " " + tolerantGet(args,++i) + " ";  // with envir, double-dash options expect an argument
+                else if (args[i].startsWith("-"))
+                    restArgs += args[i] + " ";   // assume that unknown single-dash options have arg
+                else
+                    iniArgs += args[i] + " "; // plain args are inifiles as well
             }
 
             // set the controls
             fInifileText.setText(iniArgs.trim());
             fLibraryText.setText(libArgs.trim());
             fAdditionalText.setText(restArgs.trim());
+            
             // if the ned source path is the default, erase it (meaning it is default)
             if (nedPathArg.trim().equals(getDefaultNedSourcePath()))
             	nedPathArg = "";
             fNedPathText.setText(nedPathArg.trim());
-            fOtherEnvText.setText("");
-            fDefaultEnvButton.setSelection(false);
-            fCmdEnvButton.setSelection(false);
-            fTkEnvButton.setSelection(false);
-            fOtherEnvButton.setSelection(false);
-            if ("".equals(uiArg)) {
-                fDefaultEnvButton.setSelection(true);
-            }
-            else {
-                fDefaultEnvButton.setSelection(false);
-                if ("Cmdenv".equals(uiArg))
-                    fCmdEnvButton.setSelection(true);
-                else if ("Tkenv".equals(uiArg))
-                    fTkEnvButton.setSelection(true);
-                else {
-                    fOtherEnvButton.setSelection(true);
-                    fOtherEnvText.setText(uiArg.trim());
-                }
-            }
-            fOtherEnvText.setEnabled(fOtherEnvButton.getSelection());
-            updateDialogState();
+
+            // update UI radio buttons
+            fDefaultEnvButton.setSelection("".equals(uiArg));
+            fCmdenvButton.setSelection("Cmdenv".equals(uiArg));
+            fTkenvButton.setSelection("Tkenv".equals(uiArg));
+            boolean isOther = !fDefaultEnvButton.getSelection() && !fCmdenvButton.getSelection() && !fTkenvButton.getSelection();
+            fOtherEnvButton.setSelection(isOther);
+            fOtherEnvText.setText(isOther ? uiArg.trim() : "");
+            
+            // update eventlog radio buttons  (anything that's not "false" will count as "true")
+            fEventLogDefaultButton.setSelection(recordEventlogArg.equals(""));
+            fEventLogNoButton.setSelection(recordEventlogArg.equals("false"));
+            fEventLogYesButton.setSelection(!fEventLogDefaultButton.getSelection() && !fEventLogNoButton.getSelection());
+            
             setConfigName(configArg.trim());
 
-            if (debugLaunchMode) {
+            if (debugLaunchMode)
                 fRunText.setText(config.getAttribute(IOmnetppLaunchConstants.ATTR_RUN_FOR_DEBUG, ""));
-			} else
+			else
                 fRunText.setText(config.getAttribute(IOmnetppLaunchConstants.ATTR_RUN, ""));
 
             if (fParallelismSpinner != null)
                 fParallelismSpinner.setSelection(config.getAttribute(IOmnetppLaunchConstants.ATTR_NUM_CONCURRENT_PROCESSES, 1));
+
+            // bring dialog to consistent state
+            updateDialogState();
 
         } catch (CoreException ce) {
             LaunchPlugin.logError(ce);
         }
 	}
 
-
+    private String tolerantGet(String[] array, int index) {
+        return index==array.length ? "?" : array[index];  // forgive over-indexing by one
+    }
+    
     /**
      * Fills the config combo with the config section values from the inifiles
      */
@@ -237,7 +217,8 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
     	if (updateDialogStateInProgress)
     		return;
     	updateDialogStateInProgress = true;
-    	// update the confog combo
+    	
+    	// update the config combo
         IFile[] inifiles = getIniFiles();
         if (config == null || inifiles == null)
             fConfigCombo.setItems(new String[] {});
@@ -256,8 +237,8 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
         fOtherEnvText.setEnabled(fOtherEnvButton.getSelection());
 
         if (fParallelismSpinner != null) {
-        	fParallelismSpinner.setEnabled(fCmdEnvButton.getSelection());
-        	if (!fCmdEnvButton.getSelection())
+        	fParallelismSpinner.setEnabled(fCmdenvButton.getSelection());
+        	if (!fCmdenvButton.getSelection())
         		fParallelismSpinner.setSelection(1);
         }
 
@@ -451,14 +432,21 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
         if (fParallelismSpinner != null)
             configuration.setAttribute(IOmnetppLaunchConstants.ATTR_NUM_CONCURRENT_PROCESSES, fParallelismSpinner.getSelection());
 
-        if (fCmdEnvButton.getSelection())
+        if (fCmdenvButton.getSelection())
             arg += "-u Cmdenv ";
-        if (fTkEnvButton.getSelection())
+        if (fTkenvButton.getSelection())
             arg += "-u Tkenv ";
         if (fOtherEnvButton.getSelection())
-            arg += "-u "+fOtherEnvText.getText()+" ";
+            arg += "-u " + fOtherEnvText.getText() + " ";
+        
+        if (fEventLogYesButton.getSelection())
+            arg += "--record-eventlog true ";
+        if (fEventLogNoButton.getSelection())
+            arg += "--record-eventlog false ";
+        
         arg += fAdditionalText.getText();
         configuration.setAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS, arg);
+        
         // clear the run info text, so next time it will be re-requested
         infoText = null;
     }
@@ -605,7 +593,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
             setErrorMessage("Environment type must be specified");
             return false;
         }
-        if (!fCmdEnvButton.getSelection() && !fOtherEnvButton.getSelection()
+        if (!fCmdenvButton.getSelection() && !fOtherEnvButton.getSelection()
                 && runs!=null && runs.length>1) {
             setErrorMessage("Multiple runs are only supported for the Command line environment");
             return false;
@@ -849,12 +837,20 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
             fParallelismSpinner.setMinimum(1);
             fParallelismSpinner.addModifyListener(this);
         }
-       
-        createUIRadioButtons(composite, 3);
         
         return composite;
     }
 
+    protected Composite createOptionsGroup(Composite parent, int colSpan) {
+        Composite composite = SWTFactory.createGroup(parent, "Options", 2, colSpan, GridData.FILL_HORIZONTAL);
+        GridLayout ld = (GridLayout)composite.getLayout();
+        ld.marginHeight = 1;
+
+        createUIRadioButtons(composite, 2);
+        createRecordEventlogRadioButtons(composite, 2);
+        return composite;
+    }
+    
     protected Composite createAdvancedGroup(Composite parent, int colSpan) {
         Composite composite = SWTFactory.createGroup(parent, "Advanced", 3, colSpan, GridData.FILL_HORIZONTAL);
         GridLayout ld = (GridLayout)composite.getLayout();
@@ -906,6 +902,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
 
         Composite comp = SWTFactory.createComposite(parent, 6, colSpan, GridData.FILL_HORIZONTAL);
         ((GridLayout)comp.getLayout()).marginWidth = 0;
+        ((GridLayout)comp.getLayout()).marginHeight = 0;
 
         SWTFactory.createLabel(comp, "User interface:", 1);
 
@@ -914,13 +911,13 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
         fDefaultEnvButton.setSelection(true);
         fDefaultEnvButton.addSelectionListener(selectionAdapter);
 
-        fCmdEnvButton = SWTFactory.createRadioButton(comp, "Command line");
-        fCmdEnvButton.setLayoutData(new GridData());
-        fCmdEnvButton.addSelectionListener(selectionAdapter);
+        fCmdenvButton = SWTFactory.createRadioButton(comp, "Command line");
+        fCmdenvButton.setLayoutData(new GridData());
+        fCmdenvButton.addSelectionListener(selectionAdapter);
 
-        fTkEnvButton = SWTFactory.createRadioButton(comp, "Tcl/Tk");
-        fTkEnvButton.setLayoutData(new GridData());
-        fTkEnvButton.addSelectionListener(selectionAdapter);
+        fTkenvButton = SWTFactory.createRadioButton(comp, "Tcl/Tk");
+        fTkenvButton.setLayoutData(new GridData());
+        fTkenvButton.addSelectionListener(selectionAdapter);
 
         fOtherEnvButton = SWTFactory.createRadioButton(comp, "Other:");
         fOtherEnvButton.setLayoutData(new GridData());
@@ -930,4 +927,33 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
         fOtherEnvText.setToolTipText("Specify the custom environment name");
         fOtherEnvText.addModifyListener(this);
     }
+
+    protected void createRecordEventlogRadioButtons(Composite parent, int colSpan) {
+        SelectionAdapter selectionAdapter = new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                updateDialogState();
+            }
+        };
+
+        Composite comp = SWTFactory.createComposite(parent, 6, colSpan, GridData.FILL_HORIZONTAL);
+        ((GridLayout)comp.getLayout()).marginWidth = 0;
+        ((GridLayout)comp.getLayout()).marginHeight = 0;
+
+        SWTFactory.createLabel(comp, "Record Eventlog:", 1);
+
+        fEventLogDefaultButton = SWTFactory.createRadioButton(comp, "Default");
+        fEventLogDefaultButton.setLayoutData(new GridData());
+        fEventLogDefaultButton.setSelection(true);
+        fEventLogDefaultButton.addSelectionListener(selectionAdapter);
+
+        fEventLogYesButton = SWTFactory.createRadioButton(comp, "Yes");
+        fEventLogYesButton.setLayoutData(new GridData());
+        fEventLogYesButton.addSelectionListener(selectionAdapter);
+
+        fEventLogNoButton = SWTFactory.createRadioButton(comp, "No");
+        fEventLogNoButton.setLayoutData(new GridData());
+        fEventLogNoButton.addSelectionListener(selectionAdapter);
+    }
+
 }
