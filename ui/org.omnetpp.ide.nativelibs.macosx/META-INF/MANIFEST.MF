@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: OMNeT++ MacOS X native library fragment
-Bundle-SymbolicName: org.omnetpp.ide.nativelibs.macosx
+Bundle-SymbolicName: org.omnetpp.ide.nativelibs.macosx;singleton:=true
 Bundle-Version: 4.0.0.qualifier
 Bundle-Vendor: OpenSim Ltd.
 Fragment-Host: org.omnetpp.ide.nativelibs;bundle-version="[4.0.0,5.0.0)"
