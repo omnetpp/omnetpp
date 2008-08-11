@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: OMNeT++ Native library plug-in
-Bundle-SymbolicName: org.omnetpp.ide.nativelibs;singleton:=true
+Bundle-SymbolicName: org.omnetpp.ide.nativelibs
 Bundle-Version: 4.0.0.qualifier
 Bundle-Vendor: OpenSim Ltd.
 Require-Bundle: org.eclipse.core.runtime

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.4"?>
 
-<product name="OMNeT++ IDE - Academic Edition, not for commercial use." id="org.omnetpp.main.product" application="org.eclipse.ui.ide.workbench" version="4.0.0.qualifier" useFeatures="true">
+<product name="OMNeT++ IDE - not for commercial use." id="org.omnetpp.main.product" application="org.eclipse.ui.ide.workbench" version="4.0.0.qualifier" useFeatures="true">
 
    <aboutInfo>
       <image path="/org.omnetpp.main/icons/omnest128.gif"/>
@@ -39,7 +39,6 @@
          <bmp/>
       </win>
    </launcher>
-
 
    <vm>
    </vm>

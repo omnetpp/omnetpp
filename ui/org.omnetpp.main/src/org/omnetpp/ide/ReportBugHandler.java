@@ -1,19 +1,22 @@
 package org.omnetpp.ide;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.handlers.HandlerUtil;
+import org.eclipse.ui.internal.browser.WebBrowserEditor;
+import org.eclipse.ui.internal.browser.WebBrowserEditorInput;
 import org.omnetpp.common.CommonPlugin;
-import org.omnetpp.common.IConstants;
-import org.omnetpp.ide.views.NewsView;
 
 /**
  * 
  */
+@SuppressWarnings("restriction")
 public class ReportBugHandler extends AbstractHandler {
 	private static final String BUGTRACKER_URL = "http://bugs.omnetpp.org";
 
@@ -26,11 +29,9 @@ public class ReportBugHandler extends AbstractHandler {
 			IWorkbenchWindow activeWorkbenchWindow = HandlerUtil.getActiveWorkbenchWindowChecked(event);
 			IWorkbenchPage workbenchPage = activeWorkbenchWindow == null ? null : activeWorkbenchWindow.getActivePage();
 			if (workbenchPage != null) {
-				NewsView newsView = (NewsView)workbenchPage.showView(IConstants.NEWS_VIEW_ID);
-				newsView.setURL(BUGTRACKER_URL);
+				WebBrowserEditor.open(new WebBrowserEditorInput(new URL(BUGTRACKER_URL)));
 			}
-		} 
-		catch (PartInitException e) {
+		} catch (MalformedURLException e) {
 			CommonPlugin.logError(e);
 		}
 		

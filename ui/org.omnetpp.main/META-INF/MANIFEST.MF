@@ -12,7 +12,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.expressions,
  org.omnetpp.common,
  org.eclipse.core.variables,
- org.eclipse.ui.navigator
+ org.eclipse.ui.navigator,
+ org.eclipse.ui.browser
 Eclipse-LazyStart: true
 Export-Package: org.omnetpp.ide;
   uses:="org.eclipse.jface.action,
