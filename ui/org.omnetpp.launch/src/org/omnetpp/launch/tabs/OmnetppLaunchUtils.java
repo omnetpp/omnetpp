@@ -146,7 +146,7 @@ public class OmnetppLaunchUtils {
      * Checks whether the resource is an executable file.
      */
     public static boolean isExecutable(IResource file) {
-        if (file == null || file.getResourceAttributes() == null)
+        if (!(file instanceof IFile) || file.getResourceAttributes() == null)
             return false;
         return file.getResourceAttributes().isExecutable() ||
                 StringUtils.containsIgnoreCase("exe.cmd.bat",file.getFileExtension()) && SWT.getPlatform().equals("win32");

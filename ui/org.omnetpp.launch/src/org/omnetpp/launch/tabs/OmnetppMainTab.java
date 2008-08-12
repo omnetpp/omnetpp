@@ -191,9 +191,9 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
             setConfigName(configArg.trim());
 
             if (debugLaunchMode)
-                fRunText.setText(config.getAttribute(IOmnetppLaunchConstants.ATTR_RUN_FOR_DEBUG, ""));
+                fRunText.setText(config.getAttribute(IOmnetppLaunchConstants.ATTR_RUNNUMBER_FOR_DEBUG, ""));
 			else
-                fRunText.setText(config.getAttribute(IOmnetppLaunchConstants.ATTR_RUN, ""));
+                fRunText.setText(config.getAttribute(IOmnetppLaunchConstants.ATTR_RUNNUMBER, ""));
 
             if (fParallelismSpinner != null)
                 fParallelismSpinner.setSelection(config.getAttribute(IOmnetppLaunchConstants.ATTR_NUM_CONCURRENT_PROCESSES, 1));
@@ -402,6 +402,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
 		configuration.setAttribute(IOmnetppLaunchConstants.ATTR_PROJECT_NAME, progPath.segment(0));
 		configuration.setAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, progPath.removeFirstSegments(1).toString());
         configuration.setAttribute(IOmnetppLaunchConstants.ATTR_SHOWDEBUGVIEW, fShowDebugViewButton.getSelection());
+        configuration.setMappedResources(getIniFiles());
 
         // simulation block parameters
         String arg = "";
@@ -424,10 +425,10 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
         if (debugLaunchMode) {
             if (StringUtils.isNotBlank(fRunText.getText()))
                 arg += "-r "+strippedRun+" ";
-        	configuration.setAttribute(IOmnetppLaunchConstants.ATTR_RUN_FOR_DEBUG, strippedRun);
+        	configuration.setAttribute(IOmnetppLaunchConstants.ATTR_RUNNUMBER_FOR_DEBUG, strippedRun);
         }
         else
-        	configuration.setAttribute(IOmnetppLaunchConstants.ATTR_RUN, strippedRun);
+        	configuration.setAttribute(IOmnetppLaunchConstants.ATTR_RUNNUMBER, strippedRun);
 
         if (fParallelismSpinner != null)
             configuration.setAttribute(IOmnetppLaunchConstants.ATTR_NUM_CONCURRENT_PROCESSES, fParallelismSpinner.getSelection());

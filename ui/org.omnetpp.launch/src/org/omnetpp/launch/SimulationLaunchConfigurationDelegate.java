@@ -34,7 +34,7 @@ public class SimulationLaunchConfigurationDelegate extends LaunchConfigurationDe
         }
         monitor.beginTask("Launching Simulation", 1);
 
-        Integer runs[] = LaunchPlugin.parseRuns(configuration.getAttribute(IOmnetppLaunchConstants.ATTR_RUN, ""),
+        Integer runs[] = LaunchPlugin.parseRuns(configuration.getAttribute(IOmnetppLaunchConstants.ATTR_RUNNUMBER, ""),
                                                 LaunchPlugin.getMaxNumberOfRuns(configuration));
         if (runs == null)
             throw new CoreException(new Status(IStatus.ERROR, LaunchPlugin.PLUGIN_ID, "Invalid run numbers specified"));

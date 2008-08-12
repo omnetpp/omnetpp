@@ -7,8 +7,8 @@
 	 point="org.eclipse.core.runtime.products">
       <product
             application="org.eclipse.ui.ide.workbench"
-            name="OMNeT++ IDE - not for commercial use.">
-          <property name="appName" value="OMNeT++ IDE - not for commercial use."/>
+            name="OMNeT++ IDE - Academic Edition">
+          <property name="appName" value="OMNeT++ IDE - Academic Edition"/>
           <property name="preferenceCustomization" value="plugin_customization.ini"/>
          <property
           		name="introTitle"

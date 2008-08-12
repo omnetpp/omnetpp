@@ -6,6 +6,7 @@ package org.omnetpp.launch;
  * @author rhornig
  */
 public interface IOmnetppLaunchConstants {
+	public static final String SIMULATION_LAUNCH_CONFIGURATION_TYPE = "org.omnetpp.launch.simulationLaunchConfigurationType";
     public static final String CDT_LAUNCH_ID = "org.eclipse.cdt.launch"; 
     public static final String OMNETPP_LAUNCH_ID = "org.omnetpp.launch"; 
 
@@ -32,12 +33,12 @@ public interface IOmnetppLaunchConstants {
      * Launch configuration attribute key. The value specifies the run command line parameter is
      * a standalone launcher was used.
      */
-    public static final String ATTR_RUN = OMNETPP_LAUNCH_ID + ".RUN"; 
+    public static final String ATTR_RUNNUMBER = OMNETPP_LAUNCH_ID + ".RUN"; 
 
     /**
      * Attribute used to store the run number when debugging is used.
      */
-    public static final String ATTR_RUN_FOR_DEBUG = OMNETPP_LAUNCH_ID + ".RUN.FOR_DEBUG"; 
+    public static final String ATTR_RUNNUMBER_FOR_DEBUG = OMNETPP_LAUNCH_ID + ".RUN.FOR_DEBUG"; 
     
     /**
      * Launch configuration attribute key. The value is a string specifying a
