@@ -93,9 +93,11 @@ public class NewInifileWizardPage1 extends WizardNewFileCreationPage {
                     List<String> networkNames = new ArrayList<String>(); 
                     List<String> networkQNames = new ArrayList<String>(); 
                     String iniFilePackage = nedResources.getExpectedPackageFor(container.getFile(new Path("anything.ini")));
-                    if (StringUtils.isNotEmpty(iniFilePackage)) {
-                        for (String networkQName : nedResources.getNetworkQNames(project)) {
-                            INEDTypeInfo network = nedResources.getToplevelNedType(networkQName, project);
+                    for (String networkQName : nedResources.getNetworkQNames(project)) {
+                        INEDTypeInfo network = nedResources.getToplevelNedType(networkQName, project);
+                        if (StringUtils.isEmpty(iniFilePackage)) {
+                            networkQNames.add(network.getFullyQualifiedName());
+                        } else {
                             if ((iniFilePackage+".").equals(network.getNamePrefix()))
                                 networkNames.add(network.getName());
                             if (!network.getNamePrefix().equals(""))
