@@ -109,6 +109,12 @@ channel IdealChannel {
     @class(cIdealChannel);
 }
 
+channel DelayChannel {
+    @class(cDelayChannel);
+    bool disabled = false;
+    double delay = 0s @unit(s);
+}
+
 channel DatarateChannel {
     @class(cDatarateChannel);
     bool disabled = false;
