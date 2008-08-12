@@ -23,12 +23,15 @@
 #include "cgate.h"
 #include "cownedobject.h"
 
-NAMESPACE_BEGIN
 
+NAMESPACE_BEGIN
 
 class cModule;
 class cChannel;
 class cProperties;
+class cIdealChannel;
+class cDelayChannel;
+class cDatarateChannel;
 
 
 /**
@@ -246,6 +249,7 @@ class SIM_API cChannelType : public cComponentType
 {
   protected:
     static cChannelType *idealChannelType;
+    static cChannelType *delayChannelType;
     static cChannelType *datarateChannelType;
 
   protected:
@@ -303,16 +307,33 @@ class SIM_API cChannelType : public cComponentType
      * Equivalent to <tt>cChannelType::get("ned.IdealChannel")</tt>,
      * but more efficient.
      */
-    static cChannelType *getIdealChannel();
+    static cChannelType *getIdealChannelType();
+
+    /**
+     * Equivalent to <tt>cChannelType::get("ned.DelayChannel")</tt>,
+     * but more efficient.
+     */
+    static cChannelType *getDelayChannelType();
 
     /**
      * Equivalent to <tt>cChannelType::get("ned.DatarateChannel")</tt>,
      * but more efficient.
      */
-    static cChannelType *getTransmissionChannel();
+    static cChannelType *getDatarateChannelType();
 
-    //FIXME comments
+    /**
+     * Shortcut for <tt>cChannelType::getIdealChannelType()->create(name)</tt>.
+     */
     static cIdealChannel *createIdealChannel(const char *name);
+
+    /**
+     * Shortcut for <tt>cChannelType::getDelayChannelType()->create(name)</tt>.
+     */
+    static cDelayChannel *createDelayChannel(const char *name);
+
+    /**
+     * Shortcut for <tt>cChannelType::getDatarateChannelType()->create(name)</tt>.
+     */
     static cDatarateChannel *createDatarateChannel(const char *name);
 };
 

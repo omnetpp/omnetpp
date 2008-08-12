@@ -22,6 +22,7 @@
 #include "cparimpl.h"
 #include "cexception.h"
 #include "globals.h"
+#include "cdelaychannel.h"
 #include "cdataratechannel.h"
 
 #ifdef WITH_PARSIM
@@ -201,6 +202,7 @@ cModuleType *cModuleType::get(const char *qname)
 //----
 
 cChannelType *cChannelType::idealChannelType;
+cChannelType *cChannelType::delayChannelType;
 cChannelType *cChannelType::datarateChannelType;
 
 cChannelType::cChannelType(const char *name) : cComponentType(name)
@@ -263,7 +265,7 @@ cChannelType *cChannelType::get(const char *qname)
     return p;
 }
 
-cChannelType *cChannelType::getIdealChannel()
+cChannelType *cChannelType::getIdealChannelType()
 {
     if (!idealChannelType) {
         idealChannelType = find("ned.IdealChannel");
@@ -272,7 +274,16 @@ cChannelType *cChannelType::getIdealChannel()
     return idealChannelType;
 }
 
-cChannelType *cChannelType::getTransmissionChannel()
+cChannelType *cChannelType::getDelayChannelType()
+{
+    if (!delayChannelType) {
+        delayChannelType = find("ned.DelayChannel");
+        ASSERT(delayChannelType);
+    }
+    return delayChannelType;
+}
+
+cChannelType *cChannelType::getDatarateChannelType()
 {
     if (!datarateChannelType) {
         datarateChannelType = find("ned.DatarateChannel");
@@ -283,12 +294,17 @@ cChannelType *cChannelType::getTransmissionChannel()
 
 cIdealChannel *cChannelType::createIdealChannel(const char *name)
 {
-    return dynamic_cast<cIdealChannel *>(getIdealChannel()->create(name));
+    return dynamic_cast<cIdealChannel *>(getIdealChannelType()->create(name));
+}
+
+cDelayChannel *cChannelType::createDelayChannel(const char *name)
+{
+    return dynamic_cast<cDelayChannel *>(getDelayChannelType()->create(name));
 }
 
 cDatarateChannel *cChannelType::createDatarateChannel(const char *name)
 {
-    return dynamic_cast<cDatarateChannel *>(getTransmissionChannel()->create(name));
+    return dynamic_cast<cDatarateChannel *>(getDatarateChannelType()->create(name));
 }
 
 
