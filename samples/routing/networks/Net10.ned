@@ -29,7 +29,7 @@ network Net10
             parameters:
                 address = index;
         }
-    connections allowunconnected:
+    connections:
         rte[0].port++ <--> C <--> rte[1].port++;
         rte[0].port++ <--> C <--> rte[3].port++;
         rte[1].port++ <--> C <--> rte[2].port++;

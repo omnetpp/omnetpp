@@ -216,6 +216,7 @@ $O/messagedependency.obj: messagedependency.cc \
   ievent.h \
   eventlogdefs.h \
   eventlogentries.h \
+  event.h \
   eventlogentry.h
 $O/sequencechartfacade.obj: sequencechartfacade.cc \
   messagedependency.h \

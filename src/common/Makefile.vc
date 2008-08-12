@@ -112,7 +112,8 @@ $O/enumstr.obj: enumstr.cc \
   commondefs.h
 $O/exception.obj: exception.cc \
   exception.h \
-  commondefs.h
+  commondefs.h \
+  commonutil.h
 $O/expression.obj: expression.cc \
   expressionyydefs.h \
   stringutil.h \

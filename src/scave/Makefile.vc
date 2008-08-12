@@ -527,6 +527,7 @@ $O/stddev.obj: stddev.cc \
   xyarray.h \
   stddev.h \
   ../common/exception.h \
+  scaveutils.h \
   ../common/progressmonitor.h \
   ../common/commonutil.h \
   commonnodes.h \

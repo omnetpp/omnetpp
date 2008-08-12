@@ -121,6 +121,16 @@ class cChannel extends cComponent
     cDisplayString displayString @group(general) @hint(controls appearance of this channel in the GUI);
 }
 
+class cIdealChannel extends cChannel
+{
+    // nothing special
+}
+
+class cDelayChannel extends cChannel
+{
+    // nothing special
+}
+
 class cDatarateChannel extends cChannel
 {
     // Note: no need to spell out delay etc, they come from cComponent parameters

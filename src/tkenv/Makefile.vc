@@ -178,8 +178,8 @@ $O/inspector.obj: inspector.cc \
   ../../include/mersennetwister.h \
   ../../include/clongparimpl.h \
   ../../include/cxmlelement.h \
-  ../../include/cstringpool.h \
   ../../include/cvisitor.h \
+  ../../include/cstringpool.h \
   ../../include/cmathfunction.h \
   inspector.h \
   tklib.h \
@@ -188,9 +188,10 @@ $O/inspector.obj: inspector.cc \
   ../../include/onstartup.h \
   ../../include/simtime_t.h \
   ../../include/csimplemodule.h \
+  ../../include/cdelaychannel.h \
   ../../include/cdensityestbase.h \
-  ../../include/cvarhist.h \
   ../../include/cmessageheap.h \
+  ../../include/cvarhist.h \
   ../../include/platdep/intxtypes.h \
   ../../include/globals.h \
   ../../include/cstringparimpl.h \
@@ -273,8 +274,8 @@ $O/inspfactory.obj: inspfactory.cc \
   ../../include/cscheduler.h \
   ../../include/clongparimpl.h \
   ../../include/mersennetwister.h \
-  ../../include/cvisitor.h \
   ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/cxmlelement.h \
   ../../include/cmathfunction.h \
   inspector.h \
@@ -284,9 +285,10 @@ $O/inspfactory.obj: inspfactory.cc \
   ../../include/onstartup.h \
   ../../include/simtime_t.h \
   ../../include/csimplemodule.h \
+  ../../include/cdelaychannel.h \
   ../../include/cdensityestbase.h \
-  ../../include/cvarhist.h \
   ../../include/cmessageheap.h \
+  ../../include/cvarhist.h \
   ../../include/platdep/intxtypes.h \
   ../../include/globals.h \
   ../../include/cstringparimpl.h \
@@ -319,8 +321,8 @@ $O/layouterenv.obj: layouterenv.cc \
   ../../include/csimulation.h \
   ../../include/simtime.h \
   tkutil.h \
-  ../../include/simkerneldefs.h \
   ../../include/simutil.h \
+  ../../include/simkerneldefs.h \
   ../../include/cmsgpar.h \
   ../../include/cobject.h \
   ../../include/cclassfactory.h \
@@ -372,8 +374,8 @@ $O/modinsp.obj: modinsp.cc \
   ../../include/csimulation.h \
   ../../include/simtime.h \
   tkutil.h \
-  ../../include/simkerneldefs.h \
   ../../include/simutil.h \
+  ../../include/simkerneldefs.h \
   ../../include/cmsgpar.h \
   ../../include/cobject.h \
   ../../include/cclassfactory.h \
@@ -477,8 +479,8 @@ $O/objinsp.obj: objinsp.cc \
   ../../include/cscheduler.h \
   ../../include/clongparimpl.h \
   ../../include/mersennetwister.h \
-  ../../include/cvisitor.h \
   ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/cxmlelement.h \
   ../../include/cmathfunction.h \
   inspector.h \
@@ -488,9 +490,10 @@ $O/objinsp.obj: objinsp.cc \
   ../../include/onstartup.h \
   ../../include/simtime_t.h \
   ../../include/csimplemodule.h \
+  ../../include/cdelaychannel.h \
   ../../include/cdensityestbase.h \
-  ../../include/cvarhist.h \
   ../../include/cmessageheap.h \
+  ../../include/cvarhist.h \
   ../../include/platdep/intxtypes.h \
   ../../include/globals.h \
   ../../include/cstringparimpl.h \
@@ -521,8 +524,8 @@ $O/statinsp.obj: statinsp.cc \
   ../../include/csimulation.h \
   tkutil.h \
   ../../include/simtime.h \
-  ../../include/simkerneldefs.h \
   ../../include/simutil.h \
+  ../../include/simkerneldefs.h \
   ../../include/cmsgpar.h \
   ../../include/cobject.h \
   ../../include/cstddev.h \
@@ -626,8 +629,8 @@ $O/tkenv.obj: tkenv.cc \
   ../../include/csimulation.h \
   tkutil.h \
   ../../include/simtime.h \
-  ../../include/simutil.h \
   ../../include/simkerneldefs.h \
+  ../../include/simutil.h \
   ../../include/cmsgpar.h \
   ../../include/cobject.h \
   ../../include/cstddev.h \

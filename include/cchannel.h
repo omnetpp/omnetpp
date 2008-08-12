@@ -192,7 +192,7 @@ class SIM_API cChannel : public cComponent //implies noncopyable
 
 
 /**
- * A channel with zero propagation delay, zero transmission delay (infinite
+ * Channel with zero propagation delay, zero transmission delay (infinite
  * datarate), and always enabled.
  *
  * @ingroup SimCore

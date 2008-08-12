@@ -26,7 +26,7 @@ COPTS=$(CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/p
 IMPLIBS=$O/../common/common$D.lib
 
 OBJS_STD=\
-    $O/carray.obj $O/cdataratechannel.obj $O/cboolparimpl.obj $O/cchannel.obj \
+    $O/carray.obj $O/cdelaychannel.obj $O/cdataratechannel.obj $O/cboolparimpl.obj $O/cchannel.obj \
     $O/cclassfactory.obj $O/ccomponent.obj $O/ccomponenttype.obj $O/cconfiguration.obj $O/cconfigkey.obj \
     $O/ccompoundmodule.obj $O/ccoroutine.obj $O/cdefaultlist.obj $O/cdensityestbase.obj \
     $O/cdetect.obj $O/cdisplaystring.obj $O/cdoubleparimpl.obj $O/cdynamicexpression.obj $O/cenvir.obj \
@@ -490,8 +490,8 @@ $O/cdataratechannel.obj: cdataratechannel.cc \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
   ../../include/cmsgpar.h \
-  ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
+  ../../include/cmessageheap.h \
   ../../include/cobject.h \
   ../../include/cclassfactory.h \
   ../../include/globals.h \
@@ -538,6 +538,33 @@ $O/cdefaultlist.obj: cdefaultlist.cc \
   ../../include/cnamedobject.h \
   ../../include/cownedobject.h \
   ../../include/platdep/platdefs.h \
+  ../../include/regmacros.h
+$O/cdelaychannel.obj: cdelaychannel.cc \
+  ../../include/ccommbuffer.h \
+  ../../include/cgate.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
+  ../../include/cenvir.h \
+  ../../include/simtime.h \
+  ../../include/simtime_t.h \
+  ../../include/cdelaychannel.h \
+  ../../include/simkerneldefs.h \
+  ../../include/simutil.h \
+  ../../include/platdep/intxtypes.h \
+  ../../include/cobject.h \
+  ../../include/platdep/platmisc.h \
+  ../../include/errmsg.h \
+  ../../include/cdefaultlist.h \
+  ../../include/opp_string.h \
+  ../../include/ccomponenttype.h \
+  ../../include/cexception.h \
+  ../../include/cnamedobject.h \
+  ../../include/cownedobject.h \
+  ../../include/cexpression.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/cpar.h \
+  ../../include/cchannel.h \
+  ../../include/ccomponent.h \
   ../../include/regmacros.h
 $O/cdensityestbase.obj: cdensityestbase.cc \
   ../../include/cregistrationlist.h \
@@ -716,16 +743,27 @@ $O/cenum.obj: cenum.cc \
   ../../include/regmacros.h \
   ../../include/cstringtokenizer.h
 $O/cenvir.obj: cenvir.cc \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/cenvir.h \
   ../../include/simtime.h \
   ../../include/simtime_t.h \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
   ../../include/platdep/intxtypes.h \
+  ../../include/cobject.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
+  ../../include/cdefaultlist.h \
   ../../include/opp_string.h \
-  ../../include/platdep/platdefs.h
+  ../../include/cexception.h \
+  ../../include/cnamedobject.h \
+  ../../include/cownedobject.h \
+  ../../include/cexpression.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/cpar.h \
+  ../../include/ccomponent.h \
+  ../../include/regmacros.h
 $O/cexception.obj: cexception.cc \
   ../../include/cregistrationlist.h \
   ../../include/cgate.h \
@@ -2297,19 +2335,20 @@ $O/sim_std_m.obj: sim_std_m.cc \
   ../../include/mersennetwister.h \
   ../../include/clongparimpl.h \
   ../../include/cxmlelement.h \
-  ../../include/cstringpool.h \
   ../../include/cvisitor.h \
+  ../../include/cstringpool.h \
   ../../include/cmathfunction.h \
   ../../include/coutvector.h \
   ../../include/cxmlparimpl.h \
   ../../include/onstartup.h \
   sim_std_m.h \
   ../../include/simtime_t.h \
+  ../../include/cdelaychannel.h \
   ../../include/csimplemodule.h \
   ../../include/cdensityestbase.h \
   ../../include/platdep/intxtypes.h \
-  ../../include/cmessageheap.h \
   ../../include/cvarhist.h \
+  ../../include/cmessageheap.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/cstringparimpl.h \
