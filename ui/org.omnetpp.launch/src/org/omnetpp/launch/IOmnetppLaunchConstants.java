@@ -14,7 +14,7 @@ public interface IOmnetppLaunchConstants {
      * Launch configuration attribute key. The value is a name of a C/C++
      * project associated with a C/C++ launch configuration.
      */
-    public static final String ATTR_PROJECT_NAME = CDT_LAUNCH_ID + ".PROJECT_ATTR"; 
+    public static final String ATTR_PROJECT_NAME = CDT_LAUNCH_ID + ".PROJECT_ATTR";
 
     /**
      * Launch configuration attribute key. The value is a string specifying
@@ -59,4 +59,10 @@ public interface IOmnetppLaunchConstants {
      * How many simulations may run in parallel during batch execution
      */
     public static final String ATTR_NUM_CONCURRENT_PROCESSES = OMNETPP_LAUNCH_ID + ".NUM_CONCURRENT_PROCESSES";
+
+    /**
+     * the project of the first dynamic library to be loaded (used if no executable is given in the configuration)
+     */
+    public static final String ATTR_SHARED_LIB_PROJECT_NAME = OMNETPP_LAUNCH_ID + ".SHARED_LIB_PROJECT_ATTR"; 
+
 }

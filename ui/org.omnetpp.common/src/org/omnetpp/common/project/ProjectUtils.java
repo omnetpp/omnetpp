@@ -155,6 +155,8 @@ public class ProjectUtils {
 
     public static boolean hasOmnetppNature(IProject project) {
         try {
+        	if (project == null)
+        		return false;
             IProjectDescription description = project.getDescription();
             String[] natures = description.getNatureIds();
             return ArrayUtils.contains(natures, IConstants.OMNETPP_NATURE_ID);

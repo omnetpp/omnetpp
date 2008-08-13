@@ -223,12 +223,19 @@ public class LaunchPlugin extends AbstractUIPlugin {
         String expandedProj = varman.performStringSubstitution(projAttr);
         String expandedProg = varman.performStringSubstitution(progAttr);
         String expandedArg = varman.performStringSubstitution(argAttr);
+        IPath projPath = new Path(expandedProj);
+        IPath progPath = new Path(expandedProg);
         // put the additional arguments at the beginning so they override the other arguments
         expandedArg = additionalArgs +" "+expandedArg;
-        IFile executableFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(expandedProj).append(expandedProg));
-        if (executableFile == null)
-            throw new CoreException(Status.CANCEL_STATUS);
-        String cmdLine[] =DebugPlugin.parseArguments(executableFile.getRawLocation().makeAbsolute().toString() + " " + expandedArg);
+        String programLocation = expandedProg;
+        // if it is workspace relative path, resolve it against the workspace and get the physical location
+        if (!progPath.isAbsolute() ) {
+        	IFile executableFile = ResourcesPlugin.getWorkspace().getRoot().getFile(projPath.append(progPath));
+        	if (executableFile == null)
+        		throw new CoreException(Status.CANCEL_STATUS);
+        	programLocation = executableFile.getRawLocation().makeAbsolute().toString();
+        }
+        String cmdLine[] =DebugPlugin.parseArguments(programLocation + " " + expandedArg);
         return cmdLine;
     }
 

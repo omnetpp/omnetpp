@@ -12,7 +12,7 @@
    <extension
          point="org.eclipse.debug.core.launchDelegates">
       <launchDelegate
-            delegate="org.omnetpp.launch.SimulationLaunchConfigurationDelegate"
+            delegate="org.omnetpp.launch.SimulationRunConfigurationDelegate"
             delegateDescription="Allows running an OMNeT++ simulation in standalone or batched mode"
             id="org.omnetpp.launch.simulationLaunchDelegate"
             modes="run"

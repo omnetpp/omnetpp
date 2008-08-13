@@ -201,7 +201,7 @@
    <extension
          point="org.eclipse.debug.core.launchDelegates">
       <launchDelegate
-            delegate="org.eclipse.cdt.launch.internal.LocalCDILaunchDelegate"
+            delegate="org.omnetpp.cdt.launch.SimulationDebugLaunchDelegate"
             delegateDescription="Allows debugging an OMNeT++ simulation with CDT"
             id="org.omnetpp.launch.simulationDebugDelegate"
             modes="debug"

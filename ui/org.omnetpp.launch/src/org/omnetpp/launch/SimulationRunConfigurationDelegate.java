@@ -5,18 +5,20 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
+import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.model.LaunchConfigurationDelegate;
 import org.eclipse.debug.ui.IDebugUIConstants;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
-
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.ide.OmnetppMainPlugin;
 
 
 /**
@@ -25,11 +27,24 @@ import org.omnetpp.common.util.StringUtils;
  *
  * @author rhornig
  */
-public class SimulationLaunchConfigurationDelegate extends LaunchConfigurationDelegate {
+public class SimulationRunConfigurationDelegate extends LaunchConfigurationDelegate {
 
     public void launch(ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor)
             throws CoreException {
-        if (monitor == null) {
+		// check if program name is not provided in this case we should use opp_run as the executable
+		if (StringUtils.isEmpty(configuration.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, ""))) {
+			ILaunchConfigurationWorkingCopy cfg = configuration.copy("opp_run temporary configuration");
+			String oppRunName = OmnetppMainPlugin.getOmnetppBinDir()+"/opp_run"; 
+			if(Platform.getOS().equals(Platform.OS_WIN32))
+				oppRunName += ".exe";
+				
+			cfg.setAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, oppRunName);
+			// use the first librarie's project as main project
+			cfg.setAttribute(IOmnetppLaunchConstants.ATTR_PROJECT_NAME, cfg.getAttribute(IOmnetppLaunchConstants.ATTR_SHARED_LIB_PROJECT_NAME, ""));
+			configuration = cfg;
+		}
+
+    	if (monitor == null) {
             monitor = new NullProgressMonitor();
         }
         monitor.beginTask("Launching Simulation", 1);
