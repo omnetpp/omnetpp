@@ -1,6 +1,5 @@
 package org.omnetpp.ide.variables;
 
-import org.eclipse.core.internal.runtime.IRuntimeConstants;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -23,11 +22,11 @@ public class NedPathResolver implements IDynamicVariableResolver {
 
 	public String resolveValue(IDynamicVariable variable, String argument) throws CoreException {
 		if (argument == null)
-			abort("${ned_path:arg} requires an argument", null);
+			abort("${opp_ned_path:arg} requires an argument", null);
 
 		IResource resource = ResourcesPlugin.getWorkspace().getRoot().findMember(new Path(argument));
 		if (resource == null)
-			abort("argument to ${ned_path:arg} needs to be an existing file, folder, or project", null);
+			abort("argument to ${opp_ned_path:arg} needs to be an existing file, folder, or project", null);
 
 		IProject project = resource.getProject();
 		String result = project.getLocation().toOSString();

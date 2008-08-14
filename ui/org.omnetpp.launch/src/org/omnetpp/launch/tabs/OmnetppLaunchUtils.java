@@ -7,13 +7,21 @@ import java.util.Map;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.variables.VariablesPlugin;
+import org.eclipse.debug.core.ILaunchConfiguration;
+import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
+import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.ui.model.WorkbenchContentProvider;
-
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.ide.OmnetppMainPlugin;
 import org.omnetpp.inifile.editor.model.InifileParser;
+import org.omnetpp.launch.IOmnetppLaunchConstants;
 import org.omnetpp.launch.LaunchPlugin;
 
 public class OmnetppLaunchUtils {
@@ -164,5 +172,90 @@ public class OmnetppLaunchUtils {
             resultPath = resultPath.append("../");
         // add the rest of the path (non common part)
         return resultPath.append(path.removeFirstSegments(path.matchingFirstSegments(relativeTo))).makeRelative();
+    }
+
+    /**
+     * Creates a new temporary configuration from a simulation config type that is compatible with CDT. 
+     */
+    public static ILaunchConfigurationWorkingCopy convertLaunchConfig(ILaunchConfiguration config, String mode) 
+    				throws CoreException {
+		ILaunchConfigurationWorkingCopy newCfg = config.copy("opp_run temporary configuration");
+
+		// working directory (converted from path to location
+		String wdirStr = config.getAttribute(IOmnetppLaunchConstants.OPP_WORKING_DIRECTORY, "");
+		newCfg.setAttribute(IOmnetppLaunchConstants.ATTR_WORKING_DIRECTORY, OmnetppLaunchUtils.path2location(new Path(wdirStr), new Path("/")).toString());
+		
+		// executable name
+		String exeName = config.getAttribute(IOmnetppLaunchConstants.OPP_EXECUTABLE, "");
+		if (StringUtils.isEmpty(exeName)) {
+			// use the first library's project as main project
+			newCfg.setAttribute(IOmnetppLaunchConstants.ATTR_PROJECT_NAME, newCfg.getAttribute(IOmnetppLaunchConstants.OPP_SHARED_LIB_PROJECT, ""));
+			// no exe specified use opp_run and the first libraries project 
+			exeName = OmnetppMainPlugin.getOmnetppBinDir()+"/opp_run"; 
+		} else {
+			newCfg.setAttribute(IOmnetppLaunchConstants.ATTR_PROJECT_NAME, new Path(exeName).segment(0));
+			exeName = new Path(exeName).removeFirstSegments(1).toString();
+		}
+		
+		if(Platform.getOS().equals(Platform.OS_WIN32) && !exeName.endsWith(".exe"))
+			exeName += ".exe";
+		newCfg.setAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, exeName);
+
+		String args = ""; 
+		String envirStr = config.getAttribute(IOmnetppLaunchConstants.OPP_USER_INTERFACE, "").trim();
+		if (StringUtils.isNotEmpty(envirStr))
+			args += " -u "+envirStr;
+
+		String configStr = config.getAttribute(IOmnetppLaunchConstants.OPP_CONFIG_NAME, "").trim();
+		if (StringUtils.isNotEmpty(configStr))
+			args += " -c "+configStr;
+		
+		if ( mode.equals( ILaunchManager.DEBUG_MODE ) ) {
+			String runStr = config.getAttribute(IOmnetppLaunchConstants.OPP_RUNNUMBER_FOR_DEBUG, "").trim();
+			if (StringUtils.isNotEmpty(runStr))
+				args += " -r "+runStr;
+		}
+
+		String nedpathStr = config.getAttribute(IOmnetppLaunchConstants.OPP_NED_PATH, "").trim();
+		// TODO convert to absolute location
+		if (StringUtils.isNotEmpty(nedpathStr))
+			args += " -n "+nedpathStr;
+
+		// shared libraries
+		String shLibStr = config.getAttribute(IOmnetppLaunchConstants.OPP_SHARED_LIBS, "").trim();
+		shLibStr = VariablesPlugin.getDefault().getStringVariableManager().performStringSubstitution(shLibStr, false);
+		if (StringUtils.isNotBlank(shLibStr)) {
+			String[] libs = StringUtils.split(shLibStr);
+			// convert to file system location
+			for (int i = 0 ; i< libs.length; i++)
+				libs[i] = path2location(new Path(libs[i]), new Path(wdirStr)).toString();
+			args += " -l " + StringUtils.join(libs," -l ")+" ";
+		}
+		
+		String iniStr = config.getAttribute(IOmnetppLaunchConstants.OPP_INI_FILES, "").trim();
+		if (StringUtils.isNotEmpty(iniStr))
+			args += " "+iniStr;
+
+		// set the program arguments
+		newCfg.setAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS, 
+				config.getAttribute(IOmnetppLaunchConstants.OPP_ADDITIONAL_ARGS, "/")+args);
+				
+		return newCfg;
+	}
+    
+    /**
+     * Convert a workspace path to absolute filesystem path (relative path is appended to the basePath before conversion)
+     */
+    public static final IPath path2location(IPath path, IPath basePath) {
+    	if (!path.isAbsolute() && basePath != null)
+    		path = basePath.append(path);
+    	
+    	IResource resource = ResourcesPlugin.getWorkspace().getRoot().findMember(path);
+    	// return the location of the resource
+    	if (resource != null)
+    		return resource.getLocation(); 
+    	
+    	// id resource do not exist it was an absolute location already, just return it
+    	return path;
     }
 }

@@ -10,10 +10,10 @@ import org.omnetpp.ide.OmnetppMainPlugin;
  *
  */
 public class OmnetppDirResolver implements IDynamicVariableResolver {
-    public static final String OMNETPP_ROOT = "OMNETPP_ROOT";
-    public static final String OMNETPP_BIN_DIR = "OMNETPP_BIN_DIR";
-    public static final String OMNETPP_INCL_DIR = "OMNETPP_INCL_DIR";
-    public static final String OMNETPP_LIB_DIR = "OMNETPP_LIB_DIR";
+    public static final String OMNETPP_ROOT = "opp_root";
+    public static final String OMNETPP_BIN_DIR = "opp_bin_dir";
+    public static final String OMNETPP_INCL_DIR = "opp_incl_dir";
+    public static final String OMNETPP_LIB_DIR = "opp_lib_dir";
     
 	public String resolveValue(IDynamicVariable variable, String argument)
 			throws CoreException {

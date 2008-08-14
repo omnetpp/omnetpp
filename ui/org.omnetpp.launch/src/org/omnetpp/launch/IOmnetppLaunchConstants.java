@@ -1,8 +1,6 @@
 package org.omnetpp.launch;
 
 /**
- * TODO add documentation
- *
  * @author rhornig
  */
 public interface IOmnetppLaunchConstants {
@@ -30,17 +28,6 @@ public interface IOmnetppLaunchConstants {
     public static final String ATTR_PROGRAM_ARGUMENTS = CDT_LAUNCH_ID + ".PROGRAM_ARGUMENTS"; 
 
     /**
-     * Launch configuration attribute key. The value specifies the run command line parameter is
-     * a standalone launcher was used.
-     */
-    public static final String ATTR_RUNNUMBER = OMNETPP_LAUNCH_ID + ".RUN"; 
-
-    /**
-     * Attribute used to store the run number when debugging is used.
-     */
-    public static final String ATTR_RUNNUMBER_FOR_DEBUG = OMNETPP_LAUNCH_ID + ".RUN.FOR_DEBUG"; 
-    
-    /**
      * Launch configuration attribute key. The value is a string specifying a
      * path to the working directory to use when launching the application.
      * When unspecified, the working directory is inherited from the current
@@ -49,20 +36,77 @@ public interface IOmnetppLaunchConstants {
      * represents a workspace relative path.
      */
     public static final String ATTR_WORKING_DIRECTORY = CDT_LAUNCH_ID + ".WORKING_DIRECTORY"; 
+    
+    // ========================================================================================
+    
+    /**
+     * Working directory. Workspace relative path. 
+     */
+    public static final String OPP_WORKING_DIRECTORY = OMNETPP_LAUNCH_ID + ".WORKING_DIRECTORY"; 
 
     /**
-     * Whether to show the the debug view on launch
+     * The executable file can be relative (workspace) path or absolute (file system) location
      */
-    public static final String ATTR_SHOWDEBUGVIEW = OMNETPP_LAUNCH_ID + ".SHOW_DEBUG_VIEW";
+    public static final String OPP_EXECUTABLE = OMNETPP_LAUNCH_ID + ".EXECUTABLE"; 
+
+    /**
+     * The initialization files (relative to the working dir) 
+     */
+    public static final String OPP_INI_FILES = OMNETPP_LAUNCH_ID + ".INI_FILES"; 
+    
+    /**
+     * Configuration to start with (-c)  
+     */
+    public static final String OPP_CONFIG_NAME = OMNETPP_LAUNCH_ID + ".CONFIG_NAME"; 
+    
+    /**
+     * Launch configuration attribute key. The value specifies the run command line parameter is
+     * a standalone launcher was used. (-r)
+     */
+    public static final String OPP_RUNNUMBER = OMNETPP_LAUNCH_ID + ".RUN"; 
+    
+    /**
+     * Attribute used to store the run number when debugging is used. (-r)
+     */
+    public static final String OPP_RUNNUMBER_FOR_DEBUG = OMNETPP_LAUNCH_ID + ".RUN.FOR_DEBUG"; 
 
     /**
      * How many simulations may run in parallel during batch execution
      */
-    public static final String ATTR_NUM_CONCURRENT_PROCESSES = OMNETPP_LAUNCH_ID + ".NUM_CONCURRENT_PROCESSES";
-
+    public static final String OPP_NUM_CONCURRENT_PROCESSES = OMNETPP_LAUNCH_ID + ".NUM_CONCURRENT_PROCESSES";
+    
+    /**
+     * Which user interface to use (-u)
+     */
+    public static final String OPP_USER_INTERFACE = OMNETPP_LAUNCH_ID + ".USER_INTERFACE"; 
+    
+    /**
+     * Shared libraries to be loaded (-l)
+     */
+    public static final String OPP_SHARED_LIBS = OMNETPP_LAUNCH_ID + ".SHARED_LIBS"; 
+    
     /**
      * the project of the first dynamic library to be loaded (used if no executable is given in the configuration)
      */
-    public static final String ATTR_SHARED_LIB_PROJECT_NAME = OMNETPP_LAUNCH_ID + ".SHARED_LIB_PROJECT_ATTR"; 
+    public static final String OPP_SHARED_LIB_PROJECT = OMNETPP_LAUNCH_ID + ".SHARED_LIB_PROJECT"; 
+    
+    /**
+     * The ned path used to start the executable (-n option)
+     */
+    public static final String OPP_NED_PATH = OMNETPP_LAUNCH_ID + ".NED_PATH"; 
+    
+    /**
+     * Whether to show the the debug view on launch
+     */
+    public static final String OPP_SHOWDEBUGVIEW = OMNETPP_LAUNCH_ID + ".SHOW_DEBUG_VIEW";
 
+    /**
+     * Whether to record eventlog
+     */
+    public static final String OPP_RECORD_EVENTLOG = OMNETPP_LAUNCH_ID + ".RECORD_EVENTLOG";
+
+    /**
+     * Additional hand specified arguments
+     */
+    public static final String OPP_ADDITIONAL_ARGS = OMNETPP_LAUNCH_ID + ".ADDITIONAL_ARGA";
 }

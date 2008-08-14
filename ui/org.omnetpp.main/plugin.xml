@@ -185,31 +185,31 @@
          point="org.eclipse.core.variables.dynamicVariables">
       <variable
             description="Expands to the OMNeT++ root directory"
-            name="OMNETPP_ROOT"
+            name="opp_root"
             resolver="org.omnetpp.ide.variables.OmnetppDirResolver"
             supportsArgument="false">
       </variable>
       <variable
             description="Expands to the OMNeT++ bin directory"
-            name="OMNETPP_BIN_DIR"
+            name="opp_bin_dir"
             resolver="org.omnetpp.ide.variables.OmnetppDirResolver"
             supportsArgument="false">
       </variable>
       <variable
             description="Expands to the OMNeT++ include directory"
-            name="OMNETPP_INCL_DIR"
+            name="opp_incl_dir"
             resolver="org.omnetpp.ide.variables.OmnetppDirResolver"
             supportsArgument="false">
       </variable>
       <variable
             description="Expands to the OMNeT++ lib directory"
-            name="OMNETPP_LIB_DIR"
+            name="opp_lib_dir"
             resolver="org.omnetpp.ide.variables.OmnetppDirResolver"
             supportsArgument="false">
       </variable>
       <variable
             description="Expands to the NED source path"
-            name="ned_path"
+            name="opp_ned_path"
             resolver="org.omnetpp.ide.variables.NedPathResolver"
             supportsArgument="true">
       </variable>

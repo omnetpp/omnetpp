@@ -279,5 +279,14 @@
          </perspectiveShortcut>
       </perspectiveExtension>
    </extension>
+   <extension
+         point="org.eclipse.core.variables.dynamicVariables">
+      <variable
+            description="Expands to the shared libraries used by the project"
+            name="opp_shared_libs"
+            resolver="org.omnetpp.cdt.launch.SharedLibsResolver"
+            supportsArgument="true">
+      </variable>
+   </extension>
 
 </plugin>

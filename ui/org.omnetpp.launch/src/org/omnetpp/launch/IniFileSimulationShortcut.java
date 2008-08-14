@@ -80,10 +80,10 @@ public class IniFileSimulationShortcut implements ILaunchShortcut {
 		wc.setAttribute(IOmnetppLaunchConstants.ATTR_WORKING_DIRECTORY, "${workspace_loc:"+iniFile.getParent().getFullPath().toString()+"}");
 		wc.setAttribute(IOmnetppLaunchConstants.ATTR_PROJECT_NAME, exeFile.getProject().getFullPath().toString());
 		wc.setAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, exeFile.getProjectRelativePath().toString());
-		wc.setAttribute(IOmnetppLaunchConstants.ATTR_SHOWDEBUGVIEW, false);
-    	wc.setAttribute(IOmnetppLaunchConstants.ATTR_RUNNUMBER_FOR_DEBUG, "");
-    	wc.setAttribute(IOmnetppLaunchConstants.ATTR_RUNNUMBER, "");
-    	wc.setAttribute(IOmnetppLaunchConstants.ATTR_NUM_CONCURRENT_PROCESSES, 1);
+		wc.setAttribute(IOmnetppLaunchConstants.OPP_SHOWDEBUGVIEW, false);
+    	wc.setAttribute(IOmnetppLaunchConstants.OPP_RUNNUMBER_FOR_DEBUG, "");
+    	wc.setAttribute(IOmnetppLaunchConstants.OPP_RUNNUMBER, "");
+    	wc.setAttribute(IOmnetppLaunchConstants.OPP_NUM_CONCURRENT_PROCESSES, 1);
     	wc.setAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS, "-n ${ned_path:/"+iniFile.getProject().getName()+"} "+iniFile.getName());
 		wc.setMappedResources(new IResource[] {iniFile});
 		
