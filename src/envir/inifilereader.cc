@@ -17,6 +17,7 @@
 
 #include <string.h>
 #include <stdio.h>
+#include <errno.h>
 #include <set>
 #include "opp_ctype.h"
 #include "fileutil.h"  // directoryOf
@@ -235,7 +236,7 @@ bool InifileReader::readLineInto(std::string& line, FILE *file)
             break;
     }
     if (ferror(file))
-        throw cRuntimeError("I/O error occurred while reading ini file");
+        throw cRuntimeError("Cannot read ini file: %s", strerror(errno));
     return true;
 }
 
