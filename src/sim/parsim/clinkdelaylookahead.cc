@@ -81,8 +81,7 @@ void cLinkDelayLookahead::startRun()
                     // check we have a delay on this link (it gives us lookahead)
                     cGate *fromg  = pg->getPreviousGate();
                     cChannel *chan = fromg->getChannel();
-                    cDatarateChannel *datarateChan = dynamic_cast<cDatarateChannel *>(chan);
-                    simtime_t linkDelay = datarateChan ? datarateChan->getDelay() : 0.0;
+                    simtime_t linkDelay = chan->hasPar("delay") ? chan->par("delay").doubleValue() : 0.0;
                     if (linkDelay<=0.0)
                         throw cRuntimeError("cLinkDelayLookahead: zero delay on link from gate `%s', no lookahead for parallel simulation", fromg->getFullPath().c_str());
 

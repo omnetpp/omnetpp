@@ -861,10 +861,18 @@ std::string cNEDNetworkBuilder::getChannelTypeName(cModule *parentmodp, cGate *s
             channeltypename = channelspec->getType();
         }
         else {
+            bool hasDelayChannelParams = false, hasOtherParams = false;
             ParametersElement *channelparams = channelspec->getFirstParametersChild();
-            bool hasparams = channelparams && channelparams->getFirstParamChild();
-            // create cIdealChannel if there are no parameters
-            channeltypename = hasparams ? "ned.DatarateChannel" : "ned.IdealChannel";
+            if (channelparams) {
+                for (ParamElement *param=channelparams->getFirstParamChild(); param; param=param->getNextParamSibling())
+                    if (strcmp(param->getName(),"delay")==0 || strcmp(param->getName(),"disabled")==0)
+                        hasDelayChannelParams = true;
+                    else
+                        hasOtherParams = true;
+            }
+
+            // choose one of the three built-in channel types, based on the channel's parameters
+            channeltypename = hasOtherParams ? "ned.DatarateChannel" : hasDelayChannelParams ? "ned.DelayChannel" : "ned.IdealChannel";
         }
     }
     else
