@@ -21,11 +21,12 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
-import org.eclipse.debug.internal.ui.DebugUIPlugin;
 import org.eclipse.debug.ui.ILaunchShortcut;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.MessageDialogWithToggle;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -72,6 +73,8 @@ import org.omnetpp.ned.model.ui.NedModelLabelProvider;
  * @author andras
  */
 public class SimulationLaunchShortcut implements ILaunchShortcut {
+    public static final String PREF_SKIP_LAUNCHCONFIGCREATED_MESSAGE = "org.omnetpp.launch.SkipLaunchConfigCreatedMsg";
+
     protected static class InifileConfig {
         InifileConfig(IFile f, String c, String n) {iniFile=f; config=c; network=n;}
         IFile iniFile;
@@ -123,9 +126,23 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
                 else {
                     return; // resource not supported
                 }
-                
+
                 // create launch config based on the above data
                 lc = createLaunchConfig(exeFile, iniFile, configName, resource);
+
+                // tell novice users what happened
+                IPreferenceStore preferences = LaunchPlugin.getDefault().getPreferenceStore();
+                String pref = preferences.getString(PREF_SKIP_LAUNCHCONFIGCREATED_MESSAGE);
+                if (!MessageDialogWithToggle.ALWAYS.equals(pref)) {
+                    MessageDialogWithToggle.openInformation(
+                            Display.getCurrent().getActiveShell(), 
+                            "Launch Configuration Created", 
+                            "A launch configuration named '" + lc.getName() + "' has been created, and associated " +
+                            "with resource '" + resource.getName() + "'. You can modify or delete this launch configuration " +
+                            "in the Run|Run Configurations... and Run|Debug Configurations... dialogs.", 
+                            "Do not show this message again", false, 
+                            preferences, PREF_SKIP_LAUNCHCONFIGCREATED_MESSAGE);
+                }
             }
 
             if (lc != null)
@@ -145,13 +162,13 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
     protected InifileConfig chooseOrCreateIniFileForNedFile(IFile nedFile, String mode) throws CoreException {
         NEDResources res = NEDResourcesPlugin.getNEDResources();
         if (!res.isNedFile(nedFile)) {
-             MessageDialog.openError(null, "Error", "Cannot launch simulation: " + nedFile.getName() + " is not a NED file, or it is not in a NED source folder.");
-             return null;
+            MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Cannot launch simulation: " + nedFile.getName() + " is not a NED file, or it is not in a NED source folder.");
+            return null;
         }
 
         List<INEDTypeInfo> networks = getNetworksInNedFile(nedFile);
         if (networks.isEmpty()) {
-            MessageDialog.openError(null, "Error", "Cannot launch simulation: " + nedFile.getName() + " contains no network.");
+            MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Cannot launch simulation: " + nedFile.getName() + " contains no network.");
             return null;
         }
 
@@ -202,12 +219,12 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
             LaunchPlugin.logError(e);
         }
 
-        // convert network names to String[], for faster search 
+        // convert network names to String[], for faster lookup 
         final String packagePrefix = networks.get(0).getNamePrefix(); // all networks are in the same file
         final String[] networkNames = new String[networks.size()];
         for (int i=0; i<networks.size(); i++)
             networkNames[i] = networks.get(i).getName();
-            
+
         // now, find those inifiles that refer to this network
         final List<InifileConfig> result = new ArrayList<InifileConfig>();
         for (final IFile iniFile : iniFiles) {
@@ -254,14 +271,14 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
                 "Network " + networkNames + " does not have an associated ini file. Do you want to create one now?" :
                     "None of the networks in " +nedFile.getName() + " (" + networkNames + ") have an associated ini file. Do you want to create one now?";
 
-        if (!MessageDialog.openConfirm(null, "Create Ini File", text)) 
+        if (!MessageDialog.openConfirm(Display.getCurrent().getActiveShell(), "Create Ini File", text)) 
             return null; // user cancelled
 
         // choose network to create ini file for
         INEDTypeInfo selectedNetwork = networks.get(0);
         if (networks.size() > 1) {
             // choose network from dialog
-            ListDialog dialog = new ListDialog(DebugUIPlugin.getShell());
+            ListDialog dialog = new ListDialog(Display.getCurrent().getActiveShell());
             dialog.setLabelProvider(new NedModelLabelProvider());
             dialog.setContentProvider(new ArrayContentProvider());
             dialog.setTitle("Select Network");
@@ -318,7 +335,7 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
      * Returns null if user cancelled. 
      */
     protected InifileConfig chooseInifileConfigFromDialog(List<InifileConfig> candidates, final IContainer defaultDir) {
-        ListDialog dialog = new ListDialog(DebugUIPlugin.getShell());
+        ListDialog dialog = new ListDialog(Display.getCurrent().getActiveShell());
         final WorkbenchLabelProvider workbenchLabelProvider = new WorkbenchLabelProvider(); // cannot subclass, due to final methods
         dialog.setLabelProvider(new LabelProvider() {
             @Override
@@ -354,7 +371,7 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
         ILaunchConfigurationWorkingCopy wc = launchType.newInstance(null, name);
 
         OmnetppMainTab.prepareLaunchConfig(wc);
-        
+
         wc.setAttribute(IOmnetppLaunchConstants.OPP_EXECUTABLE, exeFile.getFullPath().toString());
         wc.setAttribute(IOmnetppLaunchConstants.OPP_WORKING_DIRECTORY, iniFile.getParent().getFullPath().toString());
         wc.setAttribute(IOmnetppLaunchConstants.OPP_INI_FILES, iniFile.getName());
@@ -362,7 +379,7 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
             wc.setAttribute(IOmnetppLaunchConstants.OPP_CONFIG_NAME, configName);
         if (resourceToAssociateWith != null)
             wc.setMappedResources(new IResource[] {resourceToAssociateWith});
-        
+
         return wc.doSave();
     }
 
@@ -374,7 +391,7 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
         final List<IFile> exeFiles = new ArrayList<IFile>();
         IProject[] projects = ProjectUtils.getAllReferencedProjects(project);
         projects = (IProject[]) ArrayUtils.add(projects, project);
-        
+
         for (IProject pr : projects) {
             try {
                 pr.accept(new IResourceVisitor() {
@@ -387,16 +404,16 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
             } catch (CoreException e) {
                 LaunchPlugin.logError(e);
             }
-            
+
         }
-        
+
         if (exeFiles.size() == 0)
             return null;
         if (exeFiles.size() == 1)
             return exeFiles.get(0);
 
         // ask the user select an exe file
-        ListDialog dialog = new ListDialog(DebugUIPlugin.getShell());
+        ListDialog dialog = new ListDialog(Display.getCurrent().getActiveShell());
         dialog.setLabelProvider(new WorkbenchLabelProvider() {
             @Override
             protected String decorateText(String input, Object element) {
@@ -404,13 +421,13 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
                     return input + " - " + ((IResource)element).getParent().getFullPath().toString();
                 return input;
             }
-                
+
         });
         dialog.setContentProvider(new ArrayContentProvider());
         dialog.setTitle("Select Executable");
         dialog.setMessage("Select the executable file that should be started.\n");
         dialog.setInput(exeFiles);
-        
+
         if (dialog.open() == IDialogConstants.OK_ID && dialog.getResult().length > 0) {
             return ((IFile)dialog.getResult()[0]);
         }
@@ -426,35 +443,34 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
     public ILaunchConfiguration findOrChooseLaunchConfigAssociatedWith(IResource resource, String mode) throws CoreException {
         ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
         ILaunchConfigurationType launchType = launchManager.getLaunchConfigurationType(IOmnetppLaunchConstants.SIMULATION_LAUNCH_CONFIGURATION_TYPE);
-        
-    	ILaunchConfiguration[] launchConfigs = launchManager.getLaunchConfigurations(launchType);
-    	List<ILaunchConfiguration> matchingConfigs = new ArrayList<ILaunchConfiguration>();
-    	for(ILaunchConfiguration config : launchConfigs) 
-    		if(ArrayUtils.contains(config.getMappedResources(), resource))
-    			matchingConfigs.add(config);
-    	
+
+        ILaunchConfiguration[] launchConfigs = launchManager.getLaunchConfigurations(launchType);
+        List<ILaunchConfiguration> matchingConfigs = new ArrayList<ILaunchConfiguration>();
+        for (ILaunchConfiguration config : launchConfigs) 
+            if (ArrayUtils.contains(config.getMappedResources(), resource))
+                matchingConfigs.add(config);
+
         if (matchingConfigs.size() == 0)
-        	return null;
+            return null;
         if (matchingConfigs.size() == 1)
-        	return matchingConfigs.get(0);
-        
-        ListDialog dialog = new ListDialog(DebugUIPlugin.getShell());
+            return matchingConfigs.get(0);
+
+        ListDialog dialog = new ListDialog(Display.getCurrent().getActiveShell());
         dialog.setLabelProvider(new LabelProvider() {
-        	@Override
-        	public String getText(Object element) {
-        		return ((ILaunchConfiguration)element).getName();
-        	}
-        		
+            @Override
+            public String getText(Object element) {
+                return ((ILaunchConfiguration)element).getName();
+            }
         });
         dialog.setContentProvider(new ArrayContentProvider());
         dialog.setTitle("Choose Launch Configuration");
         dialog.setMessage("Select a launch configuration to start.");
         dialog.setInput(matchingConfigs);
-        
-    	if (dialog.open() == IDialogConstants.OK_ID && dialog.getResult().length > 0) {
-    		return ((ILaunchConfiguration)dialog.getResult()[0]);
-    	}
-    	
-    	return null;
+
+        if (dialog.open() == IDialogConstants.OK_ID && dialog.getResult().length > 0) {
+            return ((ILaunchConfiguration)dialog.getResult()[0]);
+        }
+
+        return null;
     }
 }
