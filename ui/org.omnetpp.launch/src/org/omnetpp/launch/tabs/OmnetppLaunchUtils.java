@@ -10,7 +10,6 @@ import java.util.Map;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.math.NumberUtils;
-import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -30,7 +29,6 @@ import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.internal.ui.DebugUIPlugin;
-import org.eclipse.debug.ui.DebugUITools;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -532,14 +530,14 @@ public class OmnetppLaunchUtils {
 	 * lets the user choose from a dialog. Returns null if there's no associated
 	 * launch config, or the user cancelled.
 	 */
-    public static ILaunchConfiguration findOrChooseLaunchConfigAssociatedWith(IFile iniFile, String mode) throws CoreException {
+    public static ILaunchConfiguration findOrChooseLaunchConfigAssociatedWith(IResource resource, String mode) throws CoreException {
         ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
         ILaunchConfigurationType launchType = launchManager.getLaunchConfigurationType(IOmnetppLaunchConstants.SIMULATION_LAUNCH_CONFIGURATION_TYPE);
         
     	ILaunchConfiguration[] launchConfigs = launchManager.getLaunchConfigurations(launchType);
     	List<ILaunchConfiguration> matchingConfigs = new ArrayList<ILaunchConfiguration>();
     	for(ILaunchConfiguration config : launchConfigs) 
-    		if(ArrayUtils.contains(config.getMappedResources(), iniFile))
+    		if(ArrayUtils.contains(config.getMappedResources(), resource))
     			matchingConfigs.add(config);
     	
         if (matchingConfigs.size() == 0)

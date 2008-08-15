@@ -9,12 +9,18 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceVisitor;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunchConfiguration;
+import org.eclipse.debug.core.ILaunchConfigurationType;
+import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
+import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.internal.ui.DebugUIPlugin;
 import org.eclipse.debug.ui.ILaunchShortcut;
 import org.eclipse.jface.dialogs.ErrorDialog;
@@ -30,9 +36,11 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.dialogs.ListDialog;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
+import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.inifile.editor.model.InifileParser;
 import org.omnetpp.inifile.editor.model.ParseException;
 import org.omnetpp.launch.tabs.OmnetppLaunchUtils;
+import org.omnetpp.launch.tabs.OmnetppMainTab;
 import org.omnetpp.ned.core.NEDResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.INEDElement;
@@ -63,9 +71,8 @@ import org.omnetpp.ned.model.ui.NedModelLabelProvider;
  *
  * @author andras
  */
-public class NedFileSimulationShortcut implements ILaunchShortcut {
-
-    private static class InifileConfig {
+public class SimulationLaunchShortcut implements ILaunchShortcut {
+    protected static class InifileConfig {
         InifileConfig(IFile f, String c, String n) {iniFile=f; config=c; network=n;}
         IFile iniFile;
         String config;
@@ -73,39 +80,46 @@ public class NedFileSimulationShortcut implements ILaunchShortcut {
     }
 
     public void launch(ISelection selection, String mode) {
-        if (selection instanceof IStructuredSelection ) {
+        if (selection instanceof IStructuredSelection) {
             Object obj =((IStructuredSelection)selection).getFirstElement();
-            if (obj instanceof IFile) {
-                IFile file = (IFile)obj;
-                if ("ned".equals(file.getFileExtension()))
-                    searchAndLaunch(file, mode);
+            if (obj instanceof IResource) {
+                IResource resource = (IResource)obj;
+                doLaunch(resource, mode);
             }
         }
     }
 
     public void launch(IEditorPart editor, String mode) {
         if (editor != null && editor.getEditorInput() instanceof IFileEditorInput) {
-            searchAndLaunch(((IFileEditorInput)editor.getEditorInput()).getFile(), mode);
+            doLaunch(((IFileEditorInput)editor.getEditorInput()).getFile(), mode);
         }
     }
 
-    public void searchAndLaunch(IFile nedFile, String mode) {
+    protected void doLaunch(IResource resource, String mode) {
         try {
             // find launch config already associated with the file
-            ILaunchConfiguration lc = OmnetppLaunchUtils.findOrChooseLaunchConfigAssociatedWith(nedFile, mode);
+            ILaunchConfiguration lc = OmnetppLaunchUtils.findOrChooseLaunchConfigAssociatedWith(resource, mode);
             if (lc == null) {
-                // find exe file to launch
-                //FIXME what if dll-based?
-                IFile exeFile = IniFileSimulationShortcut.chooseExecutable(nedFile.getProject());
+                // choose executable to launch
+                IFile exeFile = chooseExecutable(resource.getProject());
                 if (exeFile == null)
-                    return;
+                    return; //FIXME what if opp_run + dll-based?
 
-                // find or create a matching ini file
-                InifileConfig iniFileAndConfig = chooseOrCreateInifile(nedFile, mode);
-                if (iniFileAndConfig == null)
-                    return;
-                
-                lc = IniFileSimulationShortcut.createLaunchConfig(exeFile, iniFileAndConfig.iniFile, iniFileAndConfig.config, nedFile);
+                IFile iniFile = null;
+                String configName = null;
+                if (resource instanceof IFile && "ini".equals(resource.getFileExtension())) {
+                    iniFile = (IFile)resource;
+                }
+                else if (resource instanceof IFile && "ned".equals(resource.getFileExtension())) {
+                    // find or create a matching ini file
+                    IFile nedFile = (IFile)resource;
+                    InifileConfig iniFileAndConfig = chooseOrCreateIniFileForNedFile(nedFile, mode);
+                    if (iniFileAndConfig == null)
+                        return; // user cancelled
+                    iniFile = iniFileAndConfig.iniFile;
+                    configName = iniFileAndConfig.config;
+                }
+                lc = createLaunchConfig(exeFile, iniFile, configName, resource);
             }
 
             if (lc != null)
@@ -114,11 +128,11 @@ public class NedFileSimulationShortcut implements ILaunchShortcut {
         catch (CoreException e) {
             LaunchPlugin.logError(e);
             ErrorDialog.openError(Display.getCurrent().getActiveShell(), "Error", 
-                    "Error launching network in NED file", e.getStatus());
+                    "Error launching simulation for '" + resource.getFullPath() +"'", e.getStatus());
         }
     }
 
-    protected InifileConfig chooseOrCreateInifile(IFile nedFile, String mode) throws CoreException {
+    protected InifileConfig chooseOrCreateIniFileForNedFile(IFile nedFile, String mode) throws CoreException {
         NEDResources res = NEDResourcesPlugin.getNEDResources();
         if (!res.isNedFile(nedFile)) {
              MessageDialog.openError(null, "Error", "Cannot launch simulation: " + nedFile.getName() + " is not a NED file, or it is not in a NED source folder.");
@@ -135,7 +149,7 @@ public class NedFileSimulationShortcut implements ILaunchShortcut {
         List<InifileConfig> candidates = collectInifileConfigsForNetworks(nedFile, networks);
 
         if (candidates.isEmpty())
-            return askAndCreateInifile(networks, nedFile);
+            return askAndCreateInifile(nedFile, networks);
         else if (candidates.size() == 1)
             return candidates.get(0);
         else
@@ -153,6 +167,9 @@ public class NedFileSimulationShortcut implements ILaunchShortcut {
     }
 
     protected List<InifileConfig> collectInifileConfigsForNetworks(IFile nedFile, List<INEDTypeInfo> networks) {
+        for (INEDTypeInfo network : networks)
+            Assert.isTrue(network.getNEDFile().equals(nedFile)); // must be in the specified file
+
         // first, collect all inifiles from *this* project
         // (note: an inifile that refers to this network cannot be in a referenced 
         // project, as the network's NED type is not visible there!)
@@ -206,10 +223,16 @@ public class NedFileSimulationShortcut implements ILaunchShortcut {
         return result;
     }
 
-    protected InifileConfig askAndCreateInifile(List<INEDTypeInfo> networks, IFile nedFile) throws CoreException {
+    /**
+     * Ask the user if s/he wants to create an ini file for one of the networks 
+     * in the given NED file, then create the inifile. Returns null if user cancelled.
+     */
+    protected InifileConfig askAndCreateInifile(IFile nedFile, List<INEDTypeInfo> networks) throws CoreException {
         String networkNames = "";
-        for (INEDTypeInfo network : networks)
+        for (INEDTypeInfo network : networks) {
+            Assert.isTrue(network.getNEDFile().equals(nedFile)); // must be in the specified file
             networkNames += (networkNames.length()==0 ? "" : ", ") + network.getName();
+        }
 
         String text = networks.size()==1 ? 
                 "Network " + networkNames + " does not have an associated ini file. Do you want to create one now?" :
@@ -242,6 +265,9 @@ public class NedFileSimulationShortcut implements ILaunchShortcut {
         return createInifile(iniFile, selectedNetwork);
     }
 
+    /**
+     * Generates unique name for a new inifile which will run the given network.
+     */
     protected String generateGoodInifileName(IContainer container, INEDTypeInfo network) {
         if (!container.getFile(new Path("omnetpp.ini")).exists())
             return "omnetpp.ini";
@@ -256,6 +282,10 @@ public class NedFileSimulationShortcut implements ILaunchShortcut {
         return nameBase+suffix+".ini"; 
     }
 
+    /** 
+     * Creates the given inifile with a network= setting to run the given network.
+     * The file must NOT yet exist.
+     */
     protected InifileConfig createInifile(IFile iniFile, INEDTypeInfo network) throws CoreException {
         String content = 
             "[General]\n" +
@@ -266,6 +296,11 @@ public class NedFileSimulationShortcut implements ILaunchShortcut {
         return new InifileConfig(iniFile, "General", network.getName());
     }
 
+    /**
+     * Offer the user a selection dialog to choose an inifile+configName from a list.
+     * Inifile names that are in the given default folder will be shown without path (just the name).
+     * Returns null if user cancelled. 
+     */
     protected InifileConfig chooseInifileConfigFromDialog(List<InifileConfig> candidates, final IContainer defaultDir) {
         ListDialog dialog = new ListDialog(DebugUIPlugin.getShell());
         final WorkbenchLabelProvider workbenchLabelProvider = new WorkbenchLabelProvider(); // cannot subclass, due to final methods
@@ -289,6 +324,79 @@ public class NedFileSimulationShortcut implements ILaunchShortcut {
 
         if (dialog.open() == IDialogConstants.OK_ID && dialog.getResult().length > 0) {
             return ((InifileConfig)dialog.getResult()[0]);
+        }
+        return null;
+    }
+
+    /**
+     * Creates and saves a launch configuration with the given attributes. 
+     */
+    protected ILaunchConfiguration createLaunchConfig(IFile exeFile, IFile iniFile, String configName, IResource resourceToAssociateWith) throws CoreException {
+        ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
+        ILaunchConfigurationType launchType = launchManager.getLaunchConfigurationType(IOmnetppLaunchConstants.SIMULATION_LAUNCH_CONFIGURATION_TYPE);
+        String name = launchManager.generateUniqueLaunchConfigurationNameFrom(iniFile.getProject().getName());
+        ILaunchConfigurationWorkingCopy wc = launchType.newInstance(null, name);
+
+        OmnetppMainTab.prepareLaunchConfig(wc);
+        
+        wc.setAttribute(IOmnetppLaunchConstants.OPP_EXECUTABLE, exeFile.getFullPath().toString());
+        wc.setAttribute(IOmnetppLaunchConstants.OPP_WORKING_DIRECTORY, iniFile.getParent().getFullPath().toString());
+        wc.setAttribute(IOmnetppLaunchConstants.OPP_INI_FILES, iniFile.getName());
+        if (configName != null)
+            wc.setAttribute(IOmnetppLaunchConstants.OPP_CONFIG_NAME, configName);
+        if (resourceToAssociateWith != null)
+            wc.setMappedResources(new IResource[] {resourceToAssociateWith});
+        
+        return wc.doSave();
+    }
+
+    /**
+     * List selection dialog to choose an executable from this project and all 
+     * referenced projects. Returns null if user cancelled.
+     */
+    protected IFile chooseExecutable(IProject project) {
+        final List<IFile> exeFiles = new ArrayList<IFile>();
+        IProject[] projects = ProjectUtils.getAllReferencedProjects(project);
+        projects = (IProject[]) ArrayUtils.add(projects, project);
+        
+        for (IProject pr : projects) {
+            try {
+                pr.accept(new IResourceVisitor() {
+                    public boolean visit(IResource resource) {
+                        if (OmnetppLaunchUtils.isExecutable(resource))
+                            exeFiles.add((IFile)resource);
+                        return true;
+                    }
+                });
+            } catch (CoreException e) {
+                LaunchPlugin.logError(e);
+            }
+            
+        }
+        
+        if (exeFiles.size() == 0)
+            return null;
+        if (exeFiles.size() == 1)
+            return exeFiles.get(0);
+
+        // ask the user select an exe file
+        ListDialog dialog = new ListDialog(DebugUIPlugin.getShell());
+        dialog.setLabelProvider(new WorkbenchLabelProvider() {
+            @Override
+            protected String decorateText(String input, Object element) {
+                if (element instanceof IResource)
+                    return input + " - " + ((IResource)element).getParent().getFullPath().toString();
+                return input;
+            }
+                
+        });
+        dialog.setContentProvider(new ArrayContentProvider());
+        dialog.setTitle("Select Executable");
+        dialog.setMessage("Select the executable file that should be started.\n");
+        dialog.setInput(exeFiles);
+        
+        if (dialog.open() == IDialogConstants.OK_ID && dialog.getResult().length > 0) {
+            return ((IFile)dialog.getResult()[0]);
         }
         return null;
     }

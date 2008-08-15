@@ -40,7 +40,7 @@
 <extension
 point="org.eclipse.debug.ui.launchShortcuts">
 <shortcut
-class="org.omnetpp.launch.IniFileSimulationShortcut"
+class="org.omnetpp.launch.SimulationLaunchShortcut"
 icon="icons/full/ctool16/omnetsim.gif"
 id="org.omnetpp.launch.shortcut"
 label="OMNeT++ Simulation..."
@@ -57,7 +57,7 @@ modes="run, debug">
 	 </contextualLaunch>
 </shortcut>   
 <shortcut
-class="org.omnetpp.launch.NedFileSimulationShortcut"
+class="org.omnetpp.launch.SimulationLaunchShortcut"
 icon="icons/full/ctool16/omnetsim.gif"
 id="org.omnetpp.launch.shortcut"
 label="OMNeT++ Simulation..."
