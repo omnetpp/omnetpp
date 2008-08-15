@@ -235,7 +235,7 @@ bool InifileReader::readLineInto(std::string& line, FILE *file)
             break;
     }
     if (ferror(file))
-        throw cRuntimeError("Error reading ini file");
+        throw cRuntimeError("I/O error occurred while reading ini file");
     return true;
 }
 
