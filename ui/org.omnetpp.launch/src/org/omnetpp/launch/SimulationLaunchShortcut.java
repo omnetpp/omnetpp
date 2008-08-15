@@ -98,13 +98,14 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
     protected void doLaunch(IResource resource, String mode) {
         try {
             // find launch config already associated with the file
-            ILaunchConfiguration lc = OmnetppLaunchUtils.findOrChooseLaunchConfigAssociatedWith(resource, mode);
+            ILaunchConfiguration lc = findOrChooseLaunchConfigAssociatedWith(resource, mode);
             if (lc == null) {
                 // choose executable to launch
                 IFile exeFile = chooseExecutable(resource.getProject());
                 if (exeFile == null)
                     return; //FIXME what if opp_run + dll-based?
 
+                // determine ini file and config to use for launching
                 IFile iniFile = null;
                 String configName = null;
                 if (resource instanceof IFile && "ini".equals(resource.getFileExtension())) {
@@ -118,7 +119,12 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
                         return; // user cancelled
                     iniFile = iniFileAndConfig.iniFile;
                     configName = iniFileAndConfig.config;
+                } 
+                else {
+                    return; // resource not supported
                 }
+                
+                // create launch config based on the above data
                 lc = createLaunchConfig(exeFile, iniFile, configName, resource);
             }
 
@@ -132,6 +138,10 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
         }
     }
 
+    /**
+     * When the user selected a NED file for launch, we have to find a matching 
+     * ini file (or files), or offer creating one.
+     */
     protected InifileConfig chooseOrCreateIniFileForNedFile(IFile nedFile, String mode) throws CoreException {
         NEDResources res = NEDResourcesPlugin.getNEDResources();
         if (!res.isNedFile(nedFile)) {
@@ -156,6 +166,9 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
             return chooseInifileConfigFromDialog(candidates, nedFile.getParent());
     }
 
+    /**
+     * Collects the networks from the given NED file
+     */
     protected List<INEDTypeInfo> getNetworksInNedFile(IFile nedFile) {
         List<INEDTypeInfo> result = new ArrayList<INEDTypeInfo>();
         NEDResources res = NEDResourcesPlugin.getNEDResources();
@@ -166,6 +179,9 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
         return result;
     }
 
+    /**
+     * Finds and returns all ini files that run the given network.
+     */
     protected List<InifileConfig> collectInifileConfigsForNetworks(IFile nedFile, List<INEDTypeInfo> networks) {
         for (INEDTypeInfo network : networks)
             Assert.isTrue(network.getNEDFile().equals(nedFile)); // must be in the specified file
@@ -399,5 +415,46 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
             return ((IFile)dialog.getResult()[0]);
         }
         return null;
+    }
+
+    /**
+     * Returns the launch configuration associated with the resource (using 
+     * ILaunchConfiguration.getMappedResources()); if there's more than one,
+     * lets the user choose from a dialog. Returns null if there's no associated
+     * launch config, or the user cancelled.
+     */
+    public ILaunchConfiguration findOrChooseLaunchConfigAssociatedWith(IResource resource, String mode) throws CoreException {
+        ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
+        ILaunchConfigurationType launchType = launchManager.getLaunchConfigurationType(IOmnetppLaunchConstants.SIMULATION_LAUNCH_CONFIGURATION_TYPE);
+        
+    	ILaunchConfiguration[] launchConfigs = launchManager.getLaunchConfigurations(launchType);
+    	List<ILaunchConfiguration> matchingConfigs = new ArrayList<ILaunchConfiguration>();
+    	for(ILaunchConfiguration config : launchConfigs) 
+    		if(ArrayUtils.contains(config.getMappedResources(), resource))
+    			matchingConfigs.add(config);
+    	
+        if (matchingConfigs.size() == 0)
+        	return null;
+        if (matchingConfigs.size() == 1)
+        	return matchingConfigs.get(0);
+        
+        ListDialog dialog = new ListDialog(DebugUIPlugin.getShell());
+        dialog.setLabelProvider(new LabelProvider() {
+        	@Override
+        	public String getText(Object element) {
+        		return ((ILaunchConfiguration)element).getName();
+        	}
+        		
+        });
+        dialog.setContentProvider(new ArrayContentProvider());
+        dialog.setTitle("Choose Launch Configuration");
+        dialog.setMessage("Select a launch configuration to start.");
+        dialog.setInput(matchingConfigs);
+        
+    	if (dialog.open() == IDialogConstants.OK_ID && dialog.getResult().length > 0) {
+    		return ((ILaunchConfiguration)dialog.getResult()[0]);
+    	}
+    	
+    	return null;
     }
 }
