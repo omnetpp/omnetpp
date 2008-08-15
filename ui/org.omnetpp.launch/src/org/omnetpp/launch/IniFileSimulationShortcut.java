@@ -60,7 +60,7 @@ public class IniFileSimulationShortcut implements ILaunchShortcut {
 			if (lc == null) {
 			     IFile exeFile = chooseExecutable(iniFile.getProject());
 			      if (exeFile != null) 
-			          lc = createLaunchConfig(exeFile, iniFile, null);
+			          lc = createLaunchConfig(exeFile, iniFile, null, iniFile);
 			}
 			
 			if (lc != null)
@@ -71,7 +71,7 @@ public class IniFileSimulationShortcut implements ILaunchShortcut {
 		}
 	}
 
-	public static ILaunchConfiguration createLaunchConfig(IFile exeFile, IFile iniFile, String configName) throws CoreException {
+	public static ILaunchConfiguration createLaunchConfig(IFile exeFile, IFile iniFile, String configName, IResource associateWithRes) throws CoreException {
         ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
         ILaunchConfigurationType launchType = launchManager.getLaunchConfigurationType(IOmnetppLaunchConstants.SIMULATION_LAUNCH_CONFIGURATION_TYPE);
 		String name = launchManager.generateUniqueLaunchConfigurationNameFrom(iniFile.getProject().getName());
@@ -87,7 +87,8 @@ public class IniFileSimulationShortcut implements ILaunchShortcut {
     	wc.setAttribute(IOmnetppLaunchConstants.OPP_RUNNUMBER, "");
     	wc.setAttribute(IOmnetppLaunchConstants.OPP_NUM_CONCURRENT_PROCESSES, 1);
     	wc.setAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS, "-n ${ned_path:/"+iniFile.getProject().getName()+"} "+iniFile.getName());
-		wc.setMappedResources(new IResource[] {iniFile});
+    	if (associateWithRes != null)
+    	    wc.setMappedResources(new IResource[] {associateWithRes});
 		
 		return wc.doSave();
 	}

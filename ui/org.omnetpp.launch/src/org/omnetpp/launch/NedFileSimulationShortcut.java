@@ -84,7 +84,7 @@ public class NedFileSimulationShortcut implements ILaunchShortcut {
                     // launch the ini file (and selected config)
                     IFile exeFile = IniFileSimulationShortcut.chooseExecutable(cfg.iniFile.getProject());
                     if (exeFile != null) 
-                        lc = IniFileSimulationShortcut.createLaunchConfig(exeFile, cfg.iniFile, cfg.config);
+                        lc = IniFileSimulationShortcut.createLaunchConfig(exeFile, cfg.iniFile, cfg.config, nedFile);
                 }
             }
 
