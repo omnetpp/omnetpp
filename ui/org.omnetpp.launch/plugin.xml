@@ -56,6 +56,24 @@ modes="run, debug">
   </enablement>
 	 </contextualLaunch>
 </shortcut>   
+<shortcut
+class="org.omnetpp.launch.NedFileSimulationShortcut"
+icon="icons/full/ctool16/omnetsim.gif"
+id="org.omnetpp.launch.shortcut"
+label="OMNeT++ Simulation..."
+modes="run, debug">
+<contextualLaunch>
+  <enablement>
+    <with variable="selection">
+      <count value="1"/>
+      <iterate>
+        <test property="org.eclipse.debug.ui.matchesPattern" value="*.ned"/>
+      </iterate>
+    </with>
+  </enablement>
+	 </contextualLaunch>
+</shortcut>   
+
 
 </extension>
    <extension
