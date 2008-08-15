@@ -104,7 +104,7 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
             ILaunchConfiguration lc = findOrChooseLaunchConfigAssociatedWith(resource, mode);
             if (lc == null) {
                 // choose executable to launch
-                IFile exeFile = chooseExecutable(resource.getProject());
+                IFile exeFile = chooseExecutable(resource.getProject()); //FIXME asks exe EVEN IF NED FILE CONTAINS NO NETWORK!
                 if (exeFile == null)
                     return; //FIXME what if opp_run + dll-based?
 
