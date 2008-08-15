@@ -17,7 +17,6 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationType;
-import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.internal.ui.DebugUIPlugin;
 import org.eclipse.debug.ui.ILaunchShortcut;
@@ -213,7 +212,7 @@ public class NedFileSimulationShortcut implements ILaunchShortcut {
         });
         dialog.setContentProvider(new ArrayContentProvider());
         dialog.setTitle("Select Ini file and Config");
-        dialog.setMessage("Select ini file and configuration to start.\n");
+        dialog.setMessage("Select Ini file and configuration to start.\n");
         dialog.setInput(candidates);
 
         if (dialog.open() == IDialogConstants.OK_ID && dialog.getResult().length > 0) {
@@ -221,28 +220,6 @@ public class NedFileSimulationShortcut implements ILaunchShortcut {
         }
         return null;
     }
-
-    // FIXME there's a copy in IniFileSimulationShortcut -- factor out!
-    protected ILaunchConfiguration createLaunchConfigForInifile(IFile iniFile, String config) throws CoreException {
-        String name = getLaunchManager().generateUniqueLaunchConfigurationNameFrom(iniFile.getProject().getName());
-        ILaunchConfigurationWorkingCopy wc = getLaunchConfigurationType().newInstance(null, name);
-
-        IFile exeFile = chooseExecutable(iniFile.getProject());
-        if (exeFile == null) return null;
-
-        wc.setAttribute(IOmnetppLaunchConstants.ATTR_WORKING_DIRECTORY, "${workspace_loc:"+iniFile.getParent().getFullPath().toString()+"}");
-        wc.setAttribute(IOmnetppLaunchConstants.ATTR_PROJECT_NAME, exeFile.getProject().getFullPath().toString());
-        wc.setAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, exeFile.getProjectRelativePath().toString());
-        wc.setAttribute(IOmnetppLaunchConstants.OPP_SHOWDEBUGVIEW, false);
-        wc.setAttribute(IOmnetppLaunchConstants.OPP_RUNNUMBER_FOR_DEBUG, "");
-        wc.setAttribute(IOmnetppLaunchConstants.OPP_RUNNUMBER, "");
-        wc.setAttribute(IOmnetppLaunchConstants.OPP_NUM_CONCURRENT_PROCESSES, 1);
-        wc.setAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS, "-n ${ned_path:/"+iniFile.getProject().getName()+"} "+iniFile.getName());
-        wc.setMappedResources(new IResource[] {iniFile});
-
-        return wc.doSave();
-    }
-
 
     protected IFile chooseExecutable(IProject project) {
         final List<IFile> exeFiles = new ArrayList<IFile>();

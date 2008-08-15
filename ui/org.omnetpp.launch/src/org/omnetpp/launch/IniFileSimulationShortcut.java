@@ -27,6 +27,7 @@ import org.eclipse.ui.dialogs.ListDialog;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.launch.tabs.OmnetppLaunchUtils;
+import org.omnetpp.launch.tabs.OmnetppMainTab;
 
 
 /**
@@ -77,16 +78,13 @@ public class IniFileSimulationShortcut implements ILaunchShortcut {
 		String name = launchManager.generateUniqueLaunchConfigurationNameFrom(iniFile.getProject().getName());
 		ILaunchConfigurationWorkingCopy wc = launchType.newInstance(null, name);
 
-		wc.setAttribute(IOmnetppLaunchConstants.ATTR_WORKING_DIRECTORY, "${workspace_loc:"+iniFile.getParent().getFullPath().toString()+"}");
-		wc.setAttribute(IOmnetppLaunchConstants.ATTR_PROJECT_NAME, exeFile.getProject().getFullPath().toString());
-		wc.setAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, exeFile.getProjectRelativePath().toString());
-		wc.setAttribute(IOmnetppLaunchConstants.OPP_SHOWDEBUGVIEW, false);
+		OmnetppMainTab.prepareLaunchConfig(wc);
+		
+		wc.setAttribute(IOmnetppLaunchConstants.OPP_EXECUTABLE, exeFile.getFullPath().toString());
+		wc.setAttribute(IOmnetppLaunchConstants.OPP_WORKING_DIRECTORY, iniFile.getParent().getFullPath().toString());
+		wc.setAttribute(IOmnetppLaunchConstants.OPP_INI_FILES, iniFile.getName());
 		if (configName != null)
-		    wc.setAttribute(IOmnetppLaunchConstants.OPP_CONFIG_NAME, configName);
-    	wc.setAttribute(IOmnetppLaunchConstants.OPP_RUNNUMBER_FOR_DEBUG, "");
-    	wc.setAttribute(IOmnetppLaunchConstants.OPP_RUNNUMBER, "");
-    	wc.setAttribute(IOmnetppLaunchConstants.OPP_NUM_CONCURRENT_PROCESSES, 1);
-    	wc.setAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS, "-n ${ned_path:/"+iniFile.getProject().getName()+"} "+iniFile.getName());
+			wc.setAttribute(IOmnetppLaunchConstants.OPP_CONFIG_NAME, configName);
     	if (associateWithRes != null)
     	    wc.setMappedResources(new IResource[] {associateWithRes});
 		

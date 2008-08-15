@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -29,6 +30,7 @@ import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.internal.ui.DebugUIPlugin;
+import org.eclipse.debug.ui.DebugUITools;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -261,7 +263,7 @@ public class OmnetppLaunchUtils {
 
 		// set the program arguments
 		newCfg.setAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS, 
-				config.getAttribute(IOmnetppLaunchConstants.OPP_ADDITIONAL_ARGS, "/")+args);
+				config.getAttribute(IOmnetppLaunchConstants.OPP_ADDITIONAL_ARGS, "")+args);
 
 		return newCfg;
 	}
@@ -412,6 +414,8 @@ public class OmnetppLaunchUtils {
 	public static Process startSimulationProcess(ILaunchConfiguration configuration, String additionalArgs, boolean requestInfo) throws CoreException {
 		String[] cmdLine = createCommandLine(configuration, additionalArgs);
 
+		System.out.println("starting with command line: "+StringUtils.join(cmdLine," "));
+		
 		if (requestInfo) {
 			int i = ArrayUtils.indexOf(cmdLine, "-c");
 			if (i >= 0)
@@ -562,4 +566,5 @@ public class OmnetppLaunchUtils {
     	
     	return null;
     }
+    
 }

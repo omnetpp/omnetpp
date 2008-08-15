@@ -2,9 +2,12 @@ package org.omnetpp.launch.tabs;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.eclipse.core.resources.IContainer;
@@ -204,12 +207,29 @@ implements ModifyListener {
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_ADDITIONAL_ARGS, fAdditionalText.getText());
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_SHOWDEBUGVIEW, fShowDebugViewButton.getSelection());        
 
-        configuration.setMappedResources(getIniFiles());
+        try {
+        	Set<IResource> assocRes = new HashSet<IResource>();
+        	if (configuration.getMappedResources() != null)
+        		assocRes.addAll(Arrays.asList(configuration.getMappedResources()));
+        	if (getIniFiles() != null)
+        		assocRes.addAll(Arrays.asList(getIniFiles()));
+			configuration.setMappedResources((IResource[]) assocRes.toArray(new IResource[assocRes.size()]));
+		} catch (CoreException e) {
+			LaunchPlugin.logError(e);
+		}
         // clear the run info text, so next time it will be re-requested
         infoText = null;
     }
 
     public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
+    	prepareLaunchConfig(configuration);
+    }
+
+    /**
+     * Sets the required attributes to create a new simulation launch. Starting values are calculated
+     * from the current resource selection.
+     */
+    public static void prepareLaunchConfig(ILaunchConfigurationWorkingCopy configuration) {
         // check the current selection and figure out the initial values if possible
         String defWorkDir = "";
         String defExe = "";
@@ -238,8 +258,9 @@ implements ModifyListener {
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_NED_PATH, "${"+VAR_NED_PATH+":"+defWorkDir+"}");
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_SHARED_LIBS, "${"+VAR_SHARED_LIBS+":"+defWorkDir+"}");
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_NUM_CONCURRENT_PROCESSES, 1);
+        configuration.setAttribute(IOmnetppLaunchConstants.OPP_ADDITIONAL_ARGS, "");
     }
-
+    
     /**
      * Fills the config combo with the config section values from the inifiles
      */
