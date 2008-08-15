@@ -1,11 +1,10 @@
 package org.omnetpp.launch;
 
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
@@ -37,10 +36,9 @@ public class SimulationRunConfigurationDelegate extends LaunchConfigurationDeleg
         }
         monitor.beginTask("Launching Simulation", 1);
 
-        Integer runs[] = LaunchPlugin.parseRuns(configuration.getAttribute(IOmnetppLaunchConstants.OPP_RUNNUMBER, ""),
-                                                LaunchPlugin.getMaxNumberOfRuns(configuration));
-        if (runs == null)
-            throw new CoreException(new Status(IStatus.ERROR, LaunchPlugin.PLUGIN_ID, "Invalid run numbers specified"));
+        int runs[] = OmnetppLaunchUtils.parseRuns(configuration.getAttribute(IOmnetppLaunchConstants.OPP_RUNNUMBER, ""),
+                                                OmnetppLaunchUtils.getMaxNumberOfRuns(configuration));
+        Assert.isTrue(runs != null && runs.length > 0);
 
         // show the debug view if option is checked
         if (configuration.getAttribute(IOmnetppLaunchConstants.OPP_SHOWDEBUGVIEW, false)) {

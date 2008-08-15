@@ -19,13 +19,12 @@ import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.debug.core.model.IStreamMonitor;
 import org.eclipse.debug.internal.ui.views.launch.LaunchView;
 import org.eclipse.debug.ui.IDebugUIConstants;
-import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
-
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.launch.tabs.OmnetppLaunchUtils;
 
 /**
  * A job to launch a single simulation process in the background
@@ -83,9 +82,9 @@ public class SimulationLauncherJob extends Job {
         monitor.subTask("run #"+runNo+" - Initializing...");
         monitor.setWorkRemaining(100);
 
-        Process process = LaunchPlugin.startSimulationProcess(configuration, " -r "+runNo, false);
+        Process process = OmnetppLaunchUtils.startSimulationProcess(configuration, " -r "+runNo, false);
         IProcess iprocess = DebugPlugin.newProcess(launch, process, renderProcessLabel(runNo));
-        iprocess.setAttribute(IProcess.ATTR_CMDLINE, StringUtils.join(LaunchPlugin.createCommandLine(configuration, " -r "+runNo)," "));
+        iprocess.setAttribute(IProcess.ATTR_CMDLINE, StringUtils.join(OmnetppLaunchUtils.createCommandLine(configuration, " -r "+runNo)," "));
         // if we don't want to wait for finishing the process, just exit
         if (!waitForFinish)
             return;
@@ -94,13 +93,13 @@ public class SimulationLauncherJob extends Job {
         iprocess.getStreamsProxy().getOutputStreamMonitor().addListener(new IStreamListener () {
             int prevPct = 0;
             public void streamAppended(String text, IStreamMonitor ismon) {
-                    int pct = LaunchPlugin.getProgressInPercent(text);
+                    int pct = OmnetppLaunchUtils.getProgressInPercent(text);
                     if (pct >= 0) {
                         monitor.worked(pct - prevPct);
                         prevPct = pct;
                     }
 
-                if (LaunchPlugin.isWaitingForUserInput(text))
+                if (OmnetppLaunchUtils.isWaitingForUserInput(text))
                     monitor.subTask("run #"+runNo+" - Waiting for user input... (Switch to console)");
                 else
                     monitor.subTask("run #"+runNo+" - Executing ("+prevPct+"%)");

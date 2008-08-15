@@ -17,8 +17,7 @@ import org.omnetpp.cdt.makefile.MakemakeOptions;
 import org.omnetpp.common.project.ProjectUtils;
 
 /**
- * resolves the variable to the library command line like: -l lib1 -l lib2
- * note that the -l option is included before each library
+ * resolves the variable containig all shared libs the given project depend on
  */
 public class SharedLibsResolver implements IDynamicVariableResolver {
 

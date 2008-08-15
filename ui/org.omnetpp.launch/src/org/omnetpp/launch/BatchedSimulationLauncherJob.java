@@ -24,7 +24,7 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 public class BatchedSimulationLauncherJob extends Job implements IJobChangeListener {
     protected ILaunchConfiguration configuration;
     protected ILaunch launch;
-    protected Integer runs[];
+    protected int runs[];
     protected List<Job> runJobs = new ArrayList<Job>();
     protected int runIndex = 0;
     protected int maxParalelJobs;
@@ -52,7 +52,7 @@ public class BatchedSimulationLauncherJob extends Job implements IJobChangeListe
      * @param runs An integer array specifying which runs to execute
      * @param parallelism How many simulations should be able to run concurrently
      */
-    public BatchedSimulationLauncherJob(ILaunchConfiguration configuration, ILaunch launch, Integer[] runs, int parallelism) {
+    public BatchedSimulationLauncherJob(ILaunchConfiguration configuration, ILaunch launch, int[] runs, int parallelism) {
         super("Running "+runs.length+" simulations");
         this.configuration = configuration;
         this.launch = launch;
@@ -70,7 +70,7 @@ public class BatchedSimulationLauncherJob extends Job implements IJobChangeListe
         runIndex = finishedJobs = 0;
 
         // create a list of jobs that later can be scheduled
-        for (Integer run : runs) {
+        for (int run : runs) {
             SimulationLauncherJob launchJob = new SimulationLauncherJob(configuration, launch, run, true);
             launchJob.addJobChangeListener(this);
             launchJob.setPriority(Job.LONG);

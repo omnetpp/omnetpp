@@ -108,7 +108,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
     public void createControl(Composite parent) {
         debugLaunchMode = ILaunchManager.DEBUG_MODE.equals(getLaunchConfigurationDialog().getMode());
         runTooltip = debugLaunchMode ? "The run number that should be executed (default: 0)"
-        				: "The run number(s) that should be executed (eg.: 0,2,7,9..11 or * for ALL runs) (default: 0)";
+        				: "The run number(s) that should be executed (eg.: 0,2,7,9..11 or * for all runs) (default: 0)";
         Composite comp = SWTFactory.createComposite(parent, 1, 1, GridData.FILL_HORIZONTAL);
         createWorkingDirGroup(comp, 1);
 		createSimulationGroup(comp, 1);
@@ -173,7 +173,6 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_SHARED_LIBS, fLibraryText.getText());        
         // store the first library file's project (to use during debug launching in CDT)  
         IFile[] sharedLibFiles = getLibFiles();
-        // FIXME sharedLibfiles are not correct if has default value (opp_shared_libs)
         if (sharedLibFiles != null && sharedLibFiles.length > 0)
         	configuration.setAttribute(IOmnetppLaunchConstants.OPP_SHARED_LIB_PROJECT, sharedLibFiles[0].getProject().getName());
 
@@ -195,6 +194,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
         	configuration.setAttribute(IOmnetppLaunchConstants.OPP_USER_INTERFACE, "Tkenv");
         else if (fOtherEnvButton.getSelection())
         	configuration.setAttribute(IOmnetppLaunchConstants.OPP_USER_INTERFACE, fOtherEnvText.getText());
+        else configuration.setAttribute(IOmnetppLaunchConstants.OPP_USER_INTERFACE, "");
         
         if (fEventLogYesButton.getSelection())
             configuration.setAttribute(IOmnetppLaunchConstants.OPP_RECORD_EVENTLOG, "true");        
@@ -208,29 +208,8 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
 
         configuration.setMappedResources(getIniFiles());
 
-        
         // clear the run info text, so next time it will be re-requested
         infoText = null;
-        
-        // simulation block parameters
-//        if (StringUtils.isNotBlank(fInifileText.getText()))
-//            arg += "-f "+ StringUtils.join(StringUtils.split(fInifileText.getText())," -f ")+" ";
-//        if (StringUtils.isNotBlank(getConfigName()))
-//            arg += "-c "+getConfigName()+" ";
-
-//        String libText = fLibraryText.getText();
-//		if (StringUtils.isNotBlank(libText))
-//        	arg += "-l " + StringUtils.join(StringUtils.split(libText)," -l ")+" ";
-//		else
-//			arg += "-l " + getDefaultLibraries() + " ";  // -l is included if the omnetpp_shared_libs gets expanded
-		
-        // handle the ned path (if empty store and use the default ${ned_path:/ini_files_projectname}
-//        String nedPath = fNedPathText.getText();
-//		if (StringUtils.isNotBlank(nedPath))
-//            arg += "-n "+StringUtils.trimToEmpty(nedPath)+" ";
-//		else
-//			arg += "-n "+getDefaultNedSourcePath() +" ";
-
     }
 
     public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
@@ -491,18 +470,19 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
         	}
         }
 
-        Integer runs[] = LaunchPlugin.parseRuns(StringUtils.deleteWhitespace(fRunText.getText()), 2);
-        if (runs == null) {
-            setErrorMessage("The run number(s) should be in a format like: 0,2,7,9..11 or use * for ALL runs");
-            return false;
-        }
+        boolean isMultipleRuns;
+		try {
+			isMultipleRuns = OmnetppLaunchUtils.containsMultipleRuns(StringUtils.deleteWhitespace(fRunText.getText()));
+		} catch (CoreException e) {
+			setErrorMessage(e.getMessage());
+			return false;
+		}
 
         if (fOtherEnvButton.getSelection() && StringUtils.isEmpty(fOtherEnvText.getText())) {
             setErrorMessage("Environment type must be specified");
             return false;
         }
-        if (!fCmdenvButton.getSelection() && !fOtherEnvButton.getSelection()
-                && runs!=null && runs.length>1) {
+        if (!fCmdenvButton.getSelection() && !fOtherEnvButton.getSelection() && isMultipleRuns) {
             setErrorMessage("Multiple runs are only supported for the Command line environment");
             return false;
         }
@@ -731,7 +711,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
         hover.adapt(fRunText, new IHoverTextProvider() {
             public String getHoverTextFor(Control control, int x, int y, SizeConstraint outPreferredSize) {
                 if (infoText == null)
-                    infoText = LaunchPlugin.getSimulationRunInfo(config);
+                    infoText = OmnetppLaunchUtils.getSimulationRunInfo(config);
                 outPreferredSize.preferredWidth = 350;
                 return HoverSupport.addHTMLStyleSheet(runTooltip+"<pre>"+infoText+"</pre>");
             }
