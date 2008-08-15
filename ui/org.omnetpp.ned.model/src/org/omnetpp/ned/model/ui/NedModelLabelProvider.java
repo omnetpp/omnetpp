@@ -14,6 +14,7 @@ import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IHasDisplayString;
+import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.pojo.*;
 
 /**
@@ -25,6 +26,9 @@ public class NedModelLabelProvider extends LabelProvider {
 
 	@Override
     public String getText(Object obj) {
+	    if (obj instanceof INEDTypeInfo)
+	        obj = ((INEDTypeInfo)obj).getNEDElement();
+	    
         INEDElement model = (INEDElement)obj;
         String label = "???";
 

@@ -9,7 +9,8 @@ Export-Package: org.omnetpp.ned.model,
  org.omnetpp.ned.model.ex,
  org.omnetpp.ned.model.interfaces,
  org.omnetpp.ned.model.notification,
- org.omnetpp.ned.model.pojo
+ org.omnetpp.ned.model.pojo,
+ org.omnetpp.ned.model.ui
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui,
  org.eclipse.core.resources,
