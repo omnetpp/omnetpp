@@ -21,7 +21,6 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.dialogs.ListDialog;
@@ -57,9 +56,12 @@ public class IniFileSimulationShortcut implements ILaunchShortcut {
 	
 	public void searchAndLaunch(IFile iniFile, String mode) {
 		try {
-			ILaunchConfiguration lc = chooseLaunchConfig(iniFile, mode);
-			if (lc == null)
-				lc = createLaunchConfig(iniFile);
+			ILaunchConfiguration lc = OmnetppLaunchUtils.findOrChooseLaunchConfigAssociatedWith(iniFile, mode);
+			if (lc == null) {
+			     IFile exeFile = chooseExecutable(iniFile.getProject());
+			      if (exeFile != null) 
+			          lc = createLaunchConfig(exeFile, iniFile, null);
+			}
 			
 			if (lc != null)
 				lc.launch(mode, new NullProgressMonitor());
@@ -69,18 +71,18 @@ public class IniFileSimulationShortcut implements ILaunchShortcut {
 		}
 	}
 
-	protected ILaunchConfiguration createLaunchConfig(IFile iniFile)
-			throws CoreException {
-		String name = getLaunchManager().generateUniqueLaunchConfigurationNameFrom(iniFile.getProject().getName());
-		ILaunchConfigurationWorkingCopy wc = getLaunchConfigurationType().newInstance(null, name);
+	public static ILaunchConfiguration createLaunchConfig(IFile exeFile, IFile iniFile, String configName) throws CoreException {
+        ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
+        ILaunchConfigurationType launchType = launchManager.getLaunchConfigurationType(IOmnetppLaunchConstants.SIMULATION_LAUNCH_CONFIGURATION_TYPE);
+		String name = launchManager.generateUniqueLaunchConfigurationNameFrom(iniFile.getProject().getName());
+		ILaunchConfigurationWorkingCopy wc = launchType.newInstance(null, name);
 
-		IFile exeFile = chooseExecutable(iniFile.getProject());
-		if (exeFile == null) return null;
-		
 		wc.setAttribute(IOmnetppLaunchConstants.ATTR_WORKING_DIRECTORY, "${workspace_loc:"+iniFile.getParent().getFullPath().toString()+"}");
 		wc.setAttribute(IOmnetppLaunchConstants.ATTR_PROJECT_NAME, exeFile.getProject().getFullPath().toString());
 		wc.setAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, exeFile.getProjectRelativePath().toString());
 		wc.setAttribute(IOmnetppLaunchConstants.OPP_SHOWDEBUGVIEW, false);
+		if (configName != null)
+		    wc.setAttribute(IOmnetppLaunchConstants.OPP_CONFIG_NAME, configName);
     	wc.setAttribute(IOmnetppLaunchConstants.OPP_RUNNUMBER_FOR_DEBUG, "");
     	wc.setAttribute(IOmnetppLaunchConstants.OPP_RUNNUMBER, "");
     	wc.setAttribute(IOmnetppLaunchConstants.OPP_NUM_CONCURRENT_PROCESSES, 1);
@@ -90,39 +92,7 @@ public class IniFileSimulationShortcut implements ILaunchShortcut {
 		return wc.doSave();
 	}
 
-	protected ILaunchConfiguration chooseLaunchConfig(IFile iniFile, String mode) throws CoreException {
-		ILaunchConfiguration[] lConfigs = getLaunchManager().getLaunchConfigurations(getLaunchConfigurationType());
-		List<ILaunchConfiguration> matchingConfigs = new ArrayList<ILaunchConfiguration>();
-		for(ILaunchConfiguration config : lConfigs) 
-			if(ArrayUtils.contains(config.getMappedResources(), iniFile))
-				matchingConfigs.add(config);
-		
-        if (matchingConfigs.size() == 0)
-        	return null;
-        if (matchingConfigs.size() == 1)
-        	return matchingConfigs.get(0);
-        
-        ListDialog dialog = new ListDialog(DebugUIPlugin.getShell());
-        dialog.setLabelProvider(new LabelProvider() {
-        	@Override
-        	public String getText(Object element) {
-        		return ((ILaunchConfiguration)element).getName();
-        	}
-        		
-        });
-        dialog.setContentProvider(new ArrayContentProvider());
-        dialog.setTitle("Select a configuration");
-        dialog.setMessage("Select the launch configuration that should be started.\n");
-        dialog.setInput(matchingConfigs);
-        
-		if (dialog.open() == IDialogConstants.OK_ID && dialog.getResult().length > 0) {
-			return ((ILaunchConfiguration)dialog.getResult()[0]);
-		}
-		
-		return null;
-	}
-
-	protected IFile chooseExecutable(IProject project) {
+	public static IFile chooseExecutable(IProject project) {
 		final List<IFile> exeFiles = new ArrayList<IFile>();
         IProject[] projects = ProjectUtils.getAllReferencedProjects(project);
         projects = (IProject[]) ArrayUtils.add(projects, project);
@@ -168,14 +138,6 @@ public class IniFileSimulationShortcut implements ILaunchShortcut {
 		}
 		
 		return null;
-	}
-	
-	protected ILaunchConfigurationType getLaunchConfigurationType() {
-		return getLaunchManager().getLaunchConfigurationType(IOmnetppLaunchConstants.SIMULATION_LAUNCH_CONFIGURATION_TYPE);
-	}
-
-	protected ILaunchManager getLaunchManager() {
-		return DebugPlugin.getDefault().getLaunchManager();
 	}
 
 }

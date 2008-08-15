@@ -25,9 +25,15 @@ import org.eclipse.core.variables.IStringVariableManager;
 import org.eclipse.core.variables.VariablesPlugin;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunchConfiguration;
+import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
+import org.eclipse.debug.internal.ui.DebugUIPlugin;
+import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
+import org.eclipse.ui.dialogs.ListDialog;
 import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ide.OmnetppMainPlugin;
@@ -515,4 +521,45 @@ public class OmnetppLaunchUtils {
 		// we should have a consistent marker char/tag during user input
 		return text.contains("Enter parameter");
 	}
+
+	/**
+	 * Returns the launch configuration associated with the resource (using 
+	 * ILaunchConfiguration.getMappedResources()); if there's more than one,
+	 * lets the user choose from a dialog. Returns null if there's no associated
+	 * launch config, or the user cancelled.
+	 */
+    public static ILaunchConfiguration findOrChooseLaunchConfigAssociatedWith(IFile iniFile, String mode) throws CoreException {
+        ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
+        ILaunchConfigurationType launchType = launchManager.getLaunchConfigurationType(IOmnetppLaunchConstants.SIMULATION_LAUNCH_CONFIGURATION_TYPE);
+        
+    	ILaunchConfiguration[] launchConfigs = launchManager.getLaunchConfigurations(launchType);
+    	List<ILaunchConfiguration> matchingConfigs = new ArrayList<ILaunchConfiguration>();
+    	for(ILaunchConfiguration config : launchConfigs) 
+    		if(ArrayUtils.contains(config.getMappedResources(), iniFile))
+    			matchingConfigs.add(config);
+    	
+        if (matchingConfigs.size() == 0)
+        	return null;
+        if (matchingConfigs.size() == 1)
+        	return matchingConfigs.get(0);
+        
+        ListDialog dialog = new ListDialog(DebugUIPlugin.getShell());
+        dialog.setLabelProvider(new LabelProvider() {
+        	@Override
+        	public String getText(Object element) {
+        		return ((ILaunchConfiguration)element).getName();
+        	}
+        		
+        });
+        dialog.setContentProvider(new ArrayContentProvider());
+        dialog.setTitle("Choose Launch Configuration");
+        dialog.setMessage("Select a launch configuration to start.");
+        dialog.setInput(matchingConfigs);
+        
+    	if (dialog.open() == IDialogConstants.OK_ID && dialog.getResult().length > 0) {
+    		return ((ILaunchConfiguration)dialog.getResult()[0]);
+    	}
+    	
+    	return null;
+    }
 }

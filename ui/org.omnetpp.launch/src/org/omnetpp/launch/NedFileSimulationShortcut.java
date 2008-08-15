@@ -75,17 +75,23 @@ public class NedFileSimulationShortcut implements ILaunchShortcut {
 
     public void searchAndLaunch(IFile nedFile, String mode) {
         try {
-            ILaunchConfiguration lc = chooseLaunchConfig(nedFile, mode);
+            ILaunchConfiguration lc = OmnetppLaunchUtils.findOrChooseLaunchConfigAssociatedWith(nedFile, mode);
             if (lc == null) {
+                // find or create a matching ini file
                 InifileConfig cfg = chooseOrCreateInifileConfig(nedFile, mode);
-                if (cfg != null)
-                    lc = createLaunchConfigForInifile(cfg.iniFile, cfg.config);
+                
+                if (cfg != null) {
+                    // launch the ini file (and selected config)
+                    IFile exeFile = IniFileSimulationShortcut.chooseExecutable(cfg.iniFile.getProject());
+                    if (exeFile != null) 
+                        lc = IniFileSimulationShortcut.createLaunchConfig(exeFile, cfg.iniFile, cfg.config);
+                }
             }
 
             if (lc != null)
                 lc.launch(mode, new NullProgressMonitor());
-
-        } catch (CoreException e) {
+        } 
+        catch (CoreException e) {
             LaunchPlugin.logError(e);
             ErrorDialog.openError(Display.getCurrent().getActiveShell(), "Error", 
                     "Error launching network in NED file", e.getStatus());
@@ -213,39 +219,6 @@ public class NedFileSimulationShortcut implements ILaunchShortcut {
         if (dialog.open() == IDialogConstants.OK_ID && dialog.getResult().length > 0) {
             return ((InifileConfig)dialog.getResult()[0]);
         }
-        return null;
-    }
-
-    // FIXME there's a copy in IniFileSimulationShortcut -- factor out!
-    protected ILaunchConfiguration chooseLaunchConfig(IFile nedFile, String mode) throws CoreException {
-        ILaunchConfiguration[] lConfigs = getLaunchManager().getLaunchConfigurations(getLaunchConfigurationType());
-        List<ILaunchConfiguration> matchingConfigs = new ArrayList<ILaunchConfiguration>();
-        for (ILaunchConfiguration config : lConfigs) 
-            if (ArrayUtils.contains(config.getMappedResources(), nedFile))
-                matchingConfigs.add(config);
-
-        if (matchingConfigs.size() == 0)
-            return null;
-        if (matchingConfigs.size() == 1)
-            return matchingConfigs.get(0);
-
-        ListDialog dialog = new ListDialog(DebugUIPlugin.getShell());
-        dialog.setLabelProvider(new LabelProvider() {
-            @Override
-            public String getText(Object element) {
-                return ((ILaunchConfiguration)element).getName();
-            }
-
-        });
-        dialog.setContentProvider(new ArrayContentProvider());
-        dialog.setTitle("Select a configuration");
-        dialog.setMessage("Select the launch configuration that should be started.\n");
-        dialog.setInput(matchingConfigs);
-
-        if (dialog.open() == IDialogConstants.OK_ID && dialog.getResult().length > 0) {
-            return ((ILaunchConfiguration)dialog.getResult()[0]);
-        }
-
         return null;
     }
 
