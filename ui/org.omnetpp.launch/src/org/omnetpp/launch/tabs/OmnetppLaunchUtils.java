@@ -208,7 +208,7 @@ public class OmnetppLaunchUtils {
 			exeName = new Path(exeName).removeFirstSegments(1).toString();
 		}
 
-		if(Platform.getOS().equals(Platform.OS_WIN32) && !exeName.endsWith(".exe"))
+		if (Platform.getOS().equals(Platform.OS_WIN32) && !exeName.matches("(?i).*\\.(exe|cmd|bat)$"))
 			exeName += ".exe";
 		newCfg.setAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, exeName);
 
