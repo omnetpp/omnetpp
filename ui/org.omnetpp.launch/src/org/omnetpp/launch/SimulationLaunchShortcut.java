@@ -103,23 +103,55 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
             // find launch config already associated with the file
             ILaunchConfiguration lc = findOrChooseLaunchConfigAssociatedWith(resource, mode);
             if (lc == null) {
-                // choose executable to launch
-                IFile exeFile = chooseExecutable(resource.getProject()); //FIXME asks exe EVEN IF NED FILE CONTAINS NO NETWORK!
-                if (exeFile == null)
-                    return; //FIXME what if opp_run + dll-based?
-
-                // determine ini file and config to use for launching
+                // determine executable, ini file and ini config to use for launching
+                IFile exeFile = null;
                 IFile iniFile = null;
                 String configName = null;
+                
                 if (resource instanceof IFile && "ini".equals(resource.getFileExtension())) {
+                    // choose executable to launch
+                    exeFile = chooseExecutable(resource.getProject());
+                    if (exeFile == null)
+                        return; //FIXME what if opp_run + dll-based?
+
+                    // use selected ini file
                     iniFile = (IFile)resource;
                 }
                 else if (resource instanceof IFile && "ned".equals(resource.getFileExtension())) {
-                    // find or create a matching ini file
+                    // must be a valid NED file and must contain at least one network
                     IFile nedFile = (IFile)resource;
-                    InifileConfig iniFileAndConfig = chooseOrCreateIniFileForNedFile(nedFile, mode);
+                    NEDResources res = NEDResourcesPlugin.getNEDResources();
+                    if (!res.isNedFile(nedFile)) {
+                        MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Cannot launch simulation: '" + nedFile.getName() + "' is not a NED file, or it is not in a NED source folder.");
+                        return;
+                    }
+
+                    List<INEDTypeInfo> networks = getNetworksInNedFile(nedFile);
+                    if (networks.isEmpty()) {
+                        MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Cannot launch simulation: '" + nedFile.getName() + "' does not contain a network.");
+                        return;
+                    }
+
+                    // choose executable to launch (note: we don't do this if NED file is not OK!)
+                    exeFile = chooseExecutable(resource.getProject());
+                    if (exeFile == null)
+                        return; //FIXME what if opp_run + dll-based?
+                    
+                    // collect ini files that instantiate any of these networks
+                    List<InifileConfig> candidates = collectInifileConfigsForNetworks(nedFile, networks);
+
+                    // choose or create one
+                    InifileConfig iniFileAndConfig;
+                    if (candidates.size() == 1)
+                        iniFileAndConfig = candidates.get(0);
+                    else if (candidates.size() > 1)
+                        iniFileAndConfig = chooseInifileConfigFromDialog(candidates, nedFile.getParent());
+                    else /*if empty*/
+                        iniFileAndConfig = askAndCreateInifile(nedFile, networks);
+
                     if (iniFileAndConfig == null)
                         return; // user cancelled
+                    
                     iniFile = iniFileAndConfig.iniFile;
                     configName = iniFileAndConfig.config;
                 } 
@@ -153,34 +185,6 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
             ErrorDialog.openError(Display.getCurrent().getActiveShell(), "Error", 
                     "Error launching simulation for '" + resource.getFullPath() +"'", e.getStatus());
         }
-    }
-
-    /**
-     * When the user selected a NED file for launch, we have to find a matching 
-     * ini file (or files), or offer creating one.
-     */
-    protected InifileConfig chooseOrCreateIniFileForNedFile(IFile nedFile, String mode) throws CoreException {
-        NEDResources res = NEDResourcesPlugin.getNEDResources();
-        if (!res.isNedFile(nedFile)) {
-            MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Cannot launch simulation: " + nedFile.getName() + " is not a NED file, or it is not in a NED source folder.");
-            return null;
-        }
-
-        List<INEDTypeInfo> networks = getNetworksInNedFile(nedFile);
-        if (networks.isEmpty()) {
-            MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Cannot launch simulation: " + nedFile.getName() + " contains no network.");
-            return null;
-        }
-
-        // collect ini files that instantiate any of these networks
-        List<InifileConfig> candidates = collectInifileConfigsForNetworks(nedFile, networks);
-
-        if (candidates.isEmpty())
-            return askAndCreateInifile(nedFile, networks);
-        else if (candidates.size() == 1)
-            return candidates.get(0);
-        else
-            return chooseInifileConfigFromDialog(candidates, nedFile.getParent());
     }
 
     /**
@@ -440,7 +444,7 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
      * lets the user choose from a dialog. Returns null if there's no associated
      * launch config, or the user cancelled.
      */
-    public ILaunchConfiguration findOrChooseLaunchConfigAssociatedWith(IResource resource, String mode) throws CoreException {
+    protected ILaunchConfiguration findOrChooseLaunchConfigAssociatedWith(IResource resource, String mode) throws CoreException {
         ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
         ILaunchConfigurationType launchType = launchManager.getLaunchConfigurationType(IOmnetppLaunchConstants.SIMULATION_LAUNCH_CONFIGURATION_TYPE);
 
@@ -467,10 +471,9 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
         dialog.setMessage("Select a launch configuration to start.");
         dialog.setInput(matchingConfigs);
 
-        if (dialog.open() == IDialogConstants.OK_ID && dialog.getResult().length > 0) {
+        if (dialog.open() == IDialogConstants.OK_ID && dialog.getResult().length > 0)
             return ((ILaunchConfiguration)dialog.getResult()[0]);
-        }
-
-        return null;
+        else 
+            return null;
     }
 }
