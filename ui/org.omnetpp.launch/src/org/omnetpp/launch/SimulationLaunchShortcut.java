@@ -3,7 +3,11 @@ package org.omnetpp.launch;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
@@ -39,6 +43,7 @@ import org.eclipse.ui.dialogs.ListDialog;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.FileUtils;
+import org.omnetpp.inifile.editor.model.ConfigRegistry;
 import org.omnetpp.inifile.editor.model.InifileParser;
 import org.omnetpp.inifile.editor.model.ParseException;
 import org.omnetpp.launch.tabs.OmnetppLaunchUtils;
@@ -83,11 +88,18 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
     public static final String PREF_SKIP_LAUNCHCONFIGCREATED_MESSAGE = "org.omnetpp.launch.SkipLaunchConfigCreatedMsg";
 
     protected static class InifileConfig {
-        InifileConfig(IFile f, String c, String n) {iniFile=f; config=c; network=n;}
+        InifileConfig(IFile f, String c, String n) {iniFile=f; configName=c; network=n;}
         IFile iniFile;
-        String config;
+        String configName;
         String network; 
     }
+    private static class Section {
+        String configName;
+        String extendsName;
+        String description;
+        String network;
+    }
+
 
     public void launch(ISelection selection, String mode) {
         if (selection instanceof IStructuredSelection) {
@@ -114,7 +126,7 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
                 IFile exeFile = null;
                 IFile iniFile = null;
                 String configName = null;
-                
+
                 if (resource instanceof IFile && "ini".equals(resource.getFileExtension())) {
                     // choose executable to launch
                     exeFile = chooseExecutable(resource.getProject());
@@ -143,7 +155,7 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
                     exeFile = chooseExecutable(resource.getProject());
                     if (exeFile == null)
                         return; //FIXME what if opp_run + dll-based?
-                    
+
                     // collect ini files that instantiate any of these networks
                     List<InifileConfig> candidates = collectInifileConfigsForNetworks(nedFile, networks);
 
@@ -158,9 +170,9 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
 
                     if (iniFileAndConfig == null)
                         return; // user cancelled
-                    
+
                     iniFile = iniFileAndConfig.iniFile;
-                    configName = iniFileAndConfig.config;
+                    configName = iniFileAndConfig.configName;
                 } 
                 else {
                     return; // resource not supported
@@ -238,29 +250,43 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
         String interestingInifileRegex = "(?s).*\\b(include|" +StringUtils.join(networkNames, "|") + ")\\b.*";
 
         // now, find those inifiles that refer to this network
-        final List<InifileConfig> result = new ArrayList<InifileConfig>();
-        for (final IFile iniFile : iniFiles) {
+        List<InifileConfig> result = new ArrayList<InifileConfig>();
+        for (IFile iniFile : iniFiles) {
             try {
                 String iniFileText = FileUtils.readTextFile(iniFile.getContents());
                 if (iniFileText.matches(interestingInifileRegex)) {
                     // inifile looks interesting, so parse it
-                    final boolean isSameDir = iniFile.getParent().equals(nedFile.getParent());
-                    InifileParser inifileParser = new InifileParser();
-                    inifileParser.parse(iniFileText, new InifileParser.ParserAdapter() {
-                        String currentSection = null;
-                        public void sectionHeadingLine(int lineNumber, int numLines, String rawLine, String sectionName, String rawComment) {
-                            currentSection = sectionName;
+                    boolean isSameDir = iniFile.getParent().equals(nedFile.getParent());
+                    Map<String,Section> sections = parseInifile(iniFileText);
+
+                    // first, add to the result all where network matches
+                    Set<Section> interestingSections = new HashSet<Section>(); 
+                    for (Section section : sections.values()) {
+                        if (section.network != null) {
+                            if (isSameDir && ArrayUtils.contains(networkNames, section.network))
+                                interestingSections.add(section);
+                            else if (section.network.startsWith(packagePrefix) && ArrayUtils.contains(networkNames, StringUtils.removeStart(section.network, packagePrefix)))
+                                interestingSections.add(section);
                         }
-                        public void keyValueLine(int lineNumber, int numLines, String rawLine, String key, String value, String rawComment) {
-                            if (key.equals("network")) {
-                                if (isSameDir && ArrayUtils.contains(networkNames, value))
-                                    result.add(new InifileConfig(iniFile, currentSection, value));
-                                else if (value.startsWith(packagePrefix) && ArrayUtils.contains(networkNames, StringUtils.removeStart(value, packagePrefix)))
-                                    result.add(new InifileConfig(iniFile, currentSection, value));
-                                //FIXME sections extending this one should also be added!
+                    }
+                    // transitive closure: add sections that extend the already 
+                    // added ones, without overwriting the "network=" setting
+                    boolean again = true;
+                    while (again) {
+                        again = false;
+                        for (Section s : sections.values()) {
+                            if (!interestingSections.contains(s) && s.network == null) {
+                                Section baseSection = sections.get(StringUtils.defaultString(s.extendsName,"General"));
+                                if (interestingSections.contains(baseSection)) {
+                                    s.network = baseSection.network; // propagate up network name
+                                    interestingSections.add(s);
+                                    again = true;
+                                }
                             }
                         }
-                    });
+                    }
+                    for (Section s : interestingSections)
+                        result.add(new InifileConfig(iniFile, s.configName, s.network));
                 }
             }
             catch (ParseException e) { }
@@ -269,6 +295,38 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
 
         }
         return result;
+    }
+
+    /**
+     * Extracts section names, and their extends=, network= and description= 
+     * entries into a map. The "Config " prefix is stripped from section names.
+     */
+    //TODO should resolve includes, and process them too
+    protected Map<String,Section> parseInifile(String inifileText) throws ParseException, IOException {
+        final Map<String, Section> sections = new HashMap<String, Section>();
+        InifileParser inifileParser = new InifileParser();
+        inifileParser.parse(inifileText, new InifileParser.ParserAdapter() {
+            Section currentSection = null;
+            public void sectionHeadingLine(int lineNumber, int numLines, String rawLine, String sectionName, String rawComment) {
+                currentSection = sections.get(sectionName);
+                if (currentSection == null) {
+                    currentSection = new Section();
+                    currentSection.configName = StringUtils.removeStart(sectionName, ConfigRegistry.CONFIG_);
+                    sections.put(currentSection.configName, currentSection);
+                }
+            }
+            public void keyValueLine(int lineNumber, int numLines, String rawLine, String key, String value, String rawComment) {
+                if (currentSection!=null) {
+                    if (key.equals(ConfigRegistry.CFGID_NETWORK.getKey()))
+                        currentSection.network = value;
+                    else if (key.equals(ConfigRegistry.EXTENDS))
+                        currentSection.extendsName = value;
+                    else if (key.equals(ConfigRegistry.CFGID_DESCRIPTION.getKey()))
+                        currentSection.description = value;
+                }                
+            }
+        });
+        return sections;
     }
 
     /**
@@ -357,7 +415,7 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
             public String getText(Object element) {
                 InifileConfig cfg = (InifileConfig)element;
                 String friendlyFileName = defaultDir.equals(cfg.iniFile.getParent()) ? cfg.iniFile.getName() : cfg.iniFile.getFullPath().toString();
-                return friendlyFileName + " - " + cfg.config + " - network: " + cfg.network;
+                return friendlyFileName + " - " + cfg.configName + " - network: " + cfg.network;
             }
             @Override
             public Image getImage(Object element) {
