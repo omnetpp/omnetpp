@@ -38,6 +38,7 @@ import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.dialogs.ListDialog;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.omnetpp.common.project.ProjectUtils;
+import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.inifile.editor.model.InifileParser;
 import org.omnetpp.inifile.editor.model.ParseException;
 import org.omnetpp.launch.tabs.OmnetppLaunchUtils;
@@ -72,6 +73,12 @@ import org.omnetpp.ned.model.ui.NedModelLabelProvider;
  *
  * @author andras
  */
+//FIXME "Config " must be stripped from section names
+//FIXME offers too many executables for INET
+//FIXME chooses wrong launch config names for INET (all are "INET"!)
+//FIXME opp_run not supported
+//FIXME subclassed configs not offered from ini files
+//FIXME includes are not resolved in ini files
 public class SimulationLaunchShortcut implements ILaunchShortcut {
     public static final String PREF_SKIP_LAUNCHCONFIGCREATED_MESSAGE = "org.omnetpp.launch.SkipLaunchConfigCreatedMsg";
 
@@ -228,29 +235,33 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
         final String[] networkNames = new String[networks.size()];
         for (int i=0; i<networks.size(); i++)
             networkNames[i] = networks.get(i).getName();
+        String interestingInifileRegex = "(?s).*\\b(include|" +StringUtils.join(networkNames, "|") + ")\\b.*";
 
         // now, find those inifiles that refer to this network
         final List<InifileConfig> result = new ArrayList<InifileConfig>();
         for (final IFile iniFile : iniFiles) {
-            // parse the inifile
             try {
-                final boolean isSameDir = iniFile.getParent().equals(nedFile.getParent());
-                InifileParser inifileParser = new InifileParser();
-                inifileParser.parse(iniFile, new InifileParser.ParserAdapter() {
-                    String currentSection = null;
-                    public void sectionHeadingLine(int lineNumber, int numLines, String rawLine, String sectionName, String rawComment) {
-                        currentSection = sectionName;
-                    }
-                    public void keyValueLine(int lineNumber, int numLines, String rawLine, String key, String value, String rawComment) {
-                        if (key.equals("network")) {
-                            if (isSameDir && ArrayUtils.contains(networkNames, value))
-                                result.add(new InifileConfig(iniFile, currentSection, value));
-                            else if (value.startsWith(packagePrefix) && ArrayUtils.contains(networkNames, StringUtils.removeStart(value, packagePrefix)))
-                                result.add(new InifileConfig(iniFile, currentSection, value));
-                            //FIXME sections extending this one should also be added!
+                String iniFileText = FileUtils.readTextFile(iniFile.getContents());
+                if (iniFileText.matches(interestingInifileRegex)) {
+                    // inifile looks interesting, so parse it
+                    final boolean isSameDir = iniFile.getParent().equals(nedFile.getParent());
+                    InifileParser inifileParser = new InifileParser();
+                    inifileParser.parse(iniFileText, new InifileParser.ParserAdapter() {
+                        String currentSection = null;
+                        public void sectionHeadingLine(int lineNumber, int numLines, String rawLine, String sectionName, String rawComment) {
+                            currentSection = sectionName;
                         }
-                    }
-                });
+                        public void keyValueLine(int lineNumber, int numLines, String rawLine, String key, String value, String rawComment) {
+                            if (key.equals("network")) {
+                                if (isSameDir && ArrayUtils.contains(networkNames, value))
+                                    result.add(new InifileConfig(iniFile, currentSection, value));
+                                else if (value.startsWith(packagePrefix) && ArrayUtils.contains(networkNames, StringUtils.removeStart(value, packagePrefix)))
+                                    result.add(new InifileConfig(iniFile, currentSection, value));
+                                //FIXME sections extending this one should also be added!
+                            }
+                        }
+                    });
+                }
             }
             catch (ParseException e) { }
             catch (CoreException e) { }
