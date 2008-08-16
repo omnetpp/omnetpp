@@ -78,26 +78,20 @@ import org.omnetpp.ned.model.ui.NedModelLabelProvider;
  *
  * @author andras
  */
-//FIXME "Config " must be stripped from section names
 //FIXME offers too many executables for INET
-//FIXME chooses wrong launch config names for INET (all are "INET"!)
+//FIXME chooses wrong names for launch configs in INET (all are "INET"!)
 //FIXME opp_run not supported
-//FIXME subclassed configs not offered from ini files
 //FIXME includes are not resolved in ini files
 public class SimulationLaunchShortcut implements ILaunchShortcut {
     public static final String PREF_SKIP_LAUNCHCONFIGCREATED_MESSAGE = "org.omnetpp.launch.SkipLaunchConfigCreatedMsg";
 
-    protected static class InifileConfig {
-        InifileConfig(IFile f, String c, String n) {iniFile=f; configName=c; network=n;}
+    protected static class IniSection {
         IFile iniFile;
-        String configName;
-        String network; 
-    }
-    private static class Section {
         String configName;
         String extendsName;
         String description;
         String network;
+        public String toString() {return iniFile+"/"+configName;}
     }
 
 
@@ -157,10 +151,10 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
                         return; //FIXME what if opp_run + dll-based?
 
                     // collect ini files that instantiate any of these networks
-                    List<InifileConfig> candidates = collectInifileConfigsForNetworks(nedFile, networks);
+                    List<IniSection> candidates = collectInifileConfigsForNetworks(nedFile, networks);
 
                     // choose or create one
-                    InifileConfig iniFileAndConfig;
+                    IniSection iniFileAndConfig;
                     if (candidates.size() == 1)
                         iniFileAndConfig = candidates.get(0);
                     else if (candidates.size() > 1)
@@ -222,7 +216,7 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
     /**
      * Finds and returns all ini files that run the given network.
      */
-    protected List<InifileConfig> collectInifileConfigsForNetworks(IFile nedFile, List<INEDTypeInfo> networks) {
+    protected List<IniSection> collectInifileConfigsForNetworks(IFile nedFile, List<INEDTypeInfo> networks) {
         for (INEDTypeInfo network : networks)
             Assert.isTrue(network.getNEDFile().equals(nedFile)); // must be in the specified file
 
@@ -250,18 +244,18 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
         String interestingInifileRegex = "(?s).*\\b(include|" +StringUtils.join(networkNames, "|") + ")\\b.*";
 
         // now, find those inifiles that refer to this network
-        List<InifileConfig> result = new ArrayList<InifileConfig>();
+        List<IniSection> result = new ArrayList<IniSection>();
         for (IFile iniFile : iniFiles) {
             try {
                 String iniFileText = FileUtils.readTextFile(iniFile.getContents());
                 if (iniFileText.matches(interestingInifileRegex)) {
                     // inifile looks interesting, so parse it
                     boolean isSameDir = iniFile.getParent().equals(nedFile.getParent());
-                    Map<String,Section> sections = parseInifile(iniFileText);
+                    Map<String,IniSection> sections = parseInifile(iniFileText, iniFile);
 
-                    // first, add to the result all where network matches
-                    Set<Section> interestingSections = new HashSet<Section>(); 
-                    for (Section section : sections.values()) {
+                    // first, collect sections where network matches
+                    Set<IniSection> interestingSections = new HashSet<IniSection>(); 
+                    for (IniSection section : sections.values()) {
                         if (section.network != null) {
                             if (isSameDir && ArrayUtils.contains(networkNames, section.network))
                                 interestingSections.add(section);
@@ -274,9 +268,9 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
                     boolean again = true;
                     while (again) {
                         again = false;
-                        for (Section s : sections.values()) {
+                        for (IniSection s : sections.values()) {
                             if (!interestingSections.contains(s) && s.network == null) {
-                                Section baseSection = sections.get(StringUtils.defaultString(s.extendsName,"General"));
+                                IniSection baseSection = sections.get(StringUtils.defaultString(s.extendsName,"General"));
                                 if (interestingSections.contains(baseSection)) {
                                     s.network = baseSection.network; // propagate up network name
                                     interestingSections.add(s);
@@ -285,8 +279,7 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
                             }
                         }
                     }
-                    for (Section s : interestingSections)
-                        result.add(new InifileConfig(iniFile, s.configName, s.network));
+                    result.addAll(interestingSections);
                 }
             }
             catch (ParseException e) { }
@@ -302,15 +295,16 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
      * entries into a map. The "Config " prefix is stripped from section names.
      */
     //TODO should resolve includes, and process them too
-    protected Map<String,Section> parseInifile(String inifileText) throws ParseException, IOException {
-        final Map<String, Section> sections = new HashMap<String, Section>();
+    protected Map<String,IniSection> parseInifile(String inifileText, final IFile iniFile) throws ParseException, IOException {
+        final Map<String, IniSection> sections = new HashMap<String, IniSection>();
         InifileParser inifileParser = new InifileParser();
         inifileParser.parse(inifileText, new InifileParser.ParserAdapter() {
-            Section currentSection = null;
+            IniSection currentSection = null;
             public void sectionHeadingLine(int lineNumber, int numLines, String rawLine, String sectionName, String rawComment) {
                 currentSection = sections.get(sectionName);
                 if (currentSection == null) {
-                    currentSection = new Section();
+                    currentSection = new IniSection();
+                    currentSection.iniFile = iniFile;
                     currentSection.configName = StringUtils.removeStart(sectionName, ConfigRegistry.CONFIG_);
                     sections.put(currentSection.configName, currentSection);
                 }
@@ -333,7 +327,7 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
      * Ask the user if s/he wants to create an ini file for one of the networks 
      * in the given NED file, then create the inifile. Returns null if user cancelled.
      */
-    protected InifileConfig askAndCreateInifile(IFile nedFile, List<INEDTypeInfo> networks) throws CoreException {
+    protected IniSection askAndCreateInifile(IFile nedFile, List<INEDTypeInfo> networks) throws CoreException {
         String networkNames = "";
         for (INEDTypeInfo network : networks) {
             Assert.isTrue(network.getNEDFile().equals(nedFile)); // must be in the specified file
@@ -392,14 +386,18 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
      * Creates the given inifile with a network= setting to run the given network.
      * The file must NOT yet exist.
      */
-    protected InifileConfig createInifile(IFile iniFile, INEDTypeInfo network) throws CoreException {
+    protected IniSection createInifile(IFile iniFile, INEDTypeInfo network) throws CoreException {
         String content = 
             "[General]\n" +
             "network = " + network.getName() + "\n" +
             "**.apply-default = true\n";
         iniFile.create(new ByteArrayInputStream(content.getBytes()), false, new NullProgressMonitor());
 
-        return new InifileConfig(iniFile, "General", network.getName());
+        IniSection section = new IniSection();
+        section.iniFile = iniFile;
+        section.configName = "General";
+        section.network = network.getName();
+        return section;
     }
 
     /**
@@ -407,19 +405,19 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
      * Inifile names that are in the given default folder will be shown without path (just the name).
      * Returns null if user cancelled. 
      */
-    protected InifileConfig chooseInifileConfigFromDialog(List<InifileConfig> candidates, final IContainer defaultDir) {
+    protected IniSection chooseInifileConfigFromDialog(List<IniSection> candidates, final IContainer defaultDir) {
         ListDialog dialog = new ListDialog(Display.getCurrent().getActiveShell());
         final WorkbenchLabelProvider workbenchLabelProvider = new WorkbenchLabelProvider(); // cannot subclass, due to final methods
         dialog.setLabelProvider(new LabelProvider() {
             @Override
             public String getText(Object element) {
-                InifileConfig cfg = (InifileConfig)element;
+                IniSection cfg = (IniSection)element;
                 String friendlyFileName = defaultDir.equals(cfg.iniFile.getParent()) ? cfg.iniFile.getName() : cfg.iniFile.getFullPath().toString();
                 return friendlyFileName + " - " + cfg.configName + " - network: " + cfg.network;
             }
             @Override
             public Image getImage(Object element) {
-                InifileConfig cfg = (InifileConfig)element;
+                IniSection cfg = (IniSection)element;
                 return workbenchLabelProvider.getImage(cfg.iniFile);
             }
         });
@@ -429,7 +427,7 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
         dialog.setInput(candidates);
 
         if (dialog.open() == IDialogConstants.OK_ID && dialog.getResult().length > 0) {
-            return ((InifileConfig)dialog.getResult()[0]);
+            return ((IniSection)dialog.getResult()[0]);
         }
         return null;
     }
