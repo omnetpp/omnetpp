@@ -18,7 +18,7 @@ public class BuildSpecification {
     
     /** 
      * Returns the set of folders for which there's some explicitly set
-     * folder type or option. Child folders of those inherit the settings.
+     * folder type or option.
      */
     public IContainer[] getMakemakeFolders() {
         return folderMakemakeOptions.keySet().toArray(new IContainer[]{});

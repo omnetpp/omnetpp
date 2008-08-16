@@ -282,9 +282,27 @@
    <extension
          point="org.eclipse.core.variables.dynamicVariables">
       <variable
-            description="Expands to the shared libraries used by the project"
+            description="Expands to the list of shared libraries built by the OMNeT++ project and the projects it references"
             name="opp_shared_libs"
-            resolver="org.omnetpp.cdt.launch.SharedLibsResolver"
+            resolver="org.omnetpp.cdt.launch.OppVariableResolver"
+            supportsArgument="true">
+      </variable>
+   </extension>
+   <extension
+         point="org.eclipse.core.variables.dynamicVariables">
+      <variable
+            description="Expands to the list of static libraries built by the OMNeT++ project and the projects it references"
+            name="opp_static_libs"
+            resolver="org.omnetpp.cdt.launch.OppVariableResolver"
+            supportsArgument="true">
+      </variable>
+   </extension>
+   <extension
+         point="org.eclipse.core.variables.dynamicVariables">
+      <variable
+            description="Expands to the list of executables built by the OMNeT++ project and the projects it references"
+            name="opp_simprogs"
+            resolver="org.omnetpp.cdt.launch.OppVariableResolver"
             supportsArgument="true">
       </variable>
    </extension>

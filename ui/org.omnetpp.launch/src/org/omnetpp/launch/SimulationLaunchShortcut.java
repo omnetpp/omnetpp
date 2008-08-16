@@ -79,7 +79,6 @@ import org.omnetpp.ned.model.ui.NedModelLabelProvider;
  * @author andras
  */
 //FIXME offers too many executables for INET
-//FIXME chooses wrong names for launch configs in INET (all are "INET"!)
 //FIXME opp_run not supported
 //FIXME includes are not resolved in ini files
 public class SimulationLaunchShortcut implements ILaunchShortcut {
@@ -117,6 +116,7 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
             ILaunchConfiguration lc = findOrChooseLaunchConfigAssociatedWith(resource, mode);
             if (lc == null) {
                 // determine executable, ini file and ini config to use for launching
+                String launchName = null;
                 IFile exeFile = null;
                 IFile iniFile = null;
                 String configName = null;
@@ -129,6 +129,7 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
 
                     // use selected ini file
                     iniFile = (IFile)resource;
+                    launchName = resource.getParent().getName();
                 }
                 else if (resource instanceof IFile && "ned".equals(resource.getFileExtension())) {
                     // must be a valid NED file and must contain at least one network
@@ -167,13 +168,16 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
 
                     iniFile = iniFileAndConfig.iniFile;
                     configName = iniFileAndConfig.configName;
+                    launchName = (configName!=null && !configName.equals("General")) ? configName : 
+                        iniFileAndConfig.network!=null ? iniFileAndConfig.network : 
+                            nedFile.getParent().getName();
                 } 
                 else {
                     return; // resource not supported
                 }
 
                 // create launch config based on the above data
-                lc = createLaunchConfig(exeFile, iniFile, configName, resource);
+                lc = createLaunchConfig(launchName, exeFile, iniFile, configName, resource);
 
                 // tell novice users what happened
                 IPreferenceStore preferences = LaunchPlugin.getDefault().getPreferenceStore();
@@ -435,10 +439,12 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
     /**
      * Creates and saves a launch configuration with the given attributes. 
      */
-    protected ILaunchConfiguration createLaunchConfig(IFile exeFile, IFile iniFile, String configName, IResource resourceToAssociateWith) throws CoreException {
+    protected ILaunchConfiguration createLaunchConfig(String suggestedName, IFile exeFile, IFile iniFile, String configName, IResource resourceToAssociateWith) throws CoreException {
         ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
         ILaunchConfigurationType launchType = launchManager.getLaunchConfigurationType(IOmnetppLaunchConstants.SIMULATION_LAUNCH_CONFIGURATION_TYPE);
-        String name = launchManager.generateUniqueLaunchConfigurationNameFrom(iniFile.getProject().getName());
+        if (suggestedName == null)
+            suggestedName = resourceToAssociateWith.getParent().getName();
+        String name = launchManager.generateUniqueLaunchConfigurationNameFrom(suggestedName);
         ILaunchConfigurationWorkingCopy wc = launchType.newInstance(null, name);
 
         OmnetppMainTab.prepareLaunchConfig(wc);
