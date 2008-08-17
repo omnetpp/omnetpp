@@ -58,11 +58,11 @@ class NEDXML_API NEDParser
   protected:
     bool parseexpr;            // whether to parse expressions or not
     bool storesrc;             // whether to fill in sourceCode attributes
-    const char *filename;      // file being parsed
+    const char *filename;      // name of file being parsed
     NEDErrorStore *errors;     // accumulates error messages
     NEDFileBuffer *nedsource;  // represents the source file
 
-    bool loadFile(const char *fname);
+    bool loadFile(const char *osfname, const char *fname);
     bool loadText(const char *nedtext, const char *fname);
     NEDElement *parseNED();
     NEDElement *parseMSG();
@@ -115,17 +115,20 @@ class NEDXML_API NEDParser
     const char *getFileName() {return filename;}
 
     /**
-     * Parse the given NED file and return the result tree.
+     * Parses the given NED file (osfname), and returns the result tree.
      * Returns NULL or partial tree if there was an error.
+     * The fname parameter will be used to fill in the source location
+     * attributes; it defaults to osfname.
      */
-    NEDElement *parseNEDFile(const char *fname);
+    NEDElement *parseNEDFile(const char *osfname, const char *fname=NULL);
 
     /**
      * Parse the given NED source and return the result tree.
      * Returns NULL or partial tree if there was an error.
-     * Filename will be used to fill in the source location attribute.
+     * The fname parameter will be used to fill in the source location
+     * attributes; it defaults to "buffer".
      */
-    NEDElement *parseNEDText(const char *nedtext, const char *fname);
+    NEDElement *parseNEDText(const char *nedtext, const char *fname=NULL);
 
     /**
      * Parse the given text as a NED expression, and return the result tree.
@@ -136,15 +139,18 @@ class NEDXML_API NEDParser
     /**
      * Parse the given MSG (.msg) file and return the result tree.
      * Returns NULL or partial tree if there was an error.
+     * The fname parameter will be used to fill in the source location
+     * attributes; it defaults to osfname.
      */
-    NEDElement *parseMSGFile(const char *fname);
+    NEDElement *parseMSGFile(const char *osfname, const char *fname=NULL);
 
     /**
      * Parse the given MSG source and return the result tree.
      * Returns NULL or partial tree if there was an error.
-     * Filename will be used to fill in the source location attribute.
+     * The fname parameter will be used to fill in the source location
+     * attributes; it defaults to osfname.
      */
-    NEDElement *parseMSGText(const char *nedtext, const char *fname);
+    NEDElement *parseMSGText(const char *nedtext, const char *fname=NULL);
 };
 
 NAMESPACE_END

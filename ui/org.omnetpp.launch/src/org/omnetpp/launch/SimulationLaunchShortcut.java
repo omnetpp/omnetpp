@@ -192,7 +192,7 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
                     int result = MessageDialogWithToggle.openOkCancelConfirm(
                             Display.getCurrent().getActiveShell(), 
                             "Launch Configuration Created", 
-                            "A launch configuration named '" + lc.getName() + "' has been created, associated " +
+                            "A launch configuration named '" + lc.getName() + "' has been created, and associated " +
                             "with resource '" + resource.getName() + "'. You can modify or delete this launch configuration " +
                             "in the Run|Run Configurations... and Run|Debug Configurations... dialogs.", 
                             "Do not show this message again", false, 

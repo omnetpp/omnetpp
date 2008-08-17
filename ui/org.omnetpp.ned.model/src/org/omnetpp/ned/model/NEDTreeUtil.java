@@ -60,43 +60,42 @@ public class NEDTreeUtil {
 	/**
 	 * Load and parse NED file to a NEDElement tree. Returns a non-null,
 	 * DTD-conforming (but possibly incomplete) tree even in case of parse errors. 
- 	 * Callers should check NEDErrorStore to determine whether a parse error occurred. 
-	 * All errors produced here will be syntax errors (see NEDSYNTAXPROBLEM_MARKERID).
+     * The passed displayFileName will only be used to fill in the NedFileElement element 
+     * and source location attributes. Callers should check NEDErrorStore to determine 
+     * whether a parse error occurred. All errors produced here will be syntax errors 
+     * (see NEDSYNTAXPROBLEM_MARKERID).
 	 */
-	public static NedFileElementEx parseNedFile(String filename, INEDErrorStore errors) {
-        return doParseNedSource(null, errors, filename);
+	public static NedFileElementEx parseNedFile(String filesystemFilename, INEDErrorStore errors, String displayFilename) {
+        return doParseNedSource(null, filesystemFilename, errors, displayFilename);
 	}
 
     /**
      * Parse the NED source and return it as a NEDElement tree. Returns a non-null, 
      * DTD-conforming (but possibly incomplete) tree even in case of parse errors. 
-     * The passed fileName will only be used to fill in the NedFileElement element.
-     * Callers should check INEDErrorStore to determine whether a parse error occurred.
-     * All errors produced here will be syntax errors (see NEDSYNTAXPROBLEM_MARKERID).
+     * The passed displayFileName will only be used to fill in the NedFileElement element 
+     * and source location attributes. Callers should check INEDErrorStore to determine 
+     * whether a parse error occurred. All errors produced here will be syntax errors 
+     * (see NEDSYNTAXPROBLEM_MARKERID).
      */
-	public static NedFileElementEx parseNedText(String source, String filename, INEDErrorStore errors) {
-        return doParseNedSource(source, errors, filename);
+	public static NedFileElementEx parseNedText(String source, INEDErrorStore errors, String displayFilename) {
+        return doParseNedSource(source, null, errors, displayFilename);
 	}
 
-	private static NedFileElementEx doParseNedSource(String source, INEDErrorStore errors, String filename) {
-		Assert.isTrue(filename != null);
+	private static NedFileElementEx doParseNedSource(String source, String filesystemFilename, INEDErrorStore errors, String displayFilename) {
+		Assert.isTrue(displayFilename != null);
 		NEDElement swigTree = null;
 		try {
 			// parse
 			NEDErrorStore swigErrors = new NEDErrorStore();
 			NEDParser np = new NEDParser(swigErrors);
 			np.setParseExpressions(false);
-			swigTree = source!=null ? np.parseNEDText(source, filename) : np.parseNEDFile(filename);
+			swigTree = source!=null ? np.parseNEDText(source, displayFilename) : np.parseNEDFile(filesystemFilename, displayFilename);
 			if (swigTree == null) {
 				// return an empty NedFileElement if parsing totally failed
 				NedFileElementEx fileNode = (NedFileElementEx)NEDElementFactory.getInstance().createElement(NEDElementTags.NED_NED_FILE, null);
-				fileNode.setFilename(filename);
+				fileNode.setFilename(displayFilename);
 				return fileNode;
 			}
-
-			// set the file name property in the nedFileElement
-            if (NEDElementCode.swigToEnum(swigTree.getTagCode()) == NEDElementCode.NED_NED_FILE)
-                swigTree.setAttribute("filename", filename);
 
 			if (!swigErrors.empty()) {
 				// There were parse errors, and the tree built may not be entirely correct.

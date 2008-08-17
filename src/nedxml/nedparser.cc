@@ -98,9 +98,9 @@ NEDParser::~NEDParser()
     delete nedsource;
 }
 
-NEDElement *NEDParser::parseNEDFile(const char *fname)
+NEDElement *NEDParser::parseNEDFile(const char *osfname, const char *fname)
 {
-    if (!loadFile(fname))
+    if (!loadFile(osfname, fname))
         return NULL;
     return parseNED();
 }
@@ -119,9 +119,9 @@ NEDElement *NEDParser::parseNEDExpression(const char *nedexpression)
     return parseNEDText(source.c_str(), "buffer");
 }
 
-NEDElement *NEDParser::parseMSGFile(const char *fname)
+NEDElement *NEDParser::parseMSGFile(const char *osfname, const char *fname)
 {
-    if (!loadFile(fname))
+    if (!loadFile(osfname, fname))
         return NULL;
     return parseMSG();
 }
@@ -133,30 +133,36 @@ NEDElement *NEDParser::parseMSGText(const char *nedtext, const char *fname)
     return parseMSG();
 }
 
-bool NEDParser::loadFile(const char *fname)
+bool NEDParser::loadFile(const char *osfname, const char *fname)
 {
+    if (!fname)
+        fname = osfname;
+
     // init class members
     if (nedsource) delete nedsource;
     nedsource = new NEDFileBuffer();
     filename = fname;
     errors->clear();
 
-    // cosmetics on file name: substitute "~"
-    char newfilename[1000];
-    if (fname[0]=='~') {
-        sprintf(newfilename,"%s%s",getenv("HOME"),fname+1);
+    // resolve "~" in file name
+    char osfname2[1000];
+    if (osfname[0]=='~') {
+        sprintf(osfname2, "%s%s", getenv("HOME"), osfname+1);
     } else {
-        strcpy(newfilename,fname);
+        strcpy(osfname2, osfname);
     }
 
     // load whole file into memory
-    if (!nedsource->readFile(newfilename))
+    if (!nedsource->readFile(osfname2))
         {errors->addError("", "cannot read %s", fname); return false;}
     return true;
 }
 
 bool NEDParser::loadText(const char *nedtext, const char *fname)
 {
+    if (!fname)
+        fname = "buffer";
+
     // init vars
     if (nedsource) delete nedsource;
     nedsource = new NEDFileBuffer();
@@ -249,3 +255,5 @@ void NEDParser::error(const char *msg, int line)
 }
 
 NAMESPACE_END
+
+

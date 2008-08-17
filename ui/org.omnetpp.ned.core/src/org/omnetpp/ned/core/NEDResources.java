@@ -206,7 +206,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     protected void createBuiltInNEDTypes() {
     	String source = NEDParser.getBuiltInDeclarations();
     	INEDErrorStore errorStore = new SysoutNedErrorStore();
-    	builtInDeclarationsFile = (NedFileElementEx) NEDTreeUtil.parseNedText(source, "[builtin-declarations]", errorStore);
+    	builtInDeclarationsFile = (NedFileElementEx) NEDTreeUtil.parseNedText(source, errorStore, "[builtin-declarations]");
     	Assert.isTrue(errorStore.getNumProblems()==0);
     }
 
@@ -276,7 +276,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         ProblemMarkerSynchronizer markerSync = new ProblemMarkerSynchronizer(NEDSYNTAXPROBLEM_MARKERID);
         markerSync.register(file);
         NEDMarkerErrorStore errorStore = new NEDMarkerErrorStore(file, markerSync);
-        INEDElement targetTree = NEDTreeUtil.parseNedText(text, file.getFullPath().toString(), errorStore);
+        INEDElement targetTree = NEDTreeUtil.parseNedText(text, errorStore, file.getFullPath().toString());
 
         if (targetTree.getSyntaxProblemMaxCumulatedSeverity() == INEDElement.SEVERITY_NONE) {
         	NEDTreeDifferenceUtils.Applier treeDifferenceApplier = new NEDTreeDifferenceUtils.Applier();
@@ -696,9 +696,8 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
             System.out.println("reading from disk: " + file.toString());
 
         // parse the NED file and put it into the hash table
-        String fileName = file.getLocation().toOSString();
         NEDMarkerErrorStore errorStore = new NEDMarkerErrorStore(file, markerSync, NEDSYNTAXPROBLEM_MARKERID);
-        NedFileElementEx tree = NEDTreeUtil.parseNedFile(fileName, errorStore);
+        NedFileElementEx tree = NEDTreeUtil.parseNedFile(file.getLocation().toOSString(), errorStore, file.getFullPath().toString());
         Assert.isNotNull(tree);
 
         storeNEDFileModel(file, tree);
