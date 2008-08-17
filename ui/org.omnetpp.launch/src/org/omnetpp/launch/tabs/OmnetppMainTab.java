@@ -442,10 +442,10 @@ implements ModifyListener {
         String name = fProgText.getText().trim();
         // if there is name specified
         if (StringUtils.isNotEmpty(name)) {
-            Path exePath = new Path(name);
+            IPath exePath = new Path(name);
             // on windows add the exe extension if not present
-            if(Platform.getOS() == Platform.OS_WIN32 && !"exe".equalsIgnoreCase(exePath.getFileExtension())) 
-                exePath.addFileExtension("exe");
+            if (Platform.getOS().equals(Platform.OS_WIN32) && !"exe".equalsIgnoreCase(exePath.getFileExtension())) 
+                exePath = exePath.addFileExtension("exe");
             IFile exefile = exePath.segmentCount() >1 ? ResourcesPlugin.getWorkspace().getRoot().getFile(exePath) : null;
 
             if (exefile == null || !exefile.isAccessible()) {
