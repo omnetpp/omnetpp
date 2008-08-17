@@ -280,3 +280,4 @@ precompile
 toolchain
 fishy
 libs
+lib

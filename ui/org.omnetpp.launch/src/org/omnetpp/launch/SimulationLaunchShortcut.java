@@ -16,10 +16,13 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceVisitor;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.variables.IStringVariableManager;
+import org.eclipse.core.variables.VariablesPlugin;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationType;
@@ -78,11 +81,12 @@ import org.omnetpp.ned.model.ui.NedModelLabelProvider;
  *
  * @author andras
  */
-//FIXME offers too many executables for INET
-//FIXME opp_run not supported
 //FIXME includes are not resolved in ini files
 public class SimulationLaunchShortcut implements ILaunchShortcut {
-    public static final String PREF_SKIP_LAUNCHCONFIGCREATED_MESSAGE = "org.omnetpp.launch.SkipLaunchConfigCreatedMsg";
+    public static final String PREF_DONTSHOW_LAUNCHCONFIGCREATED_MESSAGE = "org.omnetpp.launch.DoNotShowLaunchConfigCreatedMsg";
+
+    // dummy IFile, used to represent "opp_run" as a return value  
+    protected static final IFile IFILE_OPP_RUN = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path("-/-"));
 
     protected static class IniSection {
         IFile iniFile;
@@ -92,8 +96,7 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
         String network;
         public String toString() {return iniFile+"/"+configName;}
     }
-
-
+    
     public void launch(ISelection selection, String mode) {
         if (selection instanceof IStructuredSelection) {
             Object obj =((IStructuredSelection)selection).getFirstElement();
@@ -125,7 +128,9 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
                     // choose executable to launch
                     exeFile = chooseExecutable(resource.getProject());
                     if (exeFile == null)
-                        return; //FIXME what if opp_run + dll-based?
+                        return; // user cancelled
+                    if (exeFile == IFILE_OPP_RUN)
+                        exeFile = null;
 
                     // use selected ini file
                     iniFile = (IFile)resource;
@@ -149,7 +154,9 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
                     // choose executable to launch (note: we don't do this if NED file is not OK!)
                     exeFile = chooseExecutable(resource.getProject());
                     if (exeFile == null)
-                        return; //FIXME what if opp_run + dll-based?
+                        return; // user cancelled
+                    if (exeFile == IFILE_OPP_RUN)
+                        exeFile = null;
 
                     // collect ini files that instantiate any of these networks
                     List<IniSection> candidates = collectInifileConfigsForNetworks(nedFile, networks);
@@ -181,7 +188,7 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
 
                 // tell novice users what happened
                 IPreferenceStore preferences = LaunchPlugin.getDefault().getPreferenceStore();
-                String pref = preferences.getString(PREF_SKIP_LAUNCHCONFIGCREATED_MESSAGE);
+                String pref = preferences.getString(PREF_DONTSHOW_LAUNCHCONFIGCREATED_MESSAGE);
                 if (!MessageDialogWithToggle.ALWAYS.equals(pref)) {
                     MessageDialogWithToggle.openInformation(
                             Display.getCurrent().getActiveShell(), 
@@ -190,7 +197,7 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
                             "with resource '" + resource.getName() + "'. You can modify or delete this launch configuration " +
                             "in the Run|Run Configurations... and Run|Debug Configurations... dialogs.", 
                             "Do not show this message again", false, 
-                            preferences, PREF_SKIP_LAUNCHCONFIGCREATED_MESSAGE);
+                            preferences, PREF_DONTSHOW_LAUNCHCONFIGCREATED_MESSAGE);
                 }
             }
 
@@ -465,30 +472,86 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
      * referenced projects. Returns null if user cancelled.
      */
     protected IFile chooseExecutable(IProject project) {
-        final List<IFile> exeFiles = new ArrayList<IFile>();
-        IProject[] projects = ProjectUtils.getAllReferencedProjects(project);
-        projects = (IProject[]) ArrayUtils.add(projects, project);
+        // get executables and shared libs from the CDT settings
+        // (we do it via macros, in order to avoid listing the CDT plugin as dependency in the manifest)
+        String simProgs = null;
+        String sharedLibs = null;
+        try {
+            IStringVariableManager variableManager = VariablesPlugin.getDefault().getStringVariableManager();
+            simProgs = variableManager.performStringSubstitution("${opp_simprogs:"+project.getFullPath().toString()+"}", false);
+            sharedLibs = variableManager.performStringSubstitution("${opp_shared_libs:"+project.getFullPath().toString()+"}", false);
+            
+            // when our CDT plugin is absent, these macros cannot be resolved; just use "" then 
+            if (simProgs.contains("${"))
+                simProgs = "";
+            if (sharedLibs.contains("${"))
+                sharedLibs = "";
+        }
+        catch (CoreException e) {
+            Assert.isTrue(false);  // no exception will be thrown, due to 2nd arg of performStringSubstitution()
+        }
+        
+        int numSimProgs = StringUtils.split(simProgs).length;
+        int numSharedLibs = StringUtils.split(sharedLibs).length;
+        if (numSimProgs == 1) {
+            // convert to IFile and return it
+            return locationToIFile(simProgs.trim());
+        }
+        else if (numSimProgs > 1) {
+            // choose from them
+            List<IFile> files = new ArrayList<IFile>();
+            for (String path : simProgs.split(" "))
+                files.add(locationToIFile(path));
+            return chooseFromExeFiles(files);
+        }
+        else if (numSimProgs == 0 && numSharedLibs > 0) {
+            // simulation is apparently shared lib based, return "opp_run"
+            return IFILE_OPP_RUN;            
+        }
+        else {
+            // numSimProgs == 0 && numSharedLibs == 0: nothing to run.
+            // offer all executables found in the projects
+            // FIXME we should actually offer shared libs as well, and add selected ones to the launch config!
+            final List<IFile> exeFiles = new ArrayList<IFile>();
+            IProject[] projects = ProjectUtils.getAllReferencedProjects(project);
+            projects = (IProject[]) ArrayUtils.add(projects, project);
 
-        for (IProject pr : projects) {
-            try {
-                pr.accept(new IResourceVisitor() {
-                    public boolean visit(IResource resource) {
-                        if (OmnetppLaunchUtils.isExecutable(resource))
-                            exeFiles.add((IFile)resource);
-                        return true;
-                    }
-                });
-            } catch (CoreException e) {
-                LaunchPlugin.logError(e);
+            for (IProject pr : projects) {
+                try {
+                    pr.accept(new IResourceVisitor() {
+                        public boolean visit(IResource resource) {
+                            if (OmnetppLaunchUtils.isExecutable(resource))
+                                exeFiles.add((IFile)resource);
+                            return true;
+                        }
+                    });
+                } catch (CoreException e) {
+                    LaunchPlugin.logError(e);
+                }
             }
 
+            if (exeFiles.size() == 1)
+                return exeFiles.get(0);
+            else if (exeFiles.size() > 1)
+                return chooseFromExeFiles(exeFiles);
+            else {
+                MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Cannot launch simulation: " +
+                        "no executable found in project " + project.getName() + ". To specify a shared library to be " +
+                        "run with opp_run, open the Run|Run Configurations... dialog."
+                );
+                return null;
+            }
         }
+    }
 
-        if (exeFiles.size() == 0)
-            return null;
-        if (exeFiles.size() == 1)
-            return exeFiles.get(0);
+    protected IFile locationToIFile(String path) {
+        IFile[] files = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocation(new Path(path));
+        if (files.length == 0)
+            throw new IllegalArgumentException("Wrong filesystem location, cannot map it back to the workspace: "+path); // cannot happen, as our ${} macros cannot return anything that's outside the workspace  
+        return files[0];
+    }
 
+    protected IFile chooseFromExeFiles(final List<IFile> exeFiles) {
         // ask the user select an exe file
         ListDialog dialog = new ListDialog(Display.getCurrent().getActiveShell());
         dialog.setLabelProvider(new WorkbenchLabelProvider() {
@@ -505,10 +568,10 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
         dialog.setMessage("Select the executable file that should be started.\n");
         dialog.setInput(exeFiles);
 
-        if (dialog.open() == IDialogConstants.OK_ID && dialog.getResult().length > 0) {
+        if (dialog.open() == IDialogConstants.OK_ID && dialog.getResult().length > 0)
             return ((IFile)dialog.getResult()[0]);
-        }
-        return null;
+        else
+            return null;
     }
 
     /**
