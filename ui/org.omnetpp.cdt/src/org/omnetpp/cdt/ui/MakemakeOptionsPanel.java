@@ -173,7 +173,7 @@ public class MakemakeOptionsPanel extends Composite {
         targetCompileOnlyRadioButton = createRadioButton(group, "Compile only", null);
 
         Group targetNameGroup = createGroup(targetPage, "Target name:", 2);
-        defaultTargetNameRadionButton = createRadioButton(targetNameGroup, "Default", "Default target name will be derived from the directory name");
+        defaultTargetNameRadionButton = createRadioButton(targetNameGroup, "Default", "Default target name will be the project name");
         defaultTargetNameRadionButton.setLayoutData(new GridData());
         ((GridData)defaultTargetNameRadionButton.getLayoutData()).horizontalSpan = 2;
         specifyTargetNameRadioButton = createRadioButton(targetNameGroup, "Specify name (without extension/lib prefix): ", null);

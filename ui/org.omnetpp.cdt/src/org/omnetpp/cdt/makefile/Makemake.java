@@ -90,7 +90,7 @@ public class Makemake {
         if (file(makefileName).isFile() && !options.force)
             throw new MakemakeException("use -f to force overwriting existing " + makefileName);
 
-        String target = options.target == null ? folder.getName() : options.target;
+        String target = options.target == null ? folder.getProject().getName() : options.target;
         List<String> objs = new ArrayList<String>();
         List<String> extraObjs = new ArrayList<String>();
         List<String> ccfiles = new ArrayList<String>();
