@@ -1,7 +1,5 @@
 package org.omnetpp.cdt.launch;
 
-import java.util.List;
-
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -13,7 +11,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.variables.IDynamicVariable;
 import org.eclipse.core.variables.IDynamicVariableResolver;
 import org.omnetpp.cdt.Activator;
-import org.omnetpp.cdt.CDTUtils;
 import org.omnetpp.cdt.makefile.BuildSpecification;
 import org.omnetpp.cdt.makefile.MakemakeOptions;
 import org.omnetpp.common.project.ProjectUtils;
@@ -60,14 +57,15 @@ public class OppVariableResolver implements IDynamicVariableResolver {
 	protected String resolveForProject(IProject project, String varName) {
 		try {
 			String result = "";
-			BuildSpecification spec = BuildSpecification.readBuildSpecFile(project);
-			if (spec == null)
-				return "";
-	        List<IContainer> sourceFolders = CDTUtils.getSourceFolders(project);
+			BuildSpecification buildSpec = BuildSpecification.readBuildSpecFile(project);
+			if (buildSpec == null)
+				return ""; // no build spec file
+			
+	        IContainer[] sourceFolders = buildSpec.getMakemakeFolders();
 			for (IContainer folder : sourceFolders) {
-				MakemakeOptions options = spec.getMakemakeOptions(folder);
-				if (options == null)
-				    continue; // something wrong, ignore this folder
+				MakemakeOptions options = buildSpec.getMakemakeOptions(folder);
+	            if (options == null)
+	                options = MakemakeOptions.createInitial();
 				
 				if (varName.equals(OPP_SIMPROGS)) {
 				    if (options.type == MakemakeOptions.Type.EXE) { 

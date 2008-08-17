@@ -27,7 +27,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.omnetpp.cdt.Activator;
-import org.omnetpp.cdt.CDTUtils;
 import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
 import org.omnetpp.common.util.StringUtils;
 
@@ -198,7 +197,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         monitor.subTask("Analyzing dependencies and updating makefiles...");
 
         // collect folders
-        List<IContainer> makemakeFolders = CDTUtils.getSourceFolders(getProject());
+        IContainer[] makemakeFolders = buildSpec.getMakemakeFolders();
         
         // register folders in the marker synchronizer
         for (IContainer makemakeFolder : makemakeFolders)
@@ -208,7 +207,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         long startTime = System.currentTimeMillis();
         for (IContainer makemakeFolder : makemakeFolders)
             generateMakefileFor(makemakeFolder);
-        System.out.println("Generated " + makemakeFolders.size() + " makefiles in: " + (System.currentTimeMillis()-startTime) + "ms");
+        System.out.println("Generated " + makemakeFolders.length + " makefiles in: " + (System.currentTimeMillis()-startTime) + "ms");
     }
 
     /**

@@ -81,7 +81,6 @@ import org.omnetpp.ned.model.ui.NedModelLabelProvider;
  *
  * @author andras
  */
-//FIXME includes are not resolved in ini files
 public class SimulationLaunchShortcut implements ILaunchShortcut {
     public static final String PREF_DONTSHOW_LAUNCHCONFIGCREATED_MESSAGE = "org.omnetpp.launch.DoNotShowLaunchConfigCreatedMsg";
 
@@ -193,7 +192,7 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
                     int result = MessageDialogWithToggle.openOkCancelConfirm(
                             Display.getCurrent().getActiveShell(), 
                             "Launch Configuration Created", 
-                            "A launch configuration named '" + lc.getName() + "' has been created, and associated " +
+                            "A launch configuration named '" + lc.getName() + "' has been created, associated " +
                             "with resource '" + resource.getName() + "'. You can modify or delete this launch configuration " +
                             "in the Run|Run Configurations... and Run|Debug Configurations... dialogs.", 
                             "Do not show this message again", false, 

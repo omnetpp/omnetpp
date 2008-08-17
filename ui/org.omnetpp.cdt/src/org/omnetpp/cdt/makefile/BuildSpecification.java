@@ -37,6 +37,7 @@ public class BuildSpecification {
      * (This is currently the same as the list of CDT source folders.)
      */
     public IContainer[] getMakemakeFolders() {
+        // currently, we generate a Makefile in all folders designated as "CDT Source Entry"
         return CDTUtils.getSourceFolders(project).toArray(new IContainer[]{});
     }
 
