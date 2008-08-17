@@ -190,14 +190,18 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
                 IPreferenceStore preferences = LaunchPlugin.getDefault().getPreferenceStore();
                 String pref = preferences.getString(PREF_DONTSHOW_LAUNCHCONFIGCREATED_MESSAGE);
                 if (!MessageDialogWithToggle.ALWAYS.equals(pref)) {
-                    MessageDialogWithToggle.openInformation(
+                    int result = MessageDialogWithToggle.openOkCancelConfirm(
                             Display.getCurrent().getActiveShell(), 
                             "Launch Configuration Created", 
                             "A launch configuration named '" + lc.getName() + "' has been created, and associated " +
                             "with resource '" + resource.getName() + "'. You can modify or delete this launch configuration " +
                             "in the Run|Run Configurations... and Run|Debug Configurations... dialogs.", 
                             "Do not show this message again", false, 
-                            preferences, PREF_DONTSHOW_LAUNCHCONFIGCREATED_MESSAGE);
+                            preferences, PREF_DONTSHOW_LAUNCHCONFIGCREATED_MESSAGE).getReturnCode();
+                    if (result != IDialogConstants.OK_ID) { // note: Esc returns -1, for which there is no ID constant
+                        lc.delete();
+                        return;
+                    }
                 }
             }
 
@@ -444,9 +448,11 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
     }
 
     /**
-     * Creates and saves a launch configuration with the given attributes. 
+     * Creates and saves a launch configuration with the given attributes.
+     * @param exeFile  null means "opp_run" 
      */
     protected ILaunchConfiguration createLaunchConfig(String suggestedName, IFile exeFile, IFile iniFile, String configName, IResource resourceToAssociateWith) throws CoreException {
+        Assert.isTrue(iniFile != null);
         ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
         ILaunchConfigurationType launchType = launchManager.getLaunchConfigurationType(IOmnetppLaunchConstants.SIMULATION_LAUNCH_CONFIGURATION_TYPE);
         if (suggestedName == null)
@@ -456,7 +462,7 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
 
         OmnetppMainTab.prepareLaunchConfig(wc);
 
-        wc.setAttribute(IOmnetppLaunchConstants.OPP_EXECUTABLE, exeFile.getFullPath().toString());
+        wc.setAttribute(IOmnetppLaunchConstants.OPP_EXECUTABLE, exeFile==null ? "" : exeFile.getFullPath().toString());
         wc.setAttribute(IOmnetppLaunchConstants.OPP_WORKING_DIRECTORY, iniFile.getParent().getFullPath().toString());
         wc.setAttribute(IOmnetppLaunchConstants.OPP_INI_FILES, iniFile.getName());
         if (configName != null)

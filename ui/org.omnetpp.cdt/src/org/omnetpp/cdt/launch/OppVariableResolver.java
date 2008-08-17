@@ -1,5 +1,7 @@
 package org.omnetpp.cdt.launch;
 
+import java.util.List;
+
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -11,6 +13,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.variables.IDynamicVariable;
 import org.eclipse.core.variables.IDynamicVariableResolver;
 import org.omnetpp.cdt.Activator;
+import org.omnetpp.cdt.CDTUtils;
 import org.omnetpp.cdt.makefile.BuildSpecUtils;
 import org.omnetpp.cdt.makefile.BuildSpecification;
 import org.omnetpp.cdt.makefile.MakemakeOptions;
@@ -61,29 +64,30 @@ public class OppVariableResolver implements IDynamicVariableResolver {
 			BuildSpecification spec = BuildSpecUtils.readBuildSpecFile(project);
 			if (spec == null)
 				return "";
-			for (IContainer container: spec.getMakemakeFolders()) {
-				MakemakeOptions options = spec.getMakemakeOptions(container);
+	        List<IContainer> sourceFolders = CDTUtils.getSourceFolders(project);
+			for (IContainer folder : sourceFolders) {
+				MakemakeOptions options = spec.getMakemakeOptions(folder);
 				if (options == null)
 				    continue; // something wrong, ignore this folder
 				
 				if (varName.equals(OPP_SIMPROGS)) {
 				    if (options.type == MakemakeOptions.Type.EXE) { 
 				        String target = options.target != null ? options.target : project.getName(); //FIXME default is really the project name??
-				        String targetPath = container.getLocation().append(target).toString();
+				        String targetPath = folder.getLocation().append(target).toString();
 				        result += " " + targetPath;
 				    }
 				}
 				else if (varName.equals(OPP_SHARED_LIBS)) {
                     if (options.type == MakemakeOptions.Type.SHAREDLIB) { 
                         String target = options.target != null ? options.target : project.getName();
-                        String targetPath = container.getLocation().append(target).toString();
+                        String targetPath = folder.getLocation().append(target).toString();
                         result += " " + targetPath;
                     }
                 }
                 else if (varName.equals(OPP_STATIC_LIBS)) {
                     if (options.type == MakemakeOptions.Type.STATICLIB) { 
                         String target = options.target != null ? options.target : project.getName();
-                        String targetPath = container.getLocation().append(target).toString();
+                        String targetPath = folder.getLocation().append(target).toString();
                         result += " " + targetPath;
                     }
                 }

@@ -66,6 +66,7 @@ import org.omnetpp.common.util.StringUtils;
 //FIXME unify .oppbuildspec with .nedfolders, and include nedfolder-to-dll mapping too!!!
 //FIXME per-configuration MakemakeOptions????
 //TODO check consistency!!!
+@SuppressWarnings("restriction")
 public class MakemakeFolderPropertyPage extends PropertyPage {
     private static final String SELECTED = " <selected>";
     public static final String MAKEFRAG_FILENAME = "makefrag";
@@ -166,7 +167,6 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
         return optionsPanel;  //XXX why?
     }
 
-    @SuppressWarnings("restriction")
     protected void gotoPathsAndSymbolsPage() {
         IPreferencePageContainer container = getContainer();
         if (container instanceof PropertyDialog)

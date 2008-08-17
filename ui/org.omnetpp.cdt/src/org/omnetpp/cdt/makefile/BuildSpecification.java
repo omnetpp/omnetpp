@@ -21,13 +21,8 @@ public class BuildSpecification {
      * folder type or option.
      */
     public IContainer[] getMakemakeFolders() {
+        //FIXME rather this: return CDTUtils.getSourceFolders(project);
         return folderMakemakeOptions.keySet().toArray(new IContainer[]{});
-    }
-
-    public boolean isMakemakeFolder(IContainer folder) {
-        // FIXME should return true ONLY for folders WITHIN a deep makefiles source tree
-//        return folderMakemakeOptions.containsKey(folder);
-        return true;
     }
 
     /**
