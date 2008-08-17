@@ -1,3 +1,8 @@
+2008-08-17  Andras Varga
+
+	* opp_makemake: default target name changed to the project name, from
+	the name of the makefile directory
+
 2008-07-11  Andras Varga
 
 	* opp_test: implemented the possibility to do replacements on the output

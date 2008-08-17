@@ -236,13 +236,8 @@ sub makemake()
     }
 
     $folder = cwd;
-    $folderName = $folder;
-    $folderName  =~ s/[\/\\]$//;  # remove trailing slash/backslash
-    $folderName  =~ s/.*[\/\\]//; # keep only part after last slash/backslash
 
     print "Creating $makefile in $folder...\n";
-
-    $target = $target eq "" ? $folderName : $target;
 
     @objs = ();
     @generatedHeaders = ();
@@ -286,6 +281,11 @@ sub makemake()
             error("current directory is not under the given project directory \"$projectDir\"");
         }
     }
+
+    $projectName = $projectDir;
+    $projectName  =~ s/[\/\\]$//;  # remove trailing slash/backslash
+    $projectName  =~ s/.*[\/\\]//; # keep only part after last slash/backslash
+    $target = $target ne "" ? $target : $projectName;
 
     # target should only be a name, cannot contain relative path
     if ($target =~ /.*[\/\\].*/) {
@@ -941,7 +941,8 @@ $progname [options] [object files or libraries]
     -e ext, --ext ext     C++ source file extension, usually "cc" or "cpp".
                           By default, this is determined by looking at
                           existing files in the directory.
-    -o filename           Name of simulation executable/library
+    -o filename           Name of simulation executable or library to be built.
+                          Defaults to the project name.
     -O directory, --out directory
                           Specifies the name of the output directory tree
                           for out-of-directory build; defaults to "out".
