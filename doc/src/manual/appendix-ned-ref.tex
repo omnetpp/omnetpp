@@ -380,8 +380,24 @@ and properties may add more keys and values (see property inheritance.)
 Extra params CANNOT be added in submodules and connection channelspecs --
 they can only be added in new types.
 
-FIXME: submodules
-FIXME: connections
+\subsection{Submodules}
+
+\subsection{Connections}
+
+When a connection uses an unnamed channel type (\ttt{-->
+\{\ldots\} -->} syntax), the actual NED type to be used will depend on the
+parameters set in the connection.
+
+When no parameters are set, \ttt{ned.IdealChannel} is chosen. 
+
+When only \ttt{ned.DelayChannel} parameters are used (\ttt{delay} 
+and \ttt{disabled}), \ttt{ned.DelayChannel} is chosen. 
+
+When only \ttt{ned.DatarateChannel} parameters are used
+(\ttt{datarate}, \ttt{delay}, \ttt{ber}, \ttt{per}, \ttt{disabled}),
+the chosen channel type will be \ttt{ned.DatarateChannel}.
+
+Unnamed channels connections cannot use any other parameters.  
 
 \section{Networks}
 

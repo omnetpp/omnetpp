@@ -4,6 +4,7 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
@@ -64,8 +65,7 @@ public class OppVariableResolver implements IDynamicVariableResolver {
 	        IContainer[] sourceFolders = buildSpec.getMakemakeFolders();
 			for (IContainer folder : sourceFolders) {
 				MakemakeOptions options = buildSpec.getMakemakeOptions(folder);
-	            if (options == null)
-	                options = MakemakeOptions.createInitial();
+				Assert.isTrue(options!=null);
 				
 				if (varName.equals(OPP_SIMPROGS)) {
 				    if (options.type == MakemakeOptions.Type.EXE) { 

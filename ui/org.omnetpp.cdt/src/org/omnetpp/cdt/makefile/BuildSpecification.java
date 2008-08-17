@@ -42,10 +42,13 @@ public class BuildSpecification {
     }
 
     /**
-     * Returns the options for the given folder. Returns null if makemakeOptions
-     * was never set on this folder.
+     * Returns the options for the given folder. Never returns null. (If this folder
+     * was not originally contained in the build spec, a new options object is
+     * created with some default settings.)
      */
     public MakemakeOptions getMakemakeOptions(IContainer folder) {
+        if (!folderMakemakeOptions.containsKey(folder))
+            folderMakemakeOptions.put(folder, MakemakeOptions.createInitial());
         return folderMakemakeOptions.get(folder);
     }
 
@@ -119,15 +122,14 @@ public class BuildSpecification {
         // assemble file content to save
         String content = "version 4.0\n";
         for (IContainer folder : getMakemakeFolders()) {
-            String options = "";
             MakemakeOptions makemakeOptions = getMakemakeOptions(folder);
-            options = makemakeOptions == null ? "" : makemakeOptions.toString();
-            if (options.trim().equals(""))
-                options = "--";
+            String optionsText = makemakeOptions.toString();
+            if (optionsText.trim().equals(""))
+                optionsText = "--";
     
-            if (!StringUtils.isEmpty(options)) {
+            if (!StringUtils.isEmpty(optionsText)) {
                 String projectRelativePath = folder.equals(project) ? "." : folder.getProjectRelativePath().toString();
-                content += projectRelativePath + ": " + options;
+                content += projectRelativePath + ": " + optionsText;
             }
             content += "\n";
         }
