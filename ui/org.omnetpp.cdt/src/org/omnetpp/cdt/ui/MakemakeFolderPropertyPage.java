@@ -50,7 +50,6 @@ import org.eclipse.ui.dialogs.PropertyPage;
 import org.eclipse.ui.internal.dialogs.PropertyDialog;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.CDTUtils;
-import org.omnetpp.cdt.makefile.BuildSpecUtils;
 import org.omnetpp.cdt.makefile.BuildSpecification;
 import org.omnetpp.cdt.makefile.MakemakeOptions;
 import org.omnetpp.common.color.ColorFactory;
@@ -299,13 +298,8 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
                 optionsPanel.populate(selectedFolder, folderOptions, makefragContents, makefragvcContents);
             }
 
-            //setErrorMessage(getInformationalMessage());
             String message = getInformationalMessage();
-            if (message == null)
-                errorMessageLabel.setText("");
-            else
-                //errorMessageText.setText(StringUtils.breakLines(message,80)); //XXX until we learn how to make it wrap...
-                errorMessageLabel.setText(message);
+            errorMessageLabel.setText(message==null ? "" : message);
         }
     }
 
@@ -401,22 +395,21 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
     }
 
     protected void loadBuildSpecFile() {
+        IProject project = getFolder().getProject();
         try {
-            IProject project = getFolder().getProject();
-            buildSpec = BuildSpecUtils.readBuildSpecFile(project);
+            buildSpec = BuildSpecification.readBuildSpecFile(project);
         } 
         catch (CoreException e) {
             errorDialog("Cannot read build specification, reverting page content to the default settings.", e);
         }
 
         if (buildSpec == null)
-            buildSpec = new BuildSpecification();
+            buildSpec = BuildSpecification.createBlank(project);
     }
 
     protected void saveBuildSpecFile() {
         try {
-            IProject project = getFolder().getProject();
-            BuildSpecUtils.saveBuildSpecFile(project, buildSpec);
+            buildSpec.save();
         } 
         catch (CoreException e) {
             errorDialog("Cannot store build specification", e);

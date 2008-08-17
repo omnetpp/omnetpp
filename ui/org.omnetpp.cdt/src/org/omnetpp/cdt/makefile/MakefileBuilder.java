@@ -30,7 +30,6 @@ import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.CDTUtils;
 import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.ide.OmnetppMainPlugin;
 
 /**
  * Keeps makefiles up to date.
@@ -57,9 +56,9 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
             checkActiveCDTConfiguration();
             
             markerSynchronizer = new ProblemMarkerSynchronizer(MARKER_ID);
-            buildSpec = BuildSpecUtils.readBuildSpecFile(getProject());
+            buildSpec = BuildSpecification.readBuildSpecFile(getProject());
             if (buildSpec == null)
-                buildSpec = new BuildSpecification();
+                buildSpec = BuildSpecification.createBlank(getProject());
             
             // refresh makefiles
             generateMakefiles(monitor);

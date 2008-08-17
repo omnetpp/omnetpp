@@ -20,7 +20,6 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
-import org.omnetpp.cdt.makefile.BuildSpecUtils;
 import org.omnetpp.cdt.makefile.BuildSpecification;
 import org.omnetpp.cdt.makefile.MakefileTools;
 import org.omnetpp.common.util.StringUtils;
@@ -97,7 +96,7 @@ public class GenerateMakemakefileAction implements IObjectActionDelegate {
 
     //XXX currently unused; we may create some Action to invoke it
     public static void generateMakeMakefile(IProject project, IProgressMonitor monitor) throws IOException, CoreException {
-        BuildSpecification buildSpec = BuildSpecUtils.readBuildSpecFile(project); //XXX possible IllegalArgumentException
+        BuildSpecification buildSpec = BuildSpecification.readBuildSpecFile(project); //XXX possible IllegalArgumentException
         IContainer[] makemakeFolders = buildSpec.getMakemakeFolders();
         Map<IContainer, String> targetNames = generateTargetNames(makemakeFolders);
         Map<IContainer, Set<IContainer>> folderDependencies = Activator.getDependencyCache().getFolderDependencies(project);

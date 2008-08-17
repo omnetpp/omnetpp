@@ -14,7 +14,6 @@ import org.eclipse.core.variables.IDynamicVariable;
 import org.eclipse.core.variables.IDynamicVariableResolver;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.CDTUtils;
-import org.omnetpp.cdt.makefile.BuildSpecUtils;
 import org.omnetpp.cdt.makefile.BuildSpecification;
 import org.omnetpp.cdt.makefile.MakemakeOptions;
 import org.omnetpp.common.project.ProjectUtils;
@@ -61,7 +60,7 @@ public class OppVariableResolver implements IDynamicVariableResolver {
 	protected String resolveForProject(IProject project, String varName) {
 		try {
 			String result = "";
-			BuildSpecification spec = BuildSpecUtils.readBuildSpecFile(project);
+			BuildSpecification spec = BuildSpecification.readBuildSpecFile(project);
 			if (spec == null)
 				return "";
 	        List<IContainer> sourceFolders = CDTUtils.getSourceFolders(project);
