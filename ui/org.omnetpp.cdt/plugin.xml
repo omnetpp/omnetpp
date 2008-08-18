@@ -287,24 +287,35 @@
             resolver="org.omnetpp.cdt.launch.OppVariableResolver"
             supportsArgument="true">
       </variable>
-   </extension>
-   <extension
-         point="org.eclipse.core.variables.dynamicVariables">
+      <variable
+            description="Expands to the list of shared libraries (file system location) built by the OMNeT++ project and the projects it references"
+            name="opp_shared_libs_loc"
+            resolver="org.omnetpp.cdt.launch.OppVariableResolver"
+            supportsArgument="true">
+      </variable>
       <variable
             description="Expands to the list of static libraries built by the OMNeT++ project and the projects it references"
             name="opp_static_libs"
             resolver="org.omnetpp.cdt.launch.OppVariableResolver"
             supportsArgument="true">
       </variable>
-   </extension>
-   <extension
-         point="org.eclipse.core.variables.dynamicVariables">
       <variable
-            description="Expands to the list of executables built by the OMNeT++ project and the projects it references"
+            description="Expands to the list of static libraries (file system location) built by the OMNeT++ project and the projects it references"
+            name="opp_static_libs_loc"
+            resolver="org.omnetpp.cdt.launch.OppVariableResolver"
+            supportsArgument="true">
+      </variable>
+      <variable
+            description="Expands to the list of executable names built by the OMNeT++ project and the projects it references"
             name="opp_simprogs"
             resolver="org.omnetpp.cdt.launch.OppVariableResolver"
             supportsArgument="true">
       </variable>
+      <variable
+            description="Expands to the list of executable names (file system path) built by the OMNeT++ project and the projects it references"
+            name="opp_simprogs_loc"
+            resolver="org.omnetpp.cdt.launch.OppVariableResolver"
+            supportsArgument="true">
+      </variable>
    </extension>
-
 </plugin>

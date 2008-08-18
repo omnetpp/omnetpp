@@ -14,10 +14,12 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.variables.IStringVariableManager;
 import org.eclipse.core.variables.VariablesPlugin;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
@@ -69,6 +71,8 @@ implements ModifyListener {
     public final static String VAR_NED_PATH = "opp_ned_path";
     public final static String VAR_SHARED_LIBS = "opp_shared_libs";
     // UI widgets
+    protected Button fProgOppRunButton;
+    protected Button fProgOtherButton;
     protected Text fProgText;
     protected Button fShowDebugViewButton;
 
@@ -101,6 +105,15 @@ implements ModifyListener {
     private boolean debugLaunchMode = false;
     private String infoText = null;
 
+    private SelectionAdapter defaultSelectionAdapter = new SelectionAdapter() {
+        @Override
+        public void widgetSelected(SelectionEvent e) {
+            updateDialogState();
+        }
+    };
+	private Button fBrowseForBinaryButton;
+
+
     public OmnetppMainTab() {
         super();
     }
@@ -126,7 +139,11 @@ implements ModifyListener {
         try {
             // working directory init
             setWorkingDirectoryText(config.getAttribute(IOmnetppLaunchConstants.OPP_WORKING_DIRECTORY, "").trim());
-            fProgText.setText(config.getAttribute(IOmnetppLaunchConstants.OPP_EXECUTABLE, ""));
+            String exeName = config.getAttribute(IOmnetppLaunchConstants.OPP_EXECUTABLE, "");
+           	fProgOtherButton.setSelection(StringUtils.isNotBlank(exeName));
+            fProgOppRunButton.setSelection(StringUtils.isBlank(exeName));
+			fProgText.setText(exeName);
+            
             fInifileText.setText(config.getAttribute(IOmnetppLaunchConstants.OPP_INI_FILES,"" ).trim());
             setConfigName(config.getAttribute(IOmnetppLaunchConstants.OPP_CONFIG_NAME, "").trim());
             if (debugLaunchMode)
@@ -249,8 +266,10 @@ implements ModifyListener {
             // if we just selected a directory or project use it as working dir
             if (selectedResource instanceof IContainer) 
                 defWorkDir = selectedResource.getFullPath().toString();
-
         }
+        
+        if (StringUtils.isEmpty(defExe))
+        	defExe = getDefaultExeName(defWorkDir);
 
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_WORKING_DIRECTORY, defWorkDir);
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_EXECUTABLE, defExe);
@@ -261,7 +280,31 @@ implements ModifyListener {
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_ADDITIONAL_ARGS, "");
     }
     
-    /**
+    protected static String getDefaultExeName(String defWorkDir) {
+    	if (StringUtils.isEmpty(defWorkDir))
+    		return "";
+
+    	String progs = null;
+        try {
+            IStringVariableManager variableManager = VariablesPlugin.getDefault().getStringVariableManager();
+            progs = variableManager.performStringSubstitution("${opp_simprogs:"+defWorkDir+"}", false);
+            // when our CDT plugin is absent, these macros cannot be resolved; just use "" then 
+            if (progs.contains("${"))
+                progs = "";
+        }
+        catch (CoreException e) {
+            Assert.isTrue(false);  // no exception will be thrown, due to 2nd arg of performStringSubstitution()
+        }
+        
+        // return the first program from the list
+        String [] splitProgs  = StringUtils.split(progs, ' ');
+        if (splitProgs.length > 0) 
+        	return splitProgs[0];
+    	
+		return "";
+	}
+
+	/**
      * Fills the config combo with the config section values from the inifiles
      */
     protected void updateDialogState() {
@@ -269,6 +312,12 @@ implements ModifyListener {
             return;
         updateDialogStateInProgress = true;
 
+        // executable handling
+        fProgText.setEnabled(fProgOtherButton.getSelection());
+        fBrowseForBinaryButton.setEnabled(fProgOtherButton.getSelection());
+        if (fProgOppRunButton.getSelection())
+        	fProgText.setText("");
+        
         // update the config combo
         IFile[] inifiles = getIniFiles();
         if (config == null || inifiles == null)
@@ -440,6 +489,10 @@ implements ModifyListener {
         }
 
         String name = fProgText.getText().trim();
+        if (fProgOtherButton.getSelection() && StringUtils.isBlank(name)) {
+                setErrorMessage("Simulation program must be set");
+                return false;
+        }
         // if there is name specified
         if (StringUtils.isNotEmpty(name)) {
             IPath exePath = new Path(name);
@@ -471,6 +524,11 @@ implements ModifyListener {
             }
         }
 
+        String libText = fLibraryText.getText().trim();
+        if (fProgOppRunButton.getSelection() && StringUtils.isBlank(libText)) {
+                setErrorMessage("Shared libraries must be set if opp_run is used to launch the simulation");
+                return false;
+        }
         IFile libfiles[] = getLibFiles();
         if (libfiles == null) {
             setErrorMessage("Library file does not exist, or not accessible in workspace");
@@ -614,10 +672,24 @@ implements ModifyListener {
         updateDialogState();
     }
 
+    protected void updateMacros() {
+        String workingDir = getWorkingDirectoryText();
+        String libText = fLibraryText.getText();
+        libText = libText.replaceAll("\\$\\{"+VAR_SHARED_LIBS+":.*?\\}", "\\${"+VAR_SHARED_LIBS+":"+workingDir+"}");
+        fLibraryText.setText(libText);
+
+        String nedText = fNedPathText.getText();
+        nedText = nedText.replaceAll("\\$\\{"+VAR_NED_PATH+":.*?\\}", "\\${"+VAR_NED_PATH+":"+workingDir+"}");
+        fNedPathText.setText(nedText);
+    }
+    
     // ********************************************************************
     // dialog UI control creation and layout
     public Group createWorkingDirGroup(Composite parent, int colSpan) {
         Group group = SWTFactory.createGroup(parent, "Working directory", 3, colSpan, GridData.FILL_HORIZONTAL);
+        GridLayout innerLd = (GridLayout)group.getLayout();
+        innerLd.marginWidth = 0;
+
         setControl(group);
         workingDirText = SWTFactory.createSingleText(group, 1);
         workingDirText.addModifyListener(this);
@@ -636,28 +708,30 @@ implements ModifyListener {
         return group;
     }
 
-    protected void updateMacros() {
-        String workingDir = getWorkingDirectoryText();
-        String libText = fLibraryText.getText();
-        libText = libText.replaceAll("\\$\\{"+VAR_SHARED_LIBS+":.*?\\}", "\\${"+VAR_SHARED_LIBS+":"+workingDir+"}");
-        fLibraryText.setText(libText);
-
-        String nedText = fNedPathText.getText();
-        nedText = nedText.replaceAll("\\$\\{"+VAR_NED_PATH+":.*?\\}", "\\${"+VAR_NED_PATH+":"+workingDir+"}");
-        fNedPathText.setText(nedText);
-    }
 
     protected Composite createSimulationGroup(Composite parent, int colSpan) {
-        Composite composite = SWTFactory.createGroup(parent, "Simulation", 4, colSpan, GridData.FILL_HORIZONTAL);
+    	Composite composite = SWTFactory.createGroup(parent, "Simulation", 4, colSpan, GridData.FILL_HORIZONTAL);
         GridLayout ld = (GridLayout)composite.getLayout();
         ld.marginHeight = 1;
 
         SWTFactory.createLabel(composite, "Executable:",1);
 
-        fProgText = SWTFactory.createSingleText(composite, 2);
+        Composite innerComposite = SWTFactory.createComposite(composite, 3, 2, GridData.FILL_HORIZONTAL);
+        GridLayout innerLd = (GridLayout)innerComposite.getLayout();
+        innerLd.marginHeight = 0;
+        innerLd.marginWidth = 0;
+        
+        fProgOppRunButton = SWTFactory.createRadioButton(innerComposite, "opp_run");
+        fProgOppRunButton.setLayoutData(new GridData());
+        fProgOppRunButton.setSelection(true);
+        fProgOppRunButton.addSelectionListener(defaultSelectionAdapter);
+        fProgOtherButton = SWTFactory.createRadioButton(innerComposite, "Other:");
+        fProgOtherButton.setLayoutData(new GridData());
+        fProgOtherButton.addSelectionListener(defaultSelectionAdapter);
+        fProgText = SWTFactory.createSingleText(innerComposite, 1);
         fProgText.addModifyListener(this);
 
-        Button fBrowseForBinaryButton = SWTFactory.createPushButton(composite, "Browse...", null);
+        fBrowseForBinaryButton = SWTFactory.createPushButton(composite, "Browse...", null);
         fBrowseForBinaryButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent evt) {
@@ -765,13 +839,6 @@ implements ModifyListener {
     }
 
     protected void createUIRadioButtons(Composite parent, int colSpan) {
-        SelectionAdapter selectionAdapter = new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                updateDialogState();
-            }
-        };
-
         Composite comp = SWTFactory.createComposite(parent, 6, colSpan, GridData.FILL_HORIZONTAL);
         ((GridLayout)comp.getLayout()).marginWidth = 0;
         ((GridLayout)comp.getLayout()).marginHeight = 0;
@@ -781,19 +848,19 @@ implements ModifyListener {
         fDefaultEnvButton = SWTFactory.createRadioButton(comp, "Default");
         fDefaultEnvButton.setLayoutData(new GridData());
         fDefaultEnvButton.setSelection(true);
-        fDefaultEnvButton.addSelectionListener(selectionAdapter);
+        fDefaultEnvButton.addSelectionListener(defaultSelectionAdapter);
 
         fCmdenvButton = SWTFactory.createRadioButton(comp, "Command line");
         fCmdenvButton.setLayoutData(new GridData());
-        fCmdenvButton.addSelectionListener(selectionAdapter);
+        fCmdenvButton.addSelectionListener(defaultSelectionAdapter);
 
         fTkenvButton = SWTFactory.createRadioButton(comp, "Tcl/Tk");
         fTkenvButton.setLayoutData(new GridData());
-        fTkenvButton.addSelectionListener(selectionAdapter);
+        fTkenvButton.addSelectionListener(defaultSelectionAdapter);
 
         fOtherEnvButton = SWTFactory.createRadioButton(comp, "Other:");
         fOtherEnvButton.setLayoutData(new GridData());
-        fOtherEnvButton.addSelectionListener(selectionAdapter);
+        fOtherEnvButton.addSelectionListener(defaultSelectionAdapter);
 
         fOtherEnvText = SWTFactory.createSingleText(comp, 1);
         fOtherEnvText.setToolTipText("Specify the custom environment name");
@@ -801,12 +868,6 @@ implements ModifyListener {
     }
 
     protected void createRecordEventlogRadioButtons(Composite parent, int colSpan) {
-        SelectionAdapter selectionAdapter = new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                updateDialogState();
-            }
-        };
 
         Composite comp = SWTFactory.createComposite(parent, 6, colSpan, GridData.FILL_HORIZONTAL);
         ((GridLayout)comp.getLayout()).marginWidth = 0;
@@ -817,15 +878,15 @@ implements ModifyListener {
         fEventLogDefaultButton = SWTFactory.createRadioButton(comp, "Default");
         fEventLogDefaultButton.setLayoutData(new GridData());
         fEventLogDefaultButton.setSelection(true);
-        fEventLogDefaultButton.addSelectionListener(selectionAdapter);
+        fEventLogDefaultButton.addSelectionListener(defaultSelectionAdapter);
 
         fEventLogYesButton = SWTFactory.createRadioButton(comp, "Yes");
         fEventLogYesButton.setLayoutData(new GridData());
-        fEventLogYesButton.addSelectionListener(selectionAdapter);
+        fEventLogYesButton.addSelectionListener(defaultSelectionAdapter);
 
         fEventLogNoButton = SWTFactory.createRadioButton(comp, "No");
         fEventLogNoButton.setLayoutData(new GridData());
-        fEventLogNoButton.addSelectionListener(selectionAdapter);
+        fEventLogNoButton.addSelectionListener(defaultSelectionAdapter);
     }
 
 }

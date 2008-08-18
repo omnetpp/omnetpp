@@ -1,6 +1,7 @@
 package org.omnetpp.cdt.launch;
 
 import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -15,6 +16,7 @@ import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.makefile.BuildSpecification;
 import org.omnetpp.cdt.makefile.MakemakeOptions;
 import org.omnetpp.common.project.ProjectUtils;
+import org.omnetpp.common.util.StringUtils;
 
 /**
  * Resolves the variable containing all executables/shared libs/static libs built 
@@ -28,6 +30,7 @@ public class OppVariableResolver implements IDynamicVariableResolver {
 	public static final String OPP_STATIC_LIBS = "opp_static_libs";
 	public static final String OPP_SHARED_LIBS = "opp_shared_libs";
 	public static final String OPP_SIMPROGS = "opp_simprogs";
+	public static final String LOC_SUFFIX = "_loc";
 
     public String resolveValue(IDynamicVariable variable, String argument) throws CoreException {
 	    String varName = variable.getName();
@@ -58,6 +61,9 @@ public class OppVariableResolver implements IDynamicVariableResolver {
 	protected String resolveForProject(IProject project, String varName) {
 		try {
 			String result = "";
+			boolean isLocation = varName.endsWith(LOC_SUFFIX);
+			varName = StringUtils.removeEnd(varName, LOC_SUFFIX);
+			
 			BuildSpecification buildSpec = BuildSpecification.readBuildSpecFile(project);
 			if (buildSpec == null)
 				return ""; // no build spec file
@@ -69,22 +75,25 @@ public class OppVariableResolver implements IDynamicVariableResolver {
 				
 				if (varName.equals(OPP_SIMPROGS)) {
 				    if (options.type == MakemakeOptions.Type.EXE) { 
-				        String target = options.target != null ? options.target : project.getName(); //FIXME default is really the project name??
-				        String targetPath = folder.getLocation().append(target).toString();
+				        String target = options.target != null ? options.target : project.getName();
+				        IFile file = folder.getFile(new Path(target));
+				        String targetPath = isLocation ? file.getLocation().toString() : file.getFullPath().toString();
 				        result += " " + targetPath;
 				    }
 				}
 				else if (varName.equals(OPP_SHARED_LIBS)) {
                     if (options.type == MakemakeOptions.Type.SHAREDLIB) { 
                         String target = options.target != null ? options.target : project.getName();
-                        String targetPath = folder.getLocation().append(target).toString();
+				        IFile file = folder.getFile(new Path(target));
+				        String targetPath = isLocation ? file.getLocation().toString() : file.getFullPath().toString();
                         result += " " + targetPath;
                     }
                 }
                 else if (varName.equals(OPP_STATIC_LIBS)) {
                     if (options.type == MakemakeOptions.Type.STATICLIB) { 
                         String target = options.target != null ? options.target : project.getName();
-                        String targetPath = folder.getLocation().append(target).toString();
+				        IFile file = folder.getFile(new Path(target));
+				        String targetPath = isLocation ? file.getLocation().toString() : file.getFullPath().toString();
                         result += " " + targetPath;
                     }
                 }

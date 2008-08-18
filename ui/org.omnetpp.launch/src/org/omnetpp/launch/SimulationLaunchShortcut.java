@@ -535,13 +535,13 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
         int numSharedLibs = StringUtils.split(sharedLibs).length;
         if (numSimProgs == 1) {
             // convert to IFile and return it
-            return locationToIFile(simProgs.trim());
+            return pathToIFile(simProgs.trim());
         }
         else if (numSimProgs > 1) {
             // choose from them
             List<IFile> files = new ArrayList<IFile>();
             for (String path : simProgs.split(" "))
-                files.add(locationToIFile(path));
+                files.add(pathToIFile(path));
             return chooseFromExeFiles(files);
         }
         else if (numSimProgs == 0 && numSharedLibs > 0) {
@@ -584,11 +584,12 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
         }
     }
 
-    protected IFile locationToIFile(String path) {
-        IFile[] files = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocation(new Path(path));
-        if (files.length == 0)
-            throw new IllegalArgumentException("Wrong filesystem location, cannot map it back to the workspace: "+path); // cannot happen, as our ${} macros cannot return anything that's outside the workspace  
-        return files[0];
+    protected IFile pathToIFile(String path) {
+        IResource resource = ResourcesPlugin.getWorkspace().getRoot().findMember(new Path(path));
+        
+        if (!(resource instanceof IFile))
+            throw new IllegalArgumentException("Wrong path: "+path); // cannot happen, as our ${} macros cannot return anything that's outside the workspace  
+        return (IFile)resource;
     }
 
     protected IFile chooseFromExeFiles(final List<IFile> exeFiles) {

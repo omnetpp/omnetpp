@@ -249,6 +249,10 @@ public class OmnetppLaunchUtils {
 			args += " -l " + StringUtils.join(libs," -l ")+" ";
 		}
 
+		String recEventlog = config.getAttribute(IOmnetppLaunchConstants.OPP_RECORD_EVENTLOG, "").trim();
+		if (StringUtils.isNotEmpty(recEventlog))
+			args += " --record-eventlog "+recEventlog+" ";
+
 		String iniStr = config.getAttribute(IOmnetppLaunchConstants.OPP_INI_FILES, "").trim();
 		if (StringUtils.isNotEmpty(iniStr))
 			args += " "+iniStr;
