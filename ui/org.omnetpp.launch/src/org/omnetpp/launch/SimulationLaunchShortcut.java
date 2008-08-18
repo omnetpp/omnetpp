@@ -1,5 +1,11 @@
 package org.omnetpp.launch;
 
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_DESCRIPTION;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NETWORK;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CONFIG_;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.EXTENDS;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -46,7 +52,6 @@ import org.eclipse.ui.dialogs.ListDialog;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.FileUtils;
-import org.omnetpp.inifile.editor.model.ConfigRegistry;
 import org.omnetpp.inifile.editor.model.InifileParser;
 import org.omnetpp.inifile.editor.model.ParseException;
 import org.omnetpp.launch.tabs.OmnetppLaunchUtils;
@@ -122,7 +127,7 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
                 IFile exeFile = null;
                 IFile iniFile = null;
                 String configName = null;
-
+    
                 if (resource instanceof IFile && "ini".equals(resource.getFileExtension())) {
                     // choose executable to launch
                     exeFile = chooseExecutable(resource.getProject());
@@ -130,7 +135,7 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
                         return; // user cancelled
                     if (exeFile == IFILE_OPP_RUN)
                         exeFile = null;
-
+    
                     // use selected ini file
                     iniFile = (IFile)resource;
                     launchName = resource.getParent().getName();
@@ -143,23 +148,27 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
                         MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Cannot launch simulation: '" + nedFile.getName() + "' is not a NED file, or it is not in a NED source folder.");
                         return;
                     }
-
                     List<INEDTypeInfo> networks = getNetworksInNedFile(nedFile);
                     if (networks.isEmpty()) {
                         MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Cannot launch simulation: '" + nedFile.getName() + "' does not contain a network.");
                         return;
                     }
-
+    
                     // choose executable to launch (note: we don't do this if NED file is not OK!)
                     exeFile = chooseExecutable(resource.getProject());
                     if (exeFile == null)
                         return; // user cancelled
                     if (exeFile == IFILE_OPP_RUN)
                         exeFile = null;
-
-                    // collect ini files that instantiate any of these networks
-                    List<IniSection> candidates = collectInifileConfigsForNetworks(nedFile, networks);
-
+    
+                    // choose network from NED file
+                    INEDTypeInfo network = networks.size()==1 ? networks.get(0) : chooseNetwork(networks);
+                    if (network == null)
+                        return; // cancelled
+                    
+                    // collect ini files that instantiate this network
+                    List<IniSection> candidates = collectInifileConfigsForNetwork(network);
+    
                     // choose or create one
                     IniSection iniFileAndConfig;
                     if (candidates.size() == 1)
@@ -167,24 +176,24 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
                     else if (candidates.size() > 1)
                         iniFileAndConfig = chooseInifileConfigFromDialog(candidates, nedFile.getParent());
                     else /*if empty*/
-                        iniFileAndConfig = askAndCreateInifile(nedFile, networks);
-
+                        iniFileAndConfig = askAndCreateInifile(network);
+    
                     if (iniFileAndConfig == null)
                         return; // user cancelled
-
+    
                     iniFile = iniFileAndConfig.iniFile;
                     configName = iniFileAndConfig.configName;
-                    launchName = (configName!=null && !configName.equals("General")) ? configName : 
+                    launchName = (configName!=null && !configName.equals(GENERAL)) ? configName : 
                         iniFileAndConfig.network!=null ? iniFileAndConfig.network : 
                             nedFile.getParent().getName();
                 } 
                 else {
                     return; // resource not supported
                 }
-
+    
                 // create launch config based on the above data
                 lc = createLaunchConfig(launchName, exeFile, iniFile, configName, resource);
-
+    
                 // tell novice users what happened
                 IPreferenceStore preferences = LaunchPlugin.getDefault().getPreferenceStore();
                 String pref = preferences.getString(PREF_DONTSHOW_LAUNCHCONFIGCREATED_MESSAGE);
@@ -194,7 +203,7 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
                             "Launch Configuration Created", 
                             "A launch configuration named '" + lc.getName() + "' has been created, and associated " +
                             "with resource '" + resource.getName() + "'. You can modify or delete this launch configuration " +
-                            "in the Run|Run Configurations... and Run|Debug Configurations... dialogs.", 
+                            "in the Run|Run Configurations... or Run|Debug Configurations... dialogs.", 
                             "Do not show this message again", false, 
                             preferences, PREF_DONTSHOW_LAUNCHCONFIGCREATED_MESSAGE).getReturnCode();
                     if (result != IDialogConstants.OK_ID) { // note: Esc returns -1, for which there is no ID constant
@@ -203,7 +212,7 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
                     }
                 }
             }
-
+    
             if (lc != null)
                 lc.launch(mode, new NullProgressMonitor());
         } 
@@ -212,6 +221,45 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
             ErrorDialog.openError(Display.getCurrent().getActiveShell(), "Error", 
                     "Error launching simulation for '" + resource.getFullPath() +"'", e.getStatus());
         }
+    }
+
+    /**
+     * Returns the launch configuration associated with the resource (using 
+     * ILaunchConfiguration.getMappedResources()); if there's more than one,
+     * lets the user choose from a dialog. Returns null if there's no associated
+     * launch config, or the user cancelled.
+     */
+    protected ILaunchConfiguration findOrChooseLaunchConfigAssociatedWith(IResource resource, String mode) throws CoreException {
+        ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
+        ILaunchConfigurationType launchType = launchManager.getLaunchConfigurationType(IOmnetppLaunchConstants.SIMULATION_LAUNCH_CONFIGURATION_TYPE);
+    
+        ILaunchConfiguration[] launchConfigs = launchManager.getLaunchConfigurations(launchType);
+        List<ILaunchConfiguration> matchingConfigs = new ArrayList<ILaunchConfiguration>();
+        for (ILaunchConfiguration config : launchConfigs) 
+            if (ArrayUtils.contains(config.getMappedResources(), resource))
+                matchingConfigs.add(config);
+    
+        if (matchingConfigs.size() == 0)
+            return null;
+        if (matchingConfigs.size() == 1)
+            return matchingConfigs.get(0);
+    
+        ListDialog dialog = new ListDialog(Display.getCurrent().getActiveShell());
+        dialog.setLabelProvider(new LabelProvider() {
+            @Override
+            public String getText(Object element) {
+                return ((ILaunchConfiguration)element).getName();
+            }
+        });
+        dialog.setContentProvider(new ArrayContentProvider());
+        dialog.setTitle("Choose Launch Configuration");
+        dialog.setMessage("Select a launch configuration to start.");
+        dialog.setInput(matchingConfigs);
+    
+        if (dialog.open() == IDialogConstants.OK_ID && dialog.getResult().length > 0)
+            return ((ILaunchConfiguration)dialog.getResult()[0]);
+        else 
+            return null;
     }
 
     /**
@@ -227,12 +275,25 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
         return result;
     }
 
+    protected INEDTypeInfo chooseNetwork(List<INEDTypeInfo> networks) {
+        // choose network from dialog
+        ListDialog dialog = new ListDialog(Display.getCurrent().getActiveShell());
+        dialog.setLabelProvider(new NedModelLabelProvider());
+        dialog.setContentProvider(new ArrayContentProvider());
+        dialog.setTitle("Select Network");
+        dialog.setMessage("Select a network:");
+        dialog.setInput(networks);
+
+        if (dialog.open() == IDialogConstants.OK_ID && dialog.getResult().length > 0)
+            return ((INEDTypeInfo)dialog.getResult()[0]);
+        return null; // user cancelled
+    }
+    
     /**
      * Finds and returns all ini files that run the given network.
      */
-    protected List<IniSection> collectInifileConfigsForNetworks(IFile nedFile, List<INEDTypeInfo> networks) {
-        for (INEDTypeInfo network : networks)
-            Assert.isTrue(network.getNEDFile().equals(nedFile)); // must be in the specified file
+    protected List<IniSection> collectInifileConfigsForNetwork(INEDTypeInfo network) {
+        IFile nedFile = network.getNEDFile();
 
         // first, collect all inifiles from *this* project
         // (note: an inifile that refers to this network cannot be in a referenced 
@@ -251,11 +312,9 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
         }
 
         // convert network names to String[], for faster lookup 
-        final String packagePrefix = networks.get(0).getNamePrefix(); // all networks are in the same file
-        final String[] networkNames = new String[networks.size()];
-        for (int i=0; i<networks.size(); i++)
-            networkNames[i] = networks.get(i).getName();
-        String interestingInifileRegex = "(?s).*\\b(include|" +StringUtils.join(networkNames, "|") + ")\\b.*";
+        final String networkName = network.getName();
+        final String networkQName = network.getFullyQualifiedName();
+        String interestingInifileRegex = "(?s).*\\b(include|" +networkName + ")\\b.*";
 
         // now, find those inifiles that refer to this network
         List<IniSection> result = new ArrayList<IniSection>();
@@ -271,12 +330,13 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
                     Set<IniSection> interestingSections = new HashSet<IniSection>(); 
                     for (IniSection section : sections.values()) {
                         if (section.network != null) {
-                            if (isSameDir && ArrayUtils.contains(networkNames, section.network))
+                            if (isSameDir && networkName.equals(section.network))
                                 interestingSections.add(section);
-                            else if (section.network.startsWith(packagePrefix) && ArrayUtils.contains(networkNames, StringUtils.removeStart(section.network, packagePrefix)))
+                            else if (networkQName.equals(section.network))
                                 interestingSections.add(section);
                         }
                     }
+                    
                     // transitive closure: add sections that extend the already 
                     // added ones, without overwriting the "network=" setting
                     boolean again = true;
@@ -284,7 +344,7 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
                         again = false;
                         for (IniSection s : sections.values()) {
                             if (!interestingSections.contains(s) && s.network == null) {
-                                IniSection baseSection = sections.get(StringUtils.defaultString(s.extendsName,"General"));
+                                IniSection baseSection = sections.get(StringUtils.defaultString(s.extendsName,GENERAL));
                                 if (interestingSections.contains(baseSection)) {
                                     s.network = baseSection.network; // propagate up network name
                                     interestingSections.add(s);
@@ -319,17 +379,17 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
                 if (currentSection == null) {
                     currentSection = new IniSection();
                     currentSection.iniFile = iniFile;
-                    currentSection.configName = StringUtils.removeStart(sectionName, ConfigRegistry.CONFIG_);
+                    currentSection.configName = StringUtils.removeStart(sectionName, CONFIG_);
                     sections.put(currentSection.configName, currentSection);
                 }
             }
             public void keyValueLine(int lineNumber, int numLines, String rawLine, String key, String value, String rawComment) {
                 if (currentSection!=null) {
-                    if (key.equals(ConfigRegistry.CFGID_NETWORK.getKey()))
+                    if (key.equals(CFGID_NETWORK.getKey()))
                         currentSection.network = value;
-                    else if (key.equals(ConfigRegistry.EXTENDS))
+                    else if (key.equals(EXTENDS))
                         currentSection.extendsName = value;
-                    else if (key.equals(ConfigRegistry.CFGID_DESCRIPTION.getKey()))
+                    else if (key.equals(CFGID_DESCRIPTION.getKey()))
                         currentSection.description = value;
                 }                
             }
@@ -338,45 +398,19 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
     }
 
     /**
-     * Ask the user if s/he wants to create an ini file for one of the networks 
-     * in the given NED file, then create the inifile. Returns null if user cancelled.
+     * Asks the user if s/he wants to create an ini file for the given network, 
+     * then creates the inifile. Returns null if user cancelled.
      */
-    protected IniSection askAndCreateInifile(IFile nedFile, List<INEDTypeInfo> networks) throws CoreException {
-        String networkNames = "";
-        for (INEDTypeInfo network : networks) {
-            Assert.isTrue(network.getNEDFile().equals(nedFile)); // must be in the specified file
-            networkNames += (networkNames.length()==0 ? "" : ", ") + network.getName();
-        }
-
-        String text = networks.size()==1 ? 
-                "Network " + networkNames + " does not have an associated ini file. Do you want to create one now?" :
-                    "None of the networks in " +nedFile.getName() + " (" + networkNames + ") have an associated ini file. Do you want to create one now?";
-
+    protected IniSection askAndCreateInifile(INEDTypeInfo network) throws CoreException {
+        String text = "Network '" + network.getName() + "' does not have an associated ini file. Do you want to create one now?";
         if (!MessageDialog.openConfirm(Display.getCurrent().getActiveShell(), "Create Ini File", text)) 
             return null; // user cancelled
 
-        // choose network to create ini file for
-        INEDTypeInfo selectedNetwork = networks.get(0);
-        if (networks.size() > 1) {
-            // choose network from dialog
-            ListDialog dialog = new ListDialog(Display.getCurrent().getActiveShell());
-            dialog.setLabelProvider(new NedModelLabelProvider());
-            dialog.setContentProvider(new ArrayContentProvider());
-            dialog.setTitle("Select Network");
-            dialog.setMessage("Select a network from " + nedFile.getName().toString() + ":");
-            dialog.setInput(networks);
-
-            if (dialog.open() == IDialogConstants.OK_ID && dialog.getResult().length > 0)
-                selectedNetwork = ((INEDTypeInfo)dialog.getResult()[0]);
-            else 
-                return null; // user cancelled
-        }
-
         // generate new ini file with a good name for the selected network
-        IContainer container = nedFile.getParent();
-        String inifileName = generateGoodInifileName(container, selectedNetwork);
+        IContainer container = network.getNEDFile().getParent();
+        String inifileName = generateGoodInifileName(container, network);
         IFile iniFile = container.getFile(new Path(inifileName));
-        return createInifile(iniFile, selectedNetwork);
+        return createInifile(iniFile, network);
     }
 
     /**
@@ -409,7 +443,7 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
 
         IniSection section = new IniSection();
         section.iniFile = iniFile;
-        section.configName = "General";
+        section.configName = GENERAL;
         section.network = network.getName();
         return section;
     }
@@ -427,7 +461,8 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
             public String getText(Object element) {
                 IniSection cfg = (IniSection)element;
                 String friendlyFileName = defaultDir.equals(cfg.iniFile.getParent()) ? cfg.iniFile.getName() : cfg.iniFile.getFullPath().toString();
-                return friendlyFileName + " - " + cfg.configName + " - network: " + cfg.network;
+                String sectionName = cfg.configName.equals(GENERAL) ? cfg.configName : CONFIG_ + cfg.configName;
+                return friendlyFileName + " - [" + sectionName + "]"+ (cfg.description==null ? "" : " - " + cfg.description);
             }
             @Override
             public Image getImage(Object element) {
@@ -576,45 +611,6 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
         if (dialog.open() == IDialogConstants.OK_ID && dialog.getResult().length > 0)
             return ((IFile)dialog.getResult()[0]);
         else
-            return null;
-    }
-
-    /**
-     * Returns the launch configuration associated with the resource (using 
-     * ILaunchConfiguration.getMappedResources()); if there's more than one,
-     * lets the user choose from a dialog. Returns null if there's no associated
-     * launch config, or the user cancelled.
-     */
-    protected ILaunchConfiguration findOrChooseLaunchConfigAssociatedWith(IResource resource, String mode) throws CoreException {
-        ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
-        ILaunchConfigurationType launchType = launchManager.getLaunchConfigurationType(IOmnetppLaunchConstants.SIMULATION_LAUNCH_CONFIGURATION_TYPE);
-
-        ILaunchConfiguration[] launchConfigs = launchManager.getLaunchConfigurations(launchType);
-        List<ILaunchConfiguration> matchingConfigs = new ArrayList<ILaunchConfiguration>();
-        for (ILaunchConfiguration config : launchConfigs) 
-            if (ArrayUtils.contains(config.getMappedResources(), resource))
-                matchingConfigs.add(config);
-
-        if (matchingConfigs.size() == 0)
-            return null;
-        if (matchingConfigs.size() == 1)
-            return matchingConfigs.get(0);
-
-        ListDialog dialog = new ListDialog(Display.getCurrent().getActiveShell());
-        dialog.setLabelProvider(new LabelProvider() {
-            @Override
-            public String getText(Object element) {
-                return ((ILaunchConfiguration)element).getName();
-            }
-        });
-        dialog.setContentProvider(new ArrayContentProvider());
-        dialog.setTitle("Choose Launch Configuration");
-        dialog.setMessage("Select a launch configuration to start.");
-        dialog.setInput(matchingConfigs);
-
-        if (dialog.open() == IDialogConstants.OK_ID && dialog.getResult().length > 0)
-            return ((ILaunchConfiguration)dialog.getResult()[0]);
-        else 
             return null;
     }
 }

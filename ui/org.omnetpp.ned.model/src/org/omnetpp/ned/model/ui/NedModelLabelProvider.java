@@ -132,6 +132,9 @@ public class NedModelLabelProvider extends LabelProvider {
 
     @Override
     public Image getImage(Object obj) {
+        if (obj instanceof INEDTypeInfo)
+            obj = ((INEDTypeInfo)obj).getNEDElement();
+
         INEDElement model = (INEDElement)obj;
         Image image = null;
         if (model instanceof IHasDisplayString && !(model instanceof ChannelElementEx || model instanceof ChannelInterfaceElementEx)) {
