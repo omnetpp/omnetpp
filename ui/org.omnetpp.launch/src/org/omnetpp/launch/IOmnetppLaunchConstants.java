@@ -108,5 +108,5 @@ public interface IOmnetppLaunchConstants {
     /**
      * Additional hand specified arguments
      */
-    public static final String OPP_ADDITIONAL_ARGS = OMNETPP_LAUNCH_ID + ".ADDITIONAL_ARGA";
+    public static final String OPP_ADDITIONAL_ARGS = OMNETPP_LAUNCH_ID + ".ADDITIONAL_ARG";
 }

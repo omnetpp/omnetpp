@@ -5,9 +5,7 @@ import org.eclipse.cdt.managedbuilder.core.IManagedProject;
 import org.eclipse.cdt.managedbuilder.envvar.IBuildEnvironmentVariable;
 import org.eclipse.cdt.managedbuilder.envvar.IEnvironmentVariableProvider;
 import org.eclipse.cdt.managedbuilder.envvar.IProjectEnvironmentVariableSupplier;
-import org.eclipse.core.runtime.Path;
 import org.omnetpp.ide.OmnetppMainPlugin;
-import org.omnetpp.ide.preferences.OmnetppPreferencePage;
 
 /**
  * Adds environment variables specific to an omnetpp simulation project. Prepends the omnetpp_bin 
@@ -19,7 +17,7 @@ public class OmnetppProjectEnvironmentSupplier implements IProjectEnvironmentVar
     // currently the environment variable cannot be pre/appended because of the above issue.
     // we have to get it by hand and append the rest automatically so we have to pass in the 
     // outer provider
-    // It seems that only the project properties dialog  hasprobles with it. If the focs is on the environment tab
+    // It seems that only the project properties dialog  has problems with it. If the focus is on the environment tab
     // and we open the properties dialog, the value is wrongly set. On the other hand if the focus is on an other
     // tab when we open it the path is correctly displayed
     private static class OmnetppBinPathEnvironmentVariable implements IBuildEnvironmentVariable {

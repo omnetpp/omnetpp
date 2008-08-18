@@ -3,6 +3,7 @@ package org.omnetpp.launch.tabs;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -278,6 +279,12 @@ implements ModifyListener {
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_SHARED_LIBS, "${"+VAR_SHARED_LIBS+":"+defWorkDir+"}");
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_NUM_CONCURRENT_PROCESSES, 1);
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_ADDITIONAL_ARGS, "");
+        
+        // add omnetpp bin to the path
+        Map<String, String> envir = new HashMap<String, String>();
+        envir.put("PATH", "${opp_bin_dir}${system_property:path.separator}${env_var:PATH}");
+        configuration.setAttribute("org.eclipse.debug.core.environmentVariables", envir);
+        configuration.setAttribute("org.eclipse.debug.core.appendEnvironmentVariables", true);
     }
     
     protected static String getDefaultExeName(String defWorkDir) {
