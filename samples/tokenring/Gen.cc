@@ -16,7 +16,7 @@
 //
 
 #include <omnetpp.h>
-#include "token_m.h"
+#include "TokenRing_m.h"
 
 #define STACKSIZE 16384
 
