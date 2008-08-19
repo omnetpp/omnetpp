@@ -146,7 +146,7 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
                     if (exeFile == IFILE_OPP_RUN)
                         exeFile = null;
 
-                    // choose or create one
+                    // choose one
                     IniSection iniFileAndConfig;
                     if (candidates.size() == 1)
                         iniFileAndConfig = candidates.get(0);
