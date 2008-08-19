@@ -306,7 +306,7 @@ fi
 # determine toolchain name, used in opp_makemake-generated Makefiles as part of the linker path
 if test "$TOOLCHAIN_NAME" = ""; then
     if test "$mingw" = yes; then
-        TOOLCHAIN_NAME="mingw"
+        TOOLCHAIN_NAME="gcc"
     elif test "$cygwin" = yes; then
         TOOLCHAIN_NAME="cygwin"
     else
