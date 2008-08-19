@@ -123,7 +123,6 @@ import org.omnetpp.ned.model.pojo.SubmoduleElement;
  *
  * @author rhornig
  */
-//TODO save/restore palette state
 public class GraphicalNedEditor
 	extends GraphicalEditorWithFlyoutPalette
 	implements INEDChangeListener
