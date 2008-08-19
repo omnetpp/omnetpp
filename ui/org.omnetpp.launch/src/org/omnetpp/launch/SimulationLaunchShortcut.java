@@ -98,6 +98,7 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
         String extendsName;
         String description;
         String network;
+        public IniSection(IFile f, String c) {iniFile = f; configName = c;}
         public String toString() {return iniFile+"/"+configName;}
     }
     
@@ -128,7 +129,38 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
                 IFile iniFile = null;
                 String configName = null;
     
-                if (resource instanceof IFile && "ini".equals(resource.getFileExtension())) {
+                if (resource instanceof IContainer) {
+                    IContainer folder = (IContainer)resource;
+                    
+                    // collect all ini files in this folder
+                    List<IniSection> candidates = collectInifileConfigsForFolder(folder);
+                    if (candidates.isEmpty()) {
+                        MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Cannot launch simulation: '" + folder.getFullPath().toString() + "' does not contain an ini file.");
+                        return;
+                    }
+
+                    // choose executable to launch (note: we don't do this if there's no inifile!)
+                    exeFile = chooseExecutable(resource.getProject());
+                    if (exeFile == null)
+                        return; // user cancelled
+                    if (exeFile == IFILE_OPP_RUN)
+                        exeFile = null;
+
+                    // choose or create one
+                    IniSection iniFileAndConfig;
+                    if (candidates.size() == 1)
+                        iniFileAndConfig = candidates.get(0);
+                    else 
+                        iniFileAndConfig = chooseInifileConfigFromDialog(candidates, folder);
+    
+                    if (iniFileAndConfig == null)
+                        return; // user cancelled
+
+                    iniFile = iniFileAndConfig.iniFile;
+                    configName = iniFileAndConfig.configName;
+                    launchName = folder.getName();
+                }
+                else if (resource instanceof IFile && "ini".equals(resource.getFileExtension())) {
                     // choose executable to launch
                     exeFile = chooseExecutable(resource.getProject());
                     if (exeFile == null)
@@ -289,6 +321,14 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
         return null; // user cancelled
     }
     
+    protected List<IniSection> collectInifileConfigsForFolder(IContainer folder) {
+        List<IFile> iniFiles = collectInifilesFrom(folder);
+        List<IniSection> result = new ArrayList<IniSection>();
+        for (IFile iniFile : iniFiles)
+            result.add(new IniSection(iniFile, null));
+        return result;
+    }
+
     /**
      * Finds and returns all ini files that run the given network.
      */
@@ -298,18 +338,7 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
         // first, collect all inifiles from *this* project
         // (note: an inifile that refers to this network cannot be in a referenced 
         // project, as the network's NED type is not visible there!)
-        final List<IFile> iniFiles = new ArrayList<IFile>();
-        try {
-            nedFile.getProject().accept(new IResourceVisitor() {
-                public boolean visit(IResource resource) {
-                    if (resource instanceof IFile && "ini".equals(resource.getFileExtension()))
-                        iniFiles.add((IFile)resource);
-                    return true;
-                }
-            });
-        } catch (CoreException e) {
-            LaunchPlugin.logError(e);
-        }
+        final List<IFile> iniFiles = collectInifilesFrom(nedFile.getProject());
 
         // convert network names to String[], for faster lookup 
         final String networkName = network.getName();
@@ -365,6 +394,25 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
     }
 
     /**
+     * Collects ALL inifiles under the given container.
+     */
+    protected List<IFile> collectInifilesFrom(IContainer folder) {
+        final List<IFile> iniFiles = new ArrayList<IFile>();
+        try {
+            folder.accept(new IResourceVisitor() {
+                public boolean visit(IResource resource) {
+                    if (resource instanceof IFile && "ini".equals(resource.getFileExtension()))
+                        iniFiles.add((IFile)resource);
+                    return true;
+                }
+            });
+        } catch (CoreException e) {
+            LaunchPlugin.logError(e);
+        }
+        return iniFiles;
+    }
+
+    /**
      * Extracts section names, and their extends=, network= and description= 
      * entries into a map. The "Config " prefix is stripped from section names.
      */
@@ -377,9 +425,7 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
             public void sectionHeadingLine(int lineNumber, int numLines, String rawLine, String sectionName, String rawComment) {
                 currentSection = sections.get(sectionName);
                 if (currentSection == null) {
-                    currentSection = new IniSection();
-                    currentSection.iniFile = iniFile;
-                    currentSection.configName = StringUtils.removeStart(sectionName, CONFIG_);
+                    currentSection = new IniSection(iniFile, StringUtils.removeStart(sectionName, CONFIG_));
                     sections.put(currentSection.configName, currentSection);
                 }
             }
@@ -441,9 +487,7 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
             "**.apply-default = true\n";
         iniFile.create(new ByteArrayInputStream(content.getBytes()), false, new NullProgressMonitor());
 
-        IniSection section = new IniSection();
-        section.iniFile = iniFile;
-        section.configName = GENERAL;
+        IniSection section = new IniSection(iniFile, GENERAL);
         section.network = network.getName();
         return section;
     }
@@ -461,8 +505,13 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
             public String getText(Object element) {
                 IniSection cfg = (IniSection)element;
                 String friendlyFileName = defaultDir.equals(cfg.iniFile.getParent()) ? cfg.iniFile.getName() : cfg.iniFile.getFullPath().toString();
-                String sectionName = cfg.configName.equals(GENERAL) ? cfg.configName : CONFIG_ + cfg.configName;
-                return friendlyFileName + " - [" + sectionName + "]"+ (cfg.description==null ? "" : " - " + cfg.description);
+                if (cfg.configName == null) {
+                    return friendlyFileName;
+                }
+                else {
+                    String sectionName = cfg.configName.equals(GENERAL) ? cfg.configName : CONFIG_ + cfg.configName;
+                    return friendlyFileName + " - [" + sectionName + "]"+ (cfg.description==null ? "" : " - " + cfg.description);
+                }
             }
             @Override
             public Image getImage(Object element) {
@@ -585,11 +634,7 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
     }
 
     protected IFile pathToIFile(String path) {
-        IResource resource = ResourcesPlugin.getWorkspace().getRoot().findMember(new Path(path));
-        
-        if (!(resource instanceof IFile))
-            throw new IllegalArgumentException("Wrong path: "+path); // cannot happen, as our ${} macros cannot return anything that's outside the workspace  
-        return (IFile)resource;
+        return (IFile) ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(path));
     }
 
     protected IFile chooseFromExeFiles(final List<IFile> exeFiles) {
