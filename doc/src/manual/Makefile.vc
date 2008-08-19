@@ -60,7 +60,10 @@ SVGPICS = \
          figures\usmanFig5.svg \
          figures\usmanFig7.svg \
          figures\usmanFig9.svg
-PDFPICS = $(SVGPICS:.svg=.pdf)
+
+DOTPICS = figures\workflow.dot
+
+PDFPICS = $(SVGPICS:.svg=.pdf) $(DOTPICS:.dot=.pdf)
 
 # an imperfect attempt to filter out less important warnings...
 # LOGFILTER = | sed '/Underfull/{N;N;d;};/Overfull/{N;N;d;};/Token not allowed/{N;N;d;}'
@@ -82,6 +85,9 @@ pdf: $(ALLTEX) $(PDFPICS) figures/*.png
 
 #usman-bibl.bbl : usman.bbl
 #	copy usman.bbl usman-bibl.bbl
+
+.dot.svg:
+	$(DOT) -Tsvg $< >$@
 
 .svg.pdf:
 	$(INKSCAPE) $(CWD)\$< -A $(CWD)\$@
