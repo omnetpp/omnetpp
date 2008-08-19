@@ -6,6 +6,7 @@
 <stringAttribute key="org.eclipse.cdt.debug.mi.core.GDB_INIT" value=".gdbinit"/>
 <listAttribute key="org.eclipse.cdt.debug.mi.core.SOLIB_PATH"/>
 <booleanAttribute key="org.eclipse.cdt.debug.mi.core.STOP_ON_SOLIB_EVENTS" value="false"/>
+<booleanAttribute key="org.eclipse.cdt.debug.mi.core.breakpointsFullPath" value="false"/>
 <stringAttribute key="org.eclipse.cdt.debug.mi.core.commandFactory" value="org.eclipse.cdt.debug.mi.core.standardCommandFactory"/>
 <stringAttribute key="org.eclipse.cdt.debug.mi.core.protocol" value="mi"/>
 <booleanAttribute key="org.eclipse.cdt.debug.mi.core.verboseMode" value="false"/>
@@ -15,13 +16,26 @@
 <stringAttribute key="org.eclipse.cdt.launch.DEBUGGER_STOP_AT_MAIN_SYMBOL" value="main"/>
 <booleanAttribute key="org.eclipse.cdt.launch.ENABLE_REGISTER_BOOKKEEPING" value="false"/>
 <booleanAttribute key="org.eclipse.cdt.launch.ENABLE_VARIABLE_BOOKKEEPING" value="false"/>
-<stringAttribute key="org.eclipse.cdt.launch.PROGRAM_ARGUMENTS" value="-n ${ned_path:/cqn} "/>
-<stringAttribute key="org.eclipse.cdt.launch.PROGRAM_NAME" value="cqn"/>
-<stringAttribute key="org.eclipse.cdt.launch.PROJECT_ATTR" value="cqn"/>
-<stringAttribute key="org.eclipse.cdt.launch.WORKING_DIRECTORY" value="${workspace_loc:/cqn}"/>
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
+<listEntry value="/cqn/omnetpp.ini"/>
+</listAttribute>
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
+<listEntry value="1"/>
+</listAttribute>
 <booleanAttribute key="org.eclipse.debug.core.appendEnvironmentVariables" value="true"/>
+<mapAttribute key="org.eclipse.debug.core.environmentVariables">
+<mapEntry key="PATH" value="${opp_bin_dir}${system_property:path.separator}${env_var:PATH}"/>
+</mapAttribute>
+<stringAttribute key="org.omnetpp.launch.ADDITIONAL_ARG" value=""/>
+<stringAttribute key="org.omnetpp.launch.CONFIG_NAME" value=""/>
+<stringAttribute key="org.omnetpp.launch.EXECUTABLE" value="/cqn/cqn"/>
+<stringAttribute key="org.omnetpp.launch.INI_FILES" value="omnetpp.ini"/>
+<stringAttribute key="org.omnetpp.launch.NED_PATH" value="${opp_ned_path:/cqn}"/>
 <intAttribute key="org.omnetpp.launch.NUM_CONCURRENT_PROCESSES" value="1"/>
+<stringAttribute key="org.omnetpp.launch.RECORD_EVENTLOG" value=""/>
 <stringAttribute key="org.omnetpp.launch.RUN" value=""/>
-<stringAttribute key="org.omnetpp.launch.RUN.FOR_DEBUG" value=""/>
+<stringAttribute key="org.omnetpp.launch.SHARED_LIBS" value="${opp_shared_libs:/cqn}"/>
 <booleanAttribute key="org.omnetpp.launch.SHOW_DEBUG_VIEW" value="false"/>
+<stringAttribute key="org.omnetpp.launch.USER_INTERFACE" value=""/>
+<stringAttribute key="org.omnetpp.launch.WORKING_DIRECTORY" value="/cqn"/>
 </launchConfiguration>
