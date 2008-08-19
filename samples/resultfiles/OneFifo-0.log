@@ -10,7 +10,7 @@ GC m 2 g 1048576 n in i 0 o 0
 CC sm 3 sg 3 dm 2 dg 1048576
 
 E # 0 t 0 m 1 msg -1
-SB v 1024 rid OneFifo-0-20080801-16:40:40-3596
+SB v 1024 rid OneFifo-0-20080819-12:14:27-16592
 - Initializing module SimpleQueue, stage 0
 MB sm 1 tm 2 m initialize
 - Initializing module SimpleQueue.sink, stage 0
