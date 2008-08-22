@@ -9,7 +9,7 @@
       Choosing
       <guimenuitem>File|New|Message Definition (msg)</guimenuitem>
       from the menu will bring up a wizard where you can specify the target directory and
-      the file name for your message definition. You may choose to create an empty MSG file, or a
+      the file name for your message definition. You may choose to create an empty MSG file, 
       or choose from the predefined templates. Once you press the
       <guibutton>Finish</guibutton>
       button, a new MSG file will be created with the requested content.

@@ -120,14 +120,14 @@
         file.
       </para>
       <tip>
-        It is a good practice to place only a single module or network into a NED files
+        It is a good practice to place only a single module or network into a NED file
         and name the file according to the module name.
       </tip>
       <para>
         Simple modules and submodules are represented as icons while compound modules and
         networks are rectangles where other submodules can be dropped. Connections between
         submodules are represented either by lines or arrows depending whether the
-        connection was one-directional or bi-directions. Submodules can be dragged or
+        connection was uni- or bi-directional. Submodules can be dragged or
         resized by the mouse and connected by using the Connection Tool in the palette.
       </para>
       <picture file="pictures/NED-GraphEditor.png">Graphical NED Editor</picture>
@@ -316,7 +316,7 @@
         <para>
           If you know only the name of a type of a module or other NED element, you can
           use the Open NED Type dialog by pressing
-          <keycap>Ctrl+SHIFT-N</keycap>
+          <keycap>Ctrl+SHIFT+N</keycap>
           . Type the name, or search with wildcards. The requested type will be opened in
           an editor. This feature is not tied to the graphical editor: the Open NED Type
           dialog is available from anywhere in the IDE.
