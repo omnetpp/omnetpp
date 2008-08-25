@@ -25,17 +25,18 @@ import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.NedEditorPlugin;
 
 /**
- * TODO add documentation
+ * Wizard page for creating a new NED file
  *
- * @author rhornig
+ * @author rhornig, andras
  */
 public class NewNEDFileWizardPage1 extends WizardNewFileCreationPage {
-
+    private static final String COMMENT = "//\n// TODO auto-generated module\n//\n";
+    
     private static final String[] NEDFILE_TEMPLATES = {
-        "//\n// TODO Place comment here\n//\n#PACKAGEDECL#\n",
-        "//\n// TODO Place comment here\n//\n#PACKAGEDECL#\nsimple #NAME# {\n  parameters:\n  gates:\n}\n",
-        "//\n// TODO Place comment here\n//\n#PACKAGEDECL#\nmodule #NAME# {\n  parameters:\n  gates:\n  submodules:\n  connections:\n}\n",
-        "//\n// TODO Place comment here\n//\n#PACKAGEDECL#\nnetwork #NAME# {\n  parameters:\n  submodules:\n  connections:\n}\n"
+        "#PACKAGEDECL#",
+        "#PACKAGEDECL#"+COMMENT+"simple #NAME#\n{\n}\n",
+        "#PACKAGEDECL#"+COMMENT+"module #NAME#\n{\n}\n",
+        "#PACKAGEDECL#"+COMMENT+"network #NAME#\n{\n}\n"
     };
     
 	private IWorkbench workbench;
@@ -90,20 +91,20 @@ public class NewNEDFileWizardPage1 extends WizardNewFileCreationPage {
 
 		// sample section generation checkboxes
 		emptyButton = new Button(group, SWT.RADIO);
-		emptyButton.setText("Empty Network Definition (NED) file");
+		emptyButton.setText("Empty file");
 		emptyButton.addSelectionListener(listener);
 		emptyButton.setSelection(true);
 
 		simpleButton = new Button(group, SWT.RADIO);
-		simpleButton.setText("A new Simple Module");
+		simpleButton.setText("A new simple module");
 		simpleButton.addSelectionListener(listener);
 
         compoundButton = new Button(group, SWT.RADIO);
-        compoundButton.setText("A new Compound Module");
+        compoundButton.setText("A new compound module");
         compoundButton.addSelectionListener(listener);
 
         networkButton = new Button(group, SWT.RADIO);
-        networkButton.setText("A new Network");
+        networkButton.setText("A new network");
         networkButton.addSelectionListener(listener);
 
         //new Label(composite, SWT.NONE);
@@ -124,7 +125,7 @@ public class NewNEDFileWizardPage1 extends WizardNewFileCreationPage {
         // determine package
         IFile newFile = createFileHandle(getContainerFullPath().append(getFileName()));
         String packagedecl = NEDResourcesPlugin.getNEDResources().getExpectedPackageFor(newFile);
-        packagedecl = StringUtils.isNotEmpty(packagedecl) ? "package "+packagedecl+";\n" : "";
+        packagedecl = StringUtils.isNotEmpty(packagedecl) ? "package "+packagedecl+";\n\n" : "";
 
         // substitute name and package into the template
         String contents = NEDFILE_TEMPLATES[modelSelected].replaceAll("#NAME#", name);
