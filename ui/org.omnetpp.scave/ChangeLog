@@ -1,3 +1,51 @@
+2008-08-01
+----------
+
+Fixes:
+
+   + Problem marker renamed from "Scave Problem" to "Result File Problem".
+
+2008-07-18
+----------
+
+Fixes:
+
+   + False numUnrecognizedLines reported by scavetool.
+
+   + Filter node descriptions are revised.
+
+   + Rename "x" and "xprev" parameter names in ExpressionFilterNode.
+     New names are "t" and "tprev".
+
+Additions:
+
+   + 'summary' command implemented in scavetool.
+
+
+2008-07-04
+----------
+
+Fixes:
+
+   + When new Apply/Compute dropped into the dataset, the editor crashed.
+
+2008-06-13
+----------
+
+Fixes:
+
+   + Relative file names in InputFile elements did not work.
+
+   + Selection could be scrolled outside the plot area of the chart.
+
+   + 'Delete' action of charts on the chart sheet was always disabled
+
+   + When the charts reordered on the chart page, the modification was not saved.
+
+Additions:
+
+   + Add version number to scalar/vector files.
+
 2008-05-23
 ----------
 
