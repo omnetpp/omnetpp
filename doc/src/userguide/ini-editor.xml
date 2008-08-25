@@ -7,19 +7,19 @@
   <sect1>
     <title>Overview</title>
     <para>
-      In OMNeT++, simulation models are parameterized and configured for execution using
+      In &Omnetpp;, simulation models are parameterized and configured for execution using
       configuration files with the .ini extension, called ini files. Ini files are text
-      files which can be edited using any text editor. However, OMNeT++ 4.0 introduces a
+      files which can be edited using any text editor. However, &Omnetpp; 4.0 introduces a
       tool expressly designed for editing ini files. The Inifile Editor is part of the
-      OMNeT++ IDE, and it can very efficiently assist the user in authoring ini files,
+      &Omnetpp; IDE, and it can very efficiently assist the user in authoring ini files,
       because it has detailed knowledge of the simulation model, the ini file syntax, and
       the available configuration options.
     </para>
     <note>
       <para>
-      The syntax and features of ini files have changed since OMNeT++ 3.x as well.
+      The syntax and features of ini files have changed since &Omnetpp; 3.x as well.
       These changes are summarized in the document titled "Configuring Simulations in
-      OMNeT++ 4.0." TBD <!-- olink? -->
+      &Omnetpp; 4.0." TBD <!-- olink? -->
       </para>
     </note>
     <para>
@@ -61,17 +61,33 @@
         The ini file contains the configuration of simulation runs. The content of the ini file
         is divided into sections. In the simplest case, each parameters are set in the General
         section. If you want to create several configurations in the same ini file you can
-        create named Config sections and refer them with the -c option when starting the simulation.
+        create named Config sections and refer them with the <option>-c</option> option when
+        starting the simulation.
         <!-- TODO: iteration vars? -->
         The Config sections inherit the settings from the General section or from other
         Config sections. This way you can factor out the common settings into a "base" configuration.
       </para>
       <para>
         On the first page of form editor you can edit the sections. The section are displayed 
-        as a tree, the nodes inherit settings from their parent. You can use drag and drop
-        to reorganize the sections. The selected section can be deleted, edited or a new child added to it.
+        as a tree, the nodes inherit settings from their parent. The icon before the section name
+        shows how many runs are configured in that section (see <xref linkend="section-icons-legend"/>).
+        You can use drag and drop to reorganize the sections. The selected section can be deleted,
+        edited or a new child added to it.
       </para>
       <picture file="pictures/INI-FormEditor.png">Editing ini file sections</picture>
+      <table id="section-icons-legend">
+        <title>Legend of icons before sections</title>
+        <tgroup cols="2">
+          <colspec colwidth='0.25in'/>
+          <colspec colwidth='2*'/>
+          <tbody>
+            <row><entry><icon name="section_single.gif"/></entry><entry>contains a single run</entry></row>
+            <row><entry><icon name="section_repeat.gif"/></entry><entry>contains multiple replications (specified by 'repeat=...')</entry></row>
+            <row><entry><icon name="section_iter.gif"/></entry><entry>contains iteration variables</entry></row>
+            <row><entry><icon name="section_iterrep.gif"/></entry><entry>contains multiple replications for each iteration</entry></row>
+          </tbody>
+        </tgroup>
+      </table>
       <para>
         The Config sections have a name and optionally a description. You can specify a fallback
         section other than General. If the network name is not inherited it can be given too.
@@ -95,6 +111,7 @@
         If you press the <guibutton>Add...</guibutton> button, you
         can add the missing parameters at once. 
       </para>
+      <picture file="pictures/INI-AddParams.png">Add missing module parameters dialog</picture>
       <para>
         The rest of the settings does not belong to modules, for example configuration of 
         random number generators, output vectors, simulation time limit. These settings

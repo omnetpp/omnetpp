@@ -26,3 +26,4 @@
 	name		CDATA		#IMPLIED
 >
 
+<!ENTITY Omnetpp "OMNeT&#xFEFF;+&#xFEFF;+">
