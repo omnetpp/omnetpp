@@ -59,21 +59,22 @@
       <title>Editing in form mode</title>
       <para><!-- TODO move this para to overview? -->
         The ini file contains the configuration of simulation runs. The content of the ini file
-        is divided into sections. In the simplest case, each parameters are set in the General
-        section. If you want to create several configurations in the same ini file you can
-        create named Config sections and refer them with the <option>-c</option> option when
+        is divided into sections. In the simplest case, all parameters are set in the General
+        section. If you want to create several configurations in the same ini file, you can
+        create named Config sections and refer to them with the <option>-c</option> option when
         starting the simulation.
         <!-- TODO: iteration vars? -->
         The Config sections inherit the settings from the General section or from other
         Config sections. This way you can factor out the common settings into a "base" configuration.
       </para>
       <para>
-        On the first page of form editor you can edit the sections. The section are displayed 
+        On the first page of form editor you can edit the sections. The sections are displayed 
         as a tree, the nodes inherit settings from their parent. The icon before the section name
         shows how many runs are configured in that section (see <xref linkend="section-icons-legend"/>).
         You can use drag and drop to reorganize the sections. The selected section can be deleted,
         edited or a new child added to it.
       </para>
+      <!-- TODO modify inheritance too, use example -->
       <picture file="pictures/INI-FormEditor.png">Editing ini file sections</picture>
       <table id="section-icons-legend">
         <title>Legend of icons before sections</title>
@@ -90,7 +91,7 @@
       </table>
       <para>
         The Config sections have a name and optionally a description. You can specify a fallback
-        section other than General. If the network name is not inherited it can be given too.
+        section other than General. If the network name is not inherited, it can be given too.
       </para>
       <picture file="pictures/INI-NewSection.png">Creating new ini file section</picture>
       <para>
@@ -98,7 +99,7 @@
         select the section the parameters stored into. After selecting the section from the list,
         the form shows the name of the edited network and the fallback section.
         The table below the list box shows current settings of the section and all other sections
-        it inherits from. You can move the parameters by dragging them. If you click in the table cell you can
+        it inherits from. You can move parameters by dragging them. If you click a table cell, you can
         edit the parameter name (or pattern), its value and the comment attached to it.
         <keycombo><keycap>Ctrl</keycap><keycap>Space</keycap></keycombo> brings up a content assist.
         If you hover over a table row, the parameter is described in the appearing tooltip.
@@ -109,16 +110,16 @@
         filling the new table row. The selected parameters can be removed with the
         <guibutton>Remove</guibutton> button.
         If you press the <guibutton>Add...</guibutton> button, you
-        can add the missing parameters at once. 
+        can add the missing parameters at once. <!-- TODO errol tobbet -->
       </para>
       <picture file="pictures/INI-AddParams.png">Add missing module parameters dialog</picture>
       <para>
-        The rest of the settings does not belong to modules, for example configuration of 
+        The rest of the settings do not belong to modules, for example configuration of 
         random number generators, output vectors, simulation time limit. These settings
         can be edited from the forms listed under the Configuration node. If the field
         has a default value and it is not set then the default value is displayed in gray.
         If its value is set you can reset the default value by pressing the <guibutton>Reset</guibutton>
-        button. These fields are usually set in the General section. If you want to specify
+        button. These fields are usually set in the General section. If you want to specify <!-- TODO tobbet -->
         them in a Config section, press the <icon name="expand.png"/> button and add a section specific
         value to the opening table. If the table contains the Generic section only, then it can
         be collapsed again by pressing the <icon name="collapse.png"/> button. Some fields can be
@@ -183,6 +184,8 @@
           You can get the error message in a tooltip if you hover over the <icon name="Error.png"/> marker.
         </para>
       </sect3>
+      
+      <!-- TODO tooltip -->
     </sect2>
   </sect1>
 
@@ -233,6 +236,7 @@
           </tbody>
         </tgroup>
       </table>
+      <!-- TODO screenshot, context mem pinning -->
     </sect2>
     <sect2>
       <title>NED Inheritance View</title>
