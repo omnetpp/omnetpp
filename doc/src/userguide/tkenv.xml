@@ -2,11 +2,361 @@
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
     "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <chapter id="tkenv">
-<title>Graphical Runtime Environment</title>
-
-<sect1>
-<title>Using TKenv</title>
-<para>TBD</para>
-</sect1>
-
+  <title>Graphical Runtime Environment</title>
+  <sect1>
+    <title>Features</title>
+    <para> Tkenv is a portable graphical windowing user interface. Tkenv supports
+      interactive execution of the simulation, tracing and debugging. Tkenv is recommended
+      in the development stage of a simulation or for presentation and educational
+      purposes, since it allows one to get a detailed picture of the state of simulation
+      at any point of execution and to follow what happens inside the network. The most
+      important feaures are:</para>
+    <itemizedlist>
+      <listitem>
+        message flow animation
+      </listitem>
+      <listitem>
+        graphical display of statistics (histograms etc.) and output vectors during
+        simulation execution
+      </listitem>
+      <listitem>
+        separate window for each module's text output
+      </listitem>
+      <listitem>
+        scheduled messages can be watched in a window as simulation progresses
+      </listitem>
+      <listitem>
+        event-by-event, normal and fast execution
+      </listitem>
+      <listitem>
+        labeled breakpoints
+      </listitem>
+      <listitem>
+        inspector windows to examine and alter objects and variables in the model
+      </listitem>
+      <listitem>
+        simulation can be restarted
+      </listitem>
+      <listitem>
+        snapshots (detailed report about the model: objects, variables etc.)
+      </listitem>
+    </itemizedlist>
+    <para> Tkenv makes it possible to view simulation results (output vectors etc.) during
+      execution. Results can be displayed as histograms and time-series diagrams. This can
+      speed up the process of verifying the correct operation of the simulation program
+      and provides a good environment for experimenting with the model during execution.
+      When used together with gdb or xxgdb, Tkenv can speed up debugging a lot.</para>
+    <para> Tkenv is built with Tcl/Tk, and it work on all platforms where Tcl/Tk has been
+      ported to: Unix/X, Windows, Macintosh. You can get more information about Tcl/Tk on
+      the Web pages listed in the Reference.</para>
+  </sect1>
+  <sect1>
+    <title>Command-line switches</title>
+    <para>A simulation program built with Tkenv accepts the following command line
+      switches:</para>
+    <itemizedlist>
+      <listitem>
+        -h : The program prints a short help message and the networks contained in the
+        executable, then exits.
+      </listitem>
+      <listitem>
+        -f fileName : Specify the name of the configuration file. The default is
+        omnetpp.ini. Multiple -f switches can be given; this allows you to partition your
+        configuration file. For example, one file can contain your general settings,
+        another one most of the module parameters, another one the module parameters you
+        change often.
+      </listitem>
+      <listitem>
+        -l fileName : Load a shared object (.so file on Unix). Multiple -l switches are
+        accepted. Your .so files may contain module code etc. By dynamically loading all
+        simple module code and compiled network description (_n.o files on Unix) you can
+        even eliminate the need to re-link the simulation program after each change in a
+        source file. (Shared objects can be created with gcc -shared...)
+      </listitem>
+      <listitem>
+        -r : run-number It has the same effect as (but takes priority over) the
+        [Tkenv]/default-run= ini file entry.
+      </listitem>
+    </itemizedlist>
+  </sect1>
+  <sect1>
+    <title>Tkenv ini file settings</title>
+    <para> Tkenv accepts the following settings in the [Tkenv] section of the ini file.
+    </para>
+    <informaltable>
+      <tgroup cols="2">
+        <colspec colwidth="170" />
+        <tbody>
+          <row>
+            <entry>Entry and default value</entry>
+            <entry>Description</entry>
+          </row>
+          <row>
+            <entry>extra-stack-kb = 48</entry>
+            <entry> Specifies the extra amount of stack (in kilobytes) that is reserved
+              for each activity() simple module when the simulation is run under Tkenv.
+              This value is significantly higher than the similar one for Cmdenv --
+              handling GUI events requires a large amount of stack space.</entry>
+          </row>
+          <row>
+            <entry>default-run = 1</entry>
+            <entry> Specifies which run Tkenv should set up automatically after startup.
+              If there's no default-run= entry or the value is 0, Tkenv will ask which run
+              to set up.</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </informaltable>
+    <para>The following configuration entries are of marginal usefulness, because
+      corresponding settings are also accessible in the Simulation options dialog in the
+      Tkenv GUI, and the GUI settings take precedence. Tkenv stores the settings in the
+      .tkenvrc file in the current directory -- the ini file settings are only used if
+      there is no .tkenvrc file.</para>
+    <informaltable>
+      <tgroup cols="2">
+        <colspec colwidth="170" />
+        <tbody>
+          <row>
+            <entry>Entry and default value</entry>
+            <entry>Description</entry>
+          </row>
+          <row>
+            <entry>use-mainwindow = yes</entry>
+            <entry> Enables/disables writing ev output to the Tkenv main window.</entry>
+          </row>
+          <row>
+            <entry>print-banners = yes</entry>
+            <entry> Enables/disables printing banners for each event.</entry>
+          </row>
+          <row>
+            <entry>breakpoints-enabled = yes</entry>
+            <entry> Specifies whether the simulation should be stopped at each
+              breakpoint() call in the simple modules.</entry>
+          </row>
+          <row>
+            <entry>update-freq-fast = 10</entry>
+            <entry> Number of events executed between two display updates when in Fast
+              execution mode.</entry>
+          </row>
+          <row>
+            <entry>update-freq-express = 500</entry>
+            <entry> Number of events executed between two display updates when in Express
+              execution mode.</entry>
+          </row>
+          <row>
+            <entry>animation-delay = 0.3s</entry>
+            <entry> Delay between steps when you slow-execute the simulation.</entry>
+          </row>
+          <row>
+            <entry>animation-enabled = yes</entry>
+            <entry> Enables/disables message flow animation.</entry>
+          </row>
+          <row>
+            <entry>animation-msgnames = yes</entry>
+            <entry> Enables/disables displaying message names during message flow
+              animation.</entry>
+          </row>
+          <row>
+            <entry>animation-msgcolors = yes</entry>
+            <entry> Enables/disables using different colors for each message kind during
+              message flow animation.</entry>
+          </row>
+          <row>
+            <entry>animation-speed = 1.0</entry>
+            <entry> Specifies the speed of message flow animation.</entry>
+          </row>
+          <row>
+            <entry>methodcalls-delay =</entry>
+            <entry> Sets delay after method call animation.</entry>
+          </row>
+          <row>
+            <entry>show-layouting = true</entry>
+            <entry> Show layouting process of network graphics.</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </informaltable>
+    <sect2>
+      <title>Configuring Tkenv</title>
+      <para>In case of nonstandard installation, it may be necessary to set the
+        OMNETPP_TKENV_DIR environment variable so that Tkenv can find its parts written in
+        Tcl script.</para>
+      <para> The default path from where the icons are loaded can be changed with the
+        OMNETPP_IMAGE_PATH variable, which is a semicolon-separated list of directories
+        and defaults to omnetpp-dir/images;./images.</para>
+    </sect2>
+  </sect1>
+  <sect1>
+    <title>Using the graphical environment</title>
+    <sect2>
+      <title>The main window</title>
+      <picture file="pictures/Tkenv-main.png" width="300">The main window of the
+        Tcl/Tk runtime environment</picture>
+      <para>The main window of the simulation environment contains:</para>
+      <itemizedlist>
+        <listitem>
+          Toolbar: you may access the main functions of the runtime environment.
+        </listitem>
+        <listitem>
+          Status bar: contains several informative values about the current state of the
+          simulation.
+        </listitem>
+        <listitem>
+          Timeline: displays the content of the FES on a logarithmic time scale. Double
+          clicking on a dot will display the message inspector window.
+        </listitem>
+        <listitem>
+          Object tree: displays all objects currently present in the memory. You may
+          double click on nodes to further inspect the given object.
+        </listitem>
+        <listitem>
+          Log Window: contains the output of the simulation.
+        </listitem>
+      </itemizedlist>
+      The Object tree and the Timeline can be easily switched off on the toolbar if you
+      need more space for your log window.
+    </sect2>
+    <sect2>
+      <title>Inspecting your simulation</title>
+      <sect3>
+        <title>Networks, Modules</title>
+        <picture file="pictures/Tkenv-network.png">Top level network</picture>
+        <para>You can start exploring the component hierarchy by browsing the Object
+          tree and double clicking on a node or by clicking the Inspect network icon on
+          the toolbar. Once you open a node, an inspector window will be opened. Networks
+          and compound modules are represented by a graphical inspectors displaying their
+          internal structure. Simple modules are represented by object inspectors
+          displaying their content as a list. Items in these lists can also be opened.
+        </para>
+      </sect3>
+      <sect3>
+        <title>Future Event Set</title>
+        <picture file="pictures/Tkenv-fes.png">The content of the Future Event Set</picture>
+        <para>
+          You can peek into the Future Event Set by clicking on
+          <guimenuitem>Inspect | Scheduled events</guimenuitem>
+          . The FES contains all messages already scheduled. Double clicking on any
+          message will show the message object's inspector window for further
+          investigation.
+        </para>
+      </sect3>
+      <sect3>
+        <title>Output vectors, histograms, queues</title>
+        <picture file="pictures/Tkenv-outvector.png">An output vector displayed in a window</picture>
+        <para>
+          Output vectors have also representation in the model. Double clicking on an
+          output vector object displays the content graphically. You may set the display
+          properties by clicking on the
+          <guibutton>Options...</guibutton>
+          button.
+        </para>
+        <picture file="pictures/Tkenv-histogram.png">A real-time histogram window</picture>
+        <para> Histogram inspectors provide a real-time display for the registered
+          histograms.</para>
+        <note>
+          Histograms may not be available right after the simulation start.
+        </note>
+        <picture file="pictures/Tkenv-queue.png">Peeking into a queue</picture>
+        <para> If your simulation contains queue objects, you can peek into them any time.
+          All messages currently waiting in the queue are displayed in the queue inspector
+          window. Double click on any message to further inspect it.</para>
+      </sect3>
+    </sect2>
+    <sect2>
+      <title>Browsing your registered components</title>
+      <picture file="pictures/Tkenv-registration.png">Display registered functions, classes etc.</picture>
+      <para>
+        Registered components (NED Types, classes, functions, enums) can be displayed with
+        the
+        <guimenu>Inspect | Available components</guimenu>
+        . If your simulation complains about missing types or classes, it is a good
+        practice to check whether everything is loaded and registered correctly. You can
+        learn also what configuration entries are currently in effect.
+      </para>
+    </sect2>
+    <sect2>
+      <title>Running and controlling the simulation</title>
+      <para>Tkenv has the following modes for running the simulation:</para>
+      <itemizedlist>
+        <listitem>
+          Step
+        </listitem>
+        <listitem>
+          Run
+        </listitem>
+        <listitem>
+          Fast run
+        </listitem>
+        <listitem>
+          Express run
+        </listitem>
+      </itemizedlist>
+      <para>The running modes have their corresponding buttons on Tkenv's toolbar.
+      </para>
+      <para>In Step mode, you can execute the simulation event-by-event.</para>
+      <para>In Run mode, the simulation runs with all tracing aids on. Message animation
+        is active and inspector windows are updated after each event. Output messages are
+        displayed in the main window and module output windows. You can stop the
+        simulation with the Stop button on the toolbar. You can fully interact with the
+        user interface while the simulation is running: you can open inspectors etc.
+      </para>
+      <para> In Fast mode, animation is turned off. The inspectors and the message output
+        windows are updated after each 10 events (the actual number can be set in
+        Options|Simulation options and also in the ini file). Fast mode is several times
+        faster than the Run mode; the speedup can get close to 10 (or the configured event
+        count).</para>
+      <para> In Express mode, the simulation runs at about the same speed as with Cmdenv,
+        all tracing disabled. Module output is not recorded in the output windows any
+        more. You can interact with the simulation only once in a while, thus the run-time
+        overhead of the user interface is minimal. You have to explicitly push the Update
+        inspectors button if you want an update.</para>
+      <para>
+        It is possible to run the simulation until a specified simulation time or event
+        number. This is an invaluable tool during debugging sessions. Just select
+        <guimenu>Simulate | Run until...</guimenu>
+      </para>
+      <para>It is also possible run until an event is received in a specified module. Just
+      browse for the module and choose <guimenu>Run until next event in this module.</guimenu>
+      Simulation will stop once an event arrives to this module.</para>
+      <para> Tkenv has a status bar which is regularly updated while the simulation is
+        running.</para>
+    </sect2>
+    <sect2>
+      <title>Finding objects</title>
+      <picture file="pictures/Tkenv-find.png">Finding a specific object</picture>
+      <para>There are times when you don't exactly know the location of the object
+        you are looking for. Invoke the "Find/inspect objects" window and search for your
+        object. The window allows you to set the start of the search and the type, class
+        and name of the object. The results will be presented as a clickable list.</para>
+      <note>
+        If you are debugging your simulation with a source level debugger and happen to
+        know the value of the pointer to your object, you may use the Inspect by pointer
+        menu item and insert the pointer value there to display an inspector window for
+        the object. Please note that entering an invalid pointer will crash your
+        simulation.
+      </note>
+    </sect2>
+    <sect2>
+      <title>Logging and module output</title>
+      <picture file="pictures/Tkenv-module-out-menu.png">Opening the log of a single module</picture>
+      <para>
+        Good log output is your best friend during debugging. The main window displays the
+        output of the whole simulation, however in some cases you may be interested only
+        how a single module is working. Choose
+        <guimenuitem>Module output</guimenuitem>
+        from the module's context menu.
+      </para>
+      <picture file="pictures/Tkenv-module-out.png">Module output</picture>
+      <para>Module output window displays only messages generated by the selected
+        module. You can open several module output window and place them side by side to
+        follow the workings of several module at the same time.</para>
+    </sect2>
+    <sect2>
+      <title>Simulation options</title>
+      <para>Open <guimenuitem>Options | Simulation options...</guimenuitem>
+      to display the runtime environment's preference dialog. You may set global parameters
+      for the simulations here. It is possible also to disable various animation primitives
+      to speed up the simulation.</para>
+    </sect2>
+  </sect1>
 </chapter>
