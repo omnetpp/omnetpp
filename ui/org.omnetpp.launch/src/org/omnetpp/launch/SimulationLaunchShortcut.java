@@ -220,6 +220,7 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
                             nedFile.getParent().getName();
                 } 
                 else {
+                	// TODO add IProject and IFolder support too
                     return; // resource not supported
                 }
     
