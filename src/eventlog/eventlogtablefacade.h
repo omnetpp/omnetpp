@@ -73,7 +73,7 @@ class EVENTLOG_API EventLogTableFacade : public EventLogFacade
         eventnumber_t getDistanceToLastEntry(EventLogEntry *eventLogEntry, eventnumber_t limit);
         EventLogEntry *getNeighbourEntry(EventLogEntry *eventLogEntry, eventnumber_t distance);
         double getApproximatePercentageForEntry(EventLogEntry *eventLogEntry);
-        EventLogEntry *getApproximateEventLogEntryTableAt(double percentage);
+        EventLogEntry *getApproximateEventLogEntryAt(double percentage);
         eventnumber_t getApproximateNumberOfEntries();
 
     protected:

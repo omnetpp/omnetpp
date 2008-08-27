@@ -287,11 +287,18 @@ EventLogEntry *EventLogTableFacade::getNeighbourEntry(EventLogEntry *eventLogEnt
 
 double EventLogTableFacade::getApproximatePercentageForEntry(EventLogEntry *eventLogEntry)
 {
-    return eventLog->getApproximatePercentageForEventNumber(eventLogEntry->getEvent()->getEventNumber());
+    IEvent *beforeEvent = eventLogEntry->getEvent();
+    IEvent *afterEvent = beforeEvent->getNextEvent();
+    double beforePercentage = eventLog->getApproximatePercentageForEventNumber(beforeEvent->getEventNumber());
+    double afterPercentage = afterEvent ? eventLog->getApproximatePercentageForEventNumber(afterEvent->getEventNumber()) : 1.0;
+    int index = getEntryIndexInEvent(eventLogEntry);
+
+    return beforePercentage + (afterPercentage - beforePercentage) * index / getNumMatchingEventLogEntries(beforeEvent);
 }
 
-EventLogEntry *EventLogTableFacade::getApproximateEventLogEntryTableAt(double percentage)
+EventLogEntry *EventLogTableFacade::getApproximateEventLogEntryAt(double percentage)
 {
+    Assert(0.0 <= percentage && percentage <= 1.0);
     if (percentage == 1) {
         IEvent* event = eventLog->getLastEvent();
 
@@ -300,8 +307,29 @@ EventLogEntry *EventLogTableFacade::getApproximateEventLogEntryTableAt(double pe
         else
             return getEntryInEvent(event, getNumMatchingEventLogEntries(event) - 1);
     }
-    else
-        return eventLog->getApproximateEventAt(percentage)->getEventEntry();
+    else {
+        IEvent *beforeEvent = eventLog->getApproximateEventAt(percentage);
+
+        if (!beforeEvent)
+            return NULL;
+        else {
+            double beforePercentage = eventLog->getApproximatePercentageForEventNumber(beforeEvent->getEventNumber());
+            double afterPercentage = 1;
+            IEvent *afterEvent = beforeEvent->getNextEvent();
+
+            if (afterEvent)
+                afterPercentage = eventLog->getApproximatePercentageForEventNumber(afterEvent->getEventNumber());
+
+            if (percentage < beforePercentage || percentage > afterPercentage)
+                return beforeEvent->getEventEntry();
+            else {
+                double entryPercentage = (percentage - beforePercentage) / (afterPercentage - beforePercentage);
+                Assert(0.0 <= entryPercentage && entryPercentage <= 1.0);
+                int index = (getNumMatchingEventLogEntries(beforeEvent) - 1) * entryPercentage;
+                return getEntryInEvent(beforeEvent, index);
+            }
+        }
+    }
 }
 
 eventnumber_t EventLogTableFacade::getApproximateNumberOfEntries()

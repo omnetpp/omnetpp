@@ -94,7 +94,7 @@ double IEventLog::getApproximatePercentageForEventNumber(eventnumber_t eventNumb
         file_offset_t endOffset = lastEvent->getBeginOffset();
 
         double percentage = (double)(event->getBeginOffset() - beginOffset) / (endOffset - beginOffset);
-
-        return std::min(std::max(percentage, 0.0), 1.0);
+        Assert(0.0 <= percentage && percentage <= 1.0);
+        return percentage;
     }
 }

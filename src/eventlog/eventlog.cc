@@ -168,18 +168,18 @@ Event *EventLog::getApproximateEventAt(double percentage)
         return NULL;
     else {
         file_offset_t beginOffset = firstEvent->getBeginOffset();
-        file_offset_t endOffset = lastEvent->getBeginOffset();
+        file_offset_t endOffset = lastEvent->getEndOffset();
         file_offset_t offset = beginOffset + (file_offset_t)((endOffset - beginOffset) * percentage);
 
         eventnumber_t eventNumber;
         file_offset_t lineStartOffset = -1, lineEndOffset;
         simtime_t simulationTime;
-        readToEventLine(true, offset, eventNumber, simulationTime, lineStartOffset, lineEndOffset);
+        readToEventLine(false, offset, eventNumber, simulationTime, lineStartOffset, lineEndOffset);
 
         Event *event = NULL;
 
         if (lineStartOffset == -1)
-            event = getLastEvent();
+            event = getFirstEvent();
         else
             event = getEventForBeginOffset(lineStartOffset);
 
