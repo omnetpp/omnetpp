@@ -48,9 +48,6 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
     @Override @SuppressWarnings("unchecked")
     protected IProject[] build(int kind, Map args, IProgressMonitor monitor) {
         try {
-            if (kind == CLEAN_BUILD)
-                Activator.getDependencyCache().clean(getProject());
-
             checkOrderOfProjectBuilders();
             checkActiveCDTConfiguration();
             
@@ -84,6 +81,13 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         return Activator.getDependencyCache().getProjectGroup(getProject());
     }
 
+    @Override
+    protected void clean(IProgressMonitor monitor) throws CoreException {
+        super.clean(monitor);
+        Activator.getDependencyCache().clean(getProject());
+        getProject().deleteMarkers(MARKER_ID, true, IResource.DEPTH_INFINITE);
+    }
+    
     /**
      * This builder should precede CDT's builder; check it and warn the user if it's not the case.
      */
