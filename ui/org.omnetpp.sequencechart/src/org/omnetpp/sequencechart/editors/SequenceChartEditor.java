@@ -23,6 +23,7 @@ import org.eclipse.ui.INavigationLocationProvider;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.contexts.IContextService;
 import org.eclipse.ui.ide.IGotoMarker;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.IShowInSource;
@@ -40,7 +41,10 @@ import org.omnetpp.sequencechart.widgets.SequenceChart;
  * 
  * @author levy
  */
-public class SequenceChartEditor extends EventLogEditor implements INavigationLocationProvider, IGotoMarker, IShowInSource, IShowInTargetList {
+public class SequenceChartEditor
+    extends EventLogEditor 
+    implements ISequenceChartProvider, INavigationLocationProvider, IGotoMarker, IShowInSource, IShowInTargetList
+{
 	private ResourceChangeListener resourceChangeListener = new ResourceChangeListener();
 
 	private SequenceChart sequenceChart;
@@ -56,11 +60,14 @@ public class SequenceChartEditor extends EventLogEditor implements INavigationLo
 		super.init(site, input);
 		ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceChangeListener);
 
+		IContextService contextService = (IContextService)site.getService(IContextService.class);
+        contextService.activateContext("org.omnetpp.context.SequenceChart");
+
 		// try to open the log view
 		try {
 			// Eclipse feature: during startup, showView() throws "Abnormal Workbench Condition" because perspective is null
-			if (getSite().getPage().getPerspective() != null)
-				getSite().getPage().showView("org.omnetpp.eventlogtable.editors.EventLogTableView");
+			if (site.getPage().getPerspective() != null)
+				site.getPage().showView("org.omnetpp.eventlogtable.editors.EventLogTableView");
 		}
 		catch (PartInitException e) {
 			SequenceChartPlugin.getDefault().logException(e);					

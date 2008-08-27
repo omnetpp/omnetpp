@@ -3,6 +3,9 @@ package org.omnetpp.eventlogtable.editors;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
+import org.eclipse.core.commands.AbstractHandler;
+import org.eclipse.core.commands.ExecutionEvent;
+import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
@@ -29,23 +32,23 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ContributionItemFactory;
 import org.eclipse.ui.fieldassist.ContentAssistCommandAdapter;
+import org.eclipse.ui.handlers.HandlerUtil;
+import org.eclipse.ui.internal.Workbench;
 import org.eclipse.ui.keys.IBindingService;
+import org.eclipse.ui.menus.CommandContributionItem;
+import org.eclipse.ui.menus.CommandContributionItemParameter;
 import org.eclipse.ui.part.EditorActionBarContributor;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.eclipse.ui.texteditor.StatusLineContributionItem;
@@ -69,6 +72,7 @@ import org.omnetpp.eventlogtable.EventLogTablePlugin;
 import org.omnetpp.eventlogtable.widgets.EventLogTable;
 
 
+@SuppressWarnings("restriction")
 public class EventLogTableContributor extends EditorActionBarContributor implements ISelectionChangedListener, IEventLogChangeListener {
 	private static EventLogTableContributor singleton;
 
@@ -80,13 +84,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 
 	protected EventLogTable eventLogTable;
 
-    protected FindTextDialog findDialog;
-
 	protected Separator separatorAction;
-
-	protected EventLogTableAction findTextAction;
-
-    protected EventLogTableAction findNextAction;
 
 	protected EventLogTableAction gotoEventAction;
 
@@ -120,8 +118,6 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 
 	protected EventLogTableAction filterAction;
 	
-    protected EventLogTableAction refreshAction;
-
     protected StatusLineContributionItem filterStatus;
 
 	/*************************************************************************************
@@ -130,8 +126,6 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 
 	public EventLogTableContributor() {
 		this.separatorAction = new Separator();
-		this.findTextAction = createFindTextAction();
-        this.findNextAction = createFindNextAction();
 		this.gotoEventAction = createGotoEventAction();
 		this.gotoSimulationTimeAction = createGotoSimulationTimeAction();
 		this.gotoEventCauseAction = createGotoEventCauseAction();
@@ -148,7 +142,6 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 		this.lineFilterModeAction = createLineFilterModeAction();
 		this.displayModeAction = createDisplayModeAction();
 		this.filterAction = createFilterAction();
-        this.refreshAction = createRefreshAction();
 
 		this.filterStatus = createFilterStatus();
 
@@ -187,9 +180,9 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 	 * CONTRIBUTIONS
 	 */
 
-	public void contributeToPopupMenu(IMenuManager menuManager) {
-		menuManager.add(findTextAction);
-        menuManager.add(findNextAction);
+    public void contributeToPopupMenu(IMenuManager menuManager) {
+		menuManager.add(createFindTextCommandContributionItem());
+        menuManager.add(createFindNextCommandContributionItem());
 		menuManager.add(separatorAction);
 		menuManager.add(gotoEventAction);
 		menuManager.add(gotoSimulationTimeAction);
@@ -211,9 +204,9 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
         menuManager.add(displayModeAction);
         menuManager.add(separatorAction);
         menuManager.add(toggleBookmarkAction);
-        menuManager.add(refreshAction);
+        menuManager.add(createRefreshCommandContributionItem());
         menuManager.add(separatorAction);
-
+        
         MenuManager showInSubmenu = new MenuManager(getShowInMenuLabel());
         IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
         IContributionItem showInViewItem = ContributionItemFactory.VIEWS_SHOW_IN.create(workbenchWindow);
@@ -237,15 +230,13 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 
 	@Override
 	public void contributeToToolBar(IToolBarManager toolBarManager) {
-        toolBarManager.add(findTextAction);
-        toolBarManager.add(findNextAction);
         toolBarManager.add(separatorAction);
         toolBarManager.add(nameModeAction);
 		toolBarManager.add(lineFilterModeAction);
 		toolBarManager.add(displayModeAction);
 		toolBarManager.add(separatorAction);
 	    toolBarManager.add(filterAction);
-		toolBarManager.add(refreshAction);
+		toolBarManager.add(createRefreshCommandContributionItem());
 	}
 
 	public void contributeToStatusLine(IStatusLineManager statusLineManager) {
@@ -368,124 +359,16 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 	 * ACTIONS
 	 */
 	
-    private final class FindTextDialog extends InputDialog {
-        private Button forward;
-
-        private Button backward;
-
-        private Button caseSensitive;
-
-        private Button caseInsensitive;
-
-        private boolean isBackward;
-
-        private boolean isCaseInsensitive;
-
-        private FindTextDialog(Shell parentShell, String dialogTitle, String dialogMessage, String initialValue, IInputValidator validator) {
-            super(parentShell, dialogTitle, dialogMessage, initialValue, validator);
-        }
-
-        @Override
-        protected Control createDialogArea(Composite parent) {
-            Composite parentComposite = (Composite)super.createDialogArea(parent);
-            Composite composite = new Composite(parentComposite, SWT.NONE);
-            composite.setLayout(new GridLayout(2, true));
-            composite.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
-
-            Group group = new Group(composite, SWT.SHADOW_ETCHED_IN);
-            group.setText("Direction");
-            group.setLayout(new GridLayout());
-            group.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false, 1, 1));
-            
-            forward = new Button(group, SWT.RADIO);
-            forward.setText("Forward");
-            forward.setSelection(!isBackward);
-
-            backward = new Button(group, SWT.RADIO);
-            backward.setText("Bacward");
-            backward.setSelection(isBackward);
-
-            group = new Group(composite, SWT.SHADOW_ETCHED_IN);
-            group.setText("Case");
-            group.setLayout(new GridLayout());
-            group.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false, 1, 1));
-            
-            caseSensitive = new Button(group, SWT.RADIO);
-            caseSensitive.setText("Sensitive");
-            caseSensitive.setSelection(!isCaseInsensitive);
-
-            caseInsensitive = new Button(group, SWT.RADIO);
-            caseInsensitive.setText("Insensitive");
-            caseInsensitive.setSelection(isCaseInsensitive);
-
-            return parentComposite;
-        }
- 
-        @Override
-        protected void okPressed() {
-            isBackward = backward.getSelection();
-            isCaseInsensitive = caseInsensitive.getSelection();
-
-            super.okPressed();
-        }
-
-        public boolean isBackward() {
-            return isBackward;
-        }
-
-        public boolean isCaseInsensitive() {
-            return isCaseInsensitive;
-        }
-    }
-
-	private void findNext() {
-	    if (findDialog != null) {
-            String findText = findDialog.getValue();
-            
-            if (findText != null) {
-                EventLogEntryReference eventLogEntryReference = eventLogTable.getSelectionElement();
-                EventLogEntry startEventLogEntry = eventLogEntryReference == null ? 
-                        eventLogTable.getEventLog().getFirstEvent().getEventEntry() : eventLogEntryReference.getEventLogEntry(eventLogTable.getEventLogInput());
-                EventLogEntry foundEventLogEntry = getEventLog().findEventLogEntry(startEventLogEntry, findText, !findDialog.isBackward(), !findDialog.isCaseInsensitive());
-    
-                if (foundEventLogEntry != null)
-                    eventLogTable.gotoClosestElement(new EventLogEntryReference(foundEventLogEntry));
-                else
-                    MessageDialog.openInformation(null, "Find raw text", "No more matches found for " + findText);
-            }
-	    }
-	}
-	
-	private EventLogTableAction createFindTextAction() {
-	    return new EventLogTableAction("Find Raw Text...", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SEARCH)) {
-		    @Override
-			public void run() {
-		        if (findDialog == null)
-		            findDialog = new FindTextDialog(null, "Find raw text", "Please enter the text to find", null, null);
-				
-				if (findDialog.open() == Window.OK)
-				    findNext();
-			}
-			
-			@Override
-			public void update() {
-				setEnabled(getEventLog().getApproximateNumberOfEvents() != 0);
-			}
-		};
+    private CommandContributionItem createFindTextCommandContributionItem() {
+        CommandContributionItemParameter parameter = new CommandContributionItemParameter(Workbench.getInstance(), null, "org.omnetpp.eventlogtable.findText", SWT.PUSH);
+        parameter.icon = ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SEARCH);
+	    return new CommandContributionItem(parameter);
 	}
 
-    private EventLogTableAction createFindNextAction() {
-        return new EventLogTableAction("Find Next", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SEARCH_NEXT)) {
-            @Override
-            public void run() {
-                findNext();
-            }
-            
-            @Override
-            public void update() {
-                setEnabled(getEventLog().getApproximateNumberOfEvents() != 0);
-            }
-        };
+    private CommandContributionItem createFindNextCommandContributionItem() {
+        CommandContributionItemParameter parameter = new CommandContributionItemParameter(Workbench.getInstance(), null, "org.omnetpp.eventlogtable.findNext", SWT.PUSH);
+        parameter.icon = ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SEARCH_NEXT);
+        return new CommandContributionItem(parameter);
     }
     
 	private void gotoEventLogEntry(EventLogEntry entry, Action action, boolean gotoClosest) {
@@ -1250,13 +1133,10 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 		};
 	}
 
-    private EventLogTableAction createRefreshAction() {
-        return new EventLogTableAction("Refresh", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_REFRESH)) {
-            @Override
-            public void run() {
-                eventLogTable.refresh();
-            }
-        };
+    private CommandContributionItem createRefreshCommandContributionItem() {
+        CommandContributionItemParameter parameter = new CommandContributionItemParameter(Workbench.getInstance(), null, "org.omnetpp.eventlogtable.refresh", SWT.PUSH);
+        parameter.icon = ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_REFRESH);
+        return new CommandContributionItem(parameter);
     }
 
 	private StatusLineContributionItem createFilterStatus() {
@@ -1373,4 +1253,37 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 			protected abstract void createMenu(Menu menu);
 		}
 	}
+
+    public static class FindTextHandler extends AbstractHandler {
+        public Object execute(ExecutionEvent event) throws ExecutionException {
+            IWorkbenchPart part = HandlerUtil.getActivePartChecked(event);
+            
+            if (part instanceof IEventLogTableProvider)
+                ((IEventLogTableProvider)part).getEventLogTable().findText(false);
+
+            return null;
+        }
+    }
+
+    public static class FindNextHandler extends AbstractHandler {
+        public Object execute(ExecutionEvent event) throws ExecutionException {
+            IWorkbenchPart part = HandlerUtil.getActivePartChecked(event);
+            
+            if (part instanceof IEventLogTableProvider) 
+                ((IEventLogTableProvider)part).getEventLogTable().findText(true);
+
+            return null;
+        }
+    }
+
+    public static class RefreshHandler extends AbstractHandler {
+        public Object execute(ExecutionEvent event) throws ExecutionException {
+            IWorkbenchPart part = HandlerUtil.getActivePartChecked(event);
+            
+            if (part instanceof IEventLogTableProvider) 
+                ((IEventLogTableProvider)part).getEventLogTable().refresh();
+
+            return null;
+        }
+    }
 }

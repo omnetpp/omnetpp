@@ -37,4 +37,53 @@
       </perspectiveExtension>
    </extension>
 
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            defaultHandler="org.omnetpp.sequencechart.editors.SequenceChartContributor$FindTextHandler"
+            id="org.omnetpp.sequencechart.findText"
+            name="Find Text">
+      </command>
+      <command
+            defaultHandler="org.omnetpp.sequencechart.editors.SequenceChartContributor$FindNextHandler"
+            id="org.omnetpp.sequencechart.findNext"
+            name="Find Next">
+      </command>
+      <command
+            defaultHandler="org.omnetpp.sequencechart.editors.SequenceChartContributor$RefreshHandler"
+            id="org.omnetpp.sequencechart.refresh"
+            name="Refresh">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.bindings">
+      <key
+            commandId="org.omnetpp.sequencechart.findText"
+            contextId="org.omnetpp.context.SequenceChart"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="Ctrl+F">
+      </key>
+      <key
+            commandId="org.omnetpp.sequencechart.findNext"
+            contextId="org.omnetpp.context.SequenceChart"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="Ctrl+K">
+      </key>
+      <key
+            commandId="org.omnetpp.sequencechart.refresh"
+            contextId="org.omnetpp.context.SequenceChart"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="F5">
+      </key>
+   </extension>
+   <extension
+         point="org.eclipse.ui.contexts">
+      <context
+            description="OMNeT++ Eventlog Table"
+            id="org.omnetpp.context.SequenceChart"
+            name="SequenceChartContext"
+            parentId="org.eclipse.ui.contexts.window">
+      </context>
+   </extension>
+
 </plugin>

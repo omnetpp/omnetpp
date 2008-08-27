@@ -35,5 +35,53 @@
          </view>
       </perspectiveExtension>
    </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            defaultHandler="org.omnetpp.eventlogtable.editors.EventLogTableContributor$FindTextHandler"
+            id="org.omnetpp.eventlogtable.findText"
+            name="Find Text">
+      </command>
+      <command
+            defaultHandler="org.omnetpp.eventlogtable.editors.EventLogTableContributor$FindNextHandler"
+            id="org.omnetpp.eventlogtable.findNext"
+            name="Find Next">
+      </command>
+      <command
+            defaultHandler="org.omnetpp.eventlogtable.editors.EventLogTableContributor$RefreshHandler"
+            id="org.omnetpp.eventlogtable.refresh"
+            name="Refresh">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.bindings">
+      <key
+            commandId="org.omnetpp.eventlogtable.findText"
+            contextId="org.omnetpp.context.EventLogTable"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="Ctrl+F">
+      </key>
+      <key
+            commandId="org.omnetpp.eventlogtable.findNext"
+            contextId="org.omnetpp.context.EventLogTable"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="Ctrl+K">
+      </key>
+      <key
+            commandId="org.omnetpp.eventlogtable.refresh"
+            contextId="org.omnetpp.context.EventLogTable"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="F5">
+      </key>
+   </extension>
+   <extension
+         point="org.eclipse.ui.contexts">
+      <context
+            description="OMNeT++ Eventlog Table"
+            id="org.omnetpp.context.EventLogTable"
+            name="EventLogTableContext"
+            parentId="org.eclipse.ui.contexts.window">
+      </context>
+   </extension>
 
 </plugin>

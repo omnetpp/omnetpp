@@ -4,7 +4,15 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.ui.part.FileEditorInput;
 import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.util.PersistentResourcePropertyManager;
@@ -64,6 +72,11 @@ public class EventLogInput extends FileEditorInput
 	 * being written without actually closing it.
 	 */
 	protected ArrayList<IEventLogChangeListener> eventLogChangeListeners = new ArrayList<IEventLogChangeListener>();
+
+	/**
+	 * Find text dialog along with the last parameters.
+	 */
+    protected FindTextDialog findTextDialog = new FindTextDialog();
 
 	/**
 	 * Watches the event log file for changes.
@@ -443,6 +456,84 @@ public class EventLogInput extends FileEditorInput
 		for (IEventLogChangeListener listener : eventLogChangeListeners)
 			listener.eventLogProgress();
 	}
+
+    /*************************************************************************************
+     * FIND RAW TEXT
+     */
+
+    public final static class FindTextDialog extends InputDialog {
+        private Button forward;
+
+        private Button backward;
+
+        private Button caseSensitive;
+
+        private Button caseInsensitive;
+
+        private boolean isBackward;
+
+        private boolean isCaseInsensitive;
+
+        private FindTextDialog() {
+            super(null, "Find raw text", "The search will go through the raw content of the eventlog file starting from the current selection. Please enter the text to find:", null, null);
+        }
+
+        @Override
+        protected Control createDialogArea(Composite parent) {
+            Composite parentComposite = (Composite)super.createDialogArea(parent);
+            Composite composite = new Composite(parentComposite, SWT.NONE);
+            composite.setLayout(new GridLayout(2, true));
+            composite.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
+
+            Group group = new Group(composite, SWT.SHADOW_ETCHED_IN);
+            group.setText("Direction");
+            group.setLayout(new GridLayout());
+            group.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false, 1, 1));
+            
+            forward = new Button(group, SWT.RADIO);
+            forward.setText("Forward");
+            forward.setSelection(!isBackward);
+
+            backward = new Button(group, SWT.RADIO);
+            backward.setText("Bacward");
+            backward.setSelection(isBackward);
+
+            group = new Group(composite, SWT.SHADOW_ETCHED_IN);
+            group.setText("Case");
+            group.setLayout(new GridLayout());
+            group.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false, 1, 1));
+            
+            caseSensitive = new Button(group, SWT.RADIO);
+            caseSensitive.setText("Sensitive");
+            caseSensitive.setSelection(!isCaseInsensitive);
+
+            caseInsensitive = new Button(group, SWT.RADIO);
+            caseInsensitive.setText("Insensitive");
+            caseInsensitive.setSelection(isCaseInsensitive);
+
+            return parentComposite;
+        }
+ 
+        @Override
+        protected void okPressed() {
+            isBackward = backward.getSelection();
+            isCaseInsensitive = caseInsensitive.getSelection();
+
+            super.okPressed();
+        }
+
+        public boolean isBackward() {
+            return isBackward;
+        }
+
+        public boolean isCaseInsensitive() {
+            return isCaseInsensitive;
+        }
+    }
+
+    public FindTextDialog getFindTextDialog() {
+        return findTextDialog;
+    }
 
 	/*************************************************************************************
 	 * PROGRESS MONITORING OF LONG RUNNING OPERATIONS

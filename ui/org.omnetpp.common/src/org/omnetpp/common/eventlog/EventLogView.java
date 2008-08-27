@@ -7,7 +7,7 @@ import org.omnetpp.eventlog.engine.SimulationBeginEntry;
 /**
  * Serves as a base class for views which show an event log file.
  */
-public abstract class EventLogView extends ViewWithMessagePart {
+public abstract class EventLogView extends ViewWithMessagePart implements IEventLogProvider {
     public abstract IEventLog getEventLog();
 
     protected void updateTitleToolTip() {

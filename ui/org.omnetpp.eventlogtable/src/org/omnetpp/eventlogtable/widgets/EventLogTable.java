@@ -7,8 +7,10 @@ import java.util.List;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
@@ -26,6 +28,7 @@ import org.omnetpp.common.eventlog.IEventLogSelection;
 import org.omnetpp.common.util.PersistentResourcePropertyManager;
 import org.omnetpp.common.virtualtable.VirtualTable;
 import org.omnetpp.common.virtualtable.VirtualTableSelection;
+import org.omnetpp.eventlog.engine.EventLogEntry;
 import org.omnetpp.eventlog.engine.EventLogTableFacade;
 import org.omnetpp.eventlog.engine.FilteredEventLog;
 import org.omnetpp.eventlog.engine.IEvent;
@@ -491,6 +494,25 @@ public class EventLogTable
 			throw new RuntimeException(e);
 		}
 	}
+
+	public void findText(boolean continueSearch) {
+	    EventLogInput.FindTextDialog findTextDialog = eventLogInput.getFindTextDialog();
+
+	    if (continueSearch || findTextDialog.open() == Window.OK) {
+            String findText = findTextDialog.getValue();
+            
+            if (findText != null) {
+                EventLogEntryReference eventLogEntryReference = getSelectionElement();
+                EventLogEntry startEventLogEntry = (eventLogEntryReference == null ? getTopVisibleElement() : eventLogEntryReference).getEventLogEntry(eventLogInput);
+                EventLogEntry foundEventLogEntry = eventLog.findEventLogEntry(startEventLogEntry, findText, !findTextDialog.isBackward(), !findTextDialog.isCaseInsensitive());
+    
+                if (foundEventLogEntry != null)
+                    gotoClosestElement(new EventLogEntryReference(foundEventLogEntry));
+                else
+                    MessageDialog.openInformation(null, "Find raw text", "No more matches found for " + findText);
+            }
+        }
+    }
 }
 
 class EventLogTableState implements Serializable {

@@ -29,7 +29,7 @@ import org.omnetpp.eventlog.engine.SimulationBeginEntry;
 /**
  * Serves as a base class for editors which show an event log file.
  */
-public abstract class EventLogEditor extends EditorPart implements INavigationLocationProvider {
+public abstract class EventLogEditor extends EditorPart implements IEventLogProvider, INavigationLocationProvider {
 	protected Runnable locationTimer;
 
 	protected EventLogInput eventLogInput;

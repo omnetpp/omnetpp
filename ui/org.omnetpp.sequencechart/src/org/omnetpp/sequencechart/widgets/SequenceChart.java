@@ -21,12 +21,14 @@ import org.eclipse.draw2d.SWTGraphics;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gmf.runtime.draw2d.ui.render.awt.internal.svg.export.GraphicsSVG;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.util.SafeRunnable;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
@@ -71,6 +73,7 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.TimeUtils;
 import org.omnetpp.common.virtualtable.IVirtualContentWidget;
 import org.omnetpp.eventlog.engine.BeginSendEntry;
+import org.omnetpp.eventlog.engine.EventLogEntry;
 import org.omnetpp.eventlog.engine.EventLogMessageEntry;
 import org.omnetpp.eventlog.engine.FilteredEventLog;
 import org.omnetpp.eventlog.engine.FilteredMessageDependency;
@@ -1338,6 +1341,53 @@ public class SequenceChart
 		if (eventLogInput.getEventLogProgressManager().isCanceled())
 			redraw();
 	}
+
+
+    public void findText(boolean continueSearch) {
+        String findText = null;
+        EventLogEntry foundEventLogEntry = null; 
+
+        try {
+            EventLogInput.FindTextDialog findTextDialog = eventLogInput.getFindTextDialog();
+    
+            if (continueSearch || findTextDialog.open() == Window.OK) {
+                findText = findTextDialog.getValue();
+                
+                if (findText != null) {
+                    IEvent event = getSelectionEvent();
+    
+                    if (event == null) {
+                        long[] eventPtrRange = getFirstLastEventForPixelRange(0, 0);
+                        event = sequenceChartFacade.IEvent_getEvent(eventPtrRange[0]);
+                        if (event == null)
+                            return;
+                    }
+                    
+                    EventLogEntry startEventLogEntry = null;
+                    if (findTextDialog.isBackward()) {
+                        event = event.getPreviousEvent();
+                        if (event == null)
+                            return;
+                        startEventLogEntry = event.getEventLogEntry(event.getNumEventLogEntries() - 1);
+                    }
+                    else {
+                        event = event.getNextEvent();
+                        if (event == null)
+                            return;
+                        startEventLogEntry = event.getEventEntry();
+                    }
+    
+                    foundEventLogEntry = eventLog.findEventLogEntry(startEventLogEntry, findText, !findTextDialog.isBackward(), !findTextDialog.isCaseInsensitive());
+                 }
+            }
+        }
+        finally {
+            if (foundEventLogEntry != null)
+                gotoClosestElement(foundEventLogEntry.getEvent());
+            else
+                MessageDialog.openInformation(null, "Find raw text", "No more matches found for " + findText);
+       }
+    }
 
     /*************************************************************************************
      * AXIS MODULES

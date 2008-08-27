@@ -9,6 +9,7 @@ import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.contexts.IContextService;
 import org.omnetpp.common.eventlog.EventLogView;
 import org.omnetpp.common.eventlog.IEventLogSelection;
 import org.omnetpp.eventlog.engine.IEventLog;
@@ -17,7 +18,7 @@ import org.omnetpp.eventlogtable.widgets.EventLogTable;
 /**
  * View for displaying and navigating event log entries.
  */
-public class EventLogTableView extends EventLogView {
+public class EventLogTableView extends EventLogView implements IEventLogTableProvider {
 	private EventLogTable eventLogTable;
 
     private EventLogTableContributor eventLogTableContributor;
@@ -29,10 +30,12 @@ public class EventLogTableView extends EventLogView {
 	@Override
 	public void createPartControl(Composite parent) {
 		super.createPartControl(parent);
-
+		
 		// we want to provide selection for the sequence chart tool (an IEditPart)
 		IViewSite viewSite = (IViewSite)getSite();
 		viewSite.setSelectionProvider(eventLogTable);
+		IContextService contextService = (IContextService)viewSite.getService(IContextService.class);
+		contextService.activateContext("org.omnetpp.context.EventLogTable");
 		
 		// contribute to toolbar
 		eventLogTableContributor = new EventLogTableContributor(eventLogTable);
@@ -122,5 +125,9 @@ public class EventLogTableView extends EventLogView {
 		}
 
         updateTitleToolTip();
+    }
+
+    public EventLogTable getEventLogTable() {
+        return eventLogTable;
     }
 }

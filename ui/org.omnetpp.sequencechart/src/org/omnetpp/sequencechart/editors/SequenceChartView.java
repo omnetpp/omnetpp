@@ -9,6 +9,7 @@ import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.contexts.IContextService;
 import org.omnetpp.common.eventlog.EventLogView;
 import org.omnetpp.common.eventlog.IEventLogSelection;
 import org.omnetpp.eventlog.engine.IEventLog;
@@ -17,7 +18,7 @@ import org.omnetpp.sequencechart.widgets.SequenceChart;
 /**
  * View for displaying causes and consequences of events.
  */
-public class SequenceChartView extends EventLogView {
+public class SequenceChartView extends EventLogView implements ISequenceChartProvider {
 	private SequenceChart sequenceChart;
 
     private SequenceChartContributor sequenceChartContributor;
@@ -26,6 +27,10 @@ public class SequenceChartView extends EventLogView {
 
 	private IPartListener partListener;
 
+    public SequenceChart getSequenceChart() {
+        return sequenceChart;
+    }
+
 	@Override
 	public void createPartControl(Composite parent) {
 		super.createPartControl(parent);
@@ -33,6 +38,8 @@ public class SequenceChartView extends EventLogView {
 		// we want to provide selection for the sequence chart tool (an IEditPart)
 		IViewSite viewSite = (IViewSite)getSite();
 		viewSite.setSelectionProvider(sequenceChart);
+        IContextService contextService = (IContextService)viewSite.getService(IContextService.class);
+        contextService.activateContext("org.omnetpp.context.SequenceChart");
 
 		// contribute to toolbar
 		sequenceChartContributor = new SequenceChartContributor(sequenceChart);
