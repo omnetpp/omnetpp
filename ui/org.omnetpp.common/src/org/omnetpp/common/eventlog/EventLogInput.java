@@ -461,6 +461,7 @@ public class EventLogInput extends FileEditorInput
      * FIND RAW TEXT
      */
 
+	// TODO: don't subclass InputDialog, put into separate file
     public final static class FindTextDialog extends InputDialog {
         private Button forward;
 
@@ -476,6 +477,8 @@ public class EventLogInput extends FileEditorInput
 
         private FindTextDialog() {
             super(null, "Find raw text", "The search will go through the raw content of the eventlog file starting from the current selection. Please enter the text to find:", null, null);
+            // TODO: to search for begin sends: "BS "
+            // TODO: 
         }
 
         @Override

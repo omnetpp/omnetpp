@@ -116,7 +116,7 @@ public class EventLogTableContentProvider implements IVirtualTableContentProvide
 		if (eventLogTableFacade == null)
 			return null;
 		else
-			return toEventLogEntryReference(eventLogTableFacade.getApproximateEventLogEntryTableAt(percentage));
+			return toEventLogEntryReference(eventLogTableFacade.getApproximateEventLogEntryAt(percentage));
 	}
 
 	public long getApproximateNumberOfElements() {

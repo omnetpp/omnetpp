@@ -109,8 +109,6 @@ import org.omnetpp.sequencechart.widgets.axisrenderer.IAxisRenderer;
  * @author andras, levy
  */
 //TODO proper "hand" cursor - current one is not very intuitive
-//TODO rubberband vs. haircross, show them at once
-//TODO factor out the svg export to org.omnetpp.imageexport
 public class SequenceChart
 	extends CachingCanvas
 	implements IVirtualContentWidget<IEvent>, ISelectionProvider, IEventLogChangeListener
@@ -691,7 +689,7 @@ public class SequenceChart
             sequenceChartFacade.undefineTimelineCoordinateSystem();
 
 		if (eventLog != null && !eventLog.isEmpty()) {
-			if (eventLog.getLastEvent().getSimulationTime().lessOrEqual(getSimulationTimeForViewportCoordinate(getViewportWidth()))) {
+			if (eventLog.getLastEvent().getSimulationTime().less(getSimulationTimeForViewportCoordinate(getViewportWidth()))) {
 				this.fixPointViewportCoordinate = getViewportWidth();
 				sequenceChartFacade.relocateTimelineCoordinateSystem(eventLog.getLastEvent());
 			}
@@ -768,7 +766,6 @@ public class SequenceChart
 	protected void horizontalScrollBarChanged(SelectionEvent e) {
 		ScrollBar scrollBar = getHorizontalBar();
 		double percentage = (double)scrollBar.getSelection() / (scrollBar.getMaximum() - scrollBar.getThumb());
-
 		followEnd = false;
 
 		if (e.detail == SWT.ARROW_UP)
@@ -874,7 +871,7 @@ public class SequenceChart
 			scrollHorizontalToRange(x - d, x + d);
 		}
 
-		long y = getViewportTop() + (isInitializationEvent(event) ? 0 : getEventYViewportCoordinate(event.getCPtr()));
+		long y = getViewportTop() + (isInitializationEvent(event) ? getViewportHeight() / 2 : getEventYViewportCoordinate(event.getCPtr()));
 		scrollVerticalToRange(y - d, y + d);
 		adjustHorizontalScrollBar();
 
@@ -1347,13 +1344,13 @@ public class SequenceChart
         String findText = null;
         EventLogEntry foundEventLogEntry = null; 
 
-        try {
-            EventLogInput.FindTextDialog findTextDialog = eventLogInput.getFindTextDialog();
-    
-            if (continueSearch || findTextDialog.open() == Window.OK) {
-                findText = findTextDialog.getValue();
-                
-                if (findText != null) {
+        EventLogInput.FindTextDialog findTextDialog = eventLogInput.getFindTextDialog();
+
+        if (continueSearch || findTextDialog.open() == Window.OK) {
+            findText = findTextDialog.getValue();
+            
+            if (findText != null) {
+                try {
                     IEvent event = getSelectionEvent();
     
                     if (event == null) {
@@ -1378,15 +1375,15 @@ public class SequenceChart
                     }
     
                     foundEventLogEntry = eventLog.findEventLogEntry(startEventLogEntry, findText, !findTextDialog.isBackward(), !findTextDialog.isCaseInsensitive());
-                 }
+                }
+                finally {
+                    if (foundEventLogEntry != null)
+                        gotoClosestElement(foundEventLogEntry.getEvent());
+                    else
+                        MessageDialog.openInformation(null, "Find raw text", "No more matches found for " + findText);
+                }
             }
         }
-        finally {
-            if (foundEventLogEntry != null)
-                gotoClosestElement(foundEventLogEntry.getEvent());
-            else
-                MessageDialog.openInformation(null, "Find raw text", "No more matches found for " + findText);
-       }
     }
 
     /*************************************************************************************

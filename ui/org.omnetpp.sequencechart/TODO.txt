@@ -106,3 +106,7 @@ Features:
 
 Known bugs:
 ! - navigation history
+! - jump to begin and end needs refresh in Net60
+! - scrolling with the scroll bar in Bonet-0 causes empty cached canvas regions, bad drawing, refresh helps
+! - scroll bar is not quasi linear in Net60 (due to the initialize event being to long compared to all the others)
+! - there is hysteresis in the horizontal scroll bar due to not calculating with the number of events visible on the screen
