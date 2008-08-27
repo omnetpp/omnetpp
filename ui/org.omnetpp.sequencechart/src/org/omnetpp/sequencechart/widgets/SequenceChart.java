@@ -2334,12 +2334,14 @@ public class SequenceChart
         calculateTicks(getViewportWidth());
 
         IEvent lastEvent = eventLog.getLastEvent();
-		double endSimulationTime = lastEvent == null ? 0 : lastEvent.getSimulationTime().doubleValue();
+        org.omnetpp.common.engine.BigDecimal endSimulationTime = lastEvent == null ? org.omnetpp.common.engine.BigDecimal.getZero() : lastEvent.getSimulationTime();
 
 		for (BigDecimal tick : ticks) {
 			// BigDecimal to double conversions loose precision both in Java and C++ but we must stick to the one in C++
 			// so that strange problems do not occur (think of comparing the tick's time to the last known simulation time)
-			org.omnetpp.common.engine.BigDecimal simulationTime = new org.omnetpp.common.engine.BigDecimal(Math.min(tick.doubleValue(), endSimulationTime));
+		    org.omnetpp.common.engine.BigDecimal simulationTime = new org.omnetpp.common.engine.BigDecimal(tick.doubleValue());
+		    if (endSimulationTime.less(simulationTime))
+		        simulationTime = endSimulationTime;
 			drawTick(graphics, viewportHeigth, TICK_LINE_COLOR, GUTTER_BACKGROUND_COLOR, tick, (int)getViewportCoordinateForSimulationTime(simulationTime), false);
 		}
 	}
