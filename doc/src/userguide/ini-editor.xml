@@ -154,6 +154,15 @@
         </para>
       </sect3>
       <sect3>
+        <title>Tooltip</title>
+        <para>
+        If you hover over a section or parameter, a tooltip appears showing the properties 
+        of the section or parameter. For sections the inheritance chain, the network name,
+        number of errors and warnings and the yet unassigned parameters are displayed.
+        For parameters the definition, description and the module name is displayed.
+        </para>
+      </sect3>
+      <sect3>
         <title>Add unassigned parameters</title>
         <para>
           You can add the names of unassigned module parameters to a Config section by choosing
@@ -184,8 +193,6 @@
           You can get the error message in a tooltip if you hover over the <icon name="Error.png"/> marker.
         </para>
       </sect3>
-      
-      <!-- TODO tooltip -->
     </sect2>
   </sect1>
 
