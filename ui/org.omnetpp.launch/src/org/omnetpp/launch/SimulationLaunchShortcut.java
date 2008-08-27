@@ -99,7 +99,7 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
         String description;
         String network;
         public IniSection(IFile f, String c) {iniFile = f; configName = c;}
-        public String toString() {return iniFile+"/"+configName;}
+        public String toString() {return iniFile+"#"+configName;}
     }
     
     public void launch(ISelection selection, String mode) {
@@ -220,7 +220,6 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
                             nedFile.getParent().getName();
                 } 
                 else {
-                	// TODO add IProject and IFolder support too
                     return; // resource not supported
                 }
     
