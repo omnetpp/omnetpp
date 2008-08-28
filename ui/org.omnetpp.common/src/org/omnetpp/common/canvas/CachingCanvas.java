@@ -165,12 +165,12 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 				GC imgc = new GC(image);
 				Transform transform = new Transform(imgc.getDevice());
 				// KLUDGE: FIXME: XXX: See Eclipse bug database: 245523
-				// remove the next 3 lines when that bug is fixed
-				// right now it is uncommented, because it is an incorrect workaround
-//				if (rect.y == 1)
-//                    transform.translate(-rect.x, -2f);
-//				else
-				transform.translate(-rect.x, -rect.y);
+				// remove the next 3 lines when that bug is fixed, because it is an incorrect workaround
+				// putting -1.01f does not help either, because the closer you get to -1.0 is the worse
+				if (rect.y == 1)
+                    transform.translate(-rect.x, -2f);
+				else
+				    transform.translate(-rect.x, -rect.y);
 				imgc.setTransform(transform);
 				imgc.setClipping(rect);
 
