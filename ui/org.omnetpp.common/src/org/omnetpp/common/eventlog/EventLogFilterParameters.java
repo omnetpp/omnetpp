@@ -401,7 +401,7 @@ public class EventLogFilterParameters implements Serializable {
 
             filters.add("it is the " + StringUtils.join(traceFilters, " or ") + " of the event with event number " + tracedEventNumber);
 
-            // TODO: should these included in the filter
+            // TODO: should these included in the filter description?
 	        // if (traceMessageReuses) {
 	        // }
 	        // if (traceSelfMessages) {

@@ -108,7 +108,7 @@ import org.omnetpp.sequencechart.widgets.axisrenderer.IAxisRenderer;
  *
  * @author andras, levy
  */
-//TODO proper "hand" cursor - current one is not very intuitive
+// TODO: proper "hand" cursor - current one is not very intuitive
 public class SequenceChart
 	extends CachingCanvas
 	implements IVirtualContentWidget<IEvent>, ISelectionProvider, IEventLogChangeListener
@@ -2001,7 +2001,7 @@ public class SequenceChart
 				Field field = cls.getDeclaredField("gc");
 				field.setAccessible(true);
 				GC gc = (GC)field.get(g);
-				// TODO: what a hack to send the font down to GC?!
+				// KLUDGE: what a hack to send the font down to GC?!
 				g.drawText("", 0, 0);
 				return gc.textExtent(string);
 			}
@@ -2582,7 +2582,7 @@ public class SequenceChart
         }
         
         // calculate pixel coordinates for message arrow endings
-        // TODO what about integer overflow in (int) casts? now that we have converted to long
+        // TODO: what about integer overflow in (int) casts? now that we have converted to long
         int invalid = Integer.MAX_VALUE;
         int x1 = invalid, y1 = isInitializationEvent(causeEventPtr) ? getInitializationEventYViewportCoordinate(messageDependencyPtr) : getEventYViewportCoordinate(causeEventPtr);
         int x2 = invalid, y2 = getEventYViewportCoordinate(consequenceEventPtr);
@@ -2988,10 +2988,10 @@ public class SequenceChart
 		drawText(graphics, arrowLabel, x + dx, y + dy);
 	}
 
-	// FIXME This is a workaround for SWT bug https://bugs.eclipse.org/215243 
+	// FIXME: This is a workaround for SWT bug https://bugs.eclipse.org/215243 
 	private void drawText(Graphics g, String s, int x, int y) {
 		g.drawText(s, x, y);
-		// HACK clear the cairo lib internal state (on Linux)
+		// KLUDGE: clear the cairo lib internal state (on Linux)
 		if("gtk".equals(SWT.getPlatform()))
 				g.drawPoint(-1000000, -1000000);
 	}

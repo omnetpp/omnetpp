@@ -153,11 +153,18 @@ public class SequenceChartEditor
 		}
 
 		public void restoreState(IMemento memento) {
-			// TODO: implement
+		    String value = memento.getString("StartSimulationTime");
+            if (value != null)
+                startSimulationTime = org.omnetpp.common.engine.BigDecimal.parse(value);
+
+            value = memento.getString("EndSimulationTime");
+            if (value != null)
+                endSimulationTime = org.omnetpp.common.engine.BigDecimal.parse(value);
 		}
 
 		public void saveState(IMemento memento) {
-			// TODO: implement
+            memento.putString("StartSimulationTime", startSimulationTime.toString());
+            memento.putString("EndSimulationTime", endSimulationTime.toString());
 		}
 
 		public void setInput(Object input) {

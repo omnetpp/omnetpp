@@ -95,6 +95,8 @@ public class EventLogEntryProposalProvider extends MatchExpressionContentProposa
             String prefix;
             int startIndex, endIndex, decorators;
             boolean atEnd = token.getEndPos() <= position;
+            
+            // TODO: fill in cases
 
             // inside field name: replace field name
             if (type == Node.FIELDPATTERN && token == parent.getField() && !atEnd) {

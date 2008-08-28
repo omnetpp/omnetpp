@@ -200,7 +200,7 @@ public class ModuleTreeItem implements Comparable<ModuleTreeItem> {
     }
 
     public ModuleTreeItem findDescendantModule(final String fullPath) {
-        // TODO: put a hash table in the root
+        // TODO: put a hash table in the root to make this search fast
         final ModuleTreeItem[] descendant = new ModuleTreeItem[1];
 
         visitLeaves(new IModuleTreeItemVisitor() {
