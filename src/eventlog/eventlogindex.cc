@@ -119,8 +119,10 @@ EventLogIndex::~EventLogIndex()
 
 void EventLogIndex::synchronize(FileReader::FileChangedState change)
 {
-    if (change != FileReader::UNCHANGED)
+    if (change != FileReader::UNCHANGED) {
         clearInternalState(change);
+        reader->synchronize();
+    }
 }
 
 void EventLogIndex::clearInternalState(FileReader::FileChangedState change)
@@ -139,8 +141,6 @@ void EventLogIndex::clearInternalState(FileReader::FileChangedState change)
     lastEventNumber = EVENT_NOT_YET_CALCULATED;
     lastSimulationTime = simtime_nil;
     lastEventOffset = -1;
-
-    reader->synchronize();
 }
 
 eventnumber_t EventLogIndex::getFirstEventNumber()

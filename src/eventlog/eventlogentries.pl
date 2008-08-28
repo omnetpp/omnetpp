@@ -4,9 +4,8 @@
 # Author: Levente Meszaros, 2006
 #
 
-# FIXME parsing: choose different strategy, current code cannot detect
-#    unrecognized field names and missing mandatory fields in the trace file!
-# FIXME ctors should use default value from the eventlogentries.txt file; also parse() and print() methods
+# FIXME parsing: choose different strategy,
+# current code cannot detect unrecognized field names in the trace file!
 
 $verbose = 0;
 
