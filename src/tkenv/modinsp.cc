@@ -445,10 +445,13 @@ void TGraphicalModWindow::refreshLayout()
                 cModule *destmod = destgate->getOwnerModule();
                 if (mod==parentmodule && destmod==parentmodule) {
                     // nop
-                } else if (mod==parentmodule) {
-                    layouter->addEdgeToBorder(destmod);
                 } else if (destmod==parentmodule) {
                     layouter->addEdgeToBorder(mod);
+                } else if (destmod->getParentModule()!=parentmodule) {
+                    // connection goes a module under a different parent!
+                    // this is illegal -- skip this connection.
+                } else if (mod==parentmodule) {
+                    layouter->addEdgeToBorder(destmod);
                 } else {
                     layouter->addEdge(mod,destmod);
                 }

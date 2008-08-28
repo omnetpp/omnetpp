@@ -1,3 +1,7 @@
+2008-08-28  Andras Varga
+
+	* DatarateChannel parameters to be declared with "default()"
+
 2008-07-31  Andras Varga
 
 	* added "packet" keyword to msg files. It is like "message", except 
