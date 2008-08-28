@@ -1,0 +1,44 @@
+%description:
+Tests that errors in initialize() are properly caught and displayed in Cmdenv,
+and simulation doesn't start.
+
+%module: Module
+
+class Module : public cSimpleModule
+{
+  public:
+    Module() : cSimpleModule(32768) { }
+    virtual void initialize();
+    virtual void activity();
+    virtual void finish();
+};
+
+Define_Module(Module);
+
+void Module::initialize()
+{
+    throw std::exception("something bad happened");
+}
+
+void Module::activity()
+{
+    ev << "activity called\n";
+}
+
+void Module::finish()
+{
+    ev << "finish called\n";
+}
+
+%exitcode: 1
+
+%contains-regex: stdout
+Error in module .*: something bad happened
+
+%not-contains: stdout
+activity called
+
+%not-contains: stdout
+finish called
+
+
