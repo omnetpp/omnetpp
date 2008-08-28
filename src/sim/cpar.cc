@@ -324,7 +324,8 @@ void cPar::convertToConst()
     copyIfShared();
     try {
         p->convertToConst(ownercomponent);
-    } catch (std::exception& e) {
+    }
+    catch (std::exception& e) {
         throw cRuntimeError(ePARAM, getFullName(), e.what());
     }
 
@@ -362,12 +363,10 @@ void cPar::parse(const char *text)
         // not found: clone existing parameter (to preserve name, type, unit etc), then parse text into it
         cParImpl *tmp = p->dup();
         tmp->setIsInput(false);
-        try
-        {
+        try {
             tmp->parse(text);
         }
-        catch (std::exception& e)
-        {
+        catch (std::exception& e) {
             delete tmp;
             throw cRuntimeError("Wrong value `%s' for parameter `%s': %s", text, getFullPath().c_str(), e.what());
         }

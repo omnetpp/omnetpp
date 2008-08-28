@@ -118,11 +118,11 @@ void cSimpleModule::activate(void *p)
         exception = new cRuntimeError("%s: %s", opp_typename(typeid(e)), e.what());
     }
 
-    /*
-     * Note 1: catch(...) is probably not a good idea because makes just-in-time debugging impossible on Windows
-     * Note 2: with Visual C++, SwitchToFiber() calls in catch blocks crash mess up exception handling,
-     *        see http://forums.microsoft.com/MSDN/ShowPost.aspx?PostID=835791&SiteID=1&mode=1
-     */
+    //
+    // Note 1: catch(...) is probably not a good idea because makes just-in-time debugging impossible on Windows
+    // Note 2: with Visual C++, SwitchToFiber() calls in catch blocks mess up exception handling;
+    // see http://forums.microsoft.com/MSDN/ShowPost.aspx?PostID=835791&SiteID=1&mode=1
+    //
 
     // When we get here, the module is already terminated. No further cStackCleanupException
     // will need to be thrown, as the stack has has already been unwound by an exception

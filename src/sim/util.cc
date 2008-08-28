@@ -122,8 +122,12 @@ char *simtimeToStrShort(double t, char *buf)
 //
 double strToSimtime(const char *str)
 {
-    //XXX in 3.x, it returned -1 on error, now it throws exception: TBD check invocations!!!!
-    return UnitConversion::parseQuantity(str, "s");
+    try {
+        return UnitConversion::parseQuantity(str, "s");
+    }
+    catch (std::exception& e) {
+        throw cRuntimeError("strToSimtime(): %s", e.what());
+    }
 }
 
 //
@@ -132,7 +136,6 @@ double strToSimtime(const char *str)
 //
 double strToSimtime0(const char *&str)
 {
-    //XXX in 3.x, it returned -1 on error, now it throws exception: TBD check invocations!!!!
     const char *end = str;
     while (opp_isspace(*end))
         end++;
@@ -143,7 +146,13 @@ double strToSimtime0(const char *&str)
         end++;
     std::string tmp(str, end-str);
     str = end;
-    return UnitConversion::parseQuantity(tmp.c_str(), "s");
+
+    try {
+        return UnitConversion::parseQuantity(tmp.c_str(), "s");
+    }
+    catch (std::exception& e) {
+        throw cRuntimeError("strToSimtime(): %s", e.what());
+    }
 }
 #endif //USE_DOUBLE_SIMTIME
 
