@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.2"?>
 <plugin>
+   <extension point="org.eclipse.cdt.core.templates">
+      <template
+            id="org.omnetpp.cdt.templates.EmptyMake"
+            location="templates/make/empty/template.xml"
+            projectType="DISABLEDFORNOW.org.omnetpp.cdt.omnetppProjectType">
+      </template>
+   </extension>
    <extension
          point="org.eclipse.cdt.managedbuilder.core.buildDefinitions">
       <managedBuildRevision
@@ -59,6 +66,7 @@
             isAbstract="true"
             name="GCC for OMNeT++"
             osList="all"
+            scannerConfigDiscoveryProfileId="org.omnetpp.cdt.OmnetppGCCPerProjectProfile"
             superClass="cdt.managedbuild.toolchain.gnu.base"
             supportsManagedBuild="false">
          <builder
@@ -139,6 +147,110 @@
       </projectType>
    </extension>
    <extension
+         id="org.omnetpp.cdt.OmnetppGCCPerProjectProfile"
+         name="OMNeT++ per Project Profile"
+         point="org.eclipse.cdt.make.core.ScannerConfigurationDiscoveryProfile">
+      <scannerInfoCollector
+            class="org.omnetpp.cdt.OmnetppGCCScannerInfoCollector"
+            scope="project">
+      </scannerInfoCollector>
+   </extension>
+   <extension
+         id="MakefileBuilder"
+         name="OMNeT++ Makefile Builder"
+         point="org.eclipse.core.resources.builders">
+      <builder
+            hasNature="false">
+         <run
+               class="org.omnetpp.cdt.makefile.MakefileBuilder">
+         </run>
+      </builder>
+   </extension>
+   <extension
+         point="org.eclipse.core.variables.dynamicVariables">
+      <variable
+            description="Expands to the list of shared libraries built by the OMNeT++ project and the projects it references"
+            name="opp_shared_libs"
+            resolver="org.omnetpp.cdt.launch.OppVariableResolver"
+            supportsArgument="true">
+      </variable>
+      <variable
+            description="Expands to the list of shared libraries (file system location) built by the OMNeT++ project and the projects it references"
+            name="opp_shared_libs_loc"
+            resolver="org.omnetpp.cdt.launch.OppVariableResolver"
+            supportsArgument="true">
+      </variable>
+      <variable
+            description="Expands to the list of static libraries built by the OMNeT++ project and the projects it references"
+            name="opp_static_libs"
+            resolver="org.omnetpp.cdt.launch.OppVariableResolver"
+            supportsArgument="true">
+      </variable>
+      <variable
+            description="Expands to the list of static libraries (file system location) built by the OMNeT++ project and the projects it references"
+            name="opp_static_libs_loc"
+            resolver="org.omnetpp.cdt.launch.OppVariableResolver"
+            supportsArgument="true">
+      </variable>
+      <variable
+            description="Expands to the list of executable names built by the OMNeT++ project and the projects it references"
+            name="opp_simprogs"
+            resolver="org.omnetpp.cdt.launch.OppVariableResolver"
+            supportsArgument="true">
+      </variable>
+      <variable
+            description="Expands to the list of executable names (file system path) built by the OMNeT++ project and the projects it references"
+            name="opp_simprogs_loc"
+            resolver="org.omnetpp.cdt.launch.OppVariableResolver"
+            supportsArgument="true">
+      </variable>
+   </extension>
+   <extension
+         id="makefileproblem"
+         name="Makefile Problem"
+         point="org.eclipse.core.resources.markers">
+      <persistent
+            value="false">
+      </persistent>
+      <super
+            type="org.eclipse.core.resources.problemmarker">
+      </super>
+   </extension>
+   <extension
+         point="org.eclipse.debug.core.launchDelegates">
+      <launchDelegate
+            delegate="org.omnetpp.cdt.launch.SimulationDebugLaunchDelegate"
+            delegateDescription="Allows debugging an OMNeT++ simulation with CDT"
+            id="org.omnetpp.launch.simulationDebugDelegate"
+            modes="debug"
+            name="OMNeT++ Simulation Debugger"
+            sourceLocatorId="org.eclipse.cdt.debug.core.sourceLocator"
+            sourcePathComputerId="org.eclipse.cdt.debug.core.sourcePathComputer"
+            type="org.omnetpp.launch.simulationLaunchConfigurationType">
+      </launchDelegate>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTabs">
+      <tab
+            class="org.eclipse.debug.ui.sourcelookup.SourceLookupTab"
+            group="org.omnetpp.launch.simulationLaunchConfigurationTabGroup"
+            id="org.omnetpp.cdt.csourcetab"
+            name="Source">
+         <placement
+               after="org.eclipse.debug.ui.environmentTab">
+         </placement>
+      </tab>
+      <tab
+            class="org.omnetpp.cdt.launch.OmnetppCDebuggerTab"
+            group="org.omnetpp.launch.simulationLaunchConfigurationTabGroup"
+            id="org.omnetpp.cdt.cdebugtab"
+            name="Debugger">
+         <placement
+               after="org.eclipse.debug.ui.environmentTab">
+         </placement>
+      </tab>
+   </extension>
+   <extension
          point="org.eclipse.ui.newWizards">
       <wizard
             category="org.omnetpp.wizards"
@@ -199,69 +311,6 @@
       </page>
    </extension>
    <extension
-         point="org.eclipse.debug.core.launchDelegates">
-      <launchDelegate
-            delegate="org.omnetpp.cdt.launch.SimulationDebugLaunchDelegate"
-            delegateDescription="Allows debugging an OMNeT++ simulation with CDT"
-            id="org.omnetpp.launch.simulationDebugDelegate"
-            modes="debug"
-            name="OMNeT++ Simulation Debugger"
-            sourceLocatorId="org.eclipse.cdt.debug.core.sourceLocator"
-            sourcePathComputerId="org.eclipse.cdt.debug.core.sourcePathComputer"
-            type="org.omnetpp.launch.simulationLaunchConfigurationType">
-      </launchDelegate>
-   </extension>
-   <extension
-         point="org.eclipse.debug.ui.launchConfigurationTabs">
-      <tab
-            class="org.eclipse.debug.ui.sourcelookup.SourceLookupTab"
-            group="org.omnetpp.launch.simulationLaunchConfigurationTabGroup"
-            id="org.omnetpp.cdt.csourcetab"
-            name="Source">
-         <placement
-               after="org.eclipse.debug.ui.environmentTab">
-         </placement>
-      </tab>
-      <tab
-            class="org.omnetpp.cdt.launch.OmnetppCDebuggerTab"
-            group="org.omnetpp.launch.simulationLaunchConfigurationTabGroup"
-            id="org.omnetpp.cdt.cdebugtab"
-            name="Debugger">
-         <placement
-               after="org.eclipse.debug.ui.environmentTab">
-         </placement>
-      </tab>
-   </extension>
-   <extension
-         id="MakefileBuilder"
-         name="OMNeT++ Makefile Builder"
-         point="org.eclipse.core.resources.builders">
-      <builder
-            hasNature="false">
-         <run
-               class="org.omnetpp.cdt.makefile.MakefileBuilder">
-         </run>
-      </builder>
-   </extension>
-   <extension
-         id="makefileproblem"
-         name="Makefile Problem"
-         point="org.eclipse.core.resources.markers">
-      <persistent
-            value="false">
-      </persistent>
-      <super
-            type="org.eclipse.core.resources.problemmarker">
-      </super>
-   </extension>
-   <extension point="org.eclipse.cdt.core.templates">
-      <template
-            id="org.omnetpp.cdt.templates.EmptyMake"
-            location="templates/make/empty/template.xml"
-            projectType="DISABLEDFORNOW.org.omnetpp.cdt.omnetppProjectType">
-      </template>
-   </extension>
-   <extension
          point="org.eclipse.ui.perspectiveExtensions">
       <perspectiveExtension
             targetID="org.eclipse.cdt.ui.CPerspective">
@@ -278,44 +327,5 @@
                id="org.omnetpp.main.OmnetppPerspective">
          </perspectiveShortcut>
       </perspectiveExtension>
-   </extension>
-   <extension
-         point="org.eclipse.core.variables.dynamicVariables">
-      <variable
-            description="Expands to the list of shared libraries built by the OMNeT++ project and the projects it references"
-            name="opp_shared_libs"
-            resolver="org.omnetpp.cdt.launch.OppVariableResolver"
-            supportsArgument="true">
-      </variable>
-      <variable
-            description="Expands to the list of shared libraries (file system location) built by the OMNeT++ project and the projects it references"
-            name="opp_shared_libs_loc"
-            resolver="org.omnetpp.cdt.launch.OppVariableResolver"
-            supportsArgument="true">
-      </variable>
-      <variable
-            description="Expands to the list of static libraries built by the OMNeT++ project and the projects it references"
-            name="opp_static_libs"
-            resolver="org.omnetpp.cdt.launch.OppVariableResolver"
-            supportsArgument="true">
-      </variable>
-      <variable
-            description="Expands to the list of static libraries (file system location) built by the OMNeT++ project and the projects it references"
-            name="opp_static_libs_loc"
-            resolver="org.omnetpp.cdt.launch.OppVariableResolver"
-            supportsArgument="true">
-      </variable>
-      <variable
-            description="Expands to the list of executable names built by the OMNeT++ project and the projects it references"
-            name="opp_simprogs"
-            resolver="org.omnetpp.cdt.launch.OppVariableResolver"
-            supportsArgument="true">
-      </variable>
-      <variable
-            description="Expands to the list of executable names (file system path) built by the OMNeT++ project and the projects it references"
-            name="opp_simprogs_loc"
-            resolver="org.omnetpp.cdt.launch.OppVariableResolver"
-            supportsArgument="true">
-      </variable>
    </extension>
 </plugin>
