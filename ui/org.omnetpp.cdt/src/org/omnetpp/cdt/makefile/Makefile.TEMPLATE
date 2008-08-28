@@ -108,7 +108,8 @@ MSGCOPTS = $(INCLUDE_PATH){dllsymbol? -P}{dllsymbol}{dllsymbol?_API}
 all: $(TARGET)
 {~nolink:}
 {~nolink:}$(TARGET) : $O/$(TARGET)
-{~nolink:}{nmake:}	copy $(O:/=\)\$(TARGET) $(TARGET)
+{~nolink:}{nmake:}	copy $(O:/=\)\$(TARGET) .
+{~nolink:}{nmake:}	-copy $(O:/=\)\$(TARGET).manifest . 2>NUL
 {~nolink:}{~nmake:}	ln -s -f $O/$(TARGET) .
 
 ### Rules for $TARGET. Note that end product will be softlinked into the
@@ -137,7 +138,7 @@ all: $(TARGET)
 
 ### Pattern rules for cc files. For gnu make a single rule is enough;
 ### for nmake we need per-directory rules, plus one for "." (even though
-### "." is ### in sourcedirs), because nmake doesn't recognize "$O/." as "$O"
+### "." is in sourcedirs), because nmake doesn't recognize "$O/." as "$O"
 {~nmake:}$O/%.{obj}: %.{cc}
 {~nmake:}	@mkdir -p $(dir $@)
 {~nmake:}	$(CXX) -c $(COPTS) -o $@ $<
