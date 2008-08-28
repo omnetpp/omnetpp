@@ -448,8 +448,9 @@ void TGraphicalModWindow::refreshLayout()
                 } else if (destmod==parentmodule) {
                     layouter->addEdgeToBorder(mod);
                 } else if (destmod->getParentModule()!=parentmodule) {
-                    // connection goes a module under a different parent!
-                    // this is illegal -- skip this connection.
+                    // connection goes to a module under a different parent!
+                    // this in fact violates module encapsulation, but let's
+                    // accept it nevertheless. Just skip this connection.
                 } else if (mod==parentmodule) {
                     layouter->addEdgeToBorder(destmod);
                 } else {
