@@ -1935,9 +1935,7 @@ public class SequenceChart
 		if (eventLogInput != null) {
 			Graphics graphics = createGraphics(gc);
 			graphics.translate(0, GUTTER_HEIGHT);
-
 			drawSequenceChart(graphics);
-
 			graphics.translate(0, -GUTTER_HEIGHT);
 			graphics.dispose();
 		}
@@ -1947,14 +1945,12 @@ public class SequenceChart
 	protected void paintNoncachableLayer(GC gc) {
 		if (eventLogInput != null) {
 			Graphics graphics = createGraphics(gc);
-			graphics.translate(0, GUTTER_HEIGHT);
 
+			graphics.translate(0, GUTTER_HEIGHT);
 			if (showAxisLabels)
 			    drawAxisLabels(graphics);
-
 	        drawEventBookmarks(graphics);
 	        drawEventSelectionMarks(graphics);
-
 	        graphics.translate(0, -GUTTER_HEIGHT);
 
 	        drawGutters(graphics, getViewportHeight());
@@ -1963,12 +1959,10 @@ public class SequenceChart
 	        drawTickPrefix(graphics);
 
 	        graphics.translate(0, GUTTER_HEIGHT);
-
 	        if (drawStuffUnderMouse) {
 	            drawStuffUnderMouse(graphics);
 	            drawStuffUnderMouse = false;
 	        }
-
 	        graphics.translate(0, -GUTTER_HEIGHT);
 
 	        rubberbandSupport.drawRubberband(gc);
@@ -1989,7 +1983,7 @@ public class SequenceChart
         drawGutters(graphics, (int)getVirtualHeight());
         drawSimulationTimeRange(graphics, Rectangle.SINGLETON.width);
         drawTickPrefix(graphics);
-
+        
         graphics.translate(0, GUTTER_HEIGHT);
     }
 
@@ -2205,10 +2199,9 @@ public class SequenceChart
 	private void drawAxis(Graphics graphics, long startEventPtr, long endEventPtr, int index, ModuleTreeItem axisModule) {
         int y = getAxisModuleYs()[index] - (int)getViewportTop();
         IAxisRenderer axisRenderer = getAxisRenderers()[index];
-        int dy = y;
-        graphics.translate(0, dy);
+        graphics.translate(0, y);
         axisRenderer.drawAxis(graphics, startEventPtr, endEventPtr);
-        graphics.translate(0, -dy);
+        graphics.translate(0, -y);
 	}
 
 	/**
@@ -2783,18 +2776,21 @@ public class SequenceChart
 			if (x1 == invalid) {
 				x1 = x2 - LONG_MESSAGE_ARROW_WIDTH * 2;
 
+                if (transmissionDelay != null) {
+                    if (!isReceptionStart)
+                        x1 -= LONG_MESSAGE_ARROW_WIDTH;
+                    else
+                        x1 += LONG_MESSAGE_ARROW_WIDTH;
+                }
+				
 				if (graphics != null) {
 					int xm = x2 - LONG_MESSAGE_ARROW_WIDTH;
 
 					if (transmissionDelay != null) {
-                        if (!isReceptionStart) {
+                        if (!isReceptionStart)
                             xm -= LONG_MESSAGE_ARROW_WIDTH / 2;
-                            x1 -= LONG_MESSAGE_ARROW_WIDTH;
-                        }
-                        else {
+                        else
                             xm += LONG_MESSAGE_ARROW_WIDTH / 2;
-                            x1 += LONG_MESSAGE_ARROW_WIDTH;
-                        }
 
                         drawTransmissionDuration(graphics, causeEventPtr, consequenceEventPtr, transmissionDelay, isReceptionStart, x1, y1, x2, y2, true, true);
                     }
@@ -2808,18 +2804,21 @@ public class SequenceChart
 			else if (x2 == invalid) {
 				x2 = x1 + LONG_MESSAGE_ARROW_WIDTH * 2;
 
-				if (graphics != null) {
+                if (transmissionDelay != null) {
+                    if (!isReceptionStart)
+                        x2 += LONG_MESSAGE_ARROW_WIDTH;
+                    else
+                        x2 -= LONG_MESSAGE_ARROW_WIDTH;
+                }
+
+                if (graphics != null) {
 				    int xm = x1 + LONG_MESSAGE_ARROW_WIDTH;
 
 				    if (transmissionDelay != null) {
-                        if (!isReceptionStart) {
+                        if (!isReceptionStart)
                             xm += LONG_MESSAGE_ARROW_WIDTH / 2;
-                            x2 += LONG_MESSAGE_ARROW_WIDTH;
-                        }
-                        else {
+                        else
                             xm -= LONG_MESSAGE_ARROW_WIDTH / 2;
-                            x2 -= LONG_MESSAGE_ARROW_WIDTH;
-                        }
 
                         drawTransmissionDuration(graphics, causeEventPtr, consequenceEventPtr, transmissionDelay, isReceptionStart, x1, y1, x2, y2, true, false);
                     }
