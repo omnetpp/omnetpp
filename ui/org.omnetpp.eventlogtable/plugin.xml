@@ -40,7 +40,7 @@
       <command
             defaultHandler="org.omnetpp.eventlogtable.editors.EventLogTableContributor$FindTextHandler"
             id="org.omnetpp.eventlogtable.findText"
-            name="Find Text">
+            name="Find...">
       </command>
       <command
             defaultHandler="org.omnetpp.eventlogtable.editors.EventLogTableContributor$FindNextHandler"

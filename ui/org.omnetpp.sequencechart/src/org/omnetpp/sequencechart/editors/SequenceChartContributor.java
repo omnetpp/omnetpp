@@ -194,6 +194,8 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 
     protected SequenceChartAction exportToSVGAction;
 
+    protected SequenceChartAction refreshAction;
+
 	protected StatusLineContributionItem timelineModeStatus;
 
 	protected StatusLineContributionItem filterStatus;
@@ -227,6 +229,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 		this.toggleBookmarkAction = createToggleBookmarkAction();
 		this.copyToClipboardAction = createCopyToClipboardAction();
 		this.releaseMemoryAction = createReleaseMemoryAction();
+		this.refreshAction = createRefreshAction();
 
 		if (IConstants.IS_COMMERCIAL)
             this.exportToSVGAction = createExportToSVGAction();
@@ -360,7 +363,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 				menuManager.add(separatorAction);
                 menuManager.add(toggleBookmarkAction);
                 menuManager.add(copyToClipboardAction);
-				menuManager.add(createCommandContributionItem());
+				menuManager.add(createRefreshCommandContributionItem());
                 menuManager.add(releaseMemoryAction);
 				menuManager.add(separatorAction);
 				
@@ -392,7 +395,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 		toolBarManager.add(zoomInAction);
 		toolBarManager.add(zoomOutAction);
 		toolBarManager.add(separatorAction);
-		toolBarManager.add(createCommandContributionItem());
+		toolBarManager.add(refreshAction);
 	}
 
     public void contributeToStatusLine(IStatusLineManager statusLineManager) {
@@ -1635,7 +1638,16 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 		};
 	}
 	
-	private CommandContributionItem createCommandContributionItem() {
+    private SequenceChartAction createRefreshAction() {
+        return new SequenceChartAction("Refresh", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_REFRESH)) {
+            @Override
+            public void run() {
+                sequenceChart.refresh();
+            }
+        };
+    }
+
+	private CommandContributionItem createRefreshCommandContributionItem() {
         CommandContributionItemParameter parameter = new CommandContributionItemParameter(Workbench.getInstance(), null, "org.omnetpp.sequencechart.refresh", SWT.PUSH);
         parameter.icon = ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_REFRESH);
         return new CommandContributionItem(parameter);

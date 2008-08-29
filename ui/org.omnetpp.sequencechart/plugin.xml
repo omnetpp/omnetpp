@@ -42,7 +42,7 @@
       <command
             defaultHandler="org.omnetpp.sequencechart.editors.SequenceChartContributor$FindTextHandler"
             id="org.omnetpp.sequencechart.findText"
-            name="Find Text">
+            name="Find...">
       </command>
       <command
             defaultHandler="org.omnetpp.sequencechart.editors.SequenceChartContributor$FindNextHandler"

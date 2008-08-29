@@ -107,9 +107,8 @@ Features:
  - avoid displaying too much events at once (due to being slow) when turning filtering on and off (maybe remember position and zoom level?)
 
 Known bugs:
+! - scrolling with the scroll bar sometimes causes empty cached canvas regions, bad drawing, refresh helps 
+    (this is a bug in eclipse, see bug id: 245523, GC state becomes corrupt)
 ! - navigation history
-! - jump to begin and end needs refresh in Net60
-! - scrolling with the scroll bar in Bonet-0 causes empty cached canvas regions, bad drawing, refresh helps
-! - scroll bar is not quasi linear in Net60 (due to the initialize event being to long compared to all the others)
+! - scroll bar is not quasi linear in Net60 (due to the initialize event being too long compared to all the others)
 ! - there is hysteresis in the horizontal scroll bar due to not calculating with the number of events visible on the screen
-! - disable refresh command contributions on tool bar when appropriate (bug in eclipse IHandler2.setEnabled() is called with the wrong context)

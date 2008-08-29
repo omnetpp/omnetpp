@@ -117,7 +117,9 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 	protected EventLogTableMenuAction displayModeAction;
 
 	protected EventLogTableAction filterAction;
-	
+
+    protected EventLogTableAction refreshAction;
+
     protected StatusLineContributionItem filterStatus;
 
 	/*************************************************************************************
@@ -142,6 +144,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 		this.lineFilterModeAction = createLineFilterModeAction();
 		this.displayModeAction = createDisplayModeAction();
 		this.filterAction = createFilterAction();
+		this.refreshAction = createRefreshAction();
 
 		this.filterStatus = createFilterStatus();
 
@@ -236,7 +239,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 		toolBarManager.add(displayModeAction);
 		toolBarManager.add(separatorAction);
 	    toolBarManager.add(filterAction);
-		toolBarManager.add(createRefreshCommandContributionItem());
+		toolBarManager.add(refreshAction);
 	}
 
 	public void contributeToStatusLine(IStatusLineManager statusLineManager) {
@@ -1131,6 +1134,15 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 				}
 			}
 		};
+	}
+
+	private EventLogTableAction createRefreshAction() {
+        return new EventLogTableAction("Refresh", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_REFRESH)) {
+            @Override
+            public void run() {
+                eventLogTable.refresh();
+            }
+        };
 	}
 
     private CommandContributionItem createRefreshCommandContributionItem() {
