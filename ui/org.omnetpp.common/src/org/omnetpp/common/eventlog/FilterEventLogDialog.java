@@ -12,6 +12,8 @@ import java.util.Set;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.fieldassist.ContentProposalAdapter;
+import org.eclipse.jface.fieldassist.IContentProposal;
+import org.eclipse.jface.fieldassist.IContentProposalListener;
 import org.eclipse.jface.fieldassist.TextContentAdapter;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
@@ -45,6 +47,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.fieldassist.ContentAssistCommandAdapter;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
+import org.omnetpp.common.contentassist.ContentProposal;
 import org.omnetpp.common.eventlog.EventLogFilterParameters.EnabledInt;
 import org.omnetpp.common.ui.AbstractEditableList;
 import org.omnetpp.common.ui.EditableCheckboxList;
@@ -1099,10 +1102,22 @@ public class FilterEventLogDialog
 	}
 	
     protected Text createTextWithProposals(Composite parent, String tooltip, int hspan, Class<?> clazz) {
-        Text text = createText(parent, tooltip, hspan);
+        final Text text = createText(parent, tooltip, hspan);
         ContentAssistCommandAdapter commandAdapter = new ContentAssistCommandAdapter(text, new TextContentAdapter(), new EventLogEntryProposalProvider(clazz),
             ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS, "( ".toCharArray(), true);
-        commandAdapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_REPLACE);
+        commandAdapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_IGNORE);
+        commandAdapter.addContentProposalListener(new IContentProposalListener() {
+            public void proposalAccepted(IContentProposal proposal) {
+                ContentProposal contentProposal = (ContentProposal)proposal;
+                int start = contentProposal.getStartIndex();
+                int end =contentProposal.getEndIndex();
+                int cursorPosition = contentProposal.getCursorPosition();
+                String content = contentProposal.getContent();
+                text.setSelection(start, end);
+                text.insert(content);
+                text.setSelection(start + cursorPosition, start + cursorPosition);
+            }
+        });
         return text;
     }
     

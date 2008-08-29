@@ -78,7 +78,7 @@ public class ModuleTreeViewer extends CheckboxTreeViewer {
         setInput(root);
         expandAll();
 
-        if (((ModuleTreeItem)root).getSubmodules().length > 0)
+        if (root != null && ((ModuleTreeItem)root).getSubmodules().length > 0)
         	reveal(((ModuleTreeItem)root).getSubmodules()[0]); // scroll to top
         
         Control control = getControl();
