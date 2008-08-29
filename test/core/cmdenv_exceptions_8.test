@@ -1,0 +1,30 @@
+%description:
+Tests that errors in finish() are properly caught and displayed in Cmdenv.
+
+%module: Module
+
+class Module : public cSimpleModule
+{
+  public:
+    Module() : cSimpleModule(32768) { }
+    virtual void activity();
+    virtual void finish();
+};
+
+Define_Module(Module);
+
+void Module::activity()
+{
+}
+
+void Module::finish()
+{
+    throw std::exception("something bad happened");
+}
+
+%exitcode: 1
+
+%contains-regex: stdout
+Error in module .*: something bad happened
+
+
