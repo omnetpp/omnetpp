@@ -60,6 +60,7 @@ import org.omnetpp.common.canvas.CachingCanvas;
 import org.omnetpp.common.canvas.LargeRect;
 import org.omnetpp.common.canvas.RubberbandSupport;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.eventlog.EventLogFindTextDialog;
 import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.eventlog.EventLogSelection;
 import org.omnetpp.common.eventlog.IEventLogChangeListener;
@@ -1344,7 +1345,7 @@ public class SequenceChart
         String findText = null;
         EventLogEntry foundEventLogEntry = null; 
 
-        EventLogInput.FindTextDialog findTextDialog = eventLogInput.getFindTextDialog();
+        EventLogFindTextDialog findTextDialog = eventLogInput.getFindTextDialog();
 
         if (continueSearch || findTextDialog.open() == Window.OK) {
             findText = findTextDialog.getValue();

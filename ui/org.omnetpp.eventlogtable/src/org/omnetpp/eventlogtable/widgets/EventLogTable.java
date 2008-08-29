@@ -21,6 +21,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableColumn;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.eventlog.EventLogEntryReference;
+import org.omnetpp.common.eventlog.EventLogFindTextDialog;
 import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.eventlog.EventLogSelection;
 import org.omnetpp.common.eventlog.IEventLogChangeListener;
@@ -496,7 +497,7 @@ public class EventLogTable
 	}
 
 	public void findText(boolean continueSearch) {
-	    EventLogInput.FindTextDialog findTextDialog = eventLogInput.getFindTextDialog();
+	    EventLogFindTextDialog findTextDialog = eventLogInput.getFindTextDialog();
 
 	    if (continueSearch || findTextDialog.open() == Window.OK) {
             String findText = findTextDialog.getValue();

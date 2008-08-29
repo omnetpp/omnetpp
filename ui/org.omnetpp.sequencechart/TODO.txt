@@ -92,7 +92,6 @@ Features:
  + automatically updated textual representation of current filter in filter configuration dialog
  + don't display an axis until there is an event to be displayed on it (when filtering among a lot of axes this helps not displaying useless axes)
 
-!- create a special find text dialog
 !- content assist in text fields where queries can be entered
 
  - hot keys for popup menu actions
@@ -113,3 +112,4 @@ Known bugs:
 ! - scrolling with the scroll bar in Bonet-0 causes empty cached canvas regions, bad drawing, refresh helps
 ! - scroll bar is not quasi linear in Net60 (due to the initialize event being to long compared to all the others)
 ! - there is hysteresis in the horizontal scroll bar due to not calculating with the number of events visible on the screen
+! - disable refresh command contributions on tool bar when appropriate (bug in eclipse IHandler2.setEnabled() is called with the wrong context)
