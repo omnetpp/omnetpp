@@ -2,13 +2,20 @@ package org.omnetpp.cdt.makefile;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.eclipse.cdt.core.settings.model.ICSourceEntry;
+import org.eclipse.cdt.core.settings.model.util.CDataUtil;
+import org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo;
+import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -142,4 +149,49 @@ public class MakefileTools {
             return true;
         }
     }
+
+    /**
+     * Collects source directories from the project and all dependent projects containing files
+     * matching the provided pattern (regexp)
+     */
+    public static List<IContainer> collectDirs(IProject project, String pattern) throws CoreException {
+		List<IContainer> result = new ArrayList<IContainer>();
+		collectDirs(project, result, pattern);
+		return result; 
+	}
+
+    private static void collectDirs(IProject proj, final List<IContainer> result, final String pattern) throws CoreException {
+    	IManagedBuildInfo buildInfo = ManagedBuildManager.getBuildInfo(proj);
+    	final ICSourceEntry[] srcEntries = buildInfo.getDefaultConfiguration().getSourceEntries();
+
+    	proj.accept(new IResourceVisitor() {
+    		public boolean visit(IResource resource) throws CoreException {
+    			if (MakefileTools.isGoodFolder(resource)) {
+    				if (!CDataUtil.isExcluded(resource.getProjectRelativePath(), srcEntries)
+    						&& containsFileMatchingPattern((IContainer)resource, pattern))
+    					result.add((IContainer)resource);
+
+    				return true;
+    			}
+    			return false;
+    		}
+    	});
+
+    	// collect directories from referenced projects too (recursively)
+    	for(IProject refProj : proj.getReferencedProjects())
+    		collectDirs(refProj, result, pattern);
+    }
+
+    /**
+     * true if the given container has a file which name matches the given pattern
+     * @throws CoreException 
+     */
+    private static boolean containsFileMatchingPattern(IContainer container, String pattern) throws CoreException {
+    	for (IResource member : container.members())
+    		if (member.getFullPath().toPortableString().matches(pattern))
+    			return true;
+    	return false;
+    }
+    
+
 }

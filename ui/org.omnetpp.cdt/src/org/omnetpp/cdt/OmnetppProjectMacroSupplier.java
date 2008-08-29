@@ -52,11 +52,15 @@ public class OmnetppProjectMacroSupplier implements IProjectBuildMacroSupplier {
         }
 
         public String getStringValue() throws BuildMacroException {
-            List<String> dirs = new ArrayList<String>();
-            IProject project = (IProject)cdtProject.getOwner();
-
-            collectDirs(project, dirs);
-            return StringUtils.join(dirs, " ");
+            try {
+            	IProject project = (IProject)cdtProject.getOwner();
+            	String result ="";
+				for(IContainer cont : MakefileTools.collectDirs(project, pattern))
+					result += optionPrefix+cont.getLocation().toString()+" ";
+				return result;
+			} catch (CoreException e) {
+				throw new BuildMacroException(e.getStatus());
+			}
         }
 
         public String getName() {
@@ -69,48 +73,6 @@ public class OmnetppProjectMacroSupplier implements IProjectBuildMacroSupplier {
         
         public int getValueType() {
             return VALUE_TEXT;
-        }
-        
-        /**
-         * true if the given container has a file which name matches the given pattern
-         */
-        private boolean containsFileMatchingPattern(IContainer container) {
-            try {
-                for (IResource member : container.members())
-                    if (member.getFullPath().toPortableString().matches(pattern))
-                        return true;
-            }
-            catch (CoreException e) {
-                return true;
-            }
-            return false;
-        }
-        
-        private void collectDirs(IProject proj, final List<String> result) throws BuildMacroException {
-            IManagedBuildInfo buildInfo = ManagedBuildManager.getBuildInfo(proj);
-            final ICSourceEntry[] srcEntries = buildInfo.getDefaultConfiguration().getSourceEntries();
-            
-            try {
-                proj.accept(new IResourceVisitor() {
-                    public boolean visit(IResource resource) throws CoreException {
-                        if (MakefileTools.isGoodFolder(resource)) {
-                            if (!CDataUtil.isExcluded(resource.getProjectRelativePath(), srcEntries)
-                                    && containsFileMatchingPattern((IContainer)resource))
-                                result.add(optionPrefix+resource.getLocation().toString());
-                            
-                            return true;
-                        }
-                        return false;
-                    }
-                });
-                
-                // collect directories from referenced projects too (recursively)
-                for(IProject refProj : proj.getReferencedProjects())
-                    collectDirs(refProj, result);
-            }
-            catch (CoreException e) {
-                throw new BuildMacroException(Status.CANCEL_STATUS);
-            }            
         }
     }
     
