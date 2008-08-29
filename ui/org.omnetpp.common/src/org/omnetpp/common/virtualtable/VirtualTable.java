@@ -172,8 +172,12 @@ public class VirtualTable<T>
 					scrollToBegin();
 				else if (percentage == 1)
 					scrollToEnd();
-				else
-					scrollToElement(contentProvider.getApproximateElementAt(percentage));
+				else {
+				    // avoid hysteresis (no change for a while in the position when turning to the opposite direction during scrolling)
+	                percentage = (double)scrollBar.getSelection() / scrollBar.getMaximum();
+                    relocateFixPoint(contentProvider.getApproximateElementAt(percentage), 0);
+                    redraw();
+				}
 			}
 		});
 
@@ -577,7 +581,7 @@ public class VirtualTable<T>
 
 		if (contentProvider != null && rowRenderer != null) {
 			long numberOfElements = contentProvider.getApproximateNumberOfElements();
-			verticalBar.setMaximum((int)Math.max(numberOfElements, 1E+6));
+			verticalBar.setMaximum((int)Math.min(numberOfElements, 1E+6));
 			verticalBar.setThumb((int)((double)verticalBar.getMaximum() * getVisibleElementCount() / numberOfElements));
 			verticalBar.setIncrement(1);
 			verticalBar.setPageIncrement(getPageJumpCount());
@@ -671,7 +675,7 @@ public class VirtualTable<T>
 			if (distance == maxDistance)
 				relocateFixPoint(element, 0);
 			else
-				relocateFixPoint(element, getFullyVisibleElementCount() - 1);
+				relocateFixPoint(element, Math.max(0, getFullyVisibleElementCount() - 1));
 		}
 
 		redraw();
@@ -699,7 +703,7 @@ public class VirtualTable<T>
 	 * Scroll to the very end making it visible.
 	 */
 	public void scrollToEnd() {
-		relocateFixPoint(contentProvider.getLastElement(), getFullyVisibleElementCount() - 1);
+		relocateFixPoint(contentProvider.getLastElement(), Math.max(0, getFullyVisibleElementCount() - 1));
 		redraw();
 	}
 
@@ -727,7 +731,7 @@ public class VirtualTable<T>
 				else if (isVisible() && bottomElement == null){
 					if (contentProvider.getApproximateNumberOfElements() >= getFullyVisibleElementCount()) {
 						fixPointElement = contentProvider.getLastElement();
-						fixPointDistance = getFullyVisibleElementCount() - 1;
+						fixPointDistance = Math.max(0, getFullyVisibleElementCount() - 1);
 					}
 					else {
 						fixPointElement = contentProvider.getFirstElement();
@@ -840,7 +844,7 @@ public class VirtualTable<T>
 	}
 
 	public int getBottomFullyVisibleElementDistanceFromFixPoint() {
-		return -fixPointDistance + Math.min((int)contentProvider.getApproximateNumberOfElements() - 1, getFullyVisibleElementCount() - 1);
+		return -fixPointDistance + Math.min((int)contentProvider.getApproximateNumberOfElements() - 1, Math.max(0, getFullyVisibleElementCount() - 1));
 	}
 
 	public T getElementAtDistanceFromFixPoint(int distance) {
