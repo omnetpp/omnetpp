@@ -1,25 +1,32 @@
 %description:
-Tests that errors in finish() are properly caught and displayed in Cmdenv.
+Tests that errors in handleMessage() are properly caught and displayed in Cmdenv,
+and finish() doesn't get called.
 
 %module: Module
 
 class Module : public cSimpleModule
 {
   public:
-    Module() : cSimpleModule(32768) { }
-    virtual void activity();
+    virtual void initialize();
+    virtual void handleMessage(cMessage *msg);
     virtual void finish();
 };
 
 Define_Module(Module);
 
-void Module::activity()
+void Module::initialize()
 {
+    scheduleAt(1.0, new cMessage("msg"));
+}
+
+void Module::handleMessage(cMessage *msg)
+{
+    throw cRuntimeError("test exception");
 }
 
 void Module::finish()
 {
-    throw cRuntimeError("test exception");
+    ev << "finish called\n";
 }
 
 %exitcode: 1
@@ -27,4 +34,6 @@ void Module::finish()
 %contains-regex: stdout
 Error in module .*: test exception
 
+%not-contains: stdout
+finish called
 

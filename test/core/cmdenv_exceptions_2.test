@@ -1,5 +1,5 @@
 %description:
-Tests that errors in handleMessage() are properly caught and displayed in Cmdenv,
+Tests that errors in activity() are properly caught and displayed in Cmdenv,
 and finish() doesn't get called.
 
 %module: Module
@@ -7,19 +7,14 @@ and finish() doesn't get called.
 class Module : public cSimpleModule
 {
   public:
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
+    Module() : cSimpleModule(32768) { }
+    virtual void activity();
     virtual void finish();
 };
 
 Define_Module(Module);
 
-void Module::initialize()
-{
-    scheduleAt(1.0, new cMessage("msg"));
-}
-
-void Module::handleMessage(cMessage *msg)
+void Module::activity()
 {
     throw cRuntimeError("test exception");
 }
@@ -36,4 +31,5 @@ Error in module .*: test exception
 
 %not-contains: stdout
 finish called
+
 

@@ -1,6 +1,6 @@
 %description:
-Tests that errors in activity() are properly caught and displayed in Cmdenv,
-and finish() doesn't get called.
+Tests that errors in initialize() are properly caught and displayed in Cmdenv,
+and simulation doesn't start.
 
 %module: Module
 
@@ -8,15 +8,21 @@ class Module : public cSimpleModule
 {
   public:
     Module() : cSimpleModule(32768) { }
+    virtual void initialize();
     virtual void activity();
     virtual void finish();
 };
 
 Define_Module(Module);
 
-void Module::activity()
+void Module::initialize()
 {
     throw cRuntimeError("test exception");
+}
+
+void Module::activity()
+{
+    ev << "activity called\n";
 }
 
 void Module::finish()
@@ -28,6 +34,9 @@ void Module::finish()
 
 %contains-regex: stdout
 Error in module .*: test exception
+
+%not-contains: stdout
+activity called
 
 %not-contains: stdout
 finish called
