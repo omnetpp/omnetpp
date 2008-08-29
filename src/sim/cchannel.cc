@@ -120,7 +120,13 @@ bool cChannel::initializeChannel(int stage)
         // switch context for the duration of the call
         cContextSwitcher tmp(this);
         ev << "Initializing channel " << getFullPath() << ", stage " << stage << "\n";
-        initialize(stage);
+        try {
+            initialize(stage);
+        } catch (cException&) {
+            throw;
+        } catch (std::exception& e) {
+            throw cRuntimeError("%s during initialize(): %s", opp_typename(typeid(e)), e.what());
+        }
         setFlag(FL_INITIALIZED, true);
     }
 
@@ -135,7 +141,13 @@ void cChannel::callFinish()
     cContextSwitcher tmp(this);
     cContextTypeSwitcher tmp2(CTX_FINISH);
     recordParametersAsScalars();
-    finish();
+    try {
+        finish();
+    } catch (cException&) {
+        throw;
+    } catch (std::exception& e) {
+        throw cRuntimeError("%s during finish(): %s", opp_typename(typeid(e)), e.what());
+    }
 }
 
 cModule *cChannel::getParentModule() const

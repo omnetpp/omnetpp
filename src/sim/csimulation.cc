@@ -637,11 +637,19 @@ void cSimulation::doOneEvent(cSimpleModule *mod)
         setGlobalContext();
         delete mod;
     }
-    catch (std::exception&)
+    catch (cException&)
     {
         // restore global context before throwing exception further
         setGlobalContext();
         throw;
+    }
+    catch (std::exception& e)
+    {
+        // restore global context before throwing exception further
+        // but wrap into a cRuntimeError which captures the module before that
+        cRuntimeError e2("%s: %s", opp_typename(typeid(e)), e.what());
+        setGlobalContext();
+        throw e2;
     }
 
     setGlobalContext();
