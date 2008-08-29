@@ -67,6 +67,7 @@
             name="GCC for OMNeT++"
             osList="all"
             scannerConfigDiscoveryProfileId="org.omnetpp.cdt.OmnetppGCCPerProjectProfile"
+            resourceTypeBasedDiscovery="false"
             superClass="cdt.managedbuild.toolchain.gnu.base"
             supportsManagedBuild="false">
          <builder
@@ -147,7 +148,7 @@
       </projectType>
    </extension>
    <extension
-         id="org.omnetpp.cdt.OmnetppGCCPerProjectProfile"
+         id="OmnetppGCCPerProjectProfile"
          name="OMNeT++ per Project Profile"
          point="org.eclipse.cdt.make.core.ScannerConfigurationDiscoveryProfile">
       <scannerInfoCollector
