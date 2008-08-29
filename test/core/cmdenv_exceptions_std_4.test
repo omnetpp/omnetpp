@@ -19,12 +19,12 @@ void Module::activity()
 
 void Module::finish()
 {
-    throw std::exception("something bad happened");
+    throw std::runtime_error("something bad happened");
 }
 
 %exitcode: 1
 
 %contains-regex: stdout
-Error in module .*: something bad happened
+Error in module .*: std::runtime_error: something bad happened
 
 

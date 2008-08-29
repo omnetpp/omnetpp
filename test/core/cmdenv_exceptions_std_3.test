@@ -21,7 +21,7 @@ void Module::initialize()
 
 void Module::handleMessage(cMessage *msg)
 {
-    throw std::exception("something bad happened");
+    throw std::runtime_error("something bad happened");
 }
 
 void Module::finish()
@@ -32,7 +32,7 @@ void Module::finish()
 %exitcode: 1
 
 %contains-regex: stdout
-Error in module .*: something bad happened
+Error in module .*: std::runtime_error: something bad happened
 
 %not-contains: stdout
 finish called
