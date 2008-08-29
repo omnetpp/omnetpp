@@ -138,13 +138,7 @@ public class EventLogTableEditor
 		}
 
 		public boolean mergeInto(INavigationLocation currentLocation) {
-			if (currentLocation instanceof EventLogTableLocation) {
-				EventLogTableLocation eventLogTableLocation = (EventLogTableLocation)currentLocation;
-				
-				return eventLogTableLocation.eventNumber == eventNumber;
-			}
-			else
-				return false;
+		    return equals(currentLocation);
 		}
 
 		public void releaseState() {

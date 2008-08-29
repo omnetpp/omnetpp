@@ -141,7 +141,7 @@ public class SequenceChartEditor
 		}
 
 		public boolean mergeInto(INavigationLocation currentLocation) {
-			return false;
+            return equals(currentLocation);
 		}
 
 		public void releaseState() {
