@@ -12,6 +12,8 @@
             isToolChainSupported="org.eclipse.cdt.msw.build.WinEnvironmentVariableSupplier"
             name="%toolchain.name"
             osList="win32"
+            scannerConfigDiscoveryProfileId="org.omnetpp.cdt.msvc.MSVCScannerInfo"
+            resourceTypeBasedDiscovery="false"
             targetTool="org.eclipse.cdt.msvc.link;org.eclipse.cdt.msvc.lib">
          <targetPlatform
                archList="all"
