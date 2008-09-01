@@ -10,10 +10,10 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.core.resources,
  org.eclipse.core.expressions,
- org.omnetpp.common,
  org.eclipse.core.variables,
  org.eclipse.ui.navigator,
- org.eclipse.ui.browser
+ org.eclipse.ui.browser,
+ org.omnetpp.common
 Eclipse-LazyStart: true
 Export-Package: org.omnetpp.ide;
   uses:="org.eclipse.jface.action,

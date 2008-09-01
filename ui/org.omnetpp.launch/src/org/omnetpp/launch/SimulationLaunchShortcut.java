@@ -133,6 +133,7 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
                     IContainer folder = (IContainer)resource;
                     
                     // collect all ini files in this folder
+                    //TODO if there's a NED file with network, offer creating an inifile
                     List<IniSection> candidates = collectInifileConfigsForFolder(folder);
                     if (candidates.isEmpty()) {
                         MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Cannot launch simulation: '" + folder.getFullPath().toString() + "' does not contain an ini file.");
