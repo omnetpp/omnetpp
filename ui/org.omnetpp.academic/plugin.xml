@@ -5,15 +5,15 @@
          point="org.eclipse.cdt.managedbuilder.core.buildDefinitions">
       <managedBuildRevision fileVersion="4.0.0"/>
       <toolChain
-            id="org.eclipse.cdt.msvc.toolchain.base"
+            id="org.omnetpp.cdt.msvc.toolchain"
             isAbstract="true"
             isToolChainSupported="org.omnetpp.academic.cdt.MsvcToolchainIsSupported"
-            name="Microsoft Visual C++ is not supported in Academic version"
+            name="Microsoft Visual C++ is not supported in the Academic version"
             osList="win32">
       </toolChain>
       <configuration
             artifactExtension="exe"
-            id="org.eclipse.cdt.msvc.configuration">
+            id="org.omnetpp.cdt.msvc.configuration">
       </configuration>
    </extension>
 
