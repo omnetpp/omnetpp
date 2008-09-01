@@ -23,6 +23,7 @@ import org.eclipse.core.runtime.Path;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.ide.OmnetppMainPlugin;
 
 /**
  * Utility functions for Makefile generation.
@@ -126,7 +127,7 @@ public class MakefileTools {
             throw Activator.wrapIntoCoreException(e);
         }
     }
-    
+
     /**
      * Utility function to determine whether a given container is covered by
      * a given makefile. CDT source dirs and exclusions (CSourceEntry) are ignored, 
@@ -193,5 +194,16 @@ public class MakefileTools {
     	return false;
     }
     
+    public static List<IPath> getOmnetppIncludeDirsForProject(IProject project) throws CoreException {
+        List<IPath> result = new ArrayList<IPath>();
+
+        // add the omnetpp include directory
+        result.add(new Path(OmnetppMainPlugin.getOmnetppInclDir()));
+
+        // add project source directories as include dirs for the indexer
+        for (IContainer incDir : MakefileTools.collectDirs(project, ".*\\.(h|msg)")) 
+            result.add(incDir.getFullPath());
+        return result;
+    }
 
 }
