@@ -270,50 +270,6 @@
          </outputType>
       </tool>
       <tool
-            command="rc"
-            errorParsers="org.eclipse.cdt.core.VCErrorParser"
-            id="org.eclipse.cdt.msvc.rc"
-            name="%rc.name"
-            natureFilter="both"
-            outputFlag="/Fo"
-            >
-         <optionCategory
-               id="org.eclipse.cdt.msvc.rc.optionCategory.preprocessor"
-               name="Preprocessor"/>
-         <option
-               browseType="directory"
-               category="org.eclipse.cdt.msvc.rc.optionCategory.preprocessor"
-               command="/I"
-               id="org.eclipse.cdt.msvc.rc.option.includes"
-               name="Include Path (/I)"
-               resourceFilter="all"
-               valueType="includePath"/>
-         <option
-               category="org.eclipse.cdt.msvc.rc.optionCategory.preprocessor"
-               command="/D"
-               id="org.eclipse.cdt.msvc.rc.option.defines"
-               name="Defines (/D)"
-               resourceFilter="all"
-               valueType="definedSymbols"/>
-         <optionCategory
-               id="org.eclipse.cdt.msvc.rc.optionCategory.misc"
-               name="Miscellaneous"/>
-         <option
-               category="org.eclipse.cdt.msvc.rc.optionCategory.misc"
-               id="org.eclipse.cdt.msvc.rc.option.others"
-               name="Other Options"
-               resourceFilter="all"
-               valueType="stringList"/>
-         <inputType
-               id="org.eclipse.cdt.msvc.rc.inputType"
-               sources="rc">
-         </inputType>
-         <outputType
-               id="org.eclipse.cdt.msvc.rc.outputType"
-               outputs="res">
-         </outputType>
-      </tool>
-      <tool
             command="link"
             errorParsers="org.eclipse.cdt.core.VCErrorParser"
             id="org.eclipse.cdt.msvc.link"
@@ -404,41 +360,6 @@
          <outputType
                id="org.eclipse.cdt.msvc.link.outputType.dll"
                outputs="dll">
-         </outputType>
-      </tool>
-      <tool
-            command="lib"
-            id="org.eclipse.cdt.msvc.lib"
-            name="%lib.name"
-            natureFilter="both"
-            outputFlag="/OUT:"
-            >
-         <supportedProperties>
-            <property
-                  id="org.eclipse.cdt.build.core.buildArtefactType">
-               <value
-                     id="org.eclipse.cdt.build.core.buildArtefactType.staticLib">
-               </value>
-            </property>
-         </supportedProperties>
-         <optionCategory
-               id="org.eclipse.cdt.msvc.lib.optionCategory.general"
-               name="General"/>
-         <option
-               category="org.eclipse.cdt.msvc.lib.optionCategory.general"
-               command="/nologo"
-               defaultValue="true"
-               id="org.eclipse.cdt.msvc.lib.option.nologo"
-               name="Suppress Banner (/nologo)"
-               resourceFilter="all"
-               valueType="boolean"/>
-         <inputType
-               id="org.eclipse.cdt.msvc.lib.inputType"
-               sources="obj,res">
-         </inputType>
-         <outputType
-               id="org.eclipse.cdt.msvc.lib.outputType"
-               outputs="lib">
          </outputType>
       </tool>
       </toolChain>
