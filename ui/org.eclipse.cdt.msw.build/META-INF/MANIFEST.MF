@@ -1,9 +1,9 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: MSVC Build Integration Plug-in
-Bundle-SymbolicName: org.eclipse.cdt.msw.build;singleton:=true
+Bundle-SymbolicName: org.omnetpp.cdt.msvc;singleton:=true
 Bundle-Version: 4.0.0.qualifier
-Bundle-Activator: org.eclipse.cdt.msw.build.Activator
+Bundle-Activator: org.omnetpp.cdt.msvc.Activator
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources,

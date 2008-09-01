@@ -40,6 +40,8 @@ import org.omnetpp.ide.preferences.OmnetppPreferencePage;
 //XXX support ccExt = "cc,cpp" too! (because by default, CDT creates files with .cpp extension)
 public class Makemake {
     private static final String MAKEFILE_TEMPLATE_NAME = "Makefile.TEMPLATE";
+    private static final String GENERATED_MAKEFILE_MAGIC_STRING = "# This file was generated"; // template must contain this
+
     private static String template;
 
     // parameters for the makemake function
@@ -72,6 +74,21 @@ public class Makemake {
             throw new MakemakeException(options.getParseErrors().get(0));
     }
 
+    public static boolean isGeneratedMakefile(IFile file) {
+        try {
+            byte[] buffer = new byte[1024];
+            file.getContents().read(buffer, 0, buffer.length);
+            String text = new String(buffer);
+            return text.contains(GENERATED_MAKEFILE_MAGIC_STRING);
+        }
+        catch (IOException e) {
+            return false;
+        }
+        catch (CoreException e) {
+            return false;
+        }
+    }
+    
     /**
      * Generates Makefile in the given folder.
      */
@@ -357,6 +374,8 @@ public class Makemake {
         }
         String content = StringUtils.substituteIntoTemplate(template, m);
         content = content.replace("\r\n", "\n");  // make line endings consistent
+        
+        Assert.isTrue(content.contains(GENERATED_MAKEFILE_MAGIC_STRING)); // so that we recognize our own generated file
 
         // only overwrite file if it does not already exist with the same content,
         // to avoid excessive Eclipse workspace refreshes and infinite builder invocations

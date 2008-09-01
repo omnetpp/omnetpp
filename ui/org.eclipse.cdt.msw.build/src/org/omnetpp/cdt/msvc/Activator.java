@@ -1,4 +1,4 @@
-package org.eclipse.cdt.msw.build;
+package org.omnetpp.cdt.msvc;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;

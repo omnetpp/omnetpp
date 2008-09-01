@@ -1,4 +1,4 @@
-package org.eclipse.cdt.msw.build;
+package org.omnetpp.cdt.msvc;
 
 
 import java.util.HashMap;
@@ -12,9 +12,9 @@ import org.eclipse.cdt.managedbuilder.envvar.IBuildEnvironmentVariable;
 import org.eclipse.cdt.managedbuilder.envvar.IConfigurationEnvironmentVariableSupplier;
 import org.eclipse.cdt.managedbuilder.envvar.IEnvironmentVariableProvider;
 import org.eclipse.cdt.managedbuilder.envvar.IProjectEnvironmentVariableSupplier;
-import org.eclipse.cdt.msw.build.ui.MSVCPreferencePage;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.PluginVersionIdentifier;
+import org.omnetpp.cdt.msvc.ui.MSVCPreferencePage;
 import org.omnetpp.common.util.StringUtils;
 
 /**

@@ -1,10 +1,10 @@
-package org.eclipse.cdt.msw.build.ui;
+package org.omnetpp.cdt.msvc.ui;
 
-import org.eclipse.cdt.msw.build.Activator;
 import org.eclipse.jface.preference.DirectoryFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
+import org.omnetpp.cdt.msvc.Activator;
 
 /**
  * Preference page to specify Visual Studio and Platform SDK locations.

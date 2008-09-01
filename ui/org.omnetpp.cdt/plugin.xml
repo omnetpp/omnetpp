@@ -52,7 +52,7 @@
             isAbstract="true"
             name="Microsoft Visual C++ for OMNeT++"
             osList="win32"
-            superClass="org.eclipse.cdt.msvc.toolchain.base"
+            superClass="org.omnetpp.cdt.msvc.toolchain"
             supportsManagedBuild="false">
          <builder
                id="org.omnetpp.cdt.msvc.builder"
@@ -90,7 +90,7 @@
          <configuration
                id="org.omnetpp.cdt.msvc.config.debug"
                name="msvc-debug"
-               parent="org.eclipse.cdt.msvc.configuration">
+               parent="org.omnetpp.cdt.msvc.configuration">
             <toolChain
                   id="org.omnetpp.cdt.msvc.toolchain.debug"
                   superClass="org.omnetpp.cdt.msvc.toolchain.base">
@@ -104,7 +104,7 @@
          <configuration
                id="org.omnetpp.cdt.msvc.config.release"
                name="msvc-release"
-               parent="org.eclipse.cdt.msvc.configuration">
+               parent="org.omnetpp.cdt.msvc.configuration">
             <toolChain
                   id="org.omnetpp.cdt.msvc.toolchain.release"
                   superClass="org.omnetpp.cdt.msvc.toolchain.base">
