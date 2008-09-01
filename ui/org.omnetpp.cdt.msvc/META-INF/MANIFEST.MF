@@ -1,0 +1,20 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: MSVC Build Integration Plug-in
+Bundle-SymbolicName: org.omnetpp.cdt.msvc;singleton:=true
+Bundle-Version: 4.0.0.qualifier
+Bundle-Activator: org.omnetpp.cdt.msvc.Activator
+Bundle-Localization: plugin
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.core.resources,
+ org.eclipse.cdt.core,
+ org.eclipse.cdt.managedbuilder.core,
+ org.eclipse.ui.workbench;bundle-version="3.4.0",
+ org.omnetpp.cdt;bundle-version="4.0.0",
+ org.eclipse.swt;bundle-version="3.4.0",
+ org.eclipse.ui.ide;bundle-version="3.4.0",
+ org.eclipse.jface;bundle-version="3.4.0",
+ org.omnetpp.common;bundle-version="4.0.0",
+ org.eclipse.ui
+Eclipse-LazyStart: true
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

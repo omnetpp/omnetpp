@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="org.eclipse.cdt.managedbuilder.core.buildDefinitions">
+      <managedBuildRevision fileVersion="4.0.0"/>
+      <toolChain
+            archList="all"
+            configurationEnvironmentSupplier="org.omnetpp.cdt.msvc.WinEnvironmentVariableSupplier"
+            id="org.omnetpp.cdt.msvc.toolchain"
+            isAbstract="true"
+            isToolChainSupported="org.omnetpp.cdt.msvc.WinEnvironmentVariableSupplier"
+            name="%toolchain.name"
+            osList="win32"
+            scannerConfigDiscoveryProfileId="org.omnetpp.cdt.msvc.MSVCScannerInfo"
+            resourceTypeBasedDiscovery="false">
+         <targetPlatform
+               archList="all"
+               binaryParser="org.eclipse.cdt.core.PE"
+               id="org.omnetpp.cdt.msvc.targetPlatform"
+               osList="win32">
+         </targetPlatform>
+      </toolChain>
+      <configuration
+            id="org.omnetpp.cdt.msvc.configuration">
+      </configuration>
+   </extension>
+   <extension
+         id="MSVCScannerInfo"
+         name="Windows SDK Scanner Info Provider"
+         point="org.eclipse.cdt.make.core.ScannerConfigurationDiscoveryProfile">
+      <scannerInfoCollector
+            class="org.omnetpp.cdt.msvc.WinScannerInfoCollector"
+            scope="project">
+      </scannerInfoCollector>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="org.omnetpp.cdt.msvc.ui.MSVCPreferenceInitializer">
+      </initializer>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="org.eclipse.cdt.ui.preferences.CPluginPreferencePage"
+            class="org.omnetpp.cdt.msvc.ui.MSVCPreferencePage"
+            id="org.omnetpp.cdt.msvc.MSVCPreferencePage"
+            name="MS Visual C++ Location">
+      </page>
+   </extension>
+
+</plugin>
