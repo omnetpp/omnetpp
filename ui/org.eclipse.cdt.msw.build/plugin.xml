@@ -12,6 +12,8 @@
             isToolChainSupported="org.eclipse.cdt.msw.build.WinEnvironmentVariableSupplier"
             name="%toolchain.name"
             osList="win32"
+            scannerConfigDiscoveryProfileId="org.eclipse.cdt.msvc.MSVCScannerInfo"
+            resourceTypeBasedDiscovery="false"
             targetTool="org.eclipse.cdt.msvc.link;org.eclipse.cdt.msvc.lib">
          <targetPlatform
                archList="all"
@@ -637,13 +639,28 @@
       </projectType>
    </extension>
    <extension
-         id="clScannerInfo"
+         id="MSVCScannerInfo"
          name="Windows SDK Scanner Info Provider"
          point="org.eclipse.cdt.make.core.ScannerConfigurationDiscoveryProfile">
       <scannerInfoCollector
             class="org.eclipse.cdt.msw.build.WinScannerInfoCollector"
             scope="project">
       </scannerInfoCollector>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="org.eclipse.cdt.msw.build.ui.MSVCPreferenceInitializer">
+      </initializer>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="org.eclipse.cdt.ui.preferences.CPluginPreferencePage"
+            class="org.eclipse.cdt.msw.build.ui.MSVCPreferencePage"
+            id="org.eclipse.cdt.msw.build.MSVCPreferencePage"
+            name="MS Visual C++ Location">
+      </page>
    </extension>
 
 </plugin>

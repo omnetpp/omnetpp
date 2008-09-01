@@ -9,6 +9,7 @@ import org.eclipse.cdt.make.core.scannerconfig.InfoContext;
 import org.eclipse.cdt.make.core.scannerconfig.ScannerInfoTypes;
 import org.eclipse.cdt.make.core.scannerconfig.IDiscoveredPathManager.IDiscoveredPathInfo;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 
@@ -17,22 +18,28 @@ import org.eclipse.core.runtime.IProgressMonitor;
  *
  */
 public class WinScannerInfoCollector implements IScannerInfoCollector3 {
+    private InfoContext context;
 
-	public void contributeToScannerConfig(Object resource, Map scannerInfo) {
+	@SuppressWarnings("unchecked")
+    public void contributeToScannerConfig(Object resource, Map scannerInfo) {
 	}
 
-	public List getCollectedScannerInfo(Object resource, ScannerInfoTypes type) {
+	@SuppressWarnings("unchecked")
+    public List getCollectedScannerInfo(Object resource, ScannerInfoTypes type) {
 		return null;
 	}
 
 	public IDiscoveredPathInfo createPathInfoObject() {
-		return new WinDiscoveredPathInfo();
+	    Assert.isTrue(context != null);
+		return new WinDiscoveredPathInfo(context.getProject());
 	}
 	
 	public void setInfoContext(InfoContext context) {
+	    this.context = context;
 	}
 	
 	public void setProject(IProject project) {
+	    // CDT apparently never invokes this
 	}
 	
 	public void updateScannerConfiguration(IProgressMonitor monitor) throws CoreException {

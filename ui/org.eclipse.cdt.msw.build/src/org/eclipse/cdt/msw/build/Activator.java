@@ -1,15 +1,17 @@
 package org.eclipse.cdt.msw.build;
 
-import org.eclipse.core.runtime.Plugin;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
 /**
  * The activator class controls the plug-in life cycle
  */
-public class Activator extends Plugin {
+public class Activator extends AbstractUIPlugin {
 
 	// The plug-in ID
-	public static final String PLUGIN_ID = "net.sf.wascana.msvc.build";
+	public static final String PLUGIN_ID = "net.sf.wascana.msvc.build";  //FIXME
 
 	// The shared instance
 	private static Activator plugin;
@@ -40,11 +42,27 @@ public class Activator extends Plugin {
 
 	/**
 	 * Returns the shared instance
-	 *
-	 * @return the shared instance
 	 */
 	public static Activator getDefault() {
 		return plugin;
 	}
+
+    public static void log(int severity, String message) {
+        getDefault().getLog().log(new Status(severity, PLUGIN_ID, message));
+    }
+    
+    public static void logError(Throwable exception) {
+        logError(exception.toString(), exception);
+    }
+
+    public static void logError(String message, Throwable exception) {
+        if (plugin != null) {
+            plugin.getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, 0, message, exception));
+        }
+        else {
+            System.err.println(message);
+            exception.printStackTrace();
+        }
+    }
 
 }

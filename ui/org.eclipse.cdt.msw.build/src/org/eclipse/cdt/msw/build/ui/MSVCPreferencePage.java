@@ -1,0 +1,37 @@
+package org.eclipse.cdt.msw.build.ui;
+
+import org.eclipse.cdt.msw.build.Activator;
+import org.eclipse.jface.preference.DirectoryFieldEditor;
+import org.eclipse.jface.preference.FieldEditorPreferencePage;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPreferencePage;
+
+/**
+ * Preference page to specify Visual Studio and Platform SDK locations.
+ */
+public class MSVCPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
+
+	public static final String PREFKEY_VCDIR = "vcdir";
+	public static final String PREFKEY_VSDIR = "vsdir";
+    public static final String PREFKEY_SDKDIR = "sdkdir";
+
+    public MSVCPreferencePage() {
+		super(GRID);
+		setPreferenceStore(Activator.getDefault().getPreferenceStore());
+		setDescription("Specify the location of Microsoft Visual C++ and the Platform SDK");
+	}
+
+	public void createFieldEditors() {
+	    // TODO explanation, tooltips
+		addField(new DirectoryFieldEditor(PREFKEY_VSDIR, "MS Visual Studio install location:", getFieldEditorParent()));
+		addField(new DirectoryFieldEditor(PREFKEY_VCDIR, "MS Visual C++ location:", getFieldEditorParent()));
+		addField(new DirectoryFieldEditor(PREFKEY_SDKDIR, "MS Platform SDK location:", getFieldEditorParent()));
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
+	 */
+	public void init(IWorkbench workbench) {
+	}
+
+}

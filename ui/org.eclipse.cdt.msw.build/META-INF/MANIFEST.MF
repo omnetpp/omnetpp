@@ -8,6 +8,13 @@ Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources,
  org.eclipse.cdt.core,
- org.eclipse.cdt.managedbuilder.core
+ org.eclipse.cdt.managedbuilder.core,
+ org.eclipse.ui.workbench;bundle-version="3.4.0",
+ org.omnetpp.cdt;bundle-version="4.0.0",
+ org.eclipse.swt;bundle-version="3.4.0",
+ org.eclipse.ui.ide;bundle-version="3.4.0",
+ org.eclipse.jface;bundle-version="3.4.0",
+ org.omnetpp.common;bundle-version="4.0.0",
+ org.eclipse.ui
 Eclipse-LazyStart: true
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
