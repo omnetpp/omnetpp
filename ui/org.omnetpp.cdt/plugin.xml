@@ -48,11 +48,11 @@
             superClass="org.omnetpp.cdt.opp_makemake.builder">
       </builder>
       <toolChain
-            id="org.omnetpp.cdt.msvc.toolchain.base"
+            id="org.omnetpp.cdt.msvc.toolchain"
             isAbstract="true"
             name="Microsoft Visual C++ for OMNeT++"
             osList="win32"
-            superClass="org.omnetpp.cdt.msvc.toolchain"
+            superClass="org.eclipse.cdt.msvc.toolchain.base"
             supportsManagedBuild="false">
          <builder
                id="org.omnetpp.cdt.msvc.builder"
@@ -93,7 +93,7 @@
                parent="org.omnetpp.cdt.msvc.configuration">
             <toolChain
                   id="org.omnetpp.cdt.msvc.toolchain.debug"
-                  superClass="org.omnetpp.cdt.msvc.toolchain.base">
+                  superClass="org.omnetpp.cdt.msvc.toolchain">
                <builder
                      arguments="-f Makefile.vc MODE=debug CONFIGNAME=${ConfigName}"
                      id="org.omnetpp.cdt.msvc.builder.debug"
@@ -107,7 +107,7 @@
                parent="org.omnetpp.cdt.msvc.configuration">
             <toolChain
                   id="org.omnetpp.cdt.msvc.toolchain.release"
-                  superClass="org.omnetpp.cdt.msvc.toolchain.base">
+                  superClass="org.omnetpp.cdt.msvc.toolchain">
                <builder
                      arguments="-f Makefile.vc MODE=release CONFIGNAME=${ConfigName}"
                      id="org.omnetpp.cdt.msvc.builder.release"
