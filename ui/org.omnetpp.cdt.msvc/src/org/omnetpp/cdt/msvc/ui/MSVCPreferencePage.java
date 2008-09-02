@@ -18,14 +18,16 @@ public class MSVCPreferencePage extends FieldEditorPreferencePage implements IWo
     public MSVCPreferencePage() {
 		super(GRID);
 		setPreferenceStore(Activator.getDefault().getPreferenceStore());
-		setDescription("Specify the location of Microsoft Visual C++ and the Platform SDK");
+		setDescription("Specify the location of Microsoft Visual C++ and the Platform SDK. " +
+				"This will affect the build-time INCLUDE, LIB and PATH environment variables, " +
+				"and the discovered include paths.");
 	}
 
 	public void createFieldEditors() {
 	    // TODO explanation, tooltips
-		addField(new DirectoryFieldEditor(PREFKEY_VSDIR, "MS Visual Studio install location:", getFieldEditorParent()));
-		addField(new DirectoryFieldEditor(PREFKEY_VCDIR, "MS Visual C++ location:", getFieldEditorParent()));
-		addField(new DirectoryFieldEditor(PREFKEY_SDKDIR, "MS Platform SDK location:", getFieldEditorParent()));
+		addField(new DirectoryFieldEditor(PREFKEY_VSDIR, "Visual Studio install location:", getFieldEditorParent()));
+		addField(new DirectoryFieldEditor(PREFKEY_VCDIR, "Visual C++ location:", getFieldEditorParent()));
+		addField(new DirectoryFieldEditor(PREFKEY_SDKDIR, "Platform SDK location:", getFieldEditorParent()));
 	}
 
 	/* (non-Javadoc)

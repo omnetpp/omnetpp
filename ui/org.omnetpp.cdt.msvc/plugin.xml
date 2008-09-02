@@ -412,7 +412,7 @@
             category="org.eclipse.cdt.ui.preferences.CPluginPreferencePage"
             class="org.omnetpp.cdt.msvc.ui.MSVCPreferencePage"
             id="org.omnetpp.cdt.msvc.MSVCPreferencePage"
-            name="MS Visual C++ Location">
+            name="Microsoft Visual C++">
       </page>
    </extension>
 
