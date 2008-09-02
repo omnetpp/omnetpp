@@ -37,7 +37,7 @@ all: $O/seedtool.exe $O/ln.exe
 	copy opp_test $(OMNETPP_BIN_DIR:/=\)
 	copy linkall.cmd $(OMNETPP_BIN_DIR:/=\)
 	copy linkall.pl $(OMNETPP_BIN_DIR:/=\)
-	copy msvcver.pl $(OMNETPP_BIN_DIR:/=\)
+	copy opp_msvcver.pl $(OMNETPP_BIN_DIR:/=\)
 	copy opp_stacktool.cmd $(OMNETPP_BIN_DIR:/=\)
 	copy omnetpp.cmd $(OMNETPP_BIN_DIR:/=\)
 	copy omnest.cmd $(OMNETPP_BIN_DIR:/=\)

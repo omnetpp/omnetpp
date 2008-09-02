@@ -343,7 +343,7 @@ CFLAGS=$(CFLAGS) /DWITH_NETBUILDER
 # Absolute path to msvcver.pl can be omitted if the script is already in the bin/
 # directory.
 #
-CLVER=perl $(OMNETPP_SRC_DIR)/utils/msvcver.pl $(CXX)
+CLVER=perl $(OMNETPP_BIN_DIR)/opp_msvcver.pl $(CXX)
 !if "$(TOOLCHAIN_NAME)"!=""
 # respect user's setting
 !elseif [$(CLVER)] == 14
