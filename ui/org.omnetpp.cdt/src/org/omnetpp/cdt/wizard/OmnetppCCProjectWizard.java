@@ -67,6 +67,9 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
             hideControl((Control)ReflectionUtils.getFieldValue(getLocationArea(), "locationPathField"));
             hideControl((Control)ReflectionUtils.getFieldValue(getLocationArea(), "browseButton"));
             hideControl((Control)ReflectionUtils.getFieldValue(getLocationArea(), "useDefaultsButton"));
+
+            // select "Show supported configurations only" checkbox (this comes from a preference in CDT, but we don't care) 
+            ((Button)ReflectionUtils.getFieldValue(this, "show_sup")).setSelection(true);
         }
 
         private void hideControl(Control control) {
