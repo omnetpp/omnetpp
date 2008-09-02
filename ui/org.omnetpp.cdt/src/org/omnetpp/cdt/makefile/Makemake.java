@@ -104,8 +104,11 @@ public class Makemake {
         boolean isDeep = options.isDeep;
 
         String makefileName = isNMake ? "Makefile.vc" : "Makefile";
-        if (file(makefileName).isFile() && !options.force)
-            throw new MakemakeException("use -f to force overwriting existing " + makefileName);
+        IFile makefile = folder.getFile(new Path(makefileName));
+        if (makefile.exists() && !options.force)
+            throw new MakemakeException("use -f to force overwriting existing " + makefile.getFullPath().toString());
+        if (makefile.exists() && !isGeneratedMakefile(makefile))
+            throw new MakemakeException(makefile.getFullPath().toString() + " seems to be a hand-written makefile, refusing to overwrite it. Please delete it or move it away.");
 
         String target = options.target == null ? folder.getProject().getName() : options.target;
         List<String> objs = new ArrayList<String>();
@@ -380,7 +383,6 @@ public class Makemake {
         // only overwrite file if it does not already exist with the same content,
         // to avoid excessive Eclipse workspace refreshes and infinite builder invocations
         byte[] bytes = content.getBytes();
-        IFile makefile = folder.getFile(new Path(makefileName));
         MakefileTools.ensureFileContent(makefile, bytes, null);
     }
 
