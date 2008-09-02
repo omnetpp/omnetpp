@@ -6,14 +6,15 @@
       <managedBuildRevision fileVersion="4.0.0"/>
       <toolChain
             archList="all"
-            configurationEnvironmentSupplier="org.omnetpp.cdt.msvc.WinEnvironmentVariableSupplier"
+            configurationEnvironmentSupplier="org.omnetpp.cdt.msvc.MSVCEnvironmentVariableSupplier"
             id="org.eclipse.cdt.msvc.toolchain.base"
             isAbstract="true"
-            isToolChainSupported="org.omnetpp.cdt.msvc.WinEnvironmentVariableSupplier"
+            isToolChainSupported="org.omnetpp.cdt.msvc.MSVCEnvironmentVariableSupplier"
             name="%toolchain.name"
             osList="win32"
-            scannerConfigDiscoveryProfileId="org.omnetpp.cdt.msvc.MSVCScannerInfo"
             resourceTypeBasedDiscovery="false"
+            scannerConfigDiscoveryProfileId="org.omnetpp.cdt.msvc.MSVCScannerInfo"
+            supportsManagedBuild="false"
             targetTool="org.eclipse.cdt.msvc.link;org.eclipse.cdt.msvc.lib">
          <targetPlatform
                archList="all"
@@ -395,7 +396,7 @@
          name="Windows SDK Scanner Info Provider"
          point="org.eclipse.cdt.make.core.ScannerConfigurationDiscoveryProfile">
       <scannerInfoCollector
-            class="org.omnetpp.cdt.msvc.WinScannerInfoCollector"
+            class="org.omnetpp.cdt.msvc.MSVCScannerInfoCollector"
             scope="project">
       </scannerInfoCollector>
    </extension>

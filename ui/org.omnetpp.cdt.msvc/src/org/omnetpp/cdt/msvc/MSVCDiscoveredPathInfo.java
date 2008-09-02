@@ -18,15 +18,15 @@ import org.omnetpp.cdt.makefile.MakefileTools;
  * Discover the include path for the VC installation and optionally for the SDK
  * @author Doug Schaefer, rhornig, andras
  */
-public class WinDiscoveredPathInfo implements IDiscoveredPathInfo {
+public class MSVCDiscoveredPathInfo implements IDiscoveredPathInfo {
 
 	private IPath[] paths;
 	private Map<String, String> symbols = new HashMap<String, String>();
 	
-	public WinDiscoveredPathInfo(IProject project) {
+	public MSVCDiscoveredPathInfo(IProject project) {
 		// Include paths
-		String sdkDir = WinEnvironmentVariableSupplier.getSDKDir();
-		String vcDir = WinEnvironmentVariableSupplier.getVCDir();
+		String sdkDir = MSVCEnvironmentVariableSupplier.getSDKDir();
+		String vcDir = MSVCEnvironmentVariableSupplier.getVCDir();
 		
 		List<IPath> paths = new ArrayList<IPath>(); 
 		if (vcDir != null ) {

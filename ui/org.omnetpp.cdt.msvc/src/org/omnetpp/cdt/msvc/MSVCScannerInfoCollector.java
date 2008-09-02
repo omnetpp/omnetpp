@@ -17,7 +17,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
  * @author Doug Schaefer
  *
  */
-public class WinScannerInfoCollector implements IScannerInfoCollector3 {
+public class MSVCScannerInfoCollector implements IScannerInfoCollector3 {
     private InfoContext context;
 
 	@SuppressWarnings("unchecked")
@@ -31,7 +31,7 @@ public class WinScannerInfoCollector implements IScannerInfoCollector3 {
 
 	public IDiscoveredPathInfo createPathInfoObject() {
 	    Assert.isTrue(context != null);
-		return new WinDiscoveredPathInfo(context.getProject());
+		return new MSVCDiscoveredPathInfo(context.getProject());
 	}
 	
 	public void setInfoContext(InfoContext context) {
