@@ -13,13 +13,30 @@
       <managedBuildRevision
             fileVersion="4.0.0">
       </managedBuildRevision>
+      <toolChain
+            configurationEnvironmentSupplier="org.omnetpp.cdt.GCCEnvironmentVariableSupplier"
+            id="org.omnetpp.cdt.gnu.toolchain.base"
+            isAbstract="true"
+            name="GCC for OMNeT++"
+            osList="all"
+            scannerConfigDiscoveryProfileId="org.omnetpp.cdt.OmnetppGCCPerProjectProfile"
+            resourceTypeBasedDiscovery="false"
+            superClass="cdt.managedbuild.toolchain.gnu.base"
+            supportsManagedBuild="false">
+         <targetPlatform
+               binaryParser="org.eclipse.cdt.core.ELF;org.eclipse.cdt.core.MachO;org.eclipse.cdt.core.PE"
+               id="org.omnetpp.cdt.targetPlatform"
+               isAbstract="false"
+               name="Windows, Linux, Mac"
+               osList="win32,linux,macosx">
+         </targetPlatform>
       <builder
             buildPath="${PrimarySourceDir}"
             autoBuildTarget="all"
             cleanBuildTarget="clean"
             command="make"
             errorParsers="org.eclipse.cdt.core.MakeErrorParser"
-            id="org.omnetpp.cdt.opp_makemake.builder"
+            id="org.omnetpp.cdt.gnu.builder"
             ignoreErrCmd="-k"
             incrementalBuildTarget="all"
             isAbstract="true"
@@ -40,47 +57,6 @@
             supportsManagedBuild="false"
             variableFormat="${=}">
       </builder>
-      <builder
-            command="nmake"
-            id="org.omnetpp.cdt.opp_nmakemake.builder"
-            isAbstract="true"
-            name="OMNeT++ Make Builder (opp_nmakemake - for MS Visual C++)"
-            superClass="org.omnetpp.cdt.opp_makemake.builder">
-      </builder>
-      <toolChain
-            id="org.omnetpp.cdt.msvc.toolchain"
-            isAbstract="true"
-            name="Microsoft Visual C++ for OMNeT++"
-            osList="win32"
-            superClass="org.eclipse.cdt.msvc.toolchain.base"
-            supportsManagedBuild="false">
-         <builder
-               id="org.omnetpp.cdt.msvc.builder"
-               isAbstract="true"
-               superClass="org.omnetpp.cdt.opp_nmakemake.builder">
-         </builder>
-      </toolChain>
-      <toolChain
-            configurationEnvironmentSupplier="org.omnetpp.cdt.GCCEnvironmentVariableSupplier"
-            id="org.omnetpp.cdt.gnu.toolchain.base"
-            isAbstract="true"
-            name="GCC for OMNeT++"
-            osList="all"
-            scannerConfigDiscoveryProfileId="org.omnetpp.cdt.OmnetppGCCPerProjectProfile"
-            resourceTypeBasedDiscovery="false"
-            superClass="cdt.managedbuild.toolchain.gnu.base"
-            supportsManagedBuild="false">
-         <builder
-               id="org.omnetpp.cdt.gnu.builder"
-               isAbstract="true"
-               superClass="org.omnetpp.cdt.opp_makemake.builder">
-         </builder>
-         <targetPlatform
-               binaryParser="org.eclipse.cdt.core.ELF;org.eclipse.cdt.core.MachO;org.eclipse.cdt.core.PE"
-               id="org.omnetpp.cdt.targetPlatform"
-               isAbstract="false"
-               osList="win32,linux,macosx">
-         </targetPlatform>
       </toolChain>
       <projectType
             id="org.omnetpp.cdt.omnetppProjectType"
@@ -90,10 +66,10 @@
          <configuration
                id="org.omnetpp.cdt.msvc.config.debug"
                name="msvc-debug"
-               parent="org.omnetpp.cdt.msvc.configuration">
+               parent="org.omnetpp.cdt.msvc.config.base">
             <toolChain
                   id="org.omnetpp.cdt.msvc.toolchain.debug"
-                  superClass="org.omnetpp.cdt.msvc.toolchain">
+                  superClass="org.omnetpp.cdt.msvc.toolchain.base">
                <builder
                      arguments="-f Makefile.vc MODE=debug CONFIGNAME=${ConfigName}"
                      id="org.omnetpp.cdt.msvc.builder.debug"
@@ -104,10 +80,10 @@
          <configuration
                id="org.omnetpp.cdt.msvc.config.release"
                name="msvc-release"
-               parent="org.omnetpp.cdt.msvc.configuration">
+               parent="org.omnetpp.cdt.msvc.config.base">
             <toolChain
                   id="org.omnetpp.cdt.msvc.toolchain.release"
-                  superClass="org.omnetpp.cdt.msvc.toolchain">
+                  superClass="org.omnetpp.cdt.msvc.toolchain.base">
                <builder
                      arguments="-f Makefile.vc MODE=release CONFIGNAME=${ConfigName}"
                      id="org.omnetpp.cdt.msvc.builder.release"

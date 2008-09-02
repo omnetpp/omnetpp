@@ -7,10 +7,10 @@
       <toolChain
             archList="all"
             configurationEnvironmentSupplier="org.omnetpp.cdt.msvc.MSVCEnvironmentVariableSupplier"
-            id="org.eclipse.cdt.msvc.toolchain.base"
+            id="org.omnetpp.cdt.msvc.toolchain.base"
             isAbstract="true"
             isToolChainSupported="org.omnetpp.cdt.msvc.MSVCEnvironmentVariableSupplier"
-            name="%toolchain.name"
+            name="Microsoft Visual C++ for OMNeT++"
             osList="win32"
             resourceTypeBasedDiscovery="false"
             scannerConfigDiscoveryProfileId="org.omnetpp.cdt.msvc.MSVCScannerInfo"
@@ -19,13 +19,16 @@
          <targetPlatform
                archList="all"
                binaryParser="org.eclipse.cdt.core.PE"
-               id="org.eclipse.cdt.msvc.targetPlatform"
+               id="org.omnetpp.cdt.msvc.targetPlatform"
+               name="Windows"
                osList="win32">
          </targetPlatform>
          <builder
-               id="org.eclipse.cdt.msvc.builder"
-               isVariableCaseSensitive="false"
-               superClass="org.eclipse.cdt.build.core.internal.builder">
+               command="nmake"
+               id="org.omnetpp.cdt.msvc.builder"
+               isAbstract="true"
+               name="OMNeT++ Make Builder (opp_nmakemake - for MS Visual C++)"
+               superClass="org.omnetpp.cdt.gnu.builder">
          </builder>
       <tool
             command="cl /c"
@@ -367,8 +370,7 @@
       </tool>
       </toolChain>
       <configuration
-            artifactExtension="exe"
-            id="org.eclipse.cdt.msvc.configuration">
+            id="org.omnetpp.cdt.msvc.config.base">
          <enablement
                attribute="artifactExtension"
                extensionAdjustment="false"
