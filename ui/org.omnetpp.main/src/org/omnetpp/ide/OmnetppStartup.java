@@ -38,7 +38,6 @@ import org.omnetpp.ide.views.NewsView;
  */
 public class OmnetppStartup implements IStartup {
 
-    private static final String VERSION = "4.0.0b5";
     private static final String VERSIONS_URL = NewsView.BASE_URL + "versions/";
 	private static final String LATESTVERSION_URL = VERSIONS_URL + "latest/";
 	public static final String SAMPLES_DIR = "samples";
@@ -71,7 +70,7 @@ public class OmnetppStartup implements IStartup {
 	private String getCurrentVersion() {
 		try {
 			byte buffer[] = new byte[1024];
-			URL url = new URL(LATESTVERSION_URL);
+			URL url = new URL(LATESTVERSION_URL+getUrlParams());
 			url.openStream().read(buffer);
 			return new String(buffer).trim();
 		} catch (MalformedURLException e) {
@@ -80,12 +79,16 @@ public class OmnetppStartup implements IStartup {
 		return null;
 	}
 	
+	private String getUrlParams() {
+	    return "?ver="+OmnetppMainPlugin.getVersion()+"&id="+OmnetppMainPlugin.getUUID();
+	}
+	
 	private void checkForNewVersion() {
 		Job versioncheckJob = new Job ("Checking for newer versions") {
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
 				String newestVersion = getCurrentVersion(); 
-		    	if (newestVersion != null && !newestVersion.equals(VERSION)) {
+		    	if (newestVersion != null && !newestVersion.equals(OmnetppMainPlugin.getVersion())) {
 		    		Display.getDefault().asyncExec(new Runnable() {
 						public void run() {
 			    			try {
@@ -93,7 +96,7 @@ public class OmnetppStartup implements IStartup {
 			    				IWorkbenchPage workbenchPage = activeWorkbenchWindow == null ? null : activeWorkbenchWindow.getActivePage();
 			    				if (workbenchPage != null) {
 			    					NewsView newsView = (NewsView)workbenchPage.showView(IConstants.NEWS_VIEW_ID);
-		    						newsView.setURL(VERSIONS_URL);
+		    						newsView.setURL(VERSIONS_URL+getUrlParams());
 			    				}
 			    			} 
 			    			catch (PartInitException e) {

@@ -5,16 +5,21 @@
          point="org.eclipse.cdt.managedbuilder.core.buildDefinitions">
       <managedBuildRevision fileVersion="4.0.0"/>
       <toolChain
-            id="org.omnetpp.cdt.msvc.toolchain"
+            id="org.omnetpp.cdt.msvc.toolchain.base"
             isAbstract="true"
+            isSystem="true"
             isToolChainSupported="org.omnetpp.academic.cdt.MsvcToolchainIsSupported"
-            name="Microsoft Visual C++ is not supported in the Academic version"
-            osList="win32">
+            name="Microsoft Visual C++ -- not supported"
+            osList="win32"
+            supportsManagedBuild="false">
+         <builder
+               id="org.omnetpp.cdt.msvc.builder"
+               isAbstract="false"
+               isSystem="true"
+               isVariableCaseSensitive="false"
+               name="OMNeT++ Make Builder (opp_nmakemake - not supported)">
+         </builder>
       </toolChain>
-      <configuration
-            artifactExtension="exe"
-            id="org.omnetpp.cdt.msvc.configuration">
-      </configuration>
    </extension>
 
 </plugin>
