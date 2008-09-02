@@ -6,10 +6,10 @@
       <managedBuildRevision fileVersion="4.0.0"/>
       <toolChain
             archList="all"
-            configurationEnvironmentSupplier="org.eclipse.cdt.msw.build.WinEnvironmentVariableSupplier"
+            configurationEnvironmentSupplier="org.omnetpp.cdt.msvc.WinEnvironmentVariableSupplier"
             id="org.eclipse.cdt.msvc.toolchain.base"
             isAbstract="true"
-            isToolChainSupported="org.eclipse.cdt.msw.build.WinEnvironmentVariableSupplier"
+            isToolChainSupported="org.omnetpp.cdt.msvc.WinEnvironmentVariableSupplier"
             name="%toolchain.name"
             osList="win32"
             scannerConfigDiscoveryProfileId="org.omnetpp.cdt.msvc.MSVCScannerInfo"

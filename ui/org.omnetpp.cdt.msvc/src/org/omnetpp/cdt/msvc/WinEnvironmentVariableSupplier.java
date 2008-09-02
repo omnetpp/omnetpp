@@ -16,6 +16,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.PluginVersionIdentifier;
 import org.omnetpp.cdt.msvc.ui.MSVCPreferencePage;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.ide.OmnetppMainPlugin;
 
 /**
  * Visual C environment detector. Tries to detect Visual C and (optional) MS Windows SDK
@@ -121,8 +122,11 @@ public class WinEnvironmentVariableSupplier
 	
 	private void initvars() {
 		envvars = new HashMap<String, IBuildEnvironmentVariable>();
-		
-		String vcDir = getVCDir();
+
+		// add OMNETPP_ROOT variable because it is needed by the nmake scripts
+        addvar(new WindowsBuildEnvironmentVariable("OMNETPP_ROOT", OmnetppMainPlugin.getOmnetppRootDir(), IBuildEnvironmentVariable.ENVVAR_REPLACE));
+
+        String vcDir = getVCDir();
 		if (vcDir == null)
 			return;
 		
