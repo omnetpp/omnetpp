@@ -2,15 +2,14 @@ package org.omnetpp.ide;
 
 import java.util.UUID;
 
-import org.eclipse.core.internal.utils.UniversalUniqueIdentifier;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.osgi.framework.BundleContext;
 
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ide.preferences.OmnetppPreferencePage;
-import org.osgi.framework.BundleContext;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -37,7 +36,6 @@ public class OmnetppMainPlugin extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
         PLUGIN_ID = getBundle().getSymbolicName();
-        System.out.println(getVersion()+" - "+getUUID());
 	}
 
     public static String getVersion() {
