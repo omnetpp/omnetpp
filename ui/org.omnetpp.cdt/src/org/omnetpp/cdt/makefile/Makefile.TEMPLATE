@@ -58,7 +58,7 @@ MSGFILES ={@msg:msgfiles} \
 {nmake:}!endif
 {nmake:}
 {nmake:}!if !exist($(CONFIGFILE))
-{nmake:}!error '$(CONFIGFILE)' does not exist -- set the OMNETPP_CONFIGFILE variable to point to configuser.vc, or edit/regenerate this makefile.
+{nmake:}!error '$(CONFIGFILE)' does not exist -- set OMNETPP_ROOT or OMNETPP_CONFIGFILE to point to configuser.vc. From the IDE, set the OMNeT++ install location on the Window | Preferences dialog.
 {nmake:}!endif
 {nmake:}
 {nmake:}!include $(CONFIGFILE)
