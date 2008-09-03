@@ -33,6 +33,36 @@
             Create a file that contains network elements, like simple or compound modules, channels etc.
          </description>
       </wizard>
+      <wizard
+            category="org.omnetpp.wizards"
+            class="org.omnetpp.ned.editor.wizards.NewNedComponentWizard$NewSimpleModuleWizard"
+            icon="icons/obj16/NewSimpleModule.png"
+            id="org.omnetpp.ned.editor.wizard.new.simplemodule"
+            name="Simple Module">
+         <description>
+            Create a new Simple module (NED and C++ files)
+         </description>
+      </wizard>
+      <wizard
+            category="org.omnetpp.wizards"
+            class="org.omnetpp.ned.editor.wizards.NewNedComponentWizard$NewCompoundModuleWizard"
+            icon="icons/obj16/NewCompoundModule.png"
+            id="org.omnetpp.ned.editor.wizard.new.compoundmodule"
+            name="Compound Module">
+         <description>
+            Create a new Compound module 
+         </description>
+      </wizard>
+      <wizard
+            category="org.omnetpp.wizards"
+            class="org.omnetpp.ned.editor.wizards.NewNedComponentWizard$NewNetworkWizard"
+            icon="icons/obj16/NewNetwork.png"
+            id="org.omnetpp.ned.editor.wizard.new.network"
+            name="Network">
+         <description>
+            Create a new Network
+         </description>
+      </wizard>
    </extension>
    <extension
          point="org.eclipse.ui.navigator.navigatorContent">
@@ -41,6 +71,69 @@
                  menuGroupId="org.eclipse.cdt.ui" 
                  type="new" 
                  wizardId="org.omnetpp.ned.editor.wizard.new.file">
+                 <enablement>
+                 	<and>
+			               <adapt
+			                     type="org.eclipse.core.resources.IResource">
+			                 <test
+			                     property="org.eclipse.core.resources.projectNature"
+			                     value="org.omnetpp.main.omnetppnature">
+			                 </test>
+			               </adapt>
+                  			<not>
+                     			<instanceof value="org.eclipse.core.resources.IFile">
+                     			</instanceof>
+                  			</not>
+	             	</and>
+                 </enablement>
+           </commonWizard>
+           <commonWizard 
+                 associatedExtensionId="org.eclipse.cdt.ui.navigator.content" 
+                 menuGroupId="org.eclipse.cdt.ui" 
+                 type="new" 
+                 wizardId="org.omnetpp.ned.editor.wizard.new.simplemodule">
+                 <enablement>
+                 	<and>
+			               <adapt
+			                     type="org.eclipse.core.resources.IResource">
+			                 <test
+			                     property="org.eclipse.core.resources.projectNature"
+			                     value="org.omnetpp.main.omnetppnature">
+			                 </test>
+			               </adapt>
+                  			<not>
+                     			<instanceof value="org.eclipse.core.resources.IFile">
+                     			</instanceof>
+                  			</not>
+	             	</and>
+                 </enablement>
+           </commonWizard>
+           <commonWizard 
+                 associatedExtensionId="org.eclipse.cdt.ui.navigator.content" 
+                 menuGroupId="org.eclipse.cdt.ui" 
+                 type="new" 
+                 wizardId="org.omnetpp.ned.editor.wizard.new.compoundmodule">
+                 <enablement>
+                 	<and>
+			               <adapt
+			                     type="org.eclipse.core.resources.IResource">
+			                 <test
+			                     property="org.eclipse.core.resources.projectNature"
+			                     value="org.omnetpp.main.omnetppnature">
+			                 </test>
+			               </adapt>
+                  			<not>
+                     			<instanceof value="org.eclipse.core.resources.IFile">
+                     			</instanceof>
+                  			</not>
+	             	</and>
+                 </enablement>
+           </commonWizard>
+           <commonWizard 
+                 associatedExtensionId="org.eclipse.cdt.ui.navigator.content" 
+                 menuGroupId="org.eclipse.cdt.ui" 
+                 type="new" 
+                 wizardId="org.omnetpp.ned.editor.wizard.new.network">
                  <enablement>
                  	<and>
 			               <adapt

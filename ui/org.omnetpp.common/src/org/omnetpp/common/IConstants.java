@@ -26,4 +26,8 @@ public interface IConstants {
     public static final String OMNETPP_NATURE_ID = "org.omnetpp.main.omnetppnature";
     // whether this version is a COMMERCIAL build or not
     public static final boolean IS_COMMERCIAL = false;
+    // wizards
+    public static final String NEW_SIMPLE_MODULE_WIZARD_ID = "org.omnetpp.ned.editor.wizard.new.simplemodule";
+    public static final String NEW_COMPOUND_MODULE_WIZARD_ID = "org.omnetpp.ned.editor.wizard.new.compoundmodule";
+    public static final String NEW_NETWORK_WIZARD_ID = "org.omnetpp.ned.editor.wizard.new.network";
 }

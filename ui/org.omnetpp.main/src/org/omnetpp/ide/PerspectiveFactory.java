@@ -69,11 +69,13 @@ public class PerspectiveFactory implements IPerspectiveFactory {
 		// new actions - our wizards
 		layout.addNewWizardShortcut("org.omnetpp.ide.wizard.newProjectWizard");//$NON-NLS-1$
         layout.addNewWizardShortcut("org.omnetpp.cdt.wizard.omnetppCCProjectWizard");//$NON-NLS-1$
+        layout.addNewWizardShortcut(IConstants.NEW_SIMPLE_MODULE_WIZARD_ID);
+        layout.addNewWizardShortcut(IConstants.NEW_COMPOUND_MODULE_WIZARD_ID);
+        layout.addNewWizardShortcut(IConstants.NEW_NETWORK_WIZARD_ID);
 		layout.addNewWizardShortcut("org.omnetpp.ned.editor.wizard.new.file");//$NON-NLS-1$
 		layout.addNewWizardShortcut("org.omnetpp.msg.editor.wizard.new.file");//$NON-NLS-1$
 		layout.addNewWizardShortcut("org.omnetpp.inifile.editor.wizards.NewInifileWizard");//$NON-NLS-1$
 		layout.addNewWizardShortcut("org.omnetpp.scave.wizard.ScaveModelModelWizardID"); //$NON-NLS-1$
-
 		// standard platform wizards
 		layout.addNewWizardShortcut("org.eclipse.ui.wizards.new.folder");//$NON-NLS-1$
 		layout.addNewWizardShortcut("org.eclipse.ui.wizards.new.file");//$NON-NLS-1$
