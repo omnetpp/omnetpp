@@ -4,3 +4,7 @@ Bundle-Name: OMNeT++ Help
 Bundle-SymbolicName: org.omnetpp.doc;singleton:=true
 Bundle-Version: 4.0.0.qualifier
 Bundle-Vendor: OpenSim Ltd.
+Require-Bundle: org.eclipse.ui;bundle-version="3.4.0",
+ org.eclipse.ui.intro;bundle-version="3.2.200",
+ org.eclipse.ui.intro.universal;bundle-version="3.2.200",
+ org.eclipse.help;bundle-version="3.3.100"

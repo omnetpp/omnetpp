@@ -29,7 +29,7 @@
          point="org.eclipse.ui.intro.configExtension">
       <configExtension
             configId="org.eclipse.ui.intro.universalConfig"
-            content="intro/sample.xml">
+            content="intro/intro.xml">
       </configExtension>
    </extension>
    <extension
