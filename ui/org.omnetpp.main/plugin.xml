@@ -12,28 +12,28 @@
           <property name="preferenceCustomization" value="plugin_customization.ini"/>
          <property
           		name="introTitle"
-          		value="Intro title"/>
+          		value="INtro title"/>
           <property
           		name="introBrandingImage"
-          		value="product:intro-eclipse.png"/>
+          		value="product:icons/intro-image.png"/>
           <property
           		name="introBrandingImageText"
-          		value="%productIntroBrandingText"/>
+          		value="OMNeT++ Simulation Environment"/>
 		  <property
 				name="introDescription-overview"
-				value="%introDescription-overview"/>
+				value="Welcome to the OMNeT++ Simulation Environment. Choose a topic you want to learn more about."/>
 		  <property
-				name="introDescription-tutorials"
-				value="%introDescription-tutorials"/>
+          name="introDescription-tutorials"
+          value=" "/>
 		  <property
-				name="introDescription-samples"
-				value="%introDescription-samples"/>
+          name="introDescription-samples"
+          value=" "/>
     <property
           name="aboutText"
           value="OMNeT++ Integrated Development Environment."/>
     <property
           name="aboutImage"
-          value="icons/omnest128.gif"/>
+          value="icons/about-image.png"/>
     <property
           name="windowImages"
           value="icons/omnest16.gif,icons/omnest32.gif,icons/omnest48.gif,icons/omnest64.gif,icons/omnest128.gif"/>

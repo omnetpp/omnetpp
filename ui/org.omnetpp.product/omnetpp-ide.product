@@ -40,6 +40,8 @@
       </win>
    </launcher>
 
+   <intro introId="org.eclipse.ui.intro.universal"/>
+
    <vm>
    </vm>
 
