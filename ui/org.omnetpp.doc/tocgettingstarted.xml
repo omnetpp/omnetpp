@@ -2,6 +2,6 @@
 <?NLS TYPE="org.eclipse.help.toc"?>
 
 <toc label="Getting Started" link_to="toc.xml#gettingstarted">
-	<topic label="An Overview of the OMNeT++ 4.0 IDE"  href="html/gettingstarted/getting_started.html">
+	<topic label="An Overview of the OMNeT++ 4.0 IDE"  href="content/gettingstarted/getting_started.html">
 	</topic>
 </toc>

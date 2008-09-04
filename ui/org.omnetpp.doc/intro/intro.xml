@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <introContent>
-  <extensionContent id="orgomnetppintro-introExtension" style="css/sample.css"
+  <extensionContent id="orgomnetppintro-introExtension" style="css/omnetpp.css"
     name="OMNeT++ Intro Extension" path="overview/@">
     <group style-id="content-group" id="orgomnetppintro-introLink-group">
-      <link label="OMNeT++ Simulation Environment" url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.omnetpp.help/html/gettingstarted/getting_started.html" id="orgomnetppintro-introLink"
+      <link label="OMNeT++ Simulation Environment" url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.omnetpp.doc/content/gettingstarted/getting_started.html" id="orgomnetppintro-introLink"
         style-id="content-link">
         <text>Sample text for OMNeT++</text>
       </link>
