@@ -16,7 +16,9 @@ We also assume that you have a good C++ knowledge, and you are in general
 familiar with C/C++ development (editing source files, compiling, debugging etc.)
 on your operating system. (The latter two are out of our scope here --
 there are excellent books, tutorials on the web, etc. if you need
-to update your knowledge on that.)
+to update your knowledge on that.) We highly recommend to use
+the OMNeT++ Integrated Development Environment for editing and building
+your simulations.
 
 To make the examples easier to follow, all source code in here is
 cross-linked to the @opp API documentation.
@@ -45,7 +47,7 @@ UP: @ref contents
 Since the most common application area of @opp is the simulation of
 telecommunications networks, we'll borrow our topic from there.
 For a start, let us begin with a "network" that consists of two nodes.
-The nodes will do something simple: one the nodes will create a packet,
+The nodes will do something simple: one of the nodes will create a packet,
 and the two nodes will keep passing the same packet back and forth.
 We'll call the nodes "tic" and "toc".
 
@@ -62,16 +64,14 @@ Let's call it tictoc1.ned:
 
 The file is best read from the bottom up. Here's what it says:
 
-   - we define a network called tictoc1, which is an instance the
-     module type Tictoc1 (<tt>network..endnetwork</tt>);
-   - Tictoc1 is a compound module, which is assembled from two submodules,
+   - Tictoc1 is a network, which is assembled from two submodules,
      tic and toc. tic and toc are instances of the same module type
      called Txc1. We connect tic's output gate (named out) to toc's input
-     gate (named in), and vica versa (<tt>module..endmodule</tt>). There
+     gate (named in), and vica versa (<tt>network ... { ... }</tt>). There
      will be a 100ms propagation delay both ways;
    - Txc1 is a simple module type (which means it is atomic on NED level, and
      will be implemented in C++). Txc1 has one input gate named in,
-     and one output gate named out (<tt>simple..endsimple</tt>).
+     and one output gate named out (<tt>simple ... { ... }</tt>).
 
 3. We now need to implement the functionality of the simple module Txc1. This is
 achieved by writing a C++ file txc1.cc:
@@ -123,7 +123,7 @@ $ make
 
 @note Windows+MSVC: type <tt>nmake -f Makefile.vc</tt>.
 If you get <i>'nmake' is not recognized as an internal or external command...</i>,
-find <tt>vcvars32.bat</tt> somewhere in the MSVC directories, and run it first thing
+find <tt>vcvars32.bat</tt> somewhere in the MSVC directories, and run it first
 in every command window in which you want to compile.
 
 If there are compilation errors, you need to rectify those and repeat the make until
@@ -146,9 +146,6 @@ tictoc2 and further steps will all share the following omnetpp.ini:
 
 @include omnetpp.ini
 
-which even doesn't specify the network (the simulation program ask it
-in a dialog when it starts).
-
 7. Once you complete the above steps, you launch the simulation by issuing this
 command:
 
@@ -163,7 +160,7 @@ and hopefully you should now get the @opp simulation window.
 8. Press the Run button on the toolbar to start the simulation. What you should
 see is that tic and toc are exchanging messages with each other.
 
-<img src="step1.gif">
+<img src="step1.png">
 
 The main window toolbar displays the simulated time. This is virtual time, it
 has nothing to do with the actual (or wall-clock) time that the program takes to
@@ -185,6 +182,8 @@ main window.
 
 10. You can exit the simulation program by clicking its Close icon or
 choosing File|Exit.
+
+Sources: @ref tictoc1.ned, @ref txc1.cc, @ref omnetpp.ini
 
 NEXT: @ref part2
 */
@@ -215,11 +214,11 @@ We also modify the C++ file to add some debug messages to Txc1 by
 writing to the @opp <tt>ev</tt> object like this:
 
 @dontinclude txc2.cc
-@skipline ev <<
+@skipline EV <<
 
 and
 
-@skipline ev <<
+@skipline EV <<
 
 When you run the simulation in the @opp GUI Tkenv, the following output
 will appear in the main text window:
@@ -301,20 +300,20 @@ Here, we assign one parameter in the NED file:
 and the other in omnetpp.ini:
 
 @dontinclude omnetpp.ini
-@skipline tictoc4.
+@skipline Tictoc4.toc
 
 Note that because omnetpp.ini supports wildcards, and parameters
 assigned from NED files take precedence over the ones in omnetpp.ini,
 we could have used
 
 @code
-tictoc4.t*c.limit=5
+Tictoc4.t*c.limit=5
 @endcode
 
 or
 
 @code
-tictoc4.*.limit=5
+Tictoc4.*.limit=5
 @endcode
 
 or even
@@ -405,8 +404,8 @@ In addition, we'll "lose" (delete) the packet with a small (hardcoded) probabili
 We'll assign the parameters in omnetpp.ini:
 
 @dontinclude omnetpp.ini
-@skipline tictoc6.
-@skipline tictoc6.
+@skipline Tictoc6.
+@skipline Tictoc6.
 
 You can try that no matter how many times you re-run the simulation (or
 restart it, Simulate|Rebuild network menu item), you'll get exactly the
@@ -525,14 +524,15 @@ need to have multiple input and output gates:
 
 @dontinclude tictoc9.ned
 @skip simple Txc9
-@until endsimple
+@until }
 
 The [ ] turns the gates into gate vectors. The size of the vector
 (the number of gates) will be determined where we use Txc to build
 the network.
 
-@skip module Tictoc9
-@until endmodule
+@skip network Tictoc9
+@until tic[5].out
+@until }
 
 Here we created 6 modules as a module vector, and connected them.
 
@@ -704,6 +704,17 @@ Sources: @ref tictoc11.ned, @ref tictoc11.msg, @ref txc11.cc, @ref omnetpp.ini
 
 @section s12 Step 12: Adding statistics collection
 
+The OMNeT++ simulation kernel can record a detailed log about your message 
+exchanges automatically by setting the
+
+@dontinclude omnetpp.ini
+@skipline eventlog
+
+configuration option in the omnetpp.ini file. This log file can be later displayed 
+by the IDE (see: @ref logs).
+
+@note The resulting log file can be quite large, so enable this feature only if you really need it.
+
 The previous simulation model does something interesting enough
 so that we can collect some statistics. For example, you may be interested
 in the average hop count a message has to travel before reaching
@@ -713,10 +724,10 @@ We'll record in the hop count of every message upon arrival into
 an output vector (a sequence of (time,value) pairs, sort of a time series).
 We also calculate mean, standard deviation, minimum, maximum values per node, and
 write them into a file at the end of the simulation. Then we'll use
-off-line tools to analyse the output files.
+tools from the OMNeT++ IDE to analyse the output files.
 
 For that, we add an output vector object (which will record the data into
-omnetpp.vec) and a histogram object (which also calculates mean, etc)
+<tt>Tictoc12-0.vec</tt>) and a histogram object (which also calculates mean, etc)
 to the class.
 
 @dontinclude txc12.cc
@@ -730,31 +741,26 @@ The following code has been added to handleMessage():
 @skipline hopCountVector.record
 @skipline hopCountStats.collect
 
-hopCountVector.record() call writes the data into omnetpp.vec.
-With a large simulation model or long execution time, the omnetpp.vec file
+hopCountVector.record() call writes the data into <tt>Tictoc12-0.vec</tt>.
+With a large simulation model or long execution time, the <tt>Tictoc12-0.vec</tt> file
 may grow very large. To handle this situation, you can specifically
 disable/enable vector in omnetpp.ini, and you can also specify
 a simulation time interval in which you're interested
 (data recorded outside this interval will be discarded.)
 
-When you begin a new simulation, the existing omnetpp.vec file gets deleted.
+When you begin a new simulation, the existing <tt>Tictoc12-0.vec/sca</tt>
+file gets deleted.
 
 Scalar data (collected by the histogram object in this simulation)
 have to be recorded manually, in the finish() function.
 finish() gets invoked on successful completion of the simulation,
 i.e. not when it's stopped with an error. The recordScalar() calls
-in the code below write into the omnetpp.sca file.
+in the code below write into the <tt>Tictoc12-0.sca</tt> file.
 
 @skip ::finish
 @until }
 
-Unlike omnetpp.vec, omnetpp.sca is <i>not</i> deleted between
-simulation runs. Instead, new data are just appended to it. The idea is
-that you can collect output from several simulation runs (i.e. with
-different input parameters), and analyse them together.
-
-It is possible to use different file names (omnetpp.ini option)
-so that e.g. multiple runs write to different files.
+The files are stored in the <tt>results/</tt> subdirectory. 
 
 You can also view the data during simulation. In the module inspector's
 Contents page you'll find the hopCountStats and hopCountVector objects,
@@ -767,10 +773,11 @@ data to be displayed. After a while you'll get something like this:
 <img src="step12b.gif">
 
 When you think enough data has been collected, you can stop the simulation
-and then we'll analyse the result files (omnetpp.vec and omnetpp.sca) off-line.
-You'll need to choose Simulate|Call finish() from the menu
-(or click the corresponding toolbar button) before exiting -- this will cause
-the finish() functions to run and data to be written into omnetpp.sca.
+and then we'll analyse the result files (<tt>Tictoc12-0.vec</tt> and 
+<tt>Tictoc12-0.sca</tt>) off-line. You'll need to choose Simulate|Call finish() 
+from the menu (or click the corresponding toolbar button) before exiting -- 
+this will cause the finish() functions to run and data to be written into 
+<tt>Tictoc12-0.sca</tt>.
 
 Sources: @ref tictoc12.ned, @ref tictoc12.msg, @ref txc12.cc, @ref omnetpp.ini
 
@@ -780,80 +787,15 @@ NEXT: @ref part5
 --------------------------------------------------------------------------
 
 /**
-@page part5 5. Visualizing the results with Plove and Scalars
+@page part5 5. Visualizing the results with the OMNeT++ IDE
 
 PREV: @ref part4 UP: @ref contents
 
+@section scalar Scalar statistics
 
-@section scalars Scalar statistics
+@section vector Plotting the output vectors
 
-The Scalars tool can be used to visualize the contents of the omnetpp.sca file.
-It can draw bar charts, x-y plots (e.g. throughput vs offered load), or
-export data via the clipboard for more detailed analysis into spreadsheets
-or other programs.
-
-\code
-$ scalars omnetpp.sca
-\endcode
-
-The program displays the data in a table with columns showing the file name,
-run number, module name where it was recorded, and the value. There're
-usually too many rows to get an overview, so you can filter by choosing
-from (or editing) the three combo boxes at the top. (The filters also
-accept the *, ** wildcards.)
-
-<img src="sca1.gif">
-
-You could actually load further scalar files into the window, and thus
-analyse them together.
-
-You can copy the selected rows to the clipboard by Edit|Copy or the corresponding
-toolbar button, and paste them e.g. into OpenOffice Calc, MS Excel or Gnumeric.
-
-The bar chart toolbar button creates -- well -- a bar chart in a new window.
-You can customize the chart by right-clicking on it and choosing from the
-context menu. It can also be exported to EPS, GIF, or as metafile via the
-Windows clipboard (the latter is not available on Unix of course).
-
-<img src="sca2.gif">
-
-
-@section plove Plotting the output vectors
-
-Output vector files can be visualized with Plove. Try the following:
-
-\code
-$ plove omnetpp.vec
-\endcode
-
-The left pane displays vectors that are present in the omnetpp.vec file.
-(You can load further vector files as well.)
-
-To plot, you have to copy some vectors to the right pane, select one or
-more of them (shift+click and ctrl+click works), and click the Plot icon
-on the toolbar.
-
-<img src="plove1.gif">
-
-The graph is displayed in a separate window.
-
-<img src="plove2.gif">
-
-As in Scalars, you can customize the graph and export it in various formats.
-For the following screenshot we turned off connecting the data points.
-
-<img src="plove3.gif">
-
-We can apply a filter which plots mean on [0,t). In the main window, right-click
-the selected vectors, then choose Pre-plot filtering from the context menu.
-
-<img src="plove4a.gif">
-
-Once in the dialog, choose 'mean' from the filter dropdown list and click OK.
-Next time you click the Plot button on the toolbar, you'll get the filtered
-charts.
-
-<img src="plove4.gif">
+@section logs Sequence charts end event logs
 
 @section conclusion Conclusion
 

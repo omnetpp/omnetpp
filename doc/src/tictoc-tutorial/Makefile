@@ -8,4 +8,4 @@ DOXYGEN=doxygen
 #
 all:
 	$(DOXYGEN) doxyfile
-	cp *.gif ../../tictoc-tutorial
+	cp *.gif *.png ../../tictoc-tutorial
