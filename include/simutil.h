@@ -48,9 +48,8 @@ enum {CTX_BUILD, CTX_INITIALIZE, CTX_EVENT, CTX_FINISH};
  * Convert a string to simtime_t. The string should have a format
  * similar to the one output by simtimeToStr() (like "1s 34ms").
  *
- * Returns -1 if the whole string cannot be interpreted as time.
+ * Throws an exception if the whole string cannot be interpreted as time.
  * Empty string (or only spaces+tabs) is also an error.
- * E.g. strtoSimtime("3s 600ms x") will return -1.
  */
 SIM_API double strToSimtime(const char *str);
 
