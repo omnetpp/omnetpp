@@ -343,16 +343,21 @@ CFLAGS=$(CFLAGS) /DWITH_NETBUILDER
 # Absolute path to msvcver.pl can be omitted if the script is already in the bin/
 # directory.
 #
-CLVER=perl $(OMNETPP_BIN_DIR)/opp_msvcver.pl $(CXX)
+!if exist($(OMNETPP_BIN_DIR)/opp_msvcver.pl)
+CLVER_PROG=perl $(OMNETPP_BIN_DIR)/opp_msvcver.pl $(CXX)
+!else
+CLVER_PROG=perl $(OMNETPP_SRC_DIR)/utils/opp_msvcver.pl $(CXX)
+!endif
+
 !if "$(TOOLCHAIN_NAME)"!=""
 # respect user's setting
-!elseif [$(CLVER)] == 14
+!elseif [$(CLVER_PROG)] == 14
 TOOLCHAIN_NAME = vc80
-!elseif [$(CLVER)] == 15
+!elseif [$(CLVER_PROG)] == 15
 TOOLCHAIN_NAME = vc90
-!elseif [$(CLVER)] == 13
+!elseif [$(CLVER_PROG)] == 13
 TOOLCHAIN_NAME = vc71
-!elseif [$(CLVER)] == -1
+!elseif [$(CLVER_PROG)] == -1
 !error Visual C++ compiler $(CXX) not found (not in the PATH?)
 !else
 !error Unsupported Visual C++ compiler version (8.x and 9.x supported)
