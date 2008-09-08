@@ -16,7 +16,7 @@ public class MoveAroundTest
     extends EventLogFileTestCase
 {
     public MoveAroundTest() {
-        super("Tictoc.log");
+        super("stress.log");
     }
 
     @Override
