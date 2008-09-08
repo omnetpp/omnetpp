@@ -234,9 +234,9 @@ EndSendEntry *Event::getEndSendEntry(BeginSendEntry *beginSendEntry)
         if (endSendEntry)
             return endSendEntry;
 
+        // message deleted on the channel (skip all deletes until the matching one is found)
         DeleteMessageEntry *deleteMessageEntry = dynamic_cast<DeleteMessageEntry *>(eventLogEntry);
-        if (deleteMessageEntry) {
-            Assert(deleteMessageEntry->messageId == beginSendEntry->messageId);
+        if (deleteMessageEntry && deleteMessageEntry->messageId == beginSendEntry->messageId) {
             return NULL;
         }
     }
