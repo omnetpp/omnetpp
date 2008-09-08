@@ -34,7 +34,9 @@ void Txc4::initialize()
     // in the NED file (tictoc4.ned).
     counter = par("limit");
 
-    if (strcmp("tic", getName()) == 0)
+    // we no longer depend on the name of the module to decide
+    // whether to send an initial message
+    if (par("sendMsgOnInit").boolValue() == true)
     {
         EV << "Sending initial message\n";
         cMessage *msg = new cMessage("tictocMsg");
@@ -56,4 +58,5 @@ void Txc4::handleMessage(cMessage *msg)
         send(msg, "out");
     }
 }
+
 

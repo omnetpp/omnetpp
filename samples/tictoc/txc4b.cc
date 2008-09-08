@@ -13,8 +13,7 @@
 
 
 /**
- * In this step you'll learn how to add input parameters to the simulation:
- * we'll turn the "magic number" 10 into a parameter.
+ * Same as Txc4.
  */
 class Txc4b : public cSimpleModule
 {

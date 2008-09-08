@@ -16,14 +16,15 @@
 //
 simple Txc2
 {
-    @display("i=block/routing"); // add a default icon 
+    parameters:
+        @display("i=block/routing"); // add a default icon
     gates:
         input in;
         output out;
 }
 
 //
-// Make the two module look a bit different with colorization effect. 
+// Make the two module look a bit different with colorization effect.
 // Use cyan for `tic', and yellow for `toc'.
 //
 network Tictoc2

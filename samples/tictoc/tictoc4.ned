@@ -10,8 +10,9 @@
 
 simple Txc4
 {
-    parameters: 
-        int limit = default(2);  // declare the new parameter and provide a default value
+    parameters:
+        bool sendMsgOnInit = default(false); // whether the module should send out a message on initialization
+        int limit = default(2);   // another parameter with a default value
         @display("i=block/routing");
     gates:
         input in;
@@ -26,12 +27,12 @@ network Tictoc4
     submodules:
         tic: Txc4 {
             parameters:
-                limit = 8;  // tic's limit is 8
+                sendMsgOnInit = true;
                 @display("i=,cyan");
         }
         toc: Txc4 {
             parameters:
-                // note that we leave toc's limit unbound here
+                sendMsgOnInit = false;
                 @display("i=,gold");
         }
     connections:

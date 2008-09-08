@@ -11,7 +11,7 @@
 simple Txc3
 {
     parameters:
-        @display("i=block/routing");  // make block/routing the default icon
+        @display("i=block/routing");
     gates:
         input in;
         output out;
@@ -25,11 +25,11 @@ network Tictoc3
     submodules:
         tic: Txc3 {
             parameters:
-                @display("i=,cyan");  // colorize the default icon
+                @display("i=,cyan");
         }
         toc: Txc3 {
             parameters:
-                @display("i=,gold");  // here too
+                @display("i=,gold");
         }
     connections:
         tic.out --> {  delay = 100ms; } --> toc.in;

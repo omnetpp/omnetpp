@@ -13,25 +13,25 @@ simple Txc10
     parameters:
         @display("i=block/routing");
     gates:
-        inout gate[];  // declare two way connections
+        inout gate[];
 }
 
 //
-// same as the previous step 
-//  
+// Same as Tictoc9c
+//
 network Tictoc10
 {
     types:
-        channel chn extends ned.DelayChannel {
+        channel Channel extends ned.DelayChannel {
             delay = 100ms;
         }
     submodules:
         tic[6]: Txc10;
     connections:
-        tic[0].gate++ <--> chn <--> tic[1].gate++;
-        tic[1].gate++ <--> chn <--> tic[2].gate++;
-        tic[1].gate++ <--> chn <--> tic[4].gate++;
-        tic[3].gate++ <--> chn <--> tic[4].gate++;
-        tic[4].gate++ <--> chn <--> tic[5].gate++;
+        tic[0].gate++ <--> Channel <--> tic[1].gate++;
+        tic[1].gate++ <--> Channel <--> tic[2].gate++;
+        tic[1].gate++ <--> Channel <--> tic[4].gate++;
+        tic[3].gate++ <--> Channel <--> tic[4].gate++;
+        tic[4].gate++ <--> Channel <--> tic[5].gate++;
 }
 
