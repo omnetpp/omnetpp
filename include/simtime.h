@@ -141,6 +141,7 @@ class SIM_API SimTime
     friend const SimTime operator*(const SimTime& x, double d);
     friend const SimTime operator*(double d, const SimTime& x);
     friend const SimTime operator/(const SimTime& x, double d);
+    friend double operator/(double d, const SimTime& x);
     friend double operator/(const SimTime& x, const SimTime& y);
 
     friend const SimTime operator*(const SimTime& x, const cPar& p);
@@ -273,6 +274,11 @@ inline const SimTime operator*(double d, const SimTime& x)
 inline const SimTime operator/(const SimTime& x, double d)
 {
     return SimTime(x)/=d;
+}
+
+inline double operator/(double d, const SimTime& x)
+{
+    return x.dbl() / d;
 }
 
 inline double operator/(const SimTime& x, const SimTime& y)
