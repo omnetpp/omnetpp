@@ -400,20 +400,6 @@ public class ImageFactory {
 
     	// TODO add also the current and dependent project's own bitmap folder
 
-    	// scan the resource directory for images
-    	// This is no longer used as we do not store the images inside a JAR file anymore
-//    	URL imagesResourceUrl= ImageFactory.class.getResource(IMAGE_DIR);
-//		try {
-//			// beware that the toFileURL creates a copy of ALL icons if they are stored in a JAR file
-//			// this is sub optimal. It would be better if we could create a file-system supporting
-//			// the bundle resource: protocol directly (ie we could read directory from the bundle)
-//			IFileStore resourceStore = EFS.getStore(FileLocator.toFileURL(imagesResourceUrl).toURI());
-//			result.addAll(getNameList(resourceStore, resourceStore.toURI().toString().length()));
-//		} catch (IOException e) {
-//		} catch (CoreException e) {
-//		} catch (URISyntaxException e) {
-//		}
-
     	List<String> orderedNames = new ArrayList<String>(result);
     	Collections.sort(orderedNames);
     	// store/cache for later use
