@@ -8,23 +8,25 @@
 //
 
 
-simple Txc9c
+simple Txc15
 {
     parameters:
         @display("i=block/routing");
     gates:
-        inout gate[];  // declare two way connections
+        inout gate[];
 }
 
-// using two way connections to further simplify the network definition
-network Tictoc9c
+//
+// Same as Tictoc12
+//
+network Tictoc15
 {
     types:
         channel Channel extends ned.DelayChannel {
             delay = 100ms;
         }
     submodules:
-        tic[6]: Txc9c;
+        tic[6]: Txc15;
     connections:
         tic[0].gate++ <--> Channel <--> tic[1].gate++;
         tic[1].gate++ <--> Channel <--> tic[2].gate++;

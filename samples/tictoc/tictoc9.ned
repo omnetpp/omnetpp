@@ -1,4 +1,3 @@
-
 //
 // This file is part of an OMNeT++/OMNEST simulation example.
 //
@@ -9,33 +8,40 @@
 //
 
 
-simple Txc9
+simple Tic8
 {
     parameters:
         @display("i=block/routing");
     gates:
-        input in[];  // declare in[] and out[] to be vector gates
-        output out[];
+        input in;
+        output out;
 }
 
+simple Toc8
+{
+    parameters:
+        @display("i=block/process");
+    gates:
+        input in;
+        output out;
+}
+
+//
+// Same as Tictoc8.
+//
 network Tictoc9
 {
     submodules:
-        tic[6]: Txc9;
+        tic: Tic8 {
+            parameters:
+                @display("i=,cyan");
+        }
+        toc: Toc8 {
+            parameters:
+                @display("i=,gold");
+        }
     connections:
-        tic[0].out++ --> {  delay = 100ms; } --> tic[1].in++;
-        tic[0].in++ <-- {  delay = 100ms; } <-- tic[1].out++;
-
-        tic[1].out++ --> {  delay = 100ms; } --> tic[2].in++;
-        tic[1].in++ <-- {  delay = 100ms; } <-- tic[2].out++;
-
-        tic[1].out++ --> {  delay = 100ms; } --> tic[4].in++;
-        tic[1].in++ <-- {  delay = 100ms; } <-- tic[4].out++;
-
-        tic[3].out++ --> {  delay = 100ms; } --> tic[4].in++;
-        tic[3].in++ <-- {  delay = 100ms; } <-- tic[4].out++;
-
-        tic[4].out++ --> {  delay = 100ms; } --> tic[5].in++;
-        tic[4].in++ <-- {  delay = 100ms; } <-- tic[5].out++;
+        tic.out --> {  delay = 100ms; } --> toc.in;
+        tic.in <-- {  delay = 100ms; } <-- toc.out;
 }
 

@@ -11,24 +11,19 @@
 #include <stdio.h>
 #include <string.h>
 #include <omnetpp.h>
-#include "tictoc11_m.h"
 
 
 /**
- * In this step we keep track of how many messages we send and received,
- * and display it above the icon.
+ * Let's make it more interesting by using several (n) `tic' modules,
+ * and connecting every module to every other. For now, let's keep it
+ * simple what they do: module 0 generates a message, and the others
+ * keep tossing it around in random directions until it arrives at
+ * module 2.
  */
 class Txc11 : public cSimpleModule
 {
-  private:
-    long numSent;
-    long numReceived;
-
   protected:
-    virtual TicTocMsg11 *generateMessage();
-    virtual void forwardMessage(TicTocMsg11 *msg);
-    virtual void updateDisplay();
-
+    virtual void forwardMessage(cMessage *msg);
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 };
@@ -37,87 +32,39 @@ Define_Module(Txc11);
 
 void Txc11::initialize()
 {
-    // Initialize variables
-    numSent = 0;
-    numReceived = 0;
-    WATCH(numSent);
-    WATCH(numReceived);
-
-    // Module 0 sends the first message
     if (getIndex()==0)
     {
         // Boot the process scheduling the initial message as a self-message.
-        TicTocMsg11 *msg = generateMessage();
+        char msgname[20];
+        sprintf(msgname, "tic-%d", getIndex());
+        cMessage *msg = new cMessage(msgname);
         scheduleAt(0.0, msg);
     }
 }
 
 void Txc11::handleMessage(cMessage *msg)
 {
-    TicTocMsg11 *ttmsg = check_and_cast<TicTocMsg11 *>(msg);
-
-    if (ttmsg->getDestination()==getIndex())
+    if (getIndex()==3)
     {
-        // Message arrived
-        int hopcount = ttmsg->getHopCount();
-        EV << "Message " << ttmsg << " arrived after " << hopcount << " hops.\n";
-        numReceived++;
-        delete ttmsg;
-        bubble("ARRIVED, starting new one!");
-
-        // Generate another one.
-        EV << "Generating another message: ";
-        TicTocMsg11 *newmsg = generateMessage();
-        EV << newmsg << endl;
-        forwardMessage(newmsg);
-        numSent++;
-
-        if (ev.isGUI())
-            updateDisplay();
+        // Message arrived.
+        EV << "Message " << msg << " arrived.\n";
+        delete msg;
     }
     else
     {
         // We need to forward the message.
-        forwardMessage(ttmsg);
+        forwardMessage(msg);
     }
 }
 
-TicTocMsg11 *Txc11::generateMessage()
+void Txc11::forwardMessage(cMessage *msg)
 {
-    // Produce source and destination addresses.
-    int src = getIndex();   // our module index
-    int n = size();      // module vector size
-    int dest = intuniform(0,n-2);
-    if (dest>=src) dest++;
-
-    char msgname[20];
-    sprintf(msgname, "tic-%d-to-%d", src, dest);
-
-    // Create message object and set source and destination field.
-    TicTocMsg11 *msg = new TicTocMsg11(msgname);
-    msg->setSource(src);
-    msg->setDestination(dest);
-    return msg;
-}
-
-void Txc11::forwardMessage(TicTocMsg11 *msg)
-{
-    // Increment hop count.
-    msg->setHopCount(msg->getHopCount()+1);
-
-    // Same routing as before: random gate.
-    int n = gateSize("gate");
+    // In this example, we just pick a random gate to send it on.
+    // We draw a random number between 0 and the size of gate `out[]'.
+    int n = gateSize("out");
     int k = intuniform(0,n-1);
 
-    EV << "Forwarding message " << msg << " on gate[" << k << "]\n";
-    send(msg, "gate$o", k);
+    EV << "Forwarding message " << msg << " on port out[" << k << "]\n";
+    send(msg, "out", k);
 }
-
-void Txc11::updateDisplay()
-{
-    char buf[40];
-    sprintf(buf, "rcvd: %ld sent: %ld", numReceived, numSent);
-    getDisplayString().setTagArg("t",0,buf);
-}
-
 

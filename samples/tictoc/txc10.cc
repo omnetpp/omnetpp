@@ -13,31 +13,17 @@
 #include <omnetpp.h>
 
 
-// Include a generated file: the header file created from tictoc10.msg.
-// It contains the definition of the TictocMsg10 class, derived from
-// cMessage.
-#include "tictoc10_m.h"
-
-
 /**
- * In this step the destination address is no longer node 2 -- we draw a
- * random destination, and we'll add the destination address to the message.
- *
- * The best way is to subclass cMessage and add destination as a data member.
- * Hand-coding the message class is usually tiresome because it contains
- * a lot of boilerplate code, so we let OMNeT++ generate the class for us.
- * The message class specification is in tictoc10.msg -- tictoc10_m.h
- * and .cc will be generated from this file automatically.
- *
- * To make the model execute longer, after a message arrives to its destination
- * the destination node will generate another message with a random destination
- * address, and so forth.
+ * Let's make it more interesting by using several (n) `tic' modules,
+ * and connecting every module to every other. For now, let's keep it
+ * simple what they do: module 0 generates a message, and the others
+ * keep tossing it around in random directions until it arrives at
+ * module 2.
  */
 class Txc10 : public cSimpleModule
 {
   protected:
-    virtual TicTocMsg10 *generateMessage();
-    virtual void forwardMessage(TicTocMsg10 *msg);
+    virtual void forwardMessage(cMessage *msg);
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 };
@@ -46,67 +32,39 @@ Define_Module(Txc10);
 
 void Txc10::initialize()
 {
-    // Module 0 sends the first message
     if (getIndex()==0)
     {
         // Boot the process scheduling the initial message as a self-message.
-        TicTocMsg10 *msg = generateMessage();
+        char msgname[20];
+        sprintf(msgname, "tic-%d", getIndex());
+        cMessage *msg = new cMessage(msgname);
         scheduleAt(0.0, msg);
     }
 }
 
 void Txc10::handleMessage(cMessage *msg)
 {
-    TicTocMsg10 *ttmsg = check_and_cast<TicTocMsg10 *>(msg);
-
-    if (ttmsg->getDestination()==getIndex())
+    if (getIndex()==3)
     {
         // Message arrived.
-        EV << "Message " << ttmsg << " arrived after " << ttmsg->getHopCount() << " hops.\n";
-        bubble("ARRIVED, starting new one!");
-        delete ttmsg;
-
-        // Generate another one.
-        EV << "Generating another message: ";
-        TicTocMsg10 *newmsg = generateMessage();
-        EV << newmsg << endl;
-        forwardMessage(newmsg);
+        EV << "Message " << msg << " arrived.\n";
+        delete msg;
     }
     else
     {
         // We need to forward the message.
-        forwardMessage(ttmsg);
+        forwardMessage(msg);
     }
 }
 
-TicTocMsg10 *Txc10::generateMessage()
+void Txc10::forwardMessage(cMessage *msg)
 {
-    // Produce source and destination addresses.
-    int src = getIndex();   // our module index
-    int n = size();      // module vector size
-    int dest = intuniform(0,n-2);
-    if (dest>=src) dest++;
-
-    char msgname[20];
-    sprintf(msgname, "tic-%d-to-%d", src, dest);
-
-    // Create message object and set source and destination field.
-    TicTocMsg10 *msg = new TicTocMsg10(msgname);
-    msg->setSource(src);
-    msg->setDestination(dest);
-    return msg;
-}
-
-void Txc10::forwardMessage(TicTocMsg10 *msg)
-{
-    // Increment hop count.
-    msg->setHopCount(msg->getHopCount()+1);
-
-    // Same routing as before: random gate.
-    int n = gateSize("gate");
+    // In this example, we just pick a random gate to send it on.
+    // We draw a random number between 0 and the size of gate `out[]'.
+    int n = gateSize("out");
     int k = intuniform(0,n-1);
 
-    EV << "Forwarding message " << msg << " on gate[" << k << "]\n";
-    send(msg, "gate$o", k);
+    EV << "Forwarding message " << msg << " on port out[" << k << "]\n";
+    send(msg, "out", k);
 }
 

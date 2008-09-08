@@ -13,126 +13,102 @@
 
 
 /**
- * In the previous model we just created another packet if we needed to
- * retransmit. This is OK because the packet didn't contain much, but
- * in real life it's usually more practical to keep a copy of the original
- * packet so that we can re-send it without the need to build it again.
+ * Let us take a step back, and remove random delaying from the code.
+ * We'll leave in, however, losing the packet with a small probability.
+ * And, we'll we do something very common in telecommunication networks:
+ * if the packet doesn't arrive within a certain period, we'll assume it
+ * was lost and create another one. The timeout will be handled using
+ * (what else?) a self-message.
  */
-class Tic8 : public cSimpleModule
+class Tic7 : public cSimpleModule
 {
   private:
     simtime_t timeout;  // timeout
     cMessage *timeoutEvent;  // holds pointer to the timeout self-message
-    int seq;  // message sequence number
-    cMessage *message;  // message that has to be re-sent on timeout
 
   public:
-    Tic8();
-    virtual ~Tic8();
+    Tic7();
+    virtual ~Tic7();
 
   protected:
-    virtual cMessage *generateNewMessage();
-    virtual void sendCopyOf(cMessage *msg);
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 };
 
-Define_Module(Tic8);
+Define_Module(Tic7);
 
-Tic8::Tic8()
+Tic7::Tic7()
 {
-    timeoutEvent = message = NULL;
+    timeoutEvent = NULL;
 }
 
-Tic8::~Tic8()
+Tic7::~Tic7()
 {
     cancelAndDelete(timeoutEvent);
-    delete message;
 }
 
-void Tic8::initialize()
+void Tic7::initialize()
 {
     // Initialize variables.
-    seq = 0;
     timeout = 1.0;
     timeoutEvent = new cMessage("timeoutEvent");
 
     // Generate and send initial message.
     EV << "Sending initial message\n";
-    message = generateNewMessage();
-    sendCopyOf(message);
+    cMessage *msg = new cMessage("tictocMsg");
+    send(msg, "out");
     scheduleAt(simTime()+timeout, timeoutEvent);
 }
 
-void Tic8::handleMessage(cMessage *msg)
+void Tic7::handleMessage(cMessage *msg)
 {
     if (msg==timeoutEvent)
     {
         // If we receive the timeout event, that means the packet hasn't
         // arrived in time and we have to re-send it.
         EV << "Timeout expired, resending message and restarting timer\n";
-        sendCopyOf(message);
+        cMessage *msg = new cMessage("tictocMsg");
+        send(msg, "out");
         scheduleAt(simTime()+timeout, timeoutEvent);
     }
     else // message arrived
     {
-        // Acknowledgement received!
-        EV << "Received: " << msg->getName() << "\n";
-        delete msg;
-
-        // Also delete the stored message and cancel the timeout event.
+        // Acknowledgement received -- delete the stored message and cancel
+        // the timeout event.
         EV << "Timer cancelled.\n";
         cancelEvent(timeoutEvent);
-        delete message;
 
         // Ready to send another one.
-        message = generateNewMessage();
-        sendCopyOf(message);
+        cMessage *msg = new cMessage("tictocMsg");
+        send(msg, "out");
         scheduleAt(simTime()+timeout, timeoutEvent);
     }
-}
-
-cMessage *Tic8::generateNewMessage()
-{
-    // Generate a message with a different name every time.
-    char msgname[20];
-    sprintf(msgname, "tic-%d", ++seq);
-    cMessage *msg = new cMessage(msgname);
-    return msg;
-}
-
-void Tic8::sendCopyOf(cMessage *msg)
-{
-    // Duplicate message and send the copy.
-    cMessage *copy = (cMessage *) msg->dup();
-    send(copy, "out");
 }
 
 
 /**
  * Sends back an acknowledgement -- or not.
  */
-class Toc8 : public cSimpleModule
+class Toc7 : public cSimpleModule
 {
   protected:
     virtual void handleMessage(cMessage *msg);
 };
 
-Define_Module(Toc8);
+Define_Module(Toc7);
 
-void Toc8::handleMessage(cMessage *msg)
+void Toc7::handleMessage(cMessage *msg)
 {
     if (uniform(0,1) < 0.1)
     {
-        EV << "\"Losing\" message " << msg << endl;
-        bubble("message lost");
+        EV << "\"Losing\" message.\n";
+        bubble("message lost");  // making animation more informative...
         delete msg;
     }
     else
     {
-        EV << msg << " received, sending back an acknowledgement.\n";
-        delete msg;
-        send(new cMessage("ack"), "out");
+        EV << "Sending back same message as acknowledgement.\n";
+        send(msg, "out");
     }
 }
 

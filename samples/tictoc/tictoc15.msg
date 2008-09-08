@@ -12,7 +12,7 @@
 //
 // Same as TictocMsg11
 //
-message TicTocMsg12
+message TicTocMsg15
 {
     int source;
     int destination;

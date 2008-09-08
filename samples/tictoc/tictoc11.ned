@@ -13,11 +13,14 @@ simple Txc11
     parameters:
         @display("i=block/routing");
     gates:
-        inout gate[];
+        input in[];  // declare in[] and out[] to be vector gates
+        output out[];
 }
 
+
 //
-// Same as Tictoc9c
+// Using local channel type definition to reduce the redundancy
+// of connection definitions.
 //
 network Tictoc11
 {
@@ -28,10 +31,19 @@ network Tictoc11
     submodules:
         tic[6]: Txc11;
     connections:
-        tic[0].gate++ <--> Channel <--> tic[1].gate++;
-        tic[1].gate++ <--> Channel <--> tic[2].gate++;
-        tic[1].gate++ <--> Channel <--> tic[4].gate++;
-        tic[3].gate++ <--> Channel <--> tic[4].gate++;
-        tic[4].gate++ <--> Channel <--> tic[5].gate++;
+        tic[0].out++ --> Channel --> tic[1].in++;
+        tic[0].in++ <-- Channel <-- tic[1].out++;
+
+        tic[1].out++ --> Channel --> tic[2].in++;
+        tic[1].in++ <-- Channel <-- tic[2].out++;
+
+        tic[1].out++ --> Channel --> tic[4].in++;
+        tic[1].in++ <-- Channel <-- tic[4].out++;
+
+        tic[3].out++ --> Channel --> tic[4].in++;
+        tic[3].in++ <-- Channel <-- tic[4].out++;
+
+        tic[4].out++ --> Channel --> tic[5].in++;
+        tic[4].in++ <-- Channel <-- tic[5].out++;
 }
 

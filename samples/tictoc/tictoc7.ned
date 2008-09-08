@@ -8,19 +8,11 @@
 //
 
 
-simple Tic7
+simple Txc7
 {
     parameters:
+        volatile double delayTime @unit(s);   // delay before sending back message
         @display("i=block/routing");
-    gates:
-        input in;
-        output out;
-}
-
-simple Toc7
-{
-    parameters:
-        @display("i=block/process");
     gates:
         input in;
         output out;
@@ -29,11 +21,11 @@ simple Toc7
 network Tictoc7
 {
     submodules:
-        tic: Tic7 {
+        tic: Txc7 {
             parameters:
                 @display("i=,cyan");
         }
-        toc: Toc7 {
+        toc: Txc7 {
             parameters:
                 @display("i=,gold");
         }

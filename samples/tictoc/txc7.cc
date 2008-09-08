@@ -13,103 +13,78 @@
 
 
 /**
- * Let us take a step back, and remove random delaying from the code.
- * We'll leave in, however, losing the packet with a small probability.
- * And, we'll we do something very common in telecommunication networks:
- * if the packet doesn't arrive within a certain period, we'll assume it
- * was lost and create another one. The timeout will be handled using
- * (what else?) a self-message.
+ * In this step we'll introduce random numbers. We change the delay from 1s
+ * to a random value which can be set from the NED file or from omnetpp.ini.
+ * In addition, we'll "lose" (delete) the packet with a small probability.
  */
-class Tic7 : public cSimpleModule
+class Txc7 : public cSimpleModule
 {
   private:
-    simtime_t timeout;  // timeout
-    cMessage *timeoutEvent;  // holds pointer to the timeout self-message
+    cMessage *event;
+    cMessage *tictocMsg;
 
   public:
-    Tic7();
-    virtual ~Tic7();
+    Txc7();
+    virtual ~Txc7();
 
   protected:
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 };
 
-Define_Module(Tic7);
+Define_Module(Txc7);
 
-Tic7::Tic7()
+Txc7::Txc7()
 {
-    timeoutEvent = NULL;
+    event = tictocMsg = NULL;
 }
 
-Tic7::~Tic7()
+Txc7::~Txc7()
 {
-    cancelAndDelete(timeoutEvent);
+    cancelAndDelete(event);
+    delete tictocMsg;
 }
 
-void Tic7::initialize()
+void Txc7::initialize()
 {
-    // Initialize variables.
-    timeout = 1.0;
-    timeoutEvent = new cMessage("timeoutEvent");
+    event = new cMessage("event");
+    tictocMsg = NULL;
 
-    // Generate and send initial message.
-    EV << "Sending initial message\n";
-    cMessage *msg = new cMessage("tictocMsg");
-    send(msg, "out");
-    scheduleAt(simTime()+timeout, timeoutEvent);
-}
-
-void Tic7::handleMessage(cMessage *msg)
-{
-    if (msg==timeoutEvent)
+    if (strcmp("tic", getName()) == 0)
     {
-        // If we receive the timeout event, that means the packet hasn't
-        // arrived in time and we have to re-send it.
-        EV << "Timeout expired, resending message and restarting timer\n";
-        cMessage *msg = new cMessage("tictocMsg");
-        send(msg, "out");
-        scheduleAt(simTime()+timeout, timeoutEvent);
-    }
-    else // message arrived
-    {
-        // Acknowledgement received -- delete the stored message and cancel
-        // the timeout event.
-        EV << "Timer cancelled.\n";
-        cancelEvent(timeoutEvent);
-
-        // Ready to send another one.
-        cMessage *msg = new cMessage("tictocMsg");
-        send(msg, "out");
-        scheduleAt(simTime()+timeout, timeoutEvent);
+        EV << "Scheduling first send to t=5.0s\n";
+        scheduleAt(5.0, event);
+        tictocMsg = new cMessage("tictocMsg");
     }
 }
 
-
-/**
- * Sends back an acknowledgement -- or not.
- */
-class Toc7 : public cSimpleModule
+void Txc7::handleMessage(cMessage *msg)
 {
-  protected:
-    virtual void handleMessage(cMessage *msg);
-};
-
-Define_Module(Toc7);
-
-void Toc7::handleMessage(cMessage *msg)
-{
-    if (uniform(0,1) < 0.1)
+    if (msg==event)
     {
-        EV << "\"Losing\" message.\n";
-        bubble("message lost");  // making animation more informative...
-        delete msg;
+        EV << "Wait period is over, sending back message\n";
+        send(tictocMsg, "out");
+        tictocMsg = NULL;
     }
     else
     {
-        EV << "Sending back same message as acknowledgement.\n";
-        send(msg, "out");
+        // "Lose" the message with 0.1 probability:
+        if (uniform(0,1) < 0.1)
+        {
+            EV << "\"Losing\" message\n";
+            delete msg;
+        }
+        else
+        {
+            // The "delayTime" module parameter can be set to values like
+            // "exponential(5)" (tictoc7.ned, omnetpp.ini), and then here
+            // we'll get a different delay every time.
+            simtime_t delay = par("delayTime");
+
+            EV << "Message arrived, starting to wait " << delay << " secs...\n";
+            tictocMsg = msg;
+            scheduleAt(simTime()+delay, event);
+        }
     }
 }
-
 

@@ -8,7 +8,7 @@
 // `license' for details on this and other legal matters.
 //
 
-message TicTocMsg10
+message TicTocMsg13
 {
     int source;
     int destination;

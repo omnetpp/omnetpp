@@ -13,26 +13,12 @@
 
 
 /**
- * In the previous models, `tic' and `toc' immediately sent back the
- * received message. Here we'll add some timing: tic and toc will hold the
- * message for 1 simulated second before sending it back. In OMNeT++
- * such timing is achieved by the module sending a message to itself.
- * Such messages are called self-messages (but only because of the way they
- * are used, otherwise they are completely ordinary messages) or events.
- * Self-messages can be "sent" with the scheduleAt() function, and you can
- * specify when they should arrive back at the module.
- *
- * We leave out the counter, to keep the source code small.
+ * Same as Txc4.
  */
 class Txc5 : public cSimpleModule
 {
   private:
-    cMessage *event; // pointer to the event object which we'll use for timing
-    cMessage *tictocMsg; // variable to remember the message until we send it back
-
-  public:
-    Txc5();
-    virtual ~Txc5();
+    int counter;
 
   protected:
     virtual void initialize();
@@ -41,64 +27,34 @@ class Txc5 : public cSimpleModule
 
 Define_Module(Txc5);
 
-Txc5::Txc5()
-{
-    // Set the pointer to NULL, so that the destructor won't crash
-    // even if initialize() doesn't get called because of a runtime
-    // error or user cancellation during the startup process.
-    event = tictocMsg = NULL;
-}
-
-Txc5::~Txc5()
-{
-    // Dispose of dynamically allocated the objects
-    cancelAndDelete(event);
-    delete tictocMsg;
-}
-
 void Txc5::initialize()
 {
-    // Create the event object we'll use for timing -- just any ordinary message.
-    event = new cMessage("event");
+    // Initialize the counter with the "limit" module parameter, declared
+    // in the NED file (tictoc4.ned).
+    counter = par("limit");
 
-    // No tictoc message yet.
-    tictocMsg = NULL;
-
-    if (strcmp("tic", getName()) == 0)
+    // we no longer depend on the name of the module to decide
+    // whether to send an initial message
+    if (par("sendMsgOnInit").boolValue() == true)
     {
-        // We don't start right away, but instead send an message to ourselves
-        // (a "self-message") -- we'll do the first sending when it arrives
-        // back to us, at t=5.0s simulated time.
-        EV << "Scheduling first send to t=5.0s\n";
-        tictocMsg = new cMessage("tictocMsg");
-        scheduleAt(5.0, event);
+        EV << "Sending initial message\n";
+        cMessage *msg = new cMessage("tictocMsg");
+        send(msg, "out");
     }
 }
 
 void Txc5::handleMessage(cMessage *msg)
 {
-    // There are several ways of distinguishing messages, for example by message
-    // kind (an int attribute of cMessage) or by class using dynamic_cast
-    // (provided you subclass from cMessage). In this code we just check if we
-    // recognize the pointer, which (if feasible) is the easiest and fastest
-    // method.
-    if (msg==event)
+    counter--;
+    if (counter==0)
     {
-        // The self-message arrived, so we can send out tictocMsg and NULL out
-        // its pointer so that it doesn't confuse us later.
-        EV << "Wait period is over, sending back message\n";
-        send(tictocMsg, "out");
-        tictocMsg = NULL;
+        EV << getName() << "'s counter reached zero, deleting message\n";
+        delete msg;
     }
     else
     {
-        // If the message we received is not our self-message, then it must
-        // be the tic-toc message arriving from our partner. We remember its
-        // pointer in the tictocMsg variable, then schedule our self-message
-        // to come back to us in 1s simulated time.
-        EV << "Message arrived, starting to wait 1 sec...\n";
-        tictocMsg = msg;
-        scheduleAt(simTime()+1.0, event);
+        EV << getName() << "'s counter is " << counter << ", sending back message\n";
+        send(msg, "out");
     }
 }
 
