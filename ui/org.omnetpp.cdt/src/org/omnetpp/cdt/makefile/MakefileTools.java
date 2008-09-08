@@ -194,7 +194,10 @@ public class MakefileTools {
     	return false;
     }
     
-    public static List<IPath> getOmnetppIncludeDirsForProject(IProject project) throws CoreException {
+    /**
+     * Returns locations paths.
+     */
+    public static List<IPath> getOmnetppIncludeLocationsForProject(IProject project) throws CoreException {
         List<IPath> result = new ArrayList<IPath>();
 
         // add the omnetpp include directory
@@ -202,7 +205,7 @@ public class MakefileTools {
 
         // add project source directories as include dirs for the indexer
         for (IContainer incDir : MakefileTools.collectDirs(project, ".*\\.(h|msg)")) 
-            result.add(incDir.getFullPath());
+            result.add(incDir.getLocation());
         return result;
     }
 

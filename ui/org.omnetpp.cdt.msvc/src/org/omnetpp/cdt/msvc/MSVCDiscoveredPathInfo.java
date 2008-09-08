@@ -40,7 +40,7 @@ public class MSVCDiscoveredPathInfo implements IDiscoveredPathInfo {
 				
 	    // add include dirs needed for OMNeT++
         try {
-            paths.addAll(MakefileTools.getOmnetppIncludeDirsForProject(project));
+            paths.addAll(MakefileTools.getOmnetppIncludeLocationsForProject(project));
         }
         catch (CoreException e) {
             Activator.logError(e);

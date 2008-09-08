@@ -27,7 +27,7 @@ public class OmnetppGCCScannerInfoCollector extends PerProjectSICollector
 		// add include dirs needed for OMNeT++
 		LinkedHashMap includeMap = pathInfoObject.getIncludeMap();
 		try {
-            for (IPath path : MakefileTools.getOmnetppIncludeDirsForProject(getContext().getProject()))
+            for (IPath path : MakefileTools.getOmnetppIncludeLocationsForProject(getContext().getProject()))
                 includeMap.put(path.toOSString(), false);
             pathInfoObject.setIncludeMap(includeMap);
         }
