@@ -10,8 +10,8 @@
 simple StressSource
 {
     parameters:
-        volatile double serviceTime;
-        volatile double messageLength;
+        volatile double serviceTime @unit(s);
+        volatile double messageLength @unit(byte);
         @display("i=block/source");
     gates:
         input directIn;
@@ -32,8 +32,8 @@ simple StressNode
 simple StressDirect
 {
     parameters:
-        volatile double propagationDelay;
-        volatile double transmissionDelay;
+        volatile double propagationDelay @unit(s);
+        volatile double transmissionDelay @unit(s);
         @display("i=block/rightarrow");
     gates:
         input directIn;
@@ -45,7 +45,7 @@ simple StressCapsulate
     parameters:
         double encapsulateProbability;
         double decapsulateProbability;
-        volatile double messageLength;
+        volatile double messageLength @unit(byte);
         @display("i=block/socket");
     gates:
         input directIn;
@@ -83,11 +83,9 @@ simple StressSink
         input in[];
 }
 
-channel StressChannel
+channel StressChannel extends ned.DatarateChannel
 {
-    parameters:
-        volatile double delay;
-        volatile double dataRate;
+    @class(StressChannel);
 }
 
 module StressLossy
@@ -110,12 +108,12 @@ module StressLossy
         node1.out++ --> StressChannel --> sink.in++;
         node1.out++ --> StressChannel --> node2.in++;
         for i=1..sizeof(out) {
-            node2.out++ --> StressChannel --> out++;
+            node2.out++ --> out++;
         };
         for i=1..sizeof(in) {
-            in++ --> StressChannel --> node1.in++;
+            in++ --> node1.in++;
         };
-        directIn --> StressChannel --> node1.in++;
+        directIn --> node1.in++;
 }
 
 network SimpleStress

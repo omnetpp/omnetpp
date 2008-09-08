@@ -11,7 +11,7 @@
 //
 // Represents a packet in the network.
 //
-message StressPacket
+packet StressPacket
 {
    fields:
       int remainingHops;

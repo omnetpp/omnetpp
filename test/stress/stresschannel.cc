@@ -15,29 +15,15 @@ Register_Class(StressChannel);
 
 StressChannel::StressChannel()
 {
-	transmittingUntil = 0;
 }
 
-bool StressChannel::deliver(cMessage *msg, simtime_t t)
+bool StressChannel::deliver(cMessage *msg, simtime_t at)
 {
     // drop if ongoing transmission
-	if (transmittingUntil > t) {
+	if (getTransmissionFinishTime() > at) {
 		ev << "Deleting message in channel due to ongoing transmission: " << msg << "\n";;
 		return false;
 	}
-
-    // datarate modeling
-    simtime_t transmissionDelay = msg->getBitLength() / par("dataRate").doubleValue();
-    t += transmissionDelay;
-	transmittingUntil = t;
-
-    // propagation delay modeling
-    simtime_t delay = par("delay").doubleValue();
-    t += delay;
-
-	// TODO: this should be factored out to base class
-    EVCB.messageSendHop(msg, getFromGate(), delay, transmissionDelay);
-
-    // hand over msg to next gate
-    return getFromGate()->getToGate()->deliver(msg, t);
+    else
+        return cDatarateChannel::deliver(msg, at);
 }

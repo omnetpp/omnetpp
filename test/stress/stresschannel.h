@@ -12,17 +12,13 @@
 
 #include <omnetpp.h>
 
-class StressChannel : public cChannel
+class StressChannel : public cDatarateChannel
 {
-	protected:
-		simtime_t transmittingUntil;
-
 	public:
 		StressChannel();
 
     protected:
-	    virtual simtime_t getTransmissionFinishTime() const { return transmittingUntil; }
-    	virtual bool deliver(cMessage *msg, simtime_t t);
+        virtual bool deliver(cMessage *msg, simtime_t at);
 };
 
 #endif
