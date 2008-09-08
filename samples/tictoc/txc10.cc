@@ -103,10 +103,10 @@ void Txc10::forwardMessage(TicTocMsg10 *msg)
     msg->setHopCount(msg->getHopCount()+1);
 
     // Same routing as before: random gate.
-    int n = gateSize("out");
+    int n = gateSize("gate");
     int k = intuniform(0,n-1);
 
-    EV << "Forwarding message " << msg << " on port out[" << k << "]\n";
-    send(msg, "out", k);
+    EV << "Forwarding message " << msg << " on gate[" << k << "]\n";
+    send(msg, "gate$o", k);
 }
 

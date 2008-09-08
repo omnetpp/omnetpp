@@ -10,9 +10,9 @@
 
 simple Txc4
 {
-    parameters:
-        int limit;  // declare the new parameter
-        @display("i=block/process");
+    parameters: 
+        int limit = default(2);  // declare the new parameter and provide a default value
+        @display("i=block/routing");
     gates:
         input in;
         output out;

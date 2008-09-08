@@ -11,7 +11,7 @@
 simple Txc9
 {
     parameters:
-        @display("i=block/process");
+        @display("i=block/routing");
     gates:
         input in[];  // declare in[] and out[] to be vector gates
         output out[];
@@ -36,5 +36,32 @@ network Tictoc9
 
         tic[4].out++ --> {  delay = 100ms; } --> tic[5].in++;
         tic[4].in++ <-- {  delay = 100ms; } <-- tic[5].out++;
+}
+
+// Using local channel type definition to reduce the redundancy
+// during connection definition
+network Tictoc9b
+{
+    types:
+        channel chn extends ned.DelayChannel {
+            delay = 100ms;
+        }
+    submodules:
+        tic[6]: Txc9;
+    connections:
+        tic[0].out++ --> chn --> tic[1].in++;
+        tic[0].in++ <-- chn <-- tic[1].out++;
+
+        tic[1].out++ --> chn --> tic[2].in++;
+        tic[1].in++ <-- chn <-- tic[2].out++;
+
+        tic[1].out++ --> chn --> tic[4].in++;
+        tic[1].in++ <-- chn <-- tic[4].out++;
+
+        tic[3].out++ --> chn --> tic[4].in++;
+        tic[3].in++ <-- chn <-- tic[4].out++;
+
+        tic[4].out++ --> chn --> tic[5].in++;
+        tic[4].in++ <-- chn <-- tic[5].out++;
 }
 

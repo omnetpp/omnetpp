@@ -11,7 +11,7 @@
 simple Txc5
 {
     parameters:
-        @display("i=block/process");
+        @display("i=block/routing");
     gates:
         input in;
         output out;

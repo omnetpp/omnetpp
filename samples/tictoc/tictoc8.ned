@@ -11,7 +11,7 @@
 simple Tic8
 {
     parameters:
-        @display("i=block/process");
+        @display("i=block/routing");
     gates:
         input in;
         output out;
@@ -20,7 +20,7 @@ simple Tic8
 simple Toc8
 {
     parameters:
-        @display("i=block/process");
+        @display("i=block/routing");
     gates:
         input in;
         output out;

@@ -12,7 +12,7 @@ simple Txc6
 {
     parameters:
         volatile double delayTime @unit(s);   // delay before sending back message
-        @display("i=block/process");
+        @display("i=block/routing");
     gates:
         input in;
         output out;

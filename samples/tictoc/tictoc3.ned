@@ -11,7 +11,7 @@
 simple Txc3
 {
     parameters:
-        @display("i=block/process");  // make block/process the default icon
+        @display("i=block/routing");  // make block/routing the default icon
     gates:
         input in;
         output out;
