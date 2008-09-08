@@ -22,7 +22,7 @@ public class EventLogFileTestCase
     
     protected void createFileWithOneEvent() throws Exception {
         createFileWithContent(
-                "MC id 1 c cModule n module\r\n" + 
+                "MC id 1 c cModule n module t Test\r\n" + 
         		"BS id 1 tid 1 c cMessage n start\r\n" + 
         		"ES t 0\r\n" + 
         		"\r\n" + 
@@ -31,7 +31,7 @@ public class EventLogFileTestCase
 
     protected void createFileWithTwoEvents() throws Exception {
         createFileWithContent(
-                "MC id 1 c cModule n module\r\n" + 
+                "MC id 1 c cModule n module t Test\r\n" + 
         		"BS id 1 tid 1 c cMessage n start\r\n" + 
         		"ES t 0\r\n" + 
         		"\r\n" + 
@@ -56,10 +56,16 @@ public class EventLogFileTestCase
     }
 
     protected void openFileFromProjectExplorerViewInEventLogTableEditor() {
-        WorkbenchUtils.findInProjectExplorerView(filePath).reveal().activateContextMenuWithMouseClick().activateMenuItemWithMouse(".*Open With.*").activateMenuItemWithMouse(".*Event Log Table.*");
+        WorkbenchUtils.findInProjectExplorerView(filePath).reveal().
+        activateContextMenuWithMouseClick().
+        activateMenuItemWithMouse(".*Open With.*").
+        activateMenuItemWithMouse(".*Event Log Table.*");
     }
 
     protected void openFileFromProjectExplorerViewInSequenceChartEditor() {
-        WorkbenchUtils.findInProjectExplorerView(filePath).reveal().activateContextMenuWithMouseClick().activateMenuItemWithMouse(".*Open With.*").activateMenuItemWithMouse(".*Sequence Chart.*");
+        WorkbenchUtils.findInProjectExplorerView(filePath).reveal().
+        activateContextMenuWithMouseClick().
+        activateMenuItemWithMouse(".*Open With.*").
+        activateMenuItemWithMouse(".*Sequence Chart.*");
     }
 }

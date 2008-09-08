@@ -21,6 +21,7 @@ public class ClickableAccess
     public static int delayBeforeMouseMove = 300;
     public static int delayAfterMouseMove = 300;
     public static int mouseMoveDurationMillis = 500;
+    public static int mouseClickDurationMillis = 5;
     public static int mouseMoveMaxSteps = 30;
 
     // mouse trajectory: two functions fx(t),fy(t) needed, f(0)=0 and f(1)=1 for both, 0<=t<1
@@ -131,5 +132,13 @@ public class ClickableAccess
 
     public static void setMouseMoveDurationMillis(int mouseMoveDurationMillis) {
         ClickableAccess.mouseMoveDurationMillis = mouseMoveDurationMillis;
+    }
+
+    public static int getMouseClickDurationMillis() {
+        return mouseClickDurationMillis;
+    }
+
+    public static void setMouseClickDurationMillis(int mouseClickDurationMillis) {
+        ClickableAccess.mouseClickDurationMillis = mouseClickDurationMillis;
     }
 }

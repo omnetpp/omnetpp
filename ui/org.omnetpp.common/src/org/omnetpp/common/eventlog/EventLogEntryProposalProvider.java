@@ -105,7 +105,7 @@ public class EventLogEntryProposalProvider extends MatchExpressionContentProposa
         if (parent != null) {
             int type = parent.getType();
             String prefix;
-            int startIndex, endIndex, decorators;
+            int startIndex, endIndex;
             boolean atEnd = token.getEndPos() <= position;
             
             // content: incomplete unary operator

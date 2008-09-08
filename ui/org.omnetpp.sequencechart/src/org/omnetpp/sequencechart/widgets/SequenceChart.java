@@ -116,7 +116,7 @@ public class SequenceChart
 {
 	private static final boolean debug = false;
 
-	private static final String STATE_PROPERTY = "SequenceChartState";
+	public static final String STATE_PROPERTY = "SequenceChartState";
 
 	/*************************************************************************************
 	 * DRAWING PARAMETERS
@@ -428,7 +428,7 @@ public class SequenceChart
 			}
 		});
 	}
-
+	
     /**
 	 * See setFollowSelection().
 	 */

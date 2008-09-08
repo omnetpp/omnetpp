@@ -94,7 +94,7 @@ public class OmnetppStartup implements IStartup {
 			    			try {
 			    				IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 			    				IWorkbenchPage workbenchPage = activeWorkbenchWindow == null ? null : activeWorkbenchWindow.getActivePage();
-			    				if (workbenchPage != null) {
+			    				if (workbenchPage != null && System.getProperty("com.simulcraft.test.running") == null) {
 			    					NewsView newsView = (NewsView)workbenchPage.showView(IConstants.NEWS_VIEW_ID);
 		    						newsView.setURL(VERSIONS_URL+getUrlParams());
 			    				}

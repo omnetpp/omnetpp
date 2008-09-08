@@ -81,6 +81,13 @@ public abstract class GUITestCase
         ClickableAccess.mouseMoveDurationMillis = delay;
     }
     
+    /**
+     * How long does it take to click with the mouse
+     */
+    public static void setMouseClickDuration(int delay) {
+        ClickableAccess.mouseClickDurationMillis = delay;
+    }
+    
     public static void setMouseClickAnimation(boolean animate) {
         MouseClickAnimator.mouseClickAnimation = animate;
     }

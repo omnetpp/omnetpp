@@ -43,7 +43,7 @@ public class EventLogTable
 {
 	private static final boolean debug = true;
 
-	private static final String STATE_PROPERTY = "EventLogTableState";
+	public static final String STATE_PROPERTY = "EventLogTableState";
 	
 	private boolean paintHasBeenFinished = false;
 	

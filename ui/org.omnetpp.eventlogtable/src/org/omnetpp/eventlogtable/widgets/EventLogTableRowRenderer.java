@@ -340,11 +340,17 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
                                 else
                                     drawText(" arriving at ", CONSTANT_TEXT_COLOR);
                                 
-                                drawMessageArrivalTime(contextEvent.getEndSendEntry(beginSendEntry));
-								drawText(" kind = ", CONSTANT_TEXT_COLOR);
-								drawText(String.valueOf(beginSendEntry.getMessageKind()), DATA_COLOR);
-								drawText(" length = ", CONSTANT_TEXT_COLOR);
-								drawText(String.valueOf(beginSendEntry.getMessageLength()), DATA_COLOR);
+                                EndSendEntry endSendEntry = contextEvent.getEndSendEntry(beginSendEntry);
+                                
+                                if (endSendEntry == null)
+                                    drawText("<unknown>", DATA_COLOR);
+                                else
+                                    drawMessageArrivalTime(endSendEntry);
+
+                                drawText(" kind = ", CONSTANT_TEXT_COLOR);
+                                drawText(String.valueOf(beginSendEntry.getMessageKind()), DATA_COLOR);
+                                drawText(" length = ", CONSTANT_TEXT_COLOR);
+                                drawText(String.valueOf(beginSendEntry.getMessageLength()), DATA_COLOR);
 							}
 							else if (eventLogEntry instanceof EndSendEntry) {
 								EndSendEntry endSendEntry = (EndSendEntry)eventLogEntry;

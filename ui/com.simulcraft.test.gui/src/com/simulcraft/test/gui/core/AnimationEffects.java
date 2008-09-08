@@ -140,7 +140,7 @@ public class AnimationEffects  {
         gc.setXORMode(true); // won't work on Mac
         for (int r = 2; r < 25; r++) {
             gc.drawOval(x-r, y-r, 2*r, 2*r);
-            try { Thread.sleep(Access.rescaleTime(5)); } catch (InterruptedException e) { break; }
+            try { Thread.sleep(Access.rescaleTime(ClickableAccess.getMouseClickDurationMillis())); } catch (InterruptedException e) { break; }
             gc.drawOval(x-r, y-r, 2*r, 2*r);
         }
     }
