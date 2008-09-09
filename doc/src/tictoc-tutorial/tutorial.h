@@ -344,6 +344,43 @@ Sources: @ref tictoc4.ned, @ref txc4.cc, @ref omnetpp.ini
 
 @section s5 Step 5: Using inheritance
 
+If we take a closer look at the NED file we will realize that <tt>tic</tt>
+and <tt>toc</tt> differs only in their parameter values and their display string.
+We can create a new simple module type by inheriting from an other one and specifying
+or overriding some of its parameters. In our case we will derive two simple
+module types (<tt>Tic</tt> and <tt>Toc</tt>). Later we can use these types when defining
+the submodules in the network.
+
+Deriving from an existing simple module is easy. Here is the base module:
+
+@dontinclude tictoc5.ned
+@skip simple Txc5
+@until }
+
+And here is the derived module. We just simply specify the parameter values and add some
+display properties.
+
+@dontinclude tictoc5.ned
+@skip simple Tic5
+@until }
+
+The <tt>Toc</tt> module looks similar, but with different parameter values.
+@dontinclude tictoc5.ned
+@skip simple Toc5
+@until }
+
+@note The C++ implementation is inherited from the base simple module (<tt>Txc4</tt>).
+
+Once we created the new simple modules, we can use them as submodule types in our network:
+
+@dontinclude tictoc5.ned
+@skip network
+@until connections
+
+As you can see, the network definition is much shorter and simpler now.
+Inheritance allows you to use common types in your network and avoid
+redundant definitions and parameter settings.
+
 @section s6 Step 6: Modeling processing delay
 
 In the previous models, tic and toc immediately sent back the
@@ -578,9 +615,65 @@ Sources: @ref tictoc10.ned, @ref txc10.cc, @ref omnetpp.ini
 
 @section s11 Step 11: Channels and inner type definitions
 
+Our new network definition is getting quite complex and long, especially
+the connections section. Let's try to simplify it. The first thing we
+notice is that the connections always use the same <tt>delay</tt> parameter.
+It is possible to create types for the connections (they are called channels)
+similarly to simple modules. We should create a channel type which specifies the
+delay parameter and we will use that type for all connections in the network.
+
+@dontinclude tictoc11.ned
+@skip network
+@until submodules
+
+As you have noticed we have defined the new channel type inside the network definition
+by adding a <tt>types</tt> section. This type definition is only visible inside the
+network. It is called as a local or inner type. You can use simple modules as inner types
+too, if you wish.
+
+@note We have created the channel by specializing the built-in DelayChannel.
+(built-in channels can be found inside the <tt>ned</tt> package. Thats why we used
+the full type name <tt>ned.DelayChannel</tt>) after the <tt>extends</tt> keyword.
+
+Now let's check how the <tt>connections</tt> section changed.
+
+@dontinclude tictoc11.ned
+@skip connections
+@until }
+
+As you see we just specify the channel name inside the connection definition.
+This allows to easily change the delay parameter for the whole network.
+
 Sources: @ref tictoc11.ned, @ref txc11.cc, @ref omnetpp.ini
 
-@section s12 Step 12: Using two way connections
+@section s12 Step 12: Using two-way connections
+
+If we check the <tt>connections</tt> section a little more, we will realize that
+each node pair is connected with two connections. One for each direction.
+OMNeT++ 4 supports two way connections, so let's use them.
+
+First of all, we have to define two-way (or so called <tt>inout</tt>) gates instead of the
+separate <tt>input</tt> and <tt>output</tt> gates we used previously.
+
+@dontinclude tictoc12.ned
+@skip simple
+@until }
+
+The new <tt>connections</tt> section would look like this:
+
+@dontinclude tictoc12.ned
+@skip connections:
+@until }
+
+We have modified the gate names so we have to make some modifications to the
+C++ code.
+
+@dontinclude txc12.cc
+@skip Txc12::forwardMessage
+@until }
+
+@note The special $i and $o suffix after the gate name allows us to use the
+connection's two direction separately.
 
 Sources: @ref tictoc12.ned, @ref txc12.cc, @ref omnetpp.ini
 
