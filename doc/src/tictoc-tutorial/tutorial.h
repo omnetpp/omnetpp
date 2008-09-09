@@ -198,7 +198,7 @@ PREV: @ref part1 UP: @ref contents
 @section s2 Step 2: Refining the graphics, and adding debugging output
 
 Here we make the model look a bit prettier in the GUI. We assign
-the "block/process" icon (the file <tt>bitmaps/block/process.gif</tt>), and paint it cyan for tic
+the "block/routing" icon (the file <tt>images/block/routing.png</tt>), and paint it cyan for tic
 and yellow for toc. This is achieved by adding display strings to the
 NED file. The <tt>i=</tt> tag in the display string specifies the icon.
 
@@ -211,7 +211,7 @@ You can see the result here:
 <img src="step2a.gif">
 
 We also modify the C++ file to add some debug messages to Txc1 by
-writing to the @opp <tt>ev</tt> object like this:
+writing to the @opp <tt>EV</tt> object like this:
 
 @dontinclude txc2.cc
 @skipline EV <<
@@ -270,7 +270,9 @@ Sources: @ref tictoc3.ned, @ref txc3.cc, @ref omnetpp.ini
 @section s4 Step 4: Adding parameters
 
 In this step you'll learn how to add input parameters to the simulation:
-we'll turn the "magic number" 10 into a parameter.
+we'll turn the "magic number" 10 into a parameter and add a boolean parameter
+to decide whether the module should send out the first message in its
+initialization code (whether this is a tic or a toc module).
 
 Module parameters have to be declared in the NED file. The data type can
 be numeric, string, bool, or xml (the latter is for easy access to
@@ -284,17 +286,23 @@ We also have to modify the C++ code to read the parameter in
 initialize(), and assign it to the counter.
 
 @dontinclude txc4.cc
-@skipline par(
+@skipline par("limit")
+
+We can use the second parameter to decide whether to send initial message:
+
+@dontinclude txc4.cc
+@skipline par("sendMsgOnInit")
 
 Now, we can assign the parameters in the NED file or from omnetpp.ini.
-Assignments in the NED file take precedence. Typically you'll want
-to leave most parameter assigments to omnetpp.ini because it makes the model
-a lot more flexible.
+Assignments in the NED file take precedence. You can define default
+values for parameters if you use the <tt>default(...)</tt> syntax
+in the NED file. In this case you can either set the value of the
+parameter in omnetpp.ini or use the default value provided by the NED file.
 
 Here, we assign one parameter in the NED file:
 
 @dontinclude tictoc4.ned
-@skip module
+@skip network
 @until connections
 
 and the other in omnetpp.ini:
@@ -334,8 +342,9 @@ conclude the simulation.
 
 Sources: @ref tictoc4.ned, @ref txc4.cc, @ref omnetpp.ini
 
+@section s5 Step 5: Using inheritance
 
-@section s5 Step 5: Modelling processing delay
+@section s6 Step 6: Modeling processing delay
 
 In the previous models, tic and toc immediately sent back the
 received message. Here we'll add some timing: tic and toc will hold the
@@ -348,14 +357,14 @@ We added two cMessage * variables, <tt>event</tt> and <tt>tictocMsg</tt>
 to the class, to remember the message we use for timing and message whose
 processing delay we are simulating.
 
-@dontinclude txc5.cc
-@skip class Txc5
+@dontinclude txc6.cc
+@skip class Txc6
 @until public:
 
 We "send" the self-messages with the scheduleAt() function, specifying
 when it should be delivered back to the module.
 
-@dontinclude txc5.cc
+@dontinclude txc6.cc
 @skip ::handleMessage
 @skipline scheduleAt(
 
@@ -363,7 +372,7 @@ In handleMessage() now we have to differentiate whether a new message
 has arrived via the input gate or the self-message came back
 (timer expired). Here we are using
 
-@dontinclude txc5.cc
+@dontinclude txc6.cc
 @skipline msg==
 
 but we could have written
@@ -380,10 +389,10 @@ The result of running the simulation can be seen below.
 
 <img src="step5.gif">
 
-Sources: @ref tictoc5.ned, @ref txc5.cc, @ref omnetpp.ini
+Sources: @ref tictoc6.ned, @ref txc6.cc, @ref omnetpp.ini
 
 
-@section s6 Step 6: Random numbers and parameters
+@section s7 Step 7: Random numbers and parameters
 
 In this step we'll introduce random numbers. We change the delay from 1s
 to a random value which can be set from the NED file or from omnetpp.ini.
@@ -391,21 +400,21 @@ Module parameters are able to return random variates; however, to make
 use of this feature we have to read the parameter in handleMessage()
 every time we use it.
 
-@dontinclude txc6.cc
+@dontinclude txc7.cc
 @skip The "delayTime" module parameter
 @until scheduleAt(
 
 In addition, we'll "lose" (delete) the packet with a small (hardcoded) probability.
 
-@dontinclude txc6.cc
+@dontinclude txc7.cc
 @skip uniform(
 @until }
 
 We'll assign the parameters in omnetpp.ini:
 
 @dontinclude omnetpp.ini
-@skipline Tictoc6.
-@skipline Tictoc6.
+@skipline Tictoc7.
+@skipline Tictoc7.
 
 You can try that no matter how many times you re-run the simulation (or
 restart it, Simulate|Rebuild network menu item), you'll get exactly the
@@ -427,10 +436,10 @@ use RNG 0.
 <i>Exercise: Try other distributions as well.
 </i>
 
-Sources: @ref tictoc6.ned, @ref txc6.cc, @ref omnetpp.ini
+Sources: @ref tictoc8.ned, @ref txc7.cc, @ref omnetpp.ini
 
 
-@section s7 Step 7: Timeout, cancelling timers
+@section s8 Step 8: Timeout, cancelling timers
 
 In order to get one step closer to modelling networking protocols,
 let us transform our model into a stop-and-wait simulation.
@@ -441,8 +450,8 @@ nonzero probability, and in that case tic will have to resend it.
 
 Here's toc's code:
 
-@dontinclude txc7.cc
-@skip Toc7::handleMessage(
+@dontinclude txc8.cc
+@skip Toc8::handleMessage(
 @until else
 
 Thanks to the bubble() call in the code, toc'll display a callout whenever
@@ -455,24 +464,24 @@ the timer expires, we'll assume the message was lost and send another
 one. If toc's reply arrives, the timer has to be cancelled.
 The timer will be (what else?) a self-message.
 
-@dontinclude txc7.cc
-@skip Tic7::handleMessage
+@dontinclude txc8.cc
+@skip Tic8::handleMessage
 @skipline scheduleAt(
 
 Cancelling the timer will be done with the cancelEvent() call. Note that
 this does not prevent us from being able to reuse the same
 timeout message over and over.
 
-@dontinclude txc7.cc
-@skip Tic7::handleMessage
+@dontinclude txc8.cc
+@skip Tic8::handleMessage
 @skipline cancelEvent(
 
-You can read Tic's full source in @ref txc7.cc.
+You can read Tic's full source in @ref txc8.cc.
 
-Sources: @ref tictoc7.ned, @ref txc7.cc, @ref omnetpp.ini
+Sources: @ref tictoc8.ned, @ref txc8.cc, @ref omnetpp.ini
 
 
-@section s8 Step 8: Retransmitting the same message
+@section s9 Step 9: Retransmitting the same message
 
 In this step we refine the previous model.
 There we just created another packet if we needed to
@@ -491,15 +500,15 @@ and sendCopyOf() and call them from handleMessage().
 
 The functions:
 
-@dontinclude txc8.cc
-@skip Tic8::generateNewMessage
+@dontinclude txc9.cc
+@skip Tic9::generateNewMessage
 @until }
 
-@dontinclude txc8.cc
-@skip Tic8::sendCopyOf
+@dontinclude txc9.cc
+@skip Tic9::sendCopyOf
 @until }
 
-Sources: @ref tictoc8.ned, @ref txc8.cc, @ref omnetpp.ini
+Sources: @ref tictoc9.ned, @ref txc9.cc, @ref omnetpp.ini
 
 NEXT: @ref part3
 */
@@ -511,7 +520,7 @@ NEXT: @ref part3
 
 PREV: @ref part2 UP: @ref contents
 
-@section s9 Step 9: More than two nodes
+@section s10 Step 10: More than two nodes
 
 Now we'll make a big step: create several tic modules and connect
 them into a network. For now, we'll keep it simple what they do:
@@ -522,15 +531,15 @@ a predetermined destination node.
 The NED file will need a few changes. First of all, the Txc module will
 need to have multiple input and output gates:
 
-@dontinclude tictoc9.ned
-@skip simple Txc9
+@dontinclude tictoc10.ned
+@skip simple Txc10
 @until }
 
 The [ ] turns the gates into gate vectors. The size of the vector
 (the number of gates) will be determined where we use Txc to build
 the network.
 
-@skip network Tictoc9
+@skip network Tictoc10
 @until tic[5].out
 @until }
 
@@ -549,13 +558,13 @@ from handleMessage() whenever a message arrives at the node. It draws
 a random gate number (size() is the size of the gate vector), and
 sends out message on that gate.
 
-@dontinclude txc9.cc
+@dontinclude txc10.cc
 @skip ::forwardMessage
 @until }
 
 When the message arrives at tic[3], its handleMessage() will delete the message.
 
-See the full code in @ref txc9.cc.
+See the full code in @ref txc10.cc.
 
 <i>Exercise: you'll notice that this simple "routing" is not very efficient:
 often the packet keeps bouncing between two nodes for a while before it is sent
@@ -565,10 +574,17 @@ cGate::getIndex(). Note that if the message didn't arrive via a gate but was
 a self-message, then getArrivalGate() returns NULL.
 </i>
 
-Sources: @ref tictoc9.ned, @ref txc9.cc, @ref omnetpp.ini
+Sources: @ref tictoc10.ned, @ref txc10.cc, @ref omnetpp.ini
 
+@section s11 Step 11: Channels and inner type definitions
 
-@section s10 Step 10: Defining our message class
+Sources: @ref tictoc11.ned, @ref txc11.cc, @ref omnetpp.ini
+
+@section s12 Step 12: Using two way connections
+
+Sources: @ref tictoc12.ned, @ref txc12.cc, @ref omnetpp.ini
+
+@section s13 Step 13: Defining our message class
 
 In this step the destination address is no longer hardcoded tic[3] -- we draw a
 random destination, and we'll add the destination address to the message.
@@ -576,40 +592,40 @@ random destination, and we'll add the destination address to the message.
 The best way is to subclass cMessage and add destination as a data member.
 Hand-coding the message class is usually tedious because it contains
 a lot of boilerplate code, so we let @opp generate the class for us.
-The message class specification is in tictoc10.msg:
+The message class specification is in tictoc13.msg:
 
-@dontinclude tictoc10.msg
-@skip message TicTocMsg10
+@dontinclude tictoc13.msg
+@skip message TicTocMsg13
 @until }
 
 The makefile is set up so that the message compiler, opp_msgc is invoked
-and it generates tictoc10_m.h and tictoc10_m.cc from the message declaration.
-They will contain a generated TicTocMsg10 class subclassed from cMessage;
+and it generates tictoc13_m.h and tictoc13_m.cc from the message declaration.
+They will contain a generated TicTocMsg13 class subclassed from cMessage;
 the class will have getter and setter methods for every field.
 
-We'll include tictoc10_m.h into our C++ code, and we can use TicTocMsg10 as
+We'll include tictoc13_m.h into our C++ code, and we can use TicTocMsg13 as
 any other class.
 
-@dontinclude txc10.cc
-@skipline tictoc10_m.h
+@dontinclude txc13.cc
+@skipline tictoc13_m.h
 
 For example, we use the following lines in generateMessage() to create the
 message and fill its fields.
 
 @skip ::generateMessage(
-@skip TicTocMsg10 *msg
+@skip TicTocMsg13 *msg
 @until return msg
 
 Then, handleMessage() begins like this:
 
-@dontinclude txc10.cc
+@dontinclude txc13.cc
 @skip ::handleMessage(
 @until getDestination
 
 In the argument to handleMessage(), we get the message as a cMessage * pointer.
-However, we can only access its fields defined in TicTocMsg10 if we cast
-msg to TicTocMsg10 *. Plain C-style cast (<code>(TicTocMsg10 *)msg</code>)
-is not safe because if the message is <i>not</i> a TicTocMsg10 after all
+However, we can only access its fields defined in TicTocMsg13 if we cast
+msg to TicTocMsg13 *. Plain C-style cast (<code>(TicTocMsg13 *)msg</code>)
+is not safe because if the message is <i>not</i> a TicTocMsg13 after all
 the program will just crash, causing an error which is difficult to explore.
 
 C++ offers a solution which is called dynamic_cast. Here we use check_and_cast<>()
@@ -622,11 +638,11 @@ following:
 In the next line, we check if the destination address is the same as the
 node's address. The <tt>getIndex()</tt> member function returns the index
 of the module in the submodule vector (remember, in the NED file we
-declarared it as <tt>tic: Txc10[6]</tt>, so our nodes have addresses 0..5).
+declarared it as <tt>tic: Txc13[6]</tt>, so our nodes have addresses 0..5).
 
 To make the model execute longer, after a message arrives to its destination
 the destination node will generate another message with a random destination
-address, and so forth. Read the full code: @ref txc10.cc.
+address, and so forth. Read the full code: @ref txc13.cc.
 
 When you run the model, it'll look like this:
 
@@ -640,7 +656,7 @@ on the Contents page.
 
 <img src="step10b.gif">
 
-Sources: @ref tictoc10.ned, @ref tictoc10.msg, @ref txc10.cc, @ref omnetpp.ini
+Sources: @ref tictoc13.ned, @ref tictoc13.msg, @ref txc13.cc, @ref omnetpp.ini
 
 <i>Exercise: In this model, there is only one message underway at any
 given moment: nodes only generate a message when another message arrives
@@ -661,13 +677,13 @@ NEXT: @ref part4
 PREV: @ref part3 UP: @ref contents
 
 
-@section s11 Step 11: Displaying the number of packets sent/received
+@section s14 Step 14: Displaying the number of packets sent/received
 
 To get an overview at runtime how many messages each node sent or
 received, we've added two counters to the module class: numSent and numReceived.
 
-@dontinclude txc11.cc
-@skip class Txc11
+@dontinclude txc14.cc
+@skip class Txc14
 @until protected:
 
 They are set to zero and WATCH'ed in the initialize() method. Now we
@@ -688,7 +704,7 @@ icons. The <tt>t=</tt> display string tag specifies the text;
 we only need to modify the displays string during runtime.
 The following code does the job:
 
-@dontinclude txc11.cc
+@dontinclude txc14.cc
 @skip isGUI
 @until updateDisplay
 
@@ -699,18 +715,17 @@ And the result looks like this:
 
 <img src="step11b.gif">
 
-Sources: @ref tictoc11.ned, @ref tictoc11.msg, @ref txc11.cc, @ref omnetpp.ini
+Sources: @ref tictoc14.ned, @ref tictoc14.msg, @ref txc14.cc, @ref omnetpp.ini
 
+@section s15 Step 15: Adding statistics collection
 
-@section s12 Step 12: Adding statistics collection
-
-The OMNeT++ simulation kernel can record a detailed log about your message 
+The OMNeT++ simulation kernel can record a detailed log about your message
 exchanges automatically by setting the
 
 @dontinclude omnetpp.ini
 @skipline eventlog
 
-configuration option in the omnetpp.ini file. This log file can be later displayed 
+configuration option in the omnetpp.ini file. This log file can be later displayed
 by the IDE (see: @ref logs).
 
 @note The resulting log file can be quite large, so enable this feature only if you really need it.
@@ -727,11 +742,11 @@ write them into a file at the end of the simulation. Then we'll use
 tools from the OMNeT++ IDE to analyse the output files.
 
 For that, we add an output vector object (which will record the data into
-<tt>Tictoc12-0.vec</tt>) and a histogram object (which also calculates mean, etc)
+<tt>Tictoc15-0.vec</tt>) and a histogram object (which also calculates mean, etc)
 to the class.
 
-@dontinclude txc12.cc
-@skipline class Txc12
+@dontinclude txc15.cc
+@skipline class Txc15
 @until protected:
 
 When a message arrives at the destination node, we update the statistics.
@@ -741,26 +756,26 @@ The following code has been added to handleMessage():
 @skipline hopCountVector.record
 @skipline hopCountStats.collect
 
-hopCountVector.record() call writes the data into <tt>Tictoc12-0.vec</tt>.
-With a large simulation model or long execution time, the <tt>Tictoc12-0.vec</tt> file
+hopCountVector.record() call writes the data into <tt>Tictoc15-0.vec</tt>.
+With a large simulation model or long execution time, the <tt>Tictoc15-0.vec</tt> file
 may grow very large. To handle this situation, you can specifically
 disable/enable vector in omnetpp.ini, and you can also specify
 a simulation time interval in which you're interested
 (data recorded outside this interval will be discarded.)
 
-When you begin a new simulation, the existing <tt>Tictoc12-0.vec/sca</tt>
+When you begin a new simulation, the existing <tt>Tictoc15-0.vec/sca</tt>
 file gets deleted.
 
 Scalar data (collected by the histogram object in this simulation)
 have to be recorded manually, in the finish() function.
 finish() gets invoked on successful completion of the simulation,
 i.e. not when it's stopped with an error. The recordScalar() calls
-in the code below write into the <tt>Tictoc12-0.sca</tt> file.
+in the code below write into the <tt>Tictoc15-0.sca</tt> file.
 
 @skip ::finish
 @until }
 
-The files are stored in the <tt>results/</tt> subdirectory. 
+The files are stored in the <tt>results/</tt> subdirectory.
 
 You can also view the data during simulation. In the module inspector's
 Contents page you'll find the hopCountStats and hopCountVector objects,
@@ -773,13 +788,13 @@ data to be displayed. After a while you'll get something like this:
 <img src="step12b.gif">
 
 When you think enough data has been collected, you can stop the simulation
-and then we'll analyse the result files (<tt>Tictoc12-0.vec</tt> and 
-<tt>Tictoc12-0.sca</tt>) off-line. You'll need to choose Simulate|Call finish() 
-from the menu (or click the corresponding toolbar button) before exiting -- 
-this will cause the finish() functions to run and data to be written into 
-<tt>Tictoc12-0.sca</tt>.
+and then we'll analyse the result files (<tt>Tictoc15-0.vec</tt> and
+<tt>Tictoc15-0.sca</tt>) off-line. You'll need to choose Simulate|Call finish()
+from the menu (or click the corresponding toolbar button) before exiting --
+this will cause the finish() functions to run and data to be written into
+<tt>Tictoc15-0.sca</tt>.
 
-Sources: @ref tictoc12.ned, @ref tictoc12.msg, @ref txc12.cc, @ref omnetpp.ini
+Sources: @ref tictoc15.ned, @ref tictoc15.msg, @ref txc15.cc, @ref omnetpp.ini
 
 NEXT: @ref part5
 */
@@ -844,6 +859,15 @@ UP: @ref contents
 /// @page tictoc12.ned tictoc12.ned
 /// @include tictoc12.ned
 
+/// @page tictoc13.ned tictoc13.ned
+/// @include tictoc13.ned
+
+/// @page tictoc14.ned tictoc14.ned
+/// @include tictoc14.ned
+
+/// @page tictoc15.ned tictoc15.ned
+/// @include tictoc15.ned
+
 /// @page txc1.cc txc1.cc
 /// @include txc1.cc
 
@@ -855,9 +879,6 @@ UP: @ref contents
 
 /// @page txc4.cc txc4.cc
 /// @include txc4.cc
-
-/// @page txc5.cc txc5.cc
-/// @include txc5.cc
 
 /// @page txc6.cc txc6.cc
 /// @include txc6.cc
@@ -880,14 +901,23 @@ UP: @ref contents
 /// @page txc12.cc txc12.cc
 /// @include txc12.cc
 
-/// @page tictoc10.msg tictoc10.msg
-/// @include tictoc10.msg
+/// @page txc13.cc txc13.cc
+/// @include txc13.cc
 
-/// @page tictoc11.msg tictoc11.msg
-/// @include tictoc11.msg
+/// @page txc14.cc txc14.cc
+/// @include txc14.cc
 
-/// @page tictoc12.msg tictoc12.msg
-/// @include tictoc12.msg
+/// @page txc15.cc txc15.cc
+/// @include txc15.cc
+
+/// @page tictoc13.msg tictoc13.msg
+/// @include tictoc13.msg
+
+/// @page tictoc14.msg tictoc14.msg
+/// @include tictoc14.msg
+
+/// @page tictoc15.msg tictoc15.msg
+/// @include tictoc15.msg
 
 /// @page omnetpp.ini omnetpp.ini
 /// @include omnetpp.ini
