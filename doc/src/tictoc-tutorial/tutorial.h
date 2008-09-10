@@ -900,10 +900,21 @@ NEXT: @ref part5
 PREV: @ref part4 UP: @ref contents
 
 @section scalar Scalar statistics
+<img src="browse-data.png">
+
+<img src="scalars.png">
 
 @section vector Plotting the output vectors
 
+<img src="vectors.png">
+
+@section histograms Histograms
+
+<img src="histogram.png">
+
 @section logs Sequence charts end event logs
+
+<img src="eventlog.png">
 
 @section conclusion Conclusion
 
