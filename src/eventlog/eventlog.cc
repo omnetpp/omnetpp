@@ -65,7 +65,7 @@ void EventLog::clearInternalState(FileReader::FileChangedState change)
         messageClassNames.clear();
 
         initializationLogEntries.clear();
-        moduleIdToModuleCreatedEntryMap.clear();
+//        moduleIdToModuleCreatedEntryMap.clear();
         moduleIdAndGateIdToGateCreatedEntryMap.clear();
 
         simulationBeginEntry = NULL;
@@ -230,10 +230,33 @@ std::vector<ModuleCreatedEntry *> EventLog::getModuleCreatedEntries()
 {
     std::vector<ModuleCreatedEntry *> moduleCreatedEntries;
 
-    for (ModuleIdToModuleCreatedEntryMap::iterator it = moduleIdToModuleCreatedEntryMap.begin(); it != moduleIdToModuleCreatedEntryMap.end(); it++)
+    for (ModuleIdToModuleCreatedEntryMap::iterator it = moduleIdToModuleCreatedEntryMap.begin(); it != moduleIdToModuleCreatedEntryMap.end(); it++) {
+        Assert(it->second);
         moduleCreatedEntries.push_back(it->second);
+    }
 
     return moduleCreatedEntries;
+}
+
+ModuleCreatedEntry *EventLog::getModuleCreatedEntry(int moduleId)
+{
+    ModuleIdToModuleCreatedEntryMap::iterator it = moduleIdToModuleCreatedEntryMap.find(moduleId);
+
+    if (it == moduleIdToModuleCreatedEntryMap.end())
+        return NULL;
+    else
+        return it->second;
+}
+
+GateCreatedEntry *EventLog::getGateCreatedEntry(int moduleId, int gateId)
+{
+    std::pair<int, int> key(moduleId, gateId);
+    ModuleIdAndGateIdToGateCreatedEntryMap::iterator it = moduleIdAndGateIdToGateCreatedEntryMap.find(key);
+
+    if (it == moduleIdAndGateIdToGateCreatedEntryMap.end())
+        return NULL;
+    else
+        return it->second;
 }
 
 Event *EventLog::getFirstEvent()
@@ -408,8 +431,10 @@ void EventLog::cacheEventLogEntry(EventLogEntry *eventLogEntry)
     // collect module created entries
     ModuleCreatedEntry *moduleCreatedEntry = dynamic_cast<ModuleCreatedEntry *>(eventLogEntry);
 
-    if (moduleCreatedEntry)
+    if (moduleCreatedEntry) {
         moduleIdToModuleCreatedEntryMap[moduleCreatedEntry->moduleId] = moduleCreatedEntry;
+        getModuleCreatedEntries();
+    }
 
     // collect gate created entries
     GateCreatedEntry *gateCreatedEntry = dynamic_cast<GateCreatedEntry *>(eventLogEntry);
@@ -432,8 +457,8 @@ void EventLog::uncacheEventLogEntry(EventLogEntry *eventLogEntry)
     // collect module created entries
     ModuleCreatedEntry *moduleCreatedEntry = dynamic_cast<ModuleCreatedEntry *>(eventLogEntry);
 
-    if (moduleCreatedEntry)
-        moduleIdToModuleCreatedEntryMap.erase(moduleCreatedEntry->moduleId);
+//    if (moduleCreatedEntry)
+//        moduleIdToModuleCreatedEntryMap.erase(moduleCreatedEntry->moduleId);
 
     // collect gate created entries
     GateCreatedEntry *gateCreatedEntry = dynamic_cast<GateCreatedEntry *>(eventLogEntry);
