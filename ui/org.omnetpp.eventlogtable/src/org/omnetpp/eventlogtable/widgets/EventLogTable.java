@@ -399,7 +399,9 @@ public class EventLogTable
 	public void eventLogFiltered() {
 		eventLog = eventLogInput.getEventLog();
 
-		if (fixPointElement != null) {
+		if (eventLog.isEmpty())
+		    fixPointElement = null;
+		else if (fixPointElement != null) {
 			FilteredEventLog filteredEventLog = (FilteredEventLog)eventLog;
 			IEvent closestEvent = filteredEventLog.getMatchingEventInDirection(fixPointElement.getEventNumber(), false);
 			
@@ -411,11 +413,17 @@ public class EventLogTable
 				if (closestEvent != null)
 					relocateFixPoint(new EventLogEntryReference(closestEvent.getEventEntry()), 0);
 				else
-				    relocateFixPoint(null, 0);
+				    scrollToBegin();
 			}
 		}
+		else
+		    scrollToBegin();
 
-		eventLogTableContributor.update();
+        for (EventLogEntryReference eventLogEntryReference : new ArrayList<EventLogEntryReference>(selectionElements))
+            if (eventLog.getEventForEventNumber(eventLogEntryReference.getEventNumber()) == null)
+                selectionElements.remove(eventLogEntryReference);
+		
+        eventLogTableContributor.update();
 		redraw();
 	}
 	
@@ -426,6 +434,7 @@ public class EventLogTable
 	}
 
 	public void eventLogLongOperationStarted() {
+	    // void
 	}
 
 	public void eventLogLongOperationEnded() {
@@ -516,6 +525,9 @@ public class EventLogTable
     }
 }
 
+/**
+ * Used to persistently store the eventlog table settings.
+ */
 class EventLogTableState implements Serializable {
 	private static final long serialVersionUID = 1L;
 	public long topVisibleEventNumber;

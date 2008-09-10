@@ -39,7 +39,7 @@ public class MoveAroundTest
 
         sequenceChart.pressKey(forward ? SWT.HOME : SWT.END);
         assertSelectionEvent(sequenceChart);
-        
+
         setKeyboardTypeDelay(0);
 
         IEvent limit = forward ? control.getEventLog().getLastEvent() : control.getEventLog().getFirstEvent();
@@ -67,7 +67,7 @@ public class MoveAroundTest
 
         setMouseMoveDuration(0);
         setMouseClickDuration(0);
-        
+
         IEvent limit = forward ? control.getEventLog().getLastEvent() : control.getEventLog().getFirstEvent();
         while (!control.getViewportCenterSimulationTime().equals(limit.getSimulationTime()))
         {

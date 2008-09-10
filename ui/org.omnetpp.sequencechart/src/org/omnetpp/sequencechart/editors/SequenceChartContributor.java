@@ -731,7 +731,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 					protected void createMenu(Menu menu) {
 						addSubMenuItem(menu, "Manual...", SequenceChart.AxisOrderingMode.MANUAL);
 						addSubMenuItem(menu, "Module Id", SequenceChart.AxisOrderingMode.MODULE_ID);
-						addSubMenuItem(menu, "Module Name", SequenceChart.AxisOrderingMode.MODULE_NAME);
+						addSubMenuItem(menu, "Module Name", SequenceChart.AxisOrderingMode.MODULE_FULL_PATH);
 						addSubMenuItem(menu, "Minimize Crossings", SequenceChart.AxisOrderingMode.MINIMIZE_CROSSINGS);
 					}
 
@@ -815,11 +815,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
             }
 
 			private void filter() {
-                EventLogInput eventLogInput = sequenceChart.getInput();
-                EventLogFilterParameters filterParameters = eventLogInput.getFilterParameters();
-                FilterEventLogDialog dialog = new FilterEventLogDialog(Display.getCurrent().getActiveShell(), eventLogInput, filterParameters);
-
-                if (dialog.open() == Window.OK)
+                if (sequenceChart.getInput().openFilterDialog() == Window.OK)
                     SequenceChartContributor.this.filter();
 			}
 		};

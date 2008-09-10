@@ -10,6 +10,7 @@ import org.eclipse.swt.widgets.Decorations;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.internal.Workbench;
 import org.omnetpp.common.util.ReflectionUtils;
@@ -183,9 +184,15 @@ public abstract class GUITestCase
         // KLUDGE: close all shells except the workbench window's shell
         // so that there are no hanging windows left open
         // SWT does not close open windows when exceptions pass through the event loop
-        for (Shell shell : Display.getCurrent().getShells()) {
-            if (shell != Workbench.getInstance().getActiveWorkbenchWindow().getShell())
-                shell.close();
+        IWorkbenchWindow activeWorkbenchWindow = Workbench.getInstance().getActiveWorkbenchWindow();
+
+        if (activeWorkbenchWindow != null) {
+            Shell activeShell = activeWorkbenchWindow.getShell();
+
+            for (Shell shell : Display.getCurrent().getShells()) {
+                if (shell != activeShell)
+                    shell.close();
+            }
         }
     }
     

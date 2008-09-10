@@ -43,6 +43,11 @@ public class EventLogInput extends FileEditorInput
 	protected EventLogFilterParameters eventLogFilterParameters;
 	
 	/**
+	 * The dialog used to fill the filter parameters
+	 */
+	protected FilterEventLogDialog filterEventLogDialog;
+	
+	/**
 	 * A C++ wrapper around a helpful facade.
 	 */
 	protected EventLogTableFacade eventLogTableFacade;
@@ -244,7 +249,15 @@ public class EventLogInput extends FileEditorInput
 	 * FILTERING
 	 */
 
-	public void removeFilter() {
+    public int openFilterDialog() {
+        TODO:
+//        if (filterEventLogDialog == null)
+            filterEventLogDialog = new FilterEventLogDialog(null, this, getFilterParameters());
+
+        return filterEventLogDialog.open();
+    }
+
+    public void removeFilter() {
 		if (eventLog instanceof FilteredEventLog) {
 			setEventLog(((FilteredEventLog)eventLog).getEventLog());
 			eventLog.own();
