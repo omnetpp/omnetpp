@@ -161,84 +161,86 @@ public class RandomTest
             eventLogInput.removeFilter();
         }
         else {
-            System.out.print("Changing filter to ");
-            
             IEventLog eventLog = control.getEventLog();
             if (eventLog instanceof FilteredEventLog)
                 eventLog = ((FilteredEventLog)eventLog).getEventLog();
 
-            int count;
-            IEvent lastEvent = eventLog.getLastEvent();
-            int lastEventNumber = (int)lastEvent.getEventNumber();
-            int lastMessageId = lastEvent.getMessageId();
-            double lastSimulationTime = lastEvent.getSimulationTime().doubleValue();
-            EventLogFilterParameters filterParameters = eventLogInput.getFilterParameters();
-            
-            // range filter
-            filterParameters.enableRangeFilter = random.nextBoolean();
-            
-            if (filterParameters.enableRangeFilter) {
-                boolean enable = random.nextBoolean();
+            if (!eventLog.isEmpty()) {
+                System.out.print("Changing filter to ");
 
-                // event number range
-                filterParameters.enableEventNumberFilter = enable;
-                filterParameters.lowerEventNumberLimit = random.nextInt(lastEventNumber);
-                filterParameters.upperEventNumberLimit = filterParameters.lowerEventNumberLimit + random.nextInt(lastEventNumber - (int)filterParameters.lowerEventNumberLimit);
-
-                // simulation time range
-                filterParameters.enableEventNumberFilter = !enable;
-                filterParameters.lowerSimulationTimeLimit = new BigDecimal(random.nextDouble() * lastSimulationTime);
-                filterParameters.upperSimulationTimeLimit = filterParameters.lowerSimulationTimeLimit.add(new BigDecimal(random.nextDouble() * (lastSimulationTime - filterParameters.lowerSimulationTimeLimit.doubleValue())));
-            }
-
-            // module filter
-            filterParameters.enableModuleFilter = random.nextBoolean();
-            
-            if (filterParameters.enableModuleFilter) {
-                boolean enable = random.nextBoolean();
-
-                // module id filter
-                filterParameters.enableModuleIdFilter = enable;
-                count = random.nextInt(eventLog.getNumModuleCreatedEntries()) + 1;
-                filterParameters.moduleIds = new int[count];
-                for (int i = 0; i < count; i++)
-                    filterParameters.moduleIds[i] = random.nextInt(eventLog.getNumModuleCreatedEntries());
+                int count;
+                IEvent lastEvent = eventLog.getLastEvent();
+                int lastEventNumber = (int)lastEvent.getEventNumber();
+                int lastMessageId = lastEvent.getMessageId();
+                double lastSimulationTime = lastEvent.getSimulationTime().doubleValue();
+                EventLogFilterParameters filterParameters = eventLogInput.getFilterParameters();
                 
-                // module type filter
-                filterParameters.enableModuleNEDTypeNameFilter = !enable;
-                count = random.nextInt(5) + 1;
-                filterParameters.moduleNEDTypeNames = new String[count];
-                for (int i = 0; i < count; i++) {
-                    ModuleCreatedEntryList moduleCreatedEntries = eventLog.getModuleCreatedEntries();
-                    int index = random.nextInt((int)moduleCreatedEntries.size());
-                    filterParameters.moduleNEDTypeNames[i] = moduleCreatedEntries.get(index).getNedTypeName();
+                // range filter
+                filterParameters.enableRangeFilter = random.nextBoolean();
+                
+                if (filterParameters.enableRangeFilter) {
+                    boolean enable = random.nextBoolean();
+    
+                    // event number range
+                    filterParameters.enableEventNumberFilter = enable;
+                    filterParameters.lowerEventNumberLimit = random.nextInt(lastEventNumber);
+                    filterParameters.upperEventNumberLimit = filterParameters.lowerEventNumberLimit + random.nextInt(lastEventNumber - (int)filterParameters.lowerEventNumberLimit);
+    
+                    // simulation time range
+                    filterParameters.enableEventNumberFilter = !enable;
+                    filterParameters.lowerSimulationTimeLimit = new BigDecimal(random.nextDouble() * lastSimulationTime);
+                    filterParameters.upperSimulationTimeLimit = filterParameters.lowerSimulationTimeLimit.add(new BigDecimal(random.nextDouble() * (lastSimulationTime - filterParameters.lowerSimulationTimeLimit.doubleValue())));
                 }
-            }
-
-            // message filter
-            filterParameters.enableMessageFilter = random.nextBoolean();
-
-            if (filterParameters.enableMessageFilter) {
-                boolean enable = random.nextBoolean();
-
-                // message encapsulation tree id
-                filterParameters.enableMessageEncapsulationTreeIdFilter = enable;
-                count = random.nextInt(100) + 1;
-                filterParameters.messageEncapsulationTreeIds = new EventLogFilterParameters.EnabledInt[count];
-                for (int i = 0; i < count; i++)
-                    filterParameters.messageEncapsulationTreeIds[i] = new EventLogFilterParameters.EnabledInt(true, random.nextInt(lastMessageId));
+    
+                // module filter
+                filterParameters.enableModuleFilter = random.nextBoolean();
                 
-                // message class name filter
-                filterParameters.enableMessageClassNameFilter = !enable;
-                PStringVector names = eventLog.getMessageClassNames().keys();
-                count = random.nextInt((int)names.size()) + 1;
-                filterParameters.messageClassNames = new String[count];
-                for (int i = 0; i < count; i++)
-                    filterParameters.messageClassNames[i] = names.get(random.nextInt((int)names.size()));
+                if (filterParameters.enableModuleFilter) {
+                    boolean enable = random.nextBoolean();
+    
+                    // module id filter
+                    filterParameters.enableModuleIdFilter = enable;
+                    count = random.nextInt(eventLog.getNumModuleCreatedEntries()) + 1;
+                    filterParameters.moduleIds = new int[count];
+                    for (int i = 0; i < count; i++)
+                        filterParameters.moduleIds[i] = random.nextInt(eventLog.getNumModuleCreatedEntries());
+                    
+                    // module type filter
+                    filterParameters.enableModuleNEDTypeNameFilter = !enable;
+                    count = random.nextInt(5) + 1;
+                    filterParameters.moduleNEDTypeNames = new String[count];
+                    for (int i = 0; i < count; i++) {
+                        ModuleCreatedEntryList moduleCreatedEntries = eventLog.getModuleCreatedEntries();
+                        int index = random.nextInt((int)moduleCreatedEntries.size());
+                        filterParameters.moduleNEDTypeNames[i] = moduleCreatedEntries.get(index).getNedTypeName();
+                    }
+                }
+    
+                // message filter
+                filterParameters.enableMessageFilter = random.nextBoolean();
+    
+                if (filterParameters.enableMessageFilter) {
+                    boolean enable = random.nextBoolean();
+    
+                    // message encapsulation tree id
+                    filterParameters.enableMessageEncapsulationTreeIdFilter = enable;
+                    count = random.nextInt(100) + 1;
+                    filterParameters.messageEncapsulationTreeIds = new EventLogFilterParameters.EnabledInt[count];
+                    for (int i = 0; i < count; i++)
+                        filterParameters.messageEncapsulationTreeIds[i] = new EventLogFilterParameters.EnabledInt(true, random.nextInt(lastMessageId));
+                    
+                    // message class name filter
+                    filterParameters.enableMessageClassNameFilter = !enable;
+                    PStringVector names = eventLog.getMessageClassNames().keys();
+                    count = random.nextInt((int)names.size()) + 1;
+                    filterParameters.messageClassNames = new String[count];
+                    for (int i = 0; i < count; i++)
+                        filterParameters.messageClassNames[i] = names.get(random.nextInt((int)names.size()));
+                }
+    
+                System.out.println(filterParameters.toString());
+                eventLogInput.filter();
             }
-
-            System.out.println(filterParameters.toString());
-            eventLogInput.filter();
         }
     }
 

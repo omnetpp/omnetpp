@@ -10,6 +10,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Path;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.StringUtils;
 
@@ -33,13 +34,14 @@ public class ProjectFileTestCase
 		setFileName(fileName);
 	}
 	
-	public void setFileName(String fileName) {
+	public void setFileName(String filePath) {
 	    // I think the following assert does not always hold true, because there might be files 
 	    // checked in without starting with 'test' so that they don't get deleted in cleanup
 	    // FIXME: remove this commented assert eventually
 	    // Assert.assertTrue("Filename must start with 'test'", fileName.startsWith("test"));
-		this.fileName = fileName;
-		this.filePath = projectName + "/" + fileName;
+	    Path path = new Path(filePath);
+		this.fileName = path.lastSegment();
+		this.filePath = projectName + "/" + filePath;
 	}
 
 	protected void createFileWithContent(String content) throws Exception {

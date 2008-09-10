@@ -642,9 +642,15 @@ public class SequenceChart
 	 * after changing the timeline coordinate system.
 	 */
 	public void setTimelineMode(TimelineMode timelineMode) {
-	    org.omnetpp.common.engine.BigDecimal[] leftRightSimulationTimes = getViewportSimulationTimeRange();
-		sequenceChartFacade.setTimelineMode(timelineMode.ordinal());
-		setViewportSimulationTimeRange(leftRightSimulationTimes);
+	    org.omnetpp.common.engine.BigDecimal[] leftRightSimulationTimes = null;
+	    
+	    if (!eventLog.isEmpty())
+	        leftRightSimulationTimes = getViewportSimulationTimeRange();
+
+	    sequenceChartFacade.setTimelineMode(timelineMode.ordinal());
+		
+	    if (!eventLog.isEmpty())
+	        setViewportSimulationTimeRange(leftRightSimulationTimes);
 	}
 
 	/**
@@ -686,28 +692,28 @@ public class SequenceChart
 	 * Sets the range of visible simulation times as an array of two simulation times.
 	 */
 	public void setViewportSimulationTimeRange(org.omnetpp.common.engine.BigDecimal[] leftRightSimulationTimes) {
-		zoomToSimulationTimeRange(leftRightSimulationTimes[0], leftRightSimulationTimes[1]);
+        zoomToSimulationTimeRange(leftRightSimulationTimes[0], leftRightSimulationTimes[1]);
 	}
 
 	/**
 	 * Returns the smallest visible simulation time within the viewport.
 	 */
 	public org.omnetpp.common.engine.BigDecimal getViewportLeftSimulationTime() {
-		return getSimulationTimeForViewportCoordinate(0);
+        return getSimulationTimeForViewportCoordinate(0);
 	}
 
 	/**
 	 * Returns the simulation time visible at the viewport's center.
 	 */
 	public org.omnetpp.common.engine.BigDecimal getViewportCenterSimulationTime() {
-		return getSimulationTimeForViewportCoordinate(getViewportWidth() / 2);
+        return getSimulationTimeForViewportCoordinate(getViewportWidth() / 2);
 	}
 
 	/**
 	 * Returns the biggest visible simulation time within the viewport.
 	 */
 	public org.omnetpp.common.engine.BigDecimal getViewportRightSimulationTime() {
-		return getSimulationTimeForViewportCoordinate(getViewportWidth());
+        return getSimulationTimeForViewportCoordinate(getViewportWidth());
 	}
 
 	/*************************************************************************************
@@ -1003,7 +1009,7 @@ public class SequenceChart
 	 */
 
 	/**
-	 * Sets zoom level so that a certain number of events fit into the viewport.
+	 * Sets zoom level so that the default number of events fit into the viewport.
 	 */
 	public void defaultZoom() {
         eventLogInput.runWithProgressMonitor(new Runnable() {
@@ -1033,9 +1039,15 @@ public class SequenceChart
 	public void zoomBy(final double zoomFactor) {
 		eventLogInput.runWithProgressMonitor(new Runnable() {
 			public void run() {
-			    org.omnetpp.common.engine.BigDecimal simulationTime = getViewportCenterSimulationTime();
-				setPixelPerTimelineUnit(getPixelPerTimelineUnit() * zoomFactor);
-				scrollToSimulationTimeWithCenter(simulationTime);
+			    org.omnetpp.common.engine.BigDecimal simulationTime = null;
+
+			    if (!eventLog.isEmpty())
+			        simulationTime = getViewportCenterSimulationTime();
+
+			    setPixelPerTimelineUnit(getPixelPerTimelineUnit() * zoomFactor);
+
+			    if (!eventLog.isEmpty())
+			        scrollToSimulationTimeWithCenter(simulationTime);
 			}
 		});
 	}
@@ -1932,22 +1944,26 @@ public class SequenceChart
     /**
      * Set chart scale (number of pixels a "timeline unit" maps to).
      */
-    public void setPixelPerTimelineUnit(double pixelPerTimelineCoordinate) {
-        Assert.isTrue(pixelPerTimelineCoordinate > 0);
-        this.pixelPerTimelineUnit = pixelPerTimelineCoordinate;
-        invalidateAxisModules();
+    public void setPixelPerTimelineUnit(double pixelPerTimelineUnit) {
+        if (this.pixelPerTimelineUnit != pixelPerTimelineUnit) {
+            Assert.isTrue(pixelPerTimelineUnit > 0 && !Double.isInfinite(pixelPerTimelineUnit) && !Double.isNaN(pixelPerTimelineUnit));
+            this.pixelPerTimelineUnit = pixelPerTimelineUnit;
+            invalidateAxisModules();
+        }
     }
 
     /**
-	 * Sets default pixelPerTimelineUnit so that a certain number of events fit into the screen.
+	 * Sets default pixelPerTimelineUnit so that the default number of events fit into the screen.
 	 */
 	private void setDefaultPixelPerTimelineUnit(int viewportWidth) {
 	    if (sequenceChartFacade.getTimelineCoordinateSystemOriginEventNumber() != -1) {
     	    IEvent referenceEvent = sequenceChartFacade.getTimelineCoordinateSystemOriginEvent();
     	    IEvent neighbourEvent = referenceEvent; 
 
+    	    // the idea is to find two events with different timeline coordinate at most 20 events from each other
+    	    // and focus to the range of those events
     	    int distance = 20;
-            while (--distance > 0) {
+            while (--distance > 0 || sequenceChartFacade.getTimelineCoordinate(referenceEvent) == sequenceChartFacade.getTimelineCoordinate(neighbourEvent)) {
                 IEvent newNeighbourEvent = neighbourEvent.getNextEvent();
 
                 if (newNeighbourEvent != null)
@@ -1957,14 +1973,20 @@ public class SequenceChart
                     
                     if (newReferenceEvent != null)
                         referenceEvent = newReferenceEvent;
+                    else
+                        break;
                 }
             }
     	    
     		if (referenceEvent.getEventNumber() != neighbourEvent.getEventNumber()) {
                 double referenceEventTimelineCoordinate = sequenceChartFacade.getTimelineCoordinate(referenceEvent);
-    			double otherEventTimelineCoordinate = sequenceChartFacade.getTimelineCoordinate(neighbourEvent);
-    			double timelineCoordinateDelta = Math.abs(otherEventTimelineCoordinate - referenceEventTimelineCoordinate);
-    			setPixelPerTimelineUnit(viewportWidth / timelineCoordinateDelta);
+    			double neighbourEventTimelineCoordinate = sequenceChartFacade.getTimelineCoordinate(neighbourEvent);
+    			double timelineCoordinateDelta = Math.abs(neighbourEventTimelineCoordinate - referenceEventTimelineCoordinate);
+
+    			if (timelineCoordinateDelta == 0)
+	                setPixelPerTimelineUnit(1);
+                else
+    			    setPixelPerTimelineUnit(viewportWidth / timelineCoordinateDelta);
     		}
     		else
                 setPixelPerTimelineUnit(1);
@@ -3294,48 +3316,50 @@ public class SequenceChart
 	 */
 	private void calculateTicks(int viewportWidth) {
 		ticks = new ArrayList<BigDecimal>();
-		BigDecimal leftSimulationTime = calculateTick(0, 1);
-		BigDecimal rightSimulationTime = calculateTick(viewportWidth, 1);
-		tickPrefix = TimeUtils.commonPrefix(leftSimulationTime, rightSimulationTime);
+        BigDecimal leftSimulationTime = calculateTick(0, 1);
+        BigDecimal rightSimulationTime = calculateTick(viewportWidth, 1);
+        tickPrefix = TimeUtils.commonPrefix(leftSimulationTime, rightSimulationTime);
 
-		if (getTimelineMode() == TimelineMode.SIMULATION_TIME) {
-			// puts ticks to constant distance from each other measured in timeline units
-			int tickScale = (int)Math.ceil(Math.log10(TICK_SPACING / getPixelPerTimelineUnit()));
-			BigDecimal tickSpacing = BigDecimal.valueOf(TICK_SPACING / getPixelPerTimelineUnit());
-			BigDecimal tickStart = leftSimulationTime.setScale(-tickScale, RoundingMode.FLOOR);
-			BigDecimal tickEnd = rightSimulationTime.setScale(-tickScale, RoundingMode.CEILING);
-			BigDecimal tickIntvl = new BigDecimal(1).scaleByPowerOfTen(tickScale);
-
-			// use 2, 4, 6, 8, etc. if possible
-			if (tickIntvl.divide(BigDecimal.valueOf(5)).compareTo(tickSpacing) > 0)
-				tickIntvl = tickIntvl.divide(BigDecimal.valueOf(5));
-			// use 5, 10, 15, 20, etc. if possible
-			else if (tickIntvl.divide(BigDecimal.valueOf(2)).compareTo(tickSpacing) > 0)
-				tickIntvl = tickIntvl.divide(BigDecimal.valueOf(2));
-
-			for (BigDecimal tick = tickStart; tick.compareTo(tickEnd)<0; tick = tick.add(tickIntvl))
-				if (tick.compareTo(BigDecimal.ZERO) >= 0)
-					ticks.add(tick);
-		}
-		else {
-			// tries to put ticks constant distance from each other measured in pixels
-			long modX = fixPointViewportCoordinate % TICK_SPACING;
-			long tleft = modX - TICK_SPACING;
-			long tright = modX + viewportWidth + TICK_SPACING;
-
-			IEvent lastEvent = eventLog.getLastEvent();
-
-			if (lastEvent != null) {
-				BigDecimal endSimulationTime = lastEvent.getSimulationTime().toBigDecimal();
-
-				for (long t = tleft; t < tright; t += TICK_SPACING) {
-					BigDecimal tick = calculateTick(t, TICK_SPACING / 2);
-
-					if (tick.compareTo(BigDecimal.ZERO) >= 0 && tick.compareTo(endSimulationTime) <= 0)
-						ticks.add(tick);
-				}
-			}
-		}
+		if (!eventLog.isEmpty()) {
+    		if (getTimelineMode() == TimelineMode.SIMULATION_TIME) {
+    			// puts ticks to constant distance from each other measured in timeline units
+    			int tickScale = (int)Math.ceil(Math.log10(TICK_SPACING / getPixelPerTimelineUnit()));
+    			BigDecimal tickSpacing = BigDecimal.valueOf(TICK_SPACING / getPixelPerTimelineUnit());
+    			BigDecimal tickStart = leftSimulationTime.setScale(-tickScale, RoundingMode.FLOOR);
+    			BigDecimal tickEnd = rightSimulationTime.setScale(-tickScale, RoundingMode.CEILING);
+    			BigDecimal tickIntvl = new BigDecimal(1).scaleByPowerOfTen(tickScale);
+    
+    			// use 2, 4, 6, 8, etc. if possible
+    			if (tickIntvl.divide(BigDecimal.valueOf(5)).compareTo(tickSpacing) > 0)
+    				tickIntvl = tickIntvl.divide(BigDecimal.valueOf(5));
+    			// use 5, 10, 15, 20, etc. if possible
+    			else if (tickIntvl.divide(BigDecimal.valueOf(2)).compareTo(tickSpacing) > 0)
+    				tickIntvl = tickIntvl.divide(BigDecimal.valueOf(2));
+    
+    			for (BigDecimal tick = tickStart; tick.compareTo(tickEnd)<0; tick = tick.add(tickIntvl))
+    				if (tick.compareTo(BigDecimal.ZERO) >= 0)
+    					ticks.add(tick);
+    		}
+    		else {
+    			// tries to put ticks constant distance from each other measured in pixels
+    			long modX = fixPointViewportCoordinate % TICK_SPACING;
+    			long tleft = modX - TICK_SPACING;
+    			long tright = modX + viewportWidth + TICK_SPACING;
+    
+    			IEvent lastEvent = eventLog.getLastEvent();
+    
+    			if (lastEvent != null) {
+    				BigDecimal endSimulationTime = lastEvent.getSimulationTime().toBigDecimal();
+    
+    				for (long t = tleft; t < tright; t += TICK_SPACING) {
+    					BigDecimal tick = calculateTick(t, TICK_SPACING / 2);
+    
+    					if (tick.compareTo(BigDecimal.ZERO) >= 0 && tick.compareTo(endSimulationTime) <= 0)
+    						ticks.add(tick);
+    				}
+    			}
+    		}
+        }
 	}
 
 	/**
@@ -3356,13 +3380,21 @@ public class SequenceChart
 		BigDecimal tMax = getSimulationTimeForViewportCoordinate(x + tickRange / 2).toBigDecimal();
 
 		// check some invariants
-		Assert.isTrue(tMin.compareTo(simulationTime) <= 0);
-		Assert.isTrue(tMax.compareTo(simulationTime) >= 0);
+		// originally we were checking these invariants, but it is impossible to always make these hold
+		// due to the fact that a linear approximation is inherently non monotonic between two simulation
+		// times based on a double timeline lambda value between 0.0 and 1.0
+        // NOTE: leave it as a comment: Assert.isTrue(tMin.compareTo(simulationTime) <= 0);
+        // NOTE: leave it as a comment: Assert.isTrue(tMax.compareTo(simulationTime) >= 0);
+		if (tMin.compareTo(simulationTime) > 0)
+		    tMin = simulationTime;
+		
+		if (tMax.compareTo(simulationTime) < 0)
+		    tMax = simulationTime;
 		Assert.isTrue(tMin.compareTo(tMax) <= 0);
 	
 		// the idea is to round the simulation time to the shortest (in terms of digits) value
 		// as long as it still fits into the range of min and max
-		// number of digits
+		// first get the number of digits
 		int tMinPrecision = tMin.stripTrailingZeros().precision();
 		int tMaxPrecision = tMax.stripTrailingZeros().precision();
 		int tDeltaPrecision = tMax.subtract(tMin).stripTrailingZeros().precision();
