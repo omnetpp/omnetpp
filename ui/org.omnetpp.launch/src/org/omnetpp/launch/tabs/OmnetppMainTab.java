@@ -70,7 +70,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
 implements ModifyListener {
 
     public final static String VAR_NED_PATH = "opp_ned_path";
-    public final static String VAR_SHARED_LIBS = "opp_shared_libs";
+    public final static String VAR_SHARED_LIBS_LOC = "opp_shared_libs_loc";
     // UI widgets
     protected Button fProgOppRunButton;
     protected Button fProgOtherButton;
@@ -276,7 +276,7 @@ implements ModifyListener {
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_EXECUTABLE, defExe);
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_INI_FILES, defIni);
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_NED_PATH, "${"+VAR_NED_PATH+":"+defWorkDir+"}");
-        configuration.setAttribute(IOmnetppLaunchConstants.OPP_SHARED_LIBS, "${"+VAR_SHARED_LIBS+":"+defWorkDir+"}");
+        configuration.setAttribute(IOmnetppLaunchConstants.OPP_SHARED_LIBS, "${"+VAR_SHARED_LIBS_LOC+":"+defWorkDir+"}");
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_NUM_CONCURRENT_PROCESSES, 1);
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_ADDITIONAL_ARGS, "");
         
@@ -682,7 +682,7 @@ implements ModifyListener {
     protected void updateMacros() {
         String workingDir = getWorkingDirectoryText();
         String libText = fLibraryText.getText();
-        libText = libText.replaceAll("\\$\\{"+VAR_SHARED_LIBS+":.*?\\}", "\\${"+VAR_SHARED_LIBS+":"+workingDir+"}");
+        libText = libText.replaceAll("\\$\\{"+VAR_SHARED_LIBS_LOC+":.*?\\}", "\\${"+VAR_SHARED_LIBS_LOC+":"+workingDir+"}");
         fLibraryText.setText(libText);
 
         String nedText = fNedPathText.getText();
