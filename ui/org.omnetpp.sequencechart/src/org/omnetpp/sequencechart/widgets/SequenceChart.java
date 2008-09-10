@@ -115,7 +115,7 @@ public class SequenceChart
 	extends CachingCanvas
 	implements IVirtualContentWidget<IEvent>, ISelectionProvider, IEventLogChangeListener
 {
-	private static final boolean debug = true;
+	private static final boolean debug = false;
 
 	public static final String STATE_PROPERTY = "SequenceChartState";
 
