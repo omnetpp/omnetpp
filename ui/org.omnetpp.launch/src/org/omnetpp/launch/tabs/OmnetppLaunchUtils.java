@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,6 +32,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ide.OmnetppMainPlugin;
+import org.omnetpp.inifile.editor.model.ConfigRegistry;
 import org.omnetpp.inifile.editor.model.InifileParser;
 import org.omnetpp.launch.IOmnetppLaunchConstants;
 import org.omnetpp.launch.LaunchPlugin;
@@ -251,15 +253,41 @@ public class OmnetppLaunchUtils {
 
 		String recEventlog = config.getAttribute(IOmnetppLaunchConstants.OPP_RECORD_EVENTLOG, "").trim();
 		if (StringUtils.isNotEmpty(recEventlog))
-			args += " --record-eventlog "+recEventlog+" ";
+			args += "--"+ConfigRegistry.CFGID_RECORD_EVENTLOG.getKey()+" "+recEventlog+" ";
 
+		String dbgOnErr = config.getAttribute(IOmnetppLaunchConstants.OPP_DEBUG_ON_ERRORS, "").trim();
+		if (StringUtils.isNotEmpty(dbgOnErr))
+			args += "--"+ConfigRegistry.CFGID_DEBUG_ON_ERRORS.getKey()+" "+dbgOnErr+" ";
+
+		// ini files
 		String iniStr = config.getAttribute(IOmnetppLaunchConstants.OPP_INI_FILES, "").trim();
-		if (StringUtils.isNotEmpty(iniStr))
-			args += " "+iniStr;
+		iniStr = VariablesPlugin.getDefault().getStringVariableManager().performStringSubstitution(iniStr, false);
+		if (StringUtils.isNotBlank(iniStr)) {
+			String[] inifiles = StringUtils.split(iniStr);
+			// convert to file system location
+			for (int i = 0 ; i< inifiles.length; i++)
+				inifiles[i] = path2location(new Path(inifiles[i]), new Path(wdirStr)).toString();
+			args += " " + StringUtils.join(inifiles," ")+" ";
+		}
 
 		// set the program arguments
 		newCfg.setAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS, 
 				config.getAttribute(IOmnetppLaunchConstants.OPP_ADDITIONAL_ARGS, "")+args);
+
+		// handle environment: add OMNETPP_BIN and LD_LIBRARY_PATH if necessary
+        Map<String, String> envir = newCfg.getAttribute("org.eclipse.debug.core.environmentVariables", new HashMap<String, String>());
+        String path = envir.get("PATH");
+        // if the path was not set by hand, generate automatically
+        if (StringUtils.isBlank(path))
+        	envir.put("PATH", "${opp_bin_dir}${opp_ld_library_path_loc:"+wdirStr+"}${env_var:PATH}");
+
+        String ldLibPath = envir.get("LD_LIBRARY_PATH");
+        // if the path was not set by hand, generate automatically
+        if (StringUtils.isBlank(ldLibPath))
+        	envir.put("LD_LIBRARY_PATH", "${opp_ld_library_path_loc:"+wdirStr+"}${env_var:LD_LIBRARY_PATH}");
+        
+        newCfg.setAttribute("org.eclipse.debug.core.environmentVariables", envir);
+        // do we need this ??? : configuration.setAttribute("org.eclipse.debug.core.appendEnvironmentVariables", true);
 
 		return newCfg;
 	}
@@ -271,10 +299,12 @@ public class OmnetppLaunchUtils {
 		if (!path.isAbsolute() && basePath != null)
 			path = basePath.append(path);
 
-		IResource resource = ResourcesPlugin.getWorkspace().getRoot().findMember(path);
-		// return the location of the resource
+		// get the resource containing the given file (ie. split off the filename, because the file itself might not
+		// exist. 
+		IResource resource = ResourcesPlugin.getWorkspace().getRoot().findMember(path.removeLastSegments(1));
+		// return the location of the resource. add the filename back
 		if (resource != null)
-			return resource.getLocation(); 
+			return resource.getLocation().append(path.lastSegment()); 
 
 		// id resource do not exist it was an absolute location already, just return it
 		return path;

@@ -106,6 +106,11 @@ public interface IOmnetppLaunchConstants {
     public static final String OPP_RECORD_EVENTLOG = OMNETPP_LAUNCH_ID + ".RECORD_EVENTLOG";
 
     /**
+     * Whether to drop to debugger on an simulation error
+     */
+    public static final String OPP_DEBUG_ON_ERRORS = OMNETPP_LAUNCH_ID + ".DEBUG_ON_ERRORS";
+
+    /**
      * Additional hand specified arguments
      */
     public static final String OPP_ADDITIONAL_ARGS = OMNETPP_LAUNCH_ID + ".ADDITIONAL_ARG";

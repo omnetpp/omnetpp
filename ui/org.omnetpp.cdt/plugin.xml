@@ -145,6 +145,19 @@
    </extension>
    <extension
          point="org.eclipse.core.variables.dynamicVariables">
+
+      <variable
+            description="Expands to a workspace path with directories containing a shared library in any dependent project"
+            name="opp_ld_library_path"
+            resolver="org.omnetpp.cdt.launch.OppVariableResolver"
+            supportsArgument="true">
+      </variable>
+      <variable
+            description="Expands to a filesystem location path with directories containing a shared library in any dependent project"
+            name="opp_ld_library_path_loc"
+            resolver="org.omnetpp.cdt.launch.OppVariableResolver"
+            supportsArgument="true">
+      </variable>
       <variable
             description="Expands to the list of shared libraries built by the OMNeT++ project and the projects it references"
             name="opp_shared_libs"

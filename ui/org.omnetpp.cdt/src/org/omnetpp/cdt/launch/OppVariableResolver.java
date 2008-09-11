@@ -29,6 +29,7 @@ import org.omnetpp.common.util.StringUtils;
 public class OppVariableResolver implements IDynamicVariableResolver {
 	public static final String OPP_STATIC_LIBS = "opp_static_libs";
 	public static final String OPP_SHARED_LIBS = "opp_shared_libs";
+	public static final String OPP_LD_LIBRARY_PATH = "opp_ld_library_path";
 	public static final String OPP_SIMPROGS = "opp_simprogs";
 	public static final String LOC_SUFFIX = "_loc";
 
@@ -77,7 +78,7 @@ public class OppVariableResolver implements IDynamicVariableResolver {
 				    if (options.type == MakemakeOptions.Type.EXE) { 
 				        String target = options.target != null ? options.target : project.getName();
 				        IFile file = folder.getFile(new Path(target));
-				        String targetPath = isLocation ? file.getLocation().toString() : file.getFullPath().toString();
+				        String targetPath = (isLocation ? file.getLocation() : file.getFullPath()).toString();
 				        result += " " + targetPath;
 				    }
 				}
@@ -85,7 +86,7 @@ public class OppVariableResolver implements IDynamicVariableResolver {
                     if (options.type == MakemakeOptions.Type.SHAREDLIB) { 
                         String target = options.target != null ? options.target : project.getName();
 				        IFile file = folder.getFile(new Path(target));
-				        String targetPath = isLocation ? file.getLocation().toString() : file.getFullPath().toString();
+				        String targetPath = (isLocation ? file.getLocation() : file.getFullPath()).toString();
                         result += " " + targetPath;
                     }
                 }
@@ -93,14 +94,23 @@ public class OppVariableResolver implements IDynamicVariableResolver {
                     if (options.type == MakemakeOptions.Type.STATICLIB) { 
                         String target = options.target != null ? options.target : project.getName();
 				        IFile file = folder.getFile(new Path(target));
-				        String targetPath = isLocation ? file.getLocation().toString() : file.getFullPath().toString();
+				        String targetPath = (isLocation ? file.getLocation() : file.getFullPath()).toString();
                         result += " " + targetPath;
+                    }
+                }
+                else if (varName.equals(OPP_LD_LIBRARY_PATH)) {
+                    if (options.type == MakemakeOptions.Type.SHAREDLIB) { 
+				        String targetPath = (isLocation ? folder.getLocation() : folder.getFullPath()).toString();
+                        result += System.getProperty("path.separator") + targetPath;
                     }
                 }
                 else {
                     abort("internal error: ${" + varName +"}: unexpected macro name by processing class", null);
                 }
 			}
+			// add a final path separator so we can both easily prepend or append this variable
+            if (varName.equals(OPP_LD_LIBRARY_PATH))
+            	result += System.getProperty("path.separator");
 			return result;
 		} 
 		catch (CoreException e) {
