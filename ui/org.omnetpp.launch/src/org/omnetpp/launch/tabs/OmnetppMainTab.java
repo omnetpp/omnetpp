@@ -3,7 +3,6 @@ package org.omnetpp.launch.tabs;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -59,8 +58,6 @@ import org.omnetpp.inifile.editor.model.ParseException;
 import org.omnetpp.launch.IOmnetppLaunchConstants;
 import org.omnetpp.launch.LaunchPlugin;
 
-// TODO add support for modifying the environment (eg. adding the BIN directory of all dependent projects on windows)
-// and setting the LD_LIBRARY_PATH correctly
 /**
  * A launch configuration tab that displays and edits omnetpp project
  *

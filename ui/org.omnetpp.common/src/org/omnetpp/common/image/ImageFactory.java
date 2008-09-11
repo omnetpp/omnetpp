@@ -24,6 +24,7 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.CommonPlugin;
 
+// FIXME imageRegistry should be invalidated when ${opp_root} has changed
 public class ImageFactory {
     private final static String IMAGE_DIR = "/images/";
     private final static String INTERNAL_DIR = "_internal/";
