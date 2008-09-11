@@ -26,7 +26,8 @@
 <mapEntry key="PATH" value="${opp_bin_dir}${system_property:path.separator}${env_var:PATH}"/>
 </mapAttribute>
 <stringAttribute key="org.omnetpp.launch.ADDITIONAL_ARG" value=""/>
-<stringAttribute key="org.omnetpp.launch.CONFIG_NAME" value=""/>
+<stringAttribute key="org.omnetpp.launch.CONFIG_NAME" value="Tictoc1"/>
+<stringAttribute key="org.omnetpp.launch.DEBUG_ON_ERRORS" value=""/>
 <stringAttribute key="org.omnetpp.launch.EXECUTABLE" value="/tictoc/tictoc"/>
 <stringAttribute key="org.omnetpp.launch.INI_FILES" value="omnetpp.ini"/>
 <stringAttribute key="org.omnetpp.launch.NED_PATH" value="${opp_ned_path:/tictoc}"/>

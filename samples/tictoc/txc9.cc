@@ -18,7 +18,7 @@
  * in real life it's usually more practical to keep a copy of the original
  * packet so that we can re-send it without the need to build it again.
  */
-class Tic8 : public cSimpleModule
+class Tic9 : public cSimpleModule
 {
   private:
     simtime_t timeout;  // timeout
@@ -27,8 +27,8 @@ class Tic8 : public cSimpleModule
     cMessage *message;  // message that has to be re-sent on timeout
 
   public:
-    Tic8();
-    virtual ~Tic8();
+    Tic9();
+    virtual ~Tic9();
 
   protected:
     virtual cMessage *generateNewMessage();
@@ -37,20 +37,20 @@ class Tic8 : public cSimpleModule
     virtual void handleMessage(cMessage *msg);
 };
 
-Define_Module(Tic8);
+Define_Module(Tic9);
 
-Tic8::Tic8()
+Tic9::Tic9()
 {
     timeoutEvent = message = NULL;
 }
 
-Tic8::~Tic8()
+Tic9::~Tic9()
 {
     cancelAndDelete(timeoutEvent);
     delete message;
 }
 
-void Tic8::initialize()
+void Tic9::initialize()
 {
     // Initialize variables.
     seq = 0;
@@ -64,7 +64,7 @@ void Tic8::initialize()
     scheduleAt(simTime()+timeout, timeoutEvent);
 }
 
-void Tic8::handleMessage(cMessage *msg)
+void Tic9::handleMessage(cMessage *msg)
 {
     if (msg==timeoutEvent)
     {
@@ -92,7 +92,7 @@ void Tic8::handleMessage(cMessage *msg)
     }
 }
 
-cMessage *Tic8::generateNewMessage()
+cMessage *Tic9::generateNewMessage()
 {
     // Generate a message with a different name every time.
     char msgname[20];
@@ -101,7 +101,7 @@ cMessage *Tic8::generateNewMessage()
     return msg;
 }
 
-void Tic8::sendCopyOf(cMessage *msg)
+void Tic9::sendCopyOf(cMessage *msg)
 {
     // Duplicate message and send the copy.
     cMessage *copy = (cMessage *) msg->dup();
@@ -112,15 +112,15 @@ void Tic8::sendCopyOf(cMessage *msg)
 /**
  * Sends back an acknowledgement -- or not.
  */
-class Toc8 : public cSimpleModule
+class Toc9 : public cSimpleModule
 {
   protected:
     virtual void handleMessage(cMessage *msg);
 };
 
-Define_Module(Toc8);
+Define_Module(Toc9);
 
-void Toc8::handleMessage(cMessage *msg)
+void Toc9::handleMessage(cMessage *msg)
 {
     if (uniform(0,1) < 0.1)
     {

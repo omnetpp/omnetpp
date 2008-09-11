@@ -20,34 +20,34 @@
  * was lost and create another one. The timeout will be handled using
  * (what else?) a self-message.
  */
-class Tic7 : public cSimpleModule
+class Tic8 : public cSimpleModule
 {
   private:
     simtime_t timeout;  // timeout
     cMessage *timeoutEvent;  // holds pointer to the timeout self-message
 
   public:
-    Tic7();
-    virtual ~Tic7();
+    Tic8();
+    virtual ~Tic8();
 
   protected:
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 };
 
-Define_Module(Tic7);
+Define_Module(Tic8);
 
-Tic7::Tic7()
+Tic8::Tic8()
 {
     timeoutEvent = NULL;
 }
 
-Tic7::~Tic7()
+Tic8::~Tic8()
 {
     cancelAndDelete(timeoutEvent);
 }
 
-void Tic7::initialize()
+void Tic8::initialize()
 {
     // Initialize variables.
     timeout = 1.0;
@@ -60,7 +60,7 @@ void Tic7::initialize()
     scheduleAt(simTime()+timeout, timeoutEvent);
 }
 
-void Tic7::handleMessage(cMessage *msg)
+void Tic8::handleMessage(cMessage *msg)
 {
     if (msg==timeoutEvent)
     {
@@ -89,15 +89,15 @@ void Tic7::handleMessage(cMessage *msg)
 /**
  * Sends back an acknowledgement -- or not.
  */
-class Toc7 : public cSimpleModule
+class Toc8 : public cSimpleModule
 {
   protected:
     virtual void handleMessage(cMessage *msg);
 };
 
-Define_Module(Toc7);
+Define_Module(Toc8);
 
-void Toc7::handleMessage(cMessage *msg)
+void Toc8::handleMessage(cMessage *msg)
 {
     if (uniform(0,1) < 0.1)
     {

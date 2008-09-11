@@ -60,7 +60,7 @@ void Txc12::handleMessage(cMessage *msg)
 void Txc12::forwardMessage(cMessage *msg)
 {
     // In this example, we just pick a random gate to send it on.
-    // We draw a random number between 0 and the size of gate `out[]'.
+    // We draw a random number between 0 and the size of gate `gate[]'.
     int n = gateSize("gate");
     int k = intuniform(0,n-1);
 

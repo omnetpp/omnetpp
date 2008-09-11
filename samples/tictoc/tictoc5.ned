@@ -26,7 +26,7 @@ simple Txc5
 // empty, because the default value of the sendMsgOnInit parameter is false anyway.
 // Note that the limit parameter is still unbound here.
 //
-simple Tic4b extends Txc5
+simple Tic5 extends Txc5
 {
     parameters:
         @display("i=,cyan");
@@ -38,7 +38,7 @@ simple Tic4b extends Txc5
 // empty, because the default value of the sendMsgOnInit parameter is false anyway.
 // Note that the limit parameter is still unbound here.
 //
-simple Toc4b extends Txc5
+simple Toc5 extends Txc5
 {
     parameters:
         @display("i=,gold");
@@ -51,8 +51,8 @@ simple Toc4b extends Txc5
 network Tictoc5
 {
     submodules:
-        tic: Tic4b;  // the limit parameter is still unbound here. We will get it from the ini file
-        toc: Toc4b;
+        tic: Tic5;  // the limit parameter is still unbound here. We will get it from the ini file
+        toc: Toc5;
     connections:
         tic.out --> {  delay = 100ms; } --> toc.in;
         tic.in <-- {  delay = 100ms; } <-- toc.out;
