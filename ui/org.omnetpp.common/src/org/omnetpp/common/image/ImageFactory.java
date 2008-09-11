@@ -14,7 +14,7 @@ import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.filesystem.URIUtil;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.variables.VariablesPlugin;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
@@ -22,6 +22,7 @@ import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
+import org.omnetpp.common.CommonPlugin;
 
 public class ImageFactory {
     private final static String IMAGE_DIR = "/images/";
@@ -130,19 +131,17 @@ public class ImageFactory {
 
     static {
         // default is the "images" directory in the main omnetpp directory
-        String defaultImageDir = new Path(Platform.getInstallLocation().getURL().getFile()).append("../images").toString();
-        imageDirs = new String[] { defaultImageDir };
+        imageDirs = new String[] { "${opp_root}/images" };
 
         // if image path is specified we should use that one instead of ../images
-        String omnetppBitmapPath = System.getenv("OMNETPP_IMAGE_PATH");
-        if (omnetppBitmapPath != null)
-            imageDirs = omnetppBitmapPath.split(";");
+        String omnetppImagePath = System.getenv("OMNETPP_IMAGE_PATH");
+        if (omnetppImagePath != null)
+            imageDirs = omnetppImagePath.split(";");
         // create and register a default / not found image
         imageRegistry.put(DEFAULT_KEY,
                 new NedImageDescriptor(ImageFactory.class, DEFAULT_NAME));
-
     }
-
+    
     /**
      * @param imageId
      * @return a 16x16 image or null if there is no icon for that id
@@ -328,14 +327,14 @@ public class ImageFactory {
         NedImageDescriptor result;
         // TODO svg support missing
         for (String currPath : imageDirs)
-            if ((result = createDescriptor(null, currPath, baseName, "png", preferredSize)) != null)
+            if ((result = createDescriptor(null, resolve(currPath), baseName, "png", preferredSize)) != null)
                 return result;
         // if not found in the filesystem, look for it in the JAR file
         if ((result = createDescriptor(ImageFactory.class, IMAGE_DIR, baseName, "png", preferredSize)) != null)
             return result;
         // serach for gifs if no PNG found
         for (String currPath : imageDirs)
-            if ((result = createDescriptor(null, currPath, baseName, "gif", preferredSize)) != null)
+            if ((result = createDescriptor(null, resolve(currPath), baseName, "gif", preferredSize)) != null)
                 return result;
         if ((result = createDescriptor(ImageFactory.class, IMAGE_DIR, baseName, "gif", preferredSize)) != null)
             return result;
@@ -393,7 +392,7 @@ public class ImageFactory {
     	Set<String> result = new HashSet<String>();
     	for (String basedir : imageDirs) {
 			try {
-				IFileStore baseStore = EFS.getStore(URIUtil.toURI(basedir).normalize());
+				IFileStore baseStore = EFS.getStore(URIUtil.toURI(resolve(basedir)).normalize());
 	    		result.addAll(getNameList(baseStore, baseStore.toURI().toString().length()));
 			} catch (CoreException e) {	}
     	}
@@ -495,5 +494,14 @@ public class ImageFactory {
     	loader.data = new ImageData[] { image.getImageData() };
     	loader.save(tempFile.getCanonicalPath(), format);
     	return tempFile.getCanonicalPath();
+    }
+    
+    private static String resolve(String str) {
+    	try {
+			return VariablesPlugin.getDefault().getStringVariableManager().performStringSubstitution(str, false);
+		} catch (CoreException e) {
+			CommonPlugin.logError(e);
+		}
+		return str;
     }
 }
