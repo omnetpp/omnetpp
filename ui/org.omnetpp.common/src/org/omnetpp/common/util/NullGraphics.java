@@ -12,6 +12,8 @@ import org.omnetpp.common.color.ColorFactory;
 
 public class NullGraphics extends Graphics
 {
+    private int drawCount = 0;
+    
     private Rectangle clipping;
 
     private Color foregroundColor = ColorFactory.BLACK;
@@ -19,6 +21,10 @@ public class NullGraphics extends Graphics
     private Color backgroundColor = ColorFactory.WHITE;
 
     private FontMetrics fontMetrics = new TextLayout(null).getLineMetrics(0);
+    
+    public int getDrawCount() {
+        return drawCount;
+    }
 
     @Override
     public void clipRect(Rectangle r) {
@@ -30,82 +36,102 @@ public class NullGraphics extends Graphics
 
     @Override
     public void drawArc(int x, int y, int w, int h, int offset, int length) {
+        drawCount++;
     }
 
     @Override
     public void drawFocus(int x, int y, int w, int h) {
+        drawCount++;
     }
 
     @Override
     public void drawImage(Image srcImage, int x, int y) {
+        drawCount++;
     }
 
     @Override
     public void drawImage(Image srcImage, int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2) {
+        drawCount++;
     }
 
     @Override
     public void drawLine(int x1, int y1, int x2, int y2) {
+        drawCount++;
     }
 
     @Override
     public void drawOval(int x, int y, int w, int h) {
+        drawCount++;
     }
 
     @Override
     public void drawPolygon(PointList points) {
+        drawCount++;
     }
 
     @Override
     public void drawPolyline(PointList points) {
+        drawCount++;
     }
 
     @Override
     public void drawRectangle(int x, int y, int width, int height) {
+        drawCount++;
     }
 
     @Override
     public void drawRoundRectangle(Rectangle r, int arcWidth, int arcHeight) {
+        drawCount++;
     }
 
     @Override
     public void drawString(String s, int x, int y) {
+        drawCount++;
     }
 
     @Override
     public void drawText(String s, int x, int y) {
+        drawCount++;
     }
 
     @Override
     public void fillArc(int x, int y, int w, int h, int offset, int length) {
+        drawCount++;
     }
 
     @Override
     public void fillGradient(int x, int y, int w, int h, boolean vertical) {
+        drawCount++;
     }
 
     @Override
     public void fillOval(int x, int y, int w, int h) {
+        drawCount++;
     }
 
     @Override
     public void fillPolygon(PointList points) {
+        drawCount++;
     }
 
     @Override
     public void fillRectangle(int x, int y, int width, int height) {
+        drawCount++;
     }
 
     @Override
     public void fillRoundRectangle(Rectangle r, int arcWidth, int arcHeight) {
+        drawCount++;
     }
 
     @Override
     public void fillString(String s, int x, int y) {
+        drawCount++;
     }
 
     @Override
     public void fillText(String s, int x, int y) {
+        drawCount++;
     }
 
     @Override

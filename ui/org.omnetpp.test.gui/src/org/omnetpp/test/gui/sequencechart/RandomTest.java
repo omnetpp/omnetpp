@@ -3,17 +3,24 @@ package org.omnetpp.test.gui.sequencechart;
 import java.math.BigDecimal;
 import java.util.Random;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.draw2d.Graphics;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.swt.SWT;
+import org.eclipse.ui.internal.Workbench;
 import org.omnetpp.common.eventlog.EventLogFilterParameters;
 import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.util.NullGraphics;
+import org.omnetpp.eventlog.engine.EventLog;
+import org.omnetpp.eventlog.engine.FileReader;
 import org.omnetpp.eventlog.engine.FilteredEventLog;
 import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
 import org.omnetpp.eventlog.engine.ModuleCreatedEntryList;
 import org.omnetpp.eventlog.engine.PStringVector;
+import org.omnetpp.sequencechart.editors.SequenceChartContributor;
 import org.omnetpp.sequencechart.widgets.SequenceChart;
 import org.omnetpp.sequencechart.widgets.SequenceChart.AxisOrderingMode;
 import org.omnetpp.sequencechart.widgets.SequenceChart.TimelineMode;
@@ -26,31 +33,48 @@ public class RandomTest
 {
     private static long SECOND = 1000;
     private static long MINUTE = SECOND * 60;
-    private static long HOUR = MINUTE * 60;
+    
+    private static boolean debug = true;
+    
+    private long testMillis;
 
     private Random random = new Random(0);
     
     private SequenceChart control;
+    
+    private boolean showGUI;
 
     public RandomTest() {
-        super("stress.log");
+        this("stress.log", 1 * MINUTE, true);
+    }
+
+    public RandomTest(String fileName, long testMillis, boolean showGUI) {
+        super(fileName);
+        this.testMillis = testMillis;
+        this.showGUI = showGUI;
     }
 
     @Override
     protected void setUpInternal() throws Exception {
         super.setUpInternal();
-        openFileFromProjectExplorerViewInSequenceChartEditor();
+
+        if (showGUI)
+            openFileFromProjectExplorerViewInSequenceChartEditor();
     }
     
     public void testRandom() {
-        control = findSequenceChart().getControl();
+        if (debug)
+            System.out.println("Started testing, file name: " + fileName);
+
         initialize();
 
         long count = 0;
         long begin = System.currentTimeMillis();
 
-        while ((System.currentTimeMillis() - begin) < 1 * MINUTE) {
-            System.out.println("At " + count);
+        while ((System.currentTimeMillis() - begin) < testMillis) {
+            if (debug)
+                System.out.println("At " + count);
+
             count++;
 
             // move
@@ -68,26 +92,48 @@ public class RandomTest
             // filter
             if (random.nextDouble() < 0.2)
                 setRandomFilter();
-            
+
             // timeline mode
             if (random.nextDouble() < 0.1)
                 changeToRandomTimelineMode();
 
-            paint();
+            if (!showGUI)
+                paint();
         }
+        
+        if (debug)
+            System.out.println("Finished testing, file name: " + fileName + " Paint count: " + count);
     }
 
     @UIStep
     private void initialize() {
+        if (showGUI)
+            control = findSequenceChart().getControl();            
+        else
+        {
+            IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(filePath));
+            String fullFilePath = file.getLocation().toOSString();
+            IEventLog eventLog = new EventLog(new FileReader(fullFilePath, /* EventLog will delete it */false));
+
+            control = new SequenceChart(Workbench.getInstance().getActiveWorkbenchWindow().getShell(), SWT.NONE);
+            control.setFollowSelection(false);
+            control.setSequenceChartContributor(new SequenceChartContributor());
+            control.setInput(new EventLogInput(file, eventLog));
+            control.setSize(1000, 1000);
+        }
+
         control.gotoBegin();
         control.defaultZoom();
     }
 
     @UIStep
     private void paint() {
-        Graphics graphics = new NullGraphics();
+        NullGraphics graphics = new NullGraphics();
         graphics.setClip(new Rectangle(0, 0, 1000, 1000));
         control.paintArea(graphics);
+        
+        if (debug)
+            System.out.println("Draw called " + graphics.getDrawCount() + " times");
     }
 
     @UIStep
@@ -95,30 +141,41 @@ public class RandomTest
         doRandomOperation(new Object[] {
             0.3, new Runnable() {
                     public void run() {
-                        System.out.println("Scrolling right");
+                        if (debug)
+                            System.out.println("Scrolling right");
+
                         control.scrollHorizontal(1000);
                     }},
             0.3, new Runnable() {
                     public void run() {
-                        System.out.println("Scrolling left");
+                        if (debug)
+                            System.out.println("Scrolling left");
+
                         control.scrollHorizontal(-1000);
                     }},
             0.3, new Runnable() {
                     public void run() {
                         if (!control.getEventLog().isEmpty()) {
                             IEvent event = control.getEventLog().getApproximateEventAt(random.nextDouble());
-                            System.out.println("Jumping to event #" + event.getEventNumber());
+
+                            if (debug)
+                                System.out.println("Jumping to event #" + event.getEventNumber());
+
                             control.gotoElement(event);
                         }
                     }},
             0.05, new Runnable() {
                     public void run() {
-                        System.out.println("Jumping to begin");
+                        if (debug)
+                            System.out.println("Jumping to begin");
+
                         control.gotoBegin();
                     }},
             0.05, new Runnable() {
                     public void run() {
-                        System.out.println("Jumping to end");
+                        if (debug)
+                            System.out.println("Jumping to end");
+
                         control.gotoEnd();
                     }},
             });
@@ -129,17 +186,23 @@ public class RandomTest
         doRandomOperation(new Object[] {
             0.45, new Runnable() {
                     public void run() {
-                        System.out.println("Zooming in");
+                        if (debug)
+                            System.out.println("Zooming in");
+
                         control.zoomIn();
                     }},
             0.45, new Runnable() {
                     public void run() {
-                        System.out.println("Zooming out");
+                        if (debug)
+                            System.out.println("Zooming out");
+
                         control.zoomOut();
                     }},
             0.1, new Runnable() {
                     public void run() {
-                        System.out.println("Setting zoom level to default");
+                        if (debug)
+                            System.out.println("Setting zoom level to default");
+
                         control.defaultZoom(); 
                     }}
             });
@@ -148,7 +211,10 @@ public class RandomTest
     @UIStep
     private void doRandomAxisOrdering() {
         AxisOrderingMode axisOrderingMode = AxisOrderingMode.values()[random.nextInt(AxisOrderingMode.values().length)];
-        System.out.println("Changing ordering mode to " + axisOrderingMode.name());
+        
+        if (debug)
+            System.out.println("Changing ordering mode to " + axisOrderingMode.name());
+
         control.setAxisOrderingMode(axisOrderingMode);
     }
 
@@ -157,7 +223,9 @@ public class RandomTest
         EventLogInput eventLogInput = control.getInput();
 
         if (random.nextDouble() < 0.5 && control.getEventLog() instanceof FilteredEventLog) {
-            System.out.println("Removing filter");
+            if (debug)
+                System.out.println("Removing filter");
+
             eventLogInput.removeFilter();
         }
         else {
@@ -166,7 +234,8 @@ public class RandomTest
                 eventLog = ((FilteredEventLog)eventLog).getEventLog();
 
             if (!eventLog.isEmpty()) {
-                System.out.print("Changing filter to ");
+                if (debug)
+                    System.out.print("Changing filter to ");
 
                 int count;
                 IEvent lastEvent = eventLog.getLastEvent();
@@ -238,7 +307,9 @@ public class RandomTest
                         filterParameters.messageClassNames[i] = names.get(random.nextInt((int)names.size()));
                 }
     
-                System.out.println(filterParameters.toString());
+                if (debug)
+                    System.out.println(filterParameters.toString());
+
                 eventLogInput.filter();
             }
         }
@@ -247,7 +318,10 @@ public class RandomTest
     @UIStep
     private void changeToRandomTimelineMode() {
         TimelineMode timelineMode = TimelineMode.values()[random.nextInt(TimelineMode.values().length)];
-        System.out.println("Changing timeline mode to " + timelineMode.name());
+
+        if (debug)
+            System.out.println("Changing timeline mode to " + timelineMode.name());
+        
         control.setTimelineMode(timelineMode);
     }
 
