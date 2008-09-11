@@ -152,17 +152,24 @@
             name="NED Source Folders">
          <enabledWhen>
             <adapt type="org.eclipse.core.resources.IProject">
-               <test property="org.eclipse.core.resources.projectNature" value="org.omnetpp.main.omnetppnature"/>
             </adapt>
          </enabledWhen>
+         <filter
+               name="projectNature"
+               value="org.omnetpp.main.omnetppnature">
+         </filter>
       </page>
       <page
             class="org.omnetpp.ide.properties.EmptyPropertyPage"
             id="org.omnetpp.main.OmnetppCategory"
             name="OMNeT++">
+         <filter
+               name="projectNature"
+               value="org.omnetpp.main.omnetppnature">
+         </filter>
          <enabledWhen>
-            <adapt type="org.eclipse.core.resources.IProject">
-               <test property="org.eclipse.core.resources.projectNature" value="org.omnetpp.main.omnetppnature"/>
+            <adapt
+                  type="org.eclipse.core.resources.IProject">
             </adapt>
          </enabledWhen>
       </page>

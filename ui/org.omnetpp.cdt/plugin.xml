@@ -272,31 +272,23 @@
             class="org.omnetpp.cdt.ui.MakemakeFolderPropertyPage"
             id="org.omnetpp.cdt.BuildSpec"
             name="Makemake (OMNeT++)">
+         <filter
+               name="projectNature"
+               value="org.omnetpp.main.omnetppnature">
+         </filter>
+         <filter
+               name="projectNature"
+               value="org.eclipse.cdt.managedbuilder.core.managedBuildNature">
+         </filter>
          <enabledWhen>
-            <and>
-               <or>
-               <instanceof
-                     value="org.eclipse.core.resources.IContainer">
-               </instanceof>
-               <instanceof
-                     value="org.eclipse.cdt.core.model.ICContainer">
-               </instanceof>
-               </or>
-               <adapt
-                     type="org.eclipse.core.resources.IResource">
-                 <test
-                     property="org.eclipse.core.resources.projectNature"
-                     value="org.eclipse.cdt.managedbuilder.core.managedBuildNature">
-                 </test>
-               </adapt>
-               <adapt
-                     type="org.eclipse.core.resources.IResource">
-                 <test
-                     property="org.eclipse.core.resources.projectNature"
-                     value="org.omnetpp.main.omnetppnature">
-                 </test>
-               </adapt>
-            </and>
+            <or>
+		     <instanceof value="org.eclipse.core.resources.IProject"/>
+		     <instanceof value="org.eclipse.cdt.core.model.ICProject"/>
+		     
+		     <instanceof value="org.eclipse.core.resources.IFolder"/>
+		     <instanceof value="org.eclipse.cdt.core.model.ICContainer"/>
+
+		    </or>          
          </enabledWhen>
       </page>
    </extension>
