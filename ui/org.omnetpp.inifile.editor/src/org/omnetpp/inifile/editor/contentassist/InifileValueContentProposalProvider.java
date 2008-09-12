@@ -97,6 +97,7 @@ public class InifileValueContentProposalProvider extends ContentProposalProvider
 	 * Generate a list of proposal candidates. They will be sorted and filtered by prefix
 s	 * before getting presented to the user.
 	 */
+	// XXX do not return null, if pattern matches parameters of different types
 	@Override
 	protected List<IContentProposal> getProposalCandidates(String prefix) {
 		KeyType keyType = (key == null) ? KeyType.CONFIG : InifileAnalyzer.getKeyType(key);
