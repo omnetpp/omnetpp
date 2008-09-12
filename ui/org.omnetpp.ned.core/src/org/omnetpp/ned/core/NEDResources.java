@@ -605,7 +605,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 		if (nedSourceFolders.length == 1 && nedSourceFolders[0] == project) // shortcut
 			return project;
 
-		for (IContainer container = file.getParent(); container != project; container = container.getParent())
+		for (IContainer container = file.getParent(); !container.equals(project); container = container.getParent())
 			if (ArrayUtils.contains(nedSourceFolders, container))
 				return container;
     	return null;

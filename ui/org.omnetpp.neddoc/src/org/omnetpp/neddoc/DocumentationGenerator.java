@@ -904,8 +904,9 @@ public class DocumentationGenerator {
                 withGeneratingHTMLFile(getOutputFileName(file), new Runnable() {
                     public void run() throws IOException, CoreException {
                         monitor.subTask(file.toString());
+                        String fileType = nedResources.isNedFile(file) ? "NED" : msgResources.isMsgFile(file) ? "Msg" : "";
 
-                        out("<h2 class=\"comptitle\">Ned File <i>" + file.getProjectRelativePath() + "</i></h2>\r\n" +
+                        out("<h2 class=\"comptitle\">" + fileType + " File <i>" + file.getProjectRelativePath() + "</i></h2>\r\n" +
                             "<h3 class=\"subtitle\">Contains:</h3>\r\n" +
                             "<ul>\r\n");
 

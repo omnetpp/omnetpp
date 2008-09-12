@@ -98,7 +98,9 @@ public class MsgResources implements IMsgTypeResolver {
     }
 
     public synchronized boolean isMsgFile(IResource resource) {
-        return resource instanceof IFile && MSG_EXTENSION.equalsIgnoreCase(((IFile)resource).getFileExtension());
+        return resource instanceof IFile &&
+               MSG_EXTENSION.equalsIgnoreCase(((IFile)resource).getFileExtension()) &&
+               NEDResourcesPlugin.getNEDResources().getNedSourceFolderFor((IFile)resource) != null;
     }
 
     public synchronized IMsgTypeElement lookupMsgType(String name) {
