@@ -84,7 +84,7 @@ public class InifileAnalyzer {
 	public enum KeyType {
 		CONFIG, // contains no dot (like sim-time-limit=, etc)
 		PARAM,  // contains dot, but no hyphen: parameter setting (like **.app.delay)
-		PER_OBJECT_CONFIG; // dotted, and contains hyphen (like **.apply-default, rng mapping, vector configuration, etc)
+		PER_OBJECT_CONFIG; // dotted, and contains hyphen (like **.partition-id, rng mapping, vector configuration, etc)
 	};
 
     /**

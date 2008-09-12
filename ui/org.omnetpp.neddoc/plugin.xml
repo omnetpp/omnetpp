@@ -19,7 +19,7 @@
                id="org.omnetpp.neddoc.toolbars.neddocToolbar">
             <command
                   commandId="org.omnetpp.neddoc.commands.neddocCommand"
-                  tooltip="Generate NED Documantation..."
+                  tooltip="Generate NED Documentation..."
                   id="org.omnetpp.neddoc.toolbars.neddocCommand">
             </command>
          </toolbar>

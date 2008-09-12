@@ -899,55 +899,50 @@ NEXT: @ref part5
 
 PREV: @ref part4 UP: @ref contents
 
-@section scalar Scalar statistics
-The OMNeT++ IDE can help you to analyze your results. It supports filtering,
-processing and displaying vector and scalar data files and can display histograms too.
-The following pictures just give a glimpse of the features built into the OMNeT++ IDE.
+@section results Visualizing output scalars and vectors
 
-@note For further information about the charting and processing capabilities
-you should look into the <b>OMNeT++ Users Guide</b>.
+The OMNeT++ IDE can help you to analyze your results. It supports filtering,
+processing and displaying vector and scalar data, and can display histograms too.
+The following diagrams have been created with the Result Analysis tool of the IDE.
+
+@note For further information about the charting and processing capabilities,
+please refer to the <b>OMNeT++ Users Guide</b>.
 
 Our last model records the <tt>hopCount</tt> of a message each time the message
-reaches its destination. We can create diagrams and charts from the recorded statistics.
-
-<img src="browse-data.png">
-
-The IDE allows you to browse, filter and organize you simulation data.
-We can select which node's data we are interested in.
-
-<img src="scalars.png">
-
-The above chart displays the mean and the maximum of the <tt>hopCount</tt> of the messages
-for each destination node based on the scalar data recorded at the end of the simulation.
-
-@section vector Plotting the output vectors
-We can display also the vector data which displays the <tt>hopCount</tt> for each message
-that reaches the destination. We are displaying data only for node 0 and 1.
+reaches its destination. The following plot shows these vectors for nodes 0 and 1.
 
 <img src="vectors2.png">
 
 If we apply a <tt>mean</tt> operation we can see how the <tt>hopCount</tt> in the different
-nodes converges to the average.
+nodes converge to an average:
 
 <img src="vectors.png">
 
-@section histograms Histograms
+The next chart displays the mean and the maximum of the <tt>hopCount</tt> of the messages
+for each destination node, based on the scalar data recorded at the end of the simulation.
 
-It is also possible to display histograms about how the <tt>hopCount</tt> distribution looks like.
+<img src="scalars.png">
+
+The following diagram shows the histogram of <tt>hopCount</tt>'s distribution.
 
 <img src="histogram.png">
 
+
 @section logs Sequence charts end event logs
 
-Understanding the dynamic behavior of your model is very important.
 The OMNeT++ simulation kernel can record the message exchanges during the
-simulation. This log file can be analyzed later with the sequence chart tool.
+simulation into an <i>event log file</i>. This log file can be analyzed later 
+with the Sequence Chart tool.
+
+The following figure has been created with the Sequence Chart tool, and shows 
+how the message is routed between the different nodes in the network. 
+In this instance the chart is very simple, but when you have a complex model,
+sequence charts can be very valuable in debugging, exploring or documenting
+the model's behaviour.
 
 <img src="eventlog.png">
 
-We can see on the above chart how the message is routed between the different nodes
-in the network. The sequence chart is a very powerful tool to understand your model's
-behavior.
+
 
 @section conclusion Conclusion
 

@@ -572,13 +572,11 @@ public class ParametersPage extends FormPage {
 			// save selection
 			IStructuredSelection sel = (IStructuredSelection) treeViewer.getSelection();
 
-			// add user-selected keys to the document, and also **.apply-default if chosen by the user
+			// add user-selected keys to the document
 			String[] keys = dialog.getKeys();
 			String section = dialog.getSection();
 			try {
 				doc.addEntries(section, keys, null, null, null);
-				if (dialog.getAddApplyDefault())
-					InifileUtils.addEntry(doc, section, "**.apply-default", "true", "");
 
 				// refresh table and restore selection
 				reread();

@@ -11,14 +11,12 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.texteditor.ResourceAction;
-
 import org.omnetpp.inifile.editor.IGotoInifile;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.editors.InifileEditorData;
 import org.omnetpp.inifile.editor.editors.InifileSelectionItem;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
-import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.inifile.editor.text.InifileEditorMessages;
 import org.omnetpp.inifile.editor.text.actions.InifileTextEditorAction;
 
@@ -69,12 +67,10 @@ public class AddInifileKeysAction extends ResourceAction {
 			// open the dialog
 			AddInifileKeysDialog dialog = new AddInifileKeysDialog(workbenchWindow.getShell(), analyzer, initialSection);
 			if (dialog.open()==Dialog.OK) {
-				// add user-selected keys to the document, and also **.apply-default if chosen by the user
+				// add user-selected keys to the document
 				String[] keys = dialog.getKeys();
 				String section = dialog.getSection();
 				doc.addEntries(section, keys, null, null, null);
-				if (dialog.getAddApplyDefault())
-					InifileUtils.addEntry(doc, section, "**.apply-default", "true", "");
 			}
 		}
 	}

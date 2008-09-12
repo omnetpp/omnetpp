@@ -21,8 +21,7 @@ import org.omnetpp.inifile.editor.model.ParamResolution;
  * 
  * @author Andras
  */
-//XXX suggest apply-default for parameters that have default value?
-//XXX add icons (different icon for modules, parameters, apply-default)
+//TODO add icons (different icon for modules, parameters, etc)
 public class InifileParamKeyContentProposalProvider extends ContentProposalProvider {
 	private String section;
 	private boolean addEqualSign = false;
@@ -109,15 +108,6 @@ public class InifileParamKeyContentProposalProvider extends ContentProposalProvi
 				otherProposals.add(prefixPart1dot+"**.");
 			}
 
-			// add "apply-default" proposals
-			if (!doc.containsKey(section, "**.apply-default"))
-				applyDefaultProposals.add("**.apply-default");
-			for (String param : paramProposals) {
-				String applyDefault = param + ".apply-default";
-				if (!doc.containsKey(section, applyDefault))
-					applyDefaultProposals.add(applyDefault);
-			}
-			
 			// convert strings to actual proposals, and return them. Each group will be sorted separately
 			List<IContentProposal> proposals = new ArrayList<IContentProposal>();
 			addProposals(proposals, otherProposals, "");

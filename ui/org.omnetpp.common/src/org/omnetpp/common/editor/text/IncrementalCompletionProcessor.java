@@ -102,7 +102,7 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
         String displayLine[] = new String[proposalString.length];
         for (int i=0; i<proposalString.length; i++) {
             Assert.isTrue(!proposalString[i].contains(SEPARATOR), "Proposal string contains an internal terminator char.");
-            displayLine[i] = proposalString[i]+SEPARATOR+descriptions[i];
+            displayLine[i] = proposalString[i]+SEPARATOR+StringUtils.nullToEmpty(descriptions[i]);
         }
         
         Arrays.sort(displayLine, StringUtils.dictionaryComparator);

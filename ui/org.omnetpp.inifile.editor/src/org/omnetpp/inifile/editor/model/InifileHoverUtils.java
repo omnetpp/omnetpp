@@ -117,7 +117,7 @@ public class InifileHoverUtils {
 			// config key: display description
 			return getConfigHoverText(section, key, doc);
 		}
-		else if (keyType == KeyType.PARAM || key.endsWith(".apply-default")) { //XXX hardcoded key name
+		else if (keyType == KeyType.PARAM) {
 			// parameter assignment: display which parameters it matches
 			return getParamKeyHoverText(section, key, analyzer);
 		}

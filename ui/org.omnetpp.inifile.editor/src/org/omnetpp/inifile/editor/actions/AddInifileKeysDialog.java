@@ -51,7 +51,6 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
     private Label networkNameLabel;
 	private Label sectionChainLabel;
 	private Button skipCheckbox;
-	private Button addApplyCheckbox;
     private CheckboxTableViewer listViewer;
 
     // dialog state
@@ -61,7 +60,6 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
 	// the result
     private String[] keysToAdd;
     private String selectedSection;
-    private boolean addApplyDefault;
 
 	// sizing constants
     private final static int SIZING_SELECTION_WIDGET_HEIGHT = 120;
@@ -143,17 +141,13 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
 		// checkboxes
 		skipCheckbox = new Button(group2, SWT.CHECK);
 		skipCheckbox.setText("Skip parameters that have a default value");
-		addApplyCheckbox = new Button(group2, SWT.CHECK);
-		addApplyCheckbox.setText("Insert corresponding \"**.apply-default=true\" line into the file");
 		skipCheckbox.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				addApplyCheckbox.setSelection(skipCheckbox.getSelection());
 				buildTableContents();
 			}
 		});
 		GridData gridData = new GridData();
 		gridData.horizontalIndent = 20;
-		addApplyCheckbox.setLayoutData(gridData);
 		
         // table and buttons
 		listViewer = CheckboxTableViewer.newCheckList(group2, SWT.BORDER);
@@ -256,17 +250,7 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
 		sectionChainLabel.setText("Section fallback chain: "+(sectionChain.length==0 ? "<no sections>" : StringUtils.join(sectionChain, " > "))+"  ");
 		sectionChainLabel.getParent().layout();
 		
-		String apply = doc.getValue(selectedSection, "**.apply-default");
-		if (apply != null && apply.equals("true")) {
-			skipCheckbox.setSelection(false);
-			skipCheckbox.setEnabled(false);
-			addApplyCheckbox.setSelection(false);
-			addApplyCheckbox.setEnabled(false);
-		}
-		else {
-			skipCheckbox.setEnabled(true);
-			addApplyCheckbox.setEnabled(skipCheckbox.getSelection());
-		}
+		skipCheckbox.setEnabled(true);
 		
 		// get list of unassigned parameters
 		List<ParamResolution> unassignedParams = Arrays.asList(analyzer.getUnassignedParams(selectedSection));
@@ -317,7 +301,6 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
 		}
 	}
 	
-    @SuppressWarnings("unchecked")
 	protected void okPressed() {
     	// save dialog state into variables, so that client can retrieve them after 
     	// the dialog was disposed
@@ -325,7 +308,6 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
     	for (Object res : listViewer.getCheckedElements())
     		result.add(getKeyFor((ParamResolution)res));
     	this.keysToAdd = result.toArray(new String[]{});
-    	this.addApplyDefault = addApplyCheckbox.getEnabled() && addApplyCheckbox.getSelection();
         super.okPressed();
     }
 	
@@ -341,12 +323,5 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
 	 */
 	public String getSection() {
 		return selectedSection;
-	}
-
-	/**
-	 * Returns whether a "**.apply-default = true" line should be inserted
-	 */
-	public boolean getAddApplyDefault() {
-		return addApplyDefault;
 	}
 }

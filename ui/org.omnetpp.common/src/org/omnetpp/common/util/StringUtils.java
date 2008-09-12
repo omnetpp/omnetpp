@@ -274,7 +274,7 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
 
     /**
      * Formats a NED comment as plain text. Basically, strips "//" from the lines,
-     * any removes explicit HTML formatting from the string.
+     * and removes explicit HTML formatting from the string.
      */
     public static String makeTextDocu(String comment) {
         if (comment == null)

@@ -97,7 +97,6 @@ public class InifileValueContentProposalProvider extends ContentProposalProvider
 	 * Generate a list of proposal candidates. They will be sorted and filtered by prefix
 s	 * before getting presented to the user.
 	 */
-	// XXX do not return null, if pattern matches parameters of different types
 	@Override
 	protected List<IContentProposal> getProposalCandidates(String prefix) {
 		KeyType keyType = (key == null) ? KeyType.CONFIG : InifileAnalyzer.getKeyType(key);
@@ -226,9 +225,10 @@ s	 * before getting presented to the user.
 		if (analyzer==null)
 			return new ArrayList<IContentProposal>();  // nothing
 
-		ParamResolution[] resList = analyzer.getParamResolutionsForKey(section, key);
+		List<IContentProposal> p = new ArrayList<IContentProposal>();
 
 		// collect unique param nodes
+		ParamResolution[] resList = analyzer.getParamResolutionsForKey(section, key);
 		Set<ParamElement> paramSet = new HashSet<ParamElement>();
 		for (ParamResolution res : resList)
 			paramSet.add(res.paramDeclNode);
@@ -238,19 +238,21 @@ s	 * before getting presented to the user.
 		for (ParamElement par : paramSet) {
 			if (dataType == -1)
 				dataType = par.getType();
-			else if (dataType != par.getType())
-				return null; // just refuse to suggest anything if types are inconsistent
+			else if (dataType != par.getType()) {
+		        p.addAll(toProposals(new String[] {"default", "ask"}));
+				return p; // just refuse to suggest anything more if types are inconsistent
+			}
 		}
 
 		// generate proposals
 		//TODO make use of parameter properties (like @choice)
-		//TODO detect parameters which are used as "like" params, and offer suitable module types for them
-		List<IContentProposal> p = new ArrayList<IContentProposal>();
 
 		// after "${", offer variable names
 		if (prefix.matches(".*\\$\\{[A-Za-z0-9_]*"))
 			addConfigVariableProposals(p);
 
+        p.addAll(toProposals(new String[] {"default", "ask"}));
+		
 		switch (dataType) {
 		case NEDElementConstants.NED_PARTYPE_BOOL:
 			p.addAll(toProposals(new String[] {"true", "false"}));
@@ -273,8 +275,11 @@ s	 * before getting presented to the user.
 		    // if the param is used in a "<param> like IFoo", propose all modules that implement IFoo
 		    Collection<INEDTypeInfo> types = getProposedNedTypesFor(resList);
 		    if (types != null)
-	            for (INEDTypeInfo type : types)
-	                p.add(new ContentProposal("\""+type.getName()+"\"", "\""+type.getName()+"\"", "TODO")); //FIXME display package, docu!
+	            for (INEDTypeInfo type : types) {
+	                String docu = type.getFullyQualifiedName() + "\n\n";
+	                docu += StringUtils.nullToEmpty(StringUtils.makeTextDocu(type.getNEDElement().getComment()));
+	                p.add(new ContentProposal("\""+type.getName()+"\"", "\""+type.getName()+"\"", docu));
+	            }
 			p.addAll(toProposals(new String[] {"\"\""}, "or any string value"));
 			break;
 		case NEDElementConstants.NED_PARTYPE_XML:

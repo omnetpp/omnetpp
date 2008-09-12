@@ -75,7 +75,7 @@ public class InifileConverter {
 	    text = text.replaceAll(MULTILINE+"^\\s*(("+allCommentOutNames+")\\s*=.*)", "# $1");
 	    
 	    // rename per-object keys
-    	text = text.replaceAll(MULTILINE+"\\.use-default\\s*=", ".apply-default =");
+    	text = text.replaceAll(MULTILINE+"\\.use-default\\s*=\\s*(true|yes|1)", " = default");
     	text = text.replaceAll(MULTILINE+"\\.ev-output\\s*=", ".cmdenv-ev-output =");
     	text = text.replaceAll(MULTILINE+"\\.enabled\\s*=", ".vector-recording =");
     	text = text.replaceAll(MULTILINE+"\\.interval\\s*=", ".vector-recording-interval =");
