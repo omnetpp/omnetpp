@@ -72,9 +72,71 @@ network Test
 network = Test
 cmdenv-express-mode = false
 cmdenv-event-banners = false
-**.apply-default = true
-**.p* = 999   # ===> bug: this line somehow doesn't take effect (???)
+**.p1a = 1000
+**.base.p1b = 1001
+**.base.p1c = 1002
+**.derived.p4a = 4000
+**.derived2.p4a = 4100
+
 
 %contains: stdout
-currently error ==> "enter parameter Test.base.p1a"
+module Test: Test {
+    parameters:
+        @isNetwork
+    submodules:
+        module Test.base: Base {
+            parameters:
+                p1a = 1000
+                p1b = 1001
+                p1c = 1002
+                p2a = 2
+                p2b = 2
+                p2c = 2
+                p3a = 3
+                p3b = 3
+                p3c = 3
+        }
+        module Test.derived: Derived {
+            parameters:
+                p1a = 1000
+                p1b = 1
+                p1c = 1
+                p2a = 2
+                p2b = 2
+                p2c = 2
+                p3a = 3
+                p3b = 3
+                p3c = 3
+                p4a = 4000
+                p4b = 4
+                p4c = 4
+        }
+        module Test.base2: Base {
+            parameters:
+                p1a = 1000
+                p1b = 10
+                p1c = 10
+                p2a = 2
+                p2b = 20
+                p2c = 20
+                p3a = 3
+                p3b = 30
+                p3c = 30
+        }
+        module Test.derived2: Derived {
+            parameters:
+                p1a = 1000
+                p1b = 10
+                p1c = 10
+                p2a = 2
+                p2b = 20
+                p2c = 20
+                p3a = 3
+                p3b = 30
+                p3c = 30
+                p4a = 4000
+                p4b = 4
+                p4c = 4
+        }
+}
 
