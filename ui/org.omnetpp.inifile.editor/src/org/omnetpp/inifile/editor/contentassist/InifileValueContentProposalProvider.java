@@ -183,6 +183,17 @@ s	 * before getting presented to the user.
 		}
 		return p;
 	}
+	
+	/**
+	 * Overrides the base method to add '.' to word characters,
+	 * because config values (e.g. qualified network names) may
+	 * contain '.'.
+	 */
+	protected String getCompletionPrefix(String text) {
+		// calculate the last word that the user started to type. This is the basis of
+		// proposal filtering: they have to start with this prefix.
+		return text.replaceFirst("^.*?([A-Za-z0-9_.]*)$", "$1");
+	}
 
     /**
      * Generate proposals for per-object configuration keys
