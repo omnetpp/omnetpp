@@ -62,12 +62,21 @@ void Gen::activity()
         cGate *g = gate("out",i);
         cChannel *ch = g->getChannel();
         if (ch)
+            ev << ch->getClassName();
+        if (dynamic_cast<cDelayChannel *>(ch))
+        {
+            cDelayChannel *sch = check_and_cast<cDelayChannel *>(ch);
+            ev << " disabled=" << sch->isDisabled();
+            if (sch->getDelay() != 0)  ev << " delay=" << sch->getDelay();
+        }
+        if (dynamic_cast<cDatarateChannel *>(ch))
         {
             cDatarateChannel *sch = check_and_cast<cDatarateChannel *>(ch);
-            if (sch->getDelay() != 0)  ev << "delay=" << sch->getDelay() << ":";
-            if (sch->getDatarate())  ev << "datarate=" << sch->getDatarate() << ":";
-            if (sch->getBitErrorRate())  ev << "ber=" << sch->getBitErrorRate() << ":";
-            if (sch->getPacketErrorRate())  ev << "per=" << sch->getPacketErrorRate() << ":";
+            ev << " disabled=" << sch->isDisabled();
+            if (sch->getDelay() != 0)  ev << " delay=" << sch->getDelay();
+            if (sch->getDatarate())  ev << " datarate=" << sch->getDatarate();
+            if (sch->getBitErrorRate())  ev << " ber=" << sch->getBitErrorRate();
+            if (sch->getPacketErrorRate())  ev << " per=" << sch->getPacketErrorRate();
         }
         ev << endl;
     }
@@ -90,10 +99,11 @@ void Sink::handleMessage(cMessage *msg)
 
 %contains: stdout
 0:
-1:delay=0.004:
-2:ber=0.001:
-3:datarate=64000:
-4:delay=0.004:ber=0.001:
-5:delay=0.004:datarate=64000:
-6:datarate=64000:ber=0.001:
-7:delay=0.004:datarate=64000:ber=0.001:
+1:cDelayChannel disabled=0 delay=0.004
+2:cDatarateChannel disabled=0 ber=0.001
+3:cDatarateChannel disabled=0 datarate=64000
+4:cDatarateChannel disabled=0 delay=0.004 ber=0.001
+5:cDatarateChannel disabled=0 delay=0.004 datarate=64000
+6:cDatarateChannel disabled=0 datarate=64000 ber=0.001
+7:cDatarateChannel disabled=0 delay=0.004 datarate=64000 ber=0.001
+
