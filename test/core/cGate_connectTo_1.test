@@ -17,15 +17,15 @@ Define_Module(Sender);
 void Sender::activity()
 {
    cGate *out = gate("out");
-   cGate *rcvin = gate("out")->getToGate();
+   cGate *rcvin = gate("out")->getNextGate();
 
    // start clean
    out->disconnect();
 
    // connect, then check if OK
    out->connectTo(rcvin);
-   PRINT(out->getToGate());
-   PRINT(rcvin->getFromGate());
+   PRINT(out->getNextGate());
+   PRINT(rcvin->getPreviousGate());
 
    // even send message to verify
    cMessage *msg = new cMessage("hello");
@@ -34,18 +34,18 @@ void Sender::activity()
 
    // disconnect, then check if OK
    out->disconnect();
-   PRINT(out->getToGate());
-   PRINT(rcvin->getFromGate());
+   PRINT(out->getNextGate());
+   PRINT(rcvin->getPreviousGate());
 
    // disconnect should be idempotent
    out->disconnect();
-   PRINT(out->getToGate());
-   PRINT(rcvin->getFromGate());
+   PRINT(out->getNextGate());
+   PRINT(rcvin->getPreviousGate());
 
    // connect twice -- second one must throw error
    out->connectTo(rcvin);
-   PRINT(out->getToGate());
-   PRINT(rcvin->getFromGate());
+   PRINT(out->getNextGate());
+   PRINT(rcvin->getPreviousGate());
 
    out->connectTo(rcvin);
 }
@@ -71,17 +71,17 @@ void Receiver::activity()
 %exitcode: 1
 
 %contains-regex: stdout
-out->getToGate\(\):in
-rcvin->getFromGate\(\):out
+out->getNextGate\(\):in
+rcvin->getPreviousGate\(\):out
 .*
 arrived:hello
 .*
-out->getToGate\(\):NULL
-rcvin->getFromGate\(\):NULL
-out->getToGate\(\):NULL
-rcvin->getFromGate\(\):NULL
-out->getToGate\(\):in
-rcvin->getFromGate\(\):out
+out->getNextGate\(\):NULL
+rcvin->getPreviousGate\(\):NULL
+out->getNextGate\(\):NULL
+rcvin->getPreviousGate\(\):NULL
+out->getNextGate\(\):in
+rcvin->getPreviousGate\(\):out
 .*Error .*gate already connected
 
 
