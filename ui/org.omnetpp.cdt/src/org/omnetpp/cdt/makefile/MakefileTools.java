@@ -16,6 +16,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceVisitor;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -165,18 +166,23 @@ public class MakefileTools {
     	IManagedBuildInfo buildInfo = ManagedBuildManager.getBuildInfo(proj);
     	final ICSourceEntry[] srcEntries = buildInfo.getDefaultConfiguration().getSourceEntries();
 
-    	proj.accept(new IResourceVisitor() {
-    		public boolean visit(IResource resource) throws CoreException {
-    			if (MakefileTools.isGoodFolder(resource)) {
-    				if (!CDataUtil.isExcluded(resource.getProjectRelativePath(), srcEntries)
-    						&& containsFileMatchingPattern((IContainer)resource, pattern))
-    					result.add((IContainer)resource);
-
-    				return true;
-    			}
-    			return false;
+    	for (ICSourceEntry srcEntry : srcEntries) {
+    		IResource sourceFolder = proj.findMember(srcEntry.getFullPath());
+    		if (sourceFolder != null) {
+		    	sourceFolder.accept(new IResourceVisitor() {
+		    		public boolean visit(IResource resource) throws CoreException {
+		    			if (MakefileTools.isGoodFolder(resource)) {
+		    				if (!CDataUtil.isExcluded(resource.getProjectRelativePath(), srcEntries)
+		    						&& (pattern == null || containsFileMatchingPattern((IContainer)resource, pattern)))
+		    					result.add((IContainer)resource);
+		
+		    				return true;
+		    			}
+		    			return false;
+		    		}
+		    	});
     		}
-    	});
+    	}
 
     	// collect directories from referenced projects too (recursively)
     	for(IProject refProj : proj.getReferencedProjects())
@@ -204,7 +210,8 @@ public class MakefileTools {
         result.add(new Path(OmnetppMainPlugin.getOmnetppInclDir()));
 
         // add project source directories as include dirs for the indexer
-        for (IContainer incDir : MakefileTools.collectDirs(project, ".*\\.(h|msg)")) 
+        // Note: "*.h" pattern is not good because of includes of the form "subdir/file.h"
+        for (IContainer incDir : MakefileTools.collectDirs(project, null)) 
             result.add(incDir.getLocation());
         return result;
     }

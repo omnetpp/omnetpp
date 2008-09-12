@@ -116,7 +116,7 @@ public class OmnetppProjectMacroSupplier implements IProjectBuildMacroSupplier {
     public IBuildMacro getMacro(String macroName, IManagedProject project, IBuildMacroProvider provider) {
         IBuildMacro macro = null;
         if(INCLUDE_DIRS_MACRO.equals(macroName))
-            macro = new SourcePathMacro(macroName, project, "-I", ".*\\.h");
+            macro = new SourcePathMacro(macroName, project, "-I", null);
         if(MESSAGE_DIRS_MACRO.equals(macroName)) 
             macro = new SourcePathMacro(macroName, project, "", ".*\\.msg");
         if(PRIMARY_SOURCE_DIR_MACRO.equals(macroName))
