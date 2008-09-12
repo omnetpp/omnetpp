@@ -94,7 +94,6 @@
 #include "globals.h"
 #include "index.h"
 #include "mersennetwister.h"
-#include "omnetpp.h"
 #include "onstartup.h"
 #include "opp_string.h"
 #include "random.h"
