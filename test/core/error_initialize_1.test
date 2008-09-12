@@ -17,7 +17,7 @@ Define_Module(Foo);
 %exitcode: 1
 
 %contains-regex: stdout
-<!> Error: oops\.
+<!> Error in .*: std::range_error during initialize\(\): oops.
 
 
 End run of OMNeT\+\+$
