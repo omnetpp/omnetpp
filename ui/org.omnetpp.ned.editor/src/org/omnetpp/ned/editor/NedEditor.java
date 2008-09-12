@@ -338,10 +338,14 @@ public class NedEditor
      */
     private void prepareForSave() {
         NedFileElementEx nedFileElement = getModel();
-		if (getActivePage() == graphPageIndex && !nedFileElement.isReadOnly() && !nedFileElement.hasSyntaxError()) {
+
+        if (getActivePage() == graphPageIndex && !nedFileElement.isReadOnly() && !nedFileElement.hasSyntaxError()) {
             textEditor.pullChangesFromNEDResourcesWhenPending();
-            graphicalEditor.getEditDomain().getCommandStack().markSaveLocation();
+            graphicalEditor.markSaved();
 		}
+		
+		if (getActivePage() == textPageIndex)
+		    textEditor.pushChangesIntoNEDResources();
     }
 
     @Override
