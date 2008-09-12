@@ -155,6 +155,12 @@ bool cDatarateChannel::deliver(cMessage *msg, simtime_t t)
             pkt->setDuration(duration);
             txfinishtime = t + duration;
         }
+        else {
+            txfinishtime = t;
+        }
+    }
+    else {
+        txfinishtime = t;
     }
 
     // propagation delay modeling
