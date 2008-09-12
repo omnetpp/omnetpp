@@ -289,6 +289,12 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener, 
 	protected NedFileElementEx getModel() {
 		return NEDResourcesPlugin.getNEDResources().getNedFileElement(getFile());
 	}
+	
+	@Override
+	public void setAction(String actionID, IAction action) {
+	    if (!actionID.equals(ITextEditorActionConstants.SAVE))
+	        super.setAction(actionID, action);
+	}
 
 	/**
 	 * The <code>TextualNedEditor</code> implementation of this
