@@ -261,11 +261,9 @@ class SIM_API cConfiguration : public cObject
 
     /**
      * Looks up the value of the given parameter in the inifile. The argument
-     * hasDefaultValue controls whether .apply-default entries need to be considered.
-     * Return value is NULL if the parameter is not specified in the inifile;
-     * it is empty string "" if the default needs to be applied (Note that the
-     * empty string as value is syntactically not allowed in ini files; for string
-     * parameters the empty value is two quotes (the C++ "\"\"" literal)).
+     * hasDefaultValue controls whether "=default" entries need to be considered.
+     * Return value is NULL if the parameter is not specified in the inifile,
+     * otherwise returns the string after the equal sign.
      */
     virtual const char *getParameterValue(const char *moduleFullPath, const char *paramName, bool hasDefaultValue) const = 0;
 

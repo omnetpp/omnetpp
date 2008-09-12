@@ -48,10 +48,10 @@ class SIM_API cParImpl : public cNamedObject
     // various flags, stored in cNamedObject::flags
     enum {
       FL_ISVOLATILE = 4,  // whether it was declared as "volatile" in NED
-      FL_HASVALUE = 8,    // whether it has a value
-      FL_ISEXPR = 16,     // whether it stores a constant or an expression
-      FL_ISSHARED = 32,   // used by cPar only: whether this object is shared among multiple cPars
-      FL_ISINPUT = 64     // used by cPar only: whether this is just a default value and real value will have to be asked from user or read from omnetpp.ini
+      FL_ISEXPR = 8,      // whether it stores a constant or an expression
+      FL_ISSHARED = 16,   // used by cPar only: whether this object is shared among multiple cPars
+      FL_CONTAINSVALUE = 32, // whether it has a value
+      FL_ISSET = 64       // whether the contained value is just a default value (false) or the set value (true)
     };
 
   private:
@@ -145,37 +145,38 @@ class SIM_API cParImpl : public cNamedObject
     virtual bool isExpression() const {return flags & FL_ISEXPR;}
 
     /**
-     * Returns true if the parameter has a value set. Note that isInput()
-     * may still return true or false.
-     */
-    virtual bool hasValue() const  {return flags & FL_HASVALUE;}
-
-    /**
      * Used by cPar only: Returns true if this object is shared among multiple cPars.
      */
     virtual bool isShared() const {return flags & FL_ISSHARED;}
 
     /**
-     * Used by cPar only: whether this is just a default value and real value
-     * will have to be asked from user or read from omnetpp.ini
+     * Returns true if the parameter contains a value. Note that isSet()
+     * may still return true or false.
      */
-    virtual bool isInput() const {return flags & FL_ISINPUT;}
+    virtual bool containsValue() const  {return flags & FL_CONTAINSVALUE;}
+
+    /**
+     * Used by cPar only: Returns true if the parameter value is set,
+     * false otherwise (i.e. if the object contains no value
+     * or the current value is just a default).
+     */
+    virtual bool isSet() const {return flags & FL_ISSET;}
 
     /**
      * Sets the isVolatile flag. NOTE: It may be necessary to invoke
      * convertToConst(cComponent *context) as well.
      */
-    virtual void setIsVolatile(bool f) {if (f) flags|=FL_ISVOLATILE; else flags&=~FL_ISVOLATILE;}
+    virtual void setIsVolatile(bool f) {setFlag(FL_ISVOLATILE,f);}
 
     /**
      * Sets the isShared flag.
      */
-    virtual void setIsShared(bool f) {if (f) flags|=FL_ISSHARED; else flags&=~FL_ISSHARED;}
+    virtual void setIsShared(bool f) {setFlag(FL_ISSHARED,f);}
 
     /**
-     * Sets the isInput flag.
+     * Sets the isSet flag.
      */
-    virtual void setIsInput(bool f) {if (f) flags|=FL_ISINPUT; else flags&=~FL_ISINPUT;}
+    virtual void setIsSet(bool f) {setFlag(FL_ISSET,f);}
 
     /**
      * Returns the parameter's unit ("s", "mW", "Hz", "bps", etc),

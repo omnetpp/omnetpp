@@ -16,7 +16,7 @@
 
 /* Reserved words */
 %token DOUBLETYPE INTTYPE STRINGTYPE BOOLTYPE XMLTYPE
-%token TRUE_ FALSE_ THIS_ DEFAULT_ CONST_ SIZEOF_ INDEX_ XMLDOC_
+%token TRUE_ FALSE_ THIS_ ASK_ DEFAULT_ CONST_ SIZEOF_ INDEX_ XMLDOC_
 
 /* Other tokens: identifiers, numeric literals, operators etc */
 %token NAME INTCONSTANT REALCONSTANT STRINGCONSTANT
@@ -132,8 +132,12 @@ static double parseQuantity(const char *text, std::string& unit)
 expression
         : expr
         | xmldocvalue
+        | ASK_
+                { yyerror("\"ask\" is not supported here"); }
+        | DEFAULT_
+                { yyerror("\"default\" is not supported here"); }
         | DEFAULT_ '(' expr ')'
-                { yyerror("default() is not supported here"); }
+                { yyerror("\"default()\" is not supported here"); }
         ;
 
 xmldocvalue

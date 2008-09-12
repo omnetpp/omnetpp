@@ -65,14 +65,14 @@ void cLongParImpl::setLongValue(long l)
 {
     deleteOld();
     val = l;
-    flags |= FL_HASVALUE;
+    flags |= FL_CONTAINSVALUE | FL_ISSET;
 }
 
 void cLongParImpl::setDoubleValue(double d)
 {
     deleteOld();
     val = double_to_long(d);
-    flags |= FL_HASVALUE;
+    flags |= FL_CONTAINSVALUE | FL_ISSET;
 }
 
 void cLongParImpl::setStringValue(const char *s)
@@ -89,7 +89,7 @@ void cLongParImpl::setExpression(cExpression *e)
 {
     deleteOld();
     expr = e;
-    flags |= FL_ISEXPR | FL_HASVALUE;
+    flags |= FL_ISEXPR | FL_CONTAINSVALUE | FL_ISSET;
 }
 
 bool cLongParImpl::boolValue(cComponent *) const

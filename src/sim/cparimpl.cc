@@ -73,12 +73,12 @@ std::string cParImpl::detailedInfo() const
 {
     std::stringstream out;
     out << cPar::getTypeName(getType()) << " " << getName();
-    if (hasValue())
+    if (containsValue())
     {
-        if (isInput())
-            out << " = default(" << str() << ")";
-        else
+        if (isSet())
             out << " = " << str();
+        else
+            out << " = default(" << str() << ")";
         out << " isExpression=" << (isExpression()?"true":"false");
     }
     else

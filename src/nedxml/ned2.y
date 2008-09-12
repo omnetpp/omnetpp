@@ -23,7 +23,7 @@
 %token INPUT_ OUTPUT_ INOUT_
 %token IF FOR
 %token RIGHTARROW LEFTARROW DBLARROW TO
-%token TRUE_ FALSE_ THIS_ DEFAULT CONST_ SIZEOF INDEX_ XMLDOC
+%token TRUE_ FALSE_ THIS_ DEFAULT ASK CONST_ SIZEOF INDEX_ XMLDOC
 
 /* Other tokens: identifiers, numeric literals, operators etc */
 %token NAME INTCONSTANT REALCONSTANT STRINGCONSTANT CHARCONSTANT
@@ -174,7 +174,7 @@ static void restoreGlobalParserState()  // for error recovery
     ps = globalps;
 }
 
-static void assertNonEmpty(std::stack<NEDElement *>& somescope) 
+static void assertNonEmpty(std::stack<NEDElement *>& somescope)
 {
     // for error recovery: STL stack::top() crashes if stack is empty
     if (somescope.empty())
@@ -681,7 +681,8 @@ param_typenamevalue
         | param_typename opt_inline_properties '=' paramvalue opt_inline_properties ';'
                 {
                   ps.propertyscope.pop();
-                  addExpression(ps.param, "value",ps.exprPos,$4);
+                  if ($4)
+                      addExpression(ps.param, "value",ps.exprPos,$4);
                   ps.param->setIsDefault(ps.isDefault);
                   storePos(ps.param, @$);
                   storeBannerAndRightComments(ps.param,@$);
@@ -708,7 +709,8 @@ pattern_value
                 {
                   ps.pattern = (PatternElement *)createElementWithTag(NED_PATTERN, ps.parameters);
                   ps.pattern->setPattern(toString(@2));
-                  addExpression(ps.pattern, "value",ps.exprPos,$5);
+                  if ($5)
+                      addExpression(ps.pattern, "value",ps.exprPos,$5);
                   ps.pattern->setIsDefault(ps.isDefault);
                 }
         ;
@@ -735,9 +737,21 @@ opt_volatile
 
 paramvalue
         : expression
-                { $$ = $1; ps.isDefault = false; ps.exprPos = @1; }
+                { $$ = $1; ps.exprPos = @1; ps.isDefault = false; }
         | DEFAULT '(' expression ')'
-                { $$ = $3; ps.isDefault = true; ps.exprPos = @3; }
+                { $$ = $3; ps.exprPos = @3; ps.isDefault = true; }
+        | DEFAULT
+                {
+                  // Note: "=default" is currently not accepted in NED files, because
+                  // it would be complicated to support in the Inifile Editor.
+                  np->getErrors()->addError(ps.types,"applying the default value (\"=default\" syntax) is not supported in NED files");
+                  $$ = NULL; ps.isDefault = true;
+                }
+        | ASK
+                {
+                  np->getErrors()->addError(ps.types,"interactive prompting (\"=ask\" syntax) is not supported in NED files");
+                  $$ = NULL; ps.isDefault = false;
+                }
         ;
 
 opt_inline_properties

@@ -33,6 +33,8 @@
 #include "timeutil.h"
 #include "stringutil.h"
 #include "cconfigkey.h"
+#include "cproperties.h"
+#include "cproperty.h"
 
 USING_NAMESPACE
 
@@ -145,6 +147,36 @@ void Cmdenv::readPerRunOptions()
     opt_messagetrace = cfg->getAsBool(CFGID_MESSAGE_TRACE);
     opt_status_frequency_ev = cfg->getAsInt(CFGID_STATUS_FREQUENCY);
     opt_perfdisplay = cfg->getAsBool(CFGID_PERFORMANCE_DISPLAY);
+}
+
+void Cmdenv::askParameter(cPar *par)
+{
+    bool success = false;
+    while (!success)
+    {
+        cProperties *props = par->getProperties();
+        cProperty *prop = props->get("prompt");
+        std::string prompt = prop ? prop->getValue(cProperty::DEFAULTKEY) : "";
+        std::string reply;
+
+        // ask the user. note: gets() will signal "cancel" by throwing an exception
+        if (!prompt.empty())
+            reply = this->gets(prompt.c_str(), par->str().c_str());
+        else
+            // DO NOT change the "Enter parameter" string. The IDE launcher plugin matches
+            // against this string for detecting user input
+            reply = this->gets((std::string("Enter parameter `")+par->getFullPath()+"':").c_str(), par->str().c_str());
+
+        try
+        {
+            par->parse(reply.c_str());
+            success = true;
+        }
+        catch (std::exception& e)
+        {
+            ev.printfmsg("%s -- please try again.", e.what());
+        }
+    }
 }
 
 void Cmdenv::setup()
@@ -546,17 +578,17 @@ cEnvir& Cmdenv::flush()
     return *this;
 }
 
-std::string Cmdenv::gets(const char *promptstr, const char *defaultreply)
+std::string Cmdenv::gets(const char *prompt, const char *defaultReply)
 {
     if (!opt_interactive)
     {
-        throw cRuntimeError("The simulation wanted to ask a question, set cmdenv-interactive=true to allow it: \"%s\"", promptstr);
+        throw cRuntimeError("The simulation wanted to ask a question, set cmdenv-interactive=true to allow it: \"%s\"", prompt);
     }
     else
     {
-        ::fprintf(fout, "%s", promptstr);
-        if (!opp_isempty(defaultreply))
-            ::fprintf(fout, "(default: %s) ", defaultreply);
+        ::fprintf(fout, "%s", prompt);
+        if (!opp_isempty(defaultReply))
+            ::fprintf(fout, "(default: %s) ", defaultReply);
         ::fflush(fout);
 
         ::fgets(buffer, 512, stdin);

@@ -33,8 +33,6 @@
 
 USING_NAMESPACE
 
-
-//XXX test the likes of: **.apply-default, **whatever.apply=default, whatever**.apply-default!!! make them illegal?
 //XXX error messages (exceptions) should contain file/line info!
 //XXX make sure quoting "$\{" works!
 //TODO optimize storage (now keys with wildcard groupName are stored multiple times, in several groups)
@@ -48,7 +46,6 @@ Register_PerRunConfigEntry(CFGID_EXPERIMENT_LABEL, "experiment-label", CFG_STRIN
 Register_PerRunConfigEntry(CFGID_MEASUREMENT_LABEL, "measurement-label", CFG_STRING, "${iterationvars}", "Identifies the measurement within the experiment. This string gets recorded into result files, and may be referred to during result analysis.");
 Register_PerRunConfigEntry(CFGID_REPLICATION_LABEL, "replication-label", CFG_STRING, "#${repetition}", "Identifies one replication of a measurement (see repeat= and measurement-label= as well). This string gets recorded into result files, and may be referred to during result analysis.");
 Register_PerRunConfigEntry(CFGID_RUNNUMBER_WIDTH, "runnumber-width", CFG_INT, "0", "Setting a nonzero value will cause the $runnumber variable to get padded with leading zeroes to the given length.");
-Register_PerObjectConfigEntry(CFGID_APPLY_DEFAULT, "apply-default", CFG_BOOL, "false", "Applies to module parameters: whether NED default values should be assigned if present.");
 
 extern cConfigKey *CFGID_NETWORK;
 extern cConfigKey *CFGID_RESULT_DIR;
@@ -654,25 +651,23 @@ void SectionBasedConfiguration::addEntry(const KeyValue1& entry)
 {
     const std::string& key = entry.key;
     const char *lastDot = strrchr(key.c_str(), '.');
-    if (!lastDot)
+    if (!lastDot && !PatternMatcher::containsWildcards(key.c_str()))
     {
         // config: add if not already in there
-        if (PatternMatcher::containsWildcards(key.c_str()))
-            throw cRuntimeError("invalid config key '%s': config keys cannot contain wildcard characters", key.c_str());
         if (config.find(key)==config.end())
             config[key] = entry;
     }
     else
     {
-        // key contains a dot: parameter or per-object configuration
-        // Note: since the last part of they key might contain widcards, it is not really possible
+        // key contains wildcard or dot: parameter or per-object configuration
+        // (example: "**", "**.param", "**.partition-id")
+        // Note: since the last part of they key might contain wildcards, it is not really possible
         // to distinguish the two. Cf "vector-recording", "vector-*" and "vector*"
 
         // analyze key and create appropriate entry
         std::string ownerName;
         std::string groupName;
-        bool isApplyDefault;
-        splitKey(key.c_str(), ownerName, groupName, isApplyDefault);
+        splitKey(key.c_str(), ownerName, groupName);
         bool groupContainsWildcards = PatternMatcher::containsWildcards(groupName.c_str());
 
         KeyValue2 entry2(entry);
@@ -681,9 +676,6 @@ void SectionBasedConfiguration::addEntry(const KeyValue1& entry)
          else
             entry2.fullPathPattern = new PatternMatcher(key.c_str(), true, true, true);
         entry2.groupPattern = groupContainsWildcards ? new PatternMatcher(groupName.c_str(), true, true, true) : NULL;
-        entry2.isApplyDefault = isApplyDefault;
-        if (isApplyDefault)
-            entry2.applyDefaultValue = strcmp(entry.value.c_str(), "true")==0;
 
         // find which group it should go into
         if (!groupContainsWildcards)
@@ -703,6 +695,10 @@ void SectionBasedConfiguration::addEntry(const KeyValue1& entry)
         else
         {
             // groupName contains wildcards: we need to add it to all existing groups it matches
+            // Note: if groupName also contains a hyphen, that's actually illegal (per-object
+            // config entry names cannot be wildcarded, ie. "foo.bar.cmdenv-*" is illegal),
+            // but causes no harm, because getPerObjectConfigEntry() won't look into the
+            // wildcard group
             wildcardGroup.entries.push_back(entry2);
             for (std::map<std::string,Group>::iterator it = groups.begin(); it!=groups.end(); it++)
                 if (entry2.groupPattern->matches(it->first.c_str()))
@@ -711,29 +707,15 @@ void SectionBasedConfiguration::addEntry(const KeyValue1& entry)
     }
 }
 
-void SectionBasedConfiguration::splitKey(const char *key, std::string& outOwnerName, std::string& outGroupName, bool& outIsApplyDefault)
+void SectionBasedConfiguration::splitKey(const char *key, std::string& outOwnerName, std::string& outGroupName)
 {
     std::string tmp = key;
     int keyLen = strlen(key);
 
-    outIsApplyDefault = false;
-    if (keyLen>14 && strcmp(key+keyLen-14, ".apply-default")==0)
-    {
-        // cut off ".apply-default"
-        outIsApplyDefault = true;
-        tmp = std::string(key, keyLen-14);
-        key = tmp.c_str();
-    }
-
     const char *lastDotPos = strrchr(key, '.');
     const char *doubleAsterisk = !lastDotPos ? NULL : strstr(lastDotPos, "**");
-    if (strcmp(key, "**")==0)
-    {
-        // frequent special case ("**.apply-default=true")
-        outOwnerName = "**";
-        outGroupName = "*";
-    }
-    else if (!lastDotPos || doubleAsterisk)
+
+    if (!lastDotPos || doubleAsterisk)
     {
         // complicated special case: there's a "**" after the last dot
         // (or there's no dot at all). Examples: "**baz", "net.**.foo**",
@@ -915,7 +897,7 @@ void SectionBasedConfiguration::validate(const char *ignorableConfigKeys) const
             const char *key = ini->getEntry(i, j).getKey();
             bool containsDot = strchr(key, '.')!=NULL;
 
-            if (!containsDot)
+            if (!containsDot && !PatternMatcher::containsWildcards(key))
             {
                 // warn for unrecognized (or misplaced) config keys
                 // NOTE: values don't need to be validated here, that will be
@@ -947,11 +929,10 @@ void SectionBasedConfiguration::validate(const char *ignorableConfigKeys) const
             }
             else
             {
-                // check for per-object configuration subkeys (".ev-enabled", ".record-interval", ".apply-default")
+                // check for per-object configuration subkeys (".ev-enabled", ".record-interval")
                 std::string ownerName;
                 std::string groupName;
-                bool isApplyDefault;
-                splitKey(key, ownerName, groupName, isApplyDefault);
+                splitKey(key, ownerName, groupName);
                 bool containsHyphen = strchr(groupName.c_str(), '-')!=NULL;
                 if (containsHyphen)
                 {
@@ -1030,8 +1011,7 @@ std::vector<const char *> SectionBasedConfiguration::getMatchingConfigKeys(const
 const char *SectionBasedConfiguration::getParameterValue(const char *moduleFullPath, const char *paramName, bool hasDefaultValue) const
 {
     const SectionBasedConfiguration::KeyValue2& entry = (KeyValue2&) getParameterEntry(moduleFullPath, paramName, hasDefaultValue);
-    // NULL ==> not found,   "" ==> apply the default value
-    return entry.getKey()==NULL ? NULL : entry.isApplyDefault ? "" : entry.value.c_str();
+    return entry.getKey()==NULL ? NULL : entry.value.c_str();
 }
 
 const cConfiguration::KeyValue& SectionBasedConfiguration::getParameterEntry(const char *moduleFullPath, const char *paramName, bool hasDefaultValue) const
@@ -1041,24 +1021,12 @@ const cConfiguration::KeyValue& SectionBasedConfiguration::getParameterEntry(con
     const Group *group = it==groups.end() ? &wildcardGroup : &it->second;
 
     // find first match in the group
-    bool dontApplyDefault = false;
     for (int i=0; i<(int)group->entries.size(); i++)
     {
         const KeyValue2& entry = group->entries[i];
         if (entryMatches(entry, moduleFullPath, paramName))
-        {
-            if (entry.isApplyDefault)
-            {
-                if (dontApplyDefault)
-                    ; // ignore this apply-default line
-                else if (entry.applyDefaultValue)
-                    return entry;  // ==> "yes, apply the default value"
-                else
-                    dontApplyDefault = true; // ignore further .apply-default=true lines
-            }
-            else
-                return entry;  // found value
-        }
+            if (hasDefaultValue || entry.value != "default")
+                return entry;
     }
     return nullEntry; // not found
 }
@@ -1094,14 +1062,19 @@ const char *SectionBasedConfiguration::getPerObjectConfigValue(const char *objec
 const cConfiguration::KeyValue& SectionBasedConfiguration::getPerObjectConfigEntry(const char *objectFullPath, const char *keySuffix) const
 {
     // look up which group; keySuffix serves as group name
+    // Note: we do not accept wildcards in the config key's name (ie. "**.record-*" is invalid),
+    // so we ignore the wildcard group.
     std::map<std::string,Group>::const_iterator it = groups.find(keySuffix);
-    const Group *group = it==groups.end() ? &wildcardGroup : &it->second;
+    if (it==groups.end())
+        return nullEntry; // no such group
+
+    const Group *group = &it->second;
 
     // find first match in the group
     for (int i=0; i<(int)group->entries.size(); i++)
     {
         const KeyValue2& entry = group->entries[i];
-        if (!entry.isApplyDefault && entry.ownerPattern->matches(objectFullPath) && (entry.groupPattern==NULL || entry.groupPattern->matches(keySuffix)))
+        if (entryMatches(entry, objectFullPath, keySuffix))
             return entry;  // found value
     }
     return nullEntry; // not found
@@ -1131,7 +1104,7 @@ std::vector<const char *> SectionBasedConfiguration::getMatchingPerObjectConfigK
             for (int i=0; i<(int)group.entries.size(); i++)
             {
                 const KeyValue2& entry = group.entries[i];
-                if (!entry.isApplyDefault && entry.ownerPattern->matches(objectFullPath) && (entry.groupPattern==NULL || matcher.matches(partAfterLastDot(entry.key.c_str())) || entry.groupPattern->matches(keySuffixPattern)))
+                if (entry.ownerPattern->matches(objectFullPath) && (entry.groupPattern==NULL || matcher.matches(partAfterLastDot(entry.key.c_str())) || entry.groupPattern->matches(keySuffixPattern)))
                     result.push_back(entry.key.c_str());
             }
         }

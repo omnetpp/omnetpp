@@ -151,9 +151,14 @@ bool cPar::isShared() const
     return p->isShared();
 }
 
-bool cPar::hasValue() const
+bool cPar::isSet() const
 {
-    return p->hasValue();
+    return p->isSet();
+}
+
+bool cPar::containsValue() const
+{
+    return p->containsValue();
 }
 
 bool cPar::isNumeric() const
@@ -277,12 +282,8 @@ void cPar::read()
     //TRACE("read() of par=%s", getFullPath().c_str());
 
     // obtain value if parameter is not set yet
-    if (p->isInput())
-    {
-        //printf("           before ev.readParameter(), p=%p shared=%d input=%d\n", p, p->isShared(), p->isInput());
+    if (!p->isSet())
         ev.readParameter(this);
-        //printf("           after ev.readParameter(), p=%p shared=%d input=%d\n", p, p->isShared(), p->isInput());
-    }
 
     // convert non-volatile expressions to constant
     if (p->isExpression() && !p->isVolatile())
@@ -298,24 +299,28 @@ void cPar::read()
 
 void cPar::acceptDefault()
 {
-    // basically we only need to set the isInput flag to false, but only
-    // for ourselves, without affecting the shared parameter prototype.
-    if (p->isInput())
-    {
-        // try to look up the value in the value cache (temporarily setting isInput=false)
-        p->setIsInput(false);
-        cComponentType *componentType = ownercomponent->getComponentType();
-        cParImpl *cachedValue = componentType->getSharedParImpl(p);
-        p->setIsInput(true);
+    if (p->isSet())
+        throw cRuntimeError(this, "acceptDefault(): Parameter is already set");
+    if (!p->containsValue())
+        throw cRuntimeError(this, "acceptDefault(): Parameter contains no default value");
 
-        // use the cached value, or create a value and put it into the cache
-        if (cachedValue)
-            setImpl(cachedValue);
-        else {
-            copyIfShared();
-            p->setIsInput(false);
-            componentType->putSharedParImpl(p);
-        }
+    // basically we only need to set the isSet flag to true, but only
+    // for ourselves, without affecting the shared parameter prototype.
+
+    // try to look up the value in the value cache (temporarily setting
+    // isSet=true so that we can use this object as key)
+    p->setIsSet(true);
+    cComponentType *componentType = ownercomponent->getComponentType();
+    cParImpl *cachedValue = componentType->getSharedParImpl(p);
+    p->setIsSet(false);
+
+    // use the cached value, or create a value and put it into the cache
+    if (cachedValue)
+        setImpl(cachedValue);
+    else {
+        copyIfShared();
+        p->setIsSet(true);
+        componentType->putSharedParImpl(p);
     }
 }
 
@@ -350,6 +355,9 @@ void cPar::parse(const char *text)
     // storage ensures that parameters of identical name but different types
     // don't cause trouble.
     //
+    // Note: text may not contain "ask" or "default"! This is ensured by
+    // cParImpl::parse() which throws an error on them.
+    //
     cComponentType *componentType = ownercomponent->getComponentType();
     std::string key = std::string(componentType->getName()) + ":" + getName() + ":" + text;
     cParImpl *cachedValue = componentType->getSharedParImpl(key.c_str());
@@ -362,7 +370,6 @@ void cPar::parse(const char *text)
     {
         // not found: clone existing parameter (to preserve name, type, unit etc), then parse text into it
         cParImpl *tmp = p->dup();
-        tmp->setIsInput(false);
         try {
             tmp->parse(text);
         }

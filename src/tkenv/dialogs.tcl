@@ -17,7 +17,7 @@
 #    HELPER/GUI PROCEDURES
 #===================================================================
 
-proc inputbox {title msg variable} {
+proc inputbox {title prompt variable {checkboxlabel {}} {checkboxvar {}}} {
     # This procedure displays a dialog box, waits for a button in the dialog
     # to be invoked, then returns the index of the selected button.
 
@@ -26,16 +26,28 @@ proc inputbox {title msg variable} {
     set w .inputbox
     createOkCancelDialog $w $title
 
-    label $w.f.l -text $msg
+    label $w.f.l -text $prompt
     entry $w.f.e -highlightthickness 0
     pack $w.f.l -anchor w -expand 0 -fill none -padx 2 -pady 2 -side top
     pack $w.f.e -anchor w -expand 1 -fill x -padx 2 -pady 2 -side top
     $w.f.e insert 0 $var
     $w.f.e selection range 0 end
+
+    if {$checkboxlabel != ""} {
+        global tmp
+        upvar $checkboxvar cbvar
+        set tmp(check) $cbvar
+        checkbutton $w.f.c -text $checkboxlabel -variable tmp(check)
+        pack $w.f.c -anchor w -expand 0 -fill x -padx 4 -pady 2 -side top
+    }
+
     setinitialdialogfocus $w.f.e
 
     if [execOkCancelDialog $w] {
         set var [$w.f.e get]
+        if {$checkboxlabel != ""} {
+            set cbvar $tmp(check)
+        }
         destroy $w
         return 1
     }

@@ -49,10 +49,13 @@ public class NedModelLabelProvider extends LabelProvider {
             label += node.getName();
 
             if (StringUtils.isNotEmpty(node.getValue())) {
-                if (node.getIsDefault() )
+                if (node.getIsDefault())
                     label += " = default("+node.getValue()+")";
                 else
                     label += " = "+ node.getValue();
+            }
+            else if (node.getIsDefault()) {
+                label += " = default";
             }
 
         }

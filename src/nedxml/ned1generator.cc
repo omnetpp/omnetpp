@@ -564,6 +564,8 @@ void NED1Generator::doSubstParam(ParamElement *node, const char *indent, bool is
 
     if (!hasExpression(node, "value"))
     {
+        if (node->getIsDefault())
+            errors->addWarning(node, NED2FEATURE "'parameter=default' syntax");
         OUT << "input";
     }
     else if (!node->getIsDefault())

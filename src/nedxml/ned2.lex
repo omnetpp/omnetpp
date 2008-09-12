@@ -115,6 +115,7 @@ USING_NAMESPACE
 "false"                  { countChars(); return FALSE_; }
 "this"                   { countChars(); return THIS_; }
 "default"                { countChars(); return DEFAULT; }
+"ask"                    { countChars(); return ASK; }
 "const"                  { countChars(); return CONST_; }
 "sizeof"                 { countChars(); return SIZEOF; }
 "index"                  { countChars(); return INDEX_; }

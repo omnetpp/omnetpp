@@ -44,10 +44,8 @@ public class PerObjectConfigKeyContentProposalProvider extends ContentProposalPr
 		if (section != null && prefix.contains(".")) {
 			String prefixBase = prefix.substring(0, prefix.lastIndexOf('.')+1);
 			for (ConfigKey e : ConfigRegistry.getPerObjectEntries()) {
-				if (e != ConfigRegistry.CFGID_APPLY_DEFAULT) { // that's handled by InifileParamKeyContentProposalProvider
-					String content = prefixBase + e.getKey()+(addEqualSign ? " = " : "");
-					result.add(new ContentProposal(content, content, getConfigHelpText(e, section, doc)));
-				}
+			    String content = prefixBase + e.getKey()+(addEqualSign ? " = " : "");
+			    result.add(new ContentProposal(content, content, getConfigHelpText(e, section, doc)));
 			}
 		}
 		return sort(result);

@@ -5,9 +5,9 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EXTENDS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NETWORK;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_REPEAT;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CONFIG_;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.DEFAULT;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.EXTENDS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.dot_APPLY_DEFAULT;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,15 +54,19 @@ public class InifileUtils {
 
 	// for getKeyImage()
     public static final Image ICON_ERROR = InifileEditorPlugin.getCachedImage("icons/full/obj16/Error.png");
-    public static final Image ICON_UNASSIGNEDPAR = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_unassigned.png");
-    public static final Image ICON_NEDPAR = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_ned.png");
-    public static final Image ICON_NEDDEFAULTPAR = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_neddefault.png");
-    public static final Image ICON_INIPAR = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_ini.png");
-    public static final Image ICON_INIOVERRIDEPAR = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_inioverride.png");
-    public static final Image ICON_ININEDDEFAULTPAR = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_inineddefault.png");
+    public static final Image ICON_PAR_UNASSIGNED = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_unassigned.png");
+    public static final Image ICON_PAR_NED = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_ned.png");
+    public static final Image ICON_PAR_INIDEFAULT = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_neddefault.png");
+    public static final Image ICON_PAR_INIASK = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_iniask.png");
+    public static final Image ICON_PAR_INI = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_ini.png");
+    public static final Image ICON_PAR_INIOVERRIDE = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_inioverride.png");
+    public static final Image ICON_PAR_ININEDDEFAULT = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_inineddefault.png");
+    public static final Image ICON_PAR_IMPLICITDEFAULT = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_implicitdefault.png");
+
+    public static final Image ICON_KEY_EQUALS_DEFAULT = InifileEditorPlugin.getCachedImage("icons/full/obj16/applydefault_true.png"); //FIXME rename icon
+    public static final Image ICON_KEY_EQUALS_ASK = InifileEditorPlugin.getCachedImage("icons/full/obj16/applydefault_false.png"); //FIXME rename icon
+    
     public static final Image ICON_INIPARMISC = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_inimisc.png");
-    public static final Image ICON_APPLYDEFAULT_TRUE = InifileEditorPlugin.getCachedImage("icons/full/obj16/applydefault_true.png");
-    public static final Image ICON_APPLYDEFAULT_FALSE = InifileEditorPlugin.getCachedImage("icons/full/obj16/applydefault_false.png");
 	
 	/**
 	 * Stores a cached pattern matcher created from an inifile key; used during inifile analysis
@@ -97,7 +101,7 @@ public class InifileUtils {
 	/**
 	 * Given a parameter's fullPath, returns the key of the matching
 	 * inifile entry, or null the parameter matches nothing. If hasNedDefault
-	 * is set, ".apply-default" entries are also considered.
+	 * is set, "=default" entries are also considered, otherwise they are ignored
 	 */
 	public static List<SectionKey> lookupParameter(String paramFullPath, boolean hasNedDefault, String[] sectionChain, IInifileDocument doc) {
 		//
@@ -106,25 +110,17 @@ public class InifileUtils {
 	    // "*.node[*].power=" because that eats all matching params (anything after that cannot match)
 	    //
 	    List<SectionKey> result = new ArrayList<SectionKey>();
-		String paramApplyDefault = paramFullPath + dot_APPLY_DEFAULT;
-		boolean considerApplyDefault = hasNedDefault;
 		for (String section : sectionChain) {
 			for (String key : doc.getKeys(section)) {
 			    KeyMatcher keyMatcher = getOrCreateKeyMatcher(key);
-				if (keyMatcher.matcher.matches(paramFullPath)) { 
-					result.add(new SectionKey(section, key));
-					if (keyMatcher.keyEqualsGeneralizedKey)
-					    return result;
+				if (keyMatcher.matcher.matches(paramFullPath)) {
+				    String value = doc.getValue(section, key);
+				    if (hasNedDefault || !value.equals(DEFAULT)) {
+				        result.add(new SectionKey(section, key));
+				        if (keyMatcher.keyEqualsGeneralizedKey)
+				            return result;
+				    }
 				}
-				else if (considerApplyDefault && keyMatcher.matcher.matches(paramApplyDefault))
-					if (doc.getValue(section, key).equals("true")) {
-					    result.add(new SectionKey(section, key));
-	                    if (keyMatcher.keyEqualsGeneralizedKey)
-	                        return result;
-					}
-					else {
-						considerApplyDefault = false;
-					}
 			}
 		}
 		return result;
@@ -327,7 +323,7 @@ public class InifileUtils {
 		if (key.equals(CFGID_NETWORK.getKey())) return 3;
 		KeyType type = InifileAnalyzer.getKeyType(key);
 		if (type == KeyType.CONFIG) return 4;
-		if (key.endsWith(dot_APPLY_DEFAULT)) return 7; // (!!!) 
+		//FIXME "=default" should come here: if (key.endsWith(dot_APPLY_DEFAULT)) return 7; // (!!!) 
         if (type == KeyType.PER_OBJECT_CONFIG) return 5;
         if (type == KeyType.PARAM) return 6;
         return 100; // cannot get here
@@ -445,15 +441,10 @@ public class InifileUtils {
 	 * Returns an image for a given inifile key, suitable for displaying in a table or tree.
 	 */
 	public static Image getKeyImage(String section, String key, InifileAnalyzer analyzer) {
-	    if (key.endsWith(dot_APPLY_DEFAULT)) {
-	        String value = analyzer.getDocument().getValue(section, key);
-            return "true".equals(value) ? ICON_APPLYDEFAULT_TRUE : "false".equals(value) ? ICON_APPLYDEFAULT_FALSE : ICON_ERROR;
-	    }
-
 	    // return an icon based on ParamResolutions
 	    ParamResolution[] paramResolutions = analyzer.getParamResolutionsForKey(section, key);
 	    if (paramResolutions == null || paramResolutions.length == 0)
-	        return ICON_INIPAR;
+	        return ICON_PAR_INI;
         if (paramResolutions.length == 1)
             return suggestImage(paramResolutions[0].type);
         
@@ -471,12 +462,14 @@ public class InifileUtils {
      */
     public static Image suggestImage(ParamResolutionType type) {
         switch (type) {
-            case UNASSIGNED: return ICON_UNASSIGNEDPAR;
-            case NED: return ICON_NEDPAR;
-            case NED_DEFAULT: return ICON_NEDDEFAULTPAR;
-            case INI: return ICON_INIPAR;
-            case INI_OVERRIDE:  return ICON_INIOVERRIDEPAR;
-            case INI_NEDDEFAULT: return ICON_ININEDDEFAULTPAR;
+            case UNASSIGNED: return ICON_PAR_UNASSIGNED;
+            case NED: return ICON_PAR_NED;
+            case INI: return ICON_PAR_INI;
+            case INI_DEFAULT: return ICON_PAR_INIDEFAULT;
+            case INI_ASK: return ICON_PAR_INIASK;
+            case INI_OVERRIDE:  return ICON_PAR_INIOVERRIDE;
+            case INI_NEDDEFAULT: return ICON_PAR_ININEDDEFAULT;
+            case IMPLICITDEFAULT: return ICON_PAR_IMPLICITDEFAULT;
         }
         return null;
     }

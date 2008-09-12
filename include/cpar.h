@@ -93,9 +93,9 @@ class SIM_API cPar : public cObject
     void afterChange();
 
   public:
-    // internal: clears the isInput flag
+    // internal: applies the default value if there's one
     void acceptDefault();
-    // internal, called from network building code
+    // internal: makes this parameter input
     void setImpl(cParImpl *p);
     // internal, called from network building code
     cParImpl *impl() const {return p;}
@@ -126,6 +126,8 @@ class SIM_API cPar : public cObject
 
     /**
      * Returns the component (module/channel) this parameter belongs to.
+     * Note: return type is cObject only for technical reasons, it can be
+     * safely cast to cComponent.
      */
     virtual cObject *getOwner() const;
 
@@ -173,11 +175,18 @@ class SIM_API cPar : public cObject
     bool isShared() const;
 
     /**
-     * Returns false if the parameter does not have any value assigned yet.
-     * This methods should return true any time during simulation or initialization,
-     * because all module parameters get assigned during network setup.
+     * Returns true if the parameter is assigned a value, and false otherwise.
+     * Parameters of an already initialized module or channel are guaranteed to
+     * assigned, so this method will return true for them.
      */
-    bool hasValue() const;
+    bool isSet() const;
+
+    /**
+     * Returns true if the parameter is set (see isSet()) or contains a default
+     * value, and false otherwise. Parameters of an already initialized module or
+     * channel are guaranteed to assigned, so this method will return true for them.
+     */
+    bool containsValue() const;
 
     /**
      * Return the properties for this parameter. Properties cannot be changed
@@ -316,6 +325,9 @@ class SIM_API cPar : public cObject
      * Converts the value from string, and stores the result.
      * If the text cannot be parsed, an exception is thrown, which
      * can be caught as std::runtime_error& if necessary.
+     *
+     * Note: this method understands expressions too, but does NOT handle
+     * the special values "default" and "ask".
      */
     void parse(const char *text);
     //@}

@@ -1,5 +1,5 @@
 %description:
-Test NED input() operator with various default values
+Test NED default() operator with various default values
 
 %file: test.ned
 
@@ -85,7 +85,7 @@ void Simple::activity()
 [General]
 network = Test
 cmdenv-express-mode = false
-**.apply-default = true  # NOTE THIS LINE
+#Note: default params will be assigned automatically
 
 %contains: stdout
 sub[0].p1=1

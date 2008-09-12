@@ -79,7 +79,7 @@ cmdenv-event-banners = false
 *.ini.b = this.p # local submodule's parameter
 *.ini.c = n.p    # other submodule's parameter
 
-**.apply-default = true
+#Note: default params will be assigned automatically
 
 %contains: stdout
 module Test: Test {

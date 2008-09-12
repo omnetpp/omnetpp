@@ -56,7 +56,7 @@ network = Test
 cmdenv-express-mode = false
 cmdenv-event-banners = false
 **.boxedSink.numGates = 3
-**.apply-default = true # will assign boxedSink.other
+# Note: boxedSink.other will be assigned automatically
 
 %exitcode: 0
 

@@ -1,6 +1,5 @@
 package org.omnetpp.inifile.editor.form;
 
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_APPLY_DEFAULT;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NETWORK;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_TYPE_NAME;
 
@@ -63,7 +62,7 @@ import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.inifile.editor.model.SectionKey;
 
 /**
- * For editing module parameters, apply-default and type-name lines.
+ * For editing module parameters,  and type-name lines.
  *
  * @author Andras
  */
@@ -248,8 +247,8 @@ public class ParametersPage extends FormPage {
 							if (!newKey.contains("."))
 								throw new RuntimeException("Parameter key must contain at least one dot");
                             String suffix = StringUtils.substringAfterLast(newKey, ".");
-                            if (suffix.contains("-") && !suffix.equals(CFGID_APPLY_DEFAULT.getKey()) && !suffix.equals(CFGID_TYPE_NAME.getKey()))
-                                throw new RuntimeException("Key should match a parameter, or end in \".apply-default\" or \".type-name\"");
+                            if (suffix.contains("-") && !suffix.equals(CFGID_TYPE_NAME.getKey()))
+                                throw new RuntimeException("Key should match a parameter, or end in \".type-name\"");
 							// Note: all other validation is done within InifileDocument.changeKey()
 							doc.renameKey(item.section, item.key, (String)value);
 							reread(); // treeViewer.refresh() not enough, because input consists of keys
@@ -632,7 +631,7 @@ public class ParametersPage extends FormPage {
 			for (String key : doc.getKeys(section)) {
 				if (key.contains(".")) { 
 				    String suffix = StringUtils.substringAfterLast(key, ".");
-				    if (!suffix.contains("-") || suffix.equals(CFGID_APPLY_DEFAULT.getKey()) || suffix.equals(CFGID_TYPE_NAME.getKey()))
+				    if (!suffix.contains("-") || suffix.equals(CFGID_TYPE_NAME.getKey()))
 				        sectionNode.addChild(new GenericTreeNode(new SectionKey(section, key)));
 				}
 			}

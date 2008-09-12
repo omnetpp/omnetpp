@@ -82,6 +82,7 @@ static std::string extendbuf;
 "false"                  { countChars(); return FALSE_; }
 "this"                   { countChars(); return THIS_; }
 "default"                { countChars(); return DEFAULT_; }
+"ask"                  { countChars(); return ASK_; }
 "const"                  { countChars(); return CONST_; }
 "sizeof"                 { countChars(); return SIZEOF_; }
 "index"                  { countChars(); return INDEX_; }

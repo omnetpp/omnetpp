@@ -34,6 +34,8 @@
 #include "csimulation.h"
 #include "cconfigkey.h"
 #include "regmacros.h"
+#include "cproperties.h"
+#include "cproperty.h"
 
 #include "tkdefs.h"
 #include "tkenv.h"
@@ -697,6 +699,7 @@ void Tkenv::newNetwork(const char *networkname)
         getConfig()->activateConfig("General", 0);
         readPerRunOptions();
         opt_network_name = network->getName();  // override config setting
+        answers.clear();
         simulation.setupNetwork(network);
         startRun();
 
@@ -744,6 +747,7 @@ void Tkenv::newRun(const char *configname, int runnumber)
 
         CHK(Tcl_VarEval(interp, "clear_windows", NULL));
 
+        answers.clear();
         simulation.setupNetwork(network);
         startRun();
 
@@ -1022,6 +1026,49 @@ void Tkenv::readOptions()
 void Tkenv::readPerRunOptions()
 {
     EnvirBase::readPerRunOptions();
+}
+
+void Tkenv::askParameter(cPar *par)
+{
+    // use a value entered by the user earlier ("[x] use this value for similar parameters")
+    std::string key = std::string(((cComponent*)par->getOwner())->getNedTypeName()) + ":" + par->getName();
+    if (answers.find(key) != answers.end())
+    {
+        std::string answer = answers[key];
+        par->parse(answer.c_str());
+        return;
+    }
+
+    // really ask
+    bool success = false;
+    bool useForAll = false;
+    while (!success)
+    {
+        cProperties *props = par->getProperties();
+        cProperty *prop = props->get("prompt");
+        std::string prompt = prop ? prop->getValue(cProperty::DEFAULTKEY) : "";
+        if (prompt.empty())
+            prompt = std::string("Enter parameter `") + par->getFullPath() + "':";
+
+        std::string reply;
+        bool ok = inputDialog("Unassigned Parameter", prompt.c_str(),
+                              "Use this value for all similar parameters",
+                              par->str().c_str(), reply, useForAll);
+        if (!ok)
+            throw cRuntimeError(eCANCEL);
+
+        try
+        {
+            par->parse(reply.c_str());
+            success = true;
+            if (useForAll)
+                answers[key] = reply;
+        }
+        catch (std::exception& e)
+        {
+            ev.printfmsg("%s -- please try again.", e.what());
+        }
+    }
 }
 
 bool Tkenv::idle()
@@ -1768,25 +1815,42 @@ cEnvir& Tkenv::flush()
     return *this;
 }
 
-std::string Tkenv::gets(const char *msg, const char *defaultreply)
+bool Tkenv::inputDialog(const char *title, const char *prompt,
+                        const char *checkboxLabel, const char *defaultValue,
+                        std::string& outResult, bool& inoutCheckState)
 {
-    char title[70];
-    cModule *mod = simulation.getContextModule();
-    if (mod)
-       strncpy(title, mod->getFullPath().c_str(),69);
-    else
-       strncpy(title, simulation.getNetworkType()->getName(),69);
-    title[69]=0;
-
     CHK(Tcl_Eval(interp, "global opp"));
-    Tcl_SetVar2(interp, "opp", "result", (char *)defaultreply, TCL_GLOBAL_ONLY);
-    CHK(Tcl_VarEval(interp, "inputbox ",TclQuotedString(title).get()," ",TclQuotedString(msg).get()," opp(result)",NULL));
+    Tcl_SetVar2(interp, "opp", "result", (char *)defaultValue, TCL_GLOBAL_ONLY);
+    Tcl_SetVar2(interp, "opp", "check", (char *)(inoutCheckState ? "1" : "0"), TCL_GLOBAL_ONLY);
+    if (checkboxLabel==NULL)
+        CHK(Tcl_VarEval(interp, "inputbox ",
+                        TclQuotedString(title).get()," ",
+                        TclQuotedString(prompt).get()," opp(result) ", NULL));
+    else
+        CHK(Tcl_VarEval(interp, "inputbox ",
+                        TclQuotedString(title).get()," ",
+                        TclQuotedString(prompt).get()," opp(result) ",
+                        TclQuotedString(checkboxLabel).get(), " opp(check)", NULL));
 
-    if (Tcl_GetStringResult(interp)[0]=='0')
+    if (Tcl_GetStringResult(interp)[0]=='0') {
+        return false;  // cancel
+    }
+    else {
+        outResult = Tcl_GetVar2(interp, "opp", "result", TCL_GLOBAL_ONLY);
+        inoutCheckState = Tcl_GetVar2(interp, "opp", "check", TCL_GLOBAL_ONLY)[0]=='1';
+        return true; // OK
+    }
+}
+
+std::string Tkenv::gets(const char *promt, const char *defaultReply)
+{
+    cModule *mod = simulation.getContextModule();
+    std::string title = mod ? mod->getFullPath() : simulation.getNetworkType()->getName();
+    std::string result;
+    bool dummy;
+    bool ok = inputDialog(title.c_str(), promt, NULL, defaultReply, result, dummy);
+    if (!ok)
         throw cRuntimeError(eCANCEL);
-
-    // ok
-    std::string result = Tcl_GetVar2(interp, "opp", "result", TCL_GLOBAL_ONLY);
     return result;
 }
 

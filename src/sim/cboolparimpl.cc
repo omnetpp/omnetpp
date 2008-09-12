@@ -60,7 +60,7 @@ void cBoolParImpl::setBoolValue(bool b)
 {
     deleteOld();
     val = b;
-    flags |= FL_HASVALUE;
+    flags |= FL_CONTAINSVALUE | FL_ISSET;
 }
 
 void cBoolParImpl::setLongValue(long l)
@@ -87,7 +87,7 @@ void cBoolParImpl::setExpression(cExpression *e)
 {
     deleteOld();
     expr = e;
-    flags |= FL_ISEXPR | FL_HASVALUE;
+    flags |= FL_ISEXPR | FL_CONTAINSVALUE | FL_ISSET;
 }
 
 bool cBoolParImpl::boolValue(cComponent *context) const

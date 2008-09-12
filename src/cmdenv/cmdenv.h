@@ -71,7 +71,7 @@ class CMDENV_API Cmdenv : public EnvirBase
      virtual void simulationEvent(cMessage *msg);
      virtual bool isGUI() const {return false;}
      virtual cEnvir& flush();
-     virtual std::string gets(const char *promptstr, const char *defaultreply);
+     virtual std::string gets(const char *prompt, const char *defaultReply);
      virtual bool idle();
      virtual unsigned getExtraStackForEnvir() const;
 
@@ -83,6 +83,7 @@ class CMDENV_API Cmdenv : public EnvirBase
 
      virtual void readOptions();
      virtual void readPerRunOptions();
+     virtual void askParameter(cPar *par);
 
      // new functions:
      void help();

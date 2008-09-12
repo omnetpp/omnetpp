@@ -640,9 +640,11 @@ void EnvirBase::endRun()
 
 void EnvirBase::readParameter(cPar *par)
 {
+    ASSERT(!par->isSet());  // must be unset at this point
+
     // get it from the ini file
     std::string moduleFullPath = par->getOwner()->getFullPath();
-    const char *str = getConfig()->getParameterValue(moduleFullPath.c_str(), par->getName(), par->hasValue());
+    const char *str = getConfig()->getParameterValue(moduleFullPath.c_str(), par->getName(), par->containsValue());
 
 /* XXX hack to use base directory for resolving xml files location has been commented out
  * FIXME a solution needs to be worked out!
@@ -667,45 +669,26 @@ void EnvirBase::readParameter(cPar *par)
     }
 */
 
-    if (str && str[0])
+    if (opp_strcmp(str, "default")==0)
+    {
+        ASSERT(par->containsValue());  // cConfiguration should not return "=default" lines for params that have no default value
+        par->acceptDefault();
+    }
+    else if (opp_strcmp(str, "ask")==0)
+    {
+        askParameter(par);
+    }
+    else if (!opp_isempty(str))
     {
         par->parse(str);
-        return;
     }
-
-    // maybe we should use default value
-    if (par->hasValue() && str && !str[0])  // str=="" stands for apply-default=true
+    else
     {
-        par->acceptDefault();
-        return;
-    }
-
-    // otherwise, we have to ask the user
-    bool success = false;
-    while (!success)
-    {
-        cProperties *props = par->getProperties();
-        cProperty *prop = props->get("prompt");
-        std::string prompt = prop ? prop->getValue(cProperty::DEFAULTKEY) : "";
-        std::string reply;
-
-        // ask the user. note: gets() will signal "cancel" by throwing an exception
-        if (!prompt.empty())
-            reply = this->gets(prompt.c_str(), par->str().c_str());
+        // str empty: no value in the ini file
+        if (par->containsValue())
+            par->acceptDefault();
         else
-            // DO NOT change the "Enter parameter" string. The IDE launcher plugin matches
-            // against this string for detecting user input
-            reply = this->gets((std::string("Enter parameter `")+par->getFullPath()+"':").c_str(), par->str().c_str());
-
-        try
-        {
-            par->parse(reply.c_str());
-            success = true;
-        }
-        catch (std::exception& e)
-        {
-            ev.printfmsg("%s -- please try again.", e.what());
-        }
+            askParameter(par);
     }
 }
 

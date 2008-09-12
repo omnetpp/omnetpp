@@ -74,23 +74,19 @@ class ENVIR_API SectionBasedConfiguration : public cConfiguration
 
     class KeyValue2 : public KeyValue1 {
       public:
-        PatternMatcher *ownerPattern; // key without the group name (and without ".apply-default")
+        PatternMatcher *ownerPattern; // key without the group name
         PatternMatcher *groupPattern; // only filled in when this is a wildcard group
         PatternMatcher *fullPathPattern; // when present, match against this instead of ownerPattern & groupPattern
-        bool isApplyDefault;  // whether key has the ".apply-default" suffix)
-        bool applyDefaultValue;  // the value of the ".apply-default" key which can be true or false
 
         KeyValue2(const KeyValue1& e) : KeyValue1(e) {
             ownerPattern = groupPattern = fullPathPattern = NULL;
-            isApplyDefault = false; applyDefaultValue = true;
         }
         KeyValue2(const KeyValue2& e) : KeyValue1(e) {
             ownerPattern = e.ownerPattern;
             groupPattern = e.groupPattern;
             fullPathPattern = e.fullPathPattern;
-            isApplyDefault = e.isApplyDefault;
-            applyDefaultValue = e.applyDefaultValue;
         }
+        //FIXME patterns never get deleted?
     };
 
     // Some explanation. Basically we could just store all entries in order,
@@ -103,16 +99,18 @@ class ENVIR_API SectionBasedConfiguration : public cConfiguration
     // against the group which contains the keys ending in ".power" (e.g.
     // "**.server.radio.power", "**.host[0].**.power", etc).
     // If there is an entry which contains a wildcard in the parameter name part,
-    // that unfortunately has to be added to all groups. Same thing for all the
-    // "apply-default" entries: they must be added to the same group as the parameter
-    // entries (because relative order matters).
+    // that unfortunately has to be added to all groups.
     //
     // Examples:
     // Parameter keys:
-    //   **.host[*].address               ==> goes into the "address" group; ownerPattern="**.host[*]"
-    //   **.host[*].address.apply-default ==> goes into the "address" group; ownerPattern="**.host[*]" and isApplyDefault=true
-    //   **.host[*].addr*                 ==> goes into the wildcard group; ownerPattern="**.host[*]", groupPattern="addr*"
-    //   **.host[*].addr*.apply-default   ==> goes into the wildcard group; ownerPattern="**.host[*]", groupPattern="addr*" and isApplyDefault=true
+    //   **.host[*].address  ==> goes into the "address" group; ownerPattern="**.host[*]"
+    //   **.host[*].addr*    ==> goes into the wildcard group; ownerPattern="**.host[*]", groupPattern="addr*"
+    //   **.address          ==> goes into the "address" group; ownerPattern="**"
+    //   **.addr*            ==> goes into the wildcard group; ownerPattern="**"
+    //   **                  ==> goes into the wildcard group as "*"; ownerPattern="**"
+    //   **.**               ==> goes into the wildcard group as "*"; ownerPattern="**"
+    //   **-*                ==> goes into the wildcard group as "*-*"; ownerPattern="**"
+    //   **-**               ==> goes into the wildcard group as "*-*"(?); ownerPattern="**"
     //
     // Per-object config keys:
     //   **.tcp.eedVector.record-interval ==> goes into the "record-interval" group; ownerPattern="**.tcp.eedVector"
@@ -183,7 +181,7 @@ class ENVIR_API SectionBasedConfiguration : public cConfiguration
     std::vector<int> resolveSectionChain(int sectionId) const;
     std::vector<int> resolveSectionChain(const char *section) const;
     void addEntry(const KeyValue1& entry);
-    static void splitKey(const char *key, std::string& outOwnerName, std::string& outGroupName, bool& outIsApplyDefault);
+    static void splitKey(const char *key, std::string& outOwnerName, std::string& outGroupName);
     static bool entryMatches(const KeyValue2& entry, const char *moduleFullPath, const char *paramName);
     std::vector<IterationVariable> collectIterationVariables(const std::vector<int>& sectionChain) const;
     static void parseVariable(const char *pos, std::string& outVarname, std::string& outValue, std::string& outParVar, const char *&outEndPos);

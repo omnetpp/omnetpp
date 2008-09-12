@@ -21,6 +21,7 @@
 #define __CDELAYCHANNEL_H
 
 #include "cchannel.h"
+#include "csimulation.h"
 
 NAMESPACE_BEGIN
 
@@ -79,9 +80,9 @@ class SIM_API cDelayChannel : public cChannel //implies noncopyable
     virtual simtime_t calculateDuration(cMessage *msg) const {return 0;}
 
     /**
-     * Returns zero.
+     * Returns the current simulation time.
      */
-    virtual simtime_t getTransmissionFinishTime() const {return 0;}
+    virtual simtime_t getTransmissionFinishTime() const {return simTime();}
 
     /**
      * Returns false.

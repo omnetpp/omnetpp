@@ -441,6 +441,10 @@ void NED2Generator::doParam(ParamElement *node, const char *indent, bool islast,
         if (node->getIsDefault())
             OUT << ")";
     }
+    else if (node->getIsDefault())
+    {
+        OUT << " = default";
+    }
 
     if (indent)
         OUT << ";" << getRightComment(node);
@@ -451,10 +455,23 @@ void NED2Generator::doParam(ParamElement *node, const char *indent, bool islast,
 void NED2Generator::doPattern(PatternElement *node, const char *indent, bool islast, const char *)
 {
     OUT << getBannerComment(node, indent);
-    OUT << indent << "/" << node->getPattern() << "/ = ";
-    printExpression(node, "value",indent);
-
+    OUT << indent << "/" << node->getPattern() << "/";
     generateChildrenWithType(node, NED_PROPERTY, increaseIndent(indent), " ");
+
+    if (hasExpression(node,"value"))
+    {
+        OUT << " = ";
+        if (node->getIsDefault())
+            OUT << "default(";
+        printExpression(node, "value",indent);
+        if (node->getIsDefault())
+            OUT << ")";
+    }
+    else if (node->getIsDefault())
+    {
+        OUT << " = default";
+    }
+
     OUT << ";" << getRightComment(node);
 }
 

@@ -86,14 +86,14 @@ void cXMLParImpl::setXMLValue(cXMLElement *node)
 {
     deleteOld();
     val = node;
-    flags |= FL_HASVALUE;
+    flags |= FL_CONTAINSVALUE | FL_ISSET;
 }
 
 void cXMLParImpl::setExpression(cExpression *e)
 {
     deleteOld();
     expr = e;
-    flags |= FL_ISEXPR | FL_HASVALUE;
+    flags |= FL_ISEXPR | FL_CONTAINSVALUE | FL_ISSET;
 }
 
 bool cXMLParImpl::boolValue(cComponent *) const

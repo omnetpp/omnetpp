@@ -245,6 +245,12 @@ class ENVIR_API EnvirBase : public cEnvir
     virtual void readOptions();
     virtual void readPerRunOptions();
 
+    /**
+     * Called internally from readParameter(), to interactively prompt the
+     * user for a parameter value.
+     */
+    virtual void askParameter(cPar *par) = 0;
+
   public:
     // Utility function: optionally appends host name to fname
     virtual void processFileName(opp_string& fname);

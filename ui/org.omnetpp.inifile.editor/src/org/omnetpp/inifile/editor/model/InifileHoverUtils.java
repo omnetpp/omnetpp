@@ -291,7 +291,7 @@ public class InifileHoverUtils {
         String paramName = paramDeclNode.getName();
         String paramValue = paramDeclNode.getValue();
         if (paramDeclNode.getIsDefault())
-            paramValue = "default("+paramValue+")";
+            paramValue = StringUtils.isEmpty(paramValue) ? "default" : "default("+paramValue+")";
         String optParamValue = StringUtils.isEmpty(paramValue) ? "" : " = " + paramValue;
         String paramType = paramDeclNode.getAttribute(ParamElement.ATT_TYPE);
         if (paramDeclNode.getIsVolatile())

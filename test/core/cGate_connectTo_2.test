@@ -25,7 +25,7 @@ cChannel *Sender::createChannel(double delay)
 void Sender::activity()
 {
    cGate *out = gate("out");
-   cGate *rcvin = gate("out")->getToGate();
+   cGate *rcvin = gate("out")->getNextGate();
    cChannel *ch;
 
    // start clean

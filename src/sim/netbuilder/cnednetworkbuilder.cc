@@ -170,7 +170,6 @@ void cNEDNetworkBuilder::doParam(cComponent *component, ParamElement *paramNode,
             impl = cParImpl::createWithType(translateParamType(paramNode->getType()));
             impl->setName(paramName);
             impl->setIsShared(false);
-            impl->setIsInput(true);
             impl->setIsVolatile(paramNode->getIsVolatile());
 
             component->addPar(impl);
@@ -190,10 +189,19 @@ void cNEDNetworkBuilder::doParam(cComponent *component, ParamElement *paramNode,
             //printf("   +++ assigning param %s\n", paramName);
             ASSERT(impl==component->par(paramName).impl() && !impl->isShared());
             cDynamicExpression *dynamicExpr = cExpressionBuilder().process(exprNode, isSubcomponent);
-            impl->setIsInput(paramNode->getIsDefault());
             cExpressionBuilder::setExpression(impl, dynamicExpr);
+            impl->setIsSet(!paramNode->getIsDefault());
         }
+        else if (paramNode->getIsDefault())
+        {
+            // Note: this branch ("=default" in NED files) is currently not supported,
+            // because it would be complicated to implement in the Inifile Editor.
 
+            //printf("   +++ setting param %s to default\n", paramName);
+            if (!impl->containsValue())
+                throw cRuntimeError(component, "Cannot apply default value to parameter `%s': it has no default value", paramName);
+            impl->setIsSet(true);
+        }
         impl->setIsShared(true);
         currentDecl->putSharedParImplFor(paramNode, impl);
 

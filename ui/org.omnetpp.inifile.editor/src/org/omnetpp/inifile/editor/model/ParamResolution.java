@@ -11,10 +11,12 @@ public class ParamResolution {
 	public enum ParamResolutionType {
 		UNASSIGNED, // unassigned parameter
 		NED, // parameter assigned in NED
-		NED_DEFAULT, // parameter set to the default value (**.apply-default=true)
 		INI, // parameter assigned in inifile, with no default in NED file
+		INI_DEFAULT, // parameter set to the default value (**.param=default)
+		INI_ASK,  // parameter will be asked interactively (**.param=ask)
 		INI_OVERRIDE, // inifile setting overrides NED default
-		INI_NEDDEFAULT, // inifile sets param to its NED default value
+		INI_NEDDEFAULT, // inifile sets param to a value that's identical to the NED default value
+		IMPLICITDEFAULT, // NED default applied because there's no match in the ini file
 	}
 	
 	// moduleFullPath and param name (from paramDeclNode or paramValueNode) identify the NED parameter. 

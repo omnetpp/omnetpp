@@ -6,7 +6,6 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_VECTOR_RECOR
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CONFIG_;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.EXTENDS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.dot_APPLY_DEFAULT;
 import static org.omnetpp.ned.model.NEDElementConstants.NED_PARTYPE_BOOL;
 import static org.omnetpp.ned.model.NEDElementConstants.NED_PARTYPE_DOUBLE;
 import static org.omnetpp.ned.model.NEDElementConstants.NED_PARTYPE_INT;
@@ -823,7 +822,7 @@ public class InifileAnalyzer {
 
 	    if (doc==null || (nedValue!=null && !isNedDefault)) {
 	        // value hardcoded in NED (unchangeable from ini files), or there's no inifile
-	        ParamResolutionType type = nedValue!=null ? ParamResolutionType.NED : ParamResolutionType.UNASSIGNED;
+	        ParamResolutionType type = nedValue==null ? ParamResolutionType.UNASSIGNED : isNedDefault ? ParamResolutionType.IMPLICITDEFAULT : ParamResolutionType.NED;
 	        resultList.add(new ParamResolution(moduleFullPath, pathModules, paramDeclNode, paramValueNode, type, activeSection, null, null));
 	        return;
 	    }
@@ -834,7 +833,7 @@ public class InifileAnalyzer {
 
 	    if (sectionKeys.isEmpty()) {
 	        // inifile contains nothing useful
-	        ParamResolutionType type = ParamResolutionType.UNASSIGNED;
+	        ParamResolutionType type = isNedDefault ? ParamResolutionType.IMPLICITDEFAULT : ParamResolutionType.UNASSIGNED;
 	        resultList.add(new ParamResolution(moduleFullPath, pathModules, paramDeclNode, paramValueNode, type, activeSection, null, null));
 	        return;
 	    }
@@ -843,17 +842,15 @@ public class InifileAnalyzer {
 	    for (SectionKey sectionKey : sectionKeys) {
 	        String iniSection = sectionKey.section;
 	        String iniKey = sectionKey.key;
-	        String iniValue = null;
-	        boolean iniApplyDefault = iniKey.endsWith(dot_APPLY_DEFAULT);
-	        if (iniApplyDefault)
-	            Assert.isTrue(nedValue!=null && isNedDefault && "true".equals(doc.getValue(iniSection, iniKey))); // assert lookupParameter() sanity
-	        if (!iniApplyDefault)
-	            iniValue = doc.getValue(iniSection, iniKey);
+	        String iniValue = doc.getValue(iniSection, iniKey);
+	        Assert.isTrue(iniValue != null); // must exist
 
 	        // so, find out how the parameter's going to be assigned...
 	        ParamResolutionType type;
-            if (iniApplyDefault)
-                type = ParamResolutionType.NED_DEFAULT; // **.apply-default=true
+            if (iniValue.equals(ConfigRegistry.DEFAULT))
+                type = ParamResolutionType.INI_DEFAULT;
+            else if (iniValue.equals(ConfigRegistry.ASK))
+                type = ParamResolutionType.INI_ASK;
             else if (nedValue==null)
 	            type = ParamResolutionType.INI;
 	        else if (nedValue.equals(iniValue))
@@ -1003,9 +1000,9 @@ public class InifileAnalyzer {
 
 	public static String getParamValue(ParamResolution res, IInifileDocument doc) {
 		switch (res.type) {
-			case UNASSIGNED:
+			case UNASSIGNED: case INI_ASK:
 				return null;
-			case NED: case NED_DEFAULT:
+			case NED: case INI_DEFAULT: case IMPLICITDEFAULT:
 				return res.paramValueNode.getValue();
 			case INI: case INI_OVERRIDE: case INI_NEDDEFAULT:
 				return doc.getValue(res.section, res.key);
@@ -1014,20 +1011,18 @@ public class InifileAnalyzer {
 	}
 
 	public static String getParamRemark(ParamResolution res, IInifileDocument doc) {
-		String remark;
+	    String remark;
+	    String nedDefaultIfPresent = res.paramValueNode != null ? " (NED default: "+res.paramValueNode.getValue()+")" : "";
 		switch (res.type) {
-			case UNASSIGNED: remark = "unassigned";
-				if (res.paramValueNode != null)
-					remark += " (NED default: "+res.paramValueNode.getValue()+")";
-				else
-					; //remark += " (no NED default)";
-				break;
-			case NED: remark = "NED"; break;
-			case NED_DEFAULT: remark = "NED default applied"; break;
-			case INI: remark = "ini"; break;
-			case INI_OVERRIDE: remark = "ini, overrides NED default: "+res.paramValueNode.getValue(); break;
-			case INI_NEDDEFAULT: remark = "ini, sets same value as NED default"; break;
-			default: throw new IllegalStateException("invalid param resolution type: "+res.type);
+		    case UNASSIGNED: remark = "unassigned" + nedDefaultIfPresent; break;
+		    case NED: remark = "NED"; break;
+		    case INI: remark = "ini"; break;
+		    case INI_ASK: remark = "ask" + nedDefaultIfPresent; break;
+		    case INI_DEFAULT: remark = "NED default applied"; break;
+		    case INI_OVERRIDE: remark = "ini (overrides NED default: "+res.paramValueNode.getValue()+")"; break;
+		    case INI_NEDDEFAULT: remark = "ini (sets same value as NED default)"; break;
+		    case IMPLICITDEFAULT: remark = "NED default applied implicitly"; break;
+		    default: throw new IllegalStateException("invalid param resolution type: "+res.type);
 		}
 		if (res.key!=null)
 			remark += "; see ["+res.section+"] / " + res.key + "=" + doc.getValue(res.section, res.key);

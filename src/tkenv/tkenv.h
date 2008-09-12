@@ -120,6 +120,9 @@ class TKENV_API Tkenv : public EnvirBase
       typedef std::list<TInspector*> TInspectorList;
       TInspectorList inspectors;   // list of inspector objects
 
+      typedef std::map<std::string,std::string> StringMap;
+      StringMap answers;           // key: <ModuleType>:<paramName>, value: <interactively-given-paramvalue>
+
    public:
       Tkenv();
       virtual ~Tkenv();
@@ -150,7 +153,7 @@ class TKENV_API Tkenv : public EnvirBase
       virtual void putsmsg(const char *s);
       virtual void sputn(const char *s, int n);
       virtual cEnvir& flush();
-      virtual std::string gets(const char *promptstr, const char *defaultreply);
+      virtual std::string gets(const char *promt, const char *defaultReply);
       virtual bool askyesno(const char *question);
 
       virtual bool idle();
@@ -167,6 +170,7 @@ class TKENV_API Tkenv : public EnvirBase
 
       virtual void readOptions();
       virtual void readPerRunOptions();
+      virtual void askParameter(cPar *par);
 
   public:
       // New functions:
@@ -212,6 +216,9 @@ class TKENV_API Tkenv : public EnvirBase
       void clearPerformanceDisplay();
 
       void confirm(const char *msg); // messagebox with OK button
+      bool inputDialog(const char *title, const char *prompt,
+                       const char *checkboxLabel, const char *defaultValue,
+                       std::string& outResult, bool& inoutCheckState);
 
       void printEventBanner(cSimpleModule *mod);
       void animateSend(cMessage *msg, cGate *fromgate, cGate *togate);

@@ -62,7 +62,7 @@ debug-on-errors = true
 
 *.ini.c = ref[1].p  #2
 
-**.apply-default = true
+#Note: default params will be assigned automatically
 
 %contains: stdout
 module Test: Test {

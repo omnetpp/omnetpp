@@ -65,14 +65,14 @@ void cDoubleParImpl::setLongValue(long l)
 {
     deleteOld();
     val = l;
-    flags |= FL_HASVALUE;
+    flags |= FL_CONTAINSVALUE | FL_ISSET;
 }
 
 void cDoubleParImpl::setDoubleValue(double d)
 {
     deleteOld();
     val = d;
-    flags |= FL_HASVALUE;
+    flags |= FL_CONTAINSVALUE | FL_ISSET;
 }
 
 void cDoubleParImpl::setStringValue(const char *s)
@@ -89,7 +89,7 @@ void cDoubleParImpl::setExpression(cExpression *e)
 {
     deleteOld();
     expr = e;
-    flags |= FL_ISEXPR | FL_HASVALUE;
+    flags |= FL_ISEXPR | FL_CONTAINSVALUE | FL_ISSET;
 }
 
 bool cDoubleParImpl::boolValue(cComponent *) const
