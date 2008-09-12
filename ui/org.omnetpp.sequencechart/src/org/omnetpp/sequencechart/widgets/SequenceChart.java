@@ -2681,7 +2681,7 @@ public class SequenceChart
 				    graphics.setForegroundColor(EVENT_BOOKMARK_COLOR);
 
 					for (int i = 0; i < markers.length; i++) {
-						int eventNumber = markers[i].getAttribute("EventNumber", -1);
+						long eventNumber = Long.parseLong(markers[i].getAttribute("EventNumber", "-1"));
 
 						if (startEventNumber <= eventNumber && eventNumber <= endEventNumber) {
 							IEvent bookmarkedEvent = eventLog.getEventForEventNumber(eventNumber);

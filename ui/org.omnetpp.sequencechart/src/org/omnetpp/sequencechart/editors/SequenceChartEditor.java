@@ -234,7 +234,7 @@ public class SequenceChartEditor
 
     public void gotoMarker(IMarker marker)
     {
-		int eventNumber = marker.getAttribute("EventNumber", -1);
+		long eventNumber = Long.parseLong(marker.getAttribute("EventNumber", "-1"));
 		sequenceChart.gotoElement(eventLogInput.getEventLog().getEventForEventNumber(eventNumber));
     }
 

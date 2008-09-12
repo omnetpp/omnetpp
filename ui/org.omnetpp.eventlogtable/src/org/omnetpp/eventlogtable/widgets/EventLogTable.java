@@ -11,10 +11,8 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.window.Window;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
-import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
@@ -123,30 +121,6 @@ public class EventLogTable
 	/*************************************************************************************
 	 * OVERRIDING BEHAVIOR
 	 */
-
-    @Override
-    protected void keyUpPressed(KeyEvent e) {
-        if (e.stateMask == 0)
-            super.keyUpPressed(e);
-        else if (e.stateMask == SWT.MOD1)
-            eventLogTableContributor.gotoEventCause();
-        else if (e.stateMask == SWT.SHIFT)
-            eventLogTableContributor.gotoPreviousModuleEvent();
-        else if (e.stateMask == SWT.ALT)
-            eventLogTableContributor.gotoPreviousEvent();
-    }
-
-    @Override
-    protected void keyDownPressed(KeyEvent e) {
-        if (e.stateMask == 0)
-            super.keyDownPressed(e);
-        else if (e.stateMask == SWT.MOD1)
-            eventLogTableContributor.gotoMessageArrival();
-        else if (e.stateMask == SWT.SHIFT)
-            eventLogTableContributor.gotoNextModuleEvent();
-        else if (e.stateMask == SWT.ALT)
-            eventLogTableContributor.gotoNextEvent();
-    }
 
 	@Override
 	protected void paint(final GC gc)

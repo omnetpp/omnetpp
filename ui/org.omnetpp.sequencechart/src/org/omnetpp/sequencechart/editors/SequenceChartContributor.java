@@ -1377,7 +1377,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 						IMarker[] markers = eventLogInput.getFile().findMarkers(IMarker.BOOKMARK, true, IResource.DEPTH_ZERO);
 
 						for (IMarker marker : markers)
-							if (marker.getAttribute("EventNumber", -1) == event.getEventNumber()) {
+							if (marker.getAttribute("EventNumber", "-1").equals(String.valueOf(event.getEventNumber()))) {
 								marker.delete();
 								found = true;
 							}
@@ -1388,7 +1388,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                             if (dialog.open() == Window.OK) {
                                 IMarker marker = eventLogInput.getFile().createMarker(IMarker.BOOKMARK);
                                 marker.setAttribute(IMarker.LOCATION, "# " + event.getEventNumber());
-                                marker.setAttribute("EventNumber", event.getEventNumber());
+                                marker.setAttribute("EventNumber", String.valueOf(event.getEventNumber()));
                                 marker.setAttribute(IMarker.MESSAGE, dialog.getValue());
                             }
                         }

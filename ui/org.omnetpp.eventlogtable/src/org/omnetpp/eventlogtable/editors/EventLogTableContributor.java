@@ -36,7 +36,6 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Text;
@@ -58,9 +57,7 @@ import org.omnetpp.common.contentassist.ContentProposal;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.eventlog.EventLogEntryProposalProvider;
 import org.omnetpp.common.eventlog.EventLogEntryReference;
-import org.omnetpp.common.eventlog.EventLogFilterParameters;
 import org.omnetpp.common.eventlog.EventLogInput;
-import org.omnetpp.common.eventlog.FilterEventLogDialog;
 import org.omnetpp.common.eventlog.IEventLogChangeListener;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.eventlog.engine.BeginSendEntry;
@@ -89,25 +86,9 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 
 	protected Separator separatorAction;
 
-	protected EventLogTableAction gotoEventAction;
-
-	protected EventLogTableAction gotoSimulationTimeAction;
-
-	protected EventLogTableAction gotoEventCauseAction;
-
-	protected EventLogTableAction gotoMessageArrivalAction;
-
 	protected EventLogTableAction gotoMessageOriginAction;
 
 	protected EventLogTableAction gotoMessageReuseAction;
-
-    protected EventLogTableAction gotoPreviousEventAction;
-
-    protected EventLogTableAction gotoNextEventAction;
-
-    protected EventLogTableAction gotoPreviousModuleEventAction;
-
-    protected EventLogTableAction gotoNextModuleEventAction;
 
     protected EventLogTableAction toggleBookmarkAction;
 
@@ -131,16 +112,8 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 
 	public EventLogTableContributor() {
 		this.separatorAction = new Separator();
-		this.gotoEventAction = createGotoEventAction();
-		this.gotoSimulationTimeAction = createGotoSimulationTimeAction();
-		this.gotoEventCauseAction = createGotoEventCauseAction();
-		this.gotoMessageArrivalAction = createGotoMessageArrivalAction();
 		this.gotoMessageOriginAction = createGotoMessageOriginAction();
 		this.gotoMessageReuseAction = createGotoMessageReuseAction();
-        this.gotoPreviousEventAction = createGotoPreviousEventAction();
-        this.gotoNextEventAction = createGotoNextEventAction();
-        this.gotoPreviousModuleEventAction = createGotoPreviousModuleEventAction();
-        this.gotoNextModuleEventAction = createGotoNextModuleEventAction();
         this.toggleBookmarkAction = createToggleBookmarkAction();
         this.typeModeAction = createTypeModeAction();
         this.nameModeAction = createNameModeAction();
@@ -190,23 +163,29 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 		menuManager.add(createFindTextCommandContributionItem());
         menuManager.add(createFindNextCommandContributionItem());
 		menuManager.add(separatorAction);
-		menuManager.add(gotoEventAction);
-		menuManager.add(gotoSimulationTimeAction);
-		menuManager.add(separatorAction);
-		menuManager.add(gotoEventCauseAction);
-		menuManager.add(gotoMessageArrivalAction);
-		menuManager.add(gotoMessageOriginAction);
-		menuManager.add(gotoMessageReuseAction);
-		menuManager.add(separatorAction);
-        menuManager.add(gotoPreviousEventAction);
-        menuManager.add(gotoNextEventAction);
-        menuManager.add(gotoPreviousModuleEventAction);
-        menuManager.add(gotoNextModuleEventAction);
+
+		// goto submenu
+        IMenuManager subMenuManager = new MenuManager("Go To");
+        menuManager.add(subMenuManager);
+        subMenuManager.add(createGotoEventCommandContributionItem());
+        subMenuManager.add(createGotoSimulationTimeCommandContributionItem());
+        subMenuManager.add(separatorAction);
+        subMenuManager.add(createGotoEventCauseCommandContributionItem());
+        subMenuManager.add(createGotoMessageArrivalCommandContributionItem());
+        subMenuManager.add(gotoMessageOriginAction);
+        subMenuManager.add(gotoMessageReuseAction);
+        subMenuManager.add(separatorAction);
+        subMenuManager.add(createGotoPreviousEventCommandContributionItem());
+        subMenuManager.add(createGotoNextEventCommandContributionItem());
+        subMenuManager.add(createGotoPreviousModuleEventCommandContributionItem());
+        subMenuManager.add(createGotoNextModuleEventCommandContributionItem());
+
         menuManager.add(separatorAction);
         menuManager.add(filterAction);
+        menuManager.add(lineFilterModeAction);
+        menuManager.add(separatorAction);
         menuManager.add(typeModeAction);
         menuManager.add(nameModeAction);
-        menuManager.add(lineFilterModeAction);
         menuManager.add(displayModeAction);
         menuManager.add(separatorAction);
         menuManager.add(toggleBookmarkAction);
@@ -237,11 +216,12 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 	@Override
 	public void contributeToToolBar(IToolBarManager toolBarManager) {
         toolBarManager.add(separatorAction);
+        toolBarManager.add(filterAction);
+        toolBarManager.add(lineFilterModeAction);
+        toolBarManager.add(separatorAction);
         toolBarManager.add(nameModeAction);
-		toolBarManager.add(lineFilterModeAction);
 		toolBarManager.add(displayModeAction);
-		toolBarManager.add(separatorAction);
-	    toolBarManager.add(filterAction);
+        toolBarManager.add(separatorAction);
 		toolBarManager.add(refreshAction);
 	}
 
@@ -273,30 +253,6 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 		}
 	}
 	
-	public void gotoEventCause() {
-	    gotoEventCauseAction.run();
-	}
-
-    public void gotoMessageArrival() {
-        gotoMessageArrivalAction.run();
-    }
-
-    public void gotoPreviousEvent() {
-        gotoPreviousEventAction.run();
-    }
-
-    public void gotoPreviousModuleEvent() {
-        gotoPreviousModuleEventAction.run();
-    }
-
-    public void gotoNextEvent() {
-        gotoNextEventAction.run();
-    }
-
-    public void gotoNextModuleEvent() {
-        gotoNextModuleEventAction.run();
-    }
-
 	public void update() {
 		try {
 			for (Field field : getClass().getDeclaredFields()) {
@@ -324,6 +280,24 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 			throw new RuntimeException(e);
 		}
 	}
+    
+    private static void gotoEventLogEntry(EventLogTable eventLogTable, EventLogEntry entry, Action action, boolean gotoClosest) {
+        String text = action != null ? action.getText() : "Go to";
+
+        if (entry != null) {
+            EventLogEntryReference reference = new EventLogEntryReference(entry);
+
+            if (reference.isPresent(eventLogTable.getEventLog()))
+                if (gotoClosest)
+                    eventLogTable.gotoClosestElement(reference);
+                else
+                    eventLogTable.gotoElement(reference);
+            else
+                MessageDialog.openError(null, text, "Event not present in current event log input.");
+        }
+        else
+            MessageDialog.openError(null, text, "No such event");
+    }
 
 	/*************************************************************************************
 	 * NOTIFICATIONS
@@ -371,80 +345,82 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 	    return new CommandContributionItem(parameter);
 	}
 
+    public static class FindTextHandler extends AbstractHandler {
+        public Object execute(ExecutionEvent event) throws ExecutionException {
+            IWorkbenchPart part = HandlerUtil.getActivePartChecked(event);
+            
+            if (part instanceof IEventLogTableProvider)
+                ((IEventLogTableProvider)part).getEventLogTable().findText(false);
+
+            return null;
+        }
+    }
+
     private CommandContributionItem createFindNextCommandContributionItem() {
         CommandContributionItemParameter parameter = new CommandContributionItemParameter(Workbench.getInstance(), null, "org.omnetpp.eventlogtable.findNext", SWT.PUSH);
         parameter.icon = ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SEARCH_NEXT);
         return new CommandContributionItem(parameter);
     }
-    
-	private void gotoEventLogEntry(EventLogEntry entry, Action action, boolean gotoClosest) {
-        if (entry != null) {
-            EventLogEntryReference reference = new EventLogEntryReference(entry);
 
-            if (reference.isPresent(getEventLog()))
-                if (gotoClosest)
-                    eventLogTable.gotoClosestElement(reference);
-                else
-                    eventLogTable.gotoElement(reference);
-            else
-                MessageDialog.openError(null, action.getText() , "Event not present in current event log input.");
+    public static class FindNextHandler extends AbstractHandler {
+        public Object execute(ExecutionEvent event) throws ExecutionException {
+            IWorkbenchPart part = HandlerUtil.getActivePartChecked(event);
+            
+            if (part instanceof IEventLogTableProvider) 
+                ((IEventLogTableProvider)part).getEventLogTable().findText(true);
+
+            return null;
         }
-        else
-            MessageDialog.openError(null, action.getText() , "No such event");
+    }
+
+	private CommandContributionItem createGotoEventCauseCommandContributionItem() {
+        return new CommandContributionItem(new CommandContributionItemParameter(Workbench.getInstance(), null, "org.omnetpp.eventlogtable.gotoEventCause", SWT.PUSH));
 	}
 
-	private EventLogTableAction createGotoEventCauseAction() {
-		return new EventLogTableAction("Goto Event Cause") {
-			@Override
-			public void run() {
-			    gotoEventLogEntry(getCauseEventLogEntry(), this, true);
-			}
+    public static class GotoEventCauseHandler extends AbstractHandler {
+        // TODO: setEnabled(getCauseEventLogEntry() != null);
+        public Object execute(ExecutionEvent executionEvent) throws ExecutionException {
+            IWorkbenchPart part = HandlerUtil.getActivePartChecked(executionEvent);
+            
+            if (part instanceof IEventLogTableProvider) {
+                EventLogTable eventLogTable = ((IEventLogTableProvider)part).getEventLogTable();
+                EventLogEntryReference eventLogEntryReference = eventLogTable.getSelectionElement();
+                
+                if (eventLogEntryReference != null) {
+                    IEvent event = eventLogTable.getEventLog().getEventForEventNumber(eventLogEntryReference.getEventNumber());
+                    
+                    if (event != null) {
+                        IMessageDependency cause = event.getCause();
 
-			@Override
-			public void update() {
-				setEnabled(getCauseEventLogEntry() != null);
-			}
+                        if (cause != null)
+                            gotoEventLogEntry(eventLogTable, cause.getBeginSendEntry(), null, true);
+                    }
+                }
+            }
 
-			private EventLogEntry getCauseEventLogEntry() {
-				EventLogEntryReference eventLogEntryReference = eventLogTable.getSelectionElement();
-				
-				if (eventLogEntryReference != null) {
-				    IEvent event = getEventLog().getEventForEventNumber(eventLogEntryReference.getEventNumber());
-				    
-				    if (event != null) {
-    				    IMessageDependency cause = event.getCause();
-    
-    					if (cause != null)
-    						return cause.getBeginSendEntry();
-				    }
-				}
-				
-				return null;
-			}
-		};
+            return null;
+        }
+    }
+
+	private CommandContributionItem createGotoMessageArrivalCommandContributionItem() {
+        return new CommandContributionItem(new CommandContributionItemParameter(Workbench.getInstance(), null, "org.omnetpp.eventlogtable.gotoMessageArrival", SWT.PUSH));
 	}
 
-	private EventLogTableAction createGotoMessageArrivalAction() {
-		return new EventLogTableAction("Goto Message Arrival") {
-			@Override
-			public void run() {
-			    gotoEventLogEntry(getConsequenceEventLogEntry(), this, false);
-			}
+    public static class GotoMessageArrivalHandler extends AbstractHandler {
+        // TODO: setEnabled(getConsequenceEventLogEntry() != null);
+        public Object execute(ExecutionEvent executionEvent) throws ExecutionException {
+            IWorkbenchPart part = HandlerUtil.getActivePartChecked(executionEvent);
+            
+            if (part instanceof IEventLogTableProvider) {
+                EventLogTable eventLogTable = ((IEventLogTableProvider)part).getEventLogTable();
+                EventLogEntryReference eventLogEntryReference = eventLogTable.getSelectionElement();
 
-			@Override
-			public void update() {
-				setEnabled(getConsequenceEventLogEntry() != null);
-			}
-			
-			private EventLogEntry getConsequenceEventLogEntry() {
-				EventLogEntryReference eventLogEntryReference = eventLogTable.getSelectionElement();
+                if (eventLogEntryReference != null) {
+                    EventLogEntry eventLogEntry = eventLogEntryReference.getEventLogEntry(eventLogTable.getEventLogInput());
+                    IEvent event = eventLogTable.getEventLog().getEventForEventNumber(eventLogEntryReference.getEventNumber());
+                    IMessageDependencyList consequences = event.getConsequences();
 
-				if (eventLogEntryReference != null) {
-					EventLogEntry eventLogEntry = eventLogEntryReference.getEventLogEntry(eventLogTable.getEventLogInput());
-					IEvent event = getEventLog().getEventForEventNumber(eventLogEntryReference.getEventNumber());
-					IMessageDependencyList consequences = event.getConsequences();
-
-					if (consequences.size() == 1) {
+                    if (consequences.size() == 1) {
                         IMessageDependency consequence = consequences.get(0);
                         
                         if (!eventLogTable.getEventLogTableFacade().IMessageDependency_isReuse(consequence.getCPtr())) {
@@ -453,33 +429,33 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
                             if (consequenceEvent != null)
                                 return consequenceEvent.getEventEntry();
                         }
-					}
-					else {
-    					for (int i = 0; i < consequences.size(); i++) {
-    						IMessageDependency consequence = consequences.get(i);
-    
-    						if (!eventLogTable.getEventLogTableFacade().IMessageDependency_isReuse(consequence.getCPtr()) &&
-    							consequence.getBeginSendEntry().equals(eventLogEntry))
-    						{
-    							IEvent consequenceEvent = consequence.getConsequenceEvent();
-    							
-    							if (consequenceEvent != null)
-    								return consequenceEvent.getEventEntry();
-    						}
-    					}
-					}
-				}
+                    }
+                    else {
+                        for (int i = 0; i < consequences.size(); i++) {
+                            IMessageDependency consequence = consequences.get(i);
 
-				return null;
-			}
-		};
-	}
+                            if (!eventLogTable.getEventLogTableFacade().IMessageDependency_isReuse(consequence.getCPtr()) &&
+                                consequence.getBeginSendEntry().equals(eventLogEntry))
+                            {
+                                IEvent consequenceEvent = consequence.getConsequenceEvent();
+                                
+                                if (consequenceEvent != null)
+                                    gotoEventLogEntry(eventLogTable, consequenceEvent.getEventEntry(), null, false);
+                            }
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+    }
 
 	private EventLogTableAction createGotoMessageOriginAction() {
 		return new EventLogTableAction("Goto Message Origin") {
 			@Override
 			public void run() {
-			    gotoEventLogEntry(getMessageOriginEventLogEntry(), this, false);
+			    gotoEventLogEntry(eventLogTable, getMessageOriginEventLogEntry(), this, false);
 			}
 
 			@Override
@@ -517,7 +493,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 		return new EventLogTableAction("Goto Message Reuse") {
 			@Override
 			public void run() {
-			    gotoEventLogEntry(getMessageReuseEventLogEntry(), this, true);
+			    gotoEventLogEntry(eventLogTable, getMessageReuseEventLogEntry(), this, true);
 			}
 
 			@Override
@@ -549,82 +525,76 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 		};
 	}
 
-    private EventLogTableAction createGotoPreviousEventAction() {
-        return new EventLogTableAction("Goto Previous Event") {
-            @Override
-            public void run() {
-                gotoEventLogEntry(getPreviousEventEntry(), this, false);
-            }
-
-            @Override
-            public void update() {
-            }
+    private CommandContributionItem createGotoPreviousEventCommandContributionItem() {
+        return new CommandContributionItem(new CommandContributionItemParameter(Workbench.getInstance(), null, "org.omnetpp.eventlogtable.gotoPreviousEvent", SWT.PUSH));
+    }
+    
+    public static class GotoPreviousEventHandler extends AbstractHandler {
+        public Object execute(ExecutionEvent executionEvent) throws ExecutionException {
+            IWorkbenchPart part = HandlerUtil.getActivePartChecked(executionEvent);
             
-            private EventLogEntry getPreviousEventEntry() {
+            if (part instanceof IEventLogTableProvider) {
+                EventLogTable eventLogTable = ((IEventLogTableProvider)part).getEventLogTable();
                 EventLogEntryReference eventLogEntryReference = eventLogTable.getSelectionElement();
-
+    
                 if (eventLogEntryReference != null) {
-                    IEvent event = getEventLog().getEventForEventNumber(eventLogEntryReference.getEventNumber());
+                    IEvent event = eventLogTable.getEventLog().getEventForEventNumber(eventLogEntryReference.getEventNumber());
                     
                     if (event != null) {
                         event = event.getPreviousEvent();
                             
                         if (event != null)
-                            return event.getEventEntry();
+                            gotoEventLogEntry(eventLogTable, event.getEventEntry(), null, false);
                     }
                 }
-                
-                return null;
-            }
-        };
-    }
-
-    private EventLogTableAction createGotoNextEventAction() {
-        return new EventLogTableAction("Goto Next Event") {
-            @Override
-            public void run() {
-                gotoEventLogEntry(getNextEventEntry(), this, false);
-            }
-
-            @Override
-            public void update() {
             }
             
-            private EventLogEntry getNextEventEntry() {
-                EventLogEntryReference eventLogEntryReference = eventLogTable.getSelectionElement();
+            return null;
+        }
+    }
 
+    private CommandContributionItem createGotoNextEventCommandContributionItem() {
+        return new CommandContributionItem(new CommandContributionItemParameter(Workbench.getInstance(), null, "org.omnetpp.eventlogtable.gotoNextEvent", SWT.PUSH));
+    }
+    
+    public static class GotoNextEventHandler extends AbstractHandler {
+        public Object execute(ExecutionEvent executionEvent) throws ExecutionException {
+            IWorkbenchPart part = HandlerUtil.getActivePartChecked(executionEvent);
+            
+            if (part instanceof IEventLogTableProvider) {
+                EventLogTable eventLogTable = ((IEventLogTableProvider)part).getEventLogTable();
+                EventLogEntryReference eventLogEntryReference = eventLogTable.getSelectionElement();
+    
                 if (eventLogEntryReference != null) {
-                    IEvent event = getEventLog().getEventForEventNumber(eventLogEntryReference.getEventNumber());
+                    IEvent event = eventLogTable.getEventLog().getEventForEventNumber(eventLogEntryReference.getEventNumber());
                     
                     if (event != null) {
                         event = event.getNextEvent();
-
+    
                         if (event != null)
-                            return event.getEventEntry();
+                            gotoEventLogEntry(eventLogTable, event.getEventEntry(), null, false);
                     }
                 }
-                
-                return null;
-            }
-        };
-    }
-
-    private EventLogTableAction createGotoPreviousModuleEventAction() {
-        return new EventLogTableAction("Goto Previous Module Event") {
-            @Override
-            public void run() {
-                gotoEventLogEntry(getPreviousModuleEventEntry(), this, false);
-            }
-
-            @Override
-            public void update() {
             }
             
-            private EventLogEntry getPreviousModuleEventEntry() {
+            return null;
+        }
+    }
+
+    private CommandContributionItem createGotoPreviousModuleEventCommandContributionItem() {
+        return new CommandContributionItem(new CommandContributionItemParameter(Workbench.getInstance(), null, "org.omnetpp.eventlogtable.gotoPreviousModuleEvent", SWT.PUSH));
+    }
+
+    public static class GotoPreviousModuleEventHandler extends AbstractHandler {
+        public Object execute(ExecutionEvent executionEvent) throws ExecutionException {
+            IWorkbenchPart part = HandlerUtil.getActivePartChecked(executionEvent);
+            
+            if (part instanceof IEventLogTableProvider) {
+                EventLogTable eventLogTable = ((IEventLogTableProvider)part).getEventLogTable();
                 EventLogEntryReference eventLogEntryReference = eventLogTable.getSelectionElement();
 
                 if (eventLogEntryReference != null) {
-                    IEvent event = getEventLog().getEventForEventNumber(eventLogEntryReference.getEventNumber());
+                    IEvent event = eventLogTable.getEventLog().getEventForEventNumber(eventLogEntryReference.getEventNumber());
                     
                     if (event != null) {
                         int moduleId = event.getModuleId();
@@ -632,33 +602,33 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
                         while (event != null) {
                             event = event.getPreviousEvent();
                             
-                            if (event != null && moduleId == event.getModuleId())
-                                return event.getEventEntry();
+                            if (event != null && moduleId == event.getModuleId()) {
+                                gotoEventLogEntry(eventLogTable, event.getEventEntry(), null, false);
+                                break;
+                            }
                         }
                     }
                 }
-                
-                return null;
-            }
-        };
-    }
-
-    private EventLogTableAction createGotoNextModuleEventAction() {
-        return new EventLogTableAction("Goto Next Module Event") {
-            @Override
-            public void run() {
-                gotoEventLogEntry(getNextModuleEventEntry(), this, false);
-            }
-
-            @Override
-            public void update() {
             }
             
-            private EventLogEntry getNextModuleEventEntry() {
+            return null;
+        }
+    }
+
+    private CommandContributionItem createGotoNextModuleEventCommandContributionItem() {
+        return new CommandContributionItem(new CommandContributionItemParameter(Workbench.getInstance(), null, "org.omnetpp.eventlogtable.gotoNextModuleEvent", SWT.PUSH));
+    }
+
+    public static class GotoNextModuleEventHandler extends AbstractHandler {
+        public Object execute(ExecutionEvent executionEvent) throws ExecutionException {
+            IWorkbenchPart part = HandlerUtil.getActivePartChecked(executionEvent);
+            
+            if (part instanceof IEventLogTableProvider) {
+                EventLogTable eventLogTable = ((IEventLogTableProvider)part).getEventLogTable();
                 EventLogEntryReference eventLogEntryReference = eventLogTable.getSelectionElement();
 
                 if (eventLogEntryReference != null) {
-                    IEvent event = getEventLog().getEventForEventNumber(eventLogEntryReference.getEventNumber());
+                    IEvent event = eventLogTable.getEventLog().getEventForEventNumber(eventLogEntryReference.getEventNumber());
                     
                     if (event != null) {
                         int moduleId = event.getModuleId();
@@ -666,21 +636,30 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
                         while (event != null) {
                             event = event.getNextEvent();
                             
-                            if (event != null && moduleId == event.getModuleId())
-                                return event.getEventEntry();
+                            if (event != null && moduleId == event.getModuleId()) {
+                                gotoEventLogEntry(eventLogTable, event.getEventEntry(), null, false);
+                                break;
+                            }
                         }
                     }
                 }
-                
-                return null;
             }
-        };
+            
+            return null;
+        }
     }
 
-    private EventLogTableAction createGotoEventAction() {
-		return new EventLogTableAction("Goto Event...") {
-			@Override
-			public void run() {
+    private CommandContributionItem createGotoEventCommandContributionItem() {
+        return new CommandContributionItem(new CommandContributionItemParameter(Workbench.getInstance(), null, "org.omnetpp.eventlogtable.gotoEvent", SWT.PUSH));
+    }
+
+    public static class GotoEventHandler extends AbstractHandler {
+        // TODO: setEnabled(!getEventLog().isEmpty());
+        public Object execute(ExecutionEvent executionEvent) throws ExecutionException {
+            IWorkbenchPart part = HandlerUtil.getActivePartChecked(executionEvent);
+            
+            if (part instanceof IEventLogTableProvider) {
+                EventLogTable eventLogTable = ((IEventLogTableProvider)part).getEventLogTable();
 				InputDialog dialog = new InputDialog(null, "Goto event", "Please enter the event number to go to", null, new IInputValidator() {
 					public String isValid(String newText) {
 						try {
@@ -700,7 +679,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 				if (dialog.open() == Window.OK) {
 					try {
 						int eventNumber = Integer.parseInt(dialog.getValue());
-						IEventLog eventLog = getEventLog();
+						IEventLog eventLog = eventLogTable.getEventLog();
 						IEvent event = eventLog.getEventForEventNumber(eventNumber);
 	
 						if (event != null)
@@ -713,18 +692,22 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 					}
 				}
 			}
-			
-			@Override
-			public void update() {
-				setEnabled(getEventLog().getApproximateNumberOfEvents() != 0);
-			}
-		};
+            
+            return null;
+		}
 	}
 
-	private EventLogTableAction createGotoSimulationTimeAction() {
-		return new EventLogTableAction("Goto Simulation Time...") {
-			@Override
-			public void run() {
+	private CommandContributionItem createGotoSimulationTimeCommandContributionItem() {
+        return new CommandContributionItem(new CommandContributionItemParameter(Workbench.getInstance(), null, "org.omnetpp.eventlogtable.gotoSimulationTime", SWT.PUSH));
+	}
+
+	public static class GotoSimulationTimeHandler extends AbstractHandler {
+        // TODO: setEnabled(!getEventLog().isEmpty());
+        public Object execute(ExecutionEvent executionEvent) throws ExecutionException {
+            IWorkbenchPart part = HandlerUtil.getActivePartChecked(executionEvent);
+            
+            if (part instanceof IEventLogTableProvider) {
+                EventLogTable eventLogTable = ((IEventLogTableProvider)part).getEventLogTable();
 				InputDialog dialog = new InputDialog(null, "Goto simulation time", "Please enter the simulation time to go to", null, new IInputValidator() {
 					public String isValid(String newText) {
 						try {
@@ -744,7 +727,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 				if (dialog.open() == Window.OK) {
 					try {
 						BigDecimal simulationTime = BigDecimal.parse(dialog.getValue());
-						IEventLog eventLog = getEventLog();
+						IEventLog eventLog = eventLogTable.getEventLog();
 						IEvent event = eventLog.getEventForSimulationTime(simulationTime, MatchKind.FIRST_OR_NEXT);
 	
 						if (event != null)
@@ -757,12 +740,9 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 					}
 				}
 			}
-			
-			@Override
-			public void update() {
-				setEnabled(getEventLog().getApproximateNumberOfEvents() != 0);
-			}
-		};
+
+            return null;
+        }
 	}
 
 	private EventLogTableAction createToggleBookmarkAction() {
@@ -780,7 +760,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 						IMarker[] markers = eventLogInput.getFile().findMarkers(IMarker.BOOKMARK, true, IResource.DEPTH_ZERO);
 
 						for (IMarker marker : markers)
-							if (marker.getAttribute("EventNumber", -1) == event.getEventNumber()) {
+							if (marker.getAttribute("EventNumber", "-1").equals(String.valueOf(event.getEventNumber()))) {
 								marker.delete();
 								found = true;
 							}
@@ -791,7 +771,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
                             if (dialog.open() == Window.OK) {
     							IMarker marker = eventLogInput.getFile().createMarker(IMarker.BOOKMARK);
     							marker.setAttribute(IMarker.LOCATION, "# " + event.getEventNumber());
-    							marker.setAttribute("EventNumber", event.getEventNumber());
+    							marker.setAttribute("EventNumber", String.valueOf(event.getEventNumber()));
     							marker.setAttribute(IMarker.MESSAGE, dialog.getValue());
 							}
 						}
@@ -1164,6 +1144,17 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
         return new CommandContributionItem(parameter);
     }
 
+    public static class RefreshHandler extends AbstractHandler {
+        public Object execute(ExecutionEvent event) throws ExecutionException {
+            IWorkbenchPart part = HandlerUtil.getActivePartChecked(event);
+            
+            if (part instanceof IEventLogTableProvider) 
+                ((IEventLogTableProvider)part).getEventLogTable().refresh();
+
+            return null;
+        }
+    }
+
 	private StatusLineContributionItem createFilterStatus() {
 		return new StatusLineContributionItem("Filter") {
 			@Override
@@ -1278,37 +1269,4 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 			protected abstract void createMenu(Menu menu);
 		}
 	}
-
-    public static class FindTextHandler extends AbstractHandler {
-        public Object execute(ExecutionEvent event) throws ExecutionException {
-            IWorkbenchPart part = HandlerUtil.getActivePartChecked(event);
-            
-            if (part instanceof IEventLogTableProvider)
-                ((IEventLogTableProvider)part).getEventLogTable().findText(false);
-
-            return null;
-        }
-    }
-
-    public static class FindNextHandler extends AbstractHandler {
-        public Object execute(ExecutionEvent event) throws ExecutionException {
-            IWorkbenchPart part = HandlerUtil.getActivePartChecked(event);
-            
-            if (part instanceof IEventLogTableProvider) 
-                ((IEventLogTableProvider)part).getEventLogTable().findText(true);
-
-            return null;
-        }
-    }
-
-    public static class RefreshHandler extends AbstractHandler {
-        public Object execute(ExecutionEvent event) throws ExecutionException {
-            IWorkbenchPart part = HandlerUtil.getActivePartChecked(event);
-            
-            if (part instanceof IEventLogTableProvider) 
-                ((IEventLogTableProvider)part).getEventLogTable().refresh();
-
-            return null;
-        }
-    }
 }

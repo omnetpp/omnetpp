@@ -623,8 +623,12 @@ public class VirtualTable<T>
 	public void moveSelection(int numberOfElements) {
 		T element = getSelectionElement();
 
-		if (element == null)
+		if (element == null) {
 			element = getTopVisibleElement();
+			
+			if (element == null)
+			    return;
+		}
 
 		element = contentProvider.getNeighbourElement(element, numberOfElements);
 		

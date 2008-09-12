@@ -216,7 +216,7 @@ public class EventLogTableEditor
 	}
 
 	public void gotoMarker(IMarker marker) {
-		int eventNumber = marker.getAttribute("EventNumber", -1);
+		long eventNumber = Long.parseLong(marker.getAttribute("EventNumber", "-1"));
 		IEvent event = eventLogInput.getEventLog().getEventForEventNumber(eventNumber);
 		
 		if (event != null)

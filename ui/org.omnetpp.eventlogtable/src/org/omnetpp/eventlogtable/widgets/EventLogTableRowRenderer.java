@@ -148,7 +148,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 				IMarker[] markers = eventLogInput.getFile().findMarkers(IMarker.BOOKMARK, true, IResource.DEPTH_ZERO);
 				boolean marked = false;
 				for (int i = 0; i < markers.length; i++)
-					if (markers[i].getAttribute("EventNumber", -1) == eventNumber) {
+					if (markers[i].getAttribute("EventNumber", "-1").equals(String.valueOf(eventNumber))) {
 						marked = true;
 						break;
 					}
