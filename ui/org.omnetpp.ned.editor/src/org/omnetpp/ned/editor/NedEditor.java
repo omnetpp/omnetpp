@@ -37,7 +37,6 @@ import org.eclipse.ui.part.IShowInTargetList;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.eclipse.ui.part.ShowInContext;
 import org.eclipse.ui.texteditor.ITextEditor;
-import org.eclipse.ui.views.contentoutline.ContentOutline;
 import org.omnetpp.common.IConstants;
 import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.ned.core.IGotoNedElement;
@@ -330,6 +329,13 @@ public class NedEditor
 		}
 		else
 			throw new RuntimeException("Unknown page index");
+	}
+	
+	@Override
+	public boolean isDirty() {
+        // The default behavior is wrong when undoing changes in both editors.
+	    // This way at least the text editor dirtiness flag will be good.
+	    return textEditor.isDirty();
 	}
 
     /**
