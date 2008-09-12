@@ -208,7 +208,7 @@ NED file. The <tt>i=</tt> tag in the display string specifies the icon.
 
 You can see the result here:
 
-<img src="step2a.gif">
+<img src="step2a.png">
 
 We also modify the C++ file to add some debug messages to Txc1 by
 writing to the @opp <tt>EV</tt> object like this:
@@ -223,14 +223,14 @@ and
 When you run the simulation in the @opp GUI Tkenv, the following output
 will appear in the main text window:
 
-<img src="step2b.gif">
+<img src="step2b.png">
 
 You can also open separate output windows for tic and toc by right-clicking
 on their icons and choosing Module output from the menu. This feature
 will be useful when you have a large model ("fast scrolling logs syndrome")
 and you're interested only in the log messages of specific module.
 
-<img src="step2c.gif">
+<img src="step2c.png">
 
 Sources: @ref tictoc2.ned, @ref txc2.cc, @ref omnetpp.ini
 
@@ -259,7 +259,7 @@ line in the source: this makes it possible to see the counter value
 in Tkenv. Double-click on tic's icon, then choose the Contents page
 from the inspector window that pops up.
 
-<img src="step3.gif">
+<img src="step3.png">
 
 As you continue running the simulation, you can follow as the counter
 keeps decrementing until it reaches zero.
@@ -433,8 +433,8 @@ Sources: @ref tictoc6.ned, @ref txc6.cc, @ref omnetpp.ini
 
 In this step we'll introduce random numbers. We change the delay from 1s
 to a random value which can be set from the NED file or from omnetpp.ini.
-Module parameters are able to return random variates; however, to make
-use of this feature we have to read the parameter in handleMessage()
+Module parameters are able to return random variables; however, to make
+use of this feature we have to read the parameter in <tt>handleMessage()</tt>
 every time we use it.
 
 @dontinclude txc7.cc
