@@ -3704,8 +3704,65 @@ CFLAGS_DEBUG="$CFLAGS_DEBUG $CFLAGS_ARCH"
 CFLAGS_RELEASE="$CFLAGS_RELEASE $CFLAGS_ARCH"
 LDFLAGS="$LDFLAGS $LDFLAGS_ARCH"
 
-# add RUNTIME_PATH option so setting LD_LIBRARY_PATH is no longer needed when using shared libs
-LDFLAGS="$LDFLAGS -Wl,-rpath,\$(OMNETPP_LIB_DIR)"
+# add RUNTIME_PATH option if supported so setting LD_LIBRARY_PATH is no longer needed when using shared libs
+
+    { echo "$as_me:$LINENO: checking whether $CXX supports -Wl,-rpath,." >&5
+echo $ECHO_N "checking whether $CXX supports -Wl,-rpath,.... $ECHO_C" >&6; }
+    ac_save_CXX="$CXX"
+    CXX="$CXX -Wl,-rpath,."
+    cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext
+if { (ac_try="$ac_compile"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
+  (eval "$ac_compile") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_cxx_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest.$ac_objext; then
+
+        { echo "$as_me:$LINENO: result: yes" >&5
+echo "${ECHO_T}yes" >&6; }
+
+        CXX="$ac_save_CXX"
+        LDFLAGS="$LDFLAGS -Wl,-rpath,\$(OMNETPP_LIB_DIR)"
+
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+
+        { echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6; }
+        CXX="$ac_save_CXX"
+        RPATH_UNSUPPORTED="true"
+
+fi
+
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+
 
 #----------------------
 # Checks for programs.
@@ -8506,6 +8563,23 @@ EOT
 fi
 
 #----------------------
+# Check if the rpath option is unsupported. in this warn the user to provide the LD_LIBRARY_PATH variable
+#----------------------
+if test -n "$RPATH_UNSUPPORTED"; then
+
+    cat 1>&2 << EOT
+
+WARNING: Your compiler does not support the --rpath option.
+  You must set the LD_LIBRARY_PATH environment variable to point
+  to the directory where your shared libraries can be found.
+
+Add the following line to your .profile or .bash_profile (provided you use bash):
+  export LD_LIBRARY_PATH=$OMNETPP_ROOT/lib:\$LD_LIBRARY_PATH
+EOT
+
+fi
+
+#----------------------
 # Check if TCL_LIBRARY is set.
 #----------------------
 
@@ -8544,4 +8618,5 @@ else
     echo
     echo "TCL_LIBRARY is set. Good!"
 fi
+
 

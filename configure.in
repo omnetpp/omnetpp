@@ -530,8 +530,8 @@ CFLAGS_DEBUG="$CFLAGS_DEBUG $CFLAGS_ARCH"
 CFLAGS_RELEASE="$CFLAGS_RELEASE $CFLAGS_ARCH"
 LDFLAGS="$LDFLAGS $LDFLAGS_ARCH"
 
-# add RUNTIME_PATH option so setting LD_LIBRARY_PATH is no longer needed when using shared libs
-LDFLAGS="$LDFLAGS -Wl,-rpath,\$(OMNETPP_LIB_DIR)"
+# add RUNTIME_PATH option if supported so setting LD_LIBRARY_PATH is no longer needed when using shared libs
+AC_PROG_CXX_OPTION([-Wl,-rpath,.], [LDFLAGS="$LDFLAGS -Wl,-rpath,\$(OMNETPP_LIB_DIR)"], RPATH_UNSUPPORTED="true")
 
 #----------------------
 # Checks for programs.
@@ -1111,6 +1111,23 @@ EOT
 fi
 
 #----------------------
+# Check if the rpath option is unsupported. in this warn the user to provide the LD_LIBRARY_PATH variable
+#----------------------
+if test -n "$RPATH_UNSUPPORTED"; then
+
+    cat 1>&2 << EOT
+
+WARNING: Your compiler does not support the --rpath option. 
+  You must set the LD_LIBRARY_PATH environment variable to point 
+  to the directory where your shared libraries can be found.
+
+Add the following line to your .profile or .bash_profile (provided you use bash):
+  export LD_LIBRARY_PATH=$OMNETPP_ROOT/lib:\$LD_LIBRARY_PATH
+EOT
+
+fi
+
+#----------------------
 # Check if TCL_LIBRARY is set.
 #----------------------
 
@@ -1149,4 +1166,5 @@ else
     echo
     echo "TCL_LIBRARY is set. Good!"
 fi
+
 
