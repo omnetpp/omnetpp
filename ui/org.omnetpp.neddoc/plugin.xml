@@ -69,4 +69,13 @@
             icon="icons/full/etool16/neddoc.gif">
       </image>
    </extension>
+   <extension
+         point="de.unikassel.imageexport.figureProviders">
+      <figureProvider
+            class="org.omnetpp.ned.editor.graph.misc.NedFigureProvider"
+            extensions="ned"
+            id="org.omnetpp.neddoc.figureProvider"
+            name="Ned Figure Provider">
+      </figureProvider>
+   </extension>
 </plugin>

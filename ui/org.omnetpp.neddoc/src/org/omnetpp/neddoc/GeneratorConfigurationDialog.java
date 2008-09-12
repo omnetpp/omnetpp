@@ -9,8 +9,11 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
+import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
+import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -106,6 +109,12 @@ public class GeneratorConfigurationDialog
                 return ((IProject)element).getName();
             }
         });
+        
+        selectedProjects.addCheckStateListener(new ICheckStateListener() {
+            public void checkStateChanged(CheckStateChangedEvent event) {
+                setOkButtonEnabled();
+            }
+        });
 
         for (IProject project : ResourcesPlugin.getWorkspace().getRoot().getProjects()) {
             if (project.isAccessible()) {
@@ -117,9 +126,23 @@ public class GeneratorConfigurationDialog
         if (configuration.projects != null) {
             selectedProjects.setCheckedElements(configuration.projects);
             selectedProjects.setSelection(new StructuredSelection(configuration.projects));
+            setOkButtonEnabled();
         }
 
         createProjectListButtons(container);
+    }
+    
+    @Override
+    protected void createButtonsForButtonBar(Composite parent) {
+        super.createButtonsForButtonBar(parent);
+        setOkButtonEnabled();
+    }
+
+    private void setOkButtonEnabled() {
+        Button button = getButton(IDialogConstants.OK_ID);
+
+        if (button != null)
+            button.setEnabled(selectedProjects.getCheckedElements().length != 0);
     }
 
     private void createProjectListButtons(Composite container) {
@@ -140,13 +163,16 @@ public class GeneratorConfigurationDialog
                     Set<IProject> referencedProjects = new HashSet<IProject>();
 
                     IProject selectedProject = (IProject)structuredSelection.getFirstElement();
-                    addReferencedProjects(selectedProject, referencedProjects);
-
-                    // keep old selection
-                    for (Object project : selectedProjects.getCheckedElements())
-                        referencedProjects.add((IProject)project);
-
-                    selectedProjects.setCheckedElements(referencedProjects.toArray());
+                    if (selectedProject != null) {
+                        addReferencedProjects(selectedProject, referencedProjects);
+    
+                        // keep old selection
+                        for (Object project : selectedProjects.getCheckedElements())
+                            referencedProjects.add((IProject)project);
+    
+                        selectedProjects.setCheckedElements(referencedProjects.toArray());
+                        setOkButtonEnabled();
+                    }
                 }
             }
 
@@ -170,6 +196,7 @@ public class GeneratorConfigurationDialog
             @Override
             public void widgetSelected(SelectionEvent e) {
                 selectedProjects.setCheckedElements(allProjects.toArray());
+                setOkButtonEnabled();
             }
         });
 
@@ -180,6 +207,7 @@ public class GeneratorConfigurationDialog
             @Override
             public void widgetSelected(SelectionEvent e) {
                 selectedProjects.setCheckedElements(new IProject[0]);
+                setOkButtonEnabled();
             }
         });
     }
