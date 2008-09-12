@@ -531,7 +531,14 @@ CFLAGS_RELEASE="$CFLAGS_RELEASE $CFLAGS_ARCH"
 LDFLAGS="$LDFLAGS $LDFLAGS_ARCH"
 
 # add RUNTIME_PATH option if supported so setting LD_LIBRARY_PATH is no longer needed when using shared libs
-AC_PROG_CXX_OPTION([-Wl,-rpath,.], [LDFLAGS="$LDFLAGS -Wl,-rpath,\$(OMNETPP_LIB_DIR)"], RPATH_UNSUPPORTED="true")
+#AC_PROG_CXX_OPTION([-Wl,-rpath,.], [LDFLAGS="$LDFLAGS -Wl,-rpath,\$(OMNETPP_LIB_DIR)"], RPATH_UNSUPPORTED="true")
+AC_MSG_CHECKING(whether linker support -rpath)
+LDFLAGS_SAVE="$LDFLAGS"
+LDFLAGS="$LDFLAGS -Wl,-rpath,\$(OMNETPP_LIB_DIR)"
+AC_LINK_IFELSE(
+     [AC_LANG_PROGRAM()],
+     [AC_MSG_RESULT(yes)],
+     [AC_MSG_RESULT(no); RPATH_UNSUPPORTED="true"; LDFLAGS="$LDFLAGS_SAVE"])
 
 #----------------------
 # Checks for programs.
@@ -1117,7 +1124,7 @@ if test -n "$RPATH_UNSUPPORTED"; then
 
     cat 1>&2 << EOT
 
-WARNING: Your compiler does not support the --rpath option. 
+WARNING: Your linker does not support the -rpath option. 
   You must set the LD_LIBRARY_PATH environment variable to point 
   to the directory where your shared libraries can be found.
 
