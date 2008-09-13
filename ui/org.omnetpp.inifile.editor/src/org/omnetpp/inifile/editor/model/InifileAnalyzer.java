@@ -248,6 +248,16 @@ public class InifileAnalyzer {
 		addMarker(line.getFile(), INIFILEANALYZERPROBLEM_MARKER_ID, IMarker.SEVERITY_WARNING, message, line.getLineNumber());
 	}
 
+	protected void addInfo(String section, String message) {
+	    LineInfo line = doc.getSectionLineDetails(section);
+	    addMarker(line.getFile(), INIFILEANALYZERPROBLEM_MARKER_ID, IMarker.SEVERITY_INFO, message, line.getLineNumber());
+	}
+
+	protected void addInfo(String section, String key, String message) {
+	    LineInfo line = doc.getEntryLineDetails(section, key);
+	    addMarker(line.getFile(), INIFILEANALYZERPROBLEM_MARKER_ID, IMarker.SEVERITY_INFO, message, line.getLineNumber());
+	}
+
 	protected void addMarker(final IFile file, final String type, int severity, String message, int line) {
 	    Map<String, Object> map = new HashMap<String, Object>();
 		map.put(IMarker.SEVERITY, severity);
@@ -540,6 +550,15 @@ public class InifileAnalyzer {
 		                addError(section, key, e.getMessage());
 		            }
 		        }
+		        
+		        // mark line if value is the same as the NED default
+		        Assert.isTrue(resList.length > 0);
+	            boolean allAreIniNedDefault = true;
+	            for (ParamResolution res : resList)
+	                if (res.type != ParamResolutionType.INI_NEDDEFAULT)
+	                    allAreIniNedDefault = false;
+	            if (allAreIniNedDefault) 
+	                addInfo(section, key, "Value is same as the NED default");
 		    }
         }
 	}
