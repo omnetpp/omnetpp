@@ -17,9 +17,22 @@ public class ProjectTemplateStore {
     public static final Image ICON_TEMPLATE = Activator.getCachedImage("icons/full/obj16/template.png");
     
     public ProjectTemplateStore() {
-        cppTemplates.add(new ProjectTemplate("alma", null, ICON_TEMPLATE));
-        cppTemplates.add(new ProjectTemplate("korte", null, ICON_TEMPLATE));
-        cppTemplates.add(new ProjectTemplate("barack", null, ICON_TEMPLATE));
+        // non-C++ projects
+        final String SINGLE_DIR0 = "Single-directory project";
+        noncppTemplates.add(new ProjectTemplate("Empty project", SINGLE_DIR0, null, ICON_TEMPLATE));
+        
+        // C++ projects
+        final String SINGLE_DIR = "Single-directory project, for small simulations";
+        cppTemplates.add(new ProjectTemplate("Empty project", SINGLE_DIR, null, ICON_TEMPLATE));
+        cppTemplates.add(new ProjectTemplate("Tictoc example", SINGLE_DIR, null, ICON_TEMPLATE));
+
+        final String SRC_AND_SMULATIONS = "Project with \"src\" and \"simulations\" folders";
+        cppTemplates.add(new ProjectTemplate("Empty project", SRC_AND_SMULATIONS, null, ICON_TEMPLATE));
+        cppTemplates.add(new ProjectTemplate("Tictoc example", SRC_AND_SMULATIONS, null, ICON_TEMPLATE));
+
+        final String SRC_AND_EXAMPLES = "Project with \"src\" and \"examples\" folders";
+        cppTemplates.add(new ProjectTemplate("Empty project", SRC_AND_EXAMPLES, null, ICON_TEMPLATE));
+        cppTemplates.add(new ProjectTemplate("Tictoc example", SRC_AND_EXAMPLES, null, ICON_TEMPLATE));
     }
     
     public List<IProjectTemplate> getCppTemplates() {

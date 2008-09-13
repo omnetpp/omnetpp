@@ -1,7 +1,9 @@
 package org.omnetpp.cdt.wizard;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.cdt.core.CCProjectNature;
 import org.eclipse.cdt.core.CProjectNature;
@@ -14,10 +16,9 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
@@ -36,6 +37,8 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.internal.ide.dialogs.ProjectContentsLocationArea;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.common.project.ProjectUtils;
+import org.omnetpp.common.ui.GenericTreeContentProvider;
+import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.ide.wizard.NewOmnetppProjectWizard;
 
@@ -48,6 +51,8 @@ import org.omnetpp.ide.wizard.NewOmnetppProjectWizard;
  */
 @SuppressWarnings("restriction")
 public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements INewWizard {
+    public static final Image ICON_CATEGORY = Activator.getCachedImage("icons/full/obj16/templatecategory.gif");
+
     private CCProjectWizard nestedWizard;
     private TemplateSelectionPage templatePage;
     
@@ -92,7 +97,8 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
 
     
     public class TemplateSelectionPage extends WizardPage {
-        private TableViewer tableViewer;
+
+        private TreeViewer treeViewer;
 
         protected TemplateSelectionPage() {
             super("OmnetppTemplateSelectionPage");
@@ -107,25 +113,39 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
 
             Label label = new Label(composite, SWT.NONE);
             label.setText("Select template:");
-            tableViewer = new TableViewer(composite, SWT.BORDER);
-            tableViewer.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-            tableViewer.setLabelProvider(new LabelProvider() {
+            treeViewer = new TreeViewer(composite, SWT.BORDER);
+            treeViewer.getTree().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+            treeViewer.setLabelProvider(new LabelProvider() {
                 @Override
                 public String getText(Object element) {
-                    return ((IProjectTemplate)element).getName();
+                    element = ((GenericTreeNode)element).getPayload();
+                    return element instanceof IProjectTemplate ? ((IProjectTemplate)element).getName() : element.toString();
                 }
                 @Override
                 public Image getImage(Object element) {
-                    return ((IProjectTemplate)element).getImage();
+                    element = ((GenericTreeNode)element).getPayload();
+                    return element instanceof IProjectTemplate ? ((IProjectTemplate)element).getImage() : ICON_CATEGORY;
                 }
             });
-            tableViewer.setContentProvider(new ArrayContentProvider());
+            treeViewer.setContentProvider(new GenericTreeContentProvider());
+
             ProjectTemplateStore templateStore = Activator.getProjectTemplateStore();
-            if (supportCpp())
-                tableViewer.setInput(templateStore.getCppTemplates());
-            else
-                tableViewer.setInput(templateStore.getNoncppTemplates());
-            //TODO add HoverSupport to display template description
+            List<IProjectTemplate> templates = supportCpp() ? templateStore.getCppTemplates() : templateStore.getNoncppTemplates();
+            GenericTreeNode root = new GenericTreeNode("root");
+            Set<String> categories = new LinkedHashSet<String>(); 
+            for (IProjectTemplate template : templates)
+                categories.add(template.getCategory());
+            for (String category : categories) {
+                GenericTreeNode categoryNode = new GenericTreeNode(category);
+                root.addChild(categoryNode);
+                for (IProjectTemplate template : templates)
+                    if (category.equals(template.getCategory()))
+                        categoryNode.addChild(new GenericTreeNode(template));
+            }                
+            treeViewer.setInput(root);
+            treeViewer.expandAll();
+
+                //TODO add HoverSupport to display template description
 
             // always complete
             setPageComplete(true);
@@ -137,7 +157,9 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
         }
         
         public IProjectTemplate getSelectedTemplate() {
-            return (IProjectTemplate)((IStructuredSelection)tableViewer.getSelection()).getFirstElement();
+            Object element = ((IStructuredSelection)treeViewer.getSelection()).getFirstElement();
+            element = ((GenericTreeNode)element).getPayload();
+            return (element instanceof IProjectTemplate) ? (IProjectTemplate)element : null;
         }
     }
 

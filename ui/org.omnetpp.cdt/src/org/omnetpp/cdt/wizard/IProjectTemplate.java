@@ -12,5 +12,6 @@ public interface IProjectTemplate {
     String getName();
     Image getImage();
     String getDescription();
+    String getCategory();
     void configure(IProject project);
 }

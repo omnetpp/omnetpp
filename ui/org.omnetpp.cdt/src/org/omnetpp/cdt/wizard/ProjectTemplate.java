@@ -10,11 +10,13 @@ import org.eclipse.swt.graphics.Image;
 public class ProjectTemplate implements IProjectTemplate {
     private String name;
     private String description;
+    private String category;
     private Image image;
     
-    public ProjectTemplate(String name, String description, Image image) {
+    public ProjectTemplate(String name, String category, String description, Image image) {
         super();
         this.name = name;
+        this.category = category;
         this.description = description;
         this.image = image;
     }
@@ -31,6 +33,10 @@ public class ProjectTemplate implements IProjectTemplate {
         return image;
     }
 
+    public String getCategory() {
+        return category;
+    }
+    
     public void configure(IProject project) {
         System.out.println("Applying template '"+name+"' to project "+project.getName());
         // TODO Auto-generated method stub
