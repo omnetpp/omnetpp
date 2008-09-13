@@ -36,6 +36,7 @@ import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.model.IInifileDocument.LineInfo;
 import org.omnetpp.inifile.editor.model.ParamResolution.ParamResolutionType;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
+import org.omnetpp.ned.model.NEDTreeUtil;
 import org.omnetpp.ned.model.ex.ParamElementEx;
 import org.omnetpp.ned.model.ex.PropertyElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
@@ -77,6 +78,9 @@ public class InifileAnalyzer {
 	// background threads (must be synchronized), and the analyze procedure needs
 	// NEDResources -- so use NEDResources as lock to prevent deadlocks
 	private Object lock = NEDResourcesPlugin.getNEDResources();
+
+	// too speed up validating of values. Matches boolean, number+unit, string literal
+	private static final Pattern SIMPLE_EXPRESSION_REGEX = Pattern.compile("true|false|(-?\\d+(\\.\\d+)?\\s*[a-zA-Z]*)|\"[^\"]*\"");
 
 	/**
 	 * Classifies inifile keys; see getKeyType().
@@ -467,6 +471,12 @@ public class InifileAnalyzer {
 		    // nothing to check, actually
 		}
 		else {
+		    // check syntax. note: regex is faster in most cases than parsing
+		    if (!SIMPLE_EXPRESSION_REGEX.matcher(value).matches() && !NEDTreeUtil.isExpressionValid(value)) {
+                addError(section, key, "Syntax error in expression");
+                return;
+		    }
+		    
 		    // check parameter data types are consistent with each other
 		    ParamResolution[] resList = getParamResolutionsForKey(section, key);
 		    int paramType = -1;

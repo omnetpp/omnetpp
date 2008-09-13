@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.text.templates.Template;
 import org.omnetpp.common.contentassist.ContentProposal;
@@ -339,14 +338,17 @@ s	 * before getting presented to the user.
 	 * in several submodules (IFoo, IBar, etc), return all.
 	 */
 	protected Set<INEDTypeInfo> extractParamLikeInterfaces(ParamResolution param, IProject context) {
-        // find compound module in which parameter is declared. We'll be looking for
+        // find compound module in which the parameter is declared. We'll be looking for
         // matching "like" submodules in there.
-        //FIXME there's a chance that the module instantiated in the network is actually
-        // a subclass of this compound module ("StandardHostExt" not "StandardHost"),
+
+	    //FIXME there's a chance that the module instantiated in the network is actually
+	    // a subclass of this compound module ("StandardHostExt" not "StandardHost"),
 	    // so we miss submodules added in the subclass. However, I doubt that we can
 	    // find out the subclass from ParamResolution -- TODO add it
         INedTypeLookupContext paramContext = param.paramDeclNode.getEnclosingLookupContext();
-        Assert.isTrue(paramContext instanceof CompoundModuleElementEx);
+        if (!(paramContext instanceof CompoundModuleElementEx))
+            return new HashSet<INEDTypeInfo>(); // not a compound module parameter
+
         CompoundModuleElementEx module = (CompoundModuleElementEx)paramContext;
 
         // collect its "like" submodules that refer to our parameter.
