@@ -115,8 +115,9 @@ public class InifileAnalyzer {
 	 * (see getSectionData()/setSectionData())
 	 */
 	static class SectionData {
-		List<ParamResolution> unassignedParams = new ArrayList<ParamResolution>();
-		List<ParamResolution> allParamResolutions = new ArrayList<ParamResolution>(); // incl. unassigned
+		List<ParamResolution> allParamResolutions = new ArrayList<ParamResolution>();
+		List<ParamResolution> unassignedParams = new ArrayList<ParamResolution>(); // subset of allParamResolutions
+		List<ParamResolution> implicitlyAssignedParams = new ArrayList<ParamResolution>(); // subset of allParamResolutions
 		List<IterationVariable> iterations = new ArrayList<IterationVariable>();
 		Map<String,IterationVariable> namedIterations = new HashMap<String, IterationVariable>();
 	}
@@ -691,6 +692,8 @@ public class InifileAnalyzer {
 				sectionData.allParamResolutions.add(res);
 				if (res.type == ParamResolutionType.UNASSIGNED)
 					sectionData.unassignedParams.add(res);
+				else if (res.type == ParamResolutionType.IMPLICITDEFAULT)
+                    sectionData.implicitlyAssignedParams.add(res);
 
 				if (res.key != null) {
 					((KeyData)doc.getKeyData(res.section, res.key)).paramResolutions.add(res);
@@ -1023,6 +1026,7 @@ public class InifileAnalyzer {
 
 	/**
 	 * Returns unassigned parameters for the given inifile section.
+	 * (This is a filtered subset of the objects returned by getParamResolutions().)
 	 */
 	public ParamResolution[] getUnassignedParams(String section) {
 		synchronized (lock) {
@@ -1031,6 +1035,18 @@ public class InifileAnalyzer {
 			return sectionData.unassignedParams.toArray(new ParamResolution[]{});
 		}
 	}
+
+	/**
+     * Returns implicitly assigned parameters for the given inifile section.
+     * (This is a filtered subset of the objects returned by getParamResolutions().)
+     */
+    public ParamResolution[] getImplicitlyAssignedParams(String section) {
+        synchronized (lock) {
+            analyzeIfChanged();
+            SectionData sectionData = (SectionData) doc.getSectionData(section);
+            return sectionData.implicitlyAssignedParams.toArray(new ParamResolution[]{});
+        }
+    }
 
 	public static String getParamValue(ParamResolution res, IInifileDocument doc) {
 		switch (res.type) {

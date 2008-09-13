@@ -89,7 +89,7 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
      */
     protected Control createDialogArea(Composite parent) {
         setTitle("Add Inifile Keys");
-        setMessage("Generate keys into the ini file for currently unassigned parameters.");
+        setMessage("Generate parameter assignment keys into the ini file.");
     	
         // page group
         Composite dialogArea = (Composite) super.createDialogArea(parent);
@@ -253,31 +253,26 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
 		skipCheckbox.setEnabled(true);
 		
 		// get list of unassigned parameters
-		List<ParamResolution> unassignedParams = Arrays.asList(analyzer.getUnassignedParams(selectedSection));
-		if (skipCheckbox.getSelection()) {
-			// only choose those that don't have a default value
-			List<ParamResolution> list = new ArrayList<ParamResolution>();
-			for (ParamResolution res : unassignedParams)
-				if (res.paramValueNode == null || StringUtils.isEmpty(res.paramValueNode.getValue()))
-					list.add(res);
-			unassignedParams = list;
-		}
+		List<ParamResolution> params = new ArrayList<ParamResolution>();
+		params.addAll(Arrays.asList(analyzer.getUnassignedParams(selectedSection)));
+		if (!skipCheckbox.getSelection())
+		    params.addAll(Arrays.asList(analyzer.getImplicitlyAssignedParams(selectedSection)));
 
 		// keep only those that generate unique keys
 		Set<String> uniqueKeys = new HashSet<String>();
 		List<ParamResolution> list = new ArrayList<ParamResolution>();
-		for (ParamResolution res : unassignedParams) {
+		for (ParamResolution res : params) {
 			if (!uniqueKeys.contains(getKeyFor(res))) {
 				uniqueKeys.add(getKeyFor(res));
 				list.add(res);
 			}
 		}
-		unassignedParams = list;
+		params = list;
 
 		// fill the table
 		Object[] currentInput = (Object[]) listViewer.getInput();
-		if (!Arrays.equals(unassignedParams.toArray(), currentInput)) {
-			listViewer.setInput(unassignedParams.toArray());
+		if (!Arrays.equals(params.toArray(), currentInput)) {
+			listViewer.setInput(params.toArray());
 			listViewer.setAllChecked(true);
 		}
 	
