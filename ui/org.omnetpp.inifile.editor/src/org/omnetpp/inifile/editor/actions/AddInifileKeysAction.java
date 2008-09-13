@@ -61,7 +61,7 @@ public class AddInifileKeysAction extends ResourceAction {
 
 			// determine currently selected section in the editor...
 			IStructuredSelection editorSelection = (IStructuredSelection) inifileEditor.getSite().getSelectionProvider().getSelection();
-			InifileSelectionItem selectionItem = (InifileSelectionItem) editorSelection.getFirstElement();
+			InifileSelectionItem selectionItem = editorSelection==null ? null : (InifileSelectionItem) editorSelection.getFirstElement();
 			String initialSection = selectionItem==null ? null : selectionItem.getSection();
 
 			// open the dialog

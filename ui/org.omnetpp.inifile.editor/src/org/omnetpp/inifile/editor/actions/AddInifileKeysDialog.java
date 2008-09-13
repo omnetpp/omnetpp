@@ -16,6 +16,8 @@ import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -28,6 +30,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
@@ -50,12 +53,15 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
     private Combo sectionsCombo;
     private Label networkNameLabel;
 	private Label sectionChainLabel;
-	private Button skipCheckbox;
+	private Combo filterCombo;
+	private Text filterText;
     private CheckboxTableViewer listViewer;
 
     // dialog state
     private enum KeyType { PARAM_ONLY, MODULE_AND_PARAM, ANYNETWORK_FULLPATH, FULLPATH };
     private KeyType keyType;
+    
+    private enum FilterType { ALL, IMPLICITLY_ASSIGNED_AND_UNASSIGNED, UNASSIGNED }; // filterCombo items
 
 	// the result
     private String[] keysToAdd;
@@ -103,14 +109,14 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
 		comboWithLabel.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 
 		Label comboLabel = new Label(comboWithLabel, SWT.NONE);
-		comboLabel.setText("Section:");
+		comboLabel.setText("Sec&tion:");
 		sectionsCombo = new Combo(comboWithLabel, SWT.BORDER | SWT.READ_ONLY);
 		comboWithLabel.setLayout(new GridLayout(2, false));
 		comboLabel.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
 		sectionsCombo.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
-		networkNameLabel = createLabel(composite, "Network: n/a");
-		sectionChainLabel = createLabel(composite, "Section fallback chain: n/a  ");
+		networkNameLabel = createRightLabel(composite, "Network: n/a");
+		sectionChainLabel = createRightLabel(composite, "Section fallback chain: n/a  ");
 
 		sectionsCombo.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -125,10 +131,10 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
 		group.setLayout(new GridLayout(1, false));
 
         // radiobuttons
-		createRadioButton(group, "Parameter name only (**.queueSize)", KeyType.PARAM_ONLY);
-		Button b = createRadioButton(group, "Module and parameter only (**.mac.queueSize)", KeyType.MODULE_AND_PARAM);
-		createRadioButton(group, "Full path except network name (*.host[*].mac.queueSize)", KeyType.ANYNETWORK_FULLPATH);
-		createRadioButton(group, "Full path (Network.host[*].mac.queueSize)", KeyType.FULLPATH);
+		createRadioButton(group, "Parameter &name only (**.queueSize)", KeyType.PARAM_ONLY);
+		Button b = createRadioButton(group, "&Module and parameter only (**.mac.queueSize)", KeyType.MODULE_AND_PARAM);
+		createRadioButton(group, "&Full path except network name (*.host[*].mac.queueSize)", KeyType.ANYNETWORK_FULLPATH);
+		createRadioButton(group, "F&ull path (Network.host[*].mac.queueSize)", KeyType.FULLPATH);
 		b.setSelection(true);
 		keyType = KeyType.MODULE_AND_PARAM; // must agree with selected radiobutton
         
@@ -138,16 +144,33 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
 		group2.setText("Select keys to insert");
 		group2.setLayout(new GridLayout(1, false));
       
-		// checkboxes
-		skipCheckbox = new Button(group2, SWT.CHECK);
-		skipCheckbox.setText("Skip parameters that have a default value");
-		skipCheckbox.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				buildTableContents();
-			}
-		});
-		GridData gridData = new GridData();
-		gridData.horizontalIndent = 20;
+		// filter
+		Composite filterComposite = new Composite(group2, SWT.NONE);
+        filterComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        GridLayout l = new GridLayout(4, false);
+        l.marginWidth = 0;
+        filterComposite.setLayout(l);
+		createLabel(filterComposite, "&Show:");
+		filterCombo = new Combo(filterComposite, SWT.BORDER);
+		filterCombo.add("All");
+		filterCombo.add("Implicitly assigned and unassigned");
+		filterCombo.add("Unassigned only");
+		filterCombo.select(1); // note: order should correspond to FilterType
+        filterCombo.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
+        createLabel(filterComposite, "&Containing:");
+        filterText = new Text(filterComposite, SWT.BORDER);
+        filterText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+
+        filterCombo.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e) {
+                buildTableContents();
+            }
+        });
+        filterText.addModifyListener(new ModifyListener() {
+            public void modifyText(ModifyEvent e) {
+                buildTableContents();
+            }
+        });
 		
         // table and buttons
 		listViewer = CheckboxTableViewer.newCheckList(group2, SWT.BORDER);
@@ -174,7 +197,14 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
         return composite;
     }
 
-	protected Label createLabel(Composite composite, String text) {
+    protected Label createLabel(Composite composite, String text) {
+        Label label = new Label(composite, SWT.NONE);
+        label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+        label.setText(text);
+        return label;
+    }
+
+	protected Label createRightLabel(Composite composite, String text) {
 		Label label = new Label(composite, SWT.NONE);
 		label.setLayoutData(new GridData(SWT.END, SWT.BEGINNING, true, false));
 		label.setText(text);
@@ -207,7 +237,7 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
         buttonComposite.setLayout(layout);
         buttonComposite.setLayoutData(new GridData(SWT.END, SWT.TOP, true, false));
 
-        Button selectButton = createButton(buttonComposite, IDialogConstants.SELECT_ALL_ID, "Select All", false);
+        Button selectButton = createButton(buttonComposite, IDialogConstants.SELECT_ALL_ID, "Select &All", false);
 
         SelectionListener listener = new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e) {
@@ -216,7 +246,7 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
         };
         selectButton.addSelectionListener(listener);
 
-        Button deselectButton = createButton(buttonComposite, IDialogConstants.DESELECT_ALL_ID, "Deselect All", false);
+        Button deselectButton = createButton(buttonComposite, IDialogConstants.DESELECT_ALL_ID, "&Deselect All", false);
 
         listener = new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e) {
@@ -250,14 +280,25 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
 		sectionChainLabel.setText("Section fallback chain: "+(sectionChain.length==0 ? "<no sections>" : StringUtils.join(sectionChain, " > "))+"  ");
 		sectionChainLabel.getParent().layout();
 		
-		skipCheckbox.setEnabled(true);
-		
 		// get list of unassigned parameters
 		List<ParamResolution> params = new ArrayList<ParamResolution>();
-		params.addAll(Arrays.asList(analyzer.getUnassignedParams(selectedSection)));
-		if (!skipCheckbox.getSelection())
-		    params.addAll(Arrays.asList(analyzer.getImplicitlyAssignedParams(selectedSection)));
+		if (filterCombo.getSelectionIndex() == FilterType.ALL.ordinal())
+		    params.addAll(Arrays.asList(analyzer.getParamResolutions(selectedSection)));
+		else {
+		    params.addAll(Arrays.asList(analyzer.getUnassignedParams(selectedSection)));
+		    if (filterCombo.getSelectionIndex() == FilterType.IMPLICITLY_ASSIGNED_AND_UNASSIGNED.ordinal())
+		        params.addAll(Arrays.asList(analyzer.getImplicitlyAssignedParams(selectedSection)));
+		}
 
+		// filter them by text
+		String filterString = filterText.getText().trim();
+		if (!filterString.isEmpty()) {
+	        List<ParamResolution> tmp = new ArrayList<ParamResolution>();
+	        for (ParamResolution res : params)
+	            if (StringUtils.containsIgnoreCase(getKeyFor(res), filterString))
+	                tmp.add(res);
+	        params = tmp;
+		}
 		// keep only those that generate unique keys
 		Set<String> uniqueKeys = new HashSet<String>();
 		List<ParamResolution> list = new ArrayList<ParamResolution>();
