@@ -35,7 +35,7 @@ public class Keywords {
 
 	public final static String[] NONEXPR_KEYWORDS = concat(NEDTYPE_KEYWORDS, SECTION_KEYWORDS, OTHER_KEYWORDS);
 
-	public final static String[] EXPR_KEYWORDS = { "sizeof", "const", "default", "this", "index", "typename", "xmldoc" };
+	public final static String[] EXPR_KEYWORDS = { "sizeof", "const", "default", "ask", "this", "index", "typename", "xmldoc" };
 
 	public final static String[] CONSTANTS = { "false", "true" };
 	

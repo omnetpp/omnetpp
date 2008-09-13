@@ -456,77 +456,82 @@ public class InifileAnalyzer {
 			return;
 		}
 
-		// check parameter data types are consistent with each other
-		ParamResolution[] resList = getParamResolutionsForKey(section, key);
-		int paramType = -1;
-		for (ParamResolution res : resList) {
-		    if (paramType == -1)
-		        paramType = res.paramDeclNode.getType();
-		    else if (paramType != res.paramDeclNode.getType()) {
-		        addError(section, key, "Entry matches parameters of different data types");
-		        return;
-		    }
-		}
-
-		// check units are consistent with each other
-		String paramUnit = null;
-		for (ParamResolution res : resList) {
-		    PropertyElementEx unitProperty = res.paramDeclNode.getLocalProperties().get("unit");
-		    String unit = unitProperty==null ? "" : StringUtils.nullToEmpty(unitProperty.getSimpleValue());
-		    if (paramUnit == null)
-		        paramUnit = unit;
-		    else if (!paramUnit.equals(unit)) {
-		        addError(section, key, "Entry matches parameters with different units: " + 
-		                (paramUnit.equals("") ? "none" : paramUnit) + ", " + (unit.equals("") ? "none" : unit));
-		        return;
-		    }
-		}
-
 		// if value contains "${...}" variables, check that those variables exist. Any more
 		// validation would be significantly more complex, and not done at the moment
 		if (value.indexOf('$') != -1) {
-			if (validateValueWithIterationVars(section, key))
-				return;
+		    if (validateValueWithIterationVars(section, key))
+		        return;
 		}
 
-		// check value is consistent with the data type
-		if (paramType != -1) {
-		    // determine value's data type
-			int valueType = -1;
-			String valueUnit = null;
-			if (value.equals("true") || value.equals("false"))
-				valueType = NED_PARTYPE_BOOL;
-			else if (value.startsWith("\""))
-				valueType = NED_PARTYPE_STRING;
-			else if (value.startsWith("xmldoc"))
-			    valueType = NED_PARTYPE_XML;
-            else {
-                try { 
-                    valueUnit = UnitConversion.parseQuantityForUnit(value); // throws exception if not a quantity
-                    Assert.isNotNull(valueUnit);
-                } catch (RuntimeException e) {}
-                
-                if (valueUnit != null)
-                    valueType = NED_PARTYPE_DOUBLE;
-            }
-
-			// provided we could figure out the value's data type, check it's the same as parameter's data type
-			int tmpParamType = paramType==NED_PARTYPE_INT ? NED_PARTYPE_DOUBLE : paramType; // replace "int" with "double"
-			if (valueType != -1 && valueType != tmpParamType) {
-			    String typeName = resList[0].paramDeclNode.getAttribute(ParamElement.ATT_TYPE);
-			    addError(section, key, "Wrong data type: "+typeName+" expected");
-			}
-
-            // if value is numeric, check units
-			if (valueUnit!=null) {
-			    try {
-			        UnitConversion.parseQuantity(value, paramUnit); // throws exception on incompatible units
-			    } 
-			    catch (RuntimeException e) {
-			        addError(section, key, e.getMessage());
-			    }
-			}
+		if (value.equals(ConfigRegistry.DEFAULT) || value.equals(ConfigRegistry.ASK)) {
+		    // nothing to check, actually
 		}
+		else {
+		    // check parameter data types are consistent with each other
+		    ParamResolution[] resList = getParamResolutionsForKey(section, key);
+		    int paramType = -1;
+		    for (ParamResolution res : resList) {
+		        if (paramType == -1)
+		            paramType = res.paramDeclNode.getType();
+		        else if (paramType != res.paramDeclNode.getType()) {
+		            addError(section, key, "Entry matches parameters of different data types");
+		            return;
+		        }
+		    }
+
+		    // check units are consistent with each other
+		    String paramUnit = null;
+		    for (ParamResolution res : resList) {
+		        PropertyElementEx unitProperty = res.paramDeclNode.getLocalProperties().get("unit");
+		        String unit = unitProperty==null ? "" : StringUtils.nullToEmpty(unitProperty.getSimpleValue());
+		        if (paramUnit == null)
+		            paramUnit = unit;
+		        else if (!paramUnit.equals(unit)) {
+		            addError(section, key, "Entry matches parameters with different units: " + 
+		                    (paramUnit.equals("") ? "none" : paramUnit) + ", " + (unit.equals("") ? "none" : unit));
+		            return;
+		        }
+		    }
+
+		    // check value is consistent with the data type
+		    if (paramType != -1) {
+		        // determine value's data type
+		        int valueType = -1;
+		        String valueUnit = null;
+		        if (value.equals("true") || value.equals("false"))
+		            valueType = NED_PARTYPE_BOOL;
+		        else if (value.startsWith("\""))
+		            valueType = NED_PARTYPE_STRING;
+		        else if (value.startsWith("xmldoc"))
+		            valueType = NED_PARTYPE_XML;
+		        else {
+		            try { 
+		                valueUnit = UnitConversion.parseQuantityForUnit(value); // throws exception if not a quantity
+		                Assert.isNotNull(valueUnit);
+		            } catch (RuntimeException e) {}
+
+		            if (valueUnit != null)
+		                valueType = NED_PARTYPE_DOUBLE;
+		        }
+
+		        // provided we could figure out the value's data type, check it's the same as parameter's data type
+		        int tmpParamType = paramType==NED_PARTYPE_INT ? NED_PARTYPE_DOUBLE : paramType; // replace "int" with "double"
+		        if (valueType != -1 && valueType != tmpParamType) {
+		            String typeName = resList[0].paramDeclNode.getAttribute(ParamElement.ATT_TYPE);
+		            addError(section, key, "Wrong data type: "+typeName+" expected");
+		        }
+
+		        // if value is numeric, check units
+		        if (valueUnit!=null) {
+		            try {
+		                UnitConversion.parseQuantity(value, paramUnit); // throws exception on incompatible units
+		            } 
+		            catch (RuntimeException e) {
+		                addError(section, key, e.getMessage());
+		            }
+		        }
+		    }
+        }
 	}
 
 	
@@ -893,8 +898,8 @@ public class InifileAnalyzer {
 	 * Classify an inifile key, based on its syntax.
 	 */
 	public static KeyType getKeyType(String key) {
-		if (!key.contains("."))
-			return KeyType.CONFIG;  // contains no dot
+		if (StringUtils.containsNone(key, ".?*{\\"))
+			return KeyType.CONFIG;  // contains no dot or wildcard
 		else if (!key.contains("-"))
 			return KeyType.PARAM; // contains dot, but no hyphen
 		else
