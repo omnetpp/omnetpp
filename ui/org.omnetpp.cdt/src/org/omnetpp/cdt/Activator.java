@@ -8,6 +8,7 @@ import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.omnetpp.cdt.cache.DependencyCache;
+import org.omnetpp.cdt.wizard.ProjectTemplateStore;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -22,6 +23,8 @@ public class Activator extends AbstractUIPlugin {
     // The shared instance
     private static Activator plugin;
 
+    private ProjectTemplateStore projectTemplateStore;
+    
     /**
      * The constructor
      */
@@ -112,4 +115,11 @@ public class Activator extends AbstractUIPlugin {
     public static DependencyCache getDependencyCache() {
         return getDefault().dependencyCache;
     }
+    
+    public static ProjectTemplateStore getProjectTemplateStore() {
+        if (getDefault().projectTemplateStore == null)
+            getDefault().projectTemplateStore = new ProjectTemplateStore();
+        return getDefault().projectTemplateStore;
+    }
+    
 }

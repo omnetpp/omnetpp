@@ -14,20 +14,27 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.wizard.IWizardPage;
+import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.internal.ide.dialogs.ProjectContentsLocationArea;
+import org.omnetpp.cdt.Activator;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.ide.wizard.NewOmnetppProjectWizard;
@@ -41,20 +48,110 @@ import org.omnetpp.ide.wizard.NewOmnetppProjectWizard;
  */
 @SuppressWarnings("restriction")
 public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements INewWizard {
-
-//    protected NewOmnetppCppProjectWizardPage projectPage;
     private CCProjectWizard nestedWizard;
+    private TemplateSelectionPage templatePage;
+    
+    public class NewOmnetppCppProjectCreationPage extends NewOmnetppProjectCreationPage {
+        private Button supportCppButton;
 
+        public NewOmnetppCppProjectCreationPage() {
+            setDescription("Creates an OMNeT++ project, optionally with support for C++ development using CDT.");
+        }
+
+        @Override
+        public void createControl(Composite parent) {
+            super.createControl(parent);
+            // add a new supports C++ development checkbox
+            Composite comp = new Composite((Composite)getControl(), SWT.NONE);
+            comp.setLayout(new GridLayout(1,false));
+            comp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+            supportCppButton = new Button(comp, SWT.CHECK);
+            supportCppButton.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false));
+            supportCppButton.setText("&Support C++ Development");
+            supportCppButton.setSelection(true);
+            supportCppButton.addSelectionListener(new SelectionAdapter() {
+                public void widgetSelected(SelectionEvent e) {
+                    getWizard().getContainer().updateButtons();
+                }
+            });
+        }
+
+        public boolean supportCpp() {
+            return supportCppButton.getSelection();
+        }
+
+        @Override
+        public IWizardPage getNextPage() {
+            // this method can be removed altogether if templatePage is going to stay 
+            if (templatePage != null)
+                return super.getNextPage();
+            else
+                return supportCpp() ? nestedWizard.getStartingPage() : null;
+        }
+    }
+
+    
+    public class TemplateSelectionPage extends WizardPage {
+        private TableViewer tableViewer;
+
+        protected TemplateSelectionPage() {
+            super("OmnetppTemplateSelectionPage");
+            setTitle("Project Contents");
+            setDescription("Choose initial project contents");
+        }
+
+        public void createControl(Composite parent) {
+            Composite composite = new Composite(parent, SWT.NONE);
+            composite.setLayout(new GridLayout(1,false));
+            setControl(composite);
+
+            Label label = new Label(composite, SWT.NONE);
+            label.setText("Select template:");
+            tableViewer = new TableViewer(composite, SWT.BORDER);
+            tableViewer.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+            tableViewer.setLabelProvider(new LabelProvider() {
+                @Override
+                public String getText(Object element) {
+                    return ((IProjectTemplate)element).getName();
+                }
+                @Override
+                public Image getImage(Object element) {
+                    return ((IProjectTemplate)element).getImage();
+                }
+            });
+            tableViewer.setContentProvider(new ArrayContentProvider());
+            ProjectTemplateStore templateStore = Activator.getProjectTemplateStore();
+            if (supportCpp())
+                tableViewer.setInput(templateStore.getCppTemplates());
+            else
+                tableViewer.setInput(templateStore.getNoncppTemplates());
+            //TODO add HoverSupport to display template description
+
+            // always complete
+            setPageComplete(true);
+        }
+
+        @Override
+        public IWizardPage getNextPage() {
+            return supportCpp() ? nestedWizard.getStartingPage() : null;
+        }
+        
+        public IProjectTemplate getSelectedTemplate() {
+            return (IProjectTemplate)((IStructuredSelection)tableViewer.getSelection()).getFirstElement();
+        }
+    }
+
+    
     /**
      * Customizations:
      *   (1) hide project name / location because we have a separate page for that
      *   (2) filter the project types and templates shown
      */
-    class CustomizedCDTMainPage extends CDTMainWizardPage {
+    public class CustomizedCDTMainPage extends CDTMainWizardPage {
         public CustomizedCDTMainPage() {
             super(CUIPlugin.getResourceString("CProjectWizard"));
-            setTitle("Select Project Type");
-            setDescription("Select type of project to be created");
+            setTitle("C++ Project Type");
+            setDescription("Select C++ project type and toolchain");
         }
 
         @Override
@@ -114,8 +211,8 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
         }
     }
 
-    class CCProjectWizard extends CDTCommonProjectWizard {
-
+    
+    public class CCProjectWizard extends CDTCommonProjectWizard {
         public CCProjectWizard() {
             super(UIMessages.getString("NewModelProjectWizard.2"), UIMessages.getString("NewModelProjectWizard.3")); //$NON-NLS-1$ //$NON-NLS-2$
         }
@@ -134,82 +231,60 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
             try {
                 CProjectNature.addCNature(prj, new NullProgressMonitor());
                 CCProjectNature.addCCNature(prj, new NullProgressMonitor());
-            } catch (CoreException e) {} //FIXME report error
+            } catch (CoreException e) {
+                Activator.logError(e);
+            }
             return prj;
         }
     }
-
-    class NewOmnetppCppProjectCreationPage extends NewOmnetppProjectCreationPage {
-        private Button supportCppButton;
-
-        public NewOmnetppCppProjectCreationPage() {
-            setDescription("Creates an OMNeT++ project, optionally with support for C++ development using CDT.");
-        }
-
-        @Override
-        public void createControl(Composite parent) {
-            super.createControl(parent);
-            // add a new supports C++ development checkbox
-            Composite comp = new Composite((Composite)getControl(), SWT.NONE);
-            comp.setLayout(new GridLayout(1,false));
-            comp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-            supportCppButton = new Button(comp, SWT.CHECK);
-            supportCppButton.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false));
-            supportCppButton.setText("Support C++ Development");
-            supportCppButton.setSelection(true);
-            supportCppButton.addSelectionListener(new SelectionAdapter() {
-                public void widgetSelected(SelectionEvent e) {
-                    getWizard().getContainer().updateButtons();
-                }
-            });
-        }
-
-        public boolean supportsCpp() {
-            return supportCppButton.getSelection();
-        }
-
-        @Override
-        public IWizardPage getNextPage() {
-            return supportsCpp() ? nestedWizard.getStartingPage() : null;
-        }
-    }
-
+    
     @Override
-    public void addPages() {
-        projectPage = new NewOmnetppCppProjectCreationPage() ;
-        addPage(projectPage);
-        nestedWizard.addPages();
-    }
-
-    @Override
-    public boolean performFinish() {
-        // if we are on the first page the CDT wizard is not yet created and its perform finis will not be called
-        // so we have to do it manually
-        if (getContainer().getCurrentPage() == projectPage) {
-            if (((NewOmnetppCppProjectCreationPage)projectPage).supportsCpp()) {
-                // show it manually (and create) and
-                getContainer().showPage(nestedWizard.getStartingPage());
-                nestedWizard.performFinish();
-            }
-            else {
-                // just call the plain OMNET++ wizard
-                super.performFinish();
-            }
-        }
-        // the OMNET nature is always added
-        IProject project = projectPage.getProjectHandle();
-        ProjectUtils.addOmnetppNature(project);
-
-        return true;
-    }
-
     public void init(IWorkbench workbench, IStructuredSelection selection) {
         nestedWizard = new CCProjectWizard();
         nestedWizard.init(workbench, selection);
         nestedWizard.setContainer(getContainer());
         setForcePreviousAndNextButtons(true);
     }
-    
+
+    @Override
+    public void addPages() {
+        addPage(projectPage = new NewOmnetppCppProjectCreationPage());
+        addPage(templatePage = new TemplateSelectionPage());
+        nestedWizard.addPages();
+    }
+
+    @Override
+    public boolean performFinish() {
+        // if we are on the first page the CDT wizard is not yet created and its perform finish will not be called
+        // so we have to do it manually
+        if (getContainer().getCurrentPage() == projectPage) {
+            if (((NewOmnetppCppProjectCreationPage)projectPage).supportCpp()) {
+                // show it manually (and create) and
+                getContainer().showPage(nestedWizard.getStartingPage());
+                nestedWizard.performFinish();
+            }
+            else {
+                // just call the plain OMNeT++ wizard
+                super.performFinish();
+            }
+        }
+        
+        // the OMNeT++ nature is always added
+        IProject project = projectPage.getProjectHandle();
+        ProjectUtils.addOmnetppNature(project);
+
+        // apply template: this may create files, set project properties, configure the CDT project, etc.
+        IProjectTemplate template = templatePage.getSelectedTemplate();
+        if (template != null)
+            template.configure(project);
+        
+        return true;
+    }
+
+    public boolean supportCpp() {
+        return ((NewOmnetppCppProjectCreationPage)projectPage).supportCpp();
+    }
+   
 }
 
 
