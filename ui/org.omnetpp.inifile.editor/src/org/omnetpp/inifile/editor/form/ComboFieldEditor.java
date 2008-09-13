@@ -121,7 +121,7 @@ public class ComboFieldEditor extends FieldEditor {
 
 		// update problem decoration
 		IMarker[] markers = InifileUtils.getProblemMarkersFor(GENERAL, key, inifile);
-		problemDecoration.setImage(getProblemImage(markers, true));
+		problemDecoration.setImage(getProblemImage(markers, true, true));
 		problemDecoration.setDescriptionText(getProblemsText(markers));
 		redraw(); // otherwise an obsolete error decoration doesn't disappear
 	}

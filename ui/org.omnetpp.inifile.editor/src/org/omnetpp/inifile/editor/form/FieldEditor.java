@@ -180,12 +180,12 @@ public abstract class FieldEditor extends Composite {
 		});
 	}
 
-	protected static Image getProblemImage(IMarker[] markers, boolean small) {
+	protected static Image getProblemImage(IMarker[] markers, boolean small, boolean ignoreInfos) {
 		int severity = InifileUtils.getMaximumSeverity(markers);
 		switch (severity) {
 			case IMarker.SEVERITY_ERROR: return small ? ICON_ERROR_SMALL : ICON_ERROR;
 			case IMarker.SEVERITY_WARNING: return small ? ICON_WARNING_SMALL : ICON_WARNING;
-			case IMarker.SEVERITY_INFO: return small ? ICON_INFO_SMALL : ICON_INFO;
+			case IMarker.SEVERITY_INFO: return ignoreInfos ? null : small ? ICON_INFO_SMALL : ICON_INFO;
 			default: return null;
 		}
 	}

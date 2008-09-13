@@ -87,7 +87,7 @@ public class CheckboxFieldEditor extends FieldEditor {
 
 		// update problem decoration
 		IMarker[] markers = InifileUtils.getProblemMarkersFor(GENERAL, entry.getKey(), inifile);
-		problemDecoration.setImage(getProblemImage(markers, true));
+		problemDecoration.setImage(getProblemImage(markers, true, true));
 		problemDecoration.setDescriptionText(getProblemsText(markers));
 		redraw();
 	}

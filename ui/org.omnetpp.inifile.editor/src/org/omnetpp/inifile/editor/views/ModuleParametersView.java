@@ -35,7 +35,6 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.PlatformUI;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.ui.SizeConstraint;
@@ -59,10 +58,9 @@ import org.omnetpp.ned.model.interfaces.INedTypeElement;
  * Displays module parameters recursively for a module type.
  * @author Andras
  */
-//XXX table sorting doesn't work
 public class ModuleParametersView extends AbstractModuleView {
 	private TableViewer tableViewer;
-	private boolean unassignedOnly = true;
+	private boolean unassignedOnly = false;
 	private TableColumn parameterColumn;
 	private TableColumn valueColumn;
 	private TableColumn remarkColumn;
@@ -189,7 +187,7 @@ public class ModuleParametersView extends AbstractModuleView {
 	private void createActions() {
 		IAction pinAction = getOrCreatePinAction();
 
-		Action toggleModeAction = new ActionExt("Show all", IAction.AS_CHECK_BOX, 
+		Action toggleModeAction = new ActionExt("Show unassigned only", IAction.AS_CHECK_BOX, 
 				InifileEditorPlugin.getImageDescriptor("icons/full/elcl16/filter_ps.gif")) {
 			@Override
 			public void run() {

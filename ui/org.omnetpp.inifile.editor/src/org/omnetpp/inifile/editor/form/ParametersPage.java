@@ -181,7 +181,7 @@ public class ParametersPage extends FormPage {
 					else if (columnIndex == 1) {
 						SectionKey item = (SectionKey) element;
 						IMarker[] markers = InifileUtils.getProblemMarkersFor(item.section, item.key, getInifileDocument());
-						return FieldEditor.getProblemImage(markers, false);
+						return FieldEditor.getProblemImage(markers, false, true);
 					}
 				}
 				else {

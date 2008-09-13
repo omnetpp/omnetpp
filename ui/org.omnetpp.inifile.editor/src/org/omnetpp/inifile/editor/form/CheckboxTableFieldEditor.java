@@ -93,7 +93,7 @@ public class CheckboxTableFieldEditor extends TableFieldEditor {
 				if (columnIndex == 0) {
 	                SectionKey sectionKey = (SectionKey) element;
 					IMarker[] markers = InifileUtils.getProblemMarkersFor(sectionKey.section, sectionKey.key, inifile);
-					return getProblemImage(markers, true);
+					return getProblemImage(markers, true, true);
 				}
 				return null;
 			}
