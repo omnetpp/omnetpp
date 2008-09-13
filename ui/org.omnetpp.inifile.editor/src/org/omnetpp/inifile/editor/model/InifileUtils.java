@@ -428,9 +428,7 @@ public class InifileUtils {
 		IMarker[] markers = getProblemMarkersForWholeSection(sectionName, doc);
 		int maxProblemSeverity = getMaximumSeverity(markers);
 		Image overlayImage = maxProblemSeverity == IMarker.SEVERITY_ERROR ? ICON_OVR_ERROR : 
-			maxProblemSeverity == IMarker.SEVERITY_WARNING ? ICON_OVR_WARNING : 
-				maxProblemSeverity == IMarker.SEVERITY_INFO ? ICON_OVR_INFO :
-					null;
+			maxProblemSeverity == IMarker.SEVERITY_WARNING ? ICON_OVR_WARNING : null; // note: ignore Infos
 		
 		// return decorated image
 		String key = "section:"+exists+":"+containsIteration+":"+containsRepeat+":"+maxProblemSeverity;
