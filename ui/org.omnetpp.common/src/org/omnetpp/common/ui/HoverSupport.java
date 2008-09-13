@@ -139,6 +139,7 @@ public class HoverSupport {
 		Display.getDefault().addFilter(SWT.MouseExit, eventFilter);
 		Display.getDefault().addFilter(SWT.MouseMove, eventFilter);
 		Display.getDefault().addFilter(SWT.MouseDown, eventFilter);
+		Display.getDefault().addFilter(SWT.MouseWheel, eventFilter);
 		Display.getDefault().addFilter(SWT.KeyDown, eventFilter);
 	}
 
@@ -147,6 +148,7 @@ public class HoverSupport {
 		Display.getDefault().removeFilter(SWT.MouseExit, eventFilter);
 		Display.getDefault().removeFilter(SWT.MouseMove, eventFilter);
 		Display.getDefault().removeFilter(SWT.MouseDown, eventFilter);
+		Display.getDefault().removeFilter(SWT.MouseWheel, eventFilter);
 		Display.getDefault().removeFilter(SWT.KeyDown, eventFilter);
 	}
 
