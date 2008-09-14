@@ -660,9 +660,10 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         int count = connectCount.get(file); // must exist
         if (count <= 1) {
             // there's no open editor -- remove counter and re-read last saved
-            // state from disk
+            // state from disk (provided it has not been deleted)
             connectCount.remove(file);
-            readNEDFile(file);
+            if (file.exists())
+                readNEDFile(file);
         }
         else {
             connectCount.put(file, count - 1);

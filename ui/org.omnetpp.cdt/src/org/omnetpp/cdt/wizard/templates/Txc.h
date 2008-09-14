@@ -3,7 +3,6 @@
 #ifndef __{{PROJECTNAME}}_TCX_H
 #define __{{PROJECTNAME}}_TCX_H
 
-#include <string.h>
 #include <omnetpp.h>
 
 

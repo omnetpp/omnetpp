@@ -73,30 +73,37 @@ public class ProjectTemplateStore {
         cppTemplates.add(new ProjectTemplate("Empty project", SRC_AND_SIMULATIONS, null, ICON_TEMPLATE) {
             @Override
             public void doConfigure() throws CoreException {
-                // nothing
+                createAndSetNedSourceFolders(new String[] {"src", "simulations"});
             }
         });
         cppTemplates.add(new ProjectTemplate("Tictoc example", SRC_AND_SIMULATIONS, null, ICON_TEMPLATE) {
             @Override
             public void doConfigure() throws CoreException {
-                // nothing
+                createAndSetNedSourceFolders(new String[] {"src", "simulations"});
+                createFileFromResource("src/Txc.ned", "templates/Txc.ned");
+                createFileFromResource("src/Txc.h", "templates/Txc.h");
+                createFileFromResource("src/Txc.cc", "templates/Txc.cc");
+                createFileFromResource("simulations/Tictoc.ned", "templates/Tictoc.ned");
+                createFileFromResource("simulations/omnetpp.ini", "templates/Tictoc.ini");
             }
-        });
+        }) ;
+        cppTemplates.add(new ProjectTemplate("Source-sink example", SRC_AND_SIMULATIONS, null, ICON_TEMPLATE) {
+            @Override
+            public void doConfigure() throws CoreException {
+                createAndSetNedSourceFolders(new String[] {"src", "simulations"});
+                createFileFromResource("src/Source.ned", "templates/Source.ned");
+                createFileFromResource("src/Source.h", "templates/Source.h");
+                createFileFromResource("src/Source.cc", "templates/Source.cc");
+                createFileFromResource("src/Sink.ned", "templates/Sink.ned");
+                createFileFromResource("src/Sink.h", "templates/Sink.h");
+                createFileFromResource("src/Sink.cc", "templates/Sink.cc");
+                createFileFromResource("simulations/Network.ned", "templates/SourceSink.ned");
+                createFileFromResource("simulations/omnetpp.ini", "templates/SourceSink.ini");
+            }
+        }) ;
 
         final String SRC_AND_EXAMPLES = "Project with \"src\" and \"examples\" folders";
-        cppTemplates.add(new ProjectTemplate("Empty project", SRC_AND_EXAMPLES, null, ICON_TEMPLATE) {
-            @Override
-            public void doConfigure() throws CoreException {
-                // nothing
-            }
-        });
-
-        cppTemplates.add(new ProjectTemplate("Tictoc example", SRC_AND_EXAMPLES, null, ICON_TEMPLATE) {
-            @Override
-            public void doConfigure() throws CoreException {
-                // nothing
-            }
-        });
+        //TODO like the above!
     }
     
 }

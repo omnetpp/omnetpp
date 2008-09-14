@@ -1,24 +1,6 @@
 {{copyright}}
 
-
-#include <omnetpp.h>
-
-/**
- * Generates messages; see NED file for more info.
- */
-class Source : public cSimpleModule
-{
-  private:
-    cMessage *timerMessage;
-
-  public:
-     Source();
-     virtual ~Source();
-
-  protected:
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
-};
+#include "Source.h"
 
 Define_Module(Source);
 

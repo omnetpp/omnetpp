@@ -6,6 +6,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -32,7 +33,8 @@ import org.omnetpp.inifile.editor.model.InifileAnalyzer;
  * @author Andras
  */
 public abstract class FormPage extends Composite {
-	public static final int RIGHT_MARGIN = 20; // >= scrollbar width  
+	private static final Image BANNER_IMAGE = InifileEditorPlugin.getCachedImage("icons/full/misc/formpage_banner2.png");
+    protected static final int RIGHT_MARGIN = 20; // >= scrollbar width  
 	private static Font titleFont = JFaceResources.getBannerFont();
 	private InifileEditor inifileEditor;
 	private HoverSupport hoverSupport = new HoverSupport();
@@ -142,7 +144,7 @@ public abstract class FormPage extends Composite {
 		((GridLayout)titleArea.getLayout()).marginWidth = 10;
 		
 		Label imageLabel = new Label(titleArea, SWT.NONE);
-		imageLabel.setImage(InifileEditorPlugin.getCachedImage("icons/full/misc/formpage_banner2.png")); //XXX better image needed!!!
+		imageLabel.setImage(BANNER_IMAGE);
 		imageLabel.setBackground(ColorFactory.WHITE);
 		
 		Label title = new Label(titleArea, SWT.NONE);

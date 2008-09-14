@@ -6,13 +6,16 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.swt.graphics.Image;
 import org.omnetpp.cdt.Activator;
+import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.StringUtils;
 
@@ -162,4 +165,26 @@ public abstract class ProjectTemplate implements IProjectTemplate {
             file.setContents(new ByteArrayInputStream(bytes), true, false, monitor);
     }
 
+    /**
+     * Creates a folder. If the parent folder(s) do not exist, they are created.
+     */
+    protected void createFolder(String projectRelativePath) throws CoreException {
+        IFolder folder = getProject().getFolder(new Path(projectRelativePath));
+        if (!folder.getParent().exists())
+            createFolder(folder.getParent().getProjectRelativePath().toString());
+        if (!folder.exists())
+            folder.create(true, true, monitor);
+    }
+    
+    /**
+     * Creates the given folders, and a folder. If the parent folder(s) do not exist, they are created.
+     */
+    protected void createAndSetNedSourceFolders(String[] projectRelativePaths) throws CoreException {
+        for (String path : projectRelativePaths)
+            createFolder(path);
+        IContainer[] folders = new IContainer[projectRelativePaths.length];
+        for (int i=0; i<projectRelativePaths.length; i++)
+            folders[i] = getProject().getFolder(new Path(projectRelativePaths[i]));
+        ProjectUtils.saveNedFoldersFile(getProject(), folders);
+    }
 }
