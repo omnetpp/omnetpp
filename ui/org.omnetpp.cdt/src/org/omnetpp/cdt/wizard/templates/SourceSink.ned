@@ -6,7 +6,7 @@
 //
 network {{ProjectName}}
 {
-    parameters:
+    submodules:
         source: Source;
         sink: Sink;
     connections:
