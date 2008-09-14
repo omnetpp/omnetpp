@@ -28,11 +28,13 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.INewWizard;
@@ -43,6 +45,9 @@ import org.omnetpp.cdt.Activator;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.ui.GenericTreeContentProvider;
 import org.omnetpp.common.ui.GenericTreeNode;
+import org.omnetpp.common.ui.HoverSupport;
+import org.omnetpp.common.ui.IHoverTextProvider;
+import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.ide.wizard.NewOmnetppProjectWizard;
 
@@ -53,7 +58,6 @@ import org.omnetpp.ide.wizard.NewOmnetppProjectWizard;
  *
  * @author Andras
  */
-//FIXME bug: template lapon Finish-t nyomva error: project nem letezik
 @SuppressWarnings("restriction")
 public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements INewWizard {
     public static final Image ICON_CATEGORY = Activator.getCachedImage("icons/full/obj16/templatecategory.gif");
@@ -116,6 +120,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
             composite.setLayout(new GridLayout(1,false));
             setControl(composite);
 
+            // create tree and label
             Label label = new Label(composite, SWT.NONE);
             label.setText("Select template:");
             treeViewer = new TreeViewer(composite, SWT.BORDER);
@@ -134,6 +139,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
             });
             treeViewer.setContentProvider(new GenericTreeContentProvider());
 
+            // categorize and add templates into the tree
             ProjectTemplateStore templateStore = Activator.getProjectTemplateStore();
             List<IProjectTemplate> templates = supportCpp() ? templateStore.getCppTemplates() : templateStore.getNoncppTemplates();
             GenericTreeNode root = new GenericTreeNode("root");
@@ -150,7 +156,20 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
             treeViewer.setInput(root);
             treeViewer.expandAll();
 
-                //TODO add HoverSupport to display template description
+            // show the descriptions in a tooltip
+            new HoverSupport().adapt(treeViewer.getTree(), new IHoverTextProvider() {
+                public String getHoverTextFor(Control control, int x, int y, SizeConstraint outSizeConstraint) {
+                    Item item = treeViewer.getTree().getItem(new Point(x,y));
+                    Object element = item==null ? null : item.getData();
+                    element = (element instanceof GenericTreeNode) ? ((GenericTreeNode)element).getPayload() : null;
+                    if (element instanceof IProjectTemplate) {
+                        String description = ((IProjectTemplate)element).getDescription();
+                        if (description != null)
+                            return HoverSupport.addHTMLStyleSheet(description);
+                    }
+                    return null;
+                }
+            });
 
             // always complete
             setPageComplete(true);
@@ -284,7 +303,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
     public boolean performFinish() {
         // if we are on the first page the CDT wizard is not yet created and its perform finish will not be called
         // so we have to do it manually
-        if (getContainer().getCurrentPage() == projectPage) {
+        if (getContainer().getCurrentPage() == projectPage || getContainer().getCurrentPage() == templatePage) {
             if (((NewOmnetppCppProjectCreationPage)projectPage).supportCpp()) {
                 // show it manually (and create) and do it
                 getContainer().showPage(nestedWizard.getStartingPage());
