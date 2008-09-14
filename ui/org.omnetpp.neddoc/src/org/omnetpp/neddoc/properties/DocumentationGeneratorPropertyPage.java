@@ -45,9 +45,9 @@ import org.omnetpp.ide.preferences.OmnetppPreferencePage;
 public class DocumentationGeneratorPropertyPage 
     extends PropertyPage
 {
-    private static final String DEFAULT_DOXY_PATH = "Documentation/doxy";
+    private static final String DEFAULT_DOXY_PATH = "doc/doxy";
     private static final String DEFAULT_DOXY_CONFIG_FILE_PATH = "doxy.cfg";
-    private static final String DEFAULT_NEDDOC_PATH = "Documentation/neddoc";
+    private static final String DEFAULT_NEDDOC_PATH = "doc/neddoc";
 
     public static QualifiedName DOXY_PATH_QNAME = new QualifiedName("DocumentationGenerator", "DoxyPath");
     public static QualifiedName DOXY_CONFIG_FILE_PATH_QNAME = new QualifiedName("DocumentationGenerator", "DoxyConfigFilePath");
