@@ -1,6 +1,8 @@
 package org.omnetpp.cdt.wizard;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.graphics.Image;
 
 /**
@@ -13,5 +15,5 @@ public interface IProjectTemplate {
     Image getImage();
     String getDescription();
     String getCategory();
-    void configure(IProject project);
+    void configure(IProject project, IProgressMonitor monitor) throws CoreException;
 }

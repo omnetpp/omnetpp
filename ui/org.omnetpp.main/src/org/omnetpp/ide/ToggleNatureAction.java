@@ -24,14 +24,13 @@ public class ToggleNatureAction implements IObjectActionDelegate {
     /* (non-Javadoc)
      * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
      */
-    @SuppressWarnings("unchecked")
     public void run(IAction action) {
         List<IProject> projects = getSelectedOpenProjects();
         if (anyProjectMissesNature(projects)) {
             // add OMNeT++ Nature
             for (IProject project : projects)
                 if (!ProjectUtils.hasOmnetppNature(project))
-                    ProjectUtils.addOmnetppNature(project);
+                    ProjectUtils.addOmnetppNature(project, null);
         }
         else {
             // remove OMNeT++ Nature

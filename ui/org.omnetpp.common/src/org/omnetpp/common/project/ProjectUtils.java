@@ -171,14 +171,14 @@ public class ProjectUtils {
      * Add the omnetpp nature to the project (if the project does not have already)
      * @param project
      */
-    public static void addOmnetppNature(IProject project) {
+    public static void addOmnetppNature(IProject project, IProgressMonitor monitor) {
         try {
             if (hasOmnetppNature(project))
                 return;
             IProjectDescription description = project.getDescription();
             String[] natures = description.getNatureIds();
             description.setNatureIds((String[])ArrayUtils.add(natures, IConstants.OMNETPP_NATURE_ID));
-            project.setDescription(description, null);
+            project.setDescription(description, monitor);
             // note: builders are added automatically, by OmnetppNature.configure()
         } 
         catch (CoreException e) {

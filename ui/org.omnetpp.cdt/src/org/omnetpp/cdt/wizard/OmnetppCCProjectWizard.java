@@ -1,5 +1,6 @@
 package org.omnetpp.cdt.wizard;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -15,7 +16,9 @@ import org.eclipse.cdt.ui.wizards.EntryDescriptor;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -34,6 +37,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.actions.WorkspaceModifyOperation;
 import org.eclipse.ui.internal.ide.dialogs.ProjectContentsLocationArea;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.common.project.ProjectUtils;
@@ -281,7 +285,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
         // so we have to do it manually
         if (getContainer().getCurrentPage() == projectPage) {
             if (((NewOmnetppCppProjectCreationPage)projectPage).supportCpp()) {
-                // show it manually (and create) and
+                // show it manually (and create) and do it
                 getContainer().showPage(nestedWizard.getStartingPage());
                 nestedWizard.performFinish();
             }
@@ -291,15 +295,32 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
             }
         }
         
-        // the OMNeT++ nature is always added
-        IProject project = projectPage.getProjectHandle();
-        ProjectUtils.addOmnetppNature(project);
+        // define the operation for configuring the new project
+        final IProject project = projectPage.getProjectHandle();
+        final IProjectTemplate template = templatePage.getSelectedTemplate();
+        WorkspaceModifyOperation op = new WorkspaceModifyOperation() {
+            protected void execute(IProgressMonitor monitor) throws CoreException {
+                
+                // the OMNeT++ nature is always added
+                ProjectUtils.addOmnetppNature(project, monitor);
 
-        // apply template: this may create files, set project properties, configure the CDT project, etc.
-        IProjectTemplate template = templatePage.getSelectedTemplate();
-        if (template != null)
-            template.configure(project);
-        
+                // apply template: this may create files, set project properties, configure the CDT project, etc.
+                if (template != null)
+                    template.configure(project, monitor);
+            }
+        };
+
+        // run the operation
+        try {
+            getContainer().run(true, true, op);
+        } catch (InterruptedException e) {
+            return false;
+        } catch (InvocationTargetException e) {
+            Throwable t = e.getTargetException();
+            Activator.logError(t);
+            MessageDialog.openError(getShell(), "Creation problems", "Internal error: " + t.getMessage());
+            return false;
+        }
         return true;
     }
 

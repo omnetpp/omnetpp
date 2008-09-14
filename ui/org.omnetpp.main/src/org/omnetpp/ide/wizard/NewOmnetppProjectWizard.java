@@ -121,7 +121,7 @@ public class NewOmnetppProjectWizard extends Wizard implements INewWizard {
 
             // add the project nature after now, after project creation, so that builders
             // get properly configured (Project.create() doesn't do it).
-            ProjectUtils.addOmnetppNature(projectHandle);
+            ProjectUtils.addOmnetppNature(projectHandle, monitor);
         }
         finally {
             monitor.done();
