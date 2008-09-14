@@ -2,6 +2,8 @@
 
 #include "Source.h"
 
+{{namespace:}}namespace {{namespace}} {
+
 Define_Module(Source);
 
 Source::Source()
@@ -29,4 +31,6 @@ void Source::handleMessage(cMessage *msg)
 
     scheduleAt(simTime()+par("sendIaTime").doubleValue(), timerMessage);
 }
+
+{{namespace:}}}; // namespace
 

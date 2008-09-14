@@ -2,6 +2,8 @@
 
 #include "Txc.h"
 
+{{namespace:}}namespace {{namespace}} {
+
 Define_Module(Txc);
 
 void Txc::initialize()
@@ -19,4 +21,6 @@ void Txc::handleMessage(cMessage *msg)
     // just send back the message we received
     send(msg, "out");
 }
+
+{{namespace:}}}; // namespace
 

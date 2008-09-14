@@ -5,6 +5,7 @@
 
 #include <omnetpp.h>
 
+{{namespace:}}namespace {{namespace}} {
 
 /**
  * Implements the Txc simple module. See the NED file for more information.
@@ -15,6 +16,8 @@ class Txc : public cSimpleModule
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 };
+
+{{namespace:}}}; // namespace
 
 #endif
 

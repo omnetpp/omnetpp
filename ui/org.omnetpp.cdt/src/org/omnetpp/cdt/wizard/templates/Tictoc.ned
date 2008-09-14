@@ -1,5 +1,7 @@
 {{copyright}}
 
+{{rootpackage:}}package {{rootpackage}};
+
 //
 // Two instances (tic and toc) of Txc connected.
 //

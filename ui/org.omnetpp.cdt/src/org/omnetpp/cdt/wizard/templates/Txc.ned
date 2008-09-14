@@ -1,5 +1,7 @@
 {{copyright}}
 
+{{rootpackage:}}package {{rootpackage}};
+
 //
 // Immediately sends out any message it receives. When the instance name
 // is "tic", it also generates one.

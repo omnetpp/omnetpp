@@ -1,5 +1,6 @@
 {{copyright}}
 
+{{rootpackage:}}package {{rootpackage}};
 
 //
 // Sample network, consisting of a source and a sink.
@@ -12,3 +13,5 @@ network {{ProjectName}}
     connections:
         source.out --> sink.in;
 }
+
+

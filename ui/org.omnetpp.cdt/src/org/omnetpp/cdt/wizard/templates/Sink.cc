@@ -2,6 +2,8 @@
 
 #include "Sink.h"
 
+{{namespace:}}namespace {{namespace}} {
+
 Define_Module(Sink);
 
 void Sink::initialize()
@@ -28,4 +30,6 @@ void Sink::finish()
 {
     recordStatistic(&iaTimeHistogram);
 }
+
+{{namespace:}}}; // namespace
 

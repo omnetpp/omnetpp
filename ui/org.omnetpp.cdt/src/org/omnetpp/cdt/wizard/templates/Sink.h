@@ -5,6 +5,8 @@
 
 #include <omnetpp.h>
 
+{{namespace:}}namespace {{namespace}} {
+
 /**
  * Message sink; see NED file for more info.
  */
@@ -23,6 +25,8 @@ class Sink : public cSimpleModule
     virtual void handleMessage(cMessage *msg);
     virtual void finish();
 };
+
+{{namespace:}}}; // namespace
 
 #endif
 

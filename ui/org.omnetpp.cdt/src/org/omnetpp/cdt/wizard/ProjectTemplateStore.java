@@ -50,6 +50,8 @@ public class ProjectTemplateStore {
         cppTemplates.add(new ProjectTemplate("Tictoc example", SINGLE_DIR, null, ICON_TEMPLATE) {
             @Override
             public void doConfigure() throws CoreException {
+                setVariable("namespace", "");
+                setVariable("rootpackage", "");
                 createFileFromResource("Txc.ned", "templates/Txc.ned");
                 createFileFromResource("Txc.h", "templates/Txc.h");
                 createFileFromResource("Txc.cc", "templates/Txc.cc");
@@ -60,6 +62,8 @@ public class ProjectTemplateStore {
         cppTemplates.add(new ProjectTemplate("Source-sink example", SINGLE_DIR, null, ICON_TEMPLATE) {
             @Override
             public void doConfigure() throws CoreException {
+                setVariable("namespace", "");
+                setVariable("rootpackage", "");
                 createFileFromResource("Source.ned", "templates/Source.ned");
                 createFileFromResource("Source.cc", "templates/Source.cc");
                 createFileFromResource("Sink.ned", "templates/Sink.ned");
@@ -79,6 +83,8 @@ public class ProjectTemplateStore {
         cppTemplates.add(new ProjectTemplate("Tictoc example", SRC_AND_SIMULATIONS, null, ICON_TEMPLATE) {
             @Override
             public void doConfigure() throws CoreException {
+                setVariable("namespace", "");
+                setVariable("rootpackage", "");
                 createAndSetNedSourceFolders(new String[] {"src", "simulations"});
                 createFileFromResource("src/Txc.ned", "templates/Txc.ned");
                 createFileFromResource("src/Txc.h", "templates/Txc.h");
@@ -90,6 +96,8 @@ public class ProjectTemplateStore {
         cppTemplates.add(new ProjectTemplate("Source-sink example", SRC_AND_SIMULATIONS, null, ICON_TEMPLATE) {
             @Override
             public void doConfigure() throws CoreException {
+                setVariable("namespace", "{{projectname}}"); //XXX
+                setVariable("rootpackage", "org.foo.{{projectname}}"); //XXX
                 createAndSetNedSourceFolders(new String[] {"src", "simulations"});
                 createFileFromResource("src/Source.ned", "templates/Source.ned");
                 createFileFromResource("src/Source.h", "templates/Source.h");

@@ -1,5 +1,6 @@
 {{copyright}}
 
+{{rootpackage:}}package {{rootpackage}};
 
 //
 // Consumes received messages and collects statistics

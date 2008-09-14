@@ -5,6 +5,8 @@
 
 #include <omnetpp.h>
 
+{{namespace:}}namespace {{namespace}} {
+
 /**
  * Generates messages; see NED file for more info.
  */
@@ -21,6 +23,8 @@ class Source : public cSimpleModule
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 };
+
+{{namespace:}}}; // namespace
 
 #endif
 

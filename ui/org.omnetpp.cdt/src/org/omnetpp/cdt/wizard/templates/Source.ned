@@ -1,5 +1,6 @@
 {{copyright}}
 
+{{rootpackage:}}package {{rootpackage}};
 
 //
 // Generates messages with a configurable interarrival time.
