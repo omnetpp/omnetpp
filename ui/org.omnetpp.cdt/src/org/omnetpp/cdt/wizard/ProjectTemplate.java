@@ -2,6 +2,7 @@ package org.omnetpp.cdt.wizard;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,12 +14,13 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.swt.graphics.Image;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.common.util.FileUtils;
+import org.omnetpp.common.util.StringUtils;
 
 /**
  * The default implementation of IProjectTemplate
  * @author Andras
  */
-public class ProjectTemplate implements IProjectTemplate {
+public abstract class ProjectTemplate implements IProjectTemplate {
     private String name;
     private String description;
     private String category;
@@ -27,7 +29,7 @@ public class ProjectTemplate implements IProjectTemplate {
     // fields set by and used during configure():   
     private IProject project; // the project being configured
     private IProgressMonitor monitor;
-    private Map<String,String> vars = new HashMap<String, String>(); // variables to be substituted into generated text files
+    private Map<String,Object> vars = new HashMap<String, Object>(); // variables to be substituted into generated text files
 
     public ProjectTemplate(String name, String category, String description, Image image) {
         super();
@@ -53,29 +55,64 @@ public class ProjectTemplate implements IProjectTemplate {
         return category;
     }
 
+    /**
+     * Valid only during configuring a project.
+     */
+    public IProject getProject() {
+        return project;
+    }
+    
+    /**
+     * Valid only during configuring a project.
+     */
+    public IProgressMonitor getProgressMonitor() {
+        return monitor;
+    }
+
+    /**
+     * Valid only during configuring a project.
+     */
+    protected boolean isCanceled() {
+        return monitor == null ? false : monitor.isCanceled();
+    }
+
     public void configure(IProject project, IProgressMonitor monitor) throws CoreException {
         this.project = project;
         this.monitor = monitor;
         vars.clear();
 
+        // pre-register some potentially useful template variables
+        setVariable("templateName", name);
+        setVariable("templateDescription", description);
+        setVariable("templateCategory", category);
+        setVariable("rawProjectName", project.getName());
+        setVariable("ProjectName", StringUtils.capitalize(StringUtils.makeValidIdentifier(project.getName())));
+        setVariable("projectname", StringUtils.lowerCase(StringUtils.makeValidIdentifier(project.getName())));
+        setVariable("PROJECTNAME", StringUtils.upperCase(StringUtils.makeValidIdentifier(project.getName())));
+        Calendar cal = Calendar.getInstance();
+        setVariable("date", cal.get(Calendar.YEAR)+"-"+cal.get(Calendar.MONTH)+"-"+cal.get(Calendar.DAY_OF_MONTH));
+        setVariable("year", ""+cal.get(Calendar.YEAR));
+        setVariable("author", System.getProperty("user.name"));
+        setVariable("copyright", readResource("templates/defaultCopyright.txt")); // some default; may be overwritten
+        
+        // do it!
         doConfigure();
         
         project = null;
         monitor = null;
         vars.clear();
     }
-
-    protected void doConfigure() throws CoreException {}  //FIXME make abstract
-
-    protected boolean isCanceled() {
-        return monitor == null ? false : monitor.isCanceled();
-    }
-
+    
+    /**
+     * Configure the project.
+     */
+    protected abstract void doConfigure() throws CoreException;
+    
     /**
      * Sets (creates or overwrites) a variable to be substituted into files 
      * created with createFile(). Pass value==null to remove an existing variable.
      */
-    protected void setVariable(String name, String value) {
+    protected void setVariable(String name, Object value) {
         if (value == null)
             vars.remove(name);
         else 
@@ -83,14 +120,11 @@ public class ProjectTemplate implements IProjectTemplate {
     }
 
     /**
-     * Utility method for doConfigure. Copies a resource into the project, 
-     * performing variable substitutions in it.
+     * Reads a resource to a string.
      */
-    protected void createFileFromResource(String projectRelativePath, String resourcePath) throws CoreException {
+    protected String readResource(String resourcePath) throws CoreException {
         try {
-            String content = FileUtils.readTextFile(getClass().getResourceAsStream(resourcePath));
-            content = content.replace("\r\n", "\n");
-            createFile(projectRelativePath, content);
+            return FileUtils.readTextFile(getClass().getResourceAsStream(resourcePath));
         } 
         catch (IOException e) {
             throw Activator.wrapIntoCoreException(e);
@@ -98,13 +132,26 @@ public class ProjectTemplate implements IProjectTemplate {
     }
 
     /**
+     * Utility method for doConfigure. Copies a resource into the project, 
+     * performing variable substitutions in it.
+     */
+    protected void createFileFromResource(String projectRelativePath, String resourcePath) throws CoreException {
+        String content = readResource(resourcePath);
+        content = content.replace("\r\n", "\n");
+        createFile(projectRelativePath, content);
+    }
+
+    /**
      * Utility method for doConfigure. Saves the given text into the project as a file, 
      * performing variable substitutions in it.
      */
     protected void createFile(String projectRelativePath, String content) throws CoreException {
-        // substitute variables
-        for (String varName : vars.keySet())
-            content = content.replace("@"+varName+"@", vars.get(varName));
+        // substitute variables (recursively)
+        String oldContent = "";
+        while (!content.equals(oldContent)) {
+            oldContent = content;
+            content = StringUtils.substituteIntoTemplate(content, vars, "{{", "}}");
+        }
         
         // save it
         byte[] bytes = content.getBytes(); 
@@ -114,6 +161,5 @@ public class ProjectTemplate implements IProjectTemplate {
         else
             file.setContents(new ByteArrayInputStream(bytes), true, false, monitor);
     }
-
 
 }

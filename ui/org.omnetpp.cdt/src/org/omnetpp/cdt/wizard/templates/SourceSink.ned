@@ -1,10 +1,10 @@
-@COPYRIGHT_HEADER@
+{{copyright}}
 
 
 //
 // Sample network, consisting of a source and a sink.
 //
-network @NETWORKNAME@
+network {{ProjectName}}
 {
     parameters:
         source: Source;

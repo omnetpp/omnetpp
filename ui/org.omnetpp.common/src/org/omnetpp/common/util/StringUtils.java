@@ -618,6 +618,7 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
      * Like the other substituteIntoTemplate() method, but arbitrary start/end tag can be specified. 
      */
     public static String substituteIntoTemplate(String template, Map<String, Object> map, String startTag, String endTag) {
+        Assert.isTrue(!startTag.equals(endTag), "template: startTag and endTag must be different");
         StringBuilder buf = new StringBuilder();
         
         int startTagLen = startTag.length();

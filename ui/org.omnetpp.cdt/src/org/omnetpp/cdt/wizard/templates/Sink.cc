@@ -1,4 +1,4 @@
-@COPYRIGHT_HEADER@
+{{copyright}}
 
 #include <omnetpp.h>
 

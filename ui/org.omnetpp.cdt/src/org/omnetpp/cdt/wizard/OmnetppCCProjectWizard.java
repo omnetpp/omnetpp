@@ -53,6 +53,7 @@ import org.omnetpp.ide.wizard.NewOmnetppProjectWizard;
  *
  * @author Andras
  */
+//FIXME bug: template lapon Finish-t nyomva error: project nem letezik
 @SuppressWarnings("restriction")
 public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements INewWizard {
     public static final Image ICON_CATEGORY = Activator.getCachedImage("icons/full/obj16/templatecategory.gif");
