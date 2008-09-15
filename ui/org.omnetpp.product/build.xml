@@ -13,7 +13,6 @@
 		<copy todir="${buildDirectory}/plugins">
 			<fileset dir="../">
 				<include name="org.omnetpp.*/**" />
-				<include name="org.eclipse.cdt.*/**" />
 				<include name="com.itsolut/**" />
 				<exclude name="*/bin/**" />
 				<exclude name="org.omnetpp.ide/**" />
@@ -83,12 +82,20 @@
 	    </replace>	
 	    <copy file="${buildDirectory}/plugins/org.omnetpp.product/omnest-ide.product" tofile="${buildDirectory}/plugins/org.omnetpp.product/ide.product"/>
 	    <move file="${buildDirectory}/plugins/org.omnetpp.main/splash-omnest.bmp" tofile="${buildDirectory}/plugins/org.omnetpp.main/splash.bmp"/>
+	    <move file="${buildDirectory}/plugins/org.omnetpp.main/icons/about-omnest.png" tofile="${buildDirectory}/plugins/org.omnetpp.main/icons/about-image.png"/>
+	    <move file="${buildDirectory}/plugins/org.omnetpp.main/icons/intro-omnest.png" tofile="${buildDirectory}/plugins/org.omnetpp.main/icons/intro-image.png"/>
     </target>
 	
 	<!-- prepare for academic build / throw out commercial features etc. -->	
 	<target name="init-omnetpp" depends="init">
+		<replace dir="${buildDirectory}" token="IS_COMMERCIAL = true;" value="IS_COMMERCIAL = false;">
+			<include name="**/*.java"/>
+	    </replace>	
 	    <copy file="${buildDirectory}/plugins/org.omnetpp.product/omnetpp-ide.product" tofile="${buildDirectory}/plugins/org.omnetpp.product/ide.product"/>
-    	</target>
+	    <move file="${buildDirectory}/plugins/org.omnetpp.main/splash-omnetpp.bmp" tofile="${buildDirectory}/plugins/org.omnetpp.main/splash.bmp"/>
+	    <move file="${buildDirectory}/plugins/org.omnetpp.main/icons/about-omnetpp.png" tofile="${buildDirectory}/plugins/org.omnetpp.main/icons/about-image.png"/>
+	    <move file="${buildDirectory}/plugins/org.omnetpp.main/icons/intro-omnetpp.png" tofile="${buildDirectory}/plugins/org.omnetpp.main/icons/intro-image.png"/>
+   	</target>
 	
 	<target name="omnetpp" depends="clean, init-omnetpp, pde-build" >
 	    <!-- special handling of the 64 bit linux executable -->
