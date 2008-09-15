@@ -1,6 +1,7 @@
 {{copyright}}
 
-{{rootpackage:}}package {{rootpackage}};
+{{simulationspackage:}}package {{simulationspackage}};
+{{rootpackage:}}import {{rootpackage}}.Txc;
 
 //
 // Two instances (tic and toc) of Txc connected.

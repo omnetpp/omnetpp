@@ -52,6 +52,7 @@ public class ProjectTemplateStore {
             public void doConfigure() throws CoreException {
                 setVariable("namespace", "");
                 setVariable("rootpackage", "");
+                setVariable("simulationspackage", "");
                 createFileFromResource("Txc.ned", "templates/Txc.ned");
                 createFileFromResource("Txc.h", "templates/Txc.h");
                 createFileFromResource("Txc.cc", "templates/Txc.cc");
@@ -64,10 +65,13 @@ public class ProjectTemplateStore {
             public void doConfigure() throws CoreException {
                 setVariable("namespace", "");
                 setVariable("rootpackage", "");
+                setVariable("simulationspackage", "");
                 createFileFromResource("Source.ned", "templates/Source.ned");
                 createFileFromResource("Source.cc", "templates/Source.cc");
+                createFileFromResource("Source.h", "templates/Source.h");
                 createFileFromResource("Sink.ned", "templates/Sink.ned");
                 createFileFromResource("Sink.cc", "templates/Sink.cc");
+                createFileFromResource("Sink.h", "templates/Sink.h");
                 createFileFromResource("Network.ned", "templates/SourceSink.ned");
                 createFileFromResource("omnetpp.ini", "templates/SourceSink.ini");
             }
@@ -77,7 +81,10 @@ public class ProjectTemplateStore {
         cppTemplates.add(new ProjectTemplate("Empty project", SRC_AND_SIMULATIONS, null, ICON_TEMPLATE) {
             @Override
             public void doConfigure() throws CoreException {
+                createAndSetSourceFolders(new String[]{"src"});
                 createAndSetNedSourceFolders(new String[] {"src", "simulations"});
+                createFileFromResource("Makefile", "templates/Makefile");
+                createFileFromResource("Makefile.vc", "templates/Makefile.vc");
             }
         });
         cppTemplates.add(new ProjectTemplate("Tictoc example", SRC_AND_SIMULATIONS, null, ICON_TEMPLATE) {
@@ -85,8 +92,11 @@ public class ProjectTemplateStore {
             public void doConfigure() throws CoreException {
                 setVariable("namespace", "");
                 setVariable("rootpackage", "");
+                setVariable("simulationspackage", "");
                 createAndSetSourceFolders(new String[]{"src"});
                 createAndSetNedSourceFolders(new String[] {"src", "simulations"});
+                createFileFromResource("Makefile", "templates/Makefile");
+                createFileFromResource("Makefile.vc", "templates/Makefile.vc");
                 createFileFromResource("src/Txc.ned", "templates/Txc.ned");
                 createFileFromResource("src/Txc.h", "templates/Txc.h");
                 createFileFromResource("src/Txc.cc", "templates/Txc.cc");
@@ -94,25 +104,30 @@ public class ProjectTemplateStore {
                 createFileFromResource("simulations/omnetpp.ini", "templates/Tictoc.ini");
             }
         }) ;
-        cppTemplates.add(new ProjectTemplate("Source-sink example", SRC_AND_SIMULATIONS, null, ICON_TEMPLATE) {
+        cppTemplates.add(new ProjectTemplate("Source-sink example (with NED packages and C++ namespace)", SRC_AND_SIMULATIONS, null, ICON_TEMPLATE) {
             @Override
             public void doConfigure() throws CoreException {
-                setVariable("namespace", "{{projectname}}"); //XXX
-                setVariable("rootpackage", "org.example.{{projectname}}"); //XXX
+                setVariable("namespace", "{{projectname}}");
+                setVariable("rootpackage", "org.example.{{projectname}}");
+                setVariable("simulationspackage", "{{rootpackage}}.simulations");
                 createAndSetSourceFolders(new String[]{"src"});
                 createAndSetNedSourceFolders(new String[] {"src", "simulations"});
+                createFileFromResource("Makefile", "templates/Makefile");
+                createFileFromResource("Makefile.vc", "templates/Makefile.vc");
+                createFileFromResource("src/package.ned", "templates/package.ned");
                 createFileFromResource("src/Source.ned", "templates/Source.ned");
-                createFileFromResource("src/Source.h", "templates/Source.h");
                 createFileFromResource("src/Source.cc", "templates/Source.cc");
+                createFileFromResource("src/Source.h", "templates/Source.h");
                 createFileFromResource("src/Sink.ned", "templates/Sink.ned");
-                createFileFromResource("src/Sink.h", "templates/Sink.h");
                 createFileFromResource("src/Sink.cc", "templates/Sink.cc");
+                createFileFromResource("src/Sink.h", "templates/Sink.h");
+                createFileFromResource("simulations/package.ned", "templates/simulationsPackage.ned");
                 createFileFromResource("simulations/Network.ned", "templates/SourceSink.ned");
                 createFileFromResource("simulations/omnetpp.ini", "templates/SourceSink.ini");
             }
         }) ;
 
-        final String SRC_AND_EXAMPLES = "Project with \"src\" and \"examples\" folders";
+        //final String SRC_AND_EXAMPLES = "Project with \"src\" and \"examples\" folders";
         //TODO like the above!
     }
     
