@@ -29,7 +29,7 @@ void Source::handleMessage(cMessage *msg)
     cMessage *job = new cMessage("job");
     send(job, "out");
 
-    scheduleAt(simTime()+par("sendIaTime").doubleValue(), timerMessage);
+    scheduleAt(simTime()+par("sendInterval").doubleValue(), timerMessage);
 }
 
 {{namespace:}}}; // namespace
