@@ -5,7 +5,7 @@
 //
 // Sample network, consisting of a source and a sink.
 //
-network {{ProjectName}}
+network SourceSink
 {
     submodules:
         source: Source;

@@ -15,6 +15,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.swt.graphics.Image;
 import org.omnetpp.cdt.Activator;
+import org.omnetpp.cdt.CDTUtils;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.StringUtils;
@@ -70,13 +71,6 @@ public abstract class ProjectTemplate implements IProjectTemplate {
      */
     public IProgressMonitor getProgressMonitor() {
         return monitor;
-    }
-
-    /**
-     * Valid only during configuring a project.
-     */
-    protected boolean isCanceled() {
-        return monitor == null ? false : monitor.isCanceled();
     }
 
     public void configure(IProject project, IProgressMonitor monitor) throws CoreException {
@@ -186,5 +180,17 @@ public abstract class ProjectTemplate implements IProjectTemplate {
         for (int i=0; i<projectRelativePaths.length; i++)
             folders[i] = getProject().getFolder(new Path(projectRelativePaths[i]));
         ProjectUtils.saveNedFoldersFile(getProject(), folders);
+    }
+
+    /**
+     * Sets C++ source folders to the given list.
+     */
+    protected void createAndSetSourceFolders(String[] projectRelativePaths) throws CoreException {
+        for (String path : projectRelativePaths)
+            createFolder(path);
+        IContainer[] folders = new IContainer[projectRelativePaths.length];
+        for (int i=0; i<projectRelativePaths.length; i++)
+            folders[i] = getProject().getFolder(new Path(projectRelativePaths[i]));
+        CDTUtils.setSourceFolders(project, folders);
     }
 }

@@ -85,6 +85,7 @@ public class ProjectTemplateStore {
             public void doConfigure() throws CoreException {
                 setVariable("namespace", "");
                 setVariable("rootpackage", "");
+                createAndSetSourceFolders(new String[]{"src"});
                 createAndSetNedSourceFolders(new String[] {"src", "simulations"});
                 createFileFromResource("src/Txc.ned", "templates/Txc.ned");
                 createFileFromResource("src/Txc.h", "templates/Txc.h");
@@ -97,7 +98,8 @@ public class ProjectTemplateStore {
             @Override
             public void doConfigure() throws CoreException {
                 setVariable("namespace", "{{projectname}}"); //XXX
-                setVariable("rootpackage", "org.foo.{{projectname}}"); //XXX
+                setVariable("rootpackage", "org.example.{{projectname}}"); //XXX
+                createAndSetSourceFolders(new String[]{"src"});
                 createAndSetNedSourceFolders(new String[] {"src", "simulations"});
                 createFileFromResource("src/Source.ned", "templates/Source.ned");
                 createFileFromResource("src/Source.h", "templates/Source.h");

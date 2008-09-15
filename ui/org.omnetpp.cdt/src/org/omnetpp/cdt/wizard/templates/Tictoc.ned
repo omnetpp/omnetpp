@@ -5,7 +5,7 @@
 //
 // Two instances (tic and toc) of Txc connected.
 //
-network {{ProjectName}}
+network Tictoc
 {
     submodules:
         tic: Txc;
