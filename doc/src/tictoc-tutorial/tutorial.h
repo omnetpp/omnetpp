@@ -424,7 +424,7 @@ We have left out the counter, to keep the source code small.
 
 The result of running the simulation can be seen below.
 
-<img src="step5.gif">
+<img src="step6.png">
 
 Sources: @ref tictoc6.ned, @ref txc6.cc, @ref omnetpp.ini
 
@@ -931,11 +931,11 @@ The following diagram shows the histogram of <tt>hopCount</tt>'s distribution.
 @section logs Sequence charts end event logs
 
 The OMNeT++ simulation kernel can record the message exchanges during the
-simulation into an <i>event log file</i>. This log file can be analyzed later 
+simulation into an <i>event log file</i>. This log file can be analyzed later
 with the Sequence Chart tool.
 
-The following figure has been created with the Sequence Chart tool, and shows 
-how the message is routed between the different nodes in the network. 
+The following figure has been created with the Sequence Chart tool, and shows
+how the message is routed between the different nodes in the network.
 In this instance the chart is very simple, but when you have a complex model,
 sequence charts can be very valuable in debugging, exploring or documenting
 the model's behaviour.
