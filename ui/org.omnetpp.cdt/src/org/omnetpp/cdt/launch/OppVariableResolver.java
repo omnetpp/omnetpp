@@ -108,9 +108,6 @@ public class OppVariableResolver implements IDynamicVariableResolver {
                     abort("internal error: ${" + varName +"}: unexpected macro name by processing class", null);
                 }
 			}
-			// add a final path separator so we can both easily prepend or append this variable
-            if (varName.equals(OPP_LD_LIBRARY_PATH))
-            	result += System.getProperty("path.separator");
 			return result;
 		} 
 		catch (CoreException e) {

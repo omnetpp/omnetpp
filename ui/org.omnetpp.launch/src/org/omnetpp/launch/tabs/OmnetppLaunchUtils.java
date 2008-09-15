@@ -279,12 +279,12 @@ public class OmnetppLaunchUtils {
         String path = envir.get("PATH");
         // if the path was not set by hand, generate automatically
         if (StringUtils.isBlank(path))
-        	envir.put("PATH", "${opp_bin_dir}${opp_ld_library_path_loc:"+wdirStr+"}${env_var:PATH}");
+        	envir.put("PATH", "${opp_bin_dir}${system_property:path.separator}${opp_ld_library_path_loc:"+wdirStr+"}${system_property:path.separator}${env_var:PATH}");
 
         String ldLibPath = envir.get("LD_LIBRARY_PATH");
         // if the path was not set by hand, generate automatically
         if (StringUtils.isBlank(ldLibPath))
-        	envir.put("LD_LIBRARY_PATH", "${opp_lib_dir}${opp_ld_library_path_loc:"+wdirStr+"}${env_var:LD_LIBRARY_PATH}");
+        	envir.put("LD_LIBRARY_PATH", "${opp_lib_dir}${system_property:path.separator}${opp_ld_library_path_loc:"+wdirStr+"}${system_property:path.separator}${env_var:LD_LIBRARY_PATH}");
         
         newCfg.setAttribute("org.eclipse.debug.core.environmentVariables", envir);
         // do we need this ??? : configuration.setAttribute("org.eclipse.debug.core.appendEnvironmentVariables", true);

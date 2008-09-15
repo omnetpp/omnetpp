@@ -4,6 +4,8 @@
    <extension
          point="org.eclipse.debug.core.launchConfigurationTypes">
       <launchConfigurationType
+            delegateDescription="Launch an OMNeT++ simulation or simulation batch"
+            delegateName="OMNeT++ Simulation Launches"
             id="org.omnetpp.launch.simulationLaunchConfigurationType"
             name="OMNeT++ Simulation"
             public="true">
@@ -40,11 +42,12 @@
 <extension
 point="org.eclipse.debug.ui.launchShortcuts">
 <shortcut
-class="org.omnetpp.launch.SimulationLaunchShortcut"
-icon="icons/full/ctool16/omnetsim.gif"
-id="org.omnetpp.launch.shortcut"
-label="OMNeT++ Simulation..."
-modes="run, debug">
+      class="org.omnetpp.launch.SimulationLaunchShortcut"
+      description="Starts an OMNeT++ Simulation"
+      icon="icons/full/ctool16/omnetsim.gif"
+      id="org.omnetpp.launch.shortcut"
+      label="OMNeT++ Simulation..."
+      modes="run, debug">
 <contextualLaunch>
   <enablement>
     <with variable="selection">
@@ -64,6 +67,17 @@ modes="run, debug">
     </with>
   </enablement>
 	 </contextualLaunch>
+<description
+      description="Runs an OMNeT++ Simulation"
+      mode="run">
+</description>
+<description
+      description="Debugs an OMNeT++ Simulation"
+      mode="debug">
+</description>
+<configurationType
+      id="org.omnetpp.launch.simulationLaunchConfigurationType">
+</configurationType>
 </shortcut>   
 
 
