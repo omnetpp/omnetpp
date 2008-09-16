@@ -292,7 +292,7 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
 
 		// filter them by text
 		String filterString = filterText.getText().trim();
-		if (!filterString.isEmpty()) {
+		if (!StringUtils.isEmpty(filterString)) {
 	        List<ParamResolution> tmp = new ArrayList<ParamResolution>();
 	        for (ParamResolution res : params)
 	            if (StringUtils.containsIgnoreCase(getKeyFor(res), filterString))
