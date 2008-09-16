@@ -13,6 +13,13 @@
 #
 #=====================================================================
 
+# Win9x, ME not supported
+!if "$(OS)"!="Windows_NT"
+!error This makefile only works on NT kernel (NT4.0, Win2K, XP, Vista)
+!endif
+
+MOPTS=/nologo
+MAKEFILE=-f Makefile.vc
 
 !if "$(MODE)"==""
 all: allmodes
@@ -48,17 +55,6 @@ include configuser.vc
 !endif
 !if "$(OMNETPP_LIB_DIR)"==""
 !error OMNETPP_LIB_DIR must be correctly set
-!endif
-
-#
-# Options
-#
-MOPTS=/nologo
-MAKEFILE=/F Makefile.vc
-
-# Win9x, ME not supported (shell is crippled)
-!if "$(OS)"!="Windows_NT"
-!error This makefile only works on NT kernel (NT4.0, Win2K, XP, Vista)
 !endif
 
 #=====================================================================
