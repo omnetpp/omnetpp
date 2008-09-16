@@ -494,7 +494,7 @@ Here's toc's code:
 Thanks to the bubble() call in the code, toc'll display a callout whenever
 it drops the message.
 
-<img src="step7.gif">
+<img src="step8.png">
 
 So, tic will start a timer whenever it sends the message. When
 the timer expires, we'll assume the message was lost and send another
@@ -584,7 +584,7 @@ Here we created 6 modules as a module vector, and connected them.
 
 The resulting topology looks like this:
 
-<img src="step9.gif">
+<img src="step10.png">
 
 In this version, tic[0] will generate the message to be sent around.
 This is done in initialize(), with the help of the getIndex() function which
@@ -739,7 +739,7 @@ address, and so forth. Read the full code: @ref txc13.cc.
 
 When you run the model, it'll look like this:
 
-<img src="step10a.gif">
+<img src="step13a.png">
 
 You can double-click on the messages to open an inspector for them.
 (You'll either have to temporarily stop the simulation for that,
@@ -747,7 +747,7 @@ or to be very fast in handling the mouse). The inspector window
 displays lots of useful information; the message fields can be seen
 on the Contents page.
 
-<img src="step10b.gif">
+<img src="step13b.png">
 
 Sources: @ref tictoc13.ned, @ref tictoc13.msg, @ref txc13.cc, @ref omnetpp.ini
 
