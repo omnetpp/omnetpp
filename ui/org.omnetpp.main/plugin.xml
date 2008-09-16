@@ -7,12 +7,12 @@
 	 point="org.eclipse.core.runtime.products">
       <product
             application="org.eclipse.ui.ide.workbench"
-            name="OMNeT++ IDE - Academic Edition">
-          <property name="appName" value="OMNeT++ IDE - Academic Edition"/>
+            name="OMNeT++ IDE">
+          <property name="appName" value="OMNeT++ IDE"/>
           <property name="preferenceCustomization" value="plugin_customization.ini"/>
          <property
           		name="introTitle"
-          		value="INtro title"/>
+          		value="Intro title"/>
           <property
           		name="introBrandingImage"
           		value="product:icons/intro-image.png"/>
