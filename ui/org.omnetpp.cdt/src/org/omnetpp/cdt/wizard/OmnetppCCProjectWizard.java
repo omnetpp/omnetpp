@@ -96,11 +96,10 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
 
         @Override
         public IWizardPage getNextPage() {
-            // this method can be removed altogether if templatePage is going to stay 
-            if (templatePage != null)
-                return super.getNextPage();
-            else
-                return supportCpp() ? nestedWizard.getStartingPage() : null;
+            // Note: when template page needs to be skipped, use this instead: 
+            // return supportCpp() ? nestedWizard.getStartingPage() : null;
+            templatePage.updateTemplateList();  // obey supportsCpp() option
+            return templatePage;
         }
     }
 
@@ -139,23 +138,6 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
             });
             treeViewer.setContentProvider(new GenericTreeContentProvider());
 
-            // categorize and add templates into the tree
-            ProjectTemplateStore templateStore = Activator.getProjectTemplateStore();
-            List<IProjectTemplate> templates = supportCpp() ? templateStore.getCppTemplates() : templateStore.getNoncppTemplates();
-            GenericTreeNode root = new GenericTreeNode("root");
-            Set<String> categories = new LinkedHashSet<String>(); 
-            for (IProjectTemplate template : templates)
-                categories.add(template.getCategory());
-            for (String category : categories) {
-                GenericTreeNode categoryNode = new GenericTreeNode(category);
-                root.addChild(categoryNode);
-                for (IProjectTemplate template : templates)
-                    if (category.equals(template.getCategory()))
-                        categoryNode.addChild(new GenericTreeNode(template));
-            }                
-            treeViewer.setInput(root);
-            treeViewer.expandAll();
-
             // show the descriptions in a tooltip
             new HoverSupport().adapt(treeViewer.getTree(), new IHoverTextProvider() {
                 public String getHoverTextFor(Control control, int x, int y, SizeConstraint outSizeConstraint) {
@@ -175,6 +157,26 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
             setPageComplete(true);
         }
 
+        public void updateTemplateList() {
+            // categorize and add templates into the tree
+            // NOTE: gets called from first page's getNextPage() method             
+            ProjectTemplateStore templateStore = Activator.getProjectTemplateStore();
+            List<IProjectTemplate> templates = supportCpp() ? templateStore.getCppTemplates() : templateStore.getNoncppTemplates();
+            GenericTreeNode root = new GenericTreeNode("root");
+            Set<String> categories = new LinkedHashSet<String>(); 
+            for (IProjectTemplate template : templates)
+                categories.add(template.getCategory());
+            for (String category : categories) {
+                GenericTreeNode categoryNode = new GenericTreeNode(category);
+                root.addChild(categoryNode);
+                for (IProjectTemplate template : templates)
+                    if (category.equals(template.getCategory()))
+                        categoryNode.addChild(new GenericTreeNode(template));
+            }                
+            treeViewer.setInput(root);
+            treeViewer.expandAll();
+        }
+
         @Override
         public IWizardPage getNextPage() {
             return supportCpp() ? nestedWizard.getStartingPage() : null;
@@ -182,7 +184,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
         
         public IProjectTemplate getSelectedTemplate() {
             Object element = ((IStructuredSelection)treeViewer.getSelection()).getFirstElement();
-            element = ((GenericTreeNode)element).getPayload();
+            element = element == null ? null : ((GenericTreeNode)element).getPayload();
             return (element instanceof IProjectTemplate) ? (IProjectTemplate)element : null;
         }
     }
