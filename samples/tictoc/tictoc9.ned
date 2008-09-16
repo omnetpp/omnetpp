@@ -8,7 +8,7 @@
 //
 
 
-simple Tic8
+simple Tic9
 {
     parameters:
         @display("i=block/routing");
@@ -17,7 +17,7 @@ simple Tic8
         output out;
 }
 
-simple Toc8
+simple Toc9
 {
     parameters:
         @display("i=block/process");
@@ -32,11 +32,11 @@ simple Toc8
 network Tictoc9
 {
     submodules:
-        tic: Tic8 {
+        tic: Tic9 {
             parameters:
                 @display("i=,cyan");
         }
-        toc: Toc8 {
+        toc: Toc9 {
             parameters:
                 @display("i=,gold");
         }
