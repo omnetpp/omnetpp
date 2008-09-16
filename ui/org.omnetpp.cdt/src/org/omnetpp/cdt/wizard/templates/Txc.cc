@@ -8,8 +8,7 @@ Define_Module(Txc);
 
 void Txc::initialize()
 {
-    // the module named "tic" generates the initial message
-    if (strcmp(getName(), "tic") == 0)
+    if (par("sendInitialMessage").boolValue())
     {
         cMessage *msg = new cMessage("tictocMsg");
         send(msg, "out");
