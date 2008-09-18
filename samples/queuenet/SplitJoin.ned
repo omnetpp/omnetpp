@@ -21,28 +21,28 @@ network SplitJoin
 {
     submodules:
         source: Source {
-            @display("p=70,194");
+            @display("p=54,137");
         }
         split: Split {
-            @display("p=185,194");
+            @display("p=133,138");
         }
         delay: Delay {
-            @display("p=293,103");
+            @display("p=234,47");
         }
         delay1: Delay {
-            @display("p=293,194");
+            @display("p=234,138");
         }
         delay2: Delay {
-            @display("p=293,298");
+            @display("p=234,242");
         }
         join: Join {
-            @display("p=421,194");
+            @display("p=342,137");
         }
         sink: Sink {
-            @display("p=497,194");
+            @display("p=418,137");
         }
         jobList: JobList {
-            @display("p=185,43");
+            @display("p=382,230");
         }
     connections:
         source.out --> split.in;
