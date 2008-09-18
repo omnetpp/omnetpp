@@ -18,14 +18,14 @@
 
 #include <algorithm>
 #include "Job.h"
-#include "JobTable.h"
+#include "JobList.h"
 
 namespace queueing {
 
-Job::Job(const char *name, int kind, JobTable *table) : Job_Base(name, kind) {
+Job::Job(const char *name, int kind, JobList *table) : Job_Base(name, kind) {
     parent = NULL;
-    if (table==NULL && JobTable::getDefaultInstance()!=NULL)
-        table = JobTable::getDefaultInstance();
+    if (table==NULL && JobList::getDefaultInstance()!=NULL)
+        table = JobList::getDefaultInstance();
     this->table = table;
     if (table!=NULL)
         table->registerJob(this);

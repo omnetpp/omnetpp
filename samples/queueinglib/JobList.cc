@@ -17,50 +17,50 @@
 //
 
 #include "Job.h"
-#include "JobTable.h"
+#include "JobList.h"
 
 namespace queueing {
 
-Define_Module(JobTable);
+Define_Module(JobList);
 
-JobTable *JobTable::defaultInstance = NULL;
+JobList *JobList::defaultInstance = NULL;
 
 
-JobTable::JobTable() {
+JobList::JobList() {
     if (defaultInstance == NULL)
         defaultInstance = this;
 }
 
-JobTable::~JobTable() {
+JobList::~JobTable() {
     if (defaultInstance == this)
         defaultInstance = NULL;
     for (std::set<Job*>::iterator it=jobs.begin(); it!=jobs.end(); ++it)
         (*it)->table = NULL;
 }
 
-void JobTable::initialize() {
+void JobList::initialize() {
     WATCH_PTRSET(jobs);
 }
 
-void JobTable::handleMessage(cMessage *msg) {
+void JobList::handleMessage(cMessage *msg) {
     throw cRuntimeError("this modules does not process messages");
 }
 
-void JobTable::registerJob(Job *job) {
+void JobList::registerJob(Job *job) {
     jobs.insert(job);
 }
 
-void JobTable::deregisterJob(Job *job) {
+void JobList::deregisterJob(Job *job) {
     std::set<Job*>::iterator it = jobs.find(job);
     ASSERT(it != jobs.end());
     jobs.erase(it);
 }
 
-JobTable *JobTable::getDefaultInstance() {
+JobList *JobList::getDefaultInstance() {
     return defaultInstance;
 }
 
-const std::set<Job*> JobTable::getJobs() {
+const std::set<Job*> JobList::getJobs() {
     return jobs;
 }
 

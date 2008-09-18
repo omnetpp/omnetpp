@@ -27,14 +27,14 @@ namespace queueing {
 /**
  * Makes it possible to iterate over all Job messages in the system.
  */
-class JobTable : public cSimpleModule
+class JobList : public cSimpleModule
 {
     friend class Job;
     protected:
         std::set<Job*> jobs;
-        static JobTable *defaultInstance;
+        static JobList *defaultInstance;
     public:
-        JobTable();
+        JobList();
         ~JobTable();
     protected:
         virtual void initialize();
@@ -42,7 +42,16 @@ class JobTable : public cSimpleModule
         void registerJob(Job *job);
         void deregisterJob(Job *job);
     public:
-        static JobTable *getDefaultInstance(); // may return NULL
+        /**
+         * Returns pointer to the default instance of JobList, which is
+         * the first JobList module in the network. Returns NULL if
+         * there's no JobList module.
+         */
+        static JobList *getDefaultInstance();
+
+        /**
+         * Returns the pointers of the jobs currently existing in the model.
+         */
         const std::set<Job*> getJobs();
 };
 
