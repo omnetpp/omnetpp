@@ -23,8 +23,11 @@ network CallCenter
     parameters:
         @display("i=device/cellphone");
     submodules:
-        hangingUp: Sink {
-            @display("p=131.0,330.0");
+        incomingCall: Source {
+            @display("p=34.0,236.0");
+        }
+        classifier: Classifier {
+            @display("p=130.0,236.0");
         }
         switchingDelay: Delay {
             @display("p=282.0,323.0");
@@ -34,20 +37,8 @@ network CallCenter
             gates:
                 out[2];
         }
-        callServed: Sink {
-            @display("p=559.0,134.0");
-        }
-        operator1: Server {
-            @display("p=366.0,26.0");
-        }
         billing: PQueue {
             @display("p=225.0,27.0");
-        }
-        classifier: Classifier {
-            @display("p=130.0,236.0");
-        }
-        incomingCall: Source {
-            @display("p=34.0,236.0");
         }
         marketing: PQueue {
             @display("p=225.0,104.0");
@@ -58,6 +49,9 @@ network CallCenter
         internal: PQueue {
             @display("p=225.0,236.0");
         }
+        operator1: Server {
+            @display("p=366.0,26.0");
+        }
         operator2: Server {
             @display("p=366.0,104.0");
         }
@@ -66,6 +60,12 @@ network CallCenter
         }
         operator4: Server {
             @display("p=366.0,236.0");
+        }
+        callServed: Sink {
+            @display("p=559.0,134.0");
+        }
+        hangingUp: Sink {
+            @display("p=131.0,330.0");
         }
     connections:
         incomingCall.out --> classifier.in++;
