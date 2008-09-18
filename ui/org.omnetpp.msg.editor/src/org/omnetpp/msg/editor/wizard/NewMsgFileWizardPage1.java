@@ -31,14 +31,13 @@ public class NewMsgFileWizardPage1 extends WizardNewFileCreationPage {
 
     private static final String[] MSGFILE_TEMPLATES = {
         "//\n" +
-        "// TODO comment\n" +
+        "// TODO generated message class\n" +
         "//\n\n",
         
         "//\n" +
-        "// TODO comment\n" +
+        "// TODO generated message class\n" +
         "//\n" +
         "message #NAME# {\n" +
-        "    @omitGetVerb(true);\n" +
         "    int someField;\n" +
         "    string anotherField;\n" +
         "    double arrayField1[];\n" +
@@ -51,10 +50,9 @@ public class NewMsgFileWizardPage1 extends WizardNewFileCreationPage {
         "message SomeMessage;\n" +
         "\n" + 
         "//\n" +
-        "// TODO comment\n" +
+        "// TODO generated message class\n" +
         "//\n" +
         "message #NAME# extends SomeMessage {\n" +
-        "    @omitGetVerb(true);\n" +
         "    int someField;\n" +
         "}\n",
         
@@ -70,19 +68,17 @@ public class NewMsgFileWizardPage1 extends WizardNewFileCreationPage {
         "class noncobject OtherType;\n" + 
         "\n" + 
         "//\n" + 
-        "// TODO comment\n" + 
+        "// TODO generated message class\n" + 
         "//\n" + 
         "message #NAME# {\n" + 
-        "    @omitGetVerb(true);\n" + 
         "    SomeType field1;\n" + 
         "    OtherType field2;\n" + 
         "}\n",
 
         "//\n" +
-        "// TODO comment\n" +
+        "// TODO generated message class\n" +
         "//\n" +
         "message #NAME# {\n" +
-        "    @omitGetVerb(true);\n" +
         "    @customize(true);  // see the generated C++ header for more info\n" +
         "    int someField;\n" +
         "    abstract int anotherField;\n" +
