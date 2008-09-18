@@ -19,8 +19,8 @@
 package omnetpp.queueing;
 
 //
-// Sends out incoming messages on ALL output gate. The original
-// message is sent out on out[0]. The other out gates will get a copy
+// Sends out incoming messages on ALL output gates. The original
+// message is sent out on out[0]. The other output gates will get a copy
 // of the original message.
 //
 simple Fork
@@ -28,7 +28,7 @@ simple Fork
     parameters:
         @group(Queueing);
         @display("i=block/fork");
-        bool changeMsgNames = default(true);  // whether to change the message names when they go through te module
+        bool changeMsgNames = default(true);  // whether to change the message names when they go through the module
     gates:
         input in[];
         output out[];
