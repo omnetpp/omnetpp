@@ -50,7 +50,7 @@ class Job: public Job_Base
     protected:
         Job *parent;
         std::vector<Job*> children;
-        JobList *table;
+        JobList *jobList;
         virtual void setParent(Job *parent); // only for addChild()
         virtual void parentDeleted();
         virtual void childDeleted(Job *child);

@@ -31,11 +31,11 @@ JobList::JobList() {
         defaultInstance = this;
 }
 
-JobList::~JobTable() {
+JobList::~JobList() {
     if (defaultInstance == this)
         defaultInstance = NULL;
     for (std::set<Job*>::iterator it=jobs.begin(); it!=jobs.end(); ++it)
-        (*it)->table = NULL;
+        (*it)->jobList = NULL;
 }
 
 void JobList::initialize() {

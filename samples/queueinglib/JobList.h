@@ -35,7 +35,7 @@ class JobList : public cSimpleModule
         static JobList *defaultInstance;
     public:
         JobList();
-        ~JobTable();
+        ~JobList();
     protected:
         virtual void initialize();
         virtual void handleMessage(cMessage *msg);

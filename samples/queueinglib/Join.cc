@@ -22,6 +22,18 @@ namespace queueing {
 
 Define_Module(Join);
 
+Join::Join()
+{
+}
+
+Join::~Join()
+{
+    while (!jobsHeld.empty()) {
+    	delete jobsHeld.front();
+    	jobsHeld.pop_front();
+    }
+}
+
 void Join::initialize()
 {
     WATCH_PTRLIST(jobsHeld);

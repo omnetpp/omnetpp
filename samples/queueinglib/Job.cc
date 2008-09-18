@@ -22,65 +22,76 @@
 
 namespace queueing {
 
-Job::Job(const char *name, int kind, JobList *table) : Job_Base(name, kind) {
+Job::Job(const char *name, int kind, JobList *jobList) : Job_Base(name, kind)
+{
     parent = NULL;
-    if (table==NULL && JobList::getDefaultInstance()!=NULL)
-        table = JobList::getDefaultInstance();
-    this->table = table;
-    if (table!=NULL)
-        table->registerJob(this);
+    if (jobList==NULL && JobList::getDefaultInstance()!=NULL)
+        jobList = JobList::getDefaultInstance();
+    this->jobList = jobList;
+    if (jobList!=NULL)
+        jobList->registerJob(this);
 }
 
-Job::Job(const Job& job) {
+Job::Job(const Job& job)
+{
     setName(job.getName());
     parent = NULL;
-    table = job.table;
-    if (table!=NULL)
-        table->registerJob(this);
+    jobList = job.jobList;
+    if (jobList!=NULL)
+        jobList->registerJob(this);
 }
 
-Job::~Job() {
+Job::~Job()
+{
     if (parent)
         parent->childDeleted(this);
     for (int i=0; i<children.size(); i++)
         children[i]->parentDeleted();
-    if (table!=NULL)
-        table->deregisterJob(this);
+    if (jobList!=NULL)
+        jobList->deregisterJob(this);
 }
 
-Job *Job::getParent() {
+Job *Job::getParent()
+{
     return parent;
 }
 
-void Job::setParent(Job *parent) {
+void Job::setParent(Job *parent)
+{
     this->parent = parent;
 }
 
-int Job::getNumChildren() const {
+int Job::getNumChildren() const
+{
     return children.size();
 }
 
-Job *Job::getChild(int k) {
+Job *Job::getChild(int k)
+{
     if (k<0 || k>=children.size())
         throw cRuntimeError(this, "child index %d out of bounds", k);
     return children[k];
 }
 
-void Job::makeChildOf(Job *parent) {
+void Job::makeChildOf(Job *parent)
+{
     parent->addChild(this);
 }
 
-void Job::addChild(Job *child) {
+void Job::addChild(Job *child)
+{
     child->setParent(this);
     ASSERT(std::find(children.begin(), children.end(), child)==children.end());
     children.push_back(child);
 }
 
-void Job::parentDeleted() {
+void Job::parentDeleted()
+{
     parent = NULL;
 }
 
-void Job::childDeleted(Job *child) {
+void Job::childDeleted(Job *child)
+{
     std::vector<Job*>::iterator it = std::find(children.begin(), children.end(), child);
     ASSERT(it!=children.end());
     children.erase(it);

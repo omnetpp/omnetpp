@@ -21,7 +21,7 @@ package omnetpp.queueing;
 //
 // Presents a view of all jobs currently existing in the system.
 //
-simple JobTable
+simple JobList
 {
     @display("i=block/table2");
 }

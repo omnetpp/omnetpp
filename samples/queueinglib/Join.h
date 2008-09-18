@@ -32,6 +32,9 @@ class Join : public cSimpleModule
 {
     protected:
         std::list<Job*> jobsHeld;
+    public:
+    	Join();
+    	~Join();
     protected:
         virtual void initialize();
         virtual void handleMessage(cMessage *msg);
