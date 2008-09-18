@@ -8,7 +8,7 @@
 //
 
 import omnetpp.queueing.Delay;
-import omnetpp.queueing.JobTable;
+import omnetpp.queueing.JobList;
 import omnetpp.queueing.Join;
 import omnetpp.queueing.Sink;
 import omnetpp.queueing.Source;
@@ -41,7 +41,7 @@ network SplitJoin
         sink: Sink {
             @display("p=497,194");
         }
-        jobTable: JobTable {
+        jobList: JobList {
             @display("p=185,43");
         }
     connections:

@@ -11,11 +11,15 @@
 <stringAttribute key="org.eclipse.cdt.debug.mi.core.protocol" value="mi"/>
 <booleanAttribute key="org.eclipse.cdt.debug.mi.core.verboseMode" value="false"/>
 <stringAttribute key="org.eclipse.cdt.launch.DEBUGGER_ID" value="org.eclipse.cdt.debug.mi.core.CDebuggerNew"/>
+<stringAttribute key="org.eclipse.cdt.launch.DEBUGGER_REGISTER_GROUPS" value=""/>
 <stringAttribute key="org.eclipse.cdt.launch.DEBUGGER_START_MODE" value="run"/>
 <booleanAttribute key="org.eclipse.cdt.launch.DEBUGGER_STOP_AT_MAIN" value="true"/>
 <stringAttribute key="org.eclipse.cdt.launch.DEBUGGER_STOP_AT_MAIN_SYMBOL" value="main"/>
 <booleanAttribute key="org.eclipse.cdt.launch.ENABLE_REGISTER_BOOKKEEPING" value="false"/>
 <booleanAttribute key="org.eclipse.cdt.launch.ENABLE_VARIABLE_BOOKKEEPING" value="false"/>
+<stringAttribute key="org.eclipse.cdt.launch.FORMAT" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&lt;contentList/&gt;"/>
+<stringAttribute key="org.eclipse.cdt.launch.GLOBAL_VARIABLES" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#13;&#10;&lt;globalVariableList/&gt;&#13;&#10;"/>
+<stringAttribute key="org.eclipse.cdt.launch.MEMORY_BLOCKS" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#13;&#10;&lt;memoryBlockExpressionList/&gt;&#13;&#10;"/>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
 <listEntry value="/queuenet/omnetpp.ini"/>
 </listAttribute>
@@ -24,6 +28,7 @@
 </listAttribute>
 <mapAttribute key="org.eclipse.debug.core.environmentVariables">
 <mapEntry key="PATH" value="${opp_bin_dir}${system_property:path.separator}${env_var:PATH}"/>
+<mapEntry key="LD_LIBRARY_PATH" value="${opp_lib_dir}${system_property:path.separator}${opp_ld_library_path_loc:/queuenet}${system_property:path.separator}${env_var:LD_LIBRARY_PATH}"/>
 </mapAttribute>
 <stringAttribute key="org.omnetpp.launch.ADDITIONAL_ARG" value=""/>
 <stringAttribute key="org.omnetpp.launch.CONFIG_NAME" value=""/>
