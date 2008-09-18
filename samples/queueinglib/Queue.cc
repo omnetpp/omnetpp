@@ -19,7 +19,7 @@
 #include <omnetpp.h>
 
 #include "Queue.h"
-#include "Job_m.h"
+#include "Job.h"
 
 namespace queueing {
 
