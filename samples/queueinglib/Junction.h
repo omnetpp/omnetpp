@@ -26,7 +26,7 @@ namespace queueing {
 /**
  * All messages received on ANY INPUT gate will be sent out on the OUTPUT gate
  */
-class Join : public cSimpleModule
+class Junction : public cSimpleModule
 {
     protected:
         virtual void handleMessage(cMessage *msg);

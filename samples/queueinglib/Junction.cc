@@ -16,13 +16,13 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 
-#include "Join.h"
+#include "Junction.h"
 
 namespace queueing {
 
-Define_Module(Join);
+Define_Module(Junction);
 
-void Join::handleMessage(cMessage *msg)
+void Junction::handleMessage(cMessage *msg)
 {
     send(msg, "out");
 }

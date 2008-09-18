@@ -22,7 +22,7 @@ package omnetpp.queueing;
 // Joins several incoming connections. Anything that comes in
 // will be sent out immediately on the out gate
 //
-simple Join
+simple Junction
 {
     parameters:
         @group(Queueing);
