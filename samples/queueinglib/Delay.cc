@@ -33,7 +33,7 @@ void Delay::initialize()
 
 void Delay::handleMessage(cMessage *msg)
 {
-    Job *job = check_and_cast<Job *>(job);
+    Job *job = check_and_cast<Job *>(msg);
 
     if (!job->isSelfMessage())
     {
