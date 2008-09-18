@@ -43,7 +43,7 @@ void JobList::initialize() {
 }
 
 void JobList::handleMessage(cMessage *msg) {
-    throw cRuntimeError("this modules does not process messages");
+    throw cRuntimeError("this module does not process messages");
 }
 
 void JobList::registerJob(Job *job) {
