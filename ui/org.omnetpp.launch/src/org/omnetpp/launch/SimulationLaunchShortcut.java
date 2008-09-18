@@ -484,8 +484,7 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
     protected IniSection createInifile(IFile iniFile, INEDTypeInfo network) throws CoreException {
         String content = 
             "[General]\n" +
-            "network = " + network.getName() + "\n" +
-            "**.apply-default = true\n";
+            "network = " + network.getName() + "\n";
         iniFile.create(new ByteArrayInputStream(content.getBytes()), false, new NullProgressMonitor());
 
         IniSection section = new IniSection(iniFile, GENERAL);
