@@ -1,4 +1,4 @@
-import omnetpp.queueing.Resource;
+import omnetpp.queueing.ResourcePool;
 import omnetpp.queueing.ResourceBasedQueue;
 import omnetpp.queueing.Sink;
 import omnetpp.queueing.Source;
@@ -14,7 +14,7 @@ network ResourceAllocation
         source1: Source {
             @display("p=42,75");
         }
-        resource: Resource {
+        resource: ResourcePool {
             @display("p=194,124");
         }
         queue1: ResourceBasedQueue {
