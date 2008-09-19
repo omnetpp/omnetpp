@@ -19,23 +19,22 @@
 package omnetpp.queueing;
 
 //
-// Queue that allocates a resource for processing each job.
-// If the resource is not available, the queue is idle. 
+// Passive queue. Messages have to be requested via direct method call.
+// Its output must be connected to a Server.
 //
-simple ResourceBasedQueue
+// @author rhornig
+// @todo minDelay not implemented
+//
+simple PassiveQueue
 {
     parameters:
         @group(Queueing);
-        @display("i=block/queue;q=queue");
-        int capacity = default(-1);    // negative capacity means unlimited queue
-        bool fifo = default(true);     // whether the module works as a queue (fifo=true) or a stack (fifo=false)
-        volatile double serviceTime @unit(s);
-        
-        string resourceModuleName = default("");  // the name of the Resource block to provide the resources
-        int resourceAmount = default(1);		  // the amount of resource needed for servicing a job
-        int resourcePriority = default(0);		  // the priority used durning resource allocation (smaller priorities get resources easier)
-        
+        @display("i=block/passiveq;q=queue");
+        int capacity = default(-1);  // negative capacity means unlimited queue
+        bool fifo = default(true);   // whether the module works as a queue (fifo=true) or a stack (fifo=false)
+        string sendingAlgorithm @enum("priority","random","roundRobin","minDelay") = default("priority");
+                                     // how the queue tries to find a suitable server for an incoming job
     gates:
         input in[];
-        output out;
+        output out[];
 }

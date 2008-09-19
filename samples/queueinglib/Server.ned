@@ -19,8 +19,8 @@
 package omnetpp.queueing;
 
 //
-// Queue server. It serves multiple input queues (PQueue), using a preset
-// algorithm. Inputs must be connected to Passive Queues (PQueue)
+// Queue server. It serves multiple input queues (PassiveQueue), using a preset
+// algorithm. Inputs must be connected to Passive Queues (PassiveQueue)
 //
 simple Server
 {

@@ -24,11 +24,6 @@
 
 namespace queueing {
 
-/**
- * A resource representation. Can represent any amount from a single type of resource.
- * Cooperates with ResourceBasedQueues which allocate from this resource. This module do not
- * receive any messages. Resource is allocated/released by direct Method calls
- */
 class IResourcePool;
 
 // interface implemented by modules that (try to) allocate resources
@@ -50,7 +45,9 @@ class IResourcePool
 
 
 /**
- * Provides resource tokens for other
+ * A resource representation. Can represent any amount from a single type of resource.
+ * Cooperates with ResourceBasedQueues which allocate from this resource. This module do not
+ * receive any messages. Resource is allocated/released by direct Method calls
  */
 class Resource : public cSimpleModule, public IResourcePool
 {

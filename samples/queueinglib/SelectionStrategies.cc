@@ -18,7 +18,7 @@
 
 #include <omnetpp.h>
 #include "SelectionStrategies.h"
-#include "PQueue.h"
+#include "PassiveQueue.h"
 #include "Server.h"
 
 namespace queueing {
@@ -63,7 +63,7 @@ cGate *SelectionStrategy::selectableGate(int i)
 
 bool SelectionStrategy::isSelectable(cModule *module)
 {
-    PQueue *pqueue = dynamic_cast<PQueue *>(module);
+    PassiveQueue *pqueue = dynamic_cast<PassiveQueue *>(module);
     if (pqueue != NULL)
         return pqueue->length() > 0;
 
@@ -71,7 +71,7 @@ bool SelectionStrategy::isSelectable(cModule *module)
     if (server != NULL)
         return server->isIdle();
 
-    opp_error("Only PQueue and Server is supported by this Strategy");
+    opp_error("Only PassiveQueue and Server is supported by this Strategy");
     return true;
 }
 
@@ -152,7 +152,7 @@ int ShortestQueueSelectionStrategy::select()
     int sizeMin = INT_MAX;
     for (int i = 0; i<gateSize; ++i)
     {
-        PQueue *queue = check_and_cast<PQueue *>(selectableGate(i)->getOwnerModule());
+        PassiveQueue *queue = check_and_cast<PassiveQueue *>(selectableGate(i)->getOwnerModule());
         if (isSelectable(queue) && (queue->length()<sizeMin))
         {
             sizeMin = queue->length();
@@ -176,7 +176,7 @@ int LongestQueueSelectionStrategy::select()
     int sizeMax = -1;
     for (int i = 0; i<gateSize; ++i)
     {
-        PQueue *queue = check_and_cast<PQueue *>(selectableGate(i)->getOwnerModule());
+        PassiveQueue *queue = check_and_cast<PassiveQueue *>(selectableGate(i)->getOwnerModule());
         if (isSelectable(queue) && queue->length()>sizeMax)
         {
             sizeMax = queue->length();

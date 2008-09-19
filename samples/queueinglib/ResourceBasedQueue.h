@@ -27,7 +27,9 @@ namespace queueing {
 class Job;
 
 /**
- * Queue that reserves a resource for processing each job.
+ * Queue that reserves a resource for processing each job. Can request
+ * resources from a Resource block or any module that implements the IResourcePool
+ * interface.
  */
 class ResourceBasedQueue : public cSimpleModule, public IResourceAllocator
 {

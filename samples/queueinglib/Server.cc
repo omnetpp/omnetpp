@@ -19,7 +19,7 @@
 #include <omnetpp.h>
 
 #include "Server.h"
-#include "PQueue.h"
+#include "PassiveQueue.h"
 #include "Job.h"
 #include "SelectionStrategies.h"
 
@@ -74,7 +74,7 @@ void Server::handleMessage(cMessage *msg)
         {
             EV << "requesting job from queue " << k << endl;
             cGate *gate = selectionStrategy->selectableGate(k);
-            check_and_cast<PQueue *>(gate->getOwnerModule())->request(gate->getIndex());
+            check_and_cast<PassiveQueue *>(gate->getOwnerModule())->request(gate->getIndex());
         }
     }
     else

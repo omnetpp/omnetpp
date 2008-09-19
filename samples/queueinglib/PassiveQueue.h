@@ -16,52 +16,51 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 
-#ifndef __SERVER_H
-#define __SERVER_H
+#ifndef __PASSIVE_QUEUE_H
+#define __PASSIVE_QUEUE_H
 
 #include <omnetpp.h>
 
 namespace queueing {
 
-class PassiveQueue;
-class Job;
 class SelectionStrategy;
 
 /**
- * The queue server. It cooperates with several Queue's
- * which queue up the jobs, and send them to Server by request.
- *
- * @see PassiveQueue
+ * A passive queue, designed to co-operate with Server using method calls.
  */
-class Server : public cSimpleModule
+class PassiveQueue : public cSimpleModule
 {
     private:
+        cOutVector droppedStats;
+        cOutVector lengthStats;
+        cOutVector queueingTimeStats;
+        cWeightedStdDev scalarWeightedLengthStats;
+        cStdDev scalarLengthStats;
         cWeightedStdDev scalarUtilizationStats;
 
-        int numQueues;
+        bool fifo;
+        int capacity;
+        int droppedJobs;
+        cQueue queue;
         SelectionStrategy *selectionStrategy;
+        simtime_t prevEventTimeStamp;               // the timestamp of the last queuelength change
 
-        simtime_t prevEventTimeStamp;
-        Job *jobServiced;
-        cMessage *endServiceMsg;
-
-    public:
-        Server();
-        virtual ~Server();
+        void queueLengthChanged();
 
     protected:
         virtual void initialize();
-        virtual int numInitStages() const {return 2;}
         virtual void handleMessage(cMessage *msg);
         virtual void finish();
 
     public:
-        // The following method is called from PassiveQueue:
-        virtual bool isIdle();
+        PassiveQueue();
+        virtual ~PassiveQueue();
+        // The following methods are called from Server:
+        virtual int length();
+        virtual void request(int gateIndex);
 };
 
 }; //namespace
 
 #endif
-
 

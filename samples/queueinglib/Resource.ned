@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2006 Rudolf Hornig
+// Copyright (C) 2008 Rudolf Hornig
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -20,10 +20,9 @@ package omnetpp.queueing;
 
 //
 // A resource object representing a single type of resource.
-// Server blocks using this resource can be attached on the allocators gate array  
-//
-// TODO we should notify the servers if the amount of resource has been increased
-// @author rhornig
+// More tan one ResourceBasedQueue block can specify this bolck as a resource. 
+// In this case unstatisfied resource requests are queued (with priority) and the 
+// requestor will be notified once the resource gets available.
 //
 simple Resource
 {
