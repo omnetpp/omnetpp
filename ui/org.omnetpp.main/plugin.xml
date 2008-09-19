@@ -191,32 +191,38 @@
    <extension
          point="org.eclipse.core.variables.dynamicVariables">
       <variable
-            description="Expands to the OMNeT++ root directory"
+            description="Expands to the OMNeT++ root directory location"
             name="opp_root"
             resolver="org.omnetpp.ide.variables.OmnetppDirResolver"
             supportsArgument="false">
       </variable>
       <variable
-            description="Expands to the OMNeT++ bin directory"
+            description="Expands to the OMNeT++ bin directory location"
             name="opp_bin_dir"
             resolver="org.omnetpp.ide.variables.OmnetppDirResolver"
             supportsArgument="false">
       </variable>
       <variable
-            description="Expands to the OMNeT++ include directory"
+            description="Expands to the OMNeT++ include directory location"
             name="opp_incl_dir"
             resolver="org.omnetpp.ide.variables.OmnetppDirResolver"
             supportsArgument="false">
       </variable>
       <variable
-            description="Expands to the OMNeT++ lib directory"
+            description="Expands to the OMNeT++ lib directory location"
             name="opp_lib_dir"
             resolver="org.omnetpp.ide.variables.OmnetppDirResolver"
             supportsArgument="false">
       </variable>
       <variable
-            description="Expands to the NED source path"
+            description="Expands to the NED source path (workspace paths, separated by the platform's path separator)"
             name="opp_ned_path"
+            resolver="org.omnetpp.ide.variables.NedPathResolver"
+            supportsArgument="true">
+      </variable>
+      <variable
+            description="Expands to the NED source path (location paths, separated by the platform's path separator)"
+            name="opp_ned_path_loc"
             resolver="org.omnetpp.ide.variables.NedPathResolver"
             supportsArgument="true">
       </variable>

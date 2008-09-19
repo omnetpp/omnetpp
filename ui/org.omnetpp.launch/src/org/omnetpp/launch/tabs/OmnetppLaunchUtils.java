@@ -14,6 +14,7 @@ import org.apache.commons.lang.math.NumberUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
@@ -189,14 +190,15 @@ public class OmnetppLaunchUtils {
 
 	/**
 	 * Creates a new temporary configuration from a simulation config type that is compatible with CDT. 
+	 * When an error happens during conversion, throws a CoreException.
 	 */
-	public static ILaunchConfigurationWorkingCopy convertLaunchConfig(ILaunchConfiguration config, String mode) 
-	throws CoreException {
+	@SuppressWarnings("unchecked")
+    public static ILaunchConfigurationWorkingCopy convertLaunchConfig(ILaunchConfiguration config, String mode) throws CoreException {
 		ILaunchConfigurationWorkingCopy newCfg = config.copy("opp_run temporary configuration");
 
 		// working directory (converted from path to location
 		String wdirStr = config.getAttribute(IOmnetppLaunchConstants.OPP_WORKING_DIRECTORY, "");
-		newCfg.setAttribute(IOmnetppLaunchConstants.ATTR_WORKING_DIRECTORY, OmnetppLaunchUtils.path2location(new Path(wdirStr), new Path("/")).toString());
+		newCfg.setAttribute(IOmnetppLaunchConstants.ATTR_WORKING_DIRECTORY, getLocationForWorkspacePath(wdirStr, "/", false).toString());
 
 		// executable name
 		String exeName = config.getAttribute(IOmnetppLaunchConstants.OPP_EXECUTABLE, "");
@@ -236,7 +238,7 @@ public class OmnetppLaunchUtils {
 			String pathSep = System.getProperty("path.separator");
 			String[] nedPaths = StringUtils.split(nedpathStr, pathSep);
 			for (int i = 0 ; i< nedPaths.length; i++)
-				nedPaths[i] = path2location(new Path(nedPaths[i]), new Path(wdirStr)).toString();
+				nedPaths[i] = getLocationForWorkspacePath(nedPaths[i], wdirStr, false).toString();
 			args += " -n " + StringUtils.join(nedPaths, pathSep)+" ";
 		}
 
@@ -247,7 +249,7 @@ public class OmnetppLaunchUtils {
 			String[] libs = StringUtils.split(shLibStr);
 			// convert to file system location
 			for (int i = 0 ; i< libs.length; i++)
-				libs[i] = path2location(new Path(libs[i]), new Path(wdirStr)).toString();
+				libs[i] = getLocationForWorkspacePath(libs[i], wdirStr, true).toString();
 			args += " -l " + StringUtils.join(libs," -l ")+" ";
 		}
 
@@ -266,7 +268,7 @@ public class OmnetppLaunchUtils {
 			String[] inifiles = StringUtils.split(iniStr);
 			// convert to file system location
 			for (int i = 0 ; i< inifiles.length; i++)
-				inifiles[i] = path2location(new Path(inifiles[i]), new Path(wdirStr)).toString();
+				inifiles[i] = getLocationForWorkspacePath(inifiles[i], wdirStr, true).toString();
 			args += " " + StringUtils.join(inifiles," ")+" ";
 		}
 
@@ -292,22 +294,28 @@ public class OmnetppLaunchUtils {
 		return newCfg;
 	}
 
-	/**
-	 * Convert a workspace path to absolute filesystem path (relative path is appended to the basePath before conversion)
-	 */
-	public static final IPath path2location(IPath path, IPath basePath) {
-		if (!path.isAbsolute() && basePath != null)
-			path = basePath.append(path);
-
-		// get the resource containing the given file (ie. split off the filename, because the file itself might not
-		// exist. 
-		IResource resource = ResourcesPlugin.getWorkspace().getRoot().findMember(path.removeLastSegments(1));
-		// return the location of the resource. add the filename back
-		if (resource != null)
-			return resource.getLocation().append(path.lastSegment()); 
-
-		// id resource do not exist it was an absolute location already, just return it
-		return path;
+    /**
+     * Convert a workspace path to absolute filesystem path. If pathString is a relative path,
+     * it is prepended with the basePath before conversion. The named resource may be a file,
+     * folder or project; and the file or folder does not need to exist in the workspace.
+     * Throws CoreException if the path cannot be determined (see IResource.getLocation()).
+     */
+	public static final IPath getLocationForWorkspacePath(String pathString, String basePathString, boolean isFile) throws CoreException {
+	    IPath path = new Path(pathString);
+	    IPath basePath = StringUtils.isEmpty(basePathString) ? null : new Path(basePathString);
+	    if (!path.isAbsolute() && basePath != null)
+	        path = basePath.append(path);
+	    IPath location;
+	    IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
+        if (isFile) 
+	        location = workspaceRoot.getFile(path).getLocation();
+	    else if (path.segmentCount()>=2)
+	        location = workspaceRoot.getFolder(path).getLocation();
+	    else
+	        location = workspaceRoot.getProject(path.toString()).getLocation();
+	    if (location == null)
+	        throw new CoreException(new Status(Status.ERROR, LaunchPlugin.PLUGIN_ID, "Cannot determine location for "+pathString));
+	    return location;
 	}
 
 	/**
@@ -511,7 +519,7 @@ public class OmnetppLaunchUtils {
 
 		} catch (CoreException e) {
 			// LaunchPlugin.logError("Error starting the executable", e);
-			// its not a big deal if we cannot start the simulation. dont put anything in the log
+			// its not a big deal if we cannot start the simulation. don't put anything in the log
 		} catch (IOException e) {
 			LaunchPlugin.logError("Error getting output stream from the executable", e);
 		} catch (InterruptedException e) {
