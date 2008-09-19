@@ -9,7 +9,7 @@
 
 import omnetpp.queueing.Classifier;
 import omnetpp.queueing.Delay;
-import omnetpp.queueing.PQueue;
+import omnetpp.queueing.PassiveQueue;
 import omnetpp.queueing.Router;
 import omnetpp.queueing.Server;
 import omnetpp.queueing.Sink;
@@ -37,16 +37,16 @@ network CallCenter
             gates:
                 out[2];
         }
-        billing: PQueue {
+        billing: PassiveQueue {
             @display("p=225.0,27.0");
         }
-        marketing: PQueue {
+        marketing: PassiveQueue {
             @display("p=225.0,104.0");
         }
-        support: PQueue {
+        support: PassiveQueue {
             @display("p=225.0,169.0");
         }
-        internal: PQueue {
+        internal: PassiveQueue {
             @display("p=225.0,236.0");
         }
         operator1: Server {

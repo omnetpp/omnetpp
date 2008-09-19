@@ -9,7 +9,7 @@
 
 import omnetpp.queueing.Classifier;
 import omnetpp.queueing.Delay;
-import omnetpp.queueing.PQueue;
+import omnetpp.queueing.PassiveQueue;
 import omnetpp.queueing.Server;
 import omnetpp.queueing.Sink;
 import omnetpp.queueing.Source;
@@ -81,13 +81,13 @@ network Terminal
         delay3: Delay {
             @display("p=222.0,225.0");
         }
-        firstClass: PQueue {
+        firstClass: PassiveQueue {
             @display("p=329.0,39.0");
         }
-        businessClass: PQueue {
+        businessClass: PassiveQueue {
             @display("p=329.0,132.0");
         }
-        economyClass: PQueue {
+        economyClass: PassiveQueue {
             @display("p=329.0,225.0");
         }
         clerk: Server {
