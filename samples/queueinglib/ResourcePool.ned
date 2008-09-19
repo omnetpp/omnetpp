@@ -28,6 +28,6 @@ simple ResourcePool
 {
     parameters:
         @group(Queueing);
-        @display("i=block/buffer;t=#,r,black");
+        @display("i=block/buffer;t=,r,black");
         int amount = default(1);		// the amount of resource units 
 }

@@ -41,6 +41,7 @@ ResourcePool::~ResourcePool()
 void ResourcePool::initialize()
 {
 	WATCH_LIST(allocatorList);
+    WATCH(amount);
     amount = par("amount");
     if (ev.isGUI())
     	updateDisplayString();
@@ -67,6 +68,7 @@ bool ResourcePool::tryToAllocate(IResourceAllocator *allocator, long amountToAll
 		req.amountToAllocate = amountToAllocate;
 		req.allocator = allocator;
 		add(req);
+	    if (ev.isGUI()) updateDisplayString();
 		return false;
 	}
 }
@@ -105,7 +107,7 @@ void ResourcePool::add(AllocationRequest& request)
 void ResourcePool::updateDisplayString()
 {
     char buff[80];
-    sprintf(buff, "#%ld", amount);
+    sprintf(buff, "amount: %ld\npending: %d", amount, allocatorList.size());
     getDisplayString().setTagArg("t",0, buff);
 }
 
