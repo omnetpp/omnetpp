@@ -681,7 +681,7 @@ param_typenamevalue
         | param_typename opt_inline_properties '=' paramvalue opt_inline_properties ';'
                 {
                   ps.propertyscope.pop();
-                  if ($4)
+                  if (!isEmpty(ps.exprPos))  // note: $4 cannot be checked, as it's always NULL when expression parsing is off
                       addExpression(ps.param, "value",ps.exprPos,$4);
                   ps.param->setIsDefault(ps.isDefault);
                   storePos(ps.param, @$);
@@ -709,7 +709,7 @@ pattern_value
                 {
                   ps.pattern = (PatternElement *)createElementWithTag(NED_PATTERN, ps.parameters);
                   ps.pattern->setPattern(toString(@2));
-                  if ($5)
+                  if (!isEmpty(ps.exprPos))  // note: $5 cannot be checked, as it's always NULL when expression parsing is off
                       addExpression(ps.pattern, "value",ps.exprPos,$5);
                   ps.pattern->setIsDefault(ps.isDefault);
                 }
@@ -745,12 +745,12 @@ paramvalue
                   // Note: "=default" is currently not accepted in NED files, because
                   // it would be complicated to support in the Inifile Editor.
                   np->getErrors()->addError(ps.types,"applying the default value (\"=default\" syntax) is not supported in NED files");
-                  $$ = NULL; ps.isDefault = true;
+                  $$ = NULL; ps.exprPos = makeEmptyYYLTYPE(); ps.isDefault = true;
                 }
         | ASK
                 {
                   np->getErrors()->addError(ps.types,"interactive prompting (\"=ask\" syntax) is not supported in NED files");
-                  $$ = NULL; ps.isDefault = false;
+                  $$ = NULL; ps.exprPos = makeEmptyYYLTYPE(); ps.isDefault = false;
                 }
         ;
 
