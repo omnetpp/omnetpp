@@ -92,7 +92,7 @@ public class CorrectIndentationAction extends NedTextEditorAction {
 
 	private static boolean containsSectionKeyword(String line) {
 		line = removeCommentsAndStrings(line);
-		return line.matches("(?s).*\\b("+StringUtils.join(Keywords.SECTION_KEYWORDS, "|")+")\\b.*");
+		return line.matches("(?s).*\\b("+StringUtils.join(Keywords.NED_SECTION_KEYWORDS, "|")+")\\b.*");
 	}
 
 	private static String removeCommentsAndStrings(String line) {

@@ -16,14 +16,14 @@ public final class NedCompletionHelper {
     public final static String[] proposedPrivateDocTodo = Keywords.DOC_TODO;
     public final static String[] proposedDocTags = Keywords.DOC_TAGS;
     public final static String[] proposedDocKeywords = Keywords.DOC_KEYWORDS;
-    public final static String[] proposedNedBaseParamTypes = Keywords.PARAM_TYPES;
+    public final static String[] proposedNedBaseParamTypes = Keywords.NED_PARAM_TYPES;
     public final static String[] proposedNedParamTypes = { "bool", "double", "int", "string", "xml", "volatile bool", "volatile double", "volatile int", "volatile string", "volatile xml" };
-    public final static String[] proposedNedGateTypes = Keywords.GATE_TYPES;
+    public final static String[] proposedNedGateTypes = Keywords.NED_GATE_TYPES;
     public final static String[] proposedNedTopLevelKeywords = { "import", "network", "package", "property"};
     public final static String[] proposedNedTypeDefinerKeywords = { "channel", "channelinterface", "moduleinterface", "module", "simple"};
     public final static String[] proposedNedConnsKeywords = {"allowunconnected"};
-    public final static String[] proposedNedOtherExpressionKeywords = Keywords.EXPR_KEYWORDS;
-    public final static String[] proposedConstants = Keywords.CONSTANTS;
+    public final static String[] proposedNedOtherExpressionKeywords = Keywords.NED_EXPR_KEYWORDS;
+    public final static String[] proposedConstants = Keywords.BOOL_CONSTANTS;
 
 
     public final static Template[] proposedNedComponentPropertyTempl = {

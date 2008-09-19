@@ -19,13 +19,13 @@ public class SyntaxHighlightHelper {
 	public final static String[] highlightPrivateDocTodo = Keywords.DOC_TODO;
 	public final static String[] highlightDocTags = Keywords.DOC_TAGS;
 	public final static String[] highlightDocKeywords = Keywords.DOC_KEYWORDS;
-	public final static String[] highlightNedTypes = Keywords.TYPE_KEYWORDS;
-	public final static String[] highlightNedSpecialKeywords = Keywords.SPECIAL_KEYWORDS;
-    public final static String[] highlightNedKeywords = Keywords.concat(Keywords.NONEXPR_KEYWORDS, Keywords.EXPR_KEYWORDS);
-	public final static String[] highlightNedFunctions = Keywords.FUNCTIONS;
-	public final static String[] highlightMsgTypes = Keywords.TYPE_KEYWORDS;
+	public final static String[] highlightNedTypes = Keywords.NED_TYPE_KEYWORDS;
+	public final static String[] highlightNedSpecialKeywords = Keywords.NED_SPECIAL_KEYWORDS;
+    public final static String[] highlightNedKeywords = Keywords.concat(Keywords.NED_NONEXPR_KEYWORDS, Keywords.NED_EXPR_KEYWORDS);
+	public final static String[] highlightNedFunctions = Keywords.NED_FUNCTIONS;
+	public final static String[] highlightMsgTypes = Keywords.MSG_TYPE_KEYWORDS;
 	public final static String[] highlightMsgKeywords = Keywords.concat(Keywords.MSG_KEYWORDS, Keywords.MSG_SECTION_KEYWORDS);
-	public final static String[] highlightConstants = Keywords.CONSTANTS;
+	public final static String[] highlightConstants = Keywords.BOOL_CONSTANTS;
 
     // tokens for syntax highlighting
 	public final static IToken docDefaultToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_GRAY), null, SWT.ITALIC));

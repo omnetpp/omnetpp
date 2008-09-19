@@ -69,7 +69,7 @@ public class NedTextUtils {
 
             String word = TextEditorUtil.get(textViewer, wordRegion);
             String dottedWord = TextEditorUtil.get(textViewer, dottedWordRegion);
-            if (ArrayUtils.contains(Keywords.RESERVED_WORDS, word))
+            if (ArrayUtils.contains(Keywords.NED_RESERVED_WORDS, word))
                 return null;
 
             // find which NED element was hovered
