@@ -27,7 +27,7 @@ namespace queueing {
 class Job;
 
 /**
- * Abstract base class for single-server queues.
+ * Queue that reserves a resource for processing each job.
  */
 class ResourceBasedQueue : public cSimpleModule, public IResourceAllocator
 {

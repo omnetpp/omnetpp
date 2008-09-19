@@ -19,7 +19,7 @@
 package omnetpp.queueing;
 
 //
-// A queue with a built-in server
+// Queue that reserves a resource for processing each job.
 //
 simple ResourceBasedQueue
 {
