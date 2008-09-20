@@ -39,9 +39,9 @@ PassiveQueue::~PassiveQueue()
 
 void PassiveQueue::initialize()
 {
-    droppedStats.setName("dropped jobs");
-    lengthStats.setName("length");
-    queueingTimeStats.setName("queueing time");
+    droppedVector.setName("dropped jobs");
+    lengthVector.setName("length");
+    queueingTimeVector.setName("queueing time");
     scalarUtilizationStats.setName("utilization");
     scalarWeightedLengthStats.setName("time weighted length");
     scalarLengthStats.setName("length");
@@ -68,7 +68,7 @@ void PassiveQueue::handleMessage(cMessage *msg)
     {
         EV << "Queue full! Job dropped.\n";
         if (ev.isGUI()) bubble("Dropped!");
-        droppedStats.record(++droppedJobs);
+        droppedVector.record(++droppedJobs);
         delete msg;
         return;
     }
@@ -89,7 +89,7 @@ void PassiveQueue::handleMessage(cMessage *msg)
         error("This should not happen. Queue is NOT empty and there is an IDLE server attached to us.");
 
     // statistics
-    lengthStats.record(length());
+    lengthVector.record(length());
 
     // change the icon color
     if (ev.isGUI())
@@ -133,12 +133,12 @@ void PassiveQueue::request(int gateIndex)
     job->setQueueCount(job->getQueueCount()+1);
     simtime_t d = simTime() - job->getTimestamp();
     job->setTotalQueueingTime(job->getTotalQueueingTime() + d);
-    queueingTimeStats.record(d);
+    queueingTimeVector.record(d);
 
     send(job, "out", gateIndex);
 
     // statistics
-    lengthStats.record(length());
+    lengthVector.record(length());
 
     if (ev.isGUI())
         getDisplayString().setTagArg("i",1, queue.empty() ? "" : "cyan");

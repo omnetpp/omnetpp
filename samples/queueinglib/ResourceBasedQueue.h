@@ -34,10 +34,10 @@ class Job;
 class ResourceBasedQueue : public cSimpleModule, public IResourceAllocator
 {
     private:
-    	// statistics
-        cOutVector droppedStats;
-        cOutVector lengthStats;
-        cOutVector queueingTimeStats;
+        // statistics
+        cOutVector droppedVector;
+        cOutVector lengthVector;
+        cOutVector queueingTimeVector;
         cWeightedStdDev scalarWeightedLengthStats;
         cStdDev scalarLengthStats;
         cWeightedStdDev scalarUtilizationStats;
@@ -74,8 +74,8 @@ class ResourceBasedQueue : public cSimpleModule, public IResourceAllocator
         int length();
 
         // call-back method called from any associated resource
-    	virtual void resourceGranted(IResourcePool *provider);
-    	virtual std::string getFullPath() const;
+        virtual void resourceGranted(IResourcePool *provider);
+        virtual std::string getFullPath() const;
     protected:
         virtual void initialize();
         virtual void handleMessage(cMessage *msg);

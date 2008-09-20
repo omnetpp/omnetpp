@@ -39,9 +39,9 @@ Queue::~Queue()
 
 void Queue::initialize()
 {
-    droppedStats.setName("dropped jobs");
-    lengthStats.setName("length");
-    queueingTimeStats.setName("queueing time");
+    droppedVector.setName("dropped jobs");
+    lengthVector.setName("length");
+    queueingTimeVector.setName("queueing time");
     scalarUtilizationStats.setName("utilization");
     scalarWeightedLengthStats.setName("time weighted length");
     scalarLengthStats.setName("length");
@@ -96,7 +96,7 @@ void Queue::handleMessage(cMessage *msg)
             {
                 EV << "Capacity full! Job dropped.\n";
                 if (ev.isGUI()) bubble("Dropped!");
-                droppedStats.record(++droppedJobs);
+                droppedVector.record(++droppedJobs);
                 delete job;
                 return;
             }
@@ -106,7 +106,7 @@ void Queue::handleMessage(cMessage *msg)
         }
     }
 
-    lengthStats.record(length());
+    lengthVector.record(length());
 
     if (ev.isGUI()) getDisplayString().setTagArg("i",1, !jobServiced ? "" : "cyan3");
 }
@@ -155,7 +155,7 @@ simtime_t Queue::startService(Job *job)
     // gather queueing time statistics
     simtime_t d = simTime() - job->getTimestamp();
     job->setTotalQueueingTime(job->getTotalQueueingTime() + d);
-    queueingTimeStats.record(d);
+    queueingTimeVector.record(d);
     EV << "Starting service of " << job->getName() << endl;
     job->setTimestamp();
     return par("serviceTime").doubleValue();

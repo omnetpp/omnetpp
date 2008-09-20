@@ -16,8 +16,8 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 
-#ifndef __FIFO_H
-#define __FIFO_H
+#ifndef __QUEUE_H
+#define __QUEUE_H
 
 #include <omnetpp.h>
 
@@ -31,9 +31,9 @@ class Job;
 class Queue : public cSimpleModule
 {
     private:
-        cOutVector droppedStats;
-        cOutVector lengthStats;
-        cOutVector queueingTimeStats;
+        cOutVector droppedVector;
+        cOutVector lengthVector;
+        cOutVector queueingTimeVector;
         cWeightedStdDev scalarWeightedLengthStats;
         cStdDev scalarLengthStats;
         cWeightedStdDev scalarUtilizationStats;

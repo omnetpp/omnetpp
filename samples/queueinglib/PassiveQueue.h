@@ -31,9 +31,9 @@ class SelectionStrategy;
 class PassiveQueue : public cSimpleModule
 {
     private:
-        cOutVector droppedStats;
-        cOutVector lengthStats;
-        cOutVector queueingTimeStats;
+        cOutVector droppedVector;
+        cOutVector lengthVector;
+        cOutVector queueingTimeVector;
         cWeightedStdDev scalarWeightedLengthStats;
         cStdDev scalarLengthStats;
         cWeightedStdDev scalarUtilizationStats;
