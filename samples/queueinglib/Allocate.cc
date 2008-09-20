@@ -1,0 +1,149 @@
+//
+// Copyright (C) 2008 Andras Varga
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+//
+
+#include <omnetpp.h>
+
+#include "Allocate.h"
+#include "Job.h"
+
+namespace queueing {
+
+Define_Module(Allocate);
+
+Allocate::Allocate()
+{
+}
+
+Allocate::~Allocate()
+{
+}
+
+void Allocate::initialize()
+{
+    fifo = par("fifo");
+    capacity = par("capacity");
+    queue.setName("queue");
+
+    resourceAmount = par("resourceAmount");
+    resourcePriority = par("resourcePriority");
+
+    const char *resourceName = par("resourceModuleName");
+    cModule *mod = getParentModule()->getModuleByRelativePath(resourceName);
+    if (!mod)
+        throw cRuntimeError("Cannot find resource pool module `%s'", resourceName);
+    resourcePool = check_and_cast<IResourcePool*>(mod);
+
+    numDropped = 0;
+    WATCH(numDropped);
+    droppedVector.setName("dropped jobs");
+    lengthVector.setName("length");
+    queueingTimeVector.setName("queueing time");
+
+}
+
+void Allocate::handleMessage(cMessage *msg)
+{
+    Job *job = check_and_cast<Job *>(msg);
+    if (queue.isEmpty() && allocateResource(job))
+        send(job, "out");
+    else
+        enqueueOrDrop(job);
+}
+
+void Allocate::finish()
+{
+    recordScalar("jobs dropped", numDropped);
+}
+
+bool Allocate::allocateResource(Job *job)
+{
+    return resourcePool->tryToAllocate(this, resourceAmount, resourcePriority + job->getPriority());
+}
+
+std::string Allocate::getFullPath() const
+{
+    return cSimpleModule::getFullPath();
+}
+
+void Allocate::resourceGranted(IResourcePool *provider)
+{
+    Enter_Method("resourceGranted");
+
+    // send out job for which resource was granted
+    ASSERT2(!queue.empty(), "Resource granted while no jobs are waiting");
+    Job *job = dequeue();
+    send(job, "out");
+
+    // try to handle other waiting jobs as well
+    while (!queue.isEmpty() && allocateResource(peek()))
+    {
+        Job *job = dequeue();
+        send(job, "out");
+    }
+}
+
+Job *Allocate::peek()
+{
+    return fifo ? (Job *)queue.front() : (Job *)queue.back();
+}
+
+Job *Allocate::dequeue()
+{
+    Job *job;
+    if (fifo)
+    {
+        job = (Job *)queue.pop();
+    }
+    else
+    {
+        job = (Job *)queue.back();
+        queue.remove(job);
+    }
+
+    lengthVector.record(queue.length());
+
+    simtime_t dt = simTime() - job->getTimestamp();
+    job->setTotalQueueingTime(job->getTotalQueueingTime() + dt);
+    queueingTimeVector.record(dt);
+
+    return job;
+}
+
+void Allocate::enqueueOrDrop(Job *job)
+{
+    // check for container capacity
+    if (capacity >=0 && queue.length() >= capacity)
+    {
+        EV << "Capacity full! Job dropped.\n";
+        if (ev.isGUI()) bubble("Dropped!");
+        droppedVector.record(++numDropped);
+        delete job;
+        return;
+    }
+    else
+    {
+        EV << "Job enqueued.\n";
+        job->setTimestamp();
+        queue.insert(job);
+        lengthVector.record(queue.length());
+    }
+}
+
+}; //namespace
+
+

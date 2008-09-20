@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2006 Rudolf Hornig
+// Copyright (C) 2008 Andras Varga
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -16,52 +16,31 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 
-#ifndef __SERVER_H
-#define __SERVER_H
+#ifndef __DEALLOCATE_H__
+#define __DEALLOCATE_H__
 
 #include <omnetpp.h>
+#include "ResourcePool.h"
 
 namespace queueing {
 
-class PassiveQueue;
 class Job;
-class SelectionStrategy;
 
 /**
- * The queue server. It cooperates with several Queues that which queue up
- * the jobs, and send them to Server on request.
- *
- * @see PassiveQueue
+ * Releases allocated resources on the arrival of each job.
+ * See NED file for more info.
  */
-class Server : public cSimpleModule
+class Deallocate : public cSimpleModule
 {
-    private:
-        cWeightedStdDev scalarUtilizationStats;
-
-        int numQueues;
-        SelectionStrategy *selectionStrategy;
-
-        simtime_t prevEventTimeStamp;
-        Job *jobServiced;
-        cMessage *endServiceMsg;
-
-    public:
-        Server();
-        virtual ~Server();
+    protected:
+        IResourcePool *resourcePool;
+        int resourceAmount;
 
     protected:
         virtual void initialize();
-        virtual int numInitStages() const {return 2;}
         virtual void handleMessage(cMessage *msg);
-        virtual void finish();
-
-    public:
-        // The following method is called from PassiveQueue:
-        virtual bool isIdle();
 };
 
-}; //namespace
+}; // namespace
 
 #endif
-
-

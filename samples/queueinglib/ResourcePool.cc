@@ -30,12 +30,10 @@ std::ostream& operator << (std::ostream& out, const ResourcePool::AllocationRequ
 
 ResourcePool::ResourcePool()
 {
-
 }
 
 ResourcePool::~ResourcePool()
 {
-
 }
 
 void ResourcePool::initialize()
@@ -50,7 +48,6 @@ void ResourcePool::initialize()
 void ResourcePool::finish()
 {
 }
-
 
 bool ResourcePool::tryToAllocate(IResourceAllocator *allocator, long amountToAllocate, int priority)
 {
@@ -68,7 +65,8 @@ bool ResourcePool::tryToAllocate(IResourceAllocator *allocator, long amountToAll
 		req.amountToAllocate = amountToAllocate;
 		req.allocator = allocator;
 		add(req);
-	    if (ev.isGUI()) updateDisplayString();
+	    if (ev.isGUI())
+	    	updateDisplayString();
 		return false;
 	}
 }
@@ -91,24 +89,25 @@ void ResourcePool::release(long amountToRelease)
 
 void ResourcePool::add(AllocationRequest& request)
 {
-	// start from the back and look for the first request where priority is <= than ours.
-	// put the new request AFTER that
-
-	for (AllocationRequestList::reverse_iterator i = allocatorList.rbegin(); i != allocatorList.rend(); i++)
+	// insert request into list, observing priority.
+	// start from the back and look for the first request where priority is <= than ours,
+	// and insert the new request after that one.
+	for (AllocationRequestList::reverse_iterator i = allocatorList.rbegin(); i != allocatorList.rend(); i++) {
 		if (i->priority <= request.priority) {
 			allocatorList.insert(i.base(), request);
 			return;
 		}
+	}
 
-	// if not found put at the beginning
+	// if not found, insert at the beginning
 	allocatorList.push_front(request);
 }
 
 void ResourcePool::updateDisplayString()
 {
-    char buff[80];
-    sprintf(buff, "amount: %ld\npending: %d", amount, allocatorList.size());
-    getDisplayString().setTagArg("t",0, buff);
+    char buf[80];
+    sprintf(buf, "amount: %ld\nrequests: %d", amount, allocatorList.size());
+    getDisplayString().setTagArg("t",0, buf);
 }
 
 }; // namespace

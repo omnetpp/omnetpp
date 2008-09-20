@@ -33,7 +33,7 @@ simple ResourceBasedQueue
         
         string resourceModuleName = default("");  // the name of the ResourcePool block to provide the resources
         int resourceAmount = default(1);		  // the amount of resource needed for servicing a job
-        int resourcePriority = default(0);		  // the priority used durning resource allocation (smaller priorities get resources easier)
+        int resourcePriority = default(0);		  // the priority used during resource allocation (smaller number means higher priority)
         
     gates:
         input in[];

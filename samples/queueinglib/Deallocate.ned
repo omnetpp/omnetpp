@@ -1,0 +1,16 @@
+package omnetpp.queueing;
+
+//
+// Releases a specified amount of resources on the arrival of each job.
+// Jobs are sent out on the "out" gate without any change.
+//
+simple Deallocate
+{
+    parameters:
+        @display("i=block/departure");
+        string resourceModuleName;         // the name of the ResourcePool block to release resources to
+        int resourceAmount = default(1);   // the amount of resource to deallocate
+    gates:
+        input in[];
+        output out;
+}

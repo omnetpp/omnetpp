@@ -26,8 +26,8 @@ Define_Module(Delay);
 void Delay::initialize()
 {
     currentlyStored = 0;
-    sizeStats.setName("delayed jobs");
-    sizeStats.record(currentlyStored);
+    sizeVector.setName("delayed jobs");
+    sizeVector.record(currentlyStored);
     WATCH(currentlyStored);
 }
 
@@ -53,7 +53,7 @@ void Delay::handleMessage(cMessage *msg)
         send(job, "out");
     }
 
-    sizeStats.record(currentlyStored);
+    sizeVector.record(currentlyStored);
 
     if (ev.isGUI())
         getDisplayString().setTagArg("i",1, currentlyStored==0 ? "" : "cyan4");

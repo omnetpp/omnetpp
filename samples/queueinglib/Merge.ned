@@ -16,23 +16,18 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 
-#ifndef __JOIN_H
-#define __JOIN_H
+package omnetpp.queueing;
 
-#include <omnetpp.h>
-
-namespace queueing {
-
-/**
- * All messages received on ANY INPUT gate will be sent out on the OUTPUT gate
- */
-class Junction : public cSimpleModule
+//
+// Joins several incoming connections. Anything that comes in
+// will be sent out immediately on the "out" gate.
+//
+simple Merge
 {
-    protected:
-        virtual void handleMessage(cMessage *msg);
-};
-
-}; //namespace
-
-#endif
-
+    parameters:
+        @group(Queueing);
+        @display("i=block/join");
+    gates:
+        input in[];
+        output out;
+}

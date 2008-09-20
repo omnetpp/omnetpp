@@ -29,7 +29,7 @@ namespace queueing {
 class Delay : public cSimpleModule
 {
     private:
-        cOutVector sizeStats;
+        cOutVector sizeVector;
         int currentlyStored;
     protected:
         virtual void initialize();

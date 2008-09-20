@@ -16,52 +16,23 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 
-#ifndef __SERVER_H
-#define __SERVER_H
+#ifndef __MERGE_H
+#define __MERGE_H
 
 #include <omnetpp.h>
 
 namespace queueing {
 
-class PassiveQueue;
-class Job;
-class SelectionStrategy;
-
 /**
- * The queue server. It cooperates with several Queues that which queue up
- * the jobs, and send them to Server on request.
- *
- * @see PassiveQueue
+ * All messages received on any input gate will be sent out on the output gate
  */
-class Server : public cSimpleModule
+class Merge : public cSimpleModule
 {
-    private:
-        cWeightedStdDev scalarUtilizationStats;
-
-        int numQueues;
-        SelectionStrategy *selectionStrategy;
-
-        simtime_t prevEventTimeStamp;
-        Job *jobServiced;
-        cMessage *endServiceMsg;
-
-    public:
-        Server();
-        virtual ~Server();
-
     protected:
-        virtual void initialize();
-        virtual int numInitStages() const {return 2;}
         virtual void handleMessage(cMessage *msg);
-        virtual void finish();
-
-    public:
-        // The following method is called from PassiveQueue:
-        virtual bool isIdle();
 };
 
 }; //namespace
 
 #endif
-
 

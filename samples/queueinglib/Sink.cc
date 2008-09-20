@@ -25,13 +25,13 @@ Define_Module(Sink);
 
 void Sink::initialize()
 {
-    lifeTimeStats.setName("total lifetime");
-    queueingTimeStats.setName("total queueing time");
-    queueStats.setName("number of queue nodes visited");
-    serviceTimeStats.setName("total service time");
-    delayTimeStats.setName("total delay");
-    delayStats.setName("number of delay nodes visited");
-    generationStats.setName("generation");
+    lifeTimeVector.setName("total lifetime");
+    queueingTimeVector.setName("total queueing time");
+    queueVector.setName("number of queue nodes visited");
+    serviceTimeVector.setName("total service time");
+    delayTimeVector.setName("total delay");
+    delayVector.setName("number of delay nodes visited");
+    generationVector.setName("generation");
     keepJobs = par("keepJobs");
 }
 
@@ -39,13 +39,13 @@ void Sink::handleMessage(cMessage *msg) {
     Job *job = check_and_cast<Job *>(msg);
 
     // gather statistics
-    lifeTimeStats.record(simTime()- job->getCreationTime());
-    queueingTimeStats.record(job->getTotalQueueingTime());
-    queueStats.record(job->getQueueCount());
-    serviceTimeStats.record(job->getTotalServiceTime());
-    delayTimeStats.record(job->getTotalDelayTime());
-    delayStats.record(job->getDelayCount());
-    generationStats.record(job->getGeneration());
+    lifeTimeVector.record(simTime()- job->getCreationTime());
+    queueingTimeVector.record(job->getTotalQueueingTime());
+    queueVector.record(job->getQueueCount());
+    serviceTimeVector.record(job->getTotalServiceTime());
+    delayTimeVector.record(job->getTotalDelayTime());
+    delayVector.record(job->getDelayCount());
+    generationVector.record(job->getGeneration());
 
     if (!keepJobs)
         delete msg;

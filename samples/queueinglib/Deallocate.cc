@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2006 Rudolf Hornig
+// Copyright (C) 2008 Andras Varga
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -16,35 +16,27 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 
-#ifndef __SINK_H
-#define __SINK_H
-
-#include <omnetpp.h>
+#include "Deallocate.h"
 
 namespace queueing {
 
-/**
- * Consumes jobs; see NED file for more info.
- */
-class Sink : public cSimpleModule
+Define_Module(Deallocate);
+
+void Deallocate::initialize()
 {
-  private:
-    cOutVector lifeTimeVector;
-    cOutVector queueingTimeVector;
-    cOutVector queueVector;
-    cOutVector serviceTimeVector;
-    cOutVector delayTimeVector;
-    cOutVector delayVector;
-    cOutVector generationVector;
-    bool keepJobs;
+    resourceAmount = par("resourceAmount");
 
-  protected:
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
-    virtual void finish();
-};
+    const char *resourceName = par("resourceModuleName");
+    cModule *mod = getParentModule()->getModuleByRelativePath(resourceName);
+    if (!mod)
+        throw cRuntimeError("Cannot find resource pool module `%s'", resourceName);
+    resourcePool = check_and_cast<IResourcePool*>(mod);
+}
 
-}; //namespace
+void Deallocate::handleMessage(cMessage *msg)
+{
+    resourcePool->release(resourceAmount);
+    send(msg, "out");
+}
 
-#endif
-
+}; // namespace
