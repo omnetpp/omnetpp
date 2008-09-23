@@ -26,41 +26,49 @@ Define_Module(JobList);
 JobList *JobList::defaultInstance = NULL;
 
 
-JobList::JobList() {
+JobList::JobList()
+{
     if (defaultInstance == NULL)
         defaultInstance = this;
 }
 
-JobList::~JobList() {
+JobList::~JobList()
+{
     if (defaultInstance == this)
         defaultInstance = NULL;
     for (std::set<Job*>::iterator it=jobs.begin(); it!=jobs.end(); ++it)
         (*it)->jobList = NULL;
 }
 
-void JobList::initialize() {
+void JobList::initialize()
+{
     WATCH_PTRSET(jobs);
 }
 
-void JobList::handleMessage(cMessage *msg) {
+void JobList::handleMessage(cMessage *msg)
+{
     throw cRuntimeError("this module does not process messages");
 }
 
-void JobList::registerJob(Job *job) {
+void JobList::registerJob(Job *job)
+{
     jobs.insert(job);
 }
 
-void JobList::deregisterJob(Job *job) {
+void JobList::deregisterJob(Job *job)
+{
     std::set<Job*>::iterator it = jobs.find(job);
     ASSERT(it != jobs.end());
     jobs.erase(it);
 }
 
-JobList *JobList::getDefaultInstance() {
+JobList *JobList::getDefaultInstance()
+{
     return defaultInstance;
 }
 
-const std::set<Job*> JobList::getJobs() {
+const std::set<Job*> JobList::getJobs()
+{
     return jobs;
 }
 

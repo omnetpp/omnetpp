@@ -35,6 +35,7 @@ Job::Job(const char *name, int kind, JobList *jobList) : Job_Base(name, kind)
 Job::Job(const Job& job)
 {
     setName(job.getName());
+    operator=(job);
     parent = NULL;
     jobList = job.jobList;
     if (jobList!=NULL)
@@ -49,6 +50,14 @@ Job::~Job()
         children[i]->parentDeleted();
     if (jobList!=NULL)
         jobList->deregisterJob(this);
+}
+
+Job& Job::operator=(const Job& job)
+{
+    if (this==&job) return *this;
+    Job_Base::operator=(job);
+    // leave parent and jobList untouched
+    return *this;
 }
 
 Job *Job::getParent()

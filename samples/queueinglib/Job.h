@@ -27,7 +27,7 @@ namespace queueing {
 class JobList;
 
 /**
- * We extend the generated Job_Base class with support for split-join, and well
+ * We extend the generated Job_Base class with support for split-join, as well
  * as the ability to enumerate all jobs in the system.
  *
  * To support split-join, Jobs manage parent-child relationships. A
@@ -70,6 +70,9 @@ class Job: public Job_Base
         /** Duplicates this job */
         virtual Job *dup() const {return new Job(*this);}
 
+        /** Assignment operator. Does not affect parent, children and jobList. */
+        Job& operator=(const Job& job);
+
         /** @name Parent-child relationships */
         //@{
         /** Returns the parent job. Returns NULL if there's no parent or it no longer exists. */
@@ -87,6 +90,10 @@ class Job: public Job_Base
         /** Same as addChild(), but has to be invoked on the child job */
         virtual void makeChildOf(Job *parent);
         //@}
+
+        /** Returns the JobList where this job is registered. */
+        JobList *getContainingJobList() {return jobList;}
+
 };
 
 }; // namespace

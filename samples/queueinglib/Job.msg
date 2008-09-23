@@ -21,7 +21,7 @@ namespace queueing;
 //
 // Job message definition for queueing framework
 //
-message Job 
+message Job
 {
     @customize(true);
     simtime_t totalQueueingTime; // total time spent standing in queues
@@ -31,3 +31,5 @@ message Job
     int delayCount;              // the number of delay modules visited by the job
     int generation;              // how many times the original ancestor was copied
 }
+
+
