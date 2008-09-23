@@ -31,7 +31,7 @@ class SelectionStrategy;
  * jobs on its own. A server process uses these methods to query for new jobs
  * once it becomes idle.
  */
-class IPassiveQueue : public ISelectable
+class IPassiveQueue
 {
 	public:
 		virtual ~IPassiveQueue() { };

@@ -22,15 +22,6 @@
 #include <omnetpp.h>
 
 namespace queueing {
-/**
- * An interface that represents any module that can be
- * selected by a selection strategy.
- */
-class ISelectable
-{
-	public:
-		virtual ~ISelectable() { };
-};
 
 /**
  * Selection strategies used in queue, server and router classes to decide
