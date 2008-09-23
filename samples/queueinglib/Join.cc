@@ -41,17 +41,20 @@ void Join::initialize()
 
 void Join::handleMessage(cMessage *msg)
 {
+    // store job
     Job *job = check_and_cast<Job *>(msg);
     jobsHeld.push_back(job);
 
     Job *parent = job->getParent();
     ASSERT(parent != NULL); // still exists
 
+    // count all sub-jobs with this parent
     int subJobsHeld = 0;
     for (std::list<Job*>::iterator it=jobsHeld.begin(); it!=jobsHeld.end(); it++)
         if ((*it)->getParent() == parent)
             subJobsHeld++;
 
+    // if we have all, destroy them, then obtain the parent and send it out
     if (subJobsHeld == parent->getNumChildren()) {
         take(parent);
         for (std::list<Job*>::iterator it=jobsHeld.begin(); it!=jobsHeld.end(); /*nop*/) {
