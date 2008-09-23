@@ -26,7 +26,9 @@ namespace queueing {
 
 class IResourcePool;
 
-// interface implemented by modules that (try to) allocate resources
+/**
+ * Interface implemented by modules that allocate resources
+ */
 class IResourceAllocator
 {
 	public:
@@ -35,7 +37,9 @@ class IResourceAllocator
 		virtual std::string getFullPath() const = 0;
 };
 
-// an interface that should be implemented by resource providers
+/**
+ * The interface that should be implemented by resource providers
+ */
 class IResourcePool
 {
 	public:
