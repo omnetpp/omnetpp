@@ -34,6 +34,7 @@ import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.ned.core.NEDResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.NedEditorPlugin;
 
@@ -52,8 +53,8 @@ public class NewNEDComponentWizardPage extends WizardPage {
 	};
 
 	private static final String CC_FILE = 
-		"#include \"#NAME#.h\"\n" + 
-		"\n" + 
+		"#include \"#NAME#.h\"\n" +
+		"#NAMESPACE_BEGIN#" + 
 		"Define_Module(#NAME#);\n" + 
 		"\n" + 
 		"void #NAME#::initialize()\n" + 
@@ -64,13 +65,14 @@ public class NewNEDComponentWizardPage extends WizardPage {
 		"void #NAME#::handleMessage(cMessage *msg)\n" + 
 		"{\n" + 
 		"	// TODO - Generated method body\n" + 
-		"}\n"; 
+		"}\n" +
+		"#NAMESPACE_END#"; 
 	private static final String H_FILE = 
 		"#ifndef __#UPPERCASENAME#_H__\n" + 
 		"#define __#UPPERCASENAME#_H__\n" + 
 		"\n" + 
 		"#include <omnetpp.h>\n" + 
-		"\n" + 
+        "#NAMESPACE_BEGIN#" + 
 		"/**\n" + 
 		" * TODO - Generated class\n" + 
 		" */\n" + 
@@ -80,7 +82,7 @@ public class NewNEDComponentWizardPage extends WizardPage {
 		"    virtual void initialize();\n" + 
 		"    virtual void handleMessage(cMessage *msg);\n" + 
 		"};\n" + 
-		"\n" + 
+	    "#NAMESPACE_END#" +
 		"#endif\n";
 
 	public static enum Type {SIMPLE, COMPOUND, NETWORK} 
@@ -199,11 +201,13 @@ public class NewNEDComponentWizardPage extends WizardPage {
 		IFile newHFile = null;
 
 		try {
-			// make a valid identifier
+            NEDResources nedResources = NEDResourcesPlugin.getNEDResources();
+
+            // make a valid identifier
 			name = StringUtils.makeValidIdentifier(name);
 			// determine package
 			newNedFile = getSelectedContainer().getFile(new Path(name+".ned"));
-			String packagedecl = NEDResourcesPlugin.getNEDResources().getExpectedPackageFor(newNedFile);
+			String packagedecl = nedResources.getExpectedPackageFor(newNedFile);
 			packagedecl = StringUtils.isNotEmpty(packagedecl) ? "package "+packagedecl+";\n\n" : "";
 
 			// substitute name and package into the template
@@ -213,14 +217,34 @@ public class NewNEDComponentWizardPage extends WizardPage {
 
 			// create CC and H files for simple modules
 			if (type == Type.SIMPLE) {
-				newCCFile = getSelectedContainer().getFile(new Path(name+".cc"));
+			    nedResources.readNEDFile(newNedFile);
+			    String namespace = nedResources.getCppNamespaceForFile(newNedFile);
+                String namespaceBegin = "\n";
+                String namespaceEnd = "\n";
+
+                if (namespace != null) {
+                    String[] namespaceFragments = StringUtils.split(namespace, "::");
+                    for (String namespaceFragment : namespaceFragments) {
+                        namespaceBegin += "namespace " + namespaceFragment + " {\n";
+                        namespaceEnd = "}; // namespace " + namespaceFragment + "\n" + namespaceEnd;
+                    }
+
+                    namespaceBegin += "\n";
+                    namespaceEnd = "\n" + namespaceEnd;
+                }
+
+                newCCFile = getSelectedContainer().getFile(new Path(name+".cc"));
 				contents = CC_FILE.replaceAll("#NAME#", name);
 				contents = contents.replaceAll("#UPPERCASENAME#", StringUtils.upperCase(name));
+				contents = contents.replaceAll("#NAMESPACE_BEGIN#", namespaceBegin);
+                contents = contents.replaceAll("#NAMESPACE_END#", namespaceEnd);
 				newCCFile.create(new ByteArrayInputStream(contents.getBytes()), true, null);
 
 				newHFile = getSelectedContainer().getFile(new Path(name+".h"));
 				contents = H_FILE.replaceAll("#NAME#", name);
 				contents = contents.replaceAll("#UPPERCASENAME#", StringUtils.upperCase(name));
+                contents = contents.replaceAll("#NAMESPACE_BEGIN#", namespaceBegin);
+                contents = contents.replaceAll("#NAMESPACE_END#", namespaceEnd);
 				newHFile.create(new ByteArrayInputStream(contents.getBytes()), true, null);
 			}
 		} catch (CoreException e) {

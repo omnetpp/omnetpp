@@ -443,7 +443,11 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 		}
 		return typeInfo;
 	}
-	
+
+	public synchronized String getCppNamespaceForFile(IFile file) {
+	    return getCppNamespaceForFile(getNedFileElement(file));
+	}
+	    
 	public synchronized String getCppNamespaceForFile(NedFileElementEx element) {
 	    PropertyElementEx property = element.getProperties().get(NAMESPACE_PROPERTY);
 	    
@@ -452,7 +456,14 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 	    else {
 	        IFile file = getNedFile(element);
 	        IContainer sourceFolder = getNedSourceFolderFor(file);
-	        IContainer path = file.getName().equals(PACKAGE_NED_FILENAME) ? file.getParent().getParent() : file.getParent();
+	        IContainer path = file.getParent();
+	        
+	        if (file.getName().equals(PACKAGE_NED_FILENAME)) {
+	            if (path.equals(sourceFolder))
+	                return null;
+
+	            path = path.getParent();
+	        }
 	        
 	        while (path != null) {
 	            IFile packageFile = path.getFile(new Path(PACKAGE_NED_FILENAME));
@@ -460,10 +471,10 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 	            if (packageFile.exists())
 	                return getCppNamespaceForFile(getNedFileElement(packageFile));
 
-	            path = path.getParent();
-	            
-	            if (path.equals(sourceFolder))
-	                break;
+                if (path.equals(sourceFolder))
+                    break;
+
+                path = path.getParent();
 	        }
 	        
 	        return null;
