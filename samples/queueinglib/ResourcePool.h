@@ -31,10 +31,10 @@ class IResourcePool;
  */
 class IResourceAllocator
 {
-	public:
-		// returns true if allocator accepted the resource
-		virtual void resourceGranted(IResourcePool *pool) = 0;
-		virtual std::string getFullPath() const = 0;
+    public:
+        // returns true if allocator accepted the resource
+        virtual void resourceGranted(IResourcePool *pool) = 0;
+        virtual std::string getFullPath() const = 0;
 };
 
 /**
@@ -42,9 +42,9 @@ class IResourceAllocator
  */
 class IResourcePool
 {
-	public:
-		virtual bool tryToAllocate(IResourceAllocator *allocator, long amountToAllocate, int priority) = 0;
-		virtual void release(long amountToRelease) = 0;
+    public:
+        virtual bool tryToAllocate(IResourceAllocator *allocator, long amountToAllocate, int priority) = 0;
+        virtual void release(long amountToRelease) = 0;
 };
 
 
@@ -55,29 +55,29 @@ class IResourcePool
  */
 class ResourcePool : public cSimpleModule, public IResourcePool
 {
-	public:
-		struct AllocationRequest {
-			IResourceAllocator *allocator;
-			long amountToAllocate;
-			int priority;
-		};
-	private:
-		long amount;	      // the amount of resource currently available
-		typedef std::list<AllocationRequest> AllocationRequestList;
-		AllocationRequestList allocatorList;
+    public:
+        struct AllocationRequest {
+            IResourceAllocator *allocator;
+            long amountToAllocate;
+            int priority;
+        };
+    private:
+        long amount;          // the amount of resource currently available
+        typedef std::list<AllocationRequest> AllocationRequestList;
+        AllocationRequestList allocatorList;
 
-		void add(AllocationRequest& request);
-		void updateDisplayString();
+        void add(AllocationRequest& request);
+        void updateDisplayString();
 
-	protected:
-		virtual void initialize();
+    protected:
+        virtual void initialize();
         virtual void finish();
 
-	public:
-		ResourcePool();
-		virtual ~ResourcePool();
-	    virtual bool tryToAllocate(IResourceAllocator *allocator, long amountToAllocate, int priority);
-	    virtual void release(long amountToRelease);
+    public:
+        ResourcePool();
+        virtual ~ResourcePool();
+        virtual bool tryToAllocate(IResourceAllocator *allocator, long amountToAllocate, int priority);
+        virtual void release(long amountToRelease);
 };
 
 }; // namespace
