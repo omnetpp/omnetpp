@@ -20,8 +20,6 @@ package omnetpp.queueing;
 
 //
 // Destroys (or optionally keep) the packets and collects statistics
-//#FIXME leirni: milyen statisztikat szamol, mibol?
-//#FIXME elmagyarazni egy mondatban: mire jo hogy keepMessages?
 //
 simple Sink
 {
