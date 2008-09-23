@@ -19,9 +19,7 @@
 #include <omnetpp.h>
 
 #include "PassiveQueue.h"
-#include "Server.h"
 #include "Job.h"
-#include "SelectionStrategies.h"
 
 namespace queueing {
 

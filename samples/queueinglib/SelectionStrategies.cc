@@ -63,15 +63,15 @@ cGate *SelectionStrategy::selectableGate(int i)
 
 bool SelectionStrategy::isSelectable(cModule *module)
 {
-    PassiveQueue *pqueue = dynamic_cast<PassiveQueue *>(module);
+    IPassiveQueue *pqueue = dynamic_cast<IPassiveQueue *>(module);
     if (pqueue != NULL)
         return pqueue->length() > 0;
 
-    Server *server = dynamic_cast<Server *>(module);
+    IServer *server = dynamic_cast<IServer *>(module);
     if (server != NULL)
         return server->isIdle();
 
-    opp_error("Only PassiveQueue and Server is supported by this Strategy");
+    opp_error("Only IPassiveQueue and IServer is supported by this Strategy");
     return true;
 }
 
@@ -152,10 +152,11 @@ int ShortestQueueSelectionStrategy::select()
     int sizeMin = INT_MAX;
     for (int i = 0; i<gateSize; ++i)
     {
-        PassiveQueue *queue = check_and_cast<PassiveQueue *>(selectableGate(i)->getOwnerModule());
-        if (isSelectable(queue) && (queue->length()<sizeMin))
+    	cModule *module = selectableGate(i)->getOwnerModule();
+        int length = (check_and_cast<IPassiveQueue *>(module))->length();;
+        if (isSelectable(module) && (length<sizeMin))
         {
-            sizeMin = queue->length();
+            sizeMin = length;
             result = i;
         }
     }
@@ -176,10 +177,11 @@ int LongestQueueSelectionStrategy::select()
     int sizeMax = -1;
     for (int i = 0; i<gateSize; ++i)
     {
-        PassiveQueue *queue = check_and_cast<PassiveQueue *>(selectableGate(i)->getOwnerModule());
-        if (isSelectable(queue) && queue->length()>sizeMax)
+    	cModule *module = selectableGate(i)->getOwnerModule();
+        int length = (check_and_cast<IPassiveQueue *>(module))->length();;
+        if (isSelectable(module) && length>sizeMax)
         {
-            sizeMax = queue->length();
+            sizeMax = length;
             result = i;
         }
     }

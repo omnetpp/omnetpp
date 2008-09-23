@@ -20,12 +20,26 @@
 #define __SERVER_H
 
 #include <omnetpp.h>
+#include "SelectionStrategies.h"
 
 namespace queueing {
 
-class PassiveQueue;
 class Job;
 class SelectionStrategy;
+
+/**
+ * An interface that must be implemented by blocks that are capable
+ * of processing a job. The block implementing IPassiveQueue is calling
+ * these methods to communicate with the block to decide whether
+ * a new job can be sent to a server
+ */
+class IServer : public ISelectable
+{
+	public:
+		virtual ~IServer() { };
+		// indicate whether the service is currently idle (ie. no processing is done currently)
+		virtual bool isIdle() = 0;
+};
 
 /**
  * The queue server. It cooperates with several Queues that which queue up
@@ -33,7 +47,7 @@ class SelectionStrategy;
  *
  * @see PassiveQueue
  */
-class Server : public cSimpleModule
+class Server : public cSimpleModule, public IServer
 {
     private:
         cWeightedStdDev scalarUtilizationStats;
@@ -56,7 +70,6 @@ class Server : public cSimpleModule
         virtual void finish();
 
     public:
-        // The following method is called from PassiveQueue:
         virtual bool isIdle();
 };
 

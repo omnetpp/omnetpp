@@ -22,6 +22,15 @@
 #include <omnetpp.h>
 
 namespace queueing {
+/**
+ * An interface that represents any module that can be
+ * selected by a selection strategy.
+ */
+class ISelectable
+{
+	public:
+		virtual ~ISelectable() { };
+};
 
 /**
  * Selection strategies used in queue, server and router classes to decide
@@ -43,10 +52,11 @@ class SelectionStrategy : public cObject
 
         // which gate index the selection strategy selected
         virtual int select() = 0;
-        // is this module selectable accordig to the policy? (queue is selectable if not empty, server is selectable if idle)
-        virtual bool isSelectable(cModule *module);
         // returns the i-th module's gate which connects to our host module
         cGate *selectableGate(int i);
+    protected:
+        // is this module selectable according to the policy? (queue is selectable if not empty, server is selectable if idle)
+        virtual bool isSelectable(cModule *module);
 };
 
 /**
