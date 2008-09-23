@@ -310,4 +310,28 @@
          </perspectiveShortcut>
       </perspectiveExtension>
    </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            defaultHandler="org.omnetpp.cdt.handlers.GotoCppDefinitionForNEDTypeHandler"
+            description="Opens the C++ definition for a NED type (simple module or channel)"
+            id="org.omnetpp.cdt.gotoCppDefinitionForNEDType"
+            name="name">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
+         <toolbar
+               id="org.omnetpp.cdt.toolbar1">
+            <command
+                  commandId="org.omnetpp.cdt.gotoCppDefinitionForNEDType"
+                  label="Goto C++"
+                  style="push"
+                  tooltip="Go To C++ Definition">
+            </command>
+         </toolbar>
+      </menuContribution>
+   </extension>
 </plugin>

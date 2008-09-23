@@ -48,6 +48,7 @@ import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.ModuleInterfaceElementEx;
 import org.omnetpp.ned.model.ex.NEDElementUtilEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
+import org.omnetpp.ned.model.ex.PropertyElementEx;
 import org.omnetpp.ned.model.ex.SimpleModuleElementEx;
 import org.omnetpp.ned.model.interfaces.IModuleTypeElement;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
@@ -79,6 +80,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
     private boolean debug = true;
 
+    private static final String NAMESPACE_PROPERTY = "namespace";
 	private static final String PACKAGE_NED_FILENAME = "package.ned";
     private static final String NED_EXTENSION = "ned";
     
@@ -441,7 +443,33 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 		}
 		return typeInfo;
 	}
+	
+	public synchronized String getCppNamespaceForFile(NedFileElementEx element) {
+	    PropertyElementEx property = element.getProperties().get(NAMESPACE_PROPERTY);
+	    
+	    if (property != null)
+            return property.getSimpleValue();
+	    else {
+	        IFile file = getNedFile(element);
+	        IContainer sourceFolder = getNedSourceFolderFor(file);
+	        IContainer path = file.getName().equals(PACKAGE_NED_FILENAME) ? file.getParent().getParent() : file.getParent();
+	        
+	        while (path != null) {
+	            IFile packageFile = path.getFile(new Path(PACKAGE_NED_FILENAME));
 
+	            if (packageFile.exists())
+	                return getCppNamespaceForFile(getNedFileElement(packageFile));
+
+	            path = path.getParent();
+	            
+	            if (path.equals(sourceFolder))
+	                break;
+	        }
+	        
+	        return null;
+	    }
+	}
+	
     public synchronized INEDTypeInfo lookupNedType(String name, INedTypeLookupContext lookupContext) {
         // return cached value if exists, otherwise call doLookupNedType()
         Map<String, INEDTypeInfo> map = nedTypeLookupCache.get(lookupContext);

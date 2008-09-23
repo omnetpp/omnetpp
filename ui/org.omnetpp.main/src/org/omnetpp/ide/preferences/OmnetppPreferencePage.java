@@ -47,8 +47,8 @@ public class OmnetppPreferencePage
 		addField(new DirectoryFieldEditor(OmnetppPreferencePage.OMNETPP_ROOT, "OMNeT++ install location:", getFieldEditorParent()));
 		// supported only in the commercial build
 		if (IConstants.IS_COMMERCIAL) {
-			addField(new LookupFileFieldEditor(DOXYGEN_EXECUTABLE, "Doxygen executable path:", getFieldEditorParent()));
-			addField(new LookupFileFieldEditor(GRAPHVIZ_DOT_EXECUTABLE, "GraphViz Dot executable path:", getFieldEditorParent()));
+			addField(new LookupExecutableFileFieldEditor(DOXYGEN_EXECUTABLE, "Doxygen executable path:", getFieldEditorParent()));
+			addField(new LookupExecutableFileFieldEditor(GRAPHVIZ_DOT_EXECUTABLE, "GraphViz Dot executable path:", getFieldEditorParent()));
 		}
 	}
 
@@ -74,14 +74,22 @@ public class OmnetppPreferencePage
         return doxyExecutablePath != null && new File(ProcessUtils.lookupExecutable(doxyExecutablePath)).exists();
     }
 
-    private static class LookupFileFieldEditor extends FileFieldEditor {
-        public LookupFileFieldEditor(String name, String string, Composite fieldEditorParent) {
+    private static class LookupExecutableFileFieldEditor extends FileFieldEditor {
+        public LookupExecutableFileFieldEditor(String name, String string, Composite fieldEditorParent) {
             super(name, string, fieldEditorParent);
         }
 
         @Override
         protected boolean checkState() {
-            return ProcessUtils.lookupExecutable(getStringValue()) != null || super.checkState();
+            String fileName = ProcessUtils.lookupExecutable(getStringValue());
+            boolean state = new File(fileName).exists();
+            
+            if (!state)
+                showErrorMessage("Executable file not found: " + getStringValue());
+            else
+                clearErrorMessage();
+
+            return state;
         }
     }
 }

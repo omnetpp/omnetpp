@@ -86,9 +86,15 @@ public class ProjectUtils {
      * Potential CoreExceptions are re-thrown as RuntimeException.
      */
     public static IProject[] getAllReferencedProjects(IProject project) {
+        return getAllReferencedProjects(project, false);
+    }
+
+    public static IProject[] getAllReferencedProjects(IProject project, boolean includeSelf) {
         try {
             Set<IProject> result = new HashSet<IProject>();
             collectAllReferencedOmnetppProjects(project, false, result);
+            if (includeSelf)
+                result.add(project);
             return result.toArray(new IProject[]{});
         } catch (CoreException e) {
             throw new RuntimeException(e);

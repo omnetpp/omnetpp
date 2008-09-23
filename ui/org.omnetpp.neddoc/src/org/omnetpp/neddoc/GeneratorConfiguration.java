@@ -58,5 +58,7 @@ public class GeneratorConfiguration {
             doxySourceBrowser = settings.getBoolean(DOXY_SOURCE_BROWSER);
 
         outputDirectoryPath = settings.get(OUTPUT_DIRECTORY_PATH);
+        if (outputDirectoryPath.equals(""))
+            outputDirectoryPath = null;
     }
 }

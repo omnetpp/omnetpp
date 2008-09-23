@@ -1,10 +1,14 @@
 package org.omnetpp.ned.model.ex;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.interfaces.IHasName;
+import org.omnetpp.ned.model.interfaces.IHasProperties;
 import org.omnetpp.ned.model.interfaces.INedFileElement;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
@@ -19,7 +23,7 @@ import org.omnetpp.ned.model.pojo.PackageElement;
  *
  * @author rhornig
  */
-public class NedFileElementEx extends NedFileElement implements INedFileElement, INedTypeLookupContext {
+public class NedFileElementEx extends NedFileElement implements IHasProperties, INedFileElement, INedTypeLookupContext {
 	protected boolean readOnly;
 
     protected NedFileElementEx() {
@@ -142,4 +146,19 @@ public class NedFileElementEx extends NedFileElement implements INedFileElement,
 				lastImport = (ImportElement)element;
 		return lastImport;
 	}
+
+    @SuppressWarnings("unchecked")
+    public Map<String, PropertyElementEx> getProperties() {
+        Map<String, PropertyElementEx> map = new HashMap<String, PropertyElementEx>();
+
+        INEDElement node = getFirstChildWithTag(NED_PROPERTY);
+        while (node != null) {
+            if (node instanceof IHasName && node.getTagCode() == NED_PROPERTY)
+                ((Map)map).put(((IHasName)node).getName(), (PropertyElementEx)node);
+            
+            node = node.getNextSibling();
+        }
+
+        return map;
+    }
 }

@@ -388,6 +388,29 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 		return NEDElement.getDefaultNedTypeResolver();
 	}
 
+    public String getFullyQualifiedCppClassName() {
+        String className = null;
+        List<INEDTypeInfo> extendsChain = getExtendsChain();
+
+        for (INEDTypeInfo typeInfo : extendsChain) {
+            PropertyElementEx property = typeInfo.getProperties().get("class");
+
+            if (property != null)
+                className = property.getSimpleValue();
+        }
+
+        if (className == null)
+            className = extendsChain.get(0).getName();
+
+        NedFileElementEx fileElement = componentNode.getContainingNedFileElement();
+        String namespace = NEDResourcesPlugin.getNEDResources().getCppNamespaceForFile(fileElement);
+        
+        if (namespace == null)
+            return className;
+        else
+            return namespace + "::" + className;
+    }
+
     public INedTypeElement getFirstExtendsRef() {
         refreshInheritedMembersIfNeeded();
         return firstExtendsRef;
@@ -568,5 +591,4 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
     	System.out.println("  local submodules: " + StringUtils.join(localSubmodules.keySet(), ", "));
     	System.out.println("  all submodules: " + StringUtils.join(allSubmodules.keySet(), ", "));
     }
-
 }

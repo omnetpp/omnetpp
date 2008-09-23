@@ -38,12 +38,14 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.TextAttribute;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.ITokenScanner;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
+import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.Pair;
 import org.omnetpp.common.util.ProcessUtils;
@@ -166,8 +168,8 @@ public class DocumentationGenerator {
         msgResources = NEDResourcesPlugin.getMSGResources();
 
         IPreferenceStore store = org.omnetpp.ide.OmnetppMainPlugin.getDefault().getPreferenceStore();
-        dotExecutablePath = store.getString(OmnetppPreferencePage.GRAPHVIZ_DOT_EXECUTABLE);
-        doxyExecutablePath = store.getString(OmnetppPreferencePage.DOXYGEN_EXECUTABLE);
+        dotExecutablePath = ProcessUtils.lookupExecutable(store.getString(OmnetppPreferencePage.GRAPHVIZ_DOT_EXECUTABLE));
+        doxyExecutablePath = ProcessUtils.lookupExecutable(store.getString(OmnetppPreferencePage.DOXYGEN_EXECUTABLE));
     }
 
     public void setDocumentationRootPath(IPath documentationRootPath) {
@@ -216,6 +218,17 @@ public class DocumentationGenerator {
                     return Status.OK_STATUS;
                 }
                 catch (CancellationException e) {
+                    return Status.CANCEL_STATUS;
+                }
+                catch (final IllegalStateException e) {
+                    if (e.getMessage() != null) {
+                        DisplayUtils.runNowOrSyncInUIThread(new java.lang.Runnable() {
+                            public void run() {
+                                MessageDialog.openError(null, "Error during generating neddoc", e.getMessage());
+                            }
+                        });
+                    }
+
                     return Status.CANCEL_STATUS;
                 }
                 catch (Exception e) {
@@ -443,12 +456,21 @@ public class DocumentationGenerator {
     protected void generateDoxy() throws Exception {
         if (configuration.generateDoxy) {
             if (doxyExecutablePath == null || !new File(doxyExecutablePath).exists())
-                throw new RuntimeException("The Doxygen executable path is invalid, set it using Window/Preferences...\nPath: " + doxyExecutablePath);
+                throw new IllegalStateException("The Doxygen executable path is invalid, set it using Window/Preferences...\nThe currently set path is: " + doxyExecutablePath);
 
             try {
                 monitor.beginTask("Generating doxy...", IProgressMonitor.UNKNOWN);
                 File doxyConfigFile = absoluteDoxyConfigFilePath.toFile();
 
+                if (!doxyConfigFile.exists()) {
+                    DisplayUtils.runNowOrSyncInUIThread(new java.lang.Runnable() {
+                        public void run() {
+                            if (MessageDialog.openQuestion(null, "Missing configuration file", "Doxygen configuration file does not exists at: " + absoluteDoxyConfigFilePath + "\nDo you want to create a default?"))
+                                DocumentationGeneratorPropertyPage.generateDefaultDoxyConfigurationFile(project, doxyExecutablePath, absoluteDoxyConfigFilePath.toOSString());
+                        }
+                    });
+                }
+                    
                 if (doxyConfigFile.exists()) {
                     String content = FileUtils.readTextFile(doxyConfigFile);
                     // these options must be always overwritten
@@ -461,14 +483,14 @@ public class DocumentationGenerator {
 
                     try {
                         FileUtils.writeTextFile(modifiedDoxyConfigFile, content);
-                        ProcessUtils.exec(ProcessUtils.lookupExecutable(doxyExecutablePath), new String[] {modifiedDoxyConfigFile.toString()}, project.getLocation().toString());
+                        ProcessUtils.exec(doxyExecutablePath, new String[] {modifiedDoxyConfigFile.toString()}, project.getLocation().toString());
                     }
                     finally {
                         modifiedDoxyConfigFile.delete();
                     }
                 }
                 else
-                    throw new RuntimeException("Doxygen configuration file not found at: " + absoluteDoxyConfigFilePath);
+                    throw new IllegalStateException("Doxygen configuration file not found at: " + absoluteDoxyConfigFilePath);
             }
             finally {
                 monitor.done();
@@ -1282,14 +1304,14 @@ public class DocumentationGenerator {
     }
 
     protected void generateCppDefinitionReference(ITypeElement typeElement) throws IOException {
-        String className = typeElement.getName();
+        String className;
 
-        if (typeElement instanceof INedTypeElement) {
-            ParamElementEx param = ((INedTypeElement)typeElement).getParamDeclarations().get("className");
-
-            if (param != null)
-                className = param.getValue();
-        }
+        if (typeElement instanceof INedTypeElement)
+            className = ((INedTypeElement)typeElement).getNEDTypeInfo().getFullyQualifiedCppClassName();
+        else if (typeElement instanceof IMsgTypeElement)
+            className = ((IMsgTypeElement)typeElement).getMsgTypeInfo().getFullyQualifiedCppClassName();
+        else
+            throw new RuntimeException("Unknown type element: " + typeElement);
 
         if (doxyMap.containsKey(className))
             out("<p><b>C++ definition: <a href=\"" + doxyRelativeRootPath.append(rootRelativeDoxyPath).append(doxyMap.get(className)) + "\" target=\"_top\">click here</a></b></p>\r\n");
@@ -1760,9 +1782,9 @@ public class DocumentationGenerator {
 
     protected void generateDotOuput(DotGraph dot, File outputFile, String format) throws IOException {
         if (dotExecutablePath == null || !new File(dotExecutablePath).exists())
-            throw new RuntimeException("The GraphViz Dot executable path is invalid, set it using Window/Preferences...\nPath: " + dotExecutablePath);
+            throw new IllegalStateException("The GraphViz Dot executable path is invalid, set it using Window/Preferences...\nThe currently set path is: " + dotExecutablePath);
 
-        ProcessUtils.exec(ProcessUtils.lookupExecutable(dotExecutablePath), new String[] {"-T" + format, "-o", outputFile.toString()}, ".", dot.toString(), 10);
+        ProcessUtils.exec(dotExecutablePath, new String[] {"-T" + format, "-o", outputFile.toString()}, ".", dot.toString(), 10);
     }
 
     protected String getParamTypeAsString(ParamElementEx param) {

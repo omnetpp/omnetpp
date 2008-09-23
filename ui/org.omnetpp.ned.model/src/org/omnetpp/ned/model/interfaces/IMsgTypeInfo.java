@@ -6,6 +6,11 @@ import java.util.Set;
 import org.omnetpp.ned.model.ex.PropertyElementEx;
 import org.omnetpp.ned.model.pojo.FieldElement;
 
+/**
+ * Wraps an MSG type, provides easy lookup for fields, properties.
+ *
+ * @author levy
+ */
 public interface IMsgTypeInfo {
     public ITypeElement getFirstExtendsRef();
 
@@ -23,4 +28,9 @@ public interface IMsgTypeInfo {
 
     /** Fields including inherited ones */
     public Map<String, FieldElement> getFields();
+
+    /**
+     * Returns the fully qualified C++ class name using the @namespace property and the type's name.
+     */
+    public String getFullyQualifiedCppClassName();
 }

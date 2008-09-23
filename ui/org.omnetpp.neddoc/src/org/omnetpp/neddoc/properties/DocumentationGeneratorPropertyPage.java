@@ -98,7 +98,7 @@ public class DocumentationGeneratorPropertyPage
         Button button = new Button(group, SWT.PUSH);
         button.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 3, 1));
         button.setText("Generate default");
-        button.setEnabled(doxyExecutablePath != null && new File(doxyExecutablePath).exists());
+        button.setEnabled(doxyExecutablePath != null && new File(ProcessUtils.lookupExecutable(doxyExecutablePath)).exists());
         button.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -107,44 +107,13 @@ public class DocumentationGeneratorPropertyPage
                     relativePath = "doxy.cfg";
                     doxyConfigFilePath.setText(relativePath);
                 }
-                String fileName = project.getFile(relativePath).getLocation().toPortableString();
+                String fileName = project.getFile(relativePath).getLocation().toOSString();
                 
                 if (new File(fileName).exists())
                     if (!MessageDialog.openConfirm(getShell(), "Confirm overwrite", "Do you wan to overwrite the Doxygen configuration file: " + fileName + "?"))
                        return;
 
-                try {
-                    ProcessUtils.exec(doxyExecutablePath, new String[] {"-g", fileName}, project.getLocation().toString());
-
-                    String content = FileUtils.readTextFile(fileName);
-                    // AUTO means will be set when generating the documentation based on project settings
-                    content = replaceDoxygenConfigurationEntry(content, "PROJECT_NAME", project.getName());
-                    content = replaceDoxygenConfigurationEntry(content, "OUTPUT_DIRECTORY", "AUTO");
-                    content = replaceDoxygenConfigurationEntry(content, "FULL_PATH_NAMES", "NO");
-                    content = replaceDoxygenConfigurationEntry(content, "DETAILS_AT_TOP", "YES");
-                    content = replaceDoxygenConfigurationEntry(content, "EXTRACT_ALL", "YES");
-                    content = replaceDoxygenConfigurationEntry(content, "EXTRACT_PRIVATE", "YES");
-                    content = replaceDoxygenConfigurationEntry(content, "QUIET", "YES");
-                    content = replaceDoxygenConfigurationEntry(content, "RECURSIVE", "YES");
-                    content = replaceDoxygenConfigurationEntry(content, "EXCLUDE_PATTERNS", "*_m.cc *_n.cc");
-                    content = replaceDoxygenConfigurationEntry(content, "INLINE_SOURCES", "YES");
-                    content = replaceDoxygenConfigurationEntry(content, "REFERENCES_RELATION", "NO");
-                    content = replaceDoxygenConfigurationEntry(content, "VERBATIM_HEADERS", "NO");
-                    content = replaceDoxygenConfigurationEntry(content, "HTML_OUTPUT", ".");
-                    content = replaceDoxygenConfigurationEntry(content, "HTML_STYLESHEET", "AUTO");
-                    content = replaceDoxygenConfigurationEntry(content, "GENERATE_TREEVIEW", "YES");
-                    content = replaceDoxygenConfigurationEntry(content, "GENERATE_LATEX", "NO");
-                    content = replaceDoxygenConfigurationEntry(content, "GENERATE_TAGFILE", "AUTO");
-                    content = replaceDoxygenConfigurationEntry(content, "TEMPLATE_RELATIONS", "YES");
-                    FileUtils.writeTextFile(fileName, content);                    
-                    
-                    MessageDialog.openInformation(getShell(), "Generate default Doxygen configuration file", 
-                            "Generating the Doxygen configuration file: " + fileName + " using Doxygen: " + doxyExecutablePath + " succeeded.");
-                }
-                catch (Exception x) {
-                    MessageDialog.openError(getShell(), "Generate default Doxygen configuration file", 
-                            "Generating the Doxygen configuration file: " + fileName + " using Doxygen: " + doxyExecutablePath + " failed.");
-                }
+                generateDefaultDoxyConfigurationFile(project, doxyExecutablePath, fileName);
             }
         });
 
@@ -269,5 +238,40 @@ public class DocumentationGeneratorPropertyPage
         key = key.replace("\\", "\\\\");
         value = value.replace("\\", "\\\\");
         return content.replaceAll("(?m)^\\s*" + key +"\\s*=.*?$", key + "=" + value);
+    }
+
+    public static void generateDefaultDoxyConfigurationFile(final IProject project, final String doxyExecutablePath, String fileName) {
+        try {
+            ProcessUtils.exec(doxyExecutablePath, new String[] {"-g", fileName}, project.getLocation().toString());
+
+            String content = FileUtils.readTextFile(fileName);
+            // AUTO means will be set when generating the documentation based on project settings
+            content = replaceDoxygenConfigurationEntry(content, "PROJECT_NAME", project.getName());
+            content = replaceDoxygenConfigurationEntry(content, "OUTPUT_DIRECTORY", "AUTO");
+            content = replaceDoxygenConfigurationEntry(content, "FULL_PATH_NAMES", "NO");
+            content = replaceDoxygenConfigurationEntry(content, "DETAILS_AT_TOP", "YES");
+            content = replaceDoxygenConfigurationEntry(content, "EXTRACT_ALL", "YES");
+            content = replaceDoxygenConfigurationEntry(content, "EXTRACT_PRIVATE", "YES");
+            content = replaceDoxygenConfigurationEntry(content, "QUIET", "YES");
+            content = replaceDoxygenConfigurationEntry(content, "RECURSIVE", "YES");
+            content = replaceDoxygenConfigurationEntry(content, "EXCLUDE_PATTERNS", "*_m.cc *_n.cc");
+            content = replaceDoxygenConfigurationEntry(content, "INLINE_SOURCES", "YES");
+            content = replaceDoxygenConfigurationEntry(content, "REFERENCES_RELATION", "NO");
+            content = replaceDoxygenConfigurationEntry(content, "VERBATIM_HEADERS", "NO");
+            content = replaceDoxygenConfigurationEntry(content, "HTML_OUTPUT", ".");
+            content = replaceDoxygenConfigurationEntry(content, "HTML_STYLESHEET", "AUTO");
+            content = replaceDoxygenConfigurationEntry(content, "GENERATE_TREEVIEW", "YES");
+            content = replaceDoxygenConfigurationEntry(content, "GENERATE_LATEX", "NO");
+            content = replaceDoxygenConfigurationEntry(content, "GENERATE_TAGFILE", "AUTO");
+            content = replaceDoxygenConfigurationEntry(content, "TEMPLATE_RELATIONS", "YES");
+            FileUtils.writeTextFile(fileName, content);                    
+            
+            MessageDialog.openInformation(null, "Generate default Doxygen configuration file", 
+                    "Generating the Doxygen configuration file: " + fileName + " using Doxygen: " + doxyExecutablePath + " succeeded.");
+        }
+        catch (Exception x) {
+            MessageDialog.openError(null, "Generate default Doxygen configuration file", 
+                    "Generating the Doxygen configuration file: " + fileName + " using Doxygen: " + doxyExecutablePath + " failed.");
+        }
     }
 }

@@ -21,11 +21,13 @@ import org.omnetpp.ned.model.ex.MsgFileElementEx;
 import org.omnetpp.ned.model.interfaces.IMsgTypeElement;
 import org.omnetpp.ned.model.interfaces.IMsgTypeInfo;
 import org.omnetpp.ned.model.interfaces.IMsgTypeResolver;
+import org.omnetpp.ned.model.pojo.NamespaceElement;
 
 /**
  * FIXME levy: please add description, to the class, and to the methods!!!!
  */
 public class MsgResources implements IMsgTypeResolver {
+    private static final String NAMESPACE_PROPERTY = "namespace";
     private static final String MSG_EXTENSION = "msg";
     
     // instance variable
@@ -119,5 +121,14 @@ public class MsgResources implements IMsgTypeResolver {
         
         for (IMsgTypeElement typeElement : element.getTopLevelTypeNodes())
             msgTypes.put(typeElement.getName(), typeElement);
+    }
+
+    public String getCppNamespaceForFile(MsgFileElementEx element) {
+        NamespaceElement namespace = element.getFirstNamespaceChild();
+
+        if (namespace != null)
+            return namespace.getName();
+        else
+            return null;
     }
 }
