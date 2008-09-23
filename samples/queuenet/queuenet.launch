@@ -27,11 +27,12 @@
 <listEntry value="1"/>
 </listAttribute>
 <mapAttribute key="org.eclipse.debug.core.environmentVariables">
-<mapEntry key="PATH" value="${opp_bin_dir}${system_property:path.separator}${env_var:PATH}"/>
 <mapEntry key="LD_LIBRARY_PATH" value="${opp_lib_dir}${system_property:path.separator}${opp_ld_library_path_loc:/queuenet}${system_property:path.separator}${env_var:LD_LIBRARY_PATH}"/>
+<mapEntry key="PATH" value="${opp_bin_dir}${system_property:path.separator}${env_var:PATH}"/>
 </mapAttribute>
 <stringAttribute key="org.omnetpp.launch.ADDITIONAL_ARG" value=""/>
 <stringAttribute key="org.omnetpp.launch.CONFIG_NAME" value=""/>
+<stringAttribute key="org.omnetpp.launch.DEBUG_ON_ERRORS" value=""/>
 <stringAttribute key="org.omnetpp.launch.EXECUTABLE" value="/queueinglib/queueinglib"/>
 <stringAttribute key="org.omnetpp.launch.INI_FILES" value="omnetpp.ini"/>
 <stringAttribute key="org.omnetpp.launch.NED_PATH" value="${opp_ned_path:/queuenet}"/>
