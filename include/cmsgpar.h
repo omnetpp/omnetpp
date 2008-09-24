@@ -378,12 +378,6 @@ class SIM_API cMsgPar : public cOwnedObject
 
     /** @name Utility functions. */
     //@{
-
-    /**
-     * Reads the object value from the ini file or from the user.
-     */
-    cMsgPar& read();
-
     /**
      * Replaces the object value with its evaluation (a double).
      * Equivalent to <tt>setValue('D', this->doubleValue())</tt>.
