@@ -989,7 +989,7 @@ $progname [options] [object files or libraries]
     -M mode, --mode mode  Selects the build mode, "debug" or "release".
                           Defaults to "debug". This setting can still be
                           overridden on the make command line, by specifying
-                          "MAKE=debug" or "MAKE=release" as an extra argument.
+                          "MODE=debug" or "MODE=release" as an extra argument.
     -Dname[=value], -D name[=value], --define name[=value]
                           Preprocessor symbol to be passed to the C++ compiler.
     -Kname=value, -K name=value, --makefile-define name=value
