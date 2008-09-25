@@ -34,7 +34,7 @@ EXPERIMENTAL_SRC_FILES = \
   patchownership.pl \
   ProxyObjectMap.java.in
 
-all: $(TARGET) javafiles dist
+all: $(TARGET)
 
 $(OUTDIR)\simkernel_wrap.cc $(OUTDIR)\SimkernelJNI_registerNatives.cc : simkernel.i Makefile.vc $(OMNETPP_ROOT)/include/*.h  # and many oher things
 	-mkdir $(OUTDIR)\java >nul 2>nul
