@@ -1,0 +1,3 @@
+# review these settings, and change them according to your setup
+INCLUDE_PATH += -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/linux
+LIBS += -L$(JAVA_HOME)/jre/lib/i386/client -ljvm

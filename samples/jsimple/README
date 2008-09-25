@@ -1,0 +1,399 @@
+JSimpleModule
+=============
+
+This is an extension that makes it possible to write OMNeT++ simple modules
+in Java. Java and C++-based simple modules can be freely mixed in
+simulations. Integration is not seamless though, there are limitations as
+to what OMNeT++ features are available, as well special coding rules to
+obey in the Java code.
+
+Operation is based on the JSimpleModule class. This is an ordinary C++
+simple module, which receives the name of a Java class in a module parameter.
+During initialize, it loads the Java Virtual Machine (if not already loaded),
+instantiates the given Java class, then simply delegates initialize(),
+handleMessage() and finish() calls to it. The Java class should be subclassed
+from org.omnetpp.simkernel.JSimpleModule, which provides the usual methods:
+send(), scheduleAt(), cancelEvent(), etc. Messages are instances of
+org.omnetpp.simkernel.cMessage, and the org.omnetpp.simkernel package contains
+Java versions of most simulation kernel classes.
+
+The org.omnetpp.simkernel.* Java classes are just JNI-based wrappers around
+the corresponding C++ classes: every Java object holds a pointer to a
+corresponding C++ object, and delegates all method calls to it. This
+has a few consequences about the programming model, as will be covered later.
+The wrapper classes have been generated using SWIG (www.swig.org).
+
+SO, SHOULD I DEVELOP ALL MY SIMULATIONS IN JAVA AFTERWARDS? Probably not. This
+extension has limitations, and cannot be recommended as a primary means of 
+writing simulation models. However, it can be useful for smaller models with
+no particular performance requirements, or if you want to reuse an existing
+body of Java code as part of an OMNeT++ simulation.
+
+
+Contents
+--------
+1. Building the simulation executable
+2. Creating the simulation
+3. Writing Java-based simple modules
+4. Extending messages
+5. Integration with non-Java modules
+6. Compiling the Java code and running the simulation
+
+
+1. Building the simulation executable
+-------------------------------------
+
+Prerequisite: JDK. The code is not very sensitive to the particular JDK version.
+
+First, you'll need a simulation executable that contains JSimpleModule,
+plus the C++ simple modules you'll need in the simulation. For this,
+the provided .cc files need to be compiled and linked into the executable:
+
+   JMessage.h/cc
+   JSimpleModule.h/cc
+   simkernel_wrap.cc
+   SimkernelJNI_registerNatives.cc
+
+These files need the JNI headers to compile, and the simulation executable
+needs to be linked against the JVM. If you generate the makefile with
+opp_(n)makemake, the provided makefrag(.vc) file gets built into the
+makefile, and modifies the INCLUDE_PATH and LIBS variables accordingly.
+makefrag(.vc) needs the JAVA_HOME variable, you can define it either as an
+environment variable, or add it directly into makefrag(.vc).
+
+If you get a compiler error message that <jni.h> is not found or a linker
+message that the "jvm" library is not found, review the settings in
+makefrag(.vc), and re-run opp_(n)makemake.
+
+
+2. Creating the simulation
+--------------------------
+
+Your Java-based simple modules will be run by JSimpleModule instances,
+which get the Java class name in a parameter. That is, you would write
+something like this in the NED file:
+
+   simple Source extends JSimpleModule
+   {
+      gates:
+         input in[];
+         output out[];
+   }
+
+   simple Sink extends JSimpleModule
+   {
+      gates:
+         input in[];
+         output out[];
+   }
+
+   module Net
+   {
+       submodules:
+           source: Source;
+           sink: Sink;
+       connections:
+           source.out++ --> sink.in++;
+   }
+
+JSimpleModule has the following NED declaration:
+
+   simple JSimpleModule
+   {
+   }
+
+
+3. Writing simple modules in Java
+---------------------------------
+
+FOR THE IMPATIENT: (1) subclass from JSimpleModule not cSimpleModule;
+(2) use msg.sameAs(timeoutMsg) instead of msg==timeoutMsg; (3) write
+cMessage.cast(obj) instead of (cMessage)obj; (4) objects need to be
+explicitly deleted with their delete() methods.
+
+
+Simple module classes need to subclass from JSimpleModule, should have a
+default constructor, and redefine at least handleMessage() [activity() is
+not supported] and possibly also initialize() and finish(). The Java package
+must correspond to the NED package.
+
+  package mysimulation;
+
+  import org.omnetpp.simkernel.*;
+
+  public class MyModule extends JSimpleModule
+  {
+      ...
+      public MyModule() { ... }
+      protected void initialize() { ... }
+      protected void handleMessage(cMessage msg) { ... }
+      protected void finish() { ... }
+      ...
+  }
+
+When using multi-stage initialization, the following two methods
+have to be redefined instead of initialize():
+
+      protected int numInitStages() { ... }
+      protected void initialize(int stage) { ... }
+
+
+THE SIMULATION LIBRARY. The module class can make use of cMessage, cQueue,
+cOutVector and other OMNeT++ classes. The same methods and operations are
+available as in C++; the only difference is that accessor ("getter") method
+names have been prefixed with "get" to follow the Java convention, for
+example, name() is available as getName().
+
+
+SIMKERNEL JAVA CLASSES ARE WRAPPERS. The cModule, cMessage, cQueue,
+cOutVector, etc. Java classes are just wrappers around the corresponding
+C++ classes. They don't have any data members except for a pointer to the
+underlying C++ object, and delegate method calls into C++. When you write
+
+  cMessage msg = new cMessage();
+
+in Java, the cMessage Java class will create an underlying cMessage C++
+object via a JNI call, and store its pointer. When you invoke methods on
+the Java object (e.g. msg.setLength(10)), it will be delegated to the C++
+equivalent.
+
+Also, when you perform a send(msg, "out") call (which is actually
+this.send(msg, "out"), "this" being the module object), then the underlying
+C++ simple module's and the C++ cMessage object's pointer will be taken
+from the Java objects, and the corresponding module->send(msg, "out") C++
+call will be made. After sending out the message, the msg Java object
+should no longer be referenced, because the C++ message object have been
+deleted meanwhile by the simulation kernel or other modules.
+
+Methods which return reference to an object (such as parentModule() or
+cQueue.pop()) make a JNI call to retrieve a C++ object pointer, then wrap
+the C++ pointer into a Java object.
+
+
+EXPLICIT MEMORY MANAGEMENT. The Java wrapper objects NEVER delete the
+underlying C++ object when they are garbage collected; finalize() does
+nothing. The underlying C++ objects must be explicitly deleted with the
+delete() method when they are no longer needed.
+
+Messages that are no longer needed should be disposed of:
+
+  msg.delete();
+
+Similarly, a
+
+  cQueue queue = new cQueue();
+
+line without a corresponding
+
+  queue.delete();
+
+is a memory leak.
+
+After delete(), the Java wrapper object should be considered zombie, and
+no method should be called on it any more. To emphasize this, the delete()
+call nulls out the stored C++ pointer.
+
+  NOTE: if you are familiar with SWIG, you must have noticed that this is not
+  the default behaviour of SWIG-generated classes. Simulations are too dynamic
+  in nature for SWIG's swigCMemOwn approach to work reliably in practice.
+
+
+NO JAVA OBJECT IDENTITY. It was already mentioned that methods which return
+reference to an object (such as parentModule() or cQueue.pop()) will always
+wrap the C++ pointer returned by JNI into a new Java object. Even more
+important, if you have a self-message scheduled periodically, every time it
+arrives in handleMessage() it will be wrapped into a different cMessage
+Java object.
+
+This means that Java's "==" operator cannot be used to test if two objects
+are the same, but rather, the underlying C++ pointers have to be compared
+(getBaseCPtr() method). There is also a convenience method, sameAs(), which
+does that.
+
+  if (msg == timeoutMsg) ... // WRONG
+  if (msg.getBaseCPtr() == timoutMsg.getBaseCPtr())) ... // correct
+  if (msg.sameAs(timeoutMsg)) ... // also correct (does the same as above)
+
+This requires some attention during coding to avoid bad surprises.
+
+   Rationale: Implementing one-to-one mapping of C++ objects to Java wrapper
+   objects is not done, because it would not be possible without modifying
+   the C++ base class. (If we accepted modification of the C++ base class,
+   then storing a jobject reference in it would be the best solution. One
+   might think that by introducing a global hash table [to store cptr-to-
+   wrapperobject mapping] we could spare the need for modifying the C++ base
+   class, but that doesn't work in practice. Given a CPtr, we cannot tell if
+   it is still the same object, or a new object allocated on the same memory
+   location after the original object was destroyed. This problem could only
+   be resolved by instrumenting the C++ destructor to remove the entry from
+   the hashtable, or some similar trick. However, that would mean that this
+   extension could not be run on an unmodified OMNeT++ installation.)
+
+
+NO POLYMORPHIC RETURN TYPES. Another consequence of wrapping: when a method
+returns an object, the C++ object object will be wrapped into a Java object
+of the *declared* return type of the method, and not of the actual C++ type!
+That is, the following code causes ClassCastException:
+
+  cQueue queue = new cQueue();
+  queue.insert(new cMessage());
+  ...
+  cMessage msg = (cMessage) queue.pop(); // BANG: ClassCastException!
+
+cQueue::pop() returns cObject, so the wrapper object will be an instance
+of cObject not cMessage. To access the object as a cMessage, it has to be
+re-wrapped:
+
+  cMessage msg = cMessage.cast(queue.pop());  // correct
+
+This behaves like C++ dynamic_cast<>, in that the cast() method
+returns null if the conversion cannot be performed. (It does actually
+contain a C++ dynamic_cast<> inside the JNI code.) The original Java wrapper
+object (obj above) should be considered a zombie afterwards, and should
+not be touched.
+
+   Rationale: immediately creating a wrapper object of the right (dynamic)
+   type would cause a high runtime cost in every method that returns an object.
+   The code would have to invoke className() on the C++ object to get the
+   C++ class name, prefix it with "org.omnetpp.simkernel." to get a fully
+   qualified Java class name, then invoke Class.forName() and newInstance().
+   This is far more costly than a plain "new cObject(cPtr, false)" call.
+   Caching of the Java Class would alleviate the pain, but would require
+   modification to the underlying C++ classes, i.e. this Java extension would
+   not be able to run on an unmodified OMNeT++ installation.
+
+
+4. Extending Messages
+---------------------
+
+In most simulation scenarios, messages need to carry extra data in addition
+to the built-in fields (message kind, length, etc). This can be achieved by
+subclassing JMessage (NOT cMessage!), or by adding cPar objects to cMessages.
+
+
+SUBCLASSING JMESSAGE. You can add data to messages by subclassing them in
+Java, the only disadvantage being that their contents will not be that easily
+accessible from C++. However, a naive approach to subclass the cMessage Java
+class is doomed to fail:
+
+  public class cMessageExt extends cMessage {  // WRONG!
+
+By instantiating and filling in the fields of cMessageExt you only add data
+to the particular wrapper object: when the message arrives at another module,
+a different (plain cMessage) wrapper will be created for the C++ object,
+and all data in the original cMessageExt Java object are lost. Clearly, a
+different approach is needed.
+
+JMessage extends the cMessage C++ class with a jobject reference to its
+Java peer object (we can no longer say "wrapper" here). Once a JMessage is
+created in Java, the underlying C++ object will get hold of the Java object
+and not let it go. Thus it cannot be garbage collected, and when the
+message arrives at another module, a reference to the Java object can be
+retrieved from the C++ object. When JMessage gets deleted (in C++ with
+"delete msg", or in Java with "msg.delete()"), the C++ object releases the
+Java reference so the Java peer object can be garbage collected.
+
+JMessage can be subclassed as any Java class:
+
+  public class MyMessage extends JMessage implements Cloneable {  // correct
+     ...
+  }
+
+And when a message of that type arrives at a module, its contents can be
+accessed using JMessage.cast():
+
+  MyMessage myMsg = (MyMessage) JMessage.cast(msg);
+
+When a JMessage gets duplicated somewhere in the C++ code using dup(), it
+will clone Java peer object too, by calling back its clone() method via
+JNI. So it is recommended to implement the java.lang.Cloneable interface
+(to prevent CloneNotSupportedException), and write a clone() method in the
+Java class.
+
+Note that a JMessage can travel through C++ simple modules without any
+problem. Even its contents can be manipulated from C++ by convenience
+methods declared on the JMessage C++ class: getIntJavaField(),
+getDoubleJavaField(), getStringJavaField(), setIntJavaField(),
+setDoubleJavaField(), setStringJavaField(), etc. The fields must be identified
+with a their name (a string), and the JMessage class will read/write them
+via JNI. An example C++ code:
+
+   JMessage *jmsg = check_and_cast<JMessage *>(msg);
+   ev << "counter=" << jmsg->getIntJavaField("counter") << endl;
+
+The getIntJavaField() method in the above example will first look for a
+
+   public int getCounter() {...}
+
+method in the Java object, and if it not found, it will try it as a
+
+   public int counter;
+
+data member. If it is not there either, a runtime error gets thrown.
+Similarly, a setDoubleJavaField("power", 0.543) call will first try to
+call a setPower(double) method in the Java class, then it it fails
+it tries to set a `power' data member of type double.
+
+ADDING CPAR OBJECTS. A historical way of adding data to messages is to
+attach cPar objects to them. While this method is inferior to subclassing
+from JMessage, it is possible to do.
+
+
+5. Integration with non-Java modules
+------------------------------------
+
+If you already have C++ message classes that you want to access from Java
+(i.e. the INET Framework protocol headers and control info), then the best
+way is to wrap them using SWIG. The wrapper classes should be consistent
+with the ones already present in simkernel.jar. You will probably want to
+reuse parts of the SWIG interface files (.i) provided in the sources of
+this package.
+
+Without SWIG wrappers, one solution is to stick C++-based "glue" simple
+modules between Java and C++ modules, which would convert between
+JMessage-based messages and C++ messages.
+
+Another solution is to use a generic interface for manipulating C++ message
+objects. Given the following message file:
+
+    // IPHeader.msg
+    message IPHeader {
+        fields:
+            int source;
+            int destination;
+    }
+
+the following code can be used to create and fill in an IPHeader object:
+
+    cMessage pk = cMessage.cast(Simkernel.createOne("IPHeader"));
+    pk.setField("source", "1");
+    pk.setField("destination", "2");
+
+Simkernel.createOne() is a generic factory method that can instantiate any
+C++ class that has been registered with Register_Class(). The result has
+then to be cast (re-wrapped) to the appropriate type, e.g. cMessage. Once
+created, fields of the object can be get/set with the setField()/getField()/
+setArrayField()/getArrayField() methods. These methods rely on reflection
+information generated by the OMNeT++ message compiler opp_msgc, and handle
+all values as string (that is: int, double and other types are all get/set
+via string when using this API). These factors have some performance impact,
+but using these generic methods is still easier than wrapping the C++ classes
+with SWIG.
+
+
+6. Compiling the Java code and running the simulation
+-----------------------------------------------------
+
+When invoking the Java compiler, make sure that the provided simkernel.jar
+is in the compile-time classpath.
+
+Running the simulation is no different from running any OMNeT++ simulation,
+but make sure simkernel.jar is in the CLASSPATH, and that the JVM can be loaded
+(i.e. JRE/bin is in the PATH).
+
+
+COMMENT, QUESTIONS:
+Please post to the mailing list.
+
+--
+Andras
