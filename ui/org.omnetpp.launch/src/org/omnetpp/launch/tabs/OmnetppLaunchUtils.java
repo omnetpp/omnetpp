@@ -29,6 +29,8 @@ import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
+import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.internal.core.JavaProject;
 import org.eclipse.swt.SWT;
 import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.omnetpp.common.util.StringUtils;
@@ -38,6 +40,7 @@ import org.omnetpp.inifile.editor.model.InifileParser;
 import org.omnetpp.launch.IOmnetppLaunchConstants;
 import org.omnetpp.launch.LaunchPlugin;
 
+@SuppressWarnings("restriction")
 public class OmnetppLaunchUtils {
 	/**
 	 * Reads the ini file and enumerates all config sections. resolves include directives recursively
@@ -202,15 +205,17 @@ public class OmnetppLaunchUtils {
 
 		// executable name
 		String exeName = config.getAttribute(IOmnetppLaunchConstants.OPP_EXECUTABLE, "");
+		String projectName = null;
 		if (StringUtils.isEmpty(exeName)) {
 			// use the first library's project as main project
-			newCfg.setAttribute(IOmnetppLaunchConstants.ATTR_PROJECT_NAME, newCfg.getAttribute(IOmnetppLaunchConstants.OPP_SHARED_LIB_PROJECT, ""));
+			projectName = newCfg.getAttribute(IOmnetppLaunchConstants.OPP_SHARED_LIB_PROJECT, "");
 			// no exe specified use opp_run and the first libraries project 
 			exeName = OmnetppMainPlugin.getOmnetppBinDir()+"/opp_run"; 
 		} else {
-			newCfg.setAttribute(IOmnetppLaunchConstants.ATTR_PROJECT_NAME, new Path(exeName).segment(0));
+			projectName = new Path(exeName).segment(0);
 			exeName = new Path(exeName).removeFirstSegments(1).toString();
 		}
+        newCfg.setAttribute(IOmnetppLaunchConstants.ATTR_PROJECT_NAME, projectName);
 
 		if (Platform.getOS().equals(Platform.OS_WIN32) && !exeName.matches("(?i).*\\.(exe|cmd|bat)$"))
 			exeName += ".exe";
@@ -276,7 +281,7 @@ public class OmnetppLaunchUtils {
 		newCfg.setAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS, 
 				config.getAttribute(IOmnetppLaunchConstants.OPP_ADDITIONAL_ARGS, "")+args);
 
-		// handle environment: add OMNETPP_BIN and LD_LIBRARY_PATH if necessary
+		// handle environment: add OMNETPP_BIN and LD_LIBRARY_PATH and CLASSPATH if necessary
         Map<String, String> envir = newCfg.getAttribute("org.eclipse.debug.core.environmentVariables", new HashMap<String, String>());
         String path = envir.get("PATH");
         // if the path was not set by hand, generate automatically
@@ -287,11 +292,37 @@ public class OmnetppLaunchUtils {
         // if the path was not set by hand, generate automatically
         if (StringUtils.isBlank(ldLibPath))
         	envir.put("LD_LIBRARY_PATH", "${opp_lib_dir}${system_property:path.separator}${opp_ld_library_path_loc:"+wdirStr+"}${system_property:path.separator}${env_var:LD_LIBRARY_PATH}");
-        
+
+        // Java CLASSPATH
+        IResource[] resources = newCfg.getMappedResources();
+        if (resources != null && resources.length != 0) {
+            String javaClasspath = getJavaClasspath(resources[0].getProject());
+            if (javaClasspath != null)
+                envir.put("CLASSPATH", javaClasspath);
+        }
+
         newCfg.setAttribute("org.eclipse.debug.core.environmentVariables", envir);
         // do we need this ??? : configuration.setAttribute("org.eclipse.debug.core.appendEnvironmentVariables", true);
 
 		return newCfg;
+	}
+
+	/**
+	 * Returns the Java CLASSPATH based on the project settings where the class files are generated.
+	 * @throws CoreException 
+	 */
+    public static String getJavaClasspath(IProject project) throws CoreException {
+	    JavaProject javaProject = (JavaProject)project.getNature(JavaCore.NATURE_ID);
+	    if (javaProject == null)
+	        return null;
+	    else {
+	        String result = ResourcesPlugin.getWorkspace().getRoot().getFile(javaProject.getOutputLocation()).getLocation().toOSString();
+	        
+	        for (IProject referencedProject : project.getReferencedProjects())
+	            result += ";" + getJavaClasspath(referencedProject);
+	        
+	        return result;
+	    }
 	}
 
     /**

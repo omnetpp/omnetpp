@@ -6,11 +6,13 @@ Bundle-Version: 4.0.0.qualifier
 Bundle-Activator: org.omnetpp.launch.LaunchPlugin
 Bundle-Vendor: OpenSim Ltd.
 Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.core.variables,
  org.eclipse.ui,
  org.eclipse.ui.ide,
  org.eclipse.debug.core,
  org.eclipse.debug.ui,
- org.eclipse.core.variables,
+ org.eclipse.jdt;bundle-version="3.4.0",
+ org.eclipse.jdt.core;bundle-version="3.4.0",
  org.omnetpp.common,
  org.omnetpp.main,
  org.omnetpp.ned.core,
