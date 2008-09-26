@@ -17,8 +17,8 @@ network Net1
         tic: Txc;
         toc: Txc;
     connections:
-        tic.out --> toc.in;
-        tic.in <-- toc.out;
+        tic.out --> { delay = 1ms; } --> toc.in;
+        tic.in <-- { delay = 1ms; } <-- toc.out;
 }
 
 simple Source extends JSimpleModule
