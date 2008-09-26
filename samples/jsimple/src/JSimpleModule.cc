@@ -1,4 +1,6 @@
 #include <assert.h>
+#include <string.h>
+#include <algorithm>
 #include "JSimpleModule.h"
 #include "JUtil.h"
 
@@ -49,7 +51,9 @@ void JSimpleModule::createJavaModuleObject()
          initJVM();
 
     // find class and method IDs (note: initialize() and finish() are optional)
-    const char *clazzName = getNedTypeName();
+    std::string className = getNedTypeName();
+    replace(className.begin(), className.end(), '.', '/');
+    const char *clazzName = className.c_str();
     DEBUGPRINTF("Finding class %s...\n", clazzName);
     jclass clazz = jenv->FindClass(clazzName);
     checkExceptions();
