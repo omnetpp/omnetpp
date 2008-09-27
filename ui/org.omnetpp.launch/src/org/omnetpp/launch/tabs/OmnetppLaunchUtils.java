@@ -13,6 +13,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -29,10 +30,9 @@ import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
-import org.eclipse.jdt.core.JavaCore;
-import org.eclipse.jdt.internal.core.JavaProject;
 import org.eclipse.swt.SWT;
 import org.eclipse.ui.model.WorkbenchContentProvider;
+import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ide.OmnetppMainPlugin;
 import org.omnetpp.inifile.editor.model.ConfigRegistry;
@@ -40,8 +40,13 @@ import org.omnetpp.inifile.editor.model.InifileParser;
 import org.omnetpp.launch.IOmnetppLaunchConstants;
 import org.omnetpp.launch.LaunchPlugin;
 
-@SuppressWarnings("restriction")
+/**
+ * Various utility methods for the launcher.
+ */
 public class OmnetppLaunchUtils {
+    // copied from JavaCore.NATURE_ID (we don't want dependency on the JDT plugins) 
+    private static final String JAVA_NATURE_ID = "org.eclipse.jdt.core.javanature"; 
+    
 	/**
 	 * Reads the ini file and enumerates all config sections. resolves include directives recursively
 	 */
@@ -309,20 +314,31 @@ public class OmnetppLaunchUtils {
 
 	/**
 	 * Returns the Java CLASSPATH based on the project settings where the class files are generated.
-	 * @throws CoreException 
 	 */
     public static String getJavaClasspath(IProject project) throws CoreException {
-	    JavaProject javaProject = (JavaProject)project.getNature(JavaCore.NATURE_ID);
-	    if (javaProject == null)
+        if (!project.hasNature(JAVA_NATURE_ID))
 	        return null;
-	    else {
-	        String result = ResourcesPlugin.getWorkspace().getRoot().getFile(javaProject.getOutputLocation()).getLocation().toOSString();
-	        
-	        for (IProject referencedProject : project.getReferencedProjects())
-	            result += ";" + getJavaClasspath(referencedProject);
-	        
-	        return result;
-	    }
+
+        // We want to add the output folder (.class files) to the CLASSPATH. 
+        // We can get it from the nature object, which is also an IJavaProject.
+        // We use reflection because we don't want to add JDT to our plugin dependencies.
+        // If JDT is not loaded, getNature() will throw a CoreException.
+        IProjectNature javaNature;
+        try {
+            javaNature = project.getNature(JAVA_NATURE_ID);
+        } catch (CoreException e) {
+            //TODO should this become a show-once dialog?
+            LaunchPlugin.logError("Cannot determine CLASSPATH for project with Java nature: JDT not available. Install JDT or set CLASSPATH manually.", e);
+            return null;
+        }
+       
+        IPath javaOutputLocation = (IPath)ReflectionUtils.invokeMethod(javaNature, "getOutputLocation");
+        String result = ResourcesPlugin.getWorkspace().getRoot().getFile(javaOutputLocation).getLocation().toOSString();
+
+        for (IProject referencedProject : project.getReferencedProjects())
+            result += ";" + getJavaClasspath(referencedProject);
+
+        return result;
 	}
 
     /**
