@@ -278,7 +278,7 @@ inline const SimTime operator/(const SimTime& x, double d)
 
 inline double operator/(double d, const SimTime& x)
 {
-    return x.dbl() / d;
+    return d / x.dbl();
 }
 
 inline double operator/(const SimTime& x, const SimTime& y)
