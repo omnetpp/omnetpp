@@ -3,6 +3,7 @@
 	<name>jsamples</name>
 	<comment></comment>
 	<projects>
+		<project>jsimple</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
