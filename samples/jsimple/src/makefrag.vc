@@ -1,9 +1,19 @@
+JAVA_HOME="$(TOOLS_DIR)\jdk1.5.0"
+SWIG="$(TOOLS_DIR)\swigwin-1.3.31\swig.exe"
+#PERL=perl
+
+!if !exist($(JAVA_HOME))
+!error directory $(JAVA_HOME) does not exist -- set JAVA_HOME properly
+!endif
+
+!if !exist($(SWIG))
+!error SWIG not found as $(SWIG) -- please edit makefrag.vc
+!endif
+
 INCLUDE_PATH=$(INCLUDE_PATH) -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/win32
 LIBS=$(LIBS) /libpath:$(JAVA_HOME)/lib jvm.lib
-SWIG="$(TOOLS_DIR)\swigwin-1.3.31\swig.exe"
 JAVAC=$(JAVA_HOME)\bin\javac.exe
 JAR=$(JAVA_HOME)\bin\jar.exe
-PERL="$(TOOLS_DIR)\Perl\bin\perl.exe"
 
 OUTDIR   = ..\out
 JAVAPKG  = org.omnetpp.simkernel
