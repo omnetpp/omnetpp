@@ -23,6 +23,8 @@
 #include <akaroa.H>
 #include <akaroa/distributions.H>  // for UniformInt()
 #include "cenvir.h"
+#include "regmacros.h"
+#include "globals.h"
 #include "simutil.h"
 #include "cexception.h"
 #include "akaroarng.h"
