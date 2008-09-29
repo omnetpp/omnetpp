@@ -25,6 +25,16 @@
 #CFLAGS_RELEASE='-O2 -DNDEBUG=1'
 
 #
+# Linker switches used for linking. 
+# For example use the -m64 switch to build 64 bit binaies on a 32bit operating system
+# (only if the 64bit libraries are installed of course). You should add the -m64 flag
+# to the CFLAGS_... variables too !!! 
+# NOTE: that not all 64 bit libraries may be present on your system (i.e. Tcl/Tk and other
+# libraries may be missing. Use the NO_TCL=yes if you want to skip the Tcl/Tk based parts)
+#
+#LDFLAGS=""
+
+#
 # It is possible to have the Tcl files embedded into the compiled OMNeT++
 # libraries and executables. This can be useful if you want to ship
 # self-contained standalone executables which do not rely on external
