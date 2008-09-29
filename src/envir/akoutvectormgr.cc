@@ -26,8 +26,10 @@
 #include "csimulation.h"
 #include "cmodule.h"
 #include "cstatistic.h"
-#include "macros.h"
+#include "regmacros.h"
 #include "akoutvectormgr.h"
+#include "cconfiguration.h"
+#include "cconfigkey.h"
 
 USING_NAMESPACE
 
