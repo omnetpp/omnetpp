@@ -23,6 +23,12 @@ You will need to restart the shell before proceeding (logout and login again).
 You should check configure.user to make sure it contains the settings
 you need. (In most cases you don't need to change anything.)
 
+NOTE: If you want to build 64bit binaries, you should add the '-m64' option to
+      the CFLAGS_RELEASE, CFLAGS_DEBUG and LDFLAGS variable in the configure.user
+      file. Beacuse Tcl/Tk does ot have a 64 bit version you will be able to use
+      only Cmdenv (the command line environment). Set the NO_TCL=yes in configure.user 
+      too.
+      
 For Mac OS X 10.5:
  
     1. Install XCode 3 on your machine 
@@ -51,7 +57,6 @@ By default the samples will run using the Tcl/Tk environment. You should see
 nice gui windows and dialogs.
 
 
-
 2. Starting the IDE
 
 OMNeT++ 4.0 comes with a brand new IDE (based on Eclipse). Mac OS X already has Java 5
@@ -63,7 +68,6 @@ NOTE: The IDE is supported ONLY on the following platforms:
  - Windows 32bit
  - Linux 32/64bit (i386)
  - Mac OS X 10.4/5 (i386/ppc)
-
 
 
 3. Reconfiguring the libraries
@@ -94,7 +98,6 @@ If you want to create static libraries use:
 
 NOTE: The built libraries and programs are immediately copied 
 to the lib/ and bin/ subdirs.
-
 
 
 4. Notes
