@@ -849,6 +849,17 @@ if test $mpi_ok = no; then
       fi
 fi
 if test $mpi_ok = no; then
+      # MPICH2 has mpicxx -compile-info and -link-info, slightly broken
+      # (both print the same string, which includes the compiler name too)
+      AC_CHECK_PROG(MPICXX, mpicxx, mpicxx, not found)
+      if test "$MPICXX" != "not found"; then
+          MPI_CFLAGS=`mpicxx -c -compile-info | sed 's/^[^ ]*//'`
+          MPI_LIBS=`mpicxx -link-info | sed 's/^[^ ]*//'`
+          OPP_CHECK_LIB(MPI, mpi.h, MPI_Init(0,0), $MPI_CFLAGS, $MPI_LIBS, mpi_ok)
+      fi
+fi
+
+if test $mpi_ok = no; then
    mpilibs="-lmpi++ -lmpi"   #SGI
    OPP_CHECK_LIB(MPI, mpi.h, MPI_Init(0,0), $MPI_CFLAGS, $mpilibs, mpi_ok, MPI_LIBS="$mpilibs")
 fi
