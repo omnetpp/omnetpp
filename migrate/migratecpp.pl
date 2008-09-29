@@ -155,11 +155,11 @@ while (<LISTFILE>)
     $txt =~ s/(\.|->)path\(/$1getPath(/mg;
 
     # cGate, cChannel
-    $txt =~ s/[cC]h[a-zA-Z0-9()]*->getFromGate\(\)/getSourceGate()/mg;  #channel
     $txt =~ s/\bgetFromGate\(\)/getPreviousGate()/mg;
     $txt =~ s/\bgetToGate\(\)/getNextGate()/mg;
-    #$txt =~ s/\bgetSourceGate\(\)/getPathStartGate()/mg; -- would conflict with new cChannel method
+    $txt =~ s/\bgetSourceGate\(\)/getPathStartGate()/mg;
     $txt =~ s/\bgetDestinationGate\(\)/getPathEndGate()/mg;
+    $txt =~ s/([cC]h[a-zA-Z0-9()]*)->getPreviousGate\(\)/$1->getSourceGate()/mg;  #channel
 
     # ancient stuff, from compat.h
     $txt =~ s/\bcKSplitIterator\b/cKSplit::Iterator/mg;
