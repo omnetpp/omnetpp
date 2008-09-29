@@ -161,6 +161,10 @@ while (<LISTFILE>)
     $txt =~ s/\bgetDestinationGate\(\)/getPathEndGate()/mg;
     $txt =~ s/([cC]h[a-zA-Z0-9()]*)->getPreviousGate\(\)/$1->getSourceGate()/mg;  #channel
 
+    # parsim 
+    $txt =~ s/\bnetPack *\(/parsimPack(/mg;
+    $txt =~ s/\bnetUnpack *\(/parsimUnpack(/mg;
+
     # ancient stuff, from compat.h
     $txt =~ s/\bcKSplitIterator\b/cKSplit::Iterator/mg;
     $txt =~ s/\bsGrid\b/cKSplit::Grid/mg;
