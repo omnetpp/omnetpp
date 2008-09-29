@@ -26,6 +26,7 @@
 #include "regmacros.h"
 #include "cenvir.h"
 #include "cconfiguration.h"
+#include "cconfigkey.h"
 #include "platmisc.h"
 
 USING_NAMESPACE
