@@ -5,7 +5,6 @@ import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_AXIS_TI
 import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_BACKGROUND_COLOR;
 import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_CACHING;
 import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_DISPLAY_LEGEND;
-import static org.omnetpp.scave.charting.properties.LineProperties.PROP_DISPLAY_LINE;
 import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_GRAPH_TITLE;
 import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_GRAPH_TITLE_FONT;
 import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_LABEL_FONT;
@@ -13,13 +12,15 @@ import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_LEGEND_
 import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_LEGEND_BORDER;
 import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_LEGEND_FONT;
 import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_LEGEND_POSITION;
-import static org.omnetpp.scave.charting.properties.LineProperties.PROP_LINE_TYPE;
-import static org.omnetpp.scave.charting.properties.LineProperties.PROP_SYMBOL_SIZE;
 import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_XY_GRID;
 import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_X_AXIS_TITLE;
 import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_X_LABELS_ROTATE_BY;
 import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_Y_AXIS_TITLE;
 import static org.omnetpp.scave.charting.properties.HistogramChartProperties.PROP_HIST_BAR;
+import static org.omnetpp.scave.charting.properties.HistogramChartProperties.PROP_SHOW_OVERFLOW_CELL;
+import static org.omnetpp.scave.charting.properties.LineProperties.PROP_DISPLAY_LINE;
+import static org.omnetpp.scave.charting.properties.LineProperties.PROP_LINE_TYPE;
+import static org.omnetpp.scave.charting.properties.LineProperties.PROP_SYMBOL_SIZE;
 import static org.omnetpp.scave.charting.properties.ScalarChartProperties.PROP_BAR_BASELINE;
 import static org.omnetpp.scave.charting.properties.ScalarChartProperties.PROP_BAR_PLACEMENT;
 import static org.omnetpp.scave.charting.properties.ScalarChartProperties.PROP_WRAP_LABELS;
@@ -102,6 +103,7 @@ public class ChartDefaults {
 	// histogram chart
 	public static final HistogramBar DEFAULT_HIST_BAR = HistogramBar.Solid;
 	public static final HistogramDataType DEFAULT_HIST_DATA = HistogramDataType.Count;
+	public static final boolean DEFAULT_SHOW_OVERFLOW_CELL = false;
 	
 	// Maps property names to default values
 	static Map<String,Object> defaults;
@@ -143,6 +145,7 @@ public class ChartDefaults {
 		defaults.put(PROP_LINE_TYPE, DEFAULT_LINE_STYLE);
 		
 		defaults.put(PROP_HIST_BAR, DEFAULT_HIST_BAR);
+		defaults.put(PROP_SHOW_OVERFLOW_CELL, DEFAULT_SHOW_OVERFLOW_CELL);
 	}
 	
 	public static Object getDefaultPropertyValue(String propertyName) {

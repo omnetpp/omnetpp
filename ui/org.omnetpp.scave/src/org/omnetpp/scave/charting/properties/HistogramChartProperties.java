@@ -19,6 +19,7 @@ public class HistogramChartProperties extends ChartProperties
 	public static final String
 		PROP_HIST_BAR			= "Hist.Bar",
 		PROP_HIST_DATA			= "Hist.Data",
+		PROP_SHOW_OVERFLOW_CELL	= "Hist.ShowOverflowCell",
 		PROP_BAR_BASELINE		= "Bars.Baseline";
 	
 	public enum HistogramBar {
@@ -60,6 +61,11 @@ public class HistogramChartProperties extends ChartProperties
 	public HistogramDataType getHistogramDataType() { return getEnumProperty(PROP_HIST_DATA, HistogramDataType.class); }
 	public void setHistogramDataType(HistogramDataType data) { setProperty(PROP_HIST_DATA, data); }
 	public HistogramDataType defaultHistogramData() { return ChartDefaults.DEFAULT_HIST_DATA; }
+
+	@Property(category="Plot",id=PROP_SHOW_OVERFLOW_CELL,description="Show over/underflow cells.")
+	public boolean getShowOverflowCell() { return getBooleanProperty(PROP_SHOW_OVERFLOW_CELL); }
+	public void setShowOverflowCell(boolean value) { setProperty(PROP_SHOW_OVERFLOW_CELL, value); }
+	public boolean defaultShowOverflowCell() { return ChartDefaults.DEFAULT_SHOW_OVERFLOW_CELL; }
 
 	/*======================================================================
 	 *                             Histograms

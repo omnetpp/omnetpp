@@ -3,6 +3,9 @@ package org.omnetpp.scave.editors.forms;
 import java.util.Map;
 
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TabFolder;
@@ -25,6 +28,7 @@ public class HistogramChartEditForm extends ChartEditForm {
 	private Text baselineText;
 	private Combo barTypeCombo;
 	private Combo dataTypeCombo;
+	private Button showOverflowCellCheckbox;
 	
 	public HistogramChartEditForm(HistogramChart chart, EObject parent,
 			Map<String, Object> formParameters, ResultFileManager manager) {
@@ -46,6 +50,8 @@ public class HistogramChartEditForm extends ChartEditForm {
 			baselineText = createTextField("Baseline", panel);
 			barTypeCombo = createComboField("Bar type", panel, HistogramBar.class, false);
 			dataTypeCombo = createComboField("Data type", panel, HistogramDataType.class, false);
+			showOverflowCellCheckbox = createCheckboxField("Show over/underflow cell", panel);
+			showOverflowCellCheckbox.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 		}
 	}
 	
@@ -56,6 +62,7 @@ public class HistogramChartEditForm extends ChartEditForm {
 		props.setBarBaseline(Converter.stringToDouble(baselineText.getText()));
 		props.setBarType(resolveEnum(barTypeCombo.getText(), HistogramBar.class));
 		props.setHistogramDataType(resolveEnum(dataTypeCombo.getText(), HistogramDataType.class));
+		props.setShowOverflowCell(showOverflowCellCheckbox.getSelection());
 	}
 
 	@Override
@@ -65,5 +72,6 @@ public class HistogramChartEditForm extends ChartEditForm {
 		baselineText.setText(StringUtils.defaultString(Converter.doubleToString(histogramProps.getBarBaseline())));
 		barTypeCombo.setText(histogramProps.getBarType()==null ? NO_CHANGE : histogramProps.getBarType().toString());
 		dataTypeCombo.setText(histogramProps.getHistogramDataType()==null ? NO_CHANGE : histogramProps.getHistogramDataType().toString());
+		showOverflowCellCheckbox.setSelection(histogramProps.getShowOverflowCell());
 	}
 }

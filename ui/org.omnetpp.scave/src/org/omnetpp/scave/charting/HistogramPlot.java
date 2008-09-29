@@ -28,6 +28,7 @@ class HistogramPlot {
 	Rectangle area = Rectangle.SINGLETON;
 	
 	HistogramBar barType = ChartDefaults.DEFAULT_HIST_BAR;
+	boolean showOverflowCell = ChartDefaults.DEFAULT_SHOW_OVERFLOW_CELL;
 	ICellValueTransform valueTransform;
 	double baseline = 0.0;
 	
@@ -68,10 +69,17 @@ class HistogramPlot {
 		
 		for (int series = 0; series < histCount; ++series) {
 			int count = dataset.getCellsCount(series);
-			bars[series] = new RectangularArea[count];
 			double minValue = dataset.getMinValue(series);
 			double maxValue = dataset.getMaxValue(series);
+			boolean hasUnderflow = count > 0 && Double.isInfinite(dataset.getCellLowerBound(series, 0));
+			boolean hasOverflow = count > 0 && Double.isInfinite(dataset.getCellUpperBound(series, count-1));
+			int barCount = count - (hasUnderflow && !showOverflowCell ? 1 : 0) -
+			                       (hasOverflow && !showOverflowCell ? 1 : 0);
+			int i = 0;
+			bars[series] = new RectangularArea[barCount];
 			for (int index = 0; index < count; ++index) {
+				if (!showOverflowCell && (index == 0 && hasUnderflow || index == count-1 && hasOverflow))
+					continue;
 				double lowerBound = dataset.getCellLowerBound(series, index);
 				double upperBound = dataset.getCellUpperBound(series, index);
 				double value = getCellValue(series, index);
@@ -83,7 +91,7 @@ class HistogramPlot {
 				double xRight = (index == count - 1 && Double.isInfinite(upperBound)) ?
 								(maxValue > lowerBound ? maxValue : lowerBound) : upperBound;
 				
-				bars[series][index] = new RectangularArea(xLeft, yBottom, xRight, yTop);
+				bars[series][i++] = new RectangularArea(xLeft, yBottom, xRight, yTop);
 				minX = Math.min(minX, xLeft);
 				maxX = Math.max(maxX, xRight);
 				if (!Double.isNaN(yTop))
@@ -267,6 +275,8 @@ class HistogramPlot {
 				default: isOver = false; Assert.isTrue(false, "Unknown HistogramBar type: " + barType); break;
 				}
 				if (isOver) {
+					if (!showOverflowCell && Double.isInfinite(dataset.getCellLowerBound(series, 0)))
+						++index;
 					result.add(series);
 					result.add(index);
 				}
