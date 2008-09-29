@@ -167,8 +167,8 @@ SHARED_LIBS=yes
 # Compiler and linker options for Akaroa (optional component)
 #
 # With MinGW I use the following:
-#  AKAROA_CFLAGS="-I/d/home/tools/akaroa-2.7.2/src/include"
-#  AKAROA_LIBS="-L/d/home/tools/akaroa-2.7.2/lib/include -lakaroa"
+#  AKAROA_CFLAGS="-I/d/home/tools/akaroa-2.7.4/include"
+#  AKAROA_LIBS="-L/d/home/tools/akaroa-2.7.4/lib -lakaroa"
 # If commented out, the configure script will try to autodetect it
 #
 #AKAROA_CFLAGS=
