@@ -97,11 +97,6 @@ bool cAkOutputVectorManager::record(void *vectorhandle, simtime_t t, double valu
     return cFileOutputVectorManager::record(vectorhandle, t, value);
 }
 
-bool cAkOutputVectorManager::record(void *vectorhandle, simtime_t t, double value1, double value2)
-{
-    throw cRuntimeError("cAkOutputVectorManager: Akaroa can handle only one parameter per cOutVector");
-}
-
 #endif
 
 
