@@ -44,6 +44,15 @@ BigDecimal BigDecimal::PositiveInfinity(1, INT_MAX);
 BigDecimal BigDecimal::NegativeInfinity(-1, INT_MAX);
 BigDecimal BigDecimal::Nil;
 
+static int64 powersOfTen[21];
+static double negativePowersOfTen[21];
+
+class PowersOfTenInitializer
+{
+    public:
+        PowersOfTenInitializer();
+};
+
 PowersOfTenInitializer initializer;
 
 PowersOfTenInitializer::PowersOfTenInitializer()

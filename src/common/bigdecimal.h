@@ -30,15 +30,6 @@ NAMESPACE_BEGIN
 // maximum number of digits in an int64 number, i.e. number of digits in INT64_MAX.
 #define INT64_MAX_DIGITS 19
 
-static int64 powersOfTen[21];
-static double negativePowersOfTen[21];
-
-class PowersOfTenInitializer
-{
-    public:
-        PowersOfTenInitializer();
-};
-
 /**
  * BigDecimal stores a decimal value as a 64-bit integer and a scale.
  * Arithmetic operations are performed by converting the values
