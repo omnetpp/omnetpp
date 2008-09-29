@@ -37,7 +37,7 @@ TKENV_EMBED_SUFFIX=
 endif
 
 # Required only on Mac OS X 
-ifneq (,$(findstring dylib,$(SO_LIB_SUFFIX)))
+ifeq ("$(PLATFORM)", "macosx")
 COPTS += -framework Carbon
 LDFLAGS += -framework Carbon
 OBJS += $O/osxproctype.o

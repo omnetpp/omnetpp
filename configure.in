@@ -157,7 +157,7 @@ if test "$TARGET_PLATFORM" = "mingw"; then
     mingw=yes
     windows=yes
     jni_platform=win32
-    ECLIPSE_PLATFORM=win32.x86
+    PLATFORM=win32.x86
     EXE_SUFFIX=".exe"
     SHARED_LIB_SUFFIX='$(DLL_LIB_SUFFIX)'
     LIB_PREFIX=""
@@ -168,7 +168,7 @@ else
         cygwin=yes
         windows=yes
         jni_platform=win32
-        ECLIPSE_PLATFORM=win32.x86
+        PLATFORM=win32.x86
         EXE_SUFFIX=".exe"
         SHARED_LIB_SUFFIX='$(DLL_LIB_SUFFIX)'
         LIB_PREFIX=""
@@ -177,22 +177,22 @@ else
         mingw=yes
         windows=yes
         jni_platform=win32
-        ECLIPSE_PLATFORM=win32.x86
+        PLATFORM=win32.x86
         EXE_SUFFIX=".exe"
         SHARED_LIB_SUFFIX='$(DLL_LIB_SUFFIX)'
         LIB_PREFIX=""
         ;;
     x86_64-*-linux*)
         jni_platform=linux
-        ECLIPSE_PLATFORM=linux.x86_64
+        PLATFORM=linux.x86_64
         ;;
     *-linux*)
         jni_platform=linux
-        ECLIPSE_PLATFORM=linux.x86
+        PLATFORM=linux.x86
         ;;
     *darwin*)
         jni_platform=
-        ECLIPSE_PLATFORM=macosx
+        PLATFORM=macosx
         SO_LIB_SUFFIX=".dylib"
         SHLIB_LD=${SHLIB_LD:-g++ -dynamiclib}
         JNI_LIB_SUFFIX=".jnilib"
@@ -1039,7 +1039,7 @@ AC_SUBST(WITH_PARSIM)
 
 AC_SUBST(JAVA_CFLAGS)
 AC_SUBST(SWIG)
-AC_SUBST(ECLIPSE_PLATFORM)
+AC_SUBST(PLATFORM)
 
 #
 # Generate files

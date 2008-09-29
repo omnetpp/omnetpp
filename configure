@@ -705,7 +705,7 @@ OMNETPP_TKENV_DIR
 WITH_NETBUILDER
 WITH_PARSIM
 JAVA_CFLAGS
-ECLIPSE_PLATFORM
+PLATFORM
 LIBOBJS
 LTLIBOBJS'
 ac_subst_files=''
@@ -1944,7 +1944,7 @@ if test "$TARGET_PLATFORM" = "mingw"; then
     mingw=yes
     windows=yes
     jni_platform=win32
-    ECLIPSE_PLATFORM=win32.x86
+    PLATFORM=win32.x86
     EXE_SUFFIX=".exe"
     SHARED_LIB_SUFFIX='$(DLL_LIB_SUFFIX)'
     LIB_PREFIX=""
@@ -1955,7 +1955,7 @@ else
         cygwin=yes
         windows=yes
         jni_platform=win32
-        ECLIPSE_PLATFORM=win32.x86
+        PLATFORM=win32.x86
         EXE_SUFFIX=".exe"
         SHARED_LIB_SUFFIX='$(DLL_LIB_SUFFIX)'
         LIB_PREFIX=""
@@ -1964,22 +1964,22 @@ else
         mingw=yes
         windows=yes
         jni_platform=win32
-        ECLIPSE_PLATFORM=win32.x86
+        PLATFORM=win32.x86
         EXE_SUFFIX=".exe"
         SHARED_LIB_SUFFIX='$(DLL_LIB_SUFFIX)'
         LIB_PREFIX=""
         ;;
     x86_64-*-linux*)
         jni_platform=linux
-        ECLIPSE_PLATFORM=linux.x86_64
+        PLATFORM=linux.x86_64
         ;;
     *-linux*)
         jni_platform=linux
-        ECLIPSE_PLATFORM=linux.x86
+        PLATFORM=linux.x86
         ;;
     *darwin*)
         jni_platform=
-        ECLIPSE_PLATFORM=macosx
+        PLATFORM=macosx
         SO_LIB_SUFFIX=".dylib"
         SHLIB_LD=${SHLIB_LD:-g++ -dynamiclib}
         JNI_LIB_SUFFIX=".jnilib"
@@ -8145,7 +8145,7 @@ OMNETPP_TKENV_DIR!$OMNETPP_TKENV_DIR$ac_delim
 WITH_NETBUILDER!$WITH_NETBUILDER$ac_delim
 WITH_PARSIM!$WITH_PARSIM$ac_delim
 JAVA_CFLAGS!$JAVA_CFLAGS$ac_delim
-ECLIPSE_PLATFORM!$ECLIPSE_PLATFORM$ac_delim
+PLATFORM!$PLATFORM$ac_delim
 LIBOBJS!$LIBOBJS$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF

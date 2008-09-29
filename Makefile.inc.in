@@ -116,7 +116,7 @@ WITH_PARSIM = @WITH_PARSIM@
 
 JAVA_CFLAGS = @JAVA_CFLAGS@
 SWIG = @SWIG@
-ECLIPSE_PLATFORM = @ECLIPSE_PLATFORM@
+PLATFORM = @PLATFORM@
 
 #
 # Definitions for makemake-generated makefiles
@@ -139,7 +139,7 @@ KERNEL_LIBS += $(XML_LIBS) -lnedxml$D -lcommon$D
 TKENV_LIBS += $(TK_LIBS) $(BLT_LIBS) $(ZLIB_LIBS)
   
   # add the Carbon framework if we are building statically on MAC OS X as Tct/Tk needs it
-  ifeq ("$(ECLIPSE_PLATFORM)", "macosx")
+  ifeq ("$(PLATFORM)", "macosx")
     TKENV_LIBS += -framework Carbon
   endif
 endif

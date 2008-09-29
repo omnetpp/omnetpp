@@ -56,7 +56,7 @@ ifeq ("$(JNI_LIB_SUFFIX)",".jnilib")
 STRIP_FLAGS=-x
 endif
 
-DLL_TARGET_DIR = ../org.omnetpp.ide.nativelibs.$(ECLIPSE_PLATFORM)
+DLL_TARGET_DIR = ../org.omnetpp.ide.nativelibs.$(PLATFORM)
 
 #
 # Local definitions
