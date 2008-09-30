@@ -204,8 +204,10 @@ public class OmnetppLaunchUtils {
     public static ILaunchConfigurationWorkingCopy convertLaunchConfig(ILaunchConfiguration config, String mode) throws CoreException {
 		ILaunchConfigurationWorkingCopy newCfg = config.copy("opp_run temporary configuration");
 
-		// working directory (converted from path to location
+		// working directory (converted from path to location)
 		String wdirStr = config.getAttribute(IOmnetppLaunchConstants.OPP_WORKING_DIRECTORY, "");
+		if (StringUtils.isEmpty(wdirStr))
+            throw new CoreException(new Status(Status.ERROR, LaunchPlugin.PLUGIN_ID, "Working directory must be set"));
 		newCfg.setAttribute(IOmnetppLaunchConstants.ATTR_WORKING_DIRECTORY, getLocationForWorkspacePath(wdirStr, "/", false).toString());
 
 		// executable name
@@ -235,7 +237,7 @@ public class OmnetppLaunchUtils {
 		if (StringUtils.isNotEmpty(configStr))
 			args += " -c "+configStr;
 
-		if ( mode.equals( ILaunchManager.DEBUG_MODE ) ) {
+		if (mode.equals(ILaunchManager.DEBUG_MODE)) {
 			String runStr = config.getAttribute(IOmnetppLaunchConstants.OPP_RUNNUMBER_FOR_DEBUG, "").trim();
 			if (StringUtils.isNotEmpty(runStr))
 				args += " -r "+runStr;
@@ -299,6 +301,8 @@ public class OmnetppLaunchUtils {
         	envir.put("LD_LIBRARY_PATH", "${opp_lib_dir}${system_property:path.separator}${opp_ld_library_path_loc:"+wdirStr+"}${system_property:path.separator}${env_var:LD_LIBRARY_PATH}");
 
         // Java CLASSPATH
+        //FIXME do not overwrite CLASSPATH if it's already set by the user!
+        //FIXME use the inifile's project, not mappedResources!
         IResource[] resources = newCfg.getMappedResources();
         if (resources != null && resources.length != 0) {
             String javaClasspath = getJavaClasspath(resources[0].getProject());
@@ -352,13 +356,13 @@ public class OmnetppLaunchUtils {
 	    IPath basePath = StringUtils.isEmpty(basePathString) ? null : new Path(basePathString);
 	    if (!path.isAbsolute() && basePath != null)
 	        path = basePath.append(path);
-	    IPath location;
+	    IPath location = null;
 	    IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
         if (isFile) 
 	        location = workspaceRoot.getFile(path).getLocation();
 	    else if (path.segmentCount()>=2)
 	        location = workspaceRoot.getFolder(path).getLocation();
-	    else
+	    else if (path.segmentCount()==1)
 	        location = workspaceRoot.getProject(path.toString()).getLocation();
 	    if (location == null)
 	        throw new CoreException(new Status(Status.ERROR, LaunchPlugin.PLUGIN_ID, "Cannot determine location for "+pathString));
