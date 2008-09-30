@@ -1,3 +1,8 @@
+2008-09-30  Andras Varga
+
+	* opp_makemake: added $(LDFLAGS) to the command line when building
+	shared libraries
+
 2008-08-17  Andras Varga
 
 	* opp_makemake: default target name changed to the project name, from

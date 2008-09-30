@@ -1182,7 +1182,7 @@ all: $(TARGET)
 {sharedlib:}$O/$(TARGET): $(OBJS) {submakedirs?submakedirs} $(EXTRA_OBJS) {makefile}
 {sharedlib:}{nmake:}	-@md $(O:/=\) 2>nul
 {sharedlib:}{~nmake:}	@mkdir -p $O
-{sharedlib:}	$(SHLIB_LD) {-out}$O/$(TARGET) {nmake_inlinefile} $(OBJS) $(EXTRA_OBJS) $(LIBS) $(OMNETPP_LIBS) {nmake_inlineend}
+{sharedlib:}	$(SHLIB_LD) {-out}$O/$(TARGET) {nmake_inlinefile} $(OBJS) $(EXTRA_OBJS) $(LIBS) $(OMNETPP_LIBS) $(LDFLAGS) {nmake_inlineend}
 {staticlib:}$O/$(TARGET): $(OBJS) {submakedirs?submakedirs} $(EXTRA_OBJS) {makefile}
 {staticlib:}{nmake:}	-@md $(O:/=\) 2>nul
 {staticlib:}{~nmake:}	@mkdir -p $O
