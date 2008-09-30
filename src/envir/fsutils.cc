@@ -23,34 +23,39 @@
 
 NAMESPACE_BEGIN
 
+std::string makeLibFileName(const char *libname, const char *prefix, const char *suffix)
+{
+     bool hasDir = strchr(libname, '/')!=NULL || strchr(libname, '\\')!=NULL;
+     std::string dir, fileNameOnly;
+     splitFileName(libname, dir, fileNameOnly);
+     bool hasExt = strchr(fileNameOnly.c_str(), '.')!=NULL;
+
+     std::string libFileName;
+     if (hasExt)
+         libFileName = libname;  // when an exact file name is given, leave it unchanged
+     else if (hasDir)
+         libFileName = dir + "/" + prefix + fileNameOnly + suffix;
+     else
+         libFileName = std::string(prefix) + fileNameOnly + suffix;
+     return libFileName;
+}
+
 static bool opp_loadlibrary(const char *libname)
 {
-     bool withdir = strchr(libname, '/')!=NULL || strchr(libname, '\\')!=NULL;
-     std::string dir, filenameonly;
-     splitFileName(libname, dir, filenameonly);
-     bool withext = strchr(filenameonly.c_str(), '.')!=NULL;
-
 #if HAVE_DLOPEN
-     std::string libfullname;
-     if (withext)
-         libfullname = libname;  // unchanged
-     else if (withdir)
-         libfullname = dir + "/lib" + filenameonly + SHARED_LIB_SUFFIX;
-     else
-         libfullname = std::string("lib") + filenameonly + SHARED_LIB_SUFFIX;
-     if (!dlopen(libfullname.c_str(), RTLD_NOW|RTLD_GLOBAL))
-         throw std::runtime_error(std::string("Cannot load library '")+libfullname+"': "+dlerror());
+     std::string libFileName = makeLibFileName(libname, "lib", SHARED_LIB_SUFFIX);
+     if (!dlopen(libFileName.c_str(), RTLD_NOW|RTLD_GLOBAL))
+         throw std::runtime_error(std::string("Cannot load library '")+libFileName+"': "+dlerror());
      return true;
 
 #elif defined(_WIN32)
-     std::string libfullname;
-     if (withext)
-         libfullname = libname;  // unchanged
-     else
-         libfullname = std::string(libname) + ".dll";
-     (void)withdir;
-     if (!LoadLibrary((char *)libfullname.c_str()))
-         throw std::runtime_error(std::string("Cannot load library '")+libfullname+"': "+opp_getWindowsError(GetLastError()));
+# ifdef __GNUC__
+     std::string libFileName = makeLibFileName(libname, "lib", ".dll"); // MinGW
+# else
+     std::string libFileName = makeLibFileName(libname, "", ".dll"); // Visual C++
+# endif
+     if (!LoadLibrary((char *)libFileName.c_str()))
+         throw std::runtime_error(std::string("Cannot load library '")+libFileName+"': "+opp_getWindowsError(GetLastError()));
      return true;
 
 #else
