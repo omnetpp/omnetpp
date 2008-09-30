@@ -55,9 +55,8 @@ public class GenerateMakemakefileAction implements IObjectActionDelegate {
     /* (non-Javadoc)
      * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
      */
-    @SuppressWarnings("unchecked")
     public void run(IAction action) {
-        List<IProject> projects = getSelectedOpenProjects();
+        //List<IProject> projects = getSelectedOpenProjects();
         //...
     }
 
@@ -77,7 +76,7 @@ public class GenerateMakemakefileAction implements IObjectActionDelegate {
     }
 
     @SuppressWarnings("unchecked")
-    private List<IProject> getSelectedOpenProjects() {
+    protected List<IProject> getSelectedOpenProjects() {
         List<IProject> projects = new ArrayList<IProject>();
         if (selection instanceof IStructuredSelection) {
             for (Iterator it = ((IStructuredSelection) selection).iterator(); it.hasNext();) {
