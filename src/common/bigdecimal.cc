@@ -58,13 +58,13 @@ PowersOfTenInitializer initializer;
 PowersOfTenInitializer::PowersOfTenInitializer()
 {
     int64 power = 1;
-    for (int i = 0; i < sizeof(powersOfTen) / sizeof(*powersOfTen); i++) {
+    for (unsigned int i = 0; i < sizeof(powersOfTen) / sizeof(*powersOfTen); i++) {
         powersOfTen[i] = power;
         power *= 10;
     }
 
     double negativePower = 1;
-    for (int i = 0; i < sizeof(negativePowersOfTen) / sizeof(*negativePowersOfTen); i++) {
+    for (unsigned int i = 0; i < sizeof(negativePowersOfTen) / sizeof(*negativePowersOfTen); i++) {
         negativePowersOfTen[i] = negativePower;
         negativePower /= 10.0;
     }
