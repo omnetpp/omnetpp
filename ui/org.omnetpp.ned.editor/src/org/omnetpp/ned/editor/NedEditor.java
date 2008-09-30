@@ -153,8 +153,12 @@ public class NedEditor
 		if (!(editorInput instanceof IFileEditorInput))
             throw new PartInitException("Invalid input type (only workspace files can be opened): " + editorInput);
 
-		// TODO create a nicer dialog for error reporting
-		if (NEDResourcesPlugin.getNEDResources().getNedSourceFolderFor(((FileEditorInput)editorInput).getFile()) == null) {
+		IFile file = ((FileEditorInput)editorInput).getFile();
+		if (!file.exists()) {
+            IStatus status = new Status(IStatus.WARNING, NedEditorPlugin.PLUGIN_ID, 0, "File "+file.getFullPath()+" does not exist", null);
+            throw new PartInitException(status);
+		}
+        if (NEDResourcesPlugin.getNEDResources().getNedSourceFolderFor(file) == null) {
 		    IStatus status = new Status(IStatus.WARNING, NedEditorPlugin.PLUGIN_ID, 0, "NED File is not in a NED Source Folder of an OMNeT++ Project, and cannot be opened with this editor.", null);
 		    throw new PartInitException(status);
 		}
