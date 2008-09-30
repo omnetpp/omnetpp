@@ -265,13 +265,10 @@ public class DocumentationGeneratorPropertyPage
             content = replaceDoxygenConfigurationEntry(content, "GENERATE_TAGFILE", "AUTO");
             content = replaceDoxygenConfigurationEntry(content, "TEMPLATE_RELATIONS", "YES");
             FileUtils.writeTextFile(fileName, content);                    
-            
-            MessageDialog.openInformation(null, "Generate default Doxygen configuration file", 
-                    "Generating the Doxygen configuration file: " + fileName + " using Doxygen: " + doxyExecutablePath + " succeeded.");
         }
         catch (Exception x) {
-            MessageDialog.openError(null, "Generate default Doxygen configuration file", 
-                    "Generating the Doxygen configuration file: " + fileName + " using Doxygen: " + doxyExecutablePath + " failed.");
+            MessageDialog.openError(null, "Documentation Generation", 
+                    "Error generating the Doxygen configuration file: " + fileName + " using Doxygen: " + doxyExecutablePath);
         }
     }
 }
