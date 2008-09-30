@@ -32,6 +32,14 @@
 
 USING_NAMESPACE
 
+#if defined _MSC_VER
+#define DEBUG_TRAP  __asm int 3  // Visual C++: debug interrupt
+#elif defined _WIN32 and defined __GNUC__
+#define DEBUG_TRAP  asm("int $3\n")  // MinGW or Cygwin: debug interrupt with gnu syntax
+#else
+#define DEBUG_TRAP  raise(6)  // SIGABRT
+#endif
+
 
 #define BUFLEN 1024
 static char buffer[BUFLEN];
@@ -231,11 +239,8 @@ void cRuntimeError::breakIntoDebuggerIfRequested()
                    getContextClassName(), getContextFullPath(), getModuleID(), what());
         fflush(stdout);
 
-#ifdef _MSC_VER
-        __asm int 3; // debugger interrupt
-#else
-        raise(6); // raise SIGABRT signal
-#endif
+        // cause debugger interrupt or signal
+        DEBUG_TRAP;
     }
 }
 
