@@ -664,139 +664,141 @@ fi
 #----------------------
 if test -n "$NO_TCL"; then
 
-# skip testing for TCL
-TKENV_IF_POSSIBLE=missing-dependency
+    # skip testing for TCL
+    TKENV_IF_POSSIBLE=missing-dependency
 
-# and build samples using Cmdenv (TBD)
-ALL_ENV_LIBS='$(CMDENV_LIBS)'
+    # and build samples using Cmdenv (TBD)
+    ALL_ENV_LIBS='$(CMDENV_LIBS)'
 
 else  #matching "fi" is after BLT testing
 
-OPP_CHECK_LIB(Tcl/Tk, tk.h, Tk_MainLoop(), $TK_CFLAGS, $TK_LIBS, tcltk_ok)
-# try to use tcl/tk without X (e.g. on Mac OS X native aqua Tcl/Tk impl)
-if test $tcltk_ok = no; then
-    OPP_CHECK_LIB(Tcl/Tk 8.5, tk.h, Tk_MainLoop(), $TK_CFLAGS, -ltk8.5 -ltcl8.5,
-                  tcltk_ok, TK_LIBS="-ltk8.5 -ltcl8.5")
-fi
-if test $tcltk_ok = no; then
-    OPP_CHECK_LIB(Tcl/Tk 8.4, tk.h, Tk_MainLoop(), $TK_CFLAGS, -ltk8.4 -ltcl8.4,
-                  tcltk_ok, TK_LIBS="-ltk8.4 -ltcl8.4")
-fi
-# look for X window libs and headers
-if test $tcltk_ok = no; then
-    # try to find Tcl/Tk ourselves, but it usually needs to link with Xlib
-    AC_PATH_X
-    if test "$no_x" = "yes"; then
-        opp_x11inc=
-        opp_x11lib=
+    if test -n "$TK_LIBS"; then
+        OPP_CHECK_LIB(Tcl/Tk, tk.h, Tk_MainLoop(), $TK_CFLAGS, $TK_LIBS, tcltk_ok)
     else
-       if test -n "$x_includes"; then
-           opp_x11inc="-I$x_includes"
-       fi
-       if test -n "$x_libraries"; then
-           opp_x11lib="-L$x_libraries -lX11"
-       fi
-    fi
-fi
-if test $tcltk_ok = no; then
-    OPP_CHECK_LIB(Tcl/Tk 8.5, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk85 -ltcl85,
-                  tcltk_ok, TK_LIBS="$opp_x11lib -ltk85 -ltcl85")
-fi
-if test $tcltk_ok = no; then
-    OPP_CHECK_LIB(Tcl/Tk 8.5, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk8.5 -ltcl8.5,
-                  tcltk_ok, TK_LIBS="$opp_x11lib -ltk8.5 -ltcl8.5")
-fi
-if test $tcltk_ok = no -a "$cygwin" = yes; then
-    OPP_CHECK_LIB(Tcl/Tk 8.5, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -lcygtk85 -lcygtcl85,
-                  tcltk_ok, TK_LIBS="$opp_x11lib -lcygtk85 -lcygtcl85")
-fi
-if test $tcltk_ok = no -a "$mingw" = yes; then
-    OPP_CHECK_LIB(Tcl/Tk 8.5, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -L/usr/bin -ltk85 -ltcl85,
-                  tcltk_ok, TK_LIBS="$opp_x11lib -L/usr/bin -ltk85 -ltcl85")
-fi
-if test $tcltk_ok = no; then
-    OPP_CHECK_LIB(Tcl/Tk 8.4, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk84 -ltcl84,
-                  tcltk_ok, TK_LIBS="$opp_x11lib -ltk84 -ltcl84")
-fi
-if test $tcltk_ok = no; then
-    OPP_CHECK_LIB(Tcl/Tk 8.4, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk8.4 -ltcl8.4,
-                  tcltk_ok, TK_LIBS="$opp_x11lib -ltk8.4 -ltcl8.4")
-fi
-if test $tcltk_ok = no -a "$cygwin" = yes; then
-    OPP_CHECK_LIB(Tcl/Tk 8.4, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -lcygtk84 -lcygtcl84,
-                  tcltk_ok, TK_LIBS="$opp_x11lib -lcygtk84 -lcygtcl84")
-fi
-if test $tcltk_ok = no -a "$mingw" = yes; then
-    OPP_CHECK_LIB(Tcl/Tk 8.4, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -L/usr/bin -ltk84 -ltcl84,
-                  tcltk_ok, TK_LIBS="$opp_x11lib -L/usr/bin -ltk84 -ltcl84")
-fi
-if test $tcltk_ok = no; then
-    # try to give a hint in the error message about the problem
-    if test "$no_x" = "yes"; then
-        if test "$cygwin" = yes; then
-            AC_MSG_ERROR([Cannot build Tcl/Tk apps, probably due to missing X11 headers -- try installing the XFree86 packages or get the X headers from www.omnetpp.org.])
-        else
-            AC_MSG_ERROR([Cannot build Tcl/Tk apps, probably due to misconfigured or missing X11 headers or libs. Check config.log for more info!])
+        # try to use tcl/tk without X (e.g. on Mac OS X native aqua Tcl/Tk impl)
+        OPP_CHECK_LIB(Tcl/Tk 8.5, tk.h, Tk_MainLoop(), $TK_CFLAGS, -ltk8.5 -ltcl8.5,
+                          tcltk_ok, TK_LIBS="-ltk8.5 -ltcl8.5")
+        if test $tcltk_ok = no; then
+            OPP_CHECK_LIB(Tcl/Tk 8.4, tk.h, Tk_MainLoop(), $TK_CFLAGS, -ltk8.4 -ltcl8.4,
+                          tcltk_ok, TK_LIBS="-ltk8.4 -ltcl8.4")
         fi
-    else
-        AC_MSG_ERROR([Tcl/Tk not found, needed for all GUI parts. Version 8.4.0+ and devel package required. Check config.log for more info!])
+        # look for X window libs and headers
+        if test $tcltk_ok = no; then
+            # try to find Tcl/Tk ourselves, but it usually needs to link with Xlib
+            AC_PATH_X
+            if test "$no_x" = "yes"; then
+                opp_x11inc=
+                opp_x11lib=
+            else
+               if test -n "$x_includes"; then
+                   opp_x11inc="-I$x_includes"
+               fi
+               if test -n "$x_libraries"; then
+                   opp_x11lib="-L$x_libraries -lX11"
+               fi
+            fi
+        fi
+        if test $tcltk_ok = no; then
+            OPP_CHECK_LIB(Tcl/Tk 8.5, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk85 -ltcl85,
+                          tcltk_ok, TK_LIBS="$opp_x11lib -ltk85 -ltcl85")
+        fi
+        if test $tcltk_ok = no; then
+            OPP_CHECK_LIB(Tcl/Tk 8.5, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk8.5 -ltcl8.5,
+                          tcltk_ok, TK_LIBS="$opp_x11lib -ltk8.5 -ltcl8.5")
+        fi
+        if test $tcltk_ok = no -a "$cygwin" = yes; then
+            OPP_CHECK_LIB(Tcl/Tk 8.5, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -lcygtk85 -lcygtcl85,
+                          tcltk_ok, TK_LIBS="$opp_x11lib -lcygtk85 -lcygtcl85")
+        fi
+        if test $tcltk_ok = no -a "$mingw" = yes; then
+            OPP_CHECK_LIB(Tcl/Tk 8.5, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -L/usr/bin -ltk85 -ltcl85,
+                          tcltk_ok, TK_LIBS="$opp_x11lib -L/usr/bin -ltk85 -ltcl85")
+        fi
+        if test $tcltk_ok = no; then
+            OPP_CHECK_LIB(Tcl/Tk 8.4, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk84 -ltcl84,
+                          tcltk_ok, TK_LIBS="$opp_x11lib -ltk84 -ltcl84")
+        fi
+        if test $tcltk_ok = no; then
+            OPP_CHECK_LIB(Tcl/Tk 8.4, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk8.4 -ltcl8.4,
+                          tcltk_ok, TK_LIBS="$opp_x11lib -ltk8.4 -ltcl8.4")
+        fi
+        if test $tcltk_ok = no -a "$cygwin" = yes; then
+            OPP_CHECK_LIB(Tcl/Tk 8.4, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -lcygtk84 -lcygtcl84,
+                          tcltk_ok, TK_LIBS="$opp_x11lib -lcygtk84 -lcygtcl84")
+        fi
+        if test $tcltk_ok = no -a "$mingw" = yes; then
+            OPP_CHECK_LIB(Tcl/Tk 8.4, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -L/usr/bin -ltk84 -ltcl84,
+                          tcltk_ok, TK_LIBS="$opp_x11lib -L/usr/bin -ltk84 -ltcl84")
+        fi
     fi
-fi
 
-# Check for wish.
-AC_CHECK_PROGS(WISH, $WISH wish wish85 wish8.5 wish84 wish8.4 cygwish cygwish85 cygwish84, nope)
-if test "$WISH" = nope; then
-   AC_MSG_ERROR([Cannot find wish, part of Tcl/Tk -- maybe it is not in the PATH or has some exotic name (tested names were: wish wish85 wish8.5 wish84 wish8.4 cygwish cygwish85 cygwish84)])
-fi
-if echo 'puts OK; exit' | $WISH | grep OK >/dev/null; then :; else
-    AC_MSG_ERROR([Cannot run wish (wish command "puts OK; exit" failed): maybe you are not running X or DISPLAY environment variable not set?])
-fi
-if echo 'catch {package require Tk 8.4; puts OK}; exit' | $WISH | grep OK >/dev/null; then :; else
-    AC_MSG_ERROR([wish command "package require Tk 8.4" failed: probably old Tcl/Tk version, version 8.4.0+ required])
-fi
+    if test $tcltk_ok = no; then
+        # try to give a hint in the error message about the problem
+        if test "$no_x" = "yes"; then
+            if test "$cygwin" = yes; then
+                AC_MSG_ERROR([Cannot build Tcl/Tk apps, probably due to missing X11 headers -- try installing the XFree86 packages or get the X headers from www.omnetpp.org.])
+            else
+                AC_MSG_ERROR([Cannot build Tcl/Tk apps, probably due to misconfigured or missing X11 headers or libs. Check config.log for more info!])
+            fi
+        else
+            AC_MSG_ERROR([Tcl/Tk not found, needed for all GUI parts. Version 8.4.0+ and devel package required. Check config.log for more info!])
+        fi
+    fi
 
-# note: square brackets necessary otherwise M4 messes up the Tcl command
-[tcl_library=`echo 'puts [info library]; exit' | $WISH`]
+    # Check for wish.
+    AC_CHECK_PROGS(WISH, $WISH wish wish85 wish8.5 wish84 wish8.4 cygwish cygwish85 cygwish84, nope)
+    if test "$WISH" = nope; then
+       AC_MSG_ERROR([Cannot find wish, part of Tcl/Tk -- maybe it is not in the PATH or has some exotic name (tested names were: wish wish85 wish8.5 wish84 wish8.4 cygwish cygwish85 cygwish84)])
+    fi
+    if echo 'puts OK; exit' | $WISH | grep OK >/dev/null; then :; else
+        AC_MSG_ERROR([Cannot run wish (wish command "puts OK; exit" failed): maybe you are not running X or DISPLAY environment variable not set?])
+    fi
+    if echo 'catch {package require Tk 8.4; puts OK}; exit' | $WISH | grep OK >/dev/null; then :; else
+        AC_MSG_ERROR([wish command "package require Tk 8.4" failed: probably old Tcl/Tk version, version 8.4.0+ required])
+    fi
+
+    # note: square brackets necessary otherwise M4 messes up the Tcl command
+    [tcl_library=`echo 'puts [info library]; exit' | $WISH`]
 
 
-#----------------------
-# Check for BLT. $TK_CFLAGS and $TK_LIBS plus $BLT_LIBS should be enough
-#----------------------
-OPP_CHECK_LIB(BLT 2.4, blt.h, Blt_NameOfVector(0), $TK_CFLAGS, $BLT_LIBS $TK_LIBS, blt_ok)
-if test $blt_ok = no -a "$cygwin" = yes; then
-    bltlibs="-lBLT24 -mwindows -lwinspool"
-    OPP_CHECK_LIB(BLT 2.4, blt.h, Blt_NameOfVector(0), $TK_CFLAGS, $bltlibs $TK_LIBS, blt_ok, BLT_LIBS=$bltlibs)
-fi
-if test $blt_ok = no; then
-    bltlibs="-lBLT24"
-    OPP_CHECK_LIB(BLT 2.4, blt.h, Blt_NameOfVector(0), $TK_CFLAGS, $bltlibs $TK_LIBS, blt_ok, BLT_LIBS=$bltlibs)
-fi
-if test $blt_ok = no; then
-    bltlibs="-lBLT"
-    OPP_CHECK_LIB(BLT 2.4, blt.h, Blt_NameOfVector(0), $TK_CFLAGS, $bltlibs $TK_LIBS, blt_ok, BLT_LIBS=$bltlibs)
-fi
-if test $blt_ok = no; then
-    bltlibs="-lBLT2.4"
-    OPP_CHECK_LIB(BLT 2.4, blt.h, Blt_NameOfVector(0), $TK_CFLAGS, $bltlibs $TK_LIBS, blt_ok, BLT_LIBS=$bltlibs)
-fi
-if test $blt_ok = no; then
-    OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  BLT (optional)"
-    AC_MSG_WARN([Cannot compile or link program with BLT: BLT or BLT-devel may not be installed -- check config.log for details.])
-    HAVE_BLT=no
-fi
-if test $blt_ok = yes; then
-    HAVE_BLT=yes
-    if echo 'catch {package require BLT 2.4; puts OK}; exit' | $WISH | grep OK >/dev/null; then :; else
+    #----------------------
+    # Check for BLT. $TK_CFLAGS and $TK_LIBS plus $BLT_LIBS should be enough
+    #----------------------
+    OPP_CHECK_LIB(BLT 2.4, blt.h, Blt_NameOfVector(0), $TK_CFLAGS, $BLT_LIBS $TK_LIBS, blt_ok)
+    if test $blt_ok = no -a "$cygwin" = yes; then
+        bltlibs="-lBLT24 -mwindows -lwinspool"
+        OPP_CHECK_LIB(BLT 2.4, blt.h, Blt_NameOfVector(0), $TK_CFLAGS, $bltlibs $TK_LIBS, blt_ok, BLT_LIBS=$bltlibs)
+    fi
+    if test $blt_ok = no; then
+        bltlibs="-lBLT24"
+        OPP_CHECK_LIB(BLT 2.4, blt.h, Blt_NameOfVector(0), $TK_CFLAGS, $bltlibs $TK_LIBS, blt_ok, BLT_LIBS=$bltlibs)
+    fi
+    if test $blt_ok = no; then
+        bltlibs="-lBLT"
+        OPP_CHECK_LIB(BLT 2.4, blt.h, Blt_NameOfVector(0), $TK_CFLAGS, $bltlibs $TK_LIBS, blt_ok, BLT_LIBS=$bltlibs)
+    fi
+    if test $blt_ok = no; then
+        bltlibs="-lBLT2.4"
+        OPP_CHECK_LIB(BLT 2.4, blt.h, Blt_NameOfVector(0), $TK_CFLAGS, $bltlibs $TK_LIBS, blt_ok, BLT_LIBS=$bltlibs)
+    fi
+    if test $blt_ok = no; then
         OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  BLT (optional)"
-        AC_MSG_WARN([Tcl cannot load BLT (wish command "package require BLT 2.4" failed), probably BLT not installed correctly.])
+        AC_MSG_WARN([Cannot compile or link program with BLT: BLT or BLT-devel may not be installed -- check config.log for details.])
+        HAVE_BLT=no
     fi
-fi
+    if test $blt_ok = yes; then
+        HAVE_BLT=yes
+        if echo 'catch {package require BLT 2.4; puts OK}; exit' | $WISH | grep OK >/dev/null; then :; else
+            OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  BLT (optional)"
+            AC_MSG_WARN([Tcl cannot load BLT (wish command "package require BLT 2.4" failed), probably BLT not installed correctly.])
+        fi
+    fi
 
-# if we got through until here, enable building of the following progs:
-TKENV_IF_POSSIBLE=tkenv
+    # if we got through until here, enable building of the following progs:
+    TKENV_IF_POSSIBLE=tkenv
 
-# and build samples using Tkenv
-ALL_ENV_LIBS='$(TKENV_LIBS) $(CMDENV_LIBS)'
+    # and build samples using Tkenv
+    ALL_ENV_LIBS='$(TKENV_LIBS) $(CMDENV_LIBS)'
 
 fi # end of Tcl tests ($NO_TCL=="" branch)
 
@@ -838,31 +840,36 @@ fi
 #----------------------
 # Check for MPI.
 #----------------------
-OPP_CHECK_LIB(MPI, mpi.h, MPI_Init(0,0), $CFLAGS_RELEASE $MPI_CFLAGS, $LDFLAGS $MPI_LIBS, mpi_ok)
-if test $mpi_ok = no; then
-      # LAM and OpenMPI support mpic++ -showme
-      AC_CHECK_PROG(MPICXX, mpic++, mpic++, not found)
-      if test "$MPICXX" != "not found"; then
-          MPI_CFLAGS=`mpic++ -showme:compile`
-          MPI_LIBS=`mpic++ -showme:link`
-          OPP_CHECK_LIB(MPI, mpi.h, MPI_Init(0,0), $CFLAGS_RELEASE $MPI_CFLAGS, $LDFLAGS $MPI_LIBS, mpi_ok)
-      fi
-fi
-if test $mpi_ok = no; then
-      # MPICH2 has mpicxx -compile-info and -link-info, slightly broken
-      # (both print the same string, which includes the compiler name too)
-      AC_CHECK_PROG(MPICXX, mpicxx, mpicxx, not found)
-      if test "$MPICXX" != "not found"; then
-          MPI_CFLAGS=`mpicxx -c -compile-info | sed 's/^[^ ]*//'`
-          MPI_LIBS=`mpicxx -link-info | sed 's/^[^ ]*//'`
-          OPP_CHECK_LIB(MPI, mpi.h, MPI_Init(0,0), $CFLAGS_RELEASE $MPI_CFLAGS, $LDFLAGS $MPI_LIBS, mpi_ok)
-      fi
+
+if test -n "$MPI_LIBS"; then
+    OPP_CHECK_LIB(MPI, mpi.h, MPI_Init(0,0), $CFLAGS_RELEASE $MPI_CFLAGS, $LDFLAGS $MPI_LIBS, mpi_ok)
+else
+    mpi_ok=no
+    # LAM and OpenMPI support mpic++ -showme
+    AC_CHECK_PROG(MPICPP, mpic++, mpic++, not found)
+    if test "$MPICPP" != "not found"; then
+        MPI_CFLAGS=`mpic++ -showme:compile`
+        MPI_LIBS=`mpic++ -showme:link`
+        OPP_CHECK_LIB(MPI, mpi.h, MPI_Init(0,0), $CFLAGS_RELEASE $MPI_CFLAGS, $LDFLAGS $MPI_LIBS, mpi_ok)
+    fi
+
+    if test $mpi_ok = no; then
+          # MPICH2 has mpicxx -compile-info and -link-info, slightly broken
+          # (both print the same string, which includes the compiler name too)
+          AC_CHECK_PROG(MPICXX, mpicxx, mpicxx, not found)
+          if test "$MPICXX" != "not found"; then
+              MPI_CFLAGS=`mpicxx -c -compile-info | sed 's/^[^ ]*//'`
+              MPI_LIBS=`mpicxx -link-info | sed 's/^[^ ]*//'`
+              OPP_CHECK_LIB(MPI, mpi.h, MPI_Init(0,0), $CFLAGS_RELEASE $MPI_CFLAGS, $LDFLAGS $MPI_LIBS, mpi_ok)
+          fi
+    fi
+
+    if test $mpi_ok = no; then
+       mpilibs="-lmpi++ -lmpi"   #SGI
+       OPP_CHECK_LIB(MPI, mpi.h, MPI_Init(0,0), $CFLAGS_RELEASE $MPI_CFLAGS, $LDFLAGS $mpilibs, mpi_ok, MPI_LIBS="$mpilibs")
+    fi
 fi
 
-if test $mpi_ok = no; then
-   mpilibs="-lmpi++ -lmpi"   #SGI
-   OPP_CHECK_LIB(MPI, mpi.h, MPI_Init(0,0), $CFLAGS_RELEASE $MPI_CFLAGS, $LDFLAGS $mpilibs, mpi_ok, MPI_LIBS="$mpilibs")
-fi
 if test $mpi_ok = yes; then
    HAVE_MPI=yes
    MPI_CFLAGS="$MPI_CFLAGS -DWITH_MPI"
@@ -875,24 +882,29 @@ fi
 #----------------------
 # Check for XML parsers: EXPAT and/or LIBXML
 #----------------------
-OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), $LIBXML_CFLAGS, $LIBXML_LIBS, libxml_ok)
-if test $libxml_ok = no; then
+if test -n "$LIBXML_LIBS"; then
+    OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), $LIBXML_CFLAGS, $LIBXML_LIBS, libxml_ok)
+else
     OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), $LIBXML_CFLAGS, -lxml2,
                   libxml_ok, LIBXML_LIBS="-lxml2")
+
+    if test $libxml_ok = no; then
+        OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), -I/usr/include/libxml2, -lxml2,
+                      libxml_ok, LIBXML_CFLAGS="-I/usr/include/libxml2" LIBXML_LIBS="-lxml2")
+    fi
+
+    if test $libxml_ok = no -a "$mingw" = yes; then
+        OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), -I/usr/include, -L/usr/bin -lxml2 -L/usr/bin -liconv,
+                      libxml_ok, LIBXML_CFLAGS="-I/usr/include" LIBXML_LIBS="-L/usr/bin -lxml2 -L/usr/bin -liconv")
+    fi
 fi
-if test $libxml_ok = no; then
-    OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), -I/usr/include/libxml2, -lxml2,
-                  libxml_ok, LIBXML_CFLAGS="-I/usr/include/libxml2" LIBXML_LIBS="-lxml2")
-fi
-if test $libxml_ok = no -a "$mingw" = yes; then
-    OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), -I/usr/include, -L/usr/bin -lxml2 -L/usr/bin -liconv,
-                  libxml_ok, LIBXML_CFLAGS="-I/usr/include" LIBXML_LIBS="-L/usr/bin -lxml2 -L/usr/bin -liconv")
-fi
-OPP_CHECK_LIB(Expat XML parser, expat.h, XML_ParserCreate(0), $EXPAT_CFLAGS, $EXPAT_LIBS, expat_ok)
-if test $expat_ok = no; then
+if test -n "$EXPAT_LIBS"; then
+    OPP_CHECK_LIB(Expat XML parser, expat.h, XML_ParserCreate(0), $EXPAT_CFLAGS, $EXPAT_LIBS, expat_ok)
+else
     expatlibs="-lexpat"
     OPP_CHECK_LIB(Expat XML parser, expat.h, XML_ParserCreate(0), $EXPAT_CFLAGS, $expatlibs, expat_ok, EXPAT_LIBS=$expatlibs)
 fi
+
 if test $libxml_ok = yes; then
    AC_MSG_NOTICE([Using LibXML for XML parsing])
    XMLPARSER=libxml
