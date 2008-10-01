@@ -136,7 +136,7 @@ SIM_API char *opp_strprettytrunc(char *dest, const char *src, unsigned maxlen);
  *
  * Terminates the simulation with an error message.
  */
-SIM_API void opp_error(ErrorCode errcode,...);
+SIM_API void opp_error(OppErrorCode errcode,...);
 
 /**
  * DEPRECATED: use <tt>throw cRuntimeError(...)</tt> instead!
@@ -156,7 +156,7 @@ SIM_API void opp_error(const char *msg,...);
  * to the standard error, and in Tkenv it will probably pop up an
  * [OK] dialog.
  */
-SIM_API void opp_warning(ErrorCode errcode,...);
+SIM_API void opp_warning(OppErrorCode errcode,...);
 
 /**
  * This method can be used to report non-fatal discrepancies to the user.
@@ -175,7 +175,7 @@ SIM_API void opp_warning(const char *msg,...);
  *
  * Print message and set error number.
  */
-SIM_API void opp_terminate(ErrorCode errcode,...);
+SIM_API void opp_terminate(OppErrorCode errcode,...);
 
 /**
  * DEPRECATED.

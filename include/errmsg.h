@@ -25,7 +25,7 @@ NAMESPACE_BEGIN
 /**
  * Error codes
  */
-enum ErrorCode
+enum OppErrorCode
 {
     eOK = 0,  // eOK must have zero numeric value
     eBACKSCHED,
@@ -79,7 +79,7 @@ class SIM_API cErrorMessages
 {
   public:
     cErrorMessages() {}
-    static const char *get(ErrorCode e);
+    static const char *get(OppErrorCode e);
 };
 
 NAMESPACE_END
