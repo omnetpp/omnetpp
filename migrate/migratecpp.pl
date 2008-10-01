@@ -161,7 +161,7 @@ while (<LISTFILE>)
     $txt =~ s/\bgetDestinationGate\(\)/getPathEndGate()/mg;
     $txt =~ s/([cC]h[a-zA-Z0-9()]*)->getPreviousGate\(\)/$1->getSourceGate()/mg;  #channel
 
-    # parsim 
+    # parsim
     $txt =~ s/\bnetPack *\(/parsimPack(/mg;
     $txt =~ s/\bnetUnpack *\(/parsimUnpack(/mg;
 
@@ -175,6 +175,9 @@ while (<LISTFILE>)
     $txt =~ s/\bsTopoLinkOut\b/cTopology::LinkOut/mg;
     $txt =~ s/\bsTopoNode\b/cTopology::Node/mg;
     $txt =~ s/\bcDisplayStringParser\b/cDisplayString/mg;
+
+    # exceptions must be thrown by value
+    $txt =~ s/\bthrow +new +cRuntimeError\b/throw cRuntimeError/mg;
 
     # print warnings
     $lineno = 0;
