@@ -22,7 +22,7 @@
 USING_NAMESPACE
 
 
-const char *cErrorMessages::get(ErrorCode e)
+const char *cErrorMessages::get(OppErrorCode e)
 {
     switch (e)
     {

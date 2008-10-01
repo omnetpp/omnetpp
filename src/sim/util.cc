@@ -175,7 +175,7 @@ char *opp_strprettytrunc(char *dest, const char *src, unsigned maxlen)
 
 #define BUFLEN 512
 
-void opp_error(ErrorCode errorcode...)
+void opp_error(OppErrorCode errorcode...)
 {
     char message[BUFLEN];
     VSNPRINTF2(message, BUFLEN, errorcode, cErrorMessages::get(errorcode));
@@ -189,7 +189,7 @@ void opp_error(const char *msgformat...)
     throw cRuntimeError(eUSER, message);
 }
 
-void opp_warning(ErrorCode errorcode...)
+void opp_warning(OppErrorCode errorcode...)
 {
     char message[BUFLEN];
     VSNPRINTF2(message, BUFLEN, errorcode, cErrorMessages::get(errorcode));
@@ -221,7 +221,7 @@ void opp_warning(const char *msgformat...)
     }
 }
 
-void opp_terminate(ErrorCode errorcode...)
+void opp_terminate(OppErrorCode errorcode...)
 {
     char message[BUFLEN];
     VSNPRINTF2(message, BUFLEN, errorcode, cErrorMessages::get(errorcode));

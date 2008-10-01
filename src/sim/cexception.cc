@@ -53,7 +53,7 @@ cException::cException() : std::exception()
     msg = "n/a";
 }
 
-cException::cException(ErrorCode errorcode...) : std::exception()
+cException::cException(OppErrorCode errorcode...) : std::exception()
 {
     va_list va;
     va_start(va, errorcode);
@@ -69,7 +69,7 @@ cException::cException(const char *msgformat...) : std::exception()
     va_end(va);
 }
 
-cException::cException(const cObject *where, ErrorCode errorcode...) : std::exception()
+cException::cException(const cObject *where, OppErrorCode errorcode...) : std::exception()
 {
     va_list va;
     va_start(va, errorcode);
@@ -119,7 +119,7 @@ void cException::exitIfStartupError()
     }
 }
 
-void cException::init(const cObject *where, ErrorCode errorcode, const char *fmt, va_list va)
+void cException::init(const cObject *where, OppErrorCode errorcode, const char *fmt, va_list va)
 {
     // store error code
     errorcode = errorcode;
@@ -151,7 +151,7 @@ void cException::init(const cObject *where, ErrorCode errorcode, const char *fmt
 
 //---
 
-cTerminationException::cTerminationException(ErrorCode errorcode...)
+cTerminationException::cTerminationException(OppErrorCode errorcode...)
 {
     va_list va;
     va_start(va, errorcode);
@@ -169,7 +169,7 @@ cTerminationException::cTerminationException(const char *msgformat...)
 
 //---
 
-cRuntimeError::cRuntimeError(ErrorCode errorcode...)
+cRuntimeError::cRuntimeError(OppErrorCode errorcode...)
 {
     va_list va;
     va_start(va, errorcode);
@@ -187,7 +187,7 @@ cRuntimeError::cRuntimeError(const char *msgformat...)
     breakIntoDebuggerIfRequested();
 }
 
-cRuntimeError::cRuntimeError(const cObject *where, ErrorCode errorcode...)
+cRuntimeError::cRuntimeError(const cObject *where, OppErrorCode errorcode...)
 {
     va_list va;
     va_start(va, errorcode);

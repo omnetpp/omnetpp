@@ -325,7 +325,7 @@ EventLogEntry *EventLogTableFacade::getApproximateEventLogEntryAt(double percent
             else {
                 double entryPercentage = (percentage - beforePercentage) / (afterPercentage - beforePercentage);
                 Assert(0.0 <= entryPercentage && entryPercentage <= 1.0);
-                int index = (getNumMatchingEventLogEntries(beforeEvent) - 1) * entryPercentage;
+                int index = (int) floor((getNumMatchingEventLogEntries(beforeEvent) - 1) * entryPercentage);
                 return getEntryInEvent(beforeEvent, index);
             }
         }
