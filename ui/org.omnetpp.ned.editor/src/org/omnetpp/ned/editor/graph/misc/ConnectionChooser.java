@@ -7,7 +7,6 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MenuItem;
-
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.NEDTreeUtil;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
@@ -57,12 +56,12 @@ public class ConnectionChooser {
         // gather unidirectional connections
         for (GateElement srcOut : srcOutModuleGates)
             for (GateElement destIn : destInModuleGates)
-                accumlateConnection(compound, conn, srcMod, srcOut, chooseSrc, destMod, destIn, chooseDest, unusedList, usedList);
+                accumulateConnection(compound, conn, srcMod, srcOut, chooseSrc, destMod, destIn, chooseDest, unusedList, usedList);
 
         // gather bidirectional connections
         for (GateElement srcInOut : srcInOutModuleGates)
             for (GateElement destInOut : destInOutModuleGates)
-                accumlateConnection(compound, conn, srcMod, srcInOut, chooseSrc, destMod, destInOut, chooseDest, unusedList, usedList);
+                accumulateConnection(compound, conn, srcMod, srcInOut, chooseSrc, destMod, destInOut, chooseDest, unusedList, usedList);
 
         BlockingMenu menu = new BlockingMenu(Display.getCurrent().getActiveShell(), SWT.NONE);
 
@@ -82,13 +81,17 @@ public class ConnectionChooser {
             mi.setEnabled(false);
         }
         
-        
         // add the used disabled items
         for (ConnectionElement usedConn : usedList) {
             MenuItem mi = createMenuItem(menu, usedConn);
             mi.setEnabled(false);
         }
 
+        // Note: the following code was an attempt to move the mouse over the menu right away,
+        // but it does not work: it causes the first menu item to get accepted automatically
+        //Point loc = Display.getCurrent().getCursorLocation();
+        //Display.getCurrent().setCursorLocation(loc.x+5, loc.y+5);
+        
         MenuItem selection = menu.open();
         if (selection == null)
             return null;
@@ -123,7 +126,7 @@ public class ConnectionChooser {
      * @param unusedList Connections that can be chosen
      * @param usedList Connections that are already connected
      */
-    private static void accumlateConnection(CompoundModuleElementEx compound, ConnectionElementEx connection,
+    private static void accumulateConnection(CompoundModuleElementEx compound, ConnectionElementEx connection,
                                             IConnectableElement srcModule, GateElement srcGate, boolean chooseSrc, 
                                             IConnectableElement destModule, GateElement destGate, boolean chooseDest,
                                             List<ConnectionElement> unusedList, List<ConnectionElement> usedList) {

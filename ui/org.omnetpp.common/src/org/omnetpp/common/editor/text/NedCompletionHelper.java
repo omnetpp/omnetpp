@@ -147,30 +147,28 @@ public final class NedCompletionHelper {
     public final static Template[] proposedNedDiscreteDistributionsTemplExt = addRngNumArgument(proposedNedDiscreteDistributionsTempl);
 
     public final static Template[] proposedNedGlobalTempl = new Template[] {
-    	makeTemplate("import", "import NED file",
-    			"import \"${FileName}\";\n"),
         makeTemplate("simple1", "create simple module",
-                "//\n// ${description_of_the_simple_module}\n//\n"+
+                "//\n// TODO documentation\n//\n"+
                 "// @author ${user}\n//\n"+
         		"simple ${SomeModule}\n{\n"+
         		"    parameters:${cursor}\n"+
         		"    gates:\n"+
         		"}"),
         makeTemplate("simple2", "specialize simple module",
-        		"//\n// ${description_of_the_simple_module}\n//\n"+
+        		"//\n// TODO documentation\n//\n"+
                 "// @author ${user}\n//\n"+
         		"simple ${SomeModule} extends ${AnotherModule}\n{\n"+
         		"    parameters:${cursor}\n"+
         		"}"),
-        makeTemplate("simple3", "simple module complying an interface",
-        		"//\n// ${description_of_the_simple_module}\n//\n"+
+        makeTemplate("simple3", "simple module that complies to an interface",
+        		"//\n// TODO documentation\n//\n"+
                 "// @author ${user}\n//\n"+
         		"simple ${SomeModule} like ${SomeInterface}\n{\n"+
         		"    parameters:${cursor}\n"+
         		"    gates:\n"+
         		"}"),
         makeTemplate("module1", "create compound module",
-        		"//\n// ${description_of_the_module}\n//\n"+
+        		"//\n// TODO documentation\n//\n"+
                 "// @author ${user}\n//\n"+
         		"module ${SomeModule}\n{\n"+
         		"    parameters:${cursor}\n"+
@@ -179,13 +177,13 @@ public final class NedCompletionHelper {
         		"    connections:\n"+
         		"}"),
         makeTemplate("module2", "specialize compound module",
-        		"//\n// ${description_of_the_module}\n//\n"+
+        		"//\n// TODO documentation\n//\n"+
                 "// @author ${user}\n//\n"+
         		"module ${SomeModule} extends ${AnotherModule}\n{\n"+
         		"    parameters:${cursor}\n"+
         		"}"),
-        makeTemplate("module3", "compound module complying an interface",
-        		"//\n// ${description_of_the_module}\n//\n"+
+        makeTemplate("module3", "create compound module that complies to an interface",
+        		"//\n// TODO documentation\n//\n"+
                 "// @author ${user}\n//\n"+
         		"module ${SomeModule} like ${SomeInterface}\n{\n"+
         		"    parameters:${cursor}\n"+
@@ -194,69 +192,62 @@ public final class NedCompletionHelper {
         		"    connections:\n"+
         		"}"),
 		makeTemplate("moduleinterface", "create module interface",
-				"//\n// ${description_of_the_interface}\n//\n"+
+				"//\n// TODO documentation\n//\n"+
                 "// @author ${user}\n//\n"+
 				"moduleinterface ${SomeInterface}\n{\n"+
 				"    parameters:${cursor}\n"+
 				"    gates:\n"+
 				"}"),
         makeTemplate("network1", "create network",
-        		"//\n// ${description_of_the_network}\n//\n"+
+        		"//\n// TODO documentation\n//\n"+
                 "// @author ${user}\n//\n"+
         		"network ${SomeNetwork}\n{\n"+
         		"    parameters:${cursor}\n"+
         		"    submodules:\n"+
         		"    connections:\n"+
         		"}"),
-        makeTemplate("network2", "create network instantiating a module",
-        		"//\n// ${description_of_the_network}\n//\n"+
-                "// @author ${user}\n//\n"+
-        		"network ${SomeNetwork} extends ${SomeModule}\n{\n"+
-        		"    parameters:${cursor}\n"+
-        		"}"),
         makeTemplate("channel1", "create channel",
-        		"//\n// ${description_of_the_channel}\n//\n"+
+        		"//\n// TODO documentation\n//\n"+
                 "// @author ${user}\n//\n"+
         		"channel ${SomeChannel}\n{\n"+
-        		"    parameters:${cursor}\n"+
+        		"    ${cursor}\n"+
         		"}"),
         makeTemplate("channel2", "channel with underlying C++ class", //XXX revise name
-        		"//\n// ${description_of_the_channel}\n//\n"+
+        		"//\n// TODO documentation\n//\n"+
                 "// @author ${user}\n//\n"+
-        		"channel withcppclass ${SomeChannel}\n{\n"+
-        		"    parameters:${cursor}\n"+
+        		"channel ${SomeChannel}\n{\n"+
+        		"    @class(${classname});${cursor}\n"+
         		"}"),
         makeTemplate("channelinterface", "create channel interface",
-        		"//\n// ${description_of_the_channel_interface}\n//\n"+
+        		"//\n// TODO documentation\n//\n"+
                 "// @author ${user}\n//\n"+
         		"channelinterface ${SomeChannelInterface}\n{\n"+
-        		"    parameters:${cursor}\n"+
+        		"    ${cursor}\n"+
         		"}"),
         // special compound modules with submodule topologies
         makeTemplate("moduletree", "module with binary tree topology",
-                "// binary tree node\n"+
+                "//\n// Binary tree node\n//\n"+
                 "simple ${BinaryTreeNode}\n{\n"+
                 "    gates:\n"+
-                "        inout ${fromupper};\n"+
-                "        inout ${downleft};\n"+
-                "        inout ${downright};\n"+
+                "        inout ${parent};\n"+
+                "        inout ${left};\n"+
+                "        inout ${right};\n"+
                 "}\n\n"+
-                "//\n// ${binary_tree_module_description}\n//\n"+
+                "//\n// TODO documentation\n//\n"+
                 "// @author ${user}\n//\n"+
-                "module ${BinaryTreeModule}\n{\n"+
+                "module ${BinaryTree}\n{\n"+
                 "    parameters:\n"+
-                "        int height = default(5) @prompt(\"Height of the tree\");\n"+
-                "    gates:\n"+
+                "        int height = default(5);\n"+
                 "    submodules:\n"+
-                "        ${node}[2^height-1]: ${BinaryTreeNode} {};\n"+
+                "        ${node}[2^height-1]: ${BinaryTreeNode};\n"+
                 "    connections allowunconnected:\n"+
                 "        for i = 0..2^(height-1)-2 {\n"+
-                "            ${node}[i].${downleft} <--> ${node}[2*i+1].${fromupper};\n"+
-                "            ${node}[i].${downright} <--> ${node}[2*i+2].${fromupper};\n"+
+                "            ${node}[i].${left} <--> ${node}[2*i+1].${parent};\n"+
+                "            ${node}[i].${right} <--> ${node}[2*i+2].${parent};\n"+
                 "        }\n"+
                 "}"),
         makeTemplate("modulemesh", "module with mesh topology",
-                "// mesh node\n"+
+                "//\n// Mesh node\n//\n"+
                 "simple ${MeshNode}\n{\n"+
                 "    gates:\n"+
                 "        inout ${up};\n"+
@@ -264,15 +255,14 @@ public final class NedCompletionHelper {
                 "        inout ${down};\n"+
                 "        inout ${right};\n"+
                 "}\n\n"+
-                "//\n// ${mesh_module_description}\n//\n"+
+                "//\n// TODO documentation\n//\n"+
                 "// @author ${user}\n//\n"+
-                "module ${MeshModule}\n{\n"+
+                "module ${Mesh}\n{\n"+
                 "    parameters:\n"+
-                "        int height = default(4) @prompt(\"Number of rows\");\n"+
-                "        int width = default(6) @prompt(\"Number of columns\");\n"+
-                "    gates:\n"+
+                "        int height = default(4);\n"+
+                "        int width = default(6);\n"+
                 "    submodules:\n"+
-                "        ${node}[height*width]: ${MeshNode} {};\n"+
+                "        ${node}[height*width]: ${MeshNode};\n"+
                 "    connections allowunconnected:\n"+
                 "        for i=0..height-1, for j=0..width-1 {\n"+
                 "            ${node}[i*width+j].${down} <--> ${node}[(i+1)*width+j].${up} if i!=height-1;\n"+
@@ -280,8 +270,8 @@ public final class NedCompletionHelper {
                 "        }\n"+
                 "}"),
         makeTemplate("moduletrimesh", "module with triangle mesh topology",
-                "// triangle mesh node\n"+
-                "simple ${TriMeshNode}\n{\n"+
+                "//\n// Triangle mesh node\n//\n"+
+                "simple ${TriangularMeshNode}\n{\n"+
                 "    gates:\n"+
                 "        inout ${n};\n"+
                 "        inout ${nw};\n"+
@@ -290,15 +280,14 @@ public final class NedCompletionHelper {
                 "        inout ${se};\n"+
                 "        inout ${ne};\n"+
                 "}\n\n"+
-                "//\n// ${triangle_mesh_module_description}\n//\n"+
+                "//\n// TODO documentation\n//\n"+
                 "// @author ${user}\n//\n"+
-                "module ${TriMeshModule}\n{\n"+
+                "module ${TriangularMesh}\n{\n"+
                 "    parameters:\n"+
-                "        int rows = default(4) @prompt(\"Number of rows\");\n"+
-                "        int cols = default(6) @prompt(\"Number of columns\");\n"+
-                "    gates:\n"+
+                "        int rows = default(4);\n"+
+                "        int cols = default(6);\n"+
                 "    submodules:\n"+
-                "        ${node}[rows*cols]: ${TriMeshNode} {};\n"+
+                "        ${node}[rows*cols]: ${TriangularMeshNode};\n"+
                 "    connections allowunconnected:\n"+
                 "        for i = 0..rows*cols-1 {\n"+
                 "            ${node}[i].${n} <-- ${node}[i-2*cols].${s} if i+1>2*cols;\n"+
@@ -307,21 +296,20 @@ public final class NedCompletionHelper {
                 "        }\n" +
                 "}"),
         makeTemplate("modulehexmesh", "module with hexagonal mesh topology",
-                "// hexagonal mesh node\n"+
+                "//\n// Hexagonal mesh node\n//\n"+
                 "simple ${HexMeshNode}\n{\n"+
                 "    gates:\n"+
                 "        inout ${port}[];\n"+
                 "}\n\n"+
-                "//\n// ${hexagonal_mesh_module_description}\n//\n"+
+                "//\n// TODO documentation\n//\n"+
                 "// @author ${user}\n//\n"+
-                "module ${HexMeshModule}\n{\n"+
+                "module ${HexMesh}\n{\n"+
                 "    parameters:\n"+
-                "        int rows = default(3) @prompt(\"Number of rows\");\n"+
-                "        int cols = default(3) @prompt(\"Number of columns\");\n" +
+                "        int rows = default(3);\n"+
+                "        int cols = default(3);\n" +
                 "        int num = 2*(rows*cols+rows+cols);"+
-                "    gates:\n"+
                 "    submodules:\n"+
-                "        ${node}[num]: ${HexMeshNode} {};\n"+
+                "        ${node}[num]: ${HexMeshNode};\n"+
                 "    connections:\n"+
                 "        for i = 0..num-1 {\n"+
                 "            ${node}[i].${port}++ <--> ${node}[i+1].${port}++ if i<num-1 && i%(2*cols+2)!=2*cols;\n"+
