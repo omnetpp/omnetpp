@@ -34,7 +34,7 @@ import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.PropertyPage;
-import org.eclipse.ui.internal.dialogs.PropertyDialog;
+import org.eclipse.ui.preferences.IWorkbenchPreferenceContainer;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.makefile.MakemakeOptions;
 import org.omnetpp.cdt.makefile.MetaMakemake;
@@ -69,8 +69,8 @@ public class MakemakeOptionsPanel extends Composite {
 
     // controls
     private TabFolder tabfolder;
-    private Composite scopePage;
     private Composite targetPage;
+    private Composite scopePage;
     private Composite compilePage;
     private Composite linkPage;
     private Composite customPage;
@@ -140,8 +140,8 @@ public class MakemakeOptionsPanel extends Composite {
         tabfolder = new TabFolder(composite, SWT.TOP);
         tabfolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-        scopePage = createTabPage(tabfolder, "Scope");
         targetPage = createTabPage(tabfolder, "Target");
+        scopePage = createTabPage(tabfolder, "Scope");
         compilePage = createTabPage(tabfolder, "Compile");
         linkPage = createTabPage(tabfolder, "Link");
         customPage = createTabPage(tabfolder, "Custom");
@@ -151,17 +151,6 @@ public class MakemakeOptionsPanel extends Composite {
         hoverSupport = new HoverSupport();
         hoverSupport.setHoverSizeConstaints(500, 400); // DLL help text is long & wide
 
-        // "Scope" page
-        scopePage.setLayout(new GridLayout(1,false));
-        Group group1 = createGroup(scopePage, "Select makefile type:", 1);
-        deepMakefileRadioButton = createRadioButton(group1, "Deep (recommended)", "Process all source files from this subdirectory tree");
-        recursiveMakefileRadioButton = createRadioButton(group1, "Recursive", "Process source files in this directory only, and invoke \"make\" in all subdirectories; Makefiles must exist");
-        localMakefileRadioButton = createRadioButton(group1, "Local", "Process source files in this directory only; ignore subdirectories");
-        createLabel(group1, "Makefiles will ignore directories marked as \"Excluded\"");
-        Label submakeDirsLabel = createLabel(scopePage, "Additionally, invoke \"make\" in the following directories:");
-        submakeDirsList = new FileListControl(scopePage, "Sub-make directories (relative path)", BROWSE_DIR);
-        scopePageToggle = createToggleLink(scopePage, new Control[] {submakeDirsLabel, submakeDirsList.getListControl().getParent()});
-        
         // "Target" page
         targetPage.setLayout(new GridLayout(1,false));
         Group group = createGroup(targetPage, "Target type:", 1);
@@ -183,6 +172,17 @@ public class MakemakeOptionsPanel extends Composite {
         Group outGroup = createGroup(targetPage, "Output:", 2);
         outputDirText = createLabelAndText(outGroup, "Output directory:", "Specify project relative path. When empty, defaults to \"out\".");
 
+        // "Scope" page
+        scopePage.setLayout(new GridLayout(1,false));
+        Group group1 = createGroup(scopePage, "Select makefile type:", 1);
+        deepMakefileRadioButton = createRadioButton(group1, "Deep (recommended)", "Process all source files from this subdirectory tree");
+        recursiveMakefileRadioButton = createRadioButton(group1, "Recursive", "Process source files in this directory only, and invoke \"make\" in all subdirectories; Makefiles must exist");
+        localMakefileRadioButton = createRadioButton(group1, "Local", "Process source files in this directory only; ignore subdirectories");
+        createLabel(group1, "Makefiles will ignore directories marked as \"Excluded\"");
+        Label submakeDirsLabel = createLabel(scopePage, "Additionally, invoke \"make\" in the following directories:");
+        submakeDirsList = new FileListControl(scopePage, "Sub-make directories (relative path)", BROWSE_DIR);
+        scopePageToggle = createToggleLink(scopePage, new Control[] {submakeDirsLabel, submakeDirsList.getListControl().getParent()});
+        
         // "Compile" page
         compilePage.setLayout(new GridLayout(1,false));
         Group includeGroup = createGroup(compilePage, "Include Path", 1);
@@ -247,7 +247,7 @@ public class MakemakeOptionsPanel extends Composite {
 
         // "Preview" page
         previewPage.setLayout(new GridLayout(1,false));
-        createLabel(previewPage, "Makemake options:");
+        createLabel(previewPage, "Makemake options (editable):");
         optionsText = new Text(previewPage, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
         optionsText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         createLabel(previewPage, "Makemake options modified with CDT settings:");
@@ -434,6 +434,8 @@ public class MakemakeOptionsPanel extends Composite {
             // switched to "Preview" page -- update its contents
             MakemakeOptions options = getResult();
             optionsText.setText(options.toString());
+            optionsText.setFocus();
+            optionsText.setSelection(optionsText.getText().length());
             refreshTranslatedOptions(options);
         }
     }
@@ -535,13 +537,15 @@ public class MakemakeOptionsPanel extends Composite {
                 linkObjectsList.setEnabled(type!=Type.NOLINK);
                 deepIncludesCheckbox.setEnabled(deepMakefileRadioButton.getSelection());
 
-                // update checkbox checked states
-                if (type!=Type.STATICLIB && type!=Type.SHAREDLIB)
-                    exportLibraryCheckbox.setSelection(false);
-                if (type!=Type.EXE && type!=Type.SHAREDLIB) {
-                    useExportedLibsCheckbox.setSelection(false);
-                    linkAllObjectsCheckbox.setSelection(false);
-                }
+                // clear checkboxes that do not apply to the given target type
+                // NOTE: we don't do it, because we'd lose settings when user
+                // selects a different radio button then the original one 
+                //if (type!=Type.STATICLIB && type!=Type.SHAREDLIB)
+                //    exportLibraryCheckbox.setSelection(false);
+                //if (type!=Type.EXE && type!=Type.SHAREDLIB) {
+                //    useExportedLibsCheckbox.setSelection(false);
+                //    linkAllObjectsCheckbox.setSelection(false);
+                //}
 
                 // validate text field contents
                 setErrorMessage(null);
@@ -594,11 +598,10 @@ public class MakemakeOptionsPanel extends Composite {
         job.schedule();
     }
 
-    @SuppressWarnings("restriction")
     protected void gotoPathsAndSymbolsPage() {
         IPreferencePageContainer container = ownerPage.getContainer();
-        if (container instanceof PropertyDialog)
-            ((PropertyDialog)container).setCurrentPageId(PROPERTYPAGE_PATH_AND_SYMBOLS);
+        if (container instanceof IWorkbenchPreferenceContainer)
+            ((IWorkbenchPreferenceContainer)container).openPage(PROPERTYPAGE_PATH_AND_SYMBOLS, null);
     }
 
     protected void setErrorMessage(String text) {
