@@ -44,7 +44,7 @@ BLT_VER=2.4
 
 #
 # MPI directory. MPI is only needed for parallel distributed execution.
-# Leave empty if you don't have MPI.
+# Leave empty if you don't have MPI. We recommend DeinoMPI
 #
 #MPI_DIR=$(TOOLS_DIR:\=/)/mpi
 #MPI_DIR=$(OPT_DIR:\=/)
@@ -157,18 +157,6 @@ LDFLAGS=$(LDFLAGS_RELEASE)
 D=
 !endif
 
-#
-# Choose whether to build static libs or DLLs
-#
-!ifndef SHARED_LIBS
-SHARED_LIBS=yes
-!endif
-
-!if "$(SHARED_LIBS)"=="yes"
-LIB_SUFFIX=.dll
-!else
-LIB_SUFFIX=.lib
-!endif
 
 #
 # Other directories & files based on the base dirs
@@ -206,7 +194,6 @@ BLT_LIB=blt$(BLT_VER:.=).lib
 !if "$(MPI_DIR)"!=""
 HAVE_MPI=yes
 !endif
-MPI_INCL_DIR=$(MPI_DIR)/include
 
 EXPAT_CFLAGS=/I "$(EXPAT_DIR)/source/lib"
 EXPAT_LIBS=libexpat.lib /libpath:"$(EXPAT_DIR)/libs"
@@ -222,8 +209,8 @@ ZLIB_LIBS=zdll.lib /libpath:"$(ZLIB_DIR)/lib"
 # (NO_CONST is for testing code compatibility with systems where tcl.h comes without 'const')
 TK_CFLAGS=/I "$(TK_INCL_DIR)" /DNO_CONST
 TK_LIBS=$(TCL_LIB) $(TK_LIB) $(BLT_LIB) /libpath:"$(TK_LIB_DIR)"
-MPI_CFLAGS=/I "$(MPI_INCL_DIR)"
-MPI_LIBS=
+MPI_CFLAGS=/I "$(MPI_DIR)/include"
+MPI_LIBS=/libpath:"$(MPI_DIR)/lib" mpi.lib
 
 !if "$(XMLPARSER)"=="expat"
 XML_CFLAGS=$(EXPAT_CFLAGS)
@@ -239,23 +226,42 @@ XML_LIBS=$(LIBXML_LIBS)
 # Definitions for makemake-generated makefiles
 #
 CMDENV_LIBS = /include:_cmdenv_lib envir$D.lib cmdenv$D.lib
-TKENV_LIBS = /include:_tkenv_lib envir$D.lib tkenv$D.lib layout$D.lib $(TK_LIBS) $(ZLIB_LIBS)
+TKENV_LIBS = /include:_tkenv_lib envir$D.lib tkenv$D.lib layout$D.lib
 ALL_ENV_LIBS = $(CMDENV_LIBS) $(TKENV_LIBS)
 
 KERNEL_LIBS = sim_std$D.lib
 
 !if "$(WITH_NETBUILDER)"=="yes"
-KERNEL_LIBS = $(KERNEL_LIBS) nedxml$D.lib $(XML_LIBS)
+KERNEL_LIBS = $(KERNEL_LIBS) nedxml$D.lib
 !endif
 
 KERNEL_LIBS = $(KERNEL_LIBS) common$D.lib
 
-!if "$(WITH_PARSIM)"=="yes"
-KERNEL_LIBS = $(KERNEL_LIBS) $(MPI_LIBS)
-!endif
-
 # winsock is needed by libxml as well as the sockets sample simulation
 SYS_LIBS = wsock32.lib
+
+#
+# Choose whether to build static libs or DLLs
+#
+!ifndef SHARED_LIBS
+  SHARED_LIBS=yes
+!endif
+
+!if "$(SHARED_LIBS)"=="yes"
+  LIB_SUFFIX=.dll
+!else
+  LIB_SUFFIX=.lib
+
+  TKENV_LIBS = $(TKENV_LIB) $(TK_LIBS) $(ZLIB_LIBS)
+
+  !if "$(WITH_NETBUILDER)"=="yes"
+    KERNEL_LIBS = $(KERNEL_LIBS) $(XML_LIBS)
+  !endif
+
+  !if "$(WITH_PARSIM)"=="yes" && "$(HAVE_MPI)"=="yes"
+    KERNEL_LIBS = $(KERNEL_LIBS) $(MPI_LIBS)
+  !endif
+!endif
 
 #
 # Tools
