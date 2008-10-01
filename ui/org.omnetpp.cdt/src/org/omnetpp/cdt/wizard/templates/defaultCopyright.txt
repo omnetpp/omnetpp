@@ -1,3 +1,4 @@
 //
-// Copyright (c) {{year}} {{author}}
+// Part of project {{ProjectName}}
+// Author: {{author}}, {{year}}
 //
