@@ -125,11 +125,6 @@ public class MetaMakemake {
             translatedOptions.metaExportLibrary = false;
         }
         
-        if (translatedOptions.metaLinkWithAllObjectsInProject) {
-            //FIXME TODO
-            translatedOptions.metaLinkWithAllObjectsInProject = false;
-        }
-        
         // substitute all ${eclipse_variables}
         translatedOptions.substituteVariables(makefileFolder.getProject());
         

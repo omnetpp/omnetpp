@@ -106,7 +106,6 @@ public class MakemakeOptionsPanel extends Composite {
 
     // "Link" page
     private Button useExportedLibsCheckbox;
-    private Button linkAllObjectsCheckbox;
     private Combo userInterfaceCombo;
     private ToggleLink linkPageToggle;
     private FileListControl libsList;
@@ -209,8 +208,6 @@ public class MakemakeOptionsPanel extends Composite {
         linkPage.setLayout(new GridLayout(1,false));
 
         Group linkGroup = createGroup(linkPage, "Link:", 2);
-        linkAllObjectsCheckbox = createCheckbox(linkGroup, "Link with all object files in this project", null);
-        ((GridData)linkAllObjectsCheckbox.getLayoutData()).horizontalSpan = 2;
         useExportedLibsCheckbox = createCheckbox(linkGroup, "Link with libraries exported from referenced projects", null);
         ((GridData)useExportedLibsCheckbox.getLayoutData()).horizontalSpan = 2;
         createLabel(linkGroup, "User interface libraries to link with:");
@@ -420,7 +417,6 @@ public class MakemakeOptionsPanel extends Composite {
 
         userInterfaceCombo.addSelectionListener(selectionChangeListener);
         useExportedLibsCheckbox.addSelectionListener(selectionChangeListener);
-        linkAllObjectsCheckbox.addSelectionListener(selectionChangeListener);
         libsList.addChangeListener(fileListChangeListener);
         linkObjectsList.addChangeListener(fileListChangeListener);
 
@@ -491,7 +487,6 @@ public class MakemakeOptionsPanel extends Composite {
         // "Link" page
         userInterfaceCombo.setText(StringUtils.capitalize(options.userInterface.toLowerCase()));
         useExportedLibsCheckbox.setSelection(options.metaUseExportedLibs);
-        linkAllObjectsCheckbox.setSelection(options.metaLinkWithAllObjectsInProject);
         libsList.setList(options.libs.toArray(new String[]{}));
         linkObjectsList.setList(options.extraArgs.toArray(new String[]{}));
 
@@ -532,7 +527,6 @@ public class MakemakeOptionsPanel extends Composite {
                 exportLibraryCheckbox.setEnabled(type==Type.STATICLIB || type==Type.SHAREDLIB);
                 userInterfaceCombo.setEnabled(targetExecutableRadioButton.getSelection());
                 useExportedLibsCheckbox.setEnabled(type==Type.EXE || type==Type.SHAREDLIB);
-                linkAllObjectsCheckbox.setEnabled(type==Type.EXE || type==Type.SHAREDLIB);
                 libsList.setEnabled(type!=Type.NOLINK);
                 linkObjectsList.setEnabled(type!=Type.NOLINK);
                 deepIncludesCheckbox.setEnabled(deepMakefileRadioButton.getSelection());
@@ -643,7 +637,6 @@ public class MakemakeOptionsPanel extends Composite {
         // "Link" page
         result.userInterface = userInterfaceCombo.getText().trim();
         result.metaUseExportedLibs = useExportedLibsCheckbox.getSelection();
-        result.metaLinkWithAllObjectsInProject = linkAllObjectsCheckbox.getSelection();
         result.libs.addAll(Arrays.asList(libsList.getItems()));
         result.extraArgs.addAll(Arrays.asList(linkObjectsList.getItems()));
 

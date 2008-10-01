@@ -47,10 +47,10 @@ public class MakemakeOptions implements Cloneable {
 
     // "meta" options (--meta:...): they get interpreted by MetaMakemake, 
     // and translated to normal makemake options.
+    public boolean metaSkip = false; // don't generate a Makefile in this folder
     public boolean metaAutoIncludePath = false;
     public boolean metaExportLibrary = false;
     public boolean metaUseExportedLibs = false;
-    public boolean metaLinkWithAllObjectsInProject = false;
 
     private List<String> errors = null; 
     
@@ -244,8 +244,8 @@ public class MakemakeOptions implements Cloneable {
             else if (arg.equals("--meta:use-exported-libs")) {
                 metaUseExportedLibs = true;
             }
-            else if (arg.equals("--meta:link-project-objs")) {
-                metaLinkWithAllObjectsInProject = true;
+            else if (arg.equals("--meta:skip")) {
+                metaSkip = true;
             }
             else if (arg.equals("--")) {
                 break;
@@ -340,8 +340,8 @@ public class MakemakeOptions implements Cloneable {
             result.add("--meta:export-library");
         if (metaUseExportedLibs)
             result.add("--meta:use-exported-libs");
-        if (metaLinkWithAllObjectsInProject)
-            result.add("--meta:link-project-objs");
+        if (metaSkip)
+            result.add("--meta:skip");
 
         if (!extraArgs.isEmpty())
             result.add("--");
@@ -464,7 +464,7 @@ public class MakemakeOptions implements Cloneable {
         result.metaAutoIncludePath = metaAutoIncludePath;
         result.metaExportLibrary = metaExportLibrary;
         result.metaUseExportedLibs = metaUseExportedLibs;
-        result.metaLinkWithAllObjectsInProject = metaLinkWithAllObjectsInProject;
+        result.metaSkip = metaSkip;
         return result;
     }
 }
