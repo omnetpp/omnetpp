@@ -6512,11 +6512,11 @@ fi
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$MPI_CFLAGS"
-   LIBS="$MPI_LIBS"
+   CXXFLAGS="$CFLAGS_RELEASE $MPI_CFLAGS"
+   LIBS="$LDFLAGS $MPI_LIBS"
 
-   { echo "$as_me:$LINENO: checking for MPI with CFLAGS=\"$MPI_CFLAGS\" LIBS=\"$MPI_LIBS\"" >&5
-echo $ECHO_N "checking for MPI with CFLAGS=\"$MPI_CFLAGS\" LIBS=\"$MPI_LIBS\"... $ECHO_C" >&6; }
+   { echo "$as_me:$LINENO: checking for MPI with CFLAGS=\"$CFLAGS_RELEASE $MPI_CFLAGS\" LIBS=\"$LDFLAGS $MPI_LIBS\"" >&5
+echo $ECHO_N "checking for MPI with CFLAGS=\"$CFLAGS_RELEASE $MPI_CFLAGS\" LIBS=\"$LDFLAGS $MPI_LIBS\"... $ECHO_C" >&6; }
 
    cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -6614,11 +6614,11 @@ fi
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$MPI_CFLAGS"
-   LIBS="$MPI_LIBS"
+   CXXFLAGS="$CFLAGS_RELEASE $MPI_CFLAGS"
+   LIBS="$LDFLAGS $MPI_LIBS"
 
-   { echo "$as_me:$LINENO: checking for MPI with CFLAGS=\"$MPI_CFLAGS\" LIBS=\"$MPI_LIBS\"" >&5
-echo $ECHO_N "checking for MPI with CFLAGS=\"$MPI_CFLAGS\" LIBS=\"$MPI_LIBS\"... $ECHO_C" >&6; }
+   { echo "$as_me:$LINENO: checking for MPI with CFLAGS=\"$CFLAGS_RELEASE $MPI_CFLAGS\" LIBS=\"$LDFLAGS $MPI_LIBS\"" >&5
+echo $ECHO_N "checking for MPI with CFLAGS=\"$CFLAGS_RELEASE $MPI_CFLAGS\" LIBS=\"$LDFLAGS $MPI_LIBS\"... $ECHO_C" >&6; }
 
    cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -6672,16 +6672,122 @@ rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
       fi
 fi
 if test $mpi_ok = no; then
+      # MPICH2 has mpicxx -compile-info and -link-info, slightly broken
+      # (both print the same string, which includes the compiler name too)
+      # Extract the first word of "mpicxx", so it can be a program name with args.
+set dummy mpicxx; ac_word=$2
+{ echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6; }
+if test "${ac_cv_prog_MPICXX+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  if test -n "$MPICXX"; then
+  ac_cv_prog_MPICXX="$MPICXX" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
+    ac_cv_prog_MPICXX="mpicxx"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+IFS=$as_save_IFS
+
+  test -z "$ac_cv_prog_MPICXX" && ac_cv_prog_MPICXX="not found"
+fi
+fi
+MPICXX=$ac_cv_prog_MPICXX
+if test -n "$MPICXX"; then
+  { echo "$as_me:$LINENO: result: $MPICXX" >&5
+echo "${ECHO_T}$MPICXX" >&6; }
+else
+  { echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6; }
+fi
+
+
+      if test "$MPICXX" != "not found"; then
+          MPI_CFLAGS=`mpicxx -c -compile-info | sed 's/^^ *//'`
+          MPI_LIBS=`mpicxx -link-info | sed 's/^^ *//'`
+
+   save_CXXFLAGS=$CXXFLAGS
+   save_LIBS=$LIBS
+
+   CXXFLAGS="$CFLAGS_RELEASE $MPI_CFLAGS"
+   LIBS="$LDFLAGS $MPI_LIBS"
+
+   { echo "$as_me:$LINENO: checking for MPI with CFLAGS=\"$CFLAGS_RELEASE $MPI_CFLAGS\" LIBS=\"$LDFLAGS $MPI_LIBS\"" >&5
+echo $ECHO_N "checking for MPI with CFLAGS=\"$CFLAGS_RELEASE $MPI_CFLAGS\" LIBS=\"$LDFLAGS $MPI_LIBS\"... $ECHO_C" >&6; }
+
+   cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <mpi.h>
+int
+main ()
+{
+MPI_Init(0,0);
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (ac_try="$ac_link"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
+  (eval "$ac_link") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_cxx_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest$ac_exeext &&
+       $as_test_x conftest$ac_exeext; then
+  { echo "$as_me:$LINENO: result: yes" >&5
+echo "${ECHO_T}yes" >&6; }; mpi_ok=yes;
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+	{ echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6; }; mpi_ok=no;
+fi
+
+rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
+      conftest$ac_exeext conftest.$ac_ext
+
+   CXXFLAGS=$save_CXXFLAGS
+   LIBS=$save_LIBS
+
+      fi
+fi
+
+if test $mpi_ok = no; then
    mpilibs="-lmpi++ -lmpi"   #SGI
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$MPI_CFLAGS"
-   LIBS="$mpilibs"
+   CXXFLAGS="$CFLAGS_RELEASE $MPI_CFLAGS"
+   LIBS="$LDFLAGS $mpilibs"
 
-   { echo "$as_me:$LINENO: checking for MPI with CFLAGS=\"$MPI_CFLAGS\" LIBS=\"$mpilibs\"" >&5
-echo $ECHO_N "checking for MPI with CFLAGS=\"$MPI_CFLAGS\" LIBS=\"$mpilibs\"... $ECHO_C" >&6; }
+   { echo "$as_me:$LINENO: checking for MPI with CFLAGS=\"$CFLAGS_RELEASE $MPI_CFLAGS\" LIBS=\"$LDFLAGS $mpilibs\"" >&5
+echo $ECHO_N "checking for MPI with CFLAGS=\"$CFLAGS_RELEASE $MPI_CFLAGS\" LIBS=\"$LDFLAGS $mpilibs\"... $ECHO_C" >&6; }
 
    cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -6735,6 +6841,7 @@ rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
 fi
 if test $mpi_ok = yes; then
    HAVE_MPI=yes
+   MPI_CFLAGS="$MPI_CFLAGS -DWITH_MPI"
 else
    HAVE_MPI=no
    OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  MPI (optional)"

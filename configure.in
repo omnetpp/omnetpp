@@ -838,14 +838,14 @@ fi
 #----------------------
 # Check for MPI.
 #----------------------
-OPP_CHECK_LIB(MPI, mpi.h, MPI_Init(0,0), $MPI_CFLAGS, $MPI_LIBS, mpi_ok)
+OPP_CHECK_LIB(MPI, mpi.h, MPI_Init(0,0), $CFLAGS_RELEASE $MPI_CFLAGS, $LDFLAGS $MPI_LIBS, mpi_ok)
 if test $mpi_ok = no; then
       # LAM and OpenMPI support mpic++ -showme
       AC_CHECK_PROG(MPICXX, mpic++, mpic++, not found)
       if test "$MPICXX" != "not found"; then
           MPI_CFLAGS=`mpic++ -showme:compile`
           MPI_LIBS=`mpic++ -showme:link`
-          OPP_CHECK_LIB(MPI, mpi.h, MPI_Init(0,0), $MPI_CFLAGS, $MPI_LIBS, mpi_ok)
+          OPP_CHECK_LIB(MPI, mpi.h, MPI_Init(0,0), $CFLAGS_RELEASE $MPI_CFLAGS, $LDFLAGS $MPI_LIBS, mpi_ok)
       fi
 fi
 if test $mpi_ok = no; then
@@ -855,16 +855,17 @@ if test $mpi_ok = no; then
       if test "$MPICXX" != "not found"; then
           MPI_CFLAGS=`mpicxx -c -compile-info | sed 's/^[^ ]*//'`
           MPI_LIBS=`mpicxx -link-info | sed 's/^[^ ]*//'`
-          OPP_CHECK_LIB(MPI, mpi.h, MPI_Init(0,0), $MPI_CFLAGS, $MPI_LIBS, mpi_ok)
+          OPP_CHECK_LIB(MPI, mpi.h, MPI_Init(0,0), $CFLAGS_RELEASE $MPI_CFLAGS, $LDFLAGS $MPI_LIBS, mpi_ok)
       fi
 fi
 
 if test $mpi_ok = no; then
    mpilibs="-lmpi++ -lmpi"   #SGI
-   OPP_CHECK_LIB(MPI, mpi.h, MPI_Init(0,0), $MPI_CFLAGS, $mpilibs, mpi_ok, MPI_LIBS="$mpilibs")
+   OPP_CHECK_LIB(MPI, mpi.h, MPI_Init(0,0), $CFLAGS_RELEASE $MPI_CFLAGS, $LDFLAGS $mpilibs, mpi_ok, MPI_LIBS="$mpilibs")
 fi
 if test $mpi_ok = yes; then
    HAVE_MPI=yes
+   MPI_CFLAGS="$MPI_CFLAGS -DWITH_MPI"
 else
    HAVE_MPI=no
    OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  MPI (optional)"

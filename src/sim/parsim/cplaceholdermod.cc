@@ -54,8 +54,7 @@ cGate *cPlaceholderModule::createGateObject(cGate::Type type)
 // as usual: tribute to smart linkers
 #include "cfilecomm.h"
 #include "cnamedpipecomm.h"
-//#include "cmpicomm.h"
-//#include "cptrpassingmpicomm.h"
+#include "cmpicomm.h"
 #include "cnosynchronization.h"
 #include "cnullmessageprot.h"
 #include "cispeventlogger.h"
@@ -66,8 +65,9 @@ void parsim_dummy()
 {
     cFileCommunications fc;
     cNamedPipeCommunications npc;
-    //cMPICommunications mc;
-    //cPtrPassingMPICommunications ppmc;
+#ifdef WITH_MPI
+    cMPICommunications mc;
+#endif
     cNoSynchronization ns;
     cNullMessageProtocol np;
     cISPEventLogger iel;

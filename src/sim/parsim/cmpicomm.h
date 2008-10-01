@@ -18,6 +18,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#ifdef WITH_MPI
+
 #ifndef __CMPICOMM_H__
 #define __CMPICOMM_H__
 
@@ -118,4 +120,4 @@ NAMESPACE_END
 
 #endif
 
-
+#endif

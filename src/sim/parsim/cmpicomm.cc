@@ -18,6 +18,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#ifdef WITH_MPI
+
 #include <stdio.h>
 #include <mpi.h>
 #include "cmpicomm.h"
@@ -189,4 +191,4 @@ bool cMPICommunications::receiveNonblocking(int filtTag, cCommBuffer *buffer, in
     return false;
 }
 
-
+#endif  // WITH_MPI

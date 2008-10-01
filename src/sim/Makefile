@@ -22,9 +22,9 @@ LIBNAME=libsim_std$D
 O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/sim
 L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 
-COPTS=$(CFLAGS) -I. -I../common -I$(OMNETPP_INCL_DIR) -I$(OMNETPP_INCL_DIR)/platdep -DBUILDING_SIM $(MPI_CFLAGS)
+COPTS=$(CFLAGS) -I. -I../common -I$(OMNETPP_INCL_DIR) -I$(OMNETPP_INCL_DIR)/platdep -DBUILDING_SIM
 
-IMPLIBS=-L$L -lcommon$D
+IMPLIBS=-L$L -lcommon$D 
 
 OBJS_STD=\
     $O/carray.o $O/cdelaychannel.o $O/cdataratechannel.o $O/cboolparimpl.o $O/cchannel.o \
@@ -60,10 +60,7 @@ OBJS_PARSIM=\
     $O/parsim/cidealsimulationprot.o $O/parsim/cispeventlogger.o \
     $O/parsim/ccommbufferbase.o $O/parsim/cfilecomm.o \
     $O/parsim/cfilecommbuffer.o $O/parsim/cnamedpipecomm-win.o $O/parsim/cnamedpipecomm.o $O/parsim/parsimutil.o \
-    $O/parsim/creceivedexception.o
-
-OBJS_MPI=\
-    $O/parsim/cmpicomm.o $O/parsim/cmpicommbuffer.o
+    $O/parsim/creceivedexception.o $O/parsim/cmpicomm.o $O/parsim/cmpicommbuffer.o
 
 OBJS= $(OBJS_STD)
 
@@ -76,8 +73,8 @@ endif
 ifeq ($(WITH_PARSIM),yes)
 OBJS += $(OBJS_PARSIM)
 ifeq ($(HAVE_MPI),yes)
-OBJS += $(OBJS_MPI)
 COPTS += $(MPI_CFLAGS)
+IMPLIBS += $(MPI_LIBS)
 endif
 endif
 

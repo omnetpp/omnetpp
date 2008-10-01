@@ -42,7 +42,7 @@ endif
 #
 # Various tools and options
 #
-ifeq ("$(MODE)","debug")
+ifeq ($(MODE),debug)
 CFLAGS=$(CFLAGS_DEBUG)
 D=d
 else
@@ -126,20 +126,22 @@ CMDENV_LIBS = -u _cmdenv_lib -lcmdenv$D -lenvir$D
 TKENV_LIBS = -u _tkenv_lib -ltkenv$D -lenvir$D -llayout$D  
 KERNEL_LIBS = -lsim_std$D
 
-ifeq ($(WITH_PARSIM),yes)
-KERNEL_LIBS += $(MPI_LIBS)
-endif
-
-ifeq ("$(SHARED_LIBS)", "yes")
-LIB_SUFFIX =  $(SHARED_LIB_SUFFIX)
+ifeq ($(SHARED_LIBS),yes)
+  LIB_SUFFIX =  $(SHARED_LIB_SUFFIX)
 else
-LIB_SUFFIX = $(A_LIB_SUFFIX)
-# extra libs we are indirectly depend on. they are needed if we are building statically
-KERNEL_LIBS += $(XML_LIBS) -lnedxml$D -lcommon$D
-TKENV_LIBS += $(TK_LIBS) $(BLT_LIBS) $(ZLIB_LIBS)
+  LIB_SUFFIX = $(A_LIB_SUFFIX)
+  # extra libs we are indirectly depend on. they are needed if we are building statically
+  KERNEL_LIBS += $(XML_LIBS) -lnedxml$D -lcommon$D
+  TKENV_LIBS += $(TK_LIBS) $(BLT_LIBS) $(ZLIB_LIBS)
   
+  ifeq ($(WITH_PARSIM),yes)
+    ifeq ($(HAVE_MPI),yes)
+      KERNEL_LIBS += $(MPI_LIBS)
+    endif
+  endif
+
   # add the Carbon framework if we are building statically on MAC OS X as Tct/Tk needs it
-  ifeq ("$(PLATFORM)", "macosx")
+  ifeq ($(PLATFORM),macosx)
     TKENV_LIBS += -framework Carbon
   endif
 endif
