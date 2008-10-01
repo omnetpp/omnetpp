@@ -18,6 +18,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#ifdef WITH_MPI
+
 #include <string.h>
 #include <mpi.h>
 #include "cmpicommbuffer.h"
@@ -490,3 +492,4 @@ void cMPICommBuffer::unpack(SimTime *d, int size)
         unpack(d[i]);
 }
 
+#endif // WITH_MPI
