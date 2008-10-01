@@ -51,7 +51,7 @@ so odds are rather poor that you'll be able to use the parallel simulation
 feature in practice to speed up your own simulations (or any other sample
 simulation here). You've been warned!
 
-You can find further info on the (quatifyable) relationship among lookahead,
+You can find further info on the (quantifyable) relationship among lookahead,
 communication delay (among CPUs, i.e. the MPI delay), computational intensity
 of processing one event, and other factors in the publications on our parallel
 simulation research website,
