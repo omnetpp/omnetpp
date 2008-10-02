@@ -627,7 +627,7 @@ cGate *cModule::gate(const char *gatename, int index)
     {
         // gate is vector
         if (index<0)
-            throw cRuntimeError(this, "%s when accessing vector gate `%s", (index==-1?"No gate index specified":"Negative gate index specified"), gatename);
+            throw cRuntimeError(this, "%s when accessing vector gate `%s'", (index==-1?"No gate index specified":"Negative gate index specified"), gatename);
         if (index>=desc->size)
             throw cRuntimeError(this, "Gate index %d out of range when accessing vector gate `%s[]' with size %d", index, gatename, desc->size);
         return isInput ? desc->inputgatev[index] : desc->outputgatev[index];
