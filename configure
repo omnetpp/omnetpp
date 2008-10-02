@@ -3707,10 +3707,11 @@ CFLAGS_RELEASE="$CFLAGS_RELEASE $CFLAGS_ARCH"
 LDFLAGS="$LDFLAGS $LDFLAGS_ARCH"
 
 # add RUNTIME_PATH option if supported so setting LD_LIBRARY_PATH is no longer needed when using shared libs
+# . is added to the rpath so opp_run -L option does not need full path
 { echo "$as_me:$LINENO: checking whether linker supports -rpath" >&5
 echo $ECHO_N "checking whether linker supports -rpath... $ECHO_C" >&6; }
 LDFLAGS_SAVE="$LDFLAGS"
-LDFLAGS="$LDFLAGS -Wl,-rpath,\$(OMNETPP_LIB_DIR)"
+LDFLAGS="$LDFLAGS -Wl,-rpath,\$(OMNETPP_LIB_DIR):."
 cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
 _ACEOF
