@@ -7250,6 +7250,9 @@ else
 echo "$as_me: WARNING: No suitable XML parser found: no support for XML input" >&2;}
 fi
 
+CFLAGS_DEBUG="$CFLAGS_DEBUG -DXMLPARSER=$XMLPARSER"
+CFLAGS_RELEASE="$CFLAGS_RELEASE -DXMLPARSER=$XMLPARSER"
+
 #----------------------
 # Check for Akaroa header and lib
 #----------------------
