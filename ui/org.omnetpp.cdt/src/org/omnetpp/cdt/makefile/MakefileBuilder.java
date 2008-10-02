@@ -141,7 +141,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
      * if a wrong one is selected.
      */
     protected void checkActiveCDTConfiguration() {
-        IProject project = getProject();
+        final IProject project = getProject();
         IManagedBuildInfo buildInfo = ManagedBuildManager.getBuildInfo(project);
         IConfiguration activeConfig = buildInfo!=null ? buildInfo.getDefaultConfiguration() : null;
         final IToolChain toolChain = activeConfig!=null ? activeConfig.getToolChain() : null;
@@ -161,7 +161,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
                     IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
                     Shell parent = activeWorkbenchWindow==null ? null : activeWorkbenchWindow.getShell();
                     // note: Display.getCurrent().getActiveShell() is not good as parent (ProgressDialog would pull down our dialog too when it disappears)
-                    MessageDialog.openWarning(parent, "Warning", message);
+                    MessageDialog.openWarning(parent, "Project "+project.getName(), message);
                 }
             });
         }
