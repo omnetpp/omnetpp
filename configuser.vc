@@ -342,6 +342,8 @@ CFLAGS=$(CFLAGS) /DWITH_PARSIM
 CFLAGS=$(CFLAGS) /DWITH_NETBUILDER
 !endif
 
+CFLAGS=$(CFLAGS) -DXMLPARSER=$(XMLPARSER)
+
 #
 # The Visual C++ compiler used: "vc71", "vc80", etc. This selects which set of
 # libraries simulation models will be linked with: linker path will be set as

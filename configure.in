@@ -923,6 +923,9 @@ else
    AC_MSG_WARN([No suitable XML parser found: no support for XML input])
 fi
 
+CFLAGS_DEBUG="$CFLAGS_DEBUG -DXMLPARSER=$XMLPARSER"
+CFLAGS_RELEASE="$CFLAGS_RELEASE -DXMLPARSER=$XMLPARSER"
+
 #----------------------
 # Check for Akaroa header and lib
 #----------------------
