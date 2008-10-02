@@ -129,19 +129,7 @@ void cModule::setIndex(int i, int n)
 {
     idx = i;
     vectsize = n;
-
-    // update fullname
-    if (fullname)
-    {
-        delete [] fullname;
-        fullname = NULL;
-    }
-    if (isVector())
-    {
-        fullname = new char[opp_strlen(getName())+10];
-        strcpy(fullname, getName());
-        opp_appendindex(fullname, getIndex());
-    }
+    updateFullName();
 }
 
 void cModule::insertSubmodule(cModule *mod)
@@ -193,14 +181,25 @@ cModule *cModule::getParentModule() const
 void cModule::setName(const char *s)
 {
     cOwnedObject::setName(s);
+    updateFullName();
+}
 
-    // update fullname
+void cModule::updateFullName()
+{
+    if (fullname)
+    {
+        delete [] fullname;
+        fullname = NULL;
+    }
     if (isVector())
     {
-        if (fullname)  delete [] fullname;
         fullname = new char[opp_strlen(getName())+10];
-        sprintf(fullname, "%s[%d]", getName(), getIndex());
+        strcpy(fullname, getName());
+        opp_appendindex(fullname, getIndex());
     }
+
+    if (lastmodulefullpathmod == this)
+        lastmodulefullpathmod = NULL;  // invalidate
 }
 
 const char *cModule::getFullName() const
@@ -211,7 +210,7 @@ const char *cModule::getFullName() const
 
 std::string cModule::getFullPath() const
 {
-    if (lastmodulefullpathmod!=this)
+    if (lastmodulefullpathmod != this)
     {
         // stop at the toplevel getModule(don't go up to cSimulation);
         // plus, cache the result, expecting more hits from this module

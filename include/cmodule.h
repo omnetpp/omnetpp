@@ -259,6 +259,9 @@ class SIM_API cModule : public cComponent //implies noncopyable
     // a module vector). Called as part of the module creation process.
     virtual void setIndex(int i, int n);
 
+    // internal: called from setName() and setIndex()
+    void updateFullName();
+
     // internal: inserts a submodule. Called as part of the module creation process.
     void insertSubmodule(cModule *mod);
 
