@@ -270,30 +270,31 @@ public final class NedCompletionHelper {
                 "        }\n"+
                 "}"),
         makeTemplate("moduletrimesh", "module with triangle mesh topology",
-                "//\n// Triangle mesh node\n//\n"+
-                "simple ${TriangularMeshNode}\n{\n"+
-                "    gates:\n"+
-                "        inout ${n};\n"+
-                "        inout ${nw};\n"+
-                "        inout ${sw};\n"+
-                "        inout ${s};\n"+
-                "        inout ${se};\n"+
-                "        inout ${ne};\n"+
-                "}\n\n"+
-                "//\n// TODO documentation\n//\n"+
-                "// @author ${user}\n//\n"+
-                "module ${TriangularMesh}\n{\n"+
-                "    parameters:\n"+
-                "        int rows = default(4);\n"+
-                "        int cols = default(6);\n"+
-                "    submodules:\n"+
-                "        ${node}[rows*cols]: ${TriangularMeshNode};\n"+
-                "    connections allowunconnected:\n"+
-                "        for i = 0..rows*cols-1 {\n"+
-                "            ${node}[i].${n} <-- ${node}[i-2*cols].${s} if i+1>2*cols;\n"+
-                "            ${node}[i].${nw} <-- ${node}[cols-(i/cols+1)%2].${se} if i%(2*cols)!=0 && i+1>cols;\n"+
-                "            ${node}[i].${sw} <-- ${node}[i+cols-1+(i/cols)%2].${ne} if i%(2*cols)!=0 && i<rows*cols-cols;\n"+
-                "        }\n" +
+                "//\n// Triangle mesh node\n//\n" + 
+                "simple ${TriMeshNode}\n" + 
+                "{\n" + 
+                "    gates:\n" + 
+                "        inout ${w};\n" + 
+                "        inout ${nw};\n" + 
+                "        inout ${sw};\n" + 
+                "        inout ${e};\n" + 
+                "        inout ${se};\n" + 
+                "        inout ${ne};\n" + 
+                "}\n\n" + 
+                "//\n// TODO documentation\n//\n" + 
+                "// @author ${user}\n//\n" + 
+                "module ${TriMesh}\n{\n" + 
+                "    parameters:\n" + 
+                "        int rows = default(3);\n" + 
+                "        int cols = default(7);\n" + 
+                "    submodules:\n" + 
+                "        ${node}[rows*cols]: ${TriMeshNode};\n" + 
+                "    connections allowunconnected:\n" + 
+                "        for x=0..cols-1, for y=0..rows-1 {\n" + 
+                "            ${node}[y*cols+x].${e} <--> ${node}[y*cols+x+1].${w} if x<cols-1;\n" + 
+                "            ${node}[y*cols+x].${se} <--> ${node}[(y+1)*cols+x].${nw} if y<rows-1;\n" + 
+                "            ${node}[y*cols+x].${sw} <--> ${node}[(y+1)*cols+x-1].${ne} if x>0 && y<rows-1;\n" + 
+                "        }\n" + 
                 "}"),
         makeTemplate("modulehexmesh", "module with hexagonal mesh topology",
                 "//\n// Hexagonal mesh node\n//\n"+
