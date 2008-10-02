@@ -32,6 +32,7 @@
 #include "fsutils.h"
 #include "fnamelisttokenizer.h"
 #include "stringutil.h"
+#include "fileutil.h"
 
 #include "intxtypes.h"
 
@@ -127,7 +128,7 @@ int BootEnv::run(int argc, char *argv[], cConfiguration *cfg)
 
         // args
         args = new ArgList();
-        args->parse(argc, argv, "h?f:u:l:c:r:p:n:x:gG");
+        args->parse(argc, argv, "h?f:u:l:c:r:p:n:x:gGv");
 
         //
         // First, load the ini file. It might contain the name of the user interface
@@ -137,8 +138,10 @@ int BootEnv::run(int argc, char *argv[], cConfiguration *cfg)
         if (!fname) fname = args->argument(0);   // first argument
         if (!fname) fname = "omnetpp.ini";   // or default filename
 
+        // when -h or -v is specified, be forgiving about nonexistent omnetpp.ini
         InifileReader *inifile = new InifileReader();
-        inifile->readFile(fname);
+        if ((!args->optionGiven('v') && !args->optionGiven('h')) || fileExists(fname))
+            inifile->readFile(fname);
 
         // process additional '-f filename' options or arguments if there are any
         for (int k=1; (fname=args->optionValue('f',k))!=NULL; k++)

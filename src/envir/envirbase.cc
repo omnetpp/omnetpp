@@ -54,6 +54,8 @@
 #include "fileglobber.h"
 #include "unitconversion.h"
 #include "commonutil.h"
+#include "../utils/ver.h"
+
 
 #include "timeutil.h"
 #include "platmisc.h"
@@ -118,6 +120,56 @@ Register_PerRunConfigEntry(CFGID_RECORD_EVENTLOG, "record-eventlog", CFG_BOOL, "
 Register_PerObjectConfigEntry(CFGID_PARTITION_ID, "partition-id", CFG_STRING, NULL, "With parallel simulation: in which partition the module should be instantiated. Specify numeric partition ID, or a comma-separated list of partition IDs for compound modules that span across multiple partitions. Ranges (\"5..9\") and \"*\" (=all) are accepted too.");
 Register_PerObjectConfigEntry(CFGID_RNG_K, "rng-%", CFG_INT, "", "Maps a module-local RNG to one of the global RNGs. Example: **.gen.rng-1=3 maps the local RNG 1 of modules matching `**.gen' to the global RNG 3. The default is one-to-one mapping.");
 
+#define STRINGIZE0(x) #x
+#define STRINGIZE(x) STRINGIZE0(x)
+
+static const char *compilerInfo =
+    #if defined __GNUC__
+    "GCC " __VERSION__
+    #elif defined _MSC_VER
+    "Microsoft Visual C++ version " STRINGIZE(_MSC_VER)
+    #elif defined __INTEL_COMPILER
+    "Intel Compiler version " STRINGIZE(__INTEL_COMPILER)
+    #else
+    "unknown-compiler"
+    #endif
+    ;
+
+static const char *buildInfoFormat =
+    "%d-bit"
+
+    #ifdef NDEBUG
+    " RELEASE"
+    #else
+    " DEBUG"
+    #endif
+    ;
+
+static const char *buildOptions = ""
+    #ifdef WITH_PARSIM
+    " WITH_PARSIM"
+    #endif
+
+    #ifdef WITH_MPI
+    " WITH_MPI"
+    #endif
+
+    #ifdef WITH_NETBUILDER
+    " WITH_NETBUILDER"
+    #endif
+
+    #ifdef WITH_AKAROA
+    " WITH_AKAROA"
+    #endif
+
+    #ifdef WITH_LIBXML
+    " WITH_LIBXML"
+    #endif
+
+    #ifdef WITH_EXPAT
+    " WITH_EXPAT"
+    #endif
+    ;
 
 
 EnvirBase::EnvirBase()
@@ -167,7 +219,7 @@ EnvirBase::~EnvirBase()
 int EnvirBase::run(int argc, char *argv[], cConfiguration *configobject)
 {
     args = new ArgList();
-    args->parse(argc, argv, "h?f:u:l:c:r:p:n:x:gG");  //TODO share spec with BootEnv!
+    args->parse(argc, argv, "h?f:u:l:c:r:p:n:x:gGv");  //TODO share spec with BootEnv!
     cfg = configobject;
 
     setup();
@@ -186,6 +238,15 @@ void EnvirBase::setup()
             printHelp();
         else
             dumpComponentList(category);
+        return;  // don't set initialized==true
+    }
+
+    if (args->optionGiven('v'))
+    {
+        ev << "\n";
+        ev << "Build: " OMNETPP_RELEASE " " OMNETPP_BUILDID << "\n";
+        ev << "Compiler: " << compilerInfo << "\n";
+        ev << "Options: " << opp_stringf(buildInfoFormat, 8*sizeof(void*)) << buildOptions << "\n" << "\n";
         return;  // don't set initialized==true
     }
 
@@ -327,6 +388,7 @@ void EnvirBase::printHelp()
     ev << "                      --debug-on-errors true\n";
     ev << "                      --record-eventlog true\n";
     ev << "                      --sim-time-limit 1000s\n";
+    ev << "  -v            Print version and build info.\n";
     ev << "  -h            Print this help and exit.\n";
     ev << "  -h <category> Lists registered components:\n";
     ev << "    -h config         Prints the list of available config options\n";
