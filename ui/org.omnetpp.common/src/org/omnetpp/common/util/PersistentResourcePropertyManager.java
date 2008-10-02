@@ -11,6 +11,11 @@ import java.io.ObjectOutputStream;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 
+/**
+ * TODO document
+ * 
+ * @author Levy
+ */
 public class PersistentResourcePropertyManager {
 	private String pluginId;
 

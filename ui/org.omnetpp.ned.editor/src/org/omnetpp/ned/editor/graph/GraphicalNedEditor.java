@@ -177,12 +177,14 @@ public class GraphicalNedEditor
         // restore palette filter from a persistent property
         PersistentResourcePropertyManager propertyManager = new PersistentResourcePropertyManager(NedEditorPlugin.PLUGIN_ID);
         try {
-            Set<String> excludedPackages = (Set<String>)propertyManager.getProperty(getFile(), PROP_PALETTE_FILTER);
-            getPaletteManager().setExcludedPackages(excludedPackages);
+            if (propertyManager.hasProperty(getFile(), PROP_PALETTE_FILTER)) {
+                Set<String> excludedPackages = (Set<String>)propertyManager.getProperty(getFile(), PROP_PALETTE_FILTER);
+                getPaletteManager().setExcludedPackages(excludedPackages);
+            }
         }
         catch (Exception e) {
             propertyManager.removeProperty(getFile(), PROP_PALETTE_FILTER);
-            NedEditorPlugin.logError("cannot restore palette filter",  e);
+            NedEditorPlugin.logError("Cannot restore palette filter",  e);
         }
     }
 
