@@ -381,8 +381,13 @@ implements ModifyListener {
             String expandedPath = VariablesPlugin.getDefault().getStringVariableManager().performStringSubstitution(getWorkingDirectoryText());
             if (expandedPath.length() > 0) {
                 IPath newPath = new Path(expandedPath);
-                IContainer container = (IContainer)ResourcesPlugin.getWorkspace().getRoot().findMember(newPath);
-                return container;
+                if (newPath.segmentCount() == 0)
+                	return null;
+                IResource resource = ResourcesPlugin.getWorkspace().getRoot().findMember(newPath);
+                if (resource instanceof IContainer)
+                	return (IContainer)resource;
+                // not a container - we cannot convert
+                return null;
             }
         } catch (CoreException e) {
             LaunchPlugin.logError("Error getting working directory from the Launch dialog", e);
