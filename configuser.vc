@@ -244,24 +244,26 @@ SYS_LIBS = wsock32.lib
 # Choose whether to build static libs or DLLs
 #
 !ifndef SHARED_LIBS
-  SHARED_LIBS=yes
+SHARED_LIBS=yes
 !endif
 
 !if "$(SHARED_LIBS)"=="yes"
-  LIB_SUFFIX=.dll
-!else
-  LIB_SUFFIX=.lib
+LIB_SUFFIX=.dll
+!else #SHARED_LIBS=no
 
-  TKENV_LIBS = $(TKENV_LIB) $(TK_LIBS) $(ZLIB_LIBS)
+LIB_SUFFIX=.lib
 
-  !if "$(WITH_NETBUILDER)"=="yes"
-    KERNEL_LIBS = $(KERNEL_LIBS) $(XML_LIBS)
-  !endif
+TKENV_LIBS = $(TKENV_LIB) $(TK_LIBS) $(ZLIB_LIBS)
 
-  !if "$(WITH_PARSIM)"=="yes" && "$(HAVE_MPI)"=="yes"
-    KERNEL_LIBS = $(KERNEL_LIBS) $(MPI_LIBS)
-  !endif
+!if "$(WITH_NETBUILDER)"=="yes"
+KERNEL_LIBS = $(KERNEL_LIBS) $(XML_LIBS)
 !endif
+
+!if "$(WITH_PARSIM)"=="yes" && "$(HAVE_MPI)"=="yes"
+KERNEL_LIBS = $(KERNEL_LIBS) $(MPI_LIBS)
+!endif
+
+!endif #SHARED_LIBS=no
 
 #
 # Tools
