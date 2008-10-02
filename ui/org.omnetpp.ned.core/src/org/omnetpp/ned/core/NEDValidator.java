@@ -23,6 +23,7 @@ import org.omnetpp.ned.model.interfaces.IModuleTypeElement;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
+import org.omnetpp.ned.model.pojo.ChannelInterfaceElement;
 import org.omnetpp.ned.model.pojo.ChannelSpecElement;
 import org.omnetpp.ned.model.pojo.ClassDeclElement;
 import org.omnetpp.ned.model.pojo.ClassElement;
@@ -49,6 +50,7 @@ import org.omnetpp.ned.model.pojo.LiteralElement;
 import org.omnetpp.ned.model.pojo.LoopElement;
 import org.omnetpp.ned.model.pojo.MessageDeclElement;
 import org.omnetpp.ned.model.pojo.MessageElement;
+import org.omnetpp.ned.model.pojo.ModuleInterfaceElement;
 import org.omnetpp.ned.model.pojo.MsgFileElement;
 import org.omnetpp.ned.model.pojo.NamespaceElement;
 import org.omnetpp.ned.model.pojo.OperatorElement;
@@ -206,7 +208,6 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 			errors.addError(node, "'"+name+"' is not a "+componentNode.getReadableTagName());
 			return;
 		}
-		//XXX enforce channel inheritance rules, wrt "withcppclass" keyword
 
 		// if all OK, add inherited members to our member list
 		for (String memberName : e.getMembers().keySet()) {
@@ -222,9 +223,42 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 
 	@Override
     protected void validateElement(InterfaceNameElement node) {
-		// nothing to do here: compliance to "like" interfaces will be checked
-		// after we finished validating the component
-		validateChildren(node);
+        Assert.isTrue(componentNode!=null);
+
+        //FIXME detect cycles, etc
+
+        // referenced component must exist and must be the same type as this one
+        String name = node.getName();
+        INEDTypeInfo e = resolver.lookupNedType(name, componentNode.getParentLookupContext());
+        if (e == null) {
+            errors.addError(node, "no such interface: '" + name+"'");
+            return;
+        }
+        
+        boolean isModule = componentNode instanceof IModuleTypeElement || componentNode instanceof ModuleInterfaceElement;
+        if (isModule && !(e.getNEDElement() instanceof ModuleInterfaceElement)) {
+            errors.addError(node, "'"+name+"' is not a module interface");
+            return;
+        }
+        if (!isModule && !(e.getNEDElement() instanceof ChannelInterfaceElement)) {
+            errors.addError(node, "'"+name+"' is not a channel interface");
+            return;
+        }
+
+//TODO
+//        // if all OK, add inherited members to our member list
+//        for (String memberName : e.getMembers().keySet()) {
+//            if (members.containsKey(memberName))
+//                errors.addError(node, "conflict: '"+memberName+"' occurs in multiple base interfaces");
+//            else
+//                members.put(memberName, e.getMembers().get(memberName));
+//        }
+
+        //TODO check compliance to interface (somewhere, not necessarily in the function)
+        
+        // then process children
+        validateChildren(node);
+		
 	}
 
 	@Override
