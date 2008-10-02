@@ -87,7 +87,8 @@ AC_CANONICAL_HOST()
 #
 # OMNeT++/OMNEST version number
 #
-OMNETPP_VERSION=`cat Version | sed 's/omnetpp-//'`
+OMNETPP_RELEASE=`cat Version`
+OMNETPP_VERSION=`cat Version | sed 's/^.*-//'`
 OMNETPP_BUILDID=internal
 OMNETPP_EDITION="Academic Public License -- NOT FOR COMMERCIAL USE"
 
@@ -984,6 +985,7 @@ AC_CONFIG_FILES(
 # Substitutions.
 #----------------------
 
+AC_SUBST(OMNETPP_RELEASE)
 AC_SUBST(OMNETPP_VERSION)
 AC_SUBST(OMNETPP_BUILDID)
 AC_SUBST(OMNETPP_EDITION)
@@ -1082,7 +1084,7 @@ chmod +x test/core/runtest
 
 (
 cd src/utils && cp ver.h.base ver.h && \
-echo "#define OMNETPP_RELEASE \"$OMNETPP_VERSION\"" >>ver.h && \
+echo "#define OMNETPP_RELEASE \"$OMNETPP_RELEASE\"" >>ver.h && \
 echo "#define OMNETPP_BUILDID \"$OMNETPP_BUILDID\"" >>ver.h && \
 echo "#define OMNETPP_EDITION \"$OMNETPP_EDITION\"" >>ver.h
 )

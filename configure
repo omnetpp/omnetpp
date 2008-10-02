@@ -646,6 +646,7 @@ CXXCPP
 WISH
 MPICPP
 MPICXX
+OMNETPP_RELEASE
 OMNETPP_VERSION
 OMNETPP_BUILDID
 OMNETPP_EDITION
@@ -1873,7 +1874,8 @@ case $host_os in *\ *) host_os=`echo "$host_os" | sed 's/ /-/g'`;; esac
 #
 # OMNeT++/OMNEST version number
 #
-OMNETPP_VERSION=`cat Version | sed 's/omnetpp-//'`
+OMNETPP_RELEASE=`cat Version`
+OMNETPP_VERSION=`cat Version | sed 's/^.*-//'`
 OMNETPP_BUILDID=internal
 OMNETPP_EDITION="Academic Public License -- NOT FOR COMMERCIAL USE"
 
@@ -7511,6 +7513,7 @@ ac_config_files="$ac_config_files Makefile.inc test/core/runtest"
 
 
 
+
 #
 # Generate files
 #
@@ -8212,6 +8215,7 @@ CXXCPP!$CXXCPP$ac_delim
 WISH!$WISH$ac_delim
 MPICPP!$MPICPP$ac_delim
 MPICXX!$MPICXX$ac_delim
+OMNETPP_RELEASE!$OMNETPP_RELEASE$ac_delim
 OMNETPP_VERSION!$OMNETPP_VERSION$ac_delim
 OMNETPP_BUILDID!$OMNETPP_BUILDID$ac_delim
 OMNETPP_EDITION!$OMNETPP_EDITION$ac_delim
@@ -8239,7 +8243,6 @@ AS!$AS$ac_delim
 AR!$AR$ac_delim
 SHLIB_LD!$SHLIB_LD$ac_delim
 DLLTOOL!$DLLTOOL$ac_delim
-MAKEDEPEND!$MAKEDEPEND$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -8281,6 +8284,7 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+MAKEDEPEND!$MAKEDEPEND$ac_delim
 SHARED_LIBS!$SHARED_LIBS$ac_delim
 A_LIB_SUFFIX!$A_LIB_SUFFIX$ac_delim
 SHARED_LIB_SUFFIX!$SHARED_LIB_SUFFIX$ac_delim
@@ -8319,7 +8323,7 @@ LIBOBJS!$LIBOBJS$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 36; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 37; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5
@@ -8655,7 +8659,7 @@ chmod +x test/core/runtest
 
 (
 cd src/utils && cp ver.h.base ver.h && \
-echo "#define OMNETPP_RELEASE \"$OMNETPP_VERSION\"" >>ver.h && \
+echo "#define OMNETPP_RELEASE \"$OMNETPP_RELEASE\"" >>ver.h && \
 echo "#define OMNETPP_BUILDID \"$OMNETPP_BUILDID\"" >>ver.h && \
 echo "#define OMNETPP_EDITION \"$OMNETPP_EDITION\"" >>ver.h
 )
