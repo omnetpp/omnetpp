@@ -162,12 +162,8 @@ static const char *buildOptions = ""
     " WITH_AKAROA"
     #endif
 
-    #ifdef WITH_LIBXML
-    " WITH_LIBXML"
-    #endif
-
-    #ifdef WITH_EXPAT
-    " WITH_EXPAT"
+    #ifdef XMLPARSER
+    " XMLPARSER=" STRINGIZE(XMLPARSER)
     #endif
     ;
 
