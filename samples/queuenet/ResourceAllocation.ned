@@ -1,3 +1,12 @@
+//
+// This file is part of an OMNeT++/OMNEST simulation example.
+//
+// Copyright (C) 2006-2008 OpenSim Ltd
+//
+// This file is distributed WITHOUT ANY WARRANTY. See the file
+// `license' for details on this and other legal matters.
+//
+
 import omnetpp.queueing.ResourcePool;
 import omnetpp.queueing.ResourceBasedQueue;
 import omnetpp.queueing.Sink;
@@ -5,7 +14,7 @@ import omnetpp.queueing.Source;
 
 
 //
-// This example contains a single Resource (token) and two queues 
+// This example contains a single Resource (token) and two queues
 // e
 //
 network ResourceAllocation
