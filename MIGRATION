@@ -93,12 +93,48 @@ Getting your simulation model working.
 
      "Cannot convert SimTime to double"
        simtime_t now maps to the int64-based SimTime class and not double.
-       Use SIMTIME_DBL(t) to convert a simtime_t to double. In printf's,
-       use "%s" and SIMTIME_STR(t). The advantage of using these macros
-       instead of SimTime methods is that your model will also compile with
-       simtime_t=double (a compatibility mode).
+       Wherever a simtime_t is assigned to a variable of type double,
+       consider changing that variable to simtime_t as well.
 
-     cPacket.
+       Where still needed, use SIMTIME_DBL(t) to convert a simtime_t to
+       double. In printf's, use "%s" and SIMTIME_STR(t). The advantage of
+       using these macros instead of SimTime methods is that your model will
+       also compile with simtime_t=double (a compatibility mode).
+
+     "No such method setBitLength/getBitLength/encapsulate/decapsulate"
+       Length and encapsulation have been moved to cPacket, a subclass of
+       cMessage. You likely need to change the "message" keyword in
+       .msg files with "packet", which will cause the generated class
+       to have cPacket as base class.
+
+       	 message ABCPacket {...} ==> packet ABCPacket {...}
+
+       Inside handleMessage() and other functions, cast the cMessage*
+       pointer to cPacket:
+
+         cPacket *pkt = check_and_cast<cPacket *>(msg);
+
+     "Cannot open file csimul.h" (or any other header)
+       Only <omnetpp.h> is public API. Other OMNeT++ header files should
+       not be included directly, as they may be renamed or removed in
+       any future version.
+
+     "sendDirect()" signature change.....
+
+  8. Run your simulation model. The most frequent runtime errors and
+     their fixes:
+
+     "Cannot convert unit 'none' to 'seconds'"
+       Physical units now have to be written out in expressions, so you
+       need to change 5 into 5s, and exponential(1) into exponential(1s).
+
+     "Cannot convert unit 'none' to 'bps'"
+       The datarate channel parameter now has unit bps (bit/sec), and
+       this unit must be written out. Kbps, Mbps, Gbps are also accepted.
+
+     "No such module type 'X'"
+       If your model creates modules dynamically, module types need to be
+       looked up by fully qualified name (like "some.package.X").
 
 
 Making use of new OMNeT++ features.
@@ -107,10 +143,15 @@ Making use of new OMNeT++ features.
        default icons
        parameter default values
        @unit
+       inheritance
        ...
 
   2. ini files
       configs
       experiment syntax (${})
+
+  3. C++
+      output vectors: interpolation mode, enum etc
+      gate->setDeliverOnReceptionStart(true)
 
 
