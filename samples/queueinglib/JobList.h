@@ -7,8 +7,8 @@
 // `license' for details on this and other legal matters.
 //
 
-#ifndef __JOBTABLE_H__
-#define __JOBTABLE_H__
+#ifndef __JOBLIST_H__
+#define __JOBLIST_H__
 
 #include <omnetpp.h>
 #include <set>
@@ -49,3 +49,5 @@ class JobList : public cSimpleModule
 }; // namespace
 
 #endif
+
+

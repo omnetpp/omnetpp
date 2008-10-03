@@ -11,7 +11,7 @@
 #define __RESOURCE_BASED_QUEUE_H
 
 #include <omnetpp.h>
-#include "ResourcePool.h"
+#include "IResourcePool.h"
 
 namespace queueing {
 
