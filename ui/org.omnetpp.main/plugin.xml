@@ -36,7 +36,7 @@
           value="icons/about-image.png"/>
     <property
           name="windowImages"
-          value="icons/omnest16.gif,icons/omnest32.gif,icons/omnest48.gif,icons/omnest64.gif,icons/omnest128.gif"/>
+          value="icons/logo16.png,icons/logo32.png,icons/logo48.png,icons/logo64.png,icons/logo128.png"/>
     <property
           name="startupForegroundColor"
           value="000000">
@@ -94,7 +94,7 @@
          point="org.eclipse.ui.perspectives">
       <perspective
             class="org.omnetpp.ide.PerspectiveFactory"
-            icon="icons/omnest16.gif"
+            icon="icons/logo16.png"
             id="org.omnetpp.main.OmnetppPerspective"
             name="Simulation"/>
    </extension>
@@ -239,7 +239,7 @@
             allowMultiple="false"
             category="org.omnetpp.views"
             class="org.omnetpp.ide.views.NewsView"
-            icon="icons/omnest16.gif"
+            icon="icons/logo16.png"
             id="org.omnetpp.main.NewsView"
             name="OMNeT++ News">
       </view>
