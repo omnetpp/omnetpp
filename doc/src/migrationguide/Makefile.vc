@@ -17,5 +17,5 @@ pdf: catalog
 	del custom-fo-docbook-tmp.xsl tmp.fo tmp.xml
 
 catalog:
-	set XML_CATALOG_FILES=dtd/catalog.xml
+	set XML_CATALOG_FILES=../docbook-dtd/catalog.xml
 

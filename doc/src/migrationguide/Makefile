@@ -1,5 +1,5 @@
 FOP=fop
-export XML_CATALOG_FILES=dtd/catalog.xml
+export XML_CATALOG_FILES=../docbook-dtd/catalog.xml
 
 all: pdf html
 

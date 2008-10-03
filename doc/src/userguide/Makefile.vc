@@ -27,7 +27,7 @@ pdf: chart-properties.xml processing-operations.xml catalog
 generate-tables: chart-properties processing-operations 
 
 catalog:
-	set XML_CATALOG_FILES=dtd/catalog.xml
+	set XML_CATALOG_FILES=../docbook-dtd/catalog.xml
 	
 CHART_PROP_DIR = ..\..\..\ui\org.omnetpp.scave\src\org\omnetpp\scave\charting\properties
 
