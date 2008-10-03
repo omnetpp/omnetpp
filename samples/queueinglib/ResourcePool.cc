@@ -106,7 +106,7 @@ void ResourcePool::add(AllocationRequest& request)
 void ResourcePool::updateDisplayString()
 {
     char buf[80];
-    sprintf(buf, "amount: %ld\nrequests: %d", amount, allocatorList.size());
+    sprintf(buf, "amount: %ld\nrequests: %d", amount, (int)allocatorList.size());
     getDisplayString().setTagArg("t",0, buf);
 }
 

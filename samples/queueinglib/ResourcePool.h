@@ -35,6 +35,7 @@ class IResourceAllocator
         // returns true if allocator accepted the resource
         virtual void resourceGranted(IResourcePool *pool) = 0;
         virtual std::string getFullPath() const = 0;
+        virtual ~IResourceAllocator() {}
 };
 
 /**
@@ -45,6 +46,7 @@ class IResourcePool
     public:
         virtual bool tryToAllocate(IResourceAllocator *allocator, long amountToAllocate, int priority) = 0;
         virtual void release(long amountToRelease) = 0;
+        virtual ~IResourcePool() {}
 };
 
 

@@ -46,7 +46,7 @@ Job::~Job()
 {
     if (parent)
         parent->childDeleted(this);
-    for (int i=0; i<children.size(); i++)
+    for (int i=0; i<(int)children.size(); i++)
         children[i]->parentDeleted();
     if (jobList!=NULL)
         jobList->deregisterJob(this);
@@ -77,7 +77,7 @@ int Job::getNumChildren() const
 
 Job *Job::getChild(int k)
 {
-    if (k<0 || k>=children.size())
+    if (k<0 || k>=(int)children.size())
         throw cRuntimeError(this, "child index %d out of bounds", k);
     return children[k];
 }
