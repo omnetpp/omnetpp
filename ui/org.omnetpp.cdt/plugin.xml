@@ -330,6 +330,10 @@
                   label="Goto C++"
                   style="push"
                   tooltip="Go To C++ Definition">
+               <visibleWhen
+                     checkEnabled="false">
+                  <not></not>
+               </visibleWhen>
             </command>
          </toolbar>
       </menuContribution>
