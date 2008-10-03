@@ -12,12 +12,12 @@ import omnetpp.queueing.JobList;
 import omnetpp.queueing.Join;
 import omnetpp.queueing.Sink;
 import omnetpp.queueing.Source;
-import omnetpp.queueing.Split;
+import omnetpp.queueing.Fork;
 
 //
-// Demonstrates the use of the Split and Join modules.
+// Demonstrates the use of the Fork and Join modules.
 //
-network SplitJoin
+network ForkJoin
 {
     submodules:
         source: Source {
