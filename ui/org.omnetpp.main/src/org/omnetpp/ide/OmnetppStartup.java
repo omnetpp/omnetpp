@@ -38,7 +38,9 @@ import org.omnetpp.ide.views.NewsView;
  */
 public class OmnetppStartup implements IStartup {
 
-    private static final String VERSIONS_URL = NewsView.BASE_URL + "versions/";
+	public static final String BASE_URL = "http://omnetpp.org/ide/" + (IConstants.IS_COMMERCIAL ? "omnest/" : "omnetpp/");
+	public static final String NEWS_URL = BASE_URL + "news/";
+    private static final String VERSIONS_URL = BASE_URL + "versions/";
 	private static final String LATESTVERSION_URL = VERSIONS_URL + "latest/";
 	public static final String SAMPLES_DIR = "samples";
 
@@ -88,21 +90,24 @@ public class OmnetppStartup implements IStartup {
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
 				String newestVersion = getCurrentVersion(); 
-		    	if (newestVersion != null && !newestVersion.equals(OmnetppMainPlugin.getVersion())) {
+		    	if (newestVersion != null) {
+		    		final String url = (newestVersion.equals(OmnetppMainPlugin.getVersion()) ?
+		    				NEWS_URL : VERSIONS_URL )+getUrlParams(); 
+		    		
 		    		Display.getDefault().asyncExec(new Runnable() {
-						public void run() {
-			    			try {
-			    				IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-			    				IWorkbenchPage workbenchPage = activeWorkbenchWindow == null ? null : activeWorkbenchWindow.getActivePage();
-			    				if (workbenchPage != null && System.getProperty("com.simulcraft.test.running") == null) {
-			    					NewsView newsView = (NewsView)workbenchPage.showView(IConstants.NEWS_VIEW_ID);
-		    						newsView.setURL(VERSIONS_URL+getUrlParams());
-			    				}
-			    			} 
-			    			catch (PartInitException e) {
-			    				CommonPlugin.logError(e);
-			    			}
-						}
+		    			public void run() {
+		    				try {
+		    					IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+		    					IWorkbenchPage workbenchPage = activeWorkbenchWindow == null ? null : activeWorkbenchWindow.getActivePage();
+		    					if (workbenchPage != null && System.getProperty("com.simulcraft.test.running") == null) {
+		    						NewsView newsView = (NewsView)workbenchPage.showView(IConstants.NEWS_VIEW_ID);
+		    						newsView.setURL(url);
+		    					}
+		    				} 
+		    				catch (PartInitException e) {
+		    					CommonPlugin.logError(e);
+		    				}
+		    			}
 		    		});
 		    	}
 				return Status.OK_STATUS;
