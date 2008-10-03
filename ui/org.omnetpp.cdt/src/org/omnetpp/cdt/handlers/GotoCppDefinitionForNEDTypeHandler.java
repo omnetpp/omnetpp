@@ -31,7 +31,7 @@ import org.eclipse.ui.ide.IDE;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.editor.NedEditor;
-import org.omnetpp.ned.editor.graph.edit.NedEditPart;
+import org.omnetpp.ned.editor.graph.parts.NedEditPart;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
