@@ -7,18 +7,18 @@
 // `license' for details on this and other legal matters.
 //
 
-#include "Split.h"
+#include "Fork.h"
 #include "Job.h"
 
 namespace queueing {
 
-Define_Module(Split);
+Define_Module(Fork);
 
-void Split::initialize()
+void Fork::initialize()
 {
 }
 
-void Split::handleMessage(cMessage *msg)
+void Fork::handleMessage(cMessage *msg)
 {
     Job *job = check_and_cast<Job *>(msg);
     int n = gateSize("out");

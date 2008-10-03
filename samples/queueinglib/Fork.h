@@ -17,7 +17,7 @@ namespace queueing {
 /**
  * Forks a job. See the NED file for more info.
  */
-class QUEUEING_API Split : public cSimpleModule
+class QUEUEING_API Fork : public cSimpleModule
 {
   protected:
     virtual void initialize();

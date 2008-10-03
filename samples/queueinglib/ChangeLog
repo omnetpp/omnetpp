@@ -1,10 +1,13 @@
 2008-10-03  Andras Varga
 
-	* Cleanup:
-	- copyright headers made consistent with other same simulations
+	* copyright headers made consistent with other same simulations
+
+	* cleanup:
 	- header guards made consistent
 	- put interfaces into their own files
 	- added dll export/import symbol
+
+	* Split renamed to Fork; old Fork renamed to Clone
 
 2008-09-20  Andras Varga
 

@@ -13,7 +13,7 @@ package omnetpp.queueing;
 // Forks a job to one child per output. The children can be joined together
 // into the original job with the Join module.
 //
-simple Split
+simple Fork
 {
     parameters:
         @display("i=block/fork");
