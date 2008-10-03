@@ -14,27 +14,51 @@
 
 namespace queueing {
 
+class Job;
+
 /**
- * Generates packets; see NED file for more info.
+ * Abstract base class for job generator modules
  */
-class QUEUEING_API Source : public cSimpleModule
+class QUEUEING_API SourceBase : public cSimpleModule
+{
+    protected:
+        int jobCounter;
+        std::string jobName;
+    protected:
+        virtual void initialize();
+        virtual Job *createJob();
+        virtual void finish();
+};
+
+
+/**
+ * Generates jobs; see NED file for more info.
+ */
+class QUEUEING_API Source : public SourceBase
 {
     private:
-        cMessage *selfMsg;
-        simtime_t startTime;       // when the module sends out the first job
-        simtime_t stopTime;        // when the module stops the job generation (-1 means no limit)
-        int numJobs;               // number of jobs to be generated (-1 means no limit)
-        int jobCounter;            // number of jobs generated since start
-        const char *jobName;       // the name of the generated job (if "" the job name should be
-                                   // generated from the module name)
+        simtime_t startTime;
+        simtime_t stopTime;
+        int numJobs;
 
     protected:
-        virtual ~Source();
         virtual void initialize();
         virtual void handleMessage(cMessage *msg);
-        virtual void finish();
+};
+
+
+/**
+ * Generates jobs; see NED file for more info.
+ */
+class QUEUEING_API SourceOnce : public SourceBase
+{
+    protected:
+        virtual void initialize();
+        virtual void handleMessage(cMessage *msg);
 };
 
 }; //namespace
 
 #endif
+
+

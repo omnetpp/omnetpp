@@ -12,52 +12,85 @@
 
 namespace queueing {
 
-Define_Module(Source);
 
-Source::~Source()
+void SourceBase::initialize()
 {
-    cancelAndDelete(selfMsg);
+    jobCounter = 0;
+    WATCH(jobCounter);
+    jobName = par("jobName").stringValue();
+    if (jobName == "")
+        jobName = getName();
 }
+
+Job *SourceBase::createJob()
+{
+    char buf[80];
+    sprintf(buf, "%.70s-%d", jobName, ++jobCounter);
+    Job *job = new Job(buf);
+    job->setKind(par("jobType"));
+    job->setPriority(par("jobPriority"));
+    return job;
+}
+
+void SourceBase::finish()
+{
+    recordScalar("jobs created", jobCounter);
+}
+
+//----
+
+Define_Module(Source);
 
 void Source::initialize()
 {
-    jobCounter = 0;
-    startTime =  par("startTime");
-    stopTime =  par("stopTime");
-    numJobs =  par("numJobs");
-
-    // if empty, use the module name as the default for job names
-    jobName = par("jobName");
-    if (strcmp(jobName, "") == 0)
-        jobName = getName();
+    startTime = par("startTime");
+    stopTime = par("stopTime");
+    numJobs = par("numJobs");
 
     // schedule the first message timer for start time
-    selfMsg = new cMessage("newJobTimer");
-    scheduleAt(startTime, selfMsg);
+    scheduleAt(startTime, new cMessage("newJobTimer"));
 }
 
 void Source::handleMessage(cMessage *msg)
 {
-    if (msg->isSelfMessage()
-        && (numJobs < 0 || numJobs > jobCounter)
-        && (stopTime < 0 || stopTime > simTime()))
+    ASSERT(msg->isSelfMessage());
+
+    if ((numJobs < 0 || numJobs > jobCounter) && (stopTime < 0 || stopTime > simTime()))
     {
         // reschedule the timer for the next message
         scheduleAt(simTime() + par("interArrivalTime").doubleValue(), msg);
 
-        // create a new job to be sent
-        Job *job = new Job();
-        char buff[80];
-        sprintf(buff, "%.60s %d", jobName, ++jobCounter);
-        job->setName(buff);
-        job->setKind(par("jobType"));
-        job->setPriority(par("jobPriority"));
+        Job *job = createJob();
         send(job, "out");
+    }
+    else
+    {
+        // finished
+        delete msg;
     }
 }
 
-void Source::finish()
+//----
+
+Define_Module(SourceOnce);
+
+void SourceOnce::initialize()
 {
+    simtime_t time = par("time");
+    scheduleAt(time, new cMessage("newJobTimer"));
+}
+
+void SourceOnce::handleMessage(cMessage *msg)
+{
+    ASSERT(msg->isSelfMessage());
+    delete msg;
+
+    int n = par("numJobs");
+    for (int i=0; i<n; i++)
+    {
+        Job *job = createJob();
+        send(job, "out");
+    }
 }
 
 }; //namespace

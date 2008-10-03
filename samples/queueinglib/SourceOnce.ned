@@ -15,14 +15,18 @@ package omnetpp.queueing;
 //
 // This module is useful for injecting jobs into a closed queueing network.
 //
-simple SourceOnce extends Source
+simple SourceOnce
 {
     parameters:
         @group(Queueing);
         @display("i=block/source");
-        int numJobs = default(1);  // number of jobs to be generated
-        double time @unit(s) = default(0s); // when to generate the jobs
-        startTime = time;
-        stopTime = -1s;
-        interArrivalTime = 0;
+        int numJobs = default(1);            // number of jobs to generate
+        double time @unit(s) = default(0s);  // when to generate
+        string jobName = default("");        // the base name of the generated job (will be the source name if left empty)
+        volatile int jobType = default(0);   // the type attribute of the created job (used by classifers and other modules)
+        volatile int jobPriority = default(0);  // priority of the job
+    gates:
+        output out;
 }
+
+
