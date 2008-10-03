@@ -27,27 +27,30 @@ void Clone::handleMessage(cMessage *msg)
     // increment the generation counter
     job->setGeneration(job->getGeneration()+1);
 
-    // if there are more than one output gates, send a duplicate on each output gate (index>0)
-    for (int i = 1; i < gateSize("out"); ++i)
+    int n = gateSize("out");
+    if (n == 0)
     {
-        cMessage *dupMsg = msg->dup();
-        if (changeMsgNames)
+        // no output gate: drop
+        delete job;
+    }
+    else
+    {
+        // send a copy on each gate but the last, and the original on the last gate
+        for (int i=0; i<n; i++)
         {
-            char buff[80];
-            sprintf(buff, "%.60s.%d", msg->getName(), i);
-            dupMsg->setName(buff);
+            Job *job2 = (i==n-1) ? job : job->dup();
+            if (changeMsgNames)
+                updateJobName(job2, i);
+            send(job2, "out", i);
         }
-        send(dupMsg, "out", i);
     }
+}
 
-    // send out the original message on out[0]
-    if (changeMsgNames)
-    {
-        char buff[80];
-        sprintf(buff, "%.60s.0", msg->getName());
-        msg->setName(buff);
-    }
-    send(msg, "out", 0);
+void Clone::updateJobName(Job *job, int i)
+{
+    char buf[80];
+    sprintf(buf, "%.70s.%d", job->getName(), i);
+    job->setName(buf);
 }
 
 }; //namespace

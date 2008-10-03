@@ -24,6 +24,7 @@ class QUEUEING_API Clone : public cSimpleModule
     protected:
         virtual void initialize();
         virtual void handleMessage(cMessage *msg);
+        virtual void updateJobName(Job *job, int i);
 };
 
 }; //namespace
