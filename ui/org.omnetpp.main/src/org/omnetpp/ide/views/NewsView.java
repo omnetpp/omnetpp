@@ -2,10 +2,12 @@ package org.omnetpp.ide.views;
 
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.internal.browser.BrowserViewer;
 import org.eclipse.ui.part.ViewPart;
-import org.omnetpp.common.IConstants;
 
 
 /**
@@ -14,17 +16,25 @@ import org.omnetpp.common.IConstants;
  * page that is displayed if a new version is found.
  */
 
+@SuppressWarnings("restriction")
 public class NewsView extends ViewPart {
 	protected String urlToShow = "";
-	protected Browser browser; 
+	protected BrowserViewer browser; 
 
 	/**
 	 * This is a callback that will allow us
 	 * to create the viewer and initialize it.
 	 */
 	public void createPartControl(Composite parent) {
-		browser = new Browser(parent,SWT.NONE);
-		browser.setUrl(urlToShow);
+		browser = new BrowserViewer(parent,SWT.NONE);
+		browser. setURL(urlToShow);
+		browser.getBrowser().addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseDown(MouseEvent e) {
+				if (e.button == 3)
+					browser.back();
+			}
+		});
 	}
 	/**
 	 * Passing the focus request to the viewer's control.
@@ -36,7 +46,7 @@ public class NewsView extends ViewPart {
 	public void setURL(String url) {
 		urlToShow = url;
 		if (browser != null)
-			browser.setUrl(url);
+			browser.setURL(url);
 	}
 	
 }

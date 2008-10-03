@@ -316,7 +316,7 @@
             defaultHandler="org.omnetpp.cdt.handlers.GotoCppDefinitionForNEDTypeHandler"
             description="Opens the C++ definition for a NED type (simple module or channel)"
             id="org.omnetpp.cdt.gotoCppDefinitionForNEDType"
-            name="name">
+            name="Goto C++">
       </command>
    </extension>
    <extension
