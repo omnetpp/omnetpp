@@ -29,6 +29,7 @@ class QUEUEING_API Source : public cSimpleModule
                                    // generated from the module name)
 
     protected:
+        virtual ~Source();
         virtual void initialize();
         virtual void handleMessage(cMessage *msg);
         virtual void finish();

@@ -9,6 +9,10 @@
 
 	* Split renamed to Fork; old Fork renamed to Clone
 
+	* cleaned up the implementation of Clone
+
+	* created SourceOnce and optimized Source
+
 2008-09-20  Andras Varga
 
 	* added Allocate, Deallocate

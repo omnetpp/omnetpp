@@ -82,7 +82,7 @@ class QUEUEING_API Job: public Job_Base
         virtual void makeChildOf(Job *parent);
         //@}
 
-        /** Returns the JobList where this job is registered. */
+        /** Returns the JobList where this job has been registered. */
         JobList *getContainingJobList() {return jobList;}
 
 };

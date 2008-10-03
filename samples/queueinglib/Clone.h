@@ -14,6 +14,8 @@
 
 namespace queueing {
 
+class Job;
+
 /**
  * See the NED declaration for more info.
  */

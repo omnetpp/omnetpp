@@ -14,6 +14,11 @@ namespace queueing {
 
 Define_Module(Source);
 
+Source::~Source()
+{
+    cancelAndDelete(selfMsg);
+}
+
 void Source::initialize()
 {
     jobCounter = 0;
@@ -21,7 +26,7 @@ void Source::initialize()
     stopTime =  par("stopTime");
     numJobs =  par("numJobs");
 
-    // if empty, use the module name as the default for message names
+    // if empty, use the module name as the default for job names
     jobName = par("jobName");
     if (strcmp(jobName, "") == 0)
         jobName = getName();
@@ -54,8 +59,6 @@ void Source::handleMessage(cMessage *msg)
 
 void Source::finish()
 {
-    cancelAndDelete(selfMsg);
-    selfMsg = NULL;
 }
 
 }; //namespace
