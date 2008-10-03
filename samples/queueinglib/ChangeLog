@@ -1,0 +1,22 @@
+2008-10-03  Andras Varga
+
+	* copyright headers made consistent with other same simulations
+
+2008-09-20  Andras Varga
+
+	* added Allocate, Deallocate
+	
+2008-09-19  Rudolf Hornig
+
+	* added ResourcePool, ResourceBasedQueue
+
+2008-09-18  Andras Varga
+
+	* made Job message keep track of parent-child relationships
+
+	* added Split, Join, and JobTable modules
+
+2006..2007  Rudolf Hornig
+
+	* initial implementation, based on the Fifo and CQN examples,
+	and other queueing models
