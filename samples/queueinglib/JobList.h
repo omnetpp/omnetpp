@@ -7,8 +7,8 @@
 // `license' for details on this and other legal matters.
 //
 
-#ifndef __QUEUEING_JOBLIST_H__
-#define __QUEUEING_JOBLIST_H__
+#ifndef __QUEUEING_JOBLIST_H
+#define __QUEUEING_JOBLIST_H
 
 #include "QueueingDefs.h"
 #include <set>
@@ -18,7 +18,7 @@ namespace queueing {
 /**
  * Makes it possible to iterate over all Job messages in the system.
  */
-class JobList : public cSimpleModule
+class QUEUEING_API JobList : public cSimpleModule
 {
     friend class Job;
     protected:

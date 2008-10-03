@@ -17,7 +17,7 @@ namespace queueing {
 /**
  * Generates packets; see NED file for more info.
  */
-class Source : public cSimpleModule
+class QUEUEING_API Source : public cSimpleModule
 {
     private:
         cMessage *selfMsg;

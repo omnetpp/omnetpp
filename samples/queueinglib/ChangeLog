@@ -1,6 +1,10 @@
 2008-10-03  Andras Varga
 
-	* copyright headers made consistent with other same simulations
+	* Cleanup:
+	- copyright headers made consistent with other same simulations
+	- header guards made consistent
+	- put interfaces into their own files
+	- added dll export/import symbol
 
 2008-09-20  Andras Varga
 

@@ -17,7 +17,7 @@ namespace queueing {
 /**
  * Consumes jobs; see NED file for more info.
  */
-class Sink : public cSimpleModule
+class QUEUEING_API Sink : public cSimpleModule
 {
   private:
     cOutVector lifeTimeVector;

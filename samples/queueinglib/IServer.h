@@ -20,7 +20,7 @@ namespace queueing {
  * these methods to communicate with the block to decide whether
  * a new job can be sent to a server
  */
-class IServer
+class QUEUEING_API IServer
 {
     public:
         virtual ~IServer() { };

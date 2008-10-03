@@ -17,7 +17,7 @@ namespace queueing {
 /**
  * See the NED declaration for more info.
  */
-class Fork : public cSimpleModule
+class QUEUEING_API Fork : public cSimpleModule
 {
     private:
         bool changeMsgNames;

@@ -19,7 +19,7 @@ class Job;
 /**
  * Abstract base class for single-server queues.
  */
-class Queue : public cSimpleModule
+class QUEUEING_API Queue : public cSimpleModule
 {
     private:
         cOutVector droppedVector;

@@ -19,7 +19,7 @@ namespace queueing {
  * jobs on its own. A server process uses these methods to query for new jobs
  * once it becomes idle.
  */
-class IPassiveQueue
+class QUEUEING_API IPassiveQueue
 {
     public:
         virtual ~IPassiveQueue() { };

@@ -21,7 +21,7 @@ class Job;
  * Module that reserves resources from a ResourcePool block or any module
  * that implements the IResourcePool interface. See NED file for more info.
  */
-class Allocate : public cSimpleModule, public IResourceAllocator
+class QUEUEING_API Allocate : public cSimpleModule, public IResourceAllocator
 {
     private:
         // state

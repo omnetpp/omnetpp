@@ -7,8 +7,8 @@
 // `license' for details on this and other legal matters.
 //
 
-#ifndef __QUEUEING_JOB_H_
-#define __QUEUEING_JOB_H_
+#ifndef __QUEUEING_JOB_H
+#define __QUEUEING_JOB_H
 
 #include <vector>
 #include "Job_m.h"
@@ -35,7 +35,7 @@ class JobList;
  * The default JobList can be obtained with the JobList::getDefaultInstance()
  * method. Then one can query JobList for the set of Jobs currently present.
  */
-class Job: public Job_Base
+class QUEUEING_API Job: public Job_Base
 {
     friend class JobList;
     protected:

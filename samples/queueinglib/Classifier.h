@@ -17,7 +17,7 @@ namespace queueing {
 /**
  * See the NED declaration for more info.
  */
-class Classifier : public cSimpleModule
+class QUEUEING_API Classifier : public cSimpleModule
 {
     private:
         const char *dispatchField;   // the message's field or parameter we are dispatching on

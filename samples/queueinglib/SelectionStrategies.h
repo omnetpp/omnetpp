@@ -18,7 +18,7 @@ namespace queueing {
  * Selection strategies used in queue, server and router classes to decide
  * which module to choose for further interaction.
  */
-class SelectionStrategy : public cObject
+class QUEUEING_API SelectionStrategy : public cObject
 {
     protected:
         bool isInputGate;
@@ -44,7 +44,7 @@ class SelectionStrategy : public cObject
 /**
  * Priority based selection. The first selectable index will be returned.
  */
-class PrioritySelectionStrategy : public SelectionStrategy
+class QUEUEING_API PrioritySelectionStrategy : public SelectionStrategy
 {
     public:
         PrioritySelectionStrategy(cSimpleModule *module, bool selectOnInGate);
@@ -54,7 +54,7 @@ class PrioritySelectionStrategy : public SelectionStrategy
 /**
  * Random selection from the selectable modules, with uniform distribution.
  */
-class RandomSelectionStrategy : public SelectionStrategy
+class QUEUEING_API RandomSelectionStrategy : public SelectionStrategy
 {
     public:
         RandomSelectionStrategy(cSimpleModule *module, bool selectOnInGate);
@@ -64,7 +64,7 @@ class RandomSelectionStrategy : public SelectionStrategy
 /**
  * Uses Round Robin selection, but skips any module that is not available currently.
  */
-class RoundRobinSelectionStrategy : public SelectionStrategy
+class QUEUEING_API RoundRobinSelectionStrategy : public SelectionStrategy
 {
     protected:
         int lastIndex; // the index of the module last time used
@@ -78,7 +78,7 @@ class RoundRobinSelectionStrategy : public SelectionStrategy
  * with the same length, it chooses by priority among them.
  * This strategy is for output only (i.e. for router module).
  */
-class ShortestQueueSelectionStrategy : public SelectionStrategy
+class QUEUEING_API ShortestQueueSelectionStrategy : public SelectionStrategy
 {
     public:
         ShortestQueueSelectionStrategy(cSimpleModule *module, bool selectOnInGate);
@@ -89,7 +89,7 @@ class ShortestQueueSelectionStrategy : public SelectionStrategy
  * Chooses the longest queue (where length>0 of course).
  * Input strategy (for servers).
  */
-class LongestQueueSelectionStrategy : public SelectionStrategy
+class QUEUEING_API LongestQueueSelectionStrategy : public SelectionStrategy
 {
     public:
         LongestQueueSelectionStrategy(cSimpleModule *module, bool selectOnInGate);

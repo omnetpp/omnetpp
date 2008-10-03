@@ -17,7 +17,7 @@ namespace queueing {
 /**
  * All messages received on any input gate will be sent out on the output gate
  */
-class Merge : public cSimpleModule
+class QUEUEING_API Merge : public cSimpleModule
 {
     protected:
         virtual void handleMessage(cMessage *msg);

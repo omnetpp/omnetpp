@@ -26,7 +26,7 @@ enum {
 /**
  * Sends the messages to different outputs depending on a set algorithm.
  */
-class Router : public cSimpleModule
+class QUEUEING_API Router : public cSimpleModule
 {
     private:
         int routingAlgorithm;  // the algorithm we are using for routing

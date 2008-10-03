@@ -7,8 +7,8 @@
 // `license' for details on this and other legal matters.
 //
 
-#ifndef __QUEUEING_SPLIT_H__
-#define __QUEUEING_SPLIT_H__
+#ifndef __QUEUEING_SPLIT_H
+#define __QUEUEING_SPLIT_H
 
 #include "QueueingDefs.h"
 
@@ -17,7 +17,7 @@ namespace queueing {
 /**
  * Forks a job. See the NED file for more info.
  */
-class Split : public cSimpleModule
+class QUEUEING_API Split : public cSimpleModule
 {
   protected:
     virtual void initialize();

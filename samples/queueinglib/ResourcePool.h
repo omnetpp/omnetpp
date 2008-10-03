@@ -7,8 +7,8 @@
 // `license' for details on this and other legal matters.
 //
 
-#ifndef __QUEUEING_RESOURCEPOOL_H__
-#define __QUEUEING_RESOURCEPOOL_H__
+#ifndef __QUEUEING_RESOURCEPOOL_H
+#define __QUEUEING_RESOURCEPOOL_H
 
 #include <list>
 #include "QueueingDefs.h"
@@ -21,7 +21,7 @@ namespace queueing {
  * Cooperates with ResourceBasedQueues which allocate from this resource. This module do not
  * receive any messages. Resource is allocated/released by direct Method calls
  */
-class ResourcePool : public cSimpleModule, public IResourcePool
+class QUEUEING_API ResourcePool : public cSimpleModule, public IResourcePool
 {
     public:
         struct AllocationRequest {

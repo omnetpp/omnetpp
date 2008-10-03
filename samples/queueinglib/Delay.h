@@ -17,7 +17,7 @@ namespace queueing {
 /**
  * Delays the incoming messages
  */
-class Delay : public cSimpleModule
+class QUEUEING_API Delay : public cSimpleModule
 {
     private:
         cOutVector sizeVector;

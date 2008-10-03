@@ -23,7 +23,7 @@ class SelectionStrategy;
  *
  * @see PassiveQueue
  */
-class Server : public cSimpleModule, public IServer
+class QUEUEING_API Server : public cSimpleModule, public IServer
 {
     private:
         cWeightedStdDev scalarUtilizationStats;

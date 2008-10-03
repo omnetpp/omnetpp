@@ -7,8 +7,8 @@
 // `license' for details on this and other legal matters.
 //
 
-#ifndef __QUEUEING_IRESOURCEPOOL_H__
-#define __QUEUEING_IRESOURCEPOOL_H__
+#ifndef __QUEUEING_IRESOURCEPOOL_H
+#define __QUEUEING_IRESOURCEPOOL_H
 
 #include "QueueingDefs.h"
 #include <list>
@@ -20,7 +20,7 @@ class IResourceAllocator;
 /**
  * The interface that should be implemented by resource providers
  */
-class IResourcePool
+class QUEUEING_API IResourcePool
 {
     public:
         virtual bool tryToAllocate(IResourceAllocator *allocator, long amountToAllocate, int priority) = 0;
@@ -31,7 +31,7 @@ class IResourcePool
 /**
  * Interface implemented by modules that allocate resources
  */
-class IResourceAllocator
+class QUEUEING_API IResourceAllocator
 {
     public:
         // returns true if allocator accepted the resource

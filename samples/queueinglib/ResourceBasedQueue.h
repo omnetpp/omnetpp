@@ -22,7 +22,7 @@ class Job;
  * resources from a ResourcePool block or any module that implements the IResourcePool
  * interface.
  */
-class ResourceBasedQueue : public cSimpleModule, public IResourceAllocator
+class QUEUEING_API ResourceBasedQueue : public cSimpleModule, public IResourceAllocator
 {
     private:
         // statistics

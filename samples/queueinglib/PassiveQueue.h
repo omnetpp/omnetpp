@@ -21,7 +21,7 @@ class SelectionStrategy;
 /**
  * A passive queue, designed to co-operate with IServer using method calls.
  */
-class PassiveQueue : public cSimpleModule, public IPassiveQueue
+class QUEUEING_API PassiveQueue : public cSimpleModule, public IPassiveQueue
 {
     private:
         cOutVector droppedVector;

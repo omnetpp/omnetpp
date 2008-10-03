@@ -7,8 +7,8 @@
 // `license' for details on this and other legal matters.
 //
 
-#ifndef __QUEUEING_DEALLOCATE_H__
-#define __QUEUEING_DEALLOCATE_H__
+#ifndef __QUEUEING_DEALLOCATE_H
+#define __QUEUEING_DEALLOCATE_H
 
 #include "QueueingDefs.h"
 #include "ResourcePool.h"
@@ -21,7 +21,7 @@ class Job;
  * Releases allocated resources on the arrival of each job.
  * See NED file for more info.
  */
-class Deallocate : public cSimpleModule
+class QUEUEING_API Deallocate : public cSimpleModule
 {
     protected:
         IResourcePool *resourcePool;
