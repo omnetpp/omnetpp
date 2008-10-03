@@ -42,18 +42,17 @@ void Source::handleMessage(cMessage *msg)
         && (numJobs < 0 || numJobs > jobCounter)
         && (stopTime < 0 || stopTime > simTime()))
     {
-        // reschedule the self timer for the next message
+        // reschedule the timer for the next message
         scheduleAt(simTime() + par("interArrivalTime").doubleValue(), msg);
 
-        // create a new message to be sent
-        Job *newJob = new Job();
-        newJob->setTimestamp();
+        // create a new job to be sent
+        Job *job = new Job();
         char buff[80];
         sprintf(buff, "%.60s %d", jobName, ++jobCounter);
-        newJob->setName(buff);
-        newJob->setKind(par("jobType"));
-        newJob->setPriority(par("jobPriority"));
-        send(newJob, "out");
+        job->setName(buff);
+        job->setKind(par("jobType"));
+        job->setPriority(par("jobPriority"));
+        send(job, "out");
     }
 }
 
