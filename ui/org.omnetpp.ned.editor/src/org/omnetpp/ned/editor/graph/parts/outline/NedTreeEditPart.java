@@ -1,4 +1,4 @@
-package org.omnetpp.ned.editor.graph.edit.outline;
+package org.omnetpp.ned.editor.graph.parts.outline;
 
 import java.util.Arrays;
 import java.util.List;
@@ -13,9 +13,9 @@ import org.eclipse.gef.editpolicies.RootComponentEditPolicy;
 import org.eclipse.gef.tools.DirectEditManager;
 import org.eclipse.swt.widgets.Tree;
 
-import org.omnetpp.ned.editor.graph.edit.policies.NedComponentEditPolicy;
-import org.omnetpp.ned.editor.graph.edit.policies.NedTreeContainerEditPolicy;
-import org.omnetpp.ned.editor.graph.edit.policies.NedTreeEditPolicy;
+import org.omnetpp.ned.editor.graph.parts.policies.NedComponentEditPolicy;
+import org.omnetpp.ned.editor.graph.parts.policies.NedTreeContainerEditPolicy;
+import org.omnetpp.ned.editor.graph.parts.policies.NedTreeEditPolicy;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDTreeUtil;
 import org.omnetpp.ned.model.ex.ChannelElementEx;

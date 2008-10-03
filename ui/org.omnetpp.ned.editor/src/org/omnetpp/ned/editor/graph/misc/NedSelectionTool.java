@@ -3,7 +3,7 @@ package org.omnetpp.ned.editor.graph.misc;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPartViewer;
 import org.eclipse.gef.tools.PanningSelectionTool;
-import org.omnetpp.ned.editor.graph.edit.CompoundModuleEditPart;
+import org.omnetpp.ned.editor.graph.parts.CompoundModuleEditPart;
 
 /**
  * Special selection tool that allows the dragging of compound modules ONLY by clicking

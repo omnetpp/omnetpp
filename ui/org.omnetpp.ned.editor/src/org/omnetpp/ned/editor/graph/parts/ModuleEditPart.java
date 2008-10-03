@@ -1,4 +1,4 @@
-package org.omnetpp.ned.editor.graph.edit;
+package org.omnetpp.ned.editor.graph.parts;
 
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.geometry.Point;
@@ -9,7 +9,7 @@ import org.eclipse.gef.Request;
 import org.eclipse.gef.requests.DropRequest;
 
 import org.omnetpp.figures.anchors.GateAnchor;
-import org.omnetpp.ned.editor.graph.edit.policies.NedNodeEditPolicy;
+import org.omnetpp.ned.editor.graph.parts.policies.NedNodeEditPolicy;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
 
 /**

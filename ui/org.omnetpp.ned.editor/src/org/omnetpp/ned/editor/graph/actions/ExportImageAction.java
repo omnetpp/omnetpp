@@ -6,7 +6,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.ui.IWorkbenchPart;
 import org.omnetpp.common.image.ImageFactory;
-import org.omnetpp.ned.editor.graph.edit.CompoundModuleEditPart;
+import org.omnetpp.ned.editor.graph.parts.CompoundModuleEditPart;
 
 import de.unikassel.imageexport.wizards.ExportImageOfCurrentDiagramWizard;
 

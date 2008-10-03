@@ -10,7 +10,7 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
-import org.omnetpp.ned.editor.graph.edit.EditPartUtil;
+import org.omnetpp.ned.editor.graph.parts.EditPartUtil;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
 

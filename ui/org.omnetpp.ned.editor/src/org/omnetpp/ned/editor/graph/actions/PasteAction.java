@@ -30,7 +30,7 @@ import org.eclipse.ui.actions.ActionFactory;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.graph.commands.AddNEDElementCommand;
-import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
+import org.omnetpp.ned.editor.graph.parts.ModuleEditPart;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;

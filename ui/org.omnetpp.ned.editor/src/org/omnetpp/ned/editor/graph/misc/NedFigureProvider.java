@@ -12,9 +12,9 @@ import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
-import org.omnetpp.ned.editor.graph.edit.NedEditPart;
-import org.omnetpp.ned.editor.graph.edit.NedEditPartFactory;
-import org.omnetpp.ned.editor.graph.edit.NedFileEditPart;
+import org.omnetpp.ned.editor.graph.parts.NedEditPart;
+import org.omnetpp.ned.editor.graph.parts.NedEditPartFactory;
+import org.omnetpp.ned.editor.graph.parts.NedFileEditPart;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 

@@ -7,7 +7,7 @@ import org.eclipse.gef.ui.parts.ScrollingGraphicalViewer;
 import org.eclipse.gef.ui.parts.SelectionSynchronizer;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
-import org.omnetpp.ned.editor.graph.edit.CompoundModuleEditPart;
+import org.omnetpp.ned.editor.graph.parts.CompoundModuleEditPart;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.interfaces.IModelProvider;

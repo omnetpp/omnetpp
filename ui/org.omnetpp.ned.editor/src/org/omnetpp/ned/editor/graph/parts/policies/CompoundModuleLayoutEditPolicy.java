@@ -1,4 +1,4 @@
-package org.omnetpp.ned.editor.graph.edit.policies;
+package org.omnetpp.ned.editor.graph.parts.policies;
 
 import java.util.List;
 
@@ -24,9 +24,9 @@ import org.omnetpp.ned.editor.graph.commands.ChangeDisplayPropertyCommand;
 import org.omnetpp.ned.editor.graph.commands.CloneSubmoduleCommand;
 import org.omnetpp.ned.editor.graph.commands.CreateSubmoduleCommand;
 import org.omnetpp.ned.editor.graph.commands.SetConstraintCommand;
-import org.omnetpp.ned.editor.graph.edit.EditPartUtil;
-import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
-import org.omnetpp.ned.editor.graph.edit.SubmoduleEditPart;
+import org.omnetpp.ned.editor.graph.parts.EditPartUtil;
+import org.omnetpp.ned.editor.graph.parts.ModuleEditPart;
+import org.omnetpp.ned.editor.graph.parts.SubmoduleEditPart;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IConnectableElement;

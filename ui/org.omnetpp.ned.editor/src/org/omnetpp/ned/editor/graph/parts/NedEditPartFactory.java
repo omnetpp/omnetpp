@@ -1,4 +1,4 @@
-package org.omnetpp.ned.editor.graph.edit;
+package org.omnetpp.ned.editor.graph.parts;
 
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPartFactory;

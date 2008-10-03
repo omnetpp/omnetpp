@@ -1,4 +1,4 @@
-package org.omnetpp.ned.editor.graph.edit;
+package org.omnetpp.ned.editor.graph.parts;
 
 import java.util.Map;
 
@@ -12,8 +12,8 @@ import org.eclipse.gef.editparts.AbstractConnectionEditPart;
 
 import org.omnetpp.figures.ConnectionFigure;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
-import org.omnetpp.ned.editor.graph.edit.policies.NedConnectionEditPolicy;
-import org.omnetpp.ned.editor.graph.edit.policies.NedConnectionEndpointEditPolicy;
+import org.omnetpp.ned.editor.graph.parts.policies.NedConnectionEditPolicy;
+import org.omnetpp.ned.editor.graph.parts.policies.NedConnectionEndpointEditPolicy;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDElementConstants;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;

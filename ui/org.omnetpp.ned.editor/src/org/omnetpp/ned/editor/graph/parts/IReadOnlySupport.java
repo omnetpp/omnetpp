@@ -1,4 +1,4 @@
-package org.omnetpp.ned.editor.graph.edit;
+package org.omnetpp.ned.editor.graph.parts;
 
 /**
  * Interface to allow checking whether the edit part should be edited

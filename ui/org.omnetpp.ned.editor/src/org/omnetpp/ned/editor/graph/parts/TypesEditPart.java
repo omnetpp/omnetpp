@@ -1,4 +1,4 @@
-package org.omnetpp.ned.editor.graph.edit;
+package org.omnetpp.ned.editor.graph.parts;
 
 import java.util.List;
 
@@ -7,7 +7,7 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 
-import org.omnetpp.ned.editor.graph.edit.policies.NedFileLayoutEditPolicy;
+import org.omnetpp.ned.editor.graph.parts.policies.NedFileLayoutEditPolicy;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.interfaces.IModelProvider;

@@ -8,7 +8,7 @@ import org.eclipse.gef.ui.actions.SelectAllAction;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.ui.IWorkbenchPart;
 
-import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
+import org.omnetpp.ned.editor.graph.parts.ModuleEditPart;
 
 /**
  * TODO add documentation

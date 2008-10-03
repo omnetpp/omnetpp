@@ -1,4 +1,4 @@
-package org.omnetpp.ned.editor.graph.edit.policies;
+package org.omnetpp.ned.editor.graph.parts.policies;
 
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.UnexecutableCommand;
@@ -6,7 +6,7 @@ import org.eclipse.gef.editpolicies.ConnectionEditPolicy;
 import org.eclipse.gef.requests.GroupRequest;
 
 import org.omnetpp.ned.editor.graph.commands.DeleteCommand;
-import org.omnetpp.ned.editor.graph.edit.EditPartUtil;
+import org.omnetpp.ned.editor.graph.parts.EditPartUtil;
 import org.omnetpp.ned.model.INEDElement;
 
 /**

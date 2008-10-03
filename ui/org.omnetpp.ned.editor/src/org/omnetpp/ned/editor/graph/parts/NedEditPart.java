@@ -1,4 +1,4 @@
-package org.omnetpp.ned.editor.graph.edit;
+package org.omnetpp.ned.editor.graph.parts;
 
 
 import org.eclipse.core.resources.IMarker;
@@ -16,9 +16,9 @@ import org.omnetpp.figures.NedFigure;
 import org.omnetpp.figures.TooltipFigure;
 import org.omnetpp.figures.misc.IDirectEditSupport;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
-import org.omnetpp.ned.editor.graph.edit.policies.NedComponentEditPolicy;
-import org.omnetpp.ned.editor.graph.edit.policies.NedDirectEditPolicy;
 import org.omnetpp.ned.editor.graph.misc.RenameDirectEditManager;
+import org.omnetpp.ned.editor.graph.parts.policies.NedComponentEditPolicy;
+import org.omnetpp.ned.editor.graph.parts.policies.NedDirectEditPolicy;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.interfaces.IHasName;

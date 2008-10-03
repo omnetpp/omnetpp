@@ -31,7 +31,7 @@ import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.ned.core.NEDResources;
 import org.omnetpp.ned.editor.NedEditor;
 import org.omnetpp.ned.editor.graph.actions.GNEDContextMenuProvider;
-import org.omnetpp.ned.editor.graph.edit.outline.NedTreeEditPartFactory;
+import org.omnetpp.ned.editor.graph.parts.outline.NedTreeEditPartFactory;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 

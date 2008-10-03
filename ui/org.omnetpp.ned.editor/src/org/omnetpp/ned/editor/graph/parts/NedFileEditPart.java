@@ -1,4 +1,4 @@
-package org.omnetpp.ned.editor.graph.edit;
+package org.omnetpp.ned.editor.graph.parts;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +10,7 @@ import org.eclipse.gef.SnapToGeometry;
 import org.eclipse.gef.SnapToHelper;
 
 import org.omnetpp.figures.NedFileFigure;
-import org.omnetpp.ned.editor.graph.edit.policies.NedFileLayoutEditPolicy;
+import org.omnetpp.ned.editor.graph.parts.policies.NedFileLayoutEditPolicy;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;

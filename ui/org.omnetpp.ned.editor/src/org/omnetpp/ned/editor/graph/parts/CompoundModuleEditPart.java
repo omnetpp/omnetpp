@@ -1,4 +1,4 @@
-package org.omnetpp.ned.editor.graph.edit;
+package org.omnetpp.ned.editor.graph.parts;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,7 +18,7 @@ import org.eclipse.gef.editpolicies.SnapFeedbackPolicy;
 import org.omnetpp.figures.CompoundModuleFigure;
 import org.omnetpp.figures.anchors.CompoundModuleGateAnchor;
 import org.omnetpp.figures.anchors.GateAnchor;
-import org.omnetpp.ned.editor.graph.edit.policies.CompoundModuleLayoutEditPolicy;
+import org.omnetpp.ned.editor.graph.parts.policies.CompoundModuleLayoutEditPolicy;
 import org.omnetpp.ned.editor.graph.properties.util.TypeNameValidator;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;

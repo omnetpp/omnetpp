@@ -1,4 +1,4 @@
-package org.omnetpp.ned.editor.graph.edit.policies;
+package org.omnetpp.ned.editor.graph.parts.policies;
 
 import java.util.List;
 
@@ -12,7 +12,7 @@ import org.eclipse.gef.editpolicies.ResizableEditPolicy;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
-import org.omnetpp.ned.editor.graph.edit.EditPartUtil;
+import org.omnetpp.ned.editor.graph.parts.EditPartUtil;
 
 /**
  * Handles feedback figures during move and resize and enables / disables

@@ -8,8 +8,8 @@ import org.eclipse.gef.tools.ConnectionCreationTool;
 
 import org.omnetpp.ned.editor.graph.commands.CreateConnectionCommand;
 import org.omnetpp.ned.editor.graph.commands.ReconnectCommand;
-import org.omnetpp.ned.editor.graph.edit.CompoundModuleEditPart;
-import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
+import org.omnetpp.ned.editor.graph.parts.CompoundModuleEditPart;
+import org.omnetpp.ned.editor.graph.parts.ModuleEditPart;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
 

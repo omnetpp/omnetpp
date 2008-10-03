@@ -1,4 +1,4 @@
-package org.omnetpp.ned.editor.graph.edit.policies;
+package org.omnetpp.ned.editor.graph.parts.policies;
 
 import org.eclipse.draw2d.Connection;
 import org.eclipse.draw2d.IFigure;
@@ -13,7 +13,7 @@ import org.eclipse.gef.requests.ReconnectRequest;
 import org.omnetpp.figures.ConnectionFigure;
 import org.omnetpp.ned.editor.graph.commands.CreateConnectionCommand;
 import org.omnetpp.ned.editor.graph.commands.ReconnectCommand;
-import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
+import org.omnetpp.ned.editor.graph.parts.ModuleEditPart;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.interfaces.IConnectableElement;

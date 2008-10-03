@@ -11,8 +11,8 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IWorkbenchPart;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.ned.editor.graph.commands.SetConstraintCommand;
-import org.omnetpp.ned.editor.graph.edit.EditPartUtil;
-import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
+import org.omnetpp.ned.editor.graph.parts.EditPartUtil;
+import org.omnetpp.ned.editor.graph.parts.ModuleEditPart;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IConnectableElement;
 

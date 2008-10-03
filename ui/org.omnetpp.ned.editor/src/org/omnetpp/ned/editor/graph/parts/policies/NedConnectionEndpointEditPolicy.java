@@ -1,4 +1,4 @@
-package org.omnetpp.ned.editor.graph.edit.policies;
+package org.omnetpp.ned.editor.graph.parts.policies;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,9 +8,9 @@ import org.eclipse.gef.editpolicies.ConnectionEndpointEditPolicy;
 import org.eclipse.swt.graphics.Color;
 import org.omnetpp.figures.ConnectionFigure;
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
-import org.omnetpp.ned.editor.graph.edit.EditPartUtil;
 import org.omnetpp.ned.editor.graph.misc.NedConnectionEndHandle;
 import org.omnetpp.ned.editor.graph.misc.NedConnectionStartHandle;
+import org.omnetpp.ned.editor.graph.parts.EditPartUtil;
 
 /**
  * Defines selection handle creation/removal

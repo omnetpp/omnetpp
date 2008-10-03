@@ -7,8 +7,8 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.tools.ConnectionEndpointTracker;
 
 import org.omnetpp.ned.editor.graph.commands.ReconnectCommand;
-import org.omnetpp.ned.editor.graph.edit.CompoundModuleEditPart;
-import org.omnetpp.ned.editor.graph.edit.ModuleConnectionEditPart;
+import org.omnetpp.ned.editor.graph.parts.CompoundModuleEditPart;
+import org.omnetpp.ned.editor.graph.parts.ModuleConnectionEditPart;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
 

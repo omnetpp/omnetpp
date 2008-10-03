@@ -2,7 +2,7 @@ package org.omnetpp.ned.editor.graph.properties;
 
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.eclipse.ui.views.properties.IPropertySourceProvider;
-import org.omnetpp.ned.editor.graph.edit.IReadOnlySupport;
+import org.omnetpp.ned.editor.graph.parts.IReadOnlySupport;
 import org.omnetpp.ned.editor.graph.properties.util.MergedPropertySource;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.ChannelInterfaceElementEx;

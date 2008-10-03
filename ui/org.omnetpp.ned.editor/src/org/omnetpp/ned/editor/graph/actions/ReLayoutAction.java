@@ -9,9 +9,9 @@ import org.eclipse.ui.IWorkbenchPart;
 
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.ned.editor.graph.commands.ChangeLayoutSeedCommand;
-import org.omnetpp.ned.editor.graph.edit.CompoundModuleEditPart;
-import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
-import org.omnetpp.ned.editor.graph.edit.SubmoduleEditPart;
+import org.omnetpp.ned.editor.graph.parts.CompoundModuleEditPart;
+import org.omnetpp.ned.editor.graph.parts.ModuleEditPart;
+import org.omnetpp.ned.editor.graph.parts.SubmoduleEditPart;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 
 /**

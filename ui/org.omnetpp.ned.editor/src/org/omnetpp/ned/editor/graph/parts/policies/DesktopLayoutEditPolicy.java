@@ -1,4 +1,4 @@
-package org.omnetpp.ned.editor.graph.edit.policies;
+package org.omnetpp.ned.editor.graph.parts.policies;
 
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.editpolicies.XYLayoutEditPolicy;
