@@ -11,10 +11,12 @@
 // @titlepage
 //
 // <center><h1>Queueing library</h1></center>
-// <a href="../../README.txt">See readme.txt</a>
+//
+// This is queuing library implementation; see the QueueNet
+// directory for an example usage.
 //
 
-package omnetpp.queueing;
+package org.omnetpp.queueing;
 
-// C++ classes of simple modules are in the 'queueing' namespace
+// C++ classes are in the 'queueing' namespace
 @namespace(queueing);
