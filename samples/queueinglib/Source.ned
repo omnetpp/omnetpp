@@ -10,10 +10,10 @@
 package omnetpp.queueing;
 
 //
-// A module that generates messages. You can set the number of messages to be generated,
-// the starting and ending time and the message interArrivalTime distribution.
-// Message generation stops if numMessage messages were sent out OR stopTime was reached,
-// whichever occurs first. You can set the generated message type and priority too.
+// A module that generates jobs. One can specify the number of jobs to be generated,
+// the starting and ending time, and interval between generating jobs.
+// Job generation stops when the number of jobs or the end time has been reached,
+// whichever occurs first. The name, type and priority of jobs can be set as well.
 //
 simple Source
 {
