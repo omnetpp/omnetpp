@@ -1,0 +1,93 @@
+MIGRATING SIMULATION MODELS FROM OMNeT++ 3.x TO 4.0
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Simulation models written for OMNeT++ 3.x cannot be used directly with
+OMNeT++ 4.0 or later, due to changes in the C++ API, NED, ini and msg
+files. This readme provides a brief overview of the porting process.
+
+   This is just a QUICK GUIDE -- for more background and details
+   see the Migration Document under doc/Migration.pdf!
+
+You would port your simulation model in two stages: (1) get it working
+with 4.0; then (2) improve it by making use of mew OMNeT++ features.
+
+
+Getting your simulation model working.
+
+  PREREQUISITES: Have OMNeT++ 4.0 installed and working, and familiarize
+  yourself with the IDE.
+
+  1. Make a backup of your simulation model. Be prepared to delete
+     everything and start over with the migration several times,
+     until you get it right.
+
+  2. Change into the directory of your simulation model, and run
+     all scripts in the <omnetpp>/migrate subdirectory from there.
+
+       $ cd MyModel
+       $ ../omnetpp-4.0/migrate/migratened
+       $ ../omnetpp-4.0/migrate/migrateini
+       $ ../omnetpp-4.0/migrate/migratemsg
+       $ ../omnetpp-4.0/migrate/migratecpp | tee migratecpp.out
+
+     The scripts convert NED, ini, msg and C++ files to 4.0 format.
+     The result will need some manual post-processing, because not
+     everything can be converted automatically. The scripts will print
+     some hints on what you'll need to do manually -- please make note
+     of these printouts. Especially, migratecpp is going to print a
+     number of notes, warnings and hints -- read them carefully.
+
+  3. If your simulation model is based on the INET Framework, have the
+     new INET installed, and similarly run the scripts in the migrate/
+     subdirectory of INET. They will update your source files according
+     to changes in the INET Framework.
+
+       $ cd MyModel
+       $ ../INET/migrate/migratened
+       $ ../INET/migrate/migrateini
+       $ ../INET/migrate/migratemsg
+       $ ../INET/migrate/migratecpp | tee migratecpp.out
+
+  4. You can do the rest of the migration either on the command line,
+     or in the OMNeT++ IDE. We recommend the latter. To use the IDE,
+     you need to create a project for your simulation model. Select
+
+       File | New | OMNeT++ Project...
+
+     from the menu. A wizard comes up. On the first page, uncheck
+     "Use default location" and specify the name and the directory
+     of your simulation model, then go through the other wizard pages
+     and hit Finish at the end. You should see the new project appear
+     in the Project Explorer (left), and it should contain your files.
+
+     If something goes wrong, remove the project by selecting it and
+     hitting DEL. It will ask whether you also want to delete the
+     files from the disk -- answer NO! Then start over with project
+     creation.
+
+  5. NED in 4.0 has a package system, similar to Java. If your model
+     contains NED files in several subdirectories, these subdirectories
+     now mean packages, and the NED files will need package declarations
+     and imports to be added. This can be done automatically in the IDE.
+     Have your project created and open in the IDE (see previous step),
+     then choose
+
+       Navigate | Clean up NED files...
+
+     from the menu. Select your project and click OK. The IDE will then fix
+     all package declarations and imports in your NED files.
+
+  6. Revise NED files. This includes:
+       (1) revise "volatile" parameters if they really need to be volatile
+       (2) revise "double" parameters if they should rather be "int"
+       (3) "somepar = input;" lines became just "somepar;" -- you probably want to remove them
+       (4) remove extra "network bla extends Bla {}" if needed; this affects ini files as well!
+       (5) make use of default icons: migrate "i=" tags from submodule display string to the simple module type
+       (6) "like" module types should be changed into interfaces, and actual types declared to be "like" them
+       (7) parameter values assigned in ini files could be put into the corresponding NED file as default values
+       (8) possibly make use of @properties as "marker interfaces", like @host(true)
+
+  7. Compile your simulation model.
+
+
+
