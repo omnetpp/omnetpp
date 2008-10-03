@@ -14,7 +14,7 @@ package omnetpp.queueing;
 // message is sent out on out[0]. The other output gates will get a copy
 // of the original message.
 //
-simple Fork
+simple Clone
 {
     parameters:
         @group(Queueing);

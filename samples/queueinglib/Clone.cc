@@ -8,19 +8,19 @@
 //
 
 #include <stdio.h>
-#include "Fork.h"
+#include "Clone.h"
 #include "Job.h"
 
 namespace queueing {
 
-Define_Module(Fork);
+Define_Module(Clone);
 
-void Fork::initialize()
+void Clone::initialize()
 {
     changeMsgNames = par("changeMsgNames");
 }
 
-void Fork::handleMessage(cMessage *msg)
+void Clone::handleMessage(cMessage *msg)
 {
     Job *job = check_and_cast<Job *>(msg);
 
