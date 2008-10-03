@@ -8,6 +8,11 @@ networks, but it has been successfully used in other areas like the simulation
 of IT systems, queueing networks, hardware architectures and business processes
 as well.
 
+OLD USERS:
+	If you have simulations written for OMNeT++ 3.x that you want to
+	port to 4.0, doc/Migration.pdf and the scripts under migrate/
+	are your friend!
+
 If you installed the source distribution, the omnetpp directory on your system
 should contain the following subdirectories. (If you installed a precompiled
 distribution, some of the directories may be missing, or there might be
@@ -39,6 +44,8 @@ The simulation system itself:
       eventlog/    library for processing event log files
       common/      common utility classes
       utils/       makefile generator and various utilities
+    ide/           the OMNeT++ integrated environment
+    migrate/       scripts for migrating simulation models from the 3.x version
     test/          regression test suite
       core/        regression test suite for the simulation library
       distrib/     regression test suite for built-in distributions
@@ -54,8 +61,10 @@ Sample simulations are in the samples directory.
 The contrib directory contains material from the OMNeT++ community.
 
     contrib/     directory for contributed material
-      octave/    Octave scripts for result processing
-      emacs/     NED syntax highlight for Emacs
+      gtk/       files to make Eclipse look good on Linux
+      octave/    Octave scripts for result processing (somewhat outdated)
+      emacs/     NED syntax highlighting for Emacs (somewhat outdated)
+      med/       NED syntax highlighting for MED (somewhat outdated)
 
 
 The example simulations
