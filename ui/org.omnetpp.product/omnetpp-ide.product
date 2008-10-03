@@ -4,7 +4,7 @@
 <product name="OMNeT++ IDE" id="org.omnetpp.main.product" application="org.eclipse.ui.ide.workbench" version="4.0.0.qualifier" useFeatures="true">
 
    <aboutInfo>
-      <image path="/org.omnetpp.main/icons/omnest128.gif"/>
+      <image path="/org.omnetpp.main/icons/about-image.png"/>
       <text>
          OMNeT++ Integrated Development Environment.
       </text>
@@ -23,7 +23,7 @@
 -XX:MaxPermSize=128m</vmArgs>
    </launcherArgs>
 
-   <windowImages i16="/org.omnetpp.main/icons/omnest16.gif" i32="/org.omnetpp.main/icons/omnest32.gif" i48="/org.omnetpp.main/icons/omnest48.gif" i64="/org.omnetpp.main/icons/omnest64.gif" i128="/org.omnetpp.main/icons/omnest128.gif"/>
+   <windowImages i16="/org.omnetpp.main/icons/logo16.png" i32="/org.omnetpp.main/icons/logo32.png" i48="/org.omnetpp.main/icons/logo48.png" i64="/org.omnetpp.main/icons/logo64.png" i128="/org.omnetpp.main/icons/logo128.png"/>
 
    <splash
       location="org.omnetpp.main"
@@ -31,11 +31,11 @@
       startupMessageRect="10,20,500,25"
       startupForegroundColor="000000" />
    <launcher name="omnetpp">
-      <linux icon="/org.omnetpp.main/icons/omnest.xpm"/>
-      <macosx icon="/org.omnetpp.main/icons/omnest.icns"/>
+      <linux icon="/org.omnetpp.main/icons/logo.xpm"/>
+      <macosx icon="/org.omnetpp.main/icons/logo.icns"/>
       <solaris/>
       <win useIco="true">
-         <ico path="/org.omnetpp.main/icons/omnest.ico"/>
+         <ico path="/org.omnetpp.main/icons/logo.ico"/>
          <bmp/>
       </win>
    </launcher>
