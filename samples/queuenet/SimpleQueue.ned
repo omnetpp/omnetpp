@@ -7,9 +7,10 @@
 // `license' for details on this and other legal matters.
 //
 
-import omnetpp.queueing.Queue;
-import omnetpp.queueing.Sink;
-import omnetpp.queueing.Source;
+import org.omnetpp.queueing.Queue;
+import org.omnetpp.queueing.Sink;
+import org.omnetpp.queueing.Source;
+
 
 //
 // This simple queueing network only contains a source, a FIFO queue and a sink.

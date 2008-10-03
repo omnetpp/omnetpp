@@ -7,12 +7,12 @@
 // `license' for details on this and other legal matters.
 //
 
-import omnetpp.queueing.Classifier;
-import omnetpp.queueing.Delay;
-import omnetpp.queueing.PassiveQueue;
-import omnetpp.queueing.Server;
-import omnetpp.queueing.Sink;
-import omnetpp.queueing.Source;
+import org.omnetpp.queueing.Classifier;
+import org.omnetpp.queueing.Delay;
+import org.omnetpp.queueing.PassiveQueue;
+import org.omnetpp.queueing.Server;
+import org.omnetpp.queueing.Sink;
+import org.omnetpp.queueing.Source;
 
 
 //

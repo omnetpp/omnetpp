@@ -7,7 +7,7 @@
 // `license' for details on this and other legal matters.
 //
 
-package omnetpp.queueing;
+package org.omnetpp.queueing;
 
 //
 // Forks a job to one child per output. The children can be joined together

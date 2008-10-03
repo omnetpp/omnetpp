@@ -7,7 +7,7 @@
 // `license' for details on this and other legal matters.
 //
 
-package omnetpp.queueing;
+package org.omnetpp.queueing;
 
 //
 // Joins several incoming connections. Anything that comes in

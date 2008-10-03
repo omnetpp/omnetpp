@@ -7,7 +7,7 @@
 // `license' for details on this and other legal matters.
 //
 
-package omnetpp.queueing;
+package org.omnetpp.queueing;
 
 //
 // Waits until all sub-jobs created by a Split module arrive, then

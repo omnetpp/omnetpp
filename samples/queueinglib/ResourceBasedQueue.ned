@@ -7,7 +7,7 @@
 // `license' for details on this and other legal matters.
 //
 
-package omnetpp.queueing;
+package org.omnetpp.queueing;
 
 //
 // Queue that allocates a resource for processing each job.

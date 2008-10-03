@@ -25,7 +25,7 @@ void SourceBase::initialize()
 Job *SourceBase::createJob()
 {
     char buf[80];
-    sprintf(buf, "%.70s-%d", jobName, ++jobCounter);
+    sprintf(buf, "%.60s-%d", jobName.c_str(), ++jobCounter);
     Job *job = new Job(buf);
     job->setKind(par("jobType"));
     job->setPriority(par("jobPriority"));
@@ -43,6 +43,7 @@ Define_Module(Source);
 
 void Source::initialize()
 {
+    SourceBase::initialize();
     startTime = par("startTime");
     stopTime = par("stopTime");
     numJobs = par("numJobs");
@@ -76,6 +77,7 @@ Define_Module(SourceOnce);
 
 void SourceOnce::initialize()
 {
+    SourceBase::initialize();
     simtime_t time = par("time");
     scheduleAt(time, new cMessage("newJobTimer"));
 }

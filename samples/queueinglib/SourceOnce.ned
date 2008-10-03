@@ -7,7 +7,7 @@
 // `license' for details on this and other legal matters.
 //
 
-package omnetpp.queueing;
+package org.omnetpp.queueing;
 
 //
 // A module that generates a certain number of jobs once, at a given time.
@@ -22,7 +22,7 @@ simple SourceOnce
         @display("i=block/source");
         int numJobs = default(1);            // number of jobs to generate
         double time @unit(s) = default(0s);  // when to generate
-        string jobName = default("");        // the base name of the generated job (will be the source name if left empty)
+        string jobName = default("job");     // the base name of the generated job (will be the module name if left empty)
         volatile int jobType = default(0);   // the type attribute of the created job (used by classifers and other modules)
         volatile int jobPriority = default(0);  // priority of the job
     gates:

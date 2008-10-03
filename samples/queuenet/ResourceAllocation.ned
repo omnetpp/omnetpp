@@ -7,10 +7,10 @@
 // `license' for details on this and other legal matters.
 //
 
-import omnetpp.queueing.ResourcePool;
-import omnetpp.queueing.ResourceBasedQueue;
-import omnetpp.queueing.Sink;
-import omnetpp.queueing.Source;
+import org.omnetpp.queueing.ResourceBasedQueue;
+import org.omnetpp.queueing.ResourcePool;
+import org.omnetpp.queueing.Sink;
+import org.omnetpp.queueing.Source;
 
 
 //

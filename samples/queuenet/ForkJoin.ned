@@ -7,12 +7,13 @@
 // `license' for details on this and other legal matters.
 //
 
-import omnetpp.queueing.Delay;
-import omnetpp.queueing.JobList;
-import omnetpp.queueing.Join;
-import omnetpp.queueing.Sink;
-import omnetpp.queueing.Source;
-import omnetpp.queueing.Fork;
+import org.omnetpp.queueing.Delay;
+import org.omnetpp.queueing.Fork;
+import org.omnetpp.queueing.JobList;
+import org.omnetpp.queueing.Join;
+import org.omnetpp.queueing.Sink;
+import org.omnetpp.queueing.Source;
+
 
 //
 // Demonstrates the use of the Fork and Join modules.
@@ -23,7 +24,7 @@ network ForkJoin
         source: Source {
             @display("p=54,137");
         }
-        split: Split {
+        fork: Fork {
             @display("p=133,138");
         }
         delay: Delay {
@@ -45,12 +46,12 @@ network ForkJoin
             @display("p=382,230");
         }
     connections:
-        source.out --> split.in;
-        split.out++ --> delay.in++;
+        source.out --> fork.in;
+        fork.out++ --> delay.in++;
         delay.out --> join.in++;
-        split.out++ --> delay1.in++;
+        fork.out++ --> delay1.in++;
         delay1.out --> join.in++;
-        split.out++ --> delay2.in++;
+        fork.out++ --> delay2.in++;
         delay2.out --> join.in++;
         join.out --> sink.in++;
 }
