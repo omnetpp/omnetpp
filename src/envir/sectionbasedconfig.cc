@@ -710,7 +710,6 @@ void SectionBasedConfiguration::addEntry(const KeyValue1& entry)
 void SectionBasedConfiguration::splitKey(const char *key, std::string& outOwnerName, std::string& outGroupName)
 {
     std::string tmp = key;
-    int keyLen = strlen(key);
 
     const char *lastDotPos = strrchr(key, '.');
     const char *doubleAsterisk = !lastDotPos ? NULL : strstr(lastDotPos, "**");
