@@ -7,10 +7,10 @@
 // `license' for details on this and other legal matters.
 //
 
-#ifndef __QUEUE_H
-#define __QUEUE_H
+#ifndef __QUEUEING_QUEUE_H
+#define __QUEUEING_QUEUE_H
 
-#include <omnetpp.h>
+#include "QueueingDefs.h"
 
 namespace queueing {
 

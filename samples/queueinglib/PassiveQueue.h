@@ -7,10 +7,10 @@
 // `license' for details on this and other legal matters.
 //
 
-#ifndef __PASSIVE_QUEUE_H
-#define __PASSIVE_QUEUE_H
+#ifndef __QUEUEING_PASSIVE_QUEUE_H
+#define __QUEUEING_PASSIVE_QUEUE_H
 
-#include <omnetpp.h>
+#include "QueueingDefs.h"
 #include "IPassiveQueue.h"
 #include "SelectionStrategies.h"
 

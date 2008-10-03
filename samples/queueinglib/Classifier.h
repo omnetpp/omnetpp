@@ -7,10 +7,10 @@
 // `license' for details on this and other legal matters.
 //
 
-#ifndef __CLASSIFIER_H
-#define __CLASSIFIER_H
+#ifndef __QUEUEING_CLASSIFIER_H
+#define __QUEUEING_CLASSIFIER_H
 
-#include <omnetpp.h>
+#include "QueueingDefs.h"
 
 namespace queueing {
 

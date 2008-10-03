@@ -7,7 +7,6 @@
 // `license' for details on this and other legal matters.
 //
 
-#include <omnetpp.h>
 #include "SelectionStrategies.h"
 #include "PassiveQueue.h"
 #include "Server.h"

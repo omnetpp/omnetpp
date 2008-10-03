@@ -7,10 +7,10 @@
 // `license' for details on this and other legal matters.
 //
 
-#ifndef __JOBLIST_H__
-#define __JOBLIST_H__
+#ifndef __QUEUEING_JOBLIST_H__
+#define __QUEUEING_JOBLIST_H__
 
-#include <omnetpp.h>
+#include "QueueingDefs.h"
 #include <set>
 
 namespace queueing {

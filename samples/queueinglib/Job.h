@@ -7,8 +7,8 @@
 // `license' for details on this and other legal matters.
 //
 
-#ifndef __JOB_H_
-#define __JOB_H_
+#ifndef __QUEUEING_JOB_H_
+#define __QUEUEING_JOB_H_
 
 #include <vector>
 #include "Job_m.h"

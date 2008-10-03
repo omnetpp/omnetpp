@@ -7,10 +7,10 @@
 // `license' for details on this and other legal matters.
 //
 
-#ifndef __RESOURCE_BASED_QUEUE_H
-#define __RESOURCE_BASED_QUEUE_H
+#ifndef __QUEUEING_RESOURCE_BASED_QUEUE_H
+#define __QUEUEING_RESOURCE_BASED_QUEUE_H
 
-#include <omnetpp.h>
+#include "QueueingDefs.h"
 #include "IResourcePool.h"
 
 namespace queueing {

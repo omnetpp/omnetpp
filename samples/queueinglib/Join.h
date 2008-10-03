@@ -7,11 +7,11 @@
 // `license' for details on this and other legal matters.
 //
 
-#ifndef __JOIN_H__
-#define __JOIN_H__
+#ifndef __QUEUEING_JOIN_H__
+#define __QUEUEING_JOIN_H__
 
 #include <list>
-#include <omnetpp.h>
+#include "QueueingDefs.h"
 #include "Job.h"
 
 namespace queueing {

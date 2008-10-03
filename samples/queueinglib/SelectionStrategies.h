@@ -7,10 +7,10 @@
 // `license' for details on this and other legal matters.
 //
 
-#ifndef __SELECTIONSTRATEGIES_H
-#define __SELECTIONSTRATEGIES_H
+#ifndef __QUEUEING_SELECTIONSTRATEGIES_H
+#define __QUEUEING_SELECTIONSTRATEGIES_H
 
-#include <omnetpp.h>
+#include "QueueingDefs.h"
 
 namespace queueing {
 

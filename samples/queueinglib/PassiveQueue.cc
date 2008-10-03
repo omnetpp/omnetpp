@@ -7,8 +7,6 @@
 // `license' for details on this and other legal matters.
 //
 
-#include <omnetpp.h>
-
 #include "PassiveQueue.h"
 #include "Job.h"
 

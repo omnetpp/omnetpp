@@ -7,11 +7,10 @@
 // `license' for details on this and other legal matters.
 //
 
-#include <omnetpp.h>
-
 #include "Server.h"
-#include "PassiveQueue.h"
 #include "Job.h"
+#include "SelectionStrategies.h"
+#include "IPassiveQueue.h"
 
 namespace queueing {
 

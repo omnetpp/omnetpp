@@ -7,10 +7,10 @@
 // `license' for details on this and other legal matters.
 //
 
-#ifndef __ROUTER_H
-#define __ROUTER_H
+#ifndef __QUEUEING_ROUTER_H
+#define __QUEUEING_ROUTER_H
 
-#include <omnetpp.h>
+#include "QueueingDefs.h"
 
 namespace queueing {
 

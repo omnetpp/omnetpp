@@ -7,8 +7,6 @@
 // `license' for details on this and other legal matters.
 //
 
-#include <omnetpp.h>
-
 #include "Allocate.h"
 #include "Job.h"
 

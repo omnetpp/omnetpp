@@ -7,10 +7,10 @@
 // `license' for details on this and other legal matters.
 //
 
-#ifndef __SPLIT_H__
-#define __SPLIT_H__
+#ifndef __QUEUEING_SPLIT_H__
+#define __QUEUEING_SPLIT_H__
 
-#include <omnetpp.h>
+#include "QueueingDefs.h"
 
 namespace queueing {
 

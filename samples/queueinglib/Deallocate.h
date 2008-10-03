@@ -7,10 +7,10 @@
 // `license' for details on this and other legal matters.
 //
 
-#ifndef __DEALLOCATE_H__
-#define __DEALLOCATE_H__
+#ifndef __QUEUEING_DEALLOCATE_H__
+#define __QUEUEING_DEALLOCATE_H__
 
-#include <omnetpp.h>
+#include "QueueingDefs.h"
 #include "ResourcePool.h"
 
 namespace queueing {

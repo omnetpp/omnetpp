@@ -7,30 +7,15 @@
 // `license' for details on this and other legal matters.
 //
 
-#ifndef __SERVER_H
-#define __SERVER_H
+#ifndef __QUEUEING_SERVER_H
+#define __QUEUEING_SERVER_H
 
-#include <omnetpp.h>
-#include "SelectionStrategies.h"
+#include "IServer.h"
 
 namespace queueing {
 
 class Job;
 class SelectionStrategy;
-
-/**
- * An interface that must be implemented by blocks that are capable
- * of processing a job. The block implementing IPassiveQueue is calling
- * these methods to communicate with the block to decide whether
- * a new job can be sent to a server
- */
-class IServer
-{
-    public:
-        virtual ~IServer() { };
-        // indicate whether the service is currently idle (ie. no processing is done currently)
-        virtual bool isIdle() = 0;
-};
 
 /**
  * The queue server. It cooperates with several Queues that which queue up
