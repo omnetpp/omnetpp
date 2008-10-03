@@ -10,7 +10,7 @@ import org.eclipse.ui.views.properties.PropertySheetPage;
 
 import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
-import org.omnetpp.ned.editor.graph.properties.view.BasePreferrerPropertySheetSorter;
+import org.omnetpp.ned.editor.graph.properties.util.BasePreferrerPropertySheetSorter;
 
 /**
  * Ned Property sheet page for the graphical ned editor

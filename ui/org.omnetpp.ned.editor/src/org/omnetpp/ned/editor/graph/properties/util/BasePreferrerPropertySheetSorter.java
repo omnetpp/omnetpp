@@ -1,4 +1,4 @@
-package org.omnetpp.ned.editor.graph.properties.view;
+package org.omnetpp.ned.editor.graph.properties.util;
 
 import org.eclipse.ui.views.properties.PropertySheetSorter;
 
