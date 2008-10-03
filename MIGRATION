@@ -9,7 +9,7 @@ files. This readme provides a brief overview of the porting process.
    see the Migration Document under doc/Migration.pdf!
 
 You would port your simulation model in two stages: (1) get it working
-with 4.0; then (2) improve it by making use of mew OMNeT++ features.
+with 4.0; then (2) improve it by making use of new OMNeT++ features.
 
 
 Getting your simulation model working.
@@ -87,7 +87,30 @@ Getting your simulation model working.
        (7) parameter values assigned in ini files could be put into the corresponding NED file as default values
        (8) possibly make use of @properties as "marker interfaces", like @host(true)
 
-  7. Compile your simulation model.
+  7. Compile your simulation model (right-click on the project and
+     select Build from the context menu, or close all other projects
+     and hit Ctrl+B.) The most frequent compile errors and their fixes:
 
+     "Cannot convert SimTime to double"
+       simtime_t now maps to the int64-based SimTime class and not double.
+       Use SIMTIME_DBL(t) to convert a simtime_t to double. In printf's,
+       use "%s" and SIMTIME_STR(t). The advantage of using these macros
+       instead of SimTime methods is that your model will also compile with
+       simtime_t=double (a compatibility mode).
+
+     cPacket.
+
+
+Making use of new OMNeT++ features.
+
+  1. NED files
+       default icons
+       parameter default values
+       @unit
+       ...
+
+  2. ini files
+      configs
+      experiment syntax (${})
 
 
