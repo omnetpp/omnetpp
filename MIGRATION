@@ -119,7 +119,15 @@ Getting your simulation model working.
        not be included directly, as they may be renamed or removed in
        any future version.
 
-     "sendDirect()" signature change.....
+     "sendDirect() does not take 3 (or 4) arguments"
+       sendDirect()'s signature has changed. It used to take a delay
+       as second argument; now it has two variants, one which takes
+       no delay argument (i.e. if you have 0.0 in your simulation,
+       just remove it), and another one that takes a propagation delay
+       and a transmission duration. If you use the second one,
+       you'll probably want to call setDeliverOnReceptionStart(true)
+       on the receiver gate in the target module's initialize() method
+       as well.
 
   8. Run your simulation model. The most frequent runtime errors and
      their fixes:
@@ -135,7 +143,6 @@ Getting your simulation model working.
      "No such module type 'X'"
        If your model creates modules dynamically, module types need to be
        looked up by fully qualified name (like "some.package.X").
-
 
 Making use of new OMNeT++ features.
 
