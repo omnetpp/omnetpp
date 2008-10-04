@@ -1,9 +1,6 @@
 package org.omnetpp.ide;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IWorkspace;
@@ -29,7 +26,6 @@ import org.eclipse.ui.PlatformUI;
 import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.IConstants;
 import org.omnetpp.common.project.ProjectUtils;
-import org.omnetpp.ide.views.NewsView;
 
 /**
  * Performs various tasks when the workbench starts up.
@@ -37,20 +33,15 @@ import org.omnetpp.ide.views.NewsView;
  * @author Andras
  */
 public class OmnetppStartup implements IStartup {
-
-	public static final String BASE_URL = "http://omnetpp.org/ide/" + (IConstants.IS_COMMERCIAL ? "omnest/" : "omnetpp/");
-	public static final String NEWS_URL = BASE_URL + "news/";
-    private static final String VERSIONS_URL = BASE_URL + "versions/";
-	private static final String LATESTVERSION_URL = VERSIONS_URL + "latest/";
-	public static final String SAMPLES_DIR = "samples";
+    public static final String SAMPLES_DIR = "samples";
 
     /*
      * Method declared on IStartup.
      */
     public void earlyStartup() {
 
-    	checkForNewVersion();
-    	
+        checkForNewVersion();
+
         final IWorkbench workbench = PlatformUI.getWorkbench();
         workbench.getDisplay().asyncExec(new Runnable() {
             public void run() {
@@ -65,57 +56,34 @@ public class OmnetppStartup implements IStartup {
         });
     }
 
-	/**
-	 * The current version string returned by the version check URL or NULL if 
-	 * there is an error, no network present etc.
-	 */
-	private String getCurrentVersion() {
-		try {
-			byte buffer[] = new byte[1024];
-			URL url = new URL(LATESTVERSION_URL+getUrlParams());
-			url.openStream().read(buffer);
-			return new String(buffer).trim();
-		} catch (MalformedURLException e) {
-		} catch (IOException e) {
-		}
-		return null;
-	}
-	
-	private String getUrlParams() {
-	    return "?ver="+OmnetppMainPlugin.getVersion()+"&id="+OmnetppMainPlugin.getUUID();
-	}
-	
-	private void checkForNewVersion() {
-		Job versioncheckJob = new Job ("Checking for newer versions") {
-			@Override
-			protected IStatus run(IProgressMonitor monitor) {
-				String newestVersion = getCurrentVersion(); 
-		    	if (newestVersion != null) {
-		    		final String url = (newestVersion.equals(OmnetppMainPlugin.getVersion()) ?
-		    				NEWS_URL : VERSIONS_URL )+getUrlParams(); 
-		    		
-		    		Display.getDefault().asyncExec(new Runnable() {
-		    			public void run() {
-		    				try {
-		    					IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-		    					IWorkbenchPage workbenchPage = activeWorkbenchWindow == null ? null : activeWorkbenchWindow.getActivePage();
-		    					if (workbenchPage != null && System.getProperty("com.simulcraft.test.running") == null) {
-		    						NewsView newsView = (NewsView)workbenchPage.showView(IConstants.NEWS_VIEW_ID);
-		    						newsView.setURL(url);
-		    					}
-		    				} 
-		    				catch (PartInitException e) {
-		    					CommonPlugin.logError(e);
-		    				}
-		    			}
-		    		});
-		    	}
-				return Status.OK_STATUS;
-			}
-    	};
-    	versioncheckJob.setSystem(true);
-    	versioncheckJob.schedule();
-	}
+    private void checkForNewVersion() {
+        if (System.getProperty("com.simulcraft.test.running") == null) {
+            Job versioncheckJob = new Job ("Checking for newer versions") {
+                @Override
+                protected IStatus run(IProgressMonitor monitor) {
+                    if (OmnetppMainPlugin.getDefault().haveNetworkConnection()) {
+                        Display.getDefault().asyncExec(new Runnable() {
+                            public void run() {
+                                try {
+                                    IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+                                    IWorkbenchPage workbenchPage = activeWorkbenchWindow == null ? null : activeWorkbenchWindow.getActivePage();
+                                    if (workbenchPage != null)
+                                        workbenchPage.showView(IConstants.NEWS_VIEW_ID);
+                                } 
+                                catch (PartInitException e) {
+                                    CommonPlugin.logError(e);
+                                }
+                            }
+                        });
+                    }
+                    return Status.OK_STATUS;
+                }
+            };
+            versioncheckJob.setSystem(true);
+            versioncheckJob.schedule();
+        }
+    }
+
     /**
      * Determines whether this is the first IDE startup after the installation, with the 
      * default workspace (the "samples" directory). We check two things:
@@ -150,7 +118,7 @@ public class OmnetppStartup implements IStartup {
             // nothing to do 
         }
     }
-    
+
     /**
      * Turns off the "Build automatically" option.
      */

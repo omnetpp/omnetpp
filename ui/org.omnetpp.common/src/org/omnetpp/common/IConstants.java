@@ -6,7 +6,16 @@ package org.omnetpp.common;
  * @author Andras
  */
 public interface IConstants {
-	public static final String NEWS_VIEW_ID = "org.omnetpp.main.NewsView";
+    // whether this version is a COMMERCIAL build or not
+    public static final boolean IS_COMMERCIAL = true;
+
+    // nature, builders
+    public static final String OMNETPP_NATURE_ID = "org.omnetpp.main.omnetppnature";
+    public static final String VECTORFILEINDEXER_BUILDER_ID = "org.omnetpp.scave.builder.vectorfileindexer";
+    public static final String MAKEFILEBUILDER_BUILDER_ID = "org.omnetpp.cdt.MakefileBuilder";
+
+    // views
+    public static final String NEWS_VIEW_ID = "org.omnetpp.main.NewsView";
 	public static final String MODULEPARAMETERS_VIEW_ID = "org.omnetpp.inifile.ModuleParameters";
 	public static final String MODULEHIERARCHY_VIEW_ID = "org.omnetpp.inifile.ModuleHierarchy";
     public static final String NEDINHERITANCE_VIEW_ID = "org.omnetpp.inifile.NedInheritance";
@@ -14,20 +23,18 @@ public interface IConstants {
 	public static final String VECTORBROWSER_VIEW_ID = "org.omnetpp.scave.VectorBrowserView";
 	public static final String SEQUENCECHART_VIEW_ID = "org.omnetpp.sequencechart.editors.SequenceChartView";
 	public static final String EVENTLOG_VIEW_ID = "org.omnetpp.eventlogtable.editors.EventLogTableView";
-	
-    public static final String VECTORFILEINDEXER_BUILDER_ID = "org.omnetpp.scave.builder.vectorfileindexer";
-    public static final String MAKEFILEBUILDER_BUILDER_ID = "org.omnetpp.cdt.MakefileBuilder";
 
-    // ID missing from the eclipse API
-    public static final String PROJECT_EXPOLRER_ID = "org.eclipse.ui.navigator.ProjectExplorer";
-    /**
-     * ID of this project nature
-     */
-    public static final String OMNETPP_NATURE_ID = "org.omnetpp.main.omnetppnature";
-    // whether this version is a COMMERCIAL build or not
-    public static final boolean IS_COMMERCIAL = true;
+	public static final String PROJECT_EXPLORER_ID = "org.eclipse.ui.navigator.ProjectExplorer"; // ID missing from the Eclipse API
+	
     // wizards
     public static final String NEW_SIMPLE_MODULE_WIZARD_ID = "org.omnetpp.ned.editor.wizard.new.simplemodule";
     public static final String NEW_COMPOUND_MODULE_WIZARD_ID = "org.omnetpp.ned.editor.wizard.new.compoundmodule";
     public static final String NEW_NETWORK_WIZARD_ID = "org.omnetpp.ned.editor.wizard.new.network";
+    
+    // URLs
+    public static final String BASE_URL = "http://omnetpp.org/ide/" + (IConstants.IS_COMMERCIAL ? "omnest/" : "omnetpp/");
+    public static final String NEWS_URL = BASE_URL + "news/";
+    public static final String VERSIONS_URL = BASE_URL + "versions/";
+    public static final String LATESTVERSION_URL = VERSIONS_URL + "latest/";
+    
 }
