@@ -1,6 +1,7 @@
 package org.omnetpp.ide.views;
 
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
@@ -45,15 +46,18 @@ public class NewsView extends ViewPart {
             public void partBroughtToTop(IWorkbenchPart part) { }
 		});	
 
-		// poor man's Back button. This is actually only effective (and only needed) on Linux, 
-		// because on Windows we get IE's built-in context menu which contains Back.
-		browser.getBrowser().addMouseListener(new MouseAdapter() {
-		    @Override
-		    public void mouseDown(MouseEvent e) {
-		        if (e.button == 3)
-		            browser.back();
-		    }
-		});
+		// poor man's Back button. This is only needed on Linux, because on Windows 
+		// we have IE's built-in context menu which contains Back.
+		// XXX what about OS/X?
+		if (Platform.getOS().equals(Platform.OS_LINUX)) {
+		    browser.getBrowser().addMouseListener(new MouseAdapter() {
+		        @Override
+		        public void mouseDown(MouseEvent e) {
+		            if (e.button == 3)
+		                browser.back();
+		        }
+		    });
+		}
 	}
 
 	/**

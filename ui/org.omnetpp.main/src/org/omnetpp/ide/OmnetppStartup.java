@@ -101,8 +101,9 @@ public class OmnetppStartup implements IStartup {
      */
     public boolean isWebPageNotBlank(String url) {
         try {
-            new URL(url).openStream().read(new byte[10]); // probe it by reading a few bytes
-            return true;
+            byte[] buf = new byte[10];
+            new URL(url).openStream().read(buf); // probe it by reading a few bytes
+            return new String(buf).trim().length() > 0;
         } 
         catch (IOException e) {
             return false;
