@@ -10,7 +10,6 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.internal.browser.BrowserViewer;
 import org.eclipse.ui.part.ViewPart;
 import org.omnetpp.common.IConstants;
-import org.omnetpp.ide.OmnetppMainPlugin;
 
 
 /**
@@ -20,8 +19,12 @@ import org.omnetpp.ide.OmnetppMainPlugin;
  */
 @SuppressWarnings("restriction")
 public class NewsView extends ViewPart {
-    protected String urlToShow = "";
-	protected BrowserViewer browser; 
+    public static final String BASE_URL = "http://omnetpp.org/ide/" + (IConstants.IS_COMMERCIAL ? "omnest" : "omnetpp");
+    public static final String NEWS_URL = BASE_URL + "/news";
+    public static final String VERSIONCHECK_URL = BASE_URL + "/versioncheck"; // used in OmnetppStartup
+
+    protected String defaultUrlToShow = NEWS_URL;
+    protected BrowserViewer browser; 
 
 	/**
 	 * This is a callback that will allow us
@@ -29,16 +32,12 @@ public class NewsView extends ViewPart {
 	 */
 	public void createPartControl(Composite parent) {
 		browser = new BrowserViewer(parent,SWT.NONE);
-        if (OmnetppMainPlugin.getDefault().haveNetworkConnection()) {
-            boolean haveNewVersion = OmnetppMainPlugin.getDefault().haveNewVersion(); 
-            urlToShow = (haveNewVersion ? IConstants.VERSIONS_URL : IConstants.NEWS_URL) + OmnetppMainPlugin.getUrlParams();
-        }
 		
 		// load the page when view gets opened or re-opened
 		getSite().getPage().addPartListener(new IPartListener() {
 		    public void partOpened(IWorkbenchPart part) {
-		        if (part == NewsView.this && !urlToShow.equals(browser.getURL()))
-		            browser.setURL(urlToShow);
+		        if (part == NewsView.this && !defaultUrlToShow.equals(browser.getURL()))
+		            browser.setURL(defaultUrlToShow);
 		    }
 		    public void partClosed(IWorkbenchPart part) { }
 		    public void partActivated(IWorkbenchPart part) { }
@@ -63,8 +62,12 @@ public class NewsView extends ViewPart {
 	public void setFocus() {
 		browser.setFocus();
 	}
-	
-	public void setURL(String url) {
-	    browser.setURL(url);
-	}
+
+	/**
+	 * Allows for temporarily showing an arbitrary URL in the view. However, when
+	 * closed and reopened, the view will always return to defaultUrlToShow.
+	 */
+    public void showURL(String url) {
+        browser.setURL(url);
+    }
 }

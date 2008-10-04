@@ -30,11 +30,4 @@ public interface IConstants {
     public static final String NEW_SIMPLE_MODULE_WIZARD_ID = "org.omnetpp.ned.editor.wizard.new.simplemodule";
     public static final String NEW_COMPOUND_MODULE_WIZARD_ID = "org.omnetpp.ned.editor.wizard.new.compoundmodule";
     public static final String NEW_NETWORK_WIZARD_ID = "org.omnetpp.ned.editor.wizard.new.network";
-    
-    // URLs
-    public static final String BASE_URL = "http://omnetpp.org/ide/" + (IConstants.IS_COMMERCIAL ? "omnest/" : "omnetpp/");
-    public static final String NEWS_URL = BASE_URL + "news/";
-    public static final String VERSIONS_URL = BASE_URL + "versions/";
-    public static final String LATESTVERSION_URL = VERSIONS_URL + "latest/";
-    
 }

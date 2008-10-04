@@ -1,15 +1,12 @@
 package org.omnetpp.ide;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.UUID;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.omnetpp.common.IConstants;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ide.preferences.OmnetppPreferencePage;
 import org.osgi.framework.BundleContext;
@@ -24,9 +21,6 @@ public class OmnetppMainPlugin extends AbstractUIPlugin {
 
 	// The shared instance
 	private static OmnetppMainPlugin plugin;
-	
-	private String latestVersion = null;
-	private boolean latestVersionChecked = false;
 	
 	/**
 	 * The constructor
@@ -48,14 +42,17 @@ public class OmnetppMainPlugin extends AbstractUIPlugin {
         return (String)getDefault().getBundle().getHeaders().get("Bundle-Version");
     }
     
-    public static String getUUID() {
-        String uuid = getDefault().getPluginPreferences().getString("UUID");
-        if (StringUtils.isEmpty(uuid)) {
-            uuid = UUID.randomUUID().toString();
-            getDefault().getPluginPreferences().setValue("UUID", uuid);
+    /**
+     * For use in the version check URL.
+     */
+    public static String getInstallDate() {
+        String installDate = getDefault().getPluginPreferences().getString("installDate");
+        if (StringUtils.isEmpty(installDate)) {
+            installDate = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+            getDefault().getPluginPreferences().setValue("installDate", installDate);
             getDefault().savePluginPreferences();
         }
-        return uuid;
+        return installDate;
     }
 
 	/*
@@ -115,37 +112,5 @@ public class OmnetppMainPlugin extends AbstractUIPlugin {
         // FIXME in fact we have to look into the Makefile.inc or configuser.vc files in the root and get the directory from there
     	return new Path(getOmnetppRootDir()).append("lib").toOSString();
     }
-	
-    public boolean haveNetworkConnection() {
-        return getLatestVersion()!=null;
-    }
 
-	public boolean haveNewVersion() {
-	    return getLatestVersion()!=null && !getVersion().equals(getLatestVersion());
-	}
-	
-	/**
-     * Returns the latest version by checking the omnetpp.org site, or null 
-     * if the request has failed (no network present, etc). The result is cached,
-     * that is, only the first call actually does a HTTP request, even it it fails.
-     */
-    public String getLatestVersion() {
-        if (!latestVersionChecked) {
-            try {
-                byte buffer[] = new byte[1024];
-                URL url = new URL(IConstants.LATESTVERSION_URL+getUrlParams());
-                url.openStream().read(buffer);
-                latestVersion = new String(buffer).trim();
-            } catch (MalformedURLException e) {
-            } catch (IOException e) {
-            }
-            latestVersionChecked = true;
-        }
-        return latestVersion;
-    }
-
-    public static String getUrlParams() {
-        return "?v="+getVersion()+"&s="+getUUID();
-    }
-    
 }
