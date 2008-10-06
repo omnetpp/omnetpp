@@ -7,6 +7,7 @@ html:
 	xsltproc --xinclude --output tmp.xml trans.xsl userguide.xml
 	xsltproc --output userguide.html  /usr/share/xml/docbook/stylesheet/nwalsh/html/docbook.xsl tmp.xml
 	rm tmp.xml
+	cp userguide.html ../../userguide
 
 pdf:   chart-properties.xml processing-operations.xml
 	xsltproc --xinclude --output tmp.xml trans.xsl userguide.xml
