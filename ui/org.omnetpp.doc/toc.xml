@@ -5,18 +5,4 @@
    <topic label="Getting Started">
       <anchor id="gettingstarted"/>
    </topic>
-   <topic label="References">
-      <anchor id="reference"/>
-   </topic>
-<!--
-   <topic label="Concepts">
-      <anchor id="concepts"/>
-   </topic>
-   <topic label="Tasks">
-      <anchor id="tasks"/>
-   </topic>
-   <topic label="Samples">
-      <anchor id="samples"/>
-   </topic>
--->
 </toc>
