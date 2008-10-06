@@ -37,6 +37,7 @@ HTMCHAPTERS = $(TEXCHAPTERS:.tex=.htm)
 DOTPICS = $(wildcard figures/*.dot)
 SVGPICS = $(wildcard figures/*.svg)
 PDFPICS = $(SVGPICS:.svg=.pdf) $(DOTPICS:.dot=.pdf)
+PNGPICS = $(SVGPICS:.svg=.png) $(DOTPICS:.dot=.png)
 
 # an imperfect attempt to filter out less important warnings...
 # LOGFILTER = | sed '/Underfull/{N;N;d;};/Overfull/{N;N;d;};/Token not allowed/{N;N;d;}'
@@ -56,6 +57,9 @@ pdf: $(ALLTEX) $(PDFPICS) figures/*.png
 %.svg: %.dot
 	$(DOT) -Tsvg $< >$@
 
+%.png: %.dot
+	$(DOT) -Tpng $< >$@
+
 # --- generating html ---
 
 .SUFFIXES : .tex .bbl .htm .svg .dot
@@ -66,6 +70,9 @@ pdf: $(ALLTEX) $(PDFPICS) figures/*.png
 %.pdf: %.svg
 	$(INKSCAPE) $< -A $@
 
+%.png: %.svg
+	$(INKSCAPE) $< -e $@
+
 .bbl.htm:
 	cp $< `echo $< | sed 's|\.bbl|.tex|'`
 	$(PERL) ltoh.pl `echo $< | sed 's|\.bbl|.tex|'`
@@ -75,10 +82,12 @@ pdf: $(ALLTEX) $(PDFPICS) figures/*.png
 .tex.htm:
 	$(PERL) ltoh.pl $<
 
-html : $(HTMCHAPTERS) omnest.thtml omnetpp.thtml prephtml2 ltoh.specs ltoh.pl
+html : $(HTMCHAPTERS) $(PNGPICS) omnest.thtml omnetpp.thtml prephtml2 ltoh.specs ltoh.pl
 	cat $(HTMCHAPTERS) > usman.tmp
 	$(PERL) prephtml2 usman.tmp
 	rm usman.tmp
+	rm -rf ../../manual
+	mkdir ../../manual
 	cp usman.html ../../manual
 	cp *.png ../../manual
 	cp figures/*.png ../../manual

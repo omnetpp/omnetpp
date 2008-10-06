@@ -5,15 +5,15 @@ DOCBOOK=$(TOOLS_DIR)\docbook
 all: pdf html
 
 html: catalog
-	$(XSLTPROC) --nonet --xinclude --output tmp.xml trans.xsl Migration.xml
-	$(XSLTPROC) --nonet --output Migration.html  $(DOCBOOK)/html/docbook.xsl tmp.xml
+	$(XSLTPROC) --nonet --xinclude --output tmp.xml trans.xsl migration.xml
+	$(XSLTPROC) --nonet --output migration.html  $(DOCBOOK)/html/docbook.xsl tmp.xml
 	del tmp.xml
 
 pdf: catalog
-	$(XSLTPROC) --nonet --xinclude --output tmp.xml trans.xsl Migration.xml
+	$(XSLTPROC) --nonet --xinclude --output tmp.xml trans.xsl migration.xml
 	perl -pe "s!\@DOCBOOK_STYLESHEET\@!file:///$(TOOLS_DIR:\=/)/docbook/fo/docbook.xsl!g" custom-fo-docbook.xsl >custom-fo-docbook-tmp.xsl
 	$(XSLTPROC) --nonet --output tmp.fo custom-fo-docbook-tmp.xsl tmp.xml
-	call $(FOP) -fo tmp.fo -pdf Migration.pdf
+	call $(FOP) -fo tmp.fo -pdf migration.pdf
 	del custom-fo-docbook-tmp.xsl tmp.fo tmp.xml
 
 catalog:
