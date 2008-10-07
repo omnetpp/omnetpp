@@ -3,6 +3,26 @@
 
 <toc label="OMNeT++ Development User Guide" topic="content/toc.html">
    <topic label="Getting Started">
-      <anchor id="gettingstarted"/>
+	<topic label="An Overview of the OMNeT++ 4.0 IDE"  href="content/gettingstarted/getting_started.html">
+	</topic>
+    <topic href="content/tictoc-tutorial/index.html" label="Tic-toc tutorial">
+    </topic>
+    <anchor id="gettingstarted"/>
    </topic>
+   <topic href="content/manual/usman.html" label="OMNeT++ Manual">
+   </topic>
+   <topic href="content/userguide/userguide.html" label="IDE User Guide">
+   </topic>
+   <topic href="content/migration/migration.html" label="Migration Guide">
+   </topic>
+   <topic label="API References">
+      <topic href="content/api/main.html" label="OMNeT++ Simulation API">
+      </topic>
+      <topic href="content/nedxml-api/main.html" label="NEDXML API">
+      </topic>
+      <topic href="content/parsim-api/main.html" label="Parallel Simulation API">
+      </topic>
+      <anchor id="api"/>
+   </topic>
+   <anchor id="omnetpp"/>
 </toc>
