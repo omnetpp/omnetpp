@@ -2,6 +2,7 @@
 <extensions>
    <page id="tutorials">
       <group path="page-content/bottom-left" default="true">
+         <extension id="orgomnetpp-tutorials-extension" importance="new"/>
          <extension id="orgeclipsecdtdocuserwelcome-introExtension" importance="low"/>
          <extension id="org.eclipse.team.svn.tutorials" importance="low"/>
       </group>
@@ -15,6 +16,7 @@
    </page>
    <page id="whatsnew">
       <group path="page-content/bottom-left" default="true">
+         <extension id="orgomnetpp-whatsnew-extension" importance="low"/>
          <extension id="org.eclipse.ui.workbench" importance="low"/>
       </group>
       <group path="page-content/bottom-right" default="true">
@@ -25,15 +27,19 @@
       <group path="page-content/top-right">
          <extension id="orgeclipsecdtdocuserwelcome-introExtension" importance="low"/>
       </group>
-      <hidden>         <extension id="org.eclipse.ui.workbench.migration" importance="low"/>
+      <hidden>         
+         <extension id="org.eclipse.ui.workbench.migration" importance="low"/>
          <extension id="org.eclipse.team.svn.migrate" importance="low"/>
       </hidden>
    </page>
-   <page id="firststeps">
+   <page id="migrate">
       <group path="page-content/bottom-left" default="true">
-         <extension id="org.eclipse.team.svn.firststeps" importance="low"/>
       </group>
       <group path="page-content/bottom-right" default="true">
+      </group>
+      <group path="page-content/top-left">
+      </group>
+      <group path="page-content/top-right">
       </group>
    </page>
    <page id="overview">
@@ -42,7 +48,7 @@
       <group path="page-content/bottom-right" default="true">
       </group>
       <group path="page-content/top-left">
-         <extension id="orgomnetppintro-introExtension" importance="new"/>
+         <extension id="orgomnetpp-overview-extension" importance="low"/>
          <extension id="org.eclipse.ui.workbench" importance="low"/>
       </group>
       <group path="page-content/top-right">
