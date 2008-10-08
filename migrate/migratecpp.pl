@@ -62,9 +62,11 @@ while (<LISTFILE>)
 
     # process $txt:
 
-    $txt =~ s/cPolymorphic *\*dup\(\) *const *\{ *return +new +([_A-Za-z0-9]+)/\1 *dup() const {return new \1/mg;
-    $txt =~ s/cObject *\*dup\(\) *const *\{ *return +new +([_A-Za-z0-9]+)/\1 *dup() const {return new \1/mg;
-    $txt =~ s/\bcPar( +[A-Za-z])/cMsgPar\1/mg;   # message params are no longer cPar but cMsgPar
+    # make dup() use covariant return types
+    $txt =~ s/\b(cPolymorphic|cObject|cOwnedOject)\s*\*\s*dup\s*\(\s*\)\s*const\s*\{\s*return\s+new\s+([_A-Za-z0-9]+)/\2 *dup() const {return new \2/sg;
+
+    # message params are no longer cPar but cMsgPar
+    $txt =~ s/\bcPar( +[A-Za-z])/cMsgPar\1/mg;
     $txt =~ s/\bnew +cPar\b/new cMsgPar/mg;
 
     $txt =~ s!^(# *define +EV +.*)$!//$1 ==> EV is now part of <omnetpp.h>!mg;
@@ -209,6 +211,11 @@ while (<LISTFILE>)
        }
        if ($line =~ /\b(simtimeToStr|strToSimtime)\b/) {
           $warnings{"The simtimeToStr() and strToSimtime() methods are no longer supported. (use SimTime methods, or the SIMTIME_STR(t), SIMTIME_DBL(t), STR_SIMTIME(s), SIMTIME_TTOA(buf,t) macros instead)"} .= $lineinfo;
+       }
+
+       # dup()
+       if ($line =~ /\b(cPolymorphic|cObject|cOwnedObject)\s*\*\s*dup\s*\(\*\)/) {
+          $warnings{"dup() in class X should return an X* pointer"} .= $lineinfo;
        }
 
        # gates
