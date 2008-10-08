@@ -117,8 +117,11 @@ void cQueue::clear()
     while (frontp)
     {
         QElem *tmp = frontp->next;
-        if (frontp->obj->isOwnedObject() && frontp->obj->getOwner()==this)
-            dropAndDelete(static_cast<cOwnedObject *>(frontp->obj));
+        cObject *obj = frontp->obj;
+        if (!obj->isOwnedObject())
+            delete obj;
+        else if (obj->getOwner()==this)
+            dropAndDelete(static_cast<cOwnedObject *>(obj));
         delete frontp;
         frontp = tmp;
     }
@@ -139,7 +142,10 @@ cQueue& cQueue::operator=(const cQueue& queue)
     bool old_tk = getTakeOwnership();
     for (cQueue::Iterator iter(queue, false); !iter.end(); iter++)
     {
-        if (iter()->getOwner()==const_cast<cQueue*>(&queue))
+        cObject *obj = iter();
+        if (!obj->isOwnedObject())
+            {insert(iter()->dup());}
+        else if (iter()->getOwner()==const_cast<cQueue*>(&queue))
             {setTakeOwnership(true); insert(iter()->dup());}
         else
             {setTakeOwnership(false); insert(iter());}

@@ -40,7 +40,7 @@ typedef int (*CompareFunc)(cObject *a, cObject *b);
  * cQueue is a FIFO: you insert elements at the back using insert(), and
  * remove them at the front using pop().
  *
- * cQueue may be set up to acts as a priority queue. This requires the user to specify
+ * cQueue may be set up to act as a priority queue. This requires the user to specify
  * a comparison function.
  *
  * By default, cQueue's destructor deletes all contained objects. This behaviour
@@ -296,16 +296,23 @@ class SIM_API cQueue : public cOwnedObject
     //@{
 
     /**
-     * Sets the flag which determines whether the container object
-     * should automatically take ownership of the objects that are inserted
-     * into it.
+     * Sets the flag which determines whether the container object should
+     * automatically take ownership of the objects that are inserted into it.
+     * It does not affect objects already in the queue. When an inserted
+     * object is owned by the queue, that means it will be deleted when
+     * the queue object is deleted or cleared, and will be duplicated when
+     * the queue object is duplicated or copied.
+     *
+     * Setting the flag to false does not affect the treatment of objects
+     * that are NOT cOwnedObject. Since they do not support the ownership
+     * protocol, they will always be treated by the queue as owned objects.
      */
     void setTakeOwnership(bool tk) {tkownership=tk;}
 
     /**
      * Returns the flag which determines whether the container object
      * should automatically take ownership of the objects that are inserted
-     * into it.
+     * into it. See setTakeOwnedship() for more details.
      */
     bool getTakeOwnership() const {return tkownership;}
     //@}
