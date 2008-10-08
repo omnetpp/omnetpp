@@ -15,13 +15,7 @@
    </topic>
    <topic href="content/migration/migration.html" label="Migration Guide">
    </topic>
-   <topic label="API References">
-      <topic href="content/api/main.html" label="OMNeT++ Simulation API">
-      </topic>
-      <topic href="content/nedxml-api/main.html" label="NEDXML API">
-      </topic>
-      <topic href="content/parsim-api/main.html" label="Parallel Simulation API">
-      </topic>
+   <topic href="content/api/main.html" label="OMNeT++ Simulation API Reference">
       <anchor id="api"/>
    </topic>
    <anchor id="omnetpp"/>
