@@ -33,8 +33,8 @@
 	  been added that take simtime_t.
 	- simtimeToStr(), strToSimtime() are no longer (use SimTime methods
 	  instead, or the compatibility macros described below!)
-	- simTime() moved out of the cSimpleModule class (i.e. it became a
-	  global function; it invokes simulation.getSimTime())
+	- simTime() was moved out of the cSimpleModule class: it became a global
+	  function which delegates to simulation.getSimTime()
 
 	Simtime compatibility mode:
 	- if needed, the simkernel can be compiled with simtime_t = double.
@@ -297,7 +297,7 @@
 	Configuration handling rewritten, including cConfiguration.
 
 	Run number handling:
-	- run numbers made entrirely the matter of cEnvir. cSimulation::runNumber()
+	- run numbers were made entirely the matter of cEnvir. cSimulation::runNumber()
 	  got removed. Also removed runNumber from the arg list of cEnvir callback
 	  functions.
 
