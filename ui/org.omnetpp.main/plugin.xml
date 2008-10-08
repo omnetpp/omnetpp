@@ -7,8 +7,8 @@
 	 point="org.eclipse.core.runtime.products">
       <product
             application="org.eclipse.ui.ide.workbench"
-            name="OMNEST IDE">
-          <property name="appName" value="OMNEST IDE"/>
+            name="OMNeT++ IDE">
+          <property name="appName" value="OMNeT++ IDE"/>
           <property name="preferenceCustomization" value="plugin_customization.ini"/>
          <property
           		name="introTitle"
@@ -30,12 +30,7 @@
           value=" "/>
     <property
           name="aboutText"
-          value="OMNEST Integrated Development Environment.
-
-Version: {featureVersion}
-
-Copyright (C) 2005, 2008 OpenSim Ltd.
-For more info, please visit http://www.omnetpp.org"/>
+          value="OMNeT++ Integrated Development Environment."/>
     <property
           name="aboutImage"
           value="icons/about-image.png"/>
@@ -70,22 +65,6 @@ For more info, please visit http://www.omnetpp.org"/>
       </runtime>
       <builder id="org.omnetpp.scave.builder.vectorfileindexer"/>
    </extension>
-   <!--
-   <extension
-         point="org.eclipse.ui.newWizards">
-      <wizard
-            category="org.omnetpp.wizards"
-            class="org.omnetpp.ide.wizard.NewOmnetppProjectWizard"
-            icon="icons/newoproject.gif"
-            id="org.omnetpp.ide.wizard.newProjectWizard"
-            name="OMNeT++ Project"
-            project="true">
-         <description>
-            Create a Project that can handle OMNeT++ specific files, like NED, VEC, SCA etc.
-         </description>
-      </wizard>
-   </extension>
-   -->
    <extension
          id="omnetppNatureImage"
          name="OMNeT++ Nature Overlay Image"
