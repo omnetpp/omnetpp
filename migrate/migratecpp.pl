@@ -37,6 +37,8 @@ my $gettersWithArg = "ancestorPar argType basepoint cellPDF
 $arglessGetters =~ s/\s+/|/g;
 $gettersWithArg =~ s/\s+/|/g;
 
+# key: the warning message; value: where (several file+lineno+linecontent lines contatenated)
+%warnings = ();
 
 $listfname = $ARGV[0];
 open(LISTFILE, $listfname) || die "cannot open $listfname";
@@ -185,112 +187,92 @@ while (<LISTFILE>)
        $lineno++;
        my $line = $linewithcomment;
        $line =~ s|//.*||; # avoid warning for stuff in comments
+       my $lineinfo = "    $fname:$lineno\t$linewithcomment\n";
 
        # cObject
        if ($line =~ /\bcObject\b/) {
-          print "*** warning at $fname:$lineno: cObject got renamed to cOwnedObject, check note at bottom whether you need to change the code\n";
-          print "$linewithcomment\n";
+          $warnings{"cObject got renamed to cOwnedObject, check note at bottom whether you need to change the code"} .= $lineinfo;
        }
        if ($line =~ /\bcPolymorphic\b/) {
-          print "*** warning at $fname:$lineno: cPolymorphic got renamed to cObject, you may want to change the code (old name is still supported).\n";
-          print "$linewithcomment\n";
+          $warnings{"cPolymorphic got renamed to cObject, you may want to change the code (old name is still supported)"} .= $lineinfo;
        }
 
        # simtime_t
        if ($line =~ /\bdouble +[a-z0-9_]*(time|age|interval|delay|\bt[0-9]*\b)/i) {
-          print "*** warning at $fname:$lineno: This variable might represent simulation time -- if so, change \"double\" to \"simtime_t\".\n";
-          print "$linewithcomment\n";
+          $warnings{"Variable might represent simulation time -- if so, change \"double\" to \"simtime_t\""} .= $lineinfo;
        }
        if ($line =~ /\b(simtimeToStr|strToSimtime)\b/) {
-          print "*** warning at $fname:$lineno: The simtimeToStr() and strToSimtime() methods are no longer supported. (use SimTime methods, or the SIMTIME_STR(t), SIMTIME_DBL(t), STR_SIMTIME(s), SIMTIME_TTOA(buf,t) macros instead).\n";
-          print "$linewithcomment\n";
+          $warnings{"The simtimeToStr() and strToSimtime() methods are no longer supported. (use SimTime methods, or the SIMTIME_STR(t), SIMTIME_DBL(t), STR_SIMTIME(s), SIMTIME_TTOA(buf,t) macros instead)"} .= $lineinfo;
        }
 
        # gates
        if ($line =~ /=.*\bsetGateSize\b/) {
-          print "*** warning at $fname:$lineno: setGateSize() return type changed to void.\n";
-          print "$linewithcomment\n";
+          $warnings{"setGateSize() return type changed to void"} .= $lineinfo;
        }
        if ($line =~ /=.*\baddGate\b/) {
-          print "*** warning at $fname:$lineno: addGate() return type changed to void, use gate(\"name\") to get the pointer.\n";
-          print "$linewithcomment\n";
+          $warnings{"addGate() return type changed to void, use gate(\"name\") to get the pointer"} .= $lineinfo;
        }
        if ($line =~ /'[IO]'/) {
-          print "*** warning at $fname:$lineno: if 'I'/'O' refers to a gate type, change it to cGate::INPUT or cGate::OUTPUT.\n";
-          print "$linewithcomment\n";
+          $warnings{"if 'I'/'O' refers to a gate type, change it to cGate::INPUT or cGate::OUTPUT"} .= $lineinfo;
        }
        if ($line =~ /\b(setTo|setFrom)\b/) {
-          print "*** warning at $fname:$lineno: The setTo() and setFrom() methods are no longer supported, use connectTo() instead.\n";
-          print "$linewithcomment\n";
+          $warnings{"The setTo() and setFrom() methods are no longer supported, use connectTo() instead"} .= $lineinfo;
        }
 
        # messages
        if ($line =~ /\b(setKind|setPriority)\b/ || $line =~ /\bint\b.*(\bkind\(\)|\bpriority\(\))/) {
-          print "*** warning at $fname:$lineno: note: message kind and priority changed from int to short, you may want to update the code\n";
-          print "$linewithcomment\n";
+          $warnings{"note: message kind and priority changed from int to short, you may want to update the code"} .= $lineinfo;
        }
        if ($line =~ /\b(setLength|setByteLength|addLength|addByteLength)\b/ || $line =~ /\blong\b.*(\blength\(\)|\bbyteLength\(\))/) {
-          print "*** warning at $fname:$lineno: note: message length changed from long to int64, you may want to update the code\n";
-          print "$linewithcomment\n";
+          $warnings{"note: message length changed from long to int64, you may want to update the code"} .= $lineinfo;
        }
 
        # misc
        if ($line =~ /\bcBag\b/) {
-          print "*** warning at $fname:$lineno: cBag no longer exists, use std::vector instead.\n";
-          print "$linewithcomment\n";
+          $warnings{"cBag no longer exists, use std::vector instead"} .= $lineinfo;
        }
        if ($line =~ /\bitems\(\)/) {
-          print "*** warning at $fname:$lineno: cArray::items() renamed to size().\n";
-          print "$linewithcomment\n";
+          $warnings{"cArray::items() renamed to size()"} .= $lineinfo;
        }
 
        # dynamic module creation
        if ($line =~ /\bbuildInside\b/) {
-          print "*** warning at $fname:$lineno: finalizeParameters() must be called (for channels, this reads input params from omnetpp.ini; for modules, also creates gates [since gate vector sizes may depend on parameter values])\n";
-          print "$linewithcomment\n";
+          $warnings{"finalizeParameters() must be called (for channels, this reads input params from omnetpp.ini; for modules, also creates gates [since gate vector sizes may depend on parameter values])"} .= $lineinfo;
        }
 
        # dynamic channel creation
        if ($line =~ /\bnew +cDatarateChannel\b/) {
-          print "*** warning at $fname:$lineno: channel creation should be done via cChannelType, see manual; direct \"new\" won't work properly\n";
-          print "$linewithcomment\n";
+          $warnings{"channel creation should be done via cChannelType, see manual; direct \"new\" won't work properly"} .= $lineinfo;
        }
 
        # 'ev' not permitted as variable name
        if ($line =~ /[a-zA-Z0-9_] *[&*]? *\bev\b/) {
-          print "*** warning at $fname:$lineno: \"ev\" became a macro, so it's no longer suitable as a variable or parameter name -- please rename\n";
-          print "$linewithcomment\n";
+          $warnings{"\"ev\" became a macro, so it's no longer suitable as a variable or parameter name -- please rename"} .= $lineinfo;
        }
 
        # exceptions must be thrown by value
        if ($line =~ /\bthrow +new\b/) {
-          print "*** warning at $fname:$lineno: Exceptions MUST be thrown by value, please remove the \"new\" keyword\n";
-          print "$linewithcomment\n";
+          $warnings{"Exceptions MUST be thrown by value, please remove the \"new\" keyword"} .= $lineinfo;
        }
 
        # cModule
        if ($line =~ /\bcSubmodIterator\b/) {
-          print "*** warning at $fname:$lineno: Deprecated cSubmodIterator. Use cModule::SubmoduleIterator instead\n";
-          print "$linewithcomment\n";
+          $warnings{"Deprecated cSubmodIterator. Use cModule::SubmoduleIterator instead"} .= $lineinfo;
        }
        if ($line =~ /\bmoduleState\b/) {
-          print "*** warning at $fname:$lineno: Deprecated moduleState. \n";
-          print "$linewithcomment\n";
+          $warnings{"Deprecated moduleState. "} .= $lineinfo;
        }
        if ($line =~ / end\(\)\b/) {  # note: we may give false warning for STL iterator end() methods
-          print "*** warning at $fname:$lineno: cSimpleModule::end() -- removed, as there was little value in it. To terminate an activity() module, simply return from the activity() method, or call the new halt() method to end the module while preserving the local variables for inspection.\n";
-          print "$linewithcomment\n";
+          $warnings{"cSimpleModule::end() -- removed, as there was little value in it. To terminate an activity() module, simply return from the activity() method, or call the new halt() method to end the module while preserving the local variables for inspection"} .= $lineinfo;
        }
 
        if ($line =~ /\bgates\(\)\b/) {
-          print "*** warning at $fname:$lineno: cModule's gates() method was removed; to iterate over gates of a module, use: for(cModule::GateIterator i(modp); !i.end(); i++) {cGate *gate=i(); ...}\n";
-          print "$linewithcomment\n";
+          $warnings{"cModule's gates() method was removed; to iterate over gates of a module, use: for(cModule::GateIterator i(modp); !i.end(); i++) {cGate *gate=i(); ...}"} .= $lineinfo;
        }
 
        # display string tags
        if ($line =~ /\bbackgroundDisplayString\b/i) {
-          print "*** warning at $fname:$lineno: There are no separate backgroundDisplayString and displayString. Use displayString instead. P tag become BGP, B tag become BGB.\n";
-          print "$linewithcomment\n";
+          $warnings{"There are no separate backgroundDisplayString and displayString. Use displayString instead. P tag become BGP, B tag become BGB"} .= $lineinfo;
        }
     }
     open(OUTFILE, ">$fname") || die "cannot open $fname for write";
@@ -298,9 +280,16 @@ while (<LISTFILE>)
     close OUTFILE;
 }
 
+# print all warnings:
+print "\n";
+foreach $key (sort keys %warnings) {
+     print "WARNING: $key\n$warnings{$key}\n";
+}
+
 print "\nConversion done. You may safely re-run this script as many times as you want.\n";
 
 print "cObject note: only change a cObject occurrence to cOwnedObject, if:\n";
 print "   (1) cObject is not already the result of a cPolymorphic->cObject conversion, and\n";
 print "   (2) you are REALLY sure you need cOwnedObject there, with its name string and other overhead.\n";
+
 
