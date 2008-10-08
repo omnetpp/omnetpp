@@ -36,7 +36,7 @@ typedef int (*CompareFunc)(cObject *a, cObject *b);
 
 
 /**
- * Queue class for objects derived from cOwnedObject. The default behaviour of
+ * Queue class for objects derived from cObject. The default behaviour of
  * cQueue is a FIFO: you insert elements at the back using insert(), and
  * remove them at the front using pop().
  *
@@ -57,7 +57,7 @@ class SIM_API cQueue : public cOwnedObject
   private:
     struct QElem
     {
-        cOwnedObject *obj; // contained object
+        cObject *obj; // the contained object
         QElem *prev;  // element towards the front of the queue
         QElem *next;  // element towards the back of the queue
     };
@@ -89,7 +89,7 @@ class SIM_API cQueue : public cOwnedObject
         /**
          * Returns the current object.
          */
-        cOwnedObject *operator()()  {return p ? p->obj : NULL;}
+        cObject *operator()()  {return p ? p->obj : NULL;}
 
         /**
          * Returns true if the iterator has reached either end of the queue.
@@ -102,7 +102,7 @@ class SIM_API cQueue : public cOwnedObject
          * reached either end of the queue, nothing happens, and one has to
          * call init() to restart iterating.
          */
-        cOwnedObject *operator++(int)  {if (!p) return NULL; cOwnedObject *r=p->obj; p=p->next; return r;}
+        cObject *operator++(int)  {if (!p) return NULL; cObject *r=p->obj; p=p->next; return r;}
 
         /**
          * Returns the current object, then moves the iterator to the previous item
@@ -110,7 +110,7 @@ class SIM_API cQueue : public cOwnedObject
          * reached either end of the queue, nothing happens, and one has to
          * call init() to restart iterating.
          */
-        cOwnedObject *operator--(int)  {if (!p) return NULL; cOwnedObject *r=p->obj; p=p->prev; return r;}
+        cObject *operator--(int)  {if (!p) return NULL; cObject *r=p->obj; p=p->prev; return r;}
     };
 
     friend class Iterator;
@@ -123,10 +123,10 @@ class SIM_API cQueue : public cOwnedObject
 
   protected:
     // internal functions
-    QElem *find_qelem(cOwnedObject *obj) const;
-    void insbefore_qelem(QElem *p, cOwnedObject *obj);
-    void insafter_qelem(QElem *p, cOwnedObject *obj);
-    cOwnedObject *remove_qelem(QElem *p);
+    QElem *find_qelem(cObject *obj) const;
+    void insbefore_qelem(QElem *p, cObject *obj);
+    void insafter_qelem(QElem *p, cObject *obj);
+    cObject *remove_qelem(QElem *p);
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -208,33 +208,33 @@ class SIM_API cQueue : public cOwnedObject
      * Adds an element to the back of the queue. Trying to insert a
      * NULL pointer is an error (throws cRuntimeError).
      */
-    virtual void insert(cOwnedObject *obj);
+    virtual void insert(cObject *obj);
 
     /**
      * Inserts exactly before the given object. If the given position
      * does not exist or if you try to insert a NULL pointer,
      * cRuntimeError is thrown.
      */
-    virtual void insertBefore(cOwnedObject *where, cOwnedObject *obj);
+    virtual void insertBefore(cObject *where, cObject *obj);
 
     /**
      * Inserts exactly after the given object. If the given position
      * does not exist or if you try to insert a NULL pointer,
      * cRuntimeError is thrown.
      */
-    virtual void insertAfter(cOwnedObject *where, cOwnedObject *obj);
+    virtual void insertAfter(cObject *where, cObject *obj);
 
     /**
      * Unlinks and returns the object given. If the object is not in the
      * queue, NULL pointer is returned.
      */
-    virtual cOwnedObject *remove(cOwnedObject *obj);
+    virtual cObject *remove(cObject *obj);
 
     /**
      * Unlinks and returns the front element in the queue. If the queue
      * was empty, cRuntimeError is thrown.
      */
-    virtual cOwnedObject *pop();
+    virtual cObject *pop();
 
     /**
      * Empties the container. Contained objects that were owned by the
@@ -250,14 +250,14 @@ class SIM_API cQueue : public cOwnedObject
      * This is the element to be return by pop().
      * Returns NULL if the queue is empty.
      */
-    virtual cOwnedObject *front() const;
+    virtual cObject *front() const;
 
     /**
      * Returns pointer to the last (back) element in the queue.
      * This is the element most recently added by insert().
      * Returns NULL if the queue is empty.
      */
-    virtual cOwnedObject *back() const;
+    virtual cObject *back() const;
 
     /**
      * Returns the number of objects contained in the queue.
@@ -284,12 +284,12 @@ class SIM_API cQueue : public cOwnedObject
      * get(0) returns the front element. This method performs linear
      * search.
      */
-    cOwnedObject *get(int i) const;
+    cObject *get(int i) const;
 
     /**
      * Returns true if the queue contains the given object.
      */
-    virtual bool contains(cOwnedObject *obj) const;
+    virtual bool contains(cObject *obj) const;
     //@}
 
     /** @name Ownership control flag. */
