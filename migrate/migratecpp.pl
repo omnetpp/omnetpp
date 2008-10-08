@@ -181,6 +181,12 @@ while (<LISTFILE>)
     # exceptions must be thrown by value
     $txt =~ s/\bthrow +new +cRuntimeError\b/throw cRuntimeError/mg;
 
+    # remove Module_Class_Members(classname, baseclass, 0)
+    $txt =~ s/^(\s*)Module_Class_Members\(\s*([A-Za-z0-9_]+)\s*,\s*([A-Za-z0-9_]+)\s*,\s*0\s*\);?//mg;
+
+    # expand Module_Class_Members(classname, baseclass, stacksize) to a constructor definition
+    $txt =~ s/^(\s*)Module_Class_Members\(\s*([A-Za-z0-9_]+)\s*,\s*([A-Za-z0-9_]+)\s*,\s*([0-9]+)\s*\);?/$1$2() : $3($4) {}/mg;
+
     # print warnings
     $lineno = 0;
     foreach $linewithcomment (split ("\n", $txt)) {
