@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <introContent>
-  <extensionContent id="orgomnetppintro-introExtension" style="intro.css"
-    name="OMNeT++ Intro Extension" path="overview/@">
-    <group style-id="content-group" id="orgomnetppintro-introLink-group">
-      <link label="OMNeT++ Simulation Environment" url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.omnetpp.doc/content/gettingstarted/getting_started.html" id="orgomnetppintro-introLink"
+  <extensionContent id="orgomnetpp-overview-extension" style="intro.css"
+    name="OMNeT++ Intro" path="overview/@">
+    <group style-id="content-group" id="orgomnetpp-overview-group">
+      <link label="OMNeT++ Simulation Environment" url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.omnetpp.doc/content/gettingstarted/getting_started.html" id="orgomnetpp-link"
         style-id="content-link">
         <text>Learn how to create, run and evaluate simulations.</text>
+      </link>
+    </group>
+  </extensionContent>
+  <extensionContent id="orgomnetpp-whatsnew-extension" style="intro.css"
+    name="OMNeT++ WhatsNew" path="whatsnew/@">
+    <group style-id="content-group" id="orgomnetpp-whatsnew-group">
+      <link label="What is new in OMNeT++ 4.0" url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.omnetpp.doc/content/WhatsNew.html" id="orgomnetpp-link"
+        style-id="content-link">
+        <text>Learn about changes and new features in OMNeT++ 4.0</text>
+      </link>
+    </group>
+  </extensionContent>
+  <extensionContent id="orgomnetpp-tutorials-extension" style="intro.css"
+    name="OMNeT++ Tutorials" path="tutorials/@">
+    <group style-id="content-group" id="orgomnetpp-tutorials-group">
+      <link label="Tic Toc Tutorial" url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.omnetpp.doc/content/tictoc-tutorial/index.html" id="orgomnetpp-link"
+        style-id="content-link">
+        <text>A step by step example to show how to build simulations.</text>
+      </link>
+    </group>
+  </extensionContent>
+  <extensionContent id="orgomnetpp-migration-extension" style="intro.css"
+    name="OMNeT++ Migration" path="migrate/@">
+    <group style-id="content-group" id="orgomnetpp-migrate-group">
+      <link label="OMNeT++ 3.x to 4.0 Migration Guide" url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.omnetpp.doc/content/migration/migration.html" id="orgomnetpp-link"
+        style-id="content-link">
+        <text>Learn now to migrate your OMNeT++ 3.x based projects to the new 4.0 version.</text>
       </link>
     </group>
   </extensionContent>

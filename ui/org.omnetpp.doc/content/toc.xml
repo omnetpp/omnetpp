@@ -3,6 +3,8 @@
 
 <toc label="OMNeT++ Development User Guide" topic="content/toc.html">
    <topic label="Getting Started">
+      <topic href="content/WhatsNew.html" label="What&apos;s New in OMNeT++ 4.0">
+      </topic>
 	<topic label="An Overview of the OMNeT++ 4.0 IDE"  href="content/gettingstarted/getting_started.html">
 	</topic>
     <topic href="content/tictoc-tutorial/index.html" label="Tic-toc tutorial">
@@ -15,8 +17,10 @@
    </topic>
    <topic href="content/migration/migration.html" label="Migration Guide">
    </topic>
-   <topic href="content/api/main.html" label="OMNeT++ Simulation API Reference">
+   <anchor id="omnetpp"/>
+   <topic href="content/api/main.html" label="OMNeT++ API Reference">
+      <topic href="content/api/APIChanges.html" label="API Changes">
+      </topic>
       <anchor id="api"/>
    </topic>
-   <anchor id="omnetpp"/>
 </toc>

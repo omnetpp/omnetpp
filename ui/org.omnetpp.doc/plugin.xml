@@ -17,6 +17,7 @@
             content="intro/intro.xml">
       </configExtension>
    </extension>
+   
    <extension
          point="org.eclipse.ui.intro">
       <introProductBinding
