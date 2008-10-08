@@ -11,19 +11,19 @@
 	- "get" verb added to the names of nearly all getter methods; notable
 	   exceptions are STL-like names like size(), empty(), length(),
 	   end(), str(), c_str(); par() and gate() methods of cModule;
-           boolValue(), longValue(), stringValue() etc methods of cPar
-           (already consistent with Java); info(), detailedInfo();
-           intRand(), dblRand() and other cRNG methods.
+	   boolValue(), longValue(), stringValue() etc methods of cPar
+	   (already consistent with Java); info(), detailedInfo();
+	   intRand(), dblRand() and other cRNG methods.
 	   Methods returning bools begin with "is", "has", "contains" or a
 	   similar verb. [Change voted on the mailing list]
 
 	- <omnetpp.h> now provides the C99 integer types and limit macros,
 	  even on systems that don't have <stdint.h> (for example, MSVC does
 	  not have it). This includes int8_t, uint8_t,..int64_t, uint64_t types;
-          INT8_MAX, UINT64_MAX, etc. In addition, it also provides shorter names
-          (int8, uint8,...); they are provided as macros, so if they collide
-          with definitions in some external code, they can be undefined after
-          including <omnetpp.h>.
+	  INT8_MAX, UINT64_MAX, etc. In addition, it also provides shorter names
+	  (int8, uint8,...); they are provided as macros, so if they collide
+	  with definitions in some external code, they can be undefined after
+	  including <omnetpp.h>.
 
 	Simulation time:
 	- simtime_t is now not double but class SimTime (64-bit fixed point number)
@@ -326,7 +326,7 @@
 	  to 2 gigabits or 256 megabytes on 32-bit architectures).
 	  Affected functions:
 		setLength() / setByteLength() / addLength() / addByteLength()
-                length() / byteLength()
+	        length() / byteLength()
 	- message kind and priority changed from int to short. Affected functions:
 		kind() / setKind()
 		priority() / setPriority()
@@ -347,26 +347,26 @@
 	- cWeightedStdDev: implemented stddev(); also fixed min() and max()
 	  (they bogusly returned min/max of the weight*value products).
 	  For stddev(), code is based on the patch from Peter Woitek.
-        - cStatistic: added 3 new functions, to access values underlying weighted
-          statistics: weightedSum(), sqrSumWeights(), weightedSqrSum()
-        - cStatistic: added isWeighted()
-        - cStatistic: added merge(cStatistic *) for aggregating statistics,
-          and implemented it in subclasses
-        - cDensityEstBase etc: transformed() renamed to isTransformed();
-          added setCellSize()
-        - cLongHistogram: revised the way histogram cells are set up. Now it
-          throws an error if all given constraints cannot be satisfied (so that
-          numCells*cellSize==rangeMax-rangeMin, all integers)
+	- cStatistic: added 3 new functions, to access values underlying weighted
+	  statistics: weightedSum(), sqrSumWeights(), weightedSqrSum()
+	- cStatistic: added isWeighted()
+	- cStatistic: added merge(cStatistic *) for aggregating statistics,
+	  and implemented it in subclasses
+	- cDensityEstBase etc: transformed() renamed to isTransformed();
+	  added setCellSize()
+	- cLongHistogram: revised the way histogram cells are set up. Now it
+	  throws an error if all given constraints cannot be satisfied (so that
+	  numCells*cellSize==rangeMax-rangeMin, all integers)
 
-        cTopology changes:
-        - added extractFromNetwork(Predicate*), to support specifying conditions
-          in a type-safe way (without void* casts)
-        - extractByModuleType() not longer exists, use the new extractByNedTypeName()
-          method instead. Code like
-            topo.extractByModuleType("Host", "Router", NULL);
-          should be replaced by something like
-            topo.extractByModuleType(cStringTokenizer("Host Router").asVector());
-        - extractByParameter() arg list changed
+	cTopology changes:
+	- added extractFromNetwork(Predicate*), to support specifying conditions
+	  in a type-safe way (without void* casts)
+	- extractByModuleType() not longer exists, use the new extractByNedTypeName()
+	  method instead. Code like
+	    topo.extractByModuleType("Host", "Router", NULL);
+	  should be replaced by something like
+	    topo.extractByModuleType(cStringTokenizer("Host Router").asVector());
+	- extractByParameter() arg list changed
 
 	Files renamed (Note: simulation models should only refer to <omnetpp.h>!)
 	     --OLD--          --NEW--
@@ -729,7 +729,7 @@
 	* random.h: following symbols and functions were removed because they
 	didn't fit into the new architecture:
 	#define NUM_RANDOM_GENERATORS -- this is now an omnetpp.ini setting
-        #define INTRAND_MAX -- see cRNG::intRandMax()
+	#define INTRAND_MAX -- see cRNG::intRandMax()
 	int testrand() -- see cRNG::selfTest()
 	long opp_nextrand(long& seed) -- no replacement
 	void opp_randomize() -- no replacement
