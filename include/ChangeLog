@@ -79,10 +79,18 @@
 	- sourceGate()/destinationGate() renamed to getPathStartGate()/getPathEndGate()
 	- dynamic gate creating changed:
 	    - removed cGate::setOwnerModule() and setIndex()
-	    - XXX describe what's instead
+	    - now there is addGate() and setGateSize()
+	- to help connecting gate vectors, two utility methods were added:
+	    - getOrCreateFirstUnconnectedGate()
+	    - getOrCreateFirstUnconnectedGatePair()
 	- added setDeliverOnReceptionStart() flag, which may be invoked only on
-	  simple module input gates
-	- added getTransmissionChannel() which returns *the* transmission channel in the path
+	  simple module input gates. It defines whether a packet that travelled
+	  through a channel with datarate (i.e. has nonzero duration) is
+	  delivered to the module at the time reception begins, or when
+	  reception ends. (In OMNeT++ 3.x, only the latter option was
+	  available).
+	- added getTransmissionChannel() which returns *the* transmission
+	  channel in the path
 	- transmissionFinishes() renamed to getTransmissionFinishTime()
 	- gates that have the @loose or @directIn property set in the NED file
 	  may remain unconnected (ie no error will be raised, even if
