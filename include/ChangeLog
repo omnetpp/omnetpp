@@ -197,6 +197,44 @@
 	- className() for cModule (or cComponent in general) no longer lies
 	  the NED type name, but returns the real C++ class name
 
+	cMessage changes:
+	- the length, bit error flag and encapsulated message cMessage fields
+	  got factored out from cMessage, into the cPacket class (which extends
+	  cMessage). All network packets (frames, datagrams, etc) are now
+	  supposed to be subclassed from cPacket, not directly cMessage.
+	  To port simulations into 4.0, in message descriptions (.msg files)
+	  change relevant "message" keywords to "packet" (this will cause
+	  the base class to be cPacket), and use casts to convert cMessage* to
+	  cPacket* where needed: cPacket *pkt = check_and_cast<cPacket *>(msg).
+	  We hope that on the long run this change will result in clearer code
+	  in simulation models. To help porting, it is possible to compile
+	  everything in a "backward compatibility mode" when cPacket is
+	  just an alias to cMessage, and cMessage contains all fields.
+	  For that, compile everything having WITHOUT_CPACKET defined
+	  (add -DWITHOUT_CPACKET to CFLAGS).
+	- message kind and priority changed from int to short. Affected functions:
+		kind() / setKind()
+		priority() / setPriority()
+	- added some extra fields required by sequence chart drawing: cause event
+	  number, message id, message tree id, etc.
+	- removed two static methods of limited usefulness: cmpbydelivtime(),
+	  cmpbypriority().
+
+	cPacket:
+	- existing obsolete fields (protocol and pdu codes) were removed
+	- the length, bit error flag and encapsulated message fields were moved
+	  from cMessage into cPacket
+	- methods associated with "length" got renamed, new method names are:
+	        getBitLength(), setBitLength(), addBitLength()
+	- length changed from long to int64 (reason: message length was limited
+	  to 2 gigabits=256 megabytes on 32-bit architectures).
+	  Affected functions:
+		setLength() / setByteLength() / addLength() / addByteLength()
+	        length() / byteLength()
+	- added getDuration() and isReceptionStart() methods, which are related
+	  to the last send over a channel with datarate, and to cGate's
+	  deliverOnReceptionStart flag.
+
 	Message parameters:
 	- deprecated; type changed: cMsgPar instead of cPar
 	- cMsgPar is the same as the old cPar, but features which are not needed for message parameter objects have been removed:
@@ -285,8 +323,6 @@
 
 	- cPar: new method stdstringValue() / operator std::string: this must be used with "volatile string" params
 
-	- cPacket removed
-
 	- removed macros Min() and Max(), use std::min/std::max instead (<algorithm>);
 	  also removed sgn()
 
@@ -320,25 +356,6 @@
 		genk_truncnormal(double gen_nr, double mean, double variance);
 	- other:
 	        correct(const char *) got renamed to opp_nulltoempty(const char *)
-
-	cMessage changes:
-	- length changed from long to int64 (reason: message length was limited
-	  to 2 gigabits or 256 megabytes on 32-bit architectures).
-	  Affected functions:
-		setLength() / setByteLength() / addLength() / addByteLength()
-	        length() / byteLength()
-	- message kind and priority changed from int to short. Affected functions:
-		kind() / setKind()
-		priority() / setPriority()
-	- added some extra fields required by sequence chart drawing: cause event
-	  number, message id, message tree id, etc.
-	- methods associated with "length" renamed: getBitLength(), setBitLength(),
-	  addBitLength()
-	- removed two static methods of limited usefulness: cmpbydelivtime(),
-	  cmpbypriority().
-	- added getDuration() and isReceptionStart() methods, which are related
-	  to the last send over a channel with datarate, and to cGate's
-	  deliverOnReceptionStart flag.
 
 	Statistics classes:
 	- cStatistic: renamed samples() to count(). This affects cStdDev,
