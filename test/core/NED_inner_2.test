@@ -1,0 +1,52 @@
+%description:
+Test that an inner type takes precedence over a standalone type
+
+%file: test.ned
+
+import testlib.Dump;
+
+// Note: this one has no gates which would cause an error in the network
+module Node {  
+}
+
+// Note: this one has no 'cost' parameter which would cause an error in the network
+channel C extends ned.DatarateChannel {
+}
+
+network Test {
+  types:
+    channel C extends ned.DatarateChannel {
+        double cost;
+    }
+    module Node {
+      gates:
+        inout g[];
+      connections allowunconnected:
+    }
+  submodules:
+    n1: Node;
+    n2: Node;
+    dump: Dump;
+  connections:
+    n1.g++ <--> C {cost=5;} <--> n2.g++;
+}
+
+%exitcode: 0
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+    submodules:
+        module Test.n1: Test.Node {
+            gates:
+                g$i[0]: <-- n2.g$o[0], Test.C disabled=false delay=0 datarate=0 ber=0 per=0 cost=5
+                g$o[0]: --> n2.g$i[0], Test.C disabled=false delay=0 datarate=0 ber=0 per=0 cost=5
+        }
+        module Test.n2: Test.Node {
+            gates:
+                g$i[0]: <-- n1.g$o[0], Test.C disabled=false delay=0 datarate=0 ber=0 per=0 cost=5
+                g$o[0]: --> n1.g$i[0], Test.C disabled=false delay=0 datarate=0 ber=0 per=0 cost=5
+        }
+}
+
