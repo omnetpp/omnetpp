@@ -34,7 +34,7 @@ using std::ostream;
 Register_Class(cPacketQueue);
 
 
-cPacketQueue::cPacketQueue(const char *name) : cQueue(name)
+cPacketQueue::cPacketQueue(const char *name, CompareFunc cmp) : cQueue(name,cmp)
 {
     bitlength = 0;
 }
@@ -81,47 +81,43 @@ void cPacketQueue::parsimUnpack(cCommBuffer *buffer)
 #endif
 }
 
-void cPacketQueue::msgAdd(cOwnedObject *obj)
+void cPacketQueue::addLen(cPacket *pkt)
 {
-    if (obj) {
-        cPacket *msg = dynamic_cast<cPacket *>(obj);
-        if (!msg)
-            throw cRuntimeError(this, "insert(): (%s)%s is not a cPacket", obj->getClassName(), obj->getFullName());
-        bitlength += msg->getBitLength();
-    }
+    if (pkt)
+        bitlength += pkt->getBitLength();
 }
 
-void cPacketQueue::insert(cOwnedObject *msg)
+void cPacketQueue::insert(cPacket *pkt)
 {
-    msgAdd(msg);
-    cQueue::insert(msg);
+    addLen(pkt);
+    cQueue::insert(pkt);
 }
 
-void cPacketQueue::insertBefore(cOwnedObject *where, cOwnedObject *msg)
+void cPacketQueue::insertBefore(cPacket *where, cPacket *pkt)
 {
-    msgAdd(msg);
-    cQueue::insertBefore(where, msg);
+    addLen(pkt);
+    cQueue::insertBefore(where, pkt);
 }
 
-void cPacketQueue::insertAfter(cOwnedObject *where, cOwnedObject *msg)
+void cPacketQueue::insertAfter(cPacket *where, cPacket *pkt)
 {
-    msgAdd(msg);
-    cQueue::insertAfter(where, msg);
+    addLen(pkt);
+    cQueue::insertAfter(where, pkt);
 }
 
-cPacket *cPacketQueue::remove(cOwnedObject *msg)
+cPacket *cPacketQueue::remove(cPacket *pkt)
 {
-    cPacket *msg1 = (cPacket *)cQueue::remove(msg);
-    if (msg)
+    cPacket *msg1 = (cPacket *)cQueue::remove(pkt);
+    if (pkt)
         bitlength -= msg1->getBitLength();
     return msg1;
 }
 
 cPacket *cPacketQueue::pop()
 {
-    cPacket *msg = (cPacket *)cQueue::pop();
-    if (msg)
-        bitlength -= msg->getBitLength();
-    return msg;
+    cPacket *pkt = (cPacket *)cQueue::pop();
+    if (pkt)
+        bitlength -= pkt->getBitLength();
+    return pkt;
 }
 

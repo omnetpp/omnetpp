@@ -323,16 +323,23 @@ class SIM_API cArray : public cOwnedObject
     //@{
 
     /**
-     * Sets the flag which determines whether the container object
-     * should automatically take ownership of the objects that are inserted
-     * into it.
+     * Sets the flag which determines whether the container object should
+     * automatically take ownership of the objects that are inserted into it.
+     * It does not affect objects already in the queue. When an inserted
+     * object is owned by the container, that means it will be deleted when
+     * the container object is deleted or cleared, and will be duplicated when
+     * the container object is duplicated or copied.
+     *
+     * Setting the flag to false does not affect the treatment of objects
+     * that are NOT cOwnedObject. Since they do not support the ownership
+     * protocol, they will always be treated by the container.
      */
     void setTakeOwnership(bool tk) {setFlag(FL_TKOWNERSHIP,tk);}
 
     /**
      * Returns the flag which determines whether the container object
      * should automatically take ownership of the objects that are inserted
-     * into it.
+     * into it. See setTakeOwnedship() for more details.
      */
     bool getTakeOwnership() const   {return flags&FL_TKOWNERSHIP;}
     //@}

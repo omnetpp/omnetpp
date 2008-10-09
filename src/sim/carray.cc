@@ -87,16 +87,15 @@ cObject *cArray::Iterator::operator--(int)
 
 //----
 
-cArray::cArray(const cArray& list) : cOwnedObject()
+cArray::cArray(const cArray& other) : cOwnedObject()
 {
-    vect=NULL;
-    last=-1;
-    setName( list.getName() );
-    operator=(list);
+    vect = NULL;
+    last = -1;
+    setName(other.getName());
+    operator=(other);
 }
 
-cArray::cArray(const char *name, int cap, int dt) :
-cOwnedObject( name )
+cArray::cArray(const char *name, int cap, int dt) : cOwnedObject(name)
 {
     setFlag(FL_TKOWNERSHIP,true);
     delta = std::max(1,dt);
@@ -114,26 +113,33 @@ cArray::~cArray()
     delete [] vect;
 }
 
-cArray& cArray::operator=(const cArray& list)
+cArray& cArray::operator=(const cArray& other)
 {
-    if (this == &list)
+    if (this == &other)
         return *this;
 
     clear();
 
-    cOwnedObject::operator=(list);
+    cOwnedObject::operator=(other);
 
-    capacity = list.capacity;
-    delta = list.delta;
-    firstfree = list.firstfree;
-    last = list.last;
+    capacity = other.capacity;
+    delta = other.delta;
+    firstfree = other.firstfree;
+    last = other.last;
     delete [] vect;
     vect = new cObject *[capacity];
-    memcpy(vect, list.vect, capacity * sizeof(cObject *));
+    memcpy(vect, other.vect, capacity * sizeof(cObject *));
 
     for (int i=0; i<=last; i++)
-        if (vect[i] && vect[i]->isOwnedObject() && vect[i]->getOwner()==const_cast<cArray*>(&list))
-            take((cOwnedObject *)(vect[i] = vect[i]->dup()));
+    {
+        if (vect[i])
+        {
+            if (!vect[i]->isOwnedObject())
+                vect[i] = vect[i]->dup();
+            else if (vect[i]->getOwner()==const_cast<cArray*>(&other))
+                take(static_cast<cOwnedObject*>(vect[i] = vect[i]->dup()));
+        }
+    }
     return *this;
 }
 
@@ -169,8 +175,8 @@ void cArray::parsimPack(cCommBuffer *buffer)
     {
         if (buffer->packFlag(vect[i]!=NULL))
         {
-            if (vect[i]->getOwner() != this)
-                throw cRuntimeError(this,"parsimPack(): cannot transmit pointer to \"external\" object");
+            if (vect[i]->isOwnedObject() && vect[i]->getOwner() != this)
+                throw cRuntimeError(this,"parsimPack(): refusing to transmit an object not owned by the container");
             buffer->packObject(vect[i]);
         }
     }
@@ -199,7 +205,7 @@ void cArray::parsimUnpack(cCommBuffer *buffer)
         else {
             vect[i] = buffer->unpackObject();
             if (vect[i]->isOwnedObject())
-                take((cOwnedObject *)vect[i]);
+                take(static_cast<cOwnedObject *>(vect[i]));
         }
     }
 #endif
@@ -209,8 +215,11 @@ void cArray::clear()
 {
     for (int i=0; i<=last; i++)
     {
-        if (vect[i] && vect[i]->isOwnedObject() && vect[i]->getOwner()==this)
-            dropAndDelete((cOwnedObject *)vect[i]);
+        cObject *obj = vect[i];
+        if (!obj->isOwnedObject())
+            delete obj;
+        else if (obj->getOwner()==this)
+            dropAndDelete(static_cast<cOwnedObject *>(obj));
         vect[i] = NULL;  // this is not strictly necessary
     }
     firstfree = 0;
@@ -222,9 +231,10 @@ int cArray::add(cObject *obj)
     if (!obj)
         throw cRuntimeError(this,"cannot insert NULL pointer");
 
-    int retval;
     if (obj->isOwnedObject() && getTakeOwnership())
-        take((cOwnedObject *)obj);
+        take(static_cast<cOwnedObject *>(obj));
+
+    int retval;
     if (firstfree < capacity)  // fits in current vector
     {
         vect[firstfree] = obj;
@@ -262,7 +272,7 @@ int cArray::addAt(int m, cObject *obj)
             throw cRuntimeError(this,"addAt(): position %d already used",m);
         vect[m] = obj;
         if (obj->isOwnedObject() && getTakeOwnership())
-            take((cOwnedObject *)obj);
+            take(static_cast<cOwnedObject *>(obj));
         last = std::max(m,last);
         if (firstfree==m)
             do {
@@ -278,7 +288,7 @@ int cArray::addAt(int m, cObject *obj)
         vect = v;
         vect[m] = obj;
         if (obj->isOwnedObject() && getTakeOwnership())
-            take((cOwnedObject *)obj);
+            take(static_cast<cOwnedObject *>(obj));
         capacity = m+delta;
         last = m;
         if (firstfree==m)
@@ -299,11 +309,13 @@ int cArray::set(cObject *obj)
     }
     else
     {
-        if (vect[i]->isOwnedObject() && vect[i]->getOwner()==this)
-            dropAndDelete((cOwnedObject *)vect[i]);
+        if (!vect[i]->isOwnedObject())
+            delete vect[i];
+        else if (vect[i]->getOwner()==this)
+            dropAndDelete(static_cast<cOwnedObject *>(vect[i]));
         vect[i] = obj;
         if (obj->isOwnedObject() && getTakeOwnership())
-            take((cOwnedObject *)obj);
+            take(static_cast<cOwnedObject *>(obj));
         return i;
     }
 }
@@ -366,7 +378,7 @@ const cObject *cArray::get(const char *objname) const
 
 cObject *cArray::remove(const char *objname)
 {
-    int m = find( objname );
+    int m = find(objname);
     if (m==-1)
         return NULL;
     return remove(m);
@@ -394,7 +406,7 @@ cObject *cArray::remove(int m)
             last--;
         } while (last>=0 && vect[last]==NULL);
     if (obj->isOwnedObject() && obj->getOwner()==this)
-        drop((cOwnedObject *)obj);
+        drop(static_cast<cOwnedObject *>(obj));
     return obj;
 }
 

@@ -94,10 +94,12 @@ cMessage::~cMessage()
     if (parlistp)
         dropAndDelete(parlistp);
 
-    if (dynamic_cast<cOwnedObject *>(ctrlp))
-        dropAndDelete((cOwnedObject *)ctrlp);
-    else
-        delete ctrlp;
+    if (ctrlp) {
+        if (ctrlp->isOwnedObject())
+            dropAndDelete(static_cast<cOwnedObject *>(ctrlp));
+        else
+            delete ctrlp;
+    }
     live_msgs--;
 }
 

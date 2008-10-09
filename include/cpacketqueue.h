@@ -25,7 +25,9 @@ NAMESPACE_BEGIN
 
 
 /**
- * A queue class specialized for cPacket objects.
+ * A queue class specialized for cPacket objects. The added value
+ * is that this class keeps track of the total queue length in bits
+ * as well.
  *
  * @ingroup Containers
  */
@@ -33,9 +35,10 @@ class SIM_API cPacketQueue : public cQueue
 {
   private:
     int64 bitlength;
+
   protected:
     // internal
-    void msgAdd(cOwnedObject *obj);
+    void addLen(cPacket *pkt);
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -43,7 +46,7 @@ class SIM_API cPacketQueue : public cQueue
     /**
      * Constructor.
      */
-    cPacketQueue(const char *name = NULL);
+    cPacketQueue(const char *name=NULL, CompareFunc cmp=NULL);
 
     /**
      * Copy constructor. Contained objects that are owned by the queue
@@ -100,7 +103,7 @@ class SIM_API cPacketQueue : public cQueue
      * NULL pointer is an error (throws cRuntimeError). The given
      * object must be an instance of cPacket.
      */
-    virtual void insert(cOwnedObject *msg);
+    virtual void insert(cPacket *pkt);
 
     /**
      * Inserts exactly before the given object. If the given position
@@ -108,7 +111,7 @@ class SIM_API cPacketQueue : public cQueue
      * cRuntimeError is thrown. The given object must be an instance
      * of cPacket.
      */
-    virtual void insertBefore(cOwnedObject *where, cOwnedObject *msg);
+    virtual void insertBefore(cPacket *where, cPacket *pkt);
 
     /**
      * Inserts exactly after the given object. If the given position
@@ -116,14 +119,14 @@ class SIM_API cPacketQueue : public cQueue
      * cRuntimeError is thrown. The given object must be an instance
      * of cPacket.
      */
-    virtual void insertAfter(cOwnedObject *where, cOwnedObject *msg);
+    virtual void insertAfter(cPacket *where, cPacket *pkt);
 
     /**
      * Unlinks and returns the object given. If the object is not in the
      * queue, NULL pointer is returned. The given object must be an instance
      * of cPacket.
      */
-    virtual cPacket *remove(cOwnedObject *msg);
+    virtual cPacket *remove(cPacket *pkt);
 
     /**
      * Unlinks and returns the front element in the queue. If the queue

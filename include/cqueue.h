@@ -116,7 +116,7 @@ class SIM_API cQueue : public cOwnedObject
     friend class Iterator;
 
   private:
-    bool tkownership;
+    bool tkownership; //FIXME move it info flags
     QElem *frontp, *backp;  // inserting at back(), removal at front()
     int n;  // number of items in the queue
     CompareFunc compare;   // comparison function; NULL for FIFO
@@ -135,7 +135,7 @@ class SIM_API cQueue : public cOwnedObject
      * Constructor. When comparison function argument is NULL, the queue will
      * act as FIFO, otherwise as priority queue.
      */
-    cQueue(const char *name = NULL, CompareFunc cmp=NULL);
+    cQueue(const char *name=NULL, CompareFunc cmp=NULL);
 
     /**
      * Copy constructor. Contained objects that are owned by the queue

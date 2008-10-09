@@ -144,11 +144,11 @@ cQueue& cQueue::operator=(const cQueue& queue)
     {
         cObject *obj = iter();
         if (!obj->isOwnedObject())
-            {insert(iter()->dup());}
+            {insert(obj->dup());}
         else if (iter()->getOwner()==const_cast<cQueue*>(&queue))
-            {setTakeOwnership(true); insert(iter()->dup());}
+            {setTakeOwnership(true); insert(obj->dup());}
         else
-            {setTakeOwnership(false); insert(iter());}
+            {setTakeOwnership(false); insert(obj);}
     }
     setTakeOwnership(old_tk);
     return *this;
