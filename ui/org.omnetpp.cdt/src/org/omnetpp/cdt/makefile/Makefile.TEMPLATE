@@ -109,7 +109,7 @@ all: $(TARGET)
 {~nolink:}
 {~nolink:}$(TARGET) : $O/$(TARGET)
 {~nolink:}{nmake:}	copy $(O:/=\)\$(TARGET) .
-{~nolink:}{nmake:}	-copy $(O:/=\)\$(TARGET).manifest . 2>NUL
+{~nolink:}{nmake:}	-copy $(O:/=\)\$(TARGET).manifest . >NUL
 {~nolink:}{~nmake:}	ln -s -f $O/$(TARGET) .
 
 ### Rules for $TARGET. Note that end product will be softlinked into the
