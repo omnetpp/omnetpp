@@ -1,0 +1,42 @@
+%description:
+Test inner type parameter settings
+
+%file: test.ned
+
+import testlib.Dump;
+
+network Test
+{
+    types:
+        module Node {
+            string p = default("default");
+        }
+    submodules:
+        a: Node;
+        b: Node;
+        dump: Dump;
+}
+
+%inifile: test.ini
+[General]
+network = Test
+cmdenv-express-mode = false
+**.a*.p = "inifile-a"
+
+%exitcode: 0
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+    submodules:
+        module Test.a: Test.Node {
+            parameters:
+                p = "inifile-a"
+        }
+        module Test.b: Test.Node {
+            parameters:
+                p = "default"
+        }
+}
+
