@@ -193,9 +193,15 @@ while (<LISTFILE>)
     $lineno = 0;
     foreach $linewithcomment (split ("\n", $txt)) {
        $lineno++;
-       my $line = $linewithcomment;
-       $line =~ s|//.*||; # avoid warning for stuff in comments
+       $linewithcomment =~ s/^\s+//;
        my $lineinfo = "    $fname:$lineno\t$linewithcomment\n";
+
+       my $line = $linewithcomment;
+       $line =~ s|//.*||; # avoid warnings for stuff in comments
+       $line =~ s|/\*.*?\*/| |g; # C-style comments
+       $line =~ s|/\*.*||g; # C-style comment start
+       $line =~ s|.*\*/||g; # C-style comment end
+       $line =~ s|^\s*\*.*||; # lines beginning with '*' are likely part of comments as well
 
        # cObject
        if ($line =~ /\bcObject\b/) {
