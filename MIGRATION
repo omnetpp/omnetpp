@@ -77,15 +77,38 @@ Getting your simulation model working.
      from the menu. Select your project and click OK. The IDE will then fix
      all package declarations and imports in your NED files.
 
-  6. Revise NED files. This includes:
-       (1) revise "volatile" parameters if they really need to be volatile
-       (2) revise "double" parameters if they should rather be "int"
-       (3) "somepar = input;" lines became just "somepar;" -- you probably want to remove them
-       (4) remove extra "network bla extends Bla {}" if needed; this affects ini files as well!
-       (5) make use of default icons: migrate "i=" tags from submodule display string to the simple module type
-       (6) "like" module types should be changed into interfaces, and actual types declared to be "like" them
-       (7) parameter values assigned in ini files could be put into the corresponding NED file as default values
-       (8) possibly make use of @properties as "marker interfaces", like @host(true)
+  6. Revise NED files. A brief checklist:
+       (1) Revise "volatile" parameters if they really need to be volatile.
+           As a rule of thumb, a parameter needs to be volatile if it is 
+           being read *during* simulation, not only in the initialization
+           phase. If it is only read from initialize(), remove the volatile
+           keyword.
+           
+       (2) Revise "double" parameters if they should rather be "int".
+           Before, NED only supported a "numeric" type, and the migration
+           script, for lack of a better heuristics, turns all such parameters 
+           into "double". You need to check each, and change it to "int" if 
+           needed.
+
+       (3) "somepar = input;" lines became just "somepar;" -- you probably 
+           want to remove them, as they are completely redundant.
+
+       (4) Remove extra "network bla extends Bla {}".  Background: a 3.x-style 
+           network declaration denotes a compound module as network. In 4.0,
+           a compound module may be directly declared to be a network, so the
+           extra step is not needed. Example: the 3.x network declaration
+               network cqn : CQN 
+               endmodule
+           is converted by the migration script into an inheritance:
+               network cqn extends CQN {
+               }
+           However, you can remove that altogether, if you change the CQN 
+           module's declaration to use the "network" keyword (like: 
+           network CQN {...}), and replace network=cqn with network=CQN
+           in the ini files.
+
+       (5) "like" module types should be changed into interfaces, and actual 
+           types declared to be "like" them.
 
   7. Compile your simulation model (right-click on the project and
      select Build from the context menu, or close all other projects
@@ -147,6 +170,9 @@ Getting your simulation model working.
 Making use of new OMNeT++ features.
 
   1. NED files
+       (5) make use of default icons: migrate "i=" tags from submodule display string to the simple module type
+       (7) parameter values assigned in ini files could be put into the corresponding NED file as default values
+       (8) possibly make use of @properties as "marker interfaces", like @host(true)
        default icons
        parameter default values
        @unit
@@ -161,4 +187,12 @@ Making use of new OMNeT++ features.
       output vectors: interpolation mode, enum etc
       gate->setDeliverOnReceptionStart(true)
 
+Other sources of information
+  doc/Migration.pdf
+  include/ChangeLog
+  src/*/ChangeLog
+  doc/API-changes
+  doc/api
+  doc/manual
+  opp_run -h all
 
