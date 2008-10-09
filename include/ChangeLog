@@ -158,7 +158,9 @@
 	- head()/tail() removed, back()/front() added (insert at back, pop from front!);
 	  because of head/tail change, iterator direction and meaning of insertBefore/insertAfter
 	  has changed
-	- boolean flag to specify ascending/descending order removed
+	- boolean flag to specify ascending/descending order removed (because the
+	  earlier default ascending=false was inconvenient, and silently changing
+	  the default is not a good idea)
 	- compat.h typedef cQueueIterator removed, as iterator semantic was changed in a
 	  non-compatible way anyway
 
