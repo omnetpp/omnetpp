@@ -594,7 +594,7 @@ simple Router16Port extends Router {
 	       use bidirectional ports and channels. Use:</para>
 <screen>	gates:
 		inout port;
-
+...
 	connections:
 		node1.port &lt;--&gt; node2.port;</screen>
 	       </listitem>
@@ -602,9 +602,11 @@ simple Router16Port extends Router {
 	       <para>If you use a type only locally consider using inner types:</para>
 <screen>module Node {
 	types:
-		simple InnerSimple;
-	submodules:
-		sub1: InnerSimple; ...</screen></listitem>
+		channel Ethernet extends ned.DatarateChannel {
+		    datarate = 100Mbps;
+		};
+	connections:
+		node1.port &lt;--&gt; Ethernet &lt;--&gt; node2.port; ...</screen></listitem>
 	       <listitem><para>Make use of package structure if you plan to give your model to other people.
 	       This can avoid name clashes with other models.</para></listitem>
 	       <listitem><para>Use additional display string tags (module background, grid etc.)
@@ -620,14 +622,14 @@ simple Router16Port extends Router {
 	       <listitem><para>Use inheritance between configurations if several
 	       of your configurations share the same parameter set.</para>
 <screen>[General]
-basePar=17
+**.basePar=17
 [Config foo]
-fooPar=45
+**.fooPar=45
 [Config bar]
 extends=foo
-fooBarPar=42</screen>
+**.fooBarPar=42</screen>
            </listitem>
-	       <listitem><para>Make use of the new parameter loops for experimenting.</para>
+	       <listitem><para>Make use of the new parameter study feature.</para>
 	       <para>If you have created external scripts previously to explore the result of 
 	       different parameter combinations, you can do it now without scripts.
 	       Parameters can contain loops and lists to run the simulation with all provided values.</para>
@@ -638,41 +640,16 @@ fooBarPar=42</screen>
 <listitem>
   <para>C++</para>
        <itemizedlist>
-	       <listitem><para>output vectors: interpolation mode, enum etc</para></listitem>
-	       <listitem><para>gate->setDeliverOnReceptionStart(true)</para></listitem>
+	       <listitem><para>You can add metadata to the output vectors to enhance the
+	       visualization. Use the setInterpolationMode, setEnum etc. on cOutVector.</para></listitem>
+	       <listitem><para>If a message is transmitted on a finite datarate channel,
+	       set gate->setDeliverOnReceptionStart(true) to deliver the message 
+	       to the receiver module at the start of the reception (instead of the default, which
+	       delivers at the end)</para></listitem>
 	   </itemizedlist>    
 </listitem>      
 </orderedlist>
   </sect1>
-</chapter>
-
-<chapter><title>clipboard</title>
-			<para>Note that using double simulation time requires
-				recompilation of OMNeT++ 4.0 because the prebuilt binaries are
-				compiled with the 64 bits exact representation. Specifying the
-				compiler switch -DUSE_DOUBLE_SIMTIME in CFLAGS and recompiling
-				OMNeT++ provides the required binaries.</para>
-				
-			<orderedlist>
-					<listitem>
-						<para>It is strongly recommended to use double simulation time
-							representation during the migration and validation process and
-							switch to the new class in a separate step. See the section The
-							migration process for how to do this. To simultaneously support 
-							double and SimTime simulation
-							time representations one must use macros to convert simtime_t
-							from/to double and const char *. The macros are SIMTIME_STR(t),
-							SIMTIME_DBL(t), STR_SIMTIME(s), SIMTIME_TTOA(buf, t). The
-							constant MAXTIME is also defined correctly for both types.</para>
-					</listitem>
-					<listitem>
-						<para>. Unfortunately many simulation
-							models use double variable types directly instead of simtime_t
-							which will produce compilation errors at various places. Those
-							definitions must be changed to specify simtime_t instead.</para>
-					</listitem>
-			</orderedlist>	
-
 </chapter>
 
 </book>
