@@ -1,0 +1,35 @@
+%description:
+Test cQueue insertBefore()/insertAfter() methods
+
+%global:
+void dump(cQueue& q) {
+    for (cQueue::Iterator it(q); !it.end(); it++)
+        ev << " " << it()->getName();
+     ev << "\n";
+}
+
+%activity:
+#define INS(var)   ev<<"INS "<<#var<<": "; cMessage *var=new cMessage(#var); q.insert(var); dump(q);
+#define INSBEFORE(pos,var)   ev<<"INSBEFORE "<<#pos<<","<<#var<<": "; cMessage *var=new cMessage(#var); q.insertBefore(pos,var); dump(q);
+#define INSAFTER(pos,var)    ev<<"INSAFTER "<<#pos<<","<<#var<<":  "; cMessage *var=new cMessage(#var); q.insertAfter(pos,var); dump(q);
+
+cQueue q("q");
+
+INS(k)
+INSBEFORE(k,a)
+INSBEFORE(k,b)
+INSBEFORE(k,c)
+INSAFTER(k,z)
+INSAFTER(k,w)
+INSAFTER(k,v)
+ev << ".\n";
+
+
+%contains: stdout
+INS k:  k
+INSBEFORE k,a:  a k
+INSBEFORE k,b:  a b k
+INSBEFORE k,c:  a b c k
+INSAFTER k,z:   a b c k z
+INSAFTER k,w:   a b c k w z
+INSAFTER k,v:   a b c k v w z
