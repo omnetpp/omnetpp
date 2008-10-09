@@ -15,213 +15,361 @@
 				before doing the migration. We recommend to take a closer look at
 				the 4.0 sample simulations before proceeding.</para>
 		</sect1>
-			<sect1>
-				<title>NED files</title>
-				<para>The NED language was significantly revised, and in addition to changing to a
-    more consistent syntax, it was also expanded with new powerful new concepts: inheritance, 
-    module and channel interfaces, inner types, bidirectional connections, package structure, 
-    metadata annotation (properties), and so on. The following bullets list the changes that are
-    important when porting models from the 3.x release.
-</para>
-				<itemizedlist>
-					<listitem>
-						<para>Curly braces has been introduced at the following places: module and
-                            channel definitions (the <literal>endsimple</literal>, <literal>endmodule</literal>, 
-                        <literal>endnetwork</literal>, <literal>endchannel</literal> keywords have been removed);
-                        submodules; around channel parameters in connections.</para>
-					</listitem>
-					<listitem>
-						<para>The <literal>numeric</literal> parameter type is no longer used, and must be
-							replaced with <literal>int</literal> or <literal>double</literal>, depending on the parameter usage.
-						</para>
-					</listitem>
-					<listitem>
-						<para>The <literal>const</literal> keyword has been removed, and a new keyword <literal>volatile</literal>
-							has been introduced. In 3.x an unqualified parameter was <literal>volatile</literal>
-							while it is <literal>const</literal> in 4.0.</para>
-					</listitem>
-					<listitem>
-						<para>The display string has been turned into a property with
-							the <literal>@display(…)</literal> syntax.</para>
-					</listitem>
-					<listitem>
-						<para>Introduced a new parameter property <literal>@unit(…)</literal> to
-							specify physical units. For parameters where unit is specified
-							all the values in ini files and NED files must also specify
-							convertible units otherwise an error will be signaled.</para>
-					</listitem>
-					<listitem>
-						<para>The parameter prompt string also became a property as
-							<literal>@prompt(…)</literal>.</para>
-					</listitem>
-					<listitem>
-						<para>Conditional parameters are no longer supported. In most cases they
-                            can be replaced with the <literal>?:</literal> operator in assigments.</para>
-					</listitem>
-					<listitem>
-						<para>The <literal>gatesizes</literal> section in compound modules has been
-							renamed to <literal>gates</literal>.</para>
-					</listitem>
-					<listitem>
-						<para>The syntax of parameter definitions has changed from
-							Pascal style to C style.</para>
-					</listitem>
-					<listitem>
-						<para>The syntax of the connection <literal>for</literal> loop has changed</para>
-					</listitem>
-					<listitem>
-						<para><literal>ancestor</literal> parameters have been removed.</para>
-					</listitem>
-					<listitem>
-						<para>The <literal>ref</literal> keyword was removed because parameters are now
-							always passed by reference.</para>
-					</listitem>
-					<listitem>
-						<para>There is no more implicit conversion between <literal>bool</literal> and
-							<literal>long</literal>/<literal>double</literal></para>
-					</listitem>
-					<listitem>
-						<para>The <literal>import</literal> declarations now refer to fully qualified
-							package or type names instead of files.</para>
-					</listitem>
-				</itemizedlist>
-			</sect1>
-			<sect1>
-				<title>Message (msg) files</title>
-				<itemizedlist>
-					<listitem>
-						<para>The field property syntax has been changed to be same as
-							for NED files.</para>
-					</listitem>
-				</itemizedlist>
-			</sect1>
-			<sect1>
-				<title>Initialization (ini) files</title>
-				<itemizedlist>
-					<listitem>
-						<para>The <literal>[Cmdenv]</literal>, <literal>[Tkenv]</literal>, 
-      <literal>[Parameters]</literal>, <literal>[Partitioning]</literal>, 
-      <literal>[OutVectors]</literal> sections no longer exist, and their contents should be copied under the
-       <literal>[General]</literal> sections.</para></listitem> 
-       
-<listitem>
-      <para>Configuration options from <literal>[Cmdenv]</literal> and <literal>[Tkenv]</literal> have been 
-       prefixed with <literal>cmdenv-</literal> and <literal>tkenv-</literal>, respectively.</para>
-					</listitem>
-<listitem>
-      <para>Other configuration options have been renamed as well.</para>
-     </listitem>
-
-					<listitem>
-						<para>The <literal>[Run 1]</literal>, <literal>[Run 2]</literal>, … sections are no longer used and should
-							be converted to named configurations: <literal>[Config …]</literal>, <literal>[Config …]</literal>, … 
-                            Note that run numbers no longer refer to configuration sections but iteration numbers.
-						</para>
-					</listitem>
-					<listitem>
-						<para>The <literal>cmdenv-express-mode</literal> entry (which was <literal>express-mode</literal>
-							under <literal>[Cmdenv]</literal>) defaults to <literal>true</literal> instead of <literal>false</literal>.</para>
-					</listitem>
-					<listitem>
-						<para>Most of the entries in the section <literal>[Tkenv]</literal> have been removed
-							except the following ones which are still supported but prefixed
-							as: <literal>tkenv-default-run</literal>, <literal>tkenv-image-path</literal>, <literal>tkenv-plugin-path</literal>.
-						</para>
-					</listitem>
-					<listitem>
-						<para>The <literal>tkenv-default-run</literal> entry (which was <literal>default-run</literal> under
-							<literal>[Tkenv]</literal>) was referring to a section with multiple entries but now
-							it refers to an iteration number, so now it only makes sense together with
-       <literal>tkenv-default-section</literal>.</para>
-					</listitem>
-					<listitem>
-						<para>There is a new entry <literal>cmdenv-interactive</literal> defaulting to
-							<literal>false</literal>, which causes Cmdenv to never read stdin, and abort on
-							missing configuration entries. In 3.x the default behavior was to
-							read a value from stdin.</para>
-					</listitem>
-					<listitem>
-						<para>The <literal>preload-ned-files</literal> entry has been removed 
-                            because in 4.0, NED files are loaded from directories listen in the NED path. 
-                            (The NED path is a string that contains a list of directories, and it
-                            it may come from the <literal>NEDPATH</literal> environment variable, 
-                            from a command-line option, or from the <literal>ned-path</literal> ini file option. 
-                            For single-directory simulation models, the default value of ‘.’ should be sufficient.</para>
-					</listitem>
-					<listitem>
-						<para>In 3.0 the entry network was referring to a NED type
-							loaded from one of the files specified in the entry
-							preload-ned-files. In 4.0 it specifies a qualified name referring
-							to a NED type which must be available under the directories
-							specified in the entry ned-path. In a single directory simulation
-							model the network entry should work unmodified.</para>
-					</listitem>
-					<listitem>
-						<para>The <literal>**.use-default=true</literal> syntax should be changed to <literal>**=default</literal>.
-						</para>
-					</listitem>
-					<listitem>
-						<para>Several configuration options have been renamed or otherwise changed. 
-                            For further details, see <filename>src/envir/ChangeLog</filename> and other <filename>ChangeLog</filename>
-							files.</para>
-					</listitem>
-				</itemizedlist>
-			</sect1>
-			<sect1>
-				<title>Command line options</title>
-				<itemizedlist>
-					<listitem>
-						<para>-f is now optional if you specify an ini file</para>
-					</listitem>
-					<listitem>
-						<para>-r now refers to a run instead of a named configuration
-							entry in the ini file</para>
-					</listitem>
-					<listitem>
-						<para>
-							For further information use
-							<command>opp_run -h</command>
-							or the -h switch on any simulation executable.
-						</para>
-					</listitem>
-				</itemizedlist>
-			</sect1>
-			<sect1>
-				<title>C++ code (cc/h files)</title>
-				<itemizedlist>
-					<listitem>
-						<para>The OMNeT++ API has changed. Please consult the
-							include/ChangeLog file for further information.</para>
-					</listitem>
-					<listitem>
-						<para>The 4.0 version introduces a new C++ class called <literal>SimTime</literal>
-							for 64 bits exact simulation time representation. This is the
-							default setting which might break existing simulation models if
-							they were not using simetime_t for their time related variables.
-						</para>
-					</listitem>
-				</itemizedlist>
-			</sect1>
-            <sect1>
-             <title>Environment variables</title>
-             <itemizedlist>
-              <listitem>
-               <para>The <literal>OMNETPP_BITMAP_PATH</literal> environment variable has been
-                renamed to <literal>OMNETPP_IMAGE_PATH</literal>. The system will check this at
-                runtime and print a warning if the old variable is still present.
-               </para>
-              </listitem>
-             </itemizedlist>
-            </sect1>
-   <sect1>
-    <title>Makefiles</title>
-    <para>
-     The makefile generation and the make process has been rewritten.
-     Check the
-     <command>opp_makemake -h</command>
-     for further information.
-    </para>
-   </sect1>
+		<sect1>
+			<title>NED files</title>
+			<para>The NED language was significantly revised, and in addition
+				to changing to a more consistent syntax, it was also expanded with
+				new powerful new concepts: inheritance, module and channel
+				interfaces, inner types, bidirectional connections, package
+				structure, metadata annotation (properties), and so on. The
+				following bullets list the changes that are important when porting
+				models from the 3.x release.</para>
+			<itemizedlist>
+				<listitem>
+					<para>
+						Curly braces has been introduced at the following places: module
+						and channel definitions (the
+						<literal>endsimple</literal>
+						,
+						<literal>endmodule</literal>
+						,
+						<literal>endnetwork</literal>
+						,
+						<literal>endchannel</literal>
+						keywords have been removed); submodules; around channel parameters
+						in connections.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						The
+						<literal>numeric</literal>
+						parameter type is no longer used, and must be replaced with
+						<literal>int</literal>
+						or
+						<literal>double</literal>
+						, depending on the parameter usage.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						The
+						<literal>const</literal>
+						keyword has been removed, and a new keyword
+						<literal>volatile</literal>
+						has been introduced. In 3.x an unqualified parameter was
+						<literal>volatile</literal>
+						while it is
+						<literal>const</literal>
+						in 4.0.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						The display string has been turned into a property with the
+						<literal>@display(…)</literal>
+						syntax.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						Introduced a new parameter property
+						<literal>@unit(…)</literal>
+						to specify physical units. For parameters where unit is specified
+						all the values in ini files and NED files must also specify
+						convertible units otherwise an error will be signaled.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						The parameter prompt string also became a property as
+						<literal>@prompt(…)</literal>
+						.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						Conditional parameters are no longer supported. In most cases they
+						can be replaced with the
+						<literal>?:</literal>
+						operator in assigments.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						The
+						<literal>gatesizes</literal>
+						section in compound modules has been renamed to
+						<literal>gates</literal>
+						.
+					</para>
+				</listitem>
+				<listitem>
+					<para>The syntax of parameter definitions has changed from
+						Pascal style to C style.</para>
+				</listitem>
+				<listitem>
+					<para>
+						The syntax of the connection
+						<literal>for</literal>
+						loop has changed
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<literal>ancestor</literal>
+						parameters have been removed.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						The
+						<literal>ref</literal>
+						keyword was removed because parameters are now always passed by
+						reference.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						There is no more implicit conversion between
+						<literal>bool</literal>
+						and
+						<literal>long</literal>
+						/
+						<literal>double</literal>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						The
+						<literal>import</literal>
+						declarations now refer to fully qualified package or type names
+						instead of files.
+					</para>
+				</listitem>
+			</itemizedlist>
+		</sect1>
+		<sect1>
+			<title>Message (msg) files</title>
+			<itemizedlist>
+				<listitem>
+					<para>The field property syntax has been changed to be same as
+						for NED files.</para>
+				</listitem>
+			</itemizedlist>
+		</sect1>
+		<sect1>
+			<title>Initialization (ini) files</title>
+			<itemizedlist>
+				<listitem>
+					<para>
+						The
+						<literal>[Cmdenv]</literal>
+						,
+						<literal>[Tkenv]</literal>
+						,
+						<literal>[Parameters]</literal>
+						,
+						<literal>[Partitioning]</literal>
+						,
+						<literal>[OutVectors]</literal>
+						sections no longer exist, and their contents should be copied
+						under the
+						<literal>[General]</literal>
+						sections.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						Configuration options from
+						<literal>[Cmdenv]</literal>
+						and
+						<literal>[Tkenv]</literal>
+						have been prefixed with
+						<literal>cmdenv-</literal>
+						and
+						<literal>tkenv-</literal>
+						, respectively.
+					</para>
+				</listitem>
+				<listitem>
+					<para>Other configuration options have been renamed as well.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						The
+						<literal>[Run 1]</literal>
+						,
+						<literal>[Run 2]</literal>
+						, … sections are no longer used and should be converted to named
+						configurations:
+						<literal>[Config …]</literal>
+						,
+						<literal>[Config …]</literal>
+						, … Note that run numbers no longer refer to configuration
+						sections but iteration numbers.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						The
+						<literal>cmdenv-express-mode</literal>
+						entry (which was
+						<literal>express-mode</literal>
+						under
+						<literal>[Cmdenv]</literal>
+						) defaults to
+						<literal>true</literal>
+						instead of
+						<literal>false</literal>
+						.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						Most of the entries in the section
+						<literal>[Tkenv]</literal>
+						have been removed except the following ones which are still
+						supported but prefixed as:
+						<literal>tkenv-default-run</literal>
+						,
+						<literal>tkenv-image-path</literal>
+						,
+						<literal>tkenv-plugin-path</literal>
+						.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						The
+						<literal>tkenv-default-run</literal>
+						entry (which was
+						<literal>default-run</literal>
+						under
+						<literal>[Tkenv]</literal>
+						) was referring to a section with multiple entries but now it
+						refers to an iteration number, so now it only makes sense together
+						with
+						<literal>tkenv-default-section</literal>
+						.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						There is a new entry
+						<literal>cmdenv-interactive</literal>
+						defaulting to
+						<literal>false</literal>
+						, which causes Cmdenv to never read stdin, and abort on missing
+						configuration entries. In 3.x the default behavior was to read a
+						value from stdin.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						The
+						<literal>preload-ned-files</literal>
+						entry has been removed because in 4.0, NED files are loaded from
+						directories listen in the NED path. (The NED path is a string that
+						contains a list of directories, and it it may come from the
+						<literal>NEDPATH</literal>
+						environment variable, from a command-line option, or from the
+						<literal>ned-path</literal>
+						ini file option. For single-directory simulation models, the
+						default value of ‘.’ should be sufficient.
+					</para>
+				</listitem>
+				<listitem>
+					<para>In 3.0 the entry network was referring to a NED type loaded
+						from one of the files specified in the entry preload-ned-files. In
+						4.0 it specifies a qualified name referring to a NED type which
+						must be available under the directories specified in the entry
+						ned-path. In a single directory simulation model the network entry
+						should work unmodified.</para>
+				</listitem>
+				<listitem>
+					<para>
+						The
+						<literal>**.use-default=true</literal>
+						syntax should be changed to
+						<literal>**=default</literal>
+						.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						Several configuration options have been renamed or otherwise
+						changed. For further details, see
+						<filename>src/envir/ChangeLog</filename>
+						and other
+						<filename>ChangeLog</filename>
+						files.
+					</para>
+				</listitem>
+			</itemizedlist>
+		</sect1>
+		<sect1>
+			<title>Command line options</title>
+			<itemizedlist>
+				<listitem>
+					<para>-f is now optional if you specify an ini file</para>
+				</listitem>
+				<listitem>
+					<para>-r now refers to a run instead of a named configuration
+						entry in the ini file</para>
+				</listitem>
+				<listitem>
+					<para>
+						For further information use
+						<command>opp_run -h</command>
+						or the -h switch on any simulation executable.
+					</para>
+				</listitem>
+			</itemizedlist>
+		</sect1>
+		<sect1>
+			<title>C++ code (cc/h files)</title>
+			<itemizedlist>
+				<listitem>
+					<para>The OMNeT++ API has changed. Please consult the
+						include/ChangeLog file for further information.</para>
+				</listitem>
+				<listitem>
+					<para>
+						The 4.0 version introduces a new C++ class called
+						<literal>SimTime</literal>
+						for 64 bits exact simulation time representation. This is the
+						default setting which might break existing simulation models if
+						they were not using simetime_t for their time related variables.
+					</para>
+				</listitem>
+			</itemizedlist>
+		</sect1>
+		<sect1>
+			<title>Environment variables</title>
+			<itemizedlist>
+				<listitem>
+					<para>
+						The
+						<literal>OMNETPP_BITMAP_PATH</literal>
+						environment variable has been renamed to
+						<literal>OMNETPP_IMAGE_PATH</literal>
+						. The system will check this at runtime and print a warning if the
+						old variable is still present.
+					</para>
+				</listitem>
+			</itemizedlist>
+		</sect1>
+		<sect1>
+			<title>Makefiles</title>
+			<para>
+				The makefile generation and the make process has been rewritten.
+				Check the
+				<command>opp_makemake -h</command>
+				for further information.
+			</para>
+		</sect1>
 	</chapter>
 	<chapter>
 		<title>Migration tools</title>
@@ -342,13 +490,13 @@
 							<para>Run the automatic migration scripts.</para>
 						</listitem>
 						<listitem>
-							<para>Do manual changes to your model and use 
-							      as few of the new features as possible.</para>
+							<para>Do manual changes to your model and use as few of the new
+								features as possible.</para>
 						</listitem>
 						<listitem>
 							<para>Verify whether your model is working correctly and
-								produces the same results as the old one. (either 
-								exactly or statistically)</para>
+								produces the same results as the old one. (either exactly or
+								statistically)</para>
 						</listitem>
 					</orderedlist>
 				</listitem>
