@@ -189,10 +189,18 @@ Making use of new OMNeT++ features.
               double interval = default(exponential(1));
 
        (3) annotate parameters with physical units, using the @unit property.
+           This will enforce units to be given in ini files as well. 
            An example:
               double interval @unit(s) = default(exponential(1s));
 
-       (4) inner types: specialized channels (like 100Mbps, 1Gbps etc) no 
+       (4) use inout gates and bi-directional connections where appropriate. 
+           The gate type keyword is "inout", and the connection syntax uses 
+           "<-->" arrows. Examples:
+               inout port;
+           and
+               node1.port <--> node2.port;
+
+       (5) inner types: specialized channels (like 100Mbps, 1Gbps etc) no 
            longer need to pollute the global namespace, you can move them
            inside the compound module where they are actually needed:
                module Network {
@@ -204,19 +212,19 @@ Making use of new OMNeT++ features.
                        host1.p++ <--> C <--> host2.p++;
                }
 
-       (5) inheritance, to specialize a module or channel, or to factor out 
+       (6) inheritance, to specialize a module or channel, or to factor out 
            the common part of several compound modules into a base class 
            (because a derived compound module may add new submodules and 
            connections in addition to new parameters and gates)
 
-       (6) mark gates that are supposed to receive messages via sendDirect()
+       (7) mark gates that are supposed to receive messages via sendDirect()
            as such:
                input in @directIn;  // or: input in @loose;
            The effect of @loose or @directIn is that NED won't complain about
            the gate being unconnected, and you can remove the "allowunconnected" 
            (formerly "nocheck") keyword from "connections:".
               
-       (7) possibly make use of @properties as "marker interfaces", like @node,
+       (8) possibly make use of @properties as "marker interfaces", like @node,
            @host(true)
 
   2. ini files
