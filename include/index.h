@@ -19,7 +19,6 @@
 
 /**
  * @mainpage  \opp API Reference
- * <img src="http://omnetpp.org/doc/omnetpp/4.0/logo.png" border="0" width="48" height="48" alt="">
  * If you are new to \opp, a good starting point for browsing
  * the documentation is cSimpleModule.
  *
