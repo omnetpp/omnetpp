@@ -180,22 +180,52 @@ Getting your simulation model working.
 Making use of new OMNeT++ features.
 
   1. NED files
-       (5) make use of default icons: migrate "i=" tags from submodule display string to the simple module type
-       (7) parameter values assigned in ini files could be put into the corresponding NED file as default values
-       (8) possibly make use of @properties as "marker interfaces", like @host(true)
-       default icons
-       parameter default values
-       @unit
-       inheritance
-       ...
+       (1) default icons: add a line like this into the parameters section 
+           of simple modules:  @display("i=block/fork");
+
+       (2) default values: they may be specified in NED files where the 
+           parameter is declared, or in any sub-type. The syntax is the 
+           following:
+              double interval = default(exponential(1));
+
+       (3) annotate parameters with physical units, using the @unit property.
+           An example:
+              double interval @unit(s) = default(exponential(1s));
+
+       (4) inner types: specialized channels (like 100Mbps, 1Gbps etc) no 
+           longer need to pollute the global namespace, you can move them
+           inside the compound module where they are actually needed:
+               module Network {
+                   types:
+                       channel C extends ned.DatarateChannel {
+                           datarate = 100Mbps
+                       }
+                     ...
+                       host1.p++ <--> C <--> host2.p++;
+               }
+
+       (5) inheritance, to specialize a module or channel, or to factor out 
+           the common part of several compound modules into a base class 
+           (because a derived compound module may add new submodules and 
+           connections in addition to new parameters and gates)
+
+       (6) mark gates that are supposed to receive messages via sendDirect()
+           as such:
+               input in @directIn;  // or: input in @loose;
+           The effect of @loose or @directIn is that NED won't complain about
+           the gate being unconnected, and you can remove the "allowunconnected" 
+           (formerly "nocheck") keyword from "connections:".
+              
+       (7) possibly make use of @properties as "marker interfaces", like @node,
+           @host(true)
 
   2. ini files
-      configs
-      experiment syntax (${})
+       (1) configs
+       (2) experiment syntax (${})
 
   3. C++
-      output vectors: interpolation mode, enum etc
-      gate->setDeliverOnReceptionStart(true)
+       (1) output vectors: interpolation mode, enum etc
+       (2) gate->setDeliverOnReceptionStart(true)
 
 Other sources of information
   doc/Migration.pdf
