@@ -1,5 +1,5 @@
 //==========================================================================
-//  UTIL.H - part of
+//  SIMUTIL.H - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -25,7 +25,7 @@
 #include <stdlib.h>  // for gcvt
 #include <typeinfo>  // for type_info
 #include "simkerneldefs.h"
-#include "platdep/platmisc.h"
+#include "platdep/platmisc.h" // for gcvt, etc
 #include "errmsg.h"
 
 NAMESPACE_BEGIN

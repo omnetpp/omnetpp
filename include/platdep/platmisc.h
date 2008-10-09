@@ -88,6 +88,19 @@ inline std::string opp_getWindowsError(DWORD errorCode)
 }
 #endif
 
+
+//
+// gcvt -- FreeBSD does not have it
+//
+#if defined __FreeBSD__
+inline char *gcvt(double value, int ndigit, char *buf)
+{
+    sprintf(buf, "%.*g", ndigit, value);
+    return buf;
+}
+#endif
+
+
 //
 // 64-bit file offsets
 //

@@ -29,6 +29,7 @@ NAMESPACE_BEGIN
  * Type for comparison functions for cObject. Return value should be:
  * - less than zero if a < b
  * - greater than zero if a > b
+ * - zero if a == b
  *
  * @ingroup EnumsTypes
  */
@@ -40,8 +41,8 @@ typedef int (*CompareFunc)(cObject *a, cObject *b);
  * cQueue is a FIFO: you insert elements at the back using insert(), and
  * remove them at the front using pop().
  *
- * cQueue may be set up to act as a priority queue. This requires the user to specify
- * a comparison function.
+ * cQueue may be set up to act as a priority queue. This requires the user to
+ * supply a comparison function.
  *
  * By default, cQueue's destructor deletes all contained objects. This behaviour
  * can be changed by calling setTakeOwnership(false) before inserting objects.
