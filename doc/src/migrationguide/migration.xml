@@ -38,16 +38,16 @@
 				<itemizedlist>
 					<listitem>
 						<para>The keywords endsimple, endmodule, endnetwork, endchannel
-							are obsolete and the ned syntax has been changed to use a pair of
+							have been removed and the ned syntax has been changed to use a pair of
 							curly braces instead.</para>
 					</listitem>
 					<listitem>
-						<para>The numeric parameter type is obsolete and must be
+						<para>The numeric parameter type is no longer used and must be
 							replaced with int or double depending on the parameter usage.
 						</para>
 					</listitem>
 					<listitem>
-						<para>The keyword const is obsolete and a new keyword volatile
+						<para>The keyword const is removed and a new keyword volatile
 							has been introduced. In 3.x an unqualified parameter was volatile
 							while it is const in 4.0.</para>
 					</listitem>
@@ -66,7 +66,7 @@
 							@prompt(…).</para>
 					</listitem>
 					<listitem>
-						<para>Conditional parameters are obsolete.</para>
+						<para>Conditional parameters have been removed.</para>
 					</listitem>
 					<listitem>
 						<para>The gatesizes section in compound modules has been
@@ -87,10 +87,10 @@
 						<para>The syntax of the connection for loop has changed</para>
 					</listitem>
 					<listitem>
-						<para>Ancestor parameters are obsolete.</para>
+						<para>Ancestor parameters have been.</para>
 					</listitem>
 					<listitem>
-						<para>The ref keyword is obsolete because parameters are now
+						<para>The ref keyword is removed because parameters are now
 							always passed by reference.</para>
 					</listitem>
 					<listitem>
@@ -117,14 +117,14 @@
 				<title>Initialization (ini) files</title>
 				<itemizedlist>
 					<listitem>
-						<para>The sections [Cmdenv] and [Tkenv] are obsolete and the
+						<para>The sections [Cmdenv] and [Tkenv] have been removed and the
 							entries from these sections have been prefixed with cmdenv- and
 							tkenv- respectively and can be written in any section.
 							Practically most of the time they should be copied under the
 							[General] section.</para>
 					</listitem>
 					<listitem>
-						<para>The sections [Run 1], [Run 2], … are obsolete and should
+						<para>The sections [Run 1], [Run 2], … are no longer used and should
 							be renamed to [Config …], [Config …], … Note that run numbers no
 							longer refer to configuration sections but iteration numbers.
 						</para>
@@ -134,7 +134,7 @@
 							under [Cmdenv]) defaults to true instead of false.</para>
 					</listitem>
 					<listitem>
-						<para>Most of the entries in the section [Tkenv] are obsolete
+						<para>Most of the entries in the section [Tkenv] have been removed
 							except the following ones which are still supported but prefixed
 							as: tkenv-default-run, tkenv-image-path, tkenv-plugin-path.
 						</para>
@@ -152,7 +152,7 @@
 							read a value from stdin.</para>
 					</listitem>
 					<listitem>
-						<para>The entry preload-ned-files is obsolete because in 4.0
+						<para>The entry preload-ned-files has been removed because in 4.0
 							ned files are loaded based on their packages and the entry
 							ned-path which specifies a list of directories separated by
 							semicolons. In a single directory simulation model the default
@@ -315,7 +315,7 @@
 						unambiguously identified in the code.</para>
 				</listitem>
 				<listitem>
-					<para>Removes obsolete macros.</para>
+					<para>Removes unused macros.</para>
 				</listitem>
 				<listitem>
 					<para>Print warnings for all places that may need further
@@ -342,11 +342,13 @@
 							<para>Run the automatic migration scripts.</para>
 						</listitem>
 						<listitem>
-							<para>Do manual changes to your model.</para>
+							<para>Do manual changes to your model and 
+							migrate all files using as few of the new features as possible.</para>
 						</listitem>
 						<listitem>
 							<para>Verify whether your model is working correctly and
-								produces the same results as your old one.</para>
+								produces the same results as your old one. (either 
+								exactly or statistically)</para>
 						</listitem>
 					</orderedlist>
 				</listitem>
@@ -538,10 +540,11 @@ $ ../INET/migrate/migratecpp | tee migratecpp.out
            </para></listitem>
       </itemizedlist>           
 </para></listitem>
-
 </orderedlist>
 </sect1>
-<sect1><title>Making use of new OMNeT++ features</title>
+
+<sect1>
+<title>Making use of new OMNeT++ features</title>
 
 <orderedlist>
 <listitem>
@@ -577,23 +580,6 @@ $ ../INET/migrate/migratecpp | tee migratecpp.out
 </chapter>
 
 <chapter><title>clipboard</title>
-			<para>Since migrating a complex simulation model might be a non
-				trivial and error prone task to do it is best done in two separate
-				phases.</para>
-			<orderedlist>
-				<listitem>
-					<para>First migrate all files using as few of the new features
-						as possible and try to reproduce the same simulation results
-						either exactly or statistically. For example, stick to use double
-						simulation time so that the new 64 bits exact simulation time
-						representation does not affect the simulation model.</para>
-				</listitem>
-				<listitem>
-					<para>When the simulation results are satisfying switch to the
-						new 64 bits exact simulation time representation and start using
-						other new features of OMNeT++ 4.0.</para>
-				</listitem>
-			</orderedlist>
 			<para>Note that using double simulation time requires
 				recompilation of OMNeT++ 4.0 because the prebuilt binaries are
 				compiled with the 64 bits exact representation. Specifying the
