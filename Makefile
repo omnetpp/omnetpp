@@ -168,6 +168,15 @@ makefiles:
 	done
 	(cd $(OMNETPP_SAMPLES_DIR)/queuenet && (opp_makemake -f -n))
 
+# copy the documentation to the UI doc folder too
+copy-ui-docu:
+	txt2html $(OMNETPP_DOC_DIR)/WhatsNew --xhtml --outfile $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/WhatsNew.html
+	cp -r $(OMNETPP_DOC_DIR)/api $(OMNETPP_UI_DIR)/org.omnetpp.doc/content
+	cp -r $(OMNETPP_DOC_DIR)/manual $(OMNETPP_UI_DIR)/org.omnetpp.doc/content
+	cp -r $(OMNETPP_DOC_DIR)/userguide $(OMNETPP_UI_DIR)/org.omnetpp.doc/content
+	cp -r $(OMNETPP_DOC_DIR)/migration $(OMNETPP_UI_DIR)/org.omnetpp.doc/content
+	cp -r $(OMNETPP_DOC_DIR)/tictoc-tutorial $(OMNETPP_UI_DIR)/org.omnetpp.doc/content
+
 # utility target to copy 3rd party DLLs to the bin directory on MINGW build
 copy-dlls: 
 	cp mingw/bin/libgcc_sjlj_1.dll bin

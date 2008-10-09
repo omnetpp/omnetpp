@@ -25,6 +25,7 @@ sudo apt-get install \
 	texlive-latex-extra \
 	inkscape \
 	docbook-xml \
-	docbook-xsl
+	docbook-xsl \
+	txt2html
 
 
