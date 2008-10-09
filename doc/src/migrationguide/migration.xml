@@ -342,12 +342,12 @@
 							<para>Run the automatic migration scripts.</para>
 						</listitem>
 						<listitem>
-							<para>Do manual changes to your model and 
-							migrate all files using as few of the new features as possible.</para>
+							<para>Do manual changes to your model and use 
+							      as few of the new features as possible.</para>
 						</listitem>
 						<listitem>
 							<para>Verify whether your model is working correctly and
-								produces the same results as your old one. (either 
+								produces the same results as the old one. (either 
 								exactly or statistically)</para>
 						</listitem>
 					</orderedlist>
@@ -438,7 +438,7 @@ $ ../INET/migrate/migratecpp | tee migratecpp.out
 		     			For example, if the parameter is only used by calling the C++ function par once inside
 						initialize.</para></warning>
        </listitem>
-       <listitem><para>revise "double" parameters if they should rather be "int"</para>
+       <listitem><para>revise "double" parameters whether they should rather be "int"</para>
        		<para>The numeric parameter type from the 3.x version is automatically converted to double, but you
        			  may need to change it to int if needed. Be sure to change the correspondig code in your .cc and .h files.
        </para></listitem>
@@ -518,8 +518,7 @@ $ ../INET/migrate/migratecpp | tee migratecpp.out
        </itemizedlist>
 </listitem>
 <listitem><para>
-  Run your simulation model. The most frequent runtime errors and
-     their fixes:
+  Run your simulation model. The most frequent runtime errors and their fixes:
       <itemizedlist>
            <listitem><para>
      "Cannot convert unit 'none' to 'seconds'"</para><para>
@@ -550,22 +549,90 @@ $ ../INET/migrate/migratecpp | tee migratecpp.out
 <listitem>
   <para>NED files</para>
        <itemizedlist>
-	       <listitem><para>make use of default icons: migrate "i=" tags from submodule display string to the simple module type</para></listitem>
-	       <listitem><para>parameter values assigned in ini files could be put into the corresponding NED file as default values</para></listitem>
-	       <listitem><para>use @unit for your module's parameters</para></listitem>
-	       <listitem><para>make use of module inheritance</para></listitem>
-	       <listitem><para>use inout gates and bi-directional connections</para></listitem>
-	       <listitem><para>use inner types</para></listitem>
-	       <listitem><para>make use of package structure</para></listitem>
-	       <listitem><para>use additional display string tags (module background, grid etc.)</para></listitem>
-	       <listitem><para>possibly make use of @properties as "marker interfaces", like @host(true)</para></listitem>
+	       <listitem><para>Make use of default icons.</para>
+	       			 <para>If you have several submodules which all share the same icon it 
+	       			       would be a good idea to specify the display properties for the
+	       			       simple module types and let the submodules inherit their visual 
+	       			       appearance from there. Migrate "i=" tags from submodule display 
+	       			       string to the simple module type. Use:</para>
+<screen>simple Simple {
+			@display("i=default_icon");
+}
+module {
+	submodules:
+		s1 : Simple;
+		s2 : Simple;
+}
+</screen>
+</listitem>
+	       <listitem><para>Parameter values assigned in ini files could be 
+	       put into the corresponding NED file as default values</para>
+	       <para>If your ini file contains a lot of parameter values that 
+	       usually do not change, consider to move the values to the NED file 
+	       as parameter defaults. Use the following syntax:</para>
+<screen>int somepar = default(42);</screen>
+	       </listitem>
+	       <listitem><para>Use @unit for your module's parameters and specify physical units.
+	       This will enforce that the user must explicitly specify a time unit for the parameter.</para>
+	       <screen>volatile double interArrivalTime @unit(s);</screen></listitem>
+	       <listitem><para>Make use of module inheritance.</para>
+	       <para>If you have several modules that share the same behavior, but differ only 
+	       in parameterization, you can take advantage of module inheritance.</para>
+<screen>simple Router {
+	int ports;
+}
+simple Router8Port extends Router {
+	ports = 8;
+}
+simple Router16Port extends Router {
+	ports = 16;
+}
+</screen>
+           </listitem>
+	       <listitem><para>Use inout gates and bi-directional connections.</para>
+	       <para>If you connect the same gates in both direction it is much easier to 
+	       use bidirectional ports and channels. Use:</para>
+<screen>	gates:
+		inout port;
+
+	connections:
+		node1.port &lt;--&gt; node2.port;</screen>
+	       </listitem>
+	       <listitem><para>Use inner types</para>
+	       <para>If you use a type only locally consider using inner types:</para>
+<screen>module Node {
+	types:
+		simple InnerSimple;
+	submodules:
+		sub1: InnerSimple; ...</screen></listitem>
+	       <listitem><para>Make use of package structure if you plan to give your model to other people.
+	       This can avoid name clashes with other models.</para></listitem>
+	       <listitem><para>Use additional display string tags (module background, grid etc.)
+	       to enhance your simulation. See the manual for new supported tags.</para></listitem>
+	       <listitem><para>Possibly make use of <literal>@properties</literal> as "marker interfaces", like @host(true)</para></listitem>
        </itemizedlist>
 </listitem>
 <listitem>
   <para>ini files</para>
        <itemizedlist>
-	       <listitem><para>configs</para></listitem>
-	       <listitem><para>experiment syntax (${})</para></listitem>
+	       <listitem><para>Give meaningful names to your configurations. 
+	          In 3.x only run numbers were allowed.</para></listitem>
+	       <listitem><para>Use inheritance between configurations if several
+	       of your configurations share the same parameter set.</para>
+<screen>[General]
+basePar=17
+[Config foo]
+fooPar=45
+[Config bar]
+extends=foo
+fooBarPar=42</screen>
+           </listitem>
+	       <listitem><para>Make use of the new parameter loops for experimenting.</para>
+	       <para>If you have created external scripts previously to explore the result of 
+	       different parameter combinations, you can do it now without scripts.
+	       Parameters can contain loops and lists to run the simulation with all provided values.</para>
+<screen>**.iaTime = exponential(${mean=1,1.5,2,3,5..21 step 2}s)</screen>
+	       </listitem>
 	   </itemizedlist>    
 </listitem>
 <listitem>
