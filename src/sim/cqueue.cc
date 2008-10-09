@@ -82,14 +82,14 @@ void cQueue::parsimPack(cCommBuffer *buffer)
     cOwnedObject::parsimPack(buffer);
 
     if (compare)
-        throw new cRuntimeError(this,"parsimPack(): cannot serialize comparison function");
+        throw new cRuntimeError(this,"parsimPack(): cannot transmit comparison function");
 
     buffer->pack(n);
 
     for (cQueue::Iterator iter(*this, 0); !iter.end(); iter--)
     {
-        if (iter()->getOwner() != this)
-            throw cRuntimeError(this,"parsimPack(): cannot transmit pointer to \"external\" object");
+        if (iter()->isOwnedObject() && iter()->getOwner() != this)
+            throw cRuntimeError(this,"parsimPack(): refusing to transmit an object not owned by the queue");
         buffer->packObject(iter());
     }
 #endif

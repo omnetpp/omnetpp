@@ -247,7 +247,7 @@ class SIM_API cQueue : public cOwnedObject
     //@{
     /**
      * Returns pointer to the object at the front of the queue.
-     * This is the element to be return by pop().
+     * This is the element to be returned by pop().
      * Returns NULL if the queue is empty.
      */
     virtual cObject *front() const;
