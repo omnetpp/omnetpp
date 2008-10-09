@@ -293,6 +293,12 @@ while (<LISTFILE>)
        if ($line =~ /\bbackgroundDisplayString\b/i) {
           $warnings{"There are no separate backgroundDisplayString and displayString. Use displayString instead. P tag become BGP, B tag become BGB"} .= $lineinfo;
        }
+
+       # ev.rdbuf
+       if ($line =~ /\bev\.rdbuf\b/) {
+          $warnings{"Cannot reference cEnvir internals (e.g. use ini file options to redirect output)"} .= $lineinfo;
+       }
+    
     }
     open(OUTFILE, ">$fname") || die "cannot open $fname for write";
     print OUTFILE $txt || die "cannot write $fname";
