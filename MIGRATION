@@ -108,7 +108,17 @@ Getting your simulation model working.
            in the ini files.
 
        (5) "like" module types should be changed into interfaces, and actual 
-           types declared to be "like" them.
+           types declared to be "like" them. For example, if you have a
+           submodule
+               app: <appType> like App;
+           then App should be turned into a module interface (and its name
+           prepended with "I" to conform naming convention), like this:
+               moduleinterface IApp {
+                   gates: input in; output out;
+               }
+           and the concrete types should be modified to comply with IApp:
+               simple BurstyApp like IApp { ... }
+               simple AnotherApp like IApp { ... }
 
   7. Compile your simulation model (right-click on the project and
      select Build from the context menu, or close all other projects
