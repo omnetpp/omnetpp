@@ -125,7 +125,7 @@ typedef int64 file_offset_t;  // off_t on Linux
   #define opp_stat_t stat
   #define opp_stat stat
   #define opp_fstat fstat
-#elif defined __APPLE__
+#elif defined __APPLE__ || defined __FreeBSD__
   #define opp_ftell ftello
   #define opp_fseek fseeko
   #define opp_stat_t stat
