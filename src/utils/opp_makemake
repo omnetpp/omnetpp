@@ -297,7 +297,7 @@ sub makemake()
         $isRecursive = 0;
     }
 
-    $makecommand = $isNMake ? "nmake /nologo /f Makefile.vc" : "make";
+    $makecommand = $isNMake ? "nmake /nologo /f Makefile.vc" : $ENV{MAKE} ? $ENV{MAKE} : "make";
 
     # find configuser.vc / Makefile.inc
     $configFile = $isNMake ? `cmd /c opp_configfilepath.cmd` : `opp_configfilepath`;
