@@ -264,9 +264,9 @@ while (<LISTFILE>)
           $warnings{"channel creation should be done via cChannelType, see manual; direct \"new\" won't work properly"} .= $lineinfo;
        }
 
-       # 'ev' not permitted as variable name
-       if ($line =~ /[a-zA-Z0-9_] *[&*]? *\bev\b/) {
-          $warnings{"\"ev\" became a macro, so it's no longer suitable as a variable or parameter name -- please rename"} .= $lineinfo;
+       # ev/EV not permitted as variable name
+       if ($line =~ /[a-zA-Z0-9_] *[&*]? *\b(ev|EV)\b/) {
+          $warnings{"\"ev\" and \"EV\" are now macro names, so they are no longer suitable as a variable or parameter name -- please rename"} .= $lineinfo;
        }
 
        # exceptions must be thrown by value
@@ -298,7 +298,6 @@ while (<LISTFILE>)
        if ($line =~ /\bev\.rdbuf\b/) {
           $warnings{"Cannot reference cEnvir internals (e.g. use ini file options to redirect output)"} .= $lineinfo;
        }
-    
     }
     open(OUTFILE, ">$fname") || die "cannot open $fname for write";
     print OUTFILE $txt || die "cannot write $fname";
