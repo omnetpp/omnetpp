@@ -1,0 +1,40 @@
+%description:
+unresolved base class etc
+
+%file: test.ned
+
+simple Bogus1 extends Yerewr { }
+module Bogus2 extends Qwerty { }
+channel Bogus3 extends Rreterty { }
+network Bogus4 extends Tewrrwr { }
+
+simple BogusLike1 like Yerewr { }
+module BogusLike2 like Qwerty { }
+channel BogusLike3 like Rreterty { }
+network BogusLike4 like Tewrrwr { }
+
+moduleinterface IBogus1 extends Bgfhgf { }
+channelinterface IBogus2 extends Otytr { }
+
+network Net {
+    types:
+        simple Bogus1 extends Yerewr { }
+        module Bogus2 extends Qwerty { }
+        channel Bogus3 extends Rreterty { }
+        network Bogus4 extends Tewrrwr { }
+
+        simple BogusLike1 like Yerewr { }
+        module BogusLike2 like Qwerty { }
+        channel BogusLike3 like Rreterty { }
+        network BogusLike4 like Tewrrwr { }
+
+        moduleinterface IBogus1 extends Bgfhgf { }
+        channelinterface IBogus2 extends Otytr { }
+}
+
+
+%exitcode: 1
+
+%contains: stdout
+Error: The following NED types could not be fully resolved, due to a missing base type or interface: Bogus1, Bogus2, Bogus3, Bogus4, BogusLike1, BogusLike2, BogusLike3, BogusLike4, IBogus1, IBogus2, Net.Bogus1, Net.Bogus2, Net.Bogus3, Net.Bogus4, Net.BogusLike1, Net.BogusLike2, Net.BogusLike3, Net.BogusLike4, Net.IBogus1, Net.IBogus2.
+
