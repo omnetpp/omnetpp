@@ -1,0 +1,12 @@
+%description:
+check that pop() throws an error when queue is empty
+
+%activity:
+cQueue q("q");
+q.pop();
+
+%exitcode: 1
+
+%contains-regex: stdout
+Error .*pop\(\): queue empty
+
