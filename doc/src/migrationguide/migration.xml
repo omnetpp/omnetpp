@@ -148,11 +148,9 @@
 					</para>
 				</listitem>
 				<listitem>
-					<para>Networks now behave similarly to compound modules. The only 
-					difference is that they cannot have gates. This means you can place 
-					submodules directly into a network instead of creating a compound module,
-					placing your submodules there and then instantiating the module as a network
-					(as was required in 3.x)  
+					<para>You can place submodules directly into a network instead of 
+					creating a compound module, placing your submodules there and then 
+					instantiating the module as a network (as was required in 3.x)  
 					</para>
 				</listitem>
 			</itemizedlist>
@@ -318,40 +316,80 @@
 			</itemizedlist>
 		</sect1>
 		<sect1>
-			<title>Command line options</title>
-			<itemizedlist>
-				<listitem>
-					<para>-f is now optional if you specify an ini file</para>
-				</listitem>
-				<listitem>
-					<para>-r now refers to a run instead of a named configuration
-						entry in the ini file</para>
-				</listitem>
-				<listitem>
-					<para>
-						For further information use
-						<command>opp_run -h</command>
-						or the -h switch on any simulation executable.
-					</para>
-				</listitem>
-			</itemizedlist>
+			<title>Makefiles</title>
+			<para>
+				The makefile generation and the make process has been rewritten.
+				Check the
+				<command>opp_makemake -h</command>
+				for further information.
+			</para>
+			<para>The makefile generator can generate three types of makefiles:
+			  <itemizedlist>
+			    <listitem><para>Local (default): only the sources from the current directory will be included,
+			                    subdirectories will be ignored. This mode is recommended for single directory projects.
+			    </para></listitem>
+			    <listitem><para>Recursive (--recurse): includes files from the current directory and calls into all 
+			                    subdirectory. Makefiles should exist in all subdirectories. 
+			    </para></listitem>
+			    <listitem><para>Deep (--deep): this is the preferred mode for multi-directory projects. All
+			                    source files are automatically gathered from all subdirectories recursively.
+			                    Only a single makefile is generated in the root directory. Include path for the
+			                    project is automatically discovered. Directories can be excluded with the -X option.
+			    </para></listitem>
+			  </itemizedlist>
+			</para>
 		</sect1>
 		<sect1>
 			<title>C++ code (cc/h files)</title>
+			<para>This is just a brief summary of API changes since 3.x. Please consult the
+						<literal>include/ChangeLog</literal> file for detailed information.
+			</para>
 			<itemizedlist>
-				<listitem>
-					<para>The OMNeT++ API has changed. Please consult the
-						include/ChangeLog file for further information.</para>
-				</listitem>
-				<listitem>
-					<para>
-						The 4.0 version introduces a new C++ class called
-						<literal>SimTime</literal>
-						for 64 bits exact simulation time representation. This is the
-						default setting which might break existing simulation models if
-						they were not using simetime_t for their time related variables.
-					</para>
-				</listitem>
+				<listitem><para>Several header files have been renamed in omnetpp/include.</para></listitem>
+				<listitem><para>Renamed: cObject became cOwnedObject, cPolymorphic became cObject and
+						cNamedObject introduced in between. Several method names have changed in different classes.
+						Check the ChangeLog file for details.</para></listitem>
+				<listitem><para>"get" verb added to the names of nearly all getter methods</para></listitem>
+				<listitem><para>&lt;omnetpp.h&gt; now provides the C99 integer types and limit macros,
+								  even on systems that don't have &lt;stdint.h&gt;</para></listitem>
+				<listitem><para>simtime_t is now not double but class SimTime (64-bit fixed point number)</para></listitem>
+				<listitem><para>Added simtime compatibility mode:
+	                     If needed, the simkernel can be compiled with simtime_t = double.
+	                     For that, compile everything with USE_DOUBLE_SIMTIME defined
+	                     (add -DUSE_DOUBLE_SIMTIME to CFLAGS).</para></listitem>
+				<listitem><para>Introduced inout gates. Note: with inout gates, gate("gatename") does not work, 
+				                 use gate("gatename$i") or gate("gatename$o") instead</para></listitem>
+				<listitem><para>Channels became first-class citizens: they have a common base class
+	                            (cComponent) with cModule, they participate in the initialize()/
+	                            finish() protocol, and so on</para></listitem>
+				<listitem><para>Introduced cComponent, a common base class for cModule and cChannel.
+	                            Some new methods to mention: isModule(), nedTypeName()</para></listitem>
+				<listitem><para>cBasicChannel renamed to cDatarateChannel and added cIdealChannel 
+				                which lets messages through without any change and without any delay.</para></listitem>
+				<listitem><para>Exception handling changed: now all our exceptions subclass from std::exception 
+				               (e.g. cException extends std::exception) and  exceptions are now thrown by value 
+				               not by pointer.</para></listitem>
+				<listitem><para>cOutVector: removed half-hearted tuple=2 support from cOutVector and underlying infrastructure and
+				                added methods for metadata annotation: setEnum(), setUnit(), setType(), 
+				                setInterpolationMode(), setMin(), setMax()</para></listitem>
+				<listitem><para>Numerous changes related to DisplayString. Please check include/ChangeLog for details.</para></listitem>
+				<listitem><para>cQueue: head()/tail() removed, back()/front() added (insert at back, pop from front!);
+	                            because of head/tail change, iterator direction and meaning of insertBefore/insertAfter
+	                            has changed. Additionally the boolean flag to specify ascending/descending order has been removed.</para></listitem>
+				<listitem><para>cMessage changes: the length, bit error flag and encapsulated message cMessage fields
+	                            got factored out from cMessage, into the cPacket class (which extends
+	                            cMessage). All network packets (frames, datagrams, etc) are now
+	                            supposed to be subclassed from cPacket, not directly cMessage.</para></listitem>
+				<listitem><para>A new cPacketQueue class has been introduced to store cPackets and subclasses.</para></listitem>
+				<listitem><para>Global <literal>findXXX(const char *name)</literal>  functions turned 
+				                into static <literal>cXXX::find(const char *name);</literal>
+	   						    (affected: <literal> findLink(), findFunction, findEnum, findChannelType, 
+	   						    findNetworkType(), findModuleType()</literal>)
+				</para></listitem>
+				<listitem><para>Run number handling were made entirely the matter of cEnvir. 
+				   <literal>cSimulation::runNumber()</literal> got removed. Also removed runNumber 
+				            from the arg list of cEnvir callback functions.
+				</para></listitem>
 			</itemizedlist>
 		</sect1>
 		<sect1>
@@ -370,13 +408,28 @@
 			</itemizedlist>
 		</sect1>
 		<sect1>
-			<title>Makefiles</title>
-			<para>
-				The makefile generation and the make process has been rewritten.
-				Check the
-				<command>opp_makemake -h</command>
-				for further information.
-			</para>
+			<title>Command line options</title>
+			<itemizedlist>
+				<listitem>
+					<para>-f is now optional if you specify an ini file</para>
+				</listitem>
+				<listitem>
+					<para>-r now refers to a run instead of a named configuration
+						entry in the ini file</para>
+				</listitem>
+				<listitem>
+					<para>Use the <literal>-h all</literal> switch to get detailed info about you
+					simulation executable. (or <literal>opp_run -h all</literal> to get info about 
+					OMNeT++ itself.) </para>
+				</listitem>
+				<listitem>
+					<para>
+						For further information use
+						<command>opp_run -h</command>
+						or the -h switch on any simulation executable.
+					</para>
+				</listitem>
+			</itemizedlist>
 		</sect1>
 	</chapter>
 	<chapter>
@@ -492,7 +545,7 @@
 			We recommend to port your simulation model in several stages:
 			<orderedlist>
 				<listitem>
-					<para>Get it working with 4.0 as soon as possible</para>
+					<para>Get it working with 4.0 as fast as possible</para>
 					<orderedlist>
 						<listitem>
 							<para>Run the automatic migration scripts.</para>
@@ -602,7 +655,7 @@ $ ../INET/migrate/migratecpp | tee migratecpp.out
        			<tip><para>The input keyword is no longer supported in NED files, but you can specify the value for 
        				  this parameter in the .ini file as **.somepar=ask which has the same effect.</para></tip></listitem>
        <listitem><para>remove extra "network bla extends Bla {}" if needed</para>
-       			<para>Remove extra "network bla extends Bla {}".  Background: a 3.x-style
+       			<para>A 3.x-style
            network declaration denotes a compound module as network. In 4.0,
            a compound module may be directly declared to be a network, so the
            extra step is not needed. Example: the 3.x network declaration
@@ -734,9 +787,8 @@ simple AnotherApp like IApp { ... }
 <sect1>
 <title>Making use of new OMNeT++ features</title>
 
-<orderedlist>
-<listitem>
-  <para>NED files</para>
+<sect2>
+  <title>NED files</title>
        <itemizedlist>
 	       <listitem><para>Make use of default icons.</para>
 	       			 <para>If you have several submodules which all share the same icon it 
@@ -802,9 +854,9 @@ simple Router16Port extends Router {
 	       to enhance your simulation. See the manual for new supported tags.</para></listitem>
 	       <listitem><para>Possibly make use of <literal>@properties</literal> as "marker interfaces", like @host(true)</para></listitem>
        </itemizedlist>
-</listitem>
-<listitem>
-  <para>ini files</para>
+</sect2>
+<sect2>
+  <title>ini files</title>
        <itemizedlist>
 	       <listitem><para>Give meaningful names to your configurations. 
 	          In 3.x only run numbers were allowed.</para></listitem>
@@ -825,19 +877,42 @@ extends=foo
 <screen>**.iaTime = exponential(${mean=1,1.5,2,3,5..21 step 2}s)</screen>
 	       </listitem>
 	   </itemizedlist>    
-</listitem>
-<listitem>
-  <para>C++</para>
-       <itemizedlist>
+</sect2>
+<sect2>
+  <title>C++</title>
+        <itemizedlist>
 	       <listitem><para>You can add metadata to the output vectors to enhance the
-	       visualization. Use the setInterpolationMode, setEnum etc. on cOutVector.</para></listitem>
-	       <listitem><para>If a message is transmitted on a finite datarate channel,
-	       set gate->setDeliverOnReceptionStart(true) to deliver the message 
-	       to the receiver module at the start of the reception (instead of the default, which
-	       delivers at the end)</para></listitem>
+	       visualization. Use the setInterpolationMode, setEnum etc. on cOutVector.
+	    </para></listitem>
+		<listitem><para>
+		   If possible take advantage of inout gates a bidirectional connections.
+		   use use <literal>gate("gatename$i")</literal> or <literal>gate("gatename$o")</literal>
+		   to access the two direction separately (<literal>gate("gatename")</literal> will not work!).
+		</para></listitem>      
+	    <listitem><para>If a message is transmitted on a finite datarate channel,
+	       call <literal>setDeliverOnReceptionStart(true)</literal> on a simple module's input gate 
+	       to deliver the message to the receiver module at the start of the reception 
+	       (instead of the default, which delivers at the end). In 3.x it was only possible
+	       to receive the packet at the beginning of the reception by setting the channel
+	       datarate to 0, and calculating the transmission duration manually.
+	    </para></listitem>
+		<listitem><para>If you have a complex channel model, now you can extend cChannel and 
+		      register your new class. Override the <literal>deliver(...)</literal> method.
+		      There are three new built in channels you can use as a starting point:
+		      <literal>cIdealChannel, cDelayChannel, cDatarateChannel</literal>
+		</para></listitem>      
+		<listitem><para>Use cMessage or cPacket depending on your needs. The length, bit error 
+		      flag and encapsulated message cMessage fields got factored out from cMessage, 
+		      into the cPacket class. </para></listitem>      
+		<listitem><para>Use the <literal>getProperties() </literal>method of 
+		      <literal>cComponent</literal> to access model metadata. Any property 
+		      value can be attached to the component in a NED file with the 
+		      <literal>@propname(key1=val1,val2;key2=valA,valB)</literal> syntax.
+		      You can use the properties as a marker (e.g. @host) or to provide any additional
+		      information to the model.
+	    </para></listitem>      
 	   </itemizedlist>    
-</listitem>      
-</orderedlist>
+</sect2>
   </sect1>
 </chapter>
 
