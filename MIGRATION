@@ -64,7 +64,17 @@ Getting your simulation model working.
      files from the disk -- answer NO! Then start over with project
      creation.
 
-!!!!! PROJECTS DEPENDING ON INET!!!!
+  4a. If your project is based on INET (or any other project), you can set
+     up the project as one that depends on the INET project. To do that,
+     make sure the INET project is imported and open, then open the 
+     Properties dialog for your project (select the project, right-click
+     it, then choose Properties from the context menu), and check INET
+     on the Project References page. This makes the NED types of INET
+     available in your project, and also puts INET directories on the
+     C++ include path. Make sure the INET project builds a (static/shared)
+     library, not an executable, so your project can link with it -- you
+     can check that by opening INET's Project Properties dialog, and going
+     to the C/C++ Build / Makemake page.
 
   5. NED in 4.0 has a package system, similar to Java. If your model
      contains NED files in several subdirectories, these subdirectories
@@ -78,7 +88,8 @@ Getting your simulation model working.
      from the menu. Select your project and click OK. The IDE will then fix
      all package declarations and imports in your NED files.
 
-!!!!! PACKAGE.NED!!!!
+     You may want to add a package.ned file to define the root package --
+     see later.
 
   6. Revise NED files. A brief checklist:
        (1) Revise "volatile" parameters if they really need to be volatile.
@@ -203,8 +214,19 @@ Making use of new OMNeT++ features.
            and
                node1.port <--> node2.port;
 
-       (5) inner types: specialized channels (like 100Mbps, 1Gbps etc) no 
-           longer need to pollute the global namespace, you can move them
+       (5) define the root package for your NED files. To do that, put a 
+           package.ned file into the toplevel NED source folder (i.e.
+           a directory that's listed on the OMNeT++/NED Source Folders page
+           of the Project Properties dialog of your project). The package
+           declaration in that package.ned file determines the package of that
+           diretory and all directories underneath. For example, if the
+           file's contents is
+               package org.myproject;
+           then the NED packages will be org.myproject, org.myproject.subdir1,
+           org.myproject.subdir2, etc.
+
+       (6) use inner types: specialized channels (like 100Mbps, 1Gbps etc) 
+           no longer need to pollute the global namespace, you can move them
            inside the compound module where they are actually needed:
                module Network {
                    types:
@@ -215,20 +237,21 @@ Making use of new OMNeT++ features.
                        host1.p++ <--> C <--> host2.p++;
                }
 
-       (6) inheritance, to specialize a module or channel, or to factor out 
+       (7) inheritance, to specialize a module or channel, or to factor out 
            the common part of several compound modules into a base class 
            (because a derived compound module may add new submodules and 
            connections in addition to new parameters and gates)
 
-       (7) mark gates that are supposed to receive messages via sendDirect()
+       (8) mark gates that are supposed to receive messages via sendDirect()
            as such:
                input in @directIn;  // or: input in @loose;
            The effect of @loose or @directIn is that NED won't complain about
            the gate being unconnected, and you can remove the "allowunconnected" 
            (formerly "nocheck") keyword from "connections:".
               
-       (8) possibly make use of @properties as "marker interfaces", like @node,
+       (9) possibly make use of @properties as "marker interfaces", like @node,
            @host(true)
+
 
   2. ini files
        (1) configs
@@ -251,6 +274,3 @@ If you get stuck anywhere, please post the problem on the mailing list, and
 we'll rush to your help!
 
 The OMNeT++ team
-
-
-
