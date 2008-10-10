@@ -147,6 +147,14 @@
 						instead of files.
 					</para>
 				</listitem>
+				<listitem>
+					<para>Networks now behave similarly to compound modules. The only 
+					difference is that they cannot have gates. This means you can place 
+					submodules directly into a network instead of creating a compound module,
+					placing your submodules there and then instantiating the module as a network
+					(as was required in 3.x)  
+					</para>
+				</listitem>
 			</itemizedlist>
 		</sect1>
 		<sect1>
@@ -594,10 +602,43 @@ $ ../INET/migrate/migratecpp | tee migratecpp.out
        			<tip><para>The input keyword is no longer supported in NED files, but you can specify the value for 
        				  this parameter in the .ini file as **.somepar=ask which has the same effect.</para></tip></listitem>
        <listitem><para>remove extra "network bla extends Bla {}" if needed</para>
-       			<tip><para>It is possible now to place submodules directly into a network so you no longer need to 
-       			      instantiate a compound module as a network. Networks behave exactly like compound modules except
-       			      they cannot have gates. Be sure to change the "network=" entries in your ini files too.</para></tip></listitem>
-       <listitem><para>"like" module types should be changed into interfaces, and actual types declared to be "like" them</para></listitem>
+       			<para>Remove extra "network bla extends Bla {}".  Background: a 3.x-style
+           network declaration denotes a compound module as network. In 4.0,
+           a compound module may be directly declared to be a network, so the
+           extra step is not needed. Example: the 3.x network declaration
+<screen>
+network cqn : CQN
+endmodule
+</screen>
+           is converted by the migration script into an inheritance:
+<screen>
+network cqn extends CQN {
+}
+</screen>    
+           However, you can remove that altogether, if you change the CQN
+           module's declaration to use the "network" keyword (like:
+           network CQN {...}), and replace network=cqn with network=CQN
+           in the ini files.
+       			</para></listitem>
+       <listitem><para>"like" module types should be changed into interfaces, and actual types declared to be "like" them</para>
+       <para>
+           For example, if you have a submodule
+<screen>           
+app: &lt;appType&gt; like App;
+</screen>               
+           then App should be turned into a module interface (and its name
+           prepended with "I" to conform naming convention), like this:
+<screen>           
+moduleinterface IApp {
+    gates: input in; output out;
+}
+</screen>               
+           and the concrete types should be modified to comply with IApp:
+<screen>           
+simple BurstyApp like IApp { ... }
+simple AnotherApp like IApp { ... }
+</screen>               
+          </para></listitem>
        </itemizedlist>
 </para></listitem>
 

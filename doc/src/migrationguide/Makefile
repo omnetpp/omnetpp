@@ -18,7 +18,7 @@ pdf:
 	xsltproc  --output tmp.fo custom-fo-docbook-tmp.xsl tmp.xml
 	$(FOP) -fo tmp.fo -pdf migration.pdf
 	-rm tmp.fo tmp.xml 
-	-rm custom-fo-docbook-tmp.xsl
+	-rm custom-fo-docbook-tmp.xsl 2>/dev/nul
 	cp migration.pdf ../..
 
 clean:
