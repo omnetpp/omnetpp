@@ -13,7 +13,7 @@
 # Directory names with spaces may also cause problems, it's better to use
 # short file names (e.g. 'C:/PROGRA~1' instead of 'C:/Program files').
 #
-OMNETPP_ROOT=/home/rhornig/omnetpp
+OMNETPP_ROOT=$(OMNETPP_ROOT:\=/)
 
 #
 # Choose build mode. The default is "debug" for models.
@@ -115,7 +115,7 @@ JNILIBS_IF_POSSIBLE=jnilibs
 # This option is available at present for Tkenv.
 # Set the following variable to "yes" to enable embedding Tcl files.
 #
-EMBED_TCL_CODE=yes
+EMBED_TCL_CODE=no
 
 #
 # It is possible to compile Tkenv as a Windows GUI app (as opposed to
