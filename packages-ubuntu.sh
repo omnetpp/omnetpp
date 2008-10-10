@@ -17,15 +17,6 @@ sudo apt-get install \
 	libxml2-dev \
 	zlib1g-dev \
 	libx11-dev \
-	sun-java6-jdk \
-	swig \
-	doxygen \
-	graphviz \
-	texlive \
-	texlive-latex-extra \
-	inkscape \
-	docbook-xml \
-	docbook-xsl \
-	txt2html
+	lam4-dev
 
 
