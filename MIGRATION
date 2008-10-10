@@ -6,7 +6,7 @@ OMNeT++ 4.0 or later, due to changes in the C++ API, NED, ini and msg
 files. This readme provides a brief overview of the porting process.
 
    This is just a QUICK GUIDE -- for more background and details
-   see the Migration Document under doc/Migration.pdf!
+   see the Migration Document under doc/migration.pdf!
 
 You would port your simulation model in two stages: (1) get it working
 with 4.0; then (2) improve it by making use of new OMNeT++ features.
@@ -17,9 +17,8 @@ Getting your simulation model working.
   PREREQUISITES: Have OMNeT++ 4.0 installed and working, and familiarize
   yourself with the IDE.
 
-  1. Make a backup of your simulation model. Be prepared to delete
-     everything and start over with the migration several times,
-     until you get it right.
+  1. Make a backup of your simulation model. Be prepared to have to start
+     over with the migration process several times, until you get it right.
 
   2. Change into the directory of your simulation model, and run
      all scripts in the <omnetpp>/migrate subdirectory from there.
@@ -65,6 +64,8 @@ Getting your simulation model working.
      files from the disk -- answer NO! Then start over with project
      creation.
 
+!!!!! PROJECTS DEPENDING ON INET!!!!
+
   5. NED in 4.0 has a package system, similar to Java. If your model
      contains NED files in several subdirectories, these subdirectories
      now mean packages, and the NED files will need package declarations
@@ -76,6 +77,8 @@ Getting your simulation model working.
 
      from the menu. Select your project and click OK. The IDE will then fix
      all package declarations and imports in your NED files.
+
+!!!!! PACKAGE.NED!!!!
 
   6. Revise NED files. A brief checklist:
        (1) Revise "volatile" parameters if they really need to be volatile.
@@ -236,11 +239,18 @@ Making use of new OMNeT++ features.
        (2) gate->setDeliverOnReceptionStart(true)
 
 Other sources of information
-  doc/Migration.pdf
+  doc/migration.pdf
   include/ChangeLog
   src/*/ChangeLog
   doc/API-changes
   doc/api
   doc/manual
   opp_run -h all
+
+If you get stuck anywhere, please post the problem on the mailing list, and 
+we'll rush to your help!
+
+The OMNeT++ team
+
+
 

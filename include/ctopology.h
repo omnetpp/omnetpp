@@ -410,6 +410,7 @@ class SIM_API cTopology : public cOwnedObject
      * The patterns may contain wilcards in the same syntax as in ini files.
      *
      * An example:
+     *
      * <tt>topo.extractByModulePath(cStringTokenizer("**.host[*] **.router*").asVector());</tt>
      */
     void extractByModulePath(const std::vector<std::string>& fullPathPatterns);
@@ -419,11 +420,10 @@ class SIM_API cTopology : public cOwnedObject
      * modules. All modules whose getNedTypeName() is listed in the given string
      * vector will get included.
      *
-     * Note: If you have all class names as a single, space-separated
-     * string, you can use cStringTokenizer to turn it into a string vector
-     * for this function:
+     * Note: If you have all class names as a single, space-separated string,
+     * you can use cStringTokenizer to turn it into a string vector:
      *
-     * <tt>topo.extractByNedTypeName(cStringTokenizer("Host Router").asVector());</tt>
+     * <tt>topo.extractByNedTypeName(cStringTokenizer("some.package.Host other.package.Router").asVector());</tt>
      */
     void extractByNedTypeName(const std::vector<std::string>& nedTypeNames);
 
@@ -433,6 +433,17 @@ class SIM_API cTopology : public cOwnedObject
      * (more precisely, the first value of its default key being the specified
      * value). If value is NULL, the property's value may be anything except
      * "false" (i.e. the first value of the default key may not be "false").
+     *
+     * For example, <tt>topo.extractByProperty("node");</tt> would extract
+     * all modules that contain the <tt>@node</tt> property, like the following
+     * one:
+     *
+     * <pre>
+     * module X {
+     *     @node;
+     * }
+     * </pre>
+     *
      */
     void extractByProperty(const char *propertyName, const char *value=NULL);
 

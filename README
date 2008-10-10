@@ -1,5 +1,5 @@
-OMNeT++ Discrete Event Simulation System
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+OMNeT++
+~~~~~~~
 
 OMNeT++ is a public-source, component-based, modular and open-architecture
 simulation environment with strong GUI support and an embeddable simulation
@@ -10,8 +10,8 @@ as well.
 
 OLD USERS:
 	If you have simulations written for OMNeT++ 3.x that you want to
-	port to 4.0, doc/Migration.pdf and the scripts under migrate/
-	are your friend!
+	port to 4.0, see the MIGRATION file, doc/migration.pdf, and the 
+	scripts under migrate/!
 
 If you installed the source distribution, the omnetpp directory on your system
 should contain the following subdirectories. (If you installed a precompiled

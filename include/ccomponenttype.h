@@ -106,6 +106,18 @@ class SIM_API cComponentType : public cNoncopyableOwnedObject
     /**
      * Returns the fully qualified name (i.e. the simple name prefixed
      * with the package name and any existing enclosing NED type names).
+     *
+     * Examples:
+     *
+     * The fully qualified name for a module named <tt>Fifo</tt> which is
+     * in the default package is <tt>"Fifo"</tt>.
+     *
+     * For a module named <tt>Host</tt> which is in the package <tt>some.package</tt>,
+     * the fully qualified name is <tt>"some.package.Host"</tt>.
+     *
+     * For a channel type <tt>Ch</tt> which is defined as an inner type inside
+     * the network <tt>Network</tt> in a package named <tt>some.package</tt>, the
+     * fully qualified name is <tt>"some.package.Network.Ch"</tt>.
      */
     virtual const char *getFullName() const  {return qualifiedName.c_str();}
     //@}
