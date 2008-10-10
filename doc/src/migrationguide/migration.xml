@@ -911,6 +911,20 @@ extends=foo
 		      You can use the properties as a marker (e.g. @host) or to provide any additional
 		      information to the model.
 	    </para></listitem>      
+	    
+		<listitem><para>In wireless models, the handling of transmission duration needs
+           to be refactored. </para>
+           <para>In 3.x, the receiver side usually calculated
+	           the frame duration independent of the sender. In 4.0, the duration
+	           calculated by the sender should be specified in the <literal>sendDirect()</literal>
+	           call, which writes it into the packet (<literal>setDuration()</literal>). The receiver
+	           module should have the input gate configured for
+	           <literal>deliverOnReceptionStart=true</literal>, i.e. it is supposed to call
+	           <literal>setDeliverOnReceptionStart(true)</literal> on the gate in the initialize
+	           phase. The receiver module should obtain the duration from the
+	           packet (<literal>pkt->getDuration()</literal>) instead of recalculating it.
+	    </para></listitem>      
+           	    
 	   </itemizedlist>    
 </sect2>
   </sect1>
