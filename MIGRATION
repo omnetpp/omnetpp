@@ -289,7 +289,18 @@ Making use of new OMNeT++ features.
 
   3. C++
        (1) output vectors: interpolation mode, enum etc
-       (2) gate->setDeliverOnReceptionStart(true)
+
+       (2) In wireless models, the handling of transmission duration needs 
+           to be refactored. In 3.x, the receiver side usually calculated 
+           the frame duration independent of the sender. In 4.0, the duration
+           calculated by the sender should be specified in the sendDirect() 
+           call, which writes it into the packet (setDuration()). The receiver 
+           module should have the input gate configured for 
+           deliverOnReceptionStart=true, i.e. it is supposed to call 
+           setDeliverOnReceptionStart(true) on the gate in the initialize 
+           phase. The receiver module should obtain the duration from the 
+           packet (pkt->getDuration()) instead of recalculating it. 
+           
 
 Other sources of information
   doc/migration.pdf
