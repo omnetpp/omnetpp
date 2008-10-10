@@ -14,6 +14,17 @@
    <!-- <xsl:apply-templates select="@*|node()"/> -->
 </xsl:template>
 
+
+<!-- hack to force <token>s to be rendered in bold (italic would be better)?
+<xsl:template match="token">
+   <command>
+      <xsl:copy>
+         <xsl:apply-templates select="@*|node()"/>
+      </xsl:copy>
+   </command>
+</xsl:template>
+-->
+
 <xsl:template match="picture">
    <figure float="0">
       <xsl:attribute name="id"><xsl:value-of select="@file"/></xsl:attribute>

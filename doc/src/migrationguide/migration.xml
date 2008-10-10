@@ -29,13 +29,13 @@
 					<para>
 						Curly braces has been introduced at the following places: module
 						and channel definitions (the
-						<literal>endsimple</literal>
+						<token>endsimple</token>
 						,
-						<literal>endmodule</literal>
+						<token>endmodule</token>
 						,
-						<literal>endnetwork</literal>
+						<token>endnetwork</token>
 						,
-						<literal>endchannel</literal>
+						<token>endchannel</token>
 						keywords have been removed); submodules; around channel parameters
 						in connections.
 					</para>
@@ -43,38 +43,38 @@
 				<listitem>
 					<para>
 						The
-						<literal>numeric</literal>
+						<token>numeric</token>
 						parameter type is no longer used, and must be replaced with
-						<literal>int</literal>
+						<token>int</token>
 						or
-						<literal>double</literal>
+						<token>double</token>
 						, depending on the parameter usage.
 					</para>
 				</listitem>
 				<listitem>
 					<para>
 						The
-						<literal>const</literal>
+						<token>const</token>
 						keyword has been removed, and a new keyword
-						<literal>volatile</literal>
+						<token>volatile</token>
 						has been introduced. In 3.x an unqualified parameter was
-						<literal>volatile</literal>
+						<token>volatile</token>
 						while it is
-						<literal>const</literal>
+						<token>const</token>
 						in 4.0.
 					</para>
 				</listitem>
 				<listitem>
 					<para>
 						The display string has been turned into a property with the
-						<literal>@display(...)</literal>
+						<token>@display(...)</token>
 						syntax.
 					</para>
 				</listitem>
 				<listitem>
 					<para>
 						Introduced a new parameter property
-						<literal>@unit(...)</literal>
+						<token>@unit(...)</token>
 						to specify physical units. For parameters where unit is specified
 						all the values in ini files and NED files must also specify
 						convertible units otherwise an error will be signaled.
@@ -83,7 +83,7 @@
 				<listitem>
 					<para>
 						The parameter prompt string also became a property as
-						<literal>@prompt(...)</literal>
+						<token>@prompt(...)</token>
 						.
 					</para>
 				</listitem>
@@ -91,16 +91,16 @@
 					<para>
 						Conditional parameters are no longer supported. In most cases they
 						can be replaced with the
-						<literal>?:</literal>
+						<token>?:</token>
 						operator in assigments.
 					</para>
 				</listitem>
 				<listitem>
 					<para>
 						The
-						<literal>gatesizes</literal>
+						<token>gatesizes</token>
 						section in compound modules has been renamed to
-						<literal>gates</literal>
+						<token>gates</token>
 						.
 					</para>
 				</listitem>
@@ -111,20 +111,20 @@
 				<listitem>
 					<para>
 						The syntax of the connection
-						<literal>for</literal>
+						<token>for</token>
 						loop has changed
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-						<literal>ancestor</literal>
+						<token>ancestor</token>
 						parameters have been removed.
 					</para>
 				</listitem>
 				<listitem>
 					<para>
 						The
-						<literal>ref</literal>
+						<token>ref</token>
 						keyword was removed because parameters are now always passed by
 						reference.
 					</para>
@@ -132,17 +132,17 @@
 				<listitem>
 					<para>
 						There is no more implicit conversion between
-						<literal>bool</literal>
+						<token>bool</token>
 						and
-						<literal>long</literal>
+						<token>long</token>
 						/
-						<literal>double</literal>
+						<token>double</token>
 					</para>
 				</listitem>
 				<listitem>
 					<para>
 						The
-						<literal>import</literal>
+						<token>import</token>
 						declarations now refer to fully qualified package or type names
 						instead of files.
 					</para>
@@ -170,31 +170,31 @@
 				<listitem>
 					<para>
 						The
-						<literal>[Cmdenv]</literal>
+						<token>[Cmdenv]</token>
 						,
-						<literal>[Tkenv]</literal>
+						<token>[Tkenv]</token>
 						,
-						<literal>[Parameters]</literal>
+						<token>[Parameters]</token>
 						,
-						<literal>[Partitioning]</literal>
+						<token>[Partitioning]</token>
 						,
-						<literal>[OutVectors]</literal>
+						<token>[OutVectors]</token>
 						sections no longer exist, and their contents should be copied
 						under the
-						<literal>[General]</literal>
+						<token>[General]</token>
 						sections.
 					</para>
 				</listitem>
 				<listitem>
 					<para>
 						Configuration options from
-						<literal>[Cmdenv]</literal>
+						<token>[Cmdenv]</token>
 						and
-						<literal>[Tkenv]</literal>
+						<token>[Tkenv]</token>
 						have been prefixed with
-						<literal>cmdenv-</literal>
+						<token>cmdenv-</token>
 						and
-						<literal>tkenv-</literal>
+						<token>tkenv-</token>
 						, respectively.
 					</para>
 				</listitem>
@@ -205,14 +205,14 @@
 				<listitem>
 					<para>
 						The
-						<literal>[Run 1]</literal>
+						<token>[Run 1]</token>
 						,
-						<literal>[Run 2]</literal>
+						<token>[Run 2]</token>
 						, ... sections are no longer used and should be converted to named
 						configurations:
-						<literal>[Config ...]</literal>
+						<token>[Config ...]</token>
 						,
-						<literal>[Config ...]</literal>
+						<token>[Config ...]</token>
 						, ... Note that run numbers no longer refer to configuration
 						sections but iteration numbers.
 					</para>
@@ -220,53 +220,53 @@
 				<listitem>
 					<para>
 						The
-						<literal>cmdenv-express-mode</literal>
+						<token>cmdenv-express-mode</token>
 						entry (which was
-						<literal>express-mode</literal>
+						<token>express-mode</token>
 						under
-						<literal>[Cmdenv]</literal>
+						<token>[Cmdenv]</token>
 						) defaults to
-						<literal>true</literal>
+						<token>true</token>
 						instead of
-						<literal>false</literal>
+						<token>false</token>
 						.
 					</para>
 				</listitem>
 				<listitem>
 					<para>
 						Most of the entries in the section
-						<literal>[Tkenv]</literal>
+						<token>[Tkenv]</token>
 						have been removed except the following ones which are still
 						supported but prefixed as:
-						<literal>tkenv-default-run</literal>
+						<token>tkenv-default-run</token>
 						,
-						<literal>tkenv-image-path</literal>
+						<token>tkenv-image-path</token>
 						,
-						<literal>tkenv-plugin-path</literal>
+						<token>tkenv-plugin-path</token>
 						.
 					</para>
 				</listitem>
 				<listitem>
 					<para>
 						The
-						<literal>tkenv-default-run</literal>
+						<token>tkenv-default-run</token>
 						entry (which was
-						<literal>default-run</literal>
+						<token>default-run</token>
 						under
-						<literal>[Tkenv]</literal>
+						<token>[Tkenv]</token>
 						) was referring to a section with multiple entries but now it
 						refers to an iteration number, so now it only makes sense together
 						with
-						<literal>tkenv-default-section</literal>
+						<token>tkenv-default-section</token>
 						.
 					</para>
 				</listitem>
 				<listitem>
 					<para>
 						There is a new entry
-						<literal>cmdenv-interactive</literal>
+						<token>cmdenv-interactive</token>
 						defaulting to
-						<literal>false</literal>
+						<token>false</token>
 						, which causes Cmdenv to never read stdin, and abort on missing
 						configuration entries. In 3.x the default behavior was to read a
 						value from stdin.
@@ -275,13 +275,13 @@
 				<listitem>
 					<para>
 						The
-						<literal>preload-ned-files</literal>
+						<token>preload-ned-files</token>
 						entry has been removed because in 4.0, NED files are loaded from
 						directories listen in the NED path. (The NED path is a string that
 						contains a list of directories, and it it may come from the
-						<literal>NEDPATH</literal>
+						<token>NEDPATH</token>
 						environment variable, from a command-line option, or from the
-						<literal>ned-path</literal>
+						<token>ned-path</token>
 						ini file option. For single-directory simulation models, the
 						default value of ‘.’ should be sufficient.
 					</para>
@@ -297,9 +297,9 @@
 				<listitem>
 					<para>
 						The
-						<literal>**.use-default=true</literal>
+						<token>**.use-default=true</token>
 						syntax should be changed to
-						<literal>**=default</literal>
+						<token>**=default</token>
 						.
 					</para>
 				</listitem>
@@ -345,7 +345,7 @@
 		<sect1>
 			<title>C++ code (cc/h files)</title>
 			<para>This is just a brief summary of API changes since 3.x. Please consult the
-						<literal>include/ChangeLog</literal> file for detailed information.
+						<token>include/ChangeLog</token> file for detailed information.
 			</para>
 			<itemizedlist>
 				<listitem><para>Several header files have been renamed in omnetpp/include.</para></listitem>
@@ -384,13 +384,13 @@
 	                            cMessage). All network packets (frames, datagrams, etc) are now
 	                            supposed to be subclassed from cPacket, not directly cMessage.</para></listitem>
 				<listitem><para>A new cPacketQueue class has been introduced to store cPackets and subclasses.</para></listitem>
-				<listitem><para>Global <literal>findXXX(const char *name)</literal>  functions turned
-				                into static <literal>cXXX::find(const char *name);</literal>
-	   						    (affected: <literal> findLink(), findFunction, findEnum, findChannelType,
-	   						    findNetworkType(), findModuleType()</literal>)
+				<listitem><para>Global <token>findXXX(const char *name)</token>  functions turned
+				                into static <token>cXXX::find(const char *name);</token>
+	   						    (affected: <token> findLink(), findFunction, findEnum, findChannelType,
+	   						    findNetworkType(), findModuleType()</token>)
 				</para></listitem>
 				<listitem><para>Run number handling were made entirely the matter of cEnvir.
-				   <literal>cSimulation::runNumber()</literal> got removed. Also removed runNumber
+				   <token>cSimulation::runNumber()</token> got removed. Also removed runNumber
 				            from the arg list of cEnvir callback functions.
 				</para></listitem>
 			</itemizedlist>
@@ -401,9 +401,9 @@
 				<listitem>
 					<para>
 						The
-						<literal>OMNETPP_BITMAP_PATH</literal>
+						<token>OMNETPP_BITMAP_PATH</token>
 						environment variable has been renamed to
-						<literal>OMNETPP_IMAGE_PATH</literal>
+						<token>OMNETPP_IMAGE_PATH</token>
 						. The system will check this at runtime and print a warning if the
 						old variable is still present.
 					</para>
@@ -421,8 +421,8 @@
 						entry in the ini file</para>
 				</listitem>
 				<listitem>
-					<para>Use the <literal>-h all</literal> switch to get detailed info about you
-					simulation executable. (or <literal>opp_run -h all</literal> to get info about
+					<para>Use the <token>-h all</token> switch to get detailed info about you
+					simulation executable. (or <token>opp_run -h all</token> to get info about
 					OMNeT++ itself.) </para>
 				</listitem>
 				<listitem>
@@ -878,7 +878,7 @@ simple Router16Port extends Router {
            
 	       <listitem><para>Use additional display string tags (module background, grid etc.)
 	       to enhance your simulation. See the manual for new supported tags.</para></listitem>
-	       <listitem><para>Possibly make use of <literal>@properties</literal> as "marker interfaces", like @host(true)</para></listitem>
+	       <listitem><para>Possibly make use of <token>@properties</token> as "marker interfaces", like @host(true)</para></listitem>
            
        </itemizedlist>
 </sect2>
@@ -936,28 +936,28 @@ extends=foo
 	    </para></listitem>
 		<listitem><para>
 		   If possible take advantage of inout gates a bidirectional connections.
-		   use use <literal>gate("gatename$i")</literal> or <literal>gate("gatename$o")</literal>
-		   to access the two direction separately (<literal>gate("gatename")</literal> will not work!).
+		   use use <token>gate("gatename$i")</token> or <token>gate("gatename$o")</token>
+		   to access the two direction separately (<token>gate("gatename")</token> will not work!).
 		</para></listitem>
 	    <listitem><para>If a message is transmitted on a finite datarate channel,
-	       call <literal>setDeliverOnReceptionStart(true)</literal> on a simple module's input gate
+	       call <token>setDeliverOnReceptionStart(true)</token> on a simple module's input gate
 	       to deliver the message to the receiver module at the start of the reception
 	       (instead of the default, which delivers at the end). In 3.x it was only possible
 	       to receive the packet at the beginning of the reception by setting the channel
 	       datarate to 0, and calculating the transmission duration manually.
 	    </para></listitem>
 		<listitem><para>If you have a complex channel model, now you can extend cChannel and
-		      register your new class. Override the <literal>deliver(...)</literal> method.
+		      register your new class. Override the <token>deliver(...)</token> method.
 		      There are three new built in channels you can use as a starting point:
-		      <literal>cIdealChannel, cDelayChannel, cDatarateChannel</literal>
+		      <token>cIdealChannel, cDelayChannel, cDatarateChannel</token>
 		</para></listitem>
 		<listitem><para>Use cMessage or cPacket depending on your needs. The length, bit error
 		      flag and encapsulated message cMessage fields got factored out from cMessage,
 		      into the cPacket class. </para></listitem>
-		<listitem><para>Use the <literal>getProperties() </literal>method of
-		      <literal>cComponent</literal> to access model metadata. Any property
+		<listitem><para>Use the <token>getProperties() </token>method of
+		      <token>cComponent</token> to access model metadata. Any property
 		      value can be attached to the component in a NED file with the
-		      <literal>@propname(key1=val1,val2;key2=valA,valB)</literal> syntax.
+		      <token>@propname(key1=val1,val2;key2=valA,valB)</token> syntax.
 		      You can use the properties as a marker (e.g. @host) or to provide any additional
 		      information to the model.
 	    </para></listitem>
@@ -966,13 +966,13 @@ extends=foo
            to be refactored. </para>
            <para>In 3.x, the receiver side usually calculated
 	           the frame duration independent of the sender. In 4.0, the duration
-	           calculated by the sender should be specified in the <literal>sendDirect()</literal>
-	           call, which writes it into the packet (<literal>setDuration()</literal>). The receiver
+	           calculated by the sender should be specified in the <token>sendDirect()</token>
+	           call, which writes it into the packet (<token>setDuration()</token>). The receiver
 	           module should have the input gate configured for
-	           <literal>deliverOnReceptionStart=true</literal>, i.e. it is supposed to call
-	           <literal>setDeliverOnReceptionStart(true)</literal> on the gate in the initialize
+	           <token>deliverOnReceptionStart=true</token>, i.e. it is supposed to call
+	           <token>setDeliverOnReceptionStart(true)</token> on the gate in the initialize
 	           phase. The receiver module should obtain the duration from the
-	           packet (<literal>pkt->getDuration()</literal>) instead of recalculating it.
+	           packet (<token>pkt->getDuration()</token>) instead of recalculating it.
 	    </para></listitem>
 
 	   </itemizedlist>
