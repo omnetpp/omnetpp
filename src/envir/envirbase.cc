@@ -143,6 +143,8 @@ static const char *buildInfoFormat =
     #else
     " DEBUG"
     #endif
+
+    " simtime_t=%s"
     ;
 
 static const char *buildOptions = ""
@@ -250,7 +252,7 @@ void EnvirBase::setup()
         ev << "\n";
         ev << "Build: " OMNETPP_RELEASE " " OMNETPP_BUILDID << "\n";
         ev << "Compiler: " << compilerInfo << "\n";
-        ev << "Options: " << opp_stringf(buildInfoFormat, 8*sizeof(void*)) << buildOptions << "\n" << "\n";
+        ev << "Options: " << opp_stringf(buildInfoFormat, 8*sizeof(void*), opp_typename(typeid(simtime_t))) << buildOptions << "\n" << "\n";
         return;  // don't set initialized==true
     }
 
