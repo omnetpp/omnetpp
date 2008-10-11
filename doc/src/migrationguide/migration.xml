@@ -1,908 +1,842 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE article SYSTEM "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
 <book>
-	<title>Migrating OMNeT++ simulations from version 3.x to 4.0
-	</title>
-	<chapter>
-		<title>What has changed since 3.x?</title>
-		<sect1>
-			<title>Overview</title>
-			<para>Simulation models written for OMNeT++ 3.x cannot be
-				used directly with OMNeT++ 4.0 or later, due to changes in the C++
-				API, NED, ini and msg files. This document describes how to convert
-				a 3.x model to run under OMNeT++ 4.0.</para>
-			<para>You should be already familiar with the OMNeT++ 3.x and 4.0
-				before doing the migration. We recommend to take a closer look at
-				the 4.0 sample simulations before proceeding.</para>
-		</sect1>
-		<sect1>
-			<title>NED files</title>
-			<para>The NED language was significantly revised, and in addition
-				to changing to a more consistent syntax, it was also expanded with
-				new powerful new concepts: inheritance, module and channel
-				interfaces, inner types, bidirectional connections, package
-				structure, metadata annotation (properties), and so on. The
-				following bullets list the changes that are important when porting
-				models from the 3.x release.</para>
-			<itemizedlist>
-				<listitem>
-					<para>
-						Curly braces has been introduced at the following places: module
-						and channel definitions (the
-						<token>endsimple</token>
-						,
-						<token>endmodule</token>
-						,
-						<token>endnetwork</token>
-						,
-						<token>endchannel</token>
-						keywords have been removed); submodules; around channel parameters
-						in connections.
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						The
-						<token>numeric</token>
-						parameter type is no longer used, and must be replaced with
-						<token>int</token>
-						or
-						<token>double</token>
-						, depending on the parameter usage.
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						The
-						<token>const</token>
-						keyword has been removed, and a new keyword
-						<token>volatile</token>
-						has been introduced. In 3.x an unqualified parameter was
-						<token>volatile</token>
-						while it is
-						<token>const</token>
-						in 4.0.
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						The display string has been turned into a property with the
-						<token>@display(...)</token>
-						syntax.
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						Introduced a new parameter property
-						<token>@unit(...)</token>
-						to specify physical units. For parameters where unit is specified
-						all the values in ini files and NED files must also specify
-						convertible units otherwise an error will be signaled.
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						The parameter prompt string also became a property as
-						<token>@prompt(...)</token>
-						.
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						Conditional parameters are no longer supported. In most cases they
-						can be replaced with the
-						<token>?:</token>
-						operator in assigments.
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						The
-						<token>gatesizes</token>
-						section in compound modules has been renamed to
-						<token>gates</token>
-						.
-					</para>
-				</listitem>
-				<listitem>
-					<para>The syntax of parameter definitions has changed from
-						Pascal style to C style.</para>
-				</listitem>
-				<listitem>
-					<para>
-						The syntax of the connection
-						<token>for</token>
-						loop has changed
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<token>ancestor</token>
-						parameters have been removed.
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						The
-						<token>ref</token>
-						keyword was removed because parameters are now always passed by
-						reference.
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						There is no more implicit conversion between
-						<token>bool</token>
-						and
-						<token>long</token>
-						/
-						<token>double</token>
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						The
-						<token>import</token>
-						declarations now refer to fully qualified package or type names
-						instead of files.
-					</para>
-				</listitem>
-				<listitem>
-					<para>You can place submodules directly into a network instead of
-					creating a compound module, placing your submodules there and then
-					instantiating the module as a network (as was required in 3.x)
-					</para>
-				</listitem>
-			</itemizedlist>
-		</sect1>
-		<sect1>
-			<title>Message (msg) files</title>
-			<itemizedlist>
-				<listitem>
-					<para>The field property syntax has been changed to be same as
-						for NED files.</para>
-				</listitem>
-			</itemizedlist>
-		</sect1>
-		<sect1>
-			<title>Initialization (ini) files</title>
-			<itemizedlist>
-				<listitem>
-					<para>
-						The
-						<token>[Cmdenv]</token>
-						,
-						<token>[Tkenv]</token>
-						,
-						<token>[Parameters]</token>
-						,
-						<token>[Partitioning]</token>
-						,
-						<token>[OutVectors]</token>
-						sections no longer exist, and their contents should be copied
-						under the
-						<token>[General]</token>
-						sections.
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						Configuration options from
-						<token>[Cmdenv]</token>
-						and
-						<token>[Tkenv]</token>
-						have been prefixed with
-						<token>cmdenv-</token>
-						and
-						<token>tkenv-</token>
-						, respectively.
-					</para>
-				</listitem>
-				<listitem>
-					<para>Other configuration options have been renamed as well.
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						The
-						<token>[Run 1]</token>
-						,
-						<token>[Run 2]</token>
-						, ... sections are no longer used and should be converted to named
-						configurations:
-						<token>[Config ...]</token>
-						,
-						<token>[Config ...]</token>
-						, ... Note that run numbers no longer refer to configuration
-						sections but iteration numbers.
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						The
-						<token>cmdenv-express-mode</token>
-						entry (which was
-						<token>express-mode</token>
-						under
-						<token>[Cmdenv]</token>
-						) defaults to
-						<token>true</token>
-						instead of
-						<token>false</token>
-						.
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						Most of the entries in the section
-						<token>[Tkenv]</token>
-						have been removed except the following ones which are still
-						supported but prefixed as:
-						<token>tkenv-default-run</token>
-						,
-						<token>tkenv-image-path</token>
-						,
-						<token>tkenv-plugin-path</token>
-						.
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						The
-						<token>tkenv-default-run</token>
-						entry (which was
-						<token>default-run</token>
-						under
-						<token>[Tkenv]</token>
-						) was referring to a section with multiple entries but now it
-						refers to an iteration number, so now it only makes sense together
-						with
-						<token>tkenv-default-section</token>
-						.
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						There is a new entry
-						<token>cmdenv-interactive</token>
-						defaulting to
-						<token>false</token>
-						, which causes Cmdenv to never read stdin, and abort on missing
-						configuration entries. In 3.x the default behavior was to read a
-						value from stdin.
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						The
-						<token>preload-ned-files</token>
-						entry has been removed because in 4.0, NED files are loaded from
-						directories listen in the NED path. (The NED path is a string that
-						contains a list of directories, and it it may come from the
-						<token>NEDPATH</token>
-						environment variable, from a command-line option, or from the
-						<token>ned-path</token>
-						ini file option. For single-directory simulation models, the
-						default value '.' should be sufficient.
-					</para>
-				</listitem>
-				<listitem>
-					<para>In 3.0 the entry network was referring to a NED type loaded
-						from one of the files specified in the entry preload-ned-files. In
-						4.0 it specifies a qualified name referring to a NED type which
-						must be available under the directories specified in the entry
-						ned-path. In a single directory simulation model the network entry
-						should work unmodified.</para>
-				</listitem>
-				<listitem>
-					<para>
-						The
-						<token>**.use-default=true</token>
-						syntax should be changed to
-						<token>**=default</token>
-						.
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						Several configuration options have been renamed or otherwise
-						changed. For further details, see
-						<filename>src/envir/ChangeLog</filename>
-						and other
-						<filename>ChangeLog</filename>
-						files.
-					</para>
-				</listitem>
-			</itemizedlist>
-		</sect1>
-		<sect1>
-			<title>Makefiles</title>
-			<para>
-				The makefile generation and the make process has been rewritten.
-				Notably, a single <command>opp_makemake --deep</command> command may
-				replace complicated makefile systems for multi-directory models like
-				the INET Framework.
-				Check the
-				<command>opp_makemake -h</command>
-				for further information.
-			</para>
-			<para>The makefile generator can generate three types of makefiles:
-			  <itemizedlist>
-			    <listitem><para>Local (default): only the sources from the current directory will be included,
-			                    subdirectories will be ignored. This mode is recommended for single directory projects.
-			    </para></listitem>
-			    <listitem><para>Recursive (--recurse): includes files from the current directory and calls into all
-			                    subdirectory. Makefiles should exist in all subdirectories.
-			    </para></listitem>
-			    <listitem><para>Deep (--deep): this is the preferred mode for multi-directory projects. All
-			                    source files are automatically gathered from all subdirectories recursively.
-			                    Only a single makefile is generated in the root directory. Include path for the
-			                    project is automatically discovered. Directories can be excluded with the -X option.
-			    </para></listitem>
-			  </itemizedlist>
-			</para>
-		</sect1>
-		<sect1>
-			<title>C++ code (cc/h files)</title>
-			<para>This is just a brief summary of API changes since 3.x. Please consult the
-						<token>include/ChangeLog</token> file for detailed information.
-			</para>
-			<itemizedlist>
-				<listitem><para>Several header files have been renamed in omnetpp/include.</para></listitem>
-				<listitem><para>Renamed: cObject became cOwnedObject, cPolymorphic became cObject and
-						cNamedObject introduced in between. Several method names have changed in different classes.
-						Check the ChangeLog file for details.</para></listitem>
-				<listitem><para>"get" verb added to the names of nearly all getter methods</para></listitem>
-				<listitem><para>&lt;omnetpp.h&gt; now provides the C99 integer types and limit macros,
-								  even on systems that don't have &lt;stdint.h&gt;</para></listitem>
-				<listitem><para>simtime_t is now not double but class SimTime (64-bit fixed point number)</para></listitem>
-				<listitem><para>Added simtime compatibility mode:
-	                     If needed, the simkernel can be compiled with simtime_t = double.
-	                     For that, compile everything with USE_DOUBLE_SIMTIME defined
-	                     (add -DUSE_DOUBLE_SIMTIME to CFLAGS).</para></listitem>
-				<listitem><para>Introduced inout gates. Note: with inout gates, gate("gatename") does not work,
-				                 use gate("gatename$i") or gate("gatename$o") instead</para></listitem>
-				<listitem><para>Channels became first-class citizens: they have a common base class
-	                            (cComponent) with cModule, they participate in the initialize()/
-	                            finish() protocol, and so on</para></listitem>
-				<listitem><para>Introduced cComponent, a common base class for cModule and cChannel.
-	                            Some new methods to mention: isModule(), nedTypeName()</para></listitem>
-				<listitem><para>cBasicChannel renamed to cDatarateChannel and added cIdealChannel
-				                which lets messages through without any change and without any delay.</para></listitem>
-				<listitem><para>Exception handling changed: now all our exceptions subclass from std::exception
-				               (e.g. cException extends std::exception) and  exceptions are now thrown by value
-				               not by pointer.</para></listitem>
-				<listitem><para>cOutVector: removed half-hearted tuple=2 support from cOutVector and underlying infrastructure and
-				                added methods for metadata annotation: setEnum(), setUnit(), setType(),
-				                setInterpolationMode(), setMin(), setMax()</para></listitem>
-				<listitem><para>Numerous changes related to cDisplayString. Please check include/ChangeLog for details.</para></listitem>
-				<listitem><para>cQueue: head()/tail() removed, back()/front() added (insert at back, pop from front!);
-	                            because of head/tail change, iterator direction and meaning of insertBefore/insertAfter
-	                            has changed. Additionally the boolean flag to specify ascending/descending order has been removed.</para></listitem>
-				<listitem><para>cMessage changes: the length, bit error flag and encapsulated message cMessage fields
-	                            got factored out from cMessage, into the cPacket class (which extends
-	                            cMessage). All network packets (frames, datagrams, etc) are now
-	                            supposed to be subclassed from cPacket, not directly cMessage.</para></listitem>
-				<listitem><para>A new cPacketQueue class has been introduced to store cPackets and subclasses.</para></listitem>
-				<listitem><para>Global <token>findXXX(const char *name)</token>  functions turned
-				                into static <token>cXXX::find(const char *name);</token>
-	   						    (affected: <token> findLink(), findFunction, findEnum, findChannelType,
-	   						    findNetworkType(), findModuleType()</token>)
-				</para></listitem>
-				<listitem><para>Run number handling were made entirely the matter of cEnvir.
-				   <token>cSimulation::runNumber()</token> got removed. Also removed runNumber
-				            from the arg list of cEnvir callback functions.
-				</para></listitem>
-			</itemizedlist>
-		</sect1>
-		<sect1>
-			<title>Environment variables</title>
-			<itemizedlist>
-				<listitem>
-					<para>
-						The
-						<token>OMNETPP_BITMAP_PATH</token>
-						environment variable has been renamed to
-						<token>OMNETPP_IMAGE_PATH</token>
-						. The system will check this at runtime and print a warning if the
-						old variable is still present.
-					</para>
-				</listitem>
-			</itemizedlist>
-		</sect1>
-		<sect1>
-			<title>Command line options</title>
-			<itemizedlist>
-				<listitem>
-					<para>-f is now optional if you specify an ini file</para>
-				</listitem>
-				<listitem>
-					<para>-r now refers to a run instead of a named configuration
-						entry in the ini file</para>
-				</listitem>
-				<listitem>
-					<para>Use the <token>-h all</token> switch to get detailed info about you
-					simulation executable. (or <token>opp_run -h all</token> to get info about
-					OMNeT++ itself.) </para>
-				</listitem>
-				<listitem>
-					<para>
-						For further information use
-						<command>opp_run -h</command>
-						or the -h switch on any simulation executable.
-					</para>
-				</listitem>
-			</itemizedlist>
-		</sect1>
-	</chapter>
-	<chapter>
-		<title>Migration tools</title>
-		<para>There are steps during the migration that can be easily
-			automated. OMNeT++ 4 provides several command line tools that may
-			help during the migration process. These tools are available under
-			the migrate directory in the OMNeT++ 4.0 installation.</para>
-		<sect1>
-			<title>migratened</title>
-			<para>The tool recursively migrates all .ned files under the
-				current directory by doing the following:</para>
-			<itemizedlist>
-				<listitem>
-					<para>Converts all simple, module, network, channel type
-						declarations to use the new curly brace format.</para>
-				</listitem>
-				<listitem>
-					<para>Converts all parameter definitions to the new syntax.
-					</para>
-				</listitem>
-				<listitem>
-					<para>Removes const qualifiers and adds volatile qualifier
-						to non const parameter definitions.</para>
-				</listitem>
-				<listitem>
-					<para>For safety reasons the automatic migration converts
-						numeric parameter types to double. Later the parameters must be
-						manually checked if the type int would be sufficient and change
-						accordingly.</para>
-				</listitem>
-				<listitem>
-					<para>Converts all submodule declarations to use the new
-						curly brace format.</para>
-				</listitem>
-			</itemizedlist>
-		</sect1>
-		<sect1>
-			<title>migratemsg</title>
-			<para>The tool recursively migrates all .msg files under the
-				current directory by doing the following:</para>
-			<itemizedlist>
-				<listitem>
-					<para>Converts all properties to the new format.</para>
-				</listitem>
-			</itemizedlist>
-		</sect1>
-		<sect1>
-			<title>migrateini</title>
-			<para>The tool recursively migrates all .ini files under the
-				current directory by doing the following:</para>
-			<itemizedlist>
-				<listitem>
-					<para>Copies the entries from the sections [Parameters],
-						[Cmdenv], [Tkenv], [OutVectors], [Partitioning] to the section
-						[General].</para>
-				</listitem>
-				<listitem>
-					<para>Merges the entries from multiple occurrences of the
-						section [General] into one.</para>
-				</listitem>
-				<listitem>
-					<para>Prefixes the entries in the sections [Cmdenv],
-						[Tkenv] with cmdenv- and tkenv- respectively (unless the entry
-						already begins with that).</para>
-				</listitem>
-				<listitem>
-					<para>Renames the sections [Run 1], [Run 2]... to [Config
-						config1], [Config config2]...</para>
-				</listitem>
-				<listitem>
-					<para>Renames all configuration options that have changed.
-					</para>
-				</listitem>
-				<listitem>
-					<para>Changes the entries **.use-default to **=default.
-					</para>
-				</listitem>
-			</itemizedlist>
-		</sect1>
-		<sect1>
-			<title>migratecpp</title>
-			<para>The tool recursively migrates all .cc and .h files under the
-				current directory by doing the following:</para>
-			<itemizedlist>
-				<listitem>
-					<para>Renames all changed classes and methods that can be
-						unambiguously identified in the code.</para>
-				</listitem>
-				<listitem>
-					<para>Removes obsolete macros (Define_Module_Members, etc).</para>
-				</listitem>
-				<listitem>
-					<para>Print warnings for all places that may need further
-						inspection or manual changes.</para>
-				</listitem>
-			</itemizedlist>
-		</sect1>
-		<sect1>
-			<title>opp_makemake</title>
-			<para>This tool is not a migration tool, but rather you will be
-				able to create new makefiles for your project. Old makefiles cannot
-				be reused.</para>
-		</sect1>
-	</chapter>
-	<chapter>
-		<title>How to migrate</title>
-		<para>
-			We recommend to port your simulation model in several stages:
-			<orderedlist>
-				<listitem>
-					<para>Get it working with 4.0 as fast as possible</para>
-					<orderedlist>
-						<listitem>
-							<para>Run the automatic migration scripts.</para>
-						</listitem>
-						<listitem>
-							<para>Do manual changes to your model and use as few of the new
-								features as possible.</para>
-						</listitem>
-						<listitem>
-							<para>Verify whether your model is working correctly and
-								produces the same results as the old one. (either exactly or
-								statistically)</para>
-						</listitem>
-					</orderedlist>
-				</listitem>
-				<listitem>
-					<para>Improve it by making use of new OMNeT++ features.
-					</para>
-				</listitem>
-			</orderedlist>
-		</para>
-		<sect1>
-			<title>Getting your simulation model working</title>
-			<orderedlist>
-				<listitem>
-					<para>PREREQUISITES: Have OMNeT++ 4.0 installed and
-						working, and familiarize yourself with the IDE.</para>
-				</listitem>
-				<listitem>
-					<para> Make a backup of your simulation model. Be prepared to
-						delete everything and start over with the migration several times,
-						until you get it right.</para>
-				</listitem>
-				<listitem>
-					<para> Change into the directory of your simulation model, and run
-						all scripts in the &lt;omnetpp&gt;/migrate subdirectory from there.</para>
+  <title>Migrating OMNeT++ simulations from version 3.x to 4.0</title>
+
+  <chapter>
+    <title>What has changed since 3.x?</title>
+
+    <sect1>
+      <title>Overview</title>
+      <para>Simulation models written for OMNeT++ 3.x cannot be used directly with
+      OMNeT++ 4.0 or later, due to changes in the C++ API, NED, ini and msg files. This
+      document describes how to convert a 3.x model to run under OMNeT++ 4.0.</para>
+      <para>You should be already familiar with the OMNeT++ 3.x and 4.0 before doing the
+      migration. We recommend to take a closer look at the 4.0 sample simulations before
+      proceeding.</para>
+    </sect1>
+
+    <sect1>
+      <title>NED files</title>
+      <para>The NED language was significantly revised, and in addition to changing to a
+      more consistent syntax, it was also expanded with new powerful new concepts:
+      inheritance, module and channel interfaces, inner types, bidirectional connections,
+      package structure, metadata annotation (properties), and so on. The following
+      bullets list the changes that are important when porting models from the 3.x
+      release.</para>
+      <itemizedlist>
+        <listitem>
+          <para>Curly braces has been introduced at the following places: module and
+          channel definitions (the <token>endsimple</token>, <token>endmodule</token>,
+          <token>endnetwork</token>, <token>endchannel</token> keywords have been
+          removed); submodules; around channel parameters in connections.</para>
+        </listitem>
+        <listitem>
+          <para>The <token>numeric</token> parameter type is no longer used, and
+          must be replaced with <token>int</token> or <token>double</token>, depending
+          on the parameter usage.</para>
+        </listitem>
+        <listitem>
+          <para>The <token>const</token> keyword has been removed, and a new keyword
+          <token>volatile</token> has been introduced. In 3.x an unqualified parameter was
+          <token>volatile</token> while it is <token>const</token> in 4.0.</para>
+        </listitem>
+        <listitem>
+          <para>The display string has been turned into a property with the
+          <token>@display(...)</token> syntax.</para>
+        </listitem>
+        <listitem>
+          <para>Introduced a new parameter property <token>@unit(...)</token>
+          to specify physical units. For parameters where unit
+          is specified all the values in ini files and NED files must also specify
+          convertible units otherwise an error will be signaled.</para>
+        </listitem>
+        <listitem>
+          <para>The parameter prompt string also became a property as
+          <token>@prompt(...)</token>.</para>
+        </listitem>
+        <listitem>
+          <para>Conditional parameters are no longer supported. In most cases they can be
+          replaced with the <token>?:</token> operator in assigments.</para>
+        </listitem>
+        <listitem>
+          <para>The
+          <token>gatesizes</token> section in compound modules has been renamed to
+          <token>gates</token>.</para>
+        </listitem>
+        <listitem>
+          <para>The syntax of parameter definitions has changed from Pascal style to C
+          style.</para>
+        </listitem>
+        <listitem>
+          <para>The syntax of the connection <token>for</token> loop has changed</para>
+        </listitem>
+        <listitem>
+          <para><token>ancestor</token> parameters have been removed.</para>
+        </listitem>
+        <listitem>
+          <para>The <token>ref</token> keyword was removed because parameters are now
+          always passed by reference.</para>
+        </listitem>
+        <listitem>
+          <para>There is no more implicit conversion between <token>bool</token> and
+          <token>long</token>/<token>double</token></para>
+        </listitem>
+        <listitem>
+          <para>The <token>import</token> declarations now refer to fully qualified
+          package or type names instead of files.</para>
+        </listitem>
+        <listitem>
+          <para>You can place submodules directly into a network instead of creating a
+          compound module, placing your submodules there and then instantiating the
+          module as a network (as was required in 3.x)</para>
+        </listitem>
+      </itemizedlist>
+    </sect1>
+
+    <sect1>
+      <title>Message (msg) files</title>
+      <itemizedlist>
+        <listitem>
+          <para>The field property syntax has been changed to be same as for NED
+          files.</para>
+        </listitem>
+      </itemizedlist>
+    </sect1>
+
+    <sect1>
+      <title>Initialization (ini) files</title>
+      <itemizedlist>
+        <listitem>
+          <para>The
+          <token>[Cmdenv]</token>, <token>[Tkenv]</token>, <token>[Parameters]</token>,
+          <token>[Partitioning]</token>, <token>[OutVectors]</token> sections no longer
+          exist, and their contents should be copied under the
+          <token>[General]</token> section.</para>
+        </listitem>
+        <listitem>
+          <para>Configuration options from <token>[Cmdenv]</token> and
+          <token>[Tkenv]</token> have been prefixed with <token>cmdenv-</token> and
+          <token>tkenv-</token>, respectively.</para>
+        </listitem>
+        <listitem>
+          <para>Other configuration options have been renamed as well.</para>
+        </listitem>
+        <listitem>
+          <para>The
+          <token>[Run 1]</token>, <token>[Run 2]</token>, ... sections are no longer
+          used and should be converted to named configurations:
+          <token>[Config ...]</token>, <token>[Config ...]</token>, ...
+          Note that run numbers no longer refer to configuration sections but
+          iteration numbers.</para>
+        </listitem>
+        <listitem>
+          <para>The
+          <token>cmdenv-express-mode</token> entry (which was <token>express-mode</token> under
+          <token>[Cmdenv]</token>) defaults to <token>true</token> instead of
+          <token>false</token>.</para>
+        </listitem>
+        <listitem>
+          <para>Most of the entries in the section
+          <token>[Tkenv]</token> have been removed except the following ones which are
+          still supported but prefixed as: <token>tkenv-default-run</token>,
+          <token>tkenv-image-path</token>, <token>tkenv-plugin-path</token>.</para>
+        </listitem>
+        <listitem>
+          <para>The <token>tkenv-default-run</token> entry (which was
+          <token>default-run</token> under <token>[Tkenv]</token>) was referring to
+          a section with multiple entries but now it refers to an iteration number,
+          so now it only makes sense together with
+          <token>tkenv-default-section</token>.</para>
+        </listitem>
+        <listitem>
+          <para>There is a new entry <token>cmdenv-interactive</token> defaulting to
+          <token>false</token>, which causes Cmdenv to never read stdin, and abort on
+          missing configuration entries. In 3.x the default behavior was to read a value
+          from stdin.</para>
+        </listitem>
+        <listitem>
+          <para>The <token>preload-ned-files</token> entry has been removed because in 4.0,
+          NED files are loaded from directories listen in the NED path. (The NED path is a
+          string that contains a list of directories, and it it may come from the
+          <token>NEDPATH</token> environment variable, from a command-line option, or from
+          the <token>ned-path</token> ini file option. For single-directory simulation models,
+          the default value '.' should be sufficient.</para>
+        </listitem>
+        <listitem>
+          <para>In 3.0 the entry network was referring to a NED type loaded from one of
+          the files specified in the entry preload-ned-files. In 4.0 it specifies a
+          qualified name referring to a NED type which must be available under the
+          directories specified in the entry ned-path. In a single directory simulation
+          model the network entry should work unmodified.</para>
+        </listitem>
+        <listitem>
+          <para>The <token>**.use-default=true</token> syntax should be changed to
+          <token>**=default</token>.</para>
+        </listitem>
+        <listitem>
+          <para>Several configuration options have been renamed or otherwise changed. For
+          further details, see <filename>src/envir/ChangeLog</filename> and other
+          <filename>ChangeLog</filename> files.</para>
+        </listitem>
+      </itemizedlist>
+    </sect1>
+
+    <sect1>
+      <title>Makefiles</title>
+      <para>The makefile generation and the make process has been rewritten. Notably, a
+      single <command>opp_makemake --deep</command> command may replace complicated
+      makefile systems for multi-directory models like the INET Framework. Check the
+      <command>opp_makemake -h</command> for further information.</para>
+      <para>The makefile generator can generate three types of makefiles:
+      <itemizedlist>
+        <listitem>
+          <para>Local (default): only the sources from the current directory will be
+          included, subdirectories will be ignored. This mode is recommended for single
+          directory projects.</para>
+        </listitem>
+        <listitem>
+          <para>Recursive (--recurse): includes files from the current directory and
+          calls into all subdirectory. Makefiles should exist in all
+          subdirectories.</para>
+        </listitem>
+        <listitem>
+          <para>Deep (--deep): this is the preferred mode for multi-directory projects.
+          All source files are automatically gathered from all subdirectories
+          recursively. Only a single makefile is generated in the root directory. Include
+          path for the project is automatically discovered. Directories can be excluded
+          with the -X option.</para>
+        </listitem>
+      </itemizedlist></para>
+    </sect1>
+
+    <sect1>
+      <title>C++ code (cc/h files)</title>
+      <para>This is just a brief summary of API changes since 3.x. Please consult the
+      <token>include/ChangeLog</token> file for detailed information.</para>
+      <itemizedlist>
+        <listitem>
+          <para>Several header files have been renamed in omnetpp/include.</para>
+        </listitem>
+        <listitem>
+          <para>Renamed: cObject became cOwnedObject, cPolymorphic became cObject and
+          cNamedObject introduced in between. Several method names have changed in
+          different classes. Check the ChangeLog file for details.</para>
+        </listitem>
+        <listitem>
+          <para>"get" verb added to the names of nearly all getter methods</para>
+        </listitem>
+        <listitem>
+          <para>&lt;omnetpp.h&gt; now provides the C99 integer types and limit macros,
+          even on systems that don't have &lt;stdint.h&gt;</para>
+        </listitem>
+        <listitem>
+          <para>simtime_t is now not double but class SimTime (64-bit fixed point
+          number)</para>
+        </listitem>
+        <listitem>
+          <para>Added simtime compatibility mode: If needed, the simkernel can be
+          compiled with simtime_t = double. For that, compile everything with
+          USE_DOUBLE_SIMTIME defined (add -DUSE_DOUBLE_SIMTIME to CFLAGS).</para>
+        </listitem>
+        <listitem>
+          <para>Introduced inout gates. Note: with inout gates, gate("gatename") does not
+          work, use gate("gatename$i") or gate("gatename$o") instead</para>
+        </listitem>
+        <listitem>
+          <para>Channels became first-class citizens: they have a common base class
+          (cComponent) with cModule, they participate in the initialize()/ finish()
+          protocol, and so on</para>
+        </listitem>
+        <listitem>
+          <para>Introduced cComponent, a common base class for cModule and cChannel. Some
+          new methods to mention: isModule(), nedTypeName()</para>
+        </listitem>
+        <listitem>
+          <para>cBasicChannel renamed to cDatarateChannel and added cIdealChannel which
+          lets messages through without any change and without any delay.</para>
+        </listitem>
+        <listitem>
+          <para>Exception handling changed: now all our exceptions subclass from
+          std::exception (e.g. cException extends std::exception) and exceptions are now
+          thrown by value not by pointer.</para>
+        </listitem>
+        <listitem>
+          <para>cOutVector: removed half-hearted tuple=2 support from cOutVector and
+          underlying infrastructure and added methods for metadata annotation: setEnum(),
+          setUnit(), setType(), setInterpolationMode(), setMin(), setMax()</para>
+        </listitem>
+        <listitem>
+          <para>Numerous changes related to cDisplayString. Please check
+          include/ChangeLog for details.</para>
+        </listitem>
+        <listitem>
+          <para>cQueue: head()/tail() removed, back()/front() added (insert at back, pop
+          from front!); because of head/tail change, iterator direction and meaning of
+          insertBefore/insertAfter has changed. Additionally the boolean flag to specify
+          ascending/descending order has been removed.</para>
+        </listitem>
+        <listitem>
+          <para>cMessage changes: the length, bit error flag and encapsulated message
+          cMessage fields got factored out from cMessage, into the cPacket class (which
+          extends cMessage). All network packets (frames, datagrams, etc) are now
+          supposed to be subclassed from cPacket, not directly cMessage.</para>
+        </listitem>
+        <listitem>
+          <para>A new cPacketQueue class has been introduced to store cPackets and
+          subclasses.</para>
+        </listitem>
+        <listitem>
+          <para>Global <token>findXXX(const char *name)</token> functions turned into static
+          <token>cXXX::find(const char *name);</token>(affected:
+          <token>findLink(), findFunction, findEnum, findChannelType, findNetworkType(),
+          findModuleType()</token>)</para>
+        </listitem>
+        <listitem>
+          <para>Run number handling were made entirely the matter of cEnvir.
+          <token>cSimulation::runNumber()</token> got removed. Also removed runNumber from
+          the arg list of cEnvir callback functions.</para>
+        </listitem>
+      </itemizedlist>
+    </sect1>
+
+    <sect1>
+      <title>Environment variables</title>
+      <itemizedlist>
+        <listitem>
+          <para>The <token>OMNETPP_BITMAP_PATH</token> environment variable has been
+          renamed to <token>OMNETPP_IMAGE_PATH</token>. The system will check this
+          at runtime and print a warning if the old variable is still present.</para>
+        </listitem>
+      </itemizedlist>
+    </sect1>
+
+    <sect1>
+      <title>Command line options</title>
+      <itemizedlist>
+        <listitem>
+          <para>-f is now optional if you specify an ini file</para>
+        </listitem>
+        <listitem>
+          <para>-r now refers to a run instead of a named configuration entry in the ini
+          file</para>
+        </listitem>
+        <listitem>
+          <para>Use the <token>-h all</token> switch to get detailed info about you simulation
+          executable. (or <token>opp_run -h all</token> to get info about OMNeT++ itself.)</para>
+        </listitem>
+        <listitem>
+          <para>For further information use <command>opp_run -h</command> or the -h switch
+          on any simulation executable.</para>
+        </listitem>
+      </itemizedlist>
+    </sect1>
+  </chapter>
+
+
+  <chapter>
+    <title>Migration tools</title>
+    <para>There are steps during the migration that can be easily automated. OMNeT++ 4
+    provides several command line tools that may help during the migration process. These
+    tools are available under the migrate directory in the OMNeT++ 4.0
+    installation.</para>
+
+    <sect1>
+      <title>migratened</title>
+      <para>The tool recursively migrates all .ned files under the current directory by
+      doing the following:</para>
+      <itemizedlist>
+        <listitem>
+          <para>Converts all simple, module, network, channel type declarations to use
+          the new curly brace format.</para>
+        </listitem>
+        <listitem>
+          <para>Converts all parameter definitions to the new syntax.</para>
+        </listitem>
+        <listitem>
+          <para>Removes const qualifiers and adds volatile qualifier to non const
+          parameter definitions.</para>
+        </listitem>
+        <listitem>
+          <para>For safety reasons the automatic migration converts numeric parameter
+          types to double. Later the parameters must be manually checked if the type int
+          would be sufficient and change accordingly.</para>
+        </listitem>
+        <listitem>
+          <para>Converts all submodule declarations to use the new curly brace
+          format.</para>
+        </listitem>
+      </itemizedlist>
+    </sect1>
+
+    <sect1>
+      <title>migratemsg</title>
+      <para>The tool recursively migrates all .msg files under the current directory by
+      doing the following:</para>
+      <itemizedlist>
+        <listitem>
+          <para>Converts all properties to the new format.</para>
+        </listitem>
+      </itemizedlist>
+    </sect1>
+
+    <sect1>
+      <title>migrateini</title>
+      <para>The tool recursively migrates all .ini files under the current directory by
+      doing the following:</para>
+      <itemizedlist>
+        <listitem>
+          <para>Copies the entries from the sections [Parameters], [Cmdenv], [Tkenv],
+          [OutVectors], [Partitioning] to the section [General].</para>
+        </listitem>
+        <listitem>
+          <para>Merges the entries from multiple occurrences of the section [General]
+          into one.</para>
+        </listitem>
+        <listitem>
+          <para>Prefixes the entries in the sections [Cmdenv], [Tkenv] with cmdenv- and
+          tkenv- respectively (unless the entry already begins with that).</para>
+        </listitem>
+        <listitem>
+          <para>Renames the sections [Run 1], [Run 2]... to [Config config1], [Config
+          config2]...</para>
+        </listitem>
+        <listitem>
+          <para>Renames all configuration options that have changed.</para>
+        </listitem>
+        <listitem>
+          <para>Changes the entries **.use-default to **=default.</para>
+        </listitem>
+      </itemizedlist>
+    </sect1>
+
+    <sect1>
+      <title>migratecpp</title>
+      <para>The tool recursively migrates all .cc and .h files under the current
+      directory by doing the following:</para>
+      <itemizedlist>
+        <listitem>
+          <para>Renames all changed classes and methods that can be unambiguously
+          identified in the code.</para>
+        </listitem>
+        <listitem>
+          <para>Removes obsolete macros (Define_Module_Members, etc).</para>
+        </listitem>
+        <listitem>
+          <para>Print warnings for all places that may need further inspection or manual
+          changes.</para>
+        </listitem>
+      </itemizedlist>
+    </sect1>
+
+    <sect1>
+      <title>opp_makemake</title>
+      <para>This tool is not a migration tool, but rather you will be able to create new
+      makefiles for your project. Old makefiles cannot be reused.</para>
+    </sect1>
+  </chapter>
+
+
+  <chapter>
+    <title>How to migrate</title>
+    <para>We recommend to port your simulation model in several stages:
+    <orderedlist>
+      <listitem>
+        <para>Get it working with 4.0 as fast as possible</para>
+        <orderedlist>
+          <listitem>
+            <para>Run the automatic migration scripts.</para>
+          </listitem>
+          <listitem>
+            <para>Do manual changes to your model and use as few of the new features as
+            possible.</para>
+          </listitem>
+          <listitem>
+            <para>Verify whether your model is working correctly and produces the same
+            results as the old one. (either exactly or statistically)</para>
+          </listitem>
+        </orderedlist>
+      </listitem>
+      <listitem>
+        <para>Improve it by making use of new OMNeT++ features.</para>
+      </listitem>
+    </orderedlist></para>
+
+    <sect1>
+      <title>Getting your simulation model working</title>
+      <orderedlist>
+        <listitem>
+          <para>PREREQUISITES: Have OMNeT++ 4.0 installed and working, and familiarize
+          yourself with the IDE.</para>
+        </listitem>
+        <listitem>
+          <para>Make a backup of your simulation model. Be prepared to delete everything
+          and start over with the migration several times, until you get it right.</para>
+        </listitem>
+        <listitem>
+          <para>Change into the directory of your simulation model, and run all scripts
+          in the &lt;omnetpp&gt;/migrate subdirectory from there.</para>
+
 <screen>$ cd MyModel
 $ ../omnetpp-4.0/migrate/migratened
 $ ../omnetpp-4.0/migrate/migrateini
 $ ../omnetpp-4.0/migrate/migratemsg
-$ ../omnetpp-4.0/migrate/migratecpp | tee migratecpp.out
-</screen>
-<para> The scripts convert NED, ini, msg and C++ files to 4.0 format.
-	The result will need some manual post-processing, because not
-	everything can be converted automatically. The scripts will print some
-	hints on what you'll need to do manually -- please make note of these
-	printouts. Especially, migratecpp is going to print a number of notes,
-	warnings and hints -- read them carefully.</para>
-	        </listitem>
-   <listitem><para>If your simulation model is based on the INET Framework, have the
-     new INET installed, and similarly run the scripts in the migrate/
-     subdirectory of INET. They will update your source files according
-     to changes in the INET Framework.</para>
+$ ../omnetpp-4.0/migrate/migratecpp | tee migratecpp.out</screen>
+
+          <para>The scripts convert NED, ini, msg and C++ files to 4.0 format. The result
+          will need some manual post-processing, because not everything can be converted
+          automatically. The scripts will print some hints on what you'll need to do
+          manually -- please make note of these printouts. Especially, migratecpp is
+          going to print a number of notes, warnings and hints -- read them
+          carefully.</para>
+        </listitem>
+        <listitem>
+          <para>If your simulation model is based on the INET Framework, have the new
+          INET installed, and similarly run the scripts in the migrate/ subdirectory of
+          INET. They will update your source files according to changes in the INET
+          Framework.</para>
+
 <screen>$ cd MyModel
 $ ../INET/migrate/migratened
 $ ../INET/migrate/migrateini
 $ ../INET/migrate/migratemsg
-$ ../INET/migrate/migratecpp | tee migratecpp.out
-</screen>
-</listitem>
-<listitem><para>
-     You can do the rest of the migration either on the command line,
-     or in the OMNeT++ IDE. We recommend the latter. To use the IDE,
-     you need to create a project for your simulation model. Select
+$ ../INET/migrate/migratecpp | tee migratecpp.out</screen>
 
-       <guimenu>File | New | OMNeT++ Project...</guimenu>
+        </listitem>
+        <listitem>
+          <para>You can do the rest of the migration either on the command line, or in
+          the OMNeT++ IDE. We recommend the latter. To use the IDE, you need to create a
+          project for your simulation model. Select
+          <guimenu>File | New | OMNeT++ Project...</guimenu>from the menu. A wizard comes
+          up. On the first page, uncheck "Use default location" and specify the name and
+          the directory of your simulation model, then go through the other wizard pages
+          and hit Finish at the end. You should see the new project appear in the Project
+          Explorer (left), and it should contain your files. If something goes wrong,
+          remove the project by selecting it and hitting DEL. It will ask whether you
+          also want to delete the files from the disk -- answer NO! Then start over with
+          project creation.</para>
+        </listitem>
+        <listitem>
+          <para>If your project is based on INET (or any other project), you can set up
+          the project as one that depends on the INET project. To do that, make sure the
+          INET project is imported and open, then open the Properties dialog for your
+          project (select the project, right-click it, then choose Properties from the
+          context menu), and check INET on the Project References page. This makes the
+          NED types of INET available in your project, and also puts INET directories on
+          the C++ include path. Make sure the INET project builds a (static/shared)
+          library, not an executable, so your project can link with it -- you can check
+          that by opening INET's Project Properties dialog, and going to the C/C++ Build
+          / Makemake page.</para>
+        </listitem>
+        <listitem>
+          <para>NED in 4.0 has a package system, similar to Java. If your model contains
+          NED files in several subdirectories, these subdirectories now mean packages,
+          and the NED files will need package declarations and imports to be added. This
+          can be done automatically in the IDE. Have your project created and open in the
+          IDE (see previous step), then choose
+          <guimenuitem>Navigate | Clean up NED files...</guimenuitem>from the menu.
+          Select your project and click OK. The IDE will then fix all package
+          declarations and imports in your NED files.</para>
+        </listitem>
+        <listitem>
+          <para>Revise NED files. This includes:
+          <itemizedlist>
+            <listitem>
+              <para>revise "volatile" parameters if they really need to be
+              volatile</para>
+              <warning>
+                <para>Some superfluous volatile qualifiers might pop up for parameters
+                where the original model did not specify const. It is safe to delete the
+                volatile qualifier from parameters which are expected to be constant over
+                the simulation. For example, if the parameter is only used by calling the
+                C++ function par once inside initialize.</para>
+              </warning>
+            </listitem>
+            <listitem>
+              <para>revise "double" parameters whether they should rather be "int"</para>
+              <para>The numeric parameter type from the 3.x version is automatically
+              converted to double, but you may need to change it to int if needed. Be
+              sure to change the correspondig code in your .cc and .h files.</para>
+            </listitem>
+            <listitem>
+              <para>"somepar = input;" lines became just "somepar;" -- you probably want
+              to remove them</para>
+              <tip>
+                <para>The input keyword is no longer supported in NED files, but you can
+                specify the value for this parameter in the .ini file as **.somepar=ask
+                which has the same effect.</para>
+              </tip>
+            </listitem>
+            <listitem>
+              <para>remove extra "network bla extends Bla {}" if needed</para>
+              <para>A 3.x-style network declaration denotes a compound module as network.
+              In 4.0, a compound module may be directly declared to be a network, so the
+              extra step is not needed. Example: the 3.x network declaration
 
-     from the menu. A wizard comes up. On the first page, uncheck
-     "Use default location" and specify the name and the directory
-     of your simulation model, then go through the other wizard pages
-     and hit Finish at the end. You should see the new project appear
-     in the Project Explorer (left), and it should contain your files.
+<screen>network cqn : CQN
+endmodule</screen>
 
-     If something goes wrong, remove the project by selecting it and
-     hitting DEL. It will ask whether you also want to delete the
-     files from the disk -- answer NO! Then start over with project
-     creation.</para>
-</listitem>
+              is converted by the migration script into an inheritance:
 
-<listitem><para>
-     If your project is based on INET (or any other project), you can set
-     up the project as one that depends on the INET project. To do that,
-     make sure the INET project is imported and open, then open the
-     Properties dialog for your project (select the project, right-click
-     it, then choose Properties from the context menu), and check INET
-     on the Project References page. This makes the NED types of INET
-     available in your project, and also puts INET directories on the
-     C++ include path. Make sure the INET project builds a (static/shared)
-     library, not an executable, so your project can link with it -- you
-     can check that by opening INET's Project Properties dialog, and going
-     to the C/C++ Build / Makemake page.</para>
-</listitem>
+<screen>network cqn extends CQN {
+}</screen>
 
-<listitem><para>
-     NED in 4.0 has a package system, similar to Java. If your model
-     contains NED files in several subdirectories, these subdirectories
-     now mean packages, and the NED files will need package declarations
-     and imports to be added. This can be done automatically in the IDE.
-     Have your project created and open in the IDE (see previous step),
-     then choose
+              However, you can remove that altogether, if you change the CQN module's
+              declaration to use the "network" keyword (like: network CQN {...}),
+              and replace network=cqn with network=CQN in the ini files.</para>
+            </listitem>
+            <listitem>
+              <para>"like" module types should be changed into interfaces, and actual
+              types declared to be "like" them</para>
+              <para>For example, if you have a submodule
 
-       <guimenuitem>Navigate | Clean up NED files...</guimenuitem>
+<screen>app: &lt;appType&gt; like App;</screen>
 
-     from the menu. Select your project and click OK. The IDE will then fix
-     all package declarations and imports in your NED files.
-</para></listitem>
-<listitem><para>
-  Revise NED files. This includes:
-  <itemizedlist>
-       <listitem><para>revise "volatile" parameters if they really need to be volatile</para>
-         		<warning><para>Some superfluous volatile qualifiers might pop up for parameters where the original
-		     			model did not specify const. It is safe to delete the volatile qualifier from
-		     			parameters which are expected to be constant over the simulation.
-		     			For example, if the parameter is only used by calling the C++ function par once inside
-						initialize.</para></warning>
-       </listitem>
-       <listitem><para>revise "double" parameters whether they should rather be "int"</para>
-       		<para>The numeric parameter type from the 3.x version is automatically converted to double, but you
-       			  may need to change it to int if needed. Be sure to change the correspondig code in your .cc and .h files.
-       </para></listitem>
-       <listitem><para>"somepar = input;" lines became just "somepar;" -- you probably want to remove them</para>
-       			<tip><para>The input keyword is no longer supported in NED files, but you can specify the value for
-       				  this parameter in the .ini file as **.somepar=ask which has the same effect.</para></tip></listitem>
-       <listitem><para>remove extra "network bla extends Bla {}" if needed</para>
-       			<para>A 3.x-style
-           network declaration denotes a compound module as network. In 4.0,
-           a compound module may be directly declared to be a network, so the
-           extra step is not needed. Example: the 3.x network declaration
-<screen>
-network cqn : CQN
-endmodule
-</screen>
-           is converted by the migration script into an inheritance:
-<screen>
-network cqn extends CQN {
+              then App should be turned into a module interface (and its name prepended
+              with "I" to conform naming convention), like this:
+
+<screen>moduleinterface IApp {
+    gates:
+        input in;
+        output out;
+}</screen>
+
+              and the concrete types should be modified to comply with IApp:
+
+<screen>simple BurstyApp like IApp { ... }
+simple AnotherApp like IApp { ... }</screen>
+
+              </para>
+            </listitem>
+          </itemizedlist></para>
+        </listitem>
+        <listitem>
+          <para>Compile your simulation model (right-click on the project and select
+          Build from the context menu, or close all other projects and hit Ctrl+B.) The
+          most frequent compile errors and their fixes:</para>
+          <itemizedlist>
+            <listitem>
+              <para>"Cannot convert SimTime to double"</para>
+              <para>simtime_t now maps to the int64-based SimTime class and not double.
+              Wherever a simtime_t is assigned to a variable of type double, consider
+              changing that variable to simtime_t as well. The new SimTime class does not
+              provide implicit conversion to double because it would introduce ambiguity
+              errors for C++ compiler. Check the output of the migratecpp tool. It gives
+              you some hints what variables should be changed.</para>
+              <tip>
+                <para>Where still needed, use SIMTIME_DBL(t) to convert a simtime_t to
+                double. In printf's, use "%s" and SIMTIME_STR(t). The advantage of using
+                these macros instead of SimTime methods is that your model will also
+                compile in -DUSE_DOUBLE_SIMTIME compatibility mode (see below).</para>
+              </tip>
+              <tip>
+                <para>If your model is using doubles extensively for time related
+                variables and you want to make a quickly and dirty port, OMNeT++ can be
+                compiled with the original behavior, by specifying -DUSE_DOUBLE_SIMTIME
+                in CFLAGS. However be aware that you have to recompile all OMNeT++
+                libraries with this flag. We do recommend to use the new SimTime type
+                whenever possible.</para>
+              </tip>
+            </listitem>
+            <listitem>
+              <para>"No such method setBitLength/getBitLength/encapsulate/decapsulate"</para>
+              <para>Length and encapsulation have been moved to cPacket, a subclass of
+              cMessage. You likely need to change the "message" keyword in .msg files
+              with "packet", which will cause the generated class to have cPacket as base
+              class.
+
+<screen>message ABCPacket {...} ==&gt; packet ABCPacket {...}</screen>
+
+              Inside handleMessage() and other functions, cast the cMessage* pointer to cPacket:
+
+<screen>cPacket *pkt = check_and_cast&lt;cPacket *&gt;(msg);</screen>
+
+              </para>
+            </listitem>
+            <listitem>
+              <para>"Cannot open file csimul.h" (or any other header)</para>
+              <para>Only &lt;omnetpp.h&gt; is public API. Other OMNeT++ header files
+              should not be included directly, as they may be renamed or removed in any
+              future version.</para>
+            </listitem>
+            <listitem>
+              <para>"sendDirect() does not take 3 (or 4) arguments"</para>
+              <para>sendDirect()'s signature has changed. It used to take a delay as
+              second argument; now it has two variants, one which takes no delay argument
+              (i.e. if you have 0.0 in your simulation, just remove it), and another one
+              that takes a propagation delay and a transmission duration. If you use the
+              second one, you'll probably want to call setDeliverOnReceptionStart(true)
+              on the receiver gate in the target module's initialize() method as
+              well.</para>
+            </listitem>
+          </itemizedlist>
+        </listitem>
+        <listitem>
+          <para>Run your simulation model. The most frequent runtime errors and their
+          fixes:
+          <itemizedlist>
+            <listitem>
+              <para>"Cannot convert unit 'none' to 'seconds'"</para>
+              <para>Physical units now have to be written out in expressions, so you need
+              to change 5 into 5s, and exponential(1) into exponential(1s).</para>
+            </listitem>
+            <listitem>
+              <para>"Cannot convert unit 'none' to 'bps'"</para>
+              <para>The datarate channel parameter now has unit bps (bit/sec), and this
+              unit must be written out. Kbps, Mbps, Gbps are also accepted.</para>
+            </listitem>
+            <listitem>
+              <para>"No such module type 'X'"</para>
+              <para>If your model creates modules dynamically, module types need to be
+              looked up by fully qualified name (like "some.package.X").</para>
+            </listitem>
+          </itemizedlist></para>
+        </listitem>
+      </orderedlist>
+    </sect1>
+
+    <sect1>
+      <title>Making use of new OMNeT++ features</title>
+      <sect2>
+        <title>NED files</title>
+        <itemizedlist>
+          <listitem>
+            <para>Make use of default icons.</para>
+            <para>If you have several submodules which all share the same icon it would
+            be a good idea to specify the display properties for the simple module types
+            and let the submodules inherit their visual appearance from there. Migrate
+            "i=" tags from submodule display string to the simple module type.
+            Use:</para>
+
+<screen>simple Node {
+    @display("i=block/fork");
 }
-</screen>
-           However, you can remove that altogether, if you change the CQN
-           module's declaration to use the "network" keyword (like:
-           network CQN {...}), and replace network=cqn with network=CQN
-           in the ini files.
-       			</para></listitem>
-       <listitem><para>"like" module types should be changed into interfaces, and actual types declared to be "like" them</para>
-       <para>
-           For example, if you have a submodule
-<screen>
-app: &lt;appType&gt; like App;
-</screen>
-           then App should be turned into a module interface (and its name
-           prepended with "I" to conform naming convention), like this:
-<screen>
-moduleinterface IApp {
-    gates: input in; output out;
-}
-</screen>
-           and the concrete types should be modified to comply with IApp:
-<screen>
-simple BurstyApp like IApp { ... }
-simple AnotherApp like IApp { ... }
-</screen>
-          </para></listitem>
-       </itemizedlist>
-</para></listitem>
 
-<listitem><para>
-     Compile your simulation model (right-click on the project and
-     select Build from the context menu, or close all other projects
-     and hit Ctrl+B.) The most frequent compile errors and their fixes:
-     </para>
+module Net {
+    submodules:
+        s1 : Node;
+        s2 : Node;
+}</screen>
 
-     <itemizedlist>
-		<listitem><para>
-     "Cannot convert SimTime to double" </para><para>
-       simtime_t now maps to the int64-based SimTime class and not double.
-       Wherever a simtime_t is assigned to a variable of type double,
-       consider changing that variable to simtime_t as well.
-       The new SimTime class does not provide implicit conversion to
-       double because it would introduce ambiguity errors for C++ compiler.
-       Check the output of the migratecpp tool. It gives you some
-       hints what variables should be changed.
-       </para>
-       <tip><para>
-			       Where still needed, use SIMTIME_DBL(t) to convert a simtime_t to
-			       double. In printf's, use "%s" and SIMTIME_STR(t). The advantage of
-			       using these macros instead of SimTime methods is that your model will
-			       also compile in -DUSE_DOUBLE_SIMTIME compatibility mode (see below).
-         </para></tip>
-       <tip><para>If your model is using doubles extensively for time related variables
-                  and you want to make a quickly and dirty port, OMNeT++ can be compiled with the
-                  original behavior, by specifying -DUSE_DOUBLE_SIMTIME in CFLAGS. However
-                  be aware that you have to recompile all OMNeT++ libraries with this flag.
-                  We do recommend to use the new SimTime type whenever possible.</para></tip>
-         </listitem>
+          </listitem>
+          <listitem>
+            <para>Parameter values assigned in ini files could be put into the
+            corresponding NED file as default values</para>
+            <para>If your ini file contains a lot of parameter values that usually do not
+            change, consider to move the values to the NED file as parameter defaults.
+            Use the following syntax:</para>
 
-         <listitem><para>
-     "No such method setBitLength/getBitLength/encapsulate/decapsulate"</para>
-     <para>
-       Length and encapsulation have been moved to cPacket, a subclass of
-       cMessage. You likely need to change the "message" keyword in
-       .msg files with "packet", which will cause the generated class
-       to have cPacket as base class.
-
-       <screen>message ABCPacket {...} ==> packet ABCPacket {...}</screen>
-       Inside handleMessage() and other functions, cast the cMessage*
-       pointer to cPacket:
-       <screen>cPacket *pkt = check_and_cast&lt;cPacket *&gt;(msg);</screen>
-          </para></listitem>
-
-          <listitem><para>
-     "Cannot open file csimul.h" (or any other header)</para><para>
-       Only &lt;omnetpp.h&gt; is public API. Other OMNeT++ header files should
-       not be included directly, as they may be renamed or removed in
-       any future version.
-           </para></listitem>
-
-           <listitem><para>
-     "sendDirect() does not take 3 (or 4) arguments"</para><para>
-       sendDirect()'s signature has changed. It used to take a delay
-       as second argument; now it has two variants, one which takes
-       no delay argument (i.e. if you have 0.0 in your simulation,
-       just remove it), and another one that takes a propagation delay
-       and a transmission duration. If you use the second one,
-       you'll probably want to call setDeliverOnReceptionStart(true)
-       on the receiver gate in the target module's initialize() method
-       as well.
-           </para></listitem>
-       </itemizedlist>
-</listitem>
-<listitem><para>
-  Run your simulation model. The most frequent runtime errors and their fixes:
-      <itemizedlist>
-           <listitem><para>
-     "Cannot convert unit 'none' to 'seconds'"</para><para>
-       Physical units now have to be written out in expressions, so you
-       need to change 5 into 5s, and exponential(1) into exponential(1s).
-           </para></listitem>
-
-           <listitem><para>
-     "Cannot convert unit 'none' to 'bps'"</para><para>
-       The datarate channel parameter now has unit bps (bit/sec), and
-       this unit must be written out. Kbps, Mbps, Gbps are also accepted.
-           </para></listitem>
-
-           <listitem><para>
-     "No such module type 'X'"</para><para>
-       If your model creates modules dynamically, module types need to be
-       looked up by fully qualified name (like "some.package.X").
-           </para></listitem>
-      </itemizedlist>
-</para></listitem>
-</orderedlist>
-</sect1>
-
-<sect1>
-<title>Making use of new OMNeT++ features</title>
-
-<sect2>
-  <title>NED files</title>
-       <itemizedlist>
-	       <listitem><para>Make use of default icons.</para>
-	       			 <para>If you have several submodules which all share the same icon it
-	       			       would be a good idea to specify the display properties for the
-	       			       simple module types and let the submodules inherit their visual
-	       			       appearance from there. Migrate "i=" tags from submodule display
-	       			       string to the simple module type. Use:</para>
-<screen>simple Simple {
-	@display("i=block/fork");
-}
-module {
-	submodules:
-		s1 : Simple;
-		s2 : Simple;
-}
-</screen>
-</listitem>
-	       <listitem><para>Parameter values assigned in ini files could be
-	       put into the corresponding NED file as default values</para>
-	       <para>If your ini file contains a lot of parameter values that
-	       usually do not change, consider to move the values to the NED file
-	       as parameter defaults. Use the following syntax:</para>
 <screen>int somepar = default(42);</screen>
-	       </listitem>
-	       <listitem><para>Use @unit for your module's parameters and specify physical units.
-	       This will enforce that the user must explicitly specify a time unit for the parameter.</para>
-	       <screen>volatile double interArrivalTime @unit(s);</screen></listitem>
-	       <listitem><para>Make use of module inheritance.</para>
-	       <para>If you have several modules that share the same behavior, but differ only
-	       in parameterization, you can take advantage of module inheritance.</para>
+
+          </listitem>
+          <listitem>
+            <para>Use @unit for your module's parameters and specify physical units. This
+            will enforce that the user must explicitly specify a time unit for the
+            parameter.</para>
+
+<screen>volatile double interArrivalTime @unit(s);</screen>
+
+          </listitem>
+          <listitem>
+            <para>Make use of module inheritance.</para>
+            <para>If you have several modules that share the same behavior, but differ
+            only in parameterization, you can take advantage of module
+            inheritance.</para>
+
 <screen>simple Router {
-	int ports;
+    int ports;
 }
-simple Router8Port extends Router {
-	ports = 8;
-}
-simple Router16Port extends Router {
-	ports = 16;
-}
-</screen>
-           </listitem>
-	       <listitem><para>Use inout gates and bi-directional connections.</para>
-	       <para>If you connect the same gates in both direction it is much easier to
-	       use bidirectional ports and channels. Use:</para>
-<screen>	gates:
-		inout port;
-...
-	connections:
-		node1.port &lt;--&gt; node2.port;</screen>
-	       </listitem>
-	       <listitem><para>Use inner types</para>
-	       <para>If you use a type only locally consider using inner types:</para>
-<screen>module Node {
-	types:
-		channel Ethernet extends ned.DatarateChannel {
-		    datarate = 100Mbps;
-		};
-	connections:
-		node1.port &lt;--&gt; Ethernet &lt;--&gt; node2.port; ...</screen></listitem>
 
-	       <listitem><para>define the root package for your NED files 
-           if you plan to give your model to other people.
-           This can avoid name clashes with other models. To do that, put a
-           package.ned file into the toplevel NED source folder (i.e.
-           a directory that's listed on the OMNeT++/NED Source Folders page
-           of the Project Properties dialog of your project). The package
-           declaration in that package.ned file determines the package of that
-           diretory and all directories underneath. For example, if the
-           file's contents is
-               <screen>package org.myproject;</screen>
-           then the NED packages will be org.myproject, org.myproject.subdir1,
-           org.myproject.subdir2, etc.</para></listitem>
-           
-	       <listitem><para>Use additional display string tags (module background, grid etc.)
-	       to enhance your simulation. See the manual for new supported tags.</para></listitem>
-	       <listitem><para>Possibly make use of <token>@properties</token> as "marker interfaces", like @host(true)</para></listitem>
-           
-       </itemizedlist>
-</sect2>
-<sect2>
-  <title>ini files</title>
-       <itemizedlist>
-	       <listitem><para>Give meaningful names to your configurations.
-	          In 3.x only run numbers were allowed.</para></listitem>
-	       <listitem><para>Use inheritance between configurations if several
-	       of your configurations share the same parameter set.</para>
+simple Router8 extends Router {
+    ports = 8;
+}
+
+simple Router16 extends Router {
+    ports = 16;
+}</screen>
+
+          </listitem>
+          <listitem>
+            <para>Use inout gates and bi-directional connections.</para>
+            <para>If you connect the same gates in both direction it is much easier to
+            use bidirectional ports and channels. Use:</para>
+
+<screen>    gates:
+        inout port;
+      ...
+    connections:
+        node1.port &lt;--&gt; node2.port;</screen>
+
+          </listitem>
+          <listitem>
+            <para>Use inner types</para>
+            <para>If you use a type only locally consider using inner types:</para>
+
+<screen>module Network {
+    types:
+        channel Ethernet extends ned.DatarateChannel {
+            datarate = 100Mbps;
+        };
+    ...
+    connections:
+        node1.port &lt;--&gt; Ethernet &lt;--&gt; node2.port;
+        ...
+}</screen>
+
+          </listitem>
+          <listitem>
+            <para>define the root package for your NED files if you plan to give your
+            model to other people. This can avoid name clashes with other models. To do
+            that, put a package.ned file into the toplevel NED source folder (i.e. a
+            directory that's listed on the OMNeT++/NED Source Folders page of the Project
+            Properties dialog of your project). The package declaration in that
+            package.ned file determines the package of that diretory and all directories
+            underneath. For example, if the file's contents is
+
+<screen>package org.myproject;</screen>
+
+            then the NED packages will be org.myproject, org.myproject.subdir1,
+            org.myproject.subdir2, etc.</para>
+          </listitem>
+          <listitem>
+            <para>Use additional display string tags (module background, grid etc.) to
+            enhance your simulation. See the manual for new supported tags.</para>
+          </listitem>
+          <listitem>
+            <para>Possibly make use of <token>@properties</token> as "marker interfaces",
+            like @host(true)</para>
+          </listitem>
+        </itemizedlist>
+      </sect2>
+
+      <sect2>
+        <title>ini files</title>
+        <itemizedlist>
+          <listitem>
+            <para>Give meaningful names to your configurations. In 3.x only run numbers
+            were allowed.</para>
+          </listitem>
+          <listitem>
+            <para>Use inheritance between configurations if several of your
+            configurations share the same parameter set.</para>
+
 <screen>[General]
-**.basePar=17
+network = Aloha
 
-[Config foo]
-**.fooPar=45
+[Config SlottedAloha]
+**.slotted = true
 
-[Config bar]
-extends=foo
-**.fooBarPar=42</screen>
-           </listitem>
-	       <listitem><para>Make use of the iteration syntax (${...}).</para>
-	        <para>If you had many runs that simulated the same network with different parameter values,
-	           they can be merged into a single config that contains an iteration.
-	           For example, if you had
+[Config SlottedAlohaLowTraffic]
+extends = SlottedAloha
+**.interval = exponential(1s)</screen>
+
+          </listitem>
+          <listitem>
+            <para>Make use of the iteration syntax (${...}).</para>
+            <para>If you had many runs that simulated the same network with different
+            parameter values, they can be merged into a single config that contains an
+            iteration. For example, if you had
+
 <screen>[Run 1]
 **.numClients = 2
 
@@ -910,74 +844,88 @@ extends=foo
 **.numClients = 5
 
 [Run 3]
-**.numClients = 10
-</screen>
-		Then you can now merge them into a single config:
+**.numClients = 10</screen>
+
+            Then you can now merge them into a single config:
+
 <screen>[Config MyExperiment]
-**.numClients = ${N=2,5,10}
-</screen>
-        Another example:
+**.numClients = ${N=2,5,10}</screen>
+
+            Another example:
+
 <screen>**.iaTime = exponential(${mean=1,1.5,2,3,5..21 step 2}s)</screen>
-</para>
-	       <para>If you have created external scripts previously to explore the result of
-	        different parameter combinations, you can also do it now without scripts.
-	        There can be several iterations within a section (nested loops),
-	        you can specify an additional constraint to get a subset of the
-	        Cartesian product (constraint=), and you can repeat each one
-	        several times with different seeds (repeat=).</para>
-	       </listitem>
-	   </itemizedlist>
-</sect2>
-<sect2>
-  <title>C++</title>
+
+            </para>
+            <para>If you have created external scripts previously to explore the result
+            of different parameter combinations, you can also do it now without scripts.
+            There can be several iterations within a section (nested loops), you can
+            specify an additional constraint to get a subset of the Cartesian product
+            (constraint=), and you can repeat each one several times with different seeds
+            (repeat=).</para>
+          </listitem>
+        </itemizedlist>
+      </sect2>
+
+      <sect2>
+        <title>C++</title>
         <itemizedlist>
-	       <listitem><para>You can add metadata to the output vectors to enhance the
-	       visualization. Use the setInterpolationMode, setEnum etc. on cOutVector.
-	    </para></listitem>
-		<listitem><para>
-		   If possible take advantage of inout gates a bidirectional connections.
-		   use use <token>gate("gatename$i")</token> or <token>gate("gatename$o")</token>
-		   to access the two direction separately (<token>gate("gatename")</token> will not work!).
-		</para></listitem>
-	    <listitem><para>If a message is transmitted on a finite datarate channel,
-	       call <token>setDeliverOnReceptionStart(true)</token> on a simple module's input gate
-	       to deliver the message to the receiver module at the start of the reception
-	       (instead of the default, which delivers at the end). In 3.x it was only possible
-	       to receive the packet at the beginning of the reception by setting the channel
-	       datarate to 0, and calculating the transmission duration manually.
-	    </para></listitem>
-		<listitem><para>If you have a complex channel model, now you can extend cChannel and
-		      register your new class. Override the <token>deliver(...)</token> method.
-		      There are three new built in channels you can use as a starting point:
-		      <token>cIdealChannel, cDelayChannel, cDatarateChannel</token>
-		</para></listitem>
-		<listitem><para>Use cMessage or cPacket depending on your needs. The length, bit error
-		      flag and encapsulated message cMessage fields got factored out from cMessage,
-		      into the cPacket class. </para></listitem>
-		<listitem><para>Use the <token>getProperties() </token>method of
-		      <token>cComponent</token> to access model metadata. Any property
-		      value can be attached to the component in a NED file with the
-		      <token>@propname(key1=val1,val2;key2=valA,valB)</token> syntax.
-		      You can use the properties as a marker (e.g. @host) or to provide any additional
-		      information to the model.
-	    </para></listitem>
-
-		<listitem><para>In wireless models, the handling of transmission duration needs
-           to be refactored. </para>
-           <para>In 3.x, the receiver side usually calculated
-	           the frame duration independent of the sender. In 4.0, the duration
-	           calculated by the sender should be specified in the <token>sendDirect()</token>
-	           call, which writes it into the packet (<token>setDuration()</token>). The receiver
-	           module should have the input gate configured for
-	           <token>deliverOnReceptionStart=true</token>, i.e. it is supposed to call
-	           <token>setDeliverOnReceptionStart(true)</token> on the gate in the initialize
-	           phase. The receiver module should obtain the duration from the
-	           packet (<token>pkt->getDuration()</token>) instead of recalculating it.
-	    </para></listitem>
-
-	   </itemizedlist>
-</sect2>
-  </sect1>
-</chapter>
-
+          <listitem>
+            <para>You can add metadata to the output vectors to enhance the
+            visualization. Use the setInterpolationMode, setEnum etc. on
+            cOutVector.</para>
+          </listitem>
+          <listitem>
+            <para>If possible take advantage of inout gates a bidirectional connections.
+            use <token>gate("gatename$i")</token> or
+            <token>gate("gatename$o")</token> to access the two direction separately
+            (<token>gate("gatename")</token> will not work!).</para>
+          </listitem>
+          <listitem>
+            <para>If a message is transmitted on a finite datarate channel, call
+            <token>setDeliverOnReceptionStart(true)</token> on a simple module's input
+            gate to deliver the message to the receiver module at the start of the
+            reception (instead of the default, which delivers at the end). In 3.x it was
+            only possible to receive the packet at the beginning of the reception by
+            setting the channel datarate to 0, and calculating the transmission duration
+            manually.</para>
+          </listitem>
+          <listitem>
+            <para>If you have a complex channel model, now you can extend cChannel and
+            register your new class. Override the
+            <token>deliver(...)</token> method. There are three new built in channels you
+            can use as a starting point:
+            <token>cIdealChannel, cDelayChannel, cDatarateChannel</token></para>
+          </listitem>
+          <listitem>
+            <para>Use cMessage or cPacket depending on your needs. The length, bit error
+            flag and encapsulated message cMessage fields got factored out from cMessage,
+            into the cPacket class.</para>
+          </listitem>
+          <listitem>
+            <para>Use the <token>getProperties()</token> method of
+            <token>cComponent</token> to access model metadata. Any property value can be
+            attached to the component in a NED file with the
+            <token>@propname(key1=val1,val2;key2=valA,valB)</token> syntax. You can use
+            the properties as a marker (e.g. @host) or to provide any additional
+            information to the model.</para>
+          </listitem>
+          <listitem>
+            <para>In wireless models, the handling of transmission duration needs to be
+            refactored.</para>
+            <para>In 3.x, the receiver side usually calculated the frame duration
+            independent of the sender. In 4.0, the duration calculated by the sender
+            should be specified in the
+            <token>sendDirect()</token> call, which writes it into the packet
+            (<token>setDuration()</token>). The receiver module should have the
+            input gate configured for <token>deliverOnReceptionStart=true</token>,
+            i.e. it is supposed to call <token>setDeliverOnReceptionStart(true)</token>
+            on the gate in the initialize phase. The receiver module should obtain
+            the duration from the packet (<token>pkt-&gt;getDuration()</token>)
+            instead of recalculating it.</para>
+          </listitem>
+        </itemizedlist>
+      </sect2>
+    </sect1>
+  </chapter>
 </book>
+
