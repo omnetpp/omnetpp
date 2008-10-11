@@ -107,9 +107,9 @@ Getting your simulation model working.
        (3) "somepar = input;" lines became just "somepar;" -- you probably
            want to remove them, as they are completely redundant.
 
-       (4) Remove extra "network bla extends Bla {}".  Background: a 3.x-style
+       (4) Remove superfluous network declarations.  Background: a 3.x-style
            network declaration denotes a compound module as network. In 4.0,
-           a compound module may be directly declared to be a network, so the
+           a compound module may be directly declared to be a network, so that
            extra step is not needed. Example: the 3.x network declaration
                network cqn : CQN
                endmodule
@@ -151,7 +151,7 @@ Getting your simulation model working.
      "No such method setBitLength/getBitLength/encapsulate/decapsulate"
        Length and encapsulation have been moved to cPacket, a subclass of
        cMessage. You likely need to change the "message" keyword in
-       .msg files with "packet", which will cause the generated class
+       .msg files to "packet", which will cause the generated class
        to have cPacket as base class.
 
        	 message ABCPacket {...} ==> packet ABCPacket {...}
@@ -237,8 +237,8 @@ Making use of new OMNeT++ features.
                        host1.p++ <--> C <--> host2.p++;
                }
 
-       (7) inheritance, to specialize a module or channel, or to factor out
-           the common part of several compound modules into a base class
+       (7) use inheritance to specialize a module or channel, or to factor out
+           the common part of several compound modules into a base type
            (because a derived compound module may add new submodules and
            connections in addition to new parameters and gates)
 
