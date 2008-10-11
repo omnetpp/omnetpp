@@ -283,7 +283,7 @@
 						environment variable, from a command-line option, or from the
 						<token>ned-path</token>
 						ini file option. For single-directory simulation models, the
-						default value of ‘.’ should be sufficient.
+						default value '.' should be sufficient.
 					</para>
 				</listitem>
 				<listitem>
