@@ -34,7 +34,7 @@
           removed); in submodules; around channel parameters in connections.</para>
         </listitem>
         <listitem>
-          <para>The ``numeric'' parameter type is no longer used, and
+          <para>The ``numeric'' parameter type no longer exists, and
           must be replaced with ``int'' or ``double'', depending
           on the parameter usage.</para>
         </listitem>
@@ -80,16 +80,15 @@
         </listitem>
         <listitem>
           <para>There is no more implicit conversion between ``bool'' and
-          ``long''/``double''</para>
+          ``long''/``double''.</para>
         </listitem>
         <listitem>
           <para>The ``import'' declarations now refer to fully qualified
           package or type names instead of files.</para>
         </listitem>
         <listitem>
-          <para>You can place submodules directly into a network instead of creating a
-          compound module, placing your submodules there and then instantiating the
-          module as a network (as was required in 3.x)</para>
+          <para>You can place submodules directly into a network instead, of creating a
+          compound module and separately declaring it to be a network as was required in 3.x.</para>
         </listitem>
       </itemizedlist>
     </sect1>
@@ -212,11 +211,13 @@
       ``include/ChangeLog'' file for detailed information.</para>
       <itemizedlist>
         <listitem>
-          <para>Several header files have been renamed in ``omnetpp/include''.</para>
+          <para>Several header files have been renamed in ``omnetpp/include''. (This
+          should not affect simulation models, as they should only include
+          ``&lt;omnetpp.h&gt;''.)</para>
         </listitem>
         <listitem>
-          <para>Renamed: ``cObject'' became ``cOwnedObject'', ``cPolymorphic'' became ``cObject'' and
-          ``cNamedObject'' introduced in between. Several method names have changed in
+          <para>Renamed: ``cObject'' became ``cOwnedObject'', ``cPolymorphic'' became ``cObject'',
+          and ``cNamedObject'' was introduced in between. Several method names have changed in
           different classes. Check the ``ChangeLog'' file for details.</para>
         </listitem>
         <listitem>
@@ -246,7 +247,7 @@
         </listitem>
         <listitem>
           <para>Introduced ``cComponent'', a common base class for ``cModule'' and ``cChannel''. Some
-          new methods to mention: ``isModule()'', ``nedTypeName()''</para>
+          new methods to mention: ``isModule()'', ``getNedTypeName()''</para>
         </listitem>
         <listitem>
           <para>``cBasicChannel'' renamed to ``cDatarateChannel'' and added ``cIdealChannel'' which
@@ -277,7 +278,7 @@
           <para>``cMessage'' changes: the length, bit error flag and encapsulated message
           ``cMessage'' fields got factored out from ``cMessage'', into the ``cPacket'' class (which
           extends ``cMessage''). All network packets (frames, datagrams, etc) are now
-          supposed to be subclassed from ``cPacket'', not directly ``cMessage''.</para>
+          supposed subclass from ``cPacket'', not directly ``cMessage''.</para>
         </listitem>
         <listitem>
           <para>A new ``cPacketQueue'' class has been introduced to store ``cPackets'' and
@@ -291,7 +292,7 @@
         </listitem>
         <listitem>
           <para>Run number handling were made entirely the matter of ``cEnvir''.
-          ``cSimulation::runNumber()'' got removed. Also removed runNumber from
+          ``cSimulation::runNumber()'' got removed. Also removed run number from
           the arg list of ``cEnvir'' callback functions.</para>
         </listitem>
       </itemizedlist>
@@ -304,7 +305,7 @@
         <listitem>
           <para>The ``OMNETPP_BITMAP_PATH'' environment variable has been
           renamed to ``OMNETPP_IMAGE_PATH''. The system will check this
-          at runtime and print a warning if the old variable is still present.</para>
+          at runtime, and print a warning if the old variable is still present.</para>
         </listitem>
       </itemizedlist>
     </sect1>
@@ -314,7 +315,7 @@
 
       <itemizedlist>
         <listitem>
-          <para>``-f'' is now optional if you specify an ini file</para>
+          <para>``-f'' is now optional when specifying an ini file</para>
         </listitem>
         <listitem>
           <para>``-r'' now refers to a run number instead of a named configuration
@@ -323,10 +324,10 @@
         </listitem>
         <listitem>
           <para>Use the ``-h all'' switch to get detailed info about you simulation
-          executable. (or ``opp_run -h all'' to get info about OMNeT++ itself.)</para>
+          executable (or ``opp_run -h all'' to get info about OMNeT++ itself.)</para>
         </listitem>
         <listitem>
-          <para>For further information use <command>opp_run -h</command> or the -h switch
+          <para>For further information use <command>opp_run -h</command> or the ``-h'' switch
           on any simulation executable.</para>
         </listitem>
       </itemizedlist>
@@ -361,7 +362,7 @@
         </listitem>
         <listitem>
           <para>For safety reasons, the automatic migration converts ``numeric'' parameters
-          to ``double''. Later, the parameters must be manually checked if the type ``int''
+          to ``double''. Later the parameters must be manually checked if the type ``int''
           would be sufficient, and change accordingly.</para>
         </listitem>
         <listitem>
@@ -550,24 +551,24 @@ $ ../INET/migrate/migratecpp | tee migratecpp.out</screen>
           <para>Revise NED files. This includes:
           <itemizedlist>
             <listitem>
-              <para>revise "volatile" parameters if they really need to be
+              <para>revise ``volatile'' parameters if they really need to be
               volatile</para>
-              <warning>
-                <para>Some superfluous volatile qualifiers might pop up for parameters
-                where the original model did not specify const. It is safe to delete the
-                volatile qualifier from parameters which are expected to be constant over
-                the simulation. For example, if the parameter is only used by calling the
-                C++ function par once inside initialize.</para>
-              </warning>
+              <para>Some superfluous ``volatile'' qualifiers might pop up for parameters
+              where the original model did not specify ``const''. It is safe to delete the
+              ``volatile'' qualifier from parameters which are expected to be constant over
+              the simulation. As a rule of thumb, a parameter needs to be volatile if it is
+              being read during simulation, not only in the initialization
+              phase. If it is only read from ``initialize()'', remove the ``volatile''
+              keyword.</para>
             </listitem>
             <listitem>
-              <para>revise "double" parameters whether they should rather be "int"</para>
+              <para>revise ``double'' parameters whether they should rather be ``int''</para>
               <para>The ``numeric'' parameter type from the 3.x version is automatically
               converted to ``double'', but you may need to change it to ``int'' if needed. Be
               sure to change the corresponding code in your C++ files as well.</para>
             </listitem>
             <listitem>
-              <para>"somepar = input;" lines became just "somepar;" -- you probably want
+              <para>``somepar = input;'' lines became just ``somepar;'' -- you probably want
               to remove them</para>
               <tip>
                 <para>The ``input'' keyword is no longer supported in NED files, but you can
@@ -576,7 +577,7 @@ $ ../INET/migrate/migratecpp | tee migratecpp.out</screen>
               </tip>
             </listitem>
             <listitem>
-              <para>remove extra "network bla extends Bla {}" if needed</para>
+              <para>remove superfluous network declarations</para>
               <para>A 3.x-style network declaration denotes a compound module as network.
               In 4.0, a compound module may be directly declared to be a network, so the
               extra step is not needed. Example: the 3.x network declaration
@@ -713,7 +714,7 @@ simple AnotherApp like IApp { ... }</screen>
 
         <itemizedlist>
           <listitem>
-            <para>Make use of default icons.</para>
+            <para>Add default icons.</para>
             <para>It is now possible to give a default display string
             (containing an icon, etc) to module types; at runtime the
             default gets merged with the submodule display string to
