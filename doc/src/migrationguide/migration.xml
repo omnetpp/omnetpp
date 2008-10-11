@@ -34,6 +34,10 @@
           removed); in submodules; around channel parameters in connections.</para>
         </listitem>
         <listitem>
+          <para>The syntax of parameter and gate declarations has changed
+          from Pascal style to C style.</para>
+        </listitem>
+        <listitem>
           <para>The ``numeric'' parameter type no longer exists, and
           must be replaced with ``int'' or ``double'', depending
           on the parameter usage.</para>
@@ -48,35 +52,35 @@
           ``@display(...)'' syntax.</para>
         </listitem>
         <listitem>
+          <para>The ``input'' keyword was removed, and parameter prompt string
+          has also become a property: ``@prompt(...)''.</para>
+        </listitem>
+        <listitem>
           <para>Introduced a new parameter property, ``@unit(...)'',
           to specify physical units. For parameters with units, all values
           in ini and NED files must be given with the same or a convertible
           unit, otherwise an error will be signaled.</para>
         </listitem>
         <listitem>
-          <para>The parameter prompt string also became a property: ``@prompt(...)''.</para>
+          <para>The ``ref'' keyword was removed, because parameters are now
+          always passed by reference.</para>
         </listitem>
         <listitem>
-          <para>Conditional parameters are no longer supported. In most cases,
-          they can be replaced with the ``?:'' operator in assigments.</para>
+          <para>``ancestor'' parameters have been removed.</para>
         </listitem>
         <listitem>
           <para>The ``gatesizes'' section in compound modules has been renamed to
           ``gates''.</para>
         </listitem>
         <listitem>
-          <para>The syntax of parameter definitions has changed from Pascal style to C
-          style.</para>
+          <para>Conditional parameter and gatesize sections are no longer supported.
+          In most cases, they can be substituted using the ``?:'' operator.</para>
+        </listitem>
+        <listitem>
+          <para>``connections nocheck'' is now called ``connections allowunconnected''.</para>
         </listitem>
         <listitem>
           <para>The syntax of the connection ``for'' loop has changed</para>
-        </listitem>
-        <listitem>
-          <para>``ancestor'' parameters have been removed.</para>
-        </listitem>
-        <listitem>
-          <para>The ``ref'' keyword was removed, because parameters are now
-          always passed by reference.</para>
         </listitem>
         <listitem>
           <para>There is no more implicit conversion between ``bool'' and
