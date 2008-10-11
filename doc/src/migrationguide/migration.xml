@@ -931,8 +931,8 @@ extends = SlottedAloha
             independent of the sender. In 4.0, the duration calculated by the sender
             should be specified in the ``sendDirect()'' call, which writes
             it into the packet (``setDuration()''). The receiver module should
-            have the input gate configured for ``deliverOnReceptionStart=true'',
-            i.e. it is supposed to call ``setDeliverOnReceptionStart(true)''
+            have the input gate configured to deliver packets at the start of the
+            reception, i.e. it is supposed to call ``setDeliverOnReceptionStart(true)''
             on the gate in the initialize phase. The receiver module should obtain
             the duration from the packet (``pkt-&gt;getDuration()'')
             instead of recalculating it.</para>
