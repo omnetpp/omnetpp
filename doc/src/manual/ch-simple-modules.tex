@@ -471,6 +471,8 @@ checks for that first, and cancels the message before deletion if necessary.
 \subsection{"Garbage collection" and compatibility}
 \label{sec:garbage-collection}
 
+FIXME 
+
 {\opp} versions before the 3.2 release had a feature which often was,
 informally and also somewhat incorrectly, called \textit{"garbage
 collection"} (GC). The purpose of this feature was to mitigate the need for
@@ -499,6 +501,8 @@ Starting from {\opp} 3.2, this cleanup-time GC mechanism has been disabled by de
 (\ttt{perform-gc=} configuration option, see \ref{sec:ch-run-sim:general-section}),
 and it generally not recommended to turn it back on. It does not do any harm
 to run any simulation model without GC (apart from the memory leak).
+
+FIXME perform-gc was removed in 4.0
 
 It is expected that existing modules will be updated sooner or later, by adding
 proper constructors and destructors. To catalyse this process, {\opp} dumps the

@@ -54,7 +54,6 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARSIM_NULLM
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARSIM_NULLMESSAGEPROTOCOL_LOOKAHEAD_CLASS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARSIM_SYNCHRONIZATION_CLASS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARTITION_ID;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PERFORM_GC;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PRINT_UNDISPOSED;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_REALTIMESCHEDULER_SCALING;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_RECORD_EVENTLOG;
@@ -184,7 +183,6 @@ public class GenericConfigPage extends ScrolledFormPage {
             addSpacer(form);
 			Group group2 = createGroup(form, "Debugging");
 			addCheckboxFieldEditor(group2, CFGID_PRINT_UNDISPOSED, "Dump names of undisposed objects");
-			addCheckboxFieldEditor(group2, CFGID_PERFORM_GC, "Delete leaked objects on network cleanup");
 			addCheckboxFieldEditor(group2, CFGID_WARNINGS, "Warnings"); //XXX
 			addSpacer(form);
             Group group4 = createGroup(form, "Output vector recording");

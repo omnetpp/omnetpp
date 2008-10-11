@@ -36,10 +36,6 @@ NAMESPACE_BEGIN
 Register_Class(cDefaultList);
 
 
-// doGC will be configured from Envir
-bool cDefaultList::doGC;
-
-
 cDefaultList::cDefaultList(const char *name) : cNoncopyableOwnedObject(name)
 {
     // careful: if we are a global variable (ctor called before main()),
@@ -67,7 +63,7 @@ void cDefaultList::construct()
 
 cDefaultList::~cDefaultList()
 {
-    if (doGC)
+    if (getPerformFinalGC())
     {
         // delete all owned objects. One place we make use of this is behavior is
         // when a simple module gets deleted -- there we have to delete all dynamically

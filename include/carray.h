@@ -101,7 +101,7 @@ class SIM_API cArray : public cOwnedObject
     };
 
   private:
-    enum {FL_TKOWNERSHIP = 2};
+    enum {FL_TKOWNERSHIP = 4};
     cObject **vect;   // vector of objects
     int capacity;     // allocated size of vect[]
     int delta;        // if needed, grows by delta

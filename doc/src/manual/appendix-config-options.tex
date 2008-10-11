@@ -283,11 +283,6 @@ parsim-synchronization-class=<string>, default:cNullMessageProtocol; global sett
     partition IDs for compound modules that span across multiple partitions.
     Ranges ("5..9") and "*" (=all) are accepted too.
 
-perform-gc=<bool>, default:false; global setting
-    Whether the simulation kernel should delete on network cleanup the
-    simulation objects not deleted by simple module destructors. Not
-    recommended.
-
 print-undisposed=<bool>, default:true; global setting
     Whether to report objects left (that is, not deallocated by simple module
     destructors) after network cleanup.

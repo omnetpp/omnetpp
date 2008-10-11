@@ -689,8 +689,8 @@ class SIM_API cPacket : public cMessage
 {
   private:
     enum {
-        FL_ISRECEPTIONSTART = 2,
-        FL_BITERROR = 4,
+        FL_ISRECEPTIONSTART = 4,
+        FL_BITERROR = 8,
     };
     int64 len;            // length of the packet -- used for bit error and transmissing delay modeling
     simtime_t duration;   // transmission duration on last channel with datarate

@@ -41,12 +41,14 @@ while (<INFILE>) {
 
 @tkenvNames =  ("default-run", "image-path", "plugin-path");
 
-@removeNames = ("preload-ned-files", "anim-methodcalls", "animation-enabled", "animation-msgclassnames",
-               "animation-msgcolors", "animation-msgnames", "animation-speed",
-               "expressmode-autoupdate", "methodcalls-delay", "next-event-markers",
-               "penguin-mode", "print-banners", "senddirect-arrows", "show-bubbles",
-               "show-layouting", "slowexec-delay", "update-freq-express",
-               "update-freq-fast", "use-mainwindow", "use-new-layouter", "ini-warnings");
+@removeNames = ("preload-ned-files",
+                "anim-methodcalls", "animation-enabled", "animation-msgclassnames",
+                "animation-msgcolors", "animation-msgnames", "animation-speed",
+                "expressmode-autoupdate", "methodcalls-delay", "next-event-markers",
+                "penguin-mode", "print-banners", "senddirect-arrows", "show-bubbles",
+                "show-layouting", "slowexec-delay", "update-freq-express",
+                "update-freq-fast", "use-mainwindow", "use-new-layouter",
+                "ini-warnings", "perform-gc");
 
 #note: these should be the NEW option names!
 @commentOutNames = ("tkenv-default-run", "cmdenv-runs-to-execute");

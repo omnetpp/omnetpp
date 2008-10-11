@@ -45,6 +45,9 @@
 
 	* indexed outputvector file manager
 
+	* perform-gc was removed, but it can be turned back on per module,
+	from C++ code (setPerformFinalGC(true))
+
 	* simtime-scale
 	* ned-path, NEDPATH
 	* fingerprint

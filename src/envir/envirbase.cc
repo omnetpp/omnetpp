@@ -1036,7 +1036,6 @@ void EnvirBase::readOptions()
     opt_fname_append_host = cfg->getAsBool(CFGID_FNAME_APPEND_HOST);
 
     ev.debug_on_errors = cfg->getAsBool(CFGID_DEBUG_ON_ERRORS);
-    cDefaultList::doGC = cfg->getAsBool(CFGID_PERFORM_GC);
     opt_print_undisposed = cfg->getAsBool(CFGID_PRINT_UNDISPOSED);
 
     int scaleexp = (int) cfg->getAsInt(CFGID_SIMTIME_SCALE);

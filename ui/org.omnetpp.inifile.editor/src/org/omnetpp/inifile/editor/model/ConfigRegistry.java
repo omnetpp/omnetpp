@@ -422,11 +422,6 @@ public class ConfigRegistry {
         "instantiated. Specify numeric partition ID, or a comma-separated list of " +
         "partition IDs for compound modules that span across multiple partitions. " +
         "Ranges (\"5..9\") and \"*\" (=all) are accepted too.");
-    public static final ConfigKey CFGID_PERFORM_GC = addGlobalEntry(
-        "perform-gc", CFG_BOOL, "false",
-        "Whether the simulation kernel should delete on network cleanup the " +
-        "simulation objects not deleted by simple module destructors. Not " +
-        "recommended.");
     public static final ConfigKey CFGID_PRINT_UNDISPOSED = addGlobalEntry(
         "print-undisposed", CFG_BOOL, "true",
         "Whether to report objects left (that is, not deallocated by simple module " +

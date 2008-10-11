@@ -185,6 +185,8 @@
 
 	Introduced cComponent, a common base class for cModule and cChannel
 	- new methods to mention: isModule(), nedTypeName(), etc
+	- final garbage object collection can be turned on per module, by 
+	  invoking setPerformFinalGC(true)
 
 	cSimpleModule, cSimulation:
 	- removed: pause(), backtomod, pause_in_sendmsg (they were obsolete)
