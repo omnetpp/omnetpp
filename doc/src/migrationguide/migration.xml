@@ -546,6 +546,8 @@ $ ../INET/migrate/migratecpp | tee migratecpp.out</screen>
           <guimenuitem>Navigate | Clean up NED files...</guimenuitem>from the menu.
           Select your project and click OK. The IDE will then fix all package
           declarations and imports in your NED files.</para>
+          <para>You may want to add a ``package.ned'' file to define the root package --
+          this will be described in a later section.</para>
         </listitem>
         <listitem>
           <para>Revise NED files. This includes:
