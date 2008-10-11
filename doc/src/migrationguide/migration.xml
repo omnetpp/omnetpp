@@ -128,40 +128,40 @@
           but to iteration numbers.</para>
         </listitem>
         <listitem>
-          <para>The ``cmdenv-express-mode'' entry (which was ``express-mode'' under
+          <para>The ``cmdenv-express-mode'' option (which was ``express-mode'' under
           ``[Cmdenv]'') defaults to ``true'' instead of ``false''.</para>
         </listitem>
         <listitem>
-          <para>Most of the entries in the section
-          ``[Tkenv]'' have been removed except the following ones:
-          ``tkenv-default-run'', ``tkenv-image-path'', ``tkenv-plugin-path''.</para>
+          <para>Most options in the ``[Tkenv]'' section have been removed,
+          except the following ones: ``tkenv-default-run'', ``tkenv-image-path'',
+          ``tkenv-plugin-path''.</para>
         </listitem>
         <listitem>
-          <para>The ``tkenv-default-run'' entry (which was ``default-run''
+          <para>The ``tkenv-default-run'' option (which was ``default-run''
           under ``[Tkenv]'') used to refer to a section. Now it refers to
           an iteration number, so now it only makes sense together with
           the new ``tkenv-default-section''.</para>
         </listitem>
         <listitem>
-          <para>There is a new entry ``cmdenv-interactive'' defaulting to
+          <para>There is a new ``cmdenv-interactive'' option defaulting to
           ``false'', which causes Cmdenv to never read the standard input, and abort on
-          missing configuration entries. In 3.x the default behavior was to read a value
+          missing parameter values. In 3.x, the default behavior was to read values
           from stdin.</para>
         </listitem>
         <listitem>
-          <para>The ``preload-ned-files'' entry has been removed, because in 4.0,
-          NED files are loaded from directories listed in the NED path. (The NED path is a
+          <para>The ``preload-ned-files'' option has been removed, because in 4.0,
+          NED files are loaded from directories in the NED path. (The NED path is a
           string that contains a list of directories, and it it may come from the
           ``NEDPATH'' environment variable, from a command-line option, or from
           the ``ned-path'' ini file option. For single-directory simulation models,
           the default value '.' should be sufficient.</para>
         </listitem>
         <listitem>
-          <para>In 3.0 the ``network'' entry was referring to a NED type loaded from one of
-          the files specified in the ``preload-ned-files'' entry. In 4.0, it specifies a
+          <para>In 3.0 the ``network'' option was referring to a NED type loaded from one of
+          the files specified in the ``preload-ned-files'' option. In 4.0, it specifies a
           qualified name referring to a NED type, which must be available under the
-          directories specified in the ``ned-path'' entry. In most cases,
-          the ``network'' entry will work unmodified.</para>
+          directories specified in the ``ned-path'' option. In most cases,
+          the ``network'' option will work unmodified.</para>
         </listitem>
         <listitem>
           <para>The ``**.somepar.use-default=true'' syntax should be changed to
@@ -390,8 +390,8 @@
       doing the following:</para>
       <itemizedlist>
         <listitem>
-          <para>Copies the entries from the sections ``[Parameters]'', ``[Cmdenv]'', ``[Tkenv]'',
-          ``[OutVectors]'', ``[Partitioning]'' to the ``[General]'' section.</para>
+          <para>Copies the entries from the ``[Parameters]'', ``[Cmdenv]'', ``[Tkenv]'',
+          ``[OutVectors]'' and ``[Partitioning]'' sections to the ``[General]'' section.</para>
         </listitem>
         <listitem>
           <para>Merges the entries from multiple occurrences of the ``[General]'' section
@@ -402,14 +402,14 @@
           ``cmdenv-'' and ``tkenv-'', respectively (unless the entry already begins with that).</para>
         </listitem>
         <listitem>
-          <para>Renames the sections ``[Run 1]'', ``[Run 2]'', etc.
+          <para>Renames the ``[Run 1]'', ``[Run 2]'', etc. sections
           to ``[Config config1]'', ``[Config config2]'', etc.</para>
         </listitem>
         <listitem>
-          <para>Renames all configuration options that have changed.</para>
+          <para>Renames all configuration entries that have changed.</para>
         </listitem>
         <listitem>
-          <para>Changes the entries ``**.use-default'' to ``**=default''.</para>
+          <para>Changes ``**.use-default'' to ``**=default''.</para>
         </listitem>
       </itemizedlist>
     </sect1>
