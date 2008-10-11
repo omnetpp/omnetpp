@@ -843,9 +843,20 @@ simple Router16 extends Router {
             <para>Give meaningful names to configurations. In 3.x, only run numbers
             were allowed.</para>
           </listitem>
+
           <listitem>
-            <para>Use inheritance between configurations if several of your
-            configurations share the same parameter set.</para>
+            <para>Remove redundant parameter settings. If a module parameter now has
+            a default value and the ini file explicitly sets that value,
+            that line can be removed from the ini file.</para>
+            <tip>
+              <para>If you open the file in the IDE, it will annotate the lines
+              that can possibly be removed with a blue "i" mark.</para>
+            </tip>
+          </listitem>
+          <listitem>
+            <para>Make use of section inheritance, if applicable. Common settings
+            may be factored out into a based config that other configs extend
+            (syntax: add an ``extend=BaseConfig'' line). Example:</para>
 
 <screen>[General]
 network = Aloha
@@ -894,7 +905,7 @@ extends = SlottedAloha
       </sect2>
 
       <sect2>
-        <title>C++</title>
+        <title>C++ code</title>
 
         <itemizedlist>
           <listitem>
