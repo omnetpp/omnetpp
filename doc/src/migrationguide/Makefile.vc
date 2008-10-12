@@ -3,12 +3,20 @@ XSLTPROC=$(TOOLS_DIR)\libxslt\bin\xsltproc
 DOCBOOK=$(TOOLS_DIR)\docbook
 PERL=perl
 
-all: pdf html
+all: pdf html eclipse
 
 html: catalog
 	$(PERL) trans.pl <migration.xml >tmp0.xml
 	$(XSLTPROC) --nonet --xinclude --output tmp.xml trans.xsl tmp0.xml
 	$(XSLTPROC) --nonet --output migration.html  $(DOCBOOK)/html/docbook.xsl tmp.xml
+	del tmp.xml tmp0.xml
+
+eclipse: catalog
+	$(PERL) trans.pl <migration.xml >tmp0.xml
+	$(XSLTPROC) --nonet --xinclude --output tmp.xml trans.xsl tmp0.xml
+	-del /s /q eclipse 2>nul
+	-mkdir eclipse
+	cd eclipse && $(XSLTPROC) --nonet $(DOCBOOK)/eclipse/eclipse.xsl ../tmp0.xml
 	del tmp.xml tmp0.xml
 
 pdf: catalog
@@ -18,6 +26,11 @@ pdf: catalog
 	$(XSLTPROC) --nonet --output tmp.fo custom-fo-docbook-tmp.xsl tmp.xml
 	call $(FOP) -fo tmp.fo -pdf migration.pdf
 	del custom-fo-docbook-tmp.xsl tmp.fo tmp.xml tmp0.xml
+
+clean:
+	-del migration.pdf migration.html 2>nul
+	-del /s /q eclipse 2>nul
+	-rmdir eclipse 2>nul
 
 catalog:
 	set XML_CATALOG_FILES=../docbook-dtd/catalog.xml

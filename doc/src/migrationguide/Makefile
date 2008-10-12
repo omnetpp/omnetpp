@@ -1,21 +1,31 @@
 FOP=fop
+DOCBOOK=/usr/share/xml/docbook/stylesheet/nwalsh
 export XML_CATALOG_FILES=../docbook-dtd/catalog.xml
 
-all: pdf html
+all: pdf html eclipse
 
 html:
 	perl trans.pl <migration.xml >tmp0.xml
 	xsltproc --xinclude --output tmp.xml trans.xsl tmp0.xml
-	xsltproc --output migration.html  /usr/share/xml/docbook/stylesheet/nwalsh/html/docbook.xsl tmp.xml
+	xsltproc --output migration.html  $(DOCBOOK)/html/docbook.xsl tmp.xml
 	rm -f tmp.xml tmp0.xml
 	rm -rf ../../migration
 	mkdir ../../migration
 	cp migration.html ../../migration
 
+eclipse:  
+	perl trans.pl <migration.xml >tmp0.xml
+	xsltproc --xinclude --output tmp.xml trans.xsl tmp0.xml
+	rm -rf eclipse
+	mkdir eclipse
+	cd eclipse && xsltproc $(DOCBOOK)/eclipse/eclipse.xsl ../tmp.xml
+	rm tmp.xml tmp0.xml
+
+
 pdf:
 	perl trans.pl <migration.xml >tmp0.xml
 	xsltproc --xinclude --output tmp.xml trans.xsl tmp0.xml
-	perl -pe "s!\@DOCBOOK_STYLESHEET\@!file:////usr/share/xml/docbook/stylesheet/nwalsh/fo/docbook.xsl!g" custom-fo-docbook.xsl >custom-fo-docbook-tmp.xsl
+	perl -pe "s!\@DOCBOOK_STYLESHEET\@!file:///$(DOCBOOK)/fo/docbook.xsl!g" custom-fo-docbook.xsl >custom-fo-docbook-tmp.xsl
 	xsltproc  --output tmp.fo custom-fo-docbook-tmp.xsl tmp.xml
 	$(FOP) -fo tmp.fo -pdf migration.pdf
 	rm -f tmp.fo tmp.xml tmp0.xml
@@ -23,4 +33,6 @@ pdf:
 	cp migration.pdf ../..
 
 clean:
-	rm migration.pdf migration.html
+	rm -rf migration.pdf migration.html
+	rm -rf eclipse
+
