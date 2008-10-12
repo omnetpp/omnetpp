@@ -164,7 +164,6 @@ while ($scrap =~ s/\<a name="([^"]+)"//si)
 }
 $html =~ s|\<A HREF=\"#([^\"]+)\"\>\[click\]\</A\>|\<a href=\"#$xref{$1}\"\>$xrefname{$1}\</a\>|sgi;
 
-
 #
 # create 'chapters' table
 #
@@ -205,6 +204,34 @@ for ($i=0; $i<$nheadings; $i++)
       $toc .= "$entry<BR>\n";
 }
 $toc .= "</p>";
+
+sub spaces($) {
+    my $n = shift; my $s = '';
+    for (my $i=0; $i<$n; $i++) {$s.=' ';}
+    return $s;
+}
+
+#
+# create eclipse-style table of contents (toc.xml)
+#
+$tocxml = '<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<toc label="OMNeT++ Manual" topic="index.html">
+';
+
+for (my $i=0; $i<$nheadings; $i++)
+{
+      for (my $j=$level[$i-1]-1; $j>=$level[$i]; $j--) {
+          $tocxml .= spaces(2*$j) . "</topic>\n";
+      }
+      my $link = $singlePage ? "usman.$ext#$label[$i]" : "chap$chapnum[$i].$ext#$label[$i]";
+      my $title = $title[$i];
+      $title =~ s/"/&quot;/g;
+      $entry = spaces(2*$level[$i]) . "<topic label=\"$number[$i] $title\" href=\"$link\"";
+      $entry .= ($i!=$nheadings-1 && $level[$i+1]>$level[$i]) ? ">" : "/>";
+      $tocxml .= "$entry\n";
+}
+$tocxml .= "</toc>";
+
 
 #
 # load Doxygen tags.xml...
@@ -306,6 +333,14 @@ else
       print FILE $new_html;
       close FILE;
 }
+
+#
+# write eclipse toc file (toc.xml)
+#
+print "writing toc.xml\n" unless $quiet;
+open(FILE,">toc.xml");
+print FILE $tocxml;
+close FILE;
 
 print "done\n" unless $quiet;
 
