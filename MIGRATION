@@ -287,10 +287,35 @@ Making use of new OMNeT++ features.
            Cartesian product (constraint=), and you can repeat each one
            several times with different seeds (repeat=).
 
-  3. C++
-       (1) output vectors: interpolation mode, enum etc
+  3. C++ code
+       (1) You can add metadata to the output vectors to enhance the
+           visualization. Use the setInterpolationMode(), setEnum() etc.
+           methods of cOutVector.
 
-       (2) In wireless models, the handling of transmission duration needs
+       (2) If possible take advantage of inout gates a bidirectional
+           connections. use gate("gatename$i") or gate("gatename$o")
+           to access the two direction separately (note: gate("gatename")
+           will not work).
+
+       (3) Use cMessage or cPacket depending on your needs. The length,
+           bit error flag and encapsulated message cMessage fields got
+           factored out from cMessage, into the cPacket class.
+
+       (4) If you have a complex channel model, now you can extend cChannel
+           and register your new class. Override the deliver(...) method.
+           There are three new built-in channels you can use as a starting
+           point: cIdealChannel, cDelayChannel, cDatarateChannel
+
+       (5) If a message is transmitted on a finite-datarate channel, call
+           setDeliverOnReceptionStart(true) on a simple module's input gate
+           to deliver the message to the receiver module at the start of
+           the reception (instead of the default, which delivers at the end).
+           In 3.x, the only way to receive the packet at the beginning of
+           the reception was to set the channel datarate to zero and
+           calculate the duration manually -- this workaround is no longer
+           needed.
+
+       (6) In wireless models, the handling of transmission duration needs
            to be refactored. In 3.x, the receiver side usually calculated
            the frame duration independent of the sender. In 4.0, the duration
            calculated by the sender should be specified in the sendDirect()
@@ -301,6 +326,11 @@ Making use of new OMNeT++ features.
            phase. The receiver module should obtain the duration from the
            packet (pkt->getDuration()) instead of recalculating it.
 
+       (7) You can use the getProperties() method of cComponent to access
+           model metadata. Properties can be attached to a module or channel
+           in a NED file with the @propname(key1=val1,val2;key2=valA,valB)
+           syntax. You can use properties as a markers (e.g. @host), or
+           to provide additional information about the model.
 
 Other sources of information
   doc/migration.pdf
@@ -315,3 +345,5 @@ If you get stuck anywhere, please post the problem on the mailing list, and
 we'll rush to your help!
 
 The OMNeT++ team
+
+
