@@ -2,7 +2,7 @@ FOP=$(TOOLS_DIR)\fop\fop.bat
 XSLTPROC=$(TOOLS_DIR)\libxslt\bin\xsltproc
 DOCBOOK=$(TOOLS_DIR)\docbook
 
-all: pdf html
+all: pdf html eclipse
 
 icons:
 	perl icons.pl
@@ -14,7 +14,9 @@ html: catalog
 
 eclipse: catalog
 	$(XSLTPROC) --nonet --xinclude --output tmp.xml trans.xsl userguide.xml
-	$(XSLTPROC) --nonet --output userguide.html  $(DOCBOOK)/eclipse/eclipse.xsl tmp.xml
+	-del /s /q eclipse 2>nul
+	-mkdir eclipse
+	cd eclipse && $(XSLTPROC) --nonet $(DOCBOOK)/eclipse/eclipse.xsl ../tmp.xml
 	del tmp.xml
 
 pdf: chart-properties.xml processing-operations.xml catalog
@@ -23,6 +25,11 @@ pdf: chart-properties.xml processing-operations.xml catalog
 	$(XSLTPROC) --nonet --output tmp.fo custom-fo-docbook-tmp.xsl tmp.xml
 	call $(FOP) -fo tmp.fo -pdf userguide.pdf
 	del custom-fo-docbook-tmp.xsl tmp.fo tmp.xml
+
+clean:
+	-del userguide.pdf userguide.html 2>nul
+	-del /s /q eclipse 2>nul
+	-rmdir eclipse 2>nul
 
 # the following target should be called manually because it depends on binary file (scavetool) which is  
 # created only later durnig the run of the automatic build script. 

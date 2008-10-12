@@ -1,11 +1,12 @@
 FOP=fop
+DOCBOOK=/usr/share/xml/docbook/stylesheet/nwalsh
 export XML_CATALOG_FILES=../docbook-dtd/catalog.xml
 
-all: pdf html
+all: pdf html eclipse
 
 html:  
 	xsltproc --xinclude --output tmp.xml trans.xsl userguide.xml
-	xsltproc --output userguide.html  /usr/share/xml/docbook/stylesheet/nwalsh/html/docbook.xsl tmp.xml
+	xsltproc --output userguide.html  $(DOCBOOK)/html/docbook.xsl tmp.xml
 	rm tmp.xml
 	rm -rf ../../userguide
 	mkdir ../../userguide
@@ -19,19 +20,22 @@ html:
 
 eclipse:  
 	xsltproc --xinclude --output tmp.xml trans.xsl userguide.xml
-	xsltproc --output userguide.html  /usr/share/xml/docbook/stylesheet/nwalsh/eclipse/eclipse.xsl tmp.xml
+	rm -rf eclipse
+	mkdir eclipse
+	cd eclipse && xsltproc $(DOCBOOK)/eclipse/eclipse.xsl ../tmp.xml
 	rm tmp.xml
 
-pdf:   chart-properties.xml processing-operations.xml
+pdf:  chart-properties.xml processing-operations.xml
 	xsltproc --xinclude --output tmp.xml trans.xsl userguide.xml
-	perl -pe "s!\@DOCBOOK_STYLESHEET\@!file:////usr/share/xml/docbook/stylesheet/nwalsh/fo/docbook.xsl!g" custom-fo-docbook.xsl >custom-fo-docbook-tmp.xsl
+	perl -pe "s!\@DOCBOOK_STYLESHEET\@!file:///$(DOCBOOK)/fo/docbook.xsl!g" custom-fo-docbook.xsl >custom-fo-docbook-tmp.xsl
 	xsltproc  --output tmp.fo custom-fo-docbook-tmp.xsl tmp.xml
 	$(FOP) -fo tmp.fo -pdf userguide.pdf
 	rm tmp.fo tmp.xml custom-fo-docbook-tmp.xsl
 	cp userguide.pdf ../..
 
 clean:
-	rm userguide.pdf userguide.html
+	rm -f userguide.pdf userguide.html
+	rm -rf eclipse
 
 # the following target should be called manually because it depends on binary file (scavetool) which is 
 # created only later durnig the run of the automatic build script.
