@@ -12,6 +12,11 @@ html: catalog
 	$(XSLTPROC) --nonet --output userguide.html  $(DOCBOOK)/html/docbook.xsl tmp.xml
 	del tmp.xml
 
+eclipse: catalog
+	$(XSLTPROC) --nonet --xinclude --output tmp.xml trans.xsl userguide.xml
+	$(XSLTPROC) --nonet --output userguide.html  $(DOCBOOK)/eclipse/eclipse.xsl tmp.xml
+	del tmp.xml
+
 pdf: chart-properties.xml processing-operations.xml catalog
 	$(XSLTPROC) --nonet --xinclude --output tmp.xml trans.xsl userguide.xml
 	perl -pe "s!\@DOCBOOK_STYLESHEET\@!file:///$(TOOLS_DIR:\=/)/docbook/fo/docbook.xsl!g" custom-fo-docbook.xsl >custom-fo-docbook-tmp.xsl
