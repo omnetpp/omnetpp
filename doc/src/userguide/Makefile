@@ -17,6 +17,11 @@ html:
 	cp images/*.png ../../userguide/images
 	cp pictures/*.png ../../userguide/pictures
 
+eclipse:  
+	xsltproc --xinclude --output tmp.xml trans.xsl userguide.xml
+	xsltproc --output userguide.html  /usr/share/xml/docbook/stylesheet/nwalsh/eclipse/eclipse.xsl tmp.xml
+	rm tmp.xml
+
 pdf:   chart-properties.xml processing-operations.xml
 	xsltproc --xinclude --output tmp.xml trans.xsl userguide.xml
 	perl -pe "s!\@DOCBOOK_STYLESHEET\@!file:////usr/share/xml/docbook/stylesheet/nwalsh/fo/docbook.xsl!g" custom-fo-docbook.xsl >custom-fo-docbook-tmp.xsl
