@@ -26,7 +26,7 @@ eclipse:
 	rm tmp.xml
 
 pdf:  chart-properties.xml processing-operations.xml
-	xsltproc --xinclude --output tmp.xml trans.xsl userguide.xml
+	xsltproc --xinclude --stringparam output pdf --output tmp.xml trans.xsl userguide.xml
 	perl -pe "s!\@DOCBOOK_STYLESHEET\@!file:///$(DOCBOOK)/fo/docbook.xsl!g" custom-fo-docbook.xsl >custom-fo-docbook-tmp.xsl
 	xsltproc  --output tmp.fo custom-fo-docbook-tmp.xsl tmp.xml
 	$(FOP) -fo tmp.fo -pdf userguide.pdf
