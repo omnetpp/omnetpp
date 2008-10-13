@@ -43,7 +43,7 @@ PNGPICS = $(SVGPICS:.svg=.png) $(DOTPICS:.dot=.png)
 # LOGFILTER = | sed '/Underfull/{N;N;d;};/Overfull/{N;N;d;};/Token not allowed/{N;N;d;}'
 LOGFILTER =
 
-default: pdf html
+default: pdf html eclipse
 
 pdf: $(ALLTEX) $(PDFPICS) figures/*.png
 	pdflatex usman.tex $(LOGFILTER)
@@ -82,6 +82,17 @@ pdf: $(ALLTEX) $(PDFPICS) figures/*.png
 .tex.htm:
 	$(PERL) ltoh.pl $<
 
+.PHONY : eclipse 
+eclipse : $(HTMCHAPTERS) $(PNGPICS) omnest.thtml omnetpp.thtml prephtml2 ltoh.specs ltoh.pl
+	cat $(HTMCHAPTERS) > usman.tmp
+	$(PERL) prephtml2 --split usman.tmp
+	rm usman.tmp
+	rm -rf eclipse
+	mkdir eclipse
+	mv *.html toc.xml eclipse
+	cp *.png eclipse
+	cp figures/*.png eclipse
+
 html : $(HTMCHAPTERS) $(PNGPICS) omnest.thtml omnetpp.thtml prephtml2 ltoh.specs ltoh.pl
 	cat $(HTMCHAPTERS) > usman.tmp
 	$(PERL) prephtml2 usman.tmp
@@ -94,3 +105,5 @@ html : $(HTMCHAPTERS) $(PNGPICS) omnest.thtml omnetpp.thtml prephtml2 ltoh.specs
 
 clean:
 	rm -f usman.dvi manual.pdf *.aux *.idx *.ilg *.ind *.log *.out *.toc *.bbl *.blg *.htm usman.tmp usman.html
+	rm -rf ../../manual
+	rm -rf eclipse

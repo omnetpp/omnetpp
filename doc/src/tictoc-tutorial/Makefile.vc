@@ -9,3 +9,7 @@
 all:
 	$(DOXYGEN:/=\) doxyfile
 	copy *.gif *.png ..\..\tictoc-tutorial
+
+clean:
+	-del /s /q ..\..\tictoc-tutorial 2>nul
+	-rmdir ..\..\tictoc-tutorial 2>nul

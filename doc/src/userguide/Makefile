@@ -18,10 +18,18 @@ html:
 	cp images/*.png ../../userguide/images
 	cp pictures/*.png ../../userguide/pictures
 
+.PHONY : eclipse
 eclipse:  
 	xsltproc --xinclude --output tmp.xml trans.xsl userguide.xml
 	rm -rf eclipse
 	mkdir eclipse
+	mkdir eclipse/icons
+	mkdir eclipse/images
+	mkdir eclipse/pictures
+	cp userguide.html ../../userguide
+	cp icons/*.png icons/*.gif eclipse/icons
+	cp images/*.png eclipse/images
+	cp pictures/*.png eclipse/pictures
 	cd eclipse && xsltproc $(DOCBOOK)/eclipse/eclipse.xsl ../tmp.xml
 	rm tmp.xml
 
@@ -36,6 +44,7 @@ pdf:  chart-properties.xml processing-operations.xml
 clean:
 	rm -f userguide.pdf userguide.html
 	rm -rf eclipse
+	rm -rf ../../userguide
 
 # the following target should be called manually because it depends on binary file (scavetool) which is 
 # created only later durnig the run of the automatic build script.

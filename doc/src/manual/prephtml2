@@ -20,6 +20,29 @@ $apidir = "../api";
 $tagfile = "../../api/opptags.xml";
 
 
+while (@ARGV)
+{
+    $arg = shift @ARGV;
+    if ($arg eq "--split" || $arg eq "-s") {
+        $singlePage = 0;
+    }
+    elsif ($arg eq "--apidir") {
+        $apidir = shift @ARGV;
+    } 
+    elsif ($arg eq "--tagfile") {
+        $tagfile = shift @ARGV;
+    }
+    elsif ($arg eq "--template") {
+        $templatefile = shift @ARGV;
+    }        
+    elsif ($arg =~ /^-/) {
+          die("unrecognized option: $arg");
+    }
+    else {
+        $fname = $arg;
+    }
+}
+
 #
 # read template file
 #

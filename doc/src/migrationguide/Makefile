@@ -11,16 +11,20 @@ html:
 	rm -f tmp.xml tmp0.xml
 	rm -rf ../../migration
 	mkdir ../../migration
+	mkdir ../../migration/images
 	cp migration.html ../../migration
+	cp images/* ../../migration/images
 
+.PHONY : eclipse
 eclipse:  
 	perl trans.pl <migration.xml >tmp0.xml
 	xsltproc --xinclude --output tmp.xml trans.xsl tmp0.xml
 	rm -rf eclipse
 	mkdir eclipse
+	mkdir eclipse/images
 	cd eclipse && xsltproc $(DOCBOOK)/eclipse/eclipse.xsl ../tmp.xml
+	cp images/* eclipse/images
 	rm tmp.xml tmp0.xml
-
 
 pdf:
 	perl trans.pl <migration.xml >tmp0.xml
@@ -35,4 +39,5 @@ pdf:
 clean:
 	rm -rf migration.pdf migration.html
 	rm -rf eclipse
+	rm -rf ../../migration
 

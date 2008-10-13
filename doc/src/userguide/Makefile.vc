@@ -30,6 +30,8 @@ clean:
 	-del userguide.pdf userguide.html 2>nul
 	-del /s /q eclipse 2>nul
 	-rmdir eclipse 2>nul
+	-del /s /q ..\..\userguide 2>nul
+	-rmdir ..\..\userguide 2>nul
 
 # the following target should be called manually because it depends on binary file (scavetool) which is  
 # created only later durnig the run of the automatic build script. 

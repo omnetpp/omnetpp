@@ -110,7 +110,25 @@ html : $(HTMCHAPTERS) omnest.thtml omnetpp.thtml prephtml2 ltoh.specs ltoh.pl
 	copy *.png ..\..\manual
 	copy figures\*.png ..\..\manual
 
+eclipse : $(HTMCHAPTERS) omnest.thtml omnetpp.thtml prephtml2 ltoh.specs ltoh.pl
+	:#FIXME use tmp dir
+	@echo. > usman.tmp
+	for %%i in ($(HTMCHAPTERS)) do type %i >> usman.tmp
+	$(PERL) prephtml2 --split usman.tmp
+	-del usman.tmp
+	-del /s /q eclipse
+	-rmdir eclipse
+	mkdir eclipse
+	move *.html eclipse
+	move toc.xml eclipse
+	copy *.png eclipse
+	copy figures/*.png eclipse
+
 clean:
 	-del usman.dvi manual.pdf *.aux *.idx *.ilg *.ind *.log *.out *.toc *.bbl *.blg *.htm usman.tmp usman.html
+	-del /s /q ..\..\manual 2>nul
+	-rmdir ..\..\manual 2>nul
+	-del /s /q eclipse
+	-rmdir eclipse
 
 
