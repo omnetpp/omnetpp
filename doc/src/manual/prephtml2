@@ -249,6 +249,8 @@ for (my $i=0; $i<$nheadings; $i++)
       my $link = $singlePage ? "usman.$ext#$label[$i]" : "chap$chapnum[$i].$ext#$label[$i]";
       my $title = $title[$i];
       $title =~ s/"/&quot;/g;
+      $title =~ s/<tt>//g;
+      $title =~ s/<\/tt>//g;
       $entry = spaces(2*$level[$i]) . "<topic label=\"$number[$i] $title\" href=\"$link\"";
       $entry .= ($i!=$nheadings-1 && $level[$i+1]>$level[$i]) ? ">" : "/>";
       $tocxml .= "$entry\n";
