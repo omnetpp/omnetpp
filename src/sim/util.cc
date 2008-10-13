@@ -377,6 +377,7 @@ NAMESPACE_END
 #include "cpsquare.h"
 #include "cstringtokenizer.h"
 #include "cxmlelement.h"
+#include "cdelaychannel.h"
 #include "cdataratechannel.h"
 #include "cpacketqueue.h"
 
@@ -408,6 +409,8 @@ void _sim_dummy_func()
       std_sim_descriptor_dummy();
       cXMLElement a(0,0,0);
       (void)a;
+      cDelayChannel dc(NULL);
+      (void)dc;
       cDatarateChannel c(NULL);
       (void)c;
       cPacketQueue pq;
