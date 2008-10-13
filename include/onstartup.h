@@ -29,9 +29,9 @@ NAMESPACE_BEGIN
 
 // Generating identifiers unique for this file. See MSVC Help for __COUNTER__
 // for more info.
-#define __CONCAT1(x,y) x##y
-#define __CONCAT2(prefix,line) __CONCAT1(prefix,line)
-#define MAKE_UNIQUE_WITHIN_FILE(prefix) __CONCAT2(prefix,__LINE__)
+#define __OPPCONCAT1(x,y) x##y
+#define __OPPCONCAT2(prefix,line) __OPPCONCAT1(prefix,line)
+#define MAKE_UNIQUE_WITHIN_FILE(prefix) __OPPCONCAT2(prefix,__LINE__)
 
 // helpers for EXECUTE_ON_STARTUP
 // IMPORTANT: if you change "__onstartup_func_" below, linkall.pl must also be updated!
