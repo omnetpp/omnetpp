@@ -24,7 +24,7 @@ eclipse:
 
 pdf:
 	perl trans.pl <migration.xml >tmp0.xml
-	xsltproc --xinclude --output tmp.xml trans.xsl tmp0.xml
+	xsltproc --xinclude --output --stringparam output pdf tmp.xml trans.xsl tmp0.xml
 	perl -pe "s!\@DOCBOOK_STYLESHEET\@!file:///$(DOCBOOK)/fo/docbook.xsl!g" custom-fo-docbook.xsl >custom-fo-docbook-tmp.xsl
 	xsltproc  --output tmp.fo custom-fo-docbook-tmp.xsl tmp.xml
 	$(FOP) -fo tmp.fo -pdf migration.pdf

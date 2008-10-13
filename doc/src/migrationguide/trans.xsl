@@ -3,7 +3,10 @@
 
 <xsl:output doctype-public="-//OASIS//DTD DocBook XML V4.5//EN"
             doctype-system="http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"/>
-            
+
+<!-- "html" or "pdf" -->
+<xsl:param name="output" select="'html'"/>
+
 <xsl:template match="@*|node()">
    <xsl:copy>
       <xsl:apply-templates select="@*|node()"/>
@@ -13,17 +16,6 @@
 <xsl:template match="commercial">
    <!-- <xsl:apply-templates select="@*|node()"/> -->
 </xsl:template>
-
-
-<!-- hack to force <token>s to be rendered in bold (italic would be better)?
-<xsl:template match="token">
-   <command>
-      <xsl:copy>
-         <xsl:apply-templates select="@*|node()"/>
-      </xsl:copy>
-   </command>
-</xsl:template>
--->
 
 <xsl:template match="picture">
    <figure float="0">
@@ -35,11 +27,14 @@
                <xsl:choose>
                   <xsl:when test="@width">
                      <imagedata fileref="{@file}" width="{@width}" align="center"/>
-                  </xsl:when>	
-                  <xsl:otherwise>	
+                  </xsl:when>
+                  <xsl:when test="$output='pdf'">
                      <imagedata fileref="{@file}" scale="50" align="center"/>
-                  </xsl:otherwise>	
-               </xsl:choose>     
+                  </xsl:when>
+                  <xsl:otherwise>
+                     <imagedata fileref="{@file}" align="center"/>
+                  </xsl:otherwise>
+               </xsl:choose>
             </imageobject>
             <textobject>
                <phrase></phrase>
@@ -51,16 +46,19 @@
 
 <xsl:template match="icon">
    <guibutton>
-      <inlinegraphic scale="60">
+      <inlinegraphic>
+         <xsl:if test="$output='pdf'">
+            <xsl:attribute name="scale">60</xsl:attribute>
+         </xsl:if>
          <xsl:attribute name="fileref">
             <xsl:choose>
                <xsl:when test="@file">
                   <xsl:value-of select="@file"/>
-               </xsl:when>	
-               <xsl:otherwise>	
+               </xsl:when>
+               <xsl:otherwise>
                   <xsl:value-of select="concat('icons/',@name)"/>
-               </xsl:otherwise>	
-            </xsl:choose>     
+               </xsl:otherwise>
+            </xsl:choose>
          </xsl:attribute>
       </inlinegraphic>
    </guibutton>

@@ -21,7 +21,7 @@ eclipse: catalog
 
 pdf: catalog
 	$(PERL) trans.pl <migration.xml >tmp0.xml
-	$(XSLTPROC) --nonet --xinclude --output tmp.xml trans.xsl tmp0.xml
+	$(XSLTPROC) --nonet --xinclude --stringparam output pdf --output tmp.xml trans.xsl tmp0.xml
 	perl -pe "s!\@DOCBOOK_STYLESHEET\@!file:///$(TOOLS_DIR:\=/)/docbook/fo/docbook.xsl!g" custom-fo-docbook.xsl >custom-fo-docbook-tmp.xsl
 	$(XSLTPROC) --nonet --output tmp.fo custom-fo-docbook-tmp.xsl tmp.xml
 	call $(FOP) -fo tmp.fo -pdf migration.pdf
