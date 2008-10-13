@@ -176,9 +176,12 @@ copy-ui-docu:
 	cp -r $(OMNETPP_DOC_DIR)/userguide $(OMNETPP_UI_DIR)/org.omnetpp.doc/content
 	cp -r $(OMNETPP_DOC_DIR)/migration $(OMNETPP_UI_DIR)/org.omnetpp.doc/content
 	cp -r $(OMNETPP_DOC_DIR)/tictoc-tutorial $(OMNETPP_UI_DIR)/org.omnetpp.doc/content
+	perl -ipe 's!href="!href=content/manual"!g' $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/manual/toc.xml
+	perl -ipe 's!href="!href=content/userguide"!g' $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/userguide/toc.xml
+	perl -ipe 's!href="!href=content/migration"!g' $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/migration/toc.xml
 
 # utility target to copy 3rd party DLLs to the bin directory on MINGW build
-copy-dlls: 
+copy-dlls:
 	cp mingw/bin/libgcc_sjlj_1.dll bin
 	cp mingw/bin/libstdc++_sjlj_6.dll bin
 	cp msys/bin/tcl84.dll bin
