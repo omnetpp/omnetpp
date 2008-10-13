@@ -36,6 +36,7 @@
 #else
 
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <unistd.h>  // getpid(), getcwd(), etc
 
 #if HAVE_DLOPEN
