@@ -15,6 +15,7 @@ import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.graph.parts.NedEditPart;
 import org.omnetpp.ned.editor.graph.parts.NedEditPartFactory;
 import org.omnetpp.ned.editor.graph.parts.NedFileEditPart;
+import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 
@@ -27,6 +28,24 @@ import de.unikassel.imageexport.providers.AbstractFigureProvider;
  * @author rhornig
  */
 public class NedFigureProvider extends AbstractFigureProvider {
+    public static ScrollingGraphicalViewer createNEDViewer(INEDElement model) {
+        ScrollingGraphicalViewer viewer = new ScrollingGraphicalViewer();
+        viewer.setEditPartFactory(new NedEditPartFactory());
+        viewer.setContents(model);
+        NedFileEditPart nedFilePart = (NedFileEditPart)viewer.getEditPartRegistry().get(model);
+        if (nedFilePart == null) 
+            throw new IllegalArgumentException("Invalid NED file.");
+        // root figure is not added to the viewer because of off screen rendering
+        // we have to pretend the addition otherwise add notification will not be sent to children
+        IFigure rootFigure = nedFilePart.getFigure();
+        rootFigure.addNotify();
+        rootFigure.setBounds(new Rectangle(0, 0, Integer.MAX_VALUE, Integer.MAX_VALUE));
+        rootFigure.setBorder(null);
+        rootFigure.setFont(Display.getDefault().getSystemFont());
+        rootFigure.validate();
+        
+        return viewer;
+    }
 
     @SuppressWarnings("unchecked")
     public Map<IFigure, String> provideExportImageFigures(final IFile diagramFile) {
@@ -36,18 +55,7 @@ public class NedFigureProvider extends AbstractFigureProvider {
             public void run() {
                 Map<IFigure, String> result = new HashMap<IFigure, String>();
                 NedFileElementEx modelRoot = NEDResourcesPlugin.getNEDResources().getNedFileElement(diagramFile);
-                ScrollingGraphicalViewer viewer = new ScrollingGraphicalViewer();
-                viewer.setEditPartFactory(new NedEditPartFactory());
-                viewer.setContents(modelRoot);
-                NedFileEditPart nedFilePart = (NedFileEditPart)viewer.getEditPartRegistry().get(modelRoot);
-                if (nedFilePart == null) 
-                    throw new IllegalArgumentException("Invalid NED file.");
-                // root figure is not added to the viewer because of off screen rendering
-                // we have to pretend the addition otherwise add notification will not be sent to children
-                nedFilePart.getFigure().addNotify();
-                nedFilePart.getFigure().setBounds(new Rectangle(0, 0, Integer.MAX_VALUE, Integer.MAX_VALUE));
-                nedFilePart.getFigure().setFont(Display.getDefault().getSystemFont());
-                nedFilePart.getFigure().validate();
+                ScrollingGraphicalViewer viewer = createNEDViewer(modelRoot);
                 
                 // count the number of type. if only a single type
                 // present and its name is the same as the filename, we will use only that name

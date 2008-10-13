@@ -38,6 +38,9 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.gef.ui.parts.ScrollingGraphicalViewer;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.TextAttribute;
@@ -59,6 +62,10 @@ import org.omnetpp.ned.core.MsgResources;
 import org.omnetpp.ned.core.NEDResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.graph.misc.NedFigureProvider;
+import org.omnetpp.ned.editor.graph.parts.CompoundModuleEditPart;
+import org.omnetpp.ned.editor.graph.parts.NedEditPart;
+import org.omnetpp.ned.editor.graph.parts.NedTypeEditPart;
+import org.omnetpp.ned.editor.graph.parts.SubmoduleEditPart;
 import org.omnetpp.ned.editor.text.highlight.NedCodeColorizerScanner;
 import org.omnetpp.ned.editor.text.highlight.NedDocColorizerScanner;
 import org.omnetpp.ned.editor.text.highlight.NedPrivateDocColorizerScanner;
@@ -454,7 +461,7 @@ public class DocumentationGenerator {
     }
 
     protected void generateDoxy() throws Exception {
-        if (configuration.generateDoxy) {
+        if (configuration.generateDoxy && project.getNature("org.eclipse.cdt.core.ccnature") != null) {
             if (doxyExecutablePath == null || !new File(doxyExecutablePath).exists())
                 throw new IllegalStateException("The Doxygen executable path is invalid, set it using Window/Preferences...\nThe currently set path is: " + doxyExecutablePath);
 
@@ -1412,10 +1419,41 @@ public class DocumentationGenerator {
         }
     }
 
-    protected void generateTypeDiagram(INedTypeElement typeElement) throws IOException {
+    protected void generateTypeDiagram(final INedTypeElement typeElement) throws IOException {
         if (configuration.generateNedTypeFigures) {
             out("<img src=\"" + getOutputFileName(typeElement, "type", ".png") + "\" ismap=\"yes\" usemap=\"#type-diagram\"/>");
-            // TODO: out("<map name=\"type-diagram\">" +  + "</map>\r\n");
+            DisplayUtils.runNowOrSyncInUIThread(new java.lang.Runnable() {
+                public void run() {
+                    try {
+                        NedFileElementEx modelRoot = typeElement.getContainingNedFileElement();
+                        ScrollingGraphicalViewer viewer = NedFigureProvider.createNEDViewer(modelRoot);
+                        NedEditPart editPart = (NedEditPart)viewer.getEditPartRegistry().get(typeElement);
+
+                        out("<map name=\"type-diagram\">\r\n");
+
+                        if (editPart instanceof CompoundModuleEditPart) {
+                            CompoundModuleEditPart compoundModuleEditPart = (CompoundModuleEditPart)editPart;
+
+                            for (Object child : compoundModuleEditPart.getChildren()) {
+                                if (child instanceof SubmoduleEditPart) {
+                                    SubmoduleEditPart submoduleEditPart = (SubmoduleEditPart)child;
+                                    SubmoduleElementEx submoduleElement = (SubmoduleElementEx)submoduleEditPart.getModel();
+                                    outMapReference(submoduleElement.getEffectiveTypeRef(), submoduleEditPart.getFigure());
+                                }
+                            }
+                        }
+                        else if (editPart instanceof NedTypeEditPart) {
+                            NedTypeEditPart nedTypeEditPart = (NedTypeEditPart)editPart;
+                            outMapReference((INedTypeElement)nedTypeEditPart.getModel(), nedTypeEditPart.getFigure());
+                        }
+
+                        out("</map>\r\n");
+                    }
+                    catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            });
         }
     }
 
@@ -1763,6 +1801,16 @@ public class DocumentationGenerator {
         });
     }
 
+    protected void withGeneratingFile(String fileName, Runnable content) throws Exception {
+        File oldCurrentOutputFile = currentOutputFile;
+
+        setCurrentOutputFile(fileName);
+        content.run();
+
+        if (oldCurrentOutputFile != null)
+            currentOutputFile = oldCurrentOutputFile;
+    }
+
     protected void withGeneratingHTMLFile(String fileName, Runnable content) throws Exception {
         File oldCurrentOutputFile = currentOutputFile;
 
@@ -1810,6 +1858,22 @@ public class DocumentationGenerator {
             throw new CancellationException();
 
         outputStreams.get(currentOutputFile).write(string.getBytes());
+    }
+
+    protected void outMapReference(INedTypeElement model, IFigure figure) throws IOException {
+        Rectangle bounds = new Rectangle(figure.getBounds());
+        figure.translateToAbsolute(bounds);
+        outMapReference(model, bounds);
+    }
+
+    protected void outMapReference(INedTypeElement typeElement, Rectangle bounds) throws IOException {
+        outMapReference(typeElement, bounds.x, bounds.y, bounds.x + bounds.width, bounds.y + bounds.height);
+    }
+
+    protected void outMapReference(INedTypeElement typeElement, int x1, int y1, int x2, int y2) throws IOException {
+        String name = typeElement.getName();
+        String url = getOutputFileName(typeElement);
+        out("<area shape=\"rect\" href=\"" + url + "\" title=\"" + name + "\" alt=\"" + name + "\" coords=\"" + x1 + "," + y1 + "," + x2 + "," + y2 + "\">\r\n");
     }
 
     protected IPath getOutputFilePath(IFile file) {
