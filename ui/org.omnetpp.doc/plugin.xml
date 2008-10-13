@@ -8,6 +8,18 @@
             file="content/toc.xml"
             primary="true">
       </toc>
+      <toc
+            file="content/manual/toc.xml"
+            primary="false">
+      </toc>
+      <toc
+            file="content/migration/toc.xml"
+            primary="false">
+      </toc>
+      <toc
+            file="content/userguide/toc.xml"
+            primary="false">
+      </toc>
    </extension>
 
    <extension

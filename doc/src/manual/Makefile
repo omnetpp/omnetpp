@@ -85,7 +85,7 @@ pdf: $(ALLTEX) $(PDFPICS) figures/*.png
 .PHONY : eclipse 
 eclipse : $(HTMCHAPTERS) $(PNGPICS) omnest.thtml omnetpp.thtml prephtml2 ltoh.specs ltoh.pl
 	cat $(HTMCHAPTERS) > usman.tmp
-	$(PERL) prephtml2 --split usman.tmp
+	$(PERL) prephtml2 --split --template eclipse.thtml usman.tmp
 	rm usman.tmp
 	rm -rf eclipse
 	mkdir eclipse

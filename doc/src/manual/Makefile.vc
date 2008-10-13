@@ -114,7 +114,7 @@ eclipse : $(HTMCHAPTERS) omnest.thtml omnetpp.thtml prephtml2 ltoh.specs ltoh.pl
 	:#FIXME use tmp dir
 	@echo. > usman.tmp
 	for %%i in ($(HTMCHAPTERS)) do type %i >> usman.tmp
-	$(PERL) prephtml2 --split usman.tmp
+	$(PERL) prephtml2 --split --template eclipse.thtml usman.tmp
 	-del usman.tmp
 	-del /s /q eclipse
 	-rmdir eclipse

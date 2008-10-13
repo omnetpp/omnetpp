@@ -251,9 +251,13 @@ for (my $i=0; $i<$nheadings; $i++)
       $title =~ s/"/&quot;/g;
       $title =~ s/<tt>//g;
       $title =~ s/<\/tt>//g;
-      $entry = spaces(2*$level[$i]) . "<topic label=\"$number[$i] $title\" href=\"$link\"";
-      $entry .= ($i!=$nheadings-1 && $level[$i+1]>$level[$i]) ? ">" : "/>";
-      $tocxml .= "$entry\n";
+      # limit the index deph to XX levels for eclipse, change 99 to the desired level
+      if ($level[$i] <= 99)
+      {
+          $entry = spaces(2*$level[$i]) . "<topic label=\"$number[$i] $title\" href=\"$link\"";
+          $entry .= ($i!=$nheadings-1 && $level[$i+1]>$level[$i]) ? ">" : "/>";
+          $tocxml .= "$entry\n";
+      }
 }
 $tocxml .= "</toc>";
 

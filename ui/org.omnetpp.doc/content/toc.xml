@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?NLS TYPE="org.eclipse.help.toc"?>
 
-<toc label="OMNeT++ Development User Guide" topic="content/toc.html">
+<toc label="OMNeT++ Development User Guide">
    <topic label="Getting Started">
       <topic href="content/WhatsNew.html" label="What&apos;s New in OMNeT++ 4.0">
       </topic>
@@ -11,11 +11,14 @@
     </topic>
     <anchor id="gettingstarted"/>
    </topic>
-   <topic href="content/manual/usman.html" label="OMNeT++ Manual">
+   <topic label="OMNeT++ Manual">
+      <link toc="content/manual/toc.xml"/>
    </topic>
-   <topic href="content/userguide/userguide.html" label="IDE User Guide">
+   <topic label="Migration Guide">
+      <link toc="content/migration/toc.xml"/>
    </topic>
-   <topic href="content/migration/migration.html" label="Migration Guide">
+   <topic label="IDE User Guide">
+      <link toc="content/userguide/toc.xml"/>
    </topic>
    <anchor id="omnetpp"/>
    <topic href="content/api/main.html" label="OMNeT++ API Reference">
