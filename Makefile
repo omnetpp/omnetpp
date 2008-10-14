@@ -171,14 +171,24 @@ makefiles:
 # copy the documentation to the UI doc folder too
 copy-ui-docu:
 	txt2html $(OMNETPP_DOC_DIR)/WhatsNew --xhtml --outfile $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/WhatsNew.html
+	rm -rf $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/api
+	rm -rf $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/manual
+	rm -rf $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/userguide
+	rm -rf $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/migration
+	rm -rf $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/tictoc-tutorial
 	cp -r $(OMNETPP_DOC_DIR)/api $(OMNETPP_UI_DIR)/org.omnetpp.doc/content
-	cp -r $(OMNETPP_DOC_DIR)/manual $(OMNETPP_UI_DIR)/org.omnetpp.doc/content
-	cp -r $(OMNETPP_DOC_DIR)/userguide $(OMNETPP_UI_DIR)/org.omnetpp.doc/content
-	cp -r $(OMNETPP_DOC_DIR)/migration $(OMNETPP_UI_DIR)/org.omnetpp.doc/content
+	cp -r $(OMNETPP_DOC_DIR)/src/manual/eclipse $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/manual
+	cp -r $(OMNETPP_DOC_DIR)/src/userguide/eclipse $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/userguide
+	cp -r $(OMNETPP_DOC_DIR)/src/migrationguide/eclipse $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/migration
 	cp -r $(OMNETPP_DOC_DIR)/tictoc-tutorial $(OMNETPP_UI_DIR)/org.omnetpp.doc/content
-	perl -ipe 's!href="!href=content/manual"!g' $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/manual/toc.xml
-	perl -ipe 's!href="!href=content/userguide"!g' $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/userguide/toc.xml
-	perl -ipe 's!href="!href=content/migration"!g' $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/migration/toc.xml
+	rm -rf $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/userguide/plugin.xml
+	rm -rf $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/migration/plugin.xml
+	perl -i -pe 's!href="!href="content/manual/!g' $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/manual/toc.xml
+	perl -i -pe 's!href="!href="content/userguide/!g' $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/userguide/toc.xml
+	perl -i -pe 's!<head>!<head><link rel="STYLESHEET" href="../book.css"  type="text/css"/>!g' $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/userguide/*.html
+	perl -i -pe 's!href="!href="content/migration/!g' $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/migration/toc.xml
+	perl -i -pe 's!<head>!<head><link rel="STYLESHEET" href="../book.css"  type="text/css"/>!g' $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/migration/*.html
+	perl -i -pe 's!<head>!<head><link rel="STYLESHEET" href="book.css"  type="text/css"/>!g' $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/WhatsNew.html
 
 # utility target to copy 3rd party DLLs to the bin directory on MINGW build
 copy-dlls:
