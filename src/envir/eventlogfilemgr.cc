@@ -34,7 +34,7 @@
 USING_NAMESPACE
 
 
-Register_PerRunConfigEntry(CFGID_EVENTLOG_FILE, "eventlog-file", CFG_FILENAME, "${resultdir}/${configname}-${runnumber}.log", "Name of the event log file to generate.");
+Register_PerRunConfigEntry(CFGID_EVENTLOG_FILE, "eventlog-file", CFG_FILENAME, "${resultdir}/${configname}-${runnumber}.elog", "Name of the event log file to generate.");
 Register_PerRunConfigEntry(CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN, "eventlog-message-detail-pattern", CFG_CUSTOM, NULL,
         "A list of patterns separated by '|' character which will be used to write "
         "message detail information into the event log for each message sent during "
