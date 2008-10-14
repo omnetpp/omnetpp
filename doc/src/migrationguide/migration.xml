@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE chapter SYSTEM "custom-docbook.dtd">
 <book>
-  <title>Migrating &Omnetpp; simulations from version 3.x to 4.0</title>
+  <title>Migrating &Omnetpp; Simulations From Version 3.x To 4.0</title>
 
   <chapter>
     <title>What has changed since 3.x?</title>
