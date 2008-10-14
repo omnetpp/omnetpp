@@ -3,6 +3,7 @@ PERL=perl
 
 INKSCAPE=inkscape
 DOT=dot
+TEMPLATE=omnetpp
 
 # --- generating pdf ---
 
@@ -83,7 +84,7 @@ pdf: $(ALLTEX) $(PDFPICS) figures/*.png
 	$(PERL) ltoh.pl $<
 
 .PHONY : eclipse 
-eclipse : $(HTMCHAPTERS) $(PNGPICS) omnest.thtml omnetpp.thtml prephtml2 ltoh.specs ltoh.pl
+eclipse : $(HTMCHAPTERS) $(PNGPICS) eclipse.thtml prephtml2 ltoh.specs ltoh.pl
 	cat $(HTMCHAPTERS) > usman.tmp
 	$(PERL) prephtml2 --split --template eclipse.thtml usman.tmp
 	rm usman.tmp
@@ -95,7 +96,7 @@ eclipse : $(HTMCHAPTERS) $(PNGPICS) omnest.thtml omnetpp.thtml prephtml2 ltoh.sp
 
 html : $(HTMCHAPTERS) $(PNGPICS) omnest.thtml omnetpp.thtml prephtml2 ltoh.specs ltoh.pl
 	cat $(HTMCHAPTERS) > usman.tmp
-	$(PERL) prephtml2 usman.tmp
+	$(PERL) prephtml2 --template $(TEMPLATE).thtml usman.tmp
 	rm usman.tmp
 	rm -rf ../../manual
 	mkdir ../../manual

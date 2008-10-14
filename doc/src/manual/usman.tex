@@ -47,6 +47,23 @@
 %% try this for spell checking: cat ess2002.tex | ispell -l -t -a | sort | uniq | more
 
 %%
+%% OMNeT++ logo, use as {\opp}
+%%
+\makeatletter
+%%\DeclareRobustCommand{\omnetpp}{OM\-NeT\kern-.18em++\@}
+\DeclareRobustCommand{\omnetpp}{OMNeT++\@}
+\makeatother
+
+\newcommand{\omnest}{OMNEST}
+
+%%
+%% *** CHECK SETTING BELOW BEFORE RELEASES ***
+%%
+%\newcommand{\opp}{\omnest}
+\newcommand{\opp}{\omnetpp}
+\newcommand{\oppversion}{4.0}
+
+%%
 %% PDF Header
 %%
 % note: \ifpdf now comes from the ifpdf package
@@ -63,9 +80,9 @@
   \usepackage[plainpages=false,linktocpage,bookmarksnumbered=true,pdftex]{hyperref}   %% automatic hyperlinking
   \pdfcompresslevel=9
   \pdfinfo{/Author (Andras Varga)
-    /Title (OMNeT++/OMNEST Manual)
+    /Title ({\opp} Manual)
     /Subject ()
-    /Keywords (OMNeT++/OMNEST manual)}
+    /Keywords ({\opp} manual)}
 \else
   \usepackage{graphicx}
   \usepackage[plainpages=false]{hyperref}   %% automatic hyperlinking
@@ -76,22 +93,6 @@
 %%
 \makeindex
 
-%%
-%% OMNeT++ logo, use as {\opp}
-%%
-\makeatletter
-%%\DeclareRobustCommand{\omnetpp}{OM\-NeT\kern-.18em++\@}
-\DeclareRobustCommand{\omnetpp}{OMNeT++\@}
-\makeatother
-
-\newcommand{\omnest}{OMNEST}
-
-%%
-%% *** CHECK SETTING BELOW BEFORE RELEASES ***
-%%
-%\newcommand{\opp}{\omnest}
-\newcommand{\opp}{\omnetpp}
-\newcommand{\oppversion}{4.0}
 
 %%
 %% Heading and Footer
