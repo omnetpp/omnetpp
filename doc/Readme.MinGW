@@ -92,7 +92,7 @@ to the lib/ and bin/ subdirs.
 
 4. Portability issues
 
-OMNeT++ has been tested with the MinW gcc compiler. The current distribution
+OMNeT++ has been tested with the MinGW gcc compiler. The current distribution
 contains gcc 4.2.1 version.
 
 Microsoft Visual C++ is not supported in the Academic Edition.
