@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
-<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
-    "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<!DOCTYPE chapter SYSTEM "custom-docbook.dtd">
 <chapter id="ned-editor">
   <title>Editing NED Files</title>
 
@@ -10,7 +9,7 @@
       When you double-click a .ned file in the IDE, it will open in the NED editor. Like
       its predecessor
       <command>gned</command>
-      from OMNeT++ 2.x and 3.x, the new NED editor is a dual-mode editor: in the graphical
+      from &Omnetpp; 3.x, the new NED editor is a dual-mode editor: in the graphical
       mode you can edit the network using the mouse, and the textual mode allows you to
       work directly on the NED source.
     </para>
@@ -29,10 +28,10 @@
     <para>
       The
       <command>gned</command>
-      program from OMNeT++ 3.x and 2.x viewed NED files in isolation. In contrast, the
-      OMNeT++ IDE gathers information from all .ned files in all open OMNeT++ projects,
+      program from &Omnetpp; 3.x viewed NED files in isolation. In contrast, the
+      &Omnetpp; IDE gathers information from all .ned files in all open &Omnetpp; projects,
       and makes this information available to the NED editor. This is necessary because in
-      OMNeT++ 4.0, modules may inherit parameters, visual appearance or even submodules
+      &Omnetpp; 4.0, modules may inherit parameters, visual appearance or even submodules
       and connections from other modules, so it is only possible to display a compound
       module correctly if all related NED definitions are available.
     </para>
@@ -55,7 +54,7 @@
   <sect1>
     <title>Creating new NED files</title>
     <para>
-      Once you have an empty OMNeT++ project, you can create new NED files. Choosing
+      Once you have an empty &Omnetpp; project, you can create new NED files. Choosing
       <guimenuitem>File|New|Network Description File</guimenuitem>
       from the menu will bring up a wizard where you can specify the target directory and
       the file/module name. You may choose to create an empty NED file, or a
@@ -77,7 +76,7 @@
         NED files outside the specified NED Source Folders and those files will be opened
         in a standard text editor. To specify the directory where the NED files will be
         stored right click on the project in the Project Explorer and choose Properties.
-        Select the OMNeT++/Ned Source Folders page and click on the folders where you
+        Select the &Omnetpp;/Ned Source Folders page and click on the folders where you
         store your NED files. The default value is the project root.
       </para>
       <picture file="pictures/NED-SourceFolders.png">

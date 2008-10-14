@@ -335,7 +335,7 @@ class HelloModule : public cSimpleModule
     virtual void handleMessage(cMessage *msg);
 };
 
-// register module class with OMNeT++
+// register module class with {\opp}
 Define_Module(HelloModule);
 
 void HelloModule::initialize()
@@ -471,7 +471,7 @@ checks for that first, and cancels the message before deletion if necessary.
 \subsection{"Garbage collection" and compatibility}
 \label{sec:garbage-collection}
 
-FIXME 
+FIXME
 
 {\opp} versions before the 3.2 release had a feature which often was,
 informally and also somewhat incorrectly, called \textit{"garbage
@@ -555,7 +555,7 @@ class FFGenerator : public cSimpleModule
 
 #include "FFGenerator.cc"
 
-// register module class with OMNeT++
+// register module class with {\opp}
 Define_Module(FFGenerator);
 
 FFGenerator::FFGenerator()

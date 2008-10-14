@@ -1,31 +1,30 @@
 <?xml version="1.0"?>
-<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
-    "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<!DOCTYPE chapter SYSTEM "custom-docbook.dtd">
 <chapter id="cpp-dev">
   <title>C++ Development</title>
   <sect1>
     <title>Introduction</title>
     <para>
-      The OMNeT++ IDE contains CDT (C/C++ Development Tooling) to help you develop the C++
+      The &Omnetpp; IDE contains CDT (C/C++ Development Tooling) to help you develop the C++
       part of your simulation. We recommend reading the CDT documentation in the IDE help
       system (Help/Help Content) to get a better understanding, how CDT is working in
-      general. The OMNeT++ IDE adds several extensions to the standard CDT features to
+      general. The &Omnetpp; IDE adds several extensions to the standard CDT features to
       make your life easier:
       <itemizedlist>
         <listitem>
           Customized project creation dialog
         </listitem>
         <listitem>
-          Extended C++ toolchain for OMNeT++ (including MSG compiler)
+          Extended C++ toolchain for &Omnetpp; (including MSG compiler)
         </listitem>
         <listitem>
           Automatic makefile generation
         </listitem>
         <listitem>
-          OMNeT++ specific build configuration
+          &Omnetpp; specific build configuration
         </listitem>
         <listitem>
-          Special launch configuration type for launching and debugging OMNeT++
+          Special launch configuration type for launching and debugging &Omnetpp;
           Simulations
         </listitem>
       </itemizedlist>
@@ -36,16 +35,16 @@
       (via a built-in Java version of opp_makemake) and then let CDT do a "standard make"
       build.
       <note>
-        The OMNeT++ IDE does not use the "managed make" feature of CDT.
+        The &Omnetpp; IDE does not use the "managed make" feature of CDT.
       </note>
-      Eclipse, CDT and the OMNeT++ IDE uses several files in the project to store
+      Eclipse, CDT and the &Omnetpp; IDE uses several files in the project to store
       settings. The following files should be present in the project root directory (these
       files are normally hidden by the IDE in the Project Explore view):
       <itemizedlist>
         <listitem>
           .project : Eclipse stores the general project properties in this file, including
           project name, dependencies from other projects, project type (i.e. whether
-          OMNeT++ specific features are supported at all)
+          &Omnetpp; specific features are supported at all)
         </listitem>
         .cproject : This file contains settings specific to C++ development including
         toolchain definition, configuration templates (i.e. debug / release), error
@@ -53,10 +52,10 @@
         <listitem>
         </listitem>
         <listitem>
-          .buildspec : Contains all settings specific to OMNeT++. Basically this file
+          .buildspec : Contains all settings specific to &Omnetpp;. Basically this file
           contains the settings passed to the makefile generator. You can configure all
-          OMNeT++ specific settings in the project properties dialog, on the C/C++
-          Build/Makemake (OMNeT++) page. Everything you set on this page will be stored in
+          &Omnetpp; specific settings in the project properties dialog, on the C/C++
+          Build/Makemake (&Omnetpp;) page. Everything you set on this page will be stored in
           the .buildspec file.
         </listitem>
       </itemizedlist>
@@ -70,34 +69,34 @@
   <sect1>
     <title>Prerequisites</title>
     <para>
-      The OMNeT++ IDE (and the OMNeT++ simulation framework itself) requires a
+      The &Omnetpp; IDE (and the &Omnetpp; simulation framework itself) requires a
       pre-installed compiler toolchain to function properly.
       <itemizedlist>
         <listitem>
-          On Windows: The OMNeT++ distribution comes with a pre-configured MINGW compiler
+          On Windows: The &Omnetpp; distribution comes with a pre-configured MINGW compiler
           toolchain. You don't have to install or download anything. The IDE should be
           able to use the MINGW compiler without any problem.
         </listitem>
         <listitem>
-          On Linux: The default GCC toolchain can be used. OMNeT++ 4.0 was tested on GCC
+          On Linux: The default GCC toolchain can be used. &Omnetpp; 4.0 was tested on GCC
           4.2.3 although other version should work too. You have to install the gcc
           toolchain on your distribution before trying to compile a simulation with
-          OMNeT++.
+          &Omnetpp;.
         </listitem>
         <listitem>
           On Mac OS X: Version 10.5 (i386) is supported. You should install XCode 3.x
           tools to get compiler support, before trying to compile a simulation with
-          OMNeT++.
+          &Omnetpp;.
         </listitem>
       </itemizedlist>
     </para>
   </sect1>
   <sect1>
     <title>Creating a C++ Project</title>
-    <para> To create an OMNeT++ project that supports C++ development, select File from
-      the menu and choose New/OMNeT++ Project for C++.</para>
-    <picture file="pictures/Intro-NewProject.png">Creating an OMNeT++ project</picture>
-    <para> This will show you the New OMNeT++ Project Wizard, that lets you create a
+    <para> To create an &Omnetpp; project that supports C++ development, select File from
+      the menu and choose New/&Omnetpp; Project for C++.</para>
+    <picture file="pictures/Intro-NewProject.png">Creating an &Omnetpp; project</picture>
+    <para> This will show you the New &Omnetpp; Project Wizard, that lets you create a
       project supporting NED, MSG and INI file editing as well as supporting C++
       development for simple modules.</para>
     <para> At the first page of the wizard you should specify the project name and ensure
@@ -118,9 +117,9 @@
   <sect1>
     <title>Configuring the Project</title>
     <para>
-      The OMNeT++ IDE adds several extensions to the standard CDT to make the building of
+      The &Omnetpp; IDE adds several extensions to the standard CDT to make the building of
       simulations much easier. The project properties dialog is extended with a special
-      page - called Makemake (OMNeT++) - where you can configure the options used for
+      page - called Makemake (&Omnetpp;) - where you can configure the options used for
       automatically generate the makefile(s). In each source folder you specify in CDT, a
       separate makefile will be created according to the settings you specify in the
       dialog. On the C/C++ Build page you can specify which makefile will be called by the
@@ -142,7 +141,7 @@
       You can open the the property dialog by right clicking on a folder or project and
       selecting the
       <guimenuitem>Properties</guimenuitem>
-      menu. Choose the Makemake (OMNeT++) page from here.
+      menu. Choose the Makemake (&Omnetpp;) page from here.
     </para>
     <para>
       Before you start modifying the settings, make sure that you select the source folder
@@ -219,7 +218,7 @@
     </para>
     <commercial>
       <note>
-        The commercial version of OMNeT++ supports the Microsoft Visual C++ toolchain.
+        The commercial version of &Omnetpp; supports the Microsoft Visual C++ toolchain.
         This compiler requires some special steps during DLL linking. Please check the
         Windows DLL section and click on the help link to get further description how to
         use this feature.
@@ -290,7 +289,7 @@
   <sect1>
     <title>Editing C++ Code</title>
     <para>
-      The OMNeT++ IDE comes with a C/C++ editor provided by the CDT component. In addition
+      The &Omnetpp; IDE comes with a C/C++ editor provided by the CDT component. In addition
       to the standard editor features provided by the Eclipse environment the C/C++ editor
       provides syntax highlighting and content assistance on the source code. Use
       <keycap>CTRL+SPACE</keycap>
@@ -329,7 +328,7 @@
     </para>
     <picture file="pictures/CPP-BuildProject.png">Building a project</picture>
     <tip>
-      If you have a multi core system you may try to configure OMNeT++ to support parallel
+      If you have a multi core system you may try to configure &Omnetpp; to support parallel
       build. Open the Project properties dialog (Properties from the project context
       menu), and select the C/C++ Build page and the Behavior tab. Click the use parallel
       build checkbox and specify the number of parallel jobs (usually do not set this
@@ -360,7 +359,7 @@
   <sect1>
     <title>Type Hierarchy View</title>
     <para>Displaying the C++ type hierarchy may be a great help understanding the
-      code and the inheritance relationship between your (and OMNeT++) classes.</para>
+      code and the inheritance relationship between your (and &Omnetpp;) classes.</para>
     <picture file="pictures/CPP-TypeHierarchy.png">C++ Type hierarchy</picture>
   </sect1>
   <sect1>

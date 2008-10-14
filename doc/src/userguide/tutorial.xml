@@ -1,13 +1,12 @@
 <?xml version="1.0"?>
-<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
-    "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<!DOCTYPE chapter SYSTEM "custom-docbook.dtd">
 <chapter id="tutorial">
 <title>Step by Step Tutorial</title>
 
 <sect1>
 <title>The NED Editor</title>
 <para>When you double-click a .ned file in the IDE, it will open in
-the NED editor. Like its predecessor gned from OMNeT++ 2.x and 3.x,
+the NED editor. Like its predecessor gned from &Omnetpp; 3.x,
 the new NED editor is a dual-mode editor: in the graphical mode you
 can edit the network using the mouse, and the textual mode allows
 you to work directly on the NED source.</para>
@@ -31,11 +30,11 @@ work. There is automatic conversion from the old syntax to the new,
 available both from the NED editor and as an external utility
 program (nedtool).</para>
 
-<para>The gned program from OMNeT++ 3.x and 2.x viewed NED files in
-isolation. In contrast, the OMNeT++ IDE gathers information from
-all .ned files in all open OMNeT++ projects, and makes this
+<para>The gned program from &Omnetpp; 3.x viewed NED files in
+isolation. In contrast, the &Omnetpp; IDE gathers information from
+all .ned files in all open &Omnetpp; projects, and makes this
 information available to the NED editor. This is necessary because
-in OMNeT++ 4.0, modules may inherit parameters, visual appearance
+in &Omnetpp; 4.0, modules may inherit parameters, visual appearance
 or even submodules and connections from other modules, so it is
 only possible to display a compound module correctly if all related
 NED definitions are available.</para>

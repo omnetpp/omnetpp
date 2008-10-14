@@ -1,24 +1,23 @@
 <?xml version="1.0"?>
-<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
-    "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<!DOCTYPE chapter SYSTEM "custom-docbook.dtd">
 <chapter id="intro">
   <title>Introduction</title>
   <para>
-    The OMNeT++ simulation IDE is based on the Eclipse Framework, for which manuals are
+    The &Omnetpp; simulation IDE is based on the Eclipse Framework, for which manuals are
     available on
     <ulink url="http://www.eclipse.org/">www.eclipse.org</ulink>
-    . While this flexible and easy to use platform makes the OMNeT++ simulation IDE
+    . While this flexible and easy to use platform makes the &Omnetpp; simulation IDE
     inherently more easy to use, it helps to have a concise reference on what the system
     is capable of and just how you can reach the appropriate section. In developing the
-    OMNeT++ IDE, we followed guidelines for making Eclipse plugins, integrating the
-    functionality available in separate modules in OMNeT++ 3.3 into one comprehensive
+    &Omnetpp; IDE, we followed guidelines for making Eclipse plugins, integrating the
+    functionality available in separate modules in &Omnetpp; 3.3 into one comprehensive
     system. This approach has many benefits. The environment will be instantly
     recognizable to those at home with the Eclipse system, but sections will also become
-    quickly familiar to users of earlier versions of OMNeT++. Having the system's
+    quickly familiar to users of earlier versions of &Omnetpp;. Having the system's
     functions interconnected this way brings more power and flexibility to the system.
   </para>
-  <para>The OMNeT++ 4.0 Integrated Development Environment extends Eclipse with new
-    editors, views, wizards, and other functionality. OMNeT++ adds functionality for
+  <para>The &Omnetpp; 4.0 Integrated Development Environment extends Eclipse with new
+    editors, views, wizards, and other functionality. &Omnetpp; adds functionality for
     creating and configuring models (NED and .ini files), performing batch executions and
     analyzing the simulation results, while Eclipse provides C++ editing, CVS/SVN
     integration and optionally other features (UML modeling, bug-tracker integration,
@@ -34,12 +33,12 @@
       that we are looking at the same thing.</para>
     <para>TODO: Ensure there is a default view available to load, and describe it
       here.</para>
-    <picture file="pictures/1.0_Select_Perspective.png">Selecting the OMNeT++ perspective in Eclipse</picture>
+    <picture file="pictures/1.0_Select_Perspective.png">Selecting the &Omnetpp; perspective in Eclipse</picture>
     <para>Most interface elements within Eclipse are movable, can be docked to various
       palettes or sections. The whole workspace is configurable, so you can construct your
       own workspace, but we will use the following layout throughout this manual, to get
       familiar with the various sections:</para>
-    <picture file="pictures/2.0_IDE_default_layout_view.png">OMNeT++ IDE with README.txt selected in the Navigator</picture>
+    <picture file="pictures/2.0_IDE_default_layout_view.png">&Omnetpp; IDE with README.txt selected in the Navigator</picture>
     <para>The Navigator on the top left part of the screen shows a hierarchical view of
       the various open projects in your workspace. In the example above, the "aloha" demo
       project is open, you can see the various .NED, .ini and other files inside.</para>
@@ -76,18 +75,18 @@
     <para>
       A workspace is basically a directory where all our projects are located. You may
       create and use several workspaces and switch between them as needed. At the first
-      run the OMNeT++ IDE offers to open the samples directory as the workspace so you
+      run the &Omnetpp; IDE offers to open the samples directory as the workspace so you
       will be able to experiment with the provided examples immediately. Once you start
       working on your own projects we recommend that you create your own workspace by
       selecting
       <guimenuitem>File | Switch Workspace | Other</guimenuitem>
       . You can switch between workspaces whenever you need. Please be aware that the
-      OMNeT++ IDE restarts on each workspace switch. This is normal behavior.
+      &Omnetpp; IDE restarts on each workspace switch. This is normal behavior.
     </para>
   </sect1>
   <sect1>
     <title>The Simulation Perspective</title>
-    <para>The OMNeT++ IDE defines the Simulation perspective specifically geared
+    <para>The &Omnetpp; IDE defines the Simulation perspective specifically geared
       towards the design of simulations. The simulation perspective is nothing else just a
       set of views conveniently selected and arranged to make the creation of NED, INI and
       MSG files easier. If you are working INI and NED files a lot we recommend to select
@@ -95,19 +94,19 @@
       development, debugging or result analysis.</para>
   </sect1>
   <sect1>
-    <title>Creating OMNeT++ Projects</title>
+    <title>Creating &Omnetpp; Projects</title>
     <para>
       In Eclipse, all files are within projects, so first you need a suitable project. The
-      project needs to be one designated as an OMNeT++ Project. (In Eclipse lingo, it
-      should have the “OMNeT++ Nature”.) The easiest way to create such a project is to
+      project needs to be one designated as an &Omnetpp; Project. (In Eclipse lingo, it
+      should have the &Omnetpp; Nature.) The easiest way to create such a project is to
       use a wizard: just choose
-      <guimenuitem>File|New|OMNeT++ Project...</guimenuitem>
+      <guimenuitem>File|New|&Omnetpp; Project...</guimenuitem>
       from the menu, specify a project name, and click the
       <guibutton>Finish</guibutton>
       button. If you do not plan to write simple modules, you may unselect the
       <guibutton>C++ Support</guibutton>
       checkbox which will disable all C++ related features on the project.
-      <picture file="pictures/Intro-NewProjectWizard.png"> Creating a new OMNeT++ Project </picture>
+      <picture file="pictures/Intro-NewProjectWizard.png"> Creating a new &Omnetpp; Project </picture>
     </para>
   </sect1>
   <sect1>
@@ -115,7 +114,7 @@
     <para>
       You may access the online help system form the
       <guimenuitem>Help | Help Content</guimenuitem>
-      menu point. The OMNeT++ IDE is built on top of the Eclipse ecosystem. If your are
+      menu point. The &Omnetpp; IDE is built on top of the Eclipse ecosystem. If your are
       not familiar with Eclipse we recommend to read the Eclipse and CDT related chapters
       too.
     </para>

@@ -49,7 +49,7 @@ When you build the Fifo example with Cmdenv and you run it by typing \fname{fifo
 something like this.
 
 \begin{verbatim}
-OMNeT++ Discrete Event Simulation  (C) 1992-2003 Andras Varga
+{\opp} Discrete Event Simulation  (C) 1992-2003 Andras Varga
 See the license for distribution terms and warranty disclaimer
 Setting up Cmdenv (command-line user interface)...
 
@@ -243,13 +243,13 @@ ini files.
 
 It is quite common in simulation studies that the simulation model is
 run several times with different parameter settings, and the results
-are analyzed in relation to the input parameters. OMNeT++ 3.x had no
+are analyzed in relation to the input parameters. {\opp} 3.x had no
 direct support for batch runs, and users had to resort to writing shell
 (or Python, Ruby, etc.) scripts that iterated over the required
 parameter space, and generated a (partial) ini file and run the
 simulation program in each iteration.
 
-OMNeT++ 4.0 largely automates this process, and eliminates the need for
+{\opp} 4.0 largely automates this process, and eliminates the need for
 writing batch execution scripts. It is the ini file where the user can
 specify iterations over various parameter settings.
 Here's an example:
@@ -274,7 +274,7 @@ not Tkenv.)
 \begin{Verbatim}[commandchars=\\\{\}]
 \$ aloha -u Cmdenv -c AlohaScenario -n
 
-OMNeT++/OMNEST Discrete Event Simulation
+{\opp} Discrete Event Simulation
 ...
 Config: AlohaScenario
 Number of runs: 24
@@ -294,7 +294,7 @@ for now.
 
 \begin{Verbatim}[commandchars=\\\{\}]
 \$ aloha -u Cmdenv -c AlohaScenario -n -g
-OMNeT++/OMNEST Discrete Event Simulation
+{\opp} Discrete Event Simulation
 ...
 Config: AlohaScenario
 Number of runs: 24
@@ -329,10 +329,10 @@ So, the task is now to run the simulation program 24 times, with
 \end{Verbatim}
 
 
-This batch can be executed either from the OMNeT++ IDE (where you are
+This batch can be executed either from the {\opp} IDE (where you are
 prompted to pick an executable and an ini file, choose the scenario
 from a list, and just click Run), or using a little command-line
-batch execution tool supplied with OMNeT++.
+batch execution tool supplied with {\opp}.
 
 Actually, it is also possible to get Cmdenv execute all runs in one go,
 by simply omitting the '-r' option.
@@ -341,7 +341,7 @@ by simply omitting the '-r' option.
 \begin{Verbatim}[commandchars=\\\{\}]
 \$ aloha -u Cmdenv -c AlohaScenario
 
-OMNeT++/OMNEST Discrete Event Simulation
+{\opp} Discrete Event Simulation
 Preparing for running configuration AlohaScenario, run \#0...
 ...
 Preparing for running configuration AlohaScenario, run \#1...
@@ -451,7 +451,7 @@ double and string. The expression must evaluate to a boolean.
     It is not supported to refer to other iteration variables
     in the definition of an iteration variable (i.e. you cannot write
     things like \$\{j=\$i..10\}), although it might get implemented in
-    future OMNeT++ releases.
+    future {\opp} releases.
 \end{note}
 
 \subsection{Repeating runs with different seeds}
@@ -482,7 +482,7 @@ the RNG's cycle, so they will never overlap during
 simulations.
 
 \begin{note}
-Mersenne Twister, the default RNG of OMNeT++ has a cycle length of
+Mersenne Twister, the default RNG of {\opp} has a cycle length of
 $2^{19937}$, which is more than enough for any conceivable purpose.
 \end{note}
 
@@ -553,7 +553,7 @@ in lockstep with the seed1 iteration.
 
 \subsection{Output vectors and scalars}
 
-In OMNeT++ 3.x, the default result file names were ``omnetpp.vec'' and
+In {\opp} 3.x, the default result file names were ``omnetpp.vec'' and
 ``omnetpp.sca''. This is not very convenient for batch execution, where
 an output vector file created in one run would be overwritten in the
 next run. Thus, we have changed the default file names to make them
@@ -567,7 +567,7 @@ output-scalar-file = "\$\{configname\}-\$\{runnumber\}.sca"
 
 This generates file names like "PureAloha-0.vec", "PureAloha-1.vec", and so on.
 
-Also, in OMNeT++ 3.x output scalar files were always appended to by the
+Also, in {\opp} 3.x output scalar files were always appended to by the
 simulation program, rather than being overwritten. This behavior was
 changed in 4.0 to make it consistent with vector files, that is, output
 scalar files are also overwritten by the simulator, and not appended
@@ -578,7 +578,7 @@ to.
     output-scalar-file-append=true.
 \end{note}
 
-The way of configuring output vectors has also changed. In OMNeT++ 3.x,
+The way of configuring output vectors has also changed. In {\opp} 3.x,
 the keys for enabling-disabling a vector and specifying recording
 interval were <module-and-vectorname-pattern>.enabled,
 and <module-and-vectorname-pattern>.interval.
@@ -621,7 +621,7 @@ background traffic) plot. Average throughput or response time numbers
 are saved into the output scalar files, and it is useful for the input
 parameters to get saved into the same file as well.
 
-For convenience, OMNeT++ automatically saves the iteration variables
+For convenience, {\opp} automatically saves the iteration variables
 into the output scalar file, so they can be referred to during result
 analysis. Module parameters can also be saved, but this has to be
 requested by the user, by configuring save-as-scalar=true for the
@@ -693,7 +693,7 @@ particular random number stream used for the simulation, several
 \textit{replications} of every measurement are run with different
 random number seeds, and the results are averaged.
 
-OMNeT++ result analysis tools can take advantage of
+{\opp} result analysis tools can take advantage of
 experiment/measurement/replication labels recorded into result files,
 and organize simulation runs and recorded output scalars and vectors
 accordingly on the user interface.
@@ -1266,12 +1266,12 @@ seeds for the cLCG32 RNG. When started without command-line
 arguments, the program prints out the following help:
 
 \begin{verbatim}
-seedtool - part of OMNeT++/OMNEST, (C) 1992-2004 Andras Varga
+seedtool - part of {\opp}, (C) 1992-2004 Andras Varga
 See the license for distribution terms and warranty disclaimer.
 
 Generates seeds for the LCG32 random number generator. This RNG has a
 period length of 2^31-2, which makes about 2,147 million random numbers.
-Note that Mersenne Twister is also available in OMNeT++, which has a
+Note that Mersenne Twister is also available in {\opp}, which has a
 practically infinite period length (2^19937).
 
 Usage:
@@ -1373,7 +1373,7 @@ An example of running an {\opp} executable with the -h flag:
 \begin{verbatim}
 % ./fddi -h
 
-OMNeT++/OMNEST Discrete Event Simulation  (C) 1992-2005 Andras Varga
+{\opp} Discrete Event Simulation  (C) 1992-2005 Andras Varga
 See the license for distribution terms and warranty disclaimer
 Setting up Tkenv...
 
@@ -1402,7 +1402,7 @@ The following components are available:
     FDDI_Generator4Ring
     ...
 
-End run of OMNeT++
+End run of {\opp}
 \end{verbatim}
 
 

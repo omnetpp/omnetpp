@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE article SYSTEM "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<!DOCTYPE chapter SYSTEM "custom-docbook.dtd">
 <book>
-  <title>Migrating OMNeT++ simulations from version 3.x to 4.0</title>
+  <title>Migrating &Omnetpp; simulations from version 3.x to 4.0</title>
 
   <chapter>
     <title>What has changed since 3.x?</title>
@@ -9,10 +9,10 @@
     <sect1>
       <title>Overview</title>
 
-      <para>Simulation models written for OMNeT++ 3.x cannot be used directly with
-      OMNeT++ 4.0 or later, due to changes in the C++ API, NED, ini and msg files. This
-      document describes how to convert a 3.x model to run under OMNeT++ 4.0.</para>
-      <para>You should be already familiar with the OMNeT++ 3.x and 4.0 before doing the
+      <para>Simulation models written for &Omnetpp; 3.x cannot be used directly with
+      &Omnetpp; 4.0 or later, due to changes in the C++ API, NED, ini and msg files. This
+      document describes how to convert a 3.x model to run under &Omnetpp; 4.0.</para>
+      <para>You should be already familiar with the &Omnetpp; 3.x and 4.0 before doing the
       migration. We recommend to take a closer look at the 4.0 sample simulations before
       proceeding.</para>
     </sect1>
@@ -328,7 +328,7 @@
         </listitem>
         <listitem>
           <para>Use the ``-h all'' switch to get detailed info about you simulation
-          executable (or ``opp_run -h all'' to get info about OMNeT++ itself.)</para>
+          executable (or ``opp_run -h all'' to get info about &Omnetpp; itself.)</para>
         </listitem>
         <listitem>
           <para>For further information use <command>opp_run -h</command> or the ``-h'' switch
@@ -342,9 +342,9 @@
   <chapter>
     <title>Migration tools</title>
 
-    <para>There are steps during the migration that can be easily automated. OMNeT++ 4
+    <para>There are steps during the migration that can be easily automated. &Omnetpp; 4
     provides several command line tools that may help during the migration process. These
-    tools are available under the migrate directory in the OMNeT++ 4.0
+    tools are available under the migrate directory in the &Omnetpp; 4.0
     installation.</para>
 
     <sect1>
@@ -470,7 +470,7 @@
         </orderedlist>
       </listitem>
       <listitem>
-        <para>Improve it by making use of new OMNeT++ features.</para>
+        <para>Improve it by making use of new &Omnetpp; features.</para>
       </listitem>
     </orderedlist></para>
 
@@ -479,7 +479,7 @@
 
       <orderedlist>
         <listitem>
-          <para>PREREQUISITES: Have OMNeT++ 4.0 installed and working, and familiarize
+          <para>PREREQUISITES: Have &Omnetpp; 4.0 installed and working, and familiarize
           yourself with the IDE.</para>
         </listitem>
         <listitem>
@@ -518,9 +518,9 @@ $ ../INET/migrate/migratecpp | tee migratecpp.out</screen>
         </listitem>
         <listitem>
           <para>You can do the rest of the migration either on the command line, or in
-          the OMNeT++ IDE. We recommend the latter. To use the IDE, you need to create a
+          the &Omnetpp; IDE. We recommend the latter. To use the IDE, you need to create a
           project for your simulation model. Select
-          <guimenuitem>File | New | OMNeT++ Project...</guimenuitem> from the menu. A wizard comes
+          <guimenuitem>File | New | &Omnetpp; Project...</guimenuitem> from the menu. A wizard comes
           up. On the first page, uncheck <guilabel>"Use default location"</guilabel> and specify the name and
           the directory of your simulation model, then go through the other wizard pages
           and hit Finish at the end. You should see the new project appear in the Project
@@ -647,9 +647,9 @@ simple AnotherApp like IApp { ... }</screen>
               </tip>
               <tip>
                 <para>If your model is using ``double'''s extensively for time-related
-                variables and you want to make a quickly and dirty port, OMNeT++ can be
+                variables and you want to make a quickly and dirty port, &Omnetpp; can be
                 compiled with the original behavior, by specifying ``-DUSE_DOUBLE_SIMTIME''
-                in ``CFLAGS''. However, be aware that you have to recompile all OMNeT++
+                in ``CFLAGS''. However, be aware that you have to recompile all &Omnetpp;
                 libraries with this flag. We recommend to use the new ``SimTime'' type
                 whenever possible.</para>
               </tip>
@@ -672,7 +672,7 @@ simple AnotherApp like IApp { ... }</screen>
             </listitem>
             <listitem>
               <para>"Cannot open file csimul.h" (or any other header)</para>
-              <para>Only ``&lt;omnetpp.h&gt;'' is public API. Other OMNeT++ header files
+              <para>Only ``&lt;omnetpp.h&gt;'' is public API. Other &Omnetpp; header files
               should not be included directly, as they may be renamed or removed in any
               future version.</para>
             </listitem>
@@ -713,7 +713,7 @@ simple AnotherApp like IApp { ... }</screen>
     </sect1>
 
     <sect1>
-      <title>Making use of new OMNeT++ features</title>
+      <title>Making use of new &Omnetpp; features</title>
 
       <sect2>
         <title>NED files</title>
@@ -818,7 +818,7 @@ simple Router16 extends Router {
             model to other people. This can avoid name clashes with other models. To do
             that, put a <filename>package.ned</filename> file into the toplevel
             NED source folder (i.e. a directory that's listed on the
-            OMNeT++/NED Source Folders page of the Project Properties dialog
+            &Omnetpp;/NED Source Folders page of the Project Properties dialog
             of your project). The package declaration in that
             <filename>package.ned</filename> file determines the package of that
             directory and all directories underneath. For example, if the file's contents is

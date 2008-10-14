@@ -2,14 +2,14 @@
 \label{cha:eventlog}
 
 \section{Introduction}
-The eventlog feature and the related tools are completely new in OMNeT++ 4.0. They aim to
+The eventlog feature and the related tools are completely new in {\opp} 4.0. They aim to
 help understanding complex simulation models and to help correctly implementing the
 desired component behaviors. Using these tools you will be able to easily examine every
 minute detail of the simulation back and forth in terms of simulation time or step-by-step
 focusing on the behavior instead of the statistical results of your model.
 
 The eventlog file is created automatically during a simulation run upon explicit request
-configurable in the ini file. The resulting file can be viewed in the OMNeT++ IDE using
+configurable in the ini file. The resulting file can be viewed in the {\opp} IDE using
 the Sequence Chart and the Eventlog Table or can be processed by the command line Eventlog
 Tool. These tools support filtering the collected data to show you only the relevant parts
 focusing on what you are looking for. They allow examining causality relationships and
@@ -100,7 +100,7 @@ following are the most useful commands for users.
 
 \subsection{Filter}
 The eventlog tool provides off line filtering that is usually applied to the eventlog file
-after the simulation has been finished and before actually opening it in the OMNeT++ IDE
+after the simulation has been finished and before actually opening it in the {\opp} IDE
 or processing it by any other means. Use the filter command and its various options to
 specify what should be present in the result file.
 
@@ -109,7 +109,7 @@ Since the eventlog file format is text based and users are encouraged to impleme
 own filters therefore there needs to be a way to check whether an eventlog file is
 correct. The echo command provides a way to check this and help users creating custom
 filters. Anything not echoed back by the eventlog tool will not be taken into
-consideration by the other tools found in the OMNeT++ IDE.
+consideration by the other tools found in the {\opp} IDE.
 \begin{note}
 Custom filter tools should filter out whole events only otherwise the consequences are
 undefined.

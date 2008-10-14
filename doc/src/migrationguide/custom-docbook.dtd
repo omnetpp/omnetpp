@@ -26,5 +26,5 @@
 	name		CDATA		#IMPLIED
 >
 
-!-- do not change this -- or change the replacement in _scripts/makedist too -->
+<!-- do not change this -- or change the replacement in _scripts/makedist too -->
 <!ENTITY Omnetpp "OMNeT&#xFEFF;+&#xFEFF;+">

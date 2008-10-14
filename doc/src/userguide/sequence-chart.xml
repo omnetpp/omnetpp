@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
-<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
-    "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<!DOCTYPE chapter SYSTEM "custom-docbook.dtd">
 <chapter id="seq-chart">
   <title>Sequence Charts</title>
 
@@ -8,7 +7,7 @@
     <title>Introduction</title>
     <para>
       This chapter describes the Sequence Chart and the Eventlog Table tools. Both of them
-      display an eventlog file recorded by the OMNeT++ 4.0 simulation kernel.
+      display an eventlog file recorded by the &Omnetpp; 4.0 simulation kernel.
     </para>
     <para>
       An eventlog file contains a log of messages sent during the simulation,
@@ -20,7 +19,7 @@
       their interconnections.
     </para>
     <note>
-      Please refer to the OMNeT++ 4.0 Manual for further details on what an eventlog file
+      Please refer to the &Omnetpp; 4.0 Manual for further details on what an eventlog file
       is, and what is its exact format.
     </note>
     <para>
@@ -30,7 +29,7 @@
       behaviors. The Eventlog Table displays an eventlog file in a more detailed and
       direct way, in a tabular format, focusing on the exact data. Both tools can display
       filtered eventlogs created via the Eventlog Tool filter command as described in the
-      OMNeT++ 4.0 Manual, by a third party custom filter tool, or by the IDE's in memory
+      &Omnetpp; 4.0 Manual, by a third party custom filter tool, or by the IDE's in memory
       filtering.
     </para>
     <para>
@@ -43,7 +42,7 @@
   <sect1>
     <title>Creating an eventlog file</title>
     <para>
-      The Inifile Editor in the OMNeT++ IDE provides a group of widgets in the
+      The Inifile Editor in the &Omnetpp; IDE provides a group of widgets in the
       <guilabel>Output Files</guilabel> section to configure automatic eventlog
       recording. To enable it, simply put a checkmark next to its checkbox, or insert the
       line <screen>record-eventlog = true</screen> into the inifile.
@@ -56,7 +55,7 @@
     </para>
     <warning>
       If you override the default file name, please make sure that the file extension is
-      <filename>log</filename>, so that the OMNeT++ IDE tools
+      <filename>log</filename>, so that the &Omnetpp; IDE tools
       will be able to recognize it automatically.
     </warning>
     <para>
@@ -71,7 +70,7 @@
       settings to get a reasonable tradeoff between performance and details.
     </para>
     <note>
-      Please refer to the OMNeT++ 4.0 Manual for a complete description of eventlog
+      Please refer to the &Omnetpp; 4.0 Manual for a complete description of eventlog
       recording settings.
     </note>
   </sect1>
@@ -80,11 +79,11 @@
     <title>Examples</title>
     <para>
       This section will guide you through the use of the Sequence Chart and Eventlog Table
-      tools, using example simulations from OMNeT++ and the INET Framework.
+      tools, using example simulations from &Omnetpp; and the INET Framework.
       Before running any of the simulations, make sure that eventlog recording is
       enabled, by adding or uncommenting the line <screen>record-eventlog = true</screen>
       in <filename>omnetpp.ini</filename> file in the simulation's directory. To open the
-      generated eventlog in the OMNeT++ IDE, go to the example's
+      generated eventlog in the &Omnetpp; IDE, go to the example's
       <filename>results</filename> directory in the <guilabel>Resource
       Navigator</guilabel> view, and double-click the log file. By default, the file
       will open in the Sequence Chart.
@@ -97,7 +96,7 @@
     <sect2>
       <title>Tictoc</title>
       <para>
-	The Tictoc example is available in the OMNeT++ installation under the directory
+	The Tictoc example is available in the &Omnetpp; installation under the directory
 	<filename>samples/tictoc</filename>. Tictoc is the most basic example in this
 	chapter, and it provides a quick overview on how to use and understand the Sequence
 	Chart.
@@ -151,7 +150,7 @@
     <sect2>
       <title>FIFO</title>
       <para>
-	The FIFO example is available in the OMNeT++ installation under the directory
+	The FIFO example is available in the &Omnetpp; installation under the directory
 	<filename>samples/fifo</filename>. The FIFO is an important example, because it
 	uses a queue which is an essential part of discrete event simulations and
 	introduces the notion of message reuses.
@@ -229,7 +228,7 @@
     <sect2>
       <title>Routing</title>
       <para>
-	The Routing example is available in the OMNeT++ installation under the directory
+	The Routing example is available in the &Omnetpp; installation under the directory
 	<filename>samples/routing</filename>. The predefined configuration called 'Net10'
 	specifies a network with 10 nodes, with each node having an application, a few
 	queues and a routing module inside. Three preselected nodes, namely the node '1',
@@ -405,7 +404,7 @@
 	  the physical distance of the two modules and the speed of light. Also looking at
 	  <eventnumber>172</eventnumber> and <eventnumber>174</eventnumber> you can notice
 	  that the transmission time is not zero. This time interval is calculated from
-	  the message's length and the radio module's bitrate. 
+	  the message's length and the radio module's bitrate.
 	</para>
 	<picture file="pictures/SequenceChart-Examples-WirelessSuccessfulPing.png">
 	  The second ping procedure
@@ -691,7 +690,7 @@
 	by receiving a message from another module. The event with event number zero
 	represents the module initialization phase, and may spread across multiple module
 	axes, because the simulation kernel calls each module during initialization. This
-	event is displayed with white background color. 
+	event is displayed with white background color.
       </para>
       <para>
 	Event numbers are displayed below and to the right of their corresponding events,
@@ -929,7 +928,7 @@
 	You can also provide a custom filter pattern, referring to fields present in
 	<guilabel>Raw</guilabel> mode, using a match expresssion. The following example is
 	a custom filter, which will show message sends where the message's class is
-	AirFrame. <screen>BS and c(AirFrame)</screen> Please refer to the OMNeT++ 4.0
+	AirFrame. <screen>BS and c(AirFrame)</screen> Please refer to the &Omnetpp; 4.0
 	Manual for more details on match expressions.
       </para>
       <note>
@@ -1041,14 +1040,14 @@
   <sect1>
     <title>Filter Dialog</title>
     <para>
-      The content of an eventlog can be filtered within the OMNeT++ IDE. This is called on
+      The content of an eventlog can be filtered within the &Omnetpp; IDE. This is called on
       the fly filtering as opposed to the file content filtering provided by the Eventlog
       Tool. To use on the fly filtering, open the filter configuration dialog with the
       button <icon name="Filter.png"/> on the toolbar, enable some of the range, module,
       message, or trace filters, set the various filter parameters, and apply it. The
       result is another eventlog resident in memory, where some events are filtered out.
       <note>
-	Similarly to the command line Eventlog Tool, described in the OMNeT++ 4.0 Manual,
+	Similarly to the command line Eventlog Tool, described in the &Omnetpp; 4.0 Manual,
 	the in memory filtering can only filter out whole events.
       </note>
     </para>
@@ -1197,7 +1196,7 @@
 	There are various settings for both tools which affect the display, such as
 	display modes, content position, filter parameters, etc. These user specified
 	settings are automatically saved for each file, and they are reused whenever the
-	file is visited again. The per file settings are stored under the OMNeT++
+	file is visited again. The per file settings are stored under the &Omnetpp;
 	workspace, in the directory
 	<filename>.metadata\.plugins\org.eclipse.core.resources\.projects\&lt;project-name&gt;</filename>.
       </para>
@@ -1227,7 +1226,7 @@
       <title>Viewing a running simulation's results</title>
       <para>
 	Despite the simulation kernel keeps the eventlog file open for writing while the
-	simulation is running, it may be open in the OMNeT++ IDE simultaneously. Both
+	simulation is running, it may be open in the &Omnetpp; IDE simultaneously. Both
 	tools can be instructed by pressing the <keycap>END</keycap> key to follow the
 	eventlog's end as new content is appended to it. If you pause the simulation in
 	the runtime environment, then after a few seconds the tools will refresh their

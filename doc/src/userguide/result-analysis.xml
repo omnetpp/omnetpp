@@ -10,14 +10,14 @@
     <para>
       Analyzing the simulation result is a lengthy and time consuming process.
       The result of the simulation is recorded as scalar values, vector values and histograms.
-      The user then applies statistical methods to extract the relevant information, and 
+      The user then applies statistical methods to extract the relevant information, and
       to draw a conclusion. These may include several steps, usually you need to
-      filter and transform the data, and draw the result on charts. 
+      filter and transform the data, and draw the result on charts.
       Automation is very important here. The user does not want to repeat the
       steps of re-creating charts every time simulations have to be re-run for some reason.
     </para>
     <para>
-      In OMNEST/OMNeT++ 4.0 the statistical analysis tool integrated into the Eclipse
+      In &Omnetpp; 4.0 the statistical analysis tool integrated into the Eclipse
       environment. Your settings -- your recipe for finding results from the raw data --
       will be recorded in analysis files (.anf) and become instantly reproducible. This
       means that all processing and charts are stored as datasets; for example, if
@@ -80,7 +80,7 @@
       what (optional) processing to apply, and what kind of charts to create from them.
       The pages (tabs) of the editor roughly correspond to these steps.
     </para>
-    
+
     <sect2>
       <title>Input files</title>
       <sect3>
@@ -116,7 +116,7 @@
         </tip>
         <para>
           The lower half shows what files actually matched the input specification, and
-          what runs they contain. Note that OMNeT++ 4.0 result files contain a unique run
+          what runs they contain. Note that &Omnetpp; 4.0 result files contain a unique run
           ID and several metadata annotations in addition to the actual recorded data. The
           third tree organizes simulation runs according to their
           experiment-measurement-replication labels.
@@ -129,7 +129,7 @@
           parameter space with several simulation runs. And, to gain statistical
           confidence in the results, each measurement will be possibly repeated several
           times, with different random number seeds. It is easy to set up such scenarios
-          with the improved ini files of OMNeT++ 4.0, and then the
+          with the improved ini files of &Omnetpp; 4.0, and then the
           experiment-measurement-replication labels will be assigned more-or-less
           automatically -- please refer to the chapter "Configuring and Running Simulations"
           in the manual for more discussion.
@@ -160,7 +160,7 @@
           <para>
             If you right click on a table cell and select
             <guimenuitem>Set filter: ...</guimenuitem>
-            action from the menu, you can set the value of that cell as the filter expression. 
+            action from the menu, you can set the value of that cell as the filter expression.
           </para>
         </tip>
         <picture file="pictures/ANF-BrowseDataPage.png">
@@ -173,7 +173,7 @@
           The table rows can be sorted by clicking on the column name.
         </para>
         <para>
-          You can display the selected data items on a chart. To open the chart 
+          You can display the selected data items on a chart. To open the chart
           choose <guimenuitem>Plot</guimenuitem>
           from the context menu. (Double click also works for single data.) The chart is not added
           to the analysis file, so you can explore the data by opening the chart this way and
@@ -181,30 +181,30 @@
         </para>
         <para>
           The selected vector's data can also be displayed in a table. Make sure that the
-          Output Vector View is opened. If not, then you can open it from the context menu 
-          (<guimenuitem>Show Output Vector View</guimenuitem>). If you select a vector in the 
+          Output Vector View is opened. If not, then you can open it from the context menu
+          (<guimenuitem>Show Output Vector View</guimenuitem>). If you select a vector in the
           editor, the view will display its content.
         </para>
         <para>
           You can create a dataset from the selected result items. Select
-          <guimenuitem>Add Filter Expression to Dataset...</guimenuitem> if you want to 
+          <guimenuitem>Add Filter Expression to Dataset...</guimenuitem> if you want to
           add all items displayed in the table. Select
           <guimenuitem>Add Filter Selected Data to Dataset...</guimenuitem> if you want to
           add the selected items only. You can add the items to an existing dataset, or
           you can create a new dataset in the opening dialog.
         </para>
       </sect3>
-      
+
       <sect3>
         <title>Filter expressions</title>
         <para>
           A filter expression is composed
-          of atomic patterns with the AND, OR, NOT operators. An atomic pattern 
+          of atomic patterns with the AND, OR, NOT operators. An atomic pattern
           filters for the value of a field of the result item, and has the form
           <![CDATA[<field_name>(<pattern>)]]>. The following table shows the valid field names.
-          The name field can be omitted and simply the name pattern can be used as a filter 
+          The name field can be omitted and simply the name pattern can be used as a filter
           expression. It must be quoted if it contains whitespace or parenthesis.
-          
+
           <informaltable>
             <tgroup cols="2">
               <colspec colwidth="1in"/>
@@ -238,7 +238,7 @@
               </tbody>
             </tgroup>
           </informaltable>
-          
+
           In the pattern specifying the field value the following shortcuts can be used:
           <informaltable>
             <tgroup cols="2">
@@ -280,13 +280,13 @@
             </para>
             <para>
               results in the <emphasis>queuing times</emphasis> and <emphasis>transmission times</emphasis>
-              that are written by modules named <emphasis>sink</emphasis>. 
+              that are written by modules named <emphasis>sink</emphasis>.
             </para>
           </informalexample>
         </sect4>
       </sect3>
     </sect2>
-    
+
     <sect2>
       <title>Datasets</title>
 
@@ -294,7 +294,7 @@
         <title>Overview</title>
         <para>
           The third page displays the datasets and charts created during the analysis.
-          Datasets describe a set of input data, the processings applied to them and 
+          Datasets describe a set of input data, the processings applied to them and
           the charts. The dataset is displayed as a tree of processing steps and charts.
           There are nodes for adding and discarding data, applying processing to vectors,
           selecting the operands of the operations and content of charts, and for
@@ -305,12 +305,12 @@
           <para>
           You can browse the dataset's content in the Dataset View. Open the view by selecting
           <guimenuitem>Show Dataset View</guimenuitem> from the context menu. Select a chart
-          to display its content or another node to display the content of the dataset after that 
+          to display its content or another node to display the content of the dataset after that
           processing is applied.
           </para>
         </tip>
       </sect3>
-      
+
       <sect3>
         <title>Editing datasets</title>
         <para>
@@ -354,10 +354,10 @@
           the <xref linkend="charts"/> section for details.
         </para>
       </sect3>
-      
+
       <sect3>
         <title>Export</title>
-        
+
         <para>
           You can export the content of the dataset into text files. Three formats are
           supported: comma separated values (CSV), Octave text files and Matlab script.
@@ -368,14 +368,14 @@
         </para>
 
         <para>
-          Vectors are always written as two columns into the CSV files, but the shape of the 
+          Vectors are always written as two columns into the CSV files, but the shape of the
           scalars' table can be changed by selecting the grouping attributes in the dialog.
-          
+
           E.g. assume we have two scalars (named s1 and s2) written by two modules (m1 and m2)
           in two runs (r1 and r2), so we have a total 8 scalar values.
           If none of the checkboxes is selected in the
           <guilabel>Scalars grouped by</guilabel> group, then the data is written as:
-          
+
           <informaltable>
             <tgroup cols="8">
               <colspec colwidth="48pt"/>
@@ -412,9 +412,9 @@
               </tbody>
             </tgroup>
           </informaltable>
-          
+
           After grouping the scalars by module name and scalar name it looks like:
-          
+
           <informaltable pgwide="0">
             <tgroup cols="4">
               <colspec colwidth="48pt"/>
@@ -457,23 +457,23 @@
               </tbody>
             </tgroup>
           </informaltable>
-          
+
         </para>
-        
+
         <para>Settings specific to the file format:</para>
-        
+
         <formalpara>
           <title>CSV</title>
           <para>
-            You can select the separator, line ends and quoting character. The default 
+            You can select the separator, line ends and quoting character. The default
             setting corresponds to RFC4180. The precision of the numeric values can also
             be set.
             The CSV file contains an optional header followed by the vector's data or
             groups of scalars. If multiple vectors are exported, each vector is written
-            into a separate file. 
+            into a separate file.
           </para>
         </formalpara>
-        
+
         <formalpara>
           <title>Octave</title>
           <para>
@@ -483,22 +483,22 @@
             containing an array for each column.
           </para>
         </formalpara>
-        
+
         <formalpara>
           <title>Matlab</title>
           <para>
             The data is exported as a Matlab script file. It can be loaded into Matlab/Octave
-            with the source() function. 
+            with the source() function.
           </para>
         </formalpara>
-        
+
         <note><para>Histograms can not be exported yet.</para></note>
-        
+
       </sect3>
-      
+
       <sect3>
         <title>Chart sheets</title>
-        
+
         <para>
           Sometimes it is useful to display several charts on one page. When you create
           a chart, it is automatically added to a default chart sheet. Chart sheets
@@ -508,20 +508,20 @@
           dragging charts. To move charts between chart sheets use drag and drop or
           Cut/Paste. You can display the charts by double clicking on the chart sheet node.
         </para>
-        
+
         <picture file="pictures/ANF-ChartSheetPage.png">Chart Sheet page with three charts</picture>
-        
+
       </sect3>
-      
+
     </sect2>
-    
+
     <sect2 id="charts" xreflabel="Charts">
       <title>Charts</title>
-      
+
       <sect3>
         <title>Overview</title>
         <para>
-          You typically want to display the recorded data on charts. In OMNeT++ 4.0
+          You typically want to display the recorded data on charts. In &Omnetpp; 4.0
           you can open charts for scalar, vector or histogram data with one click.
           Charts can be saved into the analysis file too. The Analysis Editor supports
           bar charts, line charts, histogram charts and scatter charts. Charts are
@@ -529,19 +529,19 @@
           the data items.
         </para>
         <para>
-          Charts can be customized. There are options, among others, for titles, fonts, 
-          legend, grid lines, colors, line styles, symbols. 
+          Charts can be customized. There are options, among others, for titles, fonts,
+          legend, grid lines, colors, line styles, symbols.
         </para>
       </sect3>
-      
+
       <sect3>
         <title>Creating charts</title>
         <para>
-          To create a chart, use the palette on the Dataset page. Drag the chart button 
+          To create a chart, use the palette on the Dataset page. Drag the chart button
           and drop it to the dataset at the position you want it to appear. If you press
           the chart button then it opens a dialog where you can edit the properties of
           the new chart. In this case the new chart will be added at the end of the selected
-          dataset or after the selected dataset item. 
+          dataset or after the selected dataset item.
         </para>
         <para>
           Temporary charts can be created on the Browse Data page for quick view.
@@ -552,7 +552,7 @@
           <icon name="template.gif"/> from the toolbar.
         </para>
       </sect3>
-      
+
       <sect3>
         <title>Editing charts</title>
         <para>
@@ -562,13 +562,13 @@
           you can edit the properties of the selected line.
         </para>
         <para>
-          You can also use the Properties view to edit the chart. It is recommended to 
+          You can also use the Properties view to edit the chart. It is recommended to
           display the properties grouped by their category.
           (<icon name="Eclipse_ShowCategories.png"/> on the toolbar of the Properties View)
         </para>
         <chart-properties groups="ChartProperties">Common chart properties</chart-properties>
       </sect3>
-      
+
       <sect3>
         <title>Zooming and panning</title>
         <para>
@@ -583,7 +583,7 @@
           Zooming and moving actions are remembered in the navigation history.
         </para>
       </sect3>
-      
+
       <sect3>
         <title>Tooltip</title>
         <para>
@@ -593,7 +593,7 @@
           of the chart.
         </para>
       </sect3>
-      
+
       <sect3>
         <title>Copy to clipboard</title>
         <para>
@@ -602,13 +602,13 @@
           The chart is copied as a bitmap image having the same size as on the screen.
         </para>
       </sect3>
-      
+
       <sect3>
         <title>Bar charts</title>
         <para>
           Bar charts display scalars as groups of vertical bars. The bars can be positioned
           within a group next to, above or in front of each other. The baseline of the
-          bars can be changed. Optionally a logarithmic transformation can be applied 
+          bars can be changed. Optionally a logarithmic transformation can be applied
           to the values.
         </para>
         <picture file="pictures/ANF-ScalarChart.png">Bar chart</picture>
@@ -629,7 +629,7 @@
         </para>
         <chart-properties groups="ScalarChartProperties BarProperties">Bar chart properties</chart-properties>
       </sect3>
-      
+
       <sect3>
         <title>Line charts</title>
         <para>
@@ -652,7 +652,7 @@
         </para>
         <para>
           Processing operations can be applied to the dataset of the chart by selecting
-          <guimenuitem>Apply</guimenuitem> or <guimenuitem>Compute</guimenuitem> from the 
+          <guimenuitem>Apply</guimenuitem> or <guimenuitem>Compute</guimenuitem> from the
           context menu. If you want to remove an existing operation, you can do it
           from the context menu too.
         </para>
@@ -663,7 +663,7 @@
         </para>
         <chart-properties groups="VectorChartProperties LineProperties">Line chart properties</chart-properties>
       </sect3>
-      
+
       <sect3>
         <title>Histogram charts</title>
         <para>Histogram charts can display data of histograms. They support three view modes:
@@ -692,7 +692,7 @@
         </tip>
         <chart-properties groups="HistogramChartProperties HistogramProperties">Histogram chart properties</chart-properties>
       </sect3>
-      
+
       <sect3>
         <title>Scatter charts</title>
         <para>
@@ -728,12 +728,12 @@
         <chart-properties groups="VectorChartProperties LineProperties">Scatter chart properties</chart-properties>
       </sect3>
     </sect2>
-  
+
   </sect1>
 
   <sect1>
     <title>Associated Views</title>
-    
+
     <sect2>
       <title>Outline View</title>
       <para>
@@ -743,18 +743,18 @@
       </para>
       <picture file="pictures/ANF-OutlineView.png">Outline View of the analysis</picture>
     </sect2>
-    
+
     <sect2>
       <title>Properties View</title>
       <para>
         The properties view displays the properties of the selected dataset, processing node
         and chart. Font and color properties can be edited as text or by opening dialogs.
         Text fields that have a bulb on the left side have a context assist; press
-        <keycombo><keycap>Ctrl</keycap><keycap>Space</keycap></keycombo> to activate it.   
+        <keycombo><keycap>Ctrl</keycap><keycap>Space</keycap></keycombo> to activate it.
       </para>
       <picture file="pictures/ANF-PropertiesView.png">Properties View showing chart properties</picture>
     </sect2>
-    
+
     <sect2>
       <title>Output Vector View</title>
       <para>
@@ -783,7 +783,7 @@
       </para>
       <picture file="pictures/ANF-DatasetView.png">Dataset View</picture>
     </sect2>
-    
+
   </sect1>
-  
+
 </chapter>

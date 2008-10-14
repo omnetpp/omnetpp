@@ -1,9 +1,8 @@
 <?xml version="1.0"?>
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
- "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<!DOCTYPE chapter SYSTEM "custom-docbook.dtd">
 
 <book xmlns:xi="http://www.w3.org/2001/XInclude">
-<title>OMNeT++ User Guide</title>
+<title>&Omnetpp; User Guide</title>
 <xi:include href="intro.xml" />
 <xi:include href="ned-editor.xml" />
 <xi:include href="ini-editor.xml" />

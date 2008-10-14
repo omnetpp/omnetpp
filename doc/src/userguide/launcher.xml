@@ -1,23 +1,22 @@
 <?xml version="1.0"?>
-<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
-    "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<!DOCTYPE chapter SYSTEM "custom-docbook.dtd">
 <chapter id="launcher">
   <title>Launching and debugging</title>
   <sect1>
     <title>Running a Simulation</title>
-    <para> In previous versions of OMNeT++, executing a simulation or carrying out
+    <para> In previous versions of &Omnetpp;, executing a simulation or carrying out
       experiments was done by manually launching the executable file from the windowing
       environment or from a command line shell. Experiments that needed several runs with
       different parameters required external scripts to be written and executed. The new
-      version of the OMNeT++ IDE allows for running simulations and simulation batches
+      version of the &Omnetpp; IDE allows for running simulations and simulation batches
       directly from the IDE. </para>
     <sect2>
       <title>Creating launch configuration</title>
-      <para> OMNeT++ IDE adds a new Eclipse launch configuration type that supports
-        launching simulation executables. This launch type, OMNeT++ Simulation, is
+      <para> &Omnetpp; IDE adds a new Eclipse launch configuration type that supports
+        launching simulation executables. This launch type, &Omnetpp; Simulation, is
         available from the Run Configurations dialog. To create a new run configuration,
         select Run Configurations... from the Run menu. A dialog appears, with the
-        possible launch types on the left. Select OMNeT++ Simulation, click the New launch
+        possible launch types on the left. Select &Omnetpp; Simulation, click the New launch
         configuration icon, then enter a configuration name at the top of the dialog form
         that appears. </para>
       <picture file="pictures/Launch-RunDialog.png">The Simulation Launcher</picture>
@@ -32,7 +31,7 @@
         If you select an Ini file in the Project Explorer view, or the active editor
         contains an Ini file before launching the Run dialog, the Ini file and Working
         directory field will be automatically populated for you. The dialog will try to
-        guess the executable name based on the settings of your current open projects. 
+        guess the executable name based on the settings of your current open projects.
       </note>
       <itemizedlist>
         <listitem>
@@ -124,11 +123,11 @@
             the current project or any other project we are currently depend on.
           </para>
           <note>If your simulation is built as a shared library, you must use the
-            "opp_run" stub executable to start it. opp_run is basically an empty OMNeT++
+            "opp_run" stub executable to start it. opp_run is basically an empty &Omnetpp;
             executable which understands all command line option, but does not contain any
             simulation code.</note>
           <warning>If you use external shared libraries (i.e. libraries other than the
-            ones provided by the current open projects or OMNeT++ itself), you must ensure
+            ones provided by the current open projects or &Omnetpp; itself), you must ensure
             that the executable part has access to the shared library. On Windows you must
             set the PATH, on Linux and Mac you must set the LD_LIBRARY_PATH to point to
             the directory where the DLLs or shared libraries are located. You can set
@@ -189,9 +188,9 @@
   <sect1>
     <title>Batch Execution</title>
     <para>
-      In previous versions of OMNeT++ to run a simulation several times with different
+      In previous versions of &Omnetpp; to run a simulation several times with different
       parameters, you had to create an external script that created an Ini file for each
-      run and started the simulation with the specified file. In OMNeT++ 4.0 it is no
+      run and started the simulation with the specified file. In &Omnetpp; 4.0 it is no
       longer needed. The vastly improved Ini file syntax allows you to specify loops for
       specific parameters so you no longer need separate Ini files for each run. In
       addition the IDE itself supports starting your simulation several times.
@@ -238,7 +237,7 @@
   <sect1>
     <title>Debugging a Simulation</title>
     <para>
-      The OMNeT++ IDE integrates with the CDT (C/C++ Development Tooling) of Eclipse. If you want to
+      The &Omnetpp; IDE integrates with the CDT (C/C++ Development Tooling) of Eclipse. If you want to
       debug your application you have to do it by starting it from the
       <guimenuitem>Run|Debug Configurations</guimenuitem>
       . You should launch your debugging session exactly the same way you were running it.
@@ -261,28 +260,28 @@
       specify only a single run number.
     </warning>
   </sect1>
-  
+
   <sect1>
     <title>Launching Shortcuts</title>
     <para>While the Launch dialog is very powerful, in most cases you just want to run your
-    simulation as quick as possible. Based on the current selection the IDE provides several 
+    simulation as quick as possible. Based on the current selection the IDE provides several
     quick methods to create a launch configuration. You can select a file by either clicking on
     it in the Project Explorer, or simply by opening it for editing. After selection, just click on the
-    <guibutton>Run</guibutton> or <guibutton>Debug</guibutton> icon on the toolbar, or right click on 
+    <guibutton>Run</guibutton> or <guibutton>Debug</guibutton> icon on the toolbar, or right click on
     the file and choose the <guimenuitem>Run As...</guimenuitem> or <guimenuitem>Debug As...</guimenuitem>
     menu.</para>
       <itemizedlist>
         <listitem>If a directory is selected and contains a single Ini file, the IDE will use
         this file to start the simulation.</listitem>
-        <listitem>If an Ini file is selected it will be used during the launch as the main Ini file 
+        <listitem>If an Ini file is selected it will be used during the launch as the main Ini file
         for the simulation.</listitem>
-        <listitem>If a Ned file is selected which contains a network definition, the IDE will 
+        <listitem>If a Ned file is selected which contains a network definition, the IDE will
         scan for Ini files in the active projects and will try to find a configuration allowing
         to start this network.</listitem>
       </itemizedlist>
-    <note>  
-      If the information to launch the simulation is insufficient or ambiguous the IDE will ask you 
-      before creating a configuration. 
+    <note>
+      If the information to launch the simulation is insufficient or ambiguous the IDE will ask you
+      before creating a configuration.
     </note>
   </sect1>
 
