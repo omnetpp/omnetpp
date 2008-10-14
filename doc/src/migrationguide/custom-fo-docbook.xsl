@@ -17,6 +17,17 @@
 <xsl:import href="file:///not set"/> 
 -->
 
+
+<!-- make menu items bold (Andras)-->
+<xsl:template match="guimenu">
+  <xsl:call-template name="inline.boldseq"/>
+</xsl:template>
+
+<!-- make menu items bold (Andras)-->
+<xsl:template match="guimenuitem">
+  <xsl:call-template name="inline.boldseq"/>
+</xsl:template>
+
 <!-- ***************  Additional  *********************  -->
 <!-- ***************************************************  -->
 
