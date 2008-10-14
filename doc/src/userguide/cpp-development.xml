@@ -296,7 +296,7 @@
       to activate the content assist window anywhere in your source code. An other useful
       key combination is
       <keycap>CTRL+TAB</keycap>
-      which switches between your CPP and header file. Press
+      which switches between your C++ and header file. Press
       <keycap>CTRL+SHIFT+L</keycap>
       to get a list of currently active key bindings. For further information about
       editing C++ files please visit the CDT section in the online help system.
