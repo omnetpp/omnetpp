@@ -298,6 +298,16 @@ while (<LISTFILE>)
        if ($line =~ /\bev\.rdbuf\b/) {
           $warnings{"Cannot reference cEnvir internals (e.g. use ini file options to redirect output)"} .= $lineinfo;
        }
+
+       # Min/Max
+       if ($line =~ /\bM[ia]n\(/) {
+          $warnings{"The Min()/Max() macros have been removed, use std::min()/max() from <algorithm> instead"} .= $lineinfo;
+       }
+
+       # message priority
+       if ($line =~ /\b[gs]etPriority\(/) {
+          $warnings{"The message priority field has been renamed, use getSchedulingPriority()/setSchedulingPriority()"} .= $lineinfo;
+       }
     }
     open(OUTFILE, ">$fname") || die "cannot open $fname for write";
     print OUTFILE $txt || die "cannot write $fname";

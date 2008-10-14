@@ -223,7 +223,7 @@ class cArray extends cOwnedObject
 class cMessage extends cOwnedObject
 {
     short kind @group(message) @editable @hint(generic user-settable attribute, usually carries "type" or "role" of message);
-    short priority @group(message) @editable @hint(controls delivery order of messages with equal timestamps);
+    short schedulingPriority @group(message) @editable @hint(controls delivery order of messages with equal timestamps);
     string displayString @group(message) @hint(controls appearance of the message in GUI);
     cArray parList @group(obsolete) @hint(use of "parList" should be replaced with message subclassing in the few models that still use it);
 

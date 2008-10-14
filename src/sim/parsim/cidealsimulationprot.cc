@@ -80,7 +80,7 @@ void cIdealSimulationProtocol::endRun()
 
 void cIdealSimulationProtocol::processReceivedMessage(cMessage *msg, int destModuleId, int destGateId, int sourceProcId)
 {
-    msg->setPriority(sourceProcId);
+    msg->setSchedulingPriority(sourceProcId);
     cParsimProtocolBase::processReceivedMessage(msg, destModuleId, destGateId, sourceProcId);
 }
 
@@ -107,7 +107,7 @@ cMessage *cIdealSimulationProtocol::getNextEvent()
         if (debug) ev << "expected external event (srcProcId=" << msg->getSrcProcId()
                       << " t=" << nextExternalEvent.t << ") has already arrived, good!\n";
         readNextRecordedEvent();
-        msg->setPriority(0);
+        msg->setSchedulingPriority(0);
         return msg;
     }
 
@@ -138,7 +138,7 @@ cMessage *cIdealSimulationProtocol::getNextEvent()
     // we have the next external event we wanted, return it
     ASSERT(msgTime==nextExternalEvent.t);
     readNextRecordedEvent();
-    msg->setPriority(0);
+    msg->setSchedulingPriority(0);
     return msg;
 }
 

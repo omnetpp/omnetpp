@@ -264,11 +264,11 @@ class SIM_API cMessage : public cOwnedObject
     void setKind(short k)  {msgkind=k;}
 
     /**
-     * Sets message priority. The priority member is used when the simulator
-     * inserts messages in the message queue (FES) to order messages
-     * with identical arrival time values.
+     * Sets event scheduling priority of the message. The priority member is
+     * used when the simulator inserts messages into the future events set
+     * (FES), to order messages with identical arrival time values.
      */
-    void setPriority(short p)  {prior=p;}
+    void setSchedulingPriority(short p)  {prior=p;}
 
     /**
      * Sets the message's time stamp to the current simulation time.
@@ -320,9 +320,9 @@ class SIM_API cMessage : public cOwnedObject
     short getKind() const  {return msgkind;}
 
     /**
-     * Returns the message priority.
+     * Returns the event scheduling priority.
      */
-    short getPriority() const  {return prior;}
+    short getSchedulingPriority() const  {return prior;}
 
     /**
      * Returns the message's time stamp.

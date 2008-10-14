@@ -61,13 +61,13 @@ void cISPEventLogger::endRun()
 
 void cISPEventLogger::processReceivedMessage(cMessage *msg, int destModuleId, int destGateId, int sourceProcId)
 {
-    msg->setPriority(sourceProcId);
+    msg->setSchedulingPriority(sourceProcId);
     cParsimProtocolBase::processReceivedMessage(msg, destModuleId, destGateId, sourceProcId);
 }
 
 void cISPEventLogger::processOutgoingMessage(cMessage *msg, int procId, int moduleId, int gateId, void *data)
 {
-    if (msg->getPriority()!=0)
+    if (msg->getSchedulingPriority()!=0)
         throw cRuntimeError("cISPEventLogger: outgoing message (%s)%s has nonzero priority set -- "
                             "this conflicts with ISP which uses priority for its own purposes",
                             msg->getClassName(), msg->getName());
@@ -81,7 +81,7 @@ cMessage *cISPEventLogger::getNextEvent()
     if (msg->getSrcProcId()!=-1)  // received from another partition
     {
         // restore original priority
-        msg->setPriority(0);
+        msg->setSchedulingPriority(0);
 
         // log event to file
         cIdealSimulationProtocol::ExternalEvent e;

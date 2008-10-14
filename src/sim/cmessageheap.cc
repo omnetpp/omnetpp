@@ -36,8 +36,8 @@ inline int operator <= (cMessage& a, cMessage& b)
 {
     return (a.getArrivalTime() < b.getArrivalTime()) ? 1 :
            (a.getArrivalTime() > b.getArrivalTime()) ? 0 :
-           (a.getPriority() < b.getPriority()) ? 1 :
-           (a.getPriority() > b.getPriority()) ? 0 :
+           (a.getSchedulingPriority() < b.getSchedulingPriority()) ? 1 :
+           (a.getSchedulingPriority() > b.getSchedulingPriority()) ? 0 :
             a.getInsertOrder() <= b.getInsertOrder();
 }
 
@@ -56,7 +56,7 @@ static int qsort_cmp_msgs(const void *p1, const void *p2)
     if (m1->getArrivalTime() > m2->getArrivalTime())
         return 1;
 
-    int dpri = m1->getPriority() - m2->getPriority();
+    int dpri = m1->getSchedulingPriority() - m2->getSchedulingPriority();
     if (dpri) return dpri;
 
     return (m1->getInsertOrder() < m2->getInsertOrder()) ? -1 : 1;

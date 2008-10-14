@@ -14,7 +14,7 @@ cPacket *msg = new cPacket("msg");
 int dummy;
 
 msg->setKind(10);
-msg->setPriority(3);
+msg->setSchedulingPriority(3);
 msg->setBitLength(456);
 msg->setBitError(true);
 msg->setTimestamp(2.434);
@@ -36,7 +36,7 @@ for (int i=0; i<3; i++)
 
     CHECK(!strcmp(cc->getName(), msg->getName()));
     CHECK(cc->getKind()==msg->getKind());
-    CHECK(cc->getPriority()==msg->getPriority());
+    CHECK(cc->getSchedulingPriority()==msg->getSchedulingPriority());
     CHECK(cc->getBitLength()==msg->getBitLength());
     CHECK(cc->hasBitError()==msg->hasBitError());
     CHECK(cc->getTimestamp()==msg->getTimestamp());

@@ -5,7 +5,7 @@ Tests that message priority affects scheduling order.
 cMessage *createMsg(const char *name, int priority)
 {
     cMessage *msg = new cMessage(name);
-    msg->setPriority(priority);
+    msg->setSchedulingPriority(priority);
     return msg;
 }
 
@@ -25,7 +25,7 @@ scheduleAt(3.1, createMsg("C''", 1));
 while (true)
 {
     cMessage *msg = receive();
-    ev << "at " << simTime() << ": " << msg->getName() << " pri=" << msg->getPriority() << "\n";
+    ev << "at " << simTime() << ": " << msg->getName() << " pri=" << msg->getSchedulingPriority() << "\n";
     delete msg;
 }
 

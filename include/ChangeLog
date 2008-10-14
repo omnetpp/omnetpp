@@ -224,9 +224,9 @@
 	  just an alias to cMessage, and cMessage contains all fields.
 	  For that, compile everything having WITHOUT_CPACKET defined
 	  (add -DWITHOUT_CPACKET to CFLAGS).
-	- message kind and priority changed from int to short. Affected functions:
-		kind() / setKind()
-		priority() / setPriority()
+	- the C++ type for message kind and priority changed from "int" to 
+	  "short", and priority was renamed to scheduling priority (methods
+	  setSchedulingPriority/getSchedulingPriority)
 	- added some extra fields required by sequence chart drawing: cause event
 	  number, message id, message tree id, etc.
 	- removed two static methods of limited usefulness: cmpbydelivtime(),

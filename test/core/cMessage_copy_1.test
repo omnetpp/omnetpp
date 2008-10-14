@@ -14,7 +14,7 @@ cMessage *msg = new cMessage("msg");
 int dummy;
 
 msg->setKind(10);
-msg->setPriority(3);
+msg->setSchedulingPriority(3);
 msg->setTimestamp(2.434);
 msg->setContextPointer(&dummy);
 
@@ -34,7 +34,7 @@ for (int i=0; i<3; i++)
 
     CHECK(!strcmp(cc->getName(), msg->getName()));
     CHECK(cc->getKind()==msg->getKind());
-    CHECK(cc->getPriority()==msg->getPriority());
+    CHECK(cc->getSchedulingPriority()==msg->getSchedulingPriority());
     CHECK(cc->getTimestamp()==msg->getTimestamp());
     CHECK(cc->getContextPointer()==msg->getContextPointer());
 

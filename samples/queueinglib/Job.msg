@@ -20,6 +20,7 @@ cplusplus {{
 message Job
 {
     @customize(true);
+    int priority;                // queueing priority
     simtime_t totalQueueingTime; // total time spent standing in queues
     simtime_t totalServiceTime;  // total time spent in servers
     simtime_t totalDelayTime;    // total time spent in delay modules

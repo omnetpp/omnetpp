@@ -13,7 +13,7 @@ cFileCommBuffer *buffer = new cFileCommBuffer();
 
 cPacket msg("msg");
 msg.setKind(5);
-msg.setPriority(8);
+msg.setSchedulingPriority(8);
 msg.setBitLength(1500);
 msg.setBitError(false);
 msg.setTimestamp(0.2234);
@@ -24,7 +24,7 @@ msg2.parsimUnpack(buffer);
 ev << "isBufferEmpty:" << buffer->isBufferEmpty() << endl;
 
 PRINT(msg2.getName());
-PRINT(msg2.getPriority());
+PRINT(msg2.getSchedulingPriority());
 PRINT(msg2.getBitLength());
 PRINT(msg2.hasBitError());
 PRINT(msg2.getTimestamp());
@@ -33,7 +33,7 @@ PRINT(msg2.getEncapsulatedMsg()==NULL);
 %contains: stdout
 isBufferEmpty:1
 msg2.getName():msg
-msg2.getPriority():8
+msg2.getSchedulingPriority():8
 msg2.getBitLength():1500
 msg2.hasBitError():0
 msg2.getTimestamp():0.2234

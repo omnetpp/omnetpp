@@ -173,14 +173,14 @@ void EventlogFileManager::beginSend(cMessage *msg)
             EventLogWriter::recordBeginSendEntry_id_tid_eid_etid_c_n_pe_k_p_l_er_d(feventlog,
                 pkt->getId(), pkt->getTreeId(), pkt->getEncapsulationId(), pkt->getEncapsulationTreeId(),
                 pkt->getClassName(), pkt->getFullName(), pkt->getPreviousEventNumber(),
-                pkt->getKind(), pkt->getPriority(), pkt->getBitLength(), pkt->hasBitError(),
+                pkt->getKind(), pkt->getSchedulingPriority(), pkt->getBitLength(), pkt->hasBitError(),
                 objectPrinter ? objectPrinter->printObjectToString(pkt).c_str() : NULL);
         }
         else {
             EventLogWriter::recordBeginSendEntry_id_tid_eid_etid_c_n_pe_k_p_l_er_d(feventlog,
                 msg->getId(), msg->getTreeId(), msg->getId(), msg->getTreeId(),
                 msg->getClassName(), msg->getFullName(), msg->getPreviousEventNumber(),
-                msg->getKind(), msg->getPriority(), 0, false,
+                msg->getKind(), msg->getSchedulingPriority(), 0, false,
                 objectPrinter ? objectPrinter->printObjectToString(msg).c_str() : NULL);
         }
     }
