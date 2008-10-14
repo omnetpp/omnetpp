@@ -234,7 +234,7 @@ public class ConfigRegistry {
         "Descriptive name for the given simulation configuration. Descriptions get " +
         "displayed in the run selection dialog.");
     public static final ConfigKey CFGID_EVENTLOG_FILE = addPerRunEntry(
-        "eventlog-file", CFG_FILENAME, "${resultdir}/${configname}-${runnumber}.log",
+        "eventlog-file", CFG_FILENAME, "${resultdir}/${configname}-${runnumber}.elog",
         "Name of the event log file to generate.");
     public static final ConfigKey CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN = addPerRunEntry(
         "eventlog-message-detail-pattern", CFG_CUSTOM, null,
