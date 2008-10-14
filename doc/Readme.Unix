@@ -104,10 +104,10 @@ please send a mail to the mailing list!
   quite annoying for menus and tooltips. To disable this behavior (on Gnome), go to
   Advanced Desktop Effect Settings / Animations and on the Open/Close  Animation tab
   and change the "type=Unknown" to "name=tk" selection entries. This will effectively
-  disable the animation for non toplevel Tcl/Tk windows.
+  disable the animation for non-toplevel Tcl/Tk windows.
 
-- If you are running the IDE on GTK you will notice that a lot of space is vasted in
+- If you are running the IDE on Gnome, you will notice that a lot of space is vasted in
   list and treelist controls (this is a general GTK issue). To make the IDE a little
-  more compact and usable look into the 'contrib' directory. We have created a .gtkrc
-  file which tweaks the GTK environment a little bit more compact.
+  more compact and usable, look into the 'contrib' directory. We have created a .gtkrc
+  file which tweaks GTK controls to be a little bit more compact.
 
