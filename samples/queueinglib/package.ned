@@ -12,7 +12,7 @@
 //
 // <center><h1>Queueing library</h1></center>
 //
-// This is queuing library implementation; see the QueueNet
+// This is a queuing library implementation; see the QueueNet
 // directory for an example usage.
 //
 
