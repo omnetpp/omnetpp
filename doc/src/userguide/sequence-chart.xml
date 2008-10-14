@@ -52,7 +52,7 @@
     <para>
       By default, the recorded eventlog file will be put in the project's
       <filename>results</filename> directory, with the name
-      <filename>${configname}-${runnumber}.log</filename>.
+      <filename>${configname}-${runnumber}.elog</filename>.
     </para>
     <warning>
       If you override the default file name, please make sure that the file extension is
