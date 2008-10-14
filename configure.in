@@ -881,6 +881,23 @@ else
    AC_MSG_WARN([Optional package MPI (needed for parallel simulation) not found.])
 fi
 
+
+#----------------------
+# Check for PCAP.
+#----------------------
+
+PCAP_LIBS=${PCAP_LIBS:-"-lpcap"}
+OPP_CHECK_LIB(PCAP, pcap.h, pcap_lookupdev("dummydev"), $CFLAGS_RELEASE $PCAP_CFLAGS, $PCAP_LIBS, pcap_ok)
+if test $pcap_ok = no; then
+    HAVE_PCAP=no
+    PCAP_CFALGS=""
+    PCAP_LIBS=""
+else
+    HAVE_PCAP=yes
+    CFLAGS_RELEASE="$CFLAGS_RELEASE -DHAVE_PCAP"
+    CFLAGS_DEBUG="$CFLAGS_DEBUG -DHAVE_PCAP"
+fi
+
 #----------------------
 # Check for XML parsers: EXPAT and/or LIBXML
 #----------------------
@@ -1047,6 +1064,9 @@ AC_SUBST(ZLIB_LIBS)
 AC_SUBST(HAVE_MPI)
 AC_SUBST(MPI_CFLAGS)
 AC_SUBST(MPI_LIBS)
+AC_SUBST(HAVE_PCAP)
+AC_SUBST(PCAP_CFLAGS)
+AC_SUBST(PCAP_LIBS)
 AC_SUBST(SYS_LIBS)
 
 AC_SUBST(XMLPARSER)

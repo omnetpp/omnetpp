@@ -694,6 +694,9 @@ ZLIB_LIBS
 HAVE_MPI
 MPI_CFLAGS
 MPI_LIBS
+HAVE_PCAP
+PCAP_CFLAGS
+PCAP_LIBS
 SYS_LIBS
 XMLPARSER
 XML_CFLAGS
@@ -6860,6 +6863,81 @@ else
 echo "$as_me: WARNING: Optional package MPI (needed for parallel simulation) not found." >&2;}
 fi
 
+
+#----------------------
+# Check for PCAP.
+#----------------------
+
+PCAP_LIBS=${PCAP_LIBS:-"-lpcap"}
+
+   save_CXXFLAGS=$CXXFLAGS
+   save_LIBS=$LIBS
+
+   CXXFLAGS="$CFLAGS_RELEASE $PCAP_CFLAGS"
+   LIBS="$PCAP_LIBS"
+
+   { echo "$as_me:$LINENO: checking for PCAP with CFLAGS=\"$CFLAGS_RELEASE $PCAP_CFLAGS\" LIBS=\"$PCAP_LIBS\"" >&5
+echo $ECHO_N "checking for PCAP with CFLAGS=\"$CFLAGS_RELEASE $PCAP_CFLAGS\" LIBS=\"$PCAP_LIBS\"... $ECHO_C" >&6; }
+
+   cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <pcap.h>
+int
+main ()
+{
+pcap_lookupdev("dummydev");
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (ac_try="$ac_link"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
+  (eval "$ac_link") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_cxx_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest$ac_exeext &&
+       $as_test_x conftest$ac_exeext; then
+  { echo "$as_me:$LINENO: result: yes" >&5
+echo "${ECHO_T}yes" >&6; }; pcap_ok=yes;
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+	{ echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6; }; pcap_ok=no;
+fi
+
+rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
+      conftest$ac_exeext conftest.$ac_ext
+
+   CXXFLAGS=$save_CXXFLAGS
+   LIBS=$save_LIBS
+
+if test $pcap_ok = no; then
+    HAVE_PCAP=no
+    PCAP_CFALGS=""
+    PCAP_LIBS=""
+else
+    HAVE_PCAP=yes
+    CFLAGS_RELEASE="$CFLAGS_RELEASE -DHAVE_PCAP"
+    CFLAGS_DEBUG="$CFLAGS_DEBUG -DHAVE_PCAP"
+fi
+
 #----------------------
 # Check for XML parsers: EXPAT and/or LIBXML
 #----------------------
@@ -7427,6 +7505,9 @@ ac_config_files="$ac_config_files Makefile.inc test/core/runtest"
 #----------------------
 # Substitutions.
 #----------------------
+
+
+
 
 
 
@@ -8304,6 +8385,9 @@ ZLIB_LIBS!$ZLIB_LIBS$ac_delim
 HAVE_MPI!$HAVE_MPI$ac_delim
 MPI_CFLAGS!$MPI_CFLAGS$ac_delim
 MPI_LIBS!$MPI_LIBS$ac_delim
+HAVE_PCAP!$HAVE_PCAP$ac_delim
+PCAP_CFLAGS!$PCAP_CFLAGS$ac_delim
+PCAP_LIBS!$PCAP_LIBS$ac_delim
 SYS_LIBS!$SYS_LIBS$ac_delim
 XMLPARSER!$XMLPARSER$ac_delim
 XML_CFLAGS!$XML_CFLAGS$ac_delim
@@ -8323,7 +8407,7 @@ LIBOBJS!$LIBOBJS$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 37; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 40; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5
