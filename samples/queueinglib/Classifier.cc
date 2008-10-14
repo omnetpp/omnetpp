@@ -8,6 +8,7 @@
 //
 
 #include "Classifier.h"
+#include "Job.h"
 
 namespace queueing {
 
@@ -20,19 +21,20 @@ void Classifier::initialize()
 
 void Classifier::handleMessage(cMessage *msg)
 {
+    Job *job = check_and_cast<Job *>(msg);
     int outGateIndex = -1;
     if (strcmp(dispatchField, "type") == 0)
-        outGateIndex = msg->getKind();
+        outGateIndex = job->getKind();
     else if (strcmp(dispatchField, "priority") == 0)
-        outGateIndex = msg->getPriority();
+        outGateIndex = job->getPriority();
     else
         error("invalid dispatchField parameter, must be \"type\" or \"priority\"");
     // TODO we could look for the value in the dynamically added parameters too
 
     if (outGateIndex < 0 || outGateIndex >= gateSize("out"))
-        send(msg, "rest");
+        send(job, "rest");
     else
-        send(msg, "out", outGateIndex);
+        send(job, "out", outGateIndex);
 }
 
 }; //namespace
