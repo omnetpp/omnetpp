@@ -17,7 +17,7 @@ familiar with C/C++ development (editing source files, compiling, debugging etc.
 on your operating system. (The latter two are out of our scope here --
 there are excellent books, tutorials on the web, etc. if you need
 to update your knowledge on that.) We highly recommend to use
-the OMNeT++ Integrated Development Environment for editing and building
+the @opp Integrated Development Environment for editing and building
 your simulations.
 
 To make the examples easier to follow, all source code in here is
@@ -650,7 +650,7 @@ Sources: @ref tictoc11.ned, @ref txc11.cc, @ref omnetpp.ini
 
 If we check the <tt>connections</tt> section a little more, we will realize that
 each node pair is connected with two connections. One for each direction.
-OMNeT++ 4 supports two way connections, so let's use them.
+@opp 4 supports two way connections, so let's use them.
 
 First of all, we have to define two-way (or so called <tt>inout</tt>) gates instead of the
 separate <tt>input</tt> and <tt>output</tt> gates we used previously.
@@ -812,7 +812,7 @@ Sources: @ref tictoc14.ned, @ref tictoc14.msg, @ref txc14.cc, @ref omnetpp.ini
 
 @section s15 Step 15: Adding statistics collection
 
-The OMNeT++ simulation kernel can record a detailed log about your message
+The @opp simulation kernel can record a detailed log about your message
 exchanges automatically by setting the
 
 @dontinclude omnetpp.ini
@@ -832,7 +832,7 @@ We'll record in the hop count of every message upon arrival into
 an output vector (a sequence of (time,value) pairs, sort of a time series).
 We also calculate mean, standard deviation, minimum, maximum values per node, and
 write them into a file at the end of the simulation. Then we'll use
-tools from the OMNeT++ IDE to analyse the output files.
+tools from the @opp IDE to analyse the output files.
 
 For that, we add an output vector object (which will record the data into
 <tt>Tictoc15-0.vec</tt>) and a histogram object (which also calculates mean, etc)
@@ -895,18 +895,18 @@ NEXT: @ref part5
 --------------------------------------------------------------------------
 
 /**
-@page part5 5. Visualizing the results with the OMNeT++ IDE
+@page part5 5. Visualizing the results with the @opp IDE
 
 PREV: @ref part4 UP: @ref contents
 
 @section results Visualizing output scalars and vectors
 
-The OMNeT++ IDE can help you to analyze your results. It supports filtering,
+The @opp IDE can help you to analyze your results. It supports filtering,
 processing and displaying vector and scalar data, and can display histograms too.
 The following diagrams have been created with the Result Analysis tool of the IDE.
 
 @note For further information about the charting and processing capabilities,
-please refer to the <b>OMNeT++ Users Guide</b>.
+please refer to the <b>@opp Users Guide</b>.
 
 Our last model records the <tt>hopCount</tt> of a message each time the message
 reaches its destination. The following plot shows these vectors for nodes 0 and 1.
@@ -930,7 +930,7 @@ The following diagram shows the histogram of <tt>hopCount</tt>'s distribution.
 
 @section logs Sequence charts end event logs
 
-The OMNeT++ simulation kernel can record the message exchanges during the
+The @opp simulation kernel can record the message exchanges during the
 simulation into an <i>event log file</i>. This log file can be analyzed later
 with the Sequence Chart tool.
 
