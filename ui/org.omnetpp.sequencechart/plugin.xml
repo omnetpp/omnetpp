@@ -6,7 +6,7 @@
          point="org.eclipse.ui.editors">
       <editor
             name="OMNeT++ Sequence Chart"
-            extensions="log"
+            extensions="elog"
             icon="icons/full/eobj16/sequencechart.png"
             contributorClass="org.omnetpp.sequencechart.editors.SequenceChartContributor"
             class="org.omnetpp.sequencechart.editors.SequenceChartEditor"
