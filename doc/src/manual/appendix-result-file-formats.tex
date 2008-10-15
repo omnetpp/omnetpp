@@ -63,7 +63,7 @@ Syntax:
 
 \hspace{20mm} \textbf{version} \textit{versionNumber}
 
-The version described in this document is 2. Version 1 are result files produced
+The version described in this document is 2. Version 1 files are produced
 by OMNeT++ 3.3 or earlier.
 
 
@@ -85,10 +85,10 @@ run TokenRing1-0-20080514-18:19:44-3248
 
 Typically there will be one run per file, but this is not mandatory.
 In cases when there are more than one runs in a file and it is not feasible
-to keep the entire file in memory during analysis, the offsets of the ``run''
+to keep the entire file in memory during analysis, the offsets of the \textit{run}
 lines may be indexed for more efficient random access.
 
-The ``run'' line may be immediately followed by ``attribute'' lines.
+The \textit{run} line may be immediately followed by \textit{attribute} lines.
 Attributes may store generic data like the network name, date/time of running
 the simulation, configuration options that took effect for the simulation, etc.
 
@@ -165,8 +165,8 @@ Contains a module parameter value for the given run. This is needed so
 that module parameters may be included in the analysis (e.g. to
 identify the load for a ``thruput vs load'' plot).
 
-It is not feasible to simply store all parameters of all modules in the
-result file (it's just too much). We assume that NED files are
+It may not be practical to simply store all parameters of all modules in the
+result file, because there may be too many. We assume that NED files are
 invariant and don't store parameters defined in them. However, we store
 parameter assignments that come from omnetpp.ini, in their original
 wildcard form (i.e. not expanded) to conserve space. Parameter values
@@ -202,7 +202,7 @@ Examples:
 scalar "net.switchA.relay" "processed frames" 100
 \end{verbatim}
 
-``Scalar'' lines may be immediately followed by ``attribute'' lines.
+Scalar lines may be immediately followed by \textit{attribute} lines.
 \opp uses the following vector attributes:
 
 \begin{itemize}
@@ -221,7 +221,7 @@ Syntax:
 
 \hspace{20mm} \textbf{vector }\textit{vectorId} \textit{moduleName vectorName columnSpec}
 
-Where columnSpec is a string encoding the meaning and ordering
+Where \textit{columnSpec} is a string, encoding the meaning and ordering
 the columns of data lines. Characters of the string mean:
 
 \begin{itemize}
@@ -232,7 +232,7 @@ the columns of data lines. Characters of the string mean:
 
 Common values are \ttt{TV} and \ttt{ETV}. The default value is \ttt{TV}.
 
-``Vector'' lines may be immediately followed by ``attribute'' lines.
+Vector lines may be immediately followed by \textit{attribute} lines.
 \opp uses the following vector attributes:
 
 \begin{itemize}
@@ -285,7 +285,8 @@ Example:
 statistic Aloha.server 	"collision multiplicity"
 \end{verbatim}
 
-May be followed by fields and attributes.
+A \textit{statistic} line may be followed by \textit{field} and \textit{attribute} lines,
+and a series of \textit{bin} lines that represent histogram data.
 
 \opp uses the following attributes:
 
