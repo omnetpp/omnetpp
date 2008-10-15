@@ -345,31 +345,31 @@ void ResultFileManager::collectIDs(IDList &out, std::vector<T> ResultFile::* vec
 
 IDList ResultFileManager::getAllItems() const
 {
-	IDList out;
-	collectIDs(out, &ResultFile::scalarResults, SCALAR);
-	collectIDs(out, &ResultFile::vectorResults, VECTOR);
-	collectIDs(out, &ResultFile::histogramResults, HISTOGRAM);
-	return out;
+    IDList out;
+    collectIDs(out, &ResultFile::scalarResults, SCALAR);
+    collectIDs(out, &ResultFile::vectorResults, VECTOR);
+    collectIDs(out, &ResultFile::histogramResults, HISTOGRAM);
+    return out;
 }
 
 IDList ResultFileManager::getAllScalars() const
 {
     IDList out;
-	collectIDs(out, &ResultFile::scalarResults, SCALAR);
+    collectIDs(out, &ResultFile::scalarResults, SCALAR);
     return out;
 }
 
 IDList ResultFileManager::getAllVectors() const
 {
     IDList out;
-	collectIDs(out, &ResultFile::vectorResults, VECTOR);
+    collectIDs(out, &ResultFile::vectorResults, VECTOR);
     return out;
 }
 
 IDList ResultFileManager::getAllHistograms() const
 {
     IDList out;
-	collectIDs(out, &ResultFile::histogramResults, HISTOGRAM);
+    collectIDs(out, &ResultFile::histogramResults, HISTOGRAM);
     return out;
 }
 
@@ -858,7 +858,7 @@ void ResultFileManager::processLine(char **vec, int numTokens, sParseContext &ct
 
         if (atoi(vec[1])>0 && strlen(vec[1])<=10)
         {
-            // old-style "run" line, format: run <runNumber> [<networkName>] [<dateTime>]
+            // old-style "run" line, format: run <runNumber> [<networkName> [<dateTime>]]
             // and runs in different files cannot be related, so we must create a new Run entry.
             Run *runRef = addRun();
             ctx.fileRunRef = addFileRun(ctx.fileRef, runRef);
@@ -901,11 +901,11 @@ void ResultFileManager::processLine(char **vec, int numTokens, sParseContext &ct
     }
     else if (vec[0][0] == 'v' && strcmp(vec[0], "version") == 0)
     {
-    	int version;
-    	CHECK(numTokens >= 2, "missing version number");
-    	CHECK(parseInt(vec[1], version), "version is not a number");
-    	CHECK(version <= 2, "expects version 2 or lower");
-    	return;
+        int version;
+        CHECK(numTokens >= 2, "missing version number");
+        CHECK(parseInt(vec[1], version), "version is not a number");
+        CHECK(version <= 2, "expects version 2 or lower");
+        return;
     }
 
 
