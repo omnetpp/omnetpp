@@ -14,6 +14,7 @@ img         { border:none }
 .subtitle   { font-size:12pt; margin-bottom: 3px }
 .footer     { font-size:8pt; margin-top:0px; text-align:center; color:#303030; }
 .inherited  { color:#A0A0A0 }
+.navigation h3 { margin: 0px; margin-top: 1em; font-size: 11pt; }
 .navigation p   { margin: 0px; white-space: nowrap; } 
 .navigation div { display: none; margin: 0px; }
 .navigation img { vertical-align: middle; } 
