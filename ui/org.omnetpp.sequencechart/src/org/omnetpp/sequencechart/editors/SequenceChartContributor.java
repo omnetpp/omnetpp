@@ -20,6 +20,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.batik.svggen.SVGGraphics2D;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.WordUtils;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -1659,10 +1660,11 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
     }
 
 	private StatusLineContributionItem createTimelineModeStatus() {
-		return new StatusLineContributionItem("Timeline Mode") {
+		return new StatusLineContributionItem("Timeline Mode", true, "SIMULATION_TIME".length()) {
 			@Override
 		    public void update() {
-				setText(sequenceChart.getTimelineMode().name());
+			    String timelineModeName = sequenceChart.getTimelineMode().name();
+				setText(WordUtils.capitalize(timelineModeName.replaceAll("_", " ").toLowerCase()));
 		    }
 		};
 	}
