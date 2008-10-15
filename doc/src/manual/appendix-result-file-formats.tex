@@ -24,7 +24,7 @@ generates physically contiguous sets of lines into one or more result
 files. (That is, lines from different runs do not arbitrarily mix in
 the files.)
 
-A run is identified by a unique textual\textit{ runId}, which appears in
+A run is identified by a unique textual \textit{runId}, which appears in
 all result files written during that run. The runId may appear on the
 user interface, so it should be somewhat meaningful to the user.
 Nothing should be assumed about the particular format of runId, but it
@@ -41,19 +41,34 @@ to relate data that belong together.
 Entry types are:
 
 \begin{itemize}
-    \item{\textbf{run}: identifies the simulation run}
-    \item{\textbf{attr}: run, vector, scalar and histogram attributes}
-    \item{\textbf{param}: module parameter}
-    \item{\textbf{scalar}: scalar}
-    \item{\textbf{vector}: vector declaration}
-    \item{\textit{vector-id}: vector data}
-    \item{\textbf{histogram}: histogram}
-    \item{\textbf{bin}: histogram bin}
+    \item \textbf{version}: result file version
+    \item \textbf{run}: simulation run identifier
+    \item \textbf{attr}: run, vector, scalar or statistics object attribute
+    \item \textbf{param}: module parameter
+    \item \textbf{scalar}: scalar data
+    \item \textbf{vector}: vector declaration
+    \item \textit{vector-id}: vector data
+    \item \textbf{statistic}: statistics object
+    \item \textbf{field}: field of a statistics object
+    \item \textbf{bin}: histogram bin
 \end{itemize}
 
 
 
-\section{``Run''}
+\section{Version}
+
+Specifies the format of the result file. It is written at the beginning of the file.
+
+Syntax:
+
+\hspace{20mm} \textbf{version} \textit{versionNumber}
+
+The version described in this document is 2. Version 1 are result files produced
+by OMNeT++ 3.3 or earlier.
+
+
+
+\section{Run Declaration}
 
 Marks the beginning of a new run in the file. Entries after this line
 belong to this run.
@@ -62,70 +77,89 @@ Syntax:
 
 \hspace{20mm} \textbf{run} \textit{runId}
 
-The following forms are obsolete, but should be understood nevertheless:
-
-\hspace{20mm} \textbf{run} \textit{runNumber}
-
-\hspace{20mm} \textbf{run} \textit{runNumber} \textit{networkName}
-
-\hspace{20mm} \textbf{run} \textit{runNumber} \textit{networkName} \textit{dateTime}
-
-These forms can be distinguished from the first one during processing,
-because runId is not numeric while runNumber is. During processing, the
-program can construct an artificial runId from the file name, run
-number, and the line number at which this line appears in the file.
-(The runNumber comes from omnetpp.ini, and it is not guaranteed to be
-unique).
-
-In the new format, runNumber, networkName and dateTime will appear on
-separate lines as \textit{run} \textit{attributes}.
-
-Old output vector files don't contain a ``run'' line. During processing,
-if any line type is encountered before a ``run'' line, then an implicit
-``run'' has to be created and subsequenet entries be assumed to be
-part of that.
-
-Performance note: if not the whole file is kept in memory during
-analysis, then the runs in the file (i.e. offsets of the ``run'' lines)
-may be indexed for more efficient random access.
-
 Example:
 
 \begin{verbatim}
-run "largeNet-20050710-14:34:11-localhost-12374"
+run TokenRing1-0-20080514-18:19:44-3248
 \end{verbatim}
 
-\section{``Run Attributes''}
+Typically there will be one run per file, but this is not manadatory.
+In cases when there are more then one runs in a file and it is not feasible
+to keep the entire file in memory during analysis, the offsets of the ``run''
+lines may be indexed for more efficient random access.
 
-Contains an attribute for the current run. These attributes include the
-network name, the time/date of execution, the
-experiment/measurement/replication labels, the random number seeds,
-configuration options that took effect such as the scheduler class,
-etc.
+The ``run'' line may be immediately followed by ``attribute'' lines.
+Attributes may store generic data like the network name, date/time of running
+the simulation, configuration options that took effect for the simulation, etc.
+
+Run attribute names used by {\opp} include the following:
+
+Generic attribute names:
+
+\begin{itemize}
+    \item \textbf{network}: name of the network simulated
+    \item \textbf{datetime}: date/time associated with the run
+    \item \textbf{processid}: the PID of the simulation process
+    \item \textbf{inifile}: the main configuration file
+    \item \textbf{configname}: name of the inifile configuration
+    \item \textbf{seedset}: index of the seed-set use for the simulation
+\end{itemize}
+
+Attributes associated with parameter studies (iterated runs):
+
+\begin{itemize}
+    \item \textbf{runnumber}: the run number within the parameter study
+    \item \textbf{experiment}: experiment label
+    \item \textbf{measurement}: measurement label
+    \item \textbf{replication}: replication label
+    \item \textbf{repetition}: the loop counter for repetitions with different seeds
+    \item \textbf{iterationvars}: string containing the values of the iteration variables
+    \item \textbf{iterationvars2}: string containing the values of the iteration variables
+\end{itemize}
+
+
+An example run header:
+
+\begin{verbatim}
+run TokenRing1-0-20080514-18:19:44-3248
+attr configname TokenRing1
+attr datetime 20080514-18:19:44
+attr experiment TokenRing1
+attr inifile omnetpp.ini
+attr iterationvars ""
+attr iterationvars2 $repetition=0
+attr measurement ""
+attr network TokenRing
+attr processid 3248
+attr repetition 0
+attr replication #0
+attr resultdir results
+attr runnumber 0
+attr seedset 0
+\end{verbatim}
+
+
+
+\section{Attributes}
+
+Contains an attribute for the preceding run, vector, scalar or
+statistics object. Attributes can be used for saving arbitrary
+extra information for objects; processors should ignore unrecognized
+attributes.
 
 Syntax:
 
 \hspace{20mm} \textbf{attr} \textit{name} \textit{value}
 
-\textbf{TODO} define the list of recognized attribute names
-
 Example:
 
 \begin{verbatim}
-attr run 1
 attr network "largeNet"
-attr date "2005-07-10 14:34:11"
-attr host "localhost"
-attr inifile "xxx.ini"
-attr experiment "blabla"
-attr measurement "rtete"
-attr replication "12th"
-attr numseeds 2
-attr seed-0-mt 573367
-attr seed-1-mt 124643
 \end{verbatim}
 
-\section{``Param''}
+
+
+\section{Module Parameters}
 
 Contains a module parameter value for the given run. This is needed so
 that module parameters may be included in the analysis (e.g. to
@@ -154,7 +188,7 @@ param **.fifo.bitsPerSec 1000
 \end{verbatim}
 
 
-\section{``Scalar''}
+\section{Scalar Data}
 
 Contains an output scalar value. This is the same as in older output
 scalar files.
@@ -163,29 +197,28 @@ Syntax:
 
 \hspace{20mm} \textbf{scalar} \textit{moduleName} \textit{scalarName} \textit{value}
 
-\textbf{TODO} room to include the unit (seconds, bits, megabit/second,
-etc), and possible extra data (for tagging, commenting, etc?)
-
 Examples:
 
 \begin{verbatim}
 scalar "net.switchA.relay" "processed frames" 100
 \end{verbatim}
 
-\section{``Vector''}
+``Scalar'' lines may be immediately followed by ``attribute'' lines.
 
-Defines an output vector. This is the same as in older output vector
-files.
+TODO attribute names.
+
+
+\section{Vector}
+
+Defines an output vector.
 
 Syntax:
 
 \hspace{20mm} \textbf{vector} \textit{vectorId} \ \textit{moduleName} \textit{vectorName}
 
-\hspace{20mm} \textbf{vector} \textit{vectorId} \textit{moduleName} \textit{vectorName} 1
+\hspace{20mm} \textbf{vector }\textit{vectorId} \textit{moduleName vectorName columnSpec}
 
-\hspace{20mm} \textbf{vector }\textit{vectorId} \textit{moduleName vectorName columns}
-
-Where columns is a string encoding the meaning and ordering
+Where columnSpec is a string encoding the meaning and ordering
 the columns of data lines. Characters of the string mean:
 
 \begin{itemize}
@@ -194,19 +227,15 @@ the columns of data lines. Characters of the string mean:
   \item \textbf{V} vector value
 \end{itemize}
 
-The default value of columns is 'TV' for compatibility with old vector files.
+Common values are \{TV} and \ttt{ETV}. The default value is \ttt{TV}.
+
+``Vector'' lines may be immediately followed by ``attribute'' lines.
+These attibutes include vector unit, enum definitions, interpolation mode, etc.
+
+TODO attributes!
 
 
-\section{``Vector Attributes''}
-
-Vector attributes may follow the definition of vectors. These attibutes
-include vector unit, enum definitions, interpolation mode, etc.
-
-Syntax:
-
-\hspace{20mm} \textbf{attr} name value
-
-\section{``Vector Data''}
+\section{Vector Data}
 
 Adds a value to an output vector. This is the same as in older output
 vector files.
@@ -225,23 +254,71 @@ not kept in memory during analysis, indexing the start offsets of these
 clusters allows one to read the file and seek in it more efficiently.
 This does not require any change or extension to the file format.
 
-\section{``Histogram''}
 
-Contains histogram data.
+
+\section{Statistics Object}
+
+Represents a statistics object.
 
 Syntax:
 
-\hspace{20mm} \textbf{histogram} \textit{moduleName} \ \textit{histogramName}
+\hspace{20mm} \textbf{statistic} \textit{moduleName} \ \textit{statisticName}
 
-\hspace{20mm} \textbf{bin} {--}INF \textit{value0}
+Example:
 
-\hspace{20mm} \textbf{bin} \textit{binLowerBound1} \textit{value1}
+\begin{verbatim}
+statistic Aloha.server 	"collision multiplicity"
+field count 13908
+field mean 6.8510209951107
+field stddev 5.2385484477843
+field sum 95284
+field sqrsum 1034434
+field min 2
+field max 65
+attr isDiscrete  1
+attr unit  packets
+bin	-INF	0
+bin	-0.5	0
+bin	0.5	0
+bin	1.5	2254
+bin	2.5	2047
+bin	3.5	1586
+bin	4.5	1428
+bin	5.5	1101
+bin	6.5	952
+bin	7.5	785
+...
+bin	51.5	2
+\end{verbatim}
 
-\hspace{20mm} \textbf{bin} \textit{binLowerBound2} \textit{value2}
 
-\hspace{20mm} \textbf{{\dots}}
 
-Histogram name and module is defined on the \textbf{histogram} line,
+
+\section{Field}
+
+Represents a field in a statistics object.
+
+Syntax:
+
+\hspace{20mm} \textbf{field} \textit{fieldName} \ \textit{value}
+
+Example:
+
+\begin{verbatim}
+field sum 95284
+\end{verbatim}
+
+
+
+\section{Histogram Bin}
+
+Represents a bin in a histogram object.
+
+Syntax:
+
+\hspace{20mm} \textbf{bin} \textit{binLowerBound} \textit{value}
+
+Histogram name and module is defined on the \textbf{statistic} line,
 which is followed by several \textbf{bin} lines to contain data. Any
 non{}-\textbf{bin} line marks the end of the histogram data.
 
@@ -257,6 +334,16 @@ integer, because the cKSplit and cPSquare algorithms produce
 non{}-integer estimates. The first \textbf{bin} line is the underflow
 cell, and the last \textbf{bin} line is the overflow cell.
 
+
+Example:
+
+\begin{verbatim}
+bin -INF  0
+bin 0 4
+bin 2 6
+bin 4 2
+bin 6 1
+\end{verbatim}
 
 
 %%% Local Variables:
