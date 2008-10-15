@@ -122,7 +122,7 @@ eclipse : $(HTMCHAPTERS) omnest.thtml omnetpp.thtml prephtml2 ltoh.specs ltoh.pl
 	move *.html eclipse
 	move toc.xml eclipse
 	copy *.png eclipse
-	copy figures/*.png eclipse
+	copy figures\*.png eclipse
 
 clean:
 	-del usman.dvi manual.pdf *.aux *.idx *.ilg *.ind *.log *.out *.toc *.bbl *.blg *.htm usman.tmp usman.html

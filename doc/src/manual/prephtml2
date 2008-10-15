@@ -28,13 +28,13 @@ while (@ARGV)
     }
     elsif ($arg eq "--apidir") {
         $apidir = shift @ARGV;
-    } 
+    }
     elsif ($arg eq "--tagfile") {
         $tagfile = shift @ARGV;
     }
     elsif ($arg eq "--template") {
         $templatefile = shift @ARGV;
-    }        
+    }
     elsif ($arg =~ /^-/) {
           die("unrecognized option: $arg");
     }
@@ -120,6 +120,7 @@ while ($scrap =~ s/\<H([0-9])\>(.*?)\<\/H[0-9]\>//s)
       $2 =~ m/\<A NAME\=\"(.*?)\"\/\>(.*)/s;
       $label[$i] = $1;
       $title[$i] = $2;
+      $aname2index{$1} = $i;
       $i++;
 }
 $nheadings = $i;
@@ -168,24 +169,36 @@ for ($i=0; $i<$nheadings; $i++)
 }
 
 $scrap = $html;
+$afilename = ""; #if singlePage
 while ($scrap =~ s/\<a name="([^"]+)"//si)
 {
       $aname = $1;
       if ($aname =~ /^sec[0-9]/)  {
           $cursection = $aname;
+          if (!$singlePage) {
+              my $i = $aname2index{$aname};
+              my $c = $chapnum[$i];
+              $afilename = "chap$c.$ext";
+          }
       } elsif ($aname =~ /^fig/) {
           # leave figures alone
-          $xref{$aname} = $aname;
+          $xref{$aname} = "$afilename#$aname";
           $xrefname{$aname} = "below";
       } else {
           # adjust other xrefs to point to the section containing them
-          $xref{$aname} = $cursection;
+          $xref{$aname} = "$afilename#$cursection";
           $xrefname{$aname} = "[$label2name{$cursection}]";
           if ($xrefname{$aname} eq '[]') {$xrefname{$aname} = "[click]";}
           print "  $aname --> $cursection: $xrefname{$aname}\n";
       }
 }
-$html =~ s|\<A HREF=\"#([^\"]+)\"\>\[click\]\</A\>|\<a href=\"#$xref{$1}\"\>$xrefname{$1}\</a\>|sgi;
+#foreach $aname (keys %xref) {
+#      print "$aname    -->    $xref{$aname}      (txt:$xrefname{$aname})\n";
+#}
+
+
+
+$html =~ s|\<A HREF=\"#([^\"]+)\"\>\[click\]\</A\>|\<a href=\"$xref{$1}\"\>$xrefname{$1}\</a\>|sgi;
 
 #
 # create 'chapters' table
