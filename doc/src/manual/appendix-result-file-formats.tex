@@ -8,7 +8,7 @@ means that they can be read with a common routine.
 
 Result files are \textit{line oriented}. A line consists of one or more
 tokens, separated by whitespace. Tokens either don't
-contain whitespace, or or whitespace is escaped using a backslash, or
+contain whitespace, or whitespace is escaped using a backslash, or
 are quoted using double quotes. Escaping within quotes using
 backslashes is also permitted.
 
@@ -58,17 +58,17 @@ Entry types are:
 Marks the beginning of a new run in the file. Entries after this line
 belong to this run.
 
-Format:
+Syntax:
 
-\textbf{run} \textit{runId}
+\hspace{20mm} \textbf{run} \textit{runId}
 
 The following forms are obsolete, but should be understood nevertheless:
 
-\textbf{run} \textit{runNumber}
+\hspace{20mm} \textbf{run} \textit{runNumber}
 
-\textbf{run} \textit{runNumber} \textit{networkName}
+\hspace{20mm} \textbf{run} \textit{runNumber} \textit{networkName}
 
-\textbf{run} \textit{runNumber} \textit{networkName} \textit{dateTime}
+\hspace{20mm} \textbf{run} \textit{runNumber} \textit{networkName} \textit{dateTime}
 
 These forms can be distinguished from the first one during processing,
 because runId is not numeric while runNumber is. During processing, the
@@ -103,9 +103,9 @@ experiment/measurement/replication labels, the random number seeds,
 configuration options that took effect such as the scheduler class,
 etc.
 
-Format:
+Syntax:
 
-\textbf{attr} \textit{name} \textit{value}
+\hspace{20mm} \textbf{attr} \textit{name} \textit{value}
 
 \textbf{TODO} define the list of recognized attribute names
 
@@ -141,9 +141,9 @@ entered interactively by the user are also stored.
 When the original NED files are present, it should thus be possible to
 reconstruct all parameters for the given simulation.
 
-Format:
+Syntax:
 
-\textbf{param} \textit{parameterNamePattern} \textit{value}
+\hspace{20mm} \textbf{param} \textit{parameterNamePattern} \textit{value}
 
 Example:
 
@@ -159,9 +159,9 @@ param **.fifo.bitsPerSec 1000
 Contains an output scalar value. This is the same as in older output
 scalar files.
 
-Format:
+Syntax:
 
-\textbf{scalar} \textit{moduleName} \textit{scalarName} \textit{value}
+\hspace{20mm} \textbf{scalar} \textit{moduleName} \textit{scalarName} \textit{value}
 
 \textbf{TODO} room to include the unit (seconds, bits, megabit/second,
 etc), and possible extra data (for tagging, commenting, etc?)
@@ -177,23 +177,24 @@ scalar "net.switchA.relay" "processed frames" 100
 Defines an output vector. This is the same as in older output vector
 files.
 
-Format:
+Syntax:
 
-\textbf{vector} \textit{vectorId} \ \textit{moduleName} \textit{vectorName}
+\hspace{20mm} \textbf{vector} \textit{vectorId} \ \textit{moduleName} \textit{vectorName}
 
-\textbf{vector} \textit{vectorId} \textit{moduleName} \textit{vectorName} 1
+\hspace{20mm} \textbf{vector} \textit{vectorId} \textit{moduleName} \textit{vectorName} 1
 
-\textbf{vector }\textit{vectorId} \textit{moduleName vectorName columns}
+\hspace{20mm} \textbf{vector }\textit{vectorId} \textit{moduleName vectorName columns}
 
 Where columns is a string encoding the meaning and ordering
 the columns of data lines. Characters of the string mean:
 
-  \textbf{E} event number
-  \textbf{T} simulation time
-  \textbf{V} vector value
+\begin{itemize}
+  \item \textbf{E} event number
+  \item \textbf{T} simulation time
+  \item \textbf{V} vector value
+\end{itemize}
 
-The default value of columns is 'TV'
-for compatibility with old vector files.
+The default value of columns is 'TV' for compatibility with old vector files.
 
 
 \section{``Vector Attributes''}
@@ -201,19 +202,18 @@ for compatibility with old vector files.
 Vector attributes may follow the definition of vectors. These attibutes
 include vector unit, enum definitions, interpolation mode, etc.
 
-Format:
+Syntax:
 
-\textbf{attr} name value
-
+\hspace{20mm} \textbf{attr} name value
 
 \section{``Vector Data''}
 
 Adds a value to an output vector. This is the same as in older output
 vector files.
 
-Format:
+Syntax:
 
-{\itshape vectorId column1 column2 ...}
+\hspace{20mm} {\itshape vectorId column1 column2 ...}
 
 Simulation times and event numbers \textit{within an output vector} are
 required to be in increasing order.
@@ -229,17 +229,17 @@ This does not require any change or extension to the file format.
 
 Contains histogram data.
 
-Format:
+Syntax:
 
-\textbf{histogram} \textit{moduleName} \ \textit{histogramName}
+\hspace{20mm} \textbf{histogram} \textit{moduleName} \ \textit{histogramName}
 
-\textbf{bin} {--}INF \textit{value0}
+\hspace{20mm} \textbf{bin} {--}INF \textit{value0}
 
-\textbf{bin} \textit{binLowerBound1} \textit{value1}
+\hspace{20mm} \textbf{bin} \textit{binLowerBound1} \textit{value1}
 
-\textbf{bin} \textit{binLowerBound2} \textit{value2}
+\hspace{20mm} \textbf{bin} \textit{binLowerBound2} \textit{value2}
 
-\textbf{{\dots}}
+\hspace{20mm} \textbf{{\dots}}
 
 Histogram name and module is defined on the \textbf{histogram} line,
 which is followed by several \textbf{bin} lines to contain data. Any
