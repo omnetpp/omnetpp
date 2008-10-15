@@ -24,14 +24,12 @@ generates physically contiguous sets of lines into one or more result
 files. (That is, lines from different runs do not arbitrarily mix in
 the files.)
 
-
 A run is identified by a unique textual\textit{ runId}, which appears in
 all result files written during that run. The runId may appear on the
 user interface, so it should be somewhat meaningful to the user.
 Nothing should be assumed about the particular format of runId, but it
 will be some string concatenated from the simulated network's name, the
 time/date, the hostname, and other pieces of data to make it unique.
-
 
 A simulation run will typically write into two result files (.vec and
 .sca). However, when using parallel distributed simulation, the user
@@ -40,25 +38,29 @@ partitions (a separate process each) will write into different files.
 However, all these files will contain the same runId, so it is possible
 to relate data that belong together.
 
-\bigskip
+Entry types are:
 
-Entry types:
+\begin{itemize}
+    \item{\textbf{run}: identifies the simulation run}
+    \item{\textbf{attr}: run, vector, scalar and histogram attributes}
+    \item{\textbf{param}: module parameter}
+    \item{\textbf{scalar}: scalar}
+    \item{\textbf{vector}: vector declaration}
+    \item{\textit{vector-id}: vector data}
+    \item{\textbf{histogram}: histogram}
+    \item{\textbf{bin}: histogram bin}
+\end{itemize}
 
-{\bfseries
-``Run''}
+
+
+\section{``Run''}
 
 Marks the beginning of a new run in the file. Entries after this line
 belong to this run.
 
-
-\bigskip
-
 Format:
 
 \textbf{run} \textit{runId}
-
-
-\bigskip
 
 The following forms are obsolete, but should be understood nevertheless:
 
@@ -67,9 +69,6 @@ The following forms are obsolete, but should be understood nevertheless:
 \textbf{run} \textit{runNumber} \textit{networkName}
 
 \textbf{run} \textit{runNumber} \textit{networkName} \textit{dateTime}
-
-
-\bigskip
 
 These forms can be distinguished from the first one during processing,
 because runId is not numeric while runNumber is. During processing, the
@@ -81,35 +80,22 @@ unique).
 In the new format, runNumber, networkName and dateTime will appear on
 separate lines as \textit{run} \textit{attributes}.
 
-
-\bigskip
-
 Old output vector files don't contain a ``run'' line. During processing,
 if any line type is encountered before a ``run'' line, then an implicit
-\ ``run'' has to be created and subsequenet entries be assumed to be
+``run'' has to be created and subsequenet entries be assumed to be
 part of that.
-
-
-\bigskip
 
 Performance note: if not the whole file is kept in memory during
 analysis, then the runs in the file (i.e. offsets of the ``run'' lines)
 may be indexed for more efficient random access.
 
-
-\bigskip
-
 Example:
 
-{\ttfamily
-run
-{\textquotedbl}largeNet{}-20050710{}-14:34:11{}-localhost{}-12374{\textquotedbl}}
+\begin{verbatim}
+run "largeNet-20050710-14:34:11-localhost-12374"
+\end{verbatim}
 
-
-\bigskip
-
-{\bfseries
-``Run Attributes''}
+\section{``Run Attributes''}
 
 Contains an attribute for the current run. These attributes include the
 network name, the time/date of execution, the
@@ -117,68 +103,33 @@ experiment/measurement/replication labels, the random number seeds,
 configuration options that took effect such as the scheduler class,
 etc.
 
-
-\bigskip
-
 Format:
 
 \textbf{attr} \textit{name} \textit{value}
 
-
-\bigskip
-
 \textbf{TODO} define the list of recognized attribute names
 
+Example:
 
-\bigskip
+\begin{verbatim}
+attr run 1
+attr network "largeNet"
+attr date "2005-07-10 14:34:11"
+attr host "localhost"
+attr inifile "xxx.ini"
+attr experiment "blabla"
+attr measurement "rtete"
+attr replication "12th"
+attr numseeds 2
+attr seed-0-mt 573367
+attr seed-1-mt 124643
+\end{verbatim}
 
-Example
-
-{\ttfamily
-attr run 1}
-
-{\ttfamily
-attr network {\textquotedbl}largeNet{\textquotedbl} }
-
-{\ttfamily
-attr date {\textquotedbl}2005{}-07{}-10 14:34:11{\textquotedbl}}
-
-{\ttfamily
-attr host {\textquotedbl}localhost{\textquotedbl} }
-
-{\ttfamily
-attr inifile {\textquotedbl}xxx.ini{\textquotedbl}}
-
-{\ttfamily
-attr experiment {\textquotedbl}blabla{\textquotedbl} }
-
-{\ttfamily
-attr measurement {\textquotedbl}rtete{\textquotedbl} }
-
-{\ttfamily
-attr replication {\textquotedbl}12th{\textquotedbl}}
-
-{\ttfamily
-attr numseeds 2 }
-
-{\ttfamily
-attr seed{}-0{}-mt 573367}
-
-{\ttfamily
-attr seed{}-1{}-mt 124643}
-
-
-\bigskip
-
-{\bfseries
-``Param''}
+\section{``Param''}
 
 Contains a module parameter value for the given run. This is needed so
 that module parameters may be included in the analysis (e.g. to
 identify the load for a ``thruput vs load'' plot).
-
-
-\bigskip
 
 It is not feasible to simply store all parameters of all modules in the
 result file (it's just too much). We assume that NED files are
@@ -187,83 +138,54 @@ parameter assignments that come from omnetpp.ini, in their original
 wildcard form (i.e. not expanded) to conserve space. Parameter values
 entered interactively by the user are also stored.
 
-
-\bigskip
-
 When the original NED files are present, it should thus be possible to
 reconstruct all parameters for the given simulation.
-
-
 
 Format:
 
 \textbf{param} \textit{parameterNamePattern} \textit{value}
 
-
-\bigskip
-
 Example:
 
-{\ttfamily
-param **.gen.sendIaTime \ \ exponential(0.01)}
-
-{\ttfamily
-param **.gen.msgLength \ \ \ 10}
-
-{\ttfamily
-param **.fifo.bitsPerSec \ 1000}
+\begin{verbatim}
+param **.gen.sendIaTime  exponential(0.01)
+param **.gen.msgLength   10
+param **.fifo.bitsPerSec 1000
+\end{verbatim}
 
 
-\bigskip
-
-{\bfseries
-``Scalar''}
+\section{``Scalar''}
 
 Contains an output scalar value. This is the same as in older output
 scalar files.
-
-\
 
 Format:
 
 \textbf{scalar} \textit{moduleName} \textit{scalarName} \textit{value}
 
-
-\bigskip
-
 \textbf{TODO} room to include the unit (seconds, bits, megabit/second,
 etc), and possible extra data (for tagging, commenting, etc?)
 
-
-\bigskip
-
 Examples:
 
-{\ttfamily
-scalar {\textquotedbl}net.switchA.relay{\textquotedbl}
-{\textquotedbl}processed frames{\textquotedbl} 100}
+\begin{verbatim}
+scalar "net.switchA.relay" "processed frames" 100
+\end{verbatim}
 
-
-\bigskip
-
-{\bfseries
-``Vector''}
+\section{``Vector''}
 
 Defines an output vector. This is the same as in older output vector
 files.
 
 Format:
 
-\textbf{vector} \textit{vectorId} \ \textit{moduleName}
-\ \textit{vectorName}
+\textbf{vector} \textit{vectorId} \ \textit{moduleName} \textit{vectorName}
 
-\textbf{vector} \textit{vectorId} \ \textit{moduleName}
-\ \textit{vectorName} \ 1
+\textbf{vector} \textit{vectorId} \textit{moduleName} \textit{vectorName} 1
 
 \textbf{vector }\textit{vectorId} \textit{moduleName vectorName columns}
 
-
-\textit{ }Where columns is a string encoding the meaning and ordering
+Where columns is a string encoding the meaning and ordering
 the columns of data lines. Characters of the string mean:
 
   \textbf{E} event number
@@ -274,28 +196,17 @@ The default value of columns is 'TV'
 for compatibility with old vector files.
 
 
-\bigskip
-
-{\bfseries
-``Vector Attributes''}
+\section{``Vector Attributes''}
 
 Vector attributes may follow the definition of vectors. These attibutes
 include vector unit, enum definitions, interpolation mode, etc.
-
-
-\bigskip
 
 Format:
 
 \textbf{attr} name value
 
-\
 
-
-\bigskip
-
-{\bfseries
-``Vector Data''}
+\section{``Vector Data''}
 
 Adds a value to an output vector. This is the same as in older output
 vector files.
@@ -314,9 +225,7 @@ not kept in memory during analysis, indexing the start offsets of these
 clusters allows one to read the file and seek in it more efficiently.
 This does not require any change or extension to the file format.
 
-\bigskip
-
-{\bfseries ``Histogram''}
+\section{``Histogram''}
 
 Contains histogram data.
 
@@ -330,7 +239,7 @@ Format:
 
 \textbf{bin} \textit{binLowerBound2} \textit{value2}
 
-{\bfseries {\dots}}
+\textbf{{\dots}}
 
 Histogram name and module is defined on the \textbf{histogram} line,
 which is followed by several \textbf{bin} lines to contain data. Any
