@@ -83,8 +83,8 @@ Example:
 run TokenRing1-0-20080514-18:19:44-3248
 \end{verbatim}
 
-Typically there will be one run per file, but this is not manadatory.
-In cases when there are more then one runs in a file and it is not feasible
+Typically there will be one run per file, but this is not mandatory.
+In cases when there are more than one runs in a file and it is not feasible
 to keep the entire file in memory during analysis, the offsets of the ``run''
 lines may be indexed for more efficient random access.
 
@@ -190,8 +190,7 @@ param **.fifo.bitsPerSec 1000
 
 \section{Scalar Data}
 
-Contains an output scalar value. This is the same as in older output
-scalar files.
+Contains an output scalar value.
 
 Syntax:
 
@@ -204,11 +203,15 @@ scalar "net.switchA.relay" "processed frames" 100
 \end{verbatim}
 
 ``Scalar'' lines may be immediately followed by ``attribute'' lines.
+\opp uses the following vector attributes:
 
-TODO attribute names.
+\begin{itemize}
+    \item \textbf{unit}: physical unit, e.g. \ttt{s} for seconds
+\end{itemize}
 
 
-\section{Vector}
+
+\section{Vector Declaration}
 
 Defines an output vector.
 
@@ -227,12 +230,24 @@ the columns of data lines. Characters of the string mean:
   \item \textbf{V} vector value
 \end{itemize}
 
-Common values are \{TV} and \ttt{ETV}. The default value is \ttt{TV}.
+Common values are \ttt{TV} and \ttt{ETV}. The default value is \ttt{TV}.
 
 ``Vector'' lines may be immediately followed by ``attribute'' lines.
-These attibutes include vector unit, enum definitions, interpolation mode, etc.
+\opp uses the following vector attributes:
 
-TODO attributes!
+\begin{itemize}
+    \item \textbf{unit}: physical unit, e.g. \ttt{s} for seconds
+    \item \textbf{enum}: symbolic names for values of the vector;
+          syntax is \ttt{"IDLE=0, BUSY=1, OFF=2"}
+    \item \textbf{type}: data type, one of \ttt{int}, \ttt{double} and \ttt{enum}
+    \item \textbf{interpolationmode}: hint for interpolation mode on the
+          chart: \ttt{none} (=do not connect the dots), \ttt{sample-hold},
+          \ttt{backward-sample-hold}, \ttt{linear}
+    \item \textbf{min}: minimum value
+    \item \textbf{max}: maximum value
+\end{itemize}
+
+
 
 
 \section{Vector Data}
@@ -268,6 +283,22 @@ Example:
 
 \begin{verbatim}
 statistic Aloha.server 	"collision multiplicity"
+\end{verbatim}
+
+May be followed by fields and attributes.
+
+\opp uses the following attributes:
+
+\begin{itemize}
+    \item \textbf{unit}: physical unit, e.g. \ttt{s} for seconds
+    \item \textbf{isDiscrete}: boolean (\ttt{0} or \ttt{1}), meaning whether
+          observations are integers
+\end{itemize}
+
+A full example with fields, attributes and histogram bins:
+
+\begin{verbatim}
+statistic Aloha.server 	"collision multiplicity"
 field count 13908
 field mean 6.8510209951107
 field stddev 5.2385484477843
@@ -292,8 +323,6 @@ bin	51.5	2
 \end{verbatim}
 
 
-
-
 \section{Field}
 
 Represents a field in a statistics object.
@@ -307,6 +336,27 @@ Example:
 \begin{verbatim}
 field sum 95284
 \end{verbatim}
+
+Fields:
+
+\begin{itemize}
+    \item \tbf{count}: observation count
+    \item \tbf{mean}: mean of the observations
+    \item \tbf{stddev}: standard deviation
+    \item \tbf{sum}: sum of the observations
+    \item \tbf{sqrsum}: sum of the squared observations
+    \item \tbf{min}: minimum of the observations
+    \item \tbf{max}: maximum of the observations
+\end{itemize}
+
+For weighted statistics, additionally the following fields may be recorded:
+
+\begin{itemize}
+    \item \tbf{weights}: sum of the weights
+    \item \tbf{weightedSum}: the weighted sum of the observations
+    \item \tbf{sqrSumWeights}:  sum of the squared weights
+    \item \tbf{weightedSqrSum}: weighted sum of the squared observations
+\end{itemize}
 
 
 
