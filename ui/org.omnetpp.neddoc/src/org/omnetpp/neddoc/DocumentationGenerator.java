@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -168,6 +169,10 @@ public class DocumentationGenerator {
 
     protected GeneratorConfiguration configuration;
 
+    private ArrayList<String> packageNames;
+
+    private int treeFolderIndex = 0;
+
     public DocumentationGenerator(IProject project) {
         this.project = project;
 
@@ -213,11 +218,11 @@ public class DocumentationGenerator {
                     generateDoxy();
                     collectDoxyMap();
                     generateCSS();
+                    generateTreeJavaScript();
                     generateHTMLFrame();
-                    generateFileList();
-                    generateSelectedTopics();
-                    generateIndexPages();
+                    generateNavigationTree();
                     generateNedTypeFigures();
+                    generatePackagePages();
                     generateFilePages();
                     generateTypePages();
                     generateFullDiagrams();
@@ -311,6 +316,7 @@ public class DocumentationGenerator {
 
             collectFiles();
             collectTypes();
+            collectPackageNames();
             collectTypeNames();
             collectSubtypesMap();
             collectImplementorsMap();
@@ -349,6 +355,26 @@ public class DocumentationGenerator {
             }
         });
         monitor.worked(1);
+    }
+    
+    protected String getPackageName(INedTypeElement typeElement) {
+        String packageName = typeElement.getNEDTypeInfo().getPackageName();
+        
+        if (packageName != null)
+            return packageName;
+        else
+            return "default";
+    }
+
+    protected void collectPackageNames() {
+        monitor.subTask("Collecting package names");
+        Set<String> packageNames = new HashSet<String>();
+
+        for (ITypeElement typeElement : typeElements)
+            if (typeElement instanceof INedTypeElement)
+                packageNames.add(getPackageName((INedTypeElement)typeElement));
+        
+        this.packageNames = (ArrayList<String>)org.omnetpp.common.util.CollectionUtils.toSorted(new ArrayList<String>(packageNames));
     }
 
     protected void collectTypeNames() {
@@ -460,8 +486,12 @@ public class DocumentationGenerator {
         }
     }
 
+    private boolean isCppProject(IProject project) throws CoreException {
+        return project.getNature("org.eclipse.cdt.core.ccnature") != null;
+    }
+
     protected void generateDoxy() throws Exception {
-        if (configuration.generateDoxy && project.getNature("org.eclipse.cdt.core.ccnature") != null) {
+        if (configuration.generateDoxy && isCppProject(project)) {
             if (doxyExecutablePath == null || !new File(doxyExecutablePath).exists())
                 throw new IllegalStateException("The Doxygen executable path is invalid, set it using Window/Preferences...\nThe currently set path is: " + doxyExecutablePath);
 
@@ -669,172 +699,234 @@ public class DocumentationGenerator {
         return buffer.toString();
     }
 
-    protected void generateCSS() throws IOException {
-        FileUtils.writeTextFile(getOutputFile("style.css"),
-                "body,td,p,ul,ol,li,h1,h2,h3,h4 {font-family:arial,sans-serif }\r\n" +
-                "body,td,p,ul,ol,li { font-size:10pt }\r\n" +
-                "h1 { font-size:18pt; text-align:center }\r\n" +
-                "pre.comment { font-size:10pt; padding-left:5pt }\r\n" +
-                "pre.src { font-size:8pt; background:#F8F8F8; padding:5pt; border:1px solid; border-color:#a0a0a0 }\r\n" +
-                "th { font-size:10pt; text-align:left; vertical-align:top; background:#E0E0f0 }\r\n" +
-                "td { font-size:10pt; text-align:left; vertical-align:top }\r\n" +
-                "tt { font-family:Courier,Courier New,Fixed,Terminal }\r\n" +
-                "img          { border:none }\r\n" +
-                ".navbar     { font-size:8pt; }\r\n" +
-                ".navbarlink { font-size:8pt; }\r\n" +
-                ".indextitle { font-size:12pt; }\r\n" +
-                ".comptitle  { font-size:14pt; }\r\n" +
-                ".subtitle   { font-size:12pt; margin-bottom: 3px }\r\n" +
-                ".footer     { font-size:8pt; margin-top:0px; text-align:center; color:#303030; }\r\n" +
-                ".inherited  { color:#A0A0A0 }\r\n" +
-                "FIXME.paramtable { border:2px ridge; border-collapse:collapse;}\r\n" +
-                ".src-keyword { font-weight:bold }\r\n" +
-                ".src-comment { font-style:italic; color:#404040 }\r\n" +
-                ".src-string  { color:#006000 }\r\n" +
-                ".src-number  { color:#0000c0 }\r\n");
+    protected void generateFileFromResource(String resourceName) throws Exception {
+        generateFileFromResource(resourceName, resourceName);
     }
 
-    protected void generateHTMLFrame() throws IOException {
-        FileUtils.writeTextFile(getOutputFile("index.html"),
-            "<html>\n" +
-            "   <head>\n" +
-            "      <title>Model documentation -- generated from NED files</title>\n" +
-            "   </head>\n" +
-            "   <frameset cols=\"35%,65%\">\n" +
-            "      <frameset rows=\"60%,40%\">\n" +
-            "         <frame src=\"all-modules.html\" name=\"componentsframe\"/>\n" +
-            "         <frame src=\"files.html\" name=\"filesframe\"/>\n" +
-            "      </frameset>\n" +
-            "      <frame src=\"overview.html\" name=\"mainframe\"/>\n" +
-            "   </frameset>\n" +
-            "   <noframes>\n" +
-            "      <h2>Frame Alert</h2>\n" +
-            "      <p>This document is designed to be viewed using HTML frames. If you see this message,\n" +
-            "      you are using a non-frame-capable browser.</p>\n" +
-            "   </noframes>\n" +
-            "</html>\n");
-    }
-
-    protected void generateFileList() throws Exception {
-        withGeneratingHTMLFile("files.html", new Runnable() {
+    protected void generateFileFromResource(final String resourcePath, String fileName) throws Exception {
+        withGeneratingFile(fileName, new Runnable() {
             public void run() throws Exception {
-                out("<h3 class=\"indextitle\">NED and MSG Files</h3>\r\n" +
-                    "<ul>\r\n");
-
-                for (IFile file : files)
-                    out("<li>\r\n" +
-                        "   <a href=\"" + getOutputFileName(file) + "\" target=\"mainframe\">" + file.getProjectRelativePath() + "</a>\r\n" +
-                        "</li>\r\n");
-
-                out("</ul>\r\n");
+                InputStream stream = getClass().getResourceAsStream("templates/" + resourcePath);
+                if (stream == null)
+                    throw new RuntimeException("Resource not found: " + resourcePath);
+                else
+                    out(FileUtils.readBinaryFile(stream));
             }
         });
     }
 
-    protected void generateIndexPages() throws Exception {
-        try {
-            monitor.beginTask("Generating index pages...", IProgressMonitor.UNKNOWN);
+    protected void generateCSS() throws Exception {
+        generateFileFromResource("style.css");
+    }
 
-            withGeneratingTypeIndexHTMLFile("channels", ChannelElementEx.class);
-            withGeneratingTypeIndexHTMLFile("channel interfaces", ChannelInterfaceElementEx.class);
-            withGeneratingTypeIndexHTMLFile("module interfaces", ModuleInterfaceElementEx.class);
-            withGeneratingTypeIndexHTMLFile("simple modules", SimpleModuleElementEx.class);
-            withGeneratingTypeIndexHTMLFile("compound modules", CompoundModuleElementEx.class);
-            withGeneratingTypeIndexHTMLFile("all modules", IModuleTypeElement.class);
-            generateNetworkIndex();
-            withGeneratingTypeIndexHTMLFile("messages", MessageElementEx.class);
-            withGeneratingTypeIndexHTMLFile("packets", PacketElementEx.class);
-            withGeneratingTypeIndexHTMLFile("classes", ClassElementEx.class);
-            withGeneratingTypeIndexHTMLFile("structs", StructElementEx.class);
-            withGeneratingTypeIndexHTMLFile("enums", EnumElementEx.class);
+    protected void generateTreeJavaScript() throws Exception {
+        generateFileFromResource("tree.js");
+    }
+
+    protected void generateHTMLFrame() throws Exception {
+        withGeneratingFile("index.html", new Runnable() {
+            public void run() throws Exception {
+                out("<html>\r\n" + 
+            		"   <head>\r\n" + 
+            		"      <title>Model documentation -- generated from NED files</title>\r\n" + 
+            		"   </head>\r\n" + 
+            		"   <frameset cols=\"25%,75%\">\r\n" + 
+            		"      <frame src=\"navigation.html\" name=\"componentsframe\"/>\r\n" + 
+            		"      <frame src=\"overview.html\" name=\"mainframe\"/>\r\n" + 
+            		"   </frameset>\r\n" + 
+            		"   <noframes>\r\n" + 
+            		"      <h2>Frame Alert</h2>\r\n" + 
+            		"      <p>This document is designed to be viewed using HTML frames. If you see this message,\r\n" + 
+            		"      you are using a non-frame-capable browser.</p>\r\n" + 
+            		"   </noframes>\r\n" + 
+            		"</html>\r\n");
+            }
+        });
+    }
+
+    protected void generateProjectIndexReference(IProject project) throws IOException, CoreException {
+        String projectName = project.getName();
+        IPath indexPath = new Path("..").append(neddocRelativeRootPath).append(projectName).append(DocumentationGeneratorPropertyPage.getNeddocPath(project)).append("index.html");
+        generateNavigationMenuItem(projectName, indexPath.toPortableString(), "_top");
+    }
+    
+    protected void generateProjectIndexReferences(String title, final IProject[] projects) throws Exception {
+        if (projects.length != 0)
+            withGeneratingNavigationMenuContainer(title, new Runnable() {
+                public void run() throws Exception {
+                    for (IProject referencedProject : projects)
+                        generateProjectIndexReference(referencedProject);
+                }
+            });
+    }
+
+    protected void generateProjectIndex() throws Exception {
+        generateProjectIndexReferences("Referenced projects", project.getReferencedProjects());
+        generateProjectIndexReferences("Referencing projects", project.getReferencingProjects());
+    }
+    
+    protected void generatePackageReference(String packageName) throws IOException {
+        out("<b>Package:</b> " + packageName);
+    }
+    
+    protected void generatePackageIndex() throws Exception {
+        if (packageNames.size() != 0)
+            withGeneratingNavigationMenuContainer("packages", new Runnable() {
+                public void run() throws Exception {
+                    for (String packageName : packageNames) {
+                        generateNavigationMenuItem(packageName, packageName + "-package.html");
+                    }
+                }
+            });
+    }
+
+    protected void generateFileIndex() throws Exception {
+        if (files.size() != 0)
+            withGeneratingNavigationMenuContainer("files", new Runnable() {
+                public void run() throws Exception {
+                    for (IFile file : files)
+                        generateNavigationMenuItem(file.getProjectRelativePath().toPortableString(), getOutputFileName(file));
+                }
+            });
+    }
+    
+    protected void generateNavigationTree() throws Exception {
+        try {
+            monitor.beginTask("Generating navigation tree...", IProgressMonitor.UNKNOWN);
+
+            generateNavigationTreeIcons();
+
+            withGeneratingHTMLFile("navigation.html", "<script type=\"text/javascript\" src=\"tree.js\"></script>", new Runnable() {
+                public void run() throws Exception {
+                    out("<h2>Project " + project.getName() + "</h2>");
+                    out("<div class=\"navigation\" style=\"display: block;\">");
+
+                    generateSelectedTopics();
+                    generateProjectIndex();
+                    generatePackageIndex();
+                    generateFileIndex();
+
+                    generateTypeIndex("simple modules", SimpleModuleElementEx.class);
+                    generateTypeIndex("compound modules", CompoundModuleElementEx.class);
+                    generateTypeIndex("all modules", IModuleTypeElement.class);
+                    generateNetworkIndex();
+                    generateTypeIndex("channels", ChannelElementEx.class);
+                    generateTypeIndex("channel interfaces", ChannelInterfaceElementEx.class);
+                    generateTypeIndex("module interfaces", ModuleInterfaceElementEx.class);
+                    generateTypeIndex("messages", MessageElementEx.class);
+                    generateTypeIndex("packets", PacketElementEx.class);
+                    generateTypeIndex("classes", ClassElementEx.class);
+                    generateTypeIndex("structs", StructElementEx.class);
+                    generateTypeIndex("enums", EnumElementEx.class);
+                    generateCppIndex();
+
+                    out("</div>");
+                }
+            });
         }
         finally {
             monitor.done();
         }
     }
 
-    protected void generateNavigationBar(String where) throws IOException {
-        out("<p class=\"navbar\">\r\n");
-        generateNavigationBarLink("selected topics", where);
-        out(" - modules (");
-        generateNavigationBarLink("simple modules", where);
-        out(", ");
-        generateNavigationBarLink("compound modules", where);
-        out(", ");
-        generateNavigationBarLink("all modules", where);
-        out(") - ");
-        generateNavigationBarLink("module interfaces", where);
-        out(" - ");
-        generateNavigationBarLink("channels", where);
-        out(" - ");
-        generateNavigationBarLink("channel interfaces", where);
-        out(" - ");
-        generateNavigationBarLink("networks", where);
-        out(" - ");
-        generateNavigationBarLink("messages", where);
-        out(" - ");
-        generateNavigationBarLink("packets", where);
-        out(" - ");
-        generateNavigationBarLink("classes", where);
-        out(" - ");
-        generateNavigationBarLink("structs", where);
-        out(" - ");
-        generateNavigationBarLink("enums", where);
-        out("</p>\r\n");
+    protected void generateNavigationTreeIcons() throws Exception {
+        generateFileFromResource("icons/ftv2blank.png", "ftv2blank.png");
+        generateFileFromResource("icons/ftv2doc.png", "ftv2doc.png");
+        generateFileFromResource("icons/ftv2folderclosed.png", "ftv2folderclosed.png");
+        generateFileFromResource("icons/ftv2folderopen.png", "ftv2folderopen.png");
+        generateFileFromResource("icons/ftv2lastnode.png", "ftv2lastnode.png");
+        generateFileFromResource("icons/ftv2link.png", "ftv2link.png");
+        generateFileFromResource("icons/ftv2mlastnode.png", "ftv2mlastnode.png");
+        generateFileFromResource("icons/ftv2mnode.png", "ftv2mnode.png");
+        generateFileFromResource("icons/ftv2node.png", "ftv2node.png");
+        generateFileFromResource("icons/ftv2plastnode.png", "ftv2plastnode.png");
+        generateFileFromResource("icons/ftv2pnode.png", "ftv2pnode.png");
+        generateFileFromResource("icons/ftv2vertline.png", "ftv2vertline.png");
     }
 
-    protected void generateNavigationBarLink(String label, String where) throws IOException {
-        if (label.equals(where))
-            out("<span class=\"navbarlink\">" + label + "</span>\r\n");
-        else
-            out("<a href=\"" + label.replace(" ", "-") + ".html\" class=\"navbarlink\">" + label + "</a>\r\n");
+    protected void withGeneratingNavigationMenuContainer(String title, Runnable content) throws Exception {
+        String folderId = "folder" + treeFolderIndex++;
+
+        // NOTE: don't put whitespace between img elements        
+        out("<p>" +
+            "<img src=\"ftv2pnode.png\" alt=\"o\" width=\"16\" height=\"22\" onclick=\"toggleFolder('" + folderId +"', this)\"/>" +
+            "<img src=\"ftv2folderclosed.png\" alt=\"+\" width=\"24\" height=\"22\" onclick=\"toggleFolder('" + folderId +"', this)\"/>\r\n" +
+            "<span class=\"indextitle\">" + WordUtils.capitalize(title) + "</span>\r\n" +
+            "</p>\r\n" +
+            "<div id=\"" + folderId + "\">");
+    
+        content.run();
+    
+        out("</div>\r\n");
     }
 
-    protected void withGeneratingTypeIndexHTMLFile(final String where, final Class<?> clazz) throws Exception {
-        withGeneratingNavigationHTMLFile(where, new Runnable() {
-            public void run() throws Exception {
-                generateTypeIndex(clazz);
-            }
-        });
+    protected void generateNavigationMenuItem(String title, String url) throws IOException {
+        generateNavigationMenuItem(title, url, "mainframe");
     }
 
-    protected void withGeneratingNavigationHTMLFile(final String where, final Runnable content) throws Exception {
-        withGeneratingHTMLFile(where.replace(" ", "-") + ".html", new Runnable() {
-            public void run() throws Exception {
-                generateNavigationBar(where);
+    protected void generateNavigationMenuItem(String title, String url, String target) throws IOException {
+        // NOTE: don't put whitespace between img elements        
+        out("<p>" +
+            "<img src=\"ftv2vertline.png\" alt=\"|\" width=\"16\" height=\"22\"/>" +
+            "<img src=\"ftv2node.png\" alt=\"o\" width=\"16\" height=\"22\"/>" +
+            "<img src=\"ftv2doc.png\" alt=\"*\" width=\"24\" height=\"22\"/>\r\n" +
+            "<a href=\"" + url + "\" target=\"" + target + "\">" + title + "</a>\r\n" +
+            "</p>\r\n");
+    }
+    
+    protected void generateCppMenuItem(String title, String url) throws IOException {
+        if (project.getFile(rootRelativeDoxyPath.append(url)).getLocation().toFile().exists())
+            generateNavigationMenuItem(title, neddocRelativeRootPath.append(rootRelativeDoxyPath).append(url).toPortableString());
+    }
 
-                out("<h3 class=\"indextitle\">" + WordUtils.capitalize(where) + "</h3>\r\n" +
-                    "<ul>\r\n");
-
-                content.run();
-
-                out("</ul>\r\n");
-            }
-        });
+    private void generateCppIndex() throws Exception {
+        if (isCppProject(project))
+            withGeneratingNavigationMenuContainer("C++", new Runnable() {
+                public void run() throws Exception {
+                    generateCppMenuItem("Main Page", "main.html");
+                    generateCppMenuItem("File List", "files.html");
+                    generateCppMenuItem("Class List", "annotated.html");
+                    generateCppMenuItem("Class Hierarchy", "hierarchy.html");
+                    generateCppMenuItem("Class Members", "functions.html");
+                    generateCppMenuItem("Namespace List", "namespaces.html");
+                    generateCppMenuItem("File Members", "globals.html");
+                    generateCppMenuItem("Namespace Members", "namespacemembers.html");
+                }
+            });
     }
 
     protected void generateSelectedTopics() throws Exception {
-        withGeneratingNavigationHTMLFile("selected topics", new Runnable() {
+        withGeneratingNavigationMenuContainer("selected topics", new Runnable() {
             protected Pattern externalPagesPattern = Pattern.compile("(?m)^//[ \t]*@externalpage +([^,\n]+),? *(.*?)$");
 
             protected Pattern pagePattern = Pattern.compile(" +([^,\n]+),? *(.*?)\n(?s)(.*)");
 
             public void run() throws Exception {
-                out("<li><a href=\"overview.html\" target=\"mainframe\">Overview</a></li>\r\n");
+                generateNavigationMenuItem("Overview", "overview.html");
 
-                if (configuration.generateUsageDiagrams)
-                    out("<li><a href=\"full-ned-usage-diagram.html\" target=\"mainframe\">Full NED Usage Diagram</a></li>\r\n");
+                for (ITypeElement typeElement : typeElements) {
+                    if (typeElement instanceof INedTypeElement) {
+                        if (configuration.generateUsageDiagrams)
+                            generateNavigationMenuItem("Full NED Usage Diagram", "full-ned-usage-diagram.html");
+        
+                        if (configuration.generateInheritanceDiagrams)
+                            generateNavigationMenuItem("Full NED Inheritance Diagram", "full-ned-inheritance-diagram.html");
 
-                if (configuration.generateInheritanceDiagrams)
-                    out("<li><a href=\"full-ned-inheritance-diagram.html\" target=\"mainframe\">Class NED Inheritance Diagram</a></li>\r\n");
+                        break;
+                    }
+                }
 
-                if (configuration.generateUsageDiagrams)
-                    out("<li><a href=\"full-msg-usage-diagram.html\" target=\"mainframe\">Full MSG Usage Diagram</a></li>\r\n");
+                for (ITypeElement typeElement : typeElements) {
+                    if (typeElement instanceof IMsgTypeElement) {
+                        if (configuration.generateUsageDiagrams)
+                            generateNavigationMenuItem("Full MSG Usage Diagram", "full-msg-usage-diagram.html");
+        
+                        if (configuration.generateInheritanceDiagrams)
+                            generateNavigationMenuItem("Full MSG Inheritance Diagram", "full-msg-inheritance-diagram.html");
 
-                if (configuration.generateInheritanceDiagrams)
-                    out("<li><a href=\"full-msg-inheritance-diagram.html\" target=\"mainframe\">Class MSG Inheritance Diagram</a></li>\r\n");
-
-                out("</ul>\r\n<ul>\r\n");
+                        break;
+                    }
+                }
 
                 boolean overviewGenerated = false;
 
@@ -893,36 +985,71 @@ public class DocumentationGenerator {
             }
         });
     }
-
+    
     protected void generatePageReference(String fileName, String title) throws IOException {
         if (title == null || title.equals(""))
             title = fileName;
-
-        out("<li>\r\n" +
-            "   <a href=\"" + fileName + "\" target=\"mainframe\">" + title + "</a>\r\n" +
-            "</li>\r\n");
+        
+        generateNavigationMenuItem(title, fileName);
     }
 
     protected void generateTypeIndexEntry(ITypeElement typeElement) throws Exception {
-        out("<li>\r\n" +
-            "   <a href=\"" + getOutputFileName(typeElement) + "\" target=\"mainframe\">" + typeElement.getName() + "</a>\r\n" +
-            "</li>\r\n");
+        generateNavigationMenuItem(typeElement.getName(), getOutputFileName(typeElement));
     }
 
-    protected void generateTypeIndex(Class<?> clazz) throws Exception {
+    protected void generateTypeIndex(String title, Class<?> clazz) throws Exception {
+        final ArrayList<ITypeElement> selectedElements = new ArrayList<ITypeElement>();
+
         for (ITypeElement typeElement : typeElements)
             if (clazz.isInstance(typeElement))
-                generateTypeIndexEntry(typeElement);
+                selectedElements.add(typeElement);
+        
+        if (selectedElements.size() != 0) {
+            withGeneratingNavigationMenuContainer(WordUtils.capitalize(title), new Runnable() {
+                public void run() throws Exception {
+                    for (ITypeElement typeElement : selectedElements)
+                        generateTypeIndexEntry(typeElement);
+                }
+            });
+        }
     }
 
     protected void generateNetworkIndex() throws Exception {
-        withGeneratingNavigationHTMLFile("networks", new Runnable() {
-            public void run() throws Exception {
-                for (ITypeElement typeElement : typeElements)
-                    if (typeElement instanceof CompoundModuleElementEx && ((CompoundModuleElementEx)typeElement).isNetwork())
+        final ArrayList<ITypeElement> selectedElements = new ArrayList<ITypeElement>();
+
+        for (ITypeElement typeElement : typeElements)
+            if (typeElement instanceof CompoundModuleElementEx && ((CompoundModuleElementEx)typeElement).isNetwork())
+                selectedElements.add(typeElement);
+
+        if (selectedElements.size() != 0)
+            withGeneratingNavigationMenuContainer("networks", new Runnable() {
+                public void run() throws Exception {
+                    for (ITypeElement typeElement : selectedElements)
                         generateTypeIndexEntry(typeElement);
-            }
-        });
+                }
+            });
+    }
+    
+    protected void generatePackagePages() throws Exception {
+        for (final String packageName : packageNames) {
+            withGeneratingHTMLFile(packageName + "-package.html", new Runnable() {
+                public void run() throws Exception {
+                    out("<h2>Package " + packageName + "</h2>\r\n" +
+                        "<table class=\"typetable\">\r\n" +
+                        "   <tr>\r\n" +
+                        "      <th>Name</th>\r\n" +
+                        "      <th>Description</th>\r\n" +
+                        "   </tr>\r\n");
+                    
+                    for (ITypeElement typeElement : typeElements)
+                        if (typeElement instanceof INedTypeElement)
+                            if (packageName.equals(getPackageName((INedTypeElement)typeElement)))
+                                generateTypeReference(typeElement);
+
+                    out("</table>\r\n");
+                }
+            });
+        }
     }
 
     protected void generateFilePages() throws Exception {
@@ -936,8 +1063,11 @@ public class DocumentationGenerator {
                         String fileType = nedResources.isNedFile(file) ? "NED" : msgResources.isMsgFile(file) ? "Msg" : "";
 
                         out("<h2 class=\"comptitle\">" + fileType + " File <i>" + file.getProjectRelativePath() + "</i></h2>\r\n" +
-                            "<h3 class=\"subtitle\">Contains:</h3>\r\n" +
-                            "<ul>\r\n");
+                            "<table class=\"typetable\">\r\n" +
+                            "   <tr>\r\n" +
+                            "      <th>Name</th>\r\n" +
+                            "      <th>Description</th>\r\n" +
+                            "   </tr>\r\n");
 
                         List<? extends ITypeElement> typeElements;
                         if (msgResources.isMsgFile(file))
@@ -946,14 +1076,9 @@ public class DocumentationGenerator {
                             typeElements = nedResources.getNedFileElement(file).getTopLevelTypeNodes();
 
                         for (ITypeElement typeElement : typeElements)
-                        {
-                            out("<li>\r\n" +
-                                "   <a href=\"" + getOutputFileName(typeElement) + "\">" + typeElement.getName() + "</a>\r\n" +
-                                "   <i> (" + typeElement.getReadableTagName() + ")</i>\r\n" +
-                                "</li>\r\n");
-                        }
+                            generateTypeReference(typeElement);
 
-                        out("</ul>\r\n");
+                        out("</table>\r\n");
                         generateSourceContent(file);
                         monitor.worked(1);
                     }
@@ -972,8 +1097,18 @@ public class DocumentationGenerator {
             for (final ITypeElement typeElement : typeElements) {
                 withGeneratingHTMLFile(getOutputFileName(typeElement), new Runnable() {
                     public void run() throws Exception {
+                        boolean isNedTypeElement = typeElement instanceof INedTypeElement;
+                        boolean isMsgTypeElement = typeElement instanceof IMsgTypeElement;
+
                         out("<h2 class=\"comptitle\">" + WordUtils.capitalize(typeElement.getReadableTagName()) + " <i>" + typeElement.getName() + "</i></h2>\r\n");
+
+                        if (isNedTypeElement) {
+                            generatePackageReference(getPackageName((INedTypeElement)typeElement));
+                            out("<br/>");
+                        }
+
                         generateFileReference(getNedOrMsgFile(typeElement));
+                        out("<br/>");
 
                         if (typeElement instanceof SimpleModuleElementEx || typeElement instanceof IMsgTypeElement)
                             generateCppDefinitionReference(typeElement);
@@ -984,7 +1119,7 @@ public class DocumentationGenerator {
                         else
                             out(processHTMLContent("comment", comment));
 
-                        if (typeElement instanceof INedTypeElement) {
+                        if (isNedTypeElement) {
                             INedTypeElement nedTypeElement = (INedTypeElement)typeElement;
                             monitor.subTask(nedTypeElement.getReadableTagName() + ": " + nedTypeElement.getNEDTypeInfo().getFullyQualifiedName());
 
@@ -1003,7 +1138,7 @@ public class DocumentationGenerator {
                             if (typeElement instanceof CompoundModuleElementEx)
                                 generateUnassignedParametersTable((CompoundModuleElementEx)nedTypeElement);
                         }
-                        else if (typeElement instanceof IMsgTypeElement) {
+                        else if (isMsgTypeElement) {
                             IMsgTypeElement msgTypeElement = (IMsgTypeElement)typeElement;
                             monitor.subTask(msgTypeElement.getReadableTagName() + ": " + msgTypeElement.getName());
 
@@ -1286,6 +1421,7 @@ public class DocumentationGenerator {
         out("<tr>\r\n" +
             "   <td>\r\n" +
             "      <a href=\"" + getOutputFileName(typeElement) + "\">" + typeElement.getName() + "</a>\r\n" +
+            "      <i> (" + typeElement.getReadableTagName().replaceAll(" ", "&nbsp;") + ")</i>\r\n" +
             "   </td>\r\n" +
             "   <td>\r\n");
 
@@ -1321,11 +1457,11 @@ public class DocumentationGenerator {
             throw new RuntimeException("Unknown type element: " + typeElement);
 
         if (doxyMap.containsKey(className))
-            out("<p><b>C++ definition: <a href=\"" + doxyRelativeRootPath.append(rootRelativeDoxyPath).append(doxyMap.get(className)) + "\" target=\"_top\">click here</a></b></p>\r\n");
+            out("<p><b>C++ definition: <a href=\"" + doxyRelativeRootPath.append(rootRelativeDoxyPath).append(doxyMap.get(className)) + "\" target=\"mainframe\">click here</a></b></p>\r\n");
     }
 
     protected void generateFileReference(IFile file) throws IOException {
-        out("<p><b>File: <a href=\"" + getOutputFileName(file) + "\">" + file.getProjectRelativePath() + "</a></b></p>\r\n");
+        out("<b>File: <a href=\"" + getOutputFileName(file) + "\">" + file.getProjectRelativePath() + "</a></b>");
     }
 
     protected void generateKnownSubtypesTable(ITypeElement typeElement) throws IOException {
@@ -1595,9 +1731,8 @@ public class DocumentationGenerator {
             DotGraph dot = new DotGraph();
 
             dot.append("digraph opp {\r\n" +
-                       "   rankdir = BT;" +
             		   "   node [fontsize=10,fontname=Helvetica,shape=box,height=.25,style=filled];\r\n" +
-            		   "   edge [arrowhead=empty,arrowtail=none];\r\n");
+            		   "   edge [arrowhead=none,arrowtail=empty];\r\n");
 
             for (ITypeElement typeElement : typeElements) {
                 dot.appendNode(typeElement, typeElements.size() == 1);
@@ -1606,7 +1741,7 @@ public class DocumentationGenerator {
                 if (typeElement.getFirstExtendsRef() != null) {
                     ITypeElement extendz = typeElement.getFirstExtendsRef();
                     dot.appendNode(extendz);
-                    dot.appendEdge(typeElement, extendz);
+                    dot.appendEdge(extendz, typeElement);
                 }
 
                 if (typeElement instanceof IInterfaceTypeElement) {
@@ -1615,7 +1750,7 @@ public class DocumentationGenerator {
                     if  (implementors != null) {
                         for (INedTypeElement implementor : implementors) {
                             dot.appendNode(implementor);
-                            dot.appendEdge(implementor, typeElement, "style=dashed");
+                            dot.appendEdge(typeElement, implementor, "style=dashed");
                         }
                     }
                 }
@@ -1626,7 +1761,7 @@ public class DocumentationGenerator {
                     if  (interfaces != null) {
                         for (INedTypeElement interfaze : interfaces) {
                             dot.appendNode(interfaze);
-                            dot.appendEdge(typeElement, interfaze, "style=dashed");
+                            dot.appendEdge(interfaze, typeElement, "style=dashed");
                         }
                     }
                 }
@@ -1636,7 +1771,7 @@ public class DocumentationGenerator {
                 if (subtypes != null)
                     for (ITypeElement subtype : subtypes) {
                         dot.appendNode(subtype);
-                        dot.appendEdge(subtype, typeElement);
+                        dot.appendEdge(typeElement, subtype);
                     }
             }
 
@@ -1812,15 +1947,26 @@ public class DocumentationGenerator {
     }
 
     protected void withGeneratingHTMLFile(String fileName, Runnable content) throws Exception {
+        withGeneratingHTMLFile(fileName, null, content);
+    }
+
+    protected void withGeneratingHTMLFile(String fileName, String header, Runnable content) throws Exception {
         File oldCurrentOutputFile = currentOutputFile;
 
         setCurrentOutputFile(fileName);
+        
         out("<html>\r\n" +
             "   <head>\r\n" +
-            "      <link rel=\"stylesheet\" type=\"text/css\" href=\"style.css\" />\r\n" +
-            "   </head>\r\n" +
+            "      <link rel=\"stylesheet\" type=\"text/css\" href=\"style.css\" />\r\n");
+        
+        if (header != null)
+            out(header);
+        
+        out("   </head>\r\n" +
             "   <body>\r\n");
+
         content.run();
+        
         out("   </body>\r\n" +
             "</html>\r\n");
 
@@ -1858,6 +2004,13 @@ public class DocumentationGenerator {
             throw new CancellationException();
 
         outputStreams.get(currentOutputFile).write(string.getBytes());
+    }
+
+    protected void out(byte[] data) throws IOException {
+        if (monitor.isCanceled())
+            throw new CancellationException();
+
+        outputStreams.get(currentOutputFile).write(data);
     }
 
     protected void outMapReference(INedTypeElement model, IFigure figure) throws IOException {
@@ -1974,7 +2127,7 @@ public class DocumentationGenerator {
                 nodes.add(typeElement);
 
                 String name = typeElement.getName();
-                append(name + " ");
+                append("\"" + name + "\" ");
 
                 append("[URL=\"" + getOutputFileName(typeElement) + "\",");
 
@@ -2020,7 +2173,7 @@ public class DocumentationGenerator {
 
             if (!edges.contains(pair)) {
                 edges.add(pair);
-                append(sourceTypeElement.getName() + " -> " + targetTypeElement.getName() + " [" + attributes + "];\n");
+                append("\"" + sourceTypeElement.getName() + "\" -> \"" + targetTypeElement.getName() + "\" [" + attributes + "];\n");
             }
         }
 

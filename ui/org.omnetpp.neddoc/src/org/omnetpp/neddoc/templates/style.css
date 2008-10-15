@@ -1,0 +1,24 @@
+body,td,p,ul,ol,li,h1,h2,h3,h4 {font-family:arial,sans-serif }
+body,td,p,ul,ol,li { font-size:10pt }
+h1 { font-size:18pt; text-align:center }
+pre.comment { font-size:10pt; padding-left:5pt }
+pre.src { font-size:8pt; background:#F8F8F8; padding:5pt; border:1px solid; border-color:#a0a0a0 }
+th { font-size:10pt; text-align:left; vertical-align:top; background:#E0E0f0 }
+td { font-size:10pt; text-align:left; vertical-align:top }
+tt { font-family:Courier,Courier New,Fixed,Terminal }
+img         { border:none }
+.navbar     { font-size:8pt; }
+.navbarlink { font-size:8pt; }
+.indextitle { font-size:12pt; }
+.comptitle  { font-size:14pt; }
+.subtitle   { font-size:12pt; margin-bottom: 3px }
+.footer     { font-size:8pt; margin-top:0px; text-align:center; color:#303030; }
+.inherited  { color:#A0A0A0 }
+.navigation p   { margin: 0px; white-space: nowrap; } 
+.navigation div { display: none; margin: 0px; }
+.navigation img { vertical-align: middle; } 
+FIXME.paramtable { border:2px ridge; border-collapse:collapse;}
+.src-keyword { font-weight:bold }
+.src-comment { font-style:italic; color:#404040 }
+.src-string  { color:#006000 }
+.src-number  { color:#0000c0 }

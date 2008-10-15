@@ -123,7 +123,7 @@ public class ProcessUtils {
             if (exitValue == 0)
                 return result;
             else
-                throw new ExecException(result, "Process exec error for " + command + " : " + FileUtils.readTextFile(process.getErrorStream()));
+                throw new ExecException(result, "Process exec error for " + command + " : " + standardError.toString());
         }
         
         process.destroy();
