@@ -13,10 +13,11 @@ rm -rf work/lib
 cp -pPR lib work/       # OSX dos not support cp -a
 export NEDPATH=.:../lib
 EXTRA_INCLUDES="-I../../../src/sim/parsim -I../../../src/envir -I../../../src/common -I../../../include/platdep"
+EXTRA_LIBS="-L../../../lib -lcommon\$D"
 
 opp_test -g $OPT -v $TESTFILES || exit 1
 echo
-(cd work; opp_makemake -f --deep --no-deep-includes $EXTRA_INCLUDES; $MAKE) || exit 1
+(cd work; opp_makemake -f --deep --no-deep-includes $EXTRA_INCLUDES $EXTRA_LIBS; $MAKE) || exit 1
 echo
 opp_test -r $OPT -v $TESTFILES || exit 1
 echo
