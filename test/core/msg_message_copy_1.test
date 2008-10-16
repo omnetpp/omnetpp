@@ -28,10 +28,10 @@ void print(const char *what, MyMessage& x)
 {
    ev << what << ":";
    ev << x.getA() << ":" << x.getB(0) << "," << x.getB(1) << ":";
-   for(int i=0; i<x.getCArraySize(); i++)
+   for (int i=0; i<(int)x.getCArraySize(); i++)
        ev << (i==0 ? "" : ",") << (int)x.getC(i);
    ev << ":" << x.getS1() << ":" << x.getS2(0) << "," << x.getS2(1) << ":";
-   for(int j=0; j<x.getS3ArraySize(); j++)
+   for (int j=0; j<(int)x.getS3ArraySize(); j++)
        ev << (j==0 ? "" : ",") << x.getS3(j);
    ev << "." << endl;
 }

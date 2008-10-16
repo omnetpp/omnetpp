@@ -11,7 +11,8 @@ const cMessage *p1 = check_and_cast<const cMessage *>(msg);
 ev << "p1:" << (p1!=NULL) << endl;
 
 // and this one not
-const cQueue *p2 = check_and_cast<const cQueue *>(msg);
+const cQueue *p2 = check_and_cast<const cQueue *>(msg); 
+(void)p2;
 ev << "fell through" << endl;
 
 %exitcode: 1

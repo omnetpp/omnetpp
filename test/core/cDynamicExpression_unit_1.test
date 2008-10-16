@@ -46,7 +46,7 @@ ev << "\n";
 
 // binary operators
 std::vector<std::string> ops = cStringTokenizer("+ - * / % ^  & | # << >> == != > >= < <=").asVector();
-for (int i=0; i<ops.size(); i++)
+for (int i=0; i<(int)ops.size(); i++)
 {
     std::string op = ops[i];
     test("3",  op, "2");

@@ -48,6 +48,7 @@ void Test::activity()
           case cPar::LONG:   ev << par(i).longValue(); break;
           case cPar::DOUBLE: ev << par(i).doubleValue(); break;
           case cPar::BOOL:   ev << (par(i).boolValue() ? "true" : "false"); break;
+          case cPar::XML:    ev << "some xml"; break; // unused in this test 
         }
         ev << "/" << par(i).str() << endl;
     }

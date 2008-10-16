@@ -10,7 +10,7 @@ cStringTokenizer tokenizer(str);
 while (tokenizer.hasMoreTokens())
     out.push_back(atoi(tokenizer.nextToken()));
 
-for (int i=0; i<out.size(); i++)
+for (int i=0; i<(int)out.size(); i++)
     ev << (i?" ":"") << out[i];
 ev << "\n.\n";
 
