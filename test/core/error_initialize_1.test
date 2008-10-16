@@ -1,7 +1,7 @@
 %description:
 Test that the simulation exits gracefully if there's an error during initializing the network.
  - exit code must be 1 (not zero and different from crash exit code)
- - nothing should be printed after "End run..." message and the error message (Note "$")
+ - nothing should be printed after "End" message and the error message (Note "$")
 
 %module: Foo
 
@@ -19,8 +19,7 @@ Define_Module(Foo);
 %contains-regex: stdout
 <!> Error in .*: std::range_error during initialize\(\): oops.
 
-
-End run of OMNeT\+\+$
+End\.$
 
 %contains-regex: stderr
 ^$

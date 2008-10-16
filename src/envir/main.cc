@@ -39,6 +39,7 @@ ENVIR_API int main(int argc, char *argv[])
 
     evPtr = &bootEnv;
     int exitcode = bootEnv.run(argc, argv, NULL);
+    printf("\nEnd.\n");
 
     return exitcode;
 }

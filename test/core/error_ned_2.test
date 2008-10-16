@@ -1,7 +1,7 @@
 %description:
 Test that the simulation exits gracefully if there's an error while building the network.
  - exit code must be 1 (not zero and different from crash exit code):
- - nothing should be printed after "End run..." message and the error message (Note "$")
+ - nothing should be printed after "End" message and the error message (Note "$")
 
 %file: test.ned
 network Test {
@@ -17,7 +17,8 @@ network Test {
 
 %contains-regex: stdout
 No submodule `node\[1000\]' to be connected.*
-End run of OMNeT\+\+$
+
+End\.$
 
 %contains-regex: stderr
 ^$

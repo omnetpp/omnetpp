@@ -301,7 +301,6 @@ void Tkenv::printUISpecificHelp()
     ev << "                See also: -r.\n";
     ev << "  -r <run>      Set up the specified run number in the configuration selected with\n";
     ev << "                the -c option\n";
-    ev << "\n";
 }
 
 void Tkenv::rebuildSim()

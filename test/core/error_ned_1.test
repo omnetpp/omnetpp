@@ -1,18 +1,18 @@
 %description:
 Test that the simulation exits gracefully if there's a syntax error in the NED file.
 - exit code must be 1 (not zero and different from crash exit code):
-- nothing should be printed after "End run..." message and the error message (Note "$")
+- nothing should be printed after "End" message and the error message (Note "$")
 
 %file: test.ned
 bla bla bla
 
 %activity:
-// nothing 
+// nothing
 
 %exitcode: 1
 
 %contains-regex: stdout
-End run of OMNeT\+\+$
+End\.$
 
 %contains-regex: stderr
 test\.ned:1: Error: syntax error, unexpected NAME, expecting \$end$

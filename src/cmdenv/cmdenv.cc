@@ -677,7 +677,6 @@ void Cmdenv::printUISpecificHelp()
     ev << "                runs of that configuration will be executed.\n" ;
     ev << "  -g, -G        Make -n and -c more verbose: print the unrolled configuration,\n";
     ev << "                iteration variables, etc. -G provides more details than -g.\n";
-    ev << "\n";
 }
 
 unsigned Cmdenv::getExtraStackForEnvir() const

@@ -258,7 +258,7 @@ void EnvirBase::setup()
                                          8*sizeof(void*),
                                          opp_typename(typeid(simtime_t)),
                                          sizeof(statbuf.st_size)>=8 ? "yes" : "no");
-        ev << buildOptions << "\n" << "\n";
+        ev << buildOptions << "\n";
         return;  // don't set initialized==true
     }
 

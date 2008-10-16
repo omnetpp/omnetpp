@@ -1,7 +1,7 @@
 %description:
 Test that the simulation exits gracefully if there's an error in the startup code.
 - exit code must be 1 (not zero and different from crash exit code)
-- nothing should be printed after "End run..." message and the error message (Note "$")
+- nothing should be printed after "End" message and the error message (Note "$")
 
 IMPORTANT: This test must be run in isolation, because the startup error would appear
 in ALL test cases! See below:
@@ -16,7 +16,7 @@ ev << "#UNRESOLVED: test currently disabled, edit it to enable\n";
 %exitcode: 1
 
 %contains-regex: stdout
-End run of OMNeT\+\+$
+End\.$
 
 %contains-regex: stderr
 <!> Error during startup: something bad happened\.$

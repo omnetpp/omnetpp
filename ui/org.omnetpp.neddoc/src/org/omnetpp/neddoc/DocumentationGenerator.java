@@ -798,8 +798,8 @@ public class DocumentationGenerator {
 
             withGeneratingHTMLFile("navigation.html", "<script type=\"text/javascript\" src=\"tree.js\"></script>", new Runnable() {
                 public void run() throws Exception {
-                    out("<h2>Project " + project.getName() + "</h2>");
                     out("<div class=\"navigation\" style=\"display: block;\">");
+                    out("<h3>" + project.getName() + "</h3>");
 
                     generateSelectedTopics();
                     generateProjectIndex();
