@@ -1,7 +1,6 @@
 %description:
-Test perform-gc=true (it is OFF by default since 3.2!):
-Test that dynamically allocated, cOwnedObject-based objects are properly cleaned up
-at the end of the simulation.
+Test setPerformFinalGC(true). Dynamically allocated, cOwnedObject-based objects 
+should be properly disposed of at the end of the simulation.
 
 %global:
 class Noisy : public cOwnedObject
@@ -12,6 +11,7 @@ class Noisy : public cOwnedObject
 };
 
 %activity:
+setPerformFinalGC(true);
 ev << "begin\n";
 new Noisy;
 
@@ -19,7 +19,6 @@ new Noisy;
 [General]
 network = Test
 cmdenv-express-mode = false
-perform-gc = true
 
 %contains-regex: stdout
 begin

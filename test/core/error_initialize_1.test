@@ -18,7 +18,7 @@ Define_Module(Foo);
 
 %contains-regex: stdout
 <!> Error in .*: std::range_error during initialize\(\): oops.
-
+*
 End\.$
 
 %contains-regex: stderr
