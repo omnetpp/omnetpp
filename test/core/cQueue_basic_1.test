@@ -43,8 +43,10 @@ INS a:  e t a
 INS z:  e t a z
 INS b:  e t a z b
 INS k:  e t a z b k
-DEL e:  t a z b k
-DEL k:  t a z b
+INS l:  e t a z b k l
+DEL e:  t a z b k l
+DEL k:  t a z b l
+DEL l:  t a z b
 POP:    a z b
 POP:    z b
 POP:    b
