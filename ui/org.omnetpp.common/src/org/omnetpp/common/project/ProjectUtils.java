@@ -3,7 +3,6 @@ package org.omnetpp.common.project;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -213,7 +212,7 @@ public class ProjectUtils {
     /**
      * Imports all project from the workspace directory, and optionally opens them.
      */
-    public static void importAllProjectsFromWorkspaceDirectory(boolean open, IProgressMonitor monitor) throws InvocationTargetException {
+    public static void importAllProjectsFromWorkspaceDirectory(boolean open, IProgressMonitor monitor) throws CoreException {
         // note: code based on WizardProjectsImportPage.updateProjectsList()
         IPath workspaceLocation = ResourcesPlugin.getWorkspace().getRoot().getLocation();
         File directory = workspaceLocation.toFile();
@@ -243,7 +242,7 @@ public class ProjectUtils {
      * Imports a project from the workspace directory, and optionally opens it.
      * This is basically a convenience wrapper around IProject.create().
      */
-    public static IProject importProjectFromWorkspaceDirectory(String projectName, boolean open, IProgressMonitor monitor) throws InvocationTargetException {
+    public static IProject importProjectFromWorkspaceDirectory(String projectName, boolean open, IProgressMonitor monitor) throws CoreException {
         //
         // Note: code based on WizardProjectsImportPage.createExistingProject().
         // Note2: description.setLocation() would only be needed when linking to a project 
@@ -256,16 +255,10 @@ public class ProjectUtils {
         try {
             monitor.beginTask("Importing project", 100);
             project.create(description, new SubProgressMonitor(monitor, 30));
-            // XXX sometimes the natures on the project do not initialize correctly
-            // doing an open/close cycle helps the workspace to read the natures
-            // this is a HACK
-            project.open(IResource.NONE, new SubProgressMonitor(monitor, 30));
-            if (!open) 
-            	project.close(new SubProgressMonitor(monitor, 20));
+            if (open)
+                project.open(IResource.NONE, new SubProgressMonitor(monitor, 30));
         } 
-        catch (CoreException e) {
-            throw new InvocationTargetException(e);
-        } finally {
+        finally {
             monitor.done();
         }
         

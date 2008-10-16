@@ -1,22 +1,19 @@
 package org.omnetpp.ide;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 
-import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceDescription;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.dialogs.ErrorDialog;
-import org.eclipse.jface.dialogs.ProgressMonitorDialog;
-import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IStartup;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
@@ -125,24 +122,16 @@ public class OmnetppStartup implements IStartup {
      * Import sample projects.
      */
     protected void importSampleProjects(final boolean open) {
-        IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-        if (workbenchWindow == null)
-            return;
-        Shell shell = workbenchWindow.getShell();
-        try {
-            IRunnableWithProgress op = new IRunnableWithProgress() {
-                public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-                    ProjectUtils.importAllProjectsFromWorkspaceDirectory(open, monitor);
-                }
-            };            
-            new ProgressMonitorDialog(shell).run(true, true, op);
-        } 
-        catch (InvocationTargetException e) {
-            OmnetppMainPlugin.logError(e);
-            ErrorDialog.openError(shell, "Error", "Error during importing sample projects into the workspace", new Status(IMarker.SEVERITY_ERROR, OmnetppMainPlugin.PLUGIN_ID, e.getMessage(), e));
-        } catch (InterruptedException e) { 
-            // nothing to do 
-        }
+        WorkspaceJob job = new WorkspaceJob("Importing sample projects") {
+            @Override
+            public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
+                ProjectUtils.importAllProjectsFromWorkspaceDirectory(open, monitor);
+                return Status.OK_STATUS;
+            }
+        };
+        job.setRule(ResourcesPlugin.getWorkspace().getRoot());
+        job.setPriority(Job.LONG);
+        job.schedule();
     }
 
     /**
