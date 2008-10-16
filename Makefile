@@ -184,12 +184,12 @@ copy-ui-docu:
 	cp -r $(OMNETPP_DOC_DIR)/tictoc-tutorial $(OMNETPP_UI_DIR)/org.omnetpp.doc/content
 	rm -rf $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/userguide/plugin.xml
 	rm -rf $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/migration/plugin.xml
-	perl -i -pe 's!href="!href="content/manual/!g' $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/manual/toc.xml
-	perl -i -pe 's!href="!href="content/userguide/!g' $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/userguide/toc.xml
-	perl -i -pe 's!<head>!<head><link rel="STYLESHEET" href="../book.css"  type="text/css"/>!g' $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/userguide/*.html
-	perl -i -pe 's!href="!href="content/migration/!g' $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/migration/toc.xml
-	perl -i -pe 's!<head>!<head><link rel="STYLESHEET" href="../book.css"  type="text/css"/>!g' $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/migration/*.html
-	perl -i -pe 's!<head>!<head><link rel="STYLESHEET" href="book.css"  type="text/css"/>!g' $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/WhatsNew.html
+	perl -i -pe 's!href="!href="content/manual/!gi' $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/manual/toc.xml
+	perl -i -pe 's!href="!href="content/userguide/!gi' $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/userguide/toc.xml
+	perl -i -pe 's!<head>!<head><link rel="STYLESHEET" href="../book.css"  type="text/css"/>!gi' $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/userguide/*.html
+	perl -i -pe 's!href="!href="content/migration/!gi' $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/migration/toc.xml
+	perl -i -pe 's!<head>!<head><link rel="STYLESHEET" href="../book.css"  type="text/css"/>!gi' $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/migration/*.html
+	perl -i -pe 's!<head>!<head><link rel="STYLESHEET" href="book.css"  type="text/css"/>!gi' $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/WhatsNew.html
 
 # utility target to copy 3rd party DLLs to the bin directory on MINGW build
 copy-dlls:

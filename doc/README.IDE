@@ -5,13 +5,13 @@ The OMNeT++ IDE
 Overview
 --------
 OMNeT++ 4.0 comes with a powerful integrated environment, based on Eclipse.
-To get a quick introduction into IDE features, watch the screencast at:
+To get a quick overview of the IDE features, watch the screencast at:
 
     http://www.omnest.com/webdemo/ide
 
 or read 
 
-    doc/misc/omnet_4_feature_list.pdf
+    doc/ide-overview.pdf
 
 in your OMNeT++ 4.0 installation.
 
@@ -49,8 +49,8 @@ on all platforms.
 Components and features of the IDE
 ----------------------------------
 The IDE presently contains:
-    Eclipse Platform 3.3
-    Eclipse CDT (C/C++ Development Environment) version 4.0.3
+    Eclipse Platform 
+    Eclipse CDT (C/C++ Development Environment)
     OMNeT++ IDE plug-ins
 
 The OMNeT++ IDE plug-ins provide the following components:
@@ -77,26 +77,12 @@ The IDE logs errors and other information to the log file at:
 The workspace directory is by default the samples/ subdirectory of your
 OMNeT++ installation.
 
-In addition to exception stack traces, IDE also writes into the log:
-    - user actions (menu selection, dialog navigation, etc)
-    - activation of views and editors
-    - (partial) CONTENTS OF FILES SAVED / CHANGED DURING THE SESSION
+If you find bugs or issues with the IDE, please report it using the
+Help/Report Bug or Enhancement menu item in the IDE, and attach your 
+.log file as well.
 
-This information is written into the log to help us reproduce errors, and
-also to help improve usability of the IDE by understanding how you use it.
-
-If you'd like to give us feedback about the IDE, please send us your log file.
-However:
-
-    IMPORTANT: DO NOT SEND ANY .LOG FILE THAT CONTAINS SENSITIVE DATA!
-    The log is a readable plain text file, and you can edit it to remove
-    parts that you don't want us to see. To remove logged file contents,
-    delete lines that begin with "  |".
-
-We hope to be able use the logs to fix bugs much faster, and to improve 
+We hope to be able use the logs to fix bugs much faster and to improve 
 the IDE.
-
 
 Best regards,
 The OMNeT++ team
-

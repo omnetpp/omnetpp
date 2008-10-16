@@ -932,7 +932,7 @@
 	Manual for more details on match expressions.
       </para>
       <note>
-	To avoid confusion, event lines marked with green circles <icon name="event.png"/>
+	To avoid confusion, event lines marked with green circles <icon name="Event.png"/>
 	are always shown in the Eventlog Table independently of the line filter.
       </note>
     </sect2>
