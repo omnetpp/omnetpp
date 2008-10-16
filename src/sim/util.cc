@@ -256,6 +256,7 @@ const char *opp_typename(const std::type_info& t)
     //   - Foo -> "3Foo"
     //   - omnetpp::Foo -> "N7omnetpp3FooE"
     //   - omnetpp::inner::Foo -> "N7omnetpp5inner3FooE"
+    //   - std::runtime_error -> "St13runtime_error"
     // http://theoryx5.uwinnipeg.ca/gnu/gcc/gxxint_15.html
     // http://www.codesourcery.com/cxx-abi/abi.html#mangling
     // libiberty/cp_demangle.c
@@ -283,6 +284,41 @@ const char *opp_typename(const std::type_info& t)
                 if (!result.empty()) result += "::";
                 result.append(s, len);
                 s += len;
+            }
+            demangledNames[mangledName] = result;
+            it = demangledNames.find(mangledName);
+        }
+        return it->second.c_str();
+    }
+    else if (*s=='S')
+    {
+        // probably std::something, e.g. "St13runtime_error"
+        const char *mangledName = s;
+        StringMap::const_iterator it = demangledNames.find(mangledName);
+        if (it == demangledNames.end())
+        {
+            std::string result;
+            result.reserve(strlen(s)+8);
+            s++;
+            switch (s[1]) {
+                // some "Sx" prefixes are special abbreviations
+                case 'a': result = "std::allocator"; break;
+                case 'b': result = "std::basic_string"; break;
+                case 's': result = "std::string"; break;
+                case 'i': result = "std::istream"; break;
+                case 'o': result = "std::ostream"; break;
+                case 'd': result = "std::iostream"; break;
+                case 't':
+                    // "St" -> std::
+                    s+=2;
+                    while (opp_isalpha(*s)) s++; // skip possible other modifiers
+                    while (*s>='0' && *s<='9') {
+                        int len = (int)strtol(s, (char **)&s, 10);
+                        if (!result.empty()) result += "::";
+                        result.append(s, len);
+                        s += len;
+                    }
+                    break;
             }
             demangledNames[mangledName] = result;
             it = demangledNames.find(mangledName);
