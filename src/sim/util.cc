@@ -298,8 +298,6 @@ const char *opp_typename(const std::type_info& t)
         if (it == demangledNames.end())
         {
             std::string result;
-            result.reserve(strlen(s)+8);
-            s++;
             switch (s[1]) {
                 // some "Sx" prefixes are special abbreviations
                 case 'a': result = "std::allocator"; break;
@@ -311,6 +309,8 @@ const char *opp_typename(const std::type_info& t)
                 case 't':
                     // "St" -> std::
                     s+=2;
+                    result.reserve(strlen(s)+8);
+                    result.append("std");
                     while (opp_isalpha(*s)) s++; // skip possible other modifiers
                     while (*s>='0' && *s<='9') {
                         int len = (int)strtol(s, (char **)&s, 10);
