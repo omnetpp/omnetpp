@@ -20,4 +20,10 @@ public class CollectionUtils {
         Collections.sort(sortable, comparator);
         return sortable;
     }
+
+    public static <T> List<T> toReversed(Collection<T> collection) {
+        List<T> sortable = new ArrayList<T>(collection);
+        Collections.reverse(sortable);
+        return sortable;
+    }
 }

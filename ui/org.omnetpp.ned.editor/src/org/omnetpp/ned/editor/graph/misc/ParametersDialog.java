@@ -12,23 +12,29 @@ import org.eclipse.gef.commands.UnexecutableCommand;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableColorProvider;
+import org.eclipse.jface.viewers.ITableFontProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
+import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -40,10 +46,15 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.properties.EnumCellEditor;
+import org.omnetpp.common.ui.HoverSupport;
+import org.omnetpp.common.ui.IHoverTextProvider;
+import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.ui.TableLabelProvider;
 import org.omnetpp.common.ui.TableTextCellEditor;
+import org.omnetpp.common.util.CollectionUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.editor.NedEditorPlugin;
 import org.omnetpp.ned.editor.graph.commands.AddNEDElementCommand;
@@ -52,6 +63,7 @@ import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
 import org.omnetpp.ned.model.ex.ParamElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
+import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.IHasParameters;
 import org.omnetpp.ned.model.interfaces.IInterfaceTypeElement;
 import org.omnetpp.ned.model.pojo.CommentElement;
@@ -94,12 +106,14 @@ public class ParametersDialog extends TitleAreaDialog {
     private TableViewer listViewer;
     private Command resultCommand = UnexecutableCommand.INSTANCE;
     private final IHasParameters parameterProvider;
+    private HoverSupport hoverSupport;
+    private boolean cellEdited;
 
 	// sizing constants
     private final static int SIZING_SELECTION_WIDGET_HEIGHT = 200;
-    private final static int SIZING_SELECTION_WIDGET_WIDTH = 640;
+    private final static int SIZING_SELECTION_WIDGET_WIDTH = 800;
 
-    private final class ParametersTableLabelProvider extends TableLabelProvider implements ITableColorProvider
+    private final class ParametersTableLabelProvider extends TableLabelProvider implements ITableColorProvider, ITableFontProvider
     {
         @Override
         public String getColumnText(Object element, int columnIndex) {
@@ -147,16 +161,38 @@ public class ParametersDialog extends TitleAreaDialog {
             else
                 return null;
         }
+
+        public Font getFont(Object element, int columnIndex) {
+            ParamLine paramLine = (ParamLine)element;
+
+            if (paramLine.isCurrentlyOverridden()) {
+                String value = null;
+
+                if (columnIndex == 3 || (parameterProvider instanceof IInterfaceTypeElement && columnIndex == 2))
+                    value = paramLine.getComment(paramLine.currentParamLocal);
+                else if (columnIndex == 2)
+                    value = paramLine.getValue(paramLine.currentParamLocal);
+
+                if (!StringUtils.isEmpty(value))
+                    return JFaceResources.getFontRegistry().getBold(JFaceResources.DIALOG_FONT);
+                else
+                    return null;
+            }
+            else
+                return null;
+        }
     }
 
     protected class ParamLine {
         // original elements in the model, corresponding functions return values without considering the current state
         private ParamElementEx originalParamDeclaration; // the end of the extends chain where the parameter is declared
-        private List<ParamElementEx> originalParamInheritanceChain; // the whole inheritance chain except the local parameter
+        private List<ParamElementEx> originalParamInheritanceChain; // the whole inheritance chain 
         private ParamElementEx originalParamLocal; // the beginning of the extends chain directly under parameterProvider or null
 
         // current state
-        public ParamElementEx currentParam; // the current parameter to be replaced or inserted
+        public ParamElementEx currentParamLocal; // the current parameter to be replaced or inserted or null
+
+        // displayed in the table
         public String type;
         public String name;
         public String value;
@@ -176,13 +212,17 @@ public class ParametersDialog extends TitleAreaDialog {
                 break;
             }
 
-            updateCurrentParam();
+            ensureCurrentParam();
+            setType(currentParamLocal, type);
+            setName(currentParamLocal, name);
+            setValue(currentParamLocal, value);
+            setComment(currentParamLocal, comment);
         }
 
         public ParamLine(List<ParamElementEx> originalParamInheritanceChain) {
-            this.originalParamInheritanceChain = new ArrayList<ParamElementEx>(originalParamInheritanceChain);
-            
+            this.originalParamInheritanceChain = originalParamInheritanceChain;
             int size = originalParamInheritanceChain.size();
+
             if (size == 0) {
                 this.originalParamDeclaration = null;
                 this.originalParamLocal = null;
@@ -192,15 +232,20 @@ public class ParametersDialog extends TitleAreaDialog {
                 ParamElementEx paramElement = originalParamInheritanceChain.get(0);
                 
                 if (paramElement.getParent().getParent() == parameterProvider)
-                    this.originalParamLocal = originalParamInheritanceChain.get(0);
+                    this.originalParamLocal = paramElement;
                 else
                     this.originalParamLocal = null;
-                
-                if (originalParamLocal != null)
-                    this.originalParamInheritanceChain.remove(originalParamLocal);
             }
 
             resetToOriginal();
+        }
+
+        public List<ParamElementEx> getOriginalParamInheritanceChain() {
+            return originalParamInheritanceChain;
+        }
+
+        public ParamElementEx getOriginalParamLocal() {
+            return originalParamLocal;
         }
 
         public void resetToOriginal() {
@@ -208,7 +253,7 @@ public class ParametersDialog extends TitleAreaDialog {
             this.name = getOriginalName();
             this.value = getOriginalValue();
             this.comment = getOriginalComment();
-            this.currentParam = originalParamLocal;
+            this.currentParamLocal = this.originalParamLocal;
         }
 
         public void resetToCurrent() {
@@ -227,11 +272,11 @@ public class ParametersDialog extends TitleAreaDialog {
         }
 
         public String getOriginalValue() {
-            return originalParamLocal == null ? getValue(originalParamInheritanceChain) : getValue(originalParamLocal);
+            return getValue(originalParamInheritanceChain, originalParamLocal);
         }
 
         public String getOriginalComment() {
-            return originalParamLocal == null ? getComment(originalParamInheritanceChain) : getComment(originalParamLocal);
+            return getComment(originalParamInheritanceChain, originalParamLocal);
         }
 
         public boolean isOriginallyLocalDeclaration() {
@@ -239,44 +284,78 @@ public class ParametersDialog extends TitleAreaDialog {
         }
         
         public boolean isOriginallyOverridden() {
-            return !isOriginallyLocalDeclaration() && originalParamLocal != originalParamDeclaration;
+            return originalParamLocal != null && originalParamLocal != originalParamDeclaration;
         }
 
         public String getCurrentValue() {
-            return currentParam == null ? getValue(originalParamInheritanceChain) : getValue(currentParam);
+            return getValue(originalParamInheritanceChain, currentParamLocal);
         }
 
         public String getCurrentComment() {
-            return currentParam == null ? getComment(originalParamInheritanceChain) : getComment(currentParam);
+            return getComment(originalParamInheritanceChain, currentParamLocal);
         }
 
         public boolean isCurrentlyOverridden() {
-            return !isOriginallyLocalDeclaration() && currentParam != null;
+            return !isOriginallyLocalDeclaration() && currentParamLocal != null;
+        }
+        
+        public boolean isCurrentOverrideDifferent() {
+            return currentParamLocal != null && currentParamLocal != originalParamLocal;
         }
 
-        public boolean isDirtyValue() {
+        public boolean isDifferentFromOriginal() {
             return !ObjectUtils.equals(type, getOriginalType()) || !ObjectUtils.equals(name, getOriginalName()) ||
                    !ObjectUtils.equals(value, getOriginalValue()) || !ObjectUtils.equals(comment, getOriginalComment());
         }
 
-        public void updateCurrentParam() {
-            if (!isDirtyValue())
-                currentParam = originalParamLocal;
-            else {
-                if (originalParamLocal != null)
-                    currentParam = (ParamElementEx)originalParamLocal.deepDup();
-                else
-                    currentParam = (ParamElementEx)NEDElementFactoryEx.getInstance().createElement(NEDElementFactoryEx.NED_PARAM);
-    
-                setParamAttributes(currentParam);
-            }
+        public boolean isDifferentFromInherited() {
+            return !ObjectUtils.equals(type, getOriginalType()) || !ObjectUtils.equals(name, getOriginalName()) ||
+                   !ObjectUtils.equals(value, getValue(originalParamInheritanceChain, null)) ||
+                   !ObjectUtils.equals(comment, getComment(originalParamInheritanceChain, null));
         }
 
-        private void setParamAttributes(ParamElementEx paramElement) {
-            setType(paramElement, type);
-            setName(paramElement, name);
-            setValue(paramElement, value);
-            setComment(paramElement, comment);
+        public void setCurrentType(String type) {
+            this.type = type;
+            ensureCurrentParam();
+            if (isCurrentOverrideDifferent())
+                setType(currentParamLocal, type);
+        }
+
+        public void setCurrentName(String name) {
+            this.name = name;
+            ensureCurrentParam();
+            if (isCurrentOverrideDifferent())
+                setName(currentParamLocal, name);
+        }
+
+        public void setCurrentValue(String value) {
+            this.value = StringUtils.isEmpty(value) ? getValue(originalParamInheritanceChain, null) : value;
+            ensureCurrentParam();
+            if (isCurrentOverrideDifferent())
+                setValue(currentParamLocal, value);
+        }
+
+        public void setCurrentComment(String comment) {
+            this.comment = StringUtils.isEmpty(comment) ? getComment(originalParamInheritanceChain, null) : comment;
+            ensureCurrentParam();
+            if (isCurrentOverrideDifferent())
+                setComment(currentParamLocal, comment);
+        }
+
+        public void ensureCurrentParam() {
+            if (isOriginallyOverridden() && !isDifferentFromInherited())
+                currentParamLocal = null;
+            else if (!isDifferentFromOriginal())
+                currentParamLocal = originalParamLocal;
+            else if (currentParamLocal == null || currentParamLocal == originalParamLocal) {
+                if (originalParamLocal != null)
+                    currentParamLocal = (ParamElementEx)originalParamLocal.deepDup();
+                else
+                    currentParamLocal = (ParamElementEx)NEDElementFactoryEx.getInstance().createElement(NEDElementFactoryEx.NED_PARAM);
+
+                setType(currentParamLocal, type);
+                setName(currentParamLocal, name);
+            }
         }
         
         protected String getType(ParamElementEx paramElement) {
@@ -303,10 +382,21 @@ public class ParametersDialog extends TitleAreaDialog {
             paramElement.setName(name);
         }
         
-        protected String getValue(List<ParamElementEx> originalParamInheritanceChain2) {
-            for (ParamElementEx paramElement : originalParamInheritanceChain2) {
-                String value = getValue(paramElement);
-                
+        protected String getValue(List<ParamElementEx> inheritanceChain, ParamElementEx firstParamElement) {
+            String value = null;
+            
+            if (firstParamElement != null)
+                value = getValue(firstParamElement);
+
+            if (!StringUtils.isEmpty(value))
+                return value;
+
+            for (ParamElementEx paramElement : inheritanceChain) {
+                if (paramElement == originalParamLocal)
+                    continue;
+                else
+                    value = getValue(paramElement);
+                    
                 if (!StringUtils.isEmpty(value))
                     return value;
             }
@@ -323,13 +413,31 @@ public class ParametersDialog extends TitleAreaDialog {
         
         protected void setValue(ParamElementEx paramElement, String value) {
             String strippedValue = StringUtils.strip(value);
-            paramElement.setIsDefault(strippedValue.startsWith(DEFAULT_VALUE_PREFIX) && strippedValue.endsWith(DEFAULT_VALUE_SUFFIX));
-            paramElement.setValue(StringUtils.removeEnd(StringUtils.removeStart(strippedValue, DEFAULT_VALUE_PREFIX), DEFAULT_VALUE_SUFFIX));
+            
+            if (StringUtils.isEmpty(strippedValue)) {
+                paramElement.setIsDefault(false);
+                paramElement.setValue(null);
+            }
+            else {
+                paramElement.setIsDefault(strippedValue.startsWith(DEFAULT_VALUE_PREFIX) && strippedValue.endsWith(DEFAULT_VALUE_SUFFIX));
+                paramElement.setValue(StringUtils.removeEnd(StringUtils.removeStart(strippedValue, DEFAULT_VALUE_PREFIX), DEFAULT_VALUE_SUFFIX));
+            }
         }
 
-        protected String getComment(List<ParamElementEx> originalParamInheritanceChain2) {
-            for (ParamElementEx paramElement : originalParamInheritanceChain2) {
-                String comment = getComment(paramElement);
+        protected String getComment(List<ParamElementEx> inheritanceChain, ParamElementEx firstParamElement) {
+            String comment = null;
+            
+            if (firstParamElement != null)
+                comment = getComment(firstParamElement);
+
+            if (!StringUtils.isEmpty(comment))
+                return comment;
+
+            for (ParamElementEx paramElement : inheritanceChain) {
+                if (paramElement == originalParamLocal)
+                    continue;
+                else
+                    comment = getComment(paramElement);
                 
                 if (!StringUtils.isEmpty(comment))
                     return comment;
@@ -368,8 +476,12 @@ public class ParametersDialog extends TitleAreaDialog {
             else
                 commentPadding = StringUtils.substringBefore(StringUtils.chomp(commentElement.getContent()), "//") + "// ";
 
-            if (StringUtils.strip(comment).equals(""))
-                commentElement.setContent("");
+            if (StringUtils.strip(comment).equals("")) {
+                while (commentElement != null) {
+                    commentElement.removeFromParent();
+                    commentElement = (CommentElement)paramElement.getFirstChildWithAttribute(NEDElementTags.NED_COMMENT, CommentElement.ATT_LOCID, "right");
+                }
+            }
             else {
                 if (originalParamLocal != null) {
                     String indent = StringUtils.repeat(" ", originalParamLocal.getSourceRegion().getEndColumn());
@@ -430,9 +542,6 @@ public class ParametersDialog extends TitleAreaDialog {
 			shell.setText(dialogTitle);
 	}
 
-    /* (non-Javadoc)
-     * Method declared on Dialog.
-     */
     @Override
     protected Control createDialogArea(Composite parent) {
         setTitle(dialogTitle);
@@ -459,6 +568,51 @@ public class ParametersDialog extends TitleAreaDialog {
         listViewer.getTable().setLayoutData(data);
 
         addEditButtons(group);
+        
+        hoverSupport = new HoverSupport(new IHoverTextProvider() {
+            public String getHoverTextFor(Control control, int x, int y, SizeConstraint outSizeConstraint) {
+                Table table = (Table)control;
+                TableItem tableItem = table.getItem(new Point(x, y));
+                
+                if (tableItem == null)
+                    return null;
+                else {
+                    ParamLine paramLine = (ParamLine)tableItem.getData();
+                    StringBuffer result = new StringBuffer();
+    
+                    for (ParamElementEx paramElement : CollectionUtils.toReversed(paramLine.getOriginalParamInheritanceChain()))
+                        if (paramElement != paramLine.getOriginalParamLocal())
+                            appendParamText(result, paramElement);
+    
+                    if (paramLine.currentParamLocal != null)
+                        appendParamText(result, paramLine.currentParamLocal);
+    
+                    return HoverSupport.addHTMLStyleSheet(StringUtils.removeEnd(result.toString(), "<br/><br/>"));
+                }
+            }
+            
+            private void appendParamText(StringBuffer buffer, ParamElementEx paramElement) {
+                INEDElement parentElement = paramElement.getParent();
+                INEDElement paramOwner = parentElement == null ? parameterProvider : parentElement.getParent();
+                if (paramOwner instanceof SubmoduleElementEx) {
+                    buffer.append("Submodule <b>");
+                    buffer.append(((SubmoduleElementEx)paramOwner).getCompoundModule().getName());
+                    buffer.append(".");
+                    buffer.append(((IHasName)paramOwner).getName());
+                    buffer.append("</b>");
+                }
+                else {
+                    buffer.append(StringUtils.capitalize(paramOwner.getReadableTagName()));
+                    buffer.append(" <b>");
+                    buffer.append(((IHasName)paramOwner).getName());
+                    buffer.append("</b>");
+                }
+                buffer.append("<br/><li>");
+                buffer.append(paramElement.getNEDSource());
+                buffer.append("</li><br/><br/>");
+            }
+        });
+        hoverSupport.adapt(listViewer.getTable());
 
         Dialog.applyDialogFont(composite);
         return composite;
@@ -482,6 +636,7 @@ public class ParametersDialog extends TitleAreaDialog {
 
         // add button
         Button addButton = createButton(buttonComposite, BUTTON_ADD_ID, "Add", false);
+        addButton.setEnabled(!(parameterProvider instanceof SubmoduleElementEx));
         addButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -492,10 +647,10 @@ public class ParametersDialog extends TitleAreaDialog {
                 listViewer.setSelection(new StructuredSelection(newParamLine), true);
             }
         });
-        addButton.setEnabled(!(parameterProvider instanceof SubmoduleElementEx));
 
         // remove button
         final Button removeButton = createButton(buttonComposite, BUTTON_REMOVE_ID, "Remove", false);
+        removeButton.setEnabled(false);
         removeButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent event) {
@@ -511,18 +666,16 @@ public class ParametersDialog extends TitleAreaDialog {
                     
                     if (paramLine.isOriginallyLocalDeclaration())
                         paramLines.remove(paramLine);
-                    else if (paramLine.isOriginallyOverridden()) {
-                        paramLine.currentParam = null;
+                    else {
+                        paramLine.currentParamLocal = null;
                         paramLine.resetToCurrent();
                     }
-                    else if (paramLine.isCurrentlyOverridden())
-                        paramLine.resetToOriginal();
-                    else
-                        throw new RuntimeException();
                 }
 
                 if (paramLines.size() != 0)
                     listViewer.setSelection(new StructuredSelection(index), true);
+                else
+                    listViewer.setSelection(null);
 
                 listViewer.refresh();
             }
@@ -540,7 +693,7 @@ public class ParametersDialog extends TitleAreaDialog {
                     }
                 }
 
-                removeButton.setEnabled(true);
+                removeButton.setEnabled(structuredSelection.size() != 0);
             }
         });
     }
@@ -585,31 +738,31 @@ public class ParametersDialog extends TitleAreaDialog {
         addTableColumn(table, "Type", 100);
         addTableColumn(table, "Name", 100);
         if (!(parameterProvider instanceof IInterfaceTypeElement))
-            addTableColumn(table, "Value", 120);
+            addTableColumn(table, "Value", 180);
         addTableColumn(table, "Comment", -1);
 
         // set up tableViewer, content and label providers
         final TableViewer tableViewer = new TableViewer(table);
         tableViewer.setContentProvider(new ArrayContentProvider());
         tableViewer.setLabelProvider(new ParametersTableLabelProvider());
-
+        
         // edit support
         final CellEditor[] editors;
         if (parameterProvider instanceof IInterfaceTypeElement) {
             tableViewer.setColumnProperties(INTERFACE_TYPE_COLUMNS);
             editors = new CellEditor[] {
                 new EnumCellEditor(table, TYPES, TYPES),
-                new TableTextCellEditor(tableViewer, 1),
-                new TableTextCellEditor(tableViewer, 2)
+                new LocalTableTextCellEditor(tableViewer, 1),
+                new LocalTableTextCellEditor(tableViewer, 2)
             };
         }
         else {
             tableViewer.setColumnProperties(COLUMNS);
             editors = new CellEditor[] {
                 new EnumCellEditor(table, TYPES, TYPES),
-                new TableTextCellEditor(tableViewer, 1),
-                new TableTextCellEditor(tableViewer, 2),
-                new TableTextCellEditor(tableViewer, 3)
+                new LocalTableTextCellEditor(tableViewer, 1),
+                new LocalTableTextCellEditor(tableViewer, 2),
+                new LocalTableTextCellEditor(tableViewer, 3)
             };
         }
         tableViewer.setCellEditors(editors);
@@ -650,32 +803,24 @@ public class ParametersDialog extends TitleAreaDialog {
                     element = ((Item)element).getData(); // workaround, see super's comment
 
                 ParamLine paramLine = (ParamLine)element;
-                String oldValue;
-                String newValue = (String)value;
+                String stringValue = (String)value;
 
-                if (COLUMN_TYPE.equals(property)) {
-                    oldValue = paramLine.type;
-                    paramLine.type = newValue;
-                }
-                else if (COLUMN_NAME.equals(property)) {
-                    oldValue = paramLine.name;
-                    paramLine.name = newValue;
-                }
-                else if (COLUMN_VALUE.equals(property)) {
-                    oldValue = paramLine.value;
-                    paramLine.value = newValue;
-                }
-                else if (COLUMN_COMMENT.equals(property)) {
-                    oldValue = paramLine.comment;
-                    paramLine.comment = newValue;
-                }
-                else
-                    throw new RuntimeException();
+                if (cellEdited) {
+                    cellEdited = false;
 
-                if (!ObjectUtils.equals(oldValue, newValue))
-                    paramLine.updateCurrentParam();
-
-                tableViewer.refresh(); // if performance gets critical: refresh only if changed
+                    if (COLUMN_TYPE.equals(property))
+                        paramLine.setCurrentType(stringValue);
+                    else if (COLUMN_NAME.equals(property))
+                        paramLine.setCurrentName(stringValue);
+                    else if (COLUMN_VALUE.equals(property))
+                        paramLine.setCurrentValue(stringValue);
+                    else if (COLUMN_COMMENT.equals(property))
+                        paramLine.setCurrentComment(stringValue);
+                    else
+                        throw new RuntimeException();
+    
+                    tableViewer.refresh(); // if performance gets critical: refresh only if changed
+                }
             }
         });
 
@@ -696,8 +841,8 @@ public class ParametersDialog extends TitleAreaDialog {
 
        // add the new parameters to copy
        for (ParamLine paramLine : paramLines)
-           if (paramLine.currentParam != null)
-               newParametersElement.appendChild(paramLine.currentParam);
+           if (paramLine.currentParamLocal != null)
+               newParametersElement.appendChild(paramLine.currentParamLocal);
 
        // create a compound replace command
        CompoundCommand parameterReplaceCommand = new CompoundCommand("Change Parameters");
@@ -715,5 +860,18 @@ public class ParametersDialog extends TitleAreaDialog {
 
     public Command getResultCommand() {
         return resultCommand;
+    }
+    
+    private class LocalTableTextCellEditor extends TableTextCellEditor
+    {
+        public LocalTableTextCellEditor(ColumnViewer tableViewer, int column) {
+            super(tableViewer, column);
+        }
+        
+        @Override
+        protected void editOccured(ModifyEvent e) {
+            super.editOccured(e);
+            cellEdited = true;
+        }
     }
 }
