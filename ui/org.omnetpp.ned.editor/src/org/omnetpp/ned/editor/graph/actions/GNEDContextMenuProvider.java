@@ -84,7 +84,7 @@ public class GNEDContextMenuProvider extends ContextMenuProvider {
         if (action.isEnabled()) manager.appendToGroup(GROUP_EDIT, action);
 
         action = getActionRegistry().getAction(ParametersDialogAction.ID);
-        if (action.isEnabled()) manager.appendToGroup(GROUP_EDIT, action);
+        manager.appendToGroup(GROUP_EDIT, action);
 
         action = getActionRegistry().getAction(TogglePinAction.ID);
         if (action.isEnabled()) manager.appendToGroup(GROUP_EDIT, action);

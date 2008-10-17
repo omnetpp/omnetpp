@@ -356,6 +356,10 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
         return getNEDTypeInfo().getParamDeclarations();
     }
 
+    public List<ParamElementEx> getParameterInheritanceChain(String parameterName) {
+        return getNEDTypeInfo().getParameterInheritanceChain(parameterName);
+    }
+
     public Map<String, PropertyElementEx> getProperties() {
         return getNEDTypeInfo().getProperties();
     }

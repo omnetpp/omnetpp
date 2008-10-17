@@ -3,9 +3,10 @@ package org.omnetpp.ned.editor.graph.actions;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchPart;
-
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.ned.editor.graph.misc.ParametersDialog;
+import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.interfaces.IHasParameters;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
 
@@ -31,19 +32,20 @@ public class ParametersDialogAction extends org.eclipse.gef.ui.actions.Selection
 
     @Override
     protected boolean calculateEnabled() {
-        // FIXEM remove if the parameterdialog is correctly implemented
-        return false;
-
-//        return getSelectedObjects().size() == 1 &&
-//                getSelectedObjects().get(0) instanceof IModelProvider &&
-//                ((IModelProvider)getSelectedObjects().get(0)).getNEDModel() instanceof IHasParameters;
+        if (getSelectedObjects().size() == 1 && getSelectedObjects().get(0) instanceof IModelProvider) {
+           INEDElement element = ((IModelProvider)getSelectedObjects().get(0)).getNedModel();
+           return element instanceof IHasParameters && 
+               element.getConsistencyProblemMaxCumulatedSeverity() == NEDElement.SEVERITY_NONE &&
+               element.getSyntaxProblemMaxCumulatedSeverity() == NEDElement.SEVERITY_NONE;
+        }
+        else
+            return false;
     }
 
     @Override
     public void run() {
         IHasParameters paramsParent = (IHasParameters)((IModelProvider)getSelectedObjects().get(0)).getNedModel();
-        ParametersDialog dialog =
-            new ParametersDialog(Display.getDefault().getActiveShell(), paramsParent);
+        ParametersDialog dialog = new ParametersDialog(Display.getDefault().getActiveShell(), paramsParent);
 
         // if the dialog is cancelled, the command is not executable
         dialog.open();

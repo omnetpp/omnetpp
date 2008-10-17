@@ -217,6 +217,19 @@ public class SubmoduleElementEx extends SubmoduleElement
         return submoduleType == null ? new HashMap<String, ParamElementEx>() : submoduleType.getParamDeclarations();
     }
 
+    public List<ParamElementEx> getParameterInheritanceChain(String parameterName) {
+        List<ParamElementEx> chain = getNEDTypeInfo().getParameterInheritanceChain(parameterName);
+        
+        for (ParamElementEx param : getOwnParams()) {
+            if (parameterName.equals(param.getName())) {
+                chain.add(0, param);
+                break;
+            }
+        }
+
+        return chain;
+    }
+
     // gate support
     
     /**

@@ -108,6 +108,9 @@ public interface INEDTypeInfo extends INEDChangeListener {
     /** Parameter nodes within this type where the "value" attribute is filled in */
     public Map<String, ParamElementEx> getLocalParamAssignments();
 
+    /** Parameter nodes within this type */
+    public Map<String, ParamElementEx> getLocalParams();
+
     /** Properties from the local parameters section */
     public Map<String, PropertyElementEx> getLocalProperties();
 

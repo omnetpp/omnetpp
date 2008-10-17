@@ -55,6 +55,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
     protected boolean needsRefreshLocal;
 	protected Set<INedTypeElement> localInterfaces = new HashSet<INedTypeElement>();
 	protected Map<String, PropertyElementEx> localProperties = new LinkedHashMap<String, PropertyElementEx>();
+    protected Map<String, ParamElementEx> localParams = new LinkedHashMap<String, ParamElementEx>();
     protected Map<String, ParamElementEx> localParamDecls = new LinkedHashMap<String, ParamElementEx>();
     protected Map<String, ParamElementEx> localParamValues = new LinkedHashMap<String, ParamElementEx>();
 	protected Map<String, GateElementEx> localGateDecls = new LinkedHashMap<String, GateElementEx>();
@@ -71,7 +72,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 	protected List<INEDTypeInfo> extendsChain = null;
 	protected Set<INedTypeElement> allInterfaces = new HashSet<INedTypeElement>();
 	protected Map<String, PropertyElementEx> allProperties = new LinkedHashMap<String, PropertyElementEx>();
-    protected Map<String, ParamElementEx> allParams = new LinkedHashMap<String, ParamElementEx>();
+    protected Map<String, ParamElementEx> allParamDecls = new LinkedHashMap<String, ParamElementEx>();
     protected Map<String, ParamElementEx> allParamValues = new LinkedHashMap<String, ParamElementEx>();
     protected Map<String, GateElementEx> allGates = new LinkedHashMap<String, GateElementEx>();
     protected Map<String, GateElementEx> allGateSizes = new LinkedHashMap<String, GateElementEx>();
@@ -196,6 +197,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
    		// clear tables before collecting members
         localInterfaces.clear();
         localProperties.clear();
+        localParams.clear();
         localParamDecls.clear();
         localParamValues.clear();
         localGateDecls.clear();
@@ -235,6 +237,10 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
         	public boolean matches(IHasName node) {
         		return node.getTagCode()==NED_PROPERTY;
         	}});
+        collect(localParams, NED_PARAMETERS, new IPredicate() {
+            public boolean matches(IHasName node) {
+                return node.getTagCode()==NED_PARAM;
+            }});
         collect(localParamDecls, NED_PARAMETERS, new IPredicate() {
 			public boolean matches(IHasName node) {
 				return node.getTagCode()==NED_PARAM && ((ParamElementEx)node).getType() != NED_PARTYPE_NONE;
@@ -298,7 +304,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 
         allInterfaces.clear();
 		allProperties.clear();
-		allParams.clear();
+		allParamDecls.clear();
         allParamValues.clear();
 		allGates.clear();
         allGateSizes.clear();
@@ -322,7 +328,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 			Assert.isTrue(typeInfo instanceof NEDTypeInfo);
 			NEDTypeInfo component = (NEDTypeInfo)typeInfo;
 			allProperties.putAll(component.getLocalProperties());
-			allParams.putAll(component.getLocalParamDeclarations());
+			allParamDecls.putAll(component.getLocalParamDeclarations());
             allParamValues.putAll(component.getLocalParamAssignments());
 			allGates.putAll(component.getLocalGateDeclarations());
             allGateSizes.putAll(component.getLocalGateSizes());
@@ -436,6 +442,11 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
         return localParamValues;
     }
 
+    public Map<String, ParamElementEx> getLocalParams() {
+        refreshLocalMembersIfNeeded();
+        return localParams;
+    }
+
     public Map<String, PropertyElementEx> getLocalProperties() {
     	refreshLocalMembersIfNeeded();
         return localProperties;
@@ -483,7 +494,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 
     public Map<String, ParamElementEx> getParamDeclarations() {
     	refreshInheritedMembersIfNeeded();
-        return allParams;
+        return allParamDecls;
     }
 
     public Map<String, ParamElementEx> getParamAssignments() {
@@ -540,8 +551,8 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 	public List<ParamElementEx> getParameterInheritanceChain(String parameterName) {
 		List<ParamElementEx> result = new ArrayList<ParamElementEx>();
 		for (INEDTypeInfo type : getExtendsChain())
-			if (type.getLocalParamDeclarations().containsKey(parameterName))
-				result.add(type.getLocalParamDeclarations().get(parameterName));
+			if (type.getLocalParams().containsKey(parameterName))
+				result.add(type.getLocalParams().get(parameterName));
 		return result;
 	}
 
@@ -584,8 +595,8 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
     	System.out.println("  all interfaces: " + StringUtils.join(allInterfaces, ", "));
     	System.out.println("  local gates: " + StringUtils.join(localGateDecls.keySet(), ", "));
     	System.out.println("  all gates: " + StringUtils.join(allGates.keySet(), ", "));
-    	System.out.println("  local parameters: " + StringUtils.join(localParamDecls.keySet(), ", "));
-    	System.out.println("  all parameters: " + StringUtils.join(allParams.keySet(), ", "));
+    	System.out.println("  local parameter declarations: " + StringUtils.join(localParamDecls.keySet(), ", "));
+    	System.out.println("  all parameter declarations: " + StringUtils.join(allParamDecls.keySet(), ", "));
     	System.out.println("  local properties: " + StringUtils.join(localProperties.keySet(), ", "));
     	System.out.println("  all properties: " + StringUtils.join(allProperties.keySet(), ", "));
     	System.out.println("  local submodules: " + StringUtils.join(localSubmodules.keySet(), ", "));

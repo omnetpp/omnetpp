@@ -314,6 +314,16 @@ public class ConnectionElementEx extends ConnectionElement implements IHasType, 
         return channelType == null ? new HashMap<String, ParamElementEx>() : channelType.getParamDeclarations();
     }
     
-    
-    
+    public List<ParamElementEx> getParameterInheritanceChain(String parameterName) {
+        List<ParamElementEx> chain = getNEDTypeInfo().getParameterInheritanceChain(parameterName);
+        
+        for (ParamElementEx param : getOwnParams()) {
+            if (parameterName.equals(param.getName())) {
+                chain.add(0, param);
+                break;
+            }
+        }
+
+        return chain;
+    }
 }

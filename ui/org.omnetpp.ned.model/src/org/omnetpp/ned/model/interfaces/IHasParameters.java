@@ -1,5 +1,6 @@
 package org.omnetpp.ned.model.interfaces;
 
+import java.util.List;
 import java.util.Map;
 
 import org.omnetpp.ned.model.INEDElement;
@@ -29,4 +30,8 @@ public interface IHasParameters extends INEDElement {
      */
     public Map<String, ParamElementEx> getParamAssignments();
 
+    /**
+     * TODO:
+     */
+    public List<ParamElementEx> getParameterInheritanceChain(String parameterName);
 }

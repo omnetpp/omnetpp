@@ -83,6 +83,10 @@ public class ChannelElementEx extends ChannelElement implements IChannelKindType
         return getNEDTypeInfo().getParamDeclarations();
     }
 
+    public List<ParamElementEx> getParameterInheritanceChain(String parameterName) {
+        return getNEDTypeInfo().getParameterInheritanceChain(parameterName);
+    }
+
     public Map<String, PropertyElementEx> getProperties() {
         return getNEDTypeInfo().getProperties();
     }

@@ -103,6 +103,10 @@ public class SimpleModuleElementEx extends SimpleModuleElement implements IModul
         return getNEDTypeInfo().getParamDeclarations();
     }
 
+    public List<ParamElementEx> getParameterInheritanceChain(String parameterName) {
+        return getNEDTypeInfo().getParameterInheritanceChain(parameterName);
+    }
+
     public Map<String, PropertyElementEx> getProperties() {
         return getNEDTypeInfo().getProperties();
     }
