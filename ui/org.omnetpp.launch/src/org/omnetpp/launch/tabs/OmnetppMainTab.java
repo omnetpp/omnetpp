@@ -293,6 +293,11 @@ implements ModifyListener {
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_SHARED_LIBS, "${"+VAR_SHARED_LIBS+":"+defWorkDir+"}");
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_NUM_CONCURRENT_PROCESSES, 1);
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_ADDITIONAL_ARGS, "");
+
+        // minimal CDT specific attributes required to start without errors
+        configuration.setAttribute(IOmnetppLaunchConstants.ATTR_DEBUGGER_ID, "org.eclipse.cdt.debug.mi.core.CDebuggerNew");
+        configuration.setAttribute(IOmnetppLaunchConstants.ATTR_DEBUGGER_STOP_AT_MAIN, true);
+        configuration.setAttribute(IOmnetppLaunchConstants.ATTR_DEBUGGER_STOP_AT_MAIN_SYMBOL, "main");
     }
     
     protected static String getDefaultExeName(String defWorkDir) {

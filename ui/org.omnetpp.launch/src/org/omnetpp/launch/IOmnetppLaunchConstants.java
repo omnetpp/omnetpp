@@ -3,9 +3,14 @@ package org.omnetpp.launch;
 /**
  * @author rhornig
  */
+/**
+ * @author rhornig
+ *
+ */
 public interface IOmnetppLaunchConstants {
 	public static final String SIMULATION_LAUNCH_CONFIGURATION_TYPE = "org.omnetpp.launch.simulationLaunchConfigurationType";
     public static final String CDT_LAUNCH_ID = "org.eclipse.cdt.launch"; 
+    public static final String CDT_DEBUG_CORE_ID ="org.eclipse.cdt.debug.mi.core";
     public static final String OMNETPP_LAUNCH_ID = "org.omnetpp.launch"; 
 
     /**
@@ -36,6 +41,13 @@ public interface IOmnetppLaunchConstants {
      * represents a workspace relative path.
      */
     public static final String ATTR_WORKING_DIRECTORY = CDT_LAUNCH_ID + ".WORKING_DIRECTORY"; 
+
+    /**
+     * CDT debugger specific 
+     */
+    public static final String ATTR_DEBUGGER_ID = CDT_LAUNCH_ID + ".DEBUGGER_ID"; 
+    public static final String ATTR_DEBUGGER_STOP_AT_MAIN = CDT_LAUNCH_ID + ".DEBUGGER_STOP_AT_MAIN"; 
+    public static final String ATTR_DEBUGGER_STOP_AT_MAIN_SYMBOL = CDT_LAUNCH_ID + ".DEBUGGER_STOP_AT_MAIN_SYMBOL"; 
     
     // ========================================================================================
     
