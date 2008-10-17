@@ -166,14 +166,19 @@ public class ParametersDialog extends TitleAreaDialog {
             ParamLine paramLine = (ParamLine)element;
 
             if (paramLine.isCurrentlyOverridden()) {
-                String value = null;
+                String currentValue = null;
+                String inheritedValue = null;
 
-                if (columnIndex == 3 || (parameterProvider instanceof IInterfaceTypeElement && columnIndex == 2))
-                    value = paramLine.getComment(paramLine.currentParamLocal);
-                else if (columnIndex == 2)
-                    value = paramLine.getValue(paramLine.currentParamLocal);
+                if (columnIndex == 3 || (parameterProvider instanceof IInterfaceTypeElement && columnIndex == 2)) {
+                    currentValue = paramLine.getComment(paramLine.currentParamLocal);
+                    inheritedValue = paramLine.getComment(paramLine.originalParamInheritanceChain, null);
+                }
+                else if (columnIndex == 2) {
+                    currentValue = paramLine.getValue(paramLine.currentParamLocal);
+                    inheritedValue = paramLine.getValue(paramLine.originalParamInheritanceChain, null);
+                }
 
-                if (!StringUtils.isEmpty(value))
+                if (!ObjectUtils.equals(currentValue, inheritedValue) && !StringUtils.isEmpty(currentValue))
                     return JFaceResources.getFontRegistry().getBold(JFaceResources.DIALOG_FONT);
                 else
                     return null;
@@ -183,14 +188,14 @@ public class ParametersDialog extends TitleAreaDialog {
         }
     }
 
-    protected class ParamLine {
+    private class ParamLine {
         // original elements in the model, corresponding functions return values without considering the current state
         private ParamElementEx originalParamDeclaration; // the end of the extends chain where the parameter is declared
         private List<ParamElementEx> originalParamInheritanceChain; // the whole inheritance chain 
         private ParamElementEx originalParamLocal; // the beginning of the extends chain directly under parameterProvider or null
 
         // current state
-        public ParamElementEx currentParamLocal; // the current parameter to be replaced or inserted or null
+        private ParamElementEx currentParamLocal; // the current parameter to be replaced or inserted, never null
 
         // displayed in the table
         public String type;
@@ -200,23 +205,6 @@ public class ParametersDialog extends TitleAreaDialog {
 
         public ParamLine() {
             this(new ArrayList<ParamElementEx>());
-            this.type = DEFAULT_TYPE;
-            
-            for (int i = 0;; i++) {
-                String name = "unnamed" + i;
-
-                if (getParamLine(name) != null)
-                    continue;
-                
-                this.name = name;
-                break;
-            }
-
-            ensureCurrentParam();
-            setType(currentParamLocal, type);
-            setName(currentParamLocal, name);
-            setValue(currentParamLocal, value);
-            setComment(currentParamLocal, comment);
         }
 
         public ParamLine(List<ParamElementEx> originalParamInheritanceChain) {
@@ -226,6 +214,11 @@ public class ParametersDialog extends TitleAreaDialog {
             if (size == 0) {
                 this.originalParamDeclaration = null;
                 this.originalParamLocal = null;
+
+                this.type = DEFAULT_TYPE;
+                this.name = generateDefaultName();
+                this.value = "";
+                this.comment = "";
             }
             else {
                 this.originalParamDeclaration = originalParamInheritanceChain.get(size - 1);
@@ -235,34 +228,16 @@ public class ParametersDialog extends TitleAreaDialog {
                     this.originalParamLocal = paramElement;
                 else
                     this.originalParamLocal = null;
+
+                this.type = getOriginalType();
+                this.name = getOriginalName();
+                this.value = getOriginalValue();
+                this.comment = getOriginalComment();
             }
 
-            resetToOriginal();
+            createCurrentParamLocal();
         }
-
-        public List<ParamElementEx> getOriginalParamInheritanceChain() {
-            return originalParamInheritanceChain;
-        }
-
-        public ParamElementEx getOriginalParamLocal() {
-            return originalParamLocal;
-        }
-
-        public void resetToOriginal() {
-            this.type = getOriginalType();
-            this.name = getOriginalName();
-            this.value = getOriginalValue();
-            this.comment = getOriginalComment();
-            this.currentParamLocal = this.originalParamLocal;
-        }
-
-        public void resetToCurrent() {
-            this.type = getOriginalType();
-            this.name = getOriginalName();
-            this.value = getCurrentValue();
-            this.comment = getCurrentComment();
-        }
-
+        
         public String getOriginalType() {
             return originalParamDeclaration == null ? "" : getType(originalParamDeclaration);
         }
@@ -282,7 +257,7 @@ public class ParametersDialog extends TitleAreaDialog {
         public boolean isOriginallyLocalDeclaration() {
             return originalParamDeclaration == originalParamLocal;
         }
-        
+
         public boolean isOriginallyOverridden() {
             return originalParamLocal != null && originalParamLocal != originalParamDeclaration;
         }
@@ -296,13 +271,9 @@ public class ParametersDialog extends TitleAreaDialog {
         }
 
         public boolean isCurrentlyOverridden() {
-            return !isOriginallyLocalDeclaration() && currentParamLocal != null;
+            return !isOriginallyLocalDeclaration() && isDifferentFromInherited();
         }
         
-        public boolean isCurrentOverrideDifferent() {
-            return currentParamLocal != null && currentParamLocal != originalParamLocal;
-        }
-
         public boolean isDifferentFromOriginal() {
             return !ObjectUtils.equals(type, getOriginalType()) || !ObjectUtils.equals(name, getOriginalName()) ||
                    !ObjectUtils.equals(value, getOriginalValue()) || !ObjectUtils.equals(comment, getOriginalComment());
@@ -316,45 +287,48 @@ public class ParametersDialog extends TitleAreaDialog {
 
         public void setCurrentType(String type) {
             this.type = type;
-            ensureCurrentParam();
-            if (isCurrentOverrideDifferent())
-                setType(currentParamLocal, type);
+            setType(currentParamLocal, type);
         }
 
         public void setCurrentName(String name) {
             this.name = name;
-            ensureCurrentParam();
-            if (isCurrentOverrideDifferent())
-                setName(currentParamLocal, name);
+            setName(currentParamLocal, name);
         }
 
         public void setCurrentValue(String value) {
             this.value = StringUtils.isEmpty(value) ? getValue(originalParamInheritanceChain, null) : value;
-            ensureCurrentParam();
-            if (isCurrentOverrideDifferent())
-                setValue(currentParamLocal, value);
+            setValue(currentParamLocal, value);
         }
 
         public void setCurrentComment(String comment) {
             this.comment = StringUtils.isEmpty(comment) ? getComment(originalParamInheritanceChain, null) : comment;
-            ensureCurrentParam();
-            if (isCurrentOverrideDifferent())
-                setComment(currentParamLocal, comment);
+            setComment(currentParamLocal, comment);
         }
 
-        public void ensureCurrentParam() {
-            if (isOriginallyOverridden() && !isDifferentFromInherited())
-                currentParamLocal = null;
-            else if (!isDifferentFromOriginal())
-                currentParamLocal = originalParamLocal;
-            else if (currentParamLocal == null || currentParamLocal == originalParamLocal) {
-                if (originalParamLocal != null)
-                    currentParamLocal = (ParamElementEx)originalParamLocal.deepDup();
-                else
-                    currentParamLocal = (ParamElementEx)NEDElementFactoryEx.getInstance().createElement(NEDElementFactoryEx.NED_PARAM);
+        protected String generateDefaultName() {
+            for (int i = 0;; i++) {
+                String name = "unnamed" + i;
 
+                if (getParamLine(name) != null)
+                    continue;
+                
+                return name;
+            }
+        }
+
+        protected void createCurrentParamLocal() {
+            if (originalParamLocal != null)
+                currentParamLocal = (ParamElementEx)originalParamLocal.deepDup();
+            else {
+                currentParamLocal = (ParamElementEx)NEDElementFactoryEx.getInstance().createElement(NEDElementFactoryEx.NED_PARAM);
+    
                 setType(currentParamLocal, type);
                 setName(currentParamLocal, name);
+                
+                if (isOriginallyLocalDeclaration()) {
+                    setValue(currentParamLocal, value);
+                    setComment(currentParamLocal, comment);
+                }
             }
         }
         
@@ -483,7 +457,7 @@ public class ParametersDialog extends TitleAreaDialog {
                 }
             }
             else {
-                if (originalParamLocal != null) {
+                if (originalParamLocal != null && originalParamLocal.getSourceRegion() != null) {
                     String indent = StringUtils.repeat(" ", originalParamLocal.getSourceRegion().getEndColumn());
                     commentPadding = indent + commentPadding;
                 }
@@ -580,11 +554,11 @@ public class ParametersDialog extends TitleAreaDialog {
                     ParamLine paramLine = (ParamLine)tableItem.getData();
                     StringBuffer result = new StringBuffer();
     
-                    for (ParamElementEx paramElement : CollectionUtils.toReversed(paramLine.getOriginalParamInheritanceChain()))
-                        if (paramElement != paramLine.getOriginalParamLocal())
+                    for (ParamElementEx paramElement : CollectionUtils.toReversed(paramLine.originalParamInheritanceChain))
+                        if (paramElement != paramLine.originalParamLocal)
                             appendParamText(result, paramElement);
     
-                    if (paramLine.currentParamLocal != null)
+                    if (paramLine.isOriginallyLocalDeclaration() || paramLine.isCurrentlyOverridden())
                         appendParamText(result, paramLine.currentParamLocal);
     
                     return HoverSupport.addHTMLStyleSheet(StringUtils.removeEnd(result.toString(), "<br/><br/>"));
@@ -667,8 +641,8 @@ public class ParametersDialog extends TitleAreaDialog {
                     if (paramLine.isOriginallyLocalDeclaration())
                         paramLines.remove(paramLine);
                     else {
-                        paramLine.currentParamLocal = null;
-                        paramLine.resetToCurrent();
+                        paramLine.setCurrentValue("");
+                        paramLine.setCurrentComment("");
                     }
                 }
 
@@ -687,7 +661,7 @@ public class ParametersDialog extends TitleAreaDialog {
 
                 for (Object element : structuredSelection.toList()) {
                     ParamLine paramLine = (ParamLine)element;
-                    if (!paramLine.isCurrentlyOverridden() && !paramLine.isOriginallyLocalDeclaration()) {
+                    if (!paramLine.isOriginallyLocalDeclaration() && !paramLine.isCurrentlyOverridden()) {
                         removeButton.setEnabled(false);
                         return;
                     }
@@ -841,7 +815,7 @@ public class ParametersDialog extends TitleAreaDialog {
 
        // add the new parameters to copy
        for (ParamLine paramLine : paramLines)
-           if (paramLine.currentParamLocal != null)
+           if (paramLine.isOriginallyLocalDeclaration() || paramLine.isCurrentlyOverridden())
                newParametersElement.appendChild(paramLine.currentParamLocal);
 
        // create a compound replace command
