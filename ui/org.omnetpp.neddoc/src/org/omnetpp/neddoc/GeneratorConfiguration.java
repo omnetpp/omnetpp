@@ -2,6 +2,7 @@ package org.omnetpp.neddoc;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.dialogs.IDialogSettings;
+import org.omnetpp.common.util.StringUtils;
 
 public class GeneratorConfiguration {
     private static final String GENERATE_NED_TYPE_FIGURES = "GenerateNedTypeFigures";
@@ -58,7 +59,7 @@ public class GeneratorConfiguration {
             doxySourceBrowser = settings.getBoolean(DOXY_SOURCE_BROWSER);
 
         outputDirectoryPath = settings.get(OUTPUT_DIRECTORY_PATH);
-        if (outputDirectoryPath.equals(""))
+        if (StringUtils.isEmpty(outputDirectoryPath))
             outputDirectoryPath = null;
     }
 }
