@@ -19,14 +19,13 @@ html:
 	cp pictures/*.png ../../userguide/pictures
 
 .PHONY : eclipse
-eclipse:  
+eclipse: 
 	xsltproc --xinclude --output tmp.xml trans.xsl userguide.xml
 	rm -rf eclipse
 	mkdir eclipse
 	mkdir eclipse/icons
 	mkdir eclipse/images
 	mkdir eclipse/pictures
-	cp userguide.html ../../userguide
 	cp icons/*.png icons/*.gif eclipse/icons
 	cp images/*.png eclipse/images
 	cp pictures/*.png eclipse/pictures
