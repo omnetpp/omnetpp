@@ -23,7 +23,11 @@
 #include "cclassdescriptor.h"
 #include "commonutil.h"
 #include "stringtokenizer.h"
+#include "matchexpression.h"
+#include "matchablefield.h"
+#include "matchableobject.h"
 #include "objectprinter.h"
+
 
 USING_NAMESPACE
 
@@ -51,8 +55,8 @@ static bool defaultRecurseInto(void *object, cClassDescriptor *descriptor, int f
 
 ObjectPrinter::ObjectPrinter(const char *objectFieldMatcherPattern, int indentSize)
 {
-    std::vector<MatchExpression> objectMatchExpressions;
-    std::vector<std::vector<MatchExpression> > fieldNameMatchExpressionsList;
+    std::vector<MatchExpression*> objectMatchExpressions;
+    std::vector<std::vector<MatchExpression*> > fieldNameMatchExpressionsList;
 
     StringTokenizer tokenizer(objectFieldMatcherPattern, "|"); // TODO: use ; when it does not mean comment anymore
     std::vector<std::string> patterns = tokenizer.asVector();
@@ -65,20 +69,20 @@ ObjectPrinter::ObjectPrinter(const char *objectFieldMatcherPattern, int indentSi
             *fieldNamePattern = '\0';
             StringTokenizer fieldNameTokenizer(fieldNamePattern + 1, ",");
             std::vector<std::string> fieldNamePatterns = fieldNameTokenizer.asVector();
-            std::vector<MatchExpression> fieldNameMatchExpressions;
+            std::vector<MatchExpression*> fieldNameMatchExpressions;
 
             for (int j = 0; j < (int)fieldNamePatterns.size(); j++)
-                fieldNameMatchExpressions.push_back(MatchExpression(fieldNamePatterns[j].c_str(), false, true, true));
+                fieldNameMatchExpressions.push_back(new MatchExpression(fieldNamePatterns[j].c_str(), false, true, true));
 
             fieldNameMatchExpressionsList.push_back(fieldNameMatchExpressions);
         }
         else {
-            std::vector<MatchExpression> fieldNameMatchExpressions;
-            fieldNameMatchExpressions.push_back(MatchExpression("*", false, true, true));
+            std::vector<MatchExpression*> fieldNameMatchExpressions;
+            fieldNameMatchExpressions.push_back(new MatchExpression("*", false, true, true));
             fieldNameMatchExpressionsList.push_back(fieldNameMatchExpressions);
         }
 
-        objectMatchExpressions.push_back(MatchExpression(objectPattern, false, true, true));
+        objectMatchExpressions.push_back(new MatchExpression(objectPattern, false, true, true));
     }
 
     Assert(objectMatchExpressions.size() == fieldNameMatchExpressionsList.size());
@@ -87,14 +91,25 @@ ObjectPrinter::ObjectPrinter(const char *objectFieldMatcherPattern, int indentSi
     this->indentSize = indentSize;
 }
 
-ObjectPrinter::ObjectPrinter(std::vector<MatchExpression> &objectMatchExpressions,
-                             std::vector<std::vector<MatchExpression> > &fieldNameMatchExpressionsList,
+ObjectPrinter::ObjectPrinter(const std::vector<MatchExpression*>& objectMatchExpressions,
+                             const std::vector<std::vector<MatchExpression*> >& fieldNameMatchExpressionsList,
                              int indentSize)
 {
     Assert(objectMatchExpressions.size() == fieldNameMatchExpressionsList.size());
     this->objectMatchExpressions = objectMatchExpressions;
     this->fieldNameMatchExpressionsList = fieldNameMatchExpressionsList;
     this->indentSize = indentSize;
+}
+
+ObjectPrinter::~ObjectPrinter()
+{
+    for (int i = 0; i < (int)objectMatchExpressions.size(); i++) {
+        delete objectMatchExpressions[i];
+        std::vector<MatchExpression*>& fieldNameMatchExpressions = fieldNameMatchExpressionsList[i];
+        for (int j = 0; j < (int)fieldNameMatchExpressions.size(); j++)
+            delete fieldNameMatchExpressions[j];
+    }
+
 }
 
 void ObjectPrinter::printObjectToStream(std::ostream& ostream, cObject *object)
@@ -194,16 +209,16 @@ bool ObjectPrinter::matchesObjectField(cObject *object, int fieldIndex)
     const MatchableObjectAdapter matchableObject(MatchableObjectAdapter::CLASSNAME, object);
 
     for (int i = 0; i < (int)objectMatchExpressions.size(); i++) {
-        MatchExpression &objectMatchExpression = objectMatchExpressions[i];
+        MatchExpression *objectMatchExpression = objectMatchExpressions[i];
 
-        if (objectMatchExpression.matches(&matchableObject)) {
-            std::vector<MatchExpression> &fieldNameMatchExpressions = fieldNameMatchExpressionsList[i];
+        if (objectMatchExpression->matches(&matchableObject)) {
+            std::vector<MatchExpression*>& fieldNameMatchExpressions = fieldNameMatchExpressionsList[i];
 
             for (int j = 0; j < (int)fieldNameMatchExpressions.size(); j++) {
-                MatchExpression &fieldNameMatchExpression = fieldNameMatchExpressions[j];
+                MatchExpression *fieldNameMatchExpression = fieldNameMatchExpressions[j];
                 const MatchableFieldAdapter matchableField(object, fieldIndex);
 
-                if (fieldNameMatchExpression.matches(&matchableField))
+                if (fieldNameMatchExpression->matches(&matchableField))
                     return true;
             }
         }
