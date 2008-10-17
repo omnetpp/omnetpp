@@ -41,11 +41,11 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.properties.EnumCellEditor;
 import org.omnetpp.common.ui.TableLabelProvider;
 import org.omnetpp.common.ui.TableTextCellEditor;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.ned.editor.NedEditorPlugin;
 import org.omnetpp.ned.editor.graph.commands.AddNEDElementCommand;
 import org.omnetpp.ned.editor.graph.commands.DeleteCommand;
 import org.omnetpp.ned.model.INEDElement;
@@ -67,10 +67,10 @@ import org.omnetpp.ned.model.pojo.ParametersElement;
 // used from ParametersPropertySource and ParametersDialogAction
 public class ParametersDialog extends TitleAreaDialog {
     // constants
-    // TODO: create icons
-    private static final String IMAGE_INHERITED_DECLARATION = ImageFactory.DECORATOR_IMAGE_WARNING;
-    private static final String IMAGE_OVERRIDDEN_DECLARATION = ImageFactory.DECORATOR_IMAGE_ERROR;
-    private static final String IMAGE_LOCAL_DECLARATION = ImageFactory.CURSOR_IMAGE_ZOOMIN;
+    private static final String IMAGE_DIR = "icons/obj16/";
+    private static final String IMAGE_INHERITED_DECLARATION = IMAGE_DIR + "InheritedParDecl.png";
+    private static final String IMAGE_OVERRIDDEN_DECLARATION = IMAGE_DIR + "OverriddenParDecl.png";
+    private static final String IMAGE_LOCAL_DECLARATION = IMAGE_DIR + "LocalParDecl.png";
 
     private static final String COLUMN_TYPE = "type";
     private static final String COLUMN_NAME = "name";
@@ -125,11 +125,11 @@ public class ParametersDialog extends TitleAreaDialog {
                 ParamLine paramLine = (ParamLine)element;
 
                 if (paramLine.isOriginallyLocalDeclaration())
-                    return ImageFactory.getImage(IMAGE_LOCAL_DECLARATION);
+                    return NedEditorPlugin.getCachedImage(IMAGE_LOCAL_DECLARATION);
                 else if (paramLine.isCurrentlyOverridden())
-                    return ImageFactory.getImage(IMAGE_OVERRIDDEN_DECLARATION);
+                    return NedEditorPlugin.getCachedImage(IMAGE_OVERRIDDEN_DECLARATION);
                 else
-                    return ImageFactory.getImage(IMAGE_INHERITED_DECLARATION);
+                    return NedEditorPlugin.getCachedImage(IMAGE_INHERITED_DECLARATION);
             }
             else
                 return null;

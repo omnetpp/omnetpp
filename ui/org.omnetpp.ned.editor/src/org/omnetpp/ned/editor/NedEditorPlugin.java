@@ -3,6 +3,8 @@ package org.omnetpp.ned.editor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -59,6 +61,28 @@ public class NedEditorPlugin extends AbstractUIPlugin {
      */
     public static ImageDescriptor getImageDescriptor(String path) {
         return imageDescriptorFromPlugin(PLUGIN_ID, path);
+    }
+    
+    /**
+     * Creates an image. IMPORTANT: The image is NOT cached! Callers 
+     * are responsible for disposal of the image. 
+     */
+    public static Image getImage(String path) {
+        return getImageDescriptor(path).createImage();
+    }
+
+    /**
+     * Like getImage(), but the image gets cached in an internal image registry,
+     * so clients do not need to (moreover, must not) dispose of the image.
+     */
+    public static Image getCachedImage(String path) {
+        ImageRegistry imageRegistry = getDefault().getImageRegistry();
+        Image image = imageRegistry.get(path);
+        if (image==null) {
+            image = getImage(path);
+            imageRegistry.put(path, image);
+        }
+        return image;
     }
 
     public static void logError(Throwable exception) {
