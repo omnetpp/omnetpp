@@ -93,6 +93,10 @@ proc getNodeInfo {w op {key {}}} {
         return "[opp_getobjectfullname $ptr] ([opp_getobjecttypename $ptr])$id"
       }
 
+      needcheckbox {
+        return 0
+      }
+
       options {
         return ""
       }

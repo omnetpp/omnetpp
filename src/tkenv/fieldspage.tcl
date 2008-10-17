@@ -148,6 +148,10 @@ proc getFieldNodeInfo {w op {key ""}} {
             }
         }
 
+        needcheckbox {
+            return 0
+        }
+
         options {
             return ""
         }

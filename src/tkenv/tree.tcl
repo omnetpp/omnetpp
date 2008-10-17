@@ -29,6 +29,7 @@
 # - multi-line texts can be opened/closed (if there're child nodes
 #   as well, they open/close together with the text)
 # - added keyboard navigation and proc Tree:view
+# - can act as checkboxtree (checkbox can be turned on/off per tree node)
 #
 
 #
@@ -200,6 +201,15 @@ proc Tree:gettooltip {w v} {
 }
 
 #
+# Returns the checkbox state for the given node
+#
+proc Tree:ischecked {w v} {
+  global Tree
+  if {![info exist Tree($w:$v)]} {return 0}
+  return $Tree($w:$v)
+}
+
+#
 # Draw the tree on the canvas
 #
 proc Tree:build {w} {
@@ -236,12 +246,21 @@ proc Tree:buildlayer {w v in} {
     $w create line $in $y [expr $in+10] $y -fill gray50
 
     # get data
+    set needcheckbox [$Tree($w:function) $w needcheckbox $c]
     set text [$Tree($w:function) $w text $c]
     set options [$Tree($w:function) $w options $c]
     set icon [$Tree($w:function) $w icon $c]
 
-    # draw icon and text
+    # draw checkbox, icon and text
     set x [expr $in+12]
+    if {$needcheckbox} {
+        set tag "_$Tree($w:lastid)"
+        incr Tree($w:lastid)
+        set cb $w.$tag
+        checkbutton $cb -padx 0 -pady 0 -bg [$w cget -bg] -activebackground [$w cget -bg] -variable $Tree($w:$c)
+        $w create window $x $y -window $cb -anchor w
+        incr x [winfo reqwidth $cb]
+    }
     if {[string length $icon]>0} {
       set tags [list "node-$c" "tooltip"]
       set k [$w create image $x $y -image $icon -anchor w -tags $tags]
@@ -301,6 +320,8 @@ proc Tree:createtext {w x y txt isopen tags} {
         set x [lindex [$w bbox $id] 2]
         set bold [expr !$bold]
     }
+
+
     return $tag
 }
 
