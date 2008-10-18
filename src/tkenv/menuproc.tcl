@@ -274,6 +274,11 @@ proc edit_findnext {{w .main.text}} {
    findNext $w
 }
 
+proc edit_filtermoduleoutput {{w .main.text} {modptr "systemmodule"}} {
+   # implements Edit|Hide/show events...
+   moduleOutputFilterDialog $w $modptr
+}
+
 proc toggle_treeview {} {
    global config widgets
 

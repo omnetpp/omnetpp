@@ -217,7 +217,7 @@ proc create_fileviewer {filename} {
 #
 # Create a context menu for a text widget
 #
-proc textwidget_contextmenu {txt X Y} {
+proc textwidget_contextmenu {txt modptr X Y} {
     global tmp config
 
     set tmp(wrap) [$txt cget -wrap]
@@ -225,6 +225,10 @@ proc textwidget_contextmenu {txt X Y} {
     catch {destroy .popup}
     menu .popup -tearoff 0
 
+    if {$modptr!=""} {
+        .popup add command -command "edit_filtermoduleoutput $txt $modptr" -label {Hide/show events...} -underline 0
+        .popup add separator
+    }
     .popup add command -command edit_copy -label {Copy} -accel {Ctrl+C} -underline 0
     .popup add separator
     .popup add command -command "edit_find $txt" -label {Find...} -accel {Ctrl+F} -underline 0

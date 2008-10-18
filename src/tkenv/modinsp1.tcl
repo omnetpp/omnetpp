@@ -200,6 +200,8 @@ proc _create_modulewindow {name geom iscompound} {
     set w $name
     create_inspector_toplevel $w $geom
 
+    regexp {\.(ptr.*)-[0-9]+} $w match modptr
+
     # Add icons
     if {$iscompound} {
         # for compound module
@@ -210,7 +212,7 @@ proc _create_modulewindow {name geom iscompound} {
         set help_tips($w.toolbar.graph)  {Inspect as network graphics}
         set help_tips($w.toolbar.obj)    {Inspect as object}
 
-        textwindow_add_icons $w
+        textwindow_add_icons $w $modptr
 
         moduleinspector_add_run_buttons $w
 
@@ -221,7 +223,7 @@ proc _create_modulewindow {name geom iscompound} {
         set help_tips($w.toolbar.owner)  {Inspect parent module}
         set help_tips($w.toolbar.obj)    {Inspect as object}
 
-        textwindow_add_icons $w
+        textwindow_add_icons $w $modptr
 
         moduleinspector_add_run_buttons $w
     }
@@ -240,7 +242,7 @@ proc _create_modulewindow {name geom iscompound} {
     pack $w.main.text -anchor center -expand 1 -fill both -side left
 
     # bindings for find
-    bind_commands_to_textwidget $w.main.text
+    bind_commands_to_textwidget $w.main.text $modptr
 }
 
 proc mainlogwindow_trimlines {} {

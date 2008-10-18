@@ -684,9 +684,26 @@ proc _doFind {w findstring case words regexp backwards} {
     return $length
 }
 
-
-proc moduleTreeDialog {title msg rootmodule textwidget} {
+#
+# Dialog to show/hide events in log windows. Takes the text widget,
+# and the corresponding compound module (whose messages the window shows).
+#
+# It relies on the "tag -elide <bool>" functionality of the Tk text widget.
+# Tags are "id-NNN" for module id, and "type-XXX" for NED type.
+# Text from "ev<<" gets annotated with these tags when it gets inserted
+# into the text widget (this is done in the C++ code, Tkenv class).
+#
+proc moduleOutputFilterDialog {textwidget rootmodule} {
     global tmp
+
+    if {[network_present] == 0} {return 0}
+
+    set title "Hide/Show Events"
+    set msg "Select modules to show log messages from:"
+
+    if {$rootmodule=="systemmodule"} {
+        set rootmodule [opp_object_systemmodule]
+    }
 
     set w .treedialog
     createOkCancelDialog $w $title
@@ -746,7 +763,8 @@ proc getModuleTreeInfo {w op {key {}}} {
         upvar #0 $varname checkboxvar
         if {![info exist checkboxvar]} {
             set tag "id-[opp_getobjectid $ptr]"
-            set ishidden [$tmp(moduletreetext) tag cget $tag -elide]
+            set ishidden ""
+            catch {set ishidden [$tmp(moduletreetext) tag cget $tag -elide]}
             if {$ishidden==""} {
                 set checkboxvar 1
             } else {

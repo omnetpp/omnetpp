@@ -207,7 +207,7 @@ class SIM_API cDisplayString
      *
      * The result is true if the operation was successful. False is returned
      * if the given tag doesn't exist, or index is invalid (negative or
-     * greater than the maximum numer of arguments, currently 16).
+     * greater than the maximum number of arguments, currently 16).
      */
     bool setTagArg(const char *tagname, int index, const char *value);
 

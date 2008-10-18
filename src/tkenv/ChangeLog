@@ -1,3 +1,8 @@
+2008-10-18  Andras Varga
+
+	* implemented module output window filtering (uses module checkboxtree
+	dialog)
+
 2008-05-17  Andras Varga
 
 	* better toolbar icons

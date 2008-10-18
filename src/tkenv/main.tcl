@@ -135,6 +135,8 @@ proc create_omnetpp_window {} {
       {separator}
       {command -command edit_find -label {Find...} -accel {Ctrl+F} -underline 0}
       {command -command edit_findnext -label {Find next} -accel {Ctrl+N,F3} -underline 5}
+      {separator}
+      {command -command edit_filtermoduleoutput -label {Hide/show events...} -underline 0}
     } {
       eval .menubar.editmenu$m add $i
     }
@@ -249,6 +251,7 @@ proc create_omnetpp_window {} {
       {copy     -image $icons(copy)    -command {edit_copy}}
       {find     -image $icons(find)    -command {edit_find}}
       {save     -image $icons(save)    -command {savefile "."}}
+      {filter   -image $icons(filter)  -command {edit_filtermoduleoutput}}
       {sep0     -separator}
       {step     -image $icons(step)    -command {one_step}}
       {run      -image $icons(run)     -command {run_normal}}
@@ -274,7 +277,9 @@ proc create_omnetpp_window {} {
     set help_tips(.toolbar.loadned) {Load NED file for compound module definitions}
     set help_tips(.toolbar.newrun)  {Set up an inifile configuration}
     set help_tips(.toolbar.copy)    {Copy selected text to clipboard (Ctrl+C)}
-    set help_tips(.toolbar.save)    {Save window contents to file}
+    set help_tips(.toolbar.find)    {Find string in main window (Ctrl+F)}
+    set help_tips(.toolbar.save)    {Save main window contents to file}
+    set help_tips(.toolbar.filter)  {Show/hide events in main window}
     set help_tips(.toolbar.newnet)  {Set up a network}
     set help_tips(.toolbar.step)    {Execute one event (F4)}
     set help_tips(.toolbar.run)     {Run with full animation (F5)}
@@ -289,7 +294,6 @@ proc create_omnetpp_window {} {
     set help_tips(.toolbar.tline)   {Show/hide timeline}
     set help_tips(.toolbar.tree)    {Show/hide object tree}
     set help_tips(.toolbar.options) {Simulation options}
-    set help_tips(.toolbar.find)    {Find string in main window (Ctrl+F)}
 
     #################################
     # Create status bars
@@ -420,7 +424,7 @@ proc create_omnetpp_window {} {
     ###############################
     # Hotkeys
     ###############################
-    bind_commands_to_textwidget .main.text
+    bind_commands_to_textwidget .main.text "systemmodule"
     bind_runcommands .
     bind_othercommands .
 }
@@ -438,7 +442,8 @@ proc bind_othercommands {w} {
     bind $w <Control-S> [list inspect_filteredobjectlist $w]
 }
 
-proc bind_commands_to_textwidget {txt} {
+# note: modptr may be "systemmodule" or a pointer; "" means no module
+proc bind_commands_to_textwidget {txt {modptr ""}} {
     global config B2 B3
 
     # bindings for find
@@ -457,7 +462,7 @@ proc bind_commands_to_textwidget {txt} {
 
     # bind a context menu as well
     catch {$txt config -wrap $config(editor-wrap)}
-    bind $txt <Button-$B3> "textwidget_contextmenu $txt %X %Y"
+    bind $txt <Button-$B3> [list textwidget_contextmenu $txt $modptr %X %Y]
 }
 
 #===================================================================
