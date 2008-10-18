@@ -685,6 +685,105 @@ proc _doFind {w findstring case words regexp backwards} {
 }
 
 
+proc moduleTreeDialog {title msg rootmodule textwidget} {
+    global tmp
+
+    set w .treedialog
+    createOkCancelDialog $w $title
+
+    label $w.f.m -text $msg -anchor w -justify left
+    frame $w.f.f -bd 2 -relief sunken
+    pack $w.f.m -fill x -padx 10 -pady 5 -side top
+    pack $w.f.f -expand 1 -fill both -padx 10 -pady 5 -side top
+
+    canvas $w.f.f.c -width 300 -height 350 -bd 0 -relief flat -yscrollcommand "$w.f.f.vsb set"
+    #   -xscrollcommand "$w.f.f.hsb set"
+    #scrollbar $w.f.f.hsb -command "$w.f.f.c xview" -orient horiz
+    scrollbar $w.f.f.vsb -command "$w.f.f.c yview"
+    grid $w.f.f.c   $w.f.f.vsb  -sticky news
+    #grid $w.f.f.hsb x           -sticky news
+    grid rowconfig $w.f.f 0 -weight 1
+    grid columnconfig $w.f.f 0 -weight 1
+
+    set tree $w.f.f.c
+    set tmp(moduletreeroot) $rootmodule
+    set tmp(moduletreetext) $textwidget
+    Tree:init $tree getModuleTreeInfo
+    Tree:open $tree $rootmodule
+
+    setinitialdialogfocus $tree
+
+    if [execOkCancelDialog $w] {
+        foreach ptr [Tree:getcheckvars $tree] {
+            set varname [Tree:getcheckvar $tree $ptr]
+            upvar #0 $varname checkboxvar
+            set hide [expr !$checkboxvar]
+            set tag "id-[opp_getobjectid $ptr]"
+            $textwidget tag configure $tag -elide $hide
+        }
+        destroy $w
+        return 1
+    }
+    destroy $w
+    return 0
+}
+
+proc getModuleTreeInfo {w op {key {}}} {
+    global icons tmp
+
+    set ptr $key
+    switch $op {
+
+      text {
+        set id [opp_getobjectid $ptr]
+        if {$id!=""} {set id " (id=$id)"}
+        return "[opp_getobjectfullname $ptr] ([opp_getobjecttypename $ptr])$id"
+      }
+
+      needcheckbox {
+        # we're going to say "yes", but initialize checkbox state first
+        set varname [Tree:getcheckvar $w $ptr]
+        upvar #0 $varname checkboxvar
+        if {![info exist checkboxvar]} {
+            set tag "id-[opp_getobjectid $ptr]"
+            set ishidden [$tmp(moduletreetext) tag cget $tag -elide]
+            if {$ishidden==""} {
+                set checkboxvar 1
+            } else {
+                set checkboxvar [expr !$ishidden]
+            }
+        }
+        return 1
+      }
+
+      options {
+        return ""
+      }
+
+      icon {
+        #return [get_icon_for_object $ptr]
+        return ""
+      }
+
+      haschildren {
+        if {$ptr=="treeroot"} {return 1}
+        return [opp_hassubmodules $ptr]
+      }
+
+      children {
+        if {$ptr=="treeroot"} {return $tmp(moduletreeroot)}
+        return [opp_getsubmodules $ptr]
+      }
+
+      root {
+        return "treeroot"
+      }
+    }
+}
+
+
+
+
 # filteredobjectlist_window --
 #
 # Implements the "Find/inspect objects" dialog.
