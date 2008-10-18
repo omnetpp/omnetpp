@@ -1036,6 +1036,8 @@ int getSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
       sprintf(buf,"%u", app->opt_updatefreq_express);
    else if (0==strcmp(argv[1], "expressmode_autoupdate"))
       sprintf(buf,"%d", app->opt_expressmode_autoupdate);
+   else if (0==strcmp(argv[1], "stoponmsgcancel"))
+      sprintf(buf,"%d", app->opt_stoponmsgcancel);
    else
       return TCL_ERROR;
    Tcl_SetResult(interp, buf, TCL_VOLATILE);
@@ -1089,6 +1091,8 @@ int setSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
       app->opt_updatefreq_express = atoi(argv[2]);
    else if (0==strcmp(argv[1], "expressmode_autoupdate"))
       app->opt_expressmode_autoupdate = (argv[2][0]!='0');
+   else if (0==strcmp(argv[1], "stoponmsgcancel"))
+      app->opt_stoponmsgcancel = (argv[2][0]!='0');
    else
       return TCL_ERROR;
    return TCL_OK;

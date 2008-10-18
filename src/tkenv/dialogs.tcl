@@ -461,7 +461,7 @@ proc setIfPatternIsValid {var pattern} {
 
 proc rununtil_dialog {time_var event_var msg_var mode_var} {
 
-    global opp config
+    global opp config tmp
 
     upvar $time_var time_var0
     upvar $event_var event_var0
@@ -483,9 +483,10 @@ proc rununtil_dialog {time_var event_var msg_var mode_var} {
     label-entry $w.f.time  {Simulation time to stop at:}
     label-entry $w.f.event {Event number to stop at:}
     label-combo $w.f.msg   {Message to stop at:} $msglabels
+    label-check $w.f.stop  {} {stop if message gets cancelled} tmp(stop)
     label-combo $w.f.mode  {Running mode:}  {{Normal} {Fast (rare updates)} {Express (tracing off)}}
 
-    foreach i {time event msg mode} {
+    foreach i {time event msg stop mode} {
        $w.f.$i.l configure -width 24
        pack $w.f.$i -anchor w -fill x
     }
@@ -504,6 +505,7 @@ proc rununtil_dialog {time_var event_var msg_var mode_var} {
     $w.f.event.e insert 0 $config(rununtil-event)
     $w.f.msg.e configure -value $msglabel
     $w.f.mode.e configure -value $config(rununtil-mode)
+    set tmp(stop) [opp_getsimoption stoponmsgcancel]
 
     $w.f.time.e select range 0 end
     $w.f.event.e select range 0 end
@@ -520,6 +522,7 @@ proc rununtil_dialog {time_var event_var msg_var mode_var} {
         set config(rununtil-event) $event_var0
         set config(rununtil-msg)   $msg_var0
         set config(rununtil-mode)  [$w.f.mode.e cget -value]
+        opp_setsimoption stoponmsgcancel $tmp(stop)
 
         destroy $w
         return 1

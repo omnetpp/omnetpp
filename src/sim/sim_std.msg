@@ -225,9 +225,10 @@ class cMessage extends cOwnedObject
     short kind @group(message) @editable @hint(generic user-settable attribute, usually carries "type" or "role" of message);
     short schedulingPriority @group(message) @editable @hint(controls delivery order of messages with equal timestamps);
     string displayString @group(message) @hint(controls appearance of the message in GUI);
-    cArray parList @group(message) @hint(OBSOLETE: use of "parList" should be replaced with message subclassing in the few models that still use it);
-
     cObject *controlInfo @group(message) @hint(used with protocol stacks: carries extra information when a packet is sent between protocol layers);
+    cArray parList @group(message) @hint(OBSOLETE: use of "parList" should be replaced with message subclassing in the few models that still use it);
+    long id @group(message) @hint(uniquely identifies the message);
+    long treeId @group(message) @hint(shared between the message and all its clones created by dup);
 
     bool isScheduled @getter(isScheduled) @group(sending) @hint(whether self-message is currently scheduled, or message currently is in transit);
     bool isSelfMessage @getter(isSelfMessage) @group(sending) @hint(whether message is a self-message, scheduled to be delivered back to the same module at a later time);

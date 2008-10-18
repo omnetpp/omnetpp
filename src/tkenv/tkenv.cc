@@ -150,6 +150,7 @@ Tkenv::Tkenv()
     opt_print_banners = true;
     opt_use_mainwindow = true;
     opt_expressmode_autoupdate = true;
+    opt_stoponmsgcancel = true;
 }
 
 Tkenv::~Tkenv()
@@ -1199,14 +1200,12 @@ void Tkenv::messageScheduled(cMessage *msg)
 
 void Tkenv::messageCancelled(cMessage *msg)
 {
-    //FIXME this should be optional (some checkbox)?
-    //if (msg==rununtil_msg)
-    //{
-    //    // message to "run until" cancelled -- stop the simulation by other means
-    //    rununtil_msg = NULL;
-    //    rununtil_eventnum = simulation.getEventNumber();
-    //    confirm("Message to run until got cancelled.");
-    //}
+    if (msg==rununtil_msg && opt_stoponmsgcancel)
+    {
+        confirm(opp_stringf("Run-until message `%s' got cancelled.", msg->getName()).c_str());
+        rununtil_msg = NULL;
+        rununtil_eventnum = simulation.getEventNumber(); // stop the simulation using the eventnumber limit
+    }
     EnvirBase::messageCancelled(msg);
 }
 
