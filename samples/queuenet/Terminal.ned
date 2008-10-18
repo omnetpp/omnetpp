@@ -25,11 +25,11 @@ import org.omnetpp.queueing.Source;
 //   There it turns out that some passengers should have gone to a different
 //   terminal, so they leave the building. Others have to walk along a long
 //   corridor to get to the check-in, where there're different queues for economy
-//   class, business class, first class etc. passengers. Unfortunately there's
-//   only one clerk. She serves the queues in priority order -- economy class
-//   passengers are only served if there's no business class or first class
-//   passenger. After check-in the passengers get into the duty-free zone and
-//   have a good time until boarding.
+//   class, business class, first class etc. Unfortunately there's only one
+//   check-in counter open. It serves the queues in priority order -- economy class
+//   passengers are only served if there're no business class or first class
+//   passengers. After check-in, passengers get into the duty-free zone and
+//   spend their time there until boarding.
 //
 // In the model, the "enter" module generates messages with different message
 // types (message kinds 0,1,2 and 3 with uniform probability). These messages
@@ -47,7 +47,7 @@ import org.omnetpp.queueing.Source;
 // "firstClass" are empty. Examination of the queues is programmed by calling
 // a method in the passive queue module objects (as opposed to message
 // exchange, or integrating all queues and the server into a single module).
-// Once the "clerk" queue server" decided from which queue to obtain a message, it
+// Once the "checkin" queue server decided from which queue to obtain a message, it
 // tells the passive queue object to send it (this is also done via a method call.)
 // The processing time in the server is random. After processing, messages are
 // forwarded into the "boarding" module where they end their life circles.
@@ -90,7 +90,7 @@ network Terminal
         economyClass: PassiveQueue {
             @display("p=329.0,225.0");
         }
-        clerk: Server {
+        checkin: Server {
             @display("p=448.0,132.0");
         }
         boarding: Sink {
@@ -101,10 +101,10 @@ network Terminal
         classifier.out++ --> delay1.in++;
         classifier.out++ --> delay2.in++;
         classifier.out++ --> delay3.in++;
-        firstClass.out++ --> clerk.in++;
-        businessClass.out++ --> clerk.in++;
-        economyClass.out++ --> clerk.in++;
-        clerk.out --> boarding.in++;
+        firstClass.out++ --> checkin.in++;
+        businessClass.out++ --> checkin.in++;
+        economyClass.out++ --> checkin.in++;
+        checkin.out --> boarding.in++;
         delay1.out --> firstClass.in++;
         delay2.out --> businessClass.in++;
         delay3.out --> economyClass.in++;
