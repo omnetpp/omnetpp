@@ -100,6 +100,8 @@ int getObjectField_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectBaseClass_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectId_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getComponentTypeObject_cmd(ClientData, Tcl_Interp *, int, const char **);
+int hasSubmodules_cmd(ClientData, Tcl_Interp *, int, const char **);
+int getSubmodules_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getChildObjects_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getNumChildObjects_cmd(ClientData, Tcl_Interp *, int, const char **);
 int hasChildObjects_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -198,6 +200,8 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_getobjectinfostring",getObjectInfoString_cmd}, // args: <pointer>  ret: info()
    { "opp_getobjectfield",   getObjectField_cmd       }, // args: <pointer> <field>  ret: value of object field (if supported)
    { "opp_getcomponenttypeobject",getComponentTypeObject_cmd}, // args: <pointer> ret: cComponentType
+   { "opp_hassubmodules",    hasSubmodules_cmd        }, // args: <pointer> ret: 0 or 1
+   { "opp_getsubmodules",    getSubmodules_cmd        }, // args: <pointer> ret: list with its submodule ptrs
    { "opp_getchildobjects",  getChildObjects_cmd      }, // args: <pointer> ret: list with its child object ptrs
    { "opp_getnumchildobjects",getNumChildObjects_cmd  }, // args: <pointer> ret: length of child objects list
    { "opp_haschildobjects",  hasChildObjects_cmd      }, // args: <pointer> ret: 0 or 1
@@ -753,10 +757,38 @@ int getComponentTypeObject_cmd(ClientData, Tcl_Interp *interp, int argc, const c
    if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    cObject *object = strToPtr(argv[1]);
    if (!object) {Tcl_SetResult(interp, TCLCONST("null or malformed pointer"), TCL_STATIC); return TCL_ERROR;}
-   cComponent *component = dynamic_cast<cModule *>(object);
+   cComponent *component = dynamic_cast<cComponent *>(object);
    if (!component) {Tcl_SetResult(interp, TCLCONST("object is not a module or channel"), TCL_STATIC); return TCL_ERROR;}
 
    Tcl_SetResult(interp, ptrToStr(component->getComponentType()), TCL_VOLATILE);
+   return TCL_OK;
+}
+
+int hasSubmodules_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
+   cObject *object = strToPtr(argv[1]);
+   if (!object) {Tcl_SetResult(interp, TCLCONST(""), TCL_STATIC); return TCL_OK;}
+   cModule *mod = dynamic_cast<cModule *>(object);
+   if (!mod) {Tcl_SetResult(interp, TCLCONST("object is not a module"), TCL_STATIC); return TCL_ERROR;}
+
+   cModule::SubmoduleIterator i(mod);
+   Tcl_SetResult(interp, i.end() ? TCLCONST("0") : TCLCONST("1"), TCL_STATIC);
+   return TCL_OK;
+}
+
+int getSubmodules_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
+   cObject *object = strToPtr(argv[1]);
+   if (!object) {Tcl_SetResult(interp, TCLCONST(""), TCL_STATIC); return TCL_OK;}
+   cModule *mod = dynamic_cast<cModule *>(object);
+   if (!mod) {Tcl_SetResult(interp, TCLCONST("object is not a module"), TCL_STATIC); return TCL_ERROR;}
+
+   Tcl_Obj *listobj = Tcl_NewListObj(0, NULL);
+   for (cModule::SubmoduleIterator i(mod); !i.end(); i++)
+       Tcl_ListObjAppendElement(interp, listobj, Tcl_NewStringObj(ptrToStr(i()), -1));
+   Tcl_SetObjResult(interp, listobj);
    return TCL_OK;
 }
 
