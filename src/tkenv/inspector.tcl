@@ -262,9 +262,9 @@ proc textwindow_add_icons {w {modptr ""}} {
     pack_iconbutton $w.toolbar.sep21  -separator
 
     set help_tips($w.toolbar.copy)   {Copy selected text to clipboard (Ctrl+C)}
-    set help_tips($w.toolbar.find)   {Find string in window (Ctrl+F}
+    set help_tips($w.toolbar.find)   {Find string in window (Ctrl+F)}
     set help_tips($w.toolbar.save)   {Save window contents to file}
-    set help_tips($w.toolbar.filter) {Show/hide events}
+    set help_tips($w.toolbar.filter) {Show/hide events (Ctrl+H)}
 }
 
 proc create_inspector_listbox {w} {

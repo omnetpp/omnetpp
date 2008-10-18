@@ -136,7 +136,7 @@ proc create_omnetpp_window {} {
       {command -command edit_find -label {Find...} -accel {Ctrl+F} -underline 0}
       {command -command edit_findnext -label {Find next} -accel {Ctrl+N,F3} -underline 5}
       {separator}
-      {command -command edit_filtermoduleoutput -label {Hide/show events...} -underline 0}
+      {command -command edit_filtermoduleoutput -label {Hide/show events...} -accel {Ctrl+H} -underline 0}
     } {
       eval .menubar.editmenu$m add $i
     }
@@ -279,7 +279,7 @@ proc create_omnetpp_window {} {
     set help_tips(.toolbar.copy)    {Copy selected text to clipboard (Ctrl+C)}
     set help_tips(.toolbar.find)    {Find string in main window (Ctrl+F)}
     set help_tips(.toolbar.save)    {Save main window contents to file}
-    set help_tips(.toolbar.filter)  {Show/hide events in main window}
+    set help_tips(.toolbar.filter)  {Show/hide events in main window (Ctrl+H)}
     set help_tips(.toolbar.newnet)  {Set up a network}
     set help_tips(.toolbar.step)    {Execute one event (F4)}
     set help_tips(.toolbar.run)     {Run with full animation (F5)}
@@ -456,6 +456,11 @@ proc bind_commands_to_textwidget {txt {modptr ""}} {
     bind $txt <Control-n> "findNext $txt;break"
     bind $txt <Control-N> "findNext $txt;break"
     bind $txt <F3> "findNext $txt"
+    if {$modptr!=""} {
+        # bind Ctrl+H ('break' is needed because originally ^H is bound to DEL)
+        bind $txt <Control-h> "moduleOutputFilterDialog $txt $modptr; break"
+        bind $txt <Control-H> "moduleOutputFilterDialog $txt $modptr; break"
+    }
 
     # bind Ctrl+A "Select all" ('break' is needed below because ^A=Home)
     bind $txt <Control-a> "$txt tag add sel 1.0 end; break"

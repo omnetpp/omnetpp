@@ -231,7 +231,7 @@ proc textwidget_contextmenu {txt modptr X Y} {
     .popup add command -command "edit_findnext $txt" -label {Find next} -accel {Ctrl+N,F3} -underline 5
     .popup add separator
     if {$modptr!=""} {
-        .popup add command -command "edit_filtermoduleoutput $txt $modptr" -label {Hide/show events...} -underline 0
+        .popup add command -command "edit_filtermoduleoutput $txt $modptr" -label {Hide/show events...} -accel {Ctrl+H} -underline 0
         .popup add separator
     }
     .popup add checkbutton -command "textwidget_togglewrap $txt" -variable tmp(wrap) -onvalue "char" -offvalue "none" -label {Wrap lines} -underline 0
