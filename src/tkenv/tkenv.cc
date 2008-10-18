@@ -972,17 +972,20 @@ void Tkenv::printEventBanner(cSimpleModule *module)
             module->getFullPath().c_str()
           );
 
+    char tags[MAX_OBJECTFULLPATH+60];
+    sprintf(tags, "{event id-%d type-%s}", module->getId(), module->getNedTypeName());
+
     // insert into main window
     if (opt_use_mainwindow)
         CHK(Tcl_VarEval(interp,
-              ".main.text insert end {",banner,"} event\n"
+              ".main.text insert end {",banner,"} ",tags,"\n"
               ".main.text see end", NULL));
 
     // and into the message window
     if (hasmessagewindow)
         CHK(Tcl_VarEval(interp,
               "catch {\n"
-              " .messagewindow.main.text insert end {",banner,"} event\n"
+              " .messagewindow.main.text insert end {",banner,"} ",tags,"\n"
               " .messagewindow.main.text see end\n"
               "}\n", NULL));
 
@@ -994,7 +997,7 @@ void Tkenv::printEventBanner(cSimpleModule *module)
         if (insp)
         {
            CHK(Tcl_VarEval(interp,
-               insp->windowName(),".main.text insert end {",banner,"} event\n",
+               insp->windowName(),".main.text insert end {",banner,"} ",tags,"\n",
                insp->windowName(),".main.text see end",
                NULL));
         }
@@ -1777,13 +1780,16 @@ void Tkenv::sputn(const char *s, int n)
 
     // output string into main window
     cModule *module = simulation.getContextModule();
-    const char *tag = (!module) ? "log" : "";
+    char idstring[32];
+    if (module) sprintf(idstring, " id-%d", module->getId()); // note leading space
     if (!module || opt_use_mainwindow)
     {
         quotedstr.set(s,n);
         quotedstr_is_set = true;
         CHK(Tcl_VarEval(interp,
-            ".main.text insert end ",quotedstr.get()," ", tag ,"\n"
+            ".main.text insert end ", quotedstr.get(), " {",
+            (module?"type-":"log"), (module?module->getNedTypeName():""), (module?idstring:""), // tags
+            "}\n"
             ".main.text see end", NULL));
     }
 
@@ -1801,7 +1807,9 @@ void Tkenv::sputn(const char *s, int n)
                 quotedstr_is_set = true;
             }
             CHK(Tcl_VarEval(interp,
-              insp->windowName(),".main.text insert end ",quotedstr.get()," ", tag, "\n",
+              insp->windowName(), ".main.text insert end ", quotedstr.get()," {",
+              (module?"type-":"log"), (module?module->getNedTypeName():""), (module?idstring:""), // tags
+              "}\n",
               insp->windowName(),".main.text see end", NULL));
         }
         mod = mod->getParentModule();
