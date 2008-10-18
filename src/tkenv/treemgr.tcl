@@ -80,7 +80,7 @@ proc getNodeInfo {w op {key {}}} {
       text {
         set id [opp_getobjectid $ptr]
         if {$id!=""} {set id " (id=$id)"}
-        return "[opp_getobjectfullname $ptr] ([opp_getobjecttypename $ptr])$id"
+        return "[opp_getobjectfullname $ptr] ([opp_getobjectshorttypename $ptr])$id"
       }
 
       needcheckbox {

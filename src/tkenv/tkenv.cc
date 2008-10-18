@@ -965,11 +965,12 @@ void Tkenv::clearPerformanceDisplay()
 void Tkenv::printEventBanner(cSimpleModule *module)
 {
     char banner[MAX_OBJECTFULLPATH+60];
-    sprintf(banner,"** Event #%"LL"d.  T=%s.  Module #%u `%s'\n",
+    sprintf(banner,"** Event #%"LL"d  T=%s  %s (%s, id=%d)\n",
             simulation.getEventNumber(),
             SIMTIME_STR(simulation.getSimTime()),
-            module->getId(),
-            module->getFullPath().c_str()
+            module->getFullPath().c_str(),
+            module->getComponentType()->getName(),
+            module->getId()
           );
 
     char tags[MAX_OBJECTFULLPATH+60];

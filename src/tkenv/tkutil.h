@@ -89,7 +89,8 @@ class TKENV_API TclQuotedString
 //
 class cCollectObjectsVisitor;
 
-const char *getObjectTypeName(cObject *object);
+const char *getObjectShortTypeName(cObject *object);
+const char *getObjectFullTypeName(cObject *object);
 
 char *voidPtrToStr(void *ptr, char *buffer=NULL);
 void *strToVoidPtr(const char *s);

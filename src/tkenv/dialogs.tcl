@@ -754,7 +754,7 @@ proc getModuleTreeInfo {w op {key {}}} {
       text {
         set id [opp_getobjectid $ptr]
         if {$id!=""} {set id " (id=$id)"}
-        return "[opp_getobjectfullname $ptr] ([opp_getobjecttypename $ptr])$id"
+        return "[opp_getobjectfullname $ptr] ([opp_getobjectshorttypename $ptr])$id"
       }
 
       needcheckbox {
@@ -1082,7 +1082,7 @@ proc filteredobjectlist_refresh {w} {
             $w.f.numobj config -text "Found $num objects:"
         }
         foreach ptr $objlist {
-            multicolumnlistbox_insert $lb $ptr [list ptr $ptr class [opp_getobjecttypename $ptr] name [opp_getobjectfullpath $ptr] info [opp_getobjectinfostring $ptr]] [get_icon_for_object $ptr]
+            multicolumnlistbox_insert $lb $ptr [list ptr $ptr class [opp_getobjectshorttypename $ptr] name [opp_getobjectfullpath $ptr] info [opp_getobjectinfostring $ptr]] [get_icon_for_object $ptr]
         }
         set filtobjlist_state(outofdate) 0
         #$lb selection set 0

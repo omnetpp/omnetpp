@@ -225,15 +225,15 @@ proc textwidget_contextmenu {txt modptr X Y} {
     catch {destroy .popup}
     menu .popup -tearoff 0
 
-    if {$modptr!=""} {
-        .popup add command -command "edit_filtermoduleoutput $txt $modptr" -label {Hide/show events...} -underline 0
-        .popup add separator
-    }
     .popup add command -command edit_copy -label {Copy} -accel {Ctrl+C} -underline 0
     .popup add separator
     .popup add command -command "edit_find $txt" -label {Find...} -accel {Ctrl+F} -underline 0
     .popup add command -command "edit_findnext $txt" -label {Find next} -accel {Ctrl+N,F3} -underline 5
     .popup add separator
+    if {$modptr!=""} {
+        .popup add command -command "edit_filtermoduleoutput $txt $modptr" -label {Hide/show events...} -underline 0
+        .popup add separator
+    }
     .popup add checkbutton -command "textwidget_togglewrap $txt" -variable tmp(wrap) -onvalue "char" -offvalue "none" -label {Wrap lines} -underline 0
     .popup add separator
     .popup add command -command "$txt tag add sel 1.0 end" -label {Select all} -accel {Ctrl+A} -underline 0

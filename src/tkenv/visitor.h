@@ -128,7 +128,7 @@ class cCountChildrenVisitor : public cVisitor
 
 void sortObjectsByName(cObject **objs, int n);
 void sortObjectsByFullPath(cObject **objs, int n);
-void sortObjectsByClassName(cObject **objs, int n);
+void sortObjectsByShortTypeName(cObject **objs, int n);
 
 NAMESPACE_END
 

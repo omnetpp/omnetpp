@@ -185,9 +185,9 @@ static int qsort_cmp_byfullpath(const void *a, const void *b)
 {
     return opp_strcmp(OBJPTR(a)->getFullPath().c_str(), OBJPTR(b)->getFullPath().c_str());
 }
-static int qsort_cmp_byclass(const void *a, const void *b)
+static int qsort_cmp_by_shorttypename(const void *a, const void *b)
 {
-    return opp_strcmp(getObjectTypeName(OBJPTR(a)), getObjectTypeName(OBJPTR(b)));
+    return opp_strcmp(getObjectShortTypeName(OBJPTR(a)), getObjectShortTypeName(OBJPTR(b)));
 }
 #undef OBJPTR
 
@@ -201,9 +201,9 @@ void sortObjectsByFullPath(cObject **objs, int n)
     qsort(objs, n, sizeof(cObject*), qsort_cmp_byfullpath);
 }
 
-void sortObjectsByClassName(cObject **objs, int n)
+void sortObjectsByShortTypeName(cObject **objs, int n)
 {
-    qsort(objs, n, sizeof(cObject*), qsort_cmp_byclass);
+    qsort(objs, n, sizeof(cObject*), qsort_cmp_by_shorttypename);
 }
 
 

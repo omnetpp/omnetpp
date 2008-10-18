@@ -434,12 +434,12 @@ void Cmdenv::simulate()
                // print event banner if neccessary
                if (opt_eventbanners && mod->isEvEnabled())
                {
-                   ::fprintf(fout, "** Event #%"LL"d  T=%s%s.  (%s) %s (id=%d)\n",
+                   ::fprintf(fout, "** Event #%"LL"d  T=%s%s   %s (%s, id=%d)\n",
                            simulation.getEventNumber(),
                            SIMTIME_STR(simulation.getSimTime()),
                            progressPercentage(),
-                           mod->getClassName(),
                            mod->getFullPath().c_str(),
+                           mod->getComponentType()->getName(),
                            mod->getId()
                          );
                    if (opt_eventbanner_details)

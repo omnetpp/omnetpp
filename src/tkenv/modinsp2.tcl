@@ -793,7 +793,7 @@ proc draw_message {c msgptr x y} {
     # display message label: "(classname)name"
     set msglabel ""
     if [opp_getsimoption animation_msgclassnames] {
-        set msglabel "([opp_getobjecttypename $msgptr])"
+        set msglabel "([opp_getobjectshorttypename $msgptr])"
     }
     if [opp_getsimoption animation_msgnames] {
         append msglabel "[opp_getobjectfullname $msgptr]"

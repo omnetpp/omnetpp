@@ -93,7 +93,8 @@ int getFileName_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectName_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectFullName_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectFullPath_cmd(ClientData, Tcl_Interp *, int, const char **);
-int getObjectTypeName_cmd(ClientData, Tcl_Interp *, int, const char **);
+int getObjectShortTypeName_cmd(ClientData, Tcl_Interp *, int, const char **);
+int getObjectFullTypeName_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectInfoString_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectOwner_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectField_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -193,7 +194,8 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_getobjectname",    getObjectName_cmd        }, // args: <pointer>  ret: getName()
    { "opp_getobjectfullname",getObjectFullName_cmd    }, // args: <pointer>  ret: getFullName()
    { "opp_getobjectfullpath",getObjectFullPath_cmd    }, // args: <pointer>  ret: getFullPath()
-   { "opp_getobjecttypename",getObjectTypeName_cmd    }, // args: <pointer>  ret: getClassName() or NED simple name
+   { "opp_getobjectshorttypename",getObjectShortTypeName_cmd  }, // args: <pointer>  ret: getClassName() or NED simple name
+   { "opp_getobjectfulltypename",getObjectFullTypeName_cmd }, // args: <pointer>  ret: getClassName() or NED qualified name
    { "opp_getobjectbaseclass",getObjectBaseClass_cmd  }, // args: <pointer>  ret: a base class
    { "opp_getobjectid",      getObjectId_cmd          }, // args: <pointer>  ret: object ID (if object has one) or ""
    { "opp_getobjectowner",   getObjectOwner_cmd       }, // args: <pointer>  ret: <ownerptr>
@@ -607,12 +609,21 @@ int getObjectFullPath_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
    return TCL_OK;
 }
 
-int getObjectTypeName_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+int getObjectShortTypeName_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    cObject *object = strToPtr(argv[1]);
    if (!object) {Tcl_SetResult(interp, TCLCONST("null or malformed pointer"), TCL_STATIC); return TCL_ERROR;}
-   Tcl_SetResult(interp, TCLCONST(getObjectTypeName(object)), TCL_VOLATILE);
+   Tcl_SetResult(interp, TCLCONST(getObjectShortTypeName(object)), TCL_VOLATILE);
+   return TCL_OK;
+}
+
+int getObjectFullTypeName_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
+   cObject *object = strToPtr(argv[1]);
+   if (!object) {Tcl_SetResult(interp, TCLCONST("null or malformed pointer"), TCL_STATIC); return TCL_ERROR;}
+   Tcl_SetResult(interp, TCLCONST(getObjectFullTypeName(object)), TCL_VOLATILE);
    return TCL_OK;
 }
 
@@ -649,8 +660,10 @@ int getObjectField_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
        Tcl_SetResult(interp, TCLCONST(object->getFullPath().c_str()), TCL_VOLATILE);
    } else if (!strcmp(field,"className")) {
        Tcl_SetResult(interp, TCLCONST(object->getClassName()), TCL_VOLATILE);
-   } else if (!strcmp(field,"typeName")) {
-       Tcl_SetResult(interp, TCLCONST(getObjectTypeName(object)), TCL_VOLATILE);
+   } else if (!strcmp(field,"fullTypeName")) {
+       Tcl_SetResult(interp, TCLCONST(getObjectFullTypeName(object)), TCL_VOLATILE);
+   } else if (!strcmp(field,"shortTypeName")) {
+       Tcl_SetResult(interp, TCLCONST(getObjectShortTypeName(object)), TCL_VOLATILE);
    } else if (!strcmp(field,"info")) {
        Tcl_SetResult(interp, TCLCONST(object->info().c_str()), TCL_VOLATILE);
    } else if (!strcmp(field,"detailedInfo")) {
@@ -902,7 +915,7 @@ int getSubObjectsFilt_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
    else if (!strcmp(orderby,"Full name"))
        sortObjectsByFullPath(visitor.getArray(), visitor.getArraySize());
    else if (!strcmp(orderby,"Class"))
-       sortObjectsByClassName(visitor.getArray(), visitor.getArraySize());
+       sortObjectsByShortTypeName(visitor.getArray(), visitor.getArraySize());
    else
        {Tcl_SetResult(interp, TCLCONST("wrong sort criteria"), TCL_STATIC); return TCL_ERROR;}
 

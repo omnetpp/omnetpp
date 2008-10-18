@@ -83,10 +83,18 @@ TclQuotedString::~TclQuotedString()
 
 //=======================================================================
 
-const char *getObjectTypeName(cObject *object)
+const char *getObjectShortTypeName(cObject *object)
 {
    if (dynamic_cast<cComponent*>(object))
        return ((cComponent*)object)->getComponentType()->getName();
+   else
+       return object->getClassName();
+}
+
+const char *getObjectFullTypeName(cObject *object)
+{
+   if (dynamic_cast<cComponent*>(object))
+       return ((cComponent*)object)->getComponentType()->getFullName();
    else
        return object->getClassName();
 }
@@ -142,7 +150,7 @@ void insertIntoInspectorListbox(Tcl_Interp *interp, const char *listbox, cObject
     CHK(Tcl_VarEval(interp, "multicolumnlistbox_insert ",listbox," ",ptr," {"
                             "ptr {",ptr,"} "
                             "name {",(fullpath ? obj->getFullPath().c_str() : obj->getFullName()),"} "
-                            "class {",getObjectTypeName(obj),"} "
+                            "class {",getObjectShortTypeName(obj),"} "
                             "info ",TclQuotedString(obj->info().c_str()).get(),
                             "} ",
                             "[get_icon_for_object {",ptr,"}]",
@@ -222,7 +230,7 @@ class cInspectByNameVisitor : public cVisitor
         }
 
         // found it?
-        if (!strcmp(fullpath,objpath.c_str()) && !strcmp(classname,getObjectTypeName(obj)))
+        if (!strcmp(fullpath,objpath.c_str()) && !strcmp(classname,getObjectShortTypeName(obj)))
         {
             // found: inspect if inspector is not open
             Tkenv *app = getTkenv();

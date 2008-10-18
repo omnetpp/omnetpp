@@ -231,12 +231,12 @@ proc inspectorNamePopup {ptr x y} {
 
     regsub {^ptr} $ptr {0x} p
 
-    .popup add command -label "Copy pointer with cast (for debugger)" -command [list setClipboard "(([opp_getobjecttypename $ptr] *)$p)"]
+    .popup add command -label "Copy pointer with cast (for debugger)" -command [list setClipboard "(([opp_getobjectfield $ptr className] *)$p)"]
     .popup add command -label "Copy pointer value (for debugger)" -command [list setClipboard $p]
     .popup add separator
     .popup add command -label "Copy full path" -command [list setClipboard [opp_getobjectfullpath $ptr]]
     .popup add command -label "Copy name" -command [list setClipboard [opp_getobjectfullname $ptr]]
-    .popup add command -label "Copy class name" -command [list setClipboard [opp_getobjecttypename $ptr]]
+    .popup add command -label "Copy class name" -command [list setClipboard [opp_getobjectfield $ptr className]]
 
     .popup post $x $y
 }
@@ -538,7 +538,9 @@ proc get_help_tip {w x y item} {
        set ptr [lindex $ptr 0]
 
        if {$ptr!="" && $ptr!=[opp_null]} {
-          set tip "([opp_getobjecttypename $ptr]) [opp_getobjectfullname $ptr] [opp_getobjectinfostring $ptr]"
+          set tip "([opp_getobjectshorttypename $ptr]) [opp_getobjectfullname $ptr]"
+          set info [opp_getobjectinfostring $ptr]
+          if {$info!=""} {append tip ", $info"}
           regsub {  +} $tip {  } tip
           if {[lsearch $tags "modname"] == -1} {
              set dispstr ""
