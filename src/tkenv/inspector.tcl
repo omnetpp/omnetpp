@@ -257,14 +257,14 @@ proc textwindow_add_icons {w {modptr ""}} {
     pack_iconbutton $w.toolbar.find   -image $icons(find) -command "findDialog $w.main.text"
     pack_iconbutton $w.toolbar.save   -image $icons(save) -command "savefile $w"
     if {$modptr!=""} {
-        pack_iconbutton $w.toolbar.filter -image $icons(filter) -command "edit_filtermoduleoutput $w.main.text $modptr"
+        pack_iconbutton $w.toolbar.filter -image $icons(filter) -command "edit_filterwindowcontents $w.main.text $modptr"
     }
     pack_iconbutton $w.toolbar.sep21  -separator
 
     set help_tips($w.toolbar.copy)   {Copy selected text to clipboard (Ctrl+C)}
     set help_tips($w.toolbar.find)   {Find string in window (Ctrl+F)}
     set help_tips($w.toolbar.save)   {Save window contents to file}
-    set help_tips($w.toolbar.filter) {Show/hide events (Ctrl+H)}
+    set help_tips($w.toolbar.filter) {Filter window contents (Ctrl+H)}
 }
 
 proc create_inspector_listbox {w} {

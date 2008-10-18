@@ -698,7 +698,7 @@ proc moduleOutputFilterDialog {textwidget rootmodule} {
 
     if {[network_present] == 0} {return 0}
 
-    set title "Hide/Show Events"
+    set title "Filter window contents"
     set msg "Select modules to show log messages from:"
 
     if {$rootmodule=="systemmodule"} {

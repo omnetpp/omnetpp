@@ -274,8 +274,8 @@ proc edit_findnext {{w .main.text}} {
    findNext $w
 }
 
-proc edit_filtermoduleoutput {{w .main.text} {modptr "systemmodule"}} {
-   # implements Edit|Hide/show events...
+proc edit_filterwindowcontents {{w .main.text} {modptr "systemmodule"}} {
+   # implements Edit|Filter window contents...
    moduleOutputFilterDialog $w $modptr
 }
 
