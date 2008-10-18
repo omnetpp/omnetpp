@@ -420,8 +420,10 @@ proc run_until {} {
 
     set time ""
     set event ""
+    set msg ""
     set mode ""    ;# will be set to Normal, Fast or Express
-    set ok [rununtil_dialog time event mode]
+
+    set ok [rununtil_dialog time event msg mode]
     if {$ok==0} return
 
     if {$mode=="Normal"} {
@@ -435,13 +437,13 @@ proc run_until {} {
     }
 
     set untilmode "until_on"
-    if {$time=="" && $event==""} {set until_on "until_off"}
+    if {$time=="" && $event=="" && $msg==""} {set until_on "until_off"}
 
     if [is_running] {
         if [catch {
             set_gui_for_runmode $mode "" $untilmode
             opp_set_run_mode $mode
-            opp_set_run_until $time $event
+            opp_set_run_until $time $event $msg
         } err] {
             messagebox {Error} "Error: $err" error ok
         }
@@ -449,14 +451,38 @@ proc run_until {} {
         if {![network_ready]} {return}
         if [catch {
             set_gui_for_runmode $mode "" $untilmode
-            opp_run $mode $time $event
+            opp_run $mode $time $event $msg
         } err] {
             messagebox {Error} "Error: $err" error ok
         }
         set_gui_for_runmode notrunning
     }
-
 }
+
+proc run_until_msg {msg mode} {
+    if {[network_ready] == 0} {
+       return
+    }
+    # mode must be "normal", "fast" or "express"
+    if [is_running] {
+        if [catch {
+            set_gui_for_runmode $mode "" "until_on"
+            opp_set_run_mode $mode
+            opp_set_run_until "" "" $msg
+        } err] {
+            messagebox {Error} "Error: $err" error ok
+        }
+    } else {
+        if [catch {
+            set_gui_for_runmode $mode "" "until_on"
+            opp_run $mode "" "" $msg
+        } err] {
+            messagebox {Error} "Error: $err" error ok
+        }
+        set_gui_for_runmode notrunning
+    }
+}
+
 
 proc start_all {} {
 

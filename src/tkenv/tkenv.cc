@@ -325,6 +325,8 @@ void Tkenv::doOneStep()
 
     animating = true;
 
+    rununtil_msg = NULL; // deactivate corresponding checks in eventCancelled()/objectDeleted()
+
     simstate = SIM_RUNNING;
     startClock();
     scheduler->executionResumed();
@@ -375,13 +377,14 @@ void Tkenv::doOneStep()
     }
 }
 
-void Tkenv::runSimulation(int mode, simtime_t until_time, eventnumber_t until_event, cModule *until_module)
+void Tkenv::runSimulation(int mode, simtime_t until_time, eventnumber_t until_eventnum, cMessage *until_msg, cModule *until_module)
 {
     ASSERT(simstate==SIM_NEW || simstate==SIM_READY);
 
     runmode = mode;
     rununtil_time = until_time;
-    rununtil_event = until_event;
+    rununtil_eventnum = until_eventnum;
+    rununtil_msg = until_msg;
     rununtil_module = until_module;  // Note: this is NOT supported with RUNMODE_EXPRESS
 
     stopsimulation_flag = false;
@@ -455,10 +458,11 @@ void Tkenv::setSimulationRunMode(int mode)
     runmode = mode;
 }
 
-void Tkenv::setSimulationRunUntil(simtime_t until_time, eventnumber_t until_event)
+void Tkenv::setSimulationRunUntil(simtime_t until_time, eventnumber_t until_eventnum, cMessage *until_msg)
 {
     rununtil_time = until_time;
-    rununtil_event = until_event;
+    rununtil_eventnum = until_eventnum;
+    rununtil_msg = until_msg;
 }
 
 void Tkenv::setSimulationRunUntilModule(cModule *until_module)
@@ -472,7 +476,7 @@ bool Tkenv::doRunSimulation()
     // IMPORTANT:
     // The following variables may change during execution (as a result of user interaction
     // during Tcl_Eval("update"):
-    //  - runmode, rununtil_time, rununtil_event, rununtil_module;
+    //  - runmode, rununtil_time, rununtil_eventnum, rununtil_msg, rununtil_module;
     //  - stopsimulation_flag
     //
     Speedometer speedometer;
@@ -487,6 +491,9 @@ bool Tkenv::doRunSimulation()
         // query which module will execute the next event
         cSimpleModule *mod = simulation.selectNextModule();
         if (!mod) break; // selectNextModule() interrupted (parsim)
+
+        // "run until message": stop if desired event was reached
+        if (rununtil_msg && simulation.msgQueue.peekFirst()==rununtil_msg) break;
 
         // if stepping locally in module, we stop both immediately
         // *before* and *after* executing the event in that module,
@@ -528,7 +535,7 @@ bool Tkenv::doRunSimulation()
         if (untilmodule_reached) break;
         if (stopsimulation_flag) break;
         if (rununtil_time>0 && simulation.guessNextSimtime()>=rununtil_time) break;
-        if (rununtil_event>0 && simulation.getEventNumber()>=rununtil_event) break;
+        if (rununtil_eventnum>0 && simulation.getEventNumber()>=rununtil_eventnum) break;
 
         // delay loop for slow simulation
         if (runmode==RUNMODE_SLOW)
@@ -550,7 +557,7 @@ bool Tkenv::doRunSimulationExpress()
     // IMPORTANT:
     // The following variables may change during execution (as a result of user interaction
     // during Tcl_Eval("update"):
-    //  - runmode, rununtil_time, rununtil_event, rununtil_module;
+    //  - runmode, rununtil_time, rununtil_eventnum, rununtil_msg, rununtil_module;
     //  - stopsimulation_flag
     //  - opt_expressmode_autoupdate
     //
@@ -579,6 +586,9 @@ bool Tkenv::doRunSimulationExpress()
         cSimpleModule *mod = simulation.selectNextModule();
         if (!mod) break; // selectNextModule() interrupted (parsim)
 
+        // "run until message": stop if desired event was reached
+        if (rununtil_msg && simulation.msgQueue.peekFirst()==rununtil_msg) break;
+
         speedometer.addEvent(simulation.getSimTime());
 
         simulation.doOneEvent(mod);
@@ -601,7 +611,7 @@ bool Tkenv::doRunSimulationExpress()
     }
     while( !stopsimulation_flag &&
            (rununtil_time<=0 || simulation.guessNextSimtime() < rununtil_time) &&
-           (rununtil_event<=0 || simulation.getEventNumber() < rununtil_event)
+           (rununtil_eventnum<=0 || simulation.getEventNumber() < rununtil_eventnum)
          );
     return false;
 }
@@ -1088,6 +1098,14 @@ bool Tkenv::idle()
 
 void Tkenv::objectDeleted(cObject *object)
 {
+    if (object==rununtil_msg)
+    {
+        // message to "run until" deleted -- stop the simulation by other means
+        rununtil_msg = NULL;
+        rununtil_eventnum = simulation.getEventNumber();
+        confirm("Message to run until has just been deleted.");
+    }
+
     for (TInspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); )
     {
         TInspectorList::iterator next = it;
@@ -1181,6 +1199,14 @@ void Tkenv::messageScheduled(cMessage *msg)
 
 void Tkenv::messageCancelled(cMessage *msg)
 {
+    //FIXME this should be optional (some checkbox)?
+    //if (msg==rununtil_msg)
+    //{
+    //    // message to "run until" cancelled -- stop the simulation by other means
+    //    rununtil_msg = NULL;
+    //    rununtil_eventnum = simulation.getEventNumber();
+    //    confirm("Message to run until got cancelled.");
+    //}
     EnvirBase::messageCancelled(msg);
 }
 

@@ -122,15 +122,10 @@ proc treemanagerDoubleClick {key} {
 proc treemanagerPopup {key x y} {
     global ned
 
-    catch {destroy .popup}
-    menu .popup -tearoff 0
-
     # $key is the object pointer
-    foreach i [opp_supported_insp_types $key] {
-       .popup add command -label "Inspect $i" -command "opp_inspect $key \"$i\""
-    }
-
-    .popup post $x $y
+    set ptr $key
+    set popup [create_inspector_contextmenu $ptr]
+    $popup post $x $y
 }
 
 

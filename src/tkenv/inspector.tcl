@@ -356,7 +356,7 @@ proc create_inspector_contextmenu {ptr} {
     # add inspector types supported by the object
     set insptypes [opp_supported_insp_types $ptr]
     foreach type $insptypes {
-       .popup add command -label "$type..." -command "opp_inspect $ptr \{$type\}"
+       .popup add command -label "Inspect $type..." -command "opp_inspect $ptr \{$type\}"
     }
 
     # add "run until" menu items
@@ -366,6 +366,13 @@ proc create_inspector_contextmenu {ptr} {
         .popup add separator
         .popup add command -label "Run until next event in this module" -command "runsimulation_local $w normal"
         .popup add command -label "Fast run until next event in this module" -command "runsimulation_local $w fast"
+    }
+
+    if {$baseclass=="cMessage"} {
+        .popup add separator
+        .popup add command -label "Run until this message" -command "run_until_msg $ptr normal"
+        .popup add command -label "Fast run until this message" -command "run_until_msg $ptr fast"
+        .popup add command -label "Express run until this message" -command "run_until_msg $ptr express"
     }
 
     # add further menu items

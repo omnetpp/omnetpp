@@ -459,33 +459,50 @@ proc setIfPatternIsValid {var pattern} {
     }
 }
 
-proc rununtil_dialog {time_var event_var mode_var} {
+proc rununtil_dialog {time_var event_var msg_var mode_var} {
 
     global opp config
 
     upvar $time_var time_var0
     upvar $event_var event_var0
+    upvar $msg_var msg_var0
     upvar $mode_var mode_var0
 
     set w .rununtil
-
     createOkCancelDialog $w {Run until}
 
+    # collect FES messages for combo
+    set msglabels {""}
+    set msgptrs [opp_fesmsgs 1000 1 1 "" ""]
+    foreach ptr $msgptrs {
+        set msglabel "[opp_getobjectfullname $ptr] ([opp_getobjectshorttypename $ptr]), [opp_getobjectinfostring $ptr] -- $ptr"
+        lappend msglabels $msglabel
+    }
+
+    # create and pack controls
     label-entry $w.f.time  {Simulation time to stop at:}
     label-entry $w.f.event {Event number to stop at:}
-    label-combo $w.f.mode  {Running mode:} \
-                 {{Normal} {Fast (rare updates)} {Express (tracing off)}}
+    label-combo $w.f.msg   {Message to stop at:} $msglabels
+    label-combo $w.f.mode  {Running mode:}  {{Normal} {Fast (rare updates)} {Express (tracing off)}}
 
-    foreach i {time event mode} {
+    foreach i {time event msg mode} {
        $w.f.$i.l configure -width 24
-       $w.f.$i.e configure -width 18
-       pack $w.f.$i -anchor w
+       pack $w.f.$i -anchor w -fill x
     }
 
     pack $w.f -anchor center -expand 1 -fill both -padx 10 -pady 10 -side top
 
+    # restore last values
+    set lastmsg $config(rununtil-msg)
+    if {[lsearch -exact $msgptrs $lastmsg]==-1} {
+        set msglabel ""  ;# saved msg pointer not currently scheduled, forget it (object may not even exist any more)
+    } else {
+        set msglabel "[opp_getobjectfullname $lastmsg] ([opp_getobjectshorttypename $lastmsg]), [opp_getobjectinfostring $lastmsg] -- $lastmsg"
+    }
+
     $w.f.time.e insert 0 $config(rununtil-time)
     $w.f.event.e insert 0 $config(rununtil-event)
+    $w.f.msg.e configure -value $msglabel
     $w.f.mode.e configure -value $config(rununtil-mode)
 
     $w.f.time.e select range 0 end
@@ -496,11 +513,13 @@ proc rununtil_dialog {time_var event_var mode_var} {
     if [execOkCancelDialog $w] {
         set time_var0  [$w.f.time.e get]
         set event_var0 [$w.f.event.e get]
+        set msg_var0   [lindex [$w.f.msg.e get] end]
         set mode_var0  [lindex [$w.f.mode.e cget -value] 0]
 
         set config(rununtil-time)  $time_var0
         set config(rununtil-event) $event_var0
-        set config(rununtil-mode) [$w.f.mode.e cget -value]
+        set config(rununtil-msg)   $msg_var0
+        set config(rununtil-mode)  [$w.f.mode.e cget -value]
 
         destroy $w
         return 1

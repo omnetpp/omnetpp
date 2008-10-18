@@ -172,10 +172,10 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_createsnapshot",   createSnapshot_cmd }, // args: <label>
    { "opp_exitomnetpp",      exitOmnetpp_cmd    }, // args: -
    { "opp_onestep",          oneStep_cmd        }, // args: -
-   { "opp_run",              run_cmd            }, // args: ?fast? ?timelimit?
+   { "opp_run",              run_cmd            }, // args: none, or <timelimit> <eventlimit> <message>
    { "opp_onestepinmodule",  oneStepInModule_cmd}, // args: <inspectorwindow>
    { "opp_set_run_mode",     setRunMode_cmd     }, // args: fast|normal|slow|express
-   { "opp_set_run_until",    setRunUntil_cmd    }, // args: <timelimit> <eventlimit>
+   { "opp_set_run_until",    setRunUntil_cmd    }, // args: none, or <timelimit> <eventlimit> <message>
    { "opp_set_run_until_module",setRunUntilModule_cmd}, // args: <inspectorwindow>
    { "opp_rebuild",          rebuild_cmd        }, // args: -
    { "opp_start_all",        startAll_cmd       }, // args: -
@@ -394,23 +394,30 @@ static int resolveRunMode(const char *mode)
 
 int run_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=2 && argc!=4) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
+   if (argc!=2 && argc!=5) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
 
    int mode = resolveRunMode(argv[1]);
    if (mode==-1) {Tcl_SetResult(interp, TCLCONST("wrong mode argument, should be slow, normal, fast or express"), TCL_STATIC);return TCL_ERROR;}
 
    simtime_t until_time = 0;
-   eventnumber_t until_event = 0;
-   if (argc==4)
+   eventnumber_t until_eventnum = 0;
+   cMessage *until_msg = NULL;
+   if (argc==5)
    {
        if (!opp_isblank(argv[2]))
            TRY( until_time = STR_SIMTIME(argv[2]) ); // simtime overflow
+
        char *e;
-       until_event = strtoll(argv[3], &e, 10);
+       until_eventnum = strtoll(argv[3], &e, 10);
+
+       if (!opp_isblank(argv[4])) {
+           until_msg = dynamic_cast<cMessage *>(strToPtr(argv[4]));
+           if (!until_msg) {Tcl_SetResult(interp, TCLCONST("until_msg object is NULL or not a cMessage"), TCL_STATIC); return TCL_ERROR;}
+       }
    }
 
-   app->runSimulation(mode, until_time, until_event);
+   app->runSimulation(mode, until_time, until_eventnum, until_msg);
    return TCL_OK;
 }
 
@@ -428,21 +435,29 @@ int setRunMode_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 
 int setRunUntil_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=1 && argc!=3) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
+   if (argc!=1 && argc!=4) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
 
    if (argc==1)
    {
-       app->setSimulationRunUntil(0,0);
+       app->setSimulationRunUntil(0,0,NULL);
    }
    else
    {
        simtime_t until_time = 0;
-       if (!opp_isblank(argv[2]))
+       if (!opp_isblank(argv[1]))
            TRY( until_time = STR_SIMTIME(argv[1]) );  // simtime overflow
+
        char *e;
-       eventnumber_t until_event = strtoll(argv[2], &e, 10);
-       app->setSimulationRunUntil(until_time, until_event);
+       eventnumber_t until_eventnum = strtoll(argv[2], &e, 10);
+
+       cMessage *until_msg = NULL;
+       if (!opp_isblank(argv[3])) {
+           until_msg = dynamic_cast<cMessage *>(strToPtr(argv[3]));
+           if (!until_msg) {Tcl_SetResult(interp, TCLCONST("until_msg object is NULL or not a cMessage"), TCL_STATIC); return TCL_ERROR;}
+       }
+
+       app->setSimulationRunUntil(until_time, until_eventnum, until_msg);
    }
    return TCL_OK;
 }
@@ -488,7 +503,7 @@ int oneStepInModule_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
    }
 
    // fast run until we get to that module
-   app->runSimulation(mode, 0, 0, mod);
+   app->runSimulation(mode, 0, 0, NULL, mod);
 
    return TCL_OK;
 }
@@ -756,6 +771,12 @@ int getObjectId_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    {
        char buf[32];
        sprintf(buf, "%d", dynamic_cast<cModule *>(object)->getId());
+       Tcl_SetResult(interp, buf, TCL_VOLATILE);
+   }
+   else if (dynamic_cast<cMessage *>(object))
+   {
+       char buf[32];
+       sprintf(buf, "%d", dynamic_cast<cMessage *>(object)->getId());
        Tcl_SetResult(interp, buf, TCL_VOLATILE);
    }
    else

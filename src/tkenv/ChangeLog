@@ -1,7 +1,12 @@
 2008-10-18  Andras Varga
 
-	* implemented module output window filtering (uses module checkboxtree
-	dialog)
+	* implemented module output window filtering: modules can be selected
+	using a checkbox tree dialog. Bound to Ctrl+H.
+
+	* implemented "Run until message", both in the Run Until dialog and
+	in message objects' context menu
+
+	* revised event banner texts
 
 2008-05-17  Andras Varga
 
