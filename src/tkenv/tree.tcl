@@ -74,6 +74,12 @@ proc Tree:init {w f} {
   set Tree($w:selection) {}
   set Tree($w:selidx) {}
   set Tree($w:lastid) 0
+
+  # forget tree checked state to force re-read
+  foreach i [array names Tree "$w:*:checked"] {
+      unset Tree($i)
+  }
+
   Tree:buildwhenidle $w
   $w config -takefocus 1 -highlightcolor gray -highlightthickness 1
   Tree:addbindings $w
@@ -201,12 +207,24 @@ proc Tree:gettooltip {w v} {
 }
 
 #
-# Returns the checkbox state for the given node
+# Returns the name of the variable that's bound to the checkbox state
+# for the given node. May not exist. Needs to be declared "global" to be accessed.
 #
-proc Tree:ischecked {w v} {
+proc Tree:getcheckvar {w v} {
+  return "Tree($w:$v:checked)"
+}
+
+#
+# Returns the list of nodes for which checkbox state is kept.
+#
+proc Tree:getcheckvars {w} {
   global Tree
-  if {![info exist Tree($w:$v)]} {return 0}
-  return $Tree($w:$v)
+  set result {}
+  foreach i [array names Tree "$w:*:checked"] {
+    regsub -- "$w:(.*):checked" $i "\\1" v
+    lappend result $v
+  }
+  return $result
 }
 
 #
@@ -257,7 +275,7 @@ proc Tree:buildlayer {w v in} {
         set tag "_$Tree($w:lastid)"
         incr Tree($w:lastid)
         set cb $w.$tag
-        checkbutton $cb -padx 0 -pady 0 -bg [$w cget -bg] -activebackground [$w cget -bg] -variable $Tree($w:$c)
+        checkbutton $cb -padx 0 -pady 0 -bg [$w cget -bg] -activebackground [$w cget -bg] -variable Tree($w:$c:checked) -command [list Tree:checkstatechanged $w $c]
         $w create window $x $y -window $cb -anchor w
         incr x [winfo reqwidth $cb]
     }
@@ -362,10 +380,18 @@ proc Tree:buildwhenidle w {
 # Add keyboard bindings to the tree widget
 #
 proc Tree:addbindings w {
+  bind $w <Button-1> {
+      catch {destroy .popup}
+      focus %W
+      set key [Tree:nodeat %W %x %y]
+      if {$key!=""} {
+          Tree:setselection %W $key
+      }
+  }
   bind $w <Up> {Tree:up %W}
   bind $w <Down> {Tree:down %W}
   bind $w <Return> {Tree:togglestate %W}
-  bind $w <space> {Tree:togglestate %W}
+  bind $w <space> {Tree:toggleorcheck %W}
   bind $w <Left> {Tree:togglestate %W}
   bind $w <Right> {Tree:togglestate %W}
 }
@@ -404,6 +430,21 @@ proc Tree:down w {
 
 #
 # Internal use only.
+# If the node has a checkbox, check/uncheck it; otherwise toggle open/closed state
+#
+proc Tree:toggleorcheck w {
+  global Tree
+  set v [Tree:getselection $w]
+  if {[info exist Tree($w:$v:checked)]} {
+    set Tree($w:$v:checked) [expr !$Tree($w:$v:checked)]
+    Tree:checkstatechanged $w $v
+  } else {
+    Tree:toggle $w $v
+  }
+}
+
+#
+# Internal use only.
 # Opens the selected node if it's closed, and closes it if it's open
 #
 proc Tree:togglestate w {
@@ -414,4 +455,21 @@ proc Tree:togglestate w {
   }
 }
 
+#
+# Internal use only.
+# Called when a checkbox state changed.
+#
+proc Tree:checkstatechanged {w v} {
+  global Tree
+  set state $Tree($w:$v:checked)
+  Tree:checksubtree $w $v $state
+}
 
+# Internal use only: helper for checkstatechanged
+proc Tree:checksubtree {w v state} {
+  global Tree
+  set Tree($w:$v:checked) $state
+  foreach c [$Tree($w:function) $w children $v] {
+      Tree:checksubtree $w $c $state
+  }
+}

@@ -27,16 +27,6 @@ proc initTreeManager {} {
     #
     # bindings for the tree
     #
-    bind $widgets(manager).tree <Button-1> {
-        catch {destroy .popup}
-        focus %W
-        #updateTreeManager
-        set key [Tree:nodeat %W %x %y]
-        if {$key!=""} {
-            Tree:setselection %W $key
-        }
-    }
-
     bind $widgets(manager).tree <Double-1> {
         focus %W
         #updateTreeManager
