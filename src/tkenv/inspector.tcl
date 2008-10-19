@@ -291,17 +291,19 @@ proc create_inspector_listbox {w} {
     grid rowconfig    $w.main 0 -weight 1 -minsize 0
     grid columnconfig $w.main 0 -weight 1 -minsize 0
 
-    bind $w.main.list <Double-Button-1> "inspect_item_in $w.main.list"
-    bind $w.main.list <Button-$B3> "inspector_rightclick $w.main.list %X %Y"
-    bind $w.main.list <Key-Return> "inspect_item_in $w.main.list"
+    bind $w.main.list <Double-Button-1> {inspect_item_in %W}
+    bind $w.main.list <Button-$B3> {inspector_rightclick %W %X %Y}
+    bind $w.main.list <Key-Return> {inspect_item_in %W}
 
     focus $w.main.list
 }
 
 proc inspector_rightclick {lb X Y} {
     set ptr [lindex [multicolumnlistbox_curselection $lb] 0]
-    set popup [create_inspector_contextmenu $ptr]
-    $popup post $X $Y
+    if [opp_isnotnull $ptr] {
+        set popup [create_inspector_contextmenu $ptr]
+        $popup post $X $Y
+    }
 }
 
 #
@@ -347,11 +349,12 @@ proc extendContextMenu {rules} {
 proc create_inspector_contextmenu {ptr} {
     global contextmenurules
 
-    if {$ptr=="" || $ptr==[opp_null]} return
-
     # create popup menu
     catch {destroy .popup}
     menu .popup -tearoff 0
+
+    # ptr should never be null, but check it anyway
+    if [opp_isnull $ptr] {return .popup}
 
     # add inspector types supported by the object
     set insptypes [opp_supported_insp_types $ptr]
@@ -456,7 +459,7 @@ proc inspect_item_in {lb} {
     # inspect the current item in the listbox of an inspector listwindow
 
     set ptr [lindex [multicolumnlistbox_curselection $lb] 0]
-    if {$ptr != "" && $ptr != [opp_null]} {
+    if [opp_isnotnull $ptr] {
         opp_inspect $ptr {(default)}
     }
 }
@@ -544,7 +547,7 @@ proc get_help_tip {w x y item} {
        }
        set ptr [lindex $ptr 0]
 
-       if {$ptr!="" && $ptr!=[opp_null]} {
+       if [opp_isnotnull $ptr] {
           set tip "([opp_getobjectshorttypename $ptr]) [opp_getobjectfullname $ptr]"
           set info [opp_getobjectinfostring $ptr]
           if {$info!=""} {append tip ", $info"}

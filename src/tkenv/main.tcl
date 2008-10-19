@@ -451,23 +451,23 @@ proc bind_commands_to_textwidget {txt {modptr ""}} {
     #      ^F is originally bound to 1 char right
     #      ^N is originally bound to 1 line down
     bind $txt <Key> {%W tag remove SELECT 0.0 end}
-    bind $txt <Control-f> "findDialog $txt;break"
-    bind $txt <Control-F> "findDialog $txt;break"
-    bind $txt <Control-n> "findNext $txt;break"
-    bind $txt <Control-N> "findNext $txt;break"
-    bind $txt <F3> "findNext $txt"
+    bind $txt <Control-f> {findDialog %W; break}
+    bind $txt <Control-F> {findDialog %W; break}
+    bind $txt <Control-n> {findNext %W; break}
+    bind $txt <Control-N> {findNext %W; break}
+    bind $txt <F3> {findNext %W}
     if {$modptr!=""} {
         # bind Ctrl+H ('break' is needed because originally ^H is bound to DEL)
-        bind $txt <Control-h> "moduleOutputFilterDialog $txt $modptr; break"
-        bind $txt <Control-H> "moduleOutputFilterDialog $txt $modptr; break"
+        bind $txt <Control-h> "moduleOutputFilterDialog %W $modptr; break"
+        bind $txt <Control-H> "moduleOutputFilterDialog %W $modptr; break"
     }
 
     # bind Ctrl+A "Select all" ('break' is needed below because ^A=Home)
-    bind $txt <Control-a> "$txt tag add sel 1.0 end; break"
+    bind $txt <Control-a> {%W tag add sel 1.0 end; break}
 
     # bind a context menu as well
     catch {$txt config -wrap $config(editor-wrap)}
-    bind $txt <Button-$B3> [list textwidget_contextmenu $txt $modptr %X %Y]
+    bind $txt <Button-$B3> [list textwidget_contextmenu %W $modptr %X %Y]
 }
 
 #===================================================================
@@ -648,7 +648,7 @@ proc startup_commands {} {
     if {$configname != ""} {
         # set up the selected config and run number
         opp_newrun $configname $runnumber
-        if {[opp_object_systemmodule] != [opp_null]} {
+        if [opp_isnotnull [opp_object_systemmodule]] {
             opp_inspect [opp_object_systemmodule] "(default)"
             notifyPlugins newNetwork
         }
