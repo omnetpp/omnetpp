@@ -9,6 +9,8 @@
 	* event banner text revised, plus now includes message name and class
 	as well; added "Short event banners" checkbox to options dialog
 
+	* fixed popup menu behaviour on linux (use tk_popup instead of post)
+
 2008-05-17  Andras Varga
 
 	* better toolbar icons

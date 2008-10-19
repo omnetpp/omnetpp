@@ -238,7 +238,7 @@ proc inspectorNamePopup {ptr x y} {
     .popup add command -label "Copy name" -command [list setClipboard [opp_getobjectfullname $ptr]]
     .popup add command -label "Copy class name" -command [list setClipboard [opp_getobjectfield $ptr className]]
 
-    .popup post $x $y
+    tk_popup .popup $x $y
 }
 
 proc setClipboard {str} {
@@ -302,7 +302,7 @@ proc inspector_rightclick {lb X Y} {
     set ptr [lindex [multicolumnlistbox_curselection $lb] 0]
     if [opp_isnotnull $ptr] {
         set popup [create_inspector_contextmenu $ptr]
-        $popup post $X $Y
+        tk_popup $popup $X $Y
     }
 }
 

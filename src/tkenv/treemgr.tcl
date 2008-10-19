@@ -125,7 +125,7 @@ proc treemanagerPopup {key x y} {
     # $key is the object pointer
     set ptr $key
     set popup [create_inspector_contextmenu $ptr]
-    $popup post $x $y
+    tk_popup $popup $x $y
 }
 
 

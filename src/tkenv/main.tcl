@@ -625,11 +625,11 @@ proc load_plugins {path} {
 #===================================================================
 
 proc generic_bindings {} {
-   global help_tips
-   set help_tips(helptip_proc) get_help_tip
-   set help_tips(width) 500
+    global help_tips
+    set help_tips(helptip_proc) get_help_tip
+    set help_tips(width) 500
 
-   bind Button <Return> {%W invoke}
+    bind Button <Return> {%W invoke}
 }
 
 proc startup_commands {} {

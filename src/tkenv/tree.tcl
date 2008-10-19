@@ -381,7 +381,6 @@ proc Tree:buildwhenidle w {
 #
 proc Tree:addbindings w {
   bind $w <Button-1> {
-      catch {destroy .popup}
       focus %W
       set key [Tree:nodeat %W %x %y]
       if {$key!=""} {

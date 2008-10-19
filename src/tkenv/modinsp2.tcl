@@ -1013,7 +1013,7 @@ proc graphmodwin_rightclick {w X Y} {
       $popup add separator
       $popup add command -label "Animation options..." -command "options_dialog a"
 
-      $popup post $X $Y
+      tk_popup $popup $X $Y
    }
 }
 
@@ -1162,7 +1162,7 @@ proc graphmodwin_qlen_rightclick {w X Y} {
    set qptr [graphmodwin_qlen_getqptr_current $c]
    if [opp_isnotnull $qptr] {
        set popup [create_inspector_contextmenu $qptr]
-       $popup post $X $Y
+       tk_popup $popup $X $Y
    }
 }
 

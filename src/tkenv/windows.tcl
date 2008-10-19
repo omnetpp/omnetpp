@@ -238,7 +238,7 @@ proc textwidget_contextmenu {txt modptr X Y} {
     .popup add separator
     .popup add command -command "$txt tag add sel 1.0 end" -label {Select all} -accel {Ctrl+A} -underline 0
 
-    .popup post $X $Y
+    tk_popup .popup $X $Y
 }
 
 proc textwidget_togglewrap {txt} {

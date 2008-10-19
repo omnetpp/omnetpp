@@ -70,7 +70,7 @@ proc moduleinspector_setrunmode {w} {
     .popup add command -label "Until..."  \
         -command [list config_iconbutton $w $icons(until) run_until "Run until time or event number"]
 
-    .popup post [winfo rootx $w] [expr [winfo rooty $w]+[winfo height $w]]
+    tk_popup .popup [winfo rootx $w] [expr [winfo rooty $w]+[winfo height $w]]
 
 }
 

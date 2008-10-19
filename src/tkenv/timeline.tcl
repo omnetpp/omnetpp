@@ -142,7 +142,7 @@ proc timeline_popup {cx cy x y} {
         catch {destroy .popup}
         menu .popup -tearoff 0
         .popup add command -label "Timeline options..." -command "options_dialog t"
-        .popup post $x $y
+        tk_popup .popup $x $y
     }
 }
 
@@ -172,7 +172,7 @@ proc timeline_rightclick {c X Y} {
 
    if [opp_isnotnull $ptr] {
       set popup [create_inspector_contextmenu $ptr]
-      $popup post $X $Y
+      tk_popup $popup $X $Y
    }
 }
 

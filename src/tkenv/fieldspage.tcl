@@ -43,14 +43,12 @@ proc inspector_createfields2page {w} {
     Tree:init $tree getFieldNodeInfo
 
     bind $tree <Double-1> {
-        catch {destroy .popup}
         focus %W
         set key [Tree:nodeat %W %x %y]
         getFieldNodeInfo_inspect %W $key
     }
 
     bind $tree <Return> {
-        catch {destroy .popup}
         set key [Tree:getselection %W]
         getFieldNodeInfo_inspect %W $key
     }
@@ -535,7 +533,7 @@ proc getFieldNodeInfo_popup {w key x y} {
         }
     }
 
-    .popup post $x $y
+    tk_popup .popup $x $y
 }
 
 proc getFieldNodeInfo_copy {w key} {

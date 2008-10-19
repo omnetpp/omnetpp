@@ -221,7 +221,7 @@ proc graphgatewin_rightclick {c X Y} {
 
    if [opp_isnotnull $ptr] {
       set popup [create_inspector_contextmenu $ptr]
-      $popup post $X $Y
+      tk_popup $popup $X $Y
    }
 }
 
