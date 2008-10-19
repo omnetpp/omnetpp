@@ -292,7 +292,7 @@ proc create_inspector_listbox {w} {
     grid columnconfig $w.main 0 -weight 1 -minsize 0
 
     bind $w.main.list <Double-Button-1> {inspect_item_in %W}
-    bind $w.main.list <Button-$B3> {inspector_rightclick %W %X %Y}
+    bind $w.main.list <Button-$B3> {+inspector_rightclick %W %X %Y}  ;# Note "+"! it appends this code to binding in widgets.tcl
     bind $w.main.list <Key-Return> {inspect_item_in %W}
 
     focus $w.main.list

@@ -979,7 +979,7 @@ proc filteredobjectlist_window {{ptr ""}} {
     bind $fp.nameentry <Return> "$fp.refresh invoke"
     bind $lb <Double-Button-1> "filteredobjectlist_inspect $lb; after 500 \{raise $w; focus $lb\}"
     bind $lb <Key-Return> "filteredobjectlist_inspect $lb; after 500 \{raise $w; focus $lb\}"
-    bind $lb <Button-$B3> "filteredobjectlist_popup %X %Y $w"
+    bind $lb <Button-$B3> "+filteredobjectlist_popup %X %Y $w"  ;# Note "+"! it appends this code to binding in widgets.tcl
     bind $w <Escape> "$w.buttons.closebutton invoke"
     bind_runcommands $w
 
