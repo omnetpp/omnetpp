@@ -985,7 +985,7 @@ void Tkenv::printEventBanner(cMessage *msg, cSimpleModule *module)
                 TclQuotedString(msg->getFullName()).get()
               );
     else
-        sprintf(banner,"** Event #%"LL"d  T=%s  %s (%s, id=%d), on %s`%s' (%s, id=%d)\n",
+        sprintf(banner,"** Event #%"LL"d  T=%s  %s (%s, id=%d), on %s`%s' (%s, id=%ld)\n",
                 simulation.getEventNumber(),
                 SIMTIME_STR(simulation.getSimTime()),
                 module->getFullPath().c_str(),
