@@ -96,7 +96,7 @@ int NEDResourceCache::doLoadNedSourceFolder(const char *foldername, const char *
         }
         if (isDirectory(filename))
         {
-            count += doLoadNedSourceFolder(filename, opp_join(".", expectedPackage, filename).c_str());
+            count += doLoadNedSourceFolder(filename, expectedPackage==NULL ? NULL : opp_join(".", expectedPackage, filename).c_str());
         }
         else if (opp_stringendswith(filename, ".ned"))
         {
@@ -118,7 +118,7 @@ void NEDResourceCache::doLoadNedFile(const char *nedfname, const char *expectedP
     // check that declared package matches expected package
     PackageElement *packageDecl = (PackageElement *)tree->getFirstChildWithTag(NED_PACKAGE);
     std::string declaredPackage = packageDecl ? packageDecl->getName() : "";
-    if (declaredPackage != expectedPackage)
+    if (expectedPackage!=NULL && declaredPackage != std::string(expectedPackage))
         throw NEDException("NED error in file `%s': declared package `%s' does not match expected package `%s'",
                            nedfname, declaredPackage.c_str(), expectedPackage);  //FIXME fname misses directory here
 
