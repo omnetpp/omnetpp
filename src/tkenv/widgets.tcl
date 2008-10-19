@@ -205,10 +205,10 @@ proc setupTkOptions {} {
 #
 # Work around bug in image handling in Aqua/Tk on Mac OS/X.
 #
-# Aqua/Tk crashes when one uses image buttons (toolbar!) where the image has 
-# partial transparency (ie alpha channel ia not just 0 or 1.) Workaround is 
+# Aqua/Tk crashes when one uses image buttons (toolbar!) where the image has
+# partial transparency (ie alpha channel ia not just 0 or 1.) Workaround is
 # to process the images with opp_resizeimage which somehow converts
-# partial transparency to opaque (even though it should keep alpha, and 
+# partial transparency to opaque (even though it should keep alpha, and
 # indeed does it on all platforms *except* OS/X -- another funny point.)
 #
 proc icons_workaround_for_osx {} {
@@ -662,7 +662,7 @@ proc vertResizeBar {w wToBeResized} {
     }
 
     # create bindings
-    bind $w <Button-1> "vertResizeBar:buttonDown $w %X"
+    bind $w <Button-1> "vertResizeBar:buttonDown %W %X"
     bind $w <B1-Motion> "vertResizeBar:buttonMove %X"
     bind $w <ButtonRelease-1> "vertResizeBar:buttonRelease %X $wToBeResized"
     bind $w <Button-$B2> "catch {destroy .resizeBar}"
@@ -848,6 +848,7 @@ proc multicolumnlistbox {w columnlist args} {
         }
         # eliminate "last column quirk" by adding a very wide dummy column:
         $w column insert end "dummy" -text "" -edit no -width 1000
+        # right-click support: should select the item (unless already selected)
         bind $w <$B3> {%W selection clearall; %W select set [%W nearest %x %y]}
         #bind $w <Motion> {puts "[%W nearest %x %y] of [%W index view.top]..[%W index view.bottom] -- [%W find view.top view.bottom]"}
     } else {
