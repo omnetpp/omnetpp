@@ -1691,51 +1691,49 @@ int nullPointer_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 int isNullPointer_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
-   const char *ptr = argv[1];
-   Tcl_SetResult(interp, TCLCONST(strcmp(ptr,ptrToStr(NULL))==0 ? "1" : "0"), TCL_STATIC);
+   Tcl_SetResult(interp, TCLCONST(strToPtr(argv[1])==NULL ? "1" : "0"), TCL_STATIC);
    return TCL_OK;
 }
 
 int isNotNullPointer_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
-   const char *ptr = argv[1];
-   Tcl_SetResult(interp, TCLCONST(strcmp(ptr,ptrToStr(NULL))==0 ? "0" : "1"), TCL_STATIC);
+   Tcl_SetResult(interp, TCLCONST(strToPtr(argv[1])!=NULL ? "1" : "0"), TCL_STATIC);
    return TCL_OK;
 }
 
 int objectDefaultList_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
-   Tcl_SetResult(interp, ptrToStr( &defaultList ), TCL_VOLATILE);
+   Tcl_SetResult(interp, ptrToStr(&defaultList), TCL_VOLATILE);
    return TCL_OK;
 }
 
 int objectSimulation_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
-   Tcl_SetResult(interp, ptrToStr( &simulation ), TCL_VOLATILE);
+   Tcl_SetResult(interp, ptrToStr(&simulation), TCL_VOLATILE);
    return TCL_OK;
 }
 
 int objectSystemModule_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
-   Tcl_SetResult(interp, ptrToStr( simulation.getSystemModule() ), TCL_VOLATILE);
+   Tcl_SetResult(interp, ptrToStr(simulation.getSystemModule()), TCL_VOLATILE);
    return TCL_OK;
 }
 
 int objectMessageQueue_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
-   Tcl_SetResult(interp, ptrToStr( &simulation.msgQueue ), TCL_VOLATILE);
+   Tcl_SetResult(interp, ptrToStr(&simulation.msgQueue), TCL_VOLATILE);
    return TCL_OK;
 }
 
 int objectComponentTypes_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
     if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
-   Tcl_SetResult(interp, ptrToStr( componentTypes.getInstance() ), TCL_VOLATILE);
+   Tcl_SetResult(interp, ptrToStr(componentTypes.getInstance()), TCL_VOLATILE);
    return TCL_OK;
 }
 
@@ -1749,21 +1747,21 @@ int objectFunctions_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 int objectClasses_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
-   Tcl_SetResult(interp, ptrToStr( classes.getInstance() ), TCL_VOLATILE);
+   Tcl_SetResult(interp, ptrToStr(classes.getInstance()), TCL_VOLATILE);
    return TCL_OK;
 }
 
 int objectEnums_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
-   Tcl_SetResult(interp, ptrToStr( enums.getInstance() ), TCL_VOLATILE);
+   Tcl_SetResult(interp, ptrToStr(enums.getInstance()), TCL_VOLATILE);
    return TCL_OK;
 }
 
 int objectConfigEntries_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
-   Tcl_SetResult(interp, ptrToStr( configKeys.getInstance() ), TCL_VOLATILE);
+   Tcl_SetResult(interp, ptrToStr(configKeys.getInstance()), TCL_VOLATILE);
    return TCL_OK;
 }
 

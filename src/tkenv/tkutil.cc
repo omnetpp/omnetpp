@@ -114,6 +114,7 @@ char *voidPtrToStr(void *ptr, char *buffer)
 
 void *strToVoidPtr(const char *s)
 {
+    // Note: must accept "" and malformed strings too, and return them as NULL.
     if (s[0]!='p' || s[1]!='t' || s[2]!='r')
        return NULL;
 
