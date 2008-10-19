@@ -22,7 +22,7 @@
 #===================================================================
 
 proc network_present {} {
-    if {[opp_object_systemmodule] == [opp_null]} {
+    if [opp_isnull [opp_object_systemmodule]] {
        messagebox {Error} {No network has been set up yet.} info ok
        return 0
     }
@@ -102,7 +102,7 @@ proc exit_omnetpp {} {
     set state [opp_getsimulationstate]
 
     if {$config(confirm-exit)} {
-        if {[opp_object_systemmodule]!=[opp_null]} {
+        if [opp_isnotnull [opp_object_systemmodule]] {
             if {$isrunning} {
                 set ans [messagebox {Warning} {The simulation is currently running. Do you really want to quit?} warning yesno]
                 if {$ans == "no"} {
@@ -217,7 +217,7 @@ proc new_network {} {
        opp_newnetwork $netname
        busy
 
-       if {[opp_object_systemmodule] != [opp_null]} {
+       if [opp_isnotnull [opp_object_systemmodule]] {
            busy "Opening graphical network inspector..."
            opp_inspect [opp_object_systemmodule] (default)
            busy
@@ -246,7 +246,7 @@ proc new_run {} {
        opp_newrun $configname $runnumber
        busy
 
-       if {[opp_object_systemmodule] != [opp_null]} {
+       if [opp_isnotnull [opp_object_systemmodule]] {
            busy "Opening graphical network inspector..."
            opp_inspect [opp_object_systemmodule] (default)
            busy

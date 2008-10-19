@@ -991,7 +991,7 @@ proc graphmodwin_rightclick {w X Y} {
    }
    set ptr [lindex $ptr 0]
 
-   if {$ptr!=""} {
+   if [opp_isnotnull $ptr] {
       set popup [create_inspector_contextmenu $ptr]
 
       set tmp($c:showlabels) $inspectordata($c:showlabels)
@@ -1152,7 +1152,7 @@ proc graphmodwin_qlen_getqptr {c modptr} {
 proc graphmodwin_qlen_dblclick w {
    set c $w.c
    set qptr [graphmodwin_qlen_getqptr_current $c]
-   if {$qptr!="" && $qptr!=[opp_null]} {
+   if [opp_isnotnull $qptr] {
        opp_inspect $qptr "(default)"
    }
 }
@@ -1160,7 +1160,7 @@ proc graphmodwin_qlen_dblclick w {
 proc graphmodwin_qlen_rightclick {w X Y} {
    set c $w.c
    set qptr [graphmodwin_qlen_getqptr_current $c]
-   if {$qptr!="" && $qptr!=[opp_null]} {
+   if [opp_isnotnull $qptr] {
        set popup [create_inspector_contextmenu $qptr]
        $popup post $X $Y
    }

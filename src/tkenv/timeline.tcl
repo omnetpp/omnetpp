@@ -170,7 +170,7 @@ proc timeline_rightclick {c X Y} {
    }
    set ptr [lindex $ptr 0]
 
-   if {$ptr!=""} {
+   if [opp_isnotnull $ptr] {
       set popup [create_inspector_contextmenu $ptr]
       $popup post $X $Y
    }
