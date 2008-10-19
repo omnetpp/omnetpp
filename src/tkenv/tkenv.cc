@@ -148,6 +148,7 @@ Tkenv::Tkenv()
     opt_bubbles = true;
     opt_animation_speed = 1.5;
     opt_print_banners = true;
+    opt_short_banners = false;
     opt_use_mainwindow = true;
     opt_expressmode_autoupdate = true;
     opt_stoponmsgcancel = true;
@@ -337,7 +338,7 @@ void Tkenv::doOneStep()
         if (mod)  // selectNextModule() not interrupted
         {
             if (opt_print_banners)
-               printEventBanner(mod);
+               printEventBanner(simulation.msgQueue.peekFirst(), mod);
             simulation.doOneEvent(mod);
             performAnimations();
         }
@@ -511,9 +512,9 @@ bool Tkenv::doRunSimulation()
 
         // do a simulation step
         if (opt_print_banners)
-            printEventBanner(mod);
+            printEventBanner(simulation.msgQueue.peekFirst(), mod);
 
-        simulation.doOneEvent( mod );
+        simulation.doOneEvent(mod);
         performAnimations();
 
         // flush so that output from different modules don't get mixed
@@ -973,16 +974,28 @@ void Tkenv::clearPerformanceDisplay()
     CHK(Tcl_VarEval(interp, EVENTSPERSIMSEC_LABEL " config -text {Ev/simsec: n/a}", NULL));
 }
 
-void Tkenv::printEventBanner(cSimpleModule *module)
+void Tkenv::printEventBanner(cMessage *msg, cSimpleModule *module)
 {
-    char banner[MAX_OBJECTFULLPATH+60];
-    sprintf(banner,"** Event #%"LL"d  T=%s  %s (%s, id=%d)\n",
-            simulation.getEventNumber(),
-            SIMTIME_STR(simulation.getSimTime()),
-            module->getFullPath().c_str(),
-            module->getComponentType()->getName(),
-            module->getId()
-          );
+    char banner[2*MAX_OBJECTFULLPATH+2*MAX_CLASSNAME+60];
+    if (opt_short_banners)
+        sprintf(banner,"** Event #%"LL"d  T=%s  %s, on `%s'\n",
+                simulation.getEventNumber(),
+                SIMTIME_STR(simulation.getSimTime()),
+                module->getFullPath().c_str(),
+                TclQuotedString(msg->getFullName()).get()
+              );
+    else
+        sprintf(banner,"** Event #%"LL"d  T=%s  %s (%s, id=%d), on %s`%s' (%s, id=%d)\n",
+                simulation.getEventNumber(),
+                SIMTIME_STR(simulation.getSimTime()),
+                module->getFullPath().c_str(),
+                module->getComponentType()->getName(),
+                module->getId(),
+                (msg->isSelfMessage() ? "selfmsg " : ""),
+                TclQuotedString(msg->getFullName()).get(),
+                msg->getClassName(),
+                msg->getId()
+              );
 
     char tags[MAX_OBJECTFULLPATH+60];
     sprintf(tags, "{event id-%d type-%s}", module->getId(), module->getNedTypeName());

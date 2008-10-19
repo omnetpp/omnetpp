@@ -1028,6 +1028,8 @@ int getSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
       sprintf(buf,"%lu ms", app->opt_stepdelay);
    else if (0==strcmp(argv[1], "print_banners"))
       sprintf(buf,"%d", app->opt_print_banners);
+   else if (0==strcmp(argv[1], "short_banners"))
+      sprintf(buf,"%d", app->opt_short_banners);
    else if (0==strcmp(argv[1], "use_mainwindow"))
       sprintf(buf,"%d", app->opt_use_mainwindow);
    else if (0==strcmp(argv[1], "updatefreq_fast"))
@@ -1083,6 +1085,8 @@ int setSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
    }
    else if (0==strcmp(argv[1], "print_banners"))
       app->opt_print_banners = (argv[2][0]!='0');
+   else if (0==strcmp(argv[1], "short_banners"))
+      app->opt_short_banners = (argv[2][0]!='0');
    else if (0==strcmp(argv[1], "use_mainwindow"))
       app->opt_use_mainwindow = (argv[2][0]!='0');
    else if (0==strcmp(argv[1], "updatefreq_fast"))

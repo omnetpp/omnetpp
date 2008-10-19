@@ -6,7 +6,8 @@
 	* implemented "Run until message", both in the Run Until dialog and
 	in message objects' context menu
 
-	* revised event banner texts
+	* event banner text revised, plus now includes message name and class
+	as well; added "Short event banners" checkbox to options dialog
 
 2008-05-17  Andras Varga
 

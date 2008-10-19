@@ -28,8 +28,6 @@
 
 USING_NAMESPACE
 
-#define MAX_CLASSNAME       100
-
 //
 // Inspector type code <--> string conversions
 //

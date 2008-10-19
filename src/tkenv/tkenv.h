@@ -33,6 +33,8 @@ NAMESPACE_BEGIN
 class Speedometer;
 class TInspector;
 
+#define MAX_CLASSNAME  100
+
 
 /**
  * A Tcl/Tk-based user interface.
@@ -76,6 +78,7 @@ class TKENV_API Tkenv : public EnvirBase
       opp_string opt_default_config; // automatically set up this config at startup
       int  opt_default_run;        // automatically set up this run (of the default config) at startup
       bool opt_print_banners;      // print event banners
+      bool opt_short_banners;      // controls detail of event banners
       bool opt_use_mainwindow;     // dump modules' ev << ... stuff into main window
       bool opt_animation_enabled;  // msg animation
       bool opt_nexteventmarkers;   // display next event marker (red frame around modules)
@@ -222,7 +225,7 @@ class TKENV_API Tkenv : public EnvirBase
                        const char *checkboxLabel, const char *defaultValue,
                        std::string& outResult, bool& inoutCheckState);
 
-      void printEventBanner(cSimpleModule *mod);
+      void printEventBanner(cMessage *msg, cSimpleModule *mod);
       void animateSend(cMessage *msg, cGate *fromgate, cGate *togate);
       void animateSendDirect(cMessage *msg, cModule *frommodule, cGate *togate);
       void animateDelivery(cMessage *msg);

@@ -30,6 +30,7 @@ proc save_tkenvrc {{fname ".tkenvrc"}} {
             stepdelay
             use_mainwindow
             print_banners
+            short_banners
             animation_enabled
             nexteventmarkers
             senddirect_arrows

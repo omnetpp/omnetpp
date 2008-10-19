@@ -320,7 +320,8 @@ proc options_dialog {{defaultpage "g"}} {
 
     frame $nb.g.f2 -relief groove -borderwidth 2
     checkbutton $nb.g.f2.usemainwin -text {Use main window for module output} -variable opp(usemainwin)
-    checkbutton $nb.g.f2.banners -text {Print event banners} -variable opp(banners)
+    checkbutton $nb.g.f2.printbanners -text {Print event banners} -variable opp(printbanners)
+    checkbutton $nb.g.f2.shortbanners -text {Short event banners} -variable opp(shortbanners)
     label-entry $nb.g.f2.numlines {Scrollback buffer (lines):}
     commentlabel $nb.g.f2.c1 {Applies to main window and module log windows. Leave blank for unlimited. Minimum value is 500 lines.}
     checkbutton $nb.g.f2.layouting -text {Show layouting process} -variable opp(layouting)
@@ -328,7 +329,8 @@ proc options_dialog {{defaultpage "g"}} {
     checkbutton $nb.g.f2.confirmexit -text {Confirm exit when simulation is in progress} -variable opp(confirmexit)
     $nb.g.f2.numlines.l config -width 0
     pack $nb.g.f2.usemainwin -anchor w
-    pack $nb.g.f2.banners -anchor w
+    pack $nb.g.f2.printbanners -anchor w
+    pack $nb.g.f2.shortbanners -anchor w -padx 10
     pack $nb.g.f2.numlines -anchor w -fill x
     pack $nb.g.f2.c1 -anchor w
     pack $nb.g.f2.layouting -anchor w
@@ -391,7 +393,8 @@ proc options_dialog {{defaultpage "g"}} {
     $nb.g.f1.stepdelay.e insert 0 [opp_getsimoption stepdelay]
     $nb.g.f2.numlines.e insert 0 $config(logwindow-scrollbacklines)
     set opp(usemainwin) [opp_getsimoption use_mainwindow]
-    set opp(banners)    [opp_getsimoption print_banners]
+    set opp(printbanners) [opp_getsimoption print_banners]
+    set opp(shortbanners) [opp_getsimoption short_banners]
     set opp(anim)       [opp_getsimoption animation_enabled]
     set opp(concanim)   $config(concurrent-anim)
     set opp(nextev)     [opp_getsimoption nexteventmarkers]
@@ -424,7 +427,8 @@ proc options_dialog {{defaultpage "g"}} {
             set config(logwindow-scrollbacklines) $n
         }
         opp_setsimoption use_mainwindow      $opp(usemainwin)
-        opp_setsimoption print_banners       $opp(banners)
+        opp_setsimoption print_banners       $opp(printbanners)
+        opp_setsimoption short_banners       $opp(shortbanners)
         opp_setsimoption animation_enabled   $opp(anim)
         set config(concurrent-anim)          $opp(concanim)
         opp_setsimoption nexteventmarkers    $opp(nextev)
