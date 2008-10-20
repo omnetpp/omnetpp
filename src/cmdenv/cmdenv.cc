@@ -448,7 +448,7 @@ void Cmdenv::simulate()
                    ::fprintf(fout, "** Event #%"LL"d  T=%s%s   %s (%s, id=%d)\n",
                            simulation.getEventNumber(),
                            SIMTIME_STR(simulation.getSimTime()),
-                           progressPercentage(),
+                           progressPercentage(), // note: IDE launcher uses this to track progress
                            mod->getFullPath().c_str(),
                            mod->getComponentType()->getName(),
                            mod->getId()
@@ -504,7 +504,7 @@ void Cmdenv::simulate()
                                simulation.getEventNumber(),
                                SIMTIME_STR(simulation.getSimTime()),
                                timeToStr(totalElapsed()),
-                               progressPercentage());
+                               progressPercentage()); // note: IDE launcher uses this to track progress
                        ::fprintf(fout, "     Speed:     ev/sec=%g   simsec/sec=%g   ev/simsec=%g\n",
                                speedometer.getEventsPerSec(),
                                speedometer.getSimSecPerSec(),
@@ -521,7 +521,7 @@ void Cmdenv::simulate()
                                simulation.getEventNumber(),
                                SIMTIME_STR(simulation.getSimTime()),
                                timeToStr(totalElapsed()),
-                               progressPercentage(),
+                               progressPercentage(), // note: IDE launcher uses this to track progress
                                speedometer.getEventsPerSec());
                    }
 
