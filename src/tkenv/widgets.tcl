@@ -378,13 +378,17 @@ proc label-entry {w label {text {}}} {
 
 proc label-entry-help {w label helptext {text {}}} {
     # utility function: create a frame with a label+entry
+    global help_tips
     frame $w
     label $w.l -anchor w -text $label
     entry $w.e -highlightthickness 0
-    label $w.h -anchor w -text "(Help)" -fg "#0000a0"
-    grid $w.l $w.e $w.h -sticky news
+    #label $w.h -anchor w -text "(Help)" -fg "#0000a0"
+    set help_tips($w.l) $helptext
+    set help_tips($w.e) $helptext
+    #grid $w.l $w.e $w.h -sticky news
+    grid $w.l $w.e -sticky news
     grid columnconfigure $w 1 -weight 1
-    bind $w.h <Button-1> [list helplabel_showhelp $helptext %X %Y]
+    #bind $w.h <Button-1> [list helplabel_showhelp $helptext %X %Y]
     $w.e insert 0 $text
 }
 
@@ -540,13 +544,17 @@ proc commentlabel {w text} {
 }
 
 proc labelwithhelp {w text helptext} {
+    global help_tips
     frame $w
     label $w.l -justify left -text $text
-    label $w.h -justify left -text "(Help)" -fg "#0000a0"
-    pack $w.l $w.h -expand 0 -side left -anchor center -fill none -padx 2 -pady 2
-    bind $w.h <Button-1> [list helplabel_showhelp $helptext %X %Y]
+    #label $w.h -justify left -text "(Help)" -fg "#0000a0"
+    set help_tips($w.l) $helptext
+    #pack $w.l $w.h -expand 0 -side left -anchor center -fill none -padx 2 -pady 2
+    pack $w.l -expand 0 -side left -anchor center -fill none -padx 2 -pady 2
+    #bind $w.h <Button-1> [list helplabel_showhelp $helptext %X %Y]
 }
 
+# do not use - DOES NOT work on Linux (focus problems...)
 proc helplabel_showhelp {text x y} {
     global help_tips
     catch {destroy .helpwin}
@@ -556,13 +564,14 @@ proc helplabel_showhelp {text x y} {
     wm geometry .helpwin "+[expr $x-200]+[expr $y+5]"
     label .helpwin.tip -text $text -padx 4 -wraplength $help_tips(width) \
                             -bg $help_tips(color) -border 1 -relief solid \
-                            -font $help_tips(font) -justify left
+                            -font $help_tips(font) -justify left -takefocus 1
     pack .helpwin.tip
-    waitforfocus .helpwin
-    bind .helpwin <Return> "catch { destroy .helpwin }"
-    bind .helpwin <Escape> "catch { destroy .helpwin }"
-    bind .helpwin <FocusOut> "catch { destroy .helpwin }"
-    bind .helpwin <Button-1> "catch { destroy .helpwin }"
+    bind .helpwin.tip <Return> "catch { destroy .helpwin }"
+    bind .helpwin.tip <Escape> "catch { destroy .helpwin }"
+    bind .helpwin.tip <FocusOut> "catch { destroy .helpwin }"
+    bind .helpwin.tip <Button-1> "catch { destroy .helpwin }"
+    waitforfocus .helpwin.tip
+    puts "bubu"
 }
 
 

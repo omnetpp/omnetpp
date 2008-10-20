@@ -906,9 +906,8 @@ proc filteredobjectlist_window {{ptr ""}} {
     $fp.classentry.entry config -textvariable tmp(class)
     entry $fp.nameentry -textvariable tmp(name)
 
-    set classhelptext "Wildcards accepted (*,?), try '*Packet'"
-    set namehelptext "Use wildcards (*,?): '*.foo' for any object named foo; '*foo*' for any\n\
-                     object whose full path contains foo; use '{a-z}' for character range"
+    set help_tips($fp.classentry.entry) $helptexts(filterdialog-classnamepattern)
+    set help_tips($fp.nameentry) $helptexts(filterdialog-namepattern)
 
     button $fp.refresh -text "Refresh" -width 10 -command "filteredobjectlist_refresh $w"
 

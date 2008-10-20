@@ -275,7 +275,7 @@ proc Tree:buildlayer {w v in} {
         set tag "_$Tree($w:lastid)"
         incr Tree($w:lastid)
         set cb $w.$tag
-        checkbutton $cb -padx 0 -pady 0 -bg [$w cget -bg] -activebackground [$w cget -bg] -variable Tree($w:$c:checked) -command [list Tree:checkstatechanged $w $c]
+        checkbutton $cb -padx 0 -pady 0 -bg [$w cget -bg] -takefocus 0 -activebackground [$w cget -bg] -variable Tree($w:$c:checked) -command [list Tree:checkstatechanged $w $c]
         $w create window $x $y -window $cb -anchor w
         incr x [winfo reqwidth $cb]
     }

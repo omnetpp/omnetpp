@@ -99,6 +99,7 @@ proc init_balloons {args} {
     enable_balloon Scale
     enable_balloon Menubutton
     enable_balloon Label
+    enable_balloon Entry
     enable_balloon Menu "%W index active"
     enable_balloon Canvas "%W find withtag current"
 }
