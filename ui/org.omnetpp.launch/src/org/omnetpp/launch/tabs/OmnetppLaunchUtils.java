@@ -563,11 +563,12 @@ public class OmnetppLaunchUtils {
 
 			proc.waitFor();
 
+			String simInfo = stringBuffer.toString().replace("\r", "");
+			
 			//FIXME parse out errors: they are the lines that start with "<!>" -- e.g. inifile might contain a syntax error etc
 			// --Andras
 			if (proc.exitValue() == 0)
-				return "Number of runs: "+StringUtils.trimToEmpty(StringUtils.substringBetween(stringBuffer.toString(), "Number of runs:", "End run of OMNeT++"));
-
+				return "Number of runs: "+StringUtils.trimToEmpty(StringUtils.substringBetween(simInfo, "Number of runs:", "\n\n"));
 		} catch (CoreException e) {
 			// LaunchPlugin.logError("Error starting the executable", e);
 			// its not a big deal if we cannot start the simulation. don't put anything in the log
