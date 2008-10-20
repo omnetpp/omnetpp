@@ -249,9 +249,17 @@ int Cmdenv::run()
 
     if (opt_printnumruns)
     {
-        // IMPORTANT: the simulation launcher will display in the tooltip the text between the following markers:
-        // "Number of runs" .. "\n\n"
-        // MODIFY the OmnetppLaunchUtils.getSimulationRunInfo if you chanage these markers
+        //
+        // IMPORTANT: the simulation launcher will parse the output of this
+        // option, so it should be modified with care and the two kept in sync
+        // (see OmnetppLaunchUtils.getSimulationRunInfo()).
+        //
+        // Rules:
+        // (1) the number of runs should appear on the rest of the line
+        //     after the "Number of runs:" text
+        // (2) per-run information lines should span from the "Number of runs:"
+        //     line until the next blank line ("\n\n").
+        //
         ev.printf("Config: %s\n", opt_configname.c_str());
         ev.printf("Number of runs: %d\n", cfg->getNumRunsInScenario(opt_configname.c_str()));
 
