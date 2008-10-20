@@ -342,7 +342,7 @@ proc options_dialog {{defaultpage "g"}} {
     checkbutton $nb.t.tlwantnonself -text {Display non-self messages in the timeline} -variable opp(timeline-wantnonselfmsgs)
     label-entry-help $nb.t.tlnamepattern {Message name filter:} $helptexts(timeline-namepattern)
     label-entry-help $nb.t.tlclassnamepattern {Class name filter:} $helptexts(timeline-classnamepattern)
-    commentlabel $nb.t.c1 {Wildcards, AND, OR, NOT, numeric ranges, field matchers like kind, length, etc. accepted. Click Help for more.}
+    commentlabel $nb.t.c1 {Wildcards, AND, OR, NOT, numeric ranges, field matchers like kind, length, etc. accepted. Hover with the mouse over the controls for more info.}
     $nb.t.tlnamepattern.l config -width 20
     $nb.t.tlclassnamepattern.l config -width 20
     $nb.t.tlnamepattern.e config -width 40
