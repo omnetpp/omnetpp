@@ -105,7 +105,7 @@ proc getFieldNodeInfo {w op {key ""}} {
 
         text {
             if [opp_isnull $obj] {return "<object is NULL>"}
-            if [opp_isnull $sd] {return "<no descriptor for object>"}
+            if {$sd!="" && [opp_isnull $sd]} {return "<no descriptor for object>"}
 
             switch $keytype {
                 obj {
