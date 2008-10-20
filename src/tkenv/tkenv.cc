@@ -1117,7 +1117,8 @@ void Tkenv::objectDeleted(cObject *object)
         // message to "run until" deleted -- stop the simulation by other means
         rununtil_msg = NULL;
         rununtil_eventnum = simulation.getEventNumber();
-        confirm("Message to run until has just been deleted.");
+        if (simstate==SIM_RUNNING || simstate==SIM_BUSY)
+            confirm("Message to run until has just been deleted.");
     }
 
     for (TInspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); )
@@ -1215,7 +1216,8 @@ void Tkenv::messageCancelled(cMessage *msg)
 {
     if (msg==rununtil_msg && opt_stoponmsgcancel)
     {
-        confirm(opp_stringf("Run-until message `%s' got cancelled.", msg->getName()).c_str());
+        if (simstate==SIM_RUNNING || simstate==SIM_BUSY)
+            confirm(opp_stringf("Run-until message `%s' got cancelled.", msg->getName()).c_str());
         rununtil_msg = NULL;
         rununtil_eventnum = simulation.getEventNumber(); // stop the simulation using the eventnumber limit
     }
