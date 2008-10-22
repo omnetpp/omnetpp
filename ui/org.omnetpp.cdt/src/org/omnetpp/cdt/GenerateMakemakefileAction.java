@@ -96,7 +96,7 @@ public class GenerateMakemakefileAction implements IObjectActionDelegate {
     //XXX currently unused; we may create some Action to invoke it
     public static void generateMakeMakefile(IProject project, IProgressMonitor monitor) throws IOException, CoreException {
         BuildSpecification buildSpec = BuildSpecification.readBuildSpecFile(project); //XXX possible IllegalArgumentException
-        IContainer[] makemakeFolders = buildSpec.getMakemakeFolders();
+        IContainer[] makemakeFolders = buildSpec.getMakemakeFolders().toArray(new IContainer[]{});
         Map<IContainer, String> targetNames = generateTargetNames(makemakeFolders);
         Map<IContainer, Set<IContainer>> folderDependencies = Activator.getDependencyCache().getFolderDependencies(project);
         String makeMakeFile = generateMakeMakefile(makemakeFolders, folderDependencies, targetNames);

@@ -1,5 +1,7 @@
 package org.omnetpp.cdt.launch;
 
+import java.util.List;
+
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -69,7 +71,7 @@ public class OppVariableResolver implements IDynamicVariableResolver {
 			if (buildSpec == null)
 				return ""; // no build spec file
 			
-	        IContainer[] sourceFolders = buildSpec.getMakemakeFolders();
+	        List<IContainer> sourceFolders = buildSpec.getMakemakeFolders();
 			for (IContainer folder : sourceFolders) {
 				MakemakeOptions options = buildSpec.getMakemakeOptions(folder);
 				Assert.isTrue(options!=null);

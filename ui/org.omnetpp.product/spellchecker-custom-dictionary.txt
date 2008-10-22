@@ -282,3 +282,4 @@ fishy
 libs
 lib
 download
+lingo

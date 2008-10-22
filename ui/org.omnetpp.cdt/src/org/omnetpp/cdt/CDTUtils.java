@@ -66,8 +66,8 @@ public class CDTUtils {
     public static List<IContainer> getSourceFolders(IProject project) {
         ICSourceEntry[] sourceEntries = CDTUtils.getSourceEntries(project);
         List<IContainer> sourceFolders = new ArrayList<IContainer>();
-        for (ICSourceEntry i : sourceEntries)
-            sourceFolders.add(i.getFullPath().isEmpty() ? project : project.getFolder(i.getFullPath()));
+        for (ICSourceEntry sourceEntry : sourceEntries)
+            sourceFolders.add(sourceEntry.getFullPath().isEmpty() ? project : project.getFolder(sourceEntry.getFullPath()));
         return sourceFolders;
     }
  
@@ -103,4 +103,5 @@ public class CDTUtils {
         }
         CoreModel.getDefault().setProjectDescription(project, projectDescription);
     }
+    
 }

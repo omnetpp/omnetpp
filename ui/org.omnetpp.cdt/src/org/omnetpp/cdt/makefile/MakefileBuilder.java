@@ -201,7 +201,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         monitor.subTask("Analyzing dependencies and updating makefiles...");
 
         // collect folders
-        IContainer[] makemakeFolders = buildSpec.getMakemakeFolders();
+        List<IContainer> makemakeFolders = buildSpec.getMakemakeFolders();
         
         // register folders in the marker synchronizer
         for (IContainer makemakeFolder : makemakeFolders)
@@ -211,7 +211,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         long startTime = System.currentTimeMillis();
         for (IContainer makemakeFolder : makemakeFolders)
             generateMakefileFor(makemakeFolder);
-        System.out.println("Generated " + makemakeFolders.length + " makefiles in: " + (System.currentTimeMillis()-startTime) + "ms");
+        System.out.println("Generated " + makemakeFolders.size() + " makefiles in: " + (System.currentTimeMillis()-startTime) + "ms");
     }
 
     /**
