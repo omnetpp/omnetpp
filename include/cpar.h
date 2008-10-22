@@ -266,7 +266,7 @@ class SIM_API cPar : public cObject
     };
 
   protected:
-    static char *possibletypes;
+    static const char *possibletypes;
   private:
     char typechar;     // S/B/L/D/F/T/X/C/P/O/I
     bool inputflag;

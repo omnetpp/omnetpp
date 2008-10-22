@@ -98,7 +98,7 @@ OmnetTclCommand tcl_commands[] = {
 
 int loadScalar_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-    if (argc!=2) {Tcl_SetResult(interp, "wrong # args: should be \"opp_loadScalar <filename>\"", TCL_STATIC); return TCL_ERROR;}
+    if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong # args: should be \"opp_loadScalar <filename>\""), TCL_STATIC); return TCL_ERROR;}
     CATCH_EXCEPTIONS(
         scalarMgr.loadFile(argv[1]);
     )
@@ -107,7 +107,7 @@ int loadScalar_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 
 int getFileAndRunList_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-    if (argc!=1) {Tcl_SetResult(interp, "wrong # args: should be \"opp_getFileAndRunList\"", TCL_STATIC); return TCL_ERROR;}
+    if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong # args: should be \"opp_getFileAndRunList\""), TCL_STATIC); return TCL_ERROR;}
     CATCH_EXCEPTIONS(
         Tcl_Obj *vectorlist = Tcl_NewListObj(0, NULL);
         for (ScalarManager::RunRef i = scalarMgr.getRuns().begin(); i!=scalarMgr.getRuns().end(); ++i)
@@ -122,7 +122,7 @@ int getFileAndRunList_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
 
 int getModuleList_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-    if (argc!=1) {Tcl_SetResult(interp, "wrong # args: should be \"opp_getModuleList\"", TCL_STATIC); return TCL_ERROR;}
+    if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong # args: should be \"opp_getModuleList\""), TCL_STATIC); return TCL_ERROR;}
 
     Tcl_Obj *vectorlist = Tcl_NewListObj(0, NULL);
     for (ScalarManager::StringRef i = scalarMgr.getModuleNames().begin(); i!=scalarMgr.getModuleNames().end(); ++i)
@@ -137,7 +137,7 @@ int getModuleList_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
 
 int getScalarNameList_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-    if (argc!=1) {Tcl_SetResult(interp, "wrong # args: should be \"opp_getScalarNameList\"", TCL_STATIC); return TCL_ERROR;}
+    if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong # args: should be \"opp_getScalarNameList\""), TCL_STATIC); return TCL_ERROR;}
 
     Tcl_Obj *vectorlist = Tcl_NewListObj(0, NULL);
     for (ScalarManager::StringRef i = scalarMgr.getScalarNames().begin(); i!=scalarMgr.getScalarNames().end(); ++i)
@@ -151,7 +151,7 @@ int getScalarNameList_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
 
 int getFilteredScalarList_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-    if (argc!=4) {Tcl_SetResult(interp, "wrong # args: should be \"opp_getFilteredScalarList <fileAndRun> <module> <name>\"", TCL_STATIC); return TCL_ERROR;}
+    if (argc!=4) {Tcl_SetResult(interp, TCLCONST("wrong # args: should be \"opp_getFilteredScalarList <fileAndRun> <module> <name>\""), TCL_STATIC); return TCL_ERROR;}
 
     const char *fileAndRunPattern = argv[1];
     const char *modulePattern = argv[2];
@@ -171,72 +171,72 @@ int getFilteredScalarList_cmd(ClientData, Tcl_Interp *interp, int argc, const ch
 
 int getFilePathOf_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-    if (argc!=2) {Tcl_SetResult(interp, "wrong # args: should be \"opp_getFilePathOf <id>\"", TCL_STATIC); return TCL_ERROR;}
+    if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong # args: should be \"opp_getFilePathOf <id>\""), TCL_STATIC); return TCL_ERROR;}
     int id = atoi(argv[1]);
-    if (id<0 || id>=(int)scalarMgr.getValues().size()) {Tcl_SetResult(interp, "id out of range", TCL_STATIC); return TCL_ERROR;}
+    if (id<0 || id>=(int)scalarMgr.getValues().size()) {Tcl_SetResult(interp, TCLCONST("id out of range"), TCL_STATIC); return TCL_ERROR;}
     Tcl_SetResult(interp, TCLCONST(scalarMgr.getValue(id).runRef->fileRef->filePath.c_str()), TCL_VOLATILE);
     return TCL_OK;
 }
 
 int getFileNameOf_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-    if (argc!=2) {Tcl_SetResult(interp, "wrong # args: should be \"opp_getFileNameOf <id>\"", TCL_STATIC); return TCL_ERROR;}
+    if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong # args: should be \"opp_getFileNameOf <id>\""), TCL_STATIC); return TCL_ERROR;}
     int id = atoi(argv[1]);
-    if (id<0 || id>=(int)scalarMgr.getValues().size()) {Tcl_SetResult(interp, "id out of range", TCL_STATIC); return TCL_ERROR;}
+    if (id<0 || id>=(int)scalarMgr.getValues().size()) {Tcl_SetResult(interp, TCLCONST("id out of range"), TCL_STATIC); return TCL_ERROR;}
     Tcl_SetResult(interp, TCLCONST(scalarMgr.getValue(id).runRef->fileRef->fileName.c_str()), TCL_VOLATILE);
     return TCL_OK;
 }
 
 int getDirectoryOf_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-    if (argc!=2) {Tcl_SetResult(interp, "wrong # args: should be \"opp_getDirectoryOf <id>\"", TCL_STATIC); return TCL_ERROR;}
+    if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong # args: should be \"opp_getDirectoryOf <id>\""), TCL_STATIC); return TCL_ERROR;}
     int id = atoi(argv[1]);
-    if (id<0 || id>=(int)scalarMgr.getValues().size()) {Tcl_SetResult(interp, "id out of range", TCL_STATIC); return TCL_ERROR;}
+    if (id<0 || id>=(int)scalarMgr.getValues().size()) {Tcl_SetResult(interp, TCLCONST("id out of range"), TCL_STATIC); return TCL_ERROR;}
     Tcl_SetResult(interp, TCLCONST(scalarMgr.getValue(id).runRef->fileRef->directory.c_str()), TCL_VOLATILE);
     return TCL_OK;
 }
 
 int getRunNoOf_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-    if (argc!=2) {Tcl_SetResult(interp, "wrong # args: should be \"opp_getRunNoOf <id>\"", TCL_STATIC); return TCL_ERROR;}
+    if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong # args: should be \"opp_getRunNoOf <id>\""), TCL_STATIC); return TCL_ERROR;}
     int id = atoi(argv[1]);
-    if (id<0 || id>=(int)scalarMgr.getValues().size()) {Tcl_SetResult(interp, "id out of range", TCL_STATIC); return TCL_ERROR;}
+    if (id<0 || id>=(int)scalarMgr.getValues().size()) {Tcl_SetResult(interp, TCLCONST("id out of range"), TCL_STATIC); return TCL_ERROR;}
     Tcl_SetResult(interp, TCLCONST(scalarMgr.getValue(id).runRef->runName.c_str()), TCL_VOLATILE);
     return TCL_OK;
 }
 
 int getModuleOf_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-    if (argc!=2) {Tcl_SetResult(interp, "wrong # args: should be \"opp_getModuleOf <id>\"", TCL_STATIC); return TCL_ERROR;}
+    if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong # args: should be \"opp_getModuleOf <id>\""), TCL_STATIC); return TCL_ERROR;}
     int id = atoi(argv[1]);
-    if (id<0 || id>=(int)scalarMgr.getValues().size()) {Tcl_SetResult(interp, "id out of range", TCL_STATIC); return TCL_ERROR;}
+    if (id<0 || id>=(int)scalarMgr.getValues().size()) {Tcl_SetResult(interp, TCLCONST("id out of range"), TCL_STATIC); return TCL_ERROR;}
     Tcl_SetResult(interp, TCLCONST(scalarMgr.getValue(id).moduleNameRef->c_str()), TCL_VOLATILE);
     return TCL_OK;
 }
 
 int getNameOf_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-    if (argc!=2) {Tcl_SetResult(interp, "wrong # args: should be \"opp_getNameOf <id>\"", TCL_STATIC); return TCL_ERROR;}
+    if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong # args: should be \"opp_getNameOf <id>\""), TCL_STATIC); return TCL_ERROR;}
     int id = atoi(argv[1]);
-    if (id<0 || id>=(int)scalarMgr.getValues().size()) {Tcl_SetResult(interp, "id out of range", TCL_STATIC); return TCL_ERROR;}
+    if (id<0 || id>=(int)scalarMgr.getValues().size()) {Tcl_SetResult(interp, TCLCONST("id out of range"), TCL_STATIC); return TCL_ERROR;}
     Tcl_SetResult(interp, TCLCONST(scalarMgr.getValue(id).scalarNameRef->c_str()), TCL_VOLATILE);
     return TCL_OK;
 }
 
 int getValueOf_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-    if (argc!=2) {Tcl_SetResult(interp, "wrong # args: should be \"opp_getValueOf <id>\"", TCL_STATIC); return TCL_ERROR;}
+    if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong # args: should be \"opp_getValueOf <id>\""), TCL_STATIC); return TCL_ERROR;}
     int id = atoi(argv[1]);
-    if (id<0 || id>=(int)scalarMgr.getValues().size()) {Tcl_SetResult(interp, "id out of range", TCL_STATIC); return TCL_ERROR;}
+    if (id<0 || id>=(int)scalarMgr.getValues().size()) {Tcl_SetResult(interp, TCLCONST("id out of range"), TCL_STATIC); return TCL_ERROR;}
     Tcl_SetObjResult(interp, Tcl_NewDoubleObj(scalarMgr.getValue(id).value));
     return TCL_OK;
 }
 
 int getListboxLine_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-    if (argc!=2) {Tcl_SetResult(interp, "wrong # args: should be \"opp_getValueOf <id>\"", TCL_STATIC); return TCL_ERROR;}
+    if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong # args: should be \"opp_getValueOf <id>\""), TCL_STATIC); return TCL_ERROR;}
     int id = atoi(argv[1]);
-    if (id<0 || id>=(int)scalarMgr.getValues().size()) {Tcl_SetResult(interp, "id out of range", TCL_STATIC); return TCL_ERROR;}
+    if (id<0 || id>=(int)scalarMgr.getValues().size()) {Tcl_SetResult(interp, TCLCONST("id out of range"), TCL_STATIC); return TCL_ERROR;}
 
     const ScalarManager::Datum& d = scalarMgr.getValue(id);
 
@@ -289,7 +289,7 @@ static Tcl_Obj *doConvertToTcl(Tcl_Interp *interp, const IntVectorVector& vv)
 
 int groupByRunAndName_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-    if (argc!=2) {Tcl_SetResult(interp, "wrong # args: should be \"opp_groupByRunAndName <idlist>\"", TCL_STATIC); return TCL_ERROR;}
+    if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong # args: should be \"opp_groupByRunAndName <idlist>\""), TCL_STATIC); return TCL_ERROR;}
     const char *idlist = argv[1];
 
     // do it
@@ -304,7 +304,7 @@ int groupByRunAndName_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
 
 int groupByModuleAndName_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-    if (argc!=2) {Tcl_SetResult(interp, "wrong # args: should be \"opp_groupByModuleAndName <idlist>\"", TCL_STATIC); return TCL_ERROR;}
+    if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong # args: should be \"opp_groupByModuleAndName <idlist>\""), TCL_STATIC); return TCL_ERROR;}
     const char *idlist = argv[1];
 
     // do it
@@ -319,7 +319,7 @@ int groupByModuleAndName_cmd(ClientData, Tcl_Interp *interp, int argc, const cha
 
 int prepareScatterPlot_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-    if (argc!=4) {Tcl_SetResult(interp, "wrong # args: should be \"opp_prepareScatterPlot <idlist> <modulename> <name>\"", TCL_STATIC); return TCL_ERROR;}
+    if (argc!=4) {Tcl_SetResult(interp, TCLCONST("wrong # args: should be \"opp_prepareScatterPlot <idlist> <modulename> <name>\""), TCL_STATIC); return TCL_ERROR;}
     const char *idlist = argv[1];
     const char *moduleName = argv[2];
     const char *scalarName = argv[3];
@@ -336,7 +336,7 @@ int prepareScatterPlot_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
 
 int getModuleAndNamePairs_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-    if (argc!=3) {Tcl_SetResult(interp, "wrong # args: should be \"opp_getModuleAndNamePairs <idlist> <maxcount>\"", TCL_STATIC); return TCL_ERROR;}
+    if (argc!=3) {Tcl_SetResult(interp, TCLCONST("wrong # args: should be \"opp_getModuleAndNamePairs <idlist> <maxcount>\""), TCL_STATIC); return TCL_ERROR;}
     const char *idlist = argv[1];
     int maxcount = atoi(argv[2]);
 
@@ -354,7 +354,7 @@ int getModuleAndNamePairs_cmd(ClientData, Tcl_Interp *interp, int argc, const ch
 
 int prepareCopyToClipboard_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-    if (argc!=2) {Tcl_SetResult(interp, "wrong # args: should be \"opp_prepareCopyToClipboard <idlist>\"", TCL_STATIC); return TCL_ERROR;}
+    if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong # args: should be \"opp_prepareCopyToClipboard <idlist>\""), TCL_STATIC); return TCL_ERROR;}
     const char *idlist = argv[1];
 
     // do it

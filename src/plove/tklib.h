@@ -22,7 +22,7 @@ char *ptrToStr(void *ptr, char *buffer=NULL);
 void *strToPtr(const char *s );
 
 struct OmnetTclCommand {
-    char *namestr;
+    const char *namestr;
     int (*func)(ClientData, Tcl_Interp *, int, const char **);
 };
 extern OmnetTclCommand tcl_commands[];

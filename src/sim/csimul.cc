@@ -64,7 +64,7 @@ cSimulation simulation("simulation");
 
 ostream& operator<<(ostream& os, struct tm d)
 {
-    static char *month[] =
+    static const char *month[] =
        {"Jan", "Feb", "Mar", "Apr", "May", "Jun",
         "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
 

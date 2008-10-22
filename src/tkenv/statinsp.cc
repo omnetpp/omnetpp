@@ -216,11 +216,11 @@ void THistogramWindow::cellInfo( char *buf, int cell )
 
 int THistogramWindow::inspectorCommand(Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc<1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc<1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
 
    if (strcmp(argv[0],"cell")==0)   // 'opp_inspectorcommand <inspector> cell ...'
    {
-      if (argc>2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+      if (argc>2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
 
       char buf[128];
       if (argc==1)
@@ -552,7 +552,7 @@ void TOutVectorWindow::update()
 #undef Y
 }
 
-static char *drawingmodes[] = {
+static const char *drawingmodes[] = {
       "dots", "bars", "pins", "sample-hold", "lines", NULL
 };
 
@@ -627,11 +627,11 @@ void TOutVectorWindow::setConfig( bool autosc, double timefac, double min_y, dou
 
 int TOutVectorWindow::inspectorCommand(Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc<1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc<1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
 
    if (strcmp(argv[0],"value")==0)   // 'opp_inspectorcommand <inspector> value ...'
    {
-      if (argc>2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+      if (argc>2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
 
       char buf[128];
       if (argc==1)
@@ -643,7 +643,7 @@ int TOutVectorWindow::inspectorCommand(Tcl_Interp *interp, int argc, const char 
    }
    else if (strcmp(argv[0],"config")==0)  // 'opp_inspectorcommand <inspector> config ...'
    {
-      if (argc!=6 && argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+      if (argc!=6 && argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
 
       // get/set configuration: "timefactor miny maxy drawingmode"
       if (argc==1)

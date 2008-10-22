@@ -48,7 +48,7 @@ void mystrlwr(char *s)
     }
 }
 
-char *RingID2prefix(int RingID)
+const char *RingID2prefix(int RingID)
 {
     switch (RingID)
     {

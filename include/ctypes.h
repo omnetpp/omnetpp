@@ -384,7 +384,7 @@ class SIM_API cModuleType : public cObject
      *  - gate vector sizes to be set
      *  - gates to be connected before initialize()
      */
-    virtual cModule *createScheduleInit(char *name, cModule *parentmod);
+    virtual cModule *createScheduleInit(const char *name, cModule *parentmod);
 
     /**
      * Returns pointer to the module interface object corresponding to this

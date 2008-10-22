@@ -258,7 +258,7 @@ double cDensityEstBase::cellPDF(int k) const
 }
 
 // plot one line
-void cDensityEstBase::plotline(ostream& os, char *pref, double xval,
+void cDensityEstBase::plotline(ostream& os, const char *pref, double xval,
                                double count, double a )
 {
     const int picwidth=54;           // width of picture

@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include <math.h>
 
+#include "tklib.h"
 #include "arrow.h"
 
 static void clip_line_to_rect(
@@ -110,7 +111,7 @@ static void clip_line_to_rect(
 
 int arrowcoords(Tcl_Interp *interp, int argc, const char **argv)
 {
-      if (argc!=18) { Tcl_SetResult(interp,"17 args expected", TCL_STATIC); return TCL_ERROR;}
+      if (argc!=18) { Tcl_SetResult(interp, TCLCONST("17 args expected"), TCL_STATIC); return TCL_ERROR;}
 
       // args 1..4: coords of source module rectangle
       double src_x1 = atof(argv[1]),
@@ -143,7 +144,7 @@ int arrowcoords(Tcl_Interp *interp, int argc, const char **argv)
 
       // error checks
       if (!strchr("amnews",mode)) {
-          Tcl_SetResult(interp,"mode must be one of (a,m,n,e,w,s)", TCL_STATIC);
+          Tcl_SetResult(interp, TCLCONST("mode must be one of (a,m,n,e,w,s)"), TCL_STATIC);
           return TCL_ERROR;
       }
 

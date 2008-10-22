@@ -62,7 +62,7 @@ int NEDParser::parseFile(Tcl_Interp *intrp, const char *fname, int nedfilekey,
 
     // load whole file into memory
     if (!nedsource->readFile(newfilename))
-        {interp->result = "unable to load file";return TCL_ERROR;}
+        {interp->result =  const_cast<char*>("unable to load file");return TCL_ERROR;}
 
     // get file comment
     set(nedfile_key, "banner-comment", nedsource->getFileComment());
@@ -71,7 +71,7 @@ int NEDParser::parseFile(Tcl_Interp *intrp, const char *fname, int nedfilekey,
     yyout = stdout;
     yyin = fopen(newfilename,"r");
     if (!yyin)
-        {interp->result = "unable to open file";return TCL_ERROR;}
+        {interp->result =  const_cast<char*>("unable to open file");return TCL_ERROR;}
     runparse();
     fclose(yyin);
 
@@ -95,7 +95,7 @@ int NEDParser::parseText(Tcl_Interp *intrp, const char *nedtext, int nedfilekey,
 
     // load whole file into memory
     if (!nedsource->setData(nedtext))
-        {interp->result = "unable to allocate work memory";return TCL_ERROR;}
+        {interp->result =  const_cast<char*>("unable to allocate work memory");return TCL_ERROR;}
 
     // get file comment
     set(nedfile_key, "banner-comment", nedsource->getFileComment());
@@ -105,7 +105,7 @@ int NEDParser::parseText(Tcl_Interp *intrp, const char *nedtext, int nedfilekey,
     yyout = stdout;
     struct yy_buffer_state *handle = yy_scan_string(nedtext);
     if (!handle)
-        {interp->result = "unable to allocate work memory";return TCL_ERROR;}
+        {interp->result =  const_cast<char*>("unable to allocate work memory");return TCL_ERROR;}
     runparse();
     yy_delete_buffer(handle);
 
@@ -128,7 +128,7 @@ const char *NEDParser::storeInTempBuf(const char *s)
     return tmpbuf;
 }
 
-int NEDParser::create(char *type, int parentkey)
+int NEDParser::create(const char *type, int parentkey)
 {
     char pkey[32];
     sprintf(pkey,"%d", parentkey);
@@ -139,7 +139,7 @@ int NEDParser::create(char *type, int parentkey)
     return keyv;
 }
 
-void NEDParser::set(int key, char *attr, long value)
+void NEDParser::set(int key, const char *attr, long value)
 {
     char tmp[64], tmp2[64];
     sprintf(tmp, "%d,%s",key,attr);
@@ -147,26 +147,26 @@ void NEDParser::set(int key, char *attr, long value)
     Tcl_SetVar2(interp,TCLCONST(tmp_ned),tmp,tmp2,TCL_GLOBAL_ONLY);
 }
 
-void NEDParser::set(int key, char *attr, char *value)
+void NEDParser::set(int key, const char *attr, const char *value)
 {
     char tmp[64];
     sprintf(tmp,"%d,%s",key,attr);
     Tcl_SetVar2(interp,TCLCONST(tmp_ned),tmp,value,TCL_GLOBAL_ONLY);
 }
 
-void NEDParser::set(int key, char *attr, YYLTYPE valuepos)
+void NEDParser::set(int key, const char *attr, YYLTYPE valuepos)
 {
     set(key,attr,nedsource->get(valuepos));
 }
 
-const char *NEDParser::get(int key, char *attr)
+const char *NEDParser::get(int key, const char *attr)
 {
     char tmp[64];
     sprintf(tmp,"%d,%s",key,attr);
     return Tcl_GetVar2(interp,TCLCONST(tmp_ned),tmp,TCL_GLOBAL_ONLY);
 }
 
-void NEDParser::swap(int key, char *attr1, char *attr2)
+void NEDParser::swap(int key, const char *attr1, const char *attr2)
 {
     char tmp1[64], tmp2[64];
     sprintf(tmp1, "%d,%s",key,attr1);
@@ -183,7 +183,7 @@ void NEDParser::swap(int key, char *attr1, char *attr2)
 
 //-----------
 
-int NEDParser::findChild(int parentkey, char *attr, char *value)
+int NEDParser::findChild(int parentkey, const char *attr, const char *value)
 {
     char pkey[32];
     sprintf(pkey,"%d", parentkey);
@@ -203,14 +203,14 @@ int NEDParser::findChild(int parentkey, char *attr, char *value)
 
 //-----------
 
-static void _setVar(Tcl_Interp *interp, const char *array, int key, char *attr, char *value)
+static void _setVar(Tcl_Interp *interp, const char *array, int key, const char *attr, const char *value)
 {
     char tmp[64];
     sprintf(tmp,"%d,%s",key,attr);
     Tcl_SetVar2(interp,TCLCONST(array),tmp,value,TCL_GLOBAL_ONLY);
 }
 
-void NEDParser::error(char type, char *msg, int line, int col)
+void NEDParser::error(const char type, const char *msg, int line, int col)
 {
     //printf("DBG: %c %s, at %d:%d\n", type, msg, line, col);
 
@@ -226,7 +226,7 @@ void NEDParser::error(char type, char *msg, int line, int col)
     num_errors++;
 }
 
-void NEDParser::dbg(YYLTYPE lc, char *what)
+void NEDParser::dbg(YYLTYPE lc, const char *what)
 {
     printf("%s: %d,%d,%d,%d=%s.\n",
             what,

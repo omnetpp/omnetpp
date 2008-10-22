@@ -20,7 +20,7 @@
 #include <tk.h>
 
 struct OmnetTclCommand {
-    char *namestr;
+    const char *namestr;
     int (*func)(ClientData, Tcl_Interp *, int, const char **);
 };
 extern OmnetTclCommand tcl_commands[];

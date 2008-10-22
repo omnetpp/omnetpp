@@ -126,7 +126,7 @@
 
 int yylex (void);
 void yyrestart(FILE *);
-void yyerror (char *s);
+void yyerror (const char *s);
 
 
 //
@@ -185,7 +185,7 @@ void setRightComment(int key, YYLTYPE tokenpos);
 void setTrailingComment(int key, YYLTYPE tokenpos);
 void setComments(int key, YYLTYPE pos);
 void setComments(int key, YYLTYPE firstpos, YYLTYPE lastpos);
-int addChanAttr(int channel_key, char *attrname, YYLTYPE valuepos);
+int addChanAttr(int channel_key, const char *attrname, YYLTYPE valuepos);
 int addParameter(int params_key, YYLTYPE namepos, int type);
 int addGate(int gates_key, YYLTYPE namepos, int is_in, int is_vector );
 int addSubmodule(int submods_key, YYLTYPE namepos, YYLTYPE vectorpos,
@@ -193,7 +193,7 @@ int addSubmodule(int submods_key, YYLTYPE namepos, YYLTYPE vectorpos,
 int addGateSize(int gatesizes_key, YYLTYPE namepos, YYLTYPE vectorpos);
 int addSubstparam(int substparams_key, YYLTYPE namepos, YYLTYPE valuepos);
 int addSubstmachine(int substmachines_key, YYLTYPE namepos);
-int addConnAttr(int conn_key, char *attrname, YYLTYPE valuepos);
+int addConnAttr(int conn_key, const char *attrname, YYLTYPE valuepos);
 int addLoopVar(int forloop_key, YYLTYPE varnamepos, YYLTYPE frompos, YYLTYPE topos);
 int addNetwork(int nedfile_key, YYLTYPE namepos, YYLTYPE typepos, YYLTYPE likepos);
 int findSubmoduleKey(YYLTYPE modulenamepos);
@@ -1206,7 +1206,7 @@ int runparse ()
 
 extern char current_fname[];
 
-void yyerror (char *s)
+void yyerror (const char *s)
 {
         fflush (stdout);
         if (strlen (s))
@@ -1228,7 +1228,7 @@ void yyerror (char *s)
 
 #ifdef DOING_GNED
 
-void yyerror (char *s)
+void yyerror (const char *s)
 {
         if (strlen (s))
                 strcpy (yyfailure, s);
@@ -1287,7 +1287,7 @@ void setComments(int key, YYLTYPE firstpos, YYLTYPE lastpos)
     setRightComment(key, pos);
 }
 
-int addChanAttr(int channel_key, char *attrname, YYLTYPE valuepos)
+int addChanAttr(int channel_key, const char *attrname, YYLTYPE valuepos)
 {
     int chanattr_key = np->create("chanattr", channel_key);
     np->set(chanattr_key,"name", attrname);
@@ -1297,7 +1297,7 @@ int addChanAttr(int channel_key, char *attrname, YYLTYPE valuepos)
 
 int addParameter(int params_key, YYLTYPE namepos, int type)
 {
-   char *s;
+   const char *s;
    switch (type)
    {
        case TYPE_NUMERIC:   s = "numeric"; break;
@@ -1376,7 +1376,7 @@ int addLoopVar(int forloop_key, YYLTYPE varnamepos, YYLTYPE frompos, YYLTYPE top
    return loopvar_key;
 }
 
-int addConnAttr(int conn_key, char *attrname, YYLTYPE valuepos)
+int addConnAttr(int conn_key, const char *attrname, YYLTYPE valuepos)
 {
     int connattr_key = np->create("connattr", conn_key);
     np->set(connattr_key,"name", attrname);

@@ -316,7 +316,7 @@ void cModuleInterface::checkConsistency()
     if (!other)
         return;
 
-    char *what, *which;
+    const char *what, *which;
     int id;
 
     // now check if everything's consistent
@@ -491,7 +491,7 @@ void cModuleType::buildInside(cModule *mod)
     mod->buildInside();
 }
 
-cModule *cModuleType::createScheduleInit(char *modname, cModule *parentmod)
+cModule *cModuleType::createScheduleInit(const char *modname, cModule *parentmod)
 {
     // This is a convenience function to get a module up and running in one step.
     //

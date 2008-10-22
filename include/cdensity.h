@@ -93,7 +93,7 @@ class SIM_API cDensityEstBase : public cStdDev
     double *firstvals;         // pointer to array of "pre-collected" samples
 
   protected:
-    static void plotline (std::ostream& os, char* pref, double xval,
+    static void plotline (std::ostream& os, const char* pref, double xval,
                           double count, double a);
 
   public:

@@ -40,7 +40,7 @@ extern "C" int Blt_Init(Tcl_Interp *interp);
 
 int loadGNED(Tcl_Interp *interp)
 {
-    char *gned_dir, *bitmap_dir;
+    const char *gned_dir, *bitmap_dir;
 
     // path for the Tcl files
 #ifdef OMNETPP_GNED_DIR
@@ -57,15 +57,15 @@ int loadGNED(Tcl_Interp *interp)
     // add OMNeT++'s commands to Tcl
     createTkCommands( interp, tcl_commands );
 
-    Tcl_SetVar(interp, "OMNETPP_BITMAP_PATH", bitmap_dir, TCL_GLOBAL_ONLY);
-    Tcl_SetVar(interp, "OMNETPP_RELEASE", OMNETPP_RELEASE, TCL_GLOBAL_ONLY);
-    Tcl_SetVar(interp, "OMNETPP_EDITION", OMNETPP_EDITION, TCL_GLOBAL_ONLY);
+    Tcl_SetVar(interp, TCLCONST("OMNETPP_BITMAP_PATH"), bitmap_dir, TCL_GLOBAL_ONLY);
+    Tcl_SetVar(interp, TCLCONST("OMNETPP_RELEASE"), OMNETPP_RELEASE, TCL_GLOBAL_ONLY);
+    Tcl_SetVar(interp, TCLCONST("OMNETPP_EDITION"), OMNETPP_EDITION, TCL_GLOBAL_ONLY);
 
     // load sources
 #ifdef OMNETPP_GNED_DIR
     // Case A: TCL code in separate .tcl files
     //
-    Tcl_SetVar(interp, "OMNETPP_GNED_DIR",  gned_dir, TCL_GLOBAL_ONLY);
+    Tcl_SetVar(interp, TCLCONST("OMNETPP_GNED_DIR"),  gned_dir, TCL_GLOBAL_ONLY);
 
     char fname[256];
     sprintf(fname,"%s/gned.tcl", gned_dir);
@@ -113,11 +113,11 @@ int initGNED(Tcl_Interp *interp)
          return TCL_ERROR;
     if (Tk_Init(interp)!=TCL_OK)
          return TCL_ERROR;
-    Tcl_StaticPackage(interp, "Tk", Tk_Init, Tk_SafeInit);
+    Tcl_StaticPackage(interp, TCLCONST("Tk"), Tk_Init, Tk_SafeInit);
 #ifdef HAVE_BLT
     if (Blt_Init(interp)!=TCL_OK)
          return TCL_ERROR;
-    //Tcl_StaticPackage(interp, "Blt", Blt_Init, Blt_SafeInit);
+    //Tcl_StaticPackage(interp, TCLCONST("Blt"), Blt_Init, Blt_SafeInit);
 #endif
     if (loadGNED(interp)!=TCL_OK)
         return TCL_ERROR;

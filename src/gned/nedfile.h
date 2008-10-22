@@ -43,7 +43,7 @@ class NEDFile
 
     bool indexLines();
     int topLineOfBannerComment(int li);
-    char *stripComment(char *s);
+    const char *stripComment(const char *s);
 
   public:
     NEDFile();
@@ -52,11 +52,11 @@ class NEDFile
     bool readFile(const char *filename);
     bool setData(const char *data);
 
-    char *get(YYLTYPE pos);
+    const char *get(YYLTYPE pos);
 
-    char *getFileComment();
-    char *getBannerComment(YYLTYPE pos);
-    char *getTrailingComment(YYLTYPE pos);
+    const char *getFileComment();
+    const char *getBannerComment(YYLTYPE pos);
+    const char *getTrailingComment(YYLTYPE pos);
 };
 
 #endif

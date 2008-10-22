@@ -23,7 +23,7 @@
 #include "nedbasicvalidator.h"
 
 
-static struct { char *fname; int args; } known_funcs[] =
+static struct { const char *fname; int args; } known_funcs[] =
 {
    /* <math.h> */
    {"fabs", 1},    {"fmod", 2},

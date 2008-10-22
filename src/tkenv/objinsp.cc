@@ -155,7 +155,7 @@ void TContainerInspector::createWindow()
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
    Tcl_Interp *interp = getTkApplication()->getInterp();
-   char *typelist = " (default) object container graphical";
+   const char *typelist = " (default) object container graphical";
    CHK(Tcl_VarEval(interp, "create_containerinspector ", windowname, " \"", geometry, "\"", typelist, NULL));
 }
 
@@ -382,7 +382,7 @@ void TParInspector::update()
    cPar *p = static_cast<cPar *>(object);
    setEntry(".main.value.e", p->getAsText().c_str());
 
-   char *t;
+   const char *t;
    switch (p->type())
    {
        case 'C': t=" C character"   ; break;

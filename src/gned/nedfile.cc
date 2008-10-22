@@ -190,7 +190,7 @@ char *NEDFile::getPosition(int line, int column)
     return s;
 }
 
-char *NEDFile::get(YYLTYPE pos)
+const char *NEDFile::get(YYLTYPE pos)
 {
     if (end) {*end = savedChar; end=NULL;}
 
@@ -211,7 +211,7 @@ char *NEDFile::get(YYLTYPE pos)
 //   all subsequent comment and blank lines will be included,
 //   up to the _last blank_ line
 //
-char *NEDFile::getFileComment()
+const char *NEDFile::getFileComment()
 {
     if (end) {*end = savedChar; end=NULL;}
 
@@ -255,7 +255,7 @@ int NEDFile::topLineOfBannerComment(int li)
 
 // getBannerComment()
 //
-char *NEDFile::getBannerComment(YYLTYPE pos)
+const char *NEDFile::getBannerComment(YYLTYPE pos)
 {
     if (end) {*end = savedChar; end=NULL;}
 
@@ -279,7 +279,7 @@ char *NEDFile::getBannerComment(YYLTYPE pos)
 //  NOTE: only handles really trailing comments, ie. those
 //        after last_line.last_column
 //
-char *NEDFile::getTrailingComment(YYLTYPE pos)
+const char *NEDFile::getTrailingComment(YYLTYPE pos)
 {
     if (end) {*end = savedChar; end=NULL;}
 
@@ -320,7 +320,7 @@ char *NEDFile::getTrailingComment(YYLTYPE pos)
 //  comment marks "//" and spaces before them removed,
 //  lines without comments are replaced by a pure "-" line
 //
-char *NEDFile::stripComment(char *comment)
+const char *NEDFile::stripComment(const char *comment)
 {
     int numlines = numLines; // comment is at most as long as whole file
 
@@ -333,7 +333,7 @@ char *NEDFile::stripComment(char *comment)
         if (!commentBuf) {commentBufLen=0;return NULL;}
     }
 
-    char *s = comment;
+    const char *s = comment;
     char *d = commentBuf;
 
     while(*s)
@@ -357,6 +357,6 @@ char *NEDFile::stripComment(char *comment)
         }
     }
     *d = '\0';
-    return commentBuf;
+    return  const_cast<char*>(commentBuf);
 }
 

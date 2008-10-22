@@ -97,7 +97,7 @@ OmnetTclCommand tcl_commands[] = {
 
 int getVectorList_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=2) {Tcl_SetResult(interp, "wrong # args: should be \"opp_getvectorlist fileName\"", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong # args: should be \"opp_getvectorlist fileName\""), TCL_STATIC); return TCL_ERROR;}
    const char *fname = argv[1];
    OutVectorArray outvectors;
    CATCH_EXCEPTIONS(
@@ -123,7 +123,7 @@ int getVectorList_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
 int getNodeTypes_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=1 && (argc!=2 || strcmp(argv[1],"-all")))
-       {Tcl_SetResult(interp, "wrong # args: should be \"opp_getnodetypes ?-all?\"", TCL_STATIC); return TCL_ERROR;}
+       {Tcl_SetResult(interp, TCLCONST("wrong # args: should be \"opp_getnodetypes ?-all?\""), TCL_STATIC); return TCL_ERROR;}
 
    bool all = (argc==2);
 
@@ -145,7 +145,7 @@ int getNodeTypes_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
 
 int nodeType_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=3) {Tcl_SetResult(interp, "wrong # args: should be \"opp_nodetype nodeType exists|category|description|hidden|attrs\"", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=3) {Tcl_SetResult(interp, TCLCONST("wrong # args: should be \"opp_nodetype nodeType exists|category|description|hidden|attrs\""), TCL_STATIC); return TCL_ERROR;}
    const char *nodetypename = argv[1];
    const char *field = argv[2];
 
@@ -194,7 +194,7 @@ int nodeType_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    }
    else
    {
-       Tcl_SetResult(interp, "2nd arg should be \"category\" or \"description\" or \"attrs\"", TCL_STATIC);
+       Tcl_SetResult(interp, TCLCONST("2nd arg should be \"category\" or \"description\" or \"attrs\""), TCL_STATIC);
        return TCL_ERROR;
    }
    return TCL_OK;
@@ -202,25 +202,25 @@ int nodeType_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 
 int createNetwork_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc<1) {Tcl_SetResult(interp, "wrong # args: should be \"opp_createnetwork\"", TCL_STATIC); return TCL_ERROR;}
+   if (argc<1) {Tcl_SetResult(interp, TCLCONST("wrong # args: should be \"opp_createnetwork\""), TCL_STATIC); return TCL_ERROR;}
    Tcl_SetResult(interp, ptrToStr(new DataflowManager()), TCL_VOLATILE);
    return TCL_OK;
 }
 
 int deleteNetwork_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=2) {Tcl_SetResult(interp, "wrong # args: should be \"opp_deletenetwork network\"", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong # args: should be \"opp_deletenetwork network\""), TCL_STATIC); return TCL_ERROR;}
    DataflowManager *mgr = (DataflowManager *)strToPtr( argv[1] );
-   if (!mgr) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
+   if (!mgr) {Tcl_SetResult(interp, TCLCONST("null or malformed pointer"), TCL_STATIC); return TCL_ERROR;}
    delete mgr;
    return TCL_OK;
 }
 
 int executeNetwork_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=2) {Tcl_SetResult(interp, "wrong # args: should be \"opp_executenetwork network\"", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong # args: should be \"opp_executenetwork network\""), TCL_STATIC); return TCL_ERROR;}
    DataflowManager *mgr = (DataflowManager *)strToPtr( argv[1] );
-   if (!mgr) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
+   if (!mgr) {Tcl_SetResult(interp, TCLCONST("null or malformed pointer"), TCL_STATIC); return TCL_ERROR;}
    CATCH_EXCEPTIONS(
        mgr->execute();
    )
@@ -229,11 +229,11 @@ int executeNetwork_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
 
 int createNode_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc<3) {Tcl_SetResult(interp, "wrong # args: should be \"opp_createnode network nodetype ?args?\"", TCL_STATIC); return TCL_ERROR;}
-   if (argc&1!=1) {Tcl_SetResult(interp, "odd number of args expected", TCL_STATIC); return TCL_ERROR;}
+   if (argc<3) {Tcl_SetResult(interp, TCLCONST("wrong # args: should be \"opp_createnode network nodetype ?args?\""), TCL_STATIC); return TCL_ERROR;}
+   if (argc&1!=1) {Tcl_SetResult(interp, TCLCONST("odd number of args expected"), TCL_STATIC); return TCL_ERROR;}
 
    DataflowManager *mgr = (DataflowManager *)strToPtr( argv[1] );
-   if (!mgr) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
+   if (!mgr) {Tcl_SetResult(interp, TCLCONST("null or malformed pointer"), TCL_STATIC); return TCL_ERROR;}
    const char *nodetypename = argv[2];
 
    CATCH_EXCEPTIONS(
@@ -241,7 +241,7 @@ int createNode_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
        StringMap attrs;
        for (int i=3; i<argc; i+=2)
        {
-           if (argv[i][0]!='-') {Tcl_SetResult(interp, "invalid arg", TCL_STATIC); return TCL_ERROR;}
+           if (argv[i][0]!='-') {Tcl_SetResult(interp, TCLCONST("invalid arg"), TCL_STATIC); return TCL_ERROR;}
            attrs[argv[i]+1] = argv[i+1];
        }
        Node *node = nodetype->create(mgr,attrs);
@@ -253,9 +253,9 @@ int createNode_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 
 int getPort_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=3) {Tcl_SetResult(interp, "wrong # args: should be \"opp_getport node portname\"", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=3) {Tcl_SetResult(interp, TCLCONST("wrong # args: should be \"opp_getport node portname\""), TCL_STATIC); return TCL_ERROR;}
    Node *node = (Node *)strToPtr( argv[1] );
-   if (!node) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
+   if (!node) {Tcl_SetResult(interp, TCLCONST("null or malformed pointer"), TCL_STATIC); return TCL_ERROR;}
    const char *portname = argv[2];
 
    CATCH_EXCEPTIONS(
@@ -268,22 +268,22 @@ int getPort_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 
 int connect_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=5) {Tcl_SetResult(interp, "wrong # args: should be \"opp_connect node1 portname1 node2 portname2\" or ", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=5) {Tcl_SetResult(interp, TCLCONST("wrong # args: should be \"opp_connect node1 portname1 node2 portname2\" or "), TCL_STATIC); return TCL_ERROR;}
 
    CATCH_EXCEPTIONS(
        Node *node1 = (Node *)strToPtr( argv[1] );
-       if (!node1) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
+       if (!node1) {Tcl_SetResult(interp, TCLCONST("null or malformed pointer"), TCL_STATIC); return TCL_ERROR;}
        const char *portname1 = argv[2];
        NodeType *nodetype1 = node1->nodeType();
        Port *port1 = nodetype1->getPort(node1,portname1);
 
        Node *node2 = (Node *)strToPtr( argv[3] );
-       if (!node2) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
+       if (!node2) {Tcl_SetResult(interp, TCLCONST("null or malformed pointer"), TCL_STATIC); return TCL_ERROR;}
        const char *portname2 = argv[4];
        NodeType *nodetype2 = node2->nodeType();
        Port *port2 = nodetype2->getPort(node2,portname2);
 
-       if (node1->dataflowManager()!=node2->dataflowManager())  {Tcl_SetResult(interp, "nodes belong to different networks", TCL_STATIC); return TCL_ERROR;}
+       if (node1->dataflowManager()!=node2->dataflowManager())  {Tcl_SetResult(interp, TCLCONST("nodes belong to different networks"), TCL_STATIC); return TCL_ERROR;}
        DataflowManager *mgr = node1->dataflowManager();
        mgr->connect(port1,port2);
    )
@@ -299,15 +299,15 @@ static void deleteDoubleArray(char *p)
 
 int arraybuilder_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc<3) {Tcl_SetResult(interp, "wrong # args: should be \"opp_arraybuilder <arraybuilderNode> <command> ...\"", TCL_STATIC); return TCL_ERROR;}
+   if (argc<3) {Tcl_SetResult(interp, TCLCONST("wrong # args: should be \"opp_arraybuilder <arraybuilderNode> <command> ...\""), TCL_STATIC); return TCL_ERROR;}
 
    ArrayBuilderNode *node = dynamic_cast<ArrayBuilderNode *>((Node *)strToPtr(argv[1]));
-   if (!node) {Tcl_SetResult(interp, "null or malformed pointer, or not an arraybuilder node", TCL_STATIC); return TCL_ERROR;}
+   if (!node) {Tcl_SetResult(interp, TCLCONST("null or malformed pointer, or not an arraybuilder node"), TCL_STATIC); return TCL_ERROR;}
    const char *cmd = argv[2];
 
    if (!strcmp(cmd,"getvectors"))
    {
-       if (argc!=5) {Tcl_SetResult(interp, "wrong # args: should be \"opp_arraybuilder <arraybuilderNode> getvectors <xvec> <yvec>\"", TCL_STATIC); return TCL_ERROR;}
+       if (argc!=5) {Tcl_SetResult(interp, TCLCONST("wrong # args: should be \"opp_arraybuilder <arraybuilderNode> getvectors <xvec> <yvec>\""), TCL_STATIC); return TCL_ERROR;}
        const char *bltvectornameX = argv[3];
        const char *bltvectornameY = argv[4];
        double *x; double *y;
@@ -335,7 +335,7 @@ int arraybuilder_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
    }
    else
    {
-       Tcl_SetResult(interp, "2nd arg should be: getvectors, length or sort", TCL_STATIC);
+       Tcl_SetResult(interp, TCLCONST("2nd arg should be: getvectors, length or sort"), TCL_STATIC);
        return TCL_ERROR;
    }
 }
@@ -343,14 +343,14 @@ int arraybuilder_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
 int makeNamedPipe_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
 #ifdef _WIN32
-   Tcl_SetResult(interp, "not supported on Windows", TCL_STATIC);
+   Tcl_SetResult(interp, TCLCONST("not supported on Windows"), TCL_STATIC);
    return TCL_ERROR;
 #else
-   if (argc!=2) {Tcl_SetResult(interp, "wrong # args: should be \"opp_makenamedpipe pathname\"", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong # args: should be \"opp_makenamedpipe pathname\""), TCL_STATIC); return TCL_ERROR;}
    const char *fname = argv[1];
    if (mknod(fname, S_IFIFO, 0))
    {
-       Tcl_SetResult(interp, "cannot create named pipe", TCL_STATIC);
+       Tcl_SetResult(interp, TCLCONST("cannot create named pipe"), TCL_STATIC);
        return TCL_ERROR;
    }
    return TCL_OK;
@@ -361,7 +361,7 @@ int makeNamedPipe_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
 int checkmemory_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    // TBD ArrayBuilders should stop after a few hundred thousand points
-   if (argc!=2) {Tcl_SetResult(interp, "wrong # args: should be \"opp_checkmemory <numpoints>\"", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong # args: should be \"opp_checkmemory <numpoints>\""), TCL_STATIC); return TCL_ERROR;}
    int numpoints = atoi(argv[1]);
    // BLT seems to allocate a Point2D array (2x double) plus an int array for every "line".
    // Plus it temporarily might need the same amount of memory.
@@ -375,7 +375,7 @@ int checkmemory_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
        char *tmp = new char[memrequired];
        delete [] tmp;
    } catch (...) {
-       Tcl_SetResult(interp, "BLT might not have enough memory for the plot", TCL_STATIC);
+       Tcl_SetResult(interp, TCLCONST("BLT might not have enough memory for the plot"), TCL_STATIC);
        return TCL_ERROR;
    }
    return TCL_OK;
@@ -383,7 +383,7 @@ int checkmemory_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 
 int compoundFilterTypeCreate_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=2) {Tcl_SetResult(interp, "wrong # args: should be \"opp_compoundfiltertype_create <nodetype>\"", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong # args: should be \"opp_compoundfiltertype_create <nodetype>\""), TCL_STATIC); return TCL_ERROR;}
    const char *nodetypename = argv[1];
    DBG(("creating type %s\n", nodetypename));
    CompoundFilterType *nodetype = new CompoundFilterType();
@@ -394,7 +394,7 @@ int compoundFilterTypeCreate_cmd(ClientData, Tcl_Interp *interp, int argc, const
 
 int compoundFilterType_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc<3) {Tcl_SetResult(interp, "wrong # args: should be \"opp_compoundfiltertype <nodetype> <command> ...\"", TCL_STATIC); return TCL_ERROR;}
+   if (argc<3) {Tcl_SetResult(interp, TCLCONST("wrong # args: should be \"opp_compoundfiltertype <nodetype> <command> ...\""), TCL_STATIC); return TCL_ERROR;}
    const char *nodetypename = argv[1];
    const char *cmd = argv[2];
 
@@ -402,12 +402,12 @@ int compoundFilterType_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
    CATCH_EXCEPTIONS(
        NodeType *p = NodeTypeRegistry::instance()->getNodeType(nodetypename);
        nodetype = dynamic_cast<CompoundFilterType *>(p);
-       if (!nodetype) {Tcl_SetResult(interp, "object is not a cascadedfilter", TCL_STATIC); return TCL_ERROR;}
+       if (!nodetype) {Tcl_SetResult(interp, TCLCONST("object is not a cascadedfilter"), TCL_STATIC); return TCL_ERROR;}
    );
 
    if (!strcmp(cmd,"clone"))
    {
-       if (argc!=4) {Tcl_SetResult(interp, "wrong # args: should be \"opp_compoundfiltertype <nodetype> clone <newnodetype>\"", TCL_STATIC); return TCL_ERROR;}
+       if (argc!=4) {Tcl_SetResult(interp, TCLCONST("wrong # args: should be \"opp_compoundfiltertype <nodetype> clone <newnodetype>\""), TCL_STATIC); return TCL_ERROR;}
        const char *s = argv[3];
        DBG(("cloning type %s to %s\n", nodetype->name(), s));
        CompoundFilterType *clone = new CompoundFilterType();
@@ -418,7 +418,7 @@ int compoundFilterType_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
    }
    else if (!strcmp(cmd,"rename"))
    {
-       if (argc!=4) {Tcl_SetResult(interp, "wrong # args: should be \"opp_compoundfiltertype <nodetype> rename <name>\"", TCL_STATIC); return TCL_ERROR;}
+       if (argc!=4) {Tcl_SetResult(interp, TCLCONST("wrong # args: should be \"opp_compoundfiltertype <nodetype> rename <name>\""), TCL_STATIC); return TCL_ERROR;}
        const char *s = argv[3];
        NodeTypeRegistry::instance()->remove(nodetype);
        DBG(("renaming type %s to %s\n", nodetype->name(), s));
@@ -428,7 +428,7 @@ int compoundFilterType_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
    }
    else if (!strcmp(cmd,"delete"))
    {
-       if (argc!=3) {Tcl_SetResult(interp, "wrong # args: should be \"opp_compoundfiltertype <nodetype> delete\"", TCL_STATIC); return TCL_ERROR;}
+       if (argc!=3) {Tcl_SetResult(interp, TCLCONST("wrong # args: should be \"opp_compoundfiltertype <nodetype> delete\""), TCL_STATIC); return TCL_ERROR;}
        DBG(("deleting type %s\n", nodetype->name()));
        NodeTypeRegistry::instance()->remove(nodetype);
        delete nodetype;
@@ -436,7 +436,7 @@ int compoundFilterType_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
    }
    else if (!strcmp(cmd,"equals"))
    {
-       if (argc!=4) {Tcl_SetResult(interp, "wrong # args: should be \"opp_compoundfiltertype <nodetype> equals <nodetype2>\"", TCL_STATIC); return TCL_ERROR;}
+       if (argc!=4) {Tcl_SetResult(interp, TCLCONST("wrong # args: should be \"opp_compoundfiltertype <nodetype> equals <nodetype2>\""), TCL_STATIC); return TCL_ERROR;}
        const char *nodetypename2 = argv[3];
        CompoundFilterType *nodetype2;
        CATCH_EXCEPTIONS(
@@ -445,7 +445,7 @@ int compoundFilterType_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
        );
        if (!nodetype2)
        {
-           Tcl_SetResult(interp, "0", TCL_STATIC);
+           Tcl_SetResult(interp, TCLCONST("0"), TCL_STATIC);
            return TCL_OK;
        }
        bool equal = nodetype->equals(*nodetype2);
@@ -455,21 +455,21 @@ int compoundFilterType_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
    }
    else if (!strcmp(cmd,"setDescription"))
    {
-       if (argc!=4) {Tcl_SetResult(interp, "wrong # args: should be \"opp_compoundfiltertype <nodetype> setDescription <desc>\"", TCL_STATIC); return TCL_ERROR;}
+       if (argc!=4) {Tcl_SetResult(interp, TCLCONST("wrong # args: should be \"opp_compoundfiltertype <nodetype> setDescription <desc>\""), TCL_STATIC); return TCL_ERROR;}
        const char *s = argv[3];
        nodetype->setDescription(s);
        return TCL_OK;
    }
    else if (!strcmp(cmd,"setHidden"))
    {
-       if (argc!=4) {Tcl_SetResult(interp, "wrong # args: should be \"opp_compoundfiltertype <nodetype> setHidden <0|1>\"", TCL_STATIC); return TCL_ERROR;}
+       if (argc!=4) {Tcl_SetResult(interp, TCLCONST("wrong # args: should be \"opp_compoundfiltertype <nodetype> setHidden <0|1>\""), TCL_STATIC); return TCL_ERROR;}
        bool hidden = (argv[3][0]!='0');
        nodetype->setHidden(hidden);
        return TCL_OK;
    }
    else if (!strcmp(cmd,"setAttr"))
    {
-       if (argc!=6) {Tcl_SetResult(interp, "wrong # args: should be \"opp_compoundfiltertype <nodetype> setAddr <name> <desc> <default>\"", TCL_STATIC); return TCL_ERROR;}
+       if (argc!=6) {Tcl_SetResult(interp, TCLCONST("wrong # args: should be \"opp_compoundfiltertype <nodetype> setAddr <name> <desc> <default>\""), TCL_STATIC); return TCL_ERROR;}
        const char *s = argv[3];
        const char *d = argv[4];
        const char *v = argv[5];
@@ -478,39 +478,39 @@ int compoundFilterType_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
    }
    else if (!strcmp(cmd,"removeAttr"))
    {
-       if (argc!=4) {Tcl_SetResult(interp, "wrong # args: should be \"opp_compoundfiltertype <nodetype> removeAddr <name>\"", TCL_STATIC); return TCL_ERROR;}
+       if (argc!=4) {Tcl_SetResult(interp, TCLCONST("wrong # args: should be \"opp_compoundfiltertype <nodetype> removeAddr <name>\""), TCL_STATIC); return TCL_ERROR;}
        const char *s = argv[3];
        nodetype->removeAttr(s);
        return TCL_OK;
    }
    else if (!strcmp(cmd,"numSubfilters"))
    {
-       if (argc!=3) {Tcl_SetResult(interp, "wrong # args: should be \"opp_compoundfiltertype <nodetype> numSubfilters\"", TCL_STATIC); return TCL_ERROR;}
+       if (argc!=3) {Tcl_SetResult(interp, TCLCONST("wrong # args: should be \"opp_compoundfiltertype <nodetype> numSubfilters\""), TCL_STATIC); return TCL_ERROR;}
        Tcl_Obj *res = Tcl_NewIntObj(nodetype->numSubfilters());
        Tcl_SetObjResult(interp, res);
        return TCL_OK;
    }
    else if (!strcmp(cmd,"subfilterType"))
    {
-       if (argc!=4) {Tcl_SetResult(interp, "wrong # args: should be \"opp_compoundfiltertype <nodetype> subfilterType <k>\"", TCL_STATIC); return TCL_ERROR;}
+       if (argc!=4) {Tcl_SetResult(interp, TCLCONST("wrong # args: should be \"opp_compoundfiltertype <nodetype> subfilterType <k>\""), TCL_STATIC); return TCL_ERROR;}
        int k = atoi(argv[3]);
-       if (k<0 || k>=nodetype->numSubfilters()) {Tcl_SetResult(interp, "subfilter index out of range", TCL_STATIC); return TCL_ERROR;}
+       if (k<0 || k>=nodetype->numSubfilters()) {Tcl_SetResult(interp, TCLCONST("subfilter index out of range"), TCL_STATIC); return TCL_ERROR;}
        Tcl_SetResult(interp, TCLCONST(nodetype->subfilter(k).nodeType()), TCL_VOLATILE);
        return TCL_OK;
    }
    else if (!strcmp(cmd,"subfilterComment"))
    {
-       if (argc!=4) {Tcl_SetResult(interp, "wrong # args: should be \"opp_compoundfiltertype <nodetype> subfilterComment <k>\"", TCL_STATIC); return TCL_ERROR;}
+       if (argc!=4) {Tcl_SetResult(interp, TCLCONST("wrong # args: should be \"opp_compoundfiltertype <nodetype> subfilterComment <k>\""), TCL_STATIC); return TCL_ERROR;}
        int k = atoi(argv[3]);
-       if (k<0 || k>=nodetype->numSubfilters()) {Tcl_SetResult(interp, "subfilter index out of range", TCL_STATIC); return TCL_ERROR;}
+       if (k<0 || k>=nodetype->numSubfilters()) {Tcl_SetResult(interp, TCLCONST("subfilter index out of range"), TCL_STATIC); return TCL_ERROR;}
        Tcl_SetResult(interp, TCLCONST(nodetype->subfilter(k).comment()), TCL_VOLATILE);
        return TCL_OK;
    }
    else if (!strcmp(cmd,"setSubfilter"))
    {
-       if (argc!=6) {Tcl_SetResult(interp, "wrong # args: should be \"opp_compoundfiltertype <nodetype> setSubfilter <k> <type> <comment>\"", TCL_STATIC); return TCL_ERROR;}
+       if (argc!=6) {Tcl_SetResult(interp, TCLCONST("wrong # args: should be \"opp_compoundfiltertype <nodetype> setSubfilter <k> <type> <comment>\""), TCL_STATIC); return TCL_ERROR;}
        int k = atoi(argv[3]);
-       if (k<0 || k>=nodetype->numSubfilters()) {Tcl_SetResult(interp, "subfilter index out of range", TCL_STATIC); return TCL_ERROR;}
+       if (k<0 || k>=nodetype->numSubfilters()) {Tcl_SetResult(interp, TCLCONST("subfilter index out of range"), TCL_STATIC); return TCL_ERROR;}
        const char *t = argv[4];
        const char *c = argv[5];
        nodetype->subfilter(k).setNodeType(t);
@@ -519,26 +519,26 @@ int compoundFilterType_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
    }
    else if (!strcmp(cmd,"removeSubfilter"))
    {
-       if (argc!=4) {Tcl_SetResult(interp, "wrong # args: should be \"opp_compoundfiltertype <nodetype> removeSubfilter <k>\"", TCL_STATIC); return TCL_ERROR;}
+       if (argc!=4) {Tcl_SetResult(interp, TCLCONST("wrong # args: should be \"opp_compoundfiltertype <nodetype> removeSubfilter <k>\""), TCL_STATIC); return TCL_ERROR;}
        int k = atoi(argv[3]);
-       if (k<0 || k>=nodetype->numSubfilters()) {Tcl_SetResult(interp, "subfilter index out of range", TCL_STATIC); return TCL_ERROR;}
+       if (k<0 || k>=nodetype->numSubfilters()) {Tcl_SetResult(interp, TCLCONST("subfilter index out of range"), TCL_STATIC); return TCL_ERROR;}
        nodetype->removeSubfilter(k);
        return TCL_OK;
    }
    else if (!strcmp(cmd,"insertSubfilter"))
    {
-       if (argc!=4) {Tcl_SetResult(interp, "wrong # args: should be \"opp_compoundfiltertype <nodetype> insertSubfilter <k>\"", TCL_STATIC); return TCL_ERROR;}
+       if (argc!=4) {Tcl_SetResult(interp, TCLCONST("wrong # args: should be \"opp_compoundfiltertype <nodetype> insertSubfilter <k>\""), TCL_STATIC); return TCL_ERROR;}
        int k = atoi(argv[3]);
-       if (k<0 || k>nodetype->numSubfilters()) {Tcl_SetResult(interp, "subfilter insertion index out of range", TCL_STATIC); return TCL_ERROR;}
+       if (k<0 || k>nodetype->numSubfilters()) {Tcl_SetResult(interp, TCLCONST("subfilter insertion index out of range"), TCL_STATIC); return TCL_ERROR;}
        // insert blank
        nodetype->insertSubfilter(k, CompoundFilterType::Subfilter());
        return TCL_OK;
    }
    else if (!strcmp(cmd,"subfilterAttrs"))
    {
-       if (argc!=4) {Tcl_SetResult(interp, "wrong # args: should be \"opp_compoundfiltertype <nodetype> subfilterAttrs <k>\"", TCL_STATIC); return TCL_ERROR;}
+       if (argc!=4) {Tcl_SetResult(interp, TCLCONST("wrong # args: should be \"opp_compoundfiltertype <nodetype> subfilterAttrs <k>\""), TCL_STATIC); return TCL_ERROR;}
        int k = atoi(argv[3]);
-       if (k<0 || k>=nodetype->numSubfilters()) {Tcl_SetResult(interp, "subfilter index out of range", TCL_STATIC); return TCL_ERROR;}
+       if (k<0 || k>=nodetype->numSubfilters()) {Tcl_SetResult(interp, TCLCONST("subfilter index out of range"), TCL_STATIC); return TCL_ERROR;}
        Tcl_Obj *resultlist = Tcl_NewListObj(0, NULL);
        StringMap& attrs = nodetype->subfilter(k).attrAssignments();
        for (StringMap::iterator i=attrs.begin(); i!=attrs.end(); ++i)
@@ -554,9 +554,9 @@ int compoundFilterType_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
    }
    else if (!strcmp(cmd,"setSubfilterAttr"))
    {
-       if (argc!=6) {Tcl_SetResult(interp, "wrong # args: should be \"opp_compoundfiltertype <nodetype> setSubfilterAttr <k> <name> <value>\"", TCL_STATIC); return TCL_ERROR;}
+       if (argc!=6) {Tcl_SetResult(interp, TCLCONST("wrong # args: should be \"opp_compoundfiltertype <nodetype> setSubfilterAttr <k> <name> <value>\""), TCL_STATIC); return TCL_ERROR;}
        int k = atoi(argv[3]);
-       if (k<0 || k>=nodetype->numSubfilters()) {Tcl_SetResult(interp, "subfilter index out of range", TCL_STATIC); return TCL_ERROR;}
+       if (k<0 || k>=nodetype->numSubfilters()) {Tcl_SetResult(interp, TCLCONST("subfilter index out of range"), TCL_STATIC); return TCL_ERROR;}
        const char *n = argv[4];
        const char *v = argv[5];
        StringMap& attrs = nodetype->subfilter(k).attrAssignments();
@@ -565,9 +565,9 @@ int compoundFilterType_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
    }
    else if (!strcmp(cmd,"removeSubfilterAttr"))
    {
-       if (argc!=5) {Tcl_SetResult(interp, "wrong # args: should be \"opp_compoundfiltertype <nodetype> removeSubfilterAttr <k> <name>\"", TCL_STATIC); return TCL_ERROR;}
+       if (argc!=5) {Tcl_SetResult(interp, TCLCONST("wrong # args: should be \"opp_compoundfiltertype <nodetype> removeSubfilterAttr <k> <name>\""), TCL_STATIC); return TCL_ERROR;}
        int k = atoi(argv[3]);
-       if (k<0 || k>=nodetype->numSubfilters()) {Tcl_SetResult(interp, "subfilter index out of range", TCL_STATIC); return TCL_ERROR;}
+       if (k<0 || k>=nodetype->numSubfilters()) {Tcl_SetResult(interp, TCLCONST("subfilter index out of range"), TCL_STATIC); return TCL_ERROR;}
        const char *n = argv[4];
        StringMap& attrs = nodetype->subfilter(k).attrAssignments();
        attrs.erase(std::string(n));
@@ -575,9 +575,9 @@ int compoundFilterType_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
    }
    else if (!strcmp(cmd,"validateSubfilter"))
    {
-       if (argc!=4) {Tcl_SetResult(interp, "wrong # args: should be \"opp_compoundfiltertype <nodetype> validateSubfilter <k>\"", TCL_STATIC); return TCL_ERROR;}
+       if (argc!=4) {Tcl_SetResult(interp, TCLCONST("wrong # args: should be \"opp_compoundfiltertype <nodetype> validateSubfilter <k>\""), TCL_STATIC); return TCL_ERROR;}
        int k = atoi(argv[3]);
-       if (k<0 || k>=nodetype->numSubfilters()) {Tcl_SetResult(interp, "subfilter index out of range", TCL_STATIC); return TCL_ERROR;}
+       if (k<0 || k>=nodetype->numSubfilters()) {Tcl_SetResult(interp, TCLCONST("subfilter index out of range"), TCL_STATIC); return TCL_ERROR;}
 
        CATCH_EXCEPTIONS(
            const char *subfiltnodetypename = nodetype->subfilter(k).nodeType();
@@ -589,10 +589,10 @@ int compoundFilterType_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
    }
    else
    {
-       Tcl_SetResult(interp, "2nd arg should be: setName, setDescription, setHidden, setAttr, "
+       Tcl_SetResult(interp, TCLCONST("2nd arg should be: setName, setDescription, setHidden, setAttr, "
                              "removeAttr, numSubfilters, subfilterType, subfilterComment, "
                              "setSubfilter, removeSubfilter, insertSubfilter, subfilterAttrs, "
-                             "setSubfilterAttr, removeSubfilterAttr or validateSubfilter",
+                             "setSubfilterAttr, removeSubfilterAttr or validateSubfilter"),
                              TCL_STATIC);
        return TCL_ERROR;
    }

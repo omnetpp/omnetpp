@@ -59,7 +59,7 @@ int parsened_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
     {
        if (i+1>=argc)
        {
-           Tcl_SetResult(interp, "wrong arg count -- missing argument?", TCL_STATIC);
+           Tcl_SetResult(interp, TCLCONST("wrong arg count -- missing argument?"), TCL_STATIC);
            return TCL_ERROR;
        }
 
@@ -75,19 +75,19 @@ int parsened_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
           nedfilekey = atoi(argv[++i]);
        else
        {
-           Tcl_SetResult(interp, "unrecognized arg", TCL_STATIC);
+           Tcl_SetResult(interp, TCLCONST("unrecognized arg"), TCL_STATIC);
            return TCL_ERROR;
        }
     }
 
     if ((filename && nedtext) || (!filename && !nedtext))
     {
-       Tcl_SetResult(interp, "one of -file and -text options must be present", TCL_STATIC);
+       Tcl_SetResult(interp, TCLCONST("one of -file and -text options must be present"), TCL_STATIC);
        return TCL_ERROR;
     }
     if (nedfilekey==-1 || !nedarray || !errorsarray)
     {
-       Tcl_SetResult(interp, "-nedfilekey, -nedarray, -errorsarray options must be present", TCL_STATIC);
+       Tcl_SetResult(interp, TCLCONST("-nedfilekey, -nedarray, -errorsarray options must be present"), TCL_STATIC);
        return TCL_ERROR;
     }
 
@@ -177,9 +177,9 @@ inline int h2d(char c)
 
 int hsbToRgb_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc<2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc<2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    const char *hsb = argv[1];
-   if (hsb[0]!='@' || strlen(hsb)!=7) {Tcl_SetResult(interp, "malformed HSB color, format is @hhssbb where h,s,b are hex digits", TCL_STATIC); return TCL_ERROR;}
+   if (hsb[0]!='@' || strlen(hsb)!=7) {Tcl_SetResult(interp, TCLCONST("malformed HSB color, format is @hhssbb where h,s,b are hex digits"), TCL_STATIC); return TCL_ERROR;}
 
    // parse hsb
    double hue =        (h2d(hsb[1])*16+h2d(hsb[2]))/256.0;
@@ -203,7 +203,7 @@ int hsbToRgb_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 
 int colorizeImage_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=4) {Tcl_SetResult(interp, "3 args expected", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=4) {Tcl_SetResult(interp, TCLCONST("3 args expected"), TCL_STATIC); return TCL_ERROR;}
    const char *imgname = argv[1];
    const char *targetcolorname = argv[2];
    const char *weightstr = argv[3]; // 0-100
@@ -211,7 +211,7 @@ int colorizeImage_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
    Tk_PhotoHandle imghandle = Tk_FindPhoto(interp, TCLCONST(imgname));
    if (!imghandle)
    {
-       Tcl_SetResult(interp, "image doesn't exist or is not a photo image", TCL_STATIC);
+       Tcl_SetResult(interp, TCLCONST("image doesn't exist or is not a photo image"), TCL_STATIC);
        return TCL_ERROR;
    }
    Tk_PhotoImageBlock imgblock;
@@ -219,14 +219,14 @@ int colorizeImage_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
 
    if (imgblock.pixelSize!=4)
    {
-       Tcl_SetResult(interp, "unsupported pixelsize in photo image", TCL_STATIC);
+       Tcl_SetResult(interp, TCLCONST("unsupported pixelsize in photo image"), TCL_STATIC);
        return TCL_ERROR;
    }
 
    XColor *targetcolor = Tk_GetColor(interp, Tk_MainWindow(interp), TCLCONST(targetcolorname));
    if (!targetcolor)
    {
-       Tcl_SetResult(interp, "invalid color", TCL_STATIC);
+       Tcl_SetResult(interp, TCLCONST("invalid color"), TCL_STATIC);
        return TCL_ERROR;
    }
    int rdest = targetcolor->red / 256;  // scale down to 8 bits
@@ -237,7 +237,7 @@ int colorizeImage_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
    double weight = atol(weightstr)/100.0;
    if (weight<0 || weight>1.0)
    {
-       Tcl_SetResult(interp, "colorizing weight is out of range, should be between 0 and 100", TCL_STATIC);
+       Tcl_SetResult(interp, TCLCONST("colorizing weight is out of range, should be between 0 and 100"), TCL_STATIC);
        return TCL_ERROR;
    }
 

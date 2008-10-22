@@ -71,7 +71,7 @@ bool cDoubleExpression::parseText(const char *text)
 //==========================================================================
 //=== cPar - member functions
 
-char *cPar::possibletypes = "SBLDFIXCTP";
+const char *cPar::possibletypes = "SBLDFIXCTP";
 
 static const char *typeName(char typechar)
 {

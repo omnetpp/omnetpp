@@ -26,7 +26,7 @@
 //   Blank slots are message codes no longer in use.
 //
 
-char *emsg[] = {
+const char *emsg[] = {
   "No error -- everything's fine",                       // eOK
   "Cannot cast from type %s to %s",                      // eBADCAST
   "cPar indirection would create circular reference",    // eCIRCREF

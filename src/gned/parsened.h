@@ -119,21 +119,21 @@ class NEDParser
                   const char *nedarray, const char *errorsarray);
 
     // create new item: returns item key
-    int create(char *type, int parentkey);
+    int create(const char *type, int parentkey);
 
     // setting, getting and swapping tmp_ned array elements
-    void set(int key, char *attr, long value);
-    void set(int key, char *attr, char *value);
-    void set(int key, char *attr, YYLTYPE valuepos);
-    const char *get(int key, char *attr);
-    void swap(int key, char *attr1, char *attr2);
+    void set(int key, const char *attr, long value);
+    void set(int key, const char *attr, const char *value);
+    void set(int key, const char *attr, YYLTYPE valuepos);
+    const char *get(int key, const char *attr);
+    void swap(int key, const char *attr1, const char *attr2);
 
     // findChild: returns item key, -1 not found, -2 not unique
-    int findChild(int parentkey, char *attr, char *value);
+    int findChild(int parentkey, const char *attr, const char *value);
 
     // error and debug handling
-    void error(char type, char *msg, int line, int col);
-    void dbg(YYLTYPE lc, char *what);
+    void error(const char type, const char *msg, int line, int col);
+    void dbg(YYLTYPE lc, const char *what);
 
 };
 

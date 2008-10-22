@@ -46,7 +46,7 @@ class FDDI_Generator : public cSimpleModule
     // Returns false at the end of trace file, (if load is taken directly from
     // there. Otherwise it returns true.
     virtual bool RetrieveDestLength(cMessage *, int &, int &) = 0;
-    virtual char *GetFileNameSuffix() = 0;
+    virtual const char *GetFileNameSuffix() = 0;
 };
 
 class FDDI_GeneratorFromTraceFile : public FDDI_Generator
@@ -60,7 +60,7 @@ class FDDI_GeneratorFromTraceFile : public FDDI_Generator
   protected:
     virtual void InitStatistics();
     virtual bool RetrieveDestLength(cMessage *, int &, int &);
-    virtual char *GetFileNameSuffix() {return ".trc";}
+    virtual const char *GetFileNameSuffix() {return ".trc";}
 };
 
 class FDDI_GeneratorHistogram2x1D : public FDDI_Generator
@@ -68,7 +68,7 @@ class FDDI_GeneratorHistogram2x1D : public FDDI_Generator
   protected:
     virtual void InitStatistics();
     virtual bool RetrieveDestLength(cMessage *, int &, int &);
-    virtual char *GetFileNameSuffix() {return ".hst";}
+    virtual const char *GetFileNameSuffix() {return ".hst";}
 };
 
 class FDDI_GeneratorPiSquare2x1D : public FDDI_Generator
@@ -76,7 +76,7 @@ class FDDI_GeneratorPiSquare2x1D : public FDDI_Generator
   protected:
     virtual void InitStatistics();
     virtual bool RetrieveDestLength(cMessage *, int &, int &);
-    virtual char *GetFileNameSuffix() {return ".psq";}
+    virtual const char *GetFileNameSuffix() {return ".psq";}
 };
 
 class FDDI_GeneratorKSplit2x1D : public FDDI_Generator
@@ -84,7 +84,7 @@ class FDDI_GeneratorKSplit2x1D : public FDDI_Generator
   protected:
     virtual void InitStatistics();
     virtual bool RetrieveDestLength(cMessage *, int &, int &);
-    virtual char *GetFileNameSuffix() {return ".ksp";}
+    virtual const char *GetFileNameSuffix() {return ".ksp";}
 };
 
 class FDDI_GeneratorKSplit2D : public FDDI_Generator
@@ -92,7 +92,7 @@ class FDDI_GeneratorKSplit2D : public FDDI_Generator
   protected:
     virtual void InitStatistics();
     virtual bool RetrieveDestLength(cMessage *, int &, int &);
-    virtual char *GetFileNameSuffix() {return ".k2d";}
+    virtual const char *GetFileNameSuffix() {return ".k2d";}
 };
 
 class FDDI_Address_Generator : public cSimpleModule
@@ -112,7 +112,7 @@ class FDDI_Address_Generator : public cSimpleModule
     virtual void activity();
     virtual void InitStatistics();
     virtual int RetrieveNewAddress(int);
-    virtual char *GetFileNameSuffix() {return ".hst";}
+    virtual const char *GetFileNameSuffix() {return ".hst";}
 };
 
 class FDDI_Generator4Ring : public cSimpleModule
