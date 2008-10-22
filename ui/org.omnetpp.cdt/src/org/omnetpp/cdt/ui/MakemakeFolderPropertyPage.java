@@ -133,7 +133,7 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
             }
         });
 
-        optionsPanel.setOwner(this);
+        optionsPanel.setOwnerPage(this);
         
         nonSourceFolderComposite = new Composite(parent, SWT.NONE);
         nonSourceFolderComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));

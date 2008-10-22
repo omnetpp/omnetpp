@@ -599,11 +599,13 @@ public class MakemakeOptionsPanel extends Composite {
     }
 
     protected void setErrorMessage(String text) {
-        ownerPage.setErrorMessage(text);
-        ownerPage.setValid(text == null);
+        if (ownerPage != null) {
+            ownerPage.setErrorMessage(text);
+            ownerPage.setValid(text == null);
+        }
     }
 
-    public void setOwner(PropertyPage page) {
+    public void setOwnerPage(PropertyPage page) {
         this.ownerPage = page;
     }
 

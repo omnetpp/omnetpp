@@ -17,10 +17,12 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.preference.IPreferencePageContainer;
 import org.eclipse.jface.preference.PreferencePage;
@@ -30,9 +32,9 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.Bullet;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -74,11 +76,14 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
     // controls
     protected TreeViewer treeViewer;
     private Button markAsToplevelButton;
-    private Button editButton;
+    private Button optionsButton;
     private Button markAsSourceFolderButton;
     private Button removeSourceFolderButton;
     private Button excludeButton;
     private Button includeButton;
+    private Button makemakeButton;
+    private Button customMakeButton;
+    private Button noMakeButton;
 
     /**
      * Constructor.
@@ -101,29 +106,66 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         createLabel(composite, "Folders:", 2);
         treeViewer = new TreeViewer(composite, SWT.BORDER);
         treeViewer.getTree().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        ((GridData)treeViewer.getTree().getLayoutData()).widthHint = 300;
 
         Composite buttons = new Composite(composite, SWT.NONE);
         buttons.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
         buttons.setLayout(new GridLayout(1,false));
-        
+
+        makemakeButton = createButton(buttons, SWT.PUSH, "Makemake", null);
+        customMakeButton = createButton(buttons, SWT.PUSH, "Custom Make", null);
+        noMakeButton = createButton(buttons, SWT.PUSH, "No Make", null);
+        createLabel(buttons, "", 1);
+        optionsButton = createButton(buttons, SWT.PUSH, "Options...", null);
+        createLabel(buttons, "", 1);
         markAsToplevelButton = createButton(buttons, SWT.PUSH, "Mark as toplevel", null);
-        editButton = createButton(buttons, SWT.PUSH, "Edit...", null);
         createLabel(buttons, "", 1);
         markAsSourceFolderButton = createButton(buttons, SWT.PUSH, "Mark as Source Folder", null);
         removeSourceFolderButton = createButton(buttons, SWT.PUSH, "Remove Source Folder", null);
         excludeButton = createButton(buttons, SWT.PUSH, "Exclude", null);
         includeButton = createButton(buttons, SWT.PUSH, "Include", null);
 
+        String text = "Source folder settings can also be managed on the Source Location tab of the <A>Paths and symbols</A> page.";
+        Link pathsAndSymbolsLink = createLink(composite, text);
+        pathsAndSymbolsLink.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1));
+
+        pathsAndSymbolsLink.addSelectionListener(new SelectionListener(){
+            public void widgetSelected(SelectionEvent e) {
+                gotoPathsAndSymbolsPage();
+            }
+            public void widgetDefaultSelected(SelectionEvent e) {
+                gotoPathsAndSymbolsPage();
+            }
+        });
+
+        makemakeButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                setFolderMakeType(getTreeSelection(), BuildSpecification.MAKEMAKE);
+            }
+        });
+        customMakeButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                setFolderMakeType(getTreeSelection(), BuildSpecification.CUSTOM);
+            }
+        });
+        noMakeButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                setFolderMakeType(getTreeSelection(), BuildSpecification.NONE);
+            }
+        });
         markAsToplevelButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 markAsToplevel(getTreeSelection());
             }
         });
-        editButton.addSelectionListener(new SelectionAdapter() {
+        optionsButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                editFolder(getTreeSelection());
+                editFolderOptions(getTreeSelection());
             }
         });
         markAsSourceFolderButton.addSelectionListener(new SelectionAdapter() {
@@ -216,12 +258,22 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
     }
 
     
+    protected void setFolderMakeType(IContainer folder, int makeType) {
+        buildSpec.setFolderMakeType(folder, makeType);
+        updatePageState();
+    }
+
     protected void markAsToplevel(IContainer folder) {
         // TODO write this folder into the "Build location" field (for all configurations)
     }
 
-    protected void editFolder(IContainer folder) {
-        // TODO Auto-generated method stub
+    protected void editFolderOptions(IContainer folder) {
+        Assert.isTrue(buildSpec.getFolderMakeType(folder) == BuildSpecification.MAKEMAKE);
+        MakemakeOptionsDialog dialog = new MakemakeOptionsDialog(getShell(), folder, buildSpec.getMakemakeOptions(folder));
+        if (dialog.open() == Dialog.OK) {
+            buildSpec.setMakemakeOptions(folder, dialog.getResult());
+            updatePageState();
+        }
     }
 
     protected void markAsSourceFolder(IContainer folder) {
@@ -367,8 +419,11 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         
         IContainer folder = getTreeSelection();
         if (folder == null) {
+            makemakeButton.setEnabled(false);
+            customMakeButton.setEnabled(false);
+            noMakeButton.setEnabled(false);
             markAsToplevelButton.setEnabled(false);
-            editButton.setEnabled(false);
+            optionsButton.setEnabled(false);
             markAsSourceFolderButton.setEnabled(false);
             removeSourceFolderButton.setEnabled(false);
             excludeButton.setEnabled(false);
@@ -377,8 +432,14 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         }
         
         IProject project = getProject();
-        //markAsToplevelButton.setEnabled(buildSpec.); // FIXME if contains makefile
-        editButton.setEnabled(true);
+
+        int makeType = buildSpec.getFolderMakeType(folder);
+        makemakeButton.setEnabled(makeType!=BuildSpecification.MAKEMAKE);
+        customMakeButton.setEnabled(makeType!=BuildSpecification.CUSTOM);
+        noMakeButton.setEnabled(makeType!=BuildSpecification.NONE);
+        
+        markAsToplevelButton.setEnabled(makeType!=BuildSpecification.NONE);
+        optionsButton.setEnabled(makeType==BuildSpecification.MAKEMAKE);
         
         boolean isSourceFolder = CDTUtils.getSourceFolders(project).contains(folder);
         markAsSourceFolderButton.setEnabled(!isSourceFolder);
