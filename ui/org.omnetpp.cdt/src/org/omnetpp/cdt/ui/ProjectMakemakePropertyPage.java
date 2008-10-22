@@ -4,21 +4,35 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.eclipse.cdt.core.model.CoreModel;
+import org.eclipse.cdt.core.settings.model.CSourceEntry;
+import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
+import org.eclipse.cdt.core.settings.model.ICProjectDescription;
+import org.eclipse.cdt.core.settings.model.ICSourceEntry;
+import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 import org.eclipse.cdt.managedbuilder.core.IConfiguration;
 import org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo;
 import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.preference.IPreferencePageContainer;
 import org.eclipse.jface.preference.PreferencePage;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.Bullet;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -46,29 +60,25 @@ import org.omnetpp.cdt.makefile.MakemakeOptions;
  */
 @SuppressWarnings("restriction")
 public class ProjectMakemakePropertyPage extends PropertyPage {
-    private enum FolderType {
-        MAKEMAKE_SOURCE_FOLDER, 
-        CUSTOMMAKE_SOURCE_FOLDER,
-        SOURCE_SUBFOLDER,
-        CUSTOMMAKE_NONSRC_FOLDER,
-        MAKEMAKE_NONSRC_FOLDER,
-        EXCLUDED_FOLDER,
-        NONSRC_FOLDER,
-    }
-    
-    private static final Image MAKEMAKE_SOURCE_FOLDER_IMG = Activator.getCachedImage("icons/full/obj16/folder_makemake.gif");
-    private static final Image CUSTOMMAKE_SOURCE_FOLDER_IMG = Activator.getCachedImage("icons/full/obj16/folder_custommake.gif");
-    private static final Image SOURCE_SUBFOLDER_IMG = Activator.getCachedImage("icons/full/obj16/folder_srcsubfolder.gif");
-    private static final Image CUSTOMMAKE_NONSRC_FOLDER_IMG = Activator.getCachedImage("icons/full/obj16/folder_nonsrc_custommake.gif");
-    private static final Image MAKEMAKE_NONSRC_FOLDER_IMG = Activator.getCachedImage("icons/full/obj16/folder_nonsrc_makemake.gif");
-    private static final Image EXCLUDED_FOLDER_IMG = Activator.getCachedImage("icons/full/obj16/folder_excluded.gif");
-    private static final Image NONSRC_FOLDER_IMG = Activator.getCachedImage("icons/full/obj16/folder_nonsrc.gif");
+    private static final String MAKEMAKE_SOURCE_FOLDER_IMG = "icons/full/obj16/folder_makemake.gif";
+    private static final String CUSTOMMAKE_SOURCE_FOLDER_IMG = "icons/full/obj16/folder_custommake.gif";
+    private static final String SOURCE_SUBFOLDER_IMG = "icons/full/obj16/folder_srcsubfolder.gif";
+    private static final String CUSTOMMAKE_NONSRC_FOLDER_IMG = "icons/full/obj16/folder_nonsrc_custommake.gif";
+    private static final String MAKEMAKE_NONSRC_FOLDER_IMG = "icons/full/obj16/folder_nonsrc_makemake.gif";
+    private static final String EXCLUDED_FOLDER_IMG = "icons/full/obj16/folder_excluded.gif";
+    private static final String NONSRC_FOLDER_IMG = "icons/full/obj16/folder_nonsrc.gif";
     
     // state
     protected BuildSpecification buildSpec;
 
     // controls
     protected TreeViewer treeViewer;
+    private Button markAsToplevelButton;
+    private Button editButton;
+    private Button markAsSourceFolderButton;
+    private Button removeSourceFolderButton;
+    private Button excludeButton;
+    private Button includeButton;
 
     /**
      * Constructor.
@@ -81,17 +91,71 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
      * @see PreferencePage#createContents(Composite)
      */
     protected Control createContents(Composite parent) {
-        final Group group = new Group(parent, SWT.NONE);
-        group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-        group.setLayout(new GridLayout(1,false));
+        Composite composite = new Composite(parent, SWT.NONE);
+        composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        
+        composite.setLayout(new GridLayout(2,false));
+        ((GridLayout)composite.getLayout()).marginWidth = 0;
+        ((GridLayout)composite.getLayout()).marginHeight = 0;
 
-        createLabel(group, "Folders:");
-        treeViewer = new TreeViewer(group, SWT.BORDER);
+        createLabel(composite, "Folders:", 2);
+        treeViewer = new TreeViewer(composite, SWT.BORDER);
         treeViewer.getTree().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+
+        Composite buttons = new Composite(composite, SWT.NONE);
+        buttons.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
+        buttons.setLayout(new GridLayout(1,false));
+        
+        markAsToplevelButton = createButton(buttons, SWT.PUSH, "Mark as toplevel", null);
+        editButton = createButton(buttons, SWT.PUSH, "Edit...", null);
+        createLabel(buttons, "", 1);
+        markAsSourceFolderButton = createButton(buttons, SWT.PUSH, "Mark as Source Folder", null);
+        removeSourceFolderButton = createButton(buttons, SWT.PUSH, "Remove Source Folder", null);
+        excludeButton = createButton(buttons, SWT.PUSH, "Exclude", null);
+        includeButton = createButton(buttons, SWT.PUSH, "Include", null);
+
+        markAsToplevelButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                markAsToplevel(getTreeSelection());
+            }
+        });
+        editButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                editFolder(getTreeSelection());
+            }
+        });
+        markAsSourceFolderButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                markAsSourceFolder(getTreeSelection());
+            }
+        });
+        removeSourceFolderButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                removeSourceFolder(getTreeSelection());
+            }
+        });
+        excludeButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                excludeFolder(getTreeSelection());
+            }
+        });
+        includeButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                includeFolder(getTreeSelection());
+            }
+        });
 
         treeViewer.setContentProvider(new WorkbenchContentProvider() {
             @Override
             public Object[] getChildren(Object element) {
+                if (element instanceof IWorkspaceRoot)
+                    return new Object[] {getProject()};
                 List<Object> result = new ArrayList<Object>();
                 for (Object object : super.getChildren(element))
                     if (object instanceof IContainer && MakefileTools.isGoodFolder((IContainer)object))
@@ -104,17 +168,29 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
             public Image getImage(Object element) {
                 if (!(element instanceof IContainer))
                     return null;
-                FolderType folderType = getFolderType((IContainer)element);
-                switch (folderType) {
-                    case MAKEMAKE_SOURCE_FOLDER: return MAKEMAKE_SOURCE_FOLDER_IMG; 
-                    case CUSTOMMAKE_SOURCE_FOLDER: return CUSTOMMAKE_SOURCE_FOLDER_IMG;
-                    case SOURCE_SUBFOLDER: return SOURCE_SUBFOLDER_IMG;
-                    case CUSTOMMAKE_NONSRC_FOLDER: return CUSTOMMAKE_NONSRC_FOLDER_IMG;
-                    case MAKEMAKE_NONSRC_FOLDER: return MAKEMAKE_NONSRC_FOLDER_IMG;
-                    case EXCLUDED_FOLDER: return EXCLUDED_FOLDER_IMG;
-                    case NONSRC_FOLDER: return NONSRC_FOLDER_IMG;
-                    default: return null; // cannot happen
+                IContainer folder = (IContainer)element;
+                int makeType = buildSpec.getFolderMakeType(folder);
+
+                ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(getProject());
+                ICConfigurationDescription configuration = projectDescription.getActiveConfiguration();
+                boolean isExcluded = CDataUtil.isExcluded(folder.getFullPath(), configuration.getSourceEntries());
+
+                String iconPath = null;
+                if (isExcluded) {
+                    switch (makeType) {
+                        case BuildSpecification.MAKEMAKE: iconPath = MAKEMAKE_NONSRC_FOLDER_IMG; break;
+                        case BuildSpecification.CUSTOM: iconPath = CUSTOMMAKE_NONSRC_FOLDER_IMG; break;
+                        case BuildSpecification.NONE: iconPath = NONSRC_FOLDER_IMG; break;
+                    }
                 }
+                else {
+                    switch (makeType) {
+                        case BuildSpecification.MAKEMAKE: iconPath = MAKEMAKE_SOURCE_FOLDER_IMG; break;
+                        case BuildSpecification.CUSTOM: iconPath = CUSTOMMAKE_SOURCE_FOLDER_IMG; break;
+                        case BuildSpecification.NONE: iconPath = SOURCE_SUBFOLDER_IMG; break;
+                    }
+                }
+                return Activator.getCachedImage(iconPath);
             }
 
             public String getText(Object element) {
@@ -126,10 +202,107 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         
         loadBuildSpecFile();
 
-        treeViewer.setInput(getFolder().getProject());
+        treeViewer.setInput(getProject().getParent());
+        treeViewer.expandToLevel(2);
+        
+        treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+            public void selectionChanged(SelectionChangedEvent event) {
+                updatePageState();
+            }
+        });
+        
         updatePageState();
-        return group;
+        return composite;
     }
+
+    
+    protected void markAsToplevel(IContainer folder) {
+        // TODO write this folder into the "Build location" field (for all configurations)
+    }
+
+    protected void editFolder(IContainer folder) {
+        // TODO Auto-generated method stub
+    }
+
+    protected void markAsSourceFolder(IContainer folder) {
+        try {
+            IProject project = getProject();
+            ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(project);
+            for (ICConfigurationDescription configuration : projectDescription.getConfigurations()) {
+                ICSourceEntry[] entries = configuration.getSourceEntries();
+                ICSourceEntry entry = new CSourceEntry(folder.getProjectRelativePath(), new IPath[0], 0);
+                entries = (ICSourceEntry[]) ArrayUtils.add(entries, entry);
+                configuration.setSourceEntries(entries);
+            }
+            CoreModel.getDefault().setProjectDescription(project, projectDescription);
+        }
+        catch (CoreException e) {
+            //TODO errordialog
+            Activator.logError(e);
+        }
+        catch (Exception e) {
+            Activator.logError(e);
+        }
+        updatePageState();
+    }
+
+    protected void removeSourceFolder(IContainer folder) {
+        try {
+            IProject project = getProject();
+            ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(project);
+            for (ICConfigurationDescription configuration : projectDescription.getConfigurations()) {
+                ICSourceEntry[] entries = configuration.getSourceEntries();
+                for (int i=0; i<entries.length; i++) 
+                    if (entries[i].getFullPath().equals(folder.getFullPath()))
+                        entries = (ICSourceEntry[]) ArrayUtils.remove(entries, i--);
+                configuration.setSourceEntries(entries);
+            }
+            CoreModel.getDefault().setProjectDescription(project, projectDescription);
+        }
+        catch (CoreException e) {
+            //TODO errordialog
+            Activator.logError(e);
+        }
+        catch (Exception e) {
+            Activator.logError(e);
+        }
+        updatePageState();
+    }
+
+    protected void excludeFolder(IContainer folder) {
+        setExcluded(folder, true);
+    }
+
+    protected void includeFolder(IContainer folder) {
+        setExcluded(folder, false);
+    }
+
+    protected void setExcluded(IContainer folder, boolean exclude) {
+        try {
+            IProject project = getProject();
+            ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(project);
+            for (ICConfigurationDescription configuration : projectDescription.getConfigurations()) {
+                ICSourceEntry[] newEntries = CDataUtil.setExcluded(folder.getFullPath(), true, exclude, configuration.getSourceEntries());
+                configuration.setSourceEntries(newEntries);
+            }
+            CoreModel.getDefault().setProjectDescription(project, projectDescription); //FIXME use CDT property page manager stuff, like on the other makemake options panel
+        }
+        catch (CoreException e) {
+            //TODO errordialog
+            Activator.logError(e);
+        }
+        catch (Exception e) {
+            Activator.logError(e);
+        }
+        updatePageState();
+    }
+
+//XXX maybe useful fragments
+//    List<IContainer> sourceFolders = CDTUtils.getSourceFolders(getProject().getProject());
+//    boolean isUnderSrcFolder = false;
+//    for (IContainer tmp = folder; !(tmp instanceof IProject); tmp = tmp.getParent())
+//        if (sourceFolders.contains(tmp))
+//            isUnderSrcFolder = true;
 
     protected void gotoPathsAndSymbolsPage() {
         IPreferencePageContainer container = getContainer();
@@ -145,10 +318,11 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         return group;
     }
 
-    protected Label createLabel(Composite composite, String text) {
+    protected Label createLabel(Composite composite, String text, int hspan) {
         Label label = new Label(composite, SWT.NONE);
         label.setText(text);
         label.setLayoutData(new GridData());
+        ((GridData)label.getLayoutData()).horizontalSpan = hspan;
         return label;
     }
 
@@ -157,7 +331,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         button.setText(text);
         if (tooltip != null)
             button.setToolTipText(tooltip);
-        button.setLayoutData(new GridData());
+        button.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
         return button;
     }
 
@@ -175,41 +349,52 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
             updatePageState();
     }
 
-    public FolderType getFolderType(IContainer folder) {
-        List<IContainer> sourceFolders = CDTUtils.getSourceFolders(getFolder().getProject());
-       
-        boolean isUnderSrcFolder = false;
-        for (IContainer tmp = folder; !(tmp instanceof IProject); tmp = tmp.getParent())
-            if (sourceFolders.contains(tmp))
-                isUnderSrcFolder = true;
-
-        //FIXME simplified....
-        if (sourceFolders.contains(folder)) {
-            if (ArrayUtils.contains(buildSpec.getMakemakeFolders(), folder))
-                return FolderType.MAKEMAKE_SOURCE_FOLDER;
-            else
-                return FolderType.CUSTOMMAKE_SOURCE_FOLDER;
-        }
-        else if (ArrayUtils.contains(buildSpec.getMakemakeFolders(), folder))
-            return FolderType.MAKEMAKE_NONSRC_FOLDER;
-        else if (isUnderSrcFolder)
-            return FolderType.SOURCE_SUBFOLDER;
-        else
-            return FolderType.NONSRC_FOLDER; // not exactly...
-    }
-
     protected String getLabelFor(IContainer folder) {
         String result = folder.getName();
-        
-        if (ArrayUtils.contains(buildSpec.getMakemakeFolders(), folder)) {
+
+        if (buildSpec.getFolderMakeType(folder)==BuildSpecification.MAKEMAKE) {
             MakemakeOptions makemakeOptions = buildSpec.getMakemakeOptions(folder);
-            result += " -- " + makemakeOptions.toString();
+            result += ": makemake " + makemakeOptions.toString(); //FIXME show target name instead ("-> libINET.so") or something
+        }
+        if (buildSpec.getFolderMakeType(folder)==BuildSpecification.CUSTOM) {
+            result += ": custom makefile";
         }
         return result;
     }
     
     protected void updatePageState() {
-        //TODO
+        treeViewer.refresh();
+        
+        IContainer folder = getTreeSelection();
+        if (folder == null) {
+            markAsToplevelButton.setEnabled(false);
+            editButton.setEnabled(false);
+            markAsSourceFolderButton.setEnabled(false);
+            removeSourceFolderButton.setEnabled(false);
+            excludeButton.setEnabled(false);
+            includeButton.setEnabled(false);
+            return;
+        }
+        
+        IProject project = getProject();
+        //markAsToplevelButton.setEnabled(buildSpec.); // FIXME if contains makefile
+        editButton.setEnabled(true);
+        
+        boolean isSourceFolder = CDTUtils.getSourceFolders(project).contains(folder);
+        markAsSourceFolderButton.setEnabled(!isSourceFolder);
+        removeSourceFolderButton.setEnabled(isSourceFolder);
+        
+        ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(project);
+        ICConfigurationDescription configuration = projectDescription.getActiveConfiguration();
+        boolean isExcluded = CDataUtil.isExcluded(folder.getFullPath(), configuration.getSourceEntries());
+        
+        excludeButton.setEnabled(!isExcluded);  //FIXME not really...
+        includeButton.setEnabled(isExcluded); //FIXME not really: only enable if exactly matches an exclusion pattern!
+    }
+
+    protected IContainer getTreeSelection() {
+        IContainer folder = (IContainer)((IStructuredSelection)treeViewer.getSelection()).getFirstElement();
+        return folder;
     }
 
     protected boolean isDirty() {
@@ -218,7 +403,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
 
     protected String getInformationalMessage() {
         // Check CDT settings
-        IManagedBuildInfo buildInfo = ManagedBuildManager.getBuildInfo(getFolder().getProject());
+        IManagedBuildInfo buildInfo = ManagedBuildManager.getBuildInfo(getProject().getProject());
         if (buildInfo == null)
             return "Cannot access CDT build information for this project. Is this a C/C++ project?";
         IConfiguration configuration = buildInfo.getDefaultConfiguration();
@@ -255,8 +440,8 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
     /**
      * The resource for which the Properties dialog was brought up.
      */
-    protected IContainer getFolder() {
-        return (IContainer) getElement().getAdapter(IContainer.class);
+    protected IProject getProject() {
+        return (IProject) getElement().getAdapter(IProject.class);
     }
 
     @Override
@@ -268,7 +453,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
     }
 
     protected void loadBuildSpecFile() {
-        IProject project = getFolder().getProject();
+        IProject project = getProject().getProject();
         try {
             buildSpec = BuildSpecification.readBuildSpecFile(project);
         } 
