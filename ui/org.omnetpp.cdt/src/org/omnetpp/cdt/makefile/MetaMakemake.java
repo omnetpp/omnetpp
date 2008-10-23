@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.cdt.core.model.CoreModel;
-import org.eclipse.cdt.core.model.CoreModelUtil;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICFolderDescription;
 import org.eclipse.cdt.core.settings.model.ICLanguageSetting;
@@ -20,7 +19,6 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -137,24 +135,22 @@ public class MetaMakemake {
      * in the active CDT configuration under the given source folder.
      * Excluded files are not considered. 
      */
-    protected static List<String> getExcludedSubpathsWithinFolder(IContainer sourceFolder) throws CoreException {
-        ICSourceEntry sourceEntry = CDTUtils.getSourceEntryFor(sourceFolder);
-        Assert.isTrue(sourceEntry != null, "no such sourceEntry: " + sourceFolder.getFullPath());
+    protected static List<String> getExcludedSubpathsWithinFolder(IContainer makemakeFolder) throws CoreException {
         List<String> result = new ArrayList<String>();
-        collectExcludedSubpaths(sourceFolder, sourceEntry, result);
+        collectExcludedSubpaths(makemakeFolder, makemakeFolder, CDTUtils.getSourceEntries(makemakeFolder.getProject()), result);
         return result;
     }
 
-    private static void collectExcludedSubpaths(IContainer folder, ICSourceEntry sourceEntry, List<String> result) throws CoreException {
+    private static void collectExcludedSubpaths(IContainer folder, IContainer makemakeFolder, ICSourceEntry sourceEntries[], List<String> result) throws CoreException {
         if (MakefileTools.isGoodFolder(folder)) {
-            if (CoreModelUtil.isExcluded(folder, sourceEntry.fullExclusionPatternChars())) {
-                IPath sourceFolderRelativePath = folder.getProjectRelativePath().removeFirstSegments(sourceEntry.getFullPath().segmentCount());
-                result.add(sourceFolderRelativePath.toString());
+            if (CDTUtils.isExcluded(folder, sourceEntries)) {
+                IPath sourceFolderRelativePath = folder.getFullPath().removeFirstSegments(makemakeFolder.getFullPath().segmentCount());
+                result.add(sourceFolderRelativePath.isEmpty() ? "." : sourceFolderRelativePath.toString());
             }
             else {
                 for (IResource member : folder.members())
                     if (member instanceof IContainer)
-                        collectExcludedSubpaths((IContainer)member, sourceEntry, result);
+                        collectExcludedSubpaths((IContainer)member, makemakeFolder, sourceEntries, result);
             }
         }
     }

@@ -15,7 +15,9 @@ import org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo;
 import org.eclipse.cdt.managedbuilder.core.IToolChain;
 import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
 import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -67,6 +69,7 @@ public class CDTUtils {
      */
     public static List<IContainer> getSourceFolders(IProject project) {
         ICSourceEntry[] sourceEntries = CDTUtils.getSourceEntries(project);
+        sourceEntries = CDataUtil.makeRelative(project, sourceEntries);
         List<IContainer> sourceFolders = new ArrayList<IContainer>();
         for (ICSourceEntry sourceEntry : sourceEntries)
             sourceFolders.add(sourceEntry.getFullPath().isEmpty() ? project : project.getFolder(sourceEntry.getFullPath()));
@@ -77,12 +80,18 @@ public class CDTUtils {
      * Returns the source entry which exactly corresponds to the given folder.
      */
     public static ICSourceEntry getSourceEntryFor(IContainer folder) {
-        for (ICSourceEntry sourceEntry : getSourceEntries(folder.getProject()))
-            if (sourceEntry.getFullPath().equals(folder.getProjectRelativePath()))
+        return getSourceEntryFor(folder, getSourceEntries(folder.getProject()));
+    }
+
+    public static ICSourceEntry getSourceEntryFor(IContainer folder, ICSourceEntry[] sourceEntries) {
+        IPath folderPath = folder.getProjectRelativePath();
+        for (ICSourceEntry sourceEntry : sourceEntries)
+            if (CDataUtil.makeRelative(folder.getProject(), sourceEntry).getFullPath().equals(folderPath))
                 return sourceEntry;
         return null;
     }
- 
+
+    
     /**
      * Sets the project's source folders list to the given list of folders. 
      * (Previous source entries get overwritten.)  
@@ -105,26 +114,36 @@ public class CDTUtils {
         }
         CoreModel.getDefault().setProjectDescription(project, projectDescription);
     }
-    
+
     /** 
      * Replaces similar function in CDataUtil (CDT), because that one cannot properly
-     * handle nested source folders. 
+     * handle nested source folders.
      * 
      * See https://bugs.eclipse.org/bugs/show_bug.cgi?id=251846
      */
-    public static boolean isExcluded(IPath path, ICSourceEntry[] entries){
-        ICSourceEntry entry = getSourceEntryThatCovers(path, entries);
-        return entry == null ? true : CDataUtil.isExcluded(path, entry);
+    public static boolean isExcluded(IResource resource, ICSourceEntry[] entries) {
+        ICSourceEntry entry = getSourceEntryThatCovers(resource, entries);
+        entry = CDataUtil.makeRelative(resource.getProject(), entry);
+        return entry == null ? true : CDataUtil.isExcluded(resource.getProjectRelativePath(), entry);
     }
     
-    public static ICSourceEntry getSourceEntryThatCovers(IPath path, ICSourceEntry[] entries) {
-        while (path.segmentCount()>0) {
+    public static ICSourceEntry getSourceEntryThatCovers(IResource resource, ICSourceEntry[] entries) {
+        entries = CDataUtil.makeRelative(resource.getProject(), entries);  // convert everything to relative path
+        IPath path = resource.getProjectRelativePath();
+        while (true) {
             for (int i = 0; i < entries.length; i++)
                 if (path.equals(new Path(entries[i].getName())))
                     return entries[i];
+            if (path.segmentCount()==0)
+                break;
             path = path.removeLastSegments(1);
         }
         return null; //none
     }
 
+    public static ICSourceEntry[] setExcluded(IResource resource, boolean exclude, ICSourceEntry[] sourceEntries) throws CoreException {
+        sourceEntries = CDataUtil.makeRelative(resource.getProject(), sourceEntries);  // convert everything to relative path
+        ICSourceEntry[] newEntries = CDataUtil.setExcluded(resource.getProjectRelativePath(), (resource instanceof IFolder), exclude, sourceEntries);
+        return newEntries;
+    }
 }

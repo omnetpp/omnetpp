@@ -284,7 +284,7 @@ public class DependencyCache {
                         addMarker(markerSync, resource, IMarker.SEVERITY_ERROR, "Linked resources are not supported by Makefiles", -1);
                     if (MakefileTools.isNonGeneratedCppFile(resource) || MakefileTools.isMsgFile(resource))
                         checkFileIncludes((IFile)resource);
-                    return MakefileTools.isGoodFolder(resource) && !CDTUtils.isExcluded(resource.getProjectRelativePath(), sourceEntries);
+                    return MakefileTools.isGoodFolder(resource) && !CDTUtils.isExcluded(resource, sourceEntries);
                 }
             });
 

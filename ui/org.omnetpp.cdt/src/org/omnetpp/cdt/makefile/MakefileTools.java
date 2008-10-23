@@ -171,7 +171,7 @@ public class MakefileTools {
 		    	sourceFolder.accept(new IResourceVisitor() {
 		    		public boolean visit(IResource resource) throws CoreException {
 		    			if (MakefileTools.isGoodFolder(resource)) {
-		    				if (!CDTUtils.isExcluded(resource.getProjectRelativePath(), srcEntries)
+		    				if (!CDTUtils.isExcluded(resource, srcEntries)
 		    						&& (pattern == null || containsFileMatchingPattern((IContainer)resource, pattern)))
 		    					result.add((IContainer)resource);
 		

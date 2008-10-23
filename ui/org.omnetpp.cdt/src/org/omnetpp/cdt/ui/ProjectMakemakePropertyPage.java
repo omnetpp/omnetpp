@@ -8,6 +8,7 @@ import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.CSourceEntry;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
+import org.eclipse.cdt.core.settings.model.ICSettingEntry;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 import org.eclipse.cdt.managedbuilder.core.IConfiguration;
@@ -212,8 +213,8 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
                 IContainer folder = (IContainer)element;
                 ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(getProject());
                 ICConfigurationDescription configuration = projectDescription.getActiveConfiguration();
-                boolean isSrcFolder = CDTUtils.getSourceEntryFor(folder)!=null;
-                boolean isExcluded = CDTUtils.isExcluded(folder.getFullPath(), configuration.getSourceEntries());
+                boolean isSrcFolder = CDTUtils.getSourceEntryFor(folder, configuration.getSourceEntries())!=null;
+                boolean isExcluded = CDTUtils.isExcluded(folder, configuration.getSourceEntries());
                 String imagePath = isSrcFolder ? SOURCE_FOLDER_IMG : !isExcluded ? SOURCE_SUBFOLDER_IMG : NONSRC_FOLDER_IMG;
 
                 int makeType = buildSpec.getFolderMakeType(folder);
@@ -280,7 +281,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
             ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(project);
             for (ICConfigurationDescription configuration : projectDescription.getConfigurations()) {
                 ICSourceEntry[] entries = configuration.getSourceEntries();
-                ICSourceEntry entry = new CSourceEntry(folder.getProjectRelativePath(), new IPath[0], 0);
+                ICSourceEntry entry = (ICSourceEntry)CDataUtil.createEntry(ICSettingEntry.SOURCE_PATH, folder.getProjectRelativePath().toString(), folder.getProjectRelativePath().toString(), new IPath[0], ICSettingEntry.VALUE_WORKSPACE_PATH);
                 entries = (ICSourceEntry[]) ArrayUtils.add(entries, entry);
                 configuration.setSourceEntries(entries);
             }
@@ -302,9 +303,8 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
             ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(project);
             for (ICConfigurationDescription configuration : projectDescription.getConfigurations()) {
                 ICSourceEntry[] entries = configuration.getSourceEntries();
-                for (int i=0; i<entries.length; i++) 
-                    if (entries[i].getFullPath().equals(folder.getFullPath()))
-                        entries = (ICSourceEntry[]) ArrayUtils.remove(entries, i--);
+                ICSourceEntry entry = CDTUtils.getSourceEntryFor(folder, entries);
+                entries = (ICSourceEntry[]) ArrayUtils.removeElement(entries, entry); // works for null too
                 configuration.setSourceEntries(entries);
             }
             CoreModel.getDefault().setProjectDescription(project, projectDescription);
@@ -332,7 +332,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
             IProject project = getProject();
             ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(project);
             for (ICConfigurationDescription configuration : projectDescription.getConfigurations()) {
-                ICSourceEntry[] newEntries = CDataUtil.setExcluded(folder.getFullPath(), true, exclude, configuration.getSourceEntries());
+                ICSourceEntry[] newEntries = CDTUtils.setExcluded(folder, exclude, configuration.getSourceEntries());
                 configuration.setSourceEntries(newEntries);
             }
             CoreModel.getDefault().setProjectDescription(project, projectDescription); //FIXME use CDT property page manager stuff, like on the other makemake options panel
@@ -445,7 +445,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         
         ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(project);
         ICConfigurationDescription configuration = projectDescription.getActiveConfiguration();
-        boolean isExcluded = CDTUtils.isExcluded(folder.getFullPath(), configuration.getSourceEntries());
+        boolean isExcluded = CDTUtils.isExcluded(folder, configuration.getSourceEntries());
         
         excludeButton.setEnabled(!isExcluded);  //FIXME not really...
         includeButton.setEnabled(isExcluded); //FIXME not really: only enable if exactly matches an exclusion pattern!
