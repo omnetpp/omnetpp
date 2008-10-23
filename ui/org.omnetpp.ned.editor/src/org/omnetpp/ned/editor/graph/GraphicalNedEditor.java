@@ -103,7 +103,7 @@ import org.omnetpp.ned.model.ex.NEDElementUtilEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IHasType;
-import org.omnetpp.ned.model.interfaces.IModelProvider;
+import org.omnetpp.ned.model.interfaces.INedModelProvider;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
 import org.omnetpp.ned.model.notification.NEDAttributeChangeEvent;
@@ -270,8 +270,8 @@ public class GraphicalNedEditor
                 List sel = ((IStructuredSelection)super.getSelection()).toList();
                 List newSel = new ArrayList();
                 for (Object o : sel) {
-                    if (o instanceof IModelProvider) {
-                        INEDElement nedElement = ((IModelProvider)o).getNedModel();
+                    if (o instanceof INedModelProvider) {
+                        INEDElement nedElement = ((INedModelProvider)o).getNedModel();
                         if (nedElement.getContainingNedFileElement() != null)
                             newSel.add(o);
                     }
@@ -699,10 +699,10 @@ public class GraphicalNedEditor
 	}
 
 	protected String getHTMLHoverTextFor(EditPart ep, SizeConstraint outPreferredSize) {
-		if (!(ep instanceof IModelProvider))
+		if (!(ep instanceof INedModelProvider))
 			return null;
 
-		INEDElement element = ((IModelProvider)ep).getNedModel();
+		INEDElement element = ((INedModelProvider)ep).getNedModel();
 		if (element instanceof NedFileElementEx)
 			return null;
 

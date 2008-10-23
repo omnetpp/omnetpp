@@ -28,84 +28,90 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
+import org.eclipse.ui.part.FileEditorInput;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.ned.editor.NedEditor;
-import org.omnetpp.ned.editor.graph.parts.NedEditPart;
+import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
+import org.omnetpp.ned.model.interfaces.INedModelProvider;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.pojo.ChannelElement;
 import org.omnetpp.ned.model.pojo.SimpleModuleElement;
 
+/**
+ * Goes to a C++ definition of a NED simple module or channel.
+ * 
+ * @author Levy
+ */
 @SuppressWarnings("restriction")
 public class GotoCppDefinitionForNEDTypeHandler extends AbstractHandler {
     public Object execute(ExecutionEvent event) throws ExecutionException {
         IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-        
-        if (window != null) {
-            IWorkbenchPage page = window.getActivePage();
+        IWorkbenchPage page = window == null ? null : window.getActivePage();
 
-            if (page != null) {
-                ISelection selection = page.getSelection();
+        if (page != null) {
+            ISelection selection = page.getSelection();
 
-                if (selection instanceof IStructuredSelection && page.getActiveEditor() instanceof NedEditor) {
-                    NedEditor nedEditor = (NedEditor)page.getActiveEditor();
-                    IStructuredSelection structuredSelection = (IStructuredSelection)selection;
-                    INEDElement nedElement = null;
+            IFile editedFile = null;
+            if (page.getActiveEditor()!=null && page.getActiveEditor().getEditorInput() instanceof FileEditorInput)
+                editedFile = ((FileEditorInput)page.getActiveEditor().getEditorInput()).getFile();
 
-                    if (structuredSelection.getFirstElement() instanceof INEDElement)
-                        nedElement = (INEDElement)structuredSelection.getFirstElement();
+            if (selection instanceof IStructuredSelection && NEDResourcesPlugin.getNEDResources().isNedFile(editedFile)) {
+                IStructuredSelection structuredSelection = (IStructuredSelection)selection;
+                INEDElement nedElement = null;
 
-                    if (structuredSelection.getFirstElement() instanceof NedEditPart)
-                        nedElement = (INEDElement)((NedEditPart)structuredSelection.getFirstElement()).getNedModel();
+                Object element = structuredSelection.getFirstElement();
+                if (element instanceof INEDElement)
+                    nedElement = (INEDElement)element;
 
-                    while (nedElement != null) {
-                        INedTypeElement nedTypeElement = null;
+                if (element instanceof INedModelProvider)
+                    nedElement = ((INedModelProvider)element).getNedModel();
 
-                        if (nedElement instanceof SimpleModuleElement || nedElement instanceof ChannelElement)
-                            nedTypeElement = (INedTypeElement)nedElement;
-                        else if (nedElement instanceof SubmoduleElementEx)
-                            nedTypeElement = ((SubmoduleElementEx)nedElement).getEffectiveTypeRef();
-                        
-                        if (nedTypeElement != null) {
-                            String className = nedTypeElement.getNEDTypeInfo().getFullyQualifiedCppClassName();
-                            IProject[] projects = ProjectUtils.getAllReferencedProjects(nedEditor.getFile().getProject(), true);
+                while (nedElement != null) {
+                    INedTypeElement nedTypeElement = null;
 
-                            if (!gotoCppDefinition(page, projects, className)) {
-                                IFile nedFile = nedEditor.getFile();
-                                IContainer container = nedFile.getParent();
-                                IFile hFile = container.getFile(new Path(nedFile.getName().replace(".ned", ".h")));
-                                IFile ccFile = container.getFile(new Path(nedFile.getName().replace(".ned", ".cc")));
-                                IFile file = null;
-                                
-                                if (hFile.exists())
-                                    file = hFile;
-                                else if (ccFile.exists())
-                                    file = ccFile;
-                                
-                                if (file != null) {
-                                    try {
-                                        IDE.openEditor(page, file, true);
-                                    }
-                                    catch (PartInitException e) {
-                                        throw new RuntimeException(e);
-                                    }
+                    if (nedElement instanceof SimpleModuleElement || nedElement instanceof ChannelElement)
+                        nedTypeElement = (INedTypeElement)nedElement;
+                    else if (nedElement instanceof SubmoduleElementEx)
+                        nedTypeElement = ((SubmoduleElementEx)nedElement).getEffectiveTypeRef();
+
+                    if (nedTypeElement != null) {
+                        String className = nedTypeElement.getNEDTypeInfo().getFullyQualifiedCppClassName();
+                        IProject[] projects = ProjectUtils.getAllReferencedProjects(editedFile.getProject(), true);
+
+                        if (!gotoCppDefinition(page, projects, className)) {
+                            IContainer container = editedFile.getParent();
+                            IFile hFile = container.getFile(new Path(editedFile.getName()).removeFileExtension().addFileExtension(".h"));
+                            IFile ccFile = container.getFile(new Path(editedFile.getName()).removeFileExtension().addFileExtension(".cc"));
+                            IFile file = null;
+
+                            if (hFile.exists())
+                                file = hFile;
+                            else if (ccFile.exists())
+                                file = ccFile;
+
+                            if (file != null) {
+                                try {
+                                    IDE.openEditor(page, file, true);
+                                }
+                                catch (PartInitException e) {
+                                    throw new RuntimeException(e);
                                 }
                             }
-
-                            break;
                         }
 
-                        nedElement = nedElement.getParent();
+                        break;
                     }
+
+                    nedElement = nedElement.getParent();
                 }
             }
         }
 
         return null;
     }
-    
+
     private boolean gotoCppDefinition(IWorkbenchPage page, IProject[] projects, String qualifiedClassName) {
         IIndexManager manager = CCorePlugin.getIndexManager();
 
@@ -125,7 +131,7 @@ public class GotoCppDefinitionForNEDTypeHandler extends AbstractHandler {
                         ICPPClassType cppClass = (ICPPClassType)binding;
                         if (qualifiedClassName.equals(StringUtils.join(cppClass.getQualifiedName(), "::"))) {
                             IIndexName[] names = index.findNames(cppClass, IIndex.FIND_DEFINITIONS);
-                    
+
                             for (IIndexName name : names) {
                                 IIndexFile indexFile = name.getFile();
                                 IFile file = project.getWorkspace().getRoot().getFile(new Path(indexFile.getLocation().getFullPath()));
@@ -143,11 +149,11 @@ public class GotoCppDefinitionForNEDTypeHandler extends AbstractHandler {
                 throw new RuntimeException(e);
             }
             finally  {
-              if (index != null)
-                  index.releaseReadLock();
+                if (index != null)
+                    index.releaseReadLock();
             }
         }
-        
+
         return false;
     }
 }

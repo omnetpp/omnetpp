@@ -17,7 +17,7 @@ import org.omnetpp.ned.editor.graph.parts.policies.NedConnectionEndpointEditPoli
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDElementConstants;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
-import org.omnetpp.ned.model.interfaces.IModelProvider;
+import org.omnetpp.ned.model.interfaces.INedModelProvider;
 
 
 /**
@@ -26,7 +26,7 @@ import org.omnetpp.ned.model.interfaces.IModelProvider;
  * @author rhornig
  */
 public class ModuleConnectionEditPart extends AbstractConnectionEditPart
-                    implements IReadOnlySupport, IModelProvider {
+                    implements IReadOnlySupport, INedModelProvider {
 
 	private EditPart sourceEditPartEx;
 	private EditPart targetEditPartEx;

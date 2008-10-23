@@ -12,7 +12,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
 import org.omnetpp.ned.editor.graph.parts.EditPartUtil;
 import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.interfaces.IModelProvider;
+import org.omnetpp.ned.model.interfaces.INedModelProvider;
 
 
 /**
@@ -49,8 +49,8 @@ public class CopyAction extends SelectionAction {
 		// translate from editparts to model elements
 		List<INEDElement> selectedModelObjects = new ArrayList<INEDElement>();
 		for (EditPart editPart : selectedEditParts)
-			if (editPart instanceof IModelProvider)
-				selectedModelObjects.add(((IModelProvider)editPart).getNedModel().deepDup());
+			if (editPart instanceof INedModelProvider)
+				selectedModelObjects.add(((INedModelProvider)editPart).getNedModel().deepDup());
 
 		// copy to clipboard
 		if (selectedModelObjects.size() > 0)

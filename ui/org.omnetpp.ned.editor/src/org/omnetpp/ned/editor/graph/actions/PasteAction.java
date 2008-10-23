@@ -40,7 +40,7 @@ import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IHasGates;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.IHasParameters;
-import org.omnetpp.ned.model.interfaces.IModelProvider;
+import org.omnetpp.ned.model.interfaces.INedModelProvider;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.pojo.ConnectionsElement;
 import org.omnetpp.ned.model.pojo.GateElement;
@@ -300,8 +300,8 @@ public class PasteAction extends SelectionAction {
 		// return the element from the primary selection
 		GraphicalViewer graphicalViewer = getGraphicalViewer();
 		List<EditPart> selectedEditParts = graphicalViewer.getSelectedEditParts();
-		if (selectedEditParts.size() > 0 && selectedEditParts.get(0) instanceof IModelProvider)
-			return ((IModelProvider)selectedEditParts.get(0)).getNedModel();
+		if (selectedEditParts.size() > 0 && selectedEditParts.get(0) instanceof INedModelProvider)
+			return ((INedModelProvider)selectedEditParts.get(0)).getNedModel();
 		else
 			return null;
 	}

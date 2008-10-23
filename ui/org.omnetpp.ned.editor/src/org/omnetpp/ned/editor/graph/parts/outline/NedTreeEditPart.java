@@ -24,7 +24,7 @@ import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.ModuleInterfaceElementEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
-import org.omnetpp.ned.model.interfaces.IModelProvider;
+import org.omnetpp.ned.model.interfaces.INedModelProvider;
 
 /**
  * EditPart for the NED Outline view.
@@ -32,7 +32,7 @@ import org.omnetpp.ned.model.interfaces.IModelProvider;
  * @author rhornig
  */
 // CHECK do we need the IPropertySourceSupport ?
-public class NedTreeEditPart extends AbstractTreeEditPart implements IModelProvider {
+public class NedTreeEditPart extends AbstractTreeEditPart implements INedModelProvider {
     protected DirectEditManager manager;
 
     /**

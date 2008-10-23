@@ -17,7 +17,7 @@ import org.omnetpp.ned.model.ex.ModuleInterfaceElementEx;
 import org.omnetpp.ned.model.ex.SimpleModuleElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IHasDisplayString;
-import org.omnetpp.ned.model.interfaces.IModelProvider;
+import org.omnetpp.ned.model.interfaces.INedModelProvider;
 
 
 /**
@@ -83,8 +83,8 @@ public class ChooseIconAction extends org.eclipse.gef.ui.actions.SelectionAction
             if (!EditPartUtil.isEditable(obj))
                 return UnexecutableCommand.INSTANCE;
 
-            if (obj instanceof IModelProvider) {
-                INEDElement element = ((IModelProvider)obj).getNedModel();
+            if (obj instanceof INedModelProvider) {
+                INEDElement element = ((INedModelProvider)obj).getNedModel();
                 // return command only for those elements which support the icon property
                 if (element instanceof IHasDisplayString &&
                         (element instanceof SubmoduleElementEx || element instanceof SimpleModuleElementEx

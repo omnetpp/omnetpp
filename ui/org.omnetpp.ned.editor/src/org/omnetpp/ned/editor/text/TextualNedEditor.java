@@ -53,7 +53,7 @@ import org.omnetpp.ned.editor.text.actions.ToggleCommentAction;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDSourceRegion;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
-import org.omnetpp.ned.model.interfaces.IModelProvider;
+import org.omnetpp.ned.model.interfaces.INedModelProvider;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
 import org.omnetpp.ned.model.notification.NEDMarkerChangeEvent;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
@@ -431,8 +431,8 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener, 
 			Object firstElement = ((IStructuredSelection) selection).getFirstElement();
 			if (selection.isEmpty())
 				resetHighlightRange();
-			else if (firstElement instanceof IModelProvider){
-				INEDElement node = ((IModelProvider)firstElement).getNedModel();
+			else if (firstElement instanceof INedModelProvider){
+				INEDElement node = ((INedModelProvider)firstElement).getNedModel();
 				//System.out.println("selected: "+node);
 				NEDSourceRegion region = node.getSourceRegion();
 				if (region!=null) {

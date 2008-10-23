@@ -15,7 +15,7 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.editor.graph.commands.DeleteCommand;
 import org.omnetpp.ned.editor.graph.parts.EditPartUtil;
 import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.interfaces.IModelProvider;
+import org.omnetpp.ned.model.interfaces.INedModelProvider;
 
 
 /**
@@ -56,8 +56,8 @@ public class CutAction extends SelectionAction {
 		// translate from editparts to model elements
 		List<INEDElement> selectedModelObjects = new ArrayList<INEDElement>();
 		for (EditPart editPart : selectedEditParts) {
-        	if (editPart instanceof IModelProvider) {
-				INEDElement model = ((IModelProvider)editPart).getNedModel();
+        	if (editPart instanceof INedModelProvider) {
+				INEDElement model = ((INedModelProvider)editPart).getNedModel();
 				selectedModelObjects.add(model.deepDup());
 				compoundCommand.add(new DeleteCommand(model));
 			}

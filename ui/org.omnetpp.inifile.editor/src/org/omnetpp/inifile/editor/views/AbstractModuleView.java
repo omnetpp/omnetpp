@@ -25,7 +25,7 @@ import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.inifile.editor.model.ParamResolution.ParamResolutionType;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.interfaces.IModelProvider;
+import org.omnetpp.ned.model.interfaces.INedModelProvider;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
@@ -273,13 +273,13 @@ public abstract class AbstractModuleView extends ViewWithMessagePart implements 
 
 		if (selection instanceof IStructuredSelection && !selection.isEmpty()) {
 			Object element = ((IStructuredSelection)selection).getFirstElement();
-			if (element instanceof IModelProvider) {
+			if (element instanceof INedModelProvider) {
 				//
 				// The NED graphical editor publishes selection as an IStructuredSelection,
 				// with editparts in it. INEDElement can be extracted from editparts
 				// via IModelProvider.
 				//
-				INEDElement model = ((IModelProvider)element).getNedModel();
+				INEDElement model = ((INedModelProvider)element).getNedModel();
 				if (model != null ) {
 					hideMessage();
 					buildContent(model, null, null, null);

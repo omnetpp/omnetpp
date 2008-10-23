@@ -10,7 +10,7 @@ import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.omnetpp.ned.editor.graph.parts.policies.NedFileLayoutEditPolicy;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
-import org.omnetpp.ned.model.interfaces.IModelProvider;
+import org.omnetpp.ned.model.interfaces.INedModelProvider;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 
 /**
@@ -18,7 +18,7 @@ import org.omnetpp.ned.model.interfaces.INedTypeElement;
  * to TypesElement
  * @author rhornig
  */
-public class TypesEditPart extends AbstractGraphicalEditPart implements IModelProvider {
+public class TypesEditPart extends AbstractGraphicalEditPart implements INedModelProvider {
 
     @Override
     protected IFigure createFigure() {

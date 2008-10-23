@@ -5,7 +5,7 @@ import org.eclipse.gef.commands.UnexecutableCommand;
 import org.eclipse.ui.IWorkbenchPart;
 import org.omnetpp.ned.editor.graph.commands.ConvertNedVersionCommand;
 import org.omnetpp.ned.model.INEDElement;
-import org.omnetpp.ned.model.interfaces.IModelProvider;
+import org.omnetpp.ned.model.interfaces.INedModelProvider;
 
 
 /**
@@ -40,8 +40,8 @@ public class ConvertToNewFormatAction extends org.eclipse.gef.ui.actions.Selecti
     private Command getCommand() {
         if (getSelectedObjects().size() > 0) {
             Object obj = getSelectedObjects().get(0);
-            if (obj instanceof IModelProvider) {
-                INEDElement element = ((IModelProvider)obj).getNedModel();
+            if (obj instanceof INedModelProvider) {
+                INEDElement element = ((INedModelProvider)obj).getNedModel();
                 return new ConvertNedVersionCommand(element);
             }
         }

@@ -10,7 +10,7 @@ import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
 import org.omnetpp.ned.editor.graph.parts.CompoundModuleEditPart;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
-import org.omnetpp.ned.model.interfaces.IModelProvider;
+import org.omnetpp.ned.model.interfaces.INedModelProvider;
 
 /**
  * Special synchronizer that syncs any selected editpart to the first editpart which is found among
@@ -33,8 +33,8 @@ public class NedSelectionSynchronizer extends SelectionSynchronizer {
      */
     @Override
     protected EditPart convert(EditPartViewer viewer, EditPart part) {
-        if (part instanceof IModelProvider) {
-            INEDElement model = ((IModelProvider)part).getNedModel();
+        if (part instanceof INedModelProvider) {
+            INEDElement model = ((INedModelProvider)part).getNedModel();
             return GraphicalNedEditor.getNearestEditPartForModel(viewer, model);
         }
         return null;

@@ -14,7 +14,7 @@ import org.omnetpp.ned.model.ex.MsgFileElementEx;
 import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.interfaces.IHasDisplayString;
-import org.omnetpp.ned.model.interfaces.IModelProvider;
+import org.omnetpp.ned.model.interfaces.INedModelProvider;
 import org.omnetpp.ned.model.interfaces.IMsgTypeResolver;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
@@ -38,7 +38,7 @@ import org.omnetpp.ned.model.pojo.NEDElementTags;
  *
  * @author andras, rhornig
  */
-public abstract class NEDElement extends PlatformObject implements INEDElement, IModelProvider
+public abstract class NEDElement extends PlatformObject implements INEDElement, INedModelProvider
 {
 	private static final int SEVERITY_INVALID = Integer.MIN_VALUE;
 

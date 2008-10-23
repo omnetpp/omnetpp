@@ -12,7 +12,7 @@ import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.ex.ModuleInterfaceElementEx;
 import org.omnetpp.ned.model.ex.SimpleModuleElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
-import org.omnetpp.ned.model.interfaces.IModelProvider;
+import org.omnetpp.ned.model.interfaces.INedModelProvider;
 
 /**
  * Provides property sources for NED elements
@@ -26,10 +26,10 @@ public class NedEditPartPropertySourceProvider implements IPropertySourceProvide
         if (object instanceof IPropertySource)
             propSource = (IPropertySource)object;
         
-        if ((object instanceof IModelProvider))
+        if ((object instanceof INedModelProvider))
         {
             // try to get the adapter from the model (if it was previously created)
-            INEDElement nedModel = ((IModelProvider)object).getNedModel();
+            INEDElement nedModel = ((INedModelProvider)object).getNedModel();
             
             // if no property source exists for this model object, create one
             if (nedModel instanceof SubmoduleElementEx) 

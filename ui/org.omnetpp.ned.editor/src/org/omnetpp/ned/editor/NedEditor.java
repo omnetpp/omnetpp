@@ -45,7 +45,7 @@ import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
 import org.omnetpp.ned.editor.text.TextualNedEditor;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
-import org.omnetpp.ned.model.interfaces.IModelProvider;
+import org.omnetpp.ned.model.interfaces.INedModelProvider;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
 import org.omnetpp.ned.model.notification.NEDFileRemovedEvent;
@@ -308,7 +308,7 @@ public class NedEditor
             Object object = ((IStructuredSelection)graphicalEditor.getSite()
                     .getSelectionProvider().getSelection()).getFirstElement();
             if (object != null)
-                currentNEDElementSelection = ((IModelProvider)object).getNedModel();
+                currentNEDElementSelection = ((INedModelProvider)object).getNedModel();
 
             if (currentNEDElementSelection != null)
                 showInEditor(currentNEDElementSelection, Mode.TEXT);
@@ -326,7 +326,7 @@ public class NedEditor
 	            Object object = ((IStructuredSelection)textEditor.getSite()
 	                    .getSelectionProvider().getSelection()).getFirstElement();
 	            if (object != null)
-	                currentNEDElementSelection = ((IModelProvider)object).getNedModel();
+	                currentNEDElementSelection = ((INedModelProvider)object).getNedModel();
 	        }
             if (currentNEDElementSelection!=null)
                 showInEditor(currentNEDElementSelection, Mode.GRAPHICAL);

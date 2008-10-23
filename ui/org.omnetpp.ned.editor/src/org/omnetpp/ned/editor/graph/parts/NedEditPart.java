@@ -22,15 +22,14 @@ import org.omnetpp.ned.editor.graph.parts.policies.NedDirectEditPolicy;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.interfaces.IHasName;
-import org.omnetpp.ned.model.interfaces.IModelProvider;
+import org.omnetpp.ned.model.interfaces.INedModelProvider;
 
 /**
  * Provides support for Container EditParts.
  *
  * @author rhornig
  */
-abstract public class NedEditPart
-extends AbstractGraphicalEditPart implements IReadOnlySupport, IModelProvider
+abstract public class NedEditPart extends AbstractGraphicalEditPart implements IReadOnlySupport, INedModelProvider
 {
 	private boolean editable = true;
 	protected DirectEditManager manager;
@@ -164,7 +163,8 @@ extends AbstractGraphicalEditPart implements IReadOnlySupport, IModelProvider
 	protected abstract INEDElement getNEDElementToOpen();
 
 	
-	@Override
+    @Override
+    @SuppressWarnings("unchecked")
 	public Object getAdapter(Class key) {
 		// TODO Auto-generated method stub
 		return null;
