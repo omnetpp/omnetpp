@@ -146,6 +146,11 @@ if test -d /usr/include/tcl8.6; then
     TK_CFLAGS="-I/usr/include/tcl8.6"
 fi
 
+# on FedoraCore 9 blt includes have their own directory
+if test -d /usr/include/blt; then
+    TK_CFLAGS="$TK_CFLAGS -I/usr/include/blt"
+fi
+
 #----------------------
 # Read user settings (and allow override the above settings)
 #----------------------
@@ -572,6 +577,18 @@ if test $tcltk_ok = no; then
     fi
 fi
 if test $tcltk_ok = no; then
+    OPP_CHECK_LIB(Tcl/Tk 8.6, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk86 -ltcl86,
+                  tcltk_ok, TK_LIBS="$opp_x11lib -ltk86 -ltcl86")
+fi
+if test $tcltk_ok = no; then
+    OPP_CHECK_LIB(Tcl/Tk 8.6, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk8.6 -ltcl8.6,
+                  tcltk_ok, TK_LIBS="$opp_x11lib -ltk8.6 -ltcl8.6")
+fi
+if test $tcltk_ok = no -a "$cygwin" = yes; then
+    OPP_CHECK_LIB(Tcl/Tk 8.6, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -lcygtk86 -lcygtcl86,
+                  tcltk_ok, TK_LIBS="$opp_x11lib -lcygtk86 -lcygtcl86")
+fi
+if test $tcltk_ok = no; then
     OPP_CHECK_LIB(Tcl/Tk 8.5, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk85 -ltcl85,
                   tcltk_ok, TK_LIBS="$opp_x11lib -ltk85 -ltcl85")
 fi
@@ -609,9 +626,9 @@ if test $tcltk_ok = no; then
 fi
 
 # Check for wish.
-AC_CHECK_PROGS(WISH, $WISH wish wish85 wish8.5 wish84 wish8.4 cygwish cygwish85 cygwish84, nope)
+AC_CHECK_PROGS(WISH, $WISH wish wish86 wish8.6 wish85 wish8.5 wish84 wish8.4 cygwish cygwish86 cygwish85 cygwish84, nope)
 if test "$WISH" = nope; then
-   AC_MSG_ERROR([Cannot find wish, part of Tcl/Tk -- maybe it is not in the PATH or has some exotic name (tested names were: wish wish85 wish8.5 wish84 wish8.4 cygwish cygwish85 cygwish84)])
+   AC_MSG_ERROR([Cannot find wish, part of Tcl/Tk -- maybe it is not in the PATH or has some exotic name (tested names were: wish wish86 wish8.6 wish85 wish8.5 wish84 wish8.4 cygwish cygwish86 cygwish85 cygwish84)])
 fi
 if echo 'puts OK; exit' | $WISH | grep OK >/dev/null; then :; else
     AC_MSG_ERROR([Cannot run wish (wish command "puts OK; exit" failed): maybe you're not running X or DISPLAY environment variable not set?])
@@ -630,6 +647,10 @@ fi
 OPP_CHECK_LIB(BLT 2.4, blt.h, Blt_NameOfVector(0), $TK_CFLAGS, $BLT_LIBS $TK_LIBS, blt_ok)
 if test $blt_ok = no -a "$cygwin" = yes; then
     bltlibs="-lBLT24 -mwindows -lwinspool"
+    OPP_CHECK_LIB(BLT 2.4, blt.h, Blt_NameOfVector(0), $TK_CFLAGS, $bltlibs $TK_LIBS, blt_ok, BLT_LIBS=$bltlibs)
+fi
+if test $blt_ok = no; then
+    bltlibs="-lBLT24"
     OPP_CHECK_LIB(BLT 2.4, blt.h, Blt_NameOfVector(0), $TK_CFLAGS, $bltlibs $TK_LIBS, blt_ok, BLT_LIBS=$bltlibs)
 fi
 if test $blt_ok = no; then
