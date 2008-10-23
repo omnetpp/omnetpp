@@ -110,13 +110,7 @@ public class CDTUtils {
      * Replaces similar function in CDataUtil (CDT), because that one cannot properly
      * handle nested source folders. 
      * 
-     * Test case to show CDataUtil bug:
-     * 
-     *   ICSourceEntry[] testEntries = new ICSourceEntry[] {
-     *           new CSourceEntry(new Path("/INET"), new Path[] {new Path("examples")}, 0),
-     *           new CSourceEntry(new Path("/INET/examples/adhoc"), new Path[]{}, 0)
-     *   };
-     *   System.out.println(CDataUtil.isExcluded(new Path("/INET/examples"), testEntries)); // prints "false", but it should be "true"
+     * See https://bugs.eclipse.org/bugs/show_bug.cgi?id=251846
      */
     public static boolean isExcluded(IPath path, ICSourceEntry[] entries){
         ICSourceEntry entry = getSourceEntryThatCovers(path, entries);
