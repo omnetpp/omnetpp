@@ -100,8 +100,8 @@ public class Makemake {
         folderLocation = folder.getLocation();
 
         boolean isNMake = options.isNMake;
-        boolean isRecursive = options.isRecursive;
         boolean isDeep = options.isDeep;
+        boolean isRecursive = false; // not supported from the IDE, because we have metaRecurse
 
         String makefileName = isNMake ? "Makefile.vc" : "Makefile";
         IFile makefile = folder.getFile(new Path(makefileName));

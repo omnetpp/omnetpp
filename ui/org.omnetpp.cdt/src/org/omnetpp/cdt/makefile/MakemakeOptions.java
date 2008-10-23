@@ -19,14 +19,13 @@ import org.omnetpp.common.util.StringUtils;
 public class MakemakeOptions implements Cloneable {
     public enum Type {EXE, SHAREDLIB, STATICLIB, NOLINK};
     
-    // opp_makemake options
+    // opp_makemake options (note: -r deliberately not supported)
     public boolean isNMake = false;
     public String projectDir = null;  // ignored (implicit)
     public Type type = Type.EXE;
     public String target = null;
     public String outRoot = null;
     public boolean isDeep = false;
-    public boolean isRecursive = false;
     public boolean noDeepIncludes = false;
     public boolean force = false;
     public String defaultMode = null;
@@ -47,7 +46,7 @@ public class MakemakeOptions implements Cloneable {
 
     // "meta" options (--meta:...): they get interpreted by MetaMakemake, 
     // and translated to normal makemake options.
-    public boolean metaSkip = false; // don't generate a Makefile in this folder
+    public boolean metaRecurse = false;
     public boolean metaAutoIncludePath = false;
     public boolean metaExportLibrary = false;
     public boolean metaUseExportedLibs = false;
@@ -78,6 +77,7 @@ public class MakemakeOptions implements Cloneable {
         MakemakeOptions result = new MakemakeOptions();
         result.outRoot = "out"; 
         result.isDeep = true;
+        result.metaRecurse = true;
         result.metaAutoIncludePath = true;
         result.metaExportLibrary = true;
         result.metaUseExportedLibs = true;
@@ -125,7 +125,7 @@ public class MakemakeOptions implements Cloneable {
                 isDeep = true;
             }
             else if (arg.equals("-r") || arg.equals("--recurse")) {
-                isRecursive = true;
+                addError(arg + ": not supported by the IDE, use --meta:recurse instead");
             }
             else if (arg.equals("-X") || arg.equals("--except")) {
                 if (checkArg(argv, i))
@@ -235,6 +235,9 @@ public class MakemakeOptions implements Cloneable {
             else if (arg.startsWith("-p")) {
                 dllSymbol = arg.substring(2);
             }
+            else if (arg.equals("--meta:recurse")) {
+                metaRecurse = true;
+            }
             else if (arg.equals("--meta:auto-include-path")) {
                 metaAutoIncludePath = true;
             }
@@ -243,9 +246,6 @@ public class MakemakeOptions implements Cloneable {
             }
             else if (arg.equals("--meta:use-exported-libs")) {
                 metaUseExportedLibs = true;
-            }
-            else if (arg.equals("--meta:skip")) {
-                metaSkip = true;
             }
             else if (arg.equals("--")) {
                 break;
@@ -304,8 +304,6 @@ public class MakemakeOptions implements Cloneable {
             add(result, "--make-so");
         else if (type == Type.STATICLIB)
             add(result, "--make-lib");
-        if (isRecursive)
-            add(result, "-r");
         if (!StringUtils.isEmpty(projectDir))
             add(result, "-P", projectDir);
         if (!StringUtils.isEmpty(target))
@@ -334,13 +332,15 @@ public class MakemakeOptions implements Cloneable {
         addOpts1(result, libs, "-l");
         addOpts1(result, defines, "-D");
         addOpts1(result, makefileDefines, "-K");
+        if (metaRecurse)
+            result.add("--meta:recurse");
         if (metaAutoIncludePath)
             result.add("--meta:auto-include-path");
         if (metaExportLibrary)
             result.add("--meta:export-library");
         if (metaUseExportedLibs)
             result.add("--meta:use-exported-libs");
-        if (metaSkip)
+        if (metaRecurse)
             result.add("--meta:skip");
 
         if (!extraArgs.isEmpty())
@@ -443,7 +443,6 @@ public class MakemakeOptions implements Cloneable {
         result.target = target;
         result.outRoot = outRoot;
         result.isDeep = isDeep;
-        result.isRecursive = isRecursive;
         result.noDeepIncludes = noDeepIncludes;
         result.force = force;
         result.defaultMode = defaultMode;
@@ -461,10 +460,10 @@ public class MakemakeOptions implements Cloneable {
         result.defines.addAll(defines);
         result.makefileDefines.addAll(makefileDefines);
         result.extraArgs.addAll(extraArgs);
+        result.metaRecurse = metaRecurse;
         result.metaAutoIncludePath = metaAutoIncludePath;
         result.metaExportLibrary = metaExportLibrary;
         result.metaUseExportedLibs = metaUseExportedLibs;
-        result.metaSkip = metaSkip;
         return result;
     }
 }

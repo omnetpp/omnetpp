@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.cdt.core.model.CoreModel;
-import org.eclipse.cdt.core.settings.model.CSourceEntry;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICSettingEntry;
@@ -60,6 +59,8 @@ import org.omnetpp.cdt.makefile.MakemakeOptions;
  *
  * @author Andras
  */
+//FIXME source folder changes immediatly get committed (no cancel!), but they aren't visible in cdt page. use cdt manager!
+//FIXME improve tree labels (should be libname etc)
 @SuppressWarnings("restriction")
 public class ProjectMakemakePropertyPage extends PropertyPage {
     private static final String SOURCE_FOLDER_IMG = "icons/full/obj16/folder_srcfolder.gif";
@@ -76,8 +77,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
     protected TreeViewer treeViewer;
     private Button markAsToplevelButton;
     private Button optionsButton;
-    private Button markAsSourceFolderButton;
-    private Button removeSourceFolderButton;
+    private Button sourceLocationButton;
     private Button excludeButton;
     private Button includeButton;
     private Button makemakeButton;
@@ -102,7 +102,11 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         ((GridLayout)composite.getLayout()).marginWidth = 0;
         ((GridLayout)composite.getLayout()).marginHeight = 0;
 
-        createLabel(composite, "Folders:", 2);
+        createLabel(composite, "Configure folders below. NOTE: changes will affect all configurations.", 2);
+        String text = "Source Locations can also be managed on the <A>Paths and symbols</A> page.";
+        Link pathsAndSymbolsLink = createLink(composite, text);
+        pathsAndSymbolsLink.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1));
+        
         treeViewer = new TreeViewer(composite, SWT.BORDER);
         treeViewer.getTree().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         ((GridData)treeViewer.getTree().getLayoutData()).widthHint = 300;
@@ -111,22 +115,17 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         buttons.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
         buttons.setLayout(new GridLayout(1,false));
 
-        makemakeButton = createButton(buttons, SWT.PUSH, "Makemake", null);
-        customMakeButton = createButton(buttons, SWT.PUSH, "Custom Make", null);
-        noMakeButton = createButton(buttons, SWT.PUSH, "No Make", null);
+        makemakeButton = createButton(buttons, SWT.PUSH, "Makemake", "Generate makefile in this folder");
+        customMakeButton = createButton(buttons, SWT.PUSH, "Custom Make", "Folder contains custom makefile");
+        noMakeButton = createButton(buttons, SWT.PUSH, "No Make", "No makefile in this folder");
         createLabel(buttons, "", 1);
-        optionsButton = createButton(buttons, SWT.PUSH, "Options...", null);
+        optionsButton = createButton(buttons, SWT.PUSH, "Options...", "Edit makefile generation options");
         createLabel(buttons, "", 1);
-        markAsToplevelButton = createButton(buttons, SWT.PUSH, "Mark as toplevel", null);
+        markAsToplevelButton = createButton(buttons, SWT.PUSH, "Mark as toplevel", "Build command will invoke this makefile");
         createLabel(buttons, "", 1);
-        markAsSourceFolderButton = createButton(buttons, SWT.PUSH, "Mark as Source Folder", null);
-        removeSourceFolderButton = createButton(buttons, SWT.PUSH, "Remove Source Folder", null);
-        excludeButton = createButton(buttons, SWT.PUSH, "Exclude", null);
-        includeButton = createButton(buttons, SWT.PUSH, "Include", null);
-
-        String text = "Source folder settings can also be managed on the Source Location tab of the <A>Paths and symbols</A> page.";
-        Link pathsAndSymbolsLink = createLink(composite, text);
-        pathsAndSymbolsLink.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1));
+        sourceLocationButton = createButton(buttons, SWT.PUSH, "Source Location", "Mark folder as source location");
+        excludeButton = createButton(buttons, SWT.PUSH, "Exclude", "Exclude from build");
+        includeButton = createButton(buttons, SWT.PUSH, "Include", "Include into build");
 
         pathsAndSymbolsLink.addSelectionListener(new SelectionListener(){
             public void widgetSelected(SelectionEvent e) {
@@ -167,16 +166,10 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
                 editFolderOptions(getTreeSelection());
             }
         });
-        markAsSourceFolderButton.addSelectionListener(new SelectionAdapter() {
+        sourceLocationButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                markAsSourceFolder(getTreeSelection());
-            }
-        });
-        removeSourceFolderButton.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                removeSourceFolder(getTreeSelection());
+                markAsSourceLocation(getTreeSelection());
             }
         });
         excludeButton.addSelectionListener(new SelectionAdapter() {
@@ -268,14 +261,14 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
     protected void editFolderOptions(IContainer folder) {
         if (buildSpec.getFolderMakeType(folder) != BuildSpecification.MAKEMAKE)
             return;
-        MakemakeOptionsDialog dialog = new MakemakeOptionsDialog(getShell(), folder, buildSpec.getMakemakeOptions(folder));
+        MakemakeOptionsDialog dialog = new MakemakeOptionsDialog(getShell(), folder, buildSpec.getMakemakeOptions(folder), buildSpec.getMakeFolders());
         if (dialog.open() == Dialog.OK) {
             buildSpec.setMakemakeOptions(folder, dialog.getResult());
             updatePageState();
         }
     }
 
-    protected void markAsSourceFolder(IContainer folder) {
+    protected void markAsSourceLocation(IContainer folder) {
         try {
             IProject project = getProject();
             ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(project);
@@ -297,7 +290,8 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         updatePageState();
     }
 
-    protected void removeSourceFolder(IContainer folder) {
+    //XXX unused -- the "Exclude" button seems to work just fine
+    protected void removeSourceLocation(IContainer folder) {
         try {
             IProject project = getProject();
             ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(project);
@@ -346,13 +340,6 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         }
         updatePageState();
     }
-
-//XXX maybe useful fragments
-//    List<IContainer> sourceFolders = CDTUtils.getSourceFolders(getProject().getProject());
-//    boolean isUnderSrcFolder = false;
-//    for (IContainer tmp = folder; !(tmp instanceof IProject); tmp = tmp.getParent())
-//        if (sourceFolders.contains(tmp))
-//            isUnderSrcFolder = true;
 
     protected void gotoPathsAndSymbolsPage() {
         IPreferencePageContainer container = getContainer();
@@ -422,8 +409,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
             noMakeButton.setEnabled(false);
             markAsToplevelButton.setEnabled(false);
             optionsButton.setEnabled(false);
-            markAsSourceFolderButton.setEnabled(false);
-            removeSourceFolderButton.setEnabled(false);
+            sourceLocationButton.setEnabled(false);
             excludeButton.setEnabled(false);
             includeButton.setEnabled(false);
             return;
@@ -440,15 +426,15 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         optionsButton.setEnabled(makeType==BuildSpecification.MAKEMAKE);
         
         boolean isSourceFolder = CDTUtils.getSourceFolders(project).contains(folder);
-        markAsSourceFolderButton.setEnabled(!isSourceFolder);
-        removeSourceFolderButton.setEnabled(isSourceFolder);
+        sourceLocationButton.setEnabled(!isSourceFolder);
         
         ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(project);
         ICConfigurationDescription configuration = projectDescription.getActiveConfiguration();
         boolean isExcluded = CDTUtils.isExcluded(folder, configuration.getSourceEntries());
+        boolean isUnderSourceLocation = CDTUtils.getSourceEntryThatCovers(folder, configuration.getSourceEntries()) != null;
         
-        excludeButton.setEnabled(!isExcluded);  //FIXME not really...
-        includeButton.setEnabled(isExcluded); //FIXME not really: only enable if exactly matches an exclusion pattern!
+        excludeButton.setEnabled(!isExcluded);
+        includeButton.setEnabled(isUnderSourceLocation && isExcluded);
     }
 
     protected IContainer getTreeSelection() {
@@ -506,7 +492,6 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
     @Override
     public boolean performOk() {
         // note: performApply() delegates here too
-        //TODO
         saveBuildSpecFile();
         return true;
     }

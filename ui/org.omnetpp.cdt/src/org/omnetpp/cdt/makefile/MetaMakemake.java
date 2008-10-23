@@ -40,12 +40,14 @@ import org.omnetpp.common.util.StringUtils;
  * @author Andras
  */
 //XXX handle  translatedOptions.metaLinkWithAllObjectsInProject
+//FIXME add other libraries within this project into the linker path
+//FIXME support a "copy to bin/ or lib/ directory" meta-option
 public class MetaMakemake {
     /**
      * Generates Makefile in the given folder.
      */
-    public static void generateMakefile(IContainer makefileFolder, MakemakeOptions options) throws CoreException, MakemakeException {
-        MakemakeOptions translatedOptions = translateOptions(makefileFolder, options);
+    public static void generateMakefile(IContainer makefileFolder, MakemakeOptions options, List<IContainer> makeFolders) throws CoreException, MakemakeException {
+        MakemakeOptions translatedOptions = translateOptions(makefileFolder, options, makeFolders);
         IProject project = makefileFolder.getProject();
 
         // Activator.getDependencyCache().dumpPerFileDependencies(project);
@@ -57,7 +59,7 @@ public class MetaMakemake {
     /** 
      * Translates makemake options
      */
-    public static MakemakeOptions translateOptions(IContainer makefileFolder, MakemakeOptions options) throws CoreException {
+    public static MakemakeOptions translateOptions(IContainer makefileFolder, MakemakeOptions options, List<IContainer> makeFolders) throws CoreException {
         MakemakeOptions translatedOptions = options.clone();
 
         IProject project = makefileFolder.getProject();
@@ -67,8 +69,8 @@ public class MetaMakemake {
         translatedOptions.force = true;
         translatedOptions.isNMake = CDTUtils.isMsvcToolchainActive(project);
 
-        // add -X option for each excluded folder in CDT
-        translatedOptions.exceptSubdirs.addAll(getExcludedSubpathsWithinFolder(makefileFolder));
+        // add -X option for each excluded folder in CDT, and for each sub-makefile
+        translatedOptions.exceptSubdirs.addAll(getExcludedSubpathsWithinFolder(makefileFolder, makeFolders));
 
         // add -I, -L and -D options configured in CDT
         translatedOptions.includeDirs.addAll(getIncludePathsFor(makefileFolder));
@@ -83,7 +85,29 @@ public class MetaMakemake {
             translatedOptions.makefileDefines.add(name + "=" + path);
         }
 
-        // add extra include folders
+        // add sub-make folders
+        if (options.metaRecurse) {
+            // collect folders in our subtree, and convert to relative path
+            List<IPath> submakePaths = new ArrayList<IPath>();
+            for (IContainer folder : makeFolders)
+                if (!folder.equals(makefileFolder) && makefileFolder.getFullPath().isPrefixOf(folder.getFullPath()))
+                    submakePaths.add(folder.getFullPath().removeFirstSegments(makefileFolder.getFullPath().segmentCount()));
+            // filter: throw out the ones whose prefix is also in the list 
+            // (i.e. we won't recurse into "foo/bar" if "foo" is already on our list)
+            for (IPath candidate : submakePaths) {
+                boolean ok = true;
+                for (IPath otherPath : submakePaths)
+                    if (!candidate.equals(otherPath) && otherPath.isPrefixOf(candidate)) {
+                        ok = false; break;}
+                if (ok)
+                    translatedOptions.submakeDirs.add(candidate.toString());
+            }
+            
+            // clear processed setting
+            translatedOptions.metaRecurse = false;
+        }
+        
+        // add extra include folders (this code assumes that exceptSubdirs are already filled in at this point)
         if (options.metaAutoIncludePath && folderDeps != null) {
             for (IContainer srcFolder : folderDeps.keySet())
                 if (MakefileTools.makefileCovers(makefileFolder, srcFolder, options.isDeep, options.exceptSubdirs))  
@@ -133,24 +157,27 @@ public class MetaMakemake {
     /**
      * Returns the (folder-relative) paths of directories excluded from build 
      * in the active CDT configuration under the given source folder.
-     * Excluded files are not considered. 
+     * Excluded files are not considered. The subtrees covered by sub-makes
+     * also gets excluded. 
      */
-    protected static List<String> getExcludedSubpathsWithinFolder(IContainer makemakeFolder) throws CoreException {
+    protected static List<String> getExcludedSubpathsWithinFolder(IContainer makemakeFolder, List<IContainer> makeFolders) throws CoreException {
         List<String> result = new ArrayList<String>();
-        collectExcludedSubpaths(makemakeFolder, makemakeFolder, CDTUtils.getSourceEntries(makemakeFolder.getProject()), result);
+        collectExcludedSubpaths(makemakeFolder, makemakeFolder, CDTUtils.getSourceEntries(makemakeFolder.getProject()), makeFolders, result);
         return result;
     }
 
-    private static void collectExcludedSubpaths(IContainer folder, IContainer makemakeFolder, ICSourceEntry sourceEntries[], List<String> result) throws CoreException {
+    private static void collectExcludedSubpaths(IContainer folder, IContainer makemakeFolder, ICSourceEntry sourceEntries[], List<IContainer> makeFolders, List<String> result) throws CoreException {
         if (MakefileTools.isGoodFolder(folder)) {
-            if (CDTUtils.isExcluded(folder, sourceEntries)) {
+            if (CDTUtils.isExcluded(folder, sourceEntries) || (!folder.equals(makemakeFolder) && makeFolders.contains(folder))) {
+                // exclude and don't go into it
                 IPath sourceFolderRelativePath = folder.getFullPath().removeFirstSegments(makemakeFolder.getFullPath().segmentCount());
                 result.add(sourceFolderRelativePath.isEmpty() ? "." : sourceFolderRelativePath.toString());
             }
             else {
+                // recurse into subdirs
                 for (IResource member : folder.members())
                     if (member instanceof IContainer)
-                        collectExcludedSubpaths((IContainer)member, makemakeFolder, sourceEntries, result);
+                        collectExcludedSubpaths((IContainer)member, makemakeFolder, sourceEntries, makeFolders, result);
             }
         }
     }

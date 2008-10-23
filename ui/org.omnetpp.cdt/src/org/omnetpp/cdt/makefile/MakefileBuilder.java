@@ -224,7 +224,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
             Assert.isTrue(folder.getProject().equals(getProject()));
             MakemakeOptions options = buildSpec.getMakemakeOptions(folder);
             Assert.isTrue(options!=null);
-            MetaMakemake.generateMakefile(folder, options);
+            MetaMakemake.generateMakefile(folder, options, buildSpec.getMakeFolders());
             ok = true;
         }
         catch (MakemakeException e) {

@@ -1,5 +1,7 @@
 package org.omnetpp.cdt.ui;
 
+import java.util.List;
+
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
@@ -13,17 +15,20 @@ import org.omnetpp.cdt.makefile.MakemakeOptions;
 /**
  * @author Andras
  */
+//FIXME displa panel status in dialog!
 public class MakemakeOptionsDialog extends TitleAreaDialog {
     protected IContainer folder;
     protected MakemakeOptions options; // initial/result
+    protected List<IContainer> makeFolders;  // needed by the panel
     
     // controls
     protected MakemakeOptionsPanel optionsPanel;
     
-    public MakemakeOptionsDialog(Shell parentShell, IContainer folder, MakemakeOptions options) {
+    public MakemakeOptionsDialog(Shell parentShell, IContainer folder, MakemakeOptions options, List<IContainer> makeFolders) {
         super(parentShell);
         this.folder = folder;
         this.options = options;
+        this.makeFolders = makeFolders;
     }
 
     protected void configureShell(Shell shell) {
@@ -42,7 +47,7 @@ public class MakemakeOptionsDialog extends TitleAreaDialog {
         
         optionsPanel = new MakemakeOptionsPanel(composite, SWT.NONE);
         optionsPanel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        optionsPanel.populate(folder, options, "TODO", "TODO"); //FIXME
+        optionsPanel.populate(folder, options, "TODO", "TODO", makeFolders); //FIXME
         return optionsPanel;
     }
     

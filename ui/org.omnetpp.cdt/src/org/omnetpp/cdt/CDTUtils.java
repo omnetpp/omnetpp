@@ -123,8 +123,10 @@ public class CDTUtils {
      */
     public static boolean isExcluded(IResource resource, ICSourceEntry[] entries) {
         ICSourceEntry entry = getSourceEntryThatCovers(resource, entries);
+        if (entry == null) 
+            return true;
         entry = CDataUtil.makeRelative(resource.getProject(), entry);
-        return entry == null ? true : CDataUtil.isExcluded(resource.getProjectRelativePath(), entry);
+        return CDataUtil.isExcluded(resource.getProjectRelativePath(), entry);
     }
     
     public static ICSourceEntry getSourceEntryThatCovers(IResource resource, ICSourceEntry[] entries) {

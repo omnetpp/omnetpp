@@ -294,7 +294,7 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
                 String makefragvcContents = readMakefrag(selectedFolder, MAKEFRAGVC_FILENAME);
                 MakemakeOptions folderOptions = buildSpec.getMakemakeOptions(selectedFolder);
                 Assert.isTrue(folderOptions!=null);
-                optionsPanel.populate(selectedFolder, folderOptions, makefragContents, makefragvcContents);
+                optionsPanel.populate(selectedFolder, folderOptions, makefragContents, makefragvcContents, buildSpec.getMakeFolders());
             }
 
             String message = getInformationalMessage();

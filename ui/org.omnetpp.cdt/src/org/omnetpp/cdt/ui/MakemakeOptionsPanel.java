@@ -1,6 +1,7 @@
 package org.omnetpp.cdt.ui;
 
 import java.util.Arrays;
+import java.util.List;
 
 import org.eclipse.cdt.utils.ui.controls.FileListControl;
 import org.eclipse.cdt.utils.ui.controls.IFileListChangeListener;
@@ -65,7 +66,8 @@ public class MakemakeOptionsPanel extends Composite {
 
     // the folder whose properties we're editing; needed for Preview panel / translated options
     private IContainer folder;
-    private PropertyPage ownerPage;
+    private List<IContainer> makeFolders; // MetaMakemake needs it for preview
+    private PropertyPage ownerPage; // null when we're in MakemakeOptionsDialog
 
     // controls
     private TabFolder tabfolder;
@@ -78,9 +80,8 @@ public class MakemakeOptionsPanel extends Composite {
     private HoverSupport hoverSupport;
 
     // "Scope" page
-    private Button deepMakefileRadioButton;
-    private Button recursiveMakefileRadioButton;
-    private Button localMakefileRadioButton;
+    private Button deepCheckbox;
+    private Button recurseCheckbox;
     private ToggleLink scopePageToggle;
     private FileListControl submakeDirsList;
 
@@ -174,10 +175,9 @@ public class MakemakeOptionsPanel extends Composite {
         // "Scope" page
         scopePage.setLayout(new GridLayout(1,false));
         Group group1 = createGroup(scopePage, "Select makefile type:", 1);
-        deepMakefileRadioButton = createRadioButton(group1, "Deep (recommended)", "Process all source files from this subdirectory tree");
-        recursiveMakefileRadioButton = createRadioButton(group1, "Recursive", "Process source files in this directory only, and invoke \"make\" in all subdirectories; Makefiles must exist");
-        localMakefileRadioButton = createRadioButton(group1, "Local", "Process source files in this directory only; ignore subdirectories");
-        createLabel(group1, "Makefiles will ignore directories marked as \"Excluded\"");
+        deepCheckbox = createCheckbox(group1, "Deep (recommended)", "Compile all source files from this subdirectory tree");
+        recurseCheckbox = createCheckbox(group1, "Recurse", "Invoke makefiles any levels under this directory");
+        createLabel(group1, "Makefiles will ignore directories marked as \"Excluded\" or covered by other makefiles");
         Label submakeDirsLabel = createLabel(scopePage, "Additionally, invoke \"make\" in the following directories:");
         submakeDirsList = new FileListControl(scopePage, "Sub-make directories (relative path)", BROWSE_DIR);
         scopePageToggle = createToggleLink(scopePage, new Control[] {submakeDirsLabel, submakeDirsList.getListControl().getParent()});
@@ -247,7 +247,7 @@ public class MakemakeOptionsPanel extends Composite {
         createLabel(previewPage, "Makemake options (editable):");
         optionsText = new Text(previewPage, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
         optionsText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        createLabel(previewPage, "Makemake options modified with CDT settings:");
+        createLabel(previewPage, "Makemake options modified with CDT settings, and with meta-options resolved:");
         translatedOptionsText = new Text(previewPage, SWT.MULTI | SWT.BORDER | SWT.READ_ONLY | SWT.WRAP | SWT.V_SCROLL);
         translatedOptionsText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         translatedOptionsText.setBackground(translatedOptionsText.getDisplay().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
@@ -392,9 +392,8 @@ public class MakemakeOptionsPanel extends Composite {
                 updateDialogState();
             }};
 
-        deepMakefileRadioButton.addSelectionListener(selectionChangeListener);
-        recursiveMakefileRadioButton.addSelectionListener(selectionChangeListener);
-        localMakefileRadioButton.addSelectionListener(selectionChangeListener);
+        deepCheckbox.addSelectionListener(selectionChangeListener);
+        recurseCheckbox.addSelectionListener(selectionChangeListener);
         submakeDirsList.addChangeListener(fileListChangeListener);
 
         targetExecutableRadioButton.addSelectionListener(selectionChangeListener);
@@ -440,8 +439,9 @@ public class MakemakeOptionsPanel extends Composite {
         return tabfolder.getSelection().length>0 && tabfolder.getSelection()[0].getControl() == previewPage;
     }
 
-    public void populate(IContainer folder, MakemakeOptions options, String makefragContents, String makefragvcContents) {
+    public void populate(IContainer folder, MakemakeOptions options, String makefragContents, String makefragvcContents, List<IContainer> makeFolders) {
         this.folder = folder;
+        this.makeFolders = makeFolders;
 
         makefragText.setText(StringUtils.nullToEmpty(makefragContents));
         makefragvcText.setText(StringUtils.nullToEmpty(makefragvcContents));
@@ -455,9 +455,8 @@ public class MakemakeOptionsPanel extends Composite {
 
     protected void populateControls(MakemakeOptions options) {
         // "Scope" page
-        deepMakefileRadioButton.setSelection(options.isDeep);
-        recursiveMakefileRadioButton.setSelection(options.isRecursive);
-        localMakefileRadioButton.setSelection(!options.isDeep && !options.isRecursive);
+        deepCheckbox.setSelection(options.isDeep);
+        recurseCheckbox.setSelection(options.metaRecurse);
         submakeDirsList.setList(options.submakeDirs.toArray(new String[]{}));
 
         // "Target" page
@@ -529,7 +528,7 @@ public class MakemakeOptionsPanel extends Composite {
                 useExportedLibsCheckbox.setEnabled(type==Type.EXE || type==Type.SHAREDLIB);
                 libsList.setEnabled(type!=Type.NOLINK);
                 linkObjectsList.setEnabled(type!=Type.NOLINK);
-                deepIncludesCheckbox.setEnabled(deepMakefileRadioButton.getSelection());
+                deepIncludesCheckbox.setEnabled(deepCheckbox.getSelection());
 
                 // clear checkboxes that do not apply to the given target type
                 // NOTE: we don't do it, because we'd lose settings when user
@@ -570,7 +569,7 @@ public class MakemakeOptionsPanel extends Composite {
             protected IStatus run(IProgressMonitor monitor) {
                 try {
                     // calculate
-                    final String translatedOptions = MetaMakemake.translateOptions(folder, updatedOptions).toString();
+                    final String translatedOptions = MetaMakemake.translateOptions(folder, updatedOptions, makeFolders).toString();
 
                     // display result if it's still relevant 
                     if (jobSerial == thisJobSerial) {
@@ -616,8 +615,8 @@ public class MakemakeOptionsPanel extends Composite {
         MakemakeOptions result = new MakemakeOptions();
 
         // "Scope" page
-        result.isDeep = deepMakefileRadioButton.getSelection();
-        result.isRecursive = recursiveMakefileRadioButton.getSelection();
+        result.isDeep = deepCheckbox.getSelection();
+        result.metaRecurse = recurseCheckbox.getSelection();
         result.submakeDirs.addAll(Arrays.asList(submakeDirsList.getItems()));
 
         // "Target" page
