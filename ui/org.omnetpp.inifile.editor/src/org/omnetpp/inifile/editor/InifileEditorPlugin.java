@@ -108,7 +108,7 @@ public class InifileEditorPlugin extends AbstractUIPlugin {
 	 * Flags affects the alignment of the overlay image, use SWT constants like
 	 * BEGINING, END, TOP, BOTTOM. 
 	 */
-	//FIXME transparency gets lost
+	//FIXME copy org.omnetpp.cdt.Activator.getCachedDecoratedImage() instead!
 	public static Image getDecoratedImage(Image image, Image overlayImage, int flags, String key) {
 		key = "decorated-image:" + key;
 		ImageRegistry imageRegistry = getDefault().getImageRegistry();

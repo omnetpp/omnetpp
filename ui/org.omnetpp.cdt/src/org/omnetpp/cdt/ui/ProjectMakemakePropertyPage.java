@@ -17,7 +17,6 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
@@ -62,13 +61,12 @@ import org.omnetpp.cdt.makefile.MakemakeOptions;
  */
 @SuppressWarnings("restriction")
 public class ProjectMakemakePropertyPage extends PropertyPage {
-    private static final String MAKEMAKE_SOURCE_FOLDER_IMG = "icons/full/obj16/folder_makemake.gif";
-    private static final String CUSTOMMAKE_SOURCE_FOLDER_IMG = "icons/full/obj16/folder_custommake.gif";
+    private static final String SOURCE_FOLDER_IMG = "icons/full/obj16/folder_srcfolder.gif";
     private static final String SOURCE_SUBFOLDER_IMG = "icons/full/obj16/folder_srcsubfolder.gif";
-    private static final String CUSTOMMAKE_NONSRC_FOLDER_IMG = "icons/full/obj16/folder_nonsrc_custommake.gif";
-    private static final String MAKEMAKE_NONSRC_FOLDER_IMG = "icons/full/obj16/folder_nonsrc_makemake.gif";
-    private static final String EXCLUDED_FOLDER_IMG = "icons/full/obj16/folder_excluded.gif";
     private static final String NONSRC_FOLDER_IMG = "icons/full/obj16/folder_nonsrc.gif";
+    
+    protected static final String OVR_MAKEMAKE_IMG = "icons/full/obj16/ovr_makemake.png";
+    protected static final String OVR_CUSTOMMAKE_IMG = "icons/full/obj16/ovr_custommake.png";
     
     // state
     protected BuildSpecification buildSpec;
@@ -210,29 +208,22 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
             public Image getImage(Object element) {
                 if (!(element instanceof IContainer))
                     return null;
-                IContainer folder = (IContainer)element;
-                int makeType = buildSpec.getFolderMakeType(folder);
 
+                IContainer folder = (IContainer)element;
                 ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(getProject());
                 ICConfigurationDescription configuration = projectDescription.getActiveConfiguration();
+                boolean isSrcFolder = CDTUtils.getSourceEntryFor(folder)!=null;
                 boolean isExcluded = CDataUtil.isExcluded(folder.getFullPath(), configuration.getSourceEntries());
+                String imagePath = isSrcFolder ? SOURCE_FOLDER_IMG : !isExcluded ? SOURCE_SUBFOLDER_IMG : NONSRC_FOLDER_IMG;
 
-                String iconPath = null;
-                if (isExcluded) {
-                    switch (makeType) {
-                        case BuildSpecification.MAKEMAKE: iconPath = MAKEMAKE_NONSRC_FOLDER_IMG; break;
-                        case BuildSpecification.CUSTOM: iconPath = CUSTOMMAKE_NONSRC_FOLDER_IMG; break;
-                        case BuildSpecification.NONE: iconPath = NONSRC_FOLDER_IMG; break;
-                    }
+                int makeType = buildSpec.getFolderMakeType(folder);
+                String overlayImagePath = null; 
+                switch (makeType) {
+                    case BuildSpecification.MAKEMAKE: overlayImagePath = OVR_MAKEMAKE_IMG; break;
+                    case BuildSpecification.CUSTOM: overlayImagePath = OVR_CUSTOMMAKE_IMG; break;
+                    case BuildSpecification.NONE: overlayImagePath = null; break;
                 }
-                else {
-                    switch (makeType) {
-                        case BuildSpecification.MAKEMAKE: iconPath = MAKEMAKE_SOURCE_FOLDER_IMG; break;
-                        case BuildSpecification.CUSTOM: iconPath = CUSTOMMAKE_SOURCE_FOLDER_IMG; break;
-                        case BuildSpecification.NONE: iconPath = SOURCE_SUBFOLDER_IMG; break;
-                    }
-                }
-                return Activator.getCachedImage(iconPath);
+                return Activator.getCachedDecoratedImage(imagePath, overlayImagePath, SWT.END, SWT.END);
             }
 
             public String getText(Object element) {
@@ -241,7 +232,13 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
                 return element.toString();
             }
         });
-        
+
+        treeViewer.getTree().addSelectionListener(new SelectionAdapter() {
+            public void widgetDefaultSelected(SelectionEvent e) {
+                editFolderOptions(getTreeSelection());
+            }
+            
+        });
         loadBuildSpecFile();
 
         treeViewer.setInput(getProject().getParent());
@@ -268,7 +265,8 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
     }
 
     protected void editFolderOptions(IContainer folder) {
-        Assert.isTrue(buildSpec.getFolderMakeType(folder) == BuildSpecification.MAKEMAKE);
+        if (buildSpec.getFolderMakeType(folder) != BuildSpecification.MAKEMAKE)
+            return;
         MakemakeOptionsDialog dialog = new MakemakeOptionsDialog(getShell(), folder, buildSpec.getMakemakeOptions(folder));
         if (dialog.open() == Dialog.OK) {
             buildSpec.setMakemakeOptions(folder, dialog.getResult());

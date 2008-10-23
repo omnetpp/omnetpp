@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.cdt.core.model.CoreModel;
+import org.eclipse.cdt.core.model.CoreModelUtil;
 import org.eclipse.cdt.core.settings.model.CSourceEntry;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
@@ -18,6 +19,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 
 /**
  * Utility class dealing with CDT's managed build classes.
@@ -104,4 +106,33 @@ public class CDTUtils {
         CoreModel.getDefault().setProjectDescription(project, projectDescription);
     }
     
+    /** 
+     * Copied from CDT's CDataUtil class
+     */
+    public static boolean isExcluded(IPath path, ICSourceEntry[] entries){
+        for(int i = 0; i < entries.length; i++){
+            if(!isExcluded(path, entries[i]))
+                return false;
+        }
+        return true;
+    }
+    
+    /** 
+     * Copied from CDT's CDataUtil class
+     */
+    public static boolean isExcluded(IPath path, ICSourceEntry entry){
+        IPath entryPath = new Path(entry.getName());
+        
+        if(path.isPrefixOf(entryPath))
+            return false;
+        
+        if(!entryPath.isPrefixOf(path))
+            return true;
+        
+        if(path.segmentCount() == 0)
+            return false;
+        char[][] exclusions = entry.fullExclusionPatternChars();
+        return CoreModelUtil.isExcluded(path, exclusions);
+    }
+
 }

@@ -9,10 +9,12 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.omnetpp.cdt.cache.DependencyCache;
 import org.omnetpp.cdt.wizard.ProjectTemplateStore;
+import org.omnetpp.common.image.ImageFactory;
 import org.osgi.framework.BundleContext;
 
 /**
- * The activator class controls the plug-in life cycle
+ * The activator class controls the plug-in life cycle.
+ * @author Andras
  */
 public class Activator extends AbstractUIPlugin {
     private DependencyCache dependencyCache = new DependencyCache();
@@ -110,6 +112,27 @@ public class Activator extends AbstractUIPlugin {
             imageRegistry.put(path, image);
         }
         return image;
+    }
+
+    /**
+     * Decorates the given image with the overlay image (may be null), and returns 
+     * the result as a new image. For positioning, use SWT.BEGIN, SWT.CENTER, SWT.END.
+     * The result image gets cached in an internal image registry,
+     * so clients do not need to (moreover, must not) dispose of the image.
+     */
+    public static Image getCachedDecoratedImage(String imagePath, String overlayImagePath, int hpos, int vpos) {
+        if (overlayImagePath==null)
+            return getCachedImage(imagePath);
+        String key = imagePath+":"+overlayImagePath+":"+hpos+":"+vpos;
+        ImageRegistry imageRegistry = getDefault().getImageRegistry();
+        Image result = imageRegistry.get(key);
+        if (result == null) {
+            Image image = getCachedImage(imagePath);        
+            Image overlayImage = getCachedImage(overlayImagePath);
+            result = ImageFactory.decorateImage(image, overlayImage, hpos, vpos);
+            imageRegistry.put(key, result);
+        }
+        return result;
     }
     
     public static DependencyCache getDependencyCache() {

@@ -147,7 +147,7 @@ public class MetaMakemake {
 
     private static void collectExcludedSubpaths(IContainer folder, ICSourceEntry sourceEntry, List<String> result) throws CoreException {
         if (MakefileTools.isGoodFolder(folder)) {
-            if (CoreModelUtil.isExcluded(folder.getProjectRelativePath(), sourceEntry.fullExclusionPatternChars())) {
+            if (CoreModelUtil.isExcluded(folder, sourceEntry.fullExclusionPatternChars())) {
                 IPath sourceFolderRelativePath = folder.getProjectRelativePath().removeFirstSegments(sourceEntry.getFullPath().segmentCount());
                 result.add(sourceFolderRelativePath.toString());
             }

@@ -17,6 +17,8 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.variables.VariablesPlugin;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageLoader;
@@ -416,7 +418,7 @@ public class ImageFactory {
     }
 
     /**
-     * Get the image ID for a file or image IDs if it is a directory (recursively(
+     * Get the image ID for a file or image IDs if it is a directory (recursively)
      * @param fileStore A file or directory
      * @param stripBeginning (how much should be stripped at the beginning of the absolute path)
      * @return
@@ -505,4 +507,29 @@ public class ImageFactory {
 		}
 		return str;
     }
+
+    /**
+     * Decorates the given image with the overlay image, and return the result 
+     * as a new image. The client has the responsibility of disposing the image 
+     * when no longer needed. For positioning, use SWT.BEGIN, SWT.CENTER, SWT.END.
+     * 
+     * @author Andras
+     */
+    //FIXME transparency gets lost
+    public static Image decorateImage(Image image, Image overlayImage, int hpos, int vpos) {
+        int w = image == null ? 16 : image.getBounds().width;
+        int h = image == null ? 16 : image.getBounds().height;
+        int ow = overlayImage.getBounds().width;
+        int oh = overlayImage.getBounds().height;
+        int x = hpos==SWT.BEGINNING ? 0 : hpos==SWT.END ? w-ow : /*SWT.CENTER*/ (w-ow)/2;
+        int y = vpos==SWT.BEGINNING ? 0 : vpos==SWT.END ? h-oh : /*SWT.CENTER*/ (h-oh)/2;
+        Image result = new Image(null, w, h); // SWT.IMAGE_COPY does not seem to work (exception)
+        GC gc = new GC(result);
+        gc.drawImage(image, 0, 0);
+        gc.drawImage(overlayImage, x, y);
+        gc.dispose();
+        return result;
+    }
+
+    
 }
