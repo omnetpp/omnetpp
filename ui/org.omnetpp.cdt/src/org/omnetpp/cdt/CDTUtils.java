@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.cdt.core.model.CoreModel;
-import org.eclipse.cdt.core.model.CoreModelUtil;
 import org.eclipse.cdt.core.settings.model.CSourceEntry;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.cdt.core.settings.model.WriteAccessException;
+import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 import org.eclipse.cdt.managedbuilder.core.IConfiguration;
 import org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo;
 import org.eclipse.cdt.managedbuilder.core.IToolChain;
@@ -107,32 +107,30 @@ public class CDTUtils {
     }
     
     /** 
-     * Copied from CDT's CDataUtil class
+     * Replaces similar function in CDataUtil (CDT), because that one cannot properly
+     * handle nested source folders. 
+     * 
+     * Test case to show CDataUtil bug:
+     * 
+     *   ICSourceEntry[] testEntries = new ICSourceEntry[] {
+     *           new CSourceEntry(new Path("/INET"), new Path[] {new Path("examples")}, 0),
+     *           new CSourceEntry(new Path("/INET/examples/adhoc"), new Path[]{}, 0)
+     *   };
+     *   System.out.println(CDataUtil.isExcluded(new Path("/INET/examples"), testEntries)); // prints "false", but it should be "true"
      */
     public static boolean isExcluded(IPath path, ICSourceEntry[] entries){
-        for(int i = 0; i < entries.length; i++){
-            if(!isExcluded(path, entries[i]))
-                return false;
-        }
-        return true;
+        ICSourceEntry entry = getSourceEntryThatCovers(path, entries);
+        return entry == null ? true : CDataUtil.isExcluded(path, entry);
     }
     
-    /** 
-     * Copied from CDT's CDataUtil class
-     */
-    public static boolean isExcluded(IPath path, ICSourceEntry entry){
-        IPath entryPath = new Path(entry.getName());
-        
-        if(path.isPrefixOf(entryPath))
-            return false;
-        
-        if(!entryPath.isPrefixOf(path))
-            return true;
-        
-        if(path.segmentCount() == 0)
-            return false;
-        char[][] exclusions = entry.fullExclusionPatternChars();
-        return CoreModelUtil.isExcluded(path, exclusions);
+    public static ICSourceEntry getSourceEntryThatCovers(IPath path, ICSourceEntry[] entries) {
+        while (path.segmentCount()>0) {
+            for (int i = 0; i < entries.length; i++)
+                if (path.equals(new Path(entries[i].getName())))
+                    return entries[i];
+            path = path.removeLastSegments(1);
+        }
+        return null; //none
     }
 
 }

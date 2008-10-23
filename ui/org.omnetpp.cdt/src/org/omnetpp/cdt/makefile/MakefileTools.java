@@ -8,7 +8,6 @@ import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
-import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 import org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo;
 import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
 import org.eclipse.core.resources.IContainer;
@@ -21,6 +20,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.omnetpp.cdt.Activator;
+import org.omnetpp.cdt.CDTUtils;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ide.OmnetppMainPlugin;
@@ -171,7 +171,7 @@ public class MakefileTools {
 		    	sourceFolder.accept(new IResourceVisitor() {
 		    		public boolean visit(IResource resource) throws CoreException {
 		    			if (MakefileTools.isGoodFolder(resource)) {
-		    				if (!CDataUtil.isExcluded(resource.getProjectRelativePath(), srcEntries)
+		    				if (!CDTUtils.isExcluded(resource.getProjectRelativePath(), srcEntries)
 		    						&& (pattern == null || containsFileMatchingPattern((IContainer)resource, pattern)))
 		    					result.add((IContainer)resource);
 		

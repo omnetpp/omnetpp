@@ -213,7 +213,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
                 ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(getProject());
                 ICConfigurationDescription configuration = projectDescription.getActiveConfiguration();
                 boolean isSrcFolder = CDTUtils.getSourceEntryFor(folder)!=null;
-                boolean isExcluded = CDataUtil.isExcluded(folder.getFullPath(), configuration.getSourceEntries());
+                boolean isExcluded = CDTUtils.isExcluded(folder.getFullPath(), configuration.getSourceEntries());
                 String imagePath = isSrcFolder ? SOURCE_FOLDER_IMG : !isExcluded ? SOURCE_SUBFOLDER_IMG : NONSRC_FOLDER_IMG;
 
                 int makeType = buildSpec.getFolderMakeType(folder);
@@ -445,7 +445,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         
         ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(project);
         ICConfigurationDescription configuration = projectDescription.getActiveConfiguration();
-        boolean isExcluded = CDataUtil.isExcluded(folder.getFullPath(), configuration.getSourceEntries());
+        boolean isExcluded = CDTUtils.isExcluded(folder.getFullPath(), configuration.getSourceEntries());
         
         excludeButton.setEnabled(!isExcluded);  //FIXME not really...
         includeButton.setEnabled(isExcluded); //FIXME not really: only enable if exactly matches an exclusion pattern!
