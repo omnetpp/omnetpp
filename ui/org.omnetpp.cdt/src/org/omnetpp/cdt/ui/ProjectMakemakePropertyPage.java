@@ -66,6 +66,10 @@ import org.omnetpp.common.color.ColorFactory;
  */
 //FIXME source folder changes immediatly get committed (no cancel!), but they aren't visible in cdt page. use CDTPropertyManager!
 //FIXME improve tree labels (should be libname etc)
+//FIXME warning if there's no makefile in a "custom makefile" folder
+//XXX makemakeoptions: "copy to bin/ or lib/" option
+//XXX support makemake -K option
+//XXX per-makefile targets
 @SuppressWarnings("restriction")
 public class ProjectMakemakePropertyPage extends PropertyPage {
     private static final String SOURCE_FOLDER_IMG = "icons/full/obj16/folder_srcfolder.gif";
@@ -408,8 +412,21 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         String result = folder.getName();
 
         if (buildSpec.getFolderMakeType(folder)==BuildSpecification.MAKEMAKE) {
-            MakemakeOptions makemakeOptions = buildSpec.getMakemakeOptions(folder);
-            result += ": makemake " + makemakeOptions.toString(); //FIXME show target name instead ("-> libINET.so") or something
+            MakemakeOptions options = buildSpec.getMakemakeOptions(folder);
+
+
+            String target = options.target == null ? folder.getProject().getName() : options.target;
+            switch (options.type) {
+                case NOLINK: target = null;
+                case EXE: target += " (executable)"; break;
+                case SHAREDLIB: target += " (dynamic lib)"; break;
+                case STATICLIB: target += " (static lib)"; break;
+            }
+
+            result += 
+                ": makemake (" + 
+                (options.isDeep ? "deep" : "shallow") + ", " +
+                (options.metaRecurse ? "recurse" : "no-recurse") + ") --> " + target;
         }
         if (buildSpec.getFolderMakeType(folder)==BuildSpecification.CUSTOM) {
             result += ": custom makefile";
