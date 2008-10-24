@@ -56,6 +56,7 @@ import org.omnetpp.cdt.CDTUtils;
 import org.omnetpp.cdt.makefile.BuildSpecification;
 import org.omnetpp.cdt.makefile.MakefileTools;
 import org.omnetpp.cdt.makefile.MakemakeOptions;
+import org.omnetpp.cdt.makefile.MakemakeOptions.Type;
 import org.omnetpp.common.color.ColorFactory;
 
 /**
@@ -70,6 +71,7 @@ import org.omnetpp.common.color.ColorFactory;
 //XXX makemakeoptions: "copy to bin/ or lib/" option
 //XXX support makemake -K option
 //XXX per-makefile targets
+//FIXME project template-kben a buildspecet atirni!!!
 @SuppressWarnings("restriction")
 public class ProjectMakemakePropertyPage extends PropertyPage {
     private static final String SOURCE_FOLDER_IMG = "icons/full/obj16/folder_srcfolder.gif";
@@ -273,9 +275,45 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         return composite;
     }
 
+    protected String getLabelFor(IContainer folder) {
+        String result = folder.getName();
+
+        if (buildSpec.getFolderMakeType(folder)==BuildSpecification.MAKEMAKE) {
+            MakemakeOptions options = buildSpec.getMakemakeOptions(folder);
+            
+            String target = options.target == null ? folder.getProject().getName() : options.target;
+            switch (options.type) {
+                case NOLINK: target = null; break;
+                case EXE: target += " (executable)"; break;
+                case SHAREDLIB: target += " (dynamic lib)"; break;
+                case STATICLIB: target += " (static lib)"; break;
+            }
+
+            ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(folder.getProject());
+            ICConfigurationDescription configuration = projectDescription.getActiveConfiguration();
+            boolean isExcluded = CDTUtils.isExcluded(folder, configuration.getSourceEntries());
+
+            result += 
+                ": makemake (" + 
+                (isExcluded ? "no src" : options.isDeep ? "deep" : "shallow") + ", "+ 
+                (options.metaRecurse ? "recurse" : "no-recurse") + ")" +
+                (target==null ? "" : " --> " + target);
+        }
+        if (buildSpec.getFolderMakeType(folder)==BuildSpecification.CUSTOM) {
+            result += ": custom makefile";
+        }
+        return result;
+    }
     
     protected void setFolderMakeType(IContainer folder, int makeType) {
         buildSpec.setFolderMakeType(folder, makeType);
+        if (makeType == BuildSpecification.MAKEMAKE) {
+            ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(folder.getProject());
+            ICConfigurationDescription configuration = projectDescription.getActiveConfiguration();
+            boolean isExcluded = CDTUtils.isExcluded(folder, configuration.getSourceEntries());
+            if (isExcluded)
+                buildSpec.getMakemakeOptions(folder).type = Type.NOLINK;
+        }
         updatePageState();
     }
 
@@ -408,32 +446,6 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
             updatePageState();
     }
 
-    protected String getLabelFor(IContainer folder) {
-        String result = folder.getName();
-
-        if (buildSpec.getFolderMakeType(folder)==BuildSpecification.MAKEMAKE) {
-            MakemakeOptions options = buildSpec.getMakemakeOptions(folder);
-
-
-            String target = options.target == null ? folder.getProject().getName() : options.target;
-            switch (options.type) {
-                case NOLINK: target = null;
-                case EXE: target += " (executable)"; break;
-                case SHAREDLIB: target += " (dynamic lib)"; break;
-                case STATICLIB: target += " (static lib)"; break;
-            }
-
-            result += 
-                ": makemake (" + 
-                (options.isDeep ? "deep" : "shallow") + ", " +
-                (options.metaRecurse ? "recurse" : "no-recurse") + ") --> " + target;
-        }
-        if (buildSpec.getFolderMakeType(folder)==BuildSpecification.CUSTOM) {
-            result += ": custom makefile";
-        }
-        return result;
-    }
-    
     protected void updatePageState() {
         // display warnings about CDT misconfiguration, etc 
         String message = getDiagnosticMessage(getProject());
@@ -468,8 +480,8 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         markAsToplevelButton.setEnabled(makeType!=BuildSpecification.NONE);
         optionsButton.setEnabled(makeType==BuildSpecification.MAKEMAKE);
         
-        boolean isSourceFolder = CDTUtils.getSourceFolders(project).contains(folder);
-        sourceLocationButton.setEnabled(!isSourceFolder);
+        boolean isSourceLocation = CDTUtils.getSourceLocations(project).contains(folder);
+        sourceLocationButton.setEnabled(!isSourceLocation);
         
         ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(project);
         ICConfigurationDescription configuration = projectDescription.getActiveConfiguration();

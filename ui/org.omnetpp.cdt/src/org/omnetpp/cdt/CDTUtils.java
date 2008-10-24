@@ -64,10 +64,10 @@ public class CDTUtils {
     }
     
     /**
-     * Returns the source folders (ICSourceEntry) for the given project and the
+     * Returns the source locations (ICSourceEntry) for the given project and the
      * active configuration.
      */
-    public static List<IContainer> getSourceFolders(IProject project) {
+    public static List<IContainer> getSourceLocations(IProject project) {
         ICSourceEntry[] sourceEntries = CDTUtils.getSourceEntries(project);
         sourceEntries = CDataUtil.makeRelative(project, sourceEntries);
         List<IContainer> sourceFolders = new ArrayList<IContainer>();
@@ -93,10 +93,10 @@ public class CDTUtils {
 
     
     /**
-     * Sets the project's source folders list to the given list of folders. 
+     * Sets the project's source locations list to the given list of folders. 
      * (Previous source entries get overwritten.)  
      */
-    public static void setSourceFolders(IProject project, IContainer[] folders) throws CoreException {
+    public static void setSourceLocations(IProject project, IContainer[] folders) throws CoreException {
         ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(project, true);
         int n = folders.length;
         for (ICConfigurationDescription configuration : projectDescription.getConfigurations()) {

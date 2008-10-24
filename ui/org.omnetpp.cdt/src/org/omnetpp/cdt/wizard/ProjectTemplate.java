@@ -191,6 +191,6 @@ public abstract class ProjectTemplate implements IProjectTemplate {
         IContainer[] folders = new IContainer[projectRelativePaths.length];
         for (int i=0; i<projectRelativePaths.length; i++)
             folders[i] = getProject().getFolder(new Path(projectRelativePaths[i]));
-        CDTUtils.setSourceFolders(project, folders);
+        CDTUtils.setSourceLocations(project, folders);
     }
 }
