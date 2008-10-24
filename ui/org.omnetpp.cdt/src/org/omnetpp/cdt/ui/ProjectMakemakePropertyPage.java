@@ -72,6 +72,17 @@ import org.omnetpp.common.color.ColorFactory;
 //XXX support makemake -K option
 //XXX per-makefile targets
 //FIXME project template-kben a buildspecet atirni!!!
+//XXX warn if there's no makefile generated at all
+//XXX implement "mark as top"
+//XXX multiselect?
+//XXX hover!! "no makefile generated" etc!
+//XXX print hint somewhere: project root should probably be excluded if there's a submakefile!
+//XXX    "Compile" fulre: ha nem akarod hogy barmit forditson, excludold ki a makefile foldert!
+//XXX makemake: add type=NONE ?
+//XXX Options preview lapra kitenni helpet (melyik opcio mit csinal)
+//XXX hintet kiirni: folderek kozotti sorrendet a makefrag-ban kellene megadni
+//XXX hintet kiirni: source location tree (tele/ures folder) es makefile tree teljesen fuggetlen
+//XXX recurse: valahova kiirni hogy tenylegesen hova fog bemenni (ne csak az options listbol legyen)
 @SuppressWarnings("restriction")
 public class ProjectMakemakePropertyPage extends PropertyPage {
     private static final String SOURCE_FOLDER_IMG = "icons/full/obj16/folder_srcfolder.gif";
@@ -132,7 +143,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         buttons.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
         buttons.setLayout(new GridLayout(1,false));
 
-        makemakeButton = createButton(buttons, SWT.PUSH, "Makemake", "Generate makefile in this folder");
+        makemakeButton = createButton(buttons, SWT.PUSH, "Makemake", "Enable makefile generation in this folder");
         customMakeButton = createButton(buttons, SWT.PUSH, "Custom Make", "Folder contains custom makefile");
         noMakeButton = createButton(buttons, SWT.PUSH, "No Make", "No makefile in this folder");
         createLabel(buttons, "", 1);
