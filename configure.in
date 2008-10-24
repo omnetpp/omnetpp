@@ -226,6 +226,13 @@ fi
 if test -d /usr/include/tcl8.5; then
     TK_CFLAGS=${TK_CFLAGS:-"-I/usr/include/tcl8.5"}
 fi
+if test -d /usr/include/tcl8.6; then
+    TK_CFLAGS="-I/usr/include/tcl8.6"
+fi
+# on FedoraCore 9 blt includes have their own directory
+if test -d /usr/include/blt; then
+    TK_CFLAGS="$TK_CFLAGS -I/usr/include/blt"
+fi
 
 #----------------------
 # Set variables to defaults if not already set.
@@ -684,6 +691,10 @@ else  #matching "fi" is after BLT testing
             OPP_CHECK_LIB(Tcl/Tk 8.4, tk.h, Tk_MainLoop(), $TK_CFLAGS, -ltk8.4 -ltcl8.4,
                           tcltk_ok, TK_LIBS="-ltk8.4 -ltcl8.4")
         fi
+        if test $tcltk_ok = no; then
+            OPP_CHECK_LIB(Tcl/Tk 8.6, tk.h, Tk_MainLoop(), $TK_CFLAGS, -ltk8.6 -ltcl8.6,
+                          tcltk_ok, TK_LIBS="-ltk8.6 -ltcl8.6")
+        fi
         # look for X window libs and headers
         if test $tcltk_ok = no; then
             # try to find Tcl/Tk ourselves, but it usually needs to link with Xlib
@@ -700,6 +711,23 @@ else  #matching "fi" is after BLT testing
                fi
             fi
         fi
+        if test $tcltk_ok = no; then
+            OPP_CHECK_LIB(Tcl/Tk 8.6, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk86 -ltcl86,
+                          tcltk_ok, TK_LIBS="$opp_x11lib -ltk86 -ltcl86")
+        fi
+        if test $tcltk_ok = no; then
+            OPP_CHECK_LIB(Tcl/Tk 8.6, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk8.6 -ltcl8.6,
+                          tcltk_ok, TK_LIBS="$opp_x11lib -ltk8.6 -ltcl8.6")
+        fi
+        if test $tcltk_ok = no -a "$cygwin" = yes; then
+            OPP_CHECK_LIB(Tcl/Tk 8.6, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -lcygtk86 -lcygtcl86,
+                          tcltk_ok, TK_LIBS="$opp_x11lib -lcygtk86 -lcygtcl86")
+        fi
+        if test $tcltk_ok = no -a "$mingw" = yes; then
+            OPP_CHECK_LIB(Tcl/Tk 8.6, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -L/usr/bin -ltk86 -ltcl86,
+                          tcltk_ok, TK_LIBS="$opp_x11lib -L/usr/bin -ltk86 -ltcl86")
+        fi
+
         if test $tcltk_ok = no; then
             OPP_CHECK_LIB(Tcl/Tk 8.5, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk85 -ltcl85,
                           tcltk_ok, TK_LIBS="$opp_x11lib -ltk85 -ltcl85")
@@ -748,9 +776,9 @@ else  #matching "fi" is after BLT testing
     fi
 
     # Check for wish.
-    AC_CHECK_PROGS(WISH, $WISH wish wish85 wish8.5 wish84 wish8.4 cygwish cygwish85 cygwish84, nope)
+    AC_CHECK_PROGS(WISH, $WISH wish wish86 wish8.6 wish85 wish8.5 wish84 wish8.4 cygwish cygwish86 cygwish85 cygwish84, nope)
     if test "$WISH" = nope; then
-       AC_MSG_ERROR([Cannot find wish, part of Tcl/Tk -- maybe it is not in the PATH or has some exotic name (tested names were: wish wish85 wish8.5 wish84 wish8.4 cygwish cygwish85 cygwish84)])
+       AC_MSG_ERROR([Cannot find wish, part of Tcl/Tk -- maybe it is not in the PATH or has some exotic name (tested names were: wish wish86 wish8.6 wish85 wish8.5 wish84 wish8.4 cygwish cygwish86 cygwish85 cygwish84)])
     fi
     if echo 'puts OK; exit' | $WISH | grep OK >/dev/null; then :; else
         AC_MSG_ERROR([Cannot run wish (wish command "puts OK; exit" failed): maybe you are not running X or DISPLAY environment variable not set?])
