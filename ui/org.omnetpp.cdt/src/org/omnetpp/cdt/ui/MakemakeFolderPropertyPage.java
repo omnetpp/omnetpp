@@ -110,7 +110,7 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
     }
 
     protected void updatePageState() {
-        String message = ProjectMakemakePropertyPage.getInformationalMessage(getFolder()); //XXX make common base class instead?
+        String message = ProjectMakemakePropertyPage.getDiagnosticMessage(getFolder()); //XXX make common base class instead?
         errorMessageLabel.setText(message==null ? "" : message);
     }
 

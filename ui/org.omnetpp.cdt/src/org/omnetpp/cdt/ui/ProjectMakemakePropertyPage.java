@@ -419,7 +419,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
     
     protected void updatePageState() {
         // display warnings about CDT misconfiguration, etc 
-        String message = getInformationalMessage(getProject());
+        String message = getDiagnosticMessage(getProject());
         errorMessageLabel.setText(message==null ? "" : message);
         ((GridData)errorMessageLabel.getLayoutData()).exclude = (message==null); 
         errorMessageLabel.setVisible(message!=null);
@@ -427,6 +427,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         
         treeViewer.refresh();
         
+        // if there's no tree selection, disable all buttons
         IContainer folder = getTreeSelection();
         if (folder == null) {
             makemakeButton.setEnabled(false);
@@ -440,8 +441,8 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
             return;
         }
         
+        // enable/disable buttons
         IProject project = getProject();
-
         int makeType = buildSpec.getFolderMakeType(folder);
         makemakeButton.setEnabled(makeType!=BuildSpecification.MAKEMAKE);
         customMakeButton.setEnabled(makeType!=BuildSpecification.CUSTOM);
@@ -471,7 +472,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         return false;
     }
 
-    public static String getInformationalMessage(IContainer folder) {
+    public static String getDiagnosticMessage(IContainer folder) {
         // Check CDT settings
         IManagedBuildInfo buildInfo = ManagedBuildManager.getBuildInfo(folder.getProject());
         if (buildInfo == null)
