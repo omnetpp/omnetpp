@@ -16,12 +16,15 @@ import org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo;
 import org.eclipse.cdt.managedbuilder.core.IToolChain;
 import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
 import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.runtime.AssertionFailedException;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.ErrorDialog;
@@ -39,6 +42,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -46,6 +50,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.ui.dialogs.PropertyPage;
@@ -58,6 +63,9 @@ import org.omnetpp.cdt.makefile.MakefileTools;
 import org.omnetpp.cdt.makefile.MakemakeOptions;
 import org.omnetpp.cdt.makefile.MakemakeOptions.Type;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.ui.HoverSupport;
+import org.omnetpp.common.ui.IHoverTextProvider;
+import org.omnetpp.common.ui.SizeConstraint;
 
 /**
  * This property page is shown for an OMNeT++ CDT Project, and lets the user 
@@ -65,24 +73,24 @@ import org.omnetpp.common.color.ColorFactory;
  *
  * @author Andras
  */
+//XXX support makemake -K option (EGYSZERU!)
+//XXX recurse: per-submake targets
+//XXX implement "mark as top"
+
 //FIXME source folder changes immediatly get committed (no cancel!), but they aren't visible in cdt page. use CDTPropertyManager!
-//FIXME improve tree labels (should be libname etc)
 //FIXME warning if there's no makefile in a "custom makefile" folder
+//FIXME warning ha egy source foldert egy makefile sem fed be
 //XXX makemakeoptions: "copy to bin/ or lib/" option
-//XXX support makemake -K option
-//XXX per-makefile targets
 //FIXME project template-kben a buildspecet atirni!!!
 //XXX warn if there's no makefile generated at all
-//XXX implement "mark as top"
-//XXX multiselect?
-//XXX hover!! "no makefile generated" etc!
+//XXX finish hover. "no makefile generated" etc!
 //XXX print hint somewhere: project root should probably be excluded if there's a submakefile!
 //XXX    "Compile" fulre: ha nem akarod hogy barmit forditson, excludold ki a makefile foldert!
-//XXX makemake: add type=NONE ?
 //XXX Options preview lapra kitenni helpet (melyik opcio mit csinal)
-//XXX hintet kiirni: folderek kozotti sorrendet a makefrag-ban kellene megadni
+//XXX hintet kiirni: folderek kozotti sorrendet a makefrag-ban kellene megadni (illetve meg lehetne probalni autodetektalni)
 //XXX hintet kiirni: source location tree (tele/ures folder) es makefile tree teljesen fuggetlen
-//XXX recurse: valahova kiirni hogy tenylegesen hova fog bemenni (ne csak az options listbol legyen)
+//XXX recurse: tooltipre kiirni hogy tenylegesen hova fog bemenni (ne csak az options listbol legyen)
+//XXX project template-ekben az out/ dirt kiexcludolni?
 @SuppressWarnings("restriction")
 public class ProjectMakemakePropertyPage extends PropertyPage {
     private static final String SOURCE_FOLDER_IMG = "icons/full/obj16/folder_srcfolder.gif";
@@ -125,10 +133,13 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         ((GridLayout)composite.getLayout()).marginWidth = 0;
         ((GridLayout)composite.getLayout()).marginHeight = 0;
 
-        createLabel(composite, "Configure folders below. NOTE: changes will affect all configurations.", 2);
-        String text = "Source Locations can also be managed on the <A>Paths and symbols</A> page.";
-        Link pathsAndSymbolsLink = createLink(composite, text);
+        String text = 
+            "On this page you can configure source folders and makefile generation, " +
+            "independent of each other. Source folders can also be managed on the " +
+            "<A>Paths and symbols</A> page.";
+        final Link pathsAndSymbolsLink = createLink(composite, text);
         pathsAndSymbolsLink.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1));
+        ((GridData)pathsAndSymbolsLink.getLayoutData()).widthHint = 300;
 
         errorMessageLabel = new Label(composite, SWT.WRAP);
         errorMessageLabel.setForeground(ColorFactory.RED2);
@@ -143,17 +154,20 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         buttons.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
         buttons.setLayout(new GridLayout(1,false));
 
-        makemakeButton = createButton(buttons, SWT.PUSH, "Makemake", "Enable makefile generation in this folder");
-        customMakeButton = createButton(buttons, SWT.PUSH, "Custom Make", "Folder contains custom makefile");
-        noMakeButton = createButton(buttons, SWT.PUSH, "No Make", "No makefile in this folder");
+        makemakeButton = createButton(buttons, SWT.PUSH, "&Makemake", "Enable makefile generation in this folder");
+        customMakeButton = createButton(buttons, SWT.PUSH, "&Custom Make", "Declare that folder contains custom makefile");
+        noMakeButton = createButton(buttons, SWT.PUSH, "&No Make", "No makefile in this folder");
         createLabel(buttons, "", 1);
-        optionsButton = createButton(buttons, SWT.PUSH, "Options...", "Edit makefile generation options");
+        optionsButton = createButton(buttons, SWT.PUSH, "&Options...", "Edit makefile generation options");
         createLabel(buttons, "", 1);
-        markAsToplevelButton = createButton(buttons, SWT.PUSH, "Mark as toplevel", "Build command will invoke this makefile");
+        markAsToplevelButton = createButton(buttons, SWT.PUSH, "Mark as &toplevel", "Build command will invoke this makefile");
         createLabel(buttons, "", 1);
-        sourceLocationButton = createButton(buttons, SWT.PUSH, "Source Location", "Mark folder as source location");
-        excludeButton = createButton(buttons, SWT.PUSH, "Exclude", "Exclude from build");
-        includeButton = createButton(buttons, SWT.PUSH, "Include", "Include into build");
+        Label sep = new Label(buttons, SWT.SEPARATOR | SWT.HORIZONTAL);
+        sep.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
+        createLabel(buttons, "", 1);
+        sourceLocationButton = createButton(buttons, SWT.PUSH, "&Source Location", "Mark folder as source location");
+        excludeButton = createButton(buttons, SWT.PUSH, "&Exclude", "Exclude from build");
+        includeButton = createButton(buttons, SWT.PUSH, "&Include", "Include into build");
 
         pathsAndSymbolsLink.addSelectionListener(new SelectionListener(){
             public void widgetSelected(SelectionEvent e) {
@@ -260,13 +274,25 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
                 editFolderOptions(getTreeSelection());
             }
         });
-        
+
+        new HoverSupport().adapt(treeViewer.getTree(), new IHoverTextProvider() {
+            public String getHoverTextFor(Control control, int x, int y, SizeConstraint outPreferredSize) {
+                Item item = treeViewer.getTree().getItem(new Point(x,y));
+                Object element = item==null ? null : item.getData();
+                if (element instanceof IContainer)
+                    return getFolderHoverText((IContainer)element);
+                return null;
+            }
+        });
+
         // make the error text label wrap properly; see https://bugs.eclipse.org/bugs/show_bug.cgi?id=9866
         composite.addControlListener(new ControlAdapter(){
             public void controlResized(ControlEvent e){
-                GridData data = (GridData)errorMessageLabel.getLayoutData();
                 GridLayout layout = (GridLayout)composite.getLayout();
+                GridData data = (GridData)errorMessageLabel.getLayoutData();
                 data.widthHint = composite.getClientArea().width - 2*layout.marginWidth;
+                GridData data2 = (GridData)pathsAndSymbolsLink.getLayoutData();
+                data2.widthHint = composite.getClientArea().width - 2*layout.marginWidth;
                 composite.layout(true);
             }
         });
@@ -315,7 +341,100 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         }
         return result;
     }
-    
+
+    protected String getFolderHoverText(IContainer folder) {
+        String result = null;
+        
+        IProject project = folder.getProject();
+        ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(project);
+        ICConfigurationDescription configuration = projectDescription.getActiveConfiguration();
+        ICSourceEntry[] sourceEntries = configuration.getSourceEntries();
+
+        boolean isSourceLocation = CDTUtils.getSourceLocations(project, sourceEntries).contains(folder);
+        boolean isExcluded = CDTUtils.isExcluded(folder, sourceEntries);
+        boolean isUnderSourceLocation = CDTUtils.getSourceEntryThatCovers(folder, sourceEntries) != null;
+
+        //TODO Tooltip irja ki, hogy:
+        //   - source folder, "source location" vagy excluded, ill. make= none/makemake/custom
+        //   - ha makefile:
+        //        - milyen submake-eket hiv meg (kell meghivnia)
+        //        - illetve milyen foldereket buildel meg (kell megbuildelnie)
+        //           ^^^ ezt a kettot a MetaMakemake kell hogy eloallitsa, es itt ezt kell felhasznalnunk!!!
+        //
+        //TODO give special hints if the folder is project root
+
+        int makeType = buildSpec.getFolderMakeType(folder);
+        if (makeType==BuildSpecification.MAKEMAKE) {
+            MakemakeOptions options = buildSpec.getMakemakeOptions(folder);
+            if (options.metaRecurse) {
+                //TODO collect sub-makes, and display them in the tooltip
+            }
+            //TODO check isDeep, isRecursive
+            if (isExcluded) {
+                result = "This is a non-source folder (excluded from build), with makefile generation enabled";
+                if (!options.metaRecurse) {
+                }
+                else {
+                    
+                }
+            } 
+            else {
+                result = "This is a source folder, with makefile generation enabled.";
+                if (folder instanceof IProject)  //FIXME if there are source files in subdirs!!! also: warn if there are C++ sources in here
+                    result += "<p>HINT: You may want to exclude this (project root) folder from build, " +
+                             "and leave compilation to subdirectory makefiles.";
+                    
+                if (!options.isDeep) {
+                    //TODO check if there're any subdirs uncovered, and warn if so!
+                }
+                else {
+                    
+                }
+            }
+            //TODO
+        }
+        else if (makeType==BuildSpecification.CUSTOM) {
+            IFile makefile = folder.getFile(new Path("Makefile"));
+            if (!makefile.exists())
+                result = "WARNING: This folder is supposed to contain a custom makefile named \"Makefile\", but it is missing";
+            else if (isExcluded)
+                result = "This is a non-source folder (excluded from build), containing a custom makefile. " +
+                		"<p>Note: The makefile is not supposed to compile any (potentially existing) source files " +
+                		"from this folder, because the folder is excluded from build. However, it may " +
+                		"invoke other makefiles, may create executables or libraries by invoking the linker, " +
+                		"or may contain other kinds of targets.";
+            else
+                result = "This is a source folder, containing a custom makefile."; //XXX "it is supposed to invoke sub-makefiles X, Y and Z"
+        }
+        else if (makeType==BuildSpecification.NONE) {
+            // find which makefile covers this folder (ignoring makefile type and scope for now)
+            IContainer makeFolder = null;
+            if (!isExcluded)
+                for (IContainer f = folder; !(f instanceof IWorkspaceRoot); f = f.getParent())
+                    if (buildSpec.getMakeFolders().contains(f)) {
+                        makeFolder = f; break;}
+            // say something about it
+            if (isExcluded)
+                result = "This is a non-source folder (excluded from build), and contains no makefile"; //XXX custom parent makefile shuld NOT build it!
+            else if (makeFolder == null) 
+                result = "WARNING: This is a source folder, but it is not covered by any makefile. Is this intentional?";
+            else if (buildSpec.getFolderMakeType(makeFolder)==BuildSpecification.CUSTOM) 
+                result = "This source folder is supposed to be covered by the custom makefile in " + makeFolder.getFullPath();
+            else if (buildSpec.getFolderMakeType(makeFolder)==BuildSpecification.MAKEMAKE && !buildSpec.getMakemakeOptions(makeFolder).isDeep) 
+                result = "WARNING: This is a source folder but it is not covered by any makefile, because the generated makefile in " + makeFolder.getFullPath() + " is not deep. Is this intentional?";
+            else if (buildSpec.getFolderMakeType(makeFolder)==BuildSpecification.MAKEMAKE) 
+                result = "This source folder is covered by the generated makefile in " + makeFolder.getFullPath(); //FIXME nem igaz!!! ha az ki van exclude-olva (vagy egy kozbeeso folder), akkor nem!
+            else 
+                Activator.logError(new AssertionFailedException("Tooltip logic error"));
+        }
+
+        if (result==null)
+            return null;
+        
+        result = "<b>" + folder.getFullPath() + "</b>" + (isSourceLocation ? " (source location)" : "") + "<p>" + result;
+        return HoverSupport.addHTMLStyleSheet(result);
+    }
+
     protected void setFolderMakeType(IContainer folder, int makeType) {
         buildSpec.setFolderMakeType(folder, makeType);
         if (makeType == BuildSpecification.MAKEMAKE) {
@@ -491,15 +610,15 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         markAsToplevelButton.setEnabled(makeType!=BuildSpecification.NONE);
         optionsButton.setEnabled(makeType==BuildSpecification.MAKEMAKE);
         
-        boolean isSourceLocation = CDTUtils.getSourceLocations(project).contains(folder);
-        sourceLocationButton.setEnabled(!isSourceLocation);
-        
         ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(project);
         ICConfigurationDescription configuration = projectDescription.getActiveConfiguration();
-        boolean isExcluded = CDTUtils.isExcluded(folder, configuration.getSourceEntries());
-        boolean isUnderSourceLocation = CDTUtils.getSourceEntryThatCovers(folder, configuration.getSourceEntries()) != null;
+        ICSourceEntry[] sourceEntries = configuration.getSourceEntries();
+        boolean isExcluded = CDTUtils.isExcluded(folder, sourceEntries);
+        boolean isSourceLocation = CDTUtils.getSourceLocations(project, sourceEntries).contains(folder);
+        boolean isUnderSourceLocation = CDTUtils.getSourceEntryThatCovers(folder, sourceEntries) != null;
         
-        excludeButton.setEnabled(!isExcluded);
+        sourceLocationButton.setEnabled(!isSourceLocation);
+        excludeButton.setEnabled(!isExcluded && !(folder instanceof IProject && sourceEntries.length==1));
         includeButton.setEnabled(isUnderSourceLocation && isExcluded);
     }
 

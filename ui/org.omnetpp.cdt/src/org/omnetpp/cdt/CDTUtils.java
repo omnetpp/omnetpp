@@ -64,11 +64,18 @@ public class CDTUtils {
     }
     
     /**
-     * Returns the source locations (ICSourceEntry) for the given project and the
+     * Returns the source locations for the given project and the
      * active configuration.
      */
     public static List<IContainer> getSourceLocations(IProject project) {
         ICSourceEntry[] sourceEntries = CDTUtils.getSourceEntries(project);
+        return getSourceLocations(project, sourceEntries);
+    }
+
+    /**
+     * Returns the source locations from the given source entries.
+     */
+    public static List<IContainer> getSourceLocations(IProject project, ICSourceEntry[] sourceEntries) {
         sourceEntries = CDataUtil.makeRelative(project, sourceEntries);
         List<IContainer> sourceFolders = new ArrayList<IContainer>();
         for (ICSourceEntry sourceEntry : sourceEntries)
@@ -116,6 +123,9 @@ public class CDTUtils {
     }
 
     /** 
+     * Returns true if the given resource is excluded from its containing source location,
+     * or is outside all source locations.
+     * 
      * Replaces similar function in CDataUtil (CDT), because that one cannot properly
      * handle nested source folders.
      * 
@@ -129,6 +139,10 @@ public class CDTUtils {
         return CDataUtil.isExcluded(resource.getProjectRelativePath(), entry);
     }
     
+    /**
+     * Returns the source entry whose subdirtree the resource is located in, or null. 
+     * Exclude patterns are ignored.
+     */
     public static ICSourceEntry getSourceEntryThatCovers(IResource resource, ICSourceEntry[] entries) {
         entries = CDataUtil.makeRelative(resource.getProject(), entries);  // convert everything to relative path
         IPath path = resource.getProjectRelativePath();
