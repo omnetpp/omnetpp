@@ -10,8 +10,10 @@ import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICSettingEntry;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.cdt.core.settings.model.util.CDataUtil;
+import org.eclipse.cdt.managedbuilder.core.IBuilder;
 import org.eclipse.cdt.managedbuilder.core.IConfiguration;
 import org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo;
+import org.eclipse.cdt.managedbuilder.core.IToolChain;
 import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IMarker;
@@ -31,6 +33,8 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -52,6 +56,7 @@ import org.omnetpp.cdt.CDTUtils;
 import org.omnetpp.cdt.makefile.BuildSpecification;
 import org.omnetpp.cdt.makefile.MakefileTools;
 import org.omnetpp.cdt.makefile.MakemakeOptions;
+import org.omnetpp.common.color.ColorFactory;
 
 /**
  * This property page is shown for an OMNeT++ CDT Project, and lets the user 
@@ -74,15 +79,16 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
     protected BuildSpecification buildSpec;
 
     // controls
+    protected Label errorMessageLabel;
     protected TreeViewer treeViewer;
-    private Button markAsToplevelButton;
-    private Button optionsButton;
-    private Button sourceLocationButton;
-    private Button excludeButton;
-    private Button includeButton;
-    private Button makemakeButton;
-    private Button customMakeButton;
-    private Button noMakeButton;
+    protected Button markAsToplevelButton;
+    protected Button optionsButton;
+    protected Button sourceLocationButton;
+    protected Button excludeButton;
+    protected Button includeButton;
+    protected Button makemakeButton;
+    protected Button customMakeButton;
+    protected Button noMakeButton;
 
     /**
      * Constructor.
@@ -95,7 +101,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
      * @see PreferencePage#createContents(Composite)
      */
     protected Control createContents(Composite parent) {
-        Composite composite = new Composite(parent, SWT.NONE);
+        final Composite composite = new Composite(parent, SWT.NONE);
         composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         
         composite.setLayout(new GridLayout(2,false));
@@ -106,7 +112,12 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         String text = "Source Locations can also be managed on the <A>Paths and symbols</A> page.";
         Link pathsAndSymbolsLink = createLink(composite, text);
         pathsAndSymbolsLink.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1));
-        
+
+        errorMessageLabel = new Label(composite, SWT.WRAP);
+        errorMessageLabel.setForeground(ColorFactory.RED2);
+        errorMessageLabel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 2, 1));
+        ((GridData)errorMessageLabel.getLayoutData()).widthHint = 300;
+
         treeViewer = new TreeViewer(composite, SWT.BORDER);
         treeViewer.getTree().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         ((GridData)treeViewer.getTree().getLayoutData()).widthHint = 300;
@@ -231,8 +242,18 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
             public void widgetDefaultSelected(SelectionEvent e) {
                 editFolderOptions(getTreeSelection());
             }
-            
         });
+        
+        // make the error text label wrap properly; see https://bugs.eclipse.org/bugs/show_bug.cgi?id=9866
+        composite.addControlListener(new ControlAdapter(){
+            public void controlResized(ControlEvent e){
+                GridData data = (GridData)errorMessageLabel.getLayoutData();
+                GridLayout layout = (GridLayout)composite.getLayout();
+                data.widthHint = composite.getClientArea().width - 2*layout.marginWidth;
+                composite.layout(true);
+            }
+        });
+        
         loadBuildSpecFile();
 
         treeViewer.setInput(getProject().getParent());
@@ -400,6 +421,12 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
     }
     
     protected void updatePageState() {
+        String message = getInformationalMessage(getProject());
+        errorMessageLabel.setText(message==null ? "" : message);
+        ((GridData)errorMessageLabel.getLayoutData()).exclude = (message==null); 
+        errorMessageLabel.setVisible(message!=null);
+        errorMessageLabel.getParent().layout(true);
+        
         treeViewer.refresh();
         
         IContainer folder = getTreeSelection();
@@ -446,23 +473,41 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         return false;
     }
 
-    protected String getInformationalMessage() {
+    public static String getInformationalMessage(IContainer folder) {
         // Check CDT settings
-        IManagedBuildInfo buildInfo = ManagedBuildManager.getBuildInfo(getProject().getProject());
+        IManagedBuildInfo buildInfo = ManagedBuildManager.getBuildInfo(folder.getProject());
         if (buildInfo == null)
             return "Cannot access CDT build information for this project. Is this a C/C++ project?";
         IConfiguration configuration = buildInfo.getDefaultConfiguration();
         if (configuration == null)
             return "No active build configuration -- please create one.";
+        boolean isOmnetppConfig = false;
+        for (IConfiguration c = configuration; c != null; c = c.getParent())
+            if (c.getId().startsWith("org.omnetpp.cdt.")) {
+                isOmnetppConfig = true; break;}
+        if (!isOmnetppConfig)
+            return "The active build configuration \""+ configuration.getName() + "\" is " +
+            		"not an OMNeT++ configuration. Please re-create the project it with the " +
+            		"New OMNeT++ Project wizard, overwriting the existing project settings.";
+        boolean isOmnetppToolchain = false;
+        for (IToolChain tc = configuration.getToolChain(); tc != null; tc = tc.getSuperClass())
+            if (tc.getId().startsWith("org.omnetpp.cdt.")) {
+                isOmnetppToolchain = true; break;}
+        if (!isOmnetppToolchain)
+            return "The active toolchain \""+ configuration.getToolChain().getName() + "\" is " +
+            		"not suitable for OMNeT++. Please re-create the project it with the " +
+                    "New OMNeT++ Project wizard, overwriting the existing project settings.";
+
         if (configuration.isManagedBuildOn())
             return "CDT Managed Build is on! Please turn off CDT's Makefile generation on the C/C++ Build page.";
-        String builderId = configuration.getBuilder()!=null ? configuration.getBuilder().getId() : null; 
-        if (builderId==null)
-            return "Cannot determine CDT builder Id. Is the project properly configured for C/C++?";
-        if (!builderId.startsWith("org.omnetpp.cdt."))
-            return "C/C++ configuration of this project is not suitable for OMNeT++. To fix that, " +
-            		"delete the project from the workspace (keeping the files), and re-create it " +
-            		"with the New OMNeT++ Project wizard, overwriting existing project settings.";
+        IBuilder builder = configuration.getBuilder();
+        if (builder == null)
+            return "No CDT Project Builder. Activate one on the C/C++ Build / Tool Chain Editor page.";
+        String builderId = builder.getId();
+        if (builderId==null || !builderId.startsWith("org.omnetpp.cdt."))
+            return "C/C++ Builder \"" + builder.getName()+ "\" set in the active build configuration " +
+                   "is not suitable for OMNeT++. Please re-create the project with the " +
+                   "New OMNeT++ Project wizard, overwriting the existing project settings.";
         
         //XXX "Out" dir should not overlap with source folders (check!!!)
         
@@ -470,14 +515,6 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         //  - CDT make folder is not the project root (or: if a makefile is unreachable)
         //  - makefile consistency error (i.e. a subdir doesn't contain a makefile)
         //  - something else is wrong?
-        
-        //FIXME revise/remove or something...        
-        // IContainer ancestorMakemakeFolder = ancestorMakemakeFolder();
-        // if (ancestorMakemakeFolder != null) {
-        //     MakemakeOptions ancestorMakemakeOptions = buildSpec.getMakemakeOptions(ancestorMakemakeFolder);
-        //     if (ancestorMakemakeOptions.isDeep /*FIXME and this folder is not excluded manually from it*/)
-        //     return "This folder is already covered by Makefile in: " + ancestorMakemakeFolder.getFullPath(); //XXX clean and disable checkbox too?
-        // }
 
         return null;
     }

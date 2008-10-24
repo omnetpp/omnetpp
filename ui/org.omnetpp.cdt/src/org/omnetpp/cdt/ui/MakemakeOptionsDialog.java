@@ -3,10 +3,12 @@ package org.omnetpp.cdt.ui;
 import java.util.List;
 
 import org.eclipse.core.resources.IContainer;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
@@ -45,12 +47,24 @@ public class MakemakeOptionsDialog extends TitleAreaDialog {
         composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         composite.setLayout(new GridLayout(1,false));
         
-        optionsPanel = new MakemakeOptionsPanel(composite, SWT.NONE);
+        optionsPanel = new MakemakeOptionsPanel(composite, SWT.NONE) {
+            @Override
+            protected void setErrorMessage(String text) {
+                setMakemakePanelErrorMessage(text);
+            }            
+        };
         optionsPanel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         optionsPanel.populate(folder, options, "TODO", "TODO", makeFolders); //FIXME
         return optionsPanel;
     }
-    
+
+    protected void setMakemakePanelErrorMessage(String text) {
+        setErrorMessage(text);
+        Button okButton = getButton(IDialogConstants.OK_ID);
+        if (okButton!=null)
+            okButton.setEnabled(text==null);
+    }            
+
     @Override
     protected void okPressed() {
         // save result before dialog gets disposed

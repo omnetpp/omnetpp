@@ -9,9 +9,6 @@ import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.cdt.core.settings.model.WriteAccessException;
-import org.eclipse.cdt.managedbuilder.core.IConfiguration;
-import org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo;
-import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
 import org.eclipse.cdt.ui.newui.CDTPropertyManager;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -297,7 +294,7 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
                 optionsPanel.populate(selectedFolder, folderOptions, makefragContents, makefragvcContents, buildSpec.getMakeFolders());
             }
 
-            String message = getInformationalMessage();
+            String message = ProjectMakemakePropertyPage.getInformationalMessage(getFolder()); //XXX make common base class instead?
             errorMessageLabel.setText(message==null ? "" : message);
         }
     }
@@ -337,42 +334,6 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
         return false;
     }
 
-
-    protected String getInformationalMessage() {
-        // Check CDT settings
-        IManagedBuildInfo buildInfo = ManagedBuildManager.getBuildInfo(getFolder().getProject());
-        if (buildInfo == null)
-            return "Cannot access CDT build information for this project. Is this a C/C++ project?";
-        IConfiguration configuration = buildInfo.getDefaultConfiguration();
-        if (configuration == null)
-            return "No active build configuration -- please create one.";
-        if (configuration.isManagedBuildOn())
-            return "CDT Managed Build is on! Please turn off CDT's Makefile generation on the C/C++ Build page.";
-        String builderId = configuration.getBuilder()!=null ? configuration.getBuilder().getId() : null; 
-        if (builderId==null)
-            return "Cannot determine CDT builder Id. Is the project properly configured for C/C++?";
-        if (!builderId.startsWith("org.omnetpp.cdt."))
-            return "C/C++ configuration of this project is not suitable for OMNeT++. To fix that, " +
-            		"delete the project from the workspace (keeping the files), and re-create it " +
-            		"with the New OMNeT++ Project wizard, overwriting existing project settings.";
-        
-        //XXX "Out" dir should not overlap with source folders (check!!!)
-        
-        //XXX return some message to be displayed to the user, if:
-        //  - CDT make folder is not the project root (or: if a makefile is unreachable)
-        //  - makefile consistency error (i.e. a subdir doesn't contain a makefile)
-        //  - something else is wrong?
-        
-        //FIXME revise/remove or something...        
-        // IContainer ancestorMakemakeFolder = ancestorMakemakeFolder();
-        // if (ancestorMakemakeFolder != null) {
-        //     MakemakeOptions ancestorMakemakeOptions = buildSpec.getMakemakeOptions(ancestorMakemakeFolder);
-        //     if (ancestorMakemakeOptions.isDeep /*FIXME and this folder is not excluded manually from it*/)
-        //     return "This folder is already covered by Makefile in: " + ancestorMakemakeFolder.getFullPath(); //XXX clean and disable checkbox too?
-        // }
-
-        return null;
-    }
 
     /**
      * The resource for which the Properties dialog was brought up.
