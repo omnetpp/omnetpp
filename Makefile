@@ -19,6 +19,8 @@ endif
 allmodes:
 	$(MAKE) MODE=release
 	$(MAKE) MODE=debug
+	@echo 
+	@echo "Now you can type \"`echo $(OMNETPP_RELEASE) | sed 's/-.*//'`\" to start the IDE"
 
 components: base samples
 
