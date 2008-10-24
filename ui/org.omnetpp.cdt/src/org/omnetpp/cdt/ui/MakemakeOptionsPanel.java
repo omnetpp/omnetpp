@@ -1,17 +1,23 @@
 package org.omnetpp.cdt.ui;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.cdt.utils.ui.controls.FileListControl;
 import org.eclipse.cdt.utils.ui.controls.IFileListChangeListener;
 import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.preference.IPreferencePageContainer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -44,6 +50,7 @@ import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.ui.ToggleLink;
+import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.StringUtils;
 
 
@@ -55,6 +62,9 @@ import org.omnetpp.common.util.StringUtils;
 //XXX kezzel beirt -D elveszik!!! ezek szinten: defaultMode, exceptSubdirs, includeDirs, libDirs, defines, makefileDefines. Store them separately!
 //XXX display which makefile is the primary makefile, and add "Make primary Makefile" button
 public class MakemakeOptionsPanel extends Composite {
+    public static final String MAKEFRAG_FILENAME = "makefrag";
+    public static final String MAKEFRAGVC_FILENAME = "makefrag.vc";
+
     // constants for CDT's FileListControl which are private;
     // see https://bugs.eclipse.org/bugs/show_bug.cgi?id=213188
     protected static final int BROWSE_NONE = 0;
@@ -439,12 +449,17 @@ public class MakemakeOptionsPanel extends Composite {
         return tabfolder.getSelection().length>0 && tabfolder.getSelection()[0].getControl() == previewPage;
     }
 
-    public void populate(IContainer folder, MakemakeOptions options, String makefragContents, String makefragvcContents, List<IContainer> makeFolders) {
+    public void populate(IContainer folder, MakemakeOptions options, List<IContainer> makeFolders) {
         this.folder = folder;
         this.makeFolders = makeFolders;
 
-        makefragText.setText(StringUtils.nullToEmpty(makefragContents));
-        makefragvcText.setText(StringUtils.nullToEmpty(makefragvcContents));
+        try {
+            loadMakefragFiles();
+        }
+        catch (CoreException e) {
+            errorDialog(e.getMessage(), e);
+        }
+
         if (isPreviewPageSelected())
             optionsText.setText(options.toString());
         else
@@ -592,9 +607,11 @@ public class MakemakeOptionsPanel extends Composite {
     }
 
     protected void gotoPathsAndSymbolsPage() {
-        IPreferencePageContainer container = ownerPage.getContainer();
-        if (container instanceof IWorkbenchPreferenceContainer)
-            ((IWorkbenchPreferenceContainer)container).openPage(PROPERTYPAGE_PATH_AND_SYMBOLS, null);
+        if (ownerPage != null) {
+            IPreferencePageContainer container = ownerPage.getContainer();
+            if (container instanceof IWorkbenchPreferenceContainer)
+                ((IWorkbenchPreferenceContainer)container).openPage(PROPERTYPAGE_PATH_AND_SYMBOLS, null);
+        }
     }
 
     protected void setErrorMessage(String text) {
@@ -668,6 +685,57 @@ public class MakemakeOptionsPanel extends Composite {
         return makefragvcText.getText();
     }
 
+    public void loadMakefragFiles() throws CoreException {
+        String makefragContents = readMakefrag(folder, MAKEFRAG_FILENAME);
+        makefragText.setText(StringUtils.nullToEmpty(makefragContents));
+
+        String makefragvcContents = readMakefrag(folder, MAKEFRAGVC_FILENAME);
+        makefragvcText.setText(StringUtils.nullToEmpty(makefragvcContents));
+    }
+    
+    public void saveMakefragFiles() throws CoreException {
+        saveMakefrag(folder, MAKEFRAG_FILENAME, getMakefragContents());
+        saveMakefrag(folder, MAKEFRAGVC_FILENAME, getMakefragvcContents());
+    }
+    
+    protected String readMakefrag(IContainer sourceFolder, String makefragFilename) throws CoreException  {
+        IFile makefragFile = sourceFolder.getFile(new Path(makefragFilename));
+        if (makefragFile.exists()) {
+            try {
+                return FileUtils.readTextFile(makefragFile.getContents());
+            }
+            catch (IOException e1) {
+                throw Activator.wrapIntoCoreException("Cannot read "+makefragFile.toString(), e1);
+            }
+        }
+        return null;
+    }
+
+    protected void saveMakefrag(IContainer sourceFolder, String makefragFilename, String makefragContents) throws CoreException {
+        String currentContents = readMakefrag(sourceFolder, makefragFilename);
+        if (StringUtils.isBlank(makefragContents))
+            makefragContents = null;
+        if (!StringUtils.equals(currentContents, makefragContents)) {
+            IFile makefragFile = sourceFolder.getFile(new Path(makefragFilename));
+            try {
+                if (makefragContents == null)
+                    makefragFile.delete(true, null);
+                else
+                    FileUtils.writeTextFile(makefragFile.getLocation().toFile(), makefragContents);
+                makefragFile.refreshLocal(IResource.DEPTH_ZERO, null);
+            }
+            catch (IOException e1) {
+                throw Activator.wrapIntoCoreException("Cannot save "+makefragFile.toString(), e1);
+            }
+        }
+    }
+
+    protected void errorDialog(String message, Throwable e) {
+        Activator.logError(message, e);
+        IStatus status = new Status(IMarker.SEVERITY_ERROR, Activator.PLUGIN_ID, e.getMessage(), e);
+        ErrorDialog.openError(Display.getCurrent().getActiveShell(), "Error", message, status);
+    }
+    
     protected String getHelpTextForBuildingDLLs() {
         return 
         "Unlike Linux shared libraries which can be built from any C/C++ code,\n" + 

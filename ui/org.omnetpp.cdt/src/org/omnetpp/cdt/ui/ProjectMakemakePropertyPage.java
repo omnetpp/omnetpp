@@ -302,16 +302,15 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
             CoreModel.getDefault().setProjectDescription(project, projectDescription);
         }
         catch (CoreException e) {
-            //TODO errordialog
-            Activator.logError(e);
+            errorDialog(e.getMessage(), e);
         }
         catch (Exception e) {
-            Activator.logError(e);
+            errorDialog(e.getMessage(), e);
         }
         updatePageState();
     }
 
-    //XXX unused -- the "Exclude" button seems to work just fine
+    //note: this method is unused -- the "Exclude" button seems to work just fine
     protected void removeSourceLocation(IContainer folder) {
         try {
             IProject project = getProject();
@@ -325,11 +324,10 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
             CoreModel.getDefault().setProjectDescription(project, projectDescription);
         }
         catch (CoreException e) {
-            //TODO errordialog
-            Activator.logError(e);
+            errorDialog(e.getMessage(), e);
         }
         catch (Exception e) {
-            Activator.logError(e);
+            errorDialog(e.getMessage(), e);
         }
         updatePageState();
     }
@@ -350,14 +348,13 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
                 ICSourceEntry[] newEntries = CDTUtils.setExcluded(folder, exclude, configuration.getSourceEntries());
                 configuration.setSourceEntries(newEntries);
             }
-            CoreModel.getDefault().setProjectDescription(project, projectDescription); //FIXME use CDT property page manager stuff, like on the other makemake options panel
+            CoreModel.getDefault().setProjectDescription(project, projectDescription);
         }
         catch (CoreException e) {
-            //TODO errordialog
-            Activator.logError(e);
+            errorDialog(e.getMessage(), e);
         }
         catch (Exception e) {
-            Activator.logError(e);
+            errorDialog(e.getMessage(), e);
         }
         updatePageState();
     }

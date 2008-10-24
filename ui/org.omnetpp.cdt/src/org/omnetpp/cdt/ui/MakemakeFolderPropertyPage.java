@@ -1,16 +1,11 @@
 package org.omnetpp.cdt.ui;
 
-import java.io.IOException;
-
 import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.preference.PreferencePage;
@@ -28,8 +23,6 @@ import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.makefile.BuildSpecification;
 import org.omnetpp.cdt.makefile.MakemakeOptions;
 import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.common.util.FileUtils;
-import org.omnetpp.common.util.StringUtils;
 
 /**
  * This property page is shown for folders in an OMNeT++ CDT Project, and lets the user 
@@ -37,7 +30,6 @@ import org.omnetpp.common.util.StringUtils;
  *
  * @author Andras
  */
-//FIXME unify .oppbuildspec with .nedfolders, and include nedfolder-to-dll mapping too!!!
 public class MakemakeFolderPropertyPage extends PropertyPage {
     public static final String MAKEFRAG_FILENAME = "makefrag";
     public static final String MAKEFRAGVC_FILENAME = "makefrag.vc";
@@ -93,12 +85,9 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
             optionsPanel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
             optionsPanel.setOwnerPage(this);
             
-            String makefragContents = readMakefrag(folder, MAKEFRAG_FILENAME);
-            String makefragvcContents = readMakefrag(folder, MAKEFRAGVC_FILENAME);
             MakemakeOptions folderOptions = buildSpec.getMakemakeOptions(folder);
             Assert.isTrue(folderOptions!=null);
-            optionsPanel.populate(folder, folderOptions, makefragContents, makefragvcContents, buildSpec.getMakeFolders());
-
+            optionsPanel.populate(folder, folderOptions, buildSpec.getMakeFolders());
         }
         else {
             createLabel(composite, "Makefile generation is not enabled for this folder. You can enable it in the Project Properties dialog.");
@@ -125,22 +114,6 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
         errorMessageLabel.setText(message==null ? "" : message);
     }
 
-    protected boolean isDirty() {
-        if (optionsPanel != null) {
-            IContainer folder = getFolder();
-            if (!optionsPanel.getResult().equals(buildSpec.getMakemakeOptions(folder)))
-                return true;
-            String makefragContents = readMakefrag(folder, MAKEFRAG_FILENAME);
-            if (!optionsPanel.getMakefragContents().equals(StringUtils.nullToEmpty(makefragContents)))
-                return true;
-            String makefragvcContents = readMakefrag(folder, MAKEFRAGVC_FILENAME);
-            if (!optionsPanel.getMakefragvcContents().equals(StringUtils.nullToEmpty(makefragvcContents)))
-                return true;
-        }
-        return false;
-    }
-
-
     /**
      * The resource for which the Properties dialog was brought up.
      */
@@ -153,10 +126,17 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
         // note: performApply() delegates here too
         if (optionsPanel != null) {
             IContainer folder = getFolder();
+            
             buildSpec.setMakemakeOptions(folder, optionsPanel.getResult());
             saveBuildSpecFile();
-            saveMakefrag(folder, MAKEFRAG_FILENAME, optionsPanel.getMakefragContents());
-            saveMakefrag(folder, MAKEFRAGVC_FILENAME, optionsPanel.getMakefragvcContents());
+            
+            try {
+                optionsPanel.saveMakefragFiles();
+            }
+            catch (CoreException e) {
+                errorDialog(e.getMessage(), e);
+                return false;
+            }
         }
         return true;
     }
@@ -182,44 +162,6 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
             errorDialog("Cannot store build specification", e);
         }
     } 
-
-    protected String readMakefrag(IContainer sourceFolder, String makefragFilename) {
-        IFile makefragFile = sourceFolder.getFile(new Path(makefragFilename));
-        if (makefragFile.exists()) {
-            try {
-                return FileUtils.readTextFile(makefragFile.getContents());
-            }
-            catch (IOException e1) {
-                errorDialog("Cannot read "+makefragFile.toString(), e1);
-            }
-            catch (CoreException e1) {
-                errorDialog("Cannot read "+makefragFile.toString(), e1);
-            }
-        }
-        return null;
-    }
-
-    protected void saveMakefrag(IContainer sourceFolder, String makefragFilename, String makefragContents) {
-        String currentContents = readMakefrag(sourceFolder, makefragFilename);
-        if (StringUtils.isBlank(makefragContents))
-            makefragContents = null;
-        if (!StringUtils.equals(currentContents, makefragContents)) {
-            IFile makefragFile = sourceFolder.getFile(new Path(makefragFilename));
-            try {
-                if (makefragContents == null)
-                    makefragFile.delete(true, null);
-                else
-                    FileUtils.writeTextFile(makefragFile.getLocation().toFile(), makefragContents);
-                makefragFile.refreshLocal(IResource.DEPTH_ZERO, null);
-            }
-            catch (IOException e1) {
-                errorDialog("Cannot write "+makefragFile.toString(), e1);
-            }
-            catch (CoreException e1) {
-                errorDialog("Cannot write "+makefragFile.toString(), e1);
-            }
-        }
-    }
 
     protected void errorDialog(String message, Throwable e) {
         Activator.logError(message, e);

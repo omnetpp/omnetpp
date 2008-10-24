@@ -3,6 +3,8 @@ package org.omnetpp.cdt.ui;
 import java.util.List;
 
 import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
@@ -11,7 +13,9 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.makefile.MakemakeOptions;
 
 /**
@@ -54,7 +58,7 @@ public class MakemakeOptionsDialog extends TitleAreaDialog {
             }            
         };
         optionsPanel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        optionsPanel.populate(folder, options, "TODO", "TODO", makeFolders); //FIXME
+        optionsPanel.populate(folder, options, makeFolders);
         return optionsPanel;
     }
 
@@ -69,10 +73,23 @@ public class MakemakeOptionsDialog extends TitleAreaDialog {
     protected void okPressed() {
         // save result before dialog gets disposed
         options = optionsPanel.getResult();
+
+        try {
+            optionsPanel.saveMakefragFiles();
+        }
+        catch (CoreException e) {
+            errorDialog(e); // sorry, that's all we can do here (we cannot veto the OK processing)
+        }
         super.okPressed();
     }
 
+
     public MakemakeOptions getResult() {
         return options;
+    }
+
+    protected void errorDialog(CoreException e) {
+        Activator.logError(e);
+        ErrorDialog.openError(Display.getCurrent().getActiveShell(), "Error", e.getMessage(), e.getStatus());
     }
 }
