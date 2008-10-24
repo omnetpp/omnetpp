@@ -64,7 +64,7 @@ import org.omnetpp.common.color.ColorFactory;
  *
  * @author Andras
  */
-//FIXME source folder changes immediatly get committed (no cancel!), but they aren't visible in cdt page. use cdt manager!
+//FIXME source folder changes immediatly get committed (no cancel!), but they aren't visible in cdt page. use CDTPropertyManager!
 //FIXME improve tree labels (should be libname etc)
 @SuppressWarnings("restriction")
 public class ProjectMakemakePropertyPage extends PropertyPage {
@@ -421,6 +421,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
     }
     
     protected void updatePageState() {
+        // display warnings about CDT misconfiguration, etc 
         String message = getInformationalMessage(getProject());
         errorMessageLabel.setText(message==null ? "" : message);
         ((GridData)errorMessageLabel.getLayoutData()).exclude = (message==null); 
