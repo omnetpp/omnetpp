@@ -112,12 +112,12 @@ proc setupTkOptions {} {
    #
 
    if {[string equal [tk windowingsystem] x11]} {
-      set fonts(normal)  -Adobe-Helvetica-Medium-R-Normal-*-12-*-*-*-*-*-*-*
-      set fonts(bold)    -Adobe-Helvetica-Bold-R-Normal-*-12-*-*-*-*-*-*-*
-      set fonts(big)     -Adobe-Helvetica-Medium-R-Normal-*-18-*-*-*-*-*-*-*
-      set fonts(msgname) -Adobe-Helvetica-Medium-R-Normal-*-12-*-*-*-*-*-*-*
+      set fonts(normal)  -*-Helvetica-Medium-R-Normal-*-12-*-*-*-*-*-*-*
+      set fonts(bold)    -*-Helvetica-Bold-R-Normal-*-12-*-*-*-*-*-*-*
+      set fonts(big)     -*-Helvetica-Medium-R-Normal-*-18-*-*-*-*-*-*-*
+      set fonts(msgname) -*-Helvetica-Medium-R-Normal-*-12-*-*-*-*-*-*-*
       set fonts(fixed)   fixed
-      set fonts(balloon) -Adobe-Helvetica-Medium-R-Normal-*-12-*-*-*-*-*-*-*
+      set fonts(balloon) -*-Helvetica-Medium-R-Normal-*-12-*-*-*-*-*-*-*
 
       option add *Scrollbar.width  12
       option add *Menubutton.font  $fonts(normal)
@@ -152,8 +152,8 @@ proc setupTkOptions {} {
 
       set fonts(normal)  opp_normal
       set fonts(bold)    opp_bold
-      set fonts(big)     -Adobe-Helvetica-Medium-R-Normal-*-*-180-*-*-*-*-*-*
-      set fonts(msgname) -Adobe-Helvetica-Medium-R-Normal-*-*-110-*-*-*-*-*-*
+      set fonts(big)     -*-Helvetica-Medium-R-Normal-*-*-180-*-*-*-*-*-*
+      set fonts(msgname) -*-Helvetica-Medium-R-Normal-*-*-110-*-*-*-*-*-*
       set fonts(fixed)   opp_fixed
       set fonts(balloon) opp_balloon
 
@@ -167,8 +167,8 @@ proc setupTkOptions {} {
 
       set fonts(normal)  opp_normal
       set fonts(bold)    opp_bold
-      set fonts(big)     -Adobe-Helvetica-Medium-R-Normal-*-*-180-*-*-*-*-*-*
-      set fonts(msgname) -Adobe-Helvetica-Medium-R-Normal-*-*-110-*-*-*-*-*-*
+      set fonts(big)     -*-Helvetica-Medium-R-Normal-*-*-180-*-*-*-*-*-*
+      set fonts(msgname) -*-Helvetica-Medium-R-Normal-*-*-110-*-*-*-*-*-*
       set fonts(fixed)   FixedSys
       set fonts(balloon) opp_balloon
 
