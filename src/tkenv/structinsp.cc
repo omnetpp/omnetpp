@@ -18,6 +18,7 @@
 
 #include <memory>
 #include <string.h>
+#include <stdlib.h>
 #include <math.h>
 
 #include "cstruct.h"

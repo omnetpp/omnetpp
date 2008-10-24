@@ -19,6 +19,7 @@
 #endif
 
 #include <stdio.h>
+#include <string.h>
 #include <assert.h>
 #include "nedcompiler.h"
 #include "cppexprgenerator.h"

@@ -17,6 +17,7 @@
 *--------------------------------------------------------------*/
 
 #include <string.h>
+#include <stdlib.h>
 #include "cenvir.h"
 #include "parsimutil.h"
 #include "cexception.h"

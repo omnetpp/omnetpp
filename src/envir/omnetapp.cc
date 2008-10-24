@@ -19,10 +19,13 @@
 #pragma warning(disable:4786)
 #endif
 
+#include <string.h>
+#include <stdlib.h>
 #include <ctype.h>
 #include <stdio.h>
 #include <assert.h>
 #include <fstream>
+#include <cstdlib>
 
 #include "args.h"
 #include "omnetapp.h"

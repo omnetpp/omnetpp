@@ -16,6 +16,7 @@
 #pragma warning(disable:4786)
 #endif
 
+#include <string.h>
 #include "commonnodes.h"
 #include "channel.h"
 

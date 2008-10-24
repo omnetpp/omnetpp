@@ -19,6 +19,8 @@
 #ifndef __CWATCH_H
 #define __CWATCH_H
 
+#include <string.h>
+#include <stdlib.h>
 #include <iostream>
 #include <sstream>
 #include <string.h>

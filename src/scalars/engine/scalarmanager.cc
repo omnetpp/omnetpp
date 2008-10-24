@@ -16,6 +16,7 @@
 #pragma warning(disable:4786)
 #endif
 
+#include <string.h>
 #include <stdlib.h>
 #include <fstream>
 #include <sstream>

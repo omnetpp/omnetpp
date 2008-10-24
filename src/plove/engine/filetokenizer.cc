@@ -13,6 +13,7 @@
 *--------------------------------------------------------------*/
 
 
+#include <string.h>
 #include <assert.h>
 #include <sstream>
 #include "filetokenizer.h"

@@ -16,6 +16,7 @@
 #pragma warning(disable:4786)
 #endif
 
+#include <stdlib.h>
 #include "channel.h"
 #include "vectorfilewriter.h"
 

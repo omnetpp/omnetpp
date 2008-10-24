@@ -90,12 +90,12 @@ proc setupTkOptions {} {
    #
 
    if {$tcl_platform(platform) == "unix"} {
-      set fonts(normal)  -Adobe-Helvetica-Medium-R-Normal-*-12-*-*-*-*-*-*-*
-      set fonts(bold)    -Adobe-Helvetica-Bold-R-Normal-*-12-*-*-*-*-*-*-*
-      set fonts(big)     -Adobe-Helvetica-Medium-R-Normal-*-18-*-*-*-*-*-*-*
-      set fonts(msgname) -Adobe-Helvetica-Medium-R-Normal-*-12-*-*-*-*-*-*-*
+      set fonts(normal)  -*-Helvetica-Medium-R-Normal-*-12-*-*-*-*-*-*-*
+      set fonts(bold)    -*-Helvetica-Bold-R-Normal-*-12-*-*-*-*-*-*-*
+      set fonts(big)     -*-Helvetica-Medium-R-Normal-*-18-*-*-*-*-*-*-*
+      set fonts(msgname) -*-Helvetica-Medium-R-Normal-*-12-*-*-*-*-*-*-*
       set fonts(fixed)   fixed
-      set fonts(balloon) -Adobe-Helvetica-Medium-R-Normal-*-12-*-*-*-*-*-*-*
+      set fonts(balloon) -*-Helvetica-Medium-R-Normal-*-12-*-*-*-*-*-*-*
    } else {
       # Windows, Mac
       if {$tk_version<8.2} {
@@ -109,8 +109,8 @@ proc setupTkOptions {} {
 
       set fonts(normal)  opp_normal
       set fonts(bold)    opp_bold
-      set fonts(big)     -Adobe-Helvetica-Medium-R-Normal-*-*-180-*-*-*-*-*-*
-      set fonts(msgname) -Adobe-Helvetica-Medium-R-Normal-*-*-$s-*-*-*-*-*-*
+      set fonts(big)     -*-Helvetica-Medium-R-Normal-*-*-180-*-*-*-*-*-*
+      set fonts(msgname) -*-Helvetica-Medium-R-Normal-*-*-$s-*-*-*-*-*-*
       set fonts(fixed)   FixedSys
       set fonts(balloon) opp_balloon
 

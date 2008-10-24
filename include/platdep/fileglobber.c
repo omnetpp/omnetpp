@@ -110,6 +110,7 @@ const char *FileGlobber::getNext()
 #else
 
 #include <glob.h>
+#include <string.h>
 
 struct GlobPrivateData
 {

@@ -22,14 +22,15 @@
 
 #include <assert.h>
 #include <stdlib.h>
+#include <string.h>
 #include "cstrtokenizer.h"
 
 
 cStringTokenizer::cStringTokenizer(const char *s, const char *delim)
 {
-    if (!s) 
+    if (!s)
         s = "";
-    if (!delim || !*delim) 
+    if (!delim || !*delim)
         delim = " ";
     delimiter = delim;
     str = new char[strlen(s)+1];
@@ -45,7 +46,7 @@ cStringTokenizer::~cStringTokenizer()
 
 void cStringTokenizer::setDelimiter(const char *delim)
 {
-    if (!delim || !*delim) 
+    if (!delim || !*delim)
         delim = " ";
     delimiter = delim;
 }

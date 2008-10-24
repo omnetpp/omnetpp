@@ -9,6 +9,7 @@
 
 
 #include <omnetpp.h>
+#include <stdlib.h>
 #include "httpmsg_m.h"
 #include "csocketrtscheduler.h"
 

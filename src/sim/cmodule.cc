@@ -21,6 +21,7 @@
 
 #include <stdio.h>           // sprintf
 #include <string.h>          // strcpy
+#include <stdlib.h>
 #include <assert.h>
 #include "cmodule.h"
 #include "csimplemodule.h"

@@ -18,6 +18,7 @@ option bubbles	{1}
 option animation_speed	{3}
 option bkpts_enabled	{1}
 option expressmode_autoupdate	{0}
+config mainwin-geom	{905x505+3+79}
 config rununtil-event	{}
 config last-nedfile	{}
 config filtobjlist-category	{amqpcsgvo}
@@ -38,12 +39,12 @@ config timeline-maxnumevents	{1000}
 config editor-case-sensitive	{0}
 config editor-whole-words	{0}
 config filtobjlist-order	{Class}
-inspector "alohaNet.server.collision multiplicity" "cOutVector" "2" "386x326+396+380"
-inspector "alohaNet.server.channel utilization" "cOutVector" "2" "386x326+3+19"
-inspector "alohaNet.server.collision length" "cOutVector" "2" "386x326+3+378"
-inspector "alohaNet" "ALOHAnet" "2" "617x576+22+29"
-inspector "alohaNet.server" "AServer" "3" "506x258+607+96"
-inspector "alohaNet.server" "AServer" "2" "357x289+915+284"
-inspector "alohaNet.server" "AServer" "1" "552x457+223+338"
 inspector "alohaNet.server.txRate" "cModulePar" "1" "311x205+961+0"
+inspector "alohaNet.server" "AServer" "3" "506x258+607+96"
+inspector "alohaNet.server.channel utilization" "cOutVector" "2" "386x326+3+19"
+inspector "alohaNet.server.collision multiplicity" "cOutVector" "2" "386x326+396+380"
+inspector "alohaNet.server.collision length" "cOutVector" "2" "386x326+3+378"
+inspector "alohaNet.server" "AServer" "1" "552x457+223+338"
+inspector "alohaNet" "ALOHAnet" "2" "617x576+22+29"
+inspector "alohaNet.server" "AServer" "2" "357x289+915+284"
 

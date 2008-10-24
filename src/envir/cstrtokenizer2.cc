@@ -21,6 +21,7 @@
 #endif
 
 #include <assert.h>
+#include <string.h>
 #include <stdlib.h>
 #include "cstrtokenizer2.h"
 

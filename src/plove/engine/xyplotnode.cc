@@ -16,6 +16,8 @@
 #pragma warning(disable:4786)
 #endif
 
+#include <string.h>
+#include <stdlib.h>
 #include "channel.h"
 #include "xyplotnode.h"
 
