@@ -340,8 +340,6 @@ public class MakemakeOptions implements Cloneable {
             result.add("--meta:export-library");
         if (metaUseExportedLibs)
             result.add("--meta:use-exported-libs");
-        if (metaRecurse)
-            result.add("--meta:skip");
 
         if (!extraArgs.isEmpty())
             result.add("--");
