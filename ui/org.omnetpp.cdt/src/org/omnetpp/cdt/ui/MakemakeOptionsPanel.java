@@ -60,7 +60,6 @@ import org.omnetpp.common.util.StringUtils;
  * @author Andras
  */
 //XXX kezzel beirt -D elveszik!!! ezek szinten: defaultMode, exceptSubdirs, includeDirs, libDirs, defines, makefileDefines. Store them separately!
-//XXX display which makefile is the primary makefile, and add "Make primary Makefile" button
 public class MakemakeOptionsPanel extends Composite {
     public static final String MAKEFRAG_FILENAME = "makefrag";
     public static final String MAKEFRAGVC_FILENAME = "makefrag.vc";
@@ -123,6 +122,7 @@ public class MakemakeOptionsPanel extends Composite {
     private FileListControl linkObjectsList;
 
     // "Custom" page
+    private FileListControl makefileVariables;
     private Text makefragText;
     private Text makefragvcText;
     private ToggleLink customPageToggle; 
@@ -228,12 +228,17 @@ public class MakemakeOptionsPanel extends Composite {
         Link pathsPageLink3 = createLink(linkPage, "NOTE: Library paths can be specified in the <A>Paths and symbols</A> page.");
         linkObjectsList = new FileListControl(linkPage, "Additional objects to link with: (folder-relative path; wildcards, macros allowed)", BROWSE_NONE);
         linkPageToggle = createToggleLink(linkPage, new Control[] {libsList.getListControl().getParent(), pathsPageLink3, linkObjectsList.getListControl().getParent()});
-        
+
         // "Custom" page
         customPage.setLayout(new GridLayout(1,false));
         CTabFolder makefragTabFolder = new CTabFolder(customPage, SWT.TOP | SWT.BORDER);
         makefragTabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         ((GridData)makefragTabFolder.getLayoutData()).heightHint = 100;
+
+        Composite variablesComposite = createCTabPage(makefragTabFolder, "Variables");
+        variablesComposite.setLayout(new GridLayout(1, false));
+        createLabel(variablesComposite, "Here you can define additional variables for the makefile:");
+        makefileVariables = new FileListControl(variablesComposite, "Additional makefile variables: (NAME=VALUE syntax, macros allowed)", BROWSE_NONE);
 
         Composite makefragComposite = createCTabPage(makefragTabFolder, "Makefrag");
         makefragComposite.setLayout(new GridLayout(1, false));
@@ -428,6 +433,8 @@ public class MakemakeOptionsPanel extends Composite {
         useExportedLibsCheckbox.addSelectionListener(selectionChangeListener);
         libsList.addChangeListener(fileListChangeListener);
         linkObjectsList.addChangeListener(fileListChangeListener);
+        
+        makefileVariables.addChangeListener(fileListChangeListener);
 
         makefragText.addModifyListener(modifyListener);
         makefragvcText.addModifyListener(modifyListener);
@@ -504,6 +511,9 @@ public class MakemakeOptionsPanel extends Composite {
         libsList.setList(options.libs.toArray(new String[]{}));
         linkObjectsList.setList(options.extraArgs.toArray(new String[]{}));
 
+        // "Variables" page
+        makefileVariables.setList(options.makefileVariables.toArray(new String[]{}));
+        
         // "Custom" page
         // Note: makefrag texts need to be set differently
         makefragsList.setList(options.fragmentFiles.toArray(new String[]{}));
@@ -657,6 +667,9 @@ public class MakemakeOptionsPanel extends Composite {
         result.metaUseExportedLibs = useExportedLibsCheckbox.getSelection();
         result.libs.addAll(Arrays.asList(libsList.getItems()));
         result.extraArgs.addAll(Arrays.asList(linkObjectsList.getItems()));
+
+        // "Variables" page
+        result.makefileVariables.addAll(Arrays.asList(makefileVariables.getItems()));
 
         // "Custom" page
         result.fragmentFiles.addAll(Arrays.asList(makefragsList.getItems()));

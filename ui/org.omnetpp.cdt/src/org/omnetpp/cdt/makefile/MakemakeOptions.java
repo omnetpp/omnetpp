@@ -19,7 +19,7 @@ import org.omnetpp.common.util.StringUtils;
 public class MakemakeOptions implements Cloneable {
     public enum Type {EXE, SHAREDLIB, STATICLIB, NOLINK};
     
-    // opp_makemake options (note: -r deliberately not supported)
+    // opp_makemake options (note: -r deliberately not supported, there's --meta:recurse instead)
     public boolean isNMake = false;
     public String projectDir = null;  // ignored (implicit)
     public Type type = Type.EXE;
@@ -41,7 +41,7 @@ public class MakemakeOptions implements Cloneable {
     public List<String> libDirs = new ArrayList<String>();
     public List<String> libs = new ArrayList<String>();
     public List<String> defines = new ArrayList<String>();
-    public List<String> makefileDefines = new ArrayList<String>();
+    public List<String> makefileVariables = new ArrayList<String>();
     public List<String> extraArgs = new ArrayList<String>();
 
     // "meta" options (--meta:...): they get interpreted by MetaMakemake, 
@@ -147,10 +147,10 @@ public class MakemakeOptions implements Cloneable {
             }
             else if (arg.equals("-K") || arg.equals("--makefile-define")) {
                 if (checkArg(argv, i))
-                    makefileDefines.add(argv[++i]);
+                    makefileVariables.add(argv[++i]);
             }
             else if (arg.startsWith("-K")) {
-                makefileDefines.add(arg.substring(2));
+                makefileVariables.add(arg.substring(2));
             }
             else if (arg.equals("-N") || arg.equals("--ignore-ned")) {
                 addError(arg + ": obsolete option, please remove (dynamic NED loading is now the default)");
@@ -331,7 +331,7 @@ public class MakemakeOptions implements Cloneable {
         addOpts1(result, libDirs, "-L");
         addOpts1(result, libs, "-l");
         addOpts1(result, defines, "-D");
-        addOpts1(result, makefileDefines, "-K");
+        addOpts1(result, makefileVariables, "-K");
         if (metaRecurse)
             result.add("--meta:recurse");
         if (metaAutoIncludePath)
@@ -428,7 +428,7 @@ public class MakemakeOptions implements Cloneable {
         libDirs = makeVariableSubstitution(libDirs, project);
         libs = makeVariableSubstitution(libs, project);
         defines = makeVariableSubstitution(defines, project);
-        makefileDefines = makeVariableSubstitution(makefileDefines, project);
+        makefileVariables = makeVariableSubstitution(makefileVariables, project);
         extraArgs = makeVariableSubstitution(extraArgs, project);
     }
     
@@ -456,7 +456,7 @@ public class MakemakeOptions implements Cloneable {
         result.libDirs.addAll(libDirs);
         result.libs.addAll(libs);
         result.defines.addAll(defines);
-        result.makefileDefines.addAll(makefileDefines);
+        result.makefileVariables.addAll(makefileVariables);
         result.extraArgs.addAll(extraArgs);
         result.metaRecurse = metaRecurse;
         result.metaAutoIncludePath = metaAutoIncludePath;

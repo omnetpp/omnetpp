@@ -82,7 +82,7 @@ public class MetaMakemake {
         for (IProject referencedProject : referencedProjects) {
             String name = Makemake.makeSymbolicProjectName(referencedProject);
             String path = makeRelativePath(referencedProject, makefileFolder);
-            translatedOptions.makefileDefines.add(name + "=" + path);
+            translatedOptions.makefileVariables.add(name + "=" + path);
         }
 
         // add sub-make folders

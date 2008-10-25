@@ -350,7 +350,7 @@ public class Makemake {
         m.put("libpathdirs", libDirs);
         m.put("libs", options.libs);
         m.put("defines", prefixQuoteJoin(defines, "-D"));
-        m.put("makefiledefines", options.makefileDefines);
+        m.put("makefiledefines", options.makefileVariables);
         m.put("makecommand", makecommand);
         m.put("makefile", isNMake ? "Makefile.vc" : "Makefile");
         m.put("makefrags", makefrags);

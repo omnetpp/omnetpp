@@ -73,7 +73,6 @@ import org.omnetpp.common.ui.SizeConstraint;
  *
  * @author Andras
  */
-//XXX support makemake -K option (EGYSZERU!)
 //XXX recurse: per-submake targets
 //XXX implement "mark as top"
 
