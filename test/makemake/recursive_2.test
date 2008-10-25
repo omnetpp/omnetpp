@@ -1,0 +1,22 @@
+%description:
+Test the -r (recursive) option. It should visit every subdirectory.
+
+%file: top.msg
+message Top {}
+
+%file: a/a.msg
+message A {}
+
+%file: b/b.msg
+message B {}
+
+%file: c/c.msg
+message C {}
+
+%file: build
+OPP_MAKEMAKE=call opp_nmakemake -f
+all:
+	$(OPP_MAKEMAKE) -r
+	cd a && $(OPP_MAKEMAKE)
+	cd b && $(OPP_MAKEMAKE)
+	cd c && $(OPP_MAKEMAKE)
