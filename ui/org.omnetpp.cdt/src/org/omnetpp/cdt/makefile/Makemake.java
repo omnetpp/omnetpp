@@ -88,7 +88,7 @@ public class Makemake {
             return false;
         }
     }
-    
+
     /**
      * Generates Makefile in the given folder.
      */
@@ -350,7 +350,7 @@ public class Makemake {
         m.put("libpathdirs", libDirs);
         m.put("libs", options.libs);
         m.put("defines", prefixQuoteJoin(defines, "-D"));
-        m.put("makefiledefines", options.makefileVariables);
+        m.put("makefilevariables", options.makefileVariables);
         m.put("makecommand", makecommand);
         m.put("makefile", isNMake ? "Makefile.vc" : "Makefile");
         m.put("makefrags", makefrags);
@@ -377,7 +377,7 @@ public class Makemake {
         }
         String content = StringUtils.substituteIntoTemplate(template, m);
         content = content.replace("\r\n", "\n");  // make line endings consistent
-        
+
         Assert.isTrue(content.contains(GENERATED_MAKEFILE_MAGIC_STRING)); // so that we recognize our own generated file
 
         // only overwrite file if it does not already exist with the same content,

@@ -43,7 +43,7 @@ MSGFILES ={@msg:msgfiles} \
 {defaultmode:}{nmake?!}endif
 {defaultmode:}
 # Other makefile variables (-K)
-{@d:makefiledefines}{d}
+{@d:makefilevariables}{d}
 {/@}
 
 #------------------------------------------------------------------------------
