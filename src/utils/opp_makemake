@@ -782,7 +782,7 @@ sub getFromMapAsBool($;$)
 
     if (ref($value) eq 'ARRAY') {
         my @list = @$value;
-        return @list!=();
+        return @list;  # =length; 0 if list is empty
     } else {
         return $value ? 1 : 0;
     }
