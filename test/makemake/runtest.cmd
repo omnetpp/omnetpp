@@ -16,15 +16,19 @@ cd work || goto end
 
 echo Creating makefiles...
 cd %~dp0\work
-for /d %%i in (*) do echo %%i && cd %~dp0\work\%%i && nmake -f build || goto end
+for /d %%i in (*) do echo %%i && cd %~dp0\work\%%i && nmake -f build || echo MAKEFILE CREATION FAILED: %%i
 
 echo Build...
 cd %~dp0\work
-for /d %%i in (*) do echo %%i && cd %~dp0\work\%%i && nmake -f Makefile.vc || goto end
+for /d %%i in (*) do echo %%i && cd %~dp0\work\%%i && nmake -f Makefile.vc || echo BUILD FAILED: %%i
 
-: nmake -f makefile.vc || cd .. && goto end
-: cd .. || goto end
-: call opp_test %OPT% -r -v %TESTFILES% || goto end
+echo Run executables to get classlists...
+cd %~dp0\work
+for /d %%i in (*) do echo %%i && cd %~dp0\work\%%i && work.exe -h classes > classlist.out
+
+echo Checking classlists...
+cd %~dp0
+call opp_test %OPT% -r -v %TESTFILES% || goto end
 
 echo.
 echo Results can be found in work/

@@ -17,3 +17,10 @@ all:
 	cd a && $(OPP_MAKEMAKE) -a -o aaa
 	cd b && $(OPP_MAKEMAKE) -a -o bbb
 
+%contains: classlist.out
+class A
+%contains: classlist.out
+class B
+%contains: classlist.out
+class Top
+
