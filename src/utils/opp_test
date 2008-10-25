@@ -121,6 +121,12 @@ while (@ARGV)
     elsif ($arg eq "--run") {
         $mode = 'run';
     }
+    elsif ($arg eq "-c") {
+        $mode = 'check';
+    }
+    elsif ($arg eq "--check") {
+        $mode = 'check';
+    }
     elsif ($arg =~ /^-/) {
         print STDERR "$arg0: error: unknown option $arg\n";
         exit(1);
@@ -133,7 +139,7 @@ while (@ARGV)
 
 if ($mode eq '')
 {
-    print STDERR "$arg0: error: either -g or -r must be present\n";
+    print STDERR "$arg0: error: mode argument missing (-g, -r)\n"; # or -c
     exit(1);
 }
 
@@ -181,9 +187,10 @@ if ($mode eq 'gen')
 #
 # run tests
 #
-if ($mode eq 'run')
+if ($mode eq 'run' || $mode eq 'check')
 {
-    print "$arg0: running tests using $testprogram...\n";
+    print "$arg0: running tests using $testprogram...\n" if ($mode eq 'run');
+    print "$arg0: checking existing output files...\n" if ($mode eq 'check');
 
     $num_pass = 0;
     $num_fail = 0;
@@ -192,12 +199,12 @@ if ($mode eq 'run')
     @unresolved_tests = ();
     @failed_tests = ();
 
-    if (! -f "$workdir/$testprogram")
+    if ($mode eq 'run' && ! -f "$workdir/$testprogram")
     {
         print STDERR "$arg0: error: test program '$workdir/$testprogram' not found\n"; exit(1);
     }
 
-    if (!$isWindows && ! -x "$workdir/$testprogram")
+    if ($mode eq 'run' && !$isWindows && ! -x "$workdir/$testprogram")
     {
         print STDERR "$arg0: error: test program '$workdir/$testprogram' is not executable\n"; exit(1);
     }
@@ -476,7 +483,7 @@ sub testcase_run()
                 $infname = $testname."/".$values{$key};
             }
 
-            if (-f $workdir."/".$infname) {
+            if ($mode eq 'run' && -f $workdir."/".$infname) {
                 print "  deleting old copy of file `$infname'\n" if ($debug);
                 unlink $workdir."/".$infname;
             }
@@ -490,27 +497,29 @@ sub testcase_run()
     }
 
     # run the program
-    $sep = $isWindows ? "\\" : "/";
-    $exitcode = exec_program("..$sep$testprogram -u Cmdenv $extraargs -f $inifname", "$workdir/$testname", $outfname, $errfname);
-    if ($exitcode != 0) {
-        if ($exitcode == -1) {
-            unresolved($testfilename, "could not execute test program");
-            return;
-        } else {
-            if ($values{'ignore-exitcode(1)'}) {
-                print "  ignoring exitcode\n" if ($debug);
-            } elsif ($values{'exitcode(1)'} =~ /\b$exitcode\b/) {
-                print "  exitcode ok ($exitcode)\n" if ($debug);
-            } elsif ($values{'exitcode(1)'} ne '') {
-                fail($testfilename, "test program returned exit code $exitcode instead of $values{'exitcode(1)'}");
-                print_tail("stdout", $workdir."/".$testname."/".$outfname) if ($verbose);
-                print_tail("stderr", $workdir."/".$testname."/".$errfname) if ($verbose);
+    if ($mode eq 'run') {
+        $sep = $isWindows ? "\\" : "/";
+        $exitcode = exec_program("..$sep$testprogram -u Cmdenv $extraargs -f $inifname", "$workdir/$testname", $outfname, $errfname);
+        if ($exitcode != 0) {
+            if ($exitcode == -1) {
+                unresolved($testfilename, "could not execute test program");
                 return;
             } else {
-                fail($testfilename, "test program returned nonzero exit code: $exitcode");
-                print_tail("stdout", $workdir."/".$testname."/".$outfname) if ($verbose);
-                print_tail("stderr", $workdir."/".$testname."/".$errfname) if ($verbose);
-                return;
+                if ($values{'ignore-exitcode(1)'}) {
+                    print "  ignoring exitcode\n" if ($debug);
+                } elsif ($values{'exitcode(1)'} =~ /\b$exitcode\b/) {
+                    print "  exitcode ok ($exitcode)\n" if ($debug);
+                } elsif ($values{'exitcode(1)'} ne '') {
+                    fail($testfilename, "test program returned exit code $exitcode instead of $values{'exitcode(1)'}");
+                    print_tail("stdout", $workdir."/".$testname."/".$outfname) if ($verbose);
+                    print_tail("stderr", $workdir."/".$testname."/".$errfname) if ($verbose);
+                    return;
+                } else {
+                    fail($testfilename, "test program returned nonzero exit code: $exitcode");
+                    print_tail("stdout", $workdir."/".$testname."/".$outfname) if ($verbose);
+                    print_tail("stderr", $workdir."/".$testname."/".$errfname) if ($verbose);
+                    return;
+                }
             }
         }
     }
