@@ -34,15 +34,12 @@ OBJS = {objs}
 MSGFILES ={@msg:msgfiles} \
     {msg}{/@}
 
-{submakedirs:}# Subdirectories to recurse into
-{submakedirs:}SUBMAKE_DIRS = {submakedirs}
-{submakedirs:}
 {defaultmode:}# Default mode (-M option); can be overridden with {nmake?n}make MODE=debug (or =release)
 {defaultmode:}{nmake?!}ifndef MODE
 {defaultmode:}MODE = {defaultmode}
 {defaultmode:}{nmake?!}endif
 {defaultmode:}
-# Other makefile variables (-K)
+{makefilevariables:}# Other makefile variables (-K)
 {@d:makefilevariables}{d}
 {/@}
 
@@ -114,7 +111,7 @@ all: $(TARGET)
 
 ### Rules for $TARGET. Note that end product will be softlinked into the
 ### Makefile's directory; on systems that don't support soft links it will
-### be copied. Note that MinGW's "ln -s" also maps to file copying.
+### be copied. Note that MinGW's "ln -s" also actually copies the file.
 {exe:}$O/$(TARGET): $(OBJS) {submakedirs?submakedirs} $(EXTRA_OBJS) {makefile}
 {exe:}{nmake:}	-@md $(O:/=\) 2>nul
 {exe:}{~nmake:}	@mkdir -p $O
@@ -130,9 +127,18 @@ all: $(TARGET)
 {nolink:}$(TARGET): $(OBJS) {submakedirs?submakedirs} {makefile}
 {nolink:}	@{nmake?rem}{~nmake?#} Do nothing
 
-{submakedirs:}submakedirs:
-{submakedirs:}{nmake:}	@if not "$(SUBMAKE_DIRS)"=="" for %%i in ( $(SUBMAKE_DIRS:/=\) ) do @pushd %%i && echo [Entering %%i] && nmake /nologo /f Makefile.vc && echo [Leaving %%i] && @popd || exit /b 1
-{submakedirs:}{~nmake:}	for i in $(SUBMAKE_DIRS); do (cd $$i && $(MAKE)) || exit 1; done
+### Subdir targets. Note that nmake.exe doesn't support .PHONY
+{submakedirs:}submakedirs: {@i:submakenames} {i}_dir{/@}
+{submakedirs:}
+{~nmake:}.PHONY:{@i:submakenames} {i}{/@}
+{~nmake:}{@i:submakenames}{i}: {i}_dir
+{~nmake:}{/@}
+{submakedirs:}
+{@i:submakenames,dir:submakedirs}{i}_dir:
+{nmake:}	echo [Entering {dir}] && cd {dir} && nmake /nologo /f Makefile.vc && echo [Leaving {dir}]
+{~nmake:}	cd {dir} && $(MAKE)
+
+{/@}
 
 .SUFFIXES: .{cc}
 
@@ -160,11 +166,11 @@ all: $(TARGET)
 {nmake:}	$(MSGC:/=\) -s _m.{cc} $(MSGCOPTS) {msg}
 {/@}
 
-{submakedirs:}{nmake:}	@if not "$(SUBMAKE_DIRS)"=="" for %%i in ( $(SUBMAKE_DIRS:/=\) ) do @pushd %%i && echo [opp_msgc in %%i] && nmake /nologo /f Makefile.vc msgheaders && @popd || exit /b 1
-{submakedirs:}{~nmake:}	for i in $(SUBMAKE_DIRS) ""; do if [ "$$i" != "" ]; then (cd $$i && $(MAKE) msgheaders) || exit 1; fi; done;
-
 ### Utility target for running opp_msgc; otherwise unused by this makefile
 msgheaders: $(MSGFILES:.msg=_m.h)
+{@i:submakedirs}{nmake:}	cd {i} && nmake /nologo /f Makefile.vc msgheaders
+{~nmake:}	cd {i} && $(MAKE) msgheaders
+{/@}
 
 ### clean, depend, etc.
 clean:
@@ -179,19 +185,21 @@ clean:
 {~nmake:}{/@}
 {nmake:}{@bsdir:backslashedsourcedirs}	-del {bsdir}\*_m.{cc} {bsdir}\*_m.h 2>nul
 {nmake:}{/@}
-{submakedirs:}{nmake:}	-if not "$(SUBMAKE_DIRS)"=="" for %%i in ( $(SUBMAKE_DIRS:/=\) ) do @pushd %%i && echo [clean in %%i] && nmake /nologo /f Makefile.vc clean && @popd || exit /b 1
-{submakedirs:}{~nmake:}	for i in $(SUBMAKE_DIRS) ""; do if [ "$$i" != "" ]; then (cd $$i && $(MAKE) clean); fi; done;
+{@i:submakedirs}{nmake:}	-cd {i} && nmake /nologo /f Makefile.vc clean
+{~nmake:}	-cd {i} && $(MAKE) clean
+{/@}
 
 depend:
 	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile{nmake?.vc} -P{nmake?^}{~nmake?\$}$O/ -- $(MSG_CC_FILES) {@d:sourcedirs} {d}/*.{cc}{/@}
-
-{nmake:}	if not "$(SUBMAKE_DIRS)"=="" for %%i in ( $(SUBMAKE_DIRS:/=\) ) do @pushd %%i && echo [depend in %%i] && nmake /nologo /f Makefile.vc depend && @popd || exit /b 1
-{~nmake:}	for i in $(SUBMAKE_DIRS) ""; do if [ "$$i" != "" ]; then (cd $$i && $(MAKE) depend) || exit 1; fi; done;
+{@i:submakedirs}{nmake:}	cd {i} && nmake /nologo /f Makefile.vc depend
+{~nmake:}	cd {i} && $(MAKE) depend
+{/@}
 
 makefiles:
 	{progname} {args}
-{nmake:}	if not "$(SUBMAKE_DIRS)"=="" for %%i in ( $(SUBMAKE_DIRS:/=\) ) do @pushd %%i && echo [makemake in %%i] && nmake /nologo /f Makefile.vc makefiles && @popd || exit /b 1
-{~nmake:}	for i in $(SUBMAKE_DIRS) ""; do if [ "$$i" != "" ]; then (cd $$i && $(MAKE) makefiles) || exit 1; fi; done;
+{@i:submakedirs}{nmake:}	cd {i} && nmake /nologo /f Makefile.vc makefiles
+{~nmake:}	cd {i} && $(MAKE) makefiles
+{/@}
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 {deps}

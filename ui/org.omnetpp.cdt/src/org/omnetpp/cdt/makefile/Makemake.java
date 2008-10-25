@@ -226,6 +226,11 @@ public class Makemake {
             }
         }
 
+        // create names for subdir targets
+        List<String> submakeNames = new ArrayList<String>();
+        for (String i : submakeDirs)
+            submakeNames.add(i.replaceAll("[^a-zA-Z0-9_]", "__"));
+
         for (String arg : options.extraArgs) {
             Assert.isTrue(!StringUtils.isEmpty(arg), "empty makemake argument found");
             extraObjs.add(arg);
@@ -358,7 +363,8 @@ public class Makemake {
         m.put("msghfiles", msghfiles);
         m.put("msgfiles", msgfiles);
         m.put("objs", quoteJoin(objs));
-        m.put("submakedirs", quoteJoin(submakeDirs));
+        m.put("submakedirs", submakeDirs);
+        m.put("submakenames", submakeNames);
         m.put("dllsymbol", StringUtils.nullToEmpty(options.dllSymbol));
         m.put("sourcedirs", sourceDirs);
         m.put("backslashedsourcedirs", backslashedSourceDirs);
