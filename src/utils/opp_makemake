@@ -1021,10 +1021,7 @@ $progname [options] [object files or libraries]
     -S, --fordll          Compile C++ files for use in DLLs; see -p option.
                           The -s (build shared library) option implies this one.
     -w, --withobjects     Link with all object files found in -I directories,
-                          or add them to the created library. Ignored when
-                          -n option is present. Dependencies between directo-
-                          ries have be handled in upper Makefiles (see -r
-                          option).
+                          or add them to the created library. OBSOLETE.
     -u name, --userinterface name
                           Selects the user interface libraries to link with.
                           Possible values are "all", "Cmdenv", and "Tkenv".
@@ -1266,14 +1263,8 @@ clean:
 
 depend:
 	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile{nmake?.vc} -P{nmake?^}{~nmake?\$}$O/ -- $(MSG_CC_FILES) {@d:sourcedirs} {d}/*.{cc}{/@}
-{@i:submakedirs}{nmake:}	cd {i} && nmake /nologo /f Makefile.vc depend
-{~nmake:}	cd {i} && $(MAKE) depend
-{/@}
-
-makefiles:
-	{progname} {args}
-{@i:submakedirs}{nmake:}	cd {i} && nmake /nologo /f Makefile.vc makefiles
-{~nmake:}	cd {i} && $(MAKE) makefiles
+{@i:submakedirs}{nmake:}	-cd {i} && nmake /nologo /f Makefile.vc depend
+{~nmake:}	-cd {i} && $(MAKE) depend
 {/@}
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
