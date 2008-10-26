@@ -1,5 +1,5 @@
 %description:
-Test the --deep option with -X. (don't build anything)
+Test the --deep option with "-X." (don't build anything)
 
 %file: top.msg
 some syntax error
@@ -7,12 +7,17 @@ some syntax error
 %file: a/a.msg
 another syntax error
 
+%file: sub/sub.msg
+// note: this file is needed, otherwise linking stops with "no object files specified" (msvc)
+message Sub { }
+
 
 %testprog: work -h classes
 %ignore-exitcode: 1
 %file: buildspec
 all:
-	$(OPP_MAKEMAKE) --deep -X.
+	$(OPP_MAKEMAKE) --deep -X. -dsub '$$O/sub/*.o'
+	cd sub && $(OPP_MAKEMAKE) --nolink
 
 %contains: stdout
 class cMessage
