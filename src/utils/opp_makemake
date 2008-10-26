@@ -430,9 +430,23 @@ sub makemake()
         error("opp_configfilepath didn't return the name of an existing directory, result was \"$configFile\"");
     }
 
+    # determine outdir (defaults to "out")
+    if ($outRoot eq "") {$outRoot = "out";}
+    my $outRootAbs = (!isRelative($outRoot) || $projectDir eq "") ? $outRoot : "$projectDir/$outRoot";
+    my $outRootRel = abs2rel($outRootAbs, $projectDir);
+    $outDir = canonicalize("$outRootRel");
+
+    # determine subpath: the project-relative path of this folder
+    my $subpath = cwd();
+    $subpath =~ s|^\Q$projectDir\E||;
+
     # collect source files
     if ($isDeep) {
-        @sourceDirs = collectDirs(".", \@exceptSubdirs);
+        my @allExcludedDirs = ();
+        push(@allExcludedDirs, $outDir);
+        push(@allExcludedDirs, @exceptSubdirs);
+        push(@allExcludedDirs, @submakeDirs);
+        @sourceDirs = collectDirs(".", \@allExcludedDirs);
         error("too many subdirs for --deep") if (@sourceDirs > 1000);
     } else {
         @sourceDirs = (".");
@@ -586,16 +600,6 @@ sub makemake()
         push(@defines, $dllSymbol."_EXPORT");
     }
 
-    # determine outdir (defaults to "out")
-    if ($outRoot eq "") {$outRoot = "out";}
-    my $outRootAbs = (!isRelative($outRoot) || $projectDir eq "") ? $outRoot : "$projectDir/$outRoot";
-    my $outRootRel = abs2rel($outRootAbs, $projectDir);
-    $outdir = canonicalize("$outRootRel");
-
-    # determine subpath: the project-relative path of this folder
-    my $subpath = cwd();
-    $subpath =~ s|^\Q$projectDir\E||;
-
     $deps = "";  # we'll run opp_makedep afterwards
 
     # XP has 8K limit on line length, so we may have to use the inline file feature of nmake
@@ -609,7 +613,7 @@ sub makemake()
         "rbrace" =>  "}",
         "nmake" =>  $isNMake,
         "target" =>  $target . $targetSuffix,
-        "outdir" => $outdir,
+        "outdir" => $outDir,
         "subpath" => $subpath,
         "isdeep" => $isDeep,
         "progname" => "opp_makemake",  # $isNMake ? "opp_nmakemake" : "opp_makemake",
@@ -697,8 +701,8 @@ sub isGoodDir($;$)
 
     # check exceptdirs. For that, we convert everything to canonical absolute path
     my $absDir = existingDirtoCanonicalAbsolute($dirpath);
-    foreach my $i (@exceptSubdirs) {
-        foreach my $exceptDir (glob($i)) {
+    foreach my $exceptDirPattern (@exceptDirs) {
+        foreach my $exceptDir (glob($exceptDirPattern)) {
             if (-d $exceptDir) {
                 my $absExceptDir = existingDirtoCanonicalAbsolute($exceptDir);
                 if ($absDir eq $absExceptDir) {

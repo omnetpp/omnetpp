@@ -39,6 +39,7 @@ import org.omnetpp.common.util.StringUtils;
  *
  * @author Andras
  */
+//FIXME automatic includes from sub-make folders don't work! 
 public class MetaMakemake {
     /**
      * Generates Makefile in the given folder.
@@ -60,6 +61,7 @@ public class MetaMakemake {
         MakemakeOptions translatedOptions = options.clone();
 
         IProject project = makefileFolder.getProject();
+        Activator.getDependencyCache().dumpPerFileDependencies(project);
         Map<IContainer, Set<IContainer>> folderDeps = Activator.getDependencyCache().getFolderDependencies(project);
 
         // add -f, and potentially --nmake 
@@ -67,7 +69,7 @@ public class MetaMakemake {
         translatedOptions.isNMake = CDTUtils.isMsvcToolchainActive(project);
 
         // add -X option for each excluded folder in CDT, and for each sub-makefile
-        translatedOptions.exceptSubdirs.addAll(getExcludedSubpathsWithinFolder(makefileFolder, makeFolders));
+        translatedOptions.exceptSubdirs.addAll(getExcludedSubpathsWithinFolder(makefileFolder));
 
         // add -I, -L and -D options configured in CDT
         translatedOptions.includeDirs.addAll(getIncludePathsFor(makefileFolder));
@@ -154,18 +156,17 @@ public class MetaMakemake {
     /**
      * Returns the (folder-relative) paths of directories excluded from build 
      * in the active CDT configuration under the given source folder.
-     * Excluded files are not considered. The subtrees covered by sub-makes
-     * also gets excluded. 
+     * File exclusions are ignored.
      */
-    protected static List<String> getExcludedSubpathsWithinFolder(IContainer makemakeFolder, List<IContainer> makeFolders) throws CoreException {
+    protected static List<String> getExcludedSubpathsWithinFolder(IContainer makemakeFolder) throws CoreException {
         List<String> result = new ArrayList<String>();
-        collectExcludedSubpaths(makemakeFolder, makemakeFolder, CDTUtils.getSourceEntries(makemakeFolder.getProject()), makeFolders, result);
+        collectExcludedSubpaths(makemakeFolder, makemakeFolder, CDTUtils.getSourceEntries(makemakeFolder.getProject()), result);
         return result;
     }
 
-    private static void collectExcludedSubpaths(IContainer folder, IContainer makemakeFolder, ICSourceEntry sourceEntries[], List<IContainer> makeFolders, List<String> result) throws CoreException {
+    private static void collectExcludedSubpaths(IContainer folder, IContainer makemakeFolder, ICSourceEntry sourceEntries[], List<String> result) throws CoreException {
         if (MakefileTools.isGoodFolder(folder)) {
-            if (CDTUtils.isExcluded(folder, sourceEntries) || (!folder.equals(makemakeFolder) && makeFolders.contains(folder))) {
+            if (CDTUtils.isExcluded(folder, sourceEntries)) {
                 // exclude and don't go into it
                 IPath sourceFolderRelativePath = folder.getFullPath().removeFirstSegments(makemakeFolder.getFullPath().segmentCount());
                 result.add(sourceFolderRelativePath.isEmpty() ? "." : sourceFolderRelativePath.toString());
@@ -174,7 +175,7 @@ public class MetaMakemake {
                 // recurse into subdirs
                 for (IResource member : folder.members())
                     if (member instanceof IContainer)
-                        collectExcludedSubpaths((IContainer)member, makemakeFolder, sourceEntries, makeFolders, result);
+                        collectExcludedSubpaths((IContainer)member, makemakeFolder, sourceEntries, result);
             }
         }
     }

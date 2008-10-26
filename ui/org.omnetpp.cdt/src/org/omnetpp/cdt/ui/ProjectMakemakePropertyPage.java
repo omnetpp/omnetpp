@@ -61,6 +61,7 @@ import org.omnetpp.cdt.CDTUtils;
 import org.omnetpp.cdt.makefile.BuildSpecification;
 import org.omnetpp.cdt.makefile.MakefileTools;
 import org.omnetpp.cdt.makefile.MakemakeOptions;
+import org.omnetpp.cdt.makefile.MetaMakemake;
 import org.omnetpp.cdt.makefile.MakemakeOptions.Type;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.ui.HoverSupport;
@@ -365,6 +366,13 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         int makeType = buildSpec.getFolderMakeType(folder);
         if (makeType==BuildSpecification.MAKEMAKE) {
             MakemakeOptions options = buildSpec.getMakemakeOptions(folder);
+            try {
+                MakemakeOptions translatedOptions = MetaMakemake.translateOptions(folder, options, buildSpec.getMakeFolders());
+            }
+            catch (CoreException e) {
+                e.printStackTrace(); //TODO
+            }
+            
             if (options.metaRecurse) {
                 //TODO collect sub-makes, and display them in the tooltip
             }

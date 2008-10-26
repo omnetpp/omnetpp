@@ -1,0 +1,33 @@
+%description:
+Test -d option (and shared libs -- not that it should matter)
+
+%file: top.msg
+message Top {}
+
+%file: one/one.msg
+message One {}
+
+%file: a/two/two.msg
+message Two {}
+
+%file: a/b/three/three.msg
+message Three {}
+
+%testprog: work -h classes
+%ignore-exitcode: 1
+%file: buildspec
+all:
+	$(OPP_MAKEMAKE) -d one -da/two -da/b/three -Lone -La/two -La/b/three -lone -ltwo -lthree
+	cd one && $(OPP_MAKEMAKE) --make-so -o one
+	cd a/two && $(OPP_MAKEMAKE) --make-so -o two
+	cd a/b/three && $(OPP_MAKEMAKE) --make-so -o three
+
+%contains: stdout
+class Top
+%contains: stdout
+class One
+%contains: stdout
+class Two
+%contains: stdout
+class Three
+

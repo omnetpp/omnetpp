@@ -1,0 +1,44 @@
+%description:
+Test that submake-dirs (-d) are automatically excluded from --deep
+
+%file: top.msg
+message Top {}
+
+%file: a/a.msg
+message A {}
+
+%file: a/b/b.msg
+message B {}
+
+%file: bad/x.msg
+message Bad {}
+
+%file: a/ugly/x.msg
+message Ugly {}
+
+%file: a/b/stupid/x.msg
+message Stupid {}
+
+%testprog: work -h classes
+%ignore-exitcode: 1
+%file: buildspec
+all:
+	$(OPP_MAKEMAKE) --deep -dbad -da/ugly -da/b/stupid
+	cd bad && $(OPP_MAKEMAKE) --nolink
+	cd a/ugly && $(OPP_MAKEMAKE) --nolink
+	cd a/b/stupid && $(OPP_MAKEMAKE) --nolink
+
+%contains: stdout
+class A
+%contains: stdout
+class B
+%contains: stdout
+class Top
+
+%not-contains: stdout
+class Bad
+%not-contains: stdout
+class Ugly
+%not-contains: stdout
+class Stupid
+

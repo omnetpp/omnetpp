@@ -36,7 +36,6 @@ import org.omnetpp.ide.preferences.OmnetppPreferencePage;
  *
  * @author Andras
  */
-//XXX "Out" dir should be excluded implicitly
 //XXX support ccExt = "cc,cpp" too! (because by default, CDT creates files with .cpp extension)
 public class Makemake {
     private static final String MAKEFILE_TEMPLATE_NAME = "Makefile.TEMPLATE";
@@ -143,11 +142,27 @@ public class Makemake {
             throw new MakemakeException("OMNeT++ root must be set in Window|Preferences");
         String configFile = omnetppRoot + (isNMake ? "\\configuser.vc" : "/Makefile.inc");
 
+        // determine outDir (defaults to "out")
+        String outDir;
+        IPath outRootPath = new Path(StringUtils.isEmpty(options.outRoot) ? "out" : options.outRoot);
+        IPath outRootAbs = outRootPath.isAbsolute() ? outRootPath : folder.getProject().getLocation().append(outRootPath);
+        IPath outRootRel = abs2rel(outRootAbs);  // "<project>/out"
+        outDir = outRootRel.toString();
+
+        // determine subpath: the project-relative path of this folder
+        String subpath = folder.getProjectRelativePath().toString();
+
         // collect source files
-        if (isDeep)
-            sourceDirs = collectDirs(folder, options.exceptSubdirs);
-        else
+        if (isDeep) {
+            List<String> allExcludedDirs = new ArrayList<String>();
+            allExcludedDirs.add(outDir);
+            allExcludedDirs.addAll(options.exceptSubdirs);
+            allExcludedDirs.addAll(options.submakeDirs);
+            sourceDirs = collectDirs(folder, allExcludedDirs);
+        }
+        else {
             sourceDirs.add(".");
+        }
 
         for (String i : sourceDirs) {
             ccfiles.addAll(glob(i, "*.cc"));
@@ -291,16 +306,6 @@ public class Makemake {
         if ((options.compileForDll || options.type == Type.SHAREDLIB) && !StringUtils.isEmpty(options.dllSymbol))
             defines.add(options.dllSymbol+"_EXPORT");
 
-        // determine outDir (defaults to "out")
-        String outdir;
-        IPath outRootPath = new Path(StringUtils.isEmpty(options.outRoot) ? "out" : options.outRoot);
-        IPath outRootAbs = outRootPath.isAbsolute() ? outRootPath : folder.getProject().getLocation().append(outRootPath);
-        IPath outRootRel = abs2rel(outRootAbs);  // "<project>/out"
-        outdir = outRootRel.toString();
-
-        // determine subpath: the project-relative path of this folder
-        String subpath = folder.getProjectRelativePath().toString();
-
         // XP has 8K limit on line length, so we may have to use the inline file feature of nmake
         int approximateLinkerLineLength = 500 + quoteJoin(objs).length() + quoteJoin(extraObjs).length() + 2*quoteJoin(options.libs).length() + 2*quoteJoin(libDirs).length();
         boolean isLongLinkerLine = approximateLinkerLineLength > 8000;
@@ -332,7 +337,7 @@ public class Makemake {
         m.put("rbrace", "}");
         m.put("nmake", isNMake);
         m.put("target", targetPrefix+ target + targetSuffix);
-        m.put("outdir", outdir);
+        m.put("outdir", outDir);
         m.put("subpath", subpath);
         m.put("isdeep", isDeep);
         m.put("progname", "opp_makemake");  // isNMake ? "opp_nmakemake" : "opp_makemake"
