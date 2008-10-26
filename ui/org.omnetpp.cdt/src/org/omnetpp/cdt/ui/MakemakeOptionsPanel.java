@@ -226,7 +226,7 @@ public class MakemakeOptionsPanel extends Composite {
             userInterfaceCombo.add(i);
         libsList = new FileListControl(linkPage, "Additional libraries to link with: (-l option)", BROWSE_NONE);
         Link pathsPageLink3 = createLink(linkPage, "NOTE: Library paths can be specified in the <A>Paths and symbols</A> page.");
-        linkObjectsList = new FileListControl(linkPage, "Additional objects to link with: (folder-relative path; wildcards, macros allowed)", BROWSE_NONE);
+        linkObjectsList = new FileListControl(linkPage, "Additional objects to link with: (wildcards, macros allowed, e.g. $O/subdir/*.o)", BROWSE_NONE);
         linkPageToggle = createToggleLink(linkPage, new Control[] {libsList.getListControl().getParent(), pathsPageLink3, linkObjectsList.getListControl().getParent()});
 
         // "Custom" page

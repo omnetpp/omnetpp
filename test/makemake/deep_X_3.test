@@ -1,0 +1,34 @@
+%description:
+Test that -X ingores nonexistent ignore dirs
+
+%file: top.msg
+message Top {}
+
+%file: a/a.msg
+message A {}
+
+%file: a/b/b.msg
+message B {}
+
+%file: bad/x.msg
+some syntax error
+
+%file: a/ugly/x.msg
+another syntax error
+
+%file: a/b/stupid/x.msg
+more syntax errors
+
+%testprog: work -h classes
+%ignore-exitcode: 1
+%file: buildspec
+all:
+	$(OPP_MAKEMAKE) --deep -Xbad -Xa/ugly -Xa/b/stupid -Xnothing -Xno/such/dir
+
+%contains: stdout
+class A
+%contains: stdout
+class B
+%contains: stdout
+class Top
+

@@ -16,6 +16,7 @@ import org.omnetpp.common.util.StringUtils;
  * Value object to represent opp_makemake command-line options in a parsed form.
  * @author Andras
  */
+//TODO support a "copy to bin/ or lib/ directory" meta-option
 public class MakemakeOptions implements Cloneable {
     public enum Type {EXE, SHAREDLIB, STATICLIB, NOLINK};
     

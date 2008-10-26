@@ -3,7 +3,7 @@
 	* opp_makemake: use individual targets for each sub-make directory,
 	instead of iterating over $(SUBMAKE_DIRS); also removed $(SUBMAKE_DIRS)
 
-	* opp_makemake: other minor refinements
+	* opp_makemake: several refinements and bugfixes
 
 	* opp_test improvements: -c, %testprog
 

@@ -697,11 +697,13 @@ sub isGoodDir($;$)
 
     # check exceptdirs. For that, we convert everything to canonical absolute path
     my $absDir = existingDirtoCanonicalAbsolute($dirpath);
-    foreach $i (@exceptSubdirs) {
-        foreach $j (glob($i)) {
-            my $absExceptDir = existingDirtoCanonicalAbsolute($j);
-            if ($absDir eq $absExceptDir) {
-                return 0;
+    foreach my $i (@exceptSubdirs) {
+        foreach my $exceptDir (glob($i)) {
+            if (-d $exceptDir) {
+                my $absExceptDir = existingDirtoCanonicalAbsolute($exceptDir);
+                if ($absDir eq $absExceptDir) {
+                    return 0;
+                }
             }
         }
 

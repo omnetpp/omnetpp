@@ -39,9 +39,6 @@ import org.omnetpp.common.util.StringUtils;
  *
  * @author Andras
  */
-//XXX handle  translatedOptions.metaLinkWithAllObjectsInProject
-//FIXME add other libraries within this project into the linker path
-//FIXME support a "copy to bin/ or lib/ directory" meta-option
 public class MetaMakemake {
     /**
      * Generates Makefile in the given folder.
