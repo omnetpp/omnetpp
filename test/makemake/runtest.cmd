@@ -10,13 +10,12 @@ if "x%TESTFILES%" == "x" set TESTFILES=*.test
 mkdir work 2>nul
 call opp_test %OPT% -g -v %TESTFILES% || goto end
 
-echo > .project
-
 cd work || goto end
+echo > .project
 
 echo Creating makefiles...
 cd %~dp0\work
-for /d %%i in (*) do echo %%i && cd %~dp0\work\%%i && nmake -f build || echo MAKEFILE CREATION FAILED: %%i
+for /d %%i in (*) do echo %%i && cd %~dp0\work\%%i && nmake "OPP_MAKEMAKE=call opp_nmakemake -f --out ../out" -f build || echo MAKEFILE CREATION FAILED: %%i
 
 echo Build...
 cd %~dp0\work

@@ -11,9 +11,8 @@ message A {}
 message B {}
 
 %file: build
-OPP_MAKEMAKE=call opp_nmakemake -f
 all:
-	$(OPP_MAKEMAKE) -r -La -Lb -laaa -lbbb -o work
+	$(OPP_MAKEMAKE) -r -La -Lb -laaa -lbbb
 	cd a && $(OPP_MAKEMAKE) -a -o aaa
 	cd b && $(OPP_MAKEMAKE) -a -o bbb
 

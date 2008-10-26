@@ -11,9 +11,8 @@ message A {}
 message B {}
 
 %file: build
-OPP_MAKEMAKE=call opp_nmakemake -f
 all:
-	$(OPP_MAKEMAKE) -r -o work '$$O/a/*.o' '$$O/b/*.o'
+	$(OPP_MAKEMAKE) -r '$$O/a/*.o' '$$O/b/*.o'
 	cd a && $(OPP_MAKEMAKE) --nolink
 	cd b && $(OPP_MAKEMAKE) --nolink
 
