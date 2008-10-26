@@ -29,6 +29,128 @@ exit 0;
 # output dir should be ignored (-X) too!
 # convert between .o and .obj in extraArgs!
 
+sub usage()
+{
+    print <<END
+$progname: create a Makefile for an OMNeT++/OMNEST model, based on
+source files in current directory
+
+$progname [options] [object files or libraries]
+    -h, --help            This help text
+    -f, --force           Force overwriting existing Makefile
+    --nmake               Generate Makefile.vc for Visual C++ and nmake.exe
+    -e ext, --ext ext     C++ source file extension, usually "cc" or "cpp".
+                          By default, this is determined by looking at
+                          existing files in the directory.
+    -o filename           Name of simulation executable or library to be built.
+                          Defaults to the project name.
+    -O directory, --out directory
+                          Specifies the name of the output directory tree
+                          for out-of-directory build; defaults to "out".
+                          The actual output directory will be
+                          <projectroot>/<dir>/\$(CONFIGNAME)/<subpath>,
+                          where <subpath> is the project-relative path of
+                          the current directory (for <projectroot> see -P).
+                          An absolute directory path can also be specified,
+                          resulting in <absolute-dir>/\$(CONFIGNAME)/<subpath>.
+    --deep                Generates a "deep" Makefile. A deep Makefile will
+                          cover the whole source tree under the make directory,
+                          not just files in that directory. Directories may be
+                          excluded using -X. The include path will contain all
+                          directories in the source tree. Deep is not
+                          compatible with -r (recursive make), but -d
+                          (directory to recurse into) can still be used.
+    -r, --recurse         Causes make to recursively descend into all subdir-
+                          ectories; subdirectories are expected to contain
+                          makefiles themselves. If you need to maintain a
+                          specific order, declare dependencies in the
+                          makefrag(.vc) file. Subdirectories may be excluded
+                          using -X. See also -d.
+    -X directory, -Xdirectory, --except directory
+                          With -r and --deep option: ignore the given directory.
+                          If the argument is a relative path, it is interpreted
+                          as relative to the current directory. Wildcards
+                          (like -X *_backups or -X */tmp) are accepted.
+    -dsubdir, -d subdir, --subdir subdir
+                          Causes make to recursively descend into the given
+                          directory. The directory does not need to be the
+                          child of the make directory. When used with --deep,
+                          -d also implies -X for that directory.
+    --no-deep-includes    Normally, when a deep makefile is created, all source
+                          directories will get added to the include path.
+                          Specifying this option turns off that behavior, and
+                          lets the user explicitly specify all include dirs.
+    -P directory, --projectdir directory
+                          Specifies the project root directory. Any absolute
+                          path (-I, -L, object file names, etc.) that points
+                          into the project's subtree will be converted to
+                          relative, to ease compiling the project in a
+                          different directory. Defaults to first ancestor
+                          directory that contains a ".project" file.
+    -M mode, --mode mode  Selects the build mode, "debug" or "release".
+                          Defaults to "debug". This setting can still be
+                          overridden on the make command line, by specifying
+                          "MODE=debug" or "MODE=release" as an extra argument.
+    -Dname[=value], -D name[=value], --define name[=value]
+                          Preprocessor symbol to be passed to the C++ compiler.
+    -Kname=value, -K name=value, --makefile-define name=value
+                          Defines a makefile variable, i.e. causes name=value
+                          line to get inserted into the makefile.
+    -n, --nolink          Produce object files but do not create executable or
+                          library. Useful for models with parts in several
+                          directories. With this option, -u and -l have
+                          no effect.
+    -s, --make-so         Build shared library (.so or .dll). Useful if you want
+                          to load the model dynamically (via the load-libs=
+                          omnetpp.ini or the -l Cmdenv/Tkenv command-line option).
+    -a, --make-lib        Create static library (.a or .lib).
+    -S, --fordll          Compile C++ files for use in DLLs; see -p option.
+                          The -s (build shared library) option implies this one.
+    -w, --withobjects     Link with all object files found in -I directories,
+                          or add them to the created library. OBSOLETE.
+    -u name, --userinterface name
+                          Selects the user interface libraries to link with.
+                          Possible values are "all", "Cmdenv", and "Tkenv".
+                          Defaults to "all".
+    -Idir                 Additional NED and C++ include directory
+    -Ldir                 Add a directory to the library path
+    -llibrary             Additional library to link against. On Unix, -lfoo
+                          will link with libfoo.so or libfoo.a; on Windows,
+                          with foo.lib. The library path (see -L) will be
+                          searched in both cases.
+    -p symbol, -psymbol   The DLL export/import symbol. It will cause
+                          -P<symbol>_API to be passed to opp_msgc. Also,
+                          if target is a DLL or --fordll is specified, the
+                          <symbol>_EXPORT macro will be passed to the compiler;
+                          the source code is expected to be set up so that
+                          dll-public declarations are annotated with
+                          <symbol>_API, and <symbol>_EXPORT causes <symbol>_API
+                          to be defined as __declspec(dllexport).
+    -i filename, --includefragment filename
+                          Append file to near end of Makefile. The file
+                          makefrag.vc (if exists) is appended automatically
+                          if no -i options are given. This option is useful
+                          if a source file (.ned, .msg or .cc) is to be
+                          generated from other files.
+    object file or library
+                          Arguments will simply get added to the linker (or
+                          librarian) command line. Thus, wildcards and macros
+                          are accepted, and will be resolved at build time.
+                          Useful macros are \$O (the output location of this
+                          makefile), \$(PROJECT_OUTPUT_PATH) and \$(CONFIGNAME);
+                          see the generated makefiles for more. On Unix you
+                          need to single-quote them ('$O') against getting
+                          resolved prematurely by the shell.
+
+Default output is Makefile (with --nmake it is Makefile.vc), which you can
+invoke by typing "make" (with nmake: "nmake -f Makefile.vc").
+
+The contents of the makefrag file (with --nmake: makefrag.vc) will be built
+into the generated makefile, letting you to override the default target,
+change variables, etc.
+
+END
+}
 
 sub makemake()
 {
@@ -943,126 +1065,6 @@ sub warning($)
     print STDERR "$progname: warning: $text\n";
 }
 
-sub usage()
-{
-    print <<END
-$progname: create a Makefile for an OMNeT++/OMNEST model, based on
-source files in current directory
-
-$progname [options] [object files or libraries]
-    -h, --help            This help text
-    -f, --force           Force overwriting existing Makefile
-    --nmake               Generate Makefile.vc for Visual C++ and nmake.exe
-    -e ext, --ext ext     C++ source file extension, usually "cc" or "cpp".
-                          By default, this is determined by looking at
-                          existing files in the directory.
-    -o filename           Name of simulation executable or library to be built.
-                          Defaults to the project name.
-    -O directory, --out directory
-                          Specifies the name of the output directory tree
-                          for out-of-directory build; defaults to "out".
-                          The actual output directory will be
-                          <projectroot>/<dir>/\$(CONFIGNAME)/<subpath>,
-                          where <subpath> is the project-relative path of
-                          the current directory (for <projectroot> see -P).
-                          An absolute directory path can also be specified,
-                          resulting in <absolute-dir>/\$(CONFIGNAME)/<subpath>.
-    --deep                Generates a "deep" Makefile. A deep Makefile will
-                          cover the whole source tree under the make directory,
-                          not just files in that directory. Directories may be
-                          excluded using -X. The include path will contain all
-                          directories in the source tree. Deep is not
-                          compatible with -r (recursive make), but -d
-                          (directory to recurse into) can still be used.
-    -r, --recurse         Causes make to recursively descend into all subdir-
-                          ectories; subdirectories are expected to contain
-                          makefiles themselves. If you need to maintain a
-                          specific order, declare dependencies in the
-                          makefrag(.vc) file. Subdirectories may be excluded
-                          using -X. See also -d.
-    -X directory, -Xdirectory, --except directory
-                          With -r and --deep option: ignore the given directory.
-                          If the argument is a relative path, it is interpreted
-                          as relative to the current directory. Wildcards
-                          (like -X *_backups or -X */tmp) are accepted.
-    -dsubdir, -d subdir, --subdir subdir
-                          Causes make to recursively descend into the given
-                          directory. The directory does not need to be the
-                          child of the make directory. When used with --deep,
-                          -d also implies -X for that directory.
-    --no-deep-includes    Normally, when a deep makefile is created, all source
-                          directories will get added to the include path.
-                          Specifying this option turns off that behavior, and
-                          lets the user explicitly specify all include dirs.
-    -P directory, --projectdir directory
-                          Specifies the project root directory. Any absolute
-                          path (-I, -L, object file names, etc.) that points
-                          into the project's subtree will be converted to
-                          relative, to ease compiling the project in a
-                          different directory. Defaults to first ancestor
-                          directory that contains a ".project" file.
-    -M mode, --mode mode  Selects the build mode, "debug" or "release".
-                          Defaults to "debug". This setting can still be
-                          overridden on the make command line, by specifying
-                          "MODE=debug" or "MODE=release" as an extra argument.
-    -Dname[=value], -D name[=value], --define name[=value]
-                          Preprocessor symbol to be passed to the C++ compiler.
-    -Kname=value, -K name=value, --makefile-define name=value
-                          Defines a makefile variable, i.e. causes name=value
-                          line to get inserted into the makefile.
-    -n, --nolink          Produce object files but do not create executable or
-                          library. Useful for models with parts in several
-                          directories. With this option, -u and -l have
-                          no effect.
-    -s, --make-so         Build shared library (.so or .dll). Useful if you want
-                          to load the model dynamically (via the load-libs=
-                          omnetpp.ini or the -l Cmdenv/Tkenv command-line option).
-    -a, --make-lib        Create static library (.a or .lib).
-    -S, --fordll          Compile C++ files for use in DLLs; see -p option.
-                          The -s (build shared library) option implies this one.
-    -w, --withobjects     Link with all object files found in -I directories,
-                          or add them to the created library. OBSOLETE.
-    -u name, --userinterface name
-                          Selects the user interface libraries to link with.
-                          Possible values are "all", "Cmdenv", and "Tkenv".
-                          Defaults to "all".
-    -Idir                 Additional NED and C++ include directory
-    -Ldir                 Add a directory to the library path
-    -llibrary             Additional library to link against. On Unix, -lfoo
-                          will link with libfoo.so or libfoo.a; on Windows,
-                          with foo.lib. The library path (see -L) will be
-                          searched in both cases.
-    -p symbol, -psymbol   The DLL export/import symbol. It will cause
-                          -P<symbol>_API to be passed to opp_msgc. Also,
-                          if target is a DLL or --fordll is specified, the
-                          <symbol>_EXPORT macro will be passed to the compiler;
-                          the source code is expected to be set up so that
-                          dll-public declarations are annotated with
-                          <symbol>_API, and <symbol>_EXPORT causes <symbol>_API
-                          to be defined as __declspec(dllexport).
-    -i filename, --includefragment filename
-                          Append file to near end of Makefile. The file
-                          makefrag.vc (if exists) is appended automatically
-                          if no -i options are given. This option is useful
-                          if a source file (.ned, .msg or .cc) is to be
-                          generated from other files.
-    object file or library
-                          Arguments will simply get added to the linker (or
-                          librarian) command line. Thus, wildcards, and macros
-                          such as \$(CONFIGNAME) are accepted, and will be
-                          resolved at build time.
-
-Default output is Makefile (with --nmake: Makefile.vc), which you can invoke
-by typing "make" (with nmake: "nmake -f Makefile.vc").
-
-The contents of the makefrag file (with --nmake: makefrag.vc) will be built
-into the generated makefile, letting you to override the default target,
-change variables, etc.
-
-END
-}
-
-
 sub template()
 {
     #
@@ -1097,7 +1099,10 @@ LIBS ={@dir:libpathdirs} {-L}{dir}{/@} {@lib:libs} {-l}{lib}{.lib}{/@}
 {libpathdirs:}{~nmake:}LIBS +={@dir:libpathdirs} -Wl,-rpath,{dir}{/@}
 
 # Output directory
-O = {outdir}/$(CONFIGNAME)/{subpath}
+### Note: these variables are public API (see help text), don't change
+PROJECT_OUTPUT_DIR = {outdir}
+PROJECTRELATIVE_PATH = {subpath}
+O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 
 # Object files for local .{cc} and .msg files
 OBJS = {objs}

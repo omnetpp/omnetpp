@@ -3,6 +3,8 @@
 	* opp_makemake: use individual targets for each sub-make directory,
 	instead of iterating over $(SUBMAKE_DIRS); also removed $(SUBMAKE_DIRS)
 
+	* opp_makemake: other minor refinements
+
 2008-09-30  Andras Varga
 
 	* opp_makemake: added $(LDFLAGS) to the command line when building
