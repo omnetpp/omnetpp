@@ -1,0 +1,13 @@
+%description:
+Test the --deep option with -X. (don't build anything)
+
+%file: top.msg
+some syntax error
+
+%file: a/a.msg
+another syntax error
+
+%file: build
+all:
+	$(OPP_MAKEMAKE) --deep -X.
+

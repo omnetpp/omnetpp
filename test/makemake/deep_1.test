@@ -1,0 +1,23 @@
+%description:
+Test the --deep option
+
+%file: top.msg
+message Top {}
+
+%file: a/a.msg
+message A {}
+
+%file: b/b.msg
+message B {}
+
+%file: build
+all:
+	$(OPP_MAKEMAKE) --deep
+
+%contains: classlist.out
+class A
+%contains: classlist.out
+class B
+%contains: classlist.out
+class Top
+

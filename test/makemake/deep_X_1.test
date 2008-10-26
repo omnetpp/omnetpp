@@ -1,0 +1,33 @@
+%description:
+Test the --deep option with -X (exclude) option
+
+%file: top.msg
+message Top {}
+
+%file: a/a.msg
+message A {}
+
+%file: a/b/b.msg
+message B {}
+
+%file: bad/x.msg
+some syntax error
+
+%file: a/ugly/x.msg
+another syntax error
+
+%file: a/b/stupid/x.msg
+more syntax errors
+
+
+%file: build
+all:
+	$(OPP_MAKEMAKE) --deep -Xbad -Xa/ugly -Xa/b/stupid
+
+%contains: classlist.out
+class A
+%contains: classlist.out
+class B
+%contains: classlist.out
+class Top
+
