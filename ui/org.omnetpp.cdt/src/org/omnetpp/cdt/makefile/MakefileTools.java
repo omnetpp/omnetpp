@@ -15,6 +15,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceVisitor;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -107,9 +108,18 @@ public class MakefileTools {
                 !((IContainer)resource).isTeamPrivateMember()); 
     }
 
+    /**
+     * Converts inputPath to be relative to referenceDir. This is not possible
+     * if the two paths are from different devices, so in this case the method
+     * returns the original inputPath unchanged.
+     */
     public static IPath makeRelativePath(IPath inputPath, IPath referenceDir) {
+        Assert.isTrue(inputPath.isAbsolute());
+        Assert.isTrue(referenceDir.isAbsolute());
         if (referenceDir.equals(inputPath))
             return new Path(".");
+        if (!StringUtils.equals(inputPath.getDevice(), referenceDir.getDevice()))
+            return inputPath;
         int commonPrefixLen = inputPath.matchingFirstSegments(referenceDir);
         int upLevels = referenceDir.segmentCount() - commonPrefixLen;
         return new Path(StringUtils.removeEnd(StringUtils.repeat("../", upLevels), "/")).append(inputPath.removeFirstSegments(commonPrefixLen));

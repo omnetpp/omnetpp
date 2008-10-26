@@ -89,7 +89,6 @@ import org.omnetpp.common.ui.SizeConstraint;
 //XXX    "Compile" fulre: ha nem akarod hogy barmit forditson, excludold ki a makefile foldert!
 //XXX Options preview lapra kitenni helpet (melyik opcio mit csinal)
 //XXX hintet kiirni: folderek kozotti sorrendet a makefrag-ban kellene megadni (illetve meg lehetne probalni autodetektalni)
-//XXX hintet kiirni: source location tree (tele/ures folder) es makefile tree teljesen fuggetlen
 //XXX recurse: tooltipre kiirni hogy tenylegesen hova fog bemenni (ne csak az options listbol legyen)
 //XXX project template-ekben az out/ dirt kiexcludolni?
 @SuppressWarnings("restriction")

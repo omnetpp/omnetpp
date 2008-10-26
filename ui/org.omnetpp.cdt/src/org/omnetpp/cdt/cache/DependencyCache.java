@@ -57,7 +57,7 @@ import org.omnetpp.common.util.StringUtils;
 // when we write a "Cross-folder Dependencies View" (using DOT to render the graph?)
 //XXX mindenki a SAJAT projektre tegye csak r� a markereket, a referenced projekteket hagyja ki! -- igy minden marker csak 1x lesz!
 public class DependencyCache {
-	private static boolean debug = true;
+	private static boolean debug = false;
     // the standard C/C++ headers (we'll ignore those #include directives)
     protected static final Set<String> standardHeaders = new HashSet<String>(Arrays.asList(MakefileTools.ALL_STANDARD_HEADERS.split(" ")));
 

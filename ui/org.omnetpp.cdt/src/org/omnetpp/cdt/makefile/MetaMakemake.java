@@ -24,7 +24,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.CDTUtils;
-import org.omnetpp.cdt.cache.DependencyCache;
 import org.omnetpp.cdt.makefile.MakemakeOptions.Type;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.StringUtils;
@@ -115,8 +114,7 @@ public class MetaMakemake {
                 if (MakefileTools.makefileCovers(makefileFolder, srcFolder, options.isDeep, options.exceptSubdirs, makeFolders))  
                     for (IContainer dep : folderDeps.get(srcFolder))
                         if (!MakefileTools.makefileCovers(makefileFolder, dep, options.isDeep, options.exceptSubdirs, makeFolders)) // only add if "dep" is outside "folder"!  
-                            if (!translatedOptions.includeDirs.contains(dep.getLocation().toString()))  // if not added yet
-                                translatedOptions.includeDirs.add(dep.getLocation().toString()); //FIXME not as absolute path!!!
+                            addLocationToDirList(dep, translatedOptions.includeDirs, makefileFolder);
 
             // clear processed setting
             translatedOptions.metaAutoIncludePath = false;
@@ -278,14 +276,18 @@ public class MetaMakemake {
         return languageSetting;
     }
 
+    protected static void addLocationToDirList(IContainer input, List<String> dirList, IContainer reference) {
+        String relativePath = makeRelativePath(input, reference);
+        if (!dirList.contains(input.getLocation().toString()) && !dirList.contains(relativePath))
+            dirList.add(relativePath);
+    }
+
     protected static String makeRelativePath(IContainer input, IContainer reference) {
-        String path;
-        // use relative path if the two projects are in the same OS directory, otherwise absolute path
+        // use relative path if the two projects are in the same directory on the disk, otherwise absolute path
         if (input.getProject().getLocation().removeLastSegments(1).equals(reference.getProject().getLocation().removeLastSegments(1)))
-            path = MakefileTools.makeRelativePath(input.getLocation(), reference.getLocation()).toString();
+            return MakefileTools.makeRelativePath(input.getLocation(), reference.getLocation()).toString();
         else
-            path = input.getLocation().toString();
-        return path;
+            return input.getLocation().toString();
     }
 
 }
