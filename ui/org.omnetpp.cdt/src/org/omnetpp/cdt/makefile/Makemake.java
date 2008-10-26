@@ -231,8 +231,12 @@ public class Makemake {
         for (String i : submakeDirs)
             submakeNames.add(i.replaceAll("[^a-zA-Z0-9_]", "__"));
 
+        // process extraArgs (do ".o" <--> ".obj" translation; NOTE: we don't try to
+        // translate library names, because libs are supposed to be given via -L/-l)
         for (String arg : options.extraArgs) {
             Assert.isTrue(!StringUtils.isEmpty(arg), "empty makemake argument found");
+            arg = arg.replaceFirst("^'(.*)'$", "$1"); // remove possible quotes (cmd.exe does not do it)
+            arg = arg.replaceFirst(".o(bj)?$", "."+objExt);
             extraObjs.add(arg);
         }
 

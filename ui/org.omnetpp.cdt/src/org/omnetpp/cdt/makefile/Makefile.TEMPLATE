@@ -25,7 +25,10 @@ LIBS ={@dir:libpathdirs} {-L}{dir}{/@} {@lib:libs} {-l}{lib}{.lib}{/@}
 {libpathdirs:}{~nmake:}LIBS +={@dir:libpathdirs} -Wl,-rpath,{dir}{/@}
 
 # Output directory
-O = {outdir}/$(CONFIGNAME)/{subpath}
+### Note: these variables are public API (see help text), don't change
+PROJECT_OUTPUT_DIR = {outdir}
+PROJECTRELATIVE_PATH = {subpath}
+O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 
 # Object files for local .{cc} and .msg files
 OBJS = {objs}
@@ -42,6 +45,8 @@ MSGFILES ={@msg:msgfiles} \
 {makefilevariables:}# Other makefile variables (-K)
 {@d:makefilevariables}{d}
 {/@}
+
+{nmake:}MAKE=nmake -nologo -f Makefile.vc
 
 #------------------------------------------------------------------------------
 
@@ -127,7 +132,8 @@ all: $(TARGET)
 {nolink:}$(TARGET): $(OBJS) {submakedirs?submakedirs} {makefile}
 {nolink:}	@{nmake?rem}{~nmake?#} Do nothing
 
-### Subdir targets. Note that nmake.exe doesn't support .PHONY
+### Subdir targets. Note that nmake.exe doesn't support .PHONY, and does not
+### print Entering/Leaving messages like gnu make.
 {submakedirs:}submakedirs: {@i:submakenames} {i}_dir{/@}
 {submakedirs:}
 {~nmake:}.PHONY:{@i:submakenames} {i}{/@}
@@ -135,7 +141,7 @@ all: $(TARGET)
 {~nmake:}{/@}
 {submakedirs:}
 {@i:submakenames,dir:submakedirs}{i}_dir:
-{nmake:}	echo [Entering {dir}] && cd {dir} && nmake /nologo /f Makefile.vc && echo [Leaving {dir}]
+{nmake:}	echo [Entering {dir}] && cd {dir} && $(MAKE) && echo [Leaving {dir}]
 {~nmake:}	cd {dir} && $(MAKE)
 
 {/@}
@@ -168,8 +174,7 @@ all: $(TARGET)
 
 ### Utility target for running opp_msgc; otherwise unused by this makefile
 msgheaders: $(MSGFILES:.msg=_m.h)
-{@i:submakedirs}{nmake:}	cd {i} && nmake /nologo /f Makefile.vc msgheaders
-{~nmake:}	cd {i} && $(MAKE) msgheaders
+{@i:submakedirs}	cd {i} && $(MAKE) msgheaders
 {/@}
 
 ### clean, depend, etc.
@@ -185,20 +190,13 @@ clean:
 {~nmake:}{/@}
 {nmake:}{@bsdir:backslashedsourcedirs}	-del {bsdir}\*_m.{cc} {bsdir}\*_m.h 2>nul
 {nmake:}{/@}
-{@i:submakedirs}{nmake:}	-cd {i} && nmake /nologo /f Makefile.vc clean
-{~nmake:}	-cd {i} && $(MAKE) clean
+{@i:submakedirs}	-cd {i} && $(MAKE) clean
 {/@}
 
 depend:
 	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile{nmake?.vc} -P{nmake?^}{~nmake?\$}$O/ -- $(MSG_CC_FILES) {@d:sourcedirs} {d}/*.{cc}{/@}
-{@i:submakedirs}{nmake:}	cd {i} && nmake /nologo /f Makefile.vc depend
-{~nmake:}	cd {i} && $(MAKE) depend
-{/@}
-
-makefiles:
-	{progname} {args}
-{@i:submakedirs}{nmake:}	cd {i} && nmake /nologo /f Makefile.vc makefiles
-{~nmake:}	cd {i} && $(MAKE) makefiles
+{@i:submakedirs}{nmake:}	-cd {i} && if exist Makefile.vc $(MAKE) depend
+{~nmake:}	-cd {i} && if [ -f Makefile ]; then $(MAKE) depend; fi
 {/@}
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
