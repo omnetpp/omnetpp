@@ -5,6 +5,8 @@
 
 	* opp_makemake: other minor refinements
 
+	* opp_test improvements: -c, %testprog
+
 2008-09-30  Andras Varga
 
 	* opp_makemake: added $(LDFLAGS) to the command line when building

@@ -39,6 +39,8 @@ Usage in nutshell:
 
 All files will be created in the work directory.
 
+Supported .test file entry types: (legend: 1=may occur once, v=value expected,
+b=has body, f=value is filename)
 ';
 
 # .test file possible entries. legend: 1=once, v=has value, b=has body, f=value is filename
@@ -63,6 +65,7 @@ All files will be created in the work directory.
     'contains-regex'     => 'vbf',
     'not-contains-regex' => 'vbf',
 
+    'testprog'           => '1v',
     'exitcode'           => '1v',
     'ignore-exitcode'    => '1v'
 );
@@ -84,6 +87,9 @@ $arg0 = "opp_test";
 if ($#ARGV == -1)
 {
     print $Usage;
+    foreach my $i (sort keys(%Entries)) {
+        print "   \%$i:\t($Entries{$i})\n";
+    }
     exit;
 }
 
@@ -158,7 +164,7 @@ if (! -d $workdir) {
     exit(1);
 }
 
-# produce name of test program
+# produce name of test program (only used for tests not containing '%testprog')
 if ($testprogram eq '') {
     $workdir =~ /([^\/\\]*)$/;
     $tmp = $1;
@@ -198,16 +204,6 @@ if ($mode eq 'run' || $mode eq 'check')
 
     @unresolved_tests = ();
     @failed_tests = ();
-
-    if ($mode eq 'run' && ! -f "$workdir/$testprogram")
-    {
-        print STDERR "$arg0: error: test program '$workdir/$testprogram' not found\n"; exit(1);
-    }
-
-    if ($mode eq 'run' && !$isWindows && ! -x "$workdir/$testprogram")
-    {
-        print STDERR "$arg0: error: test program '$workdir/$testprogram' is not executable\n"; exit(1);
-    }
 
     foreach $testfilename (@filenames)
     {
@@ -467,25 +463,28 @@ sub testcase_run()
     $outfname = "test.out";
     $errfname = "test.err";
 
-    # delete temp files before running the test case
-    foreach $key (keys(%values))
+    if ($mode eq 'run')
     {
-        if ($key =~ /^contains/)  # any form of "contains-..."
+        # delete temp files before running the test case
+        foreach $key (keys(%values))
         {
-            # read file
-            if ($values{$key} eq 'stdout') {
-                $infname = $outfname;
-            }
-            elsif ($values{$key} eq 'stderr') {
-                $infname = $errfname;
-            }
-            else {
-                $infname = $testname."/".$values{$key};
-            }
+            if ($key =~ /^contains/)  # any form of "contains-..."
+            {
+                # read file
+                if ($values{$key} eq 'stdout') {
+                    $infname = $outfname;
+                }
+                elsif ($values{$key} eq 'stderr') {
+                    $infname = $errfname;
+                }
+                else {
+                    $infname = $testname."/".$values{$key};
+                }
 
-            if ($mode eq 'run' && -f $workdir."/".$infname) {
-                print "  deleting old copy of file `$infname'\n" if ($debug);
-                unlink $workdir."/".$infname;
+                if (-f $workdir."/".$infname) {
+                    print "  deleting old copy of file `$infname'\n" if ($debug);
+                    unlink $workdir."/".$infname;
+                }
             }
         }
     }
@@ -498,8 +497,19 @@ sub testcase_run()
 
     # run the program
     if ($mode eq 'run') {
-        $sep = $isWindows ? "\\" : "/";
-        $exitcode = exec_program("..$sep$testprogram -u Cmdenv $extraargs -f $inifname", "$workdir/$testname", $outfname, $errfname);
+        if ($values{'testprog(1)'} ne '') {
+            $exitcode = exec_program($values{'testprog(1)'}." $extraargs", "$workdir/$testname", $outfname, $errfname);
+        }
+        else {
+            if (! -f "$workdir/$testprogram") {
+                print STDERR "$arg0: error: test program '$workdir/$testprogram' not found\n"; exit(1);
+            }
+            if (!$isWindows && ! -x "$workdir/$testprogram") {
+                print STDERR "$arg0: error: test program '$workdir/$testprogram' is not executable\n"; exit(1);
+            }
+            $sep = $isWindows ? "\\" : "/";
+            $exitcode = exec_program("..$sep$testprogram -u Cmdenv $extraargs -f $inifname", "$workdir/$testname", $outfname, $errfname);
+        }
         if ($exitcode != 0) {
             if ($exitcode == -1) {
                 unresolved($testfilename, "could not execute test program");
