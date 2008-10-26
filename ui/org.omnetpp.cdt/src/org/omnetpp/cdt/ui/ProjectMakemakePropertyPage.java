@@ -38,6 +38,8 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -74,9 +76,8 @@ import org.omnetpp.common.ui.SizeConstraint;
  *
  * @author Andras
  */
-//XXX recurse: per-submake targets
 //XXX implement "mark as top"
-
+//XXX warn if there're differences in source entries across configurations!
 //FIXME source folder changes immediatly get committed (no cancel!), but they aren't visible in cdt page. use CDTPropertyManager!
 //FIXME warning if there's no makefile in a "custom makefile" folder
 //FIXME warning ha egy source foldert egy makefile sem fed be
@@ -272,6 +273,14 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         treeViewer.getTree().addSelectionListener(new SelectionAdapter() {
             public void widgetDefaultSelected(SelectionEvent e) {
                 editFolderOptions(getTreeSelection());
+            }
+        });
+        treeViewer.getTree().addKeyListener(new KeyListener() {
+            public void keyPressed(KeyEvent e) {
+                if (e.keyCode == '\r' && e.stateMask == SWT.ALT)  // Alt+Enter
+                    editFolderOptions(getTreeSelection());
+            }
+            public void keyReleased(KeyEvent e) {
             }
         });
 

@@ -24,6 +24,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.CDTUtils;
+import org.omnetpp.cdt.cache.DependencyCache;
 import org.omnetpp.cdt.makefile.MakemakeOptions.Type;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.StringUtils;
@@ -61,8 +62,10 @@ public class MetaMakemake {
         MakemakeOptions translatedOptions = options.clone();
 
         IProject project = makefileFolder.getProject();
-        Activator.getDependencyCache().dumpPerFileDependencies(project);
         Map<IContainer, Set<IContainer>> folderDeps = Activator.getDependencyCache().getFolderDependencies(project);
+
+        //Activator.getDependencyCache().dumpPerFileDependencies(project);
+        //DependencyCache.dumpFolderDependencies(folderDeps);
 
         // add -f, and potentially --nmake 
         translatedOptions.force = true;
@@ -109,11 +112,11 @@ public class MetaMakemake {
         // add extra include folders (this code assumes that exceptSubdirs are already filled in at this point)
         if (options.metaAutoIncludePath && folderDeps != null) {
             for (IContainer srcFolder : folderDeps.keySet())
-                if (MakefileTools.makefileCovers(makefileFolder, srcFolder, options.isDeep, options.exceptSubdirs))  
+                if (MakefileTools.makefileCovers(makefileFolder, srcFolder, options.isDeep, options.exceptSubdirs, makeFolders))  
                     for (IContainer dep : folderDeps.get(srcFolder))
-                        if (!MakefileTools.makefileCovers(makefileFolder, dep, options.isDeep, options.exceptSubdirs)) // only add if "dep" is outside "folder"!  
+                        if (!MakefileTools.makefileCovers(makefileFolder, dep, options.isDeep, options.exceptSubdirs, makeFolders)) // only add if "dep" is outside "folder"!  
                             if (!translatedOptions.includeDirs.contains(dep.getLocation().toString()))  // if not added yet
-                                translatedOptions.includeDirs.add(dep.getLocation().toString());
+                                translatedOptions.includeDirs.add(dep.getLocation().toString()); //FIXME not as absolute path!!!
 
             // clear processed setting
             translatedOptions.metaAutoIncludePath = false;

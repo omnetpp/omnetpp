@@ -57,7 +57,7 @@ import org.omnetpp.common.util.StringUtils;
 // when we write a "Cross-folder Dependencies View" (using DOT to render the graph?)
 //XXX mindenki a SAJAT projektre tegye csak r� a markereket, a referenced projekteket hagyja ki! -- igy minden marker csak 1x lesz!
 public class DependencyCache {
-	private static boolean debug = false;
+	private static boolean debug = true;
     // the standard C/C++ headers (we'll ignore those #include directives)
     protected static final Set<String> standardHeaders = new HashSet<String>(Arrays.asList(MakefileTools.ALL_STANDARD_HEADERS.split(" ")));
 
@@ -278,16 +278,28 @@ public class DependencyCache {
             // parse all C++ source files for #include; also warn for linked-in files
             final ICSourceEntry[] sourceEntries = CDTUtils.getSourceEntries(project);
             project.accept(new IResourceVisitor() {
+                // variables for caching CDTUtils.isExcluded(), which is expensive
+                IContainer lastFolder = null;
+                boolean lastFolderIsExcluded = false; 
+                
                 public boolean visit(IResource resource) throws CoreException {
                     // warn for linked resources
                     if (resource.isLinked())
                         addMarker(markerSync, resource, IMarker.SEVERITY_ERROR, "Linked resources are not supported by Makefiles", -1);
-                    if (MakefileTools.isNonGeneratedCppFile(resource) || MakefileTools.isMsgFile(resource))
-                        checkFileIncludes((IFile)resource);
-                    return MakefileTools.isGoodFolder(resource) && !CDTUtils.isExcluded(resource, sourceEntries);
+                    if (resource instanceof IFile) {
+                        IContainer folder = resource.getParent();
+                        if (folder != lastFolder) {
+                            lastFolder = folder;
+                            lastFolderIsExcluded = CDTUtils.isExcluded(folder, sourceEntries);
+                        }
+                        if (!lastFolderIsExcluded)
+                            if (MakefileTools.isNonGeneratedCppFile(resource) || MakefileTools.isMsgFile(resource))
+                                checkFileIncludes((IFile)resource);
+                    }
+                    return MakefileTools.isGoodFolder(resource);
                 }
             });
-
+            
             // project is OK now
             fileIncludesUpToDate.add(project);
         }
@@ -512,7 +524,7 @@ public class DependencyCache {
     public static void dumpFolderDependencies(Map<IContainer, Set<IContainer>> deps) {
         System.out.println("Folder dependencies:");
         for (IContainer folder : deps.keySet()) {
-            System.out.print("Folder " + folder.getFullPath().toString() + " depends on: ");
+            System.out.print("  " + folder.getFullPath().toString() + " depends on: ");
             for (IContainer dep : deps.get(folder)) {
                 System.out.print(" " + MakefileTools.makeRelativePath(dep.getFullPath(), folder.getFullPath()).toString());
             }

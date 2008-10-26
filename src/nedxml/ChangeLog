@@ -1,3 +1,7 @@
+2008-10-26  Andras Varga
+
+	* opp_msgc: generates boilerplate code for dll export/import symbol
+
 2008-08-28  Andras Varga
 
 	* DatarateChannel parameters to be declared with "default()"
@@ -47,7 +51,7 @@
 	- @group(<string>)
 	- @hint(<string>)
 
-	Note: by default, getters for a field named "isFoo" is going to be 
+	Note: by default, getter for a field named "isFoo" is going to be 
 	named "getIsFoo". To change this to "isFoo", specify @getter(isFoo)
 	on the field.
 

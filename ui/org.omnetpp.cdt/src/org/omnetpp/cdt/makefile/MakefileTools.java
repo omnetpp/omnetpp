@@ -132,9 +132,12 @@ public class MakefileTools {
      * Utility function to determine whether a given container is covered by
      * a given makefile. CDT source dirs and exclusions (CSourceEntry) are ignored, 
      * instead there is excludedFolders (list of folder-relative paths to be excluded;
-     * it excludes subtrees not single folders).
+     * it excludes subtrees not single folders), and makeFolders (i.e. the given folder
+     * may falls into the tree of another makefile).
+     * 
+     * Both excludedFolders and makeFolders may be null.
      */
-    public static boolean makefileCovers(IContainer makefileFolder, IContainer folder, boolean deep, List<String> excludedFolders) {
+    public static boolean makefileCovers(IContainer makefileFolder, IContainer folder, boolean deep, List<String> excludedFolders, List<IContainer> makeFolders) {
         if (!deep) {
             return folder.equals(makefileFolder);
         }
@@ -146,6 +149,12 @@ public class MakefileTools {
                 for (String exludedFolder : excludedFolders) 
                     if (new Path(exludedFolder).isPrefixOf(folderRelativePath))
                         return false; // excluded
+            }
+            if (makeFolders != null) {
+                // we visit the ancestors of this folder; if we find another makefile first, the answer is "false"
+                for (IContainer tmp = folder; !tmp.equals(makefileFolder); tmp = tmp.getParent())
+                    if (makeFolders.contains(tmp))
+                        return false;
             }
             return true;
         }

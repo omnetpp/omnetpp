@@ -314,18 +314,17 @@ public class Makemake {
         StringBuilder deps = new StringBuilder();
         //String sep = " ";
         String sep = " \\\n\t";
-        for (IContainer srcFolder : perFileDeps.keySet()) {
-            if (MakefileTools.makefileCovers(folder, srcFolder, options.isDeep, options.exceptSubdirs)) {
-                Map<IFile,Set<IFile>> fileDepsMap = perFileDeps.get(srcFolder);
-                for (IFile srcFile : fileDepsMap.keySet()) {
-                    if (srcFile.getFileExtension().equals(ccExt)) {
-                        String objFileName = "$O/" + abs2rel(srcFile.getLocation()).toString().replaceFirst("\\.[^.]+$", "." + objExt);
-                        deps.append(objFileName + ": ");
-                        deps.append(abs2rel(srcFile.getLocation()).toString());
-                        for (IFile includeFile : fileDepsMap.get(srcFile))
-                            deps.append(sep + abs2rel(includeFile.getLocation()).toString());
-                        deps.append("\n");
-                    }
+        for (String srcDir : sourceDirs) {
+            IContainer srcFolder = folder.getFolder(new Path(srcDir));
+            Map<IFile,Set<IFile>> fileDepsMap = perFileDeps.get(srcFolder);
+            for (IFile srcFile : fileDepsMap.keySet()) {
+                if (srcFile.getFileExtension().equals(ccExt)) {
+                    String objFileName = "$O/" + abs2rel(srcFile.getLocation()).toString().replaceFirst("\\.[^.]+$", "." + objExt);
+                    deps.append(objFileName + ": ");
+                    deps.append(abs2rel(srcFile.getLocation()).toString());
+                    for (IFile includeFile : fileDepsMap.get(srcFile))
+                        deps.append(sep + abs2rel(includeFile.getLocation()).toString());
+                    deps.append("\n");
                 }
             }
         }
