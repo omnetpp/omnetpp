@@ -27,7 +27,6 @@ exit 0;
 # instead of *choosing* between .cc and .cpp, both files should be recognized and compiled! (remove -e option???? issue: what should be the ext for _m.* files?)
 # with --deep, -d<subdir> should imply -X<subdir> (in Java too)
 # output dir should be ignored (-X) too!
-# convert between .o and .obj in extraArgs!
 
 sub usage()
 {
@@ -531,7 +530,15 @@ sub makemake()
         push(@submakeNames, $i2);
     }
 
-    @extraObjs = @extraArgs;  #FIXME rename extraArgs?
+    # process extraArgs (do ".o" <--> ".obj" translation; NOTE: we don't try to
+    # translate library names, because libs are supposed to be given via -L/-l)
+    @extraObjs = ();
+    foreach $i (@extraArgs) {
+        my $i2 = $i;
+        $i2 =~ s/^'(.*)'$/$1/g; # remove possible quotes (cmd.exe does not do it)
+        $i2 =~ s/\.o(bj)?\b/.$objExt/g;
+        push(@extraObjs, $i2);
+    }
 
     @sources = ();
     push(@sources, @ccfiles) if ($ccExt eq "cc");
