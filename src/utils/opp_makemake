@@ -667,10 +667,10 @@ sub collectDirs($;$)
 {
     my ($dir,$exceptDirsRef) = @_;
     my @exceptDirs = @$exceptDirsRef;
-
-    my @result = ( canonicalize($dir) );
-    foreach $f (glob("$dir/*")) {
-        if (isGoodDir($f, \@exceptDirs)) {
+    my @result = ();
+    if (isGoodDir($dir, \@exceptDirs)) {
+        push(@result, canonicalize($dir));
+        foreach $f (glob("$dir/*")) {
             push(@result, collectDirs($f, \@exceptDirs));
         }
     }
@@ -691,7 +691,7 @@ sub isGoodDir($;$)
 
     my $dirname = $dirpath;
     $dirname =~ s|^.*/||;
-    if ($dirname =~ /^\./ || grep(/^\Q$dirname\E$/, @IGNORABLE_DIRS)) {
+    if ($dirname =~ /^\.(.+)/ || grep(/^\Q$dirname\E$/, @IGNORABLE_DIRS)) {
         return 0;
     }
 
