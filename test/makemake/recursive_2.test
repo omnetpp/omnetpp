@@ -10,13 +10,17 @@ message A {}
 %file: b/b.msg
 message B {}
 
-%file: c/c.msg
-message C {}
-
 %file: build
 OPP_MAKEMAKE=call opp_nmakemake -f
 all:
-	$(OPP_MAKEMAKE) -r
-	cd a && $(OPP_MAKEMAKE)
-	cd b && $(OPP_MAKEMAKE)
-	cd c && $(OPP_MAKEMAKE)
+	$(OPP_MAKEMAKE) -r -o work '$$O/a/*.o' '$$O/b/*.o'
+	cd a && $(OPP_MAKEMAKE) --nolink
+	cd b && $(OPP_MAKEMAKE) --nolink
+
+%contains: classlist.out
+class A
+%contains: classlist.out
+class B
+%contains: classlist.out
+class Top
+

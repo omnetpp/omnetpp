@@ -28,7 +28,7 @@ for /d %%i in (*) do echo %%i && cd %~dp0\work\%%i && work.exe -h classes > clas
 
 echo Checking classlists...
 cd %~dp0
-call opp_test %OPT% -r -v %TESTFILES% || goto end
+call opp_test %OPT% -c -v %TESTFILES% || goto end
 
 echo.
 echo Results can be found in work/
