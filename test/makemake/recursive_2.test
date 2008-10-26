@@ -10,16 +10,18 @@ message A {}
 %file: b/b.msg
 message B {}
 
-%file: build
+%testprog: work -h classes
+%ignore-exitcode: 1
+%file: buildspec
 all:
 	$(OPP_MAKEMAKE) -r '$$O/a/*.o' '$$O/b/*.o'
 	cd a && $(OPP_MAKEMAKE) --nolink
 	cd b && $(OPP_MAKEMAKE) --nolink
 
-%contains: classlist.out
+%contains: stdout
 class A
-%contains: classlist.out
+%contains: stdout
 class B
-%contains: classlist.out
+%contains: stdout
 class Top
 

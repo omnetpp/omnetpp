@@ -7,7 +7,13 @@ some syntax error
 %file: a/a.msg
 another syntax error
 
-%file: build
+
+%testprog: work -h classes
+%ignore-exitcode: 1
+%file: buildspec
 all:
 	$(OPP_MAKEMAKE) --deep -X.
+
+%contains: stdout
+class cMessage
 

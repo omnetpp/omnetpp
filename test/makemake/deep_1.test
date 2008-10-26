@@ -10,14 +10,16 @@ message A {}
 %file: b/b.msg
 message B {}
 
-%file: build
+%testprog: work -h classes
+%ignore-exitcode: 1
+%file: buildspec
 all:
 	$(OPP_MAKEMAKE) --deep
 
-%contains: classlist.out
+%contains: stdout
 class A
-%contains: classlist.out
+%contains: stdout
 class B
-%contains: classlist.out
+%contains: stdout
 class Top
 

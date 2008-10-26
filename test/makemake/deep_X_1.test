@@ -19,15 +19,16 @@ another syntax error
 %file: a/b/stupid/x.msg
 more syntax errors
 
-
-%file: build
+%testprog: work -h classes
+%ignore-exitcode: 1
+%file: buildspec
 all:
 	$(OPP_MAKEMAKE) --deep -Xbad -Xa/ugly -Xa/b/stupid
 
-%contains: classlist.out
+%contains: stdout
 class A
-%contains: classlist.out
+%contains: stdout
 class B
-%contains: classlist.out
+%contains: stdout
 class Top
 
