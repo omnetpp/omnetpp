@@ -7,6 +7,7 @@ rem
 set TESTFILES=%*
 if "x%TESTFILES%" == "x" set TESTFILES=*.test
 
+:: Extract files
 mkdir work 2>nul
 call opp_test %OPT% -g -v %TESTFILES% || goto end
 
@@ -19,9 +20,10 @@ for /d %%i in (*) do echo %%i && cd %~dp0\work\%%i && nmake "OPP_MAKEMAKE=call o
 
 echo Build...
 cd %~dp0\work
-for /d %%i in (*) do echo %%i && cd %~dp0\work\%%i && nmake -f Makefile.vc || echo BUILD FAILED: %%i
+call opp_nmakemake -f -r --nolink && nmake -f Makefile.vc || echo BUILD FAILED && goto end
 
-echo Running the tests...
+:: Run the tests
+echo.
 cd %~dp0
 call opp_test %OPT% -r -v %TESTFILES% || goto end
 
