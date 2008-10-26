@@ -139,7 +139,7 @@ $progname [options] [object files or libraries]
                           Useful macros are \$O (the output location of this
                           makefile), \$(PROJECT_OUTPUT_PATH) and \$(CONFIGNAME);
                           see the generated makefiles for more. On Unix you
-                          need to single-quote them ('$O') against getting
+                          need to single-quote them ('\$O') against getting
                           resolved prematurely by the shell.
 
 Default output is Makefile (with --nmake it is Makefile.vc), which you can
