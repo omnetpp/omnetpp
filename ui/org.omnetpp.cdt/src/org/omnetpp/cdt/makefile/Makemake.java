@@ -315,17 +315,19 @@ public class Makemake {
         //String sep = " ";
         String sep = " \\\n\t";
         for (String srcDir : sourceDirs) {
-            IContainer srcFolder = folder.getFolder(new Path(srcDir));
+            IContainer srcFolder = srcDir.equals(".") ? folder : folder.getFolder(new Path(srcDir));
             Map<IFile,Set<IFile>> fileDepsMap = perFileDeps.get(srcFolder);
-            for (IFile srcFile : fileDepsMap.keySet()) {
-                if (srcFile.getFileExtension().equals(ccExt)) {
-                    String objFileName = "$O/" + abs2rel(srcFile.getLocation()).toString().replaceFirst("\\.[^.]+$", "." + objExt);
-                    deps.append(objFileName + ": ");
-                    deps.append(abs2rel(srcFile.getLocation()).toString());
-                    for (IFile includeFile : fileDepsMap.get(srcFile))
-                        deps.append(sep + abs2rel(includeFile.getLocation()).toString());
-                    deps.append("\n");
-                }
+            if (fileDepsMap != null) {
+            	for (IFile srcFile : fileDepsMap.keySet()) {
+            		if (srcFile.getFileExtension().equals(ccExt)) {
+            			String objFileName = "$O/" + abs2rel(srcFile.getLocation()).toString().replaceFirst("\\.[^.]+$", "." + objExt);
+            			deps.append(objFileName + ": ");
+            			deps.append(abs2rel(srcFile.getLocation()).toString());
+            			for (IFile includeFile : fileDepsMap.get(srcFile))
+            				deps.append(sep + abs2rel(includeFile.getLocation()).toString());
+            			deps.append("\n");
+            		}
+            	}
             }
         }
 

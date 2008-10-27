@@ -618,7 +618,7 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
         else if (numSimProgs > 1) {
             // choose from them
             List<IFile> files = new ArrayList<IFile>();
-            for (String path : simProgs.split(" "))
+            for (String path : simProgs.trim().split(" +"))
                 files.add(pathToIFile(path));
             return chooseFromExeFiles(files);
         }

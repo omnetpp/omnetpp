@@ -142,6 +142,21 @@ public class MetaMakemake {
             translatedOptions.metaUseExportedLibs = false;
         }
 
+        BuildSpecification buildSpec = BuildSpecification.readBuildSpecFile(project);  // FIXME get from outside
+        for (IContainer f : buildSpec.getMakemakeFolders()) {
+        	if (!f.equals(makefileFolder)) { 
+        		MakemakeOptions opt = buildSpec.getMakemakeOptions(f);
+        		if (opt!=null && (opt.type==Type.SHAREDLIB || opt.type==Type.STATICLIB)) {
+        			String outdir = StringUtils.isEmpty(opt.outRoot) ? "out" : opt.outRoot; //FIXME hardcoded default!!!
+        			String libdir = makeRelativePath(f.getProject(), makefileFolder) + "/" + new Path(outdir).append("$(CONFIGNAME)").append(f.getProjectRelativePath()).toString();
+        			translatedOptions.libDirs.add(libdir);
+        			if (opt.type==Type.SHAREDLIB && !StringUtils.isEmpty(opt.dllSymbol))
+        				translatedOptions.defines.add(opt.dllSymbol + "_IMPORT");
+        		}
+        	}
+        }
+        
+        
         if (translatedOptions.metaExportLibrary) {
             // no processing required
             translatedOptions.metaExportLibrary = false;
