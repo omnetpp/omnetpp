@@ -1,11 +1,10 @@
 package org.omnetpp.cdt.ui;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.cdt.core.cdtvariables.CdtVariableException;
@@ -84,8 +83,12 @@ import org.omnetpp.common.util.StringUtils;
  *
  * @author Andras
  */
-//XXX implement "mark as top"
-
+//XXX metamakemake: -L-lel vegye fel a projectben levo tobbi makefile foldert is
+//XXX ${PrimarySourceDir} makrot elimimalni!!!!
+//XXX property page-et attenni az omnet++ kategoriaba!
+//XXX LIBRARY PATHS: ne out/configname legyen, hanem a source folder!
+//XXX add link to the C/C++ Build page too!!!
+//XXX when first sub-makefile is created (or "mark as source folder"!!!), offer to exclude the root!!!
 //XXX hintet kiirni: folderek kozotti sorrendet a makefrag-ban kellene megadni (illetve meg lehetne probalni autodetektalni)
 //XXX print hint somewhere: project root should probably be excluded if there's a submakefile!
 //XXX    "Compile" fulre: ha nem akarod hogy barmit forditson, excludold ki a makefile foldert!
@@ -716,11 +719,12 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
                 sourceEntryMap.get(entryText).add(cfg.getName());
             }
         }
-        Set<String> wrongSourceLocations = new HashSet<String>(); 
+        List<String> wrongSourceLocations = new ArrayList<String>(); 
         int numConfigs = projectDescription.getConfigurations().length;
         for (String e : sourceEntryMap.keySet())
             if (sourceEntryMap.get(e).size() != numConfigs)
                 wrongSourceLocations.add(e + " in " + StringUtils.join(sourceEntryMap.get(e), ","));
+        Collections.sort(wrongSourceLocations);
         if (!wrongSourceLocations.isEmpty())
             return "Note: Source locations are set up differently across configurations: " + StringUtils.join(wrongSourceLocations, "; ");
             
