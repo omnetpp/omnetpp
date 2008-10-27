@@ -6,6 +6,7 @@
 
 MAKE=make
 
+
 TESTFILES=$*
 if [ "x$TESTFILES" = "x" ]; then TESTFILES='*.test'; fi
 if [ ! -d work ];  then mkdir work; fi
@@ -28,7 +29,7 @@ opp_makemake -f -r --nolink && $MAKE || echo BUILD FAILED || exit 1
 # Run the tests
 echo
 cd ..
-opp_test $OPT -r -v $TESTFILES || exit 1
+PATH=.:$PATH opp_test $OPT -r -v $TESTFILES || exit 1
 
 echo
 echo Results can be found in ./work
