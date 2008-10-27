@@ -110,7 +110,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
     // controls
     protected Label errorMessageLabel;
     protected TreeViewer treeViewer;
-    protected Button markAsToplevelButton;
+    protected Button markAsRootButton;
     protected Button optionsButton;
     protected Button sourceLocationButton;
     protected Button excludeButton;
@@ -165,7 +165,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         createLabel(buttons, "", 1);
         optionsButton = createButton(buttons, SWT.PUSH, "&Options...", "Edit makefile generation options");
         createLabel(buttons, "", 1);
-        markAsToplevelButton = createButton(buttons, SWT.PUSH, "Mark as &toplevel", "Build command will invoke this makefile");
+        markAsRootButton = createButton(buttons, SWT.PUSH, "Mark as &Root", "Set root makefile to invoke (see Build Location on the C/C++ Build page)");
         createLabel(buttons, "", 1);
         Label sep = new Label(buttons, SWT.SEPARATOR | SWT.HORIZONTAL);
         sep.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
@@ -201,10 +201,10 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
                 setFolderMakeType(getTreeSelection(), BuildSpecification.NONE);
             }
         });
-        markAsToplevelButton.addSelectionListener(new SelectionAdapter() {
+        markAsRootButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                markAsToplevel(getTreeSelection());
+                markAsRoot(getTreeSelection());
             }
         });
         optionsButton.addSelectionListener(new SelectionAdapter() {
@@ -467,8 +467,21 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         updatePageState();
     }
 
-    protected void markAsToplevel(IContainer folder) {
-        // TODO write this folder into the "Build location" field (for all configurations)
+    protected void markAsRoot(IContainer folder) {
+        try {
+            IProject project = getProject();
+            ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(project);
+            for (ICConfigurationDescription configuration : projectDescription.getConfigurations())
+                configuration.getBuildSetting().setBuilderCWD(new Path("${workspace_loc:"+folder.getFullPath().toString()+"}"));
+            CoreModel.getDefault().setProjectDescription(project, projectDescription);
+        }
+        catch (CoreException e) {
+            errorDialog(e.getMessage(), e);
+        }
+        catch (Exception e) {
+            errorDialog(e.getMessage(), e);
+        }
+        updatePageState();
     }
 
     protected void editFolderOptions(IContainer folder) {
@@ -612,7 +625,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
             makemakeButton.setEnabled(false);
             customMakeButton.setEnabled(false);
             noMakeButton.setEnabled(false);
-            markAsToplevelButton.setEnabled(false);
+            markAsRootButton.setEnabled(false);
             optionsButton.setEnabled(false);
             sourceLocationButton.setEnabled(false);
             excludeButton.setEnabled(false);
@@ -627,7 +640,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         customMakeButton.setEnabled(makeType!=BuildSpecification.CUSTOM);
         noMakeButton.setEnabled(makeType!=BuildSpecification.NONE);
         
-        markAsToplevelButton.setEnabled(makeType!=BuildSpecification.NONE);
+        markAsRootButton.setEnabled(makeType!=BuildSpecification.NONE);
         optionsButton.setEnabled(makeType==BuildSpecification.MAKEMAKE);
         
         ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(project);
@@ -716,7 +729,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
             return "No makefile has been specified for this project.";
 
         // check if there's a makefile in the build directory
-        //XXX check of build location is set identically in all configurations
+        //XXX check that build location is set identically in all configurations
         String buildLocation = configuration.getBuildData().getBuilderCWD().toString();
         ICConfigurationDescription configurationDescription = projectDescription.getActiveConfiguration();
         try {
@@ -736,7 +749,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
             List<String> tmp = new ArrayList<String>();
             for (IContainer f : buildFolderPossibilities)
                 tmp.add(f.getFullPath().toString());
-            return "No makefile specified for root build folder " + StringUtils.join(tmp, " or ")+ ", designated on the C/C++ Build page.";
+            return "No makefile specified for root build folder " + StringUtils.join(tmp, " or ")+ " (see C/C++ Build page).";
         }
         
         //XXX "Out" dir should not overlap with source folders (check!!!)
