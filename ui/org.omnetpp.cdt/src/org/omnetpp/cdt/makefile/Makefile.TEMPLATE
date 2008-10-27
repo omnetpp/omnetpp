@@ -1,5 +1,5 @@
 #
-# OMNeT++/OMNEST Makefile for {target}
+# OMNeT++/OMNEST Makefile for {targetprefix}{target}
 #
 # This file was generated with the command:
 #  {progname} {args}
@@ -7,7 +7,7 @@
 
 
 # Name of target to be created (-o option)
-TARGET = {target}
+TARGET = {targetprefix}{target}{targetsuffix}
 
 # User interface (uncomment one) (-u option)
 {~allenv?#}USERIF_LIBS = $(ALL_ENV_LIBS) # that is, $(TKENV_LIBS) $(CMDENV_LIBS)
@@ -118,15 +118,15 @@ all: $(TARGET)
 ### Rules for $TARGET. Note that end product will be softlinked into the
 ### Makefile's directory; on systems that don't support soft links it will
 ### be copied. Note that MinGW's "ln -s" also actually copies the file.
-{exe:}$O/$(TARGET): $(OBJS) {submakedirs?submakedirs} $(EXTRA_OBJS) {makefile}
+{exe:}$O/$(TARGET): $(OBJS) {submakedirs?submakedirs} {~nmake?$(wildcard }$(EXTRA_OBJS){~nmake?)} {makefile}
 {exe:}{nmake:}	-@md $(O:/=\) 2>nul
 {exe:}{~nmake:}	@mkdir -p $O
 {exe:}	$({nmake?LINK}{~nmake?CXX}) $(LDFLAGS) {-out}$O/$(TARGET) {nmake_inlinefile} $(OBJS) $(EXTRA_OBJS) $(WHOLE_ARCHIVE_ON) $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) {nmake_inlineend}
-{sharedlib:}$O/$(TARGET): $(OBJS) {submakedirs?submakedirs} $(EXTRA_OBJS) {makefile}
+{sharedlib:}$O/$(TARGET): $(OBJS) {submakedirs?submakedirs} {~nmake?$(wildcard }$(EXTRA_OBJS){~nmake?)} {makefile}
 {sharedlib:}{nmake:}	-@md $(O:/=\) 2>nul
 {sharedlib:}{~nmake:}	@mkdir -p $O
 {sharedlib:}	$(SHLIB_LD) {-out}$O/$(TARGET) {nmake_inlinefile} $(OBJS) $(EXTRA_OBJS) $(LIBS) $(OMNETPP_LIBS) $(LDFLAGS) {nmake_inlineend}
-{staticlib:}$O/$(TARGET): $(OBJS) {submakedirs?submakedirs} $(EXTRA_OBJS) {makefile}
+{staticlib:}$O/$(TARGET): $(OBJS) {submakedirs?submakedirs} {~nmake?$(wildcard }$(EXTRA_OBJS){~nmake?)} {makefile}
 {staticlib:}{nmake:}	-@md $(O:/=\) 2>nul
 {staticlib:}{~nmake:}	@mkdir -p $O
 {staticlib:}	$(AR) {nmake?/out:}$O/$(TARGET) {nmake_inlinefile} $(OBJS) $(EXTRA_OBJS) {nmake_inlineend}
@@ -202,3 +202,4 @@ depend:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 {deps}
+

@@ -337,7 +337,9 @@ public class Makemake {
         m.put("lbrace", "{");
         m.put("rbrace", "}");
         m.put("nmake", isNMake);
-        m.put("target", targetPrefix+ target + targetSuffix);
+        m.put("targetprefix", targetPrefix);
+        m.put("target", target);
+        m.put("targetsuffix", targetSuffix);
         m.put("outdir", outDir);
         m.put("subpath", subpath);
         m.put("isdeep", isDeep);
