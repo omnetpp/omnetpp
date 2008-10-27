@@ -1,0 +1,34 @@
+#! /bin/sh
+#
+# usage: runtest [<testfile>...]
+# without args, runs all *.test files in the current directory
+#
+
+MAKE=make
+
+TESTFILES=$*
+if [ "x$TESTFILES" = "x" ]; then TESTFILES='*.test'; fi
+if [ ! -d work ];  then mkdir work; fi
+opp_test $OPT -g -v $TESTFILES || exit 1
+
+cd work || exit 1
+echo > .project
+
+echo Creating makefiles...
+for i in * ""; do 
+  if [ "$i" != "" -a -d $i ]; then 
+    echo $i
+    (cd $i && $MAKE "OPP_MAKEMAKE=opp_makemake -f --out ../out" -f buildspec || echo MAKEFILE CREATION FAILED: $i) || exit 1
+  fi
+done
+
+echo Build...
+opp_makemake -f -r --nolink && $MAKE || echo BUILD FAILED || exit 1
+
+# Run the tests
+echo
+cd ..
+opp_test $OPT -r -v $TESTFILES || exit 1
+
+echo
+echo Results can be found in ./work
