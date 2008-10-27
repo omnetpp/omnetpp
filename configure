@@ -3563,7 +3563,7 @@ echo 'void some_func() {func_from_main();}' >>conftest_a.cc
 echo '#include <dlfcn.h>' >conftest_m.cc
 echo '#include <stdio.h>' >>conftest_m.cc
 echo 'void func_from_main() {}' >>conftest_m.cc
-echo 'int main() {if (dlopen("./libconftest_a.so",RTLD_NOW)!=0) return 0; printf("%s\n",dlerror()); return 1;}' >>conftest_m.cc
+echo 'int main() {if (dlopen("./libconftest_a.so",RTLD_NOW)!=0) return 0; printf("%s",dlerror()); return 1;}' >>conftest_m.cc
 if $CXX -c conftest_a.cc >/dev/null 2>/dev/null && \
    $CXX -c conftest_m.cc >/dev/null 2>/dev/null && \
    $SHLIB_LD -o libconftest_a.so conftest_a.o >/dev/null 2>/dev/null; \
@@ -3616,7 +3616,7 @@ rm -f conftest_a.* conftest_m.* libconftest_a.so conftest
 # to include constructors of static C++ objects in statically linked libraries.
 # To test, we'll compile the following code into a static library:
 #      #include <stdio.h>
-#      class A { public: A() {printf("=WORKS=\n");} };
+#      class A { public: A() {printf("=WORKS=");} };
 #      static A a;
 # Then we link it with the following program:
 #      int main() {return 0;}
@@ -3625,7 +3625,8 @@ rm -f conftest_a.* conftest_m.* libconftest_a.so conftest
 { echo "$as_me:$LINENO: checking for flags needed to link with static libs containing simple modules" >&5
 echo $ECHO_N "checking for flags needed to link with static libs containing simple modules... $ECHO_C" >&6; }
 echo '#include <stdio.h>' >conftest_a.cc
-echo 'class A { public: A() {printf("=WORKS=\n");} };' >>conftest_a.cc
+# NOTE: do not write "=WORKS=\n" because sh on OS X resolves it
+echo 'class A { public: A() {printf("=WORKS=");} };' >>conftest_a.cc
 echo 'static A a;' >> conftest_a.cc
 echo 'int main() {return 0;}' >> conftest_m.cc
 if $CXX -c conftest_a.cc >/dev/null 2>/dev/null && \
@@ -3683,6 +3684,25 @@ echo "$as_me:    $CXX ... $silly1 <libs> $silly2 ..." >&6;}
       WHOLE_ARCHIVE_OFF=$silly2
    fi
 
+   # 4th try.
+   silly1=-Wl,-all_load
+   silly2=
+   if test $silly_ok = "no" && \
+      $CXX -o conftest conftest_m.o $silly1 libconftest_a.a $silly2 >/dev/null 2>/dev/null && \
+      ./conftest 2>/dev/null | grep '=WORKS=' >/dev/null; \
+   then
+      { echo "$as_me:$LINENO: result: -all_load" >&5
+echo "${ECHO_T}-all_load" >&6; }
+      { echo "$as_me:$LINENO: NOTE: Use the following syntax when linking with static libraries" >&5
+echo "$as_me: NOTE: Use the following syntax when linking with static libraries" >&6;}
+      { echo "$as_me:$LINENO: containing simple modules and other dynamically registered components:" >&5
+echo "$as_me: containing simple modules and other dynamically registered components:" >&6;}
+      { echo "$as_me:$LINENO:    $CXX ... $silly1 <libs> $silly2 ..." >&5
+echo "$as_me:    $CXX ... $silly1 <libs> $silly2 ..." >&6;}
+      silly_ok="yes"
+      WHOLE_ARCHIVE_ON=$silly1
+      WHOLE_ARCHIVE_OFF=$silly2
+   fi
    # no solution found
    if test $silly_ok = "no"; then
       { echo "$as_me:$LINENO: result: no solution found" >&5
