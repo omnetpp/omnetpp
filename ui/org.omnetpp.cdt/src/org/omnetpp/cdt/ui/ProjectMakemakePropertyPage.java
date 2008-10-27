@@ -1,7 +1,11 @@
 package org.omnetpp.cdt.ui;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.cdt.core.model.CoreModel;
@@ -69,6 +73,7 @@ import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.ui.SizeConstraint;
+import org.omnetpp.common.util.StringUtils;
 
 /**
  * This property page is shown for an OMNeT++ CDT Project, and lets the user 
@@ -77,20 +82,16 @@ import org.omnetpp.common.ui.SizeConstraint;
  * @author Andras
  */
 //XXX implement "mark as top"
-//XXX warn if there're differences in source entries across configurations!
-//FIXME source folder changes immediatly get committed (no cancel!), but they aren't visible in cdt page. use CDTPropertyManager!
-//FIXME warning if there's no makefile in a "custom makefile" folder
-//FIXME warning ha egy source foldert egy makefile sem fed be
-//XXX makemakeoptions: "copy to bin/ or lib/" option
-//FIXME project template-kben a buildspecet atirni!!!
-//XXX warn if there's no makefile generated at all
-//XXX finish hover. "no makefile generated" etc!
+
+//XXX hintet kiirni: folderek kozotti sorrendet a makefrag-ban kellene megadni (illetve meg lehetne probalni autodetektalni)
 //XXX print hint somewhere: project root should probably be excluded if there's a submakefile!
 //XXX    "Compile" fulre: ha nem akarod hogy barmit forditson, excludold ki a makefile foldert!
-//XXX Options preview lapra kitenni helpet (melyik opcio mit csinal)
-//XXX hintet kiirni: folderek kozotti sorrendet a makefrag-ban kellene megadni (illetve meg lehetne probalni autodetektalni)
-//XXX recurse: tooltipre kiirni hogy tenylegesen hova fog bemenni (ne csak az options listbol legyen)
+//FIXME warning if there's no makefile in a "custom makefile" folder (yello "/!\")
+//FIXME warning ha egy source foldert egy makefile sem fed be
+//XXX finish hover. "no makefile generated" etc!
+//FIXME project template-kben a buildspecet atirni!!!
 //XXX project template-ekben az out/ dirt kiexcludolni?
+//FIXME source folder changes immediatly get committed (no cancel!), but they aren't visible in cdt page. use CDTPropertyManager!
 @SuppressWarnings("restriction")
 public class ProjectMakemakePropertyPage extends PropertyPage {
     private static final String SOURCE_FOLDER_IMG = "icons/full/obj16/folder_srcfolder.gif";
@@ -134,8 +135,9 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         ((GridLayout)composite.getLayout()).marginHeight = 0;
 
         String text = 
-            "On this page you can configure source folders and makefile generation, " +
-            "independent of each other. Source folders can also be managed on the " +
+            "On this page you can configure source folders and makefile generation; " +
+            "they are independent of each other. Source folder changes on this page " +
+            "apply to all configurations. Source folders can also be managed on the " +
             "<A>Paths and symbols</A> page.";
         final Link pathsAndSymbolsLink = createLink(composite, text);
         pathsAndSymbolsLink.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1));
@@ -593,7 +595,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
 
     protected void updatePageState() {
         // display warnings about CDT misconfiguration, etc 
-        String message = getDiagnosticMessage(getProject());
+        String message = getDiagnosticMessage(getProject(), buildSpec);
         errorMessageLabel.setText(message==null ? "" : message);
         ((GridData)errorMessageLabel.getLayoutData()).exclude = (message==null); 
         errorMessageLabel.setVisible(message!=null);
@@ -646,9 +648,11 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         return false;
     }
 
-    public static String getDiagnosticMessage(IContainer folder) {
+    // note: this is shared with MakemakeFolderPropertyPage (not very pretty)
+    public static String getDiagnosticMessage(IContainer folder, BuildSpecification buildSpec) {
         // Check CDT settings
-        IManagedBuildInfo buildInfo = ManagedBuildManager.getBuildInfo(folder.getProject());
+        IProject project = folder.getProject();
+        IManagedBuildInfo buildInfo = ManagedBuildManager.getBuildInfo(project);
         if (buildInfo == null)
             return "Cannot access CDT build information for this project. Is this a C/C++ project?";
         IConfiguration configuration = buildInfo.getDefaultConfiguration();
@@ -681,6 +685,33 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
             return "C/C++ Builder \"" + builder.getName()+ "\" set in the active build configuration " +
                    "is not suitable for OMNeT++. Please re-create the project with the " +
                    "New OMNeT++ Project wizard, overwriting the existing project settings.";
+
+        // warn if there're differences in source entries across configurations.
+        // first, collect which entries occur in which configurations
+        Map<String,List<String>> sourceEntryMap = new HashMap<String, List<String>>(); // srcEntry -> config*
+        ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(project, true);
+        for (ICConfigurationDescription cfg : projectDescription.getConfigurations()) {
+            for (ICSourceEntry e : cfg.getSourceEntries()) {
+                String entryText = StringUtils.defaultIfEmpty(CDataUtil.makeAbsolute(project, e).getFullPath().toString(), ".");
+                if (e.getExclusionPatterns().length > 0) 
+                    entryText += " (excl: " + StringUtils.join(e.getExclusionPatterns(), ", ") + ")";
+                if (!sourceEntryMap.containsKey(entryText))
+                    sourceEntryMap.put(entryText, new ArrayList<String>());
+                sourceEntryMap.get(entryText).add(cfg.getName());
+            }
+        }
+        Set<String> wrongSourceLocations = new HashSet<String>(); 
+        int numConfigs = projectDescription.getConfigurations().length;
+        for (String e : sourceEntryMap.keySet())
+            if (sourceEntryMap.get(e).size() != numConfigs)
+                wrongSourceLocations.add(e + " in " + StringUtils.join(sourceEntryMap.get(e), ","));
+        if (!wrongSourceLocations.isEmpty())
+            return "Note: Source locations are set up differently across configurations: " + StringUtils.join(wrongSourceLocations, "; ");
+            
+        // warn if there's no makefile generated at all
+        if (buildSpec.getMakeFolders().isEmpty())
+            return "No makefile has been specified for this project.";
+
         
         //XXX "Out" dir should not overlap with source folders (check!!!)
         

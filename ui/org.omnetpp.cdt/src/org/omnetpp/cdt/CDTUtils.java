@@ -100,7 +100,7 @@ public class CDTUtils {
 
     
     /**
-     * Sets the project's source locations list to the given list of folders. 
+     * Sets the project's source locations list to the given list of folders, in all configurations. 
      * (Previous source entries get overwritten.)  
      */
     public static void setSourceLocations(IProject project, IContainer[] folders) throws CoreException {
