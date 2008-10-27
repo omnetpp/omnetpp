@@ -3,11 +3,14 @@
 # usage: runtest [<testfile>...]
 # without args, runs all *.test files in the current directory
 #
+failure() {
+    echo "FAILED: $1"
+    exit 1
+}
 
 MAKE=make
-
-
 TESTFILES=$*
+
 if [ "x$TESTFILES" = "x" ]; then TESTFILES='*.test'; fi
 if [ ! -d work ];  then mkdir work; fi
 opp_test $OPT -g -v $TESTFILES || exit 1
@@ -24,7 +27,7 @@ for i in * ""; do
 done
 
 echo Build...
-opp_makemake -f -r --nolink && $MAKE || echo BUILD FAILED || exit 1
+opp_makemake -f -r --nolink && $MAKE || failure BUILD
 
 # Run the tests
 echo
