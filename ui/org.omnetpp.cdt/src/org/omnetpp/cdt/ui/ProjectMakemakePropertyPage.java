@@ -8,12 +8,14 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.eclipse.cdt.core.cdtvariables.CdtVariableException;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICSettingEntry;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.cdt.core.settings.model.util.CDataUtil;
+import org.eclipse.cdt.internal.core.cdtvariables.CdtVariableManager;
 import org.eclipse.cdt.managedbuilder.core.IBuilder;
 import org.eclipse.cdt.managedbuilder.core.IConfiguration;
 import org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo;
@@ -24,6 +26,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.AssertionFailedException;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -86,7 +89,7 @@ import org.omnetpp.common.util.StringUtils;
 //XXX hintet kiirni: folderek kozotti sorrendet a makefrag-ban kellene megadni (illetve meg lehetne probalni autodetektalni)
 //XXX print hint somewhere: project root should probably be excluded if there's a submakefile!
 //XXX    "Compile" fulre: ha nem akarod hogy barmit forditson, excludold ki a makefile foldert!
-//FIXME warning if there's no makefile in a "custom makefile" folder (yello "/!\")
+//FIXME warning if there's no makefile in a "custom makefile" folder (yellow "/!\")
 //FIXME warning ha egy source foldert egy makefile sem fed be
 //XXX finish hover. "no makefile generated" etc!
 //FIXME project template-kben a buildspecet atirni!!!
@@ -712,13 +715,31 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         if (buildSpec.getMakeFolders().isEmpty())
             return "No makefile has been specified for this project.";
 
+        // check if there's a makefile in the build directory
+        //XXX check of build location is set identically in all configurations
+        String buildLocation = configuration.getBuildData().getBuilderCWD().toString();
+        ICConfigurationDescription configurationDescription = projectDescription.getActiveConfiguration();
+        try {
+            buildLocation = CdtVariableManager.getDefault().resolveValue(buildLocation, "[unknown-macro]", ",", configurationDescription);
+        }
+        catch (CdtVariableException e) {
+            Activator.logError("Cannot resolve macros in build directory spec "+buildLocation, e);
+        }
+        IContainer[] buildFolderPossibilities = ResourcesPlugin.getWorkspace().getRoot().findContainersForLocation(new Path(buildLocation));
+        if (buildFolderPossibilities.length == 0)
+            return "Build location \""+ buildLocation + "\" does not map to any folder in the workspace. Check the C/C++ Build page.";
+        IContainer buildFolder = null;
+        for (IContainer f : buildFolderPossibilities)
+            if (buildSpec.getMakeFolders().contains(f))
+                buildFolder = f;
+        if (buildFolder == null) {
+            List<String> tmp = new ArrayList<String>();
+            for (IContainer f : buildFolderPossibilities)
+                tmp.add(f.getFullPath().toString());
+            return "No makefile specified for root build folder " + StringUtils.join(tmp, " or ")+ ", designated on the C/C++ Build page.";
+        }
         
         //XXX "Out" dir should not overlap with source folders (check!!!)
-        
-        //XXX return some message to be displayed to the user, if:
-        //  - CDT make folder is not the project root (or: if a makefile is unreachable)
-        //  - makefile consistency error (i.e. a subdir doesn't contain a makefile)
-        //  - something else is wrong?
 
         return null;
     }

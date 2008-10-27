@@ -182,18 +182,25 @@ public class OmnetppLaunchUtils {
 		StringUtils.containsIgnoreCase("exe.cmd.bat",file.getFileExtension()) && SWT.getPlatform().equals("win32");
 	}
 
-	/**
-	 * Utility function: constructs a path that is relative to the relativeTo.
-	 */
-	public static IPath makeRelativePathTo(IPath path, IPath relativeTo) {
-
-		int goUpLevels = relativeTo.segmentCount() - path.matchingFirstSegments(relativeTo);
-		// walk up until the first common segment
-		IPath resultPath = new Path("");
-		for (int i=0; i<goUpLevels; ++i)
-			resultPath = resultPath.append("../");
-		// add the rest of the path (non common part)
-		return resultPath.append(path.removeFirstSegments(path.matchingFirstSegments(relativeTo))).makeRelative();
+    /**
+     * Converts inputPath to be relative to referenceDir. This is not possible
+     * if the two paths are from different devices, so in this case the method
+     * returns the original inputPath unchanged.
+     * 
+     * Copied from MakefileTools.
+     * 
+     * @author andras
+     */
+	public static IPath makeRelativePathTo(IPath inputPath, IPath referenceDir) {
+	    Assert.isTrue(inputPath.isAbsolute());
+	    Assert.isTrue(referenceDir.isAbsolute());
+	    if (referenceDir.equals(inputPath))
+	        return new Path(".");
+	    if (!StringUtils.equals(inputPath.getDevice(), referenceDir.getDevice()))
+	        return inputPath;
+	    int commonPrefixLen = inputPath.matchingFirstSegments(referenceDir);
+	    int upLevels = referenceDir.segmentCount() - commonPrefixLen;
+	    return new Path(StringUtils.removeEnd(StringUtils.repeat("../", upLevels), "/")).append(inputPath.removeFirstSegments(commonPrefixLen));
 	}
 
 	/**
