@@ -110,10 +110,7 @@ public class NEDTreeUtil {
 			int numMessages = swigErrors.numMessages();
 			NEDDTDValidator dtdvalidator = new NEDDTDValidator(swigErrors);
 			dtdvalidator.validate(swigTree);
-			// FIXME remove next lines  (for debugging only)
-			for (int i=0 ; i<swigErrors.numMessages() ; i++) {
-				System.out.println(swigErrors. errorText(i)+" loc: "+swigErrors.errorLocation(i));
-			}
+			dumpSwigErrors(swigErrors); //XXX remove -- debugging only
 			
 			Assert.isTrue(swigErrors.numMessages() == numMessages, "NED tree fails DTD validation, even after repairs");
 
@@ -134,7 +131,7 @@ public class NEDTreeUtil {
 				swigTree.delete();
 		}
 	}
-	
+
     public static MsgFileElementEx parseMsgSource(String source, INEDErrorStore errors, String filename) {
         Assert.isTrue(filename != null);
         NEDElement swigTree = null;
@@ -168,6 +165,7 @@ public class NEDTreeUtil {
             int numMessages = swigErrors.numMessages();
             NEDDTDValidator dtdvalidator = new NEDDTDValidator(swigErrors);
             dtdvalidator.validate(swigTree);
+            dumpSwigErrors(swigErrors); //XXX remove -- debugging only
             Assert.isTrue(swigErrors.numMessages() == numMessages, "NED tree fails DTD validation, even after repairs");
 
             // additional syntax-related validation
@@ -188,6 +186,23 @@ public class NEDTreeUtil {
         }
     }
 
+    protected static void dumpSwigErrors(NEDErrorStore swigErrors) {
+        int n = swigErrors.numMessages();
+        if (n > 0) {
+            System.out.println(n + " errors:");
+            for (int i=0 ; i<n ; i++) {
+                NEDElement context = swigErrors.errorContext(i);
+                System.out.println(
+                        swigErrors.errorText(i)+
+                        " loc: "+swigErrors.errorLocation(i) +
+                        " context: " + (context==null ? "" : "<"+context.getTagName()+"> at "+context.getSourceLocation()));
+                if (context!=null && context.getParent()!=null)
+                    System.out.println(generateXmlFromSwigElementTree(context.getParent(), "  "));
+                else if (context!=null)
+                    System.out.println(generateXmlFromSwigElementTree(context, "  "));
+            }
+        }
+    }
 	
 	/**
 	 * Converts a native C++ (SWIG-wrapped) NEDElement tree to a plain java tree.
