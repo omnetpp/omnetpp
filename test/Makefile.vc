@@ -1,8 +1,13 @@
 
-all: test_core
+all: test_core test_makemake
 
 test_core:
 	cd core && runtest.cmd
 
+test_makemake:
+	cd makemake && runtest.cmd
+
 clean:
 	-del /q core\work 2>nul
+	-del /q makemake\work 2>nul
+	-del /q makemake\out 2>nul
