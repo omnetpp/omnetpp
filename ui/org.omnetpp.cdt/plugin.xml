@@ -268,10 +268,10 @@
    <extension
          point="org.eclipse.ui.propertyPages">
       <page
-            category="org.eclipse.cdt.managedbuilder.ui.properties.Page_head_build"
+            category="org.omnetpp.main.OmnetppCategory"
             class="org.omnetpp.cdt.ui.MakemakeFolderPropertyPage"
             id="org.omnetpp.cdt.FolderBuildSpec"
-            name="Makemake (OMNeT++)">
+            name="Makemake">
          <filter
                name="projectNature"
                value="org.omnetpp.main.omnetppnature">
@@ -288,10 +288,10 @@
          </enabledWhen>
       </page>
       <page
-            category="org.eclipse.cdt.managedbuilder.ui.properties.Page_head_build"
+            category="org.omnetpp.main.OmnetppCategory"
             class="org.omnetpp.cdt.ui.ProjectMakemakePropertyPage"
             id="org.omnetpp.cdt.ProjectBuildSpec"
-            name="Makemake (OMNeT++)">
+            name="Makemake">
          <filter
                name="projectNature"
                value="org.omnetpp.main.omnetppnature">
