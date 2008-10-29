@@ -84,7 +84,10 @@ public class TextualNedEditorActionContributor extends TextEditorActionContribut
 	@Override
 	public void contributeToMenu(IMenuManager menuManager) {
 	    super.contributeToMenu(menuManager);
-        MenuManager sourceMenu = new MenuManager("Source");
+	    IMenuManager sourceMenu = menuManager.findMenuUsingPath("source");
+	    // create a new Source menu if no Source menu present in the main menu
+        if (sourceMenu == null)
+        	sourceMenu = new MenuManager("Source");
         sourceMenu.add(fToggleCommentAction);
         sourceMenu.add(new Separator());
         sourceMenu.add(fCorrectIndentationAction);

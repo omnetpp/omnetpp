@@ -40,7 +40,6 @@
                icon="icons/full/etool16/opennedtype.gif"
                id="openNedType"
                label="Open NED Type..."
-               menubarPath="navigate/open.ext2"
                style="push"
                toolbarPath="org.eclipse.search.searchActionSet/Search"
                tooltip="Open NED Type"/>
@@ -49,7 +48,6 @@
                definitionId="org.omnetpp.ned.cleanupNedFiles"
                id="cleanupNedFiles"
                label="Clean Up NED Files..."
-               menubarPath="navigate/open.ext2"
                tooltip="Clean Up NED Files"/>
       </actionSet>
    </extension>
@@ -59,7 +57,12 @@
             categoryId="org.eclipse.ui.category.navigate"
             description="Open NED Type"
             id="org.omnetpp.ned.openNedType"
-            name="Open Ned Type"/>
+            name="Open NED Type"/>
+      <command
+            description="Clean up and organize all import statements in NED files"
+            id="org.omnetpp.ned.cleanupNedFiles"
+            name="Clean Up NED Files...">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.bindings">
@@ -67,5 +70,35 @@
             commandId="org.omnetpp.ned.openNedType"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="M1+M2+N"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="menu:org.eclipse.ui.main.menu?after=edit">
+         <menu
+               id="source"
+               label="Source">
+            <command
+                  commandId="org.omnetpp.ned.cleanupNedFiles"
+                  id="cleanupNedFiles"
+                  style="push">
+            </command>
+         </menu>
+      </menuContribution>
+      <menuContribution
+            locationURI="menu:navigate?after=open.ext2">
+         <command
+               commandId="org.omnetpp.ned.openNedType"
+               id="openNedType"
+               style="push">
+         </command>
+      </menuContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commandImages">
+      <image
+            commandId="org.omnetpp.ned.openNedType"
+            icon="icons/full/etool16/opennedtype.gif">
+      </image>
    </extension>
 </plugin>
