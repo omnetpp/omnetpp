@@ -167,6 +167,13 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener, 
         nedSelectionProvider = new NedSelectionProvider(this);
 		getSite().setSelectionProvider(nedSelectionProvider);
     }
+    
+    @Override
+    protected boolean isEditorInputIncludedInContextMenu() {
+    	// do not include the contributions for the editor input 
+    	// (otherwise we will get a ton of unnecessary menus like Debug As, Run As, Team menus etc.)
+    	return false;
+    }
 
     /**
      * Returns this plug-in's template store.

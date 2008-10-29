@@ -299,9 +299,10 @@ public class GraphicalNedEditor
         viewer.setEditPartFactory(new NedEditPartFactory());
         ContextMenuProvider provider = new GNEDContextMenuProvider(viewer, getActionRegistry());
         viewer.setContextMenu(provider);
-        // NOTE: we do not register the context menu so external plugins will not be able to contribute to it
-        // if we ever need external contribution, uncomment the following line
-        // getSite().registerContextMenu(provider, viewer);
+        // register the menu so we can contribute to it from other plugins BUT do not include the
+        // contributions for the editor input (otherwise we will get a ton of unnecessary menus like
+        // Debug As, Run As, Team menus etc.)
+        getEditorSite().registerContextMenu(provider, viewer, false);
         viewer.setKeyHandler(new GraphicalViewerKeyHandler(viewer).setParent(getCommonKeyHandler()));
 
         // add tooltip support
