@@ -140,6 +140,12 @@ public class InifileTextEditor extends TextEditor {
 		viewer.doOperation(ProjectionViewer.TOGGLE);
 	}
 
+	@Override
+	protected boolean isEditorInputIncludedInContextMenu() {
+		// do not include editor input menus like Debug As, Compare and numerous unrelated CDT build menus
+		return false;
+	}
+	
 	/**
 	 * Installs a function to be called after the cursor rests at one place for 600ms.
 	 * @param runnable  contains the function
