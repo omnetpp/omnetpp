@@ -67,7 +67,8 @@ import org.omnetpp.ned.model.notification.NEDModelEvent;
 public class TextualNedEditor extends TextEditor implements INEDChangeListener, ISelectionListener {
 
     private static final String CUSTOM_TEMPLATES_KEY = "org.omnetpp.ned.editor.text.customtemplates";
-    public static final String[] KEY_BINDING_SCOPES = { "org.omnetpp.context.nedEditor" };
+    public static final String[] KEY_BINDING_SCOPES = { "org.omnetpp.context.nedTextEditor" };
+    public final static String ID = NedEditor.ID+".text";
 
 	private static boolean pushingChanges;
 
@@ -133,6 +134,8 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener, 
     @Override
     protected void initializeEditor() {
         super.initializeEditor();
+        // redefine the main context menu id so we can contribute to it from the outside
+        setEditorContextMenuId(ID);
         //XXX for now NEDResourcesPlugin.getNEDResources().addNEDModelChangeListener(this);
         setSourceViewerConfiguration(new NedSourceViewerConfiguration(this));
     }
@@ -264,8 +267,8 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener, 
         addAction(menu, ITextEditorActionConstants.GROUP_EDIT, ConvertToNewFormatAction.ID);
         addAction(menu, ITextEditorActionConstants.GROUP_EDIT, OrganizeImportsAction.ID);
         addAction(menu, ITextEditorActionConstants.GROUP_EDIT, ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS);
-        addAction(menu, ITextEditorActionConstants.GROUP_EDIT, GotoDeclarationAction.ID);  //XXX wrong place
-        addAction(menu, ITextEditorActionConstants.GROUP_EDIT, FindTextInNedFilesActionDelegate.ID);  //XXX wrong place
+        addAction(menu, ITextEditorActionConstants.GROUP_FIND, GotoDeclarationAction.ID); 
+        addAction(menu, ITextEditorActionConstants.GROUP_FIND, FindTextInNedFilesActionDelegate.ID); 
     }
 
 	/**

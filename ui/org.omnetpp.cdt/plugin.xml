@@ -332,22 +332,34 @@
             defaultHandler="org.omnetpp.cdt.handlers.GotoCppDefinitionForNEDTypeHandler"
             description="Opens the C++ definition for a NED type (simple module or channel)"
             id="org.omnetpp.cdt.gotoCppDefinitionForNEDType"
-            name="Goto C++">
+            name="Goto C++ Definition">
       </command>
    </extension>
    <extension
          point="org.eclipse.ui.menus">
       <menuContribution
-            locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
-         <toolbar
-               id="org.omnetpp.cdt.toolbar1">
-            <command
-                  commandId="org.omnetpp.cdt.gotoCppDefinitionForNEDType"
-                  label="Goto C++"
-                  style="push"
-                  tooltip="Go To C++ Definition">
-            </command>
-         </toolbar>
+            locationURI="popup:org.omnetpp.ned.editor.graph?after=additions">
+         <command
+               commandId="org.omnetpp.cdt.gotoCppDefinitionForNEDType"
+               style="push"
+               tooltip="Go To C++ Definition">
+         </command>
       </menuContribution>
+      <menuContribution
+            locationURI="popup:org.omnetpp.ned.editor.text?after=group.find">
+         <command
+               commandId="org.omnetpp.cdt.gotoCppDefinitionForNEDType"
+               style="push"
+               tooltip="Go To C++ Definition">
+         </command>
+      </menuContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.bindings">
+      <key
+            commandId="org.omnetpp.cdt.gotoCppDefinitionForNEDType"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+TAB">
+      </key>
    </extension>
 </plugin>

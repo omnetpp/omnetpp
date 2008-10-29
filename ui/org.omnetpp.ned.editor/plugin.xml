@@ -179,37 +179,37 @@
          point="org.eclipse.ui.bindings">
       <key
             commandId="org.omnetpp.ned.editor.text.ToggleComment"
-            contextId="org.omnetpp.context.nedEditor"
+            contextId="org.omnetpp.context.nedTextEditor"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="M1+/">
       </key>
       <key
             commandId="org.omnetpp.ned.editor.text.FormatSource"
-            contextId="org.omnetpp.context.nedEditor"
+            contextId="org.omnetpp.context.nedTextEditor"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="M1+M2+F">
       </key>
       <key
             commandId="org.omnetpp.ned.editor.text.GotoDeclaration"
-            contextId="org.omnetpp.context.nedEditor"
+            contextId="org.omnetpp.context.nedTextEditor"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="F3">
       </key>
       <key
             commandId="org.omnetpp.ned.editor.text.OrganizeImports"
-            contextId="org.omnetpp.context.nedEditor"
+            contextId="org.omnetpp.context.nedTextEditor"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="M1+M2+O">
       </key>
       <key
             commandId="org.omnetpp.ned.editor.text.CorrectIndentation"
-            contextId="org.omnetpp.context.nedEditor"
+            contextId="org.omnetpp.context.nedTextEditor"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="M1+I">
       </key>
       <key
             commandId="org.omnetpp.ned.editor.text.performTextSearchWorkspace"
-            contextId="org.omnetpp.context.nedEditor"
+            contextId="org.omnetpp.context.nedTextEditor"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="M1+M2+G">
       </key>
@@ -263,7 +263,7 @@
          point="org.eclipse.ui.contexts">
       <context
             description="OMNeT++ NED File Editor"
-            id="org.omnetpp.context.nedEditor"
+            id="org.omnetpp.context.nedTextEditor"
             name="Editing NED Source"
             parentId="org.eclipse.ui.textEditorScope">
       </context>

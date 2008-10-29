@@ -75,6 +75,7 @@ import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.common.util.PersistentResourcePropertyManager;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
+import org.omnetpp.ned.editor.NedEditor;
 import org.omnetpp.ned.editor.NedEditorPlugin;
 import org.omnetpp.ned.editor.graph.actions.ChooseIconAction;
 import org.omnetpp.ned.editor.graph.actions.ConvertToNewFormatAction;
@@ -130,6 +131,7 @@ public class GraphicalNedEditor
     private static final String PROP_PALETTE_FILTER = "paletteFilter";
     public final static Color HIGHLIGHT_COLOR = new Color(null, 255, 0, 0);
     public final static Color LOWLIGHT_COLOR = new Color(null, 128, 0, 0);
+    public final static String ID = NedEditor.ID+".graph";
 
     private KeyHandler sharedKeyHandler;
     private PaletteManager paletteManager;
@@ -302,7 +304,7 @@ public class GraphicalNedEditor
         // register the menu so we can contribute to it from other plugins BUT do not include the
         // contributions for the editor input (otherwise we will get a ton of unnecessary menus like
         // Debug As, Run As, Team menus etc.)
-        getEditorSite().registerContextMenu(provider, viewer, false);
+        getEditorSite().registerContextMenu(ID, provider, viewer, false);
         viewer.setKeyHandler(new GraphicalViewerKeyHandler(viewer).setParent(getCommonKeyHandler()));
 
         // add tooltip support
