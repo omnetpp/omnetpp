@@ -422,7 +422,7 @@ sub makemake()
 
     # find configuser.vc / Makefile.inc
     $comspec = $ENV{COMSPEC};
-    $comspec = s!\\!/!g;  # because backslashes seem to get eaten within ``
+    $comspec =~ s!\\!\\\\!g;
     $configFile = $isNMake ? `$comspec /c opp_configfilepath.cmd` : `opp_configfilepath`;
     if ($? != 0) {
         error("opp_configfilepath returned nonzero exit code -- make sure it exists and is in the PATH");
