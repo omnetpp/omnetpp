@@ -262,10 +262,22 @@
    <extension
          point="org.eclipse.ui.contexts">
       <context
-            description="OMNeT++ NED File Editor"
+            description="OMNeT++ NED Editor"
+            id="org.omnetpp.context.nedEditor"
+            name="Editing NED File"
+            parentId="org.eclipse.ui.textEditorScope">
+      </context>
+      <context
+            description="OMNeT++ NED Source Editor"
             id="org.omnetpp.context.nedTextEditor"
             name="Editing NED Source"
-            parentId="org.eclipse.ui.textEditorScope">
+            parentId="org.omnetpp.context.nedEditor">
+      </context>
+      <context
+            description="OMNeT++ NED Graphical Editor"
+            id="org.omnetpp.context.nedGraphEditor"
+            name="Editing NED Graphically"
+            parentId="org.omnetpp.context.nedEditor">
       </context>
    </extension>
 

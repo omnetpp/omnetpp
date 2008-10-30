@@ -62,6 +62,7 @@ import org.omnetpp.inifile.editor.views.InifileContentOutlinePage;
 // Solution: NED validation shouldn't lock NEDResources? (ie run validation on a *clone* of the trees)
 //TODO for units, tooltip should display "seconds" not only "s" 
 public class InifileEditor extends MultiPageEditorPart implements IGotoMarker, IGotoInifile, IShowInSource, IShowInTargetList {
+    public static final String ID = "org.omnetpp.inifile.editor";
 	/* editor pages */
 	private InifileTextEditor textEditor;
 	private InifileFormEditor formEditor;

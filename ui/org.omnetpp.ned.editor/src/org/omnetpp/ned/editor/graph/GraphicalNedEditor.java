@@ -61,6 +61,7 @@ import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.actions.ActionFactory;
+import org.eclipse.ui.contexts.IContextService;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.MultiPageEditorSite;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
@@ -176,6 +177,8 @@ public class GraphicalNedEditor
         // we listen on changes too
         NEDResourcesPlugin.getNEDResources().addNEDModelChangeListener(this);
         
+		IContextService contextService = (IContextService)site.getService(IContextService.class);
+        contextService.activateContext("org.omnetpp.context.nedGraphEditor");
         // restore palette filter from a persistent property
         PersistentResourcePropertyManager propertyManager = new PersistentResourcePropertyManager(NedEditorPlugin.PLUGIN_ID);
         try {

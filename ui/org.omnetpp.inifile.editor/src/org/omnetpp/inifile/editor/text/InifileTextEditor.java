@@ -15,7 +15,6 @@ import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.texteditor.ITextEditorActionConstants;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.eclipse.ui.texteditor.TextOperationAction;
-
 import org.omnetpp.inifile.editor.actions.AddInifileKeysAction;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.text.actions.ToggleCommentAction;
@@ -25,6 +24,7 @@ import org.omnetpp.inifile.editor.text.actions.ToggleCommentAction;
  * Text editor for ini files.
  */
 public class InifileTextEditor extends TextEditor {
+    public final static String ID = InifileEditor.ID+".text";
     public static final String[] KEY_BINDING_SCOPES = { "org.omnetpp.context.inifileEditor" };
     /** The projection support */
 	private ProjectionSupport projectionSupport;
@@ -64,6 +64,13 @@ public class InifileTextEditor extends TextEditor {
 		setAction(a.getId(), a);
 	}
 
+	@Override
+	protected void initializeEditor() {
+		super.initializeEditor();
+        // redefine the main context menu id so we can contribute to it from the outside
+        setEditorContextMenuId(ID);
+	}
+	
     @Override
     protected void editorContextMenuAboutToShow(IMenuManager menu) {
         super.editorContextMenuAboutToShow(menu);

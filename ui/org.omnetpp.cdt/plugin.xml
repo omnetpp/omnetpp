@@ -338,7 +338,7 @@
    <extension
          point="org.eclipse.ui.menus">
       <menuContribution
-            locationURI="popup:org.omnetpp.ned.editor.graph?after=additions">
+            locationURI="popup:org.omnetpp.ned.editor.graph?after=org.eclipse.gef.group.find">
          <command
                commandId="org.omnetpp.cdt.gotoCppDefinitionForNEDType"
                style="push"
