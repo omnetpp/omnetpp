@@ -19,13 +19,46 @@ static void testExceptionHandling() {
 %}
 void testExceptionHandling();
 
+%pragma(java) jniclassimports=%{
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Display;
+%}
 
 %pragma(java) jniclasscode=%{
-    static {
-        // we might catch UnsatisfiedLinkError here, but Eclipse will display it a dialog and log it anyway.
-        System.loadLibrary("opplibs");
-        testExceptionHandling();
-    }
+  static {
+      try {
+          System.loadLibrary("opplibs");
+      } 
+      catch (final UnsatisfiedLinkError e) {
+          displayError(e);
+          throw e;
+      }
+      testExceptionHandling();
+  }
+
+  private static void displayError(final UnsatisfiedLinkError e) {
+      runNowOrSyncInUIThread(new Runnable() {
+          public void run() {
+              MessageDialog.openError(null, "Fatal Error",
+                      "FATAL: The OMNeT++ IDE native library failed to load, " +
+                      "all OMNeT++-related functionality will be unaccessible.\n\n" +
+                      "Details:\n\n" +
+                      "UnsatisfiedLinkError: " + e.getMessage() + "\n\n" +
+                      (Platform.getOS().equals(Platform.OS_LINUX) ? 
+                              "Try upgrading your Linux installation to a more recent version, " +
+                              "or installing newer versions of libc and libstdc++." : "")
+              );
+          }
+      });
+  }
+
+  private static void runNowOrSyncInUIThread(Runnable runnable) {
+      if (Display.getCurrent() == null)
+          Display.getDefault().syncExec(runnable);
+      else
+          runnable.run();
+  }
 %}
 
 

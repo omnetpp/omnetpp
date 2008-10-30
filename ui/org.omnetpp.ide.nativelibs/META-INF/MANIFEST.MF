@@ -4,7 +4,9 @@ Bundle-Name: OMNeT++ Native library plug-in
 Bundle-SymbolicName: org.omnetpp.ide.nativelibs
 Bundle-Version: 4.0.0.qualifier
 Bundle-Vendor: OpenSim Ltd.
-Require-Bundle: org.eclipse.core.runtime
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.swt,
+ org.eclipse.jface
 Eclipse-LazyStart: true
 Export-Package: org.omnetpp.common.engine,
  org.omnetpp.eventlog.engine,
