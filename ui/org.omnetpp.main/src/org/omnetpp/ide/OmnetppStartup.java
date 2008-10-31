@@ -3,6 +3,16 @@ package org.omnetpp.ide;
 import java.io.IOException;
 import java.net.URL;
 
+import org.apache.commons.httpclient.HostConfiguration;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.httpclient.ProxyClient;
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.auth.AuthScope;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.eclipse.core.internal.net.ProxyManager;
+import org.eclipse.core.net.proxy.IProxyData;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceDescription;
 import org.eclipse.core.resources.IWorkspaceRoot;
@@ -72,41 +82,82 @@ public class OmnetppStartup implements IStartup {
         // the version number we send to it; it may also return a page specific 
         // to the installed version.
         //
-        Display.getDefault().asyncExec(new Runnable() {
-            public void run() {
-                try {
-                    IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-                    IWorkbenchPage workbenchPage = activeWorkbenchWindow == null ? null : activeWorkbenchWindow.getActivePage();
-                    if (workbenchPage != null) {
-                        String versionCheckURL = NewsView.VERSIONCHECK_URL + "?v=" + OmnetppMainPlugin.getVersion() + "," + OmnetppMainPlugin.getInstallDate();
-                        if (isWebPageNotBlank(versionCheckURL)) {
-                            NewsView view = (NewsView)workbenchPage.showView(IConstants.NEWS_VIEW_ID);
-                            view.showURL(versionCheckURL);
-                        }
-                        OmnetppMainPlugin.getDefault().getPluginPreferences().setValue("lastCheck", System.currentTimeMillis());
-                    }
-                } 
-                catch (PartInitException e) {
-                    CommonPlugin.logError(e);
-                }
-            }
-        });
+        Job job = new Job("Version check") { 
+        	public IStatus run(IProgressMonitor pm) {
+        		final String versionCheckURL = NewsView.VERSIONCHECK_URL + "?v=" + OmnetppMainPlugin.getVersion() + "," + OmnetppMainPlugin.getInstallDate();
+        		if (isWebPageNotBlank(versionCheckURL)) {
+        			Display.getDefault().asyncExec(new Runnable() {
+        				@Override
+        				public void run() {
+        					try {
+        						IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+        						IWorkbenchPage workbenchPage = activeWorkbenchWindow == null ? null : activeWorkbenchWindow.getActivePage();
+        						if (workbenchPage != null) {
+        							NewsView view = (NewsView)workbenchPage.showView(IConstants.NEWS_VIEW_ID);
+        							view.showURL(versionCheckURL);
+        						}
+        					} 
+        					catch (PartInitException e) {
+        						CommonPlugin.logError(e);
+        					}
+        				}});
+        		}
+        		OmnetppMainPlugin.getDefault().getPluginPreferences().setValue("lastCheck", System.currentTimeMillis());
+        		return Status.OK_STATUS;
+        	}
+        };
+        job.setSystem(true);
+        job.schedule();
     }
 
     /**
      * Checks whether the given web page is available and contains something (i.e. is not empty).
      */
+//    public boolean isWebPageNotBlankJDK(String url) {
+//        try {
+//            byte[] buf = new byte[10];
+//            new URL(url).openStream().read(buf); // probe it by reading a few bytes
+//            return new String(buf).trim().length() > 0;
+//        } 
+//        catch (IOException e) {
+//            return false;
+//        }
+//    }
+
+    /**
+     * Checks whether the given web page is available and contains something (i.e. is not empty).
+     */
     public boolean isWebPageNotBlank(String url) {
+    	HttpClient client = new HttpClient();
+    	client.getParams().setSoTimeout(10000);
+
+    	IProxyData proxyData = ProxyManager.getProxyManager().getProxyDataForHost("omnetpp.org", IProxyData.HTTP_PROXY_TYPE );
+    	if (proxyData != null) {
+    		client.getState().setProxyCredentials(
+    				new AuthScope(proxyData.getHost(), proxyData.getPort()),
+					new UsernamePasswordCredentials(proxyData.getUserId(), proxyData.getPassword()));
+    		HostConfiguration hc = new HostConfiguration();
+    		hc.setProxy(proxyData.getHost(), proxyData.getPort());
+    	}
+
+    	GetMethod get = new GetMethod(url);
+    	get.setDoAuthentication( true );
+
         try {
-            byte[] buf = new byte[10];
-            new URL(url).openStream().read(buf); // probe it by reading a few bytes
-            return new String(buf).trim().length() > 0;
-        } 
-        catch (IOException e) {
-            return false;
+            int status = client.executeMethod( get );
+            
+            String responseBody = get.getResponseBodyAsString();
+			return responseBody.trim().length() > 0 && status == HttpStatus.SC_OK;
+        } catch (HttpException e) {
+        	return false;
+		} catch (IOException e) {
+        	return false;
+		} finally {
+            get.releaseConnection();
         }
     }
-
+    
+    
     /**
      * Determines whether this is the first IDE startup after the installation, with the 
      * default workspace (the "samples" directory). We check two things:

@@ -177,4 +177,11 @@
          version="4.0.0.qualifier"
          unpack="false"/>
 
+   <plugin
+         id="org.apache.commons.httpclient"
+         download-size="0"
+         install-size="0"
+         version="3.1.0.v20080605-1935"
+         unpack="false"/>
+
 </feature>
