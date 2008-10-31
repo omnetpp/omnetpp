@@ -66,10 +66,6 @@ proc start_tkenv {} {
   load_tkenvrc
   determine_clocks_per_sec
 
-  if {!$HAVE_BLT} {
-      puts "\n*** BLT Tcl/Tk extension not found -- please make sure it is installed, and TCL_LIBRARY is set properly."
-  }
-
   global tcl_platform
   if {$tcl_platform(platform) == "windows"} {
       # without "update", the main window comes up on top of all others, it also

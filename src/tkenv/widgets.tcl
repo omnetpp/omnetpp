@@ -60,6 +60,20 @@ proc setupTkOptions {} {
    # test for BLT
    set HAVE_BLT 0
    catch {package require BLT; set HAVE_BLT 1}
+   if {!$HAVE_BLT} {
+      puts "\n*** BLT Tcl/Tk extension not found -- please make sure it is installed, and TCL_LIBRARY is set properly."
+   }
+   if {$HAVE_BLT} {
+       if [catch {
+           blt::tabset .test_blt_tabset
+           blt::treeview .test_blt_treeview
+       } errmsg] {
+           set HAVE_BLT 0
+           puts "\n*** BLT installation seems to be broken, reverting to non-BLT widgets! Details: \"package require BLT\" command was successful, but could not create BLT widgets: $errmsg\n"
+       }
+       catch {destroy .test_blt_tabset}
+       catch {destroy .test_blt_treeview}
+   }
 
    # load combobox
    package require combobox 2.3
