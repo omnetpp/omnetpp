@@ -5,7 +5,6 @@ import org.eclipse.gef.SnapToGeometry;
 import org.eclipse.gef.internal.GEFMessages;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
-
 import org.omnetpp.ned.editor.NedEditorPlugin;
 
 /**
@@ -44,13 +43,11 @@ public class GNEDToggleSnapToGeometryAction extends Action {
     }
 
     private boolean isSnapEnabled() {
-        Boolean val = (Boolean)diagramViewer.getProperty(SnapToGeometry.PROPERTY_SNAP_ENABLED);
-        if (val != null)
-            return val.booleanValue();
-        return false;
+        return (Boolean)diagramViewer.getProperty(SnapToGeometry.PROPERTY_SNAP_ENABLED);
     }
 
     private void setSnapEnabled(boolean enabled) {
+        NedEditorPlugin.getDefault().getPreferenceStore().setValue("snapToGeometry", enabled);
         diagramViewer.setProperty(SnapToGeometry.PROPERTY_SNAP_ENABLED, new Boolean(enabled));
     }
 

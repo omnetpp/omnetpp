@@ -109,7 +109,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
         if (key == SnapToHelper.class) {
             List<SnapToGeometry> snapStrategies = new ArrayList<SnapToGeometry>();
             Boolean val = (Boolean) getViewer().getProperty(SnapToGeometry.PROPERTY_SNAP_ENABLED);
-            if (val != null && val.booleanValue()) snapStrategies.add(new SnapToGeometry(this));
+            if (val) snapStrategies.add(new SnapToGeometry(this));
 
             if (snapStrategies.size() == 0) return null;
             if (snapStrategies.size() == 1) return snapStrategies.get(0);

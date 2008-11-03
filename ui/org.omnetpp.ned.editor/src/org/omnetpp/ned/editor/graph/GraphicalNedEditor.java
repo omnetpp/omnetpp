@@ -24,6 +24,7 @@ import org.eclipse.gef.KeyStroke;
 import org.eclipse.gef.MouseWheelHandler;
 import org.eclipse.gef.MouseWheelZoomHandler;
 import org.eclipse.gef.SelectionManager;
+import org.eclipse.gef.SnapToGeometry;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CommandStack;
 import org.eclipse.gef.editparts.ScalableRootEditPart;
@@ -303,6 +304,7 @@ public class GraphicalNedEditor
 
         viewer.setEditPartFactory(new NedEditPartFactory());
         ContextMenuProvider provider = new GNEDContextMenuProvider(viewer, getActionRegistry());
+        viewer.setProperty(SnapToGeometry.PROPERTY_SNAP_ENABLED, NedEditorPlugin.getDefault().getPreferenceStore().getBoolean("snapToGeometry"));
         viewer.setContextMenu(provider);
         // register the menu so we can contribute to it from other plugins BUT do not include the
         // contributions for the editor input (otherwise we will get a ton of unnecessary menus like
