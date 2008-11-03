@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.cdt.core.model.CoreModel;
+import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
+import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.utils.ui.controls.FileListControl;
 import org.eclipse.cdt.utils.ui.controls.IFileListChangeListener;
 import org.eclipse.core.resources.IContainer;
@@ -594,7 +597,9 @@ public class MakemakeOptionsPanel extends Composite {
             protected IStatus run(IProgressMonitor monitor) {
                 try {
                     // calculate
-                    final String translatedOptions = MetaMakemake.translateOptions(folder, updatedOptions, makeFolders).toString();
+                    ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(folder.getProject());
+                    ICConfigurationDescription configuration = projectDescription.getActiveConfiguration();
+                    final String translatedOptions = MetaMakemake.translateOptions(folder, updatedOptions, makeFolders, configuration).toString();
 
                     // display result if it's still relevant 
                     if (jobSerial == thisJobSerial) {

@@ -6,16 +6,23 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.cdt.core.model.CoreModel;
+import org.eclipse.cdt.core.settings.model.CSourceEntry;
+import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
+import org.eclipse.cdt.core.settings.model.ICProjectDescription;
+import org.eclipse.cdt.core.settings.model.ICSourceEntry;
+import org.eclipse.cdt.core.settings.model.WriteAccessException;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.swt.graphics.Image;
 import org.omnetpp.cdt.Activator;
-import org.omnetpp.cdt.CDTUtils;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.StringUtils;
@@ -191,6 +198,30 @@ public abstract class ProjectTemplate implements IProjectTemplate {
         IContainer[] folders = new IContainer[projectRelativePaths.length];
         for (int i=0; i<projectRelativePaths.length; i++)
             folders[i] = getProject().getFolder(new Path(projectRelativePaths[i]));
-        CDTUtils.setSourceLocations(project, folders);
+        setSourceLocations(project, folders);
     }
+    
+    /**
+     * Sets the project's source locations list to the given list of folders, in all configurations. 
+     * (Previous source entries get overwritten.)  
+     */
+    protected static void setSourceLocations(IProject project, IContainer[] folders) throws CoreException {
+        ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(project, true);
+        int n = folders.length;
+        for (ICConfigurationDescription configuration : projectDescription.getConfigurations()) {
+            ICSourceEntry[] entries = new CSourceEntry[n];
+            for (int i=0; i<n; i++) {
+                Assert.isTrue(folders[i].getProject().equals(project));
+                entries[i] = new CSourceEntry(folders[i].getProjectRelativePath(), new IPath[0], 0);
+            }
+            try {
+                configuration.setSourceEntries(entries);
+            }
+            catch (WriteAccessException e) {
+                Activator.logError(e); // should not happen, as we called getProjectDescription() with write=true
+            }
+        }
+        CoreModel.getDefault().setProjectDescription(project, projectDescription);
+    }
+    
 }

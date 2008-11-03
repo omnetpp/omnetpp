@@ -385,7 +385,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         if (makeType==BuildSpecification.MAKEMAKE) {
             MakemakeOptions options = buildSpec.getMakemakeOptions(folder);
             try {
-                MakemakeOptions translatedOptions = MetaMakemake.translateOptions(folder, options, buildSpec.getMakeFolders());
+                MakemakeOptions translatedOptions = MetaMakemake.translateOptions(folder, options, buildSpec.getMakeFolders(), configuration);
             }
             catch (CoreException e) {
                 e.printStackTrace(); //TODO

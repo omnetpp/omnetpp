@@ -3,6 +3,8 @@ package org.omnetpp.cdt;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.cdt.core.model.CoreModel;
+import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.cdt.managedbuilder.core.IManagedProject;
 import org.eclipse.cdt.managedbuilder.macros.BuildMacroException;
@@ -46,11 +48,13 @@ public class OmnetppProjectMacroSupplier implements IProjectBuildMacroSupplier {
         public String getStringValue() throws BuildMacroException {
             try {
             	IProject project = (IProject)cdtProject.getOwner();
-            	String result ="";
-				for(IContainer cont : MakefileTools.collectDirs(project, pattern))
+            	ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(project);
+            	String result = "";
+				for (IContainer cont : MakefileTools.collectDirs(projectDescription, pattern))
 					result += optionPrefix+cont.getLocation().toString()+" ";
 				return result;
-			} catch (CoreException e) {
+			} 
+            catch (CoreException e) {
 				throw new BuildMacroException(e.getStatus());
 			}
         }

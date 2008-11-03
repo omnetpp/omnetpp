@@ -2,6 +2,8 @@ package org.omnetpp.cdt;
 
 import java.util.LinkedHashMap;
 
+import org.eclipse.cdt.core.model.CoreModel;
+import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.make.core.scannerconfig.IDiscoveredPathManager.IDiscoveredPathInfo;
 import org.eclipse.cdt.make.core.scannerconfig.IDiscoveredPathManager.IPerProjectDiscoveredPathInfo;
 import org.eclipse.cdt.make.internal.core.scannerconfig2.PerProjectSICollector;
@@ -13,7 +15,6 @@ import org.omnetpp.cdt.makefile.MakefileTools;
 /**
  * Special InfoCollector based on the CDT's GCC per project collector, but adds
  * the omnetpp/include directory to the includes.
- *
  */
 @SuppressWarnings("restriction")
 public class OmnetppGCCScannerInfoCollector extends PerProjectSICollector
@@ -27,7 +28,8 @@ public class OmnetppGCCScannerInfoCollector extends PerProjectSICollector
 		// add include dirs needed for OMNeT++
 		LinkedHashMap includeMap = pathInfoObject.getIncludeMap();
 		try {
-            for (IPath path : MakefileTools.getOmnetppIncludeLocationsForProject(getContext().getProject()))
+            ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(getContext().getProject());
+            for (IPath path : MakefileTools.getOmnetppIncludeLocationsForProject(projectDescription))
                 includeMap.put(path.toOSString(), false);
             pathInfoObject.setIncludeMap(includeMap);
         }

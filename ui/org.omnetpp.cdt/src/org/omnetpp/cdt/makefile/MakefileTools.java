@@ -7,9 +7,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.eclipse.cdt.core.model.CoreModel;
+import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
-import org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo;
-import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -174,18 +174,18 @@ public class MakefileTools {
      * Collects source directories from the project and all dependent projects containing files
      * matching the provided pattern (regexp)
      */
-    public static List<IContainer> collectDirs(IProject project, String pattern) throws CoreException {
+    public static List<IContainer> collectDirs(ICProjectDescription projectDescription, String pattern) throws CoreException {
 		List<IContainer> result = new ArrayList<IContainer>();
-		collectDirs(project, result, pattern);
+		collectDirs(projectDescription, result, pattern);
 		return result; 
 	}
 
-    private static void collectDirs(IProject proj, final List<IContainer> result, final String pattern) throws CoreException {
-    	IManagedBuildInfo buildInfo = ManagedBuildManager.getBuildInfo(proj);
-    	final ICSourceEntry[] srcEntries = buildInfo.getDefaultConfiguration().getSourceEntries();
+    private static void collectDirs(ICProjectDescription projectDescription, final List<IContainer> result, final String pattern) throws CoreException {
+        IProject project = projectDescription.getProject();
+    	final ICSourceEntry[] srcEntries = projectDescription.getActiveConfiguration().getSourceEntries();
 
     	for (ICSourceEntry srcEntry : srcEntries) {
-    		IResource sourceFolder = proj.findMember(srcEntry.getFullPath());
+    		IResource sourceFolder = project.findMember(srcEntry.getFullPath());
     		if (sourceFolder != null) {
 		    	sourceFolder.accept(new IResourceVisitor() {
 		    		public boolean visit(IResource resource) throws CoreException {
@@ -203,13 +203,12 @@ public class MakefileTools {
     	}
 
     	// collect directories from referenced projects too (recursively)
-    	for(IProject refProj : proj.getReferencedProjects())
-    		collectDirs(refProj, result, pattern);
+    	for(IProject refProj : project.getReferencedProjects())
+    		collectDirs(CoreModel.getDefault().getProjectDescription(refProj), result, pattern);
     }
 
     /**
-     * true if the given container has a file which name matches the given pattern
-     * @throws CoreException 
+     * True if the given container has a file which name matches the given pattern.
      */
     private static boolean containsFileMatchingPattern(IContainer container, String pattern) throws CoreException {
     	for (IResource member : container.members())
@@ -219,9 +218,9 @@ public class MakefileTools {
     }
     
     /**
-     * Returns locations paths.
+     * Returns *location* paths for the include directories.
      */
-    public static List<IPath> getOmnetppIncludeLocationsForProject(IProject project) throws CoreException {
+    public static List<IPath> getOmnetppIncludeLocationsForProject(ICProjectDescription projectDescription) throws CoreException {
         List<IPath> result = new ArrayList<IPath>();
 
         // add the omnetpp include directory
@@ -229,7 +228,7 @@ public class MakefileTools {
 
         // add project source directories as include dirs for the indexer
         // Note: "*.h" pattern is not good because of includes of the form "subdir/file.h"
-        for (IContainer incDir : MakefileTools.collectDirs(project, null)) 
+        for (IContainer incDir : MakefileTools.collectDirs(projectDescription, null)) 
             result.add(incDir.getLocation());
         return result;
     }

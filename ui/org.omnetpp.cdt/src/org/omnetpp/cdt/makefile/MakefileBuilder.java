@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.cdt.core.model.CoreModel;
+import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
+import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.managedbuilder.core.IConfiguration;
 import org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo;
 import org.eclipse.cdt.managedbuilder.core.IToolChain;
@@ -223,8 +226,11 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
             //System.out.println("Generating makefile in: " + folder.getFullPath());
             Assert.isTrue(folder.getProject().equals(getProject()));
             MakemakeOptions options = buildSpec.getMakemakeOptions(folder);
-            Assert.isTrue(options!=null);
-            MetaMakemake.generateMakefile(folder, options, buildSpec.getMakeFolders());
+            Assert.isTrue(options != null);
+
+            ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(folder.getProject());
+            ICConfigurationDescription configuration = projectDescription.getActiveConfiguration();
+            MetaMakemake.generateMakefile(folder, options, buildSpec.getMakeFolders(), configuration);
             ok = true;
         }
         catch (MakemakeException e) {

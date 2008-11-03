@@ -44,8 +44,8 @@ public class MetaMakemake {
     /**
      * Generates Makefile in the given folder.
      */
-    public static void generateMakefile(IContainer makefileFolder, MakemakeOptions options, List<IContainer> makeFolders) throws CoreException, MakemakeException {
-        MakemakeOptions translatedOptions = translateOptions(makefileFolder, options, makeFolders);
+    public static void generateMakefile(IContainer makefileFolder, MakemakeOptions options, List<IContainer> makeFolders, ICConfigurationDescription configuration) throws CoreException, MakemakeException {
+        MakemakeOptions translatedOptions = translateOptions(makefileFolder, options, makeFolders, configuration);
         IProject project = makefileFolder.getProject();
 
         // Activator.getDependencyCache().dumpPerFileDependencies(project);
@@ -57,7 +57,7 @@ public class MetaMakemake {
     /** 
      * Translates makemake options
      */
-    public static MakemakeOptions translateOptions(IContainer makefileFolder, MakemakeOptions options, List<IContainer> makeFolders) throws CoreException {
+    public static MakemakeOptions translateOptions(IContainer makefileFolder, MakemakeOptions options, List<IContainer> makeFolders, ICConfigurationDescription configuration) throws CoreException {
         MakemakeOptions translatedOptions = options.clone();
 
         IProject project = makefileFolder.getProject();
@@ -71,7 +71,7 @@ public class MetaMakemake {
         translatedOptions.isNMake = CDTUtils.isMsvcToolchainActive(project);
 
         // add -X option for each excluded folder in CDT, and for each sub-makefile
-        translatedOptions.exceptSubdirs.addAll(getExcludedSubpathsWithinFolder(makefileFolder));
+        translatedOptions.exceptSubdirs.addAll(getExcludedSubpathsWithinFolder(makefileFolder, configuration));
 
         // add -I, -L and -D options configured in CDT
         translatedOptions.includeDirs.addAll(getIncludePathsFor(makefileFolder));
@@ -174,9 +174,9 @@ public class MetaMakemake {
      * in the active CDT configuration under the given source folder.
      * File exclusions are ignored.
      */
-    protected static List<String> getExcludedSubpathsWithinFolder(IContainer makemakeFolder) throws CoreException {
+    protected static List<String> getExcludedSubpathsWithinFolder(IContainer makemakeFolder, ICConfigurationDescription configuration) throws CoreException {
         List<String> result = new ArrayList<String>();
-        collectExcludedSubpaths(makemakeFolder, makemakeFolder, CDTUtils.getSourceEntries(makemakeFolder.getProject()), result);
+        collectExcludedSubpaths(makemakeFolder, makemakeFolder, configuration.getSourceEntries(), result);
         return result;
     }
 
@@ -195,7 +195,7 @@ public class MetaMakemake {
             }
         }
     }
-
+    
     /**
      * Returns the include paths for the given folder, in the active configuration
      * and for the C++ language. Built-in paths are skipped. The returned strings
