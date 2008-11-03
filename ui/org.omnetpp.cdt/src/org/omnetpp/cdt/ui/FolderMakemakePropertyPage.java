@@ -30,7 +30,7 @@ import org.omnetpp.common.color.ColorFactory;
  *
  * @author Andras
  */
-public class MakemakeFolderPropertyPage extends PropertyPage {
+public class FolderMakemakePropertyPage extends PropertyPage {
     public static final String MAKEFRAG_FILENAME = "makefrag";
     public static final String MAKEFRAGVC_FILENAME = "makefrag.vc";
 
@@ -44,7 +44,7 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
     /**
      * Constructor.
      */
-    public MakemakeFolderPropertyPage() {
+    public FolderMakemakePropertyPage() {
         super();
     }
 

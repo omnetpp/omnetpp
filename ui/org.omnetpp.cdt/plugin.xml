@@ -269,7 +269,7 @@
          point="org.eclipse.ui.propertyPages">
       <page
             category="org.omnetpp.main.OmnetppCategory"
-            class="org.omnetpp.cdt.ui.MakemakeFolderPropertyPage"
+            class="org.omnetpp.cdt.ui.FolderMakemakePropertyPage"
             id="org.omnetpp.cdt.FolderBuildSpec"
             name="Makemake">
          <filter

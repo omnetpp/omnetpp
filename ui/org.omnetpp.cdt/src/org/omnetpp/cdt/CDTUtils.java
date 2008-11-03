@@ -30,7 +30,8 @@ import org.eclipse.core.runtime.Path;
  */
 public class CDTUtils {
     /**
-     * Returns the currently activated configuration associated with the given project
+     * Returns the currently activated configuration associated with the given project.
+     * Note: Do not use from property pages, as it returns the saved state not the edited one.
      */
     public static IConfiguration getActiveConfiguration(IProject project) {
         IManagedBuildInfo buildInfo = ManagedBuildManager.getBuildInfo(project);
@@ -39,6 +40,7 @@ public class CDTUtils {
     
     /**
      * Returns the tool-chain associated with the currently active configuration.
+     * Note: Do not use from property pages, as it returns the saved state not the edited one.
      */
     public static IToolChain getActiveToolChain(IProject project) {
         return getActiveConfiguration(project).getToolChain();
@@ -46,6 +48,7 @@ public class CDTUtils {
     
     /**
      * Checks if the currently active tool-chain is MSVC or not.
+     * Note: Do not use from property pages, as it returns the saved state not the edited one.
      */
     public static boolean isMsvcToolchainActive(IProject project) {
         // we identify the tool-chain by assuming that its id contains the string below.
@@ -98,7 +101,6 @@ public class CDTUtils {
         return null;
     }
 
-    
     /**
      * Sets the project's source locations list to the given list of folders, in all configurations. 
      * (Previous source entries get overwritten.)  

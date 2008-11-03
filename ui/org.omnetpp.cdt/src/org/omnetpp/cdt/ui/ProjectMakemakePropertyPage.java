@@ -9,17 +9,14 @@ import java.util.Map;
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.cdt.core.cdtvariables.CdtVariableException;
 import org.eclipse.cdt.core.model.CoreModel;
+import org.eclipse.cdt.core.settings.model.ICBuildSetting;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICSettingEntry;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 import org.eclipse.cdt.internal.core.cdtvariables.CdtVariableManager;
-import org.eclipse.cdt.managedbuilder.core.IBuilder;
-import org.eclipse.cdt.managedbuilder.core.IConfiguration;
-import org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo;
-import org.eclipse.cdt.managedbuilder.core.IToolChain;
-import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
+import org.eclipse.cdt.ui.newui.CDTPropertyManager;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -235,6 +232,11 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
             }
         });
 
+        // register this page in the CDT property manager (note: if we skip this,
+        // "Mark as source folder" won't work on the page until we visit a CDT property page)
+        CDTPropertyManager.getProjectDescription(this, getProject());
+        
+        // configure the tree
         treeViewer.setContentProvider(new WorkbenchContentProvider() {
             @Override
             public Object[] getChildren(Object element) {
@@ -254,7 +256,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
                     return null;
 
                 IContainer folder = (IContainer)element;
-                ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(getProject());
+                ICProjectDescription projectDescription = CDTPropertyManager.getProjectDescription(getProject());
                 ICConfigurationDescription configuration = projectDescription.getActiveConfiguration();
                 boolean isSrcFolder = CDTUtils.getSourceEntryFor(folder, configuration.getSourceEntries())!=null;
                 boolean isExcluded = CDTUtils.isExcluded(folder, configuration.getSourceEntries());
@@ -342,7 +344,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
                 case STATICLIB: target += " (static lib)"; break;
             }
 
-            ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(folder.getProject());
+            ICProjectDescription projectDescription = CDTPropertyManager.getProjectDescription(folder.getProject());
             ICConfigurationDescription configuration = projectDescription.getActiveConfiguration();
             boolean isExcluded = CDTUtils.isExcluded(folder, configuration.getSourceEntries());
 
@@ -362,7 +364,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         String result = null;
         
         IProject project = folder.getProject();
-        ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(project);
+        ICProjectDescription projectDescription = CDTPropertyManager.getProjectDescription(project);
         ICConfigurationDescription configuration = projectDescription.getActiveConfiguration();
         ICSourceEntry[] sourceEntries = configuration.getSourceEntries();
 
@@ -461,7 +463,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
     protected void setFolderMakeType(IContainer folder, int makeType) {
         buildSpec.setFolderMakeType(folder, makeType);
         if (makeType == BuildSpecification.MAKEMAKE) {
-            ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(folder.getProject());
+            ICProjectDescription projectDescription = CDTPropertyManager.getProjectDescription(folder.getProject());
             ICConfigurationDescription configuration = projectDescription.getActiveConfiguration();
             boolean isExcluded = CDTUtils.isExcluded(folder, configuration.getSourceEntries());
             if (isExcluded)
@@ -473,13 +475,9 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
     protected void markAsRoot(IContainer folder) {
         try {
             IProject project = getProject();
-            ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(project);
+            ICProjectDescription projectDescription = CDTPropertyManager.getProjectDescription(project);
             for (ICConfigurationDescription configuration : projectDescription.getConfigurations())
                 configuration.getBuildSetting().setBuilderCWD(new Path("${workspace_loc:"+folder.getFullPath().toString()+"}"));
-            CoreModel.getDefault().setProjectDescription(project, projectDescription);
-        }
-        catch (CoreException e) {
-            errorDialog(e.getMessage(), e);
         }
         catch (Exception e) {
             errorDialog(e.getMessage(), e);
@@ -500,17 +498,13 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
     protected void markAsSourceLocation(IContainer folder) {
         try {
             IProject project = getProject();
-            ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(project);
+            ICProjectDescription projectDescription = CDTPropertyManager.getProjectDescription(project);
             for (ICConfigurationDescription configuration : projectDescription.getConfigurations()) {
                 ICSourceEntry[] entries = configuration.getSourceEntries();
                 ICSourceEntry entry = (ICSourceEntry)CDataUtil.createEntry(ICSettingEntry.SOURCE_PATH, folder.getProjectRelativePath().toString(), folder.getProjectRelativePath().toString(), new IPath[0], ICSettingEntry.VALUE_WORKSPACE_PATH);
                 entries = (ICSourceEntry[]) ArrayUtils.add(entries, entry);
                 configuration.setSourceEntries(entries);
             }
-            CoreModel.getDefault().setProjectDescription(project, projectDescription);
-        }
-        catch (CoreException e) {
-            errorDialog(e.getMessage(), e);
         }
         catch (Exception e) {
             errorDialog(e.getMessage(), e);
@@ -522,17 +516,13 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
     protected void removeSourceLocation(IContainer folder) {
         try {
             IProject project = getProject();
-            ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(project);
+            ICProjectDescription projectDescription = CDTPropertyManager.getProjectDescription(project);
             for (ICConfigurationDescription configuration : projectDescription.getConfigurations()) {
                 ICSourceEntry[] entries = configuration.getSourceEntries();
                 ICSourceEntry entry = CDTUtils.getSourceEntryFor(folder, entries);
                 entries = (ICSourceEntry[]) ArrayUtils.removeElement(entries, entry); // works for null too
                 configuration.setSourceEntries(entries);
             }
-            CoreModel.getDefault().setProjectDescription(project, projectDescription);
-        }
-        catch (CoreException e) {
-            errorDialog(e.getMessage(), e);
         }
         catch (Exception e) {
             errorDialog(e.getMessage(), e);
@@ -551,7 +541,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
     protected void setExcluded(IContainer folder, boolean exclude) {
         try {
             IProject project = getProject();
-            ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(project);
+            ICProjectDescription projectDescription = CDTPropertyManager.getProjectDescription(project);
             for (ICConfigurationDescription configuration : projectDescription.getConfigurations()) {
                 ICSourceEntry[] newEntries = CDTUtils.setExcluded(folder, exclude, configuration.getSourceEntries());
                 configuration.setSourceEntries(newEntries);
@@ -646,7 +636,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         markAsRootButton.setEnabled(makeType!=BuildSpecification.NONE);
         optionsButton.setEnabled(makeType==BuildSpecification.MAKEMAKE);
         
-        ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(project);
+        ICProjectDescription projectDescription = CDTPropertyManager.getProjectDescription(project);
         ICConfigurationDescription configuration = projectDescription.getActiveConfiguration();
         ICSourceEntry[] sourceEntries = configuration.getSourceEntries();
         boolean isExcluded = CDTUtils.isExcluded(folder, sourceEntries);
@@ -671,44 +661,32 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
     public static String getDiagnosticMessage(IContainer folder, BuildSpecification buildSpec) {
         // Check CDT settings
         IProject project = folder.getProject();
-        IManagedBuildInfo buildInfo = ManagedBuildManager.getBuildInfo(project);
-        if (buildInfo == null)
+        ICProjectDescription projectDescription = CDTPropertyManager.getProjectDescription(project);
+        if (projectDescription == null)
             return "Cannot access CDT build information for this project. Is this a C/C++ project?";
-        IConfiguration configuration = buildInfo.getDefaultConfiguration();
-        if (configuration == null)
+        ICConfigurationDescription activeConfiguration = projectDescription.getActiveConfiguration();
+        if (activeConfiguration == null)
             return "No active build configuration -- please create one.";
         boolean isOmnetppConfig = false;
-        for (IConfiguration c = configuration; c != null; c = c.getParent())
+        for (ICConfigurationDescription c = activeConfiguration; c != null; c = (ICConfigurationDescription)c.getParent())
             if (c.getId().startsWith("org.omnetpp.cdt.")) {
                 isOmnetppConfig = true; break;}
         if (!isOmnetppConfig)
-            return "The active build configuration \""+ configuration.getName() + "\" is " +
+            return "The active build configuration \""+ activeConfiguration.getName() + "\" is " +
             		"not an OMNeT++ configuration. Please re-create the project it with the " +
             		"New OMNeT++ Project wizard, overwriting the existing project settings.";
-        boolean isOmnetppToolchain = false;
-        for (IToolChain tc = configuration.getToolChain(); tc != null; tc = tc.getSuperClass())
-            if (tc.getId().startsWith("org.omnetpp.cdt.")) {
-                isOmnetppToolchain = true; break;}
-        if (!isOmnetppToolchain)
-            return "The active toolchain \""+ configuration.getToolChain().getName() + "\" is " +
-            		"not suitable for OMNeT++. Please re-create the project it with the " +
-                    "New OMNeT++ Project wizard, overwriting the existing project settings.";
-
-        if (configuration.isManagedBuildOn())
-            return "CDT Managed Build is on! Please turn off CDT's Makefile generation on the C/C++ Build page.";
-        IBuilder builder = configuration.getBuilder();
-        if (builder == null)
-            return "No CDT Project Builder. Activate one on the C/C++ Build / Tool Chain Editor page.";
-        String builderId = builder.getId();
+        ICBuildSetting buildSetting = activeConfiguration.getBuildSetting();
+        if (buildSetting == null)
+            return "No CDT Project Builder. Activate one on the C/C++ Build / Tool Chain Editor page."; //???
+        String builderId = buildSetting.getId();
         if (builderId==null || !builderId.startsWith("org.omnetpp.cdt."))
-            return "C/C++ Builder \"" + builder.getName()+ "\" set in the active build configuration " +
+            return "C/C++ Builder \"" + buildSetting.getName()+ "\" set in the active build configuration " +
                    "is not suitable for OMNeT++. Please re-create the project with the " +
                    "New OMNeT++ Project wizard, overwriting the existing project settings.";
 
         // warn if there're differences in source entries across configurations.
         // first, collect which entries occur in which configurations
         Map<String,List<String>> sourceEntryMap = new HashMap<String, List<String>>(); // srcEntry -> config*
-        ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(project, true);
         for (ICConfigurationDescription cfg : projectDescription.getConfigurations()) {
             for (ICSourceEntry e : cfg.getSourceEntries()) {
                 String entryText = StringUtils.defaultIfEmpty(CDataUtil.makeAbsolute(project, e).getFullPath().toString(), ".");
@@ -732,9 +710,8 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         if (buildSpec.getMakeFolders().isEmpty())
             return "No makefile has been specified for this project.";
 
-        // check if there's a makefile in the build directory
-        //XXX check that build location is set identically in all configurations
-        String buildLocation = configuration.getBuildData().getBuilderCWD().toString();
+        // check if build directory exists, and there's a makefile in it
+        String buildLocation = activeConfiguration.getBuildSetting().getBuilderCWD().toString();
         ICConfigurationDescription configurationDescription = projectDescription.getActiveConfiguration();
         try {
             buildLocation = CdtVariableManager.getDefault().resolveValue(buildLocation, "[unknown-macro]", ",", configurationDescription);
@@ -772,6 +749,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
     public boolean performOk() {
         // note: performApply() delegates here too
         saveBuildSpecFile();
+        CDTPropertyManager.performOk(this);
         return true;
     }
 
