@@ -1337,7 +1337,7 @@ NEDElement *doParseNED1(NEDParser *p, const char *nedtext)
     yydebug = YYDEBUGGING_ON;
 #endif
 
-    NONREENTRANT_PARSER();
+    NONREENTRANT_NED_PARSER(p);
 
     // reset the lexer
     pos.co = 0;
@@ -1353,7 +1353,6 @@ NEDElement *doParseNED1(NEDParser *p, const char *nedtext)
         {np->getErrors()->addError("", "unable to allocate work memory"); return false;}
 
     // create parser state and NEDFileElement
-    np = p;
     resetParserState();
     ps.nedfile = new NedFileElement();
 

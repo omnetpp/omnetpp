@@ -24,6 +24,12 @@
 
 NAMESPACE_BEGIN
 
+#define NONREENTRANT_NED_PARSER(p) \
+    struct Guard { \
+      Guard(NEDParser *parser) {if (np) throw opp_runtime_error("non-reentrant parser invoked again while parsing"); np=parser;} \
+      ~Guard() {np=NULL;} \
+    } __guard(p);
+
 std::string slashifyFilename(const char *fname);
 const char *currentLocation();
 
