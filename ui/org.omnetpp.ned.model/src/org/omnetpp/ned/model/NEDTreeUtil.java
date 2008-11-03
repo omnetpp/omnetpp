@@ -65,7 +65,7 @@ public class NEDTreeUtil {
      * whether a parse error occurred. All errors produced here will be syntax errors 
      * (see NEDSYNTAXPROBLEM_MARKERID).
 	 */
-	public static NedFileElementEx parseNedFile(String filesystemFilename, INEDErrorStore errors, String displayFilename) {
+	public static synchronized NedFileElementEx parseNedFile(String filesystemFilename, INEDErrorStore errors, String displayFilename) {
         return doParseNedSource(null, filesystemFilename, errors, displayFilename);
 	}
 
@@ -77,14 +77,15 @@ public class NEDTreeUtil {
      * whether a parse error occurred. All errors produced here will be syntax errors 
      * (see NEDSYNTAXPROBLEM_MARKERID).
      */
-	public static NedFileElementEx parseNedText(String source, INEDErrorStore errors, String displayFilename) {
+	public static synchronized NedFileElementEx parseNedText(String source, INEDErrorStore errors, String displayFilename) {
         return doParseNedSource(source, null, errors, displayFilename);
 	}
 
-	private static NedFileElementEx doParseNedSource(String source, String filesystemFilename, INEDErrorStore errors, String displayFilename) {
+	private static synchronized NedFileElementEx doParseNedSource(String source, String filesystemFilename, INEDErrorStore errors, String displayFilename) {
 		Assert.isTrue(displayFilename != null);
 		NEDElement swigTree = null;
 		try {
+		    // System.out.println("Parsing NED file started: " + filesystemFilename);
 			// parse
 			NEDErrorStore swigErrors = new NEDErrorStore();
 			NEDParser np = new NEDParser(swigErrors);
@@ -129,13 +130,16 @@ public class NEDTreeUtil {
 		finally {
 			if (swigTree != null)
 				swigTree.delete();
+
+			// System.out.println("Parsing NED file finished: " + filesystemFilename);
 		}
 	}
 
-    public static MsgFileElementEx parseMsgSource(String source, INEDErrorStore errors, String filename) {
+    public static synchronized MsgFileElementEx parseMsgSource(String source, INEDErrorStore errors, String filename) {
         Assert.isTrue(filename != null);
         NEDElement swigTree = null;
         try {
+            // System.out.println("Parsing MSG file started: " + filename);
             // parse
             NEDErrorStore swigErrors = new NEDErrorStore();
             NEDParser np = new NEDParser(swigErrors);
@@ -183,6 +187,8 @@ public class NEDTreeUtil {
         finally {
             if (swigTree != null)
                 swigTree.delete();
+
+            // System.out.println("Parsing MSG file finished: " + filename);
         }
     }
 
