@@ -219,6 +219,7 @@ public class DocumentationGenerator {
                     collectDoxyMap();
                     generateCSS();
                     generateTreeJavaScript();
+                    generateRedirectPage();
                     generateHTMLFrame();
                     generateNavigationTree();
                     generateNedTypeFigures();
@@ -721,6 +722,23 @@ public class DocumentationGenerator {
 
     protected void generateTreeJavaScript() throws Exception {
         generateFileFromResource("tree.js");
+    }
+    
+    protected void generateRedirectPage() throws Exception {
+        int count = rootRelativeDoxyPath.matchingFirstSegments(rootRelativeNeddocPath);
+        final IPath remainingPath = rootRelativeNeddocPath.removeFirstSegments(count);
+        final IPath reversePath = getReversePath(remainingPath);
+
+        withGeneratingFile(reversePath.append("index.html").toPortableString(), new Runnable() {
+            public void run() throws Exception {
+                out("<html>\r\n" + 
+            		"   <head>\r\n" + 
+            		"      <title>Redirect Page</title>\r\n" + 
+            		"      <meta http-equiv=\"refresh\" content=\"0;url=" + remainingPath.append("index.html").toPortableString() + "\"></head>\r\n" + 
+            		"   <body/>\r\n" + 
+            		"</html>");
+            }
+        });
     }
 
     protected void generateHTMLFrame() throws Exception {
