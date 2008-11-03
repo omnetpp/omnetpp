@@ -1,13 +1,11 @@
 package org.omnetpp.ide;
 
 import java.io.IOException;
-import java.net.URL;
 
 import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.ProxyClient;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -87,7 +85,6 @@ public class OmnetppStartup implements IStartup {
         		final String versionCheckURL = NewsView.VERSIONCHECK_URL + "?v=" + OmnetppMainPlugin.getVersion() + "," + OmnetppMainPlugin.getInstallDate();
         		if (isWebPageNotBlank(versionCheckURL)) {
         			Display.getDefault().asyncExec(new Runnable() {
-        				@Override
         				public void run() {
         					try {
         						IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
