@@ -79,6 +79,7 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.NedEditor;
 import org.omnetpp.ned.editor.NedEditorPlugin;
+import org.omnetpp.ned.editor.NedEditorPreferenceInitializer;
 import org.omnetpp.ned.editor.graph.actions.ChooseIconAction;
 import org.omnetpp.ned.editor.graph.actions.ConvertToNewFormatAction;
 import org.omnetpp.ned.editor.graph.actions.CopyAction;
@@ -304,7 +305,7 @@ public class GraphicalNedEditor
 
         viewer.setEditPartFactory(new NedEditPartFactory());
         ContextMenuProvider provider = new GNEDContextMenuProvider(viewer, getActionRegistry());
-        viewer.setProperty(SnapToGeometry.PROPERTY_SNAP_ENABLED, NedEditorPlugin.getDefault().getPreferenceStore().getBoolean("snapToGeometry"));
+        viewer.setProperty(SnapToGeometry.PROPERTY_SNAP_ENABLED, NedEditorPlugin.getDefault().getPreferenceStore().getBoolean(NedEditorPreferenceInitializer.SNAP_TO_GEOMETRY));
         viewer.setContextMenu(provider);
         // register the menu so we can contribute to it from other plugins BUT do not include the
         // contributions for the editor input (otherwise we will get a ton of unnecessary menus like
