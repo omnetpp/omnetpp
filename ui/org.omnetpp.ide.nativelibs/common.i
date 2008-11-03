@@ -12,16 +12,6 @@
 
 %include "commondefs.i"
 %include "loadlib.i"
-
-%exception {
-    try {
-        $action
-    } catch (std::exception& e) {
-        SWIG_JavaThrowException(jenv, SWIG_JavaRuntimeException, const_cast<char*>(e.what()));
-        return $null;
-    }
-}
-
 %include "std_string.i"
 
 // hide export/import macros from swig

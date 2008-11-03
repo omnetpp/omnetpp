@@ -6,6 +6,7 @@
 %include "loadlib.i"
 %include "std_string.i"
 %include "enums.swg"
+%include "commondefs.i"
 
 %javaconst(1);
 
@@ -40,9 +41,6 @@
 namespace std {
 //class ostream;
 };
-
-//XXX need %exception?
-
 
 // parse functions return new objects, supposed to be deleted from Java
 %newobject NEDParser::parseNEDText(const char *);
