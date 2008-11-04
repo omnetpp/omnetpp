@@ -55,9 +55,13 @@ public class NedTextHover implements ITextHover, ITextHoverExtension, IInformati
 		Point selection= textViewer.getSelectedRange();
 		if (selection.x <= offset && offset < selection.x + selection.y)
 			return new Region(selection.x, selection.y);
-		// TODO: find out correct region
-		// the returned region used to hide the hover when you move out of this region with the mouse 
-		return new Region(offset, 0);
+		Region region = new Region(offset, 0);
+        Info info = NedTextUtils.getNedReferenceFromSource((ITextEditor)editor, textViewer, region);
+
+        if (info != null)
+            return info.regionToHighlight;
+        else
+            return region;
 	}
 
 	/*
