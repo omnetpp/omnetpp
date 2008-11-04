@@ -376,7 +376,12 @@ public class HoverSupport {
 				        @Override
 				        public void setSize(int width, int height) {
 				            super.setSize(width + 20, height);
-				        }	    
+				        }
+
+				        @Override
+				        public IInformationControlCreator getInformationPresenterControlCreator() {
+				            return HoverSupport.getInformationPresenterControlCreator();
+				        }
 				    });
 				else 
 					return new DefaultInformationControl(parent, AFFORDANCE, new HTMLTextPresenter(false));

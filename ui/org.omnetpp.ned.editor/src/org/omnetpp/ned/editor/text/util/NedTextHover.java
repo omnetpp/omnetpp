@@ -37,8 +37,8 @@ public class NedTextHover implements ITextHover, ITextHoverExtension, IInformati
 
 		if (info.referredElement instanceof INedTypeElement)
 		    return getHoverTextFor(((INedTypeElement)info.referredElement).getNEDTypeInfo());
-
-		return HoverSupport.addHTMLStyleSheet(info.referredElement.toString() + "<br/>" + "<pre>" + info.referredElement.getNEDSource() + "</pre>"); //FIXME refine!!! ie docu, etc
+		
+		return HoverSupport.addHTMLStyleSheet("<pre>" + info.referredElement.getNEDSource() + "</pre>"); //FIXME refine!!! ie docu, etc
 	}
 
 	protected static String getHoverTextFor(INEDTypeInfo typeInfo) {
@@ -55,9 +55,11 @@ public class NedTextHover implements ITextHover, ITextHoverExtension, IInformati
 		Point selection= textViewer.getSelectedRange();
 		if (selection.x <= offset && offset < selection.x + selection.y)
 			return new Region(selection.x, selection.y);
+		// TODO: find out correct region
+		// the returned region used to hide the hover when you move out of this region with the mouse 
 		return new Region(offset, 0);
 	}
-	
+
 	/*
 	 * @see org.eclipse.jface.text.ITextHoverExtension#getHoverControlCreator()
 	 */
