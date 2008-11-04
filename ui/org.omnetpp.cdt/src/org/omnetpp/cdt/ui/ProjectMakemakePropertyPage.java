@@ -83,8 +83,9 @@ import org.omnetpp.common.util.StringUtils;
  * @author Andras
  */
 //XXX LIBRARY PATHS: ne out/configname legyen, hanem a source folder!
-//FIXME warning if there's no makefile in a "custom makefile" folder (yellow "/!\")
-//FIXME warning ha egy source foldert egy makefile sem fed be
+//TODO warning if there's no makefile in a "custom makefile" folder (yellow "/!\")
+//TODO warning ha egy source foldert egy makefile sem fed be
+//TODO "Out" dir should not overlap with source folders (check!!!)
 @SuppressWarnings("restriction")
 public class ProjectMakemakePropertyPage extends PropertyPage {
     private static final String SOURCE_FOLDER_IMG = "icons/full/obj16/folder_srcfolder.gif";
@@ -382,16 +383,6 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         int parentMakefileType = buildSpec.getFolderMakeType(parentMakefileFolder);
         MakemakeOptions parentMakeOptions = buildSpec.getMakemakeOptions(parentMakefileFolder);
 
-        //TODO Tooltip irja ki, hogy:
-        //   - source folder, "source location" vagy excluded, ill. make= none/makemake/custom
-        //   - ha makefile:
-        //        - milyen submake-eket hiv meg (kell meghivnia)
-        //        - illetve milyen foldereket buildel meg (kell megbuildelnie)
-        //           ^^^ ezt a kettot a MetaMakemake kell hogy eloallitsa, es itt ezt kell felhasznalnunk!!!
-        //
-        //TODO give special hints if the folder is project root
-
-       
         if (makeType==BuildSpecification.MAKEMAKE) {
             what = folderTypeText + "; makefile generation enabled";
             
@@ -756,8 +747,6 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
                 tmp.add(f.getFullPath().toString());
             return "No makefile specified for root build folder " + StringUtils.join(tmp, " or ")+ " (see C/C++ Build page).";
         }
-        
-        //XXX "Out" dir should not overlap with source folders (check!!!)
 
         return null;
     }
