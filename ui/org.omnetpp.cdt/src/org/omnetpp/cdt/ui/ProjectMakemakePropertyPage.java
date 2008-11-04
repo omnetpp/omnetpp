@@ -31,6 +31,8 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.ErrorDialog;
+import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.preference.IPreferencePageContainer;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -80,21 +82,9 @@ import org.omnetpp.common.util.StringUtils;
  *
  * @author Andras
  */
-//XXX metamakemake: -L-lel vegye fel a projectben levo tobbi makefile foldert is
-//XXX ${PrimarySourceDir} makrot elimimalni!!!!
-//XXX property page-et attenni az omnet++ kategoriaba!
 //XXX LIBRARY PATHS: ne out/configname legyen, hanem a source folder!
-//XXX add link to the C/C++ Build page too!!!
-//XXX when first sub-makefile is created (or "mark as source folder"!!!), offer to exclude the root!!!
-//XXX hintet kiirni: folderek kozotti sorrendet a makefrag-ban kellene megadni (illetve meg lehetne probalni autodetektalni)
-//XXX print hint somewhere: project root should probably be excluded if there's a submakefile!
-//XXX    "Compile" fulre: ha nem akarod hogy barmit forditson, excludold ki a makefile foldert!
 //FIXME warning if there's no makefile in a "custom makefile" folder (yellow "/!\")
 //FIXME warning ha egy source foldert egy makefile sem fed be
-//XXX finish hover. "no makefile generated" etc!
-//FIXME project template-kben a buildspecet atirni!!!
-//XXX project template-ekben az out/ dirt kiexcludolni?
-//FIXME source folder changes immediatly get committed (no cancel!), but they aren't visible in cdt page. use CDTPropertyManager!
 @SuppressWarnings("restriction")
 public class ProjectMakemakePropertyPage extends PropertyPage {
     private static final String SOURCE_FOLDER_IMG = "icons/full/obj16/folder_srcfolder.gif";
@@ -106,6 +96,8 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
     
     // state
     protected BuildSpecification buildSpec;
+
+    protected static boolean suppressExcludeProjectRootQuestion = false; // per-session variable
 
     // controls
     protected Label errorMessageLabel;
@@ -361,8 +353,6 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
     }
 
     protected String getFolderHoverText(IContainer folder) {
-        String result = null;
-        
         IProject project = folder.getProject();
         ICProjectDescription projectDescription = CDTPropertyManager.getProjectDescription(project);
         ICConfigurationDescription configuration = projectDescription.getActiveConfiguration();
@@ -371,6 +361,26 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         boolean isSourceLocation = CDTUtils.getSourceLocations(project, sourceEntries).contains(folder);
         boolean isExcluded = CDTUtils.isExcluded(folder, sourceEntries);
         boolean isUnderSourceLocation = CDTUtils.getSourceEntryThatCovers(folder, sourceEntries) != null;
+        int makeType = buildSpec.getFolderMakeType(folder);
+
+        String folderTypeText = "";
+        if (isSourceLocation)
+            folderTypeText = "source location";
+        else if (isExcluded)
+            folderTypeText = "excluded from build";
+        else
+            folderTypeText = "source folder";
+
+        String what = null;
+        String comments = "";
+
+        // find which makefile covers this folder (ignoring makefile type and scope for now)
+        IContainer parentMakefileFolder = null;
+        for (IContainer f = folder.getParent(); !(f instanceof IWorkspaceRoot) && !CDTUtils.isExcluded(f, sourceEntries); f = f.getParent())
+            if (buildSpec.getMakeFolders().contains(f)) {
+                parentMakefileFolder = f; break;}
+        int parentMakefileType = buildSpec.getFolderMakeType(parentMakefileFolder);
+        MakemakeOptions parentMakeOptions = buildSpec.getMakemakeOptions(parentMakefileFolder);
 
         //TODO Tooltip irja ki, hogy:
         //   - source folder, "source location" vagy excluded, ill. make= none/makemake/custom
@@ -381,82 +391,66 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         //
         //TODO give special hints if the folder is project root
 
-        int makeType = buildSpec.getFolderMakeType(folder);
+       
         if (makeType==BuildSpecification.MAKEMAKE) {
+            what = folderTypeText + "; makefile generation enabled";
+            
+            //TODO INVOKED BY:!!!!
+
             MakemakeOptions options = buildSpec.getMakemakeOptions(folder);
+            MakemakeOptions translatedOptions = null;
             try {
-                MakemakeOptions translatedOptions = MetaMakemake.translateOptions(folder, options, buildSpec.getMakeFolders(), configuration);
+                //TODO this may take a long time (if dependency-cache is empty)
+                translatedOptions = MetaMakemake.translateOptions(folder, options, buildSpec.getMakeFolders(), configuration);
             }
             catch (CoreException e) {
-                e.printStackTrace(); //TODO
+                Activator.logError(e);
             }
             
-            if (options.metaRecurse) {
-                //TODO collect sub-makes, and display them in the tooltip
+            if (translatedOptions != null) {
+                comments += "<p>Invokes make in: " + StringUtils.defaultIfEmpty(StringUtils.join(translatedOptions.submakeDirs, ", "), "-");
+                if (translatedOptions.submakeDirs.size() > 2)
+                    comments += "<p>HINT: To control invocation order, add rules to the Makefrag file (on the Custom page of the Makemake Options dialog)";
+                comments += "<p>Covers the following sub-folders: TBD";  //FIXME 
             }
-            //TODO check isDeep, isRecursive
-            if (isExcluded) {
-                result = "This is a non-source folder (excluded from build), with makefile generation enabled";
-                if (!options.metaRecurse) {
-                }
-                else {
-                    
-                }
-            } 
-            else {
-                result = "This is a source folder, with makefile generation enabled.";
-                if (folder instanceof IProject)  //FIXME if there are source files in subdirs!!! also: warn if there are C++ sources in here
-                    result += "<p>HINT: You may want to exclude this (project root) folder from build, " +
-                             "and leave compilation to subdirectory makefiles.";
-                    
-                if (!options.isDeep) {
-                    //TODO check if there're any subdirs uncovered, and warn if so!
-                }
-                else {
-                    
-                }
-            }
-            //TODO
+            if (folder instanceof IProject && !isExcluded && buildSpec.getMakeFolders().size()>1)  
+                comments = 
+                    "<p>HINT: You may want to exclude this (project root) folder from build, " +
+                    "and leave compilation to subdirectory makefiles.";
         }
         else if (makeType==BuildSpecification.CUSTOM) {
-            IFile makefile = folder.getFile(new Path("Makefile"));
+            what = folderTypeText + "; custom makefile";
+            
+            IFile makefile = folder.getFile(new Path("Makefile")); //XXX Makefile.vc?
             if (!makefile.exists())
-                result = "WARNING: This folder is supposed to contain a custom makefile named \"Makefile\", but it is missing";
+                comments = "<p>WARNING: Custom makefile \"Makefile\" missing";
             else if (isExcluded)
-                result = "This is a non-source folder (excluded from build), containing a custom makefile. " +
-                		"<p>Note: The makefile is not supposed to compile any (potentially existing) source files " +
-                		"from this folder, because the folder is excluded from build. However, it may " +
-                		"invoke other makefiles, may create executables or libraries by invoking the linker, " +
-                		"or may contain other kinds of targets.";
-            else
-                result = "This is a source folder, containing a custom makefile."; //XXX "it is supposed to invoke sub-makefiles X, Y and Z"
+                comments = 
+                    "<p>Note: The makefile is not supposed to compile any (potentially existing) source files " +
+                    "from this folder, because the folder is excluded from build. However, it may " +
+                    "invoke other makefiles, may create executables or libraries by invoking the linker, " +
+                    "or may contain other kinds of targets.";
         }
         else if (makeType==BuildSpecification.NONE) {
-            // find which makefile covers this folder (ignoring makefile type and scope for now)
-            IContainer makeFolder = null;
-            if (!isExcluded)
-                for (IContainer f = folder; !(f instanceof IWorkspaceRoot); f = f.getParent())
-                    if (buildSpec.getMakeFolders().contains(f)) {
-                        makeFolder = f; break;}
-            // say something about it
+            what = folderTypeText; // + "; no makefile";
+
             if (isExcluded)
-                result = "This is a non-source folder (excluded from build), and contains no makefile"; //XXX custom parent makefile shuld NOT build it!
-            else if (makeFolder == null) 
-                result = "WARNING: This is a source folder, but it is not covered by any makefile. Is this intentional?";
-            else if (buildSpec.getFolderMakeType(makeFolder)==BuildSpecification.CUSTOM) 
-                result = "This source folder is supposed to be covered by the custom makefile in " + makeFolder.getFullPath();
-            else if (buildSpec.getFolderMakeType(makeFolder)==BuildSpecification.MAKEMAKE && !buildSpec.getMakemakeOptions(makeFolder).isDeep) 
-                result = "WARNING: This is a source folder but it is not covered by any makefile, because the generated makefile in " + makeFolder.getFullPath() + " is not deep. Is this intentional?";
-            else if (buildSpec.getFolderMakeType(makeFolder)==BuildSpecification.MAKEMAKE) 
-                result = "This source folder is covered by the generated makefile in " + makeFolder.getFullPath(); //FIXME nem igaz!!! ha az ki van exclude-olva (vagy egy kozbeeso folder), akkor nem!
+                /*NOP*/;
+            else if (parentMakefileFolder == null) 
+                comments = "<p>WARNING: This is a source folder, but it is not covered by any makefile. Is this intentional?";
+            else if (buildSpec.getFolderMakeType(parentMakefileFolder)==BuildSpecification.CUSTOM) 
+                comments = "<p>This source folder is supposed to be covered by the custom makefile in " + parentMakefileFolder.getFullPath();
+            else if (buildSpec.getFolderMakeType(parentMakefileFolder)==BuildSpecification.MAKEMAKE && !buildSpec.getMakemakeOptions(parentMakefileFolder).isDeep) 
+                comments = "<p>WARNING: This is a source folder but it is not covered by any makefile, because the generated makefile in " + parentMakefileFolder.getFullPath() + " is not deep. Is this intentional?";
+            else if (buildSpec.getFolderMakeType(parentMakefileFolder)==BuildSpecification.MAKEMAKE) 
+                comments = "<p>This source folder is covered by the generated makefile in " + parentMakefileFolder.getFullPath(); 
             else 
                 Activator.logError(new AssertionFailedException("Tooltip logic error"));
         }
 
-        if (result==null)
-            return null;
-        
-        result = "<b>" + folder.getFullPath() + "</b>" + (isSourceLocation ? " (source location)" : "") + "<p>" + result;
+        String result = "<b>" + folder.getFullPath() + "</b> (" + what + ")";
+        if (!StringUtils.isEmpty(comments))
+            result += comments;
         return HoverSupport.addHTMLStyleSheet(result);
     }
 
@@ -470,6 +464,9 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
                 buildSpec.getMakemakeOptions(folder).type = Type.NOLINK;
         }
         updatePageState();
+
+        if (makeType!=BuildSpecification.NONE)
+            maybeOfferToExcludeProjectRoot(folder);
     }
 
     protected void markAsRoot(IContainer folder) {
@@ -510,6 +507,33 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
             errorDialog(e.getMessage(), e);
         }
         updatePageState();
+     
+        maybeOfferToExcludeProjectRoot(folder);
+    }
+
+    protected void maybeOfferToExcludeProjectRoot(IContainer selectedFolder) {
+        if (!suppressExcludeProjectRootQuestion && !selectedFolder.equals(getProject())) {
+            IProject project = getProject();
+            ICSourceEntry[] sourceEntries = CDTPropertyManager.getProjectDescription(project).getActiveConfiguration().getSourceEntries();
+            boolean isRootExcluded = CDTUtils.isExcluded(project, sourceEntries);
+            if (!isRootExcluded) {
+                MessageDialogWithToggle dialog = MessageDialogWithToggle.openYesNoQuestion(this.getShell(), 
+                        "Exclude Root", 
+                        "Do you want to exclude the project root folder from build? (recommended for projects that have all source files in subdirectories)", 
+                        "Do not ask this question again in this session", false, null, null);
+                if (dialog.getReturnCode() == IDialogConstants.YES_ID) {
+                    // exclude project root
+                    excludeFolder(getProject());
+                    // but: put back current folder if it became excluded
+                    sourceEntries = CDTPropertyManager.getProjectDescription(project).getActiveConfiguration().getSourceEntries();
+                    if (CDTUtils.isExcluded(selectedFolder, sourceEntries))
+                        includeFolder(selectedFolder);
+                    updatePageState();
+                }
+                if (dialog.getToggleState()==true) 
+                    suppressExcludeProjectRootQuestion = true;
+            }
+        }
     }
 
     //note: this method is unused -- the "Exclude" button seems to work just fine

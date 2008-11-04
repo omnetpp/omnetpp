@@ -23,6 +23,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.swt.graphics.Image;
 import org.omnetpp.cdt.Activator;
+import org.omnetpp.cdt.makefile.BuildSpecification;
+import org.omnetpp.cdt.makefile.MakemakeOptions;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.StringUtils;
@@ -223,5 +225,26 @@ public abstract class ProjectTemplate implements IProjectTemplate {
         }
         CoreModel.getDefault().setProjectDescription(project, projectDescription);
     }
+
     
+    /**
+     * Sets the makemake options on the given project. Array must contain folderPath1, options1, 
+     * folderPath2, options2, etc.
+     */
+    protected void createBuildSpec(String[] pathsAndMakemakeOptions) throws CoreException {
+        Assert.isTrue(pathsAndMakemakeOptions.length%2 == 0);
+        IProject project = getProject();
+        BuildSpecification buildSpec = BuildSpecification.createBlank(project);
+        for (int i=0; i<pathsAndMakemakeOptions.length; i+=2) {
+            String folderPath = pathsAndMakemakeOptions[i];
+            String args = pathsAndMakemakeOptions[i+1];
+            
+            IContainer folder = folderPath.equals(".") ? project : project.getFolder(new Path(folderPath));
+            buildSpec.setFolderMakeType(folder, BuildSpecification.MAKEMAKE);
+            MakemakeOptions options = new MakemakeOptions(args);
+            buildSpec.setMakemakeOptions(folder, options);
+        }
+        buildSpec.save();
+    }
+
 }

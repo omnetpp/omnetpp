@@ -19,9 +19,10 @@ import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.makefile.MakemakeOptions;
 
 /**
+ * Container dialog for a MakemakeOptionsPanel
+ * 
  * @author Andras
  */
-//FIXME displa panel status in dialog!
 public class MakemakeOptionsDialog extends TitleAreaDialog {
     protected IContainer folder;
     protected MakemakeOptions options; // initial/result

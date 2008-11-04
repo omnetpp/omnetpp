@@ -31,7 +31,7 @@
                osList="win32,linux,macosx">
          </targetPlatform>
       <builder
-            buildPath="${PrimarySourceDir}"
+            buildPath="${ProjDirPath}"
             autoBuildTarget="all"
             cleanBuildTarget="clean"
             command="make"

@@ -30,12 +30,15 @@ public class ProjectTemplateStore {
     }
 
     protected void createTemplates() {
+        final String DEFAULT_SRCFOLDER_OPTIONS = "--deep --meta:recurse --meta:auto-include-path --meta:export-library --meta:use-exported-libs";
+        final String DEFAULT_ROOTFOLDER_OPTIONS = "--nolink --meta:recurse";
+        
         // non-C++ projects
         final String SINGLE_DIR0 = "Single-directory project";
         noncppTemplates.add(new ProjectTemplate("Empty project", SINGLE_DIR0, null, ICON_TEMPLATE) {
             @Override
             public void doConfigure() throws CoreException {
-                // nothing
+                createBuildSpec(new String[] {".", DEFAULT_SRCFOLDER_OPTIONS});                
             }
         });
         
@@ -44,7 +47,7 @@ public class ProjectTemplateStore {
         cppTemplates.add(new ProjectTemplate("Empty project", SINGLE_DIR, null, ICON_TEMPLATE) {
             @Override
             public void doConfigure() throws CoreException {
-                // nothing
+                createBuildSpec(new String[] {".", DEFAULT_SRCFOLDER_OPTIONS});                
             }
         });
         cppTemplates.add(new ProjectTemplate("Tictoc example", SINGLE_DIR, null, ICON_TEMPLATE) {
@@ -53,6 +56,7 @@ public class ProjectTemplateStore {
                 setVariable("namespace", "");
                 setVariable("rootpackage", "");
                 setVariable("simulationspackage", "");
+                createBuildSpec(new String[] {".", DEFAULT_SRCFOLDER_OPTIONS});                
                 createFileFromResource("Txc.ned", "templates/Txc.ned");
                 createFileFromResource("Txc.h", "templates/Txc.h");
                 createFileFromResource("Txc.cc", "templates/Txc.cc");
@@ -66,6 +70,7 @@ public class ProjectTemplateStore {
                 setVariable("namespace", "");
                 setVariable("rootpackage", "");
                 setVariable("simulationspackage", "");
+                createBuildSpec(new String[] {".", DEFAULT_SRCFOLDER_OPTIONS});                
                 createFileFromResource("Source.ned", "templates/Source.ned");
                 createFileFromResource("Source.cc", "templates/Source.cc");
                 createFileFromResource("Source.h", "templates/Source.h");
@@ -83,8 +88,7 @@ public class ProjectTemplateStore {
             public void doConfigure() throws CoreException {
                 createAndSetSourceFolders(new String[]{"src"});
                 createAndSetNedSourceFolders(new String[] {"src", "simulations"});
-                createFileFromResource("Makefile", "templates/Makefile");
-                createFileFromResource("Makefile.vc", "templates/Makefile.vc");
+                createBuildSpec(new String[] {".", DEFAULT_ROOTFOLDER_OPTIONS, "src", DEFAULT_SRCFOLDER_OPTIONS});                
             }
         });
         cppTemplates.add(new ProjectTemplate("Tictoc example", SRC_AND_SIMULATIONS, null, ICON_TEMPLATE) {
@@ -93,10 +97,9 @@ public class ProjectTemplateStore {
                 setVariable("namespace", "");
                 setVariable("rootpackage", "");
                 setVariable("simulationspackage", "");
+                createBuildSpec(new String[] {".", DEFAULT_ROOTFOLDER_OPTIONS, "src", DEFAULT_SRCFOLDER_OPTIONS});                
                 createAndSetSourceFolders(new String[]{"src"});
                 createAndSetNedSourceFolders(new String[] {"src", "simulations"});
-                createFileFromResource("Makefile", "templates/Makefile");
-                createFileFromResource("Makefile.vc", "templates/Makefile.vc");
                 createFileFromResource("src/Txc.ned", "templates/Txc.ned");
                 createFileFromResource("src/Txc.h", "templates/Txc.h");
                 createFileFromResource("src/Txc.cc", "templates/Txc.cc");
@@ -112,8 +115,7 @@ public class ProjectTemplateStore {
                 setVariable("simulationspackage", "{{rootpackage}}.simulations");
                 createAndSetSourceFolders(new String[]{"src"});
                 createAndSetNedSourceFolders(new String[] {"src", "simulations"});
-                createFileFromResource("Makefile", "templates/Makefile");
-                createFileFromResource("Makefile.vc", "templates/Makefile.vc");
+                createBuildSpec(new String[] {".", DEFAULT_ROOTFOLDER_OPTIONS, "src", DEFAULT_SRCFOLDER_OPTIONS});                
                 createFileFromResource("src/package.ned", "templates/package.ned");
                 createFileFromResource("src/Source.ned", "templates/Source.ned");
                 createFileFromResource("src/Source.cc", "templates/Source.cc");

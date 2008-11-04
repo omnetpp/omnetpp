@@ -173,6 +173,7 @@ public class MakemakeOptionsPanel extends Composite {
         exportLibraryCheckbox = createCheckbox(group, "Export this shared/static library for other projects", "Let dependent projects automatically use this library");
         ((GridData)exportLibraryCheckbox.getLayoutData()).horizontalIndent = 20;
         targetCompileOnlyRadioButton = createRadioButton(group, "Compile only", null);
+        createLabel(group, "NOTE: To prevent the makefile from compiling any source file, exclude this folder from build.");
 
         Group targetNameGroup = createGroup(targetPage, "Target name:", 2);
         defaultTargetNameRadionButton = createRadioButton(targetNameGroup, "Default", "Default target name will be the project name");
@@ -190,7 +191,7 @@ public class MakemakeOptionsPanel extends Composite {
         Group group1 = createGroup(scopePage, "Select makefile type:", 1);
         deepCheckbox = createCheckbox(group1, "Deep (recommended)", "Compile all source files from this subdirectory tree");
         recurseCheckbox = createCheckbox(group1, "Recurse", "Invoke makefiles any levels under this directory");
-        createLabel(group1, "Makefiles will ignore directories marked as \"Excluded\" or covered by other makefiles");
+        createLabel(group1, "NOTE: To control invocation order in recursive makefiles, add rules to Makefrag on the Custom tab.");
         Label submakeDirsLabel = createLabel(scopePage, "Additionally, invoke \"make\" in the following directories:");
         submakeDirsList = new FileListControl(scopePage, "Sub-make directories (relative path)", BROWSE_DIR);
         scopePageToggle = createToggleLink(scopePage, new Control[] {submakeDirsLabel, submakeDirsList.getListControl().getParent()});

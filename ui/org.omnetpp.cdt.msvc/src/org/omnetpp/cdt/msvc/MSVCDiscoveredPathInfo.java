@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.cdt.core.model.CoreModel;
+import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.make.core.scannerconfig.IDiscoveredPathManager.IDiscoveredPathInfo;
 import org.eclipse.cdt.make.core.scannerconfig.IDiscoveredPathManager.IDiscoveredScannerInfoSerializable;
 import org.eclipse.core.resources.IProject;
@@ -40,7 +42,8 @@ public class MSVCDiscoveredPathInfo implements IDiscoveredPathInfo {
 				
 	    // add include dirs needed for OMNeT++
         try {
-            paths.addAll(MakefileTools.getOmnetppIncludeLocationsForProject(project));
+            ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(project);
+            paths.addAll(MakefileTools.getOmnetppIncludeLocationsForProject(projectDescription));
         }
         catch (CoreException e) {
             Activator.logError(e);
