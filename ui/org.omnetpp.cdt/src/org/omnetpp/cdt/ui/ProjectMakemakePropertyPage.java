@@ -92,8 +92,10 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
     private static final String SOURCE_SUBFOLDER_IMG = "icons/full/obj16/folder_srcsubfolder.gif";
     private static final String NONSRC_FOLDER_IMG = "icons/full/obj16/folder_nonsrc.gif";
     
-    protected static final String OVR_MAKEMAKE_IMG = "icons/full/obj16/ovr_makemake.png";
-    protected static final String OVR_CUSTOMMAKE_IMG = "icons/full/obj16/ovr_custommake.png";
+    protected static final String OVR_MAKEMAKE_IMG = "icons/full/ovr16/ovr_makemake.png";
+    protected static final String OVR_CUSTOMMAKE_IMG = "icons/full/ovr16/ovr_custommake.png";
+    protected static final String OVR_WARNING_IMG = "icons/full/ovr16/warning.gif";
+    protected static final String OVR_BUILDROOT_IMG = "icons/full/ovr16/buildroot.png";
     
     // state
     protected BuildSpecification buildSpec;
@@ -146,6 +148,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         treeViewer = new TreeViewer(composite, SWT.BORDER);
         treeViewer.getTree().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         ((GridData)treeViewer.getTree().getLayoutData()).widthHint = 300;
+        ((GridData)treeViewer.getTree().getLayoutData()).heightHint = 280;
 
         Composite buttons = new Composite(composite, SWT.NONE);
         buttons.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
@@ -262,6 +265,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
                     case BuildSpecification.NONE: overlayImagePath = null; break;
                 }
                 return Activator.getCachedDecoratedImage(imagePath, overlayImagePath, SWT.END, SWT.END);
+                //test: return Activator.getCachedDecoratedImage(imagePath, new String[] {overlayImagePath, OVR_WARNING_IMG, OVR_BUILDROOT_IMG}, new int[]{SWT.END, SWT.BEGINNING, SWT.BEGINNING}, new int[]{SWT.END, SWT.END, SWT.BEGINNING});
             }
 
             public String getText(Object element) {
@@ -310,7 +314,6 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         loadBuildSpecFile();
 
         treeViewer.setInput(getProject().getParent());
-        treeViewer.expandToLevel(2);
         
         treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
             public void selectionChanged(SelectionChangedEvent event) {
@@ -319,7 +322,15 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         });
         
         // open interesting tree nodes
-        //FIXME todo
+        for (IContainer f : buildSpec.getMakeFolders()) {
+            treeViewer.expandToLevel(f, 0);
+        } 
+        ICProjectDescription projectDescription = CDTPropertyManager.getProjectDescription(getProject());
+        ICConfigurationDescription configuration = projectDescription.getActiveConfiguration();
+        ICSourceEntry[] sourceEntries = configuration.getSourceEntries();
+        for (IContainer f : CDTUtils.getSourceLocations(getProject(), sourceEntries)) {
+            treeViewer.expandToLevel(f, 0);
+        } 
         
         updatePageState();
         return composite;
@@ -411,10 +422,11 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
                 comments = 
                     "<p>HINT: You may want to exclude this (project root) folder from build, " +
                     "and leave compilation to subdirectory makefiles.";
+            //FIXME warning if no parent invokes this (and not buildroot)
         }
         else if (makeType==BuildSpecification.CUSTOM) {
             what = folderTypeText + "; custom makefile";
-            
+            //TODO "Should invoke make in:" / "Should compile the following folders"
             IFile makefile = folder.getFile(new Path("Makefile")); //XXX Makefile.vc?
             if (!makefile.exists())
                 comments = "<p>WARNING: Custom makefile \"Makefile\" missing";
@@ -424,6 +436,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
                     "from this folder, because the folder is excluded from build. However, it may " +
                     "invoke other makefiles, may create executables or libraries by invoking the linker, " +
                     "or may contain other kinds of targets.";
+            //FIXME warning if no parent invokes this (and not buildroot)
         }
         else if (makeType==BuildSpecification.NONE) {
             what = folderTypeText; // + "; no makefile";
@@ -623,10 +636,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
     protected void updatePageState() {
         // display warnings about CDT misconfiguration, etc 
         String message = getDiagnosticMessage(getProject(), buildSpec);
-        errorMessageLabel.setText(message==null ? "" : message);
-        ((GridData)errorMessageLabel.getLayoutData()).exclude = (message==null); 
-        errorMessageLabel.setVisible(message!=null);
-        errorMessageLabel.getParent().layout(true);
+        setDiagnosticMessage(message);
         
         treeViewer.refresh();
         
@@ -664,6 +674,13 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         sourceLocationButton.setEnabled(!isSourceLocation);
         excludeButton.setEnabled(!isExcluded && !(folder instanceof IProject && sourceEntries.length==1));
         includeButton.setEnabled(isUnderSourceLocation && isExcluded);
+    }
+
+    private void setDiagnosticMessage(String message) {
+        errorMessageLabel.setText(message==null ? "" : message);
+        ((GridData)errorMessageLabel.getLayoutData()).exclude = (message==null); 
+        errorMessageLabel.setVisible(message!=null);
+        errorMessageLabel.getParent().layout(true);
     }
 
     protected IContainer getTreeSelection() {
@@ -730,9 +747,8 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
 
         // check if build directory exists, and there's a makefile in it
         String buildLocation = activeConfiguration.getBuildSetting().getBuilderCWD().toString();
-        ICConfigurationDescription configurationDescription = projectDescription.getActiveConfiguration();
         try {
-            buildLocation = CdtVariableManager.getDefault().resolveValue(buildLocation, "[unknown-macro]", ",", configurationDescription);
+            buildLocation = CdtVariableManager.getDefault().resolveValue(buildLocation, "[unknown-macro]", ",", activeConfiguration);
         }
         catch (CdtVariableException e) {
             Activator.logError("Cannot resolve macros in build directory spec "+buildLocation, e);
@@ -770,7 +786,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
     }
 
     protected void loadBuildSpecFile() {
-        IProject project = getProject().getProject();
+        IProject project = getProject();
         try {
             buildSpec = BuildSpecification.readBuildSpecFile(project);
         } 

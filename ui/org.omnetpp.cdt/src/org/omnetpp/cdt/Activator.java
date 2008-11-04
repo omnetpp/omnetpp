@@ -134,7 +134,37 @@ public class Activator extends AbstractUIPlugin {
         }
         return result;
     }
-    
+
+    /**
+     * Decorates the given image with the overlay images (any element may be null), 
+     * and returns the result as a new image. For positioning, use SWT.BEGIN, 
+     * SWT.CENTER, SWT.END. The result image gets cached in an internal image registry,
+     * so clients do not need to (moreover, must not) dispose of the image.
+     */
+    public static Image getCachedDecoratedImage(String imagePath, String overlayImagePath[], int hpos[], int vpos[]) {
+        String key = imagePath;
+        for (int i=0; i<overlayImagePath.length; i++)
+            key += ":"+overlayImagePath[i]+":"+hpos[i]+":"+vpos[i];
+        ImageRegistry imageRegistry = getDefault().getImageRegistry();
+        Image result = imageRegistry.get(key);
+        if (result == null) {
+            Image baseImage = getCachedImage(imagePath);        
+            Image image = baseImage;        
+            for (int i=0; i<overlayImagePath.length; i++) {
+                if (overlayImagePath[i] != null) {
+                    Image overlayImage = getCachedImage(overlayImagePath[i]);
+                    Image newImage = ImageFactory.decorateImage(image, overlayImage, hpos[i], vpos[i]);
+                    if (image != baseImage)
+                        image.dispose();
+                    image = newImage;
+                }
+            }
+            result = image;
+            imageRegistry.put(key, result);
+        }
+        return result;
+    }
+
     public static DependencyCache getDependencyCache() {
         return getDefault().dependencyCache;
     }
