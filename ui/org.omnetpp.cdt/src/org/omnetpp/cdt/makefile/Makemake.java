@@ -161,7 +161,7 @@ public class Makemake {
             sourceDirs = collectDirs(folder, allExcludedDirs);
         }
         else {
-            sourceDirs.add(".");
+            sourceDirs.add("."); //FIXME and if excluded?
         }
 
         for (String i : sourceDirs) {
@@ -404,6 +404,32 @@ public class Makemake {
         MakefileTools.ensureFileContent(makefile, bytes, null);
     }
 
+    public List<String> getSourceDirs(IContainer folder, MakemakeOptions options) throws CoreException {
+        //FIXME factor out similar code from makemake body
+        projectLocation = folder.getProject().getLocation();
+        folderLocation = folder.getLocation();
+
+        // collect source files
+        if (options.isDeep) {
+            String outDir;
+            IPath outRootPath = new Path(StringUtils.isEmpty(options.outRoot) ? "out" : options.outRoot);
+            IPath outRootAbs = outRootPath.isAbsolute() ? outRootPath : folder.getProject().getLocation().append(outRootPath);
+            IPath outRootRel = abs2rel(outRootAbs);  // "<project>/out"
+            outDir = outRootRel.toString();
+
+            List<String> allExcludedDirs = new ArrayList<String>();
+            allExcludedDirs.add(outDir);
+            allExcludedDirs.addAll(options.exceptSubdirs);
+            allExcludedDirs.addAll(options.submakeDirs);
+            return collectDirs(folder, allExcludedDirs);
+        }
+        else {
+            List<String> sourceDirs = new ArrayList<String>();
+            sourceDirs.add("."); //FIXME and if excluded?
+            return sourceDirs;
+        }
+    }
+    
     protected List<String> collectDirs(IContainer dir, List<String> exceptSubdirs) throws CoreException {
         List<String> result = new ArrayList<String>();
         collectDirs(dir, ".", exceptSubdirs, result);

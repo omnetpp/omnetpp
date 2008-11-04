@@ -67,6 +67,7 @@ import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.CDTUtils;
 import org.omnetpp.cdt.makefile.BuildSpecification;
 import org.omnetpp.cdt.makefile.MakefileTools;
+import org.omnetpp.cdt.makefile.Makemake;
 import org.omnetpp.cdt.makefile.MakemakeOptions;
 import org.omnetpp.cdt.makefile.MetaMakemake;
 import org.omnetpp.cdt.makefile.MakemakeOptions.Type;
@@ -386,23 +387,24 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         if (makeType==BuildSpecification.MAKEMAKE) {
             what = folderTypeText + "; makefile generation enabled";
             
-            //TODO INVOKED BY:!!!!
-
             MakemakeOptions options = buildSpec.getMakemakeOptions(folder);
-            MakemakeOptions translatedOptions = null;
+            List<String> submakeDirs = null;
+            List<String> sourceDirs = null;
             try {
                 //TODO this may take a long time (if dependency-cache is empty)
-                translatedOptions = MetaMakemake.translateOptions(folder, options, buildSpec.getMakeFolders(), configuration);
+                MakemakeOptions translatedOptions = MetaMakemake.translateOptions(folder, options, buildSpec.getMakeFolders(), configuration);
+                submakeDirs = translatedOptions.submakeDirs;
+                sourceDirs = new Makemake().getSourceDirs(folder, translatedOptions);
             }
             catch (CoreException e) {
                 Activator.logError(e);
             }
             
-            if (translatedOptions != null) {
-                comments += "<p>Invokes make in: " + StringUtils.defaultIfEmpty(StringUtils.join(translatedOptions.submakeDirs, ", "), "-");
-                if (translatedOptions.submakeDirs.size() > 2)
+            if (submakeDirs != null && sourceDirs != null) { // i.e. there was no error above
+                comments += "<p>Invokes make in: " + StringUtils.defaultIfEmpty(StringUtils.join(submakeDirs, ", "), "-");
+                if (submakeDirs.size() > 2)
                     comments += "<p>HINT: To control invocation order, add rules to the Makefrag file (on the Custom page of the Makemake Options dialog)";
-                comments += "<p>Covers the following sub-folders: TBD";  //FIXME 
+                comments += "<p>Covers the following folders: " + StringUtils.defaultIfEmpty(StringUtils.join(sourceDirs, ", "), "-"); 
             }
             if (folder instanceof IProject && !isExcluded && buildSpec.getMakeFolders().size()>1)  
                 comments = 
