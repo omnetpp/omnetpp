@@ -2,6 +2,7 @@ package org.omnetpp.ide.preferences;
 
 import java.io.File;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.preference.DirectoryFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.FileFieldEditor;
@@ -82,7 +83,7 @@ public class OmnetppPreferencePage
         @Override
         protected boolean checkState() {
             String fileName = ProcessUtils.lookupExecutable(getStringValue());
-            boolean state = new File(fileName).exists();
+            boolean state = StringUtils.isEmpty(fileName) || new File(fileName).exists();
             
             if (!state)
                 showErrorMessage("Executable file not found: " + getStringValue());
