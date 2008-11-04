@@ -172,11 +172,11 @@ public class MakemakeOptionsPanel extends Composite {
         targetStaticLibRadioButton = createRadioButton(group, "Static library (.lib or .a)", null);
         exportLibraryCheckbox = createCheckbox(group, "Export this shared/static library for other projects", "Let dependent projects automatically use this library");
         ((GridData)exportLibraryCheckbox.getLayoutData()).horizontalIndent = 20;
-        targetCompileOnlyRadioButton = createRadioButton(group, "Compile only", null);
+        targetCompileOnlyRadioButton = createRadioButton(group, "No executable or library", null);
         createLabel(group, "NOTE: To prevent the makefile from compiling any source file, exclude this folder from build.");
 
         Group targetNameGroup = createGroup(targetPage, "Target name:", 2);
-        defaultTargetNameRadionButton = createRadioButton(targetNameGroup, "Default", "Default target name will be the project name");
+        defaultTargetNameRadionButton = createRadioButton(targetNameGroup, "Default", "The default is the project name");
         defaultTargetNameRadionButton.setLayoutData(new GridData());
         ((GridData)defaultTargetNameRadionButton.getLayoutData()).horizontalSpan = 2;
         specifyTargetNameRadioButton = createRadioButton(targetNameGroup, "Specify name (without extension/lib prefix): ", null);
@@ -188,9 +188,9 @@ public class MakemakeOptionsPanel extends Composite {
 
         // "Scope" page
         scopePage.setLayout(new GridLayout(1,false));
-        Group group1 = createGroup(scopePage, "Select makefile type:", 1);
-        deepCheckbox = createCheckbox(group1, "Deep (recommended)", "Compile all source files from this subdirectory tree");
-        recurseCheckbox = createCheckbox(group1, "Recurse", "Invoke makefiles any levels under this directory");
+        Group group1 = createGroup(scopePage, "Select makefile scope:", 1);
+        deepCheckbox = createCheckbox(group1, "Deep compile", "Compile all source files from this subdirectory tree");
+        recurseCheckbox = createCheckbox(group1, "Recursive make", "Invoke makefiles any levels under this directory");
         createLabel(group1, "NOTE: To control invocation order in recursive makefiles, add rules to Makefrag on the Custom tab.");
         Label submakeDirsLabel = createLabel(scopePage, "Additionally, invoke \"make\" in the following directories:");
         submakeDirsList = new FileListControl(scopePage, "Sub-make directories (relative path)", BROWSE_DIR);
@@ -491,9 +491,10 @@ public class MakemakeOptionsPanel extends Composite {
         targetStaticLibRadioButton.setSelection(options.type==Type.STATICLIB);
         targetCompileOnlyRadioButton.setSelection(options.type==Type.NOLINK); 
 
-        defaultTargetNameRadionButton.setSelection(StringUtils.isEmpty(options.target)); 
+        defaultTargetNameRadionButton.setSelection(StringUtils.isEmpty(options.target));
+        defaultTargetNameRadionButton.setText("Default: " + folder.getProject().getName());
         specifyTargetNameRadioButton.setSelection(!StringUtils.isEmpty(options.target));
-        targetNameText.setText(StringUtils.nullToEmpty(options.target));
+        targetNameText.setText(StringUtils.defaultIfEmpty(options.target, folder.getName()));
         exportLibraryCheckbox.setSelection(options.metaExportLibrary);
         outputDirText.setText(StringUtils.nullToEmpty(options.outRoot));
 

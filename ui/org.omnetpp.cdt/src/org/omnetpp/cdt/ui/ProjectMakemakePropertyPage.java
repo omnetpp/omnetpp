@@ -404,7 +404,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
                 comments += "<p>Invokes make in: " + StringUtils.defaultIfEmpty(StringUtils.join(submakeDirs, ", "), "-");
                 if (submakeDirs.size() > 2)
                     comments += "<p>HINT: To control invocation order, add rules to the Makefrag file (on the Custom page of the Makemake Options dialog)";
-                comments += "<p>Covers the following folders: " + StringUtils.defaultIfEmpty(StringUtils.join(sourceDirs, ", "), "-"); 
+                comments += "<p>Compiles files in the following folders: " + StringUtils.defaultIfEmpty(StringUtils.join(sourceDirs, ", "), "-"); 
             }
             if (folder instanceof IProject && !isExcluded && buildSpec.getMakeFolders().size()>1)  
                 comments = 
