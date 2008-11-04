@@ -168,7 +168,7 @@ public class MakemakeOptionsPanel extends Composite {
         targetPage.setLayout(new GridLayout(1,false));
         Group group = createGroup(targetPage, "Target type:", 1);
         targetExecutableRadioButton = createRadioButton(group, "Executable", null);
-        targetSharedLibRadioButton = createRadioButton(group, "Shared library (.dll or .so)", null);
+        targetSharedLibRadioButton = createRadioButton(group, "Shared library (.dll, .so or .dylib)", null);
         targetStaticLibRadioButton = createRadioButton(group, "Static library (.lib or .a)", null);
         exportLibraryCheckbox = createCheckbox(group, "Export this shared/static library for other projects", "Let dependent projects automatically use this library");
         ((GridData)exportLibraryCheckbox.getLayoutData()).horizontalIndent = 20;

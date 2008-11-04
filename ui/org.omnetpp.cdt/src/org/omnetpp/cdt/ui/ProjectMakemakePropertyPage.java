@@ -47,7 +47,6 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
@@ -133,12 +132,11 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
 
         String text = 
             "On this page you can configure source folders and makefile generation; " +
-            "they are independent of each other. Source folder changes on this page " +
-            "apply to all configurations. Source folders can also be managed on the " +
-            "<A>Paths and symbols</A> page.";
-        final Link pathsAndSymbolsLink = createLink(composite, text);
-        pathsAndSymbolsLink.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1));
-        ((GridData)pathsAndSymbolsLink.getLayoutData()).widthHint = 300;
+            "these two are independent of each other. All changes apply to all configurations.";
+        // Note: do NOT add reference/link to the "Path and Symbols" page! It confuses users.
+        final Label bannerTextLabel = createLabel(composite, text, 2);
+        bannerTextLabel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1));
+        ((GridData)bannerTextLabel.getLayoutData()).widthHint = 300;
 
         errorMessageLabel = new Label(composite, SWT.WRAP);
         errorMessageLabel.setForeground(ColorFactory.RED2);
@@ -168,14 +166,14 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         excludeButton = createButton(buttons, SWT.PUSH, "&Exclude", "Exclude from build");
         includeButton = createButton(buttons, SWT.PUSH, "&Include", "Include into build");
 
-        pathsAndSymbolsLink.addSelectionListener(new SelectionListener(){
-            public void widgetSelected(SelectionEvent e) {
-                gotoPathsAndSymbolsPage();
-            }
-            public void widgetDefaultSelected(SelectionEvent e) {
-                gotoPathsAndSymbolsPage();
-            }
-        });
+//        pathsAndSymbolsLink.addSelectionListener(new SelectionListener(){
+//            public void widgetSelected(SelectionEvent e) {
+//                gotoPathsAndSymbolsPage();
+//            }
+//            public void widgetDefaultSelected(SelectionEvent e) {
+//                gotoPathsAndSymbolsPage();
+//            }
+//        });
 
         makemakeButton.addSelectionListener(new SelectionAdapter() {
             @Override
@@ -303,7 +301,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
                 GridLayout layout = (GridLayout)composite.getLayout();
                 GridData data = (GridData)errorMessageLabel.getLayoutData();
                 data.widthHint = composite.getClientArea().width - 2*layout.marginWidth;
-                GridData data2 = (GridData)pathsAndSymbolsLink.getLayoutData();
+                GridData data2 = (GridData)bannerTextLabel.getLayoutData();
                 data2.widthHint = composite.getClientArea().width - 2*layout.marginWidth;
                 composite.layout(true);
             }
@@ -319,6 +317,9 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
                 updatePageState();
             }
         });
+        
+        // open interesting tree nodes
+        //FIXME todo
         
         updatePageState();
         return composite;
@@ -589,7 +590,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
     }
 
     protected Label createLabel(Composite composite, String text, int hspan) {
-        Label label = new Label(composite, SWT.NONE);
+        Label label = new Label(composite, SWT.WRAP);
         label.setText(text);
         label.setLayoutData(new GridData());
         ((GridData)label.getLayoutData()).horizontalSpan = hspan;
