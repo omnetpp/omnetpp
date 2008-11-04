@@ -1,6 +1,7 @@
 package org.omnetpp.cdt.makefile;
 
 import java.io.ByteArrayInputStream;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,6 +11,11 @@ import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -26,7 +32,6 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 import org.w3c.dom.ls.DOMImplementationLS;
 import org.w3c.dom.ls.LSSerializer;
-
 
 /**
  * Represents contents of the OMNeT++ build specification file
@@ -230,12 +235,13 @@ public class BuildSpecification {
             }
 
             // serialize
-            DOMImplementationRegistry registry = DOMImplementationRegistry.newInstance();
-            DOMImplementationLS impl = (DOMImplementationLS)registry.getDOMImplementation("LS");
-            LSSerializer writer = impl.createLSSerializer();
-            writer.getDomConfig().setParameter("xml-declaration", false); // because by default it will emit "UTF-16" which the document is NOT, so we won't be able to read it back. Alternative is to use LSOutput magic, but it's too complicated, and no fscking way I'm going write that much for some fscking XML output, which should be SIMPLE
-            writer.getDomConfig().setParameter("format-pretty-print", true);
-            String content = writer.writeToString(doc);
+            TransformerFactory factory = TransformerFactory.newInstance();
+            Transformer transformer = factory.newTransformer();
+            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            StringWriter writer = new StringWriter();
+            transformer.transform(new DOMSource(doc), new StreamResult(writer));
+            String content = writer.toString();
             
             // save it
             IFile buildSpecFile = project.getFile(BUILDSPEC_FILENAME);
