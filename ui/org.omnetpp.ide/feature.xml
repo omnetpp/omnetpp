@@ -21,6 +21,7 @@
       <import feature="org.eclipse.emf.edit.ui" version="2.4.0.v200806091234" match="compatible"/>
       <import feature="org.eclipse.gef" version="3.4.0.v20080115-677-8082A5696H274A" match="compatible"/>
       <import feature="org.eclipse.platform" version="3.4.0.v20080610-9I96EhtEm-T_5LxIsybz-3MdGZmOA3uwv7Ka_M" match="compatible"/>
+      <import feature="org.eclipse.emf.ecore.edit" version="2.4.0.v200806091234" match="compatible"/>
    </requires>
 
    <plugin
@@ -178,10 +179,24 @@
          unpack="false"/>
 
    <plugin
+         id="org.apache.commons.codec"
+         download-size="0"
+         install-size="0"
+         version="1.3.0.v20080530-1600"
+         unpack="false"/>
+
+   <plugin
          id="org.apache.commons.httpclient"
          download-size="0"
          install-size="0"
          version="3.1.0.v20080605-1935"
+         unpack="false"/>
+
+   <plugin
+         id="org.apache.commons.logging"
+         download-size="0"
+         install-size="0"
+         version="1.0.4.v20080605-1930"
          unpack="false"/>
 
 </feature>

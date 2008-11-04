@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: MSVC Build Integration Plug-in
+Bundle-Name: OMNeT++ MSVC Build Integration Plug-in
 Bundle-SymbolicName: org.omnetpp.cdt.msvc;singleton:=true
 Bundle-Version: 4.0.0.qualifier
 Bundle-Activator: org.omnetpp.cdt.msvc.Activator
