@@ -1,7 +1,12 @@
 package org.omnetpp.ned.editor.graph.misc;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.swt.SWT;
@@ -15,6 +20,8 @@ import org.omnetpp.ned.model.ex.GateElementEx;
 import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IConnectableElement;
+import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
+import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.pojo.ConnectionElement;
 import org.omnetpp.ned.model.pojo.GateElement;
 import org.omnetpp.ned.model.pojo.NEDElementTags;
@@ -39,7 +46,7 @@ public class ConnectionChooser {
         IConnectableElement srcMod = StringUtils.isNotEmpty(conn.getSrcModule()) ? 
                 compound.getSubmoduleByName(conn.getSrcModule()) : compound;
         IConnectableElement destMod = StringUtils.isNotEmpty(conn.getDestModule()) ? 
-                        compound.getSubmoduleByName(conn.getDestModule()) : compound;
+                compound.getSubmoduleByName(conn.getDestModule()) : compound;
         
         Assert.isNotNull(srcMod);
         Assert.isNotNull(destMod);
@@ -52,21 +59,38 @@ public class ConnectionChooser {
 
         List<ConnectionElement> unusedList = new ArrayList<ConnectionElement>();
         List<ConnectionElement> usedList = new ArrayList<ConnectionElement>();
+        final Map<ConnectionElement, Integer> connectionRanks = new HashMap<ConnectionElement, Integer>();
+        Comparator<ConnectionElement> connectionRankComparator = new Comparator<ConnectionElement>() {
+            public int compare(ConnectionElement c1, ConnectionElement c2) {
+                return (int)connectionRanks.get(c2) - (int)connectionRanks.get(c1);
+            }
+        };
 
         // gather unidirectional connections
-        for (GateElement srcOut : srcOutModuleGates)
-            for (GateElement destIn : destInModuleGates)
-                accumulateConnection(compound, conn, srcMod, srcOut, chooseSrc, destMod, destIn, chooseDest, unusedList, usedList);
+        for (GateElementEx srcOut : srcOutModuleGates)
+            for (GateElementEx destIn : destInModuleGates)
+                accumulateConnection(compound, conn, srcMod, srcOut, chooseSrc, destMod, destIn, chooseDest, unusedList, usedList, connectionRanks);
 
         // gather bidirectional connections
-        for (GateElement srcInOut : srcInOutModuleGates)
-            for (GateElement destInOut : destInOutModuleGates)
-                accumulateConnection(compound, conn, srcMod, srcInOut, chooseSrc, destMod, destInOut, chooseDest, unusedList, usedList);
+        for (GateElementEx srcInOut : srcInOutModuleGates)
+            for (GateElementEx destInOut : destInOutModuleGates)
+                accumulateConnection(compound, conn, srcMod, srcInOut, chooseSrc, destMod, destInOut, chooseDest, unusedList, usedList, connectionRanks);
+
+        unusedList = org.omnetpp.common.util.CollectionUtils.toSorted(unusedList, connectionRankComparator);
+        usedList = org.omnetpp.common.util.CollectionUtils.toSorted(usedList, connectionRankComparator);
 
         BlockingMenu menu = new BlockingMenu(Display.getCurrent().getActiveShell(), SWT.NONE);
 
         // add the enabled items
-        for (ConnectionElement unusedConn : unusedList) {
+        boolean separatorAdded = unusedList.size() > 0 && (int)connectionRanks.get(unusedList.get(0)) == 0;
+        for (int i = 0; i < unusedList.size(); i++) {
+            ConnectionElement unusedConn = unusedList.get(i);
+
+            if (!separatorAdded && (int)connectionRanks.get(unusedConn) == 0) {
+                createSeparatorMenuItem(menu);
+                separatorAdded = true;
+            }
+
             createMenuItem(menu, unusedConn);
         }
 
@@ -82,6 +106,9 @@ public class ConnectionChooser {
         }
         
         // add the used disabled items
+        if (unusedList.size() != 0 && usedList.size() != 0)
+            createSeparatorMenuItem(menu);
+
         for (ConnectionElement usedConn : usedList) {
             MenuItem mi = createMenuItem(menu, usedConn);
             mi.setEnabled(false);
@@ -98,6 +125,50 @@ public class ConnectionChooser {
 
         return (ConnectionElementEx)selection.getData();
     }
+    
+    private static void collectGateLabels(GateElementEx gate, Set<String> labels) {
+        if (gate != null) {
+            labels.addAll(gate.getLabels());
+            INedTypeElement typeElement = gate.getSelfOrEnclosingTypeElement();
+    
+            if (typeElement != null) {
+                for (SubmoduleElementEx submodule : typeElement.getNEDTypeInfo().getSubmodules().values()) {
+                    Set<ConnectionElementEx> connections = new HashSet<ConnectionElementEx>(submodule.getSrcConnections());
+                    connections.addAll(submodule.getDestConnections());
+        
+                    for (ConnectionElementEx connection : connections) {
+                        if (gate.getName().equals(connection.getSrcGate()) && typeElement == connection.getSrcModuleRef()) {
+                            INEDTypeInfo destTypeInfo = connection.getDestModuleRef().getNEDTypeInfo();
+
+                            if (destTypeInfo != null)
+                                collectGateLabels(destTypeInfo.getGateDeclarations().get(connection.getDestGate()), labels);
+                        }
+        
+                        if (gate.getName().equals(connection.getDestGate()) && typeElement == connection.getDestModuleRef()) {
+                            INEDTypeInfo srcTypeInfo = connection.getSrcModuleRef().getNEDTypeInfo();
+
+                            if (srcTypeInfo != null)
+                                collectGateLabels(srcTypeInfo.getGateDeclarations().get(connection.getSrcGate()), labels);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    private static int countCommonGateLabels(GateElementEx srcGate, GateElementEx destGate) {
+        Set<String> srcLabels = new HashSet<String>();
+        Set<String> destLabels = new HashSet<String>();
+        collectGateLabels(srcGate, srcLabels);
+        collectGateLabels(destGate, destLabels);
+
+        int count = 0;
+        for (String srcLabel : srcLabels)
+            if (destLabels.contains(srcLabel))
+                count++;
+        //System.out.println(srcGate.getName() + ", " + destGate.getName() + ": " + count);
+        return count;
+    }
 
     /**
      * Creates a new menu item from the provided connection template, and adds it to the provided menu.
@@ -111,6 +182,10 @@ public class ConnectionChooser {
         mi.setText(label);
         return mi;
     }
+    
+    private static MenuItem createSeparatorMenuItem(BlockingMenu menu) {
+        return menu.addMenuItem(SWT.SEPARATOR);
+    }
 
     /**
      * Creates a connection template form the parameters and adds is to either the used
@@ -118,18 +193,19 @@ public class ConnectionChooser {
      * @param compound The compound module in which the current connection is/will be present
      * @param srcModule The source module used to create the connections
      * @param srcGate The source gate used to create the connections
-     * @param chooseSrc Whether we want to choose from source gates (if not, the dest part will be copied from "connection") 
+     * @param chooseSrc Whether we want to choose from source gates (if not, the source part will be copied from "connection") 
      * @param destModule The destination module used to create the connections
      * @param destGate The destination gate used to create the connections
-     * @param chooseSrc Whether we want to choose from dest gates (if not, the dest part will be copied from "connection")  
+     * @param chooseDest Whether we want to choose from dest gates (if not, the dest part will be copied from "connection")  
      * @param connection the connection which is being modified (if one side should be unchanged ie one of srcGate or destGate is NULL)
      * @param unusedList Connections that can be chosen
      * @param usedList Connections that are already connected
      */
     private static void accumulateConnection(CompoundModuleElementEx compound, ConnectionElementEx connection,
-                                            IConnectableElement srcModule, GateElement srcGate, boolean chooseSrc, 
-                                            IConnectableElement destModule, GateElement destGate, boolean chooseDest,
-                                            List<ConnectionElement> unusedList, List<ConnectionElement> usedList) {
+                                             IConnectableElement srcModule, GateElementEx srcGate, boolean chooseSrc, 
+                                             IConnectableElement destModule, GateElementEx destGate, boolean chooseDest,
+                                             List<ConnectionElement> unusedList, List<ConnectionElement> usedList,
+                                             Map<ConnectionElement, Integer> connectionRanks) {
         // add the gate names to the menu item as additional widget data
         ConnectionElementEx templateConn =  createTemplateConnection(srcModule, srcGate, destModule, destGate);
         // we dont want to change src so we should use the current one from the model (connection)
@@ -155,6 +231,8 @@ public class ConnectionChooser {
                 unusedList.add(templateConn);
             else
                 usedList.add(templateConn);
+            
+            connectionRanks.put(templateConn, countCommonGateLabels(srcGate, destGate));
         }
     }
     /**
