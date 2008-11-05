@@ -596,11 +596,9 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         else if (parentMakeOptions.metaRecurse)
             isReachable = true;  // OK
         else {
-            String subpath = "bubu"; //FIXME
+            String subpath = MakefileTools.makeRelativePath(folder.getFullPath(), parentMakefileFolder.getFullPath()).toString();
             isReachable = parentMakeOptions.submakeDirs.contains(subpath);
         }
-
-        //FIXME only call MetaMakemake once
 
         //
         // CALCULATE LABEL
@@ -635,16 +633,19 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         if (isSourceLocation)
             folderTypeText = "source location";
         else if (isExcluded)
-            folderTypeText = "excluded from build";
+            folderTypeText = "excluded from compile";
         else
             folderTypeText = "source folder";
 
-        String what = null;
+        String what = folderTypeText; // then we're going to append stuff to this
         String comments = "";
         boolean hasWarning = false;
 
+        if (isBuildRoot)
+            what += "; build root folder";
+        
         if (makeType==BuildSpecification.MAKEMAKE) {
-            what = folderTypeText + "; makefile generation enabled";
+            what += "; makefile generation enabled";
             
             MakemakeOptions options = buildSpec.getMakemakeOptions(folder);
             List<String> submakeDirs = null;
@@ -672,11 +673,12 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
             }
             if (folder instanceof IProject && !isExcluded && buildSpec.getMakeFolders().size()>1)  
                 comments = 
-                    "<p>HINT: You may want to exclude this (project root) folder from build, " +
+                    "<p>HINT: You may want to exclude this (project root) folder from compilation, " +
                     "and leave compilation to subdirectory makefiles.";
         }
         else if (makeType==BuildSpecification.CUSTOM) {
-            what = folderTypeText + "; custom makefile";
+            what += "; custom makefile";
+            
             //TODO "Should invoke make in:" / "Should compile the following folders"
             IFile makefile = folder.getFile(new Path("Makefile")); //XXX Makefile.vc?
             if (!makefile.exists()) {
@@ -697,8 +699,6 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
                     "or may contain other kinds of targets.";
         }
         else if (makeType==BuildSpecification.NONE) {
-            what = folderTypeText; // + "; no makefile";
-
             if (isExcluded)
                 /*NOP*/;
             else if (parentMakefileFolder == null) {
