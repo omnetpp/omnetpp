@@ -57,6 +57,10 @@ public class BuildSpecification {
     
     protected BuildSpecification(IProject project) {
         this.project = project;
+        
+        // add project root immediately
+        setFolderMakeType(project, MAKEMAKE);
+        setMakemakeOptions(project, MakemakeOptions.createInitial());
     }
     
     /**
@@ -123,7 +127,7 @@ public class BuildSpecification {
         folderSpec.makemakeOptions = options;
     }
 
-    public static BuildSpecification createBlank(IProject project) {
+    public static BuildSpecification createInitial(IProject project) {
         return new BuildSpecification(project);
     }
 

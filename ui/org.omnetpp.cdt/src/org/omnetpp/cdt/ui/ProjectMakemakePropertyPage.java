@@ -105,7 +105,6 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
     // controls
     protected Label errorMessageLabel;
     protected TreeViewer treeViewer;
-    protected Button markAsRootButton;
     protected Button optionsButton;
     protected Button sourceLocationButton;
     protected Button excludeButton;
@@ -160,8 +159,6 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         createLabel(buttons, "", 1);
         optionsButton = createButton(buttons, SWT.PUSH, "&Options...", "Edit makefile generation options");
         createLabel(buttons, "", 1);
-        markAsRootButton = createButton(buttons, SWT.PUSH, "Mark as &Root", "Set root makefile to invoke (see Build Location on the C/C++ Build page)");
-        createLabel(buttons, "", 1);
         Label sep = new Label(buttons, SWT.SEPARATOR | SWT.HORIZONTAL);
         sep.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
         createLabel(buttons, "", 1);
@@ -194,12 +191,6 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 setFolderMakeType(getTreeSelection(), BuildSpecification.NONE);
-            }
-        });
-        markAsRootButton.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                markAsRoot(getTreeSelection());
             }
         });
         optionsButton.addSelectionListener(new SelectionAdapter() {
@@ -415,7 +406,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
             if (submakeDirs != null && sourceDirs != null) { // i.e. there was no error above
                 comments += "<p>Invokes make in: " + StringUtils.defaultIfEmpty(StringUtils.join(submakeDirs, ", "), "-");
                 if (submakeDirs.size() > 2)
-                    comments += "<p>HINT: To control invocation order, add rules to the Makefrag file (on the Custom page of the Makemake Options dialog)";
+                    comments += "<p>HINT: To control invocation order, add dependency rules between subdir targets to the Makefrag file (on the Custom page of the Makemake Options dialog)";
                 comments += "<p>Compiles files in the following folders: " + StringUtils.defaultIfEmpty(StringUtils.join(sourceDirs, ", "), "-"); 
             }
             if (folder instanceof IProject && !isExcluded && buildSpec.getMakeFolders().size()>1)  
@@ -476,6 +467,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
             maybeOfferToExcludeProjectRoot(folder);
     }
 
+    // currently unused (we don't want to encourage users to change the build root, so we don't add a [Mark As Root] button)
     protected void markAsRoot(IContainer folder) {
         try {
             IProject project = getProject();
@@ -646,7 +638,6 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
             makemakeButton.setEnabled(false);
             customMakeButton.setEnabled(false);
             noMakeButton.setEnabled(false);
-            markAsRootButton.setEnabled(false);
             optionsButton.setEnabled(false);
             sourceLocationButton.setEnabled(false);
             excludeButton.setEnabled(false);
@@ -661,7 +652,6 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         customMakeButton.setEnabled(makeType!=BuildSpecification.CUSTOM);
         noMakeButton.setEnabled(makeType!=BuildSpecification.NONE);
         
-        markAsRootButton.setEnabled(makeType!=BuildSpecification.NONE);
         optionsButton.setEnabled(makeType==BuildSpecification.MAKEMAKE);
         
         ICProjectDescription projectDescription = CDTPropertyManager.getProjectDescription(project);
@@ -795,7 +785,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         }
 
         if (buildSpec == null)
-            buildSpec = BuildSpecification.createBlank(project);
+            buildSpec = BuildSpecification.createInitial(project);
     }
 
     protected void saveBuildSpecFile() {

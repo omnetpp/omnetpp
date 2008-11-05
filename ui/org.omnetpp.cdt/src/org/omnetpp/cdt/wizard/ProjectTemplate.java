@@ -234,7 +234,7 @@ public abstract class ProjectTemplate implements IProjectTemplate {
     protected void createBuildSpec(String[] pathsAndMakemakeOptions) throws CoreException {
         Assert.isTrue(pathsAndMakemakeOptions.length%2 == 0);
         IProject project = getProject();
-        BuildSpecification buildSpec = BuildSpecification.createBlank(project);
+        BuildSpecification buildSpec = BuildSpecification.createInitial(project);
         for (int i=0; i<pathsAndMakemakeOptions.length; i+=2) {
             String folderPath = pathsAndMakemakeOptions[i];
             String args = pathsAndMakemakeOptions[i+1];

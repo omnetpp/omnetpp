@@ -57,7 +57,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
             markerSynchronizer = new ProblemMarkerSynchronizer(MARKER_ID);
             buildSpec = BuildSpecification.readBuildSpecFile(getProject());
             if (buildSpec == null)
-                buildSpec = BuildSpecification.createBlank(getProject());
+                buildSpec = BuildSpecification.createInitial(getProject());
             
             // refresh makefiles
             generateMakefiles(monitor);

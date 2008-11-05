@@ -151,7 +151,7 @@ public class FolderMakemakePropertyPage extends PropertyPage {
         }
 
         if (buildSpec == null)
-            buildSpec = BuildSpecification.createBlank(project);
+            buildSpec = BuildSpecification.createInitial(project);
     }
 
     protected void saveBuildSpecFile() {
