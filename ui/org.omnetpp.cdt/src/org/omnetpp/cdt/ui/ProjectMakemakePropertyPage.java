@@ -82,9 +82,6 @@ import org.omnetpp.common.util.StringUtils;
  *
  * @author Andras
  */
-//XXX LIBRARY PATHS: ne out/configname legyen, hanem a source folder!
-//TODO warning if there's no makefile in a "custom makefile" folder (yellow "/!\")
-//TODO warning ha egy source foldert egy makefile sem fed be
 //TODO "Out" dir should not overlap with source folders (check!!!)
 @SuppressWarnings("restriction")
 public class ProjectMakemakePropertyPage extends PropertyPage {
