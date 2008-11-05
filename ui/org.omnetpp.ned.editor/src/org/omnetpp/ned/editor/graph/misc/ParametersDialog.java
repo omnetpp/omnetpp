@@ -11,6 +11,7 @@ import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.gef.commands.UnexecutableCommand;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -56,6 +57,7 @@ import org.omnetpp.common.ui.TableLabelProvider;
 import org.omnetpp.common.ui.TableTextCellEditor;
 import org.omnetpp.common.util.CollectionUtils;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.ned.editor.NedEditorPlugin;
 import org.omnetpp.ned.editor.graph.commands.AddNEDElementCommand;
 import org.omnetpp.ned.editor.graph.commands.DeleteCommand;
@@ -485,6 +487,11 @@ public class ParametersDialog extends TitleAreaDialog {
         this.dialogTitle = "Edit Parameters";
         this.parameterProvider = parameterProvider;
         paramLines = collectParamLines();
+    }
+    
+    @Override
+    protected IDialogSettings getDialogBoundsSettings() {
+        return UIUtils.getDialogSettings(NedEditorPlugin.getDefault(), getClass().getName());
     }
 
     protected List<ParamLine> collectParamLines() {

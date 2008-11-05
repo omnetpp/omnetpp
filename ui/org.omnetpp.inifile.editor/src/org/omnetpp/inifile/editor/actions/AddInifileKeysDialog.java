@@ -11,6 +11,7 @@ import java.util.Set;
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
@@ -32,6 +33,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.common.util.UIUtils;
+import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.InifileUtils;
@@ -82,6 +85,11 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
         this.selectedSection = initialSection;
         if (analyzer.getDocument().getSectionNames().length==0)
         	throw new IllegalStateException("Inifile should contain at least one section.");
+    }
+    
+    @Override
+    protected IDialogSettings getDialogBoundsSettings() {
+        return UIUtils.getDialogSettings(InifileEditorPlugin.getDefault(), getClass().getName());
     }
 
 	protected void configureShell(Shell shell) {

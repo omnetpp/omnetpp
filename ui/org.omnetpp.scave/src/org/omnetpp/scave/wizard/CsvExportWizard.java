@@ -13,6 +13,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ui.FileSelectionPanel;
 import org.omnetpp.scave.engine.CsvExport;
@@ -27,7 +28,6 @@ import org.omnetpp.scave.engine.CsvExport.QuoteMethod;
 public class CsvExportWizard extends AbstractExportWizard {
 
 	public static final String ID = "org.omnetpp.scave.wizard.CsvExportWizard";
-	public static final String SECTION_NAME = "CsvExportWizard";
 	
 	public static final String
 		SEPARATOR_KEY	= "separator",
@@ -36,12 +36,7 @@ public class CsvExportWizard extends AbstractExportWizard {
 		HEADER_KEY		= "header";
 	
 	public CsvExportWizard() {
-		IDialogSettings settings = ScavePlugin.getDefault().getDialogSettings();
-		IDialogSettings section = settings.getSection(SECTION_NAME);
-		if (section == null) {
-			section = settings.addNewSection(SECTION_NAME);
-		}
-		setDialogSettings(section);
+		setDialogSettings(UIUtils.getDialogSettings(ScavePlugin.getDefault(), getClass().getName()));
 	}
 	
 	@Override

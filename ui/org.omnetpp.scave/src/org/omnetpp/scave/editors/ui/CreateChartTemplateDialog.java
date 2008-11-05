@@ -8,6 +8,7 @@ import static org.omnetpp.scave.engine.RunAttribute.EXPERIMENT;
 import static org.omnetpp.scave.engine.RunAttribute.MEASUREMENT;
 import static org.omnetpp.scave.engine.RunAttribute.REPLICATION;
 
+import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -20,6 +21,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.omnetpp.common.util.UIUtils;
+import org.omnetpp.scave.ScavePlugin;
 
 /**
  * This dialog is called from CreateChartTemplateAction.
@@ -42,6 +45,11 @@ public class CreateChartTemplateDialog extends TitleAreaDialog {
 	
 	public CreateChartTemplateDialog(Shell parentShell) {
 		super(parentShell);
+	}
+	
+	@Override
+	protected IDialogSettings getDialogBoundsSettings() {
+	    return UIUtils.getDialogSettings(ScavePlugin.getDefault(), getClass().getName());
 	}
 
 	public String getChartName() {

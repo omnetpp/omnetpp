@@ -1,6 +1,7 @@
 package org.omnetpp.ned.core.ui.actions;
 
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
@@ -9,6 +10,7 @@ import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.eclipse.ui.dialogs.ListDialog;
+import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.ned.core.NEDResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.NEDTreeUtil;
@@ -54,6 +56,7 @@ public class OpenNedTypeAction implements IWorkbenchWindowActionDelegate {
         dialog.setElements(ned.getNedTypesFromAllProjects().toArray());
         dialog.setMessage("Select NED type to open:");
         dialog.setTitle("Open NED Type");
+        dialog.setDialogBoundsSettings(UIUtils.getDialogSettings(NEDResourcesPlugin.getDefault(), "OpenNEDTypeDialog"), Dialog.DIALOG_PERSISTSIZE + Dialog.DIALOG_PERSISTLOCATION);
         if (dialog.open() == ListDialog.OK) {
             INEDTypeInfo component = (INEDTypeInfo) dialog.getResult()[0];
             NEDResourcesPlugin.openNEDElementInEditor(component.getNEDElement());

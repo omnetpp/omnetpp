@@ -7,6 +7,7 @@ import java.util.regex.PatternSyntaxException;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.ControlAdapter;
@@ -31,6 +32,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.omnetpp.common.CommonPlugin;
+import org.omnetpp.common.util.UIUtils;
 
 /**
  * Dialog for selecting an icon. To ensure responsiveness, dialog get filled 
@@ -70,6 +72,11 @@ public class ImageSelectionDialog extends Dialog {
 		imageNames = new ArrayList<String>(ImageFactory.getImageNameList());
 		// "" represents NO IMAGE
 		imageNames.add(0, "");
+	}
+	
+	@Override
+	protected IDialogSettings getDialogBoundsSettings() {
+	    return UIUtils.getDialogSettings(CommonPlugin.getDefault(), getClass().getName());
 	}
 
 	@Override

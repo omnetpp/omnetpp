@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.fieldassist.ContentProposalAdapter;
@@ -47,6 +48,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.fieldassist.ContentAssistCommandAdapter;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
+import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.contentassist.ContentProposal;
 import org.omnetpp.common.eventlog.EventLogFilterParameters.EnabledInt;
 import org.omnetpp.common.ui.AbstractEditableList;
@@ -54,6 +56,7 @@ import org.omnetpp.common.ui.EditableCheckboxList;
 import org.omnetpp.common.ui.GenericTreeContentProvider;
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.eventlog.engine.BeginSendEntry;
 import org.omnetpp.eventlog.engine.IEventLog;
 import org.omnetpp.eventlog.engine.ModuleCreatedEntry;
@@ -172,6 +175,11 @@ public class FilterEventLogDialog
 		this.eventLogInput = eventLogInput;
 		this.filterParameters = filterParameters;
 	}
+
+    @Override
+    protected IDialogSettings getDialogBoundsSettings() {
+        return UIUtils.getDialogSettings(CommonPlugin.getDefault(), getClass().getName());
+    }
 
 	private void unparseFilterParameters(EventLogFilterParameters filterParameters) {
 		try {

@@ -1,8 +1,8 @@
 package org.omnetpp.neddoc;
 
-import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.omnetpp.common.util.UIUtils;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -76,20 +76,10 @@ public class NeddocPlugin extends AbstractUIPlugin {
 	}
 
     public void storeGeneratorConfiguration(GeneratorConfiguration generatorConfiguration) {
-        generatorConfiguration.store(ensureConfigurationDialogSettings());
+        generatorConfiguration.store(UIUtils.getDialogSettings(this, GeneratorConfigurationDialog.class.getName()));
     }
 
     public void restoreGeneratorConfiguration(GeneratorConfiguration generatorConfiguration) {
-        generatorConfiguration.restore(ensureConfigurationDialogSettings());
-    }
-
-    private IDialogSettings ensureConfigurationDialogSettings() {
-        String sectionName = "Neddoc";
-        IDialogSettings settings = getDialogSettings().getSection(sectionName);
-        
-        if (settings != null)
-            return settings;
-        else
-            return getDialogSettings().addNewSection(sectionName);
+        generatorConfiguration.restore(UIUtils.getDialogSettings(this, GeneratorConfigurationDialog.class.getName()));
     }
 }

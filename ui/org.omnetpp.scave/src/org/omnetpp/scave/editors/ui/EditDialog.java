@@ -6,12 +6,15 @@ import org.eclipse.emf.common.command.CompoundCommand;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.edit.command.SetCommand;
+import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
+import org.omnetpp.common.util.UIUtils;
+import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.forms.IScaveObjectEditForm;
 import org.omnetpp.scave.editors.forms.ScaveObjectEditFormFactory;
@@ -56,6 +59,11 @@ public class EditDialog extends TitleAreaDialog {
 		this.object = object;
 		this.features = features;
 		this.form = createForm(object, features, editor.getResultFileManager(), formParameters);
+	}
+	
+	@Override
+	protected IDialogSettings getDialogBoundsSettings() {
+	    return UIUtils.getDialogSettings(ScavePlugin.getDefault(), getClass().getName());
 	}
 	
 	public EStructuralFeature[] getFeatures() {

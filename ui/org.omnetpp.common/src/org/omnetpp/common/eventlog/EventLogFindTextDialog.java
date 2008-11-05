@@ -2,6 +2,7 @@ package org.omnetpp.common.eventlog;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -12,6 +13,8 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.omnetpp.common.CommonPlugin;
+import org.omnetpp.common.util.UIUtils;
 
 public class EventLogFindTextDialog extends Dialog {
     private String value = "";
@@ -32,6 +35,11 @@ public class EventLogFindTextDialog extends Dialog {
 
     protected EventLogFindTextDialog(Shell parentShell) {
         super(parentShell);
+    }
+    
+    @Override
+    protected IDialogSettings getDialogBoundsSettings() {
+        return UIUtils.getDialogSettings(CommonPlugin.getDefault(), getClass().getName());
     }
 
     @Override

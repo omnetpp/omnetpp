@@ -1,7 +1,7 @@
 package org.omnetpp.scave.wizard;
 
-import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.engine.ExporterFactory;
 import org.omnetpp.scave.engine.ScaveExport;
@@ -9,15 +9,9 @@ import org.omnetpp.scave.engine.ScaveExport;
 public class OctaveExportWizard extends AbstractExportWizard {
 
 	public static final String ID = "org.omnetpp.scave.wizard.OctaveExportWizard";
-	public static final String SECTION_NAME = "OctaveExportWizard";
 	
 	public OctaveExportWizard() {
-		IDialogSettings settings = ScavePlugin.getDefault().getDialogSettings();
-		IDialogSettings section = settings.getSection(SECTION_NAME);
-		if (section == null) {
-			section = settings.addNewSection(SECTION_NAME);
-		}
-		setDialogSettings(section);
+		setDialogSettings(UIUtils.getDialogSettings(ScavePlugin.getDefault(), getClass().getName()));
 	}
 	
 	@Override

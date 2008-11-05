@@ -8,10 +8,13 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.emf.edit.command.AddCommand;
+import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.dialogs.ResourceListSelectionDialog;
+import org.omnetpp.common.util.UIUtils;
+import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.ScaveModelFactory;
@@ -57,6 +60,11 @@ public class AddResultFileAction extends AbstractScaveAction {
 	{
 		public ResultFileSelectionDialog(Shell shell, IContainer container, int typeMask) {
 			super(shell, container, typeMask);
+		}
+		
+		@Override
+		protected IDialogSettings getDialogBoundsSettings() {
+		    return UIUtils.getDialogSettings(ScavePlugin.getDefault(), getClass().getName());
 		}
 
 		@Override

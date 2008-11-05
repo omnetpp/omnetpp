@@ -40,6 +40,7 @@ import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
@@ -92,6 +93,7 @@ import org.omnetpp.common.eventlog.IEventLogChangeListener;
 import org.omnetpp.common.eventlog.ModuleTreeItem;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.util.TimeUtils;
+import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.eventlog.engine.BeginSendEntry;
 import org.omnetpp.eventlog.engine.FileReader;
 import org.omnetpp.eventlog.engine.FilteredEventLog;
@@ -1567,6 +1569,11 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 				
 				public int getSelectedRangeType() {
 					return selectedRangeType;
+				}
+				
+				@Override
+				protected IDialogSettings getDialogBoundsSettings() {
+				    return UIUtils.getDialogSettings(SequenceChartPlugin.getDefault(), getClass().getName());
 				}
 
 				@Override

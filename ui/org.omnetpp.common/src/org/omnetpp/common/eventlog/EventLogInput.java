@@ -245,7 +245,7 @@ public class EventLogInput extends FileEditorInput
 	 */
 
     public int openFilterDialog() {
-        FilterEventLogDialog filterEventLogDialog = new FilterEventLogDialog(null, this, getFilterParameters());
+        FilterEventLogDialog filterEventLogDialog = new FilterEventLogDialog(Display.getCurrent().getActiveShell(), this, getFilterParameters());
         return filterEventLogDialog.open();
     }
 

@@ -7,11 +7,14 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.edit.command.AddCommand;
 import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider;
+import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.graphics.Image;
+import org.omnetpp.common.util.UIUtils;
+import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.Dataset;
@@ -55,6 +58,11 @@ public class DatasetSelectionDialog extends ElementListSelectOrCreateDialog {
 				return null;
 			}
 		});
+	}
+	
+	@Override
+	protected IDialogSettings getDialogBoundsSettings() {
+	    return UIUtils.getDialogSettings(ScavePlugin.getDefault(), getClass().getName());
 	}
 
 	static class DatasetLabelProvider extends LabelProvider {
