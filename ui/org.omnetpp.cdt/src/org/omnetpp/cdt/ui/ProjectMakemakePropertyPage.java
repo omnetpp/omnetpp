@@ -82,7 +82,6 @@ import org.omnetpp.common.util.StringUtils;
  *
  * @author Andras
  */
-//TODO "Out" dir should not overlap with source folders (check!!!)
 @SuppressWarnings("restriction")
 public class ProjectMakemakePropertyPage extends PropertyPage {
     private static final String SOURCE_FOLDER_IMG = "icons/full/obj16/folder_srcfolder.gif";
