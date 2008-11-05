@@ -152,7 +152,6 @@ public class ModuleParametersView extends AbstractModuleView {
 				if (!event.getSelection().isEmpty() && editor!=null) {
 					// remember selection (we'll try to restore it after table rebuild)
 					selectedElements.put(editor.getEditorInput(), event.getSelection());
-					System.out.println("*** bubu");
 					// try to highlight the given element in the inifile editor
 					SectionKey sel = getSectionKeyFromSelection();
 					//XXX make sure "res" and inifile editor refer to the same IFile!!!

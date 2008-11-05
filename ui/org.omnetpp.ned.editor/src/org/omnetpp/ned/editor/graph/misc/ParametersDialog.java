@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.eclipse.gef.commands.Command;
@@ -17,6 +18,7 @@ import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnViewer;
+import org.eclipse.jface.viewers.ComboBoxCellEditor;
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -27,6 +29,7 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.events.ModifyEvent;
@@ -62,15 +65,19 @@ import org.omnetpp.ned.editor.NedEditorPlugin;
 import org.omnetpp.ned.editor.graph.commands.AddNEDElementCommand;
 import org.omnetpp.ned.editor.graph.commands.DeleteCommand;
 import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.NEDElementConstants;
 import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
 import org.omnetpp.ned.model.ex.ParamElementEx;
+import org.omnetpp.ned.model.ex.PropertyElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.IHasParameters;
 import org.omnetpp.ned.model.interfaces.IInterfaceTypeElement;
 import org.omnetpp.ned.model.pojo.CommentElement;
+import org.omnetpp.ned.model.pojo.LiteralElement;
 import org.omnetpp.ned.model.pojo.NEDElementTags;
 import org.omnetpp.ned.model.pojo.ParametersElement;
+import org.omnetpp.ned.model.pojo.PropertyKeyElement;
 
 
 /**
@@ -88,11 +95,14 @@ public class ParametersDialog extends TitleAreaDialog {
 
     private static final String COLUMN_TYPE = "type";
     private static final String COLUMN_NAME = "name";
+    private static final String COLUMN_UNIT = "unit";
     private static final String COLUMN_VALUE = "value";
     private static final String COLUMN_COMMENT = "comment";
-    private static final String[] COLUMNS = new String[] {COLUMN_TYPE, COLUMN_NAME, COLUMN_VALUE, COLUMN_COMMENT};
-    private static final String[] INTERFACE_TYPE_COLUMNS = new String[] {COLUMN_TYPE, COLUMN_NAME, COLUMN_COMMENT};
+    private static final String[] COLUMNS = new String[] {COLUMN_TYPE, COLUMN_NAME, COLUMN_UNIT, COLUMN_VALUE, COLUMN_COMMENT};
+    private static final String[] INTERFACE_TYPE_COLUMNS = new String[] {COLUMN_TYPE, COLUMN_NAME, COLUMN_UNIT, COLUMN_COMMENT};
     private static final String[] TYPES = new String[] {"bool", "int", "double", "string", "xml", "volatile bool", "volatile int", "volatile double", "volatile string", "volatile xml"};
+    private static final String[] UNITS = new String[] {"", "s (second)", "bps (bit/second)", "B (byte)", "b (bit)", "m (meter)", "W (watt)", "Hz (hertz)", "g (gramm)", "J (joule)", "V (volt)", "A (amper)"};
+
     private static final String DEFAULT_TYPE = "int";
     private static final String VOLATILE_PARAMETER_PREFIX = "volatile";
     private static final String DEFAULT_VALUE_PREFIX = "default(";
@@ -124,12 +134,13 @@ public class ParametersDialog extends TitleAreaDialog {
             switch (columnIndex) {
                 case 0: return paramLine.type; 
                 case 1: return paramLine.name; 
-                case 2: 
+                case 2: return paramLine.unit; 
+                case 3: 
                     if (parameterProvider instanceof IInterfaceTypeElement)
                         return paramLine.comment;
                     else
                         return paramLine.value;
-                case 3: return paramLine.comment;
+                case 4: return paramLine.comment;
                 default:
                     throw new RuntimeException();
             }
@@ -158,7 +169,7 @@ public class ParametersDialog extends TitleAreaDialog {
         public Color getForeground(Object element, int columnIndex) {
             ParamLine paramLine = (ParamLine)element;
 
-            if ((columnIndex == 0 || columnIndex == 1) && !paramLine.isOriginallyLocalDeclaration()) 
+            if ((columnIndex == 0 || columnIndex == 1 || columnIndex == 2) && !paramLine.isOriginallyLocalDeclaration()) 
                 return ColorFactory.GREY50;
             else
                 return null;
@@ -171,11 +182,15 @@ public class ParametersDialog extends TitleAreaDialog {
                 String currentValue = null;
                 String inheritedValue = null;
 
-                if (columnIndex == 3 || (parameterProvider instanceof IInterfaceTypeElement && columnIndex == 2)) {
+                if (columnIndex == 2) {
+                    currentValue = paramLine.getUnit(paramLine.currentParamLocal);
+                    inheritedValue = paramLine.getUnit(paramLine.originalParamInheritanceChain, null);
+                }
+                if (columnIndex == 4 || (parameterProvider instanceof IInterfaceTypeElement && columnIndex == 3)) {
                     currentValue = paramLine.getComment(paramLine.currentParamLocal);
                     inheritedValue = paramLine.getComment(paramLine.originalParamInheritanceChain, null);
                 }
-                else if (columnIndex == 2) {
+                else if (columnIndex == 3) {
                     currentValue = paramLine.getValue(paramLine.currentParamLocal);
                     inheritedValue = paramLine.getValue(paramLine.originalParamInheritanceChain, null);
                 }
@@ -202,6 +217,7 @@ public class ParametersDialog extends TitleAreaDialog {
         // displayed in the table
         public String type;
         public String name;
+        public String unit;
         public String value;
         public String comment;
 
@@ -219,6 +235,7 @@ public class ParametersDialog extends TitleAreaDialog {
 
                 this.type = DEFAULT_TYPE;
                 this.name = generateDefaultName();
+                this.unit = "";
                 this.value = "";
                 this.comment = "";
             }
@@ -233,6 +250,7 @@ public class ParametersDialog extends TitleAreaDialog {
 
                 this.type = getOriginalType();
                 this.name = getOriginalName();
+                this.unit = getOriginalUnit();
                 this.value = getOriginalValue();
                 this.comment = getOriginalComment();
             }
@@ -246,6 +264,10 @@ public class ParametersDialog extends TitleAreaDialog {
 
         public String getOriginalName() {
             return originalParamDeclaration == null ? "" : getName(originalParamDeclaration);
+        }
+
+        public String getOriginalUnit() {
+            return originalParamDeclaration == null ? "" : getUnit(originalParamDeclaration);
         }
 
         public String getOriginalValue() {
@@ -263,6 +285,10 @@ public class ParametersDialog extends TitleAreaDialog {
         public boolean isOriginallyOverridden() {
             return originalParamLocal != null && originalParamLocal != originalParamDeclaration;
         }
+        
+        public String getCurrentUnit() {
+            return getUnit(originalParamInheritanceChain, currentParamLocal);
+        }
 
         public String getCurrentValue() {
             return getValue(originalParamInheritanceChain, currentParamLocal);
@@ -277,12 +303,12 @@ public class ParametersDialog extends TitleAreaDialog {
         }
         
         public boolean isDifferentFromOriginal() {
-            return !ObjectUtils.equals(type, getOriginalType()) || !ObjectUtils.equals(name, getOriginalName()) ||
+            return !ObjectUtils.equals(type, getOriginalType()) || !ObjectUtils.equals(name, getOriginalName()) || !ObjectUtils.equals(unit, getOriginalUnit()) ||
                    !ObjectUtils.equals(value, getOriginalValue()) || !ObjectUtils.equals(comment, getOriginalComment());
         }
 
         public boolean isDifferentFromInherited() {
-            return !ObjectUtils.equals(type, getOriginalType()) || !ObjectUtils.equals(name, getOriginalName()) ||
+            return !ObjectUtils.equals(type, getOriginalType()) || !ObjectUtils.equals(name, getOriginalName()) || !ObjectUtils.equals(unit, getOriginalUnit()) ||
                    !ObjectUtils.equals(value, getValue(originalParamInheritanceChain, null)) ||
                    !ObjectUtils.equals(comment, getComment(originalParamInheritanceChain, null));
         }
@@ -290,11 +316,18 @@ public class ParametersDialog extends TitleAreaDialog {
         public void setCurrentType(String type) {
             this.type = type;
             setType(currentParamLocal, type);
+            if (!mayTypeHasUnit(type))
+                setCurrentUnit("");
         }
 
         public void setCurrentName(String name) {
             this.name = name;
             setName(currentParamLocal, name);
+        }
+
+        public void setCurrentUnit(String unit) {
+            this.unit = unit;
+            setUnit(currentParamLocal, unit);
         }
 
         public void setCurrentValue(String value) {
@@ -356,6 +389,54 @@ public class ParametersDialog extends TitleAreaDialog {
         
         protected void setName(ParamElementEx paramElement, String name) {
             paramElement.setName(name);
+        }
+        
+        protected String getUnit(List<ParamElementEx> inheritanceChain, ParamElementEx firstParamElement) {
+            String unit = null;
+            
+            if (firstParamElement != null)
+                unit = getUnit(firstParamElement);
+
+            if (!StringUtils.isEmpty(unit))
+                return unit;
+
+            for (ParamElementEx paramElement : inheritanceChain) {
+                if (paramElement == originalParamLocal)
+                    continue;
+                else
+                    unit = getUnit(paramElement);
+                    
+                if (!StringUtils.isEmpty(unit))
+                    return unit;
+            }
+
+            return "";
+        }
+        
+        protected String getUnit(ParamElementEx paramElement) {
+            return paramElement.getUnit();
+        }
+        
+        protected void setUnit(ParamElementEx paramElement, String unit) {
+            PropertyElementEx propertyElement = paramElement.getLocalProperties().get("unit");
+            
+            if (StringUtils.isEmpty(unit)) {
+                if (propertyElement != null)
+                    propertyElement.removeFromParent();
+            }
+            else {
+                if (propertyElement == null)
+                    propertyElement = (PropertyElementEx)NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_PROPERTY, paramElement);
+    
+                while (propertyElement.getFirstChild() != null)
+                    propertyElement.getFirstChild().removeFromParent();
+    
+                propertyElement.setName("unit");
+                PropertyKeyElement propertyKeyElement = (PropertyKeyElement)NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_PROPERTY_KEY, propertyElement);
+                LiteralElement literalElement = (LiteralElement)NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_LITERAL, propertyKeyElement);
+                literalElement.setType(NEDElementConstants.NED_CONST_STRING);
+                literalElement.setValue(unit);
+            }
         }
         
         protected String getValue(List<ParamElementEx> inheritanceChain, ParamElementEx firstParamElement) {
@@ -476,6 +557,11 @@ public class ParametersDialog extends TitleAreaDialog {
                 return paramLine;
         
         return null;
+    }
+
+    public boolean mayTypeHasUnit(String type) {
+        return "int".equals(type) || "double".equals(type) ||
+               "volatile int".equals(type) || "volatile double".equals(type);
     }
 
     /**
@@ -648,6 +734,7 @@ public class ParametersDialog extends TitleAreaDialog {
                     if (paramLine.isOriginallyLocalDeclaration())
                         paramLines.remove(paramLine);
                     else {
+                        paramLine.setCurrentUnit("");
                         paramLine.setCurrentValue("");
                         paramLine.setCurrentComment("");
                     }
@@ -718,6 +805,7 @@ public class ParametersDialog extends TitleAreaDialog {
 
         addTableColumn(table, "Type", 100);
         addTableColumn(table, "Name", 100);
+        addTableColumn(table, "Unit", 100);
         if (!(parameterProvider instanceof IInterfaceTypeElement))
             addTableColumn(table, "Value", 180);
         addTableColumn(table, "Comment", -1);
@@ -732,18 +820,20 @@ public class ParametersDialog extends TitleAreaDialog {
         if (parameterProvider instanceof IInterfaceTypeElement) {
             tableViewer.setColumnProperties(INTERFACE_TYPE_COLUMNS);
             editors = new CellEditor[] {
-                new EnumCellEditor(table, TYPES, TYPES),
+                new LocalEnumCellEditor(table, TYPES, TYPES),
                 new LocalTableTextCellEditor(tableViewer, 1),
-                new LocalTableTextCellEditor(tableViewer, 2)
+                new LocalEditableComboBoxCellEditor(table, UNITS, getUnitValues(UNITS)),
+                new LocalTableTextCellEditor(tableViewer, 3)
             };
         }
         else {
             tableViewer.setColumnProperties(COLUMNS);
             editors = new CellEditor[] {
-                new EnumCellEditor(table, TYPES, TYPES),
+                new LocalEnumCellEditor(table, TYPES, TYPES),
                 new LocalTableTextCellEditor(tableViewer, 1),
-                new LocalTableTextCellEditor(tableViewer, 2),
-                new LocalTableTextCellEditor(tableViewer, 3)
+                new LocalEditableComboBoxCellEditor(table, UNITS, getUnitValues(UNITS)),
+                new LocalTableTextCellEditor(tableViewer, 3),
+                new LocalTableTextCellEditor(tableViewer, 4)
             };
         }
         tableViewer.setCellEditors(editors);
@@ -756,6 +846,8 @@ public class ParametersDialog extends TitleAreaDialog {
                     return paramLine.isOriginallyLocalDeclaration();
                 else if (COLUMN_NAME.equals(property))
                     return paramLine.isOriginallyLocalDeclaration();
+                else if (COLUMN_UNIT.equals(property))
+                    return paramLine.isOriginallyLocalDeclaration() && mayTypeHasUnit(paramLine.type);
                 else if (COLUMN_VALUE.equals(property))
                     return true;
                 else if (COLUMN_COMMENT.equals(property))
@@ -771,6 +863,8 @@ public class ParametersDialog extends TitleAreaDialog {
                     return paramLine.type;
                 else if (COLUMN_NAME.equals(property))
                     return paramLine.name;
+                else if (COLUMN_UNIT.equals(property))
+                    return paramLine.unit;
                 else if (COLUMN_VALUE.equals(property))
                     return paramLine.value;
                 else if (COLUMN_COMMENT.equals(property))
@@ -793,6 +887,8 @@ public class ParametersDialog extends TitleAreaDialog {
                         paramLine.setCurrentType(stringValue);
                     else if (COLUMN_NAME.equals(property))
                         paramLine.setCurrentName(stringValue);
+                    else if (COLUMN_UNIT.equals(property))
+                        paramLine.setCurrentUnit(stringValue);
                     else if (COLUMN_VALUE.equals(property))
                         paramLine.setCurrentValue(stringValue);
                     else if (COLUMN_COMMENT.equals(property))
@@ -843,16 +939,77 @@ public class ParametersDialog extends TitleAreaDialog {
         return resultCommand;
     }
     
-    private class LocalTableTextCellEditor extends TableTextCellEditor
-    {
+    private String[] getUnitValues(String[] unitsWithFullName) {
+        String[] units = new String[unitsWithFullName.length];
+
+        for (int i = 0; i < units.length; i++) {
+            String unitWithFullName = unitsWithFullName[i];
+            int index = unitWithFullName.indexOf('(');
+            units[i] = index == -1 ? unitWithFullName : unitWithFullName.substring(0, index - 1);
+        }
+
+        return units;
+    }
+
+    private class LocalTableTextCellEditor extends TableTextCellEditor {
         public LocalTableTextCellEditor(ColumnViewer tableViewer, int column) {
             super(tableViewer, column);
         }
         
         @Override
         protected void editOccured(ModifyEvent e) {
-            super.editOccured(e);
             cellEdited = true;
+            super.editOccured(e);
+        }
+    }
+    
+    private class LocalEnumCellEditor extends EnumCellEditor {
+        public LocalEnumCellEditor(Composite parent, String[] names, Object[] values) {
+            super(parent, names, values);
+        }
+        
+        @Override
+        protected void fireApplyEditorValue() {
+            cellEdited = true;
+            super.fireApplyEditorValue();
+        }
+    }
+    
+    private class LocalEditableComboBoxCellEditor extends ComboBoxCellEditor {
+    
+        private Object[] values;
+
+        public LocalEditableComboBoxCellEditor(Composite parent, String[] names, Object[] values) {
+            super(parent, names);
+            this.values = values;
+            setStyle(SWT.DROP_DOWN);
+        }
+        
+        @Override
+        protected void fireApplyEditorValue() {
+            cellEdited = true;
+            super.fireApplyEditorValue();
+        }
+    
+        @Override
+        protected Object doGetValue() {
+            Object name = ((CCombo)getControl()).getText();
+            int index = ArrayUtils.indexOf(getItems(), name);
+            return index == -1 ? name : values[index];
+        }
+    
+        @Override
+        protected void doSetValue(Object value) {
+            for (int i = 0; i < values.length; ++i) {
+                if (value == null && values[i] == null || value != null && value.equals(values[i])) {
+                    super.doSetValue(i);
+                    return;
+                }
+            }
+            
+            String newValue = (value == null) ? "" : value.toString();
+            if (getControl() != null)
+                ((CCombo)getControl()).setText(newValue);
         }
     }
 }

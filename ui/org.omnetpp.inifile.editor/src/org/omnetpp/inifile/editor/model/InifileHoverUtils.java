@@ -16,6 +16,7 @@ import org.eclipse.core.resources.IMarker;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer.KeyType;
+import org.omnetpp.ned.model.ex.ParamElementEx;
 import org.omnetpp.ned.model.pojo.ParamElement;
 import org.omnetpp.ned.model.pojo.SubmoduleElement;
 
@@ -182,7 +183,7 @@ public class InifileHoverUtils {
 		// Example:
         //   {EtherMac.address, Ieee80211Mac.address} => {[General], [Config Foo]}
         //   {Ieee80211Mac.address} => {[Config Bar]}
-        Map<Set<ParamElement>, Set<String>> sectionsGroupedByParamDeclSet = organizeParamResolutions(resList);
+        Map<Set<ParamElementEx>, Set<String>> sectionsGroupedByParamDeclSet = organizeParamResolutions(resList);
 
         boolean isVerySimpleCase = sectionsGroupedByParamDeclSet.size()==1 && sectionsGroupedByParamDeclSet.keySet().toArray(new Set[]{})[0].size()==1; 
            
@@ -200,12 +201,12 @@ public class InifileHoverUtils {
 		return HoverSupport.addHTMLStyleSheet(text);
 	}
 
-    private static String formatParamResolutions(Map<Set<ParamElement>,Set<String>> sectionsGroupedByParamDeclSet,
+    private static String formatParamResolutions(Map<Set<ParamElementEx>,Set<String>> sectionsGroupedByParamDeclSet,
             ParamResolution[] resList, String[] allSectionNames, boolean printComment, boolean printDetails) {
         String text = "";
         
         // Now we turn this into HTML
-        for (Set<ParamElement> paramDecls : sectionsGroupedByParamDeclSet.keySet()) {
+        for (Set<ParamElementEx> paramDecls : sectionsGroupedByParamDeclSet.keySet()) {
             Set<String> sectionNames = sectionsGroupedByParamDeclSet.get(paramDecls);
 
             // print section name(s), unless there'a only one section or we can say "All"
@@ -216,7 +217,7 @@ public class InifileHoverUtils {
             
             // and the param declarations
             text += "<ul>";
-            for (ParamElement paramDeclNode : paramDecls) {
+            for (ParamElementEx paramDeclNode : paramDecls) {
                 // print the parameter declaration itself
                 text += formatParamDecl(paramDeclNode, printComment);
                 
@@ -253,7 +254,7 @@ public class InifileHoverUtils {
     /**
      * Groups parameter resolutions so that we can print them in a meaningful way
      */
-    private static Map<Set<ParamElement>, Set<String>> organizeParamResolutions(ParamResolution[] resList) {
+    private static Map<Set<ParamElementEx>, Set<String>> organizeParamResolutions(ParamResolution[] resList) {
         // Build a map about sections and parameter declarations:
         // - key: section name
         // - value: the parameter declarations that this config key matches in the given section
@@ -264,11 +265,11 @@ public class InifileHoverUtils {
         //   [Config Foo] => {EtherMac.address, Ieee80211Mac.address}
         //   [Config Bar] => {Ieee80211Mac.address}
         //
-        Map<String,Set<ParamElement>> sectionParamDecls = new LinkedHashMap<String, Set<ParamElement>>();
+        Map<String,Set<ParamElementEx>> sectionParamDecls = new LinkedHashMap<String, Set<ParamElementEx>>();
         for (ParamResolution res : resList) {
             String sectionName = res.activeSection;
             if (!sectionParamDecls.containsKey(sectionName))
-                sectionParamDecls.put(sectionName, new HashSet<ParamElement>());
+                sectionParamDecls.put(sectionName, new HashSet<ParamElementEx>());
             sectionParamDecls.get(sectionName).add(res.paramDeclNode);
         }
 
@@ -277,9 +278,9 @@ public class InifileHoverUtils {
         //   {EtherMac.address, Ieee80211Mac.address} => {[General], [Config Foo]}
         //   {Ieee80211Mac.address} => {[Config Bar]}
         //
-        Map<Set<ParamElement>, Set<String>> grouping = new LinkedHashMap<Set<ParamElement>, Set<String>>();
+        Map<Set<ParamElementEx>, Set<String>> grouping = new LinkedHashMap<Set<ParamElementEx>, Set<String>>();
         for (String sectionName : sectionParamDecls.keySet()) {
-            Set<ParamElement> declSet = sectionParamDecls.get(sectionName);
+            Set<ParamElementEx> declSet = sectionParamDecls.get(sectionName);
             if (!grouping.containsKey(declSet)) 
                 grouping.put(declSet, new LinkedHashSet<String>());
             grouping.get(declSet).add(sectionName);
@@ -287,12 +288,14 @@ public class InifileHoverUtils {
         return grouping;
     }
 
-	private static String formatParamDecl(ParamElement paramDeclNode, boolean printComment) {
+	private static String formatParamDecl(ParamElementEx paramDeclNode, boolean printComment) {
         String paramName = paramDeclNode.getName();
         String paramValue = paramDeclNode.getValue();
         if (paramDeclNode.getIsDefault())
             paramValue = StringUtils.isEmpty(paramValue) ? "default" : "default("+paramValue+")";
         String optParamValue = StringUtils.isEmpty(paramValue) ? "" : " = " + paramValue;
+        String unit = paramDeclNode.getUnit();
+        String optUnit = StringUtils.isEmpty(unit) ? "" : " @unit(" + unit + ")";
         String paramType = paramDeclNode.getAttribute(ParamElement.ATT_TYPE);
         if (paramDeclNode.getIsVolatile())
             paramType = "volatile " + paramType;
@@ -301,7 +304,7 @@ public class InifileHoverUtils {
         String optComment = comment==null ? "" : ("<br>&nbsp;&nbsp;&nbsp;<i>\"" + comment + "\"</i>");
 
         // print parameter declaration 
-        return "<li>"+paramDeclaredOn + ": " + paramType + " " + paramName + optParamValue + (printComment ? optComment : "") + "\n";
+        return "<li>"+paramDeclaredOn + ": " + paramType + " " + paramName + optUnit + optParamValue + (printComment ? optComment : "") + "\n";
     }
 
     public static String getProblemsHoverText(IMarker[] markers, boolean lineNumbers) {
