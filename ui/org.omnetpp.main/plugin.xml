@@ -28,6 +28,9 @@
 		  <property
           name="introDescription-samples"
           value=" "/>
+		  <property
+          name="introDescription-migrate"
+          value=" "/>
     <property
           name="aboutText"
           value="OMNeT++ Integrated Development Environment."/>
