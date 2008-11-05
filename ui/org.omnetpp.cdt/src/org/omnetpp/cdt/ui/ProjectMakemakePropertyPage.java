@@ -571,7 +571,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         boolean isExcluded = CDTUtils.isExcluded(folder, sourceEntries);
         boolean isSrcFolder = CDTUtils.getSourceEntryFor(folder, sourceEntries)!=null;
         boolean isSourceLocation = CDTUtils.getSourceLocations(project, sourceEntries).contains(folder);
-        boolean isUnderSourceLocation = CDTUtils.getSourceEntryThatCovers(folder, sourceEntries) != null;
+        //boolean isUnderSourceLocation = CDTUtils.getSourceEntryThatCovers(folder, sourceEntries) != null;
         String buildLocation = configuration.getBuildSetting().getBuilderCWD().toString();
         IContainer buildFolder = resolveFolderLocation(buildLocation, project, configuration);
         boolean isBuildRoot = folder.equals(buildFolder); 
@@ -582,8 +582,17 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         for (IContainer f = folder.getParent(); !(f instanceof IWorkspaceRoot) && !CDTUtils.isExcluded(f, sourceEntries); f = f.getParent())
             if (buildSpec.getMakeFolders().contains(f)) {
                 parentMakefileFolder = f; break;}
-        int parentMakefileType = buildSpec.getFolderMakeType(parentMakefileFolder);
-        MakemakeOptions parentMakeOptions = buildSpec.getMakemakeOptions(parentMakefileFolder);
+        
+        boolean notInvoked = false;
+        if (makeType != BuildSpecification.NONE) {
+            // fill in notInvoked 
+            int parentMakefileType = buildSpec.getFolderMakeType(parentMakefileFolder);
+            MakemakeOptions parentMakeOptions = buildSpec.getMakemakeOptions(parentMakefileFolder);
+            //FIXME TODO...
+            //if (parentMakefileType == )
+        }
+
+        //TODO only call MetaMakemake once
 
         //
         // CALCULATE LABEL
@@ -633,7 +642,6 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
             List<String> submakeDirs = null;
             List<String> sourceDirs = null;
             try {
-                //TODO this may take a long time (if dependency-cache is empty)
                 MakemakeOptions translatedOptions = MetaMakemake.translateOptions(folder, options, buildSpec.getMakeFolders(), configuration);
                 submakeDirs = translatedOptions.submakeDirs;
                 sourceDirs = new Makemake().getSourceDirs(folder, translatedOptions);
@@ -641,7 +649,11 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
             catch (CoreException e) {
                 Activator.logError(e);
             }
-            
+
+            if (notInvoked) {
+                comments = "<p>WARNING: This makefile never gets invoked"; 
+                hasWarning = true;
+            }
             if (submakeDirs != null && sourceDirs != null) { // i.e. there was no error above
                 comments += "<p>Invokes make in: " + StringUtils.defaultIfEmpty(StringUtils.join(submakeDirs, ", "), "-");
                 if (submakeDirs.size() > 2)
@@ -652,7 +664,6 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
                 comments = 
                     "<p>HINT: You may want to exclude this (project root) folder from build, " +
                     "and leave compilation to subdirectory makefiles.";
-            //FIXME warning if no parent invokes this (and not buildroot)
         }
         else if (makeType==BuildSpecification.CUSTOM) {
             what = folderTypeText + "; custom makefile";
@@ -662,13 +673,16 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
                 comments = "<p>WARNING: Custom makefile \"Makefile\" missing"; 
                 hasWarning = true;
             }
-            else if (isExcluded)
+            if (notInvoked) {
+                comments = "<p>WARNING: This makefile never gets invoked"; 
+                hasWarning = true;
+            }
+            if (isExcluded)
                 comments = 
                     "<p>Note: The makefile is not supposed to compile any (potentially existing) source files " +
                     "from this folder, because the folder is excluded from build. However, it may " +
                     "invoke other makefiles, may create executables or libraries by invoking the linker, " +
                     "or may contain other kinds of targets.";
-            //FIXME warning if no parent invokes this (and not buildroot)
         }
         else if (makeType==BuildSpecification.NONE) {
             what = folderTypeText; // + "; no makefile";
