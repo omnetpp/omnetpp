@@ -579,7 +579,8 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
 
         // find which makefile covers this folder (ignoring makefile type and scope for now)
         IContainer parentMakefileFolder = null;
-        for (IContainer f = folder.getParent(); !(f instanceof IWorkspaceRoot) && !CDTUtils.isExcluded(f, sourceEntries); f = f.getParent())
+        boolean stopOnExcluded = makeType==BuildSpecification.NONE;
+        for (IContainer f = folder.getParent(); !(f instanceof IWorkspaceRoot) && (buildSpec.getMakeFolders().contains(f) || !stopOnExcluded || !CDTUtils.isExcluded(f, sourceEntries)); f = f.getParent())
             if (buildSpec.getMakeFolders().contains(f)) {
                 parentMakefileFolder = f; break;}
         int parentMakeFolderType = buildSpec.getFolderMakeType(parentMakefileFolder);
@@ -664,6 +665,8 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
                 comments = "<p>WARNING: This makefile never gets invoked"; 
                 hasWarning = true;
             }
+            if (parentMakefileFolder != null)
+                comments += "<p>Parent makefile: " + parentMakefileFolder.getFullPath().toString();
             if (submakeDirs != null && sourceDirs != null) { // i.e. there was no error above
                 comments += "<p>Invokes make in: " + StringUtils.defaultIfEmpty(StringUtils.join(submakeDirs, ", "), "-");
                 if (submakeDirs.size() > 2)
@@ -687,6 +690,8 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
                 comments = "<p>WARNING: This makefile never gets invoked"; 
                 hasWarning = true;
             }
+            if (parentMakefileFolder != null)
+                comments += "<p>Parent makefile: " + parentMakefileFolder.getFullPath().toString();
             if (isExcluded)
                 comments = 
                     "<p>Note: The makefile is not supposed to compile any (potentially existing) source files " +
