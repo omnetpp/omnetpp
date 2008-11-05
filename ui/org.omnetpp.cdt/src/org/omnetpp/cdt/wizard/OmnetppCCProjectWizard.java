@@ -236,7 +236,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
             getProjectNameField().setText(projectName);
             ((Button)ReflectionUtils.getFieldValue(getLocationArea(), "useDefaultsButton")).setSelection(useDefaultLocation);
             if (!useDefaultLocation)
-                ((Text)ReflectionUtils.getFieldValue(getLocationArea(), "locationPathField")).setText(location.append(projectName.trim()).toString());
+                ((Text)ReflectionUtils.getFieldValue(getLocationArea(), "locationPathField")).setText(location.toString());
         }
         
 		public ProjectContentsLocationArea getLocationArea() {

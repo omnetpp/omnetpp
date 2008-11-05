@@ -553,6 +553,7 @@ public class MakemakeOptionsPanel extends Composite {
                 defaultTargetNameRadionButton.setEnabled(type!=Type.NOLINK);
                 specifyTargetNameRadioButton.setEnabled(type!=Type.NOLINK);
                 targetNameText.setEnabled(specifyTargetNameRadioButton.getSelection() && type!=Type.NOLINK);
+                //TODO: outputDirText.setEnabled(type!=Type.NOLINK && !isExcluded);
                 exportLibraryCheckbox.setEnabled(type==Type.STATICLIB || type==Type.SHAREDLIB);
                 userInterfaceCombo.setEnabled(targetExecutableRadioButton.getSelection());
                 useExportedLibsCheckbox.setEnabled(type==Type.EXE || type==Type.SHAREDLIB);
