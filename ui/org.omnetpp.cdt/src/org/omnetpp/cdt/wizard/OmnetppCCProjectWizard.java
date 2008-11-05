@@ -42,6 +42,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
 import org.eclipse.ui.internal.ide.dialogs.ProjectContentsLocationArea;
 import org.omnetpp.cdt.Activator;
+import org.omnetpp.cdt.makefile.BuildSpecification;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.ui.GenericTreeContentProvider;
 import org.omnetpp.common.ui.GenericTreeNode;
@@ -322,9 +323,9 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
         final IProjectTemplate template = templatePage.getSelectedTemplate();
         WorkspaceModifyOperation op = new WorkspaceModifyOperation() {
             protected void execute(IProgressMonitor monitor) throws CoreException {
-                
-                // the OMNeT++ nature is always added
+                // add OMNeT++ nature and a default .buildspec file (templates may overwrite it)
                 ProjectUtils.addOmnetppNature(project, monitor);
+                BuildSpecification.createInitial(project).save();
 
                 // apply template: this may create files, set project properties, configure the CDT project, etc.
                 if (template != null)

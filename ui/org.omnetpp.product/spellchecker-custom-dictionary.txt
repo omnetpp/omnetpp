@@ -286,3 +286,4 @@ lingo
 namespace
 misconfiguration
 subdirtree
+buildspec

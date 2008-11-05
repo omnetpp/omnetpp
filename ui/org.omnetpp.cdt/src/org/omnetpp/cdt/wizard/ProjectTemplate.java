@@ -226,7 +226,13 @@ public abstract class ProjectTemplate implements IProjectTemplate {
         CoreModel.getDefault().setProjectDescription(project, projectDescription);
     }
 
-    
+    /**
+     * Creates a default build spec (project root being makemake folder)
+     */
+    protected void createDefaultBuildSpec() throws CoreException {
+        BuildSpecification.createInitial(getProject()).save();
+    }
+
     /**
      * Sets the makemake options on the given project. Array must contain folderPath1, options1, 
      * folderPath2, options2, etc.
@@ -234,7 +240,7 @@ public abstract class ProjectTemplate implements IProjectTemplate {
     protected void createBuildSpec(String[] pathsAndMakemakeOptions) throws CoreException {
         Assert.isTrue(pathsAndMakemakeOptions.length%2 == 0);
         IProject project = getProject();
-        BuildSpecification buildSpec = BuildSpecification.createInitial(project);
+        BuildSpecification buildSpec = BuildSpecification.createBlank(project);
         for (int i=0; i<pathsAndMakemakeOptions.length; i+=2) {
             String folderPath = pathsAndMakemakeOptions[i];
             String args = pathsAndMakemakeOptions[i+1];
