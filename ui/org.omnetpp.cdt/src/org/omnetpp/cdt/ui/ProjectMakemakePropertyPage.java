@@ -563,7 +563,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
     protected FolderInfo calculateFolderInfo(IContainer folder) {
         FolderInfo info = new FolderInfo();
 
-        // variables
+        // useful variables
         IProject project = getProject();
         ICProjectDescription projectDescription = CDTPropertyManager.getProjectDescription(project);
         ICConfigurationDescription configuration = projectDescription.getActiveConfiguration();
@@ -572,7 +572,9 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         boolean isSrcFolder = CDTUtils.getSourceEntryFor(folder, sourceEntries)!=null;
         boolean isSourceLocation = CDTUtils.getSourceLocations(project, sourceEntries).contains(folder);
         boolean isUnderSourceLocation = CDTUtils.getSourceEntryThatCovers(folder, sourceEntries) != null;
-        boolean isBuildRoot = false; //FIXME 
+        String buildLocation = configuration.getBuildSetting().getBuilderCWD().toString();
+        IContainer buildFolder = resolveFolderLocation(buildLocation, project, configuration);
+        boolean isBuildRoot = folder.equals(buildFolder); 
         int makeType = buildSpec.getFolderMakeType(folder);
 
         // find which makefile covers this folder (ignoring makefile type and scope for now)
@@ -767,29 +769,30 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
 
         // check if build directory exists, and there's a makefile in it
         String buildLocation = activeConfiguration.getBuildSetting().getBuilderCWD().toString();
-        try {
-            buildLocation = CdtVariableManager.getDefault().resolveValue(buildLocation, "[unknown-macro]", ",", activeConfiguration);
-        }
-        catch (CdtVariableException e) {
-            Activator.logError("Cannot resolve macros in build directory spec "+buildLocation, e);
-        }
-        IContainer[] buildFolderPossibilities = ResourcesPlugin.getWorkspace().getRoot().findContainersForLocation(new Path(buildLocation));
-        if (buildFolderPossibilities.length == 0)
-            return "Build location \""+ buildLocation + "\" does not map to any folder in the workspace. Check the C/C++ Build page.";
-        IContainer buildFolder = null;
-        for (IContainer f : buildFolderPossibilities)
-            if (buildSpec.getMakeFolders().contains(f))
-                buildFolder = f;
-        if (buildFolder == null) {
-            List<String> tmp = new ArrayList<String>();
-            for (IContainer f : buildFolderPossibilities)
-                tmp.add(f.getFullPath().toString());
-            return "No makefile specified for root build folder " + StringUtils.join(tmp, " or ")+ " (see C/C++ Build page).";
-        }
+        IContainer buildFolder = resolveFolderLocation(buildLocation, project, activeConfiguration);
+        if (buildFolder == null)
+            return "Wrong build location: filesystem location \""+ buildLocation + "\" does not exist, or does not map to any folder in the workspace. Check the C/C++ Build page."; //FIXME also print what macro gets resolved to
+        if (!buildSpec.getMakeFolders().contains(buildFolder))
+            return "No makefile specified for root build folder " + buildFolder.getFullPath().toString();
 
         return null;
     }
 
+    protected static IContainer resolveFolderLocation(String location, IProject withinProject, ICConfigurationDescription configuration) {
+        try {
+            location = CdtVariableManager.getDefault().resolveValue(location, "[unknown-macro]", ",", configuration);
+        }
+        catch (CdtVariableException e) {
+            Activator.logError("Cannot resolve macros in build directory spec "+location, e);
+        }
+        IContainer[] folderPossibilities = ResourcesPlugin.getWorkspace().getRoot().findContainersForLocation(new Path(location));
+        IContainer folder = null;
+        for (IContainer f : folderPossibilities)
+            if (f.getProject().equals(withinProject))
+                folder = f;
+        return folder;
+    }
+    
     /**
      * The resource for which the Properties dialog was brought up.
      */
