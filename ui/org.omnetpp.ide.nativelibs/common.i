@@ -13,6 +13,12 @@
 %include "commondefs.i"
 %include "loadlib.i"
 %include "std_string.i"
+%include "std_vector.i"
+
+namespace std {
+   %template(StringVector) vector<string>;
+   %template(PStringVector) vector<const char *>;
+}
 
 // hide export/import macros from swig
 #define COMMON_API

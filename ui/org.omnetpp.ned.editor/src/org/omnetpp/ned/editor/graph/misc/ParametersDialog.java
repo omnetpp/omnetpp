@@ -1,8 +1,12 @@
 package org.omnetpp.ned.editor.graph.misc;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -52,6 +56,8 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.engine.PStringVector;
+import org.omnetpp.common.engine.UnitConversion;
 import org.omnetpp.common.properties.EnumCellEditor;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverTextProvider;
@@ -101,7 +107,6 @@ public class ParametersDialog extends TitleAreaDialog {
     private static final String[] COLUMNS = new String[] {COLUMN_TYPE, COLUMN_NAME, COLUMN_UNIT, COLUMN_VALUE, COLUMN_COMMENT};
     private static final String[] INTERFACE_TYPE_COLUMNS = new String[] {COLUMN_TYPE, COLUMN_NAME, COLUMN_UNIT, COLUMN_COMMENT};
     private static final String[] TYPES = new String[] {"bool", "int", "double", "string", "xml", "volatile bool", "volatile int", "volatile double", "volatile string", "volatile xml"};
-    private static final String[] UNITS = new String[] {"", "s (second)", "bps (bit/second)", "B (byte)", "b (bit)", "m (meter)", "W (watt)", "Hz (hertz)", "g (gramm)", "J (joule)", "V (volt)", "A (amper)"};
 
     private static final String DEFAULT_TYPE = "int";
     private static final String VOLATILE_PARAMETER_PREFIX = "volatile";
@@ -612,7 +617,8 @@ public class ParametersDialog extends TitleAreaDialog {
     @Override
     protected Control createDialogArea(Composite parent) {
         setTitle(dialogTitle);
-        setMessage("Add, remove or modify parameter type, name and value.");
+        String description = parameterProvider.getReadableTagName() + (parameterProvider instanceof IHasName ? " called " + ((IHasName)parameterProvider).getName() : "");
+        setMessage("Add, remove or modify parameter type, name and value of the " + description);
 
         // page group
         Composite dialogArea = (Composite)super.createDialogArea(parent);
@@ -817,12 +823,13 @@ public class ParametersDialog extends TitleAreaDialog {
         
         // edit support
         final CellEditor[] editors;
+        String[] units = getUnitNames();
         if (parameterProvider instanceof IInterfaceTypeElement) {
             tableViewer.setColumnProperties(INTERFACE_TYPE_COLUMNS);
             editors = new CellEditor[] {
                 new LocalEnumCellEditor(table, TYPES, TYPES),
                 new LocalTableTextCellEditor(tableViewer, 1),
-                new LocalEditableComboBoxCellEditor(table, UNITS, getUnitValues(UNITS)),
+                new LocalEditableComboBoxCellEditor(table, units, getUnitValues(units)),
                 new LocalTableTextCellEditor(tableViewer, 3)
             };
         }
@@ -831,7 +838,7 @@ public class ParametersDialog extends TitleAreaDialog {
             editors = new CellEditor[] {
                 new LocalEnumCellEditor(table, TYPES, TYPES),
                 new LocalTableTextCellEditor(tableViewer, 1),
-                new LocalEditableComboBoxCellEditor(table, UNITS, getUnitValues(UNITS)),
+                new LocalEditableComboBoxCellEditor(table, units, getUnitValues(units)),
                 new LocalTableTextCellEditor(tableViewer, 3),
                 new LocalTableTextCellEditor(tableViewer, 4)
             };
@@ -939,6 +946,26 @@ public class ParametersDialog extends TitleAreaDialog {
         return resultCommand;
     }
     
+    private String[] getUnitNames() {
+        Set<String> unitNames = new HashSet<String>();
+        PStringVector units =  UnitConversion.getAllUnits();
+        unitNames.add("");
+
+        for (int i = 0; i < units.size(); i++) {
+            String unit = UnitConversion.getBaseUnit(units.get(i));
+            String unitName = UnitConversion.getLongName(unit);
+            unitNames.add(unit + " (" + unitName + ")");
+        }
+
+        String[] result = unitNames.toArray(new String[0]);
+        Arrays.sort(result, new Comparator<String>() {
+            public int compare(String s1, String s2) {
+                return s1.compareToIgnoreCase(s2);
+            }
+        });
+        return result;
+    }
+
     private String[] getUnitValues(String[] unitsWithFullName) {
         String[] units = new String[unitsWithFullName.length];
 
