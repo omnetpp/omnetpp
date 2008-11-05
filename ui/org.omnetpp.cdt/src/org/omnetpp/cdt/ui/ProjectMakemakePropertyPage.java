@@ -582,17 +582,27 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         for (IContainer f = folder.getParent(); !(f instanceof IWorkspaceRoot) && !CDTUtils.isExcluded(f, sourceEntries); f = f.getParent())
             if (buildSpec.getMakeFolders().contains(f)) {
                 parentMakefileFolder = f; break;}
-        
-        boolean notInvoked = false;
-        if (makeType != BuildSpecification.NONE) {
-            // fill in notInvoked 
-            int parentMakefileType = buildSpec.getFolderMakeType(parentMakefileFolder);
-            MakemakeOptions parentMakeOptions = buildSpec.getMakemakeOptions(parentMakefileFolder);
-            //FIXME TODO...
-            //if (parentMakefileType == )
+        int parentMakeFolderType = buildSpec.getFolderMakeType(parentMakefileFolder);
+        MakemakeOptions parentMakeOptions = buildSpec.getMakemakeOptions(parentMakefileFolder);
+
+        // check reachability
+        boolean isReachable;
+        if (makeType == BuildSpecification.NONE)
+            isReachable = false; // no makefile here, so we don't care
+        else if (isBuildRoot)
+            isReachable = true;  // build root is reachable
+        else if (parentMakefileFolder == null)
+            isReachable = false;  // no parent makefile
+        else if (parentMakeFolderType == BuildSpecification.CUSTOM)
+            isReachable = true;  // we assume that the custom makefile is written well
+        else if (parentMakeOptions.metaRecurse)
+            isReachable = true;  // OK
+        else {
+            String subpath = "bubu"; //FIXME
+            isReachable = parentMakeOptions.submakeDirs.contains(subpath);
         }
 
-        //TODO only call MetaMakemake once
+        //FIXME only call MetaMakemake once
 
         //
         // CALCULATE LABEL
@@ -650,7 +660,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
                 Activator.logError(e);
             }
 
-            if (notInvoked) {
+            if (!isReachable) {
                 comments = "<p>WARNING: This makefile never gets invoked"; 
                 hasWarning = true;
             }
@@ -673,7 +683,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
                 comments = "<p>WARNING: Custom makefile \"Makefile\" missing"; 
                 hasWarning = true;
             }
-            if (notInvoked) {
+            if (!isReachable) {
                 comments = "<p>WARNING: This makefile never gets invoked"; 
                 hasWarning = true;
             }
@@ -693,13 +703,13 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
                 comments = "<p>WARNING: This is a source folder, but it is not covered by any makefile. Is this intentional?";
                 hasWarning = true;
             }
-            else if (buildSpec.getFolderMakeType(parentMakefileFolder)==BuildSpecification.CUSTOM) 
+            else if (parentMakeFolderType==BuildSpecification.CUSTOM) 
                 comments = "<p>This source folder is supposed to be covered by the custom makefile in " + parentMakefileFolder.getFullPath();
-            else if (buildSpec.getFolderMakeType(parentMakefileFolder)==BuildSpecification.MAKEMAKE && !buildSpec.getMakemakeOptions(parentMakefileFolder).isDeep) { 
+            else if (parentMakeFolderType==BuildSpecification.MAKEMAKE && !buildSpec.getMakemakeOptions(parentMakefileFolder).isDeep) { 
                 comments = "<p>WARNING: This is a source folder but it is not covered by any makefile, because the generated makefile in " + parentMakefileFolder.getFullPath() + " is not deep. Is this intentional?";
                 hasWarning = true;
             }
-            else if (buildSpec.getFolderMakeType(parentMakefileFolder)==BuildSpecification.MAKEMAKE) 
+            else if (parentMakeFolderType==BuildSpecification.MAKEMAKE) 
                 comments = "<p>This source folder is covered by the generated makefile in " + parentMakefileFolder.getFullPath(); 
             else 
                 Activator.logError(new AssertionFailedException("Tooltip logic error"));
