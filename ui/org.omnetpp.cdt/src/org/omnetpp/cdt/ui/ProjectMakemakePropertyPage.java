@@ -113,6 +113,13 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
     protected Button customMakeButton;
     protected Button noMakeButton;
 
+    protected static class FolderInfo {
+        String label;
+        Image image;
+        String tooltipBody;
+    }
+    protected Map<IContainer, FolderInfo> folderInfoCache = new HashMap<IContainer, FolderInfo>();
+    
     /**
      * Constructor.
      */
@@ -238,30 +245,14 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         
         treeViewer.setLabelProvider(new LabelProvider() {
             public Image getImage(Object element) {
-                if (!(element instanceof IContainer))
-                    return null;
-
-                IContainer folder = (IContainer)element;
-                ICProjectDescription projectDescription = CDTPropertyManager.getProjectDescription(getProject());
-                ICConfigurationDescription configuration = projectDescription.getActiveConfiguration();
-                boolean isSrcFolder = CDTUtils.getSourceEntryFor(folder, configuration.getSourceEntries())!=null;
-                boolean isExcluded = CDTUtils.isExcluded(folder, configuration.getSourceEntries());
-                String imagePath = isSrcFolder ? SOURCE_FOLDER_IMG : !isExcluded ? SOURCE_SUBFOLDER_IMG : NONSRC_FOLDER_IMG;
-
-                int makeType = buildSpec.getFolderMakeType(folder);
-                String overlayImagePath = null; 
-                switch (makeType) {
-                    case BuildSpecification.MAKEMAKE: overlayImagePath = OVR_MAKEMAKE_IMG; break;
-                    case BuildSpecification.CUSTOM: overlayImagePath = OVR_CUSTOMMAKE_IMG; break;
-                    case BuildSpecification.NONE: overlayImagePath = null; break;
-                }
-                return Activator.getCachedDecoratedImage(imagePath, overlayImagePath, SWT.END, SWT.END);
-                //test: return Activator.getCachedDecoratedImage(imagePath, new String[] {overlayImagePath, OVR_WARNING_IMG, OVR_BUILDROOT_IMG}, new int[]{SWT.END, SWT.BEGINNING, SWT.BEGINNING}, new int[]{SWT.END, SWT.END, SWT.BEGINNING});
+                if (element instanceof IContainer)
+                    return getFolderInfo((IContainer)element).image;
+                return null;
             }
 
             public String getText(Object element) {
                 if (element instanceof IContainer)
-                    return getLabelFor((IContainer) element);
+                    return getFolderInfo((IContainer)element).label;
                 return element.toString();
             }
         });
@@ -285,7 +276,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
                 Item item = treeViewer.getTree().getItem(new Point(x,y));
                 Object element = item==null ? null : item.getData();
                 if (element instanceof IContainer)
-                    return getFolderHoverText((IContainer)element);
+                    return HoverSupport.addHTMLStyleSheet(getFolderInfo((IContainer)element).tooltipBody);
                 return null;
             }
         });
@@ -325,131 +316,6 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         
         updatePageState();
         return composite;
-    }
-
-    protected String getLabelFor(IContainer folder) {
-        String result = folder.getName();
-
-        if (buildSpec.getFolderMakeType(folder)==BuildSpecification.MAKEMAKE) {
-            MakemakeOptions options = buildSpec.getMakemakeOptions(folder);
-            
-            String target = options.target == null ? folder.getProject().getName() : options.target;
-            switch (options.type) {
-                case NOLINK: target = null; break;
-                case EXE: target += " (executable)"; break;
-                case SHAREDLIB: target += " (dynamic lib)"; break;
-                case STATICLIB: target += " (static lib)"; break;
-            }
-
-            ICProjectDescription projectDescription = CDTPropertyManager.getProjectDescription(folder.getProject());
-            ICConfigurationDescription configuration = projectDescription.getActiveConfiguration();
-            boolean isExcluded = CDTUtils.isExcluded(folder, configuration.getSourceEntries());
-
-            result += 
-                ": makemake (" + 
-                (isExcluded ? "no src" : options.isDeep ? "deep" : "shallow") + ", "+ 
-                (options.metaRecurse ? "recurse" : "no-recurse") + ")" +
-                (target==null ? "" : " --> " + target);
-        }
-        if (buildSpec.getFolderMakeType(folder)==BuildSpecification.CUSTOM) {
-            result += ": custom makefile";
-        }
-        return result;
-    }
-
-    protected String getFolderHoverText(IContainer folder) {
-        IProject project = folder.getProject();
-        ICProjectDescription projectDescription = CDTPropertyManager.getProjectDescription(project);
-        ICConfigurationDescription configuration = projectDescription.getActiveConfiguration();
-        ICSourceEntry[] sourceEntries = configuration.getSourceEntries();
-
-        boolean isSourceLocation = CDTUtils.getSourceLocations(project, sourceEntries).contains(folder);
-        boolean isExcluded = CDTUtils.isExcluded(folder, sourceEntries);
-        boolean isUnderSourceLocation = CDTUtils.getSourceEntryThatCovers(folder, sourceEntries) != null;
-        int makeType = buildSpec.getFolderMakeType(folder);
-
-        String folderTypeText = "";
-        if (isSourceLocation)
-            folderTypeText = "source location";
-        else if (isExcluded)
-            folderTypeText = "excluded from build";
-        else
-            folderTypeText = "source folder";
-
-        String what = null;
-        String comments = "";
-
-        // find which makefile covers this folder (ignoring makefile type and scope for now)
-        IContainer parentMakefileFolder = null;
-        for (IContainer f = folder.getParent(); !(f instanceof IWorkspaceRoot) && !CDTUtils.isExcluded(f, sourceEntries); f = f.getParent())
-            if (buildSpec.getMakeFolders().contains(f)) {
-                parentMakefileFolder = f; break;}
-        int parentMakefileType = buildSpec.getFolderMakeType(parentMakefileFolder);
-        MakemakeOptions parentMakeOptions = buildSpec.getMakemakeOptions(parentMakefileFolder);
-
-        if (makeType==BuildSpecification.MAKEMAKE) {
-            what = folderTypeText + "; makefile generation enabled";
-            
-            MakemakeOptions options = buildSpec.getMakemakeOptions(folder);
-            List<String> submakeDirs = null;
-            List<String> sourceDirs = null;
-            try {
-                //TODO this may take a long time (if dependency-cache is empty)
-                MakemakeOptions translatedOptions = MetaMakemake.translateOptions(folder, options, buildSpec.getMakeFolders(), configuration);
-                submakeDirs = translatedOptions.submakeDirs;
-                sourceDirs = new Makemake().getSourceDirs(folder, translatedOptions);
-            }
-            catch (CoreException e) {
-                Activator.logError(e);
-            }
-            
-            if (submakeDirs != null && sourceDirs != null) { // i.e. there was no error above
-                comments += "<p>Invokes make in: " + StringUtils.defaultIfEmpty(StringUtils.join(submakeDirs, ", "), "-");
-                if (submakeDirs.size() > 2)
-                    comments += "<p>HINT: To control invocation order, add dependency rules between subdir targets to the Makefrag file (on the Custom page of the Makemake Options dialog)";
-                comments += "<p>Compiles files in the following folders: " + StringUtils.defaultIfEmpty(StringUtils.join(sourceDirs, ", "), "-"); 
-            }
-            if (folder instanceof IProject && !isExcluded && buildSpec.getMakeFolders().size()>1)  
-                comments = 
-                    "<p>HINT: You may want to exclude this (project root) folder from build, " +
-                    "and leave compilation to subdirectory makefiles.";
-            //FIXME warning if no parent invokes this (and not buildroot)
-        }
-        else if (makeType==BuildSpecification.CUSTOM) {
-            what = folderTypeText + "; custom makefile";
-            //TODO "Should invoke make in:" / "Should compile the following folders"
-            IFile makefile = folder.getFile(new Path("Makefile")); //XXX Makefile.vc?
-            if (!makefile.exists())
-                comments = "<p>WARNING: Custom makefile \"Makefile\" missing";
-            else if (isExcluded)
-                comments = 
-                    "<p>Note: The makefile is not supposed to compile any (potentially existing) source files " +
-                    "from this folder, because the folder is excluded from build. However, it may " +
-                    "invoke other makefiles, may create executables or libraries by invoking the linker, " +
-                    "or may contain other kinds of targets.";
-            //FIXME warning if no parent invokes this (and not buildroot)
-        }
-        else if (makeType==BuildSpecification.NONE) {
-            what = folderTypeText; // + "; no makefile";
-
-            if (isExcluded)
-                /*NOP*/;
-            else if (parentMakefileFolder == null) 
-                comments = "<p>WARNING: This is a source folder, but it is not covered by any makefile. Is this intentional?";
-            else if (buildSpec.getFolderMakeType(parentMakefileFolder)==BuildSpecification.CUSTOM) 
-                comments = "<p>This source folder is supposed to be covered by the custom makefile in " + parentMakefileFolder.getFullPath();
-            else if (buildSpec.getFolderMakeType(parentMakefileFolder)==BuildSpecification.MAKEMAKE && !buildSpec.getMakemakeOptions(parentMakefileFolder).isDeep) 
-                comments = "<p>WARNING: This is a source folder but it is not covered by any makefile, because the generated makefile in " + parentMakefileFolder.getFullPath() + " is not deep. Is this intentional?";
-            else if (buildSpec.getFolderMakeType(parentMakefileFolder)==BuildSpecification.MAKEMAKE) 
-                comments = "<p>This source folder is covered by the generated makefile in " + parentMakefileFolder.getFullPath(); 
-            else 
-                Activator.logError(new AssertionFailedException("Tooltip logic error"));
-        }
-
-        String result = "<b>" + folder.getFullPath() + "</b> (" + what + ")";
-        if (!StringUtils.isEmpty(comments))
-            result += comments;
-        return HoverSupport.addHTMLStyleSheet(result);
     }
 
     protected void setFolderMakeType(IContainer folder, int makeType) {
@@ -580,6 +446,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         updatePageState();
     }
 
+    // currently unused (we don't want to encourage the user to mess with CDT settings directly)
     protected void gotoPathsAndSymbolsPage() {
         IPreferencePageContainer container = getContainer();
         if (container instanceof PropertyDialog)
@@ -626,10 +493,12 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
     }
 
     protected void updatePageState() {
-        // display warnings about CDT misconfiguration, etc 
+        // display warnings about CDT misconfiguration, etc
+        //FIXME if we find something fishy, stop here
         String message = getDiagnosticMessage(getProject(), buildSpec);
         setDiagnosticMessage(message);
         
+        folderInfoCache.clear();
         treeViewer.refresh();
         
         // if there's no tree selection, disable all buttons
@@ -680,6 +549,167 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
 
     protected boolean isDirty() {
         return false;
+    }
+
+    protected FolderInfo getFolderInfo(IContainer folder) {
+        FolderInfo info = folderInfoCache.get(folder);
+        if (info == null) {
+            info = calculateFolderInfo(folder);
+            folderInfoCache.put(folder, info);
+        }
+        return info;
+    }
+    
+    protected FolderInfo calculateFolderInfo(IContainer folder) {
+        FolderInfo info = new FolderInfo();
+
+        // variables
+        IProject project = getProject();
+        ICProjectDescription projectDescription = CDTPropertyManager.getProjectDescription(project);
+        ICConfigurationDescription configuration = projectDescription.getActiveConfiguration();
+        ICSourceEntry[] sourceEntries = configuration.getSourceEntries();
+        boolean isExcluded = CDTUtils.isExcluded(folder, sourceEntries);
+        boolean isSrcFolder = CDTUtils.getSourceEntryFor(folder, sourceEntries)!=null;
+        boolean isSourceLocation = CDTUtils.getSourceLocations(project, sourceEntries).contains(folder);
+        boolean isUnderSourceLocation = CDTUtils.getSourceEntryThatCovers(folder, sourceEntries) != null;
+        boolean isBuildRoot = false; //FIXME 
+        int makeType = buildSpec.getFolderMakeType(folder);
+
+        // find which makefile covers this folder (ignoring makefile type and scope for now)
+        IContainer parentMakefileFolder = null;
+        for (IContainer f = folder.getParent(); !(f instanceof IWorkspaceRoot) && !CDTUtils.isExcluded(f, sourceEntries); f = f.getParent())
+            if (buildSpec.getMakeFolders().contains(f)) {
+                parentMakefileFolder = f; break;}
+        int parentMakefileType = buildSpec.getFolderMakeType(parentMakefileFolder);
+        MakemakeOptions parentMakeOptions = buildSpec.getMakemakeOptions(parentMakefileFolder);
+
+        //
+        // CALCULATE LABEL
+        //
+        String label = folder.getName();
+        if (makeType==BuildSpecification.MAKEMAKE) {
+            MakemakeOptions options = buildSpec.getMakemakeOptions(folder);
+            
+            String target = options.target == null ? project.getName() : options.target;
+            switch (options.type) {
+                case NOLINK: target = null; break;
+                case EXE: target += " (executable)"; break;
+                case SHAREDLIB: target += " (dynamic lib)"; break;
+                case STATICLIB: target += " (static lib)"; break;
+            }
+
+            label += 
+                ": makemake (" + 
+                (isExcluded ? "no src" : options.isDeep ? "deep" : "shallow") + ", "+ 
+                (options.metaRecurse ? "recurse" : "no-recurse") + ")" +
+                (target==null ? "" : " --> " + target);
+        }
+        if (makeType==BuildSpecification.CUSTOM) {
+            label += ": custom makefile";
+        }
+        info.label = label;
+
+        //
+        // CALCULATE HOVER TEXT
+        //
+        String folderTypeText = "";
+        if (isSourceLocation)
+            folderTypeText = "source location";
+        else if (isExcluded)
+            folderTypeText = "excluded from build";
+        else
+            folderTypeText = "source folder";
+
+        String what = null;
+        String comments = "";
+        boolean hasWarning = false;
+
+        if (makeType==BuildSpecification.MAKEMAKE) {
+            what = folderTypeText + "; makefile generation enabled";
+            
+            MakemakeOptions options = buildSpec.getMakemakeOptions(folder);
+            List<String> submakeDirs = null;
+            List<String> sourceDirs = null;
+            try {
+                //TODO this may take a long time (if dependency-cache is empty)
+                MakemakeOptions translatedOptions = MetaMakemake.translateOptions(folder, options, buildSpec.getMakeFolders(), configuration);
+                submakeDirs = translatedOptions.submakeDirs;
+                sourceDirs = new Makemake().getSourceDirs(folder, translatedOptions);
+            }
+            catch (CoreException e) {
+                Activator.logError(e);
+            }
+            
+            if (submakeDirs != null && sourceDirs != null) { // i.e. there was no error above
+                comments += "<p>Invokes make in: " + StringUtils.defaultIfEmpty(StringUtils.join(submakeDirs, ", "), "-");
+                if (submakeDirs.size() > 2)
+                    comments += "<p>HINT: To control invocation order, add dependency rules between subdir targets to the Makefrag file (on the Custom page of the Makemake Options dialog)";
+                comments += "<p>Compiles files in the following folders: " + StringUtils.defaultIfEmpty(StringUtils.join(sourceDirs, ", "), "-"); 
+            }
+            if (folder instanceof IProject && !isExcluded && buildSpec.getMakeFolders().size()>1)  
+                comments = 
+                    "<p>HINT: You may want to exclude this (project root) folder from build, " +
+                    "and leave compilation to subdirectory makefiles.";
+            //FIXME warning if no parent invokes this (and not buildroot)
+        }
+        else if (makeType==BuildSpecification.CUSTOM) {
+            what = folderTypeText + "; custom makefile";
+            //TODO "Should invoke make in:" / "Should compile the following folders"
+            IFile makefile = folder.getFile(new Path("Makefile")); //XXX Makefile.vc?
+            if (!makefile.exists()) {
+                comments = "<p>WARNING: Custom makefile \"Makefile\" missing"; 
+                hasWarning = true;
+            }
+            else if (isExcluded)
+                comments = 
+                    "<p>Note: The makefile is not supposed to compile any (potentially existing) source files " +
+                    "from this folder, because the folder is excluded from build. However, it may " +
+                    "invoke other makefiles, may create executables or libraries by invoking the linker, " +
+                    "or may contain other kinds of targets.";
+            //FIXME warning if no parent invokes this (and not buildroot)
+        }
+        else if (makeType==BuildSpecification.NONE) {
+            what = folderTypeText; // + "; no makefile";
+
+            if (isExcluded)
+                /*NOP*/;
+            else if (parentMakefileFolder == null) {
+                comments = "<p>WARNING: This is a source folder, but it is not covered by any makefile. Is this intentional?";
+                hasWarning = true;
+            }
+            else if (buildSpec.getFolderMakeType(parentMakefileFolder)==BuildSpecification.CUSTOM) 
+                comments = "<p>This source folder is supposed to be covered by the custom makefile in " + parentMakefileFolder.getFullPath();
+            else if (buildSpec.getFolderMakeType(parentMakefileFolder)==BuildSpecification.MAKEMAKE && !buildSpec.getMakemakeOptions(parentMakefileFolder).isDeep) { 
+                comments = "<p>WARNING: This is a source folder but it is not covered by any makefile, because the generated makefile in " + parentMakefileFolder.getFullPath() + " is not deep. Is this intentional?";
+                hasWarning = true;
+            }
+            else if (buildSpec.getFolderMakeType(parentMakefileFolder)==BuildSpecification.MAKEMAKE) 
+                comments = "<p>This source folder is covered by the generated makefile in " + parentMakefileFolder.getFullPath(); 
+            else 
+                Activator.logError(new AssertionFailedException("Tooltip logic error"));
+        }
+
+        String result = "<b>" + folder.getFullPath() + "</b> (" + what + ")";
+        if (!StringUtils.isEmpty(comments))
+            result += comments;
+        info.tooltipBody = result;
+        
+        //
+        // CALCULATE IMAGE
+        //
+        String imagePath = isSrcFolder ? SOURCE_FOLDER_IMG : !isExcluded ? SOURCE_SUBFOLDER_IMG : NONSRC_FOLDER_IMG;
+        String overlayImagePath = null; 
+        switch (makeType) {
+            case BuildSpecification.MAKEMAKE: overlayImagePath = OVR_MAKEMAKE_IMG; break;
+            case BuildSpecification.CUSTOM: overlayImagePath = OVR_CUSTOMMAKE_IMG; break;
+            case BuildSpecification.NONE: overlayImagePath = null; break;
+        }
+        info.image = Activator.getCachedDecoratedImage(imagePath, 
+                new String[] {overlayImagePath, hasWarning ? OVR_WARNING_IMG : null, isBuildRoot ? OVR_BUILDROOT_IMG : null}, 
+                new int[]{SWT.END, SWT.BEGINNING, SWT.BEGINNING}, 
+                new int[]{SWT.END, SWT.END, SWT.BEGINNING});
+        
+        return info;
     }
 
     // note: this is shared with MakemakeFolderPropertyPage (not very pretty)
