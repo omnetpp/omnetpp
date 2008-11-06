@@ -1,4 +1,4 @@
-package org.omnetpp.ide.views;
+package org.omnetpp.ide.navigator;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.ui.IMemento;
@@ -16,18 +16,13 @@ public class OmnetppNavigatorLabelProvider extends WorkbenchLabelProvider implem
 	}
 
 	public String getDescription(Object anElement) {
-
+		// TODO add a little more description for the omnetpp specific files
 		if (anElement instanceof IResource) {
 			return ((IResource) anElement).getFullPath().makeRelative().toString();
 		}
 		return null;
 	}
 	
-	@Override
-	protected String decorateText(String input, Object element) {
-		return "x - "+super.decorateText(input, element);
-	}
-
 	public void restoreState(IMemento aMemento) { 
 		
 	}

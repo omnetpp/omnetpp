@@ -107,10 +107,10 @@
          point="org.eclipse.ui.navigator.navigatorContent">
       <navigatorContent
             activeByDefault="true"
-            contentProvider="org.omnetpp.ide.views.OmnetppNavigatorTreeContentProvider"
+            contentProvider="org.omnetpp.ide.navigator.OmnetppNavigatorTreeContentProvider"
             icon="icons/logo16.png"
             id="org.omnetpp.navigator.content"
-            labelProvider="org.omnetpp.ide.views.OmnetppNavigatorLabelProvider"
+            labelProvider="org.omnetpp.ide.navigator.OmnetppNavigatorLabelProvider"
             name="OMNeT++ Elements"
             priority="high">
        <enablement>
@@ -122,7 +122,31 @@
 			                 </test>
 			               </adapt>
        </enablement>
+       <override
+             policy="InvokeAlwaysRegardlessOfSuppressedExt"
+             suppressedExtensionId="org.eclipse.ui.navigator.resourceContent">
+       </override>
       </navigatorContent>
+      <commonFilter
+            activeByDefault="true"
+            class="org.omnetpp.ide.navigator.OmnetppGeneratedFilesFIlter"
+            description="All OMNeT++ generated temporary files (*.vci, *_m.cc, *_m.h)"
+            id="org.omnetpp.main.opp_tmp_file_filter"
+            name="OMNeT++ temporary files">
+         <filterExpression>
+         	<or>
+	            <adapt type="org.eclipse.core.resources.IFile">
+            		<test property="org.eclipse.core.resources.name" value="*.vci"/>
+            	</adapt>	            
+	            <adapt type="org.eclipse.core.resources.IFile">
+            		<test property="org.eclipse.core.resources.name" value="*_m.cc"/>
+            	</adapt>	            
+	            <adapt type="org.eclipse.core.resources.IFile">
+            		<test property="org.eclipse.core.resources.name" value="*_m.h"/>
+            	</adapt>	            
+	        </or>
+         </filterExpression>
+      </commonFilter>
    </extension>
   <extension
         point="org.eclipse.ui.navigator.viewer">

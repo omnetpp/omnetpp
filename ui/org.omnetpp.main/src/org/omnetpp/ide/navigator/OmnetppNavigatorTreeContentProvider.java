@@ -1,4 +1,4 @@
-package org.omnetpp.ide.views;
+package org.omnetpp.ide.navigator;
 
 import org.eclipse.ui.internal.navigator.resources.workbench.ResourceExtensionContentProvider;
 
