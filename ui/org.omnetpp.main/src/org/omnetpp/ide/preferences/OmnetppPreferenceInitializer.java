@@ -14,7 +14,7 @@ import org.omnetpp.ide.OmnetppMainPlugin;
  */
 public class OmnetppPreferenceInitializer extends AbstractPreferenceInitializer {
 	public void initializeDefaultPreferences() {
-		IPreferenceStore store = OmnetppMainPlugin.getDefault().getPreferenceStore();
+		IPreferenceStore store = OmnetppMainPlugin.getDefault().getConfigurationPreferenceStore();
 		store.setDefault(OmnetppPreferencePage.OMNETPP_ROOT, getOmnetppRootDefault());
 		store.setDefault(OmnetppPreferencePage.GRAPHVIZ_DOT_EXECUTABLE, getGraphvizDotExecutableDefault());
         store.setDefault(OmnetppPreferencePage.DOXYGEN_EXECUTABLE, getDoxygenExecutableDefault());

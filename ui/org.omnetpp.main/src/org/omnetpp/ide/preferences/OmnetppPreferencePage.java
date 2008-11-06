@@ -38,7 +38,7 @@ public class OmnetppPreferencePage
 
     public OmnetppPreferencePage() {
 		super(GRID);
-		setPreferenceStore(OmnetppMainPlugin.getDefault().getPreferenceStore());
+		setPreferenceStore(OmnetppMainPlugin.getDefault().getConfigurationPreferenceStore());
 		setDescription("Specify the directory where the Makefile.inc or configuser.vc are located. " +
 				"This is usually the root folder of the OMNeT++ installation.");
 	}

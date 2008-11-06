@@ -6,7 +6,10 @@ import java.util.Date;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.preferences.ConfigurationScope;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ide.preferences.OmnetppPreferencePage;
 import org.osgi.framework.BundleContext;
@@ -21,6 +24,8 @@ public class OmnetppMainPlugin extends AbstractUIPlugin {
 
 	// The shared instance
 	private static OmnetppMainPlugin plugin;
+
+	private ScopedPreferenceStore configPreferenceStore;
 	
 	/**
 	 * The constructor
@@ -46,11 +51,12 @@ public class OmnetppMainPlugin extends AbstractUIPlugin {
      * For use in the version check URL.
      */
     public static String getInstallDate() {
-        String installDate = getDefault().getPluginPreferences().getString("installDate");
+        String installDate = getDefault().getConfigurationPreferenceStore().getString("installDate");
         if (StringUtils.isEmpty(installDate)) {
             installDate = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
-            getDefault().getPluginPreferences().setValue("installDate", installDate);
-            getDefault().savePluginPreferences();
+            getDefault().getConfigurationPreferenceStore().setValue("installDate", installDate);
+            
+            // getDefault().savePluginPreferences();
         }
         return installDate;
     }
@@ -95,7 +101,7 @@ public class OmnetppMainPlugin extends AbstractUIPlugin {
 	 */
 	public static String getOmnetppRootDir() {
 		// FIXME do some fallback if not specified in the store (try the platformdir/.. at least)
-		return getDefault().getPreferenceStore().getString(OmnetppPreferencePage.OMNETPP_ROOT);
+		return getDefault().getConfigurationPreferenceStore().getString(OmnetppPreferencePage.OMNETPP_ROOT);
 	}
 	
 	public static String getOmnetppBinDir() {
@@ -113,4 +119,13 @@ public class OmnetppMainPlugin extends AbstractUIPlugin {
     	return new Path(getOmnetppRootDir()).append("lib").toOSString();
     }
 
+    public IPreferenceStore getConfigurationPreferenceStore() {
+        // Create the preference store lazily.
+        if (configPreferenceStore == null) {
+            configPreferenceStore = new ScopedPreferenceStore(new ConfigurationScope(),getBundle().getSymbolicName());
+
+        }
+        return configPreferenceStore;
+    }
+	
 }

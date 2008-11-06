@@ -69,7 +69,7 @@ public class OmnetppStartup implements IStartup {
             return;
 
         // skip this when version check was done recently
-        long lastCheckMillis = OmnetppMainPlugin.getDefault().getPluginPreferences().getLong("lastCheck");
+        long lastCheckMillis = OmnetppMainPlugin.getDefault().getConfigurationPreferenceStore().getLong("lastCheck");
         if (System.currentTimeMillis() - lastCheckMillis < VERSIONCHECK_INTERVAL_MILLIS)
             return;
         
@@ -99,7 +99,7 @@ public class OmnetppStartup implements IStartup {
         					}
         				}});
         		}
-        		OmnetppMainPlugin.getDefault().getPluginPreferences().setValue("lastCheck", System.currentTimeMillis());
+        		OmnetppMainPlugin.getDefault().getConfigurationPreferenceStore().setValue("lastCheck", System.currentTimeMillis());
         		return Status.OK_STATUS;
         	}
         };
@@ -108,8 +108,39 @@ public class OmnetppStartup implements IStartup {
     }
 
     /**
-     * Checks whether the given web page is available and contains something (i.e. is not empty).
+     * 
+     * @param url
+     * @return
      */
+//    public boolean isWebPageNotBlank(final String url) {
+//    	final boolean result[] = new boolean[1];
+//    	Display.getDefault().syncExec(new Runnable() {
+//			@Override
+//			public void run() {
+//				final Shell activeShell = Display.getDefault().getActiveShell();
+//				final Browser browser = new Browser(activeShell,SWT.NONE);  // FIXME getActiveShell can be null
+//				browser.setUrl("http://omnetppblsdsldlsl.org/noonsadn");
+//				System.out.println("setural");
+//				browser.addProgressListener(new ProgressAdapter() {
+//					@Override
+//					public void completed(ProgressEvent event) {
+//						System.out.println("**** completed");
+//						System.out.println("text="+browser.getText());
+//						System.out.println("display:" +Display.getCurrent());
+//						System.out.println("activeShel:"+activeShell);
+//						System.out.println("new active shell:"+Display.getDefault().getActiveShell());
+//					}
+//					
+//				});
+//			}
+//    		
+//    	});
+//    	return true;
+//    }
+    
+//    /**
+//     * Checks whether the given web page is available and contains something (i.e. is not empty).
+//     */
 //    public boolean isWebPageNotBlankJDK(String url) {
 //        try {
 //            byte[] buf = new byte[10];
