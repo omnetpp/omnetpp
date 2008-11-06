@@ -137,7 +137,7 @@ public class Makemake {
         if (options.projectDir != null)
             throw new MakemakeException("-P (--projectdir) option not supported, it is always the Eclipse project directory");
 
-        String omnetppRoot = OmnetppMainPlugin.getDefault().getPreferenceStore().getString(OmnetppPreferencePage.OMNETPP_ROOT);
+        String omnetppRoot = OmnetppMainPlugin.getOmnetppRootDir();
         if (StringUtils.isEmpty(omnetppRoot))
             throw new MakemakeException("OMNeT++ root must be set in Window|Preferences");
         String configFile = omnetppRoot + (isNMake ? "\\configuser.vc" : "/Makefile.inc");
