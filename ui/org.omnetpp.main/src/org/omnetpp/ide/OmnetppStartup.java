@@ -19,6 +19,7 @@ import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.swt.widgets.Display;
@@ -82,7 +83,7 @@ public class OmnetppStartup implements IStartup {
         //
         Job job = new Job("Version check") { 
         	public IStatus run(IProgressMonitor pm) {
-        		final String versionCheckURL = NewsView.VERSIONCHECK_URL + "?v=" + OmnetppMainPlugin.getVersion() + "," + OmnetppMainPlugin.getInstallDate();
+        		final String versionCheckURL = NewsView.VERSIONCHECK_URL + "?v=" + OmnetppMainPlugin.getVersion() + "," + OmnetppMainPlugin.getInstallDate()+","+Platform.getOS();
         		if (isWebPageNotBlank(versionCheckURL)) {
         			Display.getDefault().asyncExec(new Runnable() {
         				public void run() {
