@@ -103,6 +103,27 @@
          </perspectiveShortcut>
       </perspectiveExtension>
    </extension>
+   <extension
+         point="org.eclipse.ui.navigator.navigatorContent">
+      <navigatorContent
+            activeByDefault="true"
+            contentProvider="org.omnetpp.ide.views.OmnetppNavigatorTreeContentProvider"
+            icon="icons/logo16.png"
+            id="org.omnetpp.navigator.content"
+            labelProvider="org.omnetpp.ide.views.OmnetppNavigatorLabelProvider"
+            name="OMNeT++ Elements"
+            priority="high">
+       <enablement>
+			               <adapt
+			                     type="org.eclipse.core.resources.IResource">
+			                 <test
+			                     property="org.eclipse.core.resources.projectNature"
+			                     value="org.omnetpp.main.omnetppnature">
+			                 </test>
+			               </adapt>
+       </enablement>
+      </navigatorContent>
+   </extension>
   <extension
         point="org.eclipse.ui.navigator.viewer">
      <viewerContentBinding viewerId="org.eclipse.ui.navigator.ProjectExplorer">

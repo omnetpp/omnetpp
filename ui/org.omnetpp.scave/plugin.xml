@@ -73,9 +73,10 @@
   </extension>
   <extension
          point="org.eclipse.ui.navigator.navigatorContent">
-           <commonWizard 
-                 menuGroupId="org.eclipse.cdt.ui" 
-                 type="new" 
+           <commonWizard
+                 associatedExtensionId="org.omnetpp.navigator.content"
+                 menuGroupId="org.eclipse.cdt.ui"
+                 type="new"
                  wizardId="org.omnetpp.scave.wizard.ScaveModelModelWizardID">
                  <enablement>
                  	<and>
