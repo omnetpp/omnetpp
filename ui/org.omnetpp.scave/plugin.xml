@@ -61,9 +61,11 @@
      <wizard
            category="org.omnetpp.wizards"
            class="org.omnetpp.scave.wizard.ScaveModelWizard"
+           finalPerspective="org.omnetpp.main.OmnetppPerspective"
            icon="icons/newscavefile.png"
            id="org.omnetpp.scave.wizard.ScaveModelModelWizardID"
-           name="Analysis File (anf)">
+           name="Analysis File (anf)"
+           preferredPerspectives="org.omnetpp.main.OmnetppPerspective, org.eclipse.cdt.ui.CPerspective">
         <description>
            Create a new Analysis file that describes how charts and plottings should be created from recorded data.
         </description>

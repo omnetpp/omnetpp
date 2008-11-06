@@ -26,9 +26,11 @@
       <wizard
             category="org.omnetpp.wizards"
             class="org.omnetpp.ned.editor.wizards.NewNEDFileWizard"
+            finalPerspective="org.omnetpp.main.OmnetppPerspective"
             icon="icons/newnedfile.gif"
             id="org.omnetpp.ned.editor.wizard.new.file"
-            name="Network Description File (ned)">
+            name="Network Description File (ned)"
+            preferredPerspectives="org.omnetpp.main.OmnetppPerspective, org.eclipse.cdt.ui.CPerspective">
          <description>
             Create a file that contains network elements, like simple or compound modules, channels etc.
          </description>
@@ -36,9 +38,11 @@
       <wizard
             category="org.omnetpp.wizards"
             class="org.omnetpp.ned.editor.wizards.NewNedComponentWizard$NewSimpleModuleWizard"
+            finalPerspective="org.omnetpp.main.OmnetppPerspective"
             icon="icons/obj16/NewSimpleModule.png"
             id="org.omnetpp.ned.editor.wizard.new.simplemodule"
-            name="Simple Module">
+            name="Simple Module"
+            preferredPerspectives="org.omnetpp.main.OmnetppPerspective, org.eclipse.cdt.ui.CPerspective">
          <description>
             Create a new Simple module (NED and C++ files)
          </description>
@@ -46,9 +50,11 @@
       <wizard
             category="org.omnetpp.wizards"
             class="org.omnetpp.ned.editor.wizards.NewNedComponentWizard$NewCompoundModuleWizard"
+            finalPerspective="org.omnetpp.main.OmnetppPerspective"
             icon="icons/obj16/NewCompoundModule.png"
             id="org.omnetpp.ned.editor.wizard.new.compoundmodule"
-            name="Compound Module">
+            name="Compound Module"
+            preferredPerspectives="org.omnetpp.main.OmnetppPerspective, org.eclipse.cdt.ui.CPerspective">
          <description>
             Create a new Compound module 
          </description>
@@ -56,9 +62,11 @@
       <wizard
             category="org.omnetpp.wizards"
             class="org.omnetpp.ned.editor.wizards.NewNedComponentWizard$NewNetworkWizard"
+            finalPerspective="org.omnetpp.main.OmnetppPerspective"
             icon="icons/obj16/NewNetwork.png"
             id="org.omnetpp.ned.editor.wizard.new.network"
-            name="Network">
+            name="Network"
+            preferredPerspectives="org.omnetpp.main.OmnetppPerspective, org.eclipse.cdt.ui.CPerspective">
          <description>
             Create a new Network
          </description>

@@ -64,9 +64,11 @@
       <wizard
             category="org.omnetpp.wizards"
             class="org.omnetpp.msg.editor.wizard.NewMsgFileWizard"
+            finalPerspective="org.omnetpp.main.OmnetppPerspective"
             icon="icons/newmsgfile.gif"
             id="org.omnetpp.msg.editor.wizard.new.file"
-            name="Message Definition (msg)">
+            name="Message Definition (msg)"
+            preferredPerspectives="org.omnetpp.main.OmnetppPerspective, org.eclipse.cdt.ui.CPerspective">
          <description>
             Create a file that contains network elements, like simple or compound modules, channels etc.
          </description>

@@ -18,11 +18,13 @@
    <extension
          point="org.eclipse.ui.newWizards">
       <wizard
-            name="Initialization File (ini)"
-            icon="icons/newinifile.png"
             category="org.omnetpp.wizards"
             class="org.omnetpp.inifile.editor.wizards.NewInifileWizard"
-            id="org.omnetpp.inifile.editor.wizards.NewInifileWizard">
+            finalPerspective="org.omnetpp.main.OmnetppPerspective"
+            icon="icons/newinifile.png"
+            id="org.omnetpp.inifile.editor.wizards.NewInifileWizard"
+            name="Initialization File (ini)"
+            preferredPerspectives="org.omnetpp.main.OmnetppPerspective, org.eclipse.cdt.ui.CPerspective">
 
          <description>
             Create a file that contains simulation initalization parameters.
