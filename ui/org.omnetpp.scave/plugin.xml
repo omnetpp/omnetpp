@@ -78,21 +78,7 @@
                  menuGroupId="org.eclipse.cdt.ui"
                  type="new"
                  wizardId="org.omnetpp.scave.wizard.ScaveModelModelWizardID">
-                 <enablement>
-                 	<and>
-			               <adapt
-			                     type="org.eclipse.core.resources.IResource">
-			                 <test
-			                     property="org.eclipse.core.resources.projectNature"
-			                     value="org.omnetpp.main.omnetppnature">
-			                 </test>
-			               </adapt>
-                  			<not>
-                     			<instanceof value="org.eclipse.core.resources.IFile">
-                     			</instanceof>
-                  			</not>
-	             	</and>
-                 </enablement>
+              <enablement></enablement>
            </commonWizard>
   </extension>
   <extension
