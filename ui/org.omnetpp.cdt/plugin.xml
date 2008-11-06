@@ -318,12 +318,24 @@
          <newWizardShortcut
                id="org.omnetpp.cdt.wizard.omnetppCCProjectWizard">
          </newWizardShortcut>
+         <newWizardShortcut
+               id="org.omnetpp.ned.editor.wizard.new.simplemodule">
+         </newWizardShortcut>
       </perspectiveExtension>
       <perspectiveExtension
             targetID="org.eclipse.debug.ui.DebugPerspective">
          <perspectiveShortcut
                id="org.omnetpp.main.OmnetppPerspective">
          </perspectiveShortcut>
+      </perspectiveExtension>
+      <perspectiveExtension
+            targetID="org.omnetpp.main.OmnetppPerspective">
+         <perspectiveShortcut
+               id="org.eclipse.cdt.ui.CPerspective">
+         </perspectiveShortcut>
+         <newWizardShortcut
+               id="org.eclipse.cdt.ui.wizards.NewClassCreationWizard">
+         </newWizardShortcut>
       </perspectiveExtension>
    </extension>
    <extension

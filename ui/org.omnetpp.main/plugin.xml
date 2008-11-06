@@ -101,9 +101,6 @@
          <perspectiveShortcut
                id="org.omnetpp.main.OmnetppPerspective">
          </perspectiveShortcut>
-         <perspectiveShortcut
-               id="org.eclipse.cdt.ui.CPerspective">
-         </perspectiveShortcut>
       </perspectiveExtension>
    </extension>
   <extension
