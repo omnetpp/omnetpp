@@ -128,23 +128,45 @@
        </override>
       </navigatorContent>
       <commonFilter
-            activeByDefault="true"
-            class="org.omnetpp.ide.navigator.OmnetppGeneratedFilesFIlter"
-            description="All OMNeT++ generated temporary files (*.vci, *_m.cc, *_m.h)"
+            activeByDefault="false"
+            description="Hides all OMNeT++ generated temporary files (*.vci, *_m.cc, *_m.h)"
             id="org.omnetpp.main.opp_tmp_file_filter"
             name="OMNeT++ temporary files">
          <filterExpression>
-         	<or>
-	            <adapt type="org.eclipse.core.resources.IFile">
-            		<test property="org.eclipse.core.resources.name" value="*.vci"/>
-            	</adapt>	            
-	            <adapt type="org.eclipse.core.resources.IFile">
-            		<test property="org.eclipse.core.resources.name" value="*_m.cc"/>
-            	</adapt>	            
-	            <adapt type="org.eclipse.core.resources.IFile">
-            		<test property="org.eclipse.core.resources.name" value="*_m.h"/>
-            	</adapt>	            
-	        </or>
+            <adapt type="org.eclipse.core.resources.IFile">
+              <or>
+        		<test property="org.eclipse.core.resources.name" value="*.vci"/>
+        		<test property="org.eclipse.core.resources.name" value="*_m.cc"/>
+        		<test property="org.eclipse.core.resources.name" value="*_m.h"/>
+        	  </or>	
+        	</adapt>	            
+         </filterExpression>
+      </commonFilter>
+      <commonFilter
+            activeByDefault="false"
+            description="Show only OMNeT++ files (*.ned, *.msg, *.ini, *.cc, *.h, *.elog, *.anf, *.sca, *.vec)"
+            id="org.omnetpp.main.non_opp_files"
+            name="Show only OMNeT++ files">
+         <filterExpression>
+            <adapt type="org.eclipse.core.resources.IFile">
+            <or>
+	            <not>
+		              <or>
+		        		<test property="org.eclipse.core.resources.name" value="*.ned"/>
+		        		<test property="org.eclipse.core.resources.name" value="*.cc"/>
+		        		<test property="org.eclipse.core.resources.name" value="*.h"/>
+		        		<test property="org.eclipse.core.resources.name" value="*.msg"/>
+		        		<test property="org.eclipse.core.resources.name" value="*.ini"/>
+		        		<test property="org.eclipse.core.resources.name" value="*.elog"/>
+		        		<test property="org.eclipse.core.resources.name" value="*.anf"/>
+		        		<test property="org.eclipse.core.resources.name" value="*.vec"/>
+		        		<test property="org.eclipse.core.resources.name" value="*.sca"/>
+		        	  </or>
+	        	 </not>
+	        	 <test property="org.eclipse.core.resources.name" value="*_m.h"/>
+	         	 <test property="org.eclipse.core.resources.name" value="*_m.cc"/>
+        	 </or>	
+        	</adapt>	            
          </filterExpression>
       </commonFilter>
    </extension>
