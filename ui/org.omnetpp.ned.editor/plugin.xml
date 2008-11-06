@@ -66,10 +66,9 @@
    </extension>
    <extension
          point="org.eclipse.ui.navigator.navigatorContent">
-           <commonWizard 
-                 associatedExtensionId="org.eclipse.cdt.ui.navigator.content" 
-                 menuGroupId="org.eclipse.cdt.ui" 
-                 type="new" 
+           <commonWizard
+                 menuGroupId="org.eclipse.cdt.ui"
+                 type="new"
                  wizardId="org.omnetpp.ned.editor.wizard.new.file">
                  <enablement>
                  	<and>
@@ -88,7 +87,6 @@
                  </enablement>
            </commonWizard>
            <commonWizard 
-                 associatedExtensionId="org.eclipse.cdt.ui.navigator.content" 
                  menuGroupId="org.eclipse.cdt.ui" 
                  type="new" 
                  wizardId="org.omnetpp.ned.editor.wizard.new.simplemodule">
@@ -109,7 +107,6 @@
                  </enablement>
            </commonWizard>
            <commonWizard 
-                 associatedExtensionId="org.eclipse.cdt.ui.navigator.content" 
                  menuGroupId="org.eclipse.cdt.ui" 
                  type="new" 
                  wizardId="org.omnetpp.ned.editor.wizard.new.compoundmodule">
@@ -130,7 +127,6 @@
                  </enablement>
            </commonWizard>
            <commonWizard 
-                 associatedExtensionId="org.eclipse.cdt.ui.navigator.content" 
                  menuGroupId="org.eclipse.cdt.ui" 
                  type="new" 
                  wizardId="org.omnetpp.ned.editor.wizard.new.network">

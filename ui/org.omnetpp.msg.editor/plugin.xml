@@ -75,7 +75,6 @@
   <extension
          point="org.eclipse.ui.navigator.navigatorContent">
            <commonWizard 
-                 associatedExtensionId="org.eclipse.ui.navigator.resourceContent" 
                  menuGroupId="org.eclipse.cdt.ui" 
                  type="new" 
                  wizardId="org.omnetpp.msg.editor.wizard.new.file">
