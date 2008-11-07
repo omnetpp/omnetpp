@@ -1,6 +1,12 @@
 package org.omnetpp.ide;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
@@ -9,6 +15,8 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.internal.net.ProxyData;
 import org.eclipse.core.internal.net.ProxyManager;
 import org.eclipse.core.net.proxy.IProxyData;
 import org.eclipse.core.resources.IWorkspace;
@@ -32,7 +40,11 @@ import org.eclipse.ui.PlatformUI;
 import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.IConstants;
 import org.omnetpp.common.project.ProjectUtils;
+import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.ide.views.NewsView;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 /**
  * Performs various tasks when the workbench starts up.
@@ -108,12 +120,24 @@ public class OmnetppStartup implements IStartup {
         job.schedule();
     }
 
-    /**
-     * 
-     * @param url
-     * @return
-     */
-//    public boolean isWebPageNotBlank(final String url) {
+//  /**
+//  * Checks whether the given web page is available and contains something (i.e. is not empty).
+//  */
+// public boolean isWebPageNotBlank_plain(String url) {
+//     try {
+//         byte[] buf = new byte[10];
+//         new URL(url).openStream().read(buf); // probe it by reading a few bytes
+//         return new String(buf).trim().length() > 0;
+//     } 
+//     catch (IOException e) {
+//         return false;
+//     }
+// }
+
+//  /**
+//  * Checks whether the given web page is available and contains something (i.e. is not empty).
+//  */
+//    public boolean isWebPageNotBlank_browser(final String url) {
 //    	final boolean result[] = new boolean[1];
 //    	Display.getDefault().syncExec(new Runnable() {
 //			@Override
@@ -142,50 +166,177 @@ public class OmnetppStartup implements IStartup {
 //    /**
 //     * Checks whether the given web page is available and contains something (i.e. is not empty).
 //     */
-//    public boolean isWebPageNotBlankJDK(String url) {
+//    public boolean isWebPageNotBlank(String url) {
+//    	HttpClient client = new HttpClient();
+//    	client.getParams().setSoTimeout(10000);
+//
+//    	IProxyData proxyData = ProxyManager.getProxyManager().getProxyDataForHost("omnetpp.org", IProxyData.HTTP_PROXY_TYPE );
+//    	if (proxyData != null) {
+//    		client.getState().setProxyCredentials(
+//    				new AuthScope(proxyData.getHost(), proxyData.getPort()),
+//					new UsernamePasswordCredentials(proxyData.getUserId(), proxyData.getPassword()));
+//    		HostConfiguration hc = new HostConfiguration();
+//    		hc.setProxy(proxyData.getHost(), proxyData.getPort());
+//    	}
+//
+//    	GetMethod method = new GetMethod(url);
+//    	method.setDoAuthentication(true);
+//
 //        try {
-//            byte[] buf = new byte[10];
-//            new URL(url).openStream().read(buf); // probe it by reading a few bytes
-//            return new String(buf).trim().length() > 0;
-//        } 
-//        catch (IOException e) {
-//            return false;
+//            int status = client.executeMethod(method);
+//            String responseBody = method.getResponseBodyAsString();
+//			return responseBody.trim().length() > 0 && status == HttpStatus.SC_OK;
+//        } catch (HttpException e) {
+//        	return false;
+//		} catch (IOException e) {
+//        	return false;
+//		} finally {
+//            method.releaseConnection();
 //        }
 //    }
 
+    
     /**
      * Checks whether the given web page is available and contains something (i.e. is not empty).
      */
+    @SuppressWarnings("restriction")
     public boolean isWebPageNotBlank(String url) {
-    	HttpClient client = new HttpClient();
-    	client.getParams().setSoTimeout(10000);
+        // try with Eclipse settings
+        IProxyData proxyData = ProxyManager.getProxyManager().getProxyDataForHost("omnetpp.org", IProxyData.HTTP_PROXY_TYPE);
+        String content = getPageContent(url, proxyData);
+        if (content != null)
+            return content.trim().length() != 0;
+        
+        // try with "http_proxy" environment variable (there's also http_user and http_passwd)
+        String http_proxy = System.getenv("http_proxy");
+        if (http_proxy != null) {
+            try {
+                // format: http://host:port/ or http://username:password@host:port/
+                Matcher matcher = Pattern.compile("(http:)?/*((.*):(.*)@)?([^:]*)(:([0-9]+))?/?").matcher(http_proxy);
+                if (matcher.matches()) {
+                    proxyData = new ProxyData(IProxyData.HTTP_PROXY_TYPE);
+                    proxyData.setHost(matcher.group(5));
+                    proxyData.setPort(Integer.parseInt(StringUtils.defaultIfEmpty(matcher.group(7),"-1")));
+                    proxyData.setUserid(matcher.group(3));
+                    proxyData.setPassword(matcher.group(4));
+                    content = getPageContent(url, proxyData);
+                    if (content != null)
+                        return content.trim().length() != 0;
 
-    	IProxyData proxyData = ProxyManager.getProxyManager().getProxyDataForHost("omnetpp.org", IProxyData.HTTP_PROXY_TYPE );
-    	if (proxyData != null) {
-    		client.getState().setProxyCredentials(
-    				new AuthScope(proxyData.getHost(), proxyData.getPort()),
-					new UsernamePasswordCredentials(proxyData.getUserId(), proxyData.getPassword()));
-    		HostConfiguration hc = new HostConfiguration();
-    		hc.setProxy(proxyData.getHost(), proxyData.getPort());
-    	}
+                    if (System.getenv("http_user") != null) {
+                        proxyData.setUserid(System.getenv("http_user"));
+                        proxyData.setPassword(System.getenv("http_passwd"));
+                        content = getPageContent(url, proxyData);
+                        if (content != null)
+                            return content.trim().length() != 0;
+                    }
+                }
+            } 
+            catch (Exception e) {
+            }
+        }
+        
+        // try with Firefox proxy settings
+        String HOME = System.getenv("HOME");
+        if (HOME != null) {
+            File prefsFile = null;
+            File[] members = new File(HOME + "/.mozilla/firefox").listFiles();
+            if (members != null) {
+                for (File member : members) {
+                    File f = new File(member.getPath()+"/prefs.js");
+                    if (f.isFile()) {
+                        prefsFile = f;
+                        break;
+                    }
+                }
+            }
+            if (prefsFile != null) {
+                try {
+                    String prefsText = FileUtils.readTextFile(prefsFile);
+                    if (prefsText != null) {
+                        // user_pref("network.proxy.http", "someproxy.edu");
+                        // user_pref("network.proxy.http_port", 9999);
+                        proxyData = new ProxyData(IProxyData.HTTP_PROXY_TYPE);
+                        Matcher matcher = Pattern.compile("(?s).*user_pref\\(\"network.proxy.http\", \"(.*?)\"\\);.*").matcher(prefsText);
+                        if (matcher.matches())
+                            proxyData.setHost(matcher.group(1));
+                        matcher = Pattern.compile("(?s).*user_pref\\(\"network.proxy.http_port\", ([0-9]*)\\);.*").matcher(prefsText);
+                        if (matcher.matches())
+                            proxyData.setPort(Integer.parseInt(matcher.group(1)));
+                        content = getPageContent(url, proxyData);
+                        if (content != null)
+                            return content.trim().length() != 0;
+                    }
+                }
+                catch (Exception e) {
+                }
+            }
+        }
 
-    	GetMethod get = new GetMethod(url);
-    	get.setDoAuthentication( true );
+        // try with gconf proxy settings
+        if (HOME != null) {
+            File gconfFile = new File(HOME + "/.gconf/system/http_proxy/%gconf.xml");
+            if (gconfFile.isFile()) {
+                try {
+                    DocumentBuilder docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+                    Document doc = docBuilder.parse(gconfFile);
+                    Element root = doc.getDocumentElement();
+                    NodeList entries = root.getElementsByTagName("entry");
+                    proxyData = new ProxyData(IProxyData.HTTP_PROXY_TYPE);
+                    for (int i=0; i<entries.getLength(); i++) {
+                        Element e = (Element)entries.item(i);
+                        if (StringUtils.equals(e.getAttribute("name"), "host"))
+                            proxyData.setHost(e.getElementsByTagName("stringvalue").item(0).getTextContent().trim());
+                        if (StringUtils.equals(e.getAttribute("name"), "port"))  //???
+                            proxyData.setPort(Integer.parseInt(e.getElementsByTagName("stringvalue").item(0).getTextContent().trim()));
+                        if (StringUtils.equals(e.getAttribute("name"), "authentication_user"))
+                            proxyData.setUserid(e.getElementsByTagName("stringvalue").item(0).getTextContent().trim());
+                        if (StringUtils.equals(e.getAttribute("name"), "authentication_password"))
+                            proxyData.setPassword(e.getElementsByTagName("stringvalue").item(0).getTextContent().trim());
+                    }
+                    content = getPageContent(url, proxyData);
+                    if (content != null)
+                        return content.trim().length() != 0;
+                } 
+                catch (Exception e) { 
+                }
+            }
+        }
+        return false;
+    }
+
+    
+    /**
+     * Returns null on failure, otherwise the page content.
+     */
+    public String getPageContent(String url, IProxyData proxyData) {
+        HttpClient client = new HttpClient();
+        client.getParams().setSoTimeout(10000);
+        if (proxyData != null && !StringUtils.isEmpty(proxyData.getHost())) {
+            if (!StringUtils.isEmpty(proxyData.getUserId()) && !StringUtils.isEmpty(proxyData.getPassword()))
+                client.getState().setProxyCredentials(
+                        new AuthScope(proxyData.getHost(), proxyData.getPort()),
+                        new UsernamePasswordCredentials(proxyData.getUserId(), proxyData.getPassword()));
+            HostConfiguration hc = new HostConfiguration();
+            hc.setProxy(proxyData.getHost(), proxyData.getPort());
+        }
+
+        GetMethod method = new GetMethod(url);
+        method.setDoAuthentication(true);
 
         try {
-            int status = client.executeMethod( get );
-            
-            String responseBody = get.getResponseBodyAsString();
-			return responseBody.trim().length() > 0 && status == HttpStatus.SC_OK;
+            int status = client.executeMethod(method);
+            String responseBody = method.getResponseBodyAsString();
+            return status == HttpStatus.SC_OK ? responseBody : null;
         } catch (HttpException e) {
-        	return false;
-		} catch (IOException e) {
-        	return false;
-		} finally {
-            get.releaseConnection();
+            return null;
+        } catch (IOException e) {
+            return null;
+        } finally {
+            method.releaseConnection();
         }
     }
-    
+
     
     /**
      * Determines whether this is the first IDE startup after the installation, with the 
