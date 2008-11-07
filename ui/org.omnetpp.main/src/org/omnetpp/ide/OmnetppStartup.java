@@ -239,41 +239,37 @@ public class OmnetppStartup implements IStartup {
         // try with Firefox proxy settings
         String HOME = System.getenv("HOME");
         if (HOME != null) {
-            File prefsFile = null;
             File[] members = new File(HOME + "/.mozilla/firefox").listFiles();
             if (members != null) {
                 for (File member : members) {
-                    File f = new File(member.getPath()+"/prefs.js");
-                    if (f.isFile()) {
-                        prefsFile = f;
-                        break;
+                    File prefsFile = new File(member.getPath()+"/prefs.js");
+                    if (prefsFile.isFile()) {
+                        try {
+                            String prefsText = FileUtils.readTextFile(prefsFile);
+                            if (prefsText != null) {
+                                // user_pref("network.proxy.http", "someproxy.edu");
+                                // user_pref("network.proxy.http_port", 9999);
+                                proxyData = new ProxyData(IProxyData.HTTP_PROXY_TYPE);
+                                Matcher matcher = Pattern.compile("(?s).*user_pref\\(\"network.proxy.http\", *\"(.*?)\"\\);.*").matcher(prefsText);
+                                if (matcher.matches())
+                                    proxyData.setHost(matcher.group(1));
+                                matcher = Pattern.compile("(?s).*user_pref\\(\"network.proxy.http_port\", *([0-9]*)\\);.*").matcher(prefsText);
+                                if (matcher.matches())
+                                    proxyData.setPort(Integer.parseInt(matcher.group(1)));
+                                content = getPageContent(url, proxyData);
+                                if (content != null)
+                                    return content.trim().length() != 0;
+                            }
+                        }
+                        catch (Exception e) {
+                        }
                     }
-                }
-            }
-            if (prefsFile != null) {
-                try {
-                    String prefsText = FileUtils.readTextFile(prefsFile);
-                    if (prefsText != null) {
-                        // user_pref("network.proxy.http", "someproxy.edu");
-                        // user_pref("network.proxy.http_port", 9999);
-                        proxyData = new ProxyData(IProxyData.HTTP_PROXY_TYPE);
-                        Matcher matcher = Pattern.compile("(?s).*user_pref\\(\"network.proxy.http\", \"(.*?)\"\\);.*").matcher(prefsText);
-                        if (matcher.matches())
-                            proxyData.setHost(matcher.group(1));
-                        matcher = Pattern.compile("(?s).*user_pref\\(\"network.proxy.http_port\", ([0-9]*)\\);.*").matcher(prefsText);
-                        if (matcher.matches())
-                            proxyData.setPort(Integer.parseInt(matcher.group(1)));
-                        content = getPageContent(url, proxyData);
-                        if (content != null)
-                            return content.trim().length() != 0;
-                    }
-                }
-                catch (Exception e) {
                 }
             }
         }
 
         // try with gconf proxy settings
+        //FIXME parsing port does not work
         if (HOME != null) {
             File gconfFile = new File(HOME + "/.gconf/system/http_proxy/%gconf.xml");
             if (gconfFile.isFile()) {
