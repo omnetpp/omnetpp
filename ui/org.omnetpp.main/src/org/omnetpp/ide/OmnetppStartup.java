@@ -209,7 +209,7 @@ public class OmnetppStartup implements IStartup {
             return content.trim().length() != 0;
 
         // try without proxy as well (in case settings in Eclipse are wrong)
-        if (proxyData.getHost() != null) {
+        if (proxyData != null && proxyData.getHost() != null) {
             content = getPageContent(url, null);
             if (content != null)
                 return content.trim().length() != 0;
