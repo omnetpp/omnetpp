@@ -198,6 +198,7 @@ public class OmnetppStartup implements IStartup {
     
     /**
      * Checks whether the given web page is available and contains something (i.e. is not empty).
+     * Proxy detection is a royal pain here.
      */
     @SuppressWarnings("restriction")
     public boolean isWebPageNotBlank(String url) {
@@ -206,29 +207,38 @@ public class OmnetppStartup implements IStartup {
         String content = getPageContent(url, proxyData);
         if (content != null)
             return content.trim().length() != 0;
-        
+
+        // try without proxy as well (in case settings in Eclipse are wrong)
+        if (proxyData.getHost() != null) {
+            content = getPageContent(url, null);
+            if (content != null)
+                return content.trim().length() != 0;
+        }
+
         // try with "http_proxy" environment variable (there's also http_user and http_passwd)
         String http_proxy = System.getenv("http_proxy");
         if (http_proxy != null) {
             try {
                 // format: http://host:port/ or http://username:password@host:port/
-                Matcher matcher = Pattern.compile("(http:)?/*((.*):(.*)@)?([^:]*)(:([0-9]+))?/?").matcher(http_proxy);
+                Matcher matcher = Pattern.compile("(http:)?/*((.+):(.+)@)?([^:]+)(:([0-9]+))?/?").matcher(http_proxy);
                 if (matcher.matches()) {
                     proxyData = new ProxyData(IProxyData.HTTP_PROXY_TYPE);
                     proxyData.setHost(matcher.group(5));
                     proxyData.setPort(Integer.parseInt(StringUtils.defaultIfEmpty(matcher.group(7),"-1")));
                     proxyData.setUserid(matcher.group(3));
                     proxyData.setPassword(matcher.group(4));
-                    content = getPageContent(url, proxyData);
-                    if (content != null)
-                        return content.trim().length() != 0;
-
-                    if (System.getenv("http_user") != null) {
-                        proxyData.setUserid(System.getenv("http_user"));
-                        proxyData.setPassword(System.getenv("http_passwd"));
+                    if (proxyData.getHost() != null) {
                         content = getPageContent(url, proxyData);
                         if (content != null)
                             return content.trim().length() != 0;
+
+                        if (System.getenv("http_user") != null) {
+                            proxyData.setUserid(System.getenv("http_user"));
+                            proxyData.setPassword(System.getenv("http_passwd"));
+                            content = getPageContent(url, proxyData);
+                            if (content != null)
+                                return content.trim().length() != 0;
+                        }
                     }
                 }
             } 
@@ -256,9 +266,11 @@ public class OmnetppStartup implements IStartup {
                                 matcher = Pattern.compile("(?s).*user_pref\\(\"network.proxy.http_port\", *([0-9]*)\\);.*").matcher(prefsText);
                                 if (matcher.matches())
                                     proxyData.setPort(Integer.parseInt(matcher.group(1)));
-                                content = getPageContent(url, proxyData);
-                                if (content != null)
-                                    return content.trim().length() != 0;
+                                if (proxyData.getHost() != null) {
+                                    content = getPageContent(url, proxyData);
+                                    if (content != null)
+                                        return content.trim().length() != 0;
+                                }
                             }
                         }
                         catch (Exception e) {
@@ -290,9 +302,11 @@ public class OmnetppStartup implements IStartup {
                         if (StringUtils.equals(e.getAttribute("name"), "authentication_password"))
                             proxyData.setPassword(e.getElementsByTagName("stringvalue").item(0).getTextContent().trim());
                     }
-                    content = getPageContent(url, proxyData);
-                    if (content != null)
-                        return content.trim().length() != 0;
+                    if (proxyData.getHost() != null) {
+                        content = getPageContent(url, proxyData);
+                        if (content != null)
+                            return content.trim().length() != 0;
+                    }
                 } 
                 catch (Exception e) { 
                 }
