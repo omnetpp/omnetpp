@@ -60,7 +60,7 @@ endif
 # see http://www.trilithium.com/johan/2005/06/static-libstdc/
 # (note: 'cat' command is there to ensure it really exists)
 ifeq ("$(JNI_LIB_SUFFIX)",".so")
-SOFTLINK_LIBSTDCPP=ln -s `g++ -print-file-name=libstdc++.a` $O && cat $O/libstdc++.a > /dev/null
+SOFTLINK_LIBSTDCPP=ln -sf `g++ -print-file-name=libstdc++.a` $O && cat $O/libstdc++.a > /dev/null
 LDFLAGS+= -static-libgcc -L$O
 else
 SOFTLINK_LIBSTDCPP=
