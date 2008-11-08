@@ -58,12 +58,13 @@ endif
 
 # on Linux, link libgcc and libstdc++ statically, to reduce dependencies
 # see http://www.trilithium.com/johan/2005/06/static-libstdc/
-# (note: 'cat' command is there to ensure it really exists)
 ifeq ("$(JNI_LIB_SUFFIX)",".so")
-SOFTLINK_LIBSTDCPP=ln -sf `g++ -print-file-name=libstdc++.a` $O && cat $O/libstdc++.a > /dev/null
+LINUX_ONLY=
 LDFLAGS+= -static-libgcc -L$O
 else
-SOFTLINK_LIBSTDCPP=
+define LINUX_ONLY
+   # linux-only:
+endef
 endif
 
 
@@ -121,9 +122,10 @@ eventlog.cxx : eventlog.i
 	$(SWIG) -c++ -java $(INCLUDES) -package $(EVENTLOG_JAVAPKG) -outdir $(EVENTLOG_JAVADIR) -o $@ $<
 
 $O/$(DLL): $(OBJS)
-	$(SOFTLINK_LIBSTDCPP)
+	$(LINUX_ONLY) ln -sf `g++ -print-file-name=libstdc++.a` $O
 	$(SHLIB_LD) -o $O/$(DLL) $(OBJS) $(LIBS) $(LDFLAGS)
 	strip $(STRIP_FLAGS) $O/$(DLL)
+	$(LINUX_ONLY) if ldd $O/$(DLL) | grep -F 'libstdc++'; then echo "Error: $(DLL) not statically linked with libstdc++"; exit 1; fi
 
 $(DLL_TARGET_DIR)/$(DLL): $O/$(DLL)
 	cp $O/$(DLL) $(DLL_TARGET_DIR)
