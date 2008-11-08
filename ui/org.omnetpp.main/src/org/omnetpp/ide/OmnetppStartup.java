@@ -253,10 +253,10 @@ public class OmnetppStartup implements IStartup {
                                 // user_pref("network.proxy.http_port", 9999);
                                 proxyData = new ProxyData(IProxyData.HTTP_PROXY_TYPE);
                                 Matcher matcher = Pattern.compile("(?m)^ *user_pref\\(\"network.proxy.http\", *\"(.*?)\"\\);").matcher(prefsText);
-                                if (matcher.matches())
+                                if (matcher.find())
                                     proxyData.setHost(matcher.group(1));
                                 matcher = Pattern.compile("(?m)^ *user_pref\\(\"network.proxy.http_port\", *([0-9]+)\\);").matcher(prefsText);
-                                if (matcher.matches())
+                                if (matcher.find())
                                     proxyData.setPort(Integer.parseInt(matcher.group(1)));
                                 if (proxyData.getHost() != null) {
                                     content = getPageContent(url, proxyData);
@@ -303,7 +303,7 @@ public class OmnetppStartup implements IStartup {
                 }
             }
         }
-        
+
         // try with KDE proxy settings
         if (HOME != null) {
             File kioslavercFile = new File(HOME + "/.kde/share/config/kioslaverc");
@@ -313,8 +313,8 @@ public class OmnetppStartup implements IStartup {
                     if (kioslavercText != null) {
                         // httpProxy=http://127.0.0.1:3128
                         proxyData = new ProxyData(IProxyData.HTTP_PROXY_TYPE);
-                        Matcher matcher = Pattern.compile("(?m)^httpProxhy=(.*)").matcher(kioslavercText);
-                        if (matcher.matches()) {
+                        Matcher matcher = Pattern.compile("(?m)^httpProxy=(.*)").matcher(kioslavercText);
+                        if (matcher.find()) {
                             String httpProxy = matcher.group(1).trim();
                             proxyData = parseHttpProxyURL(httpProxy);
                             if (proxyData != null && proxyData.getHost() != null) {
@@ -328,7 +328,6 @@ public class OmnetppStartup implements IStartup {
                 catch (Exception e) {
                 }
             }
-            
         }
         return false;
     }
