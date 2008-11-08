@@ -43,18 +43,29 @@ OBJS = $O/nedxml.o $O/scave.o $O/layout.o $O/eventlog.o $O/common.o $O/jprogress
 LIBS=-L$L -lnedxml$D -lscave$D -llayout$D -leventlog$D -lcommon$D
 
 ifeq ("$(JNI_LIB_SUFFIX)",".dll")
-# on mingw we dont need the lib prefix for a JNI library 
+# on mingw we dont need the lib prefix for a JNI library
 DLL = opplibs$(JNI_LIB_SUFFIX)
 # the following is needed for building JNI lib with mingw (name mangling issue)
 LDFLAGS+= -Wl,--kill-at
-else 
+else
 DLL = $(LIB_PREFIX)opplibs$(JNI_LIB_SUFFIX)
 endif
 
-# on MAC OS X we should strip only the non public symbols
+# on MAC OS X we should strip only the non-public symbols
 ifeq ("$(JNI_LIB_SUFFIX)",".jnilib")
 STRIP_FLAGS=-x
 endif
+
+# on Linux, link libgcc and libstdc++ statically, to reduce dependencies
+# see http://www.trilithium.com/johan/2005/06/static-libstdc/
+# (note: 'cat' command is there to ensure it really exists)
+ifeq ("$(JNI_LIB_SUFFIX)",".so")
+SOFTLINK_LIBSTDCPP=ln -s `g++ -print-file-name=libstdc++.a` $O && cat $O/libstdc++.a > /dev/null
+LDFLAGS+= -static-libgcc -L$O
+else
+SOFTLINK_LIBSTDCPP=
+endif
+
 
 DLL_TARGET_DIR = ../org.omnetpp.ide.nativelibs.$(PLATFORM)
 
@@ -110,6 +121,7 @@ eventlog.cxx : eventlog.i
 	$(SWIG) -c++ -java $(INCLUDES) -package $(EVENTLOG_JAVAPKG) -outdir $(EVENTLOG_JAVADIR) -o $@ $<
 
 $O/$(DLL): $(OBJS)
+	$(SOFTLINK_LIBSTDCPP)
 	$(SHLIB_LD) -o $O/$(DLL) $(OBJS) $(LIBS) $(LDFLAGS)
 	strip $(STRIP_FLAGS) $O/$(DLL)
 
