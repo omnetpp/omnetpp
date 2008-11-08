@@ -219,26 +219,18 @@ public class OmnetppStartup implements IStartup {
         String http_proxy = System.getenv("http_proxy");
         if (http_proxy != null) {
             try {
-                // format: http://host:port/ or http://username:password@host:port/
-                Matcher matcher = Pattern.compile("(http:)?/*((.+):(.+)@)?([^:]+)(:([0-9]+))?/?").matcher(http_proxy);
-                if (matcher.matches()) {
-                    proxyData = new ProxyData(IProxyData.HTTP_PROXY_TYPE);
-                    proxyData.setHost(matcher.group(5));
-                    proxyData.setPort(Integer.parseInt(StringUtils.defaultIfEmpty(matcher.group(7),"-1")));
-                    proxyData.setUserid(matcher.group(3));
-                    proxyData.setPassword(matcher.group(4));
-                    if (proxyData.getHost() != null) {
+                proxyData = parseHttpProxyURL(http_proxy);
+                if (proxyData != null && proxyData.getHost() != null) {
+                    content = getPageContent(url, proxyData);
+                    if (content != null)
+                        return content.trim().length() != 0;
+
+                    if (System.getenv("http_user") != null) {
+                        proxyData.setUserid(System.getenv("http_user"));
+                        proxyData.setPassword(System.getenv("http_passwd"));
                         content = getPageContent(url, proxyData);
                         if (content != null)
                             return content.trim().length() != 0;
-
-                        if (System.getenv("http_user") != null) {
-                            proxyData.setUserid(System.getenv("http_user"));
-                            proxyData.setPassword(System.getenv("http_passwd"));
-                            content = getPageContent(url, proxyData);
-                            if (content != null)
-                                return content.trim().length() != 0;
-                        }
                     }
                 }
             } 
@@ -260,10 +252,10 @@ public class OmnetppStartup implements IStartup {
                                 // user_pref("network.proxy.http", "someproxy.edu");
                                 // user_pref("network.proxy.http_port", 9999);
                                 proxyData = new ProxyData(IProxyData.HTTP_PROXY_TYPE);
-                                Matcher matcher = Pattern.compile("(?s).*user_pref\\(\"network.proxy.http\", *\"(.*?)\"\\);.*").matcher(prefsText);
+                                Matcher matcher = Pattern.compile("(?m)^ *user_pref\\(\"network.proxy.http\", *\"(.*?)\"\\);").matcher(prefsText);
                                 if (matcher.matches())
                                     proxyData.setHost(matcher.group(1));
-                                matcher = Pattern.compile("(?s).*user_pref\\(\"network.proxy.http_port\", *([0-9]*)\\);.*").matcher(prefsText);
+                                matcher = Pattern.compile("(?m)^ *user_pref\\(\"network.proxy.http_port\", *([0-9]+)\\);").matcher(prefsText);
                                 if (matcher.matches())
                                     proxyData.setPort(Integer.parseInt(matcher.group(1)));
                                 if (proxyData.getHost() != null) {
@@ -280,8 +272,7 @@ public class OmnetppStartup implements IStartup {
             }
         }
 
-        // try with gconf proxy settings
-        //FIXME parsing port does not work
+        // try with GNOME proxy settings
         if (HOME != null) {
             File gconfFile = new File(HOME + "/.gconf/system/http_proxy/%gconf.xml");
             if (gconfFile.isFile()) {
@@ -295,8 +286,8 @@ public class OmnetppStartup implements IStartup {
                         Element e = (Element)entries.item(i);
                         if (StringUtils.equals(e.getAttribute("name"), "host"))
                             proxyData.setHost(e.getElementsByTagName("stringvalue").item(0).getTextContent().trim());
-                        if (StringUtils.equals(e.getAttribute("name"), "port"))  //???
-                            proxyData.setPort(Integer.parseInt(e.getElementsByTagName("stringvalue").item(0).getTextContent().trim()));
+                        if (StringUtils.equals(e.getAttribute("name"), "port"))
+                            proxyData.setPort(Integer.parseInt(e.getAttribute("value").trim()));
                         if (StringUtils.equals(e.getAttribute("name"), "authentication_user"))
                             proxyData.setUserid(e.getElementsByTagName("stringvalue").item(0).getTextContent().trim());
                         if (StringUtils.equals(e.getAttribute("name"), "authentication_password"))
@@ -312,14 +303,58 @@ public class OmnetppStartup implements IStartup {
                 }
             }
         }
+        
+        // try with KDE proxy settings
+        if (HOME != null) {
+            File kioslavercFile = new File(HOME + "/.kde/share/config/kioslaverc");
+            if (kioslavercFile.isFile()) {
+                try {
+                    String kioslavercText = FileUtils.readTextFile(kioslavercFile);
+                    if (kioslavercText != null) {
+                        // httpProxy=http://127.0.0.1:3128
+                        proxyData = new ProxyData(IProxyData.HTTP_PROXY_TYPE);
+                        Matcher matcher = Pattern.compile("(?m)^httpProxhy=(.*)").matcher(kioslavercText);
+                        if (matcher.matches()) {
+                            String httpProxy = matcher.group(1).trim();
+                            proxyData = parseHttpProxyURL(httpProxy);
+                            if (proxyData != null && proxyData.getHost() != null) {
+                                content = getPageContent(url, proxyData);
+                                if (content != null)
+                                    return content.trim().length() != 0;
+                            }
+                        }
+                    }
+                }
+                catch (Exception e) {
+                }
+            }
+            
+        }
         return false;
     }
 
-    
+    /**
+     * Parse URL of the syntax http://host:port/ or http://username:password@host:port/,
+     * being a little flexible (allow http:// to be missing, trailing slash to be missing, etc)
+     */
+    @SuppressWarnings("restriction")
+    protected IProxyData parseHttpProxyURL(String url) {
+        Matcher matcher = Pattern.compile("(http:/*)?((.+):(.+)@)?([^:]+)(:([0-9]+))?/?").matcher(url);
+        if (matcher.matches()) {
+            IProxyData proxyData = new ProxyData(IProxyData.HTTP_PROXY_TYPE);
+            proxyData.setHost(matcher.group(5));
+            proxyData.setPort(Integer.parseInt(StringUtils.defaultIfEmpty(matcher.group(7),"-1")));
+            proxyData.setUserid(matcher.group(3));
+            proxyData.setPassword(matcher.group(4));
+            return proxyData;
+        }
+        return null;
+    }
+
     /**
      * Returns null on failure, otherwise the page content.
      */
-    public String getPageContent(String url, IProxyData proxyData) {
+    protected String getPageContent(String url, IProxyData proxyData) {
         HttpClient client = new HttpClient();
         client.getParams().setSoTimeout(10000);
         if (proxyData != null && !StringUtils.isEmpty(proxyData.getHost())) {
