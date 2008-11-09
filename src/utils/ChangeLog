@@ -1,3 +1,8 @@
+2008-11-09  Andras Varga
+
+	* opp_makemake: streamline the generated makefile: definitions, 
+	actions, etc are only generated when they are actually needed
+
 2008-10-25  Andras Varga
 
 	* opp_makemake: use individual targets for each sub-make directory,

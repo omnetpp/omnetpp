@@ -451,7 +451,10 @@ sub makemake()
         @sourceDirs = collectDirs(".", \@allExcludedDirs);
         error("too many subdirs for --deep") if (@sourceDirs > 1000);
     } else {
-        @sourceDirs = (".");
+        @sourceDirs = ();
+        if (isGoodDir(".", \@exceptSubdirs)) {
+            @sourceDirs = (".");
+        }
     }
 
     foreach $f (@sourceDirs) {
@@ -1096,38 +1099,38 @@ sub template()
 #  {progname} {args}
 #
 
-
-# Name of target to be created (-o option)
-TARGET = {targetprefix}{target}{targetsuffix}
-
-# User interface (uncomment one) (-u option)
-{~allenv?#}USERIF_LIBS = $(ALL_ENV_LIBS) # that is, $(TKENV_LIBS) $(CMDENV_LIBS)
-{~cmdenv?#}USERIF_LIBS = $(CMDENV_LIBS)
-{~tkenv?#}USERIF_LIBS = $(TKENV_LIBS)
-
-# C++ include paths (with -I)
-INCLUDE_PATH = {includepath}
-
-# Additional object and library files to link with
-EXTRA_OBJS = {extraobjs}
-
-# Additional libraries (-L, -l options)
-LIBS ={@dir:libpathdirs} {-L}{dir}{/@} {@lib:libs} {-l}{lib}{.lib}{/@}
-{libpathdirs:}{~nmake:}LIBS +={@dir:libpathdirs} -Wl,-rpath,{dir}{/@}
-
+### Some definitions first; note that we only print them if there're going to be needed
+{~nolink:}# Name of target to be created (-o option)
+{~nolink:}TARGET = {targetprefix}{target}{targetsuffix}
+{~nolink:}
+{exe:}# User interface (uncomment one) (-u option)
+{exe:}{~allenv?#}USERIF_LIBS = $(ALL_ENV_LIBS) # that is, $(TKENV_LIBS) $(CMDENV_LIBS)
+{exe:}{~cmdenv?#}USERIF_LIBS = $(CMDENV_LIBS)
+{exe:}{~tkenv?#}USERIF_LIBS = $(TKENV_LIBS)
+{exe:}
+{sourcedirs:}# C++ include paths (with -I)
+{sourcedirs:}INCLUDE_PATH = {includepath}
+{sourcedirs:}
+{~nolink:}# Additional object and library files to link with
+{~nolink:}EXTRA_OBJS = {extraobjs}
+{~nolink:}
+{~nolink:}{~staticlib:}# Additional libraries (-L, -l options)
+{~nolink:}{~staticlib:}LIBS ={@dir:libpathdirs} {-L}{dir}{/@} {@lib:libs} {-l}{lib}{.lib}{/@}
+{~nolink:}{~staticlib:}{libpathdirs:}{~nmake:}LIBS +={@dir:libpathdirs} -Wl,-rpath,{dir}{/@}
+{~nolink:}{~staticlib:}
 # Output directory
 ### Note: these variables are public API (see help text), don't change
 PROJECT_OUTPUT_DIR = {outdir}
 PROJECTRELATIVE_PATH = {subpath}
 O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 
-# Object files for local .{cc} and .msg files
-OBJS = {objs}
-
-# Message files
-MSGFILES ={@msg:msgfiles} \
-    {msg}{/@}
-
+{sourcedirs:}# Object files for local .{cc} and .msg files
+{sourcedirs:}OBJS = {objs}
+{sourcedirs:}
+{sourcedirs:}# Message files
+{sourcedirs:}MSGFILES ={@msg:msgfiles} \
+{sourcedirs:}    {msg}{/@}
+{sourcedirs:}
 {defaultmode:}# Default mode (-M option); can be overridden with {nmake?n}make MODE=debug (or =release)
 {defaultmode:}{nmake?!}ifndef MODE
 {defaultmode:}MODE = {defaultmode}
@@ -1138,7 +1141,7 @@ MSGFILES ={@msg:msgfiles} \
 {/@}
 
 {nmake:}MAKE=nmake -nologo -f Makefile.vc
-
+{nmake:}
 #------------------------------------------------------------------------------
 
 # Pull in OMNeT++ configuration (Makefile.inc or configuser.vc)
@@ -1172,24 +1175,24 @@ MSGFILES ={@msg:msgfiles} \
 {~nmake:}
 {~nmake:}include $(CONFIGFILE)
 
-{rem:}# Check that MODE is valid (not enabled, to allow implementing other MODEs)
-{rem:}{nmake:}!if "$(MODE)"!="debug" && "$(MODE)"!="release"
-{rem:}{nmake:}error MODE must be "debug" or "release"
-{rem:}{nmake:}!endif
-{rem:}{~nmake:}ifneq ($(MODE),"debug")
-{rem:}{~nmake:}ifneq ($(MODE),"release")
-{rem:}{~nmake:}$(error MODE must be "debug" or "release")
-{rem:}{~nmake:}endif
-{rem:}{~nmake:}endif
+### # Check that MODE is valid (not enabled, to allow implementing other MODEs)
+### {nmake:}!if "$(MODE)"!="debug" && "$(MODE)"!="release"
+### {nmake:}error MODE must be "debug" or "release"
+### {nmake:}!endif
+### {~nmake:}ifneq ($(MODE),"debug")
+### {~nmake:}ifneq ($(MODE),"release")
+### {~nmake:}$(error MODE must be "debug" or "release")
+### {~nmake:}endif
+### {~nmake:}endif
 
-# Simulation kernel and user interface libraries
-OMNETPP_LIB_SUBDIR = $(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
+{~nolink:}{~staticlib:}# Simulation kernel and user interface libraries
+{~nolink:}{~staticlib:}OMNETPP_LIB_SUBDIR = $(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 {exe:}OMNETPP_LIBS = {-L}"$(OMNETPP_LIB_SUBDIR)" {-L}"$(OMNETPP_LIB_DIR)" $(USERIF_LIBS) $(KERNEL_LIBS) $(SYS_LIBS)
 {sharedlib:}OMNETPP_LIBS = {-L}"$(OMNETPP_LIB_SUBDIR)" {-L}"$(OMNETPP_LIB_DIR)" {-l}envir$D{.lib} $(KERNEL_LIBS) $(SYS_LIBS)
 
-COPTS = $(CFLAGS) {defines} $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
-MSGCOPTS = $(INCLUDE_PATH){dllsymbol? -P}{dllsymbol}{dllsymbol?_API}
-
+{sourcedirs:}COPTS = $(CFLAGS) {defines} $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
+{sourcedirs:}MSGCOPTS = $(INCLUDE_PATH){dllsymbol? -P}{dllsymbol}{dllsymbol?_API}
+{sourcedirs:}
 #------------------------------------------------------------------------------
 # User-supplied makefile fragment(s)
 # >>>
@@ -1198,34 +1201,34 @@ MSGCOPTS = $(INCLUDE_PATH){dllsymbol? -P}{dllsymbol}{dllsymbol?_API}
 #------------------------------------------------------------------------------
 
 # Main target
-all: $(TARGET)
+{~nolink:}all: $(TARGET)
 {~nolink:}
 {~nolink:}$(TARGET) : $O/$(TARGET)
 {~nolink:}{nmake:}	copy $(O:/=\)\$(TARGET) .
 {~nolink:}{nmake:}	-copy $(O:/=\)\$(TARGET).manifest . >NUL
 {sharedlib:}{nmake:}	-copy $(O:/=\)\$(TARGET:.dll=.lib) . >NUL
 {~nolink:}{~nmake:}	ln -s -f $O/$(TARGET) .
-
+{~nolink:}
 ### Rules for $TARGET. Note that end product will be softlinked into the
 ### Makefile's directory; on systems that don't support soft links it will
 ### be copied. Note that MinGW's "ln -s" also actually copies the file.
-{exe:}$O/$(TARGET): $(OBJS) {submakedirs?submakedirs} {~nmake?$(wildcard }$(EXTRA_OBJS){~nmake?)} {makefile}
+{exe:}$O/$(TARGET): {sourcedirs?$(OBJS)} {submakedirs?submakedirs} {~nmake?$(wildcard }$(EXTRA_OBJS){~nmake?)} {makefile}
 {exe:}{nmake:}	-@md $(O:/=\) 2>nul
 {exe:}{~nmake:}	@mkdir -p $O
-{exe:}	$({nmake?LINK}{~nmake?CXX}) $(LDFLAGS) {-out}$O/$(TARGET) {nmake_inlinefile} $(OBJS) $(EXTRA_OBJS) $(WHOLE_ARCHIVE_ON) $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) {nmake_inlineend}
-{sharedlib:}$O/$(TARGET): $(OBJS) {submakedirs?submakedirs} {~nmake?$(wildcard }$(EXTRA_OBJS){~nmake?)} {makefile}
+{exe:}	$({nmake?LINK}{~nmake?CXX}) $(LDFLAGS) {-out}$O/$(TARGET) {nmake_inlinefile} {sourcedirs?$(OBJS)} $(EXTRA_OBJS) $(WHOLE_ARCHIVE_ON) $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) {nmake_inlineend}
+{sharedlib:}$O/$(TARGET): {sourcedirs?$(OBJS)} {submakedirs?submakedirs} {~nmake?$(wildcard }$(EXTRA_OBJS){~nmake?)} {makefile}
 {sharedlib:}{nmake:}	-@md $(O:/=\) 2>nul
 {sharedlib:}{~nmake:}	@mkdir -p $O
-{sharedlib:}	$(SHLIB_LD) {-out}$O/$(TARGET) {nmake_inlinefile} $(OBJS) $(EXTRA_OBJS) $(LIBS) $(OMNETPP_LIBS) $(LDFLAGS) {nmake_inlineend}
-{staticlib:}$O/$(TARGET): $(OBJS) {submakedirs?submakedirs} {~nmake?$(wildcard }$(EXTRA_OBJS){~nmake?)} {makefile}
+{sharedlib:}	$(SHLIB_LD) {-out}$O/$(TARGET) {nmake_inlinefile} {sourcedirs?$(OBJS)} $(EXTRA_OBJS) $(LIBS) $(OMNETPP_LIBS) $(LDFLAGS) {nmake_inlineend}
+{staticlib:}$O/$(TARGET): {sourcedirs?$(OBJS)} {submakedirs?submakedirs} {~nmake?$(wildcard }$(EXTRA_OBJS){~nmake?)} {makefile}
 {staticlib:}{nmake:}	-@md $(O:/=\) 2>nul
 {staticlib:}{~nmake:}	@mkdir -p $O
-{staticlib:}	$(AR) {nmake?/out:}$O/$(TARGET) {nmake_inlinefile} $(OBJS) $(EXTRA_OBJS) {nmake_inlineend}
-{nolink:}$(TARGET): $(OBJS) {submakedirs?submakedirs} {makefile}
+{staticlib:}	$(AR) {nmake?/out:}$O/$(TARGET) {nmake_inlinefile} {sourcedirs?$(OBJS)} $(EXTRA_OBJS) {nmake_inlineend}
+{nolink:}all: {sourcedirs?$(OBJS)} {submakedirs?submakedirs} {makefile}
 {nolink:}	@{nmake?rem}{~nmake?#} Do nothing
 
-### Subdir targets. Note that nmake.exe doesn't support .PHONY, and does not
-### print Entering/Leaving messages like gnu make.
+### Subdir targets. Note that nmake.exe does not support .PHONY (that's why we need
+### the *_dir targets), and does not print "Entering"/"Leaving" messages like gnu make.
 {submakedirs:}submakedirs: {@i:submakenames} {i}_dir{/@}
 {submakedirs:}
 {~nmake:}.PHONY:{@i:submakenames} {i}{/@}
@@ -1238,17 +1241,17 @@ all: $(TARGET)
 
 {/@}
 
-.SUFFIXES: .{cc}
-
+{sourcedirs:}.SUFFIXES: .{cc}
+{sourcedirs:}
 ### Pattern rules for cc files. For gnu make a single rule is enough;
 ### for nmake we need per-directory rules, plus one for "." (even though
 ### "." is in sourcedirs), because nmake doesn't recognize "$O/." as "$O"
-{~nmake:}$O/%.{obj}: %.{cc}
-{~nmake:}	@mkdir -p $(dir $@)
-{~nmake:}	$(CXX) -c $(COPTS) -o $@ $<
-{nmake:}{lbrace}.{rbrace}.{cc}{lbrace}$O{rbrace}.{obj}:
-{nmake:}	-@md $(O:/=\) 2>nul
-{nmake:}	$(CXX) -c $(COPTS) /Fo"$@" -Tp $<
+{sourcedirs:}{~nmake:}$O/%.{obj}: %.{cc}
+{sourcedirs:}{~nmake:}	@mkdir -p $(dir $@)
+{sourcedirs:}{~nmake:}	$(CXX) -c $(COPTS) -o $@ $<
+{sourcedirs:}{nmake:}{lbrace}.{rbrace}.{cc}{lbrace}$O{rbrace}.{obj}:
+{sourcedirs:}{nmake:}	-@md $(O:/=\) 2>nul
+{sourcedirs:}{nmake:}	$(CXX) -c $(COPTS) /Fo"$@" -Tp $<
 {@dir:sourcedirs,bsdir:backslashedsourcedirs}
 {nmake:}{lbrace}{dir}{rbrace}.{cc}{lbrace}$O/{dir}{rbrace}.{obj}:
 {nmake:}	-@md $(O:/=\)\{bsdir} 2>nul
@@ -1256,16 +1259,16 @@ all: $(TARGET)
 {/@}
 ### Pattern rules for msg files. For gnu make one rule is enough,
 ### nmake needs per-file rules
-{msgfiles:}{~nmake:}%_m.{cc} %_m.h: %.msg
-{msgfiles:}{~nmake:}	$(MSGC) -s _m.{cc} $(MSGCOPTS) $?
-{msgfiles:}{~nmake:}
+{sourcedirs:}{~nmake:}%_m.{cc} %_m.h: %.msg
+{sourcedirs:}{~nmake:}	$(MSGC) -s _m.{cc} $(MSGCOPTS) $?
+{sourcedirs:}{~nmake:}
 {@msg:msgfiles,m_cc:msgccfiles,m_h:msghfiles}
 {nmake:}{m_cc} {m_h} : {msg}
 {nmake:}	$(MSGC:/=\) -s _m.{cc} $(MSGCOPTS) {msg}
 {/@}
 
 ### Utility target for running opp_msgc; otherwise unused by this makefile
-msgheaders: $(MSGFILES:.msg=_m.h)
+msgheaders: {sourcedirs?$(MSGFILES:.msg=_m.h)}
 {@i:submakedirs}	cd {i} && $(MAKE) msgheaders
 {/@}
 
@@ -1276,8 +1279,8 @@ clean:
 {nmake:}{exe:}	-del $(TARGET) $(TARGET:.exe=.lib) $(TARGET:.exe=.dll) 2>nul
 {nmake:}{sharedlib:}	-del $(TARGET) $(TARGET:.dll=.exe) $(TARGET:.dll=.lib) 2>nul
 {nmake:}{staticlib:}	-del $(TARGET) $(TARGET:.lib=.exe) $(TARGET:.lib=.dll) 2>nul
-{nmake:}{nolink:}	-del $(TARGET) $(TARGET).exe $(TARGET).dll $(TARGET).lib 2>nul
-{~nmake:}	-rm -rf $O $(TARGET)
+{nmake:}{nolink:}	-del {target}.exe {target}.dll {target}.lib 2>nul
+{~nmake:}	-rm -rf $O {target} lib{target}.so lib{target}.a lib{target}.dylib
 {~nmake:}{@dir:sourcedirs}	-rm -f {dir}/*_m.{cc} {dir}/*_m.h
 {~nmake:}{/@}
 {nmake:}{@bsdir:backslashedsourcedirs}	-del {bsdir}\*_m.{cc} {bsdir}\*_m.h 2>nul
@@ -1286,13 +1289,13 @@ clean:
 {/@}
 
 depend:
-	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile{nmake?.vc} -P{nmake?^}{~nmake?\$}$O/ -- $(MSG_CC_FILES) {@d:sourcedirs} {d}/*.{cc}{/@}
+{sourcedirs:}	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile{nmake?.vc} -P{nmake?^}{~nmake?\$}$O/ -- $(MSG_CC_FILES) {@d:sourcedirs} {d}/*.{cc}{/@}
 {@i:submakedirs}{nmake:}	-cd {i} && if exist Makefile.vc $(MAKE) depend
 {~nmake:}	-cd {i} && if [ -f Makefile ]; then $(MAKE) depend; fi
 {/@}
 
-# DO NOT DELETE THIS LINE -- make depend depends on it.
-{deps}
+{sourcedirs:}# DO NOT DELETE THIS LINE -- make depend depends on it.
+{sourcedirs:}{deps}
 ENDTEMPLATE
 }
 
