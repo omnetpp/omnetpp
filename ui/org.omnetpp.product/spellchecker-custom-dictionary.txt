@@ -288,3 +288,5 @@ misconfiguration
 subdirtree
 buildspec
 reachability
+firefox
+proxy

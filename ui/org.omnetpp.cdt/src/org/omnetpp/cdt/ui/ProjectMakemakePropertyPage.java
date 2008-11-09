@@ -8,7 +8,6 @@ import java.util.Map;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.cdt.core.cdtvariables.CdtVariableException;
-import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.ICBuildSetting;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
@@ -32,6 +31,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.preference.IPreferencePageContainer;
 import org.eclipse.jface.preference.PreferencePage;
@@ -83,6 +83,7 @@ import org.omnetpp.common.util.StringUtils;
  * @author Andras
  */
 @SuppressWarnings("restriction")
+//FIXME add an "Export makemakefiles" button
 public class ProjectMakemakePropertyPage extends PropertyPage {
     private static final String SOURCE_FOLDER_IMG = "icons/full/obj16/folder_srcfolder.gif";
     private static final String SOURCE_SUBFOLDER_IMG = "icons/full/obj16/folder_srcsubfolder.gif";
@@ -101,13 +102,14 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
     // controls
     protected Label errorMessageLabel;
     protected TreeViewer treeViewer;
+    protected Button makemakeButton;
+    protected Button customMakeButton;
+    protected Button noMakeButton;
     protected Button optionsButton;
     protected Button sourceLocationButton;
     protected Button excludeButton;
     protected Button includeButton;
-    protected Button makemakeButton;
-    protected Button customMakeButton;
-    protected Button noMakeButton;
+    protected Button exportButton;
 
     protected static class FolderInfo {
         String label;
@@ -168,6 +170,11 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         sourceLocationButton = createButton(buttons, SWT.PUSH, "&Source Location", "Mark folder as source location");
         excludeButton = createButton(buttons, SWT.PUSH, "&Exclude", "Exclude from build");
         includeButton = createButton(buttons, SWT.PUSH, "&Include", "Include into build");
+        createLabel(buttons, "", 1);
+        Label sep2 = new Label(buttons, SWT.SEPARATOR | SWT.HORIZONTAL);
+        sep2.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
+        createLabel(buttons, "", 1);
+        exportButton = createButton(buttons, SWT.PUSH, "E&xport", "Export makemake settings to a script");
 
 //        pathsAndSymbolsLink.addSelectionListener(new SelectionListener(){
 //            public void widgetSelected(SelectionEvent e) {
@@ -218,6 +225,12 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 includeFolder(getTreeSelection());
+            }
+        });
+        exportButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                exportMakemakefiles();
             }
         });
 
@@ -431,7 +444,6 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
                 ICSourceEntry[] newEntries = CDTUtils.setExcluded(folder, exclude, configuration.getSourceEntries());
                 configuration.setSourceEntries(newEntries);
             }
-            CoreModel.getDefault().setProjectDescription(project, projectDescription);
         }
         catch (CoreException e) {
             errorDialog(e.getMessage(), e);
@@ -442,6 +454,33 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         updatePageState();
     }
 
+    protected void exportMakemakefiles() {
+        String text = 
+            "# Usage:\n" +
+            "#    make -f Makemakefiles\n" +
+            "# or, for Microsoft Visual C++:\n" +
+            "#    nmake -f Makemakefiles MMOPT=-n\n" +
+            "\n" +
+            "MAKEMAKE=opp_makemake $(MMOPT)\n\n" +
+            "all:\n";
+        for (IContainer folder : buildSpec.getMakemakeFolders()) {
+            try {
+                MakemakeOptions options = buildSpec.getMakemakeOptions(folder);
+                ICProjectDescription projectDescription = CDTPropertyManager.getProjectDescription(getProject());
+                ICConfigurationDescription configuration = projectDescription.getActiveConfiguration();
+                MakemakeOptions translatedOptions = MetaMakemake.translateOptions(folder, options, buildSpec.getMakeFolders(), configuration);
+                text += "\t";
+                if (!folder.equals(getProject()))
+                    text += "cd " + folder.getProjectRelativePath().toString() + " && ";
+                text += "$(MAKEMAKE) " + translatedOptions.toString() + "\n";
+            }
+            catch (CoreException e) {
+                Activator.logError(e);
+            }
+        }
+        MessageDialog.openInformation(null, "Result", text); //XXX testing
+    }
+    
     // currently unused (we don't want to encourage the user to mess with CDT settings directly)
     protected void gotoPathsAndSymbolsPage() {
         IPreferencePageContainer container = getContainer();

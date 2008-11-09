@@ -1,4 +1,4 @@
-package org.omnetpp.cdt;
+package org.omnetpp.cdt.handlers;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.commands.AbstractHandler;
+import org.eclipse.core.commands.ExecutionEvent;
+import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -15,23 +18,20 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.ui.IObjectActionDelegate;
-import org.eclipse.ui.IWorkbenchPart;
+import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.makefile.BuildSpecification;
 import org.omnetpp.cdt.makefile.MakefileTools;
 import org.omnetpp.common.util.StringUtils;
 
 /**
  * Generate a "makemakefile" for the selected projects.
- * XXX half-cooked, currently unused
- * 
  * 
  * @author Andras
  */
-public class GenerateMakemakefileAction implements IObjectActionDelegate {
+//XXX half-cooked
+public class GenerateMakemakefileHandler extends AbstractHandler {
     // boilerplate code for Makemakefile
     public static final String BOILERPLATE = 
         "#\n" + 
@@ -52,27 +52,23 @@ public class GenerateMakemakefileAction implements IObjectActionDelegate {
 
     private ISelection selection;
 
-    /* (non-Javadoc)
-     * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
-     */
-    public void run(IAction action) {
-        //List<IProject> projects = getSelectedOpenProjects();
-        //...
-    }
+    public Object execute(ExecutionEvent event) throws ExecutionException {
+        List<IProject> projects = getSelectedOpenProjects();
 
-    /* (non-Javadoc)
-     * @see org.eclipse.ui.IActionDelegate#selectionChanged()org.eclipse.jface.action.IAction,
-     *      org.eclipse.jface.viewers.ISelection)
-     */
-    public void selectionChanged(IAction action, ISelection selection) {
-        this.selection = selection;
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.ui.IObjectActionDelegate#setActivePart(org.eclipse.jface.action.IAction,
-     *      org.eclipse.ui.IWorkbenchPart)
-     */
-    public void setActivePart(IAction action, IWorkbenchPart targetPart) {
+        for (IProject project : projects)
+            try {
+                generateMakeMakefile(project, null);
+            }
+            catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            catch (CoreException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        
+        return null;
     }
 
     @SuppressWarnings("unchecked")
@@ -150,5 +146,4 @@ public class GenerateMakemakefileAction implements IObjectActionDelegate {
         Assert.isTrue(name.endsWith("_dir"));
         return name.replaceAll("_dir$", "_" + k + "_dir");
     }
-
 }

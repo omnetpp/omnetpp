@@ -24,7 +24,6 @@ import org.omnetpp.cdt.makefile.MakemakeOptions.Type;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ide.OmnetppMainPlugin;
-import org.omnetpp.ide.preferences.OmnetppPreferencePage;
 
 /**
  * An opp_nmakemake implementation. May be invoked as a command-line tool
@@ -161,7 +160,8 @@ public class Makemake {
             sourceDirs = collectDirs(folder, allExcludedDirs);
         }
         else {
-            sourceDirs.add("."); //FIXME and if excluded?
+            if (!options.exceptSubdirs.contains("."))
+                sourceDirs.add(".");
         }
 
         for (String i : sourceDirs) {
