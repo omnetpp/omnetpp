@@ -2,6 +2,8 @@ package org.omnetpp.ide;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -252,16 +254,27 @@ public class OmnetppStartup implements IStartup {
                                 // user_pref("network.proxy.http", "someproxy.edu");
                                 // user_pref("network.proxy.http_port", 9999);
                                 proxyData = new ProxyData(IProxyData.HTTP_PROXY_TYPE);
-                                Matcher matcher = Pattern.compile("(?m)^ *user_pref\\(\"network.proxy.http\", *\"(.*?)\"\\);").matcher(prefsText);
+                                Matcher matcher = Pattern.compile("(?m)^ *user_pref\\(\"network\\.proxy\\.http\", *\"(.*?)\"\\);").matcher(prefsText);
                                 if (matcher.find())
                                     proxyData.setHost(matcher.group(1));
-                                matcher = Pattern.compile("(?m)^ *user_pref\\(\"network.proxy.http_port\", *([0-9]+)\\);").matcher(prefsText);
+                                matcher = Pattern.compile("(?m)^ *user_pref\\(\"network\\.proxy\\.http_port\", *([0-9]+)\\);").matcher(prefsText);
                                 if (matcher.find())
                                     proxyData.setPort(Integer.parseInt(matcher.group(1)));
                                 if (proxyData.getHost() != null) {
                                     content = getPageContent(url, proxyData);
                                     if (content != null)
                                         return content.trim().length() != 0;
+                                }
+                                // user_pref("network.proxy.autoconfig_url", "http://someproxy.edu/proxy.pac");
+                                matcher = Pattern.compile("(?m)^ *user_pref\\(\"network\\.proxy\\.autoconfig_url\", *\"(.*?)\"\\);").matcher(prefsText);
+                                if (matcher.find()) {
+                                    String proxyPacUrl = matcher.group(1);
+                                    IProxyData[] proxies = detectPotentialProxies(proxyPacUrl);
+                                    for (IProxyData proxy : proxies) {
+                                        content = getPageContent(url, proxy);
+                                        if (content != null)
+                                            return content.trim().length() != 0;
+                                    }
                                 }
                             }
                         }
@@ -333,6 +346,26 @@ public class OmnetppStartup implements IStartup {
     }
 
     /**
+     * Download "proxy.pac" from the given URL, and try to find proxy settings in it.
+     */
+    @SuppressWarnings("restriction")
+    protected IProxyData[] detectPotentialProxies(String proxyPacUrl) {
+        String proxyPacText = getPageContent(proxyPacUrl, null);
+        if (proxyPacText != null)
+            return new IProxyData[0];
+        // find lines like this in it: PROXY www.somesite.edu:8080
+        List<IProxyData> list = new ArrayList<IProxyData>();
+        Matcher matcher = Pattern.compile("(?m)PROXY +([^: \"]+):([0-9]+)").matcher(proxyPacText);
+        while (matcher.find()) {
+            IProxyData proxyData = new ProxyData(IProxyData.HTTP_PROXY_TYPE);
+            proxyData.setHost(matcher.group(1));
+            proxyData.setPort(Integer.parseInt(matcher.group(2)));
+            list.add(proxyData);
+        }
+        return list.toArray(new IProxyData[]{});
+    }
+    
+    /**
      * Parse URL of the syntax http://host:port/ or http://username:password@host:port/,
      * being a little flexible (allow http:// to be missing, trailing slash to be missing, etc)
      */
@@ -363,6 +396,7 @@ public class OmnetppStartup implements IStartup {
                         new UsernamePasswordCredentials(proxyData.getUserId(), proxyData.getPassword()));
             HostConfiguration hc = new HostConfiguration();
             hc.setProxy(proxyData.getHost(), proxyData.getPort());
+            client.setHostConfiguration(hc);
         }
 
         GetMethod method = new GetMethod(url);
