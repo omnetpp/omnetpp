@@ -276,6 +276,7 @@
                outputs="obj">
          </outputType>
       </tool>
+
       <tool
             command="link"
             errorParsers="org.eclipse.cdt.core.VCErrorParser"
@@ -347,7 +348,7 @@
                id="org.eclipse.cdt.msvc.link.option.libpath"
                name="Additional Libpath (/libpath)"
                resourceFilter="all"
-               valueType="stringList"/>
+               valueType="libPaths"/>
          <option
                browseType="file"
                category="org.eclipse.cdt.msvc.link.optionCategory.libraries"
