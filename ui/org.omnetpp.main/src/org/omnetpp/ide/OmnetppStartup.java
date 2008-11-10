@@ -315,6 +315,33 @@ public class OmnetppStartup implements IStartup {
                 catch (Exception e) { 
                 }
             }
+
+            gconfFile = new File(HOME + "/.gconf/system/proxy/%gconf.xml");
+            if (gconfFile.isFile()) {
+                try {
+                    DocumentBuilder docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+                    Document doc = docBuilder.parse(gconfFile);
+                    Element root = doc.getDocumentElement();
+                    NodeList entries = root.getElementsByTagName("entry");
+                    for (int i=0; i<entries.getLength(); i++) {
+                        Element e = (Element)entries.item(i);
+                        if (StringUtils.equals(e.getAttribute("name"), "autoconfig_url")) {
+                            String proxyPacUrl = e.getElementsByTagName("stringvalue").item(0).getTextContent().trim();
+                            if (!StringUtils.isEmpty(proxyPacUrl)) {
+                                IProxyData[] proxies = detectPotentialProxies(proxyPacUrl);
+                                for (IProxyData proxy : proxies) {
+                                    content = getPageContent(url, proxy);
+                                    if (content != null)
+                                        return content.trim().length() != 0;
+                                }
+                            }
+                        }
+                    }
+                } 
+                catch (Exception e) { 
+                }
+            }
+
         }
 
         // try with KDE proxy settings
