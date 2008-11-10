@@ -22,7 +22,7 @@
             scannerConfigDiscoveryProfileId="org.omnetpp.cdt.OmnetppGCCPerProjectProfile"
             resourceTypeBasedDiscovery="false"
             superClass="cdt.managedbuild.toolchain.gnu.base"
-            supportsManagedBuild="false">
+            supportsManagedBuild="true">
          <targetPlatform
                binaryParser="org.eclipse.cdt.core.ELF;org.eclipse.cdt.core.MachO;org.eclipse.cdt.core.PE"
                id="org.omnetpp.cdt.targetPlatform"
@@ -31,8 +31,9 @@
                osList="win32,linux,macosx">
          </targetPlatform>
       <builder
-            buildPath="${ProjDirPath}"
             autoBuildTarget="all"
+            buildPath="${ProjDirPath}"
+            buildfileGenerator="org.omnetpp.cdt.makefile.MakefileGenerator"
             cleanBuildTarget="clean"
             command="make"
             errorParsers="org.eclipse.cdt.core.MakeErrorParser"
@@ -41,20 +42,9 @@
             incrementalBuildTarget="all"
             isAbstract="true"
             isVariableCaseSensitive="true"
-            macroInputDirRelPathValue="$(dir $&lt;)"
-            macroInputFileBaseNameValue="$(basename $(notdir $&lt;))"
-            macroInputFileExtValue="$(suffix $(notdir $&lt;))"
-            macroInputFileNameValue="$(notdir $&lt;)"
-            macroInputFileRelPathValue="$&lt;"
-            macroOutputDirRelPathValue="$(dir $@)"
-            macroOutputFileBaseNameValue="$(basename $(notdir $@))"
-            macroOutputFileExtValue="$(suffix $(notdir $@))"
-            macroOutputFileNameValue="$(notdir $@)"
-            macroOutputFileRelPathValue="$@"
             name="OMNeT++ Make Builder (opp_makemake)"
             parallelBuildCmd="-j*"
             reservedMacroNames="ROOT,DEPS,OBJS,.*_SRCS,EXECUTABLES,SUBDIRS,LIBS,USER_OBJS,.*_INPUTS,.*_OUTPUTS"
-            supportsManagedBuild="false"
             variableFormat="${=}">
       </builder>
       </toolChain>
@@ -73,6 +63,7 @@
                <builder
                      arguments="-f Makefile.vc MODE=debug CONFIGNAME=${ConfigName}"
                      id="org.omnetpp.cdt.msvc.builder.debug"
+                     isAbstract="false"
                      superClass="org.omnetpp.cdt.msvc.builder">
                </builder>
             </toolChain>
@@ -87,6 +78,7 @@
                <builder
                      arguments="-f Makefile.vc MODE=release CONFIGNAME=${ConfigName}"
                      id="org.omnetpp.cdt.msvc.builder.release"
+                     isAbstract="false"
                      superClass="org.omnetpp.cdt.msvc.builder">
                </builder>
             </toolChain>
@@ -103,6 +95,7 @@
                <builder
                      arguments="MODE=debug CONFIGNAME=${ConfigName}"
                      id="org.omnetpp.cdt.gnu.builder.debug"
+                     isAbstract="false"
                      superClass="org.omnetpp.cdt.gnu.builder">
                </builder>
             </toolChain>
@@ -117,6 +110,7 @@
                <builder
                      arguments="MODE=release CONFIGNAME=${ConfigName}"
                      id="org.omnetpp.cdt.gnu.builder.release"
+                     isAbstract="false"
                      superClass="org.omnetpp.cdt.gnu.builder">
                </builder>
             </toolChain>
