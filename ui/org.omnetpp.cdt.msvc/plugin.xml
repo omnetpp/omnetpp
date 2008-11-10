@@ -14,7 +14,7 @@
             osList="win32"
             resourceTypeBasedDiscovery="false"
             scannerConfigDiscoveryProfileId="org.omnetpp.cdt.msvc.MSVCScannerInfo"
-            supportsManagedBuild="false"
+            supportsManagedBuild="true"
             targetTool="org.eclipse.cdt.msvc.link;org.eclipse.cdt.msvc.lib">
          <targetPlatform
                archList="all"
@@ -24,6 +24,7 @@
                osList="win32">
          </targetPlatform>
          <builder
+               buildfileGenerator="org.omnetpp.cdt.makefile.MakefileGenerator"
                command="nmake"
                id="org.omnetpp.cdt.msvc.builder"
                isAbstract="true"
