@@ -22,7 +22,7 @@
             scannerConfigDiscoveryProfileId="org.omnetpp.cdt.OmnetppGCCPerProjectProfile"
             resourceTypeBasedDiscovery="false"
             superClass="cdt.managedbuild.toolchain.gnu.base"
-            supportsManagedBuild="true">
+            supportsManagedBuild="false">
          <targetPlatform
                binaryParser="org.eclipse.cdt.core.ELF;org.eclipse.cdt.core.MachO;org.eclipse.cdt.core.PE"
                id="org.omnetpp.cdt.targetPlatform"
@@ -31,9 +31,8 @@
                osList="win32,linux,macosx">
          </targetPlatform>
       <builder
-            autoBuildTarget="all"
             buildPath="${ProjDirPath}"
-            buildfileGenerator="org.omnetpp.cdt.makefile.MakefileGenerator"
+            autoBuildTarget="all"
             cleanBuildTarget="clean"
             command="make"
             errorParsers="org.eclipse.cdt.core.MakeErrorParser"
@@ -45,6 +44,7 @@
             name="OMNeT++ Make Builder (opp_makemake)"
             parallelBuildCmd="-j*"
             reservedMacroNames="ROOT,DEPS,OBJS,.*_SRCS,EXECUTABLES,SUBDIRS,LIBS,USER_OBJS,.*_INPUTS,.*_OUTPUTS"
+            supportsManagedBuild="false"
             variableFormat="${=}">
       </builder>
       </toolChain>
@@ -131,6 +131,7 @@
          name="OMNeT++ Makefile Builder"
          point="org.eclipse.core.resources.builders">
       <builder
+            callOnEmptyDelta="true"
             hasNature="false">
          <run
                class="org.omnetpp.cdt.makefile.MakefileBuilder">
