@@ -378,7 +378,7 @@ public class OmnetppStartup implements IStartup {
     @SuppressWarnings("restriction")
     protected IProxyData[] detectPotentialProxies(String proxyPacUrl) {
         String proxyPacText = getPageContent(proxyPacUrl, null);
-        if (proxyPacText != null)
+        if (proxyPacText == null)
             return new IProxyData[0];
         // find lines like this in it: PROXY www.somesite.edu:8080
         List<IProxyData> list = new ArrayList<IProxyData>();
