@@ -2015,21 +2015,6 @@ SHARED_LIBS=${SHARED_LIBS:-yes}
 # Default flags for values for other variables that come from configure.user.
 #----------------------
 
-if test -d /usr/include/tcl8.4; then
-    # this was reported to be the case on Debian 3.1 "sarge"
-    TK_CFLAGS=${TK_CFLAGS:-"-I/usr/include/tcl8.4"}
-fi
-if test -d /usr/include/tcl8.5; then
-    TK_CFLAGS=${TK_CFLAGS:-"-I/usr/include/tcl8.5"}
-fi
-if test -d /usr/include/tcl8.6; then
-    TK_CFLAGS="-I/usr/include/tcl8.6"
-fi
-# on FedoraCore 9 blt includes have their own directory
-if test -d /usr/include/blt; then
-    TK_CFLAGS="$TK_CFLAGS -I/usr/include/blt"
-fi
-
 #----------------------
 # Set variables to defaults if not already set.
 # Note: ${VAR:-defaultvalue} used below appears to be a POSIX syntax.
@@ -4886,7 +4871,18 @@ if test -n "$NO_TCL"; then
 
 else  #matching "fi" is after BLT testing
 
-    if test -n "$TK_LIBS"; then
+    if test -d /usr/include/tcl8.4; then
+        # this was reported to be the case on Debian 3.1 "sarge"
+        TK_CFLAGS84=${TK_CFLAGS:-"-I/usr/include/tcl8.4"}
+   fi
+   if test -d /usr/include/tcl8.5; then
+        TK_CFLAGS85=${TK_CFLAGS:-"-I/usr/include/tcl8.5"}
+   fi
+   if test -d /usr/include/tcl8.6; then
+        TK_CFLAGS86=${TK_CFLAGS:-"-I/usr/include/tcl8.6"}
+   fi
+
+   if test -n "$TK_LIBS"; then
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
@@ -4952,11 +4948,11 @@ rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$TK_CFLAGS"
-   LIBS="-ltk8.5 -ltcl8.5"
+   CXXFLAGS="$TK_CFLAGS86"
+   LIBS="-ltk8.6 -ltcl8.6"
 
-   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.5 with CFLAGS=\"$TK_CFLAGS\" LIBS=\"-ltk8.5 -ltcl8.5\"" >&5
-echo $ECHO_N "checking for Tcl/Tk 8.5 with CFLAGS=\"$TK_CFLAGS\" LIBS=\"-ltk8.5 -ltcl8.5\"... $ECHO_C" >&6; }
+   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.6 with CFLAGS=\"$TK_CFLAGS86\" LIBS=\"-ltk8.6 -ltcl8.6\"" >&5
+echo $ECHO_N "checking for Tcl/Tk 8.6 with CFLAGS=\"$TK_CFLAGS86\" LIBS=\"-ltk8.6 -ltcl8.6\"... $ECHO_C" >&6; }
 
    cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -4992,7 +4988,7 @@ eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
        } && test -s conftest$ac_exeext &&
        $as_test_x conftest$ac_exeext; then
   { echo "$as_me:$LINENO: result: yes" >&5
-echo "${ECHO_T}yes" >&6; }; tcltk_ok=yes; TK_LIBS="-ltk8.5 -ltcl8.5"
+echo "${ECHO_T}yes" >&6; }; tcltk_ok=yes; TK_LIBS="-ltk8.6 -ltcl8.6" TK_CFLAGS=$TK_CFLAGS86
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
@@ -5012,11 +5008,11 @@ rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$TK_CFLAGS"
-   LIBS="-ltk8.4 -ltcl8.4"
+   CXXFLAGS="$TK_CFLAGS85"
+   LIBS="-ltk8.5 -ltcl8.5"
 
-   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.4 with CFLAGS=\"$TK_CFLAGS\" LIBS=\"-ltk8.4 -ltcl8.4\"" >&5
-echo $ECHO_N "checking for Tcl/Tk 8.4 with CFLAGS=\"$TK_CFLAGS\" LIBS=\"-ltk8.4 -ltcl8.4\"... $ECHO_C" >&6; }
+   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.5 with CFLAGS=\"$TK_CFLAGS85\" LIBS=\"-ltk8.5 -ltcl8.5\"" >&5
+echo $ECHO_N "checking for Tcl/Tk 8.5 with CFLAGS=\"$TK_CFLAGS85\" LIBS=\"-ltk8.5 -ltcl8.5\"... $ECHO_C" >&6; }
 
    cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -5052,7 +5048,7 @@ eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
        } && test -s conftest$ac_exeext &&
        $as_test_x conftest$ac_exeext; then
   { echo "$as_me:$LINENO: result: yes" >&5
-echo "${ECHO_T}yes" >&6; }; tcltk_ok=yes; TK_LIBS="-ltk8.4 -ltcl8.4"
+echo "${ECHO_T}yes" >&6; }; tcltk_ok=yes; TK_LIBS="-ltk8.5 -ltcl8.5" TK_CFLAGS=$TK_CFLAGS85
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
@@ -5073,11 +5069,11 @@ rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$TK_CFLAGS"
-   LIBS="-ltk8.6 -ltcl8.6"
+   CXXFLAGS="$TK_CFLAGS84"
+   LIBS="-ltk8.4 -ltcl8.4"
 
-   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.6 with CFLAGS=\"$TK_CFLAGS\" LIBS=\"-ltk8.6 -ltcl8.6\"" >&5
-echo $ECHO_N "checking for Tcl/Tk 8.6 with CFLAGS=\"$TK_CFLAGS\" LIBS=\"-ltk8.6 -ltcl8.6\"... $ECHO_C" >&6; }
+   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.4 with CFLAGS=\"$TK_CFLAGS84\" LIBS=\"-ltk8.4 -ltcl8.4\"" >&5
+echo $ECHO_N "checking for Tcl/Tk 8.4 with CFLAGS=\"$TK_CFLAGS84\" LIBS=\"-ltk8.4 -ltcl8.4\"... $ECHO_C" >&6; }
 
    cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -5113,7 +5109,7 @@ eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
        } && test -s conftest$ac_exeext &&
        $as_test_x conftest$ac_exeext; then
   { echo "$as_me:$LINENO: result: yes" >&5
-echo "${ECHO_T}yes" >&6; }; tcltk_ok=yes; TK_LIBS="-ltk8.6 -ltcl8.6"
+echo "${ECHO_T}yes" >&6; }; tcltk_ok=yes; TK_LIBS="-ltk8.4 -ltcl8.4" TK_CFLAGS=$TK_CFLAGS84
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
@@ -5655,7 +5651,7 @@ eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
        } && test -s conftest$ac_exeext &&
        $as_test_x conftest$ac_exeext; then
   { echo "$as_me:$LINENO: result: yes" >&5
-echo "${ECHO_T}yes" >&6; }; tcltk_ok=yes; TK_LIBS="$opp_x11lib -ltk86 -ltcl86"
+echo "${ECHO_T}yes" >&6; }; tcltk_ok=yes; TK_LIBS="$opp_x11lib -ltk86 -ltcl86" TK_CFLAGS=$TK_CFLAGS86
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
@@ -5716,7 +5712,7 @@ eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
        } && test -s conftest$ac_exeext &&
        $as_test_x conftest$ac_exeext; then
   { echo "$as_me:$LINENO: result: yes" >&5
-echo "${ECHO_T}yes" >&6; }; tcltk_ok=yes; TK_LIBS="$opp_x11lib -ltk8.6 -ltcl8.6"
+echo "${ECHO_T}yes" >&6; }; tcltk_ok=yes; TK_LIBS="$opp_x11lib -ltk8.6 -ltcl8.6" TK_CFLAGS=$TK_CFLAGS86
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
@@ -5777,7 +5773,7 @@ eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
        } && test -s conftest$ac_exeext &&
        $as_test_x conftest$ac_exeext; then
   { echo "$as_me:$LINENO: result: yes" >&5
-echo "${ECHO_T}yes" >&6; }; tcltk_ok=yes; TK_LIBS="$opp_x11lib -lcygtk86 -lcygtcl86"
+echo "${ECHO_T}yes" >&6; }; tcltk_ok=yes; TK_LIBS="$opp_x11lib -lcygtk86 -lcygtcl86" TK_CFLAGS=$TK_CFLAGS86
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
@@ -5838,7 +5834,7 @@ eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
        } && test -s conftest$ac_exeext &&
        $as_test_x conftest$ac_exeext; then
   { echo "$as_me:$LINENO: result: yes" >&5
-echo "${ECHO_T}yes" >&6; }; tcltk_ok=yes; TK_LIBS="$opp_x11lib -L/usr/bin -ltk86 -ltcl86"
+echo "${ECHO_T}yes" >&6; }; tcltk_ok=yes; TK_LIBS="$opp_x11lib -L/usr/bin -ltk86 -ltcl86" TK_CFLAGS=$TK_CFLAGS86
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
@@ -5854,7 +5850,7 @@ rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
    LIBS=$save_LIBS
 
         fi
-
+        # check for 8.5
         if test $tcltk_ok = no; then
 
    save_CXXFLAGS=$CXXFLAGS
@@ -5900,7 +5896,7 @@ eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
        } && test -s conftest$ac_exeext &&
        $as_test_x conftest$ac_exeext; then
   { echo "$as_me:$LINENO: result: yes" >&5
-echo "${ECHO_T}yes" >&6; }; tcltk_ok=yes; TK_LIBS="$opp_x11lib -ltk85 -ltcl85"
+echo "${ECHO_T}yes" >&6; }; tcltk_ok=yes; TK_LIBS="$opp_x11lib -ltk85 -ltcl85" TK_CFLAGS=$TK_CFLAGS85
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
@@ -5961,7 +5957,7 @@ eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
        } && test -s conftest$ac_exeext &&
        $as_test_x conftest$ac_exeext; then
   { echo "$as_me:$LINENO: result: yes" >&5
-echo "${ECHO_T}yes" >&6; }; tcltk_ok=yes; TK_LIBS="$opp_x11lib -ltk8.5 -ltcl8.5"
+echo "${ECHO_T}yes" >&6; }; tcltk_ok=yes; TK_LIBS="$opp_x11lib -ltk8.5 -ltcl8.5" TK_CFLAGS=$TK_CFLAGS85
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
@@ -6022,7 +6018,7 @@ eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
        } && test -s conftest$ac_exeext &&
        $as_test_x conftest$ac_exeext; then
   { echo "$as_me:$LINENO: result: yes" >&5
-echo "${ECHO_T}yes" >&6; }; tcltk_ok=yes; TK_LIBS="$opp_x11lib -lcygtk85 -lcygtcl85"
+echo "${ECHO_T}yes" >&6; }; tcltk_ok=yes; TK_LIBS="$opp_x11lib -lcygtk85 -lcygtcl85" TK_CFLAGS=$TK_CFLAGS85
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
@@ -6083,7 +6079,7 @@ eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
        } && test -s conftest$ac_exeext &&
        $as_test_x conftest$ac_exeext; then
   { echo "$as_me:$LINENO: result: yes" >&5
-echo "${ECHO_T}yes" >&6; }; tcltk_ok=yes; TK_LIBS="$opp_x11lib -L/usr/bin -ltk85 -ltcl85"
+echo "${ECHO_T}yes" >&6; }; tcltk_ok=yes; TK_LIBS="$opp_x11lib -L/usr/bin -ltk85 -ltcl85" TK_CFLAGS=$TK_CFLAGS85
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
@@ -6099,6 +6095,7 @@ rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
    LIBS=$save_LIBS
 
         fi
+        # check for 8.4
         if test $tcltk_ok = no; then
 
    save_CXXFLAGS=$CXXFLAGS
@@ -6144,7 +6141,7 @@ eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
        } && test -s conftest$ac_exeext &&
        $as_test_x conftest$ac_exeext; then
   { echo "$as_me:$LINENO: result: yes" >&5
-echo "${ECHO_T}yes" >&6; }; tcltk_ok=yes; TK_LIBS="$opp_x11lib -ltk84 -ltcl84"
+echo "${ECHO_T}yes" >&6; }; tcltk_ok=yes; TK_LIBS="$opp_x11lib -ltk84 -ltcl84" TK_CFLAGS=$TK_CFLAGS84
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
@@ -6205,7 +6202,7 @@ eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
        } && test -s conftest$ac_exeext &&
        $as_test_x conftest$ac_exeext; then
   { echo "$as_me:$LINENO: result: yes" >&5
-echo "${ECHO_T}yes" >&6; }; tcltk_ok=yes; TK_LIBS="$opp_x11lib -ltk8.4 -ltcl8.4"
+echo "${ECHO_T}yes" >&6; }; tcltk_ok=yes; TK_LIBS="$opp_x11lib -ltk8.4 -ltcl8.4" TK_CFLAGS=$TK_CFLAGS84
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
@@ -6266,7 +6263,7 @@ eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
        } && test -s conftest$ac_exeext &&
        $as_test_x conftest$ac_exeext; then
   { echo "$as_me:$LINENO: result: yes" >&5
-echo "${ECHO_T}yes" >&6; }; tcltk_ok=yes; TK_LIBS="$opp_x11lib -lcygtk84 -lcygtcl84"
+echo "${ECHO_T}yes" >&6; }; tcltk_ok=yes; TK_LIBS="$opp_x11lib -lcygtk84 -lcygtcl84" TK_CFLAGS=$TK_CFLAGS84
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
@@ -6327,7 +6324,7 @@ eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
        } && test -s conftest$ac_exeext &&
        $as_test_x conftest$ac_exeext; then
   { echo "$as_me:$LINENO: result: yes" >&5
-echo "${ECHO_T}yes" >&6; }; tcltk_ok=yes; TK_LIBS="$opp_x11lib -L/usr/bin -ltk84 -ltcl84"
+echo "${ECHO_T}yes" >&6; }; tcltk_ok=yes; TK_LIBS="$opp_x11lib -L/usr/bin -ltk84 -ltcl84" TK_CFLAGS=$TK_CFLAGS84
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
@@ -6431,6 +6428,11 @@ echo "$as_me: error: wish command \"package require Tk 8.4\" failed: probably ol
     #----------------------
     # Check for BLT. $TK_CFLAGS and $TK_LIBS plus $BLT_LIBS should be enough
     #----------------------
+    # on FedoraCore 9 blt includes have their own directory
+    if test -d /usr/include/blt; then
+        TK_CFLAGS="$TK_CFLAGS -I/usr/include/blt"
+    fi
+
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
@@ -9159,7 +9161,7 @@ WARNING: The configuration script could not detect the following packages:
   $OPP_PROBLEM_PACKAGES
 
 Scroll up to see the warning messages (use shift+PgUp key), and see config.log
-for more details. While you can use OMNeT++/OMNEST in the current
+for more details. While you can use $OMNETPP_PRODUCT in the current
 configuration, please be aware that some functionality may be unavailable
 or incomplete.
 
@@ -9234,7 +9236,7 @@ if test -n "$NO_TCL"; then
 
     cat << EOT
 
-OMNeT++/OMNEST was configured without Tcl/Tk (\$NO_TCL set). Tkenv (the GUI
+$OMNETPP_PRODUCT was configured without Tcl/Tk (\$NO_TCL set). Tkenv (the GUI
 runtime environment) will not be available, simulations need to be run
 under Cmdenv.
 EOT
