@@ -219,9 +219,14 @@
                value="org.omnetpp.main.omnetppnature">
          </filter>
          <enabledWhen>
-            <adapt
-                  type="org.eclipse.core.resources.IProject">
-            </adapt>
+            <or>
+               <adapt
+                     type="org.eclipse.core.resources.IProject">
+               </adapt>
+               <adapt
+                     type="org.eclipse.core.resources.IFolder">
+               </adapt>
+            </or>
          </enabledWhen>
       </page>
    </extension>
