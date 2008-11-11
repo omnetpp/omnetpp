@@ -13,10 +13,14 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.HttpMethodRetryHandler;
 import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.httpclient.NoHttpResponseException;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.internal.net.ProxyData;
 import org.eclipse.core.internal.net.ProxyManager;
@@ -415,7 +419,7 @@ public class OmnetppStartup implements IStartup {
      */
     protected String getPageContent(String url, IProxyData proxyData) {
         HttpClient client = new HttpClient();
-        client.getParams().setSoTimeout(10000);
+        client.getParams().setSoTimeout(10000);       
         if (proxyData != null && !StringUtils.isEmpty(proxyData.getHost())) {
             if (!StringUtils.isEmpty(proxyData.getUserId()) && !StringUtils.isEmpty(proxyData.getPassword()))
                 client.getState().setProxyCredentials(
@@ -426,7 +430,15 @@ public class OmnetppStartup implements IStartup {
             client.setHostConfiguration(hc);
         }
 
+        // do not retry 
+        HttpMethodRetryHandler noRetryhandler = new HttpMethodRetryHandler() {
+            public boolean retryMethod(final HttpMethod method,final IOException exception, int executionCount) {
+                return false;
+            }
+        };
+
         GetMethod method = new GetMethod(url);
+        method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, noRetryhandler);
         method.setDoAuthentication(true);
 
         try {
