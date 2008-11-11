@@ -585,7 +585,6 @@ proc helplabel_showhelp {text x y} {
     bind .helpwin.tip <FocusOut> "catch { destroy .helpwin }"
     bind .helpwin.tip <Button-1> "catch { destroy .helpwin }"
     waitforfocus .helpwin.tip
-    puts "bubu"
 }
 
 

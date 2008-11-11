@@ -241,7 +241,7 @@ proc new_run {} {
     # pop up selection dialog
     set ok [runSelectionDialog configname runnumber]
     if {$ok == 1} {
-       puts "DBG: selected $configname $runnumber"
+       # puts "DBG: selected $configname $runnumber"
        busy "Setting up network..."
        opp_newrun $configname $runnumber
        busy
