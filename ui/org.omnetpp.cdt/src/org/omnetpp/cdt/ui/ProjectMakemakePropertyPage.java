@@ -31,7 +31,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.preference.IPreferencePageContainer;
 import org.eclipse.jface.preference.PreferencePage;
@@ -83,7 +82,7 @@ import org.omnetpp.common.util.StringUtils;
  * @author Andras
  */
 @SuppressWarnings("restriction")
-//FIXME add an "Export makemakefiles" button
+//TODO progress bar while source files are scanned when dialog opens
 public class ProjectMakemakePropertyPage extends PropertyPage {
     private static final String SOURCE_FOLDER_IMG = "icons/full/obj16/folder_srcfolder.gif";
     private static final String SOURCE_SUBFOLDER_IMG = "icons/full/obj16/folder_srcsubfolder.gif";
@@ -174,7 +173,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         Label sep2 = new Label(buttons, SWT.SEPARATOR | SWT.HORIZONTAL);
         sep2.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
         createLabel(buttons, "", 1);
-        exportButton = createButton(buttons, SWT.PUSH, "E&xport", "Export makemake settings to a script");
+        exportButton = createButton(buttons, SWT.PUSH, "E&xport", "Export settings to \"makemakefiles\" file");
 
 //        pathsAndSymbolsLink.addSelectionListener(new SelectionListener(){
 //            public void widgetSelected(SelectionEvent e) {
@@ -370,14 +369,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
 
     protected void markAsSourceLocation(IContainer folder) {
         try {
-            IProject project = getProject();
-            ICProjectDescription projectDescription = CDTPropertyManager.getProjectDescription(project);
-            for (ICConfigurationDescription configuration : projectDescription.getConfigurations()) {
-                ICSourceEntry[] entries = configuration.getSourceEntries();
-                ICSourceEntry entry = (ICSourceEntry)CDataUtil.createEntry(ICSettingEntry.SOURCE_PATH, folder.getProjectRelativePath().toString(), folder.getProjectRelativePath().toString(), new IPath[0], ICSettingEntry.VALUE_WORKSPACE_PATH);
-                entries = (ICSourceEntry[]) ArrayUtils.add(entries, entry);
-                configuration.setSourceEntries(entries);
-            }
+            addToSourceEntries(folder);
         }
         catch (Exception e) {
             errorDialog(e.getMessage(), e);
@@ -385,6 +377,17 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         updatePageState();
      
         maybeOfferToExcludeProjectRoot(folder);
+    }
+
+    protected void addToSourceEntries(IContainer folder) throws CoreException {
+        IProject project = getProject();
+        ICProjectDescription projectDescription = CDTPropertyManager.getProjectDescription(project);
+        for (ICConfigurationDescription configuration : projectDescription.getConfigurations()) {
+            ICSourceEntry[] entries = configuration.getSourceEntries();
+            ICSourceEntry entry = (ICSourceEntry)CDataUtil.createEntry(ICSettingEntry.SOURCE_PATH, folder.getProjectRelativePath().toString(), folder.getProjectRelativePath().toString(), new IPath[0], ICSettingEntry.VALUE_WORKSPACE_PATH);
+            entries = (ICSourceEntry[]) ArrayUtils.add(entries, entry);
+            configuration.setSourceEntries(entries);
+        }
     }
 
     protected void maybeOfferToExcludeProjectRoot(IContainer selectedFolder) {
@@ -398,12 +401,19 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
                         "Do you want to exclude the project root folder from build? (recommended for projects that have all source files in subdirectories)", 
                         "Do not ask this question again in this session", false, null, null);
                 if (dialog.getReturnCode() == IDialogConstants.YES_ID) {
-                    // exclude project root
-                    excludeFolder(getProject());
-                    // but: put back current folder if it became excluded
-                    sourceEntries = CDTPropertyManager.getProjectDescription(project).getActiveConfiguration().getSourceEntries();
-                    if (CDTUtils.isExcluded(selectedFolder, sourceEntries))
-                        includeFolder(selectedFolder);
+                    try {
+                        if (sourceEntries.length==1)
+                            addToSourceEntries(selectedFolder);  // otherwise we won't be able to exclude the root  
+                        // exclude project root
+                        setExcluded(getProject(), true);
+                        // put back current folder if it became excluded
+                        sourceEntries = CDTPropertyManager.getProjectDescription(project).getActiveConfiguration().getSourceEntries();
+                        if (CDTUtils.isExcluded(selectedFolder, sourceEntries))
+                            setExcluded(getProject(), false);
+                    }
+                    catch (Exception e) {
+                        errorDialog(e.getMessage(), e);
+                    }
                     updatePageState();
                 }
                 if (dialog.getToggleState()==true) 
@@ -457,16 +467,19 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
     }
 
     protected void exportMakemakefiles() {
-        String text = 
-            "# Usage:\n" +
-            "#    make -f Makemakefiles\n" +
-            "# or, for Microsoft Visual C++:\n" +
-            "#    nmake -f Makemakefiles MMOPT=-n\n" +
-            "\n" +
-            "MAKEMAKE=opp_makemake $(MMOPT)\n\n" +
-            "all:\n";
-        for (IContainer folder : buildSpec.getMakemakeFolders()) {
-            try {
+        try {
+            final String MAKEMAKEFILE_NAME = "makemakefiles";
+            String text = 
+                "# Usage:\n" +
+                "#    make -f " + MAKEMAKEFILE_NAME + "\n" +
+                "# or, for Microsoft Visual C++:\n" +
+                "#    nmake -f " + MAKEMAKEFILE_NAME + " MMOPT=-n\n" +
+                "\n" +
+                "MAKEMAKE=opp_makemake $(MMOPT)\n" +
+                "\n" +
+                "all:\n";
+            //FIXME add variables for referenced projects!!!
+            for (IContainer folder : buildSpec.getMakemakeFolders()) {
                 ICProjectDescription projectDescription = CDTPropertyManager.getProjectDescription(getProject());
                 ICConfigurationDescription configuration = projectDescription.getActiveConfiguration();
                 MakemakeOptions translatedOptions = MetaMakemake.translateOptions(folder, buildSpec, configuration);
@@ -475,11 +488,13 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
                     text += "cd " + folder.getProjectRelativePath().toString() + " && ";
                 text += "$(MAKEMAKE) " + translatedOptions.toString() + "\n";
             }
-            catch (CoreException e) {
-                Activator.logError(e);
-            }
+            IFile makemakefile = getProject().getFile(MAKEMAKEFILE_NAME);
+            byte[] bytes = text.getBytes();
+            MakefileTools.ensureFileContent(makemakefile, bytes, null);
         }
-        MessageDialog.openInformation(null, "Result", text); //XXX testing
+        catch (CoreException e) {
+            Activator.logError(e);
+        }
     }
     
     // currently unused (we don't want to encourage the user to mess with CDT settings directly)
@@ -708,7 +723,8 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
             }
 
             if (!isReachable) {
-                comments = "<p>WARNING: This makefile never gets invoked by make"; 
+                comments = "<p>WARNING: This makefile never gets invoked";
+                comments += (parentMakefileFolder!=null ? " by parent makefile" : " (not build root and has no parent makefile)");
                 hasWarning = true;
             }
             if (parentMakefileFolder != null)
@@ -847,7 +863,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         if (buildFolder == null)
             return "Wrong build location: filesystem location \""+ buildLocation + "\" does not exist, or does not map to any folder in the workspace. Check the C/C++ Build page."; //FIXME also print what macro gets resolved to
         if (!buildSpec.getMakeFolders().contains(buildFolder))
-            return "No makefile specified for root build folder " + buildFolder.getFullPath().toString();
+            return "Root build folder " + buildFolder.getFullPath().toString() + " contains no makefile";
 
         return null;
     }
