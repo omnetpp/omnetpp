@@ -647,6 +647,7 @@ WISH
 JRE
 MPICPP
 MPICXX
+OMNETPP_PRODUCT
 OMNETPP_RELEASE
 OMNETPP_VERSION
 OMNETPP_BUILDID
@@ -1878,6 +1879,7 @@ case $host_os in *\ *) host_os=`echo "$host_os" | sed 's/ /-/g'`;; esac
 #
 # OMNeT++/OMNEST version number
 #
+OMNETPP_PRODUCT="OMNeT++"
 OMNETPP_RELEASE=`cat Version`
 OMNETPP_VERSION=`cat Version | sed 's/^.*-//'`
 OMNETPP_BUILDID=internal
@@ -7987,6 +7989,7 @@ ac_config_files="$ac_config_files Makefile.inc test/core/runtest"
 
 
 
+
 #
 # Generate files
 #
@@ -8689,6 +8692,7 @@ WISH!$WISH$ac_delim
 JRE!$JRE$ac_delim
 MPICPP!$MPICPP$ac_delim
 MPICXX!$MPICXX$ac_delim
+OMNETPP_PRODUCT!$OMNETPP_PRODUCT$ac_delim
 OMNETPP_RELEASE!$OMNETPP_RELEASE$ac_delim
 OMNETPP_VERSION!$OMNETPP_VERSION$ac_delim
 OMNETPP_BUILDID!$OMNETPP_BUILDID$ac_delim
@@ -8715,7 +8719,6 @@ MSGC!$MSGC$ac_delim
 NEDTOOL!$NEDTOOL$ac_delim
 AS!$AS$ac_delim
 AR!$AR$ac_delim
-SHLIB_LD!$SHLIB_LD$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -8757,6 +8760,7 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+SHLIB_LD!$SHLIB_LD$ac_delim
 DLLTOOL!$DLLTOOL$ac_delim
 MAKEDEPEND!$MAKEDEPEND$ac_delim
 SHARED_LIBS!$SHARED_LIBS$ac_delim
@@ -8800,7 +8804,7 @@ LIBOBJS!$LIBOBJS$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 41; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 42; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5
@@ -9136,7 +9140,9 @@ chmod +x test/core/runtest
 
 (
 cd src/utils && cp ver.h.base ver.h && \
+echo "#define OMNETPP_PRODUCT \"$OMNETPP_PRODUCT\"" >>ver.h && \
 echo "#define OMNETPP_RELEASE \"$OMNETPP_RELEASE\"" >>ver.h && \
+echo "#define OMNETPP_VERSION \"$OMNETPP_VERSION\"" >>ver.h && \
 echo "#define OMNETPP_BUILDID \"$OMNETPP_BUILDID\"" >>ver.h && \
 echo "#define OMNETPP_EDITION \"$OMNETPP_EDITION\"" >>ver.h
 )

@@ -87,6 +87,7 @@ AC_CANONICAL_HOST()
 #
 # OMNeT++/OMNEST version number
 #
+OMNETPP_PRODUCT="OMNeT++"
 OMNETPP_RELEASE=`cat Version`
 OMNETPP_VERSION=`cat Version | sed 's/^.*-//'`
 OMNETPP_BUILDID=internal
@@ -1059,6 +1060,7 @@ AC_CONFIG_FILES(
 # Substitutions.
 #----------------------
 
+AC_SUBST(OMNETPP_PRODUCT)
 AC_SUBST(OMNETPP_RELEASE)
 AC_SUBST(OMNETPP_VERSION)
 AC_SUBST(OMNETPP_BUILDID)
@@ -1161,7 +1163,9 @@ chmod +x test/core/runtest
 
 (
 cd src/utils && cp ver.h.base ver.h && \
+echo "#define OMNETPP_PRODUCT \"$OMNETPP_PRODUCT\"" >>ver.h && \
 echo "#define OMNETPP_RELEASE \"$OMNETPP_RELEASE\"" >>ver.h && \
+echo "#define OMNETPP_VERSION \"$OMNETPP_VERSION\"" >>ver.h && \
 echo "#define OMNETPP_BUILDID \"$OMNETPP_BUILDID\"" >>ver.h && \
 echo "#define OMNETPP_EDITION \"$OMNETPP_EDITION\"" >>ver.h
 )
