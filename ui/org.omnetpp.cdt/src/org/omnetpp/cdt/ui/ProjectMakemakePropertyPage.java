@@ -31,6 +31,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.preference.IPreferencePageContainer;
 import org.eclipse.jface.preference.PreferencePage;
@@ -70,6 +71,7 @@ import org.omnetpp.cdt.makefile.MakemakeOptions;
 import org.omnetpp.cdt.makefile.MetaMakemake;
 import org.omnetpp.cdt.makefile.MakemakeOptions.Type;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.ui.SizeConstraint;
@@ -469,31 +471,57 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
     protected void exportMakemakefiles() {
         try {
             final String MAKEMAKEFILE_NAME = "makemakefiles";
+            
+            // prelude
             String text = 
+                "#\n" +
                 "# Usage:\n" +
                 "#    make -f " + MAKEMAKEFILE_NAME + "\n" +
                 "# or, for Microsoft Visual C++:\n" +
                 "#    nmake -f " + MAKEMAKEFILE_NAME + " MMOPT=-n\n" +
+                "#\n" +
                 "\n" +
                 "MAKEMAKE=opp_makemake $(MMOPT)\n" +
-                "\n" +
-                "all:\n";
-            //FIXME add variables for referenced projects!!!
-            for (IContainer folder : buildSpec.getMakemakeFolders()) {
-                ICProjectDescription projectDescription = CDTPropertyManager.getProjectDescription(getProject());
-                ICConfigurationDescription configuration = projectDescription.getActiveConfiguration();
-                MakemakeOptions translatedOptions = MetaMakemake.translateOptions(folder, buildSpec, configuration);
-                text += "\t";
-                if (!folder.equals(getProject()))
-                    text += "cd " + folder.getProjectRelativePath().toString() + " && ";
-                text += "$(MAKEMAKE) " + translatedOptions.toString() + "\n";
+                "\n";
+
+            // variables for referenced projects
+            String vars = "";
+            IProject project = getProject();
+            IProject[] referencedProjects = ProjectUtils.getAllReferencedProjects(project, false);
+            for (IProject refProj : referencedProjects) {
+                String variable = Makemake.makeSymbolicProjectName(refProj);
+                IPath path = MakefileTools.makeRelativePath(refProj.getLocation(), project.getLocation());
+                text += variable + "=" + path + "\n";
+                vars += "-K" + variable + "=$(" + variable + ") ";
             }
-            IFile makemakefile = getProject().getFile(MAKEMAKEFILE_NAME);
+            if (referencedProjects.length>0)
+                text += "\n";
+
+            // generate rules
+            text += "all:\n";
+            for (IContainer folder : buildSpec.getMakemakeFolders()) {
+                if (folder.exists()) {
+                    ICProjectDescription projectDescription = CDTPropertyManager.getProjectDescription(project);
+                    ICConfigurationDescription configuration = projectDescription.getActiveConfiguration();
+                    MakemakeOptions translatedOptions = MetaMakemake.translateOptions(folder, buildSpec, configuration);
+                    text += "\t";
+                    if (!folder.equals(project))
+                        text += "cd " + folder.getProjectRelativePath().toString() + " && ";
+                    text += "$(MAKEMAKE) " + vars + translatedOptions.toString() + "\n";
+                }
+            }
+            
+            // save
+            IFile makemakefile = project.getFile(MAKEMAKEFILE_NAME);
             byte[] bytes = text.getBytes();
             MakefileTools.ensureFileContent(makemakefile, bytes, null);
+            makemakefile.refreshLocal(0, null);
+            
+            MessageDialog.openConfirm(getShell(), "Export", makemakefile.getFullPath().toString() + " created.");
         }
         catch (CoreException e) {
             Activator.logError(e);
+            errorDialog(e.getMessage(), e);
         }
     }
     
@@ -923,7 +951,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
     protected void errorDialog(String message, Throwable e) {
         Activator.logError(message, e);
         IStatus status = new Status(IMarker.SEVERITY_ERROR, Activator.PLUGIN_ID, e.getMessage(), e);
-        ErrorDialog.openError(Display.getCurrent().getActiveShell(), "Makemake Options", message, status);
+        ErrorDialog.openError(Display.getCurrent().getActiveShell(), "Error", message, status);
     }
 }
 
