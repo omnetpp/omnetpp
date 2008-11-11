@@ -57,7 +57,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
             markerSynchronizer = new ProblemMarkerSynchronizer(MARKER_ID);
             buildSpec = BuildSpecification.readBuildSpecFile(getProject());
             if (buildSpec == null)
-                buildSpec = BuildSpecification.createInitial(getProject());
+                buildSpec = BuildSpecification.createBlank(getProject());
             
             // refresh makefiles
             generateMakefiles(monitor);
@@ -144,7 +144,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
      * if a wrong one is selected.
      */
     protected void checkActiveCDTConfiguration() {
-        final IProject project = getProject();
+        IProject project = getProject();
         IManagedBuildInfo buildInfo = ManagedBuildManager.getBuildInfo(project);
         IConfiguration activeConfig = buildInfo!=null ? buildInfo.getDefaultConfiguration() : null;
         final IToolChain toolChain = activeConfig!=null ? activeConfig.getToolChain() : null;
@@ -164,7 +164,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
                     IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
                     Shell parent = activeWorkbenchWindow==null ? null : activeWorkbenchWindow.getShell();
                     // note: Display.getCurrent().getActiveShell() is not good as parent (ProgressDialog would pull down our dialog too when it disappears)
-                    MessageDialog.openWarning(parent, "Project "+project.getName(), message);
+                    MessageDialog.openWarning(parent, "Project "+getProject().getName(), message);
                 }
             });
         }
@@ -205,6 +205,16 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
 
         // collect folders
         List<IContainer> makemakeFolders = buildSpec.getMakemakeFolders();
+        if (makemakeFolders.isEmpty())
+            return; // nothing to do
+
+        // get CDT active configuration
+        ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(getProject());
+        ICConfigurationDescription configuration = projectDescription==null ? null : projectDescription.getActiveConfiguration();
+        if (configuration == null) {
+            Activator.log(IMarker.SEVERITY_WARNING, "No CDT build info for project " + getProject().getName() + ", skipping makefile generation");
+            return;
+        }
         
         // register folders in the marker synchronizer
         for (IContainer makemakeFolder : makemakeFolders)
@@ -213,23 +223,20 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         // generate Makefiles in all folders
         long startTime = System.currentTimeMillis();
         for (IContainer makemakeFolder : makemakeFolders)
-            generateMakefileFor(makemakeFolder);
+            generateMakefileFor(makemakeFolder, configuration);
         System.out.println("Generated " + makemakeFolders.size() + " makefiles in: " + (System.currentTimeMillis()-startTime) + "ms");
     }
 
     /**
      * Generate makefile in the given folder.
      */
-    protected void generateMakefileFor(IContainer folder) throws CoreException {
+    protected void generateMakefileFor(IContainer folder, ICConfigurationDescription configuration) throws CoreException {
         boolean ok = false;
         try {
             //System.out.println("Generating makefile in: " + folder.getFullPath());
             Assert.isTrue(folder.getProject().equals(getProject()));
             MakemakeOptions options = buildSpec.getMakemakeOptions(folder);
             Assert.isTrue(options != null);
-
-            ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(folder.getProject());
-            ICConfigurationDescription configuration = projectDescription.getActiveConfiguration();
             MetaMakemake.generateMakefile(folder, buildSpec, configuration);
             ok = true;
         }
