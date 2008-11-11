@@ -317,11 +317,13 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
             treeViewer.expandToLevel(f, 0);
         } 
         ICProjectDescription projectDescription = CDTPropertyManager.getProjectDescription(getProject());
-        ICConfigurationDescription configuration = projectDescription.getActiveConfiguration();
-        ICSourceEntry[] sourceEntries = configuration.getSourceEntries();
-        for (IContainer f : CDTUtils.getSourceLocations(getProject(), sourceEntries)) {
-            treeViewer.expandToLevel(f, 0);
-        } 
+        ICConfigurationDescription configuration = projectDescription==null ? null : projectDescription.getActiveConfiguration();
+        if (configuration != null) {
+            ICSourceEntry[] sourceEntries = configuration.getSourceEntries();
+            for (IContainer f : CDTUtils.getSourceLocations(getProject(), sourceEntries)) {
+                treeViewer.expandToLevel(f, 0);
+            } 
+        }
         
         updatePageState();
         return composite;
@@ -548,6 +550,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
             sourceLocationButton.setEnabled(false);
             excludeButton.setEnabled(false);
             includeButton.setEnabled(false);
+            exportButton.setEnabled(false);
         }
         else {
             // enable/disable buttons
@@ -566,6 +569,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
             sourceLocationButton.setEnabled(!isSourceLocation);
             excludeButton.setEnabled(!isExcluded && !(folder instanceof IProject && sourceEntries.length==1));
             includeButton.setEnabled(isUnderSourceLocation && isExcluded);
+            exportButton.setEnabled(true);
         }
     }
 
