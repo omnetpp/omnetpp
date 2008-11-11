@@ -130,7 +130,7 @@ proc setupTkOptions {} {
       set fonts(bold)    -*-Helvetica-Bold-R-Normal-*-12-*-*-*-*-*-*-*
       set fonts(big)     -*-Helvetica-Medium-R-Normal-*-18-*-*-*-*-*-*-*
       set fonts(msgname) -*-Helvetica-Medium-R-Normal-*-12-*-*-*-*-*-*-*
-      set fonts(fixed)   fixed
+      set fonts(fixed)   -*-Courier-Medium-R-Normal-*-12-*-*-*-*-*-*-*
       set fonts(balloon) -*-Helvetica-Medium-R-Normal-*-12-*-*-*-*-*-*-*
 
       option add *Scrollbar.width  12
