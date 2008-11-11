@@ -19,6 +19,7 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -44,8 +45,8 @@ public class MetaMakemake {
     /**
      * Generates Makefile in the given folder.
      */
-    public static void generateMakefile(IContainer makefileFolder, MakemakeOptions options, List<IContainer> makeFolders, ICConfigurationDescription configuration) throws CoreException, MakemakeException {
-        MakemakeOptions translatedOptions = translateOptions(makefileFolder, options, makeFolders, configuration);
+    public static void generateMakefile(IContainer makefileFolder, BuildSpecification buildSpec, ICConfigurationDescription configuration) throws CoreException, MakemakeException {
+        MakemakeOptions translatedOptions = translateOptions(makefileFolder, buildSpec, configuration);
         IProject project = makefileFolder.getProject();
 
         // Activator.getDependencyCache().dumpPerFileDependencies(project);
@@ -57,11 +58,15 @@ public class MetaMakemake {
     /** 
      * Translates makemake options
      */
-    public static MakemakeOptions translateOptions(IContainer makefileFolder, MakemakeOptions options, List<IContainer> makeFolders, ICConfigurationDescription configuration) throws CoreException {
-        MakemakeOptions translatedOptions = options.clone();
+    public static MakemakeOptions translateOptions(IContainer makefileFolder, BuildSpecification buildSpec, ICConfigurationDescription configuration) throws CoreException {
+        Assert.isTrue(buildSpec.getFolderMakeType(makefileFolder)==BuildSpecification.MAKEMAKE);
 
+        MakemakeOptions options = buildSpec.getMakemakeOptions(makefileFolder); 
+        List<IContainer> makeFolders = buildSpec.getMakeFolders();
         IProject project = makefileFolder.getProject();
         Map<IContainer, Set<IContainer>> folderDeps = Activator.getDependencyCache().getFolderDependencies(project);
+        
+        MakemakeOptions translatedOptions = options.clone();
 
         //Activator.getDependencyCache().dumpPerFileDependencies(project);
         //DependencyCache.dumpFolderDependencies(folderDeps);
@@ -123,10 +128,10 @@ public class MetaMakemake {
         // add libraries from other projects, if requested
         if (options.metaUseExportedLibs) {
             for (IProject referencedProject : referencedProjects) {
-                BuildSpecification buildSpec = BuildSpecification.readBuildSpecFile(referencedProject);
-                if (buildSpec != null) {
-                    for (IContainer f : buildSpec.getMakemakeFolders()) {
-                        MakemakeOptions opt = buildSpec.getMakemakeOptions(f);
+                BuildSpecification refBuildSpec = BuildSpecification.readBuildSpecFile(referencedProject);
+                if (refBuildSpec != null) {
+                    for (IContainer f : refBuildSpec.getMakemakeFolders()) {
+                        MakemakeOptions opt = refBuildSpec.getMakemakeOptions(f);
                         if (opt!=null && (opt.type==Type.SHAREDLIB || opt.type==Type.STATICLIB) && opt.metaExportLibrary) {
                             String libname = StringUtils.isEmpty(opt.target) ? f.getProject().getName() : opt.target;
                             String outdir = StringUtils.isEmpty(opt.outRoot) ? "out" : opt.outRoot; //FIXME hardcoded default!!!
@@ -142,7 +147,7 @@ public class MetaMakemake {
             translatedOptions.metaUseExportedLibs = false;
         }
 
-        BuildSpecification buildSpec = BuildSpecification.readBuildSpecFile(project);  // FIXME get from outside
+        // add paths to other libraries in this project to the library path
         for (IContainer f : buildSpec.getMakemakeFolders()) {
         	if (!f.equals(makefileFolder)) { 
         		MakemakeOptions opt = buildSpec.getMakemakeOptions(f);
@@ -277,12 +282,6 @@ public class MetaMakemake {
 
         // find C++ language settings for this folder
         ICLanguageSetting[] languageSettings = folderDescription.getLanguageSettings();
-
-//      XXX debug code        
-//      String buf = "Languages:";
-//      for (ICLanguageSetting l : languageSettings)
-//      buf += l.getId() + "=" + l.getName() + ",  ";
-//      System.out.println(buf);
 
         ICLanguageSetting languageSetting = null;
         for (ICLanguageSetting l : languageSettings) 

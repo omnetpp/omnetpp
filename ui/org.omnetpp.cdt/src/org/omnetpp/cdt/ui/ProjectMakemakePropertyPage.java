@@ -359,7 +359,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
     protected void editFolderOptions(IContainer folder) {
         if (buildSpec.getFolderMakeType(folder) != BuildSpecification.MAKEMAKE)
             return;
-        MakemakeOptionsDialog dialog = new MakemakeOptionsDialog(getShell(), folder, buildSpec.getMakemakeOptions(folder), buildSpec.getMakeFolders());
+        MakemakeOptionsDialog dialog = new MakemakeOptionsDialog(getShell(), folder, buildSpec);
         if (dialog.open() == Dialog.OK) {
             buildSpec.setMakemakeOptions(folder, dialog.getResult());
             updatePageState();
@@ -465,10 +465,9 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
             "all:\n";
         for (IContainer folder : buildSpec.getMakemakeFolders()) {
             try {
-                MakemakeOptions options = buildSpec.getMakemakeOptions(folder);
                 ICProjectDescription projectDescription = CDTPropertyManager.getProjectDescription(getProject());
                 ICConfigurationDescription configuration = projectDescription.getActiveConfiguration();
-                MakemakeOptions translatedOptions = MetaMakemake.translateOptions(folder, options, buildSpec.getMakeFolders(), configuration);
+                MakemakeOptions translatedOptions = MetaMakemake.translateOptions(folder, buildSpec, configuration);
                 text += "\t";
                 if (!folder.equals(getProject()))
                     text += "cd " + folder.getProjectRelativePath().toString() + " && ";
@@ -529,16 +528,19 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
 
     protected void updatePageState() {
         // display warnings about CDT misconfiguration, etc
-        //FIXME if we find something fishy, stop here
         String message = getDiagnosticMessage(getProject(), buildSpec);
         setDiagnosticMessage(message);
         
         folderInfoCache.clear();
         treeViewer.refresh();
-        
-        // if there's no tree selection, disable all buttons
+
+        IProject project = getProject();
+        ICProjectDescription projectDescription = CDTPropertyManager.getProjectDescription(project);
+        ICConfigurationDescription configuration = projectDescription==null ? null : projectDescription.getActiveConfiguration();
+
         IContainer folder = getTreeSelection();
-        if (folder == null) {
+        if (folder == null || configuration == null) {
+            // there's no tree selection or no active CDT configuration: disable all buttons
             makemakeButton.setEnabled(false);
             customMakeButton.setEnabled(false);
             noMakeButton.setEnabled(false);
@@ -546,28 +548,25 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
             sourceLocationButton.setEnabled(false);
             excludeButton.setEnabled(false);
             includeButton.setEnabled(false);
-            return;
         }
-        
-        // enable/disable buttons
-        IProject project = getProject();
-        int makeType = buildSpec.getFolderMakeType(folder);
-        makemakeButton.setEnabled(makeType!=BuildSpecification.MAKEMAKE);
-        customMakeButton.setEnabled(makeType!=BuildSpecification.CUSTOM);
-        noMakeButton.setEnabled(makeType!=BuildSpecification.NONE);
-        
-        optionsButton.setEnabled(makeType==BuildSpecification.MAKEMAKE);
-        
-        ICProjectDescription projectDescription = CDTPropertyManager.getProjectDescription(project);
-        ICConfigurationDescription configuration = projectDescription.getActiveConfiguration();
-        ICSourceEntry[] sourceEntries = configuration.getSourceEntries();
-        boolean isExcluded = CDTUtils.isExcluded(folder, sourceEntries);
-        boolean isSourceLocation = CDTUtils.getSourceLocations(project, sourceEntries).contains(folder);
-        boolean isUnderSourceLocation = CDTUtils.getSourceEntryThatCovers(folder, sourceEntries) != null;
-        
-        sourceLocationButton.setEnabled(!isSourceLocation);
-        excludeButton.setEnabled(!isExcluded && !(folder instanceof IProject && sourceEntries.length==1));
-        includeButton.setEnabled(isUnderSourceLocation && isExcluded);
+        else {
+            // enable/disable buttons
+            int makeType = buildSpec.getFolderMakeType(folder);
+            makemakeButton.setEnabled(makeType!=BuildSpecification.MAKEMAKE);
+            customMakeButton.setEnabled(makeType!=BuildSpecification.CUSTOM);
+            noMakeButton.setEnabled(makeType!=BuildSpecification.NONE);
+
+            optionsButton.setEnabled(makeType==BuildSpecification.MAKEMAKE);
+
+            ICSourceEntry[] sourceEntries = configuration.getSourceEntries();
+            boolean isExcluded = CDTUtils.isExcluded(folder, sourceEntries);
+            boolean isSourceLocation = CDTUtils.getSourceLocations(project, sourceEntries).contains(folder);
+            boolean isUnderSourceLocation = CDTUtils.getSourceEntryThatCovers(folder, sourceEntries) != null;
+
+            sourceLocationButton.setEnabled(!isSourceLocation);
+            excludeButton.setEnabled(!isExcluded && !(folder instanceof IProject && sourceEntries.length==1));
+            includeButton.setEnabled(isUnderSourceLocation && isExcluded);
+        }
     }
 
     private void setDiagnosticMessage(String message) {
@@ -601,7 +600,15 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         // useful variables
         IProject project = getProject();
         ICProjectDescription projectDescription = CDTPropertyManager.getProjectDescription(project);
-        ICConfigurationDescription configuration = projectDescription.getActiveConfiguration();
+        ICConfigurationDescription configuration = projectDescription==null ? null : projectDescription.getActiveConfiguration();
+        if (configuration == null) {
+            // not a CDT project, or there's no active configuration...
+            info.label = folder.getFullPath().toString();   
+            info.image = Activator.getCachedImage(NONSRC_FOLDER_IMG);
+            info.tooltipBody = null;
+            return info;
+        }
+        
         ICSourceEntry[] sourceEntries = configuration.getSourceEntries();
         boolean isExcluded = CDTUtils.isExcluded(folder, sourceEntries);
         boolean isSrcFolder = CDTUtils.getSourceEntryFor(folder, sourceEntries)!=null;
@@ -685,11 +692,10 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         if (makeType==BuildSpecification.MAKEMAKE) {
             what += "; makefile generation enabled";
             
-            MakemakeOptions options = buildSpec.getMakemakeOptions(folder);
             List<String> submakeDirs = null;
             List<String> sourceDirs = null;
             try {
-                MakemakeOptions translatedOptions = MetaMakemake.translateOptions(folder, options, buildSpec.getMakeFolders(), configuration);
+                MakemakeOptions translatedOptions = MetaMakemake.translateOptions(folder, buildSpec, configuration);
                 submakeDirs = translatedOptions.submakeDirs;
                 sourceDirs = new Makemake().getSourceDirs(folder, translatedOptions);
             }
@@ -698,7 +704,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
             }
 
             if (!isReachable) {
-                comments = "<p>WARNING: This makefile never gets invoked"; 
+                comments = "<p>WARNING: This makefile never gets invoked by make"; 
                 hasWarning = true;
             }
             if (parentMakefileFolder != null)
@@ -897,7 +903,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
     protected void errorDialog(String message, Throwable e) {
         Activator.logError(message, e);
         IStatus status = new Status(IMarker.SEVERITY_ERROR, Activator.PLUGIN_ID, e.getMessage(), e);
-        ErrorDialog.openError(Display.getCurrent().getActiveShell(), "Error", message, status);
+        ErrorDialog.openError(Display.getCurrent().getActiveShell(), "Makemake Options", message, status);
     }
 }
 

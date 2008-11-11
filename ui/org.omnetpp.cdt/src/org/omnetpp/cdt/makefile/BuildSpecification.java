@@ -34,7 +34,7 @@ import org.w3c.dom.NodeList;
  * Represents contents of the OMNeT++ build specification file
  * @author Andras
  */
-public class BuildSpecification {
+public class BuildSpecification implements Cloneable {
     private static final String TYPE_ATTR = "type";
     public static final String BUILDSPEC_FILENAME = ".oppbuildspec";
     private static final String BUILDSPEC_ELEMENTNAME = "buildspec";
@@ -59,6 +59,18 @@ public class BuildSpecification {
         this.project = project;
     }
     
+    @Override
+    public BuildSpecification clone() {
+        BuildSpecification result = new BuildSpecification(project);
+        for (IContainer folder : folderSpecs.keySet()) {
+            FolderSpec tmp = new FolderSpec();
+            tmp.makefileType = folderSpecs.get(folder).makefileType;
+            tmp.makemakeOptions = folderSpecs.get(folder).makemakeOptions.clone();
+            result.folderSpecs.put(folder, tmp);
+        }
+        return result;
+    }
+
     /**
      * Returns the list of folders where there's a makefile,
      * either generated or custom one.

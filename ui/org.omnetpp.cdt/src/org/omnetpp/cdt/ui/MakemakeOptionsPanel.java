@@ -2,7 +2,6 @@ package org.omnetpp.cdt.ui;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.List;
 
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
@@ -13,6 +12,7 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -46,6 +46,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.PropertyPage;
 import org.eclipse.ui.preferences.IWorkbenchPreferenceContainer;
 import org.omnetpp.cdt.Activator;
+import org.omnetpp.cdt.makefile.BuildSpecification;
 import org.omnetpp.cdt.makefile.MakemakeOptions;
 import org.omnetpp.cdt.makefile.MetaMakemake;
 import org.omnetpp.cdt.makefile.MakemakeOptions.Type;
@@ -78,7 +79,7 @@ public class MakemakeOptionsPanel extends Composite {
 
     // the folder whose properties we're editing; needed for Preview panel / translated options
     private IContainer folder;
-    private List<IContainer> makeFolders; // MetaMakemake needs it for preview
+    private BuildSpecification buildSpec; // MetaMakemake needs it for preview; won't be modified
     private PropertyPage ownerPage; // null when we're in MakemakeOptionsDialog
 
     // controls
@@ -460,9 +461,16 @@ public class MakemakeOptionsPanel extends Composite {
         return tabfolder.getSelection().length>0 && tabfolder.getSelection()[0].getControl() == previewPage;
     }
 
-    public void populate(IContainer folder, MakemakeOptions options, List<IContainer> makeFolders) {
+    /**
+     * Set the makemake options to be edited. Note: buildSpec will NOT be modified;
+     * to store the results, the user has to obtain the new options with getResult(), 
+     * and set it back on the buildSpec.
+     */
+    public void populate(IContainer folder, BuildSpecification buildSpec) {
+        Assert.isTrue(buildSpec.getMakemakeOptions(folder)!=null);
+
         this.folder = folder;
-        this.makeFolders = makeFolders;
+        this.buildSpec = buildSpec;
 
         try {
             loadMakefragFiles();
@@ -471,6 +479,7 @@ public class MakemakeOptionsPanel extends Composite {
             errorDialog(e.getMessage(), e);
         }
 
+        MakemakeOptions options = buildSpec.getMakemakeOptions(folder);
         if (isPreviewPageSelected())
             optionsText.setText(options.toString());
         else
@@ -602,7 +611,9 @@ public class MakemakeOptionsPanel extends Composite {
                     // calculate
                     ICProjectDescription projectDescription = CDTPropertyManager.getProjectDescription(folder.getProject());
                     ICConfigurationDescription configuration = projectDescription.getActiveConfiguration();
-                    final String translatedOptions = MetaMakemake.translateOptions(folder, updatedOptions, makeFolders, configuration).toString();
+                    BuildSpecification tempBuildSpec = buildSpec.clone();
+                    tempBuildSpec.setMakemakeOptions(folder, updatedOptions);
+                    final String translatedOptions = MetaMakemake.translateOptions(folder, tempBuildSpec, configuration).toString();
 
                     // display result if it's still relevant 
                     if (jobSerial == thisJobSerial) {
@@ -644,7 +655,8 @@ public class MakemakeOptionsPanel extends Composite {
     }
 
     /**
-     * Returns the current settings
+     * Returns the current settings. The user needs to manually set this on the buildSpec
+     * (the buildSpec won't be modified by this dialog.)
      */
     public MakemakeOptions getResult() {
         MakemakeOptions result = new MakemakeOptions();

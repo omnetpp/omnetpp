@@ -230,7 +230,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
 
             ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(folder.getProject());
             ICConfigurationDescription configuration = projectDescription.getActiveConfiguration();
-            MetaMakemake.generateMakefile(folder, options, buildSpec.getMakeFolders(), configuration);
+            MetaMakemake.generateMakefile(folder, buildSpec, configuration);
             ok = true;
         }
         catch (MakemakeException e) {

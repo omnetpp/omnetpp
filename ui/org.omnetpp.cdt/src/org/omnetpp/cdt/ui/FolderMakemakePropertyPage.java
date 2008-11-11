@@ -3,7 +3,6 @@ package org.omnetpp.cdt.ui;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -21,7 +20,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.dialogs.PropertyPage;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.makefile.BuildSpecification;
-import org.omnetpp.cdt.makefile.MakemakeOptions;
 import org.omnetpp.common.color.ColorFactory;
 
 /**
@@ -85,9 +83,7 @@ public class FolderMakemakePropertyPage extends PropertyPage {
             optionsPanel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
             optionsPanel.setOwnerPage(this);
             
-            MakemakeOptions folderOptions = buildSpec.getMakemakeOptions(folder);
-            Assert.isTrue(folderOptions!=null);
-            optionsPanel.populate(folder, folderOptions, buildSpec.getMakeFolders());
+            optionsPanel.populate(folder, buildSpec);
         }
         else {
             createLabel(composite, "Makefile generation is not enabled for this folder. You can enable it in the Project Properties dialog.");

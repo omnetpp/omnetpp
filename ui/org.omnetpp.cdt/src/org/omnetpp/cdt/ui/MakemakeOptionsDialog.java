@@ -1,7 +1,5 @@
 package org.omnetpp.cdt.ui;
 
-import java.util.List;
-
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.dialogs.ErrorDialog;
@@ -17,6 +15,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.omnetpp.cdt.Activator;
+import org.omnetpp.cdt.makefile.BuildSpecification;
 import org.omnetpp.cdt.makefile.MakemakeOptions;
 import org.omnetpp.common.util.UIUtils;
 
@@ -27,17 +26,16 @@ import org.omnetpp.common.util.UIUtils;
  */
 public class MakemakeOptionsDialog extends TitleAreaDialog {
     protected IContainer folder;
-    protected MakemakeOptions options; // initial/result
-    protected List<IContainer> makeFolders;  // needed by the panel
+    protected BuildSpecification buildSpec;  // needed by the panel
+    protected MakemakeOptions resultOptions;
     
     // controls
     protected MakemakeOptionsPanel optionsPanel;
     
-    public MakemakeOptionsDialog(Shell parentShell, IContainer folder, MakemakeOptions options, List<IContainer> makeFolders) {
+    public MakemakeOptionsDialog(Shell parentShell, IContainer folder, BuildSpecification buildSpec) {
         super(parentShell);
         this.folder = folder;
-        this.options = options;
-        this.makeFolders = makeFolders;
+        this.buildSpec = buildSpec;
     }
     
     @Override
@@ -67,7 +65,7 @@ public class MakemakeOptionsDialog extends TitleAreaDialog {
             }            
         };
         optionsPanel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        optionsPanel.populate(folder, options, makeFolders);
+        optionsPanel.populate(folder, buildSpec);
         return optionsPanel;
     }
 
@@ -81,7 +79,7 @@ public class MakemakeOptionsDialog extends TitleAreaDialog {
     @Override
     protected void okPressed() {
         // save result before dialog gets disposed
-        options = optionsPanel.getResult();
+        resultOptions = optionsPanel.getResult();
 
         try {
             optionsPanel.saveMakefragFiles();
@@ -94,7 +92,7 @@ public class MakemakeOptionsDialog extends TitleAreaDialog {
 
 
     public MakemakeOptions getResult() {
-        return options;
+        return resultOptions;
     }
 
     protected void errorDialog(CoreException e) {
