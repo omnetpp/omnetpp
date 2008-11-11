@@ -124,54 +124,30 @@ import de.unikassel.imageexport.wizards.ExportImagesOfDiagramFilesOperation;
  */
 public class DocumentationGenerator {
     protected String dotExecutablePath;
-
     protected String doxyExecutablePath;
-
     protected IPath documentationRootPath;
-
     protected IPath rootRelativeDoxyPath;
-
     protected IPath doxyRelativeRootPath;
-
     protected IPath absoluteDoxyConfigFilePath;
-
     protected IPath rootRelativeNeddocPath;
-
     protected IPath neddocRelativeRootPath;
-
     protected IProject project;
-
     protected NEDResources nedResources;
-
     protected MsgResources msgResources;
-
     protected IProgressMonitor monitor;
-
     protected File currentOutputFile;
-
     protected Map<File, FileOutputStream> outputStreams = new HashMap<File, FileOutputStream>();
-
     protected ArrayList<IFile> files = new ArrayList<IFile>();
-
     protected ArrayList<ITypeElement> typeElements = new ArrayList<ITypeElement>();
-
     protected Map<ITypeElement, ArrayList<ITypeElement>> subtypesMap = new HashMap<ITypeElement, ArrayList<ITypeElement>>();
-
     protected Map<INedTypeElement, ArrayList<INedTypeElement>> implementorsMap = new HashMap<INedTypeElement, ArrayList<INedTypeElement>>();
-
     protected Map<ITypeElement, ArrayList<ITypeElement>> usersMap = new HashMap<ITypeElement, ArrayList<ITypeElement>>();
-
     protected Map<String, ITypeElement> typeNamesMap = new HashMap<String, ITypeElement>();
-
     protected Map<String, String> doxyMap = new HashMap<String, String>();
-
     protected Pattern typeNamesPattern;
-
     protected GeneratorConfiguration configuration;
-
-    private ArrayList<String> packageNames;
-
-    private int treeFolderIndex = 0;
+    protected ArrayList<String> packageNames;
+    protected int treeFolderIndex = 0;
 
     public DocumentationGenerator(IProject project) {
         this.project = project;
@@ -207,7 +183,7 @@ public class DocumentationGenerator {
     }
 
     public void generate() throws Exception {
-        Job job = new Job("Generating neddoc...") {
+        Job job = new Job("Generating NED Documentation...") {
             @Override
             protected IStatus run(IProgressMonitor monitor) {
                 try {
@@ -237,7 +213,7 @@ public class DocumentationGenerator {
                     if (e.getMessage() != null) {
                         DisplayUtils.runNowOrSyncInUIThread(new java.lang.Runnable() {
                             public void run() {
-                                MessageDialog.openError(null, "Error during generating neddoc", e.getMessage());
+                                MessageDialog.openError(null, "Error during generating NED documentation", e.getMessage());
                             }
                         });
                     }
@@ -497,7 +473,8 @@ public class DocumentationGenerator {
                 throw new IllegalStateException("The Doxygen executable path is invalid, set it using Window/Preferences...\nThe currently set path is: " + doxyExecutablePath);
 
             try {
-                monitor.beginTask("Generating doxy...", IProgressMonitor.UNKNOWN);
+                monitor.beginTask("Running doxygen...", IProgressMonitor.UNKNOWN);
+                monitor.subTask("Waiting for doxygen to complete"); // needed, otherwise Eclipse progress dialog will show last subtask of previous task
                 File doxyConfigFile = absoluteDoxyConfigFilePath.toFile();
 
                 if (!doxyConfigFile.exists()) {
@@ -1077,7 +1054,7 @@ public class DocumentationGenerator {
             for (final IFile file : files) {
                 withGeneratingHTMLFile(getOutputFileName(file), new Runnable() {
                     public void run() throws IOException, CoreException {
-                        monitor.subTask(file.toString());
+                        monitor.subTask(file.getFullPath().toString());
                         String fileType = nedResources.isNedFile(file) ? "NED" : msgResources.isMsgFile(file) ? "Msg" : "";
 
                         out("<h2 class=\"comptitle\">" + fileType + " File <i>" + file.getProjectRelativePath() + "</i></h2>\r\n" +
@@ -1550,7 +1527,7 @@ public class DocumentationGenerator {
                 monitor.beginTask("Moving type diagrams...", nedFiles.size());
 
                 for (IFile file : nedFiles) {
-                    monitor.subTask(file.toString());
+                    monitor.subTask(file.getFullPath().toString());
                     List<INedTypeElement> typeElements = nedResources.getNedFileElement(file).getTopLevelTypeNodes();
 
                     for (INedTypeElement typeElement : typeElements) {

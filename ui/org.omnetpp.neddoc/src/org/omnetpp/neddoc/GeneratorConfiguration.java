@@ -6,17 +6,11 @@ import org.omnetpp.common.util.StringUtils;
 
 public class GeneratorConfiguration {
     private static final String GENERATE_NED_TYPE_FIGURES = "GenerateNedTypeFigures";
-
     private static final String GENERATE_USAGE_DIAGRAMS = "GenerateUsageDiagrams";
-
     private static final String GENERATE_INHERITANCE_DIAGRAMS = "GenerateInheritanceDiagrams";
-
     private static final String GENERATE_SOURCE_CONTENT = "GenerateSourceContent";
-
     private static final String GENERATE_DOXY = "GenerateDoxy";
-
     private static final String DOXY_SOURCE_BROWSER = "DoxySourceBrowser";
-
     private static final String OUTPUT_DIRECTORY_PATH = "OutputDirectoryPath";
 
     public IProject[] projects;
