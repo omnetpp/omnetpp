@@ -91,6 +91,7 @@ $O/cmdenv.o: cmdenv.cc \
   ../../include/cenvir.h \
   ../../include/cmsgpar.h \
   ../../include/ccomponent.h \
+  ../../include/cproperties.h \
   ../../include/cregistrationlist.h \
   ../../include/cconfiguration.h \
   ../../include/opp_string.h \
@@ -113,10 +114,9 @@ $O/cmdenv.o: cmdenv.cc \
   ../../include/csimplemodule.h \
   ../../include/cmodule.h \
   ../../include/platdep/platmisc.h \
-  ../envir/matchableobject.h \
   ../../include/simutil.h \
   ../../include/cmessageheap.h \
   ../../include/cexception.h \
+  ../../include/cproperty.h \
   ../../include/platdep/intxtypes.h \
-  ../envir/matchablefield.h \
   ../../include/ccomponenttype.h

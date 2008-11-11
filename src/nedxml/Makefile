@@ -313,9 +313,9 @@ $O/nedtool.o: nedtool.cc \
   nedelements.h \
   xmlgenerator.h \
   neddtdvalidatorbase.h \
-  ../utils/ver.h \
   neddtdvalidator.h \
   nedcrossvalidator.h \
+  ../common/ver.h \
   nedxmldefs.h \
   nedvalidator.h \
   nedxmlparser.h

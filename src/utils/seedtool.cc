@@ -23,6 +23,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "../common/ver.h"
 
 #define INTRAND_MAX  0x7ffffffeL  /* = 2**31-2 */
 
@@ -156,7 +157,9 @@ int main(int argc, char *argv[])
     if (argc==1)
     {
          fprintf(stderr,
-               "seedtool - part of OMNeT++/OMNEST, (C) 1992-2008 Andras Varga, OpenSim Ltd.\n"
+               "seedtool -- part of " OMNETPP_PRODUCT ", (C) 2006-2008 Andras Varga, OpenSim Ltd.\n"
+               "Version: " OMNETPP_VERSION ", build: " OMNETPP_BUILDID ", edition: " OMNETPP_EDITION "\n"
+               "\n"
                "See the license for distribution terms and warranty disclaimer.\n"
                "\n"
                "Generates seeds for the LCG32 random number generator. This RNG has a\n"

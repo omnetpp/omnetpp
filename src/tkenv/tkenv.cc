@@ -45,7 +45,7 @@
 #include "modinsp.h"
 #include "timeutil.h"
 #include "stringutil.h"
-#include "../utils/ver.h"
+#include "../common/ver.h"
 
 
 // default plugin path -- allow overriding it via compiler option (-D)

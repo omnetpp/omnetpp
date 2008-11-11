@@ -15,7 +15,7 @@
 *--------------------------------------------------------------*/
 
 #include <time.h>
-#include "../utils/ver.h"
+#include "../common/ver.h"
 #include "platmisc.h"
 #include "filereader.h"
 #include "linetokenizer.h"
@@ -348,8 +348,8 @@ void usage(const char *message)
         fprintf(stderr, "Error: %s\n\n", message);
 
     fprintf(stderr, ""
-"eventlogtool -- part of OMNeT++/OMNEST, (C) 2006-2008 Andras Varga, OpenSim Ltd.\n"
-"Release: " OMNETPP_RELEASE ", build: " OMNETPP_BUILDID ", edition: " OMNETPP_EDITION "\n"
+"eventlogtool -- part of " OMNETPP_PRODUCT ", (C) 2006-2008 Andras Varga, OpenSim Ltd.\n"
+"Version: " OMNETPP_VERSION ", build: " OMNETPP_BUILDID ", edition: " OMNETPP_EDITION "\n"
 "\n"
 "Usage:\n"
 "   eventlogtool <command> [options]* <input-file-name>\n"

@@ -233,8 +233,8 @@ $O/eventlogtool.o: eventlogtool.cc \
   ../common/exception.h \
   ../common/commonutil.h \
   ../common/linetokenizer.h \
-  ../utils/ver.h \
   event.h \
+  ../common/ver.h \
   ../common/bigdecimal.h \
   ../common/stringpool.h \
   ieventlog.h \
@@ -319,6 +319,7 @@ $O/messagedependency.o: messagedependency.cc \
   ../common/exception.h \
   ../common/commonutil.h \
   ../common/linetokenizer.h \
+  event.h \
   ../common/bigdecimal.h \
   ../common/filereader.h \
   ieventlog.h

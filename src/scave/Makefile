@@ -490,7 +490,7 @@ $O/scavetool.o: scavetool.cc \
   ../common/exception.h \
   ../common/commonutil.h \
   vectorfileindexer.h \
-  ../utils/ver.h \
+  ../common/ver.h \
   ../common/bigdecimal.h \
   ../common/filereader.h
 $O/scaveutils.o: scaveutils.cc \
@@ -516,6 +516,7 @@ $O/slidingwinavg.o: slidingwinavg.cc \
 $O/stddev.o: stddev.cc \
   ../common/commondefs.h \
   xyarray.h \
+  scaveutils.h \
   node.h \
   channel.h \
   ../common/progressmonitor.h \

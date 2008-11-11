@@ -17,7 +17,7 @@
 
 #include <assert.h>
 #include <sstream>
-#include "../utils/ver.h"
+#include "../common/ver.h"
 #include "resultfilemanager.h"
 #include "nodetype.h"
 #include "nodetyperegistry.h"
@@ -39,8 +39,8 @@ USING_NAMESPACE
 void printUsage()
 {
     printf(
-       "scavetool -- part of OMNeT++/OMNEST, (C) 2008 Andras Varga\n"
-       "Release: " OMNETPP_RELEASE ", build: " OMNETPP_BUILDID ", edition: " OMNETPP_EDITION "\n"
+       "scavetool -- part of " OMNETPP_PRODUCT ", (C) 2006-2008 Andras Varga, OpenSim Ltd.\n"
+       "Version: " OMNETPP_VERSION ", build: " OMNETPP_BUILDID ", edition: " OMNETPP_EDITION "\n"
        "\n"
        "Usage: scavetool <command> [options] <files>...\n"
        "\n"

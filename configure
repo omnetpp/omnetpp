@@ -9134,14 +9134,16 @@ if test "$no_create" != yes; then
 fi
 
 
-#FIXME check this list
 chmod +x src/utils/opp_makemake
 chmod +x src/utils/opp_test
 chmod +x src/utils/opp_makedep
+chmod +x src/utils/omnest
+chmod +x src/utils/omnetpp
+chmod +x src/utils/opp_test
 chmod +x test/core/runtest
 
 (
-cd src/utils && cp ver.h.base ver.h && \
+cd src/common && cp ver.h.base ver.h && \
 echo "#define OMNETPP_PRODUCT \"$OMNETPP_PRODUCT\"" >>ver.h && \
 echo "#define OMNETPP_RELEASE \"$OMNETPP_RELEASE\"" >>ver.h && \
 echo "#define OMNETPP_VERSION \"$OMNETPP_VERSION\"" >>ver.h && \

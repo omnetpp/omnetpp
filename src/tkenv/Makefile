@@ -145,6 +145,7 @@ $O/inspector.o: inspector.cc \
   ../../include/cenum.h \
   ../../include/cdynamicexpression.h \
   ../../include/platdep/timeutil.h \
+  ../../include/cdelaychannel.h \
   ../../include/cconfiguration.h \
   ../../include/chasher.h \
   ../../include/nedsupport.h \
@@ -171,7 +172,6 @@ $O/inspector.o: inspector.cc \
   ../../include/clcg32.h \
   ../../include/cmodule.h \
   ../../include/platdep/platmisc.h \
-  ../envir/matchableobject.h \
   ../../include/cexception.h \
   ../../include/cpsquare.h \
   ../../include/ctopology.h \
@@ -182,9 +182,9 @@ $O/inspector.o: inspector.cc \
   ../../include/ccoroutine.h \
   ../../include/cdetect.h \
   ../../include/platdep/platdefs.h \
+  ../../include/cwatch.h \
   ../../include/coutvector.h \
   ../../include/cqueue.h \
-  ../../include/cwatch.h \
   ../../include/cclassfactory.h \
   ../../include/cdataratechannel.h \
   ../../include/cmathfunction.h \
@@ -228,8 +228,7 @@ $O/inspector.o: inspector.cc \
   ../../include/cmessageheap.h \
   ../../include/simutil.h \
   tkenv.h \
-  ../../include/cproperty.h \
-  ../envir/matchablefield.h
+  ../../include/cproperty.h
 $O/inspfactory.o: inspfactory.cc \
   ../envir/args.h \
   ../../include/regmacros.h \
@@ -249,6 +248,7 @@ $O/inspfactory.o: inspfactory.cc \
   ../../include/cenum.h \
   ../../include/cdynamicexpression.h \
   ../../include/platdep/timeutil.h \
+  ../../include/cdelaychannel.h \
   ../../include/cconfiguration.h \
   ../../include/chasher.h \
   ../../include/nedsupport.h \
@@ -275,7 +275,6 @@ $O/inspfactory.o: inspfactory.cc \
   ../../include/clcg32.h \
   ../../include/cmodule.h \
   ../../include/platdep/platmisc.h \
-  ../envir/matchableobject.h \
   ../../include/cexception.h \
   ../../include/cpsquare.h \
   ../../include/ctopology.h \
@@ -286,9 +285,9 @@ $O/inspfactory.o: inspfactory.cc \
   ../../include/ccoroutine.h \
   ../../include/cdetect.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cwatch.h \
   ../../include/cqueue.h \
   ../../include/coutvector.h \
+  ../../include/cwatch.h \
   ../../include/cclassfactory.h \
   ../../include/cmathfunction.h \
   ../../include/cdataratechannel.h \
@@ -333,8 +332,7 @@ $O/inspfactory.o: inspfactory.cc \
   ../../include/cmessageheap.h \
   ../../include/simutil.h \
   tkenv.h \
-  ../../include/cproperty.h \
-  ../envir/matchablefield.h
+  ../../include/cproperty.h
 $O/layouterenv.o: layouterenv.cc \
   ../../include/regmacros.h \
   ../envir/args.h \
@@ -360,7 +358,6 @@ $O/layouterenv.o: layouterenv.cc \
   ../../include/csimplemodule.h \
   ../../include/platdep/platmisc.h \
   ../../include/cmodule.h \
-  ../envir/matchableobject.h \
   ../../include/cexception.h \
   ../../include/platdep/intxtypes.h \
   ../../include/ccomponenttype.h \
@@ -377,8 +374,8 @@ $O/layouterenv.o: layouterenv.cc \
   ../../include/cgate.h \
   ../../include/simtime.h \
   ../../include/carray.h \
-  ../../include/simtime_t.h \
   ../../include/cenvir.h \
+  ../../include/simtime_t.h \
   ../../include/cmsgpar.h \
   ../../include/cstatistic.h \
   inspector.h \
@@ -395,8 +392,7 @@ $O/layouterenv.o: layouterenv.cc \
   ../../include/cdefaultlist.h \
   ../../include/cstddev.h \
   ../../include/simutil.h \
-  ../../include/cmessageheap.h \
-  ../envir/matchablefield.h
+  ../../include/cmessageheap.h
 $O/modinsp.o: modinsp.cc \
   ../../include/regmacros.h \
   ../envir/args.h \
@@ -423,7 +419,6 @@ $O/modinsp.o: modinsp.cc \
   ../../include/csimplemodule.h \
   ../../include/platdep/platmisc.h \
   ../../include/cmodule.h \
-  ../envir/matchableobject.h \
   ../../include/cexception.h \
   ../../include/platdep/intxtypes.h \
   ../../include/ccomponenttype.h \
@@ -440,8 +435,8 @@ $O/modinsp.o: modinsp.cc \
   ../../include/cgate.h \
   ../../include/simtime.h \
   ../../include/carray.h \
-  ../../include/simtime_t.h \
   ../../include/cenvir.h \
+  ../../include/simtime_t.h \
   ../../include/cmsgpar.h \
   ../../include/cstatistic.h \
   inspector.h \
@@ -461,8 +456,7 @@ $O/modinsp.o: modinsp.cc \
   ../../include/cstddev.h \
   ../../include/simutil.h \
   ../../include/cmessageheap.h \
-  tkenv.h \
-  ../envir/matchablefield.h
+  tkenv.h
 $O/objinsp.o: objinsp.cc \
   ../envir/args.h \
   ../../include/regmacros.h \
@@ -483,6 +477,7 @@ $O/objinsp.o: objinsp.cc \
   ../../include/cenum.h \
   ../../include/cdynamicexpression.h \
   ../../include/platdep/timeutil.h \
+  ../../include/cdelaychannel.h \
   ../../include/cconfiguration.h \
   ../../include/chasher.h \
   ../../include/nedsupport.h \
@@ -509,7 +504,6 @@ $O/objinsp.o: objinsp.cc \
   ../../include/clcg32.h \
   ../../include/cmodule.h \
   ../../include/platdep/platmisc.h \
-  ../envir/matchableobject.h \
   ../../include/cexception.h \
   ../../include/cpsquare.h \
   ../../include/ctopology.h \
@@ -520,9 +514,9 @@ $O/objinsp.o: objinsp.cc \
   ../../include/ccoroutine.h \
   ../../include/cdetect.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cwatch.h \
   ../../include/cqueue.h \
   ../../include/coutvector.h \
+  ../../include/cwatch.h \
   ../../include/cclassfactory.h \
   ../../include/cmathfunction.h \
   ../../include/cdataratechannel.h \
@@ -567,8 +561,7 @@ $O/objinsp.o: objinsp.cc \
   ../../include/cmessageheap.h \
   ../../include/simutil.h \
   tkenv.h \
-  ../../include/cproperty.h \
-  ../envir/matchablefield.h
+  ../../include/cproperty.h
 $O/osxproctype.o: osxproctype.cc
 $O/statinsp.o: statinsp.cc \
   ../envir/args.h \
@@ -592,7 +585,6 @@ $O/statinsp.o: statinsp.cc \
   tkutil.h \
   ../../include/platdep/platmisc.h \
   ../../include/cmodule.h \
-  ../envir/matchableobject.h \
   ../../include/cexception.h \
   ../../include/platdep/intxtypes.h \
   ../../include/ccomponenttype.h \
@@ -606,8 +598,8 @@ $O/statinsp.o: statinsp.cc \
   ../../include/cgate.h \
   ../../include/simtime.h \
   ../../include/carray.h \
-  ../../include/simtime_t.h \
   ../../include/cenvir.h \
+  ../../include/simtime_t.h \
   ../../include/cmsgpar.h \
   ../../include/cstatistic.h \
   inspector.h \
@@ -627,9 +619,7 @@ $O/statinsp.o: statinsp.cc \
   ../../include/simutil.h \
   ../../include/cmessageheap.h \
   tkenv.h \
-  statinsp.h \
-  ../envir/matchablefield.h
-$O/tclcode.o: tclcode.cc
+  statinsp.h
 $O/tkcmd.o: tkcmd.cc \
   ../envir/args.h \
   ../../include/regmacros.h \
@@ -693,8 +683,7 @@ $O/tkcmd.o: tkcmd.cc \
   ../../include/cdefaultlist.h \
   ../../include/cmessageheap.h \
   ../../include/simutil.h \
-  tkenv.h \
-  ../envir/matchablefield.h
+  tkenv.h
 $O/tkenv.o: tkenv.cc \
   ../envir/args.h \
   ../../include/regmacros.h \
@@ -705,6 +694,7 @@ $O/tkenv.o: tkenv.cc \
   ../envir/objectprinter.h \
   ../envir/speedometer.h \
   ../../include/ccomponent.h \
+  ../../include/cproperties.h \
   ../../include/cregistrationlist.h \
   ../../include/platdep/timeutil.h \
   ../../include/cconfiguration.h \
@@ -716,16 +706,13 @@ $O/tkenv.o: tkenv.cc \
   ../../include/envirext.h \
   ../../include/cscheduler.h \
   ../../include/cpar.h \
-  tclcode.cc \
   ../../include/globals.h \
   ../envir/appreg.h \
   ../../include/cvisitor.h \
   tkutil.h \
   ../../include/csimplemodule.h \
-  ../utils/ver.h \
   ../../include/cmodule.h \
   ../../include/platdep/platmisc.h \
-  ../envir/matchableobject.h \
   ../../include/cexception.h \
   ../../include/platdep/intxtypes.h \
   ../../include/ccomponenttype.h \
@@ -762,10 +749,11 @@ $O/tkenv.o: tkenv.cc \
   ../../include/cdensityestbase.h \
   ../../include/cdefaultlist.h \
   ../../include/cstddev.h \
+  ../common/ver.h \
   ../../include/cmessageheap.h \
   ../../include/simutil.h \
   tkenv.h \
-  ../envir/matchablefield.h
+  ../../include/cproperty.h
 $O/tklib.o: tklib.cc \
   ../envir/args.h \
   ../../include/regmacros.h \
@@ -787,7 +775,6 @@ $O/tklib.o: tklib.cc \
   tkutil.h \
   ../../include/cmodule.h \
   ../../include/platdep/platmisc.h \
-  ../envir/matchableobject.h \
   ../../include/cexception.h \
   ../../include/platdep/intxtypes.h \
   ../../include/ccomponenttype.h \
@@ -813,8 +800,7 @@ $O/tklib.o: tklib.cc \
   ../../include/cdefaultlist.h \
   ../../include/cmessageheap.h \
   ../../include/simutil.h \
-  tkenv.h \
-  ../envir/matchablefield.h
+  tkenv.h
 $O/tkutil.o: tkutil.cc \
   ../envir/args.h \
   ../../include/regmacros.h \
@@ -862,8 +848,7 @@ $O/tkutil.o: tkutil.cc \
   ../../include/cdefaultlist.h \
   ../../include/cmessageheap.h \
   ../../include/simutil.h \
-  tkenv.h \
-  ../envir/matchablefield.h
+  tkenv.h
 $O/visitor.o: visitor.cc \
   ../envir/args.h \
   ../../include/regmacros.h \
@@ -919,7 +904,6 @@ $O/visitor.o: visitor.cc \
   ../../include/cdefaultlist.h \
   tkenv.h \
   ../../include/cmessageheap.h \
-  ../../include/simutil.h \
-  ../envir/matchablefield.h
+  ../../include/simutil.h
 $O/tkImgPNG.o: tkImgPNG.c
 $O/tkImgPNGInit.o: tkImgPNGInit.c

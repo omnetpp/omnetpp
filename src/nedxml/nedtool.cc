@@ -40,7 +40,7 @@
 #include "fileutil.h"
 #include "stringutil.h"
 #include "platmisc.h"   // getcwd, chdir
-#include "../utils/ver.h"
+#include "../common/ver.h"
 
 USING_NAMESPACE
 
@@ -83,8 +83,8 @@ FilesElement *outputtree;
 void printUsage()
 {
     fprintf(stderr,
-       "nedtool -- part of OMNeT++/OMNEST, (C) 2002-2008 Andras Varga, OpenSim Ltd.\n"
-       "Release: " OMNETPP_RELEASE ", build: " OMNETPP_BUILDID ", edition: " OMNETPP_EDITION "\n"
+       "nedtool -- part of " OMNETPP_PRODUCT ", (C) 2006-2008 Andras Varga, OpenSim Ltd.\n"
+       "Version: " OMNETPP_VERSION ", build: " OMNETPP_BUILDID ", edition: " OMNETPP_EDITION "\n"
        "\n"
        "Usage: nedtool [options] <file1> <file2> ...\n"
        "Files may be given in a listfile as well, with the @listfile or @@listfile\n"
