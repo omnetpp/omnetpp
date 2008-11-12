@@ -19,6 +19,7 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.NoHttpResponseException;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
+import org.apache.commons.httpclient.auth.BasicScheme;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.lang.StringUtils;
@@ -438,6 +439,7 @@ public class OmnetppStartup implements IStartup {
         };
 
         GetMethod method = new GetMethod(url);
+        method.getProxyAuthState().setAuthScheme(new BasicScheme());
         method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, noRetryhandler);
         method.setDoAuthentication(true);
 
