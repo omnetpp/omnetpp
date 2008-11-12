@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,13 +17,15 @@ import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpMethodRetryHandler;
 import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.NoHttpResponseException;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.auth.BasicScheme;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.impl.Jdk14Logger;
 import org.eclipse.core.internal.net.ProxyData;
 import org.eclipse.core.internal.net.ProxyManager;
 import org.eclipse.core.net.proxy.IProxyData;
@@ -419,6 +422,11 @@ public class OmnetppStartup implements IStartup {
      * Returns null on failure, otherwise the page content.
      */
     protected String getPageContent(String url, IProxyData proxyData) {
+        // turn off log messages from Apache HttpClient if we can...
+        Log log = LogFactory.getLog("org.apache.commons.httpclient");
+        if (log instanceof Jdk14Logger)
+            ((Jdk14Logger)log).getLogger().setLevel(Level.OFF);
+        
         HttpClient client = new HttpClient();
         client.getParams().setSoTimeout(10000);       
         if (proxyData != null && !StringUtils.isEmpty(proxyData.getHost())) {
@@ -442,7 +450,7 @@ public class OmnetppStartup implements IStartup {
         method.getProxyAuthState().setAuthScheme(new BasicScheme());
         method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, noRetryhandler);
         method.setDoAuthentication(true);
-
+        
         try {
             int status = client.executeMethod(method);
             String responseBody = method.getResponseBodyAsString();
