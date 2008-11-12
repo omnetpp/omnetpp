@@ -64,7 +64,7 @@ LINUX32_ONLY=
 LDFLAGS+= -static-libgcc -L$O
 else
 define LINUX32_ONLY
-   # linux-only:
+   @# linux-only:
 endef
 endif
 
