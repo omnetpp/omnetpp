@@ -56,13 +56,14 @@ ifeq ("$(JNI_LIB_SUFFIX)",".jnilib")
 STRIP_FLAGS=-x
 endif
 
-# on Linux, link libgcc and libstdc++ statically, to reduce dependencies
+# on Linux 32bit, link libgcc and libstdc++ statically, to reduce dependencies
 # see http://www.trilithium.com/johan/2005/06/static-libstdc/
-ifeq ("$(JNI_LIB_SUFFIX)",".so")
-LINUX_ONLY=
+# on linux 64 bit we should link against libstdc++_pic.a- but it does not work so we are linking dinamically 
+ifeq ("$(PLATFORM)","linux.x86")
+LINUX32_ONLY=
 LDFLAGS+= -static-libgcc -L$O
 else
-define LINUX_ONLY
+define LINUX32_ONLY
    # linux-only:
 endef
 endif
@@ -122,10 +123,10 @@ eventlog.cxx : eventlog.i
 	$(SWIG) -c++ -java $(INCLUDES) -package $(EVENTLOG_JAVAPKG) -outdir $(EVENTLOG_JAVADIR) -o $@ $<
 
 $O/$(DLL): $(OBJS)
-	$(LINUX_ONLY) ln -sf `g++ -print-file-name=libstdc++.a` $O
+	$(LINUX32_ONLY) ln -sf `g++ -print-file-name=libstdc++.a` $O
 	$(SHLIB_LD) -o $O/$(DLL) $(OBJS) $(LIBS) $(LDFLAGS)
 	strip $(STRIP_FLAGS) $O/$(DLL)
-	$(LINUX_ONLY) if ldd $O/$(DLL) | grep -F 'libstdc++'; then echo "Error: $(DLL) not statically linked with libstdc++"; exit 1; fi
+	$(LINUX32_ONLY) if ldd $O/$(DLL) | grep -F 'libstdc++'; then echo "Error: $(DLL) not statically linked with libstdc++"; exit 1; fi
 
 $(DLL_TARGET_DIR)/$(DLL): $O/$(DLL)
 	cp $O/$(DLL) $(DLL_TARGET_DIR)
