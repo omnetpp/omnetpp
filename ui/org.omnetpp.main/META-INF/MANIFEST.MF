@@ -16,7 +16,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.navigator.resources,
  org.eclipse.ui.browser,
  org.omnetpp.common,
- org.apache.commons.httpclient;bundle-version="3.1.0"
+ org.apache.commons.httpclient,
+ org.apache.commons.logging
 Eclipse-LazyStart: true
 Export-Package: org.omnetpp.ide;
   uses:="org.eclipse.jface.action,
