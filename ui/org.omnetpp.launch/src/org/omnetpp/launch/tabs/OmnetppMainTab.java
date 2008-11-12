@@ -29,6 +29,9 @@ import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
 import org.eclipse.debug.ui.DebugUITools;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -124,7 +127,12 @@ implements ModifyListener {
         debugLaunchMode = ILaunchManager.DEBUG_MODE.equals(getLaunchConfigurationDialog().getMode());
         runTooltip = debugLaunchMode ? "The run number that should be executed (default: 0)"
                 : "The run number(s) that should be executed (eg.: 0,2,7,9..11 or * for all runs) (default: 0)";
-        Composite comp = SWTFactory.createComposite(parent, 1, 1, GridData.FILL_HORIZONTAL);
+		final ScrolledComposite scollComp = new ScrolledComposite( parent, SWT.V_SCROLL | SWT.H_SCROLL );
+		scollComp.setExpandHorizontal(true);
+		scollComp.setExpandVertical(true);
+		
+
+		final Composite comp = SWTFactory.createComposite(scollComp, 1, 1, GridData.FILL_HORIZONTAL);
         createWorkingDirGroup(comp, 1);
         createSimulationGroup(comp, 1);
         createOptionsGroup(comp, 1);
@@ -132,8 +140,17 @@ implements ModifyListener {
         Composite advancedGroup = createAdvancedGroup(comp, 1);
         ToggleLink more = new ToggleLink(comp, SWT.NONE);
         more.setControls(new Control[] { advancedGroup });
+        
+        more.addSelectionListener(new SelectionAdapter() {
+        	@Override
+        	public void widgetSelected(SelectionEvent e) {
+        		scollComp.setMinSize(comp.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+        	}
+        });
 
-        setControl(comp);
+        scollComp.setMinSize(comp.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+        scollComp.setContent(comp);
+        setControl(scollComp);
     }
 
     public void initializeFrom(ILaunchConfiguration config) {
@@ -549,23 +566,6 @@ implements ModifyListener {
             }
         }
 
-        String libText = fLibraryText.getText().trim();
-        if (fProgOppRunButton.getSelection() && StringUtils.isBlank(libText)) {
-                setErrorMessage("Shared libraries must be set if opp_run is used to launch the simulation");
-                return false;
-        }
-        IFile libfiles[] = getLibFiles();
-        if (libfiles == null) {
-            setErrorMessage("Library file does not exist, or not accessible in workspace");
-            return false;
-        }
-        for (IFile ifile : libfiles) {
-            if (!ifile.isAccessible()) {
-                setErrorMessage("Library file "+ifile.getName()+" does not exist, or not accessible in workspace");
-                return false;
-            }
-        }
-
         boolean isMultipleRuns;
         try {
             isMultipleRuns = OmnetppLaunchUtils.containsMultipleRuns(StringUtils.deleteWhitespace(fRunText.getText()));
@@ -621,12 +621,21 @@ implements ModifyListener {
 
     protected void handleBrowseLibrariesButtonSelected() {
         String extensionRegexp = ".*\\.";
-        if (SWT.getPlatform().equals("win32"))
-            extensionRegexp += "dll";
-        else if (SWT.getPlatform().equals("carbon"))
-            extensionRegexp += "dylib";
-        else
-            extensionRegexp += "so";
+        String extension = "";
+        String prefix = "";
+        if (Platform.getOS().equals(Platform.OS_WIN32 )) {
+            extension = "dll";
+        } 
+        else if (Platform.getOS().equals(Platform.OS_MACOSX)) {
+            extension = "dylib";
+            prefix= "lib";
+        }
+        else {
+            extension = "so";
+            prefix = "lib";
+        }
+        extensionRegexp += extension;
+        
         ElementTreeSelectionDialog dialog
         = new ElementTreeSelectionDialog(getShell(), new WorkbenchLabelProvider(),
                 new OmnetppLaunchUtils.FilteredWorkbenchContentProvider(extensionRegexp));
@@ -640,12 +649,23 @@ implements ModifyListener {
             IContainer workingDirectory = getWorkingDirectory();
             for (Object resource : dialog.getResult()) {
                 if (resource instanceof IFile && workingDirectory != null) {
-                    libfiles += OmnetppLaunchUtils.makeRelativePathTo(((IFile)resource).getFullPath(),
-                            workingDirectory.getFullPath()).toString()+" ";
+                    libfiles += removePrefixSuffixFromName(
+                    		      OmnetppLaunchUtils.makeRelativePathTo(((IFile)resource).getFullPath(), workingDirectory.getFullPath())
+                    		      ,prefix, "."+extension)+" ";
                 }
             }
             fLibraryText.setText(libfiles.trim());
         }
+    }
+    
+    /**
+     * Removes the given suffix and prefix from the NAME part of the path.
+     */
+    private String removePrefixSuffixFromName(IPath path, String namePrefix, String nameSuffix) {
+    	String lastSeg = path.lastSegment();
+    	lastSeg = StringUtils.removeStart(lastSeg, namePrefix);
+    	lastSeg = StringUtils.removeEnd(lastSeg, nameSuffix);
+    	return path.removeLastSegments(1).append(lastSeg).toString();
     }
 
     protected void handleBrowseInifileButtonSelected() {

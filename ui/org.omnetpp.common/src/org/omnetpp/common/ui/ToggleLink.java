@@ -8,6 +8,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Link;
+import org.eclipse.swt.widgets.TypedListener;
 
 
 /**
@@ -89,4 +90,13 @@ public class ToggleLink extends Composite {
         link.setText(isOpen ? lessText : moreText);
         getParent().layout();
     }
+    
+    public void addSelectionListener (SelectionListener listener) {
+    	link.addSelectionListener(listener);
+    }
+    
+    public void removeSelectionListener (SelectionListener listener) {
+    	link.removeSelectionListener(listener);
+    }
+    
 }

@@ -276,10 +276,9 @@
                value="org.eclipse.cdt.managedbuilder.core.managedBuildNature">
          </filter>
          <enabledWhen>
-            <or>
-                <instanceof value="org.eclipse.core.resources.IFolder"/>
-               <instanceof value="org.eclipse.cdt.core.model.ICContainer"/>  <!-- and not ICProject? -->
-            </or>
+            <adapt
+                  type="org.eclipse.core.resources.IFolder">
+            </adapt>
          </enabledWhen>
       </page>
       <page
@@ -296,10 +295,9 @@
                value="org.eclipse.cdt.managedbuilder.core.managedBuildNature">
          </filter>
          <enabledWhen>
-            <or>
-               <instanceof value="org.eclipse.core.resources.IProject"/>
-               <instanceof value="org.eclipse.cdt.core.model.ICProject"/>
-            </or>
+            <adapt
+                  type="org.eclipse.core.resources.IProject">
+            </adapt>
          </enabledWhen>
       </page>
    </extension>
