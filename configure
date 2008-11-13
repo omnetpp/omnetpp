@@ -1885,6 +1885,9 @@ OMNETPP_VERSION=`cat Version | sed 's/^.*-//'`
 OMNETPP_BUILDID=internal
 OMNETPP_EDITION="Academic Public License -- NOT FOR COMMERCIAL USE"
 
+# We'll collect in this variable the components we've detected problems with
+OPP_PROBLEM_PACKAGES=
+
 #
 # Location of various components. They are defined here so that they can be overridden in configure.user.
 #
@@ -2033,9 +2036,6 @@ WHOLE_ARCHIVE_OFF=
 MSGC=${MSGC:-opp_msgc}
 NEDTOOL=${NEDTOOL:-nedtool}
 MAKEDEPEND=${MAKEDEPEND:-opp_makedep -Y --objdirtree}
-
-# We'll collect in this variable the components we've detected problems with
-OPP_PROBLEM_PACKAGES=
 
 #----------------------
 # Check compiler
@@ -3726,8 +3726,11 @@ CFLAGS_DEBUG="$CFLAGS_DEBUG $CFLAGS_ARCH"
 CFLAGS_RELEASE="$CFLAGS_RELEASE $CFLAGS_ARCH"
 LDFLAGS="$LDFLAGS $LDFLAGS_ARCH"
 
-# add RUNTIME_PATH option if supported so setting LD_LIBRARY_PATH is no longer needed when using shared libs
-# . is added to the rpath so opp_run -L option does not need full path
+#----------------------
+# Check for rpath
+#----------------------
+# add RUNTIME_PATH option if supported, so that setting LD_LIBRARY_PATH is no longer needed when using shared libs.
+# Also, we add "." to rpath so that opp_run -L option does not need full path of the library
 { echo "$as_me:$LINENO: checking whether linker supports -rpath" >&5
 echo $ECHO_N "checking whether linker supports -rpath... $ECHO_C" >&6; }
 LDFLAGS_SAVE="$LDFLAGS"
