@@ -61,6 +61,7 @@ import org.w3c.dom.NodeList;
  * 
  * @author Andras
  */
+@SuppressWarnings("restriction")
 public class OmnetppStartup implements IStartup {
     public static final String SAMPLES_DIR = "samples";
     
@@ -210,7 +211,6 @@ public class OmnetppStartup implements IStartup {
      * Checks whether the given web page is available and contains something (i.e. is not empty).
      * Proxy detection is a royal pain here.
      */
-    @SuppressWarnings("restriction")
     public boolean isWebPageNotBlank(String url) {
         // try with Eclipse settings
         IProxyData proxyData = ProxyManager.getProxyManager().getProxyDataForHost("omnetpp.org", IProxyData.HTTP_PROXY_TYPE);
@@ -383,7 +383,6 @@ public class OmnetppStartup implements IStartup {
     /**
      * Download "proxy.pac" from the given URL, and try to find proxy settings in it.
      */
-    @SuppressWarnings("restriction")
     protected IProxyData[] detectPotentialProxies(String proxyPacUrl) {
         String proxyPacText = getPageContent(proxyPacUrl, null);
         if (proxyPacText == null)
@@ -404,7 +403,6 @@ public class OmnetppStartup implements IStartup {
      * Parse URL of the syntax http://host:port/ or http://username:password@host:port/,
      * being a little flexible (allow http:// to be missing, trailing slash to be missing, etc)
      */
-    @SuppressWarnings("restriction")
     protected IProxyData parseHttpProxyURL(String url) {
         Matcher matcher = Pattern.compile("(http:/*)?((.+):(.+)@)?([^:]+)(:([0-9]+))?/?").matcher(url);
         if (matcher.matches()) {
