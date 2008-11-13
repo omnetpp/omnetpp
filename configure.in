@@ -243,75 +243,6 @@ NEDTOOL=${NEDTOOL:-nedtool}
 MAKEDEPEND=${MAKEDEPEND:-opp_makedep -Y --objdirtree}
 
 #----------------------
-# set arch specific flags
-#----------------------
-CFLAGS_DEBUG="$CFLAGS_DEBUG $CFLAGS_ARCH"
-CFLAGS_RELEASE="$CFLAGS_RELEASE $CFLAGS_ARCH"
-LDFLAGS="$LDFLAGS $LDFLAGS_ARCH"
-
-#----------------------
-# Check Cygwin
-#----------------------
-if test "$WITH_PARSIM" = "yes" -a "$cygwin" = "yes"; then
-   AC_MSG_ERROR([WITH_PARSIM=yes not supported with Cygwin -- please edit configure.user!])
-fi
-
-#----------------------
-# Checks for programs.
-#----------------------
-
-AC_PROG_YACC
-if test "$YACC" = "yacc"; then
-   AC_MSG_ERROR([Bison not found, needed to build OMNeT++/OMNEST -- please install it!])
-fi
-BISON_VER_LINE=`$YACC --version | grep "bison.* [[234]]\\."`
-if test -z "$BISON_VER_LINE"; then
-   AC_MSG_ERROR([At least bison version 2.0 required -- type '$YACC --version' to see the version number])
-fi
-
-AC_PROG_LEX
-if test "$LEX" != "flex"; then
-   AC_MSG_ERROR([Flex not found, needed to build OMNeT++/OMNEST -- please install it!])
-fi
-FLEX_VER_LINE=`$LEX --version | grep "flex.* 2\\.[[5-9]]"`
-if test -z "$FLEX_VER_LINE"; then
-   AC_MSG_ERROR([At least flex version 2.5 required -- type '$LEX --version' to see the version number])
-fi
-
-# make must be GNU make
-AC_CHECK_PROG(MAKE, make , make, not found)
-if test "$MAKE" = "not found"; then
-   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES make"
-   AC_MSG_ERROR(make program not found -- it is required to build OMNeT++/OMNEST, and also for model development.)
-else
-   if "$MAKE" --version 2>/dev/null | grep -i GNU >/dev/null; then :; else
-       AC_MSG_ERROR(GNU Make is required to build OMNeT++/OMNEST.)
-   fi
-fi
-
-# perl is needed for opp_msgc
-AC_ARG_VAR(PERL, The Perl interpreter)
-AC_CHECK_PROG(PERL, perl, perl, not found)
-if test "$PERL" = "not found"; then
-   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  perl"
-   AC_MSG_WARN(Perl not found -- please install it! Perl is required by opp_msgc, opp_makemake and other features.)
-fi
-if test ! -x /usr/bin/perl; then
-   this_perl=`which perl`
-   AC_MSG_ERROR(Perl MUST be available as /usr/bin/perl. Creating a soft link should help: ln -s $this_perl /usr/bin/perl)
-fi
-
-# swig is used for building the ui support libs
-AC_ARG_VAR(SWIG, The Swig interface generator)
-AC_CHECK_PROG(SWIG, swig, swig, not found)
-
-if test "$SWIG" = "not found"; then
-   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  swig (optional)"
-   AC_MSG_WARN(swig not found -- it is only needed to rebuild the OMNeT++/OMNEST IDE support library.)
-   AC_MSG_WARN(It is available from http://www.swig.org/)
-fi
-
-#----------------------
 # Check compiler
 #----------------------
 
@@ -596,6 +527,20 @@ rm -f conftest_a.* conftest_m.* libconftest_a.a conftest
 
 
 #----------------------
+# Check Cygwin
+#----------------------
+if test "$WITH_PARSIM" = "yes" -a "$cygwin" = "yes"; then
+   AC_MSG_ERROR([WITH_PARSIM=yes not supported with Cygwin -- please edit configure.user!])
+fi
+
+#----------------------
+# set arch specific flags
+#----------------------
+CFLAGS_DEBUG="$CFLAGS_DEBUG $CFLAGS_ARCH"
+CFLAGS_RELEASE="$CFLAGS_RELEASE $CFLAGS_ARCH"
+LDFLAGS="$LDFLAGS $LDFLAGS_ARCH"
+
+#----------------------
 # Check for rpath
 #----------------------
 # add RUNTIME_PATH option if supported, so that setting LD_LIBRARY_PATH is no longer needed when using shared libs.
@@ -608,6 +553,60 @@ AC_LINK_IFELSE(
      [AC_MSG_RESULT(yes)],
      [AC_MSG_RESULT(no); RPATH_UNSUPPORTED="true"; LDFLAGS="$LDFLAGS_SAVE"])
 
+#----------------------
+# Checks for programs.
+#----------------------
+
+AC_PROG_YACC
+if test "$YACC" = "yacc"; then
+   AC_MSG_ERROR([Bison not found, needed to build OMNeT++/OMNEST -- please install it!])
+fi
+BISON_VER_LINE=`$YACC --version | grep "bison.* [[234]]\\."`
+if test -z "$BISON_VER_LINE"; then
+   AC_MSG_ERROR([At least bison version 2.0 required -- type '$YACC --version' to see the version number])
+fi
+
+AC_PROG_LEX
+if test "$LEX" != "flex"; then
+   AC_MSG_ERROR([Flex not found, needed to build OMNeT++/OMNEST -- please install it!])
+fi
+FLEX_VER_LINE=`$LEX --version | grep "flex.* 2\\.[[5-9]]"`
+if test -z "$FLEX_VER_LINE"; then
+   AC_MSG_ERROR([At least flex version 2.5 required -- type '$LEX --version' to see the version number])
+fi
+
+# make must be GNU make
+AC_CHECK_PROG(MAKE, make , make, not found)
+if test "$MAKE" = "not found"; then
+   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES make"
+   AC_MSG_ERROR(make program not found -- it is required to build OMNeT++/OMNEST, and also for model development.)
+else
+   if "$MAKE" --version 2>/dev/null | grep -i GNU >/dev/null; then :; else
+       AC_MSG_ERROR(GNU Make is required to build OMNeT++/OMNEST.)
+   fi
+fi
+
+# perl is needed for opp_msgc
+AC_ARG_VAR(PERL, The Perl interpreter)
+AC_CHECK_PROG(PERL, perl, perl, not found)
+if test "$PERL" = "not found"; then
+   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  perl"
+   AC_MSG_WARN(Perl not found -- please install it! Perl is required by opp_msgc, opp_makemake and other features.)
+fi
+if test ! -x /usr/bin/perl; then
+   this_perl=`which perl`
+   AC_MSG_ERROR(Perl MUST be available as /usr/bin/perl. Creating a soft link should help: ln -s $this_perl /usr/bin/perl)
+fi
+
+# swig is used for building the ui support libs
+AC_ARG_VAR(SWIG, The Swig interface generator)
+AC_CHECK_PROG(SWIG, swig, swig, not found)
+
+if test "$SWIG" = "not found"; then
+   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  swig (optional)"
+   AC_MSG_WARN(swig not found -- it is only needed to rebuild the OMNeT++/OMNEST IDE support library.)
+   AC_MSG_WARN(It is available from http://www.swig.org/)
+fi
 
 #----------------------
 # Checks for standard libraries.
