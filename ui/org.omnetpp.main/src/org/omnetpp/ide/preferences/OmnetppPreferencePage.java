@@ -42,6 +42,32 @@ public class OmnetppPreferencePage
 	public static final String DOXYGEN_EXECUTABLE = "doxygenExecutable";
     public static final String GRAPHVIZ_DOT_EXECUTABLE = "graphvizDotExecutable";
 
+    protected static class DirectoryListFieldEditor extends DirectoryFieldEditor {
+        public DirectoryListFieldEditor(String name, String labelText, Composite parent) {
+            super(name, labelText, parent);
+            setChangeButtonText("Append...");
+            setErrorMessage("Value contains nonexistent directory");
+        }    
+
+        @Override
+        protected String changePressed() {
+            String original = getTextControl().getText();
+            String newDir = super.changePressed();
+            if (newDir == null) 
+                return null;
+            return StringUtils.join(new String[] {original, newDir}, ";");
+        }
+        
+        @Override
+        protected boolean doCheckState() {
+            String dirNames = getTextControl().getText();
+            for (String dirName : dirNames.split(";"))
+                if (!StringUtils.isEmpty(dirName) && !new File(dirName.trim()).isDirectory())
+                    return false;
+            return true;
+        }
+    }
+    
     public OmnetppPreferencePage() {
 		super(GRID);
 		setPreferenceStore(OmnetppMainPlugin.getDefault().getConfigurationPreferenceStore());
@@ -51,10 +77,10 @@ public class OmnetppPreferencePage
 		Composite parent = getFieldEditorParent();
         final Group group = createGroup(parent, "OMNeT++", 3, 3, GridData.FILL_HORIZONTAL);
         Composite spacer = createComposite(group, 3, 3, GridData.FILL_HORIZONTAL);
+        createLabel(spacer, "Install location is the directory where the Makefile.inc or configuser.vc is located.", 3);
         addAndFillIntoGrid(new DirectoryFieldEditor(OmnetppPreferencePage.OMNETPP_ROOT, "Install location:", spacer), spacer, 3);
-        createLabel(spacer, "Note: This is the directory where the Makefile.inc or configuser.vc are located.", 3);
-        addAndFillIntoGrid(new DirectoryFieldEditor(OmnetppPreferencePage.OMNETPP_IMAGE_PATH, "Image path:", spacer), spacer, 3);
-        createLabel(spacer, "Note: This is a semicolon-separated path to directory trees that contain icons.", 3);
+        addAndFillIntoGrid(new DirectoryListFieldEditor(OmnetppPreferencePage.OMNETPP_IMAGE_PATH, "Image path:", spacer), spacer, 3);
+        //createLabel(spacer, "Note: This is a semicolon-separated path to directory trees that contain icons.", 3);
         
 		// supported only in the commercial build
 		if (IConstants.IS_COMMERCIAL) {
@@ -101,7 +127,7 @@ public class OmnetppPreferencePage
 	    GridData gd = new GridData(GridData.FILL_HORIZONTAL);
 	    gd.horizontalSpan = hspan;
 	    gd.grabExcessHorizontalSpace = false;
-	    gd.horizontalIndent = 15;
+	    //gd.horizontalIndent = 10;
 	    l.setLayoutData(gd);
 	    return l;
 	}
