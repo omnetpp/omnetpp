@@ -54,7 +54,7 @@ public class TextDifferenceUtils {
 		int offset = 0;
 		for (int i = 0 ; i < differences.length; i++) {
 			RangeDifference difference = differences[i];
-			//System.out.println(difference);
+			//Debug.println(difference);
 
 			int leftStart = difference.leftStart();
 			int leftEnd = difference.leftEnd();

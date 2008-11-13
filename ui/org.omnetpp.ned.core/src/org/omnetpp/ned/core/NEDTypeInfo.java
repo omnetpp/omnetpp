@@ -10,6 +10,7 @@ import java.util.Set;
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDElement;
@@ -192,7 +193,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 		//long startMillis = System.currentTimeMillis();
 
         ++debugRefreshLocalCount;
-        // System.out.println("NEDTypeInfo for "+getName()+" localRefresh: " + refreshLocalCount);
+        // Debug.println("NEDTypeInfo for "+getName()+" localRefresh: " + refreshLocalCount);
 
    		// clear tables before collecting members
         localInterfaces.clear();
@@ -277,7 +278,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
         needsRefreshLocal = false;
 
 		//long dt = System.currentTimeMillis() - startMillis;
-        //System.out.println("typeInfo " + getName() + " refreshLocalMembers(): " + dt + "ms");
+        //Debug.println("typeInfo " + getName() + " refreshLocalMembers(): " + dt + "ms");
     }
 
 	/**
@@ -292,7 +293,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
         ++debugRefreshInheritedCount;
 
         if (debug)
-            System.out.println("NEDTypeInfo for "+getName()+" inheritedRefresh: " + debugRefreshInheritedCount);
+            Debug.println("NEDTypeInfo for "+getName()+" inheritedRefresh: " + debugRefreshInheritedCount);
 
         // first wee need our local members updated
         if (needsRefreshLocal)
@@ -338,14 +339,14 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 		}
 
 		//long dt = System.currentTimeMillis() - startMillis;
-        //System.out.println("typeInfo " + getName() + " refreshInherited(): " + dt + "ms");
+        //Debug.println("typeInfo " + getName() + " refreshInherited(): " + dt + "ms");
 
         needsRefreshInherited = false;
 	}
 
 	public void invalidate() {
 	    if (debug)
-	        System.out.println(getName() +  ": invalidated *all* members (local+inherited)");
+	        Debug.println(getName() +  ": invalidated *all* members (local+inherited)");
 	    
 		fullyQualifiedName = null;
         needsRefreshLocal = true;
@@ -356,7 +357,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 
 	public void invalidateInherited() {
         if (debug)
-            System.out.println(getName() +  ": invalidated inherited members");
+            Debug.println(getName() +  ": invalidated inherited members");
         
 		fullyQualifiedName = null;
 		needsRefreshInherited = true;
@@ -587,19 +588,19 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
     }
 
     public void debugDump() {
-    	System.out.println("NEDTypeInfo: " + getNEDElement().toString() + " debugId=" + debugId);
+    	Debug.println("NEDTypeInfo: " + getNEDElement().toString() + " debugId=" + debugId);
     	if (needsRefreshInherited || needsRefreshLocal)
-    		System.out.println(" currently invalid (needs refresh)");
-    	System.out.println("  extends chain: " + StringUtils.join(getExtendsChain(), ", "));
-    	System.out.println("  local interfaces: " + StringUtils.join(localInterfaces, ", "));
-    	System.out.println("  all interfaces: " + StringUtils.join(allInterfaces, ", "));
-    	System.out.println("  local gates: " + StringUtils.join(localGateDecls.keySet(), ", "));
-    	System.out.println("  all gates: " + StringUtils.join(allGates.keySet(), ", "));
-    	System.out.println("  local parameter declarations: " + StringUtils.join(localParamDecls.keySet(), ", "));
-    	System.out.println("  all parameter declarations: " + StringUtils.join(allParamDecls.keySet(), ", "));
-    	System.out.println("  local properties: " + StringUtils.join(localProperties.keySet(), ", "));
-    	System.out.println("  all properties: " + StringUtils.join(allProperties.keySet(), ", "));
-    	System.out.println("  local submodules: " + StringUtils.join(localSubmodules.keySet(), ", "));
-    	System.out.println("  all submodules: " + StringUtils.join(allSubmodules.keySet(), ", "));
+    		Debug.println(" currently invalid (needs refresh)");
+    	Debug.println("  extends chain: " + StringUtils.join(getExtendsChain(), ", "));
+    	Debug.println("  local interfaces: " + StringUtils.join(localInterfaces, ", "));
+    	Debug.println("  all interfaces: " + StringUtils.join(allInterfaces, ", "));
+    	Debug.println("  local gates: " + StringUtils.join(localGateDecls.keySet(), ", "));
+    	Debug.println("  all gates: " + StringUtils.join(allGates.keySet(), ", "));
+    	Debug.println("  local parameter declarations: " + StringUtils.join(localParamDecls.keySet(), ", "));
+    	Debug.println("  all parameter declarations: " + StringUtils.join(allParamDecls.keySet(), ", "));
+    	Debug.println("  local properties: " + StringUtils.join(localProperties.keySet(), ", "));
+    	Debug.println("  all properties: " + StringUtils.join(allProperties.keySet(), ", "));
+    	Debug.println("  local submodules: " + StringUtils.join(localSubmodules.keySet(), ", "));
+    	Debug.println("  all submodules: " + StringUtils.join(allSubmodules.keySet(), ", "));
     }
 }

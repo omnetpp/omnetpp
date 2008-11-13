@@ -634,7 +634,7 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
                 if (end != -1) {
                     end += endTagLen;
                     String tag = template.substring(start, end);
-                    //System.out.println("processing " + tag);
+                    //Debug.println("processing " + tag);
                     String key = template.substring(start+startTagLen, end - endTagLen);
                     if (key.indexOf('\n') != -1)
                         throw new RuntimeException("template error: newline inside " + quoteString(tag) + " (misplaced start/end tag?)");

@@ -30,6 +30,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.DelayedJob;
@@ -286,7 +287,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
 	        if (treeDifferenceApplier.hasDifferences()) {
 	        	// push tree differences into the official tree
-//	        	System.out.println("pushing text editor changes into NEDResources tree:\n  " + treeDifferenceApplier);
+//	        	Debug.println("pushing text editor changes into NEDResources tree:\n  " + treeDifferenceApplier);
 		        currentTree.fireModelEvent(new NEDBeginModelChangeEvent(currentTree));
 	        	currentTree.setSyntaxProblemMaxLocalSeverity(INEDElement.SEVERITY_NONE);
 		        treeDifferenceApplier.apply();
@@ -499,7 +500,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         rehashIfNeeded();
 		Assert.isTrue(lookupContext!=null, "lookupNedType() cannot be called with context==null");
 		
-		// if (debug) System.out.println("looking up: " + name + " in " + lookupContext.debugString());
+		// if (debug) Debug.println("looking up: " + name + " in " + lookupContext.debugString());
 		
 	    // note: this method is to be kept consistent with NEDResourceCache::resolveNedType() in the C++ code
 	    // note2: partially qualified names are not supported: name must be either simple name or fully qualified
@@ -733,7 +734,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     	//Assert.isTrue(isNEDFile(file), "file is outside the NED source folders, or not a NED file at all");
 
         if (debug)
-            System.out.println("reading from disk: " + file.toString());
+            Debug.println("reading from disk: " + file.toString());
 
         // parse the NED file and put it into the hash table
         NEDMarkerErrorStore errorStore = new NEDMarkerErrorStore(file, markerSync, NEDSYNTAXPROBLEM_MARKERID);
@@ -855,13 +856,13 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         	}
 
         	if (debug)
-        		System.out.println("types in project " + project.getName() + ": " + StringUtils.join(projectData.components.keySet(), ", ", " and "));
+        		Debug.println("types in project " + project.getName() + ": " + StringUtils.join(projectData.components.keySet(), ", ", " and "));
 
         }
 
         if (debug) {
         	long dt = System.currentTimeMillis() - startMillis;
-        	System.out.println("rehash(): " + dt + "ms, " + nedFiles.size() + " files, " + projects.size() + " projects");
+        	Debug.println("rehash(): " + dt + "ms, " + nedFiles.size() + " files, " + projects.size() + " projects");
         }
 
         // schedule a validation
@@ -900,7 +901,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 		// fake a begin change event, then "finally" an end change event
 		fireBeginChangeEvent();
 		if (debug)
-			System.out.println("Validation started");
+			Debug.println("Validation started");
 		ProblemMarkerSynchronizer markerSync = new ProblemMarkerSynchronizer(NEDCONSISTENCYPROBLEM_MARKERID);
 		try {
             // clear consistency error markers from the ned tree
@@ -952,8 +953,8 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
         if (debug) {
         	long dt = System.currentTimeMillis() - startMillis;
-        	System.out.println("validateAllFiles(): " + dt + "ms, " + markerSync.getNumberOfMarkers() + " markers on " + markerSync.getNumberOfFiles() + " files");
-        	System.out.println("typeinfo: refreshLocalCount:" + NEDTypeInfo.debugRefreshLocalCount + "  refreshInheritedCount:" + NEDTypeInfo.debugRefreshInheritedCount);
+        	Debug.println("validateAllFiles(): " + dt + "ms, " + markerSync.getNumberOfMarkers() + " markers on " + markerSync.getNumberOfFiles() + " files");
+        	Debug.println("typeinfo: refreshLocalCount:" + NEDTypeInfo.debugRefreshLocalCount + "  refreshInheritedCount:" + NEDTypeInfo.debugRefreshInheritedCount);
         }
 	}
 
@@ -1100,7 +1101,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
      */
     protected void nedModelChanged(NEDModelEvent event) {
         
-    	// System.out.println("**** nedModelChanged - notify");
+    	// Debug.println("**** nedModelChanged - notify");
         if (nedModelChangeNotificationDisabled)
             return;
 
@@ -1119,7 +1120,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
             nedModelChangeListenerList.fireModelChanged(event);
 
         // long dt = System.currentTimeMillis() - startMillis;
-        // System.out.println("visual notification took " + dt + "ms");
+        // Debug.println("visual notification took " + dt + "ms");
     }
 
     /**
@@ -1183,21 +1184,21 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
     // Utility functions for debugging
     public static void printResourceChangeEvent(IResourceChangeEvent event) {
-        System.out.println("event type: "+event.getType());
+        Debug.println("event type: "+event.getType());
     }
 
     @SuppressWarnings("restriction")
 	public static void printDelta(IResourceDelta delta) {
     	// LEGEND: [+] added, [-] removed, [*] changed, [>] and [<] phantom added/removed;
     	// then: {CONTENT, MOVED_FROM, MOVED_TO, OPEN, TYPE, SYNC, MARKERS, REPLACED, DESCRIPTION, ENCODING}
-    	System.out.println("  "+((ResourceDelta)delta).toDebugString());
+    	Debug.println("  "+((ResourceDelta)delta).toDebugString());
     }
 
     public void dumpProjectsTable() {
-		System.out.println(projects.size() + " projects:");
+		Debug.println(projects.size() + " projects:");
     	for (IProject project : projects.keySet()) {
     		ProjectData projectData = projects.get(project);
-    		System.out.println("  " + project.getName() + ":" +
+    		Debug.println("  " + project.getName() + ":" +
     				"  deps: " + StringUtils.join(projectData.referencedProjects, ",") +
     				"  nedfolders: " + StringUtils.join(projectData.nedSourceFolders, ","));
     	}

@@ -24,6 +24,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.IWorkbenchWindow;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.ui.GenericTreeContentProvider;
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.inifile.editor.TestSupport;
@@ -226,7 +227,7 @@ public class InifileFormEditor extends Composite {
 	 * of config keys that do not appear on any form page.
 	 */
 	public void dumpForgottenConfigKeys() {
-		System.out.println("Checking if all config keys are covered by the forms...");
+		Debug.println("Checking if all config keys are covered by the forms...");
 
 		// collect keys supported by the editor forms
 		Set<ConfigKey> supportedKeys = new HashSet<ConfigKey>();
@@ -245,12 +246,12 @@ public class InifileFormEditor extends Composite {
 		// see which keys are not supported anywhere
 		for (ConfigKey key : ConfigRegistry.getEntries())
 			if (!supportedKeys.contains(key))
-				System.out.println(" - forgotten key: "+key.getKey());
+				Debug.println(" - forgotten key: "+key.getKey());
         for (ConfigKey key : ConfigRegistry.getPerObjectEntries())
             if (!supportedKeys.contains(key))
-                System.out.println(" - forgotten key: **."+key.getKey());
+                Debug.println(" - forgotten key: **."+key.getKey());
 
-		System.out.println("Checking done.");
+		Debug.println("Checking done.");
 	}
 
 }

@@ -77,7 +77,7 @@ public abstract class AbstractModuleView extends ViewWithMessagePart implements 
 		selectionChangedListener = new ISelectionListener() {
 			public void selectionChanged(IWorkbenchPart part, ISelection selection) {
 				if (part != AbstractModuleView.this) // ignore our own selection changes
-					// System.out.println("*** AbstractModule selection changed from: "+part);
+					// Debug.println("*** AbstractModule selection changed from: "+part);
 					workbenchSelectionChanged();
 			}
 		};
@@ -153,17 +153,17 @@ public abstract class AbstractModuleView extends ViewWithMessagePart implements 
 	}
 
 	protected void viewActivated() {
-		//System.out.println("*** VIEW ACTIVATED");
+		//Debug.println("*** VIEW ACTIVATED");
 		scheduleRebuildContent();
 	}
 
 	protected void activeEditorChanged() {
-		//System.out.println("*** ACTIVE EDITOR CHANGED");
+		//Debug.println("*** ACTIVE EDITOR CHANGED");
 		scheduleRebuildContent();
 	}
 
 	protected void nedModelChanged() {
-		//System.out.println("*** NED MODEL CHANGE");
+		//Debug.println("*** NED MODEL CHANGE");
 		scheduleRebuildContent();
 	}
 
@@ -258,7 +258,7 @@ public abstract class AbstractModuleView extends ViewWithMessagePart implements 
 		// to a different editor (i.e. not the active editor), because we might miss updates.
 		//XXX check.
 		
-        //System.out.println("*** CONTENT REBUILD");
+        //Debug.println("*** CONTENT REBUILD");
 		IEditorPart activeEditor = getAssociatedEditor();
 		if (activeEditor==null) {
 			showMessage("There is no active editor.");

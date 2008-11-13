@@ -12,6 +12,7 @@ import java.util.Set;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.emf.ecore.EObject;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.engine.DataflowManager;
 import org.omnetpp.scave.engine.FileRunList;
@@ -204,7 +205,7 @@ public class DataflowNetworkBuilder {
 		@Override
 		public void connected(PortWrapper in) {
 			Assert.isTrue(in == inPort);
-			//System.out.format("Connecting %x%n", inPort.id);
+			//Debug.format("Connecting %x%n", inPort.id);
 			outPort.id = DatasetManager.ensureComputedResultItem(operation, inPort.id, outVectorId, resultfileManager, warnings); 
 			idToOutputPortMap.remove(inPort.id);
 			idToOutputPortMap.put(outPort.id, outPort);
@@ -249,7 +250,7 @@ public class DataflowNetworkBuilder {
 		@Override
 		public void connected(PortWrapper in) {
 			Assert.isTrue(in == inPort);
-			//System.out.format("Connecting %x%n", inPort.id);
+			//Debug.format("Connecting %x%n", inPort.id);
 			outPort1.id = DatasetManager.ensureComputedResultItem(operation, inPort.id, outVectorId, resultfileManager, warnings); 
 			outPort2.id = inPort.id;
 			idToOutputPortMap.put(outPort1.id, outPort1);
@@ -496,7 +497,7 @@ public class DataflowNetworkBuilder {
 		}
 		finally {
 			if (debug)
-				System.out.format("build dataflow network: %dms%n", System.currentTimeMillis() - start);
+				Debug.format("build dataflow network: %dms%n", System.currentTimeMillis() - start);
 		}
 	}
 	
@@ -514,7 +515,7 @@ public class DataflowNetworkBuilder {
 		}
 		finally {
 			if (debug)
-				System.out.format("build dataflow network: %dms%n", System.currentTimeMillis() - start);
+				Debug.format("build dataflow network: %dms%n", System.currentTimeMillis() - start);
 		}
 	}
 	
@@ -532,7 +533,7 @@ public class DataflowNetworkBuilder {
 		}
 		finally {
 			if (debug)
-				System.out.format("build dataflow network: %dms%n", System.currentTimeMillis() - start);
+				Debug.format("build dataflow network: %dms%n", System.currentTimeMillis() - start);
 		}
 	}
 	
@@ -564,7 +565,7 @@ public class DataflowNetworkBuilder {
 		new NetworkBuilder(target).doSwitch(dataset);
 
 		if (debug) {
-			System.out.println("Dataflow network");
+			Debug.println("Dataflow network");
 			dumpNetwork();
 		}
 	}
@@ -688,7 +689,7 @@ public class DataflowNetworkBuilder {
 			for (SinkNode sinkNode : sinkNodes) {
 				
 				// create the arraybuilder node
-				if (debug) System.out.format("Creating: %s%n", sinkNode);
+				if (debug) Debug.format("Creating: %s%n", sinkNode);
 				sinkNode.createNodes(dataflowManager);
 				
 				// follow the channels backwards
@@ -705,14 +706,14 @@ public class DataflowNetworkBuilder {
 					
 					// create fromNode if needed
 					if (!fromNode.created) {
-						if (debug) System.out.format("Creating: %s%n", fromNode);
+						if (debug) Debug.format("Creating: %s%n", fromNode);
 						fromNode.createNodes(dataflowManager);
 						fromNode.created = true;
 					}
 
 					// create ports and connect them
 					if (!channel.created) {
-						if (debug) System.out.format("Connecting: %s and %s%n", fromNode, toNode);
+						if (debug) Debug.format("Connecting: %s and %s%n", fromNode, toNode);
 						dataflowManager.connect(fromNode.createPort(channel.out), toNode.createPort(channel.in));
 						channel.created = true;
 	
@@ -744,13 +745,13 @@ public class DataflowNetworkBuilder {
 	}
 
 	private void connect(PortWrapper outPort, PortWrapper inPort) {
-		if (debug) System.out.format("Connecting %s --> %s%n", outPort, inPort);
+		if (debug) Debug.format("Connecting %s --> %s%n", outPort, inPort);
 		new ChannelWrapper(outPort, inPort);
 		inPort.owner.connected(inPort);
 	}
 	
 	private void disconnect(ChannelWrapper channel) {
-		if (debug) System.out.format("Disconnecting %s --> %s%n", channel.out, channel.in);
+		if (debug) Debug.format("Disconnecting %s --> %s%n", channel.out, channel.in);
 		PortWrapper out = channel.out;
 		channel.in.channel = channel.out.channel = null;
 		channel.in = channel.out = null;
@@ -852,7 +853,7 @@ public class DataflowNetworkBuilder {
 	private void removeOutputPort(long id) {
 		PortWrapper outPort = idToOutputPortMap.get(id);
 		if (outPort != null) {
-			if (debug) System.out.format("Disconnecting %s%n", outPort);
+			if (debug) Debug.format("Disconnecting %s%n", outPort);
 			outPort.owner.disconnected(outPort);
 		}
 	}
@@ -864,13 +865,13 @@ public class DataflowNetworkBuilder {
 	}
 	
 	private void dumpNode(NodeWrapper node, String indent) {
-		System.out.format("%s%s%n", indent, node);
+		Debug.format("%s%s%n", indent, node);
 		for (PortWrapper port : node.outPorts) {
 			if (port.channel != null) {
 				dumpNode(port.channel.in.owner, indent+"  ");
 			}
 			else
-				System.out.format("%s<null>%n", indent+"  ");
+				Debug.format("%s<null>%n", indent+"  ");
 		}
 	}
 }

@@ -33,6 +33,7 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.edit.provider.INotifyChangedListener;
+import org.omnetpp.common.Debug;
 import org.omnetpp.scave.ContentTypes;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.engine.ResultFile;
@@ -130,16 +131,16 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 			
 			switch (delta.getKind()) {
 			case IResourceDelta.ADDED:
-					if (debug) System.out.format("File added: %s%n", file);
+					if (debug) Debug.format("File added: %s%n", file);
 					loadFile(resultFile);
 					break;
 			case IResourceDelta.REMOVED:
-					if (debug) System.out.format("File removed: %s%n", file);
+					if (debug) Debug.format("File removed: %s%n", file);
 					if (isResultFile(file) && !isDerived(file))
 						unloadFile(file);
 					break;
 			case IResourceDelta.CHANGED:
-					if (debug) System.out.format("File changed: %s%n", file);
+					if (debug) Debug.format("File changed: %s%n", file);
 					if ((delta.getFlags() & ~IResourceDelta.MARKERS) != 0)
 						loadFile(resultFile);
 					break;
@@ -156,7 +157,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 		if (manager == null)
 			return;
 		
-		if (debug) System.out.println("ResultFileTracker.synchronize()");
+		if (debug) Debug.println("ResultFileTracker.synchronize()");
 		Set<String> loadedFiles = new HashSet<String>();
 		for (ResultFile file : manager.getFiles().toArray())
 			loadedFiles.add(file.getFilePath());
@@ -250,7 +251,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 	 */
 	private void loadFile(final IFile file) {
 		Assert.isLegal(isResultFile(file));
-		if (debug) System.out.format("  loadFile: %s ", file);
+		if (debug) Debug.format("  loadFile: %s ", file);
 		synchronized (lock) {
 			if (file.getLocation().toFile().exists()) {
 				String resourcePath = file.getFullPath().toString();
@@ -275,11 +276,11 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 	 * Has no effect when the file was not loaded.
 	 */
 	private void unloadFile(String resourcePath) {
-		if (debug) System.out.format("  unloadFile: %s%n ", resourcePath);
+		if (debug) Debug.format("  unloadFile: %s%n ", resourcePath);
 		ResultFile resultFile = manager.getFile(resourcePath);
 		if (resultFile != null) {
 			manager.unloadFile(resultFile);
-			if (debug) System.out.println("done");
+			if (debug) Debug.println("done");
 		}
 	}
 
@@ -302,7 +303,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 				// for ~100MB files.
 				// Create or update the index file first, and try again.
 				if (isVectorFile(file) && !isIndexFileUpToDate(file)) {
-					if (debug) System.out.format("indexing: %s%n", file);
+					if (debug) Debug.format("indexing: %s%n", file);
 					VectorFileIndexerJob indexer = new VectorFileIndexerJob("Indexing "+file, new IFile[] {file}, lock);
 					indexer.setPriority(Job.LONG);
 					indexer.addJobChangeListener(new JobChangeAdapter() {
@@ -312,7 +313,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 							if (event.getResult().getSeverity() != IStatus.ERROR) {
 								synchronized (lock) {
 									manager.loadFile(resourcePath, osPath);
-									if (debug) System.out.println("done");
+									if (debug) Debug.println("done");
 								}
 							}
 							else {
@@ -324,19 +325,19 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 				}
 				else {
 					manager.loadFile(resourcePath, osPath);
-					if (debug) System.out.println("done");
+					if (debug) Debug.println("done");
 				}
 			}
 		}
 		catch (ResultFileFormatException e) {
 			fileFormatException = e;
 			ScavePlugin.logError("Wrong file: " + file.getLocation().toOSString(), e);
-			if (debug) System.out.format("exception: %s ", e);
+			if (debug) Debug.format("exception: %s ", e);
 		}
 		catch (Exception e) {
 			exception = e;
 			ScavePlugin.logError("Could not load file: " + file.getLocation().toOSString(), e);
-			if (debug) System.out.format("exception: %s ", e);
+			if (debug) Debug.format("exception: %s ", e);
 		}
 		
 		if (fileFormatException != null) {

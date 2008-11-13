@@ -6,6 +6,7 @@ import java.util.List;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.omnetpp.common.Debug;
 
 /**
  * A tile cache for CachingCanvas that works with tiles of fixed size (100x100 pixels).
@@ -73,9 +74,9 @@ public class XYTileCache implements ITileCache {
 	}
 
 	public void printCache() {
-		System.out.printf("Cache: %d tiles, memory usage %dk, limit %dk\n", cache.size(), memoryUsage/1024, memoryUsageLimit/1024);
+		Debug.printf("Cache: %d tiles, memory usage %dk, limit %dk\n", cache.size(), memoryUsage/1024, memoryUsageLimit/1024);
 		for (LargePoint p : cache.keySet()) {
-			System.out.printf(" - tile (%d,%d) at (%d,%d), size %dk\n", p.x/TILE_WIDTH, p.y/TILE_HEIGHT, p.x, p.y, TILE_SIZE_BYTES/1024);
+			Debug.printf(" - tile (%d,%d) at (%d,%d), size %dk\n", p.x/TILE_WIDTH, p.y/TILE_HEIGHT, p.x, p.y, TILE_SIZE_BYTES/1024);
 		}
 	}
 
@@ -91,7 +92,7 @@ public class XYTileCache implements ITileCache {
 			count++;
 		}
 		if (debug && count>0)
-			System.out.printf("cache: thrown out %d tiles, currently holding %d\n", count, cache.size());
+			Debug.printf("cache: thrown out %d tiles, currently holding %d\n", count, cache.size());
 	}
 
 	public void clear() {
@@ -122,14 +123,14 @@ public class XYTileCache implements ITileCache {
 		}
 		
 		if (debug) {
-			System.out.printf("For rect %s, returning %d tiles", rect.toString(), outCachedTiles.size());
+			Debug.printf("For rect %s, returning %d tiles", rect.toString(), outCachedTiles.size());
 			if (outMissingAreas.size()>0) {
-				System.out.printf(" and %d missing areas:\n", outMissingAreas.size());
+				Debug.printf(" and %d missing areas:\n", outMissingAreas.size());
 				for (LargeRect r : outMissingAreas) {
-					System.out.println(" - "+r);
+					Debug.println(" - "+r);
 				}
 			}
-			System.out.println();
+			Debug.println();
 		}
 	}
 

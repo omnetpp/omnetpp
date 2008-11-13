@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.swt.graphics.Image;
+import org.omnetpp.common.Debug;
 
 /**
  * A tile cache that works with tiles that cover the full vertical range
@@ -42,14 +43,14 @@ public class ColumnTileCache implements ITileCache {
 		int imageSize = imageSize(image);
 		Assert.isTrue(imageSize < memoryUsageLimit, "memory usage limit set too small, even a single column image won't fit");
 		memoryUsage += imageSize;
-		//System.out.printf("cache: added image %d x %d, size %dk\n", rect.width, rect.height, imageSize/1024);
+		//Debug.printf("cache: added image %d x %d, size %dk\n", rect.width, rect.height, imageSize/1024);
 		discardOldTiles();
 	}
 
 	public void printCache() {
-		System.out.printf("Cache: %d tiles, memory usage %dk, limit %dk\n", cache.size(), memoryUsage/1024, memoryUsageLimit/1024);
+		Debug.printf("Cache: %d tiles, memory usage %dk, limit %dk\n", cache.size(), memoryUsage/1024, memoryUsageLimit/1024);
 		for (Tile tile : cache) {
-			System.out.printf(" - tile %d x %d, size %dk\n", tile.rect.width, tile.rect.height, imageSize(tile.image)/1024);
+			Debug.printf(" - tile %d x %d, size %dk\n", tile.rect.width, tile.rect.height, imageSize(tile.image)/1024);
 		}
 	}
 
@@ -64,7 +65,7 @@ public class ColumnTileCache implements ITileCache {
 			count++;
 		}
 		if (debug && count>0)
-			System.out.printf("cache: thrown out %d tiles, currently holding %d\n", count, cache.size());
+			Debug.printf("cache: thrown out %d tiles, currently holding %d\n", count, cache.size());
 	}
 
 	private int imageSize(Image image) {

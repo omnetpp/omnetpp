@@ -13,6 +13,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.omnetpp.common.Debug;
 import org.omnetpp.scave.builder.Activator;
 import org.omnetpp.scave.engine.VectorFileIndexer;
 
@@ -128,10 +129,10 @@ public class IndexFile extends org.omnetpp.scave.engine.IndexFile {
 			VectorFileIndexer indexer = new VectorFileIndexer();
 			String osFileName = vectorFile.getLocation().toFile().getAbsolutePath();
 
-			System.out.println("started indexing " + vectorFile);
+			Debug.println("started indexing " + vectorFile);
 			long startTime = System.currentTimeMillis();
 			indexer.generateIndex(osFileName, monitor);
-			System.out.println("finished indexing " + vectorFile + ", " + (System.currentTimeMillis()-startTime) + "ms");
+			Debug.println("finished indexing " + vectorFile + ", " + (System.currentTimeMillis()-startTime) + "ms");
 		}
 		catch (ResultFileFormatException e) {
 			addMarker(vectorFile, MARKERTYPE_SCAVEPROBLEM, IMarker.SEVERITY_ERROR, "Wrong file: "+e.getMessage(), e.getLineNo());

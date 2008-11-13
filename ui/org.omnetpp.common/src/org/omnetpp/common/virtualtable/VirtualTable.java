@@ -41,6 +41,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverTextProvider;
@@ -435,7 +436,7 @@ public class VirtualTable<T>
 	@SuppressWarnings("unchecked")
 	public void setSelection(ISelection selection) {
 		if (debug)
-			System.out.println("VirtualTable got selection: " + selection);
+			Debug.println("VirtualTable got selection: " + selection);
 
 		IVirtualTableSelection<T> virtualTableSelection = (IVirtualTableSelection<T>)selection;
 		Object selectionInput = virtualTableSelection.getInput();
@@ -823,7 +824,7 @@ public class VirtualTable<T>
 
 	public void redraw() {
 		if (debug)
-			System.out.println("Redrawing canvas");
+			Debug.println("Redrawing canvas");
 
 		canvas.redraw();
 		
@@ -993,7 +994,7 @@ class VirtualTableCompositeLayout extends Layout {
 			int headerHeight = table.getHeaderHeight();
 			
 			if (debug)
-				System.out.println("Relayouting virtual table: " + r.height);
+				Debug.println("Relayouting virtual table: " + r.height);
 
 			canvas.setBounds(0, headerHeight, table.getSize().x, r.height - headerHeight);
 

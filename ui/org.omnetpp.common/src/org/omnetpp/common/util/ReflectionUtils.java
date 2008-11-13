@@ -140,7 +140,7 @@ public class ReflectionUtils
 //		Annotation[] annotations = klazz.getDeclaredAnnotations();
 //		for ( int i = 0 ; i < annotations.length ; i++ ) {
 //			Annotation annotation = annotations[ i ];
-//			System.out.println( annotation.getClass().getName() );
+//			Debug.println( annotation.getClass().getName() );
 //			if ( isAssignableFrom(annotation.getClass(), annotationClass ) )
 //				return (T) annotation;
 //		}

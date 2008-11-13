@@ -30,6 +30,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.omnetpp.cdt.Activator;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
 import org.omnetpp.common.util.StringUtils;
 
@@ -224,7 +225,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         long startTime = System.currentTimeMillis();
         for (IContainer makemakeFolder : makemakeFolders)
             generateMakefileFor(makemakeFolder, configuration);
-        System.out.println("Generated " + makemakeFolders.size() + " makefiles in: " + (System.currentTimeMillis()-startTime) + "ms");
+        Debug.println("Generated " + makemakeFolders.size() + " makefiles in: " + (System.currentTimeMillis()-startTime) + "ms");
     }
 
     /**
@@ -233,7 +234,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
     protected void generateMakefileFor(IContainer folder, ICConfigurationDescription configuration) throws CoreException {
         boolean ok = false;
         try {
-            //System.out.println("Generating makefile in: " + folder.getFullPath());
+            //Debug.println("Generating makefile in: " + folder.getFullPath());
             Assert.isTrue(folder.getProject().equals(getProject()));
             MakemakeOptions options = buildSpec.getMakemakeOptions(folder);
             Assert.isTrue(options != null);

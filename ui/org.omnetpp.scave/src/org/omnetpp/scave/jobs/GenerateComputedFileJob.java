@@ -7,6 +7,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
+import org.omnetpp.common.Debug;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.engine.DataflowManager;
 import org.omnetpp.scave.engine.ResultFileManager;
@@ -96,7 +97,7 @@ public class GenerateComputedFileJob extends WorkspaceJob
 				monitor.done();
 			if (debug) {
 				long endTime = System.currentTimeMillis();
-				System.out.format("Generated computed file in %s ms%n", endTime - startTime);
+				Debug.format("Generated computed file in %s ms%n", endTime - startTime);
 			}
 		}
 	}

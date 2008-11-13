@@ -271,8 +271,8 @@ public class ChartSWTWrapper extends Canvas {
 			 // transfer image to screen
 			 event.gc.drawImage(image,0,0);
 
-			// System.out.println("repaint():canvas bounds: " + b.width + "," + b.height);
-			// System.out.println("repaint():image  bounds: " + ib.width + "," + ib.height);
+			// Debug.println("repaint():canvas bounds: " + b.width + "," + b.height);
+			// Debug.println("repaint():image  bounds: " + ib.width + "," + ib.height);
 
 			 // clear the left and bottom strips
 			 if (b.width>ib.width)
@@ -304,7 +304,7 @@ public class ChartSWTWrapper extends Canvas {
 		// Draw the chart in an AWT buffered image
 		long time = System.currentTimeMillis();
 		BufferedImage bufferedImage = chart.createBufferedImage(width, height, renderingInfo);
-		System.out.println("Chart rendering took " + (System.currentTimeMillis() - time) + " ms.");
+		Debug.println("Chart rendering took " + (System.currentTimeMillis() - time) + " ms.");
 		// Get the data buffer of the image
 		DataBuffer buffer = bufferedImage.getRaster().getDataBuffer();
 		DataBufferInt intBuffer = (DataBufferInt) buffer;

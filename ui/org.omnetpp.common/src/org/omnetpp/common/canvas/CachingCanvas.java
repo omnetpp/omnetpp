@@ -18,6 +18,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.Transform;
 import org.eclipse.swt.widgets.Composite;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.canvas.ITileCache.Tile;
 import org.omnetpp.common.image.ImageConverter;
 
@@ -148,7 +149,7 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 			ArrayList<LargeRect> missingAreas = new ArrayList<LargeRect>();
 
 			tileCache.getTiles(lclip, getVirtualWidth(), getVirtualHeight(), cachedTiles, missingAreas);
-			//System.out.println("cache: found "+cachedTiles.size()+" tiles, missing "+missingAreas.size()+" areas");
+			//Debug.println("cache: found "+cachedTiles.size()+" tiles, missing "+missingAreas.size()+" areas");
 
 			// display cached tiles
 			for (Tile tile : cachedTiles) {
@@ -228,6 +229,6 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 	public void clearCanvasCache() {
 		tileCache.clear();
 		if (debug)
-			System.out.println("canvas cache cleared");
+			Debug.println("canvas cache cleared");
 	}
 }

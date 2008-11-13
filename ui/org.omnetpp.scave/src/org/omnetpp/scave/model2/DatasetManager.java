@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.emf.ecore.EObject;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.util.Pair;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScavePlugin;
@@ -187,7 +188,7 @@ public class DatasetManager {
 		long startTime = System.currentTimeMillis();
 		if (arrayBuilders.size() > 0) // XXX DataflowManager crashes when there are no sinks
 			manager.execute(monitor);
-		if (debug) System.out.println("execute dataflow network: "+(System.currentTimeMillis()-startTime)+" ms");
+		if (debug) Debug.println("execute dataflow network: "+(System.currentTimeMillis()-startTime)+" ms");
 
 		XYArray[] result = new XYArray[arrayBuilders.size()];
 		for (int i = 0; i < result.length; ++i)
@@ -571,7 +572,7 @@ public class DatasetManager {
 		long computationID = getFilterNodeID(operation);
 		long id = manager.getComputedID(computationID, inputID);
 		if (id == -1) {
-			//System.out.format("Add computed vector: (%x,%x)%n", computationID, inputID);
+			//Debug.format("Add computed vector: (%x,%x)%n", computationID, inputID);
 			VectorResult vector = manager.getVector(inputID);
 			String name = String.format("%s(%s)", operation.getOperation(), vector.getName());
 			String fileName = ComputedResultFileLocator.instance().getComputedFile(operation);

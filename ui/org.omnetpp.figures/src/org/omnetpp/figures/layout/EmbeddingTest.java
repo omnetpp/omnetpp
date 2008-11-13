@@ -372,7 +372,7 @@ class TestCanvas2 extends Canvas implements ForceDirectedEmbedding.IForceDirecte
 					}
 
 					long end = System.currentTimeMillis();
-					System.out.println("Drag after " + (begin - last) + " in " + (end - begin) + " ms");
+					Debug.println("Drag after " + (begin - last) + " in " + (end - begin) + " ms");
 				}
 			}
 

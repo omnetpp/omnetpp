@@ -100,7 +100,7 @@ public class ZoomableCanvasMouseSupport {
 	private void updateCursor(int mouseMode, int mouseButton, int modifierKeys) {
 		boolean ctrl = (modifierKeys & SWT.MOD1) != 0;
 		boolean shift = (modifierKeys & SWT.SHIFT) != 0;
-//		System.out.format("updateCursor(%s,%s,%s)%n",
+//		Debug.format("updateCursor(%s,%s,%s)%n",
 //				(mouseMode == PAN_MODE ? "pan" : "zoom"),
 //				(mouseButton == 0 ? "no button pressed" : "button pressed"),
 //				(shift && ctrl ? "ctrl+shift" :	ctrl ? "ctrl" :	shift ? "shift" : "none"));

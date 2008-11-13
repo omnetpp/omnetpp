@@ -422,7 +422,7 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener, 
      */
     public void pullChangesFromNEDResources() {
         Assert.isTrue(Display.getCurrent() != null);
-//        System.out.println("texteditor: pulling changes from NEDResources");
+//        Debug.println("texteditor: pulling changes from NEDResources");
         TextDifferenceUtils.modifyTextEditorContentByApplyingDifferences(
         		getDocument(), getModel().getNEDSource());
         TextEditorUtil.resetMarkerAnnotations(TextualNedEditor.this); // keep markers from disappearing
@@ -436,14 +436,14 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener, 
 		if (isActivePart() || nedSelectionProvider.isNotificationInProgress())
 			return;
 		
-		// System.out.println("*** TextEditor selection changed from: "+part+" selection: "+selection);
+		// Debug.println("*** TextEditor selection changed from: "+part+" selection: "+selection);
 		if (selection instanceof IStructuredSelection) {
 			Object firstElement = ((IStructuredSelection) selection).getFirstElement();
 			if (selection.isEmpty())
 				resetHighlightRange();
 			else if (firstElement instanceof INedModelProvider){
 				INEDElement node = ((INedModelProvider)firstElement).getNedModel();
-				//System.out.println("selected: "+node);
+				//Debug.println("selected: "+node);
 				NEDSourceRegion region = node.getSourceRegion();
 				if (region!=null) {
 					IDocument docu = getDocument();

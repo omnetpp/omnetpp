@@ -5,6 +5,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.widgets.Composite;
+import org.omnetpp.common.Debug;
 
 /**
  * Extends CachingCanvas with zoom handling capabilities. Dragging and mouse wheel 
@@ -48,7 +49,7 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas implements ICo
 		if (this.minY == this.maxY)  this.maxY = this.minY + 1;
 		
 		zoomToFit(); // includes updateVirtualSize(), clearCanvasCache(), redraw() etc.
-		// System.out.printf("Area set: (%g, %g, %g, %g) - virtual size: (%d, %d)\n", this.minX, this.maxX, this.minY, this.maxY, getVirtualWidth(), getVirtualHeight());
+		// Debug.printf("Area set: (%g, %g, %g, %g) - virtual size: (%d, %d)\n", this.minX, this.maxX, this.minY, this.maxY, getVirtualWidth(), getVirtualHeight());
 	}
 	
 	public RectangularArea getArea() {
@@ -196,7 +197,7 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas implements ICo
 			updateVirtualSize(); // includes clearCache + redraw
 			centerXOn(oldX);
 			firePropertyChangeEvent(PROP_ZOOM_X, oldZoomX, newZoomX);
-			System.out.println("zoomX set to "+zoomX);
+			Debug.println("zoomX set to "+zoomX);
 		}
 	}
 	
@@ -215,7 +216,7 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas implements ICo
 			updateVirtualSize(); // includes clearCache + redraw
 			centerYOn(oldY);
 			firePropertyChangeEvent(PROP_ZOOM_Y, oldZoomY, newZoomY);
-			System.out.println("zoomY set to "+zoomY);
+			Debug.println("zoomY set to "+zoomY);
 		}
 	}
 

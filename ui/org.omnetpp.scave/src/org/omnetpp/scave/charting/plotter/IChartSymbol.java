@@ -19,13 +19,13 @@ public interface IChartSymbol {
 //	long start = System.currentTimeMillis();
 //	for (int i=0; i<100000; i++)
 //		graphics.drawImage(img, 100, 100);
-//	System.out.println("images: "+(System.currentTimeMillis()-start));
+//	Debug.println("images: "+(System.currentTimeMillis()-start));
 //
 //	start = System.currentTimeMillis();
 //	int[] ii = new int[] {100,105,105,100,110,105,105,110};
 //	for (int i=0; i<100000; i++)
 //		graphics.fillPolygon(ii);
-//	System.out.println("oval: "+(System.currentTimeMillis()-start));
+//	Debug.println("oval: "+(System.currentTimeMillis()-start));
 
 	public int getSizeHint();
 	public void setSizeHint(int size);

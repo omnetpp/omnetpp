@@ -94,7 +94,7 @@ public class NewOmnetppCCProjectWizard extends Wizard implements INewWizard {
 //                }
 //                bld.setManagedBuildOn(false);
 //            } else {
-//                System.out.println(UIMessages.getString("StdProjectTypeHandler.3")); //$NON-NLS-1$
+//                Debug.println(UIMessages.getString("StdProjectTypeHandler.3")); //$NON-NLS-1$
 //            }
 //            cfg.setArtifactName(removeSpaces(project.getName()));
 //            CConfigurationData data = cfg.getConfigurationData();

@@ -27,7 +27,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.wizard.IWizardPage;
-
+import org.omnetpp.common.Debug;
 import org.omnetpp.ide.wizard.NewOmnetppProjectWizard.NewOmnetppProjectCreationPage;
 
 
@@ -180,7 +180,7 @@ public class OmnetCDTNewProjectWizard extends TemplatesChoiceWizard {
                 }
                 bld.setManagedBuildOn(false);
             } else {
-                System.out.println(UIMessages.getString("StdProjectTypeHandler.3")); //$NON-NLS-1$
+                Debug.println(UIMessages.getString("StdProjectTypeHandler.3")); //$NON-NLS-1$
             }
             cfg.setArtifactName(project.getName());
             CConfigurationData data = cfg.getConfigurationData();

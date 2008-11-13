@@ -596,7 +596,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 	protected void contentOutlineSelectionChanged(ISelection selection) {
 		if (selection instanceof IStructuredSelection) {
 			Object object = ((IStructuredSelection)selection).getFirstElement();
-			//System.out.println("Selected: "+object);
+			//Debug.println("Selected: "+object);
 			if (object != null)
 				gotoObject(object);
 		}

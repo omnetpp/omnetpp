@@ -39,6 +39,7 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.canvas.RectangularArea;
 import org.omnetpp.common.color.ColorFactory;
@@ -299,7 +300,7 @@ public class VectorChart extends ChartCanvas {
 	}
 	
 	public void updateLineProperties() {
-		if (debug) System.out.println("updateLineProperties()");
+		if (debug) Debug.println("updateLineProperties()");
 		
 		int seriesCount = dataset != null ? dataset.getSeriesCount() : 0;
 		List<LineProperties> newProps = new ArrayList<LineProperties>(seriesCount);
@@ -379,7 +380,7 @@ public class VectorChart extends ChartCanvas {
 	 *==================================*/
 	public void setProperty(String name, String value) {
 		Assert.isLegal(name != null);
-		if (debug) System.out.println("VectorChart.setProperty: "+name+"='"+value+"'");
+		if (debug) Debug.println("VectorChart.setProperty: "+name+"='"+value+"'");
 		// Titles
 		if (PROP_X_AXIS_TITLE.equals(name))
 			setXAxisTitle(value);

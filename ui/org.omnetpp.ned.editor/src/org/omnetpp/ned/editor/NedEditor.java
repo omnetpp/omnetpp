@@ -37,6 +37,7 @@ import org.eclipse.ui.part.IShowInTargetList;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.eclipse.ui.part.ShowInContext;
 import org.eclipse.ui.texteditor.ITextEditor;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.IConstants;
 import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.ned.core.IGotoNedElement;
@@ -85,7 +86,7 @@ public class NedEditor
         }
 
         public void partActivated(IWorkbenchPart part) {
-        	System.out.println(part.toString()+" activated");
+        	Debug.println(part.toString()+" activated");
             if (part == NedEditor.this) {
                 if (getEditorInput() != null && NEDResourcesPlugin.getNEDResources().containsNedFileElement(getFile())) {
                     // when switching from another MultiPageNedEditor to this one for the same file
@@ -188,7 +189,7 @@ public class NedEditor
 
     @Override
     protected void setInput(IEditorInput newInput) {
-		//System.out.println("setInput()");
+		//Debug.println("setInput()");
         Assert.isNotNull(newInput, "input should not be null");
 
     	//FIXME it should be checked that the file is a valid NED file (inside an
@@ -219,7 +220,7 @@ public class NedEditor
 
 	@Override
 	protected void createPages() {
-		//System.out.println("createPages()");
+		//Debug.println("createPages()");
 
         graphicalEditor = new GraphicalNedEditor();
         textEditor = new TextualNedEditor();

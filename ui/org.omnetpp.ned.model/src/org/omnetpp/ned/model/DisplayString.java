@@ -8,6 +8,7 @@ import java.util.Vector;
 
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.ex.NEDElementUtilEx;
@@ -505,7 +506,7 @@ public class DisplayString implements IDisplayString {
      */
     public static void dumpSupportedTags() {
         for (Prop p : Prop.values()) {
-            System.out.println(p.getTag()+"\t "+p.getPos()+"\t "+p.getGroup()+"\t "+p.getName()
+            Debug.println(p.getTag()+"\t "+p.getPos()+"\t "+p.getGroup()+"\t "+p.getName()
                     +"\t "+p.getDefaultDesc()+"\t "+p.getEnumDesc()+"\t "+p.getDesc());
         }
     }
@@ -514,23 +515,23 @@ public class DisplayString implements IDisplayString {
      * Dump all supported tags in laTex
      */
     public static void dumpSupportedTagsInTex() {
-    	System.out.println("\\begin{longtable}{|p{6cm}|p{8cm}|}");
-    	System.out.println("\\hline");
+    	Debug.println("\\begin{longtable}{|p{6cm}|p{8cm}|}");
+    	Debug.println("\\hline");
         for (Prop prop : Prop.values()) {
         	if (prop.getTag() == null)
         		continue;
-            System.out.println("\\tbf{"+prop.getTag()+"}["+prop.getPos()+"] - "+prop.getName());
-            System.out.println("&");
+            Debug.println("\\tbf{"+prop.getTag()+"}["+prop.getPos()+"] - "+prop.getName());
+            Debug.println("&");
 
             String enumDesc = prop.getEnumDesc(); 
             String defaultValue = prop.getDefaultDesc();
             String desc = prop.getShortDesc().replace("#","\\#"); 
             desc += (StringUtils.isNotEmpty(enumDesc) ?  ". Values: " + enumDesc : ""); 
             desc += (StringUtils.isNotEmpty(defaultValue) ? ". Default: "+defaultValue : "");
-            System.out.println(desc);
-            System.out.println("\\\\ \n \\hline");
+            Debug.println(desc);
+            Debug.println("\\\\ \n \\hline");
         }
-        System.out.println("\\end{longtable}");
+        Debug.println("\\end{longtable}");
     }
     
 //    static {

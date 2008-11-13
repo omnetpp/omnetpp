@@ -167,7 +167,7 @@ public class PaletteManager {
      * Builds the palette (all drawers)
      */
     public void refresh() {
-        // System.out.println("paletteManager refresh() start");
+        // Debug.println("paletteManager refresh() start");
         // long startMillis = System.currentTimeMillis();
 
         tempChannelsStackContent = new ArrayList<PaletteEntry>();
@@ -201,7 +201,7 @@ public class PaletteManager {
         nedPalette.setChildren(drawers);
         
 //        long dt = System.currentTimeMillis() - startMillis;
-//        System.out.println("paletteManager refresh(): " + dt + "ms");
+//        Debug.println("paletteManager refresh(): " + dt + "ms");
     }
 
     /**

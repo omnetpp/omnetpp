@@ -122,7 +122,7 @@ public class ProblemDecorator implements ILightweightLabelDecorator, IResourceCh
                                         res = res.getParent();
                                     }
                                 }
-                                // System.out.println(((ResourceDelta)delta).toDebugString());
+                                // Debug.println(((ResourceDelta)delta).toDebugString());
                                 return true;
                             }
                         }

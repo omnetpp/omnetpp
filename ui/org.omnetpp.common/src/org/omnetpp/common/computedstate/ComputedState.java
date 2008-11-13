@@ -3,6 +3,8 @@ package org.omnetpp.common.computedstate;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.omnetpp.common.Debug;
+
 
 @SuppressWarnings("unchecked")
 public class ComputedState<T> {
@@ -84,7 +86,7 @@ public class ComputedState<T> {
 
 		this.value = value;
 		this.pulse = ++currentPulse; 
-		System.out.println("P: " + currentPulse);
+		Debug.println("P: " + currentPulse);
 	}
 
 	private T getValue0() {

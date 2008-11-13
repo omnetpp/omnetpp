@@ -10,6 +10,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.ui.internal.texteditor.quickdiff.compare.rangedifferencer.IRangeComparator;
 import org.eclipse.ui.internal.texteditor.quickdiff.compare.rangedifferencer.RangeDifference;
 import org.eclipse.ui.internal.texteditor.quickdiff.compare.rangedifferencer.RangeDifferencer;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.editor.text.TextDifferenceUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
@@ -247,23 +248,23 @@ class NEDTreeDifferenceTest {
 		final String originalNED = NEDTreeUtil.generateNedSource(original, false);
 		final String originalXML = NEDTreeUtil.generateXmlFromPojoElementTree(original, "", false);
 
-		System.out.println("Original NED: " + originalNED);
-		System.out.println("Target NED: " + targetNED);
+		Debug.println("Original NED: " + originalNED);
+		Debug.println("Target NED: " + targetNED);
 
 		TextDifferenceUtils.applyTextDifferences(originalNED, targetNED, new TextDifferenceUtils.ITextDifferenceApplier() {
 			public void replace(int start, int end, String replacement) {
-				System.out.println("Original first line: >>>" + StringUtils.getLines(originalNED, start, end) + "<<<");
-				System.out.println("Target start: " + start + " end: " + end + " difference: >>>" + replacement + "<<<");
+				Debug.println("Original first line: >>>" + StringUtils.getLines(originalNED, start, end) + "<<<");
+				Debug.println("Target start: " + start + " end: " + end + " difference: >>>" + replacement + "<<<");
 			}
 		});
 
-		System.out.println("Original XML: " + originalXML);
-		System.out.println("Target XML: " + targetXML);
+		Debug.println("Original XML: " + originalXML);
+		Debug.println("Target XML: " + targetXML);
 
 		TextDifferenceUtils.applyTextDifferences(originalXML, targetXML, new TextDifferenceUtils.ITextDifferenceApplier() {
 			public void replace(int start, int end, String replacement) {
-				System.out.println("Original: >>>" + StringUtils.getLines(originalXML, start, end) + "<<<");
-				System.out.println("Target start: " + start + " end: " + end + " difference: >>>" + replacement + "<<<");
+				Debug.println("Original: >>>" + StringUtils.getLines(originalXML, start, end) + "<<<");
+				Debug.println("Target start: " + start + " end: " + end + " difference: >>>" + replacement + "<<<");
 			}
 		});
 

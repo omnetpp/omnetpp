@@ -42,6 +42,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.canvas.RectangularArea;
 import org.omnetpp.common.canvas.ZoomableCachingCanvas;
@@ -137,7 +138,7 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	 * Sets the data to be visualized by the chart.
 	 */
 	void setDataset(IDataset dataset) {
-		if (debug) System.out.println("setDataset()");
+		if (debug) Debug.println("setDataset()");
 		doSetDataset(dataset);
 		this.dataset = dataset;
 		updateTitle();
@@ -158,7 +159,7 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 			return;
 		
 		layoutDepth++;
-		if (debug) System.out.println("layoutChart(), level "+layoutDepth);
+		if (debug) Debug.println("layoutChart(), level "+layoutDepth);
 		GC gc = new GC(Display.getCurrent());
 		try {
 			// preserve zoomed-out state while resizing
@@ -205,7 +206,7 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	 */
 	private void updateZoomedArea() {
 		if (zoomedArea != null && !getBounds().isEmpty() && dataset != null) {
-			if (debug) System.out.format("Restoring zoomed area: %s%n", zoomedArea);
+			if (debug) Debug.format("Restoring zoomed area: %s%n", zoomedArea);
 			RectangularArea area = zoomedArea;
 			zoomedArea = null;
 			zoomToArea(area);
@@ -226,9 +227,9 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	@Override
 	protected void paintCachableLayer(GC gc) {
 		if (debug) {
-			System.out.println("paintCachableLayer()");
-			System.out.println(String.format("area=%f, %f, %f, %f, zoom: %f, %f", getMinX(), getMaxX(), getMinY(), getMaxY(), getZoomX(), getZoomY()));
-			System.out.println(String.format("view port=%s, vxy=%d, %d", getViewportRectangle(), getViewportLeft(), getViewportTop()));
+			Debug.println("paintCachableLayer()");
+			Debug.println(String.format("area=%f, %f, %f, %f, zoom: %f, %f", getMinX(), getMaxX(), getMinY(), getMaxY(), getZoomX(), getZoomY()));
+			Debug.println(String.format("view port=%s, vxy=%d, %d", getViewportRectangle(), getViewportLeft(), getViewportTop()));
 		}
 		if (getClientArea().isEmpty())
 			return;
@@ -240,7 +241,7 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	
 	@Override
 	protected void paintNoncachableLayer(GC gc) {
-		if (debug) System.out.println("paintNoncachableLayer()");
+		if (debug) Debug.println("paintNoncachableLayer()");
 		if (getClientArea().isEmpty())
 			return;
 		
@@ -474,7 +475,7 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 		RectangularArea area = transformArea(userDefinedArea).intersect(chartArea);
 		
 		if (!area.equals(getArea())) {
-			if (debug) System.out.format("Update area: %s --> %s%n", getArea(), area);
+			if (debug) Debug.format("Update area: %s --> %s%n", getArea(), area);
 			setArea(area);
 		}
 	}

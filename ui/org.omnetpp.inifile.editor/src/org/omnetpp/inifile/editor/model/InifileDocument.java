@@ -27,6 +27,7 @@ import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentListener;
 import org.eclipse.swt.widgets.Display;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
@@ -316,7 +317,7 @@ public class InifileDocument implements IInifileDocument {
             catch (ParseException e) {
                 addError(documentFile, e.getLineNumber(), e.getMessage());
             }
-            System.out.println("Inifile parsing: "+(System.currentTimeMillis()-startTime)+"ms");
+            Debug.println("Inifile parsing: "+(System.currentTimeMillis()-startTime)+"ms");
 
             // mark data structure as up to date (even if there was an error, because 
             // we don't want to keep re-parsing again and again)
@@ -350,25 +351,25 @@ public class InifileDocument implements IInifileDocument {
 
     public void dump() {
         for (String sectionName : sections.keySet()) {
-            System.out.println("Section "+sectionName);
+            Debug.println("Section "+sectionName);
             Section section = sections.get(sectionName);
             for (SectionHeadingLine line : section.headingLines) {
-                System.out.println("  headingLine: line="+line.lineNumber+"  sectionName="+line.sectionName);
+                Debug.println("  headingLine: line="+line.lineNumber+"  sectionName="+line.sectionName);
             }
             for (String key : section.entries.keySet()) {
                 KeyValueLine line = section.entries.get(key);
-                System.out.println("  keyValueLine: line="+line.lineNumber+"  key="+line.key+" value="+line.value);
+                Debug.println("  keyValueLine: line="+line.lineNumber+"  key="+line.key+" value="+line.value);
             }
         }
-        System.out.println("Includes:");
+        Debug.println("Includes:");
         for (IncludeLine line : topIncludes) {
-            System.out.println("  topInclude: line="+line.lineNumber+"  file="+line.includedFile);
+            Debug.println("  topInclude: line="+line.lineNumber+"  file="+line.includedFile);
         }
         for (IncludeLine line : bottomIncludes) {
-            System.out.println("  bottomInclude: line="+line.lineNumber+"  file="+line.includedFile);
+            Debug.println("  bottomInclude: line="+line.lineNumber+"  file="+line.includedFile);
         }
-        System.out.println("num section heading lines: "+mainFileSectionHeadingLines.size());
-        System.out.println("num key-value lines: "+mainFileKeyValueLines.size());
+        Debug.println("num section heading lines: "+mainFileSectionHeadingLines.size());
+        Debug.println("num key-value lines: "+mainFileKeyValueLines.size());
     }
 
     protected boolean isEditable(Line line) {

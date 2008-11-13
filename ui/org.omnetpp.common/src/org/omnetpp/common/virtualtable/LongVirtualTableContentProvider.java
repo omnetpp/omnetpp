@@ -1,6 +1,7 @@
 package org.omnetpp.common.virtualtable;
 
 import org.eclipse.jface.viewers.Viewer;
+import org.omnetpp.common.Debug;
 
 /**
  * This class serves debugging purposes.
@@ -24,14 +25,14 @@ public class LongVirtualTableContentProvider implements IVirtualTableContentProv
 
 	public Long getFirstElement() {
 		if (debug)
-			System.out.println("Virtual table content provider getFirstElement");
+			Debug.println("Virtual table content provider getFirstElement");
 
 		return 0L;
 	}
 
 	public Long getLastElement() {
 		if (debug)
-			System.out.println("Virtual table content provider getLastElement");
+			Debug.println("Virtual table content provider getLastElement");
 
 		return maxValue;
 	}
@@ -39,7 +40,7 @@ public class LongVirtualTableContentProvider implements IVirtualTableContentProv
 	public long getDistanceToElement(Long sourceElement, Long targetElement, long limit)
 	{
 		if (debug)
-			System.out.println("Virtual table content provider getDistanceToElement sourceElement: " + sourceElement + " targetElement: " + targetElement + " limit: " + limit);
+			Debug.println("Virtual table content provider getDistanceToElement sourceElement: " + sourceElement + " targetElement: " + targetElement + " limit: " + limit);
 
 		long sourceValue = sourceElement;
 		long targetValue = targetElement;
@@ -53,7 +54,7 @@ public class LongVirtualTableContentProvider implements IVirtualTableContentProv
 
 	public long getDistanceToFirstElement(Long element, long limit) {
 		if (debug)
-			System.out.println("Virtual table content provider getDistanceToFirstElement element: " + element + " limit: " + limit);
+			Debug.println("Virtual table content provider getDistanceToFirstElement element: " + element + " limit: " + limit);
 
 		long value = element;
 		
@@ -65,7 +66,7 @@ public class LongVirtualTableContentProvider implements IVirtualTableContentProv
 
 	public long getDistanceToLastElement(Long element, long limit) {
 		if (debug)
-			System.out.println("Virtual table content provider getDistanceToLastElement element: " + element + " limit: " + limit);
+			Debug.println("Virtual table content provider getDistanceToLastElement element: " + element + " limit: " + limit);
 
 		long value = element;
 		
@@ -77,7 +78,7 @@ public class LongVirtualTableContentProvider implements IVirtualTableContentProv
 
 	public Long getNeighbourElement(Long element, long distance) {
 		if (debug)
-			System.out.println("Virtual table content provider getNeighbourElement element: " + element + " distance: " + distance);
+			Debug.println("Virtual table content provider getNeighbourElement element: " + element + " distance: " + distance);
 
 		long value = element;
 		
@@ -94,28 +95,28 @@ public class LongVirtualTableContentProvider implements IVirtualTableContentProv
 
 	public Long getClosestElement(Long element) {
 		if (debug)
-			System.out.println("Virtual table content provider getClosestElement element: " + element);
+			Debug.println("Virtual table content provider getClosestElement element: " + element);
 
 		return element;
 	}
 
 	public double getApproximatePercentageForElement(Long element) {
 		if (debug)
-			System.out.println("Virtual table content provider getApproximatePercentageForElement element: " + element);
+			Debug.println("Virtual table content provider getApproximatePercentageForElement element: " + element);
 
 		return (double)element / maxValue;
 	}
 
 	public Long getApproximateElementAt(double percentage) {
 		if (debug)
-			System.out.println("Virtual table content provider getApproximateElementAt percentage: " + percentage);
+			Debug.println("Virtual table content provider getApproximateElementAt percentage: " + percentage);
 
 		return (long)(maxValue * percentage);
 	}
 
 	public long getApproximateNumberOfElements() {
 		if (debug)
-			System.out.println("Virtual table content provider getApproximateNumberOfElements");
+			Debug.println("Virtual table content provider getApproximateNumberOfElements");
 
 		return maxValue + 1;
 	}

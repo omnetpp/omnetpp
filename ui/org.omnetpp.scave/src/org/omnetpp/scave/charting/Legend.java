@@ -163,7 +163,7 @@ public class Legend implements ILegend {
 			if (!visible)
 				return parent;
 
-			//System.out.println("Parent rect: " + parent);
+			//Debug.println("Parent rect: " + parent);
 
 			gc.setFont(font);
 
@@ -182,7 +182,7 @@ public class Legend implements ILegend {
 				maxSize.x = parent.width / 2;
 			positionItems(maxSize, horizontal);
 
-			//System.out.println("Bounds: "+bounds+", Max: "+maxSize);
+			//Debug.println("Bounds: "+bounds+", Max: "+maxSize);
 
 			bounds.width = Math.min(bounds.width, maxSize.x);
 			bounds.height = Math.min(bounds.height, maxSize.y);

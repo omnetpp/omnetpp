@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.contentassist.ContentProposal;
 import org.omnetpp.common.util.MatchExpressionSyntax.INodeVisitor;
 import org.omnetpp.common.util.MatchExpressionSyntax.Node;
@@ -36,7 +37,7 @@ public abstract class MatchExpressionContentProposalProvider implements IContent
 
         if (debug)
             for (IContentProposal proposal : proposals)
-                System.out.println("Proposal: " + proposal.getContent());
+                Debug.println("Proposal: " + proposal.getContent());
 
         return proposals.toArray(new IContentProposal[proposals.size()]);
     }
@@ -65,7 +66,7 @@ public abstract class MatchExpressionContentProposalProvider implements IContent
 
             public void visit(Token token) {
                 if (debug)
-                    System.out.println("Visiting: " + token);
+                    Debug.println("Visiting: " + token);
                 if (!found) {
                     if (token.getStartPos() >= position && this.token != null)
                         found = true;
@@ -76,20 +77,20 @@ public abstract class MatchExpressionContentProposalProvider implements IContent
         }
 
         if (debug) {
-            System.out.println("Position: " + position);
-            System.out.println("Parsing: " + contents);
+            Debug.println("Position: " + position);
+            Debug.println("Parsing: " + contents);
         }
 
         Node root = MatchExpressionSyntax.parseFilter(contents);
         
         if (debug)
-            System.out.println("Parse tree:\n" + root);
+            Debug.println("Parse tree:\n" + root);
         
         Visitor visitor = new Visitor();
         root.accept(visitor);
 
         if (debug)
-            System.out.println("Found: " + visitor.token);
+            Debug.println("Found: " + visitor.token);
         
         return visitor.token;
     }

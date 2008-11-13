@@ -14,6 +14,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.omnetpp.common.Debug;
 
 /**
  * Solves the following problem: when an editor continuously analyzes
@@ -203,9 +204,9 @@ public class ProblemMarkerSynchronizer {
 		if (debug) {
 	        long millis = System.currentTimeMillis() - startTime;
 		    if (markersAdded==0 && markersRemoved==0)
-		        System.out.println("markerSychronizer: no marker change, took " + millis + "ms");
+		        Debug.println("markerSychronizer: no marker change, took " + millis + "ms");
 		    else
-		        System.out.println("markerSychronizer: added "+markersAdded+", removed "+markersRemoved+" markers, took "+millis + "ms");
+		        Debug.println("markerSychronizer: added "+markersAdded+", removed "+markersRemoved+" markers, took "+millis + "ms");
 		}
 	}
 

@@ -32,6 +32,7 @@ import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.CDTUtils;
 import org.omnetpp.cdt.makefile.MakefileBuilder;
 import org.omnetpp.cdt.makefile.MakefileTools;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.FileUtils;
@@ -230,7 +231,7 @@ public class DependencyCache {
                 if (!fileIncludesUpToDate.contains(p))
                     collectIncludes(p, markerSync);
             if (debug)
-            	System.out.println("SCANNED: " + (System.currentTimeMillis() - begin) + "ms");
+            	Debug.println("SCANNED: " + (System.currentTimeMillis() - begin) + "ms");
 
             // collect list of .h and .cc files in this project group (also, add _m.cc/_m.h for msg files)
             collectCppSourceFilesInProjectGroup(data, markerSync);
@@ -272,7 +273,7 @@ public class DependencyCache {
 
     protected void collectIncludes(IProject project, final ProblemMarkerSynchronizer markerSync) {
         if (debug)
-        	System.out.println("collectIncludes(): " + project);
+        	Debug.println("collectIncludes(): " + project);
 
         try {
             // parse all C++ source files for #include; also warn for linked-in files
@@ -314,12 +315,12 @@ public class DependencyCache {
      */
     protected void checkFileIncludes(IFile file) throws CoreException {
         if (debug)
-        	System.out.println("   checkFileIncludes(): " + file);
+        	Debug.println("   checkFileIncludes(): " + file);
         long fileTime = file.getModificationStamp();
         FileIncludes fileData = fileIncludes.get(file);
         if (fileData == null || fileData.modificationStamp < fileTime) {
             if (debug)
-            	System.out.println("   parsing includes from: " + file);
+            	Debug.println("   parsing includes from: " + file);
             if (fileData == null)
                 fileIncludes.put(file, (fileData = new FileIncludes()));
 
@@ -522,22 +523,22 @@ public class DependencyCache {
     }
 
     public static void dumpFolderDependencies(Map<IContainer, Set<IContainer>> deps) {
-        System.out.println("Folder dependencies:");
+        Debug.println("Folder dependencies:");
         for (IContainer folder : deps.keySet()) {
-            System.out.print("  " + folder.getFullPath().toString() + " depends on: ");
+            Debug.print("  " + folder.getFullPath().toString() + " depends on: ");
             for (IContainer dep : deps.get(folder)) {
-                System.out.print(" " + MakefileTools.makeRelativePath(dep.getFullPath(), folder.getFullPath()).toString());
+                Debug.print(" " + MakefileTools.makeRelativePath(dep.getFullPath(), folder.getFullPath()).toString());
             }
-            System.out.println();
+            Debug.println();
         }
     }
 
     public void dumpPerFileDependencies(IProject project) {
     	Map<IContainer, Map<IFile, Set<IFile>>> perFileDependencies = getPerFileDependencies(project);
     	for(IContainer con : perFileDependencies.keySet()) {
-    		System.out.println("folder: "+con.getFullPath());
+    		Debug.println("folder: "+con.getFullPath());
     		for(IFile file : perFileDependencies.get(con).keySet())
-    			System.out.println("  file: "+file.getName()+": "+perFileDependencies.get(con).get(file).toString());
+    			Debug.println("  file: "+file.getName()+": "+perFileDependencies.get(con).get(file).toString());
     	}
     }
 

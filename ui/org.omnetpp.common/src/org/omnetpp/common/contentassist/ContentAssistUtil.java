@@ -58,7 +58,7 @@ public class ContentAssistUtil {
 		//					try {
 		//						tableViewer.getCellModifier().modify(element, property, oldText); // BTW, this may throw exceptions
 		//					} catch (Exception e) {
-		//						System.out.println("Eating exception: "+e.getMessage());
+		//						Debug.println("Eating exception: "+e.getMessage());
 		//					}
 		//				}
 		//			}

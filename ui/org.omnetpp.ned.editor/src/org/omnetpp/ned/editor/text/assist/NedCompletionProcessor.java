@@ -145,7 +145,7 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 
 		if (info.sectionType==SECT_GLOBAL || info.sectionType==SECT_TYPES)
 		{
-			// System.out.println("testing proposals for GLOBAL and TYPES scope");
+			// Debug.println("testing proposals for GLOBAL and TYPES scope");
 
 			// match various "extends" and "like" clauses and offer component types
 			if (line.matches(".*\\bsimple .* extends"))
@@ -230,7 +230,7 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 
 		// expressions: after "=", opening "[", "if" or "for"
 		if (line.contains("=") || line.matches(".*\\b(if|for)\\b.*") || containsOpenBracket(line)) {
-			// System.out.println("proposals for expressions");
+			// Debug.println("proposals for expressions");
 
 			// offer parameter names, gate names, types,...
 			if (line.matches(".*\\bthis *\\.")) {
@@ -248,7 +248,7 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 	    		// after dot: offer params (and after sizeof(), gates too) of given submodule
 	    		if (nedTypeInfo!=null) {
 					String submodTypeName = extractSubmoduleTypeName(line, nedTypeInfo);
-					// System.out.println(" offering params of type "+submodTypeName);
+					// Debug.println(" offering params of type "+submodTypeName);
 					INEDTypeInfo submodType = res.lookupNedType(submodTypeName, context);
 					if (submodType!=null) {
 						if (line.matches(".*\\bsizeof *\\(.*"))
@@ -291,7 +291,7 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 
 		// complete submodule type name
 		if (info.sectionType == SECT_SUBMODULES) {
-			// System.out.println("testing proposals for SUBMODULES scope");
+			// Debug.println("testing proposals for SUBMODULES scope");
 			if (line.matches(".*:")) {
 			    if (nedEnclosingTypeInfo != null)    // we are inside an inner type (use the enclosing module' inner types) 
 	                addNedTypeProposals(viewer, documentOffset, result, project, nedEnclosingTypeInfo, NEDResources.MODULE_FILTER);
@@ -314,7 +314,7 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 		}
 
 		if (info.sectionType == SECT_CONNECTIONS) {
-			// System.out.println("testing proposals for CONNECTIONS scope");
+			// Debug.println("testing proposals for CONNECTIONS scope");
 			if (line.matches(".*\\bconnections")) {
 				// user forgot "allowunconnected" keyword
 				addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedConnsKeywords, "keyword");
@@ -335,7 +335,7 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 	    		if (nedTypeInfo != null) {
 	    		    String submodTypeName = extractSubmoduleTypeName(line, nedTypeInfo);
 	    		    if (submodTypeName != null) {
-	    		        // System.out.println(" offering gates of type "+submodTypeName);
+	    		        // Debug.println(" offering gates of type "+submodTypeName);
 	    		        INEDTypeInfo submodType = res.lookupNedType(submodTypeName, context);
 	    		        if (submodType != null)
 	    		            addProposals(viewer, documentOffset, result, submodType.getGateDeclarations().keySet(), "gate");
@@ -349,7 +349,7 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 		}
 
 		// long millis = System.currentTimeMillis()-startMillis;
-		// System.out.println("Proposal creation: "+millis+"ms");
+		// Debug.println("Proposal creation: "+millis+"ms");
 
 	    return (ICompletionProposal[]) result.toArray(new ICompletionProposal[result.size()]);
 	}
@@ -502,11 +502,11 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 			if (sectionType == SECT_GLOBAL)
 			    nedTypeName = enclosingNedTypeName = submoduleTypeName = null;
 			
-//			System.out.println(">>>"+source+"<<<");
-//			System.out.println("ENCLOSINGNEDTYPENAME:"+enclosingNedTypeName+"  NEDTYPENAME:"+nedTypeName+"  SECTIONTYPE:"+sectionType+"  SUBMODTYPENAME:"+submoduleTypeName);
-//			System.out.println("PREFIX: >>"+prefix+"<<");
-//			System.out.println("PREFIX2: >>"+prefix2+"<<");
-//            System.out.println("inside inner type: "+insideInnertype);
+//			Debug.println(">>>"+source+"<<<");
+//			Debug.println("ENCLOSINGNEDTYPENAME:"+enclosingNedTypeName+"  NEDTYPENAME:"+nedTypeName+"  SECTIONTYPE:"+sectionType+"  SUBMODTYPENAME:"+submoduleTypeName);
+//			Debug.println("PREFIX: >>"+prefix+"<<");
+//			Debug.println("PREFIX2: >>"+prefix2+"<<");
+//            Debug.println("inside inner type: "+insideInnertype);
 
 			CompletionInfo ret = new CompletionInfo();
 			ret.linePrefix = prefix;

@@ -4,6 +4,7 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.engine.NED1Generator;
 import org.omnetpp.ned.engine.NED2Generator;
@@ -43,7 +44,7 @@ public class NEDTreeUtil {
 	 */
     public static String generateNedSource(INEDElement treeRoot, boolean keepSyntax) {
 		// XXX for debugging
-        //System.out.println(generateXmlFromPojoElementTree(treeRoot,""));
+        //Debug.println(generateXmlFromPojoElementTree(treeRoot,""));
 
         NEDErrorStore errors = new NEDErrorStore();
 		errors.setPrintToStderr(false); // turn it on for debugging
@@ -85,7 +86,7 @@ public class NEDTreeUtil {
 		Assert.isTrue(displayFilename != null);
 		NEDElement swigTree = null;
 		try {
-		    // System.out.println("Parsing NED file started: " + filesystemFilename);
+		    // Debug.println("Parsing NED file started: " + filesystemFilename);
 			// parse
 			NEDErrorStore swigErrors = new NEDErrorStore();
 			NEDParser np = new NEDParser(swigErrors);
@@ -123,7 +124,7 @@ public class NEDTreeUtil {
 			INEDElement pojoTree = swig2pojo(swigTree, null, swigErrors, errors);
 			Assert.isTrue(swigErrors.numMessages() == errors.getNumProblems(), "problems lost in translation");
 
-			// System.out.println(generateXmlFromPojoElementTree(pojoTree, ""));
+			// Debug.println(generateXmlFromPojoElementTree(pojoTree, ""));
 
 			return (NedFileElementEx)pojoTree;
 		}
@@ -131,7 +132,7 @@ public class NEDTreeUtil {
 			if (swigTree != null)
 				swigTree.delete();
 
-			// System.out.println("Parsing NED file finished: " + filesystemFilename);
+			// Debug.println("Parsing NED file finished: " + filesystemFilename);
 		}
 	}
 
@@ -139,7 +140,7 @@ public class NEDTreeUtil {
         Assert.isTrue(filename != null);
         NEDElement swigTree = null;
         try {
-            // System.out.println("Parsing MSG file started: " + filename);
+            // Debug.println("Parsing MSG file started: " + filename);
             // parse
             NEDErrorStore swigErrors = new NEDErrorStore();
             NEDParser np = new NEDParser(swigErrors);
@@ -180,7 +181,7 @@ public class NEDTreeUtil {
             INEDElement pojoTree = swig2pojo(swigTree, null, swigErrors, errors);
             Assert.isTrue(swigErrors.numMessages() == errors.getNumProblems(), "problems lost in translation");
 
-            // System.out.println(generateXmlFromPojoElementTree(pojoTree, ""));
+            // Debug.println(generateXmlFromPojoElementTree(pojoTree, ""));
 
             return (MsgFileElementEx)pojoTree;
         }
@@ -188,24 +189,24 @@ public class NEDTreeUtil {
             if (swigTree != null)
                 swigTree.delete();
 
-            // System.out.println("Parsing MSG file finished: " + filename);
+            // Debug.println("Parsing MSG file finished: " + filename);
         }
     }
 
     protected static void dumpSwigErrors(NEDErrorStore swigErrors) {
         int n = swigErrors.numMessages();
         if (n > 0) {
-            System.out.println(n + " errors:");
+            Debug.println(n + " errors:");
             for (int i=0 ; i<n ; i++) {
                 NEDElement context = swigErrors.errorContext(i);
-                System.out.println(
+                Debug.println(
                         swigErrors.errorText(i)+
                         " loc: "+swigErrors.errorLocation(i) +
                         " context: " + (context==null ? "" : "<"+context.getTagName()+"> at "+context.getSourceLocation()));
                 if (context!=null && context.getParent()!=null)
-                    System.out.println(generateXmlFromSwigElementTree(context.getParent(), "  "));
+                    Debug.println(generateXmlFromSwigElementTree(context.getParent(), "  "));
                 else if (context!=null)
-                    System.out.println(generateXmlFromSwigElementTree(context, "  "));
+                    Debug.println(generateXmlFromSwigElementTree(context, "  "));
             }
         }
     }

@@ -143,7 +143,7 @@ public class InifileEditor extends MultiPageEditorPart implements IGotoMarker, I
 //		// see registration of InformationDispatchAction in AbstractTextEditor
 //		IAction action = new Action("F2!!!") {
 //			public void run() {
-//				System.out.println("F2 pressed!");
+//				Debug.println("F2 pressed!");
 //			}
 //		};
 //		action.setActionDefinitionId(ITextEditorActionDefinitionIds.SHOW_INFORMATION);

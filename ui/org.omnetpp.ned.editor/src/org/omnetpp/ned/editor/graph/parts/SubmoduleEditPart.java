@@ -143,7 +143,7 @@ public class SubmoduleEditPart extends ModuleEditPart {
         SubmoduleConstraint constraint = new SubmoduleConstraint();
         constraint.setLocation(getSubmoduleFigure().getPreferredLocation());
         constraint.setSize(getSubmoduleFigure().getPreferredSize());
-        // System.out.println("constraint for " + nameToDisplay + ": " + constraint);
+        // Debug.println("constraint for " + nameToDisplay + ": " + constraint);
         Assert.isTrue(constraint.height != -1 && constraint.width != -1);
         getSubmoduleFigure().getParent().setConstraint(getSubmoduleFigure(), constraint);
     }

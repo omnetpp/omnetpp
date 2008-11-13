@@ -1,5 +1,6 @@
 package org.omnetpp.sequencechart.widgets;
 
+import org.omnetpp.common.Debug;
 import org.omnetpp.scave.engine.DataflowManager;
 import org.omnetpp.scave.engine.Node;
 import org.omnetpp.scave.engine.NodeType;
@@ -58,7 +59,7 @@ public class VectorFileUtil {
 		finally {
 			dataflowManager.delete(); // close vector file
 		}
-		System.out.println("data-flow network: "+(System.currentTimeMillis()-startTime)+" ms");
+		Debug.println("data-flow network: "+(System.currentTimeMillis()-startTime)+" ms");
 
 		// and return the array
 		return result;

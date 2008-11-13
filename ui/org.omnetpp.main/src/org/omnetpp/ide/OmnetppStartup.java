@@ -156,15 +156,15 @@ public class OmnetppStartup implements IStartup {
 //				final Shell activeShell = Display.getDefault().getActiveShell();
 //				final Browser browser = new Browser(activeShell,SWT.NONE);  // FIXME getActiveShell can be null
 //				browser.setUrl("http://omnetppblsdsldlsl.org/noonsadn");
-//				System.out.println("setural");
+//				Debug.println("setural");
 //				browser.addProgressListener(new ProgressAdapter() {
 //					@Override
 //					public void completed(ProgressEvent event) {
-//						System.out.println("**** completed");
-//						System.out.println("text="+browser.getText());
-//						System.out.println("display:" +Display.getCurrent());
-//						System.out.println("activeShel:"+activeShell);
-//						System.out.println("new active shell:"+Display.getDefault().getActiveShell());
+//						Debug.println("**** completed");
+//						Debug.println("text="+browser.getText());
+//						Debug.println("display:" +Display.getCurrent());
+//						Debug.println("activeShel:"+activeShell);
+//						Debug.println("new active shell:"+Display.getDefault().getActiveShell());
 //					}
 //					
 //				});

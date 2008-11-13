@@ -68,7 +68,7 @@ public class InifileParamKeyContentProposalProvider extends ContentProposalProvi
 			int restPos = Math.max(lastDotPos==-1 ? 0 : lastDotPos+1, lastXXPos==-1 ? 0 : lastXXPos+2);
 			String prefixPart1 = prefix.substring(0, restPos);  // if no dot or **, prefixPart1 will be ""
 			String prefixRest = prefix.substring(restPos);
-			//System.out.println("prefix: "+prefixPart1+" + "+prefixRest);
+			//Debug.println("prefix: "+prefixPart1+" + "+prefixRest);
 
 			// after "*" or "**" we'll want to add an extra dot
 			String optDot = prefix.endsWith("*") ? "." : ""; 
@@ -82,11 +82,11 @@ public class InifileParamKeyContentProposalProvider extends ContentProposalProvi
 					if (dotPos == -2) dotPos = -1; // get started
 					String fullPathPart1 = fullPath.substring(0, dotPos+1);
 					String fullPathRest = fullPath.substring(dotPos+1);
-					//System.out.println("fullPath: "+fullPathPart1+" + "+fullPathRest);
+					//Debug.println("fullPath: "+fullPathPart1+" + "+fullPathRest);
 
 					// prefix part1 should match fullPath part1, and fullPath rest must begin with prefix rest 
 					if (prefixPart1Matcher.matches(fullPathPart1) && fullPathRest.startsWith(prefixRest)) {
-						//System.out.println("        suggesting: "+prefixPart1+fullPathRest+" =");
+						//Debug.println("        suggesting: "+prefixPart1+fullPathRest+" =");
 						if (fullPathRest.contains(".")) {
 							// offer only the next submodule (i.e. rest up to the next dot)
 							int restDotPos = fullPathRest.indexOf('.');

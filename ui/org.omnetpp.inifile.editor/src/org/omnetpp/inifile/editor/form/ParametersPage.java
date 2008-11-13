@@ -41,6 +41,7 @@ import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.contentassist.ContentAssistUtil;
 import org.omnetpp.common.ui.GenericTreeContentProvider;
 import org.omnetpp.common.ui.GenericTreeNode;
@@ -240,7 +241,7 @@ public class ParametersPage extends FormPage {
 					return;
 				IInifileDocument doc = getInifileDocument();
 				try {
-					System.out.println("CellEditor committing the "+property+" column, value="+value);
+					Debug.println("CellEditor committing the "+property+" column, value="+value);
 					if (property.equals("key")) {
 						String newKey = (String) value;
 						if (!newKey.equals(item.key)) {
@@ -404,7 +405,7 @@ public class ParametersPage extends FormPage {
 	 */
 	protected void entriesDragged(SectionKey[] draggedEntries, Object target) {
 		try {
-			System.out.println(draggedEntries.length + " items dropped to: "+target);
+			Debug.println(draggedEntries.length + " items dropped to: "+target);
 			IInifileDocument doc = getInifileDocument();
 
 			int n = draggedEntries.length;
@@ -641,12 +642,12 @@ public class ParametersPage extends FormPage {
 		    // commit is OK, since it will directly invoke refresh(); we only have to deal with cancel.
 		    // treeViewer.getColumnViewerEditor().addEditorActivationListener() doesn't seem to work
 		    // (listener doesn't get called), so we just schedule another reread into the future.
-            System.out.println("cell editor active -- postponing tree refresh");
+            Debug.println("cell editor active -- postponing tree refresh");
 		    delayedRereadJob.restartTimer();
 		}
 		else {
 		    // refresh the tree
-		    System.out.println("refreshing the tree");
+		    Debug.println("refreshing the tree");
 		    treeViewer.setInput(rootNode);
 		    treeViewer.expandAll();
 		    treeViewer.refresh();

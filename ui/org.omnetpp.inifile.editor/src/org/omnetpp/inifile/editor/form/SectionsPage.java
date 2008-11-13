@@ -404,7 +404,7 @@ public class SectionsPage extends FormPage {
 	 */
 	protected void sectionsDragged(String[] draggedSections, String targetSectionName) {
 		try {
-			//System.out.println(draggedSections.length + " items dropped to: "+targetSectionName);
+			//Debug.println(draggedSections.length + " items dropped to: "+targetSectionName);
 			IInifileDocument doc = getInifileDocument();
 			for (String draggedSectionName : draggedSections)
 				if (getInifileDocument().containsSection(draggedSectionName)) // might occur if it was dragged from a different editor's treeviewer...

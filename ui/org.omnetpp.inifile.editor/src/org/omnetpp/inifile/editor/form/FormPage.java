@@ -12,6 +12,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverTextProvider;
@@ -65,7 +66,7 @@ public abstract class FormPage extends Composite {
 		    // reread if page is still displayed (and exists)
 		    if (inifileEditor.isFormPageDisplayed() && !FormPage.this.isDisposed() && 
 		            inifileEditor.getFormEditor().getActiveCategoryPage()==FormPage.this) {
-		        System.out.println("delayedJob: rereading form page");
+		        Debug.println("delayedJob: rereading form page");
 		        reread();
 		    }
 		}

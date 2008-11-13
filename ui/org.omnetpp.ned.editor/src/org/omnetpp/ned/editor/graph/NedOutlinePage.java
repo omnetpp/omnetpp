@@ -139,7 +139,7 @@ class NedOutlinePage extends ContentOutlinePage implements INEDChangeListener, I
 		// turn it to editparts (as text editor selection contains model objects not edit parts)
 		// and pass it to the outline view. We disable the general sync to avoid syncing back the 
 		// selection to the text editor
-		// System.out.println("*** NedOutline selecion changed from: "+part);
+		// Debug.println("*** NedOutline selecion changed from: "+part);
 		if (selection instanceof ITextSelection) { 
 			ISelection activeEditorSelection = getActiveEditorSelection();
 			if (activeEditorSelection instanceof IStructuredSelection) {

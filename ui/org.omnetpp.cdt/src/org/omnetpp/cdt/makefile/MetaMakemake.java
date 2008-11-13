@@ -170,7 +170,7 @@ public class MetaMakemake {
         // substitute all ${eclipse_variables}
         translatedOptions.substituteVariables(makefileFolder.getProject());
         
-        // System.out.println("Translated makemake options for " + makefileFolder + ": " + translatedOptions.toString());
+        // Debug.println("Translated makemake options for " + makefileFolder + ": " + translatedOptions.toString());
         return translatedOptions;
     }
 

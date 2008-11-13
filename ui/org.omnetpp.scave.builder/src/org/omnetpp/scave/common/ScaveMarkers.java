@@ -12,7 +12,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.omnetpp.common.Debug;
 import org.omnetpp.scave.builder.Activator;
+
 
 public class ScaveMarkers {
 	public static final String MARKERTYPE_SCAVEPROBLEM = "org.omnetpp.scave.builder.scaveproblem";
@@ -30,7 +32,7 @@ public class ScaveMarkers {
 		    	file.deleteMarkers(type, true, IResource.DEPTH_ZERO);
 		    	monitor.done();
 		    	if (debug)
-					System.out.println("markers deleted: "+type+" from "+file);
+					Debug.println("markers deleted: "+type+" from "+file);
 		    }
 		});
 	}
@@ -43,7 +45,7 @@ public class ScaveMarkers {
                 marker.setAttributes(createMarkerAttributes(severity, message, line));
 		    	monitor.done();
 		    	if (debug)
-					System.out.println("markers deleted: "+type+" from "+file);
+					Debug.println("markers deleted: "+type+" from "+file);
 		    }
 		});
 	}
@@ -61,7 +63,7 @@ public class ScaveMarkers {
                 marker.setAttributes(createMarkerAttributes(severity, message, line));
                 monitor.done();
                 if (debug)
-                    System.out.println("marker added: "+type+" on "+file+" line "+line+": "+message);
+                    Debug.println("marker added: "+type+" on "+file+" line "+line+": "+message);
             }
         });
 	}

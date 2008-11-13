@@ -1,5 +1,7 @@
 package org.omnetpp.common.computedstate;
 
+import org.omnetpp.common.Debug;
+
 /*
 import java.util.Map;
 
@@ -72,7 +74,7 @@ public class ComputedTest {
 
 	   return bState.recomputeIfInvalidAs(new IComputation() {
  		   public Object compute() {
- 			   System.out.println("Recomputing");
+ 			   Debug.println("Recomputing");
  			   return getA() + 1;
  		   }
 	   });
@@ -81,7 +83,7 @@ public class ComputedTest {
    public int getX() {
 	   return xState.recomputeIfInvalidAs(new IComputation() {
  		   public Object compute() {
- 			   System.out.println("Recomputing");
+ 			   Debug.println("Recomputing");
  			   return getA() + getB();
  		   }
 	   });
@@ -107,20 +109,20 @@ public class ComputedTest {
 	   final ComputedTest test1 = new ComputedTest();
 
 	   test1.setA(1);
-	   System.out.println("a: " + test1.getA() + " b: " + test1.getB() + " x: " + test1.getX());
-	   System.out.println("a: " + test1.getA() + " b: " + test1.getB() + " x: " + test1.getX());
-	   System.out.println("a: " + test1.getA() + " b: " + test1.getB() + " x: " + test1.getX());
+	   Debug.println("a: " + test1.getA() + " b: " + test1.getB() + " x: " + test1.getX());
+	   Debug.println("a: " + test1.getA() + " b: " + test1.getB() + " x: " + test1.getX());
+	   Debug.println("a: " + test1.getA() + " b: " + test1.getB() + " x: " + test1.getX());
 
 	   test1.setA(2);
-	   System.out.println("a: " + test1.getA() + " b: " + test1.getB() + " x: " + test1.getX());
-	   System.out.println("a: " + test1.getA() + " b: " + test1.getB() + " x: " + test1.getX());
-	   System.out.println("a: " + test1.getA() + " b: " + test1.getB() + " x: " + test1.getX());
+	   Debug.println("a: " + test1.getA() + " b: " + test1.getB() + " x: " + test1.getX());
+	   Debug.println("a: " + test1.getA() + " b: " + test1.getB() + " x: " + test1.getX());
+	   Debug.println("a: " + test1.getA() + " b: " + test1.getB() + " x: " + test1.getX());
 
 	   test1.setA(10);
-	   System.out.println("a: " + test1.getA() + " b: " + test1.getB() + " x: " + test1.getX());
-	   System.out.println("a: " + test1.getA() + " b: " + test1.getB() + " x: " + test1.getX());
-	   System.out.println("a: " + test1.getA() + " b: " + test1.getB() + " x: " + test1.getX());
+	   Debug.println("a: " + test1.getA() + " b: " + test1.getB() + " x: " + test1.getX());
+	   Debug.println("a: " + test1.getA() + " b: " + test1.getB() + " x: " + test1.getX());
+	   Debug.println("a: " + test1.getA() + " b: " + test1.getB() + " x: " + test1.getX());
 
-	   System.out.println("c: " + test1.getC() + " d: " + test1.getD());
+	   Debug.println("c: " + test1.getC() + " d: " + test1.getD());
    }
 }

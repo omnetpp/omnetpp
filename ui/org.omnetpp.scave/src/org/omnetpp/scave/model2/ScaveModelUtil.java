@@ -25,6 +25,7 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.edit.command.AddCommand;
 import org.eclipse.emf.edit.command.SetCommand;
 import org.eclipse.emf.edit.domain.EditingDomain;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.engine.HistogramResult;
@@ -482,14 +483,14 @@ public class ScaveModelUtil {
 	}
 
 	public static void dumpIDList(String header, IDList idlist, ResultFileManager manager) {
-		System.out.print(header);
+		Debug.print(header);
 		if (idlist.size() == 0)
-			System.out.println("Empty");
+			Debug.println("Empty");
 		else {
-			System.out.println();
+			Debug.println();
 			for (int i = 0; i < idlist.size(); ++i) {
 				ResultItem r = manager.getItem(idlist.get(i));
-				System.out.println(
+				Debug.println(
 					String.format("File: %s Run: %s Module: %s Name: %s",
 						r.getFileRun().getFile().getFilePath(),
 						r.getFileRun().getRun().getRunName(),

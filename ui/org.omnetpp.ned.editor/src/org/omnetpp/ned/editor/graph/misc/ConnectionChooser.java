@@ -166,7 +166,7 @@ public class ConnectionChooser {
         for (String srcLabel : srcLabels)
             if (destLabels.contains(srcLabel))
                 count++;
-        //System.out.println(srcGate.getName() + ", " + destGate.getName() + ": " + count);
+        //Debug.println(srcGate.getName() + ", " + destGate.getName() + ": " + count);
         return count;
     }
 

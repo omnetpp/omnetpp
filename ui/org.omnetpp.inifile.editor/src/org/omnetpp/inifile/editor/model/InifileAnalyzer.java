@@ -28,6 +28,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.Assert;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.engine.Common;
 import org.omnetpp.common.engine.UnitConversion;
 import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
@@ -221,7 +222,7 @@ public class InifileAnalyzer {
 				for (String key : getUnusedParameterKeys(section))
 					addWarning(section, key, "Unused entry (does not match any parameters)");
 
-			System.out.println("Inifile analyzed in "+(System.currentTimeMillis()-startTime)+"ms");
+			Debug.println("Inifile analyzed in "+(System.currentTimeMillis()-startTime)+"ms");
 
 			// synchronize detected problems with the file's existing markers
 			markerSynchronizer.runAsWorkspaceJob();
@@ -653,7 +654,7 @@ public class InifileAnalyzer {
 			v.parvar = m.group(5);
 			v.section = section;
 			v.key = key;
-			System.out.println("found: $"+v.varname+" = ``"+v.value+"'' ! "+v.parvar);
+			Debug.println("found: $"+v.varname+" = ``"+v.value+"'' ! "+v.parvar);
 			if (Arrays.asList(ConfigRegistry.getConfigVariableNames()).contains(v.varname))
 				addError(section, key, "${"+v.varname+"} is a predefined variable and cannot be changed");
 			else if (sectionData.namedIterations.containsKey(v.varname))

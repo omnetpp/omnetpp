@@ -44,7 +44,7 @@ public class NedSelectionSynchronizer extends SelectionSynchronizer {
     public void selectionChanged(SelectionChangedEvent event) {
     	// we don't want to publish the changes from the editor unless linkWithEditor is set
     	if (!(event.getSource() instanceof ScrollingGraphicalViewer) || linkWithEditor ) {
-    		// System.out.println("*** ned synchronizer selection changed selection changed from: "+event.getSource());
+    		// Debug.println("*** ned synchronizer selection changed selection changed from: "+event.getSource());
     		super.selectionChanged(event);
     	}
     }

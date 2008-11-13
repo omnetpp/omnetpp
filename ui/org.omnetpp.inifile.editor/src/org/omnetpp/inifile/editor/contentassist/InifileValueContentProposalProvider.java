@@ -360,7 +360,7 @@ s	 * before getting presented to the user.
         for (SubmoduleElementEx submodule : module.getSubmodules()) {
             if (submodule.getLikeParam().equals(paramName)) {
                 // resolve interface, then add to the result
-                //System.out.println("found 'like' submodule: " + submodule + " --> " + submodule.getLikeType());
+                //Debug.println("found 'like' submodule: " + submodule + " --> " + submodule.getLikeType());
                 String likeType = submodule.getLikeType();
                 INEDTypeInfo likeInterface = res.lookupNedType(likeType, module);
                 if (likeInterface != null && likeInterface.getNEDElement() instanceof ModuleInterfaceElement)

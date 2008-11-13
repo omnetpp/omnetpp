@@ -17,6 +17,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableColumn;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.eventlog.EventLogEntryReference;
 import org.omnetpp.common.eventlog.EventLogFindTextDialog;
@@ -353,7 +354,7 @@ public class EventLogTable
             scrollToBegin();
 
         if (debug)
-			System.out.println("EventLogTable got notification about eventlog change");
+			Debug.println("EventLogTable got notification about eventlog change");
 
         configureVerticalScrollBar();
 		updateVerticalBarPosition();
@@ -361,7 +362,7 @@ public class EventLogTable
 		if (followEnd)
 		{
 			if (debug)
-				System.out.println("Scrolling to follow eventlog change");
+				Debug.println("Scrolling to follow eventlog change");
 
 			if (!eventLog.isEmpty())
 			    scrollToEnd();

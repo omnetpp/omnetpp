@@ -21,6 +21,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.makefile.MakemakeOptions.Type;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ide.OmnetppMainPlugin;
@@ -199,9 +200,9 @@ public class Makemake {
         }
         else {
             if (ccExt.equals("cc") && ccfiles.isEmpty() && !cppfiles.isEmpty())
-                System.out.println("warning: you specified -e cc but you have only .cpp files in this directory!"); //XXX
+                Debug.println("warning: you specified -e cc but you have only .cpp files in this directory!"); //XXX
             if (ccExt.equals("cpp") && !ccfiles.isEmpty() && cppfiles.isEmpty())
-                System.out.println("warning: you specified -e cpp but you have only .cc files in this directory!");  //XXX
+                Debug.println("warning: you specified -e cpp but you have only .cc files in this directory!");  //XXX
         }
 
         String objExt = isNMake ? "obj" : "o";
@@ -384,7 +385,7 @@ public class Makemake {
         m.put("nmake_inlineend", (isNMake && isLongLinkerLine) ? "\n<<" : "");
 
         // now generate the makefile
-        System.out.println("generating makefile for " + folder.toString());
+        Debug.println("generating makefile for " + folder.toString());
         if (template == null) {
             try {
                 template = FileUtils.readTextFile(Makemake.class.getResourceAsStream(MAKEFILE_TEMPLATE_NAME));

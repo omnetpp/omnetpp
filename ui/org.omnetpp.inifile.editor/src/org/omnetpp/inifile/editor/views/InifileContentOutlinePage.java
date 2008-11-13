@@ -108,7 +108,7 @@ public class InifileContentOutlinePage extends ContentOutlinePage implements IIn
 	@Override
 	public void selectionChanged(SelectionChangedEvent event) {
 		super.selectionChanged(event);
-		//System.out.println(this+".selectionChanged( " + event + ") called");
+		//Debug.println(this+".selectionChanged( " + event + ") called");
 
 		// make text editor to follow outline's selection
 		ISelection selection = event.getSelection();

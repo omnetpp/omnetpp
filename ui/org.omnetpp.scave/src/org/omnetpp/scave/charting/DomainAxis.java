@@ -170,7 +170,7 @@ class DomainAxis {
 		data.textLayout.setAlignment(SWT.CENTER);
 		if (maxSize.width > 0)
 			data.textLayout.setWidth(maxSize.width);
-		//System.out.format("width=%s%n", maxWidth);
+		//Debug.format("width=%s%n", maxWidth);
 		org.eclipse.swt.graphics.Rectangle bounds = data.textLayout.getBounds(); 
 		data.size = new Dimension(bounds.width, Math.min(bounds.height, maxSize.height)); //new Dimension(gc.textExtent(data.label));
 		data.rotatedSize = GeomUtils.rotatedSize(data.size, rotation);

@@ -506,7 +506,7 @@ public class OmnetppLaunchUtils {
 	public static Process startSimulationProcess(ILaunchConfiguration configuration, String additionalArgs, boolean requestInfo) throws CoreException {
 		String[] cmdLine = createCommandLine(configuration, additionalArgs);
 
-		// System.out.println("starting with command line: "+StringUtils.join(cmdLine," "));
+		// Debug.println("starting with command line: "+StringUtils.join(cmdLine," "));
 		
 		if (requestInfo) {
 			int i = ArrayUtils.indexOf(cmdLine, "-c");

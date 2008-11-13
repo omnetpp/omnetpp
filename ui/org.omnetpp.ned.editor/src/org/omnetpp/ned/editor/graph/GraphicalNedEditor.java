@@ -67,6 +67,7 @@ import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.MultiPageEditorSite;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.IConstants;
 import org.omnetpp.common.editor.ShowViewAction;
 import org.omnetpp.common.ui.HoverSupport;
@@ -588,7 +589,7 @@ public class GraphicalNedEditor
 					nedBeginChangeCount++;
 				else if (event instanceof NEDEndModelChangeEvent)
 					nedBeginChangeCount--;
-				// System.out.println(event.toString() + ",  beginCount=" + nedBeginChangeCount);
+				// Debug.println(event.toString() + ",  beginCount=" + nedBeginChangeCount);
 				Assert.isTrue(nedBeginChangeCount >= 0, "begin/end mismatch");
 
 				// record notification event as an external change iff it refers to our model and we are not the originator
@@ -598,7 +599,7 @@ public class GraphicalNedEditor
 				{
 					if (pendingExternalChangeCommand == null)
 						pendingExternalChangeCommand = new ExternalChangeCommand();
-//					System.out.println("adding " + event + " to current external change command");
+//					Debug.println("adding " + event + " to current external change command");
 					pendingExternalChangeCommand.addEvent(event);
 		    	}
 
@@ -606,9 +607,9 @@ public class GraphicalNedEditor
 				if (nedBeginChangeCount == 0 && pendingExternalChangeCommand != null) {
 					ExternalChangeCommand tmp = pendingExternalChangeCommand;
 					pendingExternalChangeCommand = null;
-					//System.out.println("executing external change command");
+					//Debug.println("executing external change command");
 					getCommandStack().execute(tmp);
-					//System.out.println("done executing external change command");
+					//Debug.println("done executing external change command");
 				}
 
             	// adjust connections after submodule name change, etc
@@ -639,7 +640,7 @@ public class GraphicalNedEditor
     public void refresh() {
         long startTime = System.currentTimeMillis();
         getGraphicalViewer().getContents().refresh();
-        System.out.println("Graphical Editor refresh: " + (System.currentTimeMillis()-startTime) + "ms");
+        Debug.println("Graphical Editor refresh: " + (System.currentTimeMillis()-startTime) + "ms");
         
         paletteRefreshJob.restartTimer();
     }
@@ -767,7 +768,7 @@ public class GraphicalNedEditor
      * For debugging
      */
     public static void dumpEditPartHierarchy(EditPart editPart, String indent) {
-    	System.out.println(indent + editPart.toString());
+    	Debug.println(indent + editPart.toString());
     	for (Object child : editPart.getChildren())
     		dumpEditPartHierarchy((EditPart)child, indent+"  ");
     }

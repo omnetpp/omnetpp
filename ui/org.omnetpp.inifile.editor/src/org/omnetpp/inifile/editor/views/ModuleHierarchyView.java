@@ -117,7 +117,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 			this.moduleFullPath = moduleFullPath;
 			this.submoduleNode = submoduleNode;
 			this.submoduleType = submoduleType;
-			//System.out.println("PATH="+moduleFullPath+" Node="+submoduleNode+" SubmoduleType="+(submoduleNode==null ? null : submoduleNode.getType())+"  Type="+submoduleType);
+			//Debug.println("PATH="+moduleFullPath+" Node="+submoduleNode+" SubmoduleType="+(submoduleNode==null ? null : submoduleNode.getType())+"  Type="+submoduleType);
 		}
 
 		/* Needed for GenericTreeUtil.treeEquals() */

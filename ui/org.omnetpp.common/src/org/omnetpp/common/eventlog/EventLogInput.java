@@ -7,6 +7,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.part.FileEditorInput;
 import org.omnetpp.common.CommonPlugin;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.util.PersistentResourcePropertyManager;
 import org.omnetpp.common.util.RecurringJob;
 import org.omnetpp.eventlog.engine.EventLogTableFacade;
@@ -122,7 +123,7 @@ public class EventLogInput extends FileEditorInput
 
     public void synchronize(int change) {
         if (debug)
-            System.out.println("Synchronizing event log file content: " + getFile().getName());
+            Debug.println("Synchronizing event log file content: " + getFile().getName());
 
         getEventLogTableFacade().synchronize(change);
         getSequenceChartFacade().synchronize(change);
@@ -399,18 +400,18 @@ public class EventLogInput extends FileEditorInput
 
 	private void eventLogAppended() {
         if (debug)
-            System.out.println("Notifying listeners about new content being appended to the event log");
+            Debug.println("Notifying listeners about new content being appended to the event log");
 
 		for (IEventLogChangeListener listener : eventLogChangeListeners)
 			listener.eventLogAppended();
 
 		if (debug)
-            System.out.println("Event log append notification done");
+            Debug.println("Event log append notification done");
 	}
 
     private void eventLogOverwritten() {
         if (debug)
-            System.out.println("Notifying listeners about the content being overwritten in the event log");
+            Debug.println("Notifying listeners about the content being overwritten in the event log");
 
         moduleTreeRoot = null;
 
@@ -418,29 +419,29 @@ public class EventLogInput extends FileEditorInput
             listener.eventLogOverwritten();
 
         if (debug)
-            System.out.println("Event log overwritten notification done");
+            Debug.println("Event log overwritten notification done");
     }
 
 	private void eventLogFiltered() {
         if (debug)
-            System.out.println("Notifying listeners about new filter applied to the event log");
+            Debug.println("Notifying listeners about new filter applied to the event log");
 
 		for (IEventLogChangeListener listener : eventLogChangeListeners)
 			listener.eventLogFiltered();
 
 		if (debug)
-            System.out.println("Event log filter notification done");
+            Debug.println("Event log filter notification done");
 	}
 
 	private void eventLogFilterRemoved() {
         if (debug)
-            System.out.println("Notifying listeners about removing filter from the event log");
+            Debug.println("Notifying listeners about removing filter from the event log");
 
         for (IEventLogChangeListener listener : eventLogChangeListeners)
 			listener.eventLogFilterRemoved();
 
         if (debug)
-            System.out.println("Event log filter removing notification done");
+            Debug.println("Event log filter removing notification done");
 	}
 
 	private void eventLogLongOperationStarted() {

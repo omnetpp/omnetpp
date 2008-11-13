@@ -12,6 +12,7 @@ import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.omnetpp.common.Debug;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.dataset.IDataset;
 import org.omnetpp.scave.engine.ResultFileManager;
@@ -158,7 +159,7 @@ public class ChartFactory {
 					// calculate
 					long startTime = System.currentTimeMillis();
 					final IDataset data = calc.run(monitor);
-					System.out.println("total dataset creation: "+(System.currentTimeMillis()-startTime)+" ms");
+					Debug.println("total dataset creation: "+(System.currentTimeMillis()-startTime)+" ms");
 
 					if (monitor.isCanceled()) {
 						setChartStatusText(chartCanvas, "Chart update cancelled.");

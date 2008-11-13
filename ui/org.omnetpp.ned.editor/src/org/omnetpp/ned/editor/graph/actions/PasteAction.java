@@ -26,7 +26,7 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
-
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.graph.commands.AddNEDElementCommand;
@@ -119,7 +119,7 @@ public class PasteAction extends SelectionAction {
 		// warn for elements that could not be pasted
 		elements.removeAll(pastedElements);
 		if (elements.size() > 0) {
-			System.out.println("don't know how to paste: " + StringUtils.join(elements, ", "));
+			Debug.println("don't know how to paste: " + StringUtils.join(elements, ", "));
 			Display.getCurrent().beep();
 		}
 

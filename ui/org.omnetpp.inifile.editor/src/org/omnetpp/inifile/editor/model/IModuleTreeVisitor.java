@@ -2,6 +2,7 @@ package org.omnetpp.inifile.editor.model;
 
 import java.util.Stack;
 
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
@@ -89,7 +90,7 @@ public interface IModuleTreeVisitor {
 		public boolean enter(SubmoduleElementEx submodule, INEDTypeInfo submoduleType) {
 			//fullPath.push("("+submoduleType.getName()+")"+(submodule==null ? "" : submodule.getName()));
 			fullPath.push(submodule==null ? submoduleType.getName() : submodule.getName());
-			System.out.println(StringUtils.join(fullPath.toArray(), "."));
+			Debug.println(StringUtils.join(fullPath.toArray(), "."));
 			return true;
 		}
 		

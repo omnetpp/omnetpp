@@ -152,8 +152,8 @@ public class ScalarDataset implements IAveragedScalarDataset {
 	   		applyDefaults(rowFields, columnFields, unusedFields);
    		}
    		
-   		//System.out.format("Row fields: %s%n", StringUtils.formatList(rowFields, "%s", ","));
-   		//System.out.format("Column fields: %s%n", StringUtils.formatList(columnFields, "%s", ","));
+   		//Debug.format("Row fields: %s%n", StringUtils.formatList(rowFields, "%s", ","));
+   		//Debug.format("Column fields: %s%n", StringUtils.formatList(columnFields, "%s", ","));
 
    		this.rowFields = new ResultItemFields(StringVector.fromArray(rowFields.toArray(new String[rowFields.size()])));
    		this.columnFields = new ResultItemFields(StringVector.fromArray(columnFields.toArray(new String[columnFields.size()])));

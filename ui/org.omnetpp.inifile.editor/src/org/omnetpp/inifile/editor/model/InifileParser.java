@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
+import org.omnetpp.common.Debug;
 
 /**
  * Parses an ini file. Parse results are passed back via a callback.
@@ -46,19 +47,19 @@ public class InifileParser {
 	 */
 	public static class DebugParserAdapter implements ParserCallback {
 		public void blankOrCommentLine(int lineNumber, int numLines, String rawLine, String rawComment) {
-			System.out.println(lineNumber+": "+rawLine+" --> comment="+rawComment);
+			Debug.println(lineNumber+": "+rawLine+" --> comment="+rawComment);
 		}
 		public void sectionHeadingLine(int lineNumber, int numLines, String rawLine, String sectionName, String rawComment) {
-			System.out.println(lineNumber+": "+rawLine+" --> section '"+sectionName+"'  comment="+rawComment);
+			Debug.println(lineNumber+": "+rawLine+" --> section '"+sectionName+"'  comment="+rawComment);
 		}
 		public void keyValueLine(int lineNumber, int numLines, String rawLine, String key, String value, String rawComment) {
-			System.out.println(lineNumber+": "+rawLine+" --> key='"+key+"' value='"+value+"'  comment="+rawComment);
+			Debug.println(lineNumber+": "+rawLine+" --> key='"+key+"' value='"+value+"'  comment="+rawComment);
 		}
 		public void directiveLine(int lineNumber, int numLines, String rawLine, String directive, String args, String rawComment) {
-			System.out.println(lineNumber+": "+rawLine+" --> directive='"+directive+"' args='"+args+"'  comment="+rawComment);
+			Debug.println(lineNumber+": "+rawLine+" --> directive='"+directive+"' args='"+args+"'  comment="+rawComment);
 		}
 		public void parseError(int lineNumber, int numLines, String message) {
-			System.out.println(lineNumber+": PARSE ERROR: "+message);
+			Debug.println(lineNumber+": PARSE ERROR: "+message);
 		}
 	}
 	

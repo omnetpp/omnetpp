@@ -6,6 +6,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Display;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.canvas.RectangularArea;
 import org.omnetpp.scave.charting.VectorChart.LineProperties;
@@ -99,7 +100,7 @@ class LinePlot implements ILinePlot {
 				}
 				if (debug) {
 					long duration = System.currentTimeMillis() - startTime;
-					System.out.format("calculatePlotArea(): %d ms (%d points)%n", duration, numOfPoints);
+					Debug.format("calculatePlotArea(): %d ms (%d points)%n", duration, numOfPoints);
 				}
 			}
 		}
@@ -146,7 +147,7 @@ class LinePlot implements ILinePlot {
 					if (smartMode && plotter.getNumPointsInXRange(this, series, gc, coordsMapping) >= smartModeLimit) {
 						//XXX this may have unwanted effects when caching is on,
 						// i.e. parts of a line w/ symbols, other parts the SAME line w/o symbols....
-						if (debug) System.out.println("\"smart mode\": turning off symbols");
+						if (debug) Debug.println("\"smart mode\": turning off symbols");
 						symbol = null;
 					}
 
@@ -161,7 +162,7 @@ class LinePlot implements ILinePlot {
 				}
 			}
 			chart.getShell().setCursor(null);
-			if (debug) System.out.println("plotting: "+(System.currentTimeMillis()-startTime)+" ms");
+			if (debug) Debug.println("plotting: "+(System.currentTimeMillis()-startTime)+" ms");
 		}
 	}
 }

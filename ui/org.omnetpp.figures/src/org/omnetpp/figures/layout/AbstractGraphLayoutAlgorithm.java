@@ -44,7 +44,7 @@ public abstract class AbstractGraphLayoutAlgorithm
         for (int i=0; i<10000; i++)
             privRand01();
         Assert.isTrue(rndseed == 1043618065);
-        // System.out.println("Layouter: internal RNG tested and OK");
+        // Debug.println("Layouter: internal RNG tested and OK");
     }    
 
     /**

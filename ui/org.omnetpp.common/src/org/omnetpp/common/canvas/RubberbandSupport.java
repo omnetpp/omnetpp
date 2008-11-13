@@ -149,7 +149,7 @@ public abstract class RubberbandSupport {
 	}
 
 	private void drawRubberBand(GC gc, Rectangle rect) {
-		// System.out.println("rubberBand="+rect);
+		// Debug.println("rubberBand="+rect);
 		Rectangle r = new Rectangle(rect.x, rect.y, rect.width, rect.height);
 		// needed because gc.drawFocus() doesn't accept negative width/height
 		fixNegativeSizes(r);
@@ -180,8 +180,8 @@ public abstract class RubberbandSupport {
 	 * To be called from the Paint handler of the canvas if draw == false.
 	 */
 	public void drawRubberband(GC gc) {
-		//System.out.format("Focus: %s %x%n", canvas.getDisplay().getFocusControl(), canvas.getDisplay().getFocusControl().hashCode());
-		//System.out.format("UIState: "+OS.SendMessage (canvas.handle, OS.WM_QUERYUISTATE, 0, 0));
+		//Debug.format("Focus: %s %x%n", canvas.getDisplay().getFocusControl(), canvas.getDisplay().getFocusControl().hashCode());
+		//Debug.format("UIState: "+OS.SendMessage (canvas.handle, OS.WM_QUERYUISTATE, 0, 0));
 		if (rubberBand != null)
 			drawRubberBand(gc, rubberBand);
 	}

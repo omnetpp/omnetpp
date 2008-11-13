@@ -6,6 +6,7 @@ import java.util.Stack;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.geometry.Point;
+import org.omnetpp.common.Debug;
 
 /**
  * Implementation of the Spring Embedder algorithm.
@@ -219,7 +220,7 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
 	        return;
 
 	    if (debug) 
-			System.out.println("running layouter: " + nodes.size() + " nodes, " + "allNodesAreFixed=" + allNodesAreFixed + ", haveAnchoredNode=" + haveAnchoredNode + ", haveFixedNode=" + haveFixedNode);
+			Debug.println("running layouter: " + nodes.size() + " nodes, " + "allNodesAreFixed=" + allNodesAreFixed + ", haveAnchoredNode=" + haveAnchoredNode + ", haveFixedNode=" + haveFixedNode);
 	    
 	    // consume a some values (manually given seeds are usually small!)
 	    privRand01();
@@ -293,13 +294,13 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
 	            maxdcounter=0;
 
 	        if (debug) {
-	        	System.out.println("iteration " + i + ":");
+	        	Debug.println("iteration " + i + ":");
 	        	debugPrintState();
 	        }
 	    }
 
 	    if (debug) 
-			System.out.println("layout done: " + nodes.size() + " nodes, " + i + " iterations");
+			Debug.println("layout done: " + nodes.size() + " nodes, " + i + " iterations");
 
 	    // scale back if too big -- BUT scale back only non fixed nodes.
 	    // fixed nodes do not change position
@@ -329,7 +330,7 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
 	            if (xfact>1) {xfact=1;} // only scale down if needed, but never magnify
 	            if (yfact>1) {yfact=1;}
 	    	    if (debug) 
-	    			System.out.println("layout scaled back by (" + (1/xfact) + ", " + (1/yfact) + ")");
+	    			Debug.println("layout scaled back by (" + (1/xfact) + ", " + (1/yfact) + ")");
 	            for (Node n : nodes)
 	            {
 		        	// skip the fixed nodes
@@ -668,7 +669,7 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
 
     protected void debugPrintState() {
     	for (Node n : nodes) {
-    		System.out.println("  " + n.key + ": color=" + n.color + " x=" + n.x + " y=" + n.y + " dx=" + n.dx + " dy=" + n.dy);
+    		Debug.println("  " + n.key + ": color=" + n.color + " x=" + n.x + " y=" + n.y + " dx=" + n.dx + " dy=" + n.dy);
     	}
     }
     

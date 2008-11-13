@@ -46,7 +46,7 @@ public class InteractiveChart extends ChartSWTWrapper {
 	 * Zoom in when the chart gets clicked.
 	 */
 	public void clicked(int x, int y) {
-		System.out.println("CLICKED AT: " + x + "," + y);
+		Debug.println("CLICKED AT: " + x + "," + y);
 
 		// zoom in the chart (5x)
 		zoomChart(x, y, 0.2);
@@ -56,7 +56,7 @@ public class InteractiveChart extends ChartSWTWrapper {
 	 * Zoom in when a rectangle got dragged out.
 	 */
 	public void rubberBandSelectionMade(Rectangle r) {
-		System.out.println("SELECTED: " + r.toString());
+		Debug.println("SELECTED: " + r.toString());
 		// TODO zoom
 	}
 }

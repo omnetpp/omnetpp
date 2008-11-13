@@ -135,7 +135,7 @@ public class HoverSupport {
 	}
 
 	protected void hookGlobalEventFilter() {
-		// System.out.println("HoverSupport: hooking global listener");
+		// Debug.println("HoverSupport: hooking global listener");
 		Display.getDefault().addFilter(SWT.MouseExit, eventFilter);
 		Display.getDefault().addFilter(SWT.MouseMove, eventFilter);
 		Display.getDefault().addFilter(SWT.MouseDown, eventFilter);
@@ -144,7 +144,7 @@ public class HoverSupport {
 	}
 
 	protected void unhookGlobalEventFilter() {
-		// System.out.println("HoverSupport: unhooking global listener");
+		// Debug.println("HoverSupport: unhooking global listener");
 		Display.getDefault().removeFilter(SWT.MouseExit, eventFilter);
 		Display.getDefault().removeFilter(SWT.MouseMove, eventFilter);
 		Display.getDefault().removeFilter(SWT.MouseDown, eventFilter);

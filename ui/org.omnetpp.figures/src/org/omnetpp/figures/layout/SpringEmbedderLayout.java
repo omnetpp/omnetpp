@@ -9,7 +9,7 @@ import org.eclipse.draw2d.XYLayout;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
-
+import org.omnetpp.common.Debug;
 import org.omnetpp.figures.CompoundModuleFigure;
 import org.omnetpp.figures.SubmoduleFigure;
 
@@ -150,7 +150,7 @@ public class SpringEmbedderLayout extends XYLayout {
             f.setBounds(newBounds);
         }
         if (debug)
-            System.out.println("SpringEmbedderLayout: " + (System.currentTimeMillis()-startTime) + "ms");
+            Debug.println("SpringEmbedderLayout: " + (System.currentTimeMillis()-startTime) + "ms");
     }
 
     /**
