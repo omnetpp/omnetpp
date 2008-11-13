@@ -1,5 +1,6 @@
 package org.omnetpp.ide;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -7,7 +8,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.omnetpp.common.util.StringUtils;
@@ -55,8 +55,12 @@ public class OmnetppMainPlugin extends AbstractUIPlugin {
         if (StringUtils.isEmpty(installDate)) {
             installDate = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
             getDefault().getConfigurationPreferenceStore().setValue("installDate", installDate);
+            try {
+				getDefault().getConfigurationPreferenceStore().save();
+			} catch (IOException e) {
+				OmnetppMainPlugin.logError("Cannot store installDate preference", e);
+			}
             
-            // getDefault().savePluginPreferences();
         }
         return installDate;
     }
@@ -119,7 +123,7 @@ public class OmnetppMainPlugin extends AbstractUIPlugin {
     	return new Path(getOmnetppRootDir()).append("lib").toOSString();
     }
 
-    public IPreferenceStore getConfigurationPreferenceStore() {
+    public ScopedPreferenceStore getConfigurationPreferenceStore() {
         // Create the preference store lazily.
         if (configPreferenceStore == null) {
             configPreferenceStore = new ScopedPreferenceStore(new ConfigurationScope(),getBundle().getSymbolicName());

@@ -124,6 +124,11 @@ public class OmnetppStartup implements IStartup {
         				}});
         		}
         		OmnetppMainPlugin.getDefault().getConfigurationPreferenceStore().setValue("lastCheck", System.currentTimeMillis());
+        		try {
+					OmnetppMainPlugin.getDefault().getConfigurationPreferenceStore().save();
+				} catch (IOException e) {
+					OmnetppMainPlugin.logError("Cannot store lastCheck preference", e);
+				}
         		return Status.OK_STATUS;
         	}
         };
