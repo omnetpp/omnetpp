@@ -725,53 +725,53 @@ else  #matching "fi" is after BLT testing
             fi
         fi
         if test $tcltk_ok = no; then
-            OPP_CHECK_LIB(Tcl/Tk 8.6, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk86 -ltcl86,
+            OPP_CHECK_LIB(Tcl/Tk 8.6, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS86, $opp_x11lib -ltk86 -ltcl86,
                           tcltk_ok, TK_LIBS="$opp_x11lib -ltk86 -ltcl86" TK_CFLAGS=$TK_CFLAGS86)
         fi
         if test $tcltk_ok = no; then
-            OPP_CHECK_LIB(Tcl/Tk 8.6, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk8.6 -ltcl8.6,
+            OPP_CHECK_LIB(Tcl/Tk 8.6, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS86, $opp_x11lib -ltk8.6 -ltcl8.6,
                           tcltk_ok, TK_LIBS="$opp_x11lib -ltk8.6 -ltcl8.6" TK_CFLAGS=$TK_CFLAGS86)
         fi
         if test $tcltk_ok = no -a "$cygwin" = yes; then
-            OPP_CHECK_LIB(Tcl/Tk 8.6, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -lcygtk86 -lcygtcl86,
+            OPP_CHECK_LIB(Tcl/Tk 8.6, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS86, $opp_x11lib -lcygtk86 -lcygtcl86,
                           tcltk_ok, TK_LIBS="$opp_x11lib -lcygtk86 -lcygtcl86" TK_CFLAGS=$TK_CFLAGS86)
         fi
         if test $tcltk_ok = no -a "$mingw" = yes; then
-            OPP_CHECK_LIB(Tcl/Tk 8.6, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -L/usr/bin -ltk86 -ltcl86,
+            OPP_CHECK_LIB(Tcl/Tk 8.6, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS86, $opp_x11lib -L/usr/bin -ltk86 -ltcl86,
                           tcltk_ok, TK_LIBS="$opp_x11lib -L/usr/bin -ltk86 -ltcl86" TK_CFLAGS=$TK_CFLAGS86)
         fi
         # check for 8.5
         if test $tcltk_ok = no; then
-            OPP_CHECK_LIB(Tcl/Tk 8.5, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk85 -ltcl85,
+            OPP_CHECK_LIB(Tcl/Tk 8.5, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS85, $opp_x11lib -ltk85 -ltcl85,
                           tcltk_ok, TK_LIBS="$opp_x11lib -ltk85 -ltcl85" TK_CFLAGS=$TK_CFLAGS85)
         fi
         if test $tcltk_ok = no; then
-            OPP_CHECK_LIB(Tcl/Tk 8.5, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk8.5 -ltcl8.5,
+            OPP_CHECK_LIB(Tcl/Tk 8.5, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS85, $opp_x11lib -ltk8.5 -ltcl8.5,
                           tcltk_ok, TK_LIBS="$opp_x11lib -ltk8.5 -ltcl8.5" TK_CFLAGS=$TK_CFLAGS85)
         fi
         if test $tcltk_ok = no -a "$cygwin" = yes; then
-            OPP_CHECK_LIB(Tcl/Tk 8.5, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -lcygtk85 -lcygtcl85,
+            OPP_CHECK_LIB(Tcl/Tk 8.5, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS85, $opp_x11lib -lcygtk85 -lcygtcl85,
                           tcltk_ok, TK_LIBS="$opp_x11lib -lcygtk85 -lcygtcl85" TK_CFLAGS=$TK_CFLAGS85)
         fi
         if test $tcltk_ok = no -a "$mingw" = yes; then
-            OPP_CHECK_LIB(Tcl/Tk 8.5, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -L/usr/bin -ltk85 -ltcl85,
+            OPP_CHECK_LIB(Tcl/Tk 8.5, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS85, $opp_x11lib -L/usr/bin -ltk85 -ltcl85,
                           tcltk_ok, TK_LIBS="$opp_x11lib -L/usr/bin -ltk85 -ltcl85" TK_CFLAGS=$TK_CFLAGS85)
         fi
         # check for 8.4
         if test $tcltk_ok = no; then
-            OPP_CHECK_LIB(Tcl/Tk 8.4, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk84 -ltcl84,
+            OPP_CHECK_LIB(Tcl/Tk 8.4, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS84, $opp_x11lib -ltk84 -ltcl84,
                           tcltk_ok, TK_LIBS="$opp_x11lib -ltk84 -ltcl84" TK_CFLAGS=$TK_CFLAGS84)
         fi
         if test $tcltk_ok = no; then
-            OPP_CHECK_LIB(Tcl/Tk 8.4, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk8.4 -ltcl8.4,
+            OPP_CHECK_LIB(Tcl/Tk 8.4, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS84, $opp_x11lib -ltk8.4 -ltcl8.4,
                           tcltk_ok, TK_LIBS="$opp_x11lib -ltk8.4 -ltcl8.4" TK_CFLAGS=$TK_CFLAGS84)
         fi
         if test $tcltk_ok = no -a "$cygwin" = yes; then
-            OPP_CHECK_LIB(Tcl/Tk 8.4, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -lcygtk84 -lcygtcl84,
+            OPP_CHECK_LIB(Tcl/Tk 8.4, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS84, $opp_x11lib -lcygtk84 -lcygtcl84,
                           tcltk_ok, TK_LIBS="$opp_x11lib -lcygtk84 -lcygtcl84" TK_CFLAGS=$TK_CFLAGS84)
         fi
         if test $tcltk_ok = no -a "$mingw" = yes; then
-            OPP_CHECK_LIB(Tcl/Tk 8.4, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -L/usr/bin -ltk84 -ltcl84,
+            OPP_CHECK_LIB(Tcl/Tk 8.4, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS84, $opp_x11lib -L/usr/bin -ltk84 -ltcl84,
                           tcltk_ok, TK_LIBS="$opp_x11lib -L/usr/bin -ltk84 -ltcl84" TK_CFLAGS=$TK_CFLAGS84)
         fi
     fi

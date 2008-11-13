@@ -5611,11 +5611,11 @@ fi
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$opp_x11inc $TK_CFLAGS"
+   CXXFLAGS="$opp_x11inc $TK_CFLAGS86"
    LIBS="$opp_x11lib -ltk86 -ltcl86"
 
-   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.6 with CFLAGS=\"$opp_x11inc $TK_CFLAGS\" LIBS=\"$opp_x11lib -ltk86 -ltcl86\"" >&5
-echo $ECHO_N "checking for Tcl/Tk 8.6 with CFLAGS=\"$opp_x11inc $TK_CFLAGS\" LIBS=\"$opp_x11lib -ltk86 -ltcl86\"... $ECHO_C" >&6; }
+   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.6 with CFLAGS=\"$opp_x11inc $TK_CFLAGS86\" LIBS=\"$opp_x11lib -ltk86 -ltcl86\"" >&5
+echo $ECHO_N "checking for Tcl/Tk 8.6 with CFLAGS=\"$opp_x11inc $TK_CFLAGS86\" LIBS=\"$opp_x11lib -ltk86 -ltcl86\"... $ECHO_C" >&6; }
 
    cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -5672,11 +5672,11 @@ rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$opp_x11inc $TK_CFLAGS"
+   CXXFLAGS="$opp_x11inc $TK_CFLAGS86"
    LIBS="$opp_x11lib -ltk8.6 -ltcl8.6"
 
-   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.6 with CFLAGS=\"$opp_x11inc $TK_CFLAGS\" LIBS=\"$opp_x11lib -ltk8.6 -ltcl8.6\"" >&5
-echo $ECHO_N "checking for Tcl/Tk 8.6 with CFLAGS=\"$opp_x11inc $TK_CFLAGS\" LIBS=\"$opp_x11lib -ltk8.6 -ltcl8.6\"... $ECHO_C" >&6; }
+   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.6 with CFLAGS=\"$opp_x11inc $TK_CFLAGS86\" LIBS=\"$opp_x11lib -ltk8.6 -ltcl8.6\"" >&5
+echo $ECHO_N "checking for Tcl/Tk 8.6 with CFLAGS=\"$opp_x11inc $TK_CFLAGS86\" LIBS=\"$opp_x11lib -ltk8.6 -ltcl8.6\"... $ECHO_C" >&6; }
 
    cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -5733,11 +5733,11 @@ rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$opp_x11inc $TK_CFLAGS"
+   CXXFLAGS="$opp_x11inc $TK_CFLAGS86"
    LIBS="$opp_x11lib -lcygtk86 -lcygtcl86"
 
-   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.6 with CFLAGS=\"$opp_x11inc $TK_CFLAGS\" LIBS=\"$opp_x11lib -lcygtk86 -lcygtcl86\"" >&5
-echo $ECHO_N "checking for Tcl/Tk 8.6 with CFLAGS=\"$opp_x11inc $TK_CFLAGS\" LIBS=\"$opp_x11lib -lcygtk86 -lcygtcl86\"... $ECHO_C" >&6; }
+   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.6 with CFLAGS=\"$opp_x11inc $TK_CFLAGS86\" LIBS=\"$opp_x11lib -lcygtk86 -lcygtcl86\"" >&5
+echo $ECHO_N "checking for Tcl/Tk 8.6 with CFLAGS=\"$opp_x11inc $TK_CFLAGS86\" LIBS=\"$opp_x11lib -lcygtk86 -lcygtcl86\"... $ECHO_C" >&6; }
 
    cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -5794,11 +5794,11 @@ rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$opp_x11inc $TK_CFLAGS"
+   CXXFLAGS="$opp_x11inc $TK_CFLAGS86"
    LIBS="$opp_x11lib -L/usr/bin -ltk86 -ltcl86"
 
-   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.6 with CFLAGS=\"$opp_x11inc $TK_CFLAGS\" LIBS=\"$opp_x11lib -L/usr/bin -ltk86 -ltcl86\"" >&5
-echo $ECHO_N "checking for Tcl/Tk 8.6 with CFLAGS=\"$opp_x11inc $TK_CFLAGS\" LIBS=\"$opp_x11lib -L/usr/bin -ltk86 -ltcl86\"... $ECHO_C" >&6; }
+   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.6 with CFLAGS=\"$opp_x11inc $TK_CFLAGS86\" LIBS=\"$opp_x11lib -L/usr/bin -ltk86 -ltcl86\"" >&5
+echo $ECHO_N "checking for Tcl/Tk 8.6 with CFLAGS=\"$opp_x11inc $TK_CFLAGS86\" LIBS=\"$opp_x11lib -L/usr/bin -ltk86 -ltcl86\"... $ECHO_C" >&6; }
 
    cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -5856,11 +5856,11 @@ rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$opp_x11inc $TK_CFLAGS"
+   CXXFLAGS="$opp_x11inc $TK_CFLAGS85"
    LIBS="$opp_x11lib -ltk85 -ltcl85"
 
-   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.5 with CFLAGS=\"$opp_x11inc $TK_CFLAGS\" LIBS=\"$opp_x11lib -ltk85 -ltcl85\"" >&5
-echo $ECHO_N "checking for Tcl/Tk 8.5 with CFLAGS=\"$opp_x11inc $TK_CFLAGS\" LIBS=\"$opp_x11lib -ltk85 -ltcl85\"... $ECHO_C" >&6; }
+   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.5 with CFLAGS=\"$opp_x11inc $TK_CFLAGS85\" LIBS=\"$opp_x11lib -ltk85 -ltcl85\"" >&5
+echo $ECHO_N "checking for Tcl/Tk 8.5 with CFLAGS=\"$opp_x11inc $TK_CFLAGS85\" LIBS=\"$opp_x11lib -ltk85 -ltcl85\"... $ECHO_C" >&6; }
 
    cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -5917,11 +5917,11 @@ rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$opp_x11inc $TK_CFLAGS"
+   CXXFLAGS="$opp_x11inc $TK_CFLAGS85"
    LIBS="$opp_x11lib -ltk8.5 -ltcl8.5"
 
-   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.5 with CFLAGS=\"$opp_x11inc $TK_CFLAGS\" LIBS=\"$opp_x11lib -ltk8.5 -ltcl8.5\"" >&5
-echo $ECHO_N "checking for Tcl/Tk 8.5 with CFLAGS=\"$opp_x11inc $TK_CFLAGS\" LIBS=\"$opp_x11lib -ltk8.5 -ltcl8.5\"... $ECHO_C" >&6; }
+   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.5 with CFLAGS=\"$opp_x11inc $TK_CFLAGS85\" LIBS=\"$opp_x11lib -ltk8.5 -ltcl8.5\"" >&5
+echo $ECHO_N "checking for Tcl/Tk 8.5 with CFLAGS=\"$opp_x11inc $TK_CFLAGS85\" LIBS=\"$opp_x11lib -ltk8.5 -ltcl8.5\"... $ECHO_C" >&6; }
 
    cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -5978,11 +5978,11 @@ rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$opp_x11inc $TK_CFLAGS"
+   CXXFLAGS="$opp_x11inc $TK_CFLAGS85"
    LIBS="$opp_x11lib -lcygtk85 -lcygtcl85"
 
-   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.5 with CFLAGS=\"$opp_x11inc $TK_CFLAGS\" LIBS=\"$opp_x11lib -lcygtk85 -lcygtcl85\"" >&5
-echo $ECHO_N "checking for Tcl/Tk 8.5 with CFLAGS=\"$opp_x11inc $TK_CFLAGS\" LIBS=\"$opp_x11lib -lcygtk85 -lcygtcl85\"... $ECHO_C" >&6; }
+   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.5 with CFLAGS=\"$opp_x11inc $TK_CFLAGS85\" LIBS=\"$opp_x11lib -lcygtk85 -lcygtcl85\"" >&5
+echo $ECHO_N "checking for Tcl/Tk 8.5 with CFLAGS=\"$opp_x11inc $TK_CFLAGS85\" LIBS=\"$opp_x11lib -lcygtk85 -lcygtcl85\"... $ECHO_C" >&6; }
 
    cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -6039,11 +6039,11 @@ rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$opp_x11inc $TK_CFLAGS"
+   CXXFLAGS="$opp_x11inc $TK_CFLAGS85"
    LIBS="$opp_x11lib -L/usr/bin -ltk85 -ltcl85"
 
-   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.5 with CFLAGS=\"$opp_x11inc $TK_CFLAGS\" LIBS=\"$opp_x11lib -L/usr/bin -ltk85 -ltcl85\"" >&5
-echo $ECHO_N "checking for Tcl/Tk 8.5 with CFLAGS=\"$opp_x11inc $TK_CFLAGS\" LIBS=\"$opp_x11lib -L/usr/bin -ltk85 -ltcl85\"... $ECHO_C" >&6; }
+   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.5 with CFLAGS=\"$opp_x11inc $TK_CFLAGS85\" LIBS=\"$opp_x11lib -L/usr/bin -ltk85 -ltcl85\"" >&5
+echo $ECHO_N "checking for Tcl/Tk 8.5 with CFLAGS=\"$opp_x11inc $TK_CFLAGS85\" LIBS=\"$opp_x11lib -L/usr/bin -ltk85 -ltcl85\"... $ECHO_C" >&6; }
 
    cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -6101,11 +6101,11 @@ rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$opp_x11inc $TK_CFLAGS"
+   CXXFLAGS="$opp_x11inc $TK_CFLAGS84"
    LIBS="$opp_x11lib -ltk84 -ltcl84"
 
-   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.4 with CFLAGS=\"$opp_x11inc $TK_CFLAGS\" LIBS=\"$opp_x11lib -ltk84 -ltcl84\"" >&5
-echo $ECHO_N "checking for Tcl/Tk 8.4 with CFLAGS=\"$opp_x11inc $TK_CFLAGS\" LIBS=\"$opp_x11lib -ltk84 -ltcl84\"... $ECHO_C" >&6; }
+   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.4 with CFLAGS=\"$opp_x11inc $TK_CFLAGS84\" LIBS=\"$opp_x11lib -ltk84 -ltcl84\"" >&5
+echo $ECHO_N "checking for Tcl/Tk 8.4 with CFLAGS=\"$opp_x11inc $TK_CFLAGS84\" LIBS=\"$opp_x11lib -ltk84 -ltcl84\"... $ECHO_C" >&6; }
 
    cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -6162,11 +6162,11 @@ rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$opp_x11inc $TK_CFLAGS"
+   CXXFLAGS="$opp_x11inc $TK_CFLAGS84"
    LIBS="$opp_x11lib -ltk8.4 -ltcl8.4"
 
-   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.4 with CFLAGS=\"$opp_x11inc $TK_CFLAGS\" LIBS=\"$opp_x11lib -ltk8.4 -ltcl8.4\"" >&5
-echo $ECHO_N "checking for Tcl/Tk 8.4 with CFLAGS=\"$opp_x11inc $TK_CFLAGS\" LIBS=\"$opp_x11lib -ltk8.4 -ltcl8.4\"... $ECHO_C" >&6; }
+   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.4 with CFLAGS=\"$opp_x11inc $TK_CFLAGS84\" LIBS=\"$opp_x11lib -ltk8.4 -ltcl8.4\"" >&5
+echo $ECHO_N "checking for Tcl/Tk 8.4 with CFLAGS=\"$opp_x11inc $TK_CFLAGS84\" LIBS=\"$opp_x11lib -ltk8.4 -ltcl8.4\"... $ECHO_C" >&6; }
 
    cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -6223,11 +6223,11 @@ rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$opp_x11inc $TK_CFLAGS"
+   CXXFLAGS="$opp_x11inc $TK_CFLAGS84"
    LIBS="$opp_x11lib -lcygtk84 -lcygtcl84"
 
-   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.4 with CFLAGS=\"$opp_x11inc $TK_CFLAGS\" LIBS=\"$opp_x11lib -lcygtk84 -lcygtcl84\"" >&5
-echo $ECHO_N "checking for Tcl/Tk 8.4 with CFLAGS=\"$opp_x11inc $TK_CFLAGS\" LIBS=\"$opp_x11lib -lcygtk84 -lcygtcl84\"... $ECHO_C" >&6; }
+   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.4 with CFLAGS=\"$opp_x11inc $TK_CFLAGS84\" LIBS=\"$opp_x11lib -lcygtk84 -lcygtcl84\"" >&5
+echo $ECHO_N "checking for Tcl/Tk 8.4 with CFLAGS=\"$opp_x11inc $TK_CFLAGS84\" LIBS=\"$opp_x11lib -lcygtk84 -lcygtcl84\"... $ECHO_C" >&6; }
 
    cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -6284,11 +6284,11 @@ rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$opp_x11inc $TK_CFLAGS"
+   CXXFLAGS="$opp_x11inc $TK_CFLAGS84"
    LIBS="$opp_x11lib -L/usr/bin -ltk84 -ltcl84"
 
-   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.4 with CFLAGS=\"$opp_x11inc $TK_CFLAGS\" LIBS=\"$opp_x11lib -L/usr/bin -ltk84 -ltcl84\"" >&5
-echo $ECHO_N "checking for Tcl/Tk 8.4 with CFLAGS=\"$opp_x11inc $TK_CFLAGS\" LIBS=\"$opp_x11lib -L/usr/bin -ltk84 -ltcl84\"... $ECHO_C" >&6; }
+   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.4 with CFLAGS=\"$opp_x11inc $TK_CFLAGS84\" LIBS=\"$opp_x11lib -L/usr/bin -ltk84 -ltcl84\"" >&5
+echo $ECHO_N "checking for Tcl/Tk 8.4 with CFLAGS=\"$opp_x11inc $TK_CFLAGS84\" LIBS=\"$opp_x11lib -L/usr/bin -ltk84 -ltcl84\"... $ECHO_C" >&6; }
 
    cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
