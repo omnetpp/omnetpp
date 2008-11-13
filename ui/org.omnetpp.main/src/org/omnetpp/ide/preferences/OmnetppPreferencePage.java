@@ -4,10 +4,16 @@ import java.io.File;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.preference.DirectoryFieldEditor;
+import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.FileFieldEditor;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.omnetpp.common.IConstants;
@@ -27,30 +33,77 @@ import org.omnetpp.ide.OmnetppMainPlugin;
  * the main plug-in class. That way, preferences can
  * be accessed directly via the preference store.
  */
-//TODO display message if doxygen or dot cannot be found
 public class OmnetppPreferencePage
 	extends FieldEditorPreferencePage
 	implements IWorkbenchPreferencePage {
 
 	public static final String OMNETPP_ROOT = "omnetppRoot";
+	public static final String OMNETPP_IMAGE_PATH = "omnetppImagePath";
 	public static final String DOXYGEN_EXECUTABLE = "doxygenExecutable";
     public static final String GRAPHVIZ_DOT_EXECUTABLE = "graphvizDotExecutable";
 
     public OmnetppPreferencePage() {
 		super(GRID);
 		setPreferenceStore(OmnetppMainPlugin.getDefault().getConfigurationPreferenceStore());
-		setDescription("Specify the directory where the Makefile.inc or configuser.vc are located. " +
-				"This is usually the root folder of the OMNeT++ installation.");
 	}
 
 	public void createFieldEditors() {
-	    // FIXME naming is not correct - not install location)
-		addField(new DirectoryFieldEditor(OmnetppPreferencePage.OMNETPP_ROOT, "OMNeT++ install location:", getFieldEditorParent()));
+		Composite parent = getFieldEditorParent();
+        final Group group = createGroup(parent, "OMNeT++", 3, 3, GridData.FILL_HORIZONTAL);
+        Composite spacer = createComposite(group, 3, 3, GridData.FILL_HORIZONTAL);
+        addAndFillIntoGrid(new DirectoryFieldEditor(OmnetppPreferencePage.OMNETPP_ROOT, "Install location:", spacer), spacer, 3);
+        createLabel(spacer, "Note: This is the directory where the Makefile.inc or configuser.vc are located.", 3);
+        addAndFillIntoGrid(new DirectoryFieldEditor(OmnetppPreferencePage.OMNETPP_IMAGE_PATH, "Image path:", spacer), spacer, 3);
+        createLabel(spacer, "Note: This is a semicolon-separated path to directory trees that contain icons.", 3);
+        
 		// supported only in the commercial build
 		if (IConstants.IS_COMMERCIAL) {
-			addField(new LookupExecutableFileFieldEditor(DOXYGEN_EXECUTABLE, "Doxygen executable path:", getFieldEditorParent()));
-			addField(new LookupExecutableFileFieldEditor(GRAPHVIZ_DOT_EXECUTABLE, "GraphViz Dot executable path:", getFieldEditorParent()));
+		    Group group2 = createGroup(parent, "Tools for generating documentation", 3, 3, GridData.FILL_HORIZONTAL);
+	        Composite spacer2 = createComposite(group2, 3, 3, GridData.FILL_HORIZONTAL);
+	        addAndFillIntoGrid(new LookupExecutableFileFieldEditor(DOXYGEN_EXECUTABLE, "Doxygen executable path:", spacer2), spacer2, 3);
+	        addAndFillIntoGrid(new LookupExecutableFileFieldEditor(GRAPHVIZ_DOT_EXECUTABLE, "GraphViz Dot executable path:", spacer2), spacer2, 3);
 		}
+	}
+
+	protected void addAndFillIntoGrid(FieldEditor editor, Composite parent, int numColumns) {
+	    addField(editor);
+	    editor.fillIntoGrid(parent, numColumns);
+	}
+	
+	// from SWTFactory
+	protected static Group createGroup(Composite parent, String text, int columns, int hspan, int fill) {
+	    Group g = new Group(parent, SWT.NONE);
+	    g.setLayout(new GridLayout(columns, false));
+	    g.setText(text);
+	    g.setFont(parent.getFont());
+	    GridData gd = new GridData(fill);
+	    gd.horizontalSpan = hspan;
+	    g.setLayoutData(gd);
+	    return g;
+	}
+	
+    // from SWTFactory
+	protected static Composite createComposite(Composite parent, int columns, int hspan, int fill) {
+	    Composite g = new Composite(parent, SWT.NONE);
+	    g.setLayout(new GridLayout(columns, false));
+	    g.setFont(parent.getFont());
+	    GridData gd = new GridData(fill);
+	    gd.horizontalSpan = hspan;
+	    g.setLayoutData(gd);
+	    return g;
+	}
+
+    // from SWTFactory
+	protected static Label createLabel(Composite parent, String text, int hspan) {
+	    Label l = new Label(parent, SWT.WRAP);
+	    l.setFont(parent.getFont());
+	    l.setText(text);
+	    GridData gd = new GridData(GridData.FILL_HORIZONTAL);
+	    gd.horizontalSpan = hspan;
+	    gd.grabExcessHorizontalSpace = false;
+	    gd.horizontalIndent = 15;
+	    l.setLayoutData(gd);
+	    return l;
 	}
 
 	/* (non-Javadoc)
@@ -75,7 +128,7 @@ public class OmnetppPreferencePage
         return doxyExecutablePath != null && new File(ProcessUtils.lookupExecutable(doxyExecutablePath)).exists();
     }
 
-    private static class LookupExecutableFileFieldEditor extends FileFieldEditor {
+    protected static class LookupExecutableFileFieldEditor extends FileFieldEditor {
         public LookupExecutableFileFieldEditor(String name, String string, Composite fieldEditorParent) {
             super(name, string, fieldEditorParent);
         }
