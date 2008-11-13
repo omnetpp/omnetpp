@@ -314,6 +314,9 @@
          <newWizardShortcut
                id="org.omnetpp.ned.editor.wizard.new.simplemodule">
          </newWizardShortcut>
+         <newWizardShortcut
+               id="org.omnetpp.cdt.wizards.NewClassCreationWizard">
+         </newWizardShortcut>
       </perspectiveExtension>
       <perspectiveExtension
             targetID="org.eclipse.debug.ui.DebugPerspective">
@@ -327,7 +330,7 @@
                id="org.eclipse.cdt.ui.CPerspective">
          </perspectiveShortcut>
          <newWizardShortcut
-               id="org.eclipse.cdt.ui.wizards.NewClassCreationWizard">
+               id="org.omnetpp.cdt.wizards.NewClassCreationWizard">
          </newWizardShortcut>
       </perspectiveExtension>
    </extension>
@@ -367,4 +370,24 @@
             sequence="M1+TAB">
       </key>
    </extension>
+   
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <wizard
+            category="org.eclipse.cdt.ui.newCCWizards"
+            class="org.omnetpp.cdt.wizard.NewClassCreationWizard_CCExt"
+            finalPerspective="org.eclipse.cdt.ui.CPerspective"
+            icon="icons/full/etool16/newclass_wiz.gif"
+            id="org.omnetpp.cdt.wizards.NewClassCreationWizard"
+            name="Class (OMNeT++)">
+         <class class="org.eclipse.cdt.internal.ui.wizards.NewClassCreationWizard">
+            <parameter name="ctype" value="true"/>
+            <parameter targetId="org.eclipse.cdt.ui.actions.NewTypeDropDown"/>
+         </class>
+         <description>
+            Create a new C++ class (OMNeT++)
+         </description>
+      </wizard>
+   </extension>
+   
 </plugin>
