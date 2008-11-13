@@ -259,6 +259,12 @@
            wizardId="org.omnetpp.cdt.wizard.omnetppCCProjectWizard">
         <enablement></enablement>
      </commonWizard>
+     <commonWizard
+           menuGroupId="org.eclipse.cdt.ui"
+           type="new"
+           wizardId="org.omnetpp.cdt.wizards.NewClassCreationWizard">
+        <enablement></enablement>
+     </commonWizard>
   </extension>
    <extension
          point="org.eclipse.ui.propertyPages">
