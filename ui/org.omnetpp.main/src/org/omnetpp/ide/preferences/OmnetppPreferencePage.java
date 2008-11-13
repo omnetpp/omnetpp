@@ -42,32 +42,6 @@ public class OmnetppPreferencePage
 	public static final String DOXYGEN_EXECUTABLE = "doxygenExecutable";
     public static final String GRAPHVIZ_DOT_EXECUTABLE = "graphvizDotExecutable";
 
-    protected static class DirectoryListFieldEditor extends DirectoryFieldEditor {
-        public DirectoryListFieldEditor(String name, String labelText, Composite parent) {
-            super(name, labelText, parent);
-            setChangeButtonText("Append...");
-            setErrorMessage("Value contains nonexistent directory");
-        }    
-
-        @Override
-        protected String changePressed() {
-            String original = getTextControl().getText();
-            String newDir = super.changePressed();
-            if (newDir == null) 
-                return null;
-            return StringUtils.join(new String[] {original, newDir}, ";");
-        }
-        
-        @Override
-        protected boolean doCheckState() {
-            String dirNames = getTextControl().getText();
-            for (String dirName : dirNames.split(";"))
-                if (!StringUtils.isEmpty(dirName) && !new File(dirName.trim()).isDirectory())
-                    return false;
-            return true;
-        }
-    }
-    
     public OmnetppPreferencePage() {
 		super(GRID);
 		setPreferenceStore(OmnetppMainPlugin.getDefault().getConfigurationPreferenceStore());
@@ -172,4 +146,32 @@ public class OmnetppPreferencePage
             return state;
         }
     }
+
+    protected static class DirectoryListFieldEditor extends DirectoryFieldEditor {
+        public DirectoryListFieldEditor(String name, String labelText, Composite parent) {
+            super(name, labelText, parent);
+            setChangeButtonText("Append...");
+            setErrorMessage("Value contains nonexistent directory");
+        }    
+
+        @Override
+        protected String changePressed() {
+            String original = getTextControl().getText();
+            String newDir = super.changePressed();
+            if (newDir == null) 
+                return null;
+            return StringUtils.join(new String[] {original, newDir}, ";");
+        }
+        
+        @Override
+        protected boolean doCheckState() {
+            String dirNames = getTextControl().getText();
+            for (String dirName : dirNames.split(";"))
+                if (!StringUtils.isEmpty(dirName) && !new File(dirName.trim()).isDirectory())
+                    return false;
+            return true;
+        }
+    }
+   
 }
+

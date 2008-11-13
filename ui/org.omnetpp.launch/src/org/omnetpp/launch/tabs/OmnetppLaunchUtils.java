@@ -35,6 +35,7 @@ import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ide.OmnetppMainPlugin;
+import org.omnetpp.ide.preferences.OmnetppPreferencePage;
 import org.omnetpp.inifile.editor.model.ConfigRegistry;
 import org.omnetpp.inifile.editor.model.InifileParser;
 import org.omnetpp.launch.IOmnetppLaunchConstants;
@@ -307,6 +308,12 @@ public class OmnetppLaunchUtils {
         if (StringUtils.isBlank(ldLibPath))
         	envir.put("LD_LIBRARY_PATH", "${opp_lib_dir}${system_property:path.separator}${opp_ld_library_path_loc:"+wdirStr+"}${system_property:path.separator}${env_var:LD_LIBRARY_PATH}");
 
+        String imagePath = envir.get("OMNETPP_IMAGE_PATH");
+        if (StringUtils.isBlank(imagePath)) {
+            imagePath = OmnetppMainPlugin.getDefault().getConfigurationPreferenceStore().getString(OmnetppPreferencePage.OMNETPP_IMAGE_PATH);
+            envir.put("OMNETPP_IMAGE_PATH", imagePath);
+        }
+        
         // Java CLASSPATH
         //FIXME do not overwrite CLASSPATH if it's already set by the user!
         //FIXME use the inifile's project, not mappedResources!
