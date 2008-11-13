@@ -249,17 +249,6 @@ CFLAGS_DEBUG="$CFLAGS_DEBUG $CFLAGS_ARCH"
 CFLAGS_RELEASE="$CFLAGS_RELEASE $CFLAGS_ARCH"
 LDFLAGS="$LDFLAGS $LDFLAGS_ARCH"
 
-# add RUNTIME_PATH option if supported so setting LD_LIBRARY_PATH is no longer needed when using shared libs
-# . is added to the rpath so opp_run -L option does not need full path
-AC_MSG_CHECKING(whether linker supports -rpath)
-LDFLAGS_SAVE="$LDFLAGS"
-LDFLAGS="$LDFLAGS -Wl,-rpath,\$(OMNETPP_LIB_DIR):."
-AC_LINK_IFELSE(
-     [AC_LANG_PROGRAM()],
-     [AC_MSG_RESULT(yes)],
-     [AC_MSG_RESULT(no); RPATH_UNSUPPORTED="true"; LDFLAGS="$LDFLAGS_SAVE"])
-
-
 #----------------------
 # Check Cygwin
 #----------------------
@@ -466,52 +455,49 @@ rm -f conftest.*
 
 # first check if we need "-ldl" for dlopen() [Laura Marie Feeney suggests it's not needed for FreeBSD]
 OPP_CHECK_LIB(dlopen, dlfcn.h, dlopen("",0), , , ldl_not_needed, ldl="", ldl="-ldl")
-OPP_CHECK_LIB(dlopen, dlfcn.h, dlopen("",0), , , has_dlopen, , )
 
 # then go ahead
-if test $has_dlopen = "yes"; then
-   AC_MSG_CHECKING(if --export-dynamic linker option is supported/needed)
-   echo 'void func_from_main();' >conftest_a.cc
-   echo 'void some_func() {func_from_main();}' >>conftest_a.cc
-   echo '#include <dlfcn.h>' >conftest_m.cc
-   echo '#include <stdio.h>' >>conftest_m.cc
-   echo 'void func_from_main() {}' >>conftest_m.cc
-   echo 'int main() {if (dlopen("./libconftest_a.so",RTLD_NOW)!=0) return 0; printf("%s",dlerror()); return 1;}' >>conftest_m.cc
-   if $CXX -c conftest_a.cc >/dev/null 2>/dev/null && \
-      $CXX -c conftest_m.cc >/dev/null 2>/dev/null && \
-      $SHLIB_LD -o libconftest_a.so conftest_a.o >/dev/null 2>/dev/null; \
-   then
-      silly_ok="no"
-      # 1st try.
-      if $CXX -o conftest conftest_m.o $ldl >/dev/null 2>/dev/null; then
-         if ./conftest >/dev/null 2>/dev/null; then
-            AC_MSG_RESULT(not needed)
-            silly_ok="yes"
-         fi
+AC_MSG_CHECKING(if --export-dynamic linker option is supported/needed)
+echo 'void func_from_main();' >conftest_a.cc
+echo 'void some_func() {func_from_main();}' >>conftest_a.cc
+echo '#include <dlfcn.h>' >conftest_m.cc
+echo '#include <stdio.h>' >>conftest_m.cc
+echo 'void func_from_main() {}' >>conftest_m.cc
+echo 'int main() {if (dlopen("./libconftest_a.so",RTLD_NOW)!=0) return 0; printf("%s",dlerror()); return 1;}' >>conftest_m.cc
+if $CXX -c conftest_a.cc >/dev/null 2>/dev/null && \
+   $CXX -c conftest_m.cc >/dev/null 2>/dev/null && \
+   $SHLIB_LD -o libconftest_a.so conftest_a.o >/dev/null 2>/dev/null; \
+then
+   silly_ok="no"
+   # 1st try.
+   if $CXX -o conftest conftest_m.o $ldl >/dev/null 2>/dev/null; then
+      if ./conftest >/dev/null 2>/dev/null; then
+         AC_MSG_RESULT(not needed)
+         silly_ok="yes"
       fi
-      # 2nd try.
-      if test $silly_ok = "no" && \
-         $CXX -o conftest -Wl,--export-dynamic conftest_m.o $ldl >/dev/null 2>/dev/null; \
-      then
-         if ./conftest >/dev/null 2>/dev/null; then
-            AC_MSG_RESULT(both)
-            LDFLAGS="$LDFLAGS -Wl,--export-dynamic"
-            silly_ok="yes"
-         fi
-      fi
-      # no solution found
-      if test $silly_ok = "no"; then
-         AC_MSG_RESULT(no solution found)
-         AC_MSG_WARN([No way was detected to export symbols from executables to shared])
-         AC_MSG_WARN([libraries. You probably will not be able to dynamically load])
-         AC_MSG_WARN([simple modules or other extensions written in C++ into simulation])
-         AC_MSG_WARN([programs like INET.])
-      fi
-   else
-      AC_MSG_RESULT(test failed)
    fi
-   rm -f conftest_a.* conftest_m.* libconftest_a.so conftest
+   # 2nd try.
+   if test $silly_ok = "no" && \
+      $CXX -o conftest -Wl,--export-dynamic conftest_m.o $ldl >/dev/null 2>/dev/null; \
+   then
+      if ./conftest >/dev/null 2>/dev/null; then
+         AC_MSG_RESULT(both)
+         LDFLAGS="$LDFLAGS -Wl,--export-dynamic"
+         silly_ok="yes"
+      fi
+   fi
+   # no solution found
+   if test $silly_ok = "no"; then
+      AC_MSG_RESULT(no solution found)
+      AC_MSG_WARN([No way was detected to export symbols from executables to shared])
+      AC_MSG_WARN([libraries. You probably will not be able to dynamically load])
+      AC_MSG_WARN([simple modules or other extensions written in C++ into simulation])
+      AC_MSG_WARN([programs like INET.])
+   fi
+else
+   AC_MSG_RESULT(test failed)
 fi
+rm -f conftest_a.* conftest_m.* libconftest_a.so conftest
 
 
 
@@ -607,6 +593,20 @@ else
    AC_MSG_RESULT(test failed)
 fi
 rm -f conftest_a.* conftest_m.* libconftest_a.a conftest
+
+
+#----------------------
+# Check for rpath
+#----------------------
+# add RUNTIME_PATH option if supported, so that setting LD_LIBRARY_PATH is no longer needed when using shared libs.
+# Also, we add "." to rpath so that opp_run -L option does not need full path of the library
+AC_MSG_CHECKING(whether linker supports -rpath)
+LDFLAGS_SAVE="$LDFLAGS"
+LDFLAGS="$LDFLAGS -Wl,-rpath,\$(OMNETPP_LIB_DIR):."
+AC_LINK_IFELSE(
+     [AC_LANG_PROGRAM()],
+     [AC_MSG_RESULT(yes)],
+     [AC_MSG_RESULT(no); RPATH_UNSUPPORTED="true"; LDFLAGS="$LDFLAGS_SAVE"])
 
 
 #----------------------
