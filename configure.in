@@ -93,6 +93,9 @@ OMNETPP_VERSION=`cat Version | sed 's/^.*-//'`
 OMNETPP_BUILDID=internal
 OMNETPP_EDITION="Academic Public License -- NOT FOR COMMERCIAL USE"
 
+# We'll collect in this variable the components we've detected problems with
+OPP_PROBLEM_PACKAGES=
+
 #
 # Location of various components. They are defined here so that they can be overridden in configure.user.
 #
@@ -239,8 +242,85 @@ MSGC=${MSGC:-opp_msgc}
 NEDTOOL=${NEDTOOL:-nedtool}
 MAKEDEPEND=${MAKEDEPEND:-opp_makedep -Y --objdirtree}
 
-# We'll collect in this variable the components we've detected problems with
-OPP_PROBLEM_PACKAGES=
+#----------------------
+# set arch specific flags
+#----------------------
+CFLAGS_DEBUG="$CFLAGS_DEBUG $CFLAGS_ARCH"
+CFLAGS_RELEASE="$CFLAGS_RELEASE $CFLAGS_ARCH"
+LDFLAGS="$LDFLAGS $LDFLAGS_ARCH"
+
+# add RUNTIME_PATH option if supported so setting LD_LIBRARY_PATH is no longer needed when using shared libs
+# . is added to the rpath so opp_run -L option does not need full path
+AC_MSG_CHECKING(whether linker supports -rpath)
+LDFLAGS_SAVE="$LDFLAGS"
+LDFLAGS="$LDFLAGS -Wl,-rpath,\$(OMNETPP_LIB_DIR):."
+AC_LINK_IFELSE(
+     [AC_LANG_PROGRAM()],
+     [AC_MSG_RESULT(yes)],
+     [AC_MSG_RESULT(no); RPATH_UNSUPPORTED="true"; LDFLAGS="$LDFLAGS_SAVE"])
+
+
+#----------------------
+# Check Cygwin
+#----------------------
+if test "$WITH_PARSIM" = "yes" -a "$cygwin" = "yes"; then
+   AC_MSG_ERROR([WITH_PARSIM=yes not supported with Cygwin -- please edit configure.user!])
+fi
+
+#----------------------
+# Checks for programs.
+#----------------------
+
+AC_PROG_YACC
+if test "$YACC" = "yacc"; then
+   AC_MSG_ERROR([Bison not found, needed to build OMNeT++/OMNEST -- please install it!])
+fi
+BISON_VER_LINE=`$YACC --version | grep "bison.* [[234]]\\."`
+if test -z "$BISON_VER_LINE"; then
+   AC_MSG_ERROR([At least bison version 2.0 required -- type '$YACC --version' to see the version number])
+fi
+
+AC_PROG_LEX
+if test "$LEX" != "flex"; then
+   AC_MSG_ERROR([Flex not found, needed to build OMNeT++/OMNEST -- please install it!])
+fi
+FLEX_VER_LINE=`$LEX --version | grep "flex.* 2\\.[[5-9]]"`
+if test -z "$FLEX_VER_LINE"; then
+   AC_MSG_ERROR([At least flex version 2.5 required -- type '$LEX --version' to see the version number])
+fi
+
+# make must be GNU make
+AC_CHECK_PROG(MAKE, make , make, not found)
+if test "$MAKE" = "not found"; then
+   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES make"
+   AC_MSG_ERROR(make program not found -- it is required to build OMNeT++/OMNEST, and also for model development.)
+else
+   if "$MAKE" --version 2>/dev/null | grep -i GNU >/dev/null; then :; else
+       AC_MSG_ERROR(GNU Make is required to build OMNeT++/OMNEST.)
+   fi
+fi
+
+# perl is needed for opp_msgc
+AC_ARG_VAR(PERL, The Perl interpreter)
+AC_CHECK_PROG(PERL, perl, perl, not found)
+if test "$PERL" = "not found"; then
+   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  perl"
+   AC_MSG_WARN(Perl not found -- please install it! Perl is required by opp_msgc, opp_makemake and other features.)
+fi
+if test ! -x /usr/bin/perl; then
+   this_perl=`which perl`
+   AC_MSG_ERROR(Perl MUST be available as /usr/bin/perl. Creating a soft link should help: ln -s $this_perl /usr/bin/perl)
+fi
+
+# swig is used for building the ui support libs
+AC_ARG_VAR(SWIG, The Swig interface generator)
+AC_CHECK_PROG(SWIG, swig, swig, not found)
+
+if test "$SWIG" = "not found"; then
+   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  swig (optional)"
+   AC_MSG_WARN(swig not found -- it is only needed to rebuild the OMNeT++/OMNEST IDE support library.)
+   AC_MSG_WARN(It is available from http://www.swig.org/)
+fi
 
 #----------------------
 # Check compiler
@@ -386,49 +466,52 @@ rm -f conftest.*
 
 # first check if we need "-ldl" for dlopen() [Laura Marie Feeney suggests it's not needed for FreeBSD]
 OPP_CHECK_LIB(dlopen, dlfcn.h, dlopen("",0), , , ldl_not_needed, ldl="", ldl="-ldl")
+OPP_CHECK_LIB(dlopen, dlfcn.h, dlopen("",0), , , has_dlopen, , )
 
 # then go ahead
-AC_MSG_CHECKING(if --export-dynamic linker option is supported/needed)
-echo 'void func_from_main();' >conftest_a.cc
-echo 'void some_func() {func_from_main();}' >>conftest_a.cc
-echo '#include <dlfcn.h>' >conftest_m.cc
-echo '#include <stdio.h>' >>conftest_m.cc
-echo 'void func_from_main() {}' >>conftest_m.cc
-echo 'int main() {if (dlopen("./libconftest_a.so",RTLD_NOW)!=0) return 0; printf("%s",dlerror()); return 1;}' >>conftest_m.cc
-if $CXX -c conftest_a.cc >/dev/null 2>/dev/null && \
-   $CXX -c conftest_m.cc >/dev/null 2>/dev/null && \
-   $SHLIB_LD -o libconftest_a.so conftest_a.o >/dev/null 2>/dev/null; \
-then
-   silly_ok="no"
-   # 1st try.
-   if $CXX -o conftest conftest_m.o $ldl >/dev/null 2>/dev/null; then
-      if ./conftest >/dev/null 2>/dev/null; then
-         AC_MSG_RESULT(not needed)
-         silly_ok="yes"
-      fi
-   fi
-   # 2nd try.
-   if test $silly_ok = "no" && \
-      $CXX -o conftest -Wl,--export-dynamic conftest_m.o $ldl >/dev/null 2>/dev/null; \
+if test $has_dlopen = "yes"; then
+   AC_MSG_CHECKING(if --export-dynamic linker option is supported/needed)
+   echo 'void func_from_main();' >conftest_a.cc
+   echo 'void some_func() {func_from_main();}' >>conftest_a.cc
+   echo '#include <dlfcn.h>' >conftest_m.cc
+   echo '#include <stdio.h>' >>conftest_m.cc
+   echo 'void func_from_main() {}' >>conftest_m.cc
+   echo 'int main() {if (dlopen("./libconftest_a.so",RTLD_NOW)!=0) return 0; printf("%s",dlerror()); return 1;}' >>conftest_m.cc
+   if $CXX -c conftest_a.cc >/dev/null 2>/dev/null && \
+      $CXX -c conftest_m.cc >/dev/null 2>/dev/null && \
+      $SHLIB_LD -o libconftest_a.so conftest_a.o >/dev/null 2>/dev/null; \
    then
-      if ./conftest >/dev/null 2>/dev/null; then
-         AC_MSG_RESULT(both)
-         LDFLAGS="$LDFLAGS -Wl,--export-dynamic"
-         silly_ok="yes"
+      silly_ok="no"
+      # 1st try.
+      if $CXX -o conftest conftest_m.o $ldl >/dev/null 2>/dev/null; then
+         if ./conftest >/dev/null 2>/dev/null; then
+            AC_MSG_RESULT(not needed)
+            silly_ok="yes"
+         fi
       fi
+      # 2nd try.
+      if test $silly_ok = "no" && \
+         $CXX -o conftest -Wl,--export-dynamic conftest_m.o $ldl >/dev/null 2>/dev/null; \
+      then
+         if ./conftest >/dev/null 2>/dev/null; then
+            AC_MSG_RESULT(both)
+            LDFLAGS="$LDFLAGS -Wl,--export-dynamic"
+            silly_ok="yes"
+         fi
+      fi
+      # no solution found
+      if test $silly_ok = "no"; then
+         AC_MSG_RESULT(no solution found)
+         AC_MSG_WARN([No way was detected to export symbols from executables to shared])
+         AC_MSG_WARN([libraries. You probably will not be able to dynamically load])
+         AC_MSG_WARN([simple modules or other extensions written in C++ into simulation])
+         AC_MSG_WARN([programs like INET.])
+      fi
+   else
+      AC_MSG_RESULT(test failed)
    fi
-   # no solution found
-   if test $silly_ok = "no"; then
-      AC_MSG_RESULT(no solution found)
-      AC_MSG_WARN([No way was detected to export symbols from executables to shared])
-      AC_MSG_WARN([libraries. You probably will not be able to dynamically load])
-      AC_MSG_WARN([simple modules or other extensions written in C++ into simulation])
-      AC_MSG_WARN([programs like INET.])
-   fi
-else
-   AC_MSG_RESULT(test failed)
+   rm -f conftest_a.* conftest_m.* libconftest_a.so conftest
 fi
-rm -f conftest_a.* conftest_m.* libconftest_a.so conftest
 
 
 
@@ -525,85 +608,6 @@ else
 fi
 rm -f conftest_a.* conftest_m.* libconftest_a.a conftest
 
-
-#----------------------
-# Check Cygwin
-#----------------------
-if test "$WITH_PARSIM" = "yes" -a "$cygwin" = "yes"; then
-   AC_MSG_ERROR([WITH_PARSIM=yes not supported with Cygwin -- please edit configure.user!])
-fi
-
-#----------------------
-# set arch specific flags
-#----------------------
-CFLAGS_DEBUG="$CFLAGS_DEBUG $CFLAGS_ARCH"
-CFLAGS_RELEASE="$CFLAGS_RELEASE $CFLAGS_ARCH"
-LDFLAGS="$LDFLAGS $LDFLAGS_ARCH"
-
-# add RUNTIME_PATH option if supported so setting LD_LIBRARY_PATH is no longer needed when using shared libs
-# . is added to the rpath so opp_run -L option does not need full path 
-AC_MSG_CHECKING(whether linker supports -rpath)
-LDFLAGS_SAVE="$LDFLAGS"
-LDFLAGS="$LDFLAGS -Wl,-rpath,\$(OMNETPP_LIB_DIR):."
-AC_LINK_IFELSE(
-     [AC_LANG_PROGRAM()],
-     [AC_MSG_RESULT(yes)],
-     [AC_MSG_RESULT(no); RPATH_UNSUPPORTED="true"; LDFLAGS="$LDFLAGS_SAVE"])
-
-#----------------------
-# Checks for programs.
-#----------------------
-
-AC_PROG_YACC
-if test "$YACC" = "yacc"; then
-   AC_MSG_ERROR([Bison not found, needed to build OMNeT++/OMNEST -- please install it!])
-fi
-BISON_VER_LINE=`$YACC --version | grep "bison.* [[234]]\\."`
-if test -z "$BISON_VER_LINE"; then
-   AC_MSG_ERROR([At least bison version 2.0 required -- type '$YACC --version' to see the version number])
-fi
-
-AC_PROG_LEX
-if test "$LEX" != "flex"; then
-   AC_MSG_ERROR([Flex not found, needed to build OMNeT++/OMNEST -- please install it!])
-fi
-FLEX_VER_LINE=`$LEX --version | grep "flex.* 2\\.[[5-9]]"`
-if test -z "$FLEX_VER_LINE"; then
-   AC_MSG_ERROR([At least flex version 2.5 required -- type '$LEX --version' to see the version number])
-fi
-
-# make must be GNU make
-AC_CHECK_PROG(MAKE, make , make, not found)
-if test "$MAKE" = "not found"; then
-   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES make"
-   AC_MSG_ERROR(make program not found -- it is required to build OMNeT++/OMNEST, and also for model development.)
-else
-   if "$MAKE" --version 2>/dev/null | grep -i GNU >/dev/null; then :; else
-       AC_MSG_ERROR(GNU Make is required to build OMNeT++/OMNEST.)
-   fi
-fi
-
-# perl is needed for opp_msgc
-AC_ARG_VAR(PERL, The Perl interpreter)
-AC_CHECK_PROG(PERL, perl, perl, not found)
-if test "$PERL" = "not found"; then
-   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  perl"
-   AC_MSG_WARN(Perl not found -- please install it! Perl is required by opp_msgc, opp_makemake and other features.)
-fi
-if test ! -x /usr/bin/perl; then
-   this_perl=`which perl`
-   AC_MSG_ERROR(Perl MUST be available as /usr/bin/perl. Creating a soft link should help: ln -s $this_perl /usr/bin/perl)
-fi
-
-# swig is used for building the ui support libs
-AC_ARG_VAR(SWIG, The Swig interface generator)
-AC_CHECK_PROG(SWIG, swig, swig, not found)
-
-if test "$SWIG" = "not found"; then
-   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  swig (optional)"
-   AC_MSG_WARN(swig not found -- it is only needed to rebuild the OMNeT++/OMNEST IDE support library.)
-   AC_MSG_WARN(It is available from http://www.swig.org/)
-fi
 
 #----------------------
 # Checks for standard libraries.
