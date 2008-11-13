@@ -274,11 +274,11 @@ public class OmnetppLaunchUtils {
 
 		String recEventlog = config.getAttribute(IOmnetppLaunchConstants.OPP_RECORD_EVENTLOG, "").trim();
 		if (StringUtils.isNotEmpty(recEventlog))
-			args += "--"+ConfigRegistry.CFGID_RECORD_EVENTLOG.getKey()+" "+recEventlog+" ";
+			args += "--"+ConfigRegistry.CFGID_RECORD_EVENTLOG.getKey()+"="+recEventlog+" ";
 
 		String dbgOnErr = config.getAttribute(IOmnetppLaunchConstants.OPP_DEBUG_ON_ERRORS, "").trim();
 		if (StringUtils.isNotEmpty(dbgOnErr))
-			args += "--"+ConfigRegistry.CFGID_DEBUG_ON_ERRORS.getKey()+" "+dbgOnErr+" ";
+			args += "--"+ConfigRegistry.CFGID_DEBUG_ON_ERRORS.getKey()+"="+dbgOnErr+" ";
 
 		// ini files
 		String iniStr = config.getAttribute(IOmnetppLaunchConstants.OPP_INI_FILES, "").trim();
