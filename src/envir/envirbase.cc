@@ -393,13 +393,13 @@ void EnvirBase::printHelp()
     ev << "                (it will be appended automatically.) The loaded module may\n";
     ev << "                contain simple modules, plugins, etc. Multiple -l options\n";
     ev << "                can be present.\n";
-    ev << "  --<configuration-key> <value>\n";
+    ev << "  --<configuration-key>=<value>\n";
     ev << "                Any configuration option can be specified on the command\n";
     ev << "                line, and they take precedence over setting specified in the\n";
     ev << "                ini file(s). Examples:\n";
-    ev << "                      --debug-on-errors true\n";
-    ev << "                      --record-eventlog true\n";
-    ev << "                      --sim-time-limit 1000s\n";
+    ev << "                      --debug-on-errors=true\n";
+    ev << "                      --record-eventlog=true\n";
+    ev << "                      --sim-time-limit=1000s\n";
     ev << "  -v            Print version and build info.\n";
     ev << "  -h            Print this help and exit.\n";
     ev << "  -h <category> Lists registered components:\n";

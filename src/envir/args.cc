@@ -49,11 +49,16 @@ void ArgList::parse(int argc, char *argv[], const char *spec)
         }
         if (argv[i][0]=='-' && argv[i][1]=='-')
         {
-            // long option
-            if (i==argc-1)
-                throw opp_runtime_error("command-line option %s is missing required argument", argv[i]);
-            longOpts[argv[i]+2] = argv[i+1];
-            i++;
+            // long option -- treat it liberally for now
+            const char *eqpos = strchr(argv[i], '=');
+            if (eqpos)
+                longOpts[std::string(argv[i]+2, eqpos-argv[i]-2)] = eqpos+1;
+            else if (i==argc-1)
+                longOpts[argv[i]+2] = "";
+            else {
+                longOpts[argv[i]+2] = argv[i+1];
+                i++;
+            }
         }
         else if (argv[i][0]=='-')
         {

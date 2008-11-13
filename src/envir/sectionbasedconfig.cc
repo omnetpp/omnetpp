@@ -103,11 +103,12 @@ void SectionBasedConfiguration::setCommandLineConfigOptions(const std::map<std::
         // validate the key, then store the option
         const char *key = it->first.c_str();
         const char *value = it->second.c_str();
+        //TODO check only the part after the last dot, i.e. recognize per-object keys as well
         cConfigKey *e = lookupConfigKey(key);
         if (!e)
-            throw cRuntimeError("Unknown command-line configuration option: --%s", key);
-        if (e->isPerObject())
-            throw cRuntimeError("Per-object configuration options cannot be specified on the command line: --%s", key);
+            throw cRuntimeError("Unknown command-line configuration option --%s", key);
+        if (!value[0])
+            throw cRuntimeError("Missing value for command-line configuration option --%s", key);
         commandLineOptions.push_back(KeyValue1(NULL, key, value));
     }
 }
