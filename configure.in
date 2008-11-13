@@ -1169,7 +1169,7 @@ chmod +x test/core/runtest
 cd src/common && cp ver.h.base ver.h && \
 echo "#define OMNETPP_PRODUCT \"$OMNETPP_PRODUCT\"" >>ver.h && \
 echo "#define OMNETPP_RELEASE \"$OMNETPP_RELEASE\"" >>ver.h && \
-echo "#define OMNETPP_VERSION \"$OMNETPP_VERSION\"" >>ver.h && \
+echo "#define OMNETPP_VERSION_STR \"$OMNETPP_VERSION\"" >>ver.h && \
 echo "#define OMNETPP_BUILDID \"$OMNETPP_BUILDID\"" >>ver.h && \
 echo "#define OMNETPP_EDITION \"$OMNETPP_EDITION\"" >>ver.h
 )

@@ -40,7 +40,7 @@ void printUsage()
 {
     printf(
        "scavetool -- part of " OMNETPP_PRODUCT ", (C) 2006-2008 Andras Varga, OpenSim Ltd.\n"
-       "Version: " OMNETPP_VERSION ", build: " OMNETPP_BUILDID ", edition: " OMNETPP_EDITION "\n"
+       "Version: " OMNETPP_VERSION_STR ", build: " OMNETPP_BUILDID ", edition: " OMNETPP_EDITION "\n"
        "\n"
        "Usage: scavetool <command> [options] <files>...\n"
        "\n"

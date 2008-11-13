@@ -349,7 +349,7 @@ void usage(const char *message)
 
     fprintf(stderr, ""
 "eventlogtool -- part of " OMNETPP_PRODUCT ", (C) 2006-2008 Andras Varga, OpenSim Ltd.\n"
-"Version: " OMNETPP_VERSION ", build: " OMNETPP_BUILDID ", edition: " OMNETPP_EDITION "\n"
+"Version: " OMNETPP_VERSION_STR ", build: " OMNETPP_BUILDID ", edition: " OMNETPP_EDITION "\n"
 "\n"
 "Usage:\n"
 "   eventlogtool <command> [options]* <input-file-name>\n"

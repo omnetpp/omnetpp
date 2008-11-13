@@ -151,7 +151,7 @@ check-env:
 	@cd /d $(_TCL_LIBRARY:/=\) || echo ERROR: The directory $(_TCL_LIBRARY) does not exist. TK_DIR or TK_VER defined in configuser.vc might be wrong. && exit 1
 
 ver_h:
-	@cd /d $(OMNETPP_SRC_DIR:/=\)\common && copy ver.h.base ver.h.tmp && echo #define OMNETPP_PRODUCT "$(OMNETPP_PRODUCT)" >>ver.h.tmp && echo #define OMNETPP_RELEASE "$(OMNETPP_RELEASE)" >>ver.h.tmp && echo #define OMNETPP_VERSION "$(OMNETPP_VERSION)" >>ver.h.tmp && echo #define OMNETPP_BUILDID "$(OMNETPP_BUILDID)" >>ver.h.tmp && echo #define OMNETPP_EDITION "$(OMNETPP_EDITION)" >>ver.h.tmp
+	@cd /d $(OMNETPP_SRC_DIR:/=\)\common && copy ver.h.base ver.h.tmp && echo #define OMNETPP_PRODUCT "$(OMNETPP_PRODUCT)" >>ver.h.tmp && echo #define OMNETPP_RELEASE "$(OMNETPP_RELEASE)" >>ver.h.tmp && echo #define OMNETPP_VERSION_STR "$(OMNETPP_VERSION)" >>ver.h.tmp && echo #define OMNETPP_BUILDID "$(OMNETPP_BUILDID)" >>ver.h.tmp && echo #define OMNETPP_EDITION "$(OMNETPP_EDITION)" >>ver.h.tmp
 	-@cd /d $(OMNETPP_SRC_DIR:/=\)\common && diff ver.h.tmp ver.h || copy ver.h.tmp ver.h
 	-@cd /d $(OMNETPP_SRC_DIR:/=\)\common && rm ver.h.tmp
 

@@ -84,7 +84,7 @@ void printUsage()
 {
     fprintf(stderr,
        "nedtool -- part of " OMNETPP_PRODUCT ", (C) 2006-2008 Andras Varga, OpenSim Ltd.\n"
-       "Version: " OMNETPP_VERSION ", build: " OMNETPP_BUILDID ", edition: " OMNETPP_EDITION "\n"
+       "Version: " OMNETPP_VERSION_STR ", build: " OMNETPP_BUILDID ", edition: " OMNETPP_EDITION "\n"
        "\n"
        "Usage: nedtool [options] <file1> <file2> ...\n"
        "Files may be given in a listfile as well, with the @listfile or @@listfile\n"

@@ -191,7 +191,7 @@ void Tkenv::setup()
         const char *image_path_env = getenv("OMNETPP_IMAGE_PATH");
         if (image_path_env==NULL && getenv("OMNETPP_BITMAP_PATH")!=NULL)
             fprintf(stderr, "\n<!> WARNING: Obsolete environment variable OMNETPP_BITMAP_PATH found -- "
-                            "please change it to OMNETPP_IMAGE_PATH for OMNeT++ 4.0+\n");
+                            "please change it to OMNETPP_IMAGE_PATH for " OMNETPP_PRODUCT " 4.0\n");
         std::string image_path = image_path_env ? image_path_env : OMNETPP_IMAGE_PATH;
         if (!opt_image_path.empty())
             image_path = std::string(opt_image_path.c_str()) + ";" + image_path;

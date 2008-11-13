@@ -158,7 +158,7 @@ int main(int argc, char *argv[])
     {
          fprintf(stderr,
                "seedtool -- part of " OMNETPP_PRODUCT ", (C) 2006-2008 Andras Varga, OpenSim Ltd.\n"
-               "Version: " OMNETPP_VERSION ", build: " OMNETPP_BUILDID ", edition: " OMNETPP_EDITION "\n"
+               "Version: " OMNETPP_VERSION_STR ", build: " OMNETPP_BUILDID ", edition: " OMNETPP_EDITION "\n"
                "\n"
                "See the license for distribution terms and warranty disclaimer.\n"
                "\n"
