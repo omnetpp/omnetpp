@@ -3,6 +3,7 @@ package org.omnetpp.ide.preferences;
 import java.io.File;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.DirectoryFieldEditor;
 import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
@@ -150,17 +151,21 @@ public class OmnetppPreferencePage
     protected static class DirectoryListFieldEditor extends DirectoryFieldEditor {
         public DirectoryListFieldEditor(String name, String labelText, Composite parent) {
             super(name, labelText, parent);
-            setChangeButtonText("Append...");
             setErrorMessage("Value contains nonexistent directory");
         }    
 
         @Override
         protected String changePressed() {
             String original = getTextControl().getText();
-            String newDir = super.changePressed();
+            String newDir = super.changePressed(); // directory selection dialog
             if (newDir == null) 
-                return null;
-            return StringUtils.join(new String[] {original, newDir}, ";");
+                return null; // cancel
+            if (StringUtils.isEmpty(original))
+                return newDir;
+            if (!original.contains(";") && !new File(original.trim()).isDirectory())
+                return newDir; // replace if it only contained a nonexistent directory
+            boolean append = MessageDialog.openQuestion(getShell(), "Append?", "Append to existing contents as another directory? (Choosing No will replace it).");
+            return append ? (original + ";" + newDir) : newDir;
         }
         
         @Override
