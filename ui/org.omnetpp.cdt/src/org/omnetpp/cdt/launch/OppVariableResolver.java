@@ -71,8 +71,8 @@ public class OppVariableResolver implements IDynamicVariableResolver {
 			if (buildSpec == null)
 				return ""; // no build spec file
 			
-	        List<IContainer> sourceFolders = buildSpec.getMakemakeFolders();
-			for (IContainer folder : sourceFolders) {
+	        List<IContainer> makemakeFolders = buildSpec.getMakemakeFolders();
+			for (IContainer folder : makemakeFolders) {
 				MakemakeOptions options = buildSpec.getMakemakeOptions(folder);
 				Assert.isTrue(options!=null);
 				

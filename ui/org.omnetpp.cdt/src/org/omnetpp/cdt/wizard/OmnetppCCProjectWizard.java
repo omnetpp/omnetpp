@@ -304,10 +304,11 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
 
     @Override
     public boolean performFinish() {
-        // if we are on the first page the CDT wizard is not yet created and its perform finish will not be called
-        // so we have to do it manually
+        // if we are on the first page, the CDT wizard is not yet created and its perform finish 
+        // will not be called, so we have to do it manually
+        final boolean withCPlusPlus = supportCpp();
         if (getContainer().getCurrentPage() == projectPage || getContainer().getCurrentPage() == templatePage) {
-            if (((NewOmnetppCppProjectCreationPage)projectPage).supportCpp()) {
+            if (withCPlusPlus) {
                 // show it manually (and create) and do it
                 getContainer().showPage(nestedWizard.getStartingPage());
                 nestedWizard.performFinish();
@@ -323,9 +324,12 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
         final IProjectTemplate template = templatePage.getSelectedTemplate();
         WorkspaceModifyOperation op = new WorkspaceModifyOperation() {
             protected void execute(IProgressMonitor monitor) throws CoreException {
-                // add OMNeT++ nature and a default .buildspec file (templates may overwrite it)
+                // add OMNeT++ nature
                 ProjectUtils.addOmnetppNature(project, monitor);
-                BuildSpecification.createInitial(project).save();
+
+                // if C++ project, add a default .buildspec file (templates may overwrite it)
+                if (withCPlusPlus)
+                    BuildSpecification.createInitial(project).save();
 
                 // apply template: this may create files, set project properties, configure the CDT project, etc.
                 if (template != null)
@@ -336,9 +340,11 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
         // run the operation
         try {
             getContainer().run(true, true, op);
-        } catch (InterruptedException e) {
+        } 
+        catch (InterruptedException e) {
             return false;
-        } catch (InvocationTargetException e) {
+        }
+        catch (InvocationTargetException e) {
             Throwable t = e.getTargetException();
             Activator.logError(t);
             MessageDialog.openError(getShell(), "Creation problems", "Internal error: " + t.getMessage());
