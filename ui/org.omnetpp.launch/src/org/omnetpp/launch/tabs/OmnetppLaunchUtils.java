@@ -34,6 +34,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.IConstants;
+import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.CollectionUtils;
 import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.common.util.StringUtils;
@@ -48,7 +49,8 @@ import org.omnetpp.launch.LaunchPlugin;
  */
 public class OmnetppLaunchUtils {
     // copied from JavaCore.NATURE_ID (we don't want dependency on the JDT plugins) 
-    private static final String JAVA_NATURE_ID = "org.eclipse.jdt.core.javanature"; 
+    private static final String JAVA_NATURE_ID = "org.eclipse.jdt.core.javanature";
+    private static final String CDT_CC_NATURE_ID = "org.eclipse.cdt.core.ccnature"; 
     
 	/**
 	 * Reads the ini file and enumerates all config sections. resolves include directives recursively
@@ -223,17 +225,24 @@ public class OmnetppLaunchUtils {
 
 		// executable name
 		String exeName = config.getAttribute(IOmnetppLaunchConstants.OPP_EXECUTABLE, "");
+
 		String projectName = null;
-		if (StringUtils.isEmpty(exeName)) {
-			// use the first library's project as main project
-			projectName = newCfg.getAttribute(IOmnetppLaunchConstants.OPP_SHARED_LIB_PROJECT, "");
-			// no exe specified use opp_run and the first libraries project 
-			exeName = OmnetppMainPlugin.getOmnetppBinDir()+"/opp_run"; 
-		} else {
-			projectName = new Path(exeName).segment(0);
-			exeName = new Path(exeName).removeFirstSegments(1).toString();
+		if (StringUtils.isEmpty(exeName)) {  // this means opp_run
+		    projectName = findRelatedCDTProject(wdirStr);
+		    exeName = OmnetppMainPlugin.getOmnetppBinDir()+"/opp_run"; 
+		    if (mode.equals(ILaunchManager.DEBUG_MODE) && projectName == null)
+		        throw new CoreException(new Status(IStatus.ERROR, LaunchPlugin.PLUGIN_ID, "Cannot launch simulation in debug mode: no related open C++ project"));
+		} 
+		else {
+            projectName = new Path(exeName).segment(0);
+			exeName = new Path(exeName).removeFirstSegments(1).toString(); // project-relative path
+
+		    IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject();
+		    if (mode.equals(ILaunchManager.DEBUG_MODE) && (!project.exists() || !project.hasNature(CDT_CC_NATURE_ID)))
+                throw new CoreException(new Status(IStatus.ERROR, LaunchPlugin.PLUGIN_ID, "Cannot launch simulation in debug mode: the executable's project ("+projectName+") is not an open C++ project"));
 		}
-        newCfg.setAttribute(IOmnetppLaunchConstants.ATTR_PROJECT_NAME, projectName);
+
+		newCfg.setAttribute(IOmnetppLaunchConstants.ATTR_PROJECT_NAME, projectName);
 
 		if (Platform.getOS().equals(Platform.OS_WIN32) && !exeName.matches("(?i).*\\.(exe|cmd|bat)$"))
 			exeName += ".exe";
@@ -331,6 +340,19 @@ public class OmnetppLaunchUtils {
         // do we need this ??? : configuration.setAttribute("org.eclipse.debug.core.appendEnvironmentVariables", true);
 
 		return newCfg;
+	}
+
+	private static String findRelatedCDTProject(String workspacePath) throws CoreException {
+	    IStringVariableManager varman = VariablesPlugin.getDefault().getStringVariableManager();
+	    String resolvedWDir = varman.performStringSubstitution(workspacePath);
+	    IResource resource = ResourcesPlugin.getWorkspace().getRoot().findMember(resolvedWDir);
+	    if (resource == null)
+	        return null;
+	    IProject[] projects = ProjectUtils.getAllReferencedProjects(resource.getProject(), true);
+	    for (IProject project : projects)
+	        if (project.hasNature(CDT_CC_NATURE_ID))
+	            return project.getName();
+	    return null;
 	}
 
     /**

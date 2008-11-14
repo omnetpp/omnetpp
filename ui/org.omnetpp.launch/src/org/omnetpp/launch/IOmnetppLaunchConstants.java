@@ -57,7 +57,7 @@ public interface IOmnetppLaunchConstants {
     public static final String OPP_WORKING_DIRECTORY = OMNETPP_LAUNCH_ID + ".WORKING_DIRECTORY"; 
 
     /**
-     * The executable file can be relative (workspace) path or absolute (file system) location
+     * The executable file is always an absolute workspace path
      */
     public static final String OPP_EXECUTABLE = OMNETPP_LAUNCH_ID + ".EXECUTABLE"; 
 
@@ -96,11 +96,6 @@ public interface IOmnetppLaunchConstants {
      * Shared libraries to be loaded (-l)
      */
     public static final String OPP_SHARED_LIBS = OMNETPP_LAUNCH_ID + ".SHARED_LIBS"; 
-    
-    /**
-     * the project of the first dynamic library to be loaded (used if no executable is given in the configuration)
-     */
-    public static final String OPP_SHARED_LIB_PROJECT = OMNETPP_LAUNCH_ID + ".SHARED_LIB_PROJECT"; 
     
     /**
      * The ned path used to start the executable (-n option)

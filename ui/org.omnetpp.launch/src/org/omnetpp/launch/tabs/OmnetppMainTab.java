@@ -30,8 +30,6 @@ import org.eclipse.debug.ui.DebugUITools;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
-import org.eclipse.swt.events.ControlAdapter;
-import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -213,11 +211,6 @@ implements ModifyListener {
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_INI_FILES, fInifileText.getText());        
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_CONFIG_NAME, getConfigName());        
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_SHARED_LIBS, fLibraryText.getText());        
-
-        // store the first library file's project (to use during debug launching in CDT)  
-        IFile[] sharedLibFiles = getLibFiles();
-        if (sharedLibFiles != null && sharedLibFiles.length > 0)
-            configuration.setAttribute(IOmnetppLaunchConstants.OPP_SHARED_LIB_PROJECT, sharedLibFiles[0].getProject().getName());
 
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_NED_PATH, fNedPathText.getText());        
 
@@ -419,16 +412,8 @@ implements ModifyListener {
     }
 
     /**
-     * Returns the selected library files. Returns null on error
-     */
-    private IFile[] getLibFiles() {
-        String names[] =  StringUtils.split(fLibraryText.getText());
-        return convertToFiles(names);
-    }
-
-    /**
      * Returns the selected ini files or (omnetpp.ini) if the inifile text line
-     * is empty. Returns null on error.
+     * is empty. Returns null on error. Ignores names that start with a macro (${})
      */
     private IFile[] getIniFiles() {
         String names[] =  StringUtils.split(fInifileText.getText());

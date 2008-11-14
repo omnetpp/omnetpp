@@ -91,9 +91,9 @@ public class ProjectUtils {
     public static IProject[] getAllReferencedProjects(IProject project, boolean includeSelf) {
         try {
             Set<IProject> result = new HashSet<IProject>();
-            collectAllReferencedOmnetppProjects(project, false, result);
             if (includeSelf)
                 result.add(project);
+            collectAllReferencedOmnetppProjects(project, false, result);
             return result.toArray(new IProject[]{});
         } catch (CoreException e) {
             throw new RuntimeException(e);
