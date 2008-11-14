@@ -513,11 +513,14 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
             
             // save
             IFile makemakefile = project.getFile(MAKEMAKEFILE_NAME);
-            byte[] bytes = text.getBytes();
-            MakefileTools.ensureFileContent(makemakefile, bytes, null);
-            makemakefile.refreshLocal(0, null);
-            
-            MessageDialog.openConfirm(getShell(), "Export", makemakefile.getFullPath().toString() + " created.");
+            boolean existed = makemakefile.exists();
+            if (!makemakefile.exists() || MessageDialog.openConfirm(getShell(), "Export", "Overwrite existing " + makemakefile.getFullPath().toString() + "?")) {
+                byte[] bytes = text.getBytes();
+                MakefileTools.ensureFileContent(makemakefile, bytes, null);
+                makemakefile.refreshLocal(0, null);
+                if (!existed)
+                    MessageDialog.openInformation(getShell(), "Export", makemakefile.getFullPath().toString() + " created.");
+            }
         }
         catch (CoreException e) {
             Activator.logError(e);
