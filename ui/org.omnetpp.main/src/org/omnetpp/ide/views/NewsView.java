@@ -10,7 +10,7 @@ import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.internal.browser.BrowserViewer;
 import org.eclipse.ui.part.ViewPart;
-import org.omnetpp.common.IConstants;
+import org.omnetpp.ide.OmnetppStartup;
 
 
 /**
@@ -20,10 +20,7 @@ import org.omnetpp.common.IConstants;
  */
 @SuppressWarnings("restriction")
 public class NewsView extends ViewPart {
-    public static final String BASE_URL = "http://omnetpp.org/ide/" + (IConstants.IS_COMMERCIAL ? "omnest" : "omnetpp");
-    public static final String NEWS_URL = BASE_URL + "/news";
-    public static final String VERSIONCHECK_URL = BASE_URL + "/versioncheck"; // used in OmnetppStartup
-
+    public static final String NEWS_URL = OmnetppStartup.BASE_URL + "/news/";
     protected String defaultUrlToShow = NEWS_URL;
     protected BrowserViewer browser; 
 

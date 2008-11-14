@@ -65,9 +65,10 @@ import org.w3c.dom.NodeList;
  */
 @SuppressWarnings("restriction")
 public class OmnetppStartup implements IStartup {
+	protected long VERSIONCHECK_INTERVAL_MILLIS = 3*24*3600*1000L;  // 3 days
     public static final String SAMPLES_DIR = "samples";
-    
-    protected long VERSIONCHECK_INTERVAL_MILLIS = 3*24*3600*1000L;  // 3 days
+    public static final String BASE_URL = "http://omnetpp.org/ide/" + (IConstants.IS_COMMERCIAL ? "omnest" : "omnetpp");
+	public static final String VERSIONCHECK_URL = BASE_URL + "/versioncheck/"; // used in OmnetppStartup
 
     /*
      * Method declared on IStartup.
@@ -126,7 +127,7 @@ public class OmnetppStartup implements IStartup {
         //
         Job job = new Job("Version check") { 
         	public IStatus run(IProgressMonitor pm) {
-        		final String versionCheckURL = NewsView.VERSIONCHECK_URL + "?v=" + OmnetppMainPlugin.getVersion() + "&d=" + getInstallDate()+"&o="+Platform.getOS()+"."+Platform.getOSArch();
+        		final String versionCheckURL = OmnetppStartup.VERSIONCHECK_URL + "?v=" + OmnetppMainPlugin.getVersion() + "&d=" + getInstallDate()+"&o="+Platform.getOS()+"."+Platform.getOSArch();
         		if (isWebPageNotBlank(versionCheckURL)) {
         			Display.getDefault().asyncExec(new Runnable() {
         				public void run() {
@@ -135,7 +136,7 @@ public class OmnetppStartup implements IStartup {
         						IWorkbenchPage workbenchPage = activeWorkbenchWindow == null ? null : activeWorkbenchWindow.getActivePage();
         						if (workbenchPage != null) {
         							NewsView view = (NewsView)workbenchPage.showView(IConstants.NEWS_VIEW_ID);
-        							view.showURL(versionCheckURL);
+        							view.showURL(versionCheckURL+"&i=1");
         						}
         					} 
         					catch (PartInitException e) {
