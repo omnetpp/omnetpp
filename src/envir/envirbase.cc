@@ -328,7 +328,7 @@ void EnvirBase::setup()
         const char *nedpath1 = args->optionValue('n',0);
         if (!nedpath1)
             nedpath1 = getenv("NEDPATH");
-        std::string nedpath2 = getConfig()->getAsString(CFGID_NED_PATH, "");
+        std::string nedpath2 = getConfig()->getAsString(CFGID_NED_PATH, ""); //XXX use getAsFilenames?
         std::string nedpath = opp_join(";", nedpath1, nedpath2.c_str());
         if (nedpath.empty())
             nedpath = ".";
