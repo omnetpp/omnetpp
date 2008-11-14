@@ -237,7 +237,7 @@ public class OmnetppLaunchUtils {
             projectName = new Path(exeName).segment(0);
 			exeName = new Path(exeName).removeFirstSegments(1).toString(); // project-relative path
 
-		    IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject();
+		    IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
 		    if (mode.equals(ILaunchManager.DEBUG_MODE) && (!project.exists() || !project.hasNature(CDT_CC_NATURE_ID)))
                 throw new CoreException(new Status(IStatus.ERROR, LaunchPlugin.PLUGIN_ID, "Cannot launch simulation in debug mode: the executable's project ("+projectName+") is not an open C++ project"));
 		}
