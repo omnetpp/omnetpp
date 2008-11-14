@@ -11,7 +11,9 @@ IDE:
     a makefile, either generated or custom one. The corresponding property
     page was redesigned, and also moved to the OMNeT++ category (was under
     the C/C++ Build category). It is now also possible to export a makefile-
-    creation script to support command-line builds.
+    creation script to support command-line builds. Note: syntax of the
+    .oppbuildspec file changed (file written by 4.0b8 will not be understood
+    by 4.0b7).
   - added Parameter Editor dialog as a field editor in the Property View
   - moved Cleanup NED Files command from the Navigation menu to the Source menu
   - several smaller fixes and improvements
@@ -35,9 +37,11 @@ OMNeT++ 4.0 beta 7 (Oct 2008)
 -----------------------------
 First public beta release of 4.0.
 
+
 OMNeT++ 4.0 beta 1..6 (Mar 2008..Sep 2008)
 ------------------------------------------
-Internal releases.
+Internal testing releases.
+
 
 OMNeT++ 3.4b1/b2 (Nov 2006)
 ---------------------------
