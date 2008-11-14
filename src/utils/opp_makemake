@@ -743,6 +743,9 @@ sub substituteIntoTemplate($;$;$;$)
     my ($template,$mapref,$startTag,$endTag) = @_;
     my %map = %$mapref;
 
+    $template =~ s/\n[ \t]*###.*\n/\n/g; # remove whole-line comments
+    $template =~ s/[ \t]*###.*\n/\n/g;   # remove end-line comments
+
     my $buf = "";
     my $startTagLen = length($startTag);
     my $endTagLen = length($endTag);
@@ -865,7 +868,6 @@ sub substituteIntoTemplate($;$;$;$)
         }
     }
     $buf .= substr($template, $current);  # rest of the template
-    $buf =~ s/^[ \t]*###.*$//mg;     # remove comments
     $buf =~ s/ +\n/\n/sg;            # remove spaces at line end
     $buf =~ s/\n\n\n+/\n\n/sg;       # remove multiple empty lines
     return $buf;
