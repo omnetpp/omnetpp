@@ -1,6 +1,36 @@
 What's New
 ==========
 
+
+OMNeT++ 4.0 beta 8 (Nov 2008)
+-----------------------------
+Improvements since beta 7:
+
+IDE:
+  - Makemake configuration made more flexible. Now any directory may contain
+    a makefile, either generated or custom one. The corresponding property
+    page was redesigned, and also moved to the OMNeT++ category (was under
+    the C/C++ Build category). It is now also possible to export a makefile-
+    creation script to support command-line builds.
+  - added Parameter Editor dialog as a field editor in the Property View
+  - moved Cleanup NED Files command from the Navigation menu to the Source menu
+  - several smaller fixes and improvements
+
+Tkenv:
+  - implemented module output window filtering: modules can be selected
+    using a checkbox tree dialog. Bound to Ctrl+H.
+  - implemented "Run until message", available in the Run Until dialog and
+    in the context menu of message objects
+  - event banner text revised, plus now includes message name and class
+    as well; added "Short event banners" checkbox to options dialog
+  - fixed popup menu behaviour on Linux (use tk_popup instead of post)
+
+Other:
+  - opp_makemake: generates separate target for each recursively invoked
+    makefile. Several smaller fixes and improvements
+  - beginnings of a regression test suite for opp_makemake: test/makemake.
+
+
 OMNeT++ 4.0 beta 7 (Oct 2008)
 -----------------------------
 First public beta release of 4.0.
@@ -75,7 +105,7 @@ Tkenv:
 Bugfixes:
   - fix: gamma_d() was bogus for the alpha<1 case [reported by Patrick McDonnell]
 
-  - fix: worked around a fiber-related Visual C++ problem that caused certain 
+  - fix: worked around a fiber-related Visual C++ problem that caused certain
     activity()-based modules crash when the simulation was restarted.
 
   - fixed a bug which sometimes caused Tkenv to crash when inspecting an
