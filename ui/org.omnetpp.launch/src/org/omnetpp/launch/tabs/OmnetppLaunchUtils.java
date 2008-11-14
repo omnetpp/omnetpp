@@ -34,6 +34,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.IConstants;
+import org.omnetpp.common.util.CollectionUtils;
 import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ide.OmnetppMainPlugin;
@@ -212,6 +213,7 @@ public class OmnetppLaunchUtils {
 	@SuppressWarnings("unchecked")
     public static ILaunchConfigurationWorkingCopy convertLaunchConfig(ILaunchConfiguration config, String mode) throws CoreException {
 		ILaunchConfigurationWorkingCopy newCfg = config.copy("opp_run temporary configuration");
+		newCfg.setAttributes(CollectionUtils.getDeepCopyOf(newCfg.getAttributes())); // otherwise attrs that are Collections themselves are not copied
 
 		// working directory (converted from path to location)
 		String wdirStr = config.getAttribute(IOmnetppLaunchConstants.OPP_WORKING_DIRECTORY, "");
@@ -331,7 +333,7 @@ public class OmnetppLaunchUtils {
 		return newCfg;
 	}
 
-	/**
+    /**
 	 * Returns the Java CLASSPATH based on the project settings where the class files are generated.
 	 */
     public static String getJavaClasspath(IProject project) throws CoreException {
