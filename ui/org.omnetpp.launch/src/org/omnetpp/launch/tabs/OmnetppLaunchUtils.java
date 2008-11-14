@@ -32,10 +32,11 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.ui.model.WorkbenchContentProvider;
+import org.omnetpp.common.CommonPlugin;
+import org.omnetpp.common.IConstants;
 import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ide.OmnetppMainPlugin;
-import org.omnetpp.ide.preferences.OmnetppPreferencePage;
 import org.omnetpp.inifile.editor.model.ConfigRegistry;
 import org.omnetpp.inifile.editor.model.InifileParser;
 import org.omnetpp.launch.IOmnetppLaunchConstants;
@@ -310,7 +311,7 @@ public class OmnetppLaunchUtils {
 
         String imagePath = envir.get("OMNETPP_IMAGE_PATH");
         if (StringUtils.isBlank(imagePath)) {
-            imagePath = OmnetppMainPlugin.getDefault().getConfigurationPreferenceStore().getString(OmnetppPreferencePage.OMNETPP_IMAGE_PATH);
+            imagePath = CommonPlugin.getConfigurationPreferenceStore().getString(IConstants.PREF_OMNETPP_IMAGE_PATH);
             envir.put("OMNETPP_IMAGE_PATH", imagePath);
         }
         

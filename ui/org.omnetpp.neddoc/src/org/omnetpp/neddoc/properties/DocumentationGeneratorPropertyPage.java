@@ -27,10 +27,10 @@ import org.eclipse.ui.dialogs.PropertyPage;
 import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.views.navigator.ResourceComparator;
+import org.omnetpp.common.IConstants;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.ProcessUtils;
 import org.omnetpp.ide.OmnetppMainPlugin;
-import org.omnetpp.ide.preferences.OmnetppPreferencePage;
 
 /**
  * This is a property page displayed in project properties to set the project specific parameters for documentation generation.
@@ -93,7 +93,7 @@ public class DocumentationGeneratorPropertyPage
         doxyConfigFilePath = addTextAndBrowse(group, "Configuration file path:", false);
         
         IPreferenceStore store = OmnetppMainPlugin.getDefault().getPreferenceStore();
-        final String doxyExecutablePath = store.getString(OmnetppPreferencePage.DOXYGEN_EXECUTABLE);
+        final String doxyExecutablePath = store.getString(IConstants.PREF_DOXYGEN_EXECUTABLE);
 
         Button button = new Button(group, SWT.PUSH);
         button.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 3, 1));

@@ -49,12 +49,12 @@ import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.ITokenScanner;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
+import org.omnetpp.common.IConstants;
 import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.Pair;
 import org.omnetpp.common.util.ProcessUtils;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.ide.preferences.OmnetppPreferencePage;
 import org.omnetpp.msg.editor.highlight.MsgCodeColorizerScanner;
 import org.omnetpp.msg.editor.highlight.MsgDocColorizerScanner;
 import org.omnetpp.msg.editor.highlight.MsgPrivateDocColorizerScanner;
@@ -156,8 +156,8 @@ public class DocumentationGenerator {
         msgResources = NEDResourcesPlugin.getMSGResources();
 
         IPreferenceStore store = org.omnetpp.ide.OmnetppMainPlugin.getDefault().getPreferenceStore();
-        dotExecutablePath = ProcessUtils.lookupExecutable(store.getString(OmnetppPreferencePage.GRAPHVIZ_DOT_EXECUTABLE));
-        doxyExecutablePath = ProcessUtils.lookupExecutable(store.getString(OmnetppPreferencePage.DOXYGEN_EXECUTABLE));
+        dotExecutablePath = ProcessUtils.lookupExecutable(store.getString(IConstants.PREF_GRAPHVIZ_DOT_EXECUTABLE));
+        doxyExecutablePath = ProcessUtils.lookupExecutable(store.getString(IConstants.PREF_DOXYGEN_EXECUTABLE));
     }
 
     public void setDocumentationRootPath(IPath documentationRootPath) {

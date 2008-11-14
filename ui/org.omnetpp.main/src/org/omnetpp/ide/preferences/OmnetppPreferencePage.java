@@ -17,6 +17,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
+import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.IConstants;
 import org.omnetpp.common.util.ProcessUtils;
 import org.omnetpp.ide.OmnetppMainPlugin;
@@ -38,14 +39,9 @@ public class OmnetppPreferencePage
 	extends FieldEditorPreferencePage
 	implements IWorkbenchPreferencePage {
 
-	public static final String OMNETPP_ROOT = "omnetppRoot";
-	public static final String OMNETPP_IMAGE_PATH = "omnetppImagePath";
-	public static final String DOXYGEN_EXECUTABLE = "doxygenExecutable";
-    public static final String GRAPHVIZ_DOT_EXECUTABLE = "graphvizDotExecutable";
-
-    public OmnetppPreferencePage() {
+	public OmnetppPreferencePage() {
 		super(GRID);
-		setPreferenceStore(OmnetppMainPlugin.getDefault().getConfigurationPreferenceStore());
+		setPreferenceStore(CommonPlugin.getConfigurationPreferenceStore());
 	}
 
 	public void createFieldEditors() {
@@ -53,16 +49,16 @@ public class OmnetppPreferencePage
         final Group group = createGroup(parent, "OMNeT++", 3, 3, GridData.FILL_HORIZONTAL);
         Composite spacer = createComposite(group, 3, 3, GridData.FILL_HORIZONTAL);
         createLabel(spacer, "Install location is the directory where the Makefile.inc or configuser.vc is located.", 3);
-        addAndFillIntoGrid(new DirectoryFieldEditor(OmnetppPreferencePage.OMNETPP_ROOT, "Install location:", spacer), spacer, 3);
-        addAndFillIntoGrid(new DirectoryListFieldEditor(OmnetppPreferencePage.OMNETPP_IMAGE_PATH, "Image path:", spacer), spacer, 3);
-        //createLabel(spacer, "Note: This is a semicolon-separated path to directory trees that contain icons.", 3);
+        addAndFillIntoGrid(new DirectoryFieldEditor(IConstants.PREF_OMNETPP_ROOT, "Install location:", spacer), spacer, 3);
+        addAndFillIntoGrid(new DirectoryListFieldEditor(IConstants.PREF_OMNETPP_IMAGE_PATH, "Image path:", spacer), spacer, 3);
+        createLabel(spacer, "Note: Image path changes take effect on next restart.", 3);
         
 		// supported only in the commercial build
 		if (IConstants.IS_COMMERCIAL) {
 		    Group group2 = createGroup(parent, "Tools for generating documentation", 3, 3, GridData.FILL_HORIZONTAL);
 	        Composite spacer2 = createComposite(group2, 3, 3, GridData.FILL_HORIZONTAL);
-	        addAndFillIntoGrid(new LookupExecutableFileFieldEditor(DOXYGEN_EXECUTABLE, "Doxygen executable path:", spacer2), spacer2, 3);
-	        addAndFillIntoGrid(new LookupExecutableFileFieldEditor(GRAPHVIZ_DOT_EXECUTABLE, "GraphViz Dot executable path:", spacer2), spacer2, 3);
+	        addAndFillIntoGrid(new LookupExecutableFileFieldEditor(IConstants.PREF_DOXYGEN_EXECUTABLE, "Doxygen executable path:", spacer2), spacer2, 3);
+	        addAndFillIntoGrid(new LookupExecutableFileFieldEditor(IConstants.PREF_GRAPHVIZ_DOT_EXECUTABLE, "GraphViz Dot executable path:", spacer2), spacer2, 3);
 		}
 	}
 
@@ -117,7 +113,7 @@ public class OmnetppPreferencePage
     	if (!IConstants.IS_COMMERCIAL)
     		return false;
         IPreferenceStore store = OmnetppMainPlugin.getDefault().getPreferenceStore();
-        String graphvizDotExecutablePath = store.getString(OmnetppPreferencePage.GRAPHVIZ_DOT_EXECUTABLE);
+        String graphvizDotExecutablePath = store.getString(IConstants.PREF_GRAPHVIZ_DOT_EXECUTABLE);
         return graphvizDotExecutablePath != null && new File(ProcessUtils.lookupExecutable(graphvizDotExecutablePath)).exists();
     }
 
@@ -125,7 +121,7 @@ public class OmnetppPreferencePage
     	if (!IConstants.IS_COMMERCIAL)
     		return false;
         IPreferenceStore store = OmnetppMainPlugin.getDefault().getPreferenceStore();
-        String doxyExecutablePath = store.getString(OmnetppPreferencePage.DOXYGEN_EXECUTABLE);
+        String doxyExecutablePath = store.getString(IConstants.PREF_DOXYGEN_EXECUTABLE);
         return doxyExecutablePath != null && new File(ProcessUtils.lookupExecutable(doxyExecutablePath)).exists();
     }
 

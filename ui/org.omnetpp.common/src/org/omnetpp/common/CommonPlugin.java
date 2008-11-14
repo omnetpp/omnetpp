@@ -3,8 +3,10 @@ package org.omnetpp.common;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -17,6 +19,9 @@ public class CommonPlugin extends AbstractUIPlugin {
 
 	// The shared instance
 	private static CommonPlugin plugin;
+	
+	// global preference store (per installation)
+	private ScopedPreferenceStore configPreferenceStore;
 	
 	/**
 	 * The constructor
@@ -77,4 +82,13 @@ public class CommonPlugin extends AbstractUIPlugin {
 				exception.printStackTrace();
 		}
 	}
+	
+    public static ScopedPreferenceStore getConfigurationPreferenceStore() {
+        // Create the preference store lazily.
+        if (getDefault().configPreferenceStore == null) {
+        	getDefault().configPreferenceStore = new ScopedPreferenceStore(new ConfigurationScope(), PLUGIN_ID);
+        }
+        return getDefault().configPreferenceStore;
+    }
+	
 }

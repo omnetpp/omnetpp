@@ -2,7 +2,9 @@ package org.omnetpp.ide;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
@@ -88,12 +90,30 @@ public class OmnetppStartup implements IStartup {
         });
     }
 
-    private void checkForNewVersion() {
+	/**
+	 * For use in the version check URL.
+	 */
+	protected String getInstallDate() {
+	    String installDate = CommonPlugin.getConfigurationPreferenceStore().getString("installDate");
+	    if (StringUtils.isEmpty(installDate)) {
+	        installDate = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+	        CommonPlugin.getConfigurationPreferenceStore().setValue("installDate", installDate);
+	        try {
+	        	CommonPlugin.getConfigurationPreferenceStore().save();
+			} catch (IOException e) {
+				OmnetppMainPlugin.logError("Cannot store installDate preference", e);
+			}
+	        
+	    }
+	    return installDate;
+	}
+
+	private void checkForNewVersion() {
         if (System.getProperty("com.simulcraft.test.running") != null)
             return;
 
         // skip this when version check was done recently
-        long lastCheckMillis = OmnetppMainPlugin.getDefault().getConfigurationPreferenceStore().getLong("lastCheck");
+        long lastCheckMillis = CommonPlugin.getConfigurationPreferenceStore().getLong("lastCheck");
         if (System.currentTimeMillis() - lastCheckMillis < VERSIONCHECK_INTERVAL_MILLIS)
             return;
         
@@ -106,7 +126,7 @@ public class OmnetppStartup implements IStartup {
         //
         Job job = new Job("Version check") { 
         	public IStatus run(IProgressMonitor pm) {
-        		final String versionCheckURL = NewsView.VERSIONCHECK_URL + "?v=" + OmnetppMainPlugin.getVersion() + "," + OmnetppMainPlugin.getInstallDate()+","+Platform.getOS();
+        		final String versionCheckURL = NewsView.VERSIONCHECK_URL + "?v=" + OmnetppMainPlugin.getVersion() + "&d=" + getInstallDate()+"&o="+Platform.getOS()+"."+Platform.getOSArch();
         		if (isWebPageNotBlank(versionCheckURL)) {
         			Display.getDefault().asyncExec(new Runnable() {
         				public void run() {
@@ -123,9 +143,9 @@ public class OmnetppStartup implements IStartup {
         					}
         				}});
         		}
-        		OmnetppMainPlugin.getDefault().getConfigurationPreferenceStore().setValue("lastCheck", System.currentTimeMillis());
+        		CommonPlugin.getConfigurationPreferenceStore().setValue("lastCheck", System.currentTimeMillis());
         		try {
-					OmnetppMainPlugin.getDefault().getConfigurationPreferenceStore().save();
+        			CommonPlugin.getConfigurationPreferenceStore().save();
 				} catch (IOException e) {
 					OmnetppMainPlugin.logError("Cannot store lastCheck preference", e);
 				}
@@ -509,4 +529,5 @@ public class OmnetppStartup implements IStartup {
             OmnetppMainPlugin.logError("Could not turn off 'Build automatically' option", e);
         }
     }
+
 }

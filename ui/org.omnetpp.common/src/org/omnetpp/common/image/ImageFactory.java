@@ -25,6 +25,7 @@ import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.CommonPlugin;
+import org.omnetpp.common.IConstants;
 
 // FIXME imageRegistry should be invalidated when ${opp_root} has changed
 public class ImageFactory {
@@ -133,16 +134,9 @@ public class ImageFactory {
     public static final int SIZE_VL = -250;
 
     static {
-        // default is the "images" directory in the main omnetpp directory
-        imageDirs = new String[] { "${opp_root}/images" };
-
-        // if image path is specified we should use that one instead of ../images
-        String omnetppImagePath = System.getenv("OMNETPP_IMAGE_PATH");
-        if (omnetppImagePath != null)
-            imageDirs = omnetppImagePath.split(";");
+       	imageDirs = CommonPlugin.getConfigurationPreferenceStore().getString(IConstants.PREF_OMNETPP_IMAGE_PATH).split(";");
         // create and register a default / not found image
-        imageRegistry.put(DEFAULT_KEY,
-                new NedImageDescriptor(ImageFactory.class, DEFAULT_NAME));
+        imageRegistry.put(DEFAULT_KEY, new NedImageDescriptor(ImageFactory.class, DEFAULT_NAME));
     }
     
     /**

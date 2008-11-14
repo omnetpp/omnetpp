@@ -239,12 +239,6 @@
       </page>
    </extension>
    <extension
-         point="org.eclipse.core.runtime.preferences">
-      <initializer
-            class="org.omnetpp.ide.preferences.OmnetppPreferenceInitializer">
-      </initializer>
-   </extension>
-   <extension
          point="org.eclipse.core.variables.dynamicVariables">
       <variable
             description="Expands to the OMNeT++ root directory location"

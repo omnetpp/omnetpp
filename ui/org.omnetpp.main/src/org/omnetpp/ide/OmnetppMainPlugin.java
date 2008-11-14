@@ -1,17 +1,12 @@
 package org.omnetpp.ide;
 
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.eclipse.ui.preferences.ScopedPreferenceStore;
-import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.ide.preferences.OmnetppPreferencePage;
+import org.omnetpp.common.CommonPlugin;
+import org.omnetpp.common.IConstants;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -25,8 +20,6 @@ public class OmnetppMainPlugin extends AbstractUIPlugin {
 	// The shared instance
 	private static OmnetppMainPlugin plugin;
 
-	private ScopedPreferenceStore configPreferenceStore;
-	
 	/**
 	 * The constructor
 	 */
@@ -47,25 +40,7 @@ public class OmnetppMainPlugin extends AbstractUIPlugin {
         return (String)getDefault().getBundle().getHeaders().get("Bundle-Version");
     }
     
-    /**
-     * For use in the version check URL.
-     */
-    public static String getInstallDate() {
-        String installDate = getDefault().getConfigurationPreferenceStore().getString("installDate");
-        if (StringUtils.isEmpty(installDate)) {
-            installDate = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
-            getDefault().getConfigurationPreferenceStore().setValue("installDate", installDate);
-            try {
-				getDefault().getConfigurationPreferenceStore().save();
-			} catch (IOException e) {
-				OmnetppMainPlugin.logError("Cannot store installDate preference", e);
-			}
-            
-        }
-        return installDate;
-    }
-
-	/*
+    /*
 	 * (non-Javadoc)
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
 	 */
@@ -104,8 +79,7 @@ public class OmnetppMainPlugin extends AbstractUIPlugin {
 	 * The main directory (where Makefile.inc or configuser.vc resides)
 	 */
 	public static String getOmnetppRootDir() {
-		// FIXME do some fallback if not specified in the store (try the platformdir/.. at least)
-		return getDefault().getConfigurationPreferenceStore().getString(OmnetppPreferencePage.OMNETPP_ROOT);
+		return CommonPlugin.getConfigurationPreferenceStore().getString(IConstants.PREF_OMNETPP_ROOT);
 	}
 	
 	public static String getOmnetppBinDir() {
@@ -123,13 +97,4 @@ public class OmnetppMainPlugin extends AbstractUIPlugin {
     	return new Path(getOmnetppRootDir()).append("lib").toOSString();
     }
 
-    public ScopedPreferenceStore getConfigurationPreferenceStore() {
-        // Create the preference store lazily.
-        if (configPreferenceStore == null) {
-            configPreferenceStore = new ScopedPreferenceStore(new ConfigurationScope(),getBundle().getSymbolicName());
-
-        }
-        return configPreferenceStore;
-    }
-	
 }

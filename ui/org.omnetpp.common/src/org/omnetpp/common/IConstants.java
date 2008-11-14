@@ -30,4 +30,10 @@ public interface IConstants {
     public static final String NEW_SIMPLE_MODULE_WIZARD_ID = "org.omnetpp.ned.editor.wizard.new.simplemodule";
     public static final String NEW_COMPOUND_MODULE_WIZARD_ID = "org.omnetpp.ned.editor.wizard.new.compoundmodule";
     public static final String NEW_NETWORK_WIZARD_ID = "org.omnetpp.ned.editor.wizard.new.network";
+
+    // preference IDs
+	public static final String PREF_OMNETPP_ROOT = "omnetppRoot";
+	public static final String PREF_OMNETPP_IMAGE_PATH = "omnetppImagePath";
+	public static final String PREF_DOXYGEN_EXECUTABLE = "doxygenExecutable";
+	public static final String PREF_GRAPHVIZ_DOT_EXECUTABLE = "graphvizDotExecutable";
 }

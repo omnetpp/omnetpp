@@ -37,4 +37,10 @@
          </enablement>
       </decorator>
    </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="org.omnetpp.common.ConfigurationPreferenceInitializer">
+      </initializer>
+   </extension>
 </plugin>

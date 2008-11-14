@@ -1,4 +1,4 @@
-package org.omnetpp.ide.preferences;
+package org.omnetpp.common;
 
 import java.io.File;
 
@@ -8,24 +8,25 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.omnetpp.common.util.ProcessUtils;
-import org.omnetpp.ide.OmnetppMainPlugin;
+import org.omnetpp.common.util.StringUtils;
 
 /**
  * Class used to initialize default preference values.
  */
-public class OmnetppPreferenceInitializer extends AbstractPreferenceInitializer {
+public class ConfigurationPreferenceInitializer extends AbstractPreferenceInitializer {
 	public void initializeDefaultPreferences() {
-		IPreferenceStore store = OmnetppMainPlugin.getDefault().getConfigurationPreferenceStore();
-		IPath omnetppRoot = getOmnetppRootDefault();
-        store.setDefault(OmnetppPreferencePage.OMNETPP_ROOT, omnetppRoot.toOSString());
-        store.setDefault(OmnetppPreferencePage.OMNETPP_IMAGE_PATH, omnetppRoot.append("images").toOSString());
-		store.setDefault(OmnetppPreferencePage.GRAPHVIZ_DOT_EXECUTABLE, getGraphvizDotExecutableDefault());
-        store.setDefault(OmnetppPreferencePage.DOXYGEN_EXECUTABLE, getDoxygenExecutableDefault());
+		IPreferenceStore store = CommonPlugin.getConfigurationPreferenceStore();
+        store.setDefault(IConstants.PREF_OMNETPP_ROOT, getOmnetppRootDefault().toOSString());
+        IPath omnetppRoot = new Path(store.getString(IConstants.PREF_OMNETPP_ROOT));
+        if (omnetppRoot.segmentCount() > 0)
+        	store.setDefault(IConstants.PREF_OMNETPP_IMAGE_PATH, omnetppRoot.append("images").toOSString());
+		store.setDefault(IConstants.PREF_GRAPHVIZ_DOT_EXECUTABLE, getGraphvizDotExecutableDefault());
+        store.setDefault(IConstants.PREF_DOXYGEN_EXECUTABLE, getDoxygenExecutableDefault());
 	}
 	
 	private IPath getOmnetppRootDefault() {
 	    String omnetppRootEnv = System.getenv("OMNETPP_ROOT");
-	    if (omnetppRootEnv != null) {
+	    if (StringUtils.isNotEmpty(omnetppRootEnv)) {
 	        IPath omnetppRootEnvPath =  new Path(omnetppRootEnv);
 	        if (containsConfigFiles(omnetppRootEnvPath))
 	            return omnetppRootEnvPath;
