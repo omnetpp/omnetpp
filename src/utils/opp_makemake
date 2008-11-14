@@ -1280,7 +1280,7 @@ clean:
 {nmake:}{sharedlib:}	-del $(TARGET) $(TARGET:.dll=.exe) $(TARGET:.dll=.lib) 2>nul
 {nmake:}{staticlib:}	-del $(TARGET) $(TARGET:.lib=.exe) $(TARGET:.lib=.dll) 2>nul
 {nmake:}{nolink:}	-del {target}.exe {target}.dll {target}.lib 2>nul
-{~nmake:}	-rm -rf $O {target} lib{target}.so lib{target}.a lib{target}.dylib
+{~nmake:}	-rm -rf $O {target} {target}.exe lib{target}.so lib{target}.a lib{target}.dll lib{target}.dylib
 {~nmake:}{@dir:sourcedirs}	-rm -f {dir}/*_m.{cc} {dir}/*_m.h
 {~nmake:}{/@}
 {nmake:}{@bsdir:backslashedsourcedirs}	-del {bsdir}\*_m.{cc} {bsdir}\*_m.h 2>nul
