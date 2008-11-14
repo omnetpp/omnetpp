@@ -621,6 +621,9 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
         Assert.isTrue(!startTag.equals(endTag), "template: startTag and endTag must be different");
         StringBuilder buf = new StringBuilder();
         
+        template = template.replaceAll("\n[ \t]*###.*\n", "\n"); // remove whole-line comments
+        template = template.replaceAll("[ \t]*###.*\n", "\n"); // remove end-line comments
+        
         int startTagLen = startTag.length();
         int endTagLen = endTag.length();
 
@@ -730,9 +733,8 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
         }
         buf.append(template.substring(current));  // rest of the template
         String result = buf.toString();       
-        result = result.replaceAll("(?m)^[ \t]*###.*$", ""); // remove '###' lines
-        result = result.replaceAll(" +\n", "\n");
-        result = result.replaceAll("\n\n\n+", "\n\n");
+        result = result.replaceAll(" +\n", "\n");  // remove spaces at line end
+        result = result.replaceAll("\n\n\n+", "\n\n");  // remove multiple empty lines
         return result;
     }
 
