@@ -1,2 +1,0 @@
-#! /bin/sh
-mpirun -c 3 ../cqn -n .. -c LargeLookahead -u Cmdenv --parsim-communications-class cMPICommunications

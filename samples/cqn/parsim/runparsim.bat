@@ -11,6 +11,6 @@ mkdir comm
 mkdir comm\read
 
 set NEDPATH=..
-start /b /belownormal call ..\cqn -p0,3 %*
-start /b /belownormal call ..\cqn -p1,3 %*
-start /b /belownormal call ..\cqn -p2,3 %*
+start /b /belownormal ..\cqn -p0,3 %*
+start /b /belownormal ..\cqn -p1,3 %*
+start /b /belownormal ..\cqn -p2,3 %*
