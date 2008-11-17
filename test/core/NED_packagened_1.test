@@ -1,5 +1,11 @@
 %description:
-Test that "expected package" should match "declared package"
+Test that "package.ned" is found by directory names and NOT by package names.
+
+We create two directory trees (NED source folders) with modules and package.ned
+in each, and verify that simple module namespace is taken from each dirtree's
+own package.ned file, even though the packages declared in the package.ned
+files are the same.
+
 
 %file: a/package.ned
 package org.omnetpp.test;
