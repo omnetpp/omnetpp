@@ -426,6 +426,8 @@ then
       AC_MSG_WARN([programs like INET.])
    fi
 else
+   # note: expected failure on MinGW, because there's no dlopen(). 
+   # fixing this would mean overturning and re-testing the whole configure script
    AC_MSG_RESULT(test failed)
 fi
 rm -f conftest_a.* conftest_m.* libconftest_a.so conftest
