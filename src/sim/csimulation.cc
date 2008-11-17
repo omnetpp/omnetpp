@@ -323,13 +323,17 @@ void cSimulation::setSystemModule(cModule *p)
 
 cModule *cSimulation::getModuleByPath(const char *path) const
 {
-    // start tokenizing the path (path format: "SysModule.DemandGen[2].Source")
+    if (opp_isempty(path))
+        return NULL;
+
+    // start tokenizing the path
     opp_string pathbuf(path);
     char *s = strtok(pathbuf.buffer(),".");
 
     // search starts from system module
     cModule *modp = getSystemModule();
-    if (!modp) return NULL;
+    if (!modp)
+        return NULL;
 
     // 1st component in the path may be the system module, skip it then
     if (modp->isName(s))

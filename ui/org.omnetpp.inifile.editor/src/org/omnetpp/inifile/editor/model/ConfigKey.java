@@ -16,6 +16,7 @@ public class ConfigKey {
       CFG_STRING,
       CFG_FILENAME,
       CFG_FILENAMES,
+      CFG_PATH,
       CFG_CUSTOM
     };
 

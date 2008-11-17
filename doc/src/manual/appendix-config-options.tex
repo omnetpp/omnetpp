@@ -8,10 +8,6 @@ A similar list can be obtained from any simulation executable by running it
 with the \ttt{-h configdetails} option.
 
 \begin{verbatim}
-<object-full-path>.apply-default=<bool>, default:false; per-object setting
-    Applies to module parameters: whether NED default values should be assigned
-    if present.
-
 cmdenv-autoflush=<bool>, default:false; per-run setting
     Call fflush(stdout) after each event banner or status update; affects both
     express and normal mode. Turning on autoflush may have a performance
@@ -110,14 +106,14 @@ eventlog-message-detail-pattern=<custom>; per-run setting
     the simulation. The message detail will be presented in the sequence chart
     tool. Each pattern starts with an object pattern optionally followed by ':'
     character and a comma separated list of field patterns. In both patterns
-    and/or/not/* and various field matcher expressions can be used. The object
+    and/or/not/* and various field match expressions can be used. The object
     pattern matches to class name, the field pattern matches to field name by
     default.
       EVENTLOG-MESSAGE-DETAIL-PATTERN := ( DETAIL-PATTERN '|' )* DETAIL_PATTERN
       DETAIL-PATTERN := OBJECT-PATTERN [ ':' FIELD-PATTERNS ]
-      OBJECT-PATTERN := MATCHER-EXPRESSION
+      OBJECT-PATTERN := MATCH-EXPRESSION
       FIELD-PATTERNS := ( FIELD-PATTERN ',' )* FIELD_PATTERN
-      FIELD-PATTERN := MATCHER-EXPRESSION
+      FIELD-PATTERN := MATCH-EXPRESSION
     Examples (enter them without quotes):
       "*": captures all fields of all messages
       "*Frame:*Address,*Id": captures all fields named somethingAddress and
@@ -128,9 +124,10 @@ eventlog-message-detail-pattern=<custom>; per-run setting
     declaredOn(cObject))": records user-defined fields from all messages
 
 eventlog-recording-intervals=<custom>; per-run setting
-    Interval(s) when events should be recorded. Syntax: [<from>]..[<to>],...
-    That is, both start and end of an interval are optional, and intervals are
-    separated by comma. Example: ..100, 200..400, 900..
+    Simulation time interval(s) when events should be recorded. Syntax:
+    [<from>]..[<to>],... That is, both start and end of an interval are
+    optional, and intervals are separated by comma. Example: ..10.2, 22.2..100,
+    233.3..
 
 experiment-label=<string>, default:${configname}; per-run setting
     Identifies the simulation experiment (which consists of several,
@@ -143,17 +140,19 @@ extends=<string>; per-run setting
     configuration lookups will fall back to the base section.
 
 fingerprint=<string>; per-run setting
-    The expected fingerprint, suitable for crude regression tests. If present,
-    the actual fingerprint is calculated during simulation, and compared
-    against the expected one.
+    The expected fingerprint of the simulation. When provided, a fingerprint
+    will be calculated from the simulation event times and other quantities
+    during simulation, and checked against the given one. Fingerprints are
+    suitable for crude regression tests. As fingerprints occasionally differ
+    across platforms, more than one fingerprint values can be specified here,
+    separated by spaces, and a match with any of them will be accepted. To
+    calculate the initial fingerprint, enter any dummy string (such as "none"),
+    and run the simulation.
 
 fname-append-host=<bool>, default:false; global setting
     Turning it on will cause the host name and process Id to be appended to the
     names of output files (e.g. omnetpp.vec, omnetpp.sca). This is especially
     useful with distributed simulation.
-
-ini-warnings=<bool>, default:false; global setting
-    Currently ignored. Accepted for backward compatibility.
 
 load-libs=<filenames>; global setting
     A space-separated list of dynamic libraries to be loaded on startup. The
@@ -170,19 +169,23 @@ measurement-label=<string>, default:${iterationvars}; per-run setting
 
 <object-full-path>.module-eventlog-recording=<bool>, default:true; per-object setting
     Enables recording events on a per module basis. This is meaningful for
-    simple modules only.
+    simple modules only. 
     Example:
      **.router[10..20].**.module-eventlog-recording = true
      **.module-eventlog-recording = false
 
-ned-path=<string>; global setting
-    A semicolon-separated list of directories which will be appended to the
-    NEDPATH environment variable. The directories will be regarded as roots of
-    the NED package hierarchy, and all NED files will be loaded from the
-    subdirectories under them.
+ned-path=<path>; global setting
+    A semicolon-separated list of directories. The directories will be regarded
+    as roots of the NED package hierarchy, and all NED files will be loaded
+    from their subdirectory trees. This option is normally left empty, as the
+    {\opp} IDE sets the NED path automatically, and for simulations started
+    outside the IDE it is more convenient to specify it via a command-line
+    option or the NEDPATH environment variable.
 
 network=<string>; per-run setting
-    The name of the network to be simulated.
+    The name of the network to be simulated.  The package name can be omitted
+    if the ini file is in the same directory as the NED file that contains the
+    network.
 
 num-rngs=<int>, default:1; per-run setting
     The number of random number generators.
@@ -214,7 +217,7 @@ output-vectors-memory-limit=<double>, unit="B", default:16MB; per-run setting
 
 outputscalarmanager-class=<string>, default:cFileOutputScalarManager; global setting
     Part of the Envir plugin mechanism: selects the output scalar manager class
-    to be used to record data passed to record(). The class has to
+    to be used to record data passed to recordScalar(). The class has to
     implement the cOutputScalarManager interface.
 
 outputvectormanager-class=<string>, default:cIndexedFileOutputVectorManager; global setting
@@ -257,6 +260,11 @@ parsim-filecommunications-read-prefix=<string>, default:comm/read/; global setti
 parsim-idealsimulationprotocol-tablesize=<int>, default:100000; global setting
     When cIdealSimulationProtocol is selected as parsim synchronization class:
     specifies the memory buffer size for reading the ISP event trace file.
+
+parsim-mpicommunications-mpibuffer=<int>; global setting
+    When cMPICommunications is selected as parsim communications class:
+    specifies the size of the MPI communications buffer. The default is to
+    calculate a buffer size based on the number of partitions.
 
 parsim-namedpipecommunications-prefix=<string>, default:omnetpp; global setting
     When cNamedPipeCommunications is selected as parsim communications class:
@@ -322,6 +330,10 @@ rng-class=<string>, default:cMersenneTwister; per-run setting
     `cLCG32', `cAkaroaRNG', or you can use your own RNG class (it must be
     subclassed from cRNG).
 
+runnumber-width=<int>, default:0; per-run setting
+    Setting a nonzero value will cause the $runnumber variable to get padded
+    with leading zeroes to the given length.
+
 <object-full-path>.scalar-recording=<bool>, default:true; per-object setting
     Whether the matching output scalars should be recorded. Syntax:
     <module-full-path>.<scalar-name>.scalar-recording=true/false. Example:
@@ -381,10 +393,10 @@ tkenv-extra-stack=<double>, unit="B", default:48KB; global setting
     Specifies the extra amount of stack that is reserved for each activity()
     simple module when the simulation is run under Tkenv.
 
-tkenv-image-path=<filename>; global setting
+tkenv-image-path=<path>; global setting
     Specifies the path for loading module icons.
 
-tkenv-plugin-path=<filename>; global setting
+tkenv-plugin-path=<path>; global setting
     Specifies the search path for Tkenv plugins. Tkenv plugins are .tcl files
     that get evaluated on startup.
 
@@ -398,8 +410,9 @@ total-stack=<double>, unit="B"; global setting
 
 user-interface=<string>; global setting
     Selects the user interface to be started. Possible values are Cmdenv and
-    Tkenv, provided the simulation executable contains the respective libraries
-    or loads them dynamically.
+    Tkenv. This option is normally left empty, as it is more convenient to
+    specify the user interface via a command-line option or the IDE's Run and
+    Debug dialogs.
 
 <object-full-path>.vector-max-buffered-values=<int>; per-object setting
     For output vectors: the maximum number of values to buffer per vector,
@@ -422,47 +435,6 @@ user-interface=<string>; global setting
 warnings=<bool>, default:true; per-run setting
     Enables warnings.
 \end{verbatim}
-
-
-Predefined variables that can be used in config values:
-
-\begin{verbatim}
-${runid}
-    A reasonably globally unique identifier for the run, produced by
-    concatenating the configuration name, run number, date/time, etc.
-${inifile}
-    Name of the (primary) inifile
-${configname}
-    Name of the active configuration
-${runnumber}
-    Sequence number of the current run within all runs in the active
-    configuration
-${network}
-    Value of the "network" configuration option
-${experiment}
-    Value of the "experiment-label" configuration option
-${measurement}
-    Value of the "measurement-label" configuration option
-${replication}
-    Value of the "replication-label" configuration option
-${processid}
-    PID of the simulation process
-${datetime}
-    Date and time the simulation run was started
-${resultdir}
-    Value of the "result-dir" configuration option
-${repetition}
-    The iteration number in 0..N-1, where N is the value of the "repeat"
-    configuration option
-${seedset}
-    Value of the "seed-set" configuration option
-${iterationvars}
-    Concatenation of all user-defined iteration variables in name=value form
-${iterationvars2}
-    Concatenation of all user-defined iteration variables in name=value form,
-    plus ${repetition}
-\end{verbatim}
-
 
 
 \section{Predefined Configuration Variables}

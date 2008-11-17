@@ -169,6 +169,7 @@ public abstract class TableFieldEditor extends FieldEditor {
 			case CFG_DOUBLE: return "0.0";
 			case CFG_FILENAME: return "";
 			case CFG_FILENAMES: return "";
+			case CFG_PATH: return "";
 			case CFG_STRING: return "";
 		}
 		return "";

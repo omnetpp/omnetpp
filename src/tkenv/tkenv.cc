@@ -95,10 +95,10 @@ extern "C" TKENV_API void _tkenv_lib() {}
 
 
 Register_GlobalConfigEntryU(CFGID_TKENV_EXTRA_STACK, "tkenv-extra-stack", "B", "48KB", "Specifies the extra amount of stack that is reserved for each activity() simple module when the simulation is run under Tkenv.");
-Register_GlobalConfigEntry(CFGID_DEFAULT_CONFIG, "tkenv-default-config", CFG_STRING, NULL, "Specifies which config Tkenv should set up automatically on startup. The default is to ask the user.");
-Register_GlobalConfigEntry(CFGID_DEFAULT_RUN, "tkenv-default-run", CFG_INT, "0", "Specifies which run (of the default config, see tkenv-default-config) Tkenv should set up automatically on startup. The default is to ask the user.");
-Register_GlobalConfigEntry(CFGID_IMAGE_PATH, "tkenv-image-path", CFG_FILENAME, "", "Specifies the path for loading module icons.");
-Register_GlobalConfigEntry(CFGID_PLUGIN_PATH, "tkenv-plugin-path", CFG_FILENAME, "", "Specifies the search path for Tkenv plugins. Tkenv plugins are .tcl files that get evaluated on startup.");
+Register_GlobalConfigEntry(CFGID_TKENV_DEFAULT_CONFIG, "tkenv-default-config", CFG_STRING, NULL, "Specifies which config Tkenv should set up automatically on startup. The default is to ask the user.");
+Register_GlobalConfigEntry(CFGID_TKENV_DEFAULT_RUN, "tkenv-default-run", CFG_INT, "0", "Specifies which run (of the default config, see tkenv-default-config) Tkenv should set up automatically on startup. The default is to ask the user.");
+Register_GlobalConfigEntry(CFGID_TKENV_IMAGE_PATH, "tkenv-image-path", CFG_PATH, "", "Specifies the path for loading module icons.");
+Register_GlobalConfigEntry(CFGID_TKENV_PLUGIN_PATH, "tkenv-plugin-path", CFG_PATH, "", "Specifies the search path for Tkenv plugins. Tkenv plugins are .tcl files that get evaluated on startup.");
 
 
 // utility function
@@ -1041,13 +1041,13 @@ void Tkenv::readOptions()
     opt_extrastack = (size_t) cfg->getAsDouble(CFGID_TKENV_EXTRA_STACK);
 
     const char *s = args->optionValue('c');
-    opt_default_config = s ? s : cfg->getAsString(CFGID_DEFAULT_CONFIG);
+    opt_default_config = s ? s : cfg->getAsString(CFGID_TKENV_DEFAULT_CONFIG);
 
     const char *r = args->optionValue('r');
-    opt_default_run = r ? atoi(r) : cfg->getAsInt(CFGID_DEFAULT_RUN);
+    opt_default_run = r ? atoi(r) : cfg->getAsInt(CFGID_TKENV_DEFAULT_RUN);
 
-    opt_image_path = cfg->getAsFilename(CFGID_IMAGE_PATH).c_str();
-    opt_plugin_path = cfg->getAsFilename(CFGID_PLUGIN_PATH).c_str();
+    opt_image_path = cfg->getAsPath(CFGID_TKENV_IMAGE_PATH).c_str();
+    opt_plugin_path = cfg->getAsPath(CFGID_TKENV_PLUGIN_PATH).c_str();
 }
 
 void Tkenv::readPerRunOptions()

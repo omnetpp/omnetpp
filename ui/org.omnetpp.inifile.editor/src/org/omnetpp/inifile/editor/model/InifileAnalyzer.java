@@ -458,6 +458,7 @@ public class InifileAnalyzer {
 			break;
 		case CFG_FILENAME:
 		case CFG_FILENAMES:
+		case CFG_PATH:
 			//XXX
 			break;
 		}

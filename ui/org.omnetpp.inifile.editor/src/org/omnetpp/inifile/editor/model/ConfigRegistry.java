@@ -5,6 +5,7 @@ import static org.omnetpp.inifile.editor.model.ConfigKey.DataType.CFG_CUSTOM;
 import static org.omnetpp.inifile.editor.model.ConfigKey.DataType.CFG_DOUBLE;
 import static org.omnetpp.inifile.editor.model.ConfigKey.DataType.CFG_FILENAME;
 import static org.omnetpp.inifile.editor.model.ConfigKey.DataType.CFG_FILENAMES;
+import static org.omnetpp.inifile.editor.model.ConfigKey.DataType.CFG_PATH;
 import static org.omnetpp.inifile.editor.model.ConfigKey.DataType.CFG_INT;
 import static org.omnetpp.inifile.editor.model.ConfigKey.DataType.CFG_STRING;
 
@@ -29,121 +30,121 @@ import org.omnetpp.inifile.editor.model.ConfigKey.DataType;
  * @author Andras
  */
 public class ConfigRegistry {
-	/** Name of the [General] section */
-	public static final String GENERAL = "General";
+    /** Name of the [General] section */
+    public static final String GENERAL = "General";
 
-	/** Name prefix for the [Section <name>] sections; includes a trailing space. */
-	public static final String CONFIG_ = "Config ";
+    /** Name prefix for the [Section <name>] sections; includes a trailing space. */
+    public static final String CONFIG_ = "Config ";
 
-	/** Name of the "extends=" config key */
-	public static final String EXTENDS; // initialized at the bottom of this file
-	
-	/** Inifile value keyword*/
-	public static final String DEFAULT = "default";
+    /** Name of the "extends=" config key */
+    public static final String EXTENDS; // initialized at the bottom of this file
 
-	/** Inifile value keyword*/
-	public static final String ASK = "ask";
-	
-	private static Map<String, ConfigKey> entries = new HashMap<String, ConfigKey>();
-	private static Map<String, ConfigKey> perObjectEntries = new HashMap<String, ConfigKey>();
-	private static Map<String, String> configVars = new LinkedHashMap<String, String>(); // preserve order
+    /** Inifile value keyword*/
+    public static final String DEFAULT = "default";
 
-	private static ConfigKey addGlobalEntry(String name, DataType type, String defaultValue, String description) {
-    	ConfigKey e = new ConfigKey(name, false, true, type, null, defaultValue, description);
-    	entries.put(name, e);
-    	return e;
+    /** Inifile value keyword*/
+    public static final String ASK = "ask";
+
+    private static Map<String, ConfigKey> entries = new HashMap<String, ConfigKey>();
+    private static Map<String, ConfigKey> perObjectEntries = new HashMap<String, ConfigKey>();
+    private static Map<String, String> configVars = new LinkedHashMap<String, String>(); // preserve order
+
+    private static ConfigKey addGlobalEntry(String name, DataType type, String defaultValue, String description) {
+        ConfigKey e = new ConfigKey(name, false, true, type, null, defaultValue, description);
+        entries.put(name, e);
+        return e;
     }
 
-	private static ConfigKey addGlobalEntryU(String name, String unit, String defaultValue, String description) {
-    	ConfigKey e = new ConfigKey(name, false, true, CFG_DOUBLE, unit, defaultValue, description);
-    	entries.put(name, e);
-    	return e;
+    private static ConfigKey addGlobalEntryU(String name, String unit, String defaultValue, String description) {
+        ConfigKey e = new ConfigKey(name, false, true, CFG_DOUBLE, unit, defaultValue, description);
+        entries.put(name, e);
+        return e;
     }
 
-	private static ConfigKey addPerRunEntry(String name, DataType type, String defaultValue, String description) {
-    	ConfigKey e = new ConfigKey(name, false, false, type, null, defaultValue, description);
-    	entries.put(name, e);
-    	return e;
+    private static ConfigKey addPerRunEntry(String name, DataType type, String defaultValue, String description) {
+        ConfigKey e = new ConfigKey(name, false, false, type, null, defaultValue, description);
+        entries.put(name, e);
+        return e;
     }
 
-	private static ConfigKey addPerRunEntryU(String name, String unit, String defaultValue, String description) {
-    	ConfigKey e = new ConfigKey(name, false, false, CFG_DOUBLE, unit, defaultValue, description);
-    	entries.put(name, e);
-    	return e;
+    private static ConfigKey addPerRunEntryU(String name, String unit, String defaultValue, String description) {
+        ConfigKey e = new ConfigKey(name, false, false, CFG_DOUBLE, unit, defaultValue, description);
+        entries.put(name, e);
+        return e;
     }
 
-	private static ConfigKey addPerObjectEntry(String name, DataType type, String defaultValue, String description) {
-    	ConfigKey e = new ConfigKey(name, true, false, type, null, defaultValue, description);
-    	perObjectEntries.put(name, e);
-    	return e;
+    private static ConfigKey addPerObjectEntry(String name, DataType type, String defaultValue, String description) {
+        ConfigKey e = new ConfigKey(name, true, false, type, null, defaultValue, description);
+        perObjectEntries.put(name, e);
+        return e;
     }
 
-	@SuppressWarnings("unused")
-	private static ConfigKey addPerObjectEntryU(String name, String unit, String defaultValue, String description) {
-    	ConfigKey e = new ConfigKey(name, true, false, CFG_DOUBLE, unit, defaultValue, description);
-    	perObjectEntries.put(name, e);
-    	return e;
+    @SuppressWarnings("unused")
+    private static ConfigKey addPerObjectEntryU(String name, String unit, String defaultValue, String description) {
+        ConfigKey e = new ConfigKey(name, true, false, CFG_DOUBLE, unit, defaultValue, description);
+        perObjectEntries.put(name, e);
+        return e;
     }
 
-	private static ConfigKey lookupWildcardConfigKey(Map<String, ConfigKey> map, String key) {
-		// config keys may contain wildcards: '*' (any string) and '%' (numeric string)
-		for (ConfigKey e : map.values()) {
-			if (e.containsWildcard()) {
-				String pattern = e.getKey().replace("*", ".+").replace("%", "[0-9]+");
-				if (key.matches(pattern))
-					return e;
-			}
-		}
-		return null;
-	}
+    private static ConfigKey lookupWildcardConfigKey(Map<String, ConfigKey> map, String key) {
+        // config keys may contain wildcards: '*' (any string) and '%' (numeric string)
+        for (ConfigKey e : map.values()) {
+            if (e.containsWildcard()) {
+                String pattern = e.getKey().replace("*", ".+").replace("%", "[0-9]+");
+                if (key.matches(pattern))
+                    return e;
+            }
+        }
+        return null;
+    }
 
-	/**
-	 * Returns the ConfigKey with the given name, or null. It also finds and returns
-	 * wildcard keys that match the given name, for example it will return "seed-%-mt"
-	 * for "seed-1-mt".
-	 */
-	public static ConfigKey getEntry(String name) {
-		ConfigKey e = entries.get(name);
-		if (e == null)
-			e = lookupWildcardConfigKey(entries, name);
-		return e;
-	}
+    /**
+     * Returns the ConfigKey with the given name, or null. It also finds and returns
+     * wildcard keys that match the given name, for example it will return "seed-%-mt"
+     * for "seed-1-mt".
+     */
+    public static ConfigKey getEntry(String name) {
+        ConfigKey e = entries.get(name);
+        if (e == null)
+            e = lookupWildcardConfigKey(entries, name);
+        return e;
+    }
 
-	/**
-	 * Returns the per-object ConfigKey with the given name, or null. It also finds
-	 * and returns wildcard keys that match the given name, for example it will return
-	 * "rng-%" for "rng-1".
-	 */
-	public static ConfigKey getPerObjectEntry(String name) {
-		ConfigKey e = perObjectEntries.get(name);
-		if (e == null)
-			e = lookupWildcardConfigKey(perObjectEntries, name);
-		return e;
-	}
+    /**
+     * Returns the per-object ConfigKey with the given name, or null. It also finds
+     * and returns wildcard keys that match the given name, for example it will return
+     * "rng-%" for "rng-1".
+     */
+    public static ConfigKey getPerObjectEntry(String name) {
+        ConfigKey e = perObjectEntries.get(name);
+        if (e == null)
+            e = lookupWildcardConfigKey(perObjectEntries, name);
+        return e;
+    }
 
-	public static ConfigKey[] getEntries() {
-		return (ConfigKey[]) entries.values().toArray(new ConfigKey[entries.size()]);
-	}
+    public static ConfigKey[] getEntries() {
+        return (ConfigKey[]) entries.values().toArray(new ConfigKey[entries.size()]);
+    }
 
-	public static ConfigKey[] getPerObjectEntries() {
-		return (ConfigKey[]) perObjectEntries.values().toArray(new ConfigKey[perObjectEntries.size()]);
-	}
+    public static ConfigKey[] getPerObjectEntries() {
+        return (ConfigKey[]) perObjectEntries.values().toArray(new ConfigKey[perObjectEntries.size()]);
+    }
 
-	private static String addConfigVariable(String name, String description) {
-	    configVars.put(name, description);
-	    return name;
-	}
+    private static String addConfigVariable(String name, String description) {
+        configVars.put(name, description);
+        return name;
+    }
 
-	public static String[] getConfigVariableNames() {
-	    return configVars.keySet().toArray(new String[]{});
-	}
+    public static String[] getConfigVariableNames() {
+        return configVars.keySet().toArray(new String[]{});
+    }
 
-	public static String getConfigVariableDescription(String variable) {
+    public static String getConfigVariableDescription(String variable) {
         return configVars.get(variable);
     }
 
-	/*=== The following code has been generated by "some-simulation-program -h jconfig" ===*/
-	
+    /*=== The following code has been generated by "some-simulation-program -h jconfig" ===*/
+
     public static final ConfigKey CFGID_CMDENV_AUTOFLUSH = addPerRunEntry(
         "cmdenv-autoflush", CFG_BOOL, "false",
         "Call fflush(stdout) after each event banner or status update; affects both " +
@@ -243,15 +244,15 @@ public class ConfigRegistry {
         "the simulation. The message detail will be presented in the sequence chart " +
         "tool. Each pattern starts with an object pattern optionally followed by ':' " +
         "character and a comma separated list of field patterns. In both patterns " +
-        "and/or/not/* and various field matcher expressions can be used. The object " +
+        "and/or/not/* and various field match expressions can be used. The object " +
         "pattern matches to class name, the field pattern matches to field name by " +
         "default.\n" +
         "  EVENTLOG-MESSAGE-DETAIL-PATTERN := ( DETAIL-PATTERN '|' )* " +
         "DETAIL_PATTERN\n" +
         "  DETAIL-PATTERN := OBJECT-PATTERN [ ':' FIELD-PATTERNS ]\n" +
-        "  OBJECT-PATTERN := MATCHER-EXPRESSION\n" +
+        "  OBJECT-PATTERN := MATCH-EXPRESSION\n" +
         "  FIELD-PATTERNS := ( FIELD-PATTERN ',' )* FIELD_PATTERN\n" +
-        "  FIELD-PATTERN := MATCHER-EXPRESSION\n" +
+        "  FIELD-PATTERN := MATCH-EXPRESSION\n" +
         "Examples (enter them without quotes):\n" +
         "  \"*\": captures all fields of all messages\n" +
         "  \"*Frame:*Address,*Id\": captures all fields named somethingAddress and " +
@@ -262,9 +263,10 @@ public class ConfigRegistry {
         "declaredOn(cObject))\": records user-defined fields from all messages");
     public static final ConfigKey CFGID_EVENTLOG_RECORDING_INTERVALS = addPerRunEntry(
         "eventlog-recording-intervals", CFG_CUSTOM, null,
-        "Interval(s) when events should be recorded. Syntax: [<from>]..[<to>],... " +
-        "That is, both start and end of an interval are optional, and intervals are " +
-        "separated by comma. Example: ..100, 200..400, 900..");
+        "Simulation time interval(s) when events should be recorded. Syntax: " +
+        "[<from>]..[<to>],... That is, both start and end of an interval are " +
+        "optional, and intervals are separated by comma. Example: ..10.2, 22.2..100, " +
+        "233.3..");
     public static final ConfigKey CFGID_EXPERIMENT_LABEL = addPerRunEntry(
         "experiment-label", CFG_STRING, "${configname}",
         "Identifies the simulation experiment (which consists of several, " +
@@ -311,16 +313,16 @@ public class ConfigRegistry {
         " **.router[10..20].**.module-eventlog-recording = true\n" +
         " **.module-eventlog-recording = false");
     public static final ConfigKey CFGID_NED_PATH = addGlobalEntry(
-        "ned-path", CFG_STRING, null,
+        "ned-path", CFG_PATH, null,
         "A semicolon-separated list of directories. The directories will be regarded " +
-        "as roots of the NED package hierarchy, and all NED files will be loaded from " +
-        "their subdirectory trees. This option is normally left empty, as the OMNeT++ " +
-        "IDE sets the NED path automatically, and for simulations started outside the " +
-        "IDE it is more convenient to specify it via a command-line option or the " +
-        "NEDPATH environment variable.");
+        "as roots of the NED package hierarchy, and all NED files will be loaded " +
+        "from their subdirectory trees. This option is normally left empty, as the " +
+        "OMNeT++ IDE sets the NED path automatically, and for simulations started " +
+        "outside the IDE it is more convenient to specify it via a command-line " +
+        "option or the NEDPATH environment variable.");
     public static final ConfigKey CFGID_NETWORK = addPerRunEntry(
         "network", CFG_STRING, null,
-        "The name of the network to be simulated. The package name can be omitted " +
+        "The name of the network to be simulated.  The package name can be omitted " +
         "if the ini file is in the same directory as the NED file that contains the " +
         "network.");
     public static final ConfigKey CFGID_NUM_RNGS = addPerRunEntry(
@@ -525,10 +527,10 @@ public class ConfigRegistry {
         "Specifies the extra amount of stack that is reserved for each activity() " +
         "simple module when the simulation is run under Tkenv.");
     public static final ConfigKey CFGID_TKENV_IMAGE_PATH = addGlobalEntry(
-        "tkenv-image-path", CFG_FILENAME, null,
+        "tkenv-image-path", CFG_PATH, null,
         "Specifies the path for loading module icons.");
     public static final ConfigKey CFGID_TKENV_PLUGIN_PATH = addGlobalEntry(
-        "tkenv-plugin-path", CFG_FILENAME, null,
+        "tkenv-plugin-path", CFG_PATH, null,
         "Specifies the search path for Tkenv plugins. Tkenv plugins are .tcl files " +
         "that get evaluated on startup.");
     public static final ConfigKey CFGID_TOTAL_STACK = addGlobalEntryU(

@@ -23,12 +23,12 @@
 #include "unitconversion.h"
 #include "stringutil.h"
 #include "fileutil.h"
+#include "stringtokenizer.h"
 #include "fnamelisttokenizer.h"
 #include "exception.h"
 
 USING_NAMESPACE
 
-//XXX move these functions into another base class, like cConfigurationBase : public cConfiguration {} ?
 
 bool cConfiguration::parseBool(const char *s, const char *defaultValue, bool fallbackValue)
 {
@@ -87,7 +87,7 @@ std::vector<std::string> cConfiguration::parseFilenames(const char *s, const cha
 {
     if (!s)
         s = defaultValue;
-    if (!s || !s[0])
+    if (!s)
         s = "";
     std::vector<std::string> result;
     FilenamesListTokenizer tokenizer(s);
@@ -100,6 +100,24 @@ std::vector<std::string> cConfiguration::parseFilenames(const char *s, const cha
             result.push_back("@" + tidyFilename(concatDirAndFile(baseDir, fname+1).c_str()));
         else
             result.push_back(tidyFilename(concatDirAndFile(baseDir, fname).c_str()));
+    }
+    return result;
+}
+
+std::string cConfiguration::adjustPath(const char *s, const char *baseDir, const char *defaultValue)
+{
+    if (!s)
+        s = defaultValue;
+    if (!s)
+        s = "";
+    std::string result;
+    StringTokenizer tokenizer(s, PATH_SEPARATOR);
+    const char *dirName;
+    while ((dirName = tokenizer.nextToken())!=NULL)
+    {
+        if (result.size()!=0)
+            result += ";";
+        result += tidyFilename(concatDirAndFile(baseDir, dirName).c_str());
     }
     return result;
 }
@@ -171,6 +189,13 @@ std::vector<std::string> cConfiguration::getAsFilenames(cConfigKey *entry)
     TRY(return parseFilenames(keyvalue.getValue(), keyvalue.getBaseDirectory(), substituteVariables(entry->getDefaultValue())));
 }
 
+std::string cConfiguration::getAsPath(cConfigKey *entry)
+{
+    assertType(entry, false, cConfigKey::CFG_PATH);
+    const KeyValue& keyvalue = getConfigEntry(entry->getName());
+    TRY(return adjustPath(keyvalue.getValue(), keyvalue.getBaseDirectory(), substituteVariables(entry->getDefaultValue())));
+}
+
 //----
 
 const char *cConfiguration::getAsCustom(const char *objectFullPath, cConfigKey *entry, const char *fallbackValue)
@@ -215,5 +240,12 @@ std::vector<std::string> cConfiguration::getAsFilenames(const char *objectFullPa
     assertType(entry, true, cConfigKey::CFG_FILENAMES);
     const KeyValue& keyvalue = getConfigEntry(entry->getName());
     TRY(return parseFilenames(keyvalue.getValue(), keyvalue.getBaseDirectory(), substituteVariables(entry->getDefaultValue())));
+}
+
+std::string cConfiguration::getAsPath(const char *objectFullPath, cConfigKey *entry)
+{
+    assertType(entry, true, cConfigKey::CFG_FILENAMES);
+    const KeyValue& keyvalue = getConfigEntry(entry->getName());
+    TRY(return adjustPath(keyvalue.getValue(), keyvalue.getBaseDirectory(), substituteVariables(entry->getDefaultValue())));
 }
 

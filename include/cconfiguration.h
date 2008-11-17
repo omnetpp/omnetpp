@@ -327,6 +327,7 @@ class SIM_API cConfiguration : public cObject
     static std::string parseString(const char *s, const char *defaultValue, const char *fallbackValue="");
     static std::string parseFilename(const char *s, const char *baseDir, const char *defaultValue);
     static std::vector<std::string> parseFilenames(const char *s, const char *baseDir, const char *defaultValue);
+    static std::string adjustPath(const char *s, const char *baseDir, const char *defaultValue);
     //@}
 
     /** @name Getters for global and per-config entries */
@@ -375,6 +376,14 @@ class SIM_API cConfiguration : public cObject
      * (see getBaseDirectoryFor() method).
      */
     virtual std::vector<std::string> getAsFilenames(cConfigKey *entry);
+
+    /**
+     * Interprets the config value as a list of directory names, possibly
+     * containing wildcards, and separated by ";" (Windows), or ":" or ";"
+     * (other OSes). The relative names in the list will be converted to absolute,
+     * using the base directory (see getBaseDirectoryFor() method).
+     */
+    virtual std::string getAsPath(cConfigKey *entry);
     //@}
 
     /** @name Getters for per-object entries */
@@ -423,11 +432,18 @@ class SIM_API cConfiguration : public cObject
      * (see KeyValue::getBaseDirectory()).
      */
     virtual std::vector<std::string> getAsFilenames(const char *objectFullPath, cConfigKey *entry);
+
+    /**
+     * Interprets the per-object config value as a list of directory names, possibly
+     * containing wildcards, and separated by ";" (Windows), or ":" or ";"
+     * (other OSes). The relative names in the list will be converted to absolute,
+     * using the base directory (see getBaseDirectoryFor() method).
+     */
+    virtual std::string getAsPath(const char *objectFullPath, cConfigKey *entry);
     //@}
 };
 
 NAMESPACE_END
-
 
 #endif
 

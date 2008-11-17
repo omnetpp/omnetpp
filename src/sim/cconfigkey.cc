@@ -58,6 +58,7 @@ const char *cConfigKey::getTypeName(Type type)
         case CFG_STRING:    return "string";
         case CFG_FILENAME:  return "filename";
         case CFG_FILENAMES: return "filenames";
+        case CFG_PATH:      return "path";
         case CFG_CUSTOM:    return "custom";
         default:            return "???";
     }

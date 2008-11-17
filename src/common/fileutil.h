@@ -22,6 +22,12 @@
 
 NAMESPACE_BEGIN
 
+#ifdef _WIN32
+#define PATH_SEPARATOR   ";"
+#else
+#define PATH_SEPARATOR   ":;"
+#endif
+
 COMMON_API std::string fileNameToSlash(const char *fileName);
 COMMON_API void splitFileName(const char *pathname, std::string& dir, std::string& fnameonly);
 COMMON_API std::string directoryOf(const char *pathname);

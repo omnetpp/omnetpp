@@ -74,17 +74,10 @@
 
 #endif
 
-#ifdef _WIN32
-#define PATH_SEPARATOR   ";"
-#else
-#define PATH_SEPARATOR   ":;"
-#endif
 
 USING_NAMESPACE
 
-
 using std::ostream;
-
 
 #define CREATE_BY_CLASSNAME(var,classname,baseclass,description) \
      baseclass *var ## _tmp = (baseclass *) createOne(classname); \
@@ -102,10 +95,9 @@ Register_GlobalConfigEntry(CFGID_OUTPUTSCALARMANAGER_CLASS, "outputscalarmanager
 Register_GlobalConfigEntry(CFGID_SNAPSHOTMANAGER_CLASS, "snapshotmanager-class", CFG_STRING, "cFileSnapshotManager", "Part of the Envir plugin mechanism: selects the class to handle streams to which snapshot() writes its output. The class has to implement the cSnapshotManager interface.");
 Register_GlobalConfigEntry(CFGID_FNAME_APPEND_HOST, "fname-append-host", CFG_BOOL, "false", "Turning it on will cause the host name and process Id to be appended to the names of output files (e.g. omnetpp.vec, omnetpp.sca). This is especially useful with distributed simulation.");
 Register_GlobalConfigEntry(CFGID_DEBUG_ON_ERRORS, "debug-on-errors", CFG_BOOL, "false", "When set to true, runtime errors will cause the simulation program to break into the C++ debugger (if the simulation is running under one, or just-in-time debugging is activated). Once in the debugger, you can view the stack trace or examine variables.");
-Register_GlobalConfigEntry(CFGID_PERFORM_GC, "perform-gc", CFG_BOOL, "false", "Whether the simulation kernel should delete on network cleanup the simulation objects not deleted by simple module destructors. Not recommended.");
 Register_GlobalConfigEntry(CFGID_PRINT_UNDISPOSED, "print-undisposed", CFG_BOOL, "true", "Whether to report objects left (that is, not deallocated by simple module destructors) after network cleanup.");
 Register_GlobalConfigEntry(CFGID_SIMTIME_SCALE, "simtime-scale", CFG_INT, "-12", "Sets the scale exponent, and thus the resolution of time for the 64-bit fixed-point simulation time representation. Accepted values are -18..0; for example, -6 selects microsecond resolution. -12 means picosecond resolution, with a maximum simtime of ~110 days.");
-Register_GlobalConfigEntry(CFGID_NED_PATH, "ned-path", CFG_STRING, "", "A semicolon-separated list of directories. The directories will be regarded as roots of the NED package hierarchy, and all NED files will be loaded from their subdirectory trees. This option is normally left empty, as the OMNeT++ IDE sets the NED path automatically, and for simulations started outside the IDE it is more convenient to specify it via a command-line option or the NEDPATH environment variable.");
+Register_GlobalConfigEntry(CFGID_NED_PATH, "ned-path", CFG_PATH, "", "A semicolon-separated list of directories. The directories will be regarded as roots of the NED package hierarchy, and all NED files will be loaded from their subdirectory trees. This option is normally left empty, as the OMNeT++ IDE sets the NED path automatically, and for simulations started outside the IDE it is more convenient to specify it via a command-line option or the NEDPATH environment variable.");
 
 Register_PerRunConfigEntry(CFGID_NETWORK, "network", CFG_STRING, NULL, "The name of the network to be simulated.  The package name can be omitted if the ini file is in the same directory as the NED file that contains the network.");
 Register_PerRunConfigEntry(CFGID_WARNINGS, "warnings", CFG_BOOL, "true", "Enables warnings.");
@@ -328,7 +320,7 @@ void EnvirBase::setup()
         const char *nedpath1 = args->optionValue('n',0);
         if (!nedpath1)
             nedpath1 = getenv("NEDPATH");
-        std::string nedpath2 = getConfig()->getAsString(CFGID_NED_PATH, ""); //XXX use getAsFilenames?
+        std::string nedpath2 = getConfig()->getAsPath(CFGID_NED_PATH);
         std::string nedpath = opp_join(";", nedpath1, nedpath2.c_str());
         if (nedpath.empty())
             nedpath = ".";
@@ -502,6 +494,7 @@ void EnvirBase::dumpComponentList(const char *category)
                 CASE(CFG_STRING)
                 CASE(CFG_FILENAME)
                 CASE(CFG_FILENAMES)
+                CASE(CFG_PATH)
                 CASE(CFG_CUSTOM)
             }
             #undef CASE
