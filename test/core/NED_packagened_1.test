@@ -1,0 +1,51 @@
+%description:
+Test that "expected package" should match "declared package"
+
+%file: a/package.ned
+package org.omnetpp.test;
+@namespace(a);
+
+%file: a/pkg/Source.ned
+package org.omnetpp.test.pkg;
+simple Source { }  // C++ class is a::Source
+
+%file: b/package.ned
+package org.omnetpp.test;
+@namespace(b);
+
+%file: b/pkg/Sink.ned
+package org.omnetpp.test.pkg;
+simple Sink { }  // C++ class is b::Sink
+
+%file: c/Test.ned
+import org.omnetpp.test.pkg.*;
+network Test {
+    submodules:
+        source : Source;
+        sink: Sink;
+}
+
+%network: Test
+
+%file: a/pkg/Source.cc
+#include <omnetpp.h>
+namespace a {
+class Source : public cSimpleModule { };
+Define_Module(Source);
+};
+
+%file: b/pkg/Sink.cc
+#include <omnetpp.h>
+namespace b {
+class Sink : public cSimpleModule { };
+Define_Module(Sink);
+};
+
+%env: NEDPATH=a;b;c
+
+%exitcode: 1
+
+%contains-regex: stdout
+todo
+
+
