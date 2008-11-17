@@ -65,6 +65,7 @@ b=has body, f=value is filename)
     'contains-regex'     => 'vbf',
     'not-contains-regex' => 'vbf',
 
+    'env'                => 'v',
     'testprog'           => '1v',
     'exitcode'           => '1v',
     'ignore-exitcode'    => '1v'
@@ -493,6 +494,20 @@ sub testcase_run()
     $inifname = $values{'inifile(1)'};
     if ($inifname eq '') {
         $inifname = "test.ini";
+    }
+
+    # set environment variables
+    foreach $key (keys(%values))
+    {
+        if ($key =~ /^env\b/)
+        {
+            my $tmp = $values{$key};
+            $tmp =~ /(.*?)=(.*)/;
+            my $envvar = $1;
+            my $value = $2;
+            $ENV{$envvar} = $value;
+            print "  setting environment variable `$envvar' = `$value'\n" if ($debug);
+        }
     }
 
     # run the program

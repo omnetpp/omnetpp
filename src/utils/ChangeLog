@@ -1,3 +1,8 @@
+2008-11-17  Andras Varga
+
+	* opp_test: implemented %env for setting environment variables for 
+	the test program. Example:  %env: NEDPATH=this;that
+
 2008-11-09  Andras Varga
 
 	* opp_makemake: streamline the generated makefile: definitions, 
