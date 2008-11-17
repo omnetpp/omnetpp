@@ -930,7 +930,7 @@ else
     fi
 
     if test $mpi_ok = no; then
-       mpilibs="-lmpi++ -lmpi"   #SGI
+       mpilibs="-lmpi"   #SGI and mingw (on MinGW modify mpi.h and insert #include <wchar.h> at the top of the file)
        OPP_CHECK_LIB(MPI, mpi.h, MPI_Init(0,0), $CFLAGS_RELEASE $MPI_CFLAGS, $LDFLAGS $mpilibs, mpi_ok, MPI_LIBS="$mpilibs")
     fi
 fi
@@ -949,16 +949,25 @@ fi
 # Check for PCAP.
 #----------------------
 
-PCAP_LIBS=${PCAP_LIBS:-"-lpcap"}
-OPP_CHECK_LIB(PCAP, pcap.h, pcap_lookupdev("dummydev"), $CFLAGS_RELEASE $PCAP_CFLAGS, $PCAP_LIBS, pcap_ok)
-if test $pcap_ok = no; then
-    HAVE_PCAP=no
-    PCAP_CFALGS=""
-    PCAP_LIBS=""
+if test -n "$PCAP_LIBS"; then
+    OPP_CHECK_LIB(PCAP, pcap.h, pcap_lookupdev("dummydev"), $CFLAGS_RELEASE $PCAP_CFLAGS, $PCAP_LIBS, pcap_ok)
 else
+    PCAP_LIBS="-lpcap"
+    OPP_CHECK_LIB(PCAP, pcap.h, pcap_lookupdev("dummydev"), $CFLAGS_RELEASE $PCAP_CFLAGS, $PCAP_LIBS, pcap_ok)
+    # check for windows pcap (wpcap) on mingw
+    if test $pcap_ok = no; then
+	PCAP_LIBS="-lwpcap"
+	OPP_CHECK_LIB(PCAP, pcap.h, pcap_lookupdev("dummydev"), $CFLAGS_RELEASE $PCAP_CFLAGS, $PCAP_LIBS, pcap_ok)
+    fi    
+fi
+if test $pcap_ok = yes; then
     HAVE_PCAP=yes
-    CFLAGS_RELEASE="$CFLAGS_RELEASE -DHAVE_PCAP"
-    CFLAGS_DEBUG="$CFLAGS_DEBUG -DHAVE_PCAP"
+    CFLAGS_RELEASE="$CFLAGS_RELEASE $PCAP_CFLAGS -DHAVE_PCAP"
+    CFLAGS_DEBUG="$CFLAGS_DEBUG $PCAP_CFLAGS -DHAVE_PCAP"
+else
+    HAVE_PCAP=no
+    PCAP_CFLAGS=""
+    PCAP_LIBS=""
 fi
 
 #----------------------

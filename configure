@@ -7189,7 +7189,7 @@ rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
     fi
 
     if test $mpi_ok = no; then
-       mpilibs="-lmpi++ -lmpi"   #SGI
+       mpilibs="-lmpi"   #SGI and mingw (on MinGW modify mpi.h and insert #include <wchar.h> at the top of the file)
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
@@ -7267,7 +7267,7 @@ fi
 # Check for PCAP.
 #----------------------
 
-PCAP_LIBS=${PCAP_LIBS:-"-lpcap"}
+if test -n "$PCAP_LIBS"; then
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
@@ -7327,14 +7327,139 @@ rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
    CXXFLAGS=$save_CXXFLAGS
    LIBS=$save_LIBS
 
-if test $pcap_ok = no; then
-    HAVE_PCAP=no
-    PCAP_CFALGS=""
-    PCAP_LIBS=""
 else
+    PCAP_LIBS="-lpcap"
+
+   save_CXXFLAGS=$CXXFLAGS
+   save_LIBS=$LIBS
+
+   CXXFLAGS="$CFLAGS_RELEASE $PCAP_CFLAGS"
+   LIBS="$PCAP_LIBS"
+
+   { echo "$as_me:$LINENO: checking for PCAP with CFLAGS=\"$CFLAGS_RELEASE $PCAP_CFLAGS\" LIBS=\"$PCAP_LIBS\"" >&5
+echo $ECHO_N "checking for PCAP with CFLAGS=\"$CFLAGS_RELEASE $PCAP_CFLAGS\" LIBS=\"$PCAP_LIBS\"... $ECHO_C" >&6; }
+
+   cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <pcap.h>
+int
+main ()
+{
+pcap_lookupdev("dummydev");
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (ac_try="$ac_link"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
+  (eval "$ac_link") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_cxx_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest$ac_exeext &&
+       $as_test_x conftest$ac_exeext; then
+  { echo "$as_me:$LINENO: result: yes" >&5
+echo "${ECHO_T}yes" >&6; }; pcap_ok=yes;
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+	{ echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6; }; pcap_ok=no;
+fi
+
+rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
+      conftest$ac_exeext conftest.$ac_ext
+
+   CXXFLAGS=$save_CXXFLAGS
+   LIBS=$save_LIBS
+
+    # check for windows pcap (wpcap) on mingw
+    if test $pcap_ok = no; then
+	PCAP_LIBS="-lwpcap"
+
+   save_CXXFLAGS=$CXXFLAGS
+   save_LIBS=$LIBS
+
+   CXXFLAGS="$CFLAGS_RELEASE $PCAP_CFLAGS"
+   LIBS="$PCAP_LIBS"
+
+   { echo "$as_me:$LINENO: checking for PCAP with CFLAGS=\"$CFLAGS_RELEASE $PCAP_CFLAGS\" LIBS=\"$PCAP_LIBS\"" >&5
+echo $ECHO_N "checking for PCAP with CFLAGS=\"$CFLAGS_RELEASE $PCAP_CFLAGS\" LIBS=\"$PCAP_LIBS\"... $ECHO_C" >&6; }
+
+   cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <pcap.h>
+int
+main ()
+{
+pcap_lookupdev("dummydev");
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (ac_try="$ac_link"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
+  (eval "$ac_link") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_cxx_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest$ac_exeext &&
+       $as_test_x conftest$ac_exeext; then
+  { echo "$as_me:$LINENO: result: yes" >&5
+echo "${ECHO_T}yes" >&6; }; pcap_ok=yes;
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+	{ echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6; }; pcap_ok=no;
+fi
+
+rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
+      conftest$ac_exeext conftest.$ac_ext
+
+   CXXFLAGS=$save_CXXFLAGS
+   LIBS=$save_LIBS
+
+    fi
+fi
+if test $pcap_ok = yes; then
     HAVE_PCAP=yes
-    CFLAGS_RELEASE="$CFLAGS_RELEASE -DHAVE_PCAP"
-    CFLAGS_DEBUG="$CFLAGS_DEBUG -DHAVE_PCAP"
+    CFLAGS_RELEASE="$CFLAGS_RELEASE $PCAP_CFLAGS -DHAVE_PCAP"
+    CFLAGS_DEBUG="$CFLAGS_DEBUG $PCAP_CFLAGS -DHAVE_PCAP"
+else
+    HAVE_PCAP=no
+    PCAP_CFLAGS=""
+    PCAP_LIBS=""
 fi
 
 #----------------------
