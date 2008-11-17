@@ -1208,7 +1208,6 @@ for more details. While you can use $OMNETPP_PRODUCT in the current
 configuration, please be aware that some functionality may be unavailable
 or incomplete.
 
-
 EOT
 fi
 
@@ -1284,6 +1283,8 @@ runtime environment) will not be available, simulations need to be run
 under Cmdenv.
 EOT
 
+elif test "$PLATFORM" = "macosx"; then
+    :
 elif test -z "$TCL_LIBRARY"; then
 
     cat 1>&2 << EOT
@@ -1310,5 +1311,4 @@ else
     echo
     echo "TCL_LIBRARY is set. Good!"
 fi
-
 
