@@ -9154,6 +9154,12 @@ echo "#define OMNETPP_BUILDID \"$OMNETPP_BUILDID\"" >>ver.h && \
 echo "#define OMNETPP_EDITION \"$OMNETPP_EDITION\"" >>ver.h
 )
 
+# patch the ide/configuration/config.ini on MacOS X to point the default workspace to "samples"
+if test "$PLATFORM" = "macosx" -a -f ide/configuration/config.ini ; then
+    perl -i -pe 's!default=\.\./\.\./samples!default=../../../../samples!g' ide/configuration/config.ini
+    echo xxxx Hello
+fi
+
 #----------------------
 # Check $OPP_PROBLEM_PACKAGES
 #----------------------
