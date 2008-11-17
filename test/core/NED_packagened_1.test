@@ -43,9 +43,9 @@ Define_Module(Sink);
 
 %env: NEDPATH=a;b;c
 
-%exitcode: 1
+%exitcode: 0
 
-%contains-regex: stdout
-todo
+#%contains-regex: stdout
+
 
 
