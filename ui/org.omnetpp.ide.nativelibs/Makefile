@@ -124,9 +124,9 @@ eventlog.cxx : eventlog.i
 
 $O/$(DLL): $(OBJS)
 	$(LINUX32_ONLY) ln -sf `g++ $(LDFLAGS) -print-file-name=libstdc++.a` $O
-	$(SHLIB_LD) -o $O/$(DLL) $(OBJS) $(LIBS) $(LDFLAGS)
+	$(SHLIB_LD) $(LDFLAGS) -o $O/$(DLL) $(OBJS) $(LIBS)
 	strip $(STRIP_FLAGS) $O/$(DLL)
-	$(LINUX32_ONLY) if ldd $O/$(DLL) | grep -F 'libstdc++'; then echo "Error: $(DLL) not statically linked with libstdc++"; exit 1; fi
+	$(LINUX32_ONLY) @if ldd $O/$(DLL) | grep -F 'libstdc++'; then echo "Error: $(DLL) not statically linked with libstdc++"; exit 1; fi
 
 $(DLL_TARGET_DIR)/$(DLL): $O/$(DLL)
 	cp $O/$(DLL) $(DLL_TARGET_DIR)

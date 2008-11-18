@@ -1982,7 +1982,7 @@ else
         CFLAGS_ARCH="$CFLAGS_ARCH -I/usr/include"
         # on MinGW dll auto importing is used and must be linked with shared gcc and stdc++
         # otherwise exceptions cant be thrown across dll boundaries
-        LDFLAGS_ARCH="$LDFLAGS_ARCH -enable-auto-import -shared-libgcc -L/usr/lib -L/usr/bin"
+        LDFLAGS_ARCH="$LDFLAGS_ARCH -enable-auto-import -shared-libgcc -L/usr/bin -L/usr/lib"
         ;;
     x86_64-*-linux*)
         jni_platform=linux
