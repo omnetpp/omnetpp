@@ -158,32 +158,16 @@ std::string NEDTypeInfo::getPackage() const
 
 std::string NEDTypeInfo::getCxxNamespace() const
 {
-    const char *namespaceName = NULL;
-
-    // look for @namespace in the current file
-    NEDElement *nedfile = getTree()->getParentWithTag(NED_NED_FILE);
-    namespaceName = nedfile ? NEDElementUtil::getLocalStringProperty(nedfile, "namespace") : NULL;
-    if (namespaceName)
-        return namespaceName;
-
-    // find first @namespace() property in package.ned of this package and parent packages
-    std::string packageName = getPackage();
-    while (true) {
-        // check the package.ned file for this property
-        NEDElement *nedfile = getResolver()->getPackageNedFile(packageName.c_str());
-        namespaceName = nedfile ? NEDElementUtil::getLocalStringProperty(nedfile, "namespace") : NULL;
+    // find first @namespace() property in the current file, then in package.ned of this package and parent packages
+    for (NedFileElement *nedfile = (NedFileElement *)getTree()->getParentWithTag(NED_NED_FILE);
+         nedfile != NULL;
+         nedfile = getResolver()->getParentPackageNedFile(nedfile))
+    {
+        const char *namespaceName = NEDElementUtil::getLocalStringProperty(nedfile, "namespace");
         if (namespaceName)
-            break;
-
-        if (packageName.empty())
-            break;
-
-        // go one package up -- drop part after last dot
-        size_t k = packageName.rfind(".", packageName.length());
-        packageName.resize(k==std::string::npos ? 0 : k);
+            return namespaceName;
     }
-
-    return opp_nulltoempty(namespaceName);
+    return "";
 }
 
 std::string NEDTypeInfo::info() const

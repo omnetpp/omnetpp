@@ -315,9 +315,9 @@ $O/nedtool.obj: nedtool.cc \
   ned1generator.h \
   nedexception.h \
   nedvalidator.h \
-  ../utils/ver.h \
   nedyydefs.h \
   nedparser.h \
+  ../common/ver.h \
   ned2generator.h \
   nedsyntaxvalidator.h \
   nedtools.h \

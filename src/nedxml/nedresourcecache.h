@@ -106,8 +106,9 @@ class NEDXML_API NEDResourceCache
     virtual int doLoadNedSourceFolder(const char *foldername, const char *expectedPackage);
     virtual void doLoadNedFile(const char *nedfname, const char *expectedPackage, bool isXML);
     virtual NEDElement *parseAndValidateNedFile(const char *nedfname, bool isXML);
-    virtual std::string determineRootPackageName(const char *foldername);
-    virtual void collectNedTypes(NEDElement *node, const std::string& namespaceprefix);
+    virtual std::string determineRootPackageName(const char *nedSourceFolderName);
+    virtual std::string getNedSourceFolderForFolder(const char *folder) const;
+    virtual void collectNedTypes(NEDElement *node, const std::string& namespacePrefix);
     virtual void collectNedType(const char *qname, NEDElement *node);
     virtual bool areDependenciesResolved(const char *qname, NEDElement *node);
     virtual void registerPendingNedTypes();
@@ -153,10 +154,15 @@ class NEDXML_API NEDResourceCache
     virtual bool addFile(const char *fname, NEDElement *node);  //XXX make protected?
 
     /** Get a file (represented as object tree) from the cache */
-    virtual NEDElement *getFile(const char *fname);
+    virtual NEDElement *getFile(const char *fname) const;
 
-    /** Returns the package.ned file for the given package, or NULL. */
-    virtual NEDElement *getPackageNedFile(const char *packagename) const;
+    /**
+     * Given a NED file, returns the package.ned file from the same folder,
+     * or the nearest ancestor package.ned file. If the file is a package.ned
+     * file itself, returns the nearest ancestor package.ned file. Returns NULL
+     * if there is no parent package.ned file.
+     */
+    virtual NedFileElement *getParentPackageNedFile(NedFileElement *nedfile) const;
 
     /** Look up a fully qualified NED type name from the cache. Returns NULL if not found. */
     virtual NEDTypeInfo *lookup(const char *qname) const;

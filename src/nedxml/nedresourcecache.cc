@@ -113,19 +113,20 @@ void NEDResourceCache::doLoadNedFile(const char *nedfname, const char *expectedP
         return;  // already loaded
 
     // parse file
-    NEDElement *tree = parseAndValidateNedFile(nedfname, isXML);
+    std::string nedfname2 = tidyFilename(toAbsolutePath(nedfname).c_str());
+    NEDElement *tree = parseAndValidateNedFile(nedfname2.c_str(), isXML); // so that NedFileElement stores absolute file name
 
     // check that declared package matches expected package
     PackageElement *packageDecl = (PackageElement *)tree->getFirstChildWithTag(NED_PACKAGE);
     std::string declaredPackage = packageDecl ? packageDecl->getName() : "";
     if (expectedPackage!=NULL && declaredPackage != std::string(expectedPackage))
         throw NEDException("NED error in file `%s': declared package `%s' does not match expected package `%s'",
-                           nedfname, declaredPackage.c_str(), expectedPackage);  //FIXME fname misses directory here
+                           nedfname, declaredPackage.c_str(), expectedPackage);
 
     // register it
     try
     {
-        addFile(nedfname, tree);
+        addFile(nedfname2.c_str(), tree);
     }
     catch (NEDException& e)
     {
@@ -201,7 +202,7 @@ bool NEDResourceCache::addFile(const char *fname, NEDElement *node)
     return true;
 }
 
-void NEDResourceCache::collectNedTypes(NEDElement *node, const std::string& namespaceprefix)
+void NEDResourceCache::collectNedTypes(NEDElement *node, const std::string& namespacePrefix)
 {
     for (NEDElement *child=node->getFirstChild(); child; child=child->getNextSibling())
     {
@@ -210,7 +211,7 @@ void NEDResourceCache::collectNedTypes(NEDElement *node, const std::string& name
             tag==NED_COMPOUND_MODULE || tag==NED_MODULE_INTERFACE ||
             tag==NED_ENUM || tag==NED_STRUCT || tag==NED_CLASS || tag==NED_MESSAGE)
         {
-            std::string qname = namespaceprefix + child->getAttribute("name");
+            std::string qname = namespacePrefix + child->getAttribute("name");
             if (lookup(qname.c_str()))
                 throw NEDException("redeclaration of %s %s", child->getTagName(), qname.c_str()); //XXX maybe just NEDError?
 
@@ -304,35 +305,55 @@ NEDTypeInfo *NEDResourceCache::getDecl(const char *qname) const
     return decl;
 }
 
-NEDElement *NEDResourceCache::getFile(const char *fname)
+NEDElement *NEDResourceCache::getFile(const char *fname) const
 {
     // hash table lookup
     std::string key = tidyFilename(toAbsolutePath(fname).c_str());
-    NEDFileMap::iterator i = files.find(key);
+    NEDFileMap::const_iterator i = files.find(key);
     return i==files.end() ? NULL : i->second;
 }
 
-NEDElement *NEDResourceCache::getPackageNedFile(const char *packagename) const
+NedFileElement *NEDResourceCache::getParentPackageNedFile(NedFileElement *nedfile) const
 {
-    for (NEDFileMap::const_iterator i = files.begin(); i != files.end(); i++) {
-        const char *filepath = i->first.c_str();
-        NEDElement *nedfile = i->second;
-        PackageElement *packageDecl = (PackageElement *) nedfile->getFirstChildWithTag(NED_PACKAGE);
-        std::string filePackageName = packageDecl ? packageDecl->getName() : "";
-        if (filePackageName == opp_nulltoempty(packagename)) {
-            std::string dir, fname;
-            splitFileName(filepath, dir, fname);
-            if (fname == "package.ned")
-                return nedfile;
-        }
+    std::string nedfilename = tidyFilename(toAbsolutePath(nedfile->getFilename()).c_str(), true);
+    std::string dir, fname;
+    splitFileName(nedfilename.c_str(), dir, fname);
+    dir = tidyFilename(dir.c_str(), true);
+
+    std::string topDir = getNedSourceFolderForFolder(dir.c_str());
+    if (topDir.empty())
+        return NULL;
+
+    if (fname != "package.ned")
+    {
+        // get package.ned from same package
+        NEDElement *e = getFile(tidyFilename(concatDirAndFile(dir.c_str(), "package.ned").c_str(), true).c_str());
+        if (e)
+            return (NedFileElement *)e;
+    }
+
+    // walk up in search for a package.ned
+    while (dir != topDir)
+    {
+printf("%s   ~   %s\n", dir.c_str(), topDir.c_str());
+        // chop last segment
+        std::string parentDir, dummy;
+        splitFileName(dir.c_str(), parentDir, dummy);
+        Assert(dir != parentDir); // we should exit via reaching the NED source folder
+        dir = tidyFilename(parentDir.c_str(), true);
+
+        // return package.ned from this dir, if exists
+        NEDElement *e = getFile(tidyFilename(concatDirAndFile(dir.c_str(), "package.ned").c_str(), true).c_str());
+        if (e)
+            return (NedFileElement *)e;
     }
     return NULL;
 }
 
-std::string NEDResourceCache::determineRootPackageName(const char *foldername)
+std::string NEDResourceCache::determineRootPackageName(const char *nedSourceFolderName)
 {
     // determine if a package.ned file exists
-    std::string packageNedFilename = std::string(foldername) + "/package.ned";
+    std::string packageNedFilename = std::string(nedSourceFolderName) + "/package.ned";
     FILE *f = fopen(packageNedFilename.c_str(), "r");
     if (!f)
         return "";
@@ -347,20 +368,28 @@ std::string NEDResourceCache::determineRootPackageName(const char *foldername)
     return result;
 }
 
-std::string NEDResourceCache::getNedPackageForFolder(const char *folder) const
+std::string NEDResourceCache::getNedSourceFolderForFolder(const char *folder) const
 {
+    // find NED source folder which is a prefix of folder.
+    // note: this is unambiguous because nested NED source folders are not allowed
     std::string folderName = tidyFilename(toAbsolutePath(folder).c_str(), true);
     for (StringMap::const_iterator it = folderPackages.begin(); it!=folderPackages.end(); ++it)
-    {
         if (opp_stringbeginswith(folderName.c_str(), it->first.c_str()))
-        {
-            std::string suffix = folderName.substr(it->first.size());
-            if (suffix[0] == '/') suffix = suffix.substr(1);
-            std::string subpackage = opp_replacesubstring(suffix.c_str(), "/", ".", true);
-            return opp_join(".", it->second.c_str(), subpackage.c_str());
-        }
-    }
-    return "-";
+            return it->first;
+    return "";
+}
+
+std::string NEDResourceCache::getNedPackageForFolder(const char *folder) const
+{
+    std::string sourceFolder = getNedSourceFolderForFolder(folder);
+    if (sourceFolder.empty())
+        return "";
+
+    std::string folderName = tidyFilename(toAbsolutePath(folder).c_str(), true);
+    std::string suffix = folderName.substr(sourceFolder.size());
+    if (suffix[0] == '/') suffix = suffix.substr(1);
+    std::string subpackage = opp_replacesubstring(suffix.c_str(), "/", ".", true);
+    return opp_join(".", const_cast<StringMap&>(folderPackages)[sourceFolder].c_str(), subpackage.c_str());
 }
 
 NEDLookupContext NEDResourceCache::getParentContextOf(const char *qname, NEDElement *node)
