@@ -36,7 +36,7 @@ public class NewOmnetppProjectWizard extends Wizard implements INewWizard {
 	        super("OMNeT++ Project");
 	        setTitle("OMNeT++ Project");
 	        setDescription("Creates a new OMNeT++ Project.");
-	        setImageDescriptor(ImageDescriptor.createFromFile(getClass(),"/icons/newoprj_wiz.png"));
+	        setImageDescriptor(ImageDescriptor.createFromFile(getClass(),"/icons/full/wizban/newoprj_wiz.png"));
 	    }
 	}
 
