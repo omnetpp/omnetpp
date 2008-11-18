@@ -1,5 +1,6 @@
 %description:
-Tests splitFileName() function
+Tests splitFileName() function.
+NOTE: the output is far from being perfect, but for canonical absolute paths it is OK (we use for that)...
 
 %includes:
 #include "fileutil.h"
@@ -13,11 +14,12 @@ static void slice(const char *s)
     {
         std::string dir, fname;
         splitFileName(path.c_str(), dir, fname);
-        ev << path << " -> '" << dir << "' + '" << fname << "'\n";
+        ev << path << " -> " << dir << " + " << fname << "\n";
         if (path == dir)
             break;
         path = dir;
     }
+    ev << "\n";
 }
 
 %activity:
@@ -64,5 +66,169 @@ ev << ".\n";
 %exitcode: 0
 
 %contains: stdout
-sdsadsad
+. -> . +
 
+.. -> .. +
+
+../../. -> ../../ + .
+../../ -> ../ + ../
+../ -> . + ../
+. -> . +
+
+./../../. -> ./../../ + .
+./../../ -> ./../ + ../
+./../ -> ./ + ../
+./ -> . + ./
+. -> . +
+
+dir -> . + dir
+. -> . +
+
+dir// -> dir/ + /
+dir/ -> . + dir/
+. -> . +
+
+./dir -> ./ + dir
+./ -> . + ./
+. -> . +
+
+../dir -> ../ + dir
+../ -> . + ../
+. -> . +
+
+dir/.. -> dir/ + ..
+dir/ -> . + dir/
+. -> . +
+
+dir1/dir2/.. -> dir1/dir2/ + ..
+dir1/dir2/ -> dir1/ + dir2/
+dir1/ -> . + dir1/
+. -> . +
+
+dir1/../dir2 -> dir1/../ + dir2
+dir1/../ -> dir1/ + ../
+dir1/ -> . + dir1/
+. -> . +
+
+dir1/../.. -> dir1/../ + ..
+dir1/../ -> dir1/ + ../
+dir1/ -> . + dir1/
+. -> . +
+
+dir1/../../.. -> dir1/../../ + ..
+dir1/../../ -> dir1/../ + ../
+dir1/../ -> dir1/ + ../
+dir1/ -> . + dir1/
+. -> . +
+
+c:dir -> c:dir +
+
+c:./dir -> c:./ + dir
+c:./ -> c:./ +
+
+c:../dir -> c:../ + dir
+c:../ -> c:../ +
+
+c:dir/.. -> c:dir/ + ..
+c:dir/ -> c:dir/ +
+
+c:dir1/dir2/.. -> c:dir1/dir2/ + ..
+c:dir1/dir2/ -> c:dir1/ + dir2/
+c:dir1/ -> c:dir1/ +
+
+c:dir1/../dir2 -> c:dir1/../ + dir2
+c:dir1/../ -> c:dir1/ + ../
+c:dir1/ -> c:dir1/ +
+
+c:dir1/../.. -> c:dir1/../ + ..
+c:dir1/../ -> c:dir1/ + ../
+c:dir1/ -> c:dir1/ +
+
+c:dir1/../../.. -> c:dir1/../../ + ..
+c:dir1/../../ -> c:dir1/../ + ../
+c:dir1/../ -> c:dir1/ + ../
+c:dir1/ -> c:dir1/ +
+
+/usr -> . + /usr
+. -> . +
+
+/usr/bin -> /usr/ + bin
+/usr/ -> . + /usr/
+. -> . +
+
+/usr/bin/.. -> /usr/bin/ + ..
+/usr/bin/ -> /usr/ + bin/
+/usr/ -> . + /usr/
+. -> . +
+
+/usr/bin/../.. -> /usr/bin/../ + ..
+/usr/bin/../ -> /usr/bin/ + ../
+/usr/bin/ -> /usr/ + bin/
+/usr/ -> . + /usr/
+. -> . +
+
+/usr/bin/../../.. -> /usr/bin/../../ + ..
+/usr/bin/../../ -> /usr/bin/../ + ../
+/usr/bin/../ -> /usr/bin/ + ../
+/usr/bin/ -> /usr/ + bin/
+/usr/ -> . + /usr/
+. -> . +
+
+/usr/./// -> /usr/.// + /
+/usr/.// -> /usr/./ + /
+/usr/./ -> /usr/ + ./
+/usr/ -> . + /usr/
+. -> . +
+
+c:/tmp/queuenet/node.ned -> c:/tmp/queuenet/ + node.ned
+c:/tmp/queuenet/ -> c:/tmp/ + queuenet/
+c:/tmp/ -> c:/ + tmp/
+c:/ -> c:/ +
+
+c://tmp/queuenet//node.ned -> c://tmp/queuenet// + node.ned
+c://tmp/queuenet// -> c://tmp/queuenet/ + /
+c://tmp/queuenet/ -> c://tmp/ + queuenet/
+c://tmp/ -> c:// + tmp/
+c:// -> c:/ + /
+c:/ -> c:/ +
+
+c:/./tmp/queuenet/./node.ned -> c:/./tmp/queuenet/./ + node.ned
+c:/./tmp/queuenet/./ -> c:/./tmp/queuenet/ + ./
+c:/./tmp/queuenet/ -> c:/./tmp/ + queuenet/
+c:/./tmp/ -> c:/./ + tmp/
+c:/./ -> c:/ + ./
+c:/ -> c:/ +
+
+c:/./tmp/../queuenet/node.ned -> c:/./tmp/../queuenet/ + node.ned
+c:/./tmp/../queuenet/ -> c:/./tmp/../ + queuenet/
+c:/./tmp/../ -> c:/./tmp/ + ../
+c:/./tmp/ -> c:/./ + tmp/
+c:/./ -> c:/ + ./
+c:/ -> c:/ +
+
+c:/./tmp/../queuenet/../node.ned -> c:/./tmp/../queuenet/../ + node.ned
+c:/./tmp/../queuenet/../ -> c:/./tmp/../queuenet/ + ../
+c:/./tmp/../queuenet/ -> c:/./tmp/../ + queuenet/
+c:/./tmp/../ -> c:/./tmp/ + ../
+c:/./tmp/ -> c:/./ + tmp/
+c:/./ -> c:/ + ./
+c:/ -> c:/ +
+
+c:/./tmp/queuenet/../../node.ned -> c:/./tmp/queuenet/../../ + node.ned
+c:/./tmp/queuenet/../../ -> c:/./tmp/queuenet/../ + ../
+c:/./tmp/queuenet/../ -> c:/./tmp/queuenet/ + ../
+c:/./tmp/queuenet/ -> c:/./tmp/ + queuenet/
+c:/./tmp/ -> c:/./ + tmp/
+c:/./ -> c:/ + ./
+c:/ -> c:/ +
+
+c:/./tmp/queuenet/../../../node.ned -> c:/./tmp/queuenet/../../../ + node.ned
+c:/./tmp/queuenet/../../../ -> c:/./tmp/queuenet/../../ + ../
+c:/./tmp/queuenet/../../ -> c:/./tmp/queuenet/../ + ../
+c:/./tmp/queuenet/../ -> c:/./tmp/queuenet/ + ../
+c:/./tmp/queuenet/ -> c:/./tmp/ + queuenet/
+c:/./tmp/ -> c:/./ + tmp/
+c:/./ -> c:/ + ./
+c:/ -> c:/ +
+
+.
