@@ -29,6 +29,8 @@ NAMESPACE_BEGIN
 class NEDResourceCache;
 
 /**
+ * CURRENTLY UNUSED. FOR FUTURE USE.
+ *
  * Wraps a NEDElement tree of a NED declaration (module, channel, module
  * interface or channel interface), or declaration in a msg file (enum,
  * class, struct). May be extended by subclassing.

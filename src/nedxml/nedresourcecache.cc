@@ -335,7 +335,8 @@ NedFileElement *NEDResourceCache::getParentPackageNedFile(NedFileElement *nedfil
     // walk up in search for a package.ned
     while (dir != topDir)
     {
-printf("%s   ~   %s\n", dir.c_str(), topDir.c_str());
+        //printf("%s   ~   %s\n", dir.c_str(), topDir.c_str());
+
         // chop last segment
         std::string parentDir, dummy;
         splitFileName(dir.c_str(), parentDir, dummy);
