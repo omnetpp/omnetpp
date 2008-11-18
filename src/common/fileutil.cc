@@ -52,24 +52,28 @@ void splitFileName(const char *pathname, std::string& dir, std::string& fnameonl
          return;
     }
 
-    dir = pathname;
-
     // find last "/" or "\"
     const char *s = pathname + strlen(pathname) - 1;
     s--; // ignore potential trailing "/"
-    while (s>=pathname && *s!='\\' && *s!='/') s--;
+    while (s>pathname && *s!='\\' && *s!='/') s--;
+    const char *sep = s<=pathname ? NULL : s;
 
     // split along that
-    if (s<pathname)
+    if (!sep)
     {
-        fnameonly = pathname;
-        dir = ".";
+        // no slash or colon
+        if (strchr(pathname,':') || strcmp(pathname,".")==0 || strcmp(pathname,"..")==0) {
+            fnameonly = "";
+            dir = pathname;
+        } else {
+            fnameonly = pathname;
+            dir = ".";
+        }
     }
     else
     {
         fnameonly = s+1;
-        dir = "";
-        dir.append(pathname, s-pathname+1);
+        dir = std::string(pathname, s-pathname+1);
     }
 }
 

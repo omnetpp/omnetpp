@@ -28,15 +28,31 @@ NAMESPACE_BEGIN
 #define PATH_SEPARATOR   ":;"
 #endif
 
+/**
+ * Convert backslashes to slashes.
+ */
 COMMON_API std::string fileNameToSlash(const char *fileName);
+
+/**
+ * Splits the last segment of the given path. Use only with canonical absolute paths!
+ * (In extreme cases and irregularities in the path the result is unpredicateble)
+ */
 COMMON_API void splitFileName(const char *pathname, std::string& dir, std::string& fnameonly);
+
+/**
+ * Calls splitFileName() and returns the dir part of the result
+ */
 COMMON_API std::string directoryOf(const char *pathname);
 COMMON_API std::string tidyFilename(const char *pathname, bool slashes=false);
 COMMON_API std::string toAbsolutePath(const char *pathname);
 COMMON_API std::string concatDirAndFile(const char *basedir, const char *pathname);
-COMMON_API bool fileExists(const char *pathname); // true if file/directory exists
+
+/** Returns true if given file or directory exists */
+COMMON_API bool fileExists(const char *pathname);
 COMMON_API bool isDirectory(const char *pathname);
 COMMON_API void removeFile(const char *fname, const char *descr);
+
+/** Recursively create all directories in the specified path */
 COMMON_API void mkPath(const char *pathname);
 
 /**
