@@ -62,6 +62,8 @@ Define_Module(Dumb);
 
 %file: t/Test.ned
 import org.omnetpp.test.pkg.*;
+import pkg.Dumb;
+
 network Test {
     submodules:
         source : Source;
