@@ -1952,35 +1952,37 @@ LIB_PREFIX="lib"
 #
 #  Figure out target platform
 #
-if test "$TARGET_PLATFORM" = "mingw"; then
+if test "$TOOLCHAIN" = "mingw"; then
     # cross compiling for mingw
     mingw=yes
-    windows=yes
     jni_platform=win32
     PLATFORM=win32.x86
     EXE_SUFFIX=".exe"
     SHARED_LIB_SUFFIX='$(DLL_LIB_SUFFIX)'
-    LIB_PREFIX=""
+    LDFLAGS_ARCH="$LDFLAGS_ARCH -enable-auto-import -shared-libgcc"
 else
     jni_platform=$host_os
     case $host in
     *-*-cygwin*)
         cygwin=yes
-        windows=yes
         jni_platform=win32
         PLATFORM=win32.x86
         EXE_SUFFIX=".exe"
         SHARED_LIB_SUFFIX='$(DLL_LIB_SUFFIX)'
-        LIB_PREFIX=""
+        # on NT, set total stack size
+        LDFLAGS_ARCH="$LDFLAGS_ARCH -Xlinker --stack -Xlinker $CYGWIN_STACKSIZE"
         ;;
     *-*-mingw32*)
         mingw=yes
-        windows=yes
         jni_platform=win32
         PLATFORM=win32.x86
         EXE_SUFFIX=".exe"
         SHARED_LIB_SUFFIX='$(DLL_LIB_SUFFIX)'
-        LIB_PREFIX=""
+        # add default include and lib paths to make it similar to gcc on Linux
+        CFLAGS_ARCH="$CFLAGS_ARCH -I/usr/include"
+        # on MinGW dll auto importing is used and must be linked with shared gcc and stdc++
+        # otherwise exceptions cant be thrown across dll boundaries
+        LDFLAGS_ARCH="$LDFLAGS_ARCH -enable-auto-import -shared-libgcc -L/usr/lib -L/usr/bin"
         ;;
     x86_64-*-linux*)
         jni_platform=linux
@@ -1994,11 +1996,11 @@ else
         jni_platform=
         PLATFORM=macosx
         SO_LIB_SUFFIX=".dylib"
-        SHLIB_LD=${SHLIB_LD:-g++ -dynamiclib}
         JNI_LIB_SUFFIX=".jnilib"
-        if test "$BUILD_UNIVERSAL_BINARIES" == "yes"; then
-           CFLAGS_ARCH="-arch ppc -arch i386"
-           LDFLAGS_ARCH="-arch ppc -arch i386"
+        LDFLAGS_ARCH="$LDFLAGS_ARCH -dynamiclib"
+        if test "$UNIVERSAL_BINARIES" = "yes"; then
+           CFLAGS_ARCH="$CFLAGS_ARCH -arch ppc -arch i386"
+           LDFLAGS_ARCH="$LDFLAGS_ARCH -arch ppc -arch i386"
         fi
         ;;
     *)
@@ -2022,7 +2024,7 @@ SHARED_LIBS=${SHARED_LIBS:-yes}
 # Set variables to defaults if not already set.
 # Note: ${VAR:-defaultvalue} used below appears to be a POSIX syntax.
 #----------------------
-# on mingw special debug option is needed to debug with gdb
+# on mingw special debug option is needed to debug with gdb.
 if test "$mingw" = "yes"; then
   CFLAGS_DEBUG=${CFLAGS_DEBUG:- -gstabs+ -Wall}
 else
@@ -2030,6 +2032,7 @@ else
 fi
 
 CFLAGS_RELEASE=${CFLAGS_RELEASE:- -O2 -DNDEBUG=1}
+
 WHOLE_ARCHIVE_ON=
 WHOLE_ARCHIVE_OFF=
 
@@ -2041,7 +2044,7 @@ MAKEDEPEND=${MAKEDEPEND:-opp_makedep -Y --objdirtree}
 # Check compiler
 #----------------------
 
-if test "$TARGET_PLATFORM" = "mingw"; then
+if test "$TOOLCHAIN" = "mingw"; then
     cc_candidates="i586-mingw32msvc-gcc"
     cxx_candidates="i586-mingw32msvc-g++"
 else
@@ -3138,7 +3141,7 @@ ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ex
 ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 
 
-if test "$TARGET_PLATFORM" = "mingw"; then
+if test "$TOOLCHAIN" = "mingw"; then
     AS=${AS:-i586-mingw32msvc-as}
     AR=${AR:-i586-mingw32msvc-ar cr}
     SHLIB_LD=${SHLIB_LD:-$CXX -shared}
@@ -3331,7 +3334,7 @@ eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
 echo "${ECHO_T}yes" >&6; }
 
         CXX="$ac_save_CXX"
-        CFLAGS_RELEASE="-fno-stack-protector $CFLAGS_RELEASE"
+        CFLAGS_RELEASE="$CFLAGS_RELEASE -fno-stack-protector"
 
 else
   echo "$as_me: failed program was:" >&5
@@ -3389,7 +3392,7 @@ eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
 echo "${ECHO_T}yes" >&6; }
 
         CXX="$ac_save_CXX"
-        CFLAGS_DEBUG="-fno-stack-protector $CFLAGS_DEBUG"
+        CFLAGS_DEBUG="$CFLAGS_DEBUG -fno-stack-protector"
 
 else
   echo "$as_me: failed program was:" >&5
@@ -3589,12 +3592,12 @@ echo "$as_me: WARNING: simple modules or other extensions written in C++ into si
 echo "$as_me: WARNING: programs like INET." >&2;}
    fi
 else
+   # note: expected failure on MinGW, because there's no dlopen().
+   # fixing this would mean overturning and re-testing the whole configure script
    { echo "$as_me:$LINENO: result: test failed" >&5
 echo "${ECHO_T}test failed" >&6; }
 fi
 rm -f conftest_a.* conftest_m.* libconftest_a.so conftest
-
-
 
 #----------------------
 # Test for "-z allextract" (Sun) or "--whole-archive" (GNU) linker option,
@@ -4735,11 +4738,11 @@ fi
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$ZLIB_CFLAGS"
+   CXXFLAGS="$CFLAGS_RELEASE $ZLIB_CFLAGS"
    LIBS="$ZLIB_LIBS"
 
-   { echo "$as_me:$LINENO: checking for zlib with CFLAGS=\"$ZLIB_CFLAGS\" LIBS=\"$ZLIB_LIBS\"" >&5
-echo $ECHO_N "checking for zlib with CFLAGS=\"$ZLIB_CFLAGS\" LIBS=\"$ZLIB_LIBS\"... $ECHO_C" >&6; }
+   { echo "$as_me:$LINENO: checking for zlib with CFLAGS=\"$CFLAGS_RELEASE $ZLIB_CFLAGS\" LIBS=\"$ZLIB_LIBS\"" >&5
+echo $ECHO_N "checking for zlib with CFLAGS=\"$CFLAGS_RELEASE $ZLIB_CFLAGS\" LIBS=\"$ZLIB_LIBS\"... $ECHO_C" >&6; }
 
    cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -4790,19 +4793,18 @@ rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
    CXXFLAGS=$save_CXXFLAGS
    LIBS=$save_LIBS
 
-# on mingw/msys try a different path too
+# on mingw/msys try a different library name
 if test $zlib_ok = no -a "$mingw" = yes; then
-    ZLIB_LIBS="-L/usr/bin -lzlib1"
-    ZLIB_CFLAGS="-I/usr/include"
+    ZLIB_LIBS="-lzlib1"
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$ZLIB_CFLAGS"
+   CXXFLAGS="$CFLAGS_RELEASE $ZLIB_CFLAGS"
    LIBS="$ZLIB_LIBS"
 
-   { echo "$as_me:$LINENO: checking for zlib with CFLAGS=\"$ZLIB_CFLAGS\" LIBS=\"$ZLIB_LIBS\"" >&5
-echo $ECHO_N "checking for zlib with CFLAGS=\"$ZLIB_CFLAGS\" LIBS=\"$ZLIB_LIBS\"... $ECHO_C" >&6; }
+   { echo "$as_me:$LINENO: checking for zlib with CFLAGS=\"$CFLAGS_RELEASE $ZLIB_CFLAGS\" LIBS=\"$ZLIB_LIBS\"" >&5
+echo $ECHO_N "checking for zlib with CFLAGS=\"$CFLAGS_RELEASE $ZLIB_CFLAGS\" LIBS=\"$ZLIB_LIBS\"... $ECHO_C" >&6; }
 
    cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -4951,11 +4953,11 @@ rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$TK_CFLAGS86"
+   CXXFLAGS="$CFLAGS_RELEASE $TK_CFLAGS86"
    LIBS="-ltk8.6 -ltcl8.6"
 
-   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.6 with CFLAGS=\"$TK_CFLAGS86\" LIBS=\"-ltk8.6 -ltcl8.6\"" >&5
-echo $ECHO_N "checking for Tcl/Tk 8.6 with CFLAGS=\"$TK_CFLAGS86\" LIBS=\"-ltk8.6 -ltcl8.6\"... $ECHO_C" >&6; }
+   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.6 with CFLAGS=\"$CFLAGS_RELEASE $TK_CFLAGS86\" LIBS=\"-ltk8.6 -ltcl8.6\"" >&5
+echo $ECHO_N "checking for Tcl/Tk 8.6 with CFLAGS=\"$CFLAGS_RELEASE $TK_CFLAGS86\" LIBS=\"-ltk8.6 -ltcl8.6\"... $ECHO_C" >&6; }
 
    cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -5011,11 +5013,11 @@ rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$TK_CFLAGS85"
+   CXXFLAGS="$CFLAGS_RELEASE $TK_CFLAGS85"
    LIBS="-ltk8.5 -ltcl8.5"
 
-   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.5 with CFLAGS=\"$TK_CFLAGS85\" LIBS=\"-ltk8.5 -ltcl8.5\"" >&5
-echo $ECHO_N "checking for Tcl/Tk 8.5 with CFLAGS=\"$TK_CFLAGS85\" LIBS=\"-ltk8.5 -ltcl8.5\"... $ECHO_C" >&6; }
+   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.5 with CFLAGS=\"$CFLAGS_RELEASE $TK_CFLAGS85\" LIBS=\"-ltk8.5 -ltcl8.5\"" >&5
+echo $ECHO_N "checking for Tcl/Tk 8.5 with CFLAGS=\"$CFLAGS_RELEASE $TK_CFLAGS85\" LIBS=\"-ltk8.5 -ltcl8.5\"... $ECHO_C" >&6; }
 
    cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -5072,11 +5074,11 @@ rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$TK_CFLAGS84"
+   CXXFLAGS="$CFLAGS_RELEASE $TK_CFLAGS84"
    LIBS="-ltk8.4 -ltcl8.4"
 
-   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.4 with CFLAGS=\"$TK_CFLAGS84\" LIBS=\"-ltk8.4 -ltcl8.4\"" >&5
-echo $ECHO_N "checking for Tcl/Tk 8.4 with CFLAGS=\"$TK_CFLAGS84\" LIBS=\"-ltk8.4 -ltcl8.4\"... $ECHO_C" >&6; }
+   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.4 with CFLAGS=\"$CFLAGS_RELEASE $TK_CFLAGS84\" LIBS=\"-ltk8.4 -ltcl8.4\"" >&5
+echo $ECHO_N "checking for Tcl/Tk 8.4 with CFLAGS=\"$CFLAGS_RELEASE $TK_CFLAGS84\" LIBS=\"-ltk8.4 -ltcl8.4\"... $ECHO_C" >&6; }
 
    cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -5614,11 +5616,11 @@ fi
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$opp_x11inc $TK_CFLAGS86"
+   CXXFLAGS="$CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS86"
    LIBS="$opp_x11lib -ltk86 -ltcl86"
 
-   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.6 with CFLAGS=\"$opp_x11inc $TK_CFLAGS86\" LIBS=\"$opp_x11lib -ltk86 -ltcl86\"" >&5
-echo $ECHO_N "checking for Tcl/Tk 8.6 with CFLAGS=\"$opp_x11inc $TK_CFLAGS86\" LIBS=\"$opp_x11lib -ltk86 -ltcl86\"... $ECHO_C" >&6; }
+   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.6 with CFLAGS=\"$CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS86\" LIBS=\"$opp_x11lib -ltk86 -ltcl86\"" >&5
+echo $ECHO_N "checking for Tcl/Tk 8.6 with CFLAGS=\"$CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS86\" LIBS=\"$opp_x11lib -ltk86 -ltcl86\"... $ECHO_C" >&6; }
 
    cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -5675,11 +5677,11 @@ rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$opp_x11inc $TK_CFLAGS86"
+   CXXFLAGS="$CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS86"
    LIBS="$opp_x11lib -ltk8.6 -ltcl8.6"
 
-   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.6 with CFLAGS=\"$opp_x11inc $TK_CFLAGS86\" LIBS=\"$opp_x11lib -ltk8.6 -ltcl8.6\"" >&5
-echo $ECHO_N "checking for Tcl/Tk 8.6 with CFLAGS=\"$opp_x11inc $TK_CFLAGS86\" LIBS=\"$opp_x11lib -ltk8.6 -ltcl8.6\"... $ECHO_C" >&6; }
+   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.6 with CFLAGS=\"$CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS86\" LIBS=\"$opp_x11lib -ltk8.6 -ltcl8.6\"" >&5
+echo $ECHO_N "checking for Tcl/Tk 8.6 with CFLAGS=\"$CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS86\" LIBS=\"$opp_x11lib -ltk8.6 -ltcl8.6\"... $ECHO_C" >&6; }
 
    cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -5736,11 +5738,11 @@ rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$opp_x11inc $TK_CFLAGS86"
+   CXXFLAGS="$CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS86"
    LIBS="$opp_x11lib -lcygtk86 -lcygtcl86"
 
-   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.6 with CFLAGS=\"$opp_x11inc $TK_CFLAGS86\" LIBS=\"$opp_x11lib -lcygtk86 -lcygtcl86\"" >&5
-echo $ECHO_N "checking for Tcl/Tk 8.6 with CFLAGS=\"$opp_x11inc $TK_CFLAGS86\" LIBS=\"$opp_x11lib -lcygtk86 -lcygtcl86\"... $ECHO_C" >&6; }
+   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.6 with CFLAGS=\"$CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS86\" LIBS=\"$opp_x11lib -lcygtk86 -lcygtcl86\"" >&5
+echo $ECHO_N "checking for Tcl/Tk 8.6 with CFLAGS=\"$CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS86\" LIBS=\"$opp_x11lib -lcygtk86 -lcygtcl86\"... $ECHO_C" >&6; }
 
    cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -5792,78 +5794,17 @@ rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
    LIBS=$save_LIBS
 
         fi
-        if test $tcltk_ok = no -a "$mingw" = yes; then
-
-   save_CXXFLAGS=$CXXFLAGS
-   save_LIBS=$LIBS
-
-   CXXFLAGS="$opp_x11inc $TK_CFLAGS86"
-   LIBS="$opp_x11lib -L/usr/bin -ltk86 -ltcl86"
-
-   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.6 with CFLAGS=\"$opp_x11inc $TK_CFLAGS86\" LIBS=\"$opp_x11lib -L/usr/bin -ltk86 -ltcl86\"" >&5
-echo $ECHO_N "checking for Tcl/Tk 8.6 with CFLAGS=\"$opp_x11inc $TK_CFLAGS86\" LIBS=\"$opp_x11lib -L/usr/bin -ltk86 -ltcl86\"... $ECHO_C" >&6; }
-
-   cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-#include <tk.h>
-int
-main ()
-{
-Tk_MainLoop();
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext conftest$ac_exeext
-if { (ac_try="$ac_link"
-case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
-  (eval "$ac_link") 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } && {
-	 test -z "$ac_cxx_werror_flag" ||
-	 test ! -s conftest.err
-       } && test -s conftest$ac_exeext &&
-       $as_test_x conftest$ac_exeext; then
-  { echo "$as_me:$LINENO: result: yes" >&5
-echo "${ECHO_T}yes" >&6; }; tcltk_ok=yes; TK_LIBS="$opp_x11lib -L/usr/bin -ltk86 -ltcl86" TK_CFLAGS=$TK_CFLAGS86
-else
-  echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-	{ echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6; }; tcltk_ok=no;
-fi
-
-rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
-      conftest$ac_exeext conftest.$ac_ext
-
-   CXXFLAGS=$save_CXXFLAGS
-   LIBS=$save_LIBS
-
-        fi
         # check for 8.5
         if test $tcltk_ok = no; then
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$opp_x11inc $TK_CFLAGS85"
+   CXXFLAGS="$CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS85"
    LIBS="$opp_x11lib -ltk85 -ltcl85"
 
-   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.5 with CFLAGS=\"$opp_x11inc $TK_CFLAGS85\" LIBS=\"$opp_x11lib -ltk85 -ltcl85\"" >&5
-echo $ECHO_N "checking for Tcl/Tk 8.5 with CFLAGS=\"$opp_x11inc $TK_CFLAGS85\" LIBS=\"$opp_x11lib -ltk85 -ltcl85\"... $ECHO_C" >&6; }
+   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.5 with CFLAGS=\"$CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS85\" LIBS=\"$opp_x11lib -ltk85 -ltcl85\"" >&5
+echo $ECHO_N "checking for Tcl/Tk 8.5 with CFLAGS=\"$CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS85\" LIBS=\"$opp_x11lib -ltk85 -ltcl85\"... $ECHO_C" >&6; }
 
    cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -5920,11 +5861,11 @@ rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$opp_x11inc $TK_CFLAGS85"
+   CXXFLAGS="$CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS85"
    LIBS="$opp_x11lib -ltk8.5 -ltcl8.5"
 
-   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.5 with CFLAGS=\"$opp_x11inc $TK_CFLAGS85\" LIBS=\"$opp_x11lib -ltk8.5 -ltcl8.5\"" >&5
-echo $ECHO_N "checking for Tcl/Tk 8.5 with CFLAGS=\"$opp_x11inc $TK_CFLAGS85\" LIBS=\"$opp_x11lib -ltk8.5 -ltcl8.5\"... $ECHO_C" >&6; }
+   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.5 with CFLAGS=\"$CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS85\" LIBS=\"$opp_x11lib -ltk8.5 -ltcl8.5\"" >&5
+echo $ECHO_N "checking for Tcl/Tk 8.5 with CFLAGS=\"$CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS85\" LIBS=\"$opp_x11lib -ltk8.5 -ltcl8.5\"... $ECHO_C" >&6; }
 
    cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -5981,11 +5922,11 @@ rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$opp_x11inc $TK_CFLAGS85"
+   CXXFLAGS="$CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS85"
    LIBS="$opp_x11lib -lcygtk85 -lcygtcl85"
 
-   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.5 with CFLAGS=\"$opp_x11inc $TK_CFLAGS85\" LIBS=\"$opp_x11lib -lcygtk85 -lcygtcl85\"" >&5
-echo $ECHO_N "checking for Tcl/Tk 8.5 with CFLAGS=\"$opp_x11inc $TK_CFLAGS85\" LIBS=\"$opp_x11lib -lcygtk85 -lcygtcl85\"... $ECHO_C" >&6; }
+   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.5 with CFLAGS=\"$CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS85\" LIBS=\"$opp_x11lib -lcygtk85 -lcygtcl85\"" >&5
+echo $ECHO_N "checking for Tcl/Tk 8.5 with CFLAGS=\"$CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS85\" LIBS=\"$opp_x11lib -lcygtk85 -lcygtcl85\"... $ECHO_C" >&6; }
 
    cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -6037,78 +5978,17 @@ rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
    LIBS=$save_LIBS
 
         fi
-        if test $tcltk_ok = no -a "$mingw" = yes; then
-
-   save_CXXFLAGS=$CXXFLAGS
-   save_LIBS=$LIBS
-
-   CXXFLAGS="$opp_x11inc $TK_CFLAGS85"
-   LIBS="$opp_x11lib -L/usr/bin -ltk85 -ltcl85"
-
-   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.5 with CFLAGS=\"$opp_x11inc $TK_CFLAGS85\" LIBS=\"$opp_x11lib -L/usr/bin -ltk85 -ltcl85\"" >&5
-echo $ECHO_N "checking for Tcl/Tk 8.5 with CFLAGS=\"$opp_x11inc $TK_CFLAGS85\" LIBS=\"$opp_x11lib -L/usr/bin -ltk85 -ltcl85\"... $ECHO_C" >&6; }
-
-   cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-#include <tk.h>
-int
-main ()
-{
-Tk_MainLoop();
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext conftest$ac_exeext
-if { (ac_try="$ac_link"
-case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
-  (eval "$ac_link") 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } && {
-	 test -z "$ac_cxx_werror_flag" ||
-	 test ! -s conftest.err
-       } && test -s conftest$ac_exeext &&
-       $as_test_x conftest$ac_exeext; then
-  { echo "$as_me:$LINENO: result: yes" >&5
-echo "${ECHO_T}yes" >&6; }; tcltk_ok=yes; TK_LIBS="$opp_x11lib -L/usr/bin -ltk85 -ltcl85" TK_CFLAGS=$TK_CFLAGS85
-else
-  echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-	{ echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6; }; tcltk_ok=no;
-fi
-
-rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
-      conftest$ac_exeext conftest.$ac_ext
-
-   CXXFLAGS=$save_CXXFLAGS
-   LIBS=$save_LIBS
-
-        fi
         # check for 8.4
         if test $tcltk_ok = no; then
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$opp_x11inc $TK_CFLAGS84"
+   CXXFLAGS="$CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS84"
    LIBS="$opp_x11lib -ltk84 -ltcl84"
 
-   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.4 with CFLAGS=\"$opp_x11inc $TK_CFLAGS84\" LIBS=\"$opp_x11lib -ltk84 -ltcl84\"" >&5
-echo $ECHO_N "checking for Tcl/Tk 8.4 with CFLAGS=\"$opp_x11inc $TK_CFLAGS84\" LIBS=\"$opp_x11lib -ltk84 -ltcl84\"... $ECHO_C" >&6; }
+   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.4 with CFLAGS=\"$CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS84\" LIBS=\"$opp_x11lib -ltk84 -ltcl84\"" >&5
+echo $ECHO_N "checking for Tcl/Tk 8.4 with CFLAGS=\"$CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS84\" LIBS=\"$opp_x11lib -ltk84 -ltcl84\"... $ECHO_C" >&6; }
 
    cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -6165,11 +6045,11 @@ rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$opp_x11inc $TK_CFLAGS84"
+   CXXFLAGS="$CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS84"
    LIBS="$opp_x11lib -ltk8.4 -ltcl8.4"
 
-   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.4 with CFLAGS=\"$opp_x11inc $TK_CFLAGS84\" LIBS=\"$opp_x11lib -ltk8.4 -ltcl8.4\"" >&5
-echo $ECHO_N "checking for Tcl/Tk 8.4 with CFLAGS=\"$opp_x11inc $TK_CFLAGS84\" LIBS=\"$opp_x11lib -ltk8.4 -ltcl8.4\"... $ECHO_C" >&6; }
+   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.4 with CFLAGS=\"$CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS84\" LIBS=\"$opp_x11lib -ltk8.4 -ltcl8.4\"" >&5
+echo $ECHO_N "checking for Tcl/Tk 8.4 with CFLAGS=\"$CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS84\" LIBS=\"$opp_x11lib -ltk8.4 -ltcl8.4\"... $ECHO_C" >&6; }
 
    cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -6226,11 +6106,11 @@ rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$opp_x11inc $TK_CFLAGS84"
+   CXXFLAGS="$CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS84"
    LIBS="$opp_x11lib -lcygtk84 -lcygtcl84"
 
-   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.4 with CFLAGS=\"$opp_x11inc $TK_CFLAGS84\" LIBS=\"$opp_x11lib -lcygtk84 -lcygtcl84\"" >&5
-echo $ECHO_N "checking for Tcl/Tk 8.4 with CFLAGS=\"$opp_x11inc $TK_CFLAGS84\" LIBS=\"$opp_x11lib -lcygtk84 -lcygtcl84\"... $ECHO_C" >&6; }
+   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.4 with CFLAGS=\"$CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS84\" LIBS=\"$opp_x11lib -lcygtk84 -lcygtcl84\"" >&5
+echo $ECHO_N "checking for Tcl/Tk 8.4 with CFLAGS=\"$CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS84\" LIBS=\"$opp_x11lib -lcygtk84 -lcygtcl84\"... $ECHO_C" >&6; }
 
    cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -6267,67 +6147,6 @@ eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
        $as_test_x conftest$ac_exeext; then
   { echo "$as_me:$LINENO: result: yes" >&5
 echo "${ECHO_T}yes" >&6; }; tcltk_ok=yes; TK_LIBS="$opp_x11lib -lcygtk84 -lcygtcl84" TK_CFLAGS=$TK_CFLAGS84
-else
-  echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-	{ echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6; }; tcltk_ok=no;
-fi
-
-rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
-      conftest$ac_exeext conftest.$ac_ext
-
-   CXXFLAGS=$save_CXXFLAGS
-   LIBS=$save_LIBS
-
-        fi
-        if test $tcltk_ok = no -a "$mingw" = yes; then
-
-   save_CXXFLAGS=$CXXFLAGS
-   save_LIBS=$LIBS
-
-   CXXFLAGS="$opp_x11inc $TK_CFLAGS84"
-   LIBS="$opp_x11lib -L/usr/bin -ltk84 -ltcl84"
-
-   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.4 with CFLAGS=\"$opp_x11inc $TK_CFLAGS84\" LIBS=\"$opp_x11lib -L/usr/bin -ltk84 -ltcl84\"" >&5
-echo $ECHO_N "checking for Tcl/Tk 8.4 with CFLAGS=\"$opp_x11inc $TK_CFLAGS84\" LIBS=\"$opp_x11lib -L/usr/bin -ltk84 -ltcl84\"... $ECHO_C" >&6; }
-
-   cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-#include <tk.h>
-int
-main ()
-{
-Tk_MainLoop();
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext conftest$ac_exeext
-if { (ac_try="$ac_link"
-case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
-  (eval "$ac_link") 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } && {
-	 test -z "$ac_cxx_werror_flag" ||
-	 test ! -s conftest.err
-       } && test -s conftest$ac_exeext &&
-       $as_test_x conftest$ac_exeext; then
-  { echo "$as_me:$LINENO: result: yes" >&5
-echo "${ECHO_T}yes" >&6; }; tcltk_ok=yes; TK_LIBS="$opp_x11lib -L/usr/bin -ltk84 -ltcl84" TK_CFLAGS=$TK_CFLAGS84
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
@@ -6440,11 +6259,11 @@ echo "$as_me: error: wish command \"package require Tk 8.4\" failed: probably ol
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$TK_CFLAGS"
+   CXXFLAGS="$CFLAGS_RELEASE $TK_CFLAGS"
    LIBS="$BLT_LIBS $TK_LIBS"
 
-   { echo "$as_me:$LINENO: checking for BLT 2.4 with CFLAGS=\"$TK_CFLAGS\" LIBS=\"$BLT_LIBS $TK_LIBS\"" >&5
-echo $ECHO_N "checking for BLT 2.4 with CFLAGS=\"$TK_CFLAGS\" LIBS=\"$BLT_LIBS $TK_LIBS\"... $ECHO_C" >&6; }
+   { echo "$as_me:$LINENO: checking for BLT 2.4 with CFLAGS=\"$CFLAGS_RELEASE $TK_CFLAGS\" LIBS=\"$BLT_LIBS $TK_LIBS\"" >&5
+echo $ECHO_N "checking for BLT 2.4 with CFLAGS=\"$CFLAGS_RELEASE $TK_CFLAGS\" LIBS=\"$BLT_LIBS $TK_LIBS\"... $ECHO_C" >&6; }
 
    cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -6501,11 +6320,11 @@ rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$TK_CFLAGS"
+   CXXFLAGS="$CFLAGS_RELEASE $TK_CFLAGS"
    LIBS="$bltlibs $TK_LIBS"
 
-   { echo "$as_me:$LINENO: checking for BLT 2.4 with CFLAGS=\"$TK_CFLAGS\" LIBS=\"$bltlibs $TK_LIBS\"" >&5
-echo $ECHO_N "checking for BLT 2.4 with CFLAGS=\"$TK_CFLAGS\" LIBS=\"$bltlibs $TK_LIBS\"... $ECHO_C" >&6; }
+   { echo "$as_me:$LINENO: checking for BLT 2.4 with CFLAGS=\"$CFLAGS_RELEASE $TK_CFLAGS\" LIBS=\"$bltlibs $TK_LIBS\"" >&5
+echo $ECHO_N "checking for BLT 2.4 with CFLAGS=\"$CFLAGS_RELEASE $TK_CFLAGS\" LIBS=\"$bltlibs $TK_LIBS\"... $ECHO_C" >&6; }
 
    cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -6563,11 +6382,11 @@ rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$TK_CFLAGS"
+   CXXFLAGS="$CFLAGS_RELEASE $TK_CFLAGS"
    LIBS="$bltlibs $TK_LIBS"
 
-   { echo "$as_me:$LINENO: checking for BLT 2.4 with CFLAGS=\"$TK_CFLAGS\" LIBS=\"$bltlibs $TK_LIBS\"" >&5
-echo $ECHO_N "checking for BLT 2.4 with CFLAGS=\"$TK_CFLAGS\" LIBS=\"$bltlibs $TK_LIBS\"... $ECHO_C" >&6; }
+   { echo "$as_me:$LINENO: checking for BLT 2.4 with CFLAGS=\"$CFLAGS_RELEASE $TK_CFLAGS\" LIBS=\"$bltlibs $TK_LIBS\"" >&5
+echo $ECHO_N "checking for BLT 2.4 with CFLAGS=\"$CFLAGS_RELEASE $TK_CFLAGS\" LIBS=\"$bltlibs $TK_LIBS\"... $ECHO_C" >&6; }
 
    cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -6625,11 +6444,11 @@ rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$TK_CFLAGS"
+   CXXFLAGS="$CFLAGS_RELEASE $TK_CFLAGS"
    LIBS="$bltlibs $TK_LIBS"
 
-   { echo "$as_me:$LINENO: checking for BLT 2.4 with CFLAGS=\"$TK_CFLAGS\" LIBS=\"$bltlibs $TK_LIBS\"" >&5
-echo $ECHO_N "checking for BLT 2.4 with CFLAGS=\"$TK_CFLAGS\" LIBS=\"$bltlibs $TK_LIBS\"... $ECHO_C" >&6; }
+   { echo "$as_me:$LINENO: checking for BLT 2.4 with CFLAGS=\"$CFLAGS_RELEASE $TK_CFLAGS\" LIBS=\"$bltlibs $TK_LIBS\"" >&5
+echo $ECHO_N "checking for BLT 2.4 with CFLAGS=\"$CFLAGS_RELEASE $TK_CFLAGS\" LIBS=\"$bltlibs $TK_LIBS\"... $ECHO_C" >&6; }
 
    cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -6687,11 +6506,11 @@ rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$TK_CFLAGS"
+   CXXFLAGS="$CFLAGS_RELEASE $TK_CFLAGS"
    LIBS="$bltlibs $TK_LIBS"
 
-   { echo "$as_me:$LINENO: checking for BLT 2.4 with CFLAGS=\"$TK_CFLAGS\" LIBS=\"$bltlibs $TK_LIBS\"" >&5
-echo $ECHO_N "checking for BLT 2.4 with CFLAGS=\"$TK_CFLAGS\" LIBS=\"$bltlibs $TK_LIBS\"... $ECHO_C" >&6; }
+   { echo "$as_me:$LINENO: checking for BLT 2.4 with CFLAGS=\"$CFLAGS_RELEASE $TK_CFLAGS\" LIBS=\"$bltlibs $TK_LIBS\"" >&5
+echo $ECHO_N "checking for BLT 2.4 with CFLAGS=\"$CFLAGS_RELEASE $TK_CFLAGS\" LIBS=\"$bltlibs $TK_LIBS\"... $ECHO_C" >&6; }
 
    cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -6849,10 +6668,10 @@ fi
 
 
    save_CXXFLAGS=$CXXFLAGS
-   CXXFLAGS="$JAVA_CFLAGS"
+   CXXFLAGS="$CFLAGS_RELEASE $JAVA_CFLAGS"
 
-   { echo "$as_me:$LINENO: checking for JNI with CFLAGS=\"$JAVA_CFLAGS\"" >&5
-echo $ECHO_N "checking for JNI with CFLAGS=\"$JAVA_CFLAGS\"... $ECHO_C" >&6; }
+   { echo "$as_me:$LINENO: checking for JNI with CFLAGS=\"$CFLAGS_RELEASE $JAVA_CFLAGS\"" >&5
+echo $ECHO_N "checking for JNI with CFLAGS=\"$CFLAGS_RELEASE $JAVA_CFLAGS\"... $ECHO_C" >&6; }
 
    cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -7388,69 +7207,6 @@ rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
    CXXFLAGS=$save_CXXFLAGS
    LIBS=$save_LIBS
 
-    # check for windows pcap (wpcap) on mingw
-    if test $pcap_ok = no; then
-	PCAP_LIBS="-lwpcap"
-
-   save_CXXFLAGS=$CXXFLAGS
-   save_LIBS=$LIBS
-
-   CXXFLAGS="$CFLAGS_RELEASE $PCAP_CFLAGS"
-   LIBS="$PCAP_LIBS"
-
-   { echo "$as_me:$LINENO: checking for PCAP with CFLAGS=\"$CFLAGS_RELEASE $PCAP_CFLAGS\" LIBS=\"$PCAP_LIBS\"" >&5
-echo $ECHO_N "checking for PCAP with CFLAGS=\"$CFLAGS_RELEASE $PCAP_CFLAGS\" LIBS=\"$PCAP_LIBS\"... $ECHO_C" >&6; }
-
-   cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-#include <pcap.h>
-int
-main ()
-{
-pcap_lookupdev("dummydev");
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext conftest$ac_exeext
-if { (ac_try="$ac_link"
-case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
-  (eval "$ac_link") 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } && {
-	 test -z "$ac_cxx_werror_flag" ||
-	 test ! -s conftest.err
-       } && test -s conftest$ac_exeext &&
-       $as_test_x conftest$ac_exeext; then
-  { echo "$as_me:$LINENO: result: yes" >&5
-echo "${ECHO_T}yes" >&6; }; pcap_ok=yes;
-else
-  echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-	{ echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6; }; pcap_ok=no;
-fi
-
-rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
-      conftest$ac_exeext conftest.$ac_ext
-
-   CXXFLAGS=$save_CXXFLAGS
-   LIBS=$save_LIBS
-
-    fi
 fi
 if test $pcap_ok = yes; then
     HAVE_PCAP=yes
@@ -7470,11 +7226,11 @@ if test -n "$LIBXML_LIBS"; then
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$LIBXML_CFLAGS"
+   CXXFLAGS="$CFLAGS_RELEASE $LIBXML_CFLAGS"
    LIBS="$LIBXML_LIBS"
 
-   { echo "$as_me:$LINENO: checking for LibXML XML parser with CFLAGS=\"$LIBXML_CFLAGS\" LIBS=\"$LIBXML_LIBS\"" >&5
-echo $ECHO_N "checking for LibXML XML parser with CFLAGS=\"$LIBXML_CFLAGS\" LIBS=\"$LIBXML_LIBS\"... $ECHO_C" >&6; }
+   { echo "$as_me:$LINENO: checking for LibXML XML parser with CFLAGS=\"$CFLAGS_RELEASE $LIBXML_CFLAGS\" LIBS=\"$LIBXML_LIBS\"" >&5
+echo $ECHO_N "checking for LibXML XML parser with CFLAGS=\"$CFLAGS_RELEASE $LIBXML_CFLAGS\" LIBS=\"$LIBXML_LIBS\"... $ECHO_C" >&6; }
 
    cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -7530,11 +7286,11 @@ else
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$LIBXML_CFLAGS"
+   CXXFLAGS="$CFLAGS_RELEASE $LIBXML_CFLAGS"
    LIBS="-lxml2"
 
-   { echo "$as_me:$LINENO: checking for LibXML XML parser with CFLAGS=\"$LIBXML_CFLAGS\" LIBS=\"-lxml2\"" >&5
-echo $ECHO_N "checking for LibXML XML parser with CFLAGS=\"$LIBXML_CFLAGS\" LIBS=\"-lxml2\"... $ECHO_C" >&6; }
+   { echo "$as_me:$LINENO: checking for LibXML XML parser with CFLAGS=\"$CFLAGS_RELEASE $LIBXML_CFLAGS\" LIBS=\"-lxml2\"" >&5
+echo $ECHO_N "checking for LibXML XML parser with CFLAGS=\"$CFLAGS_RELEASE $LIBXML_CFLAGS\" LIBS=\"-lxml2\"... $ECHO_C" >&6; }
 
    cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -7591,11 +7347,11 @@ rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="-I/usr/include/libxml2"
+   CXXFLAGS="$CFLAGS_RELEASE -I/usr/include/libxml2"
    LIBS="-lxml2"
 
-   { echo "$as_me:$LINENO: checking for LibXML XML parser with CFLAGS=\"-I/usr/include/libxml2\" LIBS=\"-lxml2\"" >&5
-echo $ECHO_N "checking for LibXML XML parser with CFLAGS=\"-I/usr/include/libxml2\" LIBS=\"-lxml2\"... $ECHO_C" >&6; }
+   { echo "$as_me:$LINENO: checking for LibXML XML parser with CFLAGS=\"$CFLAGS_RELEASE -I/usr/include/libxml2\" LIBS=\"-lxml2\"" >&5
+echo $ECHO_N "checking for LibXML XML parser with CFLAGS=\"$CFLAGS_RELEASE -I/usr/include/libxml2\" LIBS=\"-lxml2\"... $ECHO_C" >&6; }
 
    cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -7647,79 +7403,17 @@ rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
    LIBS=$save_LIBS
 
     fi
-
-    if test $libxml_ok = no -a "$mingw" = yes; then
-
-   save_CXXFLAGS=$CXXFLAGS
-   save_LIBS=$LIBS
-
-   CXXFLAGS="-I/usr/include"
-   LIBS="-L/usr/bin -lxml2 -L/usr/bin -liconv"
-
-   { echo "$as_me:$LINENO: checking for LibXML XML parser with CFLAGS=\"-I/usr/include\" LIBS=\"-L/usr/bin -lxml2 -L/usr/bin -liconv\"" >&5
-echo $ECHO_N "checking for LibXML XML parser with CFLAGS=\"-I/usr/include\" LIBS=\"-L/usr/bin -lxml2 -L/usr/bin -liconv\"... $ECHO_C" >&6; }
-
-   cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-#include <libxml/parser.h>
-int
-main ()
-{
-xmlInitParser();
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext conftest$ac_exeext
-if { (ac_try="$ac_link"
-case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
-  (eval "$ac_link") 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } && {
-	 test -z "$ac_cxx_werror_flag" ||
-	 test ! -s conftest.err
-       } && test -s conftest$ac_exeext &&
-       $as_test_x conftest$ac_exeext; then
-  { echo "$as_me:$LINENO: result: yes" >&5
-echo "${ECHO_T}yes" >&6; }; libxml_ok=yes; LIBXML_CFLAGS="-I/usr/include" LIBXML_LIBS="-L/usr/bin -lxml2 -L/usr/bin -liconv"
-else
-  echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-	{ echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6; }; libxml_ok=no;
-fi
-
-rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
-      conftest$ac_exeext conftest.$ac_ext
-
-   CXXFLAGS=$save_CXXFLAGS
-   LIBS=$save_LIBS
-
-    fi
 fi
 if test -n "$EXPAT_LIBS"; then
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$EXPAT_CFLAGS"
+   CXXFLAGS="$CFLAGS_RELEASE $EXPAT_CFLAGS"
    LIBS="$EXPAT_LIBS"
 
-   { echo "$as_me:$LINENO: checking for Expat XML parser with CFLAGS=\"$EXPAT_CFLAGS\" LIBS=\"$EXPAT_LIBS\"" >&5
-echo $ECHO_N "checking for Expat XML parser with CFLAGS=\"$EXPAT_CFLAGS\" LIBS=\"$EXPAT_LIBS\"... $ECHO_C" >&6; }
+   { echo "$as_me:$LINENO: checking for Expat XML parser with CFLAGS=\"$CFLAGS_RELEASE $EXPAT_CFLAGS\" LIBS=\"$EXPAT_LIBS\"" >&5
+echo $ECHO_N "checking for Expat XML parser with CFLAGS=\"$CFLAGS_RELEASE $EXPAT_CFLAGS\" LIBS=\"$EXPAT_LIBS\"... $ECHO_C" >&6; }
 
    cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -7776,11 +7470,11 @@ else
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$EXPAT_CFLAGS"
+   CXXFLAGS="$CFLAGS_RELEASE $EXPAT_CFLAGS"
    LIBS="$expatlibs"
 
-   { echo "$as_me:$LINENO: checking for Expat XML parser with CFLAGS=\"$EXPAT_CFLAGS\" LIBS=\"$expatlibs\"" >&5
-echo $ECHO_N "checking for Expat XML parser with CFLAGS=\"$EXPAT_CFLAGS\" LIBS=\"$expatlibs\"... $ECHO_C" >&6; }
+   { echo "$as_me:$LINENO: checking for Expat XML parser with CFLAGS=\"$CFLAGS_RELEASE $EXPAT_CFLAGS\" LIBS=\"$expatlibs\"" >&5
+echo $ECHO_N "checking for Expat XML parser with CFLAGS=\"$CFLAGS_RELEASE $EXPAT_CFLAGS\" LIBS=\"$expatlibs\"... $ECHO_C" >&6; }
 
    cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -7864,11 +7558,11 @@ CFLAGS_RELEASE="$CFLAGS_RELEASE -DXMLPARSER=$XMLPARSER"
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$AKAROA_CFLAGS"
+   CXXFLAGS="$CFLAGS_RELEASE $AKAROA_CFLAGS"
    LIBS="$AKAROA_LIBS"
 
-   { echo "$as_me:$LINENO: checking for Akaroa with CFLAGS=\"$AKAROA_CFLAGS\" LIBS=\"$AKAROA_LIBS\"" >&5
-echo $ECHO_N "checking for Akaroa with CFLAGS=\"$AKAROA_CFLAGS\" LIBS=\"$AKAROA_LIBS\"... $ECHO_C" >&6; }
+   { echo "$as_me:$LINENO: checking for Akaroa with CFLAGS=\"$CFLAGS_RELEASE $AKAROA_CFLAGS\" LIBS=\"$AKAROA_LIBS\"" >&5
+echo $ECHO_N "checking for Akaroa with CFLAGS=\"$CFLAGS_RELEASE $AKAROA_CFLAGS\" LIBS=\"$AKAROA_LIBS\"... $ECHO_C" >&6; }
 
    cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -7925,11 +7619,11 @@ if test $akaroa_ok = no; then
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$AKAROA_CFLAGS"
+   CXXFLAGS="$CFLAGS_RELEASE $AKAROA_CFLAGS"
    LIBS="$akaroalibs"
 
-   { echo "$as_me:$LINENO: checking for Akaroa with CFLAGS=\"$AKAROA_CFLAGS\" LIBS=\"$akaroalibs\"" >&5
-echo $ECHO_N "checking for Akaroa with CFLAGS=\"$AKAROA_CFLAGS\" LIBS=\"$akaroalibs\"... $ECHO_C" >&6; }
+   { echo "$as_me:$LINENO: checking for Akaroa with CFLAGS=\"$CFLAGS_RELEASE $AKAROA_CFLAGS\" LIBS=\"$akaroalibs\"" >&5
+echo $ECHO_N "checking for Akaroa with CFLAGS=\"$CFLAGS_RELEASE $AKAROA_CFLAGS\" LIBS=\"$akaroalibs\"... $ECHO_C" >&6; }
 
    cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -7991,20 +7685,6 @@ else
 echo "$as_me: WARNING: Optional package Akaroa not found" >&2;}
 fi
 
-#----------------------
-# Linker flags
-#----------------------
-
-# on NT, set total stack size
-if test "$cygwin" = yes; then
-  LDFLAGS="$LDFLAGS -Xlinker --stack -Xlinker $CYGWIN_STACKSIZE"
-fi
-
-# on MinGW dll auto importing is used and must be linked with shared gcc and stdc++
-# otherwise exceptions cant be thrown across dll boundaries
-if test "$mingw" = yes; then
-  LDFLAGS="$LDFLAGS -enable-auto-import -shared-libgcc"
-fi
 
 #----------------------
 # #defines in CFLAGS

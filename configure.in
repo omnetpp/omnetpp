@@ -1,3 +1,6 @@
+# NOTE: set UNIVERSAL_BINARIES=yes to build universal binaries on Mac OS X 10.5
+# NOTE: set TOOLCHAIN=mingw to use the MINGW compiler to cross compile to Windows on Linux 
+
 dnl Process this file with autoconf to produce a configure script.
 
 dnl
@@ -157,35 +160,37 @@ LIB_PREFIX="lib"
 #
 #  Figure out target platform
 #
-if test "$TARGET_PLATFORM" = "mingw"; then
+if test "$TOOLCHAIN" = "mingw"; then
     # cross compiling for mingw
     mingw=yes
-    windows=yes
     jni_platform=win32
     PLATFORM=win32.x86
     EXE_SUFFIX=".exe"
     SHARED_LIB_SUFFIX='$(DLL_LIB_SUFFIX)'
-    LIB_PREFIX=""
+    LDFLAGS_ARCH="$LDFLAGS_ARCH -enable-auto-import -shared-libgcc"
 else
     jni_platform=$host_os
     case $host in
     *-*-cygwin*)
         cygwin=yes
-        windows=yes
         jni_platform=win32
         PLATFORM=win32.x86
         EXE_SUFFIX=".exe"
         SHARED_LIB_SUFFIX='$(DLL_LIB_SUFFIX)'
-        LIB_PREFIX=""
+        # on NT, set total stack size
+        LDFLAGS_ARCH="$LDFLAGS_ARCH -Xlinker --stack -Xlinker $CYGWIN_STACKSIZE"
         ;;
     *-*-mingw32*)
         mingw=yes
-        windows=yes
         jni_platform=win32
         PLATFORM=win32.x86
         EXE_SUFFIX=".exe"
         SHARED_LIB_SUFFIX='$(DLL_LIB_SUFFIX)'
-        LIB_PREFIX=""
+        # add default include and lib paths to make it similar to gcc on Linux
+        CFLAGS_ARCH="$CFLAGS_ARCH -I/usr/include"
+        # on MinGW dll auto importing is used and must be linked with shared gcc and stdc++
+        # otherwise exceptions cant be thrown across dll boundaries
+        LDFLAGS_ARCH="$LDFLAGS_ARCH -enable-auto-import -shared-libgcc -L/usr/lib -L/usr/bin"
         ;;
     x86_64-*-linux*)
         jni_platform=linux
@@ -199,11 +204,11 @@ else
         jni_platform=
         PLATFORM=macosx
         SO_LIB_SUFFIX=".dylib"
-        SHLIB_LD=${SHLIB_LD:-g++ -dynamiclib}
         JNI_LIB_SUFFIX=".jnilib"
-        if test "$BUILD_UNIVERSAL_BINARIES" == "yes"; then
-           CFLAGS_ARCH="-arch ppc -arch i386"
-           LDFLAGS_ARCH="-arch ppc -arch i386"
+        LDFLAGS_ARCH="$LDFLAGS_ARCH -dynamiclib"
+        if test "$UNIVERSAL_BINARIES" = "yes"; then
+           CFLAGS_ARCH="$CFLAGS_ARCH -arch ppc -arch i386"
+           LDFLAGS_ARCH="$LDFLAGS_ARCH -arch ppc -arch i386"
         fi
         ;;
     *)
@@ -227,7 +232,7 @@ SHARED_LIBS=${SHARED_LIBS:-yes}
 # Set variables to defaults if not already set.
 # Note: ${VAR:-defaultvalue} used below appears to be a POSIX syntax.
 #----------------------
-# on mingw special debug option is needed to debug with gdb
+# on mingw special debug option is needed to debug with gdb.
 if test "$mingw" = "yes"; then
   CFLAGS_DEBUG=${CFLAGS_DEBUG:- -gstabs+ -Wall}
 else
@@ -235,6 +240,7 @@ else
 fi
 
 CFLAGS_RELEASE=${CFLAGS_RELEASE:- -O2 -DNDEBUG=1}
+
 WHOLE_ARCHIVE_ON=
 WHOLE_ARCHIVE_OFF=
 
@@ -246,7 +252,7 @@ MAKEDEPEND=${MAKEDEPEND:-opp_makedep -Y --objdirtree}
 # Check compiler
 #----------------------
 
-if test "$TARGET_PLATFORM" = "mingw"; then
+if test "$TOOLCHAIN" = "mingw"; then
     cc_candidates="i586-mingw32msvc-gcc"
     cxx_candidates="i586-mingw32msvc-g++"
 else
@@ -258,7 +264,7 @@ fi
 AC_PROG_CC($cc_candidates)
 AC_PROG_CXX($cxx_candidates)
 
-if test "$TARGET_PLATFORM" = "mingw"; then
+if test "$TOOLCHAIN" = "mingw"; then
     AS=${AS:-i586-mingw32msvc-as}
     AR=${AR:-i586-mingw32msvc-ar cr}
     SHLIB_LD=${SHLIB_LD:-$CXX -shared}
@@ -313,8 +319,8 @@ fi
 #----------------------
 # check and disable stack checking to avoid opplibs.so dependence on glibc 2.4
 #----------------------
-AC_PROG_CXX_OPTION(-fno-stack-protector, CFLAGS_RELEASE="-fno-stack-protector $CFLAGS_RELEASE")
-AC_PROG_CXX_OPTION(-fno-stack-protector, CFLAGS_DEBUG="-fno-stack-protector $CFLAGS_DEBUG")
+AC_PROG_CXX_OPTION(-fno-stack-protector, CFLAGS_RELEASE="$CFLAGS_RELEASE -fno-stack-protector")
+AC_PROG_CXX_OPTION(-fno-stack-protector, CFLAGS_DEBUG="$CFLAGS_DEBUG -fno-stack-protector")
 
 #----------------------
 # Test if "-fPIC" is needed for shared libs (there's a performance penalty if we use it unnecessarily)
@@ -431,8 +437,6 @@ else
    AC_MSG_RESULT(test failed)
 fi
 rm -f conftest_a.* conftest_m.* libconftest_a.so conftest
-
-
 
 #----------------------
 # Test for "-z allextract" (Sun) or "--whole-archive" (GNU) linker option,
@@ -663,12 +667,11 @@ OPP_CHECK_LIB(winsock, winsock.h, socket(0,0,0), , -lwsock32, wsock_ok, SYS_LIBS
 if test "$ZLIB_LIBS" = ""; then
     ZLIB_LIBS=-lz
 fi
-OPP_CHECK_LIB(zlib, zlib.h, gzopen("",""), $ZLIB_CFLAGS, $ZLIB_LIBS, zlib_ok)
-# on mingw/msys try a different path too
+OPP_CHECK_LIB(zlib, zlib.h, gzopen("",""), $CFLAGS_RELEASE $ZLIB_CFLAGS, $ZLIB_LIBS, zlib_ok)
+# on mingw/msys try a different library name
 if test $zlib_ok = no -a "$mingw" = yes; then
-    ZLIB_LIBS="-L/usr/bin -lzlib1"
-    ZLIB_CFLAGS="-I/usr/include"
-    OPP_CHECK_LIB(zlib, zlib.h, gzopen("",""), $ZLIB_CFLAGS, $ZLIB_LIBS, zlib_ok)
+    ZLIB_LIBS="-lzlib1"
+    OPP_CHECK_LIB(zlib, zlib.h, gzopen("",""), $CFLAGS_RELEASE $ZLIB_CFLAGS, $ZLIB_LIBS, zlib_ok)
 fi
 if test $zlib_ok = no; then
    AC_MSG_ERROR([zlib or zlib header file not found, please install it])
@@ -703,14 +706,14 @@ else  #matching "fi" is after BLT testing
         OPP_CHECK_LIB(Tcl/Tk, tk.h, Tk_MainLoop(), $TK_CFLAGS, $TK_LIBS, tcltk_ok)
     else
         # try to use tcl/tk without X (e.g. on Mac OS X native aqua Tcl/Tk impl)
-        OPP_CHECK_LIB(Tcl/Tk 8.6, tk.h, Tk_MainLoop(), $TK_CFLAGS86, -ltk8.6 -ltcl8.6,
+        OPP_CHECK_LIB(Tcl/Tk 8.6, tk.h, Tk_MainLoop(), $CFLAGS_RELEASE $TK_CFLAGS86, -ltk8.6 -ltcl8.6,
                           tcltk_ok, TK_LIBS="-ltk8.6 -ltcl8.6" TK_CFLAGS=$TK_CFLAGS86)
         if test $tcltk_ok = no; then
-           OPP_CHECK_LIB(Tcl/Tk 8.5, tk.h, Tk_MainLoop(), $TK_CFLAGS85, -ltk8.5 -ltcl8.5,
+           OPP_CHECK_LIB(Tcl/Tk 8.5, tk.h, Tk_MainLoop(), $CFLAGS_RELEASE $TK_CFLAGS85, -ltk8.5 -ltcl8.5,
                           tcltk_ok, TK_LIBS="-ltk8.5 -ltcl8.5" TK_CFLAGS=$TK_CFLAGS85)
         fi
         if test $tcltk_ok = no; then
-            OPP_CHECK_LIB(Tcl/Tk 8.4, tk.h, Tk_MainLoop(), $TK_CFLAGS84, -ltk8.4 -ltcl8.4,
+            OPP_CHECK_LIB(Tcl/Tk 8.4, tk.h, Tk_MainLoop(), $CFLAGS_RELEASE $TK_CFLAGS84, -ltk8.4 -ltcl8.4,
                           tcltk_ok, TK_LIBS="-ltk8.4 -ltcl8.4" TK_CFLAGS=$TK_CFLAGS84)
         fi
         # look for X window libs and headers
@@ -730,54 +733,42 @@ else  #matching "fi" is after BLT testing
             fi
         fi
         if test $tcltk_ok = no; then
-            OPP_CHECK_LIB(Tcl/Tk 8.6, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS86, $opp_x11lib -ltk86 -ltcl86,
+            OPP_CHECK_LIB(Tcl/Tk 8.6, tk.h, Tk_MainLoop(), $CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS86, $opp_x11lib -ltk86 -ltcl86,
                           tcltk_ok, TK_LIBS="$opp_x11lib -ltk86 -ltcl86" TK_CFLAGS=$TK_CFLAGS86)
         fi
         if test $tcltk_ok = no; then
-            OPP_CHECK_LIB(Tcl/Tk 8.6, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS86, $opp_x11lib -ltk8.6 -ltcl8.6,
+            OPP_CHECK_LIB(Tcl/Tk 8.6, tk.h, Tk_MainLoop(), $CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS86, $opp_x11lib -ltk8.6 -ltcl8.6,
                           tcltk_ok, TK_LIBS="$opp_x11lib -ltk8.6 -ltcl8.6" TK_CFLAGS=$TK_CFLAGS86)
         fi
         if test $tcltk_ok = no -a "$cygwin" = yes; then
-            OPP_CHECK_LIB(Tcl/Tk 8.6, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS86, $opp_x11lib -lcygtk86 -lcygtcl86,
+            OPP_CHECK_LIB(Tcl/Tk 8.6, tk.h, Tk_MainLoop(), $CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS86, $opp_x11lib -lcygtk86 -lcygtcl86,
                           tcltk_ok, TK_LIBS="$opp_x11lib -lcygtk86 -lcygtcl86" TK_CFLAGS=$TK_CFLAGS86)
-        fi
-        if test $tcltk_ok = no -a "$mingw" = yes; then
-            OPP_CHECK_LIB(Tcl/Tk 8.6, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS86, $opp_x11lib -L/usr/bin -ltk86 -ltcl86,
-                          tcltk_ok, TK_LIBS="$opp_x11lib -L/usr/bin -ltk86 -ltcl86" TK_CFLAGS=$TK_CFLAGS86)
         fi
         # check for 8.5
         if test $tcltk_ok = no; then
-            OPP_CHECK_LIB(Tcl/Tk 8.5, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS85, $opp_x11lib -ltk85 -ltcl85,
+            OPP_CHECK_LIB(Tcl/Tk 8.5, tk.h, Tk_MainLoop(), $CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS85, $opp_x11lib -ltk85 -ltcl85,
                           tcltk_ok, TK_LIBS="$opp_x11lib -ltk85 -ltcl85" TK_CFLAGS=$TK_CFLAGS85)
         fi
         if test $tcltk_ok = no; then
-            OPP_CHECK_LIB(Tcl/Tk 8.5, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS85, $opp_x11lib -ltk8.5 -ltcl8.5,
+            OPP_CHECK_LIB(Tcl/Tk 8.5, tk.h, Tk_MainLoop(), $CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS85, $opp_x11lib -ltk8.5 -ltcl8.5,
                           tcltk_ok, TK_LIBS="$opp_x11lib -ltk8.5 -ltcl8.5" TK_CFLAGS=$TK_CFLAGS85)
         fi
         if test $tcltk_ok = no -a "$cygwin" = yes; then
-            OPP_CHECK_LIB(Tcl/Tk 8.5, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS85, $opp_x11lib -lcygtk85 -lcygtcl85,
+            OPP_CHECK_LIB(Tcl/Tk 8.5, tk.h, Tk_MainLoop(), $CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS85, $opp_x11lib -lcygtk85 -lcygtcl85,
                           tcltk_ok, TK_LIBS="$opp_x11lib -lcygtk85 -lcygtcl85" TK_CFLAGS=$TK_CFLAGS85)
-        fi
-        if test $tcltk_ok = no -a "$mingw" = yes; then
-            OPP_CHECK_LIB(Tcl/Tk 8.5, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS85, $opp_x11lib -L/usr/bin -ltk85 -ltcl85,
-                          tcltk_ok, TK_LIBS="$opp_x11lib -L/usr/bin -ltk85 -ltcl85" TK_CFLAGS=$TK_CFLAGS85)
         fi
         # check for 8.4
         if test $tcltk_ok = no; then
-            OPP_CHECK_LIB(Tcl/Tk 8.4, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS84, $opp_x11lib -ltk84 -ltcl84,
+            OPP_CHECK_LIB(Tcl/Tk 8.4, tk.h, Tk_MainLoop(), $CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS84, $opp_x11lib -ltk84 -ltcl84,
                           tcltk_ok, TK_LIBS="$opp_x11lib -ltk84 -ltcl84" TK_CFLAGS=$TK_CFLAGS84)
         fi
         if test $tcltk_ok = no; then
-            OPP_CHECK_LIB(Tcl/Tk 8.4, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS84, $opp_x11lib -ltk8.4 -ltcl8.4,
+            OPP_CHECK_LIB(Tcl/Tk 8.4, tk.h, Tk_MainLoop(), $CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS84, $opp_x11lib -ltk8.4 -ltcl8.4,
                           tcltk_ok, TK_LIBS="$opp_x11lib -ltk8.4 -ltcl8.4" TK_CFLAGS=$TK_CFLAGS84)
         fi
         if test $tcltk_ok = no -a "$cygwin" = yes; then
-            OPP_CHECK_LIB(Tcl/Tk 8.4, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS84, $opp_x11lib -lcygtk84 -lcygtcl84,
+            OPP_CHECK_LIB(Tcl/Tk 8.4, tk.h, Tk_MainLoop(), $CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS84, $opp_x11lib -lcygtk84 -lcygtcl84,
                           tcltk_ok, TK_LIBS="$opp_x11lib -lcygtk84 -lcygtcl84" TK_CFLAGS=$TK_CFLAGS84)
-        fi
-        if test $tcltk_ok = no -a "$mingw" = yes; then
-            OPP_CHECK_LIB(Tcl/Tk 8.4, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS84, $opp_x11lib -L/usr/bin -ltk84 -ltcl84,
-                          tcltk_ok, TK_LIBS="$opp_x11lib -L/usr/bin -ltk84 -ltcl84" TK_CFLAGS=$TK_CFLAGS84)
         fi
     fi
 
@@ -818,22 +809,22 @@ else  #matching "fi" is after BLT testing
         TK_CFLAGS="$TK_CFLAGS -I/usr/include/blt"
     fi
 
-    OPP_CHECK_LIB(BLT 2.4, blt.h, Blt_NameOfVector(0), $TK_CFLAGS, $BLT_LIBS $TK_LIBS, blt_ok)
+    OPP_CHECK_LIB(BLT 2.4, blt.h, Blt_NameOfVector(0), $CFLAGS_RELEASE $TK_CFLAGS, $BLT_LIBS $TK_LIBS, blt_ok)
     if test $blt_ok = no -a "$cygwin" = yes; then
         bltlibs="-lBLT24 -mwindows -lwinspool"
-        OPP_CHECK_LIB(BLT 2.4, blt.h, Blt_NameOfVector(0), $TK_CFLAGS, $bltlibs $TK_LIBS, blt_ok, BLT_LIBS=$bltlibs)
+        OPP_CHECK_LIB(BLT 2.4, blt.h, Blt_NameOfVector(0), $CFLAGS_RELEASE $TK_CFLAGS, $bltlibs $TK_LIBS, blt_ok, BLT_LIBS=$bltlibs)
     fi
     if test $blt_ok = no; then
         bltlibs="-lBLT24"
-        OPP_CHECK_LIB(BLT 2.4, blt.h, Blt_NameOfVector(0), $TK_CFLAGS, $bltlibs $TK_LIBS, blt_ok, BLT_LIBS=$bltlibs)
+        OPP_CHECK_LIB(BLT 2.4, blt.h, Blt_NameOfVector(0), $CFLAGS_RELEASE $TK_CFLAGS, $bltlibs $TK_LIBS, blt_ok, BLT_LIBS=$bltlibs)
     fi
     if test $blt_ok = no; then
         bltlibs="-lBLT"
-        OPP_CHECK_LIB(BLT 2.4, blt.h, Blt_NameOfVector(0), $TK_CFLAGS, $bltlibs $TK_LIBS, blt_ok, BLT_LIBS=$bltlibs)
+        OPP_CHECK_LIB(BLT 2.4, blt.h, Blt_NameOfVector(0), $CFLAGS_RELEASE $TK_CFLAGS, $bltlibs $TK_LIBS, blt_ok, BLT_LIBS=$bltlibs)
     fi
     if test $blt_ok = no; then
         bltlibs="-lBLT2.4"
-        OPP_CHECK_LIB(BLT 2.4, blt.h, Blt_NameOfVector(0), $TK_CFLAGS, $bltlibs $TK_LIBS, blt_ok, BLT_LIBS=$bltlibs)
+        OPP_CHECK_LIB(BLT 2.4, blt.h, Blt_NameOfVector(0), $CFLAGS_RELEASE $TK_CFLAGS, $bltlibs $TK_LIBS, blt_ok, BLT_LIBS=$bltlibs)
     fi
     if test $blt_ok = no; then
         OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  BLT (optional)"
@@ -891,7 +882,7 @@ if test "$JAVA_CFLAGS" = ""; then
    fi
 fi
 
-OPP_CHECK_LIB_NOLINK(JNI, jni.h, JNI_GetCreatedJavaVMs(0,0,0), $JAVA_CFLAGS, jni_ok)
+OPP_CHECK_LIB_NOLINK(JNI, jni.h, JNI_GetCreatedJavaVMs(0,0,0), $CFLAGS_RELEASE $JAVA_CFLAGS, jni_ok)
 if test "$jni_ok" = no; then
    OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  JNI headers for Java (optional)"
    AC_MSG_WARN([Optional package JNI headers for Java (needed for IDE support library) not found.])
@@ -956,11 +947,6 @@ if test -n "$PCAP_LIBS"; then
 else
     PCAP_LIBS="-lpcap"
     OPP_CHECK_LIB(PCAP, pcap.h, pcap_lookupdev("dummydev"), $CFLAGS_RELEASE $PCAP_CFLAGS, $PCAP_LIBS, pcap_ok)
-    # check for windows pcap (wpcap) on mingw
-    if test $pcap_ok = no; then
-	PCAP_LIBS="-lwpcap"
-	OPP_CHECK_LIB(PCAP, pcap.h, pcap_lookupdev("dummydev"), $CFLAGS_RELEASE $PCAP_CFLAGS, $PCAP_LIBS, pcap_ok)
-    fi    
 fi
 if test $pcap_ok = yes; then
     HAVE_PCAP=yes
@@ -976,26 +962,21 @@ fi
 # Check for XML parsers: EXPAT and/or LIBXML
 #----------------------
 if test -n "$LIBXML_LIBS"; then
-    OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), $LIBXML_CFLAGS, $LIBXML_LIBS, libxml_ok)
+    OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), $CFLAGS_RELEASE $LIBXML_CFLAGS, $LIBXML_LIBS, libxml_ok)
 else
-    OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), $LIBXML_CFLAGS, -lxml2,
+    OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), $CFLAGS_RELEASE $LIBXML_CFLAGS, -lxml2,
                   libxml_ok, LIBXML_LIBS="-lxml2")
 
     if test $libxml_ok = no; then
-        OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), -I/usr/include/libxml2, -lxml2,
+        OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), $CFLAGS_RELEASE -I/usr/include/libxml2, -lxml2,
                       libxml_ok, LIBXML_CFLAGS="-I/usr/include/libxml2" LIBXML_LIBS="-lxml2")
-    fi
-
-    if test $libxml_ok = no -a "$mingw" = yes; then
-        OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), -I/usr/include, -L/usr/bin -lxml2 -L/usr/bin -liconv,
-                      libxml_ok, LIBXML_CFLAGS="-I/usr/include" LIBXML_LIBS="-L/usr/bin -lxml2 -L/usr/bin -liconv")
     fi
 fi
 if test -n "$EXPAT_LIBS"; then
-    OPP_CHECK_LIB(Expat XML parser, expat.h, XML_ParserCreate(0), $EXPAT_CFLAGS, $EXPAT_LIBS, expat_ok)
+    OPP_CHECK_LIB(Expat XML parser, expat.h, XML_ParserCreate(0), $CFLAGS_RELEASE $EXPAT_CFLAGS, $EXPAT_LIBS, expat_ok)
 else
     expatlibs="-lexpat"
-    OPP_CHECK_LIB(Expat XML parser, expat.h, XML_ParserCreate(0), $EXPAT_CFLAGS, $expatlibs, expat_ok, EXPAT_LIBS=$expatlibs)
+    OPP_CHECK_LIB(Expat XML parser, expat.h, XML_ParserCreate(0), $CFLAGS_RELEASE $EXPAT_CFLAGS, $expatlibs, expat_ok, EXPAT_LIBS=$expatlibs)
 fi
 
 if test $libxml_ok = yes; then
@@ -1021,10 +1002,10 @@ CFLAGS_RELEASE="$CFLAGS_RELEASE -DXMLPARSER=$XMLPARSER"
 #----------------------
 # Check for Akaroa header and lib
 #----------------------
-OPP_CHECK_LIB(Akaroa, akaroa.H, AkObservation(0.0), $AKAROA_CFLAGS, $AKAROA_LIBS, akaroa_ok)
+OPP_CHECK_LIB(Akaroa, akaroa.H, AkObservation(0.0), $CFLAGS_RELEASE $AKAROA_CFLAGS, $AKAROA_LIBS, akaroa_ok)
 if test $akaroa_ok = no; then
     akaroalibs="-lakaroa -lfl"
-    OPP_CHECK_LIB(Akaroa, akaroa.H, AkObservation(0.0), $AKAROA_CFLAGS, $akaroalibs, akaroa_ok, AKAROA_LIBS="$akaroalibs")
+    OPP_CHECK_LIB(Akaroa, akaroa.H, AkObservation(0.0), $CFLAGS_RELEASE $AKAROA_CFLAGS, $akaroalibs, akaroa_ok, AKAROA_LIBS="$akaroalibs")
 fi
 if test $akaroa_ok = yes; then
    CFLAGS_DEBUG="$CFLAGS_DEBUG -DWITH_AKAROA"
@@ -1035,20 +1016,6 @@ else
    AC_MSG_WARN([Optional package Akaroa not found])
 fi
 
-#----------------------
-# Linker flags
-#----------------------
-
-# on NT, set total stack size
-if test "$cygwin" = yes; then
-  LDFLAGS="$LDFLAGS -Xlinker --stack -Xlinker $CYGWIN_STACKSIZE"
-fi
-
-# on MinGW dll auto importing is used and must be linked with shared gcc and stdc++
-# otherwise exceptions cant be thrown across dll boundaries
-if test "$mingw" = yes; then
-  LDFLAGS="$LDFLAGS -enable-auto-import -shared-libgcc"
-fi
 
 #----------------------
 # #defines in CFLAGS
