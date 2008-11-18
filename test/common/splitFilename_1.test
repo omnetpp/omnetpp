@@ -1,0 +1,68 @@
+%description:
+Tests splitFileName() function
+
+%includes:
+#include "fileutil.h"
+
+%global:
+
+static void slice(const char *s)
+{
+    std::string path = s;
+    for (;;)
+    {
+        std::string dir, fname;
+        splitFileName(path.c_str(), dir, fname);
+        ev << path << " -> '" << dir << "' + '" << fname << "'\n";
+        if (path == dir)
+            break;
+        path = dir;
+    }
+}
+
+%activity:
+slice(".");
+slice("..");
+slice("../../.");
+slice("./../../.");
+
+slice("dir");
+slice("dir//");
+slice("./dir");
+slice("../dir");
+slice("dir/..");
+slice("dir1/dir2/..");
+slice("dir1/../dir2");
+slice("dir1/../..");
+slice("dir1/../../..");
+
+slice("c:dir");
+slice("c:./dir");
+slice("c:../dir");
+slice("c:dir/..");
+slice("c:dir1/dir2/..");
+slice("c:dir1/../dir2");
+slice("c:dir1/../..");
+slice("c:dir1/../../..");
+
+slice("/usr");
+slice("/usr/bin");
+slice("/usr/bin/..");
+slice("/usr/bin/../..");
+slice("/usr/bin/../../..");
+slice("/usr/.///");
+
+slice("c:/tmp/queuenet/node.ned");
+slice("c://tmp/queuenet//node.ned");
+slice("c:/./tmp/queuenet/./node.ned");
+slice("c:/./tmp/../queuenet/node.ned");
+slice("c:/./tmp/../queuenet/../node.ned");
+slice("c:/./tmp/queuenet/../../node.ned");
+slice("c:/./tmp/queuenet/../../../node.ned");
+ev << ".\n";
+
+%exitcode: 0
+
+%contains: stdout
+sdsadsad
+
