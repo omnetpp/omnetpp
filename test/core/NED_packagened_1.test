@@ -23,15 +23,18 @@ package org.omnetpp.test;
 package org.omnetpp.test.pkg;
 simple Sink { }  // C++ class is b::Sink
 
-%file: c/Test.ned
-import org.omnetpp.test.pkg.*;
-network Test {
-    submodules:
-        source : Source;
-        sink: Sink;
-}
+%file: c/package.ned
+package org.omnetpp.test;
+// no @namespace
 
-%network: Test
+%file: c/pkg/Casdf.ned
+package org.omnetpp.test.pkg;
+simple Casdf { }  // C++ class is ::Casdf
+
+// note: NO d/package.ned
+%file: d/pkg/Dumb.ned
+package pkg;
+simple Dumb { }  // C++ class is ::Dumb
 
 %file: a/pkg/Source.cc
 #include <omnetpp.h>
@@ -47,7 +50,29 @@ class Sink : public cSimpleModule { };
 Define_Module(Sink);
 };
 
-%env: NEDPATH=a;b;c
+%file: c/pkg/Casdf.cc
+#include <omnetpp.h>
+class Casdf : public cSimpleModule { };
+Define_Module(Casdf);
+
+%file: d/pkg/Dumb.cc
+#include <omnetpp.h>
+class Dumb : public cSimpleModule { };
+Define_Module(Dumb);
+
+%file: t/Test.ned
+import org.omnetpp.test.pkg.*;
+network Test {
+    submodules:
+        source : Source;
+        sink: Sink;
+        casdf: Casdf;
+        dumb: Dumb;
+}
+
+%network: Test
+
+%env: NEDPATH=a;b;c;d;t
 
 %exitcode: 0
 
