@@ -24,6 +24,7 @@
 
 #include <string.h>
 #include <stdio.h>
+#include "stringutil.h"
 #include "cmodule.h"
 #include "csimplemodule.h"
 #include "cmessage.h"
