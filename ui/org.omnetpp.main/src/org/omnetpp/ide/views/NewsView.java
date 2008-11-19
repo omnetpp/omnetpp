@@ -29,7 +29,7 @@ public class NewsView extends ViewPart {
 	 * to create the viewer and initialize it.
 	 */
 	public void createPartControl(Composite parent) {
-		browser = new BrowserViewer(parent,SWT.NONE);
+		browser = new BrowserViewer(parent,SWT.NONE); // note: shows error dialog if user does not have Firefox or any other suitable browser installed
 		
 		// load the page when view gets opened or re-opened
 		getSite().getPage().addPartListener(new IPartListener() {
@@ -46,7 +46,8 @@ public class NewsView extends ViewPart {
 		// poor man's Back button. This is only needed on Linux, because on Windows 
 		// we have IE's built-in context menu which contains Back.
 		// XXX what about OS/X?
-		if (Platform.getOS().equals(Platform.OS_LINUX)) {
+        // Note: if user does not have Firefox etc installed, browser.getBrowser() will be null here!
+		if (Platform.getOS().equals(Platform.OS_LINUX) && browser.getBrowser()!=null) {
 		    browser.getBrowser().addMouseListener(new MouseAdapter() {
 		        @Override
 		        public void mouseDown(MouseEvent e) {
