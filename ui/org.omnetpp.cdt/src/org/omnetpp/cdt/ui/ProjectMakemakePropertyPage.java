@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.cdt.core.cdtvariables.CdtVariableException;
@@ -283,6 +284,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
 
         new HoverSupport().adapt(treeViewer.getTree(), new IHoverTextProvider() {
             public String getHoverTextFor(Control control, int x, int y, SizeConstraint outPreferredSize) {
+                outPreferredSize.preferredWidth = 350;
                 Item item = treeViewer.getTree().getItem(new Point(x,y));
                 Object element = item==null ? null : item.getData();
                 if (element instanceof IContainer)
@@ -811,6 +813,17 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
             else 
                 Activator.logError(new AssertionFailedException("Tooltip logic error"));
         }
+
+//        if (!isExcluded) {
+//            //TODO "Includes files from: directly: ...   Indirectly: ..."  
+//            Set<IContainer> set = Activator.getDependencyCache().getFolderDependencies(project).get(folder);
+//            if (set != null) {
+//                List<String> folderNames = new ArrayList<String>();
+//                for (IContainer f : set)
+//                    folderNames.add(f.getProject().equals(project) ? f.getProjectRelativePath().toString() : f.getFullPath().toString());
+//                comments += "<p>Includes files from: " + (folderNames.size()==0 ? "-" : StringUtils.join(folderNames, ", "));
+//            }
+//        }
 
         String result = "<b>" + folder.getFullPath() + "</b> (" + what + ")";
         if (!StringUtils.isEmpty(comments))
