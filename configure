@@ -8959,10 +8959,12 @@ echo "#define OMNETPP_BUILDID \"$OMNETPP_BUILDID\"" >>ver.h && \
 echo "#define OMNETPP_EDITION \"$OMNETPP_EDITION\"" >>ver.h
 )
 
-# patch the ide/configuration/config.ini on MacOS X to point the default workspace to "samples"
-if test "$PLATFORM" = "macosx" -a -f ide/configuration/config.ini ; then
-    perl -i -pe 's!default=\.\./\.\./samples!default=../../../../samples!g' ide/configuration/config.ini
-    echo xxxx Hello
+# patch the ide/configuration/config.ini to point to the samples dir.
+# this is needed because relative URLs cannot be used because the working directory
+# is different on Mac OS X than on any other platform
+if test -f ide/configuration/config.ini ; then
+    echo patching the ide configuration file. default workspace is: $OMNETPP_SAMPLES_DIR
+    perl -i -pe 's!osgi.instance.area.default=.*$!osgi.instance.area.default='$OMNETPP_SAMPLES_DIR'!g' ide/configuration/config.ini
 fi
 
 #----------------------
