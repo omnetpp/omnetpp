@@ -137,6 +137,12 @@ WITH_PARSIM=yes
 #======!!!         Try not to change anything below this line       !!!======
 #==============================================================================
 
+# check if OMNETPP_ROOT correctly set
+
+!if !exist($(OMNETPP_ROOT)/configuser.vc)
+!error OMNETPP_ROOT is not set correctly in configuser.vc
+!endif
+
 #
 # Make "debug" the default mode
 #
