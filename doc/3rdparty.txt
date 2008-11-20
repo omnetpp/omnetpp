@@ -29,9 +29,9 @@ BLT
 
 BLT is an extension to the Tk toolkit, adding new widgets and miscellaneous
 commands. It does not require any patching of the Tcl or Tk source files.
-OMNeT++/OMNEST uses BLT mainly for its chart, graph and table (multi-column
-listbox) widgets. BLT is available from http://blt.sourceforge.net, and it
-is distributed under a BSD-like license.
+OMNeT++/OMNEST uses BLT mainly for its table (multi-column
+listbox) and tabbed notebook widgets. BLT is available from 
+http://blt.sourceforge.net, and it is distributed under a BSD-like license.
 
 LibXML2
 
