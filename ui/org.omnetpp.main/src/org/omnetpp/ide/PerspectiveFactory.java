@@ -23,25 +23,27 @@ public class PerspectiveFactory implements IPerspectiveFactory {
 
  		String editorArea = layout.getEditorArea();
 
- 		IFolderLayout folder = layout.createFolder("left", IPageLayout.LEFT, (float)0.25, editorArea); //$NON-NLS-1$
-		folder.addView(IConstants.PROJECT_EXPLORER_ID);
-        IFolderLayout blfolder = layout.createFolder("leftbottom", IPageLayout.BOTTOM, (float)0.50, "left"); //$NON-NLS-1$
-        blfolder.addView(IPageLayout.ID_PROP_SHEET);
-        blfolder.addView(IPageLayout.ID_OUTLINE);
+ 		IFolderLayout leftFolder = layout.createFolder("left", IPageLayout.LEFT, (float)0.25, editorArea); //$NON-NLS-1$
+		leftFolder.addView(IConstants.PROJECT_EXPLORER_ID);
+		leftFolder.addPlaceholder(IPageLayout.ID_RES_NAV);
+		
+        IFolderLayout leftBottomFolder = layout.createFolder("leftbottom", IPageLayout.BOTTOM, (float)0.50, "left"); //$NON-NLS-1$
+        leftBottomFolder.addView(IPageLayout.ID_PROP_SHEET);
+        leftBottomFolder.addView(IPageLayout.ID_OUTLINE);
 
-		IFolderLayout outputfolder = layout.createFolder("bottom", IPageLayout.BOTTOM, (float)0.75, editorArea); //$NON-NLS-1$
-		outputfolder.addView(IConstants.NEWS_VIEW_ID);
-		outputfolder.addView(IPageLayout.ID_PROBLEM_VIEW);
-		outputfolder.addView(IConstants.MODULEHIERARCHY_VIEW_ID);
-		outputfolder.addView(IConstants.MODULEPARAMETERS_VIEW_ID);
-		outputfolder.addView(IConstants.NEDINHERITANCE_VIEW_ID);
+		IFolderLayout bottomFolder = layout.createFolder("bottom", IPageLayout.BOTTOM, (float)0.75, editorArea); //$NON-NLS-1$
+		bottomFolder.addView(IPageLayout.ID_PROBLEM_VIEW);
+		bottomFolder.addView(IConstants.MODULEHIERARCHY_VIEW_ID);
+		bottomFolder.addView(IConstants.MODULEPARAMETERS_VIEW_ID);
+		bottomFolder.addView(IConstants.NEDINHERITANCE_VIEW_ID);
 		
 		// note: placeholders for our other views don't need to be listed here,
 		// because they are contributed via perspectiveExtension extensions
 		// in their plugin.xml's.
-		outputfolder.addPlaceholder(IPageLayout.ID_TASK_LIST);
-		outputfolder.addPlaceholder(IPageLayout.ID_BOOKMARKS);
-		outputfolder.addPlaceholder(IProgressConstants.PROGRESS_VIEW_ID);
+		bottomFolder.addPlaceholder(IConstants.NEW_VERSION_VIEW_ID);
+		bottomFolder.addPlaceholder(IPageLayout.ID_TASK_LIST);
+		bottomFolder.addPlaceholder(IPageLayout.ID_BOOKMARKS);
+		bottomFolder.addPlaceholder(IProgressConstants.PROGRESS_VIEW_ID);
 
 		// actionsets
 		layout.addActionSet(IPageLayout.ID_NAVIGATE_ACTION_SET);
@@ -51,7 +53,6 @@ public class PerspectiveFactory implements IPerspectiveFactory {
 		layout.addShowViewShortcut(IPageLayout.ID_OUTLINE);
 		layout.addShowViewShortcut(IPageLayout.ID_PROP_SHEET);
 		layout.addShowViewShortcut(IPageLayout.ID_PROBLEM_VIEW);
-		layout.addShowViewShortcut(IPageLayout.ID_RES_NAV);
 		layout.addShowViewShortcut(IConstants.PROJECT_EXPLORER_ID);
 		layout.addShowViewShortcut(IPageLayout.ID_TASK_LIST);
 		layout.addShowViewShortcut(IProgressConstants.PROGRESS_VIEW_ID);
@@ -62,8 +63,6 @@ public class PerspectiveFactory implements IPerspectiveFactory {
 		layout.addShowViewShortcut(IConstants.VECTORBROWSER_VIEW_ID);
 		layout.addShowViewShortcut(IConstants.SEQUENCECHART_VIEW_ID);
 		layout.addShowViewShortcut(IConstants.EVENTLOG_VIEW_ID);
-		layout.addShowViewShortcut(IConstants.NEWS_VIEW_ID);
-
 
         // TODO final strings needed here
 		// new actions - our wizards

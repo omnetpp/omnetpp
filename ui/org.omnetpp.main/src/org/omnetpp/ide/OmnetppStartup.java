@@ -53,7 +53,7 @@ import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.IConstants;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.FileUtils;
-import org.omnetpp.ide.views.NewsView;
+import org.omnetpp.ide.views.NewVersionView;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -127,16 +127,17 @@ public class OmnetppStartup implements IStartup {
         //
         Job job = new Job("Version check") { 
         	public IStatus run(IProgressMonitor pm) {
-        		final String versionCheckURL = OmnetppStartup.VERSIONCHECK_URL + "?v=" + OmnetppMainPlugin.getVersion() + "&d=" + getInstallDate()+"&o="+Platform.getOS()+"."+Platform.getOSArch();
-        		if (isWebPageNotBlank(versionCheckURL)) {
+        		String versionCheckURL = OmnetppStartup.VERSIONCHECK_URL + "?v=" + OmnetppMainPlugin.getVersion() + "&d=" + getInstallDate()+"&o="+Platform.getOS()+"."+Platform.getOSArch();
+        		final String content = getWebPage(versionCheckURL); 
+        		if (StringUtils.isNotBlank(content)) {
         			Display.getDefault().asyncExec(new Runnable() {
         				public void run() {
         					try {
         						IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
         						IWorkbenchPage workbenchPage = activeWorkbenchWindow == null ? null : activeWorkbenchWindow.getActivePage();
         						if (workbenchPage != null) {
-        							NewsView view = (NewsView)workbenchPage.showView(IConstants.NEWS_VIEW_ID);
-        							view.showURL(versionCheckURL+"&i=1");
+        							NewVersionView view = (NewVersionView)workbenchPage.showView(IConstants.NEW_VERSION_VIEW_ID);
+        							view.setText(content);
         						}
         					} 
         					catch (PartInitException e) {
@@ -234,21 +235,21 @@ public class OmnetppStartup implements IStartup {
 
     
     /**
-     * Checks whether the given web page is available and contains something (i.e. is not empty).
+     * Downloads the given web page and returns it. Returns NULL if cannot download.
      * Proxy detection is a royal pain here.
      */
-    public boolean isWebPageNotBlank(String url) {
+    public String getWebPage(String url) {
         // try with Eclipse settings
         IProxyData proxyData = ProxyManager.getProxyManager().getProxyDataForHost("omnetpp.org", IProxyData.HTTP_PROXY_TYPE);
         String content = getPageContent(url, proxyData);
         if (content != null)
-            return content.trim().length() != 0;
+            return content;
 
         // try without proxy as well (in case settings in Eclipse are wrong)
         if (proxyData != null && proxyData.getHost() != null) {
             content = getPageContent(url, null);
             if (content != null)
-                return content.trim().length() != 0;
+                return content;
         }
 
         // try with "http_proxy" environment variable (there's also http_user and http_passwd)
@@ -259,14 +260,14 @@ public class OmnetppStartup implements IStartup {
                 if (proxyData != null && proxyData.getHost() != null) {
                     content = getPageContent(url, proxyData);
                     if (content != null)
-                        return content.trim().length() != 0;
+                        return content;
 
                     if (System.getenv("http_user") != null) {
                         proxyData.setUserid(System.getenv("http_user"));
                         proxyData.setPassword(System.getenv("http_passwd"));
                         content = getPageContent(url, proxyData);
                         if (content != null)
-                            return content.trim().length() != 0;
+                            return content;
                     }
                 }
             } 
@@ -297,7 +298,7 @@ public class OmnetppStartup implements IStartup {
                                 if (proxyData.getHost() != null) {
                                     content = getPageContent(url, proxyData);
                                     if (content != null)
-                                        return content.trim().length() != 0;
+                                        return content;
                                 }
                                 // user_pref("network.proxy.autoconfig_url", "http://someproxy.edu/proxy.pac");
                                 matcher = Pattern.compile("(?m)^ *user_pref\\(\"network\\.proxy\\.autoconfig_url\", *\"(.*?)\"\\);").matcher(prefsText);
@@ -307,7 +308,7 @@ public class OmnetppStartup implements IStartup {
                                     for (IProxyData proxy : proxies) {
                                         content = getPageContent(url, proxy);
                                         if (content != null)
-                                            return content.trim().length() != 0;
+                                            return content;
                                     }
                                 }
                             }
@@ -343,7 +344,7 @@ public class OmnetppStartup implements IStartup {
                     if (proxyData.getHost() != null) {
                         content = getPageContent(url, proxyData);
                         if (content != null)
-                            return content.trim().length() != 0;
+                            return content;
                     }
                 } 
                 catch (Exception e) { 
@@ -366,7 +367,7 @@ public class OmnetppStartup implements IStartup {
                                 for (IProxyData proxy : proxies) {
                                     content = getPageContent(url, proxy);
                                     if (content != null)
-                                        return content.trim().length() != 0;
+                                        return content;
                                 }
                             }
                         }
@@ -394,7 +395,7 @@ public class OmnetppStartup implements IStartup {
                             if (proxyData != null && proxyData.getHost() != null) {
                                 content = getPageContent(url, proxyData);
                                 if (content != null)
-                                    return content.trim().length() != 0;
+                                    return content;
                             }
                         }
                     }
@@ -403,7 +404,7 @@ public class OmnetppStartup implements IStartup {
                 }
             }
         }
-        return false;
+        return null;
     }
 
     /**

@@ -288,10 +288,11 @@
       <view
             allowMultiple="false"
             category="org.omnetpp.views"
-            class="org.omnetpp.ide.views.NewsView"
+            class="org.omnetpp.ide.views.NewVersionView"
             icon="icons/logo16.png"
-            id="org.omnetpp.main.NewsView"
-            name="OMNeT++ News">
+            id="org.omnetpp.main.NewVersionView"
+            name="New OMNeT++ Version"
+            restorable="false">
       </view>
    </extension>
    <extension

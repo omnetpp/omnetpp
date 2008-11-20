@@ -15,7 +15,7 @@ public interface IConstants {
     public static final String MAKEFILEBUILDER_BUILDER_ID = "org.omnetpp.cdt.MakefileBuilder";
 
     // views
-    public static final String NEWS_VIEW_ID = "org.omnetpp.main.NewsView";
+    public static final String NEW_VERSION_VIEW_ID = "org.omnetpp.main.NewVersionView";
 	public static final String MODULEPARAMETERS_VIEW_ID = "org.omnetpp.inifile.ModuleParameters";
 	public static final String MODULEHIERARCHY_VIEW_ID = "org.omnetpp.inifile.ModuleHierarchy";
     public static final String NEDINHERITANCE_VIEW_ID = "org.omnetpp.inifile.NedInheritance";
