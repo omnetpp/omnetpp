@@ -97,7 +97,7 @@ public class OmnetppStartup implements IStartup {
 	protected String getInstallDate() {
 	    String installDate = CommonPlugin.getConfigurationPreferenceStore().getString("installDate");
 	    if (StringUtils.isEmpty(installDate)) {
-	        installDate = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+	        installDate = new SimpleDateFormat("yyyyMMddHHmm").format(new Date());
 	        CommonPlugin.getConfigurationPreferenceStore().setValue("installDate", installDate);
 	        try {
 	        	CommonPlugin.getConfigurationPreferenceStore().save();
@@ -117,8 +117,16 @@ public class OmnetppStartup implements IStartup {
         long lastCheckMillis = CommonPlugin.getConfigurationPreferenceStore().getLong("lastCheck");
         if (System.currentTimeMillis() - lastCheckMillis < VERSIONCHECK_INTERVAL_MILLIS)
             return;
+
+        // store back lastCheck date, regardless whether check was successful
+        CommonPlugin.getConfigurationPreferenceStore().setValue("lastCheck", System.currentTimeMillis());
+        try {
+            CommonPlugin.getConfigurationPreferenceStore().save();
+        } catch (IOException e) {
+            OmnetppMainPlugin.logError("Cannot store lastCheck preference", e);
+        }
         
-        // Show the version check URL in the News view if it's not empty -- the page should
+        // Show the version check URL in the New Version view if it's not empty -- the page should
         // contain download information etc.
         //
         // NOTE: web page will decide whether there is a new version, by checking 
@@ -145,12 +153,6 @@ public class OmnetppStartup implements IStartup {
         					}
         				}});
         		}
-        		CommonPlugin.getConfigurationPreferenceStore().setValue("lastCheck", System.currentTimeMillis());
-        		try {
-        			CommonPlugin.getConfigurationPreferenceStore().save();
-				} catch (IOException e) {
-					OmnetppMainPlugin.logError("Cannot store lastCheck preference", e);
-				}
         		return Status.OK_STATUS;
         	}
         };
