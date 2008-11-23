@@ -8,6 +8,7 @@ import org.eclipse.cdt.make.core.scannerconfig.IDiscoveredPathManager.IDiscovere
 import org.eclipse.cdt.make.core.scannerconfig.IDiscoveredPathManager.IPerProjectDiscoveredPathInfo;
 import org.eclipse.cdt.make.internal.core.scannerconfig2.PerProjectSICollector;
 import org.eclipse.cdt.managedbuilder.scannerconfig.IManagedScannerInfoCollector;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.omnetpp.cdt.makefile.MakefileTools;
@@ -29,6 +30,7 @@ public class OmnetppGCCScannerInfoCollector extends PerProjectSICollector
 		LinkedHashMap includeMap = pathInfoObject.getIncludeMap();
 		try {
             ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(getContext().getProject());
+            Assert.isNotNull(projectDescription);
             for (IPath path : MakefileTools.getOmnetppIncludeLocationsForProject(projectDescription))
                 includeMap.put(path.toOSString(), false);
             pathInfoObject.setIncludeMap(includeMap);

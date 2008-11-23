@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.cdt.core.cdtvariables.CdtVariableException;
@@ -21,6 +20,7 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.AssertionFailedException;
@@ -264,6 +264,8 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
             public String getText(Object element) {
                 if (element instanceof IContainer)
                     return getFolderInfo((IContainer)element).label;
+                if (element instanceof IResource) // new files tend to appear in the tree as well...
+                    return ((IResource)element).getName();
                 return element.toString();
             }
         });
@@ -629,8 +631,8 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
     }
 
     protected IContainer getTreeSelection() {
-        IContainer folder = (IContainer)((IStructuredSelection)treeViewer.getSelection()).getFirstElement();
-        return folder;
+        Object element = ((IStructuredSelection)treeViewer.getSelection()).getFirstElement();
+        return element instanceof IContainer ? (IContainer)element : null; 
     }
 
     protected boolean isDirty() {
