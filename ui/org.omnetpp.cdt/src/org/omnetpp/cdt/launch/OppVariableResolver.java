@@ -34,6 +34,7 @@ public class OppVariableResolver implements IDynamicVariableResolver {
 	public static final String OPP_LD_LIBRARY_PATH = "opp_ld_library_path";
 	public static final String OPP_SIMPROGS = "opp_simprogs";
 	public static final String LOC_SUFFIX = "_loc";
+	public static final String OPP_ADDITIONAL_PATH = "opp_additional_path";
 
     public String resolveValue(IDynamicVariable variable, String argument) throws CoreException {
 	    String varName = variable.getName();

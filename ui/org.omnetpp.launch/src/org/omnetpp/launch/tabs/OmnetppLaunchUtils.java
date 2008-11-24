@@ -263,11 +263,12 @@ public class OmnetppLaunchUtils {
 				args += " -r "+runStr;
 		}
 
+		String pathSep = System.getProperty("path.separator");
+
 		// NED path
 		String nedpathStr = config.getAttribute(IOmnetppLaunchConstants.OPP_NED_PATH, "").trim();
 		nedpathStr = VariablesPlugin.getDefault().getStringVariableManager().performStringSubstitution(nedpathStr, false);
 		if (StringUtils.isNotBlank(nedpathStr)) {
-			String pathSep = System.getProperty("path.separator");
 			String[] nedPaths = StringUtils.split(nedpathStr, pathSep);
 			for (int i = 0 ; i< nedPaths.length; i++)
 				nedPaths[i] = getLocationForWorkspacePath(nedPaths[i], wdirStr, false).toString();
@@ -312,13 +313,21 @@ public class OmnetppLaunchUtils {
         Map<String, String> envir = newCfg.getAttribute("org.eclipse.debug.core.environmentVariables", new HashMap<String, String>());
         String path = envir.get("PATH");
         // if the path was not set by hand, generate automatically
-        if (StringUtils.isBlank(path))
-        	envir.put("PATH", "${opp_bin_dir}${system_property:path.separator}${opp_ld_library_path_loc:"+wdirStr+"}${system_property:path.separator}${env_var:PATH}");
+        if (StringUtils.isBlank(path)) {
+            //FIXME this will crash (error dialog) if the org.omnetpp.cdt plugin which contributes the macros
+            // is not present. We need to use VariablesPlugin.getDefault().getStringVariableManager().getDynamicVariable()
+            // (or some other way) to determine if the macros are present at all. --Andras
+        	envir.put("PATH", 
+        	        "${opp_ld_library_path_loc:"+wdirStr+"}" + pathSep +
+        	        "${opp_bin_dir}" + pathSep +
+        	        "${opp_additional_path}" + pathSep +  // msys/bin, mingw/bin, etc 
+        	        "${env_var:PATH}");
+        }
 
         String ldLibPath = envir.get("LD_LIBRARY_PATH");
         // if the path was not set by hand, generate automatically
         if (StringUtils.isBlank(ldLibPath))
-        	envir.put("LD_LIBRARY_PATH", "${opp_lib_dir}${system_property:path.separator}${opp_ld_library_path_loc:"+wdirStr+"}${system_property:path.separator}${env_var:LD_LIBRARY_PATH}");
+        	envir.put("LD_LIBRARY_PATH", "${opp_lib_dir}"+pathSep+"${opp_ld_library_path_loc:"+wdirStr+"}"+pathSep+"${env_var:LD_LIBRARY_PATH}");
 
         String imagePath = envir.get("OMNETPP_IMAGE_PATH");
         if (StringUtils.isBlank(imagePath)) {

@@ -189,6 +189,12 @@
             resolver="org.omnetpp.cdt.launch.OppVariableResolver"
             supportsArgument="true">
       </variable>
+      <variable
+            description="Expands to a string that has to be added to the PATH environment variable so that simulations can be run (e.g. msys/bin, mingw/bin)"
+            name="opp_additional_path"
+            resolver="org.omnetpp.cdt.launch.OppVariableResolver2"
+            supportsArgument="false">
+      </variable>
    </extension>
    <extension
          id="makefileproblem"

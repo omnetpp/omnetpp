@@ -11,6 +11,7 @@ import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.make.core.scannerconfig.IDiscoveredPathManager.IDiscoveredPathInfo;
 import org.eclipse.cdt.make.core.scannerconfig.IDiscoveredPathManager.IDiscoveredScannerInfoSerializable;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -33,7 +34,7 @@ public class MSVCDiscoveredPathInfo implements IDiscoveredPathInfo {
 		List<IPath> paths = new ArrayList<IPath>(); 
 		if (vcDir != null ) {
 		    paths.add(new Path(vcDir).append("INCLUDE"));
-		    paths.add(new Path(vcDir).append("INCLUDE\\SYS"));  //FIXME needeD?
+		    paths.add(new Path(vcDir).append("INCLUDE\\SYS"));  //FIXME needed?
 		    if (sdkDir != null) {
 		        paths.add(new Path(sdkDir).append("Include"));
 		        paths.add(new Path(sdkDir).append("Include\\gl"));  //FIXME others? atl,mfc,...
@@ -43,6 +44,7 @@ public class MSVCDiscoveredPathInfo implements IDiscoveredPathInfo {
 	    // add include dirs needed for OMNeT++
         try {
             ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(project);
+            Assert.isNotNull(projectDescription);
             paths.addAll(MakefileTools.getOmnetppIncludeLocationsForProject(projectDescription));
         }
         catch (CoreException e) {
