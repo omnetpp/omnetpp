@@ -34,6 +34,7 @@ public class OmnetppMainPlugin extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
         PLUGIN_ID = getBundle().getSymbolicName();
+        getLog().log(new Status(IStatus.INFO, PLUGIN_ID, IStatus.OK, "OMNeT++ IDE "+getVersion()+" started.", null));
 	}
 
     public static String getVersion() {
