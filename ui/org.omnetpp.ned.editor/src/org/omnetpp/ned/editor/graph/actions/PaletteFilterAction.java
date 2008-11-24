@@ -45,7 +45,7 @@ public class PaletteFilterAction extends WorkbenchPartAction {
 
     public PaletteFilterAction(GraphicalNedEditor part) {
         super(part);
-        setText("Select packages...");
+        setText("Select &packages...");
         setId("PaletteFilter");
         setToolTipText("Select NED packages for the palette");
     }

@@ -212,7 +212,7 @@ public class GNEDActionBarContributor extends EditorActionBarContributor {
     @Override
     public void contributeToMenu(IMenuManager menubar) {
 
-        MenuManager viewMenu = new MenuManager("View");
+        MenuManager viewMenu = new MenuManager("&View");
         viewMenu.add(getAction(GEFActionConstants.ZOOM_IN));
         viewMenu.add(getAction(GEFActionConstants.ZOOM_OUT));
         viewMenu.add(new Separator());

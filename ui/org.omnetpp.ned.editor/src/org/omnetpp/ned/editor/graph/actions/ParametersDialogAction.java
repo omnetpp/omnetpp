@@ -18,7 +18,7 @@ import org.omnetpp.ned.model.interfaces.INedModelProvider;
  */
 public class ParametersDialogAction extends org.eclipse.gef.ui.actions.SelectionAction {
     public static final String ID = "Parameters";
-    public static final String MENUNAME = "Edit Parameters...";
+    public static final String MENUNAME = "&Edit Parameters...";
     public static final String TOOLTIP = "Edit the module parameters";
     public static final ImageDescriptor IMAGE = ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_PARAM);
 

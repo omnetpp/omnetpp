@@ -16,7 +16,7 @@ import org.omnetpp.ned.model.interfaces.INedModelProvider;
 public class ConvertToNewFormatAction extends org.eclipse.gef.ui.actions.SelectionAction {
 
     public static final String ID = "ConvertToNewFormat";
-    public static final String MENUNAME = "Convert to 4.0 Format";
+    public static final String MENUNAME = "Convert to &4.0 Format";
     public static final String DESCRIPTION = "Converts the NED file into the new OMNeT++ 4.0 format";
 
     public ConvertToNewFormatAction(IWorkbenchPart part) {

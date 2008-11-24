@@ -58,7 +58,7 @@ import org.omnetpp.ned.model.pojo.SubmodulesElement;
  */
 public class PasteAction extends SelectionAction {
 	public static final String ID = ActionFactory.PASTE.getId();
-	public static final String MENUNAME = "Paste";
+	public static final String MENUNAME = "&Paste";
 	public static final String TOOLTIP = "Paste from clipboard";
 
 	public PasteAction(IWorkbenchPart part) {

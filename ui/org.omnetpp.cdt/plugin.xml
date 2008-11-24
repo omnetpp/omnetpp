@@ -361,6 +361,7 @@
             locationURI="popup:org.omnetpp.ned.editor.graph?after=org.eclipse.gef.group.find">
          <command
                commandId="org.omnetpp.cdt.gotoCppDefinitionForNEDType"
+               mnemonic="G"
                style="push"
                tooltip="Go To C++ Definition">
          </command>
@@ -369,8 +370,9 @@
             locationURI="popup:org.omnetpp.ned.editor.text?after=group.find">
          <command
                commandId="org.omnetpp.cdt.gotoCppDefinitionForNEDType"
+               mnemonic="G"
                style="push"
-               tooltip="Go To C++ Definition">
+               tooltip="&amp;Go To C++ Definition">
          </command>
       </menuContribution>
    </extension>

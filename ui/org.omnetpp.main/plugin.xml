@@ -311,7 +311,8 @@
             locationURI="menu:help?before=helpEnd">
             <command
                   commandId="org.omnetpp.main.commands.reportBug"
-                  id="reportBug">
+                  id="reportBug"
+                  mnemonic="B">
             </command>
       </menuContribution>
    </extension>

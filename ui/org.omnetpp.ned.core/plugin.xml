@@ -77,10 +77,12 @@
             locationURI="menu:org.eclipse.ui.main.menu?after=edit">
          <menu
                id="source"
-               label="Source">
+               label="Source"
+               mnemonic="S">
             <command
                   commandId="org.omnetpp.ned.cleanupNedFiles"
                   id="cleanupNedFiles"
+                  mnemonic="N"
                   style="push">
             </command>
          </menu>
@@ -90,6 +92,7 @@
          <command
                commandId="org.omnetpp.ned.openNedType"
                id="openNedType"
+               mnemonic="N"
                style="push">
          </command>
       </menuContribution>

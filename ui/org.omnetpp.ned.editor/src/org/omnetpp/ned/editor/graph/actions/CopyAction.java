@@ -22,7 +22,7 @@ import org.omnetpp.ned.model.interfaces.INedModelProvider;
  */
 public class CopyAction extends SelectionAction {
 	public static final String ID = ActionFactory.COPY.getId();
-	public static final String MENUNAME = "Copy";
+	public static final String MENUNAME = "&Copy";
 	public static final String TOOLTIP = "Copy to clipboard";
 
 	public CopyAction(IWorkbenchPart part) {

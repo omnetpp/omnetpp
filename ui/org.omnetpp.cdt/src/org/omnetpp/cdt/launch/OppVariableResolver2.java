@@ -8,6 +8,7 @@ import org.eclipse.core.variables.IDynamicVariable;
 import org.eclipse.core.variables.IDynamicVariableResolver;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.MingwEnvironmentVariableSupplier_COPY;
+import org.omnetpp.common.util.StringUtils;
 
 /**
  * Resolves opp_additional_path
@@ -34,7 +35,7 @@ public class OppVariableResolver2 implements IDynamicVariableResolver {
         if (msysBinDir != null)
             result += msysBinDir.toOSString();
         if (mingwBinDir != null)
-            result += (result.isEmpty()? "" : pathSep) + mingwBinDir.toOSString();
+            result += (StringUtils.isEmpty(result)? "" : pathSep) + mingwBinDir.toOSString();
 		return result;
 	}
 	

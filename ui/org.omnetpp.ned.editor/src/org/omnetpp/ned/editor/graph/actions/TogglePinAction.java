@@ -24,7 +24,7 @@ import org.omnetpp.ned.model.interfaces.IConnectableElement;
 public class TogglePinAction extends org.eclipse.gef.ui.actions.SelectionAction {
 
 	public static final String ID = "Pinned";
-	public static final String MENUNAME = "Pinned";
+	public static final String MENUNAME = "Pi&nned";
 	public static final String TOOLTIP = "Pins the module to a location";
 	public static final ImageDescriptor IMAGE = ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_UNPIN);
 

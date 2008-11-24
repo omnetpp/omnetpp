@@ -25,7 +25,7 @@ import org.omnetpp.ned.model.interfaces.INedModelProvider;
  */
 public class CutAction extends SelectionAction {
     public static final String ID = ActionFactory.CUT.getId();
-    public static final String MENUNAME = "Cut";
+    public static final String MENUNAME = "Cu&t";
     public static final String TOOLTIP = "Cut to clipboard";
 
     public CutAction(IWorkbenchPart part) {

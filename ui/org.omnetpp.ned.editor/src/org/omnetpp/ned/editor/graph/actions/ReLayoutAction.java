@@ -22,7 +22,7 @@ import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 public class ReLayoutAction extends org.eclipse.gef.ui.actions.SelectionAction {
 
 	public static final String ID = "Layout";
-	public static final String MENUNAME = "Layout";
+	public static final String MENUNAME = "&Layout";
 	public static final String TOOLTIP = "Re-layout compound module";
 	public static final ImageDescriptor IMAGE = ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_LAYOUT);
 

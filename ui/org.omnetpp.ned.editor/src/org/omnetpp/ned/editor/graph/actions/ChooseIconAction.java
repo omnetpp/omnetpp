@@ -27,7 +27,7 @@ import org.omnetpp.ned.model.interfaces.INedModelProvider;
  */
 public class ChooseIconAction extends org.eclipse.gef.ui.actions.SelectionAction {
     public static final String ID = "ChooseIcon";
-    public static final String MENUNAME = "Choose an Icon...";
+    public static final String MENUNAME = "C&hoose an Icon...";
     public static final String TOOLTIP = "Choose an icon for the module";
     public static final ImageDescriptor IMAGE = ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_CHOOSEICON);
 
