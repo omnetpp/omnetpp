@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -27,8 +26,6 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.variables.IStringVariableManager;
-import org.eclipse.core.variables.VariablesPlugin;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationType;
@@ -52,6 +49,7 @@ import org.eclipse.ui.dialogs.ListDialog;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.FileUtils;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.model.InifileParser;
 import org.omnetpp.inifile.editor.model.ParseException;
 import org.omnetpp.launch.tabs.OmnetppLaunchUtils;
@@ -594,21 +592,9 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
         // (we do it via macros, in order to avoid listing the CDT plugin as dependency in the manifest)
         String simProgs = null;
         String sharedLibs = null;
-        try {
-            IStringVariableManager variableManager = VariablesPlugin.getDefault().getStringVariableManager();
-            simProgs = variableManager.performStringSubstitution("${opp_simprogs:"+project.getFullPath().toString()+"}", false);
-            sharedLibs = variableManager.performStringSubstitution("${opp_shared_libs:"+project.getFullPath().toString()+"}", false);
-            
-            // when our CDT plugin is absent, these macros cannot be resolved; just use "" then 
-            if (simProgs.contains("${"))
-                simProgs = "";
-            if (sharedLibs.contains("${"))
-                sharedLibs = "";
-        }
-        catch (CoreException e) {
-            Assert.isTrue(false);  // no exception will be thrown, due to 2nd arg of performStringSubstitution()
-        }
-        
+        simProgs = StringUtils.substituteVariables("${opp_simprogs:"+project.getFullPath().toString()+"}", "");
+        sharedLibs = StringUtils.substituteVariables("${opp_shared_libs:"+project.getFullPath().toString()+"}", "");
+
         int numSimProgs = StringUtils.split(simProgs).length;
         int numSharedLibs = StringUtils.split(sharedLibs).length;
         if (numSimProgs == 1) {

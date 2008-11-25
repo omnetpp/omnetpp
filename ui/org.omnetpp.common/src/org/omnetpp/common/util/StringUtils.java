@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.variables.VariablesPlugin;
 import org.omnetpp.common.engine.Common;
 
 public class StringUtils extends org.apache.commons.lang.StringUtils {
@@ -797,4 +799,28 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
     	}
     	return builder.toString();
     }
+
+    /**
+	 * Performs variable substitution on the string.
+	 * If any variable is un-resolvable, it will remain unresolved.
+	 */
+	public static String substituteVariables(String string) {
+        try {
+			return VariablesPlugin.getDefault().getStringVariableManager().performStringSubstitution(string, false);
+		} catch (CoreException e) {
+			return string;
+		}
+	}
+    
+    /**
+	 * Performs variable substitution on the string.
+	 * If any variable is un-resolvable, returns defaultVal.
+	 */
+	public static String substituteVariables(String string, String defaultVal) {
+        try {
+			return VariablesPlugin.getDefault().getStringVariableManager().performStringSubstitution(string);
+		} catch (CoreException e) {
+			return defaultVal;
+		}
+	}
 }

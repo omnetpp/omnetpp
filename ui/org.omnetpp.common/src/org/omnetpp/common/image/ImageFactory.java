@@ -14,7 +14,6 @@ import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.filesystem.URIUtil;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.variables.VariablesPlugin;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.SWT;
@@ -26,6 +25,7 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.IConstants;
+import org.omnetpp.common.util.StringUtils;
 
 // FIXME imageRegistry should be invalidated when ${opp_root} has changed
 public class ImageFactory {
@@ -324,14 +324,14 @@ public class ImageFactory {
         NedImageDescriptor result;
         // TODO svg support missing
         for (String currPath : imageDirs)
-            if ((result = createDescriptor(null, resolve(currPath), baseName, "png", preferredSize)) != null)
+            if ((result = createDescriptor(null, StringUtils.substituteVariables(currPath), baseName, "png", preferredSize)) != null)
                 return result;
         // if not found in the filesystem, look for it in the JAR file
         if ((result = createDescriptor(ImageFactory.class, IMAGE_DIR, baseName, "png", preferredSize)) != null)
             return result;
         // serach for gifs if no PNG found
         for (String currPath : imageDirs)
-            if ((result = createDescriptor(null, resolve(currPath), baseName, "gif", preferredSize)) != null)
+            if ((result = createDescriptor(null, StringUtils.substituteVariables(currPath), baseName, "gif", preferredSize)) != null)
                 return result;
         if ((result = createDescriptor(ImageFactory.class, IMAGE_DIR, baseName, "gif", preferredSize)) != null)
             return result;
@@ -389,7 +389,7 @@ public class ImageFactory {
     	Set<String> result = new HashSet<String>();
     	for (String basedir : imageDirs) {
 			try {
-				IFileStore baseStore = EFS.getStore(URIUtil.toURI(resolve(basedir)).normalize());
+				IFileStore baseStore = EFS.getStore(URIUtil.toURI(StringUtils.substituteVariables(basedir)).normalize());
 	    		result.addAll(getNameList(baseStore, baseStore.toURI().toString().length()));
 			} catch (CoreException e) {	}
     	}
@@ -493,15 +493,6 @@ public class ImageFactory {
     	return tempFile.getCanonicalPath();
     }
     
-    private static String resolve(String str) {
-    	try {
-			return VariablesPlugin.getDefault().getStringVariableManager().performStringSubstitution(str, false);
-		} catch (CoreException e) {
-			CommonPlugin.logError(e);
-		}
-		return str;
-    }
-
     /**
      * Decorates the given image with the overlay image, and return the result 
      * as a new image. The client has the responsibility of disposing the image 

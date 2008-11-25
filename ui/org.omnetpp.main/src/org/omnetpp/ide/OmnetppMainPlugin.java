@@ -7,6 +7,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.IConstants;
+import org.omnetpp.common.util.StringUtils;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -77,25 +78,44 @@ public class OmnetppMainPlugin extends AbstractUIPlugin {
     }
 
 	/**
-	 * The main directory (where Makefile.inc or configuser.vc resides)
+	 * The main directory (where Makefile.inc or configuser.vc resides). Returns empty string if 
+	 * omnetpp location cannot be determined.
 	 */
 	public static String getOmnetppRootDir() {
 		return CommonPlugin.getConfigurationPreferenceStore().getString(IConstants.PREF_OMNETPP_ROOT);
 	}
 	
+	/**
+	 * @return The omnetpp bin directory, or empty string "" if omnetpp root dir is not defined.
+	 */
 	public static String getOmnetppBinDir() {
-        // FIXME in fact we have to look into the Makefile.inc or configuser.vc files in the root and get the directory from there
-    	return new Path(getOmnetppRootDir()).append("bin").toOSString();
+		// FIXME in fact we have to look into the Makefile.inc or configuser.vc files in the root and get the directory from there
+		String oppRoot = getOmnetppRootDir();
+		if (StringUtils.isBlank(oppRoot))
+			return "";
+    	return new Path(oppRoot).append("bin").toOSString();
     }
 
+	/**
+	 * @return The omnetpp inc directory, or empty string "" if omnetpp root dir is not defined.
+	 */
 	public static String getOmnetppInclDir() {
         // FIXME in fact we have to look into the Makefile.inc or configuser.vc files in the root and get the directory from there
-    	return new Path(getOmnetppRootDir()).append("include").toOSString();
+		String oppRoot = getOmnetppRootDir();
+		if (StringUtils.isBlank(oppRoot))
+			return "";
+    	return new Path(oppRoot).append("include").toOSString();
     }
 
+	/**
+	 * @return The omnetpp lib directory, or empty string "" if omnetpp root dir is not defined.
+	 */
 	public static String getOmnetppLibDir() {
         // FIXME in fact we have to look into the Makefile.inc or configuser.vc files in the root and get the directory from there
-    	return new Path(getOmnetppRootDir()).append("lib").toOSString();
+		String oppRoot = getOmnetppRootDir();
+		if (StringUtils.isBlank(oppRoot))
+			return "";
+    	return new Path(oppRoot).append("lib").toOSString();
     }
 
 }

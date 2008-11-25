@@ -14,13 +14,10 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.variables.IStringVariableManager;
-import org.eclipse.core.variables.VariablesPlugin;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
@@ -69,7 +66,7 @@ implements ModifyListener {
 
     public final static String VAR_NED_PATH = "opp_ned_path";
     public final static String VAR_SHARED_LIBS = "opp_shared_libs";
-    public final static String VAR_LD_LIBRARY_PATH_LOC = "opp_ld_library_path_loc";
+    
     // UI widgets
     protected Button fProgOppRunButton;
     protected Button fProgOtherButton;
@@ -314,17 +311,7 @@ implements ModifyListener {
     	if (StringUtils.isEmpty(defWorkDir))
     		return "";
 
-    	String progs = null;
-        try {
-            IStringVariableManager variableManager = VariablesPlugin.getDefault().getStringVariableManager();
-            progs = variableManager.performStringSubstitution("${opp_simprogs:"+defWorkDir+"}", false);
-            // when our CDT plugin is absent, these macros cannot be resolved; just use "" then 
-            if (progs.contains("${"))
-                progs = "";
-        }
-        catch (CoreException e) {
-            Assert.isTrue(false);  // no exception will be thrown, due to 2nd arg of performStringSubstitution()
-        }
+    	String progs = StringUtils.substituteVariables("${opp_simprogs:"+defWorkDir+"}", "");
         
         // return the first program from the list
         String [] splitProgs  = StringUtils.split(progs, ' ');
@@ -392,23 +379,18 @@ implements ModifyListener {
      * configuration or NULL.
      */
     private IContainer getWorkingDirectory(){
-        try {
-            String expandedPath = VariablesPlugin.getDefault().getStringVariableManager().performStringSubstitution(getWorkingDirectoryText());
-            if (expandedPath.length() > 0) {
-                IPath newPath = new Path(expandedPath);
-                if (newPath.segmentCount() == 0)
-                	return null;
-                IResource resource = ResourcesPlugin.getWorkspace().getRoot().findMember(newPath);
-                if (resource instanceof IContainer)
-                	return (IContainer)resource;
-                // not a container - we cannot convert
-                return null;
-            }
-        } catch (CoreException e) {
-            LaunchPlugin.logError("Error getting working directory from the Launch dialog", e);
-        }
+    	String expandedPath = StringUtils.substituteVariables(getWorkingDirectoryText());
+    	if (expandedPath.length() > 0) {
+    		IPath newPath = new Path(expandedPath);
+    		if (newPath.segmentCount() == 0)
+    			return null;
+    		IResource resource = ResourcesPlugin.getWorkspace().getRoot().findMember(newPath);
+    		if (resource instanceof IContainer)
+    			return (IContainer)resource;
+    		// not a container - we cannot convert
+    		return null;
+    	}
         return null;
-
     }
 
     /**

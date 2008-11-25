@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.util.Date;
-import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -12,7 +11,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.core.variables.VariablesPlugin;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
@@ -139,9 +137,15 @@ public class SimulationLauncherJob extends Job {
         	try {
         		ProcessConsole console = (ProcessConsole)DebugUIPlugin.getDefault().getProcessConsoleManager().getConsole(iprocess);
         		if (console != null) {
-        			IOConsoleOutputStream errStream = console.newOutputStream();
+        			final IOConsoleOutputStream errStream = console.newOutputStream();
         			errStream.setActivateOnWrite(true);
-        			errStream.setColor(DebugUITools.getPreferenceColor(IDebugPreferenceConstants.CONSOLE_SYS_ERR_COLOR));
+        			// we have to set the color in the UI thread otherwise SWT will throw an error
+        			Display.getDefault().syncExec(new Runnable() {
+						@Override
+						public void run() {
+							errStream.setColor(DebugUITools.getPreferenceColor(IDebugPreferenceConstants.CONSOLE_SYS_ERR_COLOR));
+						}
+        			});
         			errStream.write("\nSimulation terminated with exit code: "+iprocess.getExitValue());
         			errStream.write("\nCommand line: "+info.toString());
         			errStream.close();
@@ -160,7 +164,7 @@ public class SimulationLauncherJob extends Job {
      */
     private String renderProcessLabel(Integer runNo) throws CoreException {
         String progAttr = configuration.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, "");
-        String expandedProg = VariablesPlugin.getDefault().getStringVariableManager().performStringSubstitution(progAttr);
+        String expandedProg = StringUtils.substituteVariables(progAttr);
         String format = "{0} ({1} - run #"+runNo +")";
         String timestamp = DateFormat.getInstance().format(new Date(System.currentTimeMillis()));
         return MessageFormat.format(format, new Object[] {expandedProg, timestamp});

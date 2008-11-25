@@ -9,7 +9,6 @@ import org.eclipse.cdt.managedbuilder.macros.IBuildMacroProvider;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.variables.VariablesPlugin;
 import org.omnetpp.common.util.StringUtils;
 
 /**
@@ -404,7 +403,7 @@ public class MakemakeOptions implements Cloneable {
 		arg = provider.resolveValue(arg, "", " ", IBuildMacroProvider.CONTEXT_CONFIGURATION, ManagedBuildManager.getBuildInfo(project).getDefaultConfiguration());
 
 		// resolve global eclipse variables
-		arg = VariablesPlugin.getDefault().getStringVariableManager().performStringSubstitution(arg);
+		arg = StringUtils.substituteVariables(arg);
 
 		return arg;
 	}

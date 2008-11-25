@@ -24,8 +24,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.variables.IStringVariableManager;
-import org.eclipse.core.variables.VariablesPlugin;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
@@ -267,7 +265,7 @@ public class OmnetppLaunchUtils {
 
 		// NED path
 		String nedpathStr = config.getAttribute(IOmnetppLaunchConstants.OPP_NED_PATH, "").trim();
-		nedpathStr = VariablesPlugin.getDefault().getStringVariableManager().performStringSubstitution(nedpathStr, false);
+		nedpathStr = StringUtils.substituteVariables(nedpathStr);
 		if (StringUtils.isNotBlank(nedpathStr)) {
 			String[] nedPaths = StringUtils.split(nedpathStr, pathSep);
 			for (int i = 0 ; i< nedPaths.length; i++)
@@ -277,7 +275,7 @@ public class OmnetppLaunchUtils {
 
 		// shared libraries
 		String shLibStr = config.getAttribute(IOmnetppLaunchConstants.OPP_SHARED_LIBS, "").trim();
-		shLibStr = VariablesPlugin.getDefault().getStringVariableManager().performStringSubstitution(shLibStr, false);
+		shLibStr = StringUtils.substituteVariables(shLibStr, "");
 		if (StringUtils.isNotBlank(shLibStr)) {
 			String[] libs = StringUtils.split(shLibStr);
 			// convert to file system location
@@ -296,7 +294,7 @@ public class OmnetppLaunchUtils {
 
 		// ini files
 		String iniStr = config.getAttribute(IOmnetppLaunchConstants.OPP_INI_FILES, "").trim();
-		iniStr = VariablesPlugin.getDefault().getStringVariableManager().performStringSubstitution(iniStr, false);
+		iniStr = StringUtils.substituteVariables(iniStr);
 		if (StringUtils.isNotBlank(iniStr)) {
 			String[] inifiles = StringUtils.split(iniStr);
 			// convert to file system location
@@ -317,22 +315,24 @@ public class OmnetppLaunchUtils {
             //FIXME this will crash (error dialog) if the org.omnetpp.cdt plugin which contributes the macros
             // is not present. We need to use VariablesPlugin.getDefault().getStringVariableManager().getDynamicVariable()
             // (or some other way) to determine if the macros are present at all. --Andras
-        	envir.put("PATH", 
-        	        "${opp_ld_library_path_loc:"+wdirStr+"}" + pathSep +
-        	        "${opp_bin_dir}" + pathSep +
-        	        "${opp_additional_path}" + pathSep +  // msys/bin, mingw/bin, etc 
-        	        "${env_var:PATH}");
+        	envir.put("PATH",StringUtils.substituteVariables("${opp_ld_library_path_loc:"+wdirStr+"}" + pathSep, "") +
+        			         StringUtils.substituteVariables("${opp_bin_dir}" + pathSep, "") + 
+        			         StringUtils.substituteVariables("${opp_additional_path}" + pathSep, "") +  // msys/bin, mingw/bin, etc 
+        			         StringUtils.substituteVariables("${env_var:PATH}",""));
         }
 
         String ldLibPath = envir.get("LD_LIBRARY_PATH");
         // if the path was not set by hand, generate automatically
         if (StringUtils.isBlank(ldLibPath))
-        	envir.put("LD_LIBRARY_PATH", "${opp_lib_dir}"+pathSep+"${opp_ld_library_path_loc:"+wdirStr+"}"+pathSep+"${env_var:LD_LIBRARY_PATH}");
+        	envir.put("LD_LIBRARY_PATH", StringUtils.substituteVariables("${opp_lib_dir}"+pathSep,"") +
+        			                     StringUtils.substituteVariables("${opp_ld_library_path_loc:"+wdirStr+"}"+pathSep,"") +
+        			                     StringUtils.substituteVariables("${env_var:LD_LIBRARY_PATH}"));
 
         String imagePath = envir.get("OMNETPP_IMAGE_PATH");
         if (StringUtils.isBlank(imagePath)) {
             imagePath = CommonPlugin.getConfigurationPreferenceStore().getString(IConstants.PREF_OMNETPP_IMAGE_PATH);
-            envir.put("OMNETPP_IMAGE_PATH", imagePath);
+            if (StringUtils.isNotBlank(imagePath))
+            	envir.put("OMNETPP_IMAGE_PATH", imagePath);
         }
         
         // Java CLASSPATH
@@ -352,8 +352,7 @@ public class OmnetppLaunchUtils {
 	}
 
 	private static String findRelatedCDTProject(String workspacePath) throws CoreException {
-	    IStringVariableManager varman = VariablesPlugin.getDefault().getStringVariableManager();
-	    String resolvedWDir = varman.performStringSubstitution(workspacePath);
+	    String resolvedWDir = StringUtils.substituteVariables(workspacePath);
 	    IResource resource = ResourcesPlugin.getWorkspace().getRoot().findMember(resolvedWDir);
 	    if (resource == null)
 	        return null;
@@ -437,7 +436,7 @@ public class OmnetppLaunchUtils {
 			location = config.getAttribute(IOmnetppLaunchConstants.ATTR_WORKING_DIRECTORY, location);
 
 			if (location != null) {
-				String expandedLocation = VariablesPlugin.getDefault().getStringVariableManager().performStringSubstitution(location);
+				String expandedLocation = StringUtils.substituteVariables(location);
 				if (expandedLocation.length() > 0) {
 					IPath newPath = new Path(expandedLocation);
 					return newPath.makeAbsolute();
@@ -559,9 +558,8 @@ public class OmnetppLaunchUtils {
 				cmdLine = (String[]) ArrayUtils.addAll(cmdLine, new String[] {"-x", "General"});
 		}
 
-		IStringVariableManager varman2 = VariablesPlugin.getDefault().getStringVariableManager();
 		String wdAttr = getWorkingDirectoryPath(configuration).toString();
-		String expandedWd = varman2.performStringSubstitution(wdAttr);
+		String expandedWd = StringUtils.substituteVariables(wdAttr);
 		String environment[] = DebugPlugin.getDefault().getLaunchManager().getEnvironment(configuration);
 		
 		// fill in the infoBuffer
@@ -582,13 +580,12 @@ public class OmnetppLaunchUtils {
 	 * specified in the configuration.
 	 */
 	public static String[] createCommandLine(ILaunchConfiguration configuration, String additionalArgs) throws CoreException {
-		IStringVariableManager varman = VariablesPlugin.getDefault().getStringVariableManager();
 		String projAttr = configuration.getAttribute(IOmnetppLaunchConstants.ATTR_PROJECT_NAME, "");
 		String progAttr = configuration.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, "");
 		String argAttr = configuration.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS, "");
-		String expandedProj = varman.performStringSubstitution(projAttr);
-		String expandedProg = varman.performStringSubstitution(progAttr);
-		String expandedArg = varman.performStringSubstitution(argAttr);
+		String expandedProj = StringUtils.substituteVariables(projAttr);
+		String expandedProg = StringUtils.substituteVariables(progAttr);
+		String expandedArg = StringUtils.substituteVariables(argAttr);
 		IPath projPath = new Path(expandedProj);
 		IPath progPath = new Path(expandedProg);
 		// put the additional arguments at the beginning so they override the other arguments
@@ -672,5 +669,6 @@ public class OmnetppLaunchUtils {
 		// we should have a consistent marker char/tag during user input
 		return text.contains("Enter parameter");
 	}
+	
     
 }
