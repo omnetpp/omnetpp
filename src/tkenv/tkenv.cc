@@ -126,6 +126,7 @@ Tkenv::Tkenv()
     animating = false;
     hasmessagewindow = false;
     isconfigrun = false;
+    rununtil_msg = NULL; // deactivate corresponding checks in eventCancelled()/objectDeleted()
 
     // set the name here, to prevent warning from cStringPool on shutdown when Cmdenv runs
     inspectorfactories.getInstance()->setName("inspectorfactories");
@@ -433,6 +434,7 @@ void Tkenv::runSimulation(int mode, simtime_t until_time, eventnumber_t until_ev
 
     animating = true;
     disable_tracing = false;
+    rununtil_msg = NULL;
 
     if (simstate==SIM_TERMINATED)
     {
