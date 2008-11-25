@@ -1,8 +1,10 @@
 package org.omnetpp.launch;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.util.Date;
+import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -11,18 +13,24 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.variables.VariablesPlugin;
+import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.IStreamListener;
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.debug.core.model.IStreamMonitor;
+import org.eclipse.debug.internal.ui.DebugUIPlugin;
+import org.eclipse.debug.internal.ui.preferences.IDebugPreferenceConstants;
+import org.eclipse.debug.internal.ui.views.console.ProcessConsole;
 import org.eclipse.debug.internal.ui.views.launch.LaunchView;
+import org.eclipse.debug.ui.DebugUITools;
 import org.eclipse.debug.ui.IDebugUIConstants;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.console.IOConsoleOutputStream;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.launch.tabs.OmnetppLaunchUtils;
 
@@ -35,14 +43,14 @@ public class SimulationLauncherJob extends Job {
     ILaunchConfiguration configuration;
     ILaunch launch;
     Integer runNo;
-    boolean waitForFinish;
+    boolean reportProgress;
 
-    public SimulationLauncherJob(ILaunchConfiguration configuration, ILaunch launch, Integer runNo, boolean waitForFinish) {
+    public SimulationLauncherJob(ILaunchConfiguration configuration, ILaunch launch, Integer runNo, boolean reportProgress) {
         super("Running simulation");
         this.configuration = configuration;
         this.launch = launch;
         this.runNo = runNo;
-        this.waitForFinish = waitForFinish;
+        this.reportProgress = reportProgress;
     }
 
     /* (non-Javadoc)
@@ -79,33 +87,35 @@ public class SimulationLauncherJob extends Job {
         if (monitor.isCanceled())
             return;
 
-        monitor.subTask("run #"+runNo+" - Initializing...");
+        if (reportProgress) 
+        	monitor.subTask("run #"+runNo+" - Initializing...");
+        
         monitor.setWorkRemaining(100);
 
         Process process = OmnetppLaunchUtils.startSimulationProcess(configuration, " -r "+runNo, false);
         IProcess iprocess = DebugPlugin.newProcess(launch, process, renderProcessLabel(runNo));
         iprocess.setAttribute(IProcess.ATTR_CMDLINE, StringUtils.join(OmnetppLaunchUtils.createCommandLine(configuration, " -r "+runNo)," "));
-        // if we don't want to wait for finishing the process, just exit
-        if (!waitForFinish)
-            return;
 
         // setup a stream monitor on the process output, so we can track the progress
-        iprocess.getStreamsProxy().getOutputStreamMonitor().addListener(new IStreamListener () {
-            int prevPct = 0;
-            public void streamAppended(String text, IStreamMonitor ismon) {
-                    int pct = OmnetppLaunchUtils.getProgressInPercent(text);
-                    if (pct >= 0) {
-                        monitor.worked(pct - prevPct);
-                        prevPct = pct;
-                    }
+        if (reportProgress)
+        	iprocess.getStreamsProxy().getOutputStreamMonitor().addListener(new IStreamListener () {
+        		int prevPct = 0;
+        		public void streamAppended(String text, IStreamMonitor ismon) {
+        			int pct = OmnetppLaunchUtils.getProgressInPercent(text);
+        			if (pct >= 0) {
+        				monitor.worked(pct - prevPct);
+        				prevPct = pct;
+        			}
 
-                if (OmnetppLaunchUtils.isWaitingForUserInput(text))
-                    monitor.subTask("run #"+runNo+" - Waiting for user input... (Switch to console)");
-                else
-                    monitor.subTask("run #"+runNo+" - Executing ("+prevPct+"%)");
-            }
-        });
-
+        			if (OmnetppLaunchUtils.isWaitingForUserInput(text))
+        				monitor.subTask("run #"+runNo+" - Waiting for user input... (Switch to console)");
+        			else
+        				monitor.subTask("run #"+runNo+" - Executing ("+prevPct+"%)");
+        		}
+        	});
+        else
+        	monitor.worked(50);
+        
         refreshDebugView();
         // poll the state of the monitor and terminate the process if cancel was requested
         while (!iprocess.isTerminated()) {
@@ -121,8 +131,41 @@ public class SimulationLauncherJob extends Job {
             }
         }
         refreshDebugView();
+
+        // do some error reporting if the process finished with error
+        if (iprocess.isTerminated() && iprocess.getExitValue() != 0 )
+        	try {
+        		ProcessConsole console = (ProcessConsole)DebugUIPlugin.getDefault().getProcessConsoleManager().getConsole(iprocess);
+        		if (console != null) {
+        			IOConsoleOutputStream errStream = console.newOutputStream();
+        			errStream.setActivateOnWrite(true);
+        			errStream.setColor(DebugUITools.getPreferenceColor(IDebugPreferenceConstants.CONSOLE_SYS_ERR_COLOR));
+        			errStream.write(dumpProcessInfo(iprocess));
+        			// TODO add some more info for error resolution. dump environment etc.
+        			errStream.close();
+        		}
+        	} catch (IOException e) {
+        		LaunchPlugin.logError("Unable to write to error console", e);
+        	} catch (DebugException e) {
+        		LaunchPlugin.logError("Process is not yet terminated (should not happen)", e);
+        	}
     }
 
+    private String dumpProcessInfo(IProcess iprocess) throws DebugException {
+    	StringBuilder result = new StringBuilder();
+    	result.append("Simulation terminated with exit code: "+iprocess.getExitValue());
+    	result.append("\nCommand line: "+iprocess.getAttribute(IProcess.ATTR_CMDLINE));
+//    	result.append("\nWorking directory: TBD");
+    	Map<String, String> env = System.getenv();
+    	result.append("\nPATH: "+env.get("PATH"));
+    	result.append("\nLD_LIBRARY_PATH: "+env.get("LD_LIBRARY_PATH"));
+    	result.append("\n\nEnvironment variables:");
+    	for (String key : env.keySet())
+    		result.append("\n  "+key+" = "+env.get(key));
+    	return result.toString();
+    }
+    
+    
     /**
      * @param runNo
      * @return The process label to display with the run number.
