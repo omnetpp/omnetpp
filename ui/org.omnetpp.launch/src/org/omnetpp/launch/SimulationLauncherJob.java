@@ -91,10 +91,12 @@ public class SimulationLauncherJob extends Job {
         	monitor.subTask("run #"+runNo+" - Initializing...");
         
         monitor.setWorkRemaining(100);
-
-        Process process = OmnetppLaunchUtils.startSimulationProcess(configuration, " -r "+runNo, false);
+        StringBuilder info = new StringBuilder();
+        Process process = OmnetppLaunchUtils.startSimulationProcess(configuration, " -r "+runNo, false, info);
         IProcess iprocess = DebugPlugin.newProcess(launch, process, renderProcessLabel(runNo));
-        iprocess.setAttribute(IProcess.ATTR_CMDLINE, StringUtils.join(OmnetppLaunchUtils.createCommandLine(configuration, " -r "+runNo)," "));
+        // we add the process info string as the command line so the whole info will be
+        // visible in the debug view's property dialog
+        iprocess.setAttribute(IProcess.ATTR_CMDLINE, info.toString());
 
         // setup a stream monitor on the process output, so we can track the progress
         if (reportProgress)
@@ -140,8 +142,8 @@ public class SimulationLauncherJob extends Job {
         			IOConsoleOutputStream errStream = console.newOutputStream();
         			errStream.setActivateOnWrite(true);
         			errStream.setColor(DebugUITools.getPreferenceColor(IDebugPreferenceConstants.CONSOLE_SYS_ERR_COLOR));
-        			errStream.write(dumpProcessInfo(iprocess));
-        			// TODO add some more info for error resolution. dump environment etc.
+        			errStream.write("\nSimulation terminated with exit code: "+iprocess.getExitValue());
+        			errStream.write("\nCommand line: "+info.toString());
         			errStream.close();
         		}
         	} catch (IOException e) {
@@ -151,21 +153,6 @@ public class SimulationLauncherJob extends Job {
         	}
     }
 
-    private String dumpProcessInfo(IProcess iprocess) throws DebugException {
-    	StringBuilder result = new StringBuilder();
-    	result.append("Simulation terminated with exit code: "+iprocess.getExitValue());
-    	result.append("\nCommand line: "+iprocess.getAttribute(IProcess.ATTR_CMDLINE));
-//    	result.append("\nWorking directory: TBD");
-    	Map<String, String> env = System.getenv();
-    	result.append("\nPATH: "+env.get("PATH"));
-    	result.append("\nLD_LIBRARY_PATH: "+env.get("LD_LIBRARY_PATH"));
-    	result.append("\n\nEnvironment variables:");
-    	for (String key : env.keySet())
-    		result.append("\n  "+key+" = "+env.get(key));
-    	return result.toString();
-    }
-    
-    
     /**
      * @param runNo
      * @return The process label to display with the run number.

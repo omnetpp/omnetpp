@@ -541,10 +541,12 @@ public class OmnetppLaunchUtils {
 	 * @param configuration
 	 * @param additionalArgs extra command line arguments to be prepended to the command line
 	 * @param requestInfo Setting it to true runs the process in "INFO" mode (replaces the -c arg with -x)
+	 * @param infoBuffer returns an info string that describes command line, working dir, environment etc.
 	 * @return The created process object,
 	 * @throws CoreException if process is not started correctly
 	 */
-	public static Process startSimulationProcess(ILaunchConfiguration configuration, String additionalArgs, boolean requestInfo) throws CoreException {
+	public static Process startSimulationProcess(ILaunchConfiguration configuration, String additionalArgs, 
+			         boolean requestInfo, StringBuilder infoBuffer) throws CoreException {
 		String[] cmdLine = createCommandLine(configuration, additionalArgs);
 
 		// Debug.println("starting with command line: "+StringUtils.join(cmdLine," "));
@@ -561,6 +563,16 @@ public class OmnetppLaunchUtils {
 		String wdAttr = getWorkingDirectoryPath(configuration).toString();
 		String expandedWd = varman2.performStringSubstitution(wdAttr);
 		String environment[] = DebugPlugin.getDefault().getLaunchManager().getEnvironment(configuration);
+		
+		// fill in the infoBuffer
+		infoBuffer.append(StringUtils.join(cmdLine,' '));
+    	infoBuffer.append("\n\nWorking directory: "+expandedWd+"\n");
+    	for (String env : environment) {
+    		if (env.startsWith("PATH=") || env.startsWith("LD_LIBRARY_PATH=") 
+    				 || env.startsWith("OMNETPP_") || env.startsWith("NEDPATH=")  )
+    			infoBuffer.append("\n"+env);
+    	}
+		
 		return DebugPlugin.exec(cmdLine, new File(expandedWd), environment);
 	}
 
@@ -599,7 +611,8 @@ public class OmnetppLaunchUtils {
 	public static String getSimulationRunInfo(ILaunchConfiguration configuration) {
 		try {
 			configuration = convertLaunchConfig(configuration, ILaunchManager.RUN_MODE);
-			Process proc = OmnetppLaunchUtils.startSimulationProcess(configuration, "-u Cmdenv -g", true);
+			StringBuilder info = new StringBuilder();
+			Process proc = OmnetppLaunchUtils.startSimulationProcess(configuration, "-u Cmdenv -g", true, info);
 			final int BUFFERSIZE = 8192;
 			byte bytes[] = new byte[BUFFERSIZE];
 			StringBuffer stringBuffer = new StringBuffer(BUFFERSIZE);
