@@ -36,6 +36,24 @@
 		Eclipse antRunner application.
 	-->
 	<target name="pde-build">
+	    <replace dir="${buildDirectory}" token="##BUILDID##" value="${env.BUILDID}">
+		  	<include name="**/*.java"/>
+		  	<include name="**/*.htm" />
+			<include name="**/*.html"/>
+			<include name="**/*.xml"/>
+			<include name="**/MANIFEST.MF"/>
+			<include name="**/*.properties"/>
+			<include name="**/*.product"/>
+	    </replace>	
+	    <replace dir="${buildDirectory}" token="##VERSION##" value="${env.VERSION}">
+		  	<include name="**/*.java"/>
+		  	<include name="**/*.htm" />
+			<include name="**/*.html"/>
+			<include name="**/*.xml"/>
+			<include name="**/MANIFEST.MF"/>
+			<include name="**/*.properties"/>
+			<include name="**/*.product"/>
+	    </replace>	
 		<java classname="org.eclipse.equinox.launcher.Main" fork="true" failonerror="true">
 			<arg value="-application" />
 			<arg value="org.eclipse.ant.core.antRunner" />
