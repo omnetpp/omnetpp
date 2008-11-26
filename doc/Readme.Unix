@@ -62,8 +62,8 @@ NOTE: The IDE is supported ONLY on the following platforms:
 3. Reconfiguring the libraries
 
 If you need to recompile the OMNeT++ components with different flags (e.g.
-different optimization), then cd to the top-level omnetpp
-directory, edit configure.user accordingly, then say:
+different optimization), then cd to the top-level omnetpp directory, edit 
+configure.user accordingly, then say:
 
     ./configure
     make clean
@@ -75,8 +75,8 @@ of the library and type:
     make clean
     make
 
-If you want to build ONLY release or debug builds use:
-(if MODE is not specified both debug and release will be created)
+If you want to build ONLY release or debug builds, use:
+(if MODE is not specified, both debug and release will be created)
 
     make MODE=release
 
@@ -85,8 +85,8 @@ If you want to create static libraries use:
 
     make SHARED_LIBS=no
 
-NOTE: The built libraries and programs are immediately copied
-to the lib/ and bin/ subdirs.
+NOTE: The built libraries and programs are immediately copied to the 
+lib/ and bin/ subdirs.
 
 
 4. Portability issues
@@ -101,9 +101,9 @@ please send a mail to the mailing list!
 
 - If you are using Advanced Desktop effects on Linux you may notice that all windows
   (including tooltip, menu etc.) are using the the open/close animation. This can be
-  quite annoying for menus and tooltips. To disable this behavior (on Gnome), go to
-  Advanced Desktop Effect Settings / Animations and on the Open/Close  Animation tab
-  and change the "type=Unknown" to "name=tk" selection entries. This will effectively
+  annoying for menus and tooltips. To disable this behavior (on Gnome), go to
+  Advanced Desktop Effect Settings / Animations, and on the Open/Close Animation tab
+  change the "type=Unknown" to "name=tk" selection entries. This will effectively
   disable the animation for non-toplevel Tcl/Tk windows.
 
 - If you are running the IDE on Gnome, you will notice that a lot of space is vasted in
