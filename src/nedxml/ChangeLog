@@ -1,3 +1,7 @@
+2008-11-26  Andras Varga
+
+	* library renamed to oppnedxml
+
 2008-10-26  Andras Varga
 
 	* opp_msgc: generates boilerplate code for dll export/import symbol
@@ -8,7 +12,7 @@
 
 2008-07-31  Andras Varga
 
-	* added "packet" keyword to msg files. It is like "message", except 
+	* added "packet" keyword to msg files. It is like "message", except
 	that it generates "cPacket" as base class
 
 2008-07-14  Andras Varga
@@ -19,7 +23,7 @@
 
 2008-07-01  Andras Varga
 
-	* opp_msgc: doPacking/doUnpacking functions for arrays and primitive 
+	* opp_msgc: doPacking/doUnpacking functions for arrays and primitive
 	types moved out of the generated code into the simkernel headers
 	include/packing.h
 
@@ -28,11 +32,11 @@
 	* opp_msgc: added support for C99 integer types (int8_t, uint64_t, etc),
 	also without "_t" suffix (int8, uint64), and for float.
 
-	* opp_msgc: added support for @nopack field property ("don't include 
+	* opp_msgc: added support for @nopack field property ("don't include
 	in netPack()/netUnpack()")  [requested by Ingmar Baumgart]
 
 	* opp_msgc: for the record, supported properties are:
-	
+
 	class properties:
 	- @customize(<bool>)
 	- @omitGetVerb(<bool>)
@@ -51,7 +55,7 @@
 	- @group(<string>)
 	- @hint(<string>)
 
-	Note: by default, getter for a field named "isFoo" is going to be 
+	Note: by default, getter for a field named "isFoo" is going to be
 	named "getIsFoo". To change this to "isFoo", specify @getter(isFoo)
 	on the field.
 
@@ -98,9 +102,9 @@
 	syntax, and a heuristics decides which one to use. ned1.y produces the same
 	(new) AST as ned2.y, so old NED files can be read and used without problems
 
-	* there are two NED source generators as well (for NED1 and NED2), so 
-	it is possible to generate NED in the old syntax too (of course only 
-	a subset of the new NED language can be used, those compatible with the 
+	* there are two NED source generators as well (for NED1 and NED2), so
+	it is possible to generate NED in the old syntax too (of course only
+	a subset of the new NED language can be used, those compatible with the
 	old syntax)
 
 	* new classes: NEDResourceCache, NEDTypeInfo. They are used by the sim

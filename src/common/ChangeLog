@@ -1,4 +1,8 @@
+2008-11-26  Andras Varga
+
+	* library renamed to oppcommon ("common" was too common)
+
 2008-02-23  Andras Varga
 
-	* Started the ChangeLog. The Common library was added in omnetpp-4.0, 
+	* Started the ChangeLog. The Common library was added in omnetpp-4.0,
 	and it contains classes and functions used by all parts of OMNeT++.

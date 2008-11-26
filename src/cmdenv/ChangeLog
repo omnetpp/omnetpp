@@ -1,8 +1,12 @@
+2008-11-26  Andras Varga
+
+	* library renamed to oppcmdenv
+
 2008-06-19  Andras Varga
 
-	* refined signal handling: only turn on special signal handling while 
+	* refined signal handling: only turn on special signal handling while
 	the simulation is processing events. During lengthy initializations
-	etc, one can still abort the program via Ctrl-C. SIGTERM and SIGINT 
+	etc, one can still abort the program via Ctrl-C. SIGTERM and SIGINT
 	are handled. [suggested by Bradley Settlemyer]
 
 2008-02-23  Andras Varga
@@ -31,16 +35,16 @@
 	both ".." and "-" as range separator, i.e. both  "2..5" and "2-5" are
 	valid
 
-	* from now on, you need to specify "-u _cmdenv_lib" (gcc) or 
-	"/include:_cmdenv_lib" (vc++) in addition to -lcmdenv (or cmdenv.lib) 
-	on the linker command line. But: now you can have a program with both 
+	* from now on, you need to specify "-u _cmdenv_lib" (gcc) or
+	"/include:_cmdenv_lib" (vc++) in addition to -lcmdenv (or cmdenv.lib)
+	on the linker command line. But: now you can have a program with both
 	Cmdenv and Tkenv in it.
 
 	* out-of-directory build, and other Makefile changes
 
 	* obsolete source heap.cc removed
 
-	* SEE CHANGES FOR ENVIR TOO. (Envir is the common part of Cmdenv and 
+	* SEE CHANGES FOR ENVIR TOO. (Envir is the common part of Cmdenv and
 	Tkenv).
 
 2006-10-21  ------ omnetpp-3.3 released ------

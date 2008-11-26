@@ -1,7 +1,11 @@
+2008-11-26  Andras Varga
+
+	* library renamed to oppeventlog
+
 2008-02-23  Andras Varga
 
-	* Started the ChangeLog. The Eventlog library was added in omnetpp-4.0. 
-	It implements reading and traversing eventlog files recorded by 
-	simulations, and also provides a command-line tool (eventlogtool).  
+	* Started the ChangeLog. The Eventlog library was added in omnetpp-4.0.
+	It implements reading and traversing eventlog files recorded by
+	simulations, and also provides a command-line tool (eventlogtool).
 	Files >2GB are supported. The lib is used by Sequence Charts
 	in the IDE. Author: Levente Meszaros.

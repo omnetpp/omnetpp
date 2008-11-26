@@ -1,6 +1,10 @@
 2008-11-26  Andras Varga
 
-	* Fix: opening the "General" treenode in a cGate inspector caused a 
+	* library renamed to opptkenv
+
+2008-11-26  Andras Varga
+
+	* Fix: opening the "General" treenode in a cGate inspector caused a
 	Tcl error [reported by Ingmar Baumgart]
 
 2008-10-18  Andras Varga
