@@ -141,7 +141,6 @@ public class SimulationLauncherJob extends Job {
         			errStream.setActivateOnWrite(true);
         			// we have to set the color in the UI thread otherwise SWT will throw an error
         			Display.getDefault().syncExec(new Runnable() {
-						@Override
 						public void run() {
 							errStream.setColor(DebugUITools.getPreferenceColor(IDebugPreferenceConstants.CONSOLE_SYS_ERR_COLOR));
 						}
