@@ -57,7 +57,6 @@ foreach line {
    {color4  "QueueNet"         "queuenet"         "./queuenet"      "queuenet"}
    {color5  "Aloha"            "aloha"            "./aloha"         "aloha"}
    {color5  "Dyna"             "dyna"             "./dyna"          "dyna"}
-   {color5  "TokenRing"        "tokenring"        "./tokenring"     "tokenring"}
    {color5  "Hypercube"        "hypercube"        "./hypercube"     "hypercube"}
    {color5  "Routing"          "routing"          "./routing"       "routing"}
    {color6  "Parallel CQN"     "cqn/parsim"       "./runparsim"     "runparsim"}
