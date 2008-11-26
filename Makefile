@@ -49,7 +49,7 @@ endif
 #=====================================================================
 
 BASE=common layout eventlog scave nedxml sim envir cmdenv tkenv utils
-SAMPLES=aloha cqn dyna fifo hypercube histograms neddemo queueinglib routing tictoc tokenring sockets
+SAMPLES=aloha cqn dyna fifo hypercube histograms neddemo queueinglib routing tictoc sockets
 JNILIBS=org.omnetpp.ned.model org.omnetpp.ide.nativelibs
 
 #
