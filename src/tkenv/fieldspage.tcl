@@ -397,7 +397,7 @@ proc getFieldNodeInfo_getFieldText {obj sd fieldid index} {
             return "$name = \b($fieldobjclassname) $fieldobjname$fieldobjinfotext\b$typenametext"
         } else {
             # a value can be generated via operator<<
-            set value [opp_classdescriptor $obj $sd fieldvalue $fieldid $index]
+            if [catch {set value [opp_classdescriptor $obj $sd fieldvalue $fieldid $index]} err] {set value "<!> Error: $err"}
             if {$value==""} {
                 return "$name$typenametext"
             } else {
@@ -406,7 +406,7 @@ proc getFieldNodeInfo_getFieldText {obj sd fieldid index} {
         }
     } else {
         # plain field, return "name = value" text
-        set value [opp_classdescriptor $obj $sd fieldvalue $fieldid $index]
+        if [catch {set value [opp_classdescriptor $obj $sd fieldvalue $fieldid $index]} err] {set value "<!> Error: $err"}
         set enumname [opp_classdescriptor $obj $sd fieldproperty $fieldid "enum"]
         if {$enumname!=""} {
             append typename " - enum $enumname"
