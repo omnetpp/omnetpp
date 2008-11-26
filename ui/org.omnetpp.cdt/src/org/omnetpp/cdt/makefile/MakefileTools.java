@@ -171,10 +171,12 @@ public class MakefileTools {
     }
 
     /**
-     * Collects source directories from the project and all dependent projects containing files
-     * matching the provided pattern (regexp)
+     * Collects source directories from the project and all dependent projects 
+     * containing files matching the provided pattern (regexp). Nonexistent, 
+     * closed and non-CDT dependent projects will be ignored.
      */
     public static List<IContainer> collectDirs(ICProjectDescription projectDescription, String pattern) throws CoreException {
+        Assert.isNotNull(projectDescription);
 		List<IContainer> result = new ArrayList<IContainer>();
 		collectDirs(projectDescription, result, pattern);
 		return result; 
@@ -203,8 +205,11 @@ public class MakefileTools {
     	}
 
     	// collect directories from referenced projects too (recursively)
-    	for(IProject refProj : project.getReferencedProjects())
-    		collectDirs(CoreModel.getDefault().getProjectDescription(refProj), result, pattern);
+    	for(IProject refProj : project.getReferencedProjects()) {
+            ICProjectDescription refProjDesc = CoreModel.getDefault().getProjectDescription(refProj);
+            if (refProjDesc != null)
+                collectDirs(refProjDesc, result, pattern);
+        }
     }
 
     /**
@@ -227,7 +232,8 @@ public class MakefileTools {
         result.add(new Path(OmnetppMainPlugin.getOmnetppInclDir()));
 
         // add project source directories as include dirs for the indexer
-        // Note: "*.h" pattern is not good because of includes of the form "subdir/file.h"
+        // Note: "*.h" pattern is not good because of includes of the form "subdir/file.h" 
+        // (i.e. "subdir" might need to be added to the include path too, even if it doesn't contain any header)
         for (IContainer incDir : MakefileTools.collectDirs(projectDescription, null)) 
             result.add(incDir.getLocation());
         return result;

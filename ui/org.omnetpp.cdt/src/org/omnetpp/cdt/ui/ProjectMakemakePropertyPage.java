@@ -491,7 +491,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
             // variables for referenced projects
             String vars = "";
             IProject project = getProject();
-            IProject[] referencedProjects = ProjectUtils.getAllReferencedProjects(project, false);
+            IProject[] referencedProjects = ProjectUtils.getAllReferencedProjects(project, false, false);
             for (IProject refProj : referencedProjects) {
                 String variable = Makemake.makeSymbolicProjectName(refProj);
                 IPath path = MakefileTools.makeRelativePath(refProj.getLocation(), project.getLocation());

@@ -356,7 +356,7 @@ public class OmnetppLaunchUtils {
 	    IResource resource = ResourcesPlugin.getWorkspace().getRoot().findMember(resolvedWDir);
 	    if (resource == null)
 	        return null;
-	    IProject[] projects = ProjectUtils.getAllReferencedProjects(resource.getProject(), true);
+	    IProject[] projects = ProjectUtils.getAllReferencedProjects(resource.getProject(), false, true);
 	    for (IProject project : projects)
 	        if (project.hasNature(CDT_CC_NATURE_ID))
 	            return project.getName();

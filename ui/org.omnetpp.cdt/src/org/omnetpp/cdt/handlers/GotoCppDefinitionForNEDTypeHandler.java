@@ -78,7 +78,7 @@ public class GotoCppDefinitionForNEDTypeHandler extends AbstractHandler {
 
                     if (nedTypeElement != null) {
                         String className = nedTypeElement.getNEDTypeInfo().getFullyQualifiedCppClassName();
-                        IProject[] projects = ProjectUtils.getAllReferencedProjects(editedFile.getProject(), true);
+                        IProject[] projects = ProjectUtils.getAllReferencedProjects(editedFile.getProject(), false, true);
 
                         if (!gotoCppDefinition(page, projects, className)) {
                             IContainer container = editedFile.getParent();

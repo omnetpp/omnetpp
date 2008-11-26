@@ -31,6 +31,7 @@ import org.omnetpp.common.util.StringUtils;
  *
  * @author Andras
  */
+//FIXME this "potential CoreExceptions are re-thrown as RuntimeException" looks like a dubious practice...
 public class ProjectUtils {
 	public static final String NEDFOLDERS_FILENAME = ".nedfolders";
 
@@ -64,36 +65,30 @@ public class ProjectUtils {
 
 	/**
 	 * Returns the transitive closure of OMNeT++ projects referenced from the given project,
-	 * excluding the project itself.
+	 * excluding the project itself. Nonexistent and closed projects are ignored.
 	 *
 	 * Potential CoreExceptions are re-thrown as RuntimeException.
 	 */
 	public static IProject[] getAllReferencedOmnetppProjects(IProject project) {
-		try {
-			Set<IProject> result = new HashSet<IProject>();
-			collectAllReferencedOmnetppProjects(project, true, result);
-			return result.toArray(new IProject[]{});
-		} catch (CoreException e) {
-			throw new RuntimeException(e);
-		}
+        return getAllReferencedProjects(project, true, false);
 	}
 
 	/**
      * Returns the transitive closure of all projects referenced from the given project,
-     * excluding the project itself.
+     * excluding the project itself. Nonexistent and closed projects are ignored.
      *
      * Potential CoreExceptions are re-thrown as RuntimeException.
      */
     public static IProject[] getAllReferencedProjects(IProject project) {
-        return getAllReferencedProjects(project, false);
+        return getAllReferencedProjects(project, false, false);
     }
 
-    public static IProject[] getAllReferencedProjects(IProject project, boolean includeSelf) {
+    public static IProject[] getAllReferencedProjects(IProject project, boolean requireOmnetppNature, boolean includeSelf) {
         try {
             Set<IProject> result = new HashSet<IProject>();
-            if (includeSelf)
+            if (includeSelf && (requireOmnetppNature ? isOpenOmnetppProject(project) : project.isAccessible()))
                 result.add(project);
-            collectAllReferencedOmnetppProjects(project, false, result);
+            collectReferencedProjects(project, requireOmnetppNature, result);
             return result.toArray(new IProject[]{});
         } catch (CoreException e) {
             throw new RuntimeException(e);
@@ -101,11 +96,11 @@ public class ProjectUtils {
     }
 
 	// helper for getAllReferencedOmnetppProjects()
-	private static void collectAllReferencedOmnetppProjects(IProject project, boolean requireOmnetppNature, Set<IProject> result) throws CoreException {
+	private static void collectReferencedProjects(IProject project, boolean requireOmnetppNature, Set<IProject> result) throws CoreException {
 		for (IProject dependency : project.getReferencedProjects()) {
-			if ((requireOmnetppNature ? isOpenOmnetppProject(dependency) : project.isAccessible()) && !result.contains(dependency)) {
+			if ((requireOmnetppNature ? isOpenOmnetppProject(dependency) : dependency.isAccessible()) && !result.contains(dependency)) {
 				result.add(dependency);
-				collectAllReferencedOmnetppProjects(dependency, requireOmnetppNature, result);
+				collectReferencedProjects(dependency, requireOmnetppNature, result);
 			}
 		}
 	}
@@ -173,8 +168,7 @@ public class ProjectUtils {
     }
 
     /**
-     * Add the omnetpp nature to the project (if the project does not have already)
-     * @param project
+     * Add the omnetpp nature to the project (if the project does not have it already)
      */
     public static void addOmnetppNature(IProject project, IProgressMonitor monitor) {
         try {
