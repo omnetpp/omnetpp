@@ -1,4 +1,4 @@
 - .oppbuildspec missing
 - .cproject missing
 - obsolete (nonexistent) foldername in .oppbuildspec
-- referenced project closed
+- referenced project nonexistent, closed, non-omnetpp, non-cdt (test makemake property page, NED editing, C++ build etc under these conditions)
