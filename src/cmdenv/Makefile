@@ -18,13 +18,13 @@ endif
 #
 # Local definitions
 #
-LIBNAME=libcmdenv$D
+LIBNAME=liboppcmdenv$D
 O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/cmdenv
 L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 
 COPTS=$(CFLAGS) -I$(OMNETPP_INCL_DIR) -I$(OMNETPP_INCL_DIR)/platdep -I../common -I../envir -DBUILDING_CMDENV
 
-IMPLIBS= -L$L -lsim_std$D -lenvir$D -lcommon$D
+IMPLIBS= -L$L -loppsim$D -loppenvir$D -loppcommon$D
 
 OBJS = $O/cmdenv.o
 
@@ -56,7 +56,7 @@ $L/$(LIBNAME)$(SO_LIB_SUFFIX) : $(OBJS)
 
 $L/$(LIBNAME)$(DLL_LIB_SUFFIX) : $(OBJS)
 	mkdir -p $L
-	$(SHLIB_LD) $(LDFLAGS) -o $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OBJS) $(IMPLIBS) -Wl,--out-implib,$O/$(LIBNAME)$(A_LIB_SUFFIX) 
+	$(SHLIB_LD) $(LDFLAGS) -o $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OBJS) $(IMPLIBS) -Wl,--out-implib,$O/$(LIBNAME)$(A_LIB_SUFFIX)
 	cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(A_LIB_SUFFIX).$(OMNETPP_VERSION) $L $(LIBNAME)$(A_LIB_SUFFIX)
 	cp $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OMNETPP_BIN_DIR)
 

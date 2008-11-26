@@ -18,13 +18,13 @@ endif
 #
 # Local definitions
 #
-LIBNAME=libtkenv$D
+LIBNAME=libopptkenv$D
 O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/tkenv
 L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 
 COPTS=$(CFLAGS) -I$(OMNETPP_INCL_DIR) -I$(OMNETPP_INCL_DIR)/platdep -I../envir -I../layout -I../common $(TK_CFLAGS) $(ZLIB_CFLAGS) -DBUILDING_TKENV
 
-IMPLIBS= -L$L -lsim_std$D -lenvir$D -llayout$D -lcommon$D $(TK_LIBS) $(ZLIB_LIBS)
+IMPLIBS= -L$L -loppsim$D -loppenvir$D -lopplayout$D -loppcommon$D $(TK_LIBS) $(ZLIB_LIBS)
 
 OBJS = $O/tkenv$(TKENV_EMBED_SUFFIX).o $O/tkcmd.o $O/tklib.o $O/inspector.o \
        $O/inspfactory.o $O/objinsp.o $O/modinsp.o $O/statinsp.o $O/layouterenv.o \
@@ -36,7 +36,7 @@ else
 TKENV_EMBED_SUFFIX=
 endif
 
-# Required only on Mac OS X 
+# Required only on Mac OS X
 ifeq ("$(PLATFORM)", "macosx")
 COPTS += -framework Carbon
 LDFLAGS += -framework Carbon

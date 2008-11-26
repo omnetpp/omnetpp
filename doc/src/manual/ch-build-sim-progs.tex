@@ -18,6 +18,7 @@ the following parts:
 \end{itemize}
 
 
+%%FIXME obsolete!!!!
 To build an executable simulation program,
 you first need to translate the NED files\index{ned!files}
 and the message files into C++, using the NED compiler\index{ned!compiler}
@@ -28,30 +29,26 @@ program from source: all C++ sources need to be compiled into object files
 and all object files need to be linked with the necessary libraries to get
 an executable.
 
-%%  \footnote{Future versions of {\opp} may support runtime loading
-%%  of NED files, so that you do not have to recompile.}
-
 File names for libraries differ for Unix/Linux and for Windows,
 and also different for static and shared libraries.
 Let us suppose you have a library called Tkenv.
 On a Unix/Linux system, the file name for the static library
-would be something like \ttt{libtkenv.a} (or \ttt{libtkenv.a.}\textit{<version>}),
-and the shared library would be called \ttt{libtkenv.so}
-(or \ttt{libtkenv.so.}\textit{<version>}).
-The Windows version of the static library would be \ttt{tkenv.lib},
-and the DLL (which is the Windows equivalent of shared libraries)
-would be a file named \ttt{tkenv.dll}.
+would be something like \ttt{libopptkenv.a} (or \ttt{libopptkenv.a.}\textit{<version>}),
+and the shared library would be called \ttt{libopptkenv.so}
+(or \ttt{libopptkenv.so.}\textit{<version>}).
+The Windows version of the static library would be \ttt{opptkenv.lib},
+and the DLL would be named \ttt{opptkenv.dll}.
 
 You'll need to link with the following libraries:
 
 \begin{itemize}
   \item{The simulation kernel and class library\index{simulation!kernel},
-    called \textit{sim\_std} (file \ttt{libsim\_std.a}, \ttt{sim\_std.lib}, etc).}
+    called \textit{oppsim} (file \ttt{liboppsim.a}, \ttt{oppsim.lib}, etc).}
   \item{User interfaces. The common part of all user interfaces is
-    the \textit{envir} library (file \texttt{libenvir.a}, etc),
-    and the specific user interfaces are \textit{tkenv} and \textit{cmdenv}
-    (\ttt{libtkenv.a}, \ttt{libcmdenv.a}, etc). You have to link
-    with \textit{envir}, plus either \textit{tkenv} or \textit{cmdenv}.}
+    the \textit{oppenvir} library (file \texttt{liboppenvir.a}, etc),
+    and the specific user interfaces are \textit{opptkenv} and \textit{oppcmdenv}
+    (\ttt{libopptkenv.a}, \ttt{liboppcmdenv.a}, etc). You have to link
+    with \textit{oppenvir}, plus either \textit{opptkenv} or \textit{oppcmdenv}.}
 \end{itemize}
 
 Luckily, you do not have to worry about the above details, because

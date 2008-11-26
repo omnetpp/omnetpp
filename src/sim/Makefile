@@ -18,13 +18,13 @@ endif
 #
 # Local definitions
 #
-LIBNAME=libsim_std$D
+LIBNAME=liboppsim$D
 O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/sim
 L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 
 COPTS=$(CFLAGS) -I. -I../common -I$(OMNETPP_INCL_DIR) -I$(OMNETPP_INCL_DIR)/platdep -DBUILDING_SIM
 
-IMPLIBS=-L$L -lcommon$D 
+IMPLIBS=-L$L -loppcommon$D
 
 OBJS_STD=\
     $O/carray.o $O/cdelaychannel.o $O/cdataratechannel.o $O/cboolparimpl.o $O/cchannel.o \
@@ -67,7 +67,7 @@ OBJS= $(OBJS_STD)
 ifeq ($(WITH_NETBUILDER),yes)
 OBJS += $(OBJS_NETBUILDER)
 COPTS += -I../nedxml
-IMPLIBS += -lnedxml$D
+IMPLIBS += -loppnedxml$D
 endif
 
 ifeq ($(WITH_PARSIM),yes)

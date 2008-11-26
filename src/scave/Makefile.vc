@@ -17,12 +17,12 @@
 #
 # Local definitions
 #
-LIBNAME=scave$D
+LIBNAME=oppscave$D
 O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/scave
 L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 
 COPTS= $(CFLAGS) $(XML_CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" /Fd"$O/$(LIBNAME).pdb"
-IMPLIBS= $O/../common/common$D.lib $(XML_LIBS)
+IMPLIBS= $O/../common/oppcommon$D.lib $(XML_LIBS)
 
 OBJS= $O/arraybuilder.obj $O/channel.obj $O/commonnodes.obj $O/compoundfilter.obj \
       $O/dataflowmanager.obj $O/datasorter.obj $O/diffquot.obj \
@@ -489,8 +489,8 @@ $O/scavetool.obj: scavetool.cc \
   ../common/commonutil.h \
   commonnodes.h \
   fields.h \
-  ../utils/ver.h \
   datasorter.h \
+  ../common/ver.h \
   channel.h \
   node.h \
   filewriter.h \

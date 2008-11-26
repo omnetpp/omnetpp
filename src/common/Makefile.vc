@@ -17,7 +17,7 @@
 #
 # Local definitions
 #
-LIBNAME=common$D
+LIBNAME=oppcommon$D
 O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/common
 L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 

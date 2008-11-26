@@ -23,10 +23,10 @@ $DUMPFILE = "dumpbin.out";
 $tempfilename ="linkall.tmp";
 
 @knownlibs = (
-    "sim_std.lib", "envir.lib", "cmdenv.lib", "tkenv.lib",
-    "common.lib", "nedxml.lib", "layout.lib",
-    "sim_stdd.lib", "envird.lib", "cmdenvd.lib", "tkenvd.lib",
-    "commond.lib", "nedxmld.lib", "layoutd.lib",
+    "oppsim.lib", "oppenvir.lib", "oppcmdenv.lib", "opptkenv.lib",
+    "oppcommon.lib", "oppnedxml.lib", "opplayout.lib",
+    "oppsimd.lib", "oppenvird.lib", "oppcmdenvd.lib", "opptkenvd.lib",
+    "oppcommond.lib", "oppnedxmld.lib", "opplayoutd.lib",
     "tcl84.lib", "tk84.lib", "blt24.lib", "zdll.lib",
     "libxml2.lib", "iconv.lib", "wsock32.lib"
 );

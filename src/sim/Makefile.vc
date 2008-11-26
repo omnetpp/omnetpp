@@ -17,13 +17,13 @@
 #
 # Local definitions
 #
-LIBNAME=sim_std$D
+LIBNAME=oppsim$D
 O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/sim
 L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 
 COPTS=$(CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" /Fd"$O/$(LIBNAME).pdb"
 #COPTS=/C /P $(COPTS)
-IMPLIBS=$O/../common/common$D.lib
+IMPLIBS=$O/../common/oppcommon$D.lib
 
 OBJS_STD=\
     $O/carray.obj $O/cdelaychannel.obj $O/cdataratechannel.obj $O/cboolparimpl.obj $O/cchannel.obj \
@@ -73,7 +73,7 @@ COPTS= $(COPTS) -DSIM_EXPORT
 !if "$(WITH_NETBUILDER)"=="yes"
 OBJS= $(OBJS) $(OBJS_NETBUILDER)
 COPTS= $(COPTS) -I../nedxml
-IMPLIBS= $(IMPLIBS) $O/../nedxml/nedxml$D.lib
+IMPLIBS= $(IMPLIBS) $O/../nedxml/oppnedxml$D.lib
 !endif
 
 !if "$(WITH_PARSIM)"=="yes"
@@ -365,6 +365,7 @@ $O/ccomponenttype.obj: ccomponenttype.cc \
   ../../include/onstartup.h \
   ../../include/simtime.h \
   ../../include/simtime_t.h \
+  ../../include/cdelaychannel.h \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
   ../../include/cmessageheap.h \
@@ -540,18 +541,28 @@ $O/cdefaultlist.obj: cdefaultlist.cc \
   ../../include/platdep/platdefs.h \
   ../../include/regmacros.h
 $O/cdelaychannel.obj: cdelaychannel.cc \
+  ../../include/cregistrationlist.h \
   ../../include/ccommbuffer.h \
-  ../../include/cgate.h \
+  ../../include/carray.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
+  ../../include/cgate.h \
+  ../../include/cmathfunction.h \
   ../../include/cenvir.h \
+  ../../include/cmessage.h \
+  ../../include/csimulation.h \
+  ../../include/onstartup.h \
   ../../include/simtime.h \
   ../../include/simtime_t.h \
   ../../include/cdelaychannel.h \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
+  ../../include/cmsgpar.h \
   ../../include/platdep/intxtypes.h \
+  ../../include/cmessageheap.h \
   ../../include/cobject.h \
+  ../../include/cclassfactory.h \
+  ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
   ../../include/cdefaultlist.h \
@@ -563,6 +574,7 @@ $O/cdelaychannel.obj: cdelaychannel.cc \
   ../../include/cexpression.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
+  ../../include/ccoroutine.h \
   ../../include/cchannel.h \
   ../../include/ccomponent.h \
   ../../include/regmacros.h
@@ -2433,6 +2445,7 @@ $O/util.obj: util.cc \
   ../../include/cmathfunction.h \
   ../../include/onstartup.h \
   ../../include/simtime_t.h \
+  ../../include/cdelaychannel.h \
   ../../include/cdensityestbase.h \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
@@ -2994,6 +3007,7 @@ $O/parsim/cmpicomm.obj: parsim/cmpicomm.cc \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/opp_string.h \
+  ../../include/cconfigkey.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
   ../../include/platdep/platdefs.h \
@@ -3292,6 +3306,7 @@ $O/parsim/cplaceholdermod.obj: parsim/cplaceholdermod.cc \
   parsim/cfilecomm.h \
   ../../include/cownedobject.h \
   ../../include/cexpression.h \
+  parsim/cmpicomm.h \
   parsim/cnullmessageprot.h \
   ../../include/cparsimcomm.h \
   ../../include/ccomponent.h \
@@ -3355,60 +3370,6 @@ $O/parsim/cproxygate.obj: parsim/cproxygate.cc \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   ../../include/ccoroutine.h \
-  ../../include/regmacros.h
-$O/parsim/cptrpassingmpicomm.obj: parsim/cptrpassingmpicomm.cc \
-  ../../include/cenvir.h \
-  parsim/cmpicommbuffer.h \
-  ../../include/simtime.h \
-  ../../include/simkerneldefs.h \
-  ../../include/simutil.h \
-  ../../include/cobject.h \
-  ../../include/cclassfactory.h \
-  parsim/cptrpassingmpicomm.h \
-  ../../include/errmsg.h \
-  ../../include/cownedobject.h \
-  ../../include/cparsimcomm.h \
-  ../../include/cregistrationlist.h \
-  ../../include/ccommbuffer.h \
-  ../../include/cstringpool.h \
-  ../../include/cvisitor.h \
-  ../../include/onstartup.h \
-  ../../include/simtime_t.h \
-  ../../include/platdep/intxtypes.h \
-  parsim/ccommbufferbase.h \
-  ../../include/globals.h \
-  ../../include/platdep/platmisc.h \
-  ../../include/opp_string.h \
-  parsim/cptrpassingmpicommbuffer.h \
-  ../../include/cconfigkey.h \
-  ../../include/cexception.h \
-  ../../include/cnamedobject.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/regmacros.h
-$O/parsim/cptrpassingmpicommbuffer.obj: parsim/cptrpassingmpicommbuffer.cc \
-  ../../include/cenvir.h \
-  ../../include/simtime.h \
-  parsim/cmpicommbuffer.h \
-  ../../include/simutil.h \
-  ../../include/simkerneldefs.h \
-  ../../include/cobject.h \
-  ../../include/cclassfactory.h \
-  ../../include/errmsg.h \
-  ../../include/cownedobject.h \
-  ../../include/cregistrationlist.h \
-  ../../include/ccommbuffer.h \
-  ../../include/cstringpool.h \
-  ../../include/cvisitor.h \
-  ../../include/onstartup.h \
-  ../../include/simtime_t.h \
-  ../../include/platdep/intxtypes.h \
-  parsim/ccommbufferbase.h \
-  ../../include/globals.h \
-  ../../include/platdep/platmisc.h \
-  ../../include/opp_string.h \
-  ../../include/cexception.h \
-  ../../include/cnamedobject.h \
-  ../../include/platdep/platdefs.h \
   ../../include/regmacros.h
 $O/parsim/creceivedexception.obj: parsim/creceivedexception.cc \
   ../../include/simutil.h \

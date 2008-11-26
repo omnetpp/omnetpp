@@ -61,6 +61,7 @@ clean:
 	-cd $(OMNETPP_BIN_DIR:/=\) && del /q seedtool.exe* ln.exe* opp_makemake* opp_test* opp_makedep* linkall* msvcver.pl opp_nmakemake.cmd 2>nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-seedtool.obj: seedtool.cc
+seedtool.obj: seedtool.cc \
+  ../common/ver.h
 ln.obj: ln.c
 opp_replace.obj: opp_replace.c

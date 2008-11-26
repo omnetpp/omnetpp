@@ -18,12 +18,12 @@
 #
 # Local definitions
 #
-LIBNAME=nedxml$D
+LIBNAME=oppnedxml$D
 O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/nedxml
 L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 
 COPTS= $(CFLAGS) $(XML_CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" /Fd"$O/$(LIBNAME).pdb"
-IMPLIBS= $O/../common/common$D.lib $(XML_LIBS)
+IMPLIBS= $O/../common/oppcommon$D.lib $(XML_LIBS)
 
 OBJS= $O/nedelements.obj $O/nedelement.obj $O/nederror.obj $O/nedexception.obj \
       $O/nedvalidator.obj $O/neddtdvalidator.obj $O/neddtdvalidatorbase.obj \

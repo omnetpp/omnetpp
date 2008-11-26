@@ -40,7 +40,7 @@ LAYOUT_JAVADIR = src/$(subst .,/,$(LAYOUT_JAVAPKG))
 EVENTLOG_JAVADIR = src/$(subst .,/,$(EVENTLOG_JAVAPKG))
 
 OBJS = $O/nedxml.o $O/scave.o $O/layout.o $O/eventlog.o $O/common.o $O/jprogressmonitor.o
-LIBS=-L$L -lnedxml$D -lscave$D -llayout$D -leventlog$D -lcommon$D
+LIBS=-L$L -loppnedxml$D -loppscave$D -lopplayout$D -loppeventlog$D -loppcommon$D
 
 ifeq ("$(JNI_LIB_SUFFIX)",".dll")
 # on mingw we dont need the lib prefix for a JNI library
@@ -58,7 +58,7 @@ endif
 
 # on Linux 32bit, link libgcc and libstdc++ statically, to reduce dependencies
 # see http://www.trilithium.com/johan/2005/06/static-libstdc/
-# on linux 64 bit we should link against libstdc++_pic.a- but it does not work so we are linking dinamically 
+# on linux 64 bit we should link against libstdc++_pic.a- but it does not work so we are linking dinamically
 ifeq ("$(PLATFORM)","linux.x86")
 LINUX32_ONLY=
 LDFLAGS+= -static-libgcc -L$O

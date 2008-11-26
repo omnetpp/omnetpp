@@ -17,12 +17,12 @@
 #
 # Local definitions
 #
-LIBNAME=tkenv$D
+LIBNAME=opptkenv$D
 O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/tkenv
 L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 
 COPTS= $(CFLAGS) -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" -I../envir -I../common -I../layout $(TK_CFLAGS) $(ZLIB_CFLAGS) /Fd"$O/$(LIBNAME).pdb"
-IMPLIBS= $O/../sim/sim_std$D.lib $O/../envir/envir$D.lib $O/../layout/layout$D.lib $O/../common/common$D.lib $(TK_LIBS) $(ZLIB_LIBS)
+IMPLIBS= $O/../sim/oppsim$D.lib $O/../envir/oppenvir$D.lib $O/../layout/opplayout$D.lib $O/../common/oppcommon$D.lib $(TK_LIBS) $(ZLIB_LIBS)
 
 OBJS = $O/tkenv$(TKENV_EMBED_SUFFIX).obj $O/tkcmd.obj $O/tklib.obj $O/inspector.obj \
        $O/inspfactory.obj $O/objinsp.obj $O/modinsp.obj $O/statinsp.obj $O/layouterenv.obj \
@@ -642,9 +642,11 @@ $O/tkenv.obj: tkenv.cc \
   ../../include/cdisplaystring.h \
   ../../include/cownedobject.h \
   ../../include/cexpression.h \
-  ../utils/ver.h \
+  ../common/ver.h \
+  ../../include/cproperty.h \
   ../../include/cqueue.h \
   ../../include/cchannel.h \
+  ../../include/cproperties.h \
   ../../include/ccomponent.h \
   ../../include/cregistrationlist.h \
   inspfactory.h \

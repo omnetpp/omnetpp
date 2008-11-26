@@ -94,7 +94,7 @@ O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 {~nolink:}{~staticlib:}# Simulation kernel and user interface libraries
 {~nolink:}{~staticlib:}OMNETPP_LIB_SUBDIR = $(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 {exe:}OMNETPP_LIBS = {-L}"$(OMNETPP_LIB_SUBDIR)" {-L}"$(OMNETPP_LIB_DIR)" $(USERIF_LIBS) $(KERNEL_LIBS) $(SYS_LIBS)
-{sharedlib:}OMNETPP_LIBS = {-L}"$(OMNETPP_LIB_SUBDIR)" {-L}"$(OMNETPP_LIB_DIR)" {-l}envir$D{.lib} $(KERNEL_LIBS) $(SYS_LIBS)
+{sharedlib:}OMNETPP_LIBS = {-L}"$(OMNETPP_LIB_SUBDIR)" {-L}"$(OMNETPP_LIB_DIR)" {-l}oppenvir$D{.lib} $(KERNEL_LIBS) $(SYS_LIBS)
 
 {sourcedirs:}COPTS = $(CFLAGS) {defines} $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
 {sourcedirs:}MSGCOPTS = $(INCLUDE_PATH){dllsymbol? -P}{dllsymbol}{dllsymbol?_API}

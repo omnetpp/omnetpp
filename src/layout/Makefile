@@ -18,13 +18,13 @@ endif
 #
 # Local definitions
 #
-LIBNAME=liblayout$D
+LIBNAME=libopplayout$D
 O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/layout
 L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 
 COPTS=$(CFLAGS) -I. -I../common -I$(OMNETPP_INCL_DIR)/platdep
 
-IMPLIBS= -L$L -lcommon$D
+IMPLIBS= -L$L -loppcommon$D
 
 OBJS= $O/geometry.o $O/graphcomponent.o $O/heapembedding.o $O/startreeembedding.o \
       $O/forcedirectedparametersbase.o $O/forcedirectedparameters.o $O/forcedirectedembedding.o \

@@ -17,12 +17,12 @@
 #
 # Local definitions
 #
-LIBNAME=eventlog$D
+LIBNAME=oppeventlog$D
 O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/eventlog
 L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 
 COPTS= $(CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" /Fd"$O/$(LIBNAME).pdb"
-IMPLIBS= $O/../common/common$D.lib
+IMPLIBS= $O/../common/oppcommon$D.lib
 
 OBJS= $O/ievent.obj $O/ieventlog.obj $O/eventlogfacade.obj $O/eventlogtablefacade.obj \
       $O/sequencechartfacade.obj $O/eventlog.obj $O/eventlogindex.obj \
@@ -164,6 +164,7 @@ $O/eventlogtool.obj: eventlogtool.cc \
   ieventlog.h \
   messagedependency.h \
   eventlogindex.h \
+  ../common/ver.h \
   filteredevent.h \
   ievent.h \
   eventlogdefs.h \
@@ -171,8 +172,7 @@ $O/eventlogtool.obj: eventlogtool.cc \
   eventlogentries.h \
   event.h \
   eventlogentry.h \
-  filteredeventlog.h \
-  ../utils/ver.h
+  filteredeventlog.h
 $O/filteredevent.obj: filteredevent.cc \
   ieventlog.h \
   messagedependency.h \

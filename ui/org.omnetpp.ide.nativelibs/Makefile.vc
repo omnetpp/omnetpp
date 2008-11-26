@@ -44,7 +44,7 @@ LAYOUT_JAVADIR = src\$(LAYOUT_JAVAPKG:.=\)
 EVENTLOG_JAVADIR = src\$(EVENTLOG_JAVAPKG:.=\)
 
 OBJS = $O/common.obj $O/nedxml.obj $O/scave.obj $O/layout.obj $O/eventlog.obj $O/jprogressmonitor.obj
-LIBS=$L/common$D.lib $L/nedxml$D.lib $L/scave$D.lib $L/layout$D.lib $L/eventlog$D.lib
+LIBS=$L/oppcommon$D.lib $L/oppnedxml$D.lib $L/oppscave$D.lib $L/opplayout$D.lib $L/oppeventlog$D.lib
 
 DLL = opplibs.dll
 DLL_TARGET_DIR = ..\org.omnetpp.ide.nativelibs.win32.x86

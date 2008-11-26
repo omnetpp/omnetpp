@@ -18,7 +18,7 @@ endif
 #
 # Local definitions
 #
-LIBNAME=libcommon$D
+LIBNAME=liboppcommon$D
 O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/common
 L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 
@@ -70,10 +70,10 @@ $L/$(LIBNAME)$(DLL_LIB_SUFFIX) : $(OBJS)
 	cp $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OMNETPP_BIN_DIR)
 
 expression.tab.hh expression.tab.cc : expression.y
-	$(YACC) -o expression.tab.cc -p expressionyy -d expression.y 
+	$(YACC) -o expression.tab.cc -p expressionyy -d expression.y
 
 lex.expressionyy.cc: expression.lex
-	$(LEX) -olex.expressionyy.cc -Pexpressionyy expression.lex 
+	$(LEX) -olex.expressionyy.cc -Pexpressionyy expression.lex
 
 matchexpression.tab.hh matchexpression.tab.cc : matchexpression.y
 	$(YACC) -o matchexpression.tab.cc --no-lines -p matchexpressionyy -d matchexpression.y

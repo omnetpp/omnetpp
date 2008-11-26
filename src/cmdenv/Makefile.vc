@@ -17,12 +17,12 @@
 #
 # Local definitions
 #
-LIBNAME=cmdenv$D
+LIBNAME=oppcmdenv$D
 O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/cmdenv
 L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 
 COPTS= $(CFLAGS) -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" -I../common -I../envir /Fd"$O/$(LIBNAME).pdb"
-IMPLIBS= $O/../sim/sim_std$D.lib $O/../envir/envir$D.lib $O/../common/common$D.lib
+IMPLIBS= $O/../sim/oppsim$D.lib $O/../envir/oppenvir$D.lib $O/../common/oppcommon$D.lib
 
 OBJS= $O/cmdenv.obj
 
@@ -105,7 +105,9 @@ $O/cmdenv.obj: cmdenv.cc \
   ../../include/cownedobject.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
+  ../../include/cproperty.h \
   ../../include/ccoroutine.h \
   cmdenv.h \
+  ../../include/cproperties.h \
   ../../include/ccomponent.h \
   ../../include/regmacros.h

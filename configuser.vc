@@ -231,17 +231,17 @@ XML_LIBS=$(LIBXML_LIBS)
 #
 # Definitions for makemake-generated makefiles
 #
-CMDENV_LIBS = /include:_cmdenv_lib envir$D.lib cmdenv$D.lib
-TKENV_LIBS = /include:_tkenv_lib envir$D.lib tkenv$D.lib layout$D.lib
+CMDENV_LIBS = /include:_cmdenv_lib oppenvir$D.lib oppcmdenv$D.lib
+TKENV_LIBS = /include:_tkenv_lib oppenvir$D.lib opptkenv$D.lib opplayout$D.lib
 ALL_ENV_LIBS = $(CMDENV_LIBS) $(TKENV_LIBS)
 
-KERNEL_LIBS = sim_std$D.lib
+KERNEL_LIBS = oppsim$D.lib
 
 !if "$(WITH_NETBUILDER)"=="yes"
-KERNEL_LIBS = $(KERNEL_LIBS) nedxml$D.lib
+KERNEL_LIBS = $(KERNEL_LIBS) oppnedxml$D.lib
 !endif
 
-KERNEL_LIBS = $(KERNEL_LIBS) common$D.lib
+KERNEL_LIBS = $(KERNEL_LIBS) oppcommon$D.lib
 
 # winsock is needed by libxml as well as the sockets sample simulation
 SYS_LIBS = wsock32.lib
