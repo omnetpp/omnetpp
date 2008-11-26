@@ -1,2 +1,2 @@
-`dirname $0`/../queueinglib/queueinglib $*
+opp_run -l `dirname $0`/../queueinglib/queueinglib $*
 

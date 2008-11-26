@@ -1,3 +1,3 @@
 @cd %~dp0
-@%~dp0\..\queueinglib\queueinglib %*
+@opp_run -l %~dp0\..\queueinglib\queueinglib %*
 

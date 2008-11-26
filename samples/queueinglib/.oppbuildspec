@@ -1,2 +1,3 @@
-version 4.0
-.: --deep -O out --meta:auto-include-path --meta:use-exported-libs
+<buildspec version="4.0">
+<dir makemake-options="--deep --make-so -O out --meta:auto-include-path --meta:export-library --meta:use-exported-libs" path="." type="makemake"/>
+</buildspec>

@@ -1,4 +1,3 @@
-#=====================================================================
 #
 # Toplevel makefile for OMNeT++ libraries and programs
 #
@@ -168,6 +167,7 @@ makefiles:
 	for i in $(SAMPLES) ""; do \
 	    if [ "$$i" != "" ]; then (cd $(OMNETPP_SAMPLES_DIR)/$$i && (opp_makemake -f --deep)); fi;\
 	done
+	(cd $(OMNETPP_SAMPLES_DIR)/queueinglib && (opp_makemake -f --make-so))
 	(cd $(OMNETPP_SAMPLES_DIR)/queuenet && (opp_makemake -f -n))
 
 # copy the documentation to the UI doc folder too.
