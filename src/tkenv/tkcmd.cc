@@ -776,7 +776,7 @@ int getObjectId_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    else if (dynamic_cast<cMessage *>(object))
    {
        char buf[32];
-       sprintf(buf, "%d", dynamic_cast<cMessage *>(object)->getId());
+       sprintf(buf, "%ld", dynamic_cast<cMessage *>(object)->getId());
        Tcl_SetResult(interp, buf, TCL_VOLATILE);
    }
    else
