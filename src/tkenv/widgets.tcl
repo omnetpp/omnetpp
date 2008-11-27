@@ -131,6 +131,7 @@ proc setupTkOptions {} {
       set fonts(big)     -*-Helvetica-Medium-R-Normal-*-18-*-*-*-*-*-*-*
       set fonts(msgname) -*-Helvetica-Medium-R-Normal-*-12-*-*-*-*-*-*-*
       set fonts(fixed)   -*-Courier-Medium-R-Normal-*-12-*-*-*-*-*-*-*
+      set fonts(listbox) -*-Courier-Medium-R-Normal-*-12-*-*-*-*-*-*-*
       set fonts(balloon) -*-Helvetica-Medium-R-Normal-*-12-*-*-*-*-*-*-*
 
       option add *Scrollbar.width  12
@@ -138,7 +139,7 @@ proc setupTkOptions {} {
       option add *Menu.font        $fonts(normal)
       option add *Label.font       $fonts(normal)
       option add *Entry.font       $fonts(normal)
-      option add *Listbox.font     $fonts(fixed)
+      option add *Listbox.font     $fonts(listbox)
       option add *Text.font        $fonts(fixed)
       option add *TreeView.font    $fonts(fixed)
       option add *Button.font      $fonts(bold)
@@ -169,10 +170,11 @@ proc setupTkOptions {} {
       set fonts(big)     -*-Helvetica-Medium-R-Normal-*-*-180-*-*-*-*-*-*
       set fonts(msgname) -*-Helvetica-Medium-R-Normal-*-*-110-*-*-*-*-*-*
       set fonts(fixed)   opp_fixed
+      set fonts(listbox) opp_fixed
       set fonts(balloon) opp_balloon
 
-      option add *Listbox.font   $fonts(fixed)
-      option add *TreeView.font  $fonts(fixed)
+      option add *Listbox.font   $fonts(listbox)
+      option add *TreeView.font  $fonts(listbox)
    } else {
       # Windows
       font create opp_normal -family "MS Sans Serif" -size 8
@@ -184,6 +186,7 @@ proc setupTkOptions {} {
       set fonts(big)     -*-Helvetica-Medium-R-Normal-*-*-180-*-*-*-*-*-*
       set fonts(msgname) -*-Helvetica-Medium-R-Normal-*-*-110-*-*-*-*-*-*
       set fonts(fixed)   FixedSys
+      set fonts(listbox) FixedSys
       set fonts(balloon) opp_balloon
 
       option add *TreeView.font  $fonts(normal)
@@ -207,7 +210,7 @@ proc setupTkOptions {} {
        destroy .tmp
        option add *Menu.activeBorderWidth 0
        option add *Menu.relief raised
-       option add *Menu.activeBackground #800000
+       option add *Menu.activeBackground blue
        option add *Menu.activeForeground white
        option add *menubar.borderWidth 1
        option add *menubar.activeBorderWidth 1
@@ -378,6 +381,21 @@ proc comboconfig {w list {cmd {}}} {
 
 proc combo-onchange {w cmd} {
     $w configure -command "$cmd ;#" -commandstate normal
+}
+
+proc combo-fillwithfonts {w oldfont} {
+    # reuse size from existing font
+    set size [lindex $oldfont end]
+    if {![string is integer $size]} {set size ""}
+
+    # produce font list with the given size
+    set fontlist {}
+    foreach i [font families] {
+        if {[llength $i]>1} {set i "\"$i\""}
+        lappend fontlist [string trim "$i $size"]
+    }
+    comboconfig $w $fontlist
+    $w configure -value $oldfont
 }
 
 proc label-entry {w label {text {}}} {
@@ -852,7 +870,7 @@ proc _focusTableEntry {e c} {
 proc multicolumnlistbox {w columnlist args} {
     global HAVE_BLT B2 B3 fonts
     if {$HAVE_BLT} {
-        blt::treeview $w -allowduplicates yes -flat yes
+        blt::treeview $w -allowduplicates yes -flat yes -font $fonts(listbox)
         $w column configure treeView -hide no -width 15 -state disabled
         if {$args!=""} {
              eval $w config $args
@@ -876,7 +894,7 @@ proc multicolumnlistbox {w columnlist args} {
     } else {
         # emulate it with listbox widget
         global mclistbox
-        listbox $w -font $fonts(fixed)
+        listbox $w -font $fonts(listbox)
         if {$args!=""} {
              eval $w config $args
         }

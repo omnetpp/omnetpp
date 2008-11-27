@@ -401,7 +401,7 @@ proc create_omnetpp_window {} {
     #
     # Create main text window
     #
-    text .main.text -yscrollcommand ".main.sb set"
+    text .main.text -yscrollcommand ".main.sb set" -font $fonts(fixed)
     scrollbar .main.sb -command ".main.text yview"
     .main.text tag configure event -foreground blue
     .main.text tag configure log -foreground #006000

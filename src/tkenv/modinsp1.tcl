@@ -195,7 +195,7 @@ proc create_compoundmodulewindow {name geom} {
 }
 
 proc _create_modulewindow {name geom iscompound} {
-    global icons help_tips B2 B3
+    global icons fonts help_tips B2 B3
 
     set w $name
     create_inspector_toplevel $w $geom
@@ -229,7 +229,7 @@ proc _create_modulewindow {name geom iscompound} {
     }
 
     frame $w.main
-    text $w.main.text -yscrollcommand "$w.main.sb set" -width 80 -height 15
+    text $w.main.text -yscrollcommand "$w.main.sb set" -width 80 -height 15 -font $fonts(fixed)
     scrollbar $w.main.sb -command "$w.main.text yview"
     $w.main.text tag configure event -foreground blue
     $w.main.text tag configure SELECT -back #808080 -fore #ffffff
