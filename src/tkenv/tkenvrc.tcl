@@ -19,7 +19,7 @@
 #
 #
 proc save_tkenvrc {{fname ".tkenvrc"}} {
-    global config
+    global config fonts defaultfonts
 
     if [catch {
         set fout [open $fname w]
@@ -58,6 +58,13 @@ proc save_tkenvrc {{fname ".tkenvrc"}} {
             puts $fout "config $key\t{$value}"
         }
 
+        foreach key [lsort [array names fonts]] {
+            if {$fonts($key)!=$defaultfonts($key)} {
+                set value $fonts($key)
+                puts $fout "fonts $key\t{$value}"
+            }
+        }
+
         puts $fout [inspectorlist_tkenvrc_get_contents]
 
         close $fout
@@ -91,7 +98,7 @@ proc store_mainwin_geom {} {
 #
 #
 proc load_tkenvrc {{fname ".tkenvrc"}} {
-    global config
+    global config fonts
 
     if [catch {open $fname r} fin] {
         return
@@ -116,6 +123,13 @@ proc load_tkenvrc {{fname ".tkenvrc"}} {
                 set key [lindex $line 1]
                 set value [lindex $line 2]
                 set config($key) $value
+            } elseif {$cat == "fonts"} {
+                set key [lindex $line 1]
+                set value [lindex $line 2]
+                set value [actualFont [fixupFontName $value]] ;# some validation
+                if {$value!=""} {
+                    set fonts($key) $value
+                }
             } elseif {[llength $line]==4} {
                 # old tkenvrc, patch it up
                 inspectorlist_tkenvrc_process_line [concat "inspector" $line]
