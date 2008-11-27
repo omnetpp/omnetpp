@@ -351,9 +351,8 @@ inline long double_to_long(double d)
 // internal
 inline std::string double_to_str(double t)
 {
-   char buff[50];
-   gcvt(t,16,buff);
-   return buff;
+   char buf[32];
+   return gcvt(t,16,buf);
 }
 
 
