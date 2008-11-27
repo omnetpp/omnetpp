@@ -633,7 +633,7 @@ void NEDSyntaxValidator::validateElement(LiteralElement *node)
     {
         // check int
         char *s;
-        strtol(value, &s, 0);
+        (void) strtol(value, &s, 0);
         if (s && *s)
             errors->addError(node, "invalid integer constant '%s'", value);
         if (!opp_isempty(node->getUnit()))
@@ -644,7 +644,7 @@ void NEDSyntaxValidator::validateElement(LiteralElement *node)
     {
         // check real
         char *s;
-        strtod(value, &s);
+        (void) strtod(value, &s);
         if (s && *s)
             errors->addError(node, "invalid real constant '%s'", value);
         // TBD check that if text and/or unit is present, they're consistent

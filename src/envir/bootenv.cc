@@ -297,7 +297,7 @@ int BootEnv::run(int argc, char *argv[], cConfiguration *cfg)
 
 void BootEnv::sputn(const char *s, int n)
 {
-    ::fwrite(s, 1, n, stdout);
+    (void) ::fwrite(s, 1, n, stdout);
 }
 
 void BootEnv::putsmsg(const char *msg)

@@ -99,7 +99,7 @@ void cFileOutputScalarManager::endRun()
 inline bool isNumeric(const char *s)
 {
     char *e;
-    strtod(s, &e);
+    (void) strtod(s, &e);
     return *e=='\0';
 }
 

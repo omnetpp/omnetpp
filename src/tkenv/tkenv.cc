@@ -1804,7 +1804,7 @@ void Tkenv::sputn(const char *s, int n)
 
     if (!interp)
     {
-        ::fwrite(s,1,n,stdout); // fallback in case Tkenv didn't fire up correctly
+        (void) ::fwrite(s,1,n,stdout); // fallback in case Tkenv didn't fire up correctly
         return;
     }
 

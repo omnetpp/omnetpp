@@ -135,7 +135,7 @@ class DummyEnv : public cEnvir
   protected:
     void unsupported() const {throw opp_runtime_error("DummyEnv: unsupported method called");}
 
-    virtual void sputn(const char *s, int n) {::fwrite(s,1,n,stdout);}
+    virtual void sputn(const char *s, int n) {(void) ::fwrite(s,1,n,stdout);}
     virtual void putsmsg(const char *msg) {::printf("\n<!> %s\n\n", msg);}
     virtual bool askyesno(const char *msg)  {unsupported(); return false;}
 
