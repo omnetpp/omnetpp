@@ -3,7 +3,7 @@
   <extensionContent id="org.omnetpp.intro.migrate.extension" style="intro.css"
     name="OMNeT++ Migration" path="migrate/@">
     <group style-id="content-group" id="org.omnetpp.intro.migrate.group">
-      <link label="OMNeT++ 3.x to 4.0 Migration Guide" url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.omnetpp.doc/content/migration/migration.html" id="orgomnetpp-link" style-id="content-link">
+      <link label="OMNeT++ 3.x to 4.0 Migration Guide" url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.omnetpp.doc/content/migration/index.html" id="orgomnetpp-link" style-id="content-link">
         <text>Learn now to migrate your OMNeT++ 3.x based projects to the new 4.0 version.</text>
       </link>
     </group>
