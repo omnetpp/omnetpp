@@ -620,6 +620,7 @@ $O/statinsp.o: statinsp.cc \
   ../../include/cmessageheap.h \
   tkenv.h \
   statinsp.h
+$O/tclcode.o: tclcode.cc
 $O/tkcmd.o: tkcmd.cc \
   ../envir/args.h \
   ../../include/regmacros.h \
@@ -706,6 +707,7 @@ $O/tkenv.o: tkenv.cc \
   ../../include/envirext.h \
   ../../include/cscheduler.h \
   ../../include/cpar.h \
+  tclcode.cc \
   ../../include/globals.h \
   ../envir/appreg.h \
   ../../include/cvisitor.h \

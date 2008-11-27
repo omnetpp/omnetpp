@@ -340,8 +340,10 @@ proc options_dialog {{defaultpage "g"}} {
     frame $nb.g.f3 -relief groove -borderwidth 2
     label-combo $nb.g.f3.fixedfont  {Fixed-width font:} {}
     label-combo $nb.g.f3.listboxfont  {Listbox font:} {}
+    commentlabel $nb.g.f3.note {Examples: fixed, fixed 12, Courier 8, Helvetica 12 bold. NOTE: The font system may substitute another font if the given font is not available.}
     pack $nb.g.f3.fixedfont -anchor w -fill x
     pack $nb.g.f3.listboxfont -anchor w -fill x
+    pack $nb.g.f3.note -anchor w -fill x
 
     #frame $nb.t -relief groove -borderwidth 2
     checkbutton $nb.t.tlwantself -text {Display self-messages in the timeline} -variable opp(timeline-wantselfmsgs)
@@ -459,16 +461,17 @@ proc options_dialog {{defaultpage "g"}} {
         set config(timeline-wantselfmsgs)    $opp(timeline-wantselfmsgs)
         set config(timeline-wantnonselfmsgs) $opp(timeline-wantnonselfmsgs)
 
-        set fixedfont [fixupFontName [$nb.g.f3.fixedfont.e get]]
+        set fixedfont [actualFont [fixupFontName [$nb.g.f3.fixedfont.e get]]]
         if {$fixedfont != ""} {
             set fonts(fixed) $fixedfont
-            setWidgetFont Text $fixedfont
+            applyFont Text $fixedfont
         }
 
-        set listboxfont [fixupFontName [$nb.g.f3.listboxfont.e get]]
+        set listboxfont [actualFont [fixupFontName [$nb.g.f3.listboxfont.e get]]]
         if {$listboxfont != ""} {
             set fonts(listbox) $listboxfont
-            setWidgetFont Listbox $listboxfont
+            applyFont Listbox $listboxfont
+            applyFont TreeView $listboxfont  ;# BTL treeview
         }
 
         opp_updateinspectors
@@ -476,37 +479,6 @@ proc options_dialog {{defaultpage "g"}} {
     }
     destroy $w
 }
-
-proc fixupFontName {font} {
-    # remove special chars that may cause problems
-    set font [string map {"{" "" "}" "" "\"" ""} $font]
-    set font [string trim $font]
-    if {[llength $font]>2} {
-        # quote font family names that consist of more than one words
-        set lastword [lindex $font end]
-        if {[string is integer $lastword]} {
-            set font "\"[lrange $font 0 end-1]\" $lastword"  ;# "fontname size"
-        } else {
-            set font "\"$font\""
-        }
-    }
-    # check if this is a good name
-    set actualfont ""
-    catch {set actualfont [font actual $font]}
-    if {$actualfont==""} {set font ""}
-    return $font
-}
-
-# recurse widget tree and apply font to all text widgets
-proc setWidgetFont {class font {w .}} {
-    if {"[winfo class $w]"=="$class"} {
-        catch {$w config -font $font}
-    }
-    foreach i [winfo children $w] {
-        setWidgetFont $class $font $i
-    }
-}
-
 
 proc setIfPatternIsValid {var pattern} {
     if [catch {opp_checkpattern $pattern} errmsg] {

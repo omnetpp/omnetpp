@@ -53,7 +53,7 @@ catch {set tk::mac::CGAntialiasLimit 1}
 # on Unix/Windows and across different Tk versions.
 #
 proc setupTkOptions {} {
-   global fonts tcl_platform tk_version
+   global fonts defaultfonts tcl_platform tk_version
    global tcl_wordchars tcl_nonwordchars
    global HAVE_BLT B2 B3
 
@@ -126,83 +126,56 @@ proc setupTkOptions {} {
    #
 
    if {[string equal [tk windowingsystem] x11]} {
-      set fonts(normal)  -*-Helvetica-Medium-R-Normal-*-12-*-*-*-*-*-*-*
-      set fonts(bold)    -*-Helvetica-Bold-R-Normal-*-12-*-*-*-*-*-*-*
-      set fonts(big)     -*-Helvetica-Medium-R-Normal-*-18-*-*-*-*-*-*-*
-      set fonts(msgname) -*-Helvetica-Medium-R-Normal-*-12-*-*-*-*-*-*-*
-      set fonts(fixed)   -*-Courier-Medium-R-Normal-*-12-*-*-*-*-*-*-*
-      set fonts(listbox) -*-Courier-Medium-R-Normal-*-12-*-*-*-*-*-*-*
-      set fonts(balloon) -*-Helvetica-Medium-R-Normal-*-12-*-*-*-*-*-*-*
+      # note: "Helvetica 12" will look ugly [Ubuntu 8.10] because it maps to some other font
+      set fonts(normal)  "Helvetica 9"
+      set fonts(bold)    "Helvetica 9 bold"
+      set fonts(big)     "Helvetica 18"
+      set fonts(msgname) "Helvetica 9"
+      set fonts(fixed)   "fixed"
+      set fonts(listbox) "Helvetica 9"
+      set fonts(balloon) "Helvetica 9"
 
       option add *Scrollbar.width  12
       option add *Menubutton.font  $fonts(normal)
       option add *Menu.font        $fonts(normal)
       option add *Label.font       $fonts(normal)
       option add *Entry.font       $fonts(normal)
-      option add *Listbox.font     $fonts(listbox)
-      option add *Text.font        $fonts(fixed)
-      option add *TreeView.font    $fonts(fixed)
       option add *Button.font      $fonts(bold)
-
-      # make menus look more contemporary
-      menu .tmp
-      set activebg [.tmp cget -activebackground]
-      set activefg [.tmp cget -activeforeground]
-      destroy .tmp
-      option add *Menu.activeBorderWidth 0
-      option add *Menu.relief raised
-      option add *Menu.activeBackground #800000
-      option add *Menu.activeForeground white
-      option add *menubar.borderWidth 1
-      option add *menubar.activeBorderWidth 1
-      option add *menubar.activeBackground $activebg
-      option add *menubar.activeForeground $activefg
-
+      option add *Text.font        $fonts(fixed)
+      option add *TreeView.font    $fonts(listbox)
+      option add *Listbox.font     $fonts(listbox)
    } elseif {[string equal [tk windowingsystem] aqua]} {
       # Mac
-      font create opp_normal -family "Arial" -size 12
-      font create opp_bold   -family "Arial" -size 12 -weight bold
-      font create opp_balloon -family "Arial" -size 12
-      font create opp_fixed -family "Courier" -size 12
+      set fonts(normal)  "Helvetica 12"
+      set fonts(bold)    "Helvetica 12 bold"
+      set fonts(big)     "Helvetica 18"
+      set fonts(msgname) "Helvetica 11"
+      set fonts(fixed)   "Courier 12"
+      set fonts(listbox) "Courier 12"  ;# BLT is missing so we need fixed-width font for listboxes
+      set fonts(balloon) "Helvetica 12"
 
-      set fonts(normal)  opp_normal
-      set fonts(bold)    opp_bold
-      set fonts(big)     -*-Helvetica-Medium-R-Normal-*-*-180-*-*-*-*-*-*
-      set fonts(msgname) -*-Helvetica-Medium-R-Normal-*-*-110-*-*-*-*-*-*
-      set fonts(fixed)   opp_fixed
-      set fonts(listbox) opp_fixed
-      set fonts(balloon) opp_balloon
-
-      option add *Listbox.font   $fonts(listbox)
-      option add *TreeView.font  $fonts(listbox)
+      option add *Text.font        $fonts(fixed)
+      option add *TreeView.font    $fonts(listbox)
+      option add *Listbox.font     $fonts(listbox)
    } else {
       # Windows
-      font create opp_normal -family "MS Sans Serif" -size 8
-      font create opp_bold   -family "MS Sans Serif" -size 8 -weight bold
-      font create opp_balloon -family "MS Sans Serif" -size 8
-
-      set fonts(normal)  opp_normal
-      set fonts(bold)    opp_bold
-      set fonts(big)     -*-Helvetica-Medium-R-Normal-*-*-180-*-*-*-*-*-*
-      set fonts(msgname) -*-Helvetica-Medium-R-Normal-*-*-110-*-*-*-*-*-*
-      set fonts(fixed)   FixedSys
-      set fonts(listbox) FixedSys
-      set fonts(balloon) opp_balloon
+      set fonts(normal)  "\"MS Sans Serif\" 8"
+      set fonts(bold)    "\"MS Sans Serif\" 8 bold"
+      set fonts(big)     "\"MS Sans Serif\" 18"
+      set fonts(msgname) "\"MS Sans Serif\" 11"
+      set fonts(fixed)   "FixedSys"
+      set fonts(listbox) "\"MS Sans Serif\" 8"
+      set fonts(balloon) "\"MS Sans Serif\" 8"
 
       option add *TreeView.font  $fonts(normal)
    }
 
-   if {[string equal [tk windowingsystem] x11]} {
-       option add *Scrollbar.width  12
-       option add *Menubutton.font  $fonts(normal)
-       option add *Menu.font        $fonts(normal)
-       option add *Label.font       $fonts(normal)
-       option add *Entry.font       $fonts(normal)
-       option add *Listbox.font     $fonts(fixed)
-       option add *Text.font        $fonts(fixed)
-       option add *TreeView.font    $fonts(fixed)
-       option add *Button.font      $fonts(bold)
+   # remember default font settings (we'll only save the non-default ones to .tkenvrc)
+   foreach i [array names fonts] {
+       set defaultfonts($i) $fonts($i)
+   }
 
+   if {[string equal [tk windowingsystem] x11]} {
        # make menus look more contemporary
        menu .tmp
        set activebg [.tmp cget -activebackground]
@@ -210,7 +183,7 @@ proc setupTkOptions {} {
        destroy .tmp
        option add *Menu.activeBorderWidth 0
        option add *Menu.relief raised
-       option add *Menu.activeBackground blue
+       option add *Menu.activeBackground #800000
        option add *Menu.activeForeground white
        option add *menubar.borderWidth 1
        option add *menubar.activeBorderWidth 1
@@ -383,21 +356,6 @@ proc combo-onchange {w cmd} {
     $w configure -command "$cmd ;#" -commandstate normal
 }
 
-proc combo-fillwithfonts {w oldfont} {
-    # reuse size from existing font
-    set size [lindex $oldfont end]
-    if {![string is integer $size]} {set size ""}
-
-    # produce font list with the given size
-    set fontlist {}
-    foreach i [font families] {
-        if {[llength $i]>1} {set i "\"$i\""}
-        lappend fontlist [string trim "$i $size"]
-    }
-    comboconfig $w $fontlist
-    $w configure -value $oldfont
-}
-
 proc label-entry {w label {text {}}} {
     # utility function: create a frame with a label+entry
     frame $w
@@ -529,6 +487,66 @@ proc label-check {w label first var} {
     pack $w.f -anchor w -expand 0 -side left -fill x
     pack $w.f.r1 -anchor w -expand 0 -side left
 }
+
+#
+# font chooser
+#
+
+proc combo-fillwithfonts {w oldfont} {
+    # reuse size from existing font
+    set size ""
+    catch {
+        array set fontprops [font actual $oldfont]
+        set size $fontprops(-size)
+    }
+
+    # produce font list with the given size
+    set fontlist {}
+    foreach family [lsort [font families]] {
+        if {[llength $family]>1} {set family "\"$family\""}
+        lappend fontlist [string trim "$family $size"]
+    }
+    comboconfig $w $fontlist
+    $w configure -value $oldfont
+}
+
+proc fixupFontName {font} {
+    # remove special chars that may cause problems
+    set font [string map {"{" "" "}" "" "\"" ""} $font]
+    set font [string trim $font]
+
+    # quote font family names that consist of more than one words (everything before the size is family)
+    regsub -- {(.* .*?) +([0-9]+)} $font {"\1" \2} font
+    return $font
+}
+
+# returns the "readable" name of the actual font a font maps to
+proc actualFont {font} {
+    set actualfont ""
+    catch {
+        # "font actual" sample output:
+        # -family Helvetica -size 24 -weight bold -slant roman -underline 0 -overstrike 0
+        array set fontprops [font actual $font]
+        set actualfont [list $fontprops(-family) $fontprops(-size)]
+        if {$fontprops(-weight)!="normal"} {lappend actualfont $fontprops(-weight)}
+        if {$fontprops(-slant)!="roman"} {lappend actualfont $fontprops(-slant)}
+        if {$fontprops(-underline)!="0"} {lappend actualfont "underline"}
+        if {$fontprops(-overstrike)!="0"} {lappend actualfont "overstrike"}
+        set actualfont [string map {"{" "\"" "}" "\""} $actualfont]
+    }
+    return $actualfont
+}
+
+# recurse widget tree and apply font to all text widgets
+proc applyFont {class font {w .}} {
+    if {"[winfo class $w]"=="$class"} {
+        catch {$w config -font $font}
+    }
+    foreach i [winfo children $w] {
+        applyFont $class $font $i
+    }
+}
+
 
 # label-colorchooser --
 #
