@@ -877,6 +877,20 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
                    "is not suitable for OMNeT++. Please re-create the project with the " +
                    "New OMNeT++ Project wizard, overwriting the existing project settings.";
 
+        // warn if referenced projects not present or not open
+        try {
+            List<String> badRefProjs = new ArrayList<String>();
+            for (IProject ref : project.getReferencedProjects())
+                if (!ref.isAccessible())
+                    badRefProjs.add(ref.getFullPath().toString());
+            if (!badRefProjs.isEmpty())
+                return "The following referenced projects are missing or closed: " + StringUtils.join(badRefProjs, ", ");
+        }
+        catch (CoreException e) {
+            Activator.logError(e);
+            return "Cannot query list of referenced projects: " + e.getMessage();
+        }
+            
         // warn if there're differences in source entries across configurations.
         // first, collect which entries occur in which configurations
         Map<String,List<String>> sourceEntryMap = new HashMap<String, List<String>>(); // srcEntry -> config*
