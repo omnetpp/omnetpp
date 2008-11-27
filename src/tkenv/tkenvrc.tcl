@@ -59,7 +59,7 @@ proc save_tkenvrc {{fname ".tkenvrc"}} {
         }
 
         foreach key [lsort [array names fonts]] {
-            if {$fonts($key)!=$defaultfonts($key)} {
+            if {[info exists defaultfonts($key)] && $fonts($key)!=$defaultfonts($key)} {
                 set value $fonts($key)
                 puts $fout "fonts $key\t{$value}"
             }
@@ -151,12 +151,16 @@ proc load_tkenvrc {{fname ".tkenvrc"}} {
 #
 #
 proc reflectSettingsInGui {} {
-   global config
+   global config fonts
 
    catch {wm state . $config(mainwin-state)}
    catch {wm geometry . $config(mainwin-geom)}
 
    catch {.main.text config -wrap $config(editor-wrap)}
+
+   applyFont Text $fonts(text)
+   applyFont Listbox $fonts(listbox)
+   applyFont TreeView $fonts(listbox)
 
    toggle_treeview
    toggle_treeview

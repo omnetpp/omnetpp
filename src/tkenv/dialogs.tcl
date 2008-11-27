@@ -338,7 +338,7 @@ proc options_dialog {{defaultpage "g"}} {
     pack $nb.g.f2.confirmexit -anchor w
 
     frame $nb.g.f3 -relief groove -borderwidth 2
-    label-combo $nb.g.f3.fixedfont  {Fixed-width font:} {}
+    label-combo $nb.g.f3.fixedfont  {Text window font:} {}
     label-combo $nb.g.f3.listboxfont  {Listbox font:} {}
     commentlabel $nb.g.f3.note {Examples: fixed, fixed 12, Courier 8, Helvetica 12 bold. NOTE: The font system may substitute another font if the given font is not available.}
     pack $nb.g.f3.fixedfont -anchor w -fill x
@@ -424,7 +424,7 @@ proc options_dialog {{defaultpage "g"}} {
     set opp(timeline-wantselfmsgs)      $config(timeline-wantselfmsgs)
     set opp(timeline-wantnonselfmsgs)   $config(timeline-wantnonselfmsgs)
 
-    combo-fillwithfonts $nb.g.f3.fixedfont.e $fonts(fixed)
+    combo-fillwithfonts $nb.g.f3.fixedfont.e $fonts(text)
     combo-fillwithfonts $nb.g.f3.listboxfont.e $fonts(listbox)
 
     setinitialdialogfocus $nb.g.f2.usemainwin
@@ -461,17 +461,17 @@ proc options_dialog {{defaultpage "g"}} {
         set config(timeline-wantselfmsgs)    $opp(timeline-wantselfmsgs)
         set config(timeline-wantnonselfmsgs) $opp(timeline-wantnonselfmsgs)
 
-        set fixedfont [actualFont [fixupFontName [$nb.g.f3.fixedfont.e get]]]
-        if {$fixedfont != ""} {
-            set fonts(fixed) $fixedfont
-            applyFont Text $fixedfont
+        set font [actualFont [fixupFontName [$nb.g.f3.fixedfont.e get]]]
+        if {$font != ""} {
+            set fonts(text) $font
+            applyFont Text $font
         }
 
-        set listboxfont [actualFont [fixupFontName [$nb.g.f3.listboxfont.e get]]]
-        if {$listboxfont != ""} {
-            set fonts(listbox) $listboxfont
-            applyFont Listbox $listboxfont
-            applyFont TreeView $listboxfont  ;# BTL treeview
+        set font [actualFont [fixupFontName [$nb.g.f3.listboxfont.e get]]]
+        if {$font != ""} {
+            set fonts(listbox) $font
+            applyFont Listbox $font
+            applyFont TreeView $font  ;# BTL treeview
         }
 
         opp_updateinspectors

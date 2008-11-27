@@ -44,7 +44,7 @@ proc create_messagewindow {name} {
     textwindow_add_icons $w
 
     frame $w.main
-    text $w.main.text -yscrollcommand "$w.main.sb set" -width 88 -height 15 -font $fonts(fixed)
+    text $w.main.text -yscrollcommand "$w.main.sb set" -width 88 -height 15 -font $fonts(text)
     scrollbar $w.main.sb -command "$w.main.text yview"
     $w.main.text tag configure event -foreground blue
 
@@ -202,7 +202,7 @@ proc create_fileviewer {filename} {
     pack $w.main  -anchor center -expand 1 -fill both -ipadx 0 -ipady 0 -padx 0 -pady 0 -side top
     scrollbar $w.main.sb -command "$w.main.text yview"
     pack $w.main.sb -anchor center -expand 0 -fill y -ipadx 0 -ipady 0 -padx 0 -pady 0 -side right
-    text $w.main.text -yscrollcommand "$w.main.sb set" -width 88 -height 30 -font $fonts(fixed)
+    text $w.main.text -yscrollcommand "$w.main.sb set" -width 88 -height 30 -font $fonts(text)
     pack $w.main.text -anchor center -expand 1 -fill both -side left
 
     $w.main.text tag configure SELECT -back #808080 -fore #ffffff

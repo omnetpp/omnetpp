@@ -229,7 +229,7 @@ proc _create_modulewindow {name geom iscompound} {
     }
 
     frame $w.main
-    text $w.main.text -yscrollcommand "$w.main.sb set" -width 80 -height 15 -font $fonts(fixed)
+    text $w.main.text -yscrollcommand "$w.main.sb set" -width 80 -height 15 -font $fonts(text)
     scrollbar $w.main.sb -command "$w.main.text yview"
     $w.main.text tag configure event -foreground blue
     $w.main.text tag configure SELECT -back #808080 -fore #ffffff

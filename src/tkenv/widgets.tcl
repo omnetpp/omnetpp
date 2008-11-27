@@ -131,7 +131,7 @@ proc setupTkOptions {} {
       set fonts(bold)    "Helvetica 9 bold"
       set fonts(big)     "Helvetica 18"
       set fonts(msgname) "Helvetica 9"
-      set fonts(fixed)   "fixed"
+      set fonts(text)    "fixed"
       set fonts(listbox) "Helvetica 9"
       set fonts(balloon) "Helvetica 9"
 
@@ -141,7 +141,7 @@ proc setupTkOptions {} {
       option add *Label.font       $fonts(normal)
       option add *Entry.font       $fonts(normal)
       option add *Button.font      $fonts(bold)
-      option add *Text.font        $fonts(fixed)
+      option add *Text.font        $fonts(text)
       option add *TreeView.font    $fonts(listbox)
       option add *Listbox.font     $fonts(listbox)
    } elseif {[string equal [tk windowingsystem] aqua]} {
@@ -150,11 +150,11 @@ proc setupTkOptions {} {
       set fonts(bold)    "Helvetica 12 bold"
       set fonts(big)     "Helvetica 18"
       set fonts(msgname) "Helvetica 11"
-      set fonts(fixed)   "Courier 12"
+      set fonts(text)    "Courier 12"
       set fonts(listbox) "Courier 12"  ;# BLT is missing so we need fixed-width font for listboxes
       set fonts(balloon) "Helvetica 12"
 
-      option add *Text.font        $fonts(fixed)
+      option add *Text.font        $fonts(text)
       option add *TreeView.font    $fonts(listbox)
       option add *Listbox.font     $fonts(listbox)
    } else {
@@ -162,8 +162,8 @@ proc setupTkOptions {} {
       set fonts(normal)  "\"MS Sans Serif\" 8"
       set fonts(bold)    "\"MS Sans Serif\" 8 bold"
       set fonts(big)     "\"MS Sans Serif\" 18"
-      set fonts(msgname) "\"MS Sans Serif\" 11"
-      set fonts(fixed)   "FixedSys"
+      set fonts(msgname) "\"MS Sans Serif\" 7"
+      set fonts(text)    "\"MS Sans Serif\" 8"
       set fonts(listbox) "\"MS Sans Serif\" 8"
       set fonts(balloon) "\"MS Sans Serif\" 8"
 
