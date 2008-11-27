@@ -1,11 +1,17 @@
-Queuinglib
+QueueNET & Queuinglib
 ========
 
-QueueNET is a queuing network tutorial and queuing library for OMNeT++.
+Queueinglib is a queuing network tutorial and queuing library for OMNeT++.
 It is the successor of the Queue, Queueing, Fifo samples from earlier
-versions of OMNeT++. It contains several basic building blocks that can be
-used to build more complex queuing theory related networks. Jobs are passed
-between these blocks.
+versions of OMNeT++. It contains several basic building blocks in 
+a shared library that can be used to build more complex queueing theory 
+related networks. Jobs are passed between these blocks.
+
+The QueueNET project demonstrates how to use an already existing model library 
+(Queueinglib) from a different project. QueueNET contains no C++ code and
+uses only the building blocks (simple modules) provided by the queueinglib.
+The 'opp_run -l sharedlibname' command can be used to start simulations 
+in shared libraries.
 
 Basic building blocks:
 ======================
