@@ -566,6 +566,10 @@ public class OmnetppLaunchUtils {
 		infoBuffer.append(StringUtils.join(cmdLine,' '));
     	infoBuffer.append("\n\nWorking directory: "+expandedWd+"\n");
     	for (String env : environment) {
+    		// on windows the environment is case insensitive, so we convert it to upper case
+    		if (Platform.getOS().equals(Platform.OS_WIN32))
+    			env = env.toUpperCase();
+    		// print the env vars we are interested in
     		if (env.startsWith("PATH=") || env.startsWith("LD_LIBRARY_PATH=") 
     				 || env.startsWith("OMNETPP_") || env.startsWith("NEDPATH=")  )
     			infoBuffer.append("\n"+env);
