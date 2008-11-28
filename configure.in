@@ -608,12 +608,6 @@ fi
 AC_ARG_VAR(SWIG, The Swig interface generator)
 AC_CHECK_PROG(SWIG, swig, swig, not found)
 
-if test "$SWIG" = "not found"; then
-   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  swig (optional)"
-   AC_MSG_WARN(swig not found -- it is only needed to rebuild the OMNeT++/OMNEST IDE support library.)
-   AC_MSG_WARN(It is available from http://www.swig.org/)
-fi
-
 #----------------------
 # Checks for standard libraries.
 #----------------------
@@ -883,10 +877,6 @@ if test "$JAVA_CFLAGS" = ""; then
 fi
 
 OPP_CHECK_LIB_NOLINK(JNI, jni.h, JNI_GetCreatedJavaVMs(0,0,0), $CFLAGS_RELEASE $JAVA_CFLAGS, jni_ok)
-if test "$jni_ok" = no; then
-   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  JNI headers for Java (optional)"
-   AC_MSG_WARN([Optional package JNI headers for Java (needed for IDE support library) not found.])
-fi
 
 if test "$jni_ok" = "no" -o "$SWIG" = "not found"; then
    JNILIBS_IF_POSSIBLE=missing-dependency
