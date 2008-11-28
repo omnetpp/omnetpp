@@ -2,6 +2,10 @@
 
 	* implemented font selection (Options dialog)
 
+	* settings are now saved to $HOME/.tkenvrc, only inspectors are saved
+	to .tkenvrc in the current directory. (Motivation: font selection is
+	tyically meant to be global by the user, not per-simulation)
+
 2008-11-26  Andras Varga
 
 	* library renamed to opptkenv

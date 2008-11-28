@@ -18,54 +18,57 @@
 # save_tkenvrc --
 #
 #
-proc save_tkenvrc {{fname ".tkenvrc"}} {
+proc save_tkenvrc {fname savesettings saveinspectors {comment ""}} {
     global config fonts defaultfonts
 
     if [catch {
         set fout [open $fname w]
-        puts $fout "# Tkenv configuration"
-        foreach key {
-            updatefreq_fast
-            updatefreq_express
-            stepdelay
-            use_mainwindow
-            print_banners
-            short_banners
-            animation_enabled
-            nexteventmarkers
-            senddirect_arrows
-            anim_methodcalls
-            methodcalls_delay
-            animation_msgnames
-            animation_msgclassnames
-            animation_msgcolors
-            penguin_mode
-            showlayouting
-            usenewlayouter
-            bubbles
-            animation_speed
-            expressmode_autoupdate
-            stoponmsgcancel
-        } {
-            set value [opp_getsimoption $key]
-            puts $fout "option $key\t{$value}"
-        }
+        puts $fout $comment
+        if {$savesettings} {
+            foreach key {
+                updatefreq_fast
+                updatefreq_express
+                stepdelay
+                use_mainwindow
+                print_banners
+                short_banners
+                animation_enabled
+                nexteventmarkers
+                senddirect_arrows
+                anim_methodcalls
+                methodcalls_delay
+                animation_msgnames
+                animation_msgclassnames
+                animation_msgcolors
+                penguin_mode
+                showlayouting
+                usenewlayouter
+                bubbles
+                animation_speed
+                expressmode_autoupdate
+                stoponmsgcancel
+            } {
+                set value [opp_getsimoption $key]
+                puts $fout "option $key\t{$value}"
+            }
 
-        store_mainwin_geom
+            store_mainwin_geom
+            foreach key [lsort [array names config]] {
+                set value $config($key)
+                puts $fout "config $key\t{$value}"
+            }
 
-        foreach key [lsort [array names config]] {
-            set value $config($key)
-            puts $fout "config $key\t{$value}"
-        }
-
-        foreach key [lsort [array names fonts]] {
-            if {[info exists defaultfonts($key)] && $fonts($key)!=$defaultfonts($key)} {
-                set value $fonts($key)
-                puts $fout "fonts $key\t{$value}"
+            foreach key [lsort [array names fonts]] {
+                if {[info exists defaultfonts($key)] && $fonts($key)!=$defaultfonts($key)} {
+                    set value $fonts($key)
+                    puts $fout "fonts $key\t{$value}"
+                }
             }
         }
 
-        puts $fout [inspectorlist_tkenvrc_get_contents]
+        if {$saveinspectors} {
+            puts $fout [inspectorlist_tkenvrc_get_contents]
+        }
 
         close $fout
 
@@ -97,7 +100,7 @@ proc store_mainwin_geom {} {
 # load_tkenvrc --
 #
 #
-proc load_tkenvrc {{fname ".tkenvrc"}} {
+proc load_tkenvrc {fname} {
     global config fonts
 
     if [catch {open $fname r} fin] {

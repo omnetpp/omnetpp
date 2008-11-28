@@ -128,7 +128,9 @@ proc exit_omnetpp {} {
        opp_stopsimulation
     }
 
-    save_tkenvrc
+    # save settings (fonts etc) globally, and inspector list locally
+    save_tkenvrc "~/.tkenvrc" 1 0
+    save_tkenvrc ".tkenvrc"   0 1  "# Partial Tkenv config file -- see \$HOME/.tkenvrc as well"
 
     opp_exitomnetpp
 }
@@ -634,7 +636,7 @@ proc save_tkenv_config {} {
                   -filetypes {{{Configuration files} {*.cfg}} {{All files} {*}}}]
 
     if {$filename!=""} {
-       save_tkenvrc $filename
+       save_tkenvrc $filename 1 1 "# Tkenv config file"
     }
 }
 

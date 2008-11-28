@@ -63,7 +63,8 @@ proc start_tkenv {} {
   puts ""
   load_bitmaps $OMNETPP_IMAGE_PATH
   load_plugins $OMNETPP_PLUGIN_PATH
-  load_tkenvrc
+  load_tkenvrc "~/.tkenvrc"
+  load_tkenvrc ".tkenvrc"
   determine_clocks_per_sec
 
   global tcl_platform
