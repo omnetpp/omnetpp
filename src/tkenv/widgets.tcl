@@ -446,6 +446,46 @@ proc label-combo2 {w label list {text {}} {cmd {}}} {
     $w.e delete 0 end
 }
 
+proc label-fontcombo {w label {font {}}} {
+    # utility function: create a frame with a label+combo for font selection
+    frame $w
+    label $w.l -anchor w -width 16 -text $label
+    combo $w.e {}
+    label $w.p -anchor w
+
+    grid $w.l $w.e -sticky news -padx 2 -pady 2
+    grid x    $w.p -sticky news -padx 2 -pady 2
+    grid columnconfigure $w 1 -weight 1
+
+    $w.e configure -value $font
+    $w.e.entry configure -validate all -validatecommand "after idle {fontcombo:update $w}; return 1"
+}
+
+# private proc for label-fontcombo
+proc fontcombo:update {w} {
+    set font [actualFont [fixupFontName [$w.e get]]]
+    if {$font==""} {set font "n/a"}
+    $w.p configure -text "Actual: $font"
+}
+
+proc fontcombo-set {w oldfont} {
+    # reuse size from existing font
+    set size ""
+    catch {
+        array set fontprops [font actual $oldfont]
+        set size $fontprops(-size)
+    }
+
+    # produce font list with the given size
+    set fontlist {}
+    foreach family [lsort [font families]] {
+        if {[llength $family]>1} {set family "\"$family\""}
+        lappend fontlist [string trim "$family $size"]
+    }
+    comboconfig $w $fontlist
+    $w configure -value $oldfont
+}
+
 proc label-text {w label height {text {}}} {
     # utility function: create a frame with a label+text
     frame $w
@@ -488,35 +528,14 @@ proc label-check {w label first var} {
     pack $w.f.r1 -anchor w -expand 0 -side left
 }
 
-#
-# font chooser
-#
-
-proc combo-fillwithfonts {w oldfont} {
-    # reuse size from existing font
-    set size ""
-    catch {
-        array set fontprops [font actual $oldfont]
-        set size $fontprops(-size)
-    }
-
-    # produce font list with the given size
-    set fontlist {}
-    foreach family [lsort [font families]] {
-        if {[llength $family]>1} {set family "\"$family\""}
-        lappend fontlist [string trim "$family $size"]
-    }
-    comboconfig $w $fontlist
-    $w configure -value $oldfont
-}
-
 proc fixupFontName {font} {
     # remove special chars that may cause problems
     set font [string map {"{" "" "}" "" "\"" ""} $font]
     set font [string trim $font]
+    regsub -- {  +} $font { } font
 
     # quote font family names that consist of more than one words (everything before the size is family)
-    regsub -- {(.* .*?) +([0-9]+)} $font {"\1" \2} font
+    regsub -- {(.+? +[^ ]+?) +([0-9]+)} $font {"\1" \2} font
     return $font
 }
 
