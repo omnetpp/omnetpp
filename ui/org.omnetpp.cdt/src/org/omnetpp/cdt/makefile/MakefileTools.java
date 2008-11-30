@@ -10,6 +10,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
+import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -184,10 +185,10 @@ public class MakefileTools {
 
     private static void collectDirs(ICProjectDescription projectDescription, final List<IContainer> result, final String pattern) throws CoreException {
         IProject project = projectDescription.getProject();
-    	final ICSourceEntry[] srcEntries = projectDescription.getActiveConfiguration().getSourceEntries();
+        final ICSourceEntry[] srcEntries = CDataUtil.makeRelative(project, projectDescription.getActiveConfiguration().getSourceEntries());
 
     	for (ICSourceEntry srcEntry : srcEntries) {
-    		IResource sourceFolder = project.findMember(srcEntry.getFullPath());
+    		IResource sourceFolder = project.findMember(srcEntry.getFullPath()); 
     		if (sourceFolder != null) {
 		    	sourceFolder.accept(new IResourceVisitor() {
 		    		public boolean visit(IResource resource) throws CoreException {
@@ -223,7 +224,8 @@ public class MakefileTools {
     }
     
     /**
-     * Returns *location* paths for the include directories.
+     * Returns *location* paths for the include directories: the OMNeT++ include directory,
+     * plus source directories from the project and all dependent projects. 
      */
     public static List<IPath> getOmnetppIncludeLocationsForProject(ICProjectDescription projectDescription) throws CoreException {
         List<IPath> result = new ArrayList<IPath>();
