@@ -18,6 +18,7 @@
 #include <string.h>
 #include <assert.h>
 #include <algorithm>
+#include <locale.h>
 
 #include "cenvir.h"
 #include "carray.h"
@@ -1079,6 +1080,7 @@ int setSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
       app->opt_bubbles = (argv[2][0]!='0');
    else if (0==strcmp(argv[1], "animation_speed"))
    {
+	  setlocale(LC_NUMERIC, "C");
       sscanf(argv[2],"%lg",&app->opt_animation_speed);
       if (app->opt_animation_speed<0) app->opt_animation_speed=0;
       if (app->opt_animation_speed>3) app->opt_animation_speed=3;
