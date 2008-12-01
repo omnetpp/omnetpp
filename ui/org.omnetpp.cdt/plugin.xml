@@ -125,6 +125,17 @@
             class="org.omnetpp.cdt.OmnetppGCCScannerInfoCollector"
             scope="project">
       </scannerInfoCollector>
+      <buildOutputProvider>
+         <open/>
+         <scannerInfoConsoleParser class="org.eclipse.cdt.make.internal.core.scannerconfig.gnu.GCCScannerInfoConsoleParser"/>
+      </buildOutputProvider>      
+      <scannerInfoProvider providerId="specsFile">
+         <run
+               command="gcc"
+               arguments="-E -P -v -dD ${plugin_state_location}/${specs_file}"
+               class="org.eclipse.cdt.make.internal.core.scannerconfig2.GCCSpecsRunSIProvider"/>
+         <scannerInfoConsoleParser class="org.eclipse.cdt.make.internal.core.scannerconfig.gnu.GCCSpecsConsoleParser"/>
+      </scannerInfoProvider>
    </extension>
    <extension
          id="MakefileBuilder"

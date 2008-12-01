@@ -1192,6 +1192,10 @@ public class SequenceChart
 
     /**
      * Restore persistent sequence chart settings for the given resource.
+     * NOTE: the state of the filter menu Show all/filtered is intentionally not saved
+     * because a the log file can change between saved sessions. So there is no guarantee how
+     * a filter will perform next time if the user opens the sequence chart. It can throw error
+     * or run too long to be acceptable. 
      */
 	public boolean restoreState(IResource resource) {
 		PersistentResourcePropertyManager manager = new PersistentResourcePropertyManager(SequenceChartPlugin.PLUGIN_ID, getClass().getClassLoader());
