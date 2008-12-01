@@ -1245,6 +1245,12 @@ public class SequenceChart
 					    axisSpacingMode = sequenceChartState.axisSpacingMode;
 					if (sequenceChartState.axisSpacing != -1)
 					    axisSpacing = sequenceChartState.axisSpacing;
+					if (sequenceChartState.showMessageNames != null)
+						setShowMessageNames(sequenceChartState.showMessageNames);
+					if (sequenceChartState.showEventNumbers != null)
+						setShowEventNumbers(sequenceChartState.showEventNumbers);
+					if (sequenceChartState.showOtherMessageReuses != null)
+						setShowOtherMessageReuses(sequenceChartState.showOtherMessageReuses);
                     
                     // restore timeline mode
                     if (sequenceChartState.timelineMode != null)
@@ -1315,7 +1321,10 @@ public class SequenceChart
                 // store spacing
                 sequenceChartState.axisSpacingMode = getAxisSpacingMode();
                 sequenceChartState.axisSpacing = getAxisSpacing();
-
+                sequenceChartState.showMessageNames = getShowMessageNames();
+                sequenceChartState.showEventNumbers = getShowEventNumbers();
+                sequenceChartState.showOtherMessageReuses = getShowOtherMessageReuses();
+                
 				manager.setProperty(resource, STATE_PROPERTY, sequenceChartState);
 			}
 		}
@@ -4429,6 +4438,9 @@ class SequenceChartState implements Serializable {
     public SequenceChart.AxisSpacingMode axisSpacingMode;
 	public SequenceChart.AxisOrderingMode axisOrderingMode;
 	public String[] moduleFullPathesManualAxisOrder;
+	public Boolean showOtherMessageReuses;
+	public Boolean showEventNumbers;
+	public Boolean showMessageNames;
 }
 
 /**
