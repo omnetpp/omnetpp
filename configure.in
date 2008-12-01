@@ -846,12 +846,8 @@ fi # end of Tcl tests ($NO_TCL=="" branch)
 #----------------------
 AC_CHECK_PROGS(JRE, $JRE java, nope)
 if test "$JRE" = nope; then
-   if test "$mingw" = "yes"; then
-      OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  JRE (recommended)"
-      AC_MSG_WARN([Cannot find a suitable Java Runtime Environment - The IDE requires JRE 1.5 or later. Please install it before configuring])
-   else
-      AC_MSG_ERROR([Cannot find a suitable Java Runtime Environment - The IDE requires JRE 1.5 or later. Please install it before configuring])
-   fi
+   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  JRE (recommended)"
+   AC_MSG_WARN([Cannot find a suitable Java Runtime Environment - The IDE requires JRE 1.5 or later. Please install it before configuring])
 fi
 
 #----------------------
