@@ -16,6 +16,8 @@
 *--------------------------------------------------------------*/
 
 #include <stdlib.h>
+#include <locale.h>
+
 #include "channel.h"
 #include "vectorfilewriter.h"
 #include "stringutil.h"
@@ -66,6 +68,8 @@ void VectorFileWriterNode::process()
         f = fopen(fileName.c_str(), "w");
         if (!f)
             throw opp_runtime_error("cannot open `%s' for write", fileName.c_str());
+
+        setlocale(LC_NUMERIC, "C");
 
         // print file header and vector declarations
         CHECK(fprintf(f,"%s\n\n", fileHeader.c_str()));

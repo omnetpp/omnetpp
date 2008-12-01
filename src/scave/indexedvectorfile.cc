@@ -14,7 +14,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-
+#include <locale.h>
 #include <stdlib.h>
 #include "platmisc.h"
 #include "exception.h"
@@ -242,6 +242,7 @@ static FILE *openFile(const std::string fileName)
     FILE *f = fopen(fileName.c_str(),"w");
     if (f==NULL)
         throw opp_runtime_error("Cannot open vector file `%s'", fileName.c_str());
+    setlocale(LC_NUMERIC, "C"); // write '.' as decimal marker
     return f;
 }
 

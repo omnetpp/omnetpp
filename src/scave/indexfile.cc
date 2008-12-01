@@ -15,6 +15,7 @@
 *--------------------------------------------------------------*/
 
 #include <algorithm>
+#include <locale.h>
 #include <sys/stat.h>
 #include "intxtypes.h"
 #include "exception.h"
@@ -563,6 +564,8 @@ void IndexFileWriter::openFile()
     file = fopen(filename.c_str(), "w");
     if (file == NULL)
         throw opp_runtime_error("Cannot open index file: %s", filename.c_str());
+
+    setlocale(LC_NUMERIC, "C");
 
     // space for header
     CHECK(fprintf(file, "%64s\n", ""));

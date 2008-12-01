@@ -15,6 +15,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include <locale.h>
 #include "channel.h"
 #include "filewriter.h"
 
@@ -51,6 +52,8 @@ void FileWriterNode::process()
         f = fopen(fileName.c_str(), "w");
         if (!f)
             throw opp_runtime_error("cannot open `%s' for write", fileName.c_str());
+
+        setlocale(LC_NUMERIC, "C");
 
         // print file header
         CHECK(fprintf(f,"%s\n\n", banner.c_str()));

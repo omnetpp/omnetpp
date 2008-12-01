@@ -14,6 +14,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include <locale.h>
 #include "opp_ctype.h"
 #include "octaveexport.h"
 
@@ -47,6 +48,7 @@ void OctaveExport::openFileIfNeeded()
         if (!f)
             throw opp_runtime_error("cannot open `%s' for write", fileName.c_str());
 
+        setlocale(LC_NUMERIC, "C");
         // print file header
         CHECK(fprintf(f,"# Created by OMNeT++/OMNEST scavetool\n"));
     }

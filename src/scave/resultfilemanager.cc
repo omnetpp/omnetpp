@@ -42,15 +42,6 @@
 USING_NAMESPACE
 
 
-static class SetPosixLocale
-{
-  public:
-    SetPosixLocale() {
-        setPosixLocale();
-    }
-} instance;
-
-
 ResultItem::Type ResultItem::getType() const
 {
     StringMap::const_iterator it = attributes.find("type");
