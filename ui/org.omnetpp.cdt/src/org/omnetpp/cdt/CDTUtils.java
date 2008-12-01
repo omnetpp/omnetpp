@@ -129,15 +129,8 @@ public class CDTUtils {
     public static void invalidateDiscoveredPathInfo(IProject project) {
         //MakeCorePlugin.getDefault().getDiscoveryManager().removeDiscoveredInfo(project); // this one is ineffective
         IManagedBuildInfo buildInfo = ManagedBuildManager.getBuildInfo(project);
-        IConfiguration config = buildInfo==null ? null : buildInfo.getDefaultConfiguration();
-        CfgDiscoveredPathManager.getInstance().removeDiscoveredInfo(project, new CfgInfoContext(config));
-//        ICProjectDescription projectDesc = CoreModel.getDefault().getProjectDescription(project);
-//        if (projectDesc != null) {
-//            for (ICConfigurationDescription configDesc : projectDesc.getConfigurations()) {
-//                IConfiguration config = ManagedBuildManager.getConfigurationForDescription(configDesc);
-//                if (config != null)
-//                    CfgDiscoveredPathManager.getInstance().removeDiscoveredInfo(project, new CfgInfoContext(config));
-//            }
-//        }
+        if (buildInfo != null)
+            for (IConfiguration config : buildInfo.getManagedProject().getConfigurations())
+                CfgDiscoveredPathManager.getInstance().removeDiscoveredInfo(project, new CfgInfoContext(config));
     }
 }
