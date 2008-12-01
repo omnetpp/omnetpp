@@ -21,6 +21,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <locale.h>
 #include "opp_ctype.h"
 #include "nederror.h"
 #include "nedsyntaxvalidator.h"
@@ -644,6 +645,7 @@ void NEDSyntaxValidator::validateElement(LiteralElement *node)
     {
         // check real
         char *s;
+	    setlocale(LC_NUMERIC, "C");
         (void) strtod(value, &s);
         if (s && *s)
             errors->addError(node, "invalid real constant '%s'", value);

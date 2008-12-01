@@ -20,6 +20,7 @@
 #include <assert.h>
 #include <string.h>
 #include <fstream>
+#include <locale.h>
 #include "opp_ctype.h"
 #include "cconfigkey.h"
 #include "fileutil.h"
@@ -99,6 +100,7 @@ void cFileOutputScalarManager::endRun()
 inline bool isNumeric(const char *s)
 {
     char *e;
+    setlocale(LC_NUMERIC, "C");
     (void) strtod(s, &e);
     return *e=='\0';
 }
@@ -109,7 +111,7 @@ void cFileOutputScalarManager::init()
     {
         openFile();
         if (!f) return;
-        
+
         CHECK(fprintf(f, "version %d\n", SCALAR_FILE_VERSION));
     }
 

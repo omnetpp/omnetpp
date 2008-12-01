@@ -19,6 +19,7 @@
 #include <limits.h>
 #include <errno.h>
 #include <math.h>   //HUGE_VAL
+#include <locale.h>
 #include "commonutil.h"
 #include "opp_ctype.h"
 #include "stringutil.h"
@@ -190,6 +191,7 @@ int opp_vsscanf(const char *s, const char *fmt, va_list va)
 {
     // A simplified vsscanf implementation, solely for cStatistic::freadvarsf.
     // Only recognizes %d, %u, %ld, %g and whitespace. '#' terminates scanning
+	setlocale(LC_NUMERIC, "C");
     int k = 0;
     while (true)
     {
@@ -462,6 +464,7 @@ unsigned long opp_atoul(const char *s)
 
 double opp_strtod(const char *s, char **endptr)
 {
+    setlocale(LC_NUMERIC, "C");
     double d = strtod(s, endptr);
     if (d==-HUGE_VAL || d==HUGE_VAL)
         throw opp_runtime_error("overflow converting `%s' to double", s);
@@ -471,6 +474,7 @@ double opp_strtod(const char *s, char **endptr)
 double opp_atof(const char *s)
 {
     char *endptr;
+    setlocale(LC_NUMERIC, "C");
     double d = opp_strtod(s, &endptr);
     while (opp_isspace(*endptr))
         endptr++;

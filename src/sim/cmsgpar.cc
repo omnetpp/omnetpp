@@ -16,6 +16,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include <locale.h>
 #include <math.h>
 #include <string.h>
 #include <stdio.h>
@@ -782,6 +783,7 @@ bool cMsgPar::parse(const char *text, char tp)
     {
         double num;
         int len;
+        setlocale(LC_NUMERIC, "C");
         if (0==sscanf(tmp,"%lf%n",&num,&len)) goto error;
         if (len < (int)strlen(tmp) || !strchr("?D",tp)) goto error;
         setDoubleValue(num);
@@ -836,6 +838,7 @@ static double parsedbl(const char *&s)
     while (*s==' ' || *s=='\t') s++;
     int len = 0;
     double num = 0;
+    setlocale(LC_NUMERIC, "C");
     sscanf(s, "%lf%n", &num, &len);
     s += len;
     while (*s==' ' || *s=='\t') s++;

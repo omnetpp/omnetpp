@@ -15,6 +15,7 @@
 *--------------------------------------------------------------*/
 
 #include <assert.h>
+#include <locale.h>
 #include "opp_ctype.h"
 #include "stringutil.h"
 #include "platmisc.h"  //strcasecmp
@@ -96,12 +97,14 @@ bool UnitConversion::readNumber(const char *&s, double& number)
     while (opp_isspace(*s)) s++;
 
     int len;
+    setlocale(LC_NUMERIC, "C");
     if (sscanf(s, "%lf%n", &number, &len) <= 0)
         return false; // no number read
     s+=len;
 
 //FIXME use this code instead:
 //    char *endp;
+//    setlocale(LC_NUMERIC, "C");
 //    number = strtod(s, &endp);
 //    if (s==endp)
 //        return false; // no number read

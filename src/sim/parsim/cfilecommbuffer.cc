@@ -21,6 +21,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <locale.h>
 
 #include "cfilecommbuffer.h"
 #include "simutil.h"
@@ -63,6 +64,7 @@ static void sread(char *buffer, int& pos, const char *fmt, void *d)
 {
     matchtype(buffer, pos, fmt);
     char *buf = buffer+pos;
+    setlocale(LC_NUMERIC, "C");
     if (sscanf(buf,fmt,d)!=1)
         throw cRuntimeError("cFileCommBuffer: unpack(): could not convert data");
     // skip data + delimiter whitespace

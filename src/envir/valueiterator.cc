@@ -16,6 +16,7 @@
 *--------------------------------------------------------------*/
 
 #include <math.h>
+#include <locale.h>
 #include "opp_ctype.h"
 #include "valueiterator.h"
 #include "commonutil.h"
@@ -57,6 +58,8 @@ static const char *PARSEERROR = "Error in numeric range syntax `%s', <number>..<
 
 void ValueIterator::parseAsNumericRegion(Item& item)
 {
+    setlocale(LC_NUMERIC, "C");
+
     item.isNumeric = false;
     item.from = item.to = item.step = 0;
 

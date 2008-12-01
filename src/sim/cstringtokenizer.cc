@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <limits.h>  //LONG_MAX
+#include <locale.h>
 #include "cstringtokenizer.h"
 #include "cexception.h"
 
@@ -107,6 +108,7 @@ std::vector<double> cStringTokenizer::asDoubleVector()
 {
     const char *s;
     std::vector<double> v;
+    setlocale(LC_NUMERIC, "C");
     while ((s=nextToken())!=NULL)
     {
         char *e;

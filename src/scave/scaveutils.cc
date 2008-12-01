@@ -17,6 +17,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <utility>
+#include <locale.h>
 #include "platmisc.h"
 #include "scaveutils.h"
 
@@ -52,6 +53,7 @@ bool parseInt64(const char *s, int64 &dest)
 bool parseDouble(const char *s, double& dest)
 {
     char *e;
+    setlocale(LC_NUMERIC, "C");
     dest = strtod(s,&e);
     if (!*e)
     {
