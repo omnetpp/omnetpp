@@ -1,8 +1,18 @@
 package org.omnetpp.cdt;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceChangeListener;
+import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.IResourceDeltaVisitor;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
@@ -17,7 +27,7 @@ import org.osgi.framework.BundleContext;
  * The activator class controls the plug-in life cycle.
  * @author Andras
  */
-public class Activator extends AbstractUIPlugin {
+public class Activator extends AbstractUIPlugin implements IResourceChangeListener {
     private DependencyCache dependencyCache = new DependencyCache();
 
     // The plug-in ID
@@ -41,6 +51,7 @@ public class Activator extends AbstractUIPlugin {
     public void start(BundleContext context) throws Exception {
         super.start(context);
         plugin = this;
+        ResourcesPlugin.getWorkspace().addResourceChangeListener(this);
     }
 
     /*
@@ -48,6 +59,7 @@ public class Activator extends AbstractUIPlugin {
      * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
      */
     public void stop(BundleContext context) throws Exception {
+        ResourcesPlugin.getWorkspace().removeResourceChangeListener(this);
         plugin = null;
         super.stop(context);
     }
@@ -175,5 +187,36 @@ public class Activator extends AbstractUIPlugin {
             getDefault().projectTemplateStore = new ProjectTemplateStore();
         return getDefault().projectTemplateStore;
     }
-    
+
+    /**
+     * Reread include paths when folder gets created or removed
+     */
+    public synchronized void resourceChanged(IResourceChangeEvent event) {
+        try {
+            if (event.getDelta() == null || event.getType() != IResourceChangeEvent.POST_CHANGE)
+                return;
+
+            // collect projects in which a folder has been added or deleted
+            final Set<IProject> changedProjects = new HashSet<IProject>();
+            event.getDelta().accept(new IResourceDeltaVisitor() {
+                public boolean visit(IResourceDelta delta) throws CoreException {
+                    IResource resource = delta.getResource();
+                    if (resource instanceof IContainer) {
+                        int kind = delta.getKind();
+                        if (kind==IResourceDelta.ADDED || kind==IResourceDelta.REMOVED)
+                            changedProjects.add(resource.getProject());
+                    }
+                    return true;
+                }
+            });
+            
+            // and invalidate discovered info for that project 
+            for (IProject project : changedProjects)
+                CDTUtils.invalidateDiscoveredPathInfo(project);
+        }
+        catch (CoreException e) {
+            logError(e);
+        }
+    }
+
 }

@@ -21,6 +21,7 @@ import org.omnetpp.cdt.makefile.MakefileTools;
  * Discover the include path for the VC installation and optionally for the SDK
  * @author Doug Schaefer, rhornig, andras
  */
+//XXX why the PathInfo object itself discovers the paths, why not the MSVCScannerInfoCollector?
 public class MSVCDiscoveredPathInfo implements IDiscoveredPathInfo {
 
 	private IPath[] paths;

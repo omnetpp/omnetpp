@@ -3,6 +3,8 @@ package org.omnetpp.cdt;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.cdt.build.core.scannerconfig.CfgInfoContext;
+import org.eclipse.cdt.build.internal.core.scannerconfig.CfgDiscoveredPathManager;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 import org.eclipse.cdt.managedbuilder.core.IConfiguration;
@@ -18,10 +20,11 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 
 /**
- * Utility class dealing with CDT's managed build classes.
+ * Utility class dealing with CDT's data model.
  * 
- * @author rhornig, andras
+ * @author andras
  */
+@SuppressWarnings("restriction")
 public class CDTUtils {
     /**
      * Checks if the currently active tool-chain is MSVC or not.
@@ -116,5 +119,25 @@ public class CDTUtils {
         sourceEntries = CDataUtil.makeRelative(resource.getProject(), sourceEntries);  // convert everything to relative path
         ICSourceEntry[] newEntries = CDataUtil.setExcluded(resource.getProjectRelativePath(), (resource instanceof IFolder), exclude, sourceEntries);
         return newEntries;
+    }
+ 
+    /**
+     * Causes CDT to forget discovered include paths, and invoke the toolchain's 
+     * ScannerInfoCollector class again. This is important because we use ScannerInfoCollector
+     * to add the project's source directories to the include path.
+     */
+    public static void invalidateDiscoveredPathInfo(IProject project) {
+        //MakeCorePlugin.getDefault().getDiscoveryManager().removeDiscoveredInfo(project); // this one is ineffective
+        IManagedBuildInfo buildInfo = ManagedBuildManager.getBuildInfo(project);
+        IConfiguration config = buildInfo==null ? null : buildInfo.getDefaultConfiguration();
+        CfgDiscoveredPathManager.getInstance().removeDiscoveredInfo(project, new CfgInfoContext(config));
+//        ICProjectDescription projectDesc = CoreModel.getDefault().getProjectDescription(project);
+//        if (projectDesc != null) {
+//            for (ICConfigurationDescription configDesc : projectDesc.getConfigurations()) {
+//                IConfiguration config = ManagedBuildManager.getConfigurationForDescription(configDesc);
+//                if (config != null)
+//                    CfgDiscoveredPathManager.getInstance().removeDiscoveredInfo(project, new CfgInfoContext(config));
+//            }
+//        }
     }
 }

@@ -955,6 +955,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         // note: performApply() delegates here too
         saveBuildSpecFile();
         CDTPropertyManager.performOk(this);
+        CDTUtils.invalidateDiscoveredPathInfo(getProject());  //FIXME only if source entries actually changed?
         return true;
     }
 
