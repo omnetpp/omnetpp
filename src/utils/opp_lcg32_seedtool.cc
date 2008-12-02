@@ -157,7 +157,7 @@ int main(int argc, char *argv[])
     if (argc==1)
     {
          fprintf(stderr,
-               "seedtool -- part of " OMNETPP_PRODUCT ", (C) 2006-2008 Andras Varga, OpenSim Ltd.\n"
+               "opp_lcg32_seedtool -- part of " OMNETPP_PRODUCT ", (C) 2006-2008 Andras Varga, OpenSim Ltd.\n"
                "Version: " OMNETPP_VERSION_STR ", build: " OMNETPP_BUILDID ", edition: " OMNETPP_EDITION "\n"
                "\n"
                "Generates seeds for the LCG32 random number generator. This RNG has a\n"

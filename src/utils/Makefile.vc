@@ -25,7 +25,7 @@ COPTS=$(CFLAGS)
 #
 # Targets
 #
-all: $O/seedtool.exe $O/ln.exe
+all: $O/opp_lcg32_seedtool.exe $O/ln.exe
 	echo @echo %~dp0\..\configuser.vc >opp_configfilepath.cmd
 #	echo @echo $(OMNETPP_ROOT:/=\)\configuser.vc >opp_configfilepath.cmd
 	copy opp_configfilepath.cmd $(OMNETPP_BIN_DIR:/=\)
@@ -41,11 +41,11 @@ all: $O/seedtool.exe $O/ln.exe
 	copy opp_stacktool.cmd $(OMNETPP_BIN_DIR:/=\)
 	copy omnetpp.cmd $(OMNETPP_BIN_DIR:/=\)
 	copy omnest.cmd $(OMNETPP_BIN_DIR:/=\)
-	copy $(O:/=\)\seedtool.exe* $(OMNETPP_BIN_DIR:/=\)
+	copy $(O:/=\)\opp_lcg32_seedtool.exe* $(OMNETPP_BIN_DIR:/=\)
 	copy $(O:/=\)\ln.exe* $(OMNETPP_BIN_DIR:/=\)
 
-$O/seedtool.exe : $O seedtool.cc
-	$(CXX) $(CFLAGS) /Tp seedtool.cc /link /out:$(O:/=\)\seedtool.exe
+$O/opp_lcg32_seedtool.exe : $O opp_lcg32_seedtool.cc
+	$(CXX) $(CFLAGS) /Tp opp_lcg32_seedtool.cc /link /out:$(O:/=\)\opp_lcg32_seedtool.exe
 
 $O/ln.exe : $O ln.c
 	$(CXX) $(CFLAGS) ln.c /link /out:$(O:/=\)\ln.exe
@@ -58,10 +58,10 @@ depend:
 
 clean:
 	-rmdir /s /q $(O:/=\) 2>nul
-	-cd $(OMNETPP_BIN_DIR:/=\) && del /q seedtool.exe* ln.exe* opp_makemake* opp_test* opp_makedep* linkall* msvcver.pl opp_nmakemake.cmd 2>nul
+	-cd $(OMNETPP_BIN_DIR:/=\) && del /q opp_lcg32_seedtool.exe* ln.exe* opp_makemake* opp_test* opp_makedep* linkall* msvcver.pl opp_nmakemake.cmd 2>nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-seedtool.obj: seedtool.cc \
+opp_lcg32_seedtool.obj: opp_lcg32_seedtool.cc \
   ../common/ver.h
 ln.obj: ln.c
 opp_replace.obj: opp_replace.c

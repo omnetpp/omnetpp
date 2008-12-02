@@ -24,7 +24,7 @@ L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 #
 # Rules
 #
-all: $O/seedtool$(EXE_SUFFIX)
+all: $O/opp_lcg32_seedtool$(EXE_SUFFIX)
 	echo "#!/bin/sh" >opp_configfilepath && echo 'echo `dirname $$0`/../Makefile.inc' >>opp_configfilepath
 #	echo "#!/bin/sh" >opp_configfilepath && echo "echo $(OMNETPP_ROOT)/Makefile.inc" >>opp_configfilepath
 	chmod +x opp_makemake opp_test opp_makedep splitvec opp_configfilepath omnetpp omnest
@@ -41,25 +41,25 @@ all: $O/seedtool$(EXE_SUFFIX)
 	cp splitvec $(OMNETPP_BIN_DIR)
 	cp omnetpp $(OMNETPP_BIN_DIR)
 	cp omnest $(OMNETPP_BIN_DIR)
-	cd $O && $(OMNETPP_ROOT)/src/utils/install-prog seedtool$(EXE_SUFFIX) $(OMNETPP_BIN_DIR)
+	cd $O && $(OMNETPP_ROOT)/src/utils/install-prog opp_lcg32_seedtool$(EXE_SUFFIX) $(OMNETPP_BIN_DIR)
 	@# next line is for samples/rundemo
 	echo $(WISH) >$(HOME)/.wishname
 
-$O/seedtool$(EXE_SUFFIX) : seedtool.cc
+$O/opp_lcg32_seedtool$(EXE_SUFFIX) : opp_lcg32_seedtool.cc
 	@mkdir -p $O
-	$(CXX) seedtool.cc -o $O/seedtool$(EXE_SUFFIX)
+	$(CXX) opp_lcg32_seedtool.cc -o $O/opp_lcg32_seedtool$(EXE_SUFFIX)
 
 depend:
 	$(MAKEDEPEND) -I. -P\$$O/ -- *.cc *.c
 
 clean:
 	rm -rf $O
-	cd $(OMNETPP_BIN_DIR) && rm -f seedtool$(EXE_SUFFIX) opp_makemake opp_test opp_makedep splitvec
+	cd $(OMNETPP_BIN_DIR) && rm -f opp_lcg32_seedtool$(EXE_SUFFIX) opp_makemake opp_test opp_makedep splitvec
 #	rm -f opp_configfilepath
 #	rm -f opp_configfilepath.cmd
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-$O/seedtool.o: seedtool.cc \
+$O/opp_lcg32_seedtool.o: opp_lcg32_seedtool.cc \
   ../common/ver.h
 $O/ln.o: ln.c
 $O/opp_replace.o: opp_replace.c
