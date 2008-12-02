@@ -146,7 +146,7 @@ std::string opp_quotestr(const char *txt)
             case '\t': *d++ = '\\'; *d++ = 't'; s++; break;
             case '"':  *d++ = '\\'; *d++ = '"'; s++; break;
             case '\\': *d++ = '\\'; *d++ = '\\'; s++; break;
-            default: if (*s>=0 && *s<32) {*d++='\\'; *d++='x'; sprintf(d,"%2.2X",*s++); d+=2;}
+            default: if (opp_iscntrl(*s)) {*d++='\\'; *d++='x'; sprintf(d,"%2.2X",*s++); d+=2;}
                      else {*d++ = *s++;}
         }
     }
@@ -163,7 +163,7 @@ bool opp_needsquotes(const char *txt)
     if (!txt[0])
         return true;
     for (const char *s = txt; *s; s++)
-        if (opp_isspace(*s) || *s=='\\' || *s=='"' || (*s>=0 && *s<32))
+        if (opp_isspace(*s) || *s=='\\' || *s=='"' || opp_iscntrl(*s))
             return true;
     return false;
 }
@@ -191,7 +191,7 @@ int opp_vsscanf(const char *s, const char *fmt, va_list va)
 {
     // A simplified vsscanf implementation, solely for cStatistic::freadvarsf.
     // Only recognizes %d, %u, %ld, %g and whitespace. '#' terminates scanning
-	setlocale(LC_NUMERIC, "C");
+    setlocale(LC_NUMERIC, "C");
     int k = 0;
     while (true)
     {

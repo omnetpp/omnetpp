@@ -48,6 +48,7 @@ inline bool opp_isalnum(unsigned char c)  {return isalnum(c);}
 inline bool opp_isxdigit(unsigned char c) {return isxdigit(c);}
 inline bool opp_islower(unsigned char c)  {return islower(c);}
 inline bool opp_isupper(unsigned char c)  {return isupper(c);}
+inline bool opp_iscntrl(unsigned char c)  {return iscntrl(c);}
 inline char opp_tolower(unsigned char c)  {return tolower(c);}
 inline char opp_toupper(unsigned char c)  {return toupper(c);}
 //@}
