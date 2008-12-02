@@ -1216,7 +1216,7 @@ techniques, or you may want to use the same seeds for several simulation
 runs.
 
 For the cLCG32 RNG, {\opp} provides a standalone program to generate
-seed values (\fprog{seedtool} is discussed in section
+seed values (\fprog{opp\_lcg32\_seedtool} is discussed in section
 \ref{sec:ch-run-sim:seedtool}), and you can specify those seeds explicitly
 in the ini file.
 
@@ -1258,15 +1258,22 @@ To set a seed value for all runs, place the necessary seed entries
 into the \ttt{[General]} section.
 
 
-\subsection{Choosing good seed values: the seedtool utility}
+\subsection{Choosing good seed values for LCG32: the opp\_lcg32\_seedtool utility}
 \label{sec:ch-run-sim:seedtool}
 
-The \fprog{seedtool} program can be used for selecting
-seeds for the cLCG32 RNG. When started without command-line
-arguments, the program prints out the following help:
+The \fprog{opp\_lcg32\_seedtool} program generates seeds for the now obsolete
+cLCG32 RNG.
+
+\begin{note}
+Since the LCG32 RNG is obsolete, there is little reason to use the
+\fprog{opp\_lcg32\_seedtool} program. It is only covered in this manual
+for completeness.
+\begin{note}
+
+When started without command-line arguments, the program prints out the following help:
 
 \begin{verbatim}
-seedtool - part of {\opp}, (C) 1992-2004 Andras Varga
+opp_lcg32_seedtool - part of {\opp}, (C) 1992-2004 Andras Varga
 See the license for distribution terms and warranty disclaimer.
 
 Generates seeds for the LCG32 random number generator. This RNG has a
@@ -1294,7 +1301,7 @@ at least 10,000,000 values apart. The first seed value can be
 simply 1. You would type the following command:
 
 \begin{verbatim}
-C:\OMNETPP\UTILS> seedtool g 1 10000000 8
+C:\OMNETPP\UTILS> opp_lcg32_seedtool g 1 10000000 8
 \end{verbatim}
 
 
