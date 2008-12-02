@@ -1,3 +1,8 @@
+2008-12-02  Andras Varga
+
+	* seedtool: renamed opp_lcg32_seedtool, and added a warning in its help
+	that it is an obsolete tool and probably should not be used.
+
 2008-11-17  Andras Varga
 
 	* opp_test: implemented %env for setting environment variables for 
