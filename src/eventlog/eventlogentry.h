@@ -34,7 +34,7 @@ class EVENTLOG_API EventLogEntry : public MatchExpression::Matchable
 {
     public:
         int contextModuleId;
-        unsigned int level;
+        int level; // indent level (method call depth)
 
     protected:
         Event* event; // back pointer
