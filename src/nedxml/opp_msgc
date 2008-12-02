@@ -1613,7 +1613,7 @@ sub generateDescriptorClass
 
     # ctor, dtor
     $fieldcount = $#fieldlist+1;
-    print CC "$msgdescclass\:\:$msgdescclass() : cClassDescriptor(\"$msgclass\", \"$msgbaseclass\")\n";
+    print CC "$msgdescclass\:\:$msgdescclass() : cClassDescriptor(\"$realmsgclass\", \"$msgbaseclass\")\n";
     print CC "{\n";
     print CC "}\n";
     print CC "\n";

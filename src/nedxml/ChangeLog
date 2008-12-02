@@ -1,3 +1,8 @@
+2008-12-02  Andras Varga
+
+	* opp_msgc: fixed bug #15 (class descriptor was generated with the
+	intermediate class name (x__Base) not the real class name)
+
 2008-11-26  Andras Varga
 
 	* library renamed to oppnedxml
