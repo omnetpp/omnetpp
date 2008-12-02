@@ -1,0 +1,76 @@
+%description:
+Customized cMessage class
+
+%file: test.msg
+
+namespace @TESTNAME@;
+
+message SomePacket
+{
+    @customize(true);
+    int src;
+    int dest;
+    abstract int ttl;
+}
+
+%includes:
+#include <string.h>
+#include "cfilecommbuffer.h" // from src/sim/parsim
+#include "objectprinter.h"   // from src/envir
+#include "test_m.h"
+
+%global:
+class SomePacket : public SomePacket_Base
+{
+  private:
+    int ttl;
+  public:
+    SomePacket(const char *name=NULL, int kind=0) : SomePacket_Base(name,kind) {ttl=0;}
+    SomePacket(const SomePacket& other) : SomePacket_Base(other.getName()) {operator=(other);}
+    SomePacket& operator=(const SomePacket& other) {SomePacket_Base::operator=(other); ttl=other.ttl;return *this;}
+    virtual SomePacket *dup() const {return new SomePacket(*this);}
+
+    virtual int getTtl() const {return ttl;}
+    virtual void setTtl(int d) {ttl=d;}
+};
+
+Register_Class(SomePacket);
+
+%activity:
+
+SomePacket *msg = new SomePacket("some", 99);
+ev << ObjectPrinter("*").printObjectToString(msg);
+delete msg;
+
+%contains: stdout
+class SomePacket {
+    string fullName = some
+    string fullPath = Test.some
+    string info = "(new msg)"
+    string detailedInfo = ""
+    string name = some
+    long id = 1
+    long treeId = 1
+    short kind = 99
+    short schedulingPriority = 0
+    string displayString = ""
+    cObject *controlInfo = <NULL>
+    bool isScheduled = false
+    bool isSelfMessage = true
+    simtime_t creationTime = 0
+    simtime_t sendingTime = 0
+    simtime_t arrivalTime = 0
+    simtime_t timestamp = 0
+    int senderModuleId = -1
+    int senderGateId = -1
+    cModule *senderModule = <NULL>
+    cGate *senderGate = <NULL>
+    int arrivalModuleId = -1
+    int arrivalGateId = -1
+    cModule *arrivalModule = <NULL>
+    cGate *arrivalGate = <NULL>
+    int src = 0
+    int dest = 0
+    int ttl = 0
+}
+
