@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: OMNeT++ Product definition
+Bundle-SymbolicName: org.omnetpp.main.omnetpp;singleton:=true
+Bundle-Version: 4.0.0.qualifier
+Bundle-Vendor: OpenSim Ltd.
+Fragment-Host: org.omnetpp.main;bundle-version="4.0.0"
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Require-Bundle: org.eclipse.cdt.managedbuilder.core;resolution:=optional

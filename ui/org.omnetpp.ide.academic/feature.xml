@@ -344,10 +344,11 @@ END OF TERMS AND CONDITIONS
          name="OMNeT++ Base IDE Feature"/>
 
    <plugin
-         id="org.omnetpp.academic"
+         id="org.omnetpp.main.omnetpp"
          download-size="0"
          install-size="0"
          version="4.0.0.qualifier"
+         fragment="true"
          unpack="false"/>
 
 </feature>

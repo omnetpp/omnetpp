@@ -13,7 +13,6 @@
 		<copy todir="${buildDirectory}/plugins">
 			<fileset dir="../">
 				<include name="org.omnetpp.*/**" />
-				<include name="com.itsolut/**" />
 				<exclude name="*/bin/**" />
 				<exclude name="org.omnetpp.ide/**" />
 				<exclude name="org.omnetpp.scave.old/**" />
@@ -26,7 +25,6 @@
 				<include name="org.omnetpp.ide/**" />
 				<include name="org.omnetpp.ide.commercial/**" />
 				<include name="org.omnetpp.ide.academic/**" />
-				<include name="com.itsolut/**" />
 			</fileset>
 		</copy>
 	</target>
@@ -99,7 +97,6 @@
 			<include name="**/*.java"/>
 	    </replace>	
 	    <copy file="${buildDirectory}/plugins/org.omnetpp.product/omnest-ide.product" tofile="${buildDirectory}/plugins/org.omnetpp.product/ide.product"/>
-	    <move file="${buildDirectory}/plugins/org.omnetpp.main/icons/about-omnest.png" tofile="${buildDirectory}/plugins/org.omnetpp.main/icons/about-image.png"/>
 	    <move file="${buildDirectory}/plugins/org.omnetpp.main/icons/intro-omnest.png" tofile="${buildDirectory}/plugins/org.omnetpp.main/icons/intro-image.png"/>
     </target>
 	
@@ -109,7 +106,6 @@
 			<include name="**/*.java"/>
 	    </replace>	
 	    <copy file="${buildDirectory}/plugins/org.omnetpp.product/omnetpp-ide.product" tofile="${buildDirectory}/plugins/org.omnetpp.product/ide.product"/>
-	    <move file="${buildDirectory}/plugins/org.omnetpp.main/icons/about-omnetpp.png" tofile="${buildDirectory}/plugins/org.omnetpp.main/icons/about-image.png"/>
 	    <move file="${buildDirectory}/plugins/org.omnetpp.main/icons/intro-omnetpp.png" tofile="${buildDirectory}/plugins/org.omnetpp.main/icons/intro-image.png"/>
    	</target>
 	

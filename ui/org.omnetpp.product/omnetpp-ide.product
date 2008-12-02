@@ -61,6 +61,7 @@
       <feature id="org.eclipse.team.svn" version="0.7.5.I20081029-1900"/>
       <feature id="org.polarion.eclipse.team.svn.connector" version="2.0.5.I20081024-1200"/>
       <feature id="org.polarion.eclipse.team.svn.connector.svnkit" version="2.0.5.I20081024-1200"/>
+      <feature id="org.omnetpp.ide" version="4.0.0.qualifier"/>
       <feature id="org.omnetpp.ide.academic" version="4.0.0.qualifier"/>
    </features>
 
