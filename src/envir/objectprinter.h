@@ -60,7 +60,7 @@ class ENVIR_API ObjectPrinter
          * not declaredOn(cObject))":
          *     records user-defined fields from all objects
          */
-        ObjectPrinter(const char *pattern, int indentSize);
+        ObjectPrinter(const char *pattern="*", int indentSize=4);
 
         /**
          * Accepts the parsed form of the pattern string. The two vectors
@@ -69,7 +69,7 @@ class ENVIR_API ObjectPrinter
          */
         ObjectPrinter(const std::vector<MatchExpression*>& objectMatchExpressions,
                       const std::vector<std::vector<MatchExpression*> >& fieldNameMatchExpressionsList,
-                      int indentSize);
+                      int indentSize=4);
 
         /**
          * Destructor.
