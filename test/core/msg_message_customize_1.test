@@ -14,8 +14,6 @@ message SomePacket
 }
 
 %includes:
-#include <string.h>
-#include "cfilecommbuffer.h" // from src/sim/parsim
 #include "objectprinter.h"   // from src/envir
 #include "test_m.h"
 
@@ -39,7 +37,7 @@ Register_Class(SomePacket);
 %activity:
 
 SomePacket *msg = new SomePacket("some", 99);
-ev << ObjectPrinter("*").printObjectToString(msg);
+ev << ObjectPrinter().printObjectToString(msg);
 delete msg;
 
 %contains: stdout

@@ -13,6 +13,7 @@ class MyClass extends cOwnedObject
 }
 
 %includes:
+#include "objectprinter.h"   // from src/envir
 #include "test_m.h"
 
 %global:
@@ -40,13 +41,25 @@ Register_Class(MyClass);
 MyClass x("myclass");
 
 ev << (dynamic_cast<cOwnedObject *>(&x)!=0 ? "cOwnedObject" : "generic") << endl;
-ev << x.getClassName() << ":" << x.getName() << endl;
+ev << x.getClassName() << ": " << x.getName() << endl;
 
-x.setB(11); PRINT(x.getB());
+x.setB(5); PRINT(x.getB());
 x.setI(11); PRINT(x.getI());
+
+ev << ObjectPrinter().printObjectToString(&x);
 
 %contains: stdout
 cOwnedObject
-msg_cobject_custom_1::MyClass:myclass
-x.getB():11
+@TESTNAME@::MyClass: myclass
+x.getB():5
 x.getI():11
+class MyClass {
+    string fullName = myclass
+    string fullPath = Test.myclass
+    string info = ""
+    string detailedInfo = ""
+    string name = myclass
+    int b = 5
+    int i = 11
+}
+
