@@ -122,17 +122,14 @@ long cClassDescriptor::string2enum(const char *s, const char *enumname)
 {
     // return zero if string cannot be parsed
 
-    // try to interpret as numeric value
-    if (s[0]>=0 && s[0]<=9) {
+    // try to interpret it as numeric value
+    if (opp_isdigit(*s))
         return atol(s);
-    }
 
     // try to recognize string
     cEnum *enump = cEnum::find(enumname);
-    if (!enump) {
-        // this enum type is not registered
-        return 0;
-    }
+    if (!enump)
+        return 0; // this enum type is not registered
 
     // TBD should strip possible spaces, parens etc.
     return enump->lookup(s,0);
