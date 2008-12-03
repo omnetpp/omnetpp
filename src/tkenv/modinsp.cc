@@ -510,15 +510,15 @@ void TGraphicalModWindow::redrawModules()
     drawEnclosingModule(interp, parentmodule, scaling);
 
     // loop through all submodules and enclosing module & draw their connections
-    bool parent = false;
-    for (cModule::SubmoduleIterator it(parentmodule); !parent; it++)
+    bool atparent = false;
+    for (cModule::SubmoduleIterator it(parentmodule); !atparent; it++)
     {
-        cModule *mod = !it.end() ? it() : (parent=true,parentmodule);
+        cModule *mod = !it.end() ? it() : (atparent=true,parentmodule);
 
         for (cModule::GateIterator i(mod); !i.end(); i++)
         {
             cGate *gate = i();
-            if (gate->getType()==(parent ? cGate::INPUT: cGate::OUTPUT) && gate->getNextGate()!=NULL)
+            if (gate->getType()==(atparent ? cGate::INPUT: cGate::OUTPUT) && gate->getNextGate()!=NULL)
             {
                 drawConnection(interp, gate);
             }
