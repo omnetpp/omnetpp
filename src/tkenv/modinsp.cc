@@ -531,16 +531,14 @@ void TGraphicalModWindow::drawSubmodule(Tcl_Interp *interp, cModule *submod, int
 {
     char coords[32];
     sprintf(coords,"%d %d ", x, y);
-
-    static const cDisplayString blank;
-    const cDisplayString& ds = submod->hasDisplayString() ? submod->getDisplayString() : blank;
+    const char *dispstr = submod->hasDisplayString() ? submod->getDisplayString().str() : "";
 
     CHK(Tcl_VarEval(interp, "draw_submod ",
                     canvas, " ",
                     ptrToStr(submod), " ",
                     coords,
                     "{", submod->getFullName(), "} ",
-                    "{", ds.str(), "} ",
+                    "{", dispstr, "} ",
                     "{", scaling, "} ",
                     NULL));
 }
