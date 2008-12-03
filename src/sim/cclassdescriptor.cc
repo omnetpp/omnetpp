@@ -24,6 +24,7 @@
 #include "carray.h"
 #include "cenum.h"
 #include "simutil.h"
+#include "opp_ctype.h"
 #include "cclassfactory.h"  // createOne()
 
 USING_NAMESPACE
