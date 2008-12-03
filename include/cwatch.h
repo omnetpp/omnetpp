@@ -147,7 +147,7 @@ class SIM_API cWatch_char : public cWatchBase
     virtual std::string info() const
     {
         std::stringstream out;
-        out << "'" << (unsigned char)r<32 ? ' ' : r) << "' (" << int(r) << ")";
+        out << "'" << ((unsigned char)r<32 ? ' ' : r) << "' (" << int(r) << ")";
         return out.str();
     }
     virtual void assign(const char *s)
