@@ -176,6 +176,11 @@ if ($testprogram eq '') {
     }
 }
 
+# save environment variables (tests may overwrite them)
+foreach my $envvar (keys(%ENV)) {
+    $savedENV{$envvar} = $ENV{$envvar};
+}
+
 #
 # generate test files
 #
@@ -495,6 +500,10 @@ sub testcase_run()
     if ($inifname eq '') {
         $inifname = "test.ini";
     }
+
+    # restore original env vars
+    foreach my $envvar (keys(%ENV)) {delete $ENV{$envvar};}
+    foreach my $envvar (keys(%savedENV)) {$ENV{$envvar} = $savedENV{$envvar};}
 
     # set environment variables
     foreach $key (keys(%values))
