@@ -622,8 +622,22 @@ are saved into the output scalar files, and it is useful for the input
 parameters to get saved into the same file as well.
 
 For convenience, {\opp} automatically saves the iteration variables
-into the output scalar file, so they can be referred to during result
-analysis. Module parameters can also be saved, but this has to be
+into the output scalar file if they have numeric value, so they can 
+be referred to during result analysis. 
+
+\begin{warning}
+    If an iteration variable has non-numeric value, it will not be recorded 
+    automatically and cannot be used during analysis. This can happen 
+    unintentionally if you specify units inside an iteration variable list:
+\begin{Verbatim}[commandchars=\\\{\}]
+# NEVER USE:
+**.host[*].generationInterval = exponential( \$\{mean=0.2s, 0.4s, 0.6s\} )
+# INSTEAD: Specify the unit outside of the variable
+**.host[*].generationInterval = exponential( \$\{mean=0.2, 0.4, 0.6\}s )
+\end{Verbatim}
+\end{warning}
+
+Module parameters can also be saved, but this has to be
 requested by the user, by configuring save-as-scalar=true for the
 parameters in question. The configuration key is a pattern that
 identifies the parameter, plus ".save-as-scalar". An example:
