@@ -1,5 +1,5 @@
 <project name="org.omnetpp.product" default="omnetpp">
-        <property environment="env" /> 
+    <property environment="env" /> 
 	<property file="build.properties" />
 	
 	<target name="clean">
