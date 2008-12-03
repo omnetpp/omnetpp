@@ -1,3 +1,8 @@
+2008-12-03  Andras Varga
+
+	* output scalar manager: also record iteration variables that look like
+	numbers with units, e.g. 100s (previously it only recorded pure numbers)
+
 2008-11-26  Andras Varga
 
 	* library renamed to oppenvir

@@ -33,6 +33,7 @@
 #include "fileoutscalarmgr.h"
 #include "ccomponenttype.h"
 #include "stringutil.h"
+#include "unitconversion.h"
 
 USING_NAMESPACE
 
@@ -97,14 +98,6 @@ void cFileOutputScalarManager::endRun()
     closeFile();
 }
 
-inline bool isNumeric(const char *s)
-{
-    char *e;
-    setlocale(LC_NUMERIC, "C");
-    (void) strtod(s, &e);
-    return *e=='\0';
-}
-
 void cFileOutputScalarManager::init()
 {
     if (!f)
@@ -128,9 +121,38 @@ void cFileOutputScalarManager::init()
         {
             const char *name = v[i];
             const char *value = ev.getConfig()->getVariable(v[i]);
-            //XXX write with using an "itervar" keyword not "scalar"
-            if (isNumeric(value))
-                CHECK(fprintf(f, "scalar . \t%s \t%s\n", name, value));
+            recordNumericIterationVariable(name, value);
+        }
+    }
+}
+
+void cFileOutputScalarManager::recordNumericIterationVariable(const char *name, const char *value)
+{
+    char *e;
+    setlocale(LC_NUMERIC, "C");
+    (void) strtod(value, &e);
+    if (*e=='\0')
+    {
+        // plain number - just record as it is
+        //XXX write with using an "itervar" keyword not "scalar" (needs to be understood by IDE as well)
+        CHECK(fprintf(f, "scalar . \t%s \t%s\n", name, value));
+    }
+    else if (e!=value)
+    {
+        // starts with a number, so it might be something like "100s"; if so, record it as scalar with "unit" attribute
+        double d;
+        std::string unit;
+        bool parsedOK = false;
+        try {
+            d = UnitConversion::parseQuantity(value, unit);
+            parsedOK = true;
+        } catch (std::exception& e) { }
+
+        if (parsedOK)
+        {
+            CHECK(fprintf(f, "scalar . \t%s \t%.*g\n", name, prec, d));
+            if (!unit.empty())
+                CHECK(fprintf(f,"attr unit  %s\n", QUOTE(unit.c_str())));
         }
     }
 }
