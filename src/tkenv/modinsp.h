@@ -69,6 +69,11 @@ class TGraphicalModWindow : public TInspector
       typedef std::map<cModule*,Point> PositionMap;
       PositionMap submodPosMap;  // recalculateLayout() fills this map
 
+   protected:
+      void drawSubmodule(Tcl_Interp *interp, cModule *submod, int x, int y, const char *scaling);
+      void drawEnclosingModule(Tcl_Interp *interp, cModule *parentmodule, const char *scaling);
+      void drawConnection(Tcl_Interp *interp, cGate *gate);
+
    public:
       TGraphicalModWindow(cObject *obj,int typ,const char *geom,void *dat=NULL);
       ~TGraphicalModWindow();

@@ -501,32 +501,13 @@ void TGraphicalModWindow::redrawModules()
     for (cModule::SubmoduleIterator it(parentmodule); !it.end(); it++)
     {
         cModule *submod = it();
-        const cDisplayString& ds = submod->hasDisplayString() ? submod->getDisplayString() : blank;
-
-        // call Tcl procedure to draw the submodule
         assert(submodPosMap.find(submod)!=submodPosMap.end());
-        Point pos = submodPosMap[submod];
-        char coords[32];
-        sprintf(coords,"%d %d ", pos.x, pos.y);
-        CHK(Tcl_VarEval(interp, "draw_submod ",
-                        canvas, " ",
-                        ptrToStr(submod), " ",
-                        coords,
-                        "{", submod->getFullName(), "} ",
-                        "{", ds.str(), "} ",
-                        "{", scaling, "} ",
-                        NULL ));
+        Point& pos = submodPosMap[submod];
+        drawSubmodule(interp, submod, pos.x, pos.y, scaling);
     }
 
     // draw enclosing module
-    const char *dispstr = parentmodule->hasDisplayString() ? parentmodule->getDisplayString().str() : "";
-    CHK(Tcl_VarEval(interp, "draw_enclosingmod ",
-                       canvas, " ",
-                       ptrToStr(parentmodule), " ",
-                       "{", parentmodule->getFullPath().c_str(), "} ",
-                       "{", dispstr, "} ",
-                       "{", scaling, "} ",
-                       NULL ));
+    drawEnclosingModule(interp, parentmodule, scaling);
 
     // loop through all submodules and enclosing module & draw their connections
     bool parent = false;
@@ -537,31 +518,68 @@ void TGraphicalModWindow::redrawModules()
         for (cModule::GateIterator i(mod); !i.end(); i++)
         {
             cGate *gate = i();
-            cGate *dest_gate = gate->getNextGate();
-            if (gate->getType()==(parent ? cGate::INPUT: cGate::OUTPUT) && dest_gate!=NULL)
+            if (gate->getType()==(parent ? cGate::INPUT: cGate::OUTPUT) && gate->getNextGate()!=NULL)
             {
-                char gateptr[32], srcptr[32], destptr[32], indices[32];
-                ptrToStr(gate, gateptr);
-                ptrToStr(mod, srcptr);
-                ptrToStr(dest_gate->getOwnerModule(), destptr);
-                sprintf(indices,"%d %d %d %d",
-                        gate->getIndex(), gate->size(),
-                        dest_gate->getIndex(), dest_gate->size());
-                cChannel *chan = gate->getChannel();
-                const char *dispstr = (chan && chan->hasDisplayString()) ? chan->getDisplayString().str() : "";
-
-                CHK(Tcl_VarEval(interp, "draw_connection ",
-                        canvas, " ",
-                        gateptr, " ",
-                        "{", dispstr, "} ",
-                        srcptr, " ",
-                        destptr, " ",
-                        indices,
-                        NULL ));
-           }
+                drawConnection(interp, gate);
+            }
         }
     }
     CHK(Tcl_VarEval(interp, canvas, " raise bubble",NULL));
+}
+
+void TGraphicalModWindow::drawSubmodule(Tcl_Interp *interp, cModule *submod, int x, int y, const char *scaling)
+{
+    char coords[32];
+    sprintf(coords,"%d %d ", x, y);
+
+    static const cDisplayString blank;
+    const cDisplayString& ds = submod->hasDisplayString() ? submod->getDisplayString() : blank;
+
+    CHK(Tcl_VarEval(interp, "draw_submod ",
+                    canvas, " ",
+                    ptrToStr(submod), " ",
+                    coords,
+                    "{", submod->getFullName(), "} ",
+                    "{", ds.str(), "} ",
+                    "{", scaling, "} ",
+                    NULL));
+}
+
+void TGraphicalModWindow::drawEnclosingModule(Tcl_Interp *interp, cModule *parentmodule, const char *scaling)
+{
+    const char *dispstr = parentmodule->hasDisplayString() ? parentmodule->getDisplayString().str() : "";
+    CHK(Tcl_VarEval(interp, "draw_enclosingmod ",
+                       canvas, " ",
+                       ptrToStr(parentmodule), " ",
+                       "{", parentmodule->getFullPath().c_str(), "} ",
+                       "{", dispstr, "} ",
+                       "{", scaling, "} ",
+                       NULL ));
+}
+
+void TGraphicalModWindow::drawConnection(Tcl_Interp *interp, cGate *gate)
+{
+    cModule *mod = gate->getOwnerModule();
+    cGate *dest_gate = gate->getNextGate();
+
+    char gateptr[32], srcptr[32], destptr[32], indices[32];
+    ptrToStr(gate, gateptr);
+    ptrToStr(mod, srcptr);
+    ptrToStr(dest_gate->getOwnerModule(), destptr);
+    sprintf(indices, "%d %d %d %d",
+            gate->getIndex(), gate->size(),
+            dest_gate->getIndex(), dest_gate->size());
+    cChannel *chan = gate->getChannel();
+    const char *dispstr = (chan && chan->hasDisplayString()) ? chan->getDisplayString().str() : "";
+
+    CHK(Tcl_VarEval(interp, "draw_connection ",
+            canvas, " ",
+            gateptr, " ",
+            "{", dispstr, "} ",
+            srcptr, " ",
+            destptr, " ",
+            indices,
+            NULL ));
 }
 
 void TGraphicalModWindow::redrawMessages()
