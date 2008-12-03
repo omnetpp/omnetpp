@@ -41,7 +41,7 @@ components: base samples
 
 # Version. Should ideally come from the 'Version' file but nmake doesn't support that
 OMNETPP_PRODUCT=OMNeT++
-OMNETPP_VERSION=4.0b7
+OMNETPP_VERSION=4.0rc1
 OMNETPP_RELEASE=omnetpp-$(OMNETPP_VERSION)
 OMNETPP_BUILDID=internal
 OMNETPP_EDITION=Academic Public License -- NOT FOR COMMERCIAL USE
