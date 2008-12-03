@@ -100,6 +100,10 @@ public class DependencyCache {
     static class FileIncludes {
         List<Include> includes; // list of #includes in the file
         long modificationStamp; // date/time of file when it was parsed
+
+        public String toString() { 
+            return "[" + StringUtils.join(includes, " ") + "] tstamp=" + modificationStamp; 
+        }
     }
 
     static class ProjectData {
@@ -314,13 +318,9 @@ public class DependencyCache {
      * Parses the file for the list of #includes, if it's not up to date already.
      */
     protected void checkFileIncludes(IFile file) throws CoreException {
-        if (debug)
-        	Debug.println("   checkFileIncludes(): " + file);
-        long fileTime = file.getModificationStamp();
+        long fileTime = file.getModificationStamp(); // Note: must NOT compare this for greater/less, only for equals!
         FileIncludes fileData = fileIncludes.get(file);
-        if (fileData == null || fileData.modificationStamp < fileTime) {
-            if (debug)
-            	Debug.println("   parsing includes from: " + file);
+        if (fileData == null || fileData.modificationStamp != fileTime) {
             if (fileData == null)
                 fileIncludes.put(file, (fileData = new FileIncludes()));
 
@@ -328,10 +328,17 @@ public class DependencyCache {
             fileData.includes = parseIncludes(file);
             fileData.modificationStamp = fileTime;
 
+            if (debug)
+                Debug.println("   parsed includes from " + file + ": " + fileData.toString());
+
             // clear cached dependencies (need to be recalculated)
             for (IProject p : projectData.keySet().toArray(new IProject[]{}))
                 if (projectData.get(p).projectGroup.contains(file.getProject()))
                     projectData.remove(p);
+        }
+        else {
+            if (debug)
+                Debug.println("   up-to-date includes: " + file + ": " + fileData.toString());
         }
     }
 
