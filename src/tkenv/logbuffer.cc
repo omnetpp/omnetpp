@@ -81,9 +81,15 @@ void LogBuffer::addLogLine(const char *buffer, int n)
 
 void LogBuffer::addInfo(const char *text)
 {
-    entries.push_back(Entry(0,0,0,banner));
+    entries.push_back(Entry(0,0,0,text));
     totalStrings++;
     totalChars += entries.back().numChars;
+    discardIfMemoryLimitExceeded();
+}
+
+void LogBuffer::setMemoryLimit(size_t limit)
+{
+    memLimit = limit;
     discardIfMemoryLimitExceeded();
 }
 
@@ -97,44 +103,6 @@ void LogBuffer::discardIfMemoryLimitExceeded()
         totalStrings -= entry.lines.size()+1;
         entries.pop_front();
     }
-
 }
 
 
-/*
-void LogBuffer::insertIntoTkText(Tcl_Interp *interp, const char *textWidget, std::set<int>& moduleIds) const
-{
-    //FIXME zold sorokat is jegyezze meg/irja ki!!!
-    for (std::list<Entry>::const_iterator it=entries.begin(); it!=entries.end(); it++)
-    {
-        const Entry& entry = *it;
-        if (moduleIds.find(entry.moduleId)!=moduleIds.end())
-        {
-            CHK(Tcl_VarEval(interp, textWidget, " insert end {", entry.banner, "} event\n", NULL));
-            for (int i=0; i<(int)entry.lines.size(); i++)
-                CHK(Tcl_VarEval(interp, textWidget, " insert end {", entry.lines[i], "}\n", NULL));
-        }
-    }
-    CHK(Tcl_VarEval(interp, textWidget, " see end", NULL));
-}
-
-void LogBuffer::printBanner(Tcl_Interp *interp, const char *textWidget, const char *banner)
-{
-    CHK(Tcl_VarEval(interp, textWidget, " insert end {", banner, "} event\n", NULL));
-}
-
-void LogBuffer::printLogLine(Tcl_Interp *interp, const char *textWidget, const char *line)
-{
-    CHK(Tcl_VarEval(interp, textWidget, " insert end {", line, "}\n", NULL));
-}
-
-void LogBuffer::printGlobalLogLine(Tcl_Interp *interp, const char *textWidget, const char *line)
-{
-    CHK(Tcl_VarEval(interp, textWidget, " insert end {", line, "} log\n", NULL));
-}
-
-void LogBuffer::seeEnd(Tcl_Interp *interp, const char *textWidget, const char *line)
-{
-    CHK(Tcl_VarEval(interp, textWidget, " see end", NULL));
-}
-*/

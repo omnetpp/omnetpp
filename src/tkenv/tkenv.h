@@ -23,6 +23,7 @@
 #include <list>
 
 #include "tkdefs.h"
+#include "logbuffer.h"
 #include "envirbase.h"
 #include "bootenv.h"
 #include "cchannel.h"
@@ -124,6 +125,8 @@ class TKENV_API Tkenv : public EnvirBase
 
       typedef std::list<TInspector*> TInspectorList;
       TInspectorList inspectors;   // list of inspector objects
+
+      LogBuffer logBuffer;         // text window contents
 
       typedef std::map<std::string,std::string> StringMap;
       StringMap answers;           // key: <ModuleType>:<paramName>, value: <interactively-given-paramvalue>

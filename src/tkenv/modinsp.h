@@ -35,6 +35,7 @@
 #include "cdataratechannel.h"
 
 #include "intxtypes.h"
+#include "logbuffer.h"
 #include "inspector.h"
 #include "envirbase.h"
 #include "graphlayouter.h"
@@ -50,10 +51,19 @@ double resolveDoubleDispStrArg(const char *s, cModule *mod, double defaultValue)
 
 class TModuleWindow : public TInspector
 {
+   protected:
+      char textWidget[128];
+      std::set<int> excludedModuleIds;
    public:
       TModuleWindow(cObject *obj,int typ,const char *geom,void *dat=NULL);
       virtual void createWindow();
       virtual void update();
+
+      virtual void printLastLineOf(const LogBuffer::Entry& entry);
+      virtual void redisplay(const LogBuffer& logBuffer);
+
+      static void printLastLineOf(Tcl_Interp *interp, const char *textWidget, const LogBuffer::Entry& entry, const std::set<int>& excludedModuleIds);
+      static void redisplay(Tcl_Interp *interp, const char *textWidget, const LogBuffer& logBuffer, const std::set<int>& excludedModuleIds);
 };
 
 

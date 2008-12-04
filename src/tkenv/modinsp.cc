@@ -116,23 +116,70 @@ TModuleWindow::TModuleWindow(cObject *obj,int typ,const char *geom,void *dat) :
 
 void TModuleWindow::createWindow()
 {
-   TInspector::createWindow(); // create window name etc.
+    TInspector::createWindow(); // create window name etc.
+    strcpy(textWidget,windowname); strcat(textWidget, ".main.text");
 
-   // create inspector window by calling the specified proc with
-   // the object's pointer. Window name will be like ".ptr80003a9d-1"
-   Tcl_Interp *interp = getTkenv()->getInterp();
-   cModule *mod = static_cast<cModule *>(object);
-   const char *createcommand = mod->isSimple() ?
-            "create_simplemodulewindow " : "create_compoundmodulewindow ";
-   CHK(Tcl_VarEval(interp, createcommand, windowname, " \"", geometry, "\"", NULL ));
+    // create inspector window by calling the specified proc with
+    // the object's pointer. Window name will be like ".ptr80003a9d-1"
+    Tcl_Interp *interp = getTkenv()->getInterp();
+    cModule *mod = static_cast<cModule *>(object);
+    const char *createcommand = mod->isSimple() ?
+             "create_simplemodulewindow " : "create_compoundmodulewindow ";
+    CHK(Tcl_VarEval(interp, createcommand, windowname, " \"", geometry, "\"", NULL ));
 }
 
 void TModuleWindow::update()
 {
-   TInspector::update();
+    TInspector::update();
 
-   Tcl_Interp *interp = getTkenv()->getInterp();
-   CHK(Tcl_VarEval(interp, "modulewindow_trimlines ", windowname, NULL));
+    Tcl_Interp *interp = getTkenv()->getInterp();
+    CHK(Tcl_VarEval(interp, "modulewindow_trimlines ", windowname, NULL));
+}
+
+void TModuleWindow::printLastLineOf(const LogBuffer::Entry& entry)
+{
+    printLastLineOf(getTkenv()->getInterp(), textWidget, entry, excludedModuleIds);
+}
+
+void TModuleWindow::redisplay(const LogBuffer& logBuffer)
+{
+    redisplay(getTkenv()->getInterp(), textWidget, logBuffer, excludedModuleIds);
+}
+
+void TModuleWindow::printLastLineOf(Tcl_Interp *interp, const char *textWidget, const LogBuffer::Entry& entry, const std::set<int>& excludedModuleIds)
+{
+    if (entry.moduleId==0)
+    {
+        insertIntoText(interp, textWidget, entry.banner, "log");
+    }
+    else if (excludedModuleIds.find(entry.moduleId)==excludedModuleIds.end())
+    {
+        if (entry.lines.empty())
+            insertIntoText(interp, textWidget, entry.banner, "event");
+        else
+            insertIntoText(interp, textWidget, entry.lines.back());
+    }
+    textSeeEnd(interp, textWidget);
+}
+
+void TModuleWindow::redisplay(Tcl_Interp *interp, const char *textWidget, const LogBuffer& logBuffer, const std::set<int>& excludedModuleIds)
+{
+    const std::list<LogBuffer::Entry>& entries = logBuffer.getEntries();
+    for (std::list<LogBuffer::Entry>::const_iterator it=entries.begin(); it!=entries.end(); it++)
+    {
+        const LogBuffer::Entry& entry = *it;
+        if (entry.moduleId==0)
+        {
+            insertIntoText(interp, textWidget, entry.banner, "log");
+        }
+        else if (excludedModuleIds.find(entry.moduleId)==excludedModuleIds.end())
+        {
+            insertIntoText(interp, textWidget, entry.banner, "event");
+            for (int i=0; i<(int)entry.lines.size(); i++)
+                insertIntoText(interp, textWidget, entry.lines[i]);
+        }
+    }
+    textSeeEnd(interp, textWidget);
 }
 
 //=======================================================================

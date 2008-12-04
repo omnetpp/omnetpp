@@ -254,6 +254,21 @@ void inspectObjectByName(const char *fullpath, const char *classname, int inspty
     v.process(&simulation);
 }
 
+//----------------------------------------------------------------------
+
+void insertIntoText(Tcl_Interp *interp, const char *textWidget, const char *quotedText, const char *tags)
+{
+    if (!tags)
+        CHK(Tcl_VarEval(interp, textWidget, " insert end ", quotedText, NULL));
+    else
+        CHK(Tcl_VarEval(interp, textWidget, " insert end ", quotedText, " {", tags, "}", NULL));
+}
+
+void textSeeEnd(Tcl_Interp *interp, const char *textWidget)
+{
+    CHK(Tcl_VarEval(interp, textWidget, " see end", NULL));
+}
+
 NAMESPACE_END
 
 

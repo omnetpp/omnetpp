@@ -63,6 +63,9 @@ class LogBuffer
     void addLogLine(const char *buffer, int n);
     void addInfo(const char *text);
 
+    void setMemoryLimit(size_t limit);
+    size_t getMemoryLimit()  {return memLimit;}
+
     const std::list<Entry>& getEntries() const {return entries;}
 };
 
