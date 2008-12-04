@@ -1,3 +1,11 @@
+2008-12-04
+----------
+
+Fixes:
+
+   + When the scatter plot used iso lines, the same names might have been generated
+     for the lines. Now the line name includes the names and values of the iso scalars. 
+
 2008-08-01
 ----------
 

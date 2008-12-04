@@ -275,6 +275,7 @@ public class DatasetManager {
 			
 			// process scalars
 			XYDatasetVector xyScalars = null;
+			List<IDList> isoScalars = null;
 			if (!scalars.isEmpty()) {
 				ModuleAndData xData = ModuleAndData.fromFilterPattern(chart.getXDataPattern());
 				Assert.isLegal(xData.isValid(), "X data is not selected.");
@@ -301,8 +302,27 @@ public class DatasetManager {
 				xyScalars = sorter.prepareScatterPlot3(scalars,
 								xModuleName, xScalarName, rowFields, columnFields,
 								isoModuleNames, isoScalarNames);
-				
 				// assertOrdered(xyScalars);
+				
+				if (!isoPatterns.isEmpty()) {
+					isoScalars = new ArrayList<IDList>((int)xyScalars.size());
+					for (int i = 0; i < xyScalars.size(); ++i) {
+						XYDataset xyData = xyScalars.get(i);
+						Assert.isTrue(xyData.getRowCount() > 0);
+						String runName = xyData.getRowFieldNoCheck(0, FLD_RUN);
+						FilterUtil filter = new FilterUtil();
+						filter.setField(RUN, runName);
+						IDList isoScalarIds = new IDList();
+						for (int j = 0; j < isoModuleNames.size(); ++j) {
+							filter.setField(MODULE, isoModuleNames.get(j));
+							filter.setField(NAME, isoScalarNames.get(j));
+							IDList idlist = manager.filterIDList(scalars, filter.getFilterPattern());
+							if (idlist.size() > 0)
+								isoScalarIds.add(idlist.get(0));
+						}
+						isoScalars.add(isoScalarIds); 
+					}
+				}
 			}
 			
 			// process vectors
@@ -332,12 +352,12 @@ public class DatasetManager {
 			
 			// compose results
 			if (xyScalars != null && xyVectors == null)
-				return createScatterPlotDataset(xyScalars);
+				return createScatterPlotDataset(xyScalars, isoScalars, manager);
 			else if (xyScalars == null && xyVectors != null)
 				return new VectorScatterPlotDataset(yVectors, xyVectors, manager);
 			else if (xyScalars != null && xyVectors != null)
 				return new CompoundXYDataset(
-						createScatterPlotDataset(xyScalars),
+						createScatterPlotDataset(xyScalars, isoScalars, manager),
 						new VectorScatterPlotDataset(yVectors, xyVectors, manager));
 			
 		}
@@ -359,10 +379,11 @@ public class DatasetManager {
 		}
 	}
 	
-	public static IXYDataset createScatterPlotDataset(XYDatasetVector xydatasets) {
+	public static IXYDataset createScatterPlotDataset(XYDatasetVector xydatasets, List<IDList> isoScalars, ResultFileManager manager) {
+		Assert.isTrue(isoScalars == null || xydatasets.size() == isoScalars.size());
 		IXYDataset[] datasets = new IXYDataset[(int)xydatasets.size()];
 		for (int i = 0; i < datasets.length; ++i)
-			datasets[i] = new ScalarScatterPlotDataset(xydatasets.get(i));
+			datasets[i] = new ScalarScatterPlotDataset(xydatasets.get(i), isoScalars == null ? IDList.EMPTY : isoScalars.get(i), manager);
 		return new CompoundXYDataset(datasets);
 	}
 	

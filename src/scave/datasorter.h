@@ -73,6 +73,7 @@ class SCAVE_API XYDataset
         ResultItemFields getRowFields() { return rowFields; }
         ResultItemFields getColumnFields() { return columnFields; }
         std::string getRowField(int row, ResultItemField field);
+        std::string getRowFieldNoCheck(int row, ResultItemField field);
         std::string getColumnField(int column, ResultItemField field);
         Statistics getValue(int row, int column);
 };
@@ -84,6 +85,13 @@ inline std::string XYDataset::getRowField(int row, ResultItemField field)
     if (row < 0 || row >= getRowCount() || !rowFields.hasField(field))
         return "";
     return field.getFieldValue(rowKeys[rowOrder[row]]);
+}
+
+inline std::string XYDataset::getRowFieldNoCheck(int row, ResultItemField field)
+{
+	if (row < 0 || row >= getRowCount())
+		return "";
+	return field.getFieldValue(rowKeys[rowOrder[row]]);
 }
 
 inline std::string XYDataset::getColumnField(int column, ResultItemField field)

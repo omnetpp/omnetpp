@@ -1,7 +1,10 @@
 package org.omnetpp.scave.charting.dataset;
 
 import org.omnetpp.common.engine.BigDecimal;
+import org.omnetpp.scave.engine.IDList;
+import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItemField;
+import org.omnetpp.scave.engine.ScalarResult;
 import org.omnetpp.scave.engine.Statistics;
 import org.omnetpp.scave.engine.XYDataset;
 
@@ -24,11 +27,11 @@ public class ScalarScatterPlotDataset extends XYDatasetSupport implements IAvera
 	                        		// other rows contain Y values (NaN if missing)
 	private String[] keys;
 	
-	public ScalarScatterPlotDataset(XYDataset scalars) {
+	public ScalarScatterPlotDataset(XYDataset scalars, IDList isoScalars, ResultFileManager manager) {
 		this.scalars = scalars;
-		this.keys = computeKeys(this.scalars);
+		this.keys = computeKeys(this.scalars, isoScalars, manager);
 	}
-		
+	
 	public String getTitle(String format) {
 		// TODO Auto-generated method stub
 		return null;
@@ -73,13 +76,29 @@ public class ScalarScatterPlotDataset extends XYDatasetSupport implements IAvera
 	private static final ResultItemField MODULE = new ResultItemField(ResultItemField.MODULE);
 	private static final ResultItemField NAME = new ResultItemField(ResultItemField.NAME);
 	
-	private static String[] computeKeys(XYDataset data) {
+	private static String[] computeKeys(XYDataset data, IDList isoScalars, ResultFileManager manager) {
+		// each row has the same value of the iso scalars
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < isoScalars.size(); ++i) {
+			if (i == 0)
+				sb.append(" - ");
+			else
+				sb.append(" ");
+			
+			ScalarResult scalar = manager.getScalar(isoScalars.get(i));
+			sb.append(scalar.getModuleName()).append(" ")
+			  .append(scalar.getName()).append("=")
+			  .append(scalar.getValue());
+		}
+		String isoScalarValues = sb.toString();
+		
 		// first row contains the common X coordinates
 		// name the lines after their Y data
 		String[] keys = new String[data.getRowCount()-1];
 		for (int i=0; i<keys.length; ++i) {
 			keys[i] = data.getRowField(i+1, MODULE) + " " +
-					   data.getRowField(i+1, NAME);
+					   data.getRowField(i+1, NAME) +
+					   isoScalarValues;
 		}
 		return keys;
 	}
