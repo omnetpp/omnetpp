@@ -105,9 +105,9 @@ public class Makemake {
         String makefileName = isNMake ? "Makefile.vc" : "Makefile";
         IFile makefile = folder.getFile(new Path(makefileName));
         if (makefile.exists() && !options.force)
-            throw new MakemakeException("use -f to force overwriting existing " + makefile.getFullPath().toString());
+            throw new MakemakeException("use -f to force overwriting existing " + makefile.getFullPath().toString(), false);
         if (makefile.exists() && !isGeneratedMakefile(makefile))
-            throw new MakemakeException(makefile.getFullPath().toString() + " seems to be a hand-written makefile, refusing to overwrite it. Please delete it or move it away.");
+            throw new MakemakeException(makefile.getFullPath().toString() + " seems to be a hand-written makefile, refusing to overwrite it. Please delete it or move it away.", false);
 
         String target = options.target == null ? folder.getProject().getName() : options.target;
         List<String> objs = new ArrayList<String>();

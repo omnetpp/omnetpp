@@ -8,7 +8,8 @@ package org.omnetpp.cdt.makefile;
  */
 public class MakemakeException extends Exception {
     private static final long serialVersionUID = 1L;
-
+    private boolean deleteMakefile = true;
+    
     public MakemakeException(String message) {
         super(message);
     }
@@ -16,4 +17,13 @@ public class MakemakeException extends Exception {
     public MakemakeException(String message, Throwable cause) {
         super(message, cause);
     }
+
+    public MakemakeException(String message, boolean deleteMakefile) {
+        super(message);
+        this.deleteMakefile = deleteMakefile;
+    }
+    
+    public boolean getDeleteMakefile() {
+		return deleteMakefile;
+	}
 }

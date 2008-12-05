@@ -232,20 +232,21 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
      * Generate makefile in the given folder.
      */
     protected void generateMakefileFor(IContainer folder, ICConfigurationDescription configuration) throws CoreException {
-        boolean ok = false;
+        boolean deleteMakeFiles = true;
         try {
             //Debug.println("Generating makefile in: " + folder.getFullPath());
             Assert.isTrue(folder.getProject().equals(getProject()));
             MakemakeOptions options = buildSpec.getMakemakeOptions(folder);
             Assert.isTrue(options != null);
             MetaMakemake.generateMakefile(folder, buildSpec, configuration);
-            ok = true;
+            deleteMakeFiles = false;
         }
         catch (MakemakeException e) {
+        	deleteMakeFiles = e.getDeleteMakefile();
             throw Activator.wrapIntoCoreException(e);
         }
         finally {
-            if (!ok) {
+            if (deleteMakeFiles) {
                 // remove stale/incomplete makefile, so that build won't continue with CDT
                 try { folder.getFile(new Path("Makefile")).delete(true, null); } catch (CoreException e1) {}
                 try { folder.getFile(new Path("Makefile.vc")).delete(true, null); } catch (CoreException e1) {}
