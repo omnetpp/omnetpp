@@ -93,7 +93,7 @@ public class InifileAnalyzer {
 	};
 
     /**
-     * Used internally: an iteration variable "${...}", stored as part of SectionData
+     * Used internally: an iteration variable definition "${...}", stored as part of SectionData
      */
 	static class IterationVariable {
         String varname; // printable variable name ("x"); null for an unnamed variable
@@ -403,18 +403,33 @@ public class InifileAnalyzer {
 
 		String value = doc.getValue(section, key);
 		Matcher m = p.matcher(value);
-		SectionData sectionData = (SectionData) doc.getSectionData(section);
 
 		// find all occurrences of the pattern in the input string
 		boolean foundAny = false;
 		while (m.find()) {
 			foundAny = true;
-			String varname = m.group(1);
-			if (!sectionData.namedIterations.containsKey(varname) && !Arrays.asList(ConfigRegistry.getConfigVariableNames()).contains(varname))
-				addError(section, key, "${"+varname+"} is undefined");
+			String varName = m.group(1);
+			String varValue = m.group(2);
+			if (varValue==null && !isValidIterationVariable(section, varName))
+				addError(section, key, "${"+varName+"} is undefined");
 		}
 		return foundAny;
 	}
+
+	protected boolean isValidIterationVariable(String section, String varName) {
+	    // is it a predefined variable like ${configname}?
+	    if (Arrays.asList(ConfigRegistry.getConfigVariableNames()).contains(varName))
+	        return true;
+	    
+	    // is it defined in this section or any fallback section?
+        String[] sectionChain = InifileUtils.resolveSectionChain(doc, section);
+        for (String sec : sectionChain) {
+            SectionData sectionData = (SectionData) doc.getSectionData(sec);
+            if (sectionData.namedIterations.containsKey(varName))
+                return true;
+        }
+        return false;
+    }
 
 	/**
 	 * Validate a configuration entry's value.
@@ -655,7 +670,7 @@ public class InifileAnalyzer {
 			v.parvar = m.group(5);
 			v.section = section;
 			v.key = key;
-			Debug.println("found: $"+v.varname+" = ``"+v.value+"'' ! "+v.parvar);
+			Debug.println("itervar found: $"+v.varname+" = ``"+v.value+"'' ! "+v.parvar);
 			if (Arrays.asList(ConfigRegistry.getConfigVariableNames()).contains(v.varname))
 				addError(section, key, "${"+v.varname+"} is a predefined variable and cannot be changed");
 			else if (sectionData.namedIterations.containsKey(v.varname))
