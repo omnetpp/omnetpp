@@ -32,6 +32,7 @@
 #include "layouterenv.h"
 #include "forcedirectedgraphlayouter.h"
 #include "basicspringembedderlayout.h"
+#include "stringtokenizer.h"
 
 USING_NAMESPACE
 
@@ -167,6 +168,9 @@ void TModuleWindow::printLastLineOf(Tcl_Interp *interp, const char *textWidget, 
 void TModuleWindow::redisplay(Tcl_Interp *interp, const char *textWidget, const LogBuffer& logBuffer, cModule *mod, const std::set<int>& excludedModuleIds)
 {
     textWidget_clear(interp, textWidget);
+
+    if (!mod)
+        return;
 
     int inspModuleId = mod->getId();
     const std::list<LogBuffer::Entry>& entries = logBuffer.getEntries();

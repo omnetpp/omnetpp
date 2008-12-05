@@ -1028,6 +1028,12 @@ void Tkenv::printLastLogLine()
     }
 }
 
+void Tkenv::setMainWindowExcludedModuleIds(const std::set<int>& ids)
+{
+    mainWindowExcludedModuleIds = ids;
+    TModuleWindow::redisplay(interp, ".main.text", logBuffer, simulation.getSystemModule(), mainWindowExcludedModuleIds);
+}
+
 //=========================================================================
 
 void Tkenv::readOptions()

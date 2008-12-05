@@ -212,6 +212,8 @@ class TKENV_API Tkenv : public EnvirBase
       bool getStopSimulationFlag() {return stopsimulation_flag;}
       Tcl_Interp *getInterp() {return interp;}
       const LogBuffer& getLogBuffer() const {return logBuffer;}
+      const std::set<int>& getMainWindowExcludedModuleIds() const {return mainWindowExcludedModuleIds;}
+      void setMainWindowExcludedModuleIds(const std::set<int>& ids);
 
       void updateGraphicalInspectorsBeforeAnimation();
 

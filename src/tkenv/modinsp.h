@@ -39,7 +39,6 @@
 #include "inspector.h"
 #include "envirbase.h"
 #include "graphlayouter.h"
-#include "stringtokenizer.h"
 
 NAMESPACE_BEGIN
 
