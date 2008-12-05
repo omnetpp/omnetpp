@@ -39,6 +39,7 @@
 #include "inspector.h"
 #include "envirbase.h"
 #include "graphlayouter.h"
+#include "stringtokenizer.h"
 
 NAMESPACE_BEGIN
 
@@ -59,10 +60,12 @@ class TModuleWindow : public TInspector
       virtual void createWindow();
       virtual void update();
 
-      virtual void printLastLineOf(const LogBuffer::Entry& entry);
+      virtual void printLastLineOf(const LogBuffer& logBuffer);
       virtual void redisplay(const LogBuffer& logBuffer);
 
-      static void printLastLineOf(Tcl_Interp *interp, const char *textWidget, const LogBuffer::Entry& entry, const std::set<int>& excludedModuleIds);
+      virtual int inspectorCommand(Tcl_Interp *interp, int argc, const char **argv);
+
+      static void printLastLineOf(Tcl_Interp *interp, const char *textWidget, const LogBuffer& logBuffer, const std::set<int>& excludedModuleIds);
       static void redisplay(Tcl_Interp *interp, const char *textWidget, const LogBuffer& logBuffer, const std::set<int>& excludedModuleIds);
 };
 

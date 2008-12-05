@@ -127,6 +127,7 @@ class TKENV_API Tkenv : public EnvirBase
       TInspectorList inspectors;   // list of inspector objects
 
       LogBuffer logBuffer;         // text window contents
+      std::set<int> mainWindowExcludedModuleIds;
 
       typedef std::map<std::string,std::string> StringMap;
       StringMap answers;           // key: <ModuleType>:<paramName>, value: <interactively-given-paramvalue>
@@ -179,6 +180,7 @@ class TKENV_API Tkenv : public EnvirBase
       virtual void readOptions();
       virtual void readPerRunOptions();
       virtual void askParameter(cPar *par);
+      virtual void printLastLogLine();
 
   public:
       // New functions:
@@ -209,6 +211,7 @@ class TKENV_API Tkenv : public EnvirBase
       void setStopSimulationFlag() {stopsimulation_flag = true;}
       bool getStopSimulationFlag() {return stopsimulation_flag;}
       Tcl_Interp *getInterp() {return interp;}
+      const LogBuffer& getLogBuffer() const {return logBuffer;}
 
       void updateGraphicalInspectorsBeforeAnimation();
 

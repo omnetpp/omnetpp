@@ -95,6 +95,7 @@ clean:
 	-del /q $(L:/=\)\$(LIBNAME).* $(OMNETPP_LIB_DIR:/=\)\$(LIBNAME).* 2>nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
+$O/__filtering.obj: __filtering.cc
 $O/arrow.obj: arrow.cc \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -129,6 +130,7 @@ $O/inspector.obj: inspector.cc \
   ../../include/cmodule.h \
   ../../include/cclassdescriptor.h \
   ../../include/cmessage.h \
+  logbuffer.h \
   ../../include/csimulation.h \
   ../../include/clcg32.h \
   tkutil.h \
@@ -225,6 +227,7 @@ $O/inspfactory.obj: inspfactory.cc \
   ../../include/cmodule.h \
   ../../include/cclassdescriptor.h \
   ../../include/cmessage.h \
+  logbuffer.h \
   ../../include/csimulation.h \
   ../../include/clcg32.h \
   tkutil.h \
@@ -318,6 +321,7 @@ $O/layouterenv.obj: layouterenv.cc \
   ../../include/cenvir.h \
   ../../include/cmodule.h \
   ../../include/cmessage.h \
+  logbuffer.h \
   ../../include/csimulation.h \
   ../../include/simtime.h \
   tkutil.h \
@@ -361,6 +365,41 @@ $O/layouterenv.obj: layouterenv.cc \
   ../../include/cpar.h \
   ../../include/ccoroutine.h \
   ../../include/regmacros.h
+$O/logbuffer.obj: logbuffer.cc \
+  ../../include/cgate.h \
+  ../../include/cenvir.h \
+  ../../include/cmodule.h \
+  logbuffer.h \
+  ../../include/csimulation.h \
+  tkutil.h \
+  ../../include/simtime.h \
+  ../../include/simutil.h \
+  ../../include/simkerneldefs.h \
+  ../../include/cobject.h \
+  ../../include/cclassfactory.h \
+  ../../include/errmsg.h \
+  tkdefs.h \
+  ../../include/cexpression.h \
+  ../../include/cownedobject.h \
+  ../../include/ccomponent.h \
+  ../../include/cregistrationlist.h \
+  ../../include/cvisitor.h \
+  ../../include/cstringpool.h \
+  tklib.h \
+  ../../include/onstartup.h \
+  ../../include/simtime_t.h \
+  ../../include/cmessageheap.h \
+  ../../include/platdep/intxtypes.h \
+  ../../include/globals.h \
+  ../../include/platdep/platmisc.h \
+  ../../include/cdefaultlist.h \
+  ../../include/opp_string.h \
+  ../../include/cexception.h \
+  ../../include/cnamedobject.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/cpar.h \
+  ../../include/ccoroutine.h \
+  ../../include/regmacros.h
 $O/modinsp.obj: modinsp.cc \
   modinsp.h \
   ../../include/carray.h \
@@ -371,6 +410,7 @@ $O/modinsp.obj: modinsp.cc \
   ../../include/cenvir.h \
   ../../include/cmodule.h \
   ../../include/cmessage.h \
+  logbuffer.h \
   ../../include/csimulation.h \
   ../../include/simtime.h \
   tkutil.h \
@@ -429,6 +469,7 @@ $O/objinsp.obj: objinsp.cc \
   ../../include/cmodule.h \
   ../../include/cclassdescriptor.h \
   ../../include/cmessage.h \
+  logbuffer.h \
   ../../include/csimulation.h \
   ../../include/clcg32.h \
   tkutil.h \
@@ -521,6 +562,7 @@ $O/statinsp.obj: statinsp.cc \
   ../../include/cenvir.h \
   ../../include/cmodule.h \
   ../../include/cmessage.h \
+  logbuffer.h \
   ../../include/csimulation.h \
   tkutil.h \
   ../../include/simtime.h \
@@ -571,6 +613,7 @@ $O/tkcmd.obj: tkcmd.cc \
   ../../include/cmodule.h \
   ../../include/cclassdescriptor.h \
   ../../include/cmessage.h \
+  logbuffer.h \
   ../../include/csimulation.h \
   tkutil.h \
   ../../include/simtime.h \
@@ -626,6 +669,7 @@ $O/tkenv.obj: tkenv.cc \
   ../../include/cenvir.h \
   ../../include/cmodule.h \
   ../../include/cmessage.h \
+  logbuffer.h \
   ../../include/csimulation.h \
   tkutil.h \
   ../../include/simtime.h \
@@ -679,6 +723,7 @@ $O/tklib.obj: tklib.cc \
   ../../include/cgate.h \
   ../../include/cenvir.h \
   ../../include/cmodule.h \
+  logbuffer.h \
   ../../include/csimulation.h \
   ../../include/simtime.h \
   tkutil.h \
@@ -716,6 +761,7 @@ $O/tkutil.obj: tkutil.cc \
   ../../include/cgate.h \
   ../../include/cenvir.h \
   ../../include/cmodule.h \
+  logbuffer.h \
   ../../include/csimulation.h \
   ../../include/simtime.h \
   tkutil.h \
@@ -755,6 +801,7 @@ $O/visitor.obj: visitor.cc \
   ../../include/cenvir.h \
   ../../include/cmodule.h \
   ../../include/cmessage.h \
+  logbuffer.h \
   ../../include/csimulation.h \
   ../../include/simtime.h \
   tkutil.h \

@@ -126,6 +126,7 @@ void TModuleWindow::createWindow()
     const char *createcommand = mod->isSimple() ?
              "create_simplemodulewindow " : "create_compoundmodulewindow ";
     CHK(Tcl_VarEval(interp, createcommand, windowname, " \"", geometry, "\"", NULL ));
+    redisplay(getTkenv()->getLogBuffer());
 }
 
 void TModuleWindow::update()
@@ -136,9 +137,9 @@ void TModuleWindow::update()
     CHK(Tcl_VarEval(interp, "modulewindow_trimlines ", windowname, NULL));
 }
 
-void TModuleWindow::printLastLineOf(const LogBuffer::Entry& entry)
+void TModuleWindow::printLastLineOf(const LogBuffer& logBuffer)
 {
-    printLastLineOf(getTkenv()->getInterp(), textWidget, entry, excludedModuleIds);
+    printLastLineOf(getTkenv()->getInterp(), textWidget, logBuffer, excludedModuleIds);
 }
 
 void TModuleWindow::redisplay(const LogBuffer& logBuffer)
@@ -146,40 +147,76 @@ void TModuleWindow::redisplay(const LogBuffer& logBuffer)
     redisplay(getTkenv()->getInterp(), textWidget, logBuffer, excludedModuleIds);
 }
 
-void TModuleWindow::printLastLineOf(Tcl_Interp *interp, const char *textWidget, const LogBuffer::Entry& entry, const std::set<int>& excludedModuleIds)
+void TModuleWindow::printLastLineOf(Tcl_Interp *interp, const char *textWidget, const LogBuffer& logBuffer, const std::set<int>& excludedModuleIds)
 {
-    if (entry.moduleId==0)
+    const LogBuffer::Entry& entry = logBuffer.getEntries().back();
+    if (!entry.moduleIds)
     {
-        insertIntoText(interp, textWidget, entry.banner, "log");
+        textWidget_insert(interp, textWidget, entry.banner, "log");
     }
-    else if (excludedModuleIds.find(entry.moduleId)==excludedModuleIds.end())
+    else if (excludedModuleIds.find(entry.moduleIds[0])==excludedModuleIds.end())
     {
         if (entry.lines.empty())
-            insertIntoText(interp, textWidget, entry.banner, "event");
+            textWidget_insert(interp, textWidget, entry.banner, "event");
         else
-            insertIntoText(interp, textWidget, entry.lines.back());
+            textWidget_insert(interp, textWidget, entry.lines.back());
     }
-    textSeeEnd(interp, textWidget);
+    textWidget_gotoEnd(interp, textWidget);
 }
 
 void TModuleWindow::redisplay(Tcl_Interp *interp, const char *textWidget, const LogBuffer& logBuffer, const std::set<int>& excludedModuleIds)
 {
+    textWidget_clear(interp, textWidget);
+
     const std::list<LogBuffer::Entry>& entries = logBuffer.getEntries();
     for (std::list<LogBuffer::Entry>::const_iterator it=entries.begin(); it!=entries.end(); it++)
     {
         const LogBuffer::Entry& entry = *it;
-        if (entry.moduleId==0)
+        if (!entry.moduleIds)
         {
-            insertIntoText(interp, textWidget, entry.banner, "log");
+            textWidget_insert(interp, textWidget, entry.banner, "log");
         }
-        else if (excludedModuleIds.find(entry.moduleId)==excludedModuleIds.end())
+        else if (excludedModuleIds.find(entry.moduleIds[0])==excludedModuleIds.end())
         {
-            insertIntoText(interp, textWidget, entry.banner, "event");
+            textWidget_insert(interp, textWidget, entry.banner, "event");
             for (int i=0; i<(int)entry.lines.size(); i++)
-                insertIntoText(interp, textWidget, entry.lines[i]);
+                textWidget_insert(interp, textWidget, entry.lines[i]);
         }
     }
-    textSeeEnd(interp, textWidget);
+    textWidget_gotoEnd(interp, textWidget);
+}
+
+int TModuleWindow::inspectorCommand(Tcl_Interp *interp, int argc, const char **argv)
+{
+    if (argc<1) {Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC); return TCL_ERROR;}
+
+    // supported commands: redisplay, getexcludedmoduleids, setexcludedmoduleids
+
+    if (strcmp(argv[0],"redisplay")==0)
+    {
+       if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
+       TRY(redisplay(getTkenv()->getLogBuffer()));
+       return TCL_OK;
+    }
+    else if (strcmp(argv[0],"getexcludedmoduleids")==0)
+    {
+       if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
+       Tcl_Obj *listobj = Tcl_NewListObj(0, NULL);
+       for (std::set<int>::iterator it=excludedModuleIds.begin(); it!=excludedModuleIds.end(); it++)
+           Tcl_ListObjAppendElement(interp, listobj, Tcl_NewIntObj(*it));
+       Tcl_SetObjResult(interp, listobj);
+       return TCL_OK;
+    }
+    else if (strcmp(argv[0],"setexcludedmoduleids")==0)
+    {
+       if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
+       excludedModuleIds.clear();
+       StringTokenizer tokenizer(argv[1]);
+       while (tokenizer.hasMoreTokens())
+           excludedModuleIds.insert(atoi(tokenizer.nextToken()));
+       return TCL_OK;
+    }
+    return TCL_ERROR;
 }
 
 //=======================================================================

@@ -568,13 +568,8 @@ bool Tkenv::doRunSimulationExpress()
     // EXPRESS does not support rununtil_module!
     //
 
-    if (opt_use_mainwindow)
-         CHK(Tcl_VarEval(interp,
-              ".main.text insert end {...running in Express mode...\n} event\n"
-              ".main.text see end", NULL));
-
-    // should print banner into per module windows too!
-    // TO BE IMPLEMENTED
+    logBuffer.addInfo("{...running in Express mode...\n}");
+    printLastLogLine();
 
     // update, just to get the above notice displayed
     Tcl_Eval(interp, "update");
@@ -630,24 +625,8 @@ void Tkenv::finishSimulation()
     // strictly speaking, we shouldn't allow callFinish() after SIM_ERROR, but it comes handy in practice...
     ASSERT(simstate==SIM_NEW || simstate==SIM_READY || simstate==SIM_TERMINATED || simstate==SIM_ERROR);
 
-    // print banner into main window
-    if (opt_use_mainwindow)
-         CHK(Tcl_VarEval(interp,
-              ".main.text insert end {** Calling finish() methods of modules\n} event\n"
-              ".main.text see end", NULL));
-
-    // should print banner into per module windows too!
-    for (TInspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
-    {
-        TModuleWindow *insp = dynamic_cast<TModuleWindow *>(*it);
-        if (insp)
-        {
-           CHK(Tcl_VarEval(interp,
-               insp->windowName(),".main.text insert end {** Calling finish() method\n} event\n",
-               insp->windowName(),".main.text see end",
-               NULL));
-        }
-    }
+    logBuffer.addInfo("{** Calling finish() methods of modules\n}");
+    printLastLogLine();
 
     // now really call finish()
     try
@@ -978,16 +957,17 @@ void Tkenv::clearPerformanceDisplay()
 
 void Tkenv::printEventBanner(cMessage *msg, cSimpleModule *module)
 {
+    // produce banner text
     char banner[2*MAX_OBJECTFULLPATH+2*MAX_CLASSNAME+60];
     if (opt_short_banners)
-        sprintf(banner,"** Event #%"LL"d  T=%s  %s, on `%s'\n",
+        sprintf(banner,"{** Event #%"LL"d  T=%s  %s, on `%s'\n}",
                 simulation.getEventNumber(),
                 SIMTIME_STR(simulation.getSimTime()),
                 module->getFullPath().c_str(),
                 TclQuotedString(msg->getFullName()).get()
               );
     else
-        sprintf(banner,"** Event #%"LL"d  T=%s  %s (%s, id=%d), on %s`%s' (%s, id=%ld)\n",
+        sprintf(banner,"{** Event #%"LL"d  T=%s  %s (%s, id=%d), on %s`%s' (%s, id=%ld)\n}",
                 simulation.getEventNumber(),
                 SIMTIME_STR(simulation.getSimTime()),
                 module->getFullPath().c_str(),
@@ -999,36 +979,52 @@ void Tkenv::printEventBanner(cMessage *msg, cSimpleModule *module)
                 msg->getId()
               );
 
-    char tags[MAX_OBJECTFULLPATH+60];
-    sprintf(tags, "{event id-%d type-%s}", module->getId(), module->getNedTypeName());
+    // insert into log buffer
+    logBuffer.addEvent(simulation.getEventNumber(), simulation.getSimTime(), module, banner);
 
-    // insert into main window
-    if (opt_use_mainwindow)
-        CHK(Tcl_VarEval(interp,
-              ".main.text insert end {",banner,"} ",tags,"\n"
-              ".main.text see end", NULL));
+    // print into module log windows
+    printLastLogLine();
 
     // and into the message window
     if (hasmessagewindow)
         CHK(Tcl_VarEval(interp,
               "catch {\n"
-              " .messagewindow.main.text insert end {",banner,"} ",tags,"\n"
+              " .messagewindow.main.text insert end ",banner,"\n"
               " .messagewindow.main.text see end\n"
               "}\n", NULL));
 
-    // print banner into module window and all parent module windows if they exist
-    cModule *mod = module;
-    while (mod)
+}
+
+void Tkenv::printLastLogLine()
+{
+    const LogBuffer::Entry& entry = logBuffer.getEntries().back();
+
+    // print into main window
+    if (opt_use_mainwindow)
+        TModuleWindow::printLastLineOf(interp, ".main.text", logBuffer, mainWindowExcludedModuleIds);
+
+    // print into module window and all parent module windows if they exist
+    if (!entry.moduleIds)
     {
-        TModuleWindow *insp = static_cast<TModuleWindow *>(findInspector(mod,INSP_MODULEOUTPUT));
-        if (insp)
+        // info message: insert into all log windows
+        for (TInspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
         {
-           CHK(Tcl_VarEval(interp,
-               insp->windowName(),".main.text insert end {",banner,"} ",tags,"\n",
-               insp->windowName(),".main.text see end",
-               NULL));
+            TModuleWindow *insp = dynamic_cast<TModuleWindow *>(*it);
+            if (insp)
+                insp->printLastLineOf(logBuffer);
         }
-        mod = mod->getParentModule();
+    }
+    else
+    {
+        // insert into the appropriate module windows
+        cModule *mod = simulation.getModule(entry.moduleIds[0]);
+        while (mod)
+        {
+            TModuleWindow *insp = static_cast<TModuleWindow *>(findInspector(mod,INSP_MODULEOUTPUT));
+            if (insp)
+                insp->printLastLineOf(logBuffer);
+            mod = mod->getParentModule();
+        }
     }
 }
 
@@ -1817,46 +1813,15 @@ void Tkenv::sputn(const char *s, int n)
         return;
     }
 
-    // we'll need to quote Tcl special characters: {}[]$ etc; do it on demand
-    bool quotedstr_is_set = false;
-    TclQuotedString quotedstr;
-
-    // output string into main window
+    // insert into log buffer
     cModule *module = simulation.getContextModule();
-    char idstring[32];
-    if (module) sprintf(idstring, " id-%d", module->getId()); // note leading space
-    if (!module || opt_use_mainwindow)
-    {
-        quotedstr.set(s,n);
-        quotedstr_is_set = true;
-        CHK(Tcl_VarEval(interp,
-            ".main.text insert end ", quotedstr.get(), " {",
-            (module?"type-":"log"), (module?module->getNedTypeName():""), (module?idstring:""), // tags
-            "}\n"
-            ".main.text see end", NULL));
-    }
+    if (module)
+        logBuffer.addLogLine(TclQuotedString(s,n).get()); //FIXME too much copying! reuse original string if no quoting needed
+    else
+        logBuffer.addInfo(TclQuotedString(s,n).get()); //FIXME too much copying! reuse original string if no quoting needed
 
-    // print into module window and all parent compound module windows if they exist
-    cModule *mod = module;
-    while (mod)
-    {
-        TInspector *insp = findInspector(mod,INSP_MODULEOUTPUT);
-        if (insp)
-        {
-            // Tcl-quote string if not done yet
-            if (!quotedstr_is_set)
-            {
-                quotedstr.set(s,n);
-                quotedstr_is_set = true;
-            }
-            CHK(Tcl_VarEval(interp,
-              insp->windowName(), ".main.text insert end ", quotedstr.get()," {",
-              (module?"type-":"log"), (module?module->getNedTypeName():""), (module?idstring:""), // tags
-              "}\n",
-              insp->windowName(),".main.text see end", NULL));
-        }
-        mod = mod->getParentModule();
-    }
+    // print string into log windows
+    printLastLogLine();
 }
 
 cEnvir& Tkenv::flush()

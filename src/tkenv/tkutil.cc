@@ -256,7 +256,7 @@ void inspectObjectByName(const char *fullpath, const char *classname, int inspty
 
 //----------------------------------------------------------------------
 
-void insertIntoText(Tcl_Interp *interp, const char *textWidget, const char *quotedText, const char *tags)
+void textWidget_insert(Tcl_Interp *interp, const char *textWidget, const char *quotedText, const char *tags)
 {
     if (!tags)
         CHK(Tcl_VarEval(interp, textWidget, " insert end ", quotedText, NULL));
@@ -264,9 +264,14 @@ void insertIntoText(Tcl_Interp *interp, const char *textWidget, const char *quot
         CHK(Tcl_VarEval(interp, textWidget, " insert end ", quotedText, " {", tags, "}", NULL));
 }
 
-void textSeeEnd(Tcl_Interp *interp, const char *textWidget)
+void textWidget_gotoEnd(Tcl_Interp *interp, const char *textWidget)
 {
     CHK(Tcl_VarEval(interp, textWidget, " see end", NULL));
+}
+
+void textWidget_clear(Tcl_Interp *interp, const char *textWidget)
+{
+    CHK(Tcl_VarEval(interp, textWidget, " delete 1.0 end", NULL));
 }
 
 NAMESPACE_END
