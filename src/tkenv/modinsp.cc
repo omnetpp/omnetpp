@@ -260,7 +260,11 @@ TGraphicalModWindow::TGraphicalModWindow(cObject *obj,int typ,const char *geom,v
 {
    needs_redraw = false;
    not_drawn = false;
-   random_seed = 1;
+
+   const cDisplayString blank;
+   cModule *parentmodule = static_cast<cModule *>(object);
+   const cDisplayString& ds = parentmodule->hasDisplayString() ? parentmodule->getDisplayString() : blank;
+   random_seed = resolveLongDispStrArg(ds.getTagArg("bgl",4), parentmodule, 1);
 }
 
 TGraphicalModWindow::~TGraphicalModWindow()
@@ -477,9 +481,7 @@ void TGraphicalModWindow::refreshLayout()
     GraphLayouter *layouter = getTkenv()->opt_usenewlayouter ?
                                     (GraphLayouter *) new ForceDirectedGraphLayouter() :
                                     (GraphLayouter *) new BasicSpringEmbedderLayout();
-
-    int32 seed = resolveLongDispStrArg(ds.getTagArg("bgl",4), parentmodule, random_seed);
-    layouter->setSeed(seed);
+    layouter->setSeed(random_seed);
 
     Tcl_Interp *interp = getTkenv()->getInterp();
 
@@ -582,6 +584,7 @@ void TGraphicalModWindow::refreshLayout()
         submodPosMap[submod] = pos;
     }
 
+    random_seed = layouter->getSeed();
     environment.cleanup();
 
     delete layouter;

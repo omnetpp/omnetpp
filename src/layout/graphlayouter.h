@@ -107,6 +107,7 @@ class LAYOUT_API GraphLayouter
     //@{
     virtual void setEnvironment(GraphLayouterEnvironment *environment) {this->environment = environment;}
     void setSeed(int32 seed) { lcgRandom.setSeed(seed);}
+    int32 getSeed() { return lcgRandom.getSeed(); }
     void setConfineToArea(int width, int height, int border); // TBD currently ignored
     void setScaleToArea(int width, int height, int border);
     //@}

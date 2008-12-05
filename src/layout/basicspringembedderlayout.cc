@@ -179,12 +179,14 @@ void BasicSpringEmbedderLayout::execute()
     if (nodes.empty() || allNodesAreFixed)
         return;
 
+    Assert(width != 0 && height !=0);  // we are not prepared for this case
+
     // initialize variables (also randomize start positions)
     for (AnchorList::iterator l=anchors.begin(); l!=anchors.end(); ++l)
     {
         Anchor& a = *(*l);
-        a.x = 1000 * privRand01();
-        a.y = 1000 * privRand01();
+        a.x = border + (width -2*border) * privRand01();
+        a.y = border + (height -2*border) * privRand01();
         a.dx = a.dy = 0;
     }
     for (NodeList::iterator k=nodes.begin(); k!=nodes.end(); ++k)
@@ -201,8 +203,8 @@ void BasicSpringEmbedderLayout::execute()
         }
         else // movable
         {
-            n.x = 1000 * privRand01(); //TODO we should use bounding box of fixed nodes instead of hardcoded 1000x1000
-            n.y = 1000 * privRand01(); //  also, take pixel-per-unit into account
+            n.x = border + (width -2*border) * privRand01();
+            n.y = border + (height -2*border) * privRand01();
         }
         n.dx = n.dy = 0;
     }
