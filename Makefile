@@ -48,7 +48,7 @@ endif
 #=====================================================================
 
 BASE=common layout eventlog scave nedxml sim envir cmdenv tkenv utils
-SAMPLES=aloha cqn dyna fifo hypercube histograms neddemo queueinglib routing tictoc sockets
+SAMPLES=aloha cqn dyna fifo hypercube histograms neddemo queueinglib queueinglibext routing tictoc sockets
 JNILIBS=org.omnetpp.ned.model org.omnetpp.ide.nativelibs
 
 #
@@ -168,6 +168,7 @@ makefiles:
 	    if [ "$$i" != "" ]; then (cd $(OMNETPP_SAMPLES_DIR)/$$i && (opp_makemake -f --deep)); fi;\
 	done
 	(cd $(OMNETPP_SAMPLES_DIR)/queueinglib && (opp_makemake -f --make-so))
+	(cd $(OMNETPP_SAMPLES_DIR)/queueinglibext && (opp_makemake -f -I../queueinglib -L../queueinglib/out/$(CONFIGNAME) -lqueueinglib -KQUEUEINGLIB_PROJ=../queueinglib))
 	(cd $(OMNETPP_SAMPLES_DIR)/queuenet && (opp_makemake -f -n))
 
 # copy the documentation to the UI doc folder too.
