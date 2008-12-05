@@ -24,6 +24,7 @@ import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.text.StrTokenizer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
@@ -343,7 +344,7 @@ public class InifileAnalyzer {
 		// if it contains "${...}" variables, check that those variables exist. Any more
 		// validation would be significantly more complex, and not done at the moment
 		if (value.indexOf('$') != -1) {
-			if (validateValueWithIterationVars(section, key))
+			if (validateValueWithIterationVars(section, key, value))
 				return;
 		}
 
@@ -394,28 +395,41 @@ public class InifileAnalyzer {
 		return network;
 	}
 
-	protected boolean validateValueWithIterationVars(String section, String key) {
-		Pattern p = Pattern.compile(
-				"\\$\\{" +   // opening dollar+brace
-				"\\s*([a-zA-Z0-9@_-]+)" + // variable name
-				"(\\s*=.*?)?" +  // equal sign (part after this is optional)
-				"\\s*\\}");  // closing brace
-
-		String value = doc.getValue(section, key);
-		Matcher m = p.matcher(value);
+	private final static Pattern
+		DOLLAR_BRACES_PATTERN = Pattern.compile("\\$\\{\\s*(.*?)\\s*\\}"),      // ${...}
+		VARIABLE_DEFINITION_PATTERN = Pattern.compile("[a-zA-Z_][a-zA-Z0-9@_-]*\\s*=\\s*(.*)"), // name = value
+		VARIABLE_REFERENCE_PATTERN = Pattern.compile("([a-zA-Z_][a-zA-Z0-9@_-]*)");             // name only
+	
+	protected boolean validateValueWithIterationVars(String section, String key, String value) {
+		Matcher valueMatcher = DOLLAR_BRACES_PATTERN.matcher(value), contentMatcher;
 
 		// find all occurrences of the pattern in the input string
 		boolean foundAny = false;
-		while (m.find()) {
+		while (valueMatcher.find()) {
 			foundAny = true;
-			String varName = m.group(1);
-			String varValue = m.group(2);
-			if (varValue==null && !isValidIterationVariable(section, varName))
-				addError(section, key, "${"+varName+"} is undefined");
+			String content = valueMatcher.group(1);
+			
+			String before = value.substring(0, valueMatcher.start());
+			String after = value.substring(valueMatcher.end());
+
+			if ((contentMatcher = VARIABLE_DEFINITION_PATTERN.matcher(content)).matches()) {
+				String varValue = contentMatcher.group(1);
+				validateIterationValue(section, key, varValue, before, after);
+			}
+			else if ((contentMatcher=VARIABLE_REFERENCE_PATTERN.matcher(content)).matches()) {
+				String varName = contentMatcher.group(1);
+				if (!isValidIterationVariable(section, varName))
+					addError(section, key, "${"+varName+"} is undefined");
+			}
+			else { // anonymous iteration
+				validateIterationValue(section, key, content, before, after);
+			}
 		}
+		
+		
 		return foundAny;
 	}
-
+	
 	protected boolean isValidIterationVariable(String section, String varName) {
 	    // is it a predefined variable like ${configname}?
 	    if (Arrays.asList(ConfigRegistry.getConfigVariableNames()).contains(varName))
@@ -430,7 +444,31 @@ public class InifileAnalyzer {
         }
         return false;
     }
-
+	
+	private final static Pattern ITERATION_VALUE_PATTERN =
+		Pattern.compile("(.*)?\\s*\\.\\.\\s*(.*?)\\s*step\\s*(.*)|" +
+				        "(.*)?\\s*\\.\\.\\s*(.*?)|" +
+				        "(.*)");
+	
+	protected void validateIterationValue(String section, String key, String value, String before, String after) {
+		StrTokenizer tokenizer = new StrTokenizer(value, ',', '"');
+		while (tokenizer.hasNext()) {
+			String token = (String)tokenizer.next();
+			Matcher matcher = ITERATION_VALUE_PATTERN.matcher(token);
+			if (matcher.matches()) {
+				int groupCount = matcher.groupCount();
+				for (int i = 1; i <= groupCount; ++i) {
+					String v = matcher.group(i);
+					if (v != null)
+						validateParamKey(section, key, before+v+after);
+				}
+			}
+			else {
+				addError(section, key, "wrong iteration syntax");
+			}
+		}
+	}
+	
 	/**
 	 * Validate a configuration entry's value.
 	 */
@@ -479,10 +517,14 @@ public class InifileAnalyzer {
 		}
 		return null;
 	}
-
+	
 	protected void validateParamKey(String section, String key, INEDTypeResolver ned) {
-		// value cannot be empty
 		String value = doc.getValue(section, key).trim();
+		validateParamKey(section, key, value);
+	}
+
+	protected void validateParamKey(String section, String key, String value) {
+		// value cannot be empty
 		if (value.equals("")) {
 			addError(section, key, "Value cannot be empty");
 			return;
@@ -490,8 +532,8 @@ public class InifileAnalyzer {
 
 		// if value contains "${...}" variables, check that those variables exist. Any more
 		// validation would be significantly more complex, and not done at the moment
-		if (value.indexOf('$') != -1) {
-		    if (validateValueWithIterationVars(section, key))
+		if (DOLLAR_BRACES_PATTERN.matcher(value).find()) {
+		    if (validateValueWithIterationVars(section, key, value))
 		        return;
 		}
 
@@ -600,7 +642,7 @@ public class InifileAnalyzer {
 		// if it contains "${...}" variables, check that those variables exist. Any more
 		// validation would be significantly more complex, and not done at the moment
 		if (value.indexOf('$') != -1) {
-			if (validateValueWithIterationVars(section, key))
+			if (validateValueWithIterationVars(section, key, value))
 				return;
 		}
 
