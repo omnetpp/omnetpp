@@ -144,7 +144,7 @@ void TModuleWindow::printLastLineOf(const LogBuffer& logBuffer)
 
 void TModuleWindow::redisplay(const LogBuffer& logBuffer)
 {
-    redisplay(getTkenv()->getInterp(), textWidget, logBuffer, excludedModuleIds);
+    redisplay(getTkenv()->getInterp(), textWidget, logBuffer, static_cast<cModule *>(object), excludedModuleIds);
 }
 
 void TModuleWindow::printLastLineOf(Tcl_Interp *interp, const char *textWidget, const LogBuffer& logBuffer, const std::set<int>& excludedModuleIds)
@@ -164,10 +164,11 @@ void TModuleWindow::printLastLineOf(Tcl_Interp *interp, const char *textWidget, 
     textWidget_gotoEnd(interp, textWidget);
 }
 
-void TModuleWindow::redisplay(Tcl_Interp *interp, const char *textWidget, const LogBuffer& logBuffer, const std::set<int>& excludedModuleIds)
+void TModuleWindow::redisplay(Tcl_Interp *interp, const char *textWidget, const LogBuffer& logBuffer, cModule *mod, const std::set<int>& excludedModuleIds)
 {
     textWidget_clear(interp, textWidget);
 
+    int inspModuleId = mod->getId();
     const std::list<LogBuffer::Entry>& entries = logBuffer.getEntries();
     for (std::list<LogBuffer::Entry>::const_iterator it=entries.begin(); it!=entries.end(); it++)
     {
@@ -176,11 +177,21 @@ void TModuleWindow::redisplay(Tcl_Interp *interp, const char *textWidget, const 
         {
             textWidget_insert(interp, textWidget, entry.banner, "log");
         }
-        else if (excludedModuleIds.find(entry.moduleIds[0])==excludedModuleIds.end())
+        else
         {
-            textWidget_insert(interp, textWidget, entry.banner, "event");
-            for (int i=0; i<(int)entry.lines.size(); i++)
-                textWidget_insert(interp, textWidget, entry.lines[i]);
+            // check that this module is covered in entry.moduleIds[] (module path up to the root)
+            bool found = false;
+            for (int *p = entry.moduleIds; !found && *p; p++)
+                if (*p == inspModuleId)
+                    found = true;
+
+            // if so, and is not excluded, display log
+            if (found && excludedModuleIds.find(entry.moduleIds[0])==excludedModuleIds.end())
+            {
+                textWidget_insert(interp, textWidget, entry.banner, "event");
+                for (int i=0; i<(int)entry.lines.size(); i++)
+                    textWidget_insert(interp, textWidget, entry.lines[i]);
+            }
         }
     }
     textWidget_gotoEnd(interp, textWidget);
