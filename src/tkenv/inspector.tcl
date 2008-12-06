@@ -250,14 +250,14 @@ proc setClipboard {str} {
 #    UTILITY FUNCTIONS FOR INSPECTOR WINDOWS
 #===================================================================
 
-proc textwindow_add_icons {w {modptr ""}} {
+proc textwindow_add_icons {w {wintype ""}} {
     global icons help_tips
 
     pack_iconbutton $w.toolbar.copy   -image $icons(copy) -command "edit_copy $w.main.text"
     pack_iconbutton $w.toolbar.find   -image $icons(find) -command "findDialog $w.main.text"
     pack_iconbutton $w.toolbar.save   -image $icons(save) -command "savefile $w"
-    if {$modptr!=""} {
-        pack_iconbutton $w.toolbar.filter -image $icons(filter) -command "edit_filterwindowcontents $w.main.text $modptr"
+    if {$wintype=="modulewindow"} {
+        pack_iconbutton $w.toolbar.filter -image $icons(filter) -command "edit_filterwindowcontents $w.main.text"
     }
     pack_iconbutton $w.toolbar.sep21  -separator
 

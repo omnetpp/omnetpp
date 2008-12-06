@@ -212,7 +212,7 @@ proc _create_modulewindow {name geom iscompound} {
         set help_tips($w.toolbar.graph)  {Inspect as network graphics}
         set help_tips($w.toolbar.obj)    {Inspect as object}
 
-        textwindow_add_icons $w $modptr
+        textwindow_add_icons $w modulewindow
 
         moduleinspector_add_run_buttons $w
 
@@ -223,7 +223,7 @@ proc _create_modulewindow {name geom iscompound} {
         set help_tips($w.toolbar.owner)  {Inspect parent module}
         set help_tips($w.toolbar.obj)    {Inspect as object}
 
-        textwindow_add_icons $w $modptr
+        textwindow_add_icons $w modulewindow
 
         moduleinspector_add_run_buttons $w
     }

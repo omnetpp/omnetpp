@@ -276,9 +276,14 @@ proc edit_findnext {{w .main.text}} {
    findNext $w
 }
 
-proc edit_filterwindowcontents {{w .main.text} {modptr "systemmodule"}} {
+proc edit_filterwindowcontents {{w ".main.text"}} {
    # implements Edit|Filter window contents...
-   moduleOutputFilterDialog $w $modptr
+   if {$w==".main.text"} {
+       mainlogwindow_filterdialog
+   } else {
+       set w [winfo toplevel $w]
+       modulewindow_filterdialog [winfo toplevel $w]
+   }
 }
 
 proc toggle_treeview {} {
