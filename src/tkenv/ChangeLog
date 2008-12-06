@@ -1,3 +1,14 @@
+2008-12-06  Andras Varga
+
+	* fixed #16: reimplemented filtering. Now I store the log messages 
+	in the memory myself, and on closing the filter dialog I re-fill 
+	the text widget with manually filtered contents. This fixes strange 
+	scrolling behavior (bug #17) as well. New files: logbuffer.cc/h
+
+	* New feature: when you open a per-module output window, it comes up 
+	containing previous messages (and not empty as it used to). This 
+	feature was made possible by storing the log.
+
 2008-11-27  Andras Varga
 
 	* implemented font selection (Options dialog)
