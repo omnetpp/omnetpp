@@ -736,25 +736,17 @@ proc _doFind {w findstring case words regexp backwards} {
 }
 
 #
-# Dialog to show/hide events in log windows. Takes the text widget,
-# and the corresponding compound module (whose messages the window shows).
+# Dialog to show/hide events in log windows. Returns an updated
+# excludedModuleIds list; or a single 0 on cancel (0 is not a valid
+# module Id.)
 #
-# It relies on the "tag -elide <bool>" functionality of the Tk text widget.
-# Tags are "id-NNN" for module id, and "type-XXX" for NED type.
-# Text from "ev<<" gets annotated with these tags when it gets inserted
-# into the text widget (this is done in the C++ code, Tkenv class).
-#
-proc moduleOutputFilterDialog {textwidget rootmodule} {
-    global tmp
+proc moduleOutputFilterDialog {rootmodule excludedModuleIds} {
+    global tmp tmpExcludedModuleIds
 
     if {[network_present] == 0} {return 0}
 
     set title "Filter window contents"
     set msg "Select modules to show log messages from:"
-
-    if {$rootmodule=="systemmodule"} {
-        set rootmodule [opp_object_systemmodule]
-    }
 
     set w .treedialog
     createOkCancelDialog $w $title
@@ -775,29 +767,36 @@ proc moduleOutputFilterDialog {textwidget rootmodule} {
 
     set tree $w.f.f.c
     set tmp(moduletreeroot) $rootmodule
-    set tmp(moduletreetext) $textwidget
+    array unset tmpExcludedModuleIds
+    foreach i $excludedModuleIds {set tmpExcludedModuleIds($i) 1}
+
     Tree:init $tree getModuleTreeInfo
     Tree:open $tree $rootmodule
 
     setinitialdialogfocus $tree
 
     if [execOkCancelDialog $w] {
+        set excludedModuleIds {}
         foreach ptr [Tree:getcheckvars $tree] {
             set varname [Tree:getcheckvar $tree $ptr]
             upvar #0 $varname checkboxvar
-            set hide [expr !$checkboxvar]
-            set tag "id-[opp_getobjectid $ptr]"
-            $textwidget tag configure $tag -elide $hide
+            set isExcluded [expr !$checkboxvar]
+            if {$isExcluded} {
+                set moduleId [opp_getobjectid $ptr]
+                lappend excludedModuleIds $moduleId
+            }
         }
+        array unset tmpExcludedModuleIds
         destroy $w
-        return 1
+        return $excludedModuleIds
     }
+    array unset tmpExcludedModuleIds
     destroy $w
     return 0
 }
 
 proc getModuleTreeInfo {w op {key {}}} {
-    global icons tmp
+    global icons tmp tmpExcludedModuleIds
 
     set ptr $key
     switch $op {
@@ -813,14 +812,9 @@ proc getModuleTreeInfo {w op {key {}}} {
         set varname [Tree:getcheckvar $w $ptr]
         upvar #0 $varname checkboxvar
         if {![info exist checkboxvar]} {
-            set tag "id-[opp_getobjectid $ptr]"
-            set ishidden ""
-            catch {set ishidden [$tmp(moduletreetext) tag cget $tag -elide]}
-            if {$ishidden==""} {
-                set checkboxvar 1
-            } else {
-                set checkboxvar [expr !$ishidden]
-            }
+            set moduleId [opp_getobjectid $ptr]
+            set isExcluded [info exist tmpExcludedModuleIds($moduleId)]
+            set checkboxvar [expr !$isExcluded]
         }
         return 1
       }

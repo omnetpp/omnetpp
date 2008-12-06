@@ -425,7 +425,7 @@ proc create_omnetpp_window {} {
     ###############################
     # Hotkeys
     ###############################
-    bind_commands_to_textwidget .main.text "systemmodule"
+    bind_commands_to_textwidget .main.text mainwindow
     bind_runcommands .
     bind_othercommands .
 }
@@ -444,7 +444,7 @@ proc bind_othercommands {w} {
 }
 
 # note: modptr may be "systemmodule" or a pointer; "" means no module
-proc bind_commands_to_textwidget {txt {modptr ""}} {
+proc bind_commands_to_textwidget {txt {wintype ""}} {
     global config B2 B3
 
     # bindings for find
@@ -457,10 +457,16 @@ proc bind_commands_to_textwidget {txt {modptr ""}} {
     bind $txt <Control-n> {findNext %W; break}
     bind $txt <Control-N> {findNext %W; break}
     bind $txt <F3> {findNext %W}
-    if {$modptr!=""} {
+    if {$wintype=="modulewindow"} {
         # bind Ctrl+H ('break' is needed because originally ^H is bound to DEL)
-        bind $txt <Control-h> "moduleOutputFilterDialog %W $modptr; break"
-        bind $txt <Control-H> "moduleOutputFilterDialog %W $modptr; break"
+        set w [winfo toplevel $txt]
+        bind $txt <Control-h> "modulewindow_filterdialog %W; break"
+        bind $txt <Control-H> "modulewindow_filterdialog %W; break"
+    }
+    if {$wintype=="mainwindow"} {
+        # bind Ctrl+H ('break' is needed because originally ^H is bound to DEL)
+        bind $txt <Control-h> "mainlogwindow_filterdialog; break"
+        bind $txt <Control-H> "mainlogwindow_filterdialog; break"
     }
 
     # bind Ctrl+A "Select all" ('break' is needed below because ^A=Home)
@@ -468,7 +474,7 @@ proc bind_commands_to_textwidget {txt {modptr ""}} {
 
     # bind a context menu as well
     catch {$txt config -wrap $config(editor-wrap)}
-    bind $txt <Button-$B3> [list textwidget_contextmenu %W $modptr %X %Y]
+    bind $txt <Button-$B3> [list textwidget_contextmenu %W $wintype %X %Y]
 }
 
 #===================================================================

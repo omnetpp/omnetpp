@@ -242,7 +242,25 @@ proc _create_modulewindow {name geom iscompound} {
     pack $w.main.text -anchor center -expand 1 -fill both -side left
 
     # bindings for find
-    bind_commands_to_textwidget $w.main.text $modptr
+    bind_commands_to_textwidget $w.main.text modulewindow
+}
+
+proc mainlogwindow_filterdialog {} {
+    set modptr [opp_object_systemmodule]
+    set excludedModuleIds [opp_getmainwindowexcludedmoduleids]
+    set excludedModuleIds [moduleOutputFilterDialog $modptr $excludedModuleIds]
+    if {$excludedModuleIds!="0"} {
+        opp_setmainwindowexcludedmoduleids $excludedModuleIds
+    }
+}
+
+proc modulewindow_filterdialog {w} {
+    regexp {\.(ptr.*)-[0-9]+} $w match modptr
+    set excludedModuleIds [opp_inspectorcommand $w getexcludedmoduleids]
+    set excludedModuleIds [moduleOutputFilterDialog $modptr $excludedModuleIds]
+    if {$excludedModuleIds!="0"} {
+        opp_inspectorcommand $w setexcludedmoduleids $excludedModuleIds
+    }
 }
 
 proc mainlogwindow_trimlines {} {

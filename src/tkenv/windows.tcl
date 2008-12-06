@@ -216,7 +216,7 @@ proc create_fileviewer {filename} {
 #
 # Create a context menu for a text widget
 #
-proc textwidget_contextmenu {txt modptr X Y} {
+proc textwidget_contextmenu {txt wintype X Y} {
     global tmp config
 
     set tmp(wrap) [$txt cget -wrap]
@@ -229,8 +229,14 @@ proc textwidget_contextmenu {txt modptr X Y} {
     .popup add command -command "edit_find $txt" -label {Find...} -accel {Ctrl+F} -underline 0
     .popup add command -command "edit_findnext $txt" -label {Find next} -accel {Ctrl+N,F3} -underline 5
     .popup add separator
-    if {$modptr!=""} {
-        .popup add command -command "edit_filterwindowcontents $txt $modptr" -label {Filter window contents...} -accel {Ctrl+H} -underline 0
+    if {$wintype=="modulewindow"} {
+        set w [winfo toplevel $txt]
+        .popup add command -command "modulewindow_filterdialog $w" -label {Filter window contents...} -accel {Ctrl+H} -underline 0
+        .popup add separator
+
+    }
+    if {$wintype=="mainwindow"} {
+        .popup add command -command "mainlogwindow_filterdialog" -label {Filter window contents...} -accel {Ctrl+H} -underline 0
         .popup add separator
     }
     .popup add checkbutton -command "textwidget_togglewrap $txt" -variable tmp(wrap) -onvalue "char" -offvalue "none" -label {Wrap lines} -underline 0
