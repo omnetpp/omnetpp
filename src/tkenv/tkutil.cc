@@ -271,7 +271,8 @@ void textWidget_gotoEnd(Tcl_Interp *interp, const char *textWidget)
 
 void textWidget_clear(Tcl_Interp *interp, const char *textWidget)
 {
-    CHK(Tcl_VarEval(interp, textWidget, " delete 1.0 end", NULL));
+    //CHK(Tcl_VarEval(interp, textWidget, " delete 1.0 end", NULL)); -- very slow if content is large
+    CHK(Tcl_VarEval(interp, "logtextwidget_clear ", textWidget, NULL));
 }
 
 NAMESPACE_END

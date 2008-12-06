@@ -46,7 +46,7 @@ proc create_messagewindow {name} {
     frame $w.main
     text $w.main.text -yscrollcommand "$w.main.sb set" -width 88 -height 15 -font $fonts(text)
     scrollbar $w.main.sb -command "$w.main.text yview"
-    $w.main.text tag configure event -foreground blue
+    logtextwidget_configuretags $w.main.text
 
     # setting geometry
     pack $w.toolbar  -anchor center -expand 0 -fill x -side top
@@ -54,7 +54,7 @@ proc create_messagewindow {name} {
     pack $w.main.sb -anchor center -expand 0 -fill y -ipadx 0 -ipady 0 -padx 0 -pady 0 -side right
     pack $w.main.text -anchor center -expand 1 -fill both -side left
 
-    $w.main.text tag configure SELECT -back #808080 -fore #ffffff
+    logtextwidget_configuretags $w.main.text
 
     # keyboard bindings
     bind_runcommands $w
@@ -205,7 +205,7 @@ proc create_fileviewer {filename} {
     text $w.main.text -yscrollcommand "$w.main.sb set" -width 88 -height 30 -font $fonts(text)
     pack $w.main.text -anchor center -expand 1 -fill both -side left
 
-    $w.main.text tag configure SELECT -back #808080 -fore #ffffff
+    logtextwidget_configuretags $w.main.text
     bind_commands_to_textwidget $w.main.text
 
     # Read file

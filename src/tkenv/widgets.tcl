@@ -1136,7 +1136,6 @@ proc multicolumnlistbox_adddummyline {w} {
     }
 }
 
-
 # center --
 #
 # utility function: centers a dialog on the screen

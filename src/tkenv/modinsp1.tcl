@@ -231,8 +231,7 @@ proc _create_modulewindow {name geom iscompound} {
     frame $w.main
     text $w.main.text -yscrollcommand "$w.main.sb set" -width 80 -height 15 -font $fonts(text)
     scrollbar $w.main.sb -command "$w.main.text yview"
-    $w.main.text tag configure event -foreground blue
-    $w.main.text tag configure SELECT -back #808080 -fore #ffffff
+    logtextwidget_configuretags $w.main.text
 
     #pack $w.statusbar -anchor center -expand 0 -fill x -side top
     #pack $w.statusbar.name -anchor n -expand 1 -fill x -side left
@@ -243,6 +242,23 @@ proc _create_modulewindow {name geom iscompound} {
 
     # bindings for find
     bind_commands_to_textwidget $w.main.text modulewindow
+}
+
+proc logtextwidget_configuretags {txt} {
+    $txt tag configure SELECT -back #808080 -fore #ffffff
+    $txt tag configure event -foreground blue
+    $txt tag configure log -foreground #006000
+}
+
+proc logtextwidget_clear {txt} {
+    # Note: the direct way ($txt delete 0.1 end) is very slow if there's
+    # a lot of lines (100,000). Luckily, removing all tags beforehand
+    # speeds up the whole process about a hundred times. We need to
+    # re-define the tags afterwards though.
+
+    $txt tag delete log event
+    $txt delete 0.1 end
+    logtextwidget_configuretags $txt
 }
 
 proc mainlogwindow_filterdialog {} {
