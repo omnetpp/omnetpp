@@ -120,6 +120,8 @@ void LogBuffer::discardIfMemoryLimitExceeded()
     }
 }
 
+#define LL  INT64_PRINTF_FORMAT
+
 void LogBuffer::dump() const
 {
     printf("LogBuffer: %d entries\n", entries.size());
@@ -128,7 +130,7 @@ void LogBuffer::dump() const
     for (std::list<Entry>::const_iterator it=entries.begin(); it!=entries.end(); it++)
     {
         const LogBuffer::Entry& entry = *it;
-        printf("[%d] #%ld t=%s moduleId=%d: %s", k, entry.eventNumber, SIMTIME_STR(entry.simtime), entry.moduleIds?entry.moduleIds[0]:-1, entry.banner);
+        printf("[%d] #%"LL"d t=%s moduleId=%d: %s", k, entry.eventNumber, SIMTIME_STR(entry.simtime), entry.moduleIds?entry.moduleIds[0]:-1, entry.banner);
         for (int i=0; i<(int)entry.lines.size(); i++)
             printf("\t[l%d]:%s", k, entry.lines[i]);
         k++;
