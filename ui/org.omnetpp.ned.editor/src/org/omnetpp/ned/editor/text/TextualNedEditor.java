@@ -342,6 +342,7 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener, 
 	/**
 	 * Whether it is the currently active editor (not necessarily the active part however if a view is currently the
 	 * active part.
+	 * NOTE: this method is called from NON-UI threads. do not access SWT widgets
 	 */
 	public boolean isActive() {
 		IWorkbenchPage activePage = getSite().getWorkbenchWindow().getActivePage(); // may be null during startup
@@ -350,6 +351,11 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener, 
 			(activeEditorPart instanceof NedEditor && ((NedEditor)activeEditorPart).isActiveEditor(this));
 	}
 
+	/**
+	 * Whether it is the currently active editor (not necessarily the active part however if a view is currently the
+	 * active part.
+	 * NOTE: this method is called from NON-UI threads. do not access SWT widgets
+	 */
 	public boolean isActivePart() {
 		IWorkbenchPage activePage = getSite().getWorkbenchWindow().getActivePage(); // may be null during startup
 		 IWorkbenchPart activePart = activePage==null ? null : activePage.getActivePart();
@@ -357,6 +363,9 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener, 
 			(activePart instanceof NedEditor && ((NedEditor)activePart).isActiveEditor(this));
 	}
 
+	/**
+	 * NOTE: this method is called from NON-UI threads. do not access SWT widgets
+	 */
     public void modelChanged(NEDModelEvent event) {
     	if (event.getSource() != null && !(event instanceof NEDMarkerChangeEvent) && !isActive() && !pushingChanges) { //XXX looks like sometimes this condition is not enough!
 			INEDElement nedFileElement = event.getSource().getContainingNedFileElement();

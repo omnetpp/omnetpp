@@ -75,6 +75,8 @@ public class NedEditor
 	private TextualNedEditor textEditor;
     private final ResourceTracker resourceListener = new ResourceTracker();
 
+    // we should store the currentPage so we can figure out whether text or the grahical editor is the active one
+	private int currentPageIndex;
 	private int graphPageIndex;
 	private int textPageIndex;
 
@@ -263,6 +265,9 @@ public class NedEditor
 	        return;
 
 	    super.setActivePage(pageIndex);
+	    // store the current active page. we should not rely on getActivePage because it accesses 
+	    // SWT widgets so it cannot be called from NON GUI threads.
+	    currentPageIndex = pageIndex;
 	}
 
 	/* (non-Javadoc)
@@ -334,6 +339,8 @@ public class NedEditor
 		}
 		else
 			throw new RuntimeException("Unknown page index");
+        
+        currentPageIndex = newPageIndex;
 	}
 	
 	@Override
@@ -493,7 +500,14 @@ public class NedEditor
     	return NEDResourcesPlugin.getNEDResources().getNedFileElement(getFile());
     }
 
+    // NOTE: this method is called from NON UI thread too (notifications) so
+    // you should not call any SWT only methods like getActiveEditor etc.
+    // instead we store the current editorIndex and do the compare by hand
     public boolean isActiveEditor(IEditorPart editorPart) {
-    	return getActiveEditor() == editorPart;
+    	if (editorPart == textEditor && currentPageIndex == textPageIndex)
+    		return true;
+    	if (editorPart == graphicalEditor && currentPageIndex == graphPageIndex)
+    		return true;
+    	return false;
     }
 }
