@@ -6,6 +6,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
@@ -822,5 +824,18 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
 		} catch (CoreException e) {
 			return defaultVal;
 		}
+	}
+	
+	public static List<String> splitPreservingSeparators(String string, Pattern separator) {
+		List<String> result = new ArrayList<String>();
+		Matcher matcher = separator.matcher(string);
+		int lastEnd = 0;
+		while (matcher.find()) {
+			result.add(string.substring(lastEnd, matcher.start()));
+			result.add(string.substring(matcher.start(), matcher.end()));
+			lastEnd = matcher.end();
+		}
+		result.add(string.substring(lastEnd));
+		return result;
 	}
 }
