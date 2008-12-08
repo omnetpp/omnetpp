@@ -134,6 +134,7 @@ $O/inspector.o: inspector.cc \
   ../../include/cksplit.h \
   ../../include/packing.h \
   ../../include/cdoubleparimpl.h \
+  logbuffer.h \
   ../../include/distrib.h \
   ../../include/cexpression.h \
   ../../include/cnamedobject.h \
@@ -237,6 +238,7 @@ $O/inspfactory.o: inspfactory.cc \
   ../../include/cksplit.h \
   ../../include/packing.h \
   ../../include/cdoubleparimpl.h \
+  logbuffer.h \
   ../../include/distrib.h \
   ../../include/cexpression.h \
   ../../include/cnamedobject.h \
@@ -338,6 +340,7 @@ $O/layouterenv.o: layouterenv.cc \
   ../envir/args.h \
   layouterenv.h \
   ../envir/envirdefs.h \
+  logbuffer.h \
   ../../include/cexpression.h \
   ../../include/cnamedobject.h \
   ../../include/ccompoundmodule.h \
@@ -393,11 +396,47 @@ $O/layouterenv.o: layouterenv.cc \
   ../../include/cstddev.h \
   ../../include/simutil.h \
   ../../include/cmessageheap.h
+$O/logbuffer.o: logbuffer.cc \
+  ../../include/regmacros.h \
+  logbuffer.h \
+  ../../include/cexpression.h \
+  ../../include/cnamedobject.h \
+  ../../include/ccomponent.h \
+  ../../include/cregistrationlist.h \
+  ../../include/errmsg.h \
+  ../../include/cownedobject.h \
+  ../../include/onstartup.h \
+  ../../include/cpar.h \
+  ../../include/globals.h \
+  ../../include/cvisitor.h \
+  tkutil.h \
+  ../../include/platdep/platmisc.h \
+  ../../include/cmodule.h \
+  ../../include/cexception.h \
+  ../../include/platdep/intxtypes.h \
+  tklib.h \
+  ../../include/ccoroutine.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/cclassfactory.h \
+  ../../include/cgate.h \
+  ../../include/simtime.h \
+  ../../include/simtime_t.h \
+  ../../include/cenvir.h \
+  ../../include/opp_string.h \
+  ../../include/simkerneldefs.h \
+  ../../include/csimulation.h \
+  ../../include/cobject.h \
+  tkdefs.h \
+  ../../include/cstringpool.h \
+  ../../include/cdefaultlist.h \
+  ../../include/cmessageheap.h \
+  ../../include/simutil.h
 $O/modinsp.o: modinsp.cc \
   ../../include/regmacros.h \
   ../envir/args.h \
   layouterenv.h \
   ../envir/envirdefs.h \
+  logbuffer.h \
   ../../include/cexpression.h \
   ../../include/cnamedobject.h \
   ../../include/ccompoundmodule.h \
@@ -465,6 +504,7 @@ $O/objinsp.o: objinsp.cc \
   ../../include/cksplit.h \
   ../../include/packing.h \
   ../../include/cdoubleparimpl.h \
+  logbuffer.h \
   ../../include/distrib.h \
   ../../include/cexpression.h \
   ../../include/cnamedobject.h \
@@ -567,6 +607,7 @@ $O/statinsp.o: statinsp.cc \
   ../envir/args.h \
   ../../include/regmacros.h \
   ../envir/envirdefs.h \
+  logbuffer.h \
   ../../include/cexpression.h \
   ../../include/cnamedobject.h \
   ../envir/objectprinter.h \
@@ -626,6 +667,7 @@ $O/tkcmd.o: tkcmd.cc \
   ../../include/regmacros.h \
   visitor.h \
   ../envir/envirdefs.h \
+  logbuffer.h \
   ../../include/cexpression.h \
   ../../include/cnamedobject.h \
   ../../include/ccompoundmodule.h \
@@ -689,6 +731,7 @@ $O/tkenv.o: tkenv.cc \
   ../envir/args.h \
   ../../include/regmacros.h \
   ../envir/envirdefs.h \
+  logbuffer.h \
   ../../include/cexpression.h \
   ../../include/cnamedobject.h \
   ../../include/ccompoundmodule.h \
@@ -760,6 +803,7 @@ $O/tklib.o: tklib.cc \
   ../envir/args.h \
   ../../include/regmacros.h \
   ../envir/envirdefs.h \
+  logbuffer.h \
   ../../include/cexpression.h \
   ../../include/cnamedobject.h \
   ../envir/objectprinter.h \
@@ -808,6 +852,7 @@ $O/tkutil.o: tkutil.cc \
   ../../include/regmacros.h \
   visitor.h \
   ../envir/envirdefs.h \
+  logbuffer.h \
   ../../include/cexpression.h \
   ../../include/cnamedobject.h \
   ../envir/objectprinter.h \
@@ -856,6 +901,7 @@ $O/visitor.o: visitor.cc \
   ../../include/regmacros.h \
   visitor.h \
   ../envir/envirdefs.h \
+  logbuffer.h \
   ../../include/cexpression.h \
   ../../include/cnamedobject.h \
   ../envir/objectprinter.h \
