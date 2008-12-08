@@ -24,12 +24,14 @@ import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.collections.ResettableIterator;
 import org.apache.commons.lang.text.StrTokenizer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.Debug;
+import org.omnetpp.common.collections.ProductIterator;
 import org.omnetpp.common.engine.Common;
 import org.omnetpp.common.engine.UnitConversion;
 import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
@@ -397,35 +399,42 @@ public class InifileAnalyzer {
 
 	private final static Pattern
 		DOLLAR_BRACES_PATTERN = Pattern.compile("\\$\\{\\s*(.*?)\\s*\\}"),      // ${...}
-		VARIABLE_DEFINITION_PATTERN = Pattern.compile("[a-zA-Z_][a-zA-Z0-9@_-]*\\s*=\\s*(.*)"), // name = value
-		VARIABLE_REFERENCE_PATTERN = Pattern.compile("([a-zA-Z_][a-zA-Z0-9@_-]*)");             // name only
+		VARIABLE_DEFINITION_PATTERN = Pattern.compile("[a-zA-Z_][a-zA-Z0-9@_-]*?\\s*=\\s*(.*)"), // name = values
+		VARIABLE_REFERENCE_PATTERN = Pattern.compile("([a-zA-Z_][a-zA-Z0-9@_-]*)"),             // name only
+		START_END_STEP_VALUE_PATTERN = Pattern.compile("(.*?)\\s*\\.\\.\\s*(.*?)\\s*step\\s*(.*)"),
+		START_END_VALUE_PATTERN = Pattern.compile("(.*?)\\s*\\.\\.\\s*(.*?)"),
+		ANY_VALUE_PATTERN = Pattern.compile("(.*)");
+
 	
 	protected boolean validateValueWithIterationVars(String section, String key, String value) {
-		Matcher valueMatcher = DOLLAR_BRACES_PATTERN.matcher(value), contentMatcher;
+		Matcher iterationVarMatcher = DOLLAR_BRACES_PATTERN.matcher(value);
 
-		// find all occurrences of the pattern in the input string
+		// check referenced iteration variables
 		boolean foundAny = false;
-		while (valueMatcher.find()) {
+		boolean validateValues = true;
+		while (iterationVarMatcher.find()) {
 			foundAny = true;
-			String content = valueMatcher.group(1);
-			
-			String before = value.substring(0, valueMatcher.start());
-			String after = value.substring(valueMatcher.end());
 
-			if ((contentMatcher = VARIABLE_DEFINITION_PATTERN.matcher(content)).matches()) {
-				String varValue = contentMatcher.group(1);
-				validateIterationValue(section, key, varValue, before, after);
-			}
-			else if ((contentMatcher=VARIABLE_REFERENCE_PATTERN.matcher(content)).matches()) {
-				String varName = contentMatcher.group(1);
+			Matcher variableReferenceMatcher = VARIABLE_REFERENCE_PATTERN.matcher(iterationVarMatcher.group(1));
+			if (variableReferenceMatcher.matches()) {
+				String varName = variableReferenceMatcher.group(1);
 				if (!isValidIterationVariable(section, varName))
 					addError(section, key, "${"+varName+"} is undefined");
-			}
-			else { // anonymous iteration
-				validateIterationValue(section, key, content, before, after);
+				validateValues = false; // because references are not followed
 			}
 		}
 		
+		// validate the first 100 values that come from iterating the constants in the variable definitions
+		if (foundAny && validateValues) {
+			IterationVariablesIterator values = new IterationVariablesIterator(value);
+			int count = 0;
+			while (values.hasNext() && count < 100) {
+				String v = values.next();
+				//System.out.format("Validating: %s%n", v);
+				validateParamKey(section, key, v);
+				count++;
+			}
+		}
 		
 		return foundAny;
 	}
@@ -445,27 +454,148 @@ public class InifileAnalyzer {
         return false;
     }
 	
-	private final static Pattern ITERATION_VALUE_PATTERN =
-		Pattern.compile("(.*)?\\s*\\.\\.\\s*(.*?)\\s*step\\s*(.*)|" +
-				        "(.*)?\\s*\\.\\.\\s*(.*?)|" +
-				        "(.*)");
-	
-	protected void validateIterationValue(String section, String key, String value, String before, String after) {
-		StrTokenizer tokenizer = new StrTokenizer(value, ',', '"');
-		while (tokenizer.hasNext()) {
-			String token = (String)tokenizer.next();
-			Matcher matcher = ITERATION_VALUE_PATTERN.matcher(token);
-			if (matcher.matches()) {
-				int groupCount = matcher.groupCount();
-				for (int i = 1; i <= groupCount; ++i) {
-					String v = matcher.group(i);
-					if (v != null)
-						validateParamKey(section, key, before+v+after);
+	/**
+	 * Iterates on the values, that comes from the substitutions of iteration variables
+	 * with the constants found in their definition.
+	 * 
+	 * Example: "x${i=1..5}y${2 .. 8 step 3}" gives ["x1y2", "x5y2", "x1y8", "x2y8", "x1y3", "x2y3"]. 
+	 *
+	 * Note: variable references are not followed, therefore the iterator will be empty
+	 *       if the parameter value contained referenced variables.
+	 */
+	static class IterationVariablesIterator implements ResettableIterator
+	{
+		String value;
+		List<Object> format;
+		ResettableIterator iterator;
+		StringBuilder sb;
+		
+		public IterationVariablesIterator(String value) {
+			this.value = value;
+			this.format = new ArrayList<Object>();
+			this.sb = new StringBuilder(100);
+			
+			List<String> tokens = StringUtils.splitPreservingSeparators(value, DOLLAR_BRACES_PATTERN);
+			List<ResettableIterator> valueIterators = new ArrayList<ResettableIterator>();
+			int i = 0;
+			for (String token : tokens) {
+				if (i % 2 == 0)
+					format.add(token);
+				else {
+					format.add(valueIterators.size());
+					valueIterators.add(new IterationVariableIterator(token));
+				}
+				i++;
+			}
+
+			iterator = new ProductIterator(valueIterators.toArray(new ResettableIterator[valueIterators.size()]));
+		}
+
+		public void reset() {
+			iterator.reset();
+		}
+
+		public boolean hasNext() {
+			return iterator.hasNext();
+		}
+
+		public String next() {
+			Object[] values = (Object[])iterator.next();
+			if (values == null)
+				return null;
+
+			sb.setLength(0);
+			for (Object obj : format) {
+				if (obj instanceof String)
+					sb.append(obj);
+				else if (obj instanceof Integer) {
+					int index = (Integer)obj;
+					sb.append(values[index]);
 				}
 			}
-			else {
-				addError(section, key, "wrong iteration syntax");
+			return sb.toString();
+		}
+
+		public void remove() {
+			iterator.remove();
+		}
+	}
+	
+	/**
+	 * Iterates on the constants in one iteration variable.
+	 * 
+	 * Example: ${x=1,3..10 step 2} gives [1,3,10,2].
+	 *
+	 */
+	static class IterationVariableIterator implements ResettableIterator
+	{
+		StrTokenizer tokenizer;
+		Matcher matcher;
+		int groupIndex;
+		
+		public IterationVariableIterator(String iteration) {
+			Matcher m = DOLLAR_BRACES_PATTERN.matcher(iteration);
+			if (!m.matches())
+				throw new IllegalArgumentException("Illegal iteration");
+			
+			String content = m.group(1);
+			String values;
+			if ((m = VARIABLE_DEFINITION_PATTERN.matcher(content)).matches())
+				values = m.group(1);
+			else if ((m=VARIABLE_REFERENCE_PATTERN.matcher(content)).matches())
+				// TODO follow the reference?
+				values = "";
+			else // anonymous iteration
+				values = content;
+			tokenizer = StrTokenizer.getCSVInstance(values);
+		}
+		
+		public void reset() {
+			tokenizer.reset();
+			matcher = null;
+			groupIndex = 0;
+		}
+
+		public boolean hasNext() {
+			return tokenizer.hasNext() || matcher != null && groupIndex <= matcher.groupCount();
+		}
+
+		public Object next() {
+			if (matcher == null || groupIndex > matcher.groupCount()) {
+				if (!tokenizer.hasNext())
+					return null;
+				String token = tokenizer.nextToken();
+				match(token);
 			}
+			if (matcher != null && groupIndex <= matcher.groupCount()) {
+				String next = matcher.group(groupIndex);
+				groupIndex++;
+				return next;
+			}
+			return null;
+		}
+
+		public void remove() {
+			throw new UnsupportedOperationException();
+		}
+		
+		private boolean match(String token) {
+			if (matcher == null)
+				matcher = START_END_STEP_VALUE_PATTERN.matcher(token);
+			else {
+				matcher.reset(token);
+				matcher.usePattern(START_END_STEP_VALUE_PATTERN);
+			}
+			groupIndex = 1;
+			if (matcher.matches())
+				return true;
+			matcher.usePattern(START_END_VALUE_PATTERN);
+			if (matcher.matches())
+				return true;
+			matcher.usePattern(ANY_VALUE_PATTERN);
+			if (matcher.matches())
+				return true;
+			return false;
 		}
 	}
 	
