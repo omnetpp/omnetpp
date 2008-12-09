@@ -70,6 +70,7 @@ tkenv : layout
 sim : nedxml common
 $(SAMPLES) : makefiles base
 $(BASE) : check-env
+queueinglibext : queueinglib
 
 .PHONY: check-env cleanall depend makefiles clean apis docu tests all allmodes \
         components base ui samples common layout eventlog scave nedxml sim \
@@ -97,6 +98,7 @@ $(JNILIBS): nedxml
 $(SAMPLES):
 	@echo ===== Compiling $@ ====
 	cd $(OMNETPP_SAMPLES_DIR)/$@ && $(MAKE)
+
 
 #
 # Documentation
