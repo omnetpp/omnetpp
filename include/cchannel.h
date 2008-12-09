@@ -38,7 +38,7 @@ class SIM_API cChannel : public cComponent //implies noncopyable
 {
   protected:
     cGate *srcgatep; // gate the channel is attached to
-    int connId;      // for cChannelType::getConnectionProperties()
+    int connId;      // for cChannel::getProperties(); usually the NED connection element's id
 
   public:
     // internal: called from cGate
