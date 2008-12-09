@@ -308,9 +308,9 @@ proc options_dialog {{defaultpage "g"}} {
     notebook_showpage $nb $defaultpage
 
     frame $nb.g.f1 -relief groove -borderwidth 2
-    label-entry $nb.g.f1.updfreq_fast    {Update freq. for Fast Run (events):}
-    label-entry $nb.g.f1.updfreq_express {Update freq. for Express Run (events):}
-    label-entry $nb.g.f1.stepdelay       {Per-event delay for slow execution:}
+    label-entry $nb.g.f1.updfreq_fast    {Display update frequency for Fast Run (ms):}
+    label-entry $nb.g.f1.updfreq_express {Display update frequency for Express Run (ms):}
+    label-entry $nb.g.f1.stepdelay       {Per-event delay for slow execution (ms):}
     $nb.g.f1.updfreq_fast.l config -width 0
     $nb.g.f1.updfreq_express.l config -width 0
     $nb.g.f1.stepdelay.l config -width 0
@@ -397,8 +397,8 @@ proc options_dialog {{defaultpage "g"}} {
     pack $nb.g.f3 -anchor center -expand 0 -fill x -ipadx 0 -ipady 0 -padx 10 -pady 5 -side top
 
     # Configure dialog
-    $nb.g.f1.updfreq_fast.e insert 0 [opp_getsimoption updatefreq_fast]
-    $nb.g.f1.updfreq_express.e insert 0 [opp_getsimoption updatefreq_express]
+    $nb.g.f1.updfreq_fast.e insert 0 [opp_getsimoption updatefreq_fast_ms]
+    $nb.g.f1.updfreq_express.e insert 0 [opp_getsimoption updatefreq_express_ms]
     $nb.g.f1.stepdelay.e insert 0 [opp_getsimoption stepdelay]
     $nb.g.f2.numlines.e insert 0 $config(logwindow-scrollbacklines)
     set opp(usemainwin) [opp_getsimoption use_mainwindow]
@@ -430,9 +430,9 @@ proc options_dialog {{defaultpage "g"}} {
     setinitialdialogfocus $nb.g.f2.usemainwin
 
     if [execOkCancelDialog $w] {
-        opp_setsimoption stepdelay           [$nb.g.f1.stepdelay.e get]
-        opp_setsimoption updatefreq_fast     [$nb.g.f1.updfreq_fast.e get]
-        opp_setsimoption updatefreq_express  [$nb.g.f1.updfreq_express.e get]
+        opp_setsimoption stepdelay             [$nb.g.f1.stepdelay.e get]
+        opp_setsimoption updatefreq_fast_ms    [$nb.g.f1.updfreq_fast.e get]
+        opp_setsimoption updatefreq_express_ms [$nb.g.f1.updfreq_express.e get]
         set n [$nb.g.f2.numlines.e get]
         if {$n=="" || [string is integer $n]} {
             if {$n!="" && $n<500} {set n 500}

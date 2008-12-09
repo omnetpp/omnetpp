@@ -26,8 +26,8 @@ proc save_tkenvrc {fname savesettings saveinspectors {comment ""}} {
         puts $fout $comment
         if {$savesettings} {
             foreach key {
-                updatefreq_fast
-                updatefreq_express
+                updatefreq_fast_ms
+                updatefreq_express_ms
                 stepdelay
                 use_mainwindow
                 print_banners
@@ -121,7 +121,7 @@ proc load_tkenvrc {fname} {
             } elseif {$cat == "option"} {
                 set key [lindex $line 1]
                 set value [lindex $line 2]
-                opp_setsimoption $key $value
+                catch {opp_setsimoption $key $value}  ;# catch: ignore obsolete entries
             } elseif {$cat == "config"} {
                 set key [lindex $line 1]
                 set value [lindex $line 2]

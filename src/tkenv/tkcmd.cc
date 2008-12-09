@@ -1031,17 +1031,17 @@ int getSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
    else if (0==strcmp(argv[1], "animation_speed"))
       sprintf(buf,"%g", app->opt_animation_speed);
    else if (0==strcmp(argv[1], "stepdelay"))
-      sprintf(buf,"%lu ms", app->opt_stepdelay);
+      sprintf(buf,"%ld", app->opt_stepdelay);
    else if (0==strcmp(argv[1], "print_banners"))
       sprintf(buf,"%d", app->opt_print_banners);
    else if (0==strcmp(argv[1], "short_banners"))
       sprintf(buf,"%d", app->opt_short_banners);
    else if (0==strcmp(argv[1], "use_mainwindow"))
       sprintf(buf,"%d", app->opt_use_mainwindow);
-   else if (0==strcmp(argv[1], "updatefreq_fast"))
-      sprintf(buf,"%u", app->opt_updatefreq_fast);
-   else if (0==strcmp(argv[1], "updatefreq_express"))
-      sprintf(buf,"%u", app->opt_updatefreq_express);
+   else if (0==strcmp(argv[1], "updatefreq_fast_ms"))
+      sprintf(buf,"%ld", app->opt_updatefreq_fast);
+   else if (0==strcmp(argv[1], "updatefreq_express_ms"))
+      sprintf(buf,"%ld", app->opt_updatefreq_express);
    else if (0==strcmp(argv[1], "expressmode_autoupdate"))
       sprintf(buf,"%d", app->opt_expressmode_autoupdate);
    else if (0==strcmp(argv[1], "stoponmsgcancel"))
@@ -1058,7 +1058,7 @@ int setSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
    Tkenv *app = getTkenv();
 
    if (0==strcmp(argv[1], "stepdelay"))
-      app->opt_stepdelay = (long)(1000*UnitConversion::parseQuantity(argv[2], "s"));
+      app->opt_stepdelay = atol(argv[2]);
    else if (0==strcmp(argv[1], "animation_enabled"))
       app->opt_animation_enabled = (argv[2][0]!='0');
    else if (0==strcmp(argv[1], "nexteventmarkers"))
@@ -1096,10 +1096,10 @@ int setSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
       app->opt_short_banners = (argv[2][0]!='0');
    else if (0==strcmp(argv[1], "use_mainwindow"))
       app->opt_use_mainwindow = (argv[2][0]!='0');
-   else if (0==strcmp(argv[1], "updatefreq_fast"))
-      app->opt_updatefreq_fast = atoi(argv[2]);
-   else if (0==strcmp(argv[1], "updatefreq_express"))
-      app->opt_updatefreq_express = atoi(argv[2]);
+   else if (0==strcmp(argv[1], "updatefreq_fast_ms"))
+      app->opt_updatefreq_fast = atol(argv[2]);
+   else if (0==strcmp(argv[1], "updatefreq_express_ms"))
+      app->opt_updatefreq_express = atol(argv[2]);
    else if (0==strcmp(argv[1], "expressmode_autoupdate"))
       app->opt_expressmode_autoupdate = (argv[2][0]!='0');
    else if (0==strcmp(argv[1], "stoponmsgcancel"))

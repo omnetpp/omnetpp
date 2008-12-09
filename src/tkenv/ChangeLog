@@ -1,3 +1,10 @@
+2008-12-09  Andras Varga
+
+	* UI updates during Fast and Express Run changed from event-based 
+	(i.e. "every x events") to time-based ("every x milliseconds").
+	Time only checked every 16 and 256 events though, respectively,
+	to save CPU cycles.
+
 2008-12-06  Andras Varga
 
 	* fixed #16: reimplemented filtering. Now I store the log messages 

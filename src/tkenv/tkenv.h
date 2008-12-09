@@ -95,8 +95,8 @@ class TKENV_API Tkenv : public EnvirBase
       bool opt_bubbles;            // show result of bubble() calls
       double opt_animation_speed;  // msg animation speed: 0=slow 1=norm 2=fast
       long opt_stepdelay;          // Delay between steps in ms
-      int  opt_updatefreq_fast;    // FastRun updates display every N events
-      int  opt_updatefreq_express; // RunExpress updates display every N events
+      long opt_updatefreq_fast;    // Fast Run updates display every N milliseconds
+      long opt_updatefreq_express; // Express Run updates display every N milliseconds
       size_t opt_extrastack;       // per-module extra stack for activity() modules
       bool opt_expressmode_autoupdate;// update inspectors at every display refresh in EXPRESS mode or not
       opp_string opt_image_path;   // directory of module icon files

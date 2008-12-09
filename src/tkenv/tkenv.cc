@@ -133,8 +133,8 @@ Tkenv::Tkenv()
 
     // initialize .tkenvrc config variables
     opt_stepdelay = 300;
-    opt_updatefreq_fast = 100;
-    opt_updatefreq_express = 10000;
+    opt_updatefreq_fast = 500;
+    opt_updatefreq_express = 1000;
     opt_animation_enabled = true;
     opt_nexteventmarkers = true;
     opt_senddirect_arrows = true;
@@ -474,6 +474,17 @@ void Tkenv::setSimulationRunUntilModule(cModule *until_module)
     rununtil_module = until_module;
 }
 
+// note: also updates "since" (sets it to the current time) if answer is "true"
+inline bool elapsed(long millis, struct timeval& since)
+{
+    struct timeval now;
+    gettimeofday(&now, NULL);
+    bool ret = timeval_diff_usec(now, since) > 1000*millis;
+    if (ret)
+        since = now;
+    return ret;
+}
+
 bool Tkenv::doRunSimulation()
 {
     //
@@ -487,6 +498,10 @@ bool Tkenv::doRunSimulation()
     speedometer.start(simulation.getSimTime());
     disable_tracing = false;
     bool firstevent = true;
+
+    struct timeval last_update;
+    gettimeofday(&last_update, NULL);
+
     while(1)
     {
         if (runmode==RUNMODE_EXPRESS)
@@ -523,7 +538,7 @@ bool Tkenv::doRunSimulation()
         flushLastLine();
 
         // display update
-        if (frequent_updates || simulation.getEventNumber()%opt_updatefreq_fast==0)
+        if (frequent_updates || ((simulation.getEventNumber()&0x0f)==0 && elapsed(opt_updatefreq_fast, last_update)))
         {
             updateSimtimeDisplay();
             if (speedometer.getMillisSinceIntervalStart() > SPEEDOMETER_UPDATEMILLISECS)
@@ -544,9 +559,9 @@ bool Tkenv::doRunSimulation()
         // delay loop for slow simulation
         if (runmode==RUNMODE_SLOW)
         {
-            timeval start, now;
+            timeval start;
             gettimeofday(&start, NULL);
-            while ((gettimeofday(&now, NULL), timeval_msec(now-start) < (unsigned long)opt_stepdelay) && !stopsimulation_flag)
+            while (!elapsed(opt_stepdelay, start) && !stopsimulation_flag)
                 Tcl_Eval(interp, "update");
         }
 
@@ -580,6 +595,9 @@ bool Tkenv::doRunSimulationExpress()
     disable_tracing = true;
     animating = false;
 
+    struct timeval last_update;
+    gettimeofday(&last_update, NULL);
+
     do
     {
         cSimpleModule *mod = simulation.selectNextModule();
@@ -592,7 +610,7 @@ bool Tkenv::doRunSimulationExpress()
 
         simulation.doOneEvent(mod);
 
-        if (simulation.getEventNumber()%opt_updatefreq_express==0)
+        if ((simulation.getEventNumber()&0xff)==0 && elapsed(opt_updatefreq_express, last_update))
         {
             updateSimtimeDisplay();
             if (speedometer.getMillisSinceIntervalStart() > SPEEDOMETER_UPDATEMILLISECS)
