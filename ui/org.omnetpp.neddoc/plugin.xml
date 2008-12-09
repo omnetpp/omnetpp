@@ -49,6 +49,13 @@
       </menuContribution>
    </extension>
    <extension
+         point="org.eclipse.ui.commandImages">
+      <image
+            commandId="org.omnetpp.neddoc.commands.neddocCommand"
+            icon="icons/full/etool16/neddoc.gif">
+      </image>
+   </extension>
+   <extension
          point="org.eclipse.ui.propertyPages">
       <page
             category="org.omnetpp.main.OmnetppCategory"
@@ -61,21 +68,5 @@
             </adapt>
          </enabledWhen>
       </page>
-   </extension>
-   <extension
-         point="org.eclipse.ui.commandImages">
-      <image
-            commandId="org.omnetpp.neddoc.commands.neddocCommand"
-            icon="icons/full/etool16/neddoc.gif">
-      </image>
-   </extension>
-   <extension
-         point="de.unikassel.imageexport.figureProviders">
-      <figureProvider
-            class="org.omnetpp.ned.editor.graph.misc.NedFigureProvider"
-            extensions="ned"
-            id="org.omnetpp.neddoc.figureProvider"
-            name="Ned Figure Provider">
-      </figureProvider>
    </extension>
 </plugin>

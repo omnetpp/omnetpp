@@ -8,7 +8,7 @@
             id="org.omnetpp.cdt.msvc.toolchain.base"
             isAbstract="true"
             isSystem="true"
-            isToolChainSupported="org.omnetpp.academic.cdt.MsvcToolchainIsSupported"
+            isToolChainSupported="org.omnetpp.academic.MsvcToolchainIsSupported"
             name="Microsoft Visual C++ -- not supported"
             osList="win32"
             supportsManagedBuild="false">
@@ -20,6 +20,48 @@
                name="OMNeT++ Make Builder (opp_nmakemake - not supported)">
          </builder>
       </toolChain>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            categoryId="org.eclipse.ui.category.project"
+            defaultHandler="org.omnetpp.academic.GenerateNeddocHandler"
+            id="org.omnetpp.neddoc.commands.neddocCommand"
+            name="Generate NED Documentation...">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="menu:project?after=build.ext">
+         <command
+               commandId="org.omnetpp.neddoc.commands.neddocCommand"
+               id="genneddoc">
+         </command>
+      </menuContribution>
+      <menuContribution
+            locationURI="popup:org.eclipse.ui.popup.any?after=group.generate">
+         <command
+               commandId="org.omnetpp.neddoc.commands.neddocCommand">
+            <visibleWhen>
+               <with
+                     variable="activeMenuSelection">
+                  <iterate>
+                     <adapt
+                           type="org.eclipse.core.resources.IProject">
+                     </adapt>
+                  </iterate>
+               </with>
+            </visibleWhen>
+         </command>
+      </menuContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commandImages">
+      <image
+            commandId="org.omnetpp.neddoc.commands.neddocCommand"
+            icon="icons/full/etool16/neddoc.gif">
+      </image>
    </extension>
 
 </fragment>
