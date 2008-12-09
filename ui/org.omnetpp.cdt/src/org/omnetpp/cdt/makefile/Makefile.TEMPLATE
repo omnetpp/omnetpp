@@ -22,7 +22,7 @@
 {~nolink:}
 {~nolink:}{~staticlib:}# Additional libraries (-L, -l options)
 {~nolink:}{~staticlib:}LIBS ={@dir:libpathdirs} {-L}{dir}{/@} {@lib:libs} {-l}{lib}{.lib}{/@}
-{~nolink:}{~staticlib:}{libpathdirs:}{~nmake:}LIBS +={@dir:libpathdirs} -Wl,-rpath,{dir}{/@}
+{~nolink:}{~staticlib:}{libpathdirs:}{~nmake:}LIBS +={@dir:libpathdirs} -Wl,-rpath,`abspath {dir}`{/@}
 {~nolink:}{~staticlib:}
 # Output directory
 ### Note: these variables are public API (see help text), don't change
