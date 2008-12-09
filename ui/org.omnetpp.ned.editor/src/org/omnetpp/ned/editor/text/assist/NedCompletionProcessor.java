@@ -275,12 +275,15 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 
         // offer existing and standard property names after "@"
         if (line.equals("")) {
+            if (info.sectionType == SECT_GLOBAL ) {
+                addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedFilePropertyTempl);
+            }
             if (info.sectionType == SECT_PARAMETERS && nedTypeInfo!=null) {
                 addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedComponentPropertyTempl);
-                addProposals(viewer, documentOffset, result, nedTypeInfo.getProperties().keySet(), "property");
+                addProposals(viewer, documentOffset, result, "@", nedTypeInfo.getProperties().keySet(), "", "property");
             }
             if (info.sectionType == SECT_SUBMODULE_PARAMETERS && submoduleType!=null)
-                addProposals(viewer, documentOffset, result, submoduleType.getProperties().keySet(), "property");
+                addProposals(viewer, documentOffset, result, "@", submoduleType.getProperties().keySet(), "", "property");
         }
         else if ((line.contains("=") && !line.endsWith("=")) || !line.contains("=")) {
             if (info.sectionType == SECT_PARAMETERS || info.sectionType == SECT_SUBMODULE_PARAMETERS)
@@ -419,6 +422,10 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 
 	private void addProposals(ITextViewer viewer, int documentOffset, List<ICompletionProposal> result, Set<String> proposals, String description) {
 		result.addAll(createProposals(viewer, documentOffset, new SyntaxHighlightHelper.NedWordDetector(), "", proposals.toArray(new String[] {}), "", description));
+	}
+
+	private void addProposals(ITextViewer viewer, int documentOffset, List<ICompletionProposal> result, String start, Set<String> proposals, String end, String description) {
+		result.addAll(createProposals(viewer, documentOffset, new SyntaxHighlightHelper.NedWordDetector(), start, proposals.toArray(new String[] {}), end, description));
 	}
 
 	private void addProposals(ITextViewer viewer, int documentOffset, List<ICompletionProposal> result, Template[] templates) {

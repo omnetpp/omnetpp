@@ -26,14 +26,18 @@ public final class NedCompletionHelper {
     public final static String[] proposedConstants = Keywords.BOOL_CONSTANTS;
 
 
+    public final static Template[] proposedNedFilePropertyTempl = {
+        makeShortTemplate("@namespace(${namespace});", "property"),
+    }; // XXX check what gets actually supported
+
     public final static Template[] proposedNedComponentPropertyTempl = {
-        makeShortTemplate("@display(\"i=${icon}\");", "property")
+        makeShortTemplate("@display(\"i=${icon}\");", "property"),
+        makeShortTemplate("@class(${className});", "property"),
     }; // XXX check what gets actually supported! also: "recordstats", "kernel", ...
 
     public final static Template[] proposedNedParamPropertyTempl = {
         makeShortTemplate("@prompt(\"${message}\")", "property"),
         makeShortTemplate("@enum(${value1}, ${value2})", "property"),
-        makeShortTemplate("@classname(${className})", "property"),
         makeShortTemplate("@unit(${unitName})", "property"),
     }; //XXX check this list before release
 
