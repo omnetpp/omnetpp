@@ -276,6 +276,9 @@ NEDElement *NEDTypeInfo::getSubmoduleElement(const char *subcomponentName) const
 
 NEDElement *NEDTypeInfo::getConnectionElement(long id) const
 {
+    if (id == -1)
+        return NULL;  // "not a NED connection"
+
     ConnectionsElement *connectionsNode = getConnectionsElement();
     if (connectionsNode)
     {

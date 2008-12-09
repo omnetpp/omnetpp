@@ -41,6 +41,7 @@ Register_Class(cIdealChannel);
 cChannel::cChannel(const char *name) : cComponent(name)
 {
     srcgatep = NULL;
+    connId = -1;
 }
 
 cChannel::~cChannel()

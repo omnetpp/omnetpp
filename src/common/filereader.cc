@@ -318,7 +318,7 @@ bool FileReader::isLineStart(char *s) {
                throw opp_runtime_error("Cannot seek in file `%s'", fileName.c_str());
 
            char previousChar;
-           fread(&previousChar, 1, 1, f);
+           fread(&previousChar, 1, 1, f);  //XXX warning: ignored return value
 
            if (ferror(f))
                throw opp_runtime_error("Read error in file `%s'", fileName.c_str());
