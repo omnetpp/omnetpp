@@ -18,7 +18,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.browser,
  org.apache.commons.httpclient,
  org.apache.commons.logging,
- org.omnetpp.common
+ org.omnetpp.common,
+ de.unikassel.imageexport;bundle-version="0.10.0";resolution:=optional
 Eclipse-LazyStart: true
 Export-Package: org.omnetpp.ide;
   uses:="org.eclipse.jface.action,

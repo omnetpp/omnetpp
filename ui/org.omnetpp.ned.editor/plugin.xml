@@ -2,6 +2,15 @@
 <?eclipse version="3.0"?>
 <plugin>
 
+   <extension
+         point="de.unikassel.imageexport.figureProviders">
+      <figureProvider
+            class="org.omnetpp.ned.editor.graph.misc.NedFigureProvider"
+            extensions="ned"
+            id="org.omnetpp.imageexport.nedFigureProvider"
+            name="NED Figure Provider">
+      </figureProvider>
+   </extension>
      <extension
          point="org.eclipse.ui.editors">
       <editor
