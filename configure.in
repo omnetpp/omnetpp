@@ -205,7 +205,6 @@ else
         PLATFORM=macosx
         SO_LIB_SUFFIX=".dylib"
         JNI_LIB_SUFFIX=".jnilib"
-        SHLIB_LD=${SHLIB_LD:-$CXX -dynamiclib}
         if test "$UNIVERSAL_BINARIES" = "yes"; then
            CFLAGS_ARCH="$CFLAGS_ARCH -arch ppc -arch i386"
            LDFLAGS_ARCH="$LDFLAGS_ARCH -arch ppc -arch i386"
@@ -271,7 +270,6 @@ if test "$TOOLCHAIN" = "mingw"; then
     DLLTOOL=${DLLTOOL:-i586-mingw32msvc-dlltool}
     RANLIB=${RANLIB:-i586-mingw32msvc-ranlib}
 else
-    if test "$CXX" = "icpc"; then
         # disable useless warnings and 'remarks' with the Intel compiler:
         #
         # warning #654: overloaded virtual function "NEDElement::setAttribute" is only partially overridden
@@ -298,6 +296,9 @@ else
     AS=${AS:-as}
     AR=${AR:-ar cr}
     SHLIB_LD=${SHLIB_LD:-$CXX -shared}
+    if test "$PLATFORM" = "macosx"; then
+        SHLIB_LD=${SHLIB_LD:-$CXX -dynamiclib}
+    fi    
     DLLTOOL=${DLLTOOL:-dlltool}
     AC_PROG_RANLIB
 fi
