@@ -47,7 +47,7 @@ class CMDENV_API Cmdenv : public EnvirBase
      bool opt_eventbanners; // if normal mode
      bool opt_eventbanner_details; // if normal mode
      bool opt_messagetrace; // if normal mode
-     int opt_status_frequency_ev; // if express mode
+     long opt_status_frequency_ms; // if express mode
      bool opt_perfdisplay; // if express mode
 
      // set to true on SIGINT/SIGTERM signals

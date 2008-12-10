@@ -49,7 +49,7 @@ Register_PerRunConfigEntry(CFGID_MODULE_MESSAGES, "cmdenv-module-messages", CFG_
 Register_PerRunConfigEntry(CFGID_EVENT_BANNERS, "cmdenv-event-banners", CFG_BOOL, "true", "When cmdenv-express-mode=false: turns printing event banners on/off.")
 Register_PerRunConfigEntry(CFGID_EVENT_BANNER_DETAILS, "cmdenv-event-banner-details", CFG_BOOL, "false", "When cmdenv-express-mode=false: print extra information after event banners.")
 Register_PerRunConfigEntry(CFGID_MESSAGE_TRACE, "cmdenv-message-trace", CFG_BOOL, "false", "When cmdenv-express-mode=false: print a line per message sending (by send(),scheduleAt(), etc) and delivery on the standard output.")
-Register_PerRunConfigEntry(CFGID_STATUS_FREQUENCY, "cmdenv-status-frequency", CFG_INT, "100000", "When cmdenv-express-mode=true: print status update every n events. Typical values are 100,000...1,000,000.")
+Register_PerRunConfigEntryU(CFGID_STATUS_FREQUENCY, "cmdenv-status-frequency", "s", "2s", "When cmdenv-express-mode=true: print status update every n seconds.")
 Register_PerRunConfigEntry(CFGID_PERFORMANCE_DISPLAY, "cmdenv-performance-display", CFG_BOOL, "true", "When cmdenv-express-mode=true: print detailed performance information. Turning it on results in a 3-line entry printed on each update, containing ev/sec, simsec/sec, ev/simsec, number of messages created/still present/currently scheduled in FES.")
 
 Register_PerObjectConfigEntry(CFGID_CMDENV_EV_OUTPUT, "cmdenv-ev-output", CFG_BOOL, "true", "When cmdenv-express-mode=false: whether Cmdenv should print debug messages (ev<<) from the selected modules.")
@@ -145,7 +145,7 @@ void Cmdenv::readPerRunOptions()
     opt_eventbanners = cfg->getAsBool(CFGID_EVENT_BANNERS);
     opt_eventbanner_details = cfg->getAsBool(CFGID_EVENT_BANNER_DETAILS);
     opt_messagetrace = cfg->getAsBool(CFGID_MESSAGE_TRACE);
-    opt_status_frequency_ev = cfg->getAsInt(CFGID_STATUS_FREQUENCY);
+    opt_status_frequency_ms = 1000*cfg->getAsDouble(CFGID_STATUS_FREQUENCY);
     opt_perfdisplay = cfg->getAsBool(CFGID_PERFORMANCE_DISPLAY);
 }
 
@@ -422,6 +422,17 @@ const char *Cmdenv::progressPercentage()
     }
 }
 
+// note: also updates "since" (sets it to the current time) if answer is "true"
+inline bool elapsed(long millis, struct timeval& since)
+{
+    struct timeval now;
+    gettimeofday(&now, NULL);
+    bool ret = timeval_diff_usec(now, since) > 1000*millis;
+    if (ret)
+        since = now;
+    return ret;
+}
+
 void Cmdenv::simulate()
 {
     // implement graceful exit when Ctrl-C is hit during simulation. We want
@@ -484,6 +495,10 @@ void Cmdenv::simulate()
            disable_tracing = true;
            Speedometer speedometer;
            speedometer.start(simulation.getSimTime());
+
+           struct timeval last_update;
+           gettimeofday(&last_update, NULL);
+
            while (true)
            {
                cSimpleModule *mod = simulation.selectNextModule();
@@ -493,8 +508,7 @@ void Cmdenv::simulate()
                speedometer.addEvent(simulation.getSimTime()); //XXX potential performance hog
 
                // print event banner from time to time
-               // ... if (simulation.getEventNumber() >= last_update_ev + opt_status_frequency_ev && ...
-               if (simulation.getEventNumber()%opt_status_frequency_ev==0)
+               if ((simulation.getEventNumber()&0xff)==0 && elapsed(opt_status_frequency_ms, last_update))
                {
                    speedometer.beginNewInterval();
 

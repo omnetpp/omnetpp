@@ -1,3 +1,7 @@
+2008-12-10  Andras Varga
+
+	* cmdenv-status-frequency is now interpreted in seconds
+
 2008-11-26  Andras Varga
 
 	* library renamed to oppcmdenv
