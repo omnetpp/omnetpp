@@ -589,8 +589,8 @@ void Cmdenv::doStatusUpdate(Speedometer& speedometer)
                 speedometer.getEventsPerSec());
     }
 
-    if (opt_autoflush)
-        ::fflush(fout);
+    // status update is always autoflushed (not only if opt_autoflush is on)
+    ::fflush(fout);
 }
 
 //-----------------------------------------------------

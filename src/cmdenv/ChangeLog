@@ -1,9 +1,13 @@
 2008-12-10  Andras Varga
 
-	* cmdenv-status-frequency is now interpreted in seconds
+	* express mode status updates are now always flushed (no need to set
+	cmdenv-autoflush)
 
-	* enhancement: express mode: when simulation stops (on Ctrl+C, 
-	exception, normally, etc), Cmdenv prints a final status update
+	* cmdenv-status-frequency is now interpreted in seconds (default 
+	is every 2 seconds)
+
+	* express mode: when simulation stops (on Ctrl+C, exception, normally, 
+	etc), Cmdenv prints a final status update
 
 2008-11-26  Andras Varga
 
