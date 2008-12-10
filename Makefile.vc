@@ -181,7 +181,7 @@ makefiles:
 	for %%i in ( $(SAMPLES) ) do \
 	    cd /d $(OMNETPP_SAMPLES_DIR:/=\)\%%i && call opp_nmakemake -f --deep && nmake -f Makefile.vc depend
 	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\queueinglib && call opp_nmakemake -f --make-so -pQUEUEING
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\queueinglibext && call opp_nmakemake -f -I../queueinglib -L../queueinglib/out/$(CONFIGNAME) -lqueueinglib -KQUEUEINGLIB_PROJ=../queueinglib
+	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\queueinglibext && call opp_nmakemake -f --make-so -pQUEUEINGEXT -I../queueinglib -L../queueinglib/out/$(CONFIGNAME) -lqueueinglib -KQUEUEINGLIB_PROJ=../queueinglib
 	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\queuenet && call opp_nmakemake -f -n
                
 # copy 3rd party DLLs to the bin directory
