@@ -123,39 +123,59 @@ public class InifileHoverUtils {
 			return getParamKeyHoverText(section, key, analyzer);
 		}
 		else if (keyType == KeyType.PER_OBJECT_CONFIG) {
-			return null; // TODO display which modules it applies to, plus comment maybe?
+		    // display option description etc
+            return getPerObjectConfigHoverText(section, key, analyzer);
 		}
 		else {
 			return null; // should not happen (invalid key type)
 		}
 	}
 
-	/**
+
+    /**
 	 * Generates tooltip for a config entry.
 	 */
 	public static String getConfigHoverText(String section, String key, IInifileDocument doc) {
 		IMarker[] markers = InifileUtils.getProblemMarkersFor(section, key, doc);
 		String text = getProblemsHoverText(markers, false);
 		ConfigKey entry = ConfigRegistry.getEntry(key);
-		if (entry==null)
-		    entry = ConfigRegistry.getPerObjectEntry(key.replaceFirst("^.*\\.", ""));
-		if (entry == null)
-			return HoverSupport.addHTMLStyleSheet(text);
-
-		text += "<b>[General]"+(entry.isGlobal() ? "" : " or [Config X]")+" / ";
-		text += (entry.isPerObject() ? "**." : "") + entry.getKey();
-		text += " = &lt;" + entry.getDataType().name().replaceFirst("CFG_", "");
-		if (entry.getDefaultValue()!=null && !entry.getDefaultValue().equals(""))
-			text += ", default: " + entry.getDefaultValue();
-		if (entry.getUnit()!=null)
-			text += ", unit: "+entry.getUnit();
-		text += "&gt;</b><br>\n<br>\n";
-		text += htmlizeDescription(entry.getDescription()) + "<br>\n";
-
+		if (entry != null)
+		    text += getConfigOptionHoverText(entry);
 		return HoverSupport.addHTMLStyleSheet(text);
 	}
 
-	protected static String htmlizeDescription(String text) {
+    /**
+     * Generates tooltip for a per-object config entry.
+     */
+	public static String getPerObjectConfigHoverText(String section, String key, InifileAnalyzer analyzer) {
+	    IInifileDocument doc = analyzer.getDocument();
+        IMarker[] markers = InifileUtils.getProblemMarkersFor(section, key, doc);
+        String text = getProblemsHoverText(markers, false);
+       
+        ConfigKey entry = ConfigRegistry.getPerObjectEntry(key.replaceFirst("^.*\\.", ""));
+        if (entry != null)
+            text += getConfigOptionHoverText(entry);
+
+        //TODO also display which modules it applies to
+        //text += "<br><b>Applies to:</b><br>\n";
+        //...
+        return HoverSupport.addHTMLStyleSheet(text);
+    }
+
+    protected static String getConfigOptionHoverText(ConfigKey entry) {
+        String text = "<b>[General]"+(entry.isGlobal() ? "" : " or [Config X]")+" / ";
+        text += (entry.isPerObject() ? "**." : "") + entry.getKey();
+        text += " = &lt;" + entry.getDataType().name().replaceFirst("CFG_", "");
+        if (entry.getDefaultValue()!=null && !entry.getDefaultValue().equals(""))
+            text += ", default: " + entry.getDefaultValue();
+        if (entry.getUnit()!=null)
+            text += ", unit: "+entry.getUnit();
+        text += "&gt;</b><br>\n<br>\n";
+        text += htmlizeDescription(entry.getDescription()) + "<br>\n";
+        return text;
+    }
+
+    protected static String htmlizeDescription(String text) {
 	    text = text.replace("<", "&lt;");
 	    text = text.replace(">", "&gt;");
         text = text.replaceAll("\n( *)    ", "\n$1&nbsp;&nbsp;&nbsp;&nbsp;");
