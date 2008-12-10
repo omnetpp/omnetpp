@@ -13,7 +13,7 @@ Define_Module(SinkExt);
 
 void SinkExt::handleMessage(cMessage *msg)
 {
-	Sink::handleMessage(msg);
+    Sink::handleMessage(msg);
 
     char buf[80];
     sprintf(buf, "received jobs: %d", ++noOfJobsReceived);
