@@ -204,10 +204,9 @@ public class ConfigRegistry {
         "run number ranges, e.g. 1,3..4,7..9. If the value is missing, Cmdenv " +
         "executes all runs in the selected configuration. The -r command line option " +
         "overrides this setting.");
-    public static final ConfigKey CFGID_CMDENV_STATUS_FREQUENCY = addPerRunEntry(
-        "cmdenv-status-frequency", CFG_INT, "100000",
-        "When cmdenv-express-mode=true: print status update every n events. Typical " +
-        "values are 100,000...1,000,000.");
+    public static final ConfigKey CFGID_CMDENV_STATUS_FREQUENCY = addPerRunEntryU(
+        "cmdenv-status-frequency", "s", "2s",
+        "When cmdenv-express-mode=true: print status update every n seconds.");
     public static final ConfigKey CFGID_CONFIGURATION_CLASS = addGlobalEntry(
         "configuration-class", CFG_STRING, null,
         "Part of the Envir plugin mechanism: selects the class from which all " +
