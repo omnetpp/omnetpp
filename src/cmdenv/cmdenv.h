@@ -20,10 +20,10 @@
 
 #include "csimulation.h"
 #include "envirbase.h"
-#include <signal.h>
 
 NAMESPACE_BEGIN
 
+class Speedometer;
 
 /**
  * Command line user interface.
@@ -61,6 +61,7 @@ class CMDENV_API Cmdenv : public EnvirBase
      virtual void putsmsg(const char *s);
      virtual bool askyesno(const char *question);
      virtual void printEventBanner(cSimpleModule *mod);
+     virtual void printStatusUpdate(Speedometer& speedometer);
 
    public:
      Cmdenv();

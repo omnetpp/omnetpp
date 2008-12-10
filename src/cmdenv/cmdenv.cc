@@ -19,6 +19,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <signal.h>
 
 #include "opp_ctype.h"
 #include "cmddefs.h"
@@ -494,40 +495,13 @@ void Cmdenv::simulate()
                if ((simulation.getEventNumber()&0xff)==0 && elapsed(opt_status_frequency_ms, last_update))
                {
                    speedometer.beginNewInterval();
-
-                   if (opt_perfdisplay)
-                   {
-                       ::fprintf(fout, "** Event #%"LL"d   T=%s   Elapsed: %s%s\n",
-                               simulation.getEventNumber(),
-                               SIMTIME_STR(simulation.getSimTime()),
-                               timeToStr(totalElapsed()),
-                               progressPercentage()); // note: IDE launcher uses this to track progress
-                       ::fprintf(fout, "     Speed:     ev/sec=%g   simsec/sec=%g   ev/simsec=%g\n",
-                               speedometer.getEventsPerSec(),
-                               speedometer.getSimSecPerSec(),
-                               speedometer.getEventsPerSimSec());
-
-                       ::fprintf(fout, "     Messages:  created: %ld   present: %ld   in FES: %d\n",
-                               cMessage::getTotalMessageCount(),
-                               cMessage::getLiveMessageCount(),
-                               simulation.msgQueue.getLength());
-                   }
-                   else
-                   {
-                       ::fprintf(fout, "** Event #%"LL"d   T=%s   Elapsed: %s%s   ev/sec=%g\n",
-                               simulation.getEventNumber(),
-                               SIMTIME_STR(simulation.getSimTime()),
-                               timeToStr(totalElapsed()),
-                               progressPercentage(), // note: IDE launcher uses this to track progress
-                               speedometer.getEventsPerSec());
-                   }
-
+                   printStatusUpdate(speedometer);
                    if (opt_autoflush)
                        ::fflush(fout);
                }
 
                // execute event
-               simulation.doOneEvent( mod );
+               simulation.doOneEvent(mod);
 
                checkTimeLimits();  //XXX potential performance hog
                if (sigint_received)
@@ -573,6 +547,36 @@ void Cmdenv::printEventBanner(cSimpleModule *mod)
                 cMessage::getTotalMessageCount(),
                 cMessage::getLiveMessageCount(),
                 simulation.msgQueue.getLength());
+    }
+}
+
+void Cmdenv::printStatusUpdate(Speedometer& speedometer)
+{
+    if (opt_perfdisplay)
+    {
+        ::fprintf(fout, "** Event #%"LL"d   T=%s   Elapsed: %s%s\n",
+                simulation.getEventNumber(),
+                SIMTIME_STR(simulation.getSimTime()),
+                timeToStr(totalElapsed()),
+                progressPercentage()); // note: IDE launcher uses this to track progress
+        ::fprintf(fout, "     Speed:     ev/sec=%g   simsec/sec=%g   ev/simsec=%g\n",
+                speedometer.getEventsPerSec(),
+                speedometer.getSimSecPerSec(),
+                speedometer.getEventsPerSimSec());
+
+        ::fprintf(fout, "     Messages:  created: %ld   present: %ld   in FES: %d\n",
+                cMessage::getTotalMessageCount(),
+                cMessage::getLiveMessageCount(),
+                simulation.msgQueue.getLength());
+    }
+    else
+    {
+        ::fprintf(fout, "** Event #%"LL"d   T=%s   Elapsed: %s%s   ev/sec=%g\n",
+                simulation.getEventNumber(),
+                SIMTIME_STR(simulation.getSimTime()),
+                timeToStr(totalElapsed()),
+                progressPercentage(), // note: IDE launcher uses this to track progress
+                speedometer.getEventsPerSec());
     }
 }
 
