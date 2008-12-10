@@ -84,7 +84,7 @@ std::string directoryOf(const char *pathname)
     return dir;
 }
 
-std::string tidyFilename(const char *pathname, bool slashes)
+std::string tidyFilename(const char *pathname, bool slashes, bool suffixWithSlash)
 {
 #ifdef _WIN32
     const char *DELIM = slashes ? "/" : "\\";
@@ -138,7 +138,9 @@ std::string tidyFilename(const char *pathname, bool slashes)
     // reassemble from segments
     std::string result = prefix + (segments.empty() ? "." : segments[0]);
     for (int i=1; i<(int)segments.size(); i++)
-        result = result + DELIM + segments[i];
+        result += DELIM + segments[i];
+    if (suffixWithSlash)
+        result += "/";
     return result;
 }
 

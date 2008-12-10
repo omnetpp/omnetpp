@@ -43,7 +43,7 @@ COMMON_API void splitFileName(const char *pathname, std::string& dir, std::strin
  * Calls splitFileName() and returns the dir part of the result
  */
 COMMON_API std::string directoryOf(const char *pathname);
-COMMON_API std::string tidyFilename(const char *pathname, bool slashes=false);
+COMMON_API std::string tidyFilename(const char *pathname, bool slashes=false, bool suffixWithSlash=false);
 COMMON_API std::string toAbsolutePath(const char *pathname);
 COMMON_API std::string concatDirAndFile(const char *basedir, const char *pathname);
 
