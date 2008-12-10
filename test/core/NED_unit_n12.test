@@ -35,5 +35,5 @@ void Test::activity()
 
 %exitcode: 1
 
-%contains: stdout
-<!> Error: Cannot convert unit 'unknownA' to 'unknownB', at test.ned:7.
+%contains-regex: stdout
+<!> Error: Cannot convert unit 'unknownA' to 'unknownB', at .*test\.ned:7\.
