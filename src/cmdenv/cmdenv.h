@@ -60,6 +60,7 @@ class CMDENV_API Cmdenv : public EnvirBase
      virtual void sputn(const char *s, int n);
      virtual void putsmsg(const char *s);
      virtual bool askyesno(const char *question);
+     virtual void printEventBanner(cSimpleModule *mod);
 
    public:
      Cmdenv();

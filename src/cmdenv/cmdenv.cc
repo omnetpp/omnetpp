@@ -455,24 +455,7 @@ void Cmdenv::simulate()
 
                // print event banner if neccessary
                if (opt_eventbanners && mod->isEvEnabled())
-               {
-                   ::fprintf(fout, "** Event #%"LL"d  T=%s%s   %s (%s, id=%d)\n",
-                           simulation.getEventNumber(),
-                           SIMTIME_STR(simulation.getSimTime()),
-                           progressPercentage(), // note: IDE launcher uses this to track progress
-                           mod->getFullPath().c_str(),
-                           mod->getComponentType()->getName(),
-                           mod->getId()
-                         );
-                   if (opt_eventbanner_details)
-                   {
-                       ::fprintf(fout, "   Elapsed: %s   Messages: created: %ld  present: %ld  in FES: %d\n",
-                               timeToStr(totalElapsed()),
-                               cMessage::getTotalMessageCount(),
-                               cMessage::getLiveMessageCount(),
-                               simulation.msgQueue.getLength());
-                   }
-               }
+                   printEventBanner(mod);
 
                // flush *between* printing event banner and event processing, so that
                // if event processing crashes, it can be seen which event it was
@@ -571,6 +554,26 @@ void Cmdenv::simulate()
 
     // restore default signal handling
     deinstallSignalHandler();
+}
+
+void Cmdenv::printEventBanner(cSimpleModule *mod)
+{
+    ::fprintf(fout, "** Event #%"LL"d  T=%s%s   %s (%s, id=%d)\n",
+            simulation.getEventNumber(),
+            SIMTIME_STR(simulation.getSimTime()),
+            progressPercentage(), // note: IDE launcher uses this to track progress
+            mod->getFullPath().c_str(),
+            mod->getComponentType()->getName(),
+            mod->getId()
+          );
+    if (opt_eventbanner_details)
+    {
+        ::fprintf(fout, "   Elapsed: %s   Messages: created: %ld  present: %ld  in FES: %d\n",
+                timeToStr(totalElapsed()),
+                cMessage::getTotalMessageCount(),
+                cMessage::getLiveMessageCount(),
+                simulation.msgQueue.getLength());
+    }
 }
 
 //-----------------------------------------------------
