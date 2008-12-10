@@ -1,0 +1,23 @@
+version 2
+run OneFifo-0-20081210-11:48:12-11130
+attr configname OneFifo
+attr datetime 20081210-11:48:12
+attr experiment OneFifo
+attr inifile omnetpp.ini
+attr iterationvars ""
+attr iterationvars2 $repetition=0
+attr measurement ""
+attr network SimpleQueue
+attr processid 11130
+attr repetition 0
+attr replication #0
+attr resultdir results
+attr runnumber 0
+attr seedset 0
+
+scalar SimpleQueue.queue 	"min length" 	0
+scalar SimpleQueue.queue 	"max length" 	5
+scalar SimpleQueue.queue 	"avg length" 	3.771137113832
+scalar SimpleQueue.queue 	utilization 	0
+scalar SimpleQueue.queue 	"dropped jobs" 	8
+scalar SimpleQueue.source 	"jobs created" 	21
