@@ -369,13 +369,29 @@ std::string NEDResourceCache::determineRootPackageName(const char *nedSourceFold
     return result;
 }
 
+static bool isPathPrefixOf(const char *prefix, const char *path)
+{
+    // note: both "prefix" and "path" must be canonical absolute paths for this to work
+    int pathlen = strlen(path);
+    int prefixlen = strlen(prefix);
+    Assert(prefix[prefixlen-1]!='/' && path[pathlen-1]!='/');
+    if (pathlen == prefixlen)
+        return strcmp(path, prefix)==0;
+    else if (pathlen < prefixlen)
+        return false;  // too short
+    else if (strncmp(path, prefix, strlen(prefix))!=0)
+        return false;  // differ
+    else
+        return path[prefixlen]=='/';  // e.g. "/tmp/foo" is not prefix of "/tmp/fooext"
+}
+
 std::string NEDResourceCache::getNedSourceFolderForFolder(const char *folder) const
 {
     // find NED source folder which is a prefix of folder.
     // note: this is unambiguous because nested NED source folders are not allowed
     std::string folderName = tidyFilename(toAbsolutePath(folder).c_str(), true);
     for (StringMap::const_iterator it = folderPackages.begin(); it!=folderPackages.end(); ++it)
-        if (opp_stringbeginswith(folderName.c_str(), it->first.c_str()))
+        if (isPathPrefixOf(it->first.c_str(), folderName.c_str()))
             return it->first;
     return "";
 }
