@@ -1997,7 +1997,7 @@ else
         PLATFORM=macosx
         SO_LIB_SUFFIX=".dylib"
         JNI_LIB_SUFFIX=".jnilib"
-        LDFLAGS_ARCH="$LDFLAGS_ARCH -dynamiclib"
+        SHLIB_LD=${SHLIB_LD:-$CXX -dynamiclib}
         if test "$UNIVERSAL_BINARIES" = "yes"; then
            CFLAGS_ARCH="$CFLAGS_ARCH -arch ppc -arch i386"
            LDFLAGS_ARCH="$LDFLAGS_ARCH -arch ppc -arch i386"
