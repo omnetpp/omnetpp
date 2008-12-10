@@ -293,10 +293,8 @@ void NEDCppGenerator::endConditionalBlock(NEDElement *node, const char *&indent,
 void NEDCppGenerator::writeProlog(ostream& out)
 {
     // cpp file prolog
-    time_t nowt;
-    struct tm *now;
-    time(&nowt);
-    now = localtime(&nowt);
+    time_t nowt = time(NULL);
+    struct tm *now = localtime(&nowt);
 
     out << "//-----------------------------------------\n";
     out << "//\n";
