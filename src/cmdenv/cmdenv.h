@@ -61,7 +61,7 @@ class CMDENV_API Cmdenv : public EnvirBase
      virtual void putsmsg(const char *s);
      virtual bool askyesno(const char *question);
      virtual void printEventBanner(cSimpleModule *mod);
-     virtual void printStatusUpdate(Speedometer& speedometer);
+     virtual void doStatusUpdate(Speedometer& speedometer);
 
    public:
      Cmdenv();

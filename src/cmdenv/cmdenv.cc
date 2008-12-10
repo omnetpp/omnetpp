@@ -443,90 +443,98 @@ void Cmdenv::simulate()
 
     startClock();
     sigint_received = false;
+
+    Speedometer speedometer;  // only used by Express mode, but we need it in catch blocks too
+
     try
     {
         if (!opt_expressmode)
         {
-           disable_tracing = false;
-           while (true)
-           {
-               cSimpleModule *mod = simulation.selectNextModule();
-               if (!mod)
-                   throw cTerminationException("scheduler interrupted while waiting");
+            disable_tracing = false;
+            while (true)
+            {
+                cSimpleModule *mod = simulation.selectNextModule();
+                if (!mod)
+                    throw cTerminationException("scheduler interrupted while waiting");
 
-               // print event banner if neccessary
-               if (opt_eventbanners && mod->isEvEnabled())
-                   printEventBanner(mod);
+                // print event banner if neccessary
+                if (opt_eventbanners && mod->isEvEnabled())
+                    printEventBanner(mod);
 
-               // flush *between* printing event banner and event processing, so that
-               // if event processing crashes, it can be seen which event it was
-               if (opt_autoflush)
-                   ::fflush(fout);
+                // flush *between* printing event banner and event processing, so that
+                // if event processing crashes, it can be seen which event it was
+                if (opt_autoflush)
+                    ::fflush(fout);
 
-               // execute event
-               simulation.doOneEvent(mod);
+                // execute event
+                simulation.doOneEvent(mod);
 
-               // flush so that output from different modules don't get mixed
-               flushLastLine();
+                // flush so that output from different modules don't get mixed
+                flushLastLine();
 
-               checkTimeLimits();
-               if (sigint_received)
-                   throw cTerminationException("SIGINT or SIGTERM received, exiting");
-           }
+                checkTimeLimits();
+                if (sigint_received)
+                    throw cTerminationException("SIGINT or SIGTERM received, exiting");
+            }
         }
         else
         {
-           disable_tracing = true;
-           Speedometer speedometer;
-           speedometer.start(simulation.getSimTime());
+            disable_tracing = true;
+            speedometer.start(simulation.getSimTime());
 
-           struct timeval last_update;
-           gettimeofday(&last_update, NULL);
+            struct timeval last_update;
+            gettimeofday(&last_update, NULL);
 
-           while (true)
-           {
-               cSimpleModule *mod = simulation.selectNextModule();
-               if (!mod)
-                   throw cTerminationException("scheduler interrupted while waiting");
+            doStatusUpdate(speedometer);
 
-               speedometer.addEvent(simulation.getSimTime()); //XXX potential performance hog
+            while (true)
+            {
+                cSimpleModule *mod = simulation.selectNextModule();
+                if (!mod)
+                    throw cTerminationException("scheduler interrupted while waiting");
 
-               // print event banner from time to time
-               if ((simulation.getEventNumber()&0xff)==0 && elapsed(opt_status_frequency_ms, last_update))
-               {
-                   speedometer.beginNewInterval();
-                   printStatusUpdate(speedometer);
-                   if (opt_autoflush)
-                       ::fflush(fout);
-               }
+                speedometer.addEvent(simulation.getSimTime()); //XXX potential performance hog
 
-               // execute event
-               simulation.doOneEvent(mod);
+                // print event banner from time to time
+                if ((simulation.getEventNumber()&0xff)==0 && elapsed(opt_status_frequency_ms, last_update))
+                    doStatusUpdate(speedometer);
 
-               checkTimeLimits();  //XXX potential performance hog
-               if (sigint_received)
-                   throw cTerminationException("SIGINT or SIGTERM received, exiting");
-           }
+                // execute event
+                simulation.doOneEvent(mod);
+
+                checkTimeLimits();  //XXX potential performance hog
+                if (sigint_received)
+                    throw cTerminationException("SIGINT or SIGTERM received, exiting");
+            }
         }
     }
     catch (cTerminationException& e)
     {
+        if (opt_expressmode)
+            doStatusUpdate(speedometer);
         disable_tracing = false;
         stopClock();
+        deinstallSignalHandler();
+
         stoppedWithTerminationException(e);
         displayMessage(e);
         return;
     }
     catch (std::exception& e)
     {
+        if (opt_expressmode)
+            doStatusUpdate(speedometer);
         disable_tracing = false;
         stopClock();
+        deinstallSignalHandler();
         throw;
     }
+
+    // note: C++ lacks "finally": lines below need to be manually kept in sync with catch{...} blocks above!
+    if (opt_expressmode)
+        doStatusUpdate(speedometer);
     disable_tracing = false;
     stopClock();
-
-    // restore default signal handling
     deinstallSignalHandler();
 }
 
@@ -550,8 +558,10 @@ void Cmdenv::printEventBanner(cSimpleModule *mod)
     }
 }
 
-void Cmdenv::printStatusUpdate(Speedometer& speedometer)
+void Cmdenv::doStatusUpdate(Speedometer& speedometer)
 {
+    speedometer.beginNewInterval();
+
     if (opt_perfdisplay)
     {
         ::fprintf(fout, "** Event #%"LL"d   T=%s   Elapsed: %s%s\n",
@@ -578,6 +588,9 @@ void Cmdenv::printStatusUpdate(Speedometer& speedometer)
                 progressPercentage(), // note: IDE launcher uses this to track progress
                 speedometer.getEventsPerSec());
     }
+
+    if (opt_autoflush)
+        ::fflush(fout);
 }
 
 //-----------------------------------------------------
