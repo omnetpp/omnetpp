@@ -270,6 +270,7 @@ if test "$TOOLCHAIN" = "mingw"; then
     DLLTOOL=${DLLTOOL:-i586-mingw32msvc-dlltool}
     RANLIB=${RANLIB:-i586-mingw32msvc-ranlib}
 else
+    if test "$CXX" = "icpc"; then
         # disable useless warnings and 'remarks' with the Intel compiler:
         #
         # warning #654: overloaded virtual function "NEDElement::setAttribute" is only partially overridden
@@ -295,9 +296,10 @@ else
     fi
     AS=${AS:-as}
     AR=${AR:-ar cr}
-    SHLIB_LD=${SHLIB_LD:-$CXX -shared}
     if test "$PLATFORM" = "macosx"; then
         SHLIB_LD=${SHLIB_LD:-$CXX -dynamiclib}
+    else    
+        SHLIB_LD=${SHLIB_LD:-$CXX -shared}
     fi    
     DLLTOOL=${DLLTOOL:-dlltool}
     AC_PROG_RANLIB
