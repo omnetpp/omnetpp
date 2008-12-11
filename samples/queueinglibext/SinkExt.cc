@@ -11,12 +11,19 @@
 
 Define_Module(SinkExt);
 
+
+void SinkExt::initialize()
+{
+    Sink::initialize();
+    numJobsReceived = 0;
+}
+
 void SinkExt::handleMessage(cMessage *msg)
 {
     Sink::handleMessage(msg);
 
     char buf[80];
-    sprintf(buf, "received jobs: %d", ++noOfJobsReceived);
+    sprintf(buf, "received jobs: %d", ++numJobsReceived);
     getDisplayString().setTagArg("t",0, buf);
 }
 

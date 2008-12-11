@@ -19,8 +19,9 @@
 class SinkExt : public queueing::Sink
 {
   protected:
-	int noOfJobsReceived;
-    virtual void initialize() { noOfJobsReceived = 0; }
+    int numJobsReceived;
+
+    virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 };
 
