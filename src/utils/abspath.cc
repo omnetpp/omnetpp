@@ -22,8 +22,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string>
-#include "../common/ver.h"
+#ifdef _WIN32
+#include <direct.h>
+#include <stdlib.h>
+#endif
 
+#include "../common/ver.h"
 
 std::string toAbsolutePath(const char *pathname)
 {
@@ -35,7 +39,7 @@ std::string toAbsolutePath(const char *pathname)
     char wd[_MAX_PATH];
     if (pathname[0] && pathname[1]==':') // drive only, must get cwd on that drive
     {
-        if (!_getdcwd(opp_toupper(pathname[0])-'A'+1,wd,_MAX_PATH))
+        if (!_getdcwd(toupper(pathname[0])-'A'+1,wd,_MAX_PATH))
             return std::string(pathname);  // error (no such drive?), cannot help
         return std::string(wd) + "\\" + (pathname+2);
     }
