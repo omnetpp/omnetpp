@@ -8,7 +8,6 @@ import org.eclipse.swt.widgets.Display;
 
 public class GenerateNeddocHandler extends AbstractHandler {
 
-	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		MessageDialog.openInformation(Display.getCurrent().getActiveShell(), "Generate NED Documentation", 
 				"Generating NED documentation is only available in the commercial version of OMNeT++. However, " +
