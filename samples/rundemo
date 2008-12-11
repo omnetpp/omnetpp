@@ -55,6 +55,7 @@ foreach line {
    {color4  "Fifo"             "fifo"             "./fifo"          "fifo"}
    {color4  "CQN"              "cqn"              "./cqn"           "cqn"}
    {color4  "QueueNet"         "queuenet"         "./queuenet"      "queuenet"}
+   {color4  "QueueingLibExt"   "queueinglibext"   "./queueing"      "queueing"}
    {color5  "Aloha"            "aloha"            "./aloha"         "aloha"}
    {color5  "Dyna"             "dyna"             "./dyna"          "dyna"}
    {color5  "Hypercube"        "hypercube"        "./hypercube"     "hypercube"}
