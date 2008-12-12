@@ -50,10 +50,11 @@ class LogBuffer
     size_t totalChars;
     size_t totalStrings;
     std::list<Entry> entries;
+    size_t numEntries;  // gcc's list::size() is O(n)...
 
   protected:
     void discardIfMemoryLimitExceeded();
-    size_t estimatedMemUsage() {return totalChars + 8*totalStrings + entries.size()*(8+2*sizeof(void*)+sizeof(Entry)+32); }
+    size_t estimatedMemUsage() {return totalChars + 8*totalStrings + numEntries*(8+2*sizeof(void*)+sizeof(Entry)+32); }
     void fillEntry(Entry& entry, eventnumber_t e, simtime_t t, cModule *mod, const char *banner);
 
   public:
@@ -68,6 +69,7 @@ class LogBuffer
     size_t getMemoryLimit()  {return memLimit;}
 
     const std::list<Entry>& getEntries() const {return entries;}
+    size_t getNumEntries() const {return numEntries;}
 
     void dump() const;
 };

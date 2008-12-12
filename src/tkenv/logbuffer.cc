@@ -33,6 +33,7 @@ LogBuffer::Entry::~Entry()
 
 LogBuffer::LogBuffer(int memoryLimit)
 {
+    numEntries =0;
     memLimit = memoryLimit;
     totalChars = 0;
     totalStrings = 0;
@@ -66,6 +67,7 @@ void LogBuffer::fillEntry(Entry& entry, eventnumber_t e, simtime_t t, cModule *m
 void LogBuffer::addEvent(eventnumber_t e, simtime_t t, cModule *mod, const char *banner)
 {
     entries.push_back(Entry());
+    numEntries++;
     fillEntry(entries.back(), e, t, mod, banner);
     totalStrings++;
     totalChars += entries.back().numChars;
@@ -96,6 +98,7 @@ void LogBuffer::addLogLine(const char *text)
 void LogBuffer::addInfo(const char *text)
 {
     entries.push_back(Entry());
+    numEntries++;
     fillEntry(entries.back(), 0, 0, NULL, text);
     totalStrings++;
     totalChars += entries.back().numChars;
@@ -110,13 +113,14 @@ void LogBuffer::setMemoryLimit(size_t limit)
 
 void LogBuffer::discardIfMemoryLimitExceeded()
 {
-    while (estimatedMemUsage() > memLimit && entries.size()>1)  // leave at least 1 entry
+    while (estimatedMemUsage() > memLimit && numEntries > 1)  // leave at least 1 entry
     {
         // discard first entry
         Entry& entry = entries.front();
         totalChars -= entry.numChars;
         totalStrings -= entry.lines.size()+1;
         entries.pop_front();
+        numEntries--;
     }
 }
 
@@ -124,7 +128,7 @@ void LogBuffer::discardIfMemoryLimitExceeded()
 
 void LogBuffer::dump() const
 {
-    printf("LogBuffer: %d entries\n", entries.size());
+    printf("LogBuffer: %d entries\n", numEntries);
 
     int k=0;
     for (std::list<Entry>::const_iterator it=entries.begin(); it!=entries.end(); it++)
