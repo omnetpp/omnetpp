@@ -307,27 +307,27 @@ public class OmnetppLaunchUtils {
 		newCfg.setAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS, 
 				config.getAttribute(IOmnetppLaunchConstants.OPP_ADDITIONAL_ARGS, "")+args);
 
-		// handle environment: add OMNETPP_BIN and LD_LIBRARY_PATH and CLASSPATH if necessary
+		// handle environment: add OMNETPP_BIN and (DY)LD_LIBRARY_PATH 
         Map<String, String> envir = newCfg.getAttribute("org.eclipse.debug.core.environmentVariables", new HashMap<String, String>());
         String path = envir.get("PATH");
         // if the path was not set by hand, generate automatically
         if (StringUtils.isBlank(path)) {
-            //FIXME this will crash (error dialog) if the org.omnetpp.cdt plugin which contributes the macros
-            // is not present. We need to use VariablesPlugin.getDefault().getStringVariableManager().getDynamicVariable()
-            // (or some other way) to determine if the macros are present at all. --Andras
-        	envir.put("PATH",StringUtils.substituteVariables("${opp_ld_library_path_loc:"+wdirStr+"}" + pathSep, "") +
-        			         StringUtils.substituteVariables("${opp_bin_dir}" + pathSep, "") + 
-        			         StringUtils.substituteVariables("${opp_additional_path}" + pathSep, "") +  // msys/bin, mingw/bin, etc 
-        			         StringUtils.substituteVariables("${env_var:PATH}",""));
+        	envir.put("PATH",Platform.getOS().equals(Platform.OS_WIN32) ? StringUtils.substituteVariables("${opp_ld_library_path_loc:"+wdirStr+"}" + pathSep) : "" +
+        			         StringUtils.substituteVariables("${opp_bin_dir}" + pathSep) + 
+        			         StringUtils.substituteVariables("${opp_additional_path}" + pathSep) +  // msys/bin, mingw/bin, etc 
+        			         StringUtils.substituteVariables("${env_var:PATH}"));
         }
 
-        String ldLibPath = envir.get("LD_LIBRARY_PATH");
-        // if the path was not set by hand, generate automatically
-        if (StringUtils.isBlank(ldLibPath))
-        	envir.put("LD_LIBRARY_PATH", StringUtils.substituteVariables("${opp_lib_dir}"+pathSep,"") +
-        			                     StringUtils.substituteVariables("${opp_ld_library_path_loc:"+wdirStr+"}"+pathSep,"") +
-        			                     StringUtils.substituteVariables("${env_var:LD_LIBRARY_PATH}"));
-
+        if (!Platform.getOS().equals(Platform.OS_WIN32)) {
+        	String ldLibPathVar = Platform.getOS().equals(Platform.OS_MACOSX) ? "DYLD_LIBRARY_PATH" : "LD_LIBRARY_PATH";
+        	String ldLibPath = envir.get(ldLibPathVar);
+        	// if the path was not set by hand, generate automatically
+        	if (StringUtils.isBlank(ldLibPath))
+        		envir.put(ldLibPathVar, StringUtils.substituteVariables("${opp_lib_dir}"+pathSep) +
+        				StringUtils.substituteVariables("${opp_ld_library_path_loc:"+wdirStr+"}"+pathSep) +
+        				StringUtils.substituteVariables("${env_var:"+ldLibPathVar+"}"));
+        }
+        
         String imagePath = envir.get("OMNETPP_IMAGE_PATH");
         if (StringUtils.isBlank(imagePath)) {
             imagePath = CommonPlugin.getConfigurationPreferenceStore().getString(IConstants.PREF_OMNETPP_IMAGE_PATH);
@@ -570,7 +570,7 @@ public class OmnetppLaunchUtils {
     		if (Platform.getOS().equals(Platform.OS_WIN32))
     			env = env.toUpperCase();
     		// print the env vars we are interested in
-    		if (env.startsWith("PATH=") || env.startsWith("LD_LIBRARY_PATH=") 
+    		if (env.startsWith("PATH=") || env.startsWith("LD_LIBRARY_PATH=") || env.startsWith("DYLD_LIBRARY_PATH=") 
     				 || env.startsWith("OMNETPP_") || env.startsWith("NEDPATH=")  )
     			infoBuffer.append("\n"+env);
     	}
