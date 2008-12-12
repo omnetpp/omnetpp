@@ -1,4 +1,5 @@
 #!/bin/sh
-LD_LIBRARY_PATH=$LD_LIBRARY_PATH:`dirname $0`/../queueinglib
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:`dirname $0`/../queueinglib
+export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:`dirname $0`/../queueinglib
 opp_run -l`dirname $0`/queueinglibext $*
 
