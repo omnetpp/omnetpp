@@ -1,6 +1,64 @@
 What's New
 ==========
 
+OMNeT++ 4.0 rc 1 (Dec 2008)
+---------------------------
+Improvements since beta 8:
+
+General:
+  - added the "opp" prefix to library names to prevent name clashes with
+    other programs: liboppsim.so, liboppenvir.so, libopplayout.so,
+    liboppcommon.so; oppsim.dll, oppenvir.dll, opplayout.dll, oppcommon.dll,
+    etc.
+
+IDE:
+  - fixed the crash caused by static linking of libstdc++.so (bug #7)
+  - improved stability of CDT integration
+  - improved diagnostics: when simulation launch fails, Console View displays
+    the command line, PATH, other environment variables, etc to help track
+    down the problem.
+  - several other bugfixes (see bugtracker)
+
+Samples:
+  - queueinglib changed to build a dynamic library, which is run using opp_run
+
+  - added queueinglibext, which shows how to extend an existing model with
+    C++ code from a new project
+
+Tkenv:
+  - reimplemented filtering, to fix poor performance and weird scrolling of
+    log windows (bugs #16 and #17). The log is now stored in a memory buffer,
+    and filtering re-fills the text widget from the buffer.
+
+  - new feature: when you open a per-module output window, it comes up
+    containing previous messages (and not empty as it used to). This
+    feature was made possible by storing the log.
+
+  - UI updates during Fast and Express Run changed from event-based
+    (i.e. "every x events") to time-based ("every x milliseconds").
+    Time only checked every 16 and 256 events though, respectively,
+    to save CPU cycles.
+
+  - implemented font selection for text windows and list controls
+
+  - settings are now saved to $HOME/.tkenvrc, only inspectors are saved
+    to .tkenvrc in the current directory. (Motivation: font selection is
+    tyically meant to be global by the user, not per-simulation)
+
+Cmdenv:
+  - status updates in express mode are now time-based (every 2s by default),
+    not event number based
+
+  - other status update improvements: always autoflush status updates;
+    print a final status update when simulation stops
+
+Tools:
+  - seedtool was renamed opp_lcg32_seedtool, and added a warning in its help
+    that it is an obsolete tool and probably should not be used.
+
+Several bugfixes:
+  - see http://dev.omnetpp.org/bugs/changelog_page.php
+
 
 OMNeT++ 4.0 beta 8 (Nov 2008)
 -----------------------------
