@@ -1,3 +1,7 @@
+2008-12-14  Andras Varga
+
+	* sim_std.msg: fixed bug #33
+
 2008-11-26  Andras Varga
 
 	* library renamed to oppsim

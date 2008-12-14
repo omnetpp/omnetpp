@@ -92,9 +92,10 @@ class cDefaultList extends cNoncopyableOwnedObject
     cOwnedObject *contents[] @getter(defaultListGet) @sizeGetter(defaultListSize) @group(contents) @hint(List of objects directly held by this component);
 }
 
-class cPar;
-class cComponentType;
-class noncobject cDisplayString;
+class cDisplayString extends void
+{
+    string value @getter(str) @setter(parse) @editable @hint(The editable display string itself);
+}
 
 class cProperty extends cObject
 {
@@ -107,6 +108,9 @@ class cProperties
 {
     cProperty *contents[] @getter(get) @sizeGetter(getNumProperties) @hint(The property list);
 }
+
+class cPar extends cObject;
+class cComponentType extends cOwnedObject;
 
 class cComponent extends cDefaultList
 {
@@ -138,7 +142,7 @@ class cDatarateChannel extends cChannel
     simtime_t transmissionFinishTime @group(general) @hint(If busy: when currently active transmissions will finish);
 }
 
-class cGate;
+class cGate extends cObject;
 
 class cModule extends cComponent
 {
@@ -185,7 +189,7 @@ class cRegistrationList extends cNamedObject
 
 //----
 
-class cGate extends cNoncopyableOwnedObject
+class cGate extends cObject
 {
     char type @group(general) @enum(cGate_Type) @hint(Gate type);
     int id @group(general) @hint(Gate id, unique within this module);
@@ -208,11 +212,6 @@ class cGate extends cNoncopyableOwnedObject
 }
 
 //----
-
-class cDisplayString
-{
-    string value @getter(str) @setter(parse) @editable @hint(The editable display string itself);
-}
 
 class cArray extends cOwnedObject
 {
@@ -368,7 +367,7 @@ class cOutVector extends cNoncopyableOwnedObject
     long valuesStored @hint(Number of values actually stored on the disk);
 }
 
-class cPar extends cOwnedObject  //FIXME this is a lie! it's cObject!
+class cPar extends cObject
 {
     string value @getter(str) @setter(parse) @editable;
     char type @enum(cPar_Type) @hint(Parameter type);
@@ -411,9 +410,7 @@ class cPacketQueue extends cQueue
     int64 byteLength @hint(Total size of messages in the queue, in bytes);
 }
 
-class noncobject cHasher;
-
-class cHasher
+class cHasher extends void
 {
    string hash @getter(str) @hint(The current hash value);
 }
@@ -448,12 +445,11 @@ typedef cTopology::LinkIn cTopology_LinkIn;
 typedef cTopology::LinkOut cTopology_LinkOut;
 }}
 
-class noncobject cTopology_Node;
-class noncobject cTopology_Link;
-class noncobject cTopology_LinkIn;
-class noncobject cTopology_LinkOut;
+class cTopology_Link extends void;
+class cTopology_LinkIn extends cTopology_Link;
+class cTopology_LinkOut extends cTopology_Link;
 
-class cTopology_Node
+class cTopology_Node extends void
 {
     int moduleId @hint(ID of the module this node corresponds to);
     cModule *module @hint(The module this node corresponds to);
@@ -467,7 +463,7 @@ class cTopology_Node
     cTopology_LinkOut *path[] @sizeGetter(getNumPaths) @group(shortest path) @hint(The next link of the shortest path or paths towards the target node);
 }
 
-class cTopology_Link
+class cTopology_Link extends void
 {
     double weight @hint(Link weight -- affects graph algorithms such as shortest path);
     bool enabled @getter(isEnabled) @hint(Link state -- affects graph algorithms such as shortest path);
