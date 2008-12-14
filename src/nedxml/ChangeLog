@@ -1,3 +1,7 @@
+2008-12-14  Andras Varga
+
+	* opp_msgc: improvement related to bug #33.
+
 2008-12-02  Andras Varga
 
 	* opp_msgc: fixed bug #15 (class descriptor was generated with the

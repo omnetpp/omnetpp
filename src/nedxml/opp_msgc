@@ -1,7 +1,6 @@
 #!/usr/bin/env perl
 #
-# opp_msgc: supports message subclassing: compiles NED files with message
-# declarations into C++ code.
+# opp_msgc: translates MSG files into C++ code.
 #
 
 $MSGC_VERSION = "4.0";
@@ -11,7 +10,7 @@ $MSGC_VERSION_HEX = "0x0400";
 #
 # If no args, print usage
 #
-$Usage = 'opp_msgc - part of OMNeT++. (c) 2002-2005 Andras Varga
+$Usage = 'opp_msgc - part of OMNeT++. (c) 2002-2008 Andras Varga
 Translates .msg files into C++
 
 Usage: opp_msgc [-s <cc-file-suffix>] [-t <h-file-suffix>]
@@ -266,19 +265,18 @@ sub processFile()
     # pre-register some OMNeT++ classes so that one doesn't need to announce them
     #
     # note: $classtype values:
-    #FIXME FIXME FIXME update these names! cobject, cownedobject, etc!!!
-    #  'cobject'      ==> subclasses from cOwnedObject
-    #  'cpolymorphic' ==> subclasses from cObject but NOT from cOwnedObject
-    #  'foreignclass' ==> non-cObject class (NOTE: currently only external
-    #                     classes announced as "class noncobject" belong here, because
-    #                     all classes *we* generate are cObject.)
-    #  'struct'       ==> struct (i.e. no member functions)
+    #  'cownedobject' ==> subclasses from cOwnedObject
+    #  'cnamedobject' ==> subclasses from cNamedObject but NOT from cOwnedObject
+    #  'cobject'      ==> subclasses from cObject but NOT from cNamedObject
+    #  'foreign'      ==> non-cObject class (classes announced as "class noncobject" or "extends void")
+    #  'struct'       ==> struct (no member functions)
     #
-    @classes = ('cObject', 'cOwnedObject', 'cMessage', 'cPacket');
-    $classtype{'cObject'} = 'cpolymorphic';
-    $classtype{'cOwnedObject'} = 'cobject';
-    $classtype{'cMessage'} = 'cobject';
-    $classtype{'cPacket'} = 'cobject';
+    @classes = ('cObject', 'cNamedObject', 'cOwnedObject', 'cMessage', 'cPacket');
+    $classtype{'cObject'} = 'cobject';
+    $classtype{'cNamedObject'} = 'cnamedobject';
+    $classtype{'cOwnedObject'} = 'cownedobject';
+    $classtype{'cMessage'} = 'cownedobject';
+    $classtype{'cPacket'} = 'cownedobject';
 
     @enums = ();
 
@@ -291,12 +289,7 @@ sub processFile()
         . '|unsigned|where|withcppclass|xmldoc|xml|float|int8|int16|int32|int64|uint8|uint16|uint32|uint64'
         . '|int8_t|int16_t|int32_t|int64_t|uint8_t|uint16_t|uint32_t|uint64_t';
 
-    # parse cppincludes
-    while ($msg =~ s/cppinclude\s+(["\<].*?["\>])//s)
-    {
-        print "$filename: Warning: cppinclude is deprecated, use cplusplus {{ ... }} syntax instead\n";
-        print H "#include $1\n";
-    }
+    # process embedded C++ blocks
     while ($msg =~ s/cplusplus\s+{{(.*?)}};?//s)
     {
         print H "// cplusplus {{ ... }} section:\n";
@@ -335,26 +328,34 @@ sub processFile()
         print "$filename: Error: imports are not supported (yet)\n"; $ret=1;
     }
 
-    # parse type announcements in ned text
-    while ($msg =~ s/(struct|cobject|noncobject|class|class\s+noncobject|class\s+cpolymorphic|message|packet)\s+([A-Za-z_][A-Za-z0-9_]*)\s*;//s)
+    # parse type announcements
+    while ($msg =~ s/(struct|class|class\s+noncobject|class\s+cpolymorphic|message|packet)\s+([A-Za-z_][A-Za-z0-9_]*)(\s+extends\s+([A-Za-z_][A-Za-z0-9_]*))?\s*;//s)
     {
-        $class = $2;
-        $type0 = $1;
+        my $type0 = $1;
+        my $class = $2;
+        my $baseclass = $4;
 
         if ($type0 eq 'struct') {
             $type = 'struct';
-        } elsif ($type0 eq 'cobject') {
-            print "$filename: Warning: 'cobject' keyword is deprecated, write 'class' instead\n";
-            $type = 'cobject';
-        } elsif ($type0 eq 'noncobject') {
-            print "$filename: Warning: 'noncobject' is deprecated, write 'class noncobject' instead\n";
-            $type = 'foreignclass';
-        } elsif ($type0 eq 'class' or $type0 eq 'message' or $type0 eq 'packet') {
-            $type = 'cobject';
+        } elsif ($type0 eq 'message' || $type0 eq 'packet') {
+            $type = 'cownedobject';
+        } elsif ($type0 eq 'class') {
+            if ($baseclass eq '') {
+                $type = 'cownedobject';
+            } elsif ($baseclass eq 'void') {
+                $type = 'foreign';
+            } elsif (grep(/^\Q$baseclass\E$/,@classes)) {
+                $type = $classtype{$baseclass};
+            } else {
+                print "$filename: Error: '$class': unknown ancestor class '$baseclass'\n"; $ret=1;
+                $type = 'cobject';
+            }
         } elsif ($type0 =~ /class\s+noncobject/) {
-            $type = 'foreignclass';
+            $type = 'foreign';
+            if ($baseclass) {print "$filename: Error: '$class': the keywords noncobject and extends cannot be used together\n"; $ret=1;}
         } elsif ($type0 =~ /class\s+cpolymorphic/) {
-            $type = 'cpolymorphic';
+            $type = 'cobject';
+            if ($baseclass) {print "$filename: Error: '$class': the keywords cpolymorphic and extends cannot be used together\n"; $ret=1;}
         } else {
             die 'invalid type';
         }
@@ -367,12 +368,13 @@ sub processFile()
                 print "$filename: Error: different declarations for '$class' are inconsistent\n"; $ret=1;
             }
         } else {
+            #print "DBG: classtype{$type0 $class $baseclass} = $type\n";
             $classtype{$class} = $type;
             push(@classes, $class);
         }
     }
 
-    # parse enum announcements in ned text
+    # parse enum announcements
     while ($msg =~ s/enum\s+([A-Za-z_][A-Za-z0-9_]*)\s*;//s)
     {
         $enumname = $1;
@@ -388,7 +390,7 @@ sub processFile()
         }
     }
 
-    # parse enums in ned text
+    # parse enums
     while ($msg =~ s/enum\s+([A-Za-z0-9_ \t]+?)\s*{(.*?)};?//s)
     {
         $source = $&;
@@ -852,34 +854,35 @@ sub processFile()
 sub prepareForCodeGeneration
 {
     # check base class and determine type of object
-    if ($msgname eq 'cObject') {
-        $classtype = 'cpolymorphic'; # hardcoded
-    }
-    elsif ($msgname eq 'cOwnedObject') {
-        $classtype = 'cobject'; # hardcoded
+    if ($msgname eq 'cObject' || $msgname eq 'cNamedObject' || $msgname eq 'cOwnedObject') {
+        $classtype = $classtype{$msgname};  # only for sim_std.msg
     }
     elsif ($msgbase eq '') {
         if ($keyword eq 'message' or $keyword eq 'packet') {
-            $classtype = 'cobject';
+            $classtype = 'cownedobject';
         } elsif ($keyword eq 'class') {
-            $classtype = 'cpolymorphic'; # Note: we never generate non-cObject classes
+            $classtype = 'cobject'; # Note: we never generate non-cObject classes
         } elsif ($keyword eq 'struct') {
             $classtype = 'struct';
         } else {
             die 'internal error';
         }
-        # if announced earlier as noncpolymorphic, accept that. XXX needs to be re-thought
+        # if announced earlier as noncpolymorphic, accept that.
         if (grep(/^\Q$msgname\E$/,@classes)) {
-            if ($classtype{$msgname} eq 'foreignclass' && $classtype eq 'cpolymorphic') {
-                $classtype = 'foreignclass';
+            if ($classtype{$msgname} eq 'foreign' && $classtype eq 'cobject') {
+                $classtype = 'foreign';
             }
         }
     }
-    else {
-        if (!grep(/^\Q$msgbase\E$/,@classes)) {
-            print "$filename: Error: unknown base class '$msgbase'\n"; $ret=1;
-        }
+    elsif ($msgbase eq 'void') {
+        $classtype = 'foreign';
+    }
+    elsif (grep(/^\Q$msgbase\E$/,@classes)) {
         $classtype = $classtype{$msgbase};
+    }
+    else {
+        print "$filename: Error: unknown base class '$msgbase'\n"; $ret=1;
+        $classtype = 'cobject';
     }
 
     # check earlier declarations and register this class
@@ -922,6 +925,8 @@ sub prepareForCodeGeneration
         } else {
             die 'internal error';
         }
+    } elsif ($msgbase eq 'void') {
+        $msgbaseclass = '';
     } else {
         $msgbaseclass = $msgbase;
     }
@@ -940,7 +945,7 @@ sub prepareForCodeGeneration
         if ($fprops{$fieldname}->{"enum"} ne '' && !grep(/^\Q$fprops{$fieldname}->{"enum"}\E$/,@enums)) {
             print "$filename: Error: undeclared enum '$fprops{$fieldname}->{enum}' used in '$msgname'\n"; $ret=1;
         }
-        if ($classtype{$ftype{$fieldname}} eq 'cobject' && ($classtype ne 'cobject')) {
+        if ($classtype{$ftype{$fieldname}} eq 'cownedobject' && ($classtype ne 'cownedobject')) {
             print "$filename: Error: cannot use cOwnedObject field '$ftype{$fieldname} $fieldname' in struct or non-cOwnedObject class '$msgname'\n"; $ret=1;
         }
 
@@ -1093,7 +1098,7 @@ sub generateClass
         print H " * class $exportdef$realmsgclass : public $msgclass\n";
         print H " * {\n";
         print H " *   public:\n";
-        if ($classtype eq "cobject") {
+        if ($classtype eq "cownedobject") {
             if ($keyword eq "message" or $keyword eq "packet") {
                 print H " *     $realmsgclass(const char *name=NULL, int kind=0) : $msgclass(name,kind) {}\n";
             } else {
@@ -1105,13 +1110,13 @@ sub generateClass
             print H " *     $realmsgclass(const $realmsgclass& other) : $msgclass() {operator=(other);}\n";
         }
         print H " *     $realmsgclass& operator=(const $realmsgclass& other) {$msgclass\:\:operator=(other); return *this;}\n";
-        if ($classtype eq "cobject" || $classtype eq "cpolymorphic") {
+        if ($classtype eq "cownedobject" || $classtype eq "cnamedobject" || $classtype eq "cobject") {
             print H " *     virtual $realmsgclass *dup() const {return new $realmsgclass(*this);}\n";
         }
         print H " *     // ADD CODE HERE to redefine and implement pure virtual functions from $msgclass\n";
         print H " * };\n";
         print H " * </pre>\n";
-        if ($classtype eq "cobject" || $classtype eq "cpolymorphic") {
+        if ($classtype eq "cownedobject" || $classtype eq "cnamedobject" || $classtype eq "cobject") {
             print H " *\n";
             print H " * The following should go into a .cc (.cpp) file:\n";
             print H " *\n";
@@ -1153,7 +1158,7 @@ sub generateClass
         print H "\n";
         print H "  public:\n";
     }
-    if ($classtype eq "cobject") {
+    if ($classtype eq "cownedobject") {
         if ($keyword eq "message" or $keyword eq "packet") {
             print H "    $msgclass(const char *name=NULL, int kind=0);\n";
         } else {
@@ -1211,14 +1216,14 @@ sub generateClass
     print H "};\n\n";
 
     if (!$gap) {
-        if ($classtype eq "cobject" || $classtype eq "cpolymorphic") {
+        if ($classtype eq "cownedobject" || $classtype eq "cnamedobject" || $classtype eq "cobject") {
             print CC "Register_Class($msgclass);\n\n";
         }
         print H "inline void doPacking(cCommBuffer *b, $realmsgclass& obj) {obj.parsimPack(b);}\n";
         print H "inline void doUnpacking(cCommBuffer *b, $realmsgclass& obj) {obj.parsimUnpack(b);}\n\n";
     }
 
-    if ($classtype eq "cobject") {
+    if ($classtype eq "cownedobject") {
         if ($keyword eq "message" or $keyword eq "packet") {
             # CAREFUL when assigning values to existing members gets implemented!
             # The msg kind passed to the ctor should take priority!!!
@@ -1238,6 +1243,9 @@ sub generateClass
         }
     }
     print CC "{\n";
+    #print CC "    (void)static_cast<cObject *>(this); //sanity check\n" if ($fieldclasstype eq 'cobject');
+    #print CC "    (void)static_cast<cNamedObject *>(this); //sanity check\n" if ($fieldclasstype eq 'cnamedobject');
+    #print CC "    (void)static_cast<cOwnedObject *>(this); //sanity check\n" if ($fieldclasstype eq 'cownedobject');
     foreach $fieldname (@baseclassfieldlist)
     {
         $capfieldname = $fieldname;
@@ -1254,7 +1262,7 @@ sub generateClass
                     print CC "    for (unsigned int i=0; i<$farraysize{$fieldname}; i++)\n";
                     print CC "        this->$var{$fieldname}\[i\] = $fval{$fieldname};\n";
                 }
-                if ($classtype{$ftype{$fieldname}} eq 'cobject') {
+                if ($classtype{$ftype{$fieldname}} eq 'cownedobject') {
                   print CC "    for (unsigned int i=0; i<$farraysize{$fieldname}; i++)\n";
                   print CC "        take(&(this->$var{$fieldname}\[i\]));\n";
                 }
@@ -1265,7 +1273,7 @@ sub generateClass
                 if ($fval{$fieldname} ne '') {
                   print CC "    this->$var{$fieldname} = $fval{$fieldname};\n";
                 }
-                if ($classtype{$ftype{$fieldname}} eq 'cobject') {
+                if ($classtype{$ftype{$fieldname}} eq 'cownedobject') {
                   print CC "    take(&(this->$var{$fieldname}));\n";
                 }
             }
@@ -1278,21 +1286,21 @@ sub generateClass
         print CC "$msgclass\:\:$msgclass(const $msgclass& other) : $msgbaseclass()\n";
     }
     print CC "{\n";
-    if ($classtype eq "cobject") {
+    if ($classtype eq "cownedobject") {
         print CC "    setName(other.getName());\n";
     }
     foreach $fieldname (@fieldlist)
     {
       if (!$fisabstract{$fieldname}) {
         if ($fisarray{$fieldname} && $farraysize{$fieldname} ne '') {
-          if ($classtype{$ftype{$fieldname}} eq 'cobject') {
+          if ($classtype{$ftype{$fieldname}} eq 'cownedobject') {
             print CC "    for (unsigned int i=0; i<$farraysize{$fieldname}; i++)\n";
             print CC "        take(&(this->$var{$fieldname}\[i\]));\n";
           }
         } elsif ($fisarray{$fieldname} && $farraysize{$fieldname} eq '') {
           print CC "    $varsize{$fieldname} = 0;\n";
           print CC "    this->$var{$fieldname} = 0;\n";
-        } elsif (!$fisarray{$fieldname} && $classtype{$ftype{$fieldname}} eq 'cobject') {
+        } elsif (!$fisarray{$fieldname} && $classtype{$ftype{$fieldname}} eq 'cownedobject') {
           print CC "    take(&(this->$var{$fieldname}));\n";
         }
       }
@@ -1304,7 +1312,7 @@ sub generateClass
     foreach $fieldname (@fieldlist)
     {
         if (!$fisabstract{$fieldname}) {
-            if ($classtype{$ftype{$fieldname}} eq 'cobject') {
+            if ($classtype{$ftype{$fieldname}} eq 'cownedobject') {
                 if (!$fisarray{$fieldname}) {
                     print CC "    drop(&(this->$var{$fieldname}));\n";
                 } elsif ($farraysize{$fieldname} ne '') {
@@ -1333,7 +1341,7 @@ sub generateClass
             if ($fisarray{$fieldname} && $farraysize{$fieldname} ne '') {
                 print CC "    for (unsigned int i=0; i<$farraysize{$fieldname}; i++)\n";
                 print CC "        this->$var{$fieldname}\[i\] = other.$var{$fieldname}\[i\];\n";
-                if ($classtype{$ftype{$fieldname}} eq 'cobject') {
+                if ($classtype{$ftype{$fieldname}} eq 'cownedobject') {
                     print CC "    for (unsigned int i=0; i<$farraysize{$fieldname}; i++)\n";
                     print CC "        this->$var{$fieldname}\[i\].setName(other.$var{$fieldname}\[i\].getName());\n";
                 }
@@ -1342,7 +1350,7 @@ sub generateClass
                 print CC "    this->$var{$fieldname} = (other.$varsize{$fieldname}==0) ? NULL : new $datatype{$fieldname}\[other.$varsize{$fieldname}\];\n";
                 print CC "    $varsize{$fieldname} = other.$varsize{$fieldname};\n";
                 print CC "    for (unsigned int i=0; i<$varsize{$fieldname}; i++)\n";
-                if ($classtype{$ftype{$fieldname}} eq 'cobject') {
+                if ($classtype{$ftype{$fieldname}} eq 'cownedobject') {
                     print CC "    {\n";
                     print CC "        take(&(this->$var{$fieldname}\[i\]));\n";
                     print CC "        this->$var{$fieldname}\[i\] = other.$var{$fieldname}\[i\];\n";
@@ -1353,7 +1361,7 @@ sub generateClass
                 }
             } else {
                 print CC "    this->$var{$fieldname} = other.$var{$fieldname};\n";
-                if (!$fisarray{$fieldname} && $classtype{$ftype{$fieldname}} eq 'cobject') {
+                if (!$fisarray{$fieldname} && $classtype{$ftype{$fieldname}} eq 'cownedobject') {
                     print CC "    this->$var{$fieldname}.setName(other.$var{$fieldname}.getName());\n";
                 }
             }
@@ -1370,7 +1378,7 @@ sub generateClass
     print CC "void $msgclass\:\:parsimPack(cCommBuffer *b)\n";
     print CC "{\n";
     if ($msgbaseclass ne "") {
-        if ($classtype eq "cobject" || $classtype eq "cpolymorphic") {
+        if ($classtype eq "cownedobject" || $classtype eq "cnamedobject" || $classtype eq "cobject") {
             print CC "    $msgbaseclass\:\:parsimPack(b);\n" unless ($msgbaseclass eq "cObject");
         } else {
             print CC "    doPacking(b,($msgbaseclass&)*this);\n"; # this would do for cOwnedObject too, but the other is nicer
@@ -1398,7 +1406,7 @@ sub generateClass
     print CC "void $msgclass\:\:parsimUnpack(cCommBuffer *b)\n";
     print CC "{\n";
     if ($msgbaseclass ne "") {
-        if ($classtype eq "cobject" || $classtype eq "cpolymorphic") {
+        if ($classtype eq "cownedobject" || $classtype eq "cnamedobject" || $classtype eq "cobject") {
             print CC "    $msgbaseclass\:\:parsimUnpack(b);\n" unless ($msgbaseclass eq "cObject");
         } else {
             print CC "    doUnpacking(b,($msgbaseclass&)*this);\n"; # this would do for cOwnedObject too, but the other is nicer
@@ -1460,7 +1468,7 @@ sub generateClass
                     print CC "    for (unsigned int i=sz; i<size; i++)\n";
                     print CC "        $var{$fieldname}2\[i\] = 0;\n";
                 }
-                if ($classtype{$ftype{$fieldname}} eq 'cobject') {
+                if ($classtype{$ftype{$fieldname}} eq 'cownedobject') {
                     print CC "    for (unsigned int i=sz; i<size; i++)\n";
                     print CC "        take(&($var{$fieldname}2\[i\]));\n";
                 }
@@ -1535,7 +1543,7 @@ sub generateStruct
     foreach $fieldname (@fieldlist)
     {
         die "abstract field not possible in struct" if ($fisabstract{$fieldname});
-        die "cOwnedObject field not possible in struct" if ($classtype{$ftype{$fieldname}} eq 'cobject');
+        die "cOwnedObject field not possible in struct" if ($classtype{$ftype{$fieldname}} eq 'cownedobject');
         die "dynamic array not possible in struct" if ($fisarray{$fieldname} && $farraysize{$fieldname} eq '');
         if ($fisarray{$fieldname} && $farraysize{$fieldname} ne '') {
             if ($fkind{$fieldname} eq 'basic') {
@@ -1667,8 +1675,8 @@ sub generateDescriptorClass
         push(@flags, "FD_ISARRAY") if ($fisarray{$fieldname});
         push(@flags, "FD_ISCOMPOUND") if ($fkind{$fieldname} eq 'struct');
         push(@flags, "FD_ISPOINTER") if ($fispointer{$fieldname});
-        push(@flags, "FD_ISCPOLYMORPHIC") if ($classtype{$ftype{$fieldname}} eq 'cpolymorphic');
-        push(@flags, "FD_ISCPOLYMORPHIC | FD_ISCOBJECT") if ($classtype{$ftype{$fieldname}} eq 'cobject');
+        push(@flags, "FD_ISCPOLYMORPHIC") if ($classtype{$ftype{$fieldname}} eq 'cobject' || $classtype{$ftype{$fieldname}} eq 'cnamedobject');
+        push(@flags, "FD_ISCPOLYMORPHIC | FD_ISCOBJECT") if ($classtype{$ftype{$fieldname}} eq 'cownedobject');
         $editableprop = $fprops{$fieldname}->{editable};
         push(@flags, "FD_ISEDITABLE") if (($editableprop eq 'true' || $editableprop eq '1') ||
                                           ($generate_setters_in_descr && $fkind{$fieldname} eq 'basic'));
@@ -1922,7 +1930,7 @@ sub generateDescriptorClass
             }
             $fieldclasstype = $classtype{$ftype{$fieldname}};
             $cast = "(void *)";
-            $cast .= "static_cast<cObject *>" if ($fieldclasstype eq 'cpolymorphic' || $fieldclasstype eq 'cobject');
+            $cast .= "static_cast<cObject *>" if ($fieldclasstype eq 'cobject' || $fieldclasstype eq 'cnamedobject' || $fieldclasstype eq 'cownedobject');
             if ($fispointer{$fieldname}) {
                 print CC "        case $i: return $cast($value); break;\n";
             } else {
