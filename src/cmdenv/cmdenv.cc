@@ -187,10 +187,10 @@ void Cmdenv::setup()
     if (!initialized)
         return;
 
-    // '-c' and '-r' option: configuration or scenario to activate,
-    // and run numbers to run. Both command-line options take precedence
-    // over inifile settings. (NOTE: inifile settings *already* got read
-    // at this point! as EnvirBase::setup() invokes readOptions()).
+    // '-c' and '-r' option: configuration to activate, and run numbers to run.
+    // Both command-line options take precedence over inifile settings.
+    // (NOTE: inifile settings *already* got read at this point! as EnvirBase::setup()
+    // invokes readOptions()).
 
     const char *configname = args->optionValue('c');
     if (configname)
@@ -202,11 +202,11 @@ void Cmdenv::setup()
     if (runstoexec)
         opt_runstoexec = runstoexec;
 
-    // '-g'/'-G' options: modifies -x or -c: prints unrolled scenario, scenario variables, etc as well
+    // '-g'/'-G' options: modifies -x: print unrolled config, iteration variables, etc as well
     opt_printconfigdetails = args->optionGiven('g');
     opt_printconfigdetails2 = args->optionGiven('G');
 
-    // '-x' option: print number of runs in the given scenario, and exit (overrides configname)
+    // '-x' option: print number of runs in the given config, and exit (overrides configname)
     const char *xoption = args->optionValue('x');
     opt_printnumruns = xoption!=NULL;
     if (xoption)
@@ -262,11 +262,11 @@ int Cmdenv::run()
         //     line until the next blank line ("\n\n").
         //
         ev.printf("Config: %s\n", opt_configname.c_str());
-        ev.printf("Number of runs: %d\n", cfg->getNumRunsInScenario(opt_configname.c_str()));
+        ev.printf("Number of runs: %d\n", cfg->getNumRunsInConfig(opt_configname.c_str()));
 
         if (opt_printconfigdetails || opt_printconfigdetails2)
         {
-            std::vector<std::string> runs = cfg->unrollScenario(opt_configname.c_str(), opt_printconfigdetails2);
+            std::vector<std::string> runs = cfg->unrollConfig(opt_configname.c_str(), opt_printconfigdetails2);
             for (int i=0; i<(int)runs.size(); i++)
                 if (opt_printconfigdetails2)
                     ev.printf("Run %d:\n%s", i, runs[i].c_str());  // -G: detailed
@@ -279,7 +279,7 @@ int Cmdenv::run()
     // if the list of runs is not given explicitly, must execute all runs
     if (opt_runstoexec.empty())
     {
-        int n = cfg->getNumRunsInScenario(opt_configname.c_str());  //XXX may throw exception
+        int n = cfg->getNumRunsInConfig(opt_configname.c_str());  //XXX may throw exception
         char buf[32];
         sprintf(buf, (n==0 ? "" : n==1 ? "%d" : "0..%d"), n-1);
         opt_runstoexec = buf;
@@ -502,7 +502,7 @@ void Cmdenv::simulate()
                 // execute event
                 simulation.doOneEvent(mod);
 
-                checkTimeLimits();  //XXX potential performance hog
+                checkTimeLimits();  //XXX potential performance hog (maybe check every 256 events, unless "cmdenv-strict-limits" is on?)
                 if (sigint_received)
                     throw cTerminationException("SIGINT or SIGTERM received, exiting");
             }
@@ -720,8 +720,8 @@ void Cmdenv::printUISpecificHelp()
     ev << "                -c option. <runs> is a comma-separated list of run numbers or\n";
     ev << "                run number ranges, for example 1,2,5-10. When not present, all\n" ;
     ev << "                runs of that configuration will be executed.\n" ;
-    ev << "  -g, -G        Make -n and -c more verbose: print the unrolled configuration,\n";
-    ev << "                iteration variables, etc. -G provides more details than -g.\n";
+    ev << "  -g, -G        Make -x verbose: print the unrolled configuration, iteration\n";
+    ev << "                variables, etc. -G provides more details than -g.\n";
 }
 
 unsigned Cmdenv::getExtraStackForEnvir() const

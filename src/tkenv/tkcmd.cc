@@ -72,7 +72,7 @@ int newRun_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getConfigNames_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getConfigDescription_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getBaseConfig_cmd(ClientData, Tcl_Interp *, int, const char **);
-int getNumRunsInScenario_cmd(ClientData, Tcl_Interp *, int, const char **);
+int getNumRunsInConfig_cmd(ClientData, Tcl_Interp *, int, const char **);
 int createSnapshot_cmd(ClientData, Tcl_Interp *, int, const char **);
 int exitOmnetpp_cmd(ClientData, Tcl_Interp *, int, const char **);
 
@@ -193,7 +193,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_getconfignames",   getConfigNames_cmd       }, // args: -
    { "opp_getconfigdescription",getConfigDescription_cmd}, // args: <configname>
    { "opp_getbaseconfig",    getBaseConfig_cmd        }, // args: <configname>
-   { "opp_getnumrunsinscenario",getNumRunsInScenario_cmd}, // args: <configname>
+   { "opp_getnumrunsinconfig",getNumRunsInConfig_cmd  }, // args: <configname>
    { "opp_getfilename",      getFileName_cmd          }, // args: <filetype>  ret: filename
    { "opp_getobjectname",    getObjectName_cmd        }, // args: <pointer>  ret: getName()
    { "opp_getobjectfullname",getObjectFullName_cmd    }, // args: <pointer>  ret: getFullName()
@@ -352,7 +352,7 @@ int getBaseConfig_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
    E_CATCH
 }
 
-int getNumRunsInScenario_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+int getNumRunsInConfig_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    E_TRY
    if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
@@ -360,7 +360,7 @@ int getNumRunsInScenario_cmd(ClientData, Tcl_Interp *interp, int argc, const cha
    const char *configname = argv[1];
 
    cConfiguration *cfg = app->getConfig();
-   int n = cfg->getNumRunsInScenario(configname);
+   int n = cfg->getNumRunsInConfig(configname);
    Tcl_SetObjResult(interp, Tcl_NewIntObj(n));
    return TCL_OK;
    E_CATCH

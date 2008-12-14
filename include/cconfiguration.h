@@ -143,57 +143,56 @@ class SIM_API cConfiguration : public cObject
      */
     virtual void validate(const char *ignorableConfigKeys=NULL) const = 0;
 
-    /** @name Activating a configuration or scenario */
+    /** @name Activating a configuration */
     //@{
     /**
-     * Returns the names of the available configurations and scenarios.
+     * Returns the names of the available configurations.
      */
     virtual std::vector<std::string> getConfigNames() = 0;
 
     /**
-     * Activates the [Scenario \<name\>] section, or if it does not exist,
-     * the [Config \<name\>] section. If neither exists, an error is thrown.
-     * ([General] is treated as if it was short for [Config General].)
-     * The runNumber must be between 0 and getNumRunsInScenario(name)-1.
+     * Activates the [Config \<name\>] section. If it doesn't exist, an error
+     * gets thrown. [General] is treated as short for [Config General].
+     * The runNumber must be between 0 and getNumRunsInConfig(name)-1.
      */
-    virtual void activateConfig(const char *scenarioOrConfigName, int runNumber=0) = 0;
+    virtual void activateConfig(const char *configName, int runNumber=0) = 0;
 
     /**
-     * Returns the description of the given configuration or scenario.
+     * Returns the description of the given configuration.
      */
-    virtual std::string getConfigDescription(const char *scenarioOrConfigName) const = 0;
+    virtual std::string getConfigDescription(const char *configName) const = 0;
 
     /**
-     * Returns the name of the config the given configuration or scenario extends.
+     * Returns the name of the configuration the given configuration extends.
      * Only names of *existing* configuration names are returned (that is,
      * if "extends" is bogus and refers to a nonexistent configuration,
      * this method returns the empty string; also, "General" is only returned
      * if such configuration actually exists.)
      */
-    virtual std::string getBaseConfig(const char *scenarioOrConfigName) const = 0;
+    virtual std::string getBaseConfig(const char *configName) const = 0;
 
     /**
-     * Generates Cartesian product of all iterations within the scenario, and counts them.
+     * Generates Cartesian product of all iterations within the config, and counts them.
      */
-    virtual int getNumRunsInScenario(const char *scenarioName) const = 0;
+    virtual int getNumRunsInConfig(const char *configName) const = 0;
 
     /**
-     * Generates all runs in the given scenario, and returns a string for each.
+     * Generates all runs in the given configuration, and returns a string for each.
      * When detailed==false, each run will generate a one-line string with the
      * iteration variables; with detailed==true, each run generates a multi-line
      * string containing the config entries that contain iterations or iteration
      * variable references. This method is primarily for debugging purposes.
      */
-    virtual std::vector<std::string> unrollScenario(const char *scenarioName, bool detailed=true) const = 0;
+    virtual std::vector<std::string> unrollConfig(const char *configName, bool detailed=true) const = 0;
 
     /**
-     * Returns the name of the currently active configuration or scenario.
+     * Returns the name of the currently active configuration.
      */
     virtual const char *getActiveConfigName() const = 0;
 
     /**
      * Returns currently active run number. This is the number passed to
-     * activateScenario(), or 0 if activateConfig() was called.
+     * activateConfig(), or 0 if activateConfig() has not been called.
      */
     virtual int getActiveRunNumber() const = 0;
 
@@ -234,7 +233,7 @@ class SIM_API cConfiguration : public cObject
     virtual void dump() const = 0;
     //@}
 
-    /** @name Getting values from the currently active configuration or scenario */
+    /** @name Getting values from the currently active configuration */
     //@{
     /**
      * Returns a configuration value. Valid keys don't contain dots or wildcard characters.

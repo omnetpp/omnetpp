@@ -103,13 +103,13 @@ proc runSelectionDialog {configname_var runnumber_var} {
             if {$name == ""} {set isbase 1; continue}
 
             set desc [opp_getconfigdescription $name]
-            set runs [opp_getnumrunsinscenario $name]
+            set runs [opp_getnumrunsinconfig $name]
             # NOTE: if you change this, change proc runSelectionDialog:extractConfigName too
             #if {$isbase} {append name " -- base config"}
             if {$isbase} {set name "($name)"}
             if {$desc != ""} {append name " -- $desc"}
-            if {$runs == 0}   {append name " (invalid scenario, generates 0 runs)"}
-            if {$runs > 1}   {append name " (scenario with $runs runs)"}
+            if {$runs == 0}   {append name " (invalid config, generates 0 runs)"}
+            if {$runs > 1}   {append name " (config with $runs runs)"}
             lappend configlist $name
         }
 
@@ -182,7 +182,7 @@ proc runSelectionDialog:update {w} {
     # fill run number combo with runs of the selected config
     set configname [runSelectionDialog:extractConfigName [$w.f.c.e cget -value]]
     set n 0
-    catch {set n [opp_getnumrunsinscenario $configname]}
+    catch {set n [opp_getnumrunsinconfig $configname]}
 
     if {$n>1} {
         $w.f.c2.e config -state normal

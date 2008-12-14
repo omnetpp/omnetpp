@@ -305,7 +305,7 @@ void SectionBasedConfiguration::setupVariables(const char *configName, int runNu
     variables[CFGVAR_REPLICATION] = substituteVariables(internalGetValue(sectionChain, CFGID_REPLICATION_LABEL->getName(), CFGID_REPLICATION_LABEL->getDefaultValue()), -1, -1);
 }
 
-int SectionBasedConfiguration::getNumRunsInScenario(const char *configName) const
+int SectionBasedConfiguration::getNumRunsInConfig(const char *configName) const
 {
     int sectionId = resolveConfigName(configName);
     if (sectionId == -1)
@@ -328,7 +328,7 @@ int SectionBasedConfiguration::getNumRunsInScenario(const char *configName) cons
     }
 }
 
-std::vector<std::string> SectionBasedConfiguration::unrollScenario(const char *configName, bool detailed) const
+std::vector<std::string> SectionBasedConfiguration::unrollConfig(const char *configName, bool detailed) const
 {
     int sectionId = resolveConfigName(configName);
     if (sectionId == -1)

@@ -177,7 +177,7 @@ class ENVIR_API SectionBasedConfiguration : public cConfiguration
     int internalFindEntry(int sectionId, const char *key) const;
     bool internalFindEntry(const std::vector<int>& sectionChain, const char *key, int& outSectionId, int& outEntryId) const;
     const char *internalGetValue(const std::vector<int>& sectionChain, const char *key, const char *fallbackValue=NULL) const;
-    int resolveConfigName(const char *scenarioOrConfigName) const;
+    int resolveConfigName(const char *configName) const;
     std::vector<int> resolveSectionChain(int sectionId) const;
     std::vector<int> resolveSectionChain(const char *section) const;
     void addEntry(const KeyValue1& entry);
@@ -187,7 +187,7 @@ class ENVIR_API SectionBasedConfiguration : public cConfiguration
     static void parseVariable(const char *pos, std::string& outVarname, std::string& outValue, std::string& outParVar, const char *&outEndPos);
     std::string substituteVariables(const char *text, int sectionId, int entryId) const;
     bool isPredefinedVariable(const char *varname) const;
-    void setupVariables(const char *scenarioOrConfigName, int runNumber, Scenario *scenario, const std::vector<int>& sectionChain);
+    void setupVariables(const char *configName, int runNumber, Scenario *scenario, const std::vector<int>& sectionChain);
     KeyValue1 convert(int sectionId, int entryId);
     static bool isIgnorableConfigKey(const char *ignoredKeyPatterns, const char *key);
     static cConfigKey *lookupConfigKey(const char *key);
@@ -221,11 +221,11 @@ class ENVIR_API SectionBasedConfiguration : public cConfiguration
     virtual const char *getFileName() const;
     virtual void validate(const char *ignorableConfigKeys) const;
     virtual std::vector<std::string> getConfigNames();
-    virtual void activateConfig(const char *scenarioOrConfigName, int runNumber=0);
-    virtual std::string getConfigDescription(const char *scenarioOrConfigName) const;
-    virtual std::string getBaseConfig(const char *scenarioOrConfigName) const;
-    virtual int getNumRunsInScenario(const char *scenarioName) const;
-    virtual std::vector<std::string> unrollScenario(const char *scenarioName, bool detailed) const;
+    virtual void activateConfig(const char *configName, int runNumber=0);
+    virtual std::string getConfigDescription(const char *configName) const;
+    virtual std::string getBaseConfig(const char *configName) const;
+    virtual int getNumRunsInConfig(const char *configName) const;
+    virtual std::vector<std::string> unrollConfig(const char *configName, bool detailed) const;
     virtual const char *getActiveConfigName() const;
     virtual int getActiveRunNumber() const;
     virtual const char *getConfigValue(const char *key) const;
