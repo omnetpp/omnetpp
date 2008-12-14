@@ -244,7 +244,6 @@ int Cmdenv::run()
     // (NOTE: inifile settings *already* got read at this point! as EnvirBase::setup()
     // invokes readOptions()).
 
-    //FIXME: check if wrong configname! check if runnumber out of range!
     const char *configname = args->optionValue('c');
     if (configname)
         opt_configname = configname;
@@ -258,7 +257,7 @@ int Cmdenv::run()
     // if the list of runs is not given explicitly, must execute all runs
     if (opt_runstoexec.empty())
     {
-        int n = cfg->getNumRunsInConfig(opt_configname.c_str());  //XXX may throw exception
+        int n = cfg->getNumRunsInConfig(opt_configname.c_str());  //note: may throw exception
         char buf[32];
         sprintf(buf, (n==0 ? "" : n==1 ? "%d" : "0..%d"), n-1);
         opt_runstoexec = buf;
