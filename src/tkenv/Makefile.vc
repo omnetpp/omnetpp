@@ -95,7 +95,6 @@ clean:
 	-del /q $(L:/=\)\$(LIBNAME).* $(OMNETPP_LIB_DIR:/=\)\$(LIBNAME).* 2>nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-$O/__filtering.obj: __filtering.cc
 $O/arrow.obj: arrow.cc \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \

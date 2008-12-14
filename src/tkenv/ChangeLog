@@ -1,3 +1,8 @@
+2008-12-14  Andras Varga
+
+	* fixed bug #34: in Fast mode, bubble didn't get displayed for 
+	recently created modules
+
 2008-12-09  Andras Varga
 
 	* UI updates during Fast and Express Run changed from event-based 

@@ -1170,11 +1170,7 @@ proc graphmodwin_qlen_rightclick {w X Y} {
 #
 # This function is invoked from the module inspector C++ code.
 #
-proc graphmodwin_bubble {c modptr txt} {
-    set r  [get_submod_coords $c $modptr]
-    set x [expr ([lindex $r 0]+[lindex $r 2])/2]
-    set y [expr [lindex $r 1]+4]
-
+proc graphmodwin_bubble {c x y txt} {
     while {[string length $txt]<5} {set txt " $txt "}
     set txtid  [$c create text $x $y -text " $txt " -anchor c -tags "bubble"]
     set color #F8F8D8

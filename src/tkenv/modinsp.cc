@@ -562,16 +562,15 @@ void TGraphicalModWindow::refreshLayout()
     }
 
     bool isFullLayout = submodPosMap.empty();
-    if (isFullLayout) {
-        Tcl_SetVar(interp, "stoplayouting", "0", TCL_GLOBAL_ONLY);
+    if (isFullLayout)
         Tcl_VarEval(interp, "layouter_startgrab ", windowName(), ".toolbar.stop", NULL);
-    }
+
     // layout the graph -- should be VERY fast if most nodes are fixed!
+    Tcl_SetVar(interp, "stoplayouting", "0", TCL_GLOBAL_ONLY);
     layouter->execute();
 
-    if (isFullLayout) {
+    if (isFullLayout)
         Tcl_VarEval(interp, "layouter_releasegrab ", windowName(), ".toolbar.stop", NULL);
-    }
 
     // fill the map with the results
     submodPosMap.clear();
@@ -804,10 +803,21 @@ void TGraphicalModWindow::displayStringChanged(cGate *)
    needs_redraw = true;
 }
 
-void TGraphicalModWindow::bubble(cModule *mod, const char *text)
+void TGraphicalModWindow::bubble(cModule *submod, const char *text)
 {
-   Tcl_Interp *interp = getTkenv()->getInterp();
-   CHK(Tcl_VarEval(interp, "graphmodwin_bubble ",canvas," ",ptrToStr(mod)," {",text,"}",NULL));
+    Tcl_Interp *interp = getTkenv()->getInterp();
+
+    // if submod position is not yet known (because e.g. we're in fast mode
+    // and it was dynamically created since the last update), refresh layout
+    // so that we can get coordinates for it
+    if (submodPosMap.find(submod)==submodPosMap.end())
+        refreshLayout();
+
+    // invoke Tcl code to display bubble
+    char coords[32];
+    Point& pos = submodPosMap[submod];
+    sprintf(coords, " %d %d ", pos.x, pos.y);
+    CHK(Tcl_VarEval(interp, "graphmodwin_bubble ", canvas, coords, TclQuotedString(text).get(),NULL));
 }
 
 int TGraphicalModWindow::inspectorCommand(Tcl_Interp *interp, int argc, const char **argv)
@@ -823,12 +833,12 @@ int TGraphicalModWindow::inspectorCommand(Tcl_Interp *interp, int argc, const ch
    }
    else if (strcmp(argv[0],"relayout")==0)
    {
-      TRY( relayoutAndRedrawAll() );
+      TRY(relayoutAndRedrawAll());
       return TCL_OK;
    }
    else if (strcmp(argv[0],"redraw")==0)
    {
-      TRY( redrawAll() );
+      TRY(redrawAll());
       return TCL_OK;
    }
    else if (strcmp(argv[0],"dispstrpar")==0)
