@@ -228,7 +228,7 @@
 <!ELEMENT class-decl (comment*)>
 <!ATTLIST class-decl
      name                NMTOKEN   #REQUIRED
-     is-cobject      (true|false)  "false">
+     extends-name        NMTOKEN   #IMPLIED>
 
 <!ELEMENT message-decl (comment*)>
 <!ATTLIST message-decl
