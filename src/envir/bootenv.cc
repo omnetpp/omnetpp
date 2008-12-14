@@ -128,7 +128,7 @@ int BootEnv::run(int argc, char *argv[], cConfiguration *cfg)
 
         // args
         args = new ArgList();
-        args->parse(argc, argv, "h?f:u:l:c:r:p:n:x:gGv");
+        args->parse(argc, argv, "h?f:u:l:c:r:p:n:x:agGv");
 
         //
         // First, load the ini file. It might contain the name of the user interface

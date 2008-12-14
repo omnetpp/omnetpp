@@ -32,11 +32,8 @@ class CMDENV_API Cmdenv : public EnvirBase
 {
    protected:
      // new simulation options:
-     bool opt_printnumruns;
      opp_string opt_configname;
      opp_string opt_runstoexec;
-     bool opt_printconfigdetails;
-     bool opt_printconfigdetails2;
      size_t opt_extrastack;
      opp_string opt_outputfile;
 

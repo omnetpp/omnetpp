@@ -1,3 +1,8 @@
+2008-12-14  Andras Varga
+
+	* added -a option: lists all configurations and the number of runs
+	in them
+
 2008-12-10  Andras Varga
 
 	* express mode status updates are now always flushed (no need to set

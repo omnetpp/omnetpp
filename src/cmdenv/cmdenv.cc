@@ -187,68 +187,21 @@ void Cmdenv::setup()
     if (!initialized)
         return;
 
-    // '-c' and '-r' option: configuration to activate, and run numbers to run.
-    // Both command-line options take precedence over inifile settings.
-    // (NOTE: inifile settings *already* got read at this point! as EnvirBase::setup()
-    // invokes readOptions()).
-
-    const char *configname = args->optionValue('c');
-    if (configname)
-        opt_configname = configname;
-    if (opt_configname.empty())
-        opt_configname = "General";
-
-    const char *runstoexec = args->optionValue('r');
-    if (runstoexec)
-        opt_runstoexec = runstoexec;
-
-    // '-g'/'-G' options: modifies -x: print unrolled config, iteration variables, etc as well
-    opt_printconfigdetails = args->optionGiven('g');
-    opt_printconfigdetails2 = args->optionGiven('G');
-
-    // '-x' option: print number of runs in the given config, and exit (overrides configname)
-    const char *xoption = args->optionValue('x');
-    opt_printnumruns = xoption!=NULL;
-    if (xoption)
-        opt_configname = xoption;
-}
-
-void Cmdenv::signalHandler(int signum)
-{
-    if (signum == SIGINT || signum == SIGTERM)
-        sigint_received = true;
-}
-
-void Cmdenv::installSignalHandler()
-{
-    signal(SIGINT, signalHandler);
-    signal(SIGTERM, signalHandler);
-}
-
-void Cmdenv::deinstallSignalHandler()
-{
-    signal(SIGINT, SIG_DFL);
-    signal(SIGTERM, SIG_DFL);
-}
-
-void Cmdenv::shutdown()
-{
-    if (!initialized)
-        return;
-
-    EnvirBase::shutdown();
-    ::fflush(fout);
-}
-
-int Cmdenv::run()
-{
-    //FIXME: check if wrong configname! check if runnumber out of range!
-    if (!initialized)
-        return 1;
-
     cConfiguration *cfg = getConfig();
 
-    if (opt_printnumruns)
+    // -a option: print all config names, and number of runs in them
+    if (args->optionGiven('a'))
+    {
+        ev.printf("\n");
+        std::vector<std::string> configNames = cfg->getConfigNames();
+        for (int i=0; i<(int)configNames.size(); i++)
+            ev.printf("Config %s: %d\n", configNames[i].c_str(), cfg->getNumRunsInConfig(configNames[i].c_str()));
+        initialized = false; // don't run simulation
+    }
+
+    // '-x' option: print number of runs in the given config, and exit (overrides configname)
+    const char *configToPrint = args->optionValue('x');
+    if (configToPrint)
     {
         //
         // IMPORTANT: the simulation launcher will parse the output of this
@@ -261,20 +214,46 @@ int Cmdenv::run()
         // (2) per-run information lines should span from the "Number of runs:"
         //     line until the next blank line ("\n\n").
         //
-        ev.printf("Config: %s\n", opt_configname.c_str());
-        ev.printf("Number of runs: %d\n", cfg->getNumRunsInConfig(opt_configname.c_str()));
 
-        if (opt_printconfigdetails || opt_printconfigdetails2)
+        // '-g'/'-G' options: modifies -x: print unrolled config, iteration variables, etc as well
+        bool unrollBrief = args->optionGiven('g');
+        bool unrollDetailed = args->optionGiven('G');
+
+        ev.printf("\n");
+        ev.printf("Config: %s\n", configToPrint);
+        ev.printf("Number of runs: %d\n", cfg->getNumRunsInConfig(configToPrint));
+
+        if (unrollBrief || unrollDetailed)
         {
-            std::vector<std::string> runs = cfg->unrollConfig(opt_configname.c_str(), opt_printconfigdetails2);
+            std::vector<std::string> runs = cfg->unrollConfig(configToPrint, unrollDetailed);
+            const char *fmt = unrollDetailed ? "Run %d:\n%s" : "Run %d: %s\n";
             for (int i=0; i<(int)runs.size(); i++)
-                if (opt_printconfigdetails2)
-                    ev.printf("Run %d:\n%s", i, runs[i].c_str());  // -G: detailed
-                else
-                    ev.printf("Run %d: %s\n", i, runs[i].c_str());  // -g:  brief
+                ev.printf(fmt, i, runs[i].c_str());
         }
-        return 0;
+        initialized = false; // don't run simulation
     }
+}
+
+int Cmdenv::run()
+{
+    if (!initialized)
+        return 1;
+
+    // '-c' and '-r' option: configuration to activate, and run numbers to run.
+    // Both command-line options take precedence over inifile settings.
+    // (NOTE: inifile settings *already* got read at this point! as EnvirBase::setup()
+    // invokes readOptions()).
+
+    //FIXME: check if wrong configname! check if runnumber out of range!
+    const char *configname = args->optionValue('c');
+    if (configname)
+        opt_configname = configname;
+    if (opt_configname.empty())
+        opt_configname = "General";
+
+    const char *runstoexec = args->optionValue('r');
+    if (runstoexec)
+        opt_runstoexec = runstoexec;
 
     // if the list of runs is not given explicitly, must execute all runs
     if (opt_runstoexec.empty())
@@ -397,30 +376,13 @@ int Cmdenv::run()
         return 0;
 }
 
-const char *Cmdenv::progressPercentage()
+void Cmdenv::shutdown()
 {
-    double simtimeRatio = -1;
-    if (opt_simtimelimit!=0)
-         simtimeRatio = simulation.getSimTime() / opt_simtimelimit;
+    if (!initialized)
+        return;
 
-    double cputimeRatio = -1;
-    if (opt_cputimelimit!=0) {
-        timeval now;
-        gettimeofday(&now, NULL);
-        long elapsedsecs = now.tv_sec - laststarted.tv_sec + elapsedtime.tv_sec;
-        cputimeRatio = elapsedsecs / (double)opt_cputimelimit;
-    }
-
-    double ratio = std::max(simtimeRatio, cputimeRatio);
-    if (ratio == -1)
-        return "";
-    else {
-        static char buf[32];
-        // DO NOT change the "% completed" string. The IDE launcher plugin matches
-        // against this string for detecting user input
-        sprintf(buf, "  %d%% completed", (int)(100*ratio));
-        return buf;
-    }
+    EnvirBase::shutdown();
+    ::fflush(fout);
 }
 
 // note: also updates "since" (sets it to the current time) if answer is "true"
@@ -593,6 +555,50 @@ void Cmdenv::doStatusUpdate(Speedometer& speedometer)
     ::fflush(fout);
 }
 
+const char *Cmdenv::progressPercentage()
+{
+    double simtimeRatio = -1;
+    if (opt_simtimelimit!=0)
+         simtimeRatio = simulation.getSimTime() / opt_simtimelimit;
+
+    double cputimeRatio = -1;
+    if (opt_cputimelimit!=0) {
+        timeval now;
+        gettimeofday(&now, NULL);
+        long elapsedsecs = now.tv_sec - laststarted.tv_sec + elapsedtime.tv_sec;
+        cputimeRatio = elapsedsecs / (double)opt_cputimelimit;
+    }
+
+    double ratio = std::max(simtimeRatio, cputimeRatio);
+    if (ratio == -1)
+        return "";
+    else {
+        static char buf[32];
+        // DO NOT change the "% completed" string. The IDE launcher plugin matches
+        // against this string for detecting user input
+        sprintf(buf, "  %d%% completed", (int)(100*ratio));
+        return buf;
+    }
+}
+
+void Cmdenv::signalHandler(int signum)
+{
+    if (signum == SIGINT || signum == SIGTERM)
+        sigint_received = true;
+}
+
+void Cmdenv::installSignalHandler()
+{
+    signal(SIGINT, signalHandler);
+    signal(SIGTERM, signalHandler);
+}
+
+void Cmdenv::deinstallSignalHandler()
+{
+    signal(SIGINT, SIG_DFL);
+    signal(SIGTERM, SIG_DFL);
+}
+
 //-----------------------------------------------------
 
 void Cmdenv::putsmsg(const char *s)
@@ -709,8 +715,6 @@ void Cmdenv::simulationEvent(cMessage *msg)
 void Cmdenv::printUISpecificHelp()
 {
     ev << "Cmdenv-specific options:\n";
-    ev << "  -x <configname>\n";
-    ev << "                Print the number of runs in the given configuration, and exit.\n";
     ev << "  -c <configname>\n";
     ev << "                Select a given configuration for execution. With inifile-based\n";
     ev << "                configuration database, this selects the [Config <configname>]\n";
@@ -720,6 +724,9 @@ void Cmdenv::printUISpecificHelp()
     ev << "                -c option. <runs> is a comma-separated list of run numbers or\n";
     ev << "                run number ranges, for example 1,2,5-10. When not present, all\n" ;
     ev << "                runs of that configuration will be executed.\n" ;
+    ev << "  -a            Print all config names and number of runs it them, and exit.\n";
+    ev << "  -x <configname>\n";
+    ev << "                Print the number of runs in the given configuration, and exit.\n";
     ev << "  -g, -G        Make -x verbose: print the unrolled configuration, iteration\n";
     ev << "                variables, etc. -G provides more details than -g.\n";
 }

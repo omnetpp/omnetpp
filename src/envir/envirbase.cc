@@ -218,7 +218,7 @@ EnvirBase::~EnvirBase()
 int EnvirBase::run(int argc, char *argv[], cConfiguration *configobject)
 {
     args = new ArgList();
-    args->parse(argc, argv, "h?f:u:l:c:r:p:n:x:gGv");  //TODO share spec with BootEnv!
+    args->parse(argc, argv, "h?f:u:l:c:r:p:n:x:agGv");  //TODO share spec with BootEnv!
     cfg = configobject;
 
     setup();
@@ -387,7 +387,7 @@ void EnvirBase::printHelp()
     ev << "                can be present.\n";
     ev << "  --<configuration-key>=<value>\n";
     ev << "                Any configuration option can be specified on the command\n";
-    ev << "                line, and they take precedence over setting specified in the\n";
+    ev << "                line, and it takes precedence over settings specified in the\n";
     ev << "                ini file(s). Examples:\n";
     ev << "                      --debug-on-errors=true\n";
     ev << "                      --record-eventlog=true\n";
