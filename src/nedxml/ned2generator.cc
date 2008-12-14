@@ -968,7 +968,9 @@ void NED2Generator::doClassDecl(ClassDeclElement *node, const char *indent, bool
     OUT << getBannerComment(node, indent);
     OUT << indent << "class ";
     if (!node->getIsCobject()) OUT << "noncobject ";
-    OUT << node->getName() << ";" << getRightComment(node);
+    OUT << node->getName();
+    if (!opp_isempty(node->getExtendsName())) OUT << " extends " << node->getExtendsName();
+    OUT << ";" << getRightComment(node);
     OUT << getTrailingComment(node);
 }
 

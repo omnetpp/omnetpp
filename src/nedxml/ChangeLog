@@ -1,6 +1,24 @@
 2008-12-14  Andras Varga
 
-	* opp_msgc: improvement related to bug #33.
+	* opp_msgc: improvement related to bug #33. Type announcement now can
+	specify the base class of the declared class. If missing, the class is
+	assumed to subclass from cOwnedObject. To declare that the class does
+	not have any base class interesting to opp_msgc, one must declare it
+	as "extends void". Summary:
+
+	  class X {...}              ==> generated with cObject as base class
+	  class X extends void {...} ==> generated with no base class
+
+	  class X extends void;         |
+	  class X extends cObject;      |==> type announcement with base class
+	  class X extends cOwnedObject; |
+
+	  class X;            ==> equals to: class X extends cOwnedObject;
+	  class noncobject X; ==> equals to: class X extends void;
+	  message X;          ==> equals to: class X extends cMessage;
+	  packet X;           ==> equals to: class X extends cPacket;
+
+	"extends" in declarations may name ancestor instead of direct base class
 
 2008-12-02  Andras Varga
 

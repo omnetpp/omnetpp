@@ -3198,7 +3198,7 @@ ClassDeclElement::ClassDeclElement(NEDElement *parent) : NEDElement(parent)
 
 int ClassDeclElement::getNumAttributes() const
 {
-    return 2;
+    return 3;
 }
 
 const char *ClassDeclElement::getAttributeName(int k) const
@@ -3206,6 +3206,7 @@ const char *ClassDeclElement::getAttributeName(int k) const
     switch (k) {
         case 0: return "name";
         case 1: return "is-cobject";
+        case 2: return "extends-name";
         default: return 0;
     }
 }
@@ -3215,6 +3216,7 @@ const char *ClassDeclElement::getAttribute(int k) const
     switch (k) {
         case 0: return name.c_str();
         case 1: return boolToString(isCobject);
+        case 2: return extendsName.c_str();
         default: return 0;
     }
 }
@@ -3224,6 +3226,7 @@ void ClassDeclElement::setAttribute(int k, const char *val)
     switch (k) {
         case 0: name = val; break;
         case 1: isCobject = stringToBool(val); break;
+        case 2: extendsName = val; break;
         default: ;
     }
 }
@@ -3233,6 +3236,7 @@ const char *ClassDeclElement::getAttributeDefault(int k) const
     switch (k) {
         case 0: return NULL;
         case 1: return "false";
+        case 2: return "";
         default: return 0;
     }
 }
@@ -3242,6 +3246,7 @@ ClassDeclElement *ClassDeclElement::dup() const
     ClassDeclElement *element = new ClassDeclElement();
     element->name = this->name;
     element->isCobject = this->isCobject;
+    element->extendsName = this->extendsName;
     return element;
 }
 

@@ -211,7 +211,15 @@ class_decl
                   ps.classdecl = (ClassDeclElement *)createElementWithTag(NED_CLASS_DECL, ps.msgfile );
                   ps.classdecl->setIsCobject(false);
                   ps.classdecl->setName(toString(@3));
-                  storeBannerAndRightComments(ps.classdecl,@1,@2);
+                  storeBannerAndRightComments(ps.classdecl,@1,@3);
+                }
+        | CLASS NAME EXTENDS NAME ';'
+                {
+                  ps.classdecl = (ClassDeclElement *)createElementWithTag(NED_CLASS_DECL, ps.msgfile );
+                  ps.classdecl->setIsCobject(true);
+                  ps.classdecl->setName(toString(@2));
+                  ps.classdecl->setExtendsName(toString(@4));
+                  storeBannerAndRightComments(ps.classdecl,@1,@4);
                 }
         ;
 

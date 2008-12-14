@@ -2172,7 +2172,8 @@ class NEDXML_API StructDeclElement : public NEDElement
  * \<!ELEMENT class-decl (comment*)\>
  * \<!ATTLIST class-decl
  *      name                NMTOKEN   \#REQUIRED
- *      is-cobject      (true|false)  "false"\>
+ *      is-cobject      (true|false)  "false"
+ *      extends-name        NMTOKEN   \#IMPLIED\>
  * </pre>
  * 
  * @ingroup Data
@@ -2182,6 +2183,7 @@ class NEDXML_API ClassDeclElement : public NEDElement
   private:
     std::string name;
     bool isCobject;
+    std::string extendsName;
   public:
     /** @name Constructors, destructor */
     //@{
@@ -2210,6 +2212,8 @@ class NEDXML_API ClassDeclElement : public NEDElement
     void setName(const char * val)  {name = val;}
     bool getIsCobject() const  {return isCobject;}
     void setIsCobject(bool val)  {isCobject = val;}
+    const char * getExtendsName() const  {return extendsName.c_str();}
+    void setExtendsName(const char * val)  {extendsName = val;}
 
     virtual ClassDeclElement *getNextClassDeclSibling() const;
     virtual CommentElement *getFirstCommentChild() const;

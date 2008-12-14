@@ -439,6 +439,7 @@ void NEDDTDValidator::validateElement(ClassDeclElement *node)
     checkNameAttribute(node, "name");
     const char *vals1[] = {"true","false"};
     checkEnumeratedAttribute(node, "is-cobject", vals1, sizeof(vals1)/sizeof(const char *));
+    checkNameAttribute(node, "extends-name");
 }
 
 void NEDDTDValidator::validateElement(MessageDeclElement *node)
