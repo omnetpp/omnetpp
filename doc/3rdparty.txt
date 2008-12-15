@@ -41,14 +41,6 @@ is bundled with Win32 binaries maintained by Igor Zlatkovic, and currently
 available from http://www.zlatkovic.com. LibXML and ICONV (also a needed
 component) are distributed under the GNU Lesser General Public License (LGPL).
 
-Perl
-
-Some of the tools are written in Perl, an open-source script language
-written by Larry Wall. The source is available from http://www.perl.com.
-OMNeT++/OMNEST is bundled with files from the ActiveState Perl distribution
-(http://www.activestate.com). Perl is distributed under its own Artistic
-License.
-
 MinGW and MSYS
 
 A Windows port of gcc, and a minimal Unix-like environment in which typical
