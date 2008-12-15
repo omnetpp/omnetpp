@@ -2,6 +2,8 @@
 
 	* sim_std.msg: fixed bug #33
 
+2008-12-12  ------ omnetpp-4.0rc1 released ------
+
 2008-11-26  Andras Varga
 
 	* library renamed to oppsim

@@ -20,6 +20,8 @@
 
 	"extends" in declarations may name ancestor instead of direct base class
 
+2008-12-12  ------ omnetpp-4.0rc1 released ------
+
 2008-12-02  Andras Varga
 
 	* opp_msgc: fixed bug #15 (class descriptor was generated with the

@@ -3,6 +3,8 @@
 	* added -a option: lists all configurations and the number of runs
 	in them
 
+2008-12-12  ------ omnetpp-4.0rc1 released ------
+
 2008-12-10  Andras Varga
 
 	* express mode status updates are now always flushed (no need to set
