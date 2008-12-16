@@ -1,9 +1,3 @@
-/**
- * <copyright>
- * </copyright>
- *
- * $Id$
- */
 package org.omnetpp.scave.model.provider;
 
 
