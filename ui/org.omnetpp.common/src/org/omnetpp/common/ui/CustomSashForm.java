@@ -1,3 +1,10 @@
+/*--------------------------------------------------------------*
+  Copyright (C) 2006-2008 OpenSim Ltd.
+  
+  This file is distributed WITHOUT ANY WARRANTY. See the file
+  'License' for details on this and other legal matters.
+*--------------------------------------------------------------*/
+
 /**
  * Copy of org.eclipse.ve.internal.cde.core.CustomSashForm from the
  * Visual Editor project. Check https://bugs.eclipse.org/bugs/show_bug.cgi?id=75619.
