@@ -60,13 +60,10 @@ public class OmnetppPreferencePage
         addAndFillIntoGrid(new DirectoryListFieldEditor(IConstants.PREF_OMNETPP_IMAGE_PATH, "Image path:", spacer), spacer, 3);
         createLabel(spacer, "Note: Image path changes take effect on next restart.", 3);
         
-		// supported only in the commercial build
-		if (IConstants.IS_COMMERCIAL) {
-		    Group group2 = createGroup(parent, "Tools for generating documentation", 3, 3, GridData.FILL_HORIZONTAL);
-	        Composite spacer2 = createComposite(group2, 3, 3, GridData.FILL_HORIZONTAL);
-	        addAndFillIntoGrid(new LookupExecutableFileFieldEditor(IConstants.PREF_DOXYGEN_EXECUTABLE, "Doxygen executable path:", spacer2), spacer2, 3);
-	        addAndFillIntoGrid(new LookupExecutableFileFieldEditor(IConstants.PREF_GRAPHVIZ_DOT_EXECUTABLE, "GraphViz Dot executable path:", spacer2), spacer2, 3);
-		}
+        Group group2 = createGroup(parent, "Tools for generating documentation", 3, 3, GridData.FILL_HORIZONTAL);
+        Composite spacer2 = createComposite(group2, 3, 3, GridData.FILL_HORIZONTAL);
+        addAndFillIntoGrid(new LookupExecutableFileFieldEditor(IConstants.PREF_DOXYGEN_EXECUTABLE, "Doxygen executable path:", spacer2), spacer2, 3);
+        addAndFillIntoGrid(new LookupExecutableFileFieldEditor(IConstants.PREF_GRAPHVIZ_DOT_EXECUTABLE, "GraphViz Dot executable path:", spacer2), spacer2, 3);
 	}
 
 	protected void addAndFillIntoGrid(FieldEditor editor, Composite parent, int numColumns) {
@@ -117,16 +114,12 @@ public class OmnetppPreferencePage
 	}
 
     public static boolean isGraphvizDotAvailable() {
-    	if (!IConstants.IS_COMMERCIAL)
-    		return false;
         IPreferenceStore store = OmnetppMainPlugin.getDefault().getPreferenceStore();
         String graphvizDotExecutablePath = store.getString(IConstants.PREF_GRAPHVIZ_DOT_EXECUTABLE);
         return graphvizDotExecutablePath != null && new File(ProcessUtils.lookupExecutable(graphvizDotExecutablePath)).exists();
     }
 
     public static boolean isDoxygenAvailable() {
-    	if (!IConstants.IS_COMMERCIAL)
-    		return false;
         IPreferenceStore store = OmnetppMainPlugin.getDefault().getPreferenceStore();
         String doxyExecutablePath = store.getString(IConstants.PREF_DOXYGEN_EXECUTABLE);
         return doxyExecutablePath != null && new File(ProcessUtils.lookupExecutable(doxyExecutablePath)).exists();

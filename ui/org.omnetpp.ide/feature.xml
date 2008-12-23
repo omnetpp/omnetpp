@@ -199,4 +199,18 @@
          version="1.0.4.v20080605-1930"
          unpack="false"/>
 
+   <plugin
+         id="org.omnetpp.neddoc"
+         download-size="0"
+         install-size="0"
+         version="4.0.0.qualifier"
+         unpack="false"/>
+
+   <plugin
+         id="org.slf4j.nop"
+         download-size="0"
+         install-size="0"
+         version="1.0.0.rc3"
+         unpack="false"/>
+
 </feature>
