@@ -622,12 +622,12 @@ are saved into the output scalar files, and it is useful for the input
 parameters to get saved into the same file as well.
 
 For convenience, {\opp} automatically saves the iteration variables
-into the output scalar file if they have numeric value, so they can 
-be referred to during result analysis. 
+into the output scalar file if they have numeric value, so they can
+be referred to during result analysis.
 
 \begin{warning}
-    If an iteration variable has non-numeric value, it will not be recorded 
-    automatically and cannot be used during analysis. This can happen 
+    If an iteration variable has non-numeric value, it will not be recorded
+    automatically and cannot be used during analysis. This can happen
     unintentionally if you specify units inside an iteration variable list:
 \begin{Verbatim}[commandchars=\\\{\}]
 # NEVER USE:
@@ -1392,7 +1392,7 @@ All other options are read from the configuration file.
 An example of running an {\opp} executable with the -h flag:
 
 \begin{verbatim}
-% ./fddi -h
+$ ./fddi -h
 
 {\opp} Discrete Event Simulation  (C) 1992-2005 Andras Varga
 See the license for distribution terms and warranty disclaimer
@@ -1690,8 +1690,8 @@ give it \ttt{x} (executable) permission using \ttt{chmod},
 then you can execute it by typing \ttt{./run}:
 
 \begin{verbatim}
-% chmod +x run
-% ./run
+$ chmod +x run
+$ ./run
 \end{verbatim}
 
 You can simplify the above script by using a \textit{for} loop.

@@ -116,7 +116,7 @@ Once you have the source files (\ttt{*.ned}, \ttt{*.msg}, \ttt{*.cc},
 \ttt{*.h}) in a directory, change there and type:
 
 \begin{verbatim}
-% opp_makemake
+$ opp_makemake
 \end{verbatim}
 
 This will create a file named \texttt{Makefile}\index{Makefile}. Thus if you
@@ -148,7 +148,7 @@ will refuse to overwrite it. You can force overwriting the old \texttt{Makefile}
 with the -f option:
 
 \begin{verbatim}
-% opp_makemake -f
+$ opp_makemake -f
 \end{verbatim}
 
 If you have problems, check the path definitions (locations of include
@@ -161,20 +161,20 @@ You can specify the user interface (Cmdenv/Tkenv) with the -u option
 recommended configuration)):
 
 \begin{verbatim}
-% opp_makemake -u Tkenv
+$ opp_makemake -u Tkenv
 \end{verbatim}
 
 or:
 
 \begin{verbatim}
-% opp_makemake -u Cmdenv
+$ opp_makemake -u Cmdenv
 \end{verbatim}
 
 The name of the output file\index{output!file} is set with the -o
 option (the default is the name of the directory):
 
 \begin{verbatim}
-% opp_makemake -o aloha
+$ opp_makemake -o aloha
 \end{verbatim}
 
 If some of your source files are generated from other files (for
@@ -277,21 +277,23 @@ First create the makefile for the core directory (build a shared lib from all .c
 found in the core subtree and name it 'mfcore'):
 
 \begin{verbatim}
-% cd core && opp_makemake -f --deep --make-so -o mfcore -O out
+$ cd core && opp_makemake -f --deep --make-so -o mfcore -O out
 \end{verbatim}
 
 The contrib directory is depending on \texttt{mfcore} so we use the -L and -l options
 to specify the library we should link with. Note that we must also add
 the include directories manually from the core source tree, because autodiscovery works only
 in the same source tree:
+
 \begin{verbatim}
-% cd contrib && opp_makemake -f --deep --make-so -o mfcontrib -O out -I../core/basicModules -I../core/utils -L../out/$(CONFIGNAME)/core -lmfcore
+$ cd contrib && opp_makemake -f --deep --make-so -o mfcontrib -O out -I../core/basicModules -I../core/utils -L../out/$(CONFIGNAME)/core -lmfcore
 \end{verbatim}
 
 The testSuite will be created as an executable file which depends on both
 \texttt{mfcontrib} and \texttt{mfcore}.
+
 \begin{verbatim}
-% cd testSuite && opp_makemake -f --deep -o testSuite -O out -I../core/utils -I../core/basicModules \\
+$ cd testSuite && opp_makemake -f --deep -o testSuite -O out -I../core/utils -I../core/basicModules \\
     -I../contrib/utils  -I../contrib/applLayer -L../out/$(CONFIGNAME)/contrib -lmfcontrib
 \end{verbatim}
 
@@ -299,12 +301,14 @@ Now the last step is to create a top-level makefile in the root of the project t
 calls the previously created makefiles in the correct order. We will use the
 --nolink option, exclude every subdirectory from the bild (-X.) and explicitly call
 the above makefiles (-d dirname).
+
 \begin{verbatim}
-% opp_makemake -f --nolink -O out -d testSuite -d core -d contrib -X.
+$ opp_makemake -f --nolink -O out -d testSuite -d core -d contrib -X.
 \end{verbatim}
 
 Finally we have to specify the dependencies between the above directories. Add the lines below to the makefrag file
-in the prkeject directory root.
+in the project directory root.
+
 \begin{verbatim}
 contrib_dir: core_dir
 testSuite_dir: contrib_dir
@@ -324,8 +328,8 @@ If you want static linking\index{static linking}, you must
 recompile the {\opp} class library. Use
 
 \begin{verbatim}
-make clean
-make SHARED_LIBS=no
+$ make clean
+$ make SHARED_LIBS=no
 \end{verbatim}
 
 in the root of your {\opp} installation.

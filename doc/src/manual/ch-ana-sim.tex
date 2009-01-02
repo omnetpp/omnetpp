@@ -132,13 +132,13 @@ vector. You can find the appropriate vector line with a text editor or
 you can use \fprog{grep} for this purpose:
 
 \begin{verbatim}
-% grep "queue length" vector.vec
+$ grep "queue length" vector.vec
 \end{verbatim}
 
 Or, you can get the list of all vectors in the file by typing:
 
 \begin{verbatim}
-% grep ^vector vector.vec
+$ grep ^vector vector.vec
 \end{verbatim}
 
 This will output the appropriate vector line:
@@ -172,7 +172,7 @@ in the previous section: it breaks the vector file into several files which
 contain one vector each. The command
 
 \begin{verbatim}
-% splitvec mysim.vec
+$ splitvec mysim.vec
 \end{verbatim}
 
 would create the files \ttt{mysim1.vec}, \ttt{mysim2.vec} etc. with
