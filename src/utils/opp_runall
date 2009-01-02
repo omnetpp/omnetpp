@@ -1,0 +1,153 @@
+#!/usr/bin/env perl -w
+#
+# Generates a makefile that executes several simulation runs, and
+# optionally invokes "make" as well.
+#
+# Author: Andras Varga
+#
+
+use Cwd;
+use Config;
+
+sub makeMakefile();
+
+$ARG0 = $0;
+
+$verbose = 0;
+@simProg = "";
+@simProgArgs = ();
+$makefileName = "Runfile";
+makeMakefile();
+exit 0;
+
+#TODO:  -f Runfile;  --run -j2
+
+sub usage()
+{
+    print <<END
+$ARG0: Generate a makefile that executes several simulation runs, and
+optionally invokes "make" as well.
+
+Usage: $ARG0 [options] <simprog> [simprog-options]
+
+Should be called with the full command (simulation program with args)
+to be executed, and the output is a Makefile that contains one target
+per run. This program basically explodes -r option; for example, a
+simulation command line containing -r0..2,8,10 will generate 5 commands
+with the -r0, -r1, -r2, -r8 and -r10 options, respectively. It is possible
+to take advantage of multiple CPUs or cores by using the -j make option
+(GNU Make specific).
+
+Options:
+    -h, --help            This help text
+    -V                    Verbose
+    --                    Denotes end of options (everything after that is
+                          treated as part of the simulation command line)
+END
+}
+
+sub makeMakefile()
+{
+    #
+    # process command line args
+    #
+    while (@ARGV)
+    {
+        my $arg = shift @ARGV;
+        if ($arg eq "-h" || $arg eq "--help") {
+            usage();
+            exit(1);
+        }
+        elsif ($arg eq "-V") {
+            $verbose = 1;
+        }
+        elsif ($arg eq "--") {
+            $arg = shift @ARGV;
+            $simProg = $arg;
+            push(@simProgArgs, @ARGV);
+            last;  # end of options
+        }
+        elsif ($arg =~ /^-/) {
+            error("unrecognized option $arg");
+        }
+        else {
+            # process non-option args; first one is the simulation program, then its args
+            $simProg = $arg;
+            push(@simProgArgs, @ARGV);
+            last;  # end of options
+        }
+    }
+
+    # find -r option
+    $runNumIndex = "";  # index of the argument of the -r option in the args list
+    my $i = 0;
+    foreach my $arg (@simProgArgs) {
+        if ($arg eq "-r") {
+            $runNumIndex = $i+1;
+        }
+        $i++;
+    }
+
+    # expand run numbers to @runNumbers
+    if ($runNumIndex eq "") {
+        @runNumbers = 0;  # default run
+    }
+    else {
+        @runNumbers = ();
+        my $runSpec = $simProgArgs[$runNumIndex];
+        foreach my $r (split(",", $runSpec)) {
+            if ($r =~ /^\d+$/) {
+                push(@runNumbers, $r);
+            }
+            elsif ($r =~ /^(\d+)(\.\.|-)(\d+)$/) {
+                my $from = $1;
+                my $to = $3;
+                for (my $i=$from; $i<=$to; $i++) {
+                    push(@runNumbers, $i);
+                }
+            }
+            else {
+                error("unrecognized run number spec: $r");
+            }
+        }
+    }
+
+    # generate makefile
+    $content = "";
+    $targetList = "";
+    $prefix = "r";
+    foreach my $i (@runNumbers) {
+        $targetList .= " $prefix$i";
+        $content .= "$prefix$i:\n";
+        $simProgArgs[$runNumIndex] = $i;
+        $content .= "\t$simProg " . join(" ", @simProgArgs) . "\n\n";
+    }
+
+    $content = ".PHONY: $targetList\n\n" . "all: $targetList\n\n" . $content;
+
+    open(OUT, ">$makefileName");
+    print OUT $content;
+    close OUT;
+
+    print "$makefileName created\n" if $verbose;
+}
+
+sub runprog
+{
+    my $cmd = shift;
+    system($cmd);
+}
+
+sub error($)
+{
+    my($text) = @_;
+    print STDERR "$ARG0: error: $text\n";
+    exit(1);
+}
+
+sub warning($)
+{
+    my($text) = @_;
+    print STDERR "$ARG0: warning: $text\n";
+}
+
