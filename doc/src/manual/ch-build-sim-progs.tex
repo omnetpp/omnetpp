@@ -25,8 +25,10 @@ program from source: all C++ sources need to be compiled into object files
 and all object files need to be linked with the necessary libraries to get
 an executable or shared library.
 
-NOTE: Compiling NED files directly to C++ classes is no longer supported in
-{\opp} 4.0. You should always dynamically load your NED files.
+\begin{note}
+Compiling NED files directly to C++ classes is no longer supported in
+{\opp} 4.0. NED files are always dynamically loaded.
+\end{note}
 
 File names for libraries differ for Unix/Linux and for Windows,
 and also different for static and shared libraries.
@@ -38,10 +40,10 @@ and the shared library would be called \ttt{libopptkenv[d].so}.
 is for the release build.) The Windows version of the static library would
 be \ttt{libopptkenv.a}, and the DLL would be named \ttt{libopptkenv.dll}.
 
-NOTE: On MSVC compilers the corresponding filenames will be:
-\ttt{opptkenv.lib}, and the DLL would be named \ttt{opptkenv.dll}.
-
-NOTE: On Mac OS X shared libraries have the \ttt{.dylib} extension instead of \ttt{.so}.
+\begin{note}
+With MSVC, the corresponding filenames will be \ttt{opptkenv.lib} and \ttt{opptkenv.dll}.
+On Mac OS X, shared libraries have the \ttt{.dylib} extension instead of \ttt{.so}.
+\end{note}
 
 In {\opp} 4.0 we recommend to use shared libraries whenever it is possible.
 You'll need to link with the following libraries:
@@ -81,10 +83,10 @@ following platforms:
 \end{itemize}
 
 
-\section{Using gcc/MinGW}
+\section{Using gcc}
 
 This section applies to using {\opp} on Linux, Solaris, Mac OS X, FreeBSD and
-other Unix derivatives, and also MinGW on Windows.
+other Unix derivatives, and also to MinGW on Windows.
 
 Here in the manual we can give you a rough overview only.
 The \ttt{doc/} directory of your {\opp} installation contains
@@ -104,21 +106,14 @@ procedure: \ttt{./configure} followed by \ttt{make}.
 
 \subsection{Building simulation models}
 
-The \fprog{opp\_makemake} script can automatically generate the
+The \fprog{opp\_makemake} script can automatically generate a
 \texttt{Makefile} for your simulation program, based on the source files
-in the current directory. (It can also handle large models
-which are spread across several directories; this is covered later in
-this section.)
-
-\fprog{opp\_makemake} has several options, with the \ttt{-h}
-option it displays a summary.
-
-\begin{verbatim}
-% opp_makemake -h
-\end{verbatim}
+in the current directory or directory tree.
+\fprog{opp\_makemake} has several options; \ttt{opp\_makemake -h}
+displays a help text.
 
 Once you have the source files (\ttt{*.ned}, \ttt{*.msg}, \ttt{*.cc},
-\ttt{*.h}) in a directory, \ttt{cd} there then type:
+\ttt{*.h}) in a directory, change there and type:
 
 \begin{verbatim}
 % opp_makemake
@@ -227,7 +222,9 @@ that your \texttt{\#include} statements must unambigously specify the name of th
 include a directory which is outside of your source directory tree you always must specify it with
 the \texttt{-I external/include/dir} option.
 
-NOTE: You may turn off the include autodiscovery mechanism with the \texttt{--no-deep-includes} option.
+\begin{note}
+You may turn off the include autodiscovery mechanism with the \texttt{--no-deep-includes} option.
+\end{note}
 
 The next step is to decide whether you want to use static linking\index{static linking},
 shared or run-time loaded (shared) libraries\index{shared libraries}. (We strongly
