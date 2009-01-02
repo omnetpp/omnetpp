@@ -11,6 +11,10 @@ use Config;
 use IO::File; # for temp files
 use POSIX qw(tmpnam);
 
+#TODO: ha nincs -u, rakja bele
+#TODO: ha nincs -r, talalja ki
+#TODO: tamogassa a -r1,2 szintaxist is (space nelkul!)
+
 sub makeMakefile();
 
 $ARG0 = $0;
@@ -92,6 +96,10 @@ sub makeMakefile()
             push(@simProgArgs, @ARGV);
             last;  # end of options
         }
+    }
+
+    if (!$simProg) {
+        error("simulation program not specified");
     }
 
     # find -r option
