@@ -152,7 +152,7 @@ sub makeMakefile()
         # try new temporary filenames until we get one that didn't already exist
         # http://docstore.mik.ua/orelly/perl/cookbook/ch07_06.htm
         do { $filename = tmpnam() }
-            until $fh = IO::File->new($filename, O_RDWR|O_CREAT|O_EXCL);
+            until IO::File->new($filename, O_RDWR|O_CREAT|O_EXCL);
 
         # install atexit-style handler so that when we exit or die,
         # we automatically delete this temporary file
@@ -164,6 +164,16 @@ sub makeMakefile()
     close OUT;
 
     print "$filename created\n" if $verbose;
+
+    if (!$makefileToExport) {
+        # invoke make
+        $makeProg = $ENV{MAKE} ? $ENV{MAKE} : "make";
+        $jOption = $jOption ? " $jOption" : "";
+        $makeCommand = "$makeProg$jOption -f $filename";
+        print "running $makeCommand...\n" if $verbose;
+        runprog($makeCommand);
+        print "done\n" if $verbose;
+    }
 }
 
 sub runprog
