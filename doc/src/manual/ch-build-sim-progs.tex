@@ -25,7 +25,7 @@ program from source: all C++ sources need to be compiled into object files
 and all object files need to be linked with the necessary libraries to get
 an executable or shared library.
 
-NOTE: Compiling NED files directly to C++ classes is no longer supported in 
+NOTE: Compiling NED files directly to C++ classes is no longer supported in
 {\opp} 4.0. You should always dynamically load your NED files.
 
 File names for libraries differ for Unix/Linux and for Windows,
@@ -35,10 +35,10 @@ If you are compiling with gcc or mingw, the file name for the static library
 would be something like \ttt{libopptkenv[d].a},
 and the shared library would be called \ttt{libopptkenv[d].so}.
 (libopptkenvd.so would be used for the debug version while libopptkenv.so
-is for the release build.) The Windows version of the static library would 
+is for the release build.) The Windows version of the static library would
 be \ttt{libopptkenv.a}, and the DLL would be named \ttt{libopptkenv.dll}.
 
-NOTE: On MSVC compilers the corresponding filenames will be: 
+NOTE: On MSVC compilers the corresponding filenames will be:
 \ttt{opptkenv.lib}, and the DLL would be named \ttt{opptkenv.dll}.
 
 NOTE: On Mac OS X shared libraries have the \ttt{.dylib} extension instead of \ttt{.so}.
@@ -52,8 +52,8 @@ You'll need to link with the following libraries:
   \item{User interfaces. The common part of all user interfaces is
     the \textit{oppenvir} library (file \texttt{liboppenvir.[so|dll|dylib]}, etc),
     and the specific user interfaces are \textit{opptkenv} and \textit{oppcmdenv}
-    (\ttt{libopptkenv.[so|dll|dylib]}, \ttt{liboppcmdenv.[so|dll|dylib]}, etc). 
-    You have to link with \textit{oppenvir}, plus \textit{opptkenv} or 
+    (\ttt{libopptkenv.[so|dll|dylib]}, \ttt{liboppcmdenv.[so|dll|dylib]}, etc).
+    You have to link with \textit{oppenvir}, plus \textit{opptkenv} or
     \textit{oppcmdenv} or both.}
 \end{itemize}
 
@@ -89,7 +89,7 @@ other Unix derivatives, and also MinGW on Windows.
 Here in the manual we can give you a rough overview only.
 The \ttt{doc/} directory of your {\opp} installation contains
 \ttt{Readme.}\textit{<platform>} files that provide
-up-to-date, more detailed and more precise platform specific 
+up-to-date, more detailed and more precise platform specific
 instructions.
 
 
@@ -132,8 +132,8 @@ containing the files.
 
 The freshly generated \texttt{Makefile} contains
 dependencies\index{Makefile!dependencies}, but you can later
-regenerate the dependencies by typing \fprog[make]{make depend}. 
-The warnings during the dependency generation process can 
+regenerate the dependencies by typing \fprog[make]{make depend}.
+The warnings during the dependency generation process can
 be safely ignored.
 
 In addition to the simulation executable, the \texttt{Makefile}
@@ -162,7 +162,7 @@ and correct them if necessary. Then re-run configure for the changes
 to take effect.
 
 You can specify the user interface (Cmdenv/Tkenv) with the -u option
-(with no -u, both Cmdenv and Tkenv is linked in by default (this is the 
+(with no -u, both Cmdenv and Tkenv is linked in by default (this is the
 recommended configuration)):
 
 \begin{verbatim}
@@ -194,42 +194,42 @@ With the -i option, you can also name other files to be included into the
 
 In the case of a large project, your source files may be spread across
 several directories and your project may generate more than one executable
-file (i.e. several shared libraries, examples etc.). 
+file (i.e. several shared libraries, examples etc.).
 
 First identify each source directory tree in your project. A good rule of
 thumb is that each source directory tree will generate a single output file
-(i.e. shared/static library or executable file). A single project may contain 
-several source directory trees. A source directory tree needs 
-a \texttt{Makefile} in its root, but source files may be placed anywhere 
-in the tree. To specify that the generated \texttt{Makefile} should look into all 
-subfolders use the \texttt{opp_makemake --deep} option. Make will descend into
+(i.e. shared/static library or executable file). A single project may contain
+several source directory trees. A source directory tree needs
+a \texttt{Makefile} in its root, but source files may be placed anywhere
+in the tree. To specify that the generated \texttt{Makefile} should look into all
+subfolders use the \texttt{opp\_makemake --deep} option. Make will descend into
 subdirectories recursively and discover all \texttt{.cc}, \texttt{.h} and \texttt{.msg}
-files. If you need to exclude a specific directory, use the \texttt{-X excude/dir/path} 
-option. 
+files. If you need to exclude a specific directory, use the \texttt{-X excude/dir/path}
+option.
 
-Your source directory tree may contain parts which need their own hand written \texttt{Makefile}. 
-This can happen if you include source files from an other non {\opp} project. To 
+Your source directory tree may contain parts which need their own hand written \texttt{Makefile}.
+This can happen if you include source files from an other non {\opp} project. To
 include this handwritten \texttt{Makefile} into the build proecess first exclude that part
-of the source tree from the deep file discovery by using the \texttt{-X project/with/own/makefile} 
-and use the \texttt{--subdir project/with/own/makefile} option to instruct \texttt{opp_makamake}
+of the source tree from the deep file discovery by using the \texttt{-X project/with/own/makefile}
+and use the \texttt{--subdir project/with/own/makefile} option to instruct \texttt{opp\_makamake}
 to call the handwritten \texttt{Makefile} directly. (You may specify additional dependencies by
-adding them to the \texttt{makefrag} file in the root of the source tree. This file will be 
+adding them to the \texttt{makefrag} file in the root of the source tree. This file will be
 automatically included in your generated \texttt{Makefile} before all targets.)
 
-If your source tree contains several subdirectories (maybe several levels deep) it is  
+If your source tree contains several subdirectories (maybe several levels deep) it is
 annoying that you should specify relative paths for your header files in your \texttt{.cc} files
-or you should specify the include path explicitly by the \texttt{-I includepath} option. 
-\texttt{opp_makemake} has a default automatic include path discovery which adds all necessary
+or you should specify the include path explicitly by the \texttt{-I includepath} option.
+\texttt{opp\_makemake} has a default automatic include path discovery which adds all necessary
 include directories in the current source tree to the compiler command line. The only requirement is
-that your \texttt{#include} statements must unambigously specify the name of the header file.
-(i.e. if you have two \texttt{common.h} files one in subdir1 and the other in subdir2 specify 
-\texttt{#include "subdir1/common.h"} instead of \texttt{#include "common.h"}. If you want to 
-include a directory which is outside of your source directory tree you always must specify it with 
+that your \texttt{\#include} statements must unambigously specify the name of the header file.
+(i.e. if you have two \texttt{common.h} files one in subdir1 and the other in subdir2 specify
+\texttt{\#include "subdir1/common.h"} instead of \texttt{\#include "common.h"}. If you want to
+include a directory which is outside of your source directory tree you always must specify it with
 the \texttt{-I external/include/dir} option.
 
 NOTE: You may turn off the include autodiscovery mechanism with the \texttt{--no-deep-includes} option.
 
-The next step is to decide whether you want to use static linking\index{static linking}, 
+The next step is to decide whether you want to use static linking\index{static linking},
 shared or run-time loaded (shared) libraries\index{shared libraries}. (We strongly
 recommend to use shared libraries.) By default the makefile will create an executable
 file from your source tree. Use \texttt{--make-so} to create shared libraries
@@ -247,8 +247,8 @@ By default, \texttt{--recurse} decends into all subdirectories; the -X directory
 can be used to make it ignore certain subdirectories. This option is especially useful
 for top level makefiles.
 
-Once you have created your makefiles with \texttt{opp_makemake} in every source directory tree
-you will need a toplevel makefile. The toplevel makefile usually calls only the makefiles 
+Once you have created your makefiles with \texttt{opp\_makemake} in every source directory tree
+you will need a toplevel makefile. The toplevel makefile usually calls only the makefiles
 recursively in the source directory trees.
 
 You can control the build order by adding dependencies among subdirectories
@@ -284,23 +284,23 @@ found in the core subtree and name it 'mfcore'):
 \end{verbatim}
 
 The contrib directory is depending on \texttt{mfcore} so we use the -L and -l options
-to specify the library we should link with. Note that we must also add 
-the include directories manually from the core source tree, because autodiscovery works only 
+to specify the library we should link with. Note that we must also add
+the include directories manually from the core source tree, because autodiscovery works only
 in the same source tree:
 \begin{verbatim}
 % cd contrib && opp_makemake -f --deep --make-so -o mfcontrib -O out -I../core/basicModules -I../core/utils -L../out/$(CONFIGNAME)/core -lmfcore
 \end{verbatim}
 
-The testSuite will be created as an executable file which depends on both 
+The testSuite will be created as an executable file which depends on both
 \texttt{mfcontrib} and \texttt{mfcore}.
 \begin{verbatim}
 % cd testSuite && opp_makemake -f --deep -o testSuite -O out -I../core/utils -I../core/basicModules \\
     -I../contrib/utils  -I../contrib/applLayer -L../out/$(CONFIGNAME)/contrib -lmfcontrib
 \end{verbatim}
 
-Now the last step is to create a top-level makefile in the root of the project that 
-calls the previously created makefiles in the correct order. We will use the 
---nolink option, exclude every subdirectory from the bild (-X.) and explicitly call 
+Now the last step is to create a top-level makefile in the root of the project that
+calls the previously created makefiles in the correct order. We will use the
+--nolink option, exclude every subdirectory from the bild (-X.) and explicitly call
 the above makefiles (-d dirname).
 \begin{verbatim}
 % opp_makemake -f --nolink -O out -d testSuite -d core -d contrib -X.
@@ -316,10 +316,10 @@ testSuite_dir: contrib_dir
 \subsection{Static vs shared {\opp} system libraries}
 
 Default linking uses shared libraries\index{shared libraries}. One
-reason you would want static linking is that debugging\index{debugging} 
-the {\opp} class library may be easier with static libraries. 
-Another reason might be that you want to run the executable on 
-another machine without having to worry about setting the 
+reason you would want static linking is that debugging\index{debugging}
+the {\opp} class library may be easier with static libraries.
+Another reason might be that you want to run the executable on
+another machine without having to worry about setting the
 \fvar{LD\_LIBRARY\_PATH} variable (which should contain the name
 of the directory where the {\opp} shared libraries are).
 
@@ -339,7 +339,7 @@ in the root of your {\opp} installation.
 There are only slight differences to the way Microsoft Visual C++
 is handled. The main differences are:
 \begin{itemize}
-  \item{You should use \ttt{opp_nmakemake} instead of \ttt{opp_makemake}}
+  \item{You should use \ttt{opp\_nmakemake} instead of \ttt{opp\_makemake}}
   \item{The generated makefile will be called \ttt{Makefile.vc} by default.}
   \item{Use \ttt{makefrag.vc} instead of \ttt{makefrag}.}
   \item{\ttt{nmake} is used instead of \ttt{make}.}
@@ -349,8 +349,8 @@ is handled. The main differences are:
 \subsection{Installation}
 
 It is easiest to start with the binary installer version.
-It contains all necessary software and precompiled 
-libraries except MSVC\index{MSVC}, and you can get a 
+It contains all necessary software and precompiled
+libraries except MSVC\index{MSVC}, and you can get a
 working system up and running very fast.
 
 Later you'll probably want to build the source yourself.
