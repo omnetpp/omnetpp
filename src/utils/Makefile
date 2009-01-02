@@ -39,6 +39,7 @@ all: $O/opp_lcg32_seedtool$(EXE_SUFFIX) $O/abspath$(EXE_SUFFIX)
 	cp opp_makemake $(OMNETPP_BIN_DIR)
 	cp opp_test $(OMNETPP_BIN_DIR)
 	cp opp_makedep $(OMNETPP_BIN_DIR)
+	cp opp_runall $(OMNETPP_BIN_DIR)
 	cp splitvec $(OMNETPP_BIN_DIR)
 	cp omnetpp $(OMNETPP_BIN_DIR)
 	cp omnest $(OMNETPP_BIN_DIR)
@@ -60,7 +61,7 @@ depend:
 
 clean:
 	rm -rf $O
-	cd $(OMNETPP_BIN_DIR) && rm -f opp_lcg32_seedtool$(EXE_SUFFIX) abspath$(EXE_SUFFIX) opp_makemake opp_test opp_makedep splitvec
+	cd $(OMNETPP_BIN_DIR) && rm -f opp_lcg32_seedtool$(EXE_SUFFIX) abspath$(EXE_SUFFIX) opp_makemake opp_runall opp_test opp_makedep splitvec
 #	rm -f opp_configfilepath
 #	rm -f opp_configfilepath.cmd
 

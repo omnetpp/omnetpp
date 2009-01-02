@@ -33,6 +33,8 @@ all: $O/opp_lcg32_seedtool.exe $O/ln.exe
 	copy opp_makemake $(OMNETPP_BIN_DIR:/=\)
 	copy opp_makedep.cmd $(OMNETPP_BIN_DIR:/=\)
 	copy opp_makedep $(OMNETPP_BIN_DIR:/=\)
+	copy opp_runall.cmd $(OMNETPP_BIN_DIR:/=\)
+	copy opp_runall $(OMNETPP_BIN_DIR:/=\)
 	copy opp_test.cmd $(OMNETPP_BIN_DIR:/=\)
 	copy opp_test $(OMNETPP_BIN_DIR:/=\)
 	copy linkall.cmd $(OMNETPP_BIN_DIR:/=\)
@@ -58,7 +60,7 @@ depend:
 
 clean:
 	-rmdir /s /q $(O:/=\) 2>nul
-	-cd $(OMNETPP_BIN_DIR:/=\) && del /q opp_lcg32_seedtool.exe* ln.exe* opp_makemake* opp_test* opp_makedep* linkall* msvcver.pl opp_nmakemake.cmd 2>nul
+	-cd $(OMNETPP_BIN_DIR:/=\) && del /q opp_lcg32_seedtool.exe* ln.exe* opp_makemake* opp_runall* opp_test* opp_makedep* linkall* msvcver.pl opp_nmakemake.cmd 2>nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 abspath.obj: abspath.cc \
