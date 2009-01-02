@@ -8,19 +8,23 @@
 
 use Cwd;
 use Config;
+use IO::File; # for temp files
+use POSIX qw(tmpnam);
 
 sub makeMakefile();
 
 $ARG0 = $0;
+$originalArgs = $ARG0 . " " . join(" ", @ARGV);
 
 $verbose = 0;
 @simProg = "";
 @simProgArgs = ();
-$makefileName = "Runfile";
+$jOption = "";
+$makefileToExport = "";
+
 makeMakefile();
 exit 0;
 
-#TODO:  -f Runfile;  --run -j2
 
 sub usage()
 {
@@ -41,6 +45,10 @@ to take advantage of multiple CPUs or cores by using the -j make option
 Options:
     -h, --help            This help text
     -V                    Verbose
+    --export <filename>   Write a makefile but do not run it; recommended
+                          name is Runfile
+    -j<number>            Make use of multiple CPUs; this options gets passed
+                          to the "make" program without being looked at
     --                    Denotes end of options (everything after that is
                           treated as part of the simulation command line)
 END
@@ -60,6 +68,12 @@ sub makeMakefile()
         }
         elsif ($arg eq "-V") {
             $verbose = 1;
+        }
+        elsif ($arg =~ "^-j") {
+            $jOption = $arg;
+        }
+        elsif ($arg eq "--export") {
+            $makefileToExport = shift @ARGV;
         }
         elsif ($arg eq "--") {
             $arg = shift @ARGV;
@@ -110,26 +124,46 @@ sub makeMakefile()
                 error("unrecognized run number spec: $r");
             }
         }
+        print "-r $runSpec expands to: " . join(" ", @runNumbers) . "\n" if $verbose;
     }
 
     # generate makefile
-    $content = "";
+    $banner  = "#\n";
+    $banner .= "# This makefile was generated with the following command:\n";
+    $banner .= "# $originalArgs\n";
+    $banner .= "#\n";
+
     $targetList = "";
+    $rules = "";
     $prefix = "r";
     foreach my $i (@runNumbers) {
         $targetList .= " $prefix$i";
-        $content .= "$prefix$i:\n";
+        $rules .= "$prefix$i:\n";
         $simProgArgs[$runNumIndex] = $i;
-        $content .= "\t$simProg " . join(" ", @simProgArgs) . "\n\n";
+        $rules .= "\t$simProg " . join(" ", @simProgArgs) . "\n\n";
     }
 
-    $content = ".PHONY: $targetList\n\n" . "all: $targetList\n\n" . $content;
+    $content = "$banner\n" . ".PHONY: $targetList\n\n" . "all: $targetList\n\n" . $rules;
 
-    open(OUT, ">$makefileName");
+    if ($makefileToExport) {
+        $filename = $makefileToExport;
+    }
+    else {
+        # try new temporary filenames until we get one that didn't already exist
+        # http://docstore.mik.ua/orelly/perl/cookbook/ch07_06.htm
+        do { $filename = tmpnam() }
+            until $fh = IO::File->new($filename, O_RDWR|O_CREAT|O_EXCL);
+
+        # install atexit-style handler so that when we exit or die,
+        # we automatically delete this temporary file
+        END { unlink($filename) or die "Couldn't unlink $filename : $!" }
+    }
+
+    open(OUT, ">$filename");
     print OUT $content;
     close OUT;
 
-    print "$makefileName created\n" if $verbose;
+    print "$filename created\n" if $verbose;
 }
 
 sub runprog
