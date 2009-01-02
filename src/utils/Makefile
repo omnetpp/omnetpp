@@ -27,11 +27,14 @@ L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 all: $O/opp_lcg32_seedtool$(EXE_SUFFIX) $O/abspath$(EXE_SUFFIX)
 	echo "#!/bin/sh" >opp_configfilepath && echo 'echo `dirname $$0`/../Makefile.inc' >>opp_configfilepath
 #	echo "#!/bin/sh" >opp_configfilepath && echo "echo $(OMNETPP_ROOT)/Makefile.inc" >>opp_configfilepath
-	chmod +x opp_makemake opp_test opp_makedep splitvec opp_configfilepath omnetpp omnest
+	chmod +x opp_makemake opp_test opp_makedep splitvec opp_configfilepath opp_runall omnetpp omnest
 	if [ "$$OS" = "Windows_NT" ] ; then \
 	  echo "@echo $(OMNETPP_ROOT)/Makefile.inc" >opp_configfilepath.cmd && \
 	  cp opp_configfilepath.cmd $(OMNETPP_BIN_DIR); \
 	  cp opp_makemake.cmd $(OMNETPP_BIN_DIR); \
+	  cp opp_runall.cmd $(OMNETPP_BIN_DIR); \
+	  cp opp_test.cmd $(OMNETPP_BIN_DIR); \
+	  cp opp_makedep.cmd $(OMNETPP_BIN_DIR); \
 	  cp omnetpp.cmd $(OMNETPP_BIN_DIR); \
 	  cp omnest.cmd $(OMNETPP_BIN_DIR); \
 	fi

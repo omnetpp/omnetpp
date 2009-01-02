@@ -1,4 +1,4 @@
-#!/usr/bin/env perl -w
+#!/usr/bin/env perl
 #
 # Generates a makefile that executes several simulation runs, and
 # optionally invokes "make" as well.
