@@ -16,6 +16,8 @@ sub makeMakefile();
 $ARG0 = $0;
 $originalArgs = $ARG0 . " " . join(" ", @ARGV);
 
+$tempfilename = "";
+
 $verbose = 0;
 @simProg = "";
 @simProgArgs = ();
@@ -151,12 +153,10 @@ sub makeMakefile()
     else {
         # try new temporary filenames until we get one that didn't already exist
         # http://docstore.mik.ua/orelly/perl/cookbook/ch07_06.htm
-        do { $filename = tmpnam() }
-            until IO::File->new($filename, O_RDWR|O_CREAT|O_EXCL);
-
-        # install atexit-style handler so that when we exit or die,
-        # we automatically delete this temporary file
-        END { unlink($filename) or die "Couldn't unlink $filename : $!" }
+        # see also END block below
+        do { $tempfilename = tmpnam() }
+            until IO::File->new($tempfilename, O_RDWR|O_CREAT|O_EXCL);
+        $filename = $tempfilename;
     }
 
     open(OUT, ">$filename");
@@ -173,6 +173,16 @@ sub makeMakefile()
         print "running $makeCommand...\n" if $verbose;
         runprog($makeCommand);
         print "done\n" if $verbose;
+    }
+}
+
+# provide an END block so that when we exit or die, it automatically deletes
+# the temporary file. Note: the END block ALWAYS gets invoked, even if control
+# doesn't get here during the normal program flow!
+END {
+    if ($tempfilename) {
+        print "deleting $tempfilename\n" if $verbose;
+        unlink($tempfilename) or die "Couldn't unlink $tempfilename: $!"
     }
 }
 
