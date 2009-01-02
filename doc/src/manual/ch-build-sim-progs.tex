@@ -393,26 +393,6 @@ contrib_dir: core_dir
 testSuite_dir: contrib_dir
 \end{verbatim}
 
-\subsection{Static vs shared {\opp} system libraries}
-
-Default linking uses shared libraries\index{shared libraries}. One
-reason you would want static linking is that debugging\index{debugging}
-the {\opp} class library may be easier with static libraries.
-Another reason might be that you want to run the executable on
-another machine without having to worry about setting the
-\fvar{LD\_LIBRARY\_PATH} variable (which should contain the name
-of the directory where the {\opp} shared libraries are).
-
-If you want static linking\index{static linking}, you must
-recompile the {\opp} class library. Use
-
-\begin{verbatim}
-$ make clean
-$ make SHARED_LIBS=no
-\end{verbatim}
-
-in the root of your {\opp} installation.
-
 %%TODO --- include only in OMNEST build
 \section{Using Windows and Microsoft Visual C++}
 
