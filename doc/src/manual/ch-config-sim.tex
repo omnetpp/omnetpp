@@ -5,9 +5,6 @@
 
 Configuration and input data for the simulation are in
 a configuration file usually called \fname{omnetpp.ini}.
-Some entries in this file apply to Tkenv or Cmdenv only, other
-settings are in effect regardless of the user interface.
-Both user interfaces accept command-line arguments, too.
 
 The following sections explain \fname{omnetpp.ini}.
 
@@ -54,7 +51,7 @@ See the license for distribution terms and warranty disclaimer
 Setting up Cmdenv (command-line user interface)...
 
 Preparing for Run #1...
-Setting up network `fifonet1'...
+Setting up network `Fifonet'...
 Running simulation...
 ** Event #0        T=0.0000000   Elapsed: 0m  0s
 ** Event #100000   T=25321.99    Elapsed: 0m  1s
@@ -77,7 +74,7 @@ second; the first two values are 0 because there wasn't enough data
 for it to calculate yet). At the end of the simulation, the \fname{finish()}
 methods of the simple modules are run, and the output from them are displayed.
 On my machine this run took 34 seconds. This Cmdenv output can be
-customized via \fname{omnetpp.ini} entries. The output file \fname{fifo1.vec}
+customized via \fname{omnetpp.ini} entries. The output file \fname{results/Fifo1-0.vec}
 contains vector data recorded during simulation (here, queueing times),
 and it can be processed using Plove or other tools.
 
@@ -142,7 +139,30 @@ etc. options, and \ttt{xmldoc()} module parameter values.)
 
 
 \section{Sections}
-\subsection{Overview}
+
+
+\subsection{The [General] section}
+
+The most commonly used options of the \texttt{[General]} section are the
+following.
+
+\begin{itemize}
+  \item{The \fpar{network} option selects the model to be set up and run.}
+  \item{The length of the simulation can be set with the
+    \fpar{sim-time-limit} and the \fpar{cpu-time-limit} options (the
+    usual time units such as ms, s, m, h, etc. can be used).}
+\end{itemize}
+
+It is important to note, that the loaded NED files may contain
+any number of modules, channel and \textit{any number of networks} as well.
+It does not matter whether you use all or just some of them
+in the simulations. You will be able to select \ttt{any} of the
+networks that occur in the loaded NED files using the \ttt{network=}
+\ttt{omnetpp.ini} entry, and as long as every module, channel etc
+for it has been loaded, network setup will be successful.
+
+
+\subsection{Named configurations}
 
 Named configurations are sections of the form \ttt{[Config <configname>]}, where
 \textit{<configname>} is by convention a camel-case string that starts with a capital letter:
@@ -236,7 +256,167 @@ If you are experimenting a lot with different parameter settings of a
 simulation model, these techniques will make it a lot easier to manage
 ini files.
 
-\section{Scenarios}
+\section{Setting module parameters}
+\label{sec:ch-config-sim:parameter-settings}
+
+Simulations get input via module parameters, which can be assigned a
+value in NED files or in \ttt{omnetpp.ini} -- in this order. Since parameters
+assigned in NED files cannot be overridden in omnetpp.ini, one can
+think about them as being ``hardcoded''. In contrast, it is easier
+and more flexible to maintain module parameter settings in omnetpp.ini.
+
+In omnetpp.ini, module parameters are referred to by their full paths
+or hiearchical names. This name consists of the dot-separated list of
+the module names (from the top-level module down to the module containg
+the parameter), plus the parameter name
+(see section \ref{sec:sim-lib:fullname-and-fullpath}).
+
+An example \ttt{omnetpp.ini} which sets the \ttt{numHosts} parameter of
+the toplevel module and the \ttt{transactionsPerSecond} parameter of the
+\ttt{server} module:
+
+\begin{verbatim}
+[General]
+net.numHosts = 15
+net.server.transactionsPerSecond = 100
+\end{verbatim}
+
+
+\subsection{Using wildcard patterns}
+\label{sec:ch-config-sim:wildcards}
+
+Models can have a large number of parameters to be configured, and it would
+be tedious to set them one-by-one in \ttt{omnetpp.ini}. {\opp} supports
+\textit{wildcards patterns} which allow for setting several model parameters
+at once.
+
+The notation is a variation on the usual glob-style patterns.
+The most apperent differences to the usual rules are the distinction between
+\ttt{*} and \ttt{**}, and that character ranges should be written
+with curly braces instead of square brackets (that is, \textit{any-letter}
+is \ttt{\{a-zA-Z\}} not \ttt{[a-zA-Z]}, because square brackets are
+already reserved for the notation of module vector indices).
+
+Pattern syntax:
+
+\begin{itemize}
+  \item \ttt{?} : matches any character except dot (.)
+  \item \ttt{*} : matches zero or more characters except dot (.)
+  \item \ttt{**} : matches zero or more character (any character)
+  \item \ttt{\{a-f\}} : \textit{set}: matches a character in the range a-f
+  \item \ttt{\{{\textasciicircum}a-f\}}: \textit{negated set}: matches a character
+    NOT in the range a-f
+  \item \ttt{\{38..150\}} : \textit{numeric range}: any number (i.e. sequence of digits)
+    in the range 38..150  (e.g. \ttt{99})
+  \item \ttt{[38..150]} : \textit{index range}: any number in square brackets in the
+    range 38..150 (e.g. \ttt{[99]})
+  \item backslash ({\textbackslash}) : takes away the special meaning of the
+    subsequent character
+\end{itemize}
+
+\subsubsection{Precedence}
+
+If you use wildcards, the order of entries is important: if a parameter
+name matches several wildcards-patterns, the \textit{first} matching occurrence
+is used. This means that you need to list specific settings first, and
+more general ones later. Catch-all settings should come last.
+
+An example ini file:
+
+\begin{verbatim}
+[General]
+*.host[0].waitTime = 5ms   # specifics come first
+*.host[3].waitTime = 6ms
+*.host[*].waitTime = 10ms  # catch-all comes last
+\end{verbatim}
+
+
+\subsubsection{Asterisk vs double asterisk}
+
+The \ttt{*} wildcard is for matching a single module or parameter name in the
+path name, while \ttt{**} can be used to match several components in the path.
+For example, \ttt{**.queue*.bufSize} matches the \ttt{bufSize} parameter of any module
+whose name begins with \ttt{queue} in the model, while \ttt{*.queue*.bufSize}
+or \ttt{net.queue*.bufSize} selects only queues immediately on network level.
+Also note that \ttt{**.queue**.bufSize} would match \ttt{net.queue1.foo.bar.bufSize}
+as well!
+
+\subsubsection{Sets, negated sets}
+
+Sets and negated sets can contain several character ranges and also
+enumeration of characters. For example, \ttt{\{\_a-zA-Z0-9\}} matches any letter
+or digit, plus the underscore; \ttt{\{xyzc-f\}} matches any of the characters
+x, y, z, c, d, e, f.
+To include '-' in the set, put it at a position where it cannot be
+interpreted as character range, for example: \ttt{\{a-z-\}} or \ttt{\{-a-z\}}.
+If you want to include '\}' in the set, it must be the first
+character: \ttt{\{\}a-z\}}, or as a negated set: \ttt{\{{\textasciicircum}\}a-z\}}. A backslash
+is always taken as literal backslash (and NOT as escape character)
+within set definitions.
+
+
+\subsubsection{Numeric ranges and index ranges}
+
+Only nonnegative integers can be matched.  The start or the end of the range
+(or both) can be omitted: \ttt{\{10..\}}, \ttt{\{..99\}} or \ttt{\{..\}}
+are valid numeric ranges (the last one matches any number).
+The specification must use exactly two dots.
+Caveat: \ttt{*\{17..19\}} will match \ttt{a17}, \ttt{117} and \ttt{963217} as well,
+because the \ttt{*} can also match digits!
+
+An example for numeric ranges:
+
+\begin{verbatim}
+[General]
+*.*.queue[3..5].bufSize = 10
+*.*.queue[12..].bufSize = 18
+*.*.queue[*].bufSize = 6  # this will only affect queues 0,1,2 and 6..11
+\end{verbatim}
+
+
+\subsection{Using the default values}
+
+It is also possible to utilize the default values specified in the NED files.
+The \textit{<parameter-fullpath>}\ttt{.apply-default=true} setting assigns
+the default value to the parameter if it has one.
+
+The \textit{<parameter-fullpath>}\ttt{.apply-default=false} setting prohibits
+assigning the default value to the parameter.
+
+If a parameter was not set but has a default value, that value will be
+assigned. This is like having a \ttt{**.apply-default=true} line at the
+bottom of the \ttt{[General]} section.
+
+If a parameter was not set and has no default value, that will either
+cause an error or will be interactively prompted for, depending
+on the particular user interface.
+
+More precisely, parameter resolution takes place as follows:
+
+\begin{enumerate}
+\item If the parameter is assigned in NED, it cannot be overridden in the
+    configuration. The value is applied and the process finishes.
+\item Then the first entry matching \textit{<parameter-fullpath>} or
+    \textit{<parameter-fullpath>}\ttt{.apply-default} is found in the configuration.
+    When a \textit{<parameter-fullpath>}\ttt{.apply-default=false} line is found,
+    the search continues but further \ttt{apply-default}
+    lines will be ignored; this effectively prohibits accepting the
+    the default value. If the parameter has no default value,
+    \ttt{apply-default} lines are ignored from the start.
+\item If the first match is a value line (matches \textit{<parameter-fullpath>}),
+    the value is applied and the process finishes.
+\item If the first match is an \ttt{apply-default=true} line,
+    the default value is applied and the process finishes.
+\item If there was no match and no \ttt{apply-default=false} line has been
+    encountered either, and the parameter has a default value, it is applied
+    and the process finishes.
+\item Otherwise the parameter is declared unassigned, and handled accordingly
+    by the user interface. It may be reported as an error, or may be
+    asked from the user interactively.
+\end{enumerate}
+
+
+\section{Parameter studies}
 
 \subsection{Basic use}
 
@@ -255,13 +435,13 @@ specify iterations over various parameter settings.
 Here's an example:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-[Config AlohaScenario]
+[Config AlohaStudy]
 *.numHosts = \$\{1, 2, 5, 10..50 step 10\}
 **.host[*].generationInterval = exponential( \$\{0.2, 0.4, 0.6\} )
 \end{Verbatim}
 
 
-This scenario expands to 8*3 = 24 simulation runs, where the number of
+This parameter study expands to 8*3 = 24 simulation runs, where the number of
 hosts iterates over the numbers 1, 2, 5, 10, 20, 30, 40, 50, and for
 each host count three simulation runs will be done, with the generation
 interval being exponential(0.2), exponential(0.4), and
@@ -272,18 +452,18 @@ simulation runs a given section expands to. (You'll of course use Cmdenv for bat
 not Tkenv.)
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\$ aloha -u Cmdenv -c AlohaScenario -n
+\$ aloha -u Cmdenv -c AlohaStudy -n
 
 {\opp} Discrete Event Simulation
 ...
-Config: AlohaScenario
+Config: AlohaStudy
 Number of runs: 24
 \end{Verbatim}
 
 
 If you add the '-g' option, the
 program will also print out the values of the iteration variables for
-each run. Note that the scenario description actually maps to nested
+each run. Note that the parameter study actually maps to nested
 loops, with the last "\$\{..\}" becoming
 the innermost loop. The iteration variables are just named \$0 and \$1
 -- we'll see that it is possible to give
@@ -293,10 +473,10 @@ for now.
 
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\$ aloha -u Cmdenv -c AlohaScenario -n -g
+\$ aloha -u Cmdenv -c AlohaStudy -n -g
 {\opp} Discrete Event Simulation
 ...
-Config: AlohaScenario
+Config: AlohaStudy
 Number of runs: 24
 Run 0: \$0=1, \$1=0.2, \$repetition=0
 Run 1: \$0=1, \$1=0.4, \$repetition=0
@@ -321,16 +501,16 @@ So, the task is now to run the simulation program 24 times, with
 '-r' running from 0 through 23:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\$ aloha -u Cmdenv -c AlohaScenario -r 0
-\$ aloha -u Cmdenv -c AlohaScenario -r 1
-\$ aloha -u Cmdenv -c AlohaScenario -r 2
+\$ aloha -u Cmdenv -c AlohaStudy -r 0
+\$ aloha -u Cmdenv -c AlohaStudy -r 1
+\$ aloha -u Cmdenv -c AlohaStudy -r 2
 ...
-\$ aloha -u Cmdenv -c AlohaScenario -r 23
+\$ aloha -u Cmdenv -c AlohaStudy -r 23
 \end{Verbatim}
 
 
 This batch can be executed either from the {\opp} IDE (where you are
-prompted to pick an executable and an ini file, choose the scenario
+prompted to pick an executable and an ini file, choose the configuration
 from a list, and just click Run), or using a little command-line
 batch execution tool supplied with {\opp}.
 
@@ -339,15 +519,15 @@ by simply omitting the '-r' option.
 
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\$ aloha -u Cmdenv -c AlohaScenario
+\$ aloha -u Cmdenv -c AlohaStudy
 
 {\opp} Discrete Event Simulation
-Preparing for running configuration AlohaScenario, run \#0...
+Preparing for running configuration AlohaStudy, run \#0...
 ...
-Preparing for running configuration AlohaScenario, run \#1...
+Preparing for running configuration AlohaStudy, run \#1...
 ...
 ...
-Preparing for running configuration AlohaScenario, run \#23...
+Preparing for running configuration AlohaStudy, run \#23...
 \end{Verbatim}
 
 
@@ -359,7 +539,7 @@ not be what the user wants).
 Let us get back to the ini file. We had:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-[Config AlohaScenario]
+[Config AlohaStudy]
 *.numHosts = \$\{1, 2, 5, 10..50 step 10\}
 **.host[*].generationInterval = exponential( \$\{0.2, 0.4, 0.6\} )
 \end{Verbatim}
@@ -549,7 +729,7 @@ That is, the iterators of seed-2-mt and seed-3-mt are advanced
 in lockstep with the seed1 iteration.
 
 
-\section{Scenarios and Result Analysis}
+\section{Parameter Studies and Result Analysis}
 
 \subsection{Output vectors and scalars}
 
@@ -560,12 +740,14 @@ next run. Thus, we have changed the default file names to make them
 differ for every run. The new defaults are:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-output-vector-file = "\$\{configname\}-\$\{runnumber\}.vec"
-output-scalar-file = "\$\{configname\}-\$\{runnumber\}.sca"
+output-vector-file = "\$\{resultdir\}/\$\{configname\}-\$\{runnumber\}.vec"
+output-scalar-file = "\$\{resultdir\}/\$\{configname\}-\$\{runnumber\}.sca"
 \end{Verbatim}
 
-
-This generates file names like "PureAloha-0.vec", "PureAloha-1.vec", and so on.
+Where \ttt{\$\{resultdir\}} is the value of the \ttt{result-dir} configuration
+option, and defaults to \ttt{results/}. So the above defaults generate
+file names like "results/PureAloha-0.vec", "results/PureAloha-1.vec",
+and so on.
 
 Also, in {\opp} 3.x output scalar files were always appended to by the
 simulation program, rather than being overwritten. This behavior was
@@ -730,87 +912,52 @@ seed-set. Thus, for our first example the
 experiment-measurement-replication tree would look like this:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\textrm{"PureAloha" }\textrm{\textit{--experiment}}
-\textrm{\$N=1,\$mean=0.2}\textrm{\textit{ -- measurement}}
-\textrm{\#0, seed-set=0}\textrm{\textit{ -- replication}}
+"PureAloha"\textrm{\textit{--experiment}}
+  \$N=1,\$mean=0.2\textrm{\textit{ -- measurement}}
+    \#0, seed-set=0\textrm{\textit{ -- replication}}
+    \#1, seed-set=1
+    \#2, seed-set=2
+    \#3, seed-set=3
+    \#4, seed-set=4
+  \$N=1,\$mean=0.4
+    \#0, seed-set=5
+    \#1, seed-set=6
+    ...
+    \#4, seed-set=9
+  \$N=1,\$mean=0.6
+    \#0, seed-set=10
+    \#1, seed-set=11
+    ...
+    \#4, seed-set=14
+  \$N=2,\$mean=0.2
+    ...
+  \$N=2,\$mean=0.4
+    ...
+    ...
 \end{Verbatim}
-
-\#1, seed-set=1
-
-\#2, seed-set=2
-
-\#3, seed-set=3
-
-\#4, seed-set=4
-
-\$N=1,\$mean=0.4
-
-\#0, seed-set=5
-
-\#1, seed-set=6
-
-...
-
-\#4, seed-set=9
-
-\$N=1,\$mean=0.6
-
-\#0, seed-set=10
-
-\#1, seed-set=11
-
-...
-
-\#4, seed-set=14
-
-\$N=2,\$mean=0.2
-
-...
-
-\$N=2,\$mean=0.4
-
-...
-
-...
-
-
-
 
 The experiment-measurement-replication labels should be enough to
 reproduce the same simulation results, given of course that the ini
-files and the model (NED files and C++ code) haven't
-changed.
+files and the model (NED files and C++ code) haven't changed.
 
 Every instance of running the simulation gets a unique run ID. We can
 illustrate this by listing the corresponding run IDs under each
 repetition in the tree. For example:
 
+\begin{Verbatim}[commandchars=\\\{\}]
 "PureAloha"
-
-\$N=1,\$mean=0.2
-
-\#0, seed-set=0
-
-\textit{PureAloha-0-20070704-11:38:21-3241}
-
-\textit{PureAloha-0-20070704-11:53:47-3884}
-
-\textit{PureAloha-0-20070704-16:50:44-4612}
-
-\#1, seed-set=1
-
-\textit{PureAloha-1-20070704-16:50:55-4613}
-
-\#2, seed-set=2
-
-\textit{PureAloha-2-20070704-11:55:23-3892}
-
-\textit{PureAloha-2-20070704-16:51:17-4615}
-
-{\itshape
-{\dots}}
-
-
+  \$N=1,\$mean=0.2
+    \#0, seed-set=0
+      \textit{PureAloha-0-20070704-11:38:21-3241}
+      \textit{PureAloha-0-20070704-11:53:47-3884}
+      \textit{PureAloha-0-20070704-16:50:44-4612}
+    \#1, seed-set=1
+      \textit{PureAloha-1-20070704-16:50:55-4613}
+    \#2, seed-set=2
+      \textit{PureAloha-2-20070704-11:55:23-3892}
+      \textit{PureAloha-2-20070704-16:51:17-4615}
+      ...
+\end{Verbatim}
 
 
 The tree shows that ("PureAloha", "\$N=1,\$mean=0.2", "\#0, seed-set=0")
@@ -823,7 +970,7 @@ We believe that the default way of generating
 experiment-measurement-replication labels will be useful and
 sufficient in the majority of the simulation studies. However, you can
 customize it if needed. For example, here is a way to join two
-scenarios into one experiment:
+configurations into one experiment:
 
 \begin{Verbatim}[commandchars=\\\{\}]
 [Config PureAloha\_Part1]
@@ -833,8 +980,6 @@ experiment = "PureAloha"
 experiment = "PureAloha"
 ...
 \end{Verbatim}
-
-
 
 
 Measurement and replication labels can be customized in a similar way,
@@ -855,213 +1000,8 @@ all values of those variables will be grouped together to the same
 replications.
 
 
-
-////////////////////////////////////////////////////////////////
-
-
-
-
-
-\section{User interfaces}
-
-{\opp} simulations can be run under different user interfaces.
-Currenly, two user interfaces are supported:
-
-\begin{itemize}
-  \item Tkenv: Tcl/Tk-based graphical, windowing user interface
-  \item Cmdenv: command-line user interface for batch execution
-\end{itemize}
-
-
-You would typically test and debug your simulation under Tkenv,
-then run actual simulation experiments from the command line or
-shell script, using Cmdenv. Tkenv is also better suited for educational or
-demonstration purposes.
-
-Both Tkenv and Cmdenv are provided in the form of a library, and
-you choose between them by linking one or the other into your
-simulation executable. (Creating the executable was described in
-chapter \ref{cha:building-simulation-programs}). Both user interfaces
-are supported on Unix and Windows platforms.
-
-Common functionality in Tkenv and Cmdenv has been collected and
-placed into the Envir library\index{Envir}, which can be thought of as the
-``common base class'' for the two user interfaces.
-
-The user interface\index{user interface} is separated from the
-simulation kernel, and the two parts interact through a well-defined
-interface. This also means that, if needed, you can write your
-own user interface or embed an {\opp} simulation into your application
-without any change to models or the simulation library.
-
-
-
-\subsection{The [General] section}
-
-The most important options of the \texttt{[General]} section are the
-following.
-\begin{itemize}
-  \item{The \fpar{network} option selects the model to be set up and run.}
-  \item{The length of the simulation can be set with the
-    \fpar{sim-time-limit} and the \fpar{cpu-time-limit} options (the
-    usual time units such as ms, s, m, h, etc. can be used).}
-  \item{The output file names can be set with the following options:
-    \fpar{output-vector-file}, \fpar{output-scalar-file} and \fpar{snapshot-file}.}
-\end{itemize}
-
-It is important to note, that the loaded NED files may contain
-any number of modules, channel and \textit{any number of networks} as well.
-It does not matter whether you use all or just some of them
-in the simulations. You will be able to select \ttt{any} of the
-networks that occur in the loaded NED files using the \ttt{network=}
-\ttt{omnetpp.ini} entry, and as long as every module, channel etc
-for it has been loaded, network setup will be successful.
-
-
-\section{Setting module parameters in omnetpp.ini}
-\label{sec:ch-config-sim:parameter-settings}
-
-Simulations get input via module parameters, which can be assigned a
-value in NED files or in \ttt{omnetpp.ini} -- in this order. Since parameters
-assigned in NED files cannot be overridden in omnetpp.ini, one can
-think about them as being ``hardcoded''. In contrast, it is easier
-and more flexible to maintain module parameter settings in omnetpp.ini.
-
-In omnetpp.ini, module parameters are referred to by their full paths
-or hiearchical names. This name consists of the dot-separated list of
-the module names (from the top-level module down to the module containg
-the parameter), plus the parameter name
-(see section \ref{sec:sim-lib:fullname-and-fullpath}).
-
-An example \ttt{omnetpp.ini} which sets the \ttt{numHosts} parameter of
-the toplevel module and the \ttt{transactionsPerSecond} parameter of the
-\ttt{server} module:
-
-\begin{verbatim}
-[Parameters]
-net.numHosts = 15
-net.server.transactionsPerSecond = 100
-\end{verbatim}
-
-
-\subsection{Using wildcard patterns}
-\label{sec:ch-config-sim:wildcards}
-
-Models can have a large number of parameters to be configured, and it would
-be tedious to set them one-by-one in \ttt{omnetpp.ini}. {\opp} supports
-\textit{wildcards patterns} which allow for setting several model parameters
-at once.
-
-The notation is a variation on the usual glob-style patterns.
-The most apperent differences to the usual rules are the distinction between
-\ttt{*} and \ttt{**}, and that character ranges should be written
-with curly braces instead of square brackets (that is, \textit{any-letter}
-is \ttt{\{a-zA-Z\}} not \ttt{[a-zA-Z]}, because square brackets are
-already reserved for the notation of module vector indices).
-
-Pattern syntax:
-
-\begin{itemize}
-  \item \ttt{?} : matches any character except dot (.)
-  \item \ttt{*} : matches zero or more characters except dot (.)
-  \item \ttt{**} : matches zero or more character (any character)
-  \item \ttt{\{a-f\}} : \textit{set}: matches a character in the range a-f
-  \item \ttt{\{{\textasciicircum}a-f\}}: \textit{negated set}: matches a character
-    NOT in the range a-f
-  \item \ttt{\{38..150\}} : \textit{numeric range}: any number (i.e. sequence of digits)
-    in the range 38..150  (e.g. \ttt{99})
-  \item \ttt{[38..150]} : \textit{index range}: any number in square brackets in the
-    range 38..150 (e.g. \ttt{[99]})
-  \item backslash ({\textbackslash}) : takes away the special meaning of the
-    subsequent character
-\end{itemize}
-
-\subsubsection{Precedence}
-
-If you use wildcards, the order of entries is important: if a parameter
-name matches several wildcards-patterns, the \textit{first} matching occurrence
-is used. This means that you need to list specific settings first, and
-more general ones later. Catch-all settings should come last.
-
-An example ini file:
-
-\begin{verbatim}
-[Parameters]
-*.host[0].waitTime = 5ms   # specifics come first
-*.host[3].waitTime = 6ms
-*.host[*].waitTime = 10ms  # catch-all comes last
-\end{verbatim}
-
-
-\subsubsection{Asterisk vs double asterisk}
-
-The \ttt{*} wildcard is for matching a single module or parameter name in the
-path name, while \ttt{**} can be used to match several components in the path.
-For example, \ttt{**.queue*.bufSize} matches the \ttt{bufSize} parameter of any module
-whose name begins with \ttt{queue} in the model, while \ttt{*.queue*.bufSize}
-or \ttt{net.queue*.bufSize} selects only queues immediately on network level.
-Also note that \ttt{**.queue**.bufSize} would match \ttt{net.queue1.foo.bar.bufSize}
-as well!
-
-\subsubsection{Sets, negated sets}
-
-Sets and negated sets can contain several character ranges and also
-enumeration of characters. For example, \ttt{\{\_a-zA-Z0-9\}} matches any letter
-or digit, plus the underscore; \ttt{\{xyzc-f\}} matches any of the characters
-x, y, z, c, d, e, f.
-To include '-' in the set, put it at a position where it cannot be
-interpreted as character range, for example: \ttt{\{a-z-\}} or \ttt{\{-a-z\}}.
-If you want to include '\}' in the set, it must be the first
-character: \ttt{\{\}a-z\}}, or as a negated set: \ttt{\{{\textasciicircum}\}a-z\}}. A backslash
-is always taken as literal backslash (and NOT as escape character)
-within set definitions.
-
-
-\subsubsection{Numeric ranges and index ranges}
-
-Only nonnegative integers can be matched.  The start or the end of the range
-(or both) can be omitted: \ttt{\{10..\}}, \ttt{\{..99\}} or \ttt{\{..\}}
-are valid numeric ranges (the last one matches any number).
-The specification must use exactly two dots.
-Caveat: \ttt{*\{17..19\}} will match \ttt{a17}, \ttt{117} and \ttt{963217} as well,
-because the \ttt{*} can also match digits!
-
-An example for numeric ranges:
-
-\begin{verbatim}
-[Parameters]
-*.*.queue[3..5].bufSize = 10
-*.*.queue[12..].bufSize = 18
-*.*.queue[*].bufSize = 6  # this will only affect queues 0,1,2 and 6..11
-\end{verbatim}
-
-
-\subsection{Applying the defaults}
-
-It is also possible to utilize the default values specifified with
-\ttt{input(}\textit{default-value}\ttt{)} in the NED files.
-The \textit{<parameter-name>}\ttt{.use-default=yes} setting assigns
-the default value to the parameter, or 0, false or empty string if
-there was no default value in the NED file.
-
-The following example sets \ttt{ttl} (time-to-live) of \ttt{hostA}'s
-\ttt{ip} module to 5, while all other nodes in the network
-will get the default specified with \ttt{input()} in the NED files.
-
-\begin{Verbatim}[commandchars=\\\{\}]
-[Parameters]
-**.hostA.ip.ttl = 5
-**.ip.ttl.use-default = yes
-\end{Verbatim}
-
-To make use of \textit{all} defaults in NED files, you'd add the following to
-\ttt{omnetpp.ini}:
-
-\begin{verbatim}
-[Parameters]
-**.use-default = yes
-\end{verbatim}
-
+///////////////////////
+%FIXME merge into the above
 
 \section{Configuring output vectors}
 \label{sec:ch-config-sim:outvectors}
@@ -1075,9 +1015,9 @@ recorded statistics are interesting to the analyst.
 In {\opp}, you can control how \cclass{cOutVector} objects record data
 to disk. You can turn output vectors on/off or you can assign a result
 collection interval. Output vector configuration is given in the
-\texttt{[OutVectors]} section of the ini file, or in the \texttt{[Run
-  1]}, \texttt{[Run 2]} etc sections individually for each run. By
-default, all output vectors are turned on.
+\texttt{[OutVectors]} section of the ini file, or in the
+\texttt{[Run 1]}, \texttt{[Run 2]} etc sections individually for each run.
+By default, all output vectors are turned on.
 
 Output vectors can be configured with the following syntax:
 

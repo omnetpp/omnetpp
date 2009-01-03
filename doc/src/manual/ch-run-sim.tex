@@ -1,6 +1,38 @@
 \chapter{Running Simulations}
 \label{cha:run-sim}
 
+\section{User interfaces}
+
+{\opp} simulations can be run under different user interfaces.
+Currently the following user interfaces are supported:
+
+\begin{itemize}
+  \item Tkenv: Tcl/Tk-based graphical, windowing user interface
+  \item Cmdenv: command-line user interface for batch execution
+\end{itemize}
+
+
+You would typically test and debug your simulation under Tkenv,
+then run actual simulation experiments from the command line or
+shell script, using Cmdenv. Tkenv is also better suited for educational or
+demonstration purposes.
+
+Both Tkenv and Cmdenv are provided in the form of a library, and
+you choose between them by linking one or the other into your
+simulation executable. (Creating the executable was described in
+chapter \ref{cha:building-simulation-programs}). Both user interfaces
+are supported on Unix and Windows platforms.
+
+Common functionality in Tkenv and Cmdenv has been collected and
+placed into the Envir library\index{Envir}, which can be thought of as the
+``common base class'' for the two user interfaces.
+
+The user interface\index{user interface} is separated from the
+simulation kernel, and the two parts interact through a well-defined
+interface. This also means that, if needed, you can write your
+own user interface or embed an {\opp} simulation into your application
+without any change to models or the simulation library.
+
 \section{Cmdenv: the command-line interface}
 
 The command line user interface\index{command line user interface} is
