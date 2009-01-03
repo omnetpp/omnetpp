@@ -1,0 +1,197 @@
+\chapter{Plug-in Extensions}
+\label{cha:plugin-exts}
+
+\section{Overview}
+
+{\opp} is an open system, and several details of its operation
+can be customized via plug-ins. To create a plug-in, you generally
+need to write a C++ class that implements a certain interface
+(i.e. subclasses from a C++ abstract class), and register it in {\opp}.
+The plug-in class can be activated for a particular simulation
+with a corresponding configuration option.
+
+The following plug-in interfaces are supported:
+
+\begin{itemize}
+   \item{\cclass{cRNG}. Interface for random number generators.}
+   \item{\cclass{cScheduler}. The scheduler class. This plug-in interface
+     allows for implementing real-time, hardware-in-the-loop, distributed
+     and distributed parallel simulation.}
+   \item{\cclass{cConfiguration}. Configuration provider plug-in.
+     This plug-in interface lets you replace \ttt{omnetpp.ini}
+     with some other implementation, for example a database.}
+   \item{\cclass{cOutputScalarManager}. It handles recording the scalar output data.
+     The default output scalar manager is \cclass{cFileOutputScalarManager},
+     defined in the Envir library.}
+   \item{\cclass{cOutputVectorManager}. It handles recording the output
+     from \cclass{cOutVector} objects. The default output vector manager is
+     \cclass{cIndexedFileOutputVectorManager}, defined in the Envir library.}
+   \item{\cclass{cSnapshotManager}. It provides an output stream to which
+     snapshots are written (see section \ref{sec:ch-sim-lib:snapshots}).
+     The default snapshot manager is \cclass{cFileSnapshotManager},
+     defined in the Envir library.}
+\end{itemize}
+
+The classes (\cclass{cRNG}, \cclass{cScheduler}, etc.) are documented in
+the API Reference.
+
+To actually implement and select a plug-in for use:
+
+\begin{enumerate}
+   \item Subclass the given interface class (e.g. for a custom RNG, \cclass{cRNG})
+     to create your own version.
+   \item Register the class by putting the \fmac{Register\_Class(MyRNGClass)}
+     line into the C++ source.
+   \item Compile and link your interface class into the {\opp} simulation
+     executable. IMPORTANT: make sure the executable actually contains
+     the code of your class! Over-optimizing linkers (esp. on Unix)
+     tend to leave out code to which there seem to be no external reference.
+   \item Add an entry to \ttt{omnetpp.ini} to tell Envir use your class
+     instead of the default one. For RNGs, this setting is \ttt{rng-class}
+     in the \ttt{[General]} section.
+\end{enumerate}
+
+
+\section{Plug-in descriptions}
+
+
+\subsection{Defining a new random number generator}
+\label{sec:plugin-exts:rng}
+
+% TODO
+
+The new class can be activated with the \fpar{rng-class}
+configuration option.
+
+
+\subsection{Defining a new scheduler}
+\label{sec:plugin-exts:scheduler}
+
+The scheduler plug-in interface allows for implementing real-time,
+hardware-in-the-loop, distributed and distributed parallel simulation.
+%FIXME cScheduler usage
+
+The new class can be activated with the \fpar{scheduler-class}
+configuration option.
+
+
+\subsection{Defining a new configuration provider}
+\label{sec:plugin-exts:configuration}
+
+The configuration provider provider plug-in lets you replace \ttt{omnetpp.ini}
+with some other implementation, for example a database.
+
+The new class can be activated with the \fpar{configuration-class}
+configuration option.
+
+%FIXME boot-time config! etc
+
+For the configuration plug-in, the startup sequence is the following
+(see \ttt{cEnvir::setup()} in the source code):
+
+\begin{enumerate}
+  \item First, \ttt{omnetpp.ini} (or the ini file(s) specified via the "-f"
+     command-line option) are read.
+  \item Shared libraries in \ttt{[General]/load-libs} are loaded.
+     (Also the ones specified with the "-l" command-line option.)
+  \item \ttt{[General]/configuration-class} is examined, and if it is present,
+     a configuration object of the given class is instantiated.
+     The configuration object may read further entries from the
+     ini file (e.g. database connect parameters, or XML file name).
+  \item The original \ttt{omnetpp.ini} \cclass{cInifile} configuration
+     object is deleted. No other settings are taken from it.
+  \item \ttt{[General]/load-libs} from the new configuration object is
+     processed.
+  \item Then everything goes on as normally, using the new configuration
+     object.
+\end{enumerate}
+
+
+\subsection{Defining a new output scalar manager}
+\label{sec:plugin-exts:outputscalarmanager}
+
+cOutputScalarManager handles recording the scalar output data.
+The default output scalar manager is \cclass{cFileOutputScalarManager},
+defined in the Envir library.
+
+The new class can be activated with the \fpar{outputscalarmanager-class}
+configuration option.
+
+
+\subsection{Defining a new output vector manager}
+\label{sec:plugin-exts:outputvectormanager}
+
+cOutputVectorManager handles recording the output from \cclass{cOutVector} objects.
+The default output vector manager is \cclass{cIndexedFileOutputVectorManager},
+defined in the Envir library.
+
+The new class can be activated with the \fpar{outputvectormanager-class}
+configuration option.
+
+
+\subsection{Defining a new snapshot manager}
+\label{sec:plugin-exts:snapshotmanager}
+
+cSnapshotManager provides an output stream to which snapshots are written
+(see section \ref{sec:ch-sim-lib:snapshots}). The default snapshot manager
+is \cclass{cFileSnapshotManager}, defined in the Envir library.
+
+The new class can be activated with the \fpar{snapshotmanager-class}
+configuration option.
+
+
+\section{How plug-in classes can access the configuration}
+\label{sec:plugin-exts:accessing-config}
+
+The configuration is available to plug-in classes via the \fname{getConfig()}
+method of \cclass{cEnvir}, which returns a pointer to the configuration
+object (\cclass{cConfiguration}). This enables plug-in classes to have
+their own config entries.
+
+An example which reads the \ttt{parsim-debug} boolean entry from the
+\ttt{[General]} section, with \ttt{true} as default:
+
+\begin{verbatim}
+bool debug = ev.getConfig()->getAsBool("General", "parsim-debug", true);
+\end{verbatim}
+
+
+\section{Implementing a new user interface}
+\label{sec:plugin-exts:userinterface}
+
+The base class for simulation application is \cclass{TOmnetApp}.
+Specific user interfaces such as \cclass{TCmdenv},
+\cclass{TOmnetTkApp} are derived from \cclass{TOmnetApp}.
+
+\cclass{TOmnetApp}'s member functions are almost all virtual.
+\begin{itemize}
+  \item{Some of them implement the \cclass{cEnvir} functions
+    (described in the previous section)}
+  \item{Others implement the common part of all user interfaces (for
+    example: reading options from the configuration files; making the
+    options effective within the simulation kernel)}
+  \item{The \fname{run()} function is pure virtual (it is different
+    for each user interface).}
+\end{itemize}
+
+\cclass{TOmnetApp}'s data members:
+\begin{itemize}
+  \item{a pointer to the object holding configuration file contents
+    (type \cclass{cInifile});}
+  \item{the options and switches that can be set from the
+    configuration file (these members begin with \ttt{opt\_})}
+\end{itemize}
+
+Simulation applications:
+\begin{itemize}
+  \item{add new configuration options}
+  \item{provide a \fname{run()} function}
+  \sloppy
+  \item{implement functions left empty in \cclass{TOmnetApp} (like \fname{objectDeleted()}).}
+\end{itemize}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "usman"
+%%% End:
+

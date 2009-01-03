@@ -229,7 +229,7 @@ At times it can be useful to be able stop the simulation at the place of the err
 (just before the exception is thrown) and use a C++ debugger to look
 at the stack trace and examine variables. Enabling the \ttt{debug-on-errors}
 ini file entry lets you do that -- check it in section
-\ref{sec:ch-run-sim:general-section}  .
+\ref{sec:ch-config-sim:general-section}  .
 
 If you detect an error condition in your code, you can stop the
 simulation with an error message using the \fname{opp\_error()} function.
@@ -407,13 +407,13 @@ When you execute simulations under Akaroa control (see section
 \ref{sec:ch-run-sim:akaroa}), you can also select Akaroa's
 RNG as the RNG underlying for the {\opp} random number functions.
 The Akaroa RNG also has to be selected from \ttt{omnetpp.ini}
-(section \ref{sec:ch-run-sim:rng-config}).
+(section \ref{sec:ch-config-sim:rng-config}).
 
 \subsubsection{Other RNGs}
 
 {\opp} allows plugging in your own RNGs as well. This mechanism,
 based on the \cclass{cRNG} interface, is described in section
-\ref{sec:ch-opp-design:customization}.
+\ref{sec:ch-plugin-exts:customization}.
 For example, one candidate to include could be L'Ecuyer's CMRG \cite{LEcuyer02}
 which has a period of about $2^{191}$ and can provide a large
 number of \textit{guaranteed} independent streams.
@@ -439,14 +439,14 @@ unwanted correlation in your results.
 
 The number of random number streams as well as seeds for the individual
 streams can be configured in \fname{omnetpp.ini}
-(section \ref{sec:ch-run-sim:rng-config}).
+(section \ref{sec:ch-config-sim:rng-config}).
 For the "minimal standard RNG", the \fprog{seedtool} program can be
-used for selecting good seeds (section \ref{sec:ch-run-sim:seedtool}).
+used for selecting good seeds (section \ref{sec:ch-config-sim:seedtool}).
 
 In {\opp}, streams are identified with RNG numbers. The RNG numbers
 used in simple modules may be \textit{arbitrarily mapped} to the actual
 random number streams (actual RNG instances) from \fname{omnetpp.ini}
-(section \ref{sec:ch-run-sim:rng-config}). The mapping allows
+(section \ref{sec:ch-config-sim:rng-config}). The mapping allows
 for great flexibility in RNG usage and random number streams
 configuration -- even for simulation models which were not written
 with RNG awareness.
@@ -1685,7 +1685,7 @@ named \ttt{omnetpp.vec} by default.
 You can configure output vectors from \ttt{omnetpp.ini}:
 you can disable writing to the file, or limit it to a certain
 simulation time interval for recording (section
-\ref{sec:ch-run-sim:outvectors}).
+\ref{sec:ch-config-sim:outvectors}).
 
 The format and processing of output vector files is described in section
 \ref{sec:ch-ana-sim:output-vectors}.
@@ -1782,7 +1782,7 @@ values (\ttt{double}s) are recorded into it using \ttt{fprintf()}'s
 \ttt{"\%g"} format.
 The number of significant digits can be configured using the
 \ttt{output-scalar-precision=} and \ttt{output-vector-precision=}
-configuration entries (see \ref{sec:ch-run-sim:general-section}).
+configuration entries (see \ref{sec:ch-config-sim:general-section}).
 The default precision is 12 digits. The following has to be considered
 when changing the default value:
 
@@ -1834,7 +1834,7 @@ Errors coming from converting to/from decimal representation can be
 eliminated by choosing an output vector/output scalar manager class
 which stores \ttt{double}s in their native binary form.
 The appropriate configuration entries are \ttt{outputvectormanager-class=}
-and \ttt{outputvectormanager-class=}; see \ref{sec:ch-run-sim:general-section}.
+and \ttt{outputvectormanager-class=}; see \ref{sec:ch-config-sim:general-section}.
 For example, \cclass{cMySQLOutputScalarManager} and \cclass{cMySQLOutputScalarManager}
 provided in \ttt{samples/database} fulfill this requirement.
 

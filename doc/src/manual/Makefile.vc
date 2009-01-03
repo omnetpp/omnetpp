@@ -15,12 +15,14 @@ TEXCHAPTERS = \
          ch-messages.tex \
          ch-sim-lib.tex \
          ch-build-sim-progs.tex \
+         ch-config-sim.tex \
          ch-run-sim.tex \
          ch-graphics.tex \
          ch-ana-sim.tex \
          ch-eventlog.tex \
          ch-neddoc.tex \
          ch-parallel-exec.tex \
+         ch-plugin-exts.tex \
          ch-opp-design.tex \
          appendix-ned-ref.tex \
          appendix-ned-grammar.tex \

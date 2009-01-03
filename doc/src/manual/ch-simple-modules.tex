@@ -498,7 +498,7 @@ with {\opp} internals or lacking advanced C++ skills.
               pointer array, pointer as class member, etc.}
 
 Starting from {\opp} 3.2, this cleanup-time GC mechanism has been disabled by default
-(\ttt{perform-gc=} configuration option, see \ref{sec:ch-run-sim:general-section}),
+(\ttt{perform-gc=} configuration option, see \ref{sec:ch-config-sim:general-section}),
 and it generally not recommended to turn it back on. It does not do any harm
 to run any simulation model without GC (apart from the memory leak).
 
@@ -508,7 +508,7 @@ It is expected that existing modules will be updated sooner or later, by adding
 proper constructors and destructors. To catalyse this process, {\opp} dumps the
 list of unreleased objects at the end of the simulation. This dump can also be
 turned off in the configuration (\ttt{print-undisposed=} configuration option,
-see \ref{sec:ch-run-sim:general-section}).
+see \ref{sec:ch-config-sim:general-section}).
 
 
 
