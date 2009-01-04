@@ -33,6 +33,11 @@ interface. This also means that, if needed, you can write your
 own user interface or embed an {\opp} simulation into your application
 without any change to models or the simulation library.
 
+\section{Selecting a user interface}
+
+-u Cmdenv, or --user-interface=Cmdenv
+
+
 \section{Cmdenv: the command-line interface}
 
 The command line user interface\index{command line user interface} is
@@ -43,6 +48,65 @@ Cmdenv uses simply executes some or all simulation runs that are described
 in the configuration file. If one run stops with an error message,
 subsequent ones will still be executed. The runs to be executed can be
 passed via command-line argument or in the ini file.
+
+\subsection{Example run}
+
+When run the Fifo example under Cmdenv, you should see
+something like this:
+
+\begin{verbatim}
+$ ./fifo -u Cmdenv -c Fifo1
+
+OMNeT++ Discrete Event Simulation  (C) 1992-2008 Andras Varga, OpenSim Ltd.
+Version: 4.0rc1, edition: Academic Public License -- NOT FOR COMMERCIAL USE
+See the license for distribution terms and warranty disclaimer
+Setting up Cmdenv...
+Loading NED files from .: 5
+
+Preparing for running configuration Fifo1, run #0...
+Scenario: $repetition=0
+Assigned runID=Fifo1-0-20090104-12:23:25-5792
+Setting up network `FifoNet'...
+Initializing...
+Initializing module FifoNet, stage 0
+Initializing module FifoNet.gen, stage 0
+Initializing module FifoNet.fifo, stage 0
+Initializing module FifoNet.sink, stage 0
+
+Running simulation...
+** Event #1   T=0   Elapsed: 0.000s (0m 00s)  0% completed
+     Speed:     ev/sec=0   simsec/sec=0   ev/simsec=0
+     Messages:  created: 2   present: 2   in FES: 1
+** Event #232448   T=11719.051014922336   Elapsed: 2.003s (0m 02s)  3% completed
+     Speed:     ev/sec=116050   simsec/sec=5850.75   ev/simsec=19.8351
+     Messages:  created: 58114   present: 3   in FES: 2
+...
+** Event #7206882   T=360000.52066583684   Elapsed: 78.282s (1m 18s)  100% completed
+     Speed:     ev/sec=118860   simsec/sec=5911.9   ev/simsec=20.1053
+     Messages:  created: 1801723   present: 3   in FES: 2
+
+<!> Simulation time limit reached -- simulation stopped.
+
+
+Calling finish() at end of Run #0...
+Total jobs processed: 1801720
+Avg queueing time:    0.0102645
+Max queueing time:    0.0410768
+Standard deviation:   0.00135705
+
+End.
+\end{verbatim}
+
+As Cmdenv runs the simulation, periodically it prints the sequence number
+of the current event, the simulation time, the elapsed (real) time,
+and the performance of the simulation (how many events are processed per
+second; the first two values are 0 because there wasn't enough data
+for it to calculate yet). At the end of the simulation, the \fname{finish()}
+methods of the simple modules are run, and the output from them are displayed.
+On my machine this run took 34 seconds. This Cmdenv output can be
+customized via \fname{omnetpp.ini} entries. The output file \fname{results/Fifo1-0.vec}
+contains vector data recorded during simulation (here, queueing times),
+and it can be processed using Plove or other tools.
 
 \subsection{Command-line switches}
 
@@ -411,111 +475,6 @@ for ((i=1; $i<50; i++)); do
    ./wireless -f runs.ini -r $i
 done
 \end{verbatim}
-
-
-\subsection{Variations over parameter values}
-
-It may not be practical to hand-write descriptions of all runs
-in an ini file, especially if there are many parameter
-settings to try, or you want to try all possible
-combinations of two or more parameters.
-The solution might be to generate only a small fraction
-of the ini file with the variable parameters, and
-use it via ini file inclusion. For example, you might
-write your \ttt{omnetpp.ini} like this:
-
-\begin{verbatim}
-[General]
-network = Wireless
-
-[Parameters]
-Wireless.n = 10
-...   # other fixed parameters
-include params.ini  # include variable part
-\end{verbatim}
-
-And have the following as control script. It uses two nested loops to explore
-all possible combinations of the \textit{alpha} and \textit{beta} parameters.
-Note that \ttt{params.ini} is created by redirecting the \ttt{echo}
-output into file, using the \ttt{>} and \ttt{>>} operators.
-
-\begin{verbatim}
-#! /bin/sh
-for alpha in 1 2 5 10 20 50; do
-   for beta in 0.1 0.2 0.3 0.4 0.5; do
-       echo "Wireless.alpha=$alpha" > params.ini
-       echo "Wireless.beta=$beta" >> params.ini
-       ./wireless
-   done
-done
-\end{verbatim}
-
-
-As a heavy-weight example, here's the ``runall'' script of
-Joel Sherrill's \textit{File System Simulator}. It also demonstrates
-that loops can iterate over string values too, not just numbers.
-(\texttt{omnetpp.ini} includes the generated \texttt{algorithms.ini}.)
-
-Note that instead of redirecting every \ttt{echo} command to file,
-they are grouped using parentheses, and redirected together.
-The net effect is the same, but you can spare some typing this way.
-
-\begin{verbatim}
-#! /bin/bash
-#
-# This script runs multiple variations of the file system simulator.
-#
-all_cache_managers="NoCache FIFOCache LRUCache PriorityLRUCache..."
-all_schedulers="FIFOScheduler SSTFScheduler CScanScheduler..."
-
-for c in ${all_cache_managers}; do
-  for s in ${all_schedulers}; do
-  (
-    echo "[Parameters]"
-    echo "filesystem.generator_type = \"GenerateFromFile\""
-    echo "filesystem.iolibrary_type = \"PassThroughIOLibrary\""
-    echo "filesystem.syscalliface_type = \"PassThroughSysCallIface\""
-    echo "filesystem.filesystem_type = \"PassThroughFileSystem\""
-    echo "filesystem.cache_type = \"${c}\""
-    echo "filesystem.blocktranslator_type = \"NoTranslation\""
-    echo "filesystem.diskscheduler_type = \"${s}\""
-    echo "filesystem.accessmanager_type = \"MutexAccessManager\""
-    echo "filesystem.physicaldisk_type = \"HP97560Disk\""
-  ) >algorithms.ini
-
-  ./filesystem
-  done
-done
-\end{verbatim}
-
-
-
-\subsection{Variations over seed value (multiple independent runs)}
-
-The same kind of control script can be used if you want to execute
-several runs with different random seeds\index{random!seeds}.
-The following code does 500 runs with independent seeds.
-(\texttt{omnetpp.ini} should include \ttt{parameters.ini}.)
-
-The seeds are 10 million numbers apart in the sequence (\ttt{seedtool}
-parameter), so one run should not use more random numbers than this,
-otherwise there will be overlaps in the sequences and the runs
-will not be independent.
-
-\begin{verbatim}
-#! /bin/sh
-seedtool g 1 10000000 500 > seeds.txt
-for seed in `cat seeds.txt`; do
-   (
-     echo "[General]"
-     echo "random-seed = ${seed}"
-     echo "output-vector-file = xcube-${seed}.vec"
-   ) > parameters.ini
-   ./xcube
-done
-\end{verbatim}
-
-
 
 
 

@@ -13,13 +13,13 @@ Prerequisites
 
 Making HTML output
 ------------------
-Type "make usman.html". It uses local perl scripts for the conversion.
+Type "make html". It uses local perl scripts for the conversion.
 
 
 
 Making PDF output
 -----------------
-Make sure that MiKTeX/miktext/bin is in the path, the type "make .pdf". 
+Make sure that <MiKTeX>/miktex/bin is in the path, then type "make pdf". 
 
 
 Graphics
@@ -35,8 +35,8 @@ in the LaTeX sources like this:
   \includegraphics[angle=45,width=52mm]{myfig.jpg}
 
 Vector graphics should be drawn and checked in in SVG format. This will be
-rasterized to PNG and exported as vector PDF using Inkscape command-line
-options:
+rasterized to PNG (for HTML output) and exported as vector PDF (for PDF output)
+using Inkscape command-line options:
 
   inkscape -e FILENAME  (or --export-png=FILENAME)
   inkscape -A FILENAME  (or --export-pdf=FILENAME)

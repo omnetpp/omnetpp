@@ -41,57 +41,11 @@ and \ttt{[Config Fifo2]}, each one containing several \textit{entries}.
 
 Lines that start with ``\#'' are comments.
 
-When you build the Fifo example with Cmdenv and you run it by typing \fname{fifo1}
-(or on Unix, \fname{./fifo1}) on the command prompt, you should see
-something like this.
-
-\begin{verbatim}
-{\opp} Discrete Event Simulation  (C) 1992-2003 Andras Varga
-See the license for distribution terms and warranty disclaimer
-Setting up Cmdenv (command-line user interface)...
-
-Preparing for Run #1...
-Setting up network `Fifonet'...
-Running simulation...
-** Event #0        T=0.0000000   Elapsed: 0m  0s
-** Event #100000   T=25321.99    Elapsed: 0m  1s
-** Event #200000   T=50275.694   Elapsed: 0m  3s
-** Event #300000   T=75217.597   Elapsed: 0m  5s
-** Event #400000   T=100125.76   Elapsed: 0m  6s
-** Event #500000   T=125239.67   Elapsed: 0m  8s
-...
-** Event #1700000  T=424529.21   Elapsed: 0m 28s
-** Event #1800000  T=449573.47   Elapsed: 0m 30s
-** Event #1900000  T=474429.06   Elapsed: 0m 32s
-** Event #2000000  T=499417.66   Elapsed: 0m 34s
-<!> Simulation time limit reached -- simulation stopped.
-\end{verbatim}
-
-As Cmdenv runs the simulation, periodically it prints the sequence number
-of the current event, the simulation time, the elapsed (real) time,
-and the performance of the simulation (how many events are processed per
-second; the first two values are 0 because there wasn't enough data
-for it to calculate yet). At the end of the simulation, the \fname{finish()}
-methods of the simple modules are run, and the output from them are displayed.
-On my machine this run took 34 seconds. This Cmdenv output can be
-customized via \fname{omnetpp.ini} entries. The output file \fname{results/Fifo1-0.vec}
-contains vector data recorded during simulation (here, queueing times),
-and it can be processed using Plove or other tools.
-
-\subsection{The concept of simulation runs}
-
-{\opp} can execute several simulation runs automatically one after
-another. If multiple runs\index{simulation!multiple runs} are
-selected, option settings and parameter values can be given either
-individually for each run, or together for all runs, depending in
-which section the option or parameter appears.
 
 \subsection{File syntax}
 
 The ini file is a text file consisting of entries grouped into different sections.
-The order of the sections doesn't matter. Also, if you have two sections
-with the same name (e.g. \ttt{[General]} occurs twice in the file),
-they will be merged.
+The order of the sections doesn't matter.
 
 Lines that start with "\#" are comments, and will be ignored during processing.
 
@@ -105,11 +59,8 @@ Example:
 \begin{verbatim}
 [General]
 # this is a comment
-foo="this is a single value \
+**.foo = "this is a single value \
 for the foo parameter"
-
-[General]  # duplicate sections are merged
-bar="belongs to the same section as foo"
 \end{verbatim}
 
 \subsection{File inclusion}
@@ -196,7 +147,7 @@ section to set up the simulation. (Tkenv, of course, lets you select
 the configuration from a dialog.)
 
 
-\subsection{Fallbacks}
+\subsection{Section inheritance}
 
 Actually, when you activate the PureAloha configuration, the contents of
 the \ttt{[General]} section will also be taken into account: if some
@@ -764,8 +715,8 @@ The way of configuring output vectors has also changed. In {\opp} 3.x,
 the keys for enabling-disabling a vector and specifying recording
 interval were <module-and-vectorname-pattern>.enabled,
 and <module-and-vectorname-pattern>.interval.
-The "enabled" and "interval" words changed to "enable-recording" and
-"recording-interval".
+The "enabled" and "interval" words changed to "vector-recording" and
+"vector-recording-interval".
 
 \begin{note}
     The reason for this change is that per-object
@@ -779,8 +730,8 @@ The syntax for specifying the recording interval has also been extended
 by comma. An example:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-**.fifo[2].queueLengthVector.enable-recording = false
-**.fifo[*].queueLengthVector.recording-interval = ..100, 300..500, 900..
+**.fifo[2].queueLengthVector.vector-recording = false
+**.fifo[*].queueLengthVector.vector-recording-interval = ..100, 300..500, 900..
 \end{Verbatim}
 
 Although it has nothing to do with our main topic (ini files), this is a
@@ -1014,19 +965,17 @@ recorded statistics are interesting to the analyst.
 
 In {\opp}, you can control how \cclass{cOutVector} objects record data
 to disk. You can turn output vectors on/off or you can assign a result
-collection interval. Output vector configuration is given in the
-\texttt{[OutVectors]} section of the ini file, or in the
-\texttt{[Run 1]}, \texttt{[Run 2]} etc sections individually for each run.
-By default, all output vectors are turned on.
+collection interval. By default, all output vectors are turned on.
 
 Output vectors can be configured with the following syntax:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\textit{module-pathname}.\textit{objectname}.enabled = yes/no
-\textit{module-pathname}.\textit{objectname}.interval = \textit{start}..\textit{stop}
-\textit{module-pathname}.\textit{objectname}.interval = ..\textit{stop}
-\textit{module-pathname}.\textit{objectname}.interval = \textit{start}..
+\textit{module-pathname}.\textit{objectname}.vector-recording = true/false
+\textit{module-pathname}.\textit{objectname}.vector-recording-interval = \textit{start1}..\textit{stop1}, \textit{start2}..\textit{stop2}, ...
 \end{Verbatim}
+
+Either \textit{start} or \textit{stop} can be omitted, to mean the
+beginning and the end of the simulation, respectively.
 
 The object name is the string passed to \cclass{cOutVector} in its constructor
 or with the \fname{setName()} member function.
@@ -1044,17 +993,12 @@ names and module path names.
 An example:
 
 \begin{verbatim}
-#
-# omnetpp.ini
-#
-
-[OutVectors]
-**.interval = 1s..60s
-**.End-to-End Delay.enabled = yes
-**.Router2.**.enabled = yes
-**.enabled = no
+[General]
+**.vector-recording-interval = 1s..60s
+**.End-to-End Delay.vector-recording = true
+**.Router2.**.vector-recording = true
+**.vector-recording = false
 \end{verbatim}
-
 
 The above configuration limits collection of all output vectors
 to the 1s..60s interval, and disables collection of output vectors
@@ -1169,115 +1113,24 @@ Reasons for doing that may be that you want to use variance reduction
 techniques, or you may want to use the same seeds for several simulation
 runs.
 
-For the cLCG32 RNG, {\opp} provides a standalone program to generate
-seed values (\fprog{opp\_lcg32\_seedtool} is discussed in section
-\ref{sec:ch-config-sim:seedtool}), and you can specify those seeds explicitly
-in the ini file.
-
-The following ini file explicitly initializes two of the random
-number generators, and uses different seed values for each run:
+To manually set seeds for the Mersenne Twister RNG, use the \ttt{seed-}\textit{k}\ttt{-mt}
+option, where \textit{k} is the RNG index. An example:
 
 \begin{verbatim}
 [General]
-rng-class=cLCG32  # needed because the default is cMersenneTwister
-num-rngs = 2
-
-[Run 1]
-seed-0-lcg32 = 1768507984
-seed-1-lcg32 = 33648008
-
-[Run 2]
-seed-0-lcg32 = 1082809519
-seed-1-lcg32 = 703931312
-...
+num-rngs = 3
+seed-0-mt = 12
+seed-1-mt = 9
+seed-2-mt = 7
 \end{verbatim}
 
-To manually set seeds for the Mersenne Twister RNG (which should
-seldom, if ever, be necessary), use the \ttt{seed-0-mt=},
-\ttt{seed-1-mt=}, etc settings:
-
-\begin{verbatim}
-[General]
-num-rngs = 2
-
-[Run 1]
-seed-0-mt = 1317366363
-seed-1-mt = 1453732904
-
-[Run 2]
-...
-\end{verbatim}
-
-To set a seed value for all runs, place the necessary seed entries
-into the \ttt{[General]} section.
-
-
-\subsection{Choosing good seed values for LCG32: the opp\_lcg32\_seedtool utility}
-\label{sec:ch-config-sim:seedtool}
-
-The \fprog{opp\_lcg32\_seedtool} program generates seeds for the now obsolete
-cLCG32 RNG.
-
-\begin{note}
-Since the LCG32 RNG is obsolete, there is little reason to use the
-\fprog{opp\_lcg32\_seedtool} program. It is only covered in this manual
-for completeness.
-\end{note}
-
-When started without command-line arguments, the program prints out the following help:
-
-\begin{verbatim}
-opp_lcg32_seedtool - part of {\opp}, (C) 1992-2004 Andras Varga
-See the license for distribution terms and warranty disclaimer.
-
-Generates seeds for the LCG32 random number generator. This RNG has a
-period length of 2^31-2, which makes about 2,147 million random numbers.
-Note that Mersenne Twister is also available in {\opp}, which has a
-practically infinite period length (2^19937).
-
-Usage:
-  seedtool i seed         - index of 'seed' in cycle
-  seedtool s index        - seed at index 'index' in cycle
-  seedtool d seed1 seed2  - distance of 'seed1' and 'seed2' in cycle
-  seedtool g seed0 dist   - generate seed 'dist' away from 'seed0'
-  seedtool g seed0 dist n - generate 'n' seeds 'dist' apart, starting at 'seed0'
-  seedtool t              - generate hashtable
-  seedtool p              - print hashtable
-\end{verbatim}
-
-
-The last two options, p and t were used internally to generate
-a hash table of pre-computed seeds that greatly speeds up the
-tool. For practical use, the g option is the most important.
-Suppose you have 4 simulation runs that need two independent
-random number generators each and you want to start their seeds
-at least 10,000,000 values apart. The first seed value can be
-simply 1. You would type the following command:
-
-\begin{verbatim}
-C:\OMNETPP\UTILS> opp_lcg32_seedtool g 1 10000000 8
-\end{verbatim}
-
-
-The program outputs 8 numbers that can be used as random number
-seeds:
-
-\begin{verbatim}
-1768507984
-33648008
-1082809519
-703931312
-1856610745
-784675296
-426676692
-1100642647
-\end{verbatim}
-
-
-You would specify these seed values in the ini file.
-
+For the now obsolete cLCG32 RNG, the name of the corresponding option is
+\ttt{seed-}\textit{k}\ttt{-lcg32}, and {\opp} provides a standalone program
+called \fprog{opp\_lcg32\_seedtool} to generate good seed values that
+are sufficiently apart in the RNG's sequence.
 
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "usman"
 %%% End:
+
