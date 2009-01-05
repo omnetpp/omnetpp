@@ -3,17 +3,101 @@
 
 \section{Introduction}
 
-opp\_run or executable: depends on whether executable or shared library was created.
+This chapter describes how to run simulations. It covers basic usage,
+user interfaces, batch runs, how to use Akaroa, and also explains
+how to solve the most common errors.
 
-selecting a user interface
+\subsection{Running a simulation executable}
 
-NEDPATH, -n command-line option
+By default, the output of an \fprog{opp\_makemake}-generated makefile is
+a simulation executable that can be run directly. In simple cases,
+this executable can be run without command-line arguments, but usually
+one will need to specify options to specify what ini file to use,
+which user interface to activate, where to load NED files from, and so on.
 
-loading extra libraries
+\subsubsection{Getting help}
 
-getting help
+The following sections describe the most frequently used command-line
+options. To get a complete list of supported command line options, run
+a simulation executable (or \fprog{opp\_run}) with the \ttt{-h} option.
+
+\begin{verbatim}
+$ ./fifo -h
+\end{verbatim}
+
+\subsubsection{Specifying ini files}
+
+The default ini file is \ttt{omnetpp.ini}\index{omnetpp.ini}, and is
+loaded if no other ini file is given on the command line.
+
+Ini files can be specified both as plain arguments and with the \ttt{-f}
+option, so the following two commands are equivalent:
+
+\begin{verbatim}
+$ ./fifo experiment.ini common.ini
+$ ./fifo -f experiment.ini -f common.ini
+\end{verbatim}
+
+Multiple ini files can be given, and their contents will get merged. This
+allows for partitioning the configuration into separate files, for example
+to simulation options, module parameters and result recording options.
+
+\subsubsection{Extra simulation options}
+
+Additional configuration options can be specified on the command line
+with the \ttt{-\--}\textit{option}\ttt{=}\textit{value} syntax. (Note
+that there is no space on either side of the equal sign.)
+
+An example:
+
+\begin{verbatim}
+$ ./fifo --sim-time-limit=1000s
+\end{verbatim}
+
+Options given on the command line are stronger than the similar settings
+in the ini files.
+
+\subsubsection{Specifying the NED path}
+
+NED files are loaded from directories listed on the NED path. More precisely,
+they are loaded from the listed directories and their whole subdirectory trees.
+Directories are separated with a colon (\ttt{:}).
+
+The NED path can be specified in several ways:
+\begin{itemize}
+  \item in the \ttt{NEDPATH} environment variable
+  \item using the \ttt{-n} command-line option
+  \item in ini files, with the \ttt{ned-path} configuration option
+\end{itemize}
+
+%TODO rules are as follows:
+
+
+\subsubsection{Selecting a configuration or run}
+
+depends on the user interface
+
+\subsubsection{Selecting a user interface}
+
+-u Cmdenv, or --user-interface=Cmdenv; or whichever is linked
+
+\subsubsection{Loading extra libraries}
+
+uses dlopen() or LoadLibrary()
+-l; prefix/suffix to be omitted
+or: inifile option
+or: maybe not needed, if executable or shared lib was already linked with the shared lib
+
+\subsection{Running a shared library}
+
+Shared libraries can be run using the \fprog{opp\_run} program.
+Both \fprog{opp\_run} and simulation executables are capable of
+loading additional shared libraries; actually, \fprog{opp\_run}
+is nothing else than an empty simulation executable.
+
 
 TODO put somewhere: time limits, fingerprinting, and other options!
+
 
 \section{User interfaces}
 
@@ -46,10 +130,6 @@ simulation kernel, and the two parts interact through a well-defined
 interface. This also means that, if needed, you can write your
 own user interface or embed an {\opp} simulation into your application
 without any change to models or the simulation library.
-
-\section{Selecting a user interface}
-
--u Cmdenv, or --user-interface=Cmdenv
 
 
 \section{Cmdenv: the command-line interface}
@@ -127,36 +207,49 @@ and it can be processed using Plove or other tools.
 A simulation program built with Cmdenv accepts the following command line
 switches\index{command line switches}:
 
+\begin{verbatim}
+  cmdenv-autoflush=<bool>, default:false; per-run setting
+  cmdenv-config-name=<string>; global setting
+  <object-full-path>.cmdenv-ev-output=<bool>, default:true; per-object setting
+  cmdenv-event-banner-details=<bool>, default:false; per-run setting
+  cmdenv-event-banners=<bool>, default:true; per-run setting
+  cmdenv-express-mode=<bool>, default:true; per-run setting
+  cmdenv-extra-stack=<double>, unit="B", default:8KB; global setting
+  cmdenv-interactive=<bool>, default:false; global setting
+  cmdenv-message-trace=<bool>, default:false; per-run setting
+  cmdenv-module-messages=<bool>, default:true; per-run setting
+  cmdenv-output-file=<filename>; global setting
+  cmdenv-performance-display=<bool>, default:true; per-run setting
+  cmdenv-runs-to-execute=<string>; global setting
+  cmdenv-status-frequency=<double>, unit="s", default:2s; per-run setting
+\end{verbatim}
+
+
 \begin{longtable}{lp{12cm}}
   \ttt{-h}
   &
   The program prints a short help message and the networks
   contained in the executable, then exits.\\
 
-  \ttt{-f} \texttt{<}\textit{fileName\texttt{>}}
+  \ttt{-f} \ttt{<}\textit{fileName\ttt{>}}
   &
-  Specify the name of the configuration file.
-  The default is \texttt{omnetpp.ini}\index{omnetpp.ini}.
-  Multiple \ttt{-f} switches can be given; this allows you to partition your
-  configuration file.  For example, one file can contain your general
-  settings, another one most of the module parameters, another one the
-  module parameters you change often.\\
+\\
 
-  \ttt{-l} \texttt{<}\textit{fileName\texttt{>}}
+  \ttt{-l} \ttt{<}\textit{fileName\ttt{>}}
   &
-  Load a shared object\index{shared objects} (\texttt{.so} file on Unix).
-  Multiple \ttt{-l} switches are accepted. Your \texttt{.so} files may contain module
+  Load a shared object\index{shared objects} (\ttt{.so} file on Unix).
+  Multiple \ttt{-l} switches are accepted. Your \ttt{.so} files may contain module
   code etc. By dynamically loading all simple
-  module code and compiled network description (\texttt{\_n.o} files
+  module code and compiled network description (\ttt{\_n.o} files
   on Unix) you can even eliminate the need to re-link the simulation
   program after each change in a source file.  (Shared objects can be
-  created with \texttt{gcc -shared...})\\
+  created with \ttt{gcc -shared...})\\
 
-  \ttt{-r} \texttt{<}\textit{runs\texttt{>}}
+  \ttt{-r} \ttt{<}\textit{runs\ttt{>}}
   &
   It specifies which runs should be executed (e.g. \ttt{-r 2,4,6-8}).
-  This option overrides the \texttt{runs-to-execute=} option
-  in the \texttt{[Cmdenv]} section of the ini file\index{ini file}
+  This option overrides the \ttt{runs-to-execute=} option
+  in the \ttt{[Cmdenv]} section of the ini file\index{ini file}
   (see later).\\
 \end{longtable}
 
@@ -203,7 +296,15 @@ End run of {\opp}
 \subsection{Cmdenv ini file options}
 \label{sec:ch-run-sim:cmdenv-section}
 
-Cmdenv can be executed in two modes, selected by the \ttt{express-mode} ini file entry:
+\fpar{cmdenv-runs-to-execute} specifies which simulation runs should be executed.
+It accepts a comma-separated list of run numbers or run number ranges, e.g.
+\ttt{1,3-4,7-9}. If the value is missing, Cmdenv executes all runs that have
+ini file sections; if no runs are specified in the ini file, Cmdenv does one run.
+The -r command line option overrides this ini file setting.
+
+
+Cmdenv can be executed in two modes, selected by the \ttt{cmdenv-express-mode}
+ini file entry:
 
 \begin{itemize}
     \item \tbf{Normal} (non-express) mode is for debugging: detailed information
@@ -214,53 +315,12 @@ Cmdenv can be executed in two modes, selected by the \ttt{express-mode} ini file
         simulation.
 \end{itemize}
 
-The full list of ini file options recognized by Cmdenv:
-
-\begin{longtable}{|p{6.5cm}|p{7.5cm}|}
-\hline
-\tabheadcol
-\tbf{Entry and default value} & \tbf{Description}\\\hline
-\multicolumn{2}{|l|}{\tbf{[Cmdenv]}}\\\hline
-%%
-\fpar{runs-to-execute} = & Specifies which simulation runs should be executed.
-It accepts a comma-separated list of run numbers or run number ranges, e.g.
-\ttt{1,3-4,7-9}. If the value is missing, Cmdenv executes all runs that have
-ini file sections; if no runs are specified in the ini file, Cmdenv does one run.
-The -r command line option overrides this ini file setting. \\\hline
-%%
-\fpar{express-mode}=yes/no (default: no) & Selects ``normal'' (debug/trace) or ``express'' mode.
-\\\hline
-%%
-\fpar{module-messages}=yes/no (default: yes) & In normal mode only:
-printing module ev<< output on/off \\\hline
-%%
-\fpar{event-banners}=yes/no (default: yes) & In normal mode only:
-printing event banners on/off \\\hline
-%%
-\fpar{message-trace}=yes/no (default: no) & In normal mode only: print a line
-about each message sending (by \fname{send()},\fname{scheduleAt()}, etc)
-and delivery on the standard output \\\hline
-%%
-\fpar{autoflush}=yes/no (default: no) &  Call \fname{fflush(stdout)} after each
-event banner or status update; affects both express and normal mode. Turning on
-autoflush can be useful with printf-style debugging for tracking down
-program crashes. \\\hline
-%%
-\fpar{status-frequency}=<integer> (default: 50000) & In express mode only:
-print status update every n events (on today's computers, and
-for a typical model, this will produce an update every few seconds,
-perhaps a few times per second) \\\hline
-%%
-\fpar{performance-display}=yes/no (default: yes) & In express mode only:
-print detailed performance information. Turning it on results in a 3-line
+\fpar{cmdenv-performance-display} affects express mode only: it controls
+whether to print performance information. Turning it on results in a 3-line
 entry printed on each update, containing ev/sec, simsec/sec, ev/simsec,
 number of messages created/still present/currently scheduled in FES\index{FES}.
-\\\hline
-%%
-\fpar{extra-stack-kb} = 8 & Specifies the extra amount of stack
-(in kilobytes) that is reserved for each \fname{activity()}
-simple module when the simulation is run under Cmdenv.\\\hline
-\end{longtable}
+
+For a full list of options, see the cmdenv-* in the appendix
 
 
 \subsection{Interpreting Cmdenv output}
@@ -375,7 +435,7 @@ switches\index{command line switches}:
   \ttt{-f }\textit{<fileName>}
   &
   Specify the name of the configuration file.
-  The default is \texttt{omnetpp.ini}\index{omnetpp.ini}.
+  The default is \ttt{omnetpp.ini}\index{omnetpp.ini}.
   Multiple \ttt{-f} switches can be given; this allows you to partition your
   configuration file.  For example, one file can contain your general
   settings, another one most of the module parameters, another one the
@@ -383,13 +443,13 @@ switches\index{command line switches}:
 
   \ttt{-l }\textit{<fileName>}
   &
-  Load a shared object\index{shared objects} (\texttt{.so} file on Unix).
-  Multiple \ttt{-l} switches are accepted. Your \texttt{.so} files may contain module
+  Load a shared object\index{shared objects} (\ttt{.so} file on Unix).
+  Multiple \ttt{-l} switches are accepted. Your \ttt{.so} files may contain module
   code etc. By dynamically loading all simple
-  module code and compiled network description (\texttt{\_n.o} files
+  module code and compiled network description (\ttt{\_n.o} files
   on Unix) you can even eliminate the need to re-link the simulation
   program after each change in a source file.  (Shared objects can be
-  created with \texttt{gcc -shared...})\\
+  created with \ttt{gcc -shared...})\\
 
   \ttt{-r }\textit{<run-number>}
   &
@@ -398,7 +458,16 @@ switches\index{command line switches}:
 
 \end{longtable}
 
-\subsection{In Memoriam\dots }
+\begin{verbatim}
+  tkenv-default-config=<string>; global setting
+  tkenv-default-run=<int>, default:0; global setting
+  tkenv-extra-stack=<double>, unit="B", default:48KB; global setting
+  tkenv-image-path=<path>; global setting
+  tkenv-plugin-path=<path>; global setting
+\end{verbatim}
+
+
+\subsection{Past user interfaces}
 
 There used to be other windowing user interfaces which have been removed
 from the distribution:
@@ -699,7 +768,7 @@ The resolution depends on whether you are using {\opp} on Unix or on Windows.
 \textbf{Unix.}
 If you get the above message, you have to increase the total stack
 size\index{stack!size} (the sum of all coroutine stacks). You can do
-so in \texttt{omnetpp.ini}:
+so in \ttt{omnetpp.ini}:
 
 \begin{verbatim}
 [General]
@@ -922,7 +991,7 @@ than one would expect.
 %    messages if possible.}
 %  \item{Turn off the display of screen messages when you run the
 %    simulation.  You can do this in the ini file. Alternatively, you
-%    can place \ttt{\#ifdef}s around your \texttt{ev<<} and
+%    can place \ttt{\#ifdef}s around your \ttt{ev<<} and
 %    \index{ev.printf()} calls and turn off the define when compiling
 %    the simulation for speed.}
 %  \item{Store the module parameters in local variables to avoid

@@ -4,31 +4,29 @@
 \section{Overview}
 
 {\opp} provides a tool which can generate HTML documentation from NED files
-and message definitions. Like Javadoc and Doxygen, \fprog{opp\_neddoc}
-makes use of source code comments. \fprog{opp\_neddoc}-generated
-documentation lists simple and compound modules, and presents their details
-including description, gates, parameters, unassigned submodule parameters
-and syntax-highlighted source code.
-The documentation also includes clickable network diagrams (exported via the GNED
-graphical editor) and module usage diagrams as well as inheritance diagrams
-for messages.
+and message definitions. Like Javadoc and Doxygen, the NED documentation tool
+makes use of source code comments. The generated HTML documentation
+lists all modules, channels, messages, etc., and presents their details including
+description, gates, parameters, unassigned submodule parameters and
+syntax-highlighted source code. The documentation also includes clickable
+network diagrams (exported from the graphical editor) and usage diagrams as
+well as inheritance diagrams.
 
-\fprog{opp\_neddoc} works well with Doxygen, which means that it can hyperlink
-simple modules and message classes to their C++ implementation classes in
-the Doxygen documentation. If you also generate the C++ documentation with some
-Doxygen features turned on (such as \textit{inline-sources} and
-\textit{referenced-by-relation}, combined with
-\textit{extract-all}, \textit{extract-private} and \textit{extract-static}),
-the result is an easily browsable and very informative presentation of the
-source code. Of course, one still has to write documentation comments
-in the code.
+The documentation tool integrates with Doxygen, meaning that it can
+hyperlink simple modules and message classes to their C++ implementation
+classes in the Doxygen documentation. If you also generate the C++
+documentation with some Doxygen features turned on (such as
+\textit{inline-sources} and \textit{referenced-by-relation}, combined with
+\textit{extract-all}, \textit{extract-private} and
+\textit{extract-static}), the result is an easily browsable and very
+informative presentation of the source code. Of course, one still has to
+write documentation comments in the code.
 
-
-
-\section{Authoring the documentation}
+In the 4.0 version, the documentation tool is part of the Eclipse-based
+simulation IDE.
 
 
-\subsection{Documentation comments}
+\section{Documentation comments}
 
 Documentation is embedded in normal comments. All \texttt{//} comments
 that are in the ``right place'' (from the documentation tool's
@@ -38,9 +36,7 @@ point of view) will be included in the generated documentation.
      marker) to distinguish documentation from ``normal'' comments in the
      source code. In {\opp} there's no need for that: NED and the message
      syntax is so compact that practically all comments one would want to write
-     in them can serve documentation purposes. Still, there is a way to write
-     comments that \textit{don't} make it into the documentation -- by starting
-     them with \texttt{//\#}.}
+     in them can serve documentation purposes.}
 
 Example:
 
@@ -49,13 +45,14 @@ Example:
 // An ad-hoc traffic generator to test the Ethernet models.
 //
 simple Gen
+{
     parameters:
-        destAddress: string,  // destination MAC address
-        protocolId: numeric,  // value for SSAP/DSAP in Ethernet frame
-        waitMean: numeric;    // mean for exponential interarrival times
+        string destAddress;  // destination MAC address
+        int protocolId;      // value for SSAP/DSAP in Ethernet frame
+        double waitMean @unit(s); // mean for exponential interarrival times
     gates:
-        out: out;             // to Ethernet LLC
-endsimple
+        output out;  // to Ethernet LLC
+}
 \end{verbatim}
 
 You can also place comments above parameters and gates. This is useful
@@ -66,40 +63,69 @@ if they need long explanations. Example:
 // Deletes packets and optionally keeps statistics.
 //
 simple Sink
+{
     parameters:
         // You can turn statistics generation on and off. This is
         // a very long comment because it has to be described what
         // statistics are collected (or not).
-        statistics: bool;
+        bool collectStatistics = default(true);
     gates:
-        in: in;
-endsimple
+        input in;
+}
 \end{verbatim}
+
+\subsection{Private comments}
 
 If you want a comment line \textit{not} to appear in the documentation,
 begin it with \texttt{//\#}. Those lines will be ignored by the
-documentation generation, and can be used to comment out
-unused NED code or to make ``private'' comments like \texttt{FIXME} or
-\texttt{TBD}.
+documentation tool, and can be used to make ``private'' comments
+like \texttt{FIXME} or \texttt{TODO}, or to comment out unused code.
 
 \begin{verbatim}
 //
 // An ad-hoc traffic generator to test the Ethernet models.
-//# FIXME above description needs to be refined
+//# TODO above description needs to be refined
 //
 simple Gen
+{
     parameters:
-        destAddress: string,  // destination MAC address
-        protocolId: numeric,  // value for SSAP/DSAP in Ethernet frame
-        //# burstiness: numeric;  -- not yet supported
-        waitMean: numeric;    // mean for exponential interarrival times
+        string destAddress;  // destination MAC address
+        int protocolId;      // value for SSAP/DSAP in Ethernet frame
+        //# double burstiness;  -- not yet supported
+        double waitMean @unit(s); // mean for exponential interarrival times
     gates:
-        out: out;             // to Ethernet LLC
-endsimple
+        output out;  // to Ethernet LLC
+}
 \end{verbatim}
 
 
-\subsection{Text layout and formatting}
+\subsection{More on comment placement}
+
+Comments should be written where nedtool will find them.
+This is a) immediately above the documented item, or b) after the
+documented item, on the same line.
+
+In the former case, make sure there's no blank line left
+between the comment and the documented item. Blank lines
+detach the comment from the documented item.
+
+Example:
+\begin{verbatim}
+// This is wrong! Because of the blank line, this comment is not
+// associated with the following simple module!
+
+simple Gen
+{
+    ...
+}
+\end{verbatim}
+
+Do not try to comment groups of parameters together. The result
+will be awkward.
+
+\section{Text layout and formatting}
+
+\subsection{Paragraphs and lists}
 
 If you write longer descriptions, you'll need text formatting capabilities.
 Text formatting works like in Javadoc or Doxygen -- you can break up the
@@ -131,9 +157,9 @@ Example:
 
 \subsection{Special tags}
 
-\fname{\opp\_neddoc} understands the following tags and will render them accordingly:
+The documentation tool understands the following tags and will render them accordingly:
 \ttt{@author}, \ttt{@date}, \ttt{@todo}, \ttt{@bug}, \ttt{@see}, \ttt{@since},
-\ttt{@warning}, \ttt{@version}. An example usage:
+\ttt{@warning}, \ttt{@version}. Example usage:
 
 \begin{verbatim}
 //
@@ -143,10 +169,10 @@ Example:
 \end{verbatim}
 
 
-\subsection{Additional text formatting using HTML}
+\subsection{Text formatting using HTML}
 
 Common HTML tags are understood as formatting commands.
-The most useful of these tags are: \ttt{<i>..</i>} (italic),
+The most useful tags are: \ttt{<i>..</i>} (italic),
 \ttt{<b>..</b>} (bold), \ttt{<tt>..</tt>} (typewriter font),
 \ttt{<sub>..</sub>} (subscript), \ttt{<sup>..</sup>} (superscript),
 \ttt{<br>} (line break), \ttt{<h3>} (heading),
@@ -155,7 +181,7 @@ as well as a few other tags used for table creation (see below).
 For example, \texttt{<i>Hello</i>} will be rendered as ``\textit{Hello}''
 (using an italic font).
 
-The complete list of HTML tags interpreted by \ttt{opp\_neddoc} are:
+The complete list of HTML tags interpreted by the documentation tool are:
 \texttt{<a>}, \texttt{<b>}, \texttt{<body>}, \texttt{<br>}, \texttt{<center>},
 \texttt{<caption>}, \texttt{<code>}, \texttt{<dd>}, \texttt{<dfn>}, \texttt{<dl>},
 \texttt{<dt>}, \texttt{<em>}, \texttt{<form>}, \texttt{<font>}, \texttt{<hr>},
@@ -283,32 +309,9 @@ an \ttt{IP} module in the NED files.
 
 
 
-\subsection{Where to put comments}
+\section{Customizing and adding pages}
 
-You have to put the comments where nedtool will find them.
-This is a) above the documented item, or b) after the
-documented item, on the same line.
-
-If you put it above, make sure there's no blank line left
-between the comment and the documented item. Blank lines
-detach the comment from the documented item.
-
-Example:
-\begin{verbatim}
-// This is wrong! Because of the blank line, this comment is not
-// associated with the following simple module!
-
-simple Gen
-    parameters:
-    ...
-endsimple
-\end{verbatim}
-
-Do not try to comment groups of parameters together. The result
-will be awkward.
-
-
-\subsection{Customizing the title page}
+\subsection{Adding a custom title page}
 
 The title page is the one that appears in the main frame after
 opening the documentation in the browser. By default it contains
@@ -405,111 +408,15 @@ the \ttt{@externalpage} directive in any of the NED files, and
 they will be added to the page index. The pages can then be linked to
 from other pages using the HTML \ttt{<a href="...">...</a>} tag.
 
-The \ttt{@externalpage} directive is similar in syntax
-\ttt{@page}:
+The \ttt{@externalpage} directive is similar in syntax to \ttt{@page}:
 
 \begin{verbatim}
 // @externalpage filename.html, Title of the Page
 \end{verbatim}
 
 The documentation tool does not check if the page exists
-or not. It is your responsibility to copy them manually into
-the directory of the generated documentation and then to make
-sure the hyperlinks work.
-
-
-
-\section{Invoking opp\_neddoc}
-
-The \ttt{opp\_neddoc} tool accepts the following command-line options:
-
-% FIXME explain...
-
-\begin{verbatim}
-opp_neddoc - NED and MSG documentation tool, part of {\opp}
-(c) 2003-2004 Andras Varga
-
-Generates HTML model documentation from .ned and .msg files.
-
-Usage: opp_neddoc options files-or-directories ...
- -a, --all    process all *.ned and *.msg files recursively
-              ('opp_neddoc -a' is equivalent to 'opp_neddoc .')
- -o <dir>     output directory, defaults to ./html
- -t <filename>, --doxytagfile <filename>
-              turn on generating hyperlinks to Doxygen documentation;
-              <filename> specifies name of XML tag file generated by Doxygen
- -d <dir>, --doxyhtmldir <dir>
-              directory of Doxygen-generated HTML files, relative to the
-              opp_neddoc output directory (-o option). -t option must also be
-              present to turn on linking to Doxygen. Default: ../api-doc/html
- -n, --no-figures
-              do not generate diagrams
- -p, --no-unassigned-pars
-              do not document unassigned parameters
- -x, --no-diagrams
-              do not generate usage and inheritance diagrams
- -z, --no-source
-              do not generate source code listing
- -s, --silent suppress informational messages
- -g, --debug  print invocations of external programs and other info
- -h, --help   displays this help text
-
-Files specified as arguments are parsed and documented. For directories as
-arguments, all .ned and .msg files under them (in that directory subtree) are
-documented. Wildcards are accepted and they are NOT recursive, e.g.
-foo/*.ned does NOT process files in foo/bar/ or any other subdirectory.
-
-Bugs:  (1) handles only files with .ned and .msg extensions, other files are
-silently ignored; (2) does not filter out duplicate files (they will show up
-multiple times in the documentation); (3) on Windows, file names are handled
-case sensitively.
-\end{verbatim}
-
-
-\subsection{Multiple projects}
-
-The generated \ttt{tags.xml} can be used to generate other documentation
-that refers to pages in this documentation via HTML links.
-
-
-\section{How does opp\_neddoc work?}
-
-\ttt{*.ned} and \ttt{*.msg} files are collected (e.g. via the \ttt{find}
-command if you used the \ttt{-a} option on Unix) and processed
-with \ttt{nedtool}. \ttt{nedtool} parses them and outputs the resulting syntax
-tree in XML -- a single large XML file which contains all files.
-
-The \ttt{*.ned} files are processed with the \ttt{-c} (export-diagrams-and-exit)
-option of \ttt{gned}. This causes \ttt{gned} to export diagrams for the
-compound modules in Postscript. Postscript files are then converted
-to GIFs using \ttt{convert} (part of the ImageMagick package).
-\ttt{gned} also exports an \ttt{images.xml} file which describes which
-image was generated from which compound module, and also contains
-additional info (coordinates of submodule rectangles and icons in the image)
-for creating clickable image maps.
-
-The XML file containing parsed NED and message files is then processed
-with an XSLT stylesheet to generate HTML. XSLT is a very powerful way
-of converting an XML document into another XML (or HTML, or text) document.
-Additionally, the stylesheet reads \ttt{images.xml} and uses its contents
-to make the compound module images clickable.
-The stylesheet also outputs a \ttt{tags.xml} file which describes what is documented
-in which .html file, so that external documentation can link to this one.
-
-As a final step, the comments in the generated HTML file are processed
-with a perl script. The perl script also performs syntax hightlighting
-of the source listings in the HTML, and puts hyperlinks on module,
-channel, message, etc. names. (It uses the info in the \ttt{tags.xml} file
-for the latter task.) This last step, comment formatting and source code
-coloring whould have been very difficult to achieve from XSLT, which
-(at least in its 1.0 version of the standard) completely lacks powerful
-string manipulation functions. (Not even simple find/replace
-is supported in strings, let alone regular expressions. Perhaps the
-2.0 version of XSLT will improve on this.)
-
-The whole process is controlled by the \ttt{opp\_neddoc} script.
-
-
-
+or not. It is your responsibility to copy it manually into
+the directory of the generated documentation, and to make
+sure the hyperlink works.
 
 
