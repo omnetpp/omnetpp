@@ -65,6 +65,13 @@ $html =~ s/ SIZE=2//g;
 $html =~ s/ FACE="[^"]*"//g;
 $html =~ s/ color=[a-z]*?//g;
 
+if ($product ne "OMNEST") {
+   $html =~ s/\@ifcommercial\@.*?\@fi\@//sg;
+} else {
+   $html =~ s/\@ifcommercial\@//sg;
+   $html =~ s/\@fi\@//sg;
+}
+
 #$html =~ s/(\<H[0-9]\>.*?\<\/H[0-9]\>)/<font color="#006f00">\1<\/font>/g;
 
 # add IDs to headers

@@ -143,6 +143,9 @@ htmlfile_spec := $BASE.htm
 :comm   :\cclass(\[.*?\])?{(.*?)}:<tt>$2</tt>::
 :comm   :\fmac(\[.*?\])?{(.*?)}:<tt>$2</tt>::
 :comm   :\includegraphics(\[.*?\])?{figures/(.*?)}:<img src="$2.png">::
+:comm   :\ifcommercial:@ifcommercial@::
+:comm   :\fi:@fi@::
+
 # WRONG --  :comm   :\chapter\*{(.*?)}:<br><br><br><b>$2</b>::
 # WRONG --  :comm   :$\^(.*)\$:<sup>$1</sup>::
 # WRONG --  :comm   :\'(.):&\1acute;:
