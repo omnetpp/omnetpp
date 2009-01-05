@@ -209,7 +209,7 @@ class SCAVE_API ScalarDataSorter
      */
     XYDatasetVector prepareScatterPlot3(const IDList& idlist, const char *moduleName, const char *scalarName,
             ResultItemFields rowFields, ResultItemFields columnFields,
-            const StringVector isoModuleNames, const StringVector isoScalarNames);
+            const StringVector isoModuleNames, const StringVector isoScalarNames, ResultItemFields isoFields);
 
 
     /**

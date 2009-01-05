@@ -8,12 +8,10 @@
 package org.omnetpp.scave.charting.dataset;
 
 import org.omnetpp.common.engine.BigDecimal;
-import org.omnetpp.scave.engine.IDList;
-import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItemField;
-import org.omnetpp.scave.engine.ScalarResult;
 import org.omnetpp.scave.engine.Statistics;
 import org.omnetpp.scave.engine.XYDataset;
+import org.omnetpp.scave.model2.IsoLineData;
 
 /**
  * IXYDataset implementation for a scatter plot computed from a list of scalars.
@@ -34,9 +32,9 @@ public class ScalarScatterPlotDataset extends XYDatasetSupport implements IAvera
 	                        		// other rows contain Y values (NaN if missing)
 	private String[] keys;
 	
-	public ScalarScatterPlotDataset(XYDataset scalars, IDList isoScalars, ResultFileManager manager) {
+	public ScalarScatterPlotDataset(XYDataset scalars, IsoLineData[] isoLineId) {
 		this.scalars = scalars;
-		this.keys = computeKeys(this.scalars, isoScalars, manager);
+		this.keys = computeKeys(this.scalars, isoLineId);
 	}
 	
 	public String getTitle(String format) {
@@ -83,19 +81,23 @@ public class ScalarScatterPlotDataset extends XYDatasetSupport implements IAvera
 	private static final ResultItemField MODULE = new ResultItemField(ResultItemField.MODULE);
 	private static final ResultItemField NAME = new ResultItemField(ResultItemField.NAME);
 	
-	private static String[] computeKeys(XYDataset data, IDList isoScalars, ResultFileManager manager) {
+	private static String[] computeKeys(XYDataset data, IsoLineData[] isoLineId) {
 		// each row has the same value of the iso scalars
 		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < isoScalars.size(); ++i) {
-			if (i == 0)
-				sb.append(" - ");
-			else
-				sb.append(" ");
-			
-			ScalarResult scalar = manager.getScalar(isoScalars.get(i));
-			sb.append(scalar.getModuleName()).append(" ")
-			  .append(scalar.getName()).append("=")
-			  .append(scalar.getValue());
+		if (isoLineId != null) {
+			for (int i = 0; i < isoLineId.length; ++i) {
+				if (i == 0)
+					sb.append(" - ");
+				else
+					sb.append(" ");
+
+				IsoLineData isoData = isoLineId[i];
+				if (isoData.getModuleName() != null && isoData.getDataName() != null)
+					sb.append(isoData.getModuleName()).append(" ").append(isoData.getDataName());
+				else
+					sb.append(isoData.getAttributeName());
+				sb.append("=").append(isoData.getValue());
+			}
 		}
 		String isoScalarValues = sb.toString();
 		

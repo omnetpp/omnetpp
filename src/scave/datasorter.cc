@@ -455,14 +455,19 @@ struct IsoGroupingFn : public std::binary_function<ResultItem, ResultItem, bool>
     typedef map<Run*, vector<double> > RunIsoValueMap;
     typedef map<pair<string, string>, int> IsoAttrIndexMap;
     RunIsoValueMap isoMap;
+    ResultItemFields fields;
 
     IsoGroupingFn() {}
-    IDList init(const IDList &idlist, StringVector moduleNames, StringVector scalarNames, ResultFileManager *manager);
+    IDList init(const IDList &idlist, StringVector moduleNames, StringVector scalarNames,
+				ResultItemFields fields, ResultFileManager *manager);
     bool operator()(const ResultItem &d1, const ResultItem &d2) const;
 };
 
-IDList IsoGroupingFn::init(const IDList &idlist, StringVector moduleNames, StringVector scalarNames, ResultFileManager *manager)
+IDList IsoGroupingFn::init(const IDList &idlist, StringVector moduleNames, StringVector scalarNames,
+							ResultItemFields fields, ResultFileManager *manager)
 {
+	this->fields = fields;
+
     //assert(moduleNames.size() == scalarNames.size());
     int numOfIsoValues = scalarNames.size();
     IDList result;
@@ -509,6 +514,9 @@ bool IsoGroupingFn::operator()(const ResultItem &d1, const ResultItem &d2) const
     if (isoMap.empty())
         return true;
 
+    if (!fields.equal(d1,d2))
+    	return false;
+
     RunIsoValueMap::const_iterator it1 = isoMap.find(d1.fileRunRef->runRef);
     RunIsoValueMap::const_iterator it2 = isoMap.find(d2.fileRunRef->runRef);
     if (it1 == isoMap.end() || it2 == isoMap.end())
@@ -528,11 +536,11 @@ bool IsoGroupingFn::operator()(const ResultItem &d1, const ResultItem &d2) const
 
 XYDatasetVector ScalarDataSorter::prepareScatterPlot3(const IDList& idlist, const char *moduleName, const char *scalarName,
         ResultItemFields rowFields, ResultItemFields columnFields,
-        const StringVector isoModuleNames, const StringVector isoScalarNames)
+        const StringVector isoModuleNames, const StringVector isoScalarNames, ResultItemFields isoFields)
 {
     // group data according to iso fields
     IsoGroupingFn grouping;
-    IDList nonIsoScalars = grouping.init(idlist, isoModuleNames, isoScalarNames, resultFileMgr);
+    IDList nonIsoScalars = grouping.init(idlist, isoModuleNames, isoScalarNames, isoFields, resultFileMgr);
     IDVectorVector groupedScalars = doGrouping(nonIsoScalars, grouping);
 
     XYDatasetVector datasets;

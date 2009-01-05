@@ -22,6 +22,7 @@ import java.util.Set;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.CompoundCommand;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.Enumerator;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
@@ -40,7 +41,9 @@ import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.ResultItemField;
+import org.omnetpp.scave.engine.RunAttribute;
 import org.omnetpp.scave.engine.ScalarResult;
+import org.omnetpp.scave.engine.StringVector;
 import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.model.Add;
 import org.omnetpp.scave.model.Analysis;
@@ -244,6 +247,19 @@ public class ScaveModelUtil {
 		for (ChartSheet chartsheet : (List<ChartSheet>)analysis.getChartSheets().getChartSheets())
 			if (DEFAULT_CHARTSHEET_NAME.equals(chartsheet.getName()))
 				return chartsheet;
+		return null;
+	}
+	
+	public static EObject getPreviousSibling(EObject eobject) {
+		EObject parent = eobject.eContainer();
+		EStructuralFeature feature = eobject.eContainingFeature();
+		if (parent != null && feature != null) {
+			@SuppressWarnings("unchecked")
+			EList<EObject> siblings = ((EList<EObject>)parent.eGet(feature));
+			int index = siblings.indexOf(eobject);
+			if (index > 0)
+				return siblings.get(index - 1);
+		}
 		return null;
 	}
 
@@ -453,16 +469,19 @@ public class ScaveModelUtil {
 	}
 	
 
-	public static ModuleAndData[] getModuleAndDataPairs(IDList idlist, ResultFileManager manager) {
-		Set<ModuleAndData> values = new HashSet<ModuleAndData>();
+	public static IsoLineData[] getModuleAndDataPairs(IDList idlist, ResultFileManager manager) {
+		Set<IsoLineData> values = new HashSet<IsoLineData>();
 		for (int i = 0; i < idlist.size(); ++i) {
 			long id = idlist.get(i);
 			ResultItem item = manager.getItem(id);
-			ModuleAndData pair = new ModuleAndData(item.getModuleName(), item.getName());
+			IsoLineData pair = new IsoLineData(item.getModuleName(), item.getName());
 			if (pair.isValid())
 				values.add(pair);
 		}
-		ModuleAndData[] result = values.toArray(new ModuleAndData[values.size()]);
+		StringVector runAttributes = RunAttribute.getAttributeNames();
+		for (int i = 0; i < runAttributes.size(); ++i)
+			values.add(new IsoLineData(runAttributes.get(i)));
+		IsoLineData[] result = values.toArray(new IsoLineData[values.size()]);
 		Arrays.sort(result);
 		return result;
 	}

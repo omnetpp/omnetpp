@@ -35,7 +35,7 @@ import org.omnetpp.scave.model.ResultType;
 import org.omnetpp.scave.model.ScatterChart;
 import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave.model2.DatasetManager;
-import org.omnetpp.scave.model2.ModuleAndData;
+import org.omnetpp.scave.model2.IsoLineData;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
 // XXX remove (or disable) the data that was selected as X data in the iso table
@@ -56,7 +56,7 @@ public class ScatterChartEditForm extends BaseLineChartEditForm {
 	private Table isoModuleAndDataTable;
 	private Button avgReplicationsCheckbox;
 	
-	private ModuleAndData[] data = new ModuleAndData[0];
+	private IsoLineData[] data = new IsoLineData[0];
 	
 	public ScatterChartEditForm(ScatterChart chart, EObject parent, Map<String,Object> formParameters, ResultFileManager manager) {
 		super(chart, parent, formParameters, manager);
@@ -180,15 +180,14 @@ public class ScatterChartEditForm extends BaseLineChartEditForm {
 		return super.getValue(feature);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void setValue(EStructuralFeature feature, Object value) {
 		switch (feature.getFeatureID()) {
 		case ScaveModelPackage.SCATTER_CHART__XDATA_PATTERN:
 			if (xModuleAndDataCombo != null) {
-				ModuleAndData xModuleAndData = null;
+				IsoLineData xModuleAndData = null;
 				if (value instanceof String) {
-					int index = ArrayUtils.indexOf(data, ModuleAndData.fromFilterPattern((String)value));
+					int index = ArrayUtils.indexOf(data, IsoLineData.fromFilterPattern((String)value));
 					if (index >= 0)
 						xModuleAndData = data[index];
 				}
@@ -202,7 +201,7 @@ public class ScatterChartEditForm extends BaseLineChartEditForm {
 		case ScaveModelPackage.SCATTER_CHART__ISO_DATA_PATTERN:
 			if (isoModuleAndDataTable != null) {
 				if (value instanceof List) {
-					List<String> patterns = (List<String>)value;
+					@SuppressWarnings("unchecked") List<String> patterns = (List<String>)value;
 					for (TableItem item : isoModuleAndDataTable.getItems()) {
 						item.setChecked(patterns.contains(item.getData()));
 					}

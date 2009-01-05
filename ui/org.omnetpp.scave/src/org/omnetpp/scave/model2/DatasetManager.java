@@ -47,6 +47,7 @@ import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.ResultItemField;
 import org.omnetpp.scave.engine.ResultItemFields;
 import org.omnetpp.scave.engine.ScalarDataSorter;
+import org.omnetpp.scave.engine.ScalarResult;
 import org.omnetpp.scave.engine.StringMap;
 import org.omnetpp.scave.engine.StringVector;
 import org.omnetpp.scave.engine.VectorResult;
@@ -282,10 +283,10 @@ public class DatasetManager {
 			
 			// process scalars
 			XYDatasetVector xyScalars = null;
-			List<IDList> isoScalars = null;
+			List<IsoLineData[]> isoLineIds = null;
 			if (!scalars.isEmpty()) {
-				ModuleAndData xData = ModuleAndData.fromFilterPattern(chart.getXDataPattern());
-				Assert.isLegal(xData.isValid(), "X data is not selected.");
+				IsoLineData xData = IsoLineData.fromFilterPattern(chart.getXDataPattern());
+				Assert.isLegal(xData != null && xData.isValid(), "X data is not selected.");
 				
 				String xModuleName = xData.getModuleName();
 				String xScalarName = xData.getDataName();
@@ -294,13 +295,8 @@ public class DatasetManager {
 				
 				StringVector isoModuleNames = new StringVector();
 				StringVector isoScalarNames = new StringVector();
-				for (String pattern : isoPatterns) {
-					ModuleAndData moduleAndData = ModuleAndData.fromFilterPattern(pattern);
-					if (moduleAndData.isValid()) {
-						isoModuleNames.add(moduleAndData.getModuleName());
-						isoScalarNames.add(moduleAndData.getDataName());
-					}
-				}
+				StringVector isoAttrNames = new StringVector();
+				collectIsoParameters(isoPatterns, isoModuleNames, isoScalarNames, isoAttrNames);
 				
 				ScalarDataSorter sorter = new ScalarDataSorter(manager);
 				ResultItemFields rowFields = new ResultItemFields(MODULE, NAME);
@@ -308,28 +304,10 @@ public class DatasetManager {
 					                                              new ResultItemFields(RUN, EXPERIMENT, MEASUREMENT, REPLICATION);
 				xyScalars = sorter.prepareScatterPlot3(scalars,
 								xModuleName, xScalarName, rowFields, columnFields,
-								isoModuleNames, isoScalarNames);
+								isoModuleNames, isoScalarNames, new ResultItemFields(isoAttrNames));
+				// XXX isoLineIds should be returned by prepareScatterPlot3
+				isoLineIds = collectIsoLineIds(scalars, isoModuleNames, isoScalarNames, isoAttrNames, xyScalars, manager);
 				// assertOrdered(xyScalars);
-				
-				if (!isoPatterns.isEmpty()) {
-					isoScalars = new ArrayList<IDList>((int)xyScalars.size());
-					for (int i = 0; i < xyScalars.size(); ++i) {
-						XYDataset xyData = xyScalars.get(i);
-						Assert.isTrue(xyData.getRowCount() > 0);
-						String runName = xyData.getRowFieldNoCheck(0, FLD_RUN);
-						FilterUtil filter = new FilterUtil();
-						filter.setField(RUN, runName);
-						IDList isoScalarIds = new IDList();
-						for (int j = 0; j < isoModuleNames.size(); ++j) {
-							filter.setField(MODULE, isoModuleNames.get(j));
-							filter.setField(NAME, isoScalarNames.get(j));
-							IDList idlist = manager.filterIDList(scalars, filter.getFilterPattern());
-							if (idlist.size() > 0)
-								isoScalarIds.add(idlist.get(0));
-						}
-						isoScalars.add(isoScalarIds); 
-					}
-				}
 			}
 			
 			// process vectors
@@ -359,16 +337,74 @@ public class DatasetManager {
 			
 			// compose results
 			if (xyScalars != null && xyVectors == null)
-				return createScatterPlotDataset(xyScalars, isoScalars, manager);
+				return createScatterPlotDataset(xyScalars, isoLineIds, manager);
 			else if (xyScalars == null && xyVectors != null)
 				return new VectorScatterPlotDataset(yVectors, xyVectors, manager);
 			else if (xyScalars != null && xyVectors != null)
 				return new CompoundXYDataset(
-						createScatterPlotDataset(xyScalars, isoScalars, manager),
+						createScatterPlotDataset(xyScalars, isoLineIds, manager),
 						new VectorScatterPlotDataset(yVectors, xyVectors, manager));
 			
 		}
 		return null;
+	}
+	
+	/**
+	 * Collect the module/scalar names or attribute names from the filter patterns. 
+	 */
+	private static void collectIsoParameters(List<String> isoPatterns,
+							StringVector isoModuleNames, StringVector isoScalarNames, StringVector isoAttrNames) {
+
+		for (String pattern : isoPatterns) {
+			IsoLineData filter = IsoLineData.fromFilterPattern(pattern);
+			if (filter != null && filter.isValid()) {
+				if (filter.getModuleName() != null && filter.getDataName() != null) {
+					isoModuleNames.add(filter.getModuleName());
+					isoScalarNames.add(filter.getDataName());
+				}
+				else if (filter.getAttributeName() != null) {
+					isoAttrNames.add(filter.getAttributeName());
+				}
+			}
+		}
+	}
+	
+	private static List<IsoLineData[]> collectIsoLineIds(IDList scalars,
+			StringVector isoModuleNames, StringVector isoScalarNames, StringVector isoAttrNames,
+			XYDatasetVector xyScalars, ResultFileManager manager) {
+		
+		List<IsoLineData[]> isoLineIds = new ArrayList<IsoLineData[]>((int)xyScalars.size());
+		for (int i = 0; i < xyScalars.size(); ++i) {
+			XYDataset xyData = xyScalars.get(i);
+			Assert.isTrue(xyData.getRowCount() > 0);
+			String runName = xyData.getRowFieldNoCheck(0, FLD_RUN);
+			FilterUtil filter = new FilterUtil();
+			filter.setField(RUN, runName);
+			List<IsoLineData> isoLineId = new ArrayList<IsoLineData>((int)(isoModuleNames.size()+isoAttrNames.size()));
+			for (int j = 0; j < isoModuleNames.size(); ++j) {
+				filter.setField(MODULE, isoModuleNames.get(j));
+				filter.setField(NAME, isoScalarNames.get(j));
+				IDList idlist = manager.filterIDList(scalars, filter.getFilterPattern());
+				if (idlist.size() > 0) {
+					ScalarResult scalar = manager.getScalar(idlist.get(0));
+					IsoLineData data = new IsoLineData(isoModuleNames.get(j), isoScalarNames.get(j));
+					data.setValue(String.valueOf(scalar.getValue()));
+					isoLineId.add(data);
+				}
+			}
+			for (int j = 0; j < isoAttrNames.size(); ++j) {
+				String attrName = isoAttrNames.get(j);
+				String value = xyData.getRowFieldNoCheck(0, new ResultItemField(attrName));
+				if (value != null) {
+					IsoLineData data = new IsoLineData(attrName);
+					data.setValue(value);
+					isoLineId.add(data);
+				}
+			}
+			isoLineIds.add(isoLineId.toArray(new IsoLineData[isoLineId.size()])); 
+		}
+		
+		return isoLineIds;
 	}
 	
 	public static void assertOrdered(XYDatasetVector xyDatasets) {
@@ -386,11 +422,11 @@ public class DatasetManager {
 		}
 	}
 	
-	public static IXYDataset createScatterPlotDataset(XYDatasetVector xydatasets, List<IDList> isoScalars, ResultFileManager manager) {
-		Assert.isTrue(isoScalars == null || xydatasets.size() == isoScalars.size());
+	public static IXYDataset createScatterPlotDataset(XYDatasetVector xydatasets, List<IsoLineData[]> isoLineIds, ResultFileManager manager) {
+		Assert.isTrue(isoLineIds == null || xydatasets.size() == isoLineIds.size());
 		IXYDataset[] datasets = new IXYDataset[(int)xydatasets.size()];
 		for (int i = 0; i < datasets.length; ++i)
-			datasets[i] = new ScalarScatterPlotDataset(xydatasets.get(i), isoScalars == null ? IDList.EMPTY : isoScalars.get(i), manager);
+			datasets[i] = new ScalarScatterPlotDataset(xydatasets.get(i), isoLineIds == null ? null : isoLineIds.get(i));
 		return new CompoundXYDataset(datasets);
 	}
 	
