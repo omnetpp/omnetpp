@@ -25,8 +25,8 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeItem;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
@@ -53,7 +53,8 @@ public class ScatterChartEditForm extends BaseLineChartEditForm {
 	public static final String TAB_CONTENT = "Content";
 	
 	private Combo xModuleAndDataCombo;
-	private Table isoModuleAndDataTable;
+	private Tree isoLineSelectionTree;
+	private List<TreeItem> isoLineSelectionTreeItems;
 	private Button avgReplicationsCheckbox;
 	
 	private IsoLineData[] data = new IsoLineData[0];
@@ -128,20 +129,31 @@ public class ScatterChartEditForm extends BaseLineChartEditForm {
 			
 			// iso data
 			group = createGroup("Iso lines", panel, 2, 1);
-			createLabel("Select scalars whose values must be equal on data points connected by lines.",
+			createLabel("Select scalars and run attributes whose values must be equal on data points connected by lines.",
 					group, 1);
-			isoModuleAndDataTable = new Table(group,
+			isoLineSelectionTree = new Tree(group,
 					SWT.BORDER | SWT.CHECK | SWT.HIDE_SELECTION | SWT.V_SCROLL);
 			gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
 			int itemsVisible = Math.max(Math.min(data.length, 15), 3);
-			gridData.heightHint = itemsVisible * isoModuleAndDataTable.getItemHeight();
-			isoModuleAndDataTable.setLayoutData(gridData);
+			gridData.heightHint = itemsVisible * isoLineSelectionTree.getItemHeight();
+			isoLineSelectionTree.setLayoutData(gridData);
+			TreeItem scalars = new TreeItem(isoLineSelectionTree, SWT.NONE);
+			scalars.setText("scalars");
+			TreeItem attributes = new TreeItem(isoLineSelectionTree, SWT.NONE);
+			attributes.setText("run attributes");
+			
+			isoLineSelectionTreeItems = new ArrayList<TreeItem>();
 			for (int i = 0; i < data.length; ++i) {
-				TableItem tableItem = new TableItem(isoModuleAndDataTable, SWT.NONE);
-				tableItem.setChecked(false);
-				tableItem.setText(data[i].asListItem());
-				tableItem.setData(data[i].asFilterPattern());
+				TreeItem parent = data[i].getModuleName() != null && data[i].getDataName() != null ?
+									scalars : attributes;
+				TreeItem treeItem = new TreeItem(parent, SWT.NONE);
+				treeItem.setChecked(false);
+				treeItem.setText(data[i].asListItem());
+				treeItem.setData(data[i].asFilterPattern());
+				isoLineSelectionTreeItems.add(treeItem);
 			}
+			scalars.setExpanded(true);
+			attributes.setExpanded(false);
 			
 			group = createGroup("Average replications", panel, 2, 1);
 			createLabel("Check if the values that are the replications of the same measurement must be averaged.", group, 1);
@@ -169,7 +181,7 @@ public class ScatterChartEditForm extends BaseLineChartEditForm {
 			return index >= 0 ? data[index].asFilterPattern() : null; 
 		case ScaveModelPackage.SCATTER_CHART__ISO_DATA_PATTERN:
 			List<String> patterns = new ArrayList<String>();
-			for (TableItem item : isoModuleAndDataTable.getItems()) {
+			for (TreeItem item : isoLineSelectionTreeItems) {
 				if (item.getChecked())
 					patterns.add((String)item.getData());
 			}
@@ -199,10 +211,10 @@ public class ScatterChartEditForm extends BaseLineChartEditForm {
 			}
 			break;
 		case ScaveModelPackage.SCATTER_CHART__ISO_DATA_PATTERN:
-			if (isoModuleAndDataTable != null) {
+			if (isoLineSelectionTree != null) {
 				if (value instanceof List) {
 					@SuppressWarnings("unchecked") List<String> patterns = (List<String>)value;
-					for (TableItem item : isoModuleAndDataTable.getItems()) {
+					for (TreeItem item : isoLineSelectionTreeItems) {
 						item.setChecked(patterns.contains(item.getData()));
 					}
 				}
