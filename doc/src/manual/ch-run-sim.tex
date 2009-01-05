@@ -1,6 +1,20 @@
 \chapter{Running Simulations}
 \label{cha:run-sim}
 
+\section{Introduction}
+
+opp\_run or executable: depends on whether executable or shared library was created.
+
+selecting a user interface
+
+NEDPATH, -n command-line option
+
+loading extra libraries
+
+getting help
+
+TODO put somewhere: time limits, fingerprinting, and other options!
+
 \section{User interfaces}
 
 {\opp} simulations can be run under different user interfaces.
@@ -401,7 +415,7 @@ from the distribution:
 \end{itemize}
 
 
-\section{Repeating or iterating simulation runs}
+\section{Batch execution}
 
 Once your model works reliably, you'll usually want to run several
 simulations. You may want to run the model with various
@@ -417,22 +431,17 @@ a natural language choice to write the control script in,
 but other languages like Perl, Matlab/Octave, Tcl, Ruby might also have
 justification for this purpose.
 
-The next sections are only for Unix users. We'll use the
-Unix `Bourne' shell (\ttt{sh}, \ttt{bash}) to write the control script.
-If you'd prefer Matlab/Octave, the \ttt{contrib/octave/} directory
-contains example scripts (contributed by Richard Lyon).
+\subsection{Using Cmdenv}
 
+...
 
-\subsection{Executing several runs}
-
-In simple cases, you may define all simulation runs needed in the
-\ttt{[Run 1]}, \ttt{[Run 2]}, etc. sections of \ttt{omnetpp.ini},
-and invoke your simulation with the -r flag each time.
-The -f flag lets you use a file name different from \ttt{omnetpp.ini}.
+\subsection{Using shell scripts}
 
 The following script executes a simulation named \ttt{wireless}
 several times, with parameters for the different runs
 given in the \ttt{runs.ini} file.
+
+TODO -x config
 
 \begin{verbatim}
 #! /bin/sh
@@ -476,6 +485,13 @@ for ((i=1; $i<50; i++)); do
 done
 \end{verbatim}
 
+\subsection{Using opp\_runall}
+
+...
+
+\subsection{Using Xgrid}
+
+...
 
 
 \section{Akaroa support: Multiple Replications in Parallel}
@@ -659,7 +675,11 @@ files (output vector, output scalar, snapshot files).
 
 
 
-\section{Typical issues}
+\section{Troubleshooting}
+
+\subsection{Unrecognized configuration option}
+
+TODO use \ttt{-h config} or \ttt{-h configdetails}
 
 \subsection{Stack problems}
 
@@ -861,6 +881,14 @@ a good reputation and proved its usefulness many times.
 
 
 \subsection{Simulation executes slowly}
+
+TODO express mode is on?
+
+TODO eventlog recording is on?
+
+TODO vector file recording is on?
+
+TODO Tkenv: disable animation features, close inspectors, hide the timeline, hide object tree, etc.
 
 What can you do if the simulation executes much slower than you expect?
 The best advice that can be given here is that you should
