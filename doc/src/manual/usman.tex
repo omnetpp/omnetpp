@@ -55,13 +55,19 @@
 \makeatother
 
 \newcommand{\omnest}{OMNEST}
+\newcommand{\oppversion}{4.0}
 
 %%
 %% *** CHECK SETTING BELOW BEFORE RELEASES ***
 %%
-%\newcommand{\opp}{\omnest}
-\newcommand{\opp}{\omnetpp}
-\newcommand{\oppversion}{4.0}
+\newif\ifcommercial
+%\commercialtrue
+
+\ifcommercial
+  \newcommand{\opp}{\omnest}
+\else
+  \newcommand{\opp}{\omnetpp}
+\fi
 
 %%
 %% PDF Header
@@ -124,7 +130,6 @@
 \newenvironment{warning}{\begin{graybox}\textbf{WARNING: }}{\end{graybox}}
 \newenvironment{caution}{\begin{graybox}\textbf{CAUTION: }}{\end{graybox}}
 \newenvironment{rationale}{\begin{graybox}\textbf{Rationale: }}{\end{graybox}}
-
 
 
 %%

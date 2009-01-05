@@ -393,7 +393,7 @@ contrib_dir: core_dir
 testSuite_dir: contrib_dir
 \end{verbatim}
 
-%%TODO --- include only in OMNEST build
+\ifcommercial
 \section{Using Windows and Microsoft Visual C++}
 
 There are only slight differences to the way Microsoft Visual C++
@@ -408,8 +408,7 @@ is handled. The main differences are:
 
 Required compiler settings: turn on exception handling and RTTI, and
 set stack size to as low as 64K.
-
-
+\fi
 
 %%% Local Variables:
 %%% mode: latex
