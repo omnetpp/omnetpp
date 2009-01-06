@@ -21,7 +21,7 @@ you first need to translate the MSG files\index{msg!files}
 into C++, using the message compiler (\ttt{opp\_msgc}).
 After this step, the process is the same as building any C/C++
 program from source: all C++ sources need to be compiled into object files
-(\ttt{.o} files (using gcc on Mac, Linux) or mingw on Windows), or \ttt{.obj} (using MSVC on Windows)),
+(\ttt{.o} files (using gcc on Mac, Linux) or mingw on Windows)\ifcommercial or \ttt{.obj} (using MSVC on Windows)) \fi
 and all object files need to be linked with the necessary libraries to get
 an executable or shared library.
 
@@ -41,7 +41,7 @@ is for the release build.) The Windows version of the static library would
 be \ttt{libopptkenv.a}, and the DLL would be named \ttt{libopptkenv.dll}.
 
 \begin{note}
-With MSVC, the corresponding filenames will be \ttt{opptkenv.lib} and \ttt{opptkenv.dll}.
+\ifcommercial With MSVC, the corresponding filenames will be \ttt{opptkenv.lib} and \ttt{opptkenv.dll}.\fi
 On Mac OS X, shared libraries have the \ttt{.dylib} extension instead of \ttt{.so}.
 \end{note}
 
@@ -79,7 +79,8 @@ This section discusses how to use the simulation system on the
 following platforms:
 \begin{itemize}
   \item{Unix (Linux/Mac OS X) with gcc}
-  \item{Windows with the included MinGW}
+  \item{Windows with the included MinGW compiler}
+  \ifcommercial\item{Windows with Microsoft Visual C++}\fi
 \end{itemize}
 
 
@@ -104,7 +105,31 @@ displays help.
 
 The most important options are:
 
-TBD
+\begin{itemize}
+    \item{\ttt{-f, -\--force} : Force overwriting existing Makefile}
+    \item{\ttt{-o filename} : Name of simulation executable or library to be built.}
+    \item{\ttt{-O directory, -\--out directory} : Specifies the name of the output directory tree
+                          for out-of-directory build}
+    \item{\ttt{-\--deep} : Generates a "deep" Makefile. A deep Makefile will
+                          cover the whole source tree under the make directory,
+                          not just files in that directory.}
+    \item{\ttt{-r, -\--recurse} : Causes make to recursively descend into all subdirectories; 
+                          subdirectories are expected to contain
+                          makefiles themselves.}
+    \item{\ttt{-X directory, -Xdirectory, -\--except directory} :
+                          With \ttt{-r} and \ttt{-\--deep} option: ignore the given directory.}
+    \item{\ttt{-dsubdir, -d subdir, -\--subdir subdir} :
+                          Causes make to recursively descend into the given
+                          directory.}
+    \item{\ttt{-n, -\--nolink} :  Produce object files but do not create executable or
+                          library.}
+    \item{\ttt{-s, -\--make-so} : Build shared library (.so or .dll).}
+    \item{\ttt{-a, -\--make-lib} : Create static library (.a or .lib).}
+    \item{\ttt{-Idir} :         Additional NED and C++ include directory.}
+    \item{\ttt{-Ldir} :         Add a directory to the library path.}
+    \item{\ttt{-llibrary} :     Additional library to link against.}
+\end{itemize}
+
 
 \subsection{Basic use}
 
@@ -117,6 +142,7 @@ $ opp_makemake
 
 This will create a file named \ttt{Makefile}\index{Makefile}. If you
 type \fprog{make}, your simulation program should build.
+
 
 If you already had a \ttt{Makefile} in that directory, \fprog{opp\_makemake}
 will refuse to overwrite it. You can force overwriting the old \ttt{Makefile}
@@ -149,25 +175,30 @@ clean &  Deletes all files that were produced by the make process\\\hline
 
 \subsection{Debug and release builds}
 
-todo some text
-
-\begin{verbatim}
-$ make MODE=debug
-\end{verbatim}
+\fprog{opp\_makemake} generates a makefile that can create both relase and debug builds.
+By default it creates debug version, but it is easy to override this behaviour. 
+Just define the \ttt{MODE} variable on the \fprog{make} command line.
 
 \begin{verbatim}
 $ make MODE=release
 \end{verbatim}
 
+If you want to create release builds by default you should use the \ttt{-\--mode} \textit{mode} 
+options for \fprog{opp\_makemake} when generating your makefiles.
+\begin{verbatim}
+$ opp_makemake --mode release ...
+\end{verbatim}
+
 
 \subsection{Using external C/C++ libraries}
 
-include directories with -I
-
-linking with external libraries with -l and -L
+If you are using external libraries you should specify the include path for the header files
+with the \ttt{-I} \textit{includedir} option. You should specify this option if you are using
+anything outside from the source directory tree (except the system and \opp headers which are
+always included automatically)
 
 To define an external library to be linked with, use \ttt{-Ldir} to specify
-external library directory and \ttt{-llibrary} to specify the name of the
+the directory of the external library and \ttt{-llibrary} to specify the name of the
 external dependecy.
 
 
@@ -178,7 +209,7 @@ Each source tree will generate a single output file (executable or library).
 A source directory tree will always have a \ttt{Makefile} in its root,
 and source files may be placed anywhere in the tree.
 
-To turns on this option, use the \ttt{opp\_makemake --deep} option.
+To turns on this option, use the \ttt{opp\_makemake -\--deep} option.
 \ttt{opp\_makemake} will collect all \ttt{.cc} and \ttt{.msg} files from
 the whole subdirectory tree, and generate a makefile that covers all.
 If you need to exclude a specific directory, use the \ttt{-X exclude/dir/path}
@@ -194,7 +225,7 @@ $ opp_makemake -f --deep -X experimental -X obsolete
 \subsection{Automatic include dirs}
 
 If your source tree contains several subdirectories (maybe several levels
-deep), it is annoying that you should specify relative paths for your
+deep), it can be annoying that you should specify relative paths for your
 header files in your \ttt{.cc} files or you should specify the include path
 explicitly by the \ttt{-I includepath} option. \ttt{opp\_makemake} has a
 default automatic include path discovery mechanism, which adds all necessary include
@@ -203,7 +234,7 @@ Automatic include directories are turned on by default.
 
 \begin{note}
 You may turn off the include autodiscovery mechanism with the
-\ttt{--no-deep-includes} option.
+\ttt{-\--no-deep-includes} option.
 \end{note}
 
 The only requirement is that your \ttt{\#include} statements must unambigously
@@ -216,32 +247,44 @@ always must specify it with the \ttt{-I external/include/dir} option.
 
 \subsection{Dependency handling}
 
-TODO what are dependencies
+Dependency information is used by the makefile to minimize the time required to
+compile and link your project. If your makefile contains up-to date dependency info 
+-- only files changed since you last compiled your project will be re-compiled or linked.
+
 
 \fprog{opp\_makemake} automatically adds dependencies to the makefile\index{Makefile!dependencies}.
 You can regenerate the dependencies by typing \fprog[make]{make depend} any time.
-The warnings during the dependency generation process can
-be safely ignored.
+The warnings during the dependency generation process can be safely ignored.
 
 
 \subsection{Out-of-directory build}
 
-describe where object files, executables etc are created
+The build system creates object and executable files in a separate directory, called 
+\textit{output directory}. The structure of the output folder will be the same as your 
+sourcefolder structure except that it will be placed in the \ttt{out/configname} directory.
+The \ttt{configname} part will mirror your compiler toolchain and build mode settings. 
+(i.e. The result of a debug build with gcc will be placed in \ttt{out/gcc-debug})
 
-The output directory is under the \ttt{out} subdir of the project directory.
+
+The location of the generated output file is determned by the -O option.
+(The default value is 'out', relative to the project root directory):
+
+
+\begin{verbatim}
+$ opp_makemake -O ../tmp/obj
+\end{verbatim}
+
 
 \begin{note}
 The project directory is the first ancestor of the current directory which
 contains a \ttt{.project} file).
 \end{note}
 
-The location of the generated output file is determned by the -O option.
-(The default value is 'out', relative to the project root directory):
 
-\begin{verbatim}
-$ opp_makemake -O ../tmp/obj
-\end{verbatim}
-
+\begin{note}
+Source files (i.e. those created by the \fprog{opp\_msgc} compiler) will be generated in the 
+source folder not in the output folder.
+\end{note}
 
 
 \subsection{Building shared and static libraries}
@@ -250,54 +293,55 @@ By default the makefile will create an executable file, but it is also
 possible to build shared or static libraries. Shared libraries
 are usually a better choice.
 
-Use \ttt{--make-so} to create shared libraries, and \ttt{--make-lib}
-to build static libraries. The \ttt{--nolink} option completely avoids
+Use \ttt{-\--make-so} to create shared libraries, and \ttt{-\--make-lib}
+to build static libraries. The \ttt{-\--nolink} option completely avoids
 the linking step, which is useful for top-level makefiles that only invoke
 other makefiles, or if you want to do the linking manually.
 
+\ifcommercial
 TODO: dlls with msvc (export/import symbols like INET\_API)
+\fi
 
 
 \subsection{Recursive builds}
 
-The \ttt{--recurse} option enables recursive make: when you build the simulation, make
+
+The \ttt{-\--recurse} option enables recursive make: when you build the simulation, make
 will descend into the subdirectories and runs make in them too.
-By default, \ttt{--recurse} decends into all subdirectories; the -X directory option
+By default, \ttt{-\--recurse} decends into all subdirectories; the -X directory option
 can be used to make it ignore certain subdirectories. This option is especially useful
 for top level makefiles.
 
-The \ttt{--recurse} option automatically discovers subdirectories, but this
-is sometimes inconvenient. With the \ttt{-d dir} or \ttt{--subdir dir} option,
-you can explicitly specify which directories to recurse into, and also,
-the directories need not be direct children of the current directory.
 
-\begin{note}
-With \ttt{--d}, it is also possible to create infinite recursions.
-\fprog{opp\_makemake} cannot detect them, it is your responsibility that
-cycles do not occur.
-\end{note}
+The \ttt{-\--recurse} option automatically discovers subdirectories, but this
+is sometimes inconvenient. Your source directory tree may contain 
+parts which need their own hand written \ttt{Makefile}. This can happen if 
+you include source files from an other non {\opp} project.With the \ttt{-d dir} 
+or \ttt{-\--subdir dir} option, you can explicitly specify which directories to 
+recurse into, and also, the directories need not be direct children of the 
+current directory.
 
-The recursive make options (\ttt{--recurse}, \ttt{-d}, \ttt{--subdir})
+
+The recursive make options (\ttt{-\--recurse}, \ttt{-d}, \ttt{-\--subdir})
 imply \ttt{-X}, that is, the directories recursed into will be
 automatically excluded from deep makefiles.
+
 
 You can control the order of traversal by adding dependencies into
 the \ttt{makefrag} file (see \ref{sec:makefrag})
 
+\begin{note}
+With \ttt{-d}, it is also possible to create infinite recursions.
+\fprog{opp\_makemake} cannot detect them, it is your responsibility that
+cycles do not occur.
+\end{note}
+
+
 Motivation for recursive builds:
- - toplevel makefile
- - integrating sources that have their own makefile
-
-
-TODO revise:
-
-Your source directory tree may contain parts which need their own hand
-written \ttt{Makefile}. This can happen if you include source files from an
-other non {\opp} project. To include this handwritten \ttt{Makefile} into
-the build proecess first exclude that part of the source tree from the deep
-file discovery by using the \ttt{-X project/with/own/makefile} and use the
-\ttt{--subdir project/with/own/makefile} option to instruct
-\ttt{opp\_makemake} to call the handwritten \ttt{Makefile} directly.
+\begin{itemize}
+ \item{toplevel makefile}
+ \item{integrating sources that have their own makefile}
+\end{itemize}
 
 
 \subsection{Customizing the Makefile}
@@ -309,13 +353,14 @@ will automatically insert \ttt{makefrag} into the resulting \ttt{Makefile}.
 With the \ttt{-i} option, you can also name other files to be included into the
 \ttt{Makefile}.
 
-makefrag will be inserted after the definitions but before the first
+\ttt{makefrag} will be inserted after the definitions but before the first
 rule, so it is possible to override existing definitions and add new
 ones, and also to override the default target.
 
-Makefrag can be useful if some of your source files are generated
-from other files (for example, you use generated NED files), or ....
-or ...
+\ttt{makefrag} can be useful if some of your source files are generated
+from other files (for example, you use generated NED files), or you need
+additional targets in your makefile or just simply wants to override the 
+default target inthe makefile.
 
 
 \subsection{Projects with multiple source trees}
@@ -332,7 +377,7 @@ recursively in the source directory trees.
 
 \subsection{A multi-directory example}
 
-For a complex example of using opp\_makemake, we will check how to create
+For a complex example of using \fprog{opp\_makemake}, we will check how to create
 the makefiles for the mobility-framework. First take a look at the
 project's directory structure and find the directories that should be used as
 source trees:
@@ -378,7 +423,7 @@ $ cd testSuite && opp_makemake -f --deep -o testSuite -O out -I../core/utils -I.
 
 Now the last step is to create a top-level makefile in the root of the project that
 calls the previously created makefiles in the correct order. We will use the
---nolink option, exclude every subdirectory from the bild (-X.) and explicitly call
+\ttt{-\--nolink} option, exclude every subdirectory from the bild (-X.) and explicitly call
 the above makefiles (-d dirname).
 
 \begin{verbatim}
