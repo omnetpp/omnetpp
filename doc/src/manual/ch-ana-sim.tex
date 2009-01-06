@@ -2,7 +2,18 @@
 \label{cha:analyzing-simulation-results}
 
 
-\section{Output vectors}
+\section{Result files}
+
+\subsection{Results}
+
+vector results, scalar results
+
+unique run id
+
+attributes, e.g. experiment-measurement-replication
+
+
+\subsection{Output vectors}
 \label{sec:ch-ana-sim:output-vectors}
 
 Output vectors are time series data: values with timestamps.
@@ -23,69 +34,6 @@ The following sections describe the format of the file, and
 how to process it.
 
 
-\subsection{Plotting output vectors with Plove}
-
-\subsubsection{Plove features}
-
-Typically, you'll get output vector files as a result of a simulation.
-Data written to \cclass{cOutVector} objects from
-simple modules are written to output vector
-files\index{output!vector file}. You can use Plove to look
-into the output vector files and plot vectors from them.
-
-Plove\index{Plove} is a handy tool for plotting
-{\opp} output vectors. Line type (lines, dots etc) for each vector can be set
-as well as the most frequent drawing options like axis bounds, scaling, titles
-and labels. You can save the graphs to files (as Encapsulated Postscript or
-raster formats such as GIF) with a click. On Windows, you can also
-copy the graph to the clipboard in a vector format (Windows metafile)
-and paste it into other applications.
-    \footnote{Note: prior to {\opp} 3.0, Plove has been a front-end to
-    gnuplot. This older version of Plove is no longer supported, but it is still
-    available in the {\opp} source distribution.}
-
-Filtering the results\index{filtering results} before plotting is
-possible. Filters can do averaging, truncation of extreme values,
-smoothing, they can do density estimation\index{density estimation} by
-calculating histograms\index{histogram} etc. Some filters are built
-in, and you can create new filters by parameterizing and aggregating existing ones.
-You can apply several filters to a vector.
-
-On startup, Plove automatically reads the \texttt{.ploverc} file in
-your home directory. The file contains general application settings,
-including the custom filters you created.
-
-
-
-
-\subsubsection{Usage}
-
-First, you load an output vector file (\texttt{.vec}) into the left
-pane. You can copy vectors from the left
-pane to the right pane by clicking the button with the right arrow icon
-in the middle.
-The PLOT button will initiate plotting the \textit{selected}
-vectors in the right pane. Selection works as in Windows: dragging
-and shift+left click selects a range, and ctrl+left click selects/deselects
-individual items. To adjust drawing style, change vector title or add
-a filter, click the Options... button. This works for several selected
-vectors too. Plove accepts nc/mc-like keystrokes: F3, F4, F5, F6, F8,
-grey '+' and grey '*'.
-
-
-The left pane works as a general storage for vectors you're working
-with. You can load several vector files, delete vectors you don't
-want to deal with, rename them etc. These changes will not affect
-the vector files on disk.
-(Plove never modifies the output vector files themselves.)
-In the right pane, you can duplicate
-vectors if you want to filter the vector and also keep the original.
-If you set the right options for a vector but temporarily do
-not want it to hang around in the right pane, you can put it
-back into the left pane for storage.
-
-
-
 \subsection{Format of output vector files}
 
 An output vector file\index{output!vector file} contains several
@@ -93,16 +41,15 @@ series of data produced during simulation. The file is textual, and it
 looks like this:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\textbf{mysim.vec:}
-vector 1   "subnet[4].term[12]"  "response time"  TV
+\textbf{net-1.vec:}
+vector 1   "subnet[4].term[12]"  "response time"  TVE
 1  12.895  2355.66666666
 1  14.126  4577.66664666
-vector 2   "subnet[4].srvr"  "queue length"  TV
+vector 2   "subnet[4].srvr"  "queue length"  TVE
 2  16.960  2.00000000000.63663666
 1  23.086  2355.66666666
 2  24.026  8.00000000000.44766536
 \end{Verbatim}
-
 
 There two types of lines: vector declaration lines (beginning with
 the word \ttt{vector}), and data lines.
@@ -112,99 +59,14 @@ object, and multiplicity (usually 1). Actual data recorded in this
 vector are on \textit{data lines} which begin with the vector Id.
 Further columns on data lines are the simulation time and the recorded value.
 
+vector data clustering for efficiency
+
+indexed access
+
+how to configure the IndexVectorFileManager (?)
 
 
-
-\subsection{Working without Plove}
-
-In case you have a large number of repeated experiments, you'll probably
-want to automate processing of the output vector files. {\opp} lets you
-use any tool you see fit for this purpose, because the output
-vector files are text files and their format is simple enough to be
-processed by common tools such as \textit{perl}, \textit{awk},
-\textit{octave}, etc.
-
-\subsubsection{Extracting vectors from the file}
-
-You can use the Unix \fprog{grep} tool to extract a particular vector
-from the file. As the first step, you must find out the Id of the
-vector. You can find the appropriate vector line with a text editor or
-you can use \fprog{grep} for this purpose:
-
-\begin{verbatim}
-$ grep "queue length" vector.vec
-\end{verbatim}
-
-Or, you can get the list of all vectors in the file by typing:
-
-\begin{verbatim}
-$ grep ^vector vector.vec
-\end{verbatim}
-
-This will output the appropriate vector line:
-
-\begin{verbatim}
-vector 6  "subnet[4].srvr"  "queue length"  1
-\end{verbatim}
-
-Pick the vector Id, which is 6 in this case, and grep the file
-for the vector's data lines:
-
-\begin{verbatim}
-grep ^6 vector.vec > vector6.vec
-\end{verbatim}
-
-
-Now, \texttt{vector6.vec} contains the appropriate vector. The only
-potential problem is that the vector Id is there at the beginning of
-each line and this may be hard to digest for some programs that you
-use for post-processing and/or visualization. This problem is
-eliminated by the {\opp} \fprog{splitvec} utility (written in
-\fprog{awk}), to be discussed in the next section.
-
-
-
-
-\subsubsection{Using splitvec}
-
-The \fprog{splitvec} script (part of {\opp}) automates the process described
-in the previous section: it breaks the vector file into several files which
-contain one vector each. The command
-
-\begin{verbatim}
-$ splitvec mysim.vec
-\end{verbatim}
-
-would create the files \ttt{mysim1.vec}, \ttt{mysim2.vec} etc. with
-contents similar to the following:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-\textbf{mysim1.vec:}
-# vector 1  "subnet[4].term[12]"  "response time"  1
-12.895  2355.66666666
-14.126  4577.66664666
-23.086  2355.66666666
-
-\textbf{mysim2.vec:}
-# vector 2  "subnet[4].srvr"  "queue length"  1
-16.960  2.00000000000.63663666
-24.026  8.00000000000.44766536
-\end{Verbatim}
-
-
-As you can see, the vector Id column has been stripped from the files.
-The resulting files can be directly loaded e.g. into spreadsheets or other
-programs (\ref{sec:ana-sim:tools}).
-
-
-\section{Scalar statistics}
-\label{sec:ch-ana-sim:output-scalars}
-
-Output vectors capture the transient behaviour of the simulation run.
-However, to compare model behaviour under various parameter settings,
-output scalars are more useful.
-
-\subsection{Format of output scalar files}
+\subsection{Scalar results}
 
 Scalar results are recorded with \fname{record()} calls,
 usually from the \ttt{finish()} methods of modules, with code like this:
@@ -232,6 +94,10 @@ void EtherMAC::finish()
     recordScalar("bits/sec rcvd",   8*numBytesReceivedOK/t);
 }
 \end{verbatim}
+
+
+\subsubsection{Format of scalar files}
+
 
 The corresponding output scalar file (by default, \fname{omnetpp.sca})
 will look like this:
@@ -276,34 +142,28 @@ this facilitates comparing them, creating x-y plots
 
 
 
-\subsection{The Scalars tool}
+\section{The Analysis Tool in the Simulation IDE}
 
-The \fprog{Scalars} program can be used to visualize the contents of the
-\fname{omnetpp.sca} file. It can draw bar charts, x-y plots
-(e.g. throughput vs offered load), or export data via the clipboard
-for more detailed analysis into spreadsheets or other programs.
+filtering
 
-You can open a scalar file either from the Scalars program's menu
-or by specifying it as a command-line argument to Scalars.
+Filtering the results\index{filtering results} before plotting is
+possible. Filters can do averaging, truncation of extreme values,
+smoothing, they can do density estimation\index{density estimation} by
+calculating histograms\index{histogram} etc. Some filters are built
+in, and you can create new filters by parameterizing and aggregating
+existing ones.
 
-The program displays the data in a table with columns showing the
-file name, run number, module name where it was recorded, and the value.
-There're usually too many rows to get an overview, so you can filter
-by choosing from (or editing) the three combo boxes at the top.
-(The filters also accept \ttt{*}, \ttt{**} wildcards.)
+plotting
 
-You could actually load further scalar files into the window,
-and thus analyse them together.
+graphics export
 
-You can copy the selected rows to the clipboard by Edit|Copy or
-the corresponding toolbar button, and paste them e.g. into
-OpenOffice Calc, MS Excel or Gnumeric.
+Line type (lines, dots etc) for each vector can be set
+as well as the most frequent drawing options like axis bounds, scaling, titles
+and labels. You can save the graphs to files (as Encapsulated Postscript or
+raster formats such as GIF) with a click. On Windows, you can also
+copy the graph to the clipboard in a vector format (Windows metafile)
+and paste it into other applications.
 
-The bar chart toolbar button creates -- well -- a bar chart
-in a new window. You can customize the chart by right-clicking
-on it and choosing from the context menu. It can also be exported
-to EPS, GIF, or as metafile via the Windows clipbard (the latter
-is not available on Unix of course).
 
 \section{Scave Tool}
 
@@ -395,8 +255,15 @@ Reports the list of statistics names, module names, run ids, configuration
 ids in the given files to the standard output.
 
 
-\section{Analysis and visualization tools}
-\label{sec:ana-sim:tools}
+
+\section{Other processing and plotting tools}
+
+In case you have a large number of repeated experiments, you'll probably
+want to automate processing of the output vector files. {\opp} lets you
+use any tool you see fit for this purpose, because the output
+vector files are text files and their format is simple enough to be
+processed by common tools such as \textit{perl}, \textit{awk},
+\textit{octave}, etc.
 
 Output vector files (or files produced by \fprog{splitvec}) and
 output scalar files can be analysed and/or plotted by
