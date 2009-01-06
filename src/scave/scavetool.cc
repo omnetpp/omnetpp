@@ -82,16 +82,16 @@ void printUsage()
        "Function syntax (for `filter -a'): <name>(<parameterlist>).\n"
        "Examples: winavg(10), mean()\n"
        "\n"
-       "Pattern syntax: one or more <fieldname>=<pattern> pairs, combined with AND,\n"
+       "Pattern syntax: one or more <fieldname>(<pattern>) pairs, combined with AND,\n"
        "OR, NOT operators.\n"
        "  <fieldname> is one of:\n"
        "    file:         full path of the result file\n"
        "    run:          unique run Id\n"
+       "    module:       module full path\n"
+       "    name:         name of the statistic\n"
        "    experiment:   the experiment attribute of the run\n"
        "    measurement:  the measurement attribute of the run\n"
        "    replication:  the replication attribute of the run\n"
-       "    module:       module full path\n"
-       "    name:         name of the statistic\n"
        "  <pattern> is a glob-like pattern:\n"
        "    ?             matches any character except '.'\n"
        "    *             matches zero or more characters, except '.'\n"
@@ -102,10 +102,10 @@ void printUsage()
        "    [32..255]     any number in square brackets in range 32..255 (e.g. \"[99]\")\n"
        "    \\ (backslash) takes away the special meaning of the subsequent character\n"
        "Pattern example:\n"
-       "    module=\"**.sink\" AND (name=\"queueing time\" OR name=\"transmission time\")\n"
+       "    module(\"**.sink\") AND (name(\"queueing time\") OR name(\"transmission time\"))\n"
        "\n"
        "Examples:\n"
-       "    scavetool -p \"queueing time\" -a winavg(10) -O out.vec\n\n" //TODO more
+       "    scavetool filter -p \"queueing time\" -a winavg(10) -O out.vec\n\n" //TODO more
     );
 }
 
