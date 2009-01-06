@@ -13,10 +13,10 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 public class UIUtils {
     public static IDialogSettings getDialogSettings(AbstractUIPlugin plugin, String name) {
         IDialogSettings pluginDialogSettings = plugin.getDialogSettings();
-        IDialogSettings dialogSettings = pluginDialogSettings.getSection("OpenNEDTypeDialog");
+        IDialogSettings dialogSettings = pluginDialogSettings.getSection(name);
 
         if (dialogSettings == null)
-            return pluginDialogSettings.addNewSection("OpenNEDTypeDialog");
+            return pluginDialogSettings.addNewSection(name);
         else
             return dialogSettings; 
     }
