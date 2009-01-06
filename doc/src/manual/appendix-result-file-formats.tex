@@ -48,6 +48,7 @@ Entry types are:
     \item \textbf{scalar}: scalar data
     \item \textbf{vector}: vector declaration
     \item \textit{vector-id}: vector data
+    \item \textbf{file}: vector file attributes
     \item \textbf{statistic}: statistics object
     \item \textbf{field}: field of a statistics object
     \item \textbf{bin}: histogram bin
@@ -269,7 +270,40 @@ not kept in memory during analysis, indexing the start offsets of these
 clusters allows one to read the file and seek in it more efficiently.
 This does not require any change or extension to the file format.
 
+\section{Index Header}
 
+The first line of the index file stores the size and modification date
+of the vector file. If the attributes of vector file differs from
+the information stored in the index file, then the IDE automatically
+rebuilds the index file.
+
+Syntax:
+
+\hspace{20mm} \textbf{file} \textit{filesize} \textit{modificationDate}
+
+\section{Index Data}
+
+Stores the location and statistics of blocks in the vector file.
+
+Syntax:
+
+\hspace{20mm} {\itshape vectorId offset length firstEventNo lastEventNo
+                        firstSimtime lastSimtime
+                        count min max sum sqrsum }
+
+where
+
+\begin{itemize}
+    \item\textit{offset}: the start offset of the block
+    \item\textit{length}: the length of the block
+    \item\textit{firstEventNo}, \textit{lastEventNo}:
+        the event number range of the block (optional)
+    \item\textit{firstSimtime}, \textit{lastSimtime}:
+        the simtime range of the block
+    \item\textit{count, min, max, sum, sqrsum}:
+        collected statistics of the values in the block
+                 
+\end{itemize}
 
 \section{Statistics Object}
 
