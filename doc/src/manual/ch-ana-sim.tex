@@ -12,6 +12,7 @@ unique run id
 
 attributes, e.g. experiment-measurement-replication
 
+The format of result files is documented in detail in \ref{cha:result-file-formats}.
 
 \subsection{Output vectors}
 \label{sec:ch-ana-sim:output-vectors}
@@ -42,10 +43,10 @@ looks like this:
 
 \begin{Verbatim}[commandchars=\\\{\}]
 \textbf{net-1.vec:}
-vector 1   "subnet[4].term[12]"  "response time"  TVE
+vector 1   "subnet[4].term[12]"  "response time"  TV
 1  12.895  2355.66666666
 1  14.126  4577.66664666
-vector 2   "subnet[4].srvr"  "queue length"  TVE
+vector 2   "subnet[4].srvr"  "queue length"  TV
 2  16.960  2.00000000000.63663666
 1  23.086  2355.66666666
 2  24.026  8.00000000000.44766536
@@ -68,68 +69,21 @@ how to configure the IndexVectorFileManager (?)
 
 \subsection{Scalar results}
 
-Scalar results are recorded with \fname{record()} calls,
-usually from the \ttt{finish()} methods of modules, with code like this:
-
-\begin{verbatim}
-void EtherMAC::finish()
-{
-    double t = simTime();
-    if (t==0) return;
-
-    recordScalar("simulated time", t);
-    recordScalar("rx channel idle (%)", 100*totalChannelIdleTime/t);
-    recordScalar("rx channel utilization (%)", 100*totalSuccessfulRxTxTime/t);
-    recordScalar("rx channel collision (%)", 100*totalCollisionTime);
-
-    recordScalar("frames sent",    numFramesSent);
-    recordScalar("frames rcvd",    numFramesReceivedOK);
-    recordScalar("bytes sent",     numBytesSent);
-    recordScalar("bytes rcvd",     numBytesReceivedOK);
-    recordScalar("collisions",     numCollisions);
-
-    recordScalar("frames/sec sent", numFramesSent/t);
-    recordScalar("frames/sec rcvd", numFramesReceivedOK/t);
-    recordScalar("bits/sec sent",   8*numBytesSent/t);
-    recordScalar("bits/sec rcvd",   8*numBytesReceivedOK/t);
-}
-\end{verbatim}
+Scalar results are recorded with \fname{recordScalar()} calls,
+usually from the \ttt{finish()} methods of modules.
 
 
 \subsubsection{Format of scalar files}
-
 
 The corresponding output scalar file (by default, \fname{omnetpp.sca})
 will look like this:
 
 \begin{verbatim}
-run 1 "lan"
-scalar "lan.hostA.mac" "simulated time"             120.249243
-scalar "lan.hostA.mac" "rx channel idle (%)"        97.5916992
-scalar "lan.hostA.mac" "rx channel utilization (%)" 2.40820676
-scalar "lan.hostA.mac" "rx channel collision (%)"   0.011312
 scalar "lan.hostA.mac" "frames sent"                99
 scalar "lan.hostA.mac" "frames rcvd"                3088
 scalar "lan.hostA.mac" "bytes sent"                 64869
 scalar "lan.hostA.mac" "bytes rcvd"                 3529448
-scalar "lan.hostA.mac" "frames/sec sent"            0.823290006
-scalar "lan.hostA.mac" "frames/sec rcvd"            25.6799953
-scalar "lan.hostA.mac" "bits/sec sent"              4315.63632
-scalar "lan.hostA.mac" "bits/sec rcvd"              234808.83
-scalar "lan.hostB.mac" "simulated time"             120.249243
-scalar "lan.hostB.mac" "rx channel idle (%)"        97.5916992
-scalar "lan.hostB.mac" "rx channel utilization (%)" 2.40820676
-scalar "lan.hostB.mac" "rx channel collision (%)"   0.011312
-[...]
-scalar "lan.hostC.mac" "simulated time"             120.249243
-scalar "lan.hostC.mac" "rx channel idle (%)"        97.5916992
-scalar "lan.hostC.mac" "rx channel utilization (%)" 2.40820676
-scalar "lan.hostC.mac" "rx channel collision (%)"   0.011312
-[...]
-
-run 2 "lan"
-scalar "lan.hostA.mac" "simulated time"             235.678665
-[...]
+...
 \end{verbatim}
 
 Every \fname{record()} call generates one "scalar" line in the file.
@@ -144,31 +98,26 @@ this facilitates comparing them, creating x-y plots
 
 \section{The Analysis Tool in the Simulation IDE}
 
-filtering
+The Simulation IDE provides an Analysis Tool for analysis and visualization
+of simulation results. The Analysis Tool lets you load several result files
+at once, and presents their contents somewhat like a database. You can
+browse the results, select the particular data you are interested in
+(scalars, vectors, histograms), apply processing steps, and create various
+charts or plots from them. Data selection, processing and charting steps
+can be freely combined, resulting in a high degree of freedom.
+These steps are grouped into and stored as "recipes", which get automatically
+re-applied when new result files are added or existing files are
+replaced. This automation spares the user lots of repetitive manual work,
+without resorting to scripting.
 
-Filtering the results\index{filtering results} before plotting is
-possible. Filters can do averaging, truncation of extreme values,
-smoothing, they can do density estimation\index{density estimation} by
-calculating histograms\index{histogram} etc. Some filters are built
-in, and you can create new filters by parameterizing and aggregating
-existing ones.
-
-plotting
-
-graphics export
-
-Line type (lines, dots etc) for each vector can be set
-as well as the most frequent drawing options like axis bounds, scaling, titles
-and labels. You can save the graphs to files (as Encapsulated Postscript or
-raster formats such as GIF) with a click. On Windows, you can also
-copy the graph to the clipboard in a vector format (Windows metafile)
-and paste it into other applications.
+The Analysis Tool is covered in detail in the User Guide.
 
 
 \section{Scave Tool}
 
-The \fprog{scavetool} is a command line program to process the result
-files. If called without arguments, it prints its usage:
+Much of the IDE Analysis Tool's functionality is available on the command
+line as well, via the \fprog{scavetool} program. When \fprog{scavetool}
+is invoked without arguments, it prints usage information:
 
 \begin{verbatim}
 scavetool <command> [options] <file>...
@@ -244,15 +193,15 @@ If the index file was deleted or the vector file was modified, you need to
 rebuild the index file before running the filter command.
 
 Normally the vector data is written in blocks into the vector file.
-However if the vector file was generated by an older version of the 
+However if the vector file was generated by an older version of the
 \cclass{cOutputVectorManager} it might not be so. In this case you have
 to specify the -r option to rearrange the records of the vector file,
 otherwise the index file would be too big and the indexing inefficient.
 
 \subsection{Summary command}
 
-Reports the list of statistics names, module names, run ids, configuration
-ids in the given files to the standard output.
+The summary command reports the list of statistics names, module names,
+run ids, configuration names in the given files to the standard output.
 
 
 
