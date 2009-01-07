@@ -58,7 +58,7 @@ void printUsage()
        "    -a <function>   apply the given processing to the vector (see syntax below)\n"
        "                    This option may occur multiple times.\n"
        "    -O <filename>   output file name\n"   //FIXME separate file for vectors and scalars I guess
-       "    -F <formatname> format of output file: vec, sca, matlab, octave, csv, ...\n" //TODO
+       "    -F <formatname> format of output file: vec, matlab, octave, csv\n" //TODO sca files
        "    -V              print info about progress (verbose)\n"
        //TODO option: print matching vectorIDs and exit
        //TODO: dump scalars too!!!
@@ -85,13 +85,13 @@ void printUsage()
        "Pattern syntax: one or more <fieldname>(<pattern>) pairs, combined with AND,\n"
        "OR, NOT operators.\n"
        "  <fieldname> is one of:\n"
-       "    file:         full path of the result file\n"
-       "    run:          unique run Id\n"
-       "    module:       module full path\n"
-       "    name:         name of the statistic\n"
-       "    experiment:   the experiment attribute of the run\n"
-       "    measurement:  the measurement attribute of the run\n"
-       "    replication:  the replication attribute of the run\n"
+       "    file:             full path of the result file\n"
+       "    run:              unique run Id\n"
+       "    module:           module full path\n"
+       "    name:             name of the statistic\n"
+       "    attr:experiment:  the experiment attribute of the run\n"
+       "    attr:measurement: the measurement attribute of the run\n"
+       "    attr:replication: the replication attribute of the run\n"
        "  <pattern> is a glob-like pattern:\n"
        "    ?             matches any character except '.'\n"
        "    *             matches zero or more characters, except '.'\n"
@@ -335,7 +335,8 @@ int filterCommand(int argc, char **argv)
                     // write scalars
                     if (!scalarIDList.isEmpty())
                     {
-                        ResultItemFields fields(ResultItemField::NAME);
+                        ResultItemFields fields(ResultItemField::NAME); // TODO option
+                        // TODO option to choose columns (allow averaging in cells)
                         exporter->saveScalars("scalars", "scalar desc", scalarIDList,
                             fields.complement(), resultFileManager);
                     }
