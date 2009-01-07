@@ -511,11 +511,11 @@ bool IsoGroupingFn::operator()(const ResultItem &d1, const ResultItem &d2) const
     if (d1.fileRunRef->runRef == d2.fileRunRef->runRef)
         return true;
 
-    if (isoMap.empty())
-        return true;
-
     if (!fields.equal(d1,d2))
     	return false;
+
+    if (isoMap.empty())
+        return true;
 
     RunIsoValueMap::const_iterator it1 = isoMap.find(d1.fileRunRef->runRef);
     RunIsoValueMap::const_iterator it2 = isoMap.find(d2.fileRunRef->runRef);
