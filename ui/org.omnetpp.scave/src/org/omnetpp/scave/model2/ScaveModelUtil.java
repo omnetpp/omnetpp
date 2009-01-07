@@ -41,7 +41,6 @@ import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.ResultItemField;
-import org.omnetpp.scave.engine.RunAttribute;
 import org.omnetpp.scave.engine.ScalarResult;
 import org.omnetpp.scave.engine.StringVector;
 import org.omnetpp.scave.engine.VectorResult;
@@ -478,7 +477,9 @@ public class ScaveModelUtil {
 			if (pair.isValid())
 				values.add(pair);
 		}
-		StringVector runAttributes = RunAttribute.getAttributeNames();
+
+		//StringVector runAttributes = RunAttribute.getAttributeNames();
+		StringVector runAttributes = manager.getUniqueRunAttributeNames(manager.getUniqueRuns(idlist)).keys();
 		for (int i = 0; i < runAttributes.size(); ++i)
 			values.add(new IsoLineData(runAttributes.get(i)));
 		IsoLineData[] result = values.toArray(new IsoLineData[values.size()]);
