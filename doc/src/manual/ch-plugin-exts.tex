@@ -140,8 +140,21 @@ The new class can be activated with the \fpar{snapshotmanager-class}
 configuration option.
 
 
-\section{How plug-in classes can access the configuration}
+\section{Reading the configuration and defining new configuration options}
 \label{sec:plugin-exts:accessing-config}
+
+config options need to be registered
+
+%rename Entry to Option!!!!
+Register\_GlobalConfigEntry(ID, NAME, TYPE, DEFAULTVALUE, DESCRIPTION)
+Register\_PerRunConfigEntry(ID, NAME, TYPE, DEFAULTVALUE, DESCRIPTION)
+Register\_GlobalConfigEntryU(ID, NAME, UNIT, DEFAULTVALUE, DESCRIPTION)
+Register\_PerRunConfigEntryU(ID, NAME, UNIT, DEFAULTVALUE, DESCRIPTION)
+Register\_PerObjectConfigEntry(ID, NAME, TYPE, DEFAULTVALUE, DESCRIPTION)
+Register\_PerObjectConfigEntryU(ID, NAME, UNIT, DEFAULTVALUE, DESCRIPTION)
+
+
+
 
 The configuration is available to plug-in classes via the \fname{getConfig()}
 method of \cclass{cEnvir}, which returns a pointer to the configuration
@@ -151,44 +164,81 @@ their own config entries.
 An example which reads the \ttt{parsim-debug} boolean entry from the
 \ttt{[General]} section, with \ttt{true} as default:
 
+fallbackValue is returned if the value is not specified in the configuration:
+and there is no default value.
+
+const char *getAsCustom(cConfigKey *entry, const char *fallbackValue=NULL);
+bool getAsBool(cConfigKey *entry, bool fallbackValue=false);
+long getAsInt(cConfigKey *entry, long fallbackValue=0);
+double getAsDouble(cConfigKey *entry, double fallbackValue=0);
+std::string getAsString(cConfigKey *entry, const char *fallbackValue="");
+std::string getAsFilename(cConfigKey *entry);
+std::vector<std::string> getAsFilenames(cConfigKey *entry);
+std::string getAsPath(cConfigKey *entry);
+
+
 \begin{verbatim}
-bool debug = ev.getConfig()->getAsBool("General", "parsim-debug", true);
+bool debug = ev.getConfig()->getAsBool(CFGID_PARSIM_DEBUG);
 \end{verbatim}
 
 
 \section{Implementing a new user interface}
 \label{sec:plugin-exts:userinterface}
 
-The base class for simulation application is \cclass{TOmnetApp}.
-Specific user interfaces such as \cclass{TCmdenv},
-\cclass{TOmnetTkApp} are derived from \cclass{TOmnetApp}.
+It is possible to extend {\opp} with a new user interface. The new
+user interface will have fully equal rights to Cmdenv and Tkenv, that is,
+it can be activated by starting the simulation executable with the
+\ttt{-u} \textit{<name>} command-line or the \ttt{user-interface}
+configuration option, it can be made the default user interface,
+it can define new command-line options and configuration options,
+and so on.
 
-\cclass{TOmnetApp}'s member functions are almost all virtual.
-\begin{itemize}
-  \item{Some of them implement the \cclass{cEnvir} functions
-    (described in the previous section)}
-  \item{Others implement the common part of all user interfaces (for
-    example: reading options from the configuration files; making the
-    options effective within the simulation kernel)}
-  \item{The \fname{run()} function is pure virtual (it is different
-    for each user interface).}
-\end{itemize}
+User interfaces must implement (i.e. subclass from) \cclass{cEnvir},
+and must be registered to {\opp} with the \fmac{Register\_OmnetApp()} macro.
+In practice, you'll almost always want to subclass \cclass{EnvirBase}
+instead of \cclass{cEnvir}, because \cclass{EnvirBase} already
+implements lots of functionality that otherwise you'd have to.
 
-\cclass{TOmnetApp}'s data members:
-\begin{itemize}
-  \item{a pointer to the object holding configuration file contents
-    (type \cclass{cInifile});}
-  \item{the options and switches that can be set from the
-    configuration file (these members begin with \ttt{opt\_})}
-\end{itemize}
+\begin{note}
+If you want something completely different from what \cclass{EnvirBase}
+provides, such as when embedding the simulation kernel into another
+application, then you should be reading section \ref{sec:ch-opp-design:embedding},
+not this one.
+\end{note}
 
-Simulation applications:
-\begin{itemize}
-  \item{add new configuration options}
-  \item{provide a \fname{run()} function}
-  \sloppy
-  \item{implement functions left empty in \cclass{TOmnetApp} (like \fname{objectDeleted()}).}
-\end{itemize}
+An example user interface:
+
+\begin{verbatim}
+#include "envirbase.h"
+
+class FooEnv : public EnvirBase
+{
+    ...
+};
+
+Register_OmnetApp("FooEnv", FooEnv, 30, "an experimental user interface");
+\end{verbatim}
+
+The \fname{envirbase.h} header comes from the \ttt{src/envir} directory,
+so it is necessary to add it to the include path (\ttt{-I}).
+
+The arguments to \fmac{Register\_OmnetApp()} include the user interface name
+(for use with the \ttt{-u} and \ttt{user-interface=} options),
+the C++ class that implements it, a weight for default user interface selection
+(if \ttt{-u} is missing, the user interface with the largest weight will get
+activated), and a description string (for help and other purposes).
+
+The C++ class should implement all methods left pure virtual in
+\cclass{EnvirBase}, and possibly others if you want to customize
+their behaviour. One method that you'll surely want to reimplement is
+\ttt{run()} -- this is where your user interface runs. When this method
+exits, the simulation program exits.
+
+\begin{note}
+A good starting point for implementing your own user interface is
+Cmdenv -- just copy and modify its source code to quickly get going.
+\end{note}
+
 
 %%% Local Variables:
 %%% mode: latex
