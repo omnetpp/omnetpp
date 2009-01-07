@@ -129,6 +129,10 @@ public class FilterUtil {
 		fields.put(name, value);
 	}
 
+	public Set<String> getFieldNames() {
+	    return fields.keySet();
+	}
+
 	public boolean containsOnly(String[] fieldNames) {
 		Set<String> allowedNames = new HashSet<String>(Arrays.asList(fieldNames));
 		for (String name : fields.keySet())

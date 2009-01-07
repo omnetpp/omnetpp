@@ -14,6 +14,7 @@ import static org.omnetpp.scave.engine.ResultItemField.MODULE;
 import static org.omnetpp.scave.engine.ResultItemField.NAME;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.engine.RunAttribute;
 
@@ -83,11 +84,9 @@ public class IsoLineData implements Comparable<IsoLineData>
 											 filter.getField(NAME));
 				}
 				else {
-					String[] attributeNames = RunAttribute.getAttributeNames().toArray();
-					for (String field : attributeNames) {
-						if (!StringUtils.isEmpty(filter.getField(field)))
-							return new IsoLineData(field);
-					}
+				    String[] filterFieldNames = filter.getFieldNames().toArray(new String[]{});
+				    Assert.isTrue(filterFieldNames.length == 1);
+				    return new IsoLineData(filterFieldNames[0]); 
 				}
 			}
 		}

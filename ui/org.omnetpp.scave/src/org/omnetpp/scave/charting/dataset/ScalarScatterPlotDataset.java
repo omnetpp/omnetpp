@@ -8,6 +8,7 @@
 package org.omnetpp.scave.charting.dataset;
 
 import org.omnetpp.common.engine.BigDecimal;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.engine.ResultItemField;
 import org.omnetpp.scave.engine.Statistics;
 import org.omnetpp.scave.engine.XYDataset;
@@ -85,18 +86,23 @@ public class ScalarScatterPlotDataset extends XYDatasetSupport implements IAvera
 		// each row has the same value of the iso scalars
 		StringBuilder sb = new StringBuilder();
 		if (isoLineId != null) {
+		    // produce "name1=value1 name2=value2 ..."
 			for (int i = 0; i < isoLineId.length; ++i) {
 				if (i == 0)
 					sb.append(" - ");
 				else
 					sb.append(" ");
 
+				// add "name=value"; leave out where value is empty (that's usually 
+				// an itervar which is missing from the given run)
 				IsoLineData isoData = isoLineId[i];
-				if (isoData.getModuleName() != null && isoData.getDataName() != null)
-					sb.append(isoData.getModuleName()).append(" ").append(isoData.getDataName());
-				else
-					sb.append(isoData.getAttributeName());
-				sb.append("=").append(isoData.getValue());
+				if (!StringUtils.isEmpty(isoData.getValue())) {
+				    if (isoData.getModuleName() != null && isoData.getDataName() != null)
+				        sb.append(isoData.getModuleName()).append(" ").append(isoData.getDataName());
+				    else
+				        sb.append(isoData.getAttributeName());
+				    sb.append("=").append(isoData.getValue());
+                }
 			}
 		}
 		String isoScalarValues = sb.toString();
