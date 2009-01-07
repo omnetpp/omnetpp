@@ -122,7 +122,7 @@ suitable for filtering and basic processing of result files, and
 exporting the result in various formats digestable for other tools.
 \fprog{scavetool} has no graphics capabilities, but it can be used
 to produce files that can be directly plotted with other tools like
-gnuplot \ref{sec:ana-sim:gnuplot}.
+gnuplot (see \ref{sec:ana-sim:gnuplot}).
 
 When \fprog{scavetool} is invoked without arguments, it prints usage information:
 
@@ -217,13 +217,14 @@ run ids, configuration names in the given files to the standard output.
 There are several programs and packages that can also be used to analyse
 result files, and create various plots and charts from them.
 
+
 \subsection{Spreadsheet programs}
 \index{Spreadsheets}
 
 One straightforward solution is to use spreadsheets such as OpenOffice
 Calc, Microsoft Excel, Gnumeric or KSpread. Data can be imported from csv
-or other formats, exported with \fprog{scavetool}
-\ref{sec:ana-sim:scavetool}.
+or other formats, exported with \fprog{scavetool} (see
+\ref{sec:ana-sim:scavetool}).
 
 Spreadsheets have good charting and statistical features. A useful
 functionality spreadsheets offer for analysing scalar files is
@@ -234,10 +235,19 @@ and repetitive tasks; also, the number of rows is usually limited to about
 
 
 \subsection{GNU R}
-\index{GNU R}
+\label{sec:ana-sim:gnu-r}\index{GNU R}
 
 R is a free software environment for statistical computing and graphics.
-R has an excellent programming language and powerful plotting capabilities.
+R has an excellent programming language and powerful plotting capabilities,
+and it is supported on all major operating systems and platforms.
+
+R is widely used for statistical software development and data analysis.
+The program uses a command line interface, though several graphical user
+interfaces are available.
+
+Several {\opp}-related packages such as SimProcTC and Syntony already
+use R for data analysis and plotting. In the future, {\opp} is going
+to be extended with features that further facilitate using it with R.
 
 
 \subsection{MATLAB or Octave}
