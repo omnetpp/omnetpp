@@ -194,7 +194,7 @@ being at the top, and \ttt{[General]} at the bottom. Lookups always start at
 the top, and stop at the first matching entry.
 
 The concept is similar to inheritance in object-oriented languages,
-and benefits are similar too: you can to factor out the common parts of
+and benefits are similar too: you can factor out the common parts of
 several configurations into a "base"
 configuration, and the other way round, you can reuse existing
 configurations (as opposed to copying them) by using them as a base. In
@@ -328,38 +328,41 @@ An example for numeric ranges:
 \subsection{Using the default values}
 
 It is also possible to utilize the default values specified in the NED files.
-The \textit{<parameter-fullpath>}\ttt{.apply-default=true} setting assigns
+The \textit{<parameter-fullpath>}\ttt{=default} setting assigns
 the default value to the parameter if it has one.
 
-The \textit{<parameter-fullpath>}\ttt{.apply-default=false} setting prohibits
-assigning the default value to the parameter.
+
+The \textit{<parameter-fullpath>}\ttt{=ask} setting will try to get the parameter
+value interactively from the user.
+
 
 If a parameter was not set but has a default value, that value will be
-assigned. This is like having a \ttt{**.apply-default=true} line at the
+assigned. This is like having a \ttt{**=default} line at the
 bottom of the \ttt{[General]} section.
+
 
 If a parameter was not set and has no default value, that will either
 cause an error or will be interactively prompted for, depending
 on the particular user interface.
+
+\begin{note}
+In Cmdenv you must explicitly enable the interactive mode with the 
+\ttt{-{}-cmdenv-interactive=true} option otherwise you will get an error 
+when running the simulation.
+\end{note}
 
 More precisely, parameter resolution takes place as follows:
 
 \begin{enumerate}
 \item If the parameter is assigned in NED, it cannot be overridden in the
     configuration. The value is applied and the process finishes.
-\item Then the first entry matching \textit{<parameter-fullpath>} or
-    \textit{<parameter-fullpath>}\ttt{.apply-default} is found in the configuration.
-    When a \textit{<parameter-fullpath>}\ttt{.apply-default=false} line is found,
-    the search continues but further \ttt{apply-default}
-    lines will be ignored; this effectively prohibits accepting the
-    the default value. If the parameter has no default value,
-    \ttt{apply-default} lines are ignored from the start.
-\item If the first match is a value line (matches \textit{<parameter-fullpath>}),
+\item If the first match is a value line (matches \textit{<parameter-fullpath>}\ttt{=somevalue}),
     the value is applied and the process finishes.
-\item If the first match is an \ttt{apply-default=true} line,
+\item If the first match is a \textit{<parameter-fullpath>}\ttt{=default} line,
     the default value is applied and the process finishes.
-\item If there was no match and no \ttt{apply-default=false} line has been
-    encountered either, and the parameter has a default value, it is applied
+\item If the first match is a \textit{<parameter-fullpath>}\ttt{=ask} line,
+    the parameter will be asked from the user interactively (UI dependent).
+\item If there was no match and the parameter has a default value, it is applied
     and the process finishes.
 \item Otherwise the parameter is declared unassigned, and handled accordingly
     by the user interface. It may be reported as an error, or may be
@@ -398,12 +401,12 @@ each host count three simulation runs will be done, with the generation
 interval being exponential(0.2), exponential(0.4), and
 exponential(0.6).
 
-How does it get run? First of all, Cmdenv with the '-n' option will tell you how many
+How does it get run? First of all, Cmdenv with the '-x' option will tell you how many
 simulation runs a given section expands to. (You'll of course use Cmdenv for batch runs,
 not Tkenv.)
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\$ aloha -u Cmdenv -c AlohaStudy -n
+\$ aloha -u Cmdenv -x AlohaStudy
 
 {\opp} Discrete Event Simulation
 ...
@@ -412,9 +415,9 @@ Number of runs: 24
 \end{Verbatim}
 
 
-If you add the '-g' option, the
-program will also print out the values of the iteration variables for
-each run. Note that the parameter study actually maps to nested
+If you add the '-g' option, the program will also print out the 
+values of the iteration variables for each run. (Use '-G' for even more info)
+Note that the parameter study actually maps to nested
 loops, with the last "\$\{..\}" becoming
 the innermost loop. The iteration variables are just named \$0 and \$1
 -- we'll see that it is possible to give
@@ -424,7 +427,7 @@ for now.
 
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\$ aloha -u Cmdenv -c AlohaStudy -n -g
+\$ aloha -u Cmdenv -x AlohaStudy -g
 {\opp} Discrete Event Simulation
 ...
 Config: AlohaStudy
@@ -463,7 +466,7 @@ So, the task is now to run the simulation program 24 times, with
 This batch can be executed either from the {\opp} IDE (where you are
 prompted to pick an executable and an ini file, choose the configuration
 from a list, and just click Run), or using a little command-line
-batch execution tool supplied with {\opp}.
+batch execution tool (\fprog{opp\_runall}) supplied with {\opp}.
 
 Actually, it is also possible to get Cmdenv execute all runs in one go,
 by simply omitting the '-r' option.
@@ -710,30 +713,7 @@ to.
     The old behavior can be turned back on by setting
     output-scalar-file-append=true.
 \end{note}
-
-The way of configuring output vectors has also changed. In {\opp} 3.x,
-the keys for enabling-disabling a vector and specifying recording
-interval were <module-and-vectorname-pattern>.enabled,
-and <module-and-vectorname-pattern>.interval.
-The "enabled" and "interval" words changed to "vector-recording" and
-"vector-recording-interval".
-
-\begin{note}
-    The reason for this change is that per-object
-    configuration keys are now required to have a hyphen in their names, to
-    make it possible to tell them apart from module parameter assignments.
-    This allows the simulator to catch mistyped config keys in ini files.
-\end{note}
-
-The syntax for specifying the recording interval has also been extended
-(in a backward compatible way) to accept multiple intervals, separated
-by comma. An example:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-**.fifo[2].queueLengthVector.vector-recording = false
-**.fifo[*].queueLengthVector.vector-recording-interval = ..100, 300..500, 900..
-\end{Verbatim}
-
+
 Although it has nothing to do with our main topic (ini files), this is a
 good place to mention that the format of result files have been
 extended to include meta info such as the run ID, network name, all
@@ -743,6 +723,76 @@ phase, and increase reproduciblity of the results. Another change is
 that vector data are now recorded into the file clustered by the output
 vectors, which (combined with index files) allows much more efficient
 processing.
+
+\subsection{Configuring output vectors}
+\label{sec:ch-config-sim:outvectors}
+
+
+As a simulation program is evolving, it is becoming capable of
+collecting more and more statistics. The size of output vector
+files\index{output!vector file} can easily reach a magnitude of
+several ten or hundred megabytes, but very often, only some of the
+recorded statistics are interesting to the analyst.
+
+In {\opp}, you can control how \cclass{cOutVector} objects record data
+to disk. You can turn output vectors on/off or you can assign a result
+collection interval. By default, all output vectors are turned on.
+
+
+\begin{note}
+    The way of configuring output vectors has changed. In {\opp} 3.x,
+    the keys for enabling-disabling a vector and specifying recording
+    interval were <module-and-vectorname-pattern>.enabled, and 
+    <module-and-vectorname-pattern>.interval. The "enabled" and "interval" 
+    words changed to "vector-recording" and "vector-recording-interval".
+    The reason for this change is that per-object
+    configuration keys are now required to have a hyphen in their names, to
+    make it possible to tell them apart from module parameter assignments.
+    This allows the simulator to catch mistyped config keys in ini files.
+    The syntax for specifying the recording interval has also been extended
+    (in a backward compatible way) to accept multiple intervals, separated
+    by comma. \end{note}
+
+
+Output vectors can be configured with the following syntax:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+module-pathname.objectname.vector-recording = true/false
+module-pathname.objectname.vector-recording-interval = start1..stop1,
+                                                       start2..stop2, ...
+\end{Verbatim}
+
+Either \textit{start} or \textit{stop} can be omitted, to mean the
+beginning and the end of the simulation, respectively.
+
+
+The object name is the string passed to \cclass{cOutVector} in its constructor
+or with the \fname{setName()} member function.
+
+\begin{verbatim}
+cOutVector eed("End-to-End Delay");
+\end{verbatim}
+
+Start and stop values can be any time specification accepted
+in NED and config files (e.g. \textit{10h 30m 45.2s}).
+
+As with parameter names, wildcards are allowed in the object
+names and module path names.
+
+An example:
+
+\begin{verbatim}
+[General]
+**.vector-recording-interval = 1s..60s
+**.End-to-End Delay.vector-recording = true
+**.Router2.**.vector-recording = true
+**.vector-recording = false
+\end{verbatim}
+
+The above configuration limits collection of all output vectors
+to the 1s..60s interval, and disables collection of output vectors
+except all end-to-end delays and the ones in any module called Router2.
+
 
 \subsection{Saving parameters as scalars}
 
@@ -951,60 +1001,6 @@ all values of those variables will be grouped together to the same
 replications.
 
 
-///////////////////////
-%FIXME merge into the above
-
-\section{Configuring output vectors}
-\label{sec:ch-config-sim:outvectors}
-
-As a simulation program is evolving, it is becoming capable of
-collecting more and more statistics. The size of output vector
-files\index{output!vector file} can easily reach a magnitude of
-several ten or hundred megabytes, but very often, only some of the
-recorded statistics are interesting to the analyst.
-
-In {\opp}, you can control how \cclass{cOutVector} objects record data
-to disk. You can turn output vectors on/off or you can assign a result
-collection interval. By default, all output vectors are turned on.
-
-Output vectors can be configured with the following syntax:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-\textit{module-pathname}.\textit{objectname}.vector-recording = true/false
-\textit{module-pathname}.\textit{objectname}.vector-recording-interval = \textit{start1}..\textit{stop1}, \textit{start2}..\textit{stop2}, ...
-\end{Verbatim}
-
-Either \textit{start} or \textit{stop} can be omitted, to mean the
-beginning and the end of the simulation, respectively.
-
-The object name is the string passed to \cclass{cOutVector} in its constructor
-or with the \fname{setName()} member function.
-
-\begin{verbatim}
-cOutVector eed("End-to-End Delay");
-\end{verbatim}
-
-Start and stop values can be any time specification accepted
-in NED and config files (e.g. \textit{10h 30m 45.2s}).
-
-As with parameter names, wildcards are allowed in the object
-names and module path names.
-
-An example:
-
-\begin{verbatim}
-[General]
-**.vector-recording-interval = 1s..60s
-**.End-to-End Delay.vector-recording = true
-**.Router2.**.vector-recording = true
-**.vector-recording = false
-\end{verbatim}
-
-The above configuration limits collection of all output vectors
-to the 1s..60s interval, and disables collection of output vectors
-except all end-to-end delays and the ones in any module called Router2.
-
-
 \section{Configuring the random number generators}
 \label{sec:ch-config-sim:rng-config}
 
@@ -1069,15 +1065,14 @@ co-exist: for a particular simulation, some RNGs can be configured
 manually, and some automatically.
 
 The automatic seed selection mechanism uses two inputs: the \textit{run number}
-(i.e. the number in the \ttt{[Run 1]}, \ttt{[Run 2]}, etc. section names),
-and the \textit{RNG number}. For the same the run number and RNG number,
+ and the \textit{RNG number}. For the same run number and RNG number,
 {\opp} always selects the same seed value for any simulation model.
 If the run number or the RNG number is different, {\opp} does its best
 to choose different seeds which are also sufficiently apart in the RNG's sequence
 so that the generated sequences don't overlap.
 
 The run number can be specified either in in omnetpp.ini (e.g. via the
-\ttt{[Cmdenv]/runs-to-execute=} entry) or on the command line:
+\ttt{cmdenv-runs-to-execute=} entry) or on the command line:
 
 \begin{verbatim}
 ./mysim -r 1
