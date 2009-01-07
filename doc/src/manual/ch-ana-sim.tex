@@ -114,17 +114,15 @@ The Analysis Tool is covered in detail in the User Guide.
 
 
 \section{Scave Tool}
-\label{sec:ana-sim:scavetool}
+\index{scavetool}\label{sec:ana-sim:scavetool}
 
 Much of the IDE Analysis Tool's functionality is available on the command
-line as well, via the \fprog{scavetool} program.
-
-
-good for: filtering and exporting in formats edible for other tools.
-
-cannot do plotting; see section TODO (gnuplot, matplotlib, etc)
-
-
+line as well, via the \fprog{scavetool} program. \fprog{scavetool} is
+suitable for filtering and basic processing of result files, and
+exporting the result in various formats digestable for other tools.
+\fprog{scavetool} has no graphics capabilities, but it can be used
+to produce files that can be directly plotted with other tools like
+gnuplot \ref{sec:ana-sim:gnuplot}.
 
 When \fprog{scavetool} is invoked without arguments, it prints usage information:
 
@@ -239,7 +237,7 @@ and repetitive tasks; also, the number of rows is usually limited to about
 \index{GNU R}
 
 R is a free software environment for statistical computing and graphics.
-R has powerful plotting capabilities.
+R has an excellent programming language and powerful plotting capabilities.
 
 
 \subsection{MATLAB or Octave}
@@ -260,8 +258,8 @@ graphics capabilities than GNU R or MATLAB.
 MatPlotlib is a plotting library for the Python programming language and
 its NumPy numerical mathematics extension. It provides a "pylab" API designed
 to closely resemble that of MATLAB, thereby making it easy to learn
-for experienced MATLAB users. Matplotlib is written and maintained primarily
-by John Hunter, and is distributed under a BSD-style license.
+for experienced MATLAB users. Matplotlib is distributed under a BSD-style
+license.
 
 
 \subsection{ROOT}
@@ -282,17 +280,20 @@ shows examples what you can achieve using ROOT with {\opp}.
 
 
 \subsection{Gnuplot}
-\index{Gnuplot}
+\label{sec:ana-sim:gnuplot}\index{Gnuplot}
 
-Gnuplot is a command-line program that can generate two- and three-dimensional
-plots of functions and data. The program runs on all major platforms.
+Gnuplot is a very popular command-line program that can generate two-
+and three-dimensional plots of functions and data. The program runs
+on all major platforms, and it is well supported.
 
-Gnuplot has an interactive command interface. To plot the data in
-\texttt{mysim1.vec} and \texttt{mysim4.vec} (produced by \fprog{splitvec})
-plotted in the same graph, you can type:
+Gnuplot has an interactive command interface. For example, if you have
+the data files \texttt{foo.csv} and \texttt{bar.csv} that contain
+two values per line ($x$ $y$; such files can be exported with
+\fprog{scavetool} from vector files), you can plot them in the same
+graph by typing:
 
 \begin{verbatim}
-plot "mysim1.vec" with lines, "mysim4.vec" with lines
+plot "foo.csv" with lines, "bar.csv" with lines
 \end{verbatim}
 
 To adjust the $y$ range, you would type:
@@ -303,10 +304,7 @@ replot
 \end{verbatim}
 
 Several commands are available to adjust ranges, plotting style, labels,
-scaling etc. Gnuplot can also plot 3D graphs. Gnuplot
-is available for Windows and other platforms.
-
-On Windows, you can copy the resulting graph to the clipboard from
+scaling etc. On Windows, you can copy the resulting graph to the clipboard from
 the Gnuplot window's system menu, then insert it into the application you
 are working with.
 
