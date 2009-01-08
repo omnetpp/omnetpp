@@ -59,9 +59,8 @@ To actually implement and select a plug-in for use:
 \label{sec:plugin-exts:rng}
 
 % TODO
-
-The new class can be activated with the \fpar{rng-class}
-configuration option.
+The new RNG C++ class must implement the \cclass{cRNG} interface,
+and can be activated with the \fpar{rng-class} configuration option.
 
 
 \subsection{Defining a new scheduler}
@@ -71,8 +70,12 @@ The scheduler plug-in interface allows for implementing real-time,
 hardware-in-the-loop, distributed and distributed parallel simulation.
 %FIXME cScheduler usage
 
-The new class can be activated with the \fpar{scheduler-class}
-configuration option.
+The scheduler C++ class must implement the \cclass{cScheduler} interface,
+and can be activated with the \fpar{scheduler-class} configuration option.
+
+To see examples of scheduler classes, check the \cclass{cRealTimeScheduler}
+class in the simulation kernel, and \ttt{cSocketRTScheduler} which is part
+of the \textit{Sockets} sample simulation.
 
 
 \subsection{Defining a new configuration provider}
