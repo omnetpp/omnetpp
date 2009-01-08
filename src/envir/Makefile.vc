@@ -155,6 +155,7 @@ $O/akoutvectormgr.obj: akoutvectormgr.cc \
   envirdefs.h \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
+  ../../include/cconfigoption.h \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
@@ -167,7 +168,6 @@ $O/akoutvectormgr.obj: akoutvectormgr.cc \
   fileoutvectormgr.h \
   ../../include/opp_string.h \
   ../../include/cstatistic.h \
-  ../../include/cconfigkey.h \
   ../../include/envirext.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
@@ -205,6 +205,7 @@ $O/bootenv.obj: bootenv.cc \
   ../../include/simutil.h \
   envirdefs.h \
   sectionbasedconfig.h \
+  ../../include/cconfigoption.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cmessageheap.h \
   ../../include/cobject.h \
@@ -218,7 +219,6 @@ $O/bootenv.obj: bootenv.cc \
   ../../include/opp_string.h \
   fileoutvectormgr.h \
   ../../include/envirext.h \
-  ../../include/cconfigkey.h \
   ../../include/distrib.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
@@ -282,6 +282,7 @@ $O/envirbase.obj: envirbase.cc \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
   envirdefs.h \
+  ../../include/cconfigoption.h \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
@@ -293,7 +294,6 @@ $O/envirbase.obj: envirbase.cc \
   ../../include/cdefaultlist.h \
   ../../include/opp_string.h \
   ../../include/envirext.h \
-  ../../include/cconfigkey.h \
   ../../include/ccomponenttype.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
@@ -336,6 +336,7 @@ $O/eventlogfilemgr.obj: eventlogfilemgr.cc \
   ../../include/simkerneldefs.h \
   envirdefs.h \
   ../../include/simutil.h \
+  ../../include/cconfigoption.h \
   ../../include/cmsgpar.h \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
@@ -348,52 +349,16 @@ $O/eventlogfilemgr.obj: eventlogfilemgr.cc \
   ../../include/opp_string.h \
   ../../include/ccomponenttype.h \
   ../../include/envirext.h \
-  ../../include/cconfigkey.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
   ../../include/cdisplaystring.h \
-  eventlogwriter.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   ../../include/ccoroutine.h \
   objectprinter.h \
   ../../include/cchannel.h \
-  ../../include/ccomponent.h \
-  ../../include/regmacros.h
-$O/eventlogwriter.obj: eventlogwriter.cc \
-  ../../include/cregistrationlist.h \
-  ../../include/cgate.h \
-  ../../include/cstringpool.h \
-  ../../include/cvisitor.h \
-  ../../include/cenvir.h \
-  ../../include/cmodule.h \
-  ../../include/onstartup.h \
-  ../../include/csimulation.h \
-  ../../include/simtime.h \
-  ../../include/simtime_t.h \
-  ../../include/simutil.h \
-  envirdefs.h \
-  ../../include/simkerneldefs.h \
-  ../../include/cmessageheap.h \
-  ../../include/platdep/intxtypes.h \
-  ../../include/cobject.h \
-  ../../include/cclassfactory.h \
-  ../../include/globals.h \
-  ../../include/platdep/platmisc.h \
-  ../../include/errmsg.h \
-  ../../include/cdefaultlist.h \
-  ../../include/opp_string.h \
-  ../../include/cconfigkey.h \
-  ../../include/cexception.h \
-  ../../include/cnamedobject.h \
-  ../../include/cexpression.h \
-  ../../include/cownedobject.h \
-  eventlogwriter.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/cpar.h \
-  ../../include/ccoroutine.h \
   ../../include/ccomponent.h \
   ../../include/regmacros.h
 $O/fileoutscalarmgr.obj: fileoutscalarmgr.cc \
@@ -416,6 +381,7 @@ $O/fileoutscalarmgr.obj: fileoutscalarmgr.cc \
   envirdefs.h \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
+  ../../include/cconfigoption.h \
   ../../include/cdensityestbase.h \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
@@ -431,7 +397,6 @@ $O/fileoutscalarmgr.obj: fileoutscalarmgr.cc \
   ../../include/envirext.h \
   ../../include/ccomponenttype.h \
   ../../include/cstatistic.h \
-  ../../include/cconfigkey.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
   ../../include/cexpression.h \
@@ -464,6 +429,7 @@ $O/fileoutvectormgr.obj: fileoutvectormgr.cc \
   envirdefs.h \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
+  ../../include/cconfigoption.h \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
@@ -476,7 +442,6 @@ $O/fileoutvectormgr.obj: fileoutvectormgr.cc \
   fileoutvectormgr.h \
   ../../include/envirext.h \
   ../../include/ccomponenttype.h \
-  ../../include/cconfigkey.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
   ../../include/cexpression.h \
@@ -506,6 +471,7 @@ $O/filesnapshotmgr.obj: filesnapshotmgr.cc \
   envirdefs.h \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
+  ../../include/cconfigoption.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
   ../../include/cclassfactory.h \
@@ -514,7 +480,6 @@ $O/filesnapshotmgr.obj: filesnapshotmgr.cc \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
   ../../include/envirext.h \
-  ../../include/cconfigkey.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
   ../../include/cownedobject.h \
@@ -565,6 +530,7 @@ $O/indexedfileoutvectormgr.obj: indexedfileoutvectormgr.cc \
   envirdefs.h \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
+  ../../include/cconfigoption.h \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
@@ -577,7 +543,6 @@ $O/indexedfileoutvectormgr.obj: indexedfileoutvectormgr.cc \
   ../../include/opp_string.h \
   ../../include/envirext.h \
   ../../include/cstatistic.h \
-  ../../include/cconfigkey.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
   ../../include/cexpression.h \
@@ -765,6 +730,7 @@ $O/runattributes.obj: runattributes.cc \
   envirdefs.h \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
+  ../../include/cconfigoption.h \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
@@ -774,7 +740,6 @@ $O/runattributes.obj: runattributes.cc \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
   ../../include/envirext.h \
-  ../../include/cconfigkey.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
   ../../include/cownedobject.h \
@@ -816,6 +781,7 @@ $O/sectionbasedconfig.obj: sectionbasedconfig.cc \
   ../../include/simkerneldefs.h \
   scenario.h \
   sectionbasedconfig.h \
+  ../../include/cconfigoption.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
   ../../include/cclassfactory.h \
@@ -823,7 +789,6 @@ $O/sectionbasedconfig.obj: sectionbasedconfig.cc \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
-  ../../include/cconfigkey.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
   ../../include/cownedobject.h \

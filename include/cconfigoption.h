@@ -1,5 +1,5 @@
 //==========================================================================
-//  CCONFIGKEY.H - part of
+//  CCONFIGOPTION.H - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -13,8 +13,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CCONFIGKEY_H
-#define __CCONFIGKEY_H
+#ifndef __CCONFIGOPTION_H
+#define __CCONFIGOPTION_H
 
 #include <string>
 #include "cownedobject.h"
@@ -23,14 +23,14 @@ NAMESPACE_BEGIN
 
 
 /**
- * Declares a configuration key.
+ * Declares a configuration option.
  *
  * @ingroup Internals
  */
-class SIM_API cConfigKey : public cNoncopyableOwnedObject
+class SIM_API cConfigOption : public cNoncopyableOwnedObject
 {
   public:
-    /// Configuration key types.
+    /// Configuration option data types.
     enum Type {
       CFG_BOOL,
       CFG_INT,
@@ -42,10 +42,10 @@ class SIM_API cConfigKey : public cNoncopyableOwnedObject
       CFG_CUSTOM
     };
 
-    // note: key name (e.g. "sim-time-limit") is stored in object's name field
-    bool isPerObject_;         // if true, keys must be in <object-full-path>.config-name format
-    bool isGlobal_;            // if true, key may only occur in the [General] section
-    Type type_;                // key type
+    // note: option name (e.g. "sim-time-limit") is stored in object's name field
+    bool isPerObject_;         // if true, entries must be in <object-full-path>.config-name format
+    bool isGlobal_;            // if true, entries may only occur in the [General] section
+    Type type_;                // option data type
     std::string unit_;         // if numeric, its unit ("s") or empty string
     std::string defaultValue_; // the default value in string form
     std::string description_;  // help text
@@ -56,7 +56,7 @@ class SIM_API cConfigKey : public cNoncopyableOwnedObject
     /**
      * Constructor.
      */
-    cConfigKey(const char *name, bool isPerObject, bool isGlobal, Type type, const char *unit,
+    cConfigOption(const char *name, bool isPerObject, bool isGlobal, Type type, const char *unit,
                const char *defaultValue, const char *description);
     //@}
 
@@ -82,18 +82,18 @@ class SIM_API cConfigKey : public cNoncopyableOwnedObject
     bool isGlobal() const  {return isGlobal_;}
 
     /**
-     * Data type of the key.
+     * Data type of the option.
      */
     Type getType() const  {return type_;}
 
     /**
-     * Returns the human-readable name of an key data type.
+     * Returns the human-readable name of an option data type.
      */
     static const char *getTypeName(Type type);
 
     /**
-     * Returns the unit of the key (e.g. "s" for seconds, "b" for bytes, etc),
-     * or NULL if the key does not have a unit.
+     * Returns the unit of the option (e.g. "s" for seconds, "b" for bytes, etc),
+     * or NULL if the option does not have a unit.
      */
     const char *getUnit() const  {return unit_.empty() ? NULL : unit_.c_str();}
 
@@ -103,7 +103,7 @@ class SIM_API cConfigKey : public cNoncopyableOwnedObject
     const char *getDefaultValue() const  {return defaultValue_.empty() ? NULL : defaultValue_.c_str();}
 
     /**
-     * Returns a brief textual description of the key, which can be used as
+     * Returns a brief textual description of the option, which can be used as
      * help text or hint.
      */
     const char *getDescription() const  {return description_.c_str();}

@@ -33,7 +33,7 @@
 #include "cenvir.h"
 #include "cconfiguration.h"
 #include "globals.h"
-#include "cconfigkey.h"
+#include "cconfigoption.h"
 #include "regmacros.h"
 
 USING_NAMESPACE

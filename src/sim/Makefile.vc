@@ -27,7 +27,7 @@ IMPLIBS=$O/../common/oppcommon$D.lib
 
 OBJS_STD=\
     $O/carray.obj $O/cdelaychannel.obj $O/cdataratechannel.obj $O/cboolparimpl.obj $O/cchannel.obj \
-    $O/cclassfactory.obj $O/ccomponent.obj $O/ccomponenttype.obj $O/cconfiguration.obj $O/cconfigkey.obj \
+    $O/cclassfactory.obj $O/ccomponent.obj $O/ccomponenttype.obj $O/cconfiguration.obj $O/cconfigoption.obj \
     $O/ccompoundmodule.obj $O/ccoroutine.obj $O/cdefaultlist.obj $O/cdensityestbase.obj \
     $O/cdetect.obj $O/cdisplaystring.obj $O/cdoubleparimpl.obj $O/cdynamicexpression.obj $O/cenvir.obj \
     $O/cenum.obj $O/cexception.obj $O/cfsm.obj $O/cmathfunction.obj $O/cgate.obj $O/chistogram.obj \
@@ -325,6 +325,7 @@ $O/ccomponent.obj: ccomponent.cc \
   ../../include/simtime_t.h \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
+  ../../include/cconfigoption.h \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
@@ -334,7 +335,6 @@ $O/ccomponent.obj: ccomponent.cc \
   ../../include/errmsg.h \
   ../../include/cdefaultlist.h \
   ../../include/opp_string.h \
-  ../../include/cconfigkey.h \
   ../../include/cstatistic.h \
   ../../include/ccomponenttype.h \
   ../../include/cexception.h \
@@ -426,7 +426,7 @@ $O/ccompoundmodule.obj: ccompoundmodule.cc \
   ../../include/ccoroutine.h \
   ../../include/ccomponent.h \
   ../../include/regmacros.h
-$O/cconfigkey.obj: cconfigkey.cc \
+$O/cconfigoption.obj: cconfigoption.cc \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/cenvir.h \
@@ -434,12 +434,12 @@ $O/cconfigkey.obj: cconfigkey.cc \
   ../../include/simtime_t.h \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
+  ../../include/cconfigoption.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
-  ../../include/cconfigkey.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
   ../../include/cownedobject.h \
@@ -454,12 +454,12 @@ $O/cconfiguration.obj: cconfiguration.cc \
   ../../include/simtime_t.h \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
+  ../../include/cconfigoption.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
-  ../../include/cconfigkey.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
   ../../include/cownedobject.h \
@@ -974,6 +974,7 @@ $O/clcg32.obj: clcg32.cc \
   ../../include/simtime_t.h \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
+  ../../include/cconfigoption.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
   ../../include/cclassfactory.h \
@@ -981,7 +982,6 @@ $O/clcg32.obj: clcg32.cc \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
-  ../../include/cconfigkey.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
   ../../include/cownedobject.h \
@@ -1090,6 +1090,7 @@ $O/cmersennetwister.obj: cmersennetwister.cc \
   ../../include/simtime_t.h \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
+  ../../include/cconfigoption.h \
   ../../include/cmsgpar.h \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
@@ -1100,7 +1101,6 @@ $O/cmersennetwister.obj: cmersennetwister.cc \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
   ../../include/cmersennetwister.h \
-  ../../include/cconfigkey.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
   ../../include/cownedobject.h \
@@ -1647,6 +1647,7 @@ $O/cscheduler.obj: cscheduler.cc \
   ../../include/simtime_t.h \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
+  ../../include/cconfigoption.h \
   ../../include/cmsgpar.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cmessageheap.h \
@@ -1656,7 +1657,6 @@ $O/cscheduler.obj: cscheduler.cc \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
-  ../../include/cconfigkey.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
   ../../include/cownedobject.h \
@@ -2306,6 +2306,7 @@ $O/sim_std_m.obj: sim_std_m.cc \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
   ../../include/cwatch.h \
+  ../../include/cconfigoption.h \
   ../../include/cstlwatch.h \
   ../../include/cenum.h \
   ../../include/cmsgpar.h \
@@ -2351,8 +2352,8 @@ $O/sim_std_m.obj: sim_std_m.cc \
   ../../include/cstringpool.h \
   ../../include/cmathfunction.h \
   ../../include/coutvector.h \
-  ../../include/cxmlparimpl.h \
   ../../include/onstartup.h \
+  ../../include/cxmlparimpl.h \
   sim_std_m.h \
   ../../include/simtime_t.h \
   ../../include/cdelaychannel.h \
@@ -2370,7 +2371,6 @@ $O/sim_std_m.obj: sim_std_m.cc \
   ../../include/opp_string.h \
   ../../include/cmersennetwister.h \
   ../../include/envirext.h \
-  ../../include/cconfigkey.h \
   ../../include/cexception.h \
   ../../include/cdynamicexpression.h \
   ../../include/cnamedobject.h \
@@ -2663,6 +2663,7 @@ $O/netbuilder/cnednetworkbuilder.obj: netbuilder/cnednetworkbuilder.cc \
   ../../include/simtime.h \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
+  ../../include/cconfigoption.h \
   ../../include/cobject.h \
   ../../include/nedsupport.h \
   ../../include/cclassfactory.h \
@@ -2692,7 +2693,6 @@ $O/netbuilder/cnednetworkbuilder.obj: netbuilder/cnednetworkbuilder.cc \
   ../../include/cstringparimpl.h \
   ../../include/cdefaultlist.h \
   ../../include/opp_string.h \
-  ../../include/cconfigkey.h \
   ../../include/cexception.h \
   ../../include/cdynamicexpression.h \
   ../../include/cnamedobject.h \
@@ -2769,6 +2769,7 @@ $O/parsim/cfilecomm.obj: parsim/cfilecomm.cc \
   ../../include/simtime.h \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
+  ../../include/cconfigoption.h \
   ../../include/cobject.h \
   ../../include/cclassfactory.h \
   ../../include/errmsg.h \
@@ -2786,7 +2787,6 @@ $O/parsim/cfilecomm.obj: parsim/cfilecomm.cc \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/opp_string.h \
-  ../../include/cconfigkey.h \
   parsim/cfilecommbuffer.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
@@ -2831,6 +2831,7 @@ $O/parsim/cidealsimulationprot.obj: parsim/cidealsimulationprot.cc \
   ../../include/simtime.h \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
+  ../../include/cconfigoption.h \
   ../../include/cmsgpar.h \
   ../../include/cobject.h \
   ../../include/cclassfactory.h \
@@ -2858,7 +2859,6 @@ $O/parsim/cidealsimulationprot.obj: parsim/cidealsimulationprot.cc \
   ../../include/platdep/platmisc.h \
   ../../include/cdefaultlist.h \
   ../../include/opp_string.h \
-  ../../include/cconfigkey.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
   ../../include/platdep/platdefs.h \
@@ -2990,6 +2990,7 @@ $O/parsim/cmpicomm.obj: parsim/cmpicomm.cc \
   parsim/cmpicommbuffer.h \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
+  ../../include/cconfigoption.h \
   ../../include/cobject.h \
   ../../include/cclassfactory.h \
   ../../include/errmsg.h \
@@ -3007,7 +3008,6 @@ $O/parsim/cmpicomm.obj: parsim/cmpicomm.cc \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/opp_string.h \
-  ../../include/cconfigkey.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
   ../../include/platdep/platdefs.h \
@@ -3044,6 +3044,7 @@ $O/parsim/cnamedpipecomm-win.obj: parsim/cnamedpipecomm-win.cc \
   ../../include/simtime.h \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
+  ../../include/cconfigoption.h \
   ../../include/cobject.h \
   ../../include/cclassfactory.h \
   ../../include/errmsg.h \
@@ -3061,7 +3062,6 @@ $O/parsim/cnamedpipecomm-win.obj: parsim/cnamedpipecomm-win.cc \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/opp_string.h \
-  ../../include/cconfigkey.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
   ../../include/platdep/platdefs.h \
@@ -3074,6 +3074,7 @@ $O/parsim/cnamedpipecomm.obj: parsim/cnamedpipecomm.cc \
   ../../include/simtime.h \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
+  ../../include/cconfigoption.h \
   ../../include/cobject.h \
   ../../include/cclassfactory.h \
   ../../include/errmsg.h \
@@ -3091,7 +3092,6 @@ $O/parsim/cnamedpipecomm.obj: parsim/cnamedpipecomm.cc \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/opp_string.h \
-  ../../include/cconfigkey.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
   ../../include/platdep/platdefs.h \
@@ -3156,6 +3156,7 @@ $O/parsim/cnullmessageprot.obj: parsim/cnullmessageprot.cc \
   ../../include/simtime.h \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
+  ../../include/cconfigoption.h \
   ../../include/cmsgpar.h \
   ../../include/cobject.h \
   ../../include/cclassfactory.h \
@@ -3186,7 +3187,6 @@ $O/parsim/cnullmessageprot.obj: parsim/cnullmessageprot.cc \
   ../../include/platdep/platmisc.h \
   ../../include/cdefaultlist.h \
   ../../include/opp_string.h \
-  ../../include/cconfigkey.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
   ../../include/platdep/platdefs.h \
@@ -3207,6 +3207,7 @@ $O/parsim/cparsimpartition.obj: parsim/cparsimpartition.cc \
   ../../include/simtime.h \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
+  ../../include/cconfigoption.h \
   ../../include/cmsgpar.h \
   ../../include/cobject.h \
   ../../include/cclassfactory.h \
@@ -3232,7 +3233,6 @@ $O/parsim/cparsimpartition.obj: parsim/cparsimpartition.cc \
   ../../include/platdep/platmisc.h \
   ../../include/cdefaultlist.h \
   ../../include/opp_string.h \
-  ../../include/cconfigkey.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
   ../../include/platdep/platdefs.h \

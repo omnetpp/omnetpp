@@ -31,7 +31,7 @@
 #include "ccommbuffer.h"
 #include "messagetags.h"
 #include "globals.h"
-#include "cconfigkey.h"
+#include "cconfigoption.h"
 #include "regmacros.h"
 #include "cplaceholdermod.h"
 #include "cproxygate.h"
@@ -43,7 +43,7 @@ Register_Class(cNullMessageProtocol);
 
 Register_GlobalConfigEntry(CFGID_PARSIM_NULLMESSAGEPROTOCOL_LOOKAHEAD_CLASS, "parsim-nullmessageprotocol-lookahead-class", CFG_STRING, "cLinkDelayLookahead", "When cNullMessageProtocol is selected as parsim synchronization class: specifies the C++ class that calculates lookahead. The class should subclass from cNMPLookahead.");
 Register_GlobalConfigEntry(CFGID_PARSIM_NULLMESSAGEPROTOCOL_LAZINESS, "parsim-nullmessageprotocol-laziness", CFG_DOUBLE, "0.5", "When cNullMessageProtocol is selected as parsim synchronization class: specifies the laziness of sending null messages. Values in the range [0,1) are accepted. Laziness=0 causes null messages to be sent out immediately as a new EOT is learned, which may result in excessive null message traffic.");
-extern cConfigKey *CFGID_PARSIM_DEBUG; // registered in cparsimpartition.cc
+extern cConfigOption *CFGID_PARSIM_DEBUG; // registered in cparsimpartition.cc
 
 
 cNullMessageProtocol::cNullMessageProtocol() : cParsimProtocolBase()

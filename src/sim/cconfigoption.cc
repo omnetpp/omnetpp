@@ -1,5 +1,5 @@
 //=========================================================================
-//  CCONFIGKEY.CC - part of
+//  CCONFIGOPTION.CC - part of
 //
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
@@ -17,12 +17,12 @@
 *--------------------------------------------------------------*/
 
 
-#include "cconfigkey.h"
+#include "cconfigoption.h"
 
 USING_NAMESPACE
 
 
-cConfigKey::cConfigKey(const char *name, bool isPerObject, bool isGlobal, Type type, const char *unit,
+cConfigOption::cConfigOption(const char *name, bool isPerObject, bool isGlobal, Type type, const char *unit,
                        const char *defaultValue, const char *description) :
     cNoncopyableOwnedObject(name, false)
 {
@@ -36,7 +36,7 @@ cConfigKey::cConfigKey(const char *name, bool isPerObject, bool isGlobal, Type t
     description_ = description ? description : "";
 }
 
-std::string cConfigKey::info() const
+std::string cConfigOption::info() const
 {
     std::stringstream out;
     out << (isPerObject_ ? "per-object " : "");
@@ -48,7 +48,7 @@ std::string cConfigKey::info() const
     return out.str();
 }
 
-const char *cConfigKey::getTypeName(Type type)
+const char *cConfigOption::getTypeName(Type type)
 {
     switch (type)
     {

@@ -176,51 +176,51 @@ NAMESPACE_BEGIN
 //@{
 
 // internal
-#define __REGISTER_CONFIGENTRY(ID, ARGLIST) \
-  cConfigKey *ID; \
-  EXECUTE_ON_STARTUP(configKeys.getInstance()->add(ID = new cConfigKey ARGLIST);)
+#define __REGISTER_CONFIGOPTION(ID, ARGLIST) \
+  cConfigOption *ID; \
+  EXECUTE_ON_STARTUP(configOptions.getInstance()->add(ID = new cConfigOption ARGLIST);)
 
 /**
  * Generic, with unit==NULL.
  * @hideinitializer
  */
 #define Register_GlobalConfigEntry(ID, NAME, TYPE, DEFAULTVALUE, DESCRIPTION) \
-  __REGISTER_CONFIGENTRY(ID, (NAME, false, true, cConfigKey::TYPE, NULL, DEFAULTVALUE, DESCRIPTION))
+  __REGISTER_CONFIGOPTION(ID, (NAME, false, true, cConfigOption::TYPE, NULL, DEFAULTVALUE, DESCRIPTION))
 
 /**
  * Generic, with unit==NULL.
  * @hideinitializer
  */
 #define Register_PerRunConfigEntry(ID, NAME, TYPE, DEFAULTVALUE, DESCRIPTION) \
-  __REGISTER_CONFIGENTRY(ID, (NAME, false, false, cConfigKey::TYPE, NULL, DEFAULTVALUE, DESCRIPTION))
+  __REGISTER_CONFIGOPTION(ID, (NAME, false, false, cConfigOption::TYPE, NULL, DEFAULTVALUE, DESCRIPTION))
 
 /**
  * For type==CFG_DOUBLE and a unit.
  * @hideinitializer
  */
 #define Register_GlobalConfigEntryU(ID, NAME, UNIT, DEFAULTVALUE, DESCRIPTION) \
-  __REGISTER_CONFIGENTRY(ID, (NAME, false, true, cConfigKey::CFG_DOUBLE, UNIT, DEFAULTVALUE, DESCRIPTION))
+  __REGISTER_CONFIGOPTION(ID, (NAME, false, true, cConfigOption::CFG_DOUBLE, UNIT, DEFAULTVALUE, DESCRIPTION))
 
 /**
  * For type==CFG_DOUBLE and a unit.
  * @hideinitializer
  */
 #define Register_PerRunConfigEntryU(ID, NAME, UNIT, DEFAULTVALUE, DESCRIPTION) \
-  __REGISTER_CONFIGENTRY(ID, (NAME, false, false, cConfigKey::CFG_DOUBLE, UNIT, DEFAULTVALUE, DESCRIPTION))
+  __REGISTER_CONFIGOPTION(ID, (NAME, false, false, cConfigOption::CFG_DOUBLE, UNIT, DEFAULTVALUE, DESCRIPTION))
 
 /**
  * Per-object entry (can be configured per run), with unit==NULL.
  * @hideinitializer
  */
 #define Register_PerObjectConfigEntry(ID, NAME, TYPE, DEFAULTVALUE, DESCRIPTION) \
-  __REGISTER_CONFIGENTRY(ID, (NAME, true, false, cConfigKey::TYPE, NULL, DEFAULTVALUE, DESCRIPTION))
+  __REGISTER_CONFIGOPTION(ID, (NAME, true, false, cConfigOption::TYPE, NULL, DEFAULTVALUE, DESCRIPTION))
 
 /**
  * Per-object entry (can be configured per run), for type==CFG_DOUBLE and a unit.
  * @hideinitializer
  */
 #define Register_PerObjectConfigEntryU(ID, NAME, UNIT, DEFAULTVALUE, DESCRIPTION) \
-  __REGISTER_CONFIGENTRY(ID, (NAME, true, false, cConfigKey::CFG_DOUBLE, UNIT, DEFAULTVALUE, DESCRIPTION))
+  __REGISTER_CONFIGOPTION(ID, (NAME, true, false, cConfigOption::CFG_DOUBLE, UNIT, DEFAULTVALUE, DESCRIPTION))
 
 //@}
 

@@ -21,7 +21,7 @@
 #include <string.h>
 #include <fstream>
 #include "opp_ctype.h"
-#include "cconfigkey.h"
+#include "cconfigoption.h"
 #include "fileutil.h"
 #include "timeutil.h"
 #include "platmisc.h"

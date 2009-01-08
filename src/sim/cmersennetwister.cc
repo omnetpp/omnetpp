@@ -21,7 +21,7 @@
 #include "cexception.h"
 #include "cmersennetwister.h"
 #include "cmessage.h"
-#include "cconfigkey.h"
+#include "cconfigoption.h"
 
 USING_NAMESPACE
 

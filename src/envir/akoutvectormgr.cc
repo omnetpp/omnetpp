@@ -29,7 +29,7 @@
 #include "regmacros.h"
 #include "akoutvectormgr.h"
 #include "cconfiguration.h"
-#include "cconfigkey.h"
+#include "cconfigoption.h"
 
 USING_NAMESPACE
 

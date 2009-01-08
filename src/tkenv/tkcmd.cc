@@ -1794,7 +1794,7 @@ int objectEnums_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 int objectConfigEntries_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
-   Tcl_SetResult(interp, ptrToStr(configKeys.getInstance()), TCL_VOLATILE);
+   Tcl_SetResult(interp, ptrToStr(configOptions.getInstance()), TCL_VOLATILE);
    return TCL_OK;
 }
 

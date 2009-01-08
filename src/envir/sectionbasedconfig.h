@@ -190,7 +190,7 @@ class ENVIR_API SectionBasedConfiguration : public cConfiguration
     void setupVariables(const char *configName, int runNumber, Scenario *scenario, const std::vector<int>& sectionChain);
     KeyValue1 convert(int sectionId, int entryId);
     static bool isIgnorableConfigKey(const char *ignoredKeyPatterns, const char *key);
-    static cConfigKey *lookupConfigKey(const char *key);
+    static cConfigOption *lookupConfigOption(const char *key);
 
   protected:
     // cConfiguration method

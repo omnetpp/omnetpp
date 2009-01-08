@@ -23,7 +23,7 @@
 #include "opp_ctype.h"
 #include "args.h"
 #include "distrib.h"
-#include "cconfigkey.h"
+#include "cconfigoption.h"
 #include "inifilereader.h"
 #include "sectionbasedconfig.h"
 #include "bootenv.h"
@@ -289,7 +289,7 @@ int BootEnv::run(int argc, char *argv[], cConfiguration *cfg)
     classes.clear();
     enums.clear();
     classDescriptors.clear();
-    configKeys.clear();
+    configOptions.clear();
     omnetapps.clear();
 
     return exitcode;

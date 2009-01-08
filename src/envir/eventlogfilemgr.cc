@@ -19,7 +19,7 @@
 #include "commonutil.h"  //vsnprintf
 #include "eventlogfilemgr.h"
 #include "eventlogwriter.h"
-#include "cconfigkey.h"
+#include "cconfigoption.h"
 #include "fileutil.h"
 #include "cconfiguration.h"
 #include "envirbase.h"

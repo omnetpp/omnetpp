@@ -22,7 +22,7 @@
 #include <fstream>
 #include <locale.h>
 #include "opp_ctype.h"
-#include "cconfigkey.h"
+#include "cconfigoption.h"
 #include "fileutil.h"
 #include "bootenv.h"
 #include "envirbase.h"

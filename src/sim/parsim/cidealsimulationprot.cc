@@ -31,7 +31,7 @@
 #include "ccommbuffer.h"
 #include "messagetags.h"
 #include "globals.h"
-#include "cconfigkey.h"
+#include "cconfigoption.h"
 #include "regmacros.h"
 
 USING_NAMESPACE
@@ -43,7 +43,7 @@ Register_Class(cIdealSimulationProtocol);
 #define TABLESIZE   "100000"
 
 Register_GlobalConfigEntry(CFGID_PARSIM_IDEALSIMULATIONPROTOCOL_TABLESIZE, "parsim-idealsimulationprotocol-tablesize", CFG_INT, TABLESIZE, "When cIdealSimulationProtocol is selected as parsim synchronization class: specifies the memory buffer size for reading the ISP event trace file.");
-extern cConfigKey *CFGID_PARSIM_DEBUG; // registered in cparsimpartition.cc
+extern cConfigOption *CFGID_PARSIM_DEBUG; // registered in cparsimpartition.cc
 
 
 cIdealSimulationProtocol::cIdealSimulationProtocol() : cParsimProtocolBase()

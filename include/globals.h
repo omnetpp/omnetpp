@@ -35,7 +35,7 @@ SIM_API extern cGlobalRegistrationList nedFunctions;    ///< List if all NED fun
 SIM_API extern cGlobalRegistrationList classes;         ///< List of all classes that can be instantiated using createOne(); see cClassFactory and Register_Class() macro
 SIM_API extern cGlobalRegistrationList enums;           ///< List of all enum objects (cEnum)
 SIM_API extern cGlobalRegistrationList classDescriptors;///< List of all class descriptors (cClassDescriptor)
-SIM_API extern cGlobalRegistrationList configKeys;      ///< List of supported configuration keys (cConfigKey)
+SIM_API extern cGlobalRegistrationList configOptions;   ///< List of supported configuration options (cConfigOption)
 
 NAMESPACE_END
 

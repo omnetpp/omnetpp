@@ -167,14 +167,14 @@ An example which reads the \ttt{parsim-debug} boolean entry from the
 fallbackValue is returned if the value is not specified in the configuration:
 and there is no default value.
 
-const char *getAsCustom(cConfigKey *entry, const char *fallbackValue=NULL);
-bool getAsBool(cConfigKey *entry, bool fallbackValue=false);
-long getAsInt(cConfigKey *entry, long fallbackValue=0);
-double getAsDouble(cConfigKey *entry, double fallbackValue=0);
-std::string getAsString(cConfigKey *entry, const char *fallbackValue="");
-std::string getAsFilename(cConfigKey *entry);
-std::vector<std::string> getAsFilenames(cConfigKey *entry);
-std::string getAsPath(cConfigKey *entry);
+const char *getAsCustom(cConfigOption *entry, const char *fallbackValue=NULL);
+bool getAsBool(cConfigOption *entry, bool fallbackValue=false);
+long getAsInt(cConfigOption *entry, long fallbackValue=0);
+double getAsDouble(cConfigOption *entry, double fallbackValue=0);
+std::string getAsString(cConfigOption *entry, const char *fallbackValue="");
+std::string getAsFilename(cConfigOption *entry);
+std::vector<std::string> getAsFilenames(cConfigOption *entry);
+std::string getAsPath(cConfigOption *entry);
 
 
 \begin{verbatim}

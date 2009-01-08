@@ -20,7 +20,7 @@
 #include <assert.h>
 #include <string.h>
 #include <fstream>
-#include "cconfigkey.h"
+#include "cconfigoption.h"
 #include "fileutil.h"
 #include "bootenv.h"
 #include "envirbase.h"

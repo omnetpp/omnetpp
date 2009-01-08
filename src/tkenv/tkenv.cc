@@ -32,7 +32,7 @@
 #include "cscheduler.h"
 #include "ccomponenttype.h"
 #include "csimulation.h"
-#include "cconfigkey.h"
+#include "cconfigoption.h"
 #include "regmacros.h"
 #include "cproperties.h"
 #include "cproperty.h"

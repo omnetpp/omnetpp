@@ -33,7 +33,7 @@
 #include "cdefaultlist.h"
 #include "cdensityestbase.h"
 #include "cdetect.h"
-#include "cconfigkey.h"
+#include "cconfigoption.h"
 #include "cdisplaystring.h"
 #include "cdoubleparimpl.h"
 #include "cdynamicexpression.h"

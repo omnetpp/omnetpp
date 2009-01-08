@@ -173,7 +173,7 @@ print CC makeFileBanner("eventlogwriter.cc");
 print CC "
 #include \"eventlogwriter.h\"
 #include \"stringutil.h\"
-#include \"cconfigkey.h\"
+#include \"cconfigoption.h\"
 #include \"csimulation.h\"
 #include \"cmodule.h\"
 #include \"cexception.h\"

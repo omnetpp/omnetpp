@@ -136,6 +136,7 @@ $O/inspector.obj: inspector.cc \
   ../../include/simtime.h \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
+  ../../include/cconfigoption.h \
   ../../include/cwatch.h \
   ../../include/cenum.h \
   ../../include/cstlwatch.h \
@@ -202,7 +203,6 @@ $O/inspector.obj: inspector.cc \
   ../../include/index.h \
   ../../include/cmersennetwister.h \
   ../../include/opp_string.h \
-  ../../include/cconfigkey.h \
   ../../include/envirext.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
@@ -233,6 +233,7 @@ $O/inspfactory.obj: inspfactory.cc \
   ../../include/simtime.h \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
+  ../../include/cconfigoption.h \
   ../../include/cwatch.h \
   ../../include/cenum.h \
   ../../include/cstlwatch.h \
@@ -300,7 +301,6 @@ $O/inspfactory.obj: inspfactory.cc \
   ../../include/index.h \
   ../../include/cmersennetwister.h \
   ../../include/opp_string.h \
-  ../../include/cconfigkey.h \
   ../../include/envirext.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
@@ -476,6 +476,7 @@ $O/objinsp.obj: objinsp.cc \
   objinsp.h \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
+  ../../include/cconfigoption.h \
   ../../include/cwatch.h \
   ../../include/cenum.h \
   ../../include/cstlwatch.h \
@@ -543,7 +544,6 @@ $O/objinsp.obj: objinsp.cc \
   ../../include/index.h \
   ../../include/cmersennetwister.h \
   ../../include/opp_string.h \
-  ../../include/cconfigkey.h \
   ../../include/envirext.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
@@ -674,6 +674,7 @@ $O/tkenv.obj: tkenv.cc \
   ../../include/simtime.h \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
+  ../../include/cconfigoption.h \
   ../../include/cmsgpar.h \
   ../../include/cobject.h \
   ../../include/cstddev.h \
@@ -710,7 +711,6 @@ $O/tkenv.obj: tkenv.cc \
   ../../include/platdep/platmisc.h \
   ../../include/cdefaultlist.h \
   ../../include/opp_string.h \
-  ../../include/cconfigkey.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
   ../../include/platdep/platdefs.h \

@@ -23,7 +23,7 @@
 #include "crng.h"
 #include "cstatistic.h"
 #include "cconfiguration.h"
-#include "cconfigkey.h"
+#include "cconfigoption.h"
 #include "cdisplaystring.h"
 #include "stringutil.h"
 

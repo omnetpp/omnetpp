@@ -18,7 +18,7 @@
 #include "simkerneldefs.h"
 
 #include <string.h>
-#include "cconfigkey.h"
+#include "cconfigoption.h"
 #include "platmisc.h"
 #include "envirbase.h"
 #include "csimulation.h"

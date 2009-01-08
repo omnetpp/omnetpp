@@ -29,7 +29,7 @@ cGlobalRegistrationList nedFunctions("NED functions");
 cGlobalRegistrationList classes("classes");
 cGlobalRegistrationList enums("enums");
 cGlobalRegistrationList classDescriptors("class descriptors");
-cGlobalRegistrationList configKeys("supported configuration keys");
+cGlobalRegistrationList configOptions("supported configuration options");
 
 NAMESPACE_END
 

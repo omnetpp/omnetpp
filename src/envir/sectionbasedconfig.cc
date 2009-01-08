@@ -26,7 +26,7 @@
 #include "cexception.h"
 #include "scenario.h"
 #include "globals.h"
-#include "cconfigkey.h"
+#include "cconfigoption.h"
 #include "stringtokenizer.h"
 #include "timeutil.h"
 #include "platmisc.h"   //getpid()
@@ -47,9 +47,9 @@ Register_PerRunConfigEntry(CFGID_MEASUREMENT_LABEL, "measurement-label", CFG_STR
 Register_PerRunConfigEntry(CFGID_REPLICATION_LABEL, "replication-label", CFG_STRING, "#${repetition}", "Identifies one replication of a measurement (see repeat= and measurement-label= as well). This string gets recorded into result files, and may be referred to during result analysis.");
 Register_PerRunConfigEntry(CFGID_RUNNUMBER_WIDTH, "runnumber-width", CFG_INT, "0", "Setting a nonzero value will cause the $runnumber variable to get padded with leading zeroes to the given length.");
 
-extern cConfigKey *CFGID_NETWORK;
-extern cConfigKey *CFGID_RESULT_DIR;
-extern cConfigKey *CFGID_SEED_SET;
+extern cConfigOption *CFGID_NETWORK;
+extern cConfigOption *CFGID_RESULT_DIR;
+extern cConfigOption *CFGID_SEED_SET;
 
 // table to be kept consistent with scave/fields.cc
 static struct ConfigVarDescription { const char *name, *description; } configVarDescriptions[] = {
@@ -104,7 +104,7 @@ void SectionBasedConfiguration::setCommandLineConfigOptions(const std::map<std::
         const char *key = it->first.c_str();
         const char *value = it->second.c_str();
         //TODO check only the part after the last dot, i.e. recognize per-object keys as well
-        cConfigKey *e = lookupConfigKey(key);
+        cConfigOption *e = lookupConfigOption(key);
         if (!e)
             throw cRuntimeError("Unknown command-line configuration option --%s", key);
         if (!value[0])
@@ -902,7 +902,7 @@ void SectionBasedConfiguration::validate(const char *ignorableConfigKeys) const
                 // warn for unrecognized (or misplaced) config keys
                 // NOTE: values don't need to be validated here, that will be
                 // done when the config gets actually used
-                cConfigKey *e = lookupConfigKey(key);
+                cConfigOption *e = lookupConfigOption(key);
                 if (!e && isIgnorableConfigKey(ignorableConfigKeys, key))
                     continue;
                 if (!e)
@@ -939,7 +939,7 @@ void SectionBasedConfiguration::validate(const char *ignorableConfigKeys) const
                     // this is a per-object config
                     //XXX groupName (probably) should not contain wildcard
                     // FIXME but surely not "**" !!!!
-                    cConfigKey *e = lookupConfigKey(groupName.c_str());
+                    cConfigOption *e = lookupConfigOption(groupName.c_str());
                     if (!e && isIgnorableConfigKey(ignorableConfigKeys, groupName.c_str()))
                         continue;
                     if (!e || !e->isPerObject())
@@ -950,20 +950,20 @@ void SectionBasedConfiguration::validate(const char *ignorableConfigKeys) const
     }
 }
 
-cConfigKey *SectionBasedConfiguration::lookupConfigKey(const char *key)
+cConfigOption *SectionBasedConfiguration::lookupConfigOption(const char *key)
 {
-    cConfigKey *e = (cConfigKey *) configKeys.getInstance()->lookup(key);
+    cConfigOption *e = (cConfigOption *) configOptions.getInstance()->lookup(key);
     if (e)
         return e;  // found it, great
 
-    // Maybe it matches on a cConfigKey which has '*' or '%' in its name,
-    // such as "seed-1-mt" matches on the "seed-%-mt" cConfigKey.
-    // We have to iterate over all cConfigKeys to verify this.
+    // Maybe it matches on a cConfigOption which has '*' or '%' in its name,
+    // such as "seed-1-mt" matches on the "seed-%-mt" cConfigOption.
+    // We have to iterate over all cConfigOptions to verify this.
     // "%" means "any number" in config keys.
-    int n = configKeys.getInstance()->size();
+    int n = configOptions.getInstance()->size();
     for (int i=0; i<n; i++)
     {
-        cConfigKey *e = (cConfigKey *) configKeys.getInstance()->get(i);
+        cConfigOption *e = (cConfigOption *) configOptions.getInstance()->get(i);
         if (PatternMatcher::containsWildcards(e->getName()) || strchr(e->getName(),'%')!=NULL)
         {
             std::string pattern = opp_replacesubstring(e->getName(), "%", "{..}", true);

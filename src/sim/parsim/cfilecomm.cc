@@ -28,7 +28,7 @@
 #include "cfilecomm.h"
 #include "cfilecommbuffer.h"
 #include "globals.h"
-#include "cconfigkey.h"
+#include "cconfigoption.h"
 #include "regmacros.h"
 #include "cenvir.h"
 #include "cconfiguration.h"

@@ -28,7 +28,7 @@ IMPLIBS=-L$L -loppcommon$D
 
 OBJS_STD=\
     $O/carray.o $O/cdelaychannel.o $O/cdataratechannel.o $O/cboolparimpl.o $O/cchannel.o \
-    $O/cclassfactory.o $O/ccomponent.o $O/ccomponenttype.o $O/cconfiguration.o $O/cconfigkey.o \
+    $O/cclassfactory.o $O/ccomponent.o $O/ccomponenttype.o $O/cconfiguration.o $O/cconfigoption.o \
     $O/ccompoundmodule.o $O/ccoroutine.o $O/cdefaultlist.o $O/cdensityestbase.o \
     $O/cdetect.o $O/cdisplaystring.o $O/cdoubleparimpl.o $O/cdynamicexpression.o $O/cenvir.o \
     $O/cenum.o $O/cexception.o $O/cfsm.o $O/cmathfunction.o $O/cgate.o $O/chistogram.o \
@@ -304,7 +304,7 @@ $O/ccomponent.o: ccomponent.cc \
   ../../include/cexpression.h \
   ../../include/cgate.h \
   ../../include/simtime.h \
-  ../../include/cconfigkey.h \
+  ../../include/cconfigoption.h \
   ../../include/simtime_t.h \
   ../../include/cenvir.h \
   ../../include/ccomponent.h \
@@ -409,12 +409,12 @@ $O/ccompoundmodule.o: ccompoundmodule.cc \
   ../../include/cexception.h \
   ../../include/platdep/intxtypes.h \
   ../../include/ccomponenttype.h
-$O/cconfigkey.o: cconfigkey.cc \
+$O/cconfigoption.o: cconfigoption.cc \
   ../../include/regmacros.h \
   ../../include/platdep/platdefs.h \
   ../../include/cnamedobject.h \
   ../../include/simtime.h \
-  ../../include/cconfigkey.h \
+  ../../include/cconfigoption.h \
   ../../include/simtime_t.h \
   ../../include/cenvir.h \
   ../../include/opp_string.h \
@@ -433,7 +433,7 @@ $O/cconfiguration.o: cconfiguration.cc \
   ../../include/platdep/platdefs.h \
   ../../include/cnamedobject.h \
   ../../include/simtime.h \
-  ../../include/cconfigkey.h \
+  ../../include/cconfigoption.h \
   ../../include/simtime_t.h \
   ../../include/cenvir.h \
   ../../include/cconfiguration.h \
@@ -902,7 +902,7 @@ $O/clcg32.o: clcg32.cc \
   ../../include/cclassfactory.h \
   ../../include/cnamedobject.h \
   ../../include/simtime.h \
-  ../../include/cconfigkey.h \
+  ../../include/cconfigoption.h \
   ../../include/simtime_t.h \
   ../../include/cenvir.h \
   ../../include/cregistrationlist.h \
@@ -1016,7 +1016,7 @@ $O/cmersennetwister.o: cmersennetwister.cc \
   ../../include/cmathfunction.h \
   ../../include/cnamedobject.h \
   ../../include/simtime.h \
-  ../../include/cconfigkey.h \
+  ../../include/cconfigoption.h \
   ../../include/carray.h \
   ../../include/simtime_t.h \
   ../../include/cenvir.h \
@@ -1572,7 +1572,7 @@ $O/cscheduler.o: cscheduler.cc \
   ../../include/cmathfunction.h \
   ../../include/cnamedobject.h \
   ../../include/simtime.h \
-  ../../include/cconfigkey.h \
+  ../../include/cconfigoption.h \
   ../../include/carray.h \
   ../../include/simtime_t.h \
   ../../include/cenvir.h \
@@ -2277,7 +2277,7 @@ $O/sim_std_m.o: sim_std_m.cc \
   ../../include/cclassfactory.h \
   ../../include/cdataratechannel.h \
   ../../include/cmathfunction.h \
-  ../../include/cconfigkey.h \
+  ../../include/cconfigoption.h \
   ../../include/cgate.h \
   ../../include/simtime.h \
   ../../include/carray.h \
@@ -2613,7 +2613,7 @@ $O/netbuilder/cnednetworkbuilder.o: netbuilder/cnednetworkbuilder.cc \
   ../../include/cclassfactory.h \
   ../../include/cdataratechannel.h \
   ../../include/simtime.h \
-  ../../include/cconfigkey.h \
+  ../../include/cconfigoption.h \
   ../../include/cgate.h \
   ../../include/cstringparimpl.h \
   ../../include/cenvir.h \
@@ -2715,7 +2715,7 @@ $O/parsim/cfilecomm.o: parsim/cfilecomm.cc \
   ../../include/platdep/platdefs.h \
   ../../include/cclassfactory.h \
   ../../include/simtime.h \
-  ../../include/cconfigkey.h \
+  ../../include/cconfigoption.h \
   ../../include/simtime_t.h \
   ../../include/cenvir.h \
   parsim/cfilecommbuffer.h \
@@ -2779,7 +2779,7 @@ $O/parsim/cidealsimulationprot.o: parsim/cidealsimulationprot.cc \
   ../../include/cclassfactory.h \
   ../../include/cmathfunction.h \
   ../../include/simtime.h \
-  ../../include/cconfigkey.h \
+  ../../include/cconfigoption.h \
   ../../include/cgate.h \
   ../../include/carray.h \
   ../../include/simtime_t.h \
@@ -2987,7 +2987,7 @@ $O/parsim/cnamedpipecomm-win.o: parsim/cnamedpipecomm-win.cc \
   ../../include/platdep/platdefs.h \
   ../../include/cclassfactory.h \
   ../../include/simtime.h \
-  ../../include/cconfigkey.h \
+  ../../include/cconfigoption.h \
   parsim/cmemcommbuffer.h \
   ../../include/simtime_t.h \
   ../../include/cenvir.h \
@@ -3017,7 +3017,7 @@ $O/parsim/cnamedpipecomm.o: parsim/cnamedpipecomm.cc \
   ../../include/platdep/platdefs.h \
   ../../include/cclassfactory.h \
   ../../include/simtime.h \
-  ../../include/cconfigkey.h \
+  ../../include/cconfigoption.h \
   parsim/cmemcommbuffer.h \
   ../../include/simtime_t.h \
   ../../include/cenvir.h \
@@ -3102,7 +3102,7 @@ $O/parsim/cnullmessageprot.o: parsim/cnullmessageprot.cc \
   ../../include/cclassfactory.h \
   ../../include/cmathfunction.h \
   ../../include/simtime.h \
-  ../../include/cconfigkey.h \
+  ../../include/cconfigoption.h \
   ../../include/cgate.h \
   ../../include/carray.h \
   parsim/clinkdelaylookahead.h \
@@ -3154,7 +3154,7 @@ $O/parsim/cparsimpartition.o: parsim/cparsimpartition.cc \
   ../../include/cmathfunction.h \
   ../../include/cgate.h \
   ../../include/simtime.h \
-  ../../include/cconfigkey.h \
+  ../../include/cconfigoption.h \
   ../../include/carray.h \
   ../../include/simtime_t.h \
   ../../include/cenvir.h \
@@ -3321,7 +3321,7 @@ $O/parsim/cptrpassingmpicomm.o: parsim/cptrpassingmpicomm.cc \
   parsim/cmpicommbuffer.h \
   ../../include/cclassfactory.h \
   ../../include/simtime.h \
-  ../../include/cconfigkey.h \
+  ../../include/cconfigoption.h \
   ../../include/simtime_t.h \
   ../../include/cenvir.h \
   ../../include/opp_string.h \

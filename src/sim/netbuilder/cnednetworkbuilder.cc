@@ -32,7 +32,7 @@
 #include "cstringparimpl.h"
 #include "cdisplaystring.h"
 #include "cconfiguration.h"
-#include "cconfigkey.h"
+#include "cconfigoption.h"
 
 #include "nedelements.h"
 #include "nederror.h"

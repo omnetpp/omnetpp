@@ -20,7 +20,7 @@
 #include "simutil.h"
 #include "cenvir.h"
 #include "cexception.h"
-#include "cconfigkey.h"
+#include "cconfigoption.h"
 
 USING_NAMESPACE
 

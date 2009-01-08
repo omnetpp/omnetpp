@@ -36,7 +36,7 @@
 #include "cxmldoccache.h"
 #include "fnamelisttokenizer.h"
 #include "chasher.h"
-#include "cconfigkey.h"
+#include "cconfigoption.h"
 #include "regmacros.h"
 #include "stringutil.h"
 #include "enumstr.h"
@@ -430,19 +430,19 @@ void EnvirBase::dumpComponentList(const char *category)
     if (wantAll || !strcmp(category, "config") || !strcmp(category, "configdetails"))
     {
         processed = true;
-        ev << "Supported configuration keys (omnetpp.ini):\n";
+        ev << "Supported configuration options:\n";
         bool printDescriptions = strcmp(category, "configdetails")==0;
 
-        cRegistrationList *table = configKeys.getInstance();
+        cRegistrationList *table = configOptions.getInstance();
         table->sort();
         for (int i=0; i<table->size(); i++)
         {
-            cConfigKey *obj = dynamic_cast<cConfigKey *>(table->get(i));
+            cConfigOption *obj = dynamic_cast<cConfigOption *>(table->get(i));
             ASSERT(obj);
             if (!printDescriptions) ev << "  ";
             if (obj->isPerObject()) ev << "<object-full-path>.";
             ev << obj->getName() << "=";
-            ev << "<" << cConfigKey::getTypeName(obj->getType()) << ">";
+            ev << "<" << cConfigOption::getTypeName(obj->getType()) << ">";
             if (obj->getUnit())
                 ev << ", unit=\"" << obj->getUnit() << "\"";
             if (obj->getDefaultValue())
@@ -471,12 +471,12 @@ void EnvirBase::dumpComponentList(const char *category)
     {
         // generate Java code for ConfigurationRegistry.java in the IDE
         processed = true;
-        ev << "Supported configuration keys (as Java code):\n";
-        cRegistrationList *table = configKeys.getInstance();
+        ev << "Supported configuration options (as Java code):\n";
+        cRegistrationList *table = configOptions.getInstance();
         table->sort();
         for (int i=0; i<table->size(); i++)
         {
-            cConfigKey *key = dynamic_cast<cConfigKey *>(table->get(i));
+            cConfigOption *key = dynamic_cast<cConfigOption *>(table->get(i));
             ASSERT(key);
 
             std::string id = "CFGID_";
@@ -485,7 +485,7 @@ void EnvirBase::dumpComponentList(const char *category)
             const char *method = key->isGlobal() ? "addGlobalEntry" :
                                  !key->isPerObject() ? "addPerRunEntry" :
                                  "addPerObjectEntry";
-            #define CASE(X)  case cConfigKey::X: typestring = #X; break;
+            #define CASE(X)  case cConfigOption::X: typestring = #X; break;
             const char *typestring;
             switch (key->getType()) {
                 CASE(CFG_BOOL)

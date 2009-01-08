@@ -33,7 +33,7 @@
 #include "speedometer.h"
 #include "timeutil.h"
 #include "stringutil.h"
-#include "cconfigkey.h"
+#include "cconfigoption.h"
 #include "cproperties.h"
 #include "cproperty.h"
 

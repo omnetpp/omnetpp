@@ -86,6 +86,7 @@ $O/cmdenv.obj: cmdenv.cc \
   ../../include/csimplemodule.h \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
+  ../../include/cconfigoption.h \
   ../../include/cmsgpar.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cmessageheap.h \
@@ -97,7 +98,6 @@ $O/cmdenv.obj: cmdenv.cc \
   ../../include/errmsg.h \
   ../../include/cdefaultlist.h \
   ../../include/opp_string.h \
-  ../../include/cconfigkey.h \
   ../../include/ccomponenttype.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \

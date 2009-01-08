@@ -36,7 +36,7 @@
 #include "regmacros.h"
 #include "cenvir.h"
 #include "cconfiguration.h"
-#include "cconfigkey.h"
+#include "cconfigoption.h"
 #include "parsimutil.h"
 
 USING_NAMESPACE
