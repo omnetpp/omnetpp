@@ -78,29 +78,49 @@ configuration option.
 \subsection{Defining a new configuration provider}
 \label{sec:plugin-exts:configuration}
 
-The configuration provider provider plug-in lets you replace \ttt{omnetpp.ini}
-with some other implementation, for example a database.
+The configuration provider plug-in lets you replace ini files
+with some other storage implementation, for example a database.
 
 The new class can be activated with the \fpar{configuration-class}
-configuration option.
+configuration option, and it must implement the \cclass{cConfiguration}
+interface.
 
-%FIXME boot-time config! etc
+The \cclass{cConfiguration} interface abstracts the inifile-based
+data model a little. It assumes that the configuration data
+consists of several \textit{named configurations}. Before every
+simulation run, one of the \textit{named configurations} get
+activated, and from then on, all queries into the configuration
+operate on the \textit{active named configuration} only.
+
+It practice, you'll probably want to subclass from the
+\cclass{SectionBasedConfiguration} class (in \ttt{src/envir})
+instead, because it already implements a lot of functionality
+that otherwise you would have to.
+
+\cclass{SectionBasedConfiguration} does not assume ini files or
+any other particular storage format; instead, it accepts
+an object that implements the \cclass{cConfigurationReader}
+interface to provides the data in raw form to it.
+The default implementation of \cclass{cConfigurationReader} is
+\cclass{InifileReader}.
 
 For the configuration plug-in, the startup sequence is the following
-(see \ttt{cEnvir::setup()} in the source code):
+(see \ttt{src/sim/bootenv.cc} in the source code):
 
 \begin{enumerate}
-  \item First, \ttt{omnetpp.ini} (or the ini file(s) specified via the "-f"
-     command-line option) are read.
-  \item Shared libraries in \ttt{[General]/load-libs} are loaded.
-     (Also the ones specified with the "-l" command-line option.)
-  \item \ttt{[General]/configuration-class} is examined, and if it is present,
-     a configuration object of the given class is instantiated.
-     The configuration object may read further entries from the
-     ini file (e.g. database connect parameters, or XML file name).
-  \item The original \ttt{omnetpp.ini} \cclass{cInifile} configuration
-     object is deleted. No other settings are taken from it.
-  \item \ttt{[General]/load-libs} from the new configuration object is
+  \item First, ini files (specified as command-line arguments,
+     or \ttt{omnetpp.ini} if none were specified) are read into a
+     \textit{boot-time configuration object}.
+  \item Shared libraries get loaded (see the \ttt{-l} command-line option,
+     and the \ttt{load-libs} configuration option)
+  \item The \ttt{configuration-class} configuration option is examined.
+     If it is present, a configuration object of the given class
+     is instantiated, and replaces the boot-time configuration.
+     The new configuration object receives the boot-time configuration
+     when it gets initialized, so it can take parameters (e.g. database
+     connection parameters, XML file name, etc) from the boot-time
+     config. Then the boot-time configuration object is deallocated.
+  \item The \ttt{load-libs} option from the new configuration object is
      processed.
   \item Then everything goes on as normally, using the new configuration
      object.
