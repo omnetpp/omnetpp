@@ -143,15 +143,33 @@ configuration option.
 \section{Reading the configuration and defining new configuration options}
 \label{sec:plugin-exts:accessing-config}
 
-config options need to be registered
+The configuration is accessible via the \fname{getConfig()} method of \cclass{cEnvir}.
+It returns a pointer to the configuration object (\cclass{cConfiguration}):
 
-%rename Entry to Option!!!!
-Register\_GlobalConfigEntry(ID, NAME, TYPE, DEFAULTVALUE, DESCRIPTION)
-Register\_PerRunConfigEntry(ID, NAME, TYPE, DEFAULTVALUE, DESCRIPTION)
-Register\_GlobalConfigEntryU(ID, NAME, UNIT, DEFAULTVALUE, DESCRIPTION)
-Register\_PerRunConfigEntryU(ID, NAME, UNIT, DEFAULTVALUE, DESCRIPTION)
-Register\_PerObjectConfigEntry(ID, NAME, TYPE, DEFAULTVALUE, DESCRIPTION)
-Register\_PerObjectConfigEntryU(ID, NAME, UNIT, DEFAULTVALUE, DESCRIPTION)
+\begin{verbatim}
+cConfiguration *config = ev.getConfig();
+\end{verbatim}
+
+\cclass{cConfiguration} provides several methods for querying the configuration.
+
+New configuration options need to be declared to {\opp}, with one of the
+\fmac{Register\_GlobalConfigOption}, \fmac{Register\_PerRunConfigOption}
+and similar macros.
+
+\begin{note}
+Registration is necessary because from the 4.0 version, {\opp} validates
+the configuration on startup, in order to be able to report invalid or
+mistyped option names and other errors.
+\end{note}
+
+\begin{verbatim}
+Register_GlobalConfigOption(ID, NAME, TYPE, DEFAULTVALUE, DESCRIPTION)
+Register_PerRunConfigOption(ID, NAME, TYPE, DEFAULTVALUE, DESCRIPTION)
+Register_GlobalConfigOptionU(ID, NAME, UNIT, DEFAULTVALUE, DESCRIPTION)
+Register_PerRunConfigOptionU(ID, NAME, UNIT, DEFAULTVALUE, DESCRIPTION)
+Register_PerObjectConfigOption(ID, NAME, TYPE, DEFAULTVALUE, DESCRIPTION)
+Register_PerObjectConfigOptionU(ID, NAME, UNIT, DEFAULTVALUE, DESCRIPTION)
+\end{verbatim}
 
 
 
