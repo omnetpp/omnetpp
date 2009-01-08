@@ -82,8 +82,9 @@ void doUnpacking(cCommBuffer *b, T *t, int n)
 template<typename T>
 void doPacking(cCommBuffer *buffer, /*const*/ std::vector<T>& v)
 {
-    doPacking(buffer, (int)v.size());
-    for (int i=0; i<v.size(); i++)
+    int n = v.size();
+    doPacking(buffer, n);
+    for (int i=0; i<n; i++)
         doPacking(buffer, v[i]);
 }
 
@@ -100,8 +101,9 @@ void doUnpacking(cCommBuffer *buffer, std::vector<T>& v)
 template<typename T, typename A>
 void doPacking(cCommBuffer *buffer, /*const*/ std::vector<T,A>& v)
 {
-    doPacking(buffer, (int)v.size());
-    for (int i=0; i<v.size(); i++)
+    int n = v.size();
+    doPacking(buffer, n);
+    for (int i=0; i<n; i++)
         doPacking(buffer, v[i]);
 }
 
