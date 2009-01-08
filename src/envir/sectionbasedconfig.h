@@ -217,7 +217,7 @@ class ENVIR_API SectionBasedConfiguration : public cConfiguration
 
     /** @name Methods that implement the cConfiguration interface. */
     //@{
-    virtual void initializeFrom(cConfiguration *conf);
+    virtual void initializeFrom(cConfiguration *bootConfig);
     virtual const char *getFileName() const;
     virtual void validate(const char *ignorableConfigKeys) const;
     virtual std::vector<std::string> getConfigNames();

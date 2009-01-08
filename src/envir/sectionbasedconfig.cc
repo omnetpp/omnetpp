@@ -38,6 +38,7 @@ USING_NAMESPACE
 //TODO optimize storage (now keys with wildcard groupName are stored multiple times, in several groups)
 
 
+Register_GlobalConfigOption(CFGID_SECTIONBASEDCONFIG_CONFIGREADER_CLASS, "sectionbasedconfig-configreader-class", CFG_STRING, "", "When configuration-class=SectionBasedConfiguration: selects the configuration reader C++ class, which must subclass from cConfigurationReader.");
 Register_PerRunConfigOption(CFGID_DESCRIPTION, "description", CFG_STRING, NULL, "Descriptive name for the given simulation configuration. Descriptions get displayed in the run selection dialog.");
 Register_PerRunConfigOption(CFGID_EXTENDS, "extends", CFG_STRING, NULL, "Name of the configuration this section is based on. Entries from that section will be inherited and can be overridden. In other words, configuration lookups will fall back to the base section.");
 Register_PerRunConfigOption(CFGID_CONSTRAINT, "constraint", CFG_STRING, NULL, "For scenarios. Contains an expression that iteration variables (${} syntax) must satisfy for that simulation to run. Example: $i < $j+1.");
@@ -50,6 +51,8 @@ Register_PerRunConfigOption(CFGID_RUNNUMBER_WIDTH, "runnumber-width", CFG_INT, "
 extern cConfigOption *CFGID_NETWORK;
 extern cConfigOption *CFGID_RESULT_DIR;
 extern cConfigOption *CFGID_SEED_SET;
+
+Register_Class(SectionBasedConfiguration);
 
 // table to be kept consistent with scave/fields.cc
 static struct ConfigVarDescription { const char *name, *description; } configVarDescriptions[] = {
@@ -124,9 +127,17 @@ void SectionBasedConfiguration::clear()
     variables.clear();
 }
 
-void SectionBasedConfiguration::initializeFrom(cConfiguration *conf)
+void SectionBasedConfiguration::initializeFrom(cConfiguration *bootConfig)
 {
-    throw cRuntimeError("SectionBasedConfiguration: initializeFrom() not supported");
+    std::string classname = bootConfig->getAsString(CFGID_SECTIONBASEDCONFIG_CONFIGREADER_CLASS);
+    if (classname.empty())
+        throw cRuntimeError("SectionBasedConfiguration: no configuration reader class specified (missing %s option)",
+                             CFGID_SECTIONBASEDCONFIG_CONFIGREADER_CLASS->getName());
+    cConfigurationReader *reader = dynamic_cast<cConfigurationReader *>(createOne(classname.c_str()));
+    if (!reader)
+        throw cRuntimeError("Class \"%s\" is not subclassed from cConfigurationReader", classname.c_str());
+    reader->initializeFrom(bootConfig);
+    setConfigurationReader(reader);
 }
 
 const char *SectionBasedConfiguration::getFileName() const

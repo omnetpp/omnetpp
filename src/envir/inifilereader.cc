@@ -39,6 +39,11 @@ InifileReader::~InifileReader()
 {
 }
 
+void InifileReader::initializeFrom(cConfiguration *bootConfig)
+{
+    throw cRuntimeError("InifileReader: initializeFrom() method not supported");
+}
+
 const char *InifileReader::getFileName() const
 {
     return rootfilename.c_str();

@@ -121,7 +121,7 @@ class SIM_API cConfiguration : public cObject
      * uses a database as data source, it may take the connection parameters
      * from the "boot-time" configuration.
      */
-    virtual void initializeFrom(cConfiguration *conf) = 0;
+    virtual void initializeFrom(cConfiguration *bootConfig) = 0;
 
     /**
      * Returns the name of the configuration file. Returns NULL if this object is

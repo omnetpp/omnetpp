@@ -82,6 +82,7 @@ class ENVIR_API InifileReader : public cConfigurationReader
 
     /** @name Methods implementing cConfigurationReader */
     //@{
+    virtual void initializeFrom(cConfiguration *bootConfig);
     virtual const char *getFileName() const;
     virtual const char *getDefaultBaseDirectory() const;
     virtual int getNumSections() const;
