@@ -42,21 +42,6 @@ Multiple ini files can be given, and their contents will get merged. This
 allows for partitioning the configuration into separate files, for example
 to simulation options, module parameters and result recording options.
 
-\subsubsection{Extra simulation options}
-
-Additional configuration options can be specified on the command line
-with the \ttt{-\--}\textit{option}\ttt{=}\textit{value} syntax. (Note
-that there is no space on either side of the equal sign.)
-
-An example:
-
-\begin{verbatim}
-$ ./fifo --sim-time-limit=1000s
-\end{verbatim}
-
-Options given on the command line are stronger than the similar settings
-in the ini files.
-
 \subsubsection{Specifying the NED path}
 
 NED files are loaded from directories listed on the NED path. More precisely,
@@ -114,10 +99,9 @@ between them during runtime, but it is possible to specify only a single user in
 useful if you intend to run your simulations on a machine where Tcl/Tk is not installed.
 
 By default Tkenv will be used if both runtime environment is present in your executable, 
-however you can override this with the \ttt{user-interface=Cmdenv} in your ini file or by
-specifying -u Cmdenv on the command line. If both the config entry and the command line option 
+but you can override this with the \ttt{user-interface=Cmdenv} in your ini file or by
+specifying -u Cmdenv on the command line. If both the config option and the command line option 
 is present the command line option takes precedence.
-
 
 \subsubsection{Selecting a configuration or run}
 
@@ -129,28 +113,25 @@ do not specify the configuration and you are running under:
   \item Cmdenv: the \ttt{General} configuration will be executed.
 \end{itemize}
 
-You may get information about the configuration with the \ttt{-x ConfigName} option.
-Adding the \ttt{-g} or \ttt{-G} option to the command line adds details about the
-possible run numbers and iteration variables.
+There are several command line options to get information about the iteration 
+variables and the number of runs in the configurations:
 
-A specific run number can be selected by the \ttt{-r runnumber} option. It is also possible
-specify more than one runs. Constructs like 1,2,5,7..9 or * can be used after the \ttt{-r}
-option.
+\begin{itemize}
+  \item \ttt{-a} -- Prints all configuration names and the number of runs in them.
+  \item \ttt{-x ConfigName} -- Prints the number of runs available in the configuration.
+  \item \ttt{-g} -- Prints the unrolled configuration (together with the -x option) and
+                    expands the iteration variables.
+  \item \ttt{-G} -- Prints even more detail than -g.
+\end{itemize}
 
-\begin{warning}
-  It is recommended to execute only a single run this way. Specifying more than one runnumber 
-  would run these simulations in the same process. This method is more prone the C++ programming 
-  errors. A failure in a single run would stop and kill all the runs following it. If you want 
-  to execute more than one run we recommend batch execution. Use the \fprog{opp\_runall} for 
-  this purpose.
-\end{warning}
-
+User interfaces may support the \ttt{-r runnumber} option to select runs, either one or more, 
+depending on the type of the user interface.
 
 \subsubsection{Loading extra libraries}
 
 \opp allows you to load shared libraries at runtime. This means that you can create
 simulation models as a shared library and load the model later into a different executable without 
-the need to explicitly link against that library. This approach hase several advantages. 
+the need to explicitly link against that library. This approach has several advantages. 
 
 \begin{itemize}
   \item It is possible to distribute the model as a shared library. Others may be able to use
@@ -164,11 +145,11 @@ Use the \ttt{-l libraryname} command line option to load a library dynamically a
 \opp will attempt to load it using the \fname{dlopen()} or \fname{LoadLibrary()} functions and 
 automatically registers all simple modules in the library.
 
-The prefix and suffix from the library name can be omitted (the extension (\ttt{.dll, .si, .dylib} and also
+The prefix and suffix from the library name can be omitted (the extension (\ttt{.dll, .so, .dylib} and also
 the common \ttt{lib} prefix on unix systems). This means that you can specify the library name in a 
 platform independent way (name.dll, libname.dll, libname.so and libname.dylib can be loaded with \ttt{-l name}).
 
-It is also possible to specify the libraries to be loaded in the ini file with the \ttt{load-libs=} config entry.
+It is also possible to specify the libraries to be loaded in the ini file with the \ttt{load-libs=} config option.
 The values from the command line and the config file will be merged. 
 
 \begin{note}
@@ -199,39 +180,40 @@ The above example will load the model found in \ttt{libmymodel.so} and execute i
 
 \subsection{Controlling the run}
 
-There are several command line options and configuration entries which control how a 
-simulation is run.
+There are several useful configuration options that control how a simulation is run.
 
 \begin{itemize}
-  \item
-  \item
-  \item
-  \item
+  \item \ttt{cmdenv-express-mode} -- Provides only minimal status updates on the console.
+  \item \ttt{cmdenv-interactive} -- Allows asking interactively for missing
+        parameter values.
+  \item \ttt{cmdenv-status-frequency} -- How often the status is written to the console.
+  \item \ttt{cpu-time-limit} -- Limit how long the simulation should run (in wall clock time)
+  \item \ttt{sim-time-limit} -- Limit how long the simulation should run (in simulation time)
+  \item \ttt{debug-on-errors} -- If the runtime detects any error it will generate a breakpoint
+        so you will be able to ckeck the location and the context of the problem in your debugger.
+  \item \ttt{fingerprint} -- The simulation kernel computes a checksum while running the simulation.
+          It is calculated from the module id and from the current simulation time of each event. 
+          If you specify the \ttt{fingerprint} option in the config file, the simulation runtime will
+          comapre the computed checksum with the provided one. If there is a difference it will
+          generate an error. This feature is very useful if you make some cosmetic changes to your
+          source and want to be reasonable sure that your changes did not altered the behaviour 
+          f the model.
+  \item \ttt{record-eventlog} -- You can turn on the recording of the simulator events. The 
+           resulting file can be analyzed later in the IDE with the sequence chart tool.
 \end{itemize}
 
-TODO put somewhere: time limits, fingerprinting, and other options!, debug on error etc.
-cmdenv-express-mode
-cmdenv-interactive
-cmdenv-status-frequency
-cpu-time-limit
-debug-on-errors
-fingerprint
-record-eventlog
-sim-time-limit
+\begin{note}
+  It is possible to specify a configuration option also on command line (in which case the
+  command line takes precedence). You should prefix the option name with a double
+  dash (-{}-) and should not put any spaces around the equal sign 
+  (e.g. \ttt{-{}-debug-on-errors=true})
+\end{note}
 
+To get the list of all possible configuration options type:
 
-
-\section{User interfaces}
-
-Common functionality in Tkenv and Cmdenv has been collected and
-placed into the Envir library\index{Envir}, which can be thought of as the
-``common base class'' for the two user interfaces.
-
-The user interface\index{user interface} is separated from the
-simulation kernel, and the two parts interact through a well-defined
-interface. This also means that, if needed, you can write your
-own user interface or embed an {\opp} simulation into your application
-without any change to models or the simulation library.
+\begin{verbatim}
+opp_run -h config
+\end{verbatim}
 
 
 \section{Cmdenv: the command-line interface}
@@ -254,7 +236,7 @@ something like this:
 $ ./fifo -u Cmdenv -c Fifo1
 
 OMNeT++ Discrete Event Simulation  (C) 1992-2008 Andras Varga, OpenSim Ltd.
-Version: 4.0rc1, edition: Academic Public License -- NOT FOR COMMERCIAL USE
+Version: 4.0, edition: Academic Public License -- NOT FOR COMMERCIAL USE
 See the license for distribution terms and warranty disclaimer
 Setting up Cmdenv...
 Loading NED files from .: 5
@@ -283,13 +265,7 @@ Running simulation...
 
 <!> Simulation time limit reached -- simulation stopped.
 
-
 Calling finish() at end of Run #0...
-Total jobs processed: 1801720
-Avg queueing time:    0.0102645
-Max queueing time:    0.0410768
-Standard deviation:   0.00135705
-
 End.
 \end{verbatim}
 
@@ -302,111 +278,26 @@ methods of the simple modules are run, and the output from them are displayed.
 On my machine this run took 34 seconds. This Cmdenv output can be
 customized via \fname{omnetpp.ini} entries. The output file \fname{results/Fifo1-0.vec}
 contains vector data recorded during simulation (here, queueing times),
-and it can be processed using Plove or other tools.
+and it can be processed using the IDE or other tools.
 
 \subsection{Command-line switches}
 
-A simulation program built with Cmdenv accepts the following command line
-switches\index{command line switches}:
-
-\begin{verbatim}
-  cmdenv-autoflush=<bool>, default:false; per-run setting
-  cmdenv-config-name=<string>; global setting
-  <object-full-path>.cmdenv-ev-output=<bool>, default:true; per-object setting
-  cmdenv-event-banner-details=<bool>, default:false; per-run setting
-  cmdenv-event-banners=<bool>, default:true; per-run setting
-  cmdenv-express-mode=<bool>, default:true; per-run setting
-  cmdenv-extra-stack=<double>, unit="B", default:8KB; global setting
-  cmdenv-interactive=<bool>, default:false; global setting
-  cmdenv-message-trace=<bool>, default:false; per-run setting
-  cmdenv-module-messages=<bool>, default:true; per-run setting
-  cmdenv-output-file=<filename>; global setting
-  cmdenv-performance-display=<bool>, default:true; per-run setting
-  cmdenv-runs-to-execute=<string>; global setting
-  cmdenv-status-frequency=<double>, unit="s", default:2s; per-run setting
-\end{verbatim}
-
-
-\begin{longtable}{lp{12cm}}
-  \ttt{-h}
-  &
-  The program prints a short help message and the networks
-  contained in the executable, then exits.\\
-
-  \ttt{-f} \ttt{<}\textit{fileName\ttt{>}}
-  &
-\\
-
-  \ttt{-l} \ttt{<}\textit{fileName\ttt{>}}
-  &
-  Load a shared object\index{shared objects} (\ttt{.so} file on Unix).
-  Multiple \ttt{-l} switches are accepted. Your \ttt{.so} files may contain module
-  code etc. By dynamically loading all simple
-  module code and compiled network description (\ttt{\_n.o} files
-  on Unix) you can even eliminate the need to re-link the simulation
-  program after each change in a source file.  (Shared objects can be
-  created with \ttt{gcc -shared...})\\
-
-  \ttt{-r} \ttt{<}\textit{runs\ttt{>}}
-  &
-  It specifies which runs should be executed (e.g. \ttt{-r 2,4,6-8}).
-  This option overrides the \ttt{runs-to-execute=} option
-  in the \ttt{[Cmdenv]} section of the ini file\index{ini file}
-  (see later).\\
-\end{longtable}
-
-All other options are read from the configuration file.
-
-An example of running an {\opp} executable with the -h flag:
-
-\begin{verbatim}
-$ ./fddi -h
-
-{\opp} Discrete Event Simulation  (C) 1992-2005 Andras Varga
-See the license for distribution terms and warranty disclaimer
-Setting up Tkenv...
-
-Command line options:
-  -h            Print this help and exit.
-  -f <inifile>  Use the given ini file instead of omnetpp.ini. Multiple
-                -f options are accepted to load several ini files.
-  -u <ui>       Selects the user interface. Standard choices are Cmdenv
-                and Tkenv. To make a user interface available, you need
-                to link the simulation executable with the cmdenv/tkenv
-                library, or load it as shared library via the -l option.
-  -l <library>  Load the specified shared library (.so or .dll) on startup.
-                The file name should be given without the .so or .dll suffix
-                (it will be appended automatically.) The loaded module may
-                contain simple modules, plugins, etc. Multiple -l options
-                can be present.
-
-Tkenv-specific options:
-  -r <run>      Set up the given run, specified in a [Run n] section of
-                the ini file.
-
-The following components are available:
-  module types:
-    FDDI_Monitor
-    FDDI_Generator4Sniffer
-    FDDI_Generator4Ring
-    ...
-
-End run of {\opp}
-\end{verbatim}
-
+The command line environment allows you to specify more than one run by
+using the \ttt{-r 2,4,6..8} format. See \ref{sec:ch-run-sim:batch-execution}
+for more information abour running simulation batches.
 
 \subsection{Cmdenv ini file options}
 \label{sec:ch-run-sim:cmdenv-section}
 
 \fpar{cmdenv-runs-to-execute} specifies which simulation runs should be executed.
 It accepts a comma-separated list of run numbers or run number ranges, e.g.
-\ttt{1,3-4,7-9}. If the value is missing, Cmdenv executes all runs that have
+\ttt{1,3..4,7..9}. If the value is missing, Cmdenv executes all runs that have
 ini file sections; if no runs are specified in the ini file, Cmdenv does one run.
 The -r command line option overrides this ini file setting.
 
 
 Cmdenv can be executed in two modes, selected by the \ttt{cmdenv-express-mode}
-ini file entry:
+ini file option:
 
 \begin{itemize}
     \item \tbf{Normal} (non-express) mode is for debugging: detailed information
@@ -498,7 +389,7 @@ because it may indicate the `health' of your simulation.
 
 
 The second value, the number of messages present is more useful than
-perhaps one would initially think. It can indicator of the `health' of the simulation:
+perhaps one would initially think. It can be an indicator of the `health' of the simulation:
 if it is growing steadily, then either you have a memory leak and losing
 messages (which indicates a programming error), or the network you simulate is
 overloaded and queues are steadily filling up (which might indicate wrong input
@@ -513,8 +404,6 @@ most common way of leaking memory in a simulation is by not deleting messages.
 
 \section{Tkenv: the graphical user interface}
 
-\subsubsection{Features}
-
 Tkenv\index{Tkenv} is a portable graphical windowing user interface.
 Tkenv supports interactive execution of the simulation, tracing and
 debugging\index{simulation!debugging}. Tkenv is recommended in the
@@ -525,68 +414,18 @@ inside the network.
 
 \subsection{Command-line switches}
 
-A simulation program built with Tkenv accepts the following command line
-switches\index{command line switches}:
+A simulation program built with Tkenv accepts all the general command line
+switches\index{command line switches}. In addition the \ttt{-r runnumber}
+option allows only specifying a single run. Multiple runs are not supported.
 
-\begin{longtable}{lp{12cm}}
-  \ttt{-h}
-  &
-  The program prints a short help message and the networks
-  contained in the executable, then exits.\\
-
-  \ttt{-f }\textit{<fileName>}
-  &
-  Specify the name of the configuration file.
-  The default is \ttt{omnetpp.ini}\index{omnetpp.ini}.
-  Multiple \ttt{-f} switches can be given; this allows you to partition your
-  configuration file.  For example, one file can contain your general
-  settings, another one most of the module parameters, another one the
-  module parameters you change often.\\
-
-  \ttt{-l }\textit{<fileName>}
-  &
-  Load a shared object\index{shared objects} (\ttt{.so} file on Unix).
-  Multiple \ttt{-l} switches are accepted. Your \ttt{.so} files may contain module
-  code etc. By dynamically loading all simple
-  module code and compiled network description (\ttt{\_n.o} files
-  on Unix) you can even eliminate the need to re-link the simulation
-  program after each change in a source file.  (Shared objects can be
-  created with \ttt{gcc -shared...})\\
-
-  \ttt{-r }\textit{<run-number>}
-  &
-  It has the same effect as (but takes priority over) the \ttt{[Tkenv]/default-run=}
-  ini file entry.
-
-\end{longtable}
-
-\begin{verbatim}
-  tkenv-default-config=<string>; global setting
-  tkenv-default-run=<int>, default:0; global setting
-  tkenv-extra-stack=<double>, unit="B", default:48KB; global setting
-  tkenv-image-path=<path>; global setting
-  tkenv-plugin-path=<path>; global setting
-\end{verbatim}
-
-
-\subsection{Past user interfaces}
-
-There used to be other windowing user interfaces which have been removed
-from the distribution:
-
-\begin{itemize}
-  \item \tbf{TVEnv}. A Turbo Vision-based user interface, the first
-    interactive UI for {\opp}. Turbo Vision was an excellent
-    character-graphical windowing environment, originally shipped with
-    Borland C++ 3.1.
-  \item \tbf{XEnv}. A GUI written in pure X/Motif. It was an
-    experiment, written before I stumbled into Tcl/Tk and discovered
-    its immense productivity in GUI building. XEnv never got too far
-    because it was really very-very slow to program in Motif\dots
-\end{itemize}
+Tkenv specific configuration options can be specified also on command line 
+by prefixing them with double dash (e.g -{}-tkenv-option=value). See 
+\ref{cha:appendix-config-options:config.options} for the list of
+possible configuration options.
 
 
 \section{Batch execution}
+\label{sec:ch-run-sim:batch-execution}
 
 Once your model works reliably, you'll usually want to run several
 simulations. You may want to run the model with various
@@ -602,7 +441,26 @@ a natural language choice to write the control script in,
 but other languages like Perl, Matlab/Octave, Tcl, Ruby might also have
 justification for this purpose.
 
+Of course before running simulation batches you must set a condition to 
+stop your simulation. This is usually a time limit set by the 
+\ttt{sim-time-limit} configuration option, but you can limit your simulation 
+by using wall clock time (\ttt{cpu-time-limit}) or by directly ending a 
+simulation with an API call if some condition is true.
+
 \subsection{Using Cmdenv}
+
+  To execute more than one run using the Cmdenv use the \ttt{-r} option
+  and specify the runs in a comma separated format 1,2,4,9..11 or you may leave 
+  out the \ttt{-r} option to execute all runs in the experiment.
+
+\begin{warning}
+  Altough it is very convinient, we do not recommended to use this method for 
+  running simulation batches. Specifying more than one runnumber 
+  would run these simulations in the same process. This method is more prone to C++ programming 
+  errors. A failure in a single run may stop and kill all the runs following it. If you want 
+  to execute more than one run we recommend to run each of them in a separate process. 
+  Use the \fprog{opp\_runall} for this purpose.
+\end{warning}
 
 ...
 
@@ -612,7 +470,10 @@ The following script executes a simulation named \ttt{wireless}
 several times, with parameters for the different runs
 given in the \ttt{runs.ini} file.
 
-TODO -x config
+Before you are executing your simulation batch, you may check how many
+runs are available in the configuration you are using. Use the
+\ttt{-x config} command line option to print the number of runs or
+add the \ttt{-g} to get more details.
 
 \begin{verbatim}
 #! /bin/sh
@@ -660,9 +521,8 @@ done
 
 ...
 
-\subsection{Using Xgrid}
-
-...
+%% TODO
+%%\subsection{Using Xgrid}
 
 
 \section{Akaroa support: Multiple Replications in Parallel}
