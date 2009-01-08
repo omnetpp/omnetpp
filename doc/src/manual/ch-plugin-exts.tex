@@ -140,27 +140,21 @@ The new class can be activated with the \fpar{snapshotmanager-class}
 configuration option.
 
 
-\section{Reading the configuration and defining new configuration options}
+\section{Accessing the configuration}
 \label{sec:plugin-exts:accessing-config}
 
-The configuration is accessible via the \fname{getConfig()} method of \cclass{cEnvir}.
-It returns a pointer to the configuration object (\cclass{cConfiguration}):
-
-\begin{verbatim}
-cConfiguration *config = ev.getConfig();
-\end{verbatim}
-
-\cclass{cConfiguration} provides several methods for querying the configuration.
-
-New configuration options need to be declared to {\opp}, with one of the
-\fmac{Register\_GlobalConfigOption}, \fmac{Register\_PerRunConfigOption}
-and similar macros.
+config is the ini file plus --ccc=vvv options
 
 \begin{note}
 Registration is necessary because from the 4.0 version, {\opp} validates
 the configuration on startup, in order to be able to report invalid or
 mistyped option names and other errors.
 \end{note}
+
+\subsection{Defining new configuration options}
+
+New configuration options need to be declared with one of the appropriate
+registration macros. These macros are:
 
 \begin{verbatim}
 Register_GlobalConfigOption(ID, NAME, TYPE, DEFAULTVALUE, DESCRIPTION)
@@ -171,20 +165,51 @@ Register_PerObjectConfigOption(ID, NAME, TYPE, DEFAULTVALUE, DESCRIPTION)
 Register_PerObjectConfigOptionU(ID, NAME, UNIT, DEFAULTVALUE, DESCRIPTION)
 \end{verbatim}
 
+The macro arguments are as follows:
+\begin{itemize}
+  \item \textit{ID} is a C++ identifier that will let you refer to
+        the configuration option in \textit{cConfiguration} member functions.
+        (It is actually pointer to a \cclass{cConfigOption} object that
+        the macro creates.)
+  \item \textit{NAME} is the name of the option (a string).
+  \item \textit{TYPE} is the data type of the option; it must be one of:
+        \ttt{CFG\_BOOL}, \ttt{CFG\_INT}, \ttt{CFG\_DOUBLE}, \ttt{CFG\_STRING},
+        \ttt{CFG\_FILENAME}, \ttt{CFG\_FILENAMES}, \ttt{CFG\_PATH}, \ttt{CFG\_CUSTOM}.
+        The most significant difference between filesystem-related types
+        (filename, filenames, path) and plain string is that relative
+        filenames and paths get automatically converted to absolute
+        when the configuration is read, with the base directory being the
+        location of the ini file where the configuration entry was read from.
+  \item \textit{UNIT} is a string that names the measurement unit in which
+        the option's value is to be interpreted; it implies type \ttt{CFG\_DOUBLE}.
+  \item \textit{DEFAULTVALUE} is the default value in textual form (string);
+        this should be \ttt{NULL} if the option has no default value.
+  \item \textit{DESCRIPTION} is an arbitrarily long string that describes
+        the purpose and and operation of the option. It will be used in
+        help texts etc.
+\end{itemize}
+
+For example, the \ttt{debug-on-errors} macro is declared in the following way:
+
+\begin{verbatim}
+Register_GlobalConfigOption(CFGID_DEBUG_ON_ERRORS,
+                            "debug-on-errors", CFG_BOOL, "false",
+                            "When enabled, runtime errors will etc etc...");
+\end{verbatim}
 
 
+\subsection{Reading values from the configuration}
 
-The configuration is available to plug-in classes via the \fname{getConfig()}
-method of \cclass{cEnvir}, which returns a pointer to the configuration
-object (\cclass{cConfiguration}). This enables plug-in classes to have
-their own config entries.
+The configuration is accessible via the \fname{getConfig()} method of \cclass{cEnvir}.
+It returns a pointer to the configuration object (\cclass{cConfiguration}):
 
-An example which reads the \ttt{parsim-debug} boolean entry from the
-\ttt{[General]} section, with \ttt{true} as default:
+\begin{verbatim}
+cConfiguration *config = ev.getConfig();
+\end{verbatim}
 
-fallbackValue is returned if the value is not specified in the configuration:
-and there is no default value.
+\cclass{cConfiguration} provides several methods for querying the configuration.
 
+\begin{verbatim}
 const char *getAsCustom(cConfigOption *entry, const char *fallbackValue=NULL);
 bool getAsBool(cConfigOption *entry, bool fallbackValue=false);
 long getAsInt(cConfigOption *entry, long fallbackValue=0);
@@ -193,7 +218,10 @@ std::string getAsString(cConfigOption *entry, const char *fallbackValue="");
 std::string getAsFilename(cConfigOption *entry);
 std::vector<std::string> getAsFilenames(cConfigOption *entry);
 std::string getAsPath(cConfigOption *entry);
+\end{verbatim}
 
+\textit{fallbackValue} is returned if the value is not specified in the configuration,
+and there is no default value.
 
 \begin{verbatim}
 bool debug = ev.getConfig()->getAsBool(CFGID_PARSIM_DEBUG);
