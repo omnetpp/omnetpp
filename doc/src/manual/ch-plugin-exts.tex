@@ -145,12 +145,6 @@ configuration option.
 
 config is the ini file plus --ccc=vvv options
 
-\begin{note}
-Registration is necessary because from the 4.0 version, {\opp} validates
-the configuration on startup, in order to be able to report invalid or
-mistyped option names and other errors.
-\end{note}
-
 \subsection{Defining new configuration options}
 
 New configuration options need to be declared with one of the appropriate
@@ -164,6 +158,17 @@ Register_PerRunConfigOptionU(ID, NAME, UNIT, DEFAULTVALUE, DESCRIPTION)
 Register_PerObjectConfigOption(ID, NAME, TYPE, DEFAULTVALUE, DESCRIPTION)
 Register_PerObjectConfigOptionU(ID, NAME, UNIT, DEFAULTVALUE, DESCRIPTION)
 \end{verbatim}
+
+Config options come in three flavours, as indicated by the macro names:
+
+\begin{itemize}
+  \item \textit{Global} options affect all configurations (i.e. they are
+      only accepted in the \ttt{[General]} section but not in
+      \ttt{[Config <name>]} sections)
+  \item \textit{Per-Run} options can be specified in any section
+      (i.e. both in \ttt{[General]} and in \ttt{[Config <name>]} sections)
+  \item \textit{Per-Object} options ...
+\end{itemize}
 
 The macro arguments are as follows:
 \begin{itemize}
@@ -197,6 +202,12 @@ Register_GlobalConfigOption(CFGID_DEBUG_ON_ERRORS,
                             "When enabled, runtime errors will etc etc...");
 \end{verbatim}
 
+\begin{note}
+Registration is necessary because from the 4.0 version, {\opp} validates
+the configuration on startup, in order to be able to report invalid or
+mistyped option names and other errors.
+\end{note}
+
 
 \subsection{Reading values from the configuration}
 
@@ -208,6 +219,8 @@ cConfiguration *config = ev.getConfig();
 \end{verbatim}
 
 \cclass{cConfiguration} provides several methods for querying the configuration.
+
+no sections: flattened view etc.
 
 \begin{verbatim}
 const char *getAsCustom(cConfigOption *entry, const char *fallbackValue=NULL);
