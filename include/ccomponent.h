@@ -208,9 +208,9 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     virtual cProperties *getProperties() const = 0;
 
     /**
-     * Returns the associated component type.
+     * Returns the associated component type. Guaranteed to be non-NULL.
      */
-    cComponentType *getComponentType() const  {return componenttype;}
+    cComponentType *getComponentType() const;
 
     /**
      * Returns the fully qualified NED type name of the component (i.e. the

@@ -84,6 +84,13 @@ void cComponent::handleParameterChange(const char *)
     // Can be redefined by the user.
 }
 
+cComponentType *cComponent::getComponentType() const
+{
+    if (!componenttype)
+        throw cRuntimeError(this, "Object has no associated cComponentType (maybe %s should not subclass cModule/cChannel?)", getClassName());
+    return componenttype;
+}
+
 const char *cComponent::getNedTypeName() const
 {
     return getComponentType()->getFullName();
