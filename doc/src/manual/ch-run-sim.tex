@@ -61,13 +61,12 @@ The NED path can be specified in several ways:
   \item in ini files, with the \ttt{ned-path} configuration option
 \end{itemize}
 
-
-NED Path resoltion rules are as follows:
+NED path resolution rules are as follows:
 \begin{itemize}
-  \item \opp checks for NED Path specified on the command line with the \ttt{-n} option
-  \item if not found on the command line, checks for the NEDPATH environment variable
-  \item the ned-path= entry from the INI file gets appended to the result of the above steps
-  \item if the result is still empty it falls back to "." (current directory)
+  \item {\opp} checks for NED path specified on the command line with the \ttt{-n} option
+  \item if not found on the command line, it checks for the NEDPATH environment variable
+  \item the \ttt{ned-path} entry from the ini file gets appended to the result of the above steps
+  \item if the result is still empty, it falls back to "." (the current directory)
 \end{itemize}
 
 
@@ -92,75 +91,78 @@ simulation executable. (Creating the executable was described in
 chapter \ref{cha:building-simulation-programs}). Both user interfaces
 are supported on Unix and Windows platforms.
 
-You can choose which runtime environment is included in your simulation executable when 
+You can choose which runtime environment is included in your simulation executable when
 you generate your makefile. By default both Tkenv and Cmdenv is linked in so you can choose
-between them during runtime, but it is possible to specify only a single user interface with the 
-\ttt{-u Cmdenv} or \ttt{-u Tkenv} option on the \fprog{opp\_makemake} command line. This can be 
+between them during runtime, but it is possible to specify only a single user interface with the
+\ttt{-u Cmdenv} or \ttt{-u Tkenv} option on the \fprog{opp\_makemake} command line. This can be
 useful if you intend to run your simulations on a machine where Tcl/Tk is not installed.
 
-By default Tkenv will be used if both runtime environment is present in your executable, 
+By default, Tkenv will be used if both runtime environment is present in your executable,
 but you can override this with the \ttt{user-interface=Cmdenv} in your ini file or by
-specifying -u Cmdenv on the command line. If both the config option and the command line option 
-is present the command line option takes precedence.
+specifying \ttt{-u Cmdenv} on the command line. If both the config option and
+the command line option are present, the command line option takes precedence.
 
-\subsubsection{Selecting a configuration or run}
+\subsubsection{Selecting a configuration and run number}
 
-Configurations can be selected with the \ttt{-c ConfigName} command line option. If you 
-do not specify the configuration and you are running under:
+Configurations can be selected with the \ttt{-c <configname>} command line option.
+If you do not specify the configuration and you are running under:
 
 \begin{itemize}
   \item Tkenv: the runtime environment will prompt you to choose one.
   \item Cmdenv: the \ttt{General} configuration will be executed.
 \end{itemize}
 
-There are several command line options to get information about the iteration 
+User interfaces may support the \ttt{-r runnumber} option to select runs,
+either one or more, depending on the type of the user interface.
+
+There are several command line options to get information about the iteration
 variables and the number of runs in the configurations:
 
 \begin{itemize}
   \item \ttt{-a} -- Prints all configuration names and the number of runs in them.
-  \item \ttt{-x ConfigName} -- Prints the number of runs available in the configuration.
+  \item \ttt{-x <configname>} -- Prints the number of runs available in the given configuration.
   \item \ttt{-g} -- Prints the unrolled configuration (together with the -x option) and
                     expands the iteration variables.
-  \item \ttt{-G} -- Prints even more detail than -g.
+  \item \ttt{-G} -- Prints even more details than -g.
 \end{itemize}
 
-User interfaces may support the \ttt{-r runnumber} option to select runs, either one or more, 
-depending on the type of the user interface.
 
 \subsubsection{Loading extra libraries}
 
-\opp allows you to load shared libraries at runtime. This means that you can create
-simulation models as a shared library and load the model later into a different executable without 
-the need to explicitly link against that library. This approach has several advantages. 
+{\opp} allows you to load shared libraries at runtime. This means that you can create
+simulation models as a shared library and load the model later into a different executable without
+the need to explicitly link against that library. This approach has several advantages.
 
 \begin{itemize}
   \item It is possible to distribute the model as a shared library. Others may be able to use
   it without recompiling it.
   \item You can split a largel model into smaller, reusable components.
-  \item You can mix several models (even from different projects) 
+  \item You can mix several models (even from different projects)
     without the need of linking or compiling.
 \end{itemize}
 
-Use the \ttt{-l libraryname} command line option to load a library dynamically at run time. 
-\opp will attempt to load it using the \fname{dlopen()} or \fname{LoadLibrary()} functions and 
+Use the \ttt{-l libraryname} command line option to load a library dynamically at run time.
+{\opp} will attempt to load it using the \fname{dlopen()} or \fname{LoadLibrary()} functions and
 automatically registers all simple modules in the library.
 
 The prefix and suffix from the library name can be omitted (the extension (\ttt{.dll, .so, .dylib} and also
-the common \ttt{lib} prefix on unix systems). This means that you can specify the library name in a 
+the common \ttt{lib} prefix on unix systems). This means that you can specify the library name in a
 platform independent way (name.dll, libname.dll, libname.so and libname.dylib can be loaded with \ttt{-l name}).
 
 It is also possible to specify the libraries to be loaded in the ini file with the \ttt{load-libs=} config option.
-The values from the command line and the config file will be merged. 
+The values from the command line and the config file will be merged.
 
 \begin{note}
-  Of course runtime loading is not needed if your executable or shared lib was already linked against
-  the library in question. In this case the plaform's dynamic loader will automatically load the library for you.
+  Runtime loading is not needed if your executable or shared lib was
+  already linked against the library in question. In that case,
+  the platform's dynamic loader will automatically load the library.
 \end{note}
 
 \begin{note}
-  You must ensure that the library can be accessed by \opp. You have to specify the path with your library name 
-  (pre and postfixes of the library filename still can be omitted) or adjust your shared 
-  library path according to your OS. (On Windows set the PATH, on Unix set LD\_LIBRARY\_PATH and on Mac OS X
+  You must ensure that the library can be accessed by {\opp} . You have to specify
+  the path with your library name (pre- and postfixes of the library filename
+  still can be omitted) or adjust your shared library path according to your OS.
+  (On Windows set the PATH, on Unix set LD\_LIBRARY\_PATH and on Mac OS X
   set the DYLD\_LIBRARY\_PATH as needed.)
 \end{note}
 
@@ -192,20 +194,20 @@ There are several useful configuration options that control how a simulation is 
   \item \ttt{debug-on-errors} -- If the runtime detects any error it will generate a breakpoint
         so you will be able to ckeck the location and the context of the problem in your debugger.
   \item \ttt{fingerprint} -- The simulation kernel computes a checksum while running the simulation.
-          It is calculated from the module id and from the current simulation time of each event. 
+          It is calculated from the module id and from the current simulation time of each event.
           If you specify the \ttt{fingerprint} option in the config file, the simulation runtime will
           comapre the computed checksum with the provided one. If there is a difference it will
           generate an error. This feature is very useful if you make some cosmetic changes to your
-          source and want to be reasonable sure that your changes did not altered the behaviour 
+          source and want to be reasonable sure that your changes did not altered the behaviour
           f the model.
-  \item \ttt{record-eventlog} -- You can turn on the recording of the simulator events. The 
+  \item \ttt{record-eventlog} -- You can turn on the recording of the simulator events. The
            resulting file can be analyzed later in the IDE with the sequence chart tool.
 \end{itemize}
 
 \begin{note}
   It is possible to specify a configuration option also on command line (in which case the
   command line takes precedence). You should prefix the option name with a double
-  dash (-{}-) and should not put any spaces around the equal sign 
+  dash (-{}-) and should not put any spaces around the equal sign
   (e.g. \ttt{-{}-debug-on-errors=true})
 \end{note}
 
@@ -418,8 +420,8 @@ A simulation program built with Tkenv accepts all the general command line
 switches\index{command line switches}. In addition the \ttt{-r runnumber}
 option allows only specifying a single run. Multiple runs are not supported.
 
-Tkenv specific configuration options can be specified also on command line 
-by prefixing them with double dash (e.g -{}-tkenv-option=value). See 
+Tkenv specific configuration options can be specified also on command line
+by prefixing them with double dash (e.g -{}-tkenv-option=value). See
 \ref{cha:appendix-config-options:config.options} for the list of
 possible configuration options.
 
@@ -441,24 +443,24 @@ a natural language choice to write the control script in,
 but other languages like Perl, Matlab/Octave, Tcl, Ruby might also have
 justification for this purpose.
 
-Of course before running simulation batches you must set a condition to 
-stop your simulation. This is usually a time limit set by the 
-\ttt{sim-time-limit} configuration option, but you can limit your simulation 
-by using wall clock time (\ttt{cpu-time-limit}) or by directly ending a 
+Of course before running simulation batches you must set a condition to
+stop your simulation. This is usually a time limit set by the
+\ttt{sim-time-limit} configuration option, but you can limit your simulation
+by using wall clock time (\ttt{cpu-time-limit}) or by directly ending a
 simulation with an API call if some condition is true.
 
 \subsection{Using Cmdenv}
 
   To execute more than one run using the Cmdenv use the \ttt{-r} option
-  and specify the runs in a comma separated format 1,2,4,9..11 or you may leave 
+  and specify the runs in a comma separated format 1,2,4,9..11 or you may leave
   out the \ttt{-r} option to execute all runs in the experiment.
 
 \begin{warning}
-  Altough it is very convinient, we do not recommended to use this method for 
-  running simulation batches. Specifying more than one runnumber 
-  would run these simulations in the same process. This method is more prone to C++ programming 
-  errors. A failure in a single run may stop and kill all the runs following it. If you want 
-  to execute more than one run we recommend to run each of them in a separate process. 
+  Altough it is very convinient, we do not recommended to use this method for
+  running simulation batches. Specifying more than one runnumber
+  would run these simulations in the same process. This method is more prone to C++ programming
+  errors. A failure in a single run may stop and kill all the runs following it. If you want
+  to execute more than one run we recommend to run each of them in a separate process.
   Use the \fprog{opp\_runall} for this purpose.
 \end{warning}
 
