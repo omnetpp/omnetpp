@@ -78,12 +78,13 @@ configuration option.
 \subsection{Defining a new configuration provider}
 \label{sec:plugin-exts:configuration}
 
+\subsubsection{Overview}
+
 The configuration provider plug-in lets you replace ini files
 with some other storage implementation, for example a database.
-
-The new class can be activated with the \fpar{configuration-class}
-configuration option, and it must implement the \cclass{cConfiguration}
-interface.
+The configuration provider C++ class must implement the
+\cclass{cConfiguration} interface, and can be activated with
+the \fpar{configuration-class} configuration option.
 
 The \cclass{cConfiguration} interface abstracts the inifile-based
 data model a little. It assumes that the configuration data
@@ -92,10 +93,9 @@ simulation run, one of the \textit{named configurations} get
 activated, and from then on, all queries into the configuration
 operate on the \textit{active named configuration} only.
 
-It practice, you'll probably want to subclass from the
-\cclass{SectionBasedConfiguration} class (in \ttt{src/envir})
-instead, because it already implements a lot of functionality
-that otherwise you would have to.
+It practice, you'll probably use the \cclass{SectionBasedConfiguration}
+class (in \ttt{src/envir}) or subclass from it, because it already
+implements a lot of functionality that otherwise you would have to.
 
 \cclass{SectionBasedConfiguration} does not assume ini files or
 any other particular storage format; instead, it accepts
@@ -103,6 +103,8 @@ an object that implements the \cclass{cConfigurationReader}
 interface to provides the data in raw form to it.
 The default implementation of \cclass{cConfigurationReader} is
 \cclass{InifileReader}.
+
+\subsubsection{The startup sequence}
 
 From the configuration plug-in's point of view, the startup sequence
 looks like the following (see \ttt{src/sim/bootenv.cc} in the source code):
@@ -128,11 +130,56 @@ looks like the following (see \ttt{src/sim/bootenv.cc} in the source code):
      object.
 \end{enumerate}
 
+\subsubsection{Providing a custom configuration class}
+
+To replace the configuration object with your custom implementation,
+you would write the class:
+
 \begin{verbatim}
-class DatabaseConfiguration : SectionBasedConfiguration
+#include "cconfiguration.h"
+
+class CustomConfiguration : public cConfiguration
 {
-FIXME TODO!!
+   ...
 };
+
+Register_Class(CustomConfiguration);
+\end{verbatim}
+
+and then activate it in the boot-time configuration:
+
+\begin{verbatim}
+[General]
+configuration-class = CustomConfiguration
+\end{verbatim}
+
+
+\subsubsection{Providing a custom reader for SectionBasedConfiguration}
+
+As said already, writing a configuration class from scratch can
+be a lot of work, and it may be more practical to reuse
+\cclass{SectionBasedConfiguration} with a different configuration
+reader class. This can be done with \ttt{sectionbasedconfig-configreader-class}
+config option, interpreted by \cclass{SectionBasedConfiguration}.
+Specify the following in your boot-time ini file:
+
+\begin{verbatim}
+[General]
+configuration-class = SectionBasedConfiguration
+sectionbasedconfig-configreader-class = <my new reader class>
+\end{verbatim}
+
+The configuration reader class should look like this:
+
+\begin{verbatim}
+#include "cconfigreader.h"
+
+class DatabaseConfigurationReader : public cConfigurationReader
+{
+   ...
+};
+
+Register_Class(DatabaseConfigurationReader);
 \end{verbatim}
 
 
