@@ -61,45 +61,32 @@ in the ini files.
 
 NED files are loaded from directories listed on the NED path. More precisely,
 they are loaded from the listed directories and their whole subdirectory trees.
-Directories are separated with a colon (\ttt{:}).
+Directories are separated with a semicolon (\ttt{;}).
+
+
+\begin{note}
+Semicolon is used as separator on both Unix and Windows.
+\end{note}
+
 
 The NED path can be specified in several ways:
 \begin{itemize}
-  \item in the \ttt{NEDPATH} environment variable
+  \item using the \ttt{NEDPATH} environment variable
   \item using the \ttt{-n} command-line option
   \item in ini files, with the \ttt{ned-path} configuration option
 \end{itemize}
 
-%TODO rules are as follows:
 
+NED Path resoltion rules are as follows:
+\begin{itemize}
+  \item \opp checks for NED Path specified on the command line with the \ttt{-n} option
+  \item if not found on the command line, checks for the NEDPATH environment variable
+  \item the ned-path= entry from the INI file gets appended to the result of the above steps
+  \item if the result is still empty it falls back to "." (current directory)
+\end{itemize}
 
-\subsubsection{Selecting a configuration or run}
-
-depends on the user interface
 
 \subsubsection{Selecting a user interface}
-
--u Cmdenv, or --user-interface=Cmdenv; or whichever is linked
-
-\subsubsection{Loading extra libraries}
-
-uses dlopen() or LoadLibrary()
--l; prefix/suffix to be omitted
-or: inifile option
-or: maybe not needed, if executable or shared lib was already linked with the shared lib
-
-\subsection{Running a shared library}
-
-Shared libraries can be run using the \fprog{opp\_run} program.
-Both \fprog{opp\_run} and simulation executables are capable of
-loading additional shared libraries; actually, \fprog{opp\_run}
-is nothing else than an empty simulation executable.
-
-
-TODO put somewhere: time limits, fingerprinting, and other options!
-
-
-\section{User interfaces}
 
 {\opp} simulations can be run under different user interfaces.
 Currently the following user interfaces are supported:
@@ -109,17 +96,132 @@ Currently the following user interfaces are supported:
   \item Cmdenv: command-line user interface for batch execution
 \end{itemize}
 
-
 You would typically test and debug your simulation under Tkenv,
 then run actual simulation experiments from the command line or
 shell script, using Cmdenv. Tkenv is also better suited for educational or
 demonstration purposes.
 
 Both Tkenv and Cmdenv are provided in the form of a library, and
-you choose between them by linking one or the other into your
+you may choose between them by linking one or both into your
 simulation executable. (Creating the executable was described in
 chapter \ref{cha:building-simulation-programs}). Both user interfaces
 are supported on Unix and Windows platforms.
+
+You can choose which runtime environment is included in your simulation executable when 
+you generate your makefile. By default both Tkenv and Cmdenv is linked in so you can choose
+between them during runtime, but it is possible to specify only a single user interface with the 
+\ttt{-u Cmdenv} or \ttt{-u Tkenv} option on the \fprog{opp\_makemake} command line. This can be 
+useful if you intend to run your simulations on a machine where Tcl/Tk is not installed.
+
+By default Tkenv will be used if both runtime environment is present in your executable, 
+however you can override this with the \ttt{user-interface=Cmdenv} in your ini file or by
+specifying -u Cmdenv on the command line. If both the config entry and the command line option 
+is present the command line option takes precedence.
+
+
+\subsubsection{Selecting a configuration or run}
+
+Configurations can be selected with the \ttt{-c ConfigName} command line option. If you 
+do not specify the configuration and you are running under:
+
+\begin{itemize}
+  \item Tkenv: the runtime environment will prompt you to choose one.
+  \item Cmdenv: the \ttt{General} configuration will be executed.
+\end{itemize}
+
+You may get information about the configuration with the \ttt{-x ConfigName} option.
+Adding the \ttt{-g} or \ttt{-G} option to the command line adds details about the
+possible run numbers and iteration variables.
+
+A specific run number can be selected by the \ttt{-r runnumber} option. It is also possible
+specify more than one runs. Constructs like 1,2,5,7..9 or * can be used after the \ttt{-r}
+option.
+
+\begin{warning}
+  It is recommended to execute only a single run this way. Specifying more than one runnumber 
+  would run these simulations in the same process. This method is more prone the C++ programming 
+  errors. A failure in a single run would stop and kill all the runs following it. If you want 
+  to execute more than one run we recommend batch execution. Use the \fprog{opp\_runall} for 
+  this purpose.
+\end{warning}
+
+
+\subsubsection{Loading extra libraries}
+
+\opp allows you to load shared libraries at runtime. This means that you can create
+simulation models as a shared library and load the model later into a different executable without 
+the need to explicitly link against that library. This approach hase several advantages. 
+
+\begin{itemize}
+  \item It is possible to distribute the model as a shared library. Others may be able to use
+  it without recompiling it.
+  \item You can split a largel model into smaller, reusable components.
+  \item You can mix several models (even from different projects) 
+    without the need of linking or compiling.
+\end{itemize}
+
+Use the \ttt{-l libraryname} command line option to load a library dynamically at run time. 
+\opp will attempt to load it using the \fname{dlopen()} or \fname{LoadLibrary()} functions and 
+automatically registers all simple modules in the library.
+
+The prefix and suffix from the library name can be omitted (the extension (\ttt{.dll, .si, .dylib} and also
+the common \ttt{lib} prefix on unix systems). This means that you can specify the library name in a 
+platform independent way (name.dll, libname.dll, libname.so and libname.dylib can be loaded with \ttt{-l name}).
+
+It is also possible to specify the libraries to be loaded in the ini file with the \ttt{load-libs=} config entry.
+The values from the command line and the config file will be merged. 
+
+\begin{note}
+  Of course runtime loading is not needed if your executable or shared lib was already linked against
+  the library in question. In this case the plaform's dynamic loader will automatically load the library for you.
+\end{note}
+
+\begin{note}
+  You must ensure that the library can be accessed by \opp. You have to specify the path with your library name 
+  (pre and postfixes of the library filename still can be omitted) or adjust your shared 
+  library path according to your OS. (On Windows set the PATH, on Unix set LD\_LIBRARY\_PATH and on Mac OS X
+  set the DYLD\_LIBRARY\_PATH as needed.)
+\end{note}
+
+\subsection{Running a shared library}
+
+Shared libraries can be run using the \fprog{opp\_run} program.
+Both \fprog{opp\_run} and simulation executables are capable of
+loading additional shared libraries; actually, \fprog{opp\_run}
+is nothing else than an empty simulation executable.
+
+Example:
+\begin{verbatim}
+opp_run -l mymodel
+\end{verbatim}
+
+The above example will load the model found in \ttt{libmymodel.so} and execute it.
+
+\subsection{Controlling the run}
+
+There are several command line options and configuration entries which control how a 
+simulation is run.
+
+\begin{itemize}
+  \item
+  \item
+  \item
+  \item
+\end{itemize}
+
+TODO put somewhere: time limits, fingerprinting, and other options!, debug on error etc.
+cmdenv-express-mode
+cmdenv-interactive
+cmdenv-status-frequency
+cpu-time-limit
+debug-on-errors
+fingerprint
+record-eventlog
+sim-time-limit
+
+
+
+\section{User interfaces}
 
 Common functionality in Tkenv and Cmdenv has been collected and
 placed into the Envir library\index{Envir}, which can be thought of as the
@@ -138,7 +240,7 @@ The command line user interface\index{command line user interface} is
 a small, portable and fast user interface that compiles and runs on
 all platforms. Cmdenv\index{Cmdenv} is designed primarily for batch execution.
 
-Cmdenv uses simply executes some or all simulation runs that are described
+Cmdenv simply executes some or all simulation runs that are described
 in the configuration file. If one run stops with an error message,
 subsequent ones will still be executed. The runs to be executed can be
 passed via command-line argument or in the ini file.
