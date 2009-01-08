@@ -85,11 +85,11 @@ public class SectionDialog extends TitleAreaDialog {
 		
 		// if we are editing an existing section, initialize dialog fields from the inifile
 		if (sectionName != null && doc.containsSection(sectionName)) {
-			description = doc.getValue(sectionName, ConfigRegistry.CFGID_DESCRIPTION.getKey());
+			description = doc.getValue(sectionName, ConfigRegistry.CFGID_DESCRIPTION.getName());
 			if (description != null)
 				try {description = Common.parseQuotedString(description);} catch (RuntimeException e) {}
 			extendsSection = InifileUtils.resolveBaseSectionPretendingGeneralExists(doc, sectionName);
-			networkName = doc.getValue(sectionName, ConfigRegistry.CFGID_NETWORK.getKey());;
+			networkName = doc.getValue(sectionName, ConfigRegistry.CFGID_NETWORK.getName());;
 		}
 	}
     
@@ -241,8 +241,8 @@ public class SectionDialog extends TitleAreaDialog {
 		
 		// when a base section with "network=" is selected, make it impossible to override it here
         extendsSection = extendsCombo.getText();
-        String ownNetworkName = doc.getValue(originalSectionName, ConfigRegistry.CFGID_NETWORK.getKey());
-        String inheritedNetworkName = InifileUtils.lookupConfig(extendsSection, ConfigRegistry.CFGID_NETWORK.getKey(), doc);
+        String ownNetworkName = doc.getValue(originalSectionName, ConfigRegistry.CFGID_NETWORK.getName());
+        String inheritedNetworkName = InifileUtils.lookupConfig(extendsSection, ConfigRegistry.CFGID_NETWORK.getName(), doc);
         if (ownNetworkName == null && inheritedNetworkName != null) {
         	networkCombo.setText(inheritedNetworkName);
         	networkCombo.setEnabled(false);

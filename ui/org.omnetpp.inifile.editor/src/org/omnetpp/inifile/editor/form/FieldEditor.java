@@ -30,7 +30,7 @@ import org.eclipse.swt.widgets.Label;
 import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
-import org.omnetpp.inifile.editor.model.ConfigKey;
+import org.omnetpp.inifile.editor.model.ConfigOption;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileHoverUtils;
 import org.omnetpp.inifile.editor.model.InifileUtils;
@@ -49,7 +49,7 @@ public abstract class FieldEditor extends Composite {
 	public static final Image ICON_WARNING = InifileEditorPlugin.getCachedImage("icons/full/obj16/Warning.png");
 	public static final Image ICON_INFO = InifileEditorPlugin.getCachedImage("icons/full/obj16/Info.gif");
 
-	protected ConfigKey entry;
+	protected ConfigOption entry;
 	protected IInifileDocument inifile;
 	protected FormPage formPage; // to access hoverSupport, and to be able to call setEditorSelection()
 
@@ -59,7 +59,7 @@ public abstract class FieldEditor extends Composite {
 		}
 	};
 
-	public FieldEditor(Composite parent, int style, ConfigKey entry, IInifileDocument inifile, FormPage formPage) {
+	public FieldEditor(Composite parent, int style, ConfigOption entry, IInifileDocument inifile, FormPage formPage) {
 		super(parent, style);
 		this.entry = entry;
 		this.inifile = inifile;
@@ -69,12 +69,12 @@ public abstract class FieldEditor extends Composite {
 	}
 
 	protected String getValueFromFile(String section, String key) {
-		Assert.isTrue(entry.isPerObject() ? key.endsWith("."+entry.getKey()) : key.equals(entry.getKey()));
+		Assert.isTrue(entry.isPerObject() ? key.endsWith("."+entry.getName()) : key.equals(entry.getName()));
 		return inifile.getValue(section, key);
 	}
 
     protected void setValueInFile(String section, String key, String value) {
-		Assert.isTrue(entry.isPerObject() ? key.endsWith("."+entry.getKey()) : key.equals(entry.getKey()));
+		Assert.isTrue(entry.isPerObject() ? key.endsWith("."+entry.getName()) : key.equals(entry.getName()));
 		try {
 			if (!inifile.containsKey(section, key))
 				InifileUtils.addEntry(inifile, section, key, value, "");
@@ -87,8 +87,8 @@ public abstract class FieldEditor extends Composite {
 	}
 
     protected void renameKeyInInifile(String section, String key, String newKey) {
-        Assert.isTrue(entry.isPerObject() ? key.endsWith("."+entry.getKey()) : key.equals(entry.getKey()));
-        Assert.isTrue(entry.isPerObject() ? newKey.endsWith("."+entry.getKey()) : newKey.equals(entry.getKey()));
+        Assert.isTrue(entry.isPerObject() ? key.endsWith("."+entry.getName()) : key.equals(entry.getName()));
+        Assert.isTrue(entry.isPerObject() ? newKey.endsWith("."+entry.getName()) : newKey.equals(entry.getName()));
         try {
             inifile.renameKey(section, key, newKey);
         }
@@ -98,7 +98,7 @@ public abstract class FieldEditor extends Composite {
     }
     
 	protected void removeFromFile(String section, String key) {
-		Assert.isTrue(entry.isPerObject() ? key.endsWith("."+entry.getKey()) : key.equals(entry.getKey()));
+		Assert.isTrue(entry.isPerObject() ? key.endsWith("."+entry.getName()) : key.equals(entry.getName()));
 	    try {
 			inifile.removeKey(section, key);
 		}
@@ -119,7 +119,7 @@ public abstract class FieldEditor extends Composite {
 		MessageDialog.openError(getShell(), "Error", e.getMessage()+".");
 	}
 
-	protected Label createLabel(ConfigKey entry, String labelText) {
+	protected Label createLabel(ConfigOption entry, String labelText) {
 		Label label = new Label(this, SWT.NONE);
 		label.setBackground(BGCOLOR);
 		label.setText(labelText);
@@ -132,7 +132,7 @@ public abstract class FieldEditor extends Composite {
 	}
 
 	protected String getTooltipText() {
-		return InifileHoverUtils.getConfigHoverText(GENERAL, entry.getKey(), inifile);
+		return InifileHoverUtils.getConfigHoverText(GENERAL, entry.getName(), inifile);
 	}
 
 	protected Button createResetButton() {
@@ -150,7 +150,7 @@ public abstract class FieldEditor extends Composite {
 	protected void addFocusListenerTo(Control control) {
 		control.addFocusListener(new FocusListener() {
 			public void focusGained(FocusEvent e) {
-				formPage.setEditorSelection(GENERAL, entry.getKey());
+				formPage.setEditorSelection(GENERAL, entry.getName());
 			}
 
 			public void focusLost(FocusEvent e) {
@@ -171,7 +171,7 @@ public abstract class FieldEditor extends Composite {
 	public abstract void commit();
 
 	public void resetToDefault() {
-		removeFromFile(GENERAL, entry.isPerObject() ? "**."+entry.getKey() : entry.getKey());  //XXX
+		removeFromFile(GENERAL, entry.isPerObject() ? "**."+entry.getName() : entry.getName());  //XXX
 		reread();
 	}
 
@@ -208,7 +208,7 @@ public abstract class FieldEditor extends Composite {
 	/**
 	 * Returns the configuration key this editor edits.
 	 */
-	public ConfigKey getConfigKey() {
+	public ConfigOption getConfigKey() {
 		return entry;
 	}
 }

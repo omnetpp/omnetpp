@@ -27,7 +27,7 @@ USING_NAMESPACE
 
 Register_Class(cLCG32);
 
-Register_PerRunConfigEntry(CFGID_SEED_N_LCG32, "seed-%-lcg32", CFG_INT, NULL, "When cLCG32 is selected as random number generator: seed for the kth RNG. (Substitute k for '%' in the key.)");
+Register_PerRunConfigOption(CFGID_SEED_N_LCG32, "seed-%-lcg32", CFG_INT, NULL, "When cLCG32 is selected as random number generator: seed for the kth RNG. (Substitute k for '%' in the key.)");
 
 //XXX how to use runNumber?
 

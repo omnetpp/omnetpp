@@ -27,7 +27,7 @@ import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.editors.InifileEditorData;
-import org.omnetpp.inifile.editor.model.ConfigKey;
+import org.omnetpp.inifile.editor.model.ConfigOption;
 import org.omnetpp.inifile.editor.model.IInifileChangeListener;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
@@ -136,7 +136,7 @@ public abstract class FormPage extends Composite {
 	 * to check that every registered config key appears on 
 	 * some form page.
 	 */
-	public abstract List<ConfigKey> getSupportedKeys();
+	public abstract List<ConfigOption> getSupportedKeys();
 
 	/**
 	 * Utility method for subclasses: add a title to the form

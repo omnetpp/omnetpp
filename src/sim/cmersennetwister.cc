@@ -28,8 +28,8 @@ USING_NAMESPACE
 
 Register_Class(cMersenneTwister);
 
-Register_PerRunConfigEntry(CFGID_SEED_N_MT, "seed-%-mt", CFG_INT, NULL, "When Mersenne Twister is selected as random number generator (default): seed for RNG number k. (Substitute k for '%' in the key.)");
-Register_PerRunConfigEntry(CFGID_SEED_N_MT_P, "seed-%-mt-p%", CFG_INT, NULL, "With parallel simulation: When Mersenne Twister is selected as random number generator (default): seed for RNG number k in partition number p. (Substitute k for the first '%' in the key, and p for the second.)");
+Register_PerRunConfigOption(CFGID_SEED_N_MT, "seed-%-mt", CFG_INT, NULL, "When Mersenne Twister is selected as random number generator (default): seed for RNG number k. (Substitute k for '%' in the key.)");
+Register_PerRunConfigOption(CFGID_SEED_N_MT_P, "seed-%-mt-p%", CFG_INT, NULL, "With parallel simulation: When Mersenne Twister is selected as random number generator (default): seed for RNG number k in partition number p. (Substitute k for the first '%' in the key, and p for the second.)");
 
 
 void cMersenneTwister::initialize(int seedSet, int rngId, int numRngs,

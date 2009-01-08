@@ -331,7 +331,7 @@ public class InifileAnalyzer {
 	 */
 	protected void validateConfig(String section, String key, INEDTypeResolver ned) {
 		// check key and if it occurs in the right section
-		ConfigKey e = ConfigRegistry.getEntry(key);
+		ConfigOption e = ConfigRegistry.getOption(key);
 		if (e == null) {
 			addError(section, key, "Unknown configuration entry: "+key);
 			return;
@@ -339,7 +339,7 @@ public class InifileAnalyzer {
 		else if (e.isGlobal() && !section.equals(GENERAL)) {
 			addError(section, key, "Key \""+key+"\" can only be specified globally, in the [General] section");
 		}
-		else if (key.equals(CFGID_NETWORK.getKey()) && !section.equals(GENERAL)) {
+		else if (key.equals(CFGID_NETWORK.getName()) && !section.equals(GENERAL)) {
 			// it does not make sense to override "network=" in another section, warn for it
 			String[] sectionChain = InifileUtils.resolveSectionChain(doc, section);
 			for (String sec : sectionChain)
@@ -364,7 +364,7 @@ public class InifileAnalyzer {
 			return;
 		}
 
-		if (e.getDataType()==ConfigKey.DataType.CFG_STRING && value.startsWith("\""))
+		if (e.getDataType()==ConfigOption.DataType.CFG_STRING && value.startsWith("\""))
 			value =	Common.parseQuotedString(value); // cannot throw exception: value got validated above
 
 		// check validity of some settings, like network=, preload-ned-files=, etc
@@ -609,7 +609,7 @@ public class InifileAnalyzer {
 	/**
 	 * Validate a configuration entry's value.
 	 */
-	protected static String validateConfigValueByType(String value, ConfigKey e) {
+	protected static String validateConfigValueByType(String value, ConfigOption e) {
 		switch (e.getDataType()) {
 		case CFG_BOOL:
 			if (!value.equals("true") && !value.equals("false"))
@@ -764,7 +764,7 @@ public class InifileAnalyzer {
 	protected void validatePerObjectConfig(String section, String key, INEDTypeResolver ned) {
 		Assert.isTrue(key.lastIndexOf('.') > 0);
 		String configName = key.substring(key.lastIndexOf('.')+1);
-		ConfigKey e = ConfigRegistry.getPerObjectEntry(configName);
+		ConfigOption e = ConfigRegistry.getPerObjectEntry(configName);
 		if (e == null) {
 			addError(section, key, "Unknown per-object configuration: "+configName);
 			return;
@@ -790,7 +790,7 @@ public class InifileAnalyzer {
 			return;
 		}
 
-		if (e.getDataType()==ConfigKey.DataType.CFG_STRING && value.startsWith("\""))
+		if (e.getDataType()==ConfigOption.DataType.CFG_STRING && value.startsWith("\""))
 			value =	Common.parseQuotedString(value); // cannot throw exception: value got validated above
 
 		// check validity of some settings, like record-interval=, etc
@@ -902,7 +902,7 @@ public class InifileAnalyzer {
 	    // resolve section chain and network
 		INEDTypeResolver res = NEDResourcesPlugin.getNEDResources();
 		final String[] sectionChain = InifileUtils.resolveSectionChain(doc, activeSection);
-		String networkName = InifileUtils.lookupConfig(sectionChain, CFGID_NETWORK.getKey(), doc);
+		String networkName = InifileUtils.lookupConfig(sectionChain, CFGID_NETWORK.getName(), doc);
 		if (networkName == null)
 			networkName = CFGID_NETWORK.getDefaultValue();
 		if (networkName == null)

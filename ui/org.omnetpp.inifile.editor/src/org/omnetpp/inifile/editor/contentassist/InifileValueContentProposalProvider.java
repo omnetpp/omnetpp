@@ -30,7 +30,7 @@ import org.omnetpp.common.contentassist.ContentProposal;
 import org.omnetpp.common.contentassist.ContentProposalProvider;
 import org.omnetpp.common.editor.text.NedCompletionHelper;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.inifile.editor.model.ConfigKey;
+import org.omnetpp.inifile.editor.model.ConfigOption;
 import org.omnetpp.inifile.editor.model.ConfigRegistry;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
@@ -83,12 +83,12 @@ public class InifileValueContentProposalProvider extends ContentProposalProvider
 		KeyType keyType = (key == null) ? KeyType.CONFIG : InifileAnalyzer.getKeyType(key);
 		if (keyType == KeyType.CONFIG) {
 			// we call this for each edit field during form editor creation, so it should be reasonably fast
-			ConfigKey entry = ConfigRegistry.getEntry(key);
+			ConfigOption entry = ConfigRegistry.getOption(key);
 			if (entry==CFGID_EXTENDS || entry==CFGID_NETWORK || entry==CFGID_USER_INTERFACE ||
 			        entry==CFGID_CMDENV_CONFIG_NAME || entry==CFGID_TKENV_DEFAULT_CONFIG || 
 			        entry==CFGID_CONSTRAINT)
 				return true;
-			if (entry != null && entry.getDataType()==ConfigKey.DataType.CFG_BOOL)
+			if (entry != null && entry.getDataType()==ConfigOption.DataType.CFG_BOOL)
 				return true;
 			return false;
 		}
@@ -119,7 +119,7 @@ s	 * before getting presented to the user.
      * IMPORTANT: update isContentAssistAvailable() when this method gets extended!
 	 */
 	protected List<IContentProposal> getCandidatesForConfig(String prefix) {
-		ConfigKey entry = ConfigRegistry.getEntry(key);
+		ConfigOption entry = ConfigRegistry.getOption(key);
 		if (entry == null)
 			return new ArrayList<IContentProposal>();  // nothing
 
@@ -183,7 +183,7 @@ s	 * before getting presented to the user.
 			if (prefix.matches(".*\\$[A-Za-z0-9_]*"))
 	            addConfigVariableProposals(p);
 		}
-		else if (entry.getDataType()==ConfigKey.DataType.CFG_BOOL) {
+		else if (entry.getDataType()==ConfigOption.DataType.CFG_BOOL) {
 			p.addAll(toProposals(new String[] {"true", "false"}));
 		}
 		return p;
@@ -205,7 +205,7 @@ s	 * before getting presented to the user.
      */
     protected List<IContentProposal> getCandidatesForPerObjectConfig(String prefix) {
         String keySuffix = key.replaceFirst(".*\\.", ""); // only keep substring after last dot
-        ConfigKey entry = ConfigRegistry.getPerObjectEntry(keySuffix);
+        ConfigOption entry = ConfigRegistry.getPerObjectEntry(keySuffix);
         if (entry == null)
             return new ArrayList<IContentProposal>();  // nothing
 
@@ -218,7 +218,7 @@ s	 * before getting presented to the user.
         if (entry==CFGID_VECTOR_RECORDING_INTERVAL) {
             p.addAll(toProposals(new String[]{"$1..", "$1..$2, $3.."})); //XXX use templated proposals here!
         }
-        if (entry.getDataType()==ConfigKey.DataType.CFG_BOOL) {
+        if (entry.getDataType()==ConfigOption.DataType.CFG_BOOL) {
             p.addAll(toProposals(new String[] {"true", "false"}));
         }
         return p;

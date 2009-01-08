@@ -10,7 +10,7 @@ package org.omnetpp.inifile.editor.form;
 import java.util.List;
 
 import org.eclipse.swt.widgets.Composite;
-import org.omnetpp.inifile.editor.model.ConfigKey;
+import org.omnetpp.inifile.editor.model.ConfigOption;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 
 /**
@@ -22,7 +22,7 @@ import org.omnetpp.inifile.editor.model.IInifileDocument;
 public class ExpandableComboFieldEditor extends ExpandableFieldEditor {
     protected List<String> comboContents; 
 
-	public ExpandableComboFieldEditor(Composite parent, ConfigKey entry, IInifileDocument inifile, FormPage formPage, String labelText) {
+	public ExpandableComboFieldEditor(Composite parent, ConfigOption entry, IInifileDocument inifile, FormPage formPage, String labelText) {
 		super(parent, entry, inifile, formPage, labelText);
 	}
 

@@ -8,13 +8,13 @@
 package org.omnetpp.inifile.editor.model;
 
 /**
- * One entry in the ConfigRegistry. Describes a configuration key. 
+ * One entry in the ConfigRegistry. Describes a configuration option. 
  * 
  * @author Andras
  */
-public class ConfigKey {
+public class ConfigOption {
     /** 
-     * Configuration key data types 
+     * Configuration option data types 
      */
     public enum DataType {
       CFG_BOOL,
@@ -28,9 +28,9 @@ public class ConfigKey {
     };
 
     private String name;         // e.g. "sim-time-limit"
-    private boolean isPerObject; // if true, keys must be in <object-full-path>.config-name format
+    private boolean isPerObject; // if true, entries must be in <object-full-path>.config-name format
     private boolean isGlobal;    // if true, it cannot occur in [Config X] sections
-    private DataType dataType;   // entry's data type
+    private DataType dataType;   // option's data type
     private String unit;         // if numeric, its unit ("s") or empty string
     private String defaultValue; // the default value
     private String description;  // help text
@@ -38,7 +38,7 @@ public class ConfigKey {
     /**
      * Constructor.
      */
-    ConfigKey(String name, boolean isPerObject, boolean isGlobal,
+    ConfigOption(String name, boolean isPerObject, boolean isGlobal,
                  DataType dataType, String unit, String defaultValue, String description) {
         this.name = name;
         this.isPerObject = isPerObject;
@@ -49,7 +49,7 @@ public class ConfigKey {
         this.description = description;
     }
 
-    public String getKey() {
+    public String getName() {
     	return name;
     }
 

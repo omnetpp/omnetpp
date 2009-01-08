@@ -44,7 +44,7 @@ USING_NAMESPACE
 
 Register_Class(cNamedPipeCommunications);
 
-Register_GlobalConfigEntry(CFGID_PARSIM_NAMEDPIPECOMM_PREFIX, "parsim-namedpipecommunications-prefix", CFG_STRING, "omnetpp", "When cNamedPipeCommunications is selected as parsim communications class: selects the name prefix for Windows named pipes created.");
+Register_GlobalConfigOption(CFGID_PARSIM_NAMEDPIPECOMM_PREFIX, "parsim-namedpipecommunications-prefix", CFG_STRING, "omnetpp", "When cNamedPipeCommunications is selected as parsim communications class: selects the name prefix for Windows named pipes created.");
 
 
 #define sleep(x)  _sleep((x)*1000)

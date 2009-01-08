@@ -13,7 +13,7 @@ import java.util.List;
 
 import org.eclipse.jface.text.rules.*;
 import org.omnetpp.common.editor.text.SyntaxHighlightHelper;
-import org.omnetpp.inifile.editor.model.ConfigKey;
+import org.omnetpp.inifile.editor.model.ConfigOption;
 import org.omnetpp.inifile.editor.model.ConfigRegistry;
 import org.omnetpp.inifile.editor.text.InifileTextEditorHelper;
 
@@ -42,10 +42,10 @@ public class InifileCodeColorizerScanner extends RuleBasedScanner {
 			wordRule.addWord(text, InifileTextEditorHelper.codeKeywordToken);
 		for (String text : SyntaxHighlightHelper.highlightConstants)
 			wordRule.addWord(text, InifileTextEditorHelper.codeKeywordToken);
-		for (ConfigKey entry : ConfigRegistry.getEntries())
-			wordRule.addWord(entry.getKey(), InifileTextEditorHelper.codeConfigKeyToken);
-        for (ConfigKey entry : ConfigRegistry.getPerObjectEntries())
-            wordRule.addWord(entry.getKey(), InifileTextEditorHelper.codeConfigKeyToken);
+		for (ConfigOption entry : ConfigRegistry.getEntries())
+			wordRule.addWord(entry.getName(), InifileTextEditorHelper.codeConfigKeyToken);
+        for (ConfigOption entry : ConfigRegistry.getPerObjectEntries())
+            wordRule.addWord(entry.getName(), InifileTextEditorHelper.codeConfigKeyToken);
 
 		rules.add(wordRule);
         

@@ -466,11 +466,11 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
             }
             public void keyValueLine(int lineNumber, int numLines, String rawLine, String key, String value, String rawComment) {
                 if (currentSection!=null) {
-                    if (key.equals(CFGID_NETWORK.getKey()))
+                    if (key.equals(CFGID_NETWORK.getName()))
                         currentSection.network = value;
                     else if (key.equals(EXTENDS))
                         currentSection.extendsName = value;
-                    else if (key.equals(CFGID_DESCRIPTION.getKey()))
+                    else if (key.equals(CFGID_DESCRIPTION.getName()))
                         currentSection.description = value;
                 }                
             }

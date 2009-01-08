@@ -90,7 +90,7 @@ public class InifileHoverUtils {
 			text += "Fallback order: " + StringUtils.join(sectionChain, " &gt; ") + " <br>\n"; //XXX decide terminology: "Lookup order" or "Section fallback chain" ? also: "," or ">" ?
 
 		// network
-		String networkName = InifileUtils.lookupConfig(sectionChain, CFGID_NETWORK.getKey(), doc);
+		String networkName = InifileUtils.lookupConfig(sectionChain, CFGID_NETWORK.getName(), doc);
 		text += "Network: " + (networkName==null ? "not set" : networkName) + " <br>\n";
 
 		// unassigned parameters
@@ -145,7 +145,7 @@ public class InifileHoverUtils {
 	public static String getConfigHoverText(String section, String key, IInifileDocument doc) {
 		IMarker[] markers = InifileUtils.getProblemMarkersFor(section, key, doc);
 		String text = getProblemsHoverText(markers, false);
-		ConfigKey entry = ConfigRegistry.getEntry(key);
+		ConfigOption entry = ConfigRegistry.getOption(key);
 		if (entry != null)
 		    text += getConfigOptionHoverText(entry);
 		return HoverSupport.addHTMLStyleSheet(text);
@@ -159,7 +159,7 @@ public class InifileHoverUtils {
         IMarker[] markers = InifileUtils.getProblemMarkersFor(section, key, doc);
         String text = getProblemsHoverText(markers, false);
        
-        ConfigKey entry = ConfigRegistry.getPerObjectEntry(key.replaceFirst("^.*\\.", ""));
+        ConfigOption entry = ConfigRegistry.getPerObjectEntry(key.replaceFirst("^.*\\.", ""));
         if (entry != null)
             text += getConfigOptionHoverText(entry);
 
@@ -169,9 +169,9 @@ public class InifileHoverUtils {
         return HoverSupport.addHTMLStyleSheet(text);
     }
 
-    protected static String getConfigOptionHoverText(ConfigKey entry) {
+    protected static String getConfigOptionHoverText(ConfigOption entry) {
         String text = "<b>[General]"+(entry.isGlobal() ? "" : " or [Config X]")+" / ";
-        text += (entry.isPerObject() ? "**." : "") + entry.getKey();
+        text += (entry.isPerObject() ? "**." : "") + entry.getName();
         text += " = &lt;" + entry.getDataType().name().replaceFirst("CFG_", "");
         if (entry.getDefaultValue()!=null && !entry.getDefaultValue().equals(""))
             text += ", default: " + entry.getDefaultValue();

@@ -18,7 +18,7 @@ import org.eclipse.jface.fieldassist.IContentProposal;
 import org.omnetpp.common.contentassist.ContentProposal;
 import org.omnetpp.common.contentassist.ContentProposalProvider;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.inifile.editor.model.ConfigKey;
+import org.omnetpp.inifile.editor.model.ConfigOption;
 import org.omnetpp.inifile.editor.model.ConfigRegistry;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
@@ -59,9 +59,9 @@ public class InifileConfigKeyContentProposalProvider extends ContentProposalProv
 		ArrayList<IContentProposal> result = new ArrayList<IContentProposal>();
 		// idea considered and discarded: don't propose those already there (would confuse user)
 		if (section != null) {
-			for (ConfigKey e : ConfigRegistry.getEntries()) {
+			for (ConfigOption e : ConfigRegistry.getEntries()) {
 				if (!section.equals(GENERAL) || e!=CFGID_EXTENDS) { // don't propose "extends" in [General]
-					String content = e.getKey()+(addEqualSign ? " = " : "");
+					String content = e.getName()+(addEqualSign ? " = " : "");
 					result.add(new ContentProposal(content, content, getConfigHelpText(e, section, doc)));
 				}
 			}
@@ -72,8 +72,8 @@ public class InifileConfigKeyContentProposalProvider extends ContentProposalProv
 	/**
 	 * Generate help text for the given config entry, to be displayed by the content assistant.
 	 */
-	protected static String getConfigHelpText(ConfigKey entry, String section, IInifileDocument doc) {
-		String key = entry.getKey();
+	protected static String getConfigHelpText(ConfigOption entry, String section, IInifileDocument doc) {
+		String key = entry.getName();
 		String text = "";
 
 		// see where else it is already set

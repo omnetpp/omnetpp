@@ -61,7 +61,7 @@ import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.inifile.editor.actions.AddInifileKeysAction;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
-import org.omnetpp.inifile.editor.model.ConfigKey;
+import org.omnetpp.inifile.editor.model.ConfigOption;
 import org.omnetpp.inifile.editor.model.ConfigRegistry;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
@@ -146,8 +146,8 @@ public class SectionsPage extends FormPage {
 			@Override
 			public String getText(Object element) {
 				String section = getSectionNameFromTreeNode(element);
-				String networkName = getInifileDocument().getValue(section, CFGID_NETWORK.getKey());
-				String description = getInifileDocument().getValue(section, CFGID_DESCRIPTION.getKey());
+				String networkName = getInifileDocument().getValue(section, CFGID_NETWORK.getName());
+				String description = getInifileDocument().getValue(section, CFGID_DESCRIPTION.getName());
 				String text = section;
 				if (networkName != null)
 					text += " (network: " + networkName+")";
@@ -318,14 +318,14 @@ public class SectionsPage extends FormPage {
 				InifileUtils.addSection(doc, sectionName);
 
 				String description = dialog.getDescription();
-				InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, CFGID_DESCRIPTION.getKey(), description.equals("") ? null : description);			
+				InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, CFGID_DESCRIPTION.getName(), description.equals("") ? null : description);			
 
 				String extendsSection = dialog.getExtendsSection();
 				String extendsName = extendsSection.equals(GENERAL) ? null : InifileUtils.removeSectionNamePrefix(extendsSection);
 				InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, EXTENDS, extendsName);			
 
 				String networkName = dialog.getNetworkName();
-				InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, CFGID_NETWORK.getKey(), networkName.equals("") ? null : networkName);			
+				InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, CFGID_NETWORK.getName(), networkName.equals("") ? null : networkName);			
 
 				reread();
 			}
@@ -355,14 +355,14 @@ public class SectionsPage extends FormPage {
 					InifileUtils.renameSection(doc, oldSectionName, sectionName);
 
 				String description = dialog.getDescription();
-				InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, CFGID_DESCRIPTION.getKey(), description.equals("") ? null : description);			
+				InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, CFGID_DESCRIPTION.getName(), description.equals("") ? null : description);			
 
 				String extendsSection = dialog.getExtendsSection();
 				String extendsName = extendsSection.equals(GENERAL) ? null : InifileUtils.removeSectionNamePrefix(extendsSection);
 				InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, EXTENDS, extendsName);			
 
 				String networkName = dialog.getNetworkName();
-				InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, CFGID_NETWORK.getKey(), networkName.equals("") ? null : networkName);			
+				InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, CFGID_NETWORK.getName(), networkName.equals("") ? null : networkName);			
 
 				reread();
 			}
@@ -513,8 +513,8 @@ public class SectionsPage extends FormPage {
 	}
 
 	@Override
-	public List<ConfigKey> getSupportedKeys() {
-		List<ConfigKey> result = new ArrayList<ConfigKey>();
+	public List<ConfigOption> getSupportedKeys() {
+		List<ConfigOption> result = new ArrayList<ConfigOption>();
 		result.add(ConfigRegistry.CFGID_EXTENDS);
 		result.add(ConfigRegistry.CFGID_DESCRIPTION);
 		result.add(ConfigRegistry.CFGID_NETWORK);

@@ -31,7 +31,7 @@ import org.omnetpp.common.ui.TableTextCellEditor;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.contentassist.InifileParamKeyContentProposalProvider;
 import org.omnetpp.inifile.editor.contentassist.InifileValueContentProposalProvider;
-import org.omnetpp.inifile.editor.model.ConfigKey;
+import org.omnetpp.inifile.editor.model.ConfigOption;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.inifile.editor.model.SectionKey;
@@ -45,7 +45,7 @@ import org.omnetpp.inifile.editor.model.SectionKey;
  */
 public class CheckboxTableFieldEditor extends TableFieldEditor {
 
-    public CheckboxTableFieldEditor(Composite parent, ConfigKey entry, IInifileDocument inifile, FormPage formPage, String labelText) {
+    public CheckboxTableFieldEditor(Composite parent, ConfigOption entry, IInifileDocument inifile, FormPage formPage, String labelText) {
 		super(parent, entry, inifile, formPage, labelText);
 	}
 
@@ -90,7 +90,7 @@ public class CheckboxTableFieldEditor extends TableFieldEditor {
                     }
                 else
                     switch (columnIndex) {
-                        case 0: return StringUtils.removeEnd(sectionKey.key, "."+entry.getKey());
+                        case 0: return StringUtils.removeEnd(sectionKey.key, "."+entry.getName());
                         case 1: return "["+sectionKey.section+"]";
                         default: throw new IllegalArgumentException();
                     }
@@ -129,7 +129,7 @@ public class CheckboxTableFieldEditor extends TableFieldEditor {
 		        public Object getValue(Object element, String property) {
 		            Assert.isTrue(property.equals("object"));
 		            SectionKey sectionKey = (SectionKey) element;
-		            return StringUtils.removeEnd(sectionKey.key, "."+entry.getKey());
+		            return StringUtils.removeEnd(sectionKey.key, "."+entry.getName());
 		        }
 
 		        public void modify(Object element, String property, Object value) {
@@ -137,7 +137,7 @@ public class CheckboxTableFieldEditor extends TableFieldEditor {
 		            if (element instanceof Item)
 		                element = ((Item) element).getData(); // workaround, see super's comment
 		            SectionKey sectionKey = (SectionKey) element;
-		            renameKeyInInifile(sectionKey.section, sectionKey.key, value+"."+entry.getKey());
+		            renameKeyInInifile(sectionKey.section, sectionKey.key, value+"."+entry.getName());
 		            tableViewer.refresh();
 		        }
 		    });

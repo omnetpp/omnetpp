@@ -33,7 +33,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.dialogs.ListDialog;
 import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.ui.SizeConstraint;
-import org.omnetpp.inifile.editor.model.ConfigKey;
+import org.omnetpp.inifile.editor.model.ConfigOption;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileHoverUtils;
 import org.omnetpp.inifile.editor.model.SectionKey;
@@ -49,7 +49,7 @@ public abstract class TableFieldEditor extends FieldEditor {
 	protected Button addButton;
 	protected Button removeButton;
 
-	public TableFieldEditor(Composite parent, ConfigKey entry, IInifileDocument inifile, FormPage formPage, String labelText) {
+	public TableFieldEditor(Composite parent, ConfigOption entry, IInifileDocument inifile, FormPage formPage, String labelText) {
 		super(parent, SWT.NONE, entry, inifile, formPage);
 
 		GridLayout gridLayout = new GridLayout(1, false);
@@ -136,7 +136,7 @@ public abstract class TableFieldEditor extends FieldEditor {
 	protected void addNewEntry() {
 		String section = askTargetSection();
 		if (section != null) {
-			String key = entry.isPerObject() ? "**."+entry.getKey() : entry.getKey();
+			String key = entry.isPerObject() ? "**."+entry.getName() : entry.getName();
 			setValueInFile(section, key, getDefaultValueFor(section));
 			reread();
 		}
@@ -149,7 +149,7 @@ public abstract class TableFieldEditor extends FieldEditor {
 		// collect section which not yet contain this key
 		ArrayList<String> list = new ArrayList<String>();
 		for (String section : inifile.getSectionNames())
-			if (entry.isPerObject() || !inifile.containsKey(section, entry.getKey()))
+			if (entry.isPerObject() || !inifile.containsKey(section, entry.getName()))
 				list.add(section);
 
 		// and pop up a chooser dialog
@@ -222,12 +222,12 @@ public abstract class TableFieldEditor extends FieldEditor {
 		if (!entry.isPerObject()) {
 		    // find out in which sections this key occurs
 		    for (String section : inifile.getSectionNames())
-		        if (inifile.containsKey(section, entry.getKey()))
-		            list.add(new SectionKey(section, entry.getKey()));
+		        if (inifile.containsKey(section, entry.getName()))
+		            list.add(new SectionKey(section, entry.getName()));
 		}
 		else {
             // find matching entries from all sections
-		    String keySuffix = "."+entry.getKey();
+		    String keySuffix = "."+entry.getName();
             for (String section : inifile.getSectionNames())
                 for (String key : inifile.getKeys(section))
                     if (key.endsWith(keySuffix))

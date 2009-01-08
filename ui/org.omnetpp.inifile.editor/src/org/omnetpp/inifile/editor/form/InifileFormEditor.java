@@ -36,7 +36,7 @@ import org.omnetpp.common.ui.GenericTreeContentProvider;
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.inifile.editor.TestSupport;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
-import org.omnetpp.inifile.editor.model.ConfigKey;
+import org.omnetpp.inifile.editor.model.ConfigOption;
 import org.omnetpp.inifile.editor.model.ConfigRegistry;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
@@ -237,7 +237,7 @@ public class InifileFormEditor extends Composite {
 		Debug.println("Checking if all config keys are covered by the forms...");
 
 		// collect keys supported by the editor forms
-		Set<ConfigKey> supportedKeys = new HashSet<ConfigKey>();
+		Set<ConfigOption> supportedKeys = new HashSet<ConfigOption>();
 		
 		List<String> categories = new ArrayList<String>();
 		categories.add(PARAMETERS_PAGE);
@@ -246,17 +246,17 @@ public class InifileFormEditor extends Composite {
 
 		for (String category : categories) {
 			FormPage page = showCategoryPage(category);
-			for (ConfigKey key : page.getSupportedKeys())
+			for (ConfigOption key : page.getSupportedKeys())
 				supportedKeys.add(key);
 		}
 		
 		// see which keys are not supported anywhere
-		for (ConfigKey key : ConfigRegistry.getEntries())
+		for (ConfigOption key : ConfigRegistry.getEntries())
 			if (!supportedKeys.contains(key))
-				Debug.println(" - forgotten key: "+key.getKey());
-        for (ConfigKey key : ConfigRegistry.getPerObjectEntries())
+				Debug.println(" - forgotten key: "+key.getName());
+        for (ConfigOption key : ConfigRegistry.getPerObjectEntries())
             if (!supportedKeys.contains(key))
-                Debug.println(" - forgotten key: **."+key.getKey());
+                Debug.println(" - forgotten key: **."+key.getName());
 
 		Debug.println("Checking done.");
 	}

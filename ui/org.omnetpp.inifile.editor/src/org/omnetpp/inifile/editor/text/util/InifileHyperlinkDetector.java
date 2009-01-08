@@ -57,7 +57,7 @@ public class InifileHyperlinkDetector implements IHyperlinkDetector {
 			
 			InifileAnalyzer analyzer = editorData.getInifileAnalyzer();
 			if (InifileAnalyzer.getKeyType(key) == KeyType.CONFIG) {
-				if (key.equals(ConfigRegistry.CFGID_NETWORK.getKey())) {
+				if (key.equals(ConfigRegistry.CFGID_NETWORK.getName())) {
 					// network key value hover
 					String networkName = doc.getValue(section, key);
 					INEDTypeInfo network = analyzer.resolveNetwork(NEDResourcesPlugin.getNEDResources(), networkName);

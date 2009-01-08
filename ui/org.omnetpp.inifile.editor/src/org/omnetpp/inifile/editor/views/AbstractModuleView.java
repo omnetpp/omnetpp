@@ -305,7 +305,7 @@ public abstract class AbstractModuleView extends ViewWithMessagePart implements 
 					showMessage("No section selected.");
 					return;
 				}
-				String networkName = InifileUtils.lookupConfig(sel.getSection(), CFGID_NETWORK.getKey(), doc);
+				String networkName = InifileUtils.lookupConfig(sel.getSection(), CFGID_NETWORK.getName(), doc);
 				if (StringUtils.isEmpty(networkName)) {
 					showMessage("Network not specified (no network= setting in ["+sel.getSection()+"] or the sections it extends)");
 					return;

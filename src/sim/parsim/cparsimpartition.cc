@@ -40,7 +40,7 @@ USING_NAMESPACE
 
 Register_Class(cParsimPartition);
 
-Register_GlobalConfigEntry(CFGID_PARSIM_DEBUG, "parsim-debug", CFG_BOOL, "true", "With parallel-simulation=true: turns on printing of log messages from the parallel simulation code.");
+Register_GlobalConfigOption(CFGID_PARSIM_DEBUG, "parsim-debug", CFG_BOOL, "true", "With parallel-simulation=true: turns on printing of log messages from the parallel simulation code.");
 
 cParsimPartition::cParsimPartition()
 {

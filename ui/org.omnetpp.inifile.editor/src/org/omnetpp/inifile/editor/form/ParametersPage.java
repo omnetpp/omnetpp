@@ -62,7 +62,7 @@ import org.omnetpp.inifile.editor.actions.AddInifileKeysDialog;
 import org.omnetpp.inifile.editor.contentassist.InifileParamKeyContentProposalProvider;
 import org.omnetpp.inifile.editor.contentassist.InifileValueContentProposalProvider;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
-import org.omnetpp.inifile.editor.model.ConfigKey;
+import org.omnetpp.inifile.editor.model.ConfigOption;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.InifileHoverUtils;
@@ -255,7 +255,7 @@ public class ParametersPage extends FormPage {
 							if (!newKey.contains("."))
 								throw new RuntimeException("Parameter key must contain at least one dot");
                             String suffix = StringUtils.substringAfterLast(newKey, ".");
-                            if (suffix.contains("-") && !suffix.equals(CFGID_TYPE_NAME.getKey()))
+                            if (suffix.contains("-") && !suffix.equals(CFGID_TYPE_NAME.getName()))
                                 throw new RuntimeException("Key should match a parameter, or end in \".type-name\"");
 							// Note: all other validation is done within InifileDocument.changeKey()
 							doc.renameKey(item.section, item.key, (String)value);
@@ -637,7 +637,7 @@ public class ParametersPage extends FormPage {
 			for (String key : doc.getKeys(section)) {
 				if (key.contains(".")) { 
 				    String suffix = StringUtils.substringAfterLast(key, ".");
-				    if (!suffix.contains("-") || suffix.equals(CFGID_TYPE_NAME.getKey()))
+				    if (!suffix.contains("-") || suffix.equals(CFGID_TYPE_NAME.getName()))
 				        sectionNode.addChild(new GenericTreeNode(new SectionKey(section, key)));
 				}
 			}
@@ -661,7 +661,7 @@ public class ParametersPage extends FormPage {
 		}
 
 		// update labels: "Network" and "Section fallback chain"
-		String networkName = InifileUtils.lookupConfig(sectionChain, CFGID_NETWORK.getKey(), doc);
+		String networkName = InifileUtils.lookupConfig(sectionChain, CFGID_NETWORK.getName(), doc);
 		int numUnassigned = "".equals(selectedSection) ? 0 : getInifileAnalyzer().getUnassignedParams(selectedSection).length;
 		networkNameLabel.setText("Network: "+(networkName==null ? "<not configured>" : networkName));
 		sectionChainLabel.setText("Section fallback chain: "+(sectionChain.length==0 ? "<no sections>" : StringUtils.join(sectionChain, " > ")));
@@ -677,7 +677,7 @@ public class ParametersPage extends FormPage {
 		return InifileFormEditor.PARAMETERS_PAGE;
 	}
 
-	public List<ConfigKey> getSupportedKeys() {
-		return new ArrayList<ConfigKey>();
+	public List<ConfigOption> getSupportedKeys() {
+		return new ArrayList<ConfigOption>();
 	}
 }

@@ -25,10 +25,10 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.inifile.editor.model.ConfigKey;
+import org.omnetpp.inifile.editor.model.ConfigOption;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileUtils;
-import org.omnetpp.inifile.editor.model.ConfigKey.DataType;
+import org.omnetpp.inifile.editor.model.ConfigOption.DataType;
 
 /**
  * Combobox-based editor for inifile entries.
@@ -50,7 +50,7 @@ public class ComboFieldEditor extends FieldEditor {
 	private boolean isEdited;
 	private ControlDecoration problemDecoration;
 
-	public ComboFieldEditor(Composite parent, ConfigKey entry, IInifileDocument inifile, FormPage formPage, String labelText) {
+	public ComboFieldEditor(Composite parent, ConfigOption entry, IInifileDocument inifile, FormPage formPage, String labelText) {
 		super(parent, SWT.NONE, entry, inifile, formPage);
 
 		// layout
@@ -110,7 +110,7 @@ public class ComboFieldEditor extends FieldEditor {
 	@Override
 	public void reread() {
 		// update text and reset button
-		String key = entry.isPerObject() ? "**."+entry.getKey() : entry.getKey();
+		String key = entry.isPerObject() ? "**."+entry.getName() : entry.getName();
 		String value = getValueFromFile(GENERAL, key);
 		if (value==null) {
 			String defaultValue = entry.getDefaultValue()==null ? "" : entry.getDefaultValue().toString();
@@ -145,7 +145,7 @@ public class ComboFieldEditor extends FieldEditor {
 	@Override
 	public void commit() {
 		if (isEdited) {
-			String key = entry.isPerObject() ? "**."+entry.getKey() : entry.getKey();
+			String key = entry.isPerObject() ? "**."+entry.getName() : entry.getName();
 			String value = combo.getText();
 			setValueInFile(GENERAL, key, value);
 			isEdited = false;

@@ -23,7 +23,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
-import org.omnetpp.inifile.editor.model.ConfigKey;
+import org.omnetpp.inifile.editor.model.ConfigOption;
 import org.omnetpp.inifile.editor.model.IInifileChangeListener;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 
@@ -49,7 +49,7 @@ public abstract class ExpandableFieldEditor extends FieldEditor  {
 		}
 	};
 
-	public ExpandableFieldEditor(Composite parent, ConfigKey entry, IInifileDocument inifile, FormPage formPage, String labelText) {
+	public ExpandableFieldEditor(Composite parent, ConfigOption entry, IInifileDocument inifile, FormPage formPage, String labelText) {
 		super(parent, SWT.NONE, entry, inifile, formPage);
 		this.labelText = labelText;
 		GridLayout gridLayout = new GridLayout(2, false);
@@ -111,14 +111,14 @@ public abstract class ExpandableFieldEditor extends FieldEditor  {
 	protected boolean canBeCollapsed() {
 	    if (!entry.isPerObject()) {
 	        for (String section : inifile.getSectionNames())
-	            if (inifile.containsKey(section, entry.getKey()) && !section.equals(GENERAL))
+	            if (inifile.containsKey(section, entry.getName()) && !section.equals(GENERAL))
 	                return false;
 	    } 
 	    else {
 	        // if it contains any occurrence of this key except **.<key> in [General], it cannot be collapsed
             for (String section : inifile.getSectionNames())
                 for (String key : inifile.getKeys(section))
-                    if (key.endsWith("."+entry.getKey()) && (!section.equals(GENERAL) || !key.equals("**."+entry.getKey())))
+                    if (key.endsWith("."+entry.getName()) && (!section.equals(GENERAL) || !key.equals("**."+entry.getName())))
                         return false;
 	    }
 		return true;

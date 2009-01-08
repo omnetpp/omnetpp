@@ -184,42 +184,42 @@ NAMESPACE_BEGIN
  * Generic, with unit==NULL.
  * @hideinitializer
  */
-#define Register_GlobalConfigEntry(ID, NAME, TYPE, DEFAULTVALUE, DESCRIPTION) \
+#define Register_GlobalConfigOption(ID, NAME, TYPE, DEFAULTVALUE, DESCRIPTION) \
   __REGISTER_CONFIGOPTION(ID, (NAME, false, true, cConfigOption::TYPE, NULL, DEFAULTVALUE, DESCRIPTION))
 
 /**
  * Generic, with unit==NULL.
  * @hideinitializer
  */
-#define Register_PerRunConfigEntry(ID, NAME, TYPE, DEFAULTVALUE, DESCRIPTION) \
+#define Register_PerRunConfigOption(ID, NAME, TYPE, DEFAULTVALUE, DESCRIPTION) \
   __REGISTER_CONFIGOPTION(ID, (NAME, false, false, cConfigOption::TYPE, NULL, DEFAULTVALUE, DESCRIPTION))
 
 /**
  * For type==CFG_DOUBLE and a unit.
  * @hideinitializer
  */
-#define Register_GlobalConfigEntryU(ID, NAME, UNIT, DEFAULTVALUE, DESCRIPTION) \
+#define Register_GlobalConfigOptionU(ID, NAME, UNIT, DEFAULTVALUE, DESCRIPTION) \
   __REGISTER_CONFIGOPTION(ID, (NAME, false, true, cConfigOption::CFG_DOUBLE, UNIT, DEFAULTVALUE, DESCRIPTION))
 
 /**
  * For type==CFG_DOUBLE and a unit.
  * @hideinitializer
  */
-#define Register_PerRunConfigEntryU(ID, NAME, UNIT, DEFAULTVALUE, DESCRIPTION) \
+#define Register_PerRunConfigOptionU(ID, NAME, UNIT, DEFAULTVALUE, DESCRIPTION) \
   __REGISTER_CONFIGOPTION(ID, (NAME, false, false, cConfigOption::CFG_DOUBLE, UNIT, DEFAULTVALUE, DESCRIPTION))
 
 /**
- * Per-object entry (can be configured per run), with unit==NULL.
+ * Per-object option (can be configured per run), with unit==NULL.
  * @hideinitializer
  */
-#define Register_PerObjectConfigEntry(ID, NAME, TYPE, DEFAULTVALUE, DESCRIPTION) \
+#define Register_PerObjectConfigOption(ID, NAME, TYPE, DEFAULTVALUE, DESCRIPTION) \
   __REGISTER_CONFIGOPTION(ID, (NAME, true, false, cConfigOption::TYPE, NULL, DEFAULTVALUE, DESCRIPTION))
 
 /**
- * Per-object entry (can be configured per run), for type==CFG_DOUBLE and a unit.
+ * Per-object option (can be configured per run), for type==CFG_DOUBLE and a unit.
  * @hideinitializer
  */
-#define Register_PerObjectConfigEntryU(ID, NAME, UNIT, DEFAULTVALUE, DESCRIPTION) \
+#define Register_PerObjectConfigOptionU(ID, NAME, UNIT, DEFAULTVALUE, DESCRIPTION) \
   __REGISTER_CONFIGOPTION(ID, (NAME, true, false, cConfigOption::CFG_DOUBLE, UNIT, DEFAULTVALUE, DESCRIPTION))
 
 //@}

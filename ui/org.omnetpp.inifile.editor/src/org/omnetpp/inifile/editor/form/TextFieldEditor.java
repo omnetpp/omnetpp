@@ -30,10 +30,10 @@ import org.eclipse.ui.fieldassist.ContentAssistCommandAdapter;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.inifile.editor.contentassist.InifileValueContentProposalProvider;
-import org.omnetpp.inifile.editor.model.ConfigKey;
+import org.omnetpp.inifile.editor.model.ConfigOption;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileUtils;
-import org.omnetpp.inifile.editor.model.ConfigKey.DataType;
+import org.omnetpp.inifile.editor.model.ConfigOption.DataType;
 
 /**
  * Text-based editor for inifile entries.
@@ -54,7 +54,7 @@ public class TextFieldEditor extends FieldEditor {
 	private boolean isEdited;
 	private ControlDecoration problemDecoration;
 
-	public TextFieldEditor(Composite parent, ConfigKey entry, IInifileDocument inifile, FormPage formPage, String labelText) {
+	public TextFieldEditor(Composite parent, ConfigOption entry, IInifileDocument inifile, FormPage formPage, String labelText) {
 		super(parent, SWT.NONE, entry, inifile, formPage);
 
 		// layout
@@ -113,7 +113,7 @@ public class TextFieldEditor extends FieldEditor {
 
 	protected Text createContentAssistField() {
 		Text text = new Text(this, SWT.SINGLE | SWT.BORDER);
-        String key = entry.isPerObject() ? "**."+entry.getKey() : entry.getKey();
+        String key = entry.isPerObject() ? "**."+entry.getName() : entry.getName();
 		InifileValueContentProposalProvider proposalProvider = new InifileValueContentProposalProvider(GENERAL, key, inifile, null, false);
 		if (proposalProvider.isContentAssistAvailable()) {
 			// only make it a content assist field if proposals are really available
@@ -128,7 +128,7 @@ public class TextFieldEditor extends FieldEditor {
 	@Override
 	public void reread() {
 		// update text and reset button
-		String key = entry.isPerObject() ? "**."+entry.getKey() : entry.getKey();
+		String key = entry.isPerObject() ? "**."+entry.getName() : entry.getName();
 		String value = getValueFromFile(GENERAL, key);
 		if (value==null) {
 			String defaultValue = entry.getDefaultValue()==null ? "" : entry.getDefaultValue().toString();
@@ -154,7 +154,7 @@ public class TextFieldEditor extends FieldEditor {
 	@Override
 	public void commit() {
 		if (isEdited) {
-			String key = entry.isPerObject() ? "**."+entry.getKey() : entry.getKey();
+			String key = entry.isPerObject() ? "**."+entry.getName() : entry.getName();
 			String value = textField.getText();
 			setValueInFile(GENERAL, key, value);
 			isEdited = false;

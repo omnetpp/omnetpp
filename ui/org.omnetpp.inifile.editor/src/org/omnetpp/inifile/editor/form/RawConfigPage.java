@@ -16,7 +16,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
-import org.omnetpp.inifile.editor.model.ConfigKey;
+import org.omnetpp.inifile.editor.model.ConfigOption;
 import org.omnetpp.inifile.editor.model.ConfigRegistry;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 
@@ -33,9 +33,9 @@ public class RawConfigPage extends FormPage {
 		
 		// populate with field editors
 		IInifileDocument doc = getInifileDocument();
-		for (ConfigKey e : ConfigRegistry.getEntries()) {
-			String label = "The \""+e.getKey()+"\" setting";
-			if (e.getDataType()==ConfigKey.DataType.CFG_BOOL) {
+		for (ConfigOption e : ConfigRegistry.getEntries()) {
+			String label = "The \""+e.getName()+"\" setting";
+			if (e.getDataType()==ConfigOption.DataType.CFG_BOOL) {
 				CheckboxFieldEditor control = new CheckboxFieldEditor(this, e, doc, this, label);
 				control.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 			}
@@ -65,7 +65,7 @@ public class RawConfigPage extends FormPage {
 	}
 	
 	@Override
-	public List<ConfigKey> getSupportedKeys() {
-		return new ArrayList<ConfigKey>(); // dummy impl.
+	public List<ConfigOption> getSupportedKeys() {
+		return new ArrayList<ConfigOption>(); // dummy impl.
 	}
 }

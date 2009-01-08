@@ -20,7 +20,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
-import org.omnetpp.inifile.editor.model.ConfigKey;
+import org.omnetpp.inifile.editor.model.ConfigOption;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileUtils;
 
@@ -42,10 +42,10 @@ public class CheckboxFieldEditor extends FieldEditor {
 	private ControlDecoration problemDecoration;
 	private Button resetButton;
 
-	public CheckboxFieldEditor(Composite parent, ConfigKey entry, IInifileDocument inifile, FormPage formPage, String labelText) {
+	public CheckboxFieldEditor(Composite parent, ConfigOption entry, IInifileDocument inifile, FormPage formPage, String labelText) {
 		super(parent, SWT.NONE, entry, inifile, formPage);
 
-		Assert.isTrue(entry.getDataType()==ConfigKey.DataType.CFG_BOOL);
+		Assert.isTrue(entry.getDataType()==ConfigOption.DataType.CFG_BOOL);
 
 		GridLayout gridLayout = new GridLayout(4, false);
 		gridLayout.marginHeight = 0;
@@ -80,7 +80,7 @@ public class CheckboxFieldEditor extends FieldEditor {
 
 	@Override
 	public void reread() {
-		String key = entry.isPerObject() ? "**."+entry.getKey() : entry.getKey();
+		String key = entry.isPerObject() ? "**."+entry.getName() : entry.getName();
         String value = getValueFromFile(GENERAL, key);
 		if (value==null) {
 			boolean defaultValue = entry.getDefaultValue()==null ? false : entry.getDefaultValue().equals("true");
@@ -93,7 +93,7 @@ public class CheckboxFieldEditor extends FieldEditor {
 		}
 
 		// update problem decoration
-		IMarker[] markers = InifileUtils.getProblemMarkersFor(GENERAL, entry.getKey(), inifile);
+		IMarker[] markers = InifileUtils.getProblemMarkersFor(GENERAL, entry.getName(), inifile);
 		problemDecoration.setImage(getProblemImage(markers, true, true));
 		problemDecoration.setDescriptionText(getProblemsText(markers));
 		redraw();
@@ -101,7 +101,7 @@ public class CheckboxFieldEditor extends FieldEditor {
 
 	@Override
 	public void commit() {
-		String key = entry.isPerObject() ? "**."+entry.getKey() : entry.getKey();
+		String key = entry.isPerObject() ? "**."+entry.getName() : entry.getName();
 		boolean value = checkbox.getSelection();
 		setValueInFile(GENERAL, key, value ? "true" : "false");
 	}

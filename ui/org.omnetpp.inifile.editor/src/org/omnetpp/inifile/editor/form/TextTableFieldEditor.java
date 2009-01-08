@@ -24,7 +24,7 @@ import org.omnetpp.common.ui.TableLabelProvider;
 import org.omnetpp.common.ui.TableTextCellEditor;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.contentassist.InifileValueContentProposalProvider;
-import org.omnetpp.inifile.editor.model.ConfigKey;
+import org.omnetpp.inifile.editor.model.ConfigOption;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.inifile.editor.model.SectionKey;
@@ -40,7 +40,7 @@ import org.omnetpp.inifile.editor.model.SectionKey;
 //XXX fix up content assist!!!
 //XXX todo: content assist for the "object" column too
 public class TextTableFieldEditor extends TableFieldEditor {
-	public TextTableFieldEditor(Composite parent, ConfigKey entry, IInifileDocument inifile, FormPage formPage, String labelText) {
+	public TextTableFieldEditor(Composite parent, ConfigOption entry, IInifileDocument inifile, FormPage formPage, String labelText) {
 		super(parent, entry, inifile, formPage, labelText);
 	}
 
@@ -89,7 +89,7 @@ public class TextTableFieldEditor extends TableFieldEditor {
 				if (columnIndex == 0)
 					return "["+sectionKey.section+"]";
 				if (columnIndex == objectColumnIndex)
-				    return StringUtils.removeEnd(sectionKey.key, "."+entry.getKey());
+				    return StringUtils.removeEnd(sectionKey.key, "."+entry.getName());
                 if (columnIndex == valueColumnIndex)
                     return getValueFromFile(sectionKey.section, sectionKey.key);
 				throw new IllegalArgumentException();
@@ -125,7 +125,7 @@ public class TextTableFieldEditor extends TableFieldEditor {
 			    if (property.equals("value"))
 			        return getValueFromFile(sectionKey.section, sectionKey.key);
 			    else if (property.equals("object"))
-			        return StringUtils.removeEnd(sectionKey.key, "."+entry.getKey());
+			        return StringUtils.removeEnd(sectionKey.key, "."+entry.getName());
 			    else 
 			        throw new IllegalArgumentException();
 			}
@@ -137,7 +137,7 @@ public class TextTableFieldEditor extends TableFieldEditor {
                 if (property.equals("value"))
                     setValueInFile(sectionKey.section, sectionKey.key, (String) value);
                 else if (property.equals("object"))
-                    renameKeyInInifile(sectionKey.section, sectionKey.key, value+"."+entry.getKey());
+                    renameKeyInInifile(sectionKey.section, sectionKey.key, value+"."+entry.getName());
                 else 
                     throw new IllegalArgumentException();
 				tableViewer.refresh();

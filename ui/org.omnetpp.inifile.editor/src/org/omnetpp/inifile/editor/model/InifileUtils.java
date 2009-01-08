@@ -325,9 +325,9 @@ public class InifileUtils {
 	}
 	
 	private static int getKeyRank(String key) {
-		if (key.equals(CFGID_EXTENDS.getKey())) return 1;
-		if (key.equals(CFGID_DESCRIPTION.getKey())) return 2;
-		if (key.equals(CFGID_NETWORK.getKey())) return 3;
+		if (key.equals(CFGID_EXTENDS.getName())) return 1;
+		if (key.equals(CFGID_DESCRIPTION.getName())) return 2;
+		if (key.equals(CFGID_NETWORK.getName())) return 3;
 		KeyType type = InifileAnalyzer.getKeyType(key);
 		if (type == KeyType.CONFIG) return 4;
 		//FIXME "=default" should come here: if (key.endsWith(dot_APPLY_DEFAULT)) return 7; // (!!!) 
@@ -423,7 +423,7 @@ public class InifileUtils {
 		// base image
 		boolean exists = analyzer.getDocument().containsSection(sectionName);
 		boolean containsIteration = exists ? analyzer.containsIteration(sectionName) : false;
-		boolean containsRepeat = exists ? lookupConfig(sectionName, CFGID_REPEAT.getKey(), doc) != null : false;
+		boolean containsRepeat = exists ? lookupConfig(sectionName, CFGID_REPEAT.getName(), doc) != null : false;
 		Image sectionImage = !exists ? ICON_SECTION_NONEXISTENT :
 			(containsIteration && containsRepeat) ? ICON_SECTION_ITERREP :
 				(containsIteration && !containsRepeat) ? ICON_SECTION_ITER :

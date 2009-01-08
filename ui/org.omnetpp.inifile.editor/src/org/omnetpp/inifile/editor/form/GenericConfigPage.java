@@ -105,7 +105,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
-import org.omnetpp.inifile.editor.model.ConfigKey;
+import org.omnetpp.inifile.editor.model.ConfigOption;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 
 /**
@@ -368,7 +368,7 @@ public class GenericConfigPage extends ScrolledFormPage {
 		return group;
 	}
 
-    protected FieldEditor addTextFieldEditor(Composite parent, ConfigKey e, String label) {
+    protected FieldEditor addTextFieldEditor(Composite parent, ConfigOption e, String label) {
         FieldEditor editor = e.isGlobal() ?
                 new TextFieldEditor(parent, e, getInifileDocument(), this, label) :
                 new ExpandableTextFieldEditor(parent, e, getInifileDocument(), this, label);
@@ -376,7 +376,7 @@ public class GenericConfigPage extends ScrolledFormPage {
         return editor;
     }
 
-    protected FieldEditor addComboboxFieldEditor(Composite parent, ConfigKey e, String label) {
+    protected FieldEditor addComboboxFieldEditor(Composite parent, ConfigOption e, String label) {
 		FieldEditor editor = e.isGlobal() ?
 				new ComboFieldEditor(parent, e, getInifileDocument(), this, label) :
 				new ExpandableTextFieldEditor(parent, e, getInifileDocument(), this, label); //FIXME make it combo too
@@ -384,7 +384,7 @@ public class GenericConfigPage extends ScrolledFormPage {
         return editor;
 	}
 
-	protected FieldEditor addCheckboxFieldEditor(Composite parent, ConfigKey e, String label) {
+	protected FieldEditor addCheckboxFieldEditor(Composite parent, ConfigOption e, String label) {
 		FieldEditor editor = e.isGlobal() ?
 				new CheckboxFieldEditor(parent, e, getInifileDocument(), this, label) :
 				new ExpandableCheckboxFieldEditor(parent, e, getInifileDocument(), this, label);
@@ -392,13 +392,13 @@ public class GenericConfigPage extends ScrolledFormPage {
 		return editor;
 	}
 
-    protected FieldEditor addTextTableFieldEditor(Composite parent, ConfigKey e, String label) {
+    protected FieldEditor addTextTableFieldEditor(Composite parent, ConfigOption e, String label) {
         FieldEditor editor = new TextTableFieldEditor(parent, e, getInifileDocument(), this, label);
         addFieldEditor(editor);
         return editor;
     }
 
-    protected FieldEditor addCheckboxTableFieldEditor(Composite parent, ConfigKey e, String label) {
+    protected FieldEditor addCheckboxTableFieldEditor(Composite parent, ConfigOption e, String label) {
         FieldEditor editor = new CheckboxTableFieldEditor(parent, e, getInifileDocument(), this, label);
         addFieldEditor(editor);
         return editor;
@@ -409,9 +409,9 @@ public class GenericConfigPage extends ScrolledFormPage {
 		editor.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 	}
 
-	protected FieldEditor getFieldEditorFor(ConfigKey configKey) {
+	protected FieldEditor getFieldEditorFor(ConfigOption configOption) {
         for (FieldEditor e : fieldEditors)
-            if (e.getConfigKey() == configKey)
+            if (e.getConfigKey() == configOption)
                 return e;
         return null;
     }
@@ -442,8 +442,8 @@ public class GenericConfigPage extends ScrolledFormPage {
 	}
 
 	@Override
-	public List<ConfigKey> getSupportedKeys() {
-		List<ConfigKey> result = new ArrayList<ConfigKey>();
+	public List<ConfigOption> getSupportedKeys() {
+		List<ConfigOption> result = new ArrayList<ConfigOption>();
 		for (FieldEditor e : fieldEditors)
 			result.add(e.getConfigKey());
 		return result;

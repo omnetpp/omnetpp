@@ -14,7 +14,7 @@ import org.eclipse.jface.fieldassist.IContentProposal;
 import org.omnetpp.common.contentassist.ContentProposal;
 import org.omnetpp.common.contentassist.ContentProposalProvider;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.inifile.editor.model.ConfigKey;
+import org.omnetpp.inifile.editor.model.ConfigOption;
 import org.omnetpp.inifile.editor.model.ConfigRegistry;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
@@ -50,8 +50,8 @@ public class PerObjectConfigKeyContentProposalProvider extends ContentProposalPr
 		ArrayList<IContentProposal> result = new ArrayList<IContentProposal>();
 		if (section != null && prefix.contains(".")) {
 			String prefixBase = prefix.substring(0, prefix.lastIndexOf('.')+1);
-			for (ConfigKey e : ConfigRegistry.getPerObjectEntries()) {
-			    String content = prefixBase + e.getKey()+(addEqualSign ? " = " : "");
+			for (ConfigOption e : ConfigRegistry.getPerObjectEntries()) {
+			    String content = prefixBase + e.getName()+(addEqualSign ? " = " : "");
 			    result.add(new ContentProposal(content, content, getConfigHelpText(e, section, doc)));
 			}
 		}
@@ -61,8 +61,8 @@ public class PerObjectConfigKeyContentProposalProvider extends ContentProposalPr
 	/**
 	 * Generate help text for the given config entry, to be displayed by the content assistant.
 	 */
-	protected static String getConfigHelpText(ConfigKey entry, String section, IInifileDocument doc) {
-		String key = entry.getKey();
+	protected static String getConfigHelpText(ConfigOption entry, String section, IInifileDocument doc) {
+		String key = entry.getName();
 		String text = "";
 
 		// generate "standard" documentation for it
