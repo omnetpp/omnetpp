@@ -104,27 +104,36 @@ interface to provides the data in raw form to it.
 The default implementation of \cclass{cConfigurationReader} is
 \cclass{InifileReader}.
 
-For the configuration plug-in, the startup sequence is the following
-(see \ttt{src/sim/bootenv.cc} in the source code):
+From the configuration plug-in's point of view, the startup sequence
+looks like the following (see \ttt{src/sim/bootenv.cc} in the source code):
 
 \begin{enumerate}
-  \item First, ini files (specified as command-line arguments,
-     or \ttt{omnetpp.ini} if none were specified) are read into a
-     \textit{boot-time configuration object}.
+  \item First, ini files specified on the command-line are read into a
+     \textit{boot-time configuration object}. The boot-time configuration
+     is always a \cclass{SectionBasedConfiguration} with
+     \cclass{InifileReader}.
   \item Shared libraries get loaded (see the \ttt{-l} command-line option,
-     and the \ttt{load-libs} configuration option)
+     and the \ttt{load-libs} configuration option). This allows
+     configuration classes to come from shared libraries.
   \item The \ttt{configuration-class} configuration option is examined.
      If it is present, a configuration object of the given class
      is instantiated, and replaces the boot-time configuration.
-     The new configuration object receives the boot-time configuration
-     when it gets initialized, so it can take parameters (e.g. database
-     connection parameters, XML file name, etc) from the boot-time
-     config. Then the boot-time configuration object is deallocated.
+     The new configuration object is initialized from the boot-time
+     configuration, so that it can read parameters (e.g. database
+     connection parameters, XML file name, etc) from it.
+     Then the boot-time configuration object is deallocated.
   \item The \ttt{load-libs} option from the new configuration object is
      processed.
   \item Then everything goes on as normally, using the new configuration
      object.
 \end{enumerate}
+
+\begin{verbatim}
+class DatabaseConfiguration : SectionBasedConfiguration
+{
+FIXME TODO!!
+};
+\end{verbatim}
 
 
 \subsection{Defining a new output scalar manager}
