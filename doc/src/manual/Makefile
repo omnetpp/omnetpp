@@ -24,7 +24,7 @@ TEXCHAPTERS = \
 	 ch-neddoc.tex \
 	 ch-parallel-exec.tex \
 	 ch-plugin-exts.tex \
-	 ch-opp-design.tex \
+	 ch-embedding.tex \
 	 appendix-ned-ref.tex \
 	 appendix-ned-grammar.tex \
 	 appendix-ned-dtd.tex \
@@ -85,7 +85,7 @@ pdf: $(ALLTEX) $(PDFPICS) figures/*.png
 .tex.htm:
 	$(PERL) ltoh.pl $<
 
-.PHONY : eclipse 
+.PHONY : eclipse
 eclipse : $(HTMCHAPTERS) $(PNGPICS) eclipse.thtml prephtml2 ltoh.specs ltoh.pl
 	cat $(HTMCHAPTERS) > usman.tmp
 	$(PERL) prephtml2 --split --template eclipse.thtml usman.tmp

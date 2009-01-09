@@ -1,5 +1,5 @@
 \chapter{Embedding the Simulation Kernel}
-\label{cha:opp-design}
+\label{cha:embedding}
 
 \section{Architecture}
 
@@ -31,8 +31,8 @@ The rectangles in the picture represent components:
     interfaces. Embedding {\opp} into applications\index{embedding} can
     be achieved implementing a new user interface in addition to Cmdenv and Tkev,
     or by replacing Envir with another implementation of \ttt{ev}
-    (see sections \ref{sec:ch-opp-design:customization} and
-    \ref{sec:ch-opp-design:embedding}.)}
+    (see sections \ref{sec:ch-embedding:customization} and
+    \ref{sec:ch-embedding:embedding}.)}
   \item{\textbf{Cmdenv and Tkenv} are specific user interface
     implementations. A simulation is linked with
     either Cmdenv or Tkenv.}
@@ -96,7 +96,7 @@ each other:
 
 
 \section{Embedding {\opp}}
-\label{sec:ch-opp-design:embedding}
+\label{sec:ch-embedding:embedding}
 
 This section discusses the issues of embedding the simulation kernel
 or a simulation model into a larger application.

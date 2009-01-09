@@ -23,7 +23,7 @@ TEXCHAPTERS = \
          ch-neddoc.tex \
          ch-parallel-exec.tex \
          ch-plugin-exts.tex \
-         ch-opp-design.tex \
+         ch-embedding.tex \
          appendix-ned-ref.tex \
          appendix-ned-grammar.tex \
          appendix-ned-dtd.tex \
