@@ -50,22 +50,22 @@ The arrows in the figure show how components interact with
 each other:
 
 \begin{itemize}
-  \item{\textbf{Executing Model vs Sim}. The simulation kernel
+  \item{\textbf{Executing Model $\Leftrightarrow$ Sim}. The simulation kernel
     manages the future events and invokes modules in the executing model
     as events occur. The modules of the executing model are stored
     in the main object of Sim, \fvar{simulation} (of class \cclass{cSimulation}).
     In turn, the executing model calls functions in the
     simulation kernel and uses classes in the Sim library.}
-  \item{\textbf{Sim vs Model Component Library}. The simulation kernel
+  \item{\textbf{Sim $\Leftrightarrow$ Model Component Library}. The simulation kernel
     instantiates simple modules and other components when the simulation model
     is set up at the beginning of the simulation run. It also refers
     to the component library when dynamic module creation is used.
     The machinery for registering and looking up components in the model
     component library is implemented as part of Sim.}
-  \item{\textbf{Executing Model vs Envir}. The \ttt{ev} object, logically
+  \item{\textbf{Executing Model $\Leftrightarrow$ Envir}. The \ttt{ev} object, logically
     part of Envir, is the facade of the user interface towards the executing model.
     The model uses \ttt{ev} to write debug logs (\ttt{ev<<}, \ttt{ev.printf()}).}
-  \item{\textbf{Sim vs Envir}. Envir is in full command of what
+  \item{\textbf{Sim $\Leftrightarrow$ Envir}. Envir is in full command of what
     happens in the simulation program. Envir contains the \ttt{main()} function
     where execution begins. Envir determines which models should be set up
     for simulation, and instructs Sim to do so. Envir contains the main
@@ -81,7 +81,7 @@ each other:
     Sim when Sim asks for them. Sim writes output vectors via Envir,
     so one can redefine the output vector storing mechanism by changing Envir.
     Sim and its classes use Envir to print debug information.}
-  \item{\textbf{Envir vs Tkenv and Cmdenv}. Envir defines \cclass{TOmnetApp}
+  \item{\textbf{Envir $\Leftrightarrow$ Tkenv and Cmdenv}. Envir defines \cclass{TOmnetApp}
     as a base class for user interfaces, and Tkenv and Cmdenv both subclass
     from \cclass{TOmnetApp}. The \ttt{main()} function provided as part of Envir
     determines the appropriate user interface class (subclassed from

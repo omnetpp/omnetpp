@@ -1193,6 +1193,21 @@ sub formatmath ()
       # convert \in
       $txt =~ s!\\in! is in !g;
 
+      # convert some arrows
+      $txt =~ s!\\leftarrow!<--!g;
+      $txt =~ s!\\Leftarrow!<==!g;
+      $txt =~ s!\\rightarrow!-->!g;
+      $txt =~ s!\\Rightarrow!==>!g;
+      $txt =~ s!\\leftrightarrow!<-->!g;
+      $txt =~ s!\\Leftrightarrow!<==>!g;
+
+      $txt =~ s!\\longleftarrow!<---!g;
+      $txt =~ s!\\Longleftarrow!<===!g;
+      $txt =~ s!\\longrightarrow!--->!g;
+      $txt =~ s!\\Longrightarrow!===>!g;
+      $txt =~ s!\\longleftrightarrow!<--->!g;
+      $txt =~ s!\\Longleftrightarrow!<===>!g;
+
       # convert ^ and _ without braces
       $txt =~ s!\^([a-zA-Z0-9]+)!<sup>$1</sup>!g;
       $txt =~ s!\_([a-zA-Z0-9]+)!<sub>$1</sub>!g;
