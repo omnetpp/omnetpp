@@ -146,12 +146,12 @@ $O/akoutvectormgr.o: akoutvectormgr.cc \
   ../../include/cnamedobject.h \
   ../../include/cgate.h \
   ../../include/simtime.h \
-  ../../include/cconfigkey.h \
   ../../include/carray.h \
   ../../include/simtime_t.h \
   ../../include/cenvir.h \
   ../../include/ccomponent.h \
   intervals.h \
+  ../../include/cconfigoption.h \
   ../../include/cstatistic.h \
   ../../include/cregistrationlist.h \
   ../../include/cconfiguration.h \
@@ -198,11 +198,11 @@ $O/bootenv.o: bootenv.cc \
   ../../include/simtime.h \
   ../../include/cgate.h \
   matchableobject.h \
-  ../../include/cconfigkey.h \
   ../../include/simtime_t.h \
   ../../include/cenvir.h \
   ../../include/ccomponent.h \
   intervals.h \
+  ../../include/cconfigoption.h \
   ../../include/cregistrationlist.h \
   ../../include/cconfiguration.h \
   ../../include/opp_string.h \
@@ -267,12 +267,12 @@ $O/envirbase.o: envirbase.cc \
   ../../include/cnamedobject.h \
   ../../include/cgate.h \
   ../../include/simtime.h \
-  ../../include/cconfigkey.h \
   ../../include/carray.h \
   ../../include/cenvir.h \
   ../../include/simtime_t.h \
   ../../include/ccomponent.h \
   intervals.h \
+  ../../include/cconfigoption.h \
   ../../include/cproperties.h \
   ../../include/cregistrationlist.h \
   ../../include/platdep/timeutil.h \
@@ -323,15 +323,14 @@ $O/eventlogfilemgr.o: eventlogfilemgr.cc \
   ../../include/simtime.h \
   ../../include/ccompoundmodule.h \
   ../../include/cgate.h \
-  ../../include/cconfigkey.h \
   ../../include/carray.h \
   ../../include/cenvir.h \
   ../../include/simtime_t.h \
   ../../include/cmsgpar.h \
   ../../include/ccomponent.h \
   intervals.h \
+  ../../include/cconfigoption.h \
   ../../include/cregistrationlist.h \
-  eventlogwriter.h \
   ../../include/cchannel.h \
   ../../include/cconfiguration.h \
   ../../include/opp_string.h \
@@ -360,40 +359,6 @@ $O/eventlogfilemgr.o: eventlogfilemgr.cc \
   ../../include/platdep/intxtypes.h \
   ../../include/ccomponenttype.h \
   args.h
-$O/eventlogwriter.o: eventlogwriter.cc \
-  ../../include/regmacros.h \
-  ../../include/ccoroutine.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/cclassfactory.h \
-  envirdefs.h \
-  ../../include/cexpression.h \
-  ../../include/cnamedobject.h \
-  ../../include/cgate.h \
-  ../../include/simtime.h \
-  ../../include/cconfigkey.h \
-  ../../include/cenvir.h \
-  ../../include/simtime_t.h \
-  ../../include/ccomponent.h \
-  ../../include/cregistrationlist.h \
-  eventlogwriter.h \
-  ../../include/opp_string.h \
-  ../../include/simkerneldefs.h \
-  ../../include/errmsg.h \
-  ../../include/csimulation.h \
-  ../../include/cownedobject.h \
-  ../../include/onstartup.h \
-  ../../include/cobject.h \
-  ../../include/cstringpool.h \
-  ../../include/cpar.h \
-  ../../include/globals.h \
-  ../../include/cdefaultlist.h \
-  ../../include/cvisitor.h \
-  ../../include/platdep/platmisc.h \
-  ../../include/cmodule.h \
-  ../../include/cmessageheap.h \
-  ../../include/simutil.h \
-  ../../include/cexception.h \
-  ../../include/platdep/intxtypes.h
 $O/fileoutscalarmgr.o: fileoutscalarmgr.cc \
   ../../include/regmacros.h \
   ../../include/ccoroutine.h \
@@ -405,13 +370,13 @@ $O/fileoutscalarmgr.o: fileoutscalarmgr.cc \
   ../../include/cnamedobject.h \
   ../../include/cgate.h \
   ../../include/simtime.h \
-  ../../include/cconfigkey.h \
   ../../include/carray.h \
   ../../include/simtime_t.h \
   ../../include/cenvir.h \
   ../../include/ccomponent.h \
   intervals.h \
   ../../include/cstatistic.h \
+  ../../include/cconfigoption.h \
   ../../include/cregistrationlist.h \
   ../../include/cconfiguration.h \
   ../../include/opp_string.h \
@@ -454,12 +419,12 @@ $O/fileoutvectormgr.o: fileoutvectormgr.cc \
   ../../include/cnamedobject.h \
   ../../include/cgate.h \
   ../../include/simtime.h \
-  ../../include/cconfigkey.h \
   ../../include/carray.h \
   ../../include/simtime_t.h \
   ../../include/cenvir.h \
   ../../include/ccomponent.h \
   intervals.h \
+  ../../include/cconfigoption.h \
   ../../include/cregistrationlist.h \
   ../../include/cconfiguration.h \
   ../../include/opp_string.h \
@@ -495,11 +460,11 @@ $O/filesnapshotmgr.o: filesnapshotmgr.cc \
   envirdefs.h \
   ../../include/cnamedobject.h \
   ../../include/simtime.h \
-  ../../include/cconfigkey.h \
   ../../include/carray.h \
   ../../include/simtime_t.h \
   ../../include/cenvir.h \
   intervals.h \
+  ../../include/cconfigoption.h \
   ../../include/cregistrationlist.h \
   ../../include/cconfiguration.h \
   ../../include/opp_string.h \
@@ -554,13 +519,13 @@ $O/indexedfileoutvectormgr.o: indexedfileoutvectormgr.cc \
   ../../include/cnamedobject.h \
   ../../include/cgate.h \
   ../../include/simtime.h \
-  ../../include/cconfigkey.h \
   ../../include/carray.h \
   ../../include/simtime_t.h \
   ../../include/cenvir.h \
   ../../include/ccomponent.h \
   intervals.h \
   ../../include/cstatistic.h \
+  ../../include/cconfigoption.h \
   ../../include/cregistrationlist.h \
   ../../include/cconfiguration.h \
   ../../include/opp_string.h \
@@ -754,11 +719,11 @@ $O/runattributes.o: runattributes.cc \
   ../../include/cclassfactory.h \
   ../../include/cnamedobject.h \
   ../../include/simtime.h \
-  ../../include/cconfigkey.h \
   ../../include/carray.h \
   ../../include/simtime_t.h \
   ../../include/cenvir.h \
   intervals.h \
+  ../../include/cconfigoption.h \
   ../../include/cregistrationlist.h \
   ../../include/cconfiguration.h \
   ../../include/opp_string.h \
@@ -807,9 +772,9 @@ $O/sectionbasedconfig.o: sectionbasedconfig.cc \
   envirdefs.h \
   ../../include/cnamedobject.h \
   ../../include/simtime.h \
-  ../../include/cconfigkey.h \
   ../../include/cenvir.h \
   ../../include/simtime_t.h \
+  ../../include/cconfigoption.h \
   ../../include/cregistrationlist.h \
   ../../include/cconfiguration.h \
   ../../include/opp_string.h \

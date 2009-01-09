@@ -190,7 +190,6 @@ $O/inspector.o: inspector.cc \
   ../../include/cdataratechannel.h \
   ../../include/cmathfunction.h \
   ../envir/eventlogfilemgr.h \
-  ../../include/cconfigkey.h \
   ../../include/cgate.h \
   ../../include/simtime.h \
   ../../include/carray.h \
@@ -202,6 +201,7 @@ $O/inspector.o: inspector.cc \
   ../../include/mersennetwister.h \
   ../../include/cclassdescriptor.h \
   ../../include/cstatistic.h \
+  ../../include/cconfigoption.h \
   ../../include/cstringtokenizer.h \
   inspector.h \
   ../../include/cchannel.h \
@@ -296,7 +296,6 @@ $O/inspfactory.o: inspfactory.cc \
   ../envir/eventlogfilemgr.h \
   ../../include/simtime.h \
   ../../include/cgate.h \
-  ../../include/cconfigkey.h \
   ../../include/cstringparimpl.h \
   ../../include/carray.h \
   ../../include/simtime_t.h \
@@ -306,6 +305,7 @@ $O/inspfactory.o: inspfactory.cc \
   ../../include/mersennetwister.h \
   ../../include/cclassdescriptor.h \
   ../../include/cstatistic.h \
+  ../../include/cconfigoption.h \
   ../../include/cstringtokenizer.h \
   inspector.h \
   ../../include/cchannel.h \
@@ -563,7 +563,6 @@ $O/objinsp.o: objinsp.cc \
   ../envir/eventlogfilemgr.h \
   ../../include/simtime.h \
   ../../include/cgate.h \
-  ../../include/cconfigkey.h \
   ../../include/cstringparimpl.h \
   ../../include/carray.h \
   ../../include/simtime_t.h \
@@ -573,6 +572,7 @@ $O/objinsp.o: objinsp.cc \
   ../../include/mersennetwister.h \
   ../../include/cclassdescriptor.h \
   ../../include/cstatistic.h \
+  ../../include/cconfigoption.h \
   inspector.h \
   ../../include/cstringtokenizer.h \
   ../../include/cchannel.h \
@@ -661,7 +661,6 @@ $O/statinsp.o: statinsp.cc \
   ../../include/cmessageheap.h \
   tkenv.h \
   statinsp.h
-$O/tclcode.o: tclcode.cc
 $O/tkcmd.o: tkcmd.cc \
   ../envir/args.h \
   ../../include/regmacros.h \
@@ -750,7 +749,6 @@ $O/tkenv.o: tkenv.cc \
   ../../include/envirext.h \
   ../../include/cscheduler.h \
   ../../include/cpar.h \
-  tclcode.cc \
   ../../include/globals.h \
   ../envir/appreg.h \
   ../../include/cvisitor.h \
@@ -773,12 +771,12 @@ $O/tkenv.o: tkenv.cc \
   ../envir/eventlogfilemgr.h \
   ../../include/cgate.h \
   ../../include/simtime.h \
-  ../../include/cconfigkey.h \
   ../../include/carray.h \
   ../../include/simtime_t.h \
   ../../include/cenvir.h \
   ../../include/cmsgpar.h \
   ../../include/cstatistic.h \
+  ../../include/cconfigoption.h \
   inspector.h \
   ../../include/cchannel.h \
   ../envir/intervals.h \

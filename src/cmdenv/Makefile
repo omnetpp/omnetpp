@@ -83,7 +83,6 @@ $O/cmdenv.o: cmdenv.cc \
   cmddefs.h \
   ../../include/cgate.h \
   ../../include/simtime.h \
-  ../../include/cconfigkey.h \
   ../envir/objectprinter.h \
   ../../include/carray.h \
   ../envir/speedometer.h \
@@ -91,6 +90,7 @@ $O/cmdenv.o: cmdenv.cc \
   ../../include/cenvir.h \
   ../../include/cmsgpar.h \
   ../../include/ccomponent.h \
+  ../../include/cconfigoption.h \
   ../../include/cproperties.h \
   ../../include/cregistrationlist.h \
   ../../include/cconfiguration.h \

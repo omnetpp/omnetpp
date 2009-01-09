@@ -69,6 +69,8 @@ clean:
 #	rm -f opp_configfilepath.cmd
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
+$O/abspath.o: abspath.cc \
+  ../common/ver.h
 $O/opp_lcg32_seedtool.o: opp_lcg32_seedtool.cc \
   ../common/ver.h
 $O/ln.o: ln.c
