@@ -422,8 +422,7 @@ option allows only specifying a single run. Multiple runs are not supported.
 
 Tkenv specific configuration options can be specified also on command line
 by prefixing them with double dash (e.g -{}-tkenv-option=value). See
-\ref{cha:appendix-config-options:config.options} for the list of
-possible configuration options.
+Appendix \ref{cha:config-options} for the list of possible configuration options.
 
 
 \section{Batch execution}
@@ -464,7 +463,6 @@ simulation with an API call if some condition is true.
   Use the \fprog{opp\_runall} for this purpose.
 \end{warning}
 
-...
 
 \subsection{Using shell scripts}
 
@@ -521,7 +519,43 @@ done
 
 \subsection{Using opp\_runall}
 
-...
+\opp has a utility program called \fprog{opp\_runall} which 
+allows you to execute a simulation batch in command line mode. 
+You must specify the whole command line you would use to run 
+your batch in Cmdenv. There are advantages running your batches
+this way:
+\begin{itemize}
+  \item Each simulation run executes in a separate operating system process.
+        This means that a crash because of a programming error does not affect
+        the outcome of the other runs. They are totally independent of each other.
+  \item If you happen to have a multi core/processor machine, you can take advantage
+        of the processing power by running sevaral runs parallel.
+\end{itemize}
+
+The command basically creates a makefile which contains
+a separate target for each run. By default the makefile will be executed causing each 
+target to run. You can give additional options to the \fprog{opp\_runall} command to
+activate parallel building. The \ttt{-j} option can be used to specify the maximum number 
+of parallel runs allowed. 
+
+\begin{warning}
+  Use the parallel execution option only if you have enough memory to run several simulations
+  side by side. If you run out of memory your operating system will start swapping and the overall
+  performance of the system will be greatly reduced. Always specify the number of processes 
+  after the \ttt{-j} option otherwise the \fprog{make} program will try to start \textit{all}
+  runs at the same time. As a rule of thumb: if you have 4 cores (and enough memory), use \ttt{-j4}.
+\end{warning}
+
+The form of the command is:
+\begin{verbatim}
+opp_runall -j2 ./aloha -u Cmdenv -c PureAlohaExperiment -r 0..23
+\end{verbatim}
+
+You can use the \ttt{-x ConfigName -g} command line options with your simulation to 
+check the number of available runs.
+
+Using the \ttt{-{}-export filename} option only generates the \ttt{makefile}, but does not start it.
+You can run your batch later by invoking the generated makefile.
 
 %% TODO
 %%\subsection{Using Xgrid}
@@ -671,20 +705,20 @@ be under Akaroa control. By default, all output vectors are under Akaroa
 control; the
 
 \begin{verbatim}
-<modulename>.<vectorname>.akaroa=false
+<modulename>.<vectorname>.with-akaroa=false
 \end{verbatim}
 
 setting can be used to make Akaroa ignore specific vectors.
 You can use the \ttt{*}, \ttt{**} wildcards here (see
-section \ref{sec:ch-run-sim:wildcards}). For example,
+section \ref{sec:ch-config-sim:wildcards}). For example,
 if you only want a few vectors be placed under Akaroa,
 you can use the following trick:
 
 \begin{verbatim}
-<modulename>.<vectorname1>.akaroa=true
-<modulename>.<vectorname2>.akaroa=true
+<modulename>.<vectorname1>.with-akaroa=true
+<modulename>.<vectorname2>.with-akaroa=true
 ...
-**.*.akaroa=false  # catches everything not matched above
+**.*.with-akaroa=false  # catches everything not matched above
 \end{verbatim}
 
 
@@ -712,7 +746,9 @@ files (output vector, output scalar, snapshot files).
 
 \subsection{Unrecognized configuration option}
 
-TODO use \ttt{-h config} or \ttt{-h configdetails}
+If you receive an error message about unrecognized configuration
+options you may use \ttt{-h config} or \ttt{-h configdetails} options
+to display all possible configuration options and their descriptions.
 
 \subsection{Stack problems}
 
@@ -912,16 +948,19 @@ detecting double deletion, writing past the end of an allocated block, etc.
 A proven commercial tool \textit{Rational Purify}. It has
 a good reputation and proved its usefulness many times.
 
-
 \subsection{Simulation executes slowly}
 
-TODO express mode is on?
+Check the following if you think your simulation is running too slow.
 
-TODO eventlog recording is on?
+\begin{itemize}
+  \item Turn on express mode with the \ttt{cmdenv-express-mode=true} configuration option.
+  \item Be sure that event logging is turned off (\ttt{record-eventlog=false} configuration option).
+  \item Turn of vector file recording if you do not absolutely need it (\ttt{**.vector-recording=false}).
+  \item If you are running under Tkenv disable animation features, close inspectors, 
+        hide the timeline, hide object tree, turn off log filterning.
+  \item Compile your code as release instead of debug (in some cases this can give you 5x speedup)
+\end{itemize}
 
-TODO vector file recording is on?
-
-TODO Tkenv: disable animation features, close inspectors, hide the timeline, hide object tree, etc.
 
 What can you do if the simulation executes much slower than you expect?
 The best advice that can be given here is that you should
