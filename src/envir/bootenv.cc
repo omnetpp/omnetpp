@@ -118,8 +118,6 @@ int BootEnv::run(int argc, char *argv[], cConfiguration *cfg)
     int exitcode = 0;
     try
     {
-        simulation.init();
-
         // construct global lists
         ExecuteOnStartup::executeAll();
 

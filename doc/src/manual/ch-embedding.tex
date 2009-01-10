@@ -114,7 +114,6 @@ int main(int argc, char *argv[])
     cStaticFlag dummy;
 
     // initializations
-    simulation.init();
     ExecuteOnStartup::executeAll();
     SimTime::setScaleExp(-12);
 
@@ -182,6 +181,10 @@ void simulate(const char *networkName, simtime_t limit)
     simulation.deleteNetwork();
 }
 \end{verbatim}
+
+
+
+
 
 % --------------------
 %

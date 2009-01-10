@@ -83,20 +83,20 @@ TclQuotedString::~TclQuotedString()
 
 //=======================================================================
 
+#define TRY2(CODE)  try { CODE; } catch (std::exception& e) {printf("<!> Warning: %s\n", e.what());}
+
 const char *getObjectShortTypeName(cObject *object)
 {
-   if (dynamic_cast<cComponent*>(object))
-       return ((cComponent*)object)->getComponentType()->getName();
-   else
-       return object->getClassName();
+    if (dynamic_cast<cComponent*>(object))
+        TRY2( return ((cComponent*)object)->getComponentType()->getName() );
+    return object->getClassName();
 }
 
 const char *getObjectFullTypeName(cObject *object)
 {
-   if (dynamic_cast<cComponent*>(object))
-       return ((cComponent*)object)->getComponentType()->getFullName();
-   else
-       return object->getClassName();
+    if (dynamic_cast<cComponent*>(object))
+        TRY2( return ((cComponent*)object)->getComponentType()->getFullName() );
+    return object->getClassName();
 }
 
 char *voidPtrToStr(void *ptr, char *buffer)

@@ -58,21 +58,7 @@ void printAllObjects();
 
 cSimulation simulation("simulation");
 
-
-// writing date and time on a stream - used in cSimulation::writeresult(..)
-ostream& operator<<(ostream& os, struct tm d)
-{
-    static const char *month[] =
-       {"Jan", "Feb", "Mar", "Apr", "May", "Jun",
-        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
-
-    os << month[d.tm_mon] << ' ' << (int)d.tm_mday << ", " <<
-          (1900+d.tm_year) << ", ";
-    os << (int)d.tm_hour << ':' <<
-          (int)d.tm_min << ':' <<
-          (int)d.tm_sec;
-    return os;
-}
+EXECUTE_ON_STARTUP(simulation.init());
 
 
 cSimulation::cSimulation(const char *name) : cNoncopyableOwnedObject(name, false)
@@ -104,7 +90,7 @@ cSimulation::cSimulation(const char *name) : cNoncopyableOwnedObject(name, false
 cSimulation::~cSimulation()
 {
     // see shutdown()
-    msgQueue.ownerp = NULL; //XXX in case shutdown() wasn't called, like with exit()
+    msgQueue.ownerp = NULL; // in case shutdown() wasn't called, like with exit()
 }
 
 void cSimulation::init()
