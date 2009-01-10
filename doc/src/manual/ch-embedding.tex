@@ -78,7 +78,7 @@ each other:
     Sim when Sim asks for them. Sim writes output vectors via Envir,
     so one can redefine the output vector storing mechanism by changing Envir.
     Sim and its classes use Envir to print debug information.}
-  \item{\textbf{Envir $\Leftrightarrow$ Tkenv and Cmdenv}. Tkenv and Cmdenv
+  \item{\textbf{Envir $\Leftrightarrow$ Tkenv/Cmdenv}. Tkenv and Cmdenv
     are concrete user interface implementations. When a simulation program
     is started, the \ttt{main()} function (which is part of Envir) determines
     the appropriate user interface class, creates an instance and runs it
@@ -122,8 +122,8 @@ int main(int argc, char *argv[])
     evPtr = new CustomSimulationEnv();
 
     // load NED files
-    simulation.loadNedSourceFolder("./ned-core");
-    simulation.loadNedSourceFolder("./ned-ext");
+    simulation.loadNedSourceFolder("./mysim-core");
+    simulation.loadNedSourceFolder("./mysim-ext");
     simulation.doneLoadingNedFiles();
 
     // set up and run a simulation model
@@ -137,7 +137,38 @@ int main(int argc, char *argv[])
 }
 \end{verbatim}
 
-The \ttt{simulate()} function for the above code:
+The first few lines of the code initialize the simulation library. The
+purpose of \cclass{cStaticFlag} is to set a global variable to \ttt{true}
+for the duration of the \ttt{main()} function, to help the simulation
+library handle exceptions correctly in extreme cases.
+\ttt{ExecuteOnStartup::executeAll()} does various startup tasks such as
+building registration tables out of the \fmac{Define\_Module()},
+\fmac{Register\_Class()} and similar entries throughout the code.
+\ttt{SimTime::setScaleExp(-12)} sets simulation time resolution to
+picoseconds; other values can be used as well, but it is mandatory to
+choose one.
+
+The lines dealing with \ttt{evPtr} set up an environment for the
+simulation. \ttt{evPtr} is a global variable behind the \ttt{ev} object;
+basically, \ttt{ev} is defined as \ttt{(*evPtr)}. The environment object
+contains callback functions invoked by the simulation kernel (and sometimes
+model code) to log debug output, access the configuration, record simulation
+results and so on. The \ttt{CustomSimulationEnv} class has to be provided by
+you; this is discussed in detail in a later section.
+Note that \ttt{evPtr} gets restored to its original value at the end
+of \ttt{main()}. This is necessary because the \ttt{simulation} object
+or other objects may call \ttt{ev} methods in their destructors,
+when your \ttt{CustomSimulationEnv} object no longer exists.
+
+The code then loads the NED files from the \ttt{mysim-core} and
+\ttt{mysim-ext} subdirectories of the working directory (as if the NED path
+was \ttt{./mysim-core;./mysim-ext}), and goes on to run two simulations.
+
+
+\subsection{The simulate() function}
+
+A minimalistic version of the \ttt{simulate()} function that was called
+from \ttt{main()}:
 
 \begin{verbatim}
 void simulate(const char *networkName, simtime_t limit)
@@ -159,7 +190,7 @@ void simulate(const char *networkName, simtime_t limit)
         while (simulation.getSimTime() < limit) {
             cSimpleModule *mod = simulation.selectNextModule();
             if (!mod)
-                break;
+                break;  //XXX
             simulation.doOneEvent(mod);
         }
     }
@@ -181,11 +212,36 @@ void simulate(const char *networkName, simtime_t limit)
 \end{verbatim}
 
 
-\section{Installing a custom scheduler}
+\subsection{Providing an environment object}
+
+TODO
+
+\subsection{Providing a configuration object}
+
+TODO
+
+\subsection{Loading NED files, and its alternatives}
+
+TODO
+
+you can load dirtrees, single files, and also strings containing NED code
+
+
+
+\subsection{The simulation loop}
+
+may build in cpu time limit, progress monitor, interactivity etc
+
+single thread!!
+
+animation is to be done via environment object callbacks
+
+
+\subsection{Installing a custom scheduler}
 
 The default event scheduler is \cclass{cSequentialScheduler}. To replace
 it with a different scheduler (e.g. \cclass{cRealTimeScheduler} or your
-own scheduler class), add a \fname{setScheduler()} call into \fff{main()}:
+own scheduler class), add a \fname{setScheduler()} call into \ttt{main()}:
 
 \begin{verbatim}
 cScheduler *scheduler = new CustomScheduler();
