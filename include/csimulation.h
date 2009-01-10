@@ -187,10 +187,11 @@ class SIM_API cSimulation : public cNoncopyableOwnedObject
     //@{
 
     /**
-     * Installs a scheduler object. It doesn't need to be deleted in the
-     * destructor, that will be done externally.
+     * Installs a scheduler object. This may only be called when no
+     * network is set up. The cSimulation object will be responsible
+     * for deallocating the scheduler object.
      */
-    void setScheduler(cScheduler *sched);
+    void setScheduler(cScheduler *scheduler);
 
     /**
      * Returns the scheduler object.

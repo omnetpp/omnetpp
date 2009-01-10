@@ -431,7 +431,7 @@ void _sim_dummy_func()
       w.supportsAssignment();
       exponential(1.0);
       cSequentialScheduler sch;
-      sch.setSimulation(NULL);
+      (void)sch;
       cLCG32 lcg;
       lcg.intRand();
       cMersenneTwister mt;

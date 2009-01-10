@@ -185,7 +185,6 @@ EnvirBase::EnvirBase()
     num_rngs = 0;
     rngs = NULL;
 
-    scheduler = NULL;
 #ifdef WITH_PARSIM
     parsimcomm = NULL;
     parsimpartition = NULL;
@@ -208,7 +207,6 @@ EnvirBase::~EnvirBase()
          delete rngs[i];
     delete [] rngs;
 
-    delete scheduler;
 #ifdef WITH_PARSIM
     delete parsimcomm;
     delete parsimpartition;
@@ -286,8 +284,8 @@ void EnvirBase::setup()
         if (!opt_parsim)
         {
             // sequential
+            cScheduler *scheduler;
             CREATE_BY_CLASSNAME(scheduler, opt_scheduler_class.c_str(), cScheduler, "event scheduler");
-            scheduler->setSimulation(&simulation);
             simulation.setScheduler(scheduler);
         }
         else
@@ -303,7 +301,6 @@ void EnvirBase::setup()
             parsimpartition->setContext(&simulation, parsimcomm, parsimsynchronizer);
             parsimsynchronizer->setContext(&simulation, parsimpartition, parsimcomm);
             simulation.setScheduler(parsimsynchronizer);
-            scheduler = parsimsynchronizer;
 
             // initialize them
             parsimcomm->init();

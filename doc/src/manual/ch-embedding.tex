@@ -121,11 +121,6 @@ int main(int argc, char *argv[])
     cEnvir *oldEv = evPtr;
     evPtr = new CustomSimulationEnv();
 
-    // set up a scheduler
-    cScheduler *scheduler = new cSequentialScheduler();
-    scheduler->setSimulation(&simulation);
-    simulation.setScheduler(scheduler);
-
     // load NED files
     simulation.loadNedSourceFolder("./ned-core");
     simulation.loadNedSourceFolder("./ned-ext");
@@ -186,7 +181,20 @@ void simulate(const char *networkName, simtime_t limit)
 \end{verbatim}
 
 
+\section{Installing a custom scheduler}
 
+The default event scheduler is \cclass{cSequentialScheduler}. To replace
+it with a different scheduler (e.g. \cclass{cRealTimeScheduler} or your
+own scheduler class), add a \fname{setScheduler()} call into \fff{main()}:
+
+\begin{verbatim}
+cScheduler *scheduler = new CustomScheduler();
+simulation.setScheduler(scheduler);
+\end{verbatim}
+
+It is usually not a good idea to change schedulers in the middle of
+a simulation, so \fname{setScheduler()} may only be called when
+no network is set up.
 
 
 % --------------------

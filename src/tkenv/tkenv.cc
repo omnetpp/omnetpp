@@ -332,7 +332,7 @@ void Tkenv::doOneStep()
 
     simstate = SIM_RUNNING;
     startClock();
-    scheduler->executionResumed();
+    simulation.getScheduler()->executionResumed();
     try
     {
         cSimpleModule *mod = simulation.selectNextModule();
@@ -399,7 +399,7 @@ void Tkenv::runSimulation(int mode, simtime_t until_time, eventnumber_t until_ev
 
     simstate = SIM_RUNNING;
     startClock();
-    scheduler->executionResumed();
+    simulation.getScheduler()->executionResumed();
     try
     {
         // funky while loop to handle switching to and from EXPRESS mode....

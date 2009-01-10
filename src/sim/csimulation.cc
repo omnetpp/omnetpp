@@ -79,12 +79,10 @@ cSimulation::cSimulation(const char *name) : cNoncopyableOwnedObject(name, false
     last_id = 0;  // vect[0] is not used for historical reasons
     vect = NULL;
 
-    // err = eOK; -- commented out to enable errors prior to starting main()
     networktype = NULL;
-
     hasherp = NULL;
 
-    // see init()
+    // see init() as well
 }
 
 cSimulation::~cSimulation()
@@ -102,17 +100,21 @@ void cSimulation::init()
     // take() cannot be done from the ctor for the same reason.
     removeFromOwnershipTree();
     take(&msgQueue);
+
+    // install a default scheduler
+    setScheduler(new cSequentialScheduler());
 }
 
 void cSimulation::shutdown()
 {
-    // deleteNetwork() is better called before the dtor (which runs after main())
+    // deleteNetwork() is better called before the destructor that runs after main()
     deleteNetwork();
 
     // let go of msgQueue (removeFromOwnershipTree() cannot be called here)
     msgQueue.ownerp = NULL;
 
     delete hasherp;
+    delete schedulerp;
 
 #ifdef WITH_NETBUILDER
     cNEDLoader::clear();
@@ -207,28 +209,15 @@ bool cSimulation::snapshot(cObject *object, const char *label)
     return success;
 }
 
-static void writemodule( ostream& os, cModule& m, int indent )
+void cSimulation::setScheduler(cScheduler *sch)
 {
-    static char sp[] = "                                                 ";
-    os << (sp+sizeof(sp)-indent) << "`" << m.getFullName() << "'";
-    os << " id=" << m.getId() << " ";
-    //os <<  (m.isSimple() ? "simple" : "compound");
-    os <<  "(" << m.getModuleType()->getName() << ")\n";
-}
-
-static void writesubmodules(ostream& os, cModule *p, int indent )
-{
-    writemodule( os, *p, indent );
-    for (int i=0; i<=simulation.getLastModuleId(); i++)
-        if (simulation.getModule(i) && p==simulation.getModule(i)->getParentModule())
-            writesubmodules(os, simulation.getModule(i), indent+4 );
-}
-
-void cSimulation::setScheduler(cScheduler *sched)
-{
-    if (schedulerp)
-        throw cRuntimeError(this, "setScheduler() can only be called once");
-    schedulerp = sched;
+    if (systemmodp)
+        throw cRuntimeError(this, "setScheduler(): cannot switch schedulers when a network is already set up");
+    if (!sch)
+        throw cRuntimeError(this, "setScheduler(): scheduler pointer is NULL");
+    delete schedulerp;
+    schedulerp = sch;
+    schedulerp->setSimulation(this);
 }
 
 void cSimulation::loadNedFile(const char *nedfile, const char *expectedPackage, bool isXML)

@@ -101,9 +101,6 @@ class ENVIR_API EnvirBase : public cEnvir
     cParsimPartition *parsimpartition;
 // end
 
-    // The scheduler object
-    cScheduler *scheduler;
-
     // Random number generators. Module RNG's map to these RNG objects.
     int num_rngs;
     cRNG **rngs;

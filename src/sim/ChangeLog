@@ -6,6 +6,9 @@
 	* csimulation.cc: calls to scheduler->startRun()/endRun() merged into
 	cSimulation::startRun()/endRun()
 
+	* csimulation.cc: scheduler object now gets deleted by cSimulation, not
+	externally by Envir
+
 2008-12-14  Andras Varga
 
 	* sim_std.msg: fixed bug #33
