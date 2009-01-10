@@ -167,8 +167,7 @@ was \ttt{./mysim-core;./mysim-ext}), and goes on to run two simulations.
 
 \subsection{The simulate() function}
 
-A minimalistic version of the \ttt{simulate()} function that was called
-from \ttt{main()}:
+A minimalistic version of the \ttt{simulate()} function:
 
 \begin{verbatim}
 void simulate(const char *networkName, simtime_t limit)
@@ -179,7 +178,7 @@ void simulate(const char *networkName, simtime_t limit)
         printf("No such network: %s\n", networkName);
         return;
     }
-    simulation.setupNetwork(networkType);
+    simulation.setupNetwork(networkType); //XXX may throw exception
 
     // prepare for running it
     simulation.startRun();
@@ -211,10 +210,106 @@ void simulate(const char *networkName, simtime_t limit)
 }
 \end{verbatim}
 
+The function accepts a network type name (which must be fully qualified,
+i.e. with package name), and a simulation time limit.
+
+In the first few lines we look up the network name among the modules that
+have been loaded from NED files, and print an error message if not found.
+Then we set it up as a network. This creates the system module and recursively
+all modules and their interconnections; module parameters are also
+read from the configuration (where needed) and assigned. If there is
+an error (module type not found, etc.), an exception will be thrown.
+The exception type is \cclass{std::exception}, usually its
+\cclass{cRuntimeError} subclass.
+
+If network setup was successful, we call \ttt{simulation.startRun()}, one
+side effect of which is that the \fname{initialize()} methods of modules
+and channels get invoked. This step also results in an exception if
+something goes wrong in an \fname{initialize()}.
+
+The following lines actually run the simulation, by calling
+\ttt{simulation.selectNextModule()} and \ttt{simulation.doOneEvent()} in an
+event loop, until the simulation time limit is reached or some exception
+occurs. If the exception is a \cclass{cTerminationException} (or subclassed
+from it), it signals the normal termination of the simulation; otherwise it
+is an error.
+
+If the simulation has completed successfully (\ttt{ok==true}), the code
+goes on to call the \fname{finish()} methods of modules and channels.
+Then, regardless of whether there was an error, \fname{simulation.endRun()}
+has to be called, and the network is torn down with
+\fname{simulation.deleteNetwork()}.
+
 
 \subsection{Providing an environment object}
 
+
+    virtual cConfiguration *getConfig() = 0;
+
 TODO
+
+
+
+    virtual void sputn(const char *s, int n) = 0;
+    virtual void putsmsg(const char *msg) = 0;
+    virtual bool askyesno(const char *msg) = 0;
+    virtual int run(int argc, char *argv[], cConfiguration *cfg) = 0;
+
+
+    virtual void objectDeleted(cObject *object) {};
+    virtual void simulationEvent(cMessage *msg) = 0;
+    virtual void messageSent_OBSOLETE(cMessage *msg, cGate *directToGate=NULL) = 0;
+    virtual void messageScheduled(cMessage *msg) = 0;
+    virtual void messageCancelled(cMessage *msg) = 0;
+    virtual void beginSend(cMessage *msg) = 0;
+    virtual void messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay) = 0;
+    virtual void messageSendHop(cMessage *msg, cGate *srcGate) = 0;
+    virtual void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay) = 0;
+    virtual void endSend(cMessage *msg) = 0;
+    virtual void messageDeleted(cMessage *msg) = 0;
+    virtual void moduleReparented(cModule *module, cModule *oldparent) = 0;
+    virtual void componentMethodBegin(cComponent *from, cComponent *to, const char *methodFmt, va_list va) = 0;
+    virtual void componentMethodEnd() = 0;
+    virtual void moduleCreated(cModule *newmodule) = 0;
+    virtual void moduleDeleted(cModule *module) = 0;
+    virtual void gateCreated(cGate *newgate) = 0;
+    virtual void gateDeleted(cGate *gate) = 0;
+    virtual void connectionCreated(cGate *srcgate) = 0;
+    virtual void connectionDeleted(cGate *srcgate) = 0;
+    virtual void displayStringChanged(cComponent *component) = 0;
+    virtual void undisposedObject(cObject *obj) {}
+
+    virtual void readParameter(cPar *parameter) = 0;
+    virtual bool isModuleLocal(cModule *parentmod, const char *modname, int index) = 0;
+    virtual cXMLElement *getXMLDocument(const char *filename, const char *path=NULL) = 0;
+    virtual unsigned getExtraStackForEnvir() const = 0;
+    virtual cConfiguration *getConfig() = 0;
+    virtual bool isGUI() const = 0;
+    virtual void bubble(cComponent *component, const char *text) = 0;
+    virtual cEnvir& flush() = 0;
+    virtual std::string gets(const char *prompt, const char *defaultreply=NULL) = 0;
+
+    virtual int getNumRNGs() const = 0;
+    virtual cRNG *getRNG(int k) = 0;
+    virtual void getRNGMappingFor(cComponent *component) = 0;
+
+    virtual void *registerOutputVector(const char *modulename, const char *vectorname) = 0;
+    virtual void deregisterOutputVector(void *vechandle) = 0;
+    virtual void setVectorAttribute(void *vechandle, const char *name, const char *value) = 0;
+    virtual bool recordInOutputVector(void *vechandle, simtime_t t, double value) = 0;
+    virtual void recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes=NULL) = 0;
+    virtual void recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=NULL) = 0;
+    virtual std::ostream *getStreamForSnapshot() = 0;
+    virtual void releaseStreamForSnapshot(std::ostream *os) = 0;
+
+    virtual int getArgCount() const = 0;
+    virtual char **getArgVector() const = 0;
+    virtual int getParsimProcId() const = 0;
+    virtual int getParsimNumPartitions() const = 0;
+    virtual const char *getRunId() const = 0;
+    virtual unsigned long getUniqueNumber() = 0;
+    virtual bool idle() = 0;
+
 
 \subsection{Providing a configuration object}
 
