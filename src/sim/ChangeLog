@@ -1,3 +1,11 @@
+2009-01-10  Andras Varga
+
+	* csimulation.cc: simulation.init() gets called automatically, via
+	EXECUTE_ON_STARTUP()
+
+	* csimulation.cc: calls to scheduler->startRun()/endRun() merged into
+	cSimulation::startRun()/endRun()
+
 2008-12-14  Andras Varga
 
 	* sim_std.msg: fixed bug #33

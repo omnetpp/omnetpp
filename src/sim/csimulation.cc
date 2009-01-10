@@ -387,20 +387,18 @@ void cSimulation::setupNetwork(cModuleType *network)
     //    throw cRuntimeError("unknown exception occurred");
     //}
 
-    printf("setupNetwork finished, cParImpl objects in use: %ld\n", cParImpl::getLiveParImplObjectCount()); //XXX
+    //printf("setupNetwork finished, cParImpl objects in use: %ld\n", cParImpl::getLiveParImplObjectCount());
 }
 
 void cSimulation::startRun()
 {
+    // reset counters. Note msgQueue.clear() was already called from setupNetwork()
     sim_time = 0;
     event_num = 0; // initialize() has event number 0
-
-    // NOTE: should NOT call msgQueue.clear() here because the parallel
-    // simulation library (cNullMessageProtocol::startRun()) has already
-    // put messages there! It has been called from setupNetwork() anyway.
-
-    // reset message counters
     cMessage::resetMessageCounters();
+
+    // init the scheduler. Note this may insert events into the FES (see e.g. cNullMessageProtocol)
+    getScheduler()->startRun();
 
     // prepare simple modules for simulation run:
     //    1. create starter message for all modules,
@@ -429,6 +427,7 @@ void cSimulation::callFinish()
 
 void cSimulation::endRun()
 {
+    getScheduler()->endRun();
 }
 
 void cSimulation::deleteNetwork()

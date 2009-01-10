@@ -156,10 +156,10 @@ void simulate(const char *networkName, simtime_t limit)
     simulation.setupNetwork(networkType);
 
     // prepare for running it
-    simulation.getScheduler()->startRun();
     simulation.startRun();
 
     // run the simulation
+    bool ok = true;
     try {
         while (simulation.getSimTime() < limit) {
             cSimpleModule *mod = simulation.selectNextModule();
@@ -172,12 +172,15 @@ void simulate(const char *networkName, simtime_t limit)
         printf("Finished: %s", e.what());
     }
     catch (std::exception& e) {
+        ok = false;
         printf("ERROR: %s", e.what());
     }
 
+    if (ok)
+        simulation.callFinish();  //FIXME what if there's an exception during finish()?
+
     // finish the simulation and clean up the network
     simulation.endRun();
-    simulation.getScheduler()->endRun();
     simulation.deleteNetwork();
 }
 \end{verbatim}

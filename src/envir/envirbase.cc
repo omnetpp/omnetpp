@@ -677,7 +677,6 @@ void EnvirBase::startRun()
         parsimpartition->startRun();
 #endif
     }
-    simulation.getScheduler()->startRun();
     simulation.startRun();
     flushLastLine();
 }
@@ -686,7 +685,6 @@ void EnvirBase::endRun()
 {
     // reverse order as startRun()
     simulation.endRun();
-    simulation.getScheduler()->endRun();
     if (opt_parsim)
     {
 #ifdef WITH_PARSIM
