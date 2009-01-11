@@ -116,11 +116,11 @@ void cFileOutputScalarManager::init()
         run.writeRunData(f, fname);
 
         // save iteration variables
-        std::vector<const char *> v = ev.getConfig()->getIterationVariableNames();
+        std::vector<const char *> v = ev.getConfigEx()->getIterationVariableNames();
         for (int i=0; i<(int)v.size(); i++)
         {
             const char *name = v[i];
-            const char *value = ev.getConfig()->getVariable(v[i]);
+            const char *value = ev.getConfigEx()->getVariable(v[i]);
             recordNumericIterationVariable(name, value);
         }
     }

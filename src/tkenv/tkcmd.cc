@@ -314,7 +314,7 @@ int getConfigNames_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
    if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
 
-   cConfiguration *cfg = app->getConfig();
+   cConfigurationEx *cfg = app->getConfigEx();
    std::vector<std::string> confignames = cfg->getConfigNames();
 
    Tcl_Obj *listobj = Tcl_NewListObj(0, NULL);
@@ -331,7 +331,7 @@ int getConfigDescription_cmd(ClientData, Tcl_Interp *interp, int argc, const cha
    Tkenv *app = getTkenv();
    const char *configname = argv[1];
 
-   cConfiguration *cfg = app->getConfig();
+   cConfigurationEx *cfg = app->getConfigEx();
    std::string desc = cfg->getConfigDescription(configname);
    Tcl_SetResult(interp, TCLCONST(desc.c_str()), TCL_VOLATILE);
    return TCL_OK;
@@ -345,7 +345,7 @@ int getBaseConfig_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
    Tkenv *app = getTkenv();
    const char *configname = argv[1];
 
-   cConfiguration *cfg = app->getConfig();
+   cConfigurationEx *cfg = app->getConfigEx();
    std::string result = cfg->getBaseConfig(configname);
    Tcl_SetResult(interp, TCLCONST(result.c_str()), TCL_VOLATILE);
    return TCL_OK;
@@ -359,7 +359,7 @@ int getNumRunsInConfig_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
    Tkenv *app = getTkenv();
    const char *configname = argv[1];
 
-   cConfiguration *cfg = app->getConfig();
+   cConfigurationEx *cfg = app->getConfigEx();
    int n = cfg->getNumRunsInConfig(configname);
    Tcl_SetObjResult(interp, Tcl_NewIntObj(n));
    return TCL_OK;
@@ -551,7 +551,7 @@ int getActiveConfigName_cmd(ClientData, Tcl_Interp *interp, int argc, const char
 {
    if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
-   Tcl_SetResult(interp, TCLCONST(app->getConfig()->getActiveConfigName()), TCL_VOLATILE);
+   Tcl_SetResult(interp, TCLCONST(app->getConfigEx()->getActiveConfigName()), TCL_VOLATILE);
    return TCL_OK;
 }
 
@@ -560,7 +560,7 @@ int getActiveRunNumber_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
    if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    char buf[16];
    Tkenv *app = getTkenv();
-   sprintf(buf, "%d", app->getConfig()->getActiveRunNumber());
+   sprintf(buf, "%d", app->getConfigEx()->getActiveRunNumber());
    Tcl_SetResult(interp, buf, TCL_VOLATILE);
    return TCL_OK;
 }

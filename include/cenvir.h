@@ -39,9 +39,10 @@ class cModule;
 class cSimpleModule;
 class cStatistic;
 class cRNG;
-class cConfiguration;
 class cXMLElement;
 class cEnvir;
+class cConfiguration;
+class cConfigurationEx;
 
 using std::endl;
 
@@ -95,7 +96,7 @@ extern SIM_API cEnvir *evPtr;
  *
  * cEnvir has only one instance, the ev global variable.
  *
- * cEnvir member functions can be rougly divided into two groups:
+ * cEnvir member functions can be roughly divided into two groups:
  *  - I/O for module activities; actual implementation is different for each
  *    user interface (e.g. stdin/stdout for Cmdenv, windowing in Tkenv)
  *  - functions for exchanging information between the simulation and the
@@ -159,12 +160,13 @@ class SIM_API cEnvir
     virtual ~cEnvir();
     //@}
 
-    /** @name Methods called from main(). */
+    /** @name Running the application. */
     //@{
     /**
-     * Called from main(). This function should encapsulate the whole functionality
-     * of running the application. The return value will become the exit code
-     * of the simulation program.
+     * Runs the user interface. The return value is the exit code of the
+     * simulation program. If the environment object does not represent
+     * the user interface (i.e. it is not runnable), it should throw an
+     * error.
      */
     virtual int run(int argc, char *argv[], cConfiguration *cfg) = 0;
     //@}
@@ -373,13 +375,20 @@ class SIM_API cEnvir
     virtual unsigned getExtraStackForEnvir() const = 0;
 
     /**
-     * Access to the configuration data (by default, omnetpp.ini).
-     * This is provided here for the benefit of schedulers, parallel
+     * Access to the configuration (by default, omnetpp.ini).
+     * This method is provided here for the benefit of schedulers, parallel
      * simulation algorithms and other simulation kernel extensions.
      * Models (simple modules) should NOT directly access the configuration --
      * they should rely on module parameters to get input.
      */
     virtual cConfiguration *getConfig() = 0;
+
+    /**
+     * Returns the configuration as used by the Envir library. It will throw
+     * an error if the configuration object does not subclass for cConfiguration.
+     * This method should not be used from the simulation kernel or model code.
+     */
+    virtual cConfigurationEx *getConfigEx();
     //@}
 
     /** @name Input/output methods called from simple modules or the simulation kernel. */
@@ -503,7 +512,7 @@ class SIM_API cEnvir
 
     /**
      * Sets up RNG mapping (which maps module-local RNG numbers to "physical"
-     * RNGs) for the given module.
+     * RNGs) for the given module or channel, by calling its setRNGMap() function.
      */
     virtual void getRNGMappingFor(cComponent *component) = 0;
     //@}

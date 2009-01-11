@@ -61,7 +61,7 @@ class ENVIR_API EnvirBase : public cEnvir
 {
   protected:
     bool initialized;
-    cConfiguration *cfg;
+    cConfigurationEx *cfg;
     ArgList *args;
     cXMLDocCache *xmlcache;
 
@@ -174,6 +174,7 @@ class ENVIR_API EnvirBase : public cEnvir
     virtual cXMLElement *getXMLDocument(const char *filename, const char *path=NULL);
     // leave to subclasses: virtual unsigned getExtraStackForEnvir();
     virtual cConfiguration *getConfig();
+    virtual cConfigurationEx *getConfigEx();
 
     // UI functions
     virtual void bubble(cComponent *component, const char *text);

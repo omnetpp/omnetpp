@@ -309,7 +309,7 @@ void Tkenv::printUISpecificHelp()
 void Tkenv::rebuildSim()
 {
     if (isconfigrun)
-         newRun(std::string(getConfig()->getActiveConfigName()).c_str(), getConfig()->getActiveRunNumber());
+         newRun(std::string(getConfigEx()->getActiveConfigName()).c_str(), getConfigEx()->getActiveRunNumber());
     else if (simulation.getNetworkType()!=NULL)
          newNetwork(simulation.getNetworkType()->getName());
     else
@@ -706,7 +706,7 @@ void Tkenv::newNetwork(const char *networkname)
 
         // set up new network with config General.
         isconfigrun = false;
-        getConfig()->activateConfig("General", 0);
+        getConfigEx()->activateConfig("General", 0);
         readPerRunOptions();
         opt_network_name = network->getName();  // override config setting
         answers.clear();
@@ -743,7 +743,7 @@ void Tkenv::newRun(const char *configname, int runnumber)
 
         // set up new network
         isconfigrun = true;
-        getConfig()->activateConfig(configname, runnumber);
+        getConfigEx()->activateConfig(configname, runnumber);
         readPerRunOptions();
 
         if (opt_network_name.empty())
@@ -882,10 +882,10 @@ void Tkenv::updateNetworkRunDisplay()
     char runnr[10];
     const char *networkname;
 
-    if (getConfig()->getActiveRunNumber())
+    if (getConfigEx()->getActiveRunNumber())
         sprintf(runnr, "?");
     else
-        sprintf(runnr, "%d", getConfig()->getActiveRunNumber());
+        sprintf(runnr, "%d", getConfigEx()->getActiveRunNumber());
 
     if (simulation.getNetworkType()==NULL)
         networkname = "(no network)";

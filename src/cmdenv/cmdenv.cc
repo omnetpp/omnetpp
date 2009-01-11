@@ -187,7 +187,7 @@ void Cmdenv::setup()
     if (!initialized)
         return;
 
-    cConfiguration *cfg = getConfig();
+    cConfigurationEx *cfg = getConfigEx();
 
     // -a option: print all config names, and number of runs in them
     if (args->optionGiven('a'))
@@ -685,7 +685,7 @@ void Cmdenv::moduleCreated(cModule *mod)
 {
     EnvirBase::moduleCreated(mod);
 
-    bool ev_enabled = ev.getConfig()->getAsBool(mod->getFullPath().c_str(), CFGID_CMDENV_EV_OUTPUT);
+    bool ev_enabled = getConfig()->getAsBool(mod->getFullPath().c_str(), CFGID_CMDENV_EV_OUTPUT);
     mod->setEvEnabled(ev_enabled);
 }
 

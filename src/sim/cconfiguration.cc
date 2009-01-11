@@ -1,5 +1,5 @@
 //=========================================================================
-//  CCONFIG.CC - part of
+//  CCONFIGURATION.CC - part of
 //
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++

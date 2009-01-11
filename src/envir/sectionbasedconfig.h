@@ -41,7 +41,7 @@ class Scenario;
  * active section, i.e. the section fallback sequence ("extends") is
  * resolved, and sections are made invisible to the user.
  */
-class ENVIR_API SectionBasedConfiguration : public cConfiguration
+class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
 {
   private:
     // if we make our own copy, we only need cConfigurationReader for initialization, and after that it can be disposed of

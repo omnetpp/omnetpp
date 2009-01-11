@@ -217,7 +217,9 @@ int EnvirBase::run(int argc, char *argv[], cConfiguration *configobject)
 {
     args = new ArgList();
     args->parse(argc, argv, "h?f:u:l:c:r:p:n:x:agGv");  //TODO share spec with BootEnv!
-    cfg = configobject;
+    cfg = dynamic_cast<cConfigurationEx *>(configobject);
+    if (!cfg)
+        throw cRuntimeError("Cannot cast configuration object %s to cConfigurationEx", configobject->getClassName());
 
     setup();
     int exitcode = run();
@@ -453,12 +455,12 @@ void EnvirBase::dumpComponentList(const char *category)
         ev << "\n";
 
         ev << "Predefined variables that can be used in config values:\n";
-        std::vector<const char *> v = getConfig()->getPredefinedVariableNames();
+        std::vector<const char *> v = getConfigEx()->getPredefinedVariableNames();
         for (int i=0; i<(int)v.size(); i++)
         {
             if (!printDescriptions) ev << "  ";
             ev << "${" << v[i] << "}\n";
-            const char *desc = getConfig()->getVariableDescription(v[i]);
+            const char *desc = getConfigEx()->getVariableDescription(v[i]);
             if (printDescriptions && !opp_isempty(desc))
                 ev << opp_indentlines(opp_breaklines(desc,75).c_str(), "    ") << "\n";
         }
@@ -521,12 +523,12 @@ void EnvirBase::dumpComponentList(const char *category)
         }
         ev << "\n";
 
-        std::vector<const char *> vars = getConfig()->getPredefinedVariableNames();
+        std::vector<const char *> vars = getConfigEx()->getPredefinedVariableNames();
         for (int i=0; i<(int)vars.size(); i++)
         {
             opp_string id = vars[i];
             opp_strupr(id.buffer());
-            const char *desc = getConfig()->getVariableDescription(vars[i]);
+            const char *desc = getConfigEx()->getVariableDescription(vars[i]);
             ev << "    public static final String CFGVAR_" << id << " = addConfigVariable(";
             ev << "\"" << vars[i] << "\", \"" << opp_replacesubstring(desc, "\"", "\\\"", true) << "\");\n";
         }
@@ -660,7 +662,7 @@ void EnvirBase::shutdown()
 
 void EnvirBase::startRun()
 {
-    runid = getConfig()->getVariable(CFGVAR_RUNID);
+    runid = getConfigEx()->getVariable(CFGVAR_RUNID);
 
     resetClock();
     outvectormgr->startRun();
@@ -706,7 +708,7 @@ void EnvirBase::readParameter(cPar *par)
 
     // get it from the ini file
     std::string moduleFullPath = par->getOwner()->getFullPath();
-    const char *str = getConfig()->getParameterValue(moduleFullPath.c_str(), par->getName(), par->containsValue());
+    const char *str = getConfigEx()->getParameterValue(moduleFullPath.c_str(), par->getName(), par->containsValue());
 
 /* XXX hack to use base directory for resolving xml files location has been commented out
  * FIXME a solution needs to be worked out!
@@ -828,6 +830,11 @@ cXMLElement *EnvirBase::getXMLDocument(const char *filename, const char *path)
 }
 
 cConfiguration *EnvirBase::getConfig()
+{
+    return cfg;
+}
+
+cConfigurationEx *EnvirBase::getConfigEx()
 {
     return cfg;
 }
@@ -1177,7 +1184,7 @@ cRNG *EnvirBase::getRNG(int k)
 
 void EnvirBase::getRNGMappingFor(cComponent *component)
 {
-    cConfiguration *cfg = getConfig();
+    cConfigurationEx *cfg = getConfigEx();
     std::string componentFullPath = component->getFullPath();
     std::vector<const char *> suffixes = cfg->getMatchingPerObjectConfigKeySuffixes(componentFullPath.c_str(), "rng-*"); // CFGID_RNG_K
     if (suffixes.size()==0)

@@ -18,6 +18,7 @@
 
 #include "cenvir.h"
 #include "commonutil.h"
+#include "cconfiguration.h"
 #include "ccomponent.h"  // for DummyEnv
 
 
@@ -59,6 +60,14 @@ cEnvir::cEnvir() : out(new evbuf())
 
 cEnvir::~cEnvir()
 {
+}
+
+cConfigurationEx *cEnvir::getConfigEx()
+{
+    cConfigurationEx *cfg = dynamic_cast<cConfigurationEx *>(getConfig());
+    if (!cfg)
+        throw cRuntimeError("Illegal call to ev.getConfigEx(): configuration object is not subclassed from cConfigurationEx");
+    return cfg;
 }
 
 // note: exploits the fact that evbuf does sync() on "\n"'s

@@ -46,7 +46,7 @@ NAMESPACE_END
 USING_NAMESPACE;
 
 Register_GlobalConfigOption(CFGID_LOAD_LIBS, "load-libs", CFG_FILENAMES, "", "A space-separated list of dynamic libraries to be loaded on startup. The libraries should be given without the `.dll' or `.so' suffix -- that will be automatically appended.");
-Register_GlobalConfigOption(CFGID_CONFIGURATION_CLASS, "configuration-class", CFG_STRING, "", "Part of the Envir plugin mechanism: selects the class from which all configuration information will be obtained. This option lets you replace omnetpp.ini with some other implementation, e.g. database input. The simulation program still has to bootstrap from an omnetpp.ini (which contains the configuration-class setting). The class should implement the cConfiguration interface.");
+Register_GlobalConfigOption(CFGID_CONFIGURATION_CLASS, "configuration-class", CFG_STRING, "", "Part of the Envir plugin mechanism: selects the class from which all configuration information will be obtained. This option lets you replace omnetpp.ini with some other implementation, e.g. database input. The simulation program still has to bootstrap from an omnetpp.ini (which contains the configuration-class setting). The class should implement the cConfigurationEx interface.");
 Register_GlobalConfigOption(CFGID_USER_INTERFACE, "user-interface", CFG_STRING, "", "Selects the user interface to be started. Possible values are Cmdenv and Tkenv. This option is normally left empty, as it is more convenient to specify the user interface via a command-line option or the IDE's Run and Debug dialogs.");
 
 // helper macro
@@ -114,7 +114,7 @@ int BootEnv::run(int argc, char *argv[], cConfiguration *cfg)
     cEnvir *app = NULL;
     ArgList *args = NULL;
     SectionBasedConfiguration *bootconfig = NULL;
-    cConfiguration *configobject = NULL;
+    cConfigurationEx *configobject = NULL;
     int exitcode = 0;
     try
     {
@@ -176,7 +176,7 @@ int BootEnv::run(int argc, char *argv[], cConfiguration *cfg)
         else
         {
             // create custom configuration object
-            CREATE_BY_CLASSNAME(configobject, configclass.c_str(), cConfiguration, "configuration");
+            CREATE_BY_CLASSNAME(configobject, configclass.c_str(), cConfigurationEx, "configuration");
             configobject->initializeFrom(bootconfig);
             delete bootconfig;
             bootconfig = NULL;
