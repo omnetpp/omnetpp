@@ -19,7 +19,7 @@
 #include "cenvir.h"
 #include "commonutil.h"
 #include "cconfiguration.h"
-#include "ccomponent.h"  // for DummyEnv
+#include "ccomponent.h"  // for StaticEnv
 
 
 /**
@@ -128,10 +128,10 @@ bool cEnvir::askYesNo(const char *fmt,...)
  * which would crash if <tt>evPtr</tt> was NULL; one example is
  * cObject's destructor which contains an <tt>ev.objectDeleted()</tt>.
  * The solution provided here is that <tt>evPtr</tt> is initialized
- * to point to a DummyEnv instance, thus enabling library classes to work.
+ * to point to a StaticEnv instance, thus enabling library classes to work.
  *
- * DummyEnv methods either do nothing, or throw an "unsupported method"
- * exception, so DummyEnv is only useful for the most basic usage scenarios.
+ * StaticEnv methods either do nothing, or throw an "unsupported method"
+ * exception, so StaticEnv is only useful for the most basic usage scenarios.
  * For anything more complicated, <tt>evPtr</tt> must be set in <tt>main()</tt>
  * to point to a proper cEnvir implementation, like the Cmdenv or
  * Tkenv classes. (The <i>envir</i> library provides a <tt>main()</tt>
@@ -139,10 +139,10 @@ bool cEnvir::askYesNo(const char *fmt,...)
  *
  * @ingroup Envir
  */
-class DummyEnv : public cEnvir
+class StaticEnv : public cEnvir
 {
   protected:
-    void unsupported() const {throw opp_runtime_error("DummyEnv: unsupported method called");}
+    void unsupported() const {throw opp_runtime_error("StaticEnv: unsupported method called");}
 
     virtual void sputn(const char *s, int n) {(void) ::fwrite(s,1,n,stdout);}
     virtual void putsmsg(const char *msg) {::printf("\n<!> %s\n\n", msg);}
@@ -150,8 +150,8 @@ class DummyEnv : public cEnvir
 
   public:
     // constructor, destructor
-    DummyEnv() {}
-    virtual ~DummyEnv() {}
+    StaticEnv() {}
+    virtual ~StaticEnv() {}
 
     // eventlog callback interface
     virtual void objectDeleted(cObject *object) {}
@@ -218,13 +218,13 @@ class DummyEnv : public cEnvir
     virtual bool idle()  {return false;}
 };
 
-static DummyEnv dummyEnv;
+static StaticEnv staticEnv;
 
 /**
- * Pointer to the simulation's environment. Initially points to a DummyEnv,
+ * Pointer to the simulation's environment. Initially points to a StaticEnv,
  * which should be overwritten in main() for anything serious.
  */
-cEnvir *evPtr = &dummyEnv;
+cEnvir *evPtr = &staticEnv;
 
 
 
