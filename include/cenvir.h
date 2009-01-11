@@ -160,17 +160,6 @@ class SIM_API cEnvir
     virtual ~cEnvir();
     //@}
 
-    /** @name Running the application. */
-    //@{
-    /**
-     * Runs the user interface. The return value is the exit code of the
-     * simulation program. If the environment object does not represent
-     * the user interface (i.e. it is not runnable), it should throw an
-     * error.
-     */
-    virtual int run(int argc, char *argv[], cConfiguration *cfg) = 0;
-    //@}
-
     /** @name Methods to be called by the simulation kernel to notify the environment about events. */
     //@{
 
@@ -642,6 +631,21 @@ class SIM_API cEnvir
      */
     virtual bool idle() = 0;
     //@}
+};
+
+
+/**
+ * The interface for cEnvir objects that can be instantiated as a user interface
+ * like Cmdenv and Tkenv.
+ */
+class SIM_API cRunnableEnvir : public cEnvir
+{
+  public:
+    /**
+     * Runs the user interface. The return value is the exit code of the
+     * simulation program.
+     */
+    virtual int run(int argc, char *argv[], cConfiguration *cfg) = 0;
 };
 
 NAMESPACE_END

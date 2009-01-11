@@ -17,7 +17,7 @@ The following plug-in interfaces are supported:
    \item{\cclass{cScheduler}. The scheduler class. This plug-in interface
      allows for implementing real-time, hardware-in-the-loop, distributed
      and distributed parallel simulation.}
-   \item{\cclass{cConfiguration}. Configuration provider plug-in.
+   \item{\cclass{cConfigurationEx}. Configuration provider plug-in.
      This plug-in interface lets you replace \ttt{omnetpp.ini}
      with some other implementation, for example a database.}
    \item{\cclass{cOutputScalarManager}. It handles recording the scalar output data.
@@ -86,10 +86,10 @@ of the \textit{Sockets} sample simulation.
 The configuration provider plug-in lets you replace ini files
 with some other storage implementation, for example a database.
 The configuration provider C++ class must implement the
-\cclass{cConfiguration} interface, and can be activated with
+\cclass{cConfigurationEx} interface, and can be activated with
 the \fpar{configuration-class} configuration option.
 
-The \cclass{cConfiguration} interface abstracts the inifile-based
+The \cclass{cConfigurationEx} interface abstracts the inifile-based
 data model a little. It assumes that the configuration data
 consists of several \textit{named configurations}. Before every
 simulation run, one of the \textit{named configurations} get
@@ -141,7 +141,7 @@ you would write the class:
 \begin{verbatim}
 #include "cconfiguration.h"
 
-class CustomConfiguration : public cConfiguration
+class CustomConfiguration : public cConfigurationEx
 {
    ...
 };
@@ -331,10 +331,10 @@ configuration option, it can be made the default user interface,
 it can define new command-line options and configuration options,
 and so on.
 
-User interfaces must implement (i.e. subclass from) \cclass{cEnvir},
+User interfaces must implement (i.e. subclass from) \cclass{cRunnableEnvir},
 and must be registered to {\opp} with the \fmac{Register\_OmnetApp()} macro.
 In practice, you'll almost always want to subclass \cclass{EnvirBase}
-instead of \cclass{cEnvir}, because \cclass{EnvirBase} already
+instead of \cclass{cRunnableEnvir}, because \cclass{EnvirBase} already
 implements lots of functionality that otherwise you'd have to.
 
 \begin{note}

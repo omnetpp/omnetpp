@@ -28,14 +28,14 @@
 
 NAMESPACE_BEGIN
 
-//FIXME refine this macro
 #define UNSUPPORTED   {throw opp_runtime_error("unsupported function called");}
 
 
 /**
- * FIXME todo comment
+ * A start-up user interface, for selecting and starting the real
+ * user interface.
  */
-class ENVIR_API BootEnv : public cEnvir
+class ENVIR_API BootEnv : public cRunnableEnvir
 {
   protected:
     virtual void sputn(const char *s, int n);

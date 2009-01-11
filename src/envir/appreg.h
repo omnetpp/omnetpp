@@ -43,7 +43,7 @@ NAMESPACE_BEGIN
 
 // the macro
 #define Register_OmnetApp(UINAME,CLASSNAME,SCORE,DESCR) \
-    static cEnvir *__FILEUNIQUENAME__() {return new CLASSNAME();} \
+    static cRunnableEnvir *__FILEUNIQUENAME__() {return new CLASSNAME();} \
     EXECUTE_ON_STARTUP(omnetapps.getInstance()->add(new cOmnetAppRegistration(UINAME,SCORE,DESCR,__FILEUNIQUENAME__)))
 
 class cEnvir;
@@ -53,7 +53,7 @@ extern ENVIR_API cGlobalRegistrationList omnetapps;
 // registration class
 class ENVIR_API cOmnetAppRegistration : public cOwnedObject
 {
-    typedef cEnvir *(*AppCreatorFunc)();
+    typedef cRunnableEnvir *(*AppCreatorFunc)();
     AppCreatorFunc creatorfunc;
     std::string desc;
     int scor;
@@ -66,7 +66,7 @@ class ENVIR_API cOmnetAppRegistration : public cOwnedObject
     virtual const char *getClassName() const {return "cOmnetAppRegistration";}
 
     // new functions
-    cEnvir *createOne()  {return creatorfunc();}
+    cRunnableEnvir *createOne()  {return creatorfunc();}
     std::string info() const {return desc;}
     int getScore()  {return scor;}
 };

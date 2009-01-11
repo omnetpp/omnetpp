@@ -57,7 +57,7 @@ class cParsimSynchronizer;
  * Abstract base class for the user interface. Concrete user interface
  * implementations (Cmdenv, Tkenv) should be derived from this class.
  */
-class ENVIR_API EnvirBase : public cEnvir
+class ENVIR_API EnvirBase : public cRunnableEnvir
 {
   protected:
     bool initialized;
