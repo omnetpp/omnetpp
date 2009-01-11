@@ -153,9 +153,6 @@ class DummyEnv : public cEnvir
     DummyEnv() {}
     virtual ~DummyEnv() {}
 
-    // life cycle
-    virtual int run(int argc, char *argv[], cConfiguration *cfg) {unsupported();return 0;}
-
     // eventlog callback interface
     virtual void objectDeleted(cObject *object) {}
     virtual void simulationEvent(cMessage *msg)  {}
@@ -217,7 +214,6 @@ class DummyEnv : public cEnvir
     virtual char **getArgVector() const  {unsupported(); return NULL;}
     virtual int getParsimProcId() const {return 0;}
     virtual int getParsimNumPartitions() const {return 1;}
-    virtual const char *getRunId() const  {unsupported(); return NULL;}
     virtual unsigned long getUniqueNumber()  {unsupported(); return 0;}
     virtual bool idle()  {return false;}
 };

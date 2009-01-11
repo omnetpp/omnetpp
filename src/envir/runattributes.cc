@@ -40,10 +40,8 @@ void sRunData::initRun()
     {
         // Collect the attributes and module parameters of the current run
         // from the configuration.
-        //
-        runId = ev.getRunId();
-
         cConfigurationEx *cfg = ev.getConfigEx();
+        runId = cfg->getVariable(CFGVAR_RUNID);
 
         std::vector<const char *> keys1 = cfg->getPredefinedVariableNames();
         for (int i=0; i<(int)keys1.size(); i++)

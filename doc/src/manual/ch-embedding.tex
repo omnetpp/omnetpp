@@ -254,8 +254,6 @@ TODO
     virtual void sputn(const char *s, int n) = 0;
     virtual void putsmsg(const char *msg) = 0;
     virtual bool askyesno(const char *msg) = 0;
-    virtual int run(int argc, char *argv[], cConfiguration *cfg) = 0;
-
 
     virtual void objectDeleted(cObject *object) {};
     virtual void simulationEvent(cMessage *msg) = 0;
@@ -307,7 +305,6 @@ TODO
     virtual char **getArgVector() const = 0;
     virtual int getParsimProcId() const = 0;
     virtual int getParsimNumPartitions() const = 0;
-    virtual const char *getRunId() const = 0;
     virtual unsigned long getUniqueNumber() = 0;
     virtual bool idle() = 0;
 

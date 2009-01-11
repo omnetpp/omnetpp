@@ -662,14 +662,12 @@ void EnvirBase::shutdown()
 
 void EnvirBase::startRun()
 {
-    runid = getConfigEx()->getVariable(CFGVAR_RUNID);
-
     resetClock();
     outvectormgr->startRun();
     outscalarmgr->startRun();
     snapshotmgr->startRun();
     if (eventlogmgr)
-        eventlogmgr->startRun(runid.c_str());
+        eventlogmgr->startRun();
     if (opt_parsim)
     {
 #ifdef WITH_PARSIM

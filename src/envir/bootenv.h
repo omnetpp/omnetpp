@@ -111,7 +111,6 @@ class ENVIR_API BootEnv : public cRunnableEnvir
     virtual char **getArgVector() const  {UNSUPPORTED;}
     virtual int getParsimProcId() const {UNSUPPORTED;}
     virtual int getParsimNumPartitions() const {UNSUPPORTED;}
-    virtual const char *getRunId() const  {UNSUPPORTED;}
     virtual unsigned long getUniqueNumber()  {UNSUPPORTED;}
     virtual bool idle()  {UNSUPPORTED;}
 };

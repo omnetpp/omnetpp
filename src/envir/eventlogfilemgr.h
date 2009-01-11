@@ -50,7 +50,7 @@ class ENVIR_API EventlogFileManager
     virtual ~EventlogFileManager();
 
     virtual void setup();
-    virtual void startRun(const char *runId);
+    virtual void startRun();
     virtual void endRun();
 
     virtual void flush();

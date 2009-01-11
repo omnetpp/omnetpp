@@ -606,12 +606,6 @@ class SIM_API cEnvir
     virtual int getParsimNumPartitions() const = 0;
 
     /**
-     * Returns the Run Id of the current simulation run, or NULL if
-     * no simulation run is active.
-     */
-    virtual const char *getRunId() const = 0;
-
-    /**
      * The function underlying cSimulation::getUniqueNumber().
      */
     virtual unsigned long getUniqueNumber() = 0;

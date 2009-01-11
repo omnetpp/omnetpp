@@ -105,9 +105,6 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     int num_rngs;
     cRNG **rngs;
 
-    // Unique "run ID" string (gets written out into output files)
-    opp_string runid;
-
     // Output file managers
     EventlogFileManager *eventlogmgr;  // NULL if no event log is being written
     cOutputVectorManager *outvectormgr;
@@ -205,7 +202,6 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     virtual char **getArgVector() const;
     virtual int getParsimProcId() const;
     virtual int getParsimNumPartitions() const;
-    virtual const char *getRunId() const {return runid.c_str();}
     virtual unsigned long getUniqueNumber();
     virtual bool idle();
     //@}

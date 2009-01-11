@@ -103,10 +103,11 @@ void EventlogFileManager::setup()
     feventlog = out;
 }
 
-void EventlogFileManager::startRun(const char *runId)
+void EventlogFileManager::startRun()
 {
     if (isEventLogRecordingEnabled)
     {
+        const char *runId = ev.getConfigEx()->getVariable(CFGVAR_RUNID);
         EventLogWriter::recordEventEntry_e_t_m_msg(feventlog, 0, 0, simulation.getSystemModule()->getId(), -1);
         EventLogWriter::recordSimulationBeginEntry_v_rid(feventlog, OMNETPP_VERSION, runId);
         fflush(feventlog);

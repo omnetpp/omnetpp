@@ -36,7 +36,6 @@ void cMersenneTwister::initialize(int seedSet, int rngId, int numRngs,
                                   int parsimProcId, int parsimNumPartitions,
                                   cConfiguration *cfg)
 {
-    //XXX seedSet is unused (??)
     char key[40], key2[40];
     sprintf(key, "seed-%d-mt", rngId);
     sprintf(key2, "seed-%d-mt-p%d", rngId, parsimProcId);
