@@ -2,6 +2,12 @@
 #include <map>
 #include <string>
 
+// strings containing the NED sources to be loaded by the simulation
+// See the nedfiles.cc file in the model directory.
+extern const char *ALOHA_NED;
+extern const char *SERVER_NED;
+extern const char *HOST_NED;
+
 class EmptyConfig : public cConfiguration
 {
   protected:
@@ -50,14 +56,13 @@ class MinimalEnv : public cNullEnvir
     // dump any scalar result gathered by the simulation model
     void dumpResults() 
     {
-	if (!scalarResults.empty())
-	{
-    	    ::printf("Scalar statistics:\n");
-    	    for (StringDoubleMap::const_iterator it = scalarResults.begin(); it!=scalarResults.end(); ++it)
-    		::printf("  %s: %lf\n", it->first.c_str(), it->second);
-	}
+	      if (!scalarResults.empty())
+      	{
+            ::printf("Scalar statistics:\n");
+            for (StringDoubleMap::const_iterator it = scalarResults.begin(); it!=scalarResults.end(); ++it)
+                ::printf("  %s: %lf\n", it->first.c_str(), it->second);
+	      }
     }
-    
 };
 
 
