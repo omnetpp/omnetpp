@@ -64,6 +64,8 @@ foreach line {
    {color6  "Dyna/RealTime"    "dyna/realtime"    "./run"           "run"}
    {color6  "Sockets/HTTP"     "sockets"          "./sockets -c HTTPExample"    "sockets -c HTTPExample"}
    {color6  "Sockets/Telnet"   "sockets"          "./sockets -c TelnetExample"  "sockets -c TelnetExample"}
+   {color7  "Embedding"        "embedding"        "./embedding"      "embedding"}
+   {color7  "Embedding2"       "embedding2"       "./embedding2"     "embedding2"}
 } {
    lappend samples $i
    if {[llength $line]==0} {
