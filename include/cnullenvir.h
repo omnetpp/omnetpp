@@ -22,6 +22,7 @@
 #define __CNULLENVIR_H
 
 #include "cenvir.h"
+#include "cexception.h"
 
 NAMESPACE_BEGIN
 
@@ -40,7 +41,7 @@ class SIM_API cNullEnvir : public cEnvir
     
 
   protected:
-    void unsupported() const {throw opp_runtime_error("cNullEnvir: unsupported method called");}
+    void unsupported() const {throw cRuntimeError("cNullEnvir: unsupported method called");}
 
     virtual void sputn(const char *s, int n) {(void) ::fwrite(s,1,n,stdout);}
     virtual void putsmsg(const char *msg) {::printf("\n<!> %s\n\n", msg);}
@@ -108,7 +109,7 @@ class SIM_API cNullEnvir : public cEnvir
     virtual void releaseStreamForSnapshot(std::ostream *os)  {unsupported();}
 
     // misc
-    virtual int getArgCount() const  {return argc}
+    virtual int getArgCount() const  {return argc;}
     virtual char **getArgVector() const  {return argv;}
     virtual int getParsimProcId() const {return 0;}
     virtual int getParsimNumPartitions() const {return 1;}
