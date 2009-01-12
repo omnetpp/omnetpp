@@ -7,7 +7,6 @@
 // `license' for details on this and other legal matters.
 //
 
-
 //
 // Generates jobs (messages) with the given interarrival time,
 // which can be a random variate.

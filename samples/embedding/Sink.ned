@@ -7,7 +7,6 @@
 // `license' for details on this and other legal matters.
 //
 
-
 //
 // Destroys the packets and collects statistics
 //
