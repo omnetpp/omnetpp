@@ -22,96 +22,21 @@ class EmptyConfig : public cConfiguration
 };
 
 
-class MinimalEnv : public cEnvir
+class MinimalEnv : public cNullEnvir
 {
-  protected:
-    int argc;
-    char **argv;
-    cConfiguration *cfg;
-    cRNG *rng;
-
-  protected:
-    void unsupported() const {throw opp_runtime_error("MinimalEnv: unsupported method called");}
-
-    virtual void sputn(const char *s, int n) {(void) ::fwrite(s,1,n,stdout);}
-    virtual void putsmsg(const char *msg) {::printf("\n<!> %s\n\n", msg);}
-    virtual bool askyesno(const char *msg)  {unsupported(); return false;}
-
   public:
-    // constructor, destructor
-    MinimalEnv(int ac, char **av, cConfiguration *c) {argc=ac; argv=av; cfg=c; rng=new cMersenneTwister();}
-    virtual ~MinimalEnv() {delete cfg;}
+    // constructor
+    MinimalEnv(int ac, char **av, cConfiguration *c) : cNullEnvir(ac, av, c) {}
 
-    // eventlog callback interface
-    virtual void objectDeleted(cObject *object) {}
-    virtual void simulationEvent(cMessage *msg)  {}
-    virtual void messageSent_OBSOLETE(cMessage *msg, cGate *directToGate=NULL)  {}
-    virtual void messageScheduled(cMessage *msg)  {}
-    virtual void messageCancelled(cMessage *msg)  {}
-    virtual void beginSend(cMessage *msg)  {}
-    virtual void messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay)  {}
-    virtual void messageSendHop(cMessage *msg, cGate *srcGate)  {}
-    virtual void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay)  {}
-    virtual void endSend(cMessage *msg)  {}
-    virtual void messageDeleted(cMessage *msg)  {}
-    virtual void moduleReparented(cModule *module, cModule *oldparent)  {}
-    virtual void componentMethodBegin(cComponent *from, cComponent *to, const char *methodFmt, va_list va)  {}
-    virtual void componentMethodEnd()  {}
-    virtual void moduleCreated(cModule *newmodule)  {}
-    virtual void moduleDeleted(cModule *module)  {}
-    virtual void gateCreated(cGate *newgate)  {}
-    virtual void gateDeleted(cGate *gate)  {}
-    virtual void connectionCreated(cGate *srcgate)  {}
-    virtual void connectionDeleted(cGate *srcgate)  {}
-    virtual void displayStringChanged(cComponent *component)  {}
-    virtual void undisposedObject(cObject *obj) {}
-
-     // configuration, model parameters
-    virtual void readParameter(cPar *par)  {
+    // model parameters
+    virtual void readParameter(cPar *par)  
+    {
         if (par->containsValue())
             par->acceptDefault();
         else
             throw cRuntimeError("no value for parameter %s", par->getFullPath());
     }
-    virtual bool isModuleLocal(cModule *parentmod, const char *modname, int index)  {return true;}
-    virtual cXMLElement *getXMLDocument(const char *filename, const char *path=NULL)  {unsupported(); return NULL;}
-    virtual unsigned getExtraStackForEnvir() const  {return 0;}
-    virtual cConfiguration *getConfig()  {return cfg;}
-    virtual bool isGUI() const  {return false;}
-
-    // UI functions (see also protected ones)
-    virtual void bubble(cComponent *component, const char *text)  {}
-    virtual std::string gets(const char *prompt, const char *defaultreply=NULL)  {unsupported(); return "";}
-    virtual cEnvir& flush()  {::fflush(stdout); return *this;}
-
-    // RNGs
-    virtual int getNumRNGs() const {return 1;}
-    virtual cRNG *getRNG(int k)  {return rng;}
-    virtual void getRNGMappingFor(cComponent *component)  {component->setRNGMap(0,NULL);}
-
-    // output vectors
-    virtual void *registerOutputVector(const char *modulename, const char *vectorname)  {return NULL;}
-    virtual void deregisterOutputVector(void *vechandle)  {}
-    virtual void setVectorAttribute(void *vechandle, const char *name, const char *value)  {}
-    virtual bool recordInOutputVector(void *vechandle, simtime_t t, double value)  {return false;}
-
-    // output scalars
-    virtual void recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes=NULL)  {}
-    virtual void recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=NULL)  {}
-
-    // snapshot file
-    virtual std::ostream *getStreamForSnapshot()  {unsupported(); return NULL;}
-    virtual void releaseStreamForSnapshot(std::ostream *os)  {unsupported();}
-
-    // misc
-    virtual int getArgCount() const  {return argc}
-    virtual char **getArgVector() const  {return argv;}
-    virtual int getParsimProcId() const {return 0;}
-    virtual int getParsimNumPartitions() const {return 1;}
-    virtual unsigned long getUniqueNumber()  {unsupported(); return 0;}
-    virtual bool idle()  {return false;}
 };
-
 
 
 void simulate(const char *networkName, simtime_t limit)
