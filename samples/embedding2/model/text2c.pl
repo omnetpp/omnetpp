@@ -13,7 +13,7 @@ my $symbol = shift @ARGV;
 $txt = readTextFile($inputfile);
 $txt =~ s/[ \t\n]+$/\n/s;
 $txt =~ s/(.)/escape($1)/sge;
-$txt = "static unsigned char *$symbol = \n\t\"$txt\t\";\n";
+$txt = "const char *$symbol = \n\t\"$txt\t\";\n";
 print $txt;
 
 exit 0;
