@@ -29,6 +29,10 @@ NAMESPACE_BEGIN
 
 /**
  * You'll want to redefine: readParameter(); the RNG methods (getNumRNGs(), getRNG())
+    FIXME:
+    virtual void sputn(const char *s, int n) {(void) ::fwrite(s,1,n,stdout);}
+    virtual void putsmsg(const char *msg) {::printf("\n<!> %s\n\n", msg);}
+    virtual bool askyesno(const char *msg)  {unsupported(); return false;}
  */
 class SIM_API cNullEnvir : public cEnvir
 {
@@ -43,7 +47,7 @@ class SIM_API cNullEnvir : public cEnvir
   protected:
     void unsupported() const {throw cRuntimeError("cNullEnvir: unsupported method called");}
 
-    virtual void sputn(const char *s, int n) {(void) ::fwrite(s,1,n,stdout);}
+    virtual void sputn(const char *s, int n) {}
     virtual void putsmsg(const char *msg) {::printf("\n<!> %s\n\n", msg);}
     virtual bool askyesno(const char *msg)  {unsupported(); return false;}
 
@@ -95,7 +99,7 @@ class SIM_API cNullEnvir : public cEnvir
     virtual void getRNGMappingFor(cComponent *component)  {component->setRNGMap(0,NULL);}
 
     // output vectors
-    virtual void *registerOutputVector(const char *modulename, const char *vectorname)  {return NULL;}
+    virtual void *registerOutputVector(const char *modulename, const char *vectorname)  {return (void *)1;}
     virtual void deregisterOutputVector(void *vechandle)  {}
     virtual void setVectorAttribute(void *vechandle, const char *name, const char *value)  {}
     virtual bool recordInOutputVector(void *vechandle, simtime_t t, double value)  {return false;}
