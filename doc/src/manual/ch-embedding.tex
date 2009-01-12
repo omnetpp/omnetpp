@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
 
     // set up an environment for the simulation
     cEnvir *oldEv = evPtr;
-    evPtr = new CustomSimulationEnv();
+    evPtr = new CustomSimulationEnv(argc, argv, new EmptyConfig());
 
     // load NED files
     simulation.loadNedSourceFolder("./mysim-core");
@@ -243,20 +243,47 @@ has to be called, and the network is torn down with
 
 \subsection{Providing an environment object}
 
-The environment object needs to implement the \cclass{cEnvir} interface.
-There are several methods (see "creating a new user interface")
+The environment object needs to be subclassed from the \cclass{cEnvir} class,
+but since it has quite a number of pure virtual methods, it is easier
+to start by subclassing \cclass{cNullEnvir}. \cclass{cNullEnvir} defines all
+pure virtual methods, with either an empty body, or with a body that throws
+an \ttt{"unsupported method called"} exception. You can redefine methods
+to be more sophisticated later on, as you are progressing with the development.
 
-the easiest way to get started is to subclass it from \cclass{cDummyEnvir}.
-\cclass{cDummyEnvir}, which defines all pure virtual methods with either
-an empty body, or with a body that throws an \ttt{"unsupported method called"}
-exception.
+One method that you surely want to redefine is \fname{readParameter()}; that's
+how module parameters get their values. For debugging purposes, you may also
+redefine \fname{sputn()} where module log messages are written.
 
-some methods that you surely want to redefine are: \fname{readParameter()}
+The following example shows a minimalistic environment class that's enough
+to get started:
+
+\begin{verbatim}
+class CustomSimulationEnv : public cNullEnvir
+{
+  public:
+    // constructor
+    CustomSimulationEnv(int ac, char **av, cConfiguration *c) :
+        cNullEnvir(ac, av, c) {}
+
+    // model parameters: accept defaults
+    virtual void readParameter(cPar *par) {
+        if (par->containsValue())
+            par->acceptDefault();
+        else
+            throw cRuntimeError("no value for %s", par->getFullPath().c_str());
+    }
+
+    // see module output
+    virtual void sputn(const char *s, int n) {
+        (void) ::fwrite(s,1,n,stdout);
+    }
+};
+\end{verbatim}
 
 
 \subsection{Providing a configuration object}
 
-TODO
+The configuration object needs to subclass from
 
 \subsection{Loading NED files, and its alternatives}
 
@@ -291,14 +318,18 @@ Two alternative ways:
 
 1. direct C++ calls into the model
 
+\begin{verbatim}
    cModule *mod = simulation.moduleByPath("net.server.app");
    App *appMod = dynamic_cast<App *>(mod);
    int packetsSent = appMod->getTotalPacketsSent();
+\end{verbatim}
 
 2. or: catch the \fname{recordScalar()} method in \cclass{cEnvir}.
    e.g. store everything (in an std::map or something) and later select
 
+\begin{verbatim}
   if (dynamic_cast<>
+\end{verbatim}
 
 
 \subsection{Installing a custom scheduler}
