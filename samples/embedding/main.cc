@@ -1,5 +1,18 @@
+//
+// This file is part of an OMNeT++/OMNEST simulation example.
+//
+// Copyright (C) 1992-2008 Andras Varga
+//
+// This file is distributed WITHOUT ANY WARRANTY. See the file
+// `license' for details on this and other legal matters.
+//
+
 #include <omnetpp.h>
 
+/**
+ * Emulates an empty omnetpp.ini, causing config options' default values
+ * to be used.
+ */
 class EmptyConfig : public cConfiguration
 {
   protected:
@@ -21,7 +34,12 @@ class EmptyConfig : public cConfiguration
     virtual const KeyValue& getPerObjectConfigEntry(const char *objectFullPath, const char *keySuffix) const {return nullKeyValue;}
 };
 
-
+/**
+ * Defines a minimal environment for the simulation. Module parameters get
+ * initialized to their default values (causing an error if there's no
+ * default); module log messages (ev<<) get printed on the standard output;
+ * calls to record results will be ignored.
+ */
 class MinimalEnv : public cNullEnvir
 {
   public:
@@ -29,15 +47,47 @@ class MinimalEnv : public cNullEnvir
     MinimalEnv(int ac, char **av, cConfiguration *c) : cNullEnvir(ac, av, c) {}
 
     // model parameters
-    virtual void readParameter(cPar *par)  
-    {
+    virtual void readParameter(cPar *par) {
         if (par->containsValue())
             par->acceptDefault();
         else
             throw cRuntimeError("no value for parameter %s", par->getFullPath().c_str());
     }
+
+    // see module output
+    virtual void sputn(const char *s, int n) {
+        (void) ::fwrite(s,1,n,stdout);
+    }
+
 };
 
+void simulate(const char *networkName, simtime_t limit);
+
+int main(int argc, char *argv[])
+{
+    // the following line MUST be at the top of main()
+    cStaticFlag dummy;
+
+    // initializations
+    ExecuteOnStartup::executeAll();
+    SimTime::setScaleExp(-12);
+
+    // set up an environment for the simulation
+    cEnvir *oldEv = evPtr;
+    evPtr = new MinimalEnv(argc, argv, new EmptyConfig());
+
+    // load NED files
+    simulation.loadNedSourceFolder("model");
+    simulation.doneLoadingNedFiles();
+
+    // set up and run a simulation model
+    simulate("Net", 1000);
+
+    // exit
+    delete evPtr;
+    evPtr = oldEv;
+    return 0;
+}
 
 void simulate(const char *networkName, simtime_t limit)
 {
@@ -78,28 +128,3 @@ void simulate(const char *networkName, simtime_t limit)
     simulation.deleteNetwork();
 }
 
-int main(int argc, char *argv[])
-{
-    // the following line MUST be at the top of main()
-    cStaticFlag dummy;
-
-    // initializations
-    ExecuteOnStartup::executeAll();
-    SimTime::setScaleExp(-12);
-
-    // set up an environment for the simulation
-    cEnvir *oldEv = evPtr;
-    evPtr = new MinimalEnv(argc, argv, new EmptyConfig());
-
-    // load NED files
-    simulation.loadNedSourceFolder("model");
-    simulation.doneLoadingNedFiles();
-
-    // set up and run a simulation model
-    simulate("Net", 1000);
-
-    // exit
-    delete evPtr;
-    evPtr = oldEv;
-    return 0;
-}
