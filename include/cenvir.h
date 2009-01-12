@@ -448,7 +448,7 @@ class SIM_API cEnvir
      * Displays the given text in a dialog box. This function should not be
      * used by simple modules. Delegates to putsmsg().
      */
-    void printfmsg(const char *fmt,...);
+    virtual void printfmsg(const char *fmt,...);
 
     /**
      * This method can be used by modules and channels to display debugging output.
@@ -461,7 +461,7 @@ class SIM_API cEnvir
      * It is recommended to use C++-style I/O (operator<<) instead of this function.
      */
     // note: non-virtual, delegates to sputn()
-    int printf(const char *fmt,...);
+    virtual int printf(const char *fmt,...);
 
     /**
      * Flushes the output buffer of ev.printf() and ev<< operations.
@@ -482,7 +482,7 @@ class SIM_API cEnvir
      * is true for "yes", and false for "no".
      */
     // note: non-virtual, delegates to askyesno()
-    bool askYesNo(const char *fmt,...);
+    virtual bool askYesNo(const char *fmt,...);
     //@}
 
     /** @name Access to RNGs. */

@@ -244,11 +244,14 @@ has to be called, and the network is torn down with
 \subsection{Providing an environment object}
 
 The environment object needs to implement the \cclass{cEnvir} interface.
+There are several methods (see "creating a new user interface")
 
-    virtual cConfiguration *getConfig() = 0;
+the easiest way to get started is to subclass it from \cclass{cDummyEnvir}.
+\cclass{cDummyEnvir}, which defines all pure virtual methods with either
+an empty body, or with a body that throws an \ttt{"unsupported method called"}
+exception.
 
-TODO
-
+some methods that you surely want to redefine are: ...
 
 
     virtual void sputn(const char *s, int n) = 0;
@@ -325,7 +328,12 @@ you can load dirtrees, single files, and also strings containing NED code
 
 may build in cpu time limit, progress monitor, interactivity etc
 
-single thread!!
+single thread!!  if you want to access the simulation from a separate thread,
+you must use locking
+
+simptr gets implemented: then several simulations (sim+envir pairs) may coexist,
+but they cannot be run concurrently (due to evptr, simptr and static buffers
+used here and there)
 
 animation is to be done via environment object callbacks
 
