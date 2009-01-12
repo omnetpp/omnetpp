@@ -11,7 +11,6 @@ my $inputfile = shift @ARGV;
 my $symbol = shift @ARGV;
 
 $txt = readTextFile($inputfile);
-$txt =~ s/[ \t\n]+$/\n/s;
 $txt =~ s/(.)/escape($1)/sge;
 $txt = "const char *$symbol = \n\t\"$txt\t\";\n";
 print $txt;
@@ -21,11 +20,14 @@ exit 0;
 sub escape($)
 {
     my($ch) = @_;
+    if ($ch eq "\t") {
+        return "\\t";
+    }
     if ($ch eq "\n") {
         return "\\n\"\n\t\"";
     }
     elsif (ord($ch)<32 || ord($ch)>=127) {
-        return sprintf("\\x%02x", ord(ch));
+        return sprintf("\\x%02X", ord($ch));
     }
     else {
         return $ch;
