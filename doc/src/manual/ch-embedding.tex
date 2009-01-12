@@ -290,7 +290,31 @@ class CustomSimulationEnv : public cNullEnvir
 
 \subsection{Providing a configuration object}
 
-The configuration object needs to subclass from
+The configuration object needs to subclass from \cclass{cConfiguration}.
+
+\begin{verbatim}
+class EmptyConfig : public cConfiguration
+{
+  protected:
+    class NullKeyValue : public KeyValue {
+      public:
+        virtual const char *getKey() const {return NULL;}
+        virtual const char *getValue() const {return NULL;}
+        virtual const char *getBaseDirectory() const {return NULL;}
+    };
+    NullKeyValue nullKeyValue;
+
+  protected:
+    virtual const char *substituteVariables(const char *value) {return value;}
+
+  public:
+    virtual const char *getConfigValue(const char *key) const {return NULL;}
+    virtual const KeyValue& getConfigEntry(const char *key) const {return nullKeyValue;}
+    virtual const char *getPerObjectConfigValue(const char *objectFullPath, const char *keySuffix) const {return NULL;}
+    virtual const KeyValue& getPerObjectConfigEntry(const char *objectFullPath, const char *keySuffix) const {return nullKeyValue;}
+};
+\end{verbatim}
+
 
 \subsection{Loading NED files, and its alternatives}
 
