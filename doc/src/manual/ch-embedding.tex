@@ -291,6 +291,12 @@ class CustomSimulationEnv : public cNullEnvir
 \subsection{Providing a configuration object}
 
 The configuration object needs to subclass from \cclass{cConfiguration}.
+\cclass{cConfiguration} also has several methods, but the typed ones
+(\fname{getAsBool()}, \fname{getAsInt()}, etc.) have default implementations
+that delegate to the much few string-based methods (\fname{getConfigValue()}, etc.).
+
+It is fairly straightforward to implement a configuration class that
+emulates an empty ini file:
 
 \begin{verbatim}
 class EmptyConfig : public cConfiguration
