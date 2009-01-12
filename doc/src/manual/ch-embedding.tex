@@ -253,6 +253,13 @@ to be more sophisticated later on, as you are progressing with the development.
 One method that you surely want to redefine is \fname{readParameter()}; that's
 how module parameters get their values. For debugging purposes, you may also
 redefine \fname{sputn()} where module log messages are written.
+\cclass{cNullEnvir} only provides one random number generator, so your
+simulation model uses more than one, you also need to redefine the
+\fname{getNumRNGs()} and \fname{getRNG(k)} methods. To print or store
+simulation records, redefine \fname{recordScalar()}, \fname{recordStatistic()}
+and/or the output vector related methods. Other \cclass{cEnvir} methods
+are invoked from the simulation kernel to inform the environment about
+messages being sent, events scheduled and cancelled, modules created and so on.
 
 The following example shows a minimalistic environment class that's enough
 to get started:
