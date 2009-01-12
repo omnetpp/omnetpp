@@ -1,0 +1,16 @@
+TARGET = embedding2.exe
+
+OMNETPP_LIB_SUBDIR = $(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
+OMNETPP_LIBS = /libpath:"$(OMNETPP_LIB_SUBDIR)" /libpath:"$(OMNETPP_LIB_DIR)" $(KERNEL_LIBS) $(SYS_LIBS)
+
+all: $(TARGET)
+
+$(TARGET) : $O/$(TARGET)
+	copy $(O:/=\)\$(TARGET) .
+	-copy $(O:/=\)\$(TARGET).manifest . >NUL
+
+$O/$(TARGET): $(OBJS) Makefile.vc
+	-@md $(O:/=\) 2>nul
+	$(LINK) $(LDFLAGS) /out:$O/$(TARGET) $(OBJS) $(OMNETPP_LIBS)
+
+
