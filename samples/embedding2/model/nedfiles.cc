@@ -14,7 +14,7 @@ const char *ALOHA_NED =
 	"network Aloha\n"
 	"{\n"
 	"    parameters:\n"
-	"        int numHosts = 20;  // number of hosts\n"
+	"        int numHosts;  // number of hosts\n"
 	"        double txRate @unit(bps) = default(9.6Kbps); \n"
 	"        double slotTime @unit(ms) = default(100ms);\n"
 	"    submodules:\n"
@@ -41,6 +41,6 @@ const char *HOST_NED =
 	"        double txRate @unit(bps);\n"
 	"        double radioDelay @unit(s) = 10ms;\n"
 	"        volatile int pkLenBits @unit(b) = default(952b);\n"
-	"        volatile double iaTime @unit(s) = default(exponential(2s));\n"
+	"        volatile double iaTime @unit(s);\n"
 	"        double slotTime @unit(s); \n"
 	"}\n";

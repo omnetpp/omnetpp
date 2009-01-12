@@ -39,22 +39,26 @@ class MinimalEnv : public cNullEnvir
     MinimalEnv(int ac, char **av, cConfiguration *c) : cNullEnvir(ac, av, c) {}
 
     // model parameters
-    virtual void readParameter(cPar *par)  
+    virtual void readParameter(cPar *par)
     {
-        if (par->containsValue())
+    	if (strcmp(par->getName(), "iaTime") == 0)
+    		par->parse("exponential(1s)");
+    	else if (strcmp(par->getName(), "numHosts") == 0)
+    		par->parse("1");
+    	else if (par->containsValue())
             par->acceptDefault();
         else
             throw cRuntimeError("no value for parameter %s", par->getFullPath().c_str());
     }
-    
-    virtual void recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes=NULL)  
+
+    virtual void recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes=NULL)
     {
        // store all reported scalar results into a map for later use
        scalarResults[component->getFullPath()+"."+name] = value;
     }
-    
+
     // dump any scalar result gathered by the simulation model
-    void dumpResults() 
+    void dumpResults()
     {
 	      if (!scalarResults.empty())
       	{
@@ -126,10 +130,10 @@ int main(int argc, char *argv[])
     // set up and run a simulation model
     printf("Running slotted aloha simulation.\n");
     simulate("Aloha", 1000);
-    
+
     // display the simulation results
     ((MinimalEnv *)evPtr)->dumpResults();
-                                            
+
     // exit
     delete evPtr;
     evPtr = oldEv;
