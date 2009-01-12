@@ -314,10 +314,14 @@ class EmptyConfig : public cConfiguration
     virtual const char *substituteVariables(const char *value) {return value;}
 
   public:
-    virtual const char *getConfigValue(const char *key) const {return NULL;}
-    virtual const KeyValue& getConfigEntry(const char *key) const {return nullKeyValue;}
-    virtual const char *getPerObjectConfigValue(const char *objectFullPath, const char *keySuffix) const {return NULL;}
-    virtual const KeyValue& getPerObjectConfigEntry(const char *objectFullPath, const char *keySuffix) const {return nullKeyValue;}
+    virtual const char *getConfigValue(const char *key) const
+        {return NULL;}
+    virtual const KeyValue& getConfigEntry(const char *key) const
+        {return nullKeyValue;}
+    virtual const char *getPerObjectConfigValue(const char *objectFullPath,
+        const char *keySuffix) const {return NULL;}
+    virtual const KeyValue& getPerObjectConfigEntry(const char *objectFullPath,
+        const char *keySuffix) const {return nullKeyValue;}
 };
 \end{verbatim}
 
