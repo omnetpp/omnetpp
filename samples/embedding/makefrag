@@ -1,8 +1,7 @@
-# Simulation kernel and user interface libraries
+TARGET = embedding$(EXE_SUFFIX)
+
 OMNETPP_LIB_SUBDIR = $(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 OMNETPP_LIBS = -L"$(OMNETPP_LIB_SUBDIR)" -L"$(OMNETPP_LIB_DIR)" $(KERNEL_LIBS) $(SYS_LIBS)
-
-TARGET = embedding$(EXE_SUFFIX)
 
 all: $(TARGET)
 

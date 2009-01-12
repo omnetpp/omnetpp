@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
     evPtr = new MinimalEnv(argc, argv, new EmptyConfig());
 
     // load NED files
-    simulation.loadNedSourceFolder(".");
+    simulation.loadNedSourceFolder("model");
     simulation.doneLoadingNedFiles();
 
     // set up and run a simulation model
