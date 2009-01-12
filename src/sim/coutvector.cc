@@ -51,8 +51,10 @@ cOutVector::cOutVector(const char *name) : cNoncopyableOwnedObject(name)
     last_t = 0;
 
     // register early if possible (only required by Akaroa)
-    if (name)
+    if (name) {
         handle = ev.registerOutputVector(simulation.getContext()->getFullPath().c_str(), name);
+        ASSERT(handle!=NULL);
+    }
 }
 
 cOutVector::~cOutVector()
@@ -69,8 +71,10 @@ void cOutVector::setName(const char *nam)
     cOwnedObject::setName(nam);
 
     // register early (only needed for Akaroa...)
-    if (nam)
+    if (nam) {
         handle = ev.registerOutputVector(simulation.getContext()->getFullPath().c_str(), getName());
+        ASSERT(handle!=NULL);
+    }
 }
 
 std::string cOutVector::info() const
