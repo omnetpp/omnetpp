@@ -34,7 +34,7 @@ class MinimalEnv : public cNullEnvir
         if (par->containsValue())
             par->acceptDefault();
         else
-            throw cRuntimeError("no value for parameter %s", par->getFullPath());
+            throw cRuntimeError("no value for parameter %s", par->getFullPath().c_str());
     }
 };
 
@@ -92,13 +92,11 @@ int main(int argc, char *argv[])
     evPtr = new MinimalEnv(argc, argv, new EmptyConfig());
 
     // load NED files
-    simulation.loadNedSourceFolder("./mysim-core");
-    simulation.loadNedSourceFolder("./mysim-ext");
+    simulation.loadNedSourceFolder(".");
     simulation.doneLoadingNedFiles();
 
     // set up and run a simulation model
-    simulate("FooNetwork", 1000);
-    simulate("BarNetwork", 2000);
+    simulate("Net", 1000);
 
     // exit
     delete evPtr;
