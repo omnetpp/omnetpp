@@ -261,7 +261,7 @@ class SIM_API cConfiguration : public cObject
 
 /**
  * Represents a configuration suitable for use with the Envir library.
- * This class extends cConfiguration with the following functonality:
+ * This class extends cConfiguration with the following functionality:
  *
  * <ul>
  *   <li> Methods for reading module parameters; cEnvir's readParameter()

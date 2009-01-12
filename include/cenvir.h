@@ -374,7 +374,7 @@ class SIM_API cEnvir
 
     /**
      * Returns the configuration as used by the Envir library. It will throw
-     * an error if the configuration object does not subclass for cConfiguration.
+     * an error if the configuration object does not subclass from cConfigurationEx.
      * This method should not be used from the simulation kernel or model code.
      */
     virtual cConfigurationEx *getConfigEx();
@@ -518,9 +518,10 @@ class SIM_API cEnvir
 
     /**
      * This method is intended to be called by cOutVector objects to register
-     * themselves. The return value is a handle of type void*;
-     * this handle has to be passed to record() to identify the vector
-     * each time a value is written.
+     * themselves. The returned value is a handle that identifies the vector
+     * in subsequent recordInOutputVector() and deregisterOutputVector()
+     * calls. The handle may have any value (it does not have to be a valid
+     * pointer), but it should NOT be NULL.
      */
     virtual void *registerOutputVector(const char *modulename, const char *vectorname) = 0;
 
