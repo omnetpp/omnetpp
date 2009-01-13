@@ -1,3 +1,12 @@
+//
+// This file is part of an OMNeT++/OMNEST simulation example.
+//
+// Copyright (C) 1992-2008 Andras Varga
+//
+// This file is distributed WITHOUT ANY WARRANTY. See the file
+// `license' for details on this and other legal matters.
+//
+
 #include <omnetpp.h>
 #include <map>
 #include <string>
@@ -44,28 +53,28 @@ class MinimalEnv : public cNullEnvir
 
     void setParameters(int numHosts, std::string iaTime)
     {
-    	this->iaTime = iaTime;
-    	this->numHosts = numHosts;
+        this->iaTime = iaTime;
+        this->numHosts = numHosts;
     }
 
     double getStatistic(std::string name)
     {
-    	return scalarResults[name];
+        return scalarResults[name];
     }
 
     void clearStatistics()
     {
-    	scalarResults.clear();
+        scalarResults.clear();
     }
 
     // model parameters
     virtual void readParameter(cPar *par)
     {
-    	if (strcmp(par->getName(), "iaTime") == 0)
-    		par->parse(iaTime.c_str());
-    	else if (strcmp(par->getName(), "numHosts") == 0)
-    		par->setLongValue(numHosts);
-    	else if (par->containsValue())
+        if (strcmp(par->getName(), "iaTime") == 0)
+            par->parse(iaTime.c_str());
+        else if (strcmp(par->getName(), "numHosts") == 0)
+            par->setLongValue(numHosts);
+        else if (par->containsValue())
             par->acceptDefault();
         else
             throw cRuntimeError("no value for parameter %s", par->getFullPath().c_str());
@@ -80,26 +89,26 @@ class MinimalEnv : public cNullEnvir
     // dump any scalar result gathered by the simulation model
     void dumpResults()
     {
-	      if (!scalarResults.empty())
-      	{
+        if (!scalarResults.empty())
+        {
             ::printf("Scalar statistics:\n");
             for (StringDoubleMap::const_iterator it = scalarResults.begin(); it!=scalarResults.end(); ++it)
                 ::printf("  %s: %lf\n", it->first.c_str(), it->second);
-	      }
+        }
     }
 };
 
 // run the simulation with the provided arguments and return the channel utilization
 double simulate(std::string networkName, simtime_t limit, int numHosts, double iaMean)
 {
-	MinimalEnv *menv = (MinimalEnv *)evPtr;
+    MinimalEnv *menv = (MinimalEnv *)evPtr;
 
-	// set the simulation parameters in the environment
-	std::ostringstream iaParam;
-	iaParam << "exponential(" << iaMean << "s)";
+    // set the simulation parameters in the environment
+    std::ostringstream iaParam;
+    iaParam << "exponential(" << iaMean << "s)";
     menv->setParameters(numHosts, iaParam.str());
 
-	// set up the network
+    // set up the network
     cModuleType *networkType = cModuleType::find(networkName.c_str());
     if (networkType == NULL) {
         printf("No such network: %s\n", networkName.c_str());
@@ -165,19 +174,20 @@ int main(int argc, char *argv[])
 
     do
     {
-        std::cout << "Slotted aloha simulation...\n";
+        std::cout << "Slotted Aloha simulation\n";
+        std::cout << "========================\n";
+        std::cout << "\n";
         std::cout << "Specify the number of hosts: ";
         std::cin >> numHosts;
-        std::cout << "Specify the mean of the inter-arrival time between packets (sec): ";
+        std::cout << "Specify the mean inter-arrival time between packets (sec): ";
         std::cin >> iaMean;
-        std::cout << "Runnig simulation...";
+        std::cout << "Running simulation...";
 
         // simulate the Aloha network for 1 hour
-        double chanelUtil = simulate("Aloha", 3600, numHosts, iaMean);
+        double channelUtilization = simulate("Aloha", 3600, numHosts, iaMean);
 
         // display the simulation results
-        std::cout << "Channel utilization: " << chanelUtil << endl;
-
+        std::cout << "Channel utilization: " << channelUtilization << endl;
 
         std::cout << "Do you want to run a simulation again? (y/n): ";
         std::cin >> againQuestion;

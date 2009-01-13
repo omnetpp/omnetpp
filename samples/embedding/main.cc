@@ -113,11 +113,11 @@ void simulate(const char *networkName, simtime_t limit)
         }
     }
     catch (cTerminationException& e) {
-        printf("Finished: %s", e.what());
+        printf("Finished: %s\n", e.what());
     }
     catch (std::exception& e) {
         ok = false;
-        printf("ERROR: %s", e.what());
+        printf("ERROR: %s\n", e.what());
     }
 
     if (ok)
