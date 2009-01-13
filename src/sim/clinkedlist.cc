@@ -21,6 +21,7 @@
 
 #include <stdio.h>           // sprintf
 #include <string.h>          // memcmp, memcpy, memset
+#include <sstream>
 #include "globals.h"
 #include "clinkedlist.h"
 #include "cexception.h"

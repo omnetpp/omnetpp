@@ -126,25 +126,37 @@ class NEDXML_API NEDResourceCache
      * each subdirectory, and loading all "*.ned" files from there.
      * The given folder is assumed to be the root of the NED package hierarchy.
      * Returns the number of files loaded.
+     *
+     * Note: doneLoadingNedFiles() must be called after the last
+     * loadNedSourceFolder()/loadNedFile()/loadNedText() call.
      */
     virtual int loadNedSourceFolder(const char *foldername);
 
     /**
-     * To be called after all NED folders / files have been loaded. May be redefined
-     * to issue errors for components that are unresolved because of missing
-     * dependencies.
-     */
-    virtual void doneLoadingNedFiles();
-
-    /**
-     * For loading additional NED files after doneLoadingNedFiles().
-     * This method resolves dependencies (base types, etc) immediately,
-     * and throws an error if something is missing. (So this method is
-     * not useful if two or more NED files mutually depend on each other.)
-     * If the expected package is given (non-NULL), it should match the
-     * package declaration inside the NED file.
+     * Load a single NED file. If the expected package is given (non-NULL),
+     * it should match the package declaration inside the NED file.
+     *
+     * Note: doneLoadingNedFiles() must be called after the last
+     * loadNedSourceFolder()/loadNedFile()/loadNedText() call.
      */
     virtual void loadNedFile(const char *nedfname, const char *expectedPackage, bool isXML);
+
+    /**
+     * Parses and loads the NED source code passed in the string argument.
+     * If the expected package is given (non-NULL), it should match the
+     * package declaration inside the NED file.
+     *
+     * Note: doneLoadingNedFiles() must be called after the last
+     * loadNedSourceFolder()/loadNedFile()/loadNedText() call.
+     */
+    virtual void loadNedText(const char *nedtext, const char *expectedPackage, bool isXML);
+
+    /**
+     * To be called after all NED folders / files have been loaded. May be
+     * redefined to issue errors for components that could not be fully
+     * resolved because of missing base types or interfaces.
+     */
+    virtual void doneLoadingNedFiles();
 
     /**
      * Add a file (parsed into an object tree) to the cache. If the file

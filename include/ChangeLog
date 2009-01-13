@@ -1,3 +1,45 @@
+2009-01-13  Andras Varga
+
+	* Several changes to make it easier to use the simulation kernel
+	as a C++ library, for embedding simulations into other programs:
+
+	- created cRunnableEnvir by factoring out run() method from cEnvir;
+	simulation user interfaces like Cmdenv or Tkenv subclass from
+	cRunnableEnvir, but other custom environment objects do not need to.
+
+	- added cNullEnvir, a default do-nothing implementation for cEnvir.
+
+	- cConfiguration split to a smaller cConfiguration plus a
+	cConfigurationEx class that adds the rest of the methods.
+	When the simulation kernel is used as library, only cConfiguration
+	needs to be implemented. cConfigurationEx is needed only when one
+	wants to plug in a different configuration object into the existing
+	Envir library, replacing SectionBasedConfig.
+
+	- cSimulation now creates a cSequentialScheduler by default (no need
+	to do it manually); if it's not good, a different scheduler object
+	can be installed with the setScheduler() method.
+
+	- support for multiple instances of cSimulation. "simulation" is
+	no longer a global variable but a macro that expands to
+	cSimulation::getActiveSimulation(). Multiple cSimulation objects
+	may coexist; before invoking any function in the simulation library,
+	the correct cSimulation instance must be activated with
+	cSimulation::setActiveSimulation().
+
+	- multiple environment objects may coexist; in fact, there must be
+	exactly one associated with every cSimulation instance. "ev" now
+	maps to cSimulation::getActiveEnvir() which is short for
+	cSimulation::getActiveSimulation->getEnvir(). cSimulation::
+	setActiveSimulation() which activates a cSimulation instance
+	also activates its corresponding environment object.
+
+	- added cSimulation::loadNedText(), to facilitate creating
+	self-contained executables by embedding NED source as string
+	literals.
+
+	- two new related examples: samples/embedding and samples/embedding2.
+
 2008-12-12  ------ omnetpp-4.0rc1 released ------
 
 2008-02-25  Andras Varga
@@ -17,7 +59,7 @@
 	   (already consistent with Java); info(), detailedInfo();
 	   intRand(), dblRand() and other cRNG methods.
 	   Methods returning bools begin with "is", "has", "contains" or a
-	   similar verb. [Change voted on the mailing list]
+	   similar verb. [Change decided by voting on the mailing list]
 
 	- <omnetpp.h> now provides the C99 integer types and limit macros,
 	  even on systems that don't have <stdint.h> (for example, MSVC does
@@ -187,7 +229,7 @@
 
 	Introduced cComponent, a common base class for cModule and cChannel
 	- new methods to mention: isModule(), nedTypeName(), etc
-	- final garbage object collection can be turned on per module, by 
+	- final garbage object collection can be turned on per module, by
 	  invoking setPerformFinalGC(true)
 
 	cSimpleModule, cSimulation:
@@ -226,7 +268,7 @@
 	  just an alias to cMessage, and cMessage contains all fields.
 	  For that, compile everything having WITHOUT_CPACKET defined
 	  (add -DWITHOUT_CPACKET to CFLAGS).
-	- the C++ type for message kind and priority changed from "int" to 
+	- the C++ type for message kind and priority changed from "int" to
 	  "short", and priority was renamed to scheduling priority (methods
 	  setSchedulingPriority/getSchedulingPriority)
 	- added some extra fields required by sequence chart drawing: cause event

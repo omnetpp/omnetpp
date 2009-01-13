@@ -25,6 +25,7 @@
 NAMESPACE_BEGIN
 
 class cQueue;
+class cCoroutine;
 
 /**
  * Base class for all simple module classes.
@@ -211,7 +212,7 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
      *
      * See also class cWatch and the WATCH() macro.
      */
-    bool snapshot(cOwnedObject *obj=&simulation, const char *label=NULL);
+    bool snapshot(cOwnedObject *obj=NULL, const char *label=NULL);
     //@}
 
     /** @name Message sending. */

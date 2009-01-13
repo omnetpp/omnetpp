@@ -318,6 +318,11 @@ std::string cXMLElement::detailedInfo() const
     return tostr(0);
 }
 
+void cXMLElement::debugDump() const
+{
+    ev << detailedInfo();
+}
+
 //---------------
 
 static std::string my_itostr(int d)

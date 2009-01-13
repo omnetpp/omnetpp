@@ -16,18 +16,17 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "bootenv.h"
-
-USING_NAMESPACE
+#include <stdlib.h>
 
 namespace {
 
+extern "C" int main(int argc, char *argv[]);
+
 void nothing()
 {
-    // main() is part of the envir library, so here there's nothing to
-    // do except creating a reference to the envir library
-    BootEnv dummy;
-    (void)dummy;
+    // main() is part of the envir library, so we have nothing to do,
+    // except creating a reference to the envir library
+    main(0,NULL);
 }
 
 }

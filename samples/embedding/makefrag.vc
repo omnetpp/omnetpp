@@ -1,3 +1,8 @@
+#
+# Customize Makefile.vc to link an executable with the simulation kernel,
+# but without the user interface libs (oppenvir, oppcmdenv, opptkenv)
+#
+
 TARGET = embedding.exe
 
 OMNETPP_LIB_SUBDIR = $(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)

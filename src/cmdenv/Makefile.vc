@@ -73,8 +73,8 @@ $O/cmdenv.obj: cmdenv.cc \
   ../../include/cregistrationlist.h \
   ../../include/carray.h \
   ../../include/cgate.h \
-  ../../include/cvisitor.h \
   ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
   ../../include/cmathfunction.h \
   ../../include/cenvir.h \
   ../../include/cmodule.h \
@@ -84,12 +84,12 @@ $O/cmdenv.obj: cmdenv.cc \
   ../../include/simtime.h \
   ../../include/simtime_t.h \
   ../../include/csimplemodule.h \
-  ../../include/simkerneldefs.h \
   ../../include/simutil.h \
+  ../../include/simkerneldefs.h \
   ../../include/cconfigoption.h \
   ../../include/cmsgpar.h \
-  ../../include/platdep/intxtypes.h \
   ../../include/cmessageheap.h \
+  ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
   ../../include/cclassfactory.h \
   cmddefs.h \
@@ -106,7 +106,6 @@ $O/cmdenv.obj: cmdenv.cc \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   ../../include/cproperty.h \
-  ../../include/ccoroutine.h \
   cmdenv.h \
   ../../include/cproperties.h \
   ../../include/ccomponent.h \

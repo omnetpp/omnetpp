@@ -23,6 +23,7 @@
 #include "csimulation.h"
 #include "cmodule.h"
 #include "crng.h"
+#include "cenvir.h"
 
 NAMESPACE_BEGIN
 

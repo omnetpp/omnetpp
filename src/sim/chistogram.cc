@@ -32,6 +32,7 @@
 #include "cdetect.h"
 #include "chistogram.h"
 #include "cexception.h"
+#include "cenvir.h"
 
 #ifdef WITH_PARSIM
 #include "ccommbuffer.h"

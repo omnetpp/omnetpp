@@ -21,6 +21,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <sstream>
 #include "globals.h"
 #include "cqueue.h"
 #include "cexception.h"

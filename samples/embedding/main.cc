@@ -73,19 +73,20 @@ int main(int argc, char *argv[])
     SimTime::setScaleExp(-12);
 
     // set up an environment for the simulation
-    cEnvir *oldEv = evPtr;
-    evPtr = new MinimalEnv(argc, argv, new EmptyConfig());
+    cEnvir *env = new MinimalEnv(argc, argv, new EmptyConfig());
+    cSimulation *sim = new cSimulation("simulation", env);
+    cSimulation::setActiveSimulation(sim);
 
     // load NED files
-    simulation.loadNedSourceFolder("model");
-    simulation.doneLoadingNedFiles();
+    sim->loadNedSourceFolder("model");
+    sim->doneLoadingNedFiles();
 
     // set up and run a simulation model
     simulate("Net", 1000);
 
     // exit
-    delete evPtr;
-    evPtr = oldEv;
+    cSimulation::setActiveSimulation(NULL);
+    delete sim;
     return 0;
 }
 

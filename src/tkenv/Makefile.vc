@@ -101,7 +101,6 @@ $O/arrow.obj: arrow.cc \
   arrow.h \
   ../../include/cvisitor.h \
   ../../include/cstringpool.h \
-  ../../include/cenvir.h \
   ../../include/opp_string.h \
   tkdefs.h \
   ../../include/cexception.h \
@@ -109,8 +108,6 @@ $O/arrow.obj: arrow.cc \
   ../../include/cownedobject.h \
   ../../include/platdep/platdefs.h \
   tkutil.h \
-  ../../include/simtime.h \
-  ../../include/simtime_t.h \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
   ../../include/platdep/intxtypes.h \
@@ -145,6 +142,7 @@ $O/inspector.obj: inspector.cc \
   ../../include/cfsm.h \
   ../../include/nedsupport.h \
   ../../include/cclassfactory.h \
+  ../../include/cnullenvir.h \
   ../../include/cstddev.h \
   ../../include/cdoubleparimpl.h \
   ../../include/packing.h \
@@ -242,6 +240,7 @@ $O/inspfactory.obj: inspfactory.cc \
   ../../include/cfsm.h \
   ../../include/nedsupport.h \
   ../../include/cclassfactory.h \
+  ../../include/cnullenvir.h \
   ../../include/cstddev.h \
   ../../include/cdoubleparimpl.h \
   ../../include/errmsg.h \
@@ -351,8 +350,8 @@ $O/layouterenv.obj: layouterenv.cc \
   ../../include/simtime_t.h \
   ../../include/csimplemodule.h \
   ../../include/cdensityestbase.h \
-  ../../include/platdep/intxtypes.h \
   ../../include/cmessageheap.h \
+  ../../include/platdep/intxtypes.h \
   layouterenv.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
@@ -362,7 +361,6 @@ $O/layouterenv.obj: layouterenv.cc \
   ../../include/cnamedobject.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
-  ../../include/ccoroutine.h \
   ../../include/regmacros.h
 $O/logbuffer.obj: logbuffer.cc \
   ../../include/cgate.h \
@@ -370,10 +368,10 @@ $O/logbuffer.obj: logbuffer.cc \
   ../../include/cmodule.h \
   logbuffer.h \
   ../../include/csimulation.h \
-  tkutil.h \
   ../../include/simtime.h \
-  ../../include/simutil.h \
+  tkutil.h \
   ../../include/simkerneldefs.h \
+  ../../include/simutil.h \
   ../../include/cobject.h \
   ../../include/cclassfactory.h \
   ../../include/errmsg.h \
@@ -397,7 +395,6 @@ $O/logbuffer.obj: logbuffer.cc \
   ../../include/cnamedobject.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
-  ../../include/ccoroutine.h \
   ../../include/regmacros.h
 $O/modinsp.obj: modinsp.cc \
   modinsp.h \
@@ -441,8 +438,8 @@ $O/modinsp.obj: modinsp.cc \
   ../../include/simtime_t.h \
   ../../include/csimplemodule.h \
   ../../include/cdensityestbase.h \
-  ../../include/platdep/intxtypes.h \
   ../../include/cmessageheap.h \
+  ../../include/platdep/intxtypes.h \
   layouterenv.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
@@ -452,7 +449,6 @@ $O/modinsp.obj: modinsp.cc \
   ../../include/cnamedobject.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
-  ../../include/ccoroutine.h \
   tkenv.h \
   ../../include/regmacros.h
 $O/objinsp.obj: objinsp.cc \
@@ -485,6 +481,7 @@ $O/objinsp.obj: objinsp.cc \
   ../../include/cfsm.h \
   ../../include/nedsupport.h \
   ../../include/cclassfactory.h \
+  ../../include/cnullenvir.h \
   ../../include/cstddev.h \
   ../../include/cdoubleparimpl.h \
   ../../include/errmsg.h \
@@ -591,8 +588,8 @@ $O/statinsp.obj: statinsp.cc \
   ../../include/onstartup.h \
   ../../include/simtime_t.h \
   ../../include/cdensityestbase.h \
-  ../../include/platdep/intxtypes.h \
   ../../include/cmessageheap.h \
+  ../../include/platdep/intxtypes.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/cdefaultlist.h \
@@ -601,7 +598,6 @@ $O/statinsp.obj: statinsp.cc \
   ../../include/cnamedobject.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
-  ../../include/ccoroutine.h \
   tkenv.h \
   ../../include/regmacros.h
 $O/tkcmd.obj: tkcmd.cc \
@@ -616,8 +612,8 @@ $O/tkcmd.obj: tkcmd.cc \
   ../../include/csimulation.h \
   tkutil.h \
   ../../include/simtime.h \
-  ../../include/simkerneldefs.h \
   ../../include/simutil.h \
+  ../../include/simkerneldefs.h \
   ../../include/cwatch.h \
   ../../include/cenum.h \
   ../../include/cmsgpar.h \
@@ -655,7 +651,6 @@ $O/tkcmd.obj: tkcmd.cc \
   ../../include/cnamedobject.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
-  ../../include/ccoroutine.h \
   tkenv.h \
   ../../include/regmacros.h
 $O/tkenv.obj: tkenv.cc \
@@ -705,8 +700,8 @@ $O/tkenv.obj: tkenv.cc \
   ../../include/simtime_t.h \
   ../../include/csimplemodule.h \
   ../../include/cdensityestbase.h \
-  ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
+  ../../include/cmessageheap.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/cdefaultlist.h \
@@ -715,7 +710,6 @@ $O/tkenv.obj: tkenv.cc \
   ../../include/cnamedobject.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
-  ../../include/ccoroutine.h \
   tkenv.h \
   ../../include/regmacros.h
 $O/tklib.obj: tklib.cc \
@@ -726,8 +720,8 @@ $O/tklib.obj: tklib.cc \
   ../../include/csimulation.h \
   ../../include/simtime.h \
   tkutil.h \
-  ../../include/simkerneldefs.h \
   ../../include/simutil.h \
+  ../../include/simkerneldefs.h \
   ../../include/cobject.h \
   ../../include/cclassfactory.h \
   ../../include/errmsg.h \
@@ -753,7 +747,6 @@ $O/tklib.obj: tklib.cc \
   ../../include/cnamedobject.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
-  ../../include/ccoroutine.h \
   tkenv.h \
   ../../include/regmacros.h
 $O/tkutil.obj: tkutil.cc \
@@ -791,7 +784,6 @@ $O/tkutil.obj: tkutil.cc \
   ../../include/cnamedobject.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
-  ../../include/ccoroutine.h \
   tkenv.h \
   ../../include/regmacros.h
 $O/visitor.obj: visitor.cc \
@@ -804,8 +796,8 @@ $O/visitor.obj: visitor.cc \
   ../../include/csimulation.h \
   ../../include/simtime.h \
   tkutil.h \
-  ../../include/simkerneldefs.h \
   ../../include/simutil.h \
+  ../../include/simkerneldefs.h \
   ../../include/cwatch.h \
   ../../include/cmsgpar.h \
   ../../include/cobject.h \
@@ -838,7 +830,6 @@ $O/visitor.obj: visitor.cc \
   ../../include/cnamedobject.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
-  ../../include/ccoroutine.h \
   tkenv.h \
   ../../include/regmacros.h
 $O/tkImgPNG.obj: tkImgPNG.c

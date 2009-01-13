@@ -26,6 +26,7 @@
 #include "csimplemodule.h"
 #include "cgate.h"
 #include "cmessage.h"
+#include "ccoroutine.h"
 #include "csimulation.h"
 #include "carray.h"
 #include "cmsgpar.h"
@@ -729,7 +730,7 @@ void cSimpleModule::endSimulation()
 
 bool cSimpleModule::snapshot(cOwnedObject *object, const char *label)
 {
-    return simulation.snapshot(object, label);
+    return simulation.snapshot(object ? object : &simulation, label);
 }
 
 bool cSimpleModule::hasStackOverflow() const

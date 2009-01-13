@@ -19,12 +19,11 @@
 
 #include <stdio.h>
 #include "cownedobject.h"
+#include "envirdefs.h"
 #include "bootenv.h"
 #include "../common/ver.h"
 
 USING_NAMESPACE
-
-BootEnv bootEnv;
 
 //
 // The main() function
@@ -37,8 +36,8 @@ ENVIR_API int main(int argc, char *argv[])
     printf("Version: " OMNETPP_VERSION_STR ", build: " OMNETPP_BUILDID ", edition: " OMNETPP_EDITION "\n");
     printf("See the license for distribution terms and warranty disclaimer\n");
 
-    evPtr = &bootEnv;
-    int exitcode = bootEnv.run(argc, argv, NULL);
+    int exitcode = setupUserInterface(argc, argv, NULL);
+
     printf("\nEnd.\n");
 
     return exitcode;

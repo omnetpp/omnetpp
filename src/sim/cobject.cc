@@ -21,6 +21,7 @@
 #include "cdefaultlist.h"
 #include "cexception.h"
 #include "cclassdescriptor.h"
+#include "cenvir.h"
 
 USING_NAMESPACE
 

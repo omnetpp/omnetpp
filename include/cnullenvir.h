@@ -28,11 +28,28 @@ NAMESPACE_BEGIN
 
 
 /**
- * You'll want to redefine: readParameter(); the RNG methods (getNumRNGs(), getRNG())
-    FIXME:
-    virtual void sputn(const char *s, int n) {(void) ::fwrite(s,1,n,stdout);}
-    virtual void putsmsg(const char *msg) {::printf("\n<!> %s\n\n", msg);}
-    virtual bool askyesno(const char *msg)  {unsupported(); return false;}
+ * A cEnvir implementation with all pure virtual methods defined with an
+ * empty body, with a trivial implementation, or to throw an exception
+ * with the "unsupported method" text.
+ *
+ * This class is not used by \opp, it is provided for convenience of
+ * writing standlone programs that embed the simulation kernel as a library.
+ *
+ * You may want to subclass from cNullEnvir, and redefine some the following
+ * methods:
+ * <ul>
+ *   <li> sputn() to print module log messages instead of discarding
+ *        them (<tt>::fwrite(s,1,n,stdout);</tt>);
+ *   <li> readParameter() to set module parameters, or at least apply the
+ *        NED default value;
+ *   <li> the RNG methods (getNumRNGs(), getRNG()) to provide more than one
+ *        random number generator
+ *   <li> recordScalar() and other statistics recording methods to store
+ *        simulation results instead of discarding them
+ * </ul>
+ *
+ * @ingroup Envir
+ * @ingroup EnvirExtensions
  */
 class SIM_API cNullEnvir : public cEnvir
 {
@@ -42,7 +59,6 @@ class SIM_API cNullEnvir : public cEnvir
     cConfiguration *cfg;
     cRNG *rng;
     unsigned long lastnum;
-    
 
   protected:
     void unsupported() const {throw cRuntimeError("cNullEnvir: unsupported method called");}

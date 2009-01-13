@@ -313,7 +313,7 @@ class SIM_API cXMLElement
     /**
      * Prints detailedInfo() on ev.
      */
-    void debugDump() const {ev << detailedInfo();}
+    void debugDump() const;
 
     /**
      * Returns tree contents in an XML-like format. This method is only

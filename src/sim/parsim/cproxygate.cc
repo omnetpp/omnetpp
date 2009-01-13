@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <sstream>
 #include "cproxygate.h"
 #include "cparsimpartition.h"
 #include "cmodule.h"

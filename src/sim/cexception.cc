@@ -97,15 +97,18 @@ cException::cException(const cException& e)
 
 void cException::storeCtx()
 {
-    hascontext = simulation.getContext()!=NULL;
-    moduleid = -1;
-
-    if (simulation.getContext())
+    cSimulation *sim = cSimulation::getActiveSimulation();
+    if (!sim || !sim->getContext())
     {
-        contextclassname = simulation.getContext()->getClassName();
-        contextfullpath = simulation.getContext()->getFullPath().c_str();
-        if (simulation.getContextModule())
-            moduleid = simulation.getContextModule()->getId();
+        hascontext = false;
+        moduleid = -1;
+    }
+    else
+    {
+        hascontext = true;
+        contextclassname = sim->getContext()->getClassName();
+        contextfullpath = sim->getContext()->getFullPath().c_str();
+        moduleid = sim->getContextModule() ? sim->getContextModule()->getId() : -1;
     }
 }
 
@@ -129,10 +132,12 @@ void cException::init(const cObject *where, OppErrorCode errorcode, const char *
     //  - if object is local in module: use getFullName()
     //  - if object is somewhere else: use getFullPath()
     buffer[0] = '\0';
-    if (where && where!=simulation.getContext())
+    cSimulation *sim = cSimulation::getActiveSimulation();
+    cComponent *context = sim ? sim->getContext() : NULL;
+    if (where && where!=context)
     {
         // try: if context's fullpath is same as module fullpath + object fullname, no need to print path
-        sprintf(buffer2,"%s.%s",(simulation.getContext()?simulation.getContext()->getFullPath().c_str():""), where->getFullName());
+        sprintf(buffer2, "%s.%s", (context ? context->getFullPath().c_str() : ""), where->getFullName());
         bool needpath = strcmp(buffer2,where->getFullPath().c_str())!=0;
         sprintf(buffer, "(%s)%s: ", where->getClassName(), needpath ? where->getFullPath().c_str() : where->getFullName());
     }

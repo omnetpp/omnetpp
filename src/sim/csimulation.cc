@@ -37,6 +37,7 @@
 #include "cparimpl.h"
 #include "chasher.h"
 #include "cconfiguration.h"
+#include "ccoroutine.h"
 
 #ifdef WITH_PARSIM
 #include "ccommbuffer.h"
@@ -56,16 +57,12 @@ extern std::set<cOwnedObject*> objectlist;
 void printAllObjects();
 #endif
 
-cSimulation simulation("simulation");
 
-EXECUTE_ON_STARTUP(simulation.init());
-
-
-cSimulation::cSimulation(const char *name) : cNoncopyableOwnedObject(name, false)
+cSimulation::cSimulation(const char *name, cEnvir *env) : cNoncopyableOwnedObject(name, false)
 {
-    ASSERT(this==&simulation);
+    ASSERT(cStaticFlag::isSet()); // cannot be instantiated as global variable
 
-    msgQueue.setName("scheduled-events");
+    ownEvPtr = env;
 
     activitymodp = NULL;
     contextmodp = NULL;
@@ -82,43 +79,37 @@ cSimulation::cSimulation(const char *name) : cNoncopyableOwnedObject(name, false
     networktype = NULL;
     hasherp = NULL;
 
-    // see init() as well
-}
-
-cSimulation::~cSimulation()
-{
-    // see shutdown()
-    msgQueue.ownerp = NULL; // in case shutdown() wasn't called, like with exit()
-}
-
-void cSimulation::init()
-{
-    // remove ourselves from ownership tree because global variables
-    // shouldn't be destroyed via operator delete. This cannot be done
-    // from the ctor, because this method calls virtual functions of
-    // defaultList, and defaultList might not be initialized yet at that point.
-    // take() cannot be done from the ctor for the same reason.
-    removeFromOwnershipTree();
+    msgQueue.setName("scheduled-events");
     take(&msgQueue);
 
     // install a default scheduler
     setScheduler(new cSequentialScheduler());
 }
 
-void cSimulation::shutdown()
+cSimulation::~cSimulation()
 {
-    // deleteNetwork() is better called before the destructor that runs after main()
-    deleteNetwork();
+    if (this==simPtr)
+        throw cRuntimeError(this, "cannot delete the active simulation manager object");
 
-    // let go of msgQueue (removeFromOwnershipTree() cannot be called here)
-    msgQueue.ownerp = NULL;
+    deleteNetwork();
 
     delete hasherp;
     delete schedulerp;
+    delete ownEvPtr;
+    drop(&msgQueue);
+}
 
-#ifdef WITH_NETBUILDER
-    cNEDLoader::clear();
-#endif
+void cSimulation::setActiveSimulation(cSimulation *sim)
+{
+    simPtr = sim;
+    evPtr = sim==NULL ? staticEvPtr : sim->ownEvPtr;
+}
+
+void cSimulation::setStaticEnvir(cEnvir *env)
+{
+    if (!env)
+         throw cRuntimeError("cSimulation::setStaticEnvir(): argument cannot be NULL");
+    staticEvPtr = env;
 }
 
 void cSimulation::forEachChild(cVisitor *v)
@@ -220,16 +211,6 @@ void cSimulation::setScheduler(cScheduler *sch)
     schedulerp->setSimulation(this);
 }
 
-void cSimulation::loadNedFile(const char *nedfile, const char *expectedPackage, bool isXML)
-{
-#ifdef WITH_NETBUILDER
-    cNEDLoader::getInstance()->loadNedFile(nedfile, expectedPackage, isXML);
-#else
-    throw cRuntimeError("cannot load `%s': simulation kernel was compiled without "
-                        "support for dynamic loading of NED files (WITH_NETBUILDER=no)", nedfile);
-#endif
-}
-
 int cSimulation::loadNedSourceFolder(const char *folder)
 {
 #ifdef WITH_NETBUILDER
@@ -240,12 +221,23 @@ int cSimulation::loadNedSourceFolder(const char *folder)
 #endif
 }
 
-std::string cSimulation::getNedPackageForFolder(const char *folder) const
+void cSimulation::loadNedFile(const char *nedfile, const char *expectedPackage, bool isXML)
 {
 #ifdef WITH_NETBUILDER
-    return cNEDLoader::getInstance()->getNedPackageForFolder(folder);
+    cNEDLoader::getInstance()->loadNedFile(nedfile, expectedPackage, isXML);
 #else
-    return "-";
+    throw cRuntimeError("cannot load `%s': simulation kernel was compiled without "
+                        "support for dynamic loading of NED files (WITH_NETBUILDER=no)", nedfile);
+#endif
+}
+
+void cSimulation::loadNedText(const char *nedtext, const char *expectedPackage, bool isXML)
+{
+#ifdef WITH_NETBUILDER
+    cNEDLoader::getInstance()->loadNedText(nedtext, expectedPackage, isXML);
+#else
+    throw cRuntimeError("cannot source NED text: simulation kernel was compiled without "
+                        "support for dynamic loading of NED files (WITH_NETBUILDER=no)");
 #endif
 }
 
@@ -253,6 +245,15 @@ void cSimulation::doneLoadingNedFiles()
 {
 #ifdef WITH_NETBUILDER
     cNEDLoader::getInstance()->doneLoadingNedFiles();
+#endif
+}
+
+std::string cSimulation::getNedPackageForFolder(const char *folder) const
+{
+#ifdef WITH_NETBUILDER
+    return cNEDLoader::getInstance()->getNedPackageForFolder(folder);
+#else
+    return "-";
 #endif
 }
 
@@ -520,7 +521,7 @@ void cSimulation::transferTo(cSimpleModule *modp)
         throw cRuntimeError("transferTo(): attempt to transfer to NULL");
 
     // switch to activity() of the simple module
-    simulation.exception = NULL;
+    exception = NULL;
     activitymodp = modp;
     cCoroutine::switchTo(modp->coroutine);
 
@@ -531,10 +532,10 @@ void cSimulation::transferTo(cSimpleModule *modp)
 
     // if exception occurred in activity(), re-throw it. This allows us to handle
     // handleMessage() and activity() in an uniform way in the upper layer.
-    if (simulation.exception)
+    if (exception)
     {
-        cException *e = simulation.exception;
-        simulation.exception = NULL;
+        cException *e = exception;
+        exception = NULL;
 
         // ok, so we have an exception *pointer*, but we have to throw further
         // by *value*, and possibly without leaking it. Hence the following magic...
@@ -692,6 +693,128 @@ void cSimulation::insertMsg(cMessage *msg)
     msg->setPreviousEventNumber(event_num);
     simulation.msgQueue.insert(msg);
 }
+
+
+//----
+
+/**
+ * A dummy implementation of cEnvir, only provided so that one
+ * can use simulation library classes outside simulations, that is,
+ * in programs that only link with the simulation library (<i>sim_std</i>)
+ * and not with the <i>envir</i>, <i>cmdenv</i>, <i>tkenv</i>,
+ * etc. libraries.
+ *
+ * Many simulation library classes make calls to <i>ev</i> methods,
+ * which would crash if <tt>evPtr</tt> was NULL; one example is
+ * cObject's destructor which contains an <tt>ev.objectDeleted()</tt>.
+ * The solution provided here is that <tt>evPtr</tt> is initialized
+ * to point to a StaticEnv instance, thus enabling library classes to work.
+ *
+ * StaticEnv methods either do nothing, or throw an "unsupported method"
+ * exception, so StaticEnv is only useful for the most basic usage scenarios.
+ * For anything more complicated, <tt>evPtr</tt> must be set in <tt>main()</tt>
+ * to point to a proper cEnvir implementation, like the Cmdenv or
+ * Tkenv classes. (The <i>envir</i> library provides a <tt>main()</tt>
+ * which does exactly that.)
+ *
+ * @ingroup Envir
+ */
+class StaticEnv : public cEnvir
+{
+  protected:
+    void unsupported() const {throw opp_runtime_error("StaticEnv: unsupported method called");}
+
+    virtual void sputn(const char *s, int n) {(void) ::fwrite(s,1,n,stdout);}
+    virtual void putsmsg(const char *msg) {::printf("\n<!> %s\n\n", msg);}
+    virtual bool askyesno(const char *msg)  {unsupported(); return false;}
+
+  public:
+    // constructor, destructor
+    StaticEnv() {}
+    virtual ~StaticEnv() {}
+
+    // eventlog callback interface
+    virtual void objectDeleted(cObject *object) {}
+    virtual void simulationEvent(cMessage *msg)  {}
+    virtual void messageSent_OBSOLETE(cMessage *msg, cGate *directToGate=NULL)  {}
+    virtual void messageScheduled(cMessage *msg)  {}
+    virtual void messageCancelled(cMessage *msg)  {}
+    virtual void beginSend(cMessage *msg)  {}
+    virtual void messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay)  {}
+    virtual void messageSendHop(cMessage *msg, cGate *srcGate)  {}
+    virtual void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay)  {}
+    virtual void endSend(cMessage *msg)  {}
+    virtual void messageDeleted(cMessage *msg)  {}
+    virtual void moduleReparented(cModule *module, cModule *oldparent)  {}
+    virtual void componentMethodBegin(cComponent *from, cComponent *to, const char *methodFmt, va_list va)  {}
+    virtual void componentMethodEnd()  {}
+    virtual void moduleCreated(cModule *newmodule)  {}
+    virtual void moduleDeleted(cModule *module)  {}
+    virtual void gateCreated(cGate *newgate)  {}
+    virtual void gateDeleted(cGate *gate)  {}
+    virtual void connectionCreated(cGate *srcgate)  {}
+    virtual void connectionDeleted(cGate *srcgate)  {}
+    virtual void displayStringChanged(cComponent *component)  {}
+    virtual void undisposedObject(cObject *obj);
+
+     // configuration, model parameters
+    virtual void readParameter(cPar *parameter)  {unsupported();}
+    virtual bool isModuleLocal(cModule *parentmod, const char *modname, int index)  {return true;}
+    virtual cXMLElement *getXMLDocument(const char *filename, const char *path=NULL)  {unsupported(); return NULL;}
+    virtual unsigned getExtraStackForEnvir() const  {return 0;}
+    virtual cConfiguration *getConfig()  {unsupported(); return NULL;}
+    virtual bool isGUI() const  {return false;}
+
+    // UI functions (see also protected ones)
+    virtual void bubble(cComponent *component, const char *text)  {}
+    virtual std::string gets(const char *prompt, const char *defaultreply=NULL)  {unsupported(); return "";}
+    virtual cEnvir& flush()  {::fflush(stdout); return *this;}
+
+    // RNGs
+    virtual int getNumRNGs() const {return 0;}
+    virtual cRNG *getRNG(int k)  {unsupported(); return NULL;}
+    virtual void getRNGMappingFor(cComponent *component)  {component->setRNGMap(0,NULL);}
+
+    // output vectors
+    virtual void *registerOutputVector(const char *modulename, const char *vectorname)  {return NULL;}
+    virtual void deregisterOutputVector(void *vechandle)  {}
+    virtual void setVectorAttribute(void *vechandle, const char *name, const char *value)  {}
+    virtual bool recordInOutputVector(void *vechandle, simtime_t t, double value)  {return false;}
+
+    // output scalars
+    virtual void recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes=NULL)  {}
+    virtual void recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=NULL)  {}
+
+    // snapshot file
+    virtual std::ostream *getStreamForSnapshot()  {unsupported(); return NULL;}
+    virtual void releaseStreamForSnapshot(std::ostream *os)  {unsupported();}
+
+    // misc
+    virtual int getArgCount() const  {unsupported(); return 0;}
+    virtual char **getArgVector() const  {unsupported(); return NULL;}
+    virtual int getParsimProcId() const {return 0;}
+    virtual int getParsimNumPartitions() const {return 1;}
+    virtual unsigned long getUniqueNumber()  {unsupported(); return 0;}
+    virtual bool idle()  {return false;}
+};
+
+void StaticEnv::undisposedObject(cObject *obj)
+{
+    if (!cStaticFlag::isSet())
+    {
+        ::printf("<!> WARNING: global object variable (DISCOURAGED) detected: "
+                 "(%s)`%s' at %p\n", obj->getClassName(), obj->getFullPath().c_str(), obj);
+    }
+}
+
+static StaticEnv staticEnv;
+
+// cSimulation's global variables
+cEnvir *cSimulation::evPtr = &staticEnv;
+cEnvir *cSimulation::staticEvPtr = &staticEnv;
+
+cSimulation *cSimulation::simPtr = NULL;
+
 
 NAMESPACE_END
 

@@ -25,6 +25,7 @@
 #include "cmodule.h"
 #include "csimulation.h"
 #include "commonutil.h"
+#include "cenvir.h"
 
 #ifdef WITH_PARSIM
 #include "ccommbuffer.h"

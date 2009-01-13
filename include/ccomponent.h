@@ -22,6 +22,7 @@
 #include "cpar.h"
 #include "cdefaultlist.h"
 #include "simtime.h"
+#include "cenvir.h"
 
 NAMESPACE_BEGIN
 
@@ -29,7 +30,7 @@ class cComponentType;
 class cProperties;
 class cDisplayString;
 class cRNG;
-
+class cStatistic;
 
 /**
  * Common base for module and channel classes: cModule and cChannel.

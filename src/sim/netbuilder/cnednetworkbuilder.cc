@@ -33,6 +33,7 @@
 #include "cdisplaystring.h"
 #include "cconfiguration.h"
 #include "cconfigoption.h"
+#include "cenvir.h"
 
 #include "nedelements.h"
 #include "nederror.h"

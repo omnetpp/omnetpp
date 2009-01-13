@@ -4,10 +4,6 @@
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
-//
-//  Declaration of the following classes:
-//    cEnvir    : user interface class
-//
 //==========================================================================
 
 /*--------------------------------------------------------------*
@@ -26,6 +22,7 @@
 #include "simkerneldefs.h"
 #include "simtime_t.h"
 #include "opp_string.h"
+#include "csimulation.h"
 
 NAMESPACE_BEGIN
 
@@ -46,7 +43,7 @@ class cConfigurationEx;
 
 using std::endl;
 
-// internal macro, usage: EVCB.messageSent_OBSOLETE(...)
+// internal macro, usage: EVCB.beginSend(...)
 #define EVCB  ev.suppress_notifications ? (void)0 : ev
 
 /**
@@ -67,9 +64,7 @@ using std::endl;
  *
  * @ingroup Envir
  */
-#define ev  (*evPtr)
-
-extern SIM_API cEnvir *evPtr;
+#define ev  (*cSimulation::getActiveEnvir())
 
 
 /**
@@ -92,20 +87,13 @@ extern SIM_API cEnvir *evPtr;
 /**
  * cEnvir represents the "environment" of the simulation. cEnvir
  * is a common facade for the Cmdenv and Tkenv user interfaces (and any
- * other future user interface).
- *
- * cEnvir has only one instance, the ev global variable.
- *
- * cEnvir member functions can be roughly divided into two groups:
- *  - I/O for module activities; actual implementation is different for each
- *    user interface (e.g. stdin/stdout for Cmdenv, windowing in Tkenv)
- *  - functions for exchanging information between the simulation and the
- *    environment.
+ * other future user interface). The cEnvir object can be accessed
+ * via cSimulation::getActiveEnvir() or the ev macro.
  *
  * The default implementation of cEnvir can be customized by subclassing
  * the classes declared in the envirext.h header (e.g. cConfiguration,
- * cRNG, cOutputVectorManager, cOutputScalarManager),
- * and selecting the new classes from <tt>omnetpp.ini</tt>.
+ * cRNG, cOutputVectorManager, cOutputScalarManager), and selecting the
+ * new classes from <tt>omnetpp.ini</tt>.
  *
  * @ingroup Envir
  * @ingroup EnvirExtensions
@@ -309,7 +297,7 @@ class SIM_API cEnvir
      * that the user didn't delete in the module destructor.
      */
     // Note: this may not be pure virtual, as it may get called even after main()
-    // exited and bootEnv was destructed, and we don't want to get a "pure virtual
+    // exited and StaticEnv was destructed, and we don't want to get a "pure virtual
     // method called" error
     virtual void undisposedObject(cObject *obj) {}
     //@}
@@ -324,8 +312,8 @@ class SIM_API cEnvir
     virtual void readParameter(cPar *parameter) = 0;
 
     /**
-     * Used for parallel distributed simulation. Returns true if a
-     * to-be-created module which is (or has any submodule which is)
+     * Used for parallel distributed simulation. Returns true if the
+     * named future submodule of parentmod is (or will have any submodule)
      * in the local partition, and false otherwise.
      *
      * Note that for compound modules that contain simple modules in
@@ -632,13 +620,16 @@ class SIM_API cEnvir
 /**
  * The interface for cEnvir objects that can be instantiated as a user interface
  * like Cmdenv and Tkenv.
+ *
+ * @ingroup Envir
+ * @ingroup EnvirExtensions
  */
 class SIM_API cRunnableEnvir : public cEnvir
 {
   public:
     /**
-     * Runs the user interface. The return value is the exit code of the
-     * simulation program.
+     * Runs the user interface. The return value will become the exit code
+     * of the simulation program.
      */
     virtual int run(int argc, char *argv[], cConfiguration *cfg) = 0;
 };

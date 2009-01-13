@@ -1,20 +1,3 @@
-//==========================================================================
-//  BOOTENV.CC - part of
-//
-//                     OMNeT++/OMNEST
-//             Discrete System Simulation in C++
-//
-//  Author: Andras Varga
-//
-//==========================================================================
-
-/*--------------------------------------------------------------*
-  Copyright (C) 1992-2008 Andras Varga
-  Copyright (C) 2006-2008 OpenSim Ltd.
-
-  This file is distributed WITHOUT ANY WARRANTY. See the file
-  `license' for details on this and other legal matters.
-*--------------------------------------------------------------*/
 
 #include <stdarg.h>
 #include <stdio.h>
@@ -56,9 +39,6 @@ Register_GlobalConfigOption(CFGID_USER_INTERFACE, "user-interface", CFG_STRING, 
      if (!var) \
          throw cRuntimeError("Class \"%s\" is not subclassed from " #baseclass, (const char *)classname);
 
-
-
-// User interface factory functions.
 static cOmnetAppRegistration *chooseBestOmnetApp()
 {
     cOmnetAppRegistration *best_appreg = NULL;
@@ -72,16 +52,6 @@ static cOmnetAppRegistration *chooseBestOmnetApp()
             best_appreg = appreg;
     }
     return best_appreg;
-}
-
-
-
-BootEnv::BootEnv()
-{
-}
-
-BootEnv::~BootEnv()
-{
 }
 
 static void verifyIntTypes()
@@ -106,11 +76,12 @@ static void verifyIntTypes()
 #undef LL
 }
 
-int BootEnv::run(int argc, char *argv[], cConfiguration *cfg)
+int setupUserInterface(int argc, char *argv[], cConfiguration *cfg)
 {
     //
     // SETUP
     //
+    cSimulation *simulationobject = NULL;
     cRunnableEnvir *app = NULL;
     ArgList *args = NULL;
     SectionBasedConfiguration *bootconfig = NULL;
@@ -233,7 +204,7 @@ int BootEnv::run(int argc, char *argv[], cConfiguration *cfg)
         }
 
         //
-        // Finally, set up user interface object. All the rest will be done there.
+        // Create interface object.
         //
         ::printf("Setting up %s...\n", appreg->getName());
         app = appreg->createOne();
@@ -261,7 +232,8 @@ int BootEnv::run(int argc, char *argv[], cConfiguration *cfg)
     {
         if (app)
         {
-            evPtr = app;
+            simulationobject = new cSimulation("simulation", app);
+            cSimulation::setActiveSimulation(simulationobject);
             exitcode = app->run(argc, argv, configobject);
         }
         else
@@ -278,10 +250,9 @@ int BootEnv::run(int argc, char *argv[], cConfiguration *cfg)
     //
     // SHUTDOWN
     //
-    evPtr = this;
-    delete app;
+    cSimulation::setActiveSimulation(NULL);
+    delete simulationobject;  // will delete app as well
 
-    simulation.shutdown();
     componentTypes.clear();
     nedFunctions.clear();
     classes.clear();
@@ -293,28 +264,6 @@ int BootEnv::run(int argc, char *argv[], cConfiguration *cfg)
     return exitcode;
 }
 
-void BootEnv::sputn(const char *s, int n)
-{
-    (void) ::fwrite(s, 1, n, stdout);
-}
-
-void BootEnv::putsmsg(const char *msg)
-{
-    ::printf("<!> %s\n\n", msg);
-}
-
-cEnvir& BootEnv::flush()
-{
-    ::fflush(stdout);
-    return *this;
-}
-
-void BootEnv::undisposedObject(cObject *obj)
-{
-    // we must have been called after BootEnv has already shut down
-    ::printf("<!> WARNING: global object variable (DISCOURAGED) detected: (%s)`%s' at %p\n",
-             obj->getClassName(), obj->getFullPath().c_str(), obj);
-}
 
 //---------------------------------------------------------
 

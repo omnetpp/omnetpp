@@ -22,6 +22,7 @@
 
 #include <stdio.h>
 #include "cownedobject.h"
+#include "simtime_t.h"
 
 NAMESPACE_BEGIN
 

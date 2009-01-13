@@ -21,6 +21,7 @@
 
 #include <string.h>  // memcmp, memcpy, memset
 #include <algorithm>  // min, max
+#include <sstream>
 #include "carray.h"
 #include "globals.h"
 #include "cexception.h"

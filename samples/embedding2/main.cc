@@ -101,7 +101,10 @@ class MinimalEnv : public cNullEnvir
 // run the simulation with the provided arguments and return the channel utilization
 double simulate(std::string networkName, simtime_t limit, int numHosts, double iaMean)
 {
-    MinimalEnv *menv = (MinimalEnv *)evPtr;
+
+//FIXME ide behozni a simulation + envir krealast / torlest
+
+    MinimalEnv *menv = (MinimalEnv *)cSimulation::getActiveEnvir();
 
     // set the simulation parameters in the environment
     std::ostringstream iaParam;
@@ -156,24 +159,26 @@ int main(int argc, char *argv[])
 {
     // the following line MUST be at the top of main()
     cStaticFlag dummy;
-    int numHosts;
-    double iaMean;
-    std::string againQuestion;
 
     // initializations
     ExecuteOnStartup::executeAll();
     SimTime::setScaleExp(-12);
 
     // set up an environment for the simulation
-    cEnvir *oldEv = evPtr;
-    evPtr = new MinimalEnv(argc, argv, new EmptyConfig());
+    cEnvir *env = new MinimalEnv(argc, argv, new EmptyConfig());
+    cSimulation *sim = new cSimulation("simulation", env);
+    cSimulation::setActiveSimulation(sim);
 
     // load NED files
-    simulation.loadNedSourceFolder("./model");
-    simulation.doneLoadingNedFiles();
+    sim->loadNedSourceFolder("./model");
+    sim->doneLoadingNedFiles();
 
-    do
-    {
+    std::string againQuestion;
+    do {
+        int numHosts;
+        double iaMean;
+
+        std::cout << "\n";
         std::cout << "Slotted Aloha simulation\n";
         std::cout << "========================\n";
         std::cout << "\n";
@@ -191,11 +196,12 @@ int main(int argc, char *argv[])
 
         std::cout << "Do you want to run a simulation again? (y/n): ";
         std::cin >> againQuestion;
-    } while (againQuestion == "y");
+    }
+    while (againQuestion == "y");
 
 
     // exit
-    delete evPtr;
-    evPtr = oldEv;
+    cSimulation::setActiveSimulation(NULL);
+    delete sim;
     return 0;
 }

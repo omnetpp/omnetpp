@@ -20,7 +20,6 @@
 
 #include <typeinfo>
 #include <iostream>
-#include "cenvir.h"
 #include "simkerneldefs.h"
 #include "simutil.h"
 #include "cnamedobject.h"
@@ -31,9 +30,10 @@ NAMESPACE_BEGIN
 
 class cOwnedObject;
 class cStaticFlag;
-
-class cArray;
+class cSimulation;
 class cDefaultList;
+class cMessage;
+class cPacket;
 
 
 /**

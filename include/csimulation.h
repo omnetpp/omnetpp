@@ -21,10 +21,8 @@
 #define __CSIMULATION_H
 
 #include "simkerneldefs.h"
-#include "simutil.h"
-#include "globals.h"
+#include "simtime_t.h"
 #include "cmessageheap.h"
-#include "ccoroutine.h"
 
 NAMESPACE_BEGIN
 
@@ -41,24 +39,27 @@ class  cParsimPartition;
 class  cNEDFileLoader;
 class  cHasher;
 class  cModuleType;
+class  cEnvir;
+class  cDefaultList;
 
+SIM_API extern cDefaultList defaultList; //XXX twice
 
 /**
- * Global simulation instance.
+ * The active simulation manager instance.
  *
- * @ingroup Internals
+ * @ingroup FIXME
  */
-SIM_API extern cSimulation simulation;
+#define simulation  (*cSimulation::getActiveSimulation())
 
 
 /**
- * Simulation manager class.  cSimulation is the central class in \opp, and
- * it has only one instance, the global variable <tt>simulation</tt>.
- * It holds the modules, manages setting up a simulation, running and
- * finishing it, etc.
+ * Simulation manager class.  cSimulation is the central class in \opp.
+ * It stores the active simulation model, and provides methods for setting up,
+ * running and finalizing simulations.
  *
- * Most cSimulation methods are used internally (e.g. by the user interface
- * libraries (Envir, Cmdenv, Tkenv) to set up and run simulations).
+ * Most cSimulation methods are not of interest for simulation model code,
+ * they are used internally (e.g. by the user interface libraries (Envir,
+ * Cmdenv, Tkenv) to set up and run simulations).
  *
  * Some methods which can be of interest when programming simple modules:
  * getUniqueNumber(), getModuleByPath(), getModule(), snapshot().
@@ -71,14 +72,20 @@ class SIM_API cSimulation : public cNoncopyableOwnedObject
     friend class cSimpleModule;
 
   private:
+    // global variables
+    static cSimulation *simPtr; // the active cSimulation instance
+    static cEnvir *evPtr;       // the active cEnvir instance
+    static cEnvir *staticEvPtr; // the environment to activate when simPtr becomes NULL
+
     // variables of the module vector
     int size;                 // size of vector
     int delta;                // if needed, grows by delta
     cModule **vect;           // vector of modules, vect[0] is not used
     int last_id;              // index of last used pos. in vect[]
 
-    // simulation global vars
-    cModule *systemmodp;      // pointer to system module
+    // simulation vars
+    cEnvir *ownEvPtr;         // the environment that belongs to this simulation object
+    cModule *systemmodp;      // pointer to system (root) module
     cSimpleModule *activitymodp; // the module currently executing activity() (NULL if handleMessage() or in main)
     cComponent *contextmodp;  // component in context (or NULL)
     int contexttype;          // CTX_BUILD, CTX_EVENT, CTX_INITIALIZE or CTX_FINISH
@@ -98,19 +105,14 @@ class SIM_API cSimulation : public cNoncopyableOwnedObject
     cMessageHeap msgQueue;    // future messages (FES)
     cMessageHeap& getMessageQueue() {return msgQueue;}  // accessor for sim_std.msg
 
-    // internal: things that cannot be done from the constructor of global object
-    void init();
-
-    // internal: complements init().
-    void shutdown();
-
   public:
     /** @name Constructor, destructor. */
     //@{
     /**
-     * Constructor.
+     * Constructor. The environment object will be associated with this simulation
+     * object, and gets deleted in the simulation object's destructor.
      */
-    explicit cSimulation(const char *name);
+    cSimulation(const char *name, cEnvir *env);
 
     /**
      * Destructor.
@@ -130,6 +132,43 @@ class SIM_API cSimulation : public cNoncopyableOwnedObject
      * Redefined. (Reason: a C++ rule that overloaded virtual methods must be redefined together.)
      */
     virtual std::string getFullPath() const;
+    //@}
+
+    /** @name Accessing and switching the active simulation object */
+    //@{
+    /**
+     * Returns the active simulation object. May be NULL.
+     */
+    static cSimulation *getActiveSimulation()  {return simPtr;}
+
+    /**
+     * Returns the environment object for the active simulation. Never returns NULL;
+     * setActiveSimulation(NULL) will cause a static "do-nothing" instance to step in.
+     */
+    static cEnvir *getActiveEnvir()  {return evPtr;}
+
+    /**
+     * Activate the given simulation object, and its associated environment
+     * object. NULL is also accepted; it will cause the static environment
+     * object to step in (see getStaticEnvir()).
+     */
+    static void setActiveSimulation(cSimulation *sim);
+
+    /**
+     * Sets the environment object to use when there is no active simulation object.
+     * The argument cannot be NULL.
+     */
+    static void setStaticEnvir(cEnvir *env);
+
+    /**
+     * Returns the environment object to use when there is no active simulation object.
+     */
+    static cEnvir *getStaticEnvir()  {return staticEvPtr;}
+
+    /**
+     * Returns the environment object associated with this simulation object.
+     */
+    virtual cEnvir *getEnvir() const  {return ownEvPtr;}
     //@}
 
     /** @name Accessing modules. */
@@ -183,6 +222,53 @@ class SIM_API cSimulation : public cNoncopyableOwnedObject
     cModule *getSystemModule() const  {return systemmodp;}
     //@}
 
+    /** @name Loading NED files.
+     *
+     * These functions delegate to the netbuilder part of the simulation kernel,
+     * and they are present so that cEnvir and other libs outside the simkernel
+     * don't need to directly depend on nedxml or netbuilder classes, and
+     * conditional compilation (\#ifdef WITH_NETBUILDER) can be limited to the
+     * simkernel.
+     */
+    //@{
+
+    /**
+     * Load all NED files from a NED source folder. This involves visiting
+     * each subdirectory, and loading all "*.ned" files from there.
+     * The given folder is assumed to be the root of the NED package hierarchy.
+     * Returns the number of files loaded.
+     *
+     * Note: doneLoadingNedFiles() must be called after the last
+     * loadNedSourceFolder()/loadNedFile()/loadNedText() call.
+     */
+    static int loadNedSourceFolder(const char *foldername);
+
+    /**
+     * Load a single NED file. If the expected package is given (non-NULL),
+     * it should match the package declaration inside the NED file.
+     *
+     * Note: doneLoadingNedFiles() must be called after the last
+     * loadNedSourceFolder()/loadNedFile()/loadNedText() call.
+     */
+    static void loadNedFile(const char *nedfname, const char *expectedPackage, bool isXML);
+
+    /**
+     * Parses and loads the NED source code passed in the string argument.
+     * If the expected package is given (non-NULL), it should match the
+     * package declaration inside the NED file.
+     *
+     * Note: doneLoadingNedFiles() must be called after the last
+     * loadNedSourceFolder()/loadNedFile()/loadNedText() call.
+     */
+    static void loadNedText(const char *nedtext, const char *expectedPackage, bool isXML);
+
+    /**
+     * Returns the NED package that corresponds to the given folder. Returns ""
+     * for the default package, and "-" if the folder is outside all NED folders.
+     */
+    static std::string getNedPackageForFolder(const char *folder) const;
+    //@}
+
     /** @name Setting up and finishing a simulation run. */
     //@{
 
@@ -197,49 +283,6 @@ class SIM_API cSimulation : public cNoncopyableOwnedObject
      * Returns the scheduler object.
      */
     cScheduler *getScheduler() const  {return schedulerp;}
-
-    /**
-     * Load all NED files from a NED source folder. This involves visiting
-     * each subdirectory, and loading all "*.ned" files from there.
-     * The given folder is assumed to be the root of the NED package hierarchy.
-     * The return value is the number of NED files loaded.
-     *
-     * These functions delegate to the netbuilder part of the simulation kernel,
-     * and they are present so that cEnvir and other libs outside the simkernel
-     * don't need to directly depend on nedxml or netbuilder classes, and
-     * conditional compilation (\#ifdef WITH_NETBUILDER) can be limited to the
-     * simkernel.
-     */
-    int loadNedSourceFolder(const char *folder);
-
-    /**
-     * Should be called after the last loadNedSourceFolder() call. This method
-     * warns if there are NED components which could not be fully resolved
-     * due to missing super types or interfaces.
-     */
-    void doneLoadingNedFiles();
-
-    /**
-     * For loading additional NED files after doneLoadingNedFiles().
-     * This method resolves dependencies (base types, etc) immediately,
-     * and throws an error if something is missing. (So this method is
-     * not useful if two or more NED files mutually depend on each other.)
-     * If the expected package is given (non-NULL), it should match the
-     * package declaration inside the NED file.
-     *
-     * These functions delegate to the netbuilder part of the simulation kernel,
-     * and they are present so that cEnvir and other libs outside the simkernel
-     * don't need to directly depend on nedxml or netbuilder classes, and
-     * conditional compilation (\#ifdef WITH_NETBUILDER) can be limited to the
-     * simkernel.
-     */
-    void loadNedFile(const char *nedfile, const char *expectedPackage=NULL, bool isXML=false);
-
-    /**
-     * Returns the NED package that corresponds to the given folder. Returns ""
-     * for the default package, and "-" if the folder is outside all NED folders.
-     */
-    std::string getNedPackageForFolder(const char *folder) const;
 
     /**
      * Builds a new network.
@@ -431,9 +474,9 @@ class SIM_API cSimulation : public cNoncopyableOwnedObject
     //@{
     /**
      * This function is guaranteed to return a different integer every time
-     * it is called (usually 0, 1, 2, ...). This method is recommended over
-     * incrementing a global variable because it works also with distributed
-     * execution. Useful for generating unique network addresses, etc.
+     * it is called (usually 0, 1, 2, ...). This method works with parallel
+     * simulation as well, so it is recommended over incrementing a global
+     * variable. Useful for generating unique network addresses, etc.
      */
     unsigned long getUniqueNumber();
 
@@ -460,7 +503,7 @@ class SIM_API cSimulation : public cNoncopyableOwnedObject
 /**
  * Returns the current simulation time.
  */
-inline simtime_t simTime() {return simulation.getSimTime();}
+inline simtime_t simTime() {return cSimulation::getActiveSimulation()->getSimTime();}
 
 
 NAMESPACE_END

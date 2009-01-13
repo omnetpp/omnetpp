@@ -21,6 +21,7 @@
 
 #include <stdio.h>           // sprintf, fprintf
 #include <string.h>          // memcmp, memcpy, memset
+#include <sstream>
 #include "globals.h"
 #include "csimulation.h"
 #include "cenum.h"

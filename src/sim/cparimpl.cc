@@ -16,6 +16,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include <sstream>
 #include "cparimpl.h"
 #include "cproperties.h"
 #include "ccomponent.h"

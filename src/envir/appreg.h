@@ -22,6 +22,7 @@
 #define __APPREG_H
 
 #include "envirdefs.h"
+#include "cenvir.h"
 #include "globals.h"
 #include "onstartup.h"
 
@@ -45,8 +46,6 @@ NAMESPACE_BEGIN
 #define Register_OmnetApp(UINAME,CLASSNAME,SCORE,DESCR) \
     static cRunnableEnvir *__FILEUNIQUENAME__() {return new CLASSNAME();} \
     EXECUTE_ON_STARTUP(omnetapps.getInstance()->add(new cOmnetAppRegistration(UINAME,SCORE,DESCR,__FILEUNIQUENAME__)))
-
-class cEnvir;
 
 extern ENVIR_API cGlobalRegistrationList omnetapps;
 

@@ -24,6 +24,7 @@
 #include <stdarg.h>
 #include <deque>
 #include <algorithm>
+#include <sstream>
 #include "ctopology.h"
 #include "cpar.h"
 #include "globals.h"

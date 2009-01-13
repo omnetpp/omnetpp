@@ -16,6 +16,7 @@
 
 #include <math.h>
 #include <string.h>
+#include <sstream>
 #include "cnedfunction.h"
 #include "globals.h"
 #include "cexception.h"

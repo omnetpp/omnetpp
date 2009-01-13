@@ -26,6 +26,7 @@
 #include "cconfigoption.h"
 #include "cdisplaystring.h"
 #include "stringutil.h"
+#include "cenvir.h"
 
 USING_NAMESPACE
 

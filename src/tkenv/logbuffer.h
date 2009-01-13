@@ -21,6 +21,7 @@
 #include <list>
 #include <vector>
 #include <set>
+#include "simtime_t.h"
 #include "tkutil.h"
 
 NAMESPACE_BEGIN

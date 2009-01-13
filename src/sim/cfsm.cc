@@ -21,6 +21,7 @@
 
 #include <stdio.h>       // sprintf
 #include <string.h>      // strlen
+#include <sstream>
 #include "globals.h"
 #include "cfsm.h"
 

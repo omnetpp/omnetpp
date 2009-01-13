@@ -18,6 +18,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <sstream>
 #include "ccompoundmodule.h"
 #include "ccomponenttype.h"
 #include "cmessage.h"

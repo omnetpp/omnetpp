@@ -24,6 +24,9 @@
 #include "carray.h"
 #include "cexception.h"
 #include "cdefaultlist.h"
+#include "csimulation.h"
+#include "cmessageheap.h"
+#include "cenvir.h"
 #include "cwatch.h"
 
 #ifdef WITH_PARSIM

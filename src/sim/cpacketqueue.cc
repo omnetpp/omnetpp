@@ -18,6 +18,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <sstream>
 #include "globals.h"
 #include "cpacketqueue.h"
 #include "cexception.h"

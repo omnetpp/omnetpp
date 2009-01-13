@@ -23,6 +23,7 @@
 #include <stdio.h>           // sprintf
 #include <string.h>          // strlen
 #include <stdlib.h>          // qsort
+#include <sstream>
 #include "globals.h"
 #include "cmessage.h"
 #include "cmessageheap.h"

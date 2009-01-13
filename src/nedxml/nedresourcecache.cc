@@ -134,6 +134,31 @@ void NEDResourceCache::doLoadNedFile(const char *nedfname, const char *expectedP
     }
 }
 
+void NEDResourceCache::doLoadNedText(const char *nedtext, const char *expectedPackage, bool isXML)
+{
+//FIXME
+    // parse file
+    std::string nedfname2 = tidyFilename(toAbsolutePath(nedfname).c_str());
+    NEDElement *tree = parseAndValidateNedFile(nedfname2.c_str(), isXML); // so that NedFileElement stores absolute file name
+
+    // check that declared package matches expected package
+    PackageElement *packageDecl = (PackageElement *)tree->getFirstChildWithTag(NED_PACKAGE);
+    std::string declaredPackage = packageDecl ? packageDecl->getName() : "";
+    if (expectedPackage!=NULL && declaredPackage != std::string(expectedPackage))
+        throw NEDException("NED error in file `%s': declared package `%s' does not match expected package `%s'",
+                           nedfname, declaredPackage.c_str(), expectedPackage);
+
+    // register it
+    try
+    {
+        addFile(nedfname2.c_str(), tree);
+    }
+    catch (NEDException& e)
+    {
+        throw NEDException("NED error: %s", e.what());
+    }
+}
+
 NEDElement *NEDResourceCache::parseAndValidateNedFile(const char *fname, bool isXML)
 {
     // load file
@@ -178,10 +203,14 @@ NEDElement *NEDResourceCache::parseAndValidateNedFile(const char *fname, bool is
 
 void NEDResourceCache::loadNedFile(const char *nedfname, const char *expectedPackage, bool isXML)
 {
-    //FIXME revise this, and compare with documentation!!!!!!!!
-    //FIXME potentially change it so that one needs to call doneLoadingNedFiles() after it (but then mutually dependent files can be loaded too)
     doLoadNedFile(nedfname, expectedPackage, isXML);
-    doneLoadingNedFiles();
+    registerPendingNedTypes();
+}
+
+void NEDResourceCache::loadNedText(const char *nedtext, const char *expectedPackage, bool isXML)
+{
+    doLoadNedText(nedtext, expectedPackage, isXML);
+    registerPendingNedTypes();
 }
 
 bool NEDResourceCache::addFile(const char *fname, NEDElement *node)
@@ -288,6 +317,7 @@ void NEDResourceCache::registerNedType(const char *qname, NEDElement *node)
 {
     NEDTypeInfo *decl = new NEDTypeInfo(this, qname, node);
     nedTypes[qname] = decl;
+    nedTypeNames.clear();  // invalidate
 }
 
 NEDTypeInfo *NEDResourceCache::lookup(const char *qname) const
@@ -382,7 +412,7 @@ static bool isPathPrefixOf(const char *prefix, const char *path)
     else if (strncmp(path, prefix, strlen(prefix))!=0)
         return false;  // differ
     else
-        return path[prefixlen]=='/';  // e.g. "/tmp/foo" is not prefix of "/tmp/fooext"
+        return path[prefixlen]=='/';  // e.g. "/tmp/foo" is not prefix of "/tmp/foolish"
 }
 
 std::string NEDResourceCache::getNedSourceFolderForFolder(const char *folder) const
