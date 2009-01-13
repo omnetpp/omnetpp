@@ -24,7 +24,7 @@ L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 COPTS= $(CFLAGS) -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" -I../sim  -I../common -DHAVE_DLOPEN=$(HAVE_DLOPEN) -DSHARED_LIB_SUFFIX="\"$(SHARED_LIB_SUFFIX)\"" /Fd"$O/$(LIBNAME).pdb"
 IMPLIBS= $O/../sim/oppsim$D.lib $O/../nedxml/oppnedxml$D.lib $O/../common/oppcommon$D.lib $(XML_LIBS)
 
-OBJS= $O/args.obj $O/bootenv.obj $O/main.obj $O/envirbase.obj $O/fsutils.obj \
+OBJS= $O/args.obj $O/startup.obj $O/main.obj $O/envirbase.obj $O/fsutils.obj \
       $O/sectionbasedconfig.obj $O/inifilereader.obj $O/scenario.obj $O/valueiterator.obj \
       $O/fileoutvectormgr.obj $O/fileoutscalarmgr.obj $O/filesnapshotmgr.obj \
       $O/indexedfileoutvectormgr.obj $O/akoutvectormgr.obj \
@@ -184,7 +184,7 @@ $O/akoutvectormgr.obj: akoutvectormgr.cc \
 $O/args.obj: args.cc \
   args.h \
   envirdefs.h
-$O/bootenv.obj: bootenv.cc \
+$O/startup.obj: startup.cc \
   intervals.h \
   indexedfileoutvectormgr.h \
   ../../include/cregistrationlist.h \
@@ -237,7 +237,7 @@ $O/bootenv.obj: bootenv.cc \
   ../../include/cconfigreader.h \
   ../../include/ccomponent.h \
   ../../include/regmacros.h \
-  bootenv.h
+  startup.h
 $O/cxmldoccache.obj: cxmldoccache.cc \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
@@ -411,7 +411,7 @@ $O/fileoutscalarmgr.obj: fileoutscalarmgr.cc \
   objectprinter.h \
   ../../include/ccomponent.h \
   ../../include/regmacros.h \
-  bootenv.h
+  startup.h
 $O/fileoutvectormgr.obj: fileoutvectormgr.cc \
   eventlogfilemgr.h \
   envirbase.h \
@@ -455,7 +455,7 @@ $O/fileoutvectormgr.obj: fileoutvectormgr.cc \
   objectprinter.h \
   ../../include/ccomponent.h \
   ../../include/regmacros.h \
-  bootenv.h
+  startup.h
 $O/filesnapshotmgr.obj: filesnapshotmgr.cc \
   eventlogfilemgr.h \
   envirbase.h \
@@ -491,7 +491,7 @@ $O/filesnapshotmgr.obj: filesnapshotmgr.cc \
   filesnapshotmgr.h \
   objectprinter.h \
   ../../include/regmacros.h \
-  bootenv.h
+  startup.h
 $O/fsutils.obj: fsutils.cc \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
@@ -616,7 +616,7 @@ $O/main.obj: main.cc \
   ../common/ver.h \
   ../../include/platdep/platdefs.h \
   ../../include/regmacros.h \
-  bootenv.h
+  startup.h
 $O/matchablefield.obj: matchablefield.cc \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
@@ -693,7 +693,7 @@ $O/objectprinter.obj: objectprinter.cc \
   ../../include/ccomponent.h \
   ../../include/regmacros.h
 $O/opp_run.obj: opp_run.cc \
-  bootenv.h
+  startup.h
 $O/runattributes.obj: runattributes.cc \
   eventlogfilemgr.h \
   envirbase.h \

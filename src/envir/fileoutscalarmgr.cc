@@ -24,7 +24,6 @@
 #include "opp_ctype.h"
 #include "cconfigoption.h"
 #include "fileutil.h"
-#include "bootenv.h"
 #include "envirbase.h"
 #include "csimulation.h"
 #include "cmodule.h"

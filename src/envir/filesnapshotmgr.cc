@@ -22,7 +22,6 @@
 #include <fstream>
 #include "cconfigoption.h"
 #include "fileutil.h"
-#include "bootenv.h"
 #include "envirbase.h"
 #include "filesnapshotmgr.h"
 

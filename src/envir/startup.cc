@@ -1,3 +1,20 @@
+//==========================================================================
+//  STARTUP.CC - part of
+//                     OMNeT++/OMNEST
+//            Discrete System Simulation in C++
+//
+//  Author: Andras Varga
+//
+//==========================================================================
+
+/*--------------------------------------------------------------*
+  Copyright (C) 1992-2008 Andras Varga
+  Copyright (C) 2006-2008 OpenSim Ltd.
+
+  This file is distributed WITHOUT ANY WARRANTY. See the file
+  `license' for details on this and other legal matters.
+*--------------------------------------------------------------*/
+
 
 #include <stdarg.h>
 #include <stdio.h>
@@ -9,15 +26,14 @@
 #include "cconfigoption.h"
 #include "inifilereader.h"
 #include "sectionbasedconfig.h"
-#include "bootenv.h"
 #include "appreg.h"
 #include "cmodule.h"
 #include "fsutils.h"
 #include "fnamelisttokenizer.h"
 #include "stringutil.h"
 #include "fileutil.h"
-
 #include "intxtypes.h"
+#include "startup.h"
 
 NAMESPACE_BEGIN
 
@@ -39,20 +55,6 @@ Register_GlobalConfigOption(CFGID_USER_INTERFACE, "user-interface", CFG_STRING, 
      if (!var) \
          throw cRuntimeError("Class \"%s\" is not subclassed from " #baseclass, (const char *)classname);
 
-static cOmnetAppRegistration *chooseBestOmnetApp()
-{
-    cOmnetAppRegistration *best_appreg = NULL;
-
-    // choose the one with highest score.
-    cRegistrationList *a = omnetapps.getInstance();
-    for (int i=0; i<a->size(); i++)
-    {
-        cOmnetAppRegistration *appreg = static_cast<cOmnetAppRegistration *>(a->get(i));
-        if (!best_appreg || appreg->getScore() > best_appreg->getScore())
-            best_appreg = appreg;
-    }
-    return best_appreg;
-}
 
 static void verifyIntTypes()
 {
@@ -198,7 +200,7 @@ int setupUserInterface(int argc, char *argv[], cConfiguration *cfg)
         else
         {
             // user interface not explicitly selected: pick one from what we have
-            appreg = chooseBestOmnetApp();
+            appreg = cOmnetAppRegistration::chooseBest();
             if (!appreg)
                 throw cRuntimeError("No user interface (Cmdenv, Tkenv, etc.) found");
         }
@@ -266,7 +268,6 @@ int setupUserInterface(int argc, char *argv[], cConfiguration *cfg)
 
 
 //---------------------------------------------------------
-
 
 #include "speedometer.h"
 #include "fileoutvectormgr.h"

@@ -263,10 +263,18 @@ class SIM_API cSimulation : public cNoncopyableOwnedObject
     static void loadNedText(const char *nedtext, const char *expectedPackage, bool isXML);
 
     /**
+     * To be called after all NED folders / files have been loaded
+     * (see loadNedSourceFolder()/loadNedFile()/loadNedText()).
+     * Issues errors for components that could not be fully resolved
+     * because of missing base types or interfaces.
+     */
+    static void doneLoadingNedFiles();
+
+    /**
      * Returns the NED package that corresponds to the given folder. Returns ""
      * for the default package, and "-" if the folder is outside all NED folders.
      */
-    static std::string getNedPackageForFolder(const char *folder) const;
+    static std::string getNedPackageForFolder(const char *folder);
     //@}
 
     /** @name Setting up and finishing a simulation run. */

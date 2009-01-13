@@ -25,7 +25,6 @@
 #include "fileutil.h"
 #include "timeutil.h"
 #include "platmisc.h"
-#include "bootenv.h"
 #include "envirbase.h"
 #include "csimulation.h"
 #include "cmodule.h"

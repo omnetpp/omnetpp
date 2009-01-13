@@ -26,7 +26,7 @@ COPTS=$(CFLAGS) $(AKAROA_CFLAGS) -I$(OMNETPP_INCL_DIR) -I$(OMNETPP_INCL_DIR)/pla
 
 IMPLIBS= -L$L -loppsim$D -loppnedxml$D -loppcommon$D $(XML_LIBS)
 
-OBJS= $O/args.o $O/bootenv.o $O/main.o $O/envirbase.o $O/fsutils.o \
+OBJS= $O/args.o $O/startup.o $O/main.o $O/envirbase.o $O/fsutils.o \
       $O/sectionbasedconfig.o $O/inifilereader.o $O/scenario.o $O/valueiterator.o \
       $O/fileoutvectormgr.o $O/fileoutscalarmgr.o $O/filesnapshotmgr.o \
       $O/indexedfileoutvectormgr.o $O/akoutvectormgr.o \
@@ -181,7 +181,7 @@ $O/akoutvectormgr.o: akoutvectormgr.cc \
 $O/args.o: args.cc \
   envirdefs.h \
   args.h
-$O/bootenv.o: bootenv.cc \
+$O/startup.o: startup.cc \
   ../../include/regmacros.h \
   ../../include/ccoroutine.h \
   akoutvectormgr.h \
@@ -217,7 +217,7 @@ $O/bootenv.o: bootenv.cc \
   ../../include/cobject.h \
   ../../include/envirext.h \
   ../../include/cstringpool.h \
-  bootenv.h \
+  startup.h \
   ../../include/cconfigreader.h \
   ../../include/cpar.h \
   ../../include/globals.h \
@@ -390,7 +390,7 @@ $O/fileoutscalarmgr.o: fileoutscalarmgr.cc \
   eventlogfilemgr.h \
   ../../include/envirext.h \
   ../../include/cstringpool.h \
-  bootenv.h \
+  startup.h \
   ../../include/cpar.h \
   ../../include/globals.h \
   ../../include/cdefaultlist.h \
@@ -438,7 +438,7 @@ $O/fileoutvectormgr.o: fileoutvectormgr.cc \
   eventlogfilemgr.h \
   ../../include/envirext.h \
   ../../include/cstringpool.h \
-  bootenv.h \
+  startup.h \
   ../../include/cpar.h \
   ../../include/globals.h \
   ../../include/cdefaultlist.h \
@@ -476,7 +476,7 @@ $O/filesnapshotmgr.o: filesnapshotmgr.cc \
   eventlogfilemgr.h \
   ../../include/envirext.h \
   ../../include/cstringpool.h \
-  bootenv.h \
+  startup.h \
   ../../include/globals.h \
   ../../include/cvisitor.h \
   objectprinter.h \
@@ -610,7 +610,7 @@ $O/main.o: main.cc \
   ../../include/cownedobject.h \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
-  bootenv.h \
+  startup.h \
   ../../include/cvisitor.h \
   ../../include/platdep/platmisc.h \
   ../common/ver.h \
@@ -706,7 +706,7 @@ $O/opp_run.o: opp_run.cc \
   ../../include/opp_string.h \
   ../../include/simkerneldefs.h \
   ../../include/errmsg.h \
-  bootenv.h \
+  startup.h \
   ../../include/platdep/platmisc.h \
   ../../include/simutil.h \
   ../../include/platdep/intxtypes.h

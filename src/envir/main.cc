@@ -20,7 +20,7 @@
 #include <stdio.h>
 #include "cownedobject.h"
 #include "envirdefs.h"
-#include "bootenv.h"
+#include "startup.h"
 #include "../common/ver.h"
 
 USING_NAMESPACE
@@ -42,4 +42,5 @@ ENVIR_API int main(int argc, char *argv[])
 
     return exitcode;
 }
+
 

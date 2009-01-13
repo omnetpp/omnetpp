@@ -248,7 +248,7 @@ void cSimulation::doneLoadingNedFiles()
 #endif
 }
 
-std::string cSimulation::getNedPackageForFolder(const char *folder) const
+std::string cSimulation::getNedPackageForFolder(const char *folder)
 {
 #ifdef WITH_NETBUILDER
     return cNEDLoader::getInstance()->getNedPackageForFolder(folder);

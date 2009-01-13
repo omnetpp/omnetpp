@@ -216,7 +216,7 @@ EnvirBase::~EnvirBase()
 int EnvirBase::run(int argc, char *argv[], cConfiguration *configobject)
 {
     args = new ArgList();
-    args->parse(argc, argv, "h?f:u:l:c:r:p:n:x:agGv");  //TODO share spec with BootEnv!
+    args->parse(argc, argv, "h?f:u:l:c:r:p:n:x:agGv");  //TODO share spec with startup.cc!
     cfg = dynamic_cast<cConfigurationEx *>(configobject);
     if (!cfg)
         throw cRuntimeError("Cannot cast configuration object %s to cConfigurationEx", configobject->getClassName());
