@@ -358,6 +358,14 @@ used here and there)
 animation is to be done via environment object callbacks
 
 
+\subsection{Reusing cSimulation objects}
+
+cSimulation may be reused, but it is also possible to make a new instance for each simulation run
+
+cSimulation deletes cEnvir
+
+
+
 \subsection{Assigning module parameters}
 
 catch the \fname{readParameter()} method in \cclass{cEnvir}
@@ -398,6 +406,12 @@ It is usually not a good idea to change schedulers in the middle of
 a simulation, so \fname{setScheduler()} may only be called when
 no network is set up.
 
+\subsection{Multi-threading}
+
+The {\opp} simulation kernel is not reentrant, so it must be protected
+against concurrent access.
+
+TODO finish
 
 % --------------------
 %
