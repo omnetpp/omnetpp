@@ -420,10 +420,35 @@ A simulation program built with Tkenv accepts all the general command line
 switches\index{command line switches}. In addition the \ttt{-r runnumber}
 option allows only specifying a single run. Multiple runs are not supported.
 
+Tkenv configuration options:
+\begin{itemize}
+  \item{\ttt{tkenv-default-config}:
+    Specifies which config Tkenv should set up automatically on startup. The
+    default is to ask the user.}                                             
+
+  \item{\ttt{tkenv-default-run}: Specifies which run (of the default 
+    config, see tkenv-default-config) Tkenv
+    should set up automatically on startup. The default is to ask the user.}
+
+  \item{\ttt{tkenv-extra-stack}:
+    Specifies the extra amount of stack that is reserved for each activity()
+    simple module when the simulation is run under Tkenv.}                   
+
+  \item{\ttt{tkenv-image-path}: Specifies the path for loading module icons.}
+
+  \item{\ttt{tkenv-plugin-path}:
+    Specifies the search path for Tkenv plugins. Tkenv plugins are .tcl files
+    that get evaluated on startup.}
+\end{itemize}
+
 Tkenv specific configuration options can be specified also on command line
 by prefixing them with double dash (e.g -{}-tkenv-option=value). See
 Appendix \ref{cha:config-options} for the list of possible configuration options.
 
+\begin{note}
+The usage of the Tkenv user interface is detailed in the \opp  User Guide's Tkenv 
+chapter.
+\end{note}
 
 \section{Batch execution}
 \label{sec:ch-run-sim:batch-execution}
@@ -972,7 +997,6 @@ It often turns out that lots of CPU time is spent in completely
 innocent-looking statements, while the big and complex algorithm
 doesn't take nearly as much time as expected. \textit{Don't assume anything
 -- profile before you optimize!}
-    \footnote{And before blaming the simulation kernel for poor performance...}
 
 A really impressive profiler on Linux is the \textit{Valgrind}-based
 \textit{callgrind}, and its visualizer \textit{KCachegrind}.

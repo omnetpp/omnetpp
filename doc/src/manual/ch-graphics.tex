@@ -10,8 +10,8 @@ Display strings\index{display strings} specify the arrangement and
 appearance of modules in graphical user interfaces (currently only
 Tkenv): they control how the objects (compound modules, their
 submodules and connections) are displayed. Display strings occur in
-NED description's \fpar[ned!keywords!display]{display:}
-phrases.
+NED description's \fpar[ned!keywords!display]{@display}
+property.
 
 The display string format is a semicolon-separated list of tags.
 Each tag consists of a key (usually one letter), an equal sign
@@ -25,78 +25,161 @@ Parameters may be omitted also at the end and also inside the
 parameter list, like:
 
 \begin{verbatim}
-  "p=100,100;b=,,rect;o=blue,black"
+  "p=100,100;b=,,rect,blue"
 \end{verbatim}
 
 Module/submodule parameters can be included with the \ttt{\$name} notation:
 
 \begin{verbatim}
-  "p=$xpos,$ypos;b=rect,60,10;o=$fillcolor,black,2"
+  "p=$xpos,$ypos;b=60,10,rect,$fillcolor,black,2"
 \end{verbatim}
+
+Display string tags can be inherited from the base NED type if you have a derived
+NED type. Submodules are also inheriting their display tags from their type. If
+you have several submodules with the same type and want to assign the same icon
+to each one you no longer have to specify the icon in each submodule (this was the
+case with \opp 3.x). Just specify the icon in the type of the submodule and each 
+submodule with that type will inherit it. You may still override any display tag
+value in the submodule's display string. If you don't want to inherit a value 
+from your base type, but also don't want to specify one (i.e. want to have the 
+default value) use the dash (-) character at that position in the tag. This will
+prevent the inheritance.
 
 Objects that may have display strings are:
 \begin{itemize}
+  \item \textit{compound modules, networks} -- display string can specify background color,
+        border color, border thickness, background image, scaling etc.
   \item \textit{submodules} -- display string may contain position, arrangement
         (for module vectors), icon, icon color, auxiliary icon, status text,
         communication range (as circle or filled circle), etc.
   \item \textit{connections} -- display string can specify positioning, arrow color,
         arrow thickness
-  \item \textit{compound modules} -- display string can specify background color,
-        border color, border thickness
+  \item \textit{channles, connections} -- display string can specify color,
+        linestyle, line width, text and tooltip
   \item \textit{messages} -- display string can specify icon, icon color, etc.
 \end{itemize}
 
-The following NED sample shows where to place display strings in the code.
+The following NED sample shows where to place display strings in the code:
 
-\begin{Verbatim}[commandchars=\\\{\}]
-\tbf{module} ClientServer
-    \tbf{submodules}:
-        pc: Host;
-            \tbf{display}: "p=66,55;i=comp"; // position and icon
-        server: Server;
-            \tbf{display}: "p=135,73;i=server1";
-    \tbf{connections}:
-        pc.out --> server.in
-            \tbf{display} "m=m,61,40,41,28"; // note missing ":"
-        server.out --> pc.in
-            \tbf{display} "m=m,15,57,35,69";
-    \tbf{display}: "o=#ffffff"; // affects background
-\tbf{endmodule}
-\end{Verbatim}
+\begin{verbatim}
+simple Queue
+{
+    parameters:
+        @display("i=block/queue");  // icon for any submodules using this type
+    gates:
+        input in[];
+        output out;
+}
 
+network SimpleQueue
+{
+    parameters:
+        @display("i=block/network2;bgi=bgimage"); // module display string
+    submodules:
+        sink: Sink {
+            @display("p=273,101");  // submodule params
+        }
+        queue: Queue {
+            @display("p=165.0,79.0"); // icon is inherited from the Queue type
+        }
+        source: Source {
+            @display("p=50.0,79.0;i=-"); // icon won't be inherited from Source
+        }
+    connections:
+        // display string for a connection
+        source.out --> { @display("ls=red,3"); } --> queue.in++;
+        queue.out --> sink.in++;
+}
+
+\end{verbatim}
+
+
+\subsection{Simple module display strings}
+
+The simple module display string supports the following tags:
+\begin{itemize}
+  \item{\ttt{b} -- shapes, colors}
+  \item{\ttt{i} -- icon}
+  \item{\ttt{is} -- icon size}
+\end{itemize}
+These tags are used mainly to describe the default appearence of
+a submodule of this type. To see the detailed descripton of 
+these tags check Appendix \ref{cha:display-string-tags} about 
+display string tags.
+
+\subsection{Compound module and network display strings}
+
+In addition to the tags supported by a simple module there are tags 
+describing how a compound module looks like if opened in Tkenv. These
+tags mainly deal with the module background.
+
+\begin{itemize}
+  \item{\ttt{b} -- shapes, colors}
+  \item{\ttt{i} -- icon}
+  \item{\ttt{is} -- icon size}
+  \item{\ttt{bgi} -- background image}
+  \item{\ttt{bgtt} -- tooltip above the background}
+  \item{\ttt{bgg} -- background grid}
+  \item{\ttt{bgl} -- control child layouting}
+  \item{\ttt{bgb} -- background size, color, border}
+  \item{\ttt{bgs} -- scaling of background coordinates}
+  \item{\ttt{bgp} -- background coordinate offset}
+\end{itemize}
+
+\begin{verbatim}
+network SimpleQueue
+{
+    parameters:
+        @display("i=block/network2;bgi=bgimage"); // module display string
+\end{verbatim}
+
+To see the detailed descripton of these tags check 
+Appendix \ref{cha:display-string-tags} about display string tags.
 
 \subsection{Submodule display strings}
 
-TODO
-
-Examples:
+The submodule display string supports the following tags:
+\begin{itemize}
+  \item{\ttt{b} -- shapes, colors}
+  \item{\ttt{i} -- icon}
+  \item{\ttt{is} -- icon size}
+  \item{\ttt{i2} -- alternate (status) icon}
+  \item{\ttt{p} -- positioning and layouting}
+  \item{\ttt{r} -- range indicator}
+  \item{\ttt{q} -- queue information text}
+  \item{\ttt{t} -- text}
+  \item{\ttt{tt} -- tooltip}
+\end{itemize}
 
 \begin{verbatim}
-  "p=100,60;i=workstation"
-  "p=100,60;b=30,30,rect;o=4"
+submodules:
+    source: Source {
+        @display("p=50.0,79.0;i=-"); // icon won't be inherited from Source
+    }
 \end{verbatim}
 
+To see the detailed descripton of these tags check
+Appendix \ref{cha:display-string-tags} about display string tags.
 
+\subsection{Channel and connection display strings}
 
-\subsection{Background display strings}
+Channels and connections may also have display strings. Display property
+defined for a channel is inherited by a connection similary how a submodule
+inherits the display property from its type.
 
-Compound module display strings specify the background. They can contain
-the following tags:
+Channels and connections support the following tags:
+\begin{itemize}
+  \item{\ttt{ls} -- line shape, and colors}
+  \item{\ttt{t} -- text}
+  \item{\ttt{tt} -- tooltip}
+\end{itemize}
 
-TODO
-
-
-
-
-\subsection{Connection display strings}
-
-TODO
-
-Examples:
 \begin{verbatim}
-  "m=a;o=blue,3"
+source.out --> { @display("ls=red,3"); } --> queue.in++;
 \end{verbatim}
 
+To see the detailed descripton of these tags check
+Appendix \ref{cha:display-string-tags} about display string tags.
 
 \subsection{Message display strings}
 
