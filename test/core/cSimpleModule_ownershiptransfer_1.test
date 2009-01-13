@@ -80,7 +80,7 @@ after:   Test.second.hello
   owner: Test.second
 
 %contains: stdout
-Test.second (id=3)
+Test.second (Second, id=3)
 receivedMsg: Test.second.hello
       owner: Test.second
 
