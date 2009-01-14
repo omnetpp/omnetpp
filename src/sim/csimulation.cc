@@ -231,10 +231,10 @@ void cSimulation::loadNedFile(const char *nedfile, const char *expectedPackage, 
 #endif
 }
 
-void cSimulation::loadNedText(const char *nedtext, const char *expectedPackage, bool isXML)
+void cSimulation::loadNedText(const char *name, const char *nedtext, const char *expectedPackage, bool isXML)
 {
 #ifdef WITH_NETBUILDER
-    cNEDLoader::getInstance()->loadNedText(nedtext, expectedPackage, isXML);
+    cNEDLoader::getInstance()->loadNedText(name, nedtext, expectedPackage, isXML);
 #else
     throw cRuntimeError("cannot source NED text: simulation kernel was compiled without "
                         "support for dynamic loading of NED files (WITH_NETBUILDER=no)");

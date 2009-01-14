@@ -104,8 +104,8 @@ class NEDXML_API NEDResourceCache
   protected:
     virtual void registerBuiltinDeclarations();
     virtual int doLoadNedSourceFolder(const char *foldername, const char *expectedPackage);
-    virtual void doLoadNedFile(const char *nedfname, const char *expectedPackage, bool isXML);
-    virtual NEDElement *parseAndValidateNedFile(const char *nedfname, bool isXML);
+    virtual void doLoadNedFileOrText(const char *nedfname, const char *nedtext, const char *expectedPackage, bool isXML);
+    virtual NEDElement *parseAndValidateNedFileOrText(const char *nedfname, const char *nedtext, bool isXML);
     virtual std::string determineRootPackageName(const char *nedSourceFolderName);
     virtual std::string getNedSourceFolderForFolder(const char *folder) const;
     virtual void collectNedTypes(NEDElement *node, const std::string& namespacePrefix);
@@ -142,14 +142,16 @@ class NEDXML_API NEDResourceCache
     virtual void loadNedFile(const char *nedfname, const char *expectedPackage, bool isXML);
 
     /**
-     * Parses and loads the NED source code passed in the string argument.
-     * If the expected package is given (non-NULL), it should match the
-     * package declaration inside the NED file.
+     * Parses and loads the NED source code passed in the nedtext argument.
+     * The name argument will be used as filename in error messages, and
+     * and should be unique among the files loaded. If the expected package
+     * is given (non-NULL), it should match the package declaration inside
+     * the NED file.
      *
      * Note: doneLoadingNedFiles() must be called after the last
      * loadNedSourceFolder()/loadNedFile()/loadNedText() call.
      */
-    virtual void loadNedText(const char *nedtext, const char *expectedPackage, bool isXML);
+    virtual void loadNedText(const char *name, const char *nedtext, const char *expectedPackage, bool isXML);
 
     /**
      * To be called after all NED folders / files have been loaded. May be

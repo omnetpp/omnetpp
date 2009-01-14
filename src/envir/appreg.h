@@ -72,22 +72,7 @@ class ENVIR_API cOmnetAppRegistration : public cOwnedObject
     static cOmnetAppRegistration *chooseBest();
 };
 
-cOmnetAppRegistration *cOmnetAppRegistration::chooseBest()
-{
-    // choose the one with highest score
-    cOmnetAppRegistration *best = NULL;
-    cRegistrationList *list = omnetapps.getInstance();
-    for (int i=0; i<list->size(); i++)
-    {
-        cOmnetAppRegistration *appreg = static_cast<cOmnetAppRegistration *>(list->get(i));
-        if (!best || appreg->getScore() > best->getScore())
-            best = appreg;
-    }
-    return best;
-}
-
 NAMESPACE_END
-
 
 #endif
 

@@ -25,7 +25,6 @@
 #include <string>
 
 #include "appreg.h"
-#include "bootenv.h"
 #include "csimplemodule.h"
 #include "cmessage.h"
 #include "speedometer.h"

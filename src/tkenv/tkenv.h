@@ -25,7 +25,6 @@
 #include "tkdefs.h"
 #include "logbuffer.h"
 #include "envirbase.h"
-#include "bootenv.h"
 #include "cchannel.h"
 #include "cmodule.h"
 

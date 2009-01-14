@@ -250,17 +250,19 @@ class SIM_API cSimulation : public cNoncopyableOwnedObject
      * Note: doneLoadingNedFiles() must be called after the last
      * loadNedSourceFolder()/loadNedFile()/loadNedText() call.
      */
-    static void loadNedFile(const char *nedfname, const char *expectedPackage, bool isXML);
+    static void loadNedFile(const char *nedfname, const char *expectedPackage=NULL, bool isXML=false);
 
     /**
-     * Parses and loads the NED source code passed in the string argument.
-     * If the expected package is given (non-NULL), it should match the
-     * package declaration inside the NED file.
+     * Parses and loads the NED source code passed in the nedtext argument.
+     * The name argument will be used as filename in error messages, and
+     * and should be unique among the files loaded. If the expected package
+     * is given (non-NULL), it should match the package declaration inside
+     * the NED file.
      *
      * Note: doneLoadingNedFiles() must be called after the last
      * loadNedSourceFolder()/loadNedFile()/loadNedText() call.
      */
-    static void loadNedText(const char *nedtext, const char *expectedPackage, bool isXML);
+    static void loadNedText(const char *name, const char *nedtext, const char *expectedPackage=NULL, bool isXML=false);
 
     /**
      * To be called after all NED folders / files have been loaded

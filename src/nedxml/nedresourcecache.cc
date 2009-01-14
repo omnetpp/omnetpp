@@ -100,21 +100,23 @@ int NEDResourceCache::doLoadNedSourceFolder(const char *foldername, const char *
         }
         else if (opp_stringendswith(filename, ".ned"))
         {
-            doLoadNedFile(filename, expectedPackage, false);
+            doLoadNedFileOrText(filename, NULL, expectedPackage, false);
             count++;
         }
     }
     return count;
 }
 
-void NEDResourceCache::doLoadNedFile(const char *nedfname, const char *expectedPackage, bool isXML)
+void NEDResourceCache::doLoadNedFileOrText(const char *nedfname, const char *nedtext, const char *expectedPackage, bool isXML)
 {
+    Assert(nedfname);
     if (getFile(nedfname))
         return;  // already loaded
 
     // parse file
-    std::string nedfname2 = tidyFilename(toAbsolutePath(nedfname).c_str());
-    NEDElement *tree = parseAndValidateNedFile(nedfname2.c_str(), isXML); // so that NedFileElement stores absolute file name
+    std::string nedfname2 = nedtext ? nedfname : tidyFilename(toAbsolutePath(nedfname).c_str()); // so that NedFileElement stores absolute file name
+    NEDElement *tree = parseAndValidateNedFileOrText(nedfname2.c_str(), nedtext, isXML);
+    Assert(tree);
 
     // check that declared package matches expected package
     PackageElement *packageDecl = (PackageElement *)tree->getFirstChildWithTag(NED_PACKAGE);
@@ -134,32 +136,7 @@ void NEDResourceCache::doLoadNedFile(const char *nedfname, const char *expectedP
     }
 }
 
-void NEDResourceCache::doLoadNedText(const char *nedtext, const char *expectedPackage, bool isXML)
-{
-//FIXME
-    // parse file
-    std::string nedfname2 = tidyFilename(toAbsolutePath(nedfname).c_str());
-    NEDElement *tree = parseAndValidateNedFile(nedfname2.c_str(), isXML); // so that NedFileElement stores absolute file name
-
-    // check that declared package matches expected package
-    PackageElement *packageDecl = (PackageElement *)tree->getFirstChildWithTag(NED_PACKAGE);
-    std::string declaredPackage = packageDecl ? packageDecl->getName() : "";
-    if (expectedPackage!=NULL && declaredPackage != std::string(expectedPackage))
-        throw NEDException("NED error in file `%s': declared package `%s' does not match expected package `%s'",
-                           nedfname, declaredPackage.c_str(), expectedPackage);
-
-    // register it
-    try
-    {
-        addFile(nedfname2.c_str(), tree);
-    }
-    catch (NEDException& e)
-    {
-        throw NEDException("NED error: %s", e.what());
-    }
-}
-
-NEDElement *NEDResourceCache::parseAndValidateNedFile(const char *fname, bool isXML)
+NEDElement *NEDResourceCache::parseAndValidateNedFileOrText(const char *fname, const char *nedtext, bool isXML)
 {
     // load file
     NEDElement *tree = 0;
@@ -167,6 +144,8 @@ NEDElement *NEDResourceCache::parseAndValidateNedFile(const char *fname, bool is
     errors.setPrintToStderr(true); //XXX
     if (isXML)
     {
+        if (nedtext)
+            throw NEDException("loadNedText(): parsing XML from string not supported");
         tree = parseXML(fname, &errors);
     }
     else
@@ -174,7 +153,10 @@ NEDElement *NEDResourceCache::parseAndValidateNedFile(const char *fname, bool is
         NEDParser parser(&errors);
         parser.setParseExpressions(true);
         parser.setStoreSource(false);
-        tree = parser.parseNEDFile(fname);
+        if (nedtext)
+            tree = parser.parseNEDText(nedtext, fname);
+        else
+            tree = parser.parseNEDFile(fname);
     }
     if (errors.containsError())
     {
@@ -203,13 +185,21 @@ NEDElement *NEDResourceCache::parseAndValidateNedFile(const char *fname, bool is
 
 void NEDResourceCache::loadNedFile(const char *nedfname, const char *expectedPackage, bool isXML)
 {
-    doLoadNedFile(nedfname, expectedPackage, isXML);
+    if (!nedfname)
+        throw NEDException("loadNedFile(): file name is NULL");
+
+    doLoadNedFileOrText(nedfname, NULL, expectedPackage, isXML);
     registerPendingNedTypes();
 }
 
-void NEDResourceCache::loadNedText(const char *nedtext, const char *expectedPackage, bool isXML)
+void NEDResourceCache::loadNedText(const char *name, const char *nedtext, const char *expectedPackage, bool isXML)
 {
-    doLoadNedText(nedtext, expectedPackage, isXML);
+    if (!name)
+        throw NEDException("loadNedText(): name is NULL");
+    if (getFile(name))
+        throw NEDException("loadNedText(): name `%s' already used", name);
+
+    doLoadNedFileOrText(name, nedtext, expectedPackage, isXML);
     registerPendingNedTypes();
 }
 
@@ -391,7 +381,7 @@ std::string NEDResourceCache::determineRootPackageName(const char *nedSourceFold
     fclose(f);
 
     // read package declaration from it
-    NEDElement *tree = parseAndValidateNedFile(packageNedFilename.c_str(), false);
+    NEDElement *tree = parseAndValidateNedFileOrText(packageNedFilename.c_str(), NULL, false);
     Assert(tree);
     PackageElement *packageDecl = (PackageElement *)tree->getFirstChildWithTag(NED_PACKAGE);
     std::string result = packageDecl ? packageDecl->getName() : "";
