@@ -112,7 +112,7 @@ The most important options are:
     \item{\ttt{-{}-deep} : Generates a "deep" Makefile. A deep Makefile will
                           cover the whole source tree under the make directory,
                           not just files in that directory.}
-    \item{\ttt{-r, -{}-recurse} : Causes make to recursively descend into all subdirectories; 
+    \item{\ttt{-r, -{}-recurse} : Causes make to recursively descend into all subdirectories;
                           subdirectories are expected to contain
                           makefiles themselves.}
     \item{\ttt{-X directory, -Xdirectory, -{}-except directory} :
@@ -175,14 +175,14 @@ clean &  Deletes all files that were produced by the make process\\\hline
 \subsection{Debug and release builds}
 
 \fprog{opp\_makemake} generates a makefile that can create both relase and debug builds.
-By default it creates debug version, but it is easy to override this behaviour. 
+By default it creates debug version, but it is easy to override this behaviour.
 Just define the \ttt{MODE} variable on the \fprog{make} command line.
 
 \begin{verbatim}
 $ make MODE=release
 \end{verbatim}
 
-If you want to create release builds by default you should use the \ttt{-{}-mode} \textit{mode} 
+If you want to create release builds by default you should use the \ttt{-{}-mode} \textit{mode}
 option for \fprog{opp\_makemake} when generating your makefiles.
 \begin{verbatim}
 $ opp_makemake --mode release ...
@@ -193,7 +193,7 @@ $ opp_makemake --mode release ...
 
 If you are using external libraries you should specify the include path for the header files
 with the \ttt{-I} \textit{includedir} option. You should specify this option if you are using
-anything outside from the source directory tree (except the system and \opp headers which are
+anything outside from the source directory tree (except the system and {\opp} headers which are
 always included automatically)
 
 To define an external library to be linked with, use \ttt{-Ldir} to specify
@@ -227,7 +227,7 @@ If your source tree contains several subdirectories (maybe several levels
 deep), it can be annoying that you should specify relative paths for your
 header files in your \ttt{.cc} files or you should specify the include path
 explicitly by the \ttt{-I includepath} option. \ttt{opp\_makemake} has a
-command line option, which adds all directories in the current source tree 
+command line option, which adds all directories in the current source tree
 to the compiler command line. This option is turned on by default.
 
 \begin{note}
@@ -245,7 +245,7 @@ always must specify it with the \ttt{-I external/include/dir} option.
 \subsection{Dependency handling}
 
 Dependency information is used by the makefile to minimize the time required to
-compile and link your project. If your makefile contains up-to date dependency info 
+compile and link your project. If your makefile contains up-to date dependency info
 -- only files changed since you last compiled your project will be re-compiled or linked.
 
 
@@ -265,10 +265,10 @@ files are always added to the file's dependency list.
 
 \subsection{Out-of-directory build}
 
-The build system creates object and executable files in a separate directory, called 
-\textit{output directory}. The structure of the output folder will be the same as your 
+The build system creates object and executable files in a separate directory, called
+\textit{output directory}. The structure of the output folder will be the same as your
 sourcefolder structure except that it will be placed in the \ttt{out/configname} directory.
-The \ttt{configname} part will mirror your compiler toolchain and build mode settings. 
+The \ttt{configname} part will mirror your compiler toolchain and build mode settings.
 (i.e. The result of a debug build with gcc will be placed in \ttt{out/gcc-debug})
 
 
@@ -288,7 +288,7 @@ contains a \ttt{.project} file).
 
 
 \begin{note}
-Source files (i.e. those created by the \fprog{opp\_msgc} compiler) will be generated in the 
+Source files (i.e. those created by the \fprog{opp\_msgc} compiler) will be generated in the
 source folder rather than in the output folder.
 \end{note}
 
@@ -307,11 +307,11 @@ other makefiles, or if you want to do the linking manually.
 \ifcommercial
 \begin{note}
 The Microsoft Visual C++ compiler handles shared library (DLL) linking (-s)
-differently and requires additional steps to compile and link correctly. 
-You must choose a \ttt{<symbol>} for your project and annotate each class 
+differently and requires additional steps to compile and link correctly.
+You must choose a \ttt{<symbol>} for your project and annotate each class
 and dll-public declaration with \ttt{<symbol>_API}. If you generate your makefiles
-with the \ttt{-p <symbol>} option, \ttt{<symbol>_EXPORT} macro will be passed to 
-the compiler causing <symbol>_API to be defined as __declspec(dllexport) in 
+with the \ttt{-p <symbol>} option, \ttt{<symbol>_EXPORT} macro will be passed to
+the compiler causing <symbol>_API to be defined as __declspec(dllexport) in
 your sources. This step allows to correctly generate DLL exports in windows.
 \end{note}
 \fi
@@ -328,11 +328,11 @@ for top level makefiles.
 
 
 The \ttt{-{}-recurse} option automatically discovers subdirectories, but this
-is sometimes inconvenient. Your source directory tree may contain 
-parts which need their own hand written \ttt{Makefile}. This can happen if 
-you include source files from an other non {\opp} project.With the \ttt{-d dir} 
-or \ttt{-{}-subdir dir} option, you can explicitly specify which directories to 
-recurse into, and also, the directories need not be direct children of the 
+is sometimes inconvenient. Your source directory tree may contain
+parts which need their own hand written \ttt{Makefile}. This can happen if
+you include source files from an other non {\opp} project.With the \ttt{-d dir}
+or \ttt{-{}-subdir dir} option, you can explicitly specify which directories to
+recurse into, and also, the directories need not be direct children of the
 current directory.
 
 
@@ -373,7 +373,7 @@ ones, and also to override the default target.
 
 \ttt{makefrag} can be useful if some of your source files are generated
 from other files (for example, you use generated NED files), or you need
-additional targets in your makefile or just simply wants to override the 
+additional targets in your makefile or just simply wants to override the
 default target in the makefile.
 
 
@@ -432,7 +432,7 @@ The testSuite will be created as an executable file which depends on both
 \ttt{mfcontrib} and \ttt{mfcore}.
 
 \begin{verbatim}
-$ cd testSuite && opp_makemake -f --deep -o testSuite -O out 
+$ cd testSuite && opp_makemake -f --deep -o testSuite -O out
     -I../core/utils -I../core/basicModules -I../contrib/utils \\
     -I../contrib/applLayer -L../out/$(CONFIGNAME)/contrib -lmfcontrib
 \end{verbatim}
@@ -446,7 +446,7 @@ the above makefiles (-d dirname).
 $ opp_makemake -f --nolink -O out -d testSuite -d core -d contrib -X.
 \end{verbatim}
 
-Finally we have to specify the dependencies between the above directories. Add the lines below 
+Finally we have to specify the dependencies between the above directories. Add the lines below
 to the \ttt{makefrag} file in the project directory root.
 
 \begin{verbatim}

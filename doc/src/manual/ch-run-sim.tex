@@ -424,15 +424,15 @@ Tkenv configuration options:
 \begin{itemize}
   \item{\ttt{tkenv-default-config}:
     Specifies which config Tkenv should set up automatically on startup. The
-    default is to ask the user.}                                             
+    default is to ask the user.}
 
-  \item{\ttt{tkenv-default-run}: Specifies which run (of the default 
+  \item{\ttt{tkenv-default-run}: Specifies which run (of the default
     config, see tkenv-default-config) Tkenv
     should set up automatically on startup. The default is to ask the user.}
 
   \item{\ttt{tkenv-extra-stack}:
     Specifies the extra amount of stack that is reserved for each activity()
-    simple module when the simulation is run under Tkenv.}                   
+    simple module when the simulation is run under Tkenv.}
 
   \item{\ttt{tkenv-image-path}: Specifies the path for loading module icons.}
 
@@ -446,7 +446,7 @@ by prefixing them with double dash (e.g -{}-tkenv-option=value). See
 Appendix \ref{cha:config-options} for the list of possible configuration options.
 
 \begin{note}
-The usage of the Tkenv user interface is detailed in the \opp  User Guide's Tkenv 
+The usage of the Tkenv user interface is detailed in the {\opp}  User Guide's Tkenv
 chapter.
 \end{note}
 
@@ -544,9 +544,9 @@ done
 
 \subsection{Using opp\_runall}
 
-\opp has a utility program called \fprog{opp\_runall} which 
-allows you to execute a simulation batch in command line mode. 
-You must specify the whole command line you would use to run 
+{\opp} has a utility program called \fprog{opp\_runall} which
+allows you to execute a simulation batch in command line mode.
+You must specify the whole command line you would use to run
 your batch in Cmdenv. There are advantages running your batches
 this way:
 \begin{itemize}
@@ -558,15 +558,15 @@ this way:
 \end{itemize}
 
 The command basically creates a makefile which contains
-a separate target for each run. By default the makefile will be executed causing each 
+a separate target for each run. By default the makefile will be executed causing each
 target to run. You can give additional options to the \fprog{opp\_runall} command to
-activate parallel building. The \ttt{-j} option can be used to specify the maximum number 
-of parallel runs allowed. 
+activate parallel building. The \ttt{-j} option can be used to specify the maximum number
+of parallel runs allowed.
 
 \begin{warning}
   Use the parallel execution option only if you have enough memory to run several simulations
   side by side. If you run out of memory your operating system will start swapping and the overall
-  performance of the system will be greatly reduced. Always specify the number of processes 
+  performance of the system will be greatly reduced. Always specify the number of processes
   after the \ttt{-j} option otherwise the \fprog{make} program will try to start \textit{all}
   runs at the same time. As a rule of thumb: if you have 4 cores (and enough memory), use \ttt{-j4}.
 \end{warning}
@@ -576,7 +576,7 @@ The form of the command is:
 opp_runall -j2 ./aloha -u Cmdenv -c PureAlohaExperiment -r 0..23
 \end{verbatim}
 
-You can use the \ttt{-x ConfigName -g} command line options with your simulation to 
+You can use the \ttt{-x ConfigName -g} command line options with your simulation to
 check the number of available runs.
 
 Using the \ttt{-{}-export filename} option only generates the \ttt{makefile}, but does not start it.
@@ -981,7 +981,7 @@ Check the following if you think your simulation is running too slow.
   \item Turn on express mode with the \ttt{cmdenv-express-mode=true} configuration option.
   \item Be sure that event logging is turned off (\ttt{record-eventlog=false} configuration option).
   \item Turn of vector file recording if you do not absolutely need it (\ttt{**.vector-recording=false}).
-  \item If you are running under Tkenv disable animation features, close inspectors, 
+  \item If you are running under Tkenv disable animation features, close inspectors,
         hide the timeline, hide object tree, turn off log filterning.
   \item Compile your code as release instead of debug (in some cases this can give you 5x speedup)
 \end{itemize}

@@ -23,6 +23,7 @@
 #include "simkerneldefs.h"
 #include "simtime_t.h"
 #include "cmessageheap.h"
+#include "cexception.h"
 
 NAMESPACE_BEGIN
 
@@ -47,7 +48,7 @@ SIM_API extern cDefaultList defaultList; //XXX twice
 /**
  * The active simulation manager instance.
  *
- * @ingroup FIXME
+ * @ingroup SimCore
  */
 #define simulation  (*cSimulation::getActiveSimulation())
 
@@ -99,6 +100,10 @@ class SIM_API cSimulation : public cNoncopyableOwnedObject
     cException *exception;    // helper variable to get exceptions back from activity()
 
     cHasher *hasherp;         // used for fingerprint calculation
+
+  private:
+    // internal
+    void checkActive()  {if (getActiveSimulation()!=this) throw cRuntimeError(this, eWRONGSIM);}
 
   public:
     // internal: FES

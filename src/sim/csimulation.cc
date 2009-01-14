@@ -343,7 +343,7 @@ void cSimulation::setupNetwork(cModuleType *network)
     printf("DEBUG: before setupNetwork: %d objects\n", cOwnedObject::getLiveObjectCount());
     objectlist.clear();
 #endif
-
+    checkActive();
     if (!network)
         throw cRuntimeError(eNONET);
     if (!network->isNetwork())
@@ -382,6 +382,8 @@ void cSimulation::setupNetwork(cModuleType *network)
 
 void cSimulation::startRun()
 {
+    checkActive();
+
     // reset counters. Note msgQueue.clear() was already called from setupNetwork()
     sim_time = 0;
     event_num = 0; // initialize() has event number 0
@@ -408,6 +410,8 @@ void cSimulation::startRun()
 
 void cSimulation::callFinish()
 {
+    checkActive();
+
     // call user-defined finish() functions for all modules recursively
     if (systemmodp)
     {
@@ -417,6 +421,7 @@ void cSimulation::callFinish()
 
 void cSimulation::endRun()
 {
+    checkActive();
     getScheduler()->endRun();
 }
 
@@ -568,6 +573,9 @@ void cSimulation::transferTo(cSimpleModule *modp)
 
 void cSimulation::doOneEvent(cSimpleModule *mod)
 {
+#ifndef NDEBUG
+    checkActive();
+#endif
     try
     {
         // switch to the module's context

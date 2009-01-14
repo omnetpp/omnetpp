@@ -38,10 +38,10 @@ Display string tags can be inherited from the base NED type if you have a derive
 NED type. Submodules are also inheriting their display tags from their type. If
 you have several submodules with the same type and want to assign the same icon
 to each one you no longer have to specify the icon in each submodule (this was the
-case with \opp 3.x). Just specify the icon in the type of the submodule and each 
+case with {\opp} 3.x). Just specify the icon in the type of the submodule and each
 submodule with that type will inherit it. You may still override any display tag
-value in the submodule's display string. If you don't want to inherit a value 
-from your base type, but also don't want to specify one (i.e. want to have the 
+value in the submodule's display string. If you don't want to inherit a value
+from your base type, but also don't want to specify one (i.e. want to have the
 default value) use the dash (-) character at that position in the tag. This will
 prevent the inheritance.
 
@@ -103,13 +103,13 @@ The simple module display string supports the following tags:
   \item{\ttt{is} -- icon size}
 \end{itemize}
 These tags are used mainly to describe the default appearence of
-a submodule of this type. To see the detailed descripton of 
-these tags check Appendix \ref{cha:display-string-tags} about 
+a submodule of this type. To see the detailed descripton of
+these tags check Appendix \ref{cha:display-string-tags} about
 display string tags.
 
 \subsection{Compound module and network display strings}
 
-In addition to the tags supported by a simple module there are tags 
+In addition to the tags supported by a simple module there are tags
 describing how a compound module looks like if opened in Tkenv. These
 tags mainly deal with the module background.
 
@@ -133,7 +133,7 @@ network SimpleQueue
         @display("i=block/network2;bgi=bgimage"); // module display string
 \end{verbatim}
 
-To see the detailed descripton of these tags check 
+To see the detailed descripton of these tags check
 Appendix \ref{cha:display-string-tags} about display string tags.
 
 \subsection{Submodule display strings}

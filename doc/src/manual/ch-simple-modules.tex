@@ -259,10 +259,10 @@ scale exponent.
 
 \subsubsection{Compatibility}
 
-Earlier versions of \opp used \ttt{double} for simulation time. To facilitate
-porting existing models to \opp 4.0 or later, \opp can be compiled to use
+Earlier versions of {\opp} used \ttt{double} for simulation time. To facilitate
+porting existing models to {\opp} 4.0 or later, {\opp} can be compiled to use
 \ttt{double} for \ttt{simtime\_t}. To enable this mode, define the
-\ttt{USE\_DOUBLE\_SIMTIME} preprocessor macro during compiling \opp
+\ttt{USE\_DOUBLE\_SIMTIME} preprocessor macro during compiling {\opp}
 and the simulation models.
 
 There are several macros that can be used in simulation models to make
@@ -277,7 +277,7 @@ and places the result into the given buffer. \fmac{MAXTIME} is
 also defined correctly for both \ttt{simtime\_t} types.
 
 \begin{note}
-   Why did \opp switch to \ttt{int64}-based simulation time?
+   Why did {\opp} switch to \ttt{int64}-based simulation time?
    \ttt{double}'s mantissa is only 52 bits long, and this caused
    problems in long simulations that relied on fine-grained timing,
    for example MAC protocols. Other problems were the accumulation of
@@ -408,7 +408,7 @@ HelloModule::HelloModule() : cSimpleModule(16384) {...}
 \end{verbatim}
 
 \begin{note}
-    The \fmac{Module\_Class\_Members()} macro, already deprecated in \opp 3.2,
+    The \fmac{Module\_Class\_Members()} macro, already deprecated in {\opp} 3.2,
     has been removed in the 4.0 version. When porting older simulation models,
     occurrences of this macro can simply be removed from the source code.
 \end{note}
@@ -1874,10 +1874,10 @@ gates do not get reused later, so gate IDs are unique in the lifetime
 of a simulation run.
 
 \begin{note}
-    Earlier versions of \opp did not have these guarantees -- resizing
+    Earlier versions of {\opp} did not have these guarantees -- resizing
     a gate vector could cause its ID range to be relocated, if it
     would have overlapped with the ID range of other gate vectors.
-    \opp 4.0 solves the same problem by interpreting the gate ID
+    {\opp} 4.0 solves the same problem by interpreting the gate ID
     as a bitfield, basically containing bits that identify the gate name,
     and other bits that hold the index. This also means that the theoretical
     upper limit for a gate size is now smaller, albeit it is still
@@ -1926,10 +1926,10 @@ Where \ttt{this} denotes the module whose gates are being enumerated
 (it can be replaced by any \ttt{cModule *} variable).
 
 \begin{note}
-    In earlier \opp versions, gate IDs used to be small integers, so
+    In earlier {\opp} versions, gate IDs used to be small integers, so
     it made sense to iterate over all gates of a module by enumerating
     all IDs from zero to a maximum, skipping the holes (\ttt{NULL}s).
-    This is no longer the case with \opp 4.0 and later versions.
+    This is no longer the case with {\opp} 4.0 and later versions.
     Moreover, the \fname{gate()} method now throws an error when called
     with an invalid ID, and not just returns \ttt{NULL}.
 \end{note}
@@ -1951,7 +1951,7 @@ None of these methods accept \ttt{"\$i"} / \ttt{"\$o"} suffix in gate names.
 
 \begin{note}
     When memory efficiency is of concern, it is useful to know that
-    in \opp 4.0 and later, a gate vector will consume significantly less
+    in {\opp} 4.0 and later, a gate vector will consume significantly less
     memory than the same number of individual scalar gates.
 \end{note}
 
@@ -2307,7 +2307,7 @@ one in the path, you have to check the second gate's busy
 condition\index{gate!busy condition}.
 
 \begin{note}
-   In \opp versions prior to 4.0, sending on a busy gate was permitted, and
+   In {\opp} versions prior to 4.0, sending on a busy gate was permitted, and
    messages got implicitly queued up. The behaviour of the simulation kernel
    was changed because in practice, sending on a busy gate was more often result
    of a programming error than calculated behaviour.

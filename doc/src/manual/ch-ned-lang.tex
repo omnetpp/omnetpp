@@ -15,7 +15,7 @@ The NED languge has several features which let it scale well to large projects:
 \begin{description}
 
 \item[Hierarchical] The traditional way to deal with complexity is via
-introducing hierarchies. In \opp, any module which would be too complex as
+introducing hierarchies. In {\opp}, any module which would be too complex as
 a single entity can be broken down into smaller modules, and used as a
 compound module.
 
@@ -168,7 +168,7 @@ the default rendering of the module in graphical environments;
 
 Notice that the declarations don't contain any code to define the operation
 of the application (routing algorithm, queue) itself:
-that part is expressed in C++. By default, \opp looks for a
+that part is expressed in C++. By default, {\opp} looks for a
 C++ class of the same name (so here, \ttt{App}, \ttt{Routing} and {L2Queue}),
 although this gets slightly more complicated if C++ namespaces or
 NED packages are involved, and the user can also explicitly specify
@@ -207,7 +207,7 @@ Simple modules can be extended (or specialized) via subclassing. This will be
 discussed in section \ref{sec:ch-ned-lang:inheritance}.
 
 Comments in the NED source also serve a purpose in addition to making
-the NED source more readable: in the \opp IDE they get displayed
+the NED source more readable: in the {\opp} IDE they get displayed
 at various places (tooltips, content assist, etc), and become part
 of the documentation extracted from the NED files.
 The NED documentation system, not unlike \textit{JavaDoc}
@@ -387,9 +387,9 @@ matching \ttt{apply-default=true} line is found in the configuration.
 \end{note}
 
 The \ttt{serviceTime} parameter is decorated with \ttt{@unit(s)}. This means
-that the value must be specified in either seconds, or in a physical unit \opp
+that the value must be specified in either seconds, or in a physical unit {\opp}
 can convert to seconds, like milliseconds or hours; dimensionless numbers
-will not be accepted. The \opp runtime does a full and rigorous unit check on
+will not be accepted. The {\opp} runtime does a full and rigorous unit check on
 parameters to ensure ``unit safety'' of models.
 
 \ttt{serviceTime} is also declared \ttt{volatile}: this indicates that the
@@ -518,7 +518,7 @@ FIXME @isNetwork; @class, @namespace; @loose or @directIn; @prompt, @unit,...
 \section{Gates}
 
 
-Gates are the connection points of modules. \opp has three types of gates:
+Gates are the connection points of modules. {\opp} has three types of gates:
 \textit{input}, \textit{output} and \textit{inout}, the latter being essentially
 an input and an output gate glued together. The C++ code that implements the
 simple module may send and receive messages via gates. Gates allow one-to-one
@@ -529,7 +529,7 @@ undefined here, letting actual users (compound modules or networks that
 instantiate this module type) create as many gates as they want.
 
 \begin{note}
-    In many other systems, the equivalent of \opp gates are called
+    In many other systems, the equivalent of {\opp} gates are called
     \textit{ports}. We have retained the term \textit{gate} to reduce
     collisions with other uses of the otherwise overloaded word
     \textit{port}: router port, TCP port, I/O port, etc.
@@ -1038,7 +1038,7 @@ and to use them interchangeably in NED files.
 \section{Packages}
 
 To address increasingly common name collisions in NED files,
-\opp 4.0 introduces a package feature for NED. The solution
+{\opp} 4.0 introduces a package feature for NED. The solution
 is roughly modelled after Java's packages, with minor enhancements.
 
 It is also recommended practice to have one module per file,
