@@ -1291,6 +1291,10 @@ clean:
 {@i:submakedirs}	-cd {i} && $(MAKE) clean
 {/@}
 
+cleanall: clean
+{nmake:}	-rmdir /s /q $(PROJECT_OUTPUT_DIR:/=\) 2>nul
+{~nmake:}	-rm -rf $(PROJECT_OUTPUT_DIR)
+
 depend:
 {sourcedirs:}	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile{nmake?.vc} -P{nmake?^}{~nmake?\$}$O/ -- $(MSG_CC_FILES) {@d:sourcedirs} {d}/*.{cc}{/@}
 {@i:submakedirs}{nmake:}	-cd {i} && if exist Makefile.vc $(MAKE) depend

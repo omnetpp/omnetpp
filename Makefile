@@ -138,7 +138,7 @@ check-env:
 	fi; \
 	rm -f $(OMNETPP_BIN_DIR)/$$probefile; \
 
-clean:
+clean: makefiles
 	-rm -f $(OMNETPP_LIB_DIR)/*.*
 	-rm -rf $(OMNETPP_OUT_DIR)/$(CONFIGNAME)
 	-rm -rf $(OMNETPP_LIB_DIR)/$(CONFIGNAME)
@@ -149,13 +149,21 @@ clean:
 	    if [ "$$i" != "" ]; then (cd $(OMNETPP_SAMPLES_DIR)/$$i && $(MAKE) clean); fi;\
 	done
 	cd $(OMNETPP_TEST_DIR) && $(MAKE) clean
-# bin should be removed last because opp_configfilepath (in bin directory) is needed to clean
 	-rm -f $(OMNETPP_BIN_DIR)/*
 
-cleanall: clean
-	-rm -rf $(OMNETPP_BIN_DIR)/*
+cleanall: makefiles
 	-rm -rf $(OMNETPP_OUT_DIR)
 	-rm -rf $(OMNETPP_LIB_DIR)/*
+	for i in $(BASE); do \
+	    (cd $(OMNETPP_SRC_DIR)/$$i && $(MAKE) clean); \
+	done
+	for i in $(SAMPLES) ""; do \
+	    if [ "$$i" != "" ]; then (cd $(OMNETPP_SAMPLES_DIR)/$$i && $(MAKE) cleanall); fi;\
+	done
+	cd $(OMNETPP_TEST_DIR) && $(MAKE) clean
+# bin should be removed last because opp_configfilepath (in bin directory) is needed to clean
+	-rm -rf $(OMNETPP_BIN_DIR)/*
+
 
 depend:
 	for i in $(BASE); do \
