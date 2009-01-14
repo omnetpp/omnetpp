@@ -62,11 +62,6 @@ class MinimalEnv : public cNullEnvir
         return scalarResults[name];
     }
 
-    void clearStatistics()
-    {
-        scalarResults.clear();
-    }
-
     // model parameters
     virtual void readParameter(cPar *par)
     {
@@ -101,10 +96,10 @@ class MinimalEnv : public cNullEnvir
 // run the simulation with the provided arguments and return the channel utilization
 double simulate(std::string networkName, simtime_t limit, int numHosts, double iaMean)
 {
-
-//FIXME ide behozni a simulation + envir krealast / torlest
-
-    MinimalEnv *menv = (MinimalEnv *)cSimulation::getActiveEnvir();
+    // set up an environment for the simulation
+    MinimalEnv *menv = new MinimalEnv(0, NULL, new EmptyConfig());
+    cSimulation *sim = new cSimulation("simulation", menv);
+    cSimulation::setActiveSimulation(sim);
 
     // set the simulation parameters in the environment
     std::ostringstream iaParam;
@@ -117,19 +112,19 @@ double simulate(std::string networkName, simtime_t limit, int numHosts, double i
         printf("No such network: %s\n", networkName.c_str());
         return 0;
     }
-    simulation.setupNetwork(networkType); //XXX may throw exception
+    sim->setupNetwork(networkType); //XXX may throw exception
 
     // prepare for running it
-    simulation.startRun();
+    sim->startRun();
 
     // run the simulation
     bool ok = true;
     try {
-        while (simulation.getSimTime() < limit) {
-            cSimpleModule *mod = simulation.selectNextModule();
+        while (sim->getSimTime() < limit) {
+            cSimpleModule *mod = sim->selectNextModule();
             if (!mod)
                 break;  //XXX
-            simulation.doOneEvent(mod);
+            sim->doOneEvent(mod);
         }
         printf("Finished.\n");
     }
@@ -142,16 +137,19 @@ double simulate(std::string networkName, simtime_t limit, int numHosts, double i
     }
 
     if (ok)
-        simulation.callFinish();  //FIXME what if there's an exception during finish()?
+        sim->callFinish();  //FIXME what if there's an exception during finish()?
 
     // finish the simulation and clean up the network
-    simulation.endRun();
-    simulation.deleteNetwork();
+    sim->endRun();
+    sim->deleteNetwork();
 
     // get the channel utilization from the simulation
     double result = menv->getStatistic("Aloha.server.channel utilization");
-    // clear all statistics (we do not need them anymore)
-    menv->clearStatistics();
+
+    // delete simulation
+    cSimulation::setActiveSimulation(NULL);
+    delete sim;  // deletes menv as well
+
     return result;
 }
 
@@ -164,21 +162,15 @@ int main(int argc, char *argv[])
     ExecuteOnStartup::executeAll();
     SimTime::setScaleExp(-12);
 
-    // set up an environment for the simulation
-    cEnvir *env = new MinimalEnv(argc, argv, new EmptyConfig());
-    cSimulation *sim = new cSimulation("simulation", env);
-    cSimulation::setActiveSimulation(sim);
-
     // load NED files
-    sim->loadNedSourceFolder("./model");
-    sim->doneLoadingNedFiles();
+    cSimulation::loadNedSourceFolder("./model");
+    cSimulation::doneLoadingNedFiles();
 
     std::string againQuestion;
     do {
         int numHosts;
         double iaMean;
 
-        std::cout << "\n";
         std::cout << "Slotted Aloha simulation\n";
         std::cout << "========================\n";
         std::cout << "\n";
@@ -199,9 +191,5 @@ int main(int argc, char *argv[])
     }
     while (againQuestion == "y");
 
-
-    // exit
-    cSimulation::setActiveSimulation(NULL);
-    delete sim;
     return 0;
 }
