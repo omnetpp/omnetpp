@@ -94,7 +94,7 @@ class MinimalEnv : public cNullEnvir
 };
 
 // run the simulation with the provided arguments and return the channel utilization
-double simulate(std::string networkName, simtime_t limit, int numHosts, double iaMean)
+double simulateAloha(simtime_t limit, int numHosts, double iaMean)
 {
     // set up an environment for the simulation
     MinimalEnv *menv = new MinimalEnv(0, NULL, new EmptyConfig());
@@ -107,11 +107,9 @@ double simulate(std::string networkName, simtime_t limit, int numHosts, double i
     menv->setParameters(numHosts, iaParam.str());
 
     // set up the network
-    cModuleType *networkType = cModuleType::find(networkName.c_str());
-    if (networkType == NULL) {
-        printf("No such network: %s\n", networkName.c_str());
-        return 0;
-    }
+    cModuleType *networkType = cModuleType::find("Aloha");
+    if (!networkType)
+        throw cRuntimeError("Aloha network not found");
     sim->setupNetwork(networkType); //XXX may throw exception
 
     // prepare for running it
@@ -163,7 +161,10 @@ int main(int argc, char *argv[])
     SimTime::setScaleExp(-12);
 
     // load NED files
-    cSimulation::loadNedSourceFolder("./model");
+    cSimulation::loadNedText("aloha", ALOHA_NED);
+    cSimulation::loadNedText("server", SERVER_NED);
+    cSimulation::loadNedText("host", HOST_NED);
+    //cSimulation::loadNedSourceFolder("./model");
     cSimulation::doneLoadingNedFiles();
 
     std::string againQuestion;
@@ -171,6 +172,7 @@ int main(int argc, char *argv[])
         int numHosts;
         double iaMean;
 
+        std::cout << "\n";
         std::cout << "Slotted Aloha simulation\n";
         std::cout << "========================\n";
         std::cout << "\n";
@@ -181,7 +183,7 @@ int main(int argc, char *argv[])
         std::cout << "Running simulation...";
 
         // simulate the Aloha network for 1 hour
-        double channelUtilization = simulate("Aloha", 3600, numHosts, iaMean);
+        double channelUtilization = simulateAloha(3600, numHosts, iaMean);
 
         // display the simulation results
         std::cout << "Channel utilization: " << channelUtilization << endl;
