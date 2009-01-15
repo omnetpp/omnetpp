@@ -9,6 +9,14 @@ LAUNCHER=omnest
 
 echo Starting the OMNEST IDE...
 
+if java -version 2>&1 | grep -i "libgcj" >/dev/null 2>/dev/null; then
+  echo "A compatible JRE is required to run the IDE. "
+  echo "Found GNU GIJ which is not supported. Please use Sun JRE or Open JRE 1.5+"
+  echo "If you have several JDKs installed on you machine, change the default JVM."
+  echo "You can switch between Java VMs with the 'sudo update-alternatives --config java' command."
+  exit 1;
+fi
+
 case $PLATFORM in 
 *MINGW*)
 	./${LAUNCHER}.exe & 
