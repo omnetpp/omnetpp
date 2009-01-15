@@ -738,6 +738,12 @@ proc draw_message {c msgptr x y} {
             set tags(is) {}
         }
         if [info exists tags(i)] {
+
+            if {[lindex $tags(i) 1] == "kind"} {
+                set kindcolor [lindex {red green blue white yellow cyan magenta black} [expr $msgkind % 8]]
+                set tags(i) [lreplace $tags(i) 1 1 $kindcolor]
+            }
+
             set img [dispstr_getimage $tags(i) $tags(is) $zoomfactor $imagesizefactor]
             set sx [image width $img]
             set sy [image height $img]
@@ -769,18 +775,17 @@ proc draw_message {c msgptr x y} {
             set sh [lindex $tags(b) 2]
             if {$sh == ""} {set sh oval}
 
-            if {![info exists tags(o)]} {set tags(o) {}}
-            set fill [lindex $tags(o) 0]
+            set fill [lindex $tags(b) 3]
             if {$fill == ""} {set fill red}
             if {$fill == "kind"} {
                 set fill [lindex {red green blue white yellow cyan magenta black} [expr $msgkind % 8]]
             }
-            set outline [lindex $tags(o) 1]
+            set outline [lindex $tags(b) 4]
             if {$outline == ""} {set outline ""}
             if {$outline == "kind"} {
                 set outline [lindex {red green blue white yellow cyan magenta black} [expr $msgkind % 8]]
             }
-            set width [lindex $tags(o) 2]
+            set width [lindex $tags(b) 5]
             if {$width == ""} {set width 1}
 
             $c create $sh $x1 $y1 $x2 $y2 -fill $fill -width $width -outline $outline -tags "dx tooltip msg $msgptr"

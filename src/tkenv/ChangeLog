@@ -1,3 +1,11 @@
+2009-01-05 Rudolf Hornig
+    
+        * fixed: display string for messages made consistent with module display
+        strings: "o" tag removed, use b=width,height,shape,color,borderwidth instead.
+        
+        * New feature: A special color name "kind" can be used in message display strings
+        (both in "i" and "b" tag)
+
 2008-12-14  Andras Varga
 
 	* fixed bug #34: in Fast mode, bubble didn't get displayed for 
