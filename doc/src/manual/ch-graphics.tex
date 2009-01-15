@@ -17,6 +17,7 @@ The display string format is a semicolon-separated list of tags.
 Each tag consists of a key (usually one letter), an equal sign
 and a comma-separated list of parameters, like:
 
+Example:
 \begin{verbatim}
   "p=100,100;b=60,10,rect;o=blue,black,2"
 \end{verbatim}
@@ -24,12 +25,14 @@ and a comma-separated list of parameters, like:
 Parameters may be omitted also at the end and also inside the
 parameter list, like:
 
+Example:
 \begin{verbatim}
   "p=100,100;b=,,rect,blue"
 \end{verbatim}
 
 Module/submodule parameters can be included with the \ttt{\$name} notation:
 
+Example:
 \begin{verbatim}
   "p=$xpos,$ypos;b=60,10,rect,$fillcolor,black,2"
 \end{verbatim}
@@ -61,6 +64,7 @@ Objects that may have display strings are:
 
 The following NED sample shows where to place display strings in the code:
 
+Example:
 \begin{verbatim}
 simple Queue
 {
@@ -103,8 +107,8 @@ The simple module display string supports the following tags:
   \item{\ttt{is} -- icon size}
 \end{itemize}
 These tags are used mainly to describe the default appearence of
-a submodule of this type. To see the detailed descripton of
-these tags check Appendix \ref{cha:display-string-tags} about
+a submodule of this type. To see detailed descripton of 
+these tags check Appendix \ref{cha:display-string-tags} about 
 display string tags.
 
 \subsection{Compound module and network display strings}
@@ -126,6 +130,7 @@ tags mainly deal with the module background.
   \item{\ttt{bgp} -- background coordinate offset}
 \end{itemize}
 
+Example:
 \begin{verbatim}
 network SimpleQueue
 {
@@ -133,11 +138,15 @@ network SimpleQueue
         @display("i=block/network2;bgi=bgimage"); // module display string
 \end{verbatim}
 
-To see the detailed descripton of these tags check
+To see detailed descripton of these tags check 
 Appendix \ref{cha:display-string-tags} about display string tags.
 
 \subsection{Submodule display strings}
 
+Submodules inherit their appearance from their type. There are
+additional tags that are supported additionally to the ones supported
+for simple modules. These tags let you add instance specific changes
+like range indicator, satus icons, position etc.
 The submodule display string supports the following tags:
 \begin{itemize}
   \item{\ttt{b} -- shapes, colors}
@@ -151,14 +160,15 @@ The submodule display string supports the following tags:
   \item{\ttt{tt} -- tooltip}
 \end{itemize}
 
+Example:
 \begin{verbatim}
 submodules:
     source: Source {
-        @display("p=50.0,79.0;i=-"); // icon won't be inherited from Source
+        @display("p=50,79;i=-;r=90"); // icon won't be inherited from Source
     }
 \end{verbatim}
 
-To see the detailed descripton of these tags check
+To see detailed descripton of these tags check
 Appendix \ref{cha:display-string-tags} about display string tags.
 
 \subsection{Channel and connection display strings}
@@ -174,11 +184,12 @@ Channels and connections support the following tags:
   \item{\ttt{tt} -- tooltip}
 \end{itemize}
 
+Example:
 \begin{verbatim}
 source.out --> { @display("ls=red,3"); } --> queue.in++;
 \end{verbatim}
 
-To see the detailed descripton of these tags check
+To see detailed descripton of these tags check
 Appendix \ref{cha:display-string-tags} about display string tags.
 
 \subsection{Message display strings}
@@ -187,10 +198,11 @@ Message objects do not store a display string by default, but you can redefine
 the \cclass{cMessage}'s \fname{getDisplayString()} method and make it return
 one.
 
+Example:
 \begin{verbatim}
 const char *CustomPacket::getDisplayString() const
 {
-    return "i=msg/packet_vs";
+    return "i=msg/packet;is=vs";
 }
 \end{verbatim}
 
@@ -202,18 +214,26 @@ The latter is configurable in the Tkenv Options dialog, and message kind
 dependent coloring can also be turned off there.
 
 The following tags can be used in message display strings:
-
-TODO
+\begin{itemize}
+  \item{\ttt{b} -- shapes, colors}
+  \item{\ttt{i} -- icon}
+  \item{\ttt{is} -- icon size}
+\end{itemize}
 
 Examples:
-
 \begin{verbatim}
-   "i=penguin"
+   "i=box;is=s"
 \end{verbatim}
 
 \begin{verbatim}
-   "b=15,15,rect;o=white,kind,5"
+   "b=15,15,rect,white,kind,5"
 \end{verbatim}
+
+\begin{note}
+   You may use the word \ttt{kind} as a special color. This virtual color depends on 
+   the \ttt{messageKind} field in the message.
+\end{note}
+
 
 %FIXME more examples, WITH EXPLANATIONS
 
@@ -232,7 +252,7 @@ It is also possible to specify colors in HSB (hue-saturation-brightness) as
 HSB makes it easier to scale colors e.g. from white to bright red.
 
 You can produce a transparent background by specifying a hyphen (\textit{"-"})
-as color.
+as background color.
 
 
 \subsection{Icon colorization}
@@ -241,7 +261,7 @@ The \ttt{"i="} display string tag allows for colorization of icons.
 It accepts a target color and a percentage as the degree of colorization.
 Percentage has no effect if the target color is missing.
 Brightness of icon is also affected -- to keep the original brightness,
-specify a color with about 50% brightness (e.g. \#808080 mid-grey,
+specify a color with about 50\% brightness (e.g. \#808080 mid-grey,
 \#008000 mid-green).
 
 Examples:
@@ -290,8 +310,8 @@ You can also add to the image path from \ttt{omnetpp.ini}, with
 the \ttt{image-path} setting:
 
 \begin{verbatim}
-[Tkenv]
-image-path = "/home/you/model-framework/images;/home/you/extra-images"
+[General]
+tkenv-image-path = "/home/you/model-framework/images;/home/you/extra-images"
 \end{verbatim}
 
 The value should be quoted, otherwise the first semicolon separator will be
@@ -314,7 +334,7 @@ by folders. These categories include:
 
 Old (pre-3.0) icons are in the \ttt{old/} folder.
 
-Tkenv and GNED now load icons from subdirectories of all directories
+Tkenv and the IDE now load icons from subdirectories of all directories
 of the image path, and these icons can be referenced from display strings
 by naming the subdirectory (subdirectories) as well:
 \ttt{"subdir/icon"}, \ttt{"subdir/subdir2/icon"}, etc.
@@ -327,9 +347,10 @@ a category (i.e. subdirectory) name, {\opp} tries it as "old/icon" as well.
 \subsection{Icon size}
 
 Icons come in various sizes: normal, large, small, very small. Sizes are
-encoded into the icon name's suffix: \ttt{\_l}, \ttt{\_s}, \ttt{\_vs}.
+encoded into the icon name's suffix: \ttt{\_vl}, \ttt{\_l}, \ttt{\_s}, \ttt{\_vs}.
 In display strings, one can either use the suffix (\ttt{"i=device/router\_l"}),
-or the \ttt{"is}" (\textit{icon size}) display string tag ("i=device/router;is=l").
+or the \ttt{"is}" (\textit{icon size}) display string tag ("i=device/router;is=l"),
+but not both at the same time (we recommend using the \ttt{is} tag whenever possible).
 
 
 \section{Layouting}
@@ -371,17 +392,11 @@ Caveats:
     (matrix, row, ring, etc) layouts. The "Re-layout" toobar button
     can then be very useful. Larger networks usually produce
     satisfactory results.
+  \item The algorithm is starting from random positions. 
+     To get the best results you may experiment with
+    different seeds by specifying them using the \ttt{bgl=\textit{seed}}
+    display string tag. 
 \end{itemize}
-
-Parameters to the layouter algorithm (repulsive/attractive forces,
-number of iterations,random number seed) can be specified via the
-\ttt{"l="} background display string tag. Its current arguments are
-(with default values):
-\ttt{"l=\textit{<repulsion>}=10,\textit{<attraction>}=0.3,
-\textit{<edgelen>}=40,\textit{<maxiter>}=500,\textit{<rng-seed>}"}.
-The \ttt{"l="} tag is somewhat experimental and its arguments
-may change in further releases.
-
 
 \section{Enhancing animation}
 
@@ -393,26 +408,46 @@ changing a module's position is useful when simulating mobile
 networks.
 
 Display strings are stored in \cclass{cDisplayString} objects inside
-modules and gates. \cclass{cDisplayString} also lets you manipulate the string.
+channels, modules and gates. \cclass{cDisplayString} also lets you manipulate the string.
 
 To get a pointer to the \cclass{cDisplayString} object, you can call
-the module's \fname{getDisplayString()} method:
+the components's \fname{getDisplayString()} method:
 
-\begin{Verbatim}
+\begin{verbatim}
+// Setting a module's position, icon and status icon:
 cDisplayString *dispStr = getDisplayString();
-\end{Verbatim}
+dispStr->parse("p=40,20;i=device/cellphone;i2=status/disconnect");
+\end{verbatim}
 
-%FIXME finish!
+\begin{note}
+The connection display string is stored in the output gate of the connection.
+\end{note}
 
-\begin{Verbatim}
-cDisplayString *bgDispStr = getParentModule()->backgroundDisplayString();
-\end{Verbatim}
-
-\begin{Verbatim}
+\begin{verbatim}
+//Settig an outgoing connection's color to red:
 cDisplayString *gateDispStr = gate("out")->getDisplayString();
-\end{Verbatim}
+dispStr->parse("ls=red");
+\end{verbatim}
 
-%FIXME The \cclass{cDisplayString} utility class lets..
+\begin{note}
+In {\opp} 3.x to manipulate the appearence of a compound module you had to use
+the \fname{backgroundDisplayString()} method. This is no longer supported in 
+{\opp} 4.0. Use the \fname{getDisplayString()} method instead along with the background
+specific tags (i.e. \ttt{bg*} tags).
+\end{note}
+
+\begin{verbatim}
+// Setting module background and grid with background display string tags:
+cDisplayString *parentDispStr = getParentModule()->getDisplayString();
+parentDispStr->parse("bgi=maps/europe;bgg=100,2");
+\end{verbatim}
+
+\begin{note}
+Modules are inheriting the display string from their type (for submodules) or
+from their ancestors if you have a derived simple or compound module. If you
+do not want to inherit a tag argument you should specify a single dash (-) 
+as the argument's value. Tkenv will use the default value for this argument.
+\end{note}
 
 As far as \cclass{cDisplayString} is concerned, a display string
 (e.g. \ttt{"p=100,125;i=cloud"}) is a string that consist of several
@@ -438,17 +473,15 @@ dispStr->setTagArg("p",0,"beta");
 ev << dispStr->str();  // result: "x=joe,,jim;a=1,2;p=beta,,3"
 \end{verbatim}
 
-
 \subsection{Bubbles}
 
 Modules can let the user know about important events (such as a node
 going down or coming up) by displaying a bubble with a short message
 ("Going down", "Coming up", etc.) This is done by the \fname{bubble()} method
-of \cclass{cModule}. The method takes the string to be displayed
+of \cclass{cComponent}. The method takes the string to be displayed
 as a \ttt{const char *} pointer.
 
 An example:
-
 \begin{verbatim}
 bubble("Going down!");
 \end{verbatim}
@@ -459,12 +492,11 @@ on \ttt{ev.isGUI()}. The \ttt{ev.isGUI()} call returns \textit{false}
 when the simulation is run under Cmdenv, so one can make the code skip
 potentially expensive display string manipulation.
 
+Better:
 \begin{verbatim}
 if (ev.isGUI())
     bubble("Going down!");
 \end{verbatim}
-
-
 
 %%% Local Variables:
 %%% mode: latex
