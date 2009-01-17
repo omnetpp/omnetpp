@@ -11,8 +11,9 @@ message definitions.
   **  NED-2.
   -->
 
-<!ELEMENT ned-file (comment*, (package|import|property-decl|property|channel|
-                    channel-interface|simple-module|compound-module|module-interface)*)>
+<!ELEMENT ned-file (comment*, (package|import|property-decl|property|
+                    simple-module|compound-module|module-interface|
+                    channel|channel-interface)*)>
 <!ATTLIST ned-file
      filename           CDATA     #REQUIRED
      version            CDATA     "2">
@@ -200,12 +201,13 @@ message definitions.
 
 <!--
 **
-** Message Definitions (MSG)
+** OMNeT++/OMNEST Message Definitions (MSG)
 **
 -->
 
-<!ELEMENT msg-file (comment*, (namespace|property-decl|property|cplusplus|struct-decl|class-decl|message-decl|enum-decl|
-                     enum|message|class|struct)*)>
+<!ELEMENT msg-file (comment*, (namespace|property-decl|property|cplusplus|
+                    struct-decl|class-decl|message-decl|packet-decl|enum-decl|
+                    struct|class|message|packet|enum)*)>
 
 <!ATTLIST msg-file
      filename            CDATA     #IMPLIED
@@ -228,10 +230,15 @@ message definitions.
 <!ELEMENT class-decl (comment*)>
 <!ATTLIST class-decl
      name                NMTOKEN   #REQUIRED
-     is-cobject      (true|false)  "false">
+     is-cobject      (true|false)  "false"
+     extends-name        NMTOKEN   #IMPLIED>
 
 <!ELEMENT message-decl (comment*)>
 <!ATTLIST message-decl
+     name                NMTOKEN   #REQUIRED>
+
+<!ELEMENT packet-decl (comment*)>
+<!ATTLIST packet-decl
      name                NMTOKEN   #REQUIRED>
 
 <!ELEMENT enum-decl (comment*)>
@@ -257,6 +264,12 @@ message definitions.
 
 <!ELEMENT message (comment*, (property|field)*)>
 <!ATTLIST message
+     name                NMTOKEN   #REQUIRED
+     extends-name        NMTOKEN   #IMPLIED
+     source-code         CDATA     #IMPLIED>
+
+<!ELEMENT packet (comment*, (property|field)*)>
+<!ATTLIST packet
      name                NMTOKEN   #REQUIRED
      extends-name        NMTOKEN   #IMPLIED
      source-code         CDATA     #IMPLIED>
@@ -290,8 +303,6 @@ message definitions.
 <!ELEMENT unknown        ANY>
 <!ATTLIST unknown
      element             CDATA     #REQUIRED>
-
-
 \end{verbatim}
 
 %%% Local Variables:

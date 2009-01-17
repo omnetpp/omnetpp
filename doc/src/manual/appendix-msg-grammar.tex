@@ -33,8 +33,6 @@ from the previous versions of {\opp} (3.x) can be parsed.
 %
 
 \begin{Verbatim}[commandchars=\\\{\}]
-
-
 msgfile
         : definitions
         ;
@@ -50,9 +48,11 @@ definition
         | struct\_decl
         | class\_decl
         | message\_decl
+        | packet\_decl
         | enum\_decl
         | enum
         | message
+        | packet
         | class
         | struct
         ;
@@ -76,10 +76,15 @@ struct\_decl
 class\_decl
         : CLASS NAME ';'
         | CLASS NONCOBJECT NAME ';'
+        | CLASS NAME EXTENDS NAME ';'
         ;
 
 message\_decl
         : MESSAGE NAME ';'
+        ;
+
+packet\_decl
+        : PACKET NAME ';'
         ;
 
 enum\_decl
@@ -112,6 +117,10 @@ message
         : message\_header body
         ;
 
+packet
+        : packet\_header body
+        ;
+
 class
         : class\_header body
         ;
@@ -123,6 +132,11 @@ struct
 message\_header
         : MESSAGE NAME '\{'
         | MESSAGE NAME EXTENDS NAME '\{'
+        ;
+
+packet\_header
+        : PACKET NAME '\{'
+        | PACKET NAME EXTENDS NAME '\{'
         ;
 
 class\_header

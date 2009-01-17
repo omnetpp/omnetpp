@@ -89,45 +89,45 @@ importname
         ;
 
 propertydecl
-        : propertydecl_header opt_inline_properties ';'
-        | propertydecl_header '(' opt_propertydecl_keys ')' opt_inline_properties ';'
+        : propertydecl\_header opt\_inline\_properties ';'
+        | propertydecl\_header '(' opt\_propertydecl\_keys ')' opt\_inline\_properties ';'
         ;
 
-propertydecl_header
+propertydecl\_header
         : PROPERTY '@' NAME
         | PROPERTY '@' NAME '[' ']'
         ;
 
-opt_propertydecl_keys
-        : propertydecl_keys
+opt\_propertydecl\_keys
+        : propertydecl\_keys
         |
         ;
 
-propertydecl_keys
-        : propertydecl_keys ';' propertydecl_key
-        | propertydecl_key
+propertydecl\_keys
+        : propertydecl\_keys ';' propertydecl\_key
+        | propertydecl\_key
         ;
 
-propertydecl_key
+propertydecl\_key
         : NAME
         ;
 
 fileproperty
-        : property_namevalue ';'
+        : property\_namevalue ';'
         ;
 
 channeldefinition
         : channelheader '\{'
-            opt_paramblock
+            opt\_paramblock
           '\}'
         ;
 
 channelheader
         : CHANNEL NAME
-           opt_inheritance
+           opt\_inheritance
         ;
 
-opt_inheritance
+opt\_inheritance
         :
         | EXTENDS extendsname
         | LIKE likenames
@@ -149,16 +149,16 @@ likename
 
 channelinterfacedefinition
         : channelinterfaceheader '\{'
-            opt_paramblock
+            opt\_paramblock
           '\}'
         ;
 
 channelinterfaceheader
         : CHANNELINTERFACE NAME
-           opt_interfaceinheritance
+           opt\_interfaceinheritance
         ;
 
-opt_interfaceinheritance
+opt\_interfaceinheritance
         : EXTENDS extendsnames
         |
         ;
@@ -170,65 +170,65 @@ extendsnames
 
 simplemoduledefinition
         : simplemoduleheader '\{'
-            opt_paramblock
-            opt_gateblock
+            opt\_paramblock
+            opt\_gateblock
           '\}'
         ;
 
 simplemoduleheader
         : SIMPLE NAME
-          opt_inheritance
+          opt\_inheritance
         ;
 
 compoundmoduledefinition
         : compoundmoduleheader '\{'
-            opt_paramblock
-            opt_gateblock
-            opt_typeblock
-            opt_submodblock
-            opt_connblock
+            opt\_paramblock
+            opt\_gateblock
+            opt\_typeblock
+            opt\_submodblock
+            opt\_connblock
           '\}'
         ;
 
 compoundmoduleheader
         : MODULE NAME
-          opt_inheritance
+          opt\_inheritance
         ;
 
 networkdefinition
         : networkheader '\{'
-            opt_paramblock
-            opt_gateblock
-            opt_typeblock
-            opt_submodblock
-            opt_connblock
+            opt\_paramblock
+            opt\_gateblock
+            opt\_typeblock
+            opt\_submodblock
+            opt\_connblock
           '\}'
         ;
 
 networkheader
         : NETWORK NAME
-          opt_inheritance
+          opt\_inheritance
         ;
 
 moduleinterfacedefinition
         : moduleinterfaceheader '\{'
-            opt_paramblock
-            opt_gateblock
+            opt\_paramblock
+            opt\_gateblock
           '\}'
         ;
 
 moduleinterfaceheader
         : MODULEINTERFACE NAME
-           opt_interfaceinheritance
+           opt\_interfaceinheritance
         ;
 
-opt_paramblock
-        : opt_params
+opt\_paramblock
+        : opt\_params
         | PARAMETERS ':'
-          opt_params
+          opt\_params
         ;
 
-opt_params
+opt\_params
         : params
         |
         ;
@@ -244,21 +244,21 @@ paramsitem
         ;
 
 param
-        : param_typenamevalue
-        | pattern_value
+        : param\_typenamevalue
+        | pattern\_value
         ;
 
-param_typenamevalue
-        : param_typename opt_inline_properties ';'
-        | param_typename opt_inline_properties '=' paramvalue opt_inline_properties ';'
+param\_typenamevalue
+        : param\_typename opt\_inline\_properties ';'
+        | param\_typename opt\_inline\_properties '=' paramvalue opt\_inline\_properties ';'
         ;
 
-param_typename
-        : opt_volatile paramtype NAME
+param\_typename
+        : opt\_volatile paramtype NAME
         | NAME
         ;
 
-pattern_value
+pattern\_value
         : '/' pattern '/' '=' paramvalue
         ;
 
@@ -270,7 +270,7 @@ paramtype
         | XML
         ;
 
-opt_volatile
+opt\_volatile
         : VOLATILE
         |
         ;
@@ -278,24 +278,26 @@ opt_volatile
 paramvalue
         : expression
         | DEFAULT '(' expression ')'
+        | DEFAULT
+        | ASK
         ;
 
-opt_inline_properties
-        : inline_properties
+opt\_inline\_properties
+        : inline\_properties
         |
         ;
 
-inline_properties
-        : inline_properties property_namevalue
-        | property_namevalue
+inline\_properties
+        : inline\_properties property\_namevalue
+        | property\_namevalue
         ;
 
 pattern
-        : pattern pattern_elem
-        | pattern_elem
+        : pattern pattern\_elem
+        | pattern\_elem
         ;
 
-pattern_elem
+pattern\_elem
         : '.'
         | '*'
         | '?'
@@ -315,39 +317,39 @@ pattern_elem
         ;
 
 property
-        : property_namevalue ';'
+        : property\_namevalue ';'
         ;
 
-property_namevalue
-        : property_name
-        | property_name '(' opt_property_keys ')'
+property\_namevalue
+        : property\_name
+        | property\_name '(' opt\_property\_keys ')'
         ;
 
-property_name
+property\_name
         : '@' NAME
         | '@' NAME '[' NAME ']'
         ;
 
-opt_property_keys
-        : property_keys
+opt\_property\_keys
+        : property\_keys
         ;
 
-property_keys
-        : property_keys ';' property_key
-        | property_key
+property\_keys
+        : property\_keys ';' property\_key
+        | property\_key
         ;
 
-property_key
-        : NAME '=' property_values
-        | property_values
+property\_key
+        : NAME '=' property\_values
+        | property\_values
         ;
 
-property_values
-        : property_values ',' property_value
-        | property_value
+property\_values
+        : property\_values ',' property\_value
+        | property\_value
         ;
 
-property_value
+property\_value
         : NAME
         | '$' NAME
         | STRINGCONSTANT
@@ -360,17 +362,17 @@ property_value
         |
         ;
 
-opt_gateblock
+opt\_gateblock
         : gateblock
         |
         ;
 
 gateblock
         : GATES ':'
-          opt_gates
+          opt\_gates
         ;
 
-opt_gates
+opt\_gates
         : gates
         |
         ;
@@ -381,11 +383,11 @@ gates
         ;
 
 gate
-        : gate_typenamesize
-          opt_inline_properties ';'
+        : gate\_typenamesize
+          opt\_inline\_properties ';'
         ;
 
-gate_typenamesize
+gate\_typenamesize
         : gatetype NAME
         | gatetype NAME '[' ']'
         | gatetype NAME vector
@@ -400,17 +402,17 @@ gatetype
         | INOUT
         ;
 
-opt_typeblock
+opt\_typeblock
         : typeblock
         |
         ;
 
 typeblock
         : TYPES ':'
-           opt_localtypes
+           opt\_localtypes
         ;
 
-opt_localtypes
+opt\_localtypes
         : localtypes
         |
         ;
@@ -431,17 +433,17 @@ localtype
         | ';'
         ;
 
-opt_submodblock
+opt\_submodblock
         : submodblock
         |
         ;
 
 submodblock
         : SUBMODULES ':'
-          opt_submodules
+          opt\_submodules
         ;
 
-opt_submodules
+opt\_submodules
         : submodules
         |
         ;
@@ -454,9 +456,9 @@ submodules
 submodule
         : submoduleheader ';'
         | submoduleheader '\{'
-          opt_paramblock
-          opt_gateblock
-          '\}' opt_semicolon
+          opt\_paramblock
+          opt\_gateblock
+          '\}' opt\_semicolon
         ;
 
 submoduleheader
@@ -474,19 +476,19 @@ likeparam
         | '<' expression '>'
         ;
 
-opt_connblock
+opt\_connblock
         : connblock
         |
         ;
 
 connblock
         : CONNECTIONS ALLOWUNCONNECTED ':'
-          opt_connections
+          opt\_connections
         | CONNECTIONS ':'
-          opt_connections
+          opt\_connections
         ;
 
-opt_connections
+opt\_connections
         : connections
         |
         ;
@@ -498,25 +500,25 @@ connections
 
 connectionsitem
         : connectiongroup
-        | connection opt_loops_and_conditions ';'
+        | connection opt\_loops\_and\_conditions ';'
         ;
 
 connectiongroup
-        : opt_loops_and_conditions '\{'
-          connections '\}' opt_semicolon
+        : opt\_loops\_and\_conditions '\{'
+          connections '\}' opt\_semicolon
         ;
 
-opt_loops_and_conditions
-        : loops_and_conditions
+opt\_loops\_and\_conditions
+        : loops\_and\_conditions
         |
         ;
 
-loops_and_conditions
-        : loops_and_conditions ',' loop_or_condition
-        | loop_or_condition
+loops\_and\_conditions
+        : loops\_and\_conditions ',' loop\_or\_condition
+        | loop\_or\_condition
         ;
 
-loop_or_condition
+loop\_or\_condition
         : loop
         | condition
         ;
@@ -545,15 +547,15 @@ leftmod
         ;
 
 leftgate
-        : NAME opt_subgate
-        | NAME opt_subgate vector
-        | NAME opt_subgate '++'
+        : NAME opt\_subgate
+        | NAME opt\_subgate vector
+        | NAME opt\_subgate '++'
         ;
 
 parentleftgate
-        : NAME opt_subgate
-        | NAME opt_subgate vector
-        | NAME opt_subgate '++'
+        : NAME opt\_subgate
+        | NAME opt\_subgate vector
+        | NAME opt\_subgate '++'
         ;
 
 rightgatespec
@@ -567,30 +569,30 @@ rightmod
         ;
 
 rightgate
-        : NAME opt_subgate
-        | NAME opt_subgate vector
-        | NAME opt_subgate '++'
+        : NAME opt\_subgate
+        | NAME opt\_subgate vector
+        | NAME opt\_subgate '++'
         ;
 
 parentrightgate
-        : NAME opt_subgate
-        | NAME opt_subgate vector
-        | NAME opt_subgate '++'
+        : NAME opt\_subgate
+        | NAME opt\_subgate vector
+        | NAME opt\_subgate '++'
         ;
 
-opt_subgate
+opt\_subgate
         : '$' NAME
         |
         ;
 
 channelspec
-        : channelspec_header
-        | channelspec_header '\{'
-            opt_paramblock
+        : channelspec\_header
+        | channelspec\_header '\{'
+            opt\_paramblock
           '\}'
         ;
 
-channelspec_header
+channelspec\_header
         :
         | dottedname
         | likeparam LIKE dottedname
@@ -616,7 +618,7 @@ xmldocvalue
         ;
 
 expr
-        : simple_expr
+        : simple\_expr
         | '(' expr ')'
         | CONST '(' expr ')'
         | expr '+' expr
@@ -659,9 +661,9 @@ expr
         | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
         ;
 
-simple_expr
+simple\_expr
         : identifier
-        | special_expr
+        | special\_expr
         | literal
         ;
 
@@ -672,7 +674,7 @@ identifier
         | NAME '[' expr ']' '.' NAME
         ;
 
-special_expr
+special\_expr
         : INDEX
         | INDEX '(' ')'
         | SIZEOF '(' identifier ')'
@@ -706,7 +708,7 @@ quantity
         | REALCONSTANT NAME
         ;
 
-opt_semicolon
+opt\_semicolon
         : ';'
         |
         ;
