@@ -497,25 +497,71 @@ code modification in the main program.
 
 \subsection{The simulation loop}
 
-may build in cpu time limit, progress monitor, interactivity etc
+To run the simulation, the \fname{selectNextModule()} and \fname{doOneEvent}
+methods of \cclass{cSimulation} must be called in a loop:
 
-single thread!!  if you want to access the simulation from a separate thread,
-you must use locking
+\begin{verbatim}
+while (sim->getSimTime() < limit)
+{
+    cSimpleModule *mod = sim->selectNextModule();
+    sim->doOneEvent(mod);
+}
+\end{verbatim}
 
-animation is to be done via environment object callbacks
+It depends on the concrete scheduler class whether
+\fname{selectNextModule()} may return \ttt{NULL}. The default
+\cclass{cSequentialScheduler} never returns \ttt{NULL}.
+
+Execution may terminate in various ways. Runtime errors cause a
+\cclass{cRuntimeError} (or other kind of \cclass{std::exception}) to be
+thrown. \cclass{cTerminationException} is thrown on normal termination
+conditions, such as when the simulation runs out of events to process.
+
+You may customize the loop to exit on other termination conditions as well,
+such as on a simulation time limit (see above), on CPU time limit, or when
+results reach a required accuracy. It is relatively straightforward to
+build in progress reporting and interactivity (start/stop) as well.
+
+Animation can be hooked up to the appropriate callback methods of
+\cclass{cEnvir}: \fname{beginSend()}, \fname{sendHop()}, \fname{endSend()},
+and others.
 
 
-\subsection{Several cSimulation objects}
+\subsection{Multiple, coexisting simulations}
 
-several simulations (sim+envir pairs) may coexist,
-but they cannot be run concurrently (due to evptr, simptr and static buffers
-used here and there)
+It is possible for several instances of \cclass{cSimulation} to coexist,
+and also to set up and simulate a network in each instance. However, this
+requires frequent use of \fname{cSimulation::set\-Active\-Simulation()}:
+before invoking any \cclass{cSimulation} method or module method,
+the corresponding \cclass{cSimulation} instance needs to be designated
+as the active simulation manager. This is necessary because several models
+and simulation kernel methods refer to the active simulation manager
+instance via the \fmac{simulation} macro, and it is similar with the
+\fmac{ev} macro.
 
-several cSimulation objects
+\begin{note}
+Before the 4.0 version, \ttt{simulation} and \ttt{ev} were global variables;
+now they are macros that resolve to \ttt{*cSimulation::getActiveSimulation()}
+and \ttt{*cSimulation::getActiveSimulation()->getEnvir()}.
+\end{note}
 
-cSimulation may be reused, but it is also possible to make a new instance for each simulation run
+Every \cclass{cSimulation} instance should have its own associated
+environment object (\cclass{cEnvir}). Environment objects may not be
+shared among several \cclass{cSimulation} instances.
+\cclass{cSimulation}'s destructor deletes the associated
+\cclass{cEnvir} instance as well.
 
-cSimulation deletes cEnvir
+\cclass{cSimulation} instances may be reused from one simulation to another,
+but it is also possible to make a new instance for each simulation run.
+
+\begin{note}
+It is not possible to run different simulations concurrently from
+different theads, due to the use of global variables which are not easy
+to get rid of, like the active simulation manager pointer and the active
+environment object pointer. Static buffers and objects (like string pools)
+are also used for efficiency reasons at some places inside the simulation
+kernel.
+\end{note}
 
 
 \subsection{Installing a custom scheduler}
@@ -533,12 +579,12 @@ It is usually not a good idea to change schedulers in the middle of
 a simulation, so \fname{setScheduler()} may only be called when
 no network is set up.
 
-\subsection{Multi-threading}
+
+\subsection{Multi-threaded programs}
 
 The {\opp} simulation kernel is not reentrant, so it must be protected
 against concurrent access.
 
-TODO finish
 
 % --------------------
 %
