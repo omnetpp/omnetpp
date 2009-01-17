@@ -57,7 +57,7 @@ Objects that may have display strings are:
         communication range (as circle or filled circle), etc.
   \item \textit{connections} -- display string can specify positioning, arrow color,
         arrow thickness
-  \item \textit{channles, connections} -- display string can specify color,
+  \item \textit{channels, connections} -- display string can specify color,
         linestyle, line width, text and tooltip
   \item \textit{messages} -- display string can specify icon, icon color, etc.
 \end{itemize}
@@ -316,17 +316,14 @@ export OMNETPP_IMAGE_PATH="/home/you/images;./images"
 to \ttt{~/.bashrc} or \ttt{~/.bash\_profile} will do; on Windows, environment variables
 can be set via the \textit{My Computer --> Properties} dialog.
 
-You can also add to the image path from \ttt{omnetpp.ini}, with
-the \ttt{image-path} setting:
+You can extend the image path from \ttt{omnetpp.ini} with the 
+\ttt{tkenv-image-path} option, which gets prepended to the environment
+variable's value.
 
 \begin{verbatim}
 [General]
 tkenv-image-path = "/home/you/model-framework/images;/home/you/extra-images"
 \end{verbatim}
-
-The value should be quoted, otherwise the first semicolon separator will be
-interpreted as comment sign, which will result in the rest of the
-directories being ignored.
 
 
 \subsection{Categorized icons}
@@ -434,7 +431,7 @@ The connection display string is stored in the output gate of the connection.
 \end{note}
 
 \begin{verbatim}
-//Settig an outgoing connection's color to red:
+// Setting an outgoing connection's color to red:
 cDisplayString *gateDispStr = gate("out")->getDisplayString();
 dispStr->parse("ls=red");
 \end{verbatim}

@@ -432,22 +432,67 @@ class CustomSimulationEnv : public cNullEnvir
 
 \subsection{Extracting statistics from the model}
 
-Two alternative ways:
+There are several ways you can extract statistics from the
+simulation.
 
-1. direct C++ calls into the model
+\subsubsection{Via C++ calls into the model}
+
+Modules in the simulation are C++ objects. If you add the appropriate
+public getter methods to the module classes, you can call them from your
+main program to obtain statistics. Modules may be looked up with the
+\fname{getModuleByPath()} method of \cclass{cSimulation}, then cast to the
+specific module type via \fname{check\_and\_clast<>()} so that the getter
+methods can be invoked.
 
 \begin{verbatim}
-   cModule *mod = simulation.moduleByPath("net.server.app");
-   App *appMod = dynamic_cast<App *>(mod);
-   int packetsSent = appMod->getTotalPacketsSent();
+cModule *mod = simulation.getModuleByPath("Network.client[2].app");
+WebApp *appMod = check_and_cast<WebApp *>(mod);
+int numRequestsSent = appMod->getNumRequestsSent();
+double avgReplyTime = appMod->getAvgReplyTime();
+...
 \end{verbatim}
 
-2. or: catch the \fname{recordScalar()} method in \cclass{cEnvir}.
-   e.g. store everything (in an std::map or something) and later select
+The drawback of this approach is that getters need to be added manually
+to all affected module classes which might not be practical, especially
+if modules come from external projects.
+
+\subsubsection{Via \cclass{cEnvir} callbacks}
+
+A more general way is to catch \fname{recordScalar()} method calls in the
+simulation model. \cclass{cModule}'s \fname{recordScalar()} method
+delegates to the similar function in \cclass{cEnvir}. You may define the
+latter function such that it stores all recorded scalars (for example in an
+\ttt{std::map}), where the main program can find them later.
+Values from output vectors can be captured in a similar way.
+
+A draft implementation:
 
 \begin{verbatim}
-  if (dynamic_cast<>
+class CustomSimulationEnv : public cNullEnvir
+{
+  private:
+    std::map<std::string, double> results;
+  public:
+    virtual void recordScalar(cComponent *component, const char *name,
+                              double value, opp_string_map *attributes=NULL)
+    {
+       results[component->getFullPath()+"."+name] = value;
+    }
+
+    const std::map<std::string, double>& getResults() {return results;}
+};
+
+...
+
+const std::map<std::string, double>& results = env->getResults();
+int numRequestsSent = results["Network.client[2].app.numRequestsSent"];
+double avgReplyTime = results["Network.client[2].app.avgReplyTime"];
 \end{verbatim}
+
+A drawback is that compile-time checking of statistics names is lost, but
+definite advantages include that any simulation model can now be used
+without changes, and that capturing additional statistics does not require
+code modification in the main program.
 
 
 \subsection{The simulation loop}
@@ -457,14 +502,14 @@ may build in cpu time limit, progress monitor, interactivity etc
 single thread!!  if you want to access the simulation from a separate thread,
 you must use locking
 
-simptr gets implemented: then several simulations (sim+envir pairs) may coexist,
-but they cannot be run concurrently (due to evptr, simptr and static buffers
-used here and there)
-
 animation is to be done via environment object callbacks
 
 
 \subsection{Several cSimulation objects}
+
+several simulations (sim+envir pairs) may coexist,
+but they cannot be run concurrently (due to evptr, simptr and static buffers
+used here and there)
 
 several cSimulation objects
 
@@ -775,3 +820,4 @@ TODO finish
 %%% mode: latex
 %%% TeX-master: "usman"
 %%% End:
+
