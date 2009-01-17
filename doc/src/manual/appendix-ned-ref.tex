@@ -511,30 +511,20 @@ Gate vector sizes may NOT be overridden in subclasses.
 \label{ch-ned-ref:sec:expressions}
 
 FIXME TODO:
-- @unit and expression evaluation wrt units
 - rules for resolving an identifier in an expression
 
 In the NED language there are a number of places where
 expressions\index{ned!expressions} are expected.
 
-Expressions have a C-style syntax. They are built with the usual math
-operators\index{math operators}; they can use parameters taken by
-value or by reference; call C functions; contain random and input
-values etc.
+Expressions have a C-style syntax. Elements: parameters, loop variables,
+functions, operators.
 
-When an expression is used for a parameter value, it is evaluated
-each time the parameter value is accessed (unless the parameter is
-declared \ttt{const}, see \ref{sec:ch-ned-lang:const}). This means
-that a simple module querying a non-const parameter during simulation
-may get different values every time (e.g. if the value involves a
-random variable, or it contains other parameters taken by reference).
-Other expressions (including \ttt{const} parameter values)
-are evaluated only once.
+TODO volative vs nonvolatile:
 
-XML-type parameters can be used to conveniently access external
-XML files or parts of them. XML-type parameters can be assigned
-with the \ttt{xmldoc()} operator, also described in this section.
+For volatile parameters, the expression is evaluated every time the
+parameter value is accessed. Non-volatile parameters are evaluated only once.
 
+const subexpression (not yet supported)
 
 \subsection{Referencing parameters}
 
@@ -542,57 +532,14 @@ Expressions can use the parameters of the enclosing compound module
 (the one being defined) and of submodules defined earlier in NED file.
 The syntax for the latter is \ttt{submod.param} or \ttt{submod[index].param}.
 
-There are two keywords that you can use with a parameter name:
-\ttt{ancestor} and \ttt{ref}.  The first one (\ttt{ancestor} \textit{param})
-means that if compound module doesn't have such a parameter,
-further modules up in the module hierarchy will be searched for the parameter.
-\ttt{ancestor} is considered bad practice because it violates the encapsulation
-principle and can only be checked at runtime. It is provided for the
-rare case when it is really needed.
+TODO this.foo
 
-\ttt{ref} \textit{param} takes the parameter by reference, meaning that
-runtime changes to the parameter will propagate to all modules which
-take that parameter by reference. Like \ttt{ancestor}, \ttt{ref}
-should also be used very sparingly. One possible use is tuning a model
-at runtime, in search for an optimum: one defines a parameter
-at the highest level of the model, and lets other modules take it by reference --
-then if you change the parameter value at runtime
-(manually or from a simple module), it will affect the whole model.
-In another setup, reference parameters may be used to propagate
-status values to neighbouring modules.
-
-
+Parameters are taken by reference.
 
 \subsection{Operators}
 \index{ned!expressions!operators}
 
-The operators supported in NED are similar to C/C++ operators,
-with the following differences:
-
-\begin{itemize}
-  \item{{\textasciicircum} is used for power-of (and not bitwise XOR as in C)}
-  \item{\#\# is used for logical XOR (same as != between logical values), and
-        \# is used for bitwise XOR}
-  \item{the precedence of bitwise operators (\&, |, \#) have been raised
-        to bind stronger than relational operations. This precedence is usually
-        more convenient than the C/C++ one.}
-\end{itemize}
-
-All values are represented as \ttt{double}s. For the bitwise operators,
-\ttt{double}s are converted to \ttt{unsigned long}
-  \footnote{In case you are worried about \ttt{long} values being not accurately
-  represented in \ttt{double}s, this is not the case. IEEE-754 \ttt{double}s
-  have 52 bit mantissas, and integer numbers in that range are represented
-  without rounding errors.}
-using the C/C++ builtin conversion (type cast), the operation is performed,
-then the result is converted back to \ttt{double}.
-Similarly, for the logical operators \&\&, || and \#\#,
-the operands are converted to \ttt{bool} using the C/C++ builtin
-conversion (type cast), the operation is performed, then the result
-is converted back to \ttt{double}. For modulus (\%), the operands are
-converted to \ttt{long}.
-
-Here's the complete list of operators, in order of decreasing precendence:
+Here's the complete list of operators, in order of decreasing precedence:
 
 \begin{longtable}{|l|l|}
 \hline
@@ -605,7 +552,7 @@ Here's the complete list of operators, in order of decreasing precendence:
 %%
 \ttt{*}, \ttt{/}, \ttt{\%}       & multiply, divide, modulus \\\hline
 %%
-\ttt{+}, \ttt{-}                 & add, subtract \\\hline
+\ttt{+}, \ttt{-}                 & add, subtract, string concatenation \\\hline
 %%
 \ttt{<<}, \ttt{>>}               & bitwise shift \\\hline
 %%
@@ -620,6 +567,24 @@ Here's the complete list of operators, in order of decreasing precendence:
 %%
 \ttt{?:}                         & the C/C++ ``inline if'' \\\hline
 \end{longtable}
+
+Evaluation:
+
+stack types: bool, double, string, xml
+
+Numeric values are represented as \ttt{double}s.
+
+For bitwise operators, \ttt{double}s are converted to \ttt{unsigned long}
+using the C/C++ builtin conversion (type cast), the operation is performed,
+then the result is converted back to \ttt{double}.
+
+For modulus (\%), the operands are converted to \ttt{long}.
+
+no implicit conversion between bool and numeric types! nor between string + numeric
+
+TODO @unit and expression evaluation wrt units
+
+
 \subsection{The \fname{sizeof()} and \fname{index} operators}
 
 A useful operator is \fname{sizeof()}\index{ned!sizeof()}, which gives the
@@ -653,43 +618,9 @@ that is, point them to XML files or to specific elements inside XML files.
 
 \ttt{xmldoc()} has two flavours: one accepts a file name, the second accepts
 a file name plus an XPath-like expression which selects an element
-inside the XML file. Examples:
+inside the XML file.
 
-\begin{Verbatim}[commandchars=\\\{\}]
-xmlparam = \tbf{xmldoc}("someconfig.xml");
-xmlparam = \tbf{xmldoc}("someconfig.xml", "/config/profile[@id='2']");
-\end{Verbatim}
-
-{\opp} supports a subset of the XPath 1.0 specification; details are
-documented below.
-
-From the C++ code you'd access the XML element like this:
-
-\begin{verbatim}
-cXMLElement *rootelement = par("xmlparam").xmlValue();
-\end{verbatim}
-
-The \cclass{cXMLElement} class provides a DOM-like access to the XML document.
-You can then navigate the document tree, extract the information you need,
-and store it in variables or your internal data structure.
-\cclass{cXMLElement} is documented in Chapter \ref{cha:the-simulation-library}.
-
-You can also read XML parameters from omnetpp.ini:
-
-\begin{verbatim}
-[Parameters]
-**.interface[*].config = xmldoc("conf.xml")
-\end{verbatim}
-
-or
-
-\begin{verbatim}
-[Parameters]
-**.interface[*].config = xmldoc("all-in-one.xml", "/config/interfaces/interface[2]")
-\end{verbatim}
-
-
-\subsection{XML documents and the XPath subset supported}
+TODO fname mihez kepest relativ
 
 \ttt{xmldoc()} with two arguments accepts a path expression
 to select an element within the document. The expression syntax is
