@@ -10,8 +10,9 @@
   **  NED-2.
   -->
 
-<!ELEMENT ned-file (comment*, (package|import|property-decl|property|channel|
-                    channel-interface|simple-module|compound-module|module-interface)*)>
+<!ELEMENT ned-file (comment*, (package|import|property-decl|property|
+                    simple-module|compound-module|module-interface|
+                    channel|channel-interface)*)>
 <!ATTLIST ned-file
      filename           CDATA     #REQUIRED
      version            CDATA     "2">

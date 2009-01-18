@@ -176,7 +176,7 @@ If there is a toplevel \ttt{package.ned} and it declares to be in package
 
 \section{Name uniqueness}
 
-All component type names must be unique.
+Component type names must be unique within their package.
 %%FIXME clarify
 
 Identifier names within a component must be unique. That is, submodule
@@ -188,8 +188,8 @@ parameter of the parent module.
 \section{Type name resolution}
 
 Names from other NED files can be referred to either by fully qualified
-name ("inet.protocols.network.ip.RoutingTable"), or by short name
-("RoutingTable") if the name is visible.
+name (``\ttt{inet.network\-layer.ip.RoutingTable}''), or by short name
+(``\ttt{RoutingTable}'') if the name is visible.
 
 Visible names are:
 \begin{itemize}
@@ -268,30 +268,27 @@ Inheritance may:
   \item it may NOT modify inherited submodules, connections and inner types
 \end{itemize}
 
-XXX
-- parameter once assigned in base class or type MUST be allowed to be
-  set to a different value in subclass/place of usage!!!
-
-XXX
-- rules of inheritance:
-    o for inner types:
-       - can I define an inner type with the same name in subclasses? NO
-    o for properties:
-       - contents will be merged (rules like for display strings: values on
-         same key and same position will overwrite old ones)
-    o for parameters:
-       - type cannot be redefined
-       - value may be redefined in subclasses or place of usage
-    o for gates:
-       - type cannot be redefined
-       - vector size may be redefined in subclasses or place of usage
-    o for gate/parameter properties:
-       - extra properties can be added
-       - existing properties can be overridden/extended like for standalone properties (?)
-    o for submodules:
-       - new submodules may be added, but inherited ones cannot be modified
-    o for connections:
-       - new connections may be added, but inherited ones cannot be modified
+Other inheritance rules:
+\begin{itemize}
+  \item  for inner types:
+     can I define an inner type with the same name in subclasses? NO
+  \item  for properties:
+     contents will be merged (rules like for display strings: values on
+     same key and same position will overwrite old ones)
+  \item for parameters:
+     type cannot be redefined;
+     value may be redefined in subclasses or place of usage
+  \item  for gates:
+     type cannot be redefined;
+     vector size may be redefined in subclasses or place of usage
+  \item  for gate/parameter properties:
+     extra properties can be added;
+     existing properties can be overridden/extended like for standalone properties (?)
+  \item  for submodules:
+     new submodules may be added, but inherited ones cannot be modified
+  \item  for connections:
+     new connections may be added, but inherited ones cannot be modified
+\end{itemize}
 
 See other rules for specifics.
 
@@ -508,6 +505,13 @@ simple B extends A {
 
 
 \section{Gates}
+
+TODO gate types: input, output, inout. inout consists of input+output
+
+@directIn
+
+@loose
+
 
 \subsection{Rules for gate vector sizes}
 
