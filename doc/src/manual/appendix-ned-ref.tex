@@ -602,11 +602,18 @@ a dimensionless number with a number with unit is not supported.
 
 \subsection{Referencing parameters and loop variables}
 
-An identifier in an expressions occurring anywhere in a compound module
-(including submodule bodies) is interpreted as referring to a parameter
-of the compound module, unless it is a connection \ttt{for} loop variable.
+Identifiers in expressions occurring \textit{anywhere} in component definitions
+are interpreted as referring to parameters of the given component.
 
-TODO in other contexts?
+\begin{note}
+That is, an identifier in a submodule's body will be interpreted as
+a parameter of the enclosing compound module, \textit{not} that of the
+submodule.
+\end{note}
+
+Exception: if a variable occurs in a connection \ttt{for} loop and names
+a previously defined loop variable, then it is understood as referring to
+the loop variable.
 
 In submodule bodies, parameters of the same submodule must be referred to
 with the \ttt{this} qualifier: \ttt{this.destAddress}.
