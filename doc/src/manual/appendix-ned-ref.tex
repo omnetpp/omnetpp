@@ -605,17 +605,11 @@ a dimensionless number with a number with unit is not supported.
 Identifiers in expressions occurring \textit{anywhere} in component definitions
 are interpreted as referring to parameters of the given component.
 
-\begin{note}
-That is, an identifier in a submodule's body will be interpreted as
-a parameter of the enclosing compound module, \textit{not} that of the
-submodule.
-\end{note}
-
 Exception: if an identifier occurs in a connection \ttt{for} loop and names
 a previously defined loop variable, then it is understood as referring to
 the loop variable.
 
-In submodule bodies, parameters of the same submodule must be referred to
+In submodule bodies, parameters of the same submodule can be referred to
 with the \ttt{this} qualifier: \ttt{this.destAddress}.
 
 Expressions may also refer to parameters of submodules defined earlier
@@ -628,33 +622,22 @@ in NED file, using the \ttt{submoduleName.paramName} or the
 The \ttt{index} operator is only allowed in a vector submodule's body,
 and yields the index of the submodule instance.
 
+
 \subsection{The \fname{sizeof()} operator}
 
-The \fname{sizeof()}\index{ned!sizeof()} operator returns the size
-of a submodule vector or a gate vector. The interpretation of the
-argument to \ttt{sizeof()} depends on the context where the
-expression occurs.
+The \ttt{sizeof()} operator expects one argument, and it is only accepted
+in compound module definitions.
 
-Inside a submodule body:
-\begin{itemize}
-  \item sizeof(foo): must refer to a parent module gate vector, or
-                     sibling submodule vector (there cannot be ambiguity
-                     here, because of the name uniqueness rule above)
-                     NOTE: IT CANNOT REFER TO LOCAL GATE VECTOR !!!
-  \item sizeof(this.foo): refers to local gate vector
-  \item sizeof(foo.bar): refers to gatevector of sibling submodule
-\end{itemize}
+The \ttt{sizeof(identifier)} syntax occurring \textit{anywhere} in a compound
+module yields the size of the named submodule or gate vector of the
+compound module.
 
-IN CONNECTION SCOPE:
-\begin{itemize}
-  \item same as above, only sizeof(this.foo) does not make sense
-\end{itemize}
+Inside submodule bodies, the size of a gate vector of the same submodule
+can be referred to with the \ttt{this} qualifier: \ttt{sizeof(this.out)}.
 
-IN [PARENT] MODULE SCOPE:
-\begin{itemize}
-  \item sizeof(foo), sizeof(this.foo): refers to that module's gatevector
-  \item sizeof(foo.bar): makes no sense (illegal)
-\end{itemize}
+To refer to the size of a submodule's gate vector defined earlier in the
+NED file, use the \ttt{sizeof(submoduleName.gateVectorName)} or
+\ttt{submoduleName[index].gateVectorName} syntax.
 
 
 \subsection{The \fname{xmldoc()} operator}
