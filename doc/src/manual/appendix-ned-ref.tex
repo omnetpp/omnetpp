@@ -426,8 +426,8 @@ The \ttt{@isNetwork} property needs to be explicitly added to the subclass
 to make it a network.
 
 \begin{rationale}
-	Subclassing may introduce changes to a module that make it unfit to be used
-	as a network.
+    Subclassing may introduce changes to a module that make it unfit to be used
+    as a network.
 \end{rationale}
 
 
@@ -447,6 +447,14 @@ Generally, properties may be modified via inheritance. Inheritance may:
 
 
 \section{Parameters}
+
+\subsection{Evaluation}
+
+For \ttt{volatile} parameters, the expression is evaluated every time the
+parameter value is accessed. Non-\ttt{volatile} parameters are evaluated only once.
+
+TODO const subexpression (not yet supported)
+
 
 \subsection{Parameter inheritance}
 
@@ -510,36 +518,16 @@ Gate vector sizes may NOT be overridden in subclasses.
 \section{Expressions}
 \label{ch-ned-ref:sec:expressions}
 
-FIXME TODO:
-- rules for resolving an identifier in an expression
-
-In the NED language there are a number of places where
-expressions\index{ned!expressions} are expected.
-
-Expressions have a C-style syntax. Elements: parameters, loop variables,
-functions, operators.
-
-TODO volative vs nonvolatile:
-
-For volatile parameters, the expression is evaluated every time the
-parameter value is accessed. Non-volatile parameters are evaluated only once.
-
-const subexpression (not yet supported)
-
-\subsection{Referencing parameters}
-
-Expressions can use the parameters of the enclosing compound module
-(the one being defined) and of submodules defined earlier in NED file.
-The syntax for the latter is \ttt{submod.param} or \ttt{submod[index].param}.
-
-TODO this.foo
-
-Parameters are taken by reference.
+NED language expressions\index{ned!expressions} have a C-like syntax, with
+some variations on operator names (see \ttt{\textasciicircum}, \ttt{\#}, \ttt{\#\#}).
+Expressions may refer to module parameters, loop variables (inside connection
+\ttt{for} loops), gate vector and module vector sizes, and other attributes
+of the model. Expressions can use built-in and user-defined functions as well.
 
 \subsection{Operators}
 \index{ned!expressions!operators}
 
-Here's the complete list of operators, in order of decreasing precedence:
+The following operators are supported (in order of decreasing precedence):
 
 \begin{longtable}{|l|l|}
 \hline
@@ -568,47 +556,97 @@ Here's the complete list of operators, in order of decreasing precedence:
 \ttt{?:}                         & the C/C++ ``inline if'' \\\hline
 \end{longtable}
 
-Evaluation:
+\subsubsection{Conversions}
 
-stack types: bool, double, string, xml
+Values are of type boolean, double, string, or xml element. A double value
+may have an associated measurement unit (\ttt{s}, \ttt{mW}, etc.)
 
-Numeric values are represented as \ttt{double}s.
+Implementation note: Currently the stack-based evaluation engine
+represents all numbers in \ttt{double}, i.e. it does not use \ttt{long}
+on the stack.
+    \footnote{This may change in future releases.}
+Details:
 
-For bitwise operators, \ttt{double}s are converted to \ttt{unsigned long}
-using the C/C++ builtin conversion (type cast), the operation is performed,
-then the result is converted back to \ttt{double}.
+\begin{itemize}
+  \item Integers (integer constants, \ttt{long} parameters, etc) are
+        converted to \ttt{double}.
+  \item For bitwise operators, \ttt{double}s are converted to \ttt{unsigned long}
+        using the C/C++ builtin conversion (type cast), the operation is performed,
+        then the result is converted back to \ttt{double}.
+  \item For modulus (\%), the operands are converted to \ttt{long}.
+\end{itemize}
 
-For modulus (\%), the operands are converted to \ttt{long}.
+There is no implicit conversion between bool and numeric types, so it is
+not possible to use \ttt{0} as a synonym for \ttt{false}, and nonzero numbers
+as synonym to \ttt{true}.
 
-no implicit conversion between bool and numeric types! nor between string + numeric
+There is also no conversion between string and numeric types, so e.g. \ttt{"foo"+5}
+is illegal. There are functions for converting a number to string and vica versa.
 
-TODO @unit and expression evaluation wrt units
+\subsubsection{Units}
+
+Operations involving numbers with units work in the following way.
+
+Addition, substraction, and numeric comparisons require their arguments to
+have the same unit or compatible units; in the latter case a unit conversion
+is performed before the operation. Incompatible units cause an error.
+
+Power-of and bitwise operations require their arguments to be dimensionless.
+
+Multiplying two numbers with units is not supported.
+
+For division, dividing two numbers with units is only supported if the two
+units are convertible (i.e. the result will be dimensionless). Dividing
+a dimensionless number with a number with unit is not supported.
 
 
-\subsection{The \fname{sizeof()} and \fname{index} operators}
+\subsection{Referencing parameters}
 
-A useful operator is \fname{sizeof()}\index{ned!sizeof()}, which gives the
-size of a vector gate\index{gate!vector}. The \fname{index}
-operator\index{ned!index operator} gives the index of the current
-submodule in its module vector.
+FIXME TODO:
+- rules for resolving an identifier in an expression
 
-FIXME TBD:
-- sizeof() resolution:
-    IN SUBMODULE SCOPE:
-        sizeof(foo): must refer to a parent module gate vector, or
+Expressions can use the parameters of the enclosing compound module
+(the one being defined) and of submodules defined earlier in NED file.
+The syntax for the latter is \ttt{submod.param} or \ttt{submod[index].param}.
+
+TODO this.foo
+
+Parameters are taken by reference.
+
+
+
+
+\subsection{The \fname{index} and \fname{sizeof()} operators}
+
+The \ttt{index} operator returns the same (sub)module's index
+in whose "parameters" block it is defined. It cannot be used to obtain
+the parent module's index.
+
+The \fname{sizeof()}\index{ned!sizeof()} operator returns the size
+of a submodule vector or a gate vector. The interpretation of the
+argument to \ttt{sizeof()} depends on the context where the
+expression occurs.
+
+Inside a submodule body:
+\begin{itemize}
+  \item sizeof(foo): must refer to a parent module gate vector, or
                      sibling submodule vector (there cannot be ambiguity
                      here, because of the name uniqueness rule above)
                      NOTE: IT CANNOT REFER TO LOCAL GATE VECTOR !!!
-        sizeof(this.foo): refers to local gate vector
-        sizeof(foo.bar): refers to gatevector of sibling submodule
-    IN CONNECTION SCOPE:
-        same as above, only sizeof(this.foo) does not make sense
-    IN [PARENT] MODULE SCOPE:
-        sizeof(foo), sizeof(this.foo): refers to that module's gatevector
-        sizeof(foo.bar): makes no sense (thus illegal)
+  \item sizeof(this.foo): refers to local gate vector
+  \item sizeof(foo.bar): refers to gatevector of sibling submodule
+\end{itemize}
 
-- "index" operator: it always returns the same (sub)module's index in whose "parameters"
-   block it is defined. It is NOT POSSIBLE to obtain the parent module's index.
+IN CONNECTION SCOPE:
+\begin{itemize}
+  \item same as above, only sizeof(this.foo) does not make sense
+\end{itemize}
+
+IN [PARENT] MODULE SCOPE:
+\begin{itemize}
+  \item sizeof(foo), sizeof(this.foo): refers to that module's gatevector
+  \item sizeof(foo.bar): makes no sense (illegal)
+\end{itemize}
 
 
 \subsection{The \fname{xmldoc()} operator}
@@ -671,9 +709,10 @@ The functions available in NED are listed in Appendix
 \subsection{Physical units}
 \label{ch-ned-ref:sec:units}
 
-The following physical units will be recorgnized in constants. Other units can
-be used as well, the only downside being that {\opp} will not be able to
-perform conversions on them.
+The following physical units will be recognized in constants. Other units can
+be used as well, but there will be no conversions available for them (i.e.
+\ttt{parsec} and \ttt{kiloparsec} will be treated as two completely unrelated
+units.)
 
 \begin{longtable}{|c|c|r|}
   \hline
