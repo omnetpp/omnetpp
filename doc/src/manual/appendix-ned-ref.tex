@@ -600,27 +600,27 @@ units are convertible (i.e. the result will be dimensionless). Dividing
 a dimensionless number with a number with unit is not supported.
 
 
-\subsection{Referencing parameters}
+\subsection{Referencing parameters and loop variables}
 
-FIXME TODO:
-- rules for resolving an identifier in an expression
+An identifier in an expressions occurring anywhere in a compound module
+(including submodule bodies) is interpreted as referring to a parameter
+of the compound module, unless it is a connection \ttt{for} loop variable.
 
-Expressions can use the parameters of the enclosing compound module
-(the one being defined) and of submodules defined earlier in NED file.
-The syntax for the latter is \ttt{submod.param} or \ttt{submod[index].param}.
+TODO in other contexts?
 
-TODO this.foo
+In submodule bodies, parameters of the same submodule must be referred to
+with the \ttt{this} qualifier: \ttt{this.destAddress}.
 
-Parameters are taken by reference.
-
-
+Expressions may also refer to parameters of submodules defined earlier
+in NED file, using the \ttt{submoduleName.paramName} or the
+\ttt{submoduleName[index].paramName} syntax.
 
 
 \subsection{The \fname{index} and \fname{sizeof()} operators}
 
-The \ttt{index} operator returns the same (sub)module's index
-in whose "parameters" block it is defined. It cannot be used to obtain
-the parent module's index.
+The \ttt{index} operator used in a vector submodule's body yields the index
+of the submodule instance. When used in a non-vector submodule's body,
+it evaluates to zero. \ttt{index} should not be used in other contexts.
 
 The \fname{sizeof()}\index{ned!sizeof()} operator returns the size
 of a submodule vector or a gate vector. The interpretation of the
