@@ -219,14 +219,43 @@ NED type with the C++ class is described in section
 \subsection{Compound modules}
 \label{ch-ned-ref:sec:compound-modules}
 
-TODO
+Compound module types are declared with the \fkeyword{module} keyword;
+see the NED Grammar (Appendix \ref{cha:ned-language-grammar}) for the
+syntax.
 
-Extra params CANNOT be added in submodules and connection channelspecs --
-they can only be added in new types.
+Compound modules may have properties (\ref{ch-ned-ref:sec:properties}),
+parameters (\ref{ch-ned-ref:sec:parameters}),
+and gates (\ref{ch-ned-ref:sec:gates}).
+
+A compound module's internal structure is defined by
+its submodules (\ref{ch-ned-ref:sec:submodules}) and
+connections (\ref{ch-ned-ref:sec:connections}).
+
+Compound module types may also have inner types (\ref{ch-ned-ref:sec:inner-types})
+that can be used for its submodules and connections.
+
+A compound module type may extend another compound module type, and
+may implement one or more module interfaces (\ref{ch-ned-ref:sec:module-interfaces}).
+Inheritance rules are described in section \ref{ch-ned-ref:sec:inheritance}.
+
 
 \subsubsection{Submodules}
+\label{ch-ned-ref:sec:submodules}
+
+scalar, vector
+
+"like"
+
+"like <>"
+
+TODO
+
+Extra params CANNOT be added in submodules -- they can only be added in
+new module types.
+
 
 \subsubsection{Connections}
+\label{ch-ned-ref:sec:connections}
 
 When a connection uses an unnamed channel type (\ttt{-{}->
 \{\ldots\} -{}->} syntax), the actual NED type to be used will depend on the
@@ -243,6 +272,8 @@ the chosen channel type will be \ttt{ned.DatarateChannel}.
 
 Unnamed channels connections cannot use any other parameters.
 
+Extra params CANNOT be added in connection channel specs --
+they can only be added in new channel types.
 
 
 \subsection{Networks}
@@ -307,6 +338,21 @@ NED type with the C++ class is described in section
 \subsection{Module interfaces}
 \label{ch-ned-ref:sec:module-interfaces}
 
+Module interface types are declared with the \fkeyword{moduleinterface} keyword;
+see the NED Grammar (Appendix \ref{cha:ned-language-grammar}) for the
+syntax.
+
+Module interfaces may have properties (\ref{ch-ned-ref:sec:properties}),
+parameters (\ref{ch-ned-ref:sec:parameters}), and
+gates (\ref{ch-ned-ref:sec:gates}). However, parameters cannot have
+a value assigned, not even a default value.
+
+A module interface type may not have inner types (\ref{ch-ned-ref:sec:inner-types}).
+
+A module interface type may extend one or more other module interface types.
+Inheritance rules are described in section \ref{ch-ned-ref:sec:inheritance}.
+
+
 FIXME
 
 An interface (module interface or channel interface) may NOT contain
@@ -327,7 +373,75 @@ and properties may add more keys and values (see property inheritance.)
 \subsection{Channel interfaces}
 \label{ch-ned-ref:sec:channel-interfaces}
 
-TODO
+Channel interface types are declared with the \fkeyword{channelinterface} keyword;
+see the NED Grammar (Appendix \ref{cha:ned-language-grammar}) for the
+syntax.
+
+Channel interfaces may have properties (\ref{ch-ned-ref:sec:properties}) and
+parameters (\ref{ch-ned-ref:sec:parameters}). However, parameters cannot have
+a value assigned, not even a default value.
+
+A channel interface type may not have inner types (\ref{ch-ned-ref:sec:inner-types}).
+
+A channel interface type may extend one or more other channel interface types.
+Inheritance rules are described in section \ref{ch-ned-ref:sec:inheritance}.
+
+
+
+\subsection{Resolving the implementation C++ class}
+\label{ch-ned-ref:sec:resolving-cpp-class}
+
+The procedure for determiming the C++ implementation class for simple modules
+and for channels are identical. It goes as follows (we are going to say
+\textit{component} instead of \textit{``simple module or channel''}):
+
+If the component extends another component and has no
+\ttt{@class} property, the C++ implementation class is inherited from the base
+type.
+
+If the component contains has a \ttt{@class} property, the C++ class
+name will be composed of the \textit{current namespace} (see
+\ref{cha:ned-ref:current-namespace}) and the value of the \ttt{@class}
+property. The \ttt{@class} property should contain a single value.
+
+\begin{note}
+    The \ttt{@class} property may itself contain a namespace declaration (ie.
+    may contain ``\ttt{::}'').
+\end{note}
+
+If the component contains no \ttt{@class} property and has no base
+class, the C++ class name will be composed of the \textit{current namespace} and the
+unqualified name of the component.
+
+\begin{note}
+    NED subclassing does not imply subclassing the C++ implementation. If you
+    want to subclass a simple module or channel in NED as well as in C++, you
+    explicitly need to specify the \ttt{@class} property, otherwise the
+    derived simple module or channel will continue to use the C++ class from its
+    super type.
+\end{note}
+
+\subsubsection{Current namespace}
+\label{cha:ned-ref:current-namespace}
+
+The \textit{current namespace} is the value of the first \ttt{@namespace}
+property found while searching the following order:
+\begin{enumerate}
+  \item the current NED file
+  \item the \ttt{package.ned} file in the current package
+  \item the \ttt{package.ned} file of the parent package or the first ancestor
+        package searching upwards
+\end{enumerate}
+
+The \ttt{@namespace} property should contain a single value.
+
+\begin{note}
+    This was considered and discarded: \ttt{module X extends ASimple}
+    instead of \ttt{simple X extends ASimple}. It was proposed because
+    otherwise, if base type's implementation gets changed from simple to compound, all
+    subclasses will have to be changed. Idea discarded because the confusion
+    this would create is worse than the problem itself.
+\end{note}
 
 
 
@@ -569,64 +683,6 @@ Parameter (non-default) assignments may also be overridden in subclasses.
 \subsubsection{Gate inheritance}
 
 FIXME tbd
-
-
-
-\subsection{Resolving the implementation C++ class}
-\label{ch-ned-ref:sec:resolving-cpp-class}
-
-The procedure for determiming the C++ implementation class for simple modules
-and for channels are identical. It goes as follows (we are going to say
-\textit{component} instead of \textit{``simple module or channel''}):
-
-If the component extends another component and has no
-\ttt{@class} property, the C++ implementation class is inherited from the base
-type.
-
-If the component contains has a \ttt{@class} property, the C++ class
-name will be composed of the \textit{current namespace} (see
-\ref{cha:ned-ref:current-namespace}) and the value of the \ttt{@class}
-property. The \ttt{@class} property should contain a single value.
-
-\begin{note}
-    The \ttt{@class} property may itself contain a namespace declaration (ie.
-    may contain ``\ttt{::}'').
-\end{note}
-
-If the component contains no \ttt{@class} property and has no base
-class, the C++ class name will be composed of the \textit{current namespace} and the
-unqualified name of the component.
-
-\begin{note}
-    NED subclassing does not imply subclassing the C++ implementation. If you
-    want to subclass a simple module or channel in NED as well as in C++, you
-    explicitly need to specify the \ttt{@class} property, otherwise the
-    derived simple module or channel will continue to use the C++ class from its
-    super type.
-\end{note}
-
-\subsubsection{Current namespace}
-\label{cha:ned-ref:current-namespace}
-
-The \textit{current namespace} is the value of the first \ttt{@namespace}
-property found while searching the following order:
-\begin{enumerate}
-  \item the current NED file
-  \item the \ttt{package.ned} file in the current package
-  \item the \ttt{package.ned} file of the parent package or the first ancestor
-        package searching upwards
-\end{enumerate}
-
-The \ttt{@namespace} property should contain a single value.
-
-\begin{note}
-    This was considered and discarded: \ttt{module X extends ASimple}
-    instead of \ttt{simple X extends ASimple}. It was proposed because
-    otherwise, if base type's implementation gets changed from simple to compound, all
-    subclasses will have to be changed. Idea discarded because the confusion
-    this would create is worse than the problem itself.
-\end{note}
-
 
 
 
