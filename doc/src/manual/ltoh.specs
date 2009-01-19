@@ -142,6 +142,7 @@ htmlfile_spec := $BASE.htm
 :comm   :\fprog(\[.*?\])?{(.*?)}:<tt>$2</tt>::
 :comm   :\cclass(\[.*?\])?{(.*?)}:<tt>$2</tt>::
 :comm   :\fmac(\[.*?\])?{(.*?)}:<tt>$2</tt>::
+:comm   :\fkeyword(\[.*?\])?{(.*?)}:<b><tt>$2</tt></b>::
 :comm   :\includegraphics(\[.*?\])?{figures/(.*?)}:<img src="$2.png">::
 :comm   :\ifcommercial:@ifcommercial@::
 :comm   :\fi:@fi@::
