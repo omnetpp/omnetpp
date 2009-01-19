@@ -15,43 +15,91 @@ property.
 
 The display string format is a semicolon-separated list of tags.
 Each tag consists of a key (usually one letter), an equal sign
-and a comma-separated list of parameters, like:
+and a comma-separated list of arguments, like:
 
-Example:
+The following example will display a rectangle with 60x10 size 
+at the 100,100 position with blue background and black 2 pixel border:
 \begin{verbatim}
-  "p=100,100;b=60,10,rect;o=blue,black,2"
+  "p=100,100;b=60,10,rect,blue,black,2"
 \end{verbatim}
 
-Parameters may be omitted also at the end and also inside the
+Tag arguments may be omitted both at the end and inside the
 parameter list, like:
 
-Example:
+Example creating a blue rectangle with default size:
 \begin{verbatim}
+  // a blue rectangle with default size
   "p=100,100;b=,,rect,blue"
 \end{verbatim}
 
-Module/submodule parameters can be included with the \ttt{\$name} notation:
+Parameters of the module or channel containing the
+display string can be substituted into the display string 
+with the \ttt{\$parameterName} notation:
 
 Example:
 \begin{verbatim}
-  "p=$xpos,$ypos;b=60,10,rect,$fillcolor,black,2"
+simple MobileNode 
+{
+    parameters:
+        double xpos;
+        double ypos;
+        string fillColor;
+        // get the values from the module parameters xpos,ypos,fillcolor
+        @display("p=$xpos,$ypos;b=60,10,rect,$fillColor,black,2");
+}
 \end{verbatim}
 
-Display string tags can be inherited from the base NED type if you have a derived
-NED type. Submodules are also inheriting their display tags from their type. If
-you have several submodules with the same type and want to assign the same icon
-to each one you no longer have to specify the icon in each submodule (this was the
-case with {\opp} 3.x). Just specify the icon in the type of the submodule and each
-submodule with that type will inherit it. You may still override any display tag
-value in the submodule's display string. If you don't want to inherit a value
-from your base type, but also don't want to specify one (i.e. want to have the
-default value) use the dash (-) character at that position in the tag. This will
-prevent the inheritance.
+\subsection{Display string inheritance}
 
-Objects that may have display strings are:
 \begin{itemize}
-  \item \textit{compound modules, networks} -- display string can specify background color,
-        border color, border thickness, background image, scaling etc.
+  \item Derived NED types inherit their display string from their base NED type. 
+  \item Submodules inherit their display string from their type. 
+  \item Connections inherit their display string from their channel type.
+\end{itemize}
+
+The base NED type's display string is merged into the current display string
+using the following rules:
+
+\begin{itemize}
+  \item If a tag is present in the base display string, but not in the current one
+        the whole tag (with all arguments) is added to the current display string.
+        (e.g. base: "i=icon,red" current: "p=2,4" result: "p=2,4;i=icon,red")
+  \item If a tag is present both in the base and in the current display string
+        only tag arguments present in the base, but not in the current display string
+        will be copied.
+        (e.g. base: "b=40,20" current: "b=,,oval" result: "b=40,20,oval")
+  \item If the current display string contains a tag argument with value "-" (hyphen)
+        that argument is treated as empty and will not be inherited from other
+        display strings. Requesting the value of this argument will return its the 
+        default value.
+  \item If neither the base display string nor the current one has value for a tag
+        a suitable default value will be returned and used.
+\end{itemize}
+
+Example of display string inheritance:
+\begin{verbatim}
+simple Base {
+    @display("i=block/queue"); // use a queue icon in all instances
+}
+simple Derived extends Base {
+    @display("i=,red,60");  // make the (inherited) icon 60%% red
+}
+network SimpleQueue
+{
+    submodules:
+        submod: Derived {
+            // Place the submodule instance at 273,101 and draw a circle around it.
+            // Make the icon yellow (instead of red) and the intensity should be default 
+            // (-)instead of the inherited 60%%
+            @display("p=273,101;r=70;i=,yellow,-");
+        }
+\end{verbatim}
+
+Display strings can be used in the following contexts:
+\begin{itemize}
+  \item \textit{compound modules, networks} -- display string can specify 
+        shape, icons, background color, border color, border thickness, 
+        background image, scaling etc.
   \item \textit{submodules} -- display string may contain position, arrangement
         (for module vectors), icon, icon color, auxiliary icon, status text,
         communication range (as circle or filled circle), etc.
@@ -62,14 +110,14 @@ Objects that may have display strings are:
   \item \textit{messages} -- display string can specify icon, icon color, etc.
 \end{itemize}
 
+
 The following NED sample shows where to place display strings in the code:
 
-Example:
 \begin{verbatim}
 simple Queue
 {
     parameters:
-        @display("i=block/queue");  // icon for any submodules using this type
+        @display("i=block/queue");  // default icon for any submodule using this type
     gates:
         input in[];
         output out;
@@ -81,7 +129,7 @@ network SimpleQueue
         @display("i=block/network2;bgi=bgimage"); // module display string
     submodules:
         sink: Sink {
-            @display("p=273,101");  // submodule params
+            @display("p=273,101"); 
         }
         queue: Queue {
             @display("p=165.0,79.0"); // icon is inherited from the Queue type
@@ -94,33 +142,47 @@ network SimpleQueue
         source.out --> { @display("ls=red,3"); } --> queue.in++;
         queue.out --> sink.in++;
 }
-
 \end{verbatim}
 
 
-\subsection{Simple module display strings}
+\subsection{Display strings in submodules}
 
-The simple module display string supports the following tags:
+The following tags define how a module appears on the Tkenv user interface
+if it is used as a submodule:
 \begin{itemize}
   \item{\ttt{b} -- shapes, colors}
   \item{\ttt{i} -- icon}
   \item{\ttt{is} -- icon size}
 \end{itemize}
-These tags are used mainly to describe the default appearence of
-a submodule of this type. To see detailed descripton of 
-these tags check Appendix \ref{cha:display-string-tags} about 
-display string tags.
 
-\subsection{Compound module and network display strings}
+By default modules are represented by simple rectangles, but this can
+be overridden with the \ttt{b} tag:
+\begin{verbatim}
+    // an oval shape with 70x30 size, 
+    // red background, black 4 pixel border 
+    "b=70,30,oval,red,black,4"
+\end{verbatim}
 
-In addition to the tags supported by a simple module there are tags
-describing how a compound module looks like if opened in Tkenv. These
-tags mainly deal with the module background.
+\begin{center}
+\includegraphics{figures/graphics-btag}
+\end{center}
+
+You can dynamically change the color of an already existing image.
+The below example colorize the \ttt{block/source} icon, 20%% red
+\begin{verbatim}
+    "i=block/source,red,20"
+\end{verbatim}
+
+\begin{center}
+\includegraphics{figures/graphics-itag}
+\end{center}
+
+\subsection{Defining module background}
+
+These tags are describing how a module looks like if opened in 
+Tkenv. They mostly deal with the module background.
 
 \begin{itemize}
-  \item{\ttt{b} -- shapes, colors}
-  \item{\ttt{i} -- icon}
-  \item{\ttt{is} -- icon size}
   \item{\ttt{bgi} -- background image}
   \item{\ttt{bgtt} -- tooltip above the background}
   \item{\ttt{bgg} -- background grid}
@@ -130,29 +192,31 @@ tags mainly deal with the module background.
   \item{\ttt{bgp} -- background coordinate offset}
 \end{itemize}
 
-Example:
+The following example demonstrates the use of module background tags.
+The coordinates are given in km (si unit). The \ttt{bgs=pixelsperunit,unit}
+specifies pixel/unit ratio, i.e. 1km is 0.075 pixel on the screen.
+The whole area is 6000x4500km (\ttt{bgb=}) and the map of Europe is used as a background (\ttt{bgi=icon,align}).
+A light grey grid is drawn with 1000km between main ticks and 2 minor ticks per main tick
+(\ttt{bgg=tickdistance,minorpermajorticks,color}).
+
 \begin{verbatim}
-network SimpleQueue
-{
-    parameters:
-        @display("i=block/network2;bgi=bgimage"); // module display string
+network EuropePlayground
+{ 
+    @display("bgb=6000,4500;bgi=maps/europe,s;bgg=1000,2,grey95;bgs=0.075,km"); 
 \end{verbatim}
 
-To see detailed descripton of these tags check 
-Appendix \ref{cha:display-string-tags} about display string tags.
+\begin{center}
+\includegraphics{figures/graphics-bgtags}
+\end{center}
 
-\subsection{Submodule display strings}
+\subsection{Useful tags for submodules}
 
-Submodules inherit their appearance from their type. There are
-additional tags that are supported additionally to the ones supported
-for simple modules. These tags let you add instance specific changes
+Submodules inherit their appearance from their type. 
+The following tags let you add instance specific changes
 like range indicator, satus icons, position etc.
-The submodule display string supports the following tags:
+
 \begin{itemize}
-  \item{\ttt{b} -- shapes, colors}
-  \item{\ttt{i} -- icon}
-  \item{\ttt{is} -- icon size}
-  \item{\ttt{i2} -- alternate (status) icon}
+  \item{\ttt{i2} -- alternate (status) icon placed at the upper right corner of the main icon}
   \item{\ttt{p} -- positioning and layouting}
   \item{\ttt{r} -- range indicator}
   \item{\ttt{q} -- queue information text}
@@ -160,15 +224,32 @@ The submodule display string supports the following tags:
   \item{\ttt{tt} -- tooltip}
 \end{itemize}
 
-Example:
+The following example will place the module at the given position, 
+add a status icon to it and draw a 90 pixel circle around it 
+as a range indicator:
 \begin{verbatim}
 submodules:
-    source: Source {
-        @display("p=50,79;i=-;r=90"); // icon won't be inherited from Source
+    ap: AccessPoint {
+        // 
+        @display("p=50,79;i2=status/bulb_vs;r=90"); 
     }
 \end{verbatim}
 
-To see detailed descripton of these tags check
+%%Fixme example about q tag
+This example displays a short text along with the module and adds a tooltip text too
+that can be seen by hovering over them module with the mouse. The Server simple module 
+also contains a \cclass{cQueue} object, which was named by the \fname{queue.setName("procname")}
+method. If we specify \ttt{q=procqueue} in the display string, Tkenv will display the length
+of the queue object along the module.
+\begin{verbatim}
+submodules:
+    srv: Server {
+        // 
+        @display("q=procqueue;t=This is the main server;tt=Additional tooltip information"); 
+    }
+\end{verbatim}
+
+To see detailed descripton of the display string tags check
 Appendix \ref{cha:display-string-tags} about display string tags.
 
 \subsection{Channel and connection display strings}
@@ -186,7 +267,7 @@ Channels and connections support the following tags:
 
 Example:
 \begin{verbatim}
-source.out --> { @display("ls=red,3"); } --> queue.in++;
+    source.out --> { @display("ls=red,3"); } --> queue.in++;
 \end{verbatim}
 
 To see detailed descripton of these tags check
@@ -198,7 +279,7 @@ Message objects do not store a display string by default, but you can redefine
 the \cclass{cMessage}'s \fname{getDisplayString()} method and make it return
 one.
 
-Example:
+Example of using an icon to represent a message:
 \begin{verbatim}
 const char *CustomPacket::getDisplayString() const
 {
@@ -217,7 +298,7 @@ message Job
 ...
 \end{verbatim}
 
-This display string affects how messages are shown during animation.
+Message display string affects how messages are shown during animation.
 By default, they are displayed as a small filled circle, in one of
 8 basic colors (the color is determined as \textit{message kind modulo 8}),
 and with the message class and/or name displayed under it
@@ -238,11 +319,11 @@ The following tags can be used in message display strings:
 
 Examples:
 \begin{verbatim}
-   "i=msd/box,red;is=s"
+    "i=msd/box,red;is=s"
 \end{verbatim}
 
 \begin{verbatim}
-   "b=15,15,rect,white,kind,5"
+    "b=15,15,rect,white,kind,5"
 \end{verbatim}
 
 %FIXME more examples, WITH EXPLANATIONS
@@ -254,7 +335,7 @@ Examples:
 \subsection{Color names}
 
 Any valid Tk color specification is accepted: English color names
-(blue, lightgray, wheat) or \textit{\#rgb}, \textit{\#rrggbb} format
+(blue, lightgrey, wheat) or \textit{\#rgb}, \textit{\#rrggbb} format
 (where \textit{r},\textit{g},\textit{b} are hex digits).
 
 It is also possible to specify colors in HSB (hue-saturation-brightness) as
@@ -278,7 +359,7 @@ Examples:
 
 \begin{itemize}
   \item \ttt{"i=device/server,gold"} creates a gold server icon
-  \item \ttt{"i=misc/globe,\#808080,100"} makes the icon grayscale
+  \item \ttt{"i=misc/globe,\#808080,100"} makes the icon greyscale
   \item \ttt{"i=block/queue,white,100"} yields a "burnt-in" black-and-white icon
 \end{itemize}
 
@@ -349,8 +430,6 @@ by naming the subdirectory (subdirectories) as well:
 For compatibility, if the display string contains a icon without
 a category (i.e. subdirectory) name, {\opp} tries it as "old/icon" as well.
 
-%FIXME If you create new or custom icons...
-
 \subsection{Icon size}
 
 Icons come in various sizes: normal, large, small, very small. Sizes are
@@ -415,7 +494,8 @@ changing a module's position is useful when simulating mobile
 networks.
 
 Display strings are stored in \cclass{cDisplayString} objects inside
-channels, modules and gates. \cclass{cDisplayString} also lets you manipulate the string.
+channels, modules and gates. \cclass{cDisplayString} also lets you 
+manipulate the string.
 
 To get a pointer to the \cclass{cDisplayString} object, you can call
 the components's \fname{getDisplayString()} method:
@@ -448,13 +528,6 @@ specific tags (i.e. \ttt{bg*} tags).
 cDisplayString *parentDispStr = getParentModule()->getDisplayString();
 parentDispStr->parse("bgi=maps/europe;bgg=100,2");
 \end{verbatim}
-
-\begin{note}
-Modules are inheriting the display string from their type (for submodules) or
-from their ancestors if you have a derived simple or compound module. If you
-do not want to inherit a tag argument you should specify a single dash (-) 
-as the argument's value. Tkenv will use the default value for this argument.
-\end{note}
 
 As far as \cclass{cDisplayString} is concerned, a display string
 (e.g. \ttt{"p=100,125;i=cloud"}) is a string that consist of several
