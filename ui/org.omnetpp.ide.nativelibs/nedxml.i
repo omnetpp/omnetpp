@@ -70,38 +70,7 @@ namespace std {
 
 %ignore ltstr;
 
-//
-// The following code is from "19.9.7 Adding Java downcasts to polymorphic return types"
-// in the SWIG Manual
-// XXX probably not needed
-//
-%typemap(jni) NEDElement *NEDElement::getParent "jobject"
-%typemap(jtype) NEDElement *NEDElement::getParent "NEDElement"
-%typemap(jstype) NEDElement *NEDElement::getParent "NEDElement"
-%typemap(javaout) NEDElement *NEDElement::getParent {
-    return $jnicall;
-}
 
-/*
-%typemap(out) NEDElement * {
-        // manually find the Java class of the same name as the C++ class, and
-        // call its (long cPtr, boolean cMemoryOwn) constructor
-        jclass clazz = jenv->FindClass($1->className());
-        if (clazz) {
-            jmethodID mid = jenv->GetMethodID(clazz, "<init>", "(JZ)V");
-            if (mid) {
-                jlong cptr = 0;
-                *(NEDElement **)&cptr = $1; // this assumes that dynamic_cast<> doesn't change the pointer value!
-                $result = jenv->NewObject(clazz, mid, cptr, false);
-            }
-        }
-        else {
-            fprintf(stdout, "Failed to create java proxy object: no such class: %s\n", $1->className());
-        }
-}
-*/
-
-/* FIXME find a better way... */
 %ignore  FilesElement;
 %ignore  NedFileElement;
 %ignore  CommentElement;
