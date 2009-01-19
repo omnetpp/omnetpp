@@ -17,6 +17,9 @@ if java -version 2>&1 | grep -i "libgcj" >/dev/null 2>/dev/null; then
   exit 1;
 fi
 
+# set default language so GCC will report errors in english. see bug #3
+export LANG=C
+
 case $PLATFORM in 
 *MINGW*)
 	./${LAUNCHER}.exe & 
