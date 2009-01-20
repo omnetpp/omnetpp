@@ -22,7 +22,8 @@ in UTF-8, or any character set compatible with ASCII (8859-1, etc).
 Keywords and other syntactic elements in NED are ASCII, and identifiers must be
 ASCII as well. Comments and string literals may contain characters above
 127. String literals (e.g. in parameter values) will be passed to the C++ code
-as \ttt{const char *} without any conversion.
+as \ttt{const char *} without any conversion; it is up to the simulation model
+to interpret them using the desired encoding.
 
 Line ending may be either CR or CRLF, regardless of platform.
 
@@ -242,7 +243,10 @@ Inheritance rules are described in section \ref{ch-ned-ref:sec:inheritance}.
 \subsubsection{Submodules}
 \label{ch-ned-ref:sec:submodules}
 
-scalar, vector
+Submodules are defined in the \fkeyword{submodules} section of the compound module.
+
+Submodules can be scalar or vector, the vector size being specified with
+a numeric expression inside the square brackets.
 
 "like"
 
@@ -250,12 +254,17 @@ scalar, vector
 
 TODO
 
+body might be present or missing. missing is same as empty. If present,
+may contain parameters and gates.
+
 Extra params CANNOT be added in submodules -- they can only be added in
 new module types.
 
 
 \subsubsection{Connections}
 \label{ch-ned-ref:sec:connections}
+
+Connections are defined in the \fkeyword{connections} section of the compound module.
 
 When a connection uses an unnamed channel type (\ttt{-{}->
 \{\ldots\} -{}->} syntax), the actual NED type to be used will depend on the
@@ -450,15 +459,19 @@ The \ttt{@namespace} property should contain a single value.
 
 TODO syntax,
 structure
-what can have properties
+what can have properties, where
 
 
 
 \subsection{Parameters}
 \label{ch-ned-ref:sec:parameters}
 
-Parameters are declared and assigned in the parameters section.
-The parameters keyword is optional.
+Parameters are defined or assigned in the \fkeyword{parameters} section
+of the component type, submodule or connection. The \fkeyword{parameters}
+keyword is optional, and can be omitted without change in the meaning.
+
+In submodules and connections, new parameters cannot be defined. One can
+only assign existing parameters.
 
 syntax
 
@@ -475,6 +488,8 @@ For \fkeyword{volatile} parameters, the expression is evaluated every time the
 parameter value is accessed. Non-\fkeyword{volatile} parameters are evaluated only once.
 
 TODO const subexpression (not yet supported)
+
+\subsubsection{Recognized parameters properties}
 
 \subsubsection{The @unit property}
 
@@ -519,7 +534,16 @@ simple B extends A {
 \subsection{Gates}
 \label{ch-ned-ref:sec:gates}
 
+Gates are defined in the \fkeyword{gates} section of the component type
+or submodule.
+
+In submodules, new gates cannot be defined. One can only set the size
+of gate vectors defined on the component type.
+
 TODO gate types: input, output, inout. inout consists of input+output
+
+
+\subsubsection{Recognized gate properties}
 
 @directIn
 
@@ -544,8 +568,11 @@ parameter of the parent module.
 \subsection{Inner types}
 \label{ch-ned-ref:sec:inner-types}
 
+Inner types are defined in the \fkeyword{types} section of the component type.
+
 TBD
 
+visibility
 
 
 \subsection{Type name resolution}
