@@ -57,16 +57,16 @@ simple Queue
 network SimpleQueue
 {
     parameters:
-        @display("i=block/network2;bgi=bgimage"); // module display string
+        @display("bgi=bgimage"); // module display string
     submodules:
         sink: Sink {
             @display("p=273,101");
         }
         queue: Queue {
-            @display("p=165.0,79.0"); // icon is inherited from the Queue type
+            @display("p=165,79"); // icon is inherited from the Queue type
         }
         source: Source {
-            @display("p=50.0,79.0;i=-"); // icon won't be inherited from Source
+            @display("p=50,79;i=-"); // icon won't be inherited from Source
         }
     connections:
         // display string for a connection
@@ -154,10 +154,12 @@ Most of them have very small (vs), small (s), large (l) and
 very large (vl) variants. You can specify which variant you want to use with
 the \ttt{is} tag.
 \begin{verbatim}
-@display("i=block/source;is=l"); // a large source icon
+@display("i=block/source;is=l"); // a large source icon from the block icons group
 \end{verbatim}
 
-You can change the color of an already existing image.
+Sometimes you want to have similar icons for modules, but would like to
+make them look a little different to create groups or to reflect status
+information about the module. You can easily change the color of an already existing image.
 The following example colorizes the \ttt{block/source} icon, 20\% red
 \begin{verbatim}
 @display("i=block/source,red,20")
@@ -167,10 +169,19 @@ The following example colorizes the \ttt{block/source} icon, 20\% red
 \includegraphics{figures/graphics-itag}
 \end{center}
 
-TODO about i2 tag (status icons)
+If you want to show state information about your module, you can use the \ttt{i2} tag to
+add a small status icon to your main icon. This icon is displayed in the upper right corner
+of your main icon. Of course in most cases the \ttt{i2} tag is specified at runtime using
+the \fname{setDisplayString()} method so the icon can be changed diynamically based on the
+module's internal state.
+\begin{verbatim}
+@display("i=block/server;i2=status/idle")
+\end{verbatim}
 
 \subsubsection{Shapes}
-The \ttt{b} tag is used to create simple geometric shapes:
+If you want to have simple, but resizable representation for your module, you can use
+the \ttt{b} tag to create geometric shapes. Currently \ttt{oval} and \ttt{rectangle}
+ is supported:
 \begin{verbatim}
     // an oval shape with 70x30 size,
     // red background, black 4 pixel border
@@ -183,22 +194,43 @@ The \ttt{b} tag is used to create simple geometric shapes:
 
 \subsubsection{Positioning, coordinates}
 
+To define the position of a module inside an other one use the \ttt{p} tag.
+If you do not specify a \ttt{p} tag for your module, the parent module will
+automatically choose a position based on a layouting algorithm.
 The following example will place the module at the given position:
 \begin{verbatim}
 @display("p=50,79");
 \end{verbatim}
 
-TODO if missing, automatically placed.
+\begin{note}
+The coordinates specified in the \ttt{p}, \ttt{b} or \ttt{r} tags are not necessarily
+measured in pixles. You can use the parent module's \ttt{bgs=pix2unitratio,unit} tag, 
+to set the scaling parameter and the physical unit for your module. 
+You can specify the ratio between 1 pixel and 1 pysical unit with the \ttt{bgs} tag.
+\end{note}
 
-TODO coordiantes are not necessarily integers. See scaling section in bacground context..
+The \ttt{p} tag allows the automatic arrangement of module vectors. They can be
+arranged in a row, a column, a matrix or a ring or you may specify their positions
+later at runtime using the \fname{setDisplayString()} method. The rest of the arguments
+in the \ttt{p} tag depends on the layout type:
 
-TODO Arrangement of module vectors, screenshot
+\begin{itemize}
+  \item \ttt{row -- p=100,100,r,deltaX} (A row of modules with deltaX units between the modules)
+  \item \ttt{column -- p=100,100,c,deltaY} (A comulm of modules with deltaX units between the modules)
+  \item \ttt{matrix -- p=100,100,m,noOfCols,deltaX,deltaY} (A matrix with "noOfCols" columns. 
+            deltaX and deltaY units between rows and columns)
+  \item \ttt{ring -- p=100,100,ri,rx,ry} (A ring (oval) with rx and ry as the horizontal and vertical radius.)
+  \item \ttt{exact (default) -- p=100,100,x,deltaX,deltaY} (Place each module at 100+deltaX;100+deltaY. The coordinates
+         are usually set at runtime.)
+\end{itemize}
+
+TODO  screenshot of module vector
 
 \subsubsection{Wireless range}
-TODO about range (wireless)
-
-The following example will place the module at the given position,
-and draw a 90 pixel circle around it as a range indicator:
+In wireless simulations it is very useful to show some kind of range
+around your module. This can be an interference range, transmission range 
+etc. The following example will place the module at a given position,
+and draw a 90 unit circle around it as a range indicator:
 \begin{verbatim}
 submodules:
     ap: AccessPoint {
@@ -210,15 +242,21 @@ TODO screenshot
 
 \subsubsection{Additional decorations}
 %%Fixme example about q tag
-The Server simple module also contains a \cclass{cQueue} object,
-which was named by the \fname{queue.setName("procname")}
-method. If we specify \ttt{q=procqueue} in the display string, Tkenv will display the length
-of the queue object along the module.
+Sometimes you want to annotate your modules with additional information
+to make your model more transparent. One special case is when you want to
+show the length of a queue (\cclass{cQueue}) embedded somewhere in a module.
+In the following example the Server simple module contains a \cclass{cQueue} object,
+which was named by the \fname{queue.setName("procqueue")} method. 
+If we specify \ttt{q=procqueue} in the display string, Tkenv will descend into 
+the module (several levels deep if needed) and look for a queue object
+named "procqueue". It will display the length of the queue object along the module.
 \begin{verbatim}
 @display("q=procqueue");
 \end{verbatim}
 TODO screenshot
 
+You can add a text description to any module using the \ttt{t}
+(displayed along the module) or \ttt{tt} tag (displayed as a tooltip).
 The following example displays a short text along with the module
 and adds a tooltip text too that can be seen by hovering over
 them module with the mouse.
@@ -227,7 +265,13 @@ them module with the mouse.
 @display("t=Packets sent: 18;tt=Additional tooltip information");
 \end{verbatim}
 
-TODO screenshot (note usually done at runtime dynamically) See changing display strings at runtime.
+TODO screenshot 
+
+\begin{note}
+  Generally it makes no sense to assign static texts in the NED file. Usually the 
+  \ttt{t} and \ttt{tt} tags are used at runtime with the \fname{setDisplayString()}
+  method. 
+\end{note}
 
 To see detailed descripton of the display string tags check
 Appendix \ref{cha:display-string-tags} about display string tags.
@@ -247,13 +291,18 @@ Tkenv. They mostly deal with the module background.
   \item{\ttt{bgp} -- background coordinate offset}
 \end{itemize}
 
-TODO eletszeru pelda leiras.
-The following example demonstrates the use of module background tags.
-The coordinates are given in km (si unit). The \ttt{bgs=pixelsperunit,unit}
-specifies pixel/unit ratio, i.e. 1km is 0.075 pixel on the screen.
-The whole area is 6000x4500km (\ttt{bgb=}) and the map of Europe is used as a background (\ttt{bgi=icon,align}).
+In some cases it is required that the module's physical position should be modeled
+also in your model. In this case you would set the submodule display strings with 
+the \fname{setDisplayString()} method at run time, but it would be also nice to
+customize the area in what the modules are moving. It is possible to manipulate
+how a module's background look like or wheter we can use physical units instead
+of pixels to set the position of the modules. The following example demonstrates the use 
+of module background tags. The coordinates are given in km (si unit). 
+The \ttt{bgs=pixelsperunit,unit} specifies pixel/unit ratio, i.e. 1km is 0.075 pixel on the screen.
+The whole area is 6000x4500km (\ttt{bgb=}) and the map of Europe is used as a 
+background (\ttt{bgi=icon,s}) and stretched to fill the module backgroud.
 A light grey grid is drawn with 1000km between main ticks and 2 minor ticks per main tick
-(\ttt{bgg=tickdistance,minorpermajorticks,color}).
+(\ttt{bgg=tickdistance,minorpermajorticks,color}). 
 
 \begin{verbatim}
 network EuropePlayground
@@ -265,26 +314,35 @@ network EuropePlayground
 \includegraphics{figures/graphics-bgtags}
 \end{center}
 
+After specifying the above \ttt{bgs} tag, all your submodule coordinates will be treated as if
+they were specified in km.
+
+To see detailed descripton of the display string tags check
+Appendix \ref{cha:display-string-tags} about display string tags.
+
 \subsection{Connection display strings}
 
 Connections may also have display strings. Connections inherit the
-display string property of the channel in the same way submodules inherit
-their display string from their types.
+display string property of their channel in the same way submodules inherit
+their display string from their types. If no channel is specified for a 
+connection \cclass{IdealChannel} will be used implicitly by the simulation kernel.
 
 Connections support the following tags:
 \begin{itemize}
   \item{\ttt{ls} -- line shape, and colors}
   \item{\ttt{t} -- text}
   \item{\ttt{tt} -- tooltip}
+  \item{\ttt{m} -- used for hinting Tkenv how the connections should route to/from the module}
 \end{itemize}
-TODO add the m tag
 
-Example:
+Example of a thick, red connection:
 \begin{verbatim}
     source.out --> { @display("ls=red,3"); } --> queue.in++;
 \end{verbatim}
 
-TODO describe that idealchanel is created if no channel given
+\begin{note}
+If you want to hide a connection, specify width=0 for the connection. i.e. use \ttt{ls=,0}.
+\end{note}
 
 TODO screenshot
 
@@ -333,18 +391,20 @@ The following tags can be used in message display strings:
   \item{\ttt{is} -- icon size}
 \end{itemize}
 
-Examples:
+Using a small red box icon to represent the messages:
 \begin{verbatim}
-    "i=msd/box,red;is=s"
+@display("i=msd/box,red;is=s");
 \end{verbatim}
 
+Messages will be represented by a 15x15 rectangle with white background.
+Their border color will depend on the \ttt{messageKind} property of the message.
 \begin{verbatim}
     "b=15,15,rect,white,kind,5"
 \end{verbatim}
 
 \begin{note}
-   You may use the word \ttt{kind} as a special color. This virtual color depends on
-   the \ttt{messageKind} field in the message.
+   In message display strings you may use the word \ttt{kind} as a special color. 
+   This virtual color depends on the \ttt{messageKind} field in the message.
 \end{note}
 
 %FIXME more examples, WITH EXPLANATIONS
