@@ -453,6 +453,19 @@ to the \textit{default key}. Examples:
 @prop(value1,value2;key1=value11,value12,value13)
 \end{verbatim}
 
+TODO property grammar:
+        : NAME
+        | '\$' NAME
+        | STRINGCONSTANT
+        | TRUE
+        | FALSE
+        | INTCONSTANT
+        | REALCONSTANT
+        | quantity
+        | '-'
+        ;
+%% FIXME ezt jo lenne majd flexibilisebbe tenni! pl hogy beleferjen INET::Tcp (idezojelezes nelkul is!)
+
 If an item in a valuelist contains a comma or semicolon, the item
 must be quoted (using double quotes) to prevent the comma or semicolon
 from being interpreted as separator. A quotation mark must be escaped
@@ -477,6 +490,9 @@ TODO what can have properties, where
 When a component type extends another component types, properties
 are merged. This is described in section \ref{ch-ned-ref:sec:inheritance}.
 
+\subsubsection{Property declarations}
+
+TODO
 
 
 \subsection{Parameters}
@@ -672,6 +688,7 @@ name (``\ttt{inet.network\-layer.ip.RoutingTable}''), or by short name
 (``\ttt{RoutingTable}'') if the name is visible.
 
 Visible names are:
+
 \begin{itemize}
   \item anything from the same package;
   \item imported names.
