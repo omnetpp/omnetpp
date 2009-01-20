@@ -14,9 +14,7 @@ NED description's \fpar[ned!keywords!display]{@display}
 property.
 
 The display string format is a semicolon-separated list of tags.
-Each tag consists of a key (usually one letter), an equal sign
-and a comma-separated list of arguments, like:
-
+Each tag consists of a key, an equal sign and a comma-separated list of arguments.
 The following example will display a rectangle with 60x10 size 
 at the 100,100 position with blue background and black 2 pixel border:
 \begin{verbatim}
@@ -24,9 +22,7 @@ at the 100,100 position with blue background and black 2 pixel border:
 \end{verbatim}
 
 Tag arguments may be omitted both at the end and inside the
-parameter list, like:
-
-Example creating a blue rectangle with default size:
+parameter list. Creating a blue rectangle with default size:
 \begin{verbatim}
   // a blue rectangle with default size
   "p=100,100;b=,,rect,blue"
