@@ -4,14 +4,21 @@
 \section{Display strings}
 \label{sec:ch-graphics:display-strings}
 
+Display strings\index{display strings} specify the arrangement and
+appearance of modules in graphical user interfaces (currently only
+Tkenv): they control how the objects (compound modules, their
+submodules and connections) are displayed. Display strings occur in
+NED description's \fpar[ned!keywords!display]{@display}
+property.
+
 Display strings can be used in the following contexts:
 \begin{itemize}
-  \item \textit{compound modules, networks} -- display string can specify 
-        background color, border color, border thickness, 
-        background image, scaling, grid, measurement unit, etc.
   \item \textit{submodules} -- display string may contain position, arrangement
         (for module vectors), icon, icon color, auxiliary icon, status text,
         communication range (as circle or filled circle), tooltip, etc.
+  \item \textit{compound modules, networks} -- display string can specify 
+        background color, border color, border thickness, 
+        background image, scaling, grid, measurement unit, etc.
   \item \textit{connections} -- display string can specify positioning, color,
         line thickness, line style, text and tooltip
   \item \textit{messages} -- display string can specify icon, icon color, etc.
@@ -19,13 +26,6 @@ Display strings can be used in the following contexts:
 
 
 \subsection{Display string syntax}
-
-Display strings\index{display strings} specify the arrangement and
-appearance of modules in graphical user interfaces (currently only
-Tkenv): they control how the objects (compound modules, their
-submodules and connections) are displayed. Display strings occur in
-NED description's \fpar[ned!keywords!display]{@display}
-property.
 
 The display string syntax is a semicolon-separated list of tags.
 Each tag consists of a key, an equal sign and a comma-separated list of 
@@ -140,20 +140,9 @@ if it is used as a submodule:
   \item{\ttt{tt} -- tooltip}
 \end{itemize}
 
-By default modules are represented by simple icons, but this can
-be overridden with the \ttt{b} or \ttt{i} tag. The \ttt{b} tag
-is used to create simple geometric shapes:
-\begin{verbatim}
-    // an oval shape with 70x30 size, 
-    // red background, black 4 pixel border 
-    "b=70,30,oval,red,black,4"
-\end{verbatim}
-
-\begin{center}
-\includegraphics{figures/graphics-btag}
-\end{center}
-
-Using images for the modules is also possible with the \ttt{i} tag.
+\subsubsection{Icons}
+By default modules are represented by simple icons.
+Using images for the modules is possible with the \ttt{i} tag.
 See the \ttt{images} subfolder of your {\opp} installation for possible
 icons. The stock images installed with {\opp} have several size variants.
 Most of them have very small (vs), small (s), large (l) and 
@@ -175,7 +164,34 @@ The following example colorizes the \ttt{block/source} icon, 20\% red
 
 TODO about i2 tag (status icons)
 
+\subsubsection{Shapes}
+The \ttt{b} tag is used to create simple geometric shapes:
+\begin{verbatim}
+    // an oval shape with 70x30 size, 
+    // red background, black 4 pixel border 
+    "b=70,30,oval,red,black,4"
+\end{verbatim}
+
+\begin{center}
+\includegraphics{figures/graphics-btag}
+\end{center}
+
+\subsubsection{Positioning, coordinates}
+
+The following example will place the module at the given position:
+\begin{verbatim}
+@display("p=50,79"); 
+\end{verbatim}
+
+TODO if missing, automatically placed.
+
+TODO coordiantes are not necessarily integers. See scaling section in bacground context..
+
+TODO Arrangement of module vectors, screenshot
+
+\subsubsection{Wireless range}
 TODO about range (wireless)
+
 The following example will place the module at the given position, 
 and draw a 90 pixel circle around it as a range indicator:
 \begin{verbatim}
@@ -184,11 +200,13 @@ submodules:
         @display("p=50,79;r=90"); 
     }
 \end{verbatim}
+
 TODO screenshot
 
+\subsubsection{Additional decorations}
 %%Fixme example about q tag
-The Server simple module 
-also contains a \cclass{cQueue} object, which was named by the \fname{queue.setName("procname")}
+The Server simple module also contains a \cclass{cQueue} object, 
+which was named by the \fname{queue.setName("procname")}
 method. If we specify \ttt{q=procqueue} in the display string, Tkenv will display the length
 of the queue object along the module.
 \begin{verbatim}
@@ -196,25 +214,22 @@ of the queue object along the module.
 \end{verbatim}
 TODO screenshot
 
-This example displays a short text along with the module and adds a tooltip text too
-that can be seen by hovering over them module with the mouse. 
-TODO tooltip
-TODO text
-
-TODO screenshot
+The following example displays a short text along with the module 
+and adds a tooltip text too that can be seen by hovering over 
+them module with the mouse. 
 
 \begin{verbatim}
-@display("t=This is the main server;tt=Additional tooltip information"); 
+@display("t=Packets sent: 18;tt=Additional tooltip information"); 
 \end{verbatim}
+
+TODO screenshot (note usually done at runtime dynamically) See changing display strings at runtime.
 
 To see detailed descripton of the display string tags check
 Appendix \ref{cha:display-string-tags} about display string tags.
 
-
-
 \subsection{Display string tags used in module background context}
 
-These tags are describing how a module looks like if opened in 
+The following tags describe what a module looks like if opened in 
 Tkenv. They mostly deal with the module background.
 
 \begin{itemize}
@@ -227,6 +242,7 @@ Tkenv. They mostly deal with the module background.
   \item{\ttt{bgp} -- background coordinate offset}
 \end{itemize}
 
+TODO eletszeru pelda leiras.
 The following example demonstrates the use of module background tags.
 The coordinates are given in km (si unit). The \ttt{bgs=pixelsperunit,unit}
 specifies pixel/unit ratio, i.e. 1km is 0.075 pixel on the screen.
@@ -279,7 +295,7 @@ and with the message class and/or name displayed under it
 The latter is configurable in the Tkenv Options dialog, and message kind
 dependent coloring can also be turned off there.
 
-\subsection{Specifying message display strings}
+\subsubsection{Specifying message display strings}
 Message objects do not store a display string by default, but you can redefine
 the \cclass{cMessage}'s \fname{getDisplayString()} method and make it return
 one.
@@ -303,7 +319,7 @@ message Job
 ...
 \end{verbatim}
 
-\subsection{Message display string tags}
+\subsubsection{Message display string tags}
 
 The following tags can be used in message display strings:
 \begin{itemize}
