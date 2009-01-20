@@ -246,7 +246,11 @@ Inheritance rules are described in section \ref{ch-ned-ref:sec:inheritance}.
 A network declared with the \fkeyword{network} keyword is equivalent to a compound
 module (\fkeyword{module} keyword) with the \ttt{@isNetwork(true)} property.
 
-FIXME a simple module may also be a network!
+\begin{note}
+    A simple module can only be designated to be a network by spelling out the
+    \ttt{@isNetwork} property; the \fkeyword{network} keyword cannot
+    be used for that purpose.
+\end{note}
 
 \subsubsection{The @isNetwork property}
 
@@ -263,7 +267,7 @@ compound modules. The value may be empty, true or false:
 The empty value corresponds to \ttt{@isNetwork(true)}.
 
 The \ttt{@isNetwork} property does NOT get inherited, that is, a subclass
-of a module with \ttt{@isNetwork} set does NOT automatically become a network.
+of a module with \ttt{@isNetwork} set does not automatically become a network.
 The \ttt{@isNetwork} property needs to be explicitly added to the subclass
 to make it a network.
 
@@ -306,8 +310,8 @@ syntax.
 
 Module interfaces may have properties (\ref{ch-ned-ref:sec:properties}),
 parameters (\ref{ch-ned-ref:sec:parameters}), and
-gates (\ref{ch-ned-ref:sec:gates}). However, parameters cannot have
-a value assigned, not even a default value.
+gates (\ref{ch-ned-ref:sec:gates}). However, parameters are not allowed
+to have a value assigned, not even a default value.
 
 A module interface type may not have inner types (\ref{ch-ned-ref:sec:inner-types}).
 
@@ -340,8 +344,8 @@ see the NED Grammar (Appendix \ref{cha:ned-language-grammar}) for the
 syntax.
 
 Channel interfaces may have properties (\ref{ch-ned-ref:sec:properties}) and
-parameters (\ref{ch-ned-ref:sec:parameters}). However, parameters cannot have
-a value assigned, not even a default value.
+parameters (\ref{ch-ned-ref:sec:parameters}). However, parameters are not
+allowed to have a value assigned, not even a default value.
 
 A channel interface type may not have inner types (\ref{ch-ned-ref:sec:inner-types}).
 
