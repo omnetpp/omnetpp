@@ -414,8 +414,42 @@ The \ttt{@namespace} property should contain a single value.
 \subsection{Properties}
 \label{ch-ned-ref:sec:properties}
 
-TODO syntax,
-structure
+Properties are a means of adding metadata annotations to NED files, component types,
+parameters, gates, submodules, and connections.
+
+Properties are identified by name. It is possible to have several properties
+on the same object with the same name, as long as they have unique indices.
+An index is an identifier in square brackets after the property name.
+
+The following example shows a property without index, one with the index \ttt{foo},
+and a third with the index \ttt{bar}.
+
+\begin{verbatim}
+@statistic();
+@statistic[foo]();
+@statistic[bar]();
+\end{verbatim}
+
+The value of the property is specified inside parentheses. The value consists of
+\textit{key-valuelist} pairs, separated by semicolons; values are separated with commas.
+Example:
+
+\begin{verbatim}
+@prop(key1=value11,value12,value13;key2=value21,value22)
+\end{verbatim}
+
+Keys must be unique.
+
+If the key+equal sign part (\ttt{key=}) is missing, the valuelist belongs
+to the \textit{default key}. Examples:
+
+\begin{verbatim}
+@prop(value1,value2)
+@prop(value1,value2;key1=value11,value12,value13)
+\end{verbatim}
+
+values and quoting; commas, semicolons etc
+
 what can have properties, where
 
 
