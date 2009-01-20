@@ -472,7 +472,10 @@ quotation marks included, enclose it in an extra layer of quotes:
 
 \subsubsection{Placement}
 
-what can have properties, where
+TODO what can have properties, where
+
+When a component type extends another component types, properties
+are merged. This is described in section \ref{ch-ned-ref:sec:inheritance}.
 
 
 
@@ -480,20 +483,18 @@ what can have properties, where
 \label{ch-ned-ref:sec:parameters}
 
 Parameters are defined or assigned in the \fkeyword{parameters} section
-of the component type, submodule or connection. The \fkeyword{parameters}
-keyword is optional, and can be omitted without change in the meaning.
+of the component type, submodule body or connection body.
+The \fkeyword{parameters} keyword is optional, and can be omitted
+without change in the meaning.
 
 In submodules and connections, new parameters cannot be defined. One can
 only assign existing parameters.
 
 syntax
 
-types
+types, volatile/nonvolatile
 
 value
-
-recognized properties
-
 
 \subsubsection{Evaluation}
 
@@ -502,7 +503,9 @@ parameter value is accessed. Non-\fkeyword{volatile} parameters are evaluated on
 
 TODO const subexpression (not yet supported)
 
-\subsubsection{Recognized parameters properties}
+\subsubsection{Recognized parameter properties}
+
+TODO @unit, @prompt
 
 \subsubsection{The @unit property}
 
@@ -554,6 +557,14 @@ In submodules, new gates cannot be defined. One can only set the size
 of gate vectors defined on the component type.
 
 TODO gate types: input, output, inout. inout consists of input+output
+
+Gates may be scalar or vector. The vector size is specified with a
+numeric expression inside the square brackets (\ttt{[...]}).
+The vector size may also be left open by specifying an empty pair
+of square brackets.
+
+TODO it must be specified later (in subclasses or in submodule definition);
+if not, it will be zero.
 
 
 \subsubsection{Recognized gate properties}
