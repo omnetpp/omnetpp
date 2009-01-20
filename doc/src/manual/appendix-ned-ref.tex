@@ -417,6 +417,8 @@ The \ttt{@namespace} property should contain a single value.
 Properties are a means of adding metadata annotations to NED files, component types,
 parameters, gates, submodules, and connections.
 
+\subsubsection{Identifying a property}
+
 Properties are identified by name. It is possible to have several properties
 on the same object with the same name, as long as they have unique indices.
 An index is an identifier in square brackets after the property name.
@@ -429,6 +431,9 @@ and a third with the index \ttt{bar}.
 @statistic[foo]();
 @statistic[bar]();
 \end{verbatim}
+
+
+\subsubsection{Property value}
 
 The value of the property is specified inside parentheses. The value consists of
 \textit{key-valuelist} pairs, separated by semicolons; values are separated with commas.
@@ -448,7 +453,24 @@ to the \textit{default key}. Examples:
 @prop(value1,value2;key1=value11,value12,value13)
 \end{verbatim}
 
-values and quoting; commas, semicolons etc
+If an item in a valuelist contains a comma or semicolon, the item
+must be quoted (using double quotes) to prevent the comma or semicolon
+from being interpreted as separator. A quotation mark must be escaped
+with a backslash.
+
+FIXME verify this whole quoting business!!!! e.g. is \, also OK?
+
+\begin{verbatim}
+@prop(marks=the ! mark, "the , mark", "the ; mark", the \" mark);
+\end{verbatim}
+
+One layer of quotes is removed from value items automatically, that is,
+\ttt{foo} and \ttt{"foo"} are the same. To add a value item with
+quotation marks included, enclose it in an extra layer of quotes:
+\ttt{"\textbackslash"foo\textbackslash""}.
+
+
+\subsubsection{Placement}
 
 what can have properties, where
 
