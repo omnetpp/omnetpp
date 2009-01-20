@@ -226,63 +226,16 @@ syntax.
 
 Compound modules may have properties (\ref{ch-ned-ref:sec:properties}),
 parameters (\ref{ch-ned-ref:sec:parameters}),
-and gates (\ref{ch-ned-ref:sec:gates}).
-
-A compound module's internal structure is defined by
+and gates (\ref{ch-ned-ref:sec:gates}); its internal structure is defined by
 its submodules (\ref{ch-ned-ref:sec:submodules}) and
-connections (\ref{ch-ned-ref:sec:connections}).
-
-Compound module types may also have inner types (\ref{ch-ned-ref:sec:inner-types})
-that can be used for its submodules and connections.
+connections (\ref{ch-ned-ref:sec:connections});
+and it may also have inner types (\ref{ch-ned-ref:sec:inner-types})
+that can be used for submodules and connections.
 
 A compound module type may extend another compound module type, and
 may implement one or more module interfaces (\ref{ch-ned-ref:sec:module-interfaces}).
 Inheritance rules are described in section \ref{ch-ned-ref:sec:inheritance}.
 
-
-\subsubsection{Submodules}
-\label{ch-ned-ref:sec:submodules}
-
-Submodules are defined in the \fkeyword{submodules} section of the compound module.
-
-Submodules can be scalar or vector, the vector size being specified with
-a numeric expression inside the square brackets.
-
-"like"
-
-"like <>"
-
-TODO
-
-body might be present or missing. missing is same as empty. If present,
-may contain parameters and gates.
-
-Extra params CANNOT be added in submodules -- they can only be added in
-new module types.
-
-
-\subsubsection{Connections}
-\label{ch-ned-ref:sec:connections}
-
-Connections are defined in the \fkeyword{connections} section of the compound module.
-
-When a connection uses an unnamed channel type (\ttt{-{}->
-\{\ldots\} -{}->} syntax), the actual NED type to be used will depend on the
-parameters set in the connection.
-
-When no parameters are set, \ttt{ned.IdealChannel} is chosen.
-
-When only \ttt{ned.DelayChannel} parameters are used (\ttt{delay}
-and \ttt{disabled}), \ttt{ned.DelayChannel} is chosen.
-
-When only \ttt{ned.DatarateChannel} parameters are used
-(\ttt{datarate}, \ttt{delay}, \ttt{ber}, \ttt{per}, \ttt{disabled}),
-the chosen channel type will be \ttt{ned.DatarateChannel}.
-
-Unnamed channels connections cannot use any other parameters.
-
-Extra params CANNOT be added in connection channel specs --
-they can only be added in new channel types.
 
 
 \subsection{Networks}
@@ -556,12 +509,68 @@ Gate vector sizes may NOT be overridden in subclasses.
 
 
 
+\subsection{Submodules}
+\label{ch-ned-ref:sec:submodules}
 
-\subsection{Name uniqueness}
+Submodules are defined in the \fkeyword{submodules} section of the compound module.
 
-Identifier names within a component must be unique. That is, submodule
-or inner type cannot be named the same, or the same as a gate or
-parameter of the parent module.
+Submodules may be scalar or vector, the vector size of the latter being
+specified with a numeric expression inside the square brackets (\ttt{[...]}).
+
+The submodule's type may be specified:
+
+\begin{itemize}
+  \item with a simple or compound module type, or
+  \item by a string-valued expression that evaluates to the name of a
+        simple or compound module type, or
+  \item may come from the configuration.
+\end{itemize}
+
+In the latter two cases, the \fkeyword{like} keyword is used, and a
+module interface type (\ref{ch-ned-ref:sec:module-interfaces})
+needs to be specified as well, which the concrete module type needs
+to implement to be eligible to be chosen. In the second case, the
+string expression is specified in angle braces (\ttt{<...>}); in the
+third case, an empty pair of angle braces is used (\ttt{<>}).
+
+See the NED Grammar (Appendix \ref{cha:ned-language-grammar}) for the
+exact syntax.
+
+A submodule definition may or may not have a body (a curly brace
+delimited block). An empty submodule body (\ttt{\{ \}}) is equivalent
+to a missing one.
+
+A submodule body may contain parameters (\ref{ch-ned-ref:sec:parameters})
+and gates (\ref{ch-ned-ref:sec:module-interfaces}).
+
+A submodule body cannot define new parameters or gates. It is only
+allowed to assign existing parameters, and to set the vector
+size of existing gate vectors.
+
+
+
+\subsection{Connections}
+\label{ch-ned-ref:sec:connections}
+
+Connections are defined in the \fkeyword{connections} section of the compound module.
+
+When a connection uses an unnamed channel type (\ttt{-{}->
+\{\ldots\} -{}->} syntax), the actual NED type to be used will depend on the
+parameters set in the connection.
+
+When no parameters are set, \ttt{ned.IdealChannel} is chosen.
+
+When only \ttt{ned.DelayChannel} parameters are used (\ttt{delay}
+and \ttt{disabled}), \ttt{ned.DelayChannel} is chosen.
+
+When only \ttt{ned.DatarateChannel} parameters are used
+(\ttt{datarate}, \ttt{delay}, \ttt{ber}, \ttt{per}, \ttt{disabled}),
+the chosen channel type will be \ttt{ned.DatarateChannel}.
+
+Unnamed channels connections cannot use any other parameters.
+
+Extra params CANNOT be added in connection channel specs --
+they can only be added in new channel types.
 
 
 
@@ -573,6 +582,15 @@ Inner types are defined in the \fkeyword{types} section of the component type.
 TBD
 
 visibility
+
+
+
+\subsection{Name uniqueness}
+
+Identifier names within a component must be unique. That is, submodule
+or inner type cannot be named the same, or the same as a gate or
+parameter of the parent module.
+
 
 
 \subsection{Type name resolution}
