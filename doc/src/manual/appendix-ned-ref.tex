@@ -522,7 +522,12 @@ For \fkeyword{volatile} parameters, the value expression is evaluated every
 time the parameter value is accessed. Non-\fkeyword{volatile} parameters
 are evaluated only once.
 
-TODO const subexpression (not yet supported)
+\begin{note}
+    The \fkeyword{const} keyword is reserved for use within expressions
+    to define constant subexpressions, i.e. to denote a part within
+    an expression the should only be evaluated once. Constant subexpressions
+    are not supported yet.
+\end{note}
 
 The following properties are recognized for parameters: \ttt{@unit},
 \ttt{@prompt}.
@@ -530,7 +535,12 @@ The following properties are recognized for parameters: \ttt{@unit},
 
 \subsubsection{The @prompt property}
 
-TODO
+The \ttt{@prompt} property defines a prompt string for the parameter. The
+prompt string is used when/if a simulation runtime user interface
+interactively prompts the user for the parameter's value.
+
+The \ttt{@prompt} property is expected to contain one string value for the
+default key.
 
 
 \subsubsection{The @unit property}
