@@ -477,30 +477,61 @@ about mistyped or unrecognized names.
 \subsection{Parameters}
 \label{ch-ned-ref:sec:parameters}
 
-Parameters are defined or assigned in the \fkeyword{parameters} section
+Parameters are defined and assigned in the \fkeyword{parameters} section
 of the component type, submodule body or connection body.
 The \fkeyword{parameters} keyword is optional, and can be omitted
 without change in the meaning.
 
-In submodules and connections, new parameters cannot be defined. One can
-only assign existing parameters.
+Parameters can only be defined in component types, but not in submodules
+and connections. In submodules and connections, one can only assign
+existing parameters.
 
-syntax
+A parameter is identified by a name, and has a data type. A parameter
+may have value or default value, and may also have properties
+(see \ref{ch-ned-ref:sec:properties}).
 
-types, volatile/nonvolatile
+Accepted parameter data types are \fkeyword{double}, \fkeyword{int},
+\fkeyword{string}, \fkeyword{bool}, and \fkeyword{xml}. Any
+of the above types can be declared \fkeyword{volatile} as well
+(\ttt{volatile int}, \ttt{volatile string}, etc.)
 
-value
+The presence of a data type keyword decides whether the given line defines
+a new parameter or refers to an existing parameter. One can assign value or
+default value to an existing parameter, and/or modify its properties or add
+new properties.
 
-\subsubsection{Evaluation}
+Examples:
 
-For \fkeyword{volatile} parameters, the expression is evaluated every time the
-parameter value is accessed. Non-\fkeyword{volatile} parameters are evaluated only once.
+\begin{verbatim}
+int a;           // defines new parameter
+int b @foo;      // new parameter with property
+int c = default(5); // new parameter with default value
+int d = 5;       // new parameter with value assigned
+int e @foo = 5;  // new parameter with property and value
+f = 10;          // assignment to existing (e.g.inherited) parameter
+g = default(10); // overrides default value of existing parameter
+h;               // legal, but does nothing
+i @foo(1);       // adds a property to existing parameter
+j @foo(1) = 10;  // adds a property and value to existing parameter
+\end{verbatim}
+
+Parameter values are NED expressions. Expressions are described in section
+\ref{ch-ned-ref:sec:expressions}.
+
+For \fkeyword{volatile} parameters, the value expression is evaluated every
+time the parameter value is accessed. Non-\fkeyword{volatile} parameters
+are evaluated only once.
 
 TODO const subexpression (not yet supported)
 
-\subsubsection{Recognized parameter properties}
+The following properties are recognized for parameters: \ttt{@unit},
+\ttt{@prompt}.
 
-TODO @unit, @prompt
+
+\subsubsection{The @prompt property}
+
+TODO
+
 
 \subsubsection{The @unit property}
 
