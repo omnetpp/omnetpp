@@ -208,7 +208,8 @@ A simple module type may not have inner types (\ref{ch-ned-ref:sec:inner-types})
 
 A simple module type may extend another simple module type, and
 may implement one or more module interfaces (\ref{ch-ned-ref:sec:module-interfaces}).
-Inheritance rules are described in section \ref{ch-ned-ref:sec:inheritance}.
+Inheritance rules are described in section \ref{ch-ned-ref:sec:inheritance},
+and interface implementation rules in section \ref{ch-ned-ref:sec:implementing-an-interface}.
 
 Every simple module type has an associated C++ class, which must be
 subclassed from \cclass{cSimpleModule}. The way of associating the
@@ -234,7 +235,8 @@ that can be used for submodules and connections.
 
 A compound module type may extend another compound module type, and
 may implement one or more module interfaces (\ref{ch-ned-ref:sec:module-interfaces}).
-Inheritance rules are described in section \ref{ch-ned-ref:sec:inheritance}.
+Inheritance rules are described in section \ref{ch-ned-ref:sec:inheritance},
+and interface implementation rules in section \ref{ch-ned-ref:sec:implementing-an-interface}.
 
 
 
@@ -292,7 +294,8 @@ A channel type may not have inner types (\ref{ch-ned-ref:sec:inner-types}).
 
 A channel type may extend another channel type, and
 may implement one or more channel interfaces (\ref{ch-ned-ref:sec:channel-interfaces}).
-Inheritance rules are described in section \ref{ch-ned-ref:sec:inheritance}.
+Inheritance rules are described in section \ref{ch-ned-ref:sec:inheritance},
+and interface implementation rules in section \ref{ch-ned-ref:sec:implementing-an-interface}.
 
 Every channel type has an associated C++ class, which must be
 subclassed from \cclass{cChannel}. The way of associating the
@@ -317,22 +320,6 @@ A module interface type may not have inner types (\ref{ch-ned-ref:sec:inner-type
 
 A module interface type may extend one or more other module interface types.
 Inheritance rules are described in section \ref{ch-ned-ref:sec:inheritance}.
-
-
-FIXME
-
-An interface (module interface or channel interface) may NOT contain
-parameter assignment or parameter default value assignment. An interface
-may NOT contain inner types. (Rationale: what use would they be?).
-
-A module or channel type that implements ("like") an interface is
-required to have at least the parameters and, for modules, the gates
-defined in the interface, with the same types.
-
-Regarding properties, parameter properties and gate properties defined
-in the interface: the module or channel is required to have those properties,
-with at least the same values. It may have additional properties,
-and properties may add more keys and values (see property inheritance.)
 
 
 
@@ -453,7 +440,7 @@ to the \textit{default key}. Examples:
 @prop(value1,value2;key1=value11,value12,value13)
 \end{verbatim}
 
-Property values have a liberal syntax (see \ref{cha:ned-language-grammar}).
+Property values have a liberal syntax (see Appendix \ref{cha:ned-language-grammar}).
 Values that do not fit the grammar (notably, those containing a comma or
 semicolon) need to be surrounded with double quotes.
 
@@ -465,7 +452,7 @@ quotes: \ttt{"\textbackslash"foo\textbackslash""}.
 Example:
 
 \begin{verbatim}
-@prop(marks=the ! mark, "the , mark", "the ; mark");
+@prop(marks=the ! mark, "the , mark", "the ; mark", other marks);
 \end{verbatim}
 
 
@@ -605,9 +592,14 @@ needs to be specified as well, which the concrete module type needs
 to implement to be eligible to be chosen. In the second case, the
 string expression is specified in angle braces (\ttt{<...>}); in the
 third case, an empty pair of angle braces is used (\ttt{<>}).
-
 See the NED Grammar (Appendix \ref{cha:ned-language-grammar}) for the
 exact syntax.
+
+\begin{note}
+    When using the \ttt{<>} syntax, the actual NED type should be
+    provided with the \ttt{<pattern>.type-name} configuration option:
+    \ttt{**.host[0..3].\-type-name=\-"MobileHost"}.
+\end{note}
 
 A submodule definition may or may not have a body (a curly brace
 delimited block). An empty submodule body (\ttt{\{ \}}) is equivalent
@@ -652,9 +644,7 @@ they can only be added in new channel types.
 
 Inner types are defined in the \fkeyword{types} section of the component type.
 
-TBD
-
-visibility
+Inner types are only visible inside the enclosing component type.
 
 
 
@@ -727,6 +717,33 @@ Simple (unqualified) names are tried with the same package as the
 ini file is in (provided it's in a NED directory).
 
 
+\subsection{Implementing an interface}
+\label{ch-ned-ref:sec:implementing-an-interface}
+
+A module type may implement one or more module interfaces, and a channel type
+may implement one or more channel interfaces, using the \fkeyword{like}
+keyword.
+
+The module or channel type is required to have \textit{at least} those
+parameters and gates that the interface has.
+
+Regarding component properties, parameter properties and gate properties
+defined in the interface: the module or channel type is required to have at
+least those properties, with at least the same values. It may have
+additional properties, and properties may add more keys and values.
+
+\begin{note}
+  Implementing an interface does not cause the properties, parameters and
+  gates to be interited by the module or channel type; they have to be added
+  explicitly.
+\end{note}
+
+\begin{note}
+  A module or channel type may have extra properties, parameters and gates
+  in addition to those in the interface.
+\end{note}
+
+
 
 \subsection{Inheritance}
 \label{ch-ned-ref:sec:inheritance}
@@ -741,38 +758,38 @@ ini file is in (provided it's in a NED directory).
         channel interfaces).
 \end{itemize}
 
-A \fkeyword{network} is a shorthand for a compound module with the \ttt{@isNetwork}
+A network is a shorthand for a compound module with the \ttt{@isNetwork}
 property set, so the same rules apply to it as to compound modules.
 
 Inheritance may:
 \begin{itemize}
-  \item add new properties, parameters, gates, inner types, submodules,
-        connections
-  \item modify inherited properties, and properties of inherited parameters and
-        gates
-  \item it may NOT modify inherited submodules, connections and inner types
+    \item add new properties, parameters, gates, inner types, submodules,
+          connections
+    \item modify inherited properties, and properties of inherited parameters and
+          gates
+    \item it may NOT modify inherited submodules, connections and inner types
 \end{itemize}
 
 Other inheritance rules:
 \begin{itemize}
-  \item  for inner types:
-     can I define an inner type with the same name in subclasses? NO
-  \item  for properties:
-     contents will be merged (rules like for display strings: values on
-     same key and same position will overwrite old ones)
-  \item for parameters:
-     type cannot be redefined;
-     value may be redefined in subclasses or place of usage
-  \item  for gates:
-     type cannot be redefined;
-     vector size may be redefined in subclasses or place of usage
-  \item  for gate/parameter properties:
-     extra properties can be added;
-     existing properties can be overridden/extended like for standalone properties (?)
-  \item  for submodules:
-     new submodules may be added, but inherited ones cannot be modified
-  \item  for connections:
-     new connections may be added, but inherited ones cannot be modified
+    \item  for inner types:
+       can I define an inner type with the same name in subclasses? NO
+    \item  for properties:
+       contents will be merged (rules like for display strings: values on
+       same key and same position will overwrite old ones)
+    \item for parameters:
+       type cannot be redefined;
+       value may be redefined in subclasses or place of usage
+    \item  for gates:
+       type cannot be redefined;
+       vector size may be redefined in subclasses or place of usage
+    \item  for gate/parameter properties:
+       extra properties can be added;
+       existing properties can be overridden/extended like for standalone properties (?)
+    \item  for submodules:
+       new submodules may be added, but inherited ones cannot be modified
+    \item  for connections:
+       new connections may be added, but inherited ones cannot be modified
 \end{itemize}
 
 See other rules for specifics.
