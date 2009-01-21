@@ -215,16 +215,23 @@ later at runtime using the \fname{setDisplayString()} method. The rest of the ar
 in the \ttt{p} tag depends on the layout type:
 
 \begin{itemize}
-  \item \ttt{row -- p=100,100,r,deltaX} (A row of modules with deltaX units between the modules)
-  \item \ttt{column -- p=100,100,c,deltaY} (A comulm of modules with deltaX units between the modules)
-  \item \ttt{matrix -- p=100,100,m,noOfCols,deltaX,deltaY} (A matrix with "noOfCols" columns. 
-            deltaX and deltaY units between rows and columns)
-  \item \ttt{ring -- p=100,100,ri,rx,ry} (A ring (oval) with rx and ry as the horizontal and vertical radius.)
-  \item \ttt{exact (default) -- p=100,100,x,deltaX,deltaY} (Place each module at 100+deltaX;100+deltaY. The coordinates
-         are usually set at runtime.)
+  \item \ttt{row -- p=100,100,r,deltaX} (A row of modules with $deltaX$ units between the modules)
+  \item \ttt{column -- p=100,100,c,deltaY} (A column of modules with $deltaX$ units between the modules)
+  \item \ttt{matrix -- p=100,100,m,noOfCols,deltaX,deltaY} (A matrix with $noOfCols$ columns. 
+            $deltaX$ and $deltaY$ units between rows and columns)
+  \item \ttt{ring -- p=100,100,ri,rx,ry} (A ring (oval) with $rx$ and $ry$ as the horizontal and vertical radius.)
+  \item \ttt{exact (default) -- p=100,100,x,deltaX,deltaY} (Place each module at $(100+deltaX, 100+deltaY)$. 
+            The coordinates are usually set at runtime.)
 \end{itemize}
 
-TODO  screenshot of module vector
+A matrix layout for a module vector:
+\begin{verbatim}
+@display("p=,,m,4,50,50");
+\end{verbatim}
+
+\begin{center}
+\includegraphics{figures/graphics-ptag}
+\end{center}
 
 \subsubsection{Wireless range}
 In wireless simulations it is very useful to show some kind of range
@@ -238,7 +245,9 @@ submodules:
     }
 \end{verbatim}
 
-TODO screenshot
+\begin{center}
+\includegraphics{figures/graphics-rtag}
+\end{center}
 
 \subsubsection{Additional decorations}
 %%Fixme example about q tag
@@ -253,7 +262,10 @@ named "procqueue". It will display the length of the queue object along the modu
 \begin{verbatim}
 @display("q=procqueue");
 \end{verbatim}
-TODO screenshot
+
+\begin{center}
+\includegraphics{figures/graphics-qtag}
+\end{center}
 
 You can add a text description to any module using the \ttt{t}
 (displayed along the module) or \ttt{tt} tag (displayed as a tooltip).
@@ -265,7 +277,9 @@ them module with the mouse.
 @display("t=Packets sent: 18;tt=Additional tooltip information");
 \end{verbatim}
 
-TODO screenshot 
+\begin{center}
+\includegraphics{figures/graphics-ttag}
+\end{center}
 
 \begin{note}
   Generally it makes no sense to assign static texts in the NED file. Usually the 
@@ -282,13 +296,13 @@ The following tags describe what a module looks like if opened in
 Tkenv. They mostly deal with the module background.
 
 \begin{itemize}
-  \item{\ttt{bgi} -- background image}
-  \item{\ttt{bgtt} -- tooltip above the background}
-  \item{\ttt{bgg} -- background grid}
-  \item{\ttt{bgl} -- control child layouting}
-  \item{\ttt{bgb} -- background size, color, border}
-  \item{\ttt{bgs} -- scaling of background coordinates}
-  \item{\ttt{bgp} -- background coordinate offset}
+  \item \ttt{bgi} -- background image
+  \item \ttt{bgtt} -- tooltip above the background
+  \item \ttt{bgg} -- background grid
+  \item \ttt{bgl} -- control child layouting
+  \item \ttt{bgb} -- background size, color, border
+  \item \ttt{bgs} -- scaling of background coordinates
+  \item \ttt{bgp} -- background coordinate offset
 \end{itemize}
 
 In some cases it is required that the module's physical position should be modeled
@@ -337,14 +351,16 @@ Connections support the following tags:
 
 Example of a thick, red connection:
 \begin{verbatim}
-    source.out --> { @display("ls=red,3"); } --> queue.in++;
+source1.out --> { @display("ls=red,3"); } --> queue1.in++;
 \end{verbatim}
+
+\begin{center}
+\includegraphics{figures/graphics-lstag}
+\end{center}
 
 \begin{note}
 If you want to hide a connection, specify width=0 for the connection. i.e. use \ttt{ls=,0}.
 \end{note}
-
-TODO screenshot
 
 To see detailed descripton of these tags check
 Appendix \ref{cha:display-string-tags} about display string tags.
