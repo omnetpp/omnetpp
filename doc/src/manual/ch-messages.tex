@@ -576,7 +576,7 @@ a \ttt{mypacket.msg} file with the following contents:
 
 The task of the \textit{message subclassing compiler} is to generate C++ classes
 you can use from your models as well as ``reflection'' classes that allow
-Tkenv to inspect these data stuctures.
+Tkenv to inspect these data structures.
 
 If you process \ttt{mypacket.msg} with the message subclassing compiler, it will
 create the following files for you: \ttt{mypacket\_m.h} and \ttt{mypacket\_m.cc}.
@@ -608,7 +608,7 @@ pkt->setSrcAddress( localAddr );
 
 The \ttt{mypacket\_m.cc} file contains implementation of the generated \fname{MyPacket}
 class, as well as ``reflection'' code that allows you to inspect these data
-stuctures in the Tkenv GUI. The \ttt{mypacket\_m.cc} file should be compiled and
+structures in the Tkenv GUI. The \ttt{mypacket\_m.cc} file should be compiled and
 linked into your simulation. (If you use the \fname{opp\_makemake} tool
 to generate your makefiles, the latter will be automatically taken care of.)
 
@@ -1222,7 +1222,7 @@ affecting packet length, the code you'd write is the following:
 class FooPacket : public FooPacket_Base
 {
     // here come the mandatory methods: constructor,
-    // copy contructor, operator=(), dup()
+    // copy constructor, operator=(), dup()
     // ...
 
     virtual void setPayloadLength(int newlength);

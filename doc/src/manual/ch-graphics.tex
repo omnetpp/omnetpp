@@ -172,7 +172,7 @@ The following example colorizes the \ttt{block/source} icon, 20\% red
 If you want to show state information about your module, you can use the \ttt{i2} tag to
 add a small status icon to your main icon. This icon is displayed in the upper right corner
 of your main icon. Of course in most cases the \ttt{i2} tag is specified at runtime using
-the \fname{setDisplayString()} method so the icon can be changed diynamically based on the
+the \fname{setDisplayString()} method so the icon can be changed dynamically based on the
 module's internal state.
 \begin{verbatim}
 @display("i=block/server;i2=status/idle")
@@ -324,7 +324,7 @@ The \ttt{bgs=pixelsperunit,unit} specifies pixel/unit ratio, i.e. 1km is 0.075 p
 The whole area is 6000x4500km (\ttt{bgb=}) and the map of Europe is used as a
 background (\ttt{bgi=icon,s}) and stretched to fill the module backgroud.
 A light grey grid is drawn with 1000km between main ticks and 2 minor ticks per main tick
-(\ttt{bgg=tickdistance,minorpermajorticks,color}). See Figure \ref{fig:garphics-bgtags}.
+(\ttt{bgg=tickdistance,minorpermajorticks,color}). See Figure \ref{fig:graphics-bgtags}.
 
 \begin{verbatim}
 network EuropePlayground
@@ -336,7 +336,7 @@ network EuropePlayground
   \begin{center}
     \includegraphics{figures/graphics-bgtags}
     \caption{Background grid, scaling and image}
-    \label{fig:garphics-bgtags}
+    \label{fig:graphics-bgtags}
   \end{center}
 \end{figure}
 
@@ -648,7 +648,7 @@ dispStr->parse("ls=red");
 \end{verbatim}
 
 \begin{note}
-In {\opp} 3.x to manipulate the appearence of a compound module you had to use
+In {\opp} 3.x to manipulate the appearance of a compound module you had to use
 the \fname{backgroundDisplayString()} method. This is no longer supported in
 {\opp} 4.0. Use the \fname{getDisplayString()} method instead along with the background
 specific tags (i.e. \ttt{bg*} tags).

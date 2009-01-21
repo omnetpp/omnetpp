@@ -3121,7 +3121,7 @@ void BurstyGenerator::handleMessage(cMessage *msg)
 
 
 \section{Walking the module hierarchy}
-\label{ch:simple-modules:walking-module-hieararchy}
+\label{ch:simple-modules:walking-module-hierarchy}
 
 \subsubsection{Module vectors}
 
@@ -3287,7 +3287,7 @@ Typically, the called module is in the same compound module as the caller,
 so the \fname{getParentModule()} and \fname{getSubmodule()} methods of
 \cclass{cModule} can be used to get a \ttt{cModule*} pointer to the
 called module. (Further ways to obtain the pointer are described
-in the section \ref{ch:simple-modules:walking-module-hieararchy}.)
+in the section \ref{ch:simple-modules:walking-module-hierarchy}.)
 The \ttt{cModule*} pointer then has to be cast to the actual C++ class
 of the module, so that its methods become visible.
 
@@ -3347,7 +3347,7 @@ you may create a new module whenever a new user enters
 the simulated area, and dispose of them when they leave the area.
 
 As another example, when implementing a server or a transport
-protocol, it might be convenient to dymically create modules
+protocol, it might be convenient to dynamically create modules
 to serve new connections, and dispose of them when the connection
 is closed. (You would write a manager module that receives connection
 requests and creates a module for each connection.

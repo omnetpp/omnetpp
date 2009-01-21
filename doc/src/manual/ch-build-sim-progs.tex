@@ -174,7 +174,7 @@ clean &  Deletes all files that were produced by the make process\\\hline
 
 \subsection{Debug and release builds}
 
-\fprog{opp\_makemake} generates a makefile that can create both relase and debug builds.
+\fprog{opp\_makemake} generates a makefile that can create both release and debug builds.
 By default it creates debug version, but it is easy to override this behaviour.
 Just define the \ttt{MODE} variable on the \fprog{make} command line.
 
@@ -198,7 +198,7 @@ always included automatically)
 
 To define an external library to be linked with, use \ttt{-Ldir} to specify
 the directory of the external library and \ttt{-llibrary} to specify the name of the
-external dependecy.
+external dependency.
 
 
 \subsection{Building directory trees}
@@ -272,7 +272,7 @@ The \ttt{configname} part will mirror your compiler toolchain and build mode set
 (i.e. The result of a debug build with gcc will be placed in \ttt{out/gcc-debug})
 
 
-The location of the generated output file is determned by the -O option.
+The location of the generated output file is determined by the -O option.
 (The default value is 'out', relative to the project root directory):
 
 
@@ -439,7 +439,7 @@ $ cd testSuite && opp_makemake -f --deep -o testSuite -O out
 
 Now the last step is to create a top-level makefile in the root of the project that
 calls the previously created makefiles in the correct order. We will use the
-\ttt{-{}-nolink} option, exclude every subdirectory from the bild (-X.) and explicitly call
+\ttt{-{}-nolink} option, exclude every subdirectory from the build (-X.) and explicitly call
 the above makefiles (-d dirname).
 
 \begin{verbatim}

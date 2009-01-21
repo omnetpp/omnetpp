@@ -217,8 +217,8 @@ think about them as being ``hardcoded''. In contrast, it is easier
 and more flexible to maintain module parameter settings in omnetpp.ini.
 
 In omnetpp.ini, module parameters are referred to by their full paths
-or hiearchical names. This name consists of the dot-separated list of
-the module names (from the top-level module down to the module containg
+or hierarchical names. This name consists of the dot-separated list of
+the module names (from the top-level module down to the module containing
 the parameter), plus the parameter name
 (see section \ref{sec:sim-lib:fullname-and-fullpath}).
 
@@ -242,7 +242,7 @@ be tedious to set them one-by-one in \ttt{omnetpp.ini}. {\opp} supports
 at once.
 
 The notation is a variation on the usual glob-style patterns.
-The most apperent differences to the usual rules are the distinction between
+The most apparent differences to the usual rules are the distinction between
 \ttt{*} and \ttt{**}, and that character ranges should be written
 with curly braces instead of square brackets (that is, \textit{any-letter}
 is \ttt{\{a-zA-Z\}} not \ttt{[a-zA-Z]}, because square brackets are
@@ -346,8 +346,8 @@ cause an error or will be interactively prompted for, depending
 on the particular user interface.
 
 \begin{note}
-In Cmdenv you must explicitly enable the interactive mode with the 
-\ttt{-{}-cmdenv-interactive=true} option otherwise you will get an error 
+In Cmdenv you must explicitly enable the interactive mode with the
+\ttt{-{}-cmdenv-interactive=true} option otherwise you will get an error
 when running the simulation.
 \end{note}
 
@@ -415,7 +415,7 @@ Number of runs: 24
 \end{Verbatim}
 
 
-If you add the '-g' option, the program will also print out the 
+If you add the '-g' option, the program will also print out the
 values of the iteration variables for each run. (Use '-G' for even more info)
 Note that the parameter study actually maps to nested
 loops, with the last "\$\{..\}" becoming
@@ -719,7 +719,7 @@ good place to mention that the format of result files have been
 extended to include meta info such as the run ID, network name, all
 configuration settings, etc. These data make the files more
 self-documenting, which can be valuable during the result analysis
-phase, and increase reproduciblity of the results. Another change is
+phase, and increase reproducibility of the results. Another change is
 that vector data are now recorded into the file clustered by the output
 vectors, which (combined with index files) allows much more efficient
 processing.
@@ -742,8 +742,8 @@ collection interval. By default, all output vectors are turned on.
 \begin{note}
     The way of configuring output vectors has changed. In {\opp} 3.x,
     the keys for enabling-disabling a vector and specifying recording
-    interval were <module-and-vectorname-pattern>.enabled, and 
-    <module-and-vectorname-pattern>.interval. The "enabled" and "interval" 
+    interval were <module-and-vectorname-pattern>.enabled, and
+    <module-and-vectorname-pattern>.interval. The "enabled" and "interval"
     words changed to "vector-recording" and "vector-recording-interval".
     The reason for this change is that per-object
     configuration keys are now required to have a hyphen in their names, to
@@ -751,7 +751,7 @@ collection interval. By default, all output vectors are turned on.
     This allows the simulator to catch mistyped config keys in ini files.
     The syntax for specifying the recording interval has also been extended
     (in a backward compatible way) to accept multiple intervals, separated
-    by comma. \end{note}
+    by comma.\end{note}
 
 
 Output vectors can be configured with the following syntax:

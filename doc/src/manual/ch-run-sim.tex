@@ -192,7 +192,7 @@ There are several useful configuration options that control how a simulation is 
   \item \ttt{cpu-time-limit} -- Limit how long the simulation should run (in wall clock time)
   \item \ttt{sim-time-limit} -- Limit how long the simulation should run (in simulation time)
   \item \ttt{debug-on-errors} -- If the runtime detects any error it will generate a breakpoint
-        so you will be able to ckeck the location and the context of the problem in your debugger.
+        so you will be able to check the location and the context of the problem in your debugger.
   \item \ttt{fingerprint} -- The simulation kernel computes a checksum while running the simulation.
           It is calculated from the module id and from the current simulation time of each event.
           If you specify the \ttt{fingerprint} option in the config file, the simulation runtime will
@@ -286,7 +286,7 @@ and it can be processed using the IDE or other tools.
 
 The command line environment allows you to specify more than one run by
 using the \ttt{-r 2,4,6..8} format. See \ref{sec:ch-run-sim:batch-execution}
-for more information abour running simulation batches.
+for more information about running simulation batches.
 
 \subsection{Cmdenv ini file options}
 \label{sec:ch-run-sim:cmdenv-section}
@@ -359,7 +359,7 @@ The second line displays info about simulation performance:
      In any case, this value is independent of the size (number of modules) in your model.}
    \item{\ttt{simsec/sec} shows \textit{relative speed} of the simulation, that is,
      how fast the simulation is progressing compared to real time, how many
-     simulated seconds can be done in one real second. This value virtuall depends
+     simulated seconds can be done in one real second. This value virtually depends
      on everything: on the hardware, on the size of the simulation model,
      on the complexity of events, and the average simulation time between events as well.}
    \item{\ttt{ev/simsec} is the \textit{event density}: how many events are
@@ -480,7 +480,7 @@ simulation with an API call if some condition is true.
   out the \ttt{-r} option to execute all runs in the experiment.
 
 \begin{warning}
-  Altough it is very convinient, we do not recommended to use this method for
+  Although it is very convenient, we do not recommended to use this method for
   running simulation batches. Specifying more than one runnumber
   would run these simulations in the same process. This method is more prone to C++ programming
   errors. A failure in a single run may stop and kill all the runs following it. If you want
@@ -928,7 +928,7 @@ The most common problems in C++ are associated with memory allocation
      or memory blocks no longer used;}
    \item{\textit{crashes,} usually due to referring to an already deleted
      object or memory block, or trying to delete one for a second time;}
-   \item{\textit{heap corruption} (enventually leading to crash) due to
+   \item{\textit{heap corruption} (eventually leading to crash) due to
      overrunning allocated blocks, i.e. writing past the end of an allocated
      array.}
 \end{itemize}
@@ -982,7 +982,7 @@ Check the following if you think your simulation is running too slow.
   \item Be sure that event logging is turned off (\ttt{record-eventlog=false} configuration option).
   \item Turn of vector file recording if you do not absolutely need it (\ttt{**.vector-recording=false}).
   \item If you are running under Tkenv disable animation features, close inspectors,
-        hide the timeline, hide object tree, turn off log filterning.
+        hide the timeline, hide object tree, turn off log filtering.
   \item Compile your code as release instead of debug (in some cases this can give you 5x speedup)
 \end{itemize}
 

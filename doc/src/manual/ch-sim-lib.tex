@@ -12,7 +12,7 @@ previous chapters:
     (section \ref{ch:simple-modules:sending-and-receiving})}
   \item{access to module gates and parameters via \cclass{cModule} member functions
     (sections \ref{ch:simple-modules:parameters} and \ref{ch:simple-modules:gates})}
-  \item{accessing other modules in the network (section \ref{ch:simple-modules:walking-module-hieararchy})}
+  \item{accessing other modules in the network (section \ref{ch:simple-modules:walking-module-hierarchy})}
   \item{dynamic module creation (section \ref{ch:simple-modules:dynamic-module-creation})}
 \end{itemize}
 
@@ -356,7 +356,7 @@ simtime_t t = strToSimtime0(s); // now s points to "and something extra"
 \label{cha:sim-lib:generating-random-numbers}
 
 Random numbers in simulation are never random. Rather, they are
-produced using deteministic algorithms. Algorithms take a \textit{seed} value
+produced using deterministic algorithms. Algorithms take a \textit{seed} value
 and perform some deterministic calculations on them to produce
 a ``random'' number and the next seed. Such algorithms and their
 implementations are called \textit{random number generators} or RNGs,
@@ -2264,7 +2264,7 @@ The following methods \textbf{must} be implemented:
         It should create and return an exact duplicate of the object.
         It is usually a one-line function, implemented with the help
         of the \ttt{new} operator and the copy constructor.}
-  \item{\textit{Assigment operator}, that is, \ttt{X\& operator=(const X\&)}
+  \item{\textit{Assignment operator}, that is, \ttt{X\& operator=(const X\&)}
         for a class \ttt{X}. It should copy the contents of the other
         object into this one, except the name string. See later what to do
         if the object contains pointers to other objects.}
@@ -2479,7 +2479,7 @@ the one that requires the most work from you of all methods
 required by \cclass{cOwnedObject}.
 
 If you do not want to implement object copying and duplication,
-you should implement the assigment operator to call
+you should implement the assignment operator to call
 \fname{copyNotSupported()} -- it'll throw an exception that
 stops the simulation with an error message if this function
 is called.
@@ -2555,7 +2555,7 @@ into them. But this is not limited to objects inserted into a container:
 From the user's point of view, ownership is managed transparently.
 For example, when you create a new \cclass{cMessage},
 it will be owned by the simple module. When you send it, it will
-first be handed over to (i.e. change owership to) the FES\index{FES}, and,
+first be handed over to (i.e. change ownership to) the FES\index{FES}, and,
 upon arrival, to the destination simple module. When you encapsulate
 the message in another one, the encapsulating message will become
 the owner. When you decapsulate it again, the currently active
@@ -2748,7 +2748,7 @@ and the \fname{dup()} method.
 In {\opp}, the convention is that copying is implemented
 in the assignment operator, and the other two just rely on it.
 (The copy constructor just constructs an empty object and
-invokes assigment, while \fname{dup()}
+invokes assignment, while \fname{dup()}
 is implemented as \fname{new cArray(*this)}).
 
 % FIXME finish this!
