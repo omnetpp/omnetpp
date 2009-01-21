@@ -453,34 +453,20 @@ to the \textit{default key}. Examples:
 @prop(value1,value2;key1=value11,value12,value13)
 \end{verbatim}
 
-TODO property grammar:
-        : NAME
-        | '\$' NAME
-        | STRINGCONSTANT
-        | TRUE
-        | FALSE
-        | INTCONSTANT
-        | REALCONSTANT
-        | quantity
-        | '-'
-        ;
-%% FIXME ezt jo lenne majd flexibilisebbe tenni! pl hogy beleferjen INET::Tcp (idezojelezes nelkul is!)
+Property values have a liberal syntax (see \ref{cha:ned-language-grammar}).
+Values that do not fit the grammar (notably, those containing a comma or
+semicolon) need to be surrounded with double quotes.
 
-If an item in a valuelist contains a comma or semicolon, the item
-must be quoted (using double quotes) to prevent the comma or semicolon
-from being interpreted as separator. A quotation mark must be escaped
-with a backslash.
+When interpreting a property value, one layer of quotes is removed
+automatically, that is, \ttt{foo} and \ttt{"foo"} are the same. To add a
+value with quotation marks included, enclose it in an extra layer of
+quotes: \ttt{"\textbackslash"foo\textbackslash""}.
 
-FIXME verify this whole quoting business!!!! e.g. is \, also OK?
+Example:
 
 \begin{verbatim}
-@prop(marks=the ! mark, "the , mark", "the ; mark", the \" mark);
+@prop(marks=the ! mark, "the , mark", "the ; mark");
 \end{verbatim}
-
-One layer of quotes is removed from value items automatically, that is,
-\ttt{foo} and \ttt{"foo"} are the same. To add a value item with
-quotation marks included, enclose it in an extra layer of quotes:
-\ttt{"\textbackslash"foo\textbackslash""}.
 
 
 \subsubsection{Placement}
