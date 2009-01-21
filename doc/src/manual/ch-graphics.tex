@@ -229,9 +229,13 @@ A matrix layout for a module vector:
 @display("p=,,m,4,50,50");
 \end{verbatim}
 
-\begin{center}
-\includegraphics{figures/graphics-ptag}
-\end{center}
+\begin{figure}[htbp]
+  \begin{center}
+    \includegraphics{figures/graphics-ptag}
+    \caption{Matrix arrangement using the $p$ tag}
+    \label{fig:graphics-ptag}
+  \end{center}
+\end{figure}
 
 \subsubsection{Wireless range}
 In wireless simulations it is very useful to show some kind of range
@@ -245,9 +249,13 @@ submodules:
     }
 \end{verbatim}
 
-\begin{center}
-\includegraphics{figures/graphics-rtag}
-\end{center}
+\begin{figure}[htbp]
+  \begin{center}
+    \includegraphics{figures/graphics-rtag}
+    \caption{Range indicator using the $r$ tag}
+    \label{fig:graphics-rtag}
+  \end{center}
+\end{figure}
 
 \subsubsection{Additional decorations}
 %%Fixme example about q tag
@@ -316,7 +324,7 @@ The \ttt{bgs=pixelsperunit,unit} specifies pixel/unit ratio, i.e. 1km is 0.075 p
 The whole area is 6000x4500km (\ttt{bgb=}) and the map of Europe is used as a 
 background (\ttt{bgi=icon,s}) and stretched to fill the module backgroud.
 A light grey grid is drawn with 1000km between main ticks and 2 minor ticks per main tick
-(\ttt{bgg=tickdistance,minorpermajorticks,color}). 
+(\ttt{bgg=tickdistance,minorpermajorticks,color}). See Figure \ref{fig:garphics-bgtags}.
 
 \begin{verbatim}
 network EuropePlayground
@@ -324,9 +332,13 @@ network EuropePlayground
     @display("bgb=6000,4500;bgi=maps/europe,s;bgg=1000,2,grey95;bgs=0.075,km");
 \end{verbatim}
 
-\begin{center}
-\includegraphics{figures/graphics-bgtags}
-\end{center}
+\begin{figure}[htbp]
+  \begin{center}
+    \includegraphics{figures/graphics-bgtags}
+    \caption{Background grid, scaling and image}
+    \label{fig:garphics-bgtags}
+  \end{center}
+\end{figure}
 
 After specifying the above \ttt{bgs} tag, all your submodule coordinates will be treated as if
 they were specified in km.
@@ -497,7 +509,7 @@ and Tkenv need the exact location of this directory to load the icons.
 Icons are loaded from all directories in the \textit{image path},
 a semicolon-separated list of directories.
 The default image path is compiled into Tkenv with the value
-\ttt{"\textit{omnetpp-dir}/images;./images;./bitmaps"} -- which will work fine
+\ttt{"\textit{omnetpp-dir}/images; ./images;./bitmaps"} -- which will work fine
 as long as you don't move the directory, and you'll also be able to
 load more icons from the \ttt{images/} subdirectory of the current
 directory. As people usually run simulation models from the model's
