@@ -58,7 +58,7 @@ types, parameters, gates and submodules by adding properties. Metadata are
 not used by the simulation kernel directly, but they can carry extra
 information for various tools, the runtime environment, or even for other
 modules in the model. For example, a module's graphical representation
-(icon, etc)  or the prompt string and physical unit (milliwatt, etc) of a
+(icon, etc)  or the prompt string and measurement unit (milliwatt, etc) of a
 parameter are already specified as metadata annotations.
 
 \end{description}
@@ -189,7 +189,7 @@ that the parameter can be used as a source of random numbers.
     encapsulate all details, and can provide any random variable.
 \end{note}
 
-The \ttt{@unit(s)} and \ttt{@unit(byte)} bits declare the physical unit
+The \ttt{@unit(s)} and \ttt{@unit(byte)} bits declare the measurement unit
 for the parameter. Values assigned to parameters must have the same or
 compatible unit, i.e. \ttt{@unit(s)} accepts milliseconds, nanoseconds,
 minutes, hours, etc., and \ttt{@unit(byte)} accepts kilobytes, megabytes,
@@ -387,7 +387,7 @@ matching \ttt{apply-default=true} line is found in the configuration.
 \end{note}
 
 The \ttt{serviceTime} parameter is decorated with \ttt{@unit(s)}. This means
-that the value must be specified in either seconds, or in a physical unit {\opp}
+that the value must be specified in either seconds, or in a measurement unit {\opp}
 can convert to seconds, like milliseconds or hours; dimensionless numbers
 will not be accepted. The {\opp} runtime does a full and rigorous unit check on
 parameters to ensure ``unit safety'' of models.

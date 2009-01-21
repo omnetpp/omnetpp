@@ -18,7 +18,7 @@ Display strings can be used in the following contexts:
         communication range (as circle or filled circle), tooltip, etc.
   \item \textit{compound modules, networks} -- display string can specify
         background color, border color, border thickness,
-        background image, scaling, grid, measurement unit, etc.
+        background image, scaling, grid, unit of measurement, etc.
   \item \textit{connections} -- display string can specify positioning, color,
         line thickness, line style, text and tooltip
   \item \textit{messages} -- display string can specify icon, icon color, etc.
@@ -204,9 +204,9 @@ The following example will place the module at the given position:
 
 \begin{note}
 The coordinates specified in the \ttt{p}, \ttt{b} or \ttt{r} tags are not necessarily
-measured in pixles. You can use the parent module's \ttt{bgs=pix2unitratio,unit} tag, 
-to set the scaling parameter and the physical unit for your module. 
-You can specify the ratio between 1 pixel and 1 pysical unit with the \ttt{bgs} tag.
+measured in pixels. You can use the parent module's \ttt{bgs=pix2unitratio,unit} tag,
+to set the scaling parameter and the unit of measurement for your module.
+You can specify the ratio between 1 pixel and 1 unit with the \ttt{bgs} tag.
 \end{note}
 
 The \ttt{p} tag allows the automatic arrangement of module vectors. They can be
@@ -217,10 +217,10 @@ in the \ttt{p} tag depends on the layout type:
 \begin{itemize}
   \item \ttt{row -- p=100,100,r,deltaX} (A row of modules with $deltaX$ units between the modules)
   \item \ttt{column -- p=100,100,c,deltaY} (A column of modules with $deltaX$ units between the modules)
-  \item \ttt{matrix -- p=100,100,m,noOfCols,deltaX,deltaY} (A matrix with $noOfCols$ columns. 
+  \item \ttt{matrix -- p=100,100,m,noOfCols,deltaX,deltaY} (A matrix with $noOfCols$ columns.
             $deltaX$ and $deltaY$ units between rows and columns)
   \item \ttt{ring -- p=100,100,ri,rx,ry} (A ring (oval) with $rx$ and $ry$ as the horizontal and vertical radius.)
-  \item \ttt{exact (default) -- p=100,100,x,deltaX,deltaY} (Place each module at $(100+deltaX, 100+deltaY)$. 
+  \item \ttt{exact (default) -- p=100,100,x,deltaX,deltaY} (Place each module at $(100+deltaX, 100+deltaY)$.
             The coordinates are usually set at runtime.)
 \end{itemize}
 
@@ -239,7 +239,7 @@ A matrix layout for a module vector:
 
 \subsubsection{Wireless range}
 In wireless simulations it is very useful to show some kind of range
-around your module. This can be an interference range, transmission range 
+around your module. This can be an interference range, transmission range
 etc. The following example will place the module at a given position,
 and draw a 90 unit circle around it as a range indicator:
 \begin{verbatim}
@@ -263,8 +263,8 @@ Sometimes you want to annotate your modules with additional information
 to make your model more transparent. One special case is when you want to
 show the length of a queue (\cclass{cQueue}) embedded somewhere in a module.
 In the following example the Server simple module contains a \cclass{cQueue} object,
-which was named by the \fname{queue.setName("procqueue")} method. 
-If we specify \ttt{q=procqueue} in the display string, Tkenv will descend into 
+which was named by the \fname{queue.setName("procqueue")} method.
+If we specify \ttt{q=procqueue} in the display string, Tkenv will descend into
 the module (several levels deep if needed) and look for a queue object
 named "procqueue". It will display the length of the queue object along the module.
 \begin{verbatim}
@@ -290,9 +290,9 @@ them module with the mouse.
 \end{center}
 
 \begin{note}
-  Generally it makes no sense to assign static texts in the NED file. Usually the 
+  Generally it makes no sense to assign static texts in the NED file. Usually the
   \ttt{t} and \ttt{tt} tags are used at runtime with the \fname{setDisplayString()}
-  method. 
+  method.
 \end{note}
 
 To see detailed descripton of the display string tags check
@@ -314,14 +314,14 @@ Tkenv. They mostly deal with the module background.
 \end{itemize}
 
 In some cases it is required that the module's physical position should be modeled
-also in your model. In this case you would set the submodule display strings with 
+also in your model. In this case you would set the submodule display strings with
 the \fname{setDisplayString()} method at run time, but it would be also nice to
 customize the area in what the modules are moving. It is possible to manipulate
-how a module's background look like or wheter we can use physical units instead
-of pixels to set the position of the modules. The following example demonstrates the use 
-of module background tags. The coordinates are given in km (si unit). 
+what a module's background looks like or whether we can use measurement units instead
+of pixels to set the position of the modules. The following example demonstrates the use
+of module background tags. The coordinates are given in km (SI unit).
 The \ttt{bgs=pixelsperunit,unit} specifies pixel/unit ratio, i.e. 1km is 0.075 pixel on the screen.
-The whole area is 6000x4500km (\ttt{bgb=}) and the map of Europe is used as a 
+The whole area is 6000x4500km (\ttt{bgb=}) and the map of Europe is used as a
 background (\ttt{bgi=icon,s}) and stretched to fill the module backgroud.
 A light grey grid is drawn with 1000km between main ticks and 2 minor ticks per main tick
 (\ttt{bgg=tickdistance,minorpermajorticks,color}). See Figure \ref{fig:garphics-bgtags}.
@@ -350,7 +350,7 @@ Appendix \ref{cha:display-string-tags} about display string tags.
 
 Connections may also have display strings. Connections inherit the
 display string property of their channel in the same way submodules inherit
-their display string from their types. If no channel is specified for a 
+their display string from their types. If no channel is specified for a
 connection \cclass{IdealChannel} will be used implicitly by the simulation kernel.
 
 Connections support the following tags:
@@ -431,7 +431,7 @@ Their border color will depend on the \ttt{messageKind} property of the message.
 \end{verbatim}
 
 \begin{note}
-   In message display strings you may use the word \ttt{kind} as a special color. 
+   In message display strings you may use the word \ttt{kind} as a special color.
    This virtual color depends on the \ttt{messageKind} field in the message.
 \end{note}
 

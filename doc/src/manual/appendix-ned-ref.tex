@@ -72,9 +72,9 @@ scientific notations.
 \subsubsection{Quantity constants}
 
 A quantity constant has the form \textit{(<numeric-constant> <unit>)+}, for
-example \ttt{12.5mW} or \ttt{3h 15min 37.2s}. When multiple units are present,
-they have to be convertible into each other (i.e. refer to the same physical
-quantity).
+example \ttt{12.5mW} or \ttt{3h 15min 37.2s}. When multiple measurement
+units are present, they have to be convertible into each other (i.e. refer
+to the same physical quantity).
 
 Section \ref{ch-ned-ref:sec:units} lists the units recognized by {\opp}.
 Other units can be used as well, the only downside being that {\opp} will not be
@@ -545,7 +545,7 @@ default key.
 
 \subsubsection{The @unit property}
 
-A parameter may have a \ttt{@unit} property to associate it with a physical
+A parameter may have a \ttt{@unit} property to associate it with a measurement
 unit. The \ttt{@unit} property should contain one string value for the default
 key. Examples:
 
@@ -1051,11 +1051,11 @@ The expression syntax is the following:
 The functions available in NED are listed in Appendix
 \ref{cha:ned-functions}.
 
-\subsection{Physical units}
+\subsection{Units of measurement}
 \label{ch-ned-ref:sec:units}
 
-The following physical units will be recognized in constants. Other units can
-be used as well, but there will be no conversions available for them (i.e.
+The following measurements units are recognized in constants. Other units can
+be used as well, but there are no conversions available for them (i.e.
 \ttt{parsec} and \ttt{kiloparsec} will be treated as two completely unrelated
 units.)
 
