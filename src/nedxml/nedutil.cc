@@ -179,9 +179,10 @@ bool NEDElementUtil::propertyAsBool(PropertyElement *property)
     LiteralElement *literal = getTheOnlyValueFrom(property);
     if (!literal)
         return true;  // so that @isNetwork is equivalent to @isNetwork(true)
-    if (literal->getType() != NED_CONST_BOOL)
+    const char *value = literal->getValue();
+    if (strcmp(value, "true")!=0 && strcmp(value, "false")!=0)
         throw NEDException(property, "boolean value expected");
-    return literal->getValue()[0]=='t';
+    return value[0]=='t';
 }
 
 const char *NEDElementUtil::propertyAsString(PropertyElement *property)

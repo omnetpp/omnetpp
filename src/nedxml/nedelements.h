@@ -192,8 +192,9 @@ class NEDXML_API FilesElement : public NEDElement
  * GENERATED CLASS. Represents the \<ned-file\> XML element in memory. DTD declaration:
  * 
  * <pre>
- * \<!ELEMENT ned-file (comment*, (package|import|property-decl|property|channel|
- *                     channel-interface|simple-module|compound-module|module-interface)*)\>
+ * \<!ELEMENT ned-file (comment*, (package|import|property-decl|property|
+ *                     simple-module|compound-module|module-interface|
+ *                     channel|channel-interface)*)\>
  * \<!ATTLIST ned-file
  *      filename           CDATA     \#REQUIRED
  *      version            CDATA     "2"\>
@@ -241,11 +242,11 @@ class NEDXML_API NedFileElement : public NEDElement
     virtual ImportElement *getFirstImportChild() const;
     virtual PropertyDeclElement *getFirstPropertyDeclChild() const;
     virtual PropertyElement *getFirstPropertyChild() const;
-    virtual ChannelElement *getFirstChannelChild() const;
-    virtual ChannelInterfaceElement *getFirstChannelInterfaceChild() const;
     virtual SimpleModuleElement *getFirstSimpleModuleChild() const;
     virtual CompoundModuleElement *getFirstCompoundModuleChild() const;
     virtual ModuleInterfaceElement *getFirstModuleInterfaceChild() const;
+    virtual ChannelElement *getFirstChannelChild() const;
+    virtual ChannelInterfaceElement *getFirstChannelInterfaceChild() const;
     //@}
 };
 

@@ -17,6 +17,7 @@
 #include <algorithm>
 #include "cproperties.h"
 #include "cproperty.h"
+#include "stringutil.h"
 
 USING_NAMESPACE
 
@@ -98,6 +99,9 @@ bool cProperties::getAsBool(const char *name, const char *index) const
     if (!prop)
         return false;
     const char *value = prop->getValue(cProperty::DEFAULTKEY, 0);
+    if (!opp_isempty(value) && strcmp(value, "true")!=0 && strcmp(value, "false")!=0)
+        throw cRuntimeError(this, "@%s property: boolean value expected, got '%s'", name, value);
+
     return opp_strcmp(value, "false")==0 ? false : true;
 }
 

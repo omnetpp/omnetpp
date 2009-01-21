@@ -197,16 +197,6 @@ PropertyElement *NedFileElement::getFirstPropertyChild() const
     return (PropertyElement *)getFirstChildWithTag(NED_PROPERTY);
 }
 
-ChannelElement *NedFileElement::getFirstChannelChild() const
-{
-    return (ChannelElement *)getFirstChildWithTag(NED_CHANNEL);
-}
-
-ChannelInterfaceElement *NedFileElement::getFirstChannelInterfaceChild() const
-{
-    return (ChannelInterfaceElement *)getFirstChildWithTag(NED_CHANNEL_INTERFACE);
-}
-
 SimpleModuleElement *NedFileElement::getFirstSimpleModuleChild() const
 {
     return (SimpleModuleElement *)getFirstChildWithTag(NED_SIMPLE_MODULE);
@@ -220,6 +210,16 @@ CompoundModuleElement *NedFileElement::getFirstCompoundModuleChild() const
 ModuleInterfaceElement *NedFileElement::getFirstModuleInterfaceChild() const
 {
     return (ModuleInterfaceElement *)getFirstChildWithTag(NED_MODULE_INTERFACE);
+}
+
+ChannelElement *NedFileElement::getFirstChannelChild() const
+{
+    return (ChannelElement *)getFirstChildWithTag(NED_CHANNEL);
+}
+
+ChannelInterfaceElement *NedFileElement::getFirstChannelInterfaceChild() const
+{
+    return (ChannelInterfaceElement *)getFirstChildWithTag(NED_CHANNEL_INTERFACE);
 }
 
 CommentElement::CommentElement()

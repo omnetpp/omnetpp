@@ -859,30 +859,28 @@ property_values
         ;
 
 property_value
-        : NAME
-                { $$ = createLiteral(NED_CONST_STRING, @1, @1); /* not a quoted string */ }
-        | '$' NAME
-                { $$ = createLiteral(NED_CONST_STRING, @$, @$); /* not a quoted string */ }
+        : property_value_tokens
+                { $$ = createLiteral(NED_CONST_SPEC, @$, @$); }
         | STRINGCONSTANT
                 { $$ = createStringLiteral(@1); }
-        | TRUE_
-                { $$ = createLiteral(NED_CONST_BOOL, @1, @1); }
-        | FALSE_
-                { $$ = createLiteral(NED_CONST_BOOL, @1, @1); }
-        | INTCONSTANT
-                { $$ = createLiteral(NED_CONST_INT, @1, @1); }
-        | REALCONSTANT
-                { $$ = createLiteral(NED_CONST_DOUBLE, @1, @1); }
-        | quantity
-                { $$ = createQuantityLiteral(@1); }
-        | '-'  /* antivalue ("remove existing value from this position") */
-                { $$ = createLiteral(NED_CONST_SPEC, @1, @1); }
-        |  /* nothing (no value) */
+        |  /*empty*/
                 {
                   LiteralElement *node = (LiteralElement *)createElementWithTag(NED_LITERAL);
                   node->setType(NED_CONST_SPEC); // and leave both value and text at ""
                   $$ = node;
                 }
+        ;
+
+property_value_tokens
+        : property_value_tokens property_value_token
+        | property_value_token
+        ;
+
+property_value_token
+        : NAME | INTCONSTANT | REALCONSTANT | TRUE_ | FALSE_
+        | '$' | '@' | ':' | '=' | '[' | ']' | '{' | '}' | '.' | '?'
+        | '^' | '+' | '-' | '*' | '/' | '%' | '<' | '>' | EQ | NE | LE | GE
+        | DOUBLEASTERISK | TO | PLUSPLUS | OR | AND | XOR | NOT
         ;
 
 /*

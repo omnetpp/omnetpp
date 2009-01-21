@@ -1,3 +1,7 @@
+2009-01-21  Andras Varga
+
+	* ned2.y: definition of property_value made more permissive
+
 2008-12-14  Andras Varga
 
 	* opp_msgc: improvement related to bug #33. Type announcement now can
