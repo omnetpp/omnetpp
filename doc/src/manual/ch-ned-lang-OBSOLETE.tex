@@ -1124,10 +1124,10 @@ All values are represented as \ttt{double}s. For the bitwise operators,
   represented in \ttt{double}s, this is not the case. IEEE-754 \ttt{double}s
   have 52 bit mantissas, and integer numbers in that range are represented
   without rounding errors.}
-using the C/C++ builtin conversion (type cast), the operation is performed,
+using the C/C++ built-in conversion (type cast), the operation is performed,
 then the result is converted back to \ttt{double}.
 Similarly, for the logical operators \&\&, || and \#\#,
-the operands are converted to \ttt{bool} using the C/C++ builtin
+the operands are converted to \ttt{bool} using the C/C++ built-in
 conversion (type cast), the operation is performed, then the result
 is converted back to \ttt{double}. For modulus (\%), the operands are
 converted to \ttt{long}.

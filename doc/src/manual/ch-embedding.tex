@@ -441,7 +441,7 @@ Modules in the simulation are C++ objects. If you add the appropriate
 public getter methods to the module classes, you can call them from your
 main program to obtain statistics. Modules may be looked up with the
 \fname{getModuleByPath()} method of \cclass{cSimulation}, then cast to the
-specific module type via \fname{check\_and\_clast<>()} so that the getter
+specific module type via \fname{check\_and\_cast<>()} so that the getter
 methods can be invoked.
 
 \begin{verbatim}
