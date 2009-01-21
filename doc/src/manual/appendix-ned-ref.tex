@@ -458,14 +458,20 @@ Example:
 
 \subsubsection{Placement}
 
-TODO what can have properties, where
+Properties may be added to NED files, component types, parameters,
+gates, submodules and connections. For the exact syntax, see
+Appendix \ref{cha:ned-language-grammar}.
 
-When a component type extends another component types, properties
+When a component type extends another component type(s), properties
 are merged. This is described in section \ref{ch-ned-ref:sec:inheritance}.
+
 
 \subsubsection{Property declarations}
 
-TODO
+The \fkeyword{property} keyword is reserved for future use. It is
+envisioned that accepted property names and property keys would need
+to be pre-declared, so that the NED infrastructure can warn the user
+about mistyped or unrecognized names.
 
 
 \subsection{Parameters}
@@ -597,7 +603,7 @@ exact syntax.
 
 \begin{note}
     When using the \ttt{<>} syntax, the actual NED type should be
-    provided with the \ttt{<pattern>.type-name} configuration option:
+    provided with the \fconfig{type-name} configuration option:
     \ttt{**.host[0..3].\-type-name=\-"MobileHost"}.
 \end{note}
 
