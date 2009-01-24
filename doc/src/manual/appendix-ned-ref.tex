@@ -97,7 +97,7 @@ The grammar of the NED language can be found in Appendix
 \label{ch-ned-ref:sec:built-in-defs}
 
 The NED language has the following built-in definitions, all in the \ttt{ned}
-package: channels \ttt{IdealChannel} \ttt{DelayChannel}, and \ttt{DatarateChannel;
+package: channels \ttt{IdealChannel} \ttt{DelayChannel}, and \ttt{DatarateChannel};
 module interfaces \ttt{IBidirectionalChannel} and \ttt{IUnidirectionalChannel}.
 The latter two are reserved for future use.
 
@@ -626,7 +626,7 @@ and \ttt{@loose}. They have the same effect: When either of them is
 present on a gate, the gate is not required to be connected in the
 connections section of a compound module (see \ref{ch-ned-ref:sec:connections}).
 
-\ttt{@directIn} should be used when the gate is an inut gate that is
+\ttt{@directIn} should be used when the gate is an \fkeyword{inout} gate that is
 intended for being used as a target for the \fname{sendDirect()} method;
 \ttt{@loose} should be used in any other case when the gate is not
 required to be connected for some reason.
@@ -700,31 +700,85 @@ Connections are defined in the \fkeyword{connections} section of the compound mo
 
 Normally, all gates must be connected, including submodule gates and the gates
 of the compound module. When the \fkeyword{allowunconnected} modifier is present
-(\ttt{connections allowunconnected:}), gates can be left unconnected.
+after \fkeyword{connections}, gates will be allowed to be left unconnected.
 
 \begin{note}
-    The \ttt{directIn} and \ttt{@loose} gate properties are to the
-    \ttt{connections allowunconnected} syntax; see \label{ch-ned-ref:sec:gates}.
+    The \ttt{directIn} and \ttt{@loose} gate properties are alternatives to the
+    \ttt{connections allow\-unconnected} syntax; see \ref{ch-ned-ref:sec:gates}.
 \end{note}
 
-\subsubsection{Single and group connections}
+\subsubsection{Connections and connection groups}
 
-TODO
+The connections section may contain any number of connections and
+connection groups. A connection group is one or more connections
+grouped with curly braces.
+
+Both connections and connection groups may be conditional (\fkeyword{if}
+keyword) or may be multiple (\fkeyword{for} keyword).
+
+Any number of \fkeyword{for} and \fkeyword{if} clauses may be added to
+a connection or connection loop; they are interpreted as if they were
+nested in the given order. Loop variables of a \fkeyword{for} may be
+referenced from subsequent conditions and loops as well as in module and
+gate index expressions in the connections.
+
+See the NED Grammar (\ref{cha:ned-language-grammar}) for the exact syntax.
+
+Example connections:
+
+\begin{verbatim}
+a.out --> b.in;
+c.out --> d.in if p>0;
+e.out[i] --> f[i].in for i=0..sizeof(f)-1, if i%2==0;
+\end{verbatim}
+
+Example connection groups:
+
+\begin{verbatim}
+if p>0 {
+    a.out --> b.in;
+    a.in <-- b.out;
+}
+for i=0..sizeof(c)-1, if i%2==0 {
+    c[i].out --> out[i];
+    c[i].in <-- in[i];
+}
+for i=0..sizeof(d)-1, for j=0..sizeof(d)-1, if i!=j {
+    d[i].out[j] --> d[j].in[i];
+}
+for i=0..sizeof(e)-1, for j=0..sizeof(e)-1 {
+    e[i].out[j] --> e[j].in[i] if i!=j;
+}
+\end{verbatim}
 
 
-\subsubsection{Specifying gates}
+\subsubsection{Connection syntax}
 
-if module is missing, that means the compound module.
+The connection syntax uses arrows (\ttt{-{}->}, \ttt{<-{}-}) to connect
+\fkeyword{input} and \fkeyword{output} gates, and double arrows
+(\ttt{<-{}->}) to connect \fkeyword{inout} (bidirectional) gates.
 
-\ttt{$i} / \ttt{$o} notation ("subgate")
+Arrows point from the source gate (a submodule output gate or a compound
+module input gate) to the destination gate (a submodule input gate or a
+compound module output gate). Connections may be written either left to right
+or right to left, that is, \ttt{a-{}->b} is equivalent to \ttt{b<-{}-a}.
 
-<--> is shorthand for two unidirectionnal connections using $i/$o.
+Gates are specified as \textit{modulespec.gatespec} (to connect a submodule),
+or as \textit{gatespec} (to connect the compound module). \textit{modulespec}
+is either a submodule name (for scalar submodules), or a submodule name plus
+an index in square brackets (for submodule vectors). For scalar gates,
+\textit{gatespec} is the gate name; for gate vectors it is either the gate name
+plus an index in square brackets, or \textit{gatename}\ttt{++}.
+
+\ttt{\$i} / \ttt{\$o} notation ("subgate")
+
+<--> is shorthand for two unidirectionnal connections using \$i/\$o.
 
 With vector gate, one may use explicit index or the \ttt{gate++} notation.
 
 What \ttt{++} means:
  - use first unconnected gate index, or add gate (when submodule) or report error (compound module).
- - cannot use \ttt{++} with \ttt{gate$i} / \ttt{gate$o}; FIXME is that correct?
+ - cannot use \ttt{++} with \ttt{gate\$i} / \ttt{gate\$o}; FIXME is that correct?
 
 
 \subsubsection{Specifying channels}
@@ -753,6 +807,7 @@ When only \ttt{ned.DatarateChannel} parameters are used
 the chosen channel type will be \ttt{ned.DatarateChannel}.
 
 Unnamed channels connections cannot use any other parameters.
+
 
 \subsubsection{Channel specification body}
 
@@ -1113,11 +1168,11 @@ The expression syntax is the following:
         \ttt{\$PARENT\-MODULE\_\-NAME},
         \ttt{\$PARENT\-MODULE\_\-INDEX},
         \ttt{\$PARENT\-MODULE\_\-ID},
-        \ttt{\$GRANDPARENT\-MODULE\_\-FULLPATH},
-        \ttt{\$GRANDPARENT\-MODULE\_\-FULLNAME},
-        \ttt{\$GRANDPARENT\-MODULE\_\-NAME},
-        \ttt{\$GRANDPARENT\-MODULE\_\-INDEX},
-        \ttt{\$GRANDPARENT\-MODULE\_\-ID}.
+        \ttt{\$GRAND\-PARENT\-MODULE\_\-FULLPATH},
+        \ttt{\$GRAND\-PARENT\-MODULE\_\-FULLNAME},
+        \ttt{\$GRAND\-PARENT\-MODULE\_\-NAME},
+        \ttt{\$GRAND\-PARENT\-MODULE\_\-INDEX},
+        \ttt{\$GRAND\-PARENT\-MODULE\_\-ID}.
 \end{itemize}
 
 \subsection{Functions}
