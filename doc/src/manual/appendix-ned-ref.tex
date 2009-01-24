@@ -25,7 +25,7 @@ ASCII as well. Comments and string literals may contain characters above
 as \ttt{const char *} without any conversion; it is up to the simulation model
 to interpret them using the desired encoding.
 
-Line ending may be either CR or CRLF, regardless of platform.
+Line ending may be either CR or CRLF, regardless of the platform.
 
 
 \subsection{Reserved words}
@@ -97,9 +97,9 @@ The grammar of the NED language can be found in Appendix
 \label{ch-ned-ref:sec:built-in-defs}
 
 The NED language has the following built-in definitions, all in the \ttt{ned}
-package: channels \ttt{IdealChannel} and \ttt{DatarateChannel}, and module
-interfaces \ttt{IBidirectionalChannel} and \ttt{IUnidirectionalChannel}; the
-latter two are reserved for future use.
+package: channels \ttt{IdealChannel} \ttt{DelayChannel}, and \ttt{DatarateChannel;
+module interfaces \ttt{IBidirectionalChannel} and \ttt{IUnidirectionalChannel}.
+The latter two are reserved for future use.
 
 %%
 %% Note: the following code is from src/nedxml/nedparser.cc,
@@ -195,6 +195,7 @@ and channel interfaces are called \textit{components}.
 
 
 \subsection{Simple modules}
+\label{ch-ned-ref:sec:simple-modules}
 
 Simple module types are declared with the \fkeyword{simple} keyword;
 see the NED Grammar (Appendix \ref{cha:ned-language-grammar}) for the
@@ -256,7 +257,7 @@ module (\fkeyword{module} keyword) with the \ttt{@isNetwork(true)} property.
 
 \subsubsection{The @isNetwork property}
 
-The \ttt{@isNetwork} property is only accepted on simple modules and
+The \ttt{@isNetwork} property is only recognized on simple modules and
 compound modules. The value may be empty, true or false:
 
 \begin{verbatim}
@@ -352,7 +353,7 @@ If the component extends another component and has no
 \ttt{@class} property, the C++ implementation class is inherited from the base
 type.
 
-If the component contains has a \ttt{@class} property, the C++ class
+If the component contains a \ttt{@class} property, the C++ class
 name will be composed of the \textit{current namespace} (see
 \ref{cha:ned-ref:current-namespace}) and the value of the \ttt{@class}
 property. The \ttt{@class} property should contain a single value.
@@ -366,13 +367,13 @@ If the component contains no \ttt{@class} property and has no base
 class, the C++ class name will be composed of the \textit{current namespace} and the
 unqualified name of the component.
 
-\begin{note}
-    NED subclassing does not imply subclassing the C++ implementation. If you
+\begin{important}
+    NED subclassing does not imply subclassing the C++ implementation! If you
     want to subclass a simple module or channel in NED as well as in C++, you
     explicitly need to specify the \ttt{@class} property, otherwise the
     derived simple module or channel will continue to use the C++ class from its
     super type.
-\end{note}
+\end{important}
 
 \subsubsection{Current namespace}
 \label{cha:ned-ref:current-namespace}
@@ -387,14 +388,6 @@ property found while searching the following order:
 \end{enumerate}
 
 The \ttt{@namespace} property should contain a single value.
-
-\begin{note}
-    This was considered and discarded: \ttt{module X extends ASimple}
-    instead of \ttt{simple X extends ASimple}. It was proposed because
-    otherwise, if base type's implementation gets changed from simple to compound, all
-    subclasses will have to be changed. Idea discarded because the confusion
-    this would create is worse than the problem itself.
-\end{note}
 
 
 
@@ -442,7 +435,7 @@ to the \textit{default key}. Examples:
 
 Property values have a liberal syntax (see Appendix \ref{cha:ned-language-grammar}).
 Values that do not fit the grammar (notably, those containing a comma or
-semicolon) need to be surrounded with double quotes.
+a semicolon) need to be surrounded with double quotes.
 
 When interpreting a property value, one layer of quotes is removed
 automatically, that is, \ttt{foo} and \ttt{"foo"} are the same. To add a
@@ -477,14 +470,13 @@ about mistyped or unrecognized names.
 \subsection{Parameters}
 \label{ch-ned-ref:sec:parameters}
 
-Parameters are defined and assigned in the \fkeyword{parameters} section
-of the component type, submodule body or connection body.
+Parameters can be defined and assigned in the \fkeyword{parameters} section
+of component types. In addition, parameters can also be assigned in the
+\fkeyword{parameters} sections of submodule bodies and connection bodies,
+but those places do not allow adding new parameters.
+
 The \fkeyword{parameters} keyword is optional, and can be omitted
 without change in the meaning.
-
-Parameters can only be defined in component types, but not in submodules
-and connections. In submodules and connections, one can only assign
-existing parameters.
 
 A parameter is identified by a name, and has a data type. A parameter
 may have value or default value, and may also have properties
@@ -586,33 +578,65 @@ simple B extends A {
 \subsection{Gates}
 \label{ch-ned-ref:sec:gates}
 
-Gates are defined in the \fkeyword{gates} section of the component type
-or submodule.
+Gates can be defined in the \fkeyword{gates} section of component types.
+The size of a gate vector (see below) may be specified at the place of
+defining the gate, via inheritance in a derived type, and also in the
+\fkeyword{gates} block of a submodule body. A submodule body does not allow
+defining new gates.
 
-In submodules, new gates cannot be defined. One can only set the size
-of gate vectors defined on the component type.
+A gate is identified by a name, and is characterized by a type
+(\fkeyword{input}, \fkeyword{output}, \fkeyword{inout}), and optionally a
+vector size. Gates may also have properties (see
+\ref{ch-ned-ref:sec:properties}).
 
-TODO gate types: input, output, inout. inout consists of input+output
+Gates may be scalar or vector. The vector size is specified with a numeric
+expression inside the square brackets (\ttt{[...]}). The vector size may
+also be left open by specifying an empty pair of square brackets.
 
-Gates may be scalar or vector. The vector size is specified with a
-numeric expression inside the square brackets (\ttt{[...]}).
-The vector size may also be left open by specifying an empty pair
-of square brackets.
+A gate vector size may NOT be overridden in subclasses or in a submodule.
 
-TODO it must be specified later (in subclasses or in submodule definition);
-if not, it will be zero.
+The presence of a gate type keyword decides whether the given line defines
+a new gate, or refers to an existing gate. One can specify the gate vector
+size for an existing gate vector, and/or modify its properties or add new
+properties.
 
+Examples:
+
+\begin{verbatim}
+gates:
+  input a;         // defines new gate
+  input b @foo;    // new gate with property
+  input c[];       // new gate vector with unspecified size
+  input d[8];      // new gate vector with size=8
+  e[10];           // set gate size for existing (e.g.inherited) gate vector
+  f @foo(bar);     // add property to existing gate
+  g[10] @foo(bar); // set gate size and add property to existing gate
+\end{verbatim}
+
+Gate vector sizes are NED expressions. Expressions are described in section
+\ref{ch-ned-ref:sec:expressions}.
+
+See the Connections section (\ref{ch-ned-ref:sec:connections}) for more
+information on gates.
 
 \subsubsection{Recognized gate properties}
 
-@directIn
+The following properties are recognized on gates: \ttt{@directIn}
+and \ttt{@loose}. They have the same effect: When either of them is
+present on a gate, the gate is not required to be connected in the
+connections section of a compound module (see \ref{ch-ned-ref:sec:connections}).
 
-@loose
+\ttt{@directIn} should be used when the gate is an inut gate that is
+intended for being used as a target for the \fname{sendDirect()} method;
+\ttt{@loose} should be used in any other case when the gate is not
+required to be connected for some reason.
 
+Example:
 
-\subsubsection{Rules for gate vector sizes}
-
-Gate vector sizes may NOT be overridden in subclasses.
+\begin{verbatim}
+gates:
+    input radioIn @directIn;
+\end{verbatim}
 
 
 
@@ -624,13 +648,17 @@ Submodules are defined in the \fkeyword{submodules} section of the compound modu
 Submodules may be scalar or vector, the vector size of the latter being
 specified with a numeric expression inside the square brackets (\ttt{[...]}).
 
-The submodule's type may be specified:
+\subsubsection{Submodule type}
+
+The simple or compound module type (\ref{ch-ned-ref:sec:simple-modules},
+\ref{ch-ned-ref:sec:compound-modules}) that will be instantiated as the
+submodule may be specified in several ways:
 
 \begin{itemize}
-  \item with a simple or compound module type, or
+  \item with a concrete module type name, or
   \item by a string-valued expression that evaluates to the name of a
-        simple or compound module type, or
-  \item may come from the configuration.
+        module type, or
+  \item the type name may come from the configuration.
 \end{itemize}
 
 In the latter two cases, the \fkeyword{like} keyword is used, and a
@@ -648,6 +676,8 @@ exact syntax.
     \ttt{**.host[0..3].\-type-name=\-"MobileHost"}.
 \end{note}
 
+\subsubsection{Parameters, gates}
+
 A submodule definition may or may not have a body (a curly brace
 delimited block). An empty submodule body (\ttt{\{ \}}) is equivalent
 to a missing one.
@@ -659,12 +689,55 @@ A submodule body cannot define new parameters or gates. It is only
 allowed to assign existing parameters, and to set the vector
 size of existing gate vectors.
 
+FIXME is it allowed to add properties, and parameter/gate properties?
+
 
 
 \subsection{Connections}
 \label{ch-ned-ref:sec:connections}
 
 Connections are defined in the \fkeyword{connections} section of the compound module.
+
+Normally, all gates must be connected, including submodule gates and the gates
+of the compound module. When the \fkeyword{allowunconnected} modifier is present
+(\ttt{connections allowunconnected:}), gates can be left unconnected.
+
+\begin{note}
+    The \ttt{directIn} and \ttt{@loose} gate properties are to the
+    \ttt{connections allowunconnected} syntax; see \label{ch-ned-ref:sec:gates}.
+\end{note}
+
+\subsubsection{Single and group connections}
+
+TODO
+
+
+\subsubsection{Specifying gates}
+
+if module is missing, that means the compound module.
+
+\ttt{$i} / \ttt{$o} notation ("subgate")
+
+<--> is shorthand for two unidirectionnal connections using $i/$o.
+
+With vector gate, one may use explicit index or the \ttt{gate++} notation.
+
+What \ttt{++} means:
+ - use first unconnected gate index, or add gate (when submodule) or report error (compound module).
+ - cannot use \ttt{++} with \ttt{gate$i} / \ttt{gate$o}; FIXME is that correct?
+
+
+\subsubsection{Specifying channels}
+
+With <-->, actually two channel object will be created!
+
+Channel type as parameter; <expression> like IChannel, and <> like IChannel notation
+
+with <>, how to specify channel type in the config (sourcegate.channel.type-name?)
+
+
+
+\subsubsection{Implicit channel type}
 
 When a connection uses an unnamed channel type (\ttt{-{}->
 \{\ldots\} -{}->} syntax), the actual NED type to be used will depend on the
@@ -681,7 +754,9 @@ the chosen channel type will be \ttt{ned.DatarateChannel}.
 
 Unnamed channels connections cannot use any other parameters.
 
-Extra params CANNOT be added in connection channel specs --
+\subsubsection{Channel specification body}
+
+Extra parameters cannot be added in a connection channel specification --
 they can only be added in new channel types.
 
 
@@ -1026,7 +1101,7 @@ The expression syntax is the following:
   \item Element tag names and "\ttt{*}" can have an optional predicate
         in the form "\ttt{[position]}" or "\ttt{[@attribute='value']}".
         Positions start from zero.
-  \item Predicate of the form "\ttt{[@attribute=\textit{\$param}]}" are also
+  \item Predicates of the form "\ttt{[@attribute=\textit{\$param}]}" are also
         accepted, where \ttt{\textit{\$param}} can be one of:
         \ttt{\$MODULE\_\-FULLPATH},
         \ttt{\$MODULE\_\-FULLNAME},
