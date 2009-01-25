@@ -756,7 +756,8 @@ for i=0..sizeof(e)-1, for j=0..sizeof(e)-1 {
 
 The connection syntax uses arrows (\ttt{-{}->}, \ttt{<-{}-}) to connect
 \fkeyword{input} and \fkeyword{output} gates, and double arrows
-(\ttt{<-{}->}) to connect \fkeyword{inout} (bidirectional) gates.
+(\ttt{<-{}->}) to connect two \fkeyword{inout} gates. The latter is
+also said to be a bidirectional connection.
 
 Arrows point from the source gate (a submodule output gate or a compound
 module input gate) to the destination gate (a submodule input gate or a
@@ -770,15 +771,36 @@ an index in square brackets (for submodule vectors). For scalar gates,
 \textit{gatespec} is the gate name; for gate vectors it is either the gate name
 plus an index in square brackets, or \textit{gatename}\ttt{++}.
 
-\ttt{\$i} / \ttt{\$o} notation ("subgate")
-
-<--> is shorthand for two unidirectionnal connections using \$i/\$o.
 
 With vector gate, one may use explicit index or the \ttt{gate++} notation.
 
 What \ttt{++} means:
  - use first unconnected gate index, or add gate (when submodule) or report error (compound module).
  - cannot use \ttt{++} with \ttt{gate\$i} / \ttt{gate\$o}; FIXME is that correct?
+
+TODO channel specification syntax
+
+TODO examples
+
+
+\subsubsection{Inout gates}
+
+An inout gate is represented as a gate pair: an input gate and an output gate.
+The two sub-gates may also be referenced and connected individually, by adding
+the \ttt{\$i} and \ttt{\$o} suffix to the name of the inout gate.
+
+A bidirectional connection (which uses a double arrow to connect two inout gates),
+is also a shorthand for two uni-directional connections; that is,
+
+\begin{verbatim}
+a.g <--> b.g;
+\end{verbatim}
+
+is equivalent to
+\begin{verbatim}
+a.g$o --> b.g$i;
+a.g$i <-- b.g$o;
+\end{verbatim}
 
 
 \subsubsection{Specifying channels}
