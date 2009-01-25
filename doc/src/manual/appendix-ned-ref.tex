@@ -772,15 +772,20 @@ an index in square brackets (for submodule vectors). For scalar gates,
 plus an index in square brackets, or \textit{gatename}\ttt{++}.
 
 
+TODO:
 With vector gate, one may use explicit index or the \ttt{gate++} notation.
 
 What \ttt{++} means:
  - use first unconnected gate index, or add gate (when submodule) or report error (compound module).
  - cannot use \ttt{++} with \ttt{gate\$i} / \ttt{gate\$o}; FIXME is that correct?
 
-TODO channel specification syntax
+The syntax to associate a channel (see \ref{ch-ned-ref:sec:channels})
+with the connection is to use two arrows with a channel specification
+in between (see later).
 
 TODO examples
+
+TODO examples with a channel
 
 
 \subsubsection{Inout gates}
@@ -804,6 +809,8 @@ a.g$i <-- b.g$o;
 
 
 \subsubsection{Specifying channels}
+
+copy stuff from submodule!!!!
 
 With <-->, actually two channel object will be created!
 
