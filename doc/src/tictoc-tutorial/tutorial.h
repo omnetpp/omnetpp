@@ -1,5 +1,5 @@
 /**
-@mainpage TicToc Tutorial for @opp
+@mainpage TicToc Tutorial for @opp 4.0
 
 This short tutorial to @opp guides you through an example
 of modeling and simulation, showing you along the way some
