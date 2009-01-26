@@ -811,14 +811,55 @@ a.g$i <-- b.g$o;
 
 \subsubsection{Specifying channels}
 
-copy stuff from submodule!!!!
+A channel specification associates a channel object with the connection.
+A channel object is an instance of a channel type (see \ref{ch-ned-ref:sec:channels}).
 
-With <-->, actually two channel object will be created!
+The channel type that will be instantiated as channel object may be specified
+in several ways:
 
-Channel type as parameter; <expression> like IChannel, and <> like IChannel notation
+\begin{itemize}
+  \item with a concrete channel type name, or
+  \item may be implicitly determined from the set of parameters used (see later), or
+  \item by a string-valued expression that evaluates to the name of a
+        channel type, or
+  \item the type name may come from the configuration.
+\end{itemize}
 
-with <>, how to specify channel type in the config (sourcegate.channel.type-name?)
+In the latter two cases, the \fkeyword{like} keyword is used, and a
+channel interface type (\ref{ch-ned-ref:sec:channel-interfaces})
+needs to be specified as well, which the concrete channel type needs
+to implement to be eligible to be chosen. In the second case, the
+string expression is specified in angle braces (\ttt{<...>}); in the
+third case, an empty pair of angle braces is used (\ttt{<>}).
+The syntax is similar to the submodule syntax (see \ref{ch-ned-ref:sec:submodules}).
 
+\begin{note}
+    When using the \ttt{<>} syntax, the actual NED type should be
+    provided with the \fconfig{type-name} configuration option,
+    where the object pattern should be the source gate plus \ttt{.channel}:
+    \ttt{**.host[*].g\$o.channel.\-type-name=\-"EthernetChannel"}.
+\end{note}
+
+\begin{note}
+    As bidirectional connections (those using double arrows, \ttt{<-{}->})
+    are a shorthand for two uni-directional connections, bidirectional
+    connections with channels will actually create \textit{two} channel
+    objects, one for each direction!
+\end{note}
+
+
+\subsubsection{Channel parameters and properties}
+
+A channel definition may or may not have a body (a curly brace
+delimited block). An empty channel body (\ttt{\{ \}}) is equivalent
+to a missing one.
+
+A channel body may contain parameters (\ref{ch-ned-ref:sec:parameters}).
+
+A channel body cannot define new parameters. It is only
+allowed to assign existing parameters.
+
+FIXME is it allowed to add properties, and parameter properties?
 
 
 \subsubsection{Implicit channel type}
@@ -837,12 +878,6 @@ When only \ttt{ned.DatarateChannel} parameters are used
 the chosen channel type will be \ttt{ned.DatarateChannel}.
 
 Unnamed channels connections cannot use any other parameters.
-
-
-\subsubsection{Channel specification body}
-
-Extra parameters cannot be added in a connection channel specification --
-they can only be added in new channel types.
 
 
 
