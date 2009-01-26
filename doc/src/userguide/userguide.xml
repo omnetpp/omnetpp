@@ -9,7 +9,7 @@
 <xi:include href="msg-editor.xml" />
 <xi:include href="cpp-development.xml" />
 <xi:include href="launcher.xml" />
+<xi:include href="tkenv.xml" />
 <xi:include href="sequence-chart.xml" />
 <xi:include href="result-analysis.xml" />
-<xi:include href="tkenv.xml" />
 </book>

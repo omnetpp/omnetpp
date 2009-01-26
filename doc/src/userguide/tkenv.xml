@@ -45,7 +45,7 @@
       speed up the process of verifying the correct operation of the simulation program
       and provides a good environment for experimenting with the model during execution.
       When used together with gdb or xxgdb, Tkenv can speed up debugging a lot.</para>
-    <para> Tkenv is built with Tcl/Tk, and it work on all platforms where Tcl/Tk has been
+    <para> Tkenv is built with Tcl/Tk, and it works on all platforms where Tcl/Tk has been
       ported to: Unix/X, Windows, Macintosh. You can get more information about Tcl/Tk on
       the Web pages listed in the Reference.</para>
   </sect1>
@@ -55,32 +55,35 @@
       switches:</para>
     <itemizedlist>
       <listitem>
-        -h : The program prints a short help message and the networks contained in the
-        executable, then exits.
+        -h : The program prints a help message and  exits.
       </listitem>
       <listitem>
         -f fileName : Specify the name of the configuration file. The default is
         omnetpp.ini. Multiple -f switches can be given; this allows you to partition your
         configuration file. For example, one file can contain your general settings,
         another one most of the module parameters, another one the module parameters you
-        change often.
+        change often. The -f switch is optional and can be omitted.  
       </listitem>
       <listitem>
         -l fileName : Load a shared object (.so file on Unix). Multiple -l switches are
-        accepted. Your .so files may contain module code etc. By dynamically loading all
-        simple module code and compiled network description (_n.o files on Unix) you can
-        even eliminate the need to re-link the simulation program after each change in a
-        source file. (Shared objects can be created with gcc -shared...)
+        accepted. Your .so files may contain module code etc.
+      </listitem>
+      <listitem>
+        -n filePath : When present, overrides the NEDPATH environment variable and sets
+        where the simulation NED files are load from.
+      </listitem>
+      <listitem>
+        -c configname: Select a configuration for execution.
       </listitem>
       <listitem>
         -r : run-number It has the same effect as (but takes priority over) the
-        [Tkenv]/default-run= ini file entry.
+        tkenv-default-run= ini file configuration.
       </listitem>
     </itemizedlist>
   </sect1>
   <sect1>
     <title>Tkenv ini file settings</title>
-    <para> Tkenv accepts the following settings in the [Tkenv] section of the ini file.
+    <para> Tkenv accepts the following configuration options in the ini file.
     </para>
     <informaltable>
       <tgroup cols="2">
@@ -91,86 +94,17 @@
             <entry>Description</entry>
           </row>
           <row>
-            <entry>extra-stack-kb = 48</entry>
+            <entry>tkenv-extra-stack= 48</entry>
             <entry> Specifies the extra amount of stack (in kilobytes) that is reserved
               for each activity() simple module when the simulation is run under Tkenv.
               This value is significantly higher than the similar one for Cmdenv --
               handling GUI events requires a large amount of stack space.</entry>
           </row>
           <row>
-            <entry>default-run = 1</entry>
+            <entry>tkenv-default-run = 1</entry>
             <entry> Specifies which run Tkenv should set up automatically after startup.
               If there's no default-run= entry or the value is 0, Tkenv will ask which run
               to set up.</entry>
-          </row>
-        </tbody>
-      </tgroup>
-    </informaltable>
-    <para>The following configuration entries are of marginal usefulness, because
-      corresponding settings are also accessible in the Simulation options dialog in the
-      Tkenv GUI, and the GUI settings take precedence. Tkenv stores the settings in the
-      .tkenvrc file in the current directory -- the ini file settings are only used if
-      there is no .tkenvrc file.</para>
-    <informaltable>
-      <tgroup cols="2">
-        <colspec colwidth="170" />
-        <tbody>
-          <row>
-            <entry>Entry and default value</entry>
-            <entry>Description</entry>
-          </row>
-          <row>
-            <entry>use-mainwindow = yes</entry>
-            <entry> Enables/disables writing ev output to the Tkenv main window.</entry>
-          </row>
-          <row>
-            <entry>print-banners = yes</entry>
-            <entry> Enables/disables printing banners for each event.</entry>
-          </row>
-          <row>
-            <entry>breakpoints-enabled = yes</entry>
-            <entry> Specifies whether the simulation should be stopped at each
-              breakpoint() call in the simple modules.</entry>
-          </row>
-          <row>
-            <entry>update-freq-fast = 10</entry>
-            <entry> Number of events executed between two display updates when in Fast
-              execution mode.</entry>
-          </row>
-          <row>
-            <entry>update-freq-express = 500</entry>
-            <entry> Number of events executed between two display updates when in Express
-              execution mode.</entry>
-          </row>
-          <row>
-            <entry>animation-delay = 0.3s</entry>
-            <entry> Delay between steps when you slow-execute the simulation.</entry>
-          </row>
-          <row>
-            <entry>animation-enabled = yes</entry>
-            <entry> Enables/disables message flow animation.</entry>
-          </row>
-          <row>
-            <entry>animation-msgnames = yes</entry>
-            <entry> Enables/disables displaying message names during message flow
-              animation.</entry>
-          </row>
-          <row>
-            <entry>animation-msgcolors = yes</entry>
-            <entry> Enables/disables using different colors for each message kind during
-              message flow animation.</entry>
-          </row>
-          <row>
-            <entry>animation-speed = 1.0</entry>
-            <entry> Specifies the speed of message flow animation.</entry>
-          </row>
-          <row>
-            <entry>methodcalls-delay =</entry>
-            <entry> Sets delay after method call animation.</entry>
-          </row>
-          <row>
-            <entry>show-layouting = true</entry>
-            <entry> Show layouting process of network graphics.</entry>
           </row>
         </tbody>
       </tgroup>
@@ -227,6 +161,10 @@
           internal structure. Simple modules are represented by object inspectors
           displaying their content as a list. Items in these lists can also be opened.
         </para>
+        <para>TODO inspectorokban milyen watch hogyan latszik;</para>
+        <para>TODO module inspector toolbaron osszes gomb mit jelent, context menu opciok mit jelentenek
+        </para>
+        <para>TODO object inspector tree; mi atirhato, milyen info honnan jon</para>
       </sect3>
       <sect3>
         <title>Future Event Set</title>
@@ -249,6 +187,8 @@
           <guibutton>Options...</guibutton>
           button.
         </para>
+        <note>TODO output vector window csak a megnyitas pillanatatol el;</note>
+        <note>TODO mi az hogy "Histograms may not be available right after the simulation start"?</note>
         <picture file="pictures/Tkenv-histogram.png">A real-time histogram window</picture>
         <para> Histogram inspectors provide a real-time display for the registered
           histograms.</para>
@@ -259,6 +199,10 @@
         <para> If your simulation contains queue objects, you can peek into them any time.
           All messages currently waiting in the queue are displayed in the queue inspector
           window. Double click on any message to further inspect it.</para>
+      </sect3>
+      <sect3><title>Tkenvrc</title>
+      <para>TODO tkenvrc fajl (inspektorok visszatoltodnek, stb; ennek hatulutoi, pl sok azonos nevu msg-nel sok ablak jelenik meg);
+      </para>
       </sect3>
     </sect2>
     <sect2>
@@ -318,7 +262,10 @@
       browse for the module and choose <guimenu>Run until next event in this module.</guimenu>
       Simulation will stop once an event arrives to this module.</para>
       <para> Tkenv has a status bar which is regularly updated while the simulation is
-        running.</para>
+        running. TODO status bar-on mi mit jelent</para>
+        <para>TODO      sokkal tobb kevesbe nyilvanvalo infot kellene tartalmaznia!!! pl: new network/new run;
+     initialize() mikor fut, finish() mikor fut, module destruktorok mikor futnak;
+        </para>
     </sect2>
     <sect2>
       <title>Finding objects</title>
@@ -327,6 +274,10 @@
         you are looking for. Invoke the "Find/inspect objects" window and search for your
         object. The window allows you to set the start of the search and the type, class
         and name of the object. The results will be presented as a clickable list.</para>
+        <para>TODO peldak match expression-re a search ablakban;</para>
+      <note>
+        TODO search ablakban a kereses mit jelent C++ szinten, es mit hogyan/hol talal meg, ill mit nem fog sose megtalalni;
+      </note>
       <note>
         If you are debugging your simulation with a source level debugger and happen to
         know the value of the pointer to your object, you may use the Inspect by pointer
@@ -356,6 +307,27 @@
       to display the runtime environment's preference dialog. You may set global parameters
       for the simulations here. It is possible also to disable various animation primitives
       to speed up the simulation.</para>
+    <picture file="pictures/Tkenv-sim-opts1.png">General Tkenv options</picture>
+    <para>The General options tab can be used to set default layouting and logging behaviour.
+    It is possible to set how often the user interface will be updated during the simulation run.
+    Default font size and family can be configured also here.  
+    </para>
+    <picture file="pictures/Tkenv-sim-opts2.png">Animation options</picture>
+     <para>Tkenv provides automatic animation when you run your simulation. You can
+     fine-tune your animation settings using the <guimenuitem>Animation</guimenuitem> tab on the configuration
+     dialog. If you do not need all the visual feedback Tkenv provides, you can selectively
+     turn off some of the features:</para>
+    <itemizedlist>
+    <listitem>Animate messages - turn on/off the visualization of message passing between modules.</listitem>
+    <listitem>Broadcast animation - handle message broadcasts specially. (Messages 
+    that are sent at the same simulation time will be animated concurrently. </listitem>
+    <listitem>Highliht the module which will receive the next event.</listitem>
+    <listitem>Show with a flashing arrow when a sendDirect() method call was executed.</listitem>
+    <listitem>Direct method calls are also animated by default with flashing arrows if you have added the 
+    Enter_Method() macro to your method body.</listitem>
+    <listitem>The display of message names, classes also can be turned off if needed.</listitem>
+    </itemizedlist>
     </sect2>
   </sect1>
+
 </chapter>
