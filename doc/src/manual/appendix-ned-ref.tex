@@ -908,6 +908,7 @@ name (``\ttt{inet.network\-layer.ip.RoutingTable}''), or by short name
 Visible names are:
 
 \begin{itemize}
+  \item inner types;
   \item anything from the same package;
   \item imported names.
 \end{itemize}
@@ -932,7 +933,7 @@ An import not containing wildcard MUST match an existing NED type.
 However, it is legal for an import that does contain wildcards
 not to match any NED type (although that might generate a warning.)
 
-Inner types may not be referred to outside their enclosing types.
+Inner types may not be referenced outside their enclosing types.
 
 \subsubsection{Base types and submodules}
 
@@ -943,7 +944,7 @@ module), then using imports, then in the same package.
 
 \subsubsection{Parametric module types ("like" submodules)}
 
-Lookup of the actual module type for "like" submodules differs for normal
+Lookup of the actual module type for "like" submodules differs from normal
 lookups. This lookup ignores the imports in the file altogether.
 Instead, it collects all modules that support the given interface
 and match the given type name string (i.e. end in the same simple name,
@@ -954,6 +955,9 @@ The algorithm for parametric channel types works in the same way.
 
 
 \subsubsection{Network name in the ini file}
+
+The network name in the ini file may be given as fully qualified name
+or as simple (unqualified) name.
 
 Simple (unqualified) names are tried with the same package as the
 ini file is in (provided it's in a NED directory).
@@ -1125,9 +1129,9 @@ Details:
   \item For modulus (\%), the operands are converted to \ttt{long}.
 \end{itemize}
 
-There is no implicit conversion between bool and numeric types, so it is
-not possible to use \ttt{0} as a synonym for \fkeyword{false}, and nonzero numbers
-as synonym to \fkeyword{true}.
+There is no implicit conversion between bool and numeric types, so \ttt{0}
+is not a synonym for \fkeyword{false}, and nonzero numbers are not a synonym
+for \fkeyword{true}.
 
 There is also no conversion between string and numeric types, so e.g. \ttt{"foo"+5}
 is illegal. There are functions for converting a number to string and vica versa.
