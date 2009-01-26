@@ -7,8 +7,11 @@
 # Targets
 #
 all:
+	del /s /q ..\..\tictoc-tutorial
+	-mkdir ..\..\tictoc-tutorial 2>nul
 	$(DOXYGEN:/=\) tictoc.doxyfile
-	copy *.gif *.png ..\..\tictoc-tutorial
+	copy *.png ..\..\tictoc-tutorial
+	copy *.gif ..\..\tictoc-tutorial
 
 clean:
 	-del /s /q ..\..\tictoc-tutorial 2>nul

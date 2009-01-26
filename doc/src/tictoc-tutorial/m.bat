@@ -1,6 +1,4 @@
 @echo off
 call ..\..\..\setenv-vc71.bat
-doxygen doxyfile
-copy *.gif ..\..\tictoc-tutorial
-copy *.png ..\..\tictoc-tutorial
+nmake -f makefile.vc
 start ..\..\tictoc-tutorial\index.html
