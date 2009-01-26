@@ -197,7 +197,7 @@ proc create_omnetpp_window {} {
       {command -command inspect_classes        -label {Registered classes} -underline 0}
       {command -command inspect_functions      -label {NED functions} -underline 4}
       {command -command inspect_enums          -label {Registered Enums} -underline 11}
-      {command -command inspect_configentries  -label {Accepted config entries} -underline 0}
+      {command -command inspect_configentries  -label {Supported configuration options} -underline 0}
     } {
       eval .menubar.inspectmenu$m.components add $i
     }
