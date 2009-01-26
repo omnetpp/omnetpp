@@ -474,33 +474,53 @@ The simulation system itself:
 
 \begin{Verbatim}[commandchars=\\\{\}]
   \tbf{omnetpp/}         {\opp} root directory
-    \tbf{bin/}           {\opp} executables (GNED, nedtool, etc.)
+    \tbf{bin/}           {\opp} executables
     \tbf{include/}       header files for simulation models
     \tbf{lib/}           library files
-    \tbf{bitmaps/}       icons that can be used in network graphics
-    \tbf{doc/}           manual (PDF), readme, license, etc.
+    \tbf{images/}        icons and backgrounds for network graphics
+    \tbf{doc/}           manuals, readme files, license, APIs, etc.
       \tbf{manual/}      manual in HTML
       \tbf{tictoc-tutorial/}  introduction into using {\opp}
       \tbf{api/}         API reference in HTML
       \tbf{nedxml-api/}  API reference for the NEDXML library
-      \tbf{src/}         sources of the documentation
     \tbf{src/}           {\opp} sources
-      \tbf{nedc/}        nedtool, message compiler
       \tbf{sim/}         simulation kernel
         \tbf{parsim/}    files for distributed execution
         \tbf{netbuilder/}files for dynamically reading NED files
       \tbf{envir/}       common code for user interfaces
       \tbf{cmdenv/}      command-line user interface
       \tbf{tkenv/}       Tcl/Tk-based user interface
-      \tbf{gned/}        graphical NED editor
-      \tbf{plove/}       output vector analyzer and plotting tool
-      \tbf{scalars}      output scalar analyzer and plotting tool
-      \tbf{nedxml/}      NEDXML library
-      \tbf{utils/}       makefile-creator, documentation tool, etc.
+      \tbf{nedxml/}      NEDXML library, nedtool, opp_msgc
+      \tbf{scave/}       result analysis library
+      \tbf{eventlog/}    eventlog processing library
+      \tbf{layout/}      graph layouter for network graphics
+      \tbf{common/}      common library
+      \tbf{utils/}       opp_makemake, opp_test, etc.
     \tbf{test/}          regression test suite
-      \tbf{core/}        regression test suite for the simulation library
-      \tbf{distrib/}     regression test suite for built-in distributions
+      \tbf{core/}        tests for the simulation library
+      \tbf{anim/}        tests for graphics and animation
+      \tbf{dist/}        tests for the built-in distributions
+      \tbf{makemake/}    tests for opp_makemake
       ...
+\end{Verbatim}
+
+The Eclipse-based Simulation IDE is in the \texttt{ide} directory.
+
+\begin{Verbatim}[commandchars=\\\{\}]
+    \tbf{ide/}           Simulation IDE
+      \tbf{features/}
+      \tbf{plugins/}
+      ...
+\end{Verbatim}
+
+The Windows version of {\opp} contains a redistribution of the MinGW
+gcc compiler, together with a copy of MSYS that provides Unix tools
+commonly used in Makefiles. The MSYS directory also contains various
+3rd party open-source libraries needed to compile and run {\opp}.
+
+\begin{Verbatim}[commandchars=\\\{\}]
+    \tbf{mingw/}       MinGW gcc port
+    \tbf{msys/}        MSYS plus libraries
 \end{Verbatim}
 
 Sample simulations are in the \texttt{samples} directory.
@@ -518,10 +538,9 @@ The \texttt{contrib} directory contains material from the {\opp} community.
     \tbf{contrib/}     directory for contributed material
       \tbf{octave/}    Octave scripts for result processing
       \tbf{emacs/}     NED syntax highlight for Emacs
+      ...
 \end{Verbatim}
 
-You may also find additional directories like \texttt{msvc/}, which contain
-integration components for Microsoft Visual C++, etc.
 
 
 %%% Local Variables:
