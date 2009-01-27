@@ -269,7 +269,7 @@ compound modules. The value may be empty, true or false:
 
 The empty value corresponds to \ttt{@isNetwork(true)}.
 
-The \ttt{@isNetwork} property does NOT get inherited, that is, a subclass
+The \ttt{@isNetwork} property does not get inherited, that is, a subclass
 of a module with \ttt{@isNetwork} set does not automatically become a network.
 The \ttt{@isNetwork} property needs to be explicitly added to the subclass
 to make it a network.
@@ -561,7 +561,7 @@ Examples:
 @unit behavior for non-numeric parameters (string, XML) is unspecified
 (may be ignored or may be an error).
 
-The @unit property of a parameter may NOT be modified via inheritance.
+The @unit property of a parameter may not be modified via inheritance.
 
 Example:
 \begin{verbatim}
@@ -593,7 +593,7 @@ Gates may be scalar or vector. The vector size is specified with a numeric
 expression inside the square brackets (\ttt{[...]}). The vector size may
 also be left open by specifying an empty pair of square brackets.
 
-A gate vector size may NOT be overridden in subclasses or in a submodule.
+A gate vector size may not be overridden in subclasses or in a submodule.
 
 The presence of a gate type keyword decides whether the given line defines
 a new gate, or refers to an existing gate. One can specify the gate vector
@@ -1025,28 +1025,28 @@ property set, so the same rules apply to it as to compound modules.
 Inheritance may:
 \begin{itemize}
     \item add new properties, parameters, gates, inner types, submodules,
-          connections
+          connections, as long as names do not conflict with inherited names
     \item modify inherited properties, and properties of inherited parameters and
           gates
-    \item it may NOT modify inherited submodules, connections and inner types
+    \item it may not modify inherited submodules, connections and inner types
 \end{itemize}
 
 Other inheritance rules:
 \begin{itemize}
     \item  for inner types:
-       can I define an inner type with the same name in subclasses? NO
+       new inner types can be added, but inherited ones cannot be changed
     \item  for properties:
        contents will be merged (rules like for display strings: values on
        same key and same position will overwrite old ones)
     \item for parameters:
        type cannot be redefined;
-       value may be redefined in subclasses or place of usage
+       value may be redefined in subclasses or at place of usage
     \item  for gates:
        type cannot be redefined;
-       vector size may be redefined in subclasses or place of usage
+       vector size may be redefined in subclasses or at place of usage
     \item  for gate/parameter properties:
        extra properties can be added;
-       existing properties can be overridden/extended like for standalone properties (?)
+       existing properties can be overridden/extended like for standalone properties
     \item  for submodules:
        new submodules may be added, but inherited ones cannot be modified
     \item  for connections:
@@ -1079,7 +1079,7 @@ Parameter (non-default) assignments may also be overridden in subclasses.
 
 \subsubsection{Gate inheritance}
 
-Gate vector size may NOT be overridden in subclasses.
+Gate vector size may not be overridden in subclasses.
 
 
 
@@ -1126,13 +1126,23 @@ The following operators are supported (in order of decreasing precedence):
 
 \subsubsection{Conversions}
 
-Values are of type boolean, double, string, or xml element. A double value
-may have an associated measurement unit (\ttt{s}, \ttt{mW}, etc.)
+Values are of type boolean, long, double, string, or xml element.
+A long or double may have an associated measurement unit (\ttt{s}, \ttt{mW}, etc.)
 
+Long and double values are implicitly converted to one another where needed.
+Conversion is performed with the C++ language's built-in typecast operator.
+
+There is no implicit conversion between bool and numeric types, so \ttt{0}
+is not a synonym for \fkeyword{false}, and nonzero numbers are not a synonym
+for \fkeyword{true}.
+
+There is also no conversion between string and numeric types, so e.g. \ttt{"foo"+5}
+is illegal. There are functions for converting a number to string and vica versa.
+
+\begin{note}
 Implementation note: Currently the stack-based evaluation engine
 represents all numbers in \ttt{double}, i.e. it does not use \ttt{long}
-on the stack.
-    \footnote{This may change in future releases.}
+on the stack. (This may change in future releases.)
 Details:
 
 \begin{itemize}
@@ -1143,15 +1153,10 @@ Details:
         then the result is converted back to \ttt{double}.
   \item For modulus (\%), the operands are converted to \ttt{long}.
 \end{itemize}
+\end{note}
 
-There is no implicit conversion between bool and numeric types, so \ttt{0}
-is not a synonym for \fkeyword{false}, and nonzero numbers are not a synonym
-for \fkeyword{true}.
 
-There is also no conversion between string and numeric types, so e.g. \ttt{"foo"+5}
-is illegal. There are functions for converting a number to string and vica versa.
-
-\subsubsection{Units}
+\subsubsection{Unit handling}
 
 Operations involving numbers with units work in the following way.
 
@@ -1159,13 +1164,21 @@ Addition, substraction, and numeric comparisons require their arguments to
 have the same unit or compatible units; in the latter case a unit conversion
 is performed before the operation. Incompatible units cause an error.
 
+%%TODO example
+
 Power-of and bitwise operations require their arguments to be dimensionless.
 
+%%TODO example
+
 Multiplying two numbers with units is not supported.
+
+%%TODO example
 
 For division, dividing two numbers with units is only supported if the two
 units are convertible (i.e. the result will be dimensionless). Dividing
 a dimensionless number with a number with unit is not supported.
+
+%%TODO example
 
 
 \subsection{Referencing parameters and loop variables}
@@ -1217,7 +1230,7 @@ that is, point them to XML files or to specific elements inside XML files.
 a file name plus an XPath-like expression which selects an element
 inside the XML file.
 
-TODO fname mihez kepest relative
+%% TODO fname mihez kepest relative
 
 \fkeyword{xmldoc()} with two arguments accepts a path expression
 to select an element within the document. The expression syntax is
