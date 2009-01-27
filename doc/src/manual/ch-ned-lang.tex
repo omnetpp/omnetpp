@@ -347,12 +347,6 @@ A network is basically a compound module.
 
 XXX channels, inner types, gate++
 
-XXX How do parameters get their value? and they can get values from NED code,
-from the configuration (ini files, see FIXME), or interactively from the user.
-It is also possible to give them a default value (see
-\ttt{default(-1)} in the example), which gets assigned to the parameter if a
-matching \ttt{apply-default=true} line is found in the configuration.
-
 XXX add example ini file here!!!
 
 XXX @isNetwork
@@ -370,9 +364,12 @@ Parameters can be of type \ttt{double}, \ttt{int}, \ttt{bool}, \ttt{string}
 and \ttt{xml}; and they can be declared \ttt{volatile}.
 
 Parameters can get values from NED code, from the configuration (ini files, see
-FIXME), or interactively from the user. It is also possible to give them a default value (see
-\ttt{default(-1)} in the example), which gets assigned to the parameter if a
-matching \ttt{apply-default=true} line is found in the configuration.
+FIXME), or interactively from the user.
+It is also possible to give them a default value (see \ttt{default(-1)}
+in the example), which gets used if the parameter is not assigned at all in
+the configuration, or it is explicitly declared to use the default
+(\ttt{=default} snytax).
+
 
 %% FIXME maybe not here but in with compound modules?
 \begin{note}
@@ -416,37 +413,17 @@ Parameters are assigned from NED (when the module is used as a building block
 of a larger compound module) or from the config file \ttt{omnetpp.ini}.
 \ttt{omnetpp.ini} is described in Chapter \ref{cha:run-sim}.
 
-
-\subsection{Random parameters and const}
-\label{sec:ch-ned-lang:const}
-\index{const}
-\index{module!parameters!const}
-
-Numeric parameters can be set to return random numbers, uniformly
-distributed or from various distributions. For example, setting a
-parameter to \ttt{truncnormal(2,0.8)} would return a new random number
+Numeric volatile parameters can be used as a source of random numbers
+of various distributions. For example, setting a parameter to
+\ttt{truncnormal(2,0.8)} would return a new random number
 from the truncated normal distribution with mean 2.0 and standard deviation 0.8
 every time the parameter is read from the simple module (from C++ code).
-For example, this is useful for specifying interarrival times for generated
-packets or jobs.
-
-You may want the initial parameter value to be chosen randomly, but not
-to change it afterwards. This can be achieved with declaring the parameter
-to be \ttt{const}. \ttt{const} parameters will be evaluated only once
-at the beginning of the simulation then set to a constant value.
-
-It is recommended to mark every parameter with \ttt{const} unless
-you really want to make use of the random numbers feature.
-
-
+This feature is useful e.g. for specifying interarrival times for generated
+packets.
 
 If the module type used as submodule has parameters, you can assign
 values to them in the \ttt{parameters} section of the submodule
 declaration.
-As a value you can use a constant (such as \ttt{42} or
-\ttt{"www.foo.org"}), various parameters (most commonly, parameters
-of the compound module), or write an arbitrary expression containing
-the above.
 
 It is not mandatory to mention and assign all parameters.
 Unassigned parameters can get their values at runtime: either from
@@ -458,13 +435,9 @@ but to leave them to \ttt{omnetpp.ini} where they can be
 changed more easily.
 
 The expression syntax \index{ned!expressions} is very similar to C.
-Expressions may contain constants (literals) and parameters of the
-compound module being defined. Parameters can be passed by value
-or by reference. The latter means that the expression is evaluated
-at runtime each time its value is accessed (e.g. from simple module
-code), opening up interesting possibilities for the modeler.
-You can also refer to parameters of the already defined submodules,
-with the syntax \ttt{submodule.parametername}
+Expressions may refer to parameters of the compound module being defined,
+of the current module (with the \ttt{this.} prefix), and to parameters
+of already defined submodules, with the syntax \ttt{submodule.parametername}
 (or \ttt{submodule[index].parametername}).
 
 
