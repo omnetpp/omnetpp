@@ -55,7 +55,7 @@
     </para>
     <warning>
       If you override the default file name, please make sure that the file extension is
-      <filename>log</filename>, so that the &Omnetpp; IDE tools
+      <filename>elog</filename>, so that the &Omnetpp; IDE tools
       will be able to recognize it automatically.
     </warning>
     <para>
