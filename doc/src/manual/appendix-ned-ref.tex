@@ -771,13 +771,16 @@ an index in square brackets (for submodule vectors). For scalar gates,
 \textit{gatespec} is the gate name; for gate vectors it is either the gate name
 plus an index in square brackets, or \textit{gatename}\ttt{++}.
 
+The \textit{gatename}\ttt{++} notation causes the first unconnected gate index
+to be used. For a submodule, if all gates of the given gate vector are connected,
+the gate vector gets expanded by one. For the compound module, it causes an error
+if all gates of the given gate vector are connected.
 
-TODO:
-With vector gate, one may use explicit index or the \ttt{gate++} notation.
-
-What \ttt{++} means:
- - use first unconnected gate index, or add gate (when submodule) or report error (compound module).
- - cannot use \ttt{++} with \ttt{gate\$i} / \ttt{gate\$o}; FIXME is that correct?
+\begin{note}
+    Due to the top-down order of network building, it is not possible to
+    expand the gate vector of the compound module: the new gates would be
+    left unconnected on the outside.
+\end{note}
 
 The syntax to associate a channel (see \ref{ch-ned-ref:sec:channels})
 with the connection is to use two arrows with a channel specification
@@ -807,6 +810,13 @@ is equivalent to
 a.g$o --> b.g$i;
 a.g$i <-- b.g$o;
 \end{verbatim}
+
+Regarding gate vectors, the two sides of the gate \ttt{gate\$i[]} and \ttt{gate\$o[]}
+must be equal. Therefore, it is not possible to use the \ttt{gate++} operator
+with \ttt{gate\$i} and \ttt{gate\$o}.
+
+FIXME is that correct?
+
 
 
 \subsubsection{Specifying channels}
