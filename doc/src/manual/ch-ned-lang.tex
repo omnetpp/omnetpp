@@ -97,10 +97,24 @@ The nodes are routers themselves as well, and the network is connected
 by 1 megabit/sec lines. We assume that the application uses datagram-based
 communication, so that we can leave out the transport layer from the model.
 
-Our simulation model will look like this:
+Our simulation model will look like figures \ref{fig:ned-routing-network}
+and \ref{fig:ned-routing-node}.
 
-TODO screenshot of one node
-TODO screenshot of the network
+\begin{figure}[htbp]
+  \begin{center}
+    \includegraphics[scale=0.6]{figures/ned-routing-network}
+    \caption{The network}
+    \label{fig:ned-routing-network}
+  \end{center}
+\end{figure}
+
+\begin{figure}[htbp]
+  \begin{center}
+    \includegraphics[scale=0.6]{figures/ned-routing-node}
+    \caption{One node in the network}
+    \label{fig:ned-routing-node}
+  \end{center}
+\end{figure}
 
 Let us build the model bottom-up. First we define the simple module
 types that will make up a network node. We need an application;
