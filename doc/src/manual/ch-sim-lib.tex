@@ -65,19 +65,24 @@ ones.
 
 \subsection{Setting and getting attributes}
 
-
 Member functions that set and query object attributes follow
-consistent naming. The setter member function has the form \ttt{setFoo(...)}
-and its getter counterpart is named \ttt{foo()}. (The \textit{get} verb found in Java
-and some other libraries is omitted for brevity.)
-For example, the \textit{length} attribute of the \cclass{cMessage} class can
-be set and read like this:
+a naming convention: the setter member function begins with
+\ttt{set}, and the getter begins with \ttt{get} (or in the case of
+boolean attributes, with \ttt{is} or \ttt{has}, whichever is more
+appropriate). For example, the \textit{length} attribute of the
+\cclass{cPacket} class can be set and read like this:
 
 \begin{verbatim}
-msg->setBitLength(1024);
-length = msg->getBitLength();
+pk->setBitLength(1024);
+length = pk->getBitLength();
 \end{verbatim}
 
+\begin{note}
+    {\opp} 3.x and earlier versions did not have the \ttt{get} verb
+    in the name of getter methods. There are scripts to port old source
+    code to {\opp} 4.0; these tools and the suggested porting produre
+    are described in the \textit{Migration Guide}.
+\end{note}
 
 \subsection{getClassName()}
 \label{sec:sim-lib:classname}
