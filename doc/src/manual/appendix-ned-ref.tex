@@ -689,7 +689,7 @@ A submodule body cannot define new parameters or gates. It is only
 allowed to assign existing parameters, and to set the vector
 size of existing gate vectors.
 
-FIXME is it allowed to add properties, and parameter/gate properties?
+It is also allowed to add or modify properties and parameter/gate properties.
 
 
 
@@ -772,24 +772,31 @@ an index in square brackets (for submodule vectors). For scalar gates,
 plus an index in square brackets, or \textit{gatename}\ttt{++}.
 
 The \textit{gatename}\ttt{++} notation causes the first unconnected gate index
-to be used. For a submodule, if all gates of the given gate vector are connected,
-the gate vector gets expanded by one. For the compound module, it causes an error
-if all gates of the given gate vector are connected.
+to be used. If all gates of the given gate vector are connected, the behavior
+is different for submodules and for the enclosing compound module.
+For submodules, the gate vector expands by one. For the compound module,
+it is an error to use \ttt{++} on gate vector with no unconnected gates.
 
-\begin{note}
-    Due to the top-down order of network building, it is not possible to
-    expand the gate vector of the compound module: the new gates would be
-    left unconnected on the outside.
-\end{note}
+\begin{rationale}
+    The reason it is not supported to expand the gate vector of the compound
+    module is that the module structure is built in top-down order: new gates
+    would be left unconnected on the outside, as there is no way in NED to
+    "go back" and connect them afterwards.
+\end{rationale}
+
+When the \ttt{++} operator is used with \ttt{\$i} or \ttt{\$o}
+(e.g. \ttt{g\$i++} or \ttt{g\$o++}, see later), it will actually add
+a gate pair (input+output) to maintain equal gate size for the two
+directions.
 
 The syntax to associate a channel (see \ref{ch-ned-ref:sec:channels})
 with the connection is to use two arrows with a channel specification
 in between (see later). The same syntax is used to add properties such as
 \ttt{@display} to the connection.
 
-TODO examples
+%% TODO examples
 
-TODO examples with a channel
+%% TODO examples with a channel
 
 
 \subsubsection{Inout gates}
@@ -811,12 +818,10 @@ a.g$o --> b.g$i;
 a.g$i <-- b.g$o;
 \end{verbatim}
 
-Regarding gate vectors, the two sides of the gate \ttt{gate\$i[]} and \ttt{gate\$o[]}
-must be equal. Therefore, it is not possible to use the \ttt{gate++} operator
-with \ttt{gate\$i} and \ttt{gate\$o}.
-
-FIXME is that correct?
-
+In inout gate vectors, gates are always in pairs, that is,
+\ttt{sizeof(g\$i)==sizeof(g\$o)} always holds. It is maintained even
+when \ttt{g\$i++} or \ttt{g\$o++} is used: the \ttt{++} operator will
+add a gate pair, not just an input or an output gate.
 
 
 \subsubsection{Specifying channels}
@@ -869,7 +874,7 @@ A channel body may contain parameters (\ref{ch-ned-ref:sec:parameters}).
 A channel body cannot define new parameters. It is only
 allowed to assign existing parameters.
 
-FIXME is it allowed to add properties, and parameter properties?
+It is also allowed to add or modify properties and parameter properties.
 
 
 \subsubsection{Implicit channel type}
@@ -1074,7 +1079,7 @@ Parameter (non-default) assignments may also be overridden in subclasses.
 
 \subsubsection{Gate inheritance}
 
-FIXME tbd
+Gate vector size may NOT be overridden in subclasses.
 
 
 
