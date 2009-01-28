@@ -51,27 +51,27 @@
     <para>A simulation program built with Tkenv accepts the following command line switches:</para>
     <itemizedlist>
       <listitem>
-        -h : The program prints a help message and exits.
+        <literal>-h</literal> : The program prints a help message and exits.
       </listitem>
       <listitem>
-        -f fileName : Specify the name of the configuration file. The default is omnetpp.ini. Multiple -f
+        <literal>-f fileName</literal> : Specify the name of the configuration file. The default is omnetpp.ini. Multiple -f
         switches can be given; this allows you to partition your configuration file. For example, one file can
         contain your general settings, another one most of the module parameters, another one the module
         parameters you change often. The -f switch is optional and can be omitted.
       </listitem>
       <listitem>
-        -l fileName : Load a shared object (.so file on Unix). Multiple -l switches are accepted. Your .so
+        <literal>-l fileName</literal> : Load a shared object (.so file on Unix). Multiple -l switches are accepted. Your .so
         files may contain module code etc.
       </listitem>
       <listitem>
-        -n filePath : When present, overrides the NEDPATH environment variable and sets where the simulation
+        <literal>-n filePath</literal> : When present, overrides the NEDPATH environment variable and sets where the simulation
         NED files are load from.
       </listitem>
       <listitem>
-        -c configname: Select a configuration for execution.
+        <literal>-c configname</literal> : Select a configuration for execution.
       </listitem>
       <listitem>
-        -r run-number: It has the same effect as (but takes priority over) the tkenv-default-run= ini file
+        <literal>-r run-number</literal> : It has the same effect as (but takes priority over) the tkenv-default-run= ini file
         configuration.
       </listitem>
     </itemizedlist>
@@ -81,35 +81,36 @@
     <para> Tkenv accepts the following configuration options in the ini file.</para>
     <itemizedlist>
       <listitem>
-        tkenv-extra-stack: Specifies the extra amount of stack (in kilobytes) that is reserved for each
-        activity() simple module when the simulation is run under Tkenv. This value is significantly higher
+        <literal>tkenv-extra-stack</literal> : Specifies the extra amount of stack (in kilobytes) that is reserved for each
+        <literal>activity()</literal> simple module when the simulation is run under Tkenv. This value is significantly higher
         than the similar one for Cmdenv -- handling GUI events requires a large amount of stack space.
       </listitem>
       <listitem>
-        tkenv-default-config: Specifies which configuration Tkenv should set up automatically after startup.
+        <literal>tkenv-default-config</literal> : Specifies which configuration Tkenv should set up automatically after startup.
       </listitem>
       <listitem>
-        tkenv-default-run: Specifies which run Tkenv should set up for the selected configuration after
+        <literal>tkenv-default-run</literal> : Specifies which run Tkenv should set up for the selected configuration after
         startup. If there's no default-run = entry or the value is 0, Tkenv will ask which run to set up.
       </listitem>
       <listitem>
-        tkenv-image-path: Specifies which directories should be scanned when Tkenv wants to load an image.
+        <literal>tkenv-image-path</literal> : Specifies which directories should be scanned when Tkenv wants to load an image.
         This is a semicolon separated list of directories. This setting can be overridden by the
         OMNETPP_IMAGE_PATH environment variable.
       </listitem>
       <listitem>
-        tkenv-plugin-path: Specifies which directories should be scanned when Tkenv wants to load an extension
+        <literal>tkenv-plugin-path</literal> : Specifies which directories should be scanned when Tkenv wants to load an extension
         plugin. Plugins are small TCL script fragments that contribute additional behaviour to Tkenv.
       </listitem>
     </itemizedlist>
-    <para>The rest of the Tkenv options are saved into the .tkenvrc file that can be found in the current
+    <para>The rest of the Tkenv options are saved into the <literal>.tkenvrc</literal> file that can be found in the current
       directory or in the user's home directory (in case of global options).</para>
   </sect1>
   <sect1>
     <title>Environment variables</title>
-    <para>In case of nonstandard installation, it may be necessary to set the OMNETPP_TKENV_DIR environment
+    <para>In case of nonstandard installation, it may be necessary to set the 
+      <literal>OMNETPP_TKENV_DIR</literal> environment
       variable so that Tkenv can find its parts written in Tcl script.</para>
-    <para> The default path from where the icons are loaded can be changed with the OMNETPP_IMAGE_PATH
+    <para> The default path from where the icons are loaded can be changed with the <literal>OMNETPP_IMAGE_PATH</literal>
       variable, which is a semicolon-separated list of directories and defaults to
       omnetpp-dir/images;./images.</para>
   </sect1>
@@ -120,24 +121,38 @@
     <para>The main window of the simulation environment contains:</para>
     <itemizedlist>
       <listitem>
-        Toolbar: you may access the main functions of the runtime environment.
+        Toolbar: you may access the main functions of the runtime environment. It
+        is possible to step, run, stop, re-start or finish the simulation and configure
+        the visual appearance and logging behaviour.
       </listitem>
       <listitem>
-        Status bar: contains several informative values about the current state of the simulation.
+        Status bar: contains information about the current state of the simulation. 
+        On the upper line it displays the current run number and network name, 
+        the current event number, the simulation time and the module name where the
+        next simulation event will be delivered to. The middle line displays the number of
+        messages in the FES, the total number of messages created during the simulation and
+        finally the number of messages currently present in the whole simulation model.
+        The last line contains performance data: How many events are processed in a real and in
+        a simulated second along with the ratio between the simulation-time and real-time. 
       </listitem>
       <listitem>
         Timeline: displays the content of the FES on a logarithmic time scale. Double clicking on a dot will
-        display the message inspector window.
+        display the message inspector window. You can set what events are displayed on the
+        timeline by setting message filters on the main configuration dialog's timeline tab
+        (Tip: right click on the timeline to go directly to the timeline configuration dialog).
       </listitem>
       <listitem>
-        Object tree: displays all objects currently present in the memory. You may double click on nodes to
-        further inspect the given object.
+        Object tree: displays all inspectable objects currently present in the memory. 
+        You may double click on nodes to further inspect the given object in a separate window.
       </listitem>
       <listitem>
-        Log Window: contains the output of the simulation.
+        Log Window: contains the output of the simulation. You can filter the content of the
+        window to include messages only from specific modules. Open the log window's context menu
+        and select <literal>Filter window contents </literal>. Note that the whole content of the 
+        log window will be filtered including all previous messages.
       </listitem>
     </itemizedlist>
-    The Object tree and the Timeline can be easily switched off on the toolbar if you need more space for your
+    Both the Object tree and the Timeline can be easily switched off on the toolbar if you need more space for your
     log window.
   </sect1>
   <sect1>
@@ -146,7 +161,7 @@
       <title>Networks, Modules</title>
       <picture file="pictures/Tkenv-network.png">Top level network</picture>
       <para>You can start exploring the component hierarchy by browsing the Object tree and double clicking
-        on a node or by clicking the Inspect network icon on the toolbar. Once you open a node, an inspector
+        on a node or by clicking the <literal>Inspect network</literal> icon on the toolbar. Once you open a node, an inspector
         window will be opened. Networks and compound modules are represented by a graphical inspectors
         displaying their internal structure. Simple modules are represented by object inspectors displaying
         their content as a list. Items in these lists can also be opened and some of them in the tree
@@ -155,7 +170,7 @@
       <para>
         If you intend to watch some variables in your modules, add the
         <literal>WATCH(varName)</literal>
-        macro to your module's initialize() method. The watched variables will be displayed on the the object
+        macro to your module's <literal>initialize()</literal> method. The watched variables will be displayed on the the object
         inspector's content page.
       </para>
       <para>The toolbar on the module inspector window contains several useful commands that can be used
@@ -240,12 +255,12 @@
     <sect2>
       <title>Fast mode</title>
       <para> In Fast mode, animation is turned off. The inspectors and the message output windows are updated
-        after each 10 events (the actual number can be set in Options|Simulation options and also in the ini
+        after in every 500ms (the actual number can be set in Options|Simulation options and also in the ini
         file). Fast mode is several times faster than the Run mode; the speedup can get close to 10 (or the
         configured event count).</para>
     </sect2>
     <sect2>
-      <title>Expres mode</title>
+      <title>Express mode</title>
       <para> In Express mode, the simulation runs at about the same speed as with Cmdenv, all tracing
         disabled. Module output is not recorded in the output windows any more. You can interact with the
         simulation only once in a while, thus the run-time overhead of the user interface is minimal. You have
@@ -256,7 +271,7 @@
       <para>
         It is possible to run the simulation until a specified simulation time or event number. This is an
         invaluable tool during debugging sessions. Just select
-        <guimenu>Simulate | Run until...</guimenu>
+        <guimenuitem>Simulate | Run until...</guimenuitem>
       </para>
     </sect2>
     <sect2>
@@ -264,7 +279,7 @@
       <para>
         It is also possible run until an event is received in a specified module. Just browse for the module
         and choose
-        <guimenu>Run until next event in this module.</guimenu>
+        <guimenuitem>Run until next event in this module.</guimenuitem>
         Simulation will stop once an event arrives to this module.
       </para>
     </sect2>
@@ -276,8 +291,8 @@
       user clicked the New Network button to select a new one). First the simulation kernel loads all
       necessary NED files and registers the loaded modules with the kernel. Object constructors are called at
       this point. The next phase is the initialization when all module's
-      <literal>initialize()</literal>
-      . Once initialization is completed Tkenv returns the control to the user and allows stepping or running
+      <literal>initialize()</literal> method is called.
+      Once initialization is completed Tkenv returns the control to the user and allows stepping or running
       the simulation. If you choose to quit Tkenv while the simulation is not finished (or try to restart the
       simulation), Tkenv will ask you whether to call the
       <literal>finish()</literal>
@@ -292,7 +307,7 @@
       Invoke the "Find/inspect objects" window and search for your object. The window allows you to set the
       start of the search and the type, class and name of the object. The results will be presented as a
       clickable list.</para>
-    <para>You can provide generic filter expression which matches the object full path by default.
+    <para>You can provide a generic filter expression which matches the object full path by default.
       Wildcards ("?", "*") are allowed. "{a-exz}" matches any character in the range "a".."e", plus "x" and
       "z". You can match numbers: "*.job{128..191}" will match objects named "job128", "job129", ...,
       "job191". "job{128..}" and "job{..191}" are also understood. You can combine patterns with AND, OR and
@@ -333,14 +348,15 @@
       </listitem>
     </itemizedlist>
     <note>
-      TODO search ablakban a kereses mit jelent C++ szinten, es mit hogyan/hol talal meg, ill mit nem fog sose
-      megtalalni;
+      Tkenv uses the <literal>cObject::forEachChild</literal> method to collect all object from a tree
+      recursively. If you have your own objects derived from <literal>cObject</literal> you should
+      redefine the <literal>cObject::forEachChild</literal> to participate correctly in the object search.
     </note>
     <note>
       If you are debugging your simulation with a source level debugger and happen to know the value of the
-      pointer to your object, you may use the Inspect by pointer menu item and insert the pointer value there
-      to display an inspector window for the object. Please note that entering an invalid pointer will crash
-      your simulation.
+      pointer to your object, you may use the <guimenuitem>Inspect by pointer</guimenuitem> menu 
+      item and insert the pointer value there to display an inspector window for the object. 
+      Please note that entering an invalid pointer will crash your simulation.
     </note>
   </sect1>
   <sect1>
@@ -361,10 +377,10 @@
       selecting
       <guimenuitem>Filter window contents</guimenuitem>
       menu item. Individual modules can be selected/deselected. General logging behaviour can be controlled in
-      the Configuration dialog
+      the Configuration dialog.
     </para>
     <note>
-      All message lines in the log window are filtered (older ones too).
+      All message lines in the log window are filtered according to the filter settings (older ones too).
     </note>
   </sect1>
   <sect1>
@@ -395,17 +411,17 @@
       </para>
       <itemizedlist>
         <listitem>
-          Animate messages - turn on/off the visualization of message passing between modules.
+          Animate messages : turn on/off the visualization of message passing between modules.
         </listitem>
         <listitem>
-          Broadcast animation - handle message broadcasts specially. (Messages that are sent at the same
+          Broadcast animation : handle message broadcasts specially. (Messages that are sent at the same
           simulation time will be animated concurrently.
         </listitem>
         <listitem>
-          Highliht the module which will receive the next event.
+          Show next event maker : Highlight the module which will receive the next event.
         </listitem>
         <listitem>
-          Show with a flashing arrow when a sendDirect() method call was executed.
+          Show a flashing arrow when a sendDirect() method call was executed.
         </listitem>
         <listitem>
           Direct method calls are also animated by default with flashing arrows if you have added the
@@ -432,28 +448,28 @@
           <literal>m*</literal> : matches any object whose name begins with "m"
         </listitem>
         <listitem>
-          m* AND *-{0..250} : matches any object whose name begins with "m" and ends with dash and a number
+          <literal>m* AND *-{0..250}</literal> : matches any object whose name begins with "m" and ends with dash and a number
           between 0 and 250
         </listitem>
         <listitem>
-          not *timer* : matches any object whose name doesn't contain the substring "timer"
+          <literal>not *timer*</literal> : matches any object whose name doesn't contain the substring "timer"
         </listitem>
         <listitem>
-          not (*timer* or *timeout*) : matches any object whose name doesn't contain either "timer" or "timeout"
+          <literal>not (*timer* or *timeout*)</literal> : matches any object whose name doesn't contain either "timer" or "timeout"
         </listitem>
         <listitem>
-          kind(3) or kind({7..9}) : matches messages with message kind equal to 3, 7, 8 or 9
+          <literal>kind(3) or kind({7..9})</literal> : matches messages with message kind equal to 3, 7, 8 or 9
         </listitem>
         <listitem>
-          className(IP*) and data-* : matches objects whose class name begins with "IP" and name begins with
+          <literal>className(IP*) and data-*</literal> : matches objects whose class name begins with "IP" and name begins with
           "data-"
         </listitem>
         <listitem>
-          not className(cMessage) and byteLength({1500..}) : matches objects whose class is not cMessage, and
+          <literal>not className(cMessage) and byteLength({1500..}) </literal>: matches objects whose class is not cMessage, and
           byteLength is at least 1500
         </listitem>
         <listitem>
-          "or" or "and" or "not" or "*(*" or "msg(ACK)" : quotation marks needed when pattern is a reserved word
+          <literal>"or" or "and" or "not" or "*(*" or "msg(ACK)" </literal>: quotation marks needed when pattern is a reserved word
           or contains parentheses. (Note: msg(ACK) without parens would be interpreted as some object having a
           "msg" attribute with the value "ACK"!)
         </listitem>
