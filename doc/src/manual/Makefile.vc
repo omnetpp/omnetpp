@@ -50,6 +50,7 @@ SVGPICS = \
          figures\ksplit2.svg \
          figures\modules.svg \
          figures\nonblocking-crit.svg \
+         figures\ned-net6-topology.svg \
          figures\pairwise.svg \
          figures\parsim-arch.svg \
          figures\partitioning.svg \
