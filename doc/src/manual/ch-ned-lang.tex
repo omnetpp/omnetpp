@@ -86,6 +86,174 @@ other system like SQL databases, and so on.
 \end{note}
 
 
+\section{Network}
+
+\begin{Verbatim}
+network Net6
+{
+    submodules:
+        node1: Node;
+        node2: Node;
+        node3: Node;
+        node4: Node;
+        node5: Node;
+        node6: Node;
+    connections:
+        node1.port++ <--> node2.port++;
+        node2.port++ <--> node4.port++;
+        node4.port++ <--> node6.port++;
+        node1.port++ <--> node3.port++;
+        node3.port++ <--> node5.port++;
+        node5.port++ <--> node6.port++;
+        node2.port++ <--> node5.port++;
+        node3.port++ <--> node4.port++;
+}
+\end{Verbatim}
+
+What ++ means etc
+
+We'll cover it in the next section where \ttt{Node} comes from.
+
+In \ttt{omnetpp.ini}:
+
+\begin{Verbatim}
+[General]
+network = Net6
+\end{Verbatim}
+
+
+\section{Simple modules}
+
+Node: it has gates, will be responsible for traffic generation and routing.
+XXX add separate "user" nodes to the network?
+
+\begin{Verbatim}
+simple Node
+{
+    parameters:
+        @display("i=abstract/router");
+    gates:
+        inout port[];
+}
+\end{Verbatim}
+
+Corresponding C++ class is \ttt{Node}; it needs to subclass from \cclass{cSimpleModule}
+etc (link to next chapter!)
+
+
+\section{Parameters}
+
+Let us add parameters to our Node module type.
+
+\begin{Verbatim}
+simple Node
+{
+    parameters:
+        int address;
+        int destAddress;
+        volatile double sendIaTime @unit(s) = default(exponential(1s));
+        volatile int packetLength @unit(byte);
+        @display("i=block/browser");
+    gates:
+        inout port[];
+}
+\end{Verbatim}
+
+
+
+\section{Gates}
+
+gates, gate vectors?
+
+
+
+\section{Compound module}
+
+compound module syntax (sections etc)
+
+Replace Node with App, Router, L2Queue...
+
+we'll explain submodule details and conns in the next section
+
+
+\section{Submodules}
+
+there are submodule vectors;
+submodule body may assign parameters, specify gate sizes
+
+submodule type may be parameter, but see this later
+
+Replace node1, node2 etc with node[]:
+
+\begin{Verbatim}
+network Net6
+{
+    submodules:
+        node[5]: Node {
+            address = index;
+        }
+    connections:
+        node[1].port++ <--> node[2].port++;
+        node[2].port++ <--> node[4].port++;
+        node[4].port++ <--> node[6].port++;
+        node[1].port++ <--> node[3].port++;
+        node[3].port++ <--> node[5].port++;
+        node[5].port++ <--> node[6].port++;
+        node[2].port++ <--> node[5].port++;
+        node[3].port++ <--> node[4].port++;
+}
+\end{Verbatim}
+
+
+\section{Channels etc}
+
+\begin{Verbatim}
+<--> {delay=10ms; datarate=1e-8;} <-->
+\end{Verbatim}
+
+channel types
+
+
+\section{Connections}
+
+connection examples
+
+
+
+\section{Submodule type as parameter}
+
+\begin{Verbatim}
+network Net6
+{
+    parameters:
+        string nodeType;
+    submodules:
+        node[5]: <nodeType> like INode {
+            address = index;
+        }
+    connections:
+        ...
+}
+\end{Verbatim}
+
+\begin{Verbatim}
+moduleinterface INode
+{
+    parameters:
+        int address;
+    gates:
+        inout port[];
+}
+\end{Verbatim}
+
+
+\section{Inheritance}
+
+\section{Packages}
+
+
+//////////////////////////////////////////////////////
+
 \section{Simple modules, compound modules, networks}
 
 In this section we introduce the NED language via a complete and
@@ -332,21 +500,24 @@ network Net10
                 address = index;
         \}
     connections:
-        rte[0].port++ <--> C <--> rte[1].port++;
-        rte[0].port++ <--> C <--> rte[3].port++;
-        rte[1].port++ <--> C <--> rte[2].port++;
-        rte[1].port++ <--> C <--> rte[4].port++;
-        rte[3].port++ <--> C <--> rte[4].port++;
-        rte[3].port++ <--> C <--> rte[8].port++;
-        rte[4].port++ <--> C <--> rte[5].port++;
-        rte[4].port++ <--> C <--> rte[7].port++;
-        rte[5].port++ <--> C <--> rte[6].port++;
-        rte[5].port++ <--> C <--> rte[1].port++;
-        rte[6].port++ <--> C <--> rte[7].port++;
-        rte[6].port++ <--> C <--> rte[9].port++;
-        rte[7].port++ <--> C <--> rte[8].port++;
-        rte[7].port++ <--> C <--> rte[2].port++;
-        rte[9].port++ <--> C <--> rte[1].port++;
+        rte[1].port++ <--> rte[0].port++;
+        rte[0].port++ <--> rte[2].port++;
+        rte[2].port++ <--> rte[5].port++;
+        rte[5].port++ <--> rte[7].port++;
+        rte[7].port++ <--> rte[9].port++;
+        rte[9].port++ <--> rte[8].port++;
+        rte[8].port++ <--> rte[4].port++;
+        rte[4].port++ <--> rte[3].port++;
+        rte[3].port++ <--> rte[1].port++;
+        rte[3].port++ <--> rte[2].port++;
+        rte[2].port++ <--> rte[4].port++;
+        rte[4].port++ <--> rte[6].port++;
+        rte[6].port++ <--> rte[8].port++;
+        rte[9].port++ <--> rte[6].port++;
+        rte[6].port++ <--> rte[7].port++;
+        rte[5].port++ <--> rte[6].port++;
+        rte[0].port++ <--> rte[5].port++;
+        rte[1].port++ <--> rte[2].port++;
 \}
 \end{Verbatim}
 
@@ -611,25 +782,26 @@ channel Backbone extends ned.DatarateChannel
 Our \ttt{Backbone} channel type extends (subclasses, builds upon) the
 \ttt{ned.DatarateChannel} channel type. (In the latter name, \ttt{ned} is the
 package name, and \ttt{DatarateChannel} is the actual type name.)
-\ttt{ned.DatarateChannel} is a built-in NED type, and it declares four parameters:
-\ttt{delay} (propagation delay), \ttt{error} (bit error rate), \ttt{datarate}
-(channel bandwidth, used for calculating transmission time of a packet), and
-\ttt{disabled} (a boolean parameter).
-
-\begin{note}
-    \ttt{error} and \ttt{datarate} are present to facilitate simulation of
-    communication networks, they would simply be unused in, say, queueing
-    network simulations.
-\end{note}
+\ttt{ned.DatarateChannel} is a built-in NED type, and it declares the
+following parameters: \ttt{delay} (propagation delay), \ttt{ber} (bit error rate),
+\ttt{per} (packet error rate), \ttt{datarate} (channel bandwidth, used for
+calculating transmission time of a packet), and \ttt{disabled} (a boolean parameter).
 
 \ttt{ned.DatarateChannel} initializes these parameters to provide an ideal channel
 (zero delay and bit error rate, infinite data rate). In the above
 declaration, we override \ttt{delay} and \ttt{datarate} to get our custom
 channel.
 
-For completeness, there is another built-in channel type,
-\ttt{ned.IdealChannel}. It defines no parameters, and its C++ implementation
+TODO other channel types; implicit selection based on parameters
+
+Another channel type, \ttt{ned.DelayChannel} only defines the \ttt{delay}
+and \ttt{disabled} parameters, and may be used in, say, queueing
+network simulations.
+
+The simplest built-in channel type is \ttt{ned.IdealChannel}.
+It defines no parameters, and its C++ implementation
 does nothing but let the message though without any change or delay.
+It is used... XXX
 
 % FIXME into Inheritance:
 % It is also possible to add new parameters. . .
