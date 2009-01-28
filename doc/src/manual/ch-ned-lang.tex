@@ -86,9 +86,37 @@ other system like SQL databases, and so on.
 \end{note}
 
 
-\section{Network}
+\section{Warmup}
+
+In this section we introduce the NED language via a complete and
+reasonably real-life example: a communication network.
+
+Our hypothetical network consists of nodes. One each node there's an
+application running which generates packets at random intervals.
+The nodes are routers themselves as well. We assume that the application
+uses datagram-based communication, so that we can leave out the
+transport layer from the model.
+
+%% XXX keep the example simple!
+
+\subsection{The network}
+
+Let the network topology be as in Figure \ref{fig:ned-net6-topology}.
+
+\begin{figure}[htbp]
+  \begin{center}
+    \includegraphics[scale=0.6]{figures/ned-net6-topology}
+    \caption{The network}
+    \label{fig:ned-net6-topology}
+  \end{center}
+\end{figure}
+
+The corresponding NED description would look like this:
 
 \begin{Verbatim}
+//
+// A six-node network
+//
 network Net6
 {
     submodules:
@@ -99,22 +127,49 @@ network Net6
         node5: Node;
         node6: Node;
     connections:
-        node1.port++ <--> node2.port++;
-        node2.port++ <--> node4.port++;
-        node4.port++ <--> node6.port++;
-        node1.port++ <--> node3.port++;
-        node3.port++ <--> node5.port++;
-        node5.port++ <--> node6.port++;
-        node2.port++ <--> node5.port++;
-        node3.port++ <--> node4.port++;
+        node1.port++ <--> {datarate=100Mbps;} <--> node2.port++;
+        node2.port++ <--> {datarate=100Mbps;} <--> node4.port++;
+        node4.port++ <--> {datarate=100Mbps;} <--> node6.port++;
+        node1.port++ <--> {datarate=100Mbps;} <--> node3.port++;
+        node3.port++ <--> {datarate=100Mbps;} <--> node5.port++;
+        node5.port++ <--> {datarate=100Mbps;} <--> node6.port++;
+        node2.port++ <--> {datarate=100Mbps;} <--> node5.port++;
+        node3.port++ <--> {datarate=100Mbps;} <--> node4.port++;
 }
 \end{Verbatim}
 
-What ++ means etc
+The above code defines a network type named \ttt{Net6}. Note that the NED
+language uses the familiar curly brace syntax, and ``\ttt{//}'' to denote
+comments.
 
-We'll cover it in the next section where \ttt{Node} comes from.
+\begin{note}
+    Comments in NED not only make the source code more readable, but in the
+    {\opp} IDE they also get displayed at various places (tooltips, content
+    assist, etc), and become part of the documentation extracted from the NED
+    files. The NED documentation system, not unlike \textit{JavaDoc} or
+    \textit{Doxygen}, will be described in Chapter \ref{cha:neddoc}.
+\end{note}
 
-In \ttt{omnetpp.ini}:
+The network contains six nodes, named \ttt{node1}...\ttt{node6},
+from the NED module type \ttt{Node}. (We'll define \ttt{Node} in the next
+sections.)
+
+The second half of the declaration defines how the nodes are to be
+connected. The double arrow means bidirectional connection. The connection
+points of modules are called gates, and the \ttt{port++} notation adds a
+new gate to the \ttt{port[]} gate vector. Gates and connections will be
+covered in more detail in sections XXX and XXX.
+
+XXX explain datarate
+
+The above code would be placed into a file named \ttt{Net6.ned}. It is
+a convention to put every NED definition into its own file and to name the
+file accordingly, but it is not mandatory to do so.
+
+One can define any number of networks in the NED files, and for every
+simulation the user has to specify which network he wants to set up.
+The usual way of specifying the network is to put the \fconfig{network}
+option into the configuration (by default the \ttt{omnetpp.ini} file):
 
 \begin{Verbatim}
 [General]
@@ -122,58 +177,123 @@ network = Net6
 \end{Verbatim}
 
 
-\section{Simple modules}
+\subsection{The App, Routing and Queue simple modules}
 
-Node: it has gates, will be responsible for traffic generation and routing.
-XXX add separate "user" nodes to the network?
+Simple modules are the basic building blocks for other (compound) modules.
+All active behavior in the model is encapsulated in simple modules.
+Behavior is defined with a C++ class; NED files only declare the externally
+visible interface of the module (gates, parameters).
 
-\begin{Verbatim}
-simple Node
-{
+In our example, we could define \ttt{Node} as a simple module. However,
+its functionality is quite complex (traffic generation, routing, etc),
+so it is better to implement it with several smaller simple module types
+which we are going to assemble into a compound module. We'll have
+one simple module for traffic generation (\ttt{App}), one for routing
+(\ttt{Routing}), and one for queueing up packets to be sent out (\ttt{Queue}).
+For brevity, we omit the bodies of the latter two in the code below.
+
+\begin{Verbatim}[commandchars=\\\{\}]
+simple App
+\{
     parameters:
-        @display("i=abstract/router");
-    gates:
-        inout port[];
-}
-\end{Verbatim}
-
-Corresponding C++ class is \ttt{Node}; it needs to subclass from \cclass{cSimpleModule}
-etc (link to next chapter!)
-
-
-\section{Parameters}
-
-Let us add parameters to our Node module type.
-
-\begin{Verbatim}
-simple Node
-{
-    parameters:
-        int address;
-        int destAddress;
-        volatile double sendIaTime @unit(s) = default(exponential(1s));
-        volatile int packetLength @unit(byte);
+        ...
         @display("i=block/browser");
     gates:
-        inout port[];
-}
+        input in;
+        output out;
+\}
+
+simple Routing
+\{
+    ...
+\}
+
+simple Queue
+\{
+    ...
+\}
 \end{Verbatim}
 
+By convention, the above simple module declarations go into the
+\ttt{App.ned}, \ttt{Routing.ned} and \ttt{Queue.ned} files.
+
+Let us see the first simple module type declaration. \ttt{App} has some
+parameters (omitted for now), and two gates named \ttt{out} and \ttt{in}
+for sending and receiving application packets.
+
+The argument of \ttt{@display()} is called a \textit{display string},
+and it defines the default rendering of the module in graphical environments;
+\ttt{"i=..."} defines the default icon.
+
+Both the \ttt{parameters:} and \ttt{gates:} sections in the simple module are
+optional, that is, they can be left out if there's no parameter or gate.
+
+\begin{note}
+    Note that the module type names (\ttt{App}, \ttt{Routing}, \ttt{Queue})
+    begin with a capital letter, and parameter and gate names begin with
+    lowercase -- this is the recommended naming convention. Capitalization
+    matters because the language is case sensitive.
+\end{note}
+
+Notice that the declarations don't contain any code to define the operation
+of the application (routing algorithm, queue) itself: that part is
+expressed in C++. By default, {\opp} looks for C++ classes of the same name
+as the NED type (so here, \ttt{App}, \ttt{Routing} and {Queue}), although
+this gets slightly more complicated if C++ namespaces or NED packages are
+involved, and the user can also explicitly specify which C++ class to use.
+
+XXX describe @class and @namespace here?
+
+The implementation C++ classes need to be subclassed from the
+\cclass{cSimpleModule} library class; chapter XXX of this manual describes
+in detail how to write them.
+
+Simple modules can be extended (or specialized) via subclassing. This will be
+discussed in section \ref{sec:ch-ned-lang:inheritance}.
 
 
-\section{Gates}
-
-gates, gate vectors?
-
-
-
-\section{Compound module}
+\subsection{The Node compound module}
 
 compound module syntax (sections etc)
 
-Replace Node with App, Router, L2Queue...
+
+\begin{Verbatim}[commandchars=\\\{\}]
+module Node
+\{
+    parameters:
+        @display("i=misc/node_vs,gold");
+    gates:
+        inout port[];
+    submodules:
+        app: App;
+        routing: Routing;
+        queue[sizeof(port)]: Queue;
+    connections:
+        routing.localOut --> app.in;
+        routing.localIn <-- app.out;
+        for i=0..sizeof(port)-1 \{
+            routing.out[i] --> queue[i].in;
+            routing.in[i] <-- queue[i].out;
+            queue[i].line <--> port[i];
+        \}
+\}
+\end{Verbatim}
+
 
 we'll explain submodule details and conns in the next section
+
+
+. . . . . . . . . . . . . . . . . . . .
+
+% XXX no comes everything in details!
+
+\section{Simple modules}
+
+\section{Parameters}
+
+\section{Gates}
+
+\section{Compound modules}
 
 
 \section{Submodules}
@@ -183,7 +303,7 @@ submodule body may assign parameters, specify gate sizes
 
 submodule type may be parameter, but see this later
 
-Replace node1, node2 etc with node[]:
+we can replace node1, node2 etc with node[]:
 
 \begin{Verbatim}
 network Net6
@@ -210,6 +330,8 @@ network Net6
 \begin{Verbatim}
 <--> {delay=10ms; datarate=1e-8;} <-->
 \end{Verbatim}
+
+we can use the channel type C.
 
 channel types
 
@@ -246,6 +368,8 @@ moduleinterface INode
 }
 \end{Verbatim}
 
+
+\section{Properties (metadata annoations)}
 
 \section{Inheritance}
 
