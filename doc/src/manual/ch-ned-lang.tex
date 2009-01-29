@@ -587,8 +587,42 @@ Example:
     node[2*size+1]: Node;
 \end{Verbatim}
 
+there are submodule vectors;
+submodule body may assign parameters, specify gate sizes
+
+submodule type may be parameter, but see this later
+
+we can replace node1, node2 etc with node[]:
+
+\begin{Verbatim}
+network Net6
+{
+    submodules:
+        node[5]: Node {
+            address = index;
+        }
+    connections:
+        node[1].port++ <--> node[2].port++;
+        node[2].port++ <--> node[4].port++;
+        node[4].port++ <--> node[6].port++;
+        node[1].port++ <--> node[3].port++;
+        node[3].port++ <--> node[5].port++;
+        node[5].port++ <--> node[6].port++;
+        node[2].port++ <--> node[5].port++;
+        node[3].port++ <--> node[4].port++;
+}
+\end{Verbatim}
+
 
 \section{Connections, channels}
+
+\begin{Verbatim}
+<--> {delay=10ms; datarate=1e-8;} <-->
+\end{Verbatim}
+
+we can use the channel type C.
+
+channel types
 
 Channels types resemble simple modules in the sense that they need an underlying
 C++ class to function, the NED declaration itself is not enough. Our
@@ -637,45 +671,15 @@ It defines no parameters, and its C++ implementation
 does nothing but let the message though without any change or delay.
 It is used... XXX
 
-there are submodule vectors;
-submodule body may assign parameters, specify gate sizes
-
-submodule type may be parameter, but see this later
-
-we can replace node1, node2 etc with node[]:
-
-\begin{Verbatim}
-network Net6
-{
-    submodules:
-        node[5]: Node {
-            address = index;
-        }
-    connections:
-        node[1].port++ <--> node[2].port++;
-        node[2].port++ <--> node[4].port++;
-        node[4].port++ <--> node[6].port++;
-        node[1].port++ <--> node[3].port++;
-        node[3].port++ <--> node[5].port++;
-        node[5].port++ <--> node[6].port++;
-        node[2].port++ <--> node[5].port++;
-        node[3].port++ <--> node[4].port++;
-}
-\end{Verbatim}
 
 
-\section{Channels etc}
 
-\begin{Verbatim}
-<--> {delay=10ms; datarate=1e-8;} <-->
-\end{Verbatim}
+\section{Multiple Connections}
 
-we can use the channel type C.
+Simple programming constructs (loop, conditional) allow creating
+multiple connections easily.
 
-channel types
-
-
-\section{Connections}
+Example...
 
 Let use see more connection examples.
 
