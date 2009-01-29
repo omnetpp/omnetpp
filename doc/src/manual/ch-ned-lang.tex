@@ -221,6 +221,13 @@ simple Queue
 By convention, the above simple module declarations go into the
 \ttt{App.ned}, \ttt{Routing.ned} and \ttt{Queue.ned} files.
 
+\begin{note}
+    Note that module type names (\ttt{App}, \ttt{Routing}, \ttt{Queue})
+    begin with a capital letter, and parameter and gate names begin with
+    lowercase -- this is the recommended naming convention. Capitalization
+    matters because the language is case sensitive.
+\end{note}
+
 Let us see the first simple module type declaration. \ttt{App} has a
 parameter called \ttt{destAddress} (others have been omitted for now),
 and two gates named \ttt{out} and \ttt{in} for sending and receiving
@@ -235,13 +242,6 @@ in NED, and they are used to annotate various objects
 with metadata. Properties can be attached to files, modules, parameters, gates,
 connections, and other objects, and parameter values have a very flexible
 syntax.
-
-\begin{note}
-    Note that the module type names (\ttt{App}, \ttt{Routing}, \ttt{Queue})
-    begin with a capital letter, and parameter and gate names begin with
-    lowercase -- this is the recommended naming convention. Capitalization
-    matters because the language is case sensitive.
-\end{note}
 
 
 \subsection{The Node compound module}
@@ -287,7 +287,7 @@ of instantiating the module.
 The point of compound modules is to serve as a container for other
 modules. Our \ttt{Node} compound module type has an \ttt{app} and
 a \ttt{routing} \textit{submodule}, plus a \ttt{queue[]} \textit{submodule vector}
-that contains one \ttt{L2Queue} module for each port, as specified by
+that contains one \ttt{Queue} module for each port, as specified by
 \ttt{[sizeof(port)]}.
 Any module type (simple or compound module) can be used as a submodule.
 Like simple modules, compound modules can also have gates and parameters,
@@ -690,13 +690,11 @@ One can create a chain\index{chain} of modules like this:
     \tbf{submodules}:
         node[count] : Node \{
             \tbf{gates}:
-                in[index==0 || index==count-1 ? 1 : 2];
-                out[index==0 || index==count-1 ? 1 : 2];
+                port[2];
         \}
-    \tbf{connections}:
+    \tbf{connections allowunconnected}:
         \tbf{for} i = 0..count-2 \{
-            node[i].out[i!=0 ? 1 : 0] --> node[i+1].in[0];
-            node[i].in[i!=0 ? 1 : 0] <-- node[i+1].out[0];
+            node[i].port[1] <--> node[i+1].port[0];
         \}
 \}
 \end{Verbatim}
@@ -705,41 +703,6 @@ One can create a chain\index{chain} of modules like this:
 \subsubsection{Binary Tree}
 
 One can use conditional connections to build a binary tree\index{binary tree}.
-The following NED code loops through all possible node pairs, and
-creates the connections needed for a binary tree.
-
-\begin{Verbatim}[commandchars=\\\{\}]
-\tbf{simple} BinaryTreeNode \{
-    \tbf{gates}:
-        \tbf{input} fromupper;
-        \tbf{output} downleft;
-        \tbf{output} downright;
-\}
-
-\tbf{module} BinaryTree \{
-    \tbf{parameters}:
-        int height;
-    \tbf{submodules}:
-        node[2^height-1]: BinaryTreeNode;
-    \tbf{connections} \tbf{allowunconnected}:
-        \tbf{for} i = 0..2^height-2, j = 0..2^height-2 \{
-            node[i].downleft --> node[j].fromupper \tbf{if} j==2*i+1;
-            node[i].downright --> node[j].fromupper \tbf{if} j==2*i+2;
-        \}
-\}
-\end{Verbatim}
-
-Note that not every gate of the modules will be connected. By default,
-an unconnected gate produces a run-time error message when the
-simulation is started, but this error message is turned off here with
-the \fpar[ned!keywords!allowunconnected]{allowunconnected} modifier.
-Consequently, it is the simple modules' responsibility not to send
-on a gate which is not leading anywhere.
-
-An alert reader might notice that there is a better alternative
-to the above code. Each node except the ones at the lowest level
-of the tree has to be connected to exactly two nodes,
-so we can use a single loop to create the connections.
 
 \begin{Verbatim}[commandchars=\\\{\}]
 \tbf{module} BinaryTree2 \{
@@ -754,6 +717,14 @@ so we can use a single loop to create the connections.
         \}
 \}
 \end{Verbatim}
+
+Note that not every gate of the modules will be connected. By default,
+an unconnected gate produces a run-time error message when the
+simulation is started, but this error message is turned off here with
+the \fpar[ned!keywords!allowunconnected]{allowunconnected} modifier.
+Consequently, it is the simple modules' responsibility not to send
+on a gate which is not leading anywhere.
+
 
 
 \subsubsection{Random graph}
@@ -811,13 +782,13 @@ for i=0..N-1, j=0..N-1 \{
 
 The RandomGraph compound module (presented earlier) is an example of
 this pattern, but the pattern can generate any graph where an
-appropriate \textit{condition(i,j)} can be formulated. For example,
+appropriate $condition(i,j)$ can be formulated. For example,
 when generating a tree\index{topology!tree} structure, the condition
-would return whether node \textit{j} is a child of node \textit{i} or
+would return whether node $j$ is a child of node $i$ or
 vica versa.
 
 Though this pattern is very general, its usage can be prohibitive if
-the \textit{N} number of nodes is high and the graph is sparse (it has
+the $N$ number of nodes is high and the graph is sparse (it has
 much fewer connections that $N^2$). The following
 two patterns do not suffer from this drawback.
 
@@ -838,11 +809,11 @@ presented later) is a clear example of this approach. BinaryTree can
 also be regarded as an example of this pattern where the inner j loop
 is unrolled.
 
-The applicability of this pattern depends on how easily the \textit{rightNodeIndex(i,j)}
+The applicability of this pattern depends on how easily the $rightNodeIndex(i,j)$
 function can be formulated.
 
 
-\subsubsection{`Enumerate All Connections'}
+\subsubsection{``Enumerate All Connections''}
 
 
 A third pattern is to list all connections within a loop:
@@ -853,11 +824,11 @@ for i=0..Nconnections-1 \{
 \}
 \end{Verbatim}
 
-The pattern can be used if \textit{leftNodeIndex(i)} and \textit{rightNodeIndex(i)}
+The pattern can be used if $leftNodeIndex(i)$ and $rightNodeIndex(i)$
 mapping functions can be sufficiently formulated.
 
-The Serial module is an example of this approach where the mapping
-functions are extremely simple: \textit{leftNodeIndex(i)=i} and \textit{rightNodeIndex(i)=i+1}.
+The \ttt{Chain} module is an example of this approach where the mapping
+functions are extremely simple: $leftNodeIndex(i)=i$ and $rightNodeIndex(i) = i+1$.
 The pattern can also be used to create a random subset of a full
 graph with a fixed number of connections.
 
@@ -1061,8 +1032,11 @@ In the future, zip files may become supported in NEDPATH as well;
 then the root folder of the zip file will be treated as a NED source
 folder.
 
-
+\bigskip
+\bigskip
 //////////////////////////////////////////////////////
+\bigskip
+\bigskip
 
 \section{Simple modules, compound modules, networks}
 
@@ -1126,7 +1100,7 @@ simple Routing
         output localOut;
 \}
 
-simple L2Queue
+simple Queue
 \{
     parameters:
         int frameCapacity = default(0); // max queue length; 0 means no limit
@@ -1140,7 +1114,7 @@ simple L2Queue
 
 It would also be possible (moreover, recommended) to put the above three
 simple module declarations into separate \ttt{.ned} files: \ttt{App.ned},
-\ttt{Routing.ned} and \ttt{L2Queue.ned}. Note that the NED language uses
+\ttt{Routing.ned} and \ttt{Queue.ned}. Note that the NED language uses
 the familiar curly brace syntax, and ``\ttt{//}'' to denote comments.
 
 Let us see the first simple module type declaration. It declares a
@@ -1152,7 +1126,7 @@ the default rendering of the module in graphical environments;
 \ttt{"i=..."} defines the default icon.
 
 \begin{note}
-    Note that the module type names (\ttt{App}, \ttt{Routing}, \ttt{L2Queue})
+    Note that the module type names (\ttt{App}, \ttt{Routing}, \ttt{Queue})
     begin with a capital letter, and parameter and gate names begin with
     lowercase -- this is the recommended naming convention. Capitalization
     matters because the language is case sensitive.
@@ -1161,7 +1135,7 @@ the default rendering of the module in graphical environments;
 Notice that the declarations don't contain any code to define the operation
 of the application (routing algorithm, queue) itself:
 that part is expressed in C++. By default, {\opp} looks for a
-C++ class of the same name (so here, \ttt{App}, \ttt{Routing} and {L2Queue}),
+C++ class of the same name (so here, \ttt{App}, \ttt{Routing} and {Queue}),
 although this gets slightly more complicated if C++ namespaces or
 NED packages are involved, and the user can also explicitly specify
 which C++ class to use.
@@ -1229,7 +1203,7 @@ module Node
                 in[sizeof(port)];
                 out[sizeof(port)];
         \}
-        queue[sizeof(port)]: L2Queue \{
+        queue[sizeof(port)]: Queue \{
             parameters:
                 @display("p=80,200,row");
         \}
@@ -1260,7 +1234,7 @@ of instantiating the module.
 The point of compound modules is to serve as a container for other
 modules. Our \ttt{Node} compound module type has an \ttt{app} and
 a \ttt{routing} \textit{submodule}, plus a \ttt{queue[]} \textit{submodule vector}
-that contains one \ttt{L2Queue} module for each port, as specified by
+that contains one \ttt{Queue} module for each port, as specified by
 \ttt{[sizeof(port)]}.
 Any module type (simple or compound module) can be used as a submodule.
 Like simple modules, compound modules can also have gates and parameters,
