@@ -387,6 +387,11 @@ property found while searching the following order:
         package searching upwards
 \end{enumerate}
 
+\begin{note}
+    Note that namespaces coming from multiple \ttt{@namespace} properties
+    in different scopes do not nest, but rather, the nearest one wins.
+\end{note}
+
 The \ttt{@namespace} property should contain a single value.
 
 
