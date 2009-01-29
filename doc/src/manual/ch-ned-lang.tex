@@ -466,7 +466,7 @@ simple Queue
 
 simple BoundedQueue extends Queue
 {
-   int capacity = 10;
+   capacity = 10;
 }
 \end{Verbatim}
 
@@ -496,13 +496,88 @@ Inheritance in general will be discussed in section \ref{sec:ch-ned-lang:inherit
 \section{Channels}
 \label{sec:ch-ned-lang:channels}
 
-Channels are like simple modules, in the sense that C++ class is behind them...
+Channels are like simple modules, in the sense that there are C++ classes
+behind them. The rules for finding the C++ class for a NED channel type is
+the same as with simple modules: the default class name is the NED type
+name unless there is a \ttt{@class} property (\ttt{@namespace} is also
+observed), and the C++ class is inherited when the channel is subclassed.
 
-There are three predefined channel types....
+Thus, the following channel type would expect a \ttt{CustomChannel} C++ class
+to be present:
 
-new ones can be derived from existing ones (inheriting the C++ code),
-or can be defined from scratch. Then the same rules apply to them
-as to simple modules (regarding the C++ class).
+\begin{Verbatim}
+channel CustomChannel  // needs a CustomChannel C++ class
+{
+}
+\end{Verbatim}
+
+The practical difference to modules is that you rarely need to write you own
+channel C++ class, because there are predefined channel types that you can
+subclass from, inheriting their C++ code. The predefined types are:
+\ttt{ned.IdealChannel}, \ttt{ned.Delay\-Channel} and \ttt{ned.Datarate\-Channel}.
+(``\ttt{ned}'' is the package name; you can get rid of it if you import the types
+with the \ttt{import ned.*} or similar directive. Packages and imports
+are described in section XXX.)
+
+\ttt{IdealChannel} has no parameters, and lets through all messages without
+delay or any side effect. A connection without a channel object
+and a connection with an \ttt{IdealChannel} behave in the same way.
+Still, \ttt{IdealChannel} has its uses, for example when a channel object
+is required so that it can carry a new property or parameter that is
+going to be read by other parts of the simulation model.
+
+\ttt{DelayChannel} has two parameters:
+
+\begin{itemize}
+    \item \ttt{delay} is a \ttt{double} parameter which represents the
+          propagation delay of the message. Values need to be specified
+          together with a time unit (\ttt{s}, \ttt{ms}, \ttt{us}, etc.)
+    \item \ttt{disabled} is a boolean parameter that defaults to \ttt{false};
+          when set to \ttt{true}, the channel object will drop all messages.
+\end{itemize}
+
+\ttt{DatarateChannel} has a few additional parameters compared to \ttt{DelayChannel}:
+
+\begin{itemize}
+    \item \ttt{datarate} is a \ttt{double} parameter that represents the
+          bandwidth of the channel, and it is used for calculating the
+          transmission duration of packets. Values need to be specified
+          with bits per second or its multiples as unit (\ttt{bps},
+          \ttt{Kbps}, \ttt{Mbps}, \ttt{Gbps}, etc.) Zero is treated
+          specially and results in zero transmission duration, i.e.
+          it stands for infinite bandwidth. Zero is also the default.
+    \item \ttt{ber} and \ttt{per} stand for Bit Error Rate and Packet Error Rate,
+          and allow basic error modelling. They expect a \ttt{double}
+          in the $[0,1]$ range. When the channel decides (based on random
+          numbers) that an error occurred during transmission a packet,
+          it sets an error flag in the packet object. The receiver
+          module is expected to check the flag, and discard the packet
+          as corrupted if it is set. The default \ttt{ber} and \ttt{per}
+          are zero.
+\end{itemize}
+
+\begin{note}
+    XXX "deliver on first bit": this can be specified in C++
+\end{note}
+
+XXX example DatarateChannel
+
+\begin{Verbatim}[commandchars=\\\{\}]
+channel C extends ned.DatarateChannel
+\{
+    datarate = 100Mbps;
+    delay = 100us;
+    ber = 1e-10;
+\}
+\end{Verbatim}
+
+XXX connections: one of the latter 2 built-in types are chosen for connections.
+
+XXX Channels may have parameters; you can also add parameters and properties
+via subclassing. Even if you don't modify the underlying C++ class,
+they may be read and used by other parts of the model. For example,
+adding a \ttt{cost} parameter (or \ttt{@cost} property) may be observed
+by the routing algorithm and used for routing decisions.
 
 
 \section{Parameters}
