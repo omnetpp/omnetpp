@@ -535,8 +535,8 @@ Gate vectors are supported: a gate vector\index{gate!vector}
 contains a number of single gates.
 
 Gates are declared by listing their names in the
-\fpar[ned!keywords!gates]{gates:} section of a module description. An
-empty bracket pair [] denotes a gate vector\index{gate!vector}.
+\fkeyword{gates:} section of a module description. An
+empty bracket pair [] denotes a gate vector.
 Elements of the vector are numbered from zero.
 
 
@@ -555,7 +555,7 @@ TODO
 \section{Submodules}
 
 Submodules\index{module!submodule} are defined in the
-\fpar[ned!keywords!submodules]{submodules:} section of a compound
+\fkeyword{submodules} section of a compound
 module declaration. Submodules are identified by names.
 By convention, submodule names begin with lower-case letters.
 
@@ -705,15 +705,22 @@ One can create a chain\index{chain} of modules like this:
 One can use conditional connections to build a binary tree\index{binary tree}.
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\tbf{module} BinaryTree2 \{
+\tbf{simple} BinaryTreeNode \{
+    \tbf{gates}:
+        \tbf{inout} left;
+        \tbf{inout} right;
+        \tbf{inout} parent;
+\}
+
+\tbf{module} BinaryTree \{
     \tbf{parameters}:
         int height;
     \tbf{submodules}:
         node[2^height-1]: BinaryTreeNode;
     \tbf{connections} \tbf{allowunconnected}:
         \tbf{for} i=0..2^(height-1)-2 \{
-            node[i].downleft --> node[2*i+1].fromupper;
-            node[i].downright --> node[2*i+2].fromupper;
+            node[i].left <--> node[2*i+1].parent;
+            node[i].right <--> node[2*i+2].parent;
         \}
 \}
 \end{Verbatim}
@@ -721,7 +728,7 @@ One can use conditional connections to build a binary tree\index{binary tree}.
 Note that not every gate of the modules will be connected. By default,
 an unconnected gate produces a run-time error message when the
 simulation is started, but this error message is turned off here with
-the \fpar[ned!keywords!allowunconnected]{allowunconnected} modifier.
+the \fkeyword{allowunconnected} modifier.
 Consequently, it is the simple modules' responsibility not to send
 on a gate which is not leading anywhere.
 
@@ -752,7 +759,7 @@ random subgraph of a full graph:
 \}
 \end{Verbatim}
 
-Note the use of the \fpar[ned!keywords!allowunconnected]{allowunconnected} modifier
+Note the use of the \fkeyword{allowunconnected} modifier
 here too, to turn off error messages given by the network setup code
 for unconnected gates.
 
