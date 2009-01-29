@@ -208,7 +208,7 @@
           <keycap>SHIFT</keycap>
           key can be used to add/remove to/from the current selection. Note that the
           keyboard (arrow keys) can also be used to navigate between submodules. You can
-          also select using a selection rectangle by dragging the
+          also select using a selection rectangle by dragging the mouse around the modules.
         </para>
       </sect3>
       <sect3>
@@ -338,9 +338,6 @@
       <note>
         The following functions are available only in source editing mode:
         <itemizedlist>
-          <listitem>
-            Creating or modifying module, submodule and channel parameters
-          </listitem>
           <listitem>Creating or modifying gates</listitem>
           <listitem>Creating or modifying inner types in compound modules</listitem>
           <listitem>Creating grouped and conditional connections</listitem>

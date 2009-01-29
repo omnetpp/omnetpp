@@ -33,12 +33,12 @@
       that we are looking at the same thing.</para>
     <para>TODO: Ensure there is a default view available to load, and describe it
       here.</para>
-    <picture file="pictures/1.0_Select_Perspective.png">Selecting the &Omnetpp; perspective in Eclipse</picture>
+    <picture file="pictures/Intro-SelectPerspective.png">Selecting the Simulation perspective in Eclipse</picture>
     <para>Most interface elements within Eclipse are movable, can be docked to various
       palettes or sections. The whole workspace is configurable, so you can construct your
       own workspace, but we will use the following layout throughout this manual, to get
       familiar with the various sections:</para>
-    <picture file="pictures/2.0_IDE_default_layout_view.png">&Omnetpp; IDE with README.txt selected in the Navigator</picture>
+    <picture file="pictures/Intro-DefaultLayout.png">Default layout of the &Omnetpp; IDE </picture>
     <para>The Navigator on the top left part of the screen shows a hierarchical view of
       the various open projects in your workspace. In the example above, the "aloha" demo
       project is open, you can see the various .NED, .ini and other files inside.</para>
@@ -89,7 +89,7 @@
     <para>The &Omnetpp; IDE defines the Simulation perspective specifically geared
       towards the design of simulations. The simulation perspective is nothing else just a
       set of views conveniently selected and arranged to make the creation of NED, INI and
-      MSG files easier. If you are working INI and NED files a lot we recommend to select
+      MSG files easier. If you are working with INI and NED files a lot we recommend to select
       this perspective. There are other perspectives optimized for other tasks like C++
       development, debugging or result analysis.</para>
   </sect1>
