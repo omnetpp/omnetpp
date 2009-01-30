@@ -1020,8 +1020,6 @@ would do it in most existing simulators.
 
 
 
-
-
 \section{Submodule type as parameter}
 
 \begin{Verbatim}
@@ -1048,39 +1046,39 @@ moduleinterface INode
 }
 \end{Verbatim}
 
+\begin{Verbatim}
+module SomeNode like INode
+{
+    parameters:
+        int address;
+        ...
+    gates:
+        inout port[];
+        ...
+}
+\end{Verbatim}
+
+
 
 \section{Properties (metadata annotations)}
 
-So far we have neglected the \ttt{@display} line in the above code. It is called
-\textit{display string}, and specifies how the module appears in the animation.
-This particular display string specifies a default icon
-(\ttt{block/queue}), and requests that the length of an internal C++ queue
-object named \ttt{queue} be displayed next to the module icon. Other display
-strings may specify position, color, arrangement, etc. of modules. The
-syntactical similarity of \ttt{@display} to \ttt{@unit} is not accidental; they
-are both metadata annotations (\textit{properties} in \opp), recognized and
-treated specially by the runtime.
+@display, @unit, @prompt, @namespace, @class etc are properties
 
-keys, values, value lists...
+metadata annotations: using properties, one can attach extra information
+to NED elements. some properties are interpreted by NED or the simkernel,
+others you may choose to interpret in the model, or model editing tools
+can use it etc.
 
-\ttt{@isNetwork(true)}...
+properties are attached to the type, so you cannot have per-instance different
+properties
 
-FIXME @isNetwork; @class, @namespace; @loose or @directIn; @prompt, @unit,...
+properties have names; if you want to add more than one property with the
+same name, use an index.  example...
 
+properties can have a rich data model. keys, value lists, etc...
+special case: how boolean properties are interpreted...
 
-
-\section{Inheritance}
-\label{sec:ch-ned-lang:inheritance}
-
-Single inheritance is supported between modules, ie. you can further
-specialize the above module:
-
-XXX simple module inheritance
-
-XXX compound module inheritance
-
-TODO
-
+how properties are inherited. type, parameter and gate properties as well
 
 
 \section{Packages}
@@ -1089,129 +1087,47 @@ To address increasingly common name collisions in NED files,
 {\opp} 4.0 introduces a package feature for NED. The solution
 is roughly modelled after Java's packages, with minor enhancements.
 
-It is also recommended practice to have one module per file,
-and the file name to be the same as the module name (plus \ttt{.ned}).
+only needed when there are lots of files
 
-\subsection{Packages, imports}
+files are in a directory tree, where directories correspond to packages.
+example: src/a/b/c -> package a.b.c
 
-A NED file may contain a package declaration:
+packages are also declared in the files, and the two must match;
 
-\begin{Verbatim}[commandchars=\\\{\}]
-\tbf{package} inet.protocols.transport.tcp;
-\end{Verbatim}
+example: package x.y.z;
 
-If there is no package declaration, the file is said to be in the
-\textit{default package}.
+so every type has now a fully qualified name, which includes the package
 
-Names from other NED files can be referred to either by fully qualified
-name (\ttt{"inet.protocols.network.ip.RoutingTable"}), or by short name
-(\ttt{"RoutingTable"}) if the name is visible.
+when a simulation is run, the roots of the NED source dirs need to be listed
+in the NEDPATH variable (it can be given as env var, config option,
+command-line arg etc). opp will load all NED files from all directory trees
 
-Visible names are:
-\begin{itemize}
-  \item anything from the same package;
-  \item imported names.
-\end{itemize}
+in the future, we want to support zip files as well (like Java jars)
 
-Import directives also have a similar syntax to Java, but they
-are more flexible with wildcards. All of the following are legal:
+in java, there're usually some empty directories (org,apache,jakarta);
+here these extra directory levels can be eliminated by creating a package.ned
+in the root NED source dir; its package defines the NED package for the
+rest of the source tree.
 
-\begin{Verbatim}[commandchars=\\\{\}]
-\tbf{import} inet.protocols.network.ip.RoutingTable;
-\tbf{import} inet.protocols.network.ip.*;
-\tbf{import} inet.protocols.network.ip.Ro*Ta*;
-\tbf{import} inet.protocols.*.ip.*;
-\tbf{import} inet.**.RoutingTable;
-\end{Verbatim}
+now: how can you refer to types.
+1. fully qualified name. This is often cumbersome (names are too long).
+2. import the name, and then the short name is enough
+3. if it's in the same package, then it doesn't need to be imported
 
-One asterisk "*" stands for "any character sequence not containing
-period"; two asterisks mean "any character sequence which may
-contain period". No other wildcards are recognized.
+import rules
+examples
 
-An import not containing wildcard MUST match an existing NED type.
-However, it is legal for an import that does contain wildcards
-not to match any NED type (although that might generate a warning.)
+with "like", it is a little bit different. fully qualified names work fine,
+no problem with that. simple names can be used too, but the rules are
+different. imports are ignored (since the type is chosen dynamically,
+it cannot be imported in the NED file in advance...).
+instead, the types implementing the given interface are looked at, and
+there must be exactly one with the given simple name; otherwise it is an error
 
-Inner types may not be referred to outside their enclosing types.
+now, the whole thing is optional: if all NED files are in a single directory
+listed on the NEDPATH, then package declarations can be omitted. these files
+are in the default package
 
-
-\subsection{Directory Structure, package.ned}
-
-Like in Java, the directory of a NED file MUST match the package declaration.
-However, it is possible to omit directories at the top which don't
-contain any NED files (like the "/org/projectname/" directories in Java).
-
-There is a notion of "NED source folders". If a NED Source Folder is
-named "src", then a NED file containing the package declaration
-"inet.protocols.transport.tcp" must be in the following folder:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-src/inet/protocols/transport/tcp/
-\end{Verbatim}
-
-If the "inet" and "protocols" directories don't contain any NED files,
-they can be omitted:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-src/transport/tcp
-\end{Verbatim}
-
-and the "src" directory must contain a "package.ned" file which declares
-what package it corresponds to:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-// file src/package.ned:
-package inet.protocols;
-\end{Verbatim}
-
-All NED files under the "src" directory tree must have package
-declarations consistent with that.
-
-"package.ned" files are allowed in other folders as well (as long as
-their package declarations are consistent with the NED source
-directory's "package.ned"), and any file-level comment in them
-will be treated as the package's documentation (similar to Java's
-package.html).
-
-
-\subsection{Name lookups}
-
-\subsubsection{Base types and submodules}
-
-Fully qualified names and simple names are accepted. Simple names
-are looked up among the inner types of the enclosing type (compound
-module), then using imports, then in the same package.
-
-
-\subsubsection{Parametric module types ("like" submodules)}
-
-Lookup of the actual module type for "like" submodules differs for normal
-lookups. This lookup ignores the imports in the file altogether.
-Instead, it collects all modules that support the given interface
-and match the given type name string (i.e. end in the same simple name,
-or have the same fully qualified name). The result must be exactly
-one module type.
-
-The algorithm for parametric channel types works in the same way.
-
-
-\subsubsection{Network name in the ini file}
-
-Simple (unqualified) names are tried with the same package as the
-ini file is in (provided it's in a NED directory).
-
-\subsection{The NEDPATH environment variable}
-
-A simulation may need NED files from several "NED source folders".
-When a simulation is launched as a separate application, it will expect
-to receive the list of NED source folders to scan in the NEDPATH
-environment variable (similar to Java's CLASSPATH). NEDPATH should
-contain the source folder names separated by a semicolon (";").
-On Unix-like systems, colon (":") will also be accepted as separator.
-
-In the future, zip files may become supported in NEDPATH as well;
-then the root folder of the zip file will be treated as a NED source
-folder.
 
 \bigskip
 \bigskip
