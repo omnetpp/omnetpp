@@ -671,33 +671,34 @@ XXX add a complete example!
 
 \section{Gates}
 
+gate types
+there's scalar and vector; vector size can be given or can be empty
 
-Gates are the connection points of modules. {\opp} has three types of gates:
-\textit{input}, \textit{output} and \textit{inout}, the latter being essentially
-an input and an output gate glued together. The C++ code that implements the
-simple module may send and receive messages via gates.
+syntax example
 
-Gates allow one-to-one connections
+if vector size is empty, it can be specified later (submodule or subclass);
+but need not: it can also be connected with "++" that automatically expands
+the gate vector
 
-gate vectors... bracket pair []
-Elements of the vector are numbered from zero.
+gate size can be queried with sizeof() in expressions. example: creating the
+same number of submodules as parent module gate vector size
 
-Gate vectors can also be created with
-a specified size, or be set to a fixed size at the place
-of instantiating the module.
+inheritance example
 
-The sizes of gate vectors may be given later, when the module is used as
-a building block of a compound module type. Thus, every instance of
-the module can have gate vectors of different sizes.
+submodule example
 
-inout basically means that each gate is in fact a pair of gates,
-an input and an output gate; they can also be addressed individually if needed,
-as \ttt{port\$i} and \ttt{port\$o} (or for vector gates, as \ttt{port\$i[$k$]}
-and \ttt{port\$o[$k$]})
 
 
 
 \section{Compound modules}
+
+contains submodules and their interconnections...
+
+section names...
+
+inheritance may add new submodules, new connections etc
+
+----
 
 Syntactically, a submodule may have a curly brace block as body, where
 it is possible to assign its parameters (see \ttt{address} in the example),
@@ -717,6 +718,17 @@ All sections in a compound module declaration (\ttt{parameters},
 
 
 \section{Submodules}
+
+scalar submodule, vector submodule (vector size cannot be left open as with gates)
+
+type is another NED module type, simple or compound. it is also possible
+to specify the type with a string expression, more about it later...
+
+example...
+
+inheritance can add new submodules....
+
+---
 
 Submodules\index{module!submodule} are defined in the
 \fkeyword{submodules} section of a compound
@@ -1079,6 +1091,19 @@ properties can have a rich data model. keys, value lists, etc...
 special case: how boolean properties are interpreted...
 
 how properties are inherited. type, parameter and gate properties as well
+
+
+
+\section{Inheritance}
+\label{sec:ch-ned-lang:inheritance}
+
+just a summary, because inheritance details have already been explained
+at parameters, gates etc section
+
+Single inheritance is supported between modules.
+
+summarize the rules (copy from ned ref?)
+
 
 
 \section{Packages}
