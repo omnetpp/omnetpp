@@ -290,7 +290,10 @@ syntax.
 \subsection{The Node compound module}
 
 Now we can assemble \ttt{App}, \ttt{Routing} and {Queue} into the
-compound module \ttt{Node}.
+compound module \ttt{Node}. A compound module can be thought of as
+a ``cardboard box'' that groups other modules into a larger unit,
+which can further be used as a building block for other modules;
+networks are also a kind of compound module.
 
 \begin{Verbatim}[commandchars=\\\{\}]
 module Node
@@ -314,53 +317,25 @@ module Node
 \}
 \end{Verbatim}
 
-A compound module type, like simple modules, may have parameters and gates.
+Compound modules, like simple modules, may have parameters and gates.
 Our \ttt{Node} module contains an \ttt{address} parameter, plus a
 \textit{gate vector} of unspecified size, named \ttt{port}.
 The actual gate vector size will be determined implicitly by the number
 of neighbours when we create a network from nodes of this type.
-The type of \ttt{port[]} is \ttt{inout}, which basically means that
-each gate is in fact a pair of gates, an input and an output gate;
-they can also be addressed individually if needed, as \ttt{port\$i} and
-\ttt{port\$o} (or rather, \ttt{port\$i[$k$]} and \ttt{port\$o[$k$]},
-because now we have a gate vector.) Gate vectors can also be created with
-a specified size, or be set to a fixed size at the place
-of instantiating the module.
+The type of \ttt{port[]} is \ttt{inout}, which allows bidirectional
+connections.
 
-The point of compound modules is to serve as a container for other
-modules. Our \ttt{Node} compound module type has an \ttt{app} and
-a \ttt{routing} \textit{submodule}, plus a \ttt{queue[]} \textit{submodule vector}
-that contains one \ttt{Queue} module for each port, as specified by
+The modules that make up the compound module are listed under \ttt{submodules}.
+Our \ttt{Node} compound module type has an \ttt{app} and a \ttt{routing}
+\textit{submodule}, plus a \ttt{queue[]} \textit{submodule vector} that
+contains one \ttt{Queue} module for each port, as specified by
 \ttt{[sizeof(port)]}.
-Any module type (simple or compound module) can be used as a submodule.
-Like simple modules, compound modules can also have gates and parameters,
-and they can be used wherever simple modules can be used.
 
-It is useful to think about compound modules as ``cardboard boxes''
-that help you organize your simulation model and bring structure into
-it. No active behaviour is associated with compound modules -- they
-are simply meant for grouping modules into larger units that can
-can be used either as a model (a \textit{network}, see later)
-or as a building block for other compound modules.
+XXX explain "for" loop
 
-Syntactically, a submodule may have a curly brace block as body, where
-it is possible to assign its parameters (see \ttt{address} in the example),
-set the size of gate vectors, or to add properties like the display string
-(\ttt{@display}). Display strings specified here will be merged with the
-display string from the type to get the effective display string.
-The \ttt{"p="} tag used here means position on the canvas.
+\subsection{Putting it together}
 
-Connections are listed under the \ttt{connections} section of the
-declaration. Not surprisingly, input and output gates are
-connected with a normal arrow, and inout gates with a double-headed
-arrow ``\ttt{<-->}''. Submodule vectors and gate vectors can be
-connected with the familiar \ttt{for} syntax. Nesting and conditional
-connections (\ttt{if}), although not shown here, are also possible.
-Normally, NED checks that all gates be connected, but this can also
-be turned off (\ttt{connections allowunconnected}).
-
-All sections in a compound module declaration (\ttt{parameters},
-\ttt{gates}, \ttt{submodules}, \ttt{connections}) are optional.
+XXX Explain how the network is set up! top-down etc
 
 \bigskip
 \begin{center}* * *\end{center}
@@ -581,13 +556,22 @@ by the routing algorithm and used for routing decisions.
 
 
 \section{Parameters}
-\label{sec:ch-ned-lang:params}
 
-Parameters are variables that belong to a module. Simple module
-parameters can be queried and used by simple module algorithms.
+Parameters are variables that belong to a module. Parameters can be
+used in building the topology (number of nodes, etc), and to supply
+input to C++ code that implements simple modules and channels.
 
-Let us see what parameters the traffic generator \ttt{App} module
-might have:
+Parameters can be of type \fkeyword{double}, \fkeyword{int},
+\fkeyword{bool}, \fkeyword{string} and \fkeyword{xml}; they can also
+be declared \fkeyword{volatile}. For the numeric types, a unit of
+measurement can also be specified (\ttt{@unit} property), to increase
+type safety.
+
+Parameters can get their value from NED files or from the configuration
+(\ttt{omnetpp.ini}). A default value can also be given (\ttt{default(}...\ttt{)}),
+which gets used if the parameter is not assigned otherwise.
+
+Let use see an example before we go into details:
 
 \begin{Verbatim}[commandchars=\\\{\}]
 simple App
@@ -598,72 +582,43 @@ simple App
         volatile double sendIaTime @unit(s) = default(exponential(1s));
                                // time between generating packets
         volatile int packetLength @unit(byte);  // length of one packet
-        @display("i=block/browser");
-    gates:
-        input in;
-        output out;
+    ...
 \}
 \end{Verbatim}
 
-\fkeyword{parameters} keyword is optional.
+\subsubsection{Values}
 
-\ttt{App}'s parameters are of various data types (\ttt{int}, \ttt{double},
-\ttt{string}) and some of them are also declared \ttt{volatile}. Parameters
-can be read into C++ variables of similar types, and can be used by the
-algorithm that drives the simple module. \ttt{volatile} practically means
-that the parameter can be used as a source of random numbers.
+may be assigned in submodules
 
-\begin{note}
-    With constructs like \ttt{exponential(1s)} assigned to the \ttt{sendIaTime}
-    parameter in this example, \ttt{volatile} effectively means that
-    there is no need to ever hardcode the distribution (e.g. "normal")
-    into the C++ code, or to use multiple parameters to pass its mean,
-    standard deviation etc into the C++ code. A single parameter can
-    encapsulate all details, and can provide any random variable.
-\end{note}
+via inheritance  (examples!!!)
 
-The \ttt{@unit(s)} and \ttt{@unit(byte)} bits declare the measurement unit
-for the parameter. Values assigned to parameters must have the same or
-compatible unit, i.e. \ttt{@unit(s)} accepts milliseconds, nanoseconds,
-minutes, hours, etc., and \ttt{@unit(byte)} accepts kilobytes, megabytes,
-etc. as well.
+in the configuration
 
-Parameters can be of type \ttt{double}, \ttt{int}, \ttt{bool}, \ttt{string}
-and \ttt{xml}; and they can be declared \ttt{volatile}.
+C-like expression etc
 
-Parameters can get values from NED code, from the configuration (ini files, see
-FIXME), or interactively from the user.
-It is also possible to give them a default value (see \ttt{default(-1)}
-in the example), which gets used if the parameter is not assigned at all in
-the configuration, or it is explicitly declared to use the default
-(\ttt{=default} snytax).
+\subsubsection{volatile}
 
+The \fkeyword{volatile} modifier causes the parameter's value expression to
+be evaluated every time the parameter is read. This has significance if the
+expression is not constant, for example it involves numbers drawn from a
+random number generator. In contrast, non-volatile parameters are evaluated
+only once. (This practically means that they are evaluated and replaced
+with the resulting constant at the start of the simulation.)
 
-%% FIXME maybe not here but in with compound modules?
-\begin{note}
-    How do you decide whether to assign a parameter from NED or from and ini
-    file? The point of ini files is a cleaner separation of the \textit{model}
-    and \textit{experiments}. NED files (together with C++ code) are considered
-    to be part of the model, and to be more or less constant. Ini files, on
-    the other hand, are for experimenting with the model, by running it
-    several times with different parameters. Thus, parameters that are expected
-    to change (or make sense to be changed) during experimentation should be
-    put into ini files.
-\end{note}
+To better understand \fkeyword{volatile}, let's suppose we have an
+\ttt{ActiveQueue} simple module that has a \ttt{volatile double} parameter
+named \ttt{serviceTime}.
 
-The \ttt{serviceTime} parameter is decorated with \ttt{@unit(s)}. This means
-that the value must be specified in either seconds, or in a measurement unit {\opp}
-can convert to seconds, like milliseconds or hours; dimensionless numbers
-will not be accepted. The {\opp} runtime does a full and rigorous unit check on
-parameters to ensure ``unit safety'' of models.
+XXX ??? random serviceTime altalaban hulyeseg, maradjunk az iatime-nel
 
-\ttt{serviceTime} is also declared \ttt{volatile}: this indicates that the
-underlying C++ code is going to re-read the parameter at runtime for every
-use of it; for example, this queue would re-read the parameter for every job
-serviced. Thus, it makes sense to assign \ttt{serviceTime} a random value like
-\ttt{uniform(0.5s, 1.5s)}, which would result in every job to have a different,
-random service time. Non-volatile parameters, however, are evaluated and
-replaced with a constant at the start of the simulation.
+The queue module's C++ implementation would re-read the \ttt{serviceTime}
+parameter at runtime for every job serviced; so if \ttt{serviceTime} is
+assigned an expression like \ttt{uniform(0.5s, 1.5s)}, every job would have
+a different, random service time.
+
+In practice, a volatile parameter usually means that the underlying C++
+code will re-read the parameter every time a value is needed at runtime, so
+the parameter can be used a source of random numbers.
 
 \begin{note}
     This does not mean that a non-volatile parameter cannot be assigned a value
@@ -674,44 +629,21 @@ replaced with a constant at the start of the simulation.
     chosen randomly at the beginning of the simulation.
 \end{note}
 
-Parameters are declared by listing their names with a type in the
-\ttt{parameters:} section of a module description.
+\subsubsection{Units}
 
-Parameters are assigned from NED (when the module is used as a building block
-of a larger compound module) or from the config file \ttt{omnetpp.ini}.
-\ttt{omnetpp.ini} is described in Chapter \ref{cha:run-sim}.
+One can declare a parameter to have an associated unit of measurement,
+by adding the \ttt{@unit} property.
 
-Numeric volatile parameters can be used as a source of random numbers
-of various distributions. For example, setting a parameter to
-\ttt{truncnormal(2,0.8)} would return a new random number
-from the truncated normal distribution with mean 2.0 and standard deviation 0.8
-every time the parameter is read from the simple module (from C++ code).
-This feature is useful e.g. for specifying interarrival times for generated
-packets.
+The \ttt{serviceTime} parameter is decorated with \ttt{@unit(s)}. This means
+that the value must be specified in either seconds, or in a measurement unit {\opp}
+can convert to seconds, like milliseconds or hours; dimensionless numbers
+will not be accepted. The {\opp} runtime does a full and rigorous unit check on
+parameters to ensure ``unit safety'' of models.
 
-If the module type used as submodule has parameters, you can assign
-values to them in the \ttt{parameters} section of the submodule
-declaration.
-
-It is not mandatory to mention and assign all parameters.
-Unassigned parameters can get their values at runtime: either from
-the configuration file (\ttt{omnetpp.ini}), or if the value
-isn't there either, the simulator will prompt you to enter it
-interactively. Indeed, for flexibility reasons it is often very useful
-not to ``hardcode'' parameter values in the NED file,
-but to leave them to \ttt{omnetpp.ini} where they can be
-changed more easily.
-
-The expression syntax \index{ned!expressions} is very similar to C.
-Expressions may refer to parameters of the compound module being defined,
-of the current module (with the \ttt{this.} prefix), and to parameters
-of already defined submodules, with the syntax \ttt{submodule.parametername}
-(or \ttt{submodule[index].parametername}).
+XXX see \_\_SCRATCH for more....
 
 
-\subsection{XML parameters}
-\index{xml}
-\index{module!parameters!xml}
+\subsubsection{XML parameters}
 
 Sometimes modules need more complex input than simple module parameters
 can describe. Then you'd put these parameters into an external config file,
@@ -743,42 +675,45 @@ XXX add a complete example!
 Gates are the connection points of modules. {\opp} has three types of gates:
 \textit{input}, \textit{output} and \textit{inout}, the latter being essentially
 an input and an output gate glued together. The C++ code that implements the
-simple module may send and receive messages via gates. Gates allow one-to-one
-connections, but in this example the \ttt{in} gate is declared as a \textit{gate
-vector} (or \textit{vector gate}) in order to allow several sources to send jobs
-into the queue. The size of the gate vector (the number of gates in it) is left
-undefined here, letting actual users (compound modules or networks that
-instantiate this module type) create as many gates as they want.
+simple module may send and receive messages via gates.
 
+Gates allow one-to-one connections
 
-Gates are the connection points of modules. The starting and
-ending points of the connections between modules are gates. {\opp}
-supports simplex (one-directional) connections, so there are
-input and output gates. Messages are sent through
-output gates and received through input gates.
-
-Gates are identified by their names.
-By convention, gate names begin with lower-case letters.
-
-Gate vectors are supported: a gate vector\index{gate!vector}
-contains a number of single gates.
-
-Gates are declared by listing their names in the
-\fkeyword{gates:} section of a module description. An
-empty bracket pair [] denotes a gate vector.
+gate vectors... bracket pair []
 Elements of the vector are numbered from zero.
 
+Gate vectors can also be created with
+a specified size, or be set to a fixed size at the place
+of instantiating the module.
 
-The sizes of gate vectors are given later, when the module is used as
+The sizes of gate vectors may be given later, when the module is used as
 a building block of a compound module type. Thus, every instance of
 the module can have gate vectors of different sizes.
 
+inout basically means that each gate is in fact a pair of gates,
+an input and an output gate; they can also be addressed individually if needed,
+as \ttt{port\$i} and \ttt{port\$o} (or for vector gates, as \ttt{port\$i[$k$]}
+and \ttt{port\$o[$k$]})
 
 
 
 \section{Compound modules}
 
-TODO
+Syntactically, a submodule may have a curly brace block as body, where
+it is possible to assign its parameters (see \ttt{address} in the example),
+set the size of gate vectors, or to add properties like the display string
+(\ttt{@display}). Display strings specified here will be merged with the
+display string from the type to get the effective display string.
+The \ttt{"p="} tag used here means position on the canvas.
+
+Connections are listed under the \ttt{connections} section of the
+declaration.
+
+Normally, NED checks that all gates be connected, but this can also
+be turned off (\ttt{connections allowunconnected}).
+
+All sections in a compound module declaration (\ttt{parameters},
+\ttt{gates}, \ttt{submodules}, \ttt{connections}) are optional.
 
 
 \section{Submodules}
@@ -788,11 +723,11 @@ Submodules\index{module!submodule} are defined in the
 module declaration. Submodules are identified by names.
 By convention, submodule names begin with lower-case letters.
 
+Any module type (simple or compound module) can be
+used as a submodule.
+
 Submodules are instances of a module type, either simple
-or compound -- there is no distinction. The module type
-must be known to the NED compiler, that is, it must have appeared
-earlier in the same NED file or have been imported from another
-NED file.
+or compound -- there is no distinction.
 
 It is possible to define vectors of submodules, and the
 size of the vector may come from a parameter value.
@@ -844,6 +779,12 @@ network Net6
 
 
 \section{Connections, channels}
+
+input and output gates are connected with a normal arrow, and inout gates
+with a double-headed arrow ``\ttt{<-->}''. Submodule vectors and gate
+vectors can be connected with the familiar \ttt{for} syntax. Nesting and
+conditional connections (\ttt{if}), although not shown here, are also
+possible.
 
 \begin{Verbatim}
 <--> {delay=10ms; datarate=1e-8;} <-->
