@@ -1108,31 +1108,74 @@ summarize the rules (copy from ned ref?)
 
 \section{Packages}
 
-To address increasingly common name collisions in NED files,
-{\opp} 4.0 introduces a package feature for NED. The solution
-is roughly modelled after Java's packages, with minor enhancements.
+Small simulation projects are fine to have all NED files in a single
+directory. When a project grows, however, it sooner or later becomes
+inevitable to introduce a directory structure, and sort the NED files into
+them. NED natively supports directory trees with NED files, and calls
+directories \textit{packages}. Packages are also useful for reducing
+name clashes, because names can be qualified with the package name.
 
-only needed when there are lots of files
+\begin{note}
+    NED packages are based on the Java package concept, with minor
+    enhancements. If you are familiar with Java, you'll find little
+    surprise in this section.
+\end{note}
 
-files are in a directory tree, where directories correspond to packages.
-example: src/a/b/c -> package a.b.c
+When a simulation is run, you must tell the simulation kernel the
+directory which is the root of your package tree; let's call it
+\textit{NED source folder}. The simulation kernel will traverse
+the whole directory tree, and load all NED files from every directory.
+You can have several NED directory trees, and their roots (the NED source
+folders) should be given to the simulation kernel in the NEDPATH
+variable. NEDPATH can be specified in several ways: as an environment
+variable (\ttt{NEDPATH}), as a configuration option (\fconfig{ned-path}),
+or as a command-line option to the simulation runtime. NEDPATH is
+described in details in XXX.
 
-packages are also declared in the files, and the two must match;
+Directories in a NED source tree correspond to packages. If you have
+NED files in a \ttt{<root>/a/b/c} directory (where \ttt{<root>}
+gets listed in NEDPATH), then the package name is \ttt{a.b.c}.
+The package name has to be explicitly declared at the top of the NED
+files as well, like this:
 
-example: package x.y.z;
+\begin{Verbatim}
+package a.b.c;
+\end{Verbatim}
 
-so every type has now a fully qualified name, which includes the package
+The package name that follows from the directory name and the declared
+package must match; it is an error if they don't. (The only exception
+is the root \ttt{package.ned} file, as described below.)
 
-when a simulation is run, the roots of the NED source dirs need to be listed
-in the NEDPATH variable (it can be given as env var, config option,
-command-line arg etc). opp will load all NED files from all directory trees
+By convention, package names are all lowercase, and begin with either
+the project name (\ttt{myproject}), or the reversed domain name plus the
+project name (\ttt{org.example.myproject}). The latter convention
+would cause the directory tree to begin with a few levels of empty
+directories, but this can be eliminated with a toplevel \ttt{package.ned}.
 
-in the future, we want to support zip files as well (like Java jars)
+NED files called \fname{package.ned} have a special role, as they are meant
+to represent the whole package. For example, comments in
+\fname{package.ned} are treated as documentation of the package. Also, a
+\ttt{@namespace} property in a \fname{package.ned} file affects all NED
+files in that directory and all directories below.
 
-in java, there're usually some empty directories (org,apache,jakarta);
-here these extra directory levels can be eliminated by creating a package.ned
-in the root NED source dir; its package defines the NED package for the
-rest of the source tree.
+The toplevel \fname{package.ned} file can be used to designate the root
+package, which is useful for eliminating a few levels of empty directories
+resulting from the package naming convention. That is, if you have a
+\fname{package.ned} file in your \ttt{<root>} directory whose package
+declaration says \ttt{org.example.myproject}, then the \ttt{<root>/a/b/c}
+directory will be package \ttt{org.example.myproject.a.b.c} -- and NED
+files in them must contain that as package declaration. Only the root
+\fname{package.ned} has this property, other \fname{package.ned}'s cannot
+change the package.
+
+We already mentioned that packages can be used to distinguish
+similarly named NED types. The name that includes the package name
+(\ttt{a.b.c.Queue} for a \ttt{Queue} module in the \ttt{a.b.c}
+package) is called \textit{fully qualified name}; without the package
+name (\ttt{Queue}) it is called \textit{simple name}.
+
+
+have a full example here: inet framework!
 
 now: how can you refer to types.
 1. fully qualified name. This is often cumbersome (names are too long).
