@@ -671,21 +671,102 @@ XXX add a complete example!
 
 \section{Gates}
 
-gate types
-there's scalar and vector; vector size can be given or can be empty
+Gates are the connection points of modules.  {\opp} has three types of
+gates: \textit{input}, \textit{output} and \textit{inout}, the latter being
+essentially an input and an output gate glued together.
 
-syntax example
+A gate, whether input or output, cannot be connected to two or more other
+gates. (For compound module gates, this means one connection "outside" and
+one "inside".)  It is possible, though generally not recommended, to
+connect the input and output sides of an inout gate separately.
 
-if vector size is empty, it can be specified later (submodule or subclass);
-but need not: it can also be connected with "++" that automatically expands
-the gate vector
+One can create single gates and gate vectors. The size of a gate vector
+can be given inside square brackets in the declaration, but it also possible
+to leave it open by just writing a pair of empty brackets ("\ttt{[]}").
 
-gate size can be queried with sizeof() in expressions. example: creating the
-same number of submodules as parent module gate vector size
+When the gate vector size is left open, one can still specify it later,
+when subclassing the module, or when using the module for a submodule in a
+compound module. However, it does not need to be specified, because
+one can create connections with the \ttt{$gate$++} operator that
+automatically expands the gate vector.
 
-inheritance example
+The gate size can be queried from various NED expressions with the
+\ttt{sizeof()} operator.
+
+NED normally requires that all gates be connected. To relax this
+requirement, you can annotate selected gates with the \ttt{@loose}
+property, which turns off connectivity check for that gate. Also, input
+gates that solely exist so that the module can receive messages via
+\fname{sendDirect()} (see XXX) should be annotated with \ttt{@directIn}.
+(\ttt{@directIn} gates must remain unconnected.) It is also possible
+to turn off connectivity check for all gates within a compound module, by
+specifying the \fkeyword{allowunconnected} keyword in the module's
+connections section.
+
+Let us see some examples.
+
+In the following example, the \ttt{Classifier} module has one input for
+receiving jobs, which it will send to one of the outputs. The number of
+outputs is determined by a module parameter:
+
+\begin{verbatim}
+simple Classifier {
+    parameters:
+        int numCategories;
+    gates:
+        input in;
+        output out[numCategories];
+}
+\end{verbatim}
+
+The following \ttt{Sink} module also has its \ttt{in[]} gate defined
+as vector, so that it can be connected to several modules:
+
+\begin{verbatim}
+simple Sink {
+    gates:
+        input in[];
+}
+\end{verbatim}
+
+A node for building a square grid. Gates around the edges of the grid are
+expected to remain unconnected, hence the \ttt{@loose} annotation:
+
+\begin{verbatim}
+simple GridNode {
+    gates:
+        inout neighbour[4] @loose;
+}
+\end{verbatim}
+
+\ttt{WirelessNode} below is expected to receive messages (radio transmissions)
+via direct sending, so its \ttt{radioIn} gate is marked with \ttt{@directIn}.
+
+\begin{verbatim}
+simple WirelessNode {
+    gates:
+        input radioIn @directIn;
+}
+\end{verbatim}
+
+fsdfsdfsdfsdf
+
+\begin{verbatim}
+simple TreeNode {
+    gates:
+        inout parent;
+        inout children[];
+}
+
+simple BinaryTreeNode extends TreeNode {
+    gates:
+        children[2];
+}
+\end{verbatim}
 
 submodule example
+
+example: creating the same number of submodules as parent module gate vector size
 
 
 

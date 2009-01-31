@@ -181,8 +181,7 @@ If there is a toplevel \ttt{package.ned} and it declares to be in package
 
 \begin{note}
     \ttt{package.ned} files are allowed in other folders as well, but they
-    are not treated specially, i.e. they cannot be used to define the package
-    they are in.
+    cannot be used to define the package they are in.
 \end{note}
 
 
@@ -631,7 +630,7 @@ and \ttt{@loose}. They have the same effect: When either of them is
 present on a gate, the gate is not required to be connected in the
 connections section of a compound module (see \ref{ch-ned-ref:sec:connections}).
 
-\ttt{@directIn} should be used when the gate is an \fkeyword{inout} gate that is
+\ttt{@directIn} should be used when the gate is an \fkeyword{input} gate that is
 intended for being used as a target for the \fname{sendDirect()} method;
 \ttt{@loose} should be used in any other case when the gate is not
 required to be connected for some reason.
@@ -708,7 +707,7 @@ of the compound module. When the \fkeyword{allowunconnected} modifier is present
 after \fkeyword{connections}, gates will be allowed to be left unconnected.
 
 \begin{note}
-    The \ttt{directIn} and \ttt{@loose} gate properties are alternatives to the
+    The \ttt{@directIn} and \ttt{@loose} gate properties are alternatives to the
     \ttt{connections allow\-unconnected} syntax; see \ref{ch-ned-ref:sec:gates}.
 \end{note}
 
