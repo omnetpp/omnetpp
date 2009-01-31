@@ -764,10 +764,9 @@ simple BinaryTreeNode extends TreeNode {
 }
 \end{verbatim}
 
-submodule example
+XXX submodule example
 
 example: creating the same number of submodules as parent module gate vector size
-
 
 
 
@@ -780,14 +779,6 @@ section names...
 inheritance may add new submodules, new connections etc
 
 ----
-
-Syntactically, a submodule may have a curly brace block as body, where
-it is possible to assign its parameters (see \ttt{address} in the example),
-set the size of gate vectors, or to add properties like the display string
-(\ttt{@display}). Display strings specified here will be merged with the
-display string from the type to get the effective display string.
-The \ttt{"p="} tag used here means position on the canvas.
-
 Connections are listed under the \ttt{connections} section of the
 declaration.
 
@@ -798,12 +789,20 @@ All sections in a compound module declaration (\ttt{parameters},
 \ttt{gates}, \ttt{submodules}, \ttt{connections}) are optional.
 
 
+
 \section{Submodules}
 
 scalar submodule, vector submodule (vector size cannot be left open as with gates)
 
 type is another NED module type, simple or compound. it is also possible
 to specify the type with a string expression, more about it later...
+
+Syntactically, a submodule may have a curly brace block as body, where
+it is possible to assign its parameters (see \ttt{address} in the example),
+set the size of gate vectors, or to add properties like the display string
+(\ttt{@display}). Display strings specified here will be merged with the
+display string from the type to get the effective display string.
+The \ttt{"p="} tag used here means position on the canvas.
 
 example...
 
