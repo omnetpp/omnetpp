@@ -1121,6 +1121,8 @@ name clashes, because names can be qualified with the package name.
     surprise in this section.
 \end{note}
 
+\subsubsection{Overview}
+
 When a simulation is run, you must tell the simulation kernel the
 directory which is the root of your package tree; let's call it
 \textit{NED source folder}. The simulation kernel will traverse
@@ -1168,322 +1170,103 @@ files in them must contain that as package declaration. Only the root
 \fname{package.ned} has this property, other \fname{package.ned}'s cannot
 change the package.
 
+Let's look at the INET Framework as example, which contains hundreds of NED
+files in several dozen packages. The directory structure looks like this:
+
+\begin{Verbatim}
+INET/
+    src/
+        base/
+        transport/
+            tcp/
+            udp/
+            ...
+        networklayer/
+        linklayer/
+        ...
+    examples/
+        adhoc/
+        ethernet/
+        ...
+\end{Verbatim}
+
+The \ttt{src} and \ttt{examples} subdirectories are denoted as NED source
+folders, so NEDPATH is the following (provided INET was unpacked in
+\ttt{/home/joe}):
+
+\begin{Verbatim}
+/home/joe/INET/src;/home/joe/INET/examples
+\end{Verbatim}
+
+Both \ttt{src} and \ttt{examples} contain \fname{package.ned} files to
+define the root package:
+
+\begin{Verbatim}
+// INET/src/package.ned:
+package inet;
+\end{Verbatim}
+
+\begin{Verbatim}
+// INET/examples/package.ned:
+package inet.examples;
+\end{Verbatim}
+
+And other NED files follow the package defined in \fname{package.ned}:
+
+\begin{Verbatim}
+// INET/src/transport/tcp/TCP.ned:
+package inet.transport.tcp;
+\end{Verbatim}
+
+
+\subsubsection{Name resolution, imports}
+
 We already mentioned that packages can be used to distinguish
 similarly named NED types. The name that includes the package name
 (\ttt{a.b.c.Queue} for a \ttt{Queue} module in the \ttt{a.b.c}
 package) is called \textit{fully qualified name}; without the package
 name (\ttt{Queue}) it is called \textit{simple name}.
 
+Simple names alone are not enough to unambiguously identify a type.
+Here is how you can refer to an existing type:
 
-have a full example here: inet framework!
+\begin{enumerate}
+  \item By fully qualified name. This is often cumbersome though,
+        as names tend to be too long;
+  \item Import the type, then the simple name will be enough;
+  \item If the type is in the same package, then it doesn't need to be
+        imported; it can be referred to by simple name
+\end{enumerate}
 
-now: how can you refer to types.
-1. fully qualified name. This is often cumbersome (names are too long).
-2. import the name, and then the short name is enough
-3. if it's in the same package, then it doesn't need to be imported
+TODO import rules
 
-import rules
-examples
+TODO import examples
 
-with "like", it is a little bit different. fully qualified names work fine,
-no problem with that. simple names can be used too, but the rules are
-different. imports are ignored (since the type is chosen dynamically,
-it cannot be imported in the NED file in advance...).
-instead, the types implementing the given interface are looked at, and
-there must be exactly one with the given simple name; otherwise it is an error
+The situation is a little different for submodule and connection channel
+specifications using the \fkeyword{like} keyword, when the type name comes
+from a string-valued expression (see section XXX about submodule and
+channel types as parameters). Imports are not much use here: at the time of
+writing the NED file it is not yet known what NED types will be suitable
+for being "plugged in" there, so they cannot be imported in advance.
 
-now, the whole thing is optional: if all NED files are in a single directory
-listed on the NEDPATH, then package declarations can be omitted. these files
-are in the default package
+There is no problem with fully qualified names, but simple names need
+to be resolved differently. What NED does is this: it determines which
+interface the module or channel type must implement (i.e. \ttt{... like INode}),
+and then collects the types that have the given simple name AND implement
+the given interface. There must be exactly one such type, which is then used.
+If there's none or more than one, it will be reported as an error.
+
+XXX example!!! for both fully qualified and simple name
 
 
-\bigskip
-\bigskip
-//////////////////////////////////////////////////////
-\bigskip
-\bigskip
 
-\section{Simple modules, compound modules, networks}
+\subsubsection{The default package}
 
-In this section we introduce the NED language via a complete and
-reasonably real-life example: a communication network.
+It is not mandatory to make use of packages: if all NED files are in a
+single directory listed on the NEDPATH, then package declarations (and
+imports) can be omitted. Those files are said to be in the \textit{default
+package}.
 
-Our hypothetical network consists of nodes. One each node there's an
-application running which generates packets at random intervals.
-The nodes are routers themselves as well, and the network is connected
-by 1 megabit/sec lines. We assume that the application uses datagram-based
-communication, so that we can leave out the transport layer from the model.
-
-Our simulation model will look like figures \ref{fig:ned-routing-network}
-and \ref{fig:ned-routing-node}.
-
-\begin{figure}[htbp]
-  \begin{center}
-    \includegraphics[scale=0.6]{figures/ned-routing-network}
-    \caption{The network}
-    \label{fig:ned-routing-network}
-  \end{center}
-\end{figure}
-
-\begin{figure}[htbp]
-  \begin{center}
-    \includegraphics[scale=0.6]{figures/ned-routing-node}
-    \caption{One node in the network}
-    \label{fig:ned-routing-node}
-  \end{center}
-\end{figure}
-
-Let us build the model bottom-up. First we define the simple module
-types that will make up a network node. We need an application;
-a module that performs network layer functions including routing;
-and a module that queues up packets before they are transmitted on the
-line. A NED file that declares them would look like this:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-simple App
-\{
-    parameters:
-        int address;  // local node address
-        string destAddresses;  // destination addresses
-        volatile double sendIaTime @unit(s) = default(exponential(1s));
-                               // time between generating packets
-        volatile int packetLength @unit(byte);  // length of one packet
-        @display("i=block/browser");
-    gates:
-        input in;
-        output out;
-\}
-
-simple Routing
-\{
-    parameters:
-        @display("i=block/switch");
-    gates:
-        input in[];
-        output out[];
-        input localIn;
-        output localOut;
-\}
-
-simple Queue
-\{
-    parameters:
-        int frameCapacity = default(0); // max queue length; 0 means no limit
-        @display("i=block/queue;q=queue");
-    gates:
-        input in;
-        output out;
-        inout line;
-\}
-\end{Verbatim}
-
-It would also be possible (moreover, recommended) to put the above three
-simple module declarations into separate \ttt{.ned} files: \ttt{App.ned},
-\ttt{Routing.ned} and \ttt{Queue.ned}. Note that the NED language uses
-the familiar curly brace syntax, and ``\ttt{//}'' to denote comments.
-
-Let us see the first simple module type declaration. It declares a
-\textit{module type} named \ttt{App}, which has four \textit{parameters}
-called \ttt{address}, \ttt{destAddresses}, \ttt{sendIaTime} and \ttt{packetLength},
-and also two \textit{gates} named \ttt{in} and \ttt{out}. The argument of
-\ttt{@display()} is called a \textit{display string}, and it defines
-the default rendering of the module in graphical environments;
-\ttt{"i=..."} defines the default icon.
-
-\begin{note}
-    Note that the module type names (\ttt{App}, \ttt{Routing}, \ttt{Queue})
-    begin with a capital letter, and parameter and gate names begin with
-    lowercase -- this is the recommended naming convention. Capitalization
-    matters because the language is case sensitive.
-\end{note}
-
-Notice that the declarations don't contain any code to define the operation
-of the application (routing algorithm, queue) itself:
-that part is expressed in C++. By default, {\opp} looks for a
-C++ class of the same name (so here, \ttt{App}, \ttt{Routing} and {Queue}),
-although this gets slightly more complicated if C++ namespaces or
-NED packages are involved, and the user can also explicitly specify
-which C++ class to use.
-
-\ttt{App}'s parameters are of various data types (\ttt{int}, \ttt{double},
-\ttt{string}) and some of them are also declared \ttt{volatile}. Parameters
-can be read into C++ variables of similar types, and can be used by the
-algorithm that drives the simple module. \ttt{volatile} practically means
-that the parameter can be used as a source of random numbers.
-
-\begin{note}
-    With constructs like \ttt{exponential(1s)} assigned to the \ttt{sendIaTime}
-    parameter in this example, \ttt{volatile} effectively means that
-    there is no need to ever hardcode the distribution (e.g. "normal")
-    into the C++ code, or to use multiple parameters to pass its mean,
-    standard deviation etc into the C++ code. A single parameter can
-    encapsulate all details, and can provide any random variable.
-\end{note}
-
-The \ttt{@unit(s)} and \ttt{@unit(byte)} bits declare the measurement unit
-for the parameter. Values assigned to parameters must have the same or
-compatible unit, i.e. \ttt{@unit(s)} accepts milliseconds, nanoseconds,
-minutes, hours, etc., and \ttt{@unit(byte)} accepts kilobytes, megabytes,
-etc. as well.
-
-Generally, \ttt{@}-words like \ttt{@unit} and \ttt{@display} are called
-\textit{properties} in NED, and they are used to annotate various objects
-with metadata. Properties can be attached to parameters, gates, modules,
-connections and other objects.
-
-Both the \ttt{parameters:} and \ttt{gates:} sections in the simple module are
-optional, that is, they can be left out if there's no parameter or gate.
-
-Simple modules can be extended (or specialized) via subclassing. This will be
-discussed in section \ref{sec:ch-ned-lang:inheritance}.
-
-Comments in the NED source also serve a purpose in addition to making
-the NED source more readable: in the {\opp} IDE they get displayed
-at various places (tooltips, content assist, etc), and become part
-of the documentation extracted from the NED files.
-The NED documentation system, not unlike \textit{JavaDoc}
-or \textit{Doxygen}, will be described in Chapter \ref{cha:neddoc}.
-
-Now that we've learned enough about simple modules, we assemble our components
-into a compound module type that represents a network node:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-module Node
-\{
-    parameters:
-        int address;
-        @display("i=misc/node_vs,gold");
-    gates:
-        inout port[];
-    submodules:
-        app: App \{
-            parameters:
-                address = address;
-                @display("p=140,60");
-        \}
-        routing: Routing \{
-            parameters:
-                @display("p=140,130");
-            gates:
-                in[sizeof(port)];
-                out[sizeof(port)];
-        \}
-        queue[sizeof(port)]: Queue \{
-            parameters:
-                @display("p=80,200,row");
-        \}
-    connections:
-        routing.localOut --> app.in;
-        routing.localIn <-- app.out;
-        for i=0..sizeof(port)-1 \{
-            routing.out[i] --> queue[i].in;
-            routing.in[i] <-- queue[i].out;
-            queue[i].line <--> port[i];
-        \}
-\}
-\end{Verbatim}
-
-A compound module type, like simple modules, may have parameters and gates.
-Our \ttt{Node} module contains an \ttt{address} parameter, plus a
-\textit{gate vector} of unspecified size, named \ttt{port}.
-The actual gate vector size will be determined implicitly by the number
-of neighbours when we create a network from nodes of this type.
-The type of \ttt{port[]} is \ttt{inout}, which basically means that
-each gate is in fact a pair of gates, an input and an output gate;
-they can also be addressed individually if needed, as \ttt{port\$i} and
-\ttt{port\$o} (or rather, \ttt{port\$i[$k$]} and \ttt{port\$o[$k$]},
-because now we have a gate vector.) Gate vectors can also be created with
-a specified size, or be set to a fixed size at the place
-of instantiating the module.
-
-The point of compound modules is to serve as a container for other
-modules. Our \ttt{Node} compound module type has an \ttt{app} and
-a \ttt{routing} \textit{submodule}, plus a \ttt{queue[]} \textit{submodule vector}
-that contains one \ttt{Queue} module for each port, as specified by
-\ttt{[sizeof(port)]}.
-Any module type (simple or compound module) can be used as a submodule.
-Like simple modules, compound modules can also have gates and parameters,
-and they can be used wherever simple modules can be used.
-
-It is useful to think about compound modules as ``cardboard boxes''
-that help you organize your simulation model and bring structure into
-it. No active behaviour is associated with compound modules -- they
-are simply meant for grouping modules into larger units that can
-can be used either as a model (a \textit{network}, see later)
-or as a building block for other compound modules.
-
-Syntactically, a submodule may have a curly brace block as body, where
-it is possible to assign its parameters (see \ttt{address} in the example),
-set the size of gate vectors, or to add properties like the display string
-(\ttt{@display}). Display strings specified here will be merged with the
-display string from the type to get the effective display string.
-The \ttt{"p="} tag used here means position on the canvas.
-
-Connections are listed under the \ttt{connections} section of the
-declaration. Not surprisingly, input and output gates are
-connected with a normal arrow, and inout gates with a double-headed
-arrow ``\ttt{<-->}''. Submodule vectors and gate vectors can be
-connected with the familiar \ttt{for} syntax. Nesting and conditional
-connections (\ttt{if}), although not shown here, are also possible.
-Normally, NED checks that all gates be connected, but this can also
-be turned off (\ttt{connections allowunconnected}).
-
-All sections in a compound module declaration (\ttt{parameters},
-\ttt{gates}, \ttt{submodules}, \ttt{connections}) are optional.
-
-Now, we finally define the network, which consists of a few nodes that
-are connected with lines:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-network Net10
-\{
-    types:
-        channel C extends ned.DatarateChannel \{
-            parameters:
-                delay = uniform(0.1ms, 1ms);
-                datarate = 1Mbps;
-        \}
-    submodules:
-        rte[10]: Node \{
-            parameters:
-                address = index;
-        \}
-    connections:
-        rte[1].port++ <--> rte[0].port++;
-        rte[0].port++ <--> rte[2].port++;
-        rte[2].port++ <--> rte[5].port++;
-        rte[5].port++ <--> rte[7].port++;
-        rte[7].port++ <--> rte[9].port++;
-        rte[9].port++ <--> rte[8].port++;
-        rte[8].port++ <--> rte[4].port++;
-        rte[4].port++ <--> rte[3].port++;
-        rte[3].port++ <--> rte[1].port++;
-        rte[3].port++ <--> rte[2].port++;
-        rte[2].port++ <--> rte[4].port++;
-        rte[4].port++ <--> rte[6].port++;
-        rte[6].port++ <--> rte[8].port++;
-        rte[9].port++ <--> rte[6].port++;
-        rte[6].port++ <--> rte[7].port++;
-        rte[5].port++ <--> rte[6].port++;
-        rte[0].port++ <--> rte[5].port++;
-        rte[1].port++ <--> rte[2].port++;
-\}
-\end{Verbatim}
-
-There can be several network definitions in your NED file or NED files.
-The simulation program that uses those NED files will be
-able to run any of them; you typically select the desired one
-in the config file (\ttt{omnetpp.ini}).
-
-Naturally, only modules that have no gates can be a network.
-
-A network is basically a compound module.
-
-XXX channels, inner types, gate++
-
-XXX add example ini file here!!!
-
-XXX @isNetwork
 
 
 %%% Local Variables:
