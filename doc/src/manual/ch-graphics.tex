@@ -629,7 +629,8 @@ dispStr->parse("p=40,20;i=device/cellphone;i2=status/disconnect");
 \end{verbatim}
 
 \begin{note}
-The connection display string is stored in the output gate of the connection.
+The connection display string is stored in the channel object, but it
+can also be accessed via the source gate of the connection.
 \end{note}
 
 \begin{verbatim}
@@ -639,10 +640,11 @@ dispStr->parse("ls=red");
 \end{verbatim}
 
 \begin{note}
-In {\opp} 3.x to manipulate the appearance of a compound module you had to use
-the \fname{backgroundDisplayString()} method. This is no longer supported in
-{\opp} 4.0. Use the \fname{getDisplayString()} method instead along with the background
-specific tags (i.e. \ttt{bg*} tags).
+In {\opp} 3.x, to manipulate the appearance of a compound module you had to use
+the \fname{backgroundDisplayString()} method. This method is no longer 
+supported in {\opp} 4.0, because there is no separate background display string. 
+Use the \fname{getDisplayString()} method instead with the background
+specific tags, i.e. those starting with \ttt{bg}.
 \end{note}
 
 \begin{verbatim}

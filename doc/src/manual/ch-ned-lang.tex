@@ -1242,6 +1242,9 @@ TODO import rules
 
 TODO import examples
 
+
+\subsubsection{Name resolution with "like"}
+
 The situation is a little different for submodule and connection channel
 specifications using the \fkeyword{like} keyword, when the type name comes
 from a string-valued expression (see section XXX about submodule and
@@ -1254,10 +1257,34 @@ to be resolved differently. What NED does is this: it determines which
 interface the module or channel type must implement (i.e. \ttt{... like INode}),
 and then collects the types that have the given simple name AND implement
 the given interface. There must be exactly one such type, which is then used.
-If there's none or more than one, it will be reported as an error.
+If there's none or there's more than one, it will be reported as an error.
 
-XXX example!!! for both fully qualified and simple name
+Let us see the following example:
 
+\begin{Verbatim}
+module MobileHost
+{
+    parameters:
+        string mobilityType;
+    submodules:
+        mobility: <mobilityType> like IMobility;
+        ...
+}
+\end{Verbatim}
+
+and suppose that the following modules implement the \ttt{IMobility} module
+interface: \ttt{inet.mo\-bility.Random\-Walk}, \ttt{inet.adhoc.RandomWalk},
+\ttt{inet.mobility.MassMobility}; and suppose that there's also a type
+called \ttt{inet.examples.adhoc.MassMobility} but it does not implement the
+interface.
+
+So if \ttt{mobilityType="MassMobility"}, then
+\ttt{inet.mobility.MassMobility} will be selected; the other
+\ttt{MassMobility} doesn't interfere. However, if
+\ttt{mobilityType="RandomWalk"}, then it's an error because there're two
+matching \ttt{RandomWalk} types. Both \ttt{RandomWalk}'s can still be used,
+but one must explicitly choose one of them by providing a package name:
+\ttt{mobility\-Type="inet.ad\-hoc.Random\-Walk"}.
 
 
 \subsubsection{The default package}
