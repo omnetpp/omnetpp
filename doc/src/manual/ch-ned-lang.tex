@@ -500,24 +500,74 @@ module Host
 }
 \end{Verbatim}
 
-Modules contained in a compound module are called submodules,
-and they are listed in the \ttt{submodules} section. One can create
-arrays of submodules (i.e. submodule vectors), and the submodule type
-may come from a parameter.
+Modules contained in a compound module are called submodules, and they are
+listed in the \ttt{submodules} section. One can create arrays of submodules
+(i.e. submodule vectors), and the submodule type may come from a parameter.
 
 Connections are listed under the \ttt{connections} section of the
-declaration. One can create connections using simple programming
-constructs (loop, conditional). Connection behaviour can be defined
-by associating a channel with the connection; the channel type may
-also come from a parameter.
+declaration. One can create connections using simple programming constructs
+(loop, conditional). Connection behaviour can be defined by associating a
+channel with the connection; the channel type may also come from a
+parameter.
 
 Module and channel types only used locally can be defined in the
-\ttt{types} section, so that they don't pollute the namespace.
+\ttt{types} section as inner types, so that they don't pollute the
+namespace.
 
-inheritance may add new submodules, new connections etc; one may refer to
-inherited submodules, inherited types etc.
+Compound modules may be extended via subclassing. Inheritance may add new
+submodules and new connections as well, not only parameters and gates;
+also, one may refer to inherited submodules, to inherited types etc. What
+is not possible is to "de-inherit" submodules or connections, or to modify
+inherited ones.
 
-inheritance example: hostbase -> host+apps, etc
+In the following example, we show how one can assemble common protocols
+into a "stub" for wireless hosts, and add user agents via
+subclassing.\footnote{Module types, gate names, etc. used in the example
+are fictional, not based on an actual {\opp}-based model framework}
+
+\begin{Verbatim}
+module WirelessHostBase
+{
+   gates:
+       input radioIn;
+   submodules:
+       tcp: TCP;
+       ip: IP;
+       wlan: Ieee80211;
+   connections:
+       tcp.ipOut --> ip.tcpIn;
+       tcp.ipIn <-- ip.tcpOut;
+       ip.nicOut++ --> wlan.ipIn;
+       ip.nicIn++ <-- wlan.ipOut;
+       wlan.radioIn <-- radioIn;
+}
+
+module WirelessUser extends WirelessHostBase
+{
+   submodules:
+       webAgent: WebAgent;
+   connections:
+       webAgent.tcpOut --> tcp.appIn++;
+       webAgent.tcpIn <-- tcp.appOut++;
+}
+\end{Verbatim}
+
+The \ttt{WirelessUser} compound module can further be extended,
+for example with an Ethernet port:
+
+\begin{Verbatim}
+module DesktopUser extends WirelessUser
+{
+   gates:
+       inout ethg;
+   submodules:
+       eth: EthernetNic;
+   connections:
+       ip.nicOut++ --> eth.ipIn;
+       ip.nicIn++ <-- eth.ipOut;
+       eth.phy <--> ethg;
+}
+\end{Verbatim}
 
 
 
