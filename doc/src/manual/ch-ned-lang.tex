@@ -1237,23 +1237,92 @@ module SomeNode like INode
 
 \section{Properties (metadata annotations)}
 
-@display, @unit, @prompt, @namespace, @class etc are properties
+Properties allow adding metadata annotations to modules, parameters, gates,
+connections, NED files, packages, and virtually anything in NED.
+\ttt{@display}, \ttt{@class}, \ttt{@namespace}, \ttt{@unit}, \ttt{@prompt},
+\ttt{loose}, \ttt{@directIn} are all properties that have been mentioned in
+previous sections, but those examples only scratch the surface of what can
+be done with properties.
 
-metadata annotations: using properties, one can attach extra information
-to NED elements. some properties are interpreted by NED or the simkernel,
-others you may choose to interpret in the model, or model editing tools
-can use it etc.
+Using properties, one can attach extra information to NED elements. Some
+properties are interpreted by NED, by the simulation kernel; other
+properties may be read and used from within the simulation model, or
+provide hints for NED editing tools.
 
-properties are attached to the type, so you cannot have per-instance different
-properties
+Properties are attached to the type, so you cannot have properties
+per-instance different properties. All instances of modules, connections,
+parameters, etc. created from any particular location in the NED files have
+identical properties.
 
-properties have names; if you want to add more than one property with the
-same name, use an index.  example...
+The following "allatorvosi lo" example shows the syntax for annotating
+various NED elements:
 
-properties can have a rich data model. keys, value lists, etc...
-special case: how boolean properties are interpreted...
+\begin{Verbatim}
+XXX syntax in all cases: submodule, connection etc....
+\end{Verbatim}
+
+Properties have a flexible data model. They may contain lists:
+
+\begin{Verbatim}
+@enum(hapci, morgo, kuka)
+\end{Verbatim}
+
+They may contain key-value pairs, separated by semicolons:
+
+\begin{Verbatim}
+@coords(x=10.31; y=30.2; unit=km);
+\end{Verbatim}
+
+In key-value pairs, each value can be a (comma-separated) list:
+
+\begin{Verbatim}
+@bubu(key1=a,b,c);
+\end{Verbatim}
+
+The above examples are special cases. According to the general data model,
+properties contain \textit{key-valuelist} pairs, separated by semicolons.
+Items in \textit{valuelist} are separated by commas. Wherever \textit{key}
+is missing, values go on the valuelist of the \textit{default key}, the
+empty string.
+
+The syntax for value items is a bit restrictive: they may contain words,
+numbers, string constants and some more, but not arbitrary strings.
+Whenever the syntax does not permit some value, it should be enclosed in
+quotes. This quoting does not make any difference in the value, because
+the parser automatically drops one layer of quotes; thus, \ttt{@class(TCP)}
+and \ttt{@class("TCP")} are exactly the same.
+
+There are also some conventions. Boolean properties...
+XXX how boolean properties are interpreted...
+
 
 how properties are inherited. type, parameter and gate properties as well
+
+....
+
+
+Properties are identified by names, so if the same \textit{@$name$} occurs
+in the same context, then it names the exact same property object.
+This might be a problem if you count on having multiple properties with
+the same name.
+
+if you want to add more than one property with the
+same name, use an index.
+
+@bubu(joe);
+@bubu(jim);  // overrides the first one!!!
+
+@bubu[1](joe);
+@bubu[2](jim);  //OK
+
+
+@host;  // custom properties can serve as "marker interfaces"
+@propertyname(key="value1","value2"; key="value"; key=5; key=false; key=true;
+@propertyname(starttime=10s 531ms,true);  // propertyname.starttime={"10s 531ms",true}
+string tcpAlgorithmClass1 @enum("TCPTahoe", "TCPReno", "TCPNoCongestionControl", "DumbTCP"); // "..."
+@recordstats[stat1](storeintervall=5; averaging=true); // recording seqNum etc. into output vectors on/off, 'id' is the primary key (must be unique)
+@recordstats[stat2](storeintervall=9; averaging=false); // recording seqNum etc. into output vectors on/off
+
 
 
 
@@ -1401,9 +1470,30 @@ Here is how you can refer to an existing type:
         imported; it can be referred to by simple name
 \end{enumerate}
 
-TODO import rules
+Types can be imported with the \fkeyword{import} keyword by either
+fully qualified name, or by a wildcard pattern. In wildcard patterns,
+one asterisk ("\ttt{*}") stands for "any character sequence not containing
+period", and two asterisks ("\ttt{**}") mean "any character sequence which may
+contain period".
 
-TODO import examples
+So, any of the following lines can be used to import a type called
+\ttt{inet.protocols.net\-work.ip.RoutingTable}:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\tbf{import} inet.protocols.network.ip.RoutingTable;
+\tbf{import} inet.protocols.network.ip.*;
+\tbf{import} inet.protocols.network.ip.Ro*Ta*;
+\tbf{import} inet.protocols.*.ip.*;
+\tbf{import} inet.**.RoutingTable;
+\end{Verbatim}
+
+If an import explicitly names a type with its exact fully qualified name,
+then that type must exist, otherwise it's an error. Imports containing
+wildcards are more permissive, it is allowed for them not to match any
+existing NED type (although that might generate a warning.)
+
+Inner types may not be referred to outside their enclosing types, so they
+cannot be imported either.
 
 
 \subsubsection{Name resolution with "like"}
