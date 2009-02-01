@@ -468,6 +468,59 @@ simple PriorityQueue extends Queue
 Inheritance in general will be discussed in section \ref{sec:ch-ned-lang:inheritance}.
 
 
+
+\section{Compound modules}
+
+A compound module groups other modules into a larger unit. A compound
+module may have gates and parameters like a simple module, but
+no active behavior (no C++ code) is associated with it.
+
+\begin{note}
+    When there is a temptation to add code to a compound module,
+    then encapsulate the code into a simple module, and add it as
+    a submodule.
+\end{note}
+
+A compound module declaration may contain several sections,
+all of them optional:
+
+\begin{Verbatim}
+module Host
+{
+   types:
+       ...
+   parameters:
+       ...
+   gates:
+       ...
+   submodules:
+       ...
+   connections:
+       ...
+}
+\end{Verbatim}
+
+Modules contained in a compound module are called submodules,
+and they are listed in the \ttt{submodules} section. One can create
+arrays of submodules (i.e. submodule vectors), and the submodule type
+may come from a parameter.
+
+Connections are listed under the \ttt{connections} section of the
+declaration. One can create connections using simple programming
+constructs (loop, conditional). Connection behaviour can be defined
+by associating a channel with the connection; the channel type may
+also come from a parameter.
+
+Module and channel types only used locally can be defined in the
+\ttt{types} section, so that they don't pollute the namespace.
+
+inheritance may add new submodules, new connections etc; one may refer to
+inherited submodules, inherited types etc.
+
+inheritance example: hostbase -> host+apps, etc
+
+
+
 \section{Channels}
 \label{sec:ch-ned-lang:channels}
 
@@ -767,26 +820,6 @@ simple BinaryTreeNode extends TreeNode {
 XXX submodule example
 
 example: creating the same number of submodules as parent module gate vector size
-
-
-
-\section{Compound modules}
-
-contains submodules and their interconnections...
-
-section names...
-
-inheritance may add new submodules, new connections etc
-
-----
-Connections are listed under the \ttt{connections} section of the
-declaration.
-
-Normally, NED checks that all gates be connected, but this can also
-be turned off (\ttt{connections allowunconnected}).
-
-All sections in a compound module declaration (\ttt{parameters},
-\ttt{gates}, \ttt{submodules}, \ttt{connections}) are optional.
 
 
 
