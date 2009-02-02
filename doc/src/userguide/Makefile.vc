@@ -8,19 +8,22 @@ icons:
 	perl icons.pl
 
 html: catalog
-	$(XSLTPROC) --nonet --xinclude --output tmp.xml trans.xsl userguide.xml
+	$(XSLTPROC) --nonet --xinclude --output tmp1.xml trans.xsl userguide.xml
+	perl trans.pl <tmp1.xml >tmp.xml
 	$(XSLTPROC) --nonet --output userguide.html  $(DOCBOOK)/html/docbook.xsl tmp.xml
 	del tmp.xml
 
 eclipse: catalog
-	$(XSLTPROC) --nonet --xinclude --output tmp.xml trans.xsl userguide.xml
+	$(XSLTPROC) --nonet --xinclude --output tmp1.xml trans.xsl userguide.xml
+	perl trans.pl <tmp1.xml >tmp.xml
 	-del /s /q eclipse 2>nul
 	-mkdir eclipse
 	cd eclipse && $(XSLTPROC) --nonet $(DOCBOOK)/eclipse/eclipse.xsl ../tmp.xml
 	del tmp.xml
 
 pdf: chart-properties.xml processing-operations.xml catalog
-	$(XSLTPROC) --nonet --xinclude --stringparam output pdf --output tmp.xml trans.xsl userguide.xml
+	$(XSLTPROC) --nonet --xinclude --stringparam output pdf --output tmp1.xml trans.xsl userguide.xml
+	perl trans.pl <tmp1.xml >tmp.xml
 	perl -pe "s!\@DOCBOOK_STYLESHEET\@!file:///$(TOOLS_DIR:\=/)/docbook/fo/docbook.xsl!g" custom-fo-docbook.xsl >custom-fo-docbook-tmp.xsl
 	$(XSLTPROC) --nonet --output tmp.fo custom-fo-docbook-tmp.xsl tmp.xml
 	call $(FOP) -fo tmp.fo -pdf userguide.pdf
