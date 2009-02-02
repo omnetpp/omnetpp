@@ -5,7 +5,8 @@ export XML_CATALOG_FILES=../docbook-dtd/catalog.xml
 all: pdf html eclipse
 
 html:  
-	xsltproc --xinclude --output tmp.xml trans.xsl userguide.xml
+	xsltproc --xinclude --output tmp1.xml trans.xsl userguide.xml
+	perl trans.pl <tmp1.xml >tmp.xml
 	xsltproc --output userguide.html  $(DOCBOOK)/html/docbook.xsl tmp.xml
 	rm tmp.xml
 	rm -rf ../../userguide
@@ -20,7 +21,8 @@ html:
 
 .PHONY : eclipse
 eclipse: 
-	xsltproc --xinclude --output tmp.xml trans.xsl userguide.xml
+	xsltproc --xinclude --output tmp1.xml trans.xsl userguide.xml
+	perl trans.pl <tmp1.xml >tmp.xml
 	rm -rf eclipse
 	mkdir eclipse
 	mkdir eclipse/icons
@@ -33,7 +35,8 @@ eclipse:
 	rm tmp.xml
 
 pdf:  chart-properties.xml processing-operations.xml
-	xsltproc --xinclude --stringparam output pdf --output tmp.xml trans.xsl userguide.xml
+	xsltproc --xinclude --stringparam output pdf --output tmp1.xml trans.xsl userguide.xml 
+	perl trans.pl <tmp1.xml >tmp.xml
 	perl -pe "s!\@DOCBOOK_STYLESHEET\@!file:///$(DOCBOOK)/fo/docbook.xsl!g" custom-fo-docbook.xsl >custom-fo-docbook-tmp.xsl
 	xsltproc  --output tmp.fo custom-fo-docbook-tmp.xsl tmp.xml
 	$(FOP) -fo tmp.fo -pdf userguide.pdf
@@ -41,7 +44,7 @@ pdf:  chart-properties.xml processing-operations.xml
 	cp userguide.pdf ../..
 
 clean:
-	rm -f userguide.pdf userguide.html
+	rm -f userguide.pdf userguide.html tmp1.xml tmp.xml
 	rm -rf eclipse
 	rm -rf ../../userguide
 

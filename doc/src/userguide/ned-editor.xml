@@ -360,11 +360,7 @@
       <itemizedlist>
         <listitem>
           <para>
-            Undo (
-            <keycap>Ctrl+Z</keycap>
-            ), Redo (
-            <keycap>Ctrl+Y</keycap>
-            )
+            Undo (<keycap>Ctrl+Z</keycap>), Redo (<keycap>Ctrl+Y</keycap>)
           </para>
         </listitem>
         <listitem>
