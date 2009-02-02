@@ -958,7 +958,7 @@ is rarely useful). It is not possible to connect to any gate outside the
 parent module, or inside compound submodules.
 
 Input and output gates are connected with a normal arrow, and inout gates
-with a double-headed arrow ``\ttt{<-->}''. To connect the two gates
+with a double-headed arrow ``\ttt{<-{}->}''. To connect the two gates
 with a channel, use two arrows and put the channel specification in between.
 
 Some examples have already been shown in the Warmup section (XXX);
@@ -972,24 +972,28 @@ XXX examples
 A channel specification (\ttt{-{}-> $channelspec$ -{}->} inside a connection)
 are similar to submodules in many respect.
 
-we can use the channel type C.
+Let's see some examples:
 
 \begin{Verbatim}
+<--> {delay=10ms;} <-->
 <--> {delay=10ms; datarate=1e-8;} <-->
+<--> C <-->
+<--> BBone {cost=100; length=52km; datarate=1e-8;} <-->
+<--> {@display("XXX");} <-->
+<--> BBone {@display("XXX");} <-->
 \end{Verbatim}
 
 
+When a channel type is missing, one of the built-in channel types will be
+used, based on the parameters assigned in the connection. If
+\ttt{datarate}, \ttt{ber} or \ttt{per} is assigned,
+\ttt{ned.DatarateChannel} will be chosen. Otherwise, if \ttt{delay} or
+\ttt{disabled} is present, it will be \ttt{ned.DelayChannel}; otherwise it
+is \ttt{ned.IdealChannel}. Naturally, if other parameter names are
+assigned in an connection without an explicit channel type, it will be an error
+(with \textit{``ned.DelayChannel has no such parameter''} or similar message).
 
-TODO other channel types; implicit selection based on parameters
-
-Another channel type, \ttt{ned.DelayChannel} only defines the \ttt{delay}
-and \ttt{disabled} parameters, and may be used in, say, queueing
-network simulations.
-
-The simplest built-in channel type is \ttt{ned.IdealChannel}.
-It defines no parameters, and its C++ implementation
-does nothing but let the message though without any change or delay.
-It is used... XXX
+XXX channel type as parameter; here or later?
 
 
 \section{Multiple connections}
