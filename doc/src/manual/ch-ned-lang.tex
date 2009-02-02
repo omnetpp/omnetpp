@@ -1281,6 +1281,9 @@ module Example
 }
 \end{Verbatim}
 
+
+\subsubsection{Data model}
+
 Properties may contain data, given in parentheses; the data model is quite
 flexible. Properties may contain lists:
 
@@ -1328,6 +1331,9 @@ equivalent to \ttt{@host}: \ttt{@host()}, \ttt{@host(true)},
 \ttt{@host(false)} should be interpreted as the lack of the \ttt{@host}
 tag.
 
+
+\subsubsection{Modifying properties}
+
 Properties are not only inherited, but may also be modified via inheritance.
 
 XXX how properties are inherited. inheritance rules.
@@ -1335,18 +1341,36 @@ XXX how properties are inherited. inheritance rules.
 XXX example
 
 
+\subsubsection{Indices}
+
 Properties are identified by names, so if the same \textit{@$name$} occurs
 in the same context, then it names the exact same property object. If you
 want to have multiple properties with the same name, then you need to
 distinguish them with an index. An index is a name or number, written in
-square brackets after the property name. The index tells multiple
-properties with the same name apart, while staying out of the way (the code
-that interprets properties may choose to ignore the index strings
-altogether).
+square brackets after the property name. The index may be chosen to carry
+a meaning, or it may be a dummy whose only purpose is to tell multiple
+properties with the same name apart. (The code that interprets properties
+may be written to observe or to ignore indices, as needed).
+
+The following example, the simple module declares in properties the
+statistics it collects. These declarations might be used by model editing
+tools, by simulation code, or by analysis tools.\footnote{Note that this is
+a completely hypothetical example -- {\opp} does not presently support
+declaring statistics using properties.} The statistic names are
+used as indices:
 
 \begin{Verbatim}
-XXX @statistic[bubu](type=count;label="sdsadsad");
-XXX @statistic[bubu](type=double;unit=s;label="fdsfdsf");
+simple App {
+    // declare two statistics collected by the C++ code
+    @statistic[packetsReceived](type=integer;label="Number of packets received");
+    @statistic[responseTime](type=double;unit=s;label="Application response time");
+    ...
+}
+
+simple HttpApp {
+    // tailor the label of the "packetsReceived" statistic:
+    @statistic[packetsReceived](label="Number of HTTP requests received");
+}
 \end{Verbatim}
 
 
