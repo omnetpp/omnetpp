@@ -898,6 +898,8 @@ NED supports submodule arrays (vectors) as well. Submodule vector size,
 unlike gate vector size, must always be specified and cannot be left
 open as with gates.
 
+XXX nulla hosszu is lehet!!!
+
 Syntactically, a submodule may have a curly brace block as body, where
 it is possible to assign parameters (see \ttt{address} in the example),
 set the size of gate vectors, and add/modify properties like the
@@ -966,6 +968,10 @@ let's see some more.
 
 XXX examples
 
+XXX explain \$i / \$o
+
+XXX explain ++
+
 
 \subsubsection{Channel specification}
 
@@ -1028,7 +1034,7 @@ One can create a chain\index{chain} of modules like this:
 
 \subsubsection{Binary Tree}
 
-One can use conditional connections to build a binary tree\index{binary tree}.
+One can build a binary tree\index{binary tree} in the following way:
 
 \begin{Verbatim}[commandchars=\\\{\}]
 \tbf{simple} BinaryTreeNode \{
@@ -1062,9 +1068,9 @@ on a gate which is not leading anywhere.
 
 \subsubsection{Random graph}
 
-Conditional connections can also be used to generate random
-topologies\index{topology!random}.  The following code generates a
-random subgraph of a full graph:
+Conditional connections can be used to generate random
+topologies\index{topology!random}, for example. The following code
+generates a random subgraph of a full graph:
 
 \begin{Verbatim}[commandchars=\\\{\}]
 \tbf{module} RandomGraph \{
@@ -1175,20 +1181,6 @@ would do it in most existing simulators.
 \section{Submodule type as parameter}
 
 \begin{Verbatim}
-network Net6
-{
-    parameters:
-        string nodeType;
-    submodules:
-        node[5]: <nodeType> like INode {
-            address = index;
-        }
-    connections:
-        ...
-}
-\end{Verbatim}
-
-\begin{Verbatim}
 moduleinterface INode
 {
     parameters:
@@ -1210,6 +1202,19 @@ module SomeNode like INode
 }
 \end{Verbatim}
 
+\begin{Verbatim}
+network Net6
+{
+    parameters:
+        string nodeType;
+    submodules:
+        node[5]: <nodeType> like INode {
+            address = index;
+        }
+    connections:
+        ...
+}
+\end{Verbatim}
 
 
 \section{Properties (metadata annotations)}
@@ -1217,9 +1222,11 @@ module SomeNode like INode
 Properties allow adding metadata annotations to modules, parameters, gates,
 connections, NED files, packages, and virtually anything in NED.
 \ttt{@display}, \ttt{@class}, \ttt{@namespace}, \ttt{@unit}, \ttt{@prompt},
-\ttt{loose}, \ttt{@directIn} are all properties that have been mentioned in
+\ttt{@loose}, \ttt{@directIn} are all properties that have been mentioned in
 previous sections, but those examples only scratch the surface of what can
 be done with properties.
+
+XXX @isNetwork (valahol leirni azt is; BTW "network" nincs leirva sectionben)
 
 Using properties, one can attach extra information to NED elements. Some
 properties are interpreted by NED, by the simulation kernel; other
