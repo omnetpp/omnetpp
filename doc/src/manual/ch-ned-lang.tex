@@ -852,7 +852,9 @@ simple WirelessNode {
 }
 \end{verbatim}
 
-fsdfsdfsdfsdf
+In the following example, we define \ttt{TreeNode} as having gates to connect
+any number of children, then subclass it to get a \ttt{BinaryTreeNode} to
+set the gate size to two:
 
 \begin{verbatim}
 simple TreeNode {
@@ -875,42 +877,26 @@ example: creating the same number of submodules as parent module gate vector siz
 
 \section{Submodules}
 
-scalar submodule, vector submodule (vector size cannot be left open as with gates)
+Modules a compound module consist of are called its submodules.
+A submodule has a name, and it is an instance of a compound or simple
+module type. In the NED definition of a submodule, this module type
+may be explicitly written, but, as we'll see later, it is also possible
+to specify the type with a string expression.
 
-type is another NED module type, simple or compound. it is also possible
-to specify the type with a string expression, more about it later...
+NED supports submodule arrays (vectors) as well. Submodule vector size,
+unlike gate vector size, must always be specified and cannot be left
+open as with gates.
 
 Syntactically, a submodule may have a curly brace block as body, where
-it is possible to assign its parameters (see \ttt{address} in the example),
-set the size of gate vectors, or to add properties like the display string
-(\ttt{@display}). Display strings specified here will be merged with the
-display string from the type to get the effective display string.
-The \ttt{"p="} tag used here means position on the canvas.
+it is possible to assign parameters (see \ttt{address} in the example),
+set the size of gate vectors, and add/modify properties like the
+display string (\ttt{@display}). Display strings specified here will
+be merged with the display string from the type to get the effective
+display string.
 
-example...
+XXX example...
 
-inheritance can add new submodules....
-
----
-
-Submodules\index{module!submodule} are defined in the
-\fkeyword{submodules} section of a compound
-module declaration. Submodules are identified by names.
-By convention, submodule names begin with lower-case letters.
-
-Any module type (simple or compound module) can be
-used as a submodule.
-
-Submodules are instances of a module type, either simple
-or compound -- there is no distinction.
-
-It is possible to define vectors of submodules, and the
-size of the vector may come from a parameter value.
-
-When defining submodules, you can assign values to their
-parameters, and if the corresponding module type has gate vectors,
-you have to specify their sizes.
-
+XXX inheritance can add new submodules....
 
 \subsubsection{Submodule vectors}
 
