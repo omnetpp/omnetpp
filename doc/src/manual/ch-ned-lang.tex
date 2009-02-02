@@ -939,7 +939,9 @@ network Net6
 \end{Verbatim}
 
 
-\section{Connections, channels}
+\section{Connections}
+
+\subsection{Single connections}
 
 input and output gates are connected with a normal arrow, and inout gates
 with a double-headed arrow ``\ttt{<-->}''. Submodule vectors and gate
@@ -1004,8 +1006,7 @@ It is used... XXX
 
 
 
-
-\section{Multiple Connections}
+\subsection{Multiple Connections}
 
 Simple programming constructs (loop, conditional) allow creating
 multiple connections easily.
@@ -1099,7 +1100,7 @@ here too, to turn off error messages given by the network setup code
 for unconnected gates.
 
 
-\subsection{Design patterns for compound modules}
+\subsection{Connection patterns}
 
 \index{module!compound!patterns}
 \index{topology!patterns}
@@ -1109,7 +1110,7 @@ topologies which have a regular structure; three of them are
 described below.
 
 
-\subsubsection{`Subgraph of a Full Graph'}
+\subsubsection{``Subgraph of a Full Graph''}
 
 
 This pattern takes a subset of the connections of a full graph.  A
@@ -1135,7 +1136,7 @@ much fewer connections that $N^2$). The following
 two patterns do not suffer from this drawback.
 
 
-\subsubsection{`Connections of Each Node'}
+\subsubsection{``Connections of Each Node''}
 
 The pattern loops through all nodes and creates the necessary
 connections for each one. It can be generalized like this:
