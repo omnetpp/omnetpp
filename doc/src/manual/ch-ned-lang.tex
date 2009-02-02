@@ -1254,17 +1254,37 @@ per-instance different properties. All instances of modules, connections,
 parameters, etc. created from any particular location in the NED files have
 identical properties.
 
-The following "allatorvosi lo" example shows the syntax for annotating
-various NED elements:
+The following example shows the syntax for annotating various NED elements:
 
 \begin{Verbatim}
-XXX syntax in all cases: submodule, connection etc....
+@prop;  // file property
+
+module Example
+{
+    parameters:
+       @prop;   // module property
+       int a @prop = default(1); // parameter property
+    gates:
+       output out @prop;
+    submodules:
+       src: Source {
+           parameters:
+              @prop;  // submodule property
+              count @prop;  // adding a property to a parameter
+           gates:
+              out[] @prop;  // adding a property to a gate
+       }
+       ...
+    connections:
+       src.out++ --> { @prop; }--> sink1.in;
+       src.out++ --> Channel { @prop; }--> sink2.in;
+}
 \end{Verbatim}
 
 Properties have a flexible data model. They may contain lists:
 
 \begin{Verbatim}
-@enum(hapci, morgo, kuka)
+@enum(Sneezy,Sleepy,Dopey,Doc,Happy,Bashful,Grumpy);
 \end{Verbatim}
 
 They may contain key-value pairs, separated by semicolons:
@@ -1276,7 +1296,7 @@ They may contain key-value pairs, separated by semicolons:
 In key-value pairs, each value can be a (comma-separated) list:
 
 \begin{Verbatim}
-@bubu(key1=a,b,c);
+XXX @bubu(key1=a,b,c);
 \end{Verbatim}
 
 The above examples are special cases. According to the general data model,
@@ -1296,9 +1316,9 @@ There are also some conventions. Boolean properties...
 XXX how boolean properties are interpreted...
 
 
-how properties are inherited. type, parameter and gate properties as well
+XXX how properties are inherited. inheritance rules.
 
-....
+XXX example
 
 
 Properties are identified by names, so if the same \textit{@$name$} occurs
@@ -1306,22 +1326,26 @@ in the same context, then it names the exact same property object.
 This might be a problem if you count on having multiple properties with
 the same name.
 
-if you want to add more than one property with the
-same name, use an index.
+XXX If you want to add more than one property with the same name, use an index.
 
+\begin{Verbatim}
 @bubu(joe);
 @bubu(jim);  // overrides the first one!!!
 
 @bubu[1](joe);
 @bubu[2](jim);  //OK
+\end{Verbatim}
 
+XXX
 
+\begin{Verbatim}
 @host;  // custom properties can serve as "marker interfaces"
 @propertyname(key="value1","value2"; key="value"; key=5; key=false; key=true;
 @propertyname(starttime=10s 531ms,true);  // propertyname.starttime={"10s 531ms",true}
 string tcpAlgorithmClass1 @enum("TCPTahoe", "TCPReno", "TCPNoCongestionControl", "DumbTCP"); // "..."
 @recordstats[stat1](storeintervall=5; averaging=true); // recording seqNum etc. into output vectors on/off, 'id' is the primary key (must be unique)
 @recordstats[stat2](storeintervall=9; averaging=false); // recording seqNum etc. into output vectors on/off
+\end{Verbatim}
 
 
 
