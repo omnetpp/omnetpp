@@ -102,8 +102,8 @@
       You may access the online help system form the
       <guimenuitem>Help | Help Contents</guimenuitem>
       menu item. The &Omnetpp; IDE is built on top of the Eclipse ecosystem. If your are
-      not familiar with Eclipse we recommend to read the ``Workbench User Guide'' and the
-      ``C/C++ Development User Guide'' before starting using &Omnetpp; specific features. .
+      not familiar with Eclipse we recommend to read the <emphasis>Workbench User Guide</emphasis> and the
+      <emphasis>C/C++ Development User Guide</emphasis> before starting using &Omnetpp; specific features. .
     </para>
   </sect1>
 </chapter>

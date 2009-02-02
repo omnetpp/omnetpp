@@ -30,7 +30,7 @@
       </itemizedlist>
     </para>
     <para><!-- some overview on how the whole thing works -->
-      How C/C++ builds in the IDE work: CDT already supports "standard make" builds, ie it
+      How C/C++ builds in the IDE work: CDT already supports "standard make" builds, i.e. it
       can invoke "make"; and when you select "Build" in the IDE, we generate a makefile
       (via a built-in Java version of opp_makemake) and then let CDT do a "standard make"
       build.
@@ -46,16 +46,16 @@
           project name, dependencies from other projects, project type (i.e. whether
           &Omnetpp; specific features are supported at all)
         </listitem>
-        .cproject : This file contains settings specific to C++ development including
-        toolchain definition, configuration templates (i.e. debug / release), error
-        parsers, debugger settings.
         <listitem>
+          .cproject : This file contains settings specific to C++ development including
+          toolchain definition, configuration templates (i.e. debug / release), error
+          parsers, debugger settings.
         </listitem>
         <listitem>
           .buildspec : Contains all settings specific to &Omnetpp;. Basically this file
           contains the settings passed to the makefile generator. You can configure all
-          &Omnetpp; specific settings in the project properties dialog, on the C/C++
-          Build/Makemake (&Omnetpp;) page. Everything you set on this page will be stored in
+          &Omnetpp; specific settings in the project properties dialog, on the 
+          &Omnetpp;/Makemakepage. Everything you set on this page will be stored in
           the .buildspec file.
         </listitem>
       </itemizedlist>
@@ -102,9 +102,10 @@
     <para> At the first page of the wizard you should specify the project name and ensure
       that the Support C++ Development checkbox is selected.</para>
     <picture file="pictures/CPP-NewProjectWizard.png"> Setting project name and enabling C++ support </picture>
-    <para> You must select a toolchain which is supported on your platform. Usually you
-      will see only a single toolchain supported on your platform, so you don't need to
-      select anything.</para>
+    <para> Select a project template.</para>
+    <picture file="pictures/CPP-NewProjectWizard1.png">Selecting a project template</picture>
+    <para>Select a toolchain which is supported on your platform. Usually you
+      will see only a single toolchain supported, so you don't need to select anything.</para>
     <picture file="pictures/CPP-NewProjectWizard2.png">Selecting a toolchain</picture>
     <para>
       Finally choose from the preset configurations. By default a debug and a release
@@ -119,17 +120,15 @@
     <para>
       The &Omnetpp; IDE adds several extensions to the standard CDT to make the building of
       simulations much easier. The project properties dialog is extended with a special
-      page - called Makemake (&Omnetpp;) - where you can configure the options used for
-      automatically generate the makefile(s). In each source folder you specify in CDT, a
-      separate makefile will be created according to the settings you specify in the
+      page - &Omnetpp; / Makemake - where you can configure the options used for
+      automatically generate the makefile(s). 
+      A separate makefile will be created according to the settings you specify in the
       dialog. On the C/C++ Build page you can specify which makefile will be called by the
       IDE build process when you initiate a Build action. By default the Build directory
-      is specified as ${PrimarySourceDir} which is the first source directory specified on
-      the
-      <guimenuitem>C/C++ General | Path and Symbols | Source location</guimenuitem>
-      page. You can set any directory for the build directory, but keep in mind that it
-      should contain an automatically generated makefile (i.e. must be a source directory)
-      or you have to create a makefile manually there (not recommended). If you have
+      is specified as ${ProjDirPath} which is the root directory of your project.
+      You can set any directory for the build directory, but keep in mind that it
+      should contain an automatically generated makefile or you have to create a 
+      makefile manually there (not recommended). If you have
       several source directories make sure that the primary makefile calls the
       sub-makefiles correctly.
     </para>
@@ -137,47 +136,42 @@
       The build configuration is done on the Makemake page. Usually you don't have to
       change anything on other C++ related property pages.
     </note>
+    <tip>Use the project templates in the New &Omnetpp; Project Wizard to start a new project.
+    The templates are especially helpful if you have a project where you need multiple source trees
+    each with its own makefile.
+    </tip>
     <para>
       You can open the the property dialog by right clicking on a folder or project and
       selecting the
       <guimenuitem>Properties</guimenuitem>
-      menu. Choose the Makemake (&Omnetpp;) page from here.
+      menu. Choose the <guimenuitem>&Omnetpp; | Makemake</guimenuitem>  page from here.
     </para>
     <para>
-      Before you start modifying the settings, make sure that you select the source folder
+      Before you start modifying the settings, make sure that you select the folder
       you want to configure. If you want to convert the current folder to a source folder
-      simply click on the
-      <guibutton>Mark as Source Folder</guibutton>
-      .
+      simply click on
+      <guibutton>Source Location</guibutton>
+      . It is also possible to selectively include or exclude a whole directory tree if it is already
+      inside a source tree.
     </para>
     <note>
       Creating a source folder here, will affect all configuration.
     </note>
     <picture file="pictures/CPP-SourceFolder.png">Setting a source folder</picture>
+    <note>To regenerate your makefile on the command line, you can export the settings 
+       by pressing the <guibutton>Export</guibutton> button. This action will create 
+       a file with the name ``makemakefiles''.
+       After exporting, execute ``make -f makemakefiles'' from the command line.</note>
     <para>
-      The first tab on the Makemake page allows you to configure the scope of the makefile
-      and what source files will be included.
-      <itemizedlist>
-        <listitem>
-          Deep - will use all source files recursively in all subdirectories.
-        </listitem>
-        <listitem>
-          Recursive - will use source files only in the current directory. Invokes make in
-          all subdirectory (i.e. makefiles must exist in those directories)
-        </listitem>
-        <listitem>
-          Local - will use source files only in the current directory. Subdirectories will
-          be ignored.
-        </listitem>
-      </itemizedlist>
-      If you want to invoke additional makefiles from this makefile, click on the
-      <guibutton>More >></guibutton>
-      button and specify which directories should be visited.
+      Press the <guibutton>Makemake</guibutton> button to generate a makefile automatically 
+      in the selected folder. Manually written makefiles can be used by selecting 
+      <guibutton>Custom Make</guibutton>.
     </para>
-    <picture file="pictures/CPP-ConfigureProject.png">Scope of makefile</picture>
-    <beginpage />
     <para>
-      On the next tab, you can specify how the final target of the build is created.
+      To configure how the makefile will be generated press the <guibutton>Options</guibutton> button.
+    </para>
+    <para>
+      On the first tab of the options dialog, you can specify how the final target of the makefile is created.
       <itemizedlist>
         <listitem>
           The target type can be either executable or a shared/static library. Libraries
@@ -195,7 +189,26 @@
       </itemizedlist>
     </para>
     <picture file="pictures/CPP-ConfigureProject2.png">Target definition</picture>
-    <para> The compiler options tab allows you to adjust the parameters passed to the
+    <picture file="pictures/CPP-ConfigureProject.png">Scope of makefile</picture>
+    <para>
+      The <guimenuitem>Scope</guimenuitem> tab allows you to 
+      configure the scope of the makefile and what source files will be included.
+      <itemizedlist>
+        <listitem>
+          Deep - will use all source files recursively in all subdirectories.
+        </listitem>
+        <listitem>
+          Recursive - will use source files only in the current directory. Invokes make in
+          all subdirectory (i.e. makefiles must exist in those directories)
+        </listitem>
+      </itemizedlist>
+      If you want to invoke additional makefiles from this makefile, click on the
+      <guibutton>More >></guibutton>
+      button and specify which directories should be visited.
+    </para>
+
+    <picture file="pictures/CPP-ConfigureProject3.png">Compiler options</picture>
+    <para> The <guimenuitem>Compile</guimenuitem> tab allows you to adjust the parameters passed to the
       compiler during the build process. The build system discovers the necessary include
       directories automatically. You can specify where the system should look for input
       files. You can scan all subfolders in the source directory or even allow to scan all
@@ -224,16 +237,10 @@
         use this feature.
       </note>
     </commercial>
-    <picture file="pictures/CPP-ConfigureProject3.png">Compiler options</picture>
+
     <para>
       Link options allows to fine tune the linking steps at the end of the build process.
       <itemizedlist>
-        <listitem>
-          Link with all object files in the project - if you have additional object files
-          (other than the ones generated from this source folder) you can instruct the
-          linker to use them. This can happen if these object files are generated by other
-          means (external makefiles etc.)
-        </listitem>
         <listitem>
           Link with libraries exported from referenced projects - if you are depending on
           an other project's target (i.e. static or dynamic library), you can instruct the
@@ -241,25 +248,21 @@
           project dependencies (See Dependent Projects section).
         </listitem>
         <listitem>
-          User interface libraries - you can set what runtime environments you will use in
-          your simulation. Selecting All, will link against both Cmdenv and Tkenv.
-        </listitem>
-        <listitem>
-          Additional libraries and library path can be set by clicking on the More>>
+          Additional object files, libraries can be set by clicking on the More>>
           button.
         </listitem>
       </itemizedlist>
     </para>
     <picture file="pictures/CPP-ConfigureProject4.png">Linker options</picture>
-    <para>
-      To exclude a directory from the source tree select the directory from the project
-      explorer and right click on it. From the context menu select
-      <guimenuitem>Exclude from build</guimenuitem>
-      and select all configurations where you want to exclude the directory. (Usually you
-      should select both release and debug configuration.)
+
+    <para>The <guimenu>Custom</guimenu> tab allows the customization of the makefiles by inserting handwritten
+    makefile fragments inside the automatically generated makefile. It is possible to add additional
+    variables, targets, rules. The fragment code entered here will be written into the Makefrag file.
     </para>
-    <picture file="pictures/CPP-ExcludeSource.png"> Excluding a directory from the build </picture>
+    <para>The <guimenu>Preview</guimenu> tab just displays the final command line with all options that
+    will be passed to ``opp_makemake'' to generate the makefile.</para>
   </sect1>
+
   <sect1>
     <title>Dependent Projects</title>
     <para> If your project uses code from other projects (i.e. you are using a library
@@ -275,7 +278,7 @@
       output the linker will automatically include those libraries during link phase. It
       is also possible to use executable files from other projects. In this case your
       project should not have any code in it so no compilation or linking is necessary.
-      You project should contain only INI and NED files and use the pre-built simulation
+      Your project should contain only INI and NED files and use the pre-built simulation
       executable from the other projects.
     </para>
     <picture file="pictures/CPP-ProjectReferences.png"> Setting project dependencies </picture>

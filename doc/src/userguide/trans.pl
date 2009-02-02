@@ -1,3 +1,5 @@
+# replaces special double qutes with literal tag (just a shortcut)
+# deletes the whitespace before and after tags if there is a '(' char before the tag (avoids spaces in (<tag>command</tag>) construct
 $txt = "";
 
 while (<>) {
