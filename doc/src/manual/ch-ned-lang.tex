@@ -869,9 +869,20 @@ simple BinaryTreeNode extends TreeNode {
 }
 \end{verbatim}
 
-XXX submodule example
+An example for setting the gate vector size in a submodule, using the same
+\ttt{TreeNode} module type as above:
 
-example: creating the same number of submodules as parent module gate vector size
+\begin{verbatim}
+module BinaryTree {
+    submodules:
+        nodes[31]: TreeNode {
+            gates:
+                children[2];
+        }
+    connections:
+        ...
+}
+\end{verbatim}
 
 
 
@@ -881,7 +892,7 @@ Modules a compound module consist of are called its submodules.
 A submodule has a name, and it is an instance of a compound or simple
 module type. In the NED definition of a submodule, this module type
 may be explicitly written, but, as we'll see later, it is also possible
-to specify the type with a string expression.
+to specify the type with a string expression (see section XXX.)
 
 NED supports submodule arrays (vectors) as well. Submodule vector size,
 unlike gate vector size, must always be specified and cannot be left
@@ -890,53 +901,51 @@ open as with gates.
 Syntactically, a submodule may have a curly brace block as body, where
 it is possible to assign parameters (see \ttt{address} in the example),
 set the size of gate vectors, and add/modify properties like the
-display string (\ttt{@display}). Display strings specified here will
-be merged with the display string from the type to get the effective
-display string.
-
-XXX example...
-
-XXX inheritance can add new submodules....
-
-\subsubsection{Submodule vectors}
-
-It is possible to create an array\index{module!array} of
-submodules\index{submodule|see{module}} (a module
-vector\index{module!vector}).  This is done with an expression between
-brackets right behind the module type name. The expression can refer
-to module parameters. A zero value as module count is also allowed.
-
-Example:
+display string (\ttt{@display}).
 
 \begin{Verbatim}[commandchars=\\\{\}]
-    node[2*size+1]: Node;
+module Node
+\{
+    gates:
+        inout port[];
+    submodules:
+        routing: Routing {
+            parameters:   // this keyword is optional
+                routingTable = "routingtable.txt"; // assign parameter
+            gates:
+                in[sizeof(port)];  // set gate vector size
+                out[sizeof(port)];
+        }
+
+        queue[sizeof(port)]: Queue;
+
+    connections:
+        ...
+\}
 \end{Verbatim}
 
-there are submodule vectors;
-submodule body may assign parameters, specify gate sizes
-
-submodule type may be parameter, but see this later
-
-we can replace node1, node2 etc with node[]:
+An empty body may be omitted, that is,
 
 \begin{Verbatim}
-network Net6
-{
-    submodules:
-        node[5]: Node {
-            address = index;
-        }
-    connections:
-        node[1].port++ <--> node[2].port++;
-        node[2].port++ <--> node[4].port++;
-        node[4].port++ <--> node[6].port++;
-        node[1].port++ <--> node[3].port++;
-        node[3].port++ <--> node[5].port++;
-        node[5].port++ <--> node[6].port++;
-        node[2].port++ <--> node[5].port++;
-        node[3].port++ <--> node[4].port++;
+queue: Queue;
+\end{Verbatim}
+
+is the same as
+
+\begin{Verbatim}
+queue: Queue {
 }
 \end{Verbatim}
+
+Display strings specified here will be merged with the display string
+from the type to get the effective display string. This is described
+in chapter XXX.
+
+It is possible to add new submodules to an existing compound module via
+subclassing.
+
+XXX example.
+
 
 
 \section{Connections}
@@ -1326,6 +1335,9 @@ Properties are not only inherited, but may also be modified via inheritance.
 XXX how properties are inherited. inheritance rules.
 
 XXX example
+
+XXX @display is interpreted and merged in a special way.
+
 
 
 \subsubsection{Indices}
