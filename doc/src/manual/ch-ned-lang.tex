@@ -909,13 +909,13 @@ module Node
     gates:
         inout port[];
     submodules:
-        routing: Routing {
+        routing: Routing \{
             parameters:   // this keyword is optional
                 routingTable = "routingtable.txt"; // assign parameter
             gates:
                 in[sizeof(port)];  // set gate vector size
                 out[sizeof(port)];
-        }
+        \}
 
         queue[sizeof(port)]: Queue;
 
@@ -927,14 +927,14 @@ module Node
 An empty body may be omitted, that is,
 
 \begin{Verbatim}
-queue: Queue;
+      queue: Queue;
 \end{Verbatim}
 
 is the same as
 
 \begin{Verbatim}
-queue: Queue {
-}
+      queue: Queue {
+      }
 \end{Verbatim}
 
 Display strings specified here will be merged with the display string
@@ -950,57 +950,35 @@ XXX example.
 
 \section{Connections}
 
-\subsection{Single connections}
+Connections are defined in the \fkeyword{connections} section of compound
+modules. Connections cannot span across hierarchy levels: one can connect
+two submodule gates, a submodule gate and the "inside" of the parent
+(compound) module's gates, or two gates of the parent module (though this
+is rarely useful). It is not possible to connect to any gate outside the
+parent module, or inside compound submodules.
 
-input and output gates are connected with a normal arrow, and inout gates
-with a double-headed arrow ``\ttt{<-->}''. Submodule vectors and gate
-vectors can be connected with the familiar \ttt{for} syntax. Nesting and
-conditional connections (\ttt{if}), although not shown here, are also
-possible.
+Input and output gates are connected with a normal arrow, and inout gates
+with a double-headed arrow ``\ttt{<-->}''. To connect the two gates
+with a channel, use two arrows and put the channel specification in between.
+
+Some examples have already been shown in the Warmup section (XXX);
+let's see some more.
+
+XXX examples
+
+
+\subsubsection{Channel specification}
+
+A channel specification (\ttt{-{}-> $channelspec$ -{}->} inside a connection)
+are similar to submodules in many respect.
+
+we can use the channel type C.
 
 \begin{Verbatim}
 <--> {delay=10ms; datarate=1e-8;} <-->
 \end{Verbatim}
 
-we can use the channel type C.
 
-channel types
-
-Channels types resemble simple modules in the sense that they need an underlying
-C++ class to function, the NED declaration itself is not enough. Our
-\ttt{Backbone} channel inherits this C++ class from \ttt{ned.DatarateChannel}.
-
-FIXME @class, @namespace
-
-A channel definition specifies a connection type of some given characteristics.
-Let us see an example channel:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-channel Backbone extends ned.DatarateChannel
-\{
-    parameters:
-        delay = 2ms;
-        datarate = 10Gbps;
-\}
-\end{Verbatim}
-
-\begin{note}
-    The \ttt{parameters:} keyword is optional (everywhere, not only in
-    channels), so it can be left out.
-\end{note}
-
-Our \ttt{Backbone} channel type extends (subclasses, builds upon) the
-\ttt{ned.DatarateChannel} channel type. (In the latter name, \ttt{ned} is the
-package name, and \ttt{DatarateChannel} is the actual type name.)
-\ttt{ned.DatarateChannel} is a built-in NED type, and it declares the
-following parameters: \ttt{delay} (propagation delay), \ttt{ber} (bit error rate),
-\ttt{per} (packet error rate), \ttt{datarate} (channel bandwidth, used for
-calculating transmission time of a packet), and \ttt{disabled} (a boolean parameter).
-
-\ttt{ned.DatarateChannel} initializes these parameters to provide an ideal channel
-(zero delay and bit error rate, infinite data rate). In the above
-declaration, we override \ttt{delay} and \ttt{datarate} to get our custom
-channel.
 
 TODO other channel types; implicit selection based on parameters
 
@@ -1014,8 +992,7 @@ does nothing but let the message though without any change or delay.
 It is used... XXX
 
 
-
-\subsection{Multiple Connections}
+\section{Multiple connections}
 
 Simple programming constructs (loop, conditional) allow creating
 multiple connections easily.
