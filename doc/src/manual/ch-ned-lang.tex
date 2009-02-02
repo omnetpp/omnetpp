@@ -1281,7 +1281,8 @@ module Example
 }
 \end{Verbatim}
 
-Properties have a flexible data model. They may contain lists:
+Properties may contain data, given in parentheses; the data model is quite
+flexible. Properties may contain lists:
 
 \begin{Verbatim}
 @enum(Sneezy,Sleepy,Dopey,Doc,Happy,Bashful,Grumpy);
@@ -1296,14 +1297,15 @@ They may contain key-value pairs, separated by semicolons:
 In key-value pairs, each value can be a (comma-separated) list:
 
 \begin{Verbatim}
-XXX @bubu(key1=a,b,c);
+@nodeinfo(id=742;labels=swregion,routers,critical);
 \end{Verbatim}
 
-The above examples are special cases. According to the general data model,
-properties contain \textit{key-valuelist} pairs, separated by semicolons.
-Items in \textit{valuelist} are separated by commas. Wherever \textit{key}
-is missing, values go on the valuelist of the \textit{default key}, the
-empty string.
+The above examples are special cases of the general data model. According
+to the data model, properties contain \textit{key-valuelist} pairs,
+separated by semicolons. Items in \textit{valuelist} are separated by
+commas. Wherever \textit{key} is missing, values go on the valuelist of the
+\textit{default key}, the empty string. \ttt{@prop} is the same
+as \ttt{@prop()}.
 
 The syntax for value items is a bit restrictive: they may contain words,
 numbers, string constants and some more, but not arbitrary strings.
@@ -1312,9 +1314,21 @@ quotes. This quoting does not make any difference in the value, because
 the parser automatically drops one layer of quotes; thus, \ttt{@class(TCP)}
 and \ttt{@class("TCP")} are exactly the same.
 
-There are also some conventions. Boolean properties...
-XXX how boolean properties are interpreted...
+There are also some conventions. One can use properties to tag some NED element
+with a label; for example, a \ttt{@host} property could be used to mark
+all module types that represent various hosts. This property could be used
+e.g. by editing tools, by topology discovery code inside the simulation model, etc.
 
+The convention for such a "label" property is that any extra data in it
+(i.e. within parens) is ignored, except a single word \ttt{false}, which is
+reserved to "remove" the property. Thus, simulation model or tool source
+code that interprets properties should handle all the following forms as
+equivalent to \ttt{@host}: \ttt{@host()}, \ttt{@host(true)},
+\ttt{@host(anything-but-false)}, \ttt{@host(a=1;b=2)}; and
+\ttt{@host(false)} should be interpreted as the lack of the \ttt{@host}
+tag.
+
+Properties are not only inherited, but may also be modified via inheritance.
 
 XXX how properties are inherited. inheritance rules.
 
@@ -1322,31 +1336,18 @@ XXX example
 
 
 Properties are identified by names, so if the same \textit{@$name$} occurs
-in the same context, then it names the exact same property object.
-This might be a problem if you count on having multiple properties with
-the same name.
-
-XXX If you want to add more than one property with the same name, use an index.
-
-\begin{Verbatim}
-@bubu(joe);
-@bubu(jim);  // overrides the first one!!!
-
-@bubu[1](joe);
-@bubu[2](jim);  //OK
-\end{Verbatim}
-
-XXX
+in the same context, then it names the exact same property object. If you
+want to have multiple properties with the same name, then you need to
+distinguish them with an index. An index is a name or number, written in
+square brackets after the property name. The index tells multiple
+properties with the same name apart, while staying out of the way (the code
+that interprets properties may choose to ignore the index strings
+altogether).
 
 \begin{Verbatim}
-@host;  // custom properties can serve as "marker interfaces"
-@propertyname(key="value1","value2"; key="value"; key=5; key=false; key=true;
-@propertyname(starttime=10s 531ms,true);  // propertyname.starttime={"10s 531ms",true}
-string tcpAlgorithmClass1 @enum("TCPTahoe", "TCPReno", "TCPNoCongestionControl", "DumbTCP"); // "..."
-@recordstats[stat1](storeintervall=5; averaging=true); // recording seqNum etc. into output vectors on/off, 'id' is the primary key (must be unique)
-@recordstats[stat2](storeintervall=9; averaging=false); // recording seqNum etc. into output vectors on/off
+XXX @statistic[bubu](type=count;label="sdsadsad");
+XXX @statistic[bubu](type=double;unit=s;label="fdsfdsf");
 \end{Verbatim}
-
 
 
 
