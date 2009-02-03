@@ -1,7 +1,7 @@
 #PERL=$(TOOLS_DIR)\perl\bin\perl.exe
 PERL=c:\Perl\bin\Perl.exe
-
 INKSCAPE="C:\Program Files\inkscape\inkscape.exe"
+DOT=C:\home\tools\Graphviz\bin\dot.exe
 
 CWD=C:\home\omnetpp40\omnetpp\doc\src\manual  # because Inkscape is broken and needs full paths; and nmake is also broken as there's no way to produce the current dir programmatically
 
@@ -38,29 +38,29 @@ HTMCHAPTERS = $(TEXCHAPTERS:.tex=.htm)
 
 # must list all SVGs because nmake is broken and has no wildcard functionality
 SVGPICS = \
-        figures/embed-architecture.svg \
-        figures/parsim-cqn-model.svg \     
-        figures/simlib-ksplit1.svg \
-        figures/ned-hypercube.svg \      
-        figures/parsim-cqn-partitioning.svg \
-        figures/simlib-ksplit2.svg \
-        figures/ned-loopconnextion.svg \
-        figures/parsim-placeholders2.svg \
-        figures/simlib-queue.svg \
-        figures/parsim-placeholders.svg \
-        figures/simple-conndatarate.svg \
-        figures/over-connections.svg \
-        figures/simple-gates.svg \
-        figures/over-modules.svg \      
-        figures/simlib-histogramcells.svg \
-        figures/simple-messagesend.svg \
-        figures/simlib-histogramrange.svg \
-        figures/simple-transmission.svg \
-        figures/parsim-arch.svg \
-        figures/simlib-histogramsetup.svg
-        
+        figures\embed-architecture.svg \
+        figures\parsim-cqn-model.svg \
+        figures\simlib-ksplit1.svg \
+        figures\ned-hypercube.svg \
+        figures\parsim-cqn-partitioning.svg \
+        figures\simlib-ksplit2.svg \
+        figures\ned-loopconnextion.svg \
+        figures\parsim-placeholders2.svg \
+        figures\simlib-queue.svg \
+        figures\parsim-placeholders.svg \
+        figures\simple-conndatarate.svg \
+        figures\over-connections.svg \
+        figures\simple-gates.svg \
+        figures\over-modules.svg \
+        figures\simlib-histogramcells.svg \
+        figures\simple-messagesend.svg \
+        figures\simlib-histogramrange.svg \
+        figures\simple-transmission.svg \
+        figures\parsim-arch.svg \
+        figures\simlib-histogramsetup.svg
 
-DOTPICS = figures\workflow.dot
+
+DOTPICS = figures\build-workflow.dot figures\ned-net6-topology.dot
 
 PDFPICS = $(SVGPICS:.svg=.pdf) $(DOTPICS:.dot=.pdf)
 
@@ -68,9 +68,9 @@ PDFPICS = $(SVGPICS:.svg=.pdf) $(DOTPICS:.dot=.pdf)
 # LOGFILTER = | sed '/Underfull/{N;N;d;};/Overfull/{N;N;d;};/Token not allowed/{N;N;d;}'
 LOGFILTER =
 
-default: pdf html
+default: pdf html eclipse
 
-pdf: $(ALLTEX) $(PDFPICS) figures/*.png
+pdf: $(ALLTEX) $(DOTPICS:.dot=.svg) $(PDFPICS) figures/*.png
 	pdflatex -aux-directory=tmp usman.tex $(LOGFILTER)
 	bibtex tmp/usman
 	makeindex tmp/usman
@@ -78,18 +78,24 @@ pdf: $(ALLTEX) $(PDFPICS) figures/*.png
 	pdflatex -aux-directory=tmp usman.tex $(LOGFILTER)
 	copy usman.pdf ..\..\manual\manual.pdf
 
-# --- generating html ---
-
-.SUFFIXES : .tex .bbl .htm .svg
-
-#usman-bibl.bbl : usman.bbl
-#	copy usman.bbl usman-bibl.bbl
+.svg.pdf:
+	$(INKSCAPE) $(CWD)\$< -A $(CWD)\$@
 
 .dot.svg:
 	$(DOT) -Tsvg $< >$@
 
-.svg.pdf:
-	$(INKSCAPE) $(CWD)\$< -A $(CWD)\$@
+# --- generating html ---
+
+.SUFFIXES: .tex .bbl .htm .svg .dot
+
+#usman-bibl.bbl : usman.bbl
+#	copy usman.bbl usman-bibl.bbl
+
+.svg.png:
+	$(INKSCAPE) $< -e $@
+
+.dot.png:
+	$(DOT) -Tpng $< >$@
 
 .bbl.htm:
 	copy $< $(<:.bbl=.tex)
@@ -99,17 +105,7 @@ pdf: $(ALLTEX) $(PDFPICS) figures/*.png
 .tex.htm:
 	$(PERL) ltoh.pl $<
 
-html : $(HTMCHAPTERS) omnest.thtml omnetpp.thtml prephtml2 ltoh.specs ltoh.pl
-	:#FIXME use tmp dir
-	@echo. > usman.tmp
-	for %%i in ($(HTMCHAPTERS)) do type %i >> usman.tmp
-	$(PERL) prephtml2 usman.tmp
-	del usman.tmp
-	copy usman.html ..\..\manual
-	copy *.png ..\..\manual
-	copy figures\*.png ..\..\manual
-
-eclipse : $(HTMCHAPTERS) omnest.thtml omnetpp.thtml prephtml2 ltoh.specs ltoh.pl
+eclipse : $(HTMCHAPTERS) $(PNGPICS) eclipse.thtml prephtml2 ltoh.specs ltoh.pl
 	:#FIXME use tmp dir
 	@echo. > usman.tmp
 	for %%i in ($(HTMCHAPTERS)) do type %i >> usman.tmp
@@ -123,11 +119,20 @@ eclipse : $(HTMCHAPTERS) omnest.thtml omnetpp.thtml prephtml2 ltoh.specs ltoh.pl
 	copy *.png eclipse
 	copy figures\*.png eclipse
 
+html : $(HTMCHAPTERS) $(PNGPICS) omnest.thtml omnetpp.thtml prephtml2 ltoh.specs ltoh.pl
+	:#FIXME use tmp dir
+	@echo. > usman.tmp
+	for %%i in ($(HTMCHAPTERS)) do type %i >> usman.tmp
+	$(PERL) prephtml2 usman.tmp
+	del usman.tmp
+	copy usman.html ..\..\manual
+	copy *.png ..\..\manual
+	copy figures\*.png ..\..\manual
+
 clean:
 	-del usman.dvi manual.pdf *.aux *.idx *.ilg *.ind *.log *.out *.toc *.bbl *.blg *.htm usman.tmp usman.html
 	-del /s /q ..\..\manual 2>nul
 	-rmdir ..\..\manual 2>nul
 	-del /s /q eclipse
 	-rmdir eclipse
-
 
