@@ -49,7 +49,6 @@ SVGPICS = \
         figures\simlib-queue.svg \
         figures\parsim-placeholders.svg \
         figures\simple-conndatarate.svg \
-        figures\over-connections.svg \
         figures\simple-gates.svg \
         figures\over-modules.svg \
         figures\simlib-histogramcells.svg \
