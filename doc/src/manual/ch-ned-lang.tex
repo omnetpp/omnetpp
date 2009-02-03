@@ -1182,14 +1182,33 @@ The pattern can also be used to create a random subset of a full
 graph with a fixed number of connections.
 
 In the case of irregular structures where none of the above patterns
-can be employed, you can resort to specifying constant submodule/gate
-vector sizes and explicitly listing all connections, like you
+can be employed, you can resort to listing all connections, like you
 would do it in most existing simulators.
 
 
 
 \section{Submodule type as parameter}
 \label{sec:ch-ned-lang:submodule-like}
+
+A submodule type may be specified with a module parameter of the type
+\fkeyword{string}, or in general, with any string-typed expression.
+The syntax uses the \fkeyword{like} keyword.
+
+\begin{Verbatim}
+network Net6
+{
+    parameters:
+        string nodeType;
+    submodules:
+        node[5]: <nodeType> like INode {
+            address = index;
+        }
+    connections:
+        ...
+}
+\end{Verbatim}
+
+XXX Note: parser may get confused around <>; you may help it by adding parens, i.e. <(typeName+"Module")>
 
 \begin{Verbatim}
 moduleinterface INode
@@ -1209,20 +1228,6 @@ module SomeNode like INode
         ...
     gates:
         inout port[];
-        ...
-}
-\end{Verbatim}
-
-\begin{Verbatim}
-network Net6
-{
-    parameters:
-        string nodeType;
-    submodules:
-        node[5]: <nodeType> like INode {
-            address = index;
-        }
-    connections:
         ...
 }
 \end{Verbatim}
@@ -1366,7 +1371,7 @@ simple App {
     ...
 }
 
-simple HttpApp {
+simple HttpApp extends App {
     // tailor the label of the "packetsReceived" statistic:
     @statistic[packetsReceived](label="Number of HTTP requests received");
 }

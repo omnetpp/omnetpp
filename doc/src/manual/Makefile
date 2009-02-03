@@ -46,6 +46,8 @@ PNGPICS = $(SVGPICS:.svg=.png) $(DOTPICS:.dot=.png)
 # LOGFILTER = | sed '/Underfull/{N;N;d;};/Overfull/{N;N;d;};/Token not allowed/{N;N;d;}'
 LOGFILTER =
 
+.PHONY : pdf html eclipse
+
 default: pdf html eclipse
 
 pdf: $(ALLTEX) $(PDFPICS) figures/*.png
@@ -57,11 +59,11 @@ pdf: $(ALLTEX) $(PDFPICS) figures/*.png
 	cp usman.pdf ../../manual.pdf
 	rm -f *.aux *.idx *.ilg *.ind *.log *.out *.toc *.blg
 
+%.pdf: %.svg
+	$(INKSCAPE) $< -A $@
+
 %.svg: %.dot
 	$(DOT) -Tsvg $< >$@
-
-%.png: %.dot
-	$(DOT) -Tpng $< >$@
 
 # --- generating html ---
 
@@ -70,11 +72,11 @@ pdf: $(ALLTEX) $(PDFPICS) figures/*.png
 #usman-bibl.bbl : usman.bbl
 #       copy usman.bbl usman-bibl.bbl
 
-%.pdf: %.svg
-	$(INKSCAPE) $< -A $@
-
 %.png: %.svg
 	$(INKSCAPE) $< -e $@
+
+%.png: %.dot
+	$(DOT) -Tpng $< >$@
 
 .bbl.htm:
 	cp $< `echo $< | sed 's|\.bbl|.tex|'`
@@ -85,7 +87,6 @@ pdf: $(ALLTEX) $(PDFPICS) figures/*.png
 .tex.htm:
 	$(PERL) ltoh.pl $<
 
-.PHONY : eclipse
 eclipse : $(HTMCHAPTERS) $(PNGPICS) eclipse.thtml prephtml2 ltoh.specs ltoh.pl
 	cat $(HTMCHAPTERS) > usman.tmp
 	$(PERL) prephtml2 --split --template eclipse.thtml usman.tmp
@@ -110,3 +111,4 @@ clean:
 	rm -f usman.dvi manual.pdf *.aux *.idx *.ilg *.ind *.log *.out *.toc *.bbl *.blg *.htm usman.tmp usman.html
 	rm -rf ../../manual
 	rm -rf eclipse
+
