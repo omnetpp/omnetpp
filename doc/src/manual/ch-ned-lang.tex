@@ -105,42 +105,38 @@ transport layer from the model.
 First we'll define the network, then in the next sections we'll continue
 to define the network nodes.
 
-Let the network topology be as in Figure \ref{fig:ned-net6-topology}.
+Let the network topology be as in Figure \ref{fig:ned-routing-topology}.
 
 \begin{figure}[htbp]
-  \begin{center}
-    %% XXX \includegraphics[scale=0.6]{figures/ned-net6-topology}
-    \includegraphics[scale=0.6]{figures/ned-routing-network}
-    \caption{The network}
-    \label{fig:ned-net6-topology}
-  \end{center}
+  \centering
+  %% XXX \includegraphics[scale=0.6]{figures/ned-net6-topology}
+  \includegraphics[scale=0.6]{figures/ned-routing-network}
+  \caption{The network}
+  \label{fig:ned-routing-topology}
 \end{figure}
 
 The corresponding NED description would look like this:
 
 \begin{Verbatim}
 //
-// A six-node network
+// A network
 //
-network Net6
+network Network
 {
     submodules:
         node1: Node;
         node2: Node;
         node3: Node;
-        node4: Node;
-        node5: Node;
-        node6: Node;
+        ...
     connections:
         node1.port++ <--> {datarate=100Mbps;} <--> node2.port++;
         node2.port++ <--> {datarate=100Mbps;} <--> node4.port++;
         node4.port++ <--> {datarate=100Mbps;} <--> node6.port++;
         ...
-        node3.port++ <--> {datarate=100Mbps;} <--> node4.port++;
 }
 \end{Verbatim}
 
-The above code defines a network type named \ttt{Net6}. Note that the NED
+The above code defines a network type named \ttt{Network}. Note that the NED
 language uses the familiar curly brace syntax, and ``\ttt{//}'' to denote
 comments.
 
@@ -152,9 +148,9 @@ comments.
     \textit{Doxygen}, will be described in Chapter \ref{cha:neddoc}.
 \end{note}
 
-The network contains six nodes, named \ttt{node1}...\ttt{node6},
-from the NED module type \ttt{Node}. (We'll define \ttt{Node} in the next
-sections.)
+The network contains several nodes, named \ttt{node1}, \ttt{node2}, etc.
+from the NED module type \ttt{Node}. We'll define \ttt{Node} in the next
+sections.
 
 The second half of the declaration defines how the nodes are to be
 connected. The double arrow means bidirectional connection. The connection
@@ -182,7 +178,7 @@ option into the configuration (by default the \ttt{omnetpp.ini} file):
 
 \begin{Verbatim}
 [General]
-network = Net6
+network = Network
 \end{Verbatim}
 
 
@@ -198,9 +194,9 @@ The improved network will look like this:
 
 \begin{Verbatim}
 //
-// A six-node network
+// A Network
 //
-network Net6
+network Network
 {
     types:
         channel C extends ned.DatarateChannel {
@@ -210,15 +206,12 @@ network Net6
         node1: Node;
         node2: Node;
         node3: Node;
-        node4: Node;
-        node5: Node;
-        node6: Node;
+        ...
     connections:
         node1.port++ <--> C <--> node2.port++;
         node2.port++ <--> C <--> node4.port++;
         node4.port++ <--> C <--> node6.port++;
         ...
-        node3.port++ <--> C <--> node4.port++;
 }
 \end{Verbatim}
 
@@ -297,6 +290,13 @@ compound module \ttt{Node}. A compound module can be thought of as
 a ``cardboard box'' that groups other modules into a larger unit,
 which can further be used as a building block for other modules;
 networks are also a kind of compound module.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[scale=0.6]{figures/ned-routing-node}
+  \caption{The Node compound module}
+  \label{fig:ned-routing-node}
+\end{figure}
 
 \begin{Verbatim}[commandchars=\\\{\}]
 module Node
