@@ -15,7 +15,7 @@
    inkscape:version="0.46"
    width="369.25479"
    height="128.61108"
-   sodipodi:docname="usmanFig2.svg"
+   sodipodi:docname="modules.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    style="fill-rule:evenodd">
   <metadata
@@ -30,8 +30,8 @@
     </rdf:RDF>
   </metadata>
   <sodipodi:namedview
-     inkscape:window-height="480"
-     inkscape:window-width="640"
+     inkscape:window-height="750"
+     inkscape:window-width="1280"
      inkscape:pageshadow="2"
      inkscape:pageopacity="0.0"
      guidetolerance="10.0"
@@ -41,7 +41,13 @@
      bordercolor="#666666"
      pagecolor="#ffffff"
      id="base"
-     showgrid="false" />
+     showgrid="false"
+     inkscape:zoom="2"
+     inkscape:cx="171.15975"
+     inkscape:cy="74.88837"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:current-layer="svg2" />
   <defs
      id="defs4">
     <inkscape:perspective
@@ -193,6 +199,12 @@
            id="path73" />
       </glyph>
     </font>
+    <desc
+       id="desc218">Slide</desc>
+    <desc
+       id="desc222">Group</desc>
+    <desc
+       id="desc330">Drawing</desc>
   </defs>
   <defs
      id="defs75">
@@ -468,317 +480,420 @@
     </font>
   </defs>
   <g
-     transform="matrix(8.1825155,0,0,8.1825155,-45981.093,-23912.302)"
-     visibility="visible"
-     id="Slide_13"
-     style="visibility:visible">
+     style="visibility:visible"
+     id="g224"
+     transform="matrix(8.1825155,0,0,8.1825155,-45981.093,-23912.302)">
     <desc
-       id="desc218">Slide</desc>
+       id="desc226">Drawing</desc>
     <g
-       id="g220">
+       id="g228">
+      <g
+         id="g230" />
+    </g>
+  </g>
+  <path
+     style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     d="M 7631.1811,20886.97 L -8736.6522,37705.782"
+     id="path5540"
+     inkscape:connector-type="polyline"
+     inkscape:connection-start="#g260" />
+  <g
+     id="g3417">
+    <g
+       transform="matrix(8.1825155,0,0,8.1825155,-45981.093,-23912.302)"
+       id="g232"
+       style="visibility:visible">
       <desc
-         id="desc222">Group</desc>
+         id="desc234">Drawing</desc>
       <g
-         id="g224">
-        <desc
-           id="desc226">Drawing</desc>
+         id="g236">
         <g
-           id="g228">
-          <g
-             id="g230" />
+           id="g238"
+           style="fill:#000000;stroke:none">
+          <path
+             id="path240"
+             d="M 4320,5475 L 3394,5475 L 3394,5446 L 3394,5418 L 4320,5418 L 4320,5446 L 4320,5475 z" />
+          <path
+             id="path242"
+             d="M 3394,5446 L 3394,5475 L 3366,5475 L 3366,5446 L 3394,5446 z" />
+          <path
+             id="path244"
+             d="M 3366,5446 L 3366,4604 L 3394,4604 L 3423,4604 L 3423,5446 L 3394,5446 L 3366,5446 z" />
+          <path
+             id="path246"
+             d="M 3394,4604 L 3366,4604 L 3366,4576 L 3394,4576 L 3394,4604 z" />
+          <path
+             id="path248"
+             d="M 3394,4576 L 5247,4576 L 5247,4604 L 5247,4633 L 3394,4633 L 3394,4604 L 3394,4576 z" />
+          <path
+             id="path250"
+             d="M 5247,4604 L 5247,4576 L 5276,4576 L 5276,4604 L 5247,4604 z" />
+          <path
+             id="path252"
+             d="M 5276,4604 L 5276,5446 L 5247,5446 L 5219,5446 L 5219,4604 L 5247,4604 L 5276,4604 z" />
+          <path
+             id="path254"
+             d="M 5247,5446 L 5276,5446 L 5276,5475 L 5247,5475 L 5247,5446 z" />
+          <path
+             id="path256"
+             d="M 5247,5475 L 4320,5475 L 4320,5446 L 4320,5418 L 5247,5418 L 5247,5446 L 5247,5475 z" />
         </g>
+        <g
+           id="g258" />
+      </g>
+    </g>
+    <g
+       transform="matrix(8.1825155,0,0,8.1825155,-45981.093,-23912.302)"
+       id="g260"
+       style="visibility:visible">
+      <desc
+         id="desc262">Drawing</desc>
+      <g
+         id="g264">
+        <g
+           id="g266"
+           style="fill:#000000;stroke:none">
+          <path
+             id="path268"
+             d="M 6989,5475 L 6063,5475 L 6063,5446 L 6063,5418 L 6989,5418 L 6989,5446 L 6989,5475 z" />
+          <path
+             id="path270"
+             d="M 6063,5446 L 6063,5475 L 6035,5475 L 6035,5446 L 6063,5446 z" />
+          <path
+             id="path272"
+             d="M 6035,5446 L 6035,4604 L 6063,4604 L 6092,4604 L 6092,5446 L 6063,5446 L 6035,5446 z" />
+          <path
+             id="path274"
+             d="M 6063,4604 L 6035,4604 L 6035,4576 L 6063,4576 L 6063,4604 z" />
+          <path
+             id="path276"
+             d="M 6063,4576 L 7915,4576 L 7915,4604 L 7915,4633 L 6063,4633 L 6063,4604 L 6063,4576 z" />
+          <path
+             id="path278"
+             d="M 7915,4604 L 7915,4576 L 7944,4576 L 7944,4604 L 7915,4604 z" />
+          <path
+             id="path280"
+             d="M 7944,4604 L 7944,5446 L 7915,5446 L 7887,5446 L 7887,4604 L 7915,4604 L 7944,4604 z" />
+          <path
+             id="path282"
+             d="M 7915,5446 L 7944,5446 L 7944,5475 L 7915,5475 L 7915,5446 z" />
+          <path
+             id="path284"
+             d="M 7915,5475 L 6989,5475 L 6989,5446 L 6989,5418 L 7915,5418 L 7915,5446 L 7915,5475 z" />
+        </g>
+        <g
+           id="g286" />
+      </g>
+    </g>
+    <g
+       transform="matrix(8.1825155,0,0,8.1825155,-45981.093,-23912.302)"
+       id="g288"
+       style="visibility:visible;stroke:#000000;stroke-opacity:1;stroke-width:26.15069252;stroke-miterlimit:4;stroke-dasharray:none">
+      <desc
+         style="stroke:url(#Strips1_1)"
+         id="desc290">Drawing</desc>
+      <g
+         style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069252;stroke-miterlimit:4;stroke-dasharray:none"
+         id="g292">
+        <g
+           id="g294"
+           style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:26.15069252;stroke-miterlimit:4;stroke-dasharray:none">
+          <path
+             id="path296"
+             d="M 5654,5865 L 2777,5865 L 2777,3973 L 8532,3973 L 8532,5865 L 5654,5865"
+             style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:26.15069252;stroke-miterlimit:4;stroke-dasharray:none" />
+        </g>
+        <g
+           style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069252;stroke-miterlimit:4;stroke-dasharray:none"
+           id="g298" />
+      </g>
+    </g>
+    <g
+       transform="matrix(8.1825155,0,0,8.1825155,-45981.093,-23912.302)"
+       id="g300"
+       style="visibility:visible">
+      <desc
+         id="desc302">Drawing</desc>
+      <g
+         id="g304">
+        <g
+           id="g306"
+           style="fill:#000000;stroke:none">
+          <path
+             id="path308"
+             d="M 10070,5475 L 9349,5475 L 9349,5446 L 9349,5418 L 10070,5418 L 10070,5446 L 10070,5475 z" />
+          <path
+             id="path310"
+             d="M 9349,5446 L 9349,5475 L 9321,5475 L 9321,5446 L 9349,5446 z" />
+          <path
+             id="path312"
+             d="M 9321,5446 L 9321,4604 L 9349,4604 L 9378,4604 L 9378,5446 L 9349,5446 L 9321,5446 z" />
+          <path
+             id="path314"
+             d="M 9349,4604 L 9321,4604 L 9321,4576 L 9349,4576 L 9349,4604 z" />
+          <path
+             id="path316"
+             d="M 9349,4576 L 10791,4576 L 10791,4604 L 10791,4633 L 9349,4633 L 9349,4604 L 9349,4576 z" />
+          <path
+             id="path318"
+             d="M 10791,4604 L 10791,4576 L 10820,4576 L 10820,4604 L 10791,4604 z" />
+          <path
+             id="path320"
+             d="M 10820,4604 L 10820,5446 L 10791,5446 L 10763,5446 L 10763,4604 L 10791,4604 L 10820,4604 z" />
+          <path
+             id="path322"
+             d="M 10791,5446 L 10820,5446 L 10820,5475 L 10791,5475 L 10791,5446 z" />
+          <path
+             id="path324"
+             d="M 10791,5475 L 10070,5475 L 10070,5446 L 10070,5418 L 10791,5418 L 10791,5446 L 10791,5475 z" />
+        </g>
+        <g
+           id="g326" />
+      </g>
+    </g>
+    <g
+       transform="matrix(8.1825155,0,0,8.1825155,-45981.093,-23912.302)"
+       id="g332"
+       style="visibility:visible;stroke:#000000;stroke-opacity:1;stroke-width:26.15069252;stroke-miterlimit:4;stroke-dasharray:none">
+      <g
+         style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:26.15069252;stroke-miterlimit:4;stroke-dasharray:none"
+         id="g334">
+        <path
+           style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:26.15069252;stroke-miterlimit:4;stroke-dasharray:none"
+           d="M 6783,6284 L 1957,6284 L 1957,2924 L 11610,2924 L 11610,6284 L 6783,6284"
+           id="path336" />
       </g>
       <g
-         id="g232">
-        <desc
-           id="desc234">Drawing</desc>
-        <g
-           id="g236">
-          <g
-             style="fill:#000000;stroke:none"
-             id="g238">
-            <path
-               d="M 4320,5475 L 3394,5475 L 3394,5446 L 3394,5418 L 4320,5418 L 4320,5446 L 4320,5475 z"
-               id="path240" />
-            <path
-               d="M 3394,5446 L 3394,5475 L 3366,5475 L 3366,5446 L 3394,5446 z"
-               id="path242" />
-            <path
-               d="M 3366,5446 L 3366,4604 L 3394,4604 L 3423,4604 L 3423,5446 L 3394,5446 L 3366,5446 z"
-               id="path244" />
-            <path
-               d="M 3394,4604 L 3366,4604 L 3366,4576 L 3394,4576 L 3394,4604 z"
-               id="path246" />
-            <path
-               d="M 3394,4576 L 5247,4576 L 5247,4604 L 5247,4633 L 3394,4633 L 3394,4604 L 3394,4576 z"
-               id="path248" />
-            <path
-               d="M 5247,4604 L 5247,4576 L 5276,4576 L 5276,4604 L 5247,4604 z"
-               id="path250" />
-            <path
-               d="M 5276,4604 L 5276,5446 L 5247,5446 L 5219,5446 L 5219,4604 L 5247,4604 L 5276,4604 z"
-               id="path252" />
-            <path
-               d="M 5247,5446 L 5276,5446 L 5276,5475 L 5247,5475 L 5247,5446 z"
-               id="path254" />
-            <path
-               d="M 5247,5475 L 4320,5475 L 4320,5446 L 4320,5418 L 5247,5418 L 5247,5446 L 5247,5475 z"
-               id="path256" />
-          </g>
-          <g
-             id="g258" />
-        </g>
-      </g>
+         style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069252;stroke-miterlimit:4;stroke-dasharray:none"
+         id="g338" />
+    </g>
+    <g
+       transform="matrix(8.1825155,0,0,8.1825155,-45981.093,-23912.302)"
+       id="g340"
+       style="visibility:visible">
+      <desc
+         id="desc342">Drawing</desc>
       <g
-         id="g260">
-        <desc
-           id="desc262">Drawing</desc>
+         id="g344">
         <g
-           id="g264">
+           id="g346">
           <g
-             style="fill:#000000;stroke:none"
-             id="g266">
-            <path
-               d="M 6989,5475 L 6063,5475 L 6063,5446 L 6063,5418 L 6989,5418 L 6989,5446 L 6989,5475 z"
-               id="path268" />
-            <path
-               d="M 6063,5446 L 6063,5475 L 6035,5475 L 6035,5446 L 6063,5446 z"
-               id="path270" />
-            <path
-               d="M 6035,5446 L 6035,4604 L 6063,4604 L 6092,4604 L 6092,5446 L 6063,5446 L 6035,5446 z"
-               id="path272" />
-            <path
-               d="M 6063,4604 L 6035,4604 L 6035,4576 L 6063,4576 L 6063,4604 z"
-               id="path274" />
-            <path
-               d="M 6063,4576 L 7915,4576 L 7915,4604 L 7915,4633 L 6063,4633 L 6063,4604 L 6063,4576 z"
-               id="path276" />
-            <path
-               d="M 7915,4604 L 7915,4576 L 7944,4576 L 7944,4604 L 7915,4604 z"
-               id="path278" />
-            <path
-               d="M 7944,4604 L 7944,5446 L 7915,5446 L 7887,5446 L 7887,4604 L 7915,4604 L 7944,4604 z"
-               id="path280" />
-            <path
-               d="M 7915,5446 L 7944,5446 L 7944,5475 L 7915,5475 L 7915,5446 z"
-               id="path282" />
-            <path
-               d="M 7915,5475 L 6989,5475 L 6989,5446 L 6989,5418 L 7915,5418 L 7915,5446 L 7915,5475 z"
-               id="path284" />
-          </g>
-          <g
-             id="g286" />
-        </g>
-      </g>
-      <g
-         id="g288">
-        <desc
-           id="desc290">Drawing</desc>
-        <g
-           id="g292">
-          <g
-             style="fill:none;stroke:#000000"
-             id="g294">
-            <path
-               style="fill:none"
-               d="M 5654,5865 L 2777,5865 L 2777,3973 L 8532,3973 L 8532,5865 L 5654,5865"
-               id="path296" />
-          </g>
-          <g
-             id="g298" />
-        </g>
-      </g>
-      <g
-         id="g300">
-        <desc
-           id="desc302">Drawing</desc>
-        <g
-           id="g304">
-          <g
-             style="fill:#000000;stroke:none"
-             id="g306">
-            <path
-               d="M 10070,5475 L 9349,5475 L 9349,5446 L 9349,5418 L 10070,5418 L 10070,5446 L 10070,5475 z"
-               id="path308" />
-            <path
-               d="M 9349,5446 L 9349,5475 L 9321,5475 L 9321,5446 L 9349,5446 z"
-               id="path310" />
-            <path
-               d="M 9321,5446 L 9321,4604 L 9349,4604 L 9378,4604 L 9378,5446 L 9349,5446 L 9321,5446 z"
-               id="path312" />
-            <path
-               d="M 9349,4604 L 9321,4604 L 9321,4576 L 9349,4576 L 9349,4604 z"
-               id="path314" />
-            <path
-               d="M 9349,4576 L 10791,4576 L 10791,4604 L 10791,4633 L 9349,4633 L 9349,4604 L 9349,4576 z"
-               id="path316" />
-            <path
-               d="M 10791,4604 L 10791,4576 L 10820,4576 L 10820,4604 L 10791,4604 z"
-               id="path318" />
-            <path
-               d="M 10820,4604 L 10820,5446 L 10791,5446 L 10763,5446 L 10763,4604 L 10791,4604 L 10820,4604 z"
-               id="path320" />
-            <path
-               d="M 10791,5446 L 10820,5446 L 10820,5475 L 10791,5475 L 10791,5446 z"
-               id="path322" />
-            <path
-               d="M 10791,5475 L 10070,5475 L 10070,5446 L 10070,5418 L 10791,5418 L 10791,5446 L 10791,5475 z"
-               id="path324" />
-          </g>
-          <g
-             id="g326" />
-        </g>
-      </g>
-      <g
-         id="g328">
-        <desc
-           id="desc330">Drawing</desc>
-        <g
-           id="g332">
-          <g
-             style="fill:none;stroke:#000000"
-             id="g334">
-            <path
-               style="fill:none"
-               d="M 6783,6284 L 1957,6284 L 1957,2924 L 11610,2924 L 11610,6284 L 6783,6284"
-               id="path336" />
-          </g>
-          <g
-             id="g338" />
-        </g>
-      </g>
-      <g
-         id="g340">
-        <desc
-           id="desc342">Drawing</desc>
-        <g
-           id="g344">
-          <g
-             id="g346">
+             id="g348"
+             style="font-size:353px;font-weight:400;font-family:Arial embedded">
             <g
-               style="font-size:353px;font-weight:400;font-family:Arial embedded"
-               id="g348">
-              <g
-                 style="fill:#000000;stroke:none"
-                 id="g350">
-                <text
-                   id="text352">
-                  <tspan
-                     x="7168 7346 7422 7723 7917 7994 8188 8286 8586 8781 8976 9170 9247 9441"
-                     y="3524"
-                     id="tspan354">simple modules</tspan>
-                </text>
-              </g>
+               id="g350"
+               style="fill:#000000;stroke:none">
+              <text
+                 id="text352">
+                <tspan
+                   id="tspan354"
+                   y="3524"
+                   x="7168 7346 7422 7723 7917 7994 8188 8286 8586 8781 8976 9170 9247 9441">simple modules</tspan>
+              </text>
             </g>
           </g>
-        </g>
-      </g>
-      <g
-         id="g356">
-        <desc
-           id="desc358">Drawing</desc>
-        <g
-           id="g360">
-          <g
-             id="g362">
-            <g
-               style="font-size:353px;font-weight:400;font-family:Arial embedded"
-               id="g364">
-              <g
-                 style="fill:#000000;stroke:none"
-                 id="g366">
-                <text
-                   id="text368">
-                  <tspan
-                     x="2857 3035 3230 3530 3725 3920 4114 4309 4504 4601 4902 5096 5291 5486 5562"
-                     y="4366"
-                     id="tspan370">compound module</tspan>
-                </text>
-              </g>
-            </g>
-          </g>
-        </g>
-      </g>
-      <g
-         id="g372">
-        <desc
-           id="desc374">Drawing</desc>
-        <g
-           id="g376">
-          <g
-             id="g378">
-            <g
-               style="font-size:353px;font-weight:400;font-family:Arial embedded"
-               id="g380">
-              <g
-                 style="fill:#000000;stroke:none"
-                 id="g382">
-                <text
-                   id="text384">
-                  <tspan
-                     x="2606 2801 2995 3093 3343 3537 3656"
-                     y="3316"
-                     id="tspan386">network</tspan>
-                </text>
-              </g>
-            </g>
-          </g>
-        </g>
-      </g>
-      <g
-         id="g388">
-        <desc
-           id="desc390">Drawing</desc>
-        <g
-           id="g392">
-          <g
-             style="fill:none;stroke:#000000"
-             id="g394">
-            <path
-               style="fill:none"
-               d="M 5036,4810 L 7501,3553"
-               id="path396" />
-          </g>
-          <g
-             id="g398" />
-        </g>
-      </g>
-      <g
-         id="g400">
-        <desc
-           id="desc402">Drawing</desc>
-        <g
-           id="g404">
-          <g
-             style="fill:none;stroke:#000000"
-             id="g406">
-            <path
-               style="fill:none"
-               d="M 7910,3554 L 7293,4811"
-               id="path408" />
-          </g>
-          <g
-             id="g410" />
-        </g>
-      </g>
-      <g
-         id="g412">
-        <desc
-           id="desc414">Drawing</desc>
-        <g
-           id="g416">
-          <g
-             style="fill:none;stroke:#000000"
-             id="g418">
-            <path
-               style="fill:none"
-               d="M 8939,3554 L 9966,4811"
-               id="path420" />
-          </g>
-          <g
-             id="g422" />
         </g>
       </g>
     </g>
+    <g
+       transform="matrix(8.1825155,0,0,8.1825155,-45981.093,-23912.302)"
+       id="g356"
+       style="visibility:visible">
+      <desc
+         id="desc358">Drawing</desc>
+      <g
+         id="g360">
+        <g
+           id="g362">
+          <g
+             id="g364"
+             style="font-size:353px;font-weight:400;font-family:Arial embedded">
+            <g
+               id="g366"
+               style="fill:#000000;stroke:none">
+              <text
+                 id="text368">
+                <tspan
+                   id="tspan370"
+                   y="4366"
+                   x="2857 3035 3230 3530 3725 3920 4114 4309 4504 4601 4902 5096 5291 5486 5562">compound module</tspan>
+              </text>
+            </g>
+          </g>
+        </g>
+      </g>
+    </g>
+    <g
+       transform="matrix(8.1825155,0,0,8.1825155,-45981.093,-23912.302)"
+       id="g372"
+       style="visibility:visible">
+      <desc
+         id="desc374">Drawing</desc>
+      <g
+         id="g376">
+        <g
+           id="g378">
+          <g
+             id="g380"
+             style="font-size:353px;font-weight:400;font-family:Arial embedded">
+            <g
+               id="g382"
+               style="fill:#000000;stroke:none">
+              <text
+                 id="text384">
+                <tspan
+                   id="tspan386"
+                   y="3316"
+                   x="2606 2801 2995 3093 3343 3537 3656">network</tspan>
+              </text>
+            </g>
+          </g>
+        </g>
+      </g>
+    </g>
+    <g
+       transform="matrix(7.4239618,0,0,7.2737812,-40280.276,-20694.474)"
+       id="g388"
+       style="stroke:#000000;stroke-width:29.11870456;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;visibility:visible">
+      <desc
+         id="desc390">Drawing</desc>
+      <g
+         style="stroke:#000000;stroke-width:29.11870456;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         id="g392">
+        <g
+           id="g394"
+           style="fill:none;stroke:#000000;stroke-width:29.11870456;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1">
+          <path
+             id="path396"
+             d="M 5036,4810 L 7501,3553"
+             style="fill:none;stroke:#000000;stroke-width:29.11870456;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+        </g>
+        <g
+           style="stroke:#000000;stroke-width:29.11870456;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           id="g398" />
+      </g>
+    </g>
+    <g
+       transform="matrix(8.6780684,0,0,6.6893481,-49893.55,-18612.952)"
+       id="g400"
+       style="stroke:#000000;stroke-width:28.08449366;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;visibility:visible">
+      <desc
+         id="desc402">Drawing</desc>
+      <g
+         style="stroke:#000000;stroke-width:28.08449366;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         id="g404">
+        <g
+           id="g406"
+           style="fill:none;stroke:#000000;stroke-width:28.08449366;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1">
+          <path
+             id="path408"
+             d="M 7910,3554 L 7293,4811"
+             style="fill:none;stroke:#000000;stroke-width:28.08449366;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+        </g>
+        <g
+           style="stroke:#000000;stroke-width:28.08449366;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           id="g410" />
+      </g>
+    </g>
+    <path
+       inkscape:connection-start="#g260"
+       inkscape:connector-type="polyline"
+       id="path5532"
+       d="M 3400.388,17358.645 L -2916.2053,17479.729"
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline" />
+    <path
+       inkscape:connector-type="polyline"
+       id="path5534"
+       d="M 18910.471,17625.24 L 24003.362,17625.24"
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <path
+       inkscape:connection-start="#g232"
+       inkscape:connector-type="polyline"
+       id="path5536"
+       d="M -2810.1412,17037.683 L -3061.7164,17043.196"
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <path
+       inkscape:connection-end="#g232"
+       inkscape:connector-type="polyline"
+       id="path5538"
+       d="M 3631.7975,17043.196 L -2810.1412,17118.086"
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:213.97844686;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;stroke-miterlimit:4;stroke-dasharray:none" />
+    <path
+       transform="matrix(213.97845,0,0,213.97845,-29981.283,0)"
+       id="path2611"
+       d="M 56.611838,80.347082 L 56.611838,65.726496 L 90.6132,65.726496 L 124.61456,65.726496 L 124.61456,80.347082 L 124.61456,94.967668 L 90.6132,94.967668 L 56.611838,94.967668 L 56.611838,80.347082 z"
+       style="fill:#cccccc;stroke:#000000;stroke-width:1.99999997;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <path
+       transform="matrix(213.97845,0,0,213.97845,-29981.283,0)"
+       id="path2613"
+       d="M 158.61593,80.347082 L 158.61593,65.726496 L 192.61729,65.726496 L 226.61865,65.726496 L 226.61865,80.347082 L 226.61865,94.967668 L 192.61729,94.967668 L 158.61593,94.967668 L 158.61593,80.347082 z"
+       style="fill:#cccccc;stroke:#000000;stroke-width:1.99999997;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <path
+       transform="matrix(213.97845,0,0,213.97845,-29981.283,0)"
+       id="path2615"
+       d="M 284.42097,80.347082 L 284.42097,65.726496 L 310.60202,65.726496 L 336.78307,65.726496 L 336.78307,80.347082 L 336.78307,94.967668 L 310.60202,94.967668 L 284.42097,94.967668 L 284.42097,80.347082 z"
+       style="fill:#cccccc;stroke:#000000;stroke-width:1.99999997;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <g
+       transform="matrix(7.2219044,0,0,6.7031083,-37131.641,-18704.647)"
+       id="g2617"
+       style="fill-rule:evenodd;stroke:#000000;stroke-width:30.75431407;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;visibility:visible">
+      <desc
+         id="desc2619">Drawing</desc>
+      <g
+         style="stroke:#000000;stroke-width:30.75431407;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         id="g2621">
+        <g
+           id="g2623"
+           style="fill:none;stroke:#000000;stroke-width:30.75431407;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1">
+          <path
+             id="path2625"
+             d="M 8939,3554 L 9966,4811"
+             style="fill:none;stroke:#000000;stroke-width:30.75431407;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+        </g>
+        <g
+           style="stroke:#000000;stroke-width:30.75431407;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           id="g2627" />
+      </g>
+    </g>
+    <path
+       inkscape:connector-type="polyline"
+       id="path3405"
+       d="M 19011.083,17263.319 L 30153.1,17355.902"
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:213.97844686;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <rect
+       y="16024.617"
+       x="22839.273"
+       height="2328.1787"
+       width="1891.6453"
+       id="rect3407"
+       style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <rect
+       y="16063.14"
+       x="17780.615"
+       height="2328.1787"
+       width="1891.6453"
+       id="rect3409"
+       style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <rect
+       y="16170.127"
+       x="29567.021"
+       height="2328.1787"
+       width="1891.6453"
+       id="rect3411"
+       style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <rect
+       y="15733.596"
+       x="2831.4868"
+       height="2328.1787"
+       width="1891.6453"
+       id="rect3413"
+       style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <rect
+       y="15879.104"
+       x="-4191.5713"
+       height="2328.1787"
+       width="1891.6453"
+       id="rect3415"
+       style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
   </g>
 </svg>

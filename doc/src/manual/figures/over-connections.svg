@@ -15,7 +15,7 @@
    inkscape:version="0.46"
    width="493.7251"
    height="102.89371"
-   sodipodi:docname="usmanFig3.svg"
+   sodipodi:docname="over-connections.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    style="fill-rule:evenodd">
   <metadata
@@ -30,8 +30,8 @@
     </rdf:RDF>
   </metadata>
   <sodipodi:namedview
-     inkscape:window-height="667"
-     inkscape:window-width="640"
+     inkscape:window-height="750"
+     inkscape:window-width="1280"
      inkscape:pageshadow="2"
      inkscape:pageopacity="0.0"
      guidetolerance="10.0"
@@ -42,11 +42,11 @@
      pagecolor="#ffffff"
      id="base"
      showgrid="false"
-     inkscape:zoom="0.43901235"
-     inkscape:cx="372.04724"
-     inkscape:cy="526.18109"
-     inkscape:window-x="120"
-     inkscape:window-y="63"
+     inkscape:zoom="1.6912245"
+     inkscape:cx="47.633637"
+     inkscape:cy="51.446854"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
      inkscape:current-layer="svg2" />
   <defs
      id="defs4">
@@ -191,6 +191,8 @@
            id="path69" />
       </glyph>
     </font>
+    <desc
+       id="desc226">Slide</desc>
   </defs>
   <defs
      id="defs71">
@@ -490,118 +492,134 @@
     </font>
   </defs>
   <g
-     transform="matrix(10.227663,0,0,10.227663,-78126.653,-25184.245)"
-     visibility="visible"
-     id="Slide_14"
-     style="visibility:visible">
+     style="visibility:visible"
+     id="g228"
+     transform="matrix(10.227663,0,0,10.227663,-78126.653,-25184.245)">
     <desc
-       id="desc226">Slide</desc>
+       id="desc230">Drawing</desc>
     <g
-       id="g228">
-      <desc
-         id="desc230">Drawing</desc>
+       id="g232">
       <g
-         id="g232">
-        <g
-           id="g234" />
-      </g>
+         id="g234" />
     </g>
+  </g>
+  <g
+     id="g4587">
     <g
-       id="g236">
+       transform="matrix(10.227663,0,0,10.227663,-78126.653,-25184.245)"
+       id="g236"
+       style="visibility:visible;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none">
       <desc
          id="desc238">Group</desc>
       <g
+         style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
          id="g240">
         <desc
            id="desc242">Drawing</desc>
         <g
+           style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
            id="g244">
           <g
-             style="fill:#ffffff;stroke:none"
+             style="fill:#ffffff;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
              id="g246">
             <path
+               style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
                d="M 2508,2549 L 7381,2549 L 7381,4485 L 2508,4485 L 2508,2549 z"
                id="path248" />
           </g>
           <g
-             style="fill:none;stroke:#000000"
+             style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
              id="g250">
             <path
-               style="fill:none"
+               style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
                d="M 4944,4485 L 2508,4485 L 2508,2549 L 7381,2549 L 7381,4485 L 4944,4485"
                id="path252" />
           </g>
           <g
+             style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
              id="g254" />
         </g>
       </g>
       <g
+         style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
          id="g256">
         <desc
            id="desc258">Drawing</desc>
         <g
+           style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
            id="g260">
           <g
-             style="fill:#ffffff;stroke:none"
+             style="fill:#ffffff;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
              id="g262">
             <path
+               style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
                d="M 3051,3378 L 4404,3378 L 4404,4070 L 3051,4070 L 3051,3378 z"
                id="path264" />
           </g>
           <g
-             style="fill:none;stroke:#000000"
+             style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
              id="g266">
             <path
-               style="fill:none"
+               style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
                d="M 3727,4070 L 3051,4070 L 3051,3378 L 4404,3378 L 4404,4070 L 3727,4070"
                id="path268" />
           </g>
           <g
+             style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
              id="g270" />
         </g>
       </g>
       <g
+         style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
          id="g272">
         <desc
            id="desc274">Drawing</desc>
         <g
+           style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
            id="g276">
           <g
-             style="fill:#ffffff;stroke:none"
+             style="fill:#ffffff;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
              id="g278">
             <path
+               style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
                d="M 5349,3378 L 6707,3378 L 6707,4070 L 5349,4070 L 5349,3378 z"
                id="path280" />
           </g>
           <g
-             style="fill:none;stroke:#000000"
+             style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
              id="g282">
             <path
-               style="fill:none"
+               style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
                d="M 6028,4070 L 5349,4070 L 5349,3378 L 6707,3378 L 6707,4070 L 6028,4070"
                id="path284" />
           </g>
           <g
+             style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
              id="g286" />
         </g>
       </g>
       <g
+         style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
          id="g288">
         <desc
            id="desc290">Drawing</desc>
         <g
+           style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
            id="g292">
           <g
+             style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
              id="g294">
             <g
-               style="font-size:388px;font-weight:400;font-family:Arial embedded"
+               style="font-size:388px;font-weight:400;font-family:Arial embedded;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
                id="g296">
               <g
-                 style="fill:#000000;stroke:none"
+                 style="fill:#000000;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
                  id="g298">
                 <text
+                   style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
                    id="text300">
                   <tspan
+                     style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069314999999861;stroke-miterlimit:4;stroke-dasharray:none;-inkscape-font-specification:Arial;font-family:Arial;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal"
                      x="3490 3706 3922 4053 4269 4485 4595 4705 5031 5247 5463 5679 5763"
                      y="3135"
                      id="tspan302">parent module</tspan>
@@ -612,22 +630,27 @@
         </g>
       </g>
       <g
+         style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
          id="g304">
         <desc
            id="desc306">Drawing</desc>
         <g
+           style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
            id="g308">
           <g
+             style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
              id="g310">
             <g
-               style="font-size:388px;font-weight:400;font-family:Arial embedded"
+               style="font-size:388px;font-weight:400;font-family:Arial embedded;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
                id="g312">
               <g
-                 style="fill:#000000;stroke:none"
+                 style="fill:#000000;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
                  id="g314">
                 <text
+                   style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
                    id="text316">
                   <tspan
+                     style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
                      x="3446 3641"
                      y="3823"
                      id="tspan318">s1</tspan>
@@ -638,22 +661,27 @@
         </g>
       </g>
       <g
+         style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
          id="g320">
         <desc
            id="desc322">Drawing</desc>
         <g
+           style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
            id="g324">
           <g
+             style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
              id="g326">
             <g
-               style="font-size:388px;font-weight:400;font-family:Arial embedded"
+               style="font-size:388px;font-weight:400;font-family:Arial embedded;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
                id="g328">
               <g
-                 style="fill:#000000;stroke:none"
+                 style="fill:#000000;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
                  id="g330">
                 <text
+                   style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
                    id="text332">
                   <tspan
+                     style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
                      x="5744 5939"
                      y="3823"
                      id="tspan334">s2</tspan>
@@ -664,195 +692,229 @@
         </g>
       </g>
       <g
+         style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
          id="g336">
         <desc
            id="desc338">Drawing</desc>
         <g
+           style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
            id="g340">
           <g
-             style="fill:#ffffff;stroke:none"
+             style="fill:#ffffff;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
              id="g342">
             <path
+               style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
                d="M 4268,3514 L 4541,3514 L 4541,3791 L 4268,3791 L 4268,3514 z"
                id="path344" />
           </g>
           <g
-             style="fill:none;stroke:#000000"
+             style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
              id="g346">
             <path
-               style="fill:none"
+               style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
                d="M 4404,3791 L 4268,3791 L 4268,3514 L 4541,3514 L 4541,3791 L 4404,3791"
                id="path348" />
           </g>
           <g
+             style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
              id="g350" />
         </g>
       </g>
       <g
+         style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
          id="g352">
         <desc
            id="desc354">Drawing</desc>
         <g
+           style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
            id="g356">
           <g
-             style="fill:#ffffff;stroke:none"
+             style="fill:#ffffff;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
              id="g358">
             <path
+               style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
                d="M 5212,3514 L 5486,3514 L 5486,3791 L 5212,3791 L 5212,3514 z"
                id="path360" />
           </g>
           <g
-             style="fill:none;stroke:#000000"
+             style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
              id="g362">
             <path
-               style="fill:none"
+               style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
                d="M 5349,3791 L 5212,3791 L 5212,3514 L 5486,3514 L 5486,3791 L 5349,3791"
                id="path364" />
           </g>
           <g
+             style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
              id="g366" />
         </g>
       </g>
       <g
+         style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
          id="g368">
         <desc
            id="desc370">Drawing</desc>
         <g
+           style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
            id="g372">
           <g
-             style="fill:none;stroke:#000000"
+             style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
              id="g374">
             <path
-               style="fill:none"
+               style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
                d="M 4538,3651 L 5151,3656"
                id="path376" />
           </g>
           <g
+             style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
              id="g378" />
         </g>
       </g>
       <g
+         style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
          id="g380">
         <desc
            id="desc382">Drawing</desc>
         <g
+           style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
            id="g384">
           <g
-             style="fill:#000000;stroke:none"
+             style="fill:#000000;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
              id="g386">
             <path
+               style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
                d="M 5124,3470 L 5124,3837 L 5213,3651 L 5124,3470 L 5124,3470 z"
                id="path388" />
           </g>
           <g
-             style="fill:none;stroke:#000000"
+             style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
              id="g390">
             <path
-               style="fill:none"
+               style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
                d="M 5124,3470 L 5124,3837 L 5213,3651 L 5124,3470"
                id="path392" />
           </g>
           <g
+             style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
              id="g394" />
         </g>
       </g>
     </g>
     <g
-       id="g396">
+       transform="matrix(10.227663,0,0,10.227663,-78126.653,-25184.245)"
+       id="g396"
+       style="visibility:visible;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none">
       <desc
          id="desc398">Group</desc>
       <g
+         style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
          id="g400">
         <desc
            id="desc402">Drawing</desc>
         <g
+           style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
            id="g404">
           <g
-             style="fill:#ffffff;stroke:none"
+             style="fill:#ffffff;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
              id="g406">
             <path
+               style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
                d="M 8758,2464 L 13622,2464 L 13622,4391 L 8758,4391 L 8758,2464 z"
                id="path408" />
           </g>
           <g
-             style="fill:none;stroke:#000000"
+             style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
              id="g410">
             <path
-               style="fill:none"
+               style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
                d="M 11190,4391 L 8758,4391 L 8758,2464 L 13622,2464 L 13622,4391 L 11190,4391"
                id="path412" />
           </g>
           <g
+             style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
              id="g414" />
         </g>
       </g>
       <g
+         style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
          id="g416">
         <desc
            id="desc418">Drawing</desc>
         <g
+           style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
            id="g420">
           <g
-             style="fill:#ffffff;stroke:none"
+             style="fill:#ffffff;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
              id="g422">
             <path
+               style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
                d="M 9299,3290 L 10648,3290 L 10648,3986 L 9299,3986 L 9299,3290 z"
                id="path424" />
           </g>
           <g
-             style="fill:none;stroke:#000000"
+             style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
              id="g426">
             <path
-               style="fill:none"
+               style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
                d="M 9973,3986 L 9299,3986 L 9299,3290 L 10648,3290 L 10648,3986 L 9973,3986"
                id="path428" />
           </g>
           <g
+             style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
              id="g430" />
         </g>
       </g>
       <g
+         style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
          id="g432">
         <desc
            id="desc434">Drawing</desc>
         <g
+           style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
            id="g436">
           <g
-             style="fill:#ffffff;stroke:none"
+             style="fill:#ffffff;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
              id="g438">
             <path
+               style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
                d="M 11593,3290 L 12947,3290 L 12947,3982 L 11593,3982 L 11593,3290 z"
                id="path440" />
           </g>
           <g
-             style="fill:none;stroke:#000000"
+             style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
              id="g442">
             <path
-               style="fill:none"
+               style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
                d="M 12270,3982 L 11593,3982 L 11593,3290 L 12947,3290 L 12947,3982 L 12270,3982"
                id="path444" />
           </g>
           <g
+             style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
              id="g446" />
         </g>
       </g>
       <g
+         style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
          id="g448">
         <desc
            id="desc450">Drawing</desc>
         <g
+           style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
            id="g452">
           <g
+             style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
              id="g454">
             <g
-               style="font-size:388px;font-weight:400;font-family:Arial embedded"
+               style="font-size:388px;font-weight:400;font-family:Arial embedded;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
                id="g456">
               <g
-                 style="fill:#000000;stroke:none"
+                 style="fill:#000000;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
                  id="g458">
                 <text
+                   style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
                    id="text460">
                   <tspan
+                     style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069314999999861;stroke-miterlimit:4;stroke-dasharray:none;-inkscape-font-specification:Arial;font-family:Arial;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal"
                      x="9734 9950 10166 10297 10513 10729 10839 10949 11275 11491 11707 11923 12007"
                      y="3043"
                      id="tspan462">parent module</tspan>
@@ -863,22 +925,27 @@
         </g>
       </g>
       <g
+         style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
          id="g464">
         <desc
            id="desc466">Drawing</desc>
         <g
+           style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
            id="g468">
           <g
+             style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
              id="g470">
             <g
-               style="font-size:388px;font-weight:400;font-family:Arial embedded"
+               style="font-size:388px;font-weight:400;font-family:Arial embedded;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
                id="g472">
               <g
-                 style="fill:#000000;stroke:none"
+                 style="fill:#000000;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
                  id="g474">
                 <text
+                   style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
                    id="text476">
                   <tspan
+                     style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
                      x="9691 9886"
                      y="3731"
                      id="tspan478">s1</tspan>
@@ -889,22 +956,27 @@
         </g>
       </g>
       <g
+         style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
          id="g480">
         <desc
            id="desc482">Drawing</desc>
         <g
+           style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
            id="g484">
           <g
+             style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
              id="g486">
             <g
-               style="font-size:388px;font-weight:400;font-family:Arial embedded"
+               style="font-size:388px;font-weight:400;font-family:Arial embedded;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
                id="g488">
               <g
-                 style="fill:#000000;stroke:none"
+                 style="fill:#000000;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
                  id="g490">
                 <text
+                   style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
                    id="text492">
                   <tspan
+                     style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
                      x="11992 12187"
                      y="3731"
                      id="tspan494">s2</tspan>
@@ -915,194 +987,226 @@
         </g>
       </g>
       <g
+         style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
          id="g496">
         <desc
            id="desc498">Drawing</desc>
         <g
+           style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
            id="g500">
           <g
-             style="fill:#ffffff;stroke:none"
+             style="fill:#ffffff;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
              id="g502">
             <path
+               style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
                d="M 9159,3426 L 9437,3426 L 9437,3704 L 9159,3704 L 9159,3426 z"
                id="path504" />
           </g>
           <g
-             style="fill:none;stroke:#000000"
+             style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
              id="g506">
             <path
-               style="fill:none"
+               style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
                d="M 9298,3704 L 9159,3704 L 9159,3426 L 9437,3426 L 9437,3704 L 9298,3704"
                id="path508" />
           </g>
           <g
+             style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
              id="g510" />
         </g>
       </g>
       <g
+         style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
          id="g512">
         <desc
            id="desc514">Drawing</desc>
         <g
+           style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
            id="g516">
           <g
-             style="fill:#ffffff;stroke:none"
+             style="fill:#ffffff;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
              id="g518">
             <path
+               style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
                d="M 12810,3426 L 13084,3426 L 13084,3704 L 12810,3704 L 12810,3426 z"
                id="path520" />
           </g>
           <g
-             style="fill:none;stroke:#000000"
+             style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
              id="g522">
             <path
-               style="fill:none"
+               style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
                d="M 12947,3704 L 12810,3704 L 12810,3426 L 13084,3426 L 13084,3704 L 12947,3704"
                id="path524" />
           </g>
           <g
+             style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
              id="g526" />
         </g>
       </g>
       <g
+         style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
          id="g528">
         <desc
            id="desc530">Drawing</desc>
         <g
+           style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
            id="g532">
           <g
-             style="fill:none;stroke:#000000"
+             style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
              id="g534">
             <path
-               style="fill:none"
+               style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
                d="M 13150,3563 L 13485,3567"
                id="path536" />
           </g>
           <g
+             style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
              id="g538" />
         </g>
       </g>
       <g
+         style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
          id="g540">
         <desc
            id="desc542">Drawing</desc>
         <g
+           style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
            id="g544">
           <g
-             style="fill:#000000;stroke:none"
+             style="fill:#000000;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
              id="g546">
             <path
+               style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
                d="M 13168,3745 L 13168,3382 L 13079,3563 L 13168,3745 L 13168,3745 z"
                id="path548" />
           </g>
           <g
-             style="fill:none;stroke:#000000"
+             style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
              id="g550">
             <path
-               style="fill:none"
+               style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
                d="M 13168,3745 L 13168,3382 L 13079,3563 L 13168,3745"
                id="path552" />
           </g>
           <g
+             style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
              id="g554" />
         </g>
       </g>
       <g
+         style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
          id="g556">
         <desc
            id="desc558">Drawing</desc>
         <g
+           style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
            id="g560">
           <g
-             style="fill:#ffffff;stroke:none"
+             style="fill:#ffffff;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
              id="g562">
             <path
+               style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
                d="M 13485,3426 L 13763,3426 L 13763,3704 L 13485,3704 L 13485,3426 z"
                id="path564" />
           </g>
           <g
-             style="fill:none;stroke:#000000"
+             style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
              id="g566">
             <path
-               style="fill:none"
+               style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
                d="M 13624,3704 L 13485,3704 L 13485,3426 L 13763,3426 L 13763,3704 L 13624,3704"
                id="path568" />
           </g>
           <g
+             style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
              id="g570" />
         </g>
       </g>
       <g
+         style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
          id="g572">
         <desc
            id="desc574">Drawing</desc>
         <g
+           style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
            id="g576">
           <g
-             style="fill:#ffffff;stroke:none"
+             style="fill:#ffffff;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
              id="g578">
             <path
+               style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
                d="M 8620,3426 L 8893,3426 L 8893,3704 L 8620,3704 L 8620,3426 z"
                id="path580" />
           </g>
           <g
-             style="fill:none;stroke:#000000"
+             style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
              id="g582">
             <path
-               style="fill:none"
+               style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
                d="M 8756,3704 L 8620,3704 L 8620,3426 L 8893,3426 L 8893,3704 L 8756,3704"
                id="path584" />
           </g>
           <g
+             style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
              id="g586" />
         </g>
       </g>
       <g
+         style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
          id="g588">
         <desc
            id="desc590">Drawing</desc>
         <g
+           style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
            id="g592">
           <g
-             style="fill:none;stroke:#000000"
+             style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
              id="g594">
             <path
-               style="fill:none"
+               style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
                d="M 8956,3563 L 9159,3567"
                id="path596" />
           </g>
           <g
+             style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
              id="g598" />
         </g>
       </g>
       <g
+         style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
          id="g600">
         <desc
            id="desc602">Drawing</desc>
         <g
+           style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
            id="g604">
           <g
-             style="fill:#000000;stroke:none"
+             style="fill:#000000;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
              id="g606">
             <path
+               style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
                d="M 8979,3745 L 8979,3382 L 8890,3563 L 8979,3745 L 8979,3745 z"
                id="path608" />
           </g>
           <g
-             style="fill:none;stroke:#000000"
+             style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
              id="g610">
             <path
-               style="fill:none"
+               style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
                d="M 8979,3745 L 8979,3382 L 8890,3563 L 8979,3745"
                id="path612" />
           </g>
           <g
+             style="stroke:#000000;stroke-opacity:1;stroke-width:26.15069315;stroke-miterlimit:4;stroke-dasharray:none"
              id="g614" />
         </g>
       </g>
     </g>
     <g
-       id="g616">
+       transform="matrix(10.227663,0,0,10.227663,-78126.653,-25184.245)"
+       id="g616"
+       style="visibility:visible">
       <desc
          id="desc618">Drawing</desc>
       <g
@@ -1116,8 +1220,10 @@
                style="fill:#000000;stroke:none"
                id="g626">
               <text
+                 style="-inkscape-font-specification:Bitstream Vera Sans;font-family:Bitstream Vera Sans;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal"
                  id="text628">
                 <tspan
+                   style="-inkscape-font-specification:Arial;font-family:Arial;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal"
                    x="2097 2313 2508 2702 2999 3193 3388 3583 3693 3867 4019 4116 4290 4485 4679 4874 5048 5221 5331 5505 5700 5797 5907 6102 6199 6373 6546 6720 6915 7012 7207 7317 7511 7685"
                    y="5076"
                    id="tspan630">Submodules connected to each other</tspan>
@@ -1128,7 +1234,9 @@
       </g>
     </g>
     <g
-       id="g632">
+       transform="matrix(10.227663,0,0,10.227663,-78126.653,-25184.245)"
+       id="g632"
+       style="visibility:visible">
       <desc
          id="desc634">Drawing</desc>
       <g
@@ -1144,6 +1252,7 @@
               <text
                  id="text644">
                 <tspan
+                   style="-inkscape-font-specification:Arial;font-family:Arial;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal"
                    x="8082 8298 8493 8687 8984 9178 9373 9568 9678 9852 10004 10101 10275 10470 10664 10859 11033 11206 11316 11490 11685 11782 11892 12087 12184 12294 12489 12662 12760 12955 13128 13259 13433 13628 13738 13835 14131 14326 14521 14716 14826"
                    y="5076"
                    id="tspan646">Submodules connected to the parent module</tspan>

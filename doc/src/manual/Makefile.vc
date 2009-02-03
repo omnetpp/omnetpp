@@ -38,31 +38,27 @@ HTMCHAPTERS = $(TEXCHAPTERS:.tex=.htm)
 
 # must list all SVGs because nmake is broken and has no wildcard functionality
 SVGPICS = \
-         figures\architecture.svg \
-         figures\connections.svg \
-         figures\cqn-model.svg \
-         figures\cqn-partitioning.svg \
-         figures\gates.svg \
-         figures\histogramrange.svg \
-         figures\histogramcells.svg \
-         figures\hypercube.svg \
-         figures\ksplit1.svg \
-         figures\ksplit2.svg \
-         figures\modules.svg \
-         figures\nonblocking-crit.svg \
-         figures\ned-net6-topology.svg \
-         figures\pairwise.svg \
-         figures\parsim-arch.svg \
-         figures\partitioning.svg \
-         figures\placeholders.svg \
-         figures\placeholders2.svg \
-         figures\queue.svg \
-         figures\transmission.svg \
-         figures\workflow.svg \
-         figures\usmanFig13.svg \
-         figures\usmanFig5.svg \
-         figures\usmanFig7.svg \
-         figures\usmanFig9.svg
+        figures/embed-architecture.svg \
+        figures/parsim-cqn-model.svg \     
+        figures/simlib-ksplit1.svg \
+        figures/ned-hypercube.svg \      
+        figures/parsim-cqn-partitioning.svg \
+        figures/simlib-ksplit2.svg \
+        figures/ned-loopconnextion.svg \
+        figures/parsim-placeholders2.svg \
+        figures/simlib-queue.svg \
+        figures/parsim-placeholders.svg \
+        figures/simple-conndatarate.svg \
+        figures/over-connections.svg \
+        figures/simple-gates.svg \
+        figures/over-modules.svg \      
+        figures/simlib-histogramcells.svg \
+        figures/simple-messagesend.svg \
+        figures/simlib-histogramrange.svg \
+        figures/simple-transmission.svg \
+        figures/parsim-arch.svg \
+        figures/simlib-histogramsetup.svg
+        
 
 DOTPICS = figures\workflow.dot
 

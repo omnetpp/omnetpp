@@ -8,21 +8,12 @@ An {\opp} model consists of modules that communicate with message passing.
 The active modules are termed \textit{simple modules}; they are written in C++,
 using the simulation class library. Simple modules can be grouped into
 \textit{compound modules} and so forth; the number of hierarchy levels is not
-limited. Messages can be sent either via connections that span between
+limited. On the top level the user creates the system module as a network 
+module which is a special compound module type without gates to the external world.
+Messages can be sent either via connections that span between
 modules or directly to their destination modules. The concept of simple and
 compound modules is similar to DEVS atomic and coupled models.
 %TODO add ref to DEVS papers
-
-Both simple and compound modules are instances of \textit{module types}.
-When describing the model, the user defines module types; instances of these
-module types serve as components for more complex module types. Finally,
-the user creates the system module as a network module which is a special
-compound module type without gates to the external world. When a module
-type is used as a building block, there is no distinction whether it is a
-simple or a compound module. This allows the user to transparently split a
-module into several simple modules within a compound module, or do the
-opposite, re-implement the functionality of a compound module in one simple
-module, without affecting existing users of the module type.
 
 In Fig. \ref{fig:ch-overview:modules}, boxes represent simple modules
 (thick border) and compound modules (thin border).
@@ -30,7 +21,7 @@ Arrows connecting small boxes represent connections and gates.
 
 \begin{figure}[htbp]
 \begin{center}
-\includegraphics[width=3.772in, height=1.292in]{figures/modules}
+\includegraphics[width=3.772in, height=1.292in]{figures/over-modules}
 \caption{Simple and compound modules}
 \label{fig:ch-overview:modules}
 \end{center}
@@ -51,7 +42,7 @@ not permitted, as it would hinder model reuse. Due to the hierarchical
 structure of the model, messages typically travel through a chain of
 connections, to start and arrive in simple modules. Compound modules act as
 'cardboard boxes' in the model, transparently relaying messages between
-their inside and the outside world. Properties such as propagation delay,
+their inside and the outside world. Parameters such as propagation delay,
 data rate and bit error rate, can be assigned to connections. One can also
 define connection types with specific properties (termed channels) and
 reuse them in several places. Modules can have parameters. Parameters are
@@ -97,7 +88,7 @@ Model structure is described in {\opp}'s NED language.
 
 \begin{figure}[htbp]
 \begin{center}
-\includegraphics[width=3.772in, height=1.292in]{figures/modules}
+\includegraphics[width=3.772in, height=1.292in]{figures/over-modules}
 \caption{Simple and compound modules}
 \label{fig:ch-overview:modules}
 \end{center}
@@ -168,7 +159,7 @@ a gate of the compound module (Fig.
 
 \begin{figure}[htbp]
 \begin{center}
-\includegraphics[width=5.061in, height=1.121in]{figures/connections}
+\includegraphics[width=5.061in, height=1.121in]{figures/over-connections}
 \caption{Connections}
 \label{fig:ch-overview:connections}
 \end{center}
@@ -208,8 +199,9 @@ for example protocols like Token Ring and FDDI do not wait
 for the frame to arrive in its entirety, but rather start repeating
 its first bits soon after they arrive -- in other words,
 frames ``flow through'' the stations, being delayed only a few bits.
-If you want to model such networks, the data rate modeling feature
-of {\opp} cannot be used.
+If you want to model such networks, it is possible to change this default
+behaviour and deliver the message to the module when the first bit is
+received.
 
 
 
@@ -357,8 +349,8 @@ An {\opp} model consists of the following parts:
 \begin{itemize}
   \item{NED language topology description(s)\index{ned!files} (\texttt{.ned} files)
     which describe the module structure with parameters, gates etc.
-    NED files can be written using any text editor or the
-    GNED graphical editor\index{ned!graphical editor}.}
+    NED files can be written using any text editor, but the {\opp} IDE
+    provides excellent support for two-way graphical and text editing.}
   \item{Message definitions (\texttt{.msg} files). You can define various message
     types and add data fields to them. {\opp} will translate message definitions
     into full-fledged C++ classes.}
@@ -369,32 +361,32 @@ The simulation system provides the following components:
 \begin{itemize}
   \item{Simulation kernel\index{simulation!kernel}. This contains the
     code that manages the simulation and the simulation class library.
-    It is written in C++, compiled and put together to form a library
-    (a file with .a or .lib extension)}
+    It is written in C++, compiled into a shared or static library.}
   \item{User interfaces\index{simulation!user interface}.
     \index{user interface} {\opp} user interfaces
     are used in simulation execution, to facilitate debugging,
-    demonstration, or batch execution of simulations. There are
-    several user interfaces, written in C++, compiled and put together
-    into libraries (\texttt{.a} or \texttt{.lib} files).}
+    demonstration, or batch execution of simulations. They are 
+    written in C++, compiled into libraries.}
 \end{itemize}
 
 
 Simulation programs are built from the above components. First,
 \ttt{.msg} files are translated into C++ code using the \ttt{opp\_msgc}.
 program. Then all C++ sources are compiled, and linked with the simulation
-kernel and a user interface library to form a simulation executable.
-NED files\index{ned!files} can either be also translated into C++
-(using \ttt{nedtool}) and linked in, or loaded dynamically in their original
+kernel and a user interface library to form a simulation executable or
+shared library. NED files\index{ned!files} are loaded dynamically in their original
 text forms when the simulation program starts.
 
 
 
 \subsubsection{Running the simulation and analyzing the results}
 
-The simulation executable is a standalone program,
-thus it can be run on other machines without {\opp} or the model files
-being present. When the program is started, it reads a configuration
+The simulation may be compiled as a standalone program executable,
+thus it can be run on other machines without {\opp}
+being present or it can be created as a shared library. In this case the
+{\opp} shared libraries must be present on that system.
+When the program is started, first it reads all NED files\index{ned!files} 
+containing your model topology, then it reads a configuration
 file\index{simulation!configuration file} (usually called
 \texttt{omnetpp.ini}\index{omnetpp.ini}). This file contains settings that
 control how the simulation is executed, values for model parameters, etc.
@@ -405,8 +397,8 @@ after another.
 The output of the simulation is written into data files: output vector
 files\index{output!vector file}, output scalar files
 \index{output!scalar file}, and possibly the user's own output files.
-{\opp} provides a GUI tool named Plove to view and plot the contents
-of output vector files. It is not expected that someone will
+{\opp} contains an Integrated Development Environment that provides 
+rich environment for analyzing these files. It is not expected that someone will
 process the result files using {\opp} alone: output files are text
 files in a format which can be read into math packages like Matlab
 or Octave, or imported into spreadsheets like OpenOffice Calc,
@@ -417,7 +409,7 @@ analysis and visualization, and it is outside the scope of {\opp} to
 duplicate their efforts. This manual briefly describes
 some data plotting programs and how to use them with {\opp}.
 
-Output scalar files can be visualized using the Scalars tool.
+Output scalar files can be visualized with the {\opp} IDE too.
 It can draw bar charts, x-y plots (e.g. throughput vs offered load),
 or export data via the clipboard for more detailed analysis into
 spreadsheets and other programs.
@@ -480,9 +472,13 @@ The simulation system itself:
     \tbf{images/}        icons and backgrounds for network graphics
     \tbf{doc/}           manuals, readme files, license, APIs, etc.
       \tbf{manual/}      manual in HTML
+      \tbf{migration/}   how to migrate your models from 3.x to 4.0 version
+      \tbf{ned2/}        DTD definition of the XML syntax for NED files
       \tbf{tictoc-tutorial/}  introduction into using {\opp}
       \tbf{api/}         API reference in HTML
       \tbf{nedxml-api/}  API reference for the NEDXML library
+      \tbf{parsim-api/}  API reference for the parallel simulation library
+    \tbf{migrate/}       tools to help model migration from 3.x to 4.0 version
     \tbf{src/}           {\opp} sources
       \tbf{sim/}         simulation kernel
         \tbf{parsim/}    files for distributed execution
@@ -508,8 +504,8 @@ The Eclipse-based Simulation IDE is in the \texttt{ide} directory.
 
 \begin{Verbatim}[commandchars=\\\{\}]
     \tbf{ide/}           Simulation IDE
-      \tbf{features/}
-      \tbf{plugins/}
+      \tbf{features/}    Eclipse feature definitions
+      \tbf{plugins/}     IDE plugins (extensions to the IDE can be dropped here)
       ...
 \end{Verbatim}
 
