@@ -334,11 +334,37 @@ Our \ttt{Node} compound module type has an \ttt{app} and a \ttt{routing}
 contains one \ttt{Queue} module for each port, as specified by
 \ttt{[sizeof(port)]}.
 
+XXX explain that sizeof(port) is possible because the network is already
+fully built when it comes to building out the internals of the nodes.
+
 XXX explain "for" loop
+
 
 \subsection{Putting it together}
 
-XXX Explain how the network is set up! top-down etc
+Here's what happens when the simulation is started. First, {\opp} determines
+from the configuration (\ttt{omnetpp.ini}) that the simulation model to be
+run is the \ttt{Network} network, and builds it.
+
+XXX todo into the ref:
+The simulation model is built in a top-down preorder fashion. This means that
+starting from an empty system module, all submodules are created and
+fully connected before proceeding to go into the submodules to build their
+internals.
+
+% It begins with creating an empty compound module object, and names it
+% \ttt{Network}. Then it looks up the \ttt{Node} module type which is needed
+% for \ttt{Network}'s submodules. \ttt{Node} is a compound module type, so an
+% empty compound module object is created for every node in the network. Then
+% the nodes get connected. In the next step, the simulator descends into each
+% node to build their internals. It enters the first node, and looks up the
+% \ttt{App}, \ttt{Routing} and \ttt{Queue} module types needed for it. These
+% types turn out to be simple modules, so the simulator instantiates the
+% similarly named C++ classes. Then the connections among these modules
+% and their connections to the node compound module are created, and the process
+% goes onto the second node.
+
+%%XXX rename \fname to \ffunc{}!!!
 
 \bigskip
 \begin{center}* * *\end{center}
