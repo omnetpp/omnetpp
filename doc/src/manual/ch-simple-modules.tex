@@ -13,6 +13,7 @@ on how to design and code simple modules.
 
 
 \section{Simulation concepts}
+\label{sec:simple-modules:simulation-concepts}
 
 This section contains a very brief introduction into how Discrete
 Event Simulation (DES) works, in order to introduce terms we'll use
@@ -21,6 +22,7 @@ implementation.
 
 
 \subsection{Discrete Event Simulation}
+\label{sec:simple-modules:discrete-event-simulation}
 
 A \textit{Discrete Event System} is a system where state changes
 (events\index{events}) happen at discrete instances in time, and events take zero time
@@ -66,6 +68,7 @@ how much CPU time it has consumed.
 
 
 \subsection{The event loop}
+\label{sec:simple-modules:event-loop}
 
 Discrete event simulation maintains the set of future
 events\index{future events} in a data structure often called
@@ -172,6 +175,7 @@ is the recording of statistics collected during simulation.
 
 
 \subsection{Events in {\opp}}
+\label{sec:simple-modules:events-in-opp}
 
 {\opp} uses messages\index{message} to represent
 events\index{events}. Each event is represented by an instance of the
@@ -200,6 +204,7 @@ attribute of messages.
 
 
 \subsection{Simulation time}
+\label{sec:simple-modules:simulation-time}
 
 The current simulation time can be obtained with the \ttt{simTime()} function.
 
@@ -288,6 +293,7 @@ also defined correctly for both \ttt{simtime\_t} types.
 
 
 \subsection{FES implementation}
+\label{sec:simple-modules:fes-implementation}
 
 The implementation of the FES\index{FES} is a crucial factor in the
 performance of a discrete event simulator. In {\opp}, the FES is
@@ -304,6 +310,7 @@ ever need to care about that.
 
 
 \section{Defining simple module types}
+\label{sec:simple-modules:defining-simple-modules}
 
 \subsection{Overview}
 
@@ -364,6 +371,7 @@ look like this:
 
 
 \subsection{Constructor}
+\label{sec:simple-modules:module-ctor}
 
 Simple modules are never instantiated by the user directly, but rather by
 the simulation kernel. This implies that one cannot write arbitrary
@@ -417,6 +425,7 @@ HelloModule::HelloModule() : cSimpleModule(16384) {...}
 
 
 \subsection{Constructor and destructor vs initialize() and finish()}
+\label{sec:simple-modules:ctor-dtor-init-finish}
 
 The \fname{initialize()} and \fname{finish()} methods will be discussed
 in a later section in detail, but because their apparent similarity
@@ -612,6 +621,7 @@ The corresponding NED declaration:
 
 
 \subsection{Using global variables}
+\label{sec:simple-modules:global-vars}
 \index{global variables}
 
 If possible, avoid using global variables, including
@@ -635,6 +645,7 @@ and \ttt{InterfaceTable} and \ttt{RoutingTable} in the \textit{INET Framework}.
 
 
 \section{Adding functionality to cSimpleModule}
+\label{sec:simple-modules:adding-functionality-to-csimplemodule}
 
 This section discusses \cclass{cSimpleModule}'s four previously
 mentioned member functions, intended to be redefined by the user:
@@ -645,6 +656,7 @@ and \fname{finish()}, plus a fifth, less frequently used one,
 
 
 \subsection{handleMessage()}
+\label{sec:simple-modules:handlemessage}
 
 \subsubsection{Function called for each event}
 
@@ -969,6 +981,7 @@ systems are:
 
 
 \subsection{activity()}
+\label{sec:simple-modules:activity}
 
 \subsubsection{Process-style description}
 
@@ -1311,6 +1324,7 @@ Coroutines are used by a number of other simulation packages:
 
 
 \subsection{initialize() and finish()}
+\label{sec:simple-modules:initialize-and-finish}
 
 \subsubsection{Purpose}
 
@@ -1456,7 +1470,7 @@ end-of-simulation events were dropped in favour of \fname{finish()}
 
 
 \subsection{handleParameterChange()}
-\label{sec:handleParameterChange}
+\label{sec:simple-modules:handleParameterChange}
 
 The \fname{handleParameterChange()} method was added in {\opp} 3.2,
 and it gets called by the simulation kernel when a module parameter changes.
@@ -1501,6 +1515,7 @@ void Queue::handleParameterChange(const char *parname)
 
 
 \subsection{Reusing module code via subclassing}
+\label{sec:simple-modules:module-subclassing}
 
 It is often needed to have several variants of a simple module.
 A good design strategy is to create a simple module class with
@@ -1530,7 +1545,7 @@ void ModifiedTransportProtocol::recalculateTimeout()
 
 
 \section{Accessing module parameters}
-\label{ch:simple-modules:parameters}
+\label{sec:simple-modules:parameters}
 
 Module parameters declared in NED files are represented with the \cclass{cPar}
 class at runtime, and be accessed\index{module!accessing parameters}
@@ -1568,6 +1583,7 @@ the \ttt{doubleValue()} or \ttt{longValue()} methods.
 
 
 \subsection{Volatile and non-volatile parameters}
+\label{sec:simple-modules:volatile-parameters}
 
 A parameter can be declared \ttt{volatile} in the NED file. The \ttt{volatile}
 modifier indicates that a parameter is re-read every time a value is needed
@@ -1644,6 +1660,7 @@ void Source::handleMessage(cMessage *msg)
 
 
 \subsection{Changing a parameter's value}
+\label{sec:simple-modules:setting-parameters}
 
 Parameter values can be changed from the program, during execution.
 This is rarely needed, but may be useful for some scenarios.
@@ -1761,10 +1778,9 @@ while (tokenizer.hasMoreTokens())
 
 
 \section{Accessing gates and connections}
-\label{ch:simple-modules:gates}
+\label{sec:simple-modules:gates}
 
 \subsection{Gate objects}
-
 
 Module gates\index{gate} are represented by \cclass{cGate} objects.
 Gate objects know to which other gates they are connected, and
@@ -1999,6 +2015,7 @@ following sections.
 
 
 \subsection{Connections}
+\label{sec:simple-modules:connections}
 
 Simple module gates have normally one connection attached. Compound module
 gates, however, need to be connected both inside and outside of the
@@ -2062,7 +2079,7 @@ FIXME
 
 
 \section{Sending and receiving messages}
-\label{ch:simple-modules:sending-and-receiving}
+\label{sec:simple-modules:sending-and-receiving}
 
 On an abstract level, an {\opp} simulation model is a set of
 simple modules that communicate with each other via message passing.
@@ -2133,7 +2150,7 @@ while(true)
 
 
 \subsection{Packet transmissions}
-\label{ch:simple-modules:packet-transmission}
+\label{sec:simple-modules:packet-transmission}
 
 When a message is sent out on a gate, it usually travels through
 a series of connections until it arrives at the destination module.
@@ -2392,7 +2409,7 @@ changes will not affect messages already sent, even if they have not
 begun transmission yet.
 
 \subsubsection{Channel transmission state}
-\label{ch:simple-modules:cgate-transmission-state}
+\label{sec:simple-modules:cgate-transmission-state}
 
 The \fname{isBusy()} member function returns whether the gate
 is currently transmitting, and if so, the
@@ -2429,9 +2446,6 @@ if (gate("out")->getNextGate()->isBusy())
 Note that if data rates change\index{data rate change} during the
 simulation, the changes will affect only the messages that are
 \textit{sent} after the change.
-
-
-
 
 
 
@@ -2530,6 +2544,7 @@ in a queue etc., you'll get a runtime error: \textit{not owner of message}.
 
 
 \subsection{Delayed sending}
+\label{sec:simple-modules:delayed-sending}
 
 It is often needed to model a delay (processing time, etc.) immediately
 followed by message sending. In {\opp}, it is possible to implement
@@ -2573,6 +2588,7 @@ sendDelayed(msg, 0.005, "outGate");
 
 
 \subsection{Direct message sending}
+\label{sec:simple-modules:direct-sending}
 
 Sometimes it is necessary or convenient to ignore gates/connections
 and send a message directly to a remote destination module. The \fname{sendDirect()}
@@ -2604,6 +2620,7 @@ directly and those received over connections.
 
 
 \subsection{Receiving messages}
+\label{sec:simple-modules:receiving-messages}
 
 \textbf{With activity() only!} The message receiving functions can
 only be used in the \fname{activity()} function,
@@ -2641,6 +2658,7 @@ else
 
 
 \subsection{The wait() function}
+\label{sec:simple-modules:wait}
 
 \textbf{With activity() only!} The \fname{wait()} function's implementation
 contains a \fname{receive()} call which cannot be used in \fname{handleMessage()}.
@@ -2810,6 +2828,7 @@ else
 
 
 \section{Stopping the simulation}
+\label{sec:simple-modules:stopping}
 
 \subsection{Normal termination}
 
@@ -2853,6 +2872,7 @@ is available.
 
 
 \section{Finite State Machines in {\opp}}
+\label{sec:simple-modules:fsm}
 
 \subsubsection{Overview}
 
@@ -3122,7 +3142,7 @@ void BurstyGenerator::handleMessage(cMessage *msg)
 
 
 \section{Walking the module hierarchy}
-\label{ch:simple-modules:walking-module-hierarchy}
+\label{sec:simple-modules:walking-module-hierarchy}
 
 \subsubsection{Module vectors}
 
@@ -3267,7 +3287,7 @@ For input gates, you would use \fname{getPreviousGate()} instead of
 
 
 \section{Direct method calls between modules}
-\label{ch:simple-modules:direct-method-calls}
+\label{sec:simple-modules:direct-method-calls}
 \index{method calls!between modules}
 
 In some simulation models, there might be modules which are too
@@ -3288,7 +3308,7 @@ Typically, the called module is in the same compound module as the caller,
 so the \fname{getParentModule()} and \fname{getSubmodule()} methods of
 \cclass{cModule} can be used to get a \ttt{cModule*} pointer to the
 called module. (Further ways to obtain the pointer are described
-in the section \ref{ch:simple-modules:walking-module-hierarchy}.)
+in the section \ref{sec:simple-modules:walking-module-hierarchy}.)
 The \ttt{cModule*} pointer then has to be cast to the actual C++ class
 of the module, so that its methods become visible.
 
@@ -3337,7 +3357,7 @@ void Callee::doSomething()
 
 
 \section{Dynamic module creation}
-\label{ch:simple-modules:dynamic-module-creation}
+\label{sec:simple-modules:dynamic-module-creation}
 \index{module!dynamic creation}
 
 \subsection{When do you need dynamic module creation}
