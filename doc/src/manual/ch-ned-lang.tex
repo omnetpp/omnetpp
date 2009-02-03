@@ -1335,13 +1335,47 @@ tag.
 
 \subsubsection{Modifying properties}
 
-Properties are not only inherited, but may also be modified via inheritance.
+When you subclass a NED type, use a module type as submodule or use a channel
+type for a connection, you may add new properties to the module or channel,
+or to its parameters and gates., and you can also modify existing properties.
 
-XXX how properties are inherited. inheritance rules.
+When modifying a property, the new property gets merged with the old one,
+with a few simple rules. New keys simply get added. If a key already
+exists in the old property, items in its valuelist overwrite items on
+the same position in the old property. A single hyphen ($-$) as
+valuelist item serves as ``antivalue'', it removes the item at the
+corresponding position.
 
-XXX example
+Some examples:
 
-XXX @display is interpreted and merged in a special way.
+\begin{tabular}{l l}
+$base$   & \ttt{@prop}  \\
+$new$    & \ttt{@prop(a)}  \\
+\hline
+$result$ & \ttt{@prop(a)}
+\end{tabular}
+
+\begin{tabular}{l l}
+$base$   & \ttt{@prop(a,b,c)}  \\
+$new$    & \ttt{@prop(,-)}  \\
+\hline
+$result$ & \ttt{@prop(a,{},c)}
+\end{tabular}
+
+\begin{tabular}{l l}
+$base$   & \ttt{@prop(foo=a,b)}  \\
+$new$    & \ttt{@prop(foo=A,{},c;bar=1,2)}  \\
+\hline
+$result$ & \ttt{@prop(foo=A,b,c;bar=1,2)}
+\end{tabular}
+
+\begin{note}
+    The above merge rules are part of NED, but the code that interprets
+    properties may have special rules for certain properties. For example,
+    the \ttt{@unit} property of parameters is not allowed to be overridden,
+    and \ttt{@display} is merged with special although similar rules
+    (see Chapter \ref{cha:graphics}).
+\end{note}
 
 
 
