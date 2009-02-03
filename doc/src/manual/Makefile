@@ -111,7 +111,6 @@ clean:
 	rm -f usman.dvi manual.pdf *.aux *.idx *.ilg *.ind *.log *.out *.toc *.bbl *.blg *.htm usman.tmp usman.html
 	rm -rf ../../manual
 	rm -rf eclipse
-	rm `echo figures/*.svg | sed 's/svg$/pdf/'`
-	rm `echo figures/*.svg | sed 's/svg$/png/'`
-	rm `echo figures/*.dot | sed 's/dot$/svg/'`
-
+	rm -f figures/*.pdf
+	rm -f `ls figures/*.svg | sed 's/svg$$/png/'`
+	rm -f `ls figures/*.dot | sed 's/dot$$/svg/'`

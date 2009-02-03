@@ -135,6 +135,7 @@ clean:
 	-rmdir ..\..\manual 2>nul
 	-del /s /q eclipse
 	-rmdir eclipse
-	-cd figures && for %%I in (*.svg) do del %%~nI.png %%~nI.pdf
+	-del /q figures\*.pdf
+	-cd figures && for %%I in (*.svg) do del %%~nI.png
 	-cd figures && for %%I in (*.dot) do del %%~nI.svg
 
