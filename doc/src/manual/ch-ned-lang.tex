@@ -101,6 +101,7 @@ transport layer from the model.
 %% XXX keep the example simple!
 
 \subsection{The network}
+\label{sec:ch-ned-lang:warmup:network}
 
 First we'll define the network, then in the next sections we'll continue
 to define the network nodes.
@@ -601,6 +602,7 @@ module DesktopUser extends WirelessUser
 \section{Channels}
 \label{sec:ch-ned-lang:channels}
 
+Channels encapsulate parameters and behaviour associated with connections.
 Channels are like simple modules, in the sense that there are C++ classes
 behind them. The rules for finding the C++ class for a NED channel type is
 the same as with simple modules: the default class name is the NED type
@@ -665,7 +667,8 @@ going to be read by other parts of the simulation model.
     XXX "deliver on first bit": this can be specified in C++
 \end{note}
 
-XXX example DatarateChannel
+The following example shows how to create a new channel type by
+specializing \ttt{DatarateChannel}:
 
 \begin{Verbatim}[commandchars=\\\{\}]
 channel C extends ned.DatarateChannel
@@ -676,13 +679,39 @@ channel C extends ned.DatarateChannel
 \}
 \end{Verbatim}
 
-XXX connections: one of the latter 2 built-in types are chosen for connections.
+\begin{note}
+    The three built-in channel types are also used for connections where
+    the channel type not explicitly specified.
+\end{note}
 
-XXX Channels may have parameters; you can also add parameters and properties
-via subclassing. Even if you don't modify the underlying C++ class,
-they may be read and used by other parts of the model. For example,
-adding a \ttt{cost} parameter (or \ttt{@cost} property) may be observed
-by the routing algorithm and used for routing decisions.
+You may add parameters and properties to channels via subclassing, and
+modify existing ones. In the following example, we introduce length-based
+calculation of the propagation delay:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+channel DatarateChannel2 extends ned.DatarateChannel
+\{
+    double length @unit(km);
+    delay = length / 200000km * 1s;
+\}
+\end{Verbatim}
+
+Parameters are primarily useful as input to the underlying C++ class, but
+even if you reuse the underlying C++ class of built-in channel types, they
+may be read and used by other parts of the model. For example, adding a
+\ttt{cost} parameter (or \ttt{@cost} property) may be observed by the
+routing algorithm and used for routing decisions. The following example
+shows a \ttt{cost} parameter, and annotation using a property
+(\ttt{@backbone}).
+
+\begin{Verbatim}[commandchars=\\\{\}]
+channel Backbone extends ned.DatarateChannel
+\{
+    @backbone;
+    double cost = default(1);
+\}
+\end{Verbatim}
+
 
 
 \section{Parameters}
