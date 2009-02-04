@@ -60,10 +60,10 @@ ParameterRef::ParameterRef(const char *paramName, bool ofParent, bool printThis)
 Value ParameterRef::evaluate(cComponent *context, Value args[], int numargs)
 {
     ASSERT(numargs==0 && context!=NULL);
-    cModule *module = dynamic_cast<cModule *>(ofParent ? context->getParentModule() : context);
-    if (!module)
+    cComponent *component = ofParent ? context->getParentModule() : context;
+    if (!component)
         throw cRuntimeError(context,eENOPARENT);
-    return module->par(paramName.c_str());
+    return component->par(paramName.c_str());
 }
 
 std::string ParameterRef::str(std::string args[], int numargs)

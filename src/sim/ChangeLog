@@ -1,3 +1,8 @@
+2009-02-04  Andras Varga
+
+	* nedsupport.cc: fix: NED: a channel type could not refer to local 
+	parameters ("this.param" caused an error)
+
 2009-01-10  Andras Varga
 
 	* csimulation.cc: simulation.init() gets called automatically, via
