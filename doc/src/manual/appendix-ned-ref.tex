@@ -1086,6 +1086,22 @@ Parameter (non-default) assignments may also be overridden in subclasses.
 Gate vector size may not be overridden in subclasses.
 
 
+\subsection{Network build order}
+\label{ch-ned-ref:sec:build-order}
+
+When a network in instantiated for simulation, the module tree is built in
+a top-down preorder fashion. This means that starting from an empty system
+module, all submodules are created, their parameters and vector sizes get
+assigned and they get fully connected before proceeding to go into the
+submodules to build their internals.
+
+This implies that inside a compound module definition (including in
+submodules and connections), one can refer to the compound module's
+parameters and gate sizes, because they are already built at the time of
+usage.
+
+The same rules apply to compound or simple modules created dynamically during
+runtime.
 
 \section{Expressions}
 \label{ch-ned-ref:sec:expressions}

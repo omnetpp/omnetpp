@@ -328,41 +328,37 @@ of neighbours when we create a network from nodes of this type.
 The type of \ttt{port[]} is \ttt{inout}, which allows bidirectional
 connections.
 
-The modules that make up the compound module are listed under \ttt{submodules}.
-Our \ttt{Node} compound module type has an \ttt{app} and a \ttt{routing}
-\textit{submodule}, plus a \ttt{queue[]} \textit{submodule vector} that
-contains one \ttt{Queue} module for each port, as specified by
-\ttt{[sizeof(port)]}.
+The modules that make up the compound module are listed under
+\fkeyword{submodules}. Our \ttt{Node} compound module type has an \ttt{app} and
+a \ttt{routing} \textit{submodule}, plus a \ttt{queue[]} \textit{submodule
+vector} that contains one \ttt{Queue} module for each port, as specified by
+\ttt{[sizeof(port)]}. (It is legal to refer to \ttt{[sizeof(port)]} because
+the network is built in top-down order, and the node is already created and
+connected at network level when its submodule structure is built out.)
 
-XXX explain that sizeof(port) is possible because the network is already
-fully built when it comes to building out the internals of the nodes.
-
-XXX explain "for" loop
+In the \fkeyword{connections} section, the submodules are connected to each
+other and to the parent module. Single arrows are used to connect input and
+output gates, and double arrows connect inout gates, and a \fkeyword{for} loop
+is utilized to connect the \ttt{routing} module to each \ttt{queue} module, and
+to connect the outgoing/incoming link (\ttt{line} gate) of each queue to the
+corresponding port of the enclosing module.
 
 
 \subsection{Putting it together}
 
-Here's what happens when the simulation is started. First, {\opp} determines
-from the configuration (\ttt{omnetpp.ini}) that the simulation model to be
-run is the \ttt{Network} network, and builds it.
+We have seen all NED definitions, but how does it get used by {\opp}? When
+the simulation program is started, it loads the NED files. The program
+should already contain the C++ classes that implement the needed simple
+modules, \ttt{App}, \ttt{Routing} and \ttt{Queue}; their C++ code is either
+part if the executable or gets loaded from shared library. The simulation
+program also loads the configuration (\ttt{omnetpp.ini}), and determines
+from it that the simulation model to be run is the \ttt{Network} network.
+Then the network gets instantiated for simulation.
 
-XXX todo into the ref:
-The simulation model is built in a top-down preorder fashion. This means that
-starting from an empty system module, all submodules are created and
-fully connected before proceeding to go into the submodules to build their
-internals.
-
-% It begins with creating an empty compound module object, and names it
-% \ttt{Network}. Then it looks up the \ttt{Node} module type which is needed
-% for \ttt{Network}'s submodules. \ttt{Node} is a compound module type, so an
-% empty compound module object is created for every node in the network. Then
-% the nodes get connected. In the next step, the simulator descends into each
-% node to build their internals. It enters the first node, and looks up the
-% \ttt{App}, \ttt{Routing} and \ttt{Queue} module types needed for it. These
-% types turn out to be simple modules, so the simulator instantiates the
-% similarly named C++ classes. Then the connections among these modules
-% and their connections to the node compound module are created, and the process
-% goes onto the second node.
+The simulation model is built in a top-down preorder fashion. This means
+that starting from an empty system module, all submodules are created,
+their parameters and vector sizes get assigned and they get fully connected
+before proceeding to go into the submodules to build their internals.
 
 %%XXX rename \fname to \ffunc{}!!!
 
@@ -775,6 +771,10 @@ can convert to seconds, like milliseconds or hours; dimensionless numbers
 will not be accepted. The {\opp} runtime does a full and rigorous unit check on
 parameters to ensure ``unit safety'' of models.
 
+XXX example
+
+XXX @unit cannot be overridden in subclasses or in a submodule declaration
+
 XXX see \_\_SCRATCH for more....
 
 
@@ -803,6 +803,24 @@ and from \ttt{omnetpp.ini}.
 
 XXX add a complete example!
 
+\begin{verbatim}
+simple TrafficGenerator {
+    parameters:
+        xml profile;
+    gates:
+        output out;
+}
+
+module TrafficGenerator {
+    XXX several submods, and assign!
+    parameters:
+        xml profile;
+    gates:
+        output out;
+}
+\end{verbatim}
+
+XXX example 2, with xpath!
 
 \section{Gates}
 \label{sec:ch-ned-lang:gates}
@@ -933,13 +951,12 @@ NED supports submodule arrays (vectors) as well. Submodule vector size,
 unlike gate vector size, must always be specified and cannot be left
 open as with gates.
 
-XXX nulla hosszu is lehet!!!
-
 Syntactically, a submodule may have a curly brace block as body, where
 it is possible to assign parameters (see \ttt{address} in the example),
 set the size of gate vectors, and add/modify properties like the
 display string (\ttt{@display}).
 
+XXX kettevenni a kovetkezo peldat:
 \begin{Verbatim}[commandchars=\\\{\}]
 module Node
 \{
@@ -957,6 +974,23 @@ module Node
         queue[sizeof(port)]: Queue;
 
     connections:
+        ...
+\}
+\end{Verbatim}
+
+A submodule vector may also be used to implement a conditional submodule:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+module Host
+\{
+    parameters:
+        bool withTCP = default(true);
+    submodules:
+        tcp[withTCP ? 1 : 0]: TCP;
+        ...
+    connections:
+        tcp[0].ipOut --> ip.tcpIn if withTCP;
+        tcp[0].ipIn <-- ip.tcpOut if withTCP;
         ...
 \}
 \end{Verbatim}
