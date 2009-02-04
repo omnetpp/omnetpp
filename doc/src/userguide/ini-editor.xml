@@ -152,6 +152,7 @@
           contain section names, general options, and parameter names and values
           of the modules of the configured network.
         </para>
+        <picture file="pictures/INI-TextEditor2.png">Content assist in source mode</picture>
       </sect3>
       <sect3>
         <title>Tooltip</title>
@@ -203,7 +204,7 @@
     <para>
       There are several views related to the INI editor. These views can be displayed (if
       not already open) by choosing the view from the
-      <menuchoice><guimenu>Window</guimenu><guisubmenu> Show View</guisubmenu></menuchoice>
+      <guimenuitem>Window | Show View</guimenuitem>
       submenu.
     </para>
     <sect2>
@@ -223,36 +224,6 @@
       </para>
     </sect2>
     <sect2>
-      <title>Module Hierarchy View</title>
-      <para>
-        The Module Hierarchy View shows the contained submodules, several levels deep.
-        It also display the module parameters, and where its value comes from (ini file,
-        ned file or unassigned).
-      </para>
-      <table>
-        <title>Legend of icons before module parameters</title>
-        <tgroup cols="2">
-          <colspec colwidth='0.25in'/>
-          <colspec colwidth='2*'/>
-          <tbody>
-            <row><entry><icon name="par_unassigned.png"/></entry><entry>has no value (unassigned)</entry></row>
-            <row><entry><icon name="par_ini.png"/></entry><entry>set in the INI file</entry></row>
-            <row><entry><icon name="par_ned.png"/></entry><entry>set in the NED file</entry></row>
-            <row><entry><icon name="par_neddefault.png"/></entry><entry>NED default applied (apply-default=true)</entry></row>
-            <row><entry><icon name="par_inineddefault.png"/></entry><entry>set in the INI file to the same value as NED default</entry></row>
-          </tbody>
-        </tgroup>
-      </table>
-      <!-- TODO screenshot, context mem pinning -->
-    </sect2>
-    <sect2>
-      <title>NED Inheritance View</title>
-      <para>
-        The NED Inheritance View shows the inheritance tree of the network configured in the
-        selected section.
-      </para>
-    </sect2>
-    <sect2>
       <title>Parameters View</title>
       <para>
         The Parameters View shows parameters of the selected section, including inherited
@@ -266,6 +237,39 @@
         set.
       </para>
       <picture file="pictures/INI-ParametersView.png">Parameters View</picture>
+      <table>
+        <title>Legend of icons before module parameters</title>
+        <tgroup cols="2">
+          <colspec colwidth='0.25in'/>
+          <colspec colwidth='2*'/>
+          <tbody>
+            <row><entry><icon name="par_ned.png"/></entry><entry>value is set in the NED file</entry></row>
+            <row><entry><icon name="par_neddefault.png"/></entry><entry>default from the NED file is explicitly set in the INI file (``**.paramname=default'')</entry></row>
+            <row><entry><icon name="par_implicitdefault.png"/></entry><entry>default from the NED file is automatically applied, because no value is specified in the INI file</entry></row>
+            <row><entry><icon name="par_ini.png"/></entry><entry>value is set in the INI file (may override the value from the NED file)</entry></row>
+            <row><entry><icon name="par_inineddefault.png"/></entry><entry>value is set in the INI file to the same value as the NED default</entry></row>
+            <row><entry><icon name="par_iniask.png"/></entry><entry>will ask the user at runtime (``**.paramname=ask'')</entry></row>
+            <row><entry><icon name="par_unassigned.png"/></entry><entry>unassigned -- has no value specified neither in NED nor in INI file</entry></row>
+          </tbody>
+        </tgroup>
+      </table>
+    </sect2>
+    <sect2>
+      <title>Module Hierarchy View</title>
+      <para>
+        The Module Hierarchy View shows the contained submodules, several levels deep.
+        It also display the module parameters, and where its value comes from (ini file,
+        ned file or unassigned).
+      </para>
+      <picture file="pictures/INI-ModuleHierarchyView.png">Module Hierarchy View</picture>
+      <!-- TODO screenshot, context mem pinning -->
+    </sect2>
+    <sect2>
+      <title>NED Inheritance View</title>
+      <para>
+        The NED Inheritance View shows the inheritance tree of the network configured in the
+        selected section.
+      </para>
     </sect2>
   </sect1>
 </chapter>
