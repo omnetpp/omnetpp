@@ -18,7 +18,7 @@ network Aloha
         int numHosts;  // number of hosts
         double txRate @unit(bps);  // transmission rate
         double slotTime @unit(ms);  // zero means no slots (pure Aloha)
-        @display("bgb=,,white");
+        @display("bgi=background/terrain");
     submodules:
         server: Server;
         host[numHosts]: Host {

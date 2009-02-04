@@ -691,8 +691,8 @@ calculation of the propagation delay:
 \begin{Verbatim}[commandchars=\\\{\}]
 channel DatarateChannel2 extends ned.DatarateChannel
 \{
-    double length @unit(km);
-    delay = length / 200000km * 1s;
+    double length @unit(m);
+    delay = this.length / 200000km * 1s;
 \}
 \end{Verbatim}
 
