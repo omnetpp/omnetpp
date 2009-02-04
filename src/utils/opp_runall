@@ -34,15 +34,18 @@ exit 0;
 
 sub usage()
 {
+    my $prog = $ARG0;
+    $prog =~ s|^.*[/\\]||;
+
     print <<END
-$ARG0: Generate a makefile that executes several simulation runs, and
+$prog: Generate a makefile that executes several simulation runs, and
 optionally invokes "make" as well.
 
-Usage: $ARG0 [options] <simprog> [simprog-options]
+Usage: $prog [options] <simprog> [simprog-options]
 
 Should be called with the full command (simulation program with args)
 to be executed, and the output is a Makefile that contains one target
-per run. This program basically explodes -r option; for example, a
+per run. This program basically expands the -r option; for example, a
 simulation command line containing -r 0..2,8,10 will generate 5 commands
 with the -r 0, -r 1, -r 2, -r 8 and -r 10 options, respectively. It is possible
 to take advantage of multiple CPUs or cores by using the -j make option
