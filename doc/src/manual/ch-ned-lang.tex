@@ -1506,10 +1506,9 @@ simple HttpApp extends App {
 \section{Inheritance}
 \label{sec:ch-ned-lang:inheritance}
 
-Inheritance support in the NED language is only described in summary here,
-because details about parameter, gate, property, submodule, etc.
-inheritance have already been described with examples in the corresponding
-sections.
+Inheritance support in the NED language is only described briefly here,
+because several details and examples have been already presented in
+previous sections.
 
 In NED, a type may only extend (\fkeyword{extends} keyword) an element of
 the same component type: a simple module may only extend a simple module,
@@ -1525,11 +1524,9 @@ several channel interfaces.
 
 \begin{important}
     When you extend a simple module type both in NED and in C++, you must
-    use the \ttt{@class()} property to tell NED to use the new C++ class --
+    use the \ttt{@class} property to tell NED to use the new C++ class --
     otherwise your new module type inherits the C++ class of the base!
 \end{important}
-
-
 
 Inheritance may:
 \begin{itemize}
@@ -1540,27 +1537,15 @@ Inheritance may:
     \item it may not modify inherited submodules, connections and inner types
 \end{itemize}
 
-Other inheritance rules:
-\begin{itemize}
-    \item  for inner types:
-       new inner types can be added, but inherited ones cannot be changed
-    \item  for properties:
-       contents will be merged (rules like for display strings: values on
-       same key and same position will overwrite old ones)
-    \item for parameters:
-       type cannot be redefined;
-       value may be redefined in subclasses or at place of usage
-    \item  for gates:
-       type cannot be redefined;
-       vector size may be redefined in subclasses or at place of usage
-    \item  for gate/parameter properties:
-       extra properties can be added;
-       existing properties can be overridden/extended like for standalone properties
-    \item  for submodules:
-       new submodules may be added, but inherited ones cannot be modified
-    \item  for connections:
-       new connections may be added, but inherited ones cannot be modified
-\end{itemize}
+For details and examples, see the corresponding sections of this chapter
+(simple modules \ref{sec:ch-ned-lang:simple-modules},
+compound modules \ref{sec:ch-ned-lang:compound-modules},
+channels \ref{sec:ch-ned-lang:channels},
+parameters \ref{sec:ch-ned-lang:parameters},
+gates \ref{sec:ch-ned-lang:gates},
+submodules \ref{sec:ch-ned-lang:submodules},
+connections \ref{sec:ch-ned-lang:connections},
+module interfaces and channel interfaces \ref{sec:ch-ned-lang:submodule-like}).
 
 
 
