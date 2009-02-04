@@ -18,8 +18,8 @@
     <note>
       <para>
       The syntax and features of ini files have changed since &Omnetpp; 3.x as well.
-      These changes are summarized in the document titled "Configuring Simulations in
-      &Omnetpp; 4.0." TBD <!-- olink? -->
+      These changes are summarized in the "Configuring Simulations" chapter of the
+       "&Omnetpp; 4.0. User Manual". 
       </para>
     </note>
     <para>
