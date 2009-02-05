@@ -38,8 +38,6 @@
 \renewcommand{\topfraction}{0.9}
 \renewcommand{\floatpagefraction}{0.9}
 
-\lstloadlanguages{C++,make,perl,tcl,XML,R,Matlab}
-
 %% try to cure overfull hboxes
 %% \tolerance=500
 
@@ -107,6 +105,9 @@
 %% Heading and Footer
 %%
 
+\definecolor{MyDarkBlue}{rgb}{0.16,0.16,0.5}
+\hypersetup{colorlinks=true,linkcolor=MyDarkBlue}
+
 \pagestyle{fancy}
 \fancyhf{}
 \renewcommand{\footrulewidth}{0.5pt}
@@ -122,7 +123,7 @@
 %%
 %% Use \begin{graybox}...\end{graybox} for notes
 %%
-\definecolor{MyGray}{rgb}{0.93,0.93,0.95}
+\definecolor{MyGray}{rgb}{0.85,0.85,1.0}
 \makeatletter\newenvironment{graybox}%
    {\begin{flushright}\begin{lrbox}{\@tempboxa}\begin{minipage}[r]{0.95\textwidth}}%
    {\end{minipage}\end{lrbox}\colorbox{MyGray}{\usebox{\@tempboxa}}\end{flushright}}%
@@ -134,6 +135,8 @@
 \newenvironment{caution}{\begin{graybox}\textbf{CAUTION: }}{\end{graybox}}
 \newenvironment{rationale}{\begin{graybox}\textbf{Rationale: }}{\end{graybox}}
 \newenvironment{important}{\begin{graybox}\textbf{IMPORTANT: }}{\end{graybox}}
+
+\lstloadlanguages{C++,make,perl,tcl,XML,R,Matlab}
 
 %% See listings-1.pdf,pp20
 \lstdefinelanguage{NED}
@@ -148,9 +151,8 @@
     morestring=[b]",
 }
 
-\definecolor{RulerColor}{rgb}{0.8,0.8,0.8}
-
 %% See listings-1.pdf,pp39
+\definecolor{RulerColor}{rgb}{0.8,0.8,1.0}
 \lstnewenvironment{ned}
     {\lstset{language=NED,basicstyle=\ttfamily,frame=leftline,framesep=10pt,framerule=3pt,rulecolor=\color{RulerColor},xleftmargin=15pt}}
     {}
