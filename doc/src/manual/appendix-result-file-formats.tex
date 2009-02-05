@@ -80,9 +80,9 @@ Syntax:
 
 Example:
 
-\begin{verbatim}
+\begin{filelisting}
 run TokenRing1-0-20080514-18:19:44-3248
-\end{verbatim}
+\end{filelisting}
 
 Typically there will be one run per file, but this is not mandatory.
 In cases when there are more than one runs in a file and it is not feasible
@@ -121,7 +121,7 @@ Attributes associated with parameter studies (iterated runs):
 
 An example run header:
 
-\begin{verbatim}
+\begin{filelisting}
 run TokenRing1-0-20080514-18:19:44-3248
 attr configname TokenRing1
 attr datetime 20080514-18:19:44
@@ -137,7 +137,7 @@ attr replication #0
 attr resultdir results
 attr runnumber 0
 attr seedset 0
-\end{verbatim}
+\end{filelisting}
 
 
 
@@ -154,9 +154,9 @@ Syntax:
 
 Example:
 
-\begin{verbatim}
+\begin{filelisting}
 attr network "largeNet"
-\end{verbatim}
+\end{filelisting}
 
 
 
@@ -182,11 +182,11 @@ Syntax:
 
 Example:
 
-\begin{verbatim}
+\begin{filelisting}
 param **.gen.sendIaTime  exponential(0.01)
 param **.gen.msgLength   10
 param **.fifo.bitsPerSec 1000
-\end{verbatim}
+\end{filelisting}
 
 
 \section{Scalar Data}
@@ -199,9 +199,9 @@ Syntax:
 
 Examples:
 
-\begin{verbatim}
+\begin{filelisting}
 scalar "net.switchA.relay" "processed frames" 100
-\end{verbatim}
+\end{filelisting}
 
 Scalar lines may be immediately followed by \textit{attribute} lines.
 {\opp} uses the following vector attributes:
@@ -315,9 +315,9 @@ Syntax:
 
 Example:
 
-\begin{verbatim}
+\begin{filelisting}
 statistic Aloha.server 	"collision multiplicity"
-\end{verbatim}
+\end{filelisting}
 
 A \textit{statistic} line may be followed by \textit{field} and \textit{attribute} lines,
 and a series of \textit{bin} lines that represent histogram data.
@@ -332,7 +332,7 @@ and a series of \textit{bin} lines that represent histogram data.
 
 A full example with fields, attributes and histogram bins:
 
-\begin{verbatim}
+\begin{filelisting}
 statistic Aloha.server 	"collision multiplicity"
 field count 13908
 field mean 6.8510209951107
@@ -355,7 +355,7 @@ bin	6.5	952
 bin	7.5	785
 ...
 bin	51.5	2
-\end{verbatim}
+\end{filelisting}
 
 
 \section{Field}
@@ -368,9 +368,9 @@ Syntax:
 
 Example:
 
-\begin{verbatim}
+\begin{filelisting}
 field sum 95284
-\end{verbatim}
+\end{filelisting}
 
 Fields:
 
@@ -422,13 +422,13 @@ cell, and the last \textbf{bin} line is the overflow cell.
 
 Example:
 
-\begin{verbatim}
+\begin{filelisting}
 bin -INF  0
 bin 0 4
 bin 2 6
 bin 4 2
 bin 6 1
-\end{verbatim}
+\end{filelisting}
 
 
 %%% Local Variables:

@@ -41,8 +41,8 @@ An output vector file\index{output!vector file} contains several
 series of data produced during simulation. The file is textual, and it
 looks like this:
 
-\begin{Verbatim}[commandchars=\\\{\}]
-\textbf{net-1.vec:}
+\begin{filelisting}
+# net-1.vec
 vector 1   "subnet[4].term[12]"  "response time"  TV
 1  12.895  2355.66666666
 1  14.126  4577.66664666
@@ -50,7 +50,7 @@ vector 2   "subnet[4].srvr"  "queue length"  TV
 2  16.960  2.00000000000.63663666
 1  23.086  2355.66666666
 2  24.026  8.00000000000.44766536
-\end{Verbatim}
+\end{filelisting}
 
 There two types of lines: vector declaration lines (beginning with
 the word \ttt{vector}), and data lines.
@@ -78,13 +78,13 @@ usually from the \ttt{finish()} methods of modules.
 The corresponding output scalar file (by default, \ffilename{omnetpp.sca})
 will look like this:
 
-\begin{verbatim}
+\begin{filelisting}
 scalar "lan.hostA.mac" "frames sent"                99
 scalar "lan.hostA.mac" "frames rcvd"                3088
 scalar "lan.hostA.mac" "bytes sent"                 64869
 scalar "lan.hostA.mac" "bytes rcvd"                 3529448
 ...
-\end{verbatim}
+\end{filelisting}
 
 Every \ffunc{record()} call generates one "scalar" line in the file.
 (If you record statistics objects (\cclass{cStatictic} subclasses
@@ -126,9 +126,9 @@ gnuplot (see \ref{sec:ana-sim:gnuplot}).
 
 When \fprog{scavetool} is invoked without arguments, it prints usage information:
 
-\begin{verbatim}
+\begin{commandline}
 scavetool <command> [options] <file>...
-\end{verbatim}
+\end{commandline}
 
 \subsection{Filter command}
 
@@ -167,31 +167,31 @@ the formatname is one of:
 
 Examples:
 
-\begin{verbatim}
+\begin{commandline}
 scavetool filter -p "queuing time" -a winavg(10) -O out.vec in.vec
-\end{verbatim}
+\end{commandline}
 
 Writes the window averaged queuing times stored in in.vec into out.vec.
 
-\begin{verbatim}
+\begin{commandline}
 scavetool filter -p "module(**.sink) AND
                     (\"queueing time\" OR \"transmission time\")"
                  -O out.csv -F csv in.vec
-\end{verbatim}
+\end{commandline}
 
 Writes the queing and transmission times of sink modules into CSV files.
 It generates a separate files for each vector named
 \textit{out-1.csv}, \textit{out-2.csv}...
 The generated file contains a header and two columns:
 
-\begin{verbatim}
+\begin{filelisting}
 time,"Queue.sink.queueing time"
 2.231807576851,0
 7.843802235089,0
 15.797137536721,3.59449
 21.730758362277,6.30398
 [...]
-\end{verbatim}
+\end{filelisting}
 
 
 \subsection{Index command}
@@ -302,16 +302,16 @@ two values per line ($x$ $y$; such files can be exported with
 \fprog{scavetool} from vector files), you can plot them in the same
 graph by typing:
 
-\begin{verbatim}
+\begin{commandline}
 plot "foo.csv" with lines, "bar.csv" with lines
-\end{verbatim}
+\end{commandline}
 
 To adjust the $y$ range, you would type:
 
-\begin{verbatim}
+\begin{commandline}
 set yrange [0:1.2]
 replot
-\end{verbatim}
+\end{commandline}
 
 Several commands are available to adjust ranges, plotting style, labels,
 scaling etc. On Windows, you can copy the resulting graph to the clipboard from

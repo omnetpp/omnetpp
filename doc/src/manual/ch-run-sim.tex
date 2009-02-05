@@ -22,9 +22,9 @@ The following sections describe the most frequently used command-line
 options. To get a complete list of supported command line options, run
 a simulation executable (or \fprog{opp\_run}) with the \ttt{-h} option.
 
-\begin{verbatim}
+\begin{commandline}
 $ ./fifo -h
-\end{verbatim}
+\end{commandline}
 
 \subsubsection{Specifying ini files}
 
@@ -34,14 +34,15 @@ loaded if no other ini file is given on the command line.
 Ini files can be specified both as plain arguments and with the \ttt{-f}
 option, so the following two commands are equivalent:
 
-\begin{verbatim}
+\begin{commandline}
 $ ./fifo experiment.ini common.ini
 $ ./fifo -f experiment.ini -f common.ini
-\end{verbatim}
+\end{commandline}
 
 Multiple ini files can be given, and their contents will get merged. This
 allows for partitioning the configuration into separate files, for example
 to simulation options, module parameters and result recording options.
+
 
 \subsubsection{Specifying the NED path}
 
@@ -49,11 +50,9 @@ NED files are loaded from directories listed on the NED path. More precisely,
 they are loaded from the listed directories and their whole subdirectory trees.
 Directories are separated with a semicolon (\ttt{;}).
 
-
 \begin{note}
 Semicolon is used as separator on both Unix and Windows.
 \end{note}
-
 
 The NED path can be specified in several ways:
 \begin{itemize}
@@ -175,9 +174,9 @@ loading additional shared libraries; actually, \fprog{opp\_run}
 is nothing else than an empty simulation executable.
 
 Example:
-\begin{verbatim}
+\begin{commandline}
 opp_run -l mymodel
-\end{verbatim}
+\end{commandline}
 
 The above example will load the model found in \ttt{libmymodel.so} and execute it.
 
@@ -214,9 +213,9 @@ There are several useful configuration options that control how a simulation is 
 
 To get the list of all possible configuration options type:
 
-\begin{verbatim}
+\begin{commandline}
 opp_run -h config
-\end{verbatim}
+\end{commandline}
 
 
 \section{Cmdenv: the command-line interface}
@@ -235,7 +234,7 @@ passed via command-line argument or in the ini file.
 When run the Fifo example under Cmdenv, you should see
 something like this:
 
-\begin{verbatim}
+\begin{commandline}
 $ ./fifo -u Cmdenv -c Fifo1
 
 OMNeT++ Discrete Event Simulation  (C) 1992-2008 Andras Varga, OpenSim Ltd.
@@ -270,7 +269,7 @@ Running simulation...
 
 Calling finish() at end of Run #0...
 End.
-\end{verbatim}
+\end{commandline}
 
 As Cmdenv runs the simulation, periodically it prints the sequence number
 of the current event, the simulation time, the elapsed (real) time,
@@ -327,7 +326,7 @@ performance display enabled, Cmdenv periodically outputs a three-line
 status info about the progress of the simulation.
 The output looks like this:
 
-\begin{verbatim}
+\begin{commandline}
 ...
 ** Event #250000   T=123.74354 ( 2m  3s)    Elapsed: 0m 12s
      Speed:     ev/sec=19731.6   simsec/sec=9.80713   ev/simsec=2011.97
@@ -336,7 +335,7 @@ The output looks like this:
      Speed:     ev/sec=19584.8   simsec/sec=9.64698   ev/simsec=2030.15
      Messages:  created: 66605   present: 7815   in FES: 7
 ...
-\end{verbatim}
+\end{commandline}
 
 The first line of the status display (beginning with \ttt{**})
 contains:
@@ -501,7 +500,7 @@ runs are available in the configuration you are using. Use the
 \ttt{-x config} command line option to print the number of runs or
 add the \ttt{-g} to get more details.
 
-\begin{verbatim}
+\begin{filelisting}
 #! /bin/sh
 ./wireless -f runs.ini -r 1
 ./wireless -f runs.ini -r 2
@@ -509,16 +508,16 @@ add the \ttt{-g} to get more details.
 ./wireless -f runs.ini -r 4
 ...
 ./wireless -f runs.ini -r 10
-\end{verbatim}
+\end{filelisting}
 
 To run the above script, type it in a text file called e.g. \ttt{run},
 give it \ttt{x} (executable) permission using \ttt{chmod},
 then you can execute it by typing \ttt{./run}:
 
-\begin{verbatim}
+\begin{commandline}
 $ chmod +x run
 $ ./run
-\end{verbatim}
+\end{commandline}
 
 You can simplify the above script by using a \textit{for} loop.
 In the example below, the variable \ttt{i} iterates through
@@ -527,21 +526,21 @@ It is very practical, since you can leave out or add runs,
 or change the order of runs by simply editing the list --
 to demonstrate this, we skip run 6, and include run 15 instead.
 
-\begin{verbatim}
+\begin{filelisting}
 #! /bin/sh
 for i in 3 2 1 4 5 7 15 8 9 10; do
    ./wireless -f runs.ini -r $i
 done
-\end{verbatim}
+\end{filelisting}
 
 If you have many runs, you can use a C-style loop:
 
-\begin{verbatim}
+\begin{filelisting}
 #! /bin/sh
 for ((i=1; $i<50; i++)); do
    ./wireless -f runs.ini -r $i
 done
-\end{verbatim}
+\end{filelisting}
 
 \subsection{Using opp\_runall}
 
@@ -573,9 +572,9 @@ of parallel runs allowed.
 \end{warning}
 
 The form of the command is:
-\begin{verbatim}
+\begin{commandline}
 opp_runall -j2 ./aloha -u Cmdenv -c PureAlohaExperiment -r 0..23
-\end{verbatim}
+\end{commandline}
 
 You can use the \ttt{-x ConfigName -g} command line options with your simulation to
 check the number of available runs.
@@ -679,9 +678,9 @@ Then you use \ttt{akrun} to start a simulation. \ttt{akrun} waits
 for the simulation to complete, and writes a report of the results
 to the standard output. The basic usage of the \ttt{akrun} command is:
 
-\begin{verbatim}
+\begin{commandline}
 akrun -n num_hosts command [argument..]
-\end{verbatim}
+\end{commandline}
 
 where \textit{command} is the name of the simulation you want to start.
 Parameters for Akaroa are read from the file named \ttt{Akaroa} in
@@ -861,40 +860,40 @@ Linux 2.4.x, the default stack limit is 8192K (that is, 8MB). The
 resource limits, and you can raise the allowed maximum stack size
 up to 64M.
 
-\begin{verbatim}
+\begin{commandline}
 $ ulimit -s 65500
 $ ulimit -s
 65500
-\end{verbatim}
+\end{commandline}
 
 Further increase is only possible if you're root.
 Resource limits are inherited by child processes.
 The following sequence can be used under Linux to get a shell with
 256M stack limit:
 
-\begin{verbatim}
+\begin{commandline}
 $ su root
 Password:
 # ulimit -s 262144
 # su andras
 $ ulimit -s
 262144
-\end{verbatim}
+\end{commandline}
 
 If you do not want to go through the above process at each login, you
 can change the limit in the PAM configuration files. In Redhat Linux
 (maybe other systems too), add the following line to
 \ttt{/etc/pam.d/login}:
 
-\begin{verbatim}
+\begin{filelisting}
 session    required    /lib/security/pam_limits.so
-\end{verbatim}
+\end{filelisting}
 
 and the following line to \ttt{/etc/security/limits.conf}:
 
-\begin{verbatim}
+\begin{filelisting}
 *    hard    stack    65536
-\end{verbatim}
+\end{filelisting}
 
 \begin{sloppypar}
 A more drastic solution is to recompile the kernel with a larger stack

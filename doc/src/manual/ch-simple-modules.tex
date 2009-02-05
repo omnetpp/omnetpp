@@ -2975,7 +2975,7 @@ is conventionally named INIT.
 FSMs can log their state transitions \ttt{ev}\index{ev},
 with the output looking like this:
 
-\begin{verbatim}
+\begin{filelisting}
 ...
 FSM GenState: leaving state SLEEP
 FSM GenState: entering state ACTIVE
@@ -2988,7 +2988,7 @@ FSM GenState: entering state ACTIVE
 FSM GenState: leaving state ACTIVE
 FSM GenState: entering state SLEEP
 ...
-\end{verbatim}
+\end{filelisting}
 
 To enable the above output, you have to \ttt{\#define FSM\_DEBUG}\index{FSM\_DEBUG}
 before including \ttt{omnetpp.h}.

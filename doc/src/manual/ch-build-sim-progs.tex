@@ -135,9 +135,9 @@ The most important options are:
 Once you have the source files (\ttt{*.ned}, \ttt{*.msg}, \ttt{*.cc},
 \ttt{*.h}) in a directory, change there and type:
 
-\begin{verbatim}
+\begin{commandline}
 $ opp_makemake
-\end{verbatim}
+\end{commandline}
 
 This will create a file named \ttt{Makefile}\index{Makefile}. If you
 type \fprog{make}, your simulation program should build.
@@ -147,17 +147,17 @@ If you already had a \ttt{Makefile} in that directory, \fprog{opp\_makemake}
 will refuse to overwrite it. You can force overwriting the old \ttt{Makefile}
 with the -f option:
 
-\begin{verbatim}
+\begin{commandline}
 $ opp_makemake -f
-\end{verbatim}
+\end{commandline}
 
 The name of the output file\index{output!file} will be derived from
 the name of the project directory (see later). You can override it
 with the \ttt{-o} option:
 
-\begin{verbatim}
+\begin{commandline}
 $ opp_makemake -f -o aloha
-\end{verbatim}
+\end{commandline}
 
 In addition to the default target that builds the simulation executable,
 the \ttt{Makefile} also contains the following targets:
@@ -178,15 +178,15 @@ clean &  Deletes all files that were produced by the make process\\\hline
 By default it creates debug version, but it is easy to override this behaviour.
 Just define the \ttt{MODE} variable on the \fprog{make} command line.
 
-\begin{verbatim}
+\begin{commandline}
 $ make MODE=release
-\end{verbatim}
+\end{commandline}
 
 If you want to create release builds by default you should use the \ttt{-{}-mode} \textit{mode}
 option for \fprog{opp\_makemake} when generating your makefiles.
-\begin{verbatim}
+\begin{commandline}
 $ opp_makemake --mode release ...
-\end{verbatim}
+\end{commandline}
 
 
 \subsection{Using external C/C++ libraries}
@@ -216,9 +216,9 @@ option. (Multiple \ttt{-X} options are accepted.)
 
 An example:
 
-\begin{verbatim}
+\begin{commandline}
 $ opp_makemake -f --deep -X experimental -X obsolete
-\end{verbatim}
+\end{commandline}
 
 
 \subsection{Automatic include dirs}
@@ -276,9 +276,9 @@ The location of the generated output file is determined by the -O option.
 (The default value is 'out', relative to the project root directory):
 
 
-\begin{verbatim}
+\begin{commandline}
 $ opp_makemake -O ../tmp/obj
-\end{verbatim}
+\end{commandline}
 
 
 \begin{note}
@@ -414,45 +414,45 @@ requires \ttt{mfcore} and \ttt{testSuite} requires \ttt{mfcontrib} (and indirect
 First create the makefile for the core directory (build a shared lib from all .cc files
 found in the core subtree and name it 'mfcore'):
 
-\begin{verbatim}
+\begin{commandline}
 $ cd core && opp_makemake -f --deep --make-so -o mfcore -O out
-\end{verbatim}
+\end{commandline}
 
 The contrib directory is depending on \ttt{mfcore} so we use the -L and -l options
 to specify the library we should link with. Note that we must also add
 the include directories manually from the core source tree, because autodiscovery works only
 in the same source tree:
 
-\begin{verbatim}
+\begin{commandline}
 $ cd contrib && opp_makemake -f --deep --make-so -o mfcontrib -O out \\
   -I../core/basicModules -I../core/utils -L../out/$(CONFIGNAME)/core -lmfcore
-\end{verbatim}
+\end{commandline}
 
 The testSuite will be created as an executable file which depends on both
 \ttt{mfcontrib} and \ttt{mfcore}.
 
-\begin{verbatim}
+\begin{commandline}
 $ cd testSuite && opp_makemake -f --deep -o testSuite -O out
     -I../core/utils -I../core/basicModules -I../contrib/utils \\
     -I../contrib/applLayer -L../out/$(CONFIGNAME)/contrib -lmfcontrib
-\end{verbatim}
+\end{commandline}
 
 Now the last step is to create a top-level makefile in the root of the project that
 calls the previously created makefiles in the correct order. We will use the
 \ttt{-{}-nolink} option, exclude every subdirectory from the build (-X.) and explicitly call
 the above makefiles (-d dirname).
 
-\begin{verbatim}
+\begin{commandline}
 $ opp_makemake -f --nolink -O out -d testSuite -d core -d contrib -X.
-\end{verbatim}
+\end{commandline}
 
 Finally we have to specify the dependencies between the above directories. Add the lines below
 to the \ttt{makefrag} file in the project directory root.
 
-\begin{verbatim}
+\begin{filelisting}
 contrib_dir: core_dir
 testSuite_dir: contrib_dir
-\end{verbatim}
+\end{filelisting}
 
 \ifcommercial
 \section{Using Windows and Microsoft Visual C++}

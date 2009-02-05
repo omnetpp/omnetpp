@@ -138,9 +138,9 @@ sections as well.
 When you run a simulation, you need to select one of the configurations
 to be activated. In Cmdenv, this is done with the \ttt{-c} command-line option:
 
-\begin{Verbatim}
+\begin{commandline}
 $ aloha -c PureAloha
-\end{Verbatim}
+\end{commandline}
 
 The simulation will then use the contents of the \ttt{[Config PureAloha]}
 section to set up the simulation. (Tkenv, of course, lets you select
@@ -405,14 +405,14 @@ How does it get run? First of all, Cmdenv with the '-x' option will tell you how
 simulation runs a given section expands to. (You'll of course use Cmdenv for batch runs,
 not Tkenv.)
 
-\begin{Verbatim}[commandchars=\\\{\}]
+\begin{commandline}[commandchars=\\\{\}]
 \$ aloha -u Cmdenv -x AlohaStudy
 
 {\opp} Discrete Event Simulation
 ...
 Config: AlohaStudy
 Number of runs: 24
-\end{Verbatim}
+\end{commandline}
 
 
 If you add the '-g' option, the program will also print out the
@@ -426,7 +426,7 @@ meaningful names to them. Please ignore the
 for now.
 
 
-\begin{Verbatim}[commandchars=\\\{\}]
+\begin{commandline}[commandchars=\\\{\}]
 \$ aloha -u Cmdenv -x AlohaStudy -g
 {\opp} Discrete Event Simulation
 ...
@@ -446,7 +446,7 @@ Run 20: \$0=40, \$1=0.6, \$repetition=0
 Run 21: \$0=50, \$1=0.2, \$repetition=0
 Run 22: \$0=50, \$1=0.4, \$repetition=0
 Run 23: \$0=50, \$1=0.6, \$repetition=0
-\end{Verbatim}
+\end{commandline}
 
 
 Any of these runs can be executed by passing the '-r
@@ -454,13 +454,13 @@ Any of these runs can be executed by passing the '-r
 So, the task is now to run the simulation program 24 times, with
 '-r' running from 0 through 23:
 
-\begin{Verbatim}[commandchars=\\\{\}]
-\$ aloha -u Cmdenv -c AlohaStudy -r 0
-\$ aloha -u Cmdenv -c AlohaStudy -r 1
-\$ aloha -u Cmdenv -c AlohaStudy -r 2
+\begin{commandline}
+$ aloha -u Cmdenv -c AlohaStudy -r 0
+$ aloha -u Cmdenv -c AlohaStudy -r 1
+$ aloha -u Cmdenv -c AlohaStudy -r 2
 ...
-\$ aloha -u Cmdenv -c AlohaStudy -r 23
-\end{Verbatim}
+$ aloha -u Cmdenv -c AlohaStudy -r 23
+\end{commandline}
 
 
 This batch can be executed either from the {\opp} IDE (where you are
@@ -472,7 +472,7 @@ Actually, it is also possible to get Cmdenv execute all runs in one go,
 by simply omitting the '-r' option.
 
 
-\begin{Verbatim}[commandchars=\\\{\}]
+\begin{commandline}[commandchars=\\\{\}]
 \$ aloha -u Cmdenv -c AlohaStudy
 
 {\opp} Discrete Event Simulation
@@ -482,7 +482,7 @@ Preparing for running configuration AlohaStudy, run \#1...
 ...
 ...
 Preparing for running configuration AlohaStudy, run \#23...
-\end{Verbatim}
+\end{commandline}
 
 
 However, this approach is not recommended, because it is more
@@ -1074,11 +1074,11 @@ so that the generated sequences don't overlap.
 The run number can be specified either in in omnetpp.ini (e.g. via the
 \ttt{cmdenv-runs-to-execute=} entry) or on the command line:
 
-\begin{verbatim}
+\begin{commandline}
 ./mysim -r 1
 ./mysim -r 2
 ./mysim -r 3
-\end{verbatim}
+\end{commandline}
 
 For the \ttt{cMersenneTwister} random number generator, selecting seeds
 so that the generated sequences don't overlap is easy,

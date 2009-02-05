@@ -152,7 +152,7 @@
 %%
 \lstloadlanguages{C++,make,perl,tcl,XML,R,Matlab}
 
-%% See listings-1.pdf,pp20
+%% See listings.pdf,pp20
 \lstdefinelanguage{NED} {
     morekeywords={allowunconnected,bool,channel,channelinterface,connections,const,
                   default,double,extends,false,for,gates,if,import,index,inout,input,
@@ -178,14 +178,24 @@
     morestring=[b]",
 }
 
-\lstset{basicstyle=\ttfamily,showstringspaces=false,frame=leftline,framesep=10pt,framerule=3pt,xleftmargin=15pt}
+%% thick ruler on the left
+\lstset{
+    basicstyle=\ttfamily,
+    showstringspaces=false,
+    frame=leftline,
+    framesep=10pt,
+    framerule=3pt,
+    xleftmargin=15pt
+}
 
-\definecolor{NEDRulerColor}{rgb}{0.8,1.0,0.8}
-\definecolor{MSGRulerColor}{rgb}{0.8,1.0,0.8}
-\definecolor{CPPRulerColor}{rgb}{0.8,0.8,1.0}
-\definecolor{IniRulerColor}{rgb}{0.9,0.9,0.2}
+\definecolor{NEDRulerColor}{rgb}{0.8,1.0,0.8}  % pale green
+\definecolor{MSGRulerColor}{rgb}{0.8,1.0,0.8}  % pale green
+\definecolor{CPPRulerColor}{rgb}{0.8,0.8,1.0}  % pale blue
+\definecolor{IniRulerColor}{rgb}{0.9,0.9,0.2}  % pale yellow
+\definecolor{FileListingRulerColor}{rgb}{0.85,0.85,0.85}  % grey
+%\definecolor{CommandLineRulerColor}{rgb}{0.9,0.9,0.2}
 
-%% See listings-1.pdf,pp39
+%% See listings.pdf,pp39
 \lstnewenvironment{ned}
     {\lstset{language=NED,rulecolor=\color{NEDRulerColor}}}
     {}
@@ -197,6 +207,12 @@
     {}
 \lstnewenvironment{inifile}
     {\lstset{language=inifile,rulecolor=\color{IniRulerColor}}}
+    {}
+\lstnewenvironment{filelisting}
+    {\lstset{language={},rulecolor=\color{FileListingRulerColor}}}
+    {}
+\lstnewenvironment{commandline}
+    {\lstset{language={},framesep=11pt,framerule=1pt,xleftmargin=16pt}}
     {}
 
 %%
