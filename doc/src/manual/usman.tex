@@ -148,9 +148,11 @@
     morestring=[b]",
 }
 
+\definecolor{RulerColor}{rgb}{0.8,0.8,0.8}
+
 %% See listings-1.pdf,pp39
 \lstnewenvironment{ned}
-    {\lstset{language=NED,basicstyle=\ttfamily}}
+    {\lstset{language=NED,basicstyle=\ttfamily,frame=leftline,framesep=10pt,framerule=3pt,rulecolor=\color{RulerColor},xleftmargin=15pt}}
     {}
 
 
