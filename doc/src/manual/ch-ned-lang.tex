@@ -118,23 +118,23 @@ Let the network topology be as in Figure \ref{fig:ned-routing-topology}.
 
 The corresponding NED description would look like this:
 
-\begin{Verbatim}
+\begin{Verbatim}[commandchars=\\\{\}]
 //
 // A network
 //
-network Network
-{
-    submodules:
+\tbf{network} Network
+\{
+    \tbf{submodules}:
         node1: Node;
         node2: Node;
         node3: Node;
         ...
-    connections:
-        node1.port++ <--> {datarate=100Mbps;} <--> node2.port++;
-        node2.port++ <--> {datarate=100Mbps;} <--> node4.port++;
-        node4.port++ <--> {datarate=100Mbps;} <--> node6.port++;
+    \tbf{connections}:
+        node1.port++ <--> \{datarate=100Mbps;\} <--> node2.port++;
+        node2.port++ <--> \{datarate=100Mbps;\} <--> node4.port++;
+        node4.port++ <--> \{datarate=100Mbps;\} <--> node6.port++;
         ...
-}
+\}
 \end{Verbatim}
 
 The above code defines a network type named \ttt{Network}. Note that the NED
@@ -193,27 +193,27 @@ namespace.
 
 The improved network will look like this:
 
-\begin{Verbatim}
+\begin{Verbatim}[commandchars=\\\{\}]
 //
 // A Network
 //
-network Network
-{
-    types:
-        channel C extends ned.DatarateChannel {
+\tbf{network} Network
+\{
+    \tbf{types}:
+        \tbf{channel} C \tbf{extends} ned.DatarateChannel \{
             datarate = 100Mbps;
-        }
-    submodules:
+        \}
+    \tbf{submodules}:
         node1: Node;
         node2: Node;
         node3: Node;
         ...
-    connections:
+    \tbf{connections}:
         node1.port++ <--> C <--> node2.port++;
         node2.port++ <--> C <--> node4.port++;
         node4.port++ <--> C <--> node6.port++;
         ...
-}
+\}
 \end{Verbatim}
 
 Later sections will cover the concepts used (inner types, channels, the
@@ -238,21 +238,21 @@ For brevity, we omit the bodies of the latter two in the code below.
 \begin{Verbatim}[commandchars=\\\{\}]
 simple App
 \{
-    parameters:
-        int destAddress;
+    \tbf{parameters}:
+        \tbf{int} destAddress;
         ...
         @display("i=block/browser");
-    gates:
-        input in;
-        output out;
+    \tbf{gates}:
+        \tbf{input} in;
+        \tbf{output} out;
 \}
 
-simple Routing
+\tbf{simple} Routing
 \{
     ...
 \}
 
-simple Queue
+\tbf{simple} Queue
 \{
     ...
 \}
@@ -300,20 +300,20 @@ networks are also a kind of compound module.
 \end{figure}
 
 \begin{Verbatim}[commandchars=\\\{\}]
-module Node
+\tbf{module} Node
 \{
-    parameters:
+    \tbf{parameters}:
         @display("i=misc/node_vs,gold");
-    gates:
-        inout port[];
-    submodules:
+    \tbf{gates}:
+        \tbf{inout} port[];
+    \tbf{submodules}:
         app: App;
         routing: Routing;
-        queue[sizeof(port)]: Queue;
-    connections:
+        queue[\tbf{sizeof}(port)]: Queue;
+    \tbf{connections}:
         routing.localOut --> app.in;
         routing.localIn <-- app.out;
-        for i=0..sizeof(port)-1 \{
+        \tbf{for} i=0..\tbf{sizeof}(port)-1 \{
             routing.out[i] --> queue[i].in;
             routing.in[i] <-- queue[i].out;
             queue[i].line <--> port[i];
@@ -381,14 +381,14 @@ Simple modules are defined with the \fkeyword{simple} keyword.
 An example simple module:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-simple Queue
+\tbf{simple} Queue
 \{
-    parameters:
-        int capacity;
+    \tbf{parameters}:
+        \tbf{int} capacity;
         @display("i=block/queue");
-    gates:
-        input in;
-        output out;
+    \tbf{gates}:
+        \tbf{input} in;
+        \tbf{output} out;
 \}
 \end{Verbatim}
 
@@ -406,15 +406,15 @@ Classes with namespace qualifiers are also accepted, as shown in the following
 example that uses the \ttt{mylib::Queue} class:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-simple Queue
+\tbf{simple} Queue
 \{
-    parameters:
-        int capacity;
+    \tbf{parameters}:
+        \tbf{int} capacity;
         @class(mylib::Queue);
         @display("i=block/queue");
-    gates:
-        input in;
-        output out;
+    \tbf{gates}:
+        \tbf{input} in;
+        \tbf{output} out;
 \}
 \end{Verbatim}
 
@@ -424,20 +424,20 @@ C++ namespace given with \ttt{@namespace} will be prepended to the normal
 class name. In the following example, the C++ classes will be
 \ttt{mylib::App}, \ttt{mylib::Router} and \ttt{mylib::Queue}:
 
-\begin{Verbatim}
+\begin{Verbatim}[commandchars=\\\{\}]
 @namespace(mylib);
 
-simple App {
+\tbf{simple} App \{
    ...
-}
+\}
 
-simple Router {
+\tbf{simple} Router \{
    ...
-}
+\}
 
-simple Queue {
+\tbf{simple} Queue \{
    ...
-}
+\}
 \end{Verbatim}
 
 As you've seen, \ttt{@namespace} can be specified on file level. Moreover,
@@ -459,37 +459,37 @@ write out \ttt{@class} if you want it to use the new class.
 The following example shows how to specialize a module by setting a parameter
 to a fixed value (and leaving the C++ class unchanged):
 
-\begin{Verbatim}
-simple Queue
-{
-   int capacity;
+\begin{Verbatim}[commandchars=\\\{\}]
+\tbf{simple} Queue
+\{
+   \tbf{int} capacity;
    ...
-}
+\}
 
-simple BoundedQueue extends Queue
-{
+\tbf{simple} BoundedQueue \tbf{extends} Queue
+\{
    capacity = 10;
-}
+\}
 \end{Verbatim}
 
 In the next example, the author wrote a \ttt{PriorityQueue} C++ class, and
 wants to have a corresponding NED type, derived from \ttt{Queue}. However,
 it does not work as expected:
 
-\begin{Verbatim}
-simple PriorityQueue extends Queue // wrong! still uses the Queue C++ class
-{
-}
+\begin{Verbatim}[commandchars=\\\{\}]
+\tbf{simple} PriorityQueue \tbf{extends} Queue // wrong! still uses the Queue C++ class
+\{
+\}
 \end{Verbatim}
 
 The correct solution is to add a \ttt{@class} property to override the
 inherited C++ class:
 
-\begin{Verbatim}
-simple PriorityQueue extends Queue
-{
+\begin{Verbatim}[commandchars=\\\{\}]
+\tbf{simple} PriorityQueue \tbf{extends} Queue
+\{
    @class(PriorityQueue);
-}
+\}
 \end{Verbatim}
 
 Inheritance in general will be discussed in section \ref{sec:ch-ned-lang:inheritance}.
@@ -512,20 +512,20 @@ no active behavior (no C++ code) is associated with it.
 A compound module declaration may contain several sections,
 all of them optional:
 
-\begin{Verbatim}
-module Host
-{
-   types:
+\begin{Verbatim}[commandchars=\\\{\}]
+\tbf{module} Host
+\{
+   \tbf{types}:
        ...
-   parameters:
+   \tbf{parameters}:
        ...
-   gates:
+   \tbf{gates}:
        ...
-   submodules:
+   \tbf{submodules}:
        ...
-   connections:
+   \tbf{connections}:
        ...
-}
+\}
 \end{Verbatim}
 
 Modules contained in a compound module are called submodules, and they are
@@ -553,48 +553,48 @@ into a "stub" for wireless hosts, and add user agents via
 subclassing.\footnote{Module types, gate names, etc. used in the example
 are fictional, not based on an actual {\opp}-based model framework}
 
-\begin{Verbatim}
-module WirelessHostBase
-{
-   gates:
-       input radioIn;
-   submodules:
+\begin{Verbatim}[commandchars=\\\{\}]
+\tbf{module} WirelessHostBase
+\{
+   \tbf{gates}:
+       \tbf{input} radioIn;
+   \tbf{submodules}:
        tcp: TCP;
        ip: IP;
        wlan: Ieee80211;
-   connections:
+   \tbf{connections}:
        tcp.ipOut --> ip.tcpIn;
        tcp.ipIn <-- ip.tcpOut;
        ip.nicOut++ --> wlan.ipIn;
        ip.nicIn++ <-- wlan.ipOut;
        wlan.radioIn <-- radioIn;
-}
+\}
 
-module WirelessUser extends WirelessHostBase
-{
-   submodules:
+\tbf{module} WirelessUser \tbf{extends} WirelessHostBase
+\{
+   \tbf{submodules}:
        webAgent: WebAgent;
-   connections:
+   \tbf{connections}:
        webAgent.tcpOut --> tcp.appIn++;
        webAgent.tcpIn <-- tcp.appOut++;
-}
+\}
 \end{Verbatim}
 
 The \ttt{WirelessUser} compound module can further be extended,
 for example with an Ethernet port:
 
-\begin{Verbatim}
-module DesktopUser extends WirelessUser
-{
-   gates:
-       inout ethg;
-   submodules:
+\begin{Verbatim}[commandchars=\\\{\}]
+\tbf{module} DesktopUser \tbf{extends} WirelessUser
+\{
+   \tbf{gates}:
+       \tbf{inout} ethg;
+   \tbf{submodules}:
        eth: EthernetNic;
-   connections:
+   \tbf{connections}:
        ip.nicOut++ --> eth.ipIn;
        ip.nicIn++ <-- eth.ipOut;
        eth.phy <--> ethg;
-}
+\}
 \end{Verbatim}
 
 
@@ -612,10 +612,10 @@ observed), and the C++ class is inherited when the channel is subclassed.
 Thus, the following channel type would expect a \ttt{CustomChannel} C++ class
 to be present:
 
-\begin{Verbatim}
-channel CustomChannel  // needs a CustomChannel C++ class
-{
-}
+\begin{Verbatim}[commandchars=\\\{\}]
+\tbf{channel} CustomChannel  // needs a CustomChannel C++ class
+\{
+\}
 \end{Verbatim}
 
 The practical difference to modules is that you rarely need to write you own
@@ -671,7 +671,7 @@ The following example shows how to create a new channel type by
 specializing \ttt{DatarateChannel}:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-channel C extends ned.DatarateChannel
+\tbf{channel} C \tbf{extends} ned.DatarateChannel
 \{
     datarate = 100Mbps;
     delay = 100us;
@@ -689,10 +689,10 @@ modify existing ones. In the following example, we introduce length-based
 calculation of the propagation delay:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-channel DatarateChannel2 extends ned.DatarateChannel
+\tbf{channel} DatarateChannel2 \tbf{extends} ned.DatarateChannel
 \{
-    double length @unit(m);
-    delay = this.length / 200000km * 1s;
+    \tbf{double} length @unit(m);
+    \tbf{delay} = \tbf{this}.length / 200000km * 1s;
 \}
 \end{Verbatim}
 
@@ -705,10 +705,10 @@ shows a \ttt{cost} parameter, and annotation using a property
 (\ttt{@backbone}).
 
 \begin{Verbatim}[commandchars=\\\{\}]
-channel Backbone extends ned.DatarateChannel
+\tbf{channel} Backbone \tbf{extends} ned.DatarateChannel
 \{
     @backbone;
-    double cost = default(1);
+    \tbf{double} cost = \tbf{default}(1);
 \}
 \end{Verbatim}
 
@@ -734,14 +734,14 @@ which gets used if the parameter is not assigned otherwise.
 Let use see an example before we go into details:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-simple App
+\tbf{simple} App
 \{
-    parameters:
-        int address;  // local node address
-        string destAddresses;  // destination addresses
-        volatile double sendIaTime @unit(s) = default(exponential(1s));
+    \tbf{parameters}:
+        \tbf{int} address;  // local node address
+        \tbf{string} destAddresses;  // destination addresses
+        \tbf{volatile double} sendIaTime @unit(s) = \tbf{default}(exponential(1s));
                                // time between generating packets
-        volatile int packetLength @unit(byte);  // length of one packet
+        \tbf{volatile int} packetLength @unit(byte);  // length of one packet
     ...
 \}
 \end{Verbatim}
@@ -832,22 +832,22 @@ and from \ttt{omnetpp.ini}.
 
 XXX add a complete example!
 
-\begin{verbatim}
-simple TrafficGenerator {
-    parameters:
-        xml profile;
-    gates:
-        output out;
-}
+\begin{Verbatim}[commandchars=\\\{\}]
+\tbf{simple} TrafficGenerator \{
+    \tbf{parameters}:
+        \tbf{xml} profile;
+    \tbf{gates}:
+        \tbf{output} out;
+\}
 
-module TrafficGenerator {
+\tbf{module} TrafficGenerator \{
     XXX several submods, and assign!
-    parameters:
-        xml profile;
-    gates:
-        output out;
-}
-\end{verbatim}
+    \tbf{parameters}:
+        \tbf{xml} profile;
+    \tbf{gates}:
+        \tbf{output} out;
+\}
+\end{Verbatim}
 
 XXX example 2, with xpath!
 
@@ -892,77 +892,77 @@ In the following example, the \ttt{Classifier} module has one input for
 receiving jobs, which it will send to one of the outputs. The number of
 outputs is determined by a module parameter:
 
-\begin{verbatim}
-simple Classifier {
-    parameters:
-        int numCategories;
-    gates:
-        input in;
-        output out[numCategories];
-}
-\end{verbatim}
+\begin{Verbatim}[commandchars=\\\{\}]
+\tbf{simple} Classifier \{
+    \tbf{parameters}:
+        \tbf{int} numCategories;
+    \tbf{gates}:
+        \tbf{input} in;
+        \tbf{output} out[numCategories];
+\}
+\end{Verbatim}
 
 The following \ttt{Sink} module also has its \ttt{in[]} gate defined
 as vector, so that it can be connected to several modules:
 
-\begin{verbatim}
-simple Sink {
-    gates:
-        input in[];
-}
-\end{verbatim}
+\begin{Verbatim}[commandchars=\\\{\}]
+\tbf{simple} Sink \{
+    \tbf{gates}:
+        \tbf{input} in[];
+\}
+\end{Verbatim}
 
 A node for building a square grid. Gates around the edges of the grid are
 expected to remain unconnected, hence the \ttt{@loose} annotation:
 
-\begin{verbatim}
-simple GridNode {
-    gates:
-        inout neighbour[4] @loose;
-}
-\end{verbatim}
+\begin{Verbatim}[commandchars=\\\{\}]
+\tbf{simple} GridNode \{
+    \tbf{gates}:
+        \tbf{inout} neighbour[4] @loose;
+\}
+\end{Verbatim}
 
 \ttt{WirelessNode} below is expected to receive messages (radio transmissions)
 via direct sending, so its \ttt{radioIn} gate is marked with \ttt{@directIn}.
 
-\begin{verbatim}
-simple WirelessNode {
-    gates:
-        input radioIn @directIn;
-}
-\end{verbatim}
+\begin{Verbatim}[commandchars=\\\{\}]
+\tbf{simple} WirelessNode \{
+    \tbf{gates}:
+        \tbf{input} radioIn @directIn;
+\}
+\end{Verbatim}
 
 In the following example, we define \ttt{TreeNode} as having gates to connect
 any number of children, then subclass it to get a \ttt{BinaryTreeNode} to
 set the gate size to two:
 
-\begin{verbatim}
-simple TreeNode {
-    gates:
-        inout parent;
-        inout children[];
-}
+\begin{Verbatim}[commandchars=\\\{\}]
+\tbf{simple} TreeNode \{
+    \tbf{gates}:
+        \tbf{inout} parent;
+        \tbf{inout} children[];
+\}
 
-simple BinaryTreeNode extends TreeNode {
-    gates:
+\tbf{simple} BinaryTreeNode \tbf{extends} TreeNode \{
+    \tbf{gates}:
         children[2];
-}
-\end{verbatim}
+\}
+\end{Verbatim}
 
 An example for setting the gate vector size in a submodule, using the same
 \ttt{TreeNode} module type as above:
 
-\begin{verbatim}
-module BinaryTree {
-    submodules:
-        nodes[31]: TreeNode {
-            gates:
+\begin{Verbatim}[commandchars=\\\{\}]
+\tbf{module} BinaryTree \{
+    \tbf{submodules}:
+        nodes[31]: TreeNode \{
+            \tbf{gates}:
                 children[2];
-        }
-    connections:
+        \}
+    \tbf{connections}:
         ...
-}
-\end{verbatim}
+\}
+\end{Verbatim}
 
 
 
@@ -987,22 +987,22 @@ display string (\ttt{@display}).
 
 XXX kettevenni a kovetkezo peldat:
 \begin{Verbatim}[commandchars=\\\{\}]
-module Node
+\tbf{module} Node
 \{
-    gates:
-        inout port[];
-    submodules:
+    \tbf{gates}:
+        \tbf{inout} port[];
+    \tbf{submodules}:
         routing: Routing \{
-            parameters:   // this keyword is optional
+            \tbf{parameters}:   // this keyword is optional
                 routingTable = "routingtable.txt"; // assign parameter
-            gates:
-                in[sizeof(port)];  // set gate vector size
-                out[sizeof(port)];
+            \tbf{gates}:
+                in[\tbf{sizeof}(port)];  // set gate vector size
+                out[\tbf{sizeof}(port)];
         \}
 
-        queue[sizeof(port)]: Queue;
+        queue[\tbf{sizeof}(port)]: Queue;
 
-    connections:
+    \tbf{connections}:
         ...
 \}
 \end{Verbatim}
@@ -1010,31 +1010,31 @@ module Node
 A submodule vector may also be used to implement a conditional submodule:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-module Host
+\tbf{module} Host
 \{
-    parameters:
-        bool withTCP = default(true);
-    submodules:
+    \tbf{parameters}:
+        \tbf{bool} withTCP = \tbf{default}(\tbf{true});
+    \tbf{submodules}:
         tcp[withTCP ? 1 : 0]: TCP;
         ...
-    connections:
-        tcp[0].ipOut --> ip.tcpIn if withTCP;
-        tcp[0].ipIn <-- ip.tcpOut if withTCP;
+    \tbf{connections}:
+        tcp[0].ipOut --> ip.tcpIn \tbf{if} withTCP;
+        tcp[0].ipIn <-- ip.tcpOut \tbf{if} withTCP;
         ...
 \}
 \end{Verbatim}
 
 An empty body may be omitted, that is,
 
-\begin{Verbatim}
+\begin{Verbatim}[commandchars=\\\{\}]
       queue: Queue;
 \end{Verbatim}
 
 is the same as
 
-\begin{Verbatim}
-      queue: Queue {
-      }
+\begin{Verbatim}[commandchars=\\\{\}]
+      queue: Queue \{
+      \}
 \end{Verbatim}
 
 Display strings specified here will be merged with the display string
@@ -1079,7 +1079,7 @@ are similar to submodules in many respect.
 
 Let's see some examples:
 
-\begin{Verbatim}
+\begin{Verbatim}[commandchars=\\\{\}]
 <--> {delay=10ms;} <-->
 <--> {delay=10ms; datarate=1e-8;} <-->
 <--> C <-->
@@ -1118,7 +1118,7 @@ One can create a chain\index{chain} of modules like this:
 \begin{Verbatim}[commandchars=\\\{\}]
 \tbf{module} Chain
     \tbf{parameters}:
-        int count;
+        \tbf{int} count;
     \tbf{submodules}:
         node[count] : Node \{
             \tbf{gates}:
@@ -1146,7 +1146,7 @@ One can build a binary tree\index{binary tree} in the following way:
 
 \tbf{module} BinaryTree \{
     \tbf{parameters}:
-        int height;
+        \tbf{int} height;
     \tbf{submodules}:
         node[2^height-1]: BinaryTreeNode;
     \tbf{connections} \tbf{allowunconnected}:
@@ -1175,13 +1175,13 @@ generates a random subgraph of a full graph:
 \begin{Verbatim}[commandchars=\\\{\}]
 \tbf{module} RandomGraph \{
     \tbf{parameters}:
-        int count;
-        double connectedness; // 0.0<x<1.0
+        \tbf{int} count;
+        \tbf{double} connectedness; // 0.0<x<1.0
     \tbf{submodules}:
         node[count]: Node \{
             \tbf{gates}:
-                \tbf{in}[count];
-                \tbf{out}[count];
+                in[count];
+                out[count];
         \}
     \tbf{connections} \tbf{allowunconnected}:
         \tbf{for} i=0..count-1, j=0..count-1 \{
@@ -1214,8 +1214,8 @@ condition is used to ``carve out'' the necessary interconnection from
 the full graph:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-for i=0..N-1, j=0..N-1 \{
-    node[i].out[...] --> node[j].in[...] if condition(i,j);
+\tbf{for} i=0..N-1, j=0..N-1 \{
+    node[i].out[...] --> node[j].in[...] \tbf{if} condition(i,j);
 \}
 \end{Verbatim}
 
@@ -1238,7 +1238,7 @@ The pattern loops through all nodes and creates the necessary
 connections for each one. It can be generalized like this:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-for i=0..Nnodes, j=0..Nconns(i)-1 \{
+\tbf{for} i=0..Nnodes, j=0..Nconns(i)-1 \{
     node[i].out[j] --> node[rightNodeIndex(i,j)].in[j];
 \}
 \end{Verbatim}
@@ -1258,7 +1258,7 @@ function can be formulated.
 A third pattern is to list all connections within a loop:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-for i=0..Nconnections-1 \{
+\tbf{for} i=0..Nconnections-1 \{
     node[leftNodeIndex(i)].out[...] --> node[rightNodeIndex(i)].in[...];
 \}
 \end{Verbatim}
@@ -1284,43 +1284,58 @@ A submodule type may be specified with a module parameter of the type
 \fkeyword{string}, or in general, with any string-typed expression.
 The syntax uses the \fkeyword{like} keyword.
 
-\begin{Verbatim}
-network Net6
-{
-    parameters:
-        string nodeType;
-    submodules:
-        node[5]: <nodeType> like INode {
-            address = index;
-        }
-    connections:
+Let us begin with an example:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\tbf{network} Net6
+\{
+    \tbf{parameters}:
+        \tbf{string} nodeType;
+    \tbf{submodules}:
+        node[6]: <nodeType> \tbf{like} INode \{
+            address = \tbf{index};
+        \}
+    \tbf{connections}:
         ...
-}
+\}
 \end{Verbatim}
 
+It creates a submodule vector whose module type will come from the
+\ttt{nodeType} parameter. For example, if \ttt{nodeType="SensorNode"},
+then the module vector will consist of sensor nodes (provided such module
+type exists and it qualifies -- the latter will be explained right now).
+
+The missing piece is the \ttt{like INode} bit. \ttt{INode} must be
+an existing \textit{module interface}, which the \ttt{SensorNode}
+module type must implement (more about this later).
+
+The corresponding NED declarations:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\tbf{moduleinterface} INode
+\{
+    \tbf{parameters}:
+        \tbf{int} address;
+    \tbf{gates}:
+        \tbf{inout} port[];
+\}
+\end{Verbatim}
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\tbf{module} SensorNode \tbf{like} INode
+\{
+    \tbf{parameters}:
+        \tbf{int} address;
+        ...
+    \tbf{gates}:
+        \tbf{inout} port[];
+        ...
+\}
+\end{Verbatim}
+
+of course, typ
+XXX expressions accepted; show a some examples
 XXX Note: parser may get confused around <>; you may help it by adding parens, i.e. <(typeName+"Module")>
-
-\begin{Verbatim}
-moduleinterface INode
-{
-    parameters:
-        int address;
-    gates:
-        inout port[];
-}
-\end{Verbatim}
-
-\begin{Verbatim}
-module SomeNode like INode
-{
-    parameters:
-        int address;
-        ...
-    gates:
-        inout port[];
-        ...
-}
-\end{Verbatim}
 
 
 \section{Properties (metadata annotations)}
@@ -1347,29 +1362,29 @@ identical properties.
 
 The following example shows the syntax for annotating various NED elements:
 
-\begin{Verbatim}
+\begin{Verbatim}[commandchars=\\\{\}]
 @prop;  // file property
 
-module Example
-{
-    parameters:
+\tbf{module} Example
+\{
+    \tbf{parameters}:
        @prop;   // module property
-       int a @prop = default(1); // parameter property
-    gates:
-       output out @prop;
-    submodules:
-       src: Source {
-           parameters:
+       \tbf{int} a @prop = \tbf{default}(1); // parameter property
+    \tbf{gates}:
+       \tbf{output} out @prop;
+    \tbf{submodules}:
+       src: Source \{
+           \tbf{parameters}:
               @prop;  // submodule property
               count @prop;  // adding a property to a parameter
-           gates:
+           \tbf{gates}:
               out[] @prop;  // adding a property to a gate
-       }
+       \}
        ...
-    connections:
-       src.out++ --> { @prop; }--> sink1.in;
-       src.out++ --> Channel { @prop; }--> sink2.in;
-}
+    \tbf{connections}:
+       src.out++ --> \{ @prop; \} --> sink1.in;
+       src.out++ --> Channel \{ @prop; \} --> sink2.in;
+\}
 \end{Verbatim}
 
 
@@ -1378,19 +1393,19 @@ module Example
 Properties may contain data, given in parentheses; the data model is quite
 flexible. Properties may contain lists:
 
-\begin{Verbatim}
+\begin{Verbatim}[commandchars=\\\{\}]
 @enum(Sneezy,Sleepy,Dopey,Doc,Happy,Bashful,Grumpy);
 \end{Verbatim}
 
 They may contain key-value pairs, separated by semicolons:
 
-\begin{Verbatim}
+\begin{Verbatim}[commandchars=\\\{\}]
 @coords(x=10.31; y=30.2; unit=km);
 \end{Verbatim}
 
 In key-value pairs, each value can be a (comma-separated) list:
 
-\begin{Verbatim}
+\begin{Verbatim}[commandchars=\\\{\}]
 @nodeinfo(id=742;labels=swregion,routers,critical);
 \end{Verbatim}
 
@@ -1427,7 +1442,7 @@ tag.
 
 When you subclass a NED type, use a module type as submodule or use a channel
 type for a connection, you may add new properties to the module or channel,
-or to its parameters and gates., and you can also modify existing properties.
+or to its parameters and gates, and you can also modify existing properties.
 
 When modifying a property, the new property gets merged with the old one,
 with a few simple rules. New keys simply get added. If a key already
@@ -1487,18 +1502,18 @@ a completely hypothetical example -- {\opp} does not presently support
 declaring statistics using properties.} The statistic names are
 used as indices:
 
-\begin{Verbatim}
-simple App {
+\begin{Verbatim}[commandchars=\\\{\}]
+\tbf{simple} App \{
     // declare two statistics collected by the C++ code
     @statistic[packetsReceived](type=integer;label="Number of packets received");
     @statistic[responseTime](type=double;unit=s;label="Application response time");
     ...
-}
+\}
 
-simple HttpApp extends App {
+\tbf{simple} HttpApp \tbf{extends} App \{
     // tailor the label of the "packetsReceived" statistic:
     @statistic[packetsReceived](label="Number of HTTP requests received");
-}
+\}
 \end{Verbatim}
 
 
@@ -1584,8 +1599,8 @@ gets listed in NEDPATH), then the package name is \ttt{a.b.c}.
 The package name has to be explicitly declared at the top of the NED
 files as well, like this:
 
-\begin{Verbatim}
-package a.b.c;
+\begin{Verbatim}[commandchars=\\\{\}]
+\tbf{package} a.b.c;
 \end{Verbatim}
 
 The package name that follows from the directory name and the declared
@@ -1645,21 +1660,21 @@ folders, so NEDPATH is the following (provided INET was unpacked in
 Both \ttt{src} and \ttt{examples} contain \fname{package.ned} files to
 define the root package:
 
-\begin{Verbatim}
+\begin{Verbatim}[commandchars=\\\{\}]
 // INET/src/package.ned:
-package inet;
+\tbf{package} inet;
 \end{Verbatim}
 
-\begin{Verbatim}
+\begin{Verbatim}[commandchars=\\\{\}]
 // INET/examples/package.ned:
-package inet.examples;
+\tbf{package} inet.examples;
 \end{Verbatim}
 
 And other NED files follow the package defined in \fname{package.ned}:
 
-\begin{Verbatim}
+\begin{Verbatim}[commandchars=\\\{\}]
 // INET/src/transport/tcp/TCP.ned:
-package inet.transport.tcp;
+\tbf{package} inet.transport.tcp;
 \end{Verbatim}
 
 
@@ -1727,15 +1742,15 @@ If there's none or there's more than one, it will be reported as an error.
 
 Let us see the following example:
 
-\begin{Verbatim}
-module MobileHost
-{
-    parameters:
-        string mobilityType;
-    submodules:
-        mobility: <mobilityType> like IMobility;
+\begin{Verbatim}[commandchars=\\\{\}]
+\tbf{module} MobileHost
+\{
+    \tbf{parameters}:
+        \tbf{string} mobilityType;
+    \tbf{submodules}:
+        mobility: <mobilityType> \tbf{like} IMobility;
         ...
-}
+\}
 \end{Verbatim}
 
 and suppose that the following modules implement the \ttt{IMobility} module
