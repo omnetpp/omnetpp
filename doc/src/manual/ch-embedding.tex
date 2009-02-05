@@ -105,7 +105,7 @@ Here's an minimalistic program that initializes the simulation library,
 and runs two simulations. In later sections we'll go through details
 of the code and discuss how to elaborate it.
 
-\begin{verbatim}
+\begin{cpp}
 #include <omnetpp.h>
 
 int main(int argc, char *argv[])
@@ -128,7 +128,7 @@ int main(int argc, char *argv[])
 
     return 0;
 }
-\end{verbatim}
+\end{cpp}
 
 The first few lines of the code initialize the simulation library. The
 purpose of \cclass{cStaticFlag} is to set a global variable to \ttt{true}
@@ -159,7 +159,7 @@ For conciseness, we omitted exception handling code (\ttt{try}/\ttt{catch} block
 except for the event loop, but marked every line with ``\ttt{E!}'' where various
 problems with the simulation model can manifest as exceptions.
 
-\begin{verbatim}
+\begin{cpp}
 void simulate(const char *networkName, simtime_t limit)
 {
     // look up network type
@@ -207,7 +207,7 @@ void simulate(const char *networkName, simtime_t limit)
     cSimulation::setActiveSimulation(NULL);
     delete sim; // deletes env as well
 }
-\end{verbatim}
+\end{cpp}
 
 The function accepts a network type name (which must be fully qualified,
 i.e. with package name), and a simulation time limit.
@@ -281,7 +281,7 @@ messages being sent, events scheduled and cancelled, modules created and so on.
 The following example shows a minimalistic environment class that's enough
 to get started:
 
-\begin{verbatim}
+\begin{cpp}
 class CustomSimulationEnv : public cNullEnvir
 {
   public:
@@ -302,7 +302,7 @@ class CustomSimulationEnv : public cNullEnvir
         (void) ::fwrite(s,1,n,stdout);
     }
 };
-\end{verbatim}
+\end{cpp}
 
 
 \subsection{Providing a configuration object}
@@ -315,7 +315,7 @@ that delegate to the much fewer string-based methods (\ffunc{getConfigValue()}, 
 It is fairly straightforward to implement a configuration class that
 emulates an empty ini file:
 
-\begin{verbatim}
+\begin{cpp}
 class EmptyConfig : public cConfiguration
 {
   protected:
@@ -340,7 +340,7 @@ class EmptyConfig : public cConfiguration
     virtual const KeyValue& getPerObjectConfigEntry(const char *objectFullPath,
         const char *keySuffix) const {return nullKeyValue;}
 };
-\end{verbatim}
+\end{cpp}
 
 
 \subsection{Loading NED files}
@@ -410,7 +410,7 @@ It can also accept the default value if there is one (\ffunc{acceptDefault()}).
 The following code is a straightforward example that answers parameter
 value requests from a pre-filled table.
 
-\begin{verbatim}
+\begin{cpp}
 class CustomSimulationEnv : public cNullEnvir
 {
   protected:
@@ -427,7 +427,7 @@ class CustomSimulationEnv : public cNullEnvir
             throw cRuntimeError("no value for %s", par->getFullPath().c_str());
     }
 };
-\end{verbatim}
+\end{cpp}
 
 
 \subsection{Extracting statistics from the model}
@@ -444,13 +444,13 @@ main program to obtain statistics. Modules may be looked up with the
 specific module type via \ffunc{check\_and\_cast<>()} so that the getter
 methods can be invoked.
 
-\begin{verbatim}
+\begin{cpp}
 cModule *mod = simulation.getModuleByPath("Network.client[2].app");
 WebApp *appMod = check_and_cast<WebApp *>(mod);
 int numRequestsSent = appMod->getNumRequestsSent();
 double avgReplyTime = appMod->getAvgReplyTime();
 ...
-\end{verbatim}
+\end{cpp}
 
 The drawback of this approach is that getters need to be added manually
 to all affected module classes which might not be practical, especially
@@ -467,7 +467,7 @@ Values from output vectors can be captured in a similar way.
 
 A draft implementation:
 
-\begin{verbatim}
+\begin{cpp}
 class CustomSimulationEnv : public cNullEnvir
 {
   private:
@@ -487,7 +487,7 @@ class CustomSimulationEnv : public cNullEnvir
 const std::map<std::string, double>& results = env->getResults();
 int numRequestsSent = results["Network.client[2].app.numRequestsSent"];
 double avgReplyTime = results["Network.client[2].app.avgReplyTime"];
-\end{verbatim}
+\end{cpp}
 
 A drawback is that compile-time checking of statistics names is lost, but
 definite advantages include that any simulation model can now be used
@@ -500,13 +500,13 @@ code modification in the main program.
 To run the simulation, the \ffunc{selectNextModule()} and \ffunc{doOneEvent}
 methods of \cclass{cSimulation} must be called in a loop:
 
-\begin{verbatim}
+\begin{cpp}
 while (sim->getSimTime() < limit)
 {
     cSimpleModule *mod = sim->selectNextModule();
     sim->doOneEvent(mod);
 }
-\end{verbatim}
+\end{cpp}
 
 It depends on the concrete scheduler class whether
 \ffunc{selectNextModule()} may return \ttt{NULL}. The default
@@ -570,10 +570,10 @@ The default event scheduler is \cclass{cSequentialScheduler}. To replace
 it with a different scheduler (e.g. \cclass{cRealTimeScheduler} or your
 own scheduler class), add a \ffunc{setScheduler()} call into \ttt{main()}:
 
-\begin{verbatim}
+\begin{cpp}
 cScheduler *scheduler = new CustomScheduler();
 simulation.setScheduler(scheduler);
-\end{verbatim}
+\end{cpp}
 
 It is usually not a good idea to change schedulers in the middle of
 a simulation, so \ffunc{setScheduler()} may only be called when
@@ -714,7 +714,7 @@ against concurrent access.
 %
 % macro expands to the following code:
 %
-% \begin{verbatim}
+% \begin{cpp}
 % static cModule *FIFO__create(const char *name, cModule *parentmod)
 % {
 %     return new FIFO(name, parentmod);
@@ -725,7 +725,7 @@ against concurrent access.
 %        new cModuleType("FIFO","FIFO",(ModuleCreateFunc)FIFO__create)
 %     );
 % )
-% \end{verbatim}
+% \end{cpp}
 %
 % When the simulation program starts up, a new \cclass{cModuleType}
 % object will be added to the \ttt{modtypes} object, which holds the list
@@ -840,9 +840,9 @@ against concurrent access.
 % The \cclass{cEnvir} class has only one instance, a global object
 % called \fvar{ev}:
 %
-% \begin{verbatim}
+% \begin{cpp}
 % cEnvir ev;
-% \end{verbatim}
+% \end{cpp}
 %
 % \cclass{cEnvir} basically a facade, its member functions
 % contain little code. \cclass{cEnvir} maintains a pointer to a

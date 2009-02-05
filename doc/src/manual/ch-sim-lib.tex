@@ -72,10 +72,10 @@ boolean attributes, with \ttt{is} or \ttt{has}, whichever is more
 appropriate). For example, the \textit{length} attribute of the
 \cclass{cPacket} class can be set and read like this:
 
-\begin{verbatim}
+\begin{cpp}
 pk->setBitLength(1024);
 length = pk->getBitLength();
-\end{verbatim}
+\end{cpp}
 
 \begin{note}
     {\opp} 3.x and earlier versions did not have the \ttt{get} verb
@@ -91,9 +91,9 @@ length = pk->getBitLength();
 For each class, the \ffunc{getClassName()} member function returns the class
 name as a string:
 
-\begin{verbatim}
+\begin{cpp}
 const char *classname = msg->getClassName(); // returns "cMessage"
-\end{verbatim}
+\end{cpp}
 
 
 \subsection{Name attribute}
@@ -103,22 +103,22 @@ An object can be assigned a \textit{name} (a character string). The name
 string is the first argument to the constructor of every class,
 and it defaults to \ttt{NULL} (no name string). An example:
 
-\begin{verbatim}
+\begin{cpp}
 cMessage *timeoutMsg = new cMessage("timeout");
-\end{verbatim}
+\end{cpp}
 
 You can also set the name after the object has been created:
 
-\begin{verbatim}
+\begin{cpp}
 timeoutMsg->setName("timeout");
-\end{verbatim}
+\end{cpp}
 
 You can get a pointer to the internally stored copy of the name
 string like this:
 
-\begin{verbatim}
+\begin{cpp}
 const char *name = timeoutMsg->getName(); // --> "timeout"
-\end{verbatim}
+\end{cpp}
 
 For convenience and efficiency reasons, the empty string \ttt{""}
 and \ttt{NULL} are treated as equivalent by library objects.
@@ -127,10 +127,10 @@ If you create a message object with either \ttt{NULL}
 or \ttt{""} as name string, it will be stored as \ttt{NULL}
 and \ffunc{getName()} will return a pointer to a static \ttt{""}.
 
-\begin{verbatim}
+\begin{cpp}
 cMessage *msg = new cMessage(NULL, <additional args>);
 const char *str = msg->getName(); // --> returns ""
-\end{verbatim}
+\end{cpp}
 
 
 \subsection{getFullName() and getFullPath()}
@@ -151,11 +151,11 @@ That is, if the \ttt{node[3]} module above is in the compound module
 \ttt{"net.subnet1"}, its \ffunc{getFullPath()} method will return
 \ttt{"net.subnet1.node[3]"}.
 
-\begin{verbatim}
+\begin{cpp}
 ev << this->getName();     // --> "node"
 ev << this->getFullName(); // --> "node[3]"
 ev << this->getFullPath(); // --> "net.subnet1.node[3]"
-\end{verbatim}
+\end{cpp}
 
 \ffunc{getClassName()}, \ffunc{getFullName()} and \ffunc{getFullPath()}
 are extensively used on the graphical runtime environment Tkenv,
@@ -166,10 +166,10 @@ and \ffunc{getFullPath()} returns \ttt{std::string}. This makes no difference
 with \ttt{ev<<}, but when \ffunc{getFullPath()} is used as a \ttt{"\%s"} argument
 to \ffunc{sprintf()} you have to write \ttt{getFullPath().c\_str()}.
 
-\begin{verbatim}
+\begin{cpp}
 char buf[100];
 sprintf("msg is '%80s'", msg->getFullPath().c_str()); // note c_str()
-\end{verbatim}
+\end{cpp}
 
 
 \subsection{Copying and duplicating objects}
@@ -180,9 +180,9 @@ object\index{object!copy}, duplicating\index{object!duplication}
 contained objects also if necessary. This is especially useful in the
 case of message objects.
 
-\begin{verbatim}
+\begin{cpp}
 cMessage *copy = msg->dup();
-\end{verbatim}
+\end{cpp}
 
 \ffunc{dup()} delegates to the copy constructor, which in
 turn relies on the assignment operator between objects.
@@ -209,7 +209,7 @@ the container.
 
 For example:
 
-\begin{verbatim}
+\begin{cpp}
 cQueue queue;
 
 //..
@@ -217,7 +217,7 @@ for (cQueue::Iterator queueIter(queue); !queueIter.end(); queueIter++)
 {
     cOwnedObject *containedObject = queueIter();
 }
-\end{verbatim}
+\end{cpp}
 
 
 
@@ -244,11 +244,11 @@ filled in using subsequent arguments.
 
 An example:
 
-\begin{verbatim}
+\begin{cpp}
 if (msg->getControlInfo()==NULL)
     opp_error("message (%s)%s has no control info attached",
               msg->getClassName(), msg->getName());
-\end{verbatim}
+\end{cpp}
 
 
 
@@ -261,16 +261,16 @@ The \ttt{ev}\index{ev} object represents the user interface of the
 simulation.  You can send debugging output to \ttt{ev} with the C++-style
 output operators:
 
-\begin{verbatim}
+\begin{cpp}
 ev << "packet received, sequence number is " << seqNum << endl;
 ev << "queue full, discarding packet\n";
-\end{verbatim}
+\end{cpp}
 
 An alternative solution is \ffunc{ev.printf()}:
 
-\begin{verbatim}
+\begin{cpp}
 ev.printf("packet received, sequence number is %d\n", seqNum);
-\end{verbatim}
+\end{cpp}
 
 The exact way messages are displayed to the user depends on the user
 interface. In the command-line user interface (Cmdenv\index{Cmdenv}),
@@ -288,24 +288,24 @@ The \ttt{ev.isDisabled()} call returns true when \ttt{ev<<} output is disabled,
 such as in Tkenv or Cmdenv ``express'' mode. Thus, one can write code like
 this:
 
-\begin{verbatim}
+\begin{cpp}
 if (!ev.isDisabled())
     ev << "Packet " << msg->getName() << " received\n";
-\end{verbatim}
+\end{cpp}
 
 A more sophisticated implementation of the same idea is to define
 an \ttt{EV} macro which can be used in logging statements instead of
 \ttt{ev}. The definition:
 
-\begin{verbatim}
+\begin{cpp}
 //#define EV  ev.isDisabled()?std::cout:ev ==> EV is now part of <omnetpp.h>
-\end{verbatim}
+\end{cpp}
 
 And after that, one would simply write \ttt{EV<<} instead of \ttt{ev<<}.
 
-\begin{verbatim}
+\begin{cpp}
 EV << "Packet " << msg->getName() << " received\n";
-\end{verbatim}
+\end{cpp}
 
 The slightly tricky definition of \ttt{EV} makes use of the fact
 that the \ttt{<<} operator binds looser than \ttt{?:}.
@@ -326,10 +326,10 @@ the \ttt{char} array pointed to by the second argument. If the second argument i
 or it is \ttt{NULL}, \ffunc{simtimeToStr()} will place the result into a
 static buffer which is overwritten with each call. An example:
 
-\begin{verbatim}
+\begin{cpp}
 char buf[32];
 ev.printf("t1=%s, t2=%s\n", simtimeToStr(t1), simTimeToStr(t2,buf));
-\end{verbatim}
+\end{cpp}
 
 The \ffunc{simtimeToStrShort()} is similar to \ffunc{simtimeToStr()},
 but its output is more concise.
@@ -338,9 +338,9 @@ The \ffunc{strToSimtime()} function parses a time specification passed
 in a string, and returns a \cclass{simtime\_t}. If the string cannot
 be entirely interpreted, -1 is returned.
 
-\begin{verbatim}
+\begin{cpp}
 simtime_t t = strToSimtime("30s 152ms");
-\end{verbatim}
+\end{cpp}
 
 Another variant, \ffunc{strToSimtime0()} can be used if the time
 string is a substring in a larger string. Instead of taking a \ttt{char*},
@@ -350,11 +350,11 @@ interpreted as part of the time string, and returns the value. It
 never returns -1; if nothing at the beginning of the string looked
 like simulation time, it returns 0.
 
-\begin{verbatim}
+\begin{cpp}
 const char *s = "30s 152ms and something extra";
 
 simtime_t t = strToSimtime0(s); // now s points to "and something extra"
-\end{verbatim}
+\end{cpp}
 
 
 \section{Generating random numbers}
@@ -463,26 +463,26 @@ The \ffunc{intrand(n)} function generates random integers in the range $[0, n-1]
 \ffunc{dblrand()} generates a random double on $[0,1)$. These functions
 simply wrap the underlying RNG objects. Examples:
 
-\begin{verbatim}
+\begin{cpp}
 int dice = 1 + intrand(6); // result of intrand(6) is in the range 0..5
 double p = dblrand();      // dblrand() produces numbers in [0,1)
-\end{verbatim}
+\end{cpp}
 
 They also have a counterparts that use generator \textit{k}:
 
-\begin{verbatim}
+\begin{cpp}
 int dice = 1 + genk_intrand(k,6); // uses generator k
 double prob = genk_dblrand(k);    // ""
-\end{verbatim}
+\end{cpp}
 
 The underlying RNG objects are subclassed from \cclass{cRNG},
 and they can be accessed via \cclass{cModule}'s \ffunc{getRNG()} method.
 The argument to \ffunc{getRNG()} is a local RNG number which will undergo
 RNG mapping.
 
-\begin{verbatim}
+\begin{cpp}
 cRNG *rng1 = getRNG(1);
-\end{verbatim}
+\end{cpp}
 
 \cclass{cRNG} contains the methods implementing the above \ffunc{intrand()}
 and \ffunc{dblrand()} functions. The \cclass{cRNG} interface also allows
@@ -589,7 +589,7 @@ The basic \cclass{cQueue} member functions dealing with insertion and removal
 are \ffunc{insert()} and \ffunc{pop()}. They are used
 like this:
 
-\begin{verbatim}
+\begin{cpp}
 cQueue queue("my-queue");
 cMessage *msg;
 
@@ -606,7 +606,7 @@ while(!queue.empty())
   msg = (cMessage *)queue.pop();
   delete msg;
 }
-\end{verbatim}
+\end{cpp}
 
 
 The \ffunc{length()} member function returns the number of items in the
@@ -624,9 +624,9 @@ The \ffunc{pop()} function can be used to remove items from the
 tail of the queue, and the \ffunc{remove()} function can be
 used to remove any item known by its pointer from the queue:
 
-\begin{verbatim}
+\begin{cpp}
 queue.remove(msg);
-\end{verbatim}
+\end{cpp}
 
 
 
@@ -641,10 +641,10 @@ compares the two objects and returns -1, 0 or 1 as the result (see the
 reference for details).  An example of setting up an ordered
 \cclass{cQueue}:
 
-\begin{verbatim}
+\begin{cpp}
 cQueue sortedqueue("sortedqueue", cOwnedObject::cmpbyname, true );
                         // sorted by object name, ascending
-\end{verbatim}
+\end{cpp}
 
 
 If the queue object is set up as an ordered queue, the \ffunc{insert()}
@@ -671,13 +671,13 @@ beginning) of the queue.
 
 An example:
 
-\begin{verbatim}
+\begin{cpp}
 for( cQueue::Iterator iter(queue,1); !iter.end(), iter++)
 {
   cMessage *msg = (cMessage *) iter();
   //...
 }
-\end{verbatim}
+\end{cpp}
 
 
 
@@ -701,65 +701,65 @@ and gates.
 
 Creating an array:
 
-\begin{verbatim}
+\begin{cpp}
 cArray array("array");
-\end{verbatim}
+\end{cpp}
 
 Adding an object at the first free index:
 
-\begin{verbatim}
+\begin{cpp}
 cPar *p = new cMsgPar("par");
 int index = array.add( p );
-\end{verbatim}
+\end{cpp}
 
 
 Adding an object at a given index (if the index is occupied,
 you'll get an error message):
 
-\begin{verbatim}
+\begin{cpp}
 cPar *p = new cMsgPar("par");
 int index = array.addAt(5,p);
-\end{verbatim}
+\end{cpp}
 
 
 Finding an object in the array:
 
-\begin{verbatim}
+\begin{cpp}
 int index = array.find(p);
-\end{verbatim}
+\end{cpp}
 
 Getting a pointer to an object at a given index:
 
-\begin{verbatim}
+\begin{cpp}
 cPar *p = (cPar *) array[index];
-\end{verbatim}
+\end{cpp}
 
 You can also search the array or get a pointer to an object by
 the object's name:
 
-\begin{verbatim}
+\begin{cpp}
 int index = array.find("par");
 Par *p = (cPar *) array["par"];
-\end{verbatim}
+\end{cpp}
 
 
 You can remove an object from the array by calling \ffunc{remove()}
 with the object name, the index position or the object pointer:
 
-\begin{verbatim}
+\begin{cpp}
 array.remove("par");
 array.remove(index);
 array.remove( p );
-\end{verbatim}
+\end{cpp}
 
 
 The \ffunc{remove()} function doesn't deallocate the object, but it
 returns the object pointer. If you also want to deallocate it, you can
 write:
 
-\begin{verbatim}
+\begin{cpp}
 delete array.remove( index );
-\end{verbatim}
+\end{cpp}
 
 \subsubsection{Iteration}
 
@@ -768,7 +768,7 @@ delete array.remove( index );
 indices with an integer variable. The \ffunc{size()} member function
 returns the largest index plus one.
 
-\begin{verbatim}
+\begin{cpp}
 for (int i=0; i<array.size(); i++)
 {
   if (array[i]) // is this position used?
@@ -777,7 +777,7 @@ for (int i=0; i<array.size(); i++)
     ev << obj->getName() << endl;
   }
 }
-\end{verbatim}
+\end{cpp}
 
 
 %
@@ -852,10 +852,10 @@ First, you can specify which node types you want to include. The
 following code extracts all modules of type \ttt{Router} or \ttt{Host}.
 (\ttt{Router} and \ttt{Host} can be either simple or compound module types.)
 
-\begin{verbatim}
+\begin{cpp}
 cTopology topo;
 topo.extractByModuleType("Router", "Host", NULL);
-\end{verbatim}
+\end{cpp}
 
 Any number of module types can be supplied; the list must be terminated by \ttt{NULL}.
 
@@ -864,28 +864,28 @@ A dynamically assembled list of module types can be passed as a
 in an STL string vector \ttt{std::vector<std::string>}.
 An example for the former:
 
-\begin{verbatim}
+\begin{cpp}
 cTopology topo;
 const char *typeNames[3];
 typeNames[0] = "Router";
 typeNames[1] = "Host";
 typeNames[2] = NULL;
 topo.extractByModuleType(typeNames);
-\end{verbatim}
+\end{cpp}
 
 Second, you can extract all modules which have a certain parameter:
 
-\begin{verbatim}
+\begin{cpp}
 topo.extractByParameter( "ipAddress" );
-\end{verbatim}
+\end{cpp}
 
 You can also specify that the parameter must have a certain value
 for the module to be included in the graph:
 
-\begin{verbatim}
+\begin{cpp}
 cMsgPar yes = "yes";
 topo.extractByParameter( "includeInTopo", &yes );
-\end{verbatim}
+\end{cpp}
 
 The third form allows you to pass a function which can determine for
 each module whether it should or should not be included.  You can have
@@ -893,14 +893,14 @@ each module whether it should or should not be included.  You can have
 \ttt{void*} pointer. An example which selects all top-level modules (and
 does not use the \ttt{void*} pointer):
 
-\begin{verbatim}
+\begin{cpp}
 int selectFunction(cModule *mod, void *)
 {
   return mod->getParentModule() == simulation.getSystemModule();
 }
 
 topo.extractFromNetwork( selectFunction, NULL );
-\end{verbatim}
+\end{cpp}
 
 %
 % TBD one more example which \textit{does use} the void* ptr.
@@ -914,7 +914,7 @@ talk about them later.)
 Once you have the topology extracted, you can start exploring
 it. Consider the following code (we'll explain it shortly):
 
-\begin{verbatim}
+\begin{cpp}
 for (int i=0; i<topo.getNumNodes(); i++)
 {
   cTopology::Node *node = topo.getNode(i);
@@ -931,7 +931,7 @@ for (int i=0; i<topo.getNumNodes(); i++)
        << " through gate " << gate->getFullName() << endl;
   }
 }
-\end{verbatim}
+\end{cpp}
 
 The \ffunc{getNumNodes()} member function (1st line) returns the number of
 nodes in the graph, and getNode(i) returns a pointer to the \textit{i}th
@@ -941,10 +941,10 @@ node, an \cclass{cTopology::Node} structure.
 The correspondence between a graph node and a module can be obtained
 by:
 
-\begin{verbatim}
+\begin{cpp}
 cTopology::Node *node = topo.getNodeFor( module );
 cModule *module = node->getModule();
-\end{verbatim}
+\end{cpp}
 
 
 The \ffunc{getNodeFor()} member function returns a pointer to the graph
@@ -986,11 +986,11 @@ assumed to have the same weight.
 A real-life example when we have the target module pointer, finding
 the shortest path looks like this:
 
-\begin{verbatim}
+\begin{cpp}
 cModule *targetmodulep =...;
 cTopology::Node *targetnode = topo.getNodeFor( targetmodulep );
 topo.calculateUnweightedSingleShortestPathsTo( targetnode );
-\end{verbatim}
+\end{cpp}
 
 
 This performs the Dijkstra algorithm\index{Dijkstra algorithm} and
@@ -1002,7 +1002,7 @@ the previous call.
 
 Walking along the path from our module to the target node:
 
-\begin{verbatim}
+\begin{cpp}
 cTopology::Node *node = topo.getNodeFor( this );
 
 if (node == NULL)
@@ -1028,7 +1028,7 @@ else
     node = path->getRemoteNode();
   }
 }
-\end{verbatim}
+\end{cpp}
 
 
 The purpose of the \ffunc{getDistanceToTarget()} member function of a
@@ -1059,7 +1059,7 @@ shortest paths to the target \textit{from the neighbor node}, but
 you must disable the current node to prevent the shortest paths
 from going through it:
 
-\begin{verbatim}
+\begin{cpp}
 cTopology::Node *thisnode = topo.getNodeFor( this );
 thisnode->disable();
 topo.calculateUnweightedSingleShortestPathsTo( targetnode );
@@ -1071,15 +1071,15 @@ for (int j=0; j<thisnode->getNumOutLinks(); j++)
   ev << "Through gate " << link->getLocalGate()->getFullName() << " : "
      << 1 + link->getRemoteNode()->getDistanceToTarget() << " hops" << endl;
 }
-\end{verbatim}
+\end{cpp}
 
 In the future, other shortest path algorithms will also be implemented:
 
-\begin{verbatim}
+\begin{cpp}
 unweightedMultiShortestPathsTo(cTopology::Node *target);
 weightedSingleShortestPathsTo(cTopology::Node *target);
 weightedMultiShortestPathsTo(cTopology::Node *target);
-\end{verbatim}
+\end{cpp}
 
 
 
@@ -1130,7 +1130,7 @@ statistics out of the object: \ffunc{getCount()}, \ffunc{getMin()},
 \ffunc{getSum()}, \ffunc{getSqrSum()} with the obvious meanings. An example
 usage for \cclass{cStdDev}:
 
-\begin{verbatim}
+\begin{cpp}
 cStdDev stat("stat");
 
 for (int i=0; i<10; i++)
@@ -1142,7 +1142,7 @@ double smallest = stat.getMin(),
 double mean = stat.getMean(),
        standardDeviation = stat.getStddev(),
        variance = stat.getVariance();
-\end{verbatim}
+\end{cpp}
 
 
 
@@ -1168,24 +1168,24 @@ The following member functions exist for setting up the range
 and to specify how many observations should be used for
 automatically determining the range.
 
-\begin{verbatim}
+\begin{cpp}
 setRange(lower,upper);
 setRangeAuto(numFirstvals, rangeExtFactor);
 setRangeAutoLower(upper, numFirstvals, rangeExtFactor);
 setRangeAutoUpper(lower, numFirstvals, rangeExtFactor);
-\end{verbatim}
+\end{cpp}
 
-\begin{verbatim}
+\begin{cpp}
 setNumFirstVals(numFirstvals);
-\end{verbatim}
+\end{cpp}
 
 The following example creates a histogram with 20 cells and automatic
 range estimation\index{histogram!range estimation}:
 
-\begin{verbatim}
+\begin{cpp}
 cDoubleHistogram histogram("histogram", 20);
 histogram.setRangeAuto(100,1.5);
-\end{verbatim}
+\end{cpp}
 
 
 Here, 20 is the number of cells (not including the underflow/overflow
@@ -1224,9 +1224,9 @@ member functions.
 
 You create a $P^{2}$ object by specifying the number of cells:
 
-\begin{verbatim}
+\begin{cpp}
 cPSquare psquare("interarrival-times", 20);
-\end{verbatim}
+\end{cpp}
 
 Afterwards, a \cclass{cPSquare} can be used with the same member functions
 as a histogram.
@@ -1257,7 +1257,7 @@ and \cclass{cKSplit}.
 
 An example:
 
-\begin{verbatim}
+\begin{cpp}
 long n = histogram.getCount();
 for (int i=0; i<histogram.getNumCells(); i++)
 {
@@ -1266,7 +1266,7 @@ for (int i=0; i<histogram.getNumCells(); i++)
   double pdf = histogram.getCellPDF(i);
   //...
 }
-\end{verbatim}
+\end{cpp}
 
 
 The \ffunc[getPDF()]{getPDF(x)} and \ffunc[getCDF()]{getCDF(x)} member functions
@@ -1281,28 +1281,28 @@ The \ffunc{random()} member function generates random
 numbers\index{random!numbers} from the distribution stored by the
 object:
 
-\begin{verbatim}
+\begin{cpp}
 double rnd = histogram.random();
-\end{verbatim}
+\end{cpp}
 
 
 \cclass{cStdDev} assumes normal distribution.
 
 You can also wrap the distribution object in a \cclass{cPar}:
 
-\begin{verbatim}
+\begin{cpp}
 cMsgPar rndPar("rndPar");
 rndPar.setDoubleValue(&histogram);
-\end{verbatim}
+\end{cpp}
 
 
 The \cclass{cPar} object stores the pointer to the histogram (or $P^{2}$ object),
 and whenever it is asked for the value, calls the histogram object's \ffunc{random()}
 function:
 
-\begin{verbatim}
+\begin{cpp}
 double rnd = (double)rndPar; // random number from the cPSquare
-\end{verbatim}
+\end{cpp}
 
 \subsubsection{Storing/loading distributions}
 
@@ -1317,7 +1317,7 @@ stored in a text file, and use a histogram object with
 You can also use \ffunc{saveToFile()}that writes out the distribution
 collected by the histogram object:
 
-\begin{verbatim}
+\begin{cpp}
 FILE *f = fopen("histogram.dat","w");
 histogram.saveToFile(f); // save the distribution
 fclose(f);
@@ -1326,7 +1326,7 @@ cDoubleHistogram hist2("Hist-from-file");
 FILE *f2 = fopen("histogram.dat","r");
 hist2.loadFromFile(f2); // load stored distribution
 fclose(f2);
-\end{verbatim}
+\end{cpp}
 
 
 \subsubsection{Histogram with custom cells}
@@ -1355,17 +1355,17 @@ Modes are selected with a \textit{transform-type} parameter:
 
 Creating an object:
 
-\begin{verbatim}
+\begin{cpp}
 cVarHistogram(const char *s=NULL,
               int numcells=11,
               int transformtype=HIST_TR_AUTO_EPC_DBL);
-\end{verbatim}
+\end{cpp}
 
 Manually adding a cell boundary:
 
-\begin{verbatim}
+\begin{cpp}
 void addBinBound(double x);
-\end{verbatim}
+\end{cpp}
 
 Rangemin and rangemax is chosen after collecting the
 \texttt{numFirstVals} initial observations. One cannot add cell
@@ -1514,29 +1514,29 @@ Member functions:
 % TBD comments
 %
 
-\begin{verbatim}
+\begin{cpp}
 void setCritFunc(KSplitCritFunc _critfunc, double *_critdata);
 void setDivFunc(KSplitDivFunc \_divfunc, double *\_divdata);
 void rangeExtension( bool enabled );
-\end{verbatim}
+\end{cpp}
 
 
-\begin{verbatim}
+\begin{cpp}
 int getTreeDepth();
 int getTreeDepth(cKSplit::Grid& grid);
-\end{verbatim}
+\end{cpp}
 
-\begin{verbatim}
+\begin{cpp}
 double getRealCellValue(cKSplit::Grid& grid, int cell);
 void printGrids();
-\end{verbatim}
+\end{cpp}
 
-\begin{verbatim}
+\begin{cpp}
 cKSplit::Grid& getGrid(int k);
 cKSplit::Grid& getRootGrid();
-\end{verbatim}
+\end{cpp}
 
-\begin{verbatim}
+\begin{cpp}
 struct cKSplit::Grid
 {
   int parent;   // index of parent grid
@@ -1545,7 +1545,7 @@ struct cKSplit::Grid
   int mother;   // observations `inherited' from mother cell
   int cells[K]; // cell values
 };
-\end{verbatim}
+\end{cpp}
 
 
 
@@ -1585,12 +1585,12 @@ detection and result accuracy detection algorithms are:
 Attaching detection objects to a \cclass{cStatistic} and getting pointers
 to the attached objects:
 
-\begin{verbatim}
+\begin{cpp}
 addTransientDetection(cTransientDetection *object);
 addAccuracyDetection(cAccuracyDetection *object);
 cTransientDetection *getTransientDetectionObject();
 cAccuracyDetection *getAccuracyDetectionObject();
-\end{verbatim}
+\end{cpp}
 
 
 Detecting the end of the period:
@@ -1609,12 +1609,12 @@ is implemented, i.e.  there's one class derived from
 uses the sliding window approach with two windows, and checks the
 difference of the two averages to see if the transient period is over.
 
-\begin{verbatim}
+\begin{cpp}
 void setParameters(int reps=3,
                    int minw=4,
                    double wind=1.3,
                    double acc=0.3);
-\end{verbatim}
+\end{cpp}
 
 \subsubsection{Accuracy detection}
 
@@ -1625,9 +1625,9 @@ is implemented, i.e.  there's one class derived from
 \cclass{cADByStddev} class is: divide the standard deviation by the
 square of the number of values and check if this is small enough.
 
-\begin{verbatim}
+\begin{cpp}
 void setParameters(double acc=0.1, int reps=3);
-\end{verbatim}
+\end{cpp}
 
 
 
@@ -1644,9 +1644,9 @@ The object name will serve as the name of the output vector.
 
 The vector name can be passed in the constructor,
 
-\begin{verbatim}
+\begin{cpp}
 cOutVector responseTimeVec("response time");
-\end{verbatim}
+\end{cpp}
 
 but in the usual arrangement you'd make the \cclass{cOutVector} a member
 of the module class and set the name in \ffunc{initialize()}. You'd
@@ -1656,7 +1656,7 @@ record values from \ffunc{handleMessage()} or from a function called from
 The following example is a \ttt{Sink} module which records the lifetime
 of every message that arrives to it.
 
-\begin{verbatim}
+\begin{cpp}
 class Sink : public cSimpleModule
 {
   protected:
@@ -1679,7 +1679,7 @@ void Sink::handleMessage(cMessage *msg)
     endToEndDelayVec.record(eed);
     delete msg;
 }
-\end{verbatim}
+\end{cpp}
 
 There is also a \ffunc{recordWithTimestamp()} method, to make it
 possible to record values into output vectors with a timestamp other than
@@ -1723,13 +1723,13 @@ Output scalars are recorded with the \ffunc{record()} method of
 \cclass{cSimpleModule}, and you'll usually want to insert this code
 into the \ffunc{finish()} function. An example:
 
-\begin{verbatim}
+\begin{cpp}
 void Transmitter::finish()
 {
     double avgThroughput = totalBits / simTime();
     recordScalar("Average throughput", avgThroughput);
 }
-\end{verbatim}
+\end{cpp}
 
 You can record whole statistics objects by calling their \ffunc{record()}
 methods, declared as part of \cclass{cStatistic}. In the following example
@@ -1737,7 +1737,7 @@ we create a \ttt{Sink} module which calculates the mean, standard
 deviation, minimum and maximum values of a variable, and records them at the
 end of the simulation.
 
-\begin{verbatim}
+\begin{cpp}
 class Sink : public cSimpleModule
 {
   protected:
@@ -1767,7 +1767,7 @@ void Sink::finish()
     recordScalar("Simulation duration", simTime());
     eedStats.record();
 }
-\end{verbatim}
+\end{cpp}
 
 The above calls write into the \textit{output scalar file} which is named
 \ttt{omnetpp.sca} by default. The output scalar file is preserved across
@@ -1879,19 +1879,19 @@ file\index{snapshot file}. \fmac{WATCH()} macros are usually placed into
 \ffunc{activity()} function (to watch its local variables), the point being
 that they should only be executed once.
 
-\begin{verbatim}
+\begin{cpp}
 long packetsSent;
 double idleTime;
 
 WATCH(packetsSent);
 WATCH(idleTime);
-\end{verbatim}
+\end{cpp}
 
 Of course, members of classes and structs can also be watched:
 
-\begin{verbatim}
+\begin{cpp}
 WATCH(config.maxRetries);
-\end{verbatim}
+\end{cpp}
 
 When you open an inspector for the simple module in Tkenv and click
 the Objects/Watches tab in it, you'll see your watched variables
@@ -1908,19 +1908,19 @@ amount of information that can be conveniently displayed is limited.
 
 An example stream output operator:
 
-\begin{verbatim}
+\begin{cpp}
 std::ostream& operator<<(std::ostream& os, const ClientInfo& cli)
 {
     os << "addr=" << cli.clientAddr << "  port=" << cli.clientPort; // no endl!
     return os;
 }
-\end{verbatim}
+\end{cpp}
 
 And the \ttt{WATCH()} line:
 
-\begin{verbatim}
+\begin{cpp}
 WATCH(currentClientInfo);
-\end{verbatim}
+\end{cpp}
 
 
 \subsection{Read-write watches}
@@ -1933,19 +1933,19 @@ operator (\ttt{operator>>}) and use the \fmac{WATCH\_RW()} macro instead of
 
 The stream input operator:
 
-\begin{verbatim}
+\begin{cpp}
 std::ostream& operator>>(std::istream& is, ClientInfo& cli)
 {
     // read a line from "is" and parse its contents into "cli"
     return is;
 }
-\end{verbatim}
+\end{cpp}
 
 And the \ttt{WATCH\_RW()} line:
 
-\begin{verbatim}
+\begin{cpp}
 WATCH_RW(currentClientInfo);
-\end{verbatim}
+\end{cpp}
 
 
 \subsection{Structured watches}
@@ -1962,13 +1962,13 @@ and \fmac{WATCH\_PTR()}. Both expect the object to be subclassed from
 \cclass{cObject}; \fmac{WATCH\_OBJ()} expects a reference to such class,
 and \fmac{WATCH\_PTR()} expects a pointer variable.
 
-\begin{verbatim}
+\begin{cpp}
 ExtensionHeader hdr;
 ExtensionHeader *hdrPtr;
 ...
 WATCH_OBJ(hdr);
 WATCH_PTR(hdrPtr);
-\end{verbatim}
+\end{cpp}
 
 CAUTION: With \fmac{WATCH\_PTR()}, the pointer variable must point to a valid
 object or be \ttt{NULL} at all times, otherwise the GUI may crash
@@ -1976,10 +1976,10 @@ while trying to display the object. This practically means that
 the pointer should be initialized to \ttt{NULL} even if not used, and
 should be set to \ttt{NULL} when the object to which it points gets deleted.
 
-\begin{verbatim}
+\begin{cpp}
 delete watchedPtr;
 watchedPtr = NULL;  // set to NULL when object gets deleted
-\end{verbatim}
+\end{cpp}
 
 
 \subsection{STL watches}
@@ -2003,13 +2003,13 @@ itself.)
 
 Examples:
 
-\begin{verbatim}
+\begin{cpp}
 std::vector<int> intvec;
 WATCH_VECTOR(intvec);
 
 std::map<std::string,Command*> commandMap;
 WATCH_PTRMAP(commandMap);
-\end{verbatim}
+\end{cpp}
 
 
 
@@ -2020,18 +2020,18 @@ The \ffunc{snapshot()} function outputs textual information about all
 or selected objects of the simulation (including the objects created
 in module functions by the user) into the snapshot file\index{snapshot file}.
 
-\begin{verbatim}
+\begin{cpp}
 bool snapshot(cOwnedObject *obj = &simulation, const char *label = NULL);
-\end{verbatim}
+\end{cpp}
 
 
 The function can be called from module functions, like this:
 
-\begin{verbatim}
+\begin{cpp}
 snapshot();     // dump the whole network
 snapshot(this); // dump this simple module and all its objects
 snapshot(&simulation.msgQueue); // dump future events
-\end{verbatim}
+\end{cpp}
 
 This will append snapshot information to the end of the snapshot file.
 (The snapshot file name has an extension of \ttt{.sna}, default is
@@ -2052,7 +2052,7 @@ from the menu.
 
 An example of a snapshot file:
 
-\begin{Verbatim}[commandchars=\\\{\}]
+\begin{verbatim}
 [...]
 
 (cSimulation) `simulation' begin
@@ -2121,7 +2121,7 @@ end
 end
 
 [...]
-\end{Verbatim}
+\end{verbatim}
 
 It is possible that the format of the snapshot file will change to XML
 in future {\opp} releases.
@@ -2176,12 +2176,12 @@ To be able to make a good guess about stack size, you can use
 the \ffunc{getStackUsage()} call which tells you how much stack the module
 actually uses. It is most conveniently called from \ffunc{finish()}:
 
-\begin{verbatim}
+\begin{cpp}
 void FooModule::finish()
 {
   ev << getStackUsage() <<  "bytes of stack used\n";
 }
-\end{verbatim}
+\end{cpp}
 
 
 The value includes the extra stack added by the user interface library
@@ -2323,15 +2323,15 @@ rng-class="cMersenneTwister"
 would result in something like the following code to be executed
 for creating the RNG objects:
 
-\begin{verbatim}
+\begin{cpp}
 cRNG *rng = check_and_cast<cRNG*>(createOne("cMersenneTwister"));
-\end{verbatim}
+\end{cpp}
 
 But for that to work, we needed to have the following line somewhere in the code:
 
-\begin{verbatim}
+\begin{cpp}
 Register_Class(cMersenneTwister);
-\end{verbatim}
+\end{cpp}
 
 \ffunc{createOne()} is also needed by the parallel distributed simulation feature
 (Chapter \ref{cha:parallel-execution}) to create blank objects to unmarshal into
@@ -2353,7 +2353,7 @@ a dynamically allocated {\opp} object (a \ttt{cMessage}).
 The class declaration is the following. It contains the declarations
 of all methods discussed in the previous section.
 
-\begin{verbatim}
+\begin{cpp}
 //
 // file: NewClass.h
 //
@@ -2377,12 +2377,12 @@ class NewClass : public cOwnedObject
     virtual void forEachChild(cVisitor *v);
     virtual std::string info();
 };
-\end{verbatim}
+\end{cpp}
 
 We'll discuss the implementation method by method.
 Here's the top of the \ttt{.cc} file:
 
-\begin{verbatim}
+\begin{cpp}
 //
 // file: NewClass.cc
 //
@@ -2401,14 +2401,14 @@ NewClass::NewClass(const char *name, int d) : cOwnedObject(name)
     take(&queue);
     msg = NULL;
 }
-\end{verbatim}
+\end{cpp}
 
 The constructor (above) calls the base class constructor with
 the name of the object, then initializes its own data members.
 You need to call \ffunc{take()} for \cclass{cOwnedObject}-based data members.
 
 
-\begin{verbatim}
+\begin{cpp}
 NewClass::NewClass(const NewClass& other) : cOwnedObject(other.getName())
 {
     array = new double[10];
@@ -2416,7 +2416,7 @@ NewClass::NewClass(const NewClass& other) : cOwnedObject(other.getName())
     take(&queue);
     operator=(other);
 }
-\end{verbatim}
+\end{cpp}
 
 The copy constructor relies on the assignment operator. Because
 by convention the assignment operator does not copy the
@@ -2430,30 +2430,30 @@ to avoid crashes.
 
 You need to call \ffunc{take()} for \cclass{cOwnedObject}-based data members.
 
-\begin{verbatim}
+\begin{cpp}
 NewClass::~NewClass()
 {
     delete [] array;
     if (msg->getOwner()==this)
         delete msg;
 }
-\end{verbatim}
+\end{cpp}
 
 The destructor should delete all data structures the object allocated.
 \cclass{cOwnedObject}-based objects should \textit{only} be deleted if they
 are owned by the object -- details will be covered in section
 \ref{sec:ch-sim-lib:ownership-management}.
 
-\begin{verbatim}
+\begin{cpp}
 NewClass *NewClass::dup() const
 {
     return new NewClass(*this);
 }
-\end{verbatim}
+\end{cpp}
 
 The \ttt{dup()} functions is usually just one line, like the one above.
 
-\begin{verbatim}
+\begin{cpp}
 NewClass& NewClass::operator=(const NewClass& other)
 {
     if (&other==this)
@@ -2476,7 +2476,7 @@ NewClass& NewClass::operator=(const NewClass& other)
         msg = other.msg;
     return *this;
 }
-\end{verbatim}
+\end{cpp}
 
 Complexity associated with copying and duplicating the object
 is concentrated in the assignment operator, so it is usually
@@ -2512,20 +2512,20 @@ it and become the owner of the new object. Details of ownership
 management will be covered in section \ref{sec:ch-sim-lib:ownership-management}.
 
 
-\begin{verbatim}
+\begin{cpp}
 void NewClass::forEachChild(cVisitor *v)
 {
     v->visit(queue);
     if (msg)
         v->visit(msg);
 }
-\end{verbatim}
+\end{cpp}
 
 The \ffunc{forEachChild()} function should call \ttt{v->visit(obj)}
 for each \ttt{obj} member of the class. See the API Reference for more
 information of \ffunc{forEachChild()}.
 
-\begin{verbatim}
+\begin{cpp}
 std::string NewClass::info()
 {
     std::stringstream out;
@@ -2533,7 +2533,7 @@ std::string NewClass::info()
     return out.str();
 
 }
-\end{verbatim}
+\end{cpp}
 
 The \ffunc{info()} method should produce a concise, one-line string
 about the object. You should try not to exceed 40-80 characters, since the
@@ -2569,11 +2569,11 @@ simple module becomes the owner.
 The \ffunc{getOwner()} method, defined in \cclass{cOwnedObject}, returns the
 owner of the object:
 
-\begin{verbatim}
+\begin{cpp}
 cOwnedObject *o = msg->getOwner();
 ev << "Owner of " << msg->getName() << " is: " <<
    << "(" << o->getClassName() << ") " << o->getFullPath() << endl;
-\end{verbatim}
+\end{cpp}
 
 The other direction, enumerating the objects owned can be implemented with
 the \ffunc{forEachChild()} method by it looping through all
@@ -2662,7 +2662,7 @@ Here's what the \textit{insert} operation of \cclass{cQueue} (or \cclass{cArray}
 
 The corresponding source code:
 
-\begin{verbatim}
+\begin{cpp}
 void cQueue::insert(cOwnedObject *obj)
 {
     // insert into queue data structure
@@ -2673,7 +2673,7 @@ void cQueue::insert(cOwnedObject *obj)
         take(obj);
 
 }
-\end{verbatim}
+\end{cpp}
 
 
 \subsubsection{Removal}
@@ -2706,7 +2706,7 @@ implemented like this:
   \footnote{Actual code in \texttt{src/sim} is structured somewhat
   differently, but the meaning is the same.}
 
-\begin{verbatim}
+\begin{cpp}
 cOwnedObject *cQueue::remove(cOwnedObject *obj)
 {
     // remove object from queue data structure
@@ -2718,7 +2718,7 @@ cOwnedObject *cQueue::remove(cOwnedObject *obj)
 
     return obj;
 }
-\end{verbatim}
+\end{cpp}
 
 
 \subsubsection{Destructor}

@@ -150,11 +150,42 @@
     morecomment=[l]{//},
     morestring=[b]",
 }
+%FIXME: remove NED keywords from list!
+\lstdefinelanguage{MSG}
+{
+    morekeywords={allowunconnected,bool,channel,channelinterface,connections,const,
+                  default,double,extends,false,for,gates,if,import,index,inout,input,
+                  int,like,module,moduleinterface,network,output,package,parameters,
+                  property,simple,sizeof,string,submodules,this,true,types,volatile,
+                  xml,xmldoc},
+    sensitive=true,
+    morecomment=[l]{//},
+    morestring=[b]",
+}
+\lstdefinelanguage{inifile}
+{
+    morekeywords={},
+    sensitive=true,
+    morecomment=[l]{\#},
+    morestring=[b]",
+}
+
+%% showstringspaces=false
+
 
 %% See listings-1.pdf,pp39
 \definecolor{RulerColor}{rgb}{0.8,0.8,1.0}
 \lstnewenvironment{ned}
     {\lstset{language=NED,basicstyle=\ttfamily,frame=leftline,framesep=10pt,framerule=3pt,rulecolor=\color{RulerColor},xleftmargin=15pt}}
+    {}
+\lstnewenvironment{msg}
+    {\lstset{language=MSG,basicstyle=\ttfamily,frame=leftline,framesep=10pt,framerule=3pt,rulecolor=\color{RulerColor},xleftmargin=15pt}}
+    {}
+\lstnewenvironment{cpp}
+    {\lstset{language=C++,basicstyle=\ttfamily,frame=leftline,framesep=10pt,framerule=3pt,rulecolor=\color{RulerColor},xleftmargin=15pt}}
+    {}
+\lstnewenvironment{inifile}
+    {\lstset{language=inifile,basicstyle=\ttfamily,frame=leftline,framesep=10pt,framerule=3pt,rulecolor=\color{RulerColor},xleftmargin=15pt}}
     {}
 
 

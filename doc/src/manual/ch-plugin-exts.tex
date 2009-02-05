@@ -138,7 +138,7 @@ looks like the following (see \ttt{src/sim/bootenv.cc} in the source code):
 To replace the configuration object with your custom implementation,
 you would write the class:
 
-\begin{verbatim}
+\begin{cpp}
 #include "cconfiguration.h"
 
 class CustomConfiguration : public cConfigurationEx
@@ -147,7 +147,7 @@ class CustomConfiguration : public cConfigurationEx
 };
 
 Register_Class(CustomConfiguration);
-\end{verbatim}
+\end{cpp}
 
 and then activate it in the boot-time configuration:
 
@@ -174,7 +174,7 @@ sectionbasedconfig-configreader-class = <my new reader class>
 
 The configuration reader class should look like this:
 
-\begin{verbatim}
+\begin{cpp}
 #include "cconfigreader.h"
 
 class DatabaseConfigurationReader : public cConfigurationReader
@@ -183,7 +183,7 @@ class DatabaseConfigurationReader : public cConfigurationReader
 };
 
 Register_Class(DatabaseConfigurationReader);
-\end{verbatim}
+\end{cpp}
 
 
 \subsection{Defining a new output scalar manager}
@@ -229,14 +229,14 @@ config is the ini file plus --ccc=vvv options
 New configuration options need to be declared with one of the appropriate
 registration macros. These macros are:
 
-\begin{verbatim}
+\begin{cpp}
 Register_GlobalConfigOption(ID, NAME, TYPE, DEFAULTVALUE, DESCRIPTION)
 Register_PerRunConfigOption(ID, NAME, TYPE, DEFAULTVALUE, DESCRIPTION)
 Register_GlobalConfigOptionU(ID, NAME, UNIT, DEFAULTVALUE, DESCRIPTION)
 Register_PerRunConfigOptionU(ID, NAME, UNIT, DEFAULTVALUE, DESCRIPTION)
 Register_PerObjectConfigOption(ID, NAME, TYPE, DEFAULTVALUE, DESCRIPTION)
 Register_PerObjectConfigOptionU(ID, NAME, UNIT, DEFAULTVALUE, DESCRIPTION)
-\end{verbatim}
+\end{cpp}
 
 Config options come in three flavours, as indicated by the macro names:
 
@@ -275,11 +275,11 @@ The macro arguments are as follows:
 
 For example, the \ttt{debug-on-errors} macro is declared in the following way:
 
-\begin{verbatim}
+\begin{cpp}
 Register_GlobalConfigOption(CFGID_DEBUG_ON_ERRORS,
                             "debug-on-errors", CFG_BOOL, "false",
                             "When enabled, runtime errors will etc etc...");
-\end{verbatim}
+\end{cpp}
 
 \begin{note}
 Registration is necessary because from the 4.0 version, {\opp} validates
@@ -293,15 +293,15 @@ mistyped option names and other errors.
 The configuration is accessible via the \ffunc{getConfig()} method of \cclass{cEnvir}.
 It returns a pointer to the configuration object (\cclass{cConfiguration}):
 
-\begin{verbatim}
+\begin{cpp}
 cConfiguration *config = ev.getConfig();
-\end{verbatim}
+\end{cpp}
 
 \cclass{cConfiguration} provides several methods for querying the configuration.
 
 no sections: flattened view etc.
 
-\begin{verbatim}
+\begin{cpp}
 const char *getAsCustom(cConfigOption *entry, const char *fallbackValue=NULL);
 bool getAsBool(cConfigOption *entry, bool fallbackValue=false);
 long getAsInt(cConfigOption *entry, long fallbackValue=0);
@@ -310,14 +310,14 @@ std::string getAsString(cConfigOption *entry, const char *fallbackValue="");
 std::string getAsFilename(cConfigOption *entry);
 std::vector<std::string> getAsFilenames(cConfigOption *entry);
 std::string getAsPath(cConfigOption *entry);
-\end{verbatim}
+\end{cpp}
 
 \textit{fallbackValue} is returned if the value is not specified in the configuration,
 and there is no default value.
 
-\begin{verbatim}
+\begin{cpp}
 bool debug = ev.getConfig()->getAsBool(CFGID_PARSIM_DEBUG);
-\end{verbatim}
+\end{cpp}
 
 
 \section{Implementing a new user interface}
@@ -346,7 +346,7 @@ not this one.
 
 An example user interface:
 
-\begin{verbatim}
+\begin{cpp}
 #include "envirbase.h"
 
 class FooEnv : public EnvirBase
@@ -355,7 +355,7 @@ class FooEnv : public EnvirBase
 };
 
 Register_OmnetApp("FooEnv", FooEnv, 30, "an experimental user interface");
-\end{verbatim}
+\end{cpp}
 
 The \ffilename{envirbase.h} header comes from the \ttt{src/envir} directory,
 so it is necessary to add it to the include path (\ttt{-I}).

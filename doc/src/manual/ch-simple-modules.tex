@@ -331,7 +331,7 @@ The following \ttt{HelloModule} is about the simplest simple module one could wr
 but how would it say Hello then?) Note \cclass{cSimpleModule} as base class,
 and the \fmac{Define\_Module()} line.
 
-\begin{verbatim}
+\begin{cpp}
 // file: HelloModule.cc
 #include <omnetpp.h>
 
@@ -354,20 +354,20 @@ void HelloModule::handleMessage(cMessage *msg)
 {
     delete msg; // just discard everything we receive
 }
-\end{verbatim}
+\end{cpp}
 
 In order to be able to refer to this simple\index{module!simple} module type
 in NED files, we also need an associated NED declaration which might
 look like this:
 
-\begin{Verbatim}[commandchars=\\\{\}]
+\begin{ned}
 // file: HelloModule.ned
-\textbf{simple} HelloModule
+simple HelloModule
 {
-    \textbf{gates}:
-        \textbf{input} in;
+    gates:
+        input in;
 }
-\end{Verbatim}
+\end{ned}
 
 
 \subsection{Constructor}
@@ -379,10 +379,10 @@ constructors: the signature must be what is expected by the simulation kernel.
 Luckily, this contract is very simple: the constructor must be public, and must take
 no arguments:
 
-\begin{verbatim}
+\begin{cpp}
   public:
     HelloModule();  // constructor takes no arguments
-\end{verbatim}
+\end{cpp}
 
 \cclass{cSimpleModule} itself has two constructors:
 \begin{enumerate}
@@ -401,10 +401,10 @@ Passing zero stack size to the latter constructor also selects \ttt{handleMessag
 Thus, the following constructor definitions are all OK, and select
 \ffunc{handleMessage()} to be used with the module:
 
-\begin{verbatim}
+\begin{cpp}
 HelloModule::HelloModule() {...}
 HelloModule::HelloModule() : cSimpleModule() {...}
-\end{verbatim}
+\end{cpp}
 
 It is also OK to omit the constructor altogether, because the
 compiler-generated one is suitable too.
@@ -412,9 +412,9 @@ compiler-generated one is suitable too.
 The following constructor definition selects \ffunc{activity()} to be used
 with the module, with 16K of coroutine stack:
 
-\begin{verbatim}
+\begin{cpp}
 HelloModule::HelloModule() : cSimpleModule(16384) {...}
-\end{verbatim}
+\end{cpp}
 
 \begin{note}
     The \fmac{Module\_Class\_Members()} macro, already deprecated in {\opp} 3.2,
@@ -535,7 +535,7 @@ some others which will be explained in later sections:
   \item{documenting the programmer's assumptions using ASSERT()}
 \end{enumerate}
 
-\begin{verbatim}
+\begin{cpp}
 // file: FFGenerator.h
 
 #include <omnetpp.h>
@@ -558,9 +558,9 @@ class FFGenerator : public cSimpleModule
     virtual void handleMessage(cMessage *msg);
     virtual void finish();
 };
-\end{verbatim}
+\end{cpp}
 
-\begin{verbatim}
+\begin{cpp}
 // file: FFGenerator.cc
 
 #include "FFGenerator.cc"
@@ -602,20 +602,20 @@ FFGenerator::~FFGenerator()
 {
     cancelAndDelete(sendMessageEvent);
 }
-\end{verbatim}
+\end{cpp}
 
 The corresponding NED declaration:
 
-\begin{Verbatim}[commandchars=\\\{\}]
+\begin{ned}
 // file: FFGenerator.ned
-\textbf{simple} FFGenerator
-\{
-    \textbf{parameters}:
-        \textbf{volatile double} sendIaTime;
-    \textbf{gates}:
-        \textbf{output} out;
-\}
-\end{Verbatim}
+simple FFGenerator
+{
+    parameters:
+        volatile double sendIaTime;
+    gates:
+        output out;
+}
+\end{ned}
 
 
 
@@ -792,7 +792,7 @@ and to various timers and timeouts (that is, self-messages).
 
 This usually results in the following source code pattern:
 
-\begin{verbatim}
+\begin{cpp}
 class FooProtocol : public cSimpleModule
 {
   protected:
@@ -818,7 +818,7 @@ void FooProtocol::handleMessage(cMessage *msg)
     else
         processMsgFromHigherLayer(msg);
 }
-\end{verbatim}
+\end{cpp}
 
 The functions \ttt{processMsgFromHigherLayer()}, \ttt{processMsgFromLowerLayer()}
 and \ttt{processTimer()} are then usually split further: there are separate
@@ -831,7 +831,7 @@ methods to process separate packet types and separate timers.
 The code for simple packet generators and sinks programmed with \ffunc{handleMessage()} might
 be as simple as the following pseoudocode:
 
-\begin{verbatim}
+\begin{cpp}
 PacketGenerator::handleMessage(msg)
 {
     create and send out a new packet;
@@ -842,7 +842,7 @@ PacketSink::handleMessage(msg)
 {
     delete msg;
 }
-\end{verbatim}
+\end{cpp}
 
 Note that \textit{PacketGenerator} will need to redefine \ffunc{initialize()}
 to create \textit{m} and schedule the first event.
@@ -852,33 +852,33 @@ inter-arrival time. (Some details in the source haven't been
 discussed yet, but the code is probably understandable nevertheless.)
 
 
-\begin{Verbatim}[commandchars=\\\{\}]
+\begin{cpp}
 class Generator : public cSimpleModule
-\{
+{
   public:
     Generator() : cSimpleModule() {}
   protected:
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
-\};
+};
 
 Define_Module(Generator);
 
 void Generator::initialize()
-\{
+{
     // schedule first sending
     scheduleAt(simTime(), new cMessage);
-\}
+}
 
 void Generator::handleMessage(cMessage *msg)
-\{
+{
     // generate & send packet
     cMessage *pkt = new cMessage;
     send(pkt, "out");
     // schedule next call
     scheduleAt(simTime()+exponential(1.0), msg);
-\}
-\end{Verbatim}
+}
+\end{cpp}
 
 
 
@@ -898,47 +898,47 @@ We add some data members to the class:
 
 The code:
 
-\begin{Verbatim}[commandchars=\\\{\}]
+\begin{cpp}
 class BurstyGenerator : public cSimpleModule
-\{
+{
   protected:
     int burstLength;
     int burstCounter;
 
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
-\};
+};
 
 Define_Module(BurstyGenerator);
 
 void BurstyGenerator::initialize()
-\{
+{
     // init parameters and state variables
     burstLength = par("burstLength");
     burstCounter = burstLength;
     // schedule first packet of first burst
     scheduleAt(simTime(), new cMessage);
-\}
+}
 
 void BurstyGenerator::handleMessage(cMessage *msg)
-\{
+{
     // generate & send packet
     cMessage *pkt = new cMessage;
     send(pkt, "out");
     // if this was the last packet of the burst
     if (--burstCounter == 0)
-    \{
+    {
         // schedule next burst
         burstCounter = burstLength;
         scheduleAt(simTime()+exponential(5.0), msg);
-    \}
+    }
     else
-    \{
+    {
         // schedule next sending within burst
         scheduleAt(simTime()+exponential(1.0), msg);
-    \}
-\}
-\end{Verbatim}
+    }
+}
+\end{cpp}
 
 
 
@@ -1083,7 +1083,7 @@ the module class, and you'd initialize them in \ffunc{initialize()}.
 
 Example:
 
-\begin{verbatim}
+\begin{cpp}
 void Sink::activity()
 {
     while(true)
@@ -1092,16 +1092,16 @@ void Sink::activity()
         delete msg;
     }
 }
-\end{verbatim}
+\end{cpp}
 
 should rather be programmed as:
 
-\begin{verbatim}
+\begin{cpp}
 void Sink::handleMessage(cMessage *msg)
 {
     delete msg;
 }
-\end{verbatim}
+\end{cpp}
 
 
 
@@ -1424,10 +1424,10 @@ is not sufficient, one can use multi-stage
 initialization\index{initialization!multi-stage}.  Modules have two
 functions which can be redefined by the user:
 
-\begin{verbatim}
+\begin{cpp}
 void initialize(int stage);
 int numInitStages() const;
-\end{verbatim}
+\end{cpp}
 
 At the beginning of the simulation, \ttt{initialize(0)}
 is called for \textit{all} modules, then \ttt{initialize(1)},
@@ -1476,9 +1476,9 @@ The \ffunc{handleParameterChange()} method was added in {\opp} 3.2,
 and it gets called by the simulation kernel when a module parameter changes.
 The method signature is the following:
 
-\begin{verbatim}
+\begin{cpp}
 void handleParameterChange(const char *parname);
-\end{verbatim}
+\end{cpp}
 
 The user can redefine this method to let the module react to runtime parameter
 changes. A typical use is to re-read the changed parameter, and update
@@ -1493,7 +1493,7 @@ Such modules can be very convenient in studies involving transient behaviour.
 The following example shows a queue module, which supports
 runtime change of its \ttt{serviceTime} parameter:
 
-\begin{verbatim}
+\begin{cpp}
 void Queue::handleParameterChange(const char *parname)
 {
     if (strcmp(parname, "serviceTime")==0)
@@ -1509,7 +1509,7 @@ void Queue::handleParameterChange(const char *parname)
         }
     }
 }
-\end{verbatim}
+\end{cpp}
 
 
 
@@ -1526,7 +1526,7 @@ specific simple module types.
 
 An example:
 
-\begin{verbatim}
+\begin{cpp}
 class ModifiedTransportProtocol : public TransportProtocol
 {
   protected:
@@ -1539,7 +1539,7 @@ void ModifiedTransportProtocol::recalculateTimeout()
 {
     //...
 }
-\end{verbatim}
+\end{cpp}
 
 
 
@@ -1551,9 +1551,9 @@ Module parameters declared in NED files are represented with the \cclass{cPar}
 class at runtime, and be accessed\index{module!accessing parameters}
 by calling the \ffunc{par()} member function of \cclass{cModule}:
 
-\begin{verbatim}
+\begin{cpp}
 cPar& delayPar = par("delay");
-\end{verbatim}
+\end{cpp}
 
 \cclass{cPar}'s value can be read with methods that correspond to
 the parameter's NED type: \ffunc{boolValue()}, \ffunc{longValue()},
@@ -1563,10 +1563,10 @@ There are also overloaded type cast operators for the corresponding types
 (\ttt{bool}; integer types including \ttt{int}, \ttt{long}, etc;
 \ttt{double}; \ttt{const char *}; \ttt{cXMLElement *}).
 
-\begin{verbatim}
+\begin{cpp}
 long numJobs = par("numJobs").longValue();
 double processingDelay = par("processingDelay"); // using operator double()
-\end{verbatim}
+\end{cpp}
 
 Note that \cclass{cPar} has two methods for returning string value:
 \ffunc{stringValue()} which returns \ttt{const char *}, and
@@ -1601,7 +1601,7 @@ The typical usage for non-volatile parameters is to read them in the
 \ffunc{initialize()} method of the module class, and store the values
 in class variables for easy access later:
 
-\begin{verbatim}
+\begin{cpp}
 class Source : public cSimpleModule
 {
   protected:
@@ -1615,26 +1615,26 @@ void Source::initialize()
     numJobs = par("numJobs");
     ...
 }
-\end{verbatim}
+\end{cpp}
 
 \ttt{volatile} parameters need to be re-read every time the value is needed.
 For example, a parameter that represents a random packet generation interval
 may be used like this:
 
-\begin{verbatim}
+\begin{cpp}
 void Source::handleMessage(cMessage *msg)
 {
     ...
     scheduleAt(simTime() + par("interval").doubleValue(), timerMsg);
     ...
 }
-\end{verbatim}
+\end{cpp}
 
 This code looks up the the parameter by name every time. This lookup
 can be spared by storing the parameter object's pointer in a class variable,
 resulting in the following code:
 
-\begin{verbatim}
+\begin{cpp}
 class Source : public cSimpleModule
 {
   protected:
@@ -1656,7 +1656,7 @@ void Source::handleMessage(cMessage *msg)
     scheduleAt(simTime() + intervalp->doubleValue(), timerMsg);
     ...
 }
-\end{verbatim}
+\end{cpp}
 
 
 \subsection{Changing a parameter's value}
@@ -1702,7 +1702,7 @@ of the expression gets returned.
 
 An example usage of the above methods:
 
-\begin{verbatim}
+\begin{cpp}
 int n = getNumParams();
 for (int i=0; i<n; i++)
 {
@@ -1711,7 +1711,7 @@ for (int i=0; i<n; i++)
     ev << "  type:" << cPar::getTypeName(p.getType()) << "\n";
     ev << "  contains:" << p.str() << "\n";
 }
-\end{verbatim}
+\end{cpp}
 
 The NED properties of a parameter can be accessed with the \ffunc{getProperties()}
 method that returns a pointer to the \cclass{cProperties} object that stores
@@ -1743,24 +1743,24 @@ or \ttt{double}s (\ffunc{asDoubleVector()}).
 
 The latter methods can be used like this:
 
-\begin{verbatim}
+\begin{cpp}
 const char *vstr = par("v").stringValue(); // e.g. "aa bb cc";
 std::vector<std::string> v = cStringTokenizer(vstr).asVector();
-\end{verbatim}
+\end{cpp}
 
 and
 
-\begin{verbatim}
+\begin{cpp}
 const char *str = "34 42 13 46 72 41";
 std::vector<int> v = cStringTokenizer().asIntVector();
 
 const char *str = "0.4311 0.7402 0.7134";
 std::vector<double> v = cStringTokenizer().asDoubleVector();
-\end{verbatim}
+\end{cpp}
 
 The following example processes the string by enumerating the tokens:
 
-\begin{verbatim}
+\begin{cpp}
 const char *str = "3.25 1.83 34 X 19.8"; // input
 
 std::vector<double> result;
@@ -1773,7 +1773,7 @@ while (tokenizer.hasMoreTokens())
     else
         result.push_back(atof(token));
 }
-\end{verbatim}
+\end{cpp}
 
 
 
@@ -1792,9 +1792,9 @@ The \cclass{cModule} class has a number of member functions that
 deal with gates. You can look up a gate by name using the \ffunc{gate()}
 method:
 
-\begin{verbatim}
+\begin{cpp}
 cGate *outGate = gate("out");
-\end{verbatim}
+\end{cpp}
 
 This works for input and output gates. However, when a gate was declared
 \ttt{inout} in NED, it is actually represented by the simulation kernel
@@ -1804,27 +1804,27 @@ the output half of the gate you need. This can be done by appending
 the \ttt{"\$i"} or \ttt{"\$o"} to the gate name. The following example
 retrieves the two gates for the inout gate \ttt{"g"}:
 
-\begin{verbatim}
+\begin{cpp}
 cGate *gIn = gate("g$i");
 cGate *gOut = gate("g$o");
-\end{verbatim}
+\end{cpp}
 
 Another way is to use the \ffunc{gateHalf()} function, which takes
 the inout gate's name plus either \ttt{cGate::INPUT} or \ttt{cGate::OUTPUT}:
 
-\begin{verbatim}
+\begin{cpp}
 cGate *gIn = gateHalf("g", cGate::INPUT);
 cGate *gOut = gateHalf("g", cGate::OUTPUT);
-\end{verbatim}
+\end{cpp}
 
 These methods throw an error if the gate does not exist, so they cannot
 be used to determine whether the module has a particular gate.
 The \ffunc{hasGate()} method can be used then. An example:
 
-\begin{verbatim}
+\begin{cpp}
 if (hasGate("optOut"))
    send(new cMessage(), "optOut");
-\end{verbatim}
+\end{cpp}
 
 A gate can also be identified and looked up by a numeric gate ID.
 You can get the ID from the gate itself (\ffunc{getId()} method),
@@ -1832,10 +1832,10 @@ or from the module by gate name (\ffunc{findGate()} method).
 The \ffunc{gate()} method also has an overloaded variant which
 returns the gate from the gate ID.
 
-\begin{verbatim}
+\begin{cpp}
 int gateId = gate("in")->getId();  // or:
 int gateId = findGate("in");
-\end{verbatim}
+\end{cpp}
 
 As gate IDs are more useful with gate vectors, we'll cover them
 in detail in a later section.
@@ -1851,12 +1851,12 @@ The size of the gate vector can be read with the \ffunc{gateSize()}
 method. The following example iterates through all elements in the
 gate vector:
 
-\begin{verbatim}
+\begin{cpp}
 for (int i=0; i<gateSize("out"); i++) {
     cGate *gate = gate("out", i);
     //...
 }
-\end{verbatim}
+\end{cpp}
 
 A gate vector cannot have ``holes'' in it, that is, \ffunc{gate()}
 never returns \ttt{NULL} or throws an error if the gate vector exists
@@ -1903,14 +1903,14 @@ of a simulation run.
 
 The following example iterates through a gate vector, using IDs:
 
-\begin{verbatim}
+\begin{cpp}
 int baseId = getBaseId("out");
 int size = gateSize("out");
 for (int i=0; i<size; i++) {
     cGate *gate = gate(baseId + i);
     //...
 }
-\end{verbatim}
+\end{cpp}
 
 
 \subsubsection{Enumerating all gates}
@@ -1932,12 +1932,12 @@ Clearly, the above solution can be quite hairy. An alternative is to use
 the \cclass{GateIterator} class provided by \cclass{cModule}.
 It goes like this:
 
-\begin{verbatim}
+\begin{cpp}
 for (cModule::GateIterator i(this); !i.end(); i++) {
     cGate *gate = i();
     ...
 }
-\end{verbatim}
+\end{cpp}
 
 Where \ttt{this} denotes the module whose gates are being enumerated
 (it can be replaced by any \ttt{cModule *} variable).
@@ -1993,7 +1993,7 @@ belongs to.
 To illustrate these methods, we expand the gate iterator example
 to print some information about each gate:
 
-\begin{verbatim}
+\begin{cpp}
 for (cModule::GateIterator i(this); !i.end(); i++) {
     cGate *gate = i();
     ev << gate->getFullName() << ": ";
@@ -2007,7 +2007,7 @@ for (cModule::GateIterator i(this); !i.end(); i++) {
     ev << "type:" << cGate::getTypeName(gate->getType());
     ev << "\n";
 }
-\end{verbatim}
+\end{cpp}
 
 There are further \cclass{cGate} methods to access and manipulate
 the connection(s) attached to the gate; they will be covered in the
@@ -2059,7 +2059,7 @@ both inside and outside, and for a simple module gate, outside.
 The following code prints the name of the gate a simple module gate is
 connected to:
 
-\begin{verbatim}
+\begin{cpp}
 cGate *gate = gate("somegate");
 cGate *otherGate = gate->getType()==cGate::OUTPUT ? gate->getNextGate() :
                                                     gate->getPreviousGate();
@@ -2067,7 +2067,7 @@ if (otherGate)
   ev << "gate is connected to: " << otherGate->getFullPath() << endl;
 else
   ev << "gate not connected" << endl;
-\end{verbatim}
+\end{cpp}
 
 
 
@@ -2113,11 +2113,11 @@ should not surprise you if you see something like
 Once created, a message object can be sent through an
 output gate\index{output!gate} using one of the following functions:
 
-\begin{verbatim}
+\begin{cpp}
 send(cMessage *msg, const char *gateName, int index=0);
 send(cMessage *msg, int gateId);
 send(cMessage *msg, cGate *gate);
-\end{verbatim}
+\end{cpp}
 
 In the first function, the argument \ttt{gateName} is the name of
 the gate the message has to be sent through. If this gate is
@@ -2131,22 +2131,22 @@ search through the gate array.
 
 Examples:
 
-\begin{verbatim}
+\begin{cpp}
 send(msg, "outGate");
 send(msg, "outGates", i); // send via outGates[i]
-\end{verbatim}
+\end{cpp}
 
 The following code example creates and sends messages
 every 5 simulated seconds:
 
-\begin{verbatim}
+\begin{cpp}
 int outGateId = findGate("outGate");
 while(true)
 {
   send(new cMessage("job"), outGateId);
   wait(5);
 }
-\end{verbatim}
+\end{cpp}
 
 
 \subsection{Packet transmissions}
@@ -2187,14 +2187,14 @@ on the cached channel pointer.
 
 An incomplete code example to illustrate the above process:
 
-\begin{verbatim}
+\begin{cpp}
 simtime_t txfinishTime = gate("out")->getTransmissionFinishTime();
 if (txfinishTime <= simTime())
     send(pkt, "out");
 else
     scheduleAt(txFinishTime, timerMsg); // also: remember pkt,
     // and ensure that when timerMsg expires, it will get sent out
-\end{verbatim}
+\end{cpp}
 
 
 \subsubsection{Receiving a packet}
@@ -2205,9 +2205,9 @@ of the message (ie. the arrival of its last bit). However, the receiver
 module may change this, by "reprogramming" the receiver gate with
 the \ffunc{setDeliverOnReceptionStart()} method:
 
-\begin{verbatim}
+\begin{cpp}
 gate("in")->setDeliverOnReceptionStart(true);
-\end{verbatim}
+\end{cpp}
 
 This method may only be called on simple module input gates, and it
 instructs the simulation kernel to give arriving packets to the
@@ -2387,20 +2387,20 @@ Connection attributes (propagation delay, transmission data rate,
 bit error rate) are represented by the channel object, which
 is available via the source gate of the connection.
 
-\begin{verbatim}
+\begin{cpp}
 cChannel *chan = outgate->getChannel();
-\end{verbatim}
+\end{cpp}
 
 \cclass{cChannel} is a small base class. All interesting attributes are
 part of its subclass \cclass{cDatarateChannel}, so you have to cast the pointer
 before getting to the delay, error and data rate values.
 
-\begin{verbatim}
+\begin{cpp}
 cDatarateChannel *chan = check_and_cast<cDatarateChannel *>(outgate->getChannel());
 double d = chan->getDelay();
 double e = chan->getBitErrorRate();
 double r = chan->getDatarate();
-\end{verbatim}
+\end{cpp}
 
 You can also change the channel attributes with the corresponding
 \ttt{setXXX()} functions. Note, however, that (as it was explained in
@@ -2421,7 +2421,7 @@ when it finished its last transmission.)
 
 An example:
 
-\begin{verbatim}
+\begin{cpp}
 cMessage *packet = new cMessage("DATA");
 packet->setByteLength(1024);  // 1K
 
@@ -2430,7 +2430,7 @@ if (gate("TxGate")->isBusy()) // if gate is busy, wait until it
   wait( gate("TxGate")->getTransmissionFinishTime() - simTime());
 }
 send( packet, "TxGate");
-\end{verbatim}
+\end{cpp}
 
 If the connection with a data rate is not directly connected
 to the simple module's output gate but is the second
@@ -2438,10 +2438,10 @@ one in the path, you have to check the second gate's busy
 condition\index{gate!busy condition}. You could use the following
 code:
 
-\begin{verbatim}
+\begin{cpp}
 if (gate("out")->getNextGate()->isBusy())
   //...
-\end{verbatim}
+\end{cpp}
 
 Note that if data rates change\index{data rate change} during the
 simulation, the changes will affect only the messages that are
@@ -2468,14 +2468,14 @@ create copies (duplicates) of the message object and send them.
 
 Example:
 
-\begin{verbatim}
+\begin{cpp}
 for (int i=0; i<n; i++)
 {
     cMessage *copy = msg->dup();
     send(copy, "out", i);
 }
 delete msg;
-\end{verbatim}
+\end{cpp}
 
 You might have noticed that copying the message for the last gate is
 redundant: we can just send out the original message there.
@@ -2483,11 +2483,11 @@ Also, we can utilize gate IDs to spare looking up the gate by name
 for each send operation. The optimized version of the code looks
 like this:
 
-\begin{verbatim}
+\begin{cpp}
 int outGateBaseId = gateBaseId("out");
 for (int i=0; i<n; i++)
     send(i==n-1 ? msg : msg->dup(), outGateBaseId+i);
-\end{verbatim}
+\end{cpp}
 
 
 \subsubsection{Retransmissions}
@@ -2504,17 +2504,17 @@ you can delete the original message.
 
 Creating and sending a copy:
 
-\begin{verbatim}
+\begin{cpp}
 // (re)transmit packet:
 cMessage *copy = packet->dup();
 send(copy, "out");
-\end{verbatim}
+\end{cpp}
 
 and finally (when no more retransmissions will occur):
 
-\begin{verbatim}
+\begin{cpp}
 delete packet;
-\end{verbatim}
+\end{cpp}
 
 
 \subsubsection{Why?}
@@ -2550,10 +2550,10 @@ It is often needed to model a delay (processing time, etc.) immediately
 followed by message sending. In {\opp}, it is possible to implement
 it like this:
 
-\begin{verbatim}
+\begin{cpp}
 wait(someDelay);
 send(msg, "outgate");
-\end{verbatim}
+\end{cpp}
 
 
 If the module needs to react to messages that arrive during the delay,
@@ -2566,11 +2566,11 @@ There is also a more straightforward method than those mentioned above:
 delayed sending\index{delayed sending}. Delayed sending can be achieved
 by using one of these functions:
 
-\begin{verbatim}
+\begin{cpp}
 sendDelayed(cMessage *msg, double delay, const char *gateName, int index);
 sendDelayed(cMessage *msg, double delay, int gateId);
 sendDelayed(cMessage *msg, double delay, cGate *gate);
-\end{verbatim}
+\end{cpp}
 
 The arguments are the same as for \ffunc{send()}, except for the extra \textit{delay}
 parameter. The effect of the function is the same as if the module
@@ -2581,9 +2581,9 @@ The delay value must be non-negative.
 
 Example:
 
-\begin{verbatim}
+\begin{cpp}
 sendDelayed(msg, 0.005, "outGate");
-\end{verbatim}
+\end{cpp}
 
 
 
@@ -2594,11 +2594,11 @@ Sometimes it is necessary or convenient to ignore gates/connections
 and send a message directly to a remote destination module. The \ffunc{sendDirect()}
 function does that:
 
-\begin{verbatim}
+\begin{cpp}
 sendDirect(cMessage *msg, double delay, cModule *mod, int gateId)
 sendDirect(cMessage *msg, double delay, cModule *mod, const char *gateName, int index=-1)
 sendDirect(cMessage *msg, double delay, cGate *gate)
-\end{verbatim}
+\end{cpp}
 
 In addition to the message and a delay, it also takes the destination module
 and gate. The gate should be an \textit{input} gate and should not be connected.
@@ -2608,11 +2608,11 @@ In other words, the module needs dedicated gates for receiving via \ttt{sendDire
 
 An example:
 
-\begin{verbatim}
+\begin{cpp}
 cModule *destinationModule = getParentModule()->getSubmodule("node2");
 double delay = truncnormal(0.005, 0.0001);
 sendDirect(new cMessage("packet"), delay, destinationModule, "inputGate");
-\end{verbatim}
+\end{cpp}
 
 At the destination module, there is no difference between messages received
 directly and those received over connections.
@@ -2629,9 +2629,9 @@ only be used in the \ffunc{activity()} function,
 Messages are received using the \ffunc{receive()} function.
 \ffunc{receive()} is a member of \cclass{cSimpleModule}.
 
-\begin{verbatim}
+\begin{cpp}
 cMessage *msg = receive();
-\end{verbatim}
+\end{cpp}
 
 The \ffunc{receive()} function accepts an optional \textit{timeout}
 parameter\index{receive!timeout}. (This is a \textit{delta}, not an
@@ -2641,7 +2641,7 @@ within the timeout period, the function returns a NULL pointer.
     \ttt{receiveNew()}, and \ttt{receiveNewOn()} were deprecated
     in {\opp} 2.3 and removed in {\opp} 3.0.}
 
-\begin{verbatim}
+\begin{cpp}
 simtime_t timeout = 3.0;
 cMessage *msg = receive( timeout );
 
@@ -2653,7 +2653,7 @@ else
 {
     ...  // process message
 }
-\end{verbatim}
+\end{cpp}
 
 
 
@@ -2666,9 +2666,9 @@ contains a \ffunc{receive()} call which cannot be used in \ffunc{handleMessage()
 The \ffunc{wait()} function suspends the execution of the module for
 a given amount of simulation time (a \textit{delta}).
 
-\begin{verbatim}
+\begin{cpp}
 wait(delay);
-\end{verbatim}
+\end{cpp}
 
 In other simulation software, \ffunc{wait()} is often called \textit{hold}.
 Internally, the \ffunc{wait()} function is implemented by a
@@ -2677,7 +2677,7 @@ The \ffunc{wait()} function is very convenient in modules that do not need
 to be prepared for arriving messages, for example message generators.
 An example:
 
-\begin{verbatim}
+\begin{cpp}
 for (;;)
 {
   // wait for a (potentially random amount of) time, specified
@@ -2687,7 +2687,7 @@ for (;;)
   // generate and send message
   ...
 }
-\end{verbatim}
+\end{cpp}
 
 It is a runtime error if a message arrives during the wait interval.
 If you expect messages to arrive during the wait period, you can
@@ -2697,7 +2697,7 @@ in addition to the wait interval. Messages that arrive during the
 wait interval will be accumulated in the queue, so you can
 process them after the \ffunc{waitAndEnqueue()} call returned.
 
-\begin{verbatim}
+\begin{cpp}
 cQueue queue("queue");
 ...
 waitAndEnqueue(waitTime, &queue);
@@ -2706,7 +2706,7 @@ if (!queue.empty())
   // process messages arrived during wait interval
   ...
 }
-\end{verbatim}
+\end{cpp}
 
 
 \subsection{Modeling events using self-messages}
@@ -2735,10 +2735,10 @@ The module can send a message to itself using the \ffunc{scheduleAt()} function.
 \ffunc{scheduleAt()} accepts an \textit{absolute} simulation time,
 usually calculated as \ffunc{simTime()}+\textit{delta}:
 
-\begin{verbatim}
+\begin{cpp}
 scheduleAt(absoluteTime, msg);
 scheduleAt(simtime()+delta, msg);
-\end{verbatim}
+\end{cpp}
 
 Self-messages are delivered to the module in the same way as other
 messages (via the usual receive calls or \ffunc{handleMessage()});
@@ -2757,24 +2757,24 @@ didn't provide it already:
 %Gabor
 %
 
-\begin{verbatim}
+\begin{cpp}
 cMessage *msg = new cMessage();
 scheduleAt(simtime()+waitTime, msg);
 cMessage *recvd = receive();
 if (recvd!=msg)
    // hmm, some other event occurred meanwhile: error!
 ...
-\end{verbatim}
+\end{cpp}
 
 You can determine if a message is currently in the FES\index{FES}
 by calling its \ffunc{isScheduled()} member:
 
-\begin{verbatim}
+\begin{cpp}
 if (msg->isScheduled())
   // currently scheduled
 else
   // not scheduled
-\end{verbatim}
+\end{cpp}
 
 
 \subsubsection{Re-scheduling an event}
@@ -2790,9 +2790,9 @@ Scheduled self-messages can be cancelled\index{self-message!cancelling}
 This is particularly useful because self-messages are often used
 to model timers.
 
-\begin{verbatim}
+\begin{cpp}
 cancelEvent( msg );
-\end{verbatim}
+\end{cpp}
 
 The \ffunc{cancelEvent()} function takes a pointer to the message to
 be cancelled, and also returns the same pointer. After having it
@@ -2805,7 +2805,7 @@ the message is not in the FES\index{FES}.
 
 The following example shows how to implement timers:
 
-\begin{verbatim}
+\begin{cpp}
 cMessage *timeoutEvent = new cMessage("timeout");
 
 scheduleAt(simTime()+10.0, timeoutEvent);
@@ -2821,7 +2821,7 @@ else
   // other message has arrived, timer can be cancelled now:
   delete cancelEvent(timeoutEvent);
 }
-\end{verbatim}
+\end{cpp}
 
 
 
@@ -2834,9 +2834,9 @@ else
 
 You can finish the simulation with the \ffunc{endSimulation()} function:
 
-\begin{verbatim}
+\begin{cpp}
 endSimulation();
-\end{verbatim}
+\end{cpp}
 
 \ffunc{endSimulation()} is rarely needed in practice because you
 can specify simulation time and CPU time limits\index{simulation time limits}
@@ -2850,10 +2850,10 @@ an error message (and in case of Cmdenv, a nonzero exit code).
 The \ttt{cRuntimeError} class has a constructor whose argument list
 is similar to \ffunc{printf()}:
 
-\begin{verbatim}
+\begin{cpp}
 if (windowSize<1)
     throw cRuntimeError("Invalid window size %d; must be >=1", windowSize);
-\end{verbatim}
+\end{cpp}
 
 Do not include a newline (``{\textbackslash}n'') or punctuation (period
 or exclamation mark) in the error text; it will be added by {\opp}.
@@ -2861,10 +2861,10 @@ or exclamation mark) in the error text; it will be added by {\opp}.
 You can achieve the same effect by calling the \ffunc{error()} method of
 \cclass{cModule}.
 
-\begin{verbatim}
+\begin{cpp}
 if (windowSize<1)
     error("Invalid window size %d; must be >=1", windowSize);
-\end{verbatim}
+\end{cpp}
 
 Of course, the \ffunc{error()} method can only be used when a module pointer
 is available.
@@ -2922,14 +2922,14 @@ and ACTIVE are steady states and SEND is transient (the numbers
 in parentheses must be unique within the state type and they are used
 for constructing the numeric IDs for the states):
 
-\begin{verbatim}
+\begin{cpp}
 enum {
   INIT = 0,
   SLEEP = FSM_Steady(1),
   ACTIVE = FSM_Steady(2),
   SEND = FSM_Transient(1),
 };
-\end{verbatim}
+\end{cpp}
 
 
 
@@ -2938,33 +2938,33 @@ The actual FSM is embedded in a switch-like statement,
 each state:
 
 
-\begin{Verbatim}[commandchars=\\\{\}]
+\begin{cpp}
 FSM_Switch(fsm)
-\{
-  case FSM_Exit(\textit{state1}):
+{
+  case FSM_Exit(state1):
     //...
     break;
-  case FSM_Enter(\textit{state1}):
+  case FSM_Enter(state1):
     //...
     break;
-  case FSM_Exit(\textit{state2}):
+  case FSM_Exit(state2):
     //...
     break;
-  case FSM_Enter(\textit{state2}):
+  case FSM_Enter(state2):
     //...
     break;
   //...
-\};
-\end{Verbatim}
+};
+\end{cpp}
 
 
 State transitions\index{state transition} are done via calls to
 \fmac{FSM\_Goto()}, which simply stores the new state in the
 \cclass{cFSM} object:
 
-\begin{Verbatim}[commandchars=\\\{\}]
+\begin{cpp}
 FSM_Goto(fsm,\textit{newState});
-\end{Verbatim}
+\end{cpp}
 
 The FSM starts from the state with the numeric code 0; this state
 is conventionally named INIT.
@@ -2993,22 +2993,22 @@ FSM GenState: entering state SLEEP
 To enable the above output, you have to \ttt{\#define FSM\_DEBUG}\index{FSM\_DEBUG}
 before including \ttt{omnetpp.h}.
 
-\begin{Verbatim}[commandchars=\\\{\}]
+\begin{cpp}
 #define FSM_DEBUG    // enables debug output from FSMs
 #include <omnetpp.h>
-\end{Verbatim}
+\end{cpp}
 
 The actual logging is done via the \fmac{FSM\_Print()} macro.
 It is currently defined as follows, but you can change the
 output format by undefining \ttt{FSM\_Print()} after including
 \ffilename{omnetpp.ini} and providing a new definition instead.
 
-\begin{verbatim}
+\begin{cpp}
 #define FSM_Print(fsm,exiting)
   (ev << "FSM " << (fsm).getName()
       << ((exiting) ? ": leaving state " : ": entering state ")
       << (fsm).getStateName() << endl)
-\end{verbatim}
+\end{cpp}
 
 
 \subsubsection{Implementation}
@@ -3034,12 +3034,12 @@ inter-arrival time. The code was taken from the Fifo2 sample
 simulation.
 
 
-\begin{Verbatim}[commandchars=\\\{\}]
+\begin{cpp}
 #define FSM_DEBUG
 #include <omnetpp.h>
 
 class BurstyGenerator : public cSimpleModule
-\{
+{
   protected:
     // parameters
     double sleepTimeMean;
@@ -3049,12 +3049,12 @@ class BurstyGenerator : public cSimpleModule
 
     // FSM and its states
     cFSM fsm;
-    enum \{
+    enum {
       INIT = 0,
       SLEEP = FSM_Steady(1),
       ACTIVE = FSM_Steady(2),
       SEND = FSM_Transient(1),
-    \};
+    };
 
     // variables used
     int i;
@@ -3064,12 +3064,12 @@ class BurstyGenerator : public cSimpleModule
     // the virtual functions
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
-\};
+};
 
 Define_Module(BurstyGenerator);
 
 void BurstyGenerator::initialize()
-\{
+{
     fsm.setName("fsm");
     sleepTimeMean = par("sleepTimeMean");
     burstTimeMean = par("burstTimeMean");
@@ -3080,63 +3080,63 @@ void BurstyGenerator::initialize()
     startStopBurst = new cMessage("startStopBurst");
     sendMessage = new cMessage("sendMessage");
     scheduleAt(0.0,startStopBurst);
-\}
+}
 
 void BurstyGenerator::handleMessage(cMessage *msg)
-\{
-  FSM_Switch(fsm)
-  \{
-    case FSM_Exit(INIT):
-      // transition to SLEEP state
-      FSM_Goto(fsm,SLEEP);
-      break;
-    case FSM_Enter(SLEEP):
-      // schedule end of sleep period (start of next burst)
-      scheduleAt(simTime()+exponential(sleepTimeMean),
-                 startStopBurst);
-    break;
-    case FSM_Exit(SLEEP):
-      // schedule end of this burst
-      scheduleAt(simTime()+exponential(burstTimeMean),
-                 startStopBurst);
-      // transition to ACTIVE state:
-      if (msg!=startStopBurst) \{
-        error("invalid event in state ACTIVE");
-      \}
-      FSM_Goto(fsm,ACTIVE);
-      break;
-    case FSM_Enter(ACTIVE):
-      // schedule next sending
-      scheduleAt(simTime()+exponential(sendIATime), sendMessage);
-    break;
-    case FSM_Exit(ACTIVE):
-      // transition to either SEND or SLEEP
-      if (msg==sendMessage) \{
-        FSM_Goto(fsm,SEND);
-      \} else if (msg==startStopBurst) \{
-        cancelEvent(sendMessage);
-        FSM_Goto(fsm,SLEEP);
-      \} else \{
-        error("invalid event in state ACTIVE");
-      \}
-      break;
-    case FSM_Exit(SEND):
-    \{
-      // generate and send out job
-      char msgname[32];
-      sprintf( msgname, "job-%d", ++i);
-      ev << "Generating " << msgname << endl;
-      cMessage *job = new cMessage(msgname);
-      job->setBitLength( (long) *msgLength );
-      job->setTimestamp();
-      send( job, "out" );
-      // return to ACTIVE
-      FSM_Goto(fsm,ACTIVE);
-      break;
-    \}
-  \}
-\}
-\end{Verbatim}
+{
+   FSM_Switch(fsm)
+   {
+     case FSM_Exit(INIT):
+       // transition to SLEEP state
+       FSM_Goto(fsm,SLEEP);
+       break;
+     case FSM_Enter(SLEEP):
+       // schedule end of sleep period (start of next burst)
+       scheduleAt(simTime()+exponential(sleepTimeMean),
+                  startStopBurst);
+     break;
+     case FSM_Exit(SLEEP):
+       // schedule end of this burst
+       scheduleAt(simTime()+exponential(burstTimeMean),
+                  startStopBurst);
+       // transition to ACTIVE state:
+       if (msg!=startStopBurst) {
+         error("invalid event in state ACTIVE");
+       }
+       FSM_Goto(fsm,ACTIVE);
+       break;
+     case FSM_Enter(ACTIVE):
+       // schedule next sending
+       scheduleAt(simTime()+exponential(sendIATime), sendMessage);
+     break;
+     case FSM_Exit(ACTIVE):
+       // transition to either SEND or SLEEP
+       if (msg==sendMessage) {
+         FSM_Goto(fsm,SEND);
+       } else if (msg==startStopBurst) {
+         cancelEvent(sendMessage);
+         FSM_Goto(fsm,SLEEP);
+       } else {
+         error("invalid event in state ACTIVE");
+       }
+       break;
+     case FSM_Exit(SEND):
+     {
+       // generate and send out job
+       char msgname[32];
+       sprintf( msgname, "job-%d", ++i);
+       ev << "Generating " << msgname << endl;
+       cMessage *job = new cMessage(msgname);
+       job->setBitLength( (long) *msgLength );
+       job->setTimestamp();
+       send( job, "out" );
+       // return to ACTIVE
+       FSM_Goto(fsm,ACTIVE);
+       break;
+     }
+   }
+}
+\end{cpp}
 
 
 
@@ -3151,10 +3151,10 @@ If a module is part of a module vector\index{module!vector}, the
 \ffunc{getIndex()} and \ffunc{size()} member functions can be used to
 query its index and the vector size:
 
-\begin{verbatim}
+\begin{cpp}
 ev << "This is module [" << module->getIndex() <<
       "] in a vector of size [" << module->size() << "].\n";
-\end{verbatim}
+\end{cpp}
 
 
 \subsubsection{Module IDs}
@@ -3164,17 +3164,17 @@ Each module in the network has a unique ID that is returned by the
 \ffunc{getId()} member function. The module ID\index{module!id} is used
 internally by the simulation kernel to identify modules.
 
-\begin{verbatim}
+\begin{cpp}
 int myModuleId = getId();
-\end{verbatim}
+\end{cpp}
 
 If you know the module ID, you can ask the simulation object
 (a global variable) to get back the module pointer:
 
-\begin{verbatim}
+\begin{cpp}
 int id = 100;
 cModule *mod = simulation.getModule( id );
-\end{verbatim}
+\end{cpp}
 
 
 Module IDs are guaranteed to be unique, even when modules are
@@ -3189,16 +3189,16 @@ module later.
 The surrounding compound module can be accessed by the
 \ffunc{getParentModule()} member function:
 
-\begin{verbatim}
+\begin{cpp}
 cModule *parent = getParentModule();
-\end{verbatim}
+\end{cpp}
 
 For example, the parameters of the parent module are accessed
 like this:
 
-\begin{verbatim}
+\begin{cpp}
 double timeout = getParentModule()->par( "timeout" );
-\end{verbatim}
+\end{cpp}
 
 
 \cclass{cModule}'s \ffunc{findSubmodule()} and \ffunc{getSubmodule()}
@@ -3208,24 +3208,24 @@ is in a module vector). The first one returns the numeric module ID of
 the submodule, and the latter returns the module pointer.  If the
 submodule is not found, they return -1 or NULL, respectively.
 
-\begin{verbatim}
+\begin{cpp}
 int submodID = compoundmod->findSubmodule("child",5);
 cModule *submod = compoundmod->getSubmodule("child",5);
-\end{verbatim}
+\end{cpp}
 
 
 The \ffunc{getModuleByRelativePath()} member function can be used to find
 a submodule nested deeper than one level below. For example,
 
-\begin{verbatim}
+\begin{cpp}
 compoundmod->getModuleByRelativePath("child[5].grandchild");
-\end{verbatim}
+\end{cpp}
 
 would give the same results as
 
-\begin{verbatim}
+\begin{cpp}
 compoundmod->getSubmodule("child",5)->getSubmodule("grandchild");
-\end{verbatim}
+\end{cpp}
 
 (Provided that \ttt{child[5]} does exist, because otherwise the second
 version would crash with an access violation because of the NULL
@@ -3245,12 +3245,12 @@ use \cclass{cSubModIterator}.
 
 For example:
 
-\begin{verbatim}
+\begin{cpp}
 for (cSubModIterator iter(*getParentModule()); !iter.end(); iter++)
 {
   ev << iter()->getFullName();
 }
-\end{verbatim}
+\end{cpp}
 
 (\ffunc{iter()} is pointer to the current module the iterator is at.)
 
@@ -3259,7 +3259,7 @@ The above method can also be used to iterate along a module
 vector\index{module!vector!iteration}, since the \ffunc{getName()}
 function returns the same for all modules:
 
-\begin{verbatim}
+\begin{cpp}
 for (cSubModIterator iter(*getParentModule()); !iter.end(); iter++)
 {
   if (iter()->isName(getName())) // if iter() is in the same
@@ -3269,7 +3269,7 @@ for (cSubModIterator iter(*getParentModule()); !iter.end(); iter++)
     // do something to it
   }
 }
-\end{verbatim}
+\end{cpp}
 
 
 \subsubsection{Walking along links}
@@ -3278,9 +3278,9 @@ To determine the module at the other end of a connection, use
 \cclass{cGate}'s \ffunc{getPreviousGate()}, \ffunc{getNextGate()} and
 \ffunc{getOwnerModule()} functions. For example:
 
-\begin{verbatim}
+\begin{cpp}
 cModule *neighbour = gate("out")->getNextGate()->getOwnerModule();
-\end{verbatim}
+\end{cpp}
 
 For input gates, you would use \ffunc{getPreviousGate()} instead of
 \ffunc{getNextGate()}.
@@ -3314,11 +3314,11 @@ of the module, so that its methods become visible.
 
 This makes the following code:
 
-\begin{verbatim}
+\begin{cpp}
 cModule *calleeModule = getParentModule()->getSubmodule("callee");
 Callee *callee = check_and_cast<Callee *>(calleeModule);
 callee->doSomething();
-\end{verbatim}
+\end{cpp}
 
 The \ffunc{check\_and\_cast<>()} template function on the second line
 is part of {\opp}. It does a standard C++ \ttt{dynamic\_cast},
@@ -3346,13 +3346,13 @@ does not animate the call. \ttt{Enter\_Method()} expects a
 \ttt{printf()}-like argument list -- the resulting string will
 be displayed during animation.
 
-\begin{verbatim}
+\begin{cpp}
 void Callee::doSomething()
 {
     Enter_Method("doSomething()");
     ...
 }
-\end{verbatim}
+\end{cpp}
 
 
 
@@ -3437,9 +3437,9 @@ into the FES\index{FES}, and these messages should be processed
 
 The first step, finding the factory object:
 
-\begin{verbatim}
+\begin{cpp}
 cModuleType *moduleType = cModuleType::get("WirelessNode");
-\end{verbatim}
+\end{cpp}
 
 
 \subsubsection{Simplified form}
@@ -3448,9 +3448,9 @@ cModuleType *moduleType = cModuleType::get("WirelessNode");
 \ttt{createScheduleInit(const char *name, cModule *parentmod)}
 convenience function to get a module up and running in one step.
 
-\begin{verbatim}
+\begin{cpp}
 mod = modtype->createScheduleInit("node",this);
-\end{verbatim}
+\end{cpp}
 
 It does \ffunc{create()} + \ffunc{buildInside()} +
 \ffunc[scheduleStart()]{scheduleStart(now)} + \ffunc{callInitialize()}.
@@ -3489,7 +3489,7 @@ Each step (except for Step 3.) can be done with one line of code.
 
 See the following example, where Step 3 is omitted:
 
-\begin{verbatim}
+\begin{cpp}
 // find factory object
 cModuleType *moduleType = cModuleType::get("WirelessNode");
 
@@ -3499,13 +3499,13 @@ module->buildInside();
 
 // create activation message
 module->scheduleStart( simTime() );
-\end{verbatim}
+\end{cpp}
 
 If you want to set up parameter values or gate vector sizes (Step 3.),
 the code goes between the \ffunc{create()} and
 \ffunc{buildInside()} calls:
 
-\begin{verbatim}
+\begin{cpp}
 // create
 cModuleType *moduleType = cModuleType::get("WirelessNode");
 cModule *module = moduleType->create("node", this);
@@ -3518,7 +3518,7 @@ module->setGateSize("out", 3);
 // create internals, and schedule it
 module->buildInside();
 module->scheduleStart(simTime());
-\end{verbatim}
+\end{cpp}
 
 
 \subsection{Deleting modules}
@@ -3526,9 +3526,9 @@ module->scheduleStart(simTime());
 
 To delete a module dynamically\index{module!dynamic deletion}:
 
-\begin{verbatim}
+\begin{cpp}
 module->deleteModule();
-\end{verbatim}
+\end{cpp}
 
 If the module was a compound module, this involves recursively
 destroying all its submodules. A simple module can also delete itself;
@@ -3562,10 +3562,10 @@ switch for the duration of the call.
 
 Example:
 
-\begin{verbatim}
+\begin{cpp}
 mod->callFinish();
 mod->deleteModule();
-\end{verbatim}
+\end{cpp}
 
 
 \subsection{Creating connections}
@@ -3580,23 +3580,23 @@ method.
 of the connection, and expects the destination gate pointer as
 an argument:
 
-\begin{verbatim}
+\begin{cpp}
 srcGate->connectTo(destGate);
-\end{verbatim}
+\end{cpp}
 
 The \textit{source} and \textit{destination} words correspond
 to the direction of the arrow in NED files.
 
 As an example, we create two modules and connect them in both directions:
 
-\begin{verbatim}
+\begin{cpp}
 cModuleType *moduleType = cModuleType::get("TicToc");
 cModule *a = modtype->createScheduleInit("a",this);
 cModule *b = modtype->createScheduleInit("b",this);
 
 a->gate("out")->connectTo(b->gate("in"));
 b->gate("out")->connectTo(a->gate("in"));
-\end{verbatim}
+\end{cpp}
 
 \ffunc{connectTo()} also accepts a channel object as an
 additional, optional argument. Channels are subclassed from
@@ -3612,12 +3612,12 @@ and \ffunc{setDatarate()} methods to set up the channel attributes.
 
 An example that sets up a channel with a delay:
 
-\begin{verbatim}
+\begin{cpp}
 cDatarateChannel *channel = new cDatarateChannel("channel");
 channel->setDelay(0.001);
 
 a->gate("out")->connectTo(b->gate("in"), channel); // a,b are modules
-\end{verbatim}
+\end{cpp}
 
 
 \subsection{Removing connections}
@@ -3628,9 +3628,9 @@ used to remove connections. This method has to be invoked
 on the \textit{source} side of the connection. It also destroys
 the channel object associated with the connection, if one has been set.
 
-\begin{verbatim}
+\begin{cpp}
 srcGate->disconnect();
-\end{verbatim}
+\end{cpp}
 
 
 %%% Local Variables:

@@ -64,17 +64,17 @@ The \cclass{cMessage} constructor accepts several arguments.
 Most commonly, you would create a message using an \textit{object name}
 (a \ttt{const char *} string) and a \textit{message kind} (\ttt{int}):
 
-\begin{verbatim}
+\begin{cpp}
 cMessage *msg = new cMessage("MessageName", msgKind);
-\end{verbatim}
+\end{cpp}
 
 Both arguments are optional and initialize to the null string (\ttt{""})
 and 0, so the following statements are also valid:
 
-\begin{verbatim}
+\begin{cpp}
 cMessage *msg = new cMessage();
 cMessage *msg = new cMessage("MessageName");
-\end{verbatim}
+\end{cpp}
 
 It is a good idea to \textit{always} use message names -- they can be
 extremely useful when debugging or demonstrating your simulation.
@@ -96,7 +96,7 @@ Length and priority are integers, and the bit error flag is boolean.
 
 Once a message has been created, its data members can be changed by the following functions:
 
-\begin{verbatim}
+\begin{cpp}
 msg->setKind( kind );
 msg->setBitLength( length );
 msg->setByteLength( lengthInBytes );
@@ -104,7 +104,7 @@ msg->setPriority( priority );
 msg->setBitError( err );
 msg->setTimestamp();
 msg->setTimestamp( simtime );
-\end{verbatim}
+\end{cpp}
 
 With these functions the user can set the message
 kind\index{message!kind}, the message length\index{message@length},
@@ -117,14 +117,14 @@ only the parameters gets internally multiplied by 8.
 
 The values can be obtained by the following functions:
 
-\begin{verbatim}
+\begin{cpp}
 int k       = msg->getKind();
 int p       = msg->getPriority();
 int l       = msg->getBitLength();
 int lb      = msg->getByteLength();
 bool b      = msg->hasBitError();
 simtime_t t = msg->getTimestamp();
-\end{verbatim}
+\end{cpp}
 
 \ffunc{getByteLength()} also reads the length field as \ffunc{length()},
 but the result gets divided by 8 and rounded up.
@@ -137,15 +137,15 @@ It is often necessary to duplicate a message (for example, sending
 one and keeping a copy). This can be done in the same way as
 for any other {\opp} object:
 
-\begin{verbatim}
+\begin{cpp}
 cMessage *copy = msg->dup();
-\end{verbatim}
+\end{cpp}
 
 or
 
-\begin{verbatim}
+\begin{cpp}
 cMessage *copy = new cMessage( *msg );
-\end{verbatim}
+\end{cpp}
 
 
 The two are equivalent. The resulting message is an exact copy
@@ -171,20 +171,20 @@ a self-message; it other words, if it was scheduled with
 returns true if the message is currently scheduled. A scheduled
 message can also be cancelled (\ffunc{cancelEvent()}).
 
-\begin{Verbatim}[commandchars=\\\{\}]
+\begin{cpp}
 bool \ffunc{isSelfMessage()};
 bool \ffunc{isScheduled()};
-\end{Verbatim}
+\end{cpp}
 
 The following methods return the time of creating and scheduling the message
 as well as its arrival time. While the message is scheduled, arrival
 time is the time it will be delivered to the module.
 
-\begin{Verbatim}[commandchars=\\\{\}]
+\begin{cpp}
 simtime_t \ffunc{getCreationTime()}
 simtime_t \ffunc{getSendingTime()};
 simtime_t \ffunc{getArrivalTime()};
-\end{Verbatim}
+\end{cpp}
 
 \subsubsection{Context pointer}
 
@@ -192,11 +192,11 @@ simtime_t \ffunc{getArrivalTime()};
 set/returned by the \ffunc{setContextPointer()} and
 \ffunc{getContextPointer()} functions:
 
-\begin{verbatim}
+\begin{cpp}
 void *context =...;
 msg->setContextPointer( context );
 void *context2 = msg->getContextPointer();
-\end{verbatim}
+\end{cpp}
 
 
 It can be used for any purpose by the simulation programmer.
@@ -219,39 +219,39 @@ enough ``context'' information about the event.
 The following methods can tell where the message came from and
 where it arrived (or will arrive if it is currently scheduled or under way.)
 
-\begin{Verbatim}[commandchars=\\\{\}]
+\begin{cpp}
 int \ffunc{getSenderModuleId()};
 int \ffunc{getSenderGateId()};
 int \ffunc{getArrivalModuleId()};
 int \ffunc{getArrivalGateId()};
-\end{Verbatim}
+\end{cpp}
 
 The following methods are just convenience functions which build
 on the ones above.
 
-\begin{Verbatim}[commandchars=\\\{\}]
+\begin{cpp}
 cModule *\ffunc{getSenderModule()};
 cGate *\ffunc{getSenderGate()};
 cGate *\ffunc{getArrivalGate()};
-\end{Verbatim}
+\end{cpp}
 
 And there are further convenience functions to tell whether
 the message arrived on a specific gate given with id or
 name+index.
 
-\begin{Verbatim}[commandchars=\\\{\}]
+\begin{cpp}
 bool \ffunc{arrivedOn}(int id);
 bool \ffunc{arrivedOn}(const char *gname, int gindex=0);
-\end{Verbatim}
+\end{cpp}
 
 The following methods return message creation time and the last sending
 and arrival times.
 
-\begin{Verbatim}[commandchars=\\\{\}]
+\begin{cpp}
 simtime_t \ffunc{getCreationTime()}
 simtime_t \ffunc{getSendingTime()};
 simtime_t \ffunc{getArrivalTime()};
-\end{Verbatim}
+\end{cpp}
 
 \subsubsection{Control info}
 
@@ -275,11 +275,11 @@ no data members), and attached to the messages representing
 packets. \cclass{cMessage} has the following methods for this
 purpose:
 
-\begin{Verbatim}[commandchars=\\\{\}]
+\begin{cpp}
 void \ffunc{setControlInfo(cObject *controlInfo)};
 cObject *\ffunc{getControlInfo()};
 cObject *\ffunc{removeControlInfo()};
-\end{Verbatim}
+\end{cpp}
 
 When a "command" is associated with the message sending (such as
 TCP OPEN, SEND, CLOSE, etc), the message kind field (\ttt{getKind()},
@@ -300,14 +300,14 @@ The PDU type is usually represented as a field inside the message class.
 The C++ \ttt{dynamic\_cast} operator can be used to determine
 if a message object is of a specific protocol.
 
-\begin{verbatim}
+\begin{cpp}
 cMessage *msg = receive();
 if (dynamic_cast<IPv6Datagram *>(msg) != NULL)
 {
     IPv6Datagram *datagram = (IPv6Datagram *)msg;
     ...
 }
-\end{verbatim}
+\end{cpp}
 
 
 \subsection{Encapsulation}
@@ -326,7 +326,7 @@ the encapsulated message. An exception: when the encapsulating (outer)
 message has zero length, {\opp} assumes it is not a real packet but
 some out-of-band signal, so its length is left at zero.
 
-\begin{verbatim}
+\begin{cpp}
 cMessage *userdata = new cMessage("userdata");
 
 userdata->setByteLength(2048);  // 2K
@@ -334,7 +334,7 @@ cMessage *tcpseg = new cMessage("tcp");
 tcpseg->setByteLength(24);
 tcpseg->encapsulate(userdata);
 ev << tcpseg->getByteLength() << endl; // --> 2048+24 = 2072
-\end{verbatim}
+\end{cpp}
 
 A message can only hold one encapsulated message at a time. The
 second \ffunc{encapsulate()} call will result in an error. It is also
@@ -343,9 +343,9 @@ module.
 
 You can get back the encapsulated message by \ffunc{decapsulate()}:
 
-\begin{verbatim}
+\begin{cpp}
 cMessage *userdata = tcpseg->decapsulate();
-\end{verbatim}
+\end{cpp}
 
 \ffunc{decapsulate()} will decrease the length of the message accordingly,
 except if it was zero. If the length would become negative, an
@@ -401,7 +401,7 @@ done via the \ffunc{take()} and \ffunc{drop()} methods. Let us see
 an example which assumes you have added to the class an \ttt{std::list} member
 called \ttt{messages} that stores message pointers:
 
-\begin{verbatim}
+\begin{cpp}
 void MessageBundleMessage::insertMessage(cMessage *msg)
 {
     take(msg);  // take ownership
@@ -413,7 +413,7 @@ void MessageBundleMessage::removeMessage(cMessage *msg)
     messages.remove(msg);  // remove pointer
     drop(msg);  // release ownership
 }
-\end{verbatim}
+\end{cpp}
 
 You will also have to provide an \ffunc{operator=()} method to
 make sure your message objects can be copied and duplicated
@@ -440,7 +440,7 @@ The \ffunc{addObject()}, \ffunc{getObject()}, \ffunc{hasObject()},
 \ffunc{removeObject()} methods use the object name
 as the key to the array. An example:
 
-\begin{verbatim}
+\begin{cpp}
 cLongHistogram *pklenDistr = new cLongHistogram("pklenDistr");
 msg->addObject( pklenDistr );
 ...
@@ -450,7 +450,7 @@ if (msg->hasObject("pklenDistr"))
        (cLongHistogram *) msg->getObject("pklenDistr");
    ...
 }
-\end{verbatim}
+\end{cpp}
 
 You should take care that names of the attached objects do not
 clash with each other or with \cclass{cMsgPar} parameter names
@@ -465,11 +465,11 @@ the message\index{message!attaching non-object types} by using
 \cclass{cMsgPar}'s \ttt{void*} pointer 'P') type (see later in the description
 of \cclass{cMsgPar}). An example:
 
-\begin{verbatim}
+\begin{cpp}
 struct conn_t *conn = new conn_t; // conn_t is a C struct
 msg->addPar("conn") = (void *) conn;
 msg->par("conn").configPointer(NULL,NULL,sizeof(struct conn_t));
-\end{verbatim}
+\end{cpp}
 
 
 
@@ -510,21 +510,21 @@ object with the given name. Then the value can be read with the methods
 
 Example usage:
 
-\begin{verbatim}
+\begin{cpp}
 msg->addPar("destAddr");
 msg->par("destAddr").setLongValue(168);
 ...
 long destAddr = msg->par("destAddr").longValue();
-\end{verbatim}
+\end{cpp}
 
 Or, using overloaded operators:
 
-\begin{verbatim}
+\begin{cpp}
 msg->addPar("destAddr");
 msg->par("destAddr") = 168;
 ...
 long destAddr = msg->par("destAddr");
-\end{verbatim}
+\end{cpp}
 
 
 \section{Message definitions}
@@ -565,14 +565,14 @@ Let us begin with a simple example. Suppose that you need message objects to
 carry source and destination addresses as well as a hop count. You could write
 a \ttt{mypacket.msg} file with the following contents:
 
-\begin{Verbatim}[commandchars=\\\{\}]
-\tbf{message} MyPacket
-\{
-     \tbf{int} srcAddress;
-     \tbf{int} destAddress;
-     \tbf{int} hops = 32;
-\};
-\end{Verbatim}
+\begin{msg}
+message MyPacket
+{
+     int srcAddress;
+     int destAddress;
+     int hops = 32;
+};
+\end{msg}
 
 The task of the \textit{message subclassing compiler} is to generate C++ classes
 you can use from your models as well as ``reflection'' classes that allow
@@ -586,25 +586,25 @@ it should be included into your C++ sources where you need to handle
 
 The generated \ttt{mypacket\_m.h} will contain the following class declaration:
 
-\begin{verbatim}
+\begin{cpp}
 class MyPacket : public cMessage {
     ...
     virtual int getSrcAddress() const;
     virtual void setSrcAddress(int srcAddress);
     ...
 };
-\end{verbatim}
+\end{cpp}
 
 So in your C++ file, you could use the \ttt{MyPacket} class like this:
 
-\begin{verbatim}
+\begin{cpp}
 #include "mypacket_m.h"
 
 ...
 MyPacket *pkt = new MyPacket("pkt");
 pkt->setSrcAddress( localAddr );
 ...
-\end{verbatim}
+\end{cpp}
 
 The \ttt{mypacket\_m.cc} file contains implementation of the generated \ttt{MyPacket}
 class, as well as ``reflection'' code that allows you to inspect these data
@@ -672,27 +672,27 @@ enum, plus creates an object which stores text representations of the
 constants. The latter makes it possible to display symbolic names in Tkenv.
 An example:
 
-\begin{Verbatim}[commandchars=\\\{\}]
-\tbf{enum} ProtocolTypes
-\{
+\begin{msg}
+enum ProtocolTypes
+{
    IP = 1;
    TCP = 2;
-\};
-\end{Verbatim}
+};
+\end{msg}
 
 Enum values need to be unique.
 
 
 % It is possible to ``extend'' an enum with new values.
 %
-% begin{Verbatim}[commandchars=\\\{\}]
+% begin{msg}
 % // add new values to ProtocolTypes
-% \tbf{enum} MoreProtocolTypes \tbf{extends} ProtocolTypes
-% \{
+% enum MoreProtocolTypes extends ProtocolTypes
+% {
 %   CLNP = 3;
 %   TP4 = 4;
-% \};
-% end{Verbatim}
+% };
+% end{msg}
 
 \subsection{Message declarations}
 
@@ -700,14 +700,14 @@ Enum values need to be unique.
 
 You can describe messages with the following syntax:
 
-\begin{Verbatim}[commandchars=\\\{\}]
-\tbf{message} FooPacket
-\{
-    \tbf{int} sourceAddress;
-    \tbf{int} destAddress;
-    \tbf{bool} hasPayload;
-\};
-\end{Verbatim}
+\begin{msg}
+message FooPacket
+{
+    int sourceAddress;
+    int destAddress;
+    bool hasPayload;
+};
+\end{msg}
 
 Processing this description with the message compiler will produce
 a C++ header file with a generated class, \ttt{FooPacket}.
@@ -719,7 +719,7 @@ methods will begin with \ttt{get} and \ttt{set},
 followed by the field name with its first letter converted to uppercase.
 Thus, \ttt{FooPacket} will contain the following methods:
 
-\begin{verbatim}
+\begin{cpp}
 virtual int getSourceAddress() const;
 virtual void setSourceAddress(int sourceAddress);
 
@@ -728,7 +728,7 @@ virtual void setDestAddress(int destAddress);
 
 virtual bool getHasPayload() const;
 virtual void setHasPayload(bool hasPayload);
-\end{verbatim}
+\end{cpp}
 
 Note that the methods are all declared \fkeyword{virtual} to give you the possibility
 of overriding them in subclasses.
@@ -736,10 +736,10 @@ of overriding them in subclasses.
 Two constructors will be generated: one that optionally accepts object name and
 (for \cclass{cMessage} subclasses) message kind, and a copy constructor:
 
-\begin{verbatim}
+\begin{cpp}
 FooPacket(const char *name=NULL, int kind=0);
 FooPacket(const FooPacket& other);
-\end{verbatim}
+\end{cpp}
 
 Appropriate assignment operator (\ffunc{operator=()}) and \ffunc{dup()} methods will
 also be generated.
@@ -764,14 +764,14 @@ Field values are initialized to zero.
 
 You can initialize field values with the following syntax:
 
-\begin{Verbatim}[commandchars=\\\{\}]
-\tbf{message} FooPacket
-\{
-    \tbf{int} sourceAddress = 0;
-    \tbf{int} destAddress = 0;
-    \tbf{bool} hasPayload = false;
-\};
-\end{Verbatim}
+\begin{msg}
+message FooPacket
+{
+    int sourceAddress = 0;
+    int destAddress = 0;
+    bool hasPayload = false;
+};
+\end{msg}
 
 Initialization code will be placed in the constructor of the generated class.
 
@@ -784,12 +784,12 @@ that allows Tkenv display the symbolic value of the field.
 
 Example:
 
-\begin{Verbatim}[commandchars=\\\{\}]
-\tbf{message} FooPacket
-\{
-    \tbf{int} payloadType \tbf{enum}(PayloadTypes);
-\};
-\end{Verbatim}
+\begin{msg}
+message FooPacket
+{
+    int payloadType enum(PayloadTypes);
+};
+\end{msg}
 
 The enum has to be declared separately in the message file.
 
@@ -798,20 +798,20 @@ The enum has to be declared separately in the message file.
 
 You can specify fixed size arrays:
 
-\begin{Verbatim}[commandchars=\\\{\}]
-\tbf{message} FooPacket
-\{
-    \tbf{long} route[4];
-\};
-\end{Verbatim}
+\begin{msg}
+message FooPacket
+{
+    long route[4];
+};
+\end{msg}
 
 The generated getter and setter methods will have an extra \ttt{k} argument,
 the array index:
 
-\begin{verbatim}
+\begin{cpp}
 virtual long getRoute(unsigned k) const;
 virtual void setRoute(unsigned k, long route);
-\end{verbatim}
+\end{cpp}
 
 If you call the methods with an index that is out of bounds, an exception
 will be thrown.
@@ -822,23 +822,23 @@ will be thrown.
 If the array size is not known in advance, you can declare the field
 to be a dynamic array:
 
-\begin{Verbatim}[commandchars=\\\{\}]
-\tbf{message} FooPacket
-\{
-    \tbf{long} route[];
-\};
-\end{Verbatim}
+\begin{msg}
+message FooPacket
+{
+    long route[];
+};
+\end{msg}
 
 In this case, the generated class will have two extra methods in addition
 to the getter and setter methods: one for setting the array size, and another
 one for returning the current array size.
 
-\begin{verbatim}
+\begin{cpp}
 virtual long getRoute(unsigned k) const;
 virtual void setRoute(unsigned k, long route);
 virtual unsigned getRouteArraySize() const;
 virtual void setRouteArraySize(unsigned n);
-\end{verbatim}
+\end{cpp}
 
 The \ffunc{set...ArraySize()} method internally allocates a new array. Existing
 values in the array will be preserved (copied over to the new array.)
@@ -851,39 +851,39 @@ The default array size is zero. This means that you need to call the
 
 You can declare string-valued fields with the following syntax:
 
-\begin{Verbatim}[commandchars=\\\{\}]
-\tbf{message} FooPacket
-\{
-    \tbf{string} hostName;
-\};
-\end{Verbatim}
+\begin{msg}
+message FooPacket
+{
+    string hostName;
+};
+\end{msg}
 
 The generated getter and setter methods will return and accept \ttt{const char*}
 pointers:
 
-\begin{verbatim}
+\begin{cpp}
 virtual const char *getHostName() const;
 virtual void setHostName(const char *hostName);
-\end{verbatim}
+\end{cpp}
 
 The generated object will have its own copy of the string.
 
 Note that a string member is different from a character array,
 which is treated as an array of any other type. For example,
 
-\begin{Verbatim}[commandchars=\\\{\}]
-\tbf{message} FooPacket
-\{
-    \tbf{char} chars[10];
-\};
-\end{Verbatim}
+\begin{msg}
+message FooPacket
+{
+    char chars[10];
+};
+\end{msg}
 
 will generate the following methods:
 
-\begin{verbatim}
+\begin{cpp}
 virtual char getChars(unsigned k);
 virtual void setChars(unsigned k, char a);
-\end{verbatim}
+\end{cpp}
 
 
 \subsection{Inheritance, composition}
@@ -912,18 +912,18 @@ The following section describes how to do this.
 By default, messages are subclassed from \cclass{cMessage}. However, you can
 explicitly specify the base class using the \fkeyword{extends} keyword:
 
-\begin{Verbatim}[commandchars=\\\{\}]
-\tbf{message} FooPacket \tbf{extends} FooBase
-\{
+\begin{msg}
+message FooPacket extends FooBase
+{
     ...
-\};
-\end{Verbatim}
+};
+\end{msg}
 
 For the example above, the generated C++ code will look like:
 
-\begin{verbatim}
+\begin{cpp}
 class FooPacket : public FooBase { ... };
-\end{verbatim}
+\end{cpp}
 
 Inheritance also works for structs and classes (see next sections
 for details).
@@ -951,12 +951,12 @@ derived from \cclass{cOwnedObject}, thus it will not have \ffunc{getName()},
 To create a class with those methods, you have to explicitly write
 \ttt{extends cOwnedObject}.
 
-\begin{Verbatim}[commandchars=\\\{\}]
-\tbf{class} MyClass \tbf{extends} cOwnedObject
-\{
+\begin{msg}
+class MyClass extends cOwnedObject
+{
     ...
-\};
-\end{Verbatim}
+};
+\end{msg}
 
 
 
@@ -969,44 +969,44 @@ and in general it can do anything a class can.)
 
 The syntax is similar to that of defining messages:
 
-\begin{Verbatim}[commandchars=\\\{\}]
-\tbf{struct} MyStruct
-\{
-    \tbf{char} array[10];
-    \tbf{short} version;
-\};
-\end{Verbatim}
+\begin{msg}
+struct MyStruct
+{
+    char array[10];
+    short version;
+};
+\end{msg}
 
 However, the generated code is different. The generated struct has
 no getter or setter methods, instead the fields are represented
 by public data members. For the definition above, the
 following code is generated:
 
-\begin{verbatim}
+\begin{cpp}
 // generated C++
 struct MyStruct
 {
     char array[10];
     short version;
 };
-\end{verbatim}
+\end{cpp}
 
 A struct can have primitive types or other structs as fields. It cannot
 have string or class as field.
 
 Inheritance is supported for structs:
 
-\begin{Verbatim}[commandchars=\\\{\}]
-\tbf{struct} Base
-\{
+\begin{msg}
+struct Base
+{
     ...
-\};
+};
 
-\tbf{struct} MyStruct extends Base
-\{
+struct MyStruct extends Base
+{
     ...
-\};
-\end{Verbatim}
+};
+\end{msg}
 
 But because a struct has no member functions, there are limitations:
 
@@ -1023,12 +1023,12 @@ In addition to primitive types, you can also use other structs or objects
 as a field. For example, if you have a struct named \ttt{IPAddress},
 you can write the following:
 
-\begin{Verbatim}[commandchars=\\\{\}]
-\tbf{message} FooPacket
-\{
+\begin{msg}
+message FooPacket
+{
     IPAddress src;
-\};
-\end{Verbatim}
+};
+\end{msg}
 
 The \ttt{IPAddress} structure must be known in advance to the message compiler;
 that is, it must either be a struct or class defined earlier in the message
@@ -1040,10 +1040,10 @@ The generated class will contain an \ttt{IPAddress} data member
 (that is, \textbf{not} a pointer to an \ttt{IPAddress}).
 The following getter and setter methods will be generated:
 
-\begin{verbatim}
+\begin{cpp}
 virtual const IPAddress& getSrc() const;
 virtual void setSrc(const IPAddress& src);
-\end{verbatim}
+\end{cpp}
 
 
 \subsubsection{Pointers}
@@ -1066,23 +1066,23 @@ so that the C++ compiler can compile it.
 Suppose you have an \ttt{IPAddress} structure, defined in an \ttt{ipaddress.h}
 file:
 
-\begin{verbatim}
+\begin{cpp}
 // ipaddress.h
 struct IPAddress {
     int byte0, byte1, byte2, byte3;
 };
-\end{verbatim}
+\end{cpp}
 
 To be able to use \ttt{IPAddress} in a message definition, the message
 file (say \ttt{foopacket.msg}) should contain the following lines:
 
-\begin{Verbatim}[commandchars=\\\{\}]
-\tbf{cplusplus} \{\{
+\begin{msg}
+cplusplus {{
 #include "ipaddress.h"
-\}\};
+}};
 
-\tbf{struct} IPAddress;
-\end{Verbatim}
+struct IPAddress;
+\end{msg}
 
 The effect of the first three lines is simply that the \ttt{\#include}
 statement will be copied into the generated \ttt{foopacket\_m.h}
@@ -1096,17 +1096,17 @@ affect the generated code.
 
 Classes can be announced using the \fkeyword{class} keyword:
 
-\begin{Verbatim}[commandchars=\\\{\}]
-\tbf{class} cSubQueue;
-\end{Verbatim}
+\begin{msg}
+class cSubQueue;
+\end{msg}
 
 The above syntax assumes that the class is derived from \cclass{cOwnedObject}
 either directly or indirectly. If it is not, the \fkeyword{noncobject}
 keyword should be used:
 
-\begin{Verbatim}[commandchars=\\\{\}]
-\tbf{class} \tbf{noncobject} IPAddress;
-\end{Verbatim}
+\begin{msg}
+class noncobject IPAddress;
+\end{msg}
 
 The distinction between classes derived and not derived from \cclass{cOwnedObject}
 is important because the generated code differs at places.
@@ -1131,23 +1131,23 @@ you might also need to adjust the packet length. That is,
 the following default (generated) version of the
 \ttt{setPayloadLength()} method is not suitable:
 
-\begin{verbatim}
+\begin{cpp}
 void FooPacket::setPayloadLength(int payloadLength)
 {
     this->payloadLength = payloadLength;
 }
-\end{verbatim}
+\end{cpp}
 
 Instead, it should look something like this:
 
-\begin{verbatim}
+\begin{cpp}
 void FooPacket::setPayloadLength(int payloadLength)
 {
     int diff = payloadLength - this->payloadLength;
     this->payloadLength = payloadLength;
     setBitLength(length() + diff);
 }
-\end{verbatim}
+\end{cpp}
 
 According to common belief, the largest drawback of generated code
 is that it is difficult or impossible to fulfill such wishes.
@@ -1163,13 +1163,13 @@ is known as the \textit{Generation Gap} design pattern.
 It is enabled with the \ttt{@customize} property set on the
 message:
 
-\begin{Verbatim}[commandchars=\\\{\}]
-\tbf{message} FooPacket
-\{
+\begin{msg}
+message FooPacket
+{
    @customize(true);
-   \tbf{int} payloadLength;
-\};
-\end{Verbatim}
+   int payloadLength;
+};
+\end{msg}
 
 If you process the above code with the message compiler,
 the generated code will contain a \ttt{FooPacket\_Base} class
@@ -1177,7 +1177,7 @@ instead of \ttt{FooPacket}. Then you would subclass
 \ttt{FooPacket\_Base} to produce \ttt{FooPacket},
 while doing your customizations by redefining the necessary methods.
 
-\begin{verbatim}
+\begin{cpp}
 class FooPacket_Base : public cMessage
 {
   protected:
@@ -1190,7 +1190,7 @@ class FooPacket_Base : public cMessage
     virtual int getSrc() const;
     virtual void setSrc(int src);
 };
-\end{verbatim}
+\end{cpp}
 
 There is a minimum amount of code you have to write
 for \ttt{FooPacket}, because not everything can be
@@ -1199,7 +1199,7 @@ constructors cannot be inherited. This minimum
 code is the following (you'll find it the generated C++ header
 too, as a comment):
 
-\begin{verbatim}
+\begin{cpp}
 class FooPacket : public FooPacket_Base
 {
   public:
@@ -1211,7 +1211,7 @@ class FooPacket : public FooPacket_Base
 };
 
 Register_Class(FooPacket);
-\end{verbatim}
+\end{cpp}
 
 Note that it is important that you redefine \ffunc{dup()} and
 provide an assignment operator (\ffunc{operator=()}).
@@ -1219,7 +1219,7 @@ provide an assignment operator (\ffunc{operator=()}).
 So, returning to our original example about payload length
 affecting packet length, the code you'd write is the following:
 
-\begin{verbatim}
+\begin{cpp}
 class FooPacket : public FooPacket_Base
 {
     // here come the mandatory methods: constructor,
@@ -1237,7 +1237,7 @@ void FooPacket::setPayloadLength(int newlength)
     // set the new length
     FooPacket_Base::setPayloadLength(newlength);
 }
-\end{verbatim}
+\end{cpp}
 
 
 
@@ -1254,22 +1254,22 @@ It is also useful for implementing computed fields.
 
 You can declare any field to be abstract with the following syntax:
 
-\begin{Verbatim}[commandchars=\\\{\}]
-\tbf{message} FooPacket
-\{
+\begin{msg}
+message FooPacket
+{
    @customize(true);
-   \tbf{abstract} \tbf{bool} urgentBit;
-\};
-\end{Verbatim}
+   abstract bool urgentBit;
+};
+\end{msg}
 
 For an \fkeyword{abstract} field, the message compiler generates
 no data member, and generated getter/setter methods will be pure
 virtual:
 
-\begin{verbatim}
+\begin{cpp}
 virtual bool getUrgentBit() const = 0;
 virtual void setUrgentBit(bool urgentBit) = 0;
-\end{verbatim}
+\end{cpp}
 
 
 Usually you'll want to use abstract fields together with
@@ -1296,9 +1296,6 @@ supply your implementation.
 %%};
 
 
-
-
-
 You may want to use STL \ttt{vector} or \ttt{stack} classes in your message classes.
 This is possible using abstract fields. After all, \ttt{vector} and \ttt{stack}
 are representations of a \textit{sequence} -- same abstraction as dynamic-size vectors.
@@ -1309,27 +1306,27 @@ on the underlying STL object.
 
 See the following message declaration:
 
-\begin{Verbatim}[commandchars=\\\{\}]
-\tbf{struct} Item
-\{
-    \tbf{int} a;
-    \tbf{double} b;
-\}
+\begin{msg}
+struct Item
+{
+    int a;
+    double b;
+}
 
-\tbf{message} STLMessage
-\{
+message STLMessage
+{
    @customize(true);
-   \tbf{abstract} Item foo[]; // will use vector<Item>
-   \tbf{abstract} Item bar[]; // will use stack<Item>
-\}
-\end{Verbatim}
+   abstract Item foo[]; // will use vector<Item>
+   abstract Item bar[]; // will use stack<Item>
+}
+\end{msg}
 
 If you compile the above, in the generated code you'll only find a couple of
 abstract methods for \ttt{foo} and \ttt{bar}, no data members or anything concrete.
 You can implement everything as you like. You can write the following C++ file
 then to implement \ttt{foo} and \ttt{bar} with \ttt{std::vector} and \ttt{std::stack}:
 
-\begin{verbatim}
+\begin{cpp}
 #include <vector>
 #include <stack>
 #include "stlmessage_m.h"
@@ -1371,7 +1368,7 @@ class STLMessage : public STLMessage_Base
 };
 
 Register_Class(STLMessage);
-\end{verbatim}
+\end{cpp}
 
 Some additional notes:
 
@@ -1555,7 +1552,7 @@ To illustrate why this is necessary, suppose you manually subclass
   Also, the above class definition misses several member functions
   (constructor, assignment operator, etc.) that should be written.}
 
-\begin{verbatim}
+\begin{cpp}
 class RadioMsg : public cMessage
 {
   public:
@@ -1563,16 +1560,16 @@ class RadioMsg : public cMessage
     double power;
     ...
 };
-\end{verbatim}
+\end{cpp}
 
 Now it is possible to use \ttt{RadioMsg} in your simple modules:
 
-\begin{verbatim}
+\begin{cpp}
 RadioMsg *msg = new RadioMsg();
 msg->freq = 1;
 msg->power = 10.0;
 ...
-\end{verbatim}
+\end{cpp}
 
 %% FIXME remove this section?
 
@@ -1590,7 +1587,7 @@ information about the new class. Reflection info might take the form of
 a separate C++ class whose methods return information about the
 \ttt{RadioMsg} fields. This descriptor class might look like this:
 
-\begin{verbatim}
+\begin{cpp}
 class RadioMsgDescriptor : public Descriptor
 {
   public:
@@ -1609,7 +1606,7 @@ class RadioMsgDescriptor : public Descriptor
     }
     //...
 };
-\end{verbatim}
+\end{cpp}
 
 Then you have to inform Tkenv that a \ttt{RadioMsgDescriptor} exists and that it
 should be used whenever Tkenv finds messages of type \ttt{RadioMsg} (as it is
