@@ -170,24 +170,22 @@
     morestring=[b]",
 }
 
-%% showstringspaces=false
-
+\definecolor{RulerColor}{rgb}{0.8,0.8,1.0}
+\lstset{basicstyle=\ttfamily,showstringspaces=false,frame=leftline,framesep=10pt,framerule=3pt,rulecolor=\color{RulerColor},xleftmargin=15pt}
 
 %% See listings-1.pdf,pp39
-\definecolor{RulerColor}{rgb}{0.8,0.8,1.0}
 \lstnewenvironment{ned}
-    {\lstset{language=NED,basicstyle=\ttfamily,frame=leftline,framesep=10pt,framerule=3pt,rulecolor=\color{RulerColor},xleftmargin=15pt}}
+    {\lstset{language=NED}}
     {}
 \lstnewenvironment{msg}
-    {\lstset{language=MSG,basicstyle=\ttfamily,frame=leftline,framesep=10pt,framerule=3pt,rulecolor=\color{RulerColor},xleftmargin=15pt}}
+    {\lstset{language=MSG}}
     {}
 \lstnewenvironment{cpp}
-    {\lstset{language=C++,basicstyle=\ttfamily,frame=leftline,framesep=10pt,framerule=3pt,rulecolor=\color{RulerColor},xleftmargin=15pt}}
+    {\lstset{language=C++}}
     {}
 \lstnewenvironment{inifile}
-    {\lstset{language=inifile,basicstyle=\ttfamily,frame=leftline,framesep=10pt,framerule=3pt,rulecolor=\color{RulerColor},xleftmargin=15pt}}
+    {\lstset{language=inifile}}
     {}
-
 
 %%
 %% some customization

@@ -151,10 +151,10 @@ Register_Class(CustomConfiguration);
 
 and then activate it in the boot-time configuration:
 
-\begin{verbatim}
+\begin{inifile}
 [General]
 configuration-class = CustomConfiguration
-\end{verbatim}
+\end{inifile}
 
 
 \subsubsection{Providing a custom reader for SectionBasedConfiguration}
@@ -166,11 +166,11 @@ reader class. This can be done with \ttt{sectionbasedconfig-configreader-class}
 config option, interpreted by \cclass{SectionBasedConfiguration}.
 Specify the following in your boot-time ini file:
 
-\begin{verbatim}
+\begin{inifile}
 [General]
 configuration-class = SectionBasedConfiguration
 sectionbasedconfig-configreader-class = <my new reader class>
-\end{verbatim}
+\end{inifile}
 
 The configuration reader class should look like this:
 

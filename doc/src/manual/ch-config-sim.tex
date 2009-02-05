@@ -15,7 +15,7 @@ The following sections explain \ffilename{omnetpp.ini}.
 For a start, let us see a simple \ffilename{omnetpp.ini} file which
 can be used to run the Fifo example simulation.
 
-\begin{verbatim}
+\begin{inifile}
 [General]
 network = FifoNet
 sim-time-limit = 100h
@@ -34,7 +34,7 @@ description = "high job arrival rate"
 **.gen.sendIaTime = exponential(0.01s)
 **.gen.msgLength = 10b
 **.fifo.bitsPerSec = 1000bps
-\end{verbatim}
+\end{inifile}
 
 The file is grouped into \textit{sections} named \ttt{[General]}, \ttt{[Config Fifo1]}
 and \ttt{[Config Fifo2]}, each one containing several \textit{entries}.
@@ -56,12 +56,12 @@ There is no limit on the file size or the maximum line length.
 
 Example:
 
-\begin{verbatim}
+\begin{inifile}
 [General]
 # this is a comment
 **.foo = "this is a single value \
 for the foo parameter"
-\end{verbatim}
+\end{inifile}
 
 \subsection{File inclusion}
 
@@ -71,13 +71,13 @@ files into logical units, fixed and varying part etc.
 
 An example:
 
-\begin{verbatim}
+\begin{inifile}
 # omnetpp.ini
 ...
 include parameters.ini
 include per-run-pars.ini
 ...
-\end{verbatim}
+\end{inifile}
 
 You can also include files from other directories. If the included ini file
 further includes others, their path names will be understood as relative
@@ -120,7 +120,7 @@ Named configurations are sections of the form \ttt{[Config <configname>]}, where
 \ttt{Config1}, \ttt{WirelessPing}, \ttt{OverloadedFifo}, etc. For example,
 \ffilename{omnetpp.ini} for an Aloha simulation might have the following skeleton:
 
-\begin{Verbatim}[commandchars=\\\{\}]
+\begin{inifile}
 [General]
 ...
 [Config PureAloha]
@@ -129,7 +129,7 @@ Named configurations are sections of the form \ttt{[Config <configname>]}, where
 ...
 [Config SlottedAloha2]
 ...
-\end{Verbatim}
+\end{inifile}
 
 Some configuration keys (such as user interface selection) are only
 accepted in the \ttt{[General]} section, but most of them can go into Config
@@ -138,7 +138,7 @@ sections as well.
 When you run a simulation, you need to select one of the configurations
 to be activated. In Cmdenv, this is done with the \ttt{-c} command-line option:
 
-\begin{Verbatim}[commandchars=\\\{\}]
+\begin{Verbatim}
 $ aloha -c PureAloha
 \end{Verbatim}
 
@@ -162,7 +162,7 @@ each configuration it is possible to specify a fall-back section
 explicitly, using the extends= key. Consider the following ini file
 skeleton:
 
-\begin{Verbatim}[commandchars=\\\{\}]
+\begin{inifile}
 [General]
 ...
 [Config SlottedAlohaBase]
@@ -179,7 +179,7 @@ extends = SlottedAloha2
 [Config SlottedAloha2b]
 extends = SlottedAloha2
 ...
-\end{Verbatim}
+\end{inifile}
 
 
 If you activate the \ttt{SlottedAloha2b} configuration, lookups will consider
@@ -226,11 +226,11 @@ An example \ffilename{omnetpp.ini} which sets the \ttt{numHosts} parameter of
 the toplevel module and the \ttt{transactionsPerSecond} parameter of the
 \ttt{server} module:
 
-\begin{verbatim}
+\begin{inifile}
 [General]
 net.numHosts = 15
 net.server.transactionsPerSecond = 100
-\end{verbatim}
+\end{inifile}
 
 
 \subsection{Using wildcard patterns}
@@ -274,12 +274,12 @@ more general ones later. Catch-all settings should come last.
 
 An example ini file:
 
-\begin{verbatim}
+\begin{inifile}
 [General]
 *.host[0].waitTime = 5ms   # specifics come first
 *.host[3].waitTime = 6ms
 *.host[*].waitTime = 10ms  # catch-all comes last
-\end{verbatim}
+\end{inifile}
 
 
 \subsubsection{Asterisk vs double asterisk}
@@ -317,12 +317,12 @@ because the \ttt{*} can also match digits!
 
 An example for numeric ranges:
 
-\begin{verbatim}
+\begin{inifile}
 [General]
 *.*.queue[3..5].bufSize = 10
 *.*.queue[12..].bufSize = 18
 *.*.queue[*].bufSize = 6  # this will only affect queues 0,1,2 and 6..11
-\end{verbatim}
+\end{inifile}
 
 
 \subsection{Using the default values}
@@ -388,11 +388,11 @@ writing batch execution scripts. It is the ini file where the user can
 specify iterations over various parameter settings.
 Here's an example:
 
-\begin{Verbatim}[commandchars=\\\{\}]
+\begin{inifile}
 [Config AlohaStudy]
-*.numHosts = \$\{1, 2, 5, 10..50 step 10\}
-**.host[*].generationInterval = exponential( \$\{0.2, 0.4, 0.6\} )
-\end{Verbatim}
+*.numHosts = ${1, 2, 5, 10..50 step 10}
+**.host[*].generationInterval = exponential(${0.2, 0.4, 0.6}s)
+\end{inifile}
 
 
 This parameter study expands to 8*3 = 24 simulation runs, where the number of
@@ -492,11 +492,11 @@ not be what the user wants).
 
 Let us get back to the ini file. We had:
 
-\begin{Verbatim}[commandchars=\\\{\}]
+\begin{inifile}
 [Config AlohaStudy]
-*.numHosts = \$\{1, 2, 5, 10..50 step 10\}
-**.host[*].generationInterval = exponential( \$\{0.2, 0.4, 0.6\} )
-\end{Verbatim}
+*.numHosts = ${1, 2, 5, 10..50 step 10}
+**.host[*].generationInterval = exponential( ${0.2, 0.4, 0.6}s )
+\end{inifile}
 
 
 The \$\{...\} syntax specifies an iteration. It is sort of a macro: at
@@ -533,12 +533,12 @@ more than one place in the ini file. The syntax is
 \$\{<varname>=<iteration>\}, and variables can be referred to simply as
 \$\{<varname>\}:
 
-\begin{Verbatim}[commandchars=\\\{\}]
+\begin{inifile}
 [Config Aloha]
-*.numHosts = \$\{N=1, 2, 5, 10..50 step 10\}
-**.host[*].generationInterval = exponential( \$\{mean=0.2, 0.4, 0.6\} )
-**.greeting = "There are \$\{N\} hosts"
-\end{Verbatim}
+*.numHosts = ${N=1, 2, 5, 10..50 step 10}
+**.host[*].generationInterval = exponential( ${mean=0.2, 0.4, 0.6}s )
+**.greeting = "There are ${N} hosts"
+\end{inifile}
 
 The scope of the variable name is the section that defines it, plus
 sections based on that section (via extends=).
@@ -569,11 +569,11 @@ loop, and it must evaluate to "true" for
 the variable combination to generate a run. The expression should be
 given with the constraint= configuration key. An example:
 
-\begin{Verbatim}[commandchars=\\\{\}]
-*.numNodes = \$\{n=10..100 step 10\}
-**.numNeighbors = \$\{m=2..10 step 2\}
-constraint = \$m <= sqrt(\$n)
-\end{Verbatim}
+\begin{inifile}
+*.numNodes = ${n=10..100 step 10}
+**.numNeighbors = ${m=2..10 step 2}
+constraint = $m <= sqrt($n)
+\end{inifile}
 
 
 The expression syntax supports most C language operators (including
@@ -596,9 +596,9 @@ configuration keys related to this: repeat= and seed-set=. The first
 one simple specifies how many times a run needs to be repeated. For
 example,
 
-\begin{Verbatim}[commandchars=\\\{\}]
+\begin{inifile}
 repeat = 10
-\end{Verbatim}
+\end{inifile}
 
 causes every combination of iteration variables to be repeated 10 times,
 and the \$\{repetition\} predefined variable holds the loop counter.
@@ -627,16 +627,16 @@ with exactly the same seeds. It is more practical to set it to either
 \$\{runnumber\} or to \$\{repetition\}. The default setting is
 \$\{runnumber\}:
 
-\begin{Verbatim}[commandchars=\\\{\}]
-seed-set = \$\{runnumber\}   # this is the default
-\end{Verbatim}
+\begin{inifile}
+seed-set = ${runnumber}   # this is the default
+\end{inifile}
 
 This makes every simulation run to execute with a unique seed set. The
 second option is:
 
-\begin{Verbatim}[commandchars=\\\{\}]
-seed-set = \$\{repetition\}
-\end{Verbatim}
+\begin{inifile}
+seed-set = ${repetition}
+\end{inifile}
 
 where all \$repetition=0 runs will use the same seeds (seed set 0), all
 \$repetition=1 runs use another seed set, \$repetition=2 a third seed
@@ -645,9 +645,9 @@ set, etc.
 To perform runs with manually selected seed sets, you can just define an
 iteration for the seed-set= key:
 
-\begin{Verbatim}[commandchars=\\\{\}]
-seed-set = \$\{5,6,8..11\}
-\end{Verbatim}
+\begin{inifile}
+seed-set = ${5,6,8..11}
+\end{inifile}
 
 In this case, the repeat= key should be left out, as seed-set= already
 defines an iteration and there's no need for an extra
@@ -657,12 +657,12 @@ It is of course also possible to manually specify individual seeds for
 simulations. This is rarely necessary, but we can use it here to
 demonstrate another feature, parallel iterators:
 
-\begin{Verbatim}[commandchars=\\\{\}]
+\begin{inifile}
 repeat = 4
-seed-1-mt = \$\{53542, 45732, 47853, 33434 ! repetition\}
-seed-2-mt = \$\{75335, 35463, 24674, 56673 ! repetition\}
-seed-3-mt = \$\{34542, 67563, 96433, 23567 ! repetition\}
-\end{Verbatim}
+seed-1-mt = ${53542, 45732, 47853, 33434 ! repetition}
+seed-2-mt = ${75335, 35463, 24674, 56673 ! repetition}
+seed-3-mt = ${34542, 67563, 96433, 23567 ! repetition}
+\end{inifile}
 
 The meaning of the above is this: in the first repetition, the first
 column of seeds is chosen, for the second repetition, the second
@@ -672,12 +672,12 @@ column, etc. The "!" syntax chooses the
 "!". Thus, the above example is equivalent
 to the following:
 
-\begin{Verbatim}[commandchars=\\\{\}]
+\begin{inifile}
 # no repeat= line!
-seed-1-mt = \$\{seed1 = 53542, 45732, 47853, 33434\}
-seed-2-mt = \$\{        75335, 35463, 24674, 56673 ! seed1\}
-seed-3-mt = \$\{        34542, 67563, 96433, 23567 ! seed1\}
-\end{Verbatim}
+seed-1-mt = ${seed1 = 53542, 45732, 47853, 33434}
+seed-2-mt = ${        75335, 35463, 24674, 56673 ! seed1}
+seed-3-mt = ${        34542, 67563, 96433, 23567 ! seed1}
+\end{inifile}
 
 That is, the iterators of seed-2-mt and seed-3-mt are advanced
 in lockstep with the seed1 iteration.
@@ -693,10 +693,10 @@ an output vector file created in one run would be overwritten in the
 next run. Thus, we have changed the default file names to make them
 differ for every run. The new defaults are:
 
-\begin{Verbatim}[commandchars=\\\{\}]
-output-vector-file = "\$\{resultdir\}/\$\{configname\}-\$\{runnumber\}.vec"
-output-scalar-file = "\$\{resultdir\}/\$\{configname\}-\$\{runnumber\}.sca"
-\end{Verbatim}
+\begin{inifile}
+output-vector-file = "${resultdir}/${configname}-${runnumber}.vec"
+output-scalar-file = "${resultdir}/${configname}-${runnumber}.sca"
+\end{inifile}
 
 Where \ttt{\$\{resultdir\}} is the value of the \ttt{result-dir} configuration
 option, and defaults to \ttt{results/}. So the above defaults generate
@@ -756,11 +756,11 @@ collection interval. By default, all output vectors are turned on.
 
 Output vectors can be configured with the following syntax:
 
-\begin{Verbatim}[commandchars=\\\{\}]
+\begin{inifile}
 module-pathname.objectname.vector-recording = true/false
 module-pathname.objectname.vector-recording-interval = start1..stop1,
                                                        start2..stop2, ...
-\end{Verbatim}
+\end{inifile}
 
 Either \textit{start} or \textit{stop} can be omitted, to mean the
 beginning and the end of the simulation, respectively.
@@ -769,9 +769,9 @@ beginning and the end of the simulation, respectively.
 The object name is the string passed to \cclass{cOutVector} in its constructor
 or with the \ffunc{setName()} member function.
 
-\begin{verbatim}
+\begin{cpp}
 cOutVector eed("End-to-End Delay");
-\end{verbatim}
+\end{cpp}
 
 Start and stop values can be any time specification accepted
 in NED and config files (e.g. \textit{10h 30m 45.2s}).
@@ -781,13 +781,13 @@ names and module path names.
 
 An example:
 
-\begin{verbatim}
+\begin{inifile}
 [General]
 **.vector-recording-interval = 1s..60s
 **.End-to-End Delay.vector-recording = true
 **.Router2.**.vector-recording = true
 **.vector-recording = false
-\end{verbatim}
+\end{inifile}
 
 The above configuration limits collection of all output vectors
 to the 1s..60s interval, and disables collection of output vectors
@@ -812,12 +812,12 @@ be referred to during result analysis.
     If an iteration variable has non-numeric value, it will not be recorded
     automatically and cannot be used during analysis. This can happen
     unintentionally if you specify units inside an iteration variable list:
-\begin{Verbatim}[commandchars=\\\{\}]
+\begin{inifile}
 # NEVER USE:
-**.host[*].generationInterval = exponential( \$\{mean=0.2s, 0.4s, 0.6s\} )
+**.host[*].generationInterval = exponential( ${mean=0.2s, 0.4s, 0.6s} )
 # INSTEAD: Specify the unit outside of the variable
-**.host[*].generationInterval = exponential( \$\{mean=0.2, 0.4, 0.6\}s )
-\end{Verbatim}
+**.host[*].generationInterval = exponential( ${mean=0.2, 0.4, 0.6}s )
+\end{inifile}
 \end{warning}
 
 Module parameters can also be saved, but this has to be
@@ -825,9 +825,9 @@ requested by the user, by configuring save-as-scalar=true for the
 parameters in question. The configuration key is a pattern that
 identifies the parameter, plus ".save-as-scalar". An example:
 
-\begin{Verbatim}[commandchars=\\\{\}]
+\begin{inifile}
 **.host[*].networkLoad.save-as-scalar = true
-\end{Verbatim}
+\end{inifile}
 
 This looks simple enough. However, there are three pitfalls:
 non-numeric parameters, too many matching parameters, and
@@ -843,30 +843,30 @@ if the host[] module vector size is 1000 in the example below, then the
 same value (3) will be saved 1000 times into the scalar file, once for
 each host.
 
-\begin{Verbatim}[commandchars=\\\{\}]
+\begin{inifile}
 **.host[*].startTime = 3
-**.host[*].startTime.save-as-scalar = true  \# saves "3" once for each host
-\end{Verbatim}
+**.host[*].startTime.save-as-scalar = true  # saves "3" once for each host
+\end{inifile}
 
 Third, recording a random-valued volatile parameter will just save a
 random number from that distribution. This is rarely what you need, and
 the simulation kernel will also issue a warning if this happens.
 
-\begin{Verbatim}[commandchars=\\\{\}]
-**.interarrivalTime = exponential(1)
-**.interarrivalTime.save-as-scalar = true  \# wrong: saves random values!
-\end{Verbatim}
+\begin{inifile}
+**.interarrivalTime = exponential(1s)
+**.interarrivalTime.save-as-scalar = true  # wrong: saves random values!
+\end{inifile}
 
 
 These pitfalls are not rare in practice, so it is usually more
 convenient to rely on the iteration variables in the result analysis.
 That is, one can rewrite the above example as
 
-\begin{Verbatim}[commandchars=\\\{\}]
-**.interarrivalTime = exponential( ${mean=1} )
-\end{Verbatim}
+\begin{inifile}
+**.interarrivalTime = exponential( ${mean=1}s )
+\end{inifile}
 
-and refer to the \$mean iteration variable instead of the
+and refer to the \ttt{\$mean} iteration variable instead of the
 interarrivalTime module parameter(s) during result analysis.
 save-as-scalar=true is not needed because iteration variables are
 automatically saved into the result files.
@@ -899,11 +899,11 @@ These labels can be explicitly specified in the ini file using the
 experiment=, measurement= and replication= config keys. If they are
 missing, the default is the following:
 
-\begin{Verbatim}[commandchars=\\\{\}]
-experiment = "\$\{configname\}"
-measurement = "\$\{iterationvars\}"
-replication = "\#\$\{repetition\},seed-set=<seedset>"
-\end{Verbatim}
+\begin{inifile}
+experiment = "${configname}"
+measurement = "${iterationvars}"
+replication = "#${repetition},seed-set=<seedset>"
+\end{inifile}
 
 
 That is, the default experiment label is the configuration name; the
@@ -973,14 +973,14 @@ sufficient in the majority of the simulation studies. However, you can
 customize it if needed. For example, here is a way to join two
 configurations into one experiment:
 
-\begin{Verbatim}[commandchars=\\\{\}]
-[Config PureAloha\_Part1]
+\begin{inifile}
+[Config PureAloha_Part1]
 experiment = "PureAloha"
 ...
-[Config PureAloha\_Part2]
+[Config PureAloha_Part2]
 experiment = "PureAloha"
 ...
-\end{Verbatim}
+\end{inifile}
 
 
 Measurement and replication labels can be customized in a similar way,
@@ -989,10 +989,10 @@ making use of named iteration variables, \$\{repetition\},
 to customize the generated measurement and replication labels. For
 example:
 
-\begin{Verbatim}[commandchars=\\\{\}]
-[Config PureAloha\_Part1]
-measurement = "\$\{N\} hosts, exponential(\$\{mean\}) packet generation interval"
-\end{Verbatim}
+\begin{inifile}
+[Config PureAloha_Part1]
+measurement = "${N} hosts, exponential(${mean}) packet generation interval"
+\end{inifile}
 
 
 One should be careful with the above technique though, because if some
@@ -1037,21 +1037,21 @@ written with RNG awareness.
 RNG mapping may be specified in \ffilename{omnetpp.ini}. The syntax of
 configuration entries is the following.
 
-\begin{verbatim}
+\begin{inifile}
 [General]
-<modulepath>.rng-N=M  (where N,M are numeric, M<num-rngs)
-\end{verbatim}
+<modulepath>.rng-N = M  # where N,M are numeric, M < num-rngs
+\end{inifile}
 
 This maps module-local RNG N to physical RNG M. The following
 example maps all  \ttt{gen} module's default (N=0) RNG to physical RNG 1,
 and all  \ttt{noisychannel} module's default (N=0) RNG to physical RNG 2.
 
-\begin{verbatim}
+\begin{inifile}
 [General]
 num-rngs = 3
 **.gen[*].rng-0 = 1
 **.noisychannel[*].rng-0 = 2
-\end{verbatim}
+\end{inifile}
 
 This mapping allows variance reduction techniques to be applied to
 {\opp} models, without any model change or recompilation.
@@ -1111,13 +1111,13 @@ runs.
 To manually set seeds for the Mersenne Twister RNG, use the \ttt{seed-}\textit{k}\ttt{-mt}
 option, where \textit{k} is the RNG index. An example:
 
-\begin{verbatim}
+\begin{inifile}
 [General]
 num-rngs = 3
 seed-0-mt = 12
 seed-1-mt = 9
 seed-2-mt = 7
-\end{verbatim}
+\end{inifile}
 
 For the now obsolete cLCG32 RNG, the name of the corresponding option is
 \ttt{seed-}\textit{k}\ttt{-lcg32}, and {\opp} provides a standalone program

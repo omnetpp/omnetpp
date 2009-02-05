@@ -105,7 +105,7 @@ The latter two are reserved for future use.
 %% Note: the following code is from src/nedxml/nedparser.cc,
 %%       NEDParser::getBuiltInDeclarations()
 %%
-\begin{verbatim}
+\begin{ned}
 package ned;
 
 @namespace("");
@@ -140,7 +140,7 @@ moduleinterface IUnidirectionalChannel {
         input i;
         output o;
 }
-\end{verbatim}
+\end{ned}
 
 
 
@@ -259,12 +259,12 @@ module (\fkeyword{module} keyword) with the \ttt{@isNetwork(true)} property.
 The \ttt{@isNetwork} property is only recognized on simple modules and
 compound modules. The value may be empty, true or false:
 
-\begin{verbatim}
+\begin{ned}
 @isNetwork;
 @isNetwork();
 @isNetwork(true);
 @isNetwork(false);
-\end{verbatim}
+\end{ned}
 
 The empty value corresponds to \ttt{@isNetwork(true)}.
 
@@ -410,11 +410,11 @@ An index is an identifier in square brackets after the property name.
 The following example shows a property without index, one with the index \ttt{foo},
 and a third with the index \ttt{bar}.
 
-\begin{verbatim}
+\begin{ned}
 @statistic();
 @statistic[foo]();
 @statistic[bar]();
-\end{verbatim}
+\end{ned}
 
 
 \subsubsection{Property value}
@@ -423,19 +423,19 @@ The value of the property is specified inside parentheses. The value consists of
 \textit{key-valuelist} pairs, separated by semicolons; values are separated with commas.
 Example:
 
-\begin{verbatim}
+\begin{ned}
 @prop(key1=value11,value12,value13;key2=value21,value22)
-\end{verbatim}
+\end{ned}
 
 Keys must be unique.
 
 If the key+equal sign part (\ttt{key=}) is missing, the valuelist belongs
 to the \textit{default key}. Examples:
 
-\begin{verbatim}
+\begin{ned}
 @prop(value1,value2)
 @prop(value1,value2;key1=value11,value12,value13)
-\end{verbatim}
+\end{ned}
 
 Property values have a liberal syntax (see Appendix \ref{cha:ned-language-grammar}).
 Values that do not fit the grammar (notably, those containing a comma or
@@ -448,9 +448,9 @@ quotes: \ttt{"\textbackslash"foo\textbackslash""}.
 
 Example:
 
-\begin{verbatim}
+\begin{ned}
 @prop(marks=the ! mark, "the , mark", "the ; mark", other marks);
-\end{verbatim}
+\end{ned}
 
 
 \subsubsection{Placement}
@@ -498,7 +498,7 @@ new properties.
 
 Examples:
 
-\begin{verbatim}
+\begin{ned}
 int a;           // defines new parameter
 int b @foo;      // new parameter with property
 int c = default(5); // new parameter with default value
@@ -509,7 +509,7 @@ g = default(10); // overrides default value of existing parameter
 h;               // legal, but does nothing
 i @foo(1);       // adds a property to existing parameter
 j @foo(1) = 10;  // adds a property and value to existing parameter
-\end{verbatim}
+\end{ned}
 
 Parameter values are NED expressions. Expressions are described in section
 \ref{ch-ned-ref:sec:expressions}.
@@ -545,22 +545,22 @@ A parameter may have a \ttt{@unit} property to associate it with a measurement
 unit. The \ttt{@unit} property should contain one string value for the default
 key. Examples:
 
-\begin{verbatim}
+\begin{ned}
 @unit("s")
 @unit(s)
 @unit("second")
 @unit(second)
-\end{verbatim}
+\end{ned}
 
 When present, values assigned to the parameter must be in the
 same or in a compatible (that is, convertible) unit.
 Examples:
 
-\begin{verbatim}
+\begin{ned}
   double a @unit(s) = 5s;  // OK
   double a @unit(s) = 5;   // error: should be 5s
   double a @unit(s) = 5kg; // error: incompatible unit
-\end{verbatim}
+\end{ned}
 
 @unit behavior for non-numeric parameters (string, XML) is unspecified
 (may be ignored or may be an error).
@@ -568,14 +568,14 @@ Examples:
 The @unit property of a parameter may not be modified via inheritance.
 
 Example:
-\begin{verbatim}
+\begin{ned}
 simple A {
     double p @unit(s);
 }
 simple B extends A {
     p @unit(mW);  // illegal: cannot override @unit
 }
-\end{verbatim}
+\end{ned}
 
 
 
@@ -606,7 +606,7 @@ properties.
 
 Examples:
 
-\begin{verbatim}
+\begin{ned}
 gates:
   input a;         // defines new gate
   input b @foo;    // new gate with property
@@ -615,7 +615,7 @@ gates:
   e[10];           // set gate size for existing (e.g.inherited) gate vector
   f @foo(bar);     // add property to existing gate
   g[10] @foo(bar); // set gate size and add property to existing gate
-\end{verbatim}
+\end{ned}
 
 Gate vector sizes are NED expressions. Expressions are described in section
 \ref{ch-ned-ref:sec:expressions}.
@@ -639,10 +639,10 @@ required to be connected for some reason.
 
 Example:
 
-\begin{verbatim}
+\begin{ned}
 gates:
     input radioIn @directIn;
-\end{verbatim}
+\end{ned}
 
 
 
@@ -732,15 +732,15 @@ See the NED Grammar (\ref{cha:ned-language-grammar}) for the exact syntax.
 
 Example connections:
 
-\begin{verbatim}
+\begin{ned}
 a.out --> b.in;
 c.out --> d.in if p>0;
 e.out[i] --> f[i].in for i=0..sizeof(f)-1, if i%2==0;
-\end{verbatim}
+\end{ned}
 
 Example connection groups:
 
-\begin{verbatim}
+\begin{ned}
 if p>0 {
     a.out --> b.in;
     a.in <-- b.out;
@@ -755,7 +755,7 @@ for i=0..sizeof(d)-1, for j=0..sizeof(d)-1, if i!=j {
 for i=0..sizeof(e)-1, for j=0..sizeof(e)-1 {
     e[i].out[j] --> e[j].in[i] if i!=j;
 }
-\end{verbatim}
+\end{ned}
 
 
 \subsubsection{Connection syntax}
@@ -814,15 +814,15 @@ the \ttt{\$i} and \ttt{\$o} suffix to the name of the inout gate.
 A bidirectional connection (which uses a double arrow to connect two inout gates),
 is also a shorthand for two uni-directional connections; that is,
 
-\begin{verbatim}
+\begin{ned}
 a.g <--> b.g;
-\end{verbatim}
+\end{ned}
 
 is equivalent to
-\begin{verbatim}
+\begin{ned}
 a.g$o --> b.g$i;
 a.g$i <-- b.g$o;
-\end{verbatim}
+\end{ned}
 
 In inout gate vectors, gates are always in pairs, that is,
 \ttt{sizeof(g\$i)==sizeof(g\$o)} always holds. It is maintained even
@@ -938,13 +938,14 @@ Visible names are:
 
 Imports have a similar syntax to Java, but they are more flexible with wildcards.
 All of the following are legal:
-\begin{verbatim}
+
+\begin{ned}
 import inet.protocols.network.ip.RoutingTable;
 import inet.protocols.network.ip.*;
 import inet.protocols.network.ip.Ro*Ta*;
 import inet.protocols.*.ip.*;
 import inet.**.RoutingTable;
-\end{verbatim}
+\end{ned}
 
 One asterisk "*" stands for "any character sequence not containing
 period"; two asterisks mean "any character sequence which may
