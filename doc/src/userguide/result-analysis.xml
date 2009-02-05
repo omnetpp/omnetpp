@@ -263,23 +263,23 @@
             to get a list of suggestions appropriate at the cursor position.
           </para>
         </tip>
-        <sect4>
-          <title>Examples</title>
-          <informalexample>
-            <para><literallayout><userinput>"queuing time"</userinput></literallayout></para>
-            <para>filters for result items named <emphasis>queuing time</emphasis>.</para>
-          </informalexample>
-          <informalexample>
-            <para>
-              <literallayout><userinput>module(**.sink) AND (name("queuing time") OR</userinput>
+      </sect3>
+      <sect3>
+        <title>Examples</title>
+        <informalexample>
+          <para><literallayout><userinput>"queuing time"</userinput></literallayout></para>
+          <para>filters for result items named <emphasis>queuing time</emphasis>.</para>
+        </informalexample>
+        <informalexample>
+          <para>
+            <literallayout><userinput>module(**.sink) AND (name("queuing time") OR</userinput>
 <userinput>                     name("transmission time"))</userinput></literallayout>
-            </para>
-            <para>
-              results in the <emphasis>queuing times</emphasis> and <emphasis>transmission times</emphasis>
-              that are written by modules named <emphasis>sink</emphasis>.
-            </para>
-          </informalexample>
-        </sect4>
+          </para>
+          <para>
+            results in the <emphasis>queuing times</emphasis> and <emphasis>transmission times</emphasis>
+            that are written by modules named <emphasis>sink</emphasis>.
+          </para>
+        </informalexample>
       </sect3>
     </sect2>
 
@@ -345,8 +345,7 @@
           selected by adding Select/Deselect children to the chart node. By default the
           chart displays all data in the dataset at its position. You can modify the
           content of the chart by adding Select and Deselect children to it.
-          There are lots of customization can be applied to
-          charts including setting titles, colors, adding legends, grid lines, etc. See
+          Charts can be fully customized including setting titles, colors, adding legends, grid lines, etc. See
           the <xref linkend="charts"/> section for details.
         </para>
       </sect3>

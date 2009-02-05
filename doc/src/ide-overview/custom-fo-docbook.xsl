@@ -133,12 +133,6 @@
   </xsl:attribute>
 </xsl:attribute-set>
 
-<!--  Turn on section numbers -->
-<xsl:param name="chapter.autolabel" select="1"/>
-<xsl:param name="section.label.includes.component.label" select="1"/>
-<xsl:param name="section.autolabel" select="1"/>
-<xsl:param name="section.autolabel.max.depth" select="2"/>
-
 <!-- ***************  QAndASet  *********************  -->
 <!-- ***************************************************  -->
 
@@ -157,7 +151,9 @@
 
 <!-- ***************  ToC/LoT/Index Generation  *********************  -->
 <!-- ***************************************************  -->
-<xsl:param name="generate.toc" select="'book toc'"/>
+<xsl:param name="generate.toc">
+article title
+</xsl:param>
 
 <!-- ***************  XSLT Processing  *********************  -->
 <!-- ***************************************************  -->
@@ -165,11 +161,24 @@
 <!-- ***************  Figure, table, and other titles  *********************  -->
 <!-- ***************************************************  -->
 <xsl:param name="formal.title.placement">
-figure before
+figure after
 example before
 equation before
 table before
 procedure before
 </xsl:param>
 
+<xsl:param name="local.l10n.xml" select="document('')"/>
+<l:i18n xmlns:l="http://docbook.sourceforge.net/xmlns/l10n/1.0">
+  <l:l10n language="en">
+    <l:context name="title">
+      <l:template name="figure" text="%t"/>
+    </l:context>
+    <l:context name="xref-number-and-title">
+      <l:template name="figure" text="the figure titled &#8220;%t&#8221;"/>
+    </l:context>
+  </l:l10n>
+</l:i18n>
+
+<xsl:template match="table" mode="label.markup"/>
 </xsl:stylesheet>
