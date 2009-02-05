@@ -708,8 +708,8 @@ You need to add the following to \ffilename{omnetpp.ini}:
 
 \begin{inifile}
 [General]
-rng-class="cAkaroaRNG"
-outputvectormanager-class="cAkOutputVectorManager"
+rng-class = "cAkaroaRNG"
+outputvectormanager-class = "cAkOutputVectorManager"
 \end{inifile}
 
 These lines cause the simulation to obtain random numbers from Akaroa,
@@ -730,7 +730,7 @@ be under Akaroa control. By default, all output vectors are under Akaroa
 control; the
 
 \begin{inifile}
-<modulename>.<vectorname>.with-akaroa=false
+<modulename>.<vectorname>.with-akaroa = false
 \end{inifile}
 
 setting can be used to make Akaroa ignore specific vectors.
@@ -740,10 +740,10 @@ if you only want a few vectors be placed under Akaroa,
 you can use the following trick:
 
 \begin{inifile}
-<modulename>.<vectorname1>.with-akaroa=true
-<modulename>.<vectorname2>.with-akaroa=true
+<modulename>.<vectorname1>.with-akaroa = true
+<modulename>.<vectorname2>.with-akaroa = true
 ...
-**.*.with-akaroa=false  # catches everything not matched above
+**.*.with-akaroa = false  # catches everything not matched above
 \end{inifile}
 
 
@@ -759,7 +759,7 @@ Your can prevent this from happening using the
 
 \begin{inifile}
 [General]
-fname-append-host=yes
+fname-append-host = true
 \end{inifile}
 
 When turned on, it appends the host name to the names of the output
@@ -998,7 +998,7 @@ innocent-looking statements, while the big and complex algorithm
 doesn't take nearly as much time as expected. \textit{Don't assume anything
 -- profile before you optimize!}
 
-A really impressive profiler on Linux is the \textit{Valgrind}-based
+A great profiler on Linux is the \textit{Valgrind}-based
 \textit{callgrind}, and its visualizer \textit{KCachegrind}.
 Unfortunately it won't be ported to Windows anytime soon.
 On Windows, you're out of luck -- commercial products may help, or,

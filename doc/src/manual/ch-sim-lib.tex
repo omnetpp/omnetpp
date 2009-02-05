@@ -293,22 +293,16 @@ if (!ev.isDisabled())
     ev << "Packet " << msg->getName() << " received\n";
 \end{cpp}
 
-A more sophisticated implementation of the same idea is to define
-an \ttt{EV} macro which can be used in logging statements instead of
-\ttt{ev}. The definition:
-
-\begin{cpp}
-//#define EV  ev.isDisabled()?std::cout:ev ==> EV is now part of <omnetpp.h>
-\end{cpp}
-
-And after that, one would simply write \ttt{EV<<} instead of \ttt{ev<<}.
+A more sophisticated implementation of the same idea is to the \fmac{EV}
+macro which can be used in logging statements instead of \ttt{ev}.
+One would simply write \ttt{EV<<} instead of \ttt{ev<<}:
 
 \begin{cpp}
 EV << "Packet " << msg->getName() << " received\n";
 \end{cpp}
 
-The slightly tricky definition of \ttt{EV} makes use of the fact
-that the \ttt{<<} operator binds looser than \ttt{?:}.
+\ttt{EV}'s implementation makes use of the fact that the \ttt{<<} operator
+binds looser than the conditional operator (\ttt{?:}).
 
 %FIXME add tale about debug channels etc.
 
