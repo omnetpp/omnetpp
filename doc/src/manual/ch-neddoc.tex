@@ -40,7 +40,7 @@ point of view) will be included in the generated documentation.
 
 Example:
 
-\begin{verbatim}
+\begin{ned}
 //
 // An ad-hoc traffic generator to test the Ethernet models.
 //
@@ -53,12 +53,12 @@ simple Gen
     gates:
         output out;  // to Ethernet LLC
 }
-\end{verbatim}
+\end{ned}
 
 You can also place comments above parameters and gates. This is useful
 if they need long explanations. Example:
 
-\begin{verbatim}
+\begin{ned}
 //
 // Deletes packets and optionally keeps statistics.
 //
@@ -72,7 +72,7 @@ simple Sink
     gates:
         input in;
 }
-\end{verbatim}
+\end{ned}
 
 \subsection{Private comments}
 
@@ -81,7 +81,7 @@ begin it with \texttt{//\#}. Those lines will be ignored by the
 documentation tool, and can be used to make ``private'' comments
 like \texttt{FIXME} or \texttt{TODO}, or to comment out unused code.
 
-\begin{verbatim}
+\begin{ned}
 //
 // An ad-hoc traffic generator to test the Ethernet models.
 //# TODO above description needs to be refined
@@ -96,7 +96,7 @@ simple Gen
     gates:
         output out;  // to Ethernet LLC
 }
-\end{verbatim}
+\end{ned}
 
 
 \subsection{More on comment placement}
@@ -110,7 +110,7 @@ between the comment and the documented item. Blank lines
 detach the comment from the documented item.
 
 Example:
-\begin{verbatim}
+\begin{ned}
 // This is wrong! Because of the blank line, this comment is not
 // associated with the following simple module!
 
@@ -118,7 +118,7 @@ simple Gen
 {
     ...
 }
-\end{verbatim}
+\end{ned}
 
 Do not try to comment groups of parameters together. The result
 will be awkward.
@@ -138,7 +138,7 @@ and lines beginning with `\ttt{-\#}' into numbered lists.
 
 Example:
 
-\begin{verbatim}
+\begin{ned}
 //
 // Ethernet MAC layer. MAC performs transmission and reception of frames.
 //
@@ -152,7 +152,7 @@ Example:
 // -# IEEE 802.3
 // -# Ethernet-II
 //
-\end{verbatim}
+\end{ned}
 
 
 \subsection{Special tags}
@@ -161,12 +161,12 @@ The documentation tool understands the following tags and will render them accor
 \ttt{@author}, \ttt{@date}, \ttt{@todo}, \ttt{@bug}, \ttt{@see}, \ttt{@since},
 \ttt{@warning}, \ttt{@version}. Example usage:
 
-\begin{verbatim}
+\begin{ned}
 //
 // @author Jack Foo
 // @date 2005-02-11
 //
-\end{verbatim}
+\end{ned}
 
 
 \subsection{Text formatting using HTML}
@@ -204,24 +204,24 @@ which replaces all frames in the current browser).
 
 Examples:
 
-\begin{verbatim}
+\begin{ned}
 //
 // For more info on Ethernet and other LAN standards, see the
 // <a href="http://www.ieee802.org/" target="_blank">IEEE 802
 // Committee's site</a>.
 //
-\end{verbatim}
+\end{ned}
 
 You can also use the \ttt{<a href=..>} tag to create links within the page:
 
-\begin{verbatim}
+\begin{ned}
 //
 // See the <a href="#resources">resources</a> in this page.
 // ...
 // <a name="resources"><b>Resources</b></a>
 // ...
 //
-\end{verbatim}
+\end{ned}
 
 You can use the \texttt{<pre>..</pre>} HTML tag to insert source code examples
 into the documentation. Line breaks and indentation will be preserved,
@@ -230,7 +230,7 @@ with \texttt{<nohtml>}, see later).
 
 Example:
 
-\begin{verbatim}
+\begin{ned}
 // <pre>
 // // my preferred way of indentation in C/C++ is this:
 // <b>for</b> (<b>int</b> i=0; i<10; i++)
@@ -238,7 +238,7 @@ Example:
 //     printf(<i>"%d\n"</i>, i);
 // }
 // </pre>
-\end{verbatim}
+\end{ned}
 
 will be rendered as
 
@@ -252,7 +252,7 @@ will be rendered as
 
 HTML is also the way to create tables. The example below
 
-\begin{verbatim}
+\begin{ned}
 //
 // <table border="1">
 //   <tr>  <th>#</th> <th>number</th> </tr>
@@ -261,7 +261,7 @@ HTML is also the way to create tables. The example below
 //   <tr>  <td>3</td> <td>three</td>  </tr>
 // </table>
 //
-\end{verbatim}
+\end{ned}
 
 will be rendered approximately as:
 
@@ -283,10 +283,10 @@ as formatting instructions, and rather you want them to appear as literal
 surrounding the text with the \ttt{<nohtml>}...\ttt{</nohtml>} tag.
 For example,
 
-\begin{verbatim}
+\begin{ned}
 // Use the <nohtml><i></nohtml> tag (like <tt><nohtml><i>this</i></nohtml><tt>)
 // to write in <i>italic</i>.
-\end{verbatim}
+\end{ned}
 
 will be rendered as ``Use the <i> tag (like \texttt{<i>this</i>}) to write
 in \textit{italic}.''
@@ -296,13 +296,13 @@ from hyperlinking words that are accidentally the same as an existing
 module or message name. Prefixing the word with a backslash will achieve
 the same. That is, either of the following will do:
 
-\begin{verbatim}
+\begin{ned}
 // In <nohtml>IP</nohtml> networks, routing is...
-\end{verbatim}
+\end{ned}
 
-\begin{verbatim}
+\begin{ned}
 // In \IP networks, routing is...
-\end{verbatim}
+\end{ned}
 
 Both will prevent hyperlinking the word \textit{IP} if you happen to have
 an \ttt{IP} module in the NED files.
@@ -337,7 +337,7 @@ to define a title.
 
 Example:
 
-\begin{verbatim}
+\begin{ned}
 //
 // @titlepage
 // <h1>Ethernet Model Documentation</h1>
@@ -345,7 +345,7 @@ Example:
 // This documents the Ethernet model created by David Wu and refined by Andras
 // Varga at CTIE, Monash University, Melbourne, Australia.
 //
-\end{verbatim}
+\end{ned}
 
 
 \subsection{Adding extra pages}
@@ -356,9 +356,9 @@ appear in any file-level comment (see above).
 
 The syntax of the \ttt{@page} directive is the following:
 
-\begin{verbatim}
+\begin{ned}
 // @page filename.html, Title of the Page
-\end{verbatim}
+\end{ned}
 
 Please choose a file name that doesn't collide with the files generated
 by the documentation tool (such as \ttt{index.html}).
@@ -371,7 +371,7 @@ You don't need to add a title because the documentation tool
 automatically adds one.
 
 Example:
-\begin{verbatim}
+\begin{ned}
 //
 // @page structure.html, Directory Structure
 //
@@ -382,7 +382,7 @@ Example:
 // @page examples.html, Examples
 // ...
 //
-\end{verbatim}
+\end{ned}
 
 You can create links to the generated pages using standard HTML,
 using the \ttt{<a href="...">...</a>} tag. All HTML files are
@@ -390,13 +390,13 @@ placed in a single directory, so you don't have to worry about
 specifying directories.
 
 Example:
-\begin{verbatim}
+\begin{ned}
 //
 // @titlepage
 // ...
 // The structure of the model is described <a href="structure.html">here</a>.
 //
-\end{verbatim}
+\end{ned}
 
 
 \subsection{Incorporating externally created pages}
@@ -410,9 +410,9 @@ from other pages using the HTML \ttt{<a href="...">...</a>} tag.
 
 The \ttt{@externalpage} directive is similar in syntax to \ttt{@page}:
 
-\begin{verbatim}
+\begin{ned}
 // @externalpage filename.html, Title of the Page
-\end{verbatim}
+\end{ned}
 
 The documentation tool does not check if the page exists
 or not. It is your responsibility to copy it manually into

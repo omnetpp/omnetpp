@@ -102,12 +102,23 @@
 
 
 %%
+%% Link colors (hyperref package)
+%%
+\definecolor{MyDarkBlue}{rgb}{0.16,0.16,0.5}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=MyDarkBlue,
+    anchorcolor=MyDarkBlue,
+    citecolor=MyDarkBlue,
+    filecolor=MyDarkBlue,
+    menucolor=MyDarkBlue,
+    runcolor=MyDarkBlue,
+    urlcolor=blue,
+}
+
+%%
 %% Heading and Footer
 %%
-
-\definecolor{MyDarkBlue}{rgb}{0.16,0.16,0.5}
-\hypersetup{colorlinks=true,linkcolor=MyDarkBlue}
-
 \pagestyle{fancy}
 \fancyhf{}
 \renewcommand{\footrulewidth}{0.5pt}

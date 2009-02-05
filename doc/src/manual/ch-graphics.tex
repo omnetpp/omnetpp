@@ -30,21 +30,23 @@ Display strings can be used in the following contexts:
 The display string syntax is a semicolon-separated list of tags.
 Each tag consists of a key, an equal sign and a comma-separated list of
 arguments:
-\begin{verbatim}
+
+\begin{ned}
 @display("p=100,100;b=60,10,rect,blue,black,2")
-\end{verbatim}
+\end{ned}
 
 Tag arguments may be omitted both at the end and inside the
 parameter list:
-\begin{verbatim}
+
+\begin{ned}
 @display("p=100,100;b=,,rect,blue")
-\end{verbatim}
+\end{ned}
 
 \subsection{Display string placement}
 
 The following NED sample shows where to place display strings in the code:
 
-\begin{verbatim}
+\begin{ned}
 simple Queue
 {
     parameters:
@@ -64,7 +66,7 @@ network SimpleQueue
     connections:
         source.out --> { @display("ls=red,3"); } --> queue.in++;
 }
-\end{verbatim}
+\end{ned}
 
 \subsection{Display string inheritance}
 
@@ -101,20 +103,24 @@ using the following rules:
 \end{itemize}
 
 Example of display string inheritance:
-\begin{verbatim}
+
+\begin{ned}
 simple Base {
     @display("i=block/queue"); // use a queue icon in all instances
 }
+
 simple Derived extends Base {
     @display("i=,red,60");  // ==> "i=block/queue,red,60"
 }
-network SimpleQueue
-{
+
+network SimpleQueue {
     submodules:
         submod: Derived {
             @display("i=,yellow,-;p=273,101;r=70");  // ==> "i=block/queue,yellow;p=273,101;r=70"
         }
-\end{verbatim}
+        ...
+}
+\end{ned}
 
 
 \subsection{Display string tags used in submodule context}
@@ -141,17 +147,19 @@ icons. The stock images installed with {\opp} have several size variants.
 Most of them have very small (vs), small (s), large (l) and
 very large (vl) variants. You can specify which variant you want to use with
 the \ttt{is} tag.
-\begin{verbatim}
+
+\begin{ned}
 @display("i=block/source;is=l"); // a large source icon from the block icons group
-\end{verbatim}
+\end{ned}
 
 Sometimes you want to have similar icons for modules, but would like to
 make them look a little different to create groups or to reflect status
 information about the module. You can easily change the color of an already existing image.
 The following example colorizes the \ttt{block/source} icon, 20\% red
-\begin{verbatim}
+
+\begin{ned}
 @display("i=block/source,red,20")
-\end{verbatim}
+\end{ned}
 
 \begin{center}
 \includegraphics{figures/graphics-itag}
@@ -162,22 +170,25 @@ add a small status icon to your main icon. This icon is displayed in the upper r
 of your main icon. In most cases the \ttt{i2} tag is specified at runtime using
 the \ffunc{setDisplayString()} method, so the icon can be changed dynamically based on the
 module's internal state.
-\begin{verbatim}
+
+\begin{ned}
 @display("i=block/queue;i2=status/busy")
-\end{verbatim}
+\end{ned}
 
 \begin{center}
 \includegraphics{figures/graphics-i2tag}
 \end{center}
 
 \subsubsection{Shapes}
+
 If you want to have simple, but resizable representation for your module, you can use
 the \ttt{b} tag to create geometric shapes. Currently \ttt{oval} and \ttt{rectangle}
- is supported:
-\begin{verbatim}
+is supported:
+
+\begin{ned}
 // an oval shape with 70x30 size, red background, black 4 pixel border
 @display("b=70,30,oval,red,black,4")
-\end{verbatim}
+\end{ned}
 
 \begin{center}
 \includegraphics{figures/graphics-btag}
@@ -189,9 +200,9 @@ To define the position of a module inside an other one use the \ttt{p} tag.
 If you do not specify a \ttt{p} tag for your module, the parent module will
 automatically choose a position based on a layouting algorithm.
 The following example will place the module at the given position:
-\begin{verbatim}
+\begin{ned}
 @display("p=50,79");
-\end{verbatim}
+\end{ned}
 
 \begin{note}
 The coordinates specified in the \ttt{p}, \ttt{b} or \ttt{r} tags are not necessarily
@@ -216,9 +227,10 @@ in the \ttt{p} tag depends on the layout type:
 \end{itemize}
 
 A matrix layout for a module vector:
-\begin{verbatim}
+
+\begin{ned}
 @display("p=,,m,4,50,50");
-\end{verbatim}
+\end{ned}
 
 \begin{figure}[htbp]
   \begin{center}
@@ -232,13 +244,14 @@ A matrix layout for a module vector:
 In wireless simulations it is very useful to show some kind of range
 around your module. This can be an interference range, transmission range
 etc. The following example will place the module at a given position,
-and draw a 90 unit circle around it as a range indicator:
-\begin{verbatim}
+and draw a circle with a 90-unit radius around it as a range indicator:
+
+\begin{ned}
 submodules:
     ap: AccessPoint {
         @display("p=50,79;r=90");
     }
-\end{verbatim}
+\end{ned}
 
 \begin{figure}[htbp]
   \begin{center}
@@ -257,9 +270,10 @@ which was named by the \ffunc{queue.setName("procqueue")} method.
 If we specify \ttt{q=procqueue} in the display string, Tkenv will descend into
 the module (several levels deep if needed) and look for a queue object
 named "procqueue". It will display the length of the queue object along the module.
-\begin{verbatim}
+
+\begin{ned}
 @display("q=procqueue");
-\end{verbatim}
+\end{ned}
 
 \begin{center}
 \includegraphics{figures/graphics-qtag}
@@ -271,9 +285,9 @@ The following example displays a short text along with the module
 and adds a tooltip text too that can be seen by hovering over
 them module with the mouse.
 
-\begin{verbatim}
+\begin{ned}
 @display("t=Packets sent: 18;tt=Additional tooltip information");
-\end{verbatim}
+\end{ned}
 
 \begin{center}
 \includegraphics{figures/graphics-ttag}
@@ -317,11 +331,11 @@ A light grey grid is drawn with a 1000km distance between major ticks,
 and 2 minor ticks per major tick (\ttt{bgg=tickdistance,minorpermajorticks,color}).
 See Figure \ref{fig:graphics-bgtags}.
 
-\begin{verbatim}
+\begin{ned}
 network EuropePlayground
 {
     @display("bgb=6000,4500;bgi=maps/europe,s;bgg=1000,2,grey95;bgs=0.075,km");
-\end{verbatim}
+\end{ned}
 
 \begin{figure}[htbp]
   \begin{center}
@@ -353,9 +367,9 @@ Connections support the following tags:
 \end{itemize}
 
 Example of a thick, red connection:
-\begin{verbatim}
+\begin{ned}
 source1.out --> { @display("ls=red,3"); } --> queue1.in++;
-\end{verbatim}
+\end{ned}
 
 \begin{center}
 \includegraphics{figures/graphics-lstag}
@@ -383,23 +397,24 @@ the \cclass{cMessage}'s \ffunc{getDisplayString()} method and make it return
 one.
 
 Example of using an icon to represent a message:
-\begin{verbatim}
+
+\begin{cpp}
 const char *CustomPacket::getDisplayString() const
 {
     return "i=msg/packet;is=vs";
 }
-\end{verbatim}
+\end{cpp}
 
 Or better: If you add the field \ffunc{displayString} to your message
 definition (.msg file) the message compiler will automatically generate
 the \ffunc{set/getDisplayString} methods for you:
 
-\begin{verbatim}
+\begin{msg}
 message Job
 {
     string displayString = "i=msg/package_s,kind";
 ...
-\end{verbatim}
+\end{msg}
 
 \subsubsection{Message display string tags}
 
@@ -411,15 +426,17 @@ The following tags can be used in message display strings:
 \end{itemize}
 
 Using a small red box icon to represent the messages:
-\begin{verbatim}
+
+\begin{ned}
 @display("i=msd/box,red;is=s");
-\end{verbatim}
+\end{ned}
 
 Messages will be represented by a 15x15 rectangle with white background.
 Their border color will depend on the \ttt{messageKind} property of the message.
-\begin{verbatim}
+
+\begin{ned}
 @display("b=15,15,rect,white,kind,5");
-\end{verbatim}
+\end{ned}
 
 \begin{note}
    In message display strings you may use the word \ttt{kind} as a special color.
@@ -436,7 +453,8 @@ display string can be substituted into the display string
 with the \ttt{\$parameterName} notation:
 
 Example:
-\begin{verbatim}
+
+\begin{ned}
 simple MobileNode
 {
     parameters:
@@ -446,7 +464,7 @@ simple MobileNode
         // get the values from the module parameters xpos,ypos,fillcolor
         @display("p=$xpos,$ypos;b=60,10,rect,$fillColor,black,2");
 }
-\end{verbatim}
+\end{ned}
 
 \section{Colors}
 \label{sec:ch-graphics:colors}
@@ -523,10 +541,10 @@ You can extend the image path from \ffilename{omnetpp.ini} with the
 \ttt{tkenv-image-path} option, which gets prepended to the environment
 variable's value.
 
-\begin{verbatim}
+\begin{inifile}
 [General]
 tkenv-image-path = "/home/you/model-framework/images;/home/you/extra-images"
-\end{verbatim}
+\end{inifile}
 
 
 \subsection{Categorized icons}
@@ -622,22 +640,22 @@ manipulate the string.
 To get a pointer to the \cclass{cDisplayString} object, you can call
 the components's \ffunc{getDisplayString()} method:
 
-\begin{verbatim}
+\begin{cpp}
 // Setting a module's position, icon and status icon:
 cDisplayString *dispStr = getDisplayString();
 dispStr->parse("p=40,20;i=device/cellphone;i2=status/disconnect");
-\end{verbatim}
+\end{cpp}
 
 \begin{note}
 The connection display string is stored in the channel object, but it
 can also be accessed via the source gate of the connection.
 \end{note}
 
-\begin{verbatim}
+\begin{cpp}
 // Setting an outgoing connection's color to red:
 cDisplayString *gateDispStr = gate("out")->getDisplayString();
 dispStr->parse("ls=red");
-\end{verbatim}
+\end{cpp}
 
 \begin{note}
 In {\opp} 3.x, to manipulate the appearance of a compound module you had to use
@@ -647,11 +665,11 @@ Use the \ffunc{getDisplayString()} method instead with the background
 specific tags, i.e. those starting with \ttt{bg}.
 \end{note}
 
-\begin{verbatim}
+\begin{cpp}
 // Setting module background and grid with background display string tags:
 cDisplayString *parentDispStr = getParentModule()->getDisplayString();
 parentDispStr->parse("bgi=maps/europe;bgg=100,2");
-\end{verbatim}
+\end{cpp}
 
 As far as \cclass{cDisplayString} is concerned, a display string
 (e.g. \ttt{"p=100,125;i=cloud"}) is a string that consist of several
@@ -668,14 +686,14 @@ as data elements separated by semicolons, equal signs and commas.
 
 An example:
 
-\begin{verbatim}
+\begin{cpp}
 dispStr->parse("a=1,2;p=alpha,,3");
 dispStr->insertTag("x");
 dispStr->setTagArg("x",0,"joe");
 dispStr->setTagArg("x",2,"jim");
 dispStr->setTagArg("p",0,"beta");
 ev << dispStr->str();  // result: "x=joe,,jim;a=1,2;p=beta,,3"
-\end{verbatim}
+\end{cpp}
 
 \subsection{Bubbles}
 
@@ -686,9 +704,10 @@ of \cclass{cComponent}. The method takes the string to be displayed
 as a \ttt{const char *} pointer.
 
 An example:
-\begin{verbatim}
+\begin{cpp}
 bubble("Collision! (2 frames)");
-\end{verbatim}
+\end{cpp}
+
 \begin{center}
 \includegraphics{figures/graphics-bubble}
 \end{center}
@@ -700,12 +719,13 @@ when the simulation is run under Cmdenv, so one can make the code skip
 potentially expensive display string manipulation.
 
 Better:
-\begin{verbatim}
+\begin{cpp}
 if (ev.isGUI())
     bubble("Going down!");
-\end{verbatim}
+\end{cpp}
 
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "usman"
 %%% End:
+
