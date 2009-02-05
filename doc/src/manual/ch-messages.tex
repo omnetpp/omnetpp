@@ -482,11 +482,11 @@ message definitions (see section \ref{ch:messages:message-definitions}).
 The old, deprecated way of adding new fields to messages is via
 attaching \cclass{cMsgPar} objects.
 There are several downsides of this approach, the worst being
-large memory and execution time overhead. \ffunc{cMsgPar}'s are
+large memory and execution time overhead. \cclass{cMsgPar}'s are
 heavy-weight and fairly complex objects themselves.
 It has been reported that using \cclass{cMsgPar} message parameters
 might account for a large part of execution time, sometimes as much as 80\%.
-Using \cclass{cMsgPar}s is also error-prone because \ffunc{cMsgPar} objects
+Using \cclass{cMsgPar}s is also error-prone because \cclass{cMsgPar} objects
 have to be added dynamically and individually to each message object.
 In contrast, subclassing benefits from static type checking:
 if you mistype the name of a field in the C++ code, already the compiler
@@ -580,7 +580,7 @@ Tkenv to inspect these data structures.
 
 If you process \ttt{mypacket.msg} with the message subclassing compiler, it will
 create the following files for you: \ttt{mypacket\_m.h} and \ttt{mypacket\_m.cc}.
-\ttt{mypacket\_m.h} contains the declaration of the \ffunc{MyPacket} C++ class, and
+\ttt{mypacket\_m.h} contains the declaration of the \ttt{MyPacket} C++ class, and
 it should be included into your C++ sources where you need to handle
 \ttt{MyPacket} objects.
 
@@ -606,10 +606,10 @@ pkt->setSrcAddress( localAddr );
 ...
 \end{verbatim}
 
-The \ttt{mypacket\_m.cc} file contains implementation of the generated \ffunc{MyPacket}
+The \ttt{mypacket\_m.cc} file contains implementation of the generated \ttt{MyPacket}
 class, as well as ``reflection'' code that allows you to inspect these data
 structures in the Tkenv GUI. The \ttt{mypacket\_m.cc} file should be compiled and
-linked into your simulation. (If you use the \ffunc{opp\_makemake} tool
+linked into your simulation. (If you use the \fprog{opp\_makemake} tool
 to generate your makefiles, the latter will be automatically taken care of.)
 
 
@@ -667,9 +667,9 @@ The following sections describe the message syntax and features in detail.
 
 \subsection{Declaring enums}
 
-An \ffunc{enum \{..\}} generates a normal C++ enum, plus creates an object
-which stores text representations of the constants. The latter makes it possible
-to display symbolic names in Tkenv.
+An enum (declared with the \fkeyword{enum} keyword) generates a normal C++
+enum, plus creates an object which stores text representations of the
+constants. The latter makes it possible to display symbolic names in Tkenv.
 An example:
 
 \begin{Verbatim}[commandchars=\\\{\}]
@@ -710,14 +710,14 @@ You can describe messages with the following syntax:
 \end{Verbatim}
 
 Processing this description with the message compiler will produce
-a C++ header file with a generated class, \ffunc{FooPacket}.
-\ffunc{FooPacket} will be a subclass of \ffunc{cMessage}.
+a C++ header file with a generated class, \ttt{FooPacket}.
+\ttt{FooPacket} will be a subclass of \cclass{cMessage}.
 
 For each field in the above description, the generated class will have
 a protected data member, a getter and a setter method. The names of the
-methods will begin with \ffunc{get} and \ffunc{set},
+methods will begin with \ttt{get} and \ttt{set},
 followed by the field name with its first letter converted to uppercase.
-Thus, \ffunc{FooPacket} will contain the following methods:
+Thus, \ttt{FooPacket} will contain the following methods:
 
 \begin{verbatim}
 virtual int getSourceAddress() const;
@@ -730,7 +730,7 @@ virtual bool getHasPayload() const;
 virtual void setHasPayload(bool hasPayload);
 \end{verbatim}
 
-Note that the methods are all declared \ffunc{virtual} to give you the possibility
+Note that the methods are all declared \fkeyword{virtual} to give you the possibility
 of overriding them in subclasses.
 
 Two constructors will be generated: one that optionally accepts object name and
@@ -744,16 +744,17 @@ FooPacket(const FooPacket& other);
 Appropriate assignment operator (\ffunc{operator=()}) and \ffunc{dup()} methods will
 also be generated.
 
-Data types for fields are not limited to \ffunc{int} and \ffunc{bool}. You can use the
-following primitive types (i.e. primitive types as defined in the C++ language):
+Data types for fields are not limited to \fkeyword{int} and
+\fkeyword{bool}. You can use the following primitive types (i.e. primitive
+types as defined in the C++ language):
 
 \begin{itemize}
-   \item \ffunc{bool}
-   \item \ffunc{char}, \ffunc{unsigned char}
-   \item \ffunc{short}, \ffunc{unsigned short}
-   \item \ffunc{int}, \ffunc{unsigned int}
-   \item \ffunc{long}, \ffunc{unsigned long}
-   \item \ffunc{double}
+   \item \fkeyword{bool}
+   \item \fkeyword{char}, \fkeyword{unsigned char}
+   \item \fkeyword{short}, \fkeyword{unsigned short}
+   \item \fkeyword{int}, \fkeyword{unsigned int}
+   \item \fkeyword{long}, \fkeyword{unsigned long}
+   \item \fkeyword{double}
 \end{itemize}
 
 Field values are initialized to zero.
@@ -777,7 +778,7 @@ Initialization code will be placed in the constructor of the generated class.
 
 \subsubsection{Enum declarations}
 
-You can declare that an \ffunc{int} (or other integral type) field
+You can declare that an \fkeyword{int} (or other integral type) field
 takes values from an enum. The message compiler can than generate code
 that allows Tkenv display the symbolic value of the field.
 
@@ -804,7 +805,7 @@ You can specify fixed size arrays:
 \};
 \end{Verbatim}
 
-The generated getter and setter methods will have an extra \ffunc{k} argument,
+The generated getter and setter methods will have an extra \ttt{k} argument,
 the array index:
 
 \begin{verbatim}
@@ -857,7 +858,7 @@ You can declare string-valued fields with the following syntax:
 \};
 \end{Verbatim}
 
-The generated getter and setter methods will return and accept \ffunc{const char*}
+The generated getter and setter methods will return and accept \ttt{const char*}
 pointers:
 
 \begin{verbatim}
@@ -888,13 +889,13 @@ virtual void setChars(unsigned k, char a);
 \subsection{Inheritance, composition}
 
 So far we have discussed how to add fields of primitive types
-(\ffunc{int}, \ffunc{double}, \ffunc{char}, ...) to \ffunc{cMessage}.
-This might be sufficient for simple models, but if you have
-more complex models, you'll probably need to:
+(\fkeyword{int}, \fkeyword{double}, \fkeyword{char}, ...) to
+\cclass{cMessage}. This might be sufficient for simple models, but if you
+have more complex models, you'll probably need to:
 
 \begin{itemize}
   \item set up a hierarchy of message (packet) classes, that is,
-    not only subclass from \ffunc{cMessage} but also from your
+    not only subclass from \cclass{cMessage} but also from your
     own message classes;
   \item use not only primitive types as fields, but also structs,
     classes or typedefs. Sometimes you'll want to use a C++ type
@@ -908,8 +909,8 @@ The following section describes how to do this.
 
 \subsubsection{Inheritance among message classes}
 
-By default, messages are subclassed from \ffunc{cMessage}. However, you can
-explicitly specify the base class using the \ffunc{extends} keyword:
+By default, messages are subclassed from \cclass{cMessage}. However, you can
+explicitly specify the base class using the \fkeyword{extends} keyword:
 
 \begin{Verbatim}[commandchars=\\\{\}]
 \tbf{message} FooPacket \tbf{extends} FooBase
@@ -931,21 +932,21 @@ for details).
 
 \subsubsection{Defining classes}
 
-Until now we have used the \ffunc{message} keyword to define classes, which
-implies that the base class is \ffunc{cMessage}, either directly or indirectly.
+Until now we have used the \fkeyword{message} keyword to define classes, which
+implies that the base class is \cclass{cMessage}, either directly or indirectly.
 
 But as part of complex messages, you'll need structs and other classes
-(rooted or not rooted in \ffunc{cOwnedObject}) as building blocks.
-Classes can be created with the \ffunc{class} class keyword;
+(rooted or not rooted in \cclass{cOwnedObject}) as building blocks.
+Classes can be created with the \fkeyword{class} class keyword;
 structs we'll cover in the next section.
 
 The syntax for defining classes is almost the same as defining messages,
-only the \ffunc{class} keyword is used instead of \ffunc{message}.
+only the \fkeyword{class} keyword is used instead of \fkeyword{message}.
 
 Slightly different code is generated for classes that are rooted in
-\ffunc{cOwnedObject} than for those which are not.
+\cclass{cOwnedObject} than for those which are not.
 If there is no \ttt{extends}, the generated class will not be
-derived from \ffunc{cOwnedObject}, thus it will not have \ffunc{getName()},
+derived from \cclass{cOwnedObject}, thus it will not have \ffunc{getName()},
 \ffunc{getClassName()}, etc. methods.
 To create a class with those methods, you have to explicitly write
 \ttt{extends cOwnedObject}.
@@ -1019,7 +1020,7 @@ But because a struct has no member functions, there are limitations:
 \subsubsection{Using structs and classes as fields}
 
 In addition to primitive types, you can also use other structs or objects
-as a field. For example, if you have a struct named \ffunc{IPAddress},
+as a field. For example, if you have a struct named \ttt{IPAddress},
 you can write the following:
 
 \begin{Verbatim}[commandchars=\\\{\}]
@@ -1029,14 +1030,14 @@ you can write the following:
 \};
 \end{Verbatim}
 
-The \ffunc{IPAddress} structure must be known in advance to the message compiler;
+The \ttt{IPAddress} structure must be known in advance to the message compiler;
 that is, it must either be a struct or class defined earlier in the message
 description file, or it must be a C++ type with its header file
 included via \ttt{cplusplus \{\{...\}\}} and its type announced
 (see Announcing C++ types).
 
-The generated class will contain an \ffunc{IPAddress} data member
-(that is, \textbf{not} a pointer to an \ffunc{IPAddress}).
+The generated class will contain an \ttt{IPAddress} data member
+(that is, \textbf{not} a pointer to an \ttt{IPAddress}).
 The following getter and setter methods will be generated:
 
 \begin{verbatim}
@@ -1062,7 +1063,7 @@ announce those types to the message compiler. You also have to make sure
 that your header file gets included into the generated \ttt{\_m.h} file
 so that the C++ compiler can compile it.
 
-Suppose you have an \ffunc{IPAddress} structure, defined in an \ttt{ipaddress.h}
+Suppose you have an \ttt{IPAddress} structure, defined in an \ttt{ipaddress.h}
 file:
 
 \begin{verbatim}
@@ -1072,7 +1073,7 @@ struct IPAddress {
 };
 \end{verbatim}
 
-To be able to use \ffunc{IPAddress} in a message definition, the message
+To be able to use \ttt{IPAddress} in a message definition, the message
 file (say \ttt{foopacket.msg}) should contain the following lines:
 
 \begin{Verbatim}[commandchars=\\\{\}]
@@ -1083,36 +1084,36 @@ file (say \ttt{foopacket.msg}) should contain the following lines:
 \tbf{struct} IPAddress;
 \end{Verbatim}
 
-The effect of the first three lines is simply that the \ffunc{\#include}
+The effect of the first three lines is simply that the \ttt{\#include}
 statement will be copied into the generated \ttt{foopacket\_m.h}
-file to let the C++ compiler know about the \ffunc{IPAddress} class.
+file to let the C++ compiler know about the \ttt{IPAddress} class.
 The message compiler itself will not try to make sense of the
 text in the body of the \ttt{cplusplus \{\{ ... \}\}} directive.
 
 The next line, \ttt{struct IPAddress}, tells the message compiler that
-\ffunc{IPAddress} is a C++ struct. This information will (among others)
+\ttt{IPAddress} is a C++ struct. This information will (among others)
 affect the generated code.
 
-Classes can be announced using the \ffunc{class} keyword:
+Classes can be announced using the \fkeyword{class} keyword:
 
 \begin{Verbatim}[commandchars=\\\{\}]
 \tbf{class} cSubQueue;
 \end{Verbatim}
 
-The above syntax assumes that the class is derived from \ffunc{cOwnedObject}
-either directly or indirectly. If it is not, the \ffunc{noncobject}
+The above syntax assumes that the class is derived from \cclass{cOwnedObject}
+either directly or indirectly. If it is not, the \fkeyword{noncobject}
 keyword should be used:
 
 \begin{Verbatim}[commandchars=\\\{\}]
 \tbf{class} \tbf{noncobject} IPAddress;
 \end{Verbatim}
 
-The distinction between classes derived and not derived from \ffunc{cOwnedObject}
+The distinction between classes derived and not derived from \cclass{cOwnedObject}
 is important because the generated code differs at places.
 The generated code is set up so that if you incidentally
-forget the \ffunc{noncobject} keyword (and thereby mislead the
+forget the \fkeyword{noncobject} keyword (and thereby mislead the
 message compiler into thinking that your class is rooted in
-\ffunc{cOwnedObject} when in fact it is not), you'll get a C++ compiler
+\cclass{cOwnedObject} when in fact it is not), you'll get a C++ compiler
 error in the generated header file.
 
 
@@ -1125,10 +1126,10 @@ error in the generated header file.
 Sometimes you need the generated code to do something
 more or do something differently than the version generated
 by the message compiler.
-For example, when setting a integer field named \ffunc{payloadLength},
+For example, when setting a integer field named \ttt{payloadLength},
 you might also need to adjust the packet length. That is,
 the following default (generated) version of the
-\ffunc{setPayloadLength()} method is not suitable:
+\ttt{setPayloadLength()} method is not suitable:
 
 \begin{verbatim}
 void FooPacket::setPayloadLength(int payloadLength)
@@ -1171,9 +1172,9 @@ message:
 \end{Verbatim}
 
 If you process the above code with the message compiler,
-the generated code will contain a \ffunc{FooPacket\_Base} class
-instead of \ffunc{FooPacket}. Then you would subclass
-\ffunc{FooPacket\_Base} to produce \ffunc{FooPacket},
+the generated code will contain a \ttt{FooPacket\_Base} class
+instead of \ttt{FooPacket}. Then you would subclass
+\ttt{FooPacket\_Base} to produce \ttt{FooPacket},
 while doing your customizations by redefining the necessary methods.
 
 \begin{verbatim}
@@ -1192,8 +1193,8 @@ class FooPacket_Base : public cMessage
 \end{verbatim}
 
 There is a minimum amount of code you have to write
-for \ffunc{FooPacket}, because not everything can be
-pre-generated as part of \ffunc{FooPacket\_Base}, e.g.
+for \ttt{FooPacket}, because not everything can be
+pre-generated as part of \ttt{FooPacket\_Base}, e.g.
 constructors cannot be inherited. This minimum
 code is the following (you'll find it the generated C++ header
 too, as a comment):
@@ -1247,7 +1248,7 @@ the way the value is stored inside the class,
 and still benefit from inspectability in Tkenv.
 
 For example, this is the situation when you want to store a bitfield
-in a single \ffunc{int} or \ffunc{short}, and still you want
+in a single \fkeyword{int} or \fkeyword{short}, and still you want
 to present bits as individual packet fields.
 It is also useful for implementing computed fields.
 
@@ -1261,7 +1262,7 @@ You can declare any field to be abstract with the following syntax:
 \};
 \end{Verbatim}
 
-For an \ffunc{abstract} field, the message compiler generates
+For an \fkeyword{abstract} field, the message compiler generates
 no data member, and generated getter/setter methods will be pure
 virtual:
 
@@ -1526,14 +1527,14 @@ void setField(double d) = 0;
 
 \subsubsection{Example simulations}
 
-Several of the example simulations (Token Ring, Dyna, Hypercube)
-use message definitions. For example, in Dyna you'll find this:
+Several of the example simulations contain message definitions, for example
+Tictoc, Dyna, Routing and Hypercube. For example, in Dyna you'll find this:
 
 \begin{itemize}
- \item \ttt{dynapacket.msg} defines \ffunc{DynaPacket} and \ffunc{DynaDataPacket};
+ \item \ttt{dynapacket.msg} defines \ttt{DynaPacket} and \ttt{DynaDataPacket};
  \item \ttt{dynapacket\_m.h} and \ttt{dynapacket\_m.cc} are produced
    by the message subclassing compiler from it, and they contain
-   the generated \ffunc{DynaPacket} and \ffunc{DynaDataPacke}t
+   the generated \ttt{DynaPacket} and \ttt{DynaDataPacket}
    C++ classes (plus code for Tkenv inspectors);
  \item other model files (\ttt{client.cc}, \ttt{server.cc}, ...)
    use the generated message classes
@@ -1549,7 +1550,7 @@ possible to inspect message contents in Tkenv.
 To illustrate why this is necessary, suppose you manually subclass
 \cclass{cMessage} to get a new message class. You could write the following:
   \footnote{Note that the code is only for illustration.
-  In real code, \ffunc{freq} and \ffunc{power} should be private members,
+  In real code, \ttt{freq} and \ttt{power} should be private members,
   and getter/setter methods should exist to access them.
   Also, the above class definition misses several member functions
   (constructor, assignment operator, etc.) that should be written.}
@@ -1576,7 +1577,7 @@ msg->power = 10.0;
 %% FIXME remove this section?
 
 You'll notice one drawback of this solution when you try to use
-Tkenv for debugging. While \ffunc{cMsgPar}-based message parameters can be viewed in
+Tkenv for debugging. While \cclass{cMsgPar}-based message parameters can be viewed in
 message inspector windows, fields added via subclassing do not appear
 there. The reason is that Tkenv, being just another C++ library in your
 simulation program, doesn't know about your C++ instance variables.
@@ -1587,7 +1588,7 @@ like for example Java does.
 There is a solution however: one can supply Tkenv with missing ``reflection''
 information about the new class. Reflection info might take the form of
 a separate C++ class whose methods return information about the
-\ffunc{RadioMsg} fields. This descriptor class might look like this:
+\ttt{RadioMsg} fields. This descriptor class might look like this:
 
 \begin{verbatim}
 class RadioMsgDescriptor : public Descriptor
@@ -1610,12 +1611,12 @@ class RadioMsgDescriptor : public Descriptor
 };
 \end{verbatim}
 
-Then you have to inform Tkenv that a \ffunc{RadioMsgDescriptor} exists and that it
-should be used whenever Tkenv finds messages of type \ffunc{RadioMsg} (as it is
+Then you have to inform Tkenv that a \ttt{RadioMsgDescriptor} exists and that it
+should be used whenever Tkenv finds messages of type \ttt{RadioMsg} (as it is
 currently implemented, whenever the object's \ffunc{getClassName()} method returns
-\ttt{"RadioMsg"}). So when you inspect a \ffunc{RadioMsg} in your simulation, Tkenv
-can use \ffunc{RadioMsgDescriptor} to extract and display the values of
-the \ffunc{freq} and \ffunc{power} variables.
+\ttt{"RadioMsg"}). So when you inspect a \ttt{RadioMsg} in your simulation, Tkenv
+can use \ttt{RadioMsgDescriptor} to extract and display the values of
+the \ttt{freq} and \ttt{power} variables.
 
 The actual implementation is somewhat more complicated than this, but not
 much.
