@@ -250,24 +250,24 @@ execution. In {\opp}, the configuration is in a text file called
 partitioning, that is, assign modules to processors. This is done
 by the following lines:
 
-\begin{verbatim}
-[Partitioning]
+\begin{inifile}
+[General]
 *.tandemQueue[0]**.partition-id = 0
 *.tandemQueue[1]**.partition-id = 1
 *.tandemQueue[2]**.partition-id = 2
-\end{verbatim}
+\end{inifile}
 
 The numbers after the equal sign identify the LP.
 
 Then we have to select the communication library and the parallel
 simulation algorithm, and enable parallel simulation:
 
-\begin{verbatim}
+\begin{inifile}
 [General]
-parallel-simulation=true
+parallel-simulation = true
 parsim-communications-class = "cMPICommunications"
 parsim-synchronization-class = "cNullMessageProtocol"
-\end{verbatim}
+\end{inifile}
 
 When the parallel simulation is run, LPs are represented
 by multiple running instances of the same program.
@@ -461,10 +461,10 @@ When you are using cross-mounted home directories (the simulation's
 directory is on a disk mounted on all nodes of the cluster),
 a useful configuration setting is
 
-\begin{verbatim}
+\begin{inifile}
 [General]
-fname-append-host=yes
-\end{verbatim}
+fname-append-host = true
+\end{inifile}
 
 It will cause the host names to be appended to the names of
 all output vector files, so that partitions do not overwrite each other's
