@@ -170,21 +170,25 @@
     morestring=[b]",
 }
 
-\definecolor{RulerColor}{rgb}{0.8,0.8,1.0}
-\lstset{basicstyle=\ttfamily,showstringspaces=false,frame=leftline,framesep=10pt,framerule=3pt,rulecolor=\color{RulerColor},xleftmargin=15pt}
+\lstset{basicstyle=\ttfamily,showstringspaces=false,frame=leftline,framesep=10pt,framerule=3pt,xleftmargin=15pt}
+
+\definecolor{NEDRulerColor}{rgb}{0.8,1.0,0.8}
+\definecolor{MSGRulerColor}{rgb}{0.8,1.0,0.8}
+\definecolor{CPPRulerColor}{rgb}{0.8,0.8,1.0}
+\definecolor{IniRulerColor}{rgb}{0.9,0.9,0.2}
 
 %% See listings-1.pdf,pp39
 \lstnewenvironment{ned}
-    {\lstset{language=NED}}
+    {\lstset{language=NED,rulecolor=\color{NEDRulerColor}}}
     {}
 \lstnewenvironment{msg}
-    {\lstset{language=MSG}}
+    {\lstset{language=MSG,rulecolor=\color{MSGRulerColor}}}
     {}
 \lstnewenvironment{cpp}
-    {\lstset{language=C++}}
+    {\lstset{language=C++,rulecolor=\color{CPPRulerColor}}}
     {}
 \lstnewenvironment{inifile}
-    {\lstset{language=inifile}}
+    {\lstset{language=inifile,rulecolor=\color{IniRulerColor}}}
     {}
 
 %%
