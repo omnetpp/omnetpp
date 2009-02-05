@@ -1010,7 +1010,7 @@ we'll cover the configuration of RNGs in \ffilename{omnetpp.ini}.
 
 \subsection{Number of RNGs}
 
-The \ttt{num-rngs=} configuration entry sets the number of
+The \ttt{num-rngs=} configuration option sets the number of
 random number generator instances (i.e. random number streams)
 available for the simulation model (see \ref{cha:sim-lib:generating-random-numbers}).
 Referencing an RNG number greater or equal to this number
@@ -1019,7 +1019,7 @@ Referencing an RNG number greater or equal to this number
 
 \subsection{RNG choice}
 
-The \ttt{rng-class=} configuration entry sets the random number
+The \ttt{rng-class=} configuration option sets the random number
 generator class to be used. It defaults to \ttt{"cMersenneTwister"},
 the Mersenne Twister RNG. Other available classes are \ttt{"cLCG32"}
 (the "legacy" RNG of {\opp} 2.3 and earlier versions, with a cycle length

@@ -126,6 +126,7 @@ htmlfile_spec := $BASE.htm
 :comm   :\tabheadcol:::
 :comm   :\linebreak:<br>::
 :comm   :\newline:<br>::
+:comm   :\centering:<br>::
 :comm   :\tab: ::
 :comm   :\sloppy:::
 :comm   :\bibitem(\[(.*?)\])?{(.*?)}:<a name="bib-$3"></a>[$2]&nbsp;&nbsp;::
@@ -138,11 +139,13 @@ htmlfile_spec := $BASE.htm
 :comm   :\fpar(\[.*?\])?{(.*?)}:<tt>$2</tt>::
 :comm   :\fdef(\[.*?\])?{(.*?)}:<tt>$2</tt>::
 :comm   :\fvar(\[.*?\])?{(.*?)}:<tt>$2</tt>::
-:comm   :\fname(\[.*?\])?{(.*?)}:<tt>$2</tt>::
+:comm   :\ffunc(\[.*?\])?{(.*?)}:<tt>$2</tt>::
 :comm   :\fprog(\[.*?\])?{(.*?)}:<tt>$2</tt>::
 :comm   :\cclass(\[.*?\])?{(.*?)}:<tt>$2</tt>::
 :comm   :\fmac(\[.*?\])?{(.*?)}:<tt>$2</tt>::
 :comm   :\fkeyword(\[.*?\])?{(.*?)}:<b><tt>$2</tt></b>::
+:comm   :\fconfig(\[.*?\])?{(.*?)}:<b><tt>$2</tt></b>::
+:comm   :\ffilename(\[.*?\])?{(.*?)}:<tt>$2</tt>::
 :comm   :\includegraphics(\[.*?\])?{figures/(.*?)}:<img src="$2.png">::
 :comm   :\ifcommercial:@ifcommercial@::
 :comm   :\fi:@fi@::
@@ -153,9 +156,19 @@ htmlfile_spec := $BASE.htm
 # WRONG --  :comm   :\"(.):&\1tilde;:
 :b/e	:\begin{figure}(\[.*?\])?:::
 :b/e	:\begin{equation}:<blockquote>:</blockquote>:
-:b/e	:\begin{Verbatim}(\[.*?\])?:<pre>:</pre>:
 :b/e	:\begin{sloppypar}:<p>:</p>:
 :b/e	:\begin{thebibliography}(\{.*?\})?:<H1>References</H1>::
 :b/e	:\begin{note}:<ul><b>NOTE</b><br>:</ul>:
-
+:b/e	:\begin{warning}:<ul><b>WARNING</b><br>:</ul>:
+:b/e	:\begin{caution}:<ul><b>CAUTION</b><br>:</ul>:
+:b/e	:\begin{rationale}:<ul><b>Rationale</b><br>:</ul>:
+:b/e	:\begin{important}:<ul><b>IMPORTANT</b><br>:</ul>:
+:b/e	:\begin{ned}(\[.*?\])?:<pre class="ned">:</pre>:
+:b/e	:\begin{msg}(\[.*?\])?:<pre class="msg">:</pre>:
+:b/e	:\begin{cpp}(\[.*?\])?:<pre class="cpp">:</pre>:
+:b/e	:\begin{inifile}(\[.*?\])?:<pre class="inifile">:</pre>:
+:b/e	:\begin{filelisting}(\[.*?\])?:<pre class="filelisting">:</pre>:
+:b/e	:\begin{commandline}(\[.*?\])?:<pre class="commandline">:</pre>:
+:b/e	:\begin{Verbatim}(\[.*?\])?:<pre>:</pre>:
+:b/e	:\begin{center}:<center>:</center>:
 
