@@ -18,9 +18,10 @@
 \usepackage{makeidx}
 \usepackage{longtable}  %% page wrapping table environment
 \usepackage{colortbl}   %% colors for tables
-\usepackage{fancyvrb}   %% source code listings
+\usepackage{fancyvrb}   %% the "Verbatim" environment
 \usepackage{fancyhdr}   %% custom headers and footers
 \usepackage{multicol}
+\usepackage{listings}   %% source code listings with syntax highlight (lstxxx commands)
 
 \usepackage{tocbibind}  %% makes Bibliography and Index show up in TOC
 \settocbibname{References}
@@ -36,6 +37,8 @@
 \renewcommand{\bottomfraction}{0.9}
 \renewcommand{\topfraction}{0.9}
 \renewcommand{\floatpagefraction}{0.9}
+
+\lstloadlanguages{C++,make,perl,tcl,XML,R,Matlab}
 
 %% try to cure overfull hboxes
 %% \tolerance=500
@@ -131,6 +134,24 @@
 \newenvironment{caution}{\begin{graybox}\textbf{CAUTION: }}{\end{graybox}}
 \newenvironment{rationale}{\begin{graybox}\textbf{Rationale: }}{\end{graybox}}
 \newenvironment{important}{\begin{graybox}\textbf{IMPORTANT: }}{\end{graybox}}
+
+%% See listings-1.pdf,pp20
+\lstdefinelanguage{NED}
+{
+    morekeywords={allowunconnected,bool,channel,channelinterface,connections,const,
+                  default,double,extends,false,for,gates,if,import,index,inout,input,
+                  int,like,module,moduleinterface,network,output,package,parameters,
+                  property,simple,sizeof,string,submodules,this,true,types,volatile,
+                  xml,xmldoc},
+    sensitive=true,
+    morecomment=[l]{//},
+    morestring=[b]",
+}
+
+%% See listings-1.pdf,pp39
+\lstnewenvironment{ned}
+    {\lstset{language=NED,basicstyle=\ttfamily}}
+    {}
 
 
 %%
