@@ -161,13 +161,13 @@
 %% Write the names in type writer font and do an index entry
 %% Allows word wrap by automatic hyphenation
 %%
-%% Usage: \fname{take()}
-%%    or: \fname[take()]{take(obj)}
+%% Usage: \ffunc{take()}
+%%    or: \ffunc[take()]{take(obj)}
 %% the second form uses the bracketed word for the index entry
 %%
 
 %% Function names
-\newcommand{\fname}[2][\DefaultOpt]{\def\DefaultOpt{#2}%
+\newcommand{\ffunc}[2][\DefaultOpt]{\def\DefaultOpt{#2}%
   \index{#1}%
   \texttt{\hyphenchar\font=`\-\relax#2}}
 
@@ -210,6 +210,11 @@
 \newcommand{\fconfig}[2][\DefaultOpt]{\def\DefaultOpt{#2}%
   \index{#1}%
   \textbf{\texttt{\hyphenchar\font=`\-\relax#2}}}
+
+%% File names
+\newcommand{\ffilename}[2][\DefaultOpt]{\def\DefaultOpt{#2}%
+  \index{#1}%
+  \texttt{\hyphenchar\font=`\-\relax#2}}
 
 %% do not number subsubsections
 %\setcounter{secnumdepth}{4}

@@ -175,7 +175,7 @@ file accordingly, but it is not mandatory to do so.
 One can define any number of networks in the NED files, and for every
 simulation the user has to specify which network he wants to set up.
 The usual way of specifying the network is to put the \fconfig{network}
-option into the configuration (by default the \ttt{omnetpp.ini} file):
+option into the configuration (by default the \ffilename{omnetpp.ini} file):
 
 \begin{Verbatim}
 [General]
@@ -352,7 +352,7 @@ the simulation program is started, it loads the NED files. The program
 should already contain the C++ classes that implement the needed simple
 modules, \ttt{App}, \ttt{Routing} and \ttt{Queue}; their C++ code is either
 part if the executable or gets loaded from shared library. The simulation
-program also loads the configuration (\ttt{omnetpp.ini}), and determines
+program also loads the configuration (\ffilename{omnetpp.ini}), and determines
 from it that the simulation model to be run is the \ttt{Network} network.
 Then the network gets instantiated for simulation.
 
@@ -360,8 +360,6 @@ The simulation model is built in a top-down preorder fashion. This means
 that starting from an empty system module, all submodules are created,
 their parameters and vector sizes get assigned and they get fully connected
 before proceeding to go into the submodules to build their internals.
-
-%%XXX rename \fname to \ffunc{}!!!
 
 \bigskip
 \begin{center}* * *\end{center}
@@ -728,7 +726,7 @@ measurement can also be specified (\ttt{@unit} property), to increase
 type safety.
 
 Parameters can get their value from NED files or from the configuration
-(\ttt{omnetpp.ini}). A default value can also be given (\ttt{default(}...\ttt{)}),
+(\ffilename{omnetpp.ini}). A default value can also be given (\ttt{default(}...\ttt{)}),
 which gets used if the parameter is not assigned otherwise.
 
 Let use see an example before we go into details:
@@ -828,7 +826,7 @@ This machinery can be accessed via the NED parameter type \ttt{xml}, and the
 \ttt{xmldoc()} operator. You can point \ttt{xml}-type module parameters
 to a specific XML file (or to an element inside an XML file) via the
 \ttt{xmldoc()} operator. You can assign \ttt{xml} parameters both from NED
-and from \ttt{omnetpp.ini}.
+and from \ffilename{omnetpp.ini}.
 
 XXX add a complete example!
 
@@ -880,7 +878,7 @@ NED normally requires that all gates be connected. To relax this
 requirement, you can annotate selected gates with the \ttt{@loose}
 property, which turns off connectivity check for that gate. Also, input
 gates that solely exist so that the module can receive messages via
-\fname{sendDirect()} (see \ref{sec:simple-modules:direct-sending}) should
+\ffunc{sendDirect()} (see \ref{sec:simple-modules:direct-sending}) should
 be annotated with \ttt{@directIn}. (\ttt{@directIn} gates must remain
 unconnected.) It is also possible to turn off connectivity check for all
 gates within a compound module, by specifying the
@@ -1613,20 +1611,20 @@ project name (\ttt{org.example.myproject}). The latter convention
 would cause the directory tree to begin with a few levels of empty
 directories, but this can be eliminated with a toplevel \ttt{package.ned}.
 
-NED files called \fname{package.ned} have a special role, as they are meant
+NED files called \ffilename{package.ned} have a special role, as they are meant
 to represent the whole package. For example, comments in
-\fname{package.ned} are treated as documentation of the package. Also, a
-\ttt{@namespace} property in a \fname{package.ned} file affects all NED
+\ffilename{package.ned} are treated as documentation of the package. Also, a
+\ttt{@namespace} property in a \ffilename{package.ned} file affects all NED
 files in that directory and all directories below.
 
-The toplevel \fname{package.ned} file can be used to designate the root
+The toplevel \ffilename{package.ned} file can be used to designate the root
 package, which is useful for eliminating a few levels of empty directories
 resulting from the package naming convention. That is, if you have a
-\fname{package.ned} file in your \ttt{<root>} directory whose package
+\ffilename{package.ned} file in your \ttt{<root>} directory whose package
 declaration says \ttt{org.example.myproject}, then the \ttt{<root>/a/b/c}
 directory will be package \ttt{org.example.myproject.a.b.c} -- and NED
 files in them must contain that as package declaration. Only the root
-\fname{package.ned} has this property, other \fname{package.ned}'s cannot
+\ffilename{package.ned} has this property, other \ffilename{package.ned}'s cannot
 change the package.
 
 Let's look at the INET Framework as example, which contains hundreds of NED
@@ -1657,7 +1655,7 @@ folders, so NEDPATH is the following (provided INET was unpacked in
 /home/joe/INET/src;/home/joe/INET/examples
 \end{Verbatim}
 
-Both \ttt{src} and \ttt{examples} contain \fname{package.ned} files to
+Both \ttt{src} and \ttt{examples} contain \ffilename{package.ned} files to
 define the root package:
 
 \begin{Verbatim}[commandchars=\\\{\}]
@@ -1670,7 +1668,7 @@ define the root package:
 \tbf{package} inet.examples;
 \end{Verbatim}
 
-And other NED files follow the package defined in \fname{package.ned}:
+And other NED files follow the package defined in \ffilename{package.ned}:
 
 \begin{Verbatim}[commandchars=\\\{\}]
 // INET/src/transport/tcp/TCP.ned:

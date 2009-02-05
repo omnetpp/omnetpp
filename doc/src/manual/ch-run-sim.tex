@@ -28,7 +28,7 @@ $ ./fifo -h
 
 \subsubsection{Specifying ini files}
 
-The default ini file is \ttt{omnetpp.ini}\index{omnetpp.ini}, and is
+The default ini file is \ffilename{omnetpp.ini}, and is
 loaded if no other ini file is given on the command line.
 
 Ini files can be specified both as plain arguments and with the \ttt{-f}
@@ -143,7 +143,7 @@ the need to explicitly link against that library. This approach has several adva
 \end{itemize}
 
 Use the \ttt{-l libraryname} command line option to load a library dynamically at run time.
-{\opp} will attempt to load it using the \fname{dlopen()} or \fname{LoadLibrary()} functions and
+{\opp} will attempt to load it using the \ffunc{dlopen()} or \ffunc{LoadLibrary()} functions and
 automatically registers all simple modules in the library.
 
 The prefix and suffix from the library name can be omitted (the extension (\ttt{.dll, .so, .dylib} and also
@@ -276,10 +276,10 @@ As Cmdenv runs the simulation, periodically it prints the sequence number
 of the current event, the simulation time, the elapsed (real) time,
 and the performance of the simulation (how many events are processed per
 second; the first two values are 0 because there wasn't enough data
-for it to calculate yet). At the end of the simulation, the \fname{finish()}
+for it to calculate yet). At the end of the simulation, the \ffunc{finish()}
 methods of the simple modules are run, and the output from them are displayed.
 On my machine this run took 34 seconds. This Cmdenv output can be
-customized via \fname{omnetpp.ini} entries. The output file \fname{results/Fifo1-0.vec}
+customized via \ffilename{omnetpp.ini} entries. The output file \ffilename{results/Fifo1-0.vec}
 contains vector data recorded during simulation (here, queueing times),
 and it can be processed using the IDE or other tools.
 
@@ -698,14 +698,14 @@ Akaroa manual.
 
 First of all, you have to compile {\opp} with Akaroa support enabled.
 
-The {\opp} simulation must be configured in \ttt{omnetpp.ini}
+The {\opp} simulation must be configured in \ffilename{omnetpp.ini}
 so that it passes the observations to Akaroa. The simulation model itself does
 not need to be changed -- it continues to write
 the observations into output vectors (\cclass{cOutVector} objects,
 see chapter \ref{cha:the-simulation-library}). You can place some of
 the output vectors under Akaroa control.
 
-You need to add the following to \ttt{omnetpp.ini}:
+You need to add the following to \ffilename{omnetpp.ini}:
 
 \begin{verbatim}
 [General]
@@ -783,7 +783,7 @@ to display all possible configuration options and their descriptions.
 
 {\opp} detected that the module has used more stack space than it has
 allocated. The solution is to increase the stack for that module type.
-You can call the \fname{getStackUsage()} from \fname{finish()} to find out
+You can call the \ffunc{getStackUsage()} from \ffunc{finish()} to find out
 actually how much stack the module used.
 
 
@@ -794,7 +794,7 @@ The resolution depends on whether you are using {\opp} on Unix or on Windows.
 \textbf{Unix.}
 If you get the above message, you have to increase the total stack
 size\index{stack!size} (the sum of all coroutine stacks). You can do
-so in \ttt{omnetpp.ini}:
+so in \ffilename{omnetpp.ini}:
 
 \begin{verbatim}
 [General]
@@ -817,7 +817,7 @@ program (which relies on another Microsoft utility called \ttt{dumpbin})
 to display reserved stack size for executables.
 
 You need a low reserved stack size because the Win32 Fiber API
-which is the mechanism underlying \fname{activity()} uses
+which is the mechanism underlying \ffunc{activity()} uses
 this number as coroutine stack size, and with 1MB being the default,
 it is easy to run out of the 2GB possible address space (2GB/1MB=2048).
 
@@ -913,8 +913,8 @@ Cmdenv does not need that much extra stack.
 
 Once you get to the point where you have to adjust the total stack size
 to get your program running,
-you should probably consider transforming (some of) your \fname{activity()}
-simple modules to \fname{handleMessage()}. \fname{activity()} does not
+you should probably consider transforming (some of) your \ffunc{activity()}
+simple modules to \ffunc{handleMessage()}. \ffunc{activity()} does not
 scale well for large simulations.
 
 
@@ -1014,7 +1014,7 @@ than one would expect.
 %
 %Here are a few tips that can help you make the simulation faster:
 %\begin{itemize}
-%  \item{Use message subclassing instead of adding \fname{cPar}'s to messages.}
+%  \item{Use message subclassing instead of adding \ffunc{cPar}'s to messages.}
 %  \item{Try to minimize message creations and deletions. Reuse
 %    messages if possible.}
 %  \item{Turn off the display of screen messages when you run the

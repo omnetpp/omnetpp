@@ -26,7 +26,7 @@ in the model during the simulation run.
 
 Output vectors are recorded from simple modules, by \cclass{cOutVector} objects
 (see section \ref{sec:ch-sim-lib:coutvector}). Since output vectors usually
-record a large amount of data, in \ttt{omnetpp.ini} you can disable vectors
+record a large amount of data, in \ffilename{omnetpp.ini} you can disable vectors
 or specify a simulation time interval for recording
 (see section \ref{sec:ch-config-sim:outvectors}).
 
@@ -69,13 +69,13 @@ how to configure the IndexVectorFileManager (?)
 
 \subsection{Scalar results}
 
-Scalar results are recorded with \fname{recordScalar()} calls,
+Scalar results are recorded with \ffunc{recordScalar()} calls,
 usually from the \ttt{finish()} methods of modules.
 
 
 \subsubsection{Format of scalar files}
 
-The corresponding output scalar file (by default, \fname{omnetpp.sca})
+The corresponding output scalar file (by default, \ffilename{omnetpp.sca})
 will look like this:
 
 \begin{verbatim}
@@ -86,9 +86,9 @@ scalar "lan.hostA.mac" "bytes rcvd"                 3529448
 ...
 \end{verbatim}
 
-Every \fname{record()} call generates one "scalar" line in the file.
+Every \ffunc{record()} call generates one "scalar" line in the file.
 (If you record statistics objects (\cclass{cStatictic} subclasses
-such as \cclass{cStdDev}) via their \fname{record()} methods,
+such as \cclass{cStdDev}) via their \ffunc{record()} methods,
 they'll generate several lines: mean, standard deviation, etc.)
 In addition, several simulation runs can record their results into a single file --
 this facilitates comparing them, creating x-y plots

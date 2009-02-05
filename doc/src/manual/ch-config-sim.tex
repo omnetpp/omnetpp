@@ -4,15 +4,15 @@
 \section{Configuring simulations}
 
 Configuration and input data for the simulation are in
-a configuration file usually called \fname{omnetpp.ini}.
+a configuration file usually called \ffilename{omnetpp.ini}.
 
-The following sections explain \fname{omnetpp.ini}.
+The following sections explain \ffilename{omnetpp.ini}.
 
 \section{The configuration file: omnetpp.ini}
 
 \subsection{An example}
 
-For a start, let us see a simple \fname{omnetpp.ini} file which
+For a start, let us see a simple \ffilename{omnetpp.ini} file which
 can be used to run the Fifo example simulation.
 
 \begin{verbatim}
@@ -109,7 +109,7 @@ any number of modules, channel and \textit{any number of networks} as well.
 It does not matter whether you use all or just some of them
 in the simulations. You will be able to select \ttt{any} of the
 networks that occur in the loaded NED files using the \ttt{network=}
-\ttt{omnetpp.ini} entry, and as long as every module, channel etc
+\ffilename{omnetpp.ini} entry, and as long as every module, channel etc
 for it has been loaded, network setup will be successful.
 
 
@@ -118,7 +118,7 @@ for it has been loaded, network setup will be successful.
 Named configurations are sections of the form \ttt{[Config <configname>]}, where
 \textit{<configname>} is by convention a camel-case string that starts with a capital letter:
 \ttt{Config1}, \ttt{WirelessPing}, \ttt{OverloadedFifo}, etc. For example,
-\ttt{omnetpp.ini} for an Aloha simulation might have the following skeleton:
+\ffilename{omnetpp.ini} for an Aloha simulation might have the following skeleton:
 
 \begin{Verbatim}[commandchars=\\\{\}]
 [General]
@@ -211,7 +211,7 @@ ini files.
 \label{sec:ch-config-sim:parameter-settings}
 
 Simulations get input via module parameters, which can be assigned a
-value in NED files or in \ttt{omnetpp.ini} -- in this order. Since parameters
+value in NED files or in \ffilename{omnetpp.ini} -- in this order. Since parameters
 assigned in NED files cannot be overridden in omnetpp.ini, one can
 think about them as being ``hardcoded''. In contrast, it is easier
 and more flexible to maintain module parameter settings in omnetpp.ini.
@@ -222,7 +222,7 @@ the module names (from the top-level module down to the module containing
 the parameter), plus the parameter name
 (see section \ref{sec:sim-lib:fullname-and-fullpath}).
 
-An example \ttt{omnetpp.ini} which sets the \ttt{numHosts} parameter of
+An example \ffilename{omnetpp.ini} which sets the \ttt{numHosts} parameter of
 the toplevel module and the \ttt{transactionsPerSecond} parameter of the
 \ttt{server} module:
 
@@ -237,7 +237,7 @@ net.server.transactionsPerSecond = 100
 \label{sec:ch-config-sim:wildcards}
 
 Models can have a large number of parameters to be configured, and it would
-be tedious to set them one-by-one in \ttt{omnetpp.ini}. {\opp} supports
+be tedious to set them one-by-one in \ffilename{omnetpp.ini}. {\opp} supports
 \textit{wildcards patterns} which allow for setting several model parameters
 at once.
 
@@ -767,7 +767,7 @@ beginning and the end of the simulation, respectively.
 
 
 The object name is the string passed to \cclass{cOutVector} in its constructor
-or with the \fname{setName()} member function.
+or with the \ffunc{setName()} member function.
 
 \begin{verbatim}
 cOutVector eed("End-to-End Delay");
@@ -1006,7 +1006,7 @@ replications.
 
 The random number architecture of {\opp} was already outlined
 in section \ref{cha:sim-lib:generating-random-numbers}. Here
-we'll cover the configuration of RNGs in \ttt{omnetpp.ini}.
+we'll cover the configuration of RNGs in \ffilename{omnetpp.ini}.
 
 \subsection{Number of RNGs}
 
@@ -1029,12 +1029,12 @@ see section \ref{sec:ch-run-sim:akaroa}).
 \subsection{RNG mapping}
 
 The RNG numbers used in simple modules may be arbitrarily mapped to the
-actual random number streams (actual RNG instances) from \ttt{omnetpp.ini}.
+actual random number streams (actual RNG instances) from \ffilename{omnetpp.ini}.
 The mapping allows for great flexibility in RNG usage and random number
 streams configuration -- even for simulation models which were not
 written with RNG awareness.
 
-RNG mapping may be specified in \ttt{omnetpp.ini}. The syntax of
+RNG mapping may be specified in \ffilename{omnetpp.ini}. The syntax of
 configuration entries is the following.
 
 \begin{verbatim}

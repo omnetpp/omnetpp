@@ -135,8 +135,8 @@ from Simulcraft Inc.
 %
 % \textbf{Programming Model.} \textit{What is the programming model supported
 % by the simulation environment?} Network simulators typically use
-% either thread/coroutine-based programming (such as \fname{activity()}
-% in {\opp}), or FSMs built upon a \fname{handleMessage()}-like function.
+% either thread/coroutine-based programming (such as \ffunc{activity()}
+% in {\opp}), or FSMs built upon a \ffunc{handleMessage()}-like function.
 % For example, OPNET, SMURPH and NetSim++ use FSMs (with underlying
 % handleMessage()), PARSEC and C++SIM use threads. {\opp} supports
 % both programming models; the author does not know of another
@@ -146,7 +146,7 @@ from Simulcraft Inc.
 % \textbf{Debugging and Tracing Support.} \textit{What debugging or tracing
 % facilities does the simulation tool offer?} Simulation programs
 % are infamous for long debugging periods. C++-based simulation
-% tools rarely offer much more than \fname{printf()}-style debugging; often
+% tools rarely offer much more than \ffunc{printf()}-style debugging; often
 % the simulation kernel is also capable of dumping selected debug
 % information on the standard output. Animation is also often supported,
 % either off-line (record\&playback) or in some client-server architecture,

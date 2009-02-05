@@ -137,39 +137,39 @@ to redefine some virtual member functions to make it do useful work.
 
 These member functions are the following:
 \begin{itemize}
-  \item{void \fname{initialize()}}
-  \item{void \fname[handleMessage()]{handleMessage(cMessage *msg)}}
-  \item{void \fname{activity()}}
-  \item{void \fname{finish()}}
+  \item{void \ffunc{initialize()}}
+  \item{void \ffunc[handleMessage()]{handleMessage(cMessage *msg)}}
+  \item{void \ffunc{activity()}}
+  \item{void \ffunc{finish()}}
 \end{itemize}
 
 In the initialization step, {\opp} builds the network: it creates the
 necessary simple\index{module!simple} and compound modules and
 connects them according to the NED definitions. {\opp} also calls the
-\fname{initialize()} functions of all modules.
+\ffunc{initialize()} functions of all modules.
 
-The \fname{handleMessage()} and \fname{activity()} functions are
+The \ffunc{handleMessage()} and \ffunc{activity()} functions are
 called during event processing. This means that the user will
 implement the model's behavior in these functions.
-\fname{handleMessage()} and \fname{activity()} implement
+\ffunc{handleMessage()} and \ffunc{activity()} implement
 different event processing strategies: for each simple module, the user
 has to redefine exactly one of these functions.
 
-\fname{handleMessage()} is a method that is called
+\ffunc{handleMessage()} is a method that is called
 by the simulation kernel when the module receives a message.
-\fname{activity()} is a coroutine-based\index{coroutine} solution
+\ffunc{activity()} is a coroutine-based\index{coroutine} solution
 which implements the process interaction approach (coroutines are
 non-preemptive (i.e. cooperative) threads). Generally, it is recommended
-that you prefer \fname{handleMessage()} to \fname{activity()} --
-mainly because \fname{activity()} doesn't scale well.
+that you prefer \ffunc{handleMessage()} to \ffunc{activity()} --
+mainly because \ffunc{activity()} doesn't scale well.
 Later in this chapter we'll discuss both methods including their advantages
 and disadvantages.
 
-Modules written with \fname{activity()} and \fname{handleMessage()}
+Modules written with \ffunc{activity()} and \ffunc{handleMessage()}
 can be freely mixed within a simulation model.
 
-The \fname{finish()} functions are called when the simulation
-terminates successfully. The most typical use of \fname{finish()}
+The \ffunc{finish()} functions are called when the simulation
+terminates successfully. The most typical use of \ffunc{finish()}
 is the recording of statistics collected during simulation.
 
 
@@ -243,22 +243,22 @@ are performed in \ttt{double}, then converted back to integer.
 
 There is no implicit conversion from \ttt{SimTime} to \ttt{double}, mostly
 because it would conflict with overloaded arithmetic operations of \ttt{SimTime};
-use the \fname{dbl()} method of \ttt{Simtime} to convert. To reduce the
-need for \fname{dbl()}, several functions and methods have overloaded variants
-that directly accept \ttt{SimTime}, for example \fname{fabs()}, \fname{fmod()},
-\fname{ceil()}, \fname{floor()}, \fname{uniform()}, \fname{exponential()}, and
-\fname{normal()}.
+use the \ffunc{dbl()} method of \ttt{Simtime} to convert. To reduce the
+need for \ffunc{dbl()}, several functions and methods have overloaded variants
+that directly accept \ttt{SimTime}, for example \ffunc{fabs()}, \ffunc{fmod()},
+\ffunc{ceil()}, \ffunc{floor()}, \ffunc{uniform()}, \ffunc{exponential()}, and
+\ffunc{normal()}.
 
 \begin{note}
    Converting a \ttt{SimTime} to \ttt{double} may lose precision, because
    \ttt{double} only has a 52-bit mantissa.
 \end{note}
 
-Other useful methods of \ttt{SimTime} include \fname{str()}
-which returns the value as a string; \fname{parse()} which converts a
-string to \ttt{SimTime}; \fname{raw()} which returns the
-underlying \ttt{int64} value; \fname{getScaleExp()} which returns the
-global scale exponent; and \fname{getMaxTime} which returns the
+Other useful methods of \ttt{SimTime} include \ffunc{str()}
+which returns the value as a string; \ffunc{parse()} which converts a
+string to \ttt{SimTime}; \ffunc{raw()} which returns the
+underlying \ttt{int64} value; \ffunc{getScaleExp()} which returns the
+global scale exponent; and \ffunc{getMaxTime} which returns the
 maximum simulation time that can be represented at the current
 scale exponent.
 
@@ -391,15 +391,15 @@ no arguments:
         stack size\index{module!stack size}\index{stack!size}}
 \end{enumerate}
 
-The first version should be used with \fname{handleMessage()} simple modules,
-and the second one with \fname{activity()} modules.
-(With the latter, the \fname{activity()} method of the module class
+The first version should be used with \ffunc{handleMessage()} simple modules,
+and the second one with \ffunc{activity()} modules.
+(With the latter, the \ffunc{activity()} method of the module class
 runs as a coroutine\index{coroutine} which needs a separate CPU stack,
 usually of 16..32K. This will be discussed in detail later.)
 Passing zero stack size to the latter constructor also selects \ttt{handleMessage()}.
 
 Thus, the following constructor definitions are all OK, and select
-\fname{handleMessage()} to be used with the module:
+\ffunc{handleMessage()} to be used with the module:
 
 \begin{verbatim}
 HelloModule::HelloModule() {...}
@@ -409,7 +409,7 @@ HelloModule::HelloModule() : cSimpleModule() {...}
 It is also OK to omit the constructor altogether, because the
 compiler-generated one is suitable too.
 
-The following constructor definition selects \fname{activity()} to be used
+The following constructor definition selects \ffunc{activity()} to be used
 with the module, with 16K of coroutine stack:
 
 \begin{verbatim}
@@ -427,7 +427,7 @@ HelloModule::HelloModule() : cSimpleModule(16384) {...}
 \subsection{Constructor and destructor vs initialize() and finish()}
 \label{sec:simple-modules:ctor-dtor-init-finish}
 
-The \fname{initialize()} and \fname{finish()} methods will be discussed
+The \ffunc{initialize()} and \ffunc{finish()} methods will be discussed
 in a later section in detail, but because their apparent similarity
 to the constructor and the destructor is prone to cause some confusion,
 we'll briefly cover them here.
@@ -435,11 +435,11 @@ we'll briefly cover them here.
 The constructor gets called when the module is created, as part of the
 model setup process. At that time, everything is just being built,
 so there isn't a lot things one can do from the constructor.
-In contrast, \fname{initialize()} gets called just before the
+In contrast, \ffunc{initialize()} gets called just before the
 simulation starts executing, when everything else has been set up
 already.
 
-\fname{finish()} is for recording statistics, and it only gets called
+\ffunc{finish()} is for recording statistics, and it only gets called
 when the simulation has terminated normally. It does not get called when
 the simulations stops with an error message. The destructor always
 gets called at the end, no matter how the simulation stopped, but
@@ -453,15 +453,15 @@ Based on the above, the following conventions exist for these four methods:
 \item Constructor:
 
 Set pointer members of the module class to \ttt{NULL}; postpone all other
-initialization tasks to \fname{initialize()}.
+initialization tasks to \ffunc{initialize()}.
 
-\item \fname{initialize()}:
+\item \ffunc{initialize()}:
 
 Perform all initialization tasks: read module parameters, initialize
 class variables, allocate dynamic data structures with \ttt{new};
 also allocate and initialize self-messages (timers) if needed.
 
-\item \fname{finish()}:
+\item \ffunc{finish()}:
 
 Record statistics. Do \tbf{not} \ttt{delete} anything or cancel timers --
 all cleanup must be done in the destructor.
@@ -470,9 +470,9 @@ all cleanup must be done in the destructor.
 
 Delete everything which was allocated by \ttt{new} and is still held
 by the module class. With self-messages (timers), use the
-\fname{cancelAndDelete(msg)} function! It is almost always wrong
+\ffunc{cancelAndDelete(msg)} function! It is almost always wrong
 to just delete a self-message from the destructor, because it might be
-in the scheduled events list. The \fname{cancelAndDelete(msg)} function
+in the scheduled events list. The \ffunc{cancelAndDelete(msg)} function
 checks for that first, and cancels the message before deletion if necessary.
 
 \end{description}
@@ -649,9 +649,9 @@ and \ttt{InterfaceTable} and \ttt{RoutingTable} in the \textit{INET Framework}.
 
 This section discusses \cclass{cSimpleModule}'s four previously
 mentioned member functions, intended to be redefined by the user:
-\fname{initialize()}, \fname{handleMessage()}, \fname{activity()}
-and \fname{finish()}, plus a fifth, less frequently used one,
-\fname{handleParameterChange}.
+\ffunc{initialize()}, \ffunc{handleMessage()}, \ffunc{activity()}
+and \ffunc{finish()}, plus a fifth, less frequently used one,
+\ffunc{handleParameterChange}.
 
 
 
@@ -668,14 +668,14 @@ virtual member function of \cclass{cSimpleModule} which does
 nothing by default -- the user has to redefine it in subclasses
 and add the message processing code.
 
-The \fname{handleMessage()} function will be called for every message
+The \ffunc{handleMessage()} function will be called for every message
 that arrives at the module. The function should process the message
 and return immediately after that. The simulation time is potentially
 different in each call. No simulation time elapses within a call
-to \fname{handleMessage()}.
+to \ffunc{handleMessage()}.
 
-The event loop inside the simulator handles both \fname{activity()}
-and \fname{handleMessage()} simple modules, and it corresponds
+The event loop inside the simulator handles both \ffunc{activity()}
+and \ffunc{handleMessage()} simple modules, and it corresponds
 to the following pseudocode:
 
 \begin{Verbatim}[commandchars=\\\{\}]
@@ -691,11 +691,11 @@ to the following pseudocode:
 \}
 \end{Verbatim}
 
-Modules with \fname{handleMessage()} are NOT started automatically:
+Modules with \ffunc{handleMessage()} are NOT started automatically:
 the simulation kernel creates starter messages\index{starter messages}
-only for modules with \fname{activity()}. This means that you have to
+only for modules with \ffunc{activity()}. This means that you have to
 schedule self-messages\index{self-message} from the
-\fname{initialize()} function if you want a \fname{handleMessage()}
+\ffunc{initialize()} function if you want a \ffunc{handleMessage()}
 simple module to start working ``by itself'', without first receiving
 a message from other modules.
 
@@ -703,28 +703,28 @@ a message from other modules.
 \subsubsection{Programming with handleMessage()}
 
 
-To use the \fname{handleMessage()} mechanism in a
+To use the \ffunc{handleMessage()} mechanism in a
 simple module, you must specify \textit{zero
   stack size}\index{zero stack size} for the module. This is
 important, because this tells {\opp} that you want to use
-\fname{handleMessage()} and not \fname{activity()}.
+\ffunc{handleMessage()} and not \ffunc{activity()}.
 
-Message/event related functions you can use in \fname{handleMessage()}:
+Message/event related functions you can use in \ffunc{handleMessage()}:
 
 \begin{itemize}
-  \item{\fname{send()} family of functions -- to send messages to other modules}
-  \item{\fname{scheduleAt()} -- to schedule an event (the module ``sends a message to itself'')}
-  \item{\fname{cancelEvent()} -- to delete an event scheduled with \fname{scheduleAt()}}
+  \item{\ffunc{send()} family of functions -- to send messages to other modules}
+  \item{\ffunc{scheduleAt()} -- to schedule an event (the module ``sends a message to itself'')}
+  \item{\ffunc{cancelEvent()} -- to delete an event scheduled with \ffunc{scheduleAt()}}
 \end{itemize}
 
-You cannot use the \fname{receive()} family and
-\fname{wait()} functions in \fname{handleMessage()}, because they are
+You cannot use the \ffunc{receive()} family and
+\ffunc{wait()} functions in \ffunc{handleMessage()}, because they are
 coroutine-based by nature, as explained in the section about
-\fname{activity()}.
+\ffunc{activity()}.
 
 You have to add data members to the module class for every piece
 of information you want to preserve. This information cannot
-be stored in local variables of \fname{handleMessage()} because they
+be stored in local variables of \ffunc{handleMessage()} because they
 are destroyed when the function returns. Also, they cannot be
 stored in static variables in the function (or the class), because
 they would be shared between all instances of the class.
@@ -744,40 +744,40 @@ things like:
   \item{variables/objects for statistics collection}
 \end{itemize}
 
-You can initialize these variables from the \fname{initialize()}
+You can initialize these variables from the \ffunc{initialize()}
 function.  The constructor\index{module!constructor} is not a very good place
 for this purpose, because it is called in the network setup phase when
 the model is still under construction, so a lot of information you may
 want to use is not yet available.
 
-Another task you have to do in \fname{initialize()} is to schedule
+Another task you have to do in \ffunc{initialize()} is to schedule
 initial event(s)\index{events!initial} which trigger the first call(s)
-to \fname{handleMessage()}.  After the first call,
-\fname{handleMessage()} must take care to schedule further events for
+to \ffunc{handleMessage()}.  After the first call,
+\ffunc{handleMessage()} must take care to schedule further events for
 itself so that the ``chain'' is not broken. Scheduling events is not
 necessary if your module only has to react to messages coming from
 other modules.
 
-\fname{finish()} is normally used to record statistics information
+\ffunc{finish()} is normally used to record statistics information
 accumulated in data members of the class at the end of the simulation.
 
 
 \subsubsection{Application area}
 
 
-\fname{handleMessage()} is in most cases a better choice than \fname{activity()}:
+\ffunc{handleMessage()} is in most cases a better choice than \ffunc{activity()}:
 
 \begin{enumerate}
   \item{When you expect the module to be used in large simulations,
       involving several thousand modules. In such cases, the module stacks
-      required by \fname{activity()} would simply consume too much memory.}
+      required by \ffunc{activity()} would simply consume too much memory.}
   \item{For modules which maintain little or no state information,
-      such as packet sinks, \fname{handleMessage()} is more convenient to program.}
+      such as packet sinks, \ffunc{handleMessage()} is more convenient to program.}
   \item{Other good candidates are modules with a large state space and
       many arbitrary state transition possibilities (i.e. where there
       are many possible subsequent states for any state). Such algorithms
-      are difficult to program with \fname{activity()}, or the result is code
-      which is better suited for \fname{handleMessage()} (see rule of thumb
+      are difficult to program with \ffunc{activity()}, or the result is code
+      which is better suited for \ffunc{handleMessage()} (see rule of thumb
       below). Most communication protocols are like this.}
 \end{enumerate}
 
@@ -828,7 +828,7 @@ methods to process separate packet types and separate timers.
 \subsubsection{Example 2: Simple traffic generators and sinks}
 
 
-The code for simple packet generators and sinks programmed with \fname{handleMessage()} might
+The code for simple packet generators and sinks programmed with \ffunc{handleMessage()} might
 be as simple as the following pseoudocode:
 
 \begin{verbatim}
@@ -844,7 +844,7 @@ PacketSink::handleMessage(msg)
 }
 \end{verbatim}
 
-Note that \textit{PacketGenerator} will need to redefine \fname{initialize()}
+Note that \textit{PacketGenerator} will need to redefine \ffunc{initialize()}
 to create \textit{m} and schedule the first event.
 
 The following simple module generates packets with exponential
@@ -942,7 +942,7 @@ void BurstyGenerator::handleMessage(cMessage *msg)
 
 
 
-\subsubsection{Pros and Cons of using \fname{handleMessage()}}
+\subsubsection{Pros and Cons of using \ffunc{handleMessage()}}
 
 
 Pros:
@@ -954,10 +954,10 @@ Pros:
 Cons:
 \begin{itemize}
   \item{local variables cannot be used to store state information}
-  \item{need to redefine \fname{initialize()}}
+  \item{need to redefine \ffunc{initialize()}}
 \end{itemize}
 
-Usually, \fname{handleMessage()} should be preferred to \fname{activity()}.
+Usually, \ffunc{handleMessage()} should be preferred to \ffunc{activity()}.
 
 
 \subsubsection{Other simulators}
@@ -985,33 +985,33 @@ systems are:
 
 \subsubsection{Process-style description}
 
-With \fname{activity()}, you can code the simple
+With \ffunc{activity()}, you can code the simple
 module much like you would code an operating system process or a
 thread. You can wait for an incoming message (event) at any point of
 the code, you can suspend the execution for some time (model time!),
-etc. When the \fname{activity()} function exits, the module is
+etc. When the \ffunc{activity()} function exits, the module is
 terminated.  (The simulation can continue if there are other modules
 which can run.)
 
 
-The most important functions you can use in \fname{activity()} are
+The most important functions you can use in \ffunc{activity()} are
 (they will be discussed in detail later):
 \begin{itemize}
-\item{\fname{receive()} -- to receive messages (events)}
-\item{\fname{wait()} -- to suspend execution\index{suspend execution}
+\item{\ffunc{receive()} -- to receive messages (events)}
+\item{\ffunc{wait()} -- to suspend execution\index{suspend execution}
     for some time (model time)}
-\item{\fname{send()} family of functions -- to send messages to other
+\item{\ffunc{send()} family of functions -- to send messages to other
     modules}
-\item{\fname{scheduleAt()} -- to schedule an event (the module ``sends
+\item{\ffunc{scheduleAt()} -- to schedule an event (the module ``sends
     a message to itself'')}
-\item{\fname{cancelEvent()} -- to delete an event scheduled with
+\item{\ffunc{cancelEvent()} -- to delete an event scheduled with
     scheduleAt()}
-\item{\fname{end()} -- to finish execution of this module (same as
-    exiting the \fname{activity()} function)}
+\item{\ffunc{end()} -- to finish execution of this module (same as
+    exiting the \ffunc{activity()} function)}
 \end{itemize}
 
-The \fname{activity()} function normally contains an infinite loop,
-with at least a \fname{wait()} or \fname{receive()} call in its body.
+The \ffunc{activity()} function normally contains an infinite loop,
+with at least a \ffunc{wait()} or \ffunc{receive()} call in its body.
 
 
 
@@ -1072,14 +1072,14 @@ If you have to handle several connections simultaneously, you may
 dynamically create them as instances of the simple module above.
 Dynamic module creation will be discussed later.
 
-There are situations when you certainly \textit{do not want} to use \fname{activity()}.
-If your \fname{activity()} function contains no \fname{wait()} and it has
-only one \fname{receive()} call at the top of an infinite loop,
+There are situations when you certainly \textit{do not want} to use \ffunc{activity()}.
+If your \ffunc{activity()} function contains no \ffunc{wait()} and it has
+only one \ffunc{receive()} call at the top of an infinite loop,
 there's no point in using \ttt{activity()} and the code should be written
 with \ttt{handleMessage()}.
-The body of the infinite loop would then become the body to \fname{handleMessage()},
-state variables inside \fname{activity()} would become data members in
-the module class, and you'd initialize them in \fname{initialize()}.
+The body of the infinite loop would then become the body to \ffunc{handleMessage()},
+state variables inside \ffunc{activity()} would become data members in
+the module class, and you'd initialize them in \ffunc{initialize()}.
 
 Example:
 
@@ -1108,7 +1108,7 @@ void Sink::handleMessage(cMessage *msg)
 \subsubsection{Activity() is run as a coroutine}
 
 
-\fname{activity()} is run in a coroutine\index{coroutine}.
+\ffunc{activity()} is run in a coroutine\index{coroutine}.
 Coroutines are a sort of threads which are scheduled
 non-preemptively (this is also called cooperative
 multitasking\index{multitasking!cooperative}). From one coroutine you
@@ -1122,12 +1122,12 @@ the first coroutine will resume from the point of the
 of the coroutine, including local variables are preserved while the
 thread of execution is in other coroutines.  This implies that each
 coroutine must have its own processor stack\index{stack}, and
-\fname{transferTo()} involves a switch from one processor stack to
+\ffunc{transferTo()} involves a switch from one processor stack to
 another.
 
 
 Coroutines\index{coroutine} are at the heart of {\opp}, and the
-simulation programmer doesn't ever need to call \fname{transferTo()}
+simulation programmer doesn't ever need to call \ffunc{transferTo()}
 or other functions in the coroutine library, nor does he need to care
 about the coroutine library implementation. It is important to
 understand, however, how the event loop found in discrete event simulators
@@ -1154,7 +1154,7 @@ kernel transfers the control to the module's coroutine. It is expected
 that when the module ``decides it has finished the processing of the
 event'', it will transfer the control back to the simulation kernel by
 a \ttt{transferTo(main)} call. Initially,
-simple\index{module!simple} modules using \fname{activity()} are
+simple\index{module!simple} modules using \ffunc{activity()} are
 ``booted'' by events (\textit{''starter messages''}\index{starter messages})
 inserted into the FES\index{FES} by the simulation kernel before the
 start of the simulation.
@@ -1163,7 +1163,7 @@ start of the simulation.
 How does the coroutine know it has ``finished processing the event''?
 The answer: \textit{when it requests another event}.  The functions
 which request events from the simulation kernel are the
-\fname{receive()} and \fname{wait()}, so their
+\ffunc{receive()} and \ffunc{wait()}, so their
 implementations contain a \ttt{transferTo(main)} call
 somewhere.
 
@@ -1195,8 +1195,8 @@ wait()
 
 
 
-Thus, the \fname{receive()} and \fname{wait()} calls are
-special points in the \fname{activity()} function, because
+Thus, the \ffunc{receive()} and \ffunc{wait()} calls are
+special points in the \ffunc{activity()} function, because
 they are where
 
 \begin{itemize}
@@ -1208,10 +1208,10 @@ they are where
 \subsubsection{Starter messages}
 
 
-Modules written with \fname{activity()} need starter
+Modules written with \ffunc{activity()} need starter
 messages\index{starter messages} to ``boot''.  These starter messages
 are inserted into the FES\index{FES} automatically by {\opp} at the
-beginning of the simulation, even before the \fname{initialize()}
+beginning of the simulation, even before the \ffunc{initialize()}
 functions are called.
 
 
@@ -1232,19 +1232,19 @@ so you can find out if you overestimated the stack needs.
 \subsubsection{initialize() and finish() with activity()}
 
 
-Because local variables of \fname{activity()} are preserved across
+Because local variables of \ffunc{activity()} are preserved across
 events, you can store everything (state information, packet buffers,
 etc.) in them. Local variables can be initialized at the top of the
-\fname{activity()} function, so there isn't much need to use
-\fname{initialize()}.
+\ffunc{activity()} function, so there isn't much need to use
+\ffunc{initialize()}.
 
 
-You do need \fname{finish()}, however, if you want to write statistics at
-the end of the simulation. Because \fname{finish()} cannot access
-the local variables of \fname{activity()}, you have to put the variables
+You do need \ffunc{finish()}, however, if you want to write statistics at
+the end of the simulation. Because \ffunc{finish()} cannot access
+the local variables of \ffunc{activity()}, you have to put the variables
 and objects containing the statistics into the module class.
-You still don't need \fname{initialize()} because class members can also
-be initialized at the top of \fname{activity()}.
+You still don't need \ffunc{initialize()} because class members can also
+be initialized at the top of \ffunc{activity()}.
 
 
 Thus, a typical setup looks like this in pseudocode:
@@ -1277,13 +1277,13 @@ MySimpleModule::finish()
 \end{Verbatim}
 
 
-\subsubsection{Pros and Cons of using \fname{activity()}}
+\subsubsection{Pros and Cons of using \ffunc{activity()}}
 
 
 Pros:
 \begin{itemize}
-   \item{\fname{initialize()} not needed, state can be stored in local
-       variables of \fname{activity()}}
+   \item{\ffunc{initialize()} not needed, state can be stored in local
+       variables of \ffunc{activity()}}
    \item{process-style description is a natural programming model in some cases}
 \end{itemize}
 
@@ -1329,33 +1329,33 @@ Coroutines are used by a number of other simulation packages:
 \subsubsection{Purpose}
 
 
-\fname{initialize()} -- to provide place for any user setup code
+\ffunc{initialize()} -- to provide place for any user setup code
 
-\fname{finish()} -- to provide place where the user can record statistics
+\ffunc{finish()} -- to provide place where the user can record statistics
 after the simulation has completed
 
 
 \subsubsection{When and how they are called}
 
 
-The \fname{initialize()} functions of the modules are invoked
+The \ffunc{initialize()} functions of the modules are invoked
 \textit{before} the first event is processed, but \textit{after} the
 initial events (starter messages\index{starter messages}) have been
 placed into the FES\index{FES} by the simulation kernel.
 
 
-Both simple and compound modules have \fname{initialize()} functions.
-A compound module's \fname{initialize()} function runs
+Both simple and compound modules have \ffunc{initialize()} functions.
+A compound module's \ffunc{initialize()} function runs
 \textit{before} that of its submodules.
 
 
-The \fname{finish()} functions are called when the event
+The \ffunc{finish()} functions are called when the event
 loop\index{event loop} has terminated, and only if it terminated
 normally (i.e. not with a runtime error).  The calling order is the
-reverse of the order of \fname{initialize()}: first submodules, then the
+reverse of the order of \ffunc{initialize()}: first submodules, then the
 encompassing compound module. (The bottom line is that at the moment
-there is no ``official'' possibility to redefine \fname{initialize()}
-and \fname{finish()} for compound modules; the unofficial way is to
+there is no ``official'' possibility to redefine \ffunc{initialize()}
+and \ffunc{finish()} for compound modules; the unofficial way is to
 write into the nedtool-generated C++ code. Future versions of {\opp} will
 support adding these functions to compound modules.)
 
@@ -1407,9 +1407,9 @@ constructor is called.
 \subsubsection{finish() vs. destructor}
 
 
-Keep in mind that \fname{finish()} is not always called, so it isn't a
+Keep in mind that \ffunc{finish()} is not always called, so it isn't a
 good place for cleanup code which should run every time the module is
-deleted. \fname{finish()} is only a good place for writing statistics,
+deleted. \ffunc{finish()} is only a good place for writing statistics,
 result post-processing and other operations  which are supposed to run only on
 successful completion. Cleanup code should go into the
 destructor\index{module!destructor}.
@@ -1419,7 +1419,7 @@ destructor\index{module!destructor}.
 
 
 In simulation models, when one-stage
-initialization\index{initialization} provided by \fname{initialize()}
+initialization\index{initialization} provided by \ffunc{initialize()}
 is not sufficient, one can use multi-stage
 initialization\index{initialization!multi-stage}.  Modules have two
 functions which can be redefined by the user:
@@ -1433,28 +1433,28 @@ At the beginning of the simulation, \ttt{initialize(0)}
 is called for \textit{all} modules, then \ttt{initialize(1)},
 \ttt{initialize(2)}, etc. You can think of it like
 initialization takes place in several ``waves''. For each module,
-\fname{numInitStages()} must be redefined to return the number of init
-stages required, e.g. for a two-stage init, \fname{numInitStages()}
-should return 2, and \fname{initialize(int stage)} must be implemented to
+\ffunc{numInitStages()} must be redefined to return the number of init
+stages required, e.g. for a two-stage init, \ffunc{numInitStages()}
+should return 2, and \ffunc{initialize(int stage)} must be implemented to
 handle the \textit{stage=0} and \textit{stage=1} cases.
   \footnote{Note \ttt{const} in the \ttt{numInitStages()} declaration.
   If you forget it, by C++ rules you create a \textit{different} function
   instead of redefining the existing one in the base class, thus the
   existing one will remain in effect and return 1.}
 
-The \fname{callInitialize()} function performs the full multi-stage initialization
+The \ffunc{callInitialize()} function performs the full multi-stage initialization
 for that module and all its submodules.
 
 If you do not redefine the multi-stage initialization functions, the
 default behavior is single-stage initialization: the default
-\fname{numInitStages()} returns 1, and the default \ttt{initialize(int stage)}
-simply calls \fname{initialize()}.
+\ffunc{numInitStages()} returns 1, and the default \ttt{initialize(int stage)}
+simply calls \ffunc{initialize()}.
 
 
 \subsubsection{``End-of-Simulation'' event}
 
 
-The task of \fname{finish()} is solved in several simulators
+The task of \ffunc{finish()} is solved in several simulators
 by introducing a special \textit{end-of-simulation}\index{end-of-simulation} event.
 This is not a very good practice because the simulation programmer has to
 code the models (often represented as FSMs) so that they can \textit{always}
@@ -1465,14 +1465,14 @@ This can also be witnessed in the design of the PARSEC\index{PARSEC}
 simulation language (UCLA). Its predecessor Maisie used
 end-of-simulation events, but -- as documented in the PARSEC manual --
 this has led to awkward programming in many cases, so for PARSEC
-end-of-simulation events were dropped in favour of \fname{finish()}
-(called \fname{finalize()} in PARSEC).
+end-of-simulation events were dropped in favour of \ffunc{finish()}
+(called \ffunc{finalize()} in PARSEC).
 
 
 \subsection{handleParameterChange()}
 \label{sec:simple-modules:handleParameterChange}
 
-The \fname{handleParameterChange()} method was added in {\opp} 3.2,
+The \ffunc{handleParameterChange()} method was added in {\opp} 3.2,
 and it gets called by the simulation kernel when a module parameter changes.
 The method signature is the following:
 
@@ -1549,16 +1549,16 @@ void ModifiedTransportProtocol::recalculateTimeout()
 
 Module parameters declared in NED files are represented with the \cclass{cPar}
 class at runtime, and be accessed\index{module!accessing parameters}
-by calling the \fname{par()} member function of \cclass{cModule}:
+by calling the \ffunc{par()} member function of \cclass{cModule}:
 
 \begin{verbatim}
 cPar& delayPar = par("delay");
 \end{verbatim}
 
 \cclass{cPar}'s value can be read with methods that correspond to
-the parameter's NED type: \fname{boolValue()}, \fname{longValue()},
-\fname{doubleValue()}, \fname{stringValue()}, \fname{stdstringValue()},
-\fname{xmlValue()}.
+the parameter's NED type: \ffunc{boolValue()}, \ffunc{longValue()},
+\ffunc{doubleValue()}, \ffunc{stringValue()}, \ffunc{stdstringValue()},
+\ffunc{xmlValue()}.
 There are also overloaded type cast operators for the corresponding types
 (\ttt{bool}; integer types including \ttt{int}, \ttt{long}, etc;
 \ttt{double}; \ttt{const char *}; \ttt{cXMLElement *}).
@@ -1569,9 +1569,9 @@ double processingDelay = par("processingDelay"); // using operator double()
 \end{verbatim}
 
 Note that \cclass{cPar} has two methods for returning string value:
-\fname{stringValue()} which returns \ttt{const char *}, and
-\fname{stdstringValue()} which returns \ttt{std::string}.
-For volatile parameters, only \fname{stdstringValue()} may be used,
+\ffunc{stringValue()} which returns \ttt{const char *}, and
+\ffunc{stdstringValue()} which returns \ttt{std::string}.
+For volatile parameters, only \ffunc{stdstringValue()} may be used,
 but otherwise the two are interchangeable.
 
 If you use the \ttt{par("foo")} parameter in expressions (such as
@@ -1598,7 +1598,7 @@ evaluated once at the beginning of the simulation and replaced with the result,
 so all reads will get same (randomly generated) value.
 
 The typical usage for non-volatile parameters is to read them in the
-\fname{initialize()} method of the module class, and store the values
+\ffunc{initialize()} method of the module class, and store the values
 in class variables for easy access later:
 
 \begin{verbatim}
@@ -1671,32 +1671,32 @@ This is rarely needed, but may be useful for some scenarios.
     to add or remove module parameters at runtime.
 \end{note}
 
-The methods to set the parameter value are \fname{setBoolValue()},
-\fname{setLongValue()}, \fname{setStringValue()},
-\fname{setDoubleValue()}, \fname{setXMLValue()}. There are also
+The methods to set the parameter value are \ffunc{setBoolValue()},
+\ffunc{setLongValue()}, \ffunc{setStringValue()},
+\ffunc{setDoubleValue()}, \ffunc{setXMLValue()}. There are also
 overloaded assignment operators for various types including \ttt{bool},
 \ttt{int}, \ttt{long}, \ttt{double}, \ttt{const char *}, and
 \ttt{cXMLElement *}.
 
 To let a module get notified about parameter changes, override
-its \fname{handleParameterChange()} method, see
+its \ffunc{handleParameterChange()} method, see
 \ref{sec:handleParameterChange}.
 
 
 \subsection{Further cPar methods}
 
-The parameter's name and type are returned by the \fname{getName()} and
-\fname{getType()} methods. The latter returns a value from an enum,
-which can be converted to a readable string with the \fname{getTypeName()}
+The parameter's name and type are returned by the \ffunc{getName()} and
+\ffunc{getType()} methods. The latter returns a value from an enum,
+which can be converted to a readable string with the \ffunc{getTypeName()}
 static method. The enum values are \ttt{BOOL}, \ttt{DOUBLE}, \ttt{LONG},
 \ttt{STRING} and \ttt{XML}; and since the enum is an inner type,
 they usually have to be qualified with \ttt{cPar::}.
 
-\fname{isVolatile()} returns whether the parameter was declared volatile
-in the NED file. \fname{isNumeric()} returns true if the parameter
+\ffunc{isVolatile()} returns whether the parameter was declared volatile
+in the NED file. \ffunc{isNumeric()} returns true if the parameter
 type is double or long.
 
-The \fname{str()} method returns the parameter's value in a string form.
+The \ffunc{str()} method returns the parameter's value in a string form.
 If the parameter contains an expression, then the string representation
 of the expression gets returned.
 
@@ -1713,9 +1713,9 @@ for (int i=0; i<n; i++)
 }
 \end{verbatim}
 
-The NED properties of a parameter can be accessed with the \fname{getProperties()}
+The NED properties of a parameter can be accessed with the \ffunc{getProperties()}
 method that returns a pointer to the \cclass{cProperties} object that stores
-the properties of this parameter. Specifically, \fname{getUnit()} returns
+the properties of this parameter. Specifically, \ffunc{getUnit()} returns
 the unit of measurement associated with the parameter (\ttt{@unit} property in NED).
 
 Further \cclass{cPar} methods and related classes like \cclass{cExpression} and
@@ -1736,10 +1736,10 @@ The \cclass{cStringTokenizer} class can be quite useful for this
 purpose. The constructor accepts a string, which it regards as
 a sequence of tokens (words) separated by delimiter characters
 (by default, spaces). Then you can either enumerate the tokens
-and process them one by one (\fname{hasMoreTokens()}, \fname{nextToken()}),
+and process them one by one (\ffunc{hasMoreTokens()}, \ffunc{nextToken()}),
 or use one of the \cclass{cStringTokenizer} convenience methods to convert
-them into a vector of strings (\fname{asVector()}), integers (\fname{asIntVector()}),
-or \ttt{double}s (\fname{asDoubleVector()}).
+them into a vector of strings (\ffunc{asVector()}), integers (\ffunc{asIntVector()}),
+or \ttt{double}s (\ffunc{asDoubleVector()}).
 
 The latter methods can be used like this:
 
@@ -1789,7 +1789,7 @@ what are the channel objects associated with the links.
 \subsubsection{Accessing gates by name}
 
 The \cclass{cModule} class has a number of member functions that
-deal with gates. You can look up a gate by name using the \fname{gate()}
+deal with gates. You can look up a gate by name using the \ffunc{gate()}
 method:
 
 \begin{verbatim}
@@ -1799,7 +1799,7 @@ cGate *outGate = gate("out");
 This works for input and output gates. However, when a gate was declared
 \ttt{inout} in NED, it is actually represented by the simulation kernel
 with two gates, so the above call would result in a \textit{gate not found}
-error. The \fname{gate()} method needs to be told whether the input or
+error. The \ffunc{gate()} method needs to be told whether the input or
 the output half of the gate you need. This can be done by appending
 the \ttt{"\$i"} or \ttt{"\$o"} to the gate name. The following example
 retrieves the two gates for the inout gate \ttt{"g"}:
@@ -1809,7 +1809,7 @@ cGate *gIn = gate("g$i");
 cGate *gOut = gate("g$o");
 \end{verbatim}
 
-Another way is to use the \fname{gateHalf()} function, which takes
+Another way is to use the \ffunc{gateHalf()} function, which takes
 the inout gate's name plus either \ttt{cGate::INPUT} or \ttt{cGate::OUTPUT}:
 
 \begin{verbatim}
@@ -1819,7 +1819,7 @@ cGate *gOut = gateHalf("g", cGate::OUTPUT);
 
 These methods throw an error if the gate does not exist, so they cannot
 be used to determine whether the module has a particular gate.
-The \fname{hasGate()} method can be used then. An example:
+The \ffunc{hasGate()} method can be used then. An example:
 
 \begin{verbatim}
 if (hasGate("optOut"))
@@ -1827,9 +1827,9 @@ if (hasGate("optOut"))
 \end{verbatim}
 
 A gate can also be identified and looked up by a numeric gate ID.
-You can get the ID from the gate itself (\fname{getId()} method),
-or from the module by gate name (\fname{findGate()} method).
-The \fname{gate()} method also has an overloaded variant which
+You can get the ID from the gate itself (\ffunc{getId()} method),
+or from the module by gate name (\ffunc{findGate()} method).
+The \ffunc{gate()} method also has an overloaded variant which
 returns the gate from the gate ID.
 
 \begin{verbatim}
@@ -1845,9 +1845,9 @@ in detail in a later section.
 
 Gate vectors possess one \cclass{cGate} object per element.
 To access individual gates in the vector, you need to call
-the \fname{gate()} function with an additional \textit{index}
+the \ffunc{gate()} function with an additional \textit{index}
 parameter. The index should be between zero and \textit{size}-1.
-The size of the gate vector can be read with the \fname{gateSize()}
+The size of the gate vector can be read with the \ffunc{gateSize()}
 method. The following example iterates through all elements in the
 gate vector:
 
@@ -1858,14 +1858,14 @@ for (int i=0; i<gateSize("out"); i++) {
 }
 \end{verbatim}
 
-A gate vector cannot have ``holes'' in it, that is, \fname{gate()}
+A gate vector cannot have ``holes'' in it, that is, \ffunc{gate()}
 never returns \ttt{NULL} or throws an error if the gate vector exists
 and the index is within bounds.
 
-For inout gates, \fname{gateSize()} may be called with or without
+For inout gates, \ffunc{gateSize()} may be called with or without
 the \ttt{"\$i"}/\ttt{"\$o"} suffix, and returns the same number.
 
-The \fname{hasGate()} method may be used both with and without an
+The \ffunc{hasGate()} method may be used both with and without an
 index, and they mean two different things: without an index it tells
 the existence of a gate vector with the given name, regardless of its
 size (it returns \ttt{true} for an existing vector even if its size
@@ -1880,7 +1880,7 @@ is that \textit{the ID of gate $k$ in a gate vector equals the ID of gate $0$ pl
 This allows you to efficiently access any gate in a gate vector, because
 retrieving a gate by ID is more efficient than by name and index.
 The index of the first gate can be obtained with \ttt{gate("out",0)->getId()},
-but it is better to use a dedicated method, \fname{gateBaseId()},
+but it is better to use a dedicated method, \ffunc{gateBaseId()},
 which also works if the gate size is zero.
 
 Two further important properties of gate IDs: they are \textit{stable}
@@ -1916,14 +1916,14 @@ for (int i=0; i<size; i++) {
 \subsubsection{Enumerating all gates}
 
 If you need to go through all gates of a module, there are
-two possibilities. One is invoking the \fname{getGateNames()} method
+two possibilities. One is invoking the \ffunc{getGateNames()} method
 that returns the names of all gates and gate vectors the module
-has; then you can call \fname{isGateVector(name)} to determine
+has; then you can call \ffunc{isGateVector(name)} to determine
 whether individual names identify a scalar gate or a gate vector;
 then gate vectors can be enumerated by index. Also, for inout
-gates \fname{getGateNames()} returns the base name without the
+gates \ffunc{getGateNames()} returns the base name without the
 \ttt{"\$i"}/\ttt{"\$o"} suffix, so the two directions
-need to be handled separately. The \fname{gateType(name)} method
+need to be handled separately. The \ffunc{gateType(name)} method
 can be used to test whether a gate is inout, output or inout
 (it returns \ttt{cGate::INOUT}, \ttt{cGate::INPUT}, or
 \ttt{cGate::OUTPUT}).
@@ -1947,7 +1947,7 @@ Where \ttt{this} denotes the module whose gates are being enumerated
     it made sense to iterate over all gates of a module by enumerating
     all IDs from zero to a maximum, skipping the holes (\ttt{NULL}s).
     This is no longer the case with {\opp} 4.0 and later versions.
-    Moreover, the \fname{gate()} method now throws an error when called
+    Moreover, the \ffunc{gate()} method now throws an error when called
     with an invalid ID, and not just returns \ttt{NULL}.
 \end{note}
 
@@ -1962,8 +1962,8 @@ to remove one half of an inout gate (e.g. \ttt{"gate\$o"}), or to set
 different gate vector sizes on the two halves of an inout gate vector.
 
 The \cclass{cModule} methods for adding and removing gates are
-\fname{addGate(name,type,isvector=false)} and \fname{deleteGate(name)}.
-Gate vector size can be changed by using \fname{setGateSize(name,size)}.
+\ffunc{addGate(name,type,isvector=false)} and \ffunc{deleteGate(name)}.
+Gate vector size can be changed by using \ffunc{setGateSize(name,size)}.
 None of these methods accept \ttt{"\$i"} / \ttt{"\$o"} suffix in gate names.
 
 \begin{note}
@@ -1975,19 +1975,19 @@ None of these methods accept \ttt{"\$i"} / \ttt{"\$o"} suffix in gate names.
 
 \subsubsection{cGate methods}
 
-The \fname{getName()} method of \cclass{cGate} returns the name of the
+The \ffunc{getName()} method of \cclass{cGate} returns the name of the
 gate or gate vector. If you need a string that contains the gate index
-as well, \fname{getFullName()} is what you want. If you also want to
-include the hierarchical name of the owner module, call \fname{getFullPath()}.
+as well, \ffunc{getFullName()} is what you want. If you also want to
+include the hierarchical name of the owner module, call \ffunc{getFullPath()}.
 
-The \fname{getType()} method of \cclass{cGate} returns the gate type,
+The \ffunc{getType()} method of \cclass{cGate} returns the gate type,
 either \ttt{cGate::INPUT} or \ttt{cGate::OUTPUT}. (It cannot return
 \ttt{cGate::INOUT}, because an inout gate is represented by a pair
-of \cclass{cGate}s.) The \fname{isVector()}, \fname{getIndex()},
-\fname{getVectorSize()}, \fname{getId()} method names speak for themselves.
-\fname{size()} is an alias to \fname{getVectorSize()}.
+of \cclass{cGate}s.) The \ffunc{isVector()}, \ffunc{getIndex()},
+\ffunc{getVectorSize()}, \ffunc{getId()} method names speak for themselves.
+\ffunc{size()} is an alias to \ffunc{getVectorSize()}.
 
-The \fname{getOwnerModule()} method returns the module the gate object
+The \ffunc{getOwnerModule()} method returns the module the gate object
 belongs to.
 
 To illustrate these methods, we expand the gate iterator example
@@ -2025,8 +2025,8 @@ starts at an output gate of a simple module, ends at an input gate
 of a simple module, and passes through several compound module gates.
 
 Every \cclass{cGate} object contains pointers to the previous gate
-and the next gate in the path (returned by the \fname{getPreviousGate()}
-and \fname{getNextGate()} methods), so a path can be thought of as
+and the next gate in the path (returned by the \ffunc{getPreviousGate()}
+and \ffunc{getNextGate()} methods), so a path can be thought of as
 a double-linked list.
 
 The use of the \textit{previous gate} / \textit{next gate} pointers
@@ -2042,17 +2042,17 @@ with various gate types is illustrated on figure
 \end{center}
 \end{figure}
 
-The start and end gates of the path can be found with the \fname{getPathStartGate()}
-and \fname{getPathEndGate()} methods, which simply follow the \textit{previous gate} /
+The start and end gates of the path can be found with the \ffunc{getPathStartGate()}
+and \ffunc{getPathEndGate()} methods, which simply follow the \textit{previous gate} /
 \textit{next gate} pointers until they return \ttt{NULL}.
 
-The \fname{isConnectedOutside()} and \fname{isConnectedInside()} methods
+The \ffunc{isConnectedOutside()} and \ffunc{isConnectedInside()} methods
 return whether a gate is connected on the outside or on the inside. They
 examine either the \textit{from} or the \textit{to} pointer, depending on the
 gate type (input or output). Again, see figure \ref{fig:ch-simple-modules:gates}
 for an illustration.
 
-The \fname{isConnected()} method is a bit different: it returns true if the gate
+The \ffunc{isConnected()} method is a bit different: it returns true if the gate
 is \textit{fully} connected, that is, for a compound module gate
 both inside and outside, and for a simple module gate, outside.
 
@@ -2169,8 +2169,8 @@ subsequent packets may only be sent when the transmission channel
 is free, that is, it has finished transmitting earlier packets.
 
 You can get a pointer to the transmission channel by calling the
-\fname{getDatarateChannel()} method on the output gate.
-The channel's \fname{isBusy()} and \fname{getTransmissionFinishTime()}
+\ffunc{getDatarateChannel()} method on the output gate.
+The channel's \ffunc{isBusy()} and \ffunc{getTransmissionFinishTime()}
 methods can tell you whether a channel is currently transmitting,
 and when the transmission is going to finish. (When the latter is
 less or equal the current simulation time, the channel is free.)
@@ -2178,11 +2178,11 @@ If the channel is currently busy, a timer (self-message) needs to
 be scheduled, and the packet should be stored until then, for example
 in a queue.
 
-The output gate also has \fname{isBusy()} and \fname{getTransmissionFinishTime()}
+The output gate also has \ffunc{isBusy()} and \ffunc{getTransmissionFinishTime()}
 methods, which are basically shortcuts to \ttt{getDatarateChannel()->isBusy()}
 and \ttt{getDatarateChannel()->getTransmissionFinishTime()}. When performance
 is important, it is recommended to obtain a pointer to the transmission
-channel once, and then call \fname{isBusy()} and \fname{getTransmissionFinishTime()}
+channel once, and then call \ffunc{isBusy()} and \ffunc{getTransmissionFinishTime()}
 on the cached channel pointer.
 
 An incomplete code example to illustrate the above process:
@@ -2203,7 +2203,7 @@ Normally the packet object gets delivered to the destination module
 at the simulation time that corresponds to finishing the reception
 of the message (ie. the arrival of its last bit). However, the receiver
 module may change this, by "reprogramming" the receiver gate with
-the \fname{setDeliverOnReceptionStart()} method:
+the \ffunc{setDeliverOnReceptionStart()} method:
 
 \begin{verbatim}
 gate("in")->setDeliverOnReceptionStart(true);
@@ -2213,14 +2213,14 @@ This method may only be called on simple module input gates, and it
 instructs the simulation kernel to give arriving packets to the
 receiver module when reception \textit{begins} not ends, that is,
 on arrival of the first bit of the message.
-\fname{getDeliverOnReceptionStart()} only needs to be called once,
-so it is usually done in the \fname{initialize()} method of the module.
+\ffunc{getDeliverOnReceptionStart()} only needs to be called once,
+so it is usually done in the \ffunc{initialize()} method of the module.
 
 When a packet gets delivered to the module, the packet's
-\fname{isReceptionStart()} method can be called to determine
+\ffunc{isReceptionStart()} method can be called to determine
 whether it corresponds to the start or end of the reception
-process (it should be the same as the \fname{getDeliverOnReceptionStart()}
-flag of the input gate), and \fname{getDuration()} returns the transmission
+process (it should be the same as the \ffunc{getDeliverOnReceptionStart()}
+flag of the input gate), and \ffunc{getDuration()} returns the transmission
 duration.
 
 
@@ -2336,7 +2336,7 @@ condition\index{gate!busy condition}.
 
 Message sending is implemented like this: the arrival time\index{arrival time}
 and the bit error\index{bit error} flag of a message are calculated right inside
-the \fname{send()} call, then the message gets inserted into the FES\index{FES}
+the \ffunc{send()} call, then the message gets inserted into the FES\index{FES}
 with the calculated arrival time. The message does \textit{not} get scheduled
 individually for each link. This implementation was chosen because of its
 run-time efficiency.
@@ -2411,12 +2411,12 @@ begun transmission yet.
 \subsubsection{Channel transmission state}
 \label{sec:simple-modules:cgate-transmission-state}
 
-The \fname{isBusy()} member function returns whether the gate
+The \ffunc{isBusy()} member function returns whether the gate
 is currently transmitting, and if so, the
-\fname{getTransmissionFinishTime()} member function
+\ffunc{getTransmissionFinishTime()} member function
 returns the simulation time when the gate is going to finish
 transmitting. (If the gate in not currently transmitting,
-\fname{getTransmissionFinishTime()} returns the simulation time
+\ffunc{getTransmissionFinishTime()} returns the simulation time
 when it finished its last transmission.)
 
 An example:
@@ -2453,7 +2453,7 @@ simulation, the changes will affect only the messages that are
 
 When you implement broadcasts or retransmissions, two frequently
 occurring tasks in protocol simulation, you might feel tempted
-to use the same message in multiple \fname{send()} operations.
+to use the same message in multiple \ffunc{send()} operations.
 Do not do it -- you cannot send the same message object multiple times.
 The solution in such cases is duplicating the message.
 
@@ -2463,7 +2463,7 @@ In your model, you may need to broadcast a message to several destinations.
 Broadcast can be implemented in a simple module by sending out copies
 of the same message, for example on every gate of a gate vector.
 As described above, you cannot use the same message pointer for
-in all \fname{send()} calls -- what you have to do instead is
+in all \ffunc{send()} calls -- what you have to do instead is
 create copies (duplicates) of the message object and send them.
 
 Example:
@@ -2557,7 +2557,7 @@ send(msg, "outgate");
 
 
 If the module needs to react to messages that arrive during the delay,
-\fname{wait()} cannot be used and the timer mechanism described in
+\ffunc{wait()} cannot be used and the timer mechanism described in
 Section \ref{sec:ch-simple-modules:self-messages}, ``Self-messages'', would
 need to be employed.
 
@@ -2572,11 +2572,11 @@ sendDelayed(cMessage *msg, double delay, int gateId);
 sendDelayed(cMessage *msg, double delay, cGate *gate);
 \end{verbatim}
 
-The arguments are the same as for \fname{send()}, except for the extra \textit{delay}
+The arguments are the same as for \ffunc{send()}, except for the extra \textit{delay}
 parameter. The effect of the function is the same as if the module
 had kept the message for the delay interval and sent it afterwards.
 That is, the sending time of the message will be the current
-simulation time (time at the \fname{sendDelayed()} call) plus the delay.
+simulation time (time at the \ffunc{sendDelayed()} call) plus the delay.
 The delay value must be non-negative.
 
 Example:
@@ -2591,7 +2591,7 @@ sendDelayed(msg, 0.005, "outGate");
 \label{sec:simple-modules:direct-sending}
 
 Sometimes it is necessary or convenient to ignore gates/connections
-and send a message directly to a remote destination module. The \fname{sendDirect()}
+and send a message directly to a remote destination module. The \ffunc{sendDirect()}
 function does that:
 
 \begin{verbatim}
@@ -2623,17 +2623,17 @@ directly and those received over connections.
 \label{sec:simple-modules:receiving-messages}
 
 \textbf{With activity() only!} The message receiving functions can
-only be used in the \fname{activity()} function,
-\fname{handleMessage()} gets received messages in its argument list.
+only be used in the \ffunc{activity()} function,
+\ffunc{handleMessage()} gets received messages in its argument list.
 
-Messages are received using the \fname{receive()} function.
-\fname{receive()} is a member of \cclass{cSimpleModule}.
+Messages are received using the \ffunc{receive()} function.
+\ffunc{receive()} is a member of \cclass{cSimpleModule}.
 
 \begin{verbatim}
 cMessage *msg = receive();
 \end{verbatim}
 
-The \fname{receive()} function accepts an optional \textit{timeout}
+The \ffunc{receive()} function accepts an optional \textit{timeout}
 parameter\index{receive!timeout}. (This is a \textit{delta}, not an
 absolute simulation time.) If an appropriate message doesn't arrive
 within the timeout period, the function returns a NULL pointer.
@@ -2660,20 +2660,20 @@ else
 \subsection{The wait() function}
 \label{sec:simple-modules:wait}
 
-\textbf{With activity() only!} The \fname{wait()} function's implementation
-contains a \fname{receive()} call which cannot be used in \fname{handleMessage()}.
+\textbf{With activity() only!} The \ffunc{wait()} function's implementation
+contains a \ffunc{receive()} call which cannot be used in \ffunc{handleMessage()}.
 
-The \fname{wait()} function suspends the execution of the module for
+The \ffunc{wait()} function suspends the execution of the module for
 a given amount of simulation time (a \textit{delta}).
 
 \begin{verbatim}
 wait(delay);
 \end{verbatim}
 
-In other simulation software, \fname{wait()} is often called \textit{hold}.
-Internally, the \fname{wait()} function is implemented by a
-\fname{scheduleAt()} followed by a \fname{receive()}.
-The \fname{wait()} function is very convenient in modules that do not need
+In other simulation software, \ffunc{wait()} is often called \textit{hold}.
+Internally, the \ffunc{wait()} function is implemented by a
+\ffunc{scheduleAt()} followed by a \ffunc{receive()}.
+The \ffunc{wait()} function is very convenient in modules that do not need
 to be prepared for arriving messages, for example message generators.
 An example:
 
@@ -2691,11 +2691,11 @@ for (;;)
 
 It is a runtime error if a message arrives during the wait interval.
 If you expect messages to arrive during the wait period, you can
-use the \fname{waitAndEnqueue()} function. It takes a pointer to a queue object
+use the \ffunc{waitAndEnqueue()} function. It takes a pointer to a queue object
 (of class \cclass{cQueue}, described in chapter \ref{cha:the-simulation-library})
 in addition to the wait interval. Messages that arrive during the
 wait interval will be accumulated in the queue, so you can
-process them after the \fname{waitAndEnqueue()} call returned.
+process them after the \ffunc{waitAndEnqueue()} call returned.
 
 \begin{verbatim}
 cQueue queue("queue");
@@ -2731,9 +2731,9 @@ Self-messages are used to model events which occur within the module.
 
 \subsubsection{Scheduling an event}
 
-The module can send a message to itself using the \fname{scheduleAt()} function.
-\fname{scheduleAt()} accepts an \textit{absolute} simulation time,
-usually calculated as \fname{simTime()}+\textit{delta}:
+The module can send a message to itself using the \ffunc{scheduleAt()} function.
+\ffunc{scheduleAt()} accepts an \textit{absolute} simulation time,
+usually calculated as \ffunc{simTime()}+\textit{delta}:
 
 \begin{verbatim}
 scheduleAt(absoluteTime, msg);
@@ -2741,12 +2741,12 @@ scheduleAt(simtime()+delta, msg);
 \end{verbatim}
 
 Self-messages are delivered to the module in the same way as other
-messages (via the usual receive calls or \fname{handleMessage()});
-the module may call the \fname{isSelfMessage()} member of any received
+messages (via the usual receive calls or \ffunc{handleMessage()});
+the module may call the \ffunc{isSelfMessage()} member of any received
 message to determine if it is a self-message.
 
-As an example, here's how you could implement your own \fname{wait()}
-function in an \fname{activity()} simple module, if the simulation kernel
+As an example, here's how you could implement your own \ffunc{wait()}
+function in an \ffunc{activity()} simple module, if the simulation kernel
 didn't provide it already:
 
 %
@@ -2767,7 +2767,7 @@ if (recvd!=msg)
 \end{verbatim}
 
 You can determine if a message is currently in the FES\index{FES}
-by calling its \fname{isScheduled()} member:
+by calling its \ffunc{isScheduled()} member:
 
 \begin{verbatim}
 if (msg->isScheduled())
@@ -2780,7 +2780,7 @@ else
 \subsubsection{Re-scheduling an event}
 
 If you want to reschedule an event which is currently scheduled to a different
-simulation time, first you have to cancel it using \fname{cancelEvent()}.
+simulation time, first you have to cancel it using \ffunc{cancelEvent()}.
 
 
 \subsubsection{Cancelling an event}
@@ -2794,10 +2794,10 @@ to model timers.
 cancelEvent( msg );
 \end{verbatim}
 
-The \fname{cancelEvent()} function takes a pointer to the message to
+The \ffunc{cancelEvent()} function takes a pointer to the message to
 be cancelled, and also returns the same pointer. After having it
 cancelled, you may delete the message or reuse it in the next
-\fname{scheduleAt()} calls. \fname{cancelEvent()} gives an error if
+\ffunc{scheduleAt()} calls. \ffunc{cancelEvent()} gives an error if
 the message is not in the FES\index{FES}.
 
 
@@ -2832,13 +2832,13 @@ else
 
 \subsection{Normal termination}
 
-You can finish the simulation with the \fname{endSimulation()} function:
+You can finish the simulation with the \ffunc{endSimulation()} function:
 
 \begin{verbatim}
 endSimulation();
 \end{verbatim}
 
-\fname{endSimulation()} is rarely needed in practice because you
+\ffunc{endSimulation()} is rarely needed in practice because you
 can specify simulation time and CPU time limits\index{simulation time limits}
 in the ini file (see later).
 
@@ -2848,7 +2848,7 @@ If your simulation encounters an error condition, you can throw a
 \ttt{cRuntimeError} exception to terminate the simulation with
 an error message (and in case of Cmdenv, a nonzero exit code).
 The \ttt{cRuntimeError} class has a constructor whose argument list
-is similar to \fname{printf()}:
+is similar to \ffunc{printf()}:
 
 \begin{verbatim}
 if (windowSize<1)
@@ -2858,7 +2858,7 @@ if (windowSize<1)
 Do not include a newline (``{\textbackslash}n'') or punctuation (period
 or exclamation mark) in the error text; it will be added by {\opp}.
 
-You can achieve the same effect by calling the \fname{error()} method of
+You can achieve the same effect by calling the \ffunc{error()} method of
 \cclass{cModule}.
 
 \begin{verbatim}
@@ -2866,7 +2866,7 @@ if (windowSize<1)
     error("Invalid window size %d; must be >=1", windowSize);
 \end{verbatim}
 
-Of course, the \fname{error()} method can only be used when a module pointer
+Of course, the \ffunc{error()} method can only be used when a module pointer
 is available.
 
 
@@ -2878,7 +2878,7 @@ is available.
 
 
 Finite State Machines\index{finite state machine} (FSMs)\index{FSM}
-can make life with \fname{handleMessage()} easier. {\opp} provides a
+can make life with \ffunc{handleMessage()} easier. {\opp} provides a
 class and a set of macros to build FSMs. {\opp}'s FSMs work very much
 like OPNET's or SDL's.
 
@@ -2888,7 +2888,7 @@ The key points are:
 \item{There are two kinds of states:
     \textit{transient}\index{transient states} and
     \textit{steady}\index{steady states}. At each event (that is, at
-    each call to \fname{handleMessage()}), the FSM transitions out of
+    each call to \ffunc{handleMessage()}), the FSM transitions out of
     the current (\textit{steady}) state, undergoes a series of state
     changes (runs through a number of \textit{transient} states), and
     finally arrives at another \textit{steady} state. Thus between two
@@ -3001,7 +3001,7 @@ before including \ttt{omnetpp.h}.
 The actual logging is done via the \fmac{FSM\_Print()} macro.
 It is currently defined as follows, but you can change the
 output format by undefining \ttt{FSM\_Print()} after including
-\ttt{omnetpp.ini} and providing a new definition instead.
+\ffilename{omnetpp.ini} and providing a new definition instead.
 
 \begin{verbatim}
 #define FSM_Print(fsm,exiting)
@@ -3014,8 +3014,8 @@ output format by undefining \ttt{FSM\_Print()} after including
 \subsubsection{Implementation}
 
 
-The \fmac{FSM\_Switch()} is a macro. It expands to a \fname{switch()}
-statement embedded in a \fname{for()} loop which repeats until the
+The \fmac{FSM\_Switch()} is a macro. It expands to a \ffunc{switch()}
+statement embedded in a \ffunc{for()} loop which repeats until the
 FSM\index{FSM} reaches a steady state. (The actual code is rather
 scary, but if you're dying to see it, it is in \texttt{cfsm.h}.)
 
@@ -3148,7 +3148,7 @@ void BurstyGenerator::handleMessage(cMessage *msg)
 
 
 If a module is part of a module vector\index{module!vector}, the
-\fname{getIndex()} and \fname{size()} member functions can be used to
+\ffunc{getIndex()} and \ffunc{size()} member functions can be used to
 query its index and the vector size:
 
 \begin{verbatim}
@@ -3161,7 +3161,7 @@ ev << "This is module [" << module->getIndex() <<
 
 
 Each module in the network has a unique ID that is returned by the
-\fname{getId()} member function. The module ID\index{module!id} is used
+\ffunc{getId()} member function. The module ID\index{module!id} is used
 internally by the simulation kernel to identify modules.
 
 \begin{verbatim}
@@ -3187,7 +3187,7 @@ module later.
 
 
 The surrounding compound module can be accessed by the
-\fname{getParentModule()} member function:
+\ffunc{getParentModule()} member function:
 
 \begin{verbatim}
 cModule *parent = getParentModule();
@@ -3201,7 +3201,7 @@ double timeout = getParentModule()->par( "timeout" );
 \end{verbatim}
 
 
-\cclass{cModule}'s \fname{findSubmodule()} and \fname{getSubmodule()}
+\cclass{cModule}'s \ffunc{findSubmodule()} and \ffunc{getSubmodule()}
 member functions make it possible to look up the module's submodules
 by name\index{module!submodule!lookup} (or name+index if the submodule
 is in a module vector). The first one returns the numeric module ID of
@@ -3214,7 +3214,7 @@ cModule *submod = compoundmod->getSubmodule("child",5);
 \end{verbatim}
 
 
-The \fname{getModuleByRelativePath()} member function can be used to find
+The \ffunc{getModuleByRelativePath()} member function can be used to find
 a submodule nested deeper than one level below. For example,
 
 \begin{verbatim}
@@ -3232,8 +3232,8 @@ version would crash with an access violation because of the NULL
 pointer dereference.)
 
 
-The \cclass{cSimulation}::\fname{getModuleByPath()} function is similar
-to \cclass{cModule}'s \fname{moduleByRelative\-Path()} function, and it
+The \cclass{cSimulation}::\ffunc{getModuleByPath()} function is similar
+to \cclass{cModule}'s \ffunc{moduleByRelative\-Path()} function, and it
 starts the search at the top-level module.
 
 
@@ -3252,11 +3252,11 @@ for (cSubModIterator iter(*getParentModule()); !iter.end(); iter++)
 }
 \end{verbatim}
 
-(\fname{iter()} is pointer to the current module the iterator is at.)
+(\ffunc{iter()} is pointer to the current module the iterator is at.)
 
 
 The above method can also be used to iterate along a module
-vector\index{module!vector!iteration}, since the \fname{getName()}
+vector\index{module!vector!iteration}, since the \ffunc{getName()}
 function returns the same for all modules:
 
 \begin{verbatim}
@@ -3275,15 +3275,15 @@ for (cSubModIterator iter(*getParentModule()); !iter.end(); iter++)
 \subsubsection{Walking along links}
 
 To determine the module at the other end of a connection, use
-\cclass{cGate}'s \fname{getPreviousGate()}, \fname{getNextGate()} and
-\fname{getOwnerModule()} functions. For example:
+\cclass{cGate}'s \ffunc{getPreviousGate()}, \ffunc{getNextGate()} and
+\ffunc{getOwnerModule()} functions. For example:
 
 \begin{verbatim}
 cModule *neighbour = gate("out")->getNextGate()->getOwnerModule();
 \end{verbatim}
 
-For input gates, you would use \fname{getPreviousGate()} instead of
-\fname{getNextGate()}.
+For input gates, you would use \ffunc{getPreviousGate()} instead of
+\ffunc{getNextGate()}.
 
 
 \section{Direct method calls between modules}
@@ -3305,7 +3305,7 @@ work. Two issues need to be mentioned, however:
 \end{itemize}
 
 Typically, the called module is in the same compound module as the caller,
-so the \fname{getParentModule()} and \fname{getSubmodule()} methods of
+so the \ffunc{getParentModule()} and \ffunc{getSubmodule()} methods of
 \cclass{cModule} can be used to get a \ttt{cModule*} pointer to the
 called module. (Further ways to obtain the pointer are described
 in the section \ref{sec:simple-modules:walking-module-hierarchy}.)
@@ -3320,7 +3320,7 @@ Callee *callee = check_and_cast<Callee *>(calleeModule);
 callee->doSomething();
 \end{verbatim}
 
-The \fname{check\_and\_cast<>()} template function on the second line
+The \ffunc{check\_and\_cast<>()} template function on the second line
 is part of {\opp}. It does a standard C++ \ttt{dynamic\_cast},
 and checks the result: if it is NULL, \ttt{check\_and\_cast} raises an {\opp} error.
 Using \ttt{check\_and\_cast} saves you from writing error checking
@@ -3417,13 +3417,13 @@ first create the module itself, second, set parameter values and gate
 vector sizes, and then call the method that creates its submodules and
 internal connections.
 
-As you know already, simple modules with \fname{activity()} need a
+As you know already, simple modules with \ffunc{activity()} need a
 starter message\index{starter messages}. For statically created
 modules, this message is created automatically by {\opp}, but for
 dynamically created modules, you have to do this explicitly by calling
 the appropriate functions.
 
-Calling \fname{initialize()} has to take place after insertion of the
+Calling \ffunc{initialize()} has to take place after insertion of the
 starter messages, because the initializing code may insert new messages
 into the FES\index{FES}, and these messages should be processed
 \textit{after} the starter message.
@@ -3452,15 +3452,15 @@ convenience function to get a module up and running in one step.
 mod = modtype->createScheduleInit("node",this);
 \end{verbatim}
 
-It does \fname{create()} + \fname{buildInside()} +
-\fname[scheduleStart()]{scheduleStart(now)} + \fname{callInitialize()}.
+It does \ffunc{create()} + \ffunc{buildInside()} +
+\ffunc[scheduleStart()]{scheduleStart(now)} + \ffunc{callInitialize()}.
 
 This method can be used for both simple and compound modules.
 Its applicability is somewhat limited, however:
 because it does everything in one step, you do not have the chance to
 set parameters or gate sizes, and to connect gates before
-\fname{initialize()} is called.
-(\fname{initialize()} expects all parameters and gates to
+\ffunc{initialize()} is called.
+(\ffunc{initialize()} expects all parameters and gates to
 be in place and the network fully built when it is called.)
 Because of the above limitation, this function is mainly useful
 for creating basic simple modules.
@@ -3502,8 +3502,8 @@ module->scheduleStart( simTime() );
 \end{verbatim}
 
 If you want to set up parameter values or gate vector sizes (Step 3.),
-the code goes between the \fname{create()} and
-\fname{buildInside()} calls:
+the code goes between the \ffunc{create()} and
+\ffunc{buildInside()} calls:
 
 \begin{verbatim}
 // create
@@ -3532,7 +3532,7 @@ module->deleteModule();
 
 If the module was a compound module, this involves recursively
 destroying all its submodules. A simple module can also delete itself;
-in this case, the \fname{deleteModule()} call does not return to the
+in this case, the \ffunc{deleteModule()} call does not return to the
 caller.
 
 Currently, you cannot safely delete a
@@ -3543,20 +3543,20 @@ module.
 
 \subsection{Module deletion and finish()}
 
-When you delete a module \textit{during simulation}, its \fname{finish()}
-function is not called automatically (\fname{deleteModule()} doesn't do it.)
+When you delete a module \textit{during simulation}, its \ffunc{finish()}
+function is not called automatically (\ffunc{deleteModule()} doesn't do it.)
 How the module was created doesn't play any role here:
-\fname{finish()} gets called for \textit{all} modules -- at the end of the
-simulation. If a module doesn't live that long, \fname{finish()} is not
+\ffunc{finish()} gets called for \textit{all} modules -- at the end of the
+simulation. If a module doesn't live that long, \ffunc{finish()} is not
 invoked, but you can still manually invoke it.
 
-You can use the \fname{callFinish()} function to arrange \fname{finish()}
-to be called. It is usually not a good idea to invoke \fname{finish()}
-directly. If you're deleting a compound module, \fname{callFinish()} will
-recursively invoke \fname{finish()} for all submodules, and if you're deleting
-a simple module from another module, \fname{callFinish()} will do the context
+You can use the \ffunc{callFinish()} function to arrange \ffunc{finish()}
+to be called. It is usually not a good idea to invoke \ffunc{finish()}
+directly. If you're deleting a compound module, \ffunc{callFinish()} will
+recursively invoke \ffunc{finish()} for all submodules, and if you're deleting
+a simple module from another module, \ffunc{callFinish()} will do the context
 switch for the duration of the call.
-  \footnote{The \fname{finish()} function is even made \ttt{protected}
+  \footnote{The \ffunc{finish()} function is even made \ttt{protected}
   in \cclass{cSimpleModule}, in order to discourage its invocation from
   other modules.}
 
@@ -3571,12 +3571,12 @@ mod->deleteModule();
 \subsection{Creating connections}
 \index{connection!creating}
 
-Connections can be created using \cclass{cGate}'s \fname{connectTo()}
+Connections can be created using \cclass{cGate}'s \ffunc{connectTo()}
 method.
-  \footnote{The earlier \fname{connect()} global functions that
+  \footnote{The earlier \ffunc{connect()} global functions that
   accepted two gates have been deprecated, and may be removed
   from further {\opp} releases.}
-\fname{connectTo()} should be invoked on the source gate
+\ffunc{connectTo()} should be invoked on the source gate
 of the connection, and expects the destination gate pointer as
 an argument:
 
@@ -3598,7 +3598,7 @@ a->gate("out")->connectTo(b->gate("in"));
 b->gate("out")->connectTo(a->gate("in"));
 \end{verbatim}
 
-\fname{connectTo()} also accepts a channel object as an
+\ffunc{connectTo()} also accepts a channel object as an
 additional, optional argument. Channels are subclassed from
 \cclass{cChannel}. Almost always you'll want use an instance of
 \cclass{cDatarateChannel} as channel -- this is the one that supports
@@ -3607,8 +3607,8 @@ and data rate\index{channel!datarate}. The channel object will
 be owned by the source gate of the connection, and you cannot
 reuse the same channel object with several connections.
 
-\cclass{cDatarateChannel} has \fname{setDelay()}, \fname{setBitErrorRate()}
-and \fname{setDatarate()} methods to set up the channel attributes.
+\cclass{cDatarateChannel} has \ffunc{setDelay()}, \ffunc{setBitErrorRate()}
+and \ffunc{setDatarate()} methods to set up the channel attributes.
 
 An example that sets up a channel with a delay:
 
@@ -3623,7 +3623,7 @@ a->gate("out")->connectTo(b->gate("in"), channel); // a,b are modules
 \subsection{Removing connections}
 \index{connection!removing}
 
-The \fname{disconnect()} method of \cclass{cGate} can be
+The \ffunc{disconnect()} method of \cclass{cGate} can be
 used to remove connections. This method has to be invoked
 on the \textit{source} side of the connection. It also destroys
 the channel object associated with the connection, if one has been set.

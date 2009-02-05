@@ -19,8 +19,8 @@ previous chapters:
 This chapter discusses the rest of the simulation library:
 
 \begin{itemize}
-  \item{random number generation: \fname{normal()},
-    \fname{exponential()}, etc.}
+  \item{random number generation: \ffunc{normal()},
+    \ffunc{exponential()}, etc.}
   \item{module parameters: \cclass{cPar} class}
   \item{storing data in containers: the \cclass{cArray} and \cclass{cQueue} classes}
   \item{routing support and discovery of network topology: \cclass{cTopology} class}
@@ -49,7 +49,7 @@ Classes in the {\opp} simulation library are derived from \cclass{cOwnedObject}.
 Functionality and conventions that come from \cclass{cOwnedObject}:
 \begin{itemize}
   \item{name attribute}
-  \item{\fname{getClassName()} member and other member functions giving textual
+  \item{\ffunc{getClassName()} member and other member functions giving textual
     information about the object}
   \item{conventions for assignment, copying, duplicating the object}
   \item{ownership\index{ownership} control for containers derived from \cclass{cOwnedObject}}
@@ -88,7 +88,7 @@ length = pk->getBitLength();
 \label{sec:sim-lib:classname}
 
 
-For each class, the \fname{getClassName()} member function returns the class
+For each class, the \ffunc{getClassName()} member function returns the class
 name as a string:
 
 \begin{verbatim}
@@ -125,7 +125,7 @@ and \ttt{NULL} are treated as equivalent by library objects.
 That is, \ttt{""} is stored as \ttt{NULL} but returned as \ttt{""}.
 If you create a message object with either \ttt{NULL}
 or \ttt{""} as name string, it will be stored as \ttt{NULL}
-and \fname{getName()} will return a pointer to a static \ttt{""}.
+and \ffunc{getName()} will return a pointer to a static \ttt{""}.
 
 \begin{verbatim}
 cMessage *msg = new cMessage(NULL, <additional args>);
@@ -138,17 +138,17 @@ const char *str = msg->getName(); // --> returns ""
 
 
 Objects have two more member functions which return strings
-based on object names: \fname{getFullName()} and \fname{getFullPath()}.
+based on object names: \ffunc{getFullName()} and \ffunc{getFullPath()}.
 For gates and modules which are part of gate or module vectors,
-\fname{getFullName()} returns the name with the index in brackets.
+\ffunc{getFullName()} returns the name with the index in brackets.
 That is, for a module \ttt{node[3]} in the submodule vector \ttt{node[10]}
-\fname{getName()} returns \ttt{"node"}, and \fname{getFullName()} returns \ttt{"node[3]"}.
-For other objects, \fname{getFullName()} is the same as \fname{getName()}.
+\ffunc{getName()} returns \ttt{"node"}, and \ffunc{getFullName()} returns \ttt{"node[3]"}.
+For other objects, \ffunc{getFullName()} is the same as \ffunc{getName()}.
 
-\fname{getFullPath()} returns \fname{getFullName()}, prepended with the
-parent or owner object's \fname{getFullPath()} and separated by a dot.
+\ffunc{getFullPath()} returns \ffunc{getFullName()}, prepended with the
+parent or owner object's \ffunc{getFullPath()} and separated by a dot.
 That is, if the \ttt{node[3]} module above is in the compound module
-\ttt{"net.subnet1"}, its \fname{getFullPath()} method will return
+\ttt{"net.subnet1"}, its \ffunc{getFullPath()} method will return
 \ttt{"net.subnet1.node[3]"}.
 
 \begin{verbatim}
@@ -157,14 +157,14 @@ ev << this->getFullName(); // --> "node[3]"
 ev << this->getFullPath(); // --> "net.subnet1.node[3]"
 \end{verbatim}
 
-\fname{getClassName()}, \fname{getFullName()} and \fname{getFullPath()}
+\ffunc{getClassName()}, \ffunc{getFullName()} and \ffunc{getFullPath()}
 are extensively used on the graphical runtime environment Tkenv,
 and also appear in error messages.
 
-\fname{getName()} and \fname{getFullName()} return \ttt{const char *} pointers,
-and \fname{getFullPath()} returns \ttt{std::string}. This makes no difference
-with \ttt{ev<<}, but when \fname{getFullPath()} is used as a \ttt{"\%s"} argument
-to \fname{sprintf()} you have to write \ttt{getFullPath().c\_str()}.
+\ffunc{getName()} and \ffunc{getFullName()} return \ttt{const char *} pointers,
+and \ffunc{getFullPath()} returns \ttt{std::string}. This makes no difference
+with \ttt{ev<<}, but when \ffunc{getFullPath()} is used as a \ttt{"\%s"} argument
+to \ffunc{sprintf()} you have to write \ttt{getFullPath().c\_str()}.
 
 \begin{verbatim}
 char buf[100];
@@ -175,7 +175,7 @@ sprintf("msg is '%80s'", msg->getFullPath().c_str()); // note c_str()
 \subsection{Copying and duplicating objects}
 
 
-The \fname{dup()} member function creates an exact copy of the
+The \ffunc{dup()} member function creates an exact copy of the
 object\index{object!copy}, duplicating\index{object!duplication}
 contained objects also if necessary. This is especially useful in the
 case of message objects.
@@ -184,16 +184,16 @@ case of message objects.
 cMessage *copy = msg->dup();
 \end{verbatim}
 
-\fname{dup()} delegates to the copy constructor, which in
+\ffunc{dup()} delegates to the copy constructor, which in
 turn relies on the assignment operator between objects.
-\fname{operator=()} can be used to copy contents of an object into
+\ffunc{operator=()} can be used to copy contents of an object into
 another object of the same type. This is a deep copy: object
 contained in the object will also be duplicated if necessary.
-\fname{operator=()} does not copy the name string -- this task is done
+\ffunc{operator=()} does not copy the name string -- this task is done
 by the copy constructor\index{copy constructor}.
 
 \begin{note}
-    Since the {\opp} 4.0 version, \fname{dup()} returns a pointer to
+    Since the {\opp} 4.0 version, \ffunc{dup()} returns a pointer to
     the same type as the object itself, and not a \ttt{cObject*}.
     This is made possible by a relatively new C++ feature called
     \textit{covariant return types}.
@@ -237,7 +237,7 @@ ini file entry lets you do that -- check it in section
 \ref{sec:ch-config-sim:general-section}  .
 
 If you detect an error condition in your code, you can stop the
-simulation with an error message using the \fname{opp\_error()} function.
+simulation with an error message using the \ffunc{opp\_error()} function.
 \ttt{opp\_error()}'s argument list works like \ttt{printf()}: the
 first argument is a format string which can contain \ttt{"\%s"}, \ttt{"\%d"} etc,
 filled in using subsequent arguments.
@@ -266,7 +266,7 @@ ev << "packet received, sequence number is " << seqNum << endl;
 ev << "queue full, discarding packet\n";
 \end{verbatim}
 
-An alternative solution is \fname{ev.printf()}:
+An alternative solution is \ffunc{ev.printf()}:
 
 \begin{verbatim}
 ev.printf("packet received, sequence number is %d\n", seqNum);
@@ -275,12 +275,12 @@ ev.printf("packet received, sequence number is %d\n", seqNum);
 The exact way messages are displayed to the user depends on the user
 interface. In the command-line user interface (Cmdenv\index{Cmdenv}),
 it is simply dumped to the standard output. (This output can also be
-disabled from \ttt{omnetpp.ini} so that it doesn't slow down simulation
+disabled from \ffilename{omnetpp.ini} so that it doesn't slow down simulation
 when it is not needed.) In Tkenv, the runtime GUI, you can open
 a text output window for every module.
-It is not recommended that you use \fname{printf()} or \fname{cout}
+It is not recommended that you use \ffunc{printf()} or \ffunc{cout}
 to print messages -- \ttt{ev} output can be controlled much better
-from \ttt{omnetpp.ini} and it is more convenient to view, using Tkenv.
+from \ffilename{omnetpp.ini} and it is more convenient to view, using Tkenv.
 
 One can save CPU cycles by making logging statements conditional
 on whether the output actually gets displayed or recorded anywhere.
@@ -320,10 +320,10 @@ which is a typedef to \ttt{double}.
 {\opp} provides utility functions, which convert \ttt{simtime\_t}
 to a printable string (\ttt{"3s 130ms 230us"}) and vica versa.
 
-The \fname{simtimeToStr()} function converts a \cclass{simtime\_t}
+The \ffunc{simtimeToStr()} function converts a \cclass{simtime\_t}
 (passed in the first argument) to textual form. The result is placed into
 the \ttt{char} array pointed to by the second argument. If the second argument is omitted
-or it is \ttt{NULL}, \fname{simtimeToStr()} will place the result into a
+or it is \ttt{NULL}, \ffunc{simtimeToStr()} will place the result into a
 static buffer which is overwritten with each call. An example:
 
 \begin{verbatim}
@@ -331,10 +331,10 @@ char buf[32];
 ev.printf("t1=%s, t2=%s\n", simtimeToStr(t1), simTimeToStr(t2,buf));
 \end{verbatim}
 
-The \fname{simtimeToStrShort()} is similar to \fname{simtimeToStr()},
+The \ffunc{simtimeToStrShort()} is similar to \ffunc{simtimeToStr()},
 but its output is more concise.
 
-The \fname{strToSimtime()} function parses a time specification passed
+The \ffunc{strToSimtime()} function parses a time specification passed
 in a string, and returns a \cclass{simtime\_t}. If the string cannot
 be entirely interpreted, -1 is returned.
 
@@ -342,7 +342,7 @@ be entirely interpreted, -1 is returned.
 simtime_t t = strToSimtime("30s 152ms");
 \end{verbatim}
 
-Another variant, \fname{strToSimtime0()} can be used if the time
+Another variant, \ffunc{strToSimtime0()} can be used if the time
 string is a substring in a larger string. Instead of taking a \ttt{char*},
 it takes a reference to \ttt{char*} (\ttt{char*\&}) as the first argument.  The
 function sets the pointer to the first character that could not be
@@ -396,7 +396,7 @@ also very fast: as fast or faster than ANSI C's \ttt{rand()}.
 {\opp} releases prior to 3.0 used a linear congruential generator
 (LCG) with a cycle length of $2^{31}-2$, described in
 \cite{Jain91}, pp. 441-444,455. This RNG is still available
-and can be selected from \ttt{omnetpp.ini} (Chapter \ref{cha:run-sim}).
+and can be selected from \ffilename{omnetpp.ini} (Chapter \ref{cha:run-sim}).
 This RNG is only suitable for small-scale simulation studies.
 As shown by Karl Entacher et al. in \cite{Entacher02},
 the cycle length of about $2^{31}$ is too small (on todays
@@ -411,7 +411,7 @@ It also contains useful links and references on the topic.
 When you execute simulations under Akaroa control (see section
 \ref{sec:ch-run-sim:akaroa}), you can also select Akaroa's
 RNG as the RNG underlying for the {\opp} random number functions.
-The Akaroa RNG also has to be selected from \ttt{omnetpp.ini}
+The Akaroa RNG also has to be selected from \ffilename{omnetpp.ini}
 (section \ref{sec:ch-config-sim:rng-config}).
 
 \subsubsection{Other RNGs}
@@ -443,14 +443,14 @@ Overlap in the generated random number sequences can introduce
 unwanted correlation in your results.
 
 The number of random number streams as well as seeds for the individual
-streams can be configured in \fname{omnetpp.ini}
+streams can be configured in \ffilename{omnetpp.ini}
 (section \ref{sec:ch-config-sim:rng-config}).
 For the "minimal standard RNG", the \fprog{seedtool} program can be
 used for selecting good seeds (section \ref{sec:ch-config-sim:seedtool}).
 
 In {\opp}, streams are identified with RNG numbers. The RNG numbers
 used in simple modules may be \textit{arbitrarily mapped} to the actual
-random number streams (actual RNG instances) from \fname{omnetpp.ini}
+random number streams (actual RNG instances) from \ffilename{omnetpp.ini}
 (section \ref{sec:ch-config-sim:rng-config}). The mapping allows
 for great flexibility in RNG usage and random number streams
 configuration -- even for simulation models which were not written
@@ -459,8 +459,8 @@ with RNG awareness.
 
 \subsection{Accessing the RNGs}
 
-The \fname{intrand(n)} function generates random integers in the range $[0, n-1]$, and
-\fname{dblrand()} generates a random double on $[0,1)$. These functions
+The \ffunc{intrand(n)} function generates random integers in the range $[0, n-1]$, and
+\ffunc{dblrand()} generates a random double on $[0,1)$. These functions
 simply wrap the underlying RNG objects. Examples:
 
 \begin{verbatim}
@@ -476,16 +476,16 @@ double prob = genk_dblrand(k);    // ""
 \end{verbatim}
 
 The underlying RNG objects are subclassed from \cclass{cRNG},
-and they can be accessed via \cclass{cModule}'s \fname{getRNG()} method.
-The argument to \fname{getRNG()} is a local RNG number which will undergo
+and they can be accessed via \cclass{cModule}'s \ffunc{getRNG()} method.
+The argument to \ffunc{getRNG()} is a local RNG number which will undergo
 RNG mapping.
 
 \begin{verbatim}
 cRNG *rng1 = getRNG(1);
 \end{verbatim}
 
-\cclass{cRNG} contains the methods implementing the above \fname{intrand()}
-and \fname{dblrand()} functions. The \cclass{cRNG} interface also allows
+\cclass{cRNG} contains the methods implementing the above \ffunc{intrand()}
+and \ffunc{dblrand()} functions. The \cclass{cRNG} interface also allows
 you to access the ``raw'' 32-bit random numbers generated by the RNG
 and to learn their ranges (\ttt{intRand()}, \ttt{intRandMax()}) as well as
 to query the number of random numbers generated (\ttt{getNumbersDrawn()}).
@@ -493,7 +493,7 @@ to query the number of random numbers generated (\ttt{getNumbersDrawn()}).
 
 \subsection{Random variates}
 
-The following functions are based on \fname{dblrand()} and return
+The following functions are based on \ffunc{dblrand()} and return
 random variables of different distributions\index{distribution!random variables}\index{random!numbers from distributions}:
 
 Random variate functions use one of the random number generators (RNGs)
@@ -506,35 +506,35 @@ which one to be used.
 \hline
 \tbf{Function} & \tbf{Description}\\\hline
 \multicolumn{2}{|c|}{\tbf{Continuous distributions}}\\\hline
-\fname{uniform(a, b, \textit{rng=0})} & uniform distribution in the range [a,b) \\\hline
-\fname{exponential(mean, \textit{rng=0})} & exponential distribution with the given mean \\\hline
-\fname{normal(mean, stddev, \textit{rng=0})} & normal distribution with the given mean and standard deviation \\\hline
-\fname{truncnormal(mean, stddev, \textit{rng=0})} & normal distribution truncated to nonnegative values \\\hline
-\fname{gamma\_d(alpha, beta, \textit{rng=0})} & gamma distribution with parameters alpha>0, beta>0 \\\hline
-\fname{beta(alpha1, alpha2, \textit{rng=0})} & beta distribution with parameters alpha1>0, alpha2>0 \\\hline
-\fname{erlang\_k(k, mean, \textit{rng=0})} & Erlang distribution with k>0 phases and the given mean \\\hline
-\fname{chi\_square(k, \textit{rng=0})} & chi-square distribution with k>0 degrees of freedom \\\hline
-\fname{student\_t(i, \textit{rng=0})} & student-t distribution with i>0 degrees of freedom \\\hline
-\fname{cauchy(a, b, \textit{rng=0})} & Cauchy distribution with parameters a,b where b>0 \\\hline
-\fname{triang(a, b, c, \textit{rng=0})} & triangular distribution with parameters a<=b<=c, a!=c \\\hline
-\fname{lognormal(m, s, rng=0)} & lognormal distribution with mean m and variance s>0 \\\hline
-\fname{weibull(a, b, \textit{rng=0})} & Weibull distribution with parameters a>0, b>0 \\\hline
-\fname{pareto\_shifted(a, b, c, \textit{rng=0})} & generalized Pareto distribution with parameters a, b and shift c \\\hline
+\ffunc{uniform(a, b, \textit{rng=0})} & uniform distribution in the range [a,b) \\\hline
+\ffunc{exponential(mean, \textit{rng=0})} & exponential distribution with the given mean \\\hline
+\ffunc{normal(mean, stddev, \textit{rng=0})} & normal distribution with the given mean and standard deviation \\\hline
+\ffunc{truncnormal(mean, stddev, \textit{rng=0})} & normal distribution truncated to nonnegative values \\\hline
+\ffunc{gamma\_d(alpha, beta, \textit{rng=0})} & gamma distribution with parameters alpha>0, beta>0 \\\hline
+\ffunc{beta(alpha1, alpha2, \textit{rng=0})} & beta distribution with parameters alpha1>0, alpha2>0 \\\hline
+\ffunc{erlang\_k(k, mean, \textit{rng=0})} & Erlang distribution with k>0 phases and the given mean \\\hline
+\ffunc{chi\_square(k, \textit{rng=0})} & chi-square distribution with k>0 degrees of freedom \\\hline
+\ffunc{student\_t(i, \textit{rng=0})} & student-t distribution with i>0 degrees of freedom \\\hline
+\ffunc{cauchy(a, b, \textit{rng=0})} & Cauchy distribution with parameters a,b where b>0 \\\hline
+\ffunc{triang(a, b, c, \textit{rng=0})} & triangular distribution with parameters a<=b<=c, a!=c \\\hline
+\ffunc{lognormal(m, s, rng=0)} & lognormal distribution with mean m and variance s>0 \\\hline
+\ffunc{weibull(a, b, \textit{rng=0})} & Weibull distribution with parameters a>0, b>0 \\\hline
+\ffunc{pareto\_shifted(a, b, c, \textit{rng=0})} & generalized Pareto distribution with parameters a, b and shift c \\\hline
 \multicolumn{2}{|c|}{\tbf{Discrete distributions}} \\\hline
-\fname{intuniform(a, b, \textit{rng=0})} & uniform integer from a..b \\\hline
-\fname{bernoulli(p, \textit{rng=0})} & result of a Bernoulli trial with probability 0<=p<=1 (1 with probability p and 0 with probability (1-p)) \\\hline
-\fname{binomial(n, p, \textit{rng=0})} & binomial distribution with parameters n>=0 and 0<=p<=1 \\\hline
-\fname{geometric(p, \textit{rng=0})} & geometric distribution with parameter 0<=p<=1 \\\hline
-\fname{negbinomial(n, p, \textit{rng=0})} & binomial distribution with parameters n>0 and 0<=p<=1\\\hline
-\fname{poisson(lambda, \textit{rng=0})} & Poisson distribution with parameter lambda \\\hline
+\ffunc{intuniform(a, b, \textit{rng=0})} & uniform integer from a..b \\\hline
+\ffunc{bernoulli(p, \textit{rng=0})} & result of a Bernoulli trial with probability 0<=p<=1 (1 with probability p and 0 with probability (1-p)) \\\hline
+\ffunc{binomial(n, p, \textit{rng=0})} & binomial distribution with parameters n>=0 and 0<=p<=1 \\\hline
+\ffunc{geometric(p, \textit{rng=0})} & geometric distribution with parameter 0<=p<=1 \\\hline
+\ffunc{negbinomial(n, p, \textit{rng=0})} & binomial distribution with parameters n>0 and 0<=p<=1\\\hline
+\ffunc{poisson(lambda, \textit{rng=0})} & Poisson distribution with parameter lambda \\\hline
 
 \end{longtable}
 
 
 They are the same functions that can be used in NED files.
-\fname{intuniform()} generates integers including both the lower and
+\ffunc{intuniform()} generates integers including both the lower and
 upper limit, so for example the outcome of tossing a coin could be
-written as intuniform(1,2).  \fname{truncnormal()} is the normal
+written as intuniform(1,2).  \ffunc{truncnormal()} is the normal
 distribution truncated to nonnegative values; its implementation
 generates a number with normal distribution and if the result is
 negative, it keeps generating other numbers until the outcome is
@@ -586,7 +586,7 @@ are inserted at its head and elements are removed at its tail.
 \end{figure}
 
 The basic \cclass{cQueue} member functions dealing with insertion and removal
-are \fname{insert()} and \fname{pop()}. They are used
+are \ffunc{insert()} and \ffunc{pop()}. They are used
 like this:
 
 \begin{verbatim}
@@ -609,19 +609,19 @@ while(!queue.empty())
 \end{verbatim}
 
 
-The \fname{length()} member function returns the number of items in the
-queue, and \fname{empty()} tells whether there's anything in the queue.
+The \ffunc{length()} member function returns the number of items in the
+queue, and \ffunc{empty()} tells whether there's anything in the queue.
 
 There are other functions dealing with insertion and removal.  The
-\fname{insertBefore()} and \fname{insertAfter()} functions insert a
+\ffunc{insertBefore()} and \ffunc{insertAfter()} functions insert a
 new item exactly before and after a specified one, regardless of the
 ordering function.
 
-The \fname{front()} and \fname{back()} functions return pointers to the objects
+The \ffunc{front()} and \ffunc{back()} functions return pointers to the objects
 at the front and back of the queue, without affecting queue contents.
 
-The \fname{pop()} function can be used to remove items from the
-tail of the queue, and the \fname{remove()} function can be
+The \ffunc{pop()} function can be used to remove items from the
+tail of the queue, and the \ffunc{remove()} function can be
 used to remove any item known by its pointer from the queue:
 
 \begin{verbatim}
@@ -647,7 +647,7 @@ cQueue sortedqueue("sortedqueue", cOwnedObject::cmpbyname, true );
 \end{verbatim}
 
 
-If the queue object is set up as an ordered queue, the \fname{insert()}
+If the queue object is set up as an ordered queue, the \ffunc{insert()}
 function uses the ordering function: it searches the queue contents
 from the head until it reaches the position where the new item
 needs to be inserted, and inserts it there.
@@ -665,7 +665,7 @@ is the queue object and the second one specifies the initial position
 of the iterator: 0=tail, 1=head. Otherwise it acts as any other
 {\opp} iterator class: you can use the ++ and -- operators to advance
 it, the () operator to get a pointer to the current item, and the
-\fname{end()} member function to examine if you're at the end (or the
+\ffunc{end()} member function to examine if you're at the end (or the
 beginning) of the queue.
 
 
@@ -743,7 +743,7 @@ Par *p = (cPar *) array["par"];
 \end{verbatim}
 
 
-You can remove an object from the array by calling \fname{remove()}
+You can remove an object from the array by calling \ffunc{remove()}
 with the object name, the index position or the object pointer:
 
 \begin{verbatim}
@@ -753,7 +753,7 @@ array.remove( p );
 \end{verbatim}
 
 
-The \fname{remove()} function doesn't deallocate the object, but it
+The \ffunc{remove()} function doesn't deallocate the object, but it
 returns the object pointer. If you also want to deallocate it, you can
 write:
 
@@ -765,7 +765,7 @@ delete array.remove( index );
 
 
 \cclass{cArray} has no iterator, but it is easy to loop through all the
-indices with an integer variable. The \fname{size()} member function
+indices with an integer variable. The \ffunc{size()} member function
 returns the largest index plus one.
 
 \begin{verbatim}
@@ -933,7 +933,7 @@ for (int i=0; i<topo.getNumNodes(); i++)
 }
 \end{verbatim}
 
-The \fname{getNumNodes()} member function (1st line) returns the number of
+The \ffunc{getNumNodes()} member function (1st line) returns the number of
 nodes in the graph, and getNode(i) returns a pointer to the \textit{i}th
 node, an \cclass{cTopology::Node} structure.
 
@@ -947,23 +947,23 @@ cModule *module = node->getModule();
 \end{verbatim}
 
 
-The \fname{getNodeFor()} member function returns a pointer to the graph
+The \ffunc{getNodeFor()} member function returns a pointer to the graph
 node for a given module. (If the module is not in the graph, it
-returns \ttt{NULL}). \fname{getNodeFor()} uses binary search within the
+returns \ttt{NULL}). \ffunc{getNodeFor()} uses binary search within the
 \cclass{cTopology} object so it is fast enough.
 
 
 \cclass{cTopology::Node}'s other member functions let you determine the
-connections of this node: \fname{getNumInLinks()}, \fname{getNumOutLinks()} return
+connections of this node: \ffunc{getNumInLinks()}, \ffunc{getNumOutLinks()} return
 the number of connections, \ttt{in(i)} and
 \ttt{out(i)} return pointers to graph edge objects.
 
 
 By calling member functions of the graph edge object, you can
-determine the modules and gates involved. The \fname{getRemoteNode()}
+determine the modules and gates involved. The \ffunc{getRemoteNode()}
 function returns the other end of the connection, and
-\fname{getLocalGate()}, \fname{getRemoteGate()}, \fname{getLocalGateId()} and
-\fname{getRemoteGateId()} return the gate pointers and ids of the gates
+\ffunc{getLocalGate()}, \ffunc{getRemoteGate()}, \ffunc{getLocalGateId()} and
+\ffunc{getRemoteGateId()} return the gate pointers and ids of the gates
 involved. (Actually, the implementation is a bit tricky here: the same
 graph edge object \cclass{cTopology::Link} is returned either as
 \cclass{cTopology::LinkIn} or as \cclass{cTopology::LinkOut} so that ``remote''
@@ -997,7 +997,7 @@ This performs the Dijkstra algorithm\index{Dijkstra algorithm} and
 stores the result in the \cclass{cTopology} object. The result can
 then be extracted using \cclass{cTopology} and
 \ttt{cTopology::Node}\index{cTopology::Node} methods.  Naturally, each call to
-\fname{calculateUnweightedSingleShortestPathsTo()} overwrites the results of
+\ffunc{calculateUnweightedSingleShortestPathsTo()} overwrites the results of
 the previous call.
 
 Walking along the path from our module to the target node:
@@ -1031,28 +1031,28 @@ else
 \end{verbatim}
 
 
-The purpose of the \fname{getDistanceToTarget()} member function of a
+The purpose of the \ffunc{getDistanceToTarget()} member function of a
 node is self-explanatory. In the unweighted case, it returns the
-number of hops. The \fname{getNumPaths()} member function returns the number
+number of hops. The \ffunc{getNumPaths()} member function returns the number
 of edges which are part of a shortest path, and
-\fname[path()]{path(i)} returns the \textit{i}th edge of them as
+\ffunc[path()]{path(i)} returns the \textit{i}th edge of them as
 \cclass{cTopology::LinkOut}. If the shortest paths were created by the
-\fname[SingleShortestPaths()]{...SingleShortestPaths()} function,
-\fname{getNumPaths()} will always return 1 (or 0 if the target is not
+\ffunc[SingleShortestPaths()]{...SingleShortestPaths()} function,
+\ffunc{getNumPaths()} will always return 1 (or 0 if the target is not
 reachable), that is, only one of the several possible shortest paths
 are found.  The
-\fname[MultiShortestPathsTo()]{...MultiShortestPathsTo()} functions
+\ffunc[MultiShortestPathsTo()]{...MultiShortestPathsTo()} functions
 find all paths, at increased run-time cost. The \cclass{cTopology}'s
-\fname{getTargetNode()} function returns the target node of the last
+\ffunc{getTargetNode()} function returns the target node of the last
 shortest path search.
 
 You can enable/disable nodes or edges in the graph. This is done by
-calling their \fname{enable()} or \fname{disable()} member functions.
+calling their \ffunc{enable()} or \ffunc{disable()} member functions.
 Disabled nodes or edges are ignored by the shortest paths calculation
-algorithm. The \fname{isEnabled()} member function returns the state of
+algorithm. The \ffunc{isEnabled()} member function returns the state of
 a node or edge in the topology graph.
 
-One usage of \fname{disable()} is when you want to determine in how many
+One usage of \ffunc{disable()} is when you want to determine in how many
 hops the target node can be reached from our node \textit{through
 a particular output gate}. To calculate this, you calculate the
 shortest paths to the target \textit{from the neighbor node}, but
@@ -1123,11 +1123,11 @@ There are several statistic and result collection classes:
 \subsubsection{Basic usage}
 
 One can insert an observation into a statistic object with the
-\fname{collect()} function or the \texttt{+=} operator (they are
+\ffunc{collect()} function or the \texttt{+=} operator (they are
 equivalent).  \cclass{cStdDev} has the following methods for getting
-statistics out of the object: \fname{getCount()}, \fname{getMin()},
-\fname{getMax()}, \fname{getMean()}, \fname{getStddev()}, \fname{getVariance()},
-\fname{getSum()}, \fname{getSqrSum()} with the obvious meanings. An example
+statistics out of the object: \ffunc{getCount()}, \ffunc{getMin()},
+\ffunc{getMax()}, \ffunc{getMean()}, \ffunc{getStddev()}, \ffunc{getVariance()},
+\ffunc{getSum()}, \ffunc{getSqrSum()} with the obvious meanings. An example
 usage for \cclass{cStdDev}:
 
 \begin{verbatim}
@@ -1206,13 +1206,13 @@ range.
 
 After the cells have been set up, collection can go on.
 
-The \fname{isTransformed()} function returns \textit{true} when the cells have
+The \ffunc{isTransformed()} function returns \textit{true} when the cells have
 already been set up. You can force range estimation and setting
-up the cells by calling the \fname{transform()} function.
+up the cells by calling the \ffunc{transform()} function.
 
 The observations that fall outside the histogram range will be counted
 as underflows and overflows. The number of underflows and overflows
-are returned by the \fname{getUnderflowCell()} and \fname{getOverflowCell()}
+are returned by the \ffunc{getUnderflowCell()} and \ffunc{getOverflowCell()}
 member functions.
 
 \begin{figure}[htbp]
@@ -1236,14 +1236,14 @@ as a histogram.
 
 
 There are three member functions to explicitly return cell boundaries
-and the number of observations is each cell. \fname{getNumCells()} returns
-the number of cells, \fname[getBasepoint()]{getBasepoint(int k)} returns the
-\textit{k}th base point, \fname[getCellValue()]{getCellValue(int k)} returns the
+and the number of observations is each cell. \ffunc{getNumCells()} returns
+the number of cells, \ffunc[getBasepoint()]{getBasepoint(int k)} returns the
+\textit{k}th base point, \ffunc[getCellValue()]{getCellValue(int k)} returns the
 number of observations in cell \textit{k}, and
-\fname[getCellPDF()]{getCellPDF(int k)} returns the PDF value in the cell
-(i.e. between \fname[getBasepoint()]{getBasepoint(k)} and
-\fname[getBasepoint()]{getBasepoint(k+1)}).
-The \fname[getCellInfo()]{getCellInfo(k)} method returns multiple data
+\ffunc[getCellPDF()]{getCellPDF(int k)} returns the PDF value in the cell
+(i.e. between \ffunc[getBasepoint()]{getBasepoint(k)} and
+\ffunc[getBasepoint()]{getBasepoint(k+1)}).
+The \ffunc[getCellInfo()]{getCellInfo(k)} method returns multiple data
 (cell bounds, counter, relatile frequency) packed together in a struct.
 These functions work for all histogram types, plus \cclass{cPSquare}
 and \cclass{cKSplit}.
@@ -1269,7 +1269,7 @@ for (int i=0; i<histogram.getNumCells(); i++)
 \end{verbatim}
 
 
-The \fname[getPDF()]{getPDF(x)} and \fname[getCDF()]{getCDF(x)} member functions
+The \ffunc[getPDF()]{getPDF(x)} and \ffunc[getCDF()]{getCDF(x)} member functions
 return the value of the Probability Density Function and the Cumulated
 Density Function at a given \textit{x}, respectively.
 
@@ -1277,7 +1277,7 @@ Density Function at a given \textit{x}, respectively.
 \subsubsection{Random number generation from distributions}
 
 
-The \fname{random()} member function generates random
+The \ffunc{random()} member function generates random
 numbers\index{random!numbers} from the distribution stored by the
 object:
 
@@ -1297,7 +1297,7 @@ rndPar.setDoubleValue(&histogram);
 
 
 The \cclass{cPar} object stores the pointer to the histogram (or $P^{2}$ object),
-and whenever it is asked for the value, calls the histogram object's \fname{random()}
+and whenever it is asked for the value, calls the histogram object's \ffunc{random()}
 function:
 
 \begin{verbatim}
@@ -1307,14 +1307,14 @@ double rnd = (double)rndPar; // random number from the cPSquare
 \subsubsection{Storing/loading distributions}
 
 
-The statistic classes have \fname{loadFromFile()} member functions
+The statistic classes have \ffunc{loadFromFile()} member functions
 that read the histogram data from a text file. If you need a custom
 distribution\index{distribution!custom} that cannot be written (or it
 is inefficient) as a C function, you can describe it in histogram form
 stored in a text file, and use a histogram object with
-\fname{loadFromFile()}.
+\ffunc{loadFromFile()}.
 
-You can also use \fname{saveToFile()}that writes out the distribution
+You can also use \ffunc{saveToFile()}that writes out the distribution
 collected by the histogram object:
 
 \begin{verbatim}
@@ -1339,7 +1339,7 @@ It can operate in two modes:
 \begin{itemize}
   \item \textit{manual}, where you specify cell boundaries explicitly
      before starting collecting
-  \item \textit{automatic}, where \fname{transform()} will set up the cells
+  \item \textit{automatic}, where \ffunc{transform()} will set up the cells
      after collecting a certain number of initial observations. The cells
      will be set up so that as far as possible, an equal number of observations
      fall into each cell (equi-probable cells).
@@ -1348,7 +1348,7 @@ It can operate in two modes:
 Modes are selected with a \textit{transform-type} parameter:
 \begin{itemize}
   \item{\ttt{HIST\_TR\_NO\_TRANSFORM}: no transformation; uses bin boundaries
-    previously defined by \fname{addBinBound()}}
+    previously defined by \ffunc{addBinBound()}}
   \item{\ttt{HIST\_TR\_AUTO\_EPC\_DBL}: automatically creates equiprobable cells}
   \item{\ttt{HIST\_TR\_AUTO\_EPC\_INT}: like the above, but for integers}
 \end{itemize}
@@ -1595,7 +1595,7 @@ cAccuracyDetection *getAccuracyDetectionObject();
 
 Detecting the end of the period:
 \begin{itemize}
-\item{polling the \fname{detect()} function of the object}
+\item{polling the \ffunc{detect()} function of the object}
 \item{installing a post-detect function}
 \end{itemize}
 
@@ -1638,7 +1638,7 @@ void setParameters(double acc=0.1, int reps=3);
 \label{sec:ch-sim-lib:coutvector}
 
 Objects of type \cclass{cOutVector} are responsible for writing time series
-data (referred to as \textit{output vectors}) to a file. The \fname{record()}
+data (referred to as \textit{output vectors}) to a file. The \ffunc{record()}
 method is used to output a value (or a value pair) with a timestamp.
 The object name will serve as the name of the output vector.
 
@@ -1649,9 +1649,9 @@ cOutVector responseTimeVec("response time");
 \end{verbatim}
 
 but in the usual arrangement you'd make the \cclass{cOutVector} a member
-of the module class and set the name in \fname{initialize()}. You'd
-record values from \fname{handleMessage()} or from a function called from
-\fname{handleMessage()}.
+of the module class and set the name in \ffunc{initialize()}. You'd
+record values from \ffunc{handleMessage()} or from a function called from
+\ffunc{handleMessage()}.
 
 The following example is a \ttt{Sink} module which records the lifetime
 of every message that arrives to it.
@@ -1681,13 +1681,13 @@ void Sink::handleMessage(cMessage *msg)
 }
 \end{verbatim}
 
-There is also a \fname{recordWithTimestamp()} method, to make it
+There is also a \ffunc{recordWithTimestamp()} method, to make it
 possible to record values into output vectors with a timestamp other than
-\fname{simTime()}. Increasing timestamp order is still enforced though.
+\ffunc{simTime()}. Increasing timestamp order is still enforced though.
 
 All \cclass{cOutVector} objects write to a single \textit{output vector file}
 named \ttt{omnetpp.vec} by default.
-You can configure output vectors from \ttt{omnetpp.ini}:
+You can configure output vectors from \ffilename{omnetpp.ini}:
 you can disable writing to the file, or limit it to a certain
 simulation time interval for recording (section
 \ref{sec:ch-config-sim:outvectors}).
@@ -1696,7 +1696,7 @@ The format and processing of output vector files is described in section
 \ref{sec:ch-ana-sim:output-vectors}.
 
 If the output vector object is disabled or the simulation time is
-outside the specified interval, \fname{record()} doesn't write
+outside the specified interval, \ffunc{record()} doesn't write
 anything to the output file. However, if you have a Tkenv inspector
 window open for the output vector object\index{output!vector object},
 the values will be displayed there, regardless of the state of the
@@ -1719,9 +1719,9 @@ value per simulation run. You can use output scalars
     way to produce \textit{Throughput vs. Offered Load} plots.}
 \end{itemize}
 
-Output scalars are recorded with the \fname{record()} method of
+Output scalars are recorded with the \ffunc{record()} method of
 \cclass{cSimpleModule}, and you'll usually want to insert this code
-into the \fname{finish()} function. An example:
+into the \ffunc{finish()} function. An example:
 
 \begin{verbatim}
 void Transmitter::finish()
@@ -1731,7 +1731,7 @@ void Transmitter::finish()
 }
 \end{verbatim}
 
-You can record whole statistics objects by calling their \fname{record()}
+You can record whole statistics objects by calling their \ffunc{record()}
 methods, declared as part of \cclass{cStatistic}. In the following example
 we create a \ttt{Sink} module which calculates the mean, standard
 deviation, minimum and maximum values of a variable, and records them at the
@@ -1875,8 +1875,8 @@ nothing about types and variables in your source code.
 {\opp} provides \fmac{WATCH()} and set of other macros to come to your rescue,
 and make variable to be inspectable in Tkenv and to be output into the snapshot
 file\index{snapshot file}. \fmac{WATCH()} macros are usually placed into
-\fname{initialize()} (to watch instance variables) or to the top of the
-\fname{activity()} function (to watch its local variables), the point being
+\ffunc{initialize()} (to watch instance variables) or to the top of the
+\ffunc{activity()} function (to watch its local variables), the point being
 that they should only be executed once.
 
 \begin{verbatim}
@@ -2016,7 +2016,7 @@ WATCH_PTRMAP(commandMap);
 \subsection{Snapshots}
 \label{sec:ch-sim-lib:snapshots}
 
-The \fname{snapshot()} function outputs textual information about all
+The \ffunc{snapshot()} function outputs textual information about all
 or selected objects of the simulation (including the objects created
 in module functions by the user) into the snapshot file\index{snapshot file}.
 
@@ -2040,7 +2040,7 @@ config file.)
 
 
 The snapshot file output is detailed enough to be used for debugging
-the simulation: by regularly calling \fname{snapshot()}, one can trace
+the simulation: by regularly calling \ffunc{snapshot()}, one can trace
 how the values of variables, objects changed over the simulation.
 The arguments: label is a string that will appear in the output
 file; obj is the object whose inside is of interest. By default,
@@ -2173,8 +2173,8 @@ such a local variable, it may be preserved intact and {\opp} does not
 detect the stack violation.
 
 To be able to make a good guess about stack size, you can use
-the \fname{getStackUsage()} call which tells you how much stack the module
-actually uses. It is most conveniently called from \fname{finish()}:
+the \ffunc{getStackUsage()} call which tells you how much stack the module
+actually uses. It is most conveniently called from \ffunc{finish()}:
 
 \begin{verbatim}
 void FooModule::finish()
@@ -2190,7 +2190,7 @@ envir/omnetapp.h), which is currently 8K for Cmdenv and at least 16K
 for Tkenv.
   \footnote{The actual value is platform-dependent.}
 
-\fname{getStackUsage()}also works by checking the existence of predefined
+\ffunc{getStackUsage()}also works by checking the existence of predefined
 byte patterns in the stack area, so it is also subject to the above
 effect with local variables.
 
@@ -2248,7 +2248,7 @@ co-operate with other parts of the simulation system. A more or less
 complete list of these functions is presented here. You do not need to
 worry about the length of the list: most functions are not
 absolutely necessary to implement. For example, you do not need to
-redefine \fname{forEachChild()} unless your class is a container class.
+redefine \ffunc{forEachChild()} unless your class is a container class.
 
 The following methods \textbf{must} be implemented:
 
@@ -2262,10 +2262,10 @@ The following methods \textbf{must} be implemented:
         for a class \ttt{X}: \ttt{X(const X\&)}. The copy constructor is used
         whenever an object is duplicated. The usual implementation of
         the copy constructor is to initialize the base class with the
-        name (\fname{getName()}) of the other object it receives, then call the
+        name (\ffunc{getName()}) of the other object it receives, then call the
         assignment operator (see below).}
   \item{\textit{Destructor}.}
-  \item{\textit{Duplication function,} \fname{X *dup() const}.
+  \item{\textit{Duplication function,} \ffunc{X *dup() const}.
         It should create and return an exact duplicate of the object.
         It is usually a one-line function, implemented with the help
         of the \ttt{new} operator and the copy constructor.}
@@ -2284,22 +2284,22 @@ be implemented:
         The implementation should call the function passed
         for each object it contains via pointer or as data member;
         see the API Reference on \cclass{cOwnedObject} on how to implement
-        \ttt{forEachChild()}. \fname{forEachChild()} makes it possible
+        \ttt{forEachChild()}. \ffunc{forEachChild()} makes it possible
         for Tkenv to display the object tree to you, to perform searches on it, etc.
-        It is also used by \fname{snapshot()} and some other library functions.}
+        It is also used by \ffunc{snapshot()} and some other library functions.}
 \end{itemize}
 
 The following methods are \textbf{recommended} to implement:
 
 \begin{itemize}
-  \item{\textit{Object info,} \fname{std::string info()}. The \ttt{info()} function
+  \item{\textit{Object info,} \ffunc{std::string info()}. The \ttt{info()} function
         should return a one-line string describing the object's contents or state.
         \ttt{info()} is displayed at several places in Tkenv.}
-  \item{\textit{Detailed object info,} \fname{std::string detailedInfo()}.
+  \item{\textit{Detailed object info,} \ffunc{std::string detailedInfo()}.
         This method may potentially be implemented in addition to \ttt{info()};
         it can return a multi-line description. \ttt{detailedInfo()} is also
         displayed by Tkenv in the object's inspector.}
-  \item{\textit{Serialization}, \fname{parsimPack()} and \fname{parsimUnpack()} methods.
+  \item{\textit{Serialization}, \ffunc{parsimPack()} and \ffunc{parsimUnpack()} methods.
         These methods are needed for parallel simulation, if you want
         objects of this type to be transmitted across partitions.}
 \end{itemize}
@@ -2308,9 +2308,9 @@ The following methods are \textbf{recommended} to implement:
 \subsection{Class registration}
 
 You should also use the \fmac{Register\_Class()} macro to register the
-new class. It is used by the \fname{createOne()} factory function, which can
-create any object given the class name as a string. \fname{createOne()}
-is used by the Envir library to implement \ttt{omnetpp.ini} options
+new class. It is used by the \ffunc{createOne()} factory function, which can
+create any object given the class name as a string. \ffunc{createOne()}
+is used by the Envir library to implement \ffilename{omnetpp.ini} options
 such as \ttt{rng-class="..."} or \ttt{scheduler-class="..."}.
 (see Chapter \ref{cha:plugin-exts})
 
@@ -2333,7 +2333,7 @@ But for that to work, we needed to have the following line somewhere in the code
 Register_Class(cMersenneTwister);
 \end{verbatim}
 
-\fname{createOne()} is also needed by the parallel distributed simulation feature
+\ffunc{createOne()} is also needed by the parallel distributed simulation feature
 (Chapter \ref{cha:parallel-execution}) to create blank objects to unmarshal into
 on the receiving side.
 
@@ -2405,7 +2405,7 @@ NewClass::NewClass(const char *name, int d) : cOwnedObject(name)
 
 The constructor (above) calls the base class constructor with
 the name of the object, then initializes its own data members.
-You need to call \fname{take()} for \cclass{cOwnedObject}-based data members.
+You need to call \ffunc{take()} for \cclass{cOwnedObject}-based data members.
 
 
 \begin{verbatim}
@@ -2428,7 +2428,7 @@ Note that pointer members have to be initialized (to \ttt{NULL} or to an
 allocated object/memory) before calling the assignment operator,
 to avoid crashes.
 
-You need to call \fname{take()} for \cclass{cOwnedObject}-based data members.
+You need to call \ffunc{take()} for \cclass{cOwnedObject}-based data members.
 
 \begin{verbatim}
 NewClass::~NewClass()
@@ -2485,7 +2485,7 @@ required by \cclass{cOwnedObject}.
 
 If you do not want to implement object copying and duplication,
 you should implement the assignment operator to call
-\fname{copyNotSupported()} -- it'll throw an exception that
+\ffunc{copyNotSupported()} -- it'll throw an exception that
 stops the simulation with an error message if this function
 is called.
 
@@ -2521,9 +2521,9 @@ void NewClass::forEachChild(cVisitor *v)
 }
 \end{verbatim}
 
-The \fname{forEachChild()} function should call \ttt{v->visit(obj)}
+The \ffunc{forEachChild()} function should call \ttt{v->visit(obj)}
 for each \ttt{obj} member of the class. See the API Reference for more
-information of \fname{forEachChild()}.
+information of \ffunc{forEachChild()}.
 
 \begin{verbatim}
 std::string NewClass::info()
@@ -2535,7 +2535,7 @@ std::string NewClass::info()
 }
 \end{verbatim}
 
-The \fname{info()} method should produce a concise, one-line string
+The \ffunc{info()} method should produce a concise, one-line string
 about the object. You should try not to exceed 40-80 characters, since the
 string will be shown in tooltips and listboxes.
 
@@ -2566,7 +2566,7 @@ the message in another one, the encapsulating message will become
 the owner. When you decapsulate it again, the currently active
 simple module becomes the owner.
 
-The \fname{getOwner()} method, defined in \cclass{cOwnedObject}, returns the
+The \ffunc{getOwner()} method, defined in \cclass{cOwnedObject}, returns the
 owner of the object:
 
 \begin{verbatim}
@@ -2576,7 +2576,7 @@ ev << "Owner of " << msg->getName() << " is: " <<
 \end{verbatim}
 
 The other direction, enumerating the objects owned can be implemented with
-the \fname{forEachChild()} method by it looping through all
+the \ffunc{forEachChild()} method by it looping through all
 contained objects and checking the owner of each object.
 
 \subsubsection{Why do we need this?}
@@ -2612,7 +2612,7 @@ by the ownership facility:
     destinations at the same time (ie. to all connected modules)}
 \end{itemize}
 
-For example, the \fname{send()} and \fname{scheduleAt()} functions check
+For example, the \ffunc{send()} and \ffunc{scheduleAt()} functions check
 that the message being sent/scheduled \textit{must} is owned by the module.
 If it is not, then it signals a programming error: the message is probably
 owned by another module (already sent earlier?), or currently scheduled, or
@@ -2646,7 +2646,7 @@ to store messages or other \cclass{cOwnedObject}-based objects.
 (array and linked list) to store the objects which are inserted
 into them. However, they do \textit{not} necessarily own all of these
 objects.  (Whether they own an object or not can be determined
-from that object's \fname{getOwner()} pointer.)
+from that object's \ffunc{getOwner()} pointer.)
 
 The default behaviour of \cclass{cQueue} and \cclass{cArray} is
 to take ownership of the objects inserted.
@@ -2695,13 +2695,13 @@ you may further use it, or if it is not needed any more, you can delete it.
 The \textit{release ownership} phrase requires further explanation.
 When you remove an object from a queue or array, the ownership
 is expected to be transferred to the simple module's local objects list.
-This is accomplished by the \fname{drop()} function, which transfers the
+This is accomplished by the \ffunc{drop()} function, which transfers the
 ownership to the object's default owner.
-\fname{getDefaultOwner()} is a virtual method returning \ttt{cOwnedObject*}
+\ffunc{getDefaultOwner()} is a virtual method returning \ttt{cOwnedObject*}
 defined in \cclass{cOwnedObject}, and its implementation returns
 the currently executing simple module's local object list.
 
-As an example, the \fname{remove()} method of \cclass{cQueue} is
+As an example, the \ffunc{remove()} method of \cclass{cQueue} is
 implemented like this:
   \footnote{Actual code in \texttt{src/sim} is structured somewhat
   differently, but the meaning is the same.}
@@ -2723,7 +2723,7 @@ cOwnedObject *cQueue::remove(cOwnedObject *obj)
 
 \subsubsection{Destructor}
 
-The concept of \fname{ownership} is that \textit{the owner has the
+The concept of \ffunc{ownership} is that \textit{the owner has the
 exclusive right and duty to delete the objects it owns}.
 For example, if you delete a \cclass{cQueue} containing \cclass{cMessage}s,
 all messages it contains \textit{and} owns will also be deleted.
@@ -2748,13 +2748,13 @@ will have their pointers taken over and their original owners
 left unchanged.
 
 In fact, the same question arises in three places:
-the assignment operator \fname{operator=()}, the copy constructor
-and the \fname{dup()} method.
+the assignment operator \ffunc{operator=()}, the copy constructor
+and the \ffunc{dup()} method.
 In {\opp}, the convention is that copying is implemented
 in the assignment operator, and the other two just rely on it.
 (The copy constructor just constructs an empty object and
-invokes assignment, while \fname{dup()}
-is implemented as \fname{new cArray(*this)}).
+invokes assignment, while \ffunc{dup()}
+is implemented as \ffunc{new cArray(*this)}).
 
 % FIXME finish this!
 %

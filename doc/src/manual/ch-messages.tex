@@ -110,9 +110,9 @@ With these functions the user can set the message
 kind\index{message!kind}, the message length\index{message@length},
 the priority\index{message!priority}, the error
 flag\index{message!error flag} and the time stamp\index{message!time
-  stamp}. The \fname{setTimeStamp()} function without any argument
+  stamp}. The \ffunc{setTimeStamp()} function without any argument
 sets the time stamp to the current simulation time.
-\fname{setByteLength()} sets the same length field as \fname{setBitLength()},
+\ffunc{setByteLength()} sets the same length field as \ffunc{setBitLength()},
 only the parameters gets internally multiplied by 8.
 
 The values can be obtained by the following functions:
@@ -126,7 +126,7 @@ bool b      = msg->hasBitError();
 simtime_t t = msg->getTimestamp();
 \end{verbatim}
 
-\fname{getByteLength()} also reads the length field as \fname{length()},
+\ffunc{getByteLength()} also reads the length field as \ffunc{length()},
 but the result gets divided by 8 and rounded up.
 
 
@@ -164,16 +164,16 @@ in such a scenario -- otherwise self-messages are normal messages,
 of class \cclass{cMessage} or a class derived from it.
 
 When a message is delivered to a module by the simulation kernel,
-you can call the \fname{isSelfMessage()} method to determine if it is
+you can call the \ffunc{isSelfMessage()} method to determine if it is
 a self-message; it other words, if it was scheduled with
-\fname{scheduleAt()} or was sent with one of the
-\fname{send...()} methods. The \fname{isScheduled()} method
+\ffunc{scheduleAt()} or was sent with one of the
+\ffunc{send...()} methods. The \ffunc{isScheduled()} method
 returns true if the message is currently scheduled. A scheduled
-message can also be cancelled (\fname{cancelEvent()}).
+message can also be cancelled (\ffunc{cancelEvent()}).
 
 \begin{Verbatim}[commandchars=\\\{\}]
-bool \fname{isSelfMessage()};
-bool \fname{isScheduled()};
+bool \ffunc{isSelfMessage()};
+bool \ffunc{isScheduled()};
 \end{Verbatim}
 
 The following methods return the time of creating and scheduling the message
@@ -181,16 +181,16 @@ as well as its arrival time. While the message is scheduled, arrival
 time is the time it will be delivered to the module.
 
 \begin{Verbatim}[commandchars=\\\{\}]
-simtime_t \fname{getCreationTime()}
-simtime_t \fname{getSendingTime()};
-simtime_t \fname{getArrivalTime()};
+simtime_t \ffunc{getCreationTime()}
+simtime_t \ffunc{getSendingTime()};
+simtime_t \ffunc{getArrivalTime()};
 \end{Verbatim}
 
 \subsubsection{Context pointer}
 
 \cclass{cMessage} contains a \ttt{void*} pointer which is
-set/returned by the \fname{setContextPointer()} and
-\fname{getContextPointer()} functions:
+set/returned by the \ffunc{setContextPointer()} and
+\ffunc{getContextPointer()} functions:
 
 \begin{verbatim}
 void *context =...;
@@ -220,19 +220,19 @@ The following methods can tell where the message came from and
 where it arrived (or will arrive if it is currently scheduled or under way.)
 
 \begin{Verbatim}[commandchars=\\\{\}]
-int \fname{getSenderModuleId()};
-int \fname{getSenderGateId()};
-int \fname{getArrivalModuleId()};
-int \fname{getArrivalGateId()};
+int \ffunc{getSenderModuleId()};
+int \ffunc{getSenderGateId()};
+int \ffunc{getArrivalModuleId()};
+int \ffunc{getArrivalGateId()};
 \end{Verbatim}
 
 The following methods are just convenience functions which build
 on the ones above.
 
 \begin{Verbatim}[commandchars=\\\{\}]
-cModule *\fname{getSenderModule()};
-cGate *\fname{getSenderGate()};
-cGate *\fname{getArrivalGate()};
+cModule *\ffunc{getSenderModule()};
+cGate *\ffunc{getSenderGate()};
+cGate *\ffunc{getArrivalGate()};
 \end{Verbatim}
 
 And there are further convenience functions to tell whether
@@ -240,17 +240,17 @@ the message arrived on a specific gate given with id or
 name+index.
 
 \begin{Verbatim}[commandchars=\\\{\}]
-bool \fname{arrivedOn}(int id);
-bool \fname{arrivedOn}(const char *gname, int gindex=0);
+bool \ffunc{arrivedOn}(int id);
+bool \ffunc{arrivedOn}(const char *gname, int gindex=0);
 \end{Verbatim}
 
 The following methods return message creation time and the last sending
 and arrival times.
 
 \begin{Verbatim}[commandchars=\\\{\}]
-simtime_t \fname{getCreationTime()}
-simtime_t \fname{getSendingTime()};
-simtime_t \fname{getArrivalTime()};
+simtime_t \ffunc{getCreationTime()}
+simtime_t \ffunc{getSendingTime()};
+simtime_t \ffunc{getArrivalTime()};
 \end{Verbatim}
 
 \subsubsection{Control info}
@@ -276,9 +276,9 @@ packets. \cclass{cMessage} has the following methods for this
 purpose:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-void \fname{setControlInfo(cObject *controlInfo)};
-cObject *\fname{getControlInfo()};
-cObject *\fname{removeControlInfo()};
+void \ffunc{setControlInfo(cObject *controlInfo)};
+cObject *\ffunc{getControlInfo()};
+cObject *\ffunc{removeControlInfo()};
 \end{Verbatim}
 
 When a "command" is associated with the message sending (such as
@@ -320,7 +320,7 @@ layered protocols of computer networks. Although you can encapsulate
 messages by adding them to the parameter list, there's a better way.
 
 
-The \fname{encapsulate()} function encapsulates a message
+The \ffunc{encapsulate()} function encapsulates a message
 into another one. The length of the message will grow by the length of
 the encapsulated message. An exception: when the encapsulating (outer)
 message has zero length, {\opp} assumes it is not a real packet but
@@ -337,32 +337,32 @@ ev << tcpseg->getByteLength() << endl; // --> 2048+24 = 2072
 \end{verbatim}
 
 A message can only hold one encapsulated message at a time. The
-second \fname{encapsulate()} call will result in an error. It is also
+second \ffunc{encapsulate()} call will result in an error. It is also
 an error if the message to be encapsulated isn't owned by the
 module.
 
-You can get back the encapsulated message by \fname{decapsulate()}:
+You can get back the encapsulated message by \ffunc{decapsulate()}:
 
 \begin{verbatim}
 cMessage *userdata = tcpseg->decapsulate();
 \end{verbatim}
 
-\fname{decapsulate()} will decrease the length of the message accordingly,
+\ffunc{decapsulate()} will decrease the length of the message accordingly,
 except if it was zero. If the length would become negative, an
 error occurs.
 
-The \fname{getEncapsulatedMsg()} function returns a pointer to the encapsulated
+The \ffunc{getEncapsulatedMsg()} function returns a pointer to the encapsulated
 message, or \ttt{NULL} if no message was encapsulated.
 
 \subsubsection{Reference counting}
 
 Since the 3.2 release, {\opp} implements reference counting of
-encapsulated messages, meaning that if you \fname{dup()} a message
+encapsulated messages, meaning that if you \ffunc{dup()} a message
 that contains an encapsulated message, then the encapsulated message will
 not be duplicated, only a reference count incremented. Duplication of
-the encapsulated message is deferred until \fname{decapsulate()}
+the encapsulated message is deferred until \ffunc{decapsulate()}
 actually gets called. If the outer message gets deleted without its
-\fname{decapsulate()} method ever being called, then the reference
+\ffunc{decapsulate()} method ever being called, then the reference
 count of the encapsulated message simply gets decremented. The
 encapsulated message is deleted when its reference count reaches
 zero.
@@ -376,7 +376,7 @@ MAC address doesn't match in the first place.
 The reference counting mechanism works transparently. However, there
 is one implication: \tbf{one must not change anything in a message
 that is encapsulated into another!} That is,
-\fname{getEncapsulatedMsg()} should be viewed as if it returned a
+\ffunc{getEncapsulatedMsg()} should be viewed as if it returned a
 pointer to a read-only object (it returns a \ttt{const} pointer
 indeed), for quite obvious reasons: the encapsulated message may be
 shared between several messages, and any change would affect those
@@ -397,7 +397,7 @@ array, or you can use STL classes like \ttt{std::vector} or \ttt{std::list}.
 There is one additional ``trick'' that you might not expect: your message
 class has to \textbf{take ownership} of the inserted messages, and
 \textbf{release} them when they are removed from the message. These are
-done via the \fname{take()} and \fname{drop()} methods. Let us see
+done via the \ffunc{take()} and \ffunc{drop()} methods. Let us see
 an example which assumes you have added to the class an \ttt{std::list} member
 called \ttt{messages} that stores message pointers:
 
@@ -415,7 +415,7 @@ void MessageBundleMessage::removeMessage(cMessage *msg)
 }
 \end{verbatim}
 
-You will also have to provide an \fname{operator=()} method to
+You will also have to provide an \ffunc{operator=()} method to
 make sure your message objects can be copied and duplicated
 properly -- this is something often needed in simulations
 (think of broadcasts and retransmissions!). Section
@@ -436,8 +436,8 @@ way to do that is via message definitions, described in chapter
 The \cclass{cMessage} class has an internal \cclass{cArray} object which can
 carry objects\index{message!attaching objects}. Only objects
 that are derived from \cclass{cOwnedObject} (most {\opp} classes are so) can be attached.
-The \fname{addObject()}, \fname{getObject()}, \fname{hasObject()},
-\fname{removeObject()} methods use the object name
+The \ffunc{addObject()}, \ffunc{getObject()}, \ffunc{hasObject()},
+\ffunc{removeObject()} methods use the object name
 as the key to the array. An example:
 
 \begin{verbatim}
@@ -456,7 +456,7 @@ You should take care that names of the attached objects do not
 clash with each other or with \cclass{cMsgPar} parameter names
 (see next section).
 If you do not attach anything to the message and do not call the
-\fname{getParList()} function, the internal \cclass{cArray} object
+\ffunc{getParList()} function, the internal \cclass{cArray} object
 will not be created.
 This saves both storage and execution time.
 
@@ -482,11 +482,11 @@ message definitions (see section \ref{ch:messages:message-definitions}).
 The old, deprecated way of adding new fields to messages is via
 attaching \cclass{cMsgPar} objects.
 There are several downsides of this approach, the worst being
-large memory and execution time overhead. \fname{cMsgPar}'s are
+large memory and execution time overhead. \ffunc{cMsgPar}'s are
 heavy-weight and fairly complex objects themselves.
 It has been reported that using \cclass{cMsgPar} message parameters
 might account for a large part of execution time, sometimes as much as 80\%.
-Using \cclass{cMsgPar}s is also error-prone because \fname{cMsgPar} objects
+Using \cclass{cMsgPar}s is also error-prone because \ffunc{cMsgPar} objects
 have to be added dynamically and individually to each message object.
 In contrast, subclassing benefits from static type checking:
 if you mistype the name of a field in the C++ code, already the compiler
@@ -494,19 +494,19 @@ can detect the mistake.
 
 If you still need \cclass{cMsgPar}s for some reason, here's a short summary.
 At the sender side you can add a new named parameter to the message
-with the \fname{addPar()} member function, then set its value with
-one of the methods \fname{setBoolValue()}, \fname{setLongValue()},
-\fname{setStringValue()}, \fname{setDoubleValue()}, \fname{setPointerValue()},
-\fname{setObjectValue()}, and \fname{setXMLValue()}. There are also overloaded
+with the \ffunc{addPar()} member function, then set its value with
+one of the methods \ffunc{setBoolValue()}, \ffunc{setLongValue()},
+\ffunc{setStringValue()}, \ffunc{setDoubleValue()}, \ffunc{setPointerValue()},
+\ffunc{setObjectValue()}, and \ffunc{setXMLValue()}. There are also overloaded
 assignment operators for the corresponding C/C++ types.
 
 At the receiver side, you can look up the parameter object on the message
-by name and obtain a reference to it with the \fname{par()} member function.
-\fname{hasPar()} can be used to check first whether the message object has a parameter
+by name and obtain a reference to it with the \ffunc{par()} member function.
+\ffunc{hasPar()} can be used to check first whether the message object has a parameter
 object with the given name. Then the value can be read with the methods
-\fname{boolValue()}, \fname{longValue()}, \fname{stringValue()},
-\fname{doubleValue()}, \fname{pointerValue()}, \fname{objectValue()},
-\fname{xmlValue()}, or by using the provided overloaded type cast operators.
+\ffunc{boolValue()}, \ffunc{longValue()}, \ffunc{stringValue()},
+\ffunc{doubleValue()}, \ffunc{pointerValue()}, \ffunc{objectValue()},
+\ffunc{xmlValue()}, or by using the provided overloaded type cast operators.
 
 Example usage:
 
@@ -580,7 +580,7 @@ Tkenv to inspect these data structures.
 
 If you process \ttt{mypacket.msg} with the message subclassing compiler, it will
 create the following files for you: \ttt{mypacket\_m.h} and \ttt{mypacket\_m.cc}.
-\ttt{mypacket\_m.h} contains the declaration of the \fname{MyPacket} C++ class, and
+\ttt{mypacket\_m.h} contains the declaration of the \ffunc{MyPacket} C++ class, and
 it should be included into your C++ sources where you need to handle
 \ttt{MyPacket} objects.
 
@@ -606,10 +606,10 @@ pkt->setSrcAddress( localAddr );
 ...
 \end{verbatim}
 
-The \ttt{mypacket\_m.cc} file contains implementation of the generated \fname{MyPacket}
+The \ttt{mypacket\_m.cc} file contains implementation of the generated \ffunc{MyPacket}
 class, as well as ``reflection'' code that allows you to inspect these data
 structures in the Tkenv GUI. The \ttt{mypacket\_m.cc} file should be compiled and
-linked into your simulation. (If you use the \fname{opp\_makemake} tool
+linked into your simulation. (If you use the \ffunc{opp\_makemake} tool
 to generate your makefiles, the latter will be automatically taken care of.)
 
 
@@ -667,7 +667,7 @@ The following sections describe the message syntax and features in detail.
 
 \subsection{Declaring enums}
 
-An \fname{enum \{..\}} generates a normal C++ enum, plus creates an object
+An \ffunc{enum \{..\}} generates a normal C++ enum, plus creates an object
 which stores text representations of the constants. The latter makes it possible
 to display symbolic names in Tkenv.
 An example:
@@ -710,14 +710,14 @@ You can describe messages with the following syntax:
 \end{Verbatim}
 
 Processing this description with the message compiler will produce
-a C++ header file with a generated class, \fname{FooPacket}.
-\fname{FooPacket} will be a subclass of \fname{cMessage}.
+a C++ header file with a generated class, \ffunc{FooPacket}.
+\ffunc{FooPacket} will be a subclass of \ffunc{cMessage}.
 
 For each field in the above description, the generated class will have
 a protected data member, a getter and a setter method. The names of the
-methods will begin with \fname{get} and \fname{set},
+methods will begin with \ffunc{get} and \ffunc{set},
 followed by the field name with its first letter converted to uppercase.
-Thus, \fname{FooPacket} will contain the following methods:
+Thus, \ffunc{FooPacket} will contain the following methods:
 
 \begin{verbatim}
 virtual int getSourceAddress() const;
@@ -730,7 +730,7 @@ virtual bool getHasPayload() const;
 virtual void setHasPayload(bool hasPayload);
 \end{verbatim}
 
-Note that the methods are all declared \fname{virtual} to give you the possibility
+Note that the methods are all declared \ffunc{virtual} to give you the possibility
 of overriding them in subclasses.
 
 Two constructors will be generated: one that optionally accepts object name and
@@ -741,19 +741,19 @@ FooPacket(const char *name=NULL, int kind=0);
 FooPacket(const FooPacket& other);
 \end{verbatim}
 
-Appropriate assignment operator (\fname{operator=()}) and \fname{dup()} methods will
+Appropriate assignment operator (\ffunc{operator=()}) and \ffunc{dup()} methods will
 also be generated.
 
-Data types for fields are not limited to \fname{int} and \fname{bool}. You can use the
+Data types for fields are not limited to \ffunc{int} and \ffunc{bool}. You can use the
 following primitive types (i.e. primitive types as defined in the C++ language):
 
 \begin{itemize}
-   \item \fname{bool}
-   \item \fname{char}, \fname{unsigned char}
-   \item \fname{short}, \fname{unsigned short}
-   \item \fname{int}, \fname{unsigned int}
-   \item \fname{long}, \fname{unsigned long}
-   \item \fname{double}
+   \item \ffunc{bool}
+   \item \ffunc{char}, \ffunc{unsigned char}
+   \item \ffunc{short}, \ffunc{unsigned short}
+   \item \ffunc{int}, \ffunc{unsigned int}
+   \item \ffunc{long}, \ffunc{unsigned long}
+   \item \ffunc{double}
 \end{itemize}
 
 Field values are initialized to zero.
@@ -777,7 +777,7 @@ Initialization code will be placed in the constructor of the generated class.
 
 \subsubsection{Enum declarations}
 
-You can declare that an \fname{int} (or other integral type) field
+You can declare that an \ffunc{int} (or other integral type) field
 takes values from an enum. The message compiler can than generate code
 that allows Tkenv display the symbolic value of the field.
 
@@ -804,7 +804,7 @@ You can specify fixed size arrays:
 \};
 \end{Verbatim}
 
-The generated getter and setter methods will have an extra \fname{k} argument,
+The generated getter and setter methods will have an extra \ffunc{k} argument,
 the array index:
 
 \begin{verbatim}
@@ -839,11 +839,11 @@ virtual unsigned getRouteArraySize() const;
 virtual void setRouteArraySize(unsigned n);
 \end{verbatim}
 
-The \fname{set...ArraySize()} method internally allocates a new array. Existing
+The \ffunc{set...ArraySize()} method internally allocates a new array. Existing
 values in the array will be preserved (copied over to the new array.)
 
 The default array size is zero. This means that you need to call the
-\fname{set...ArraySize()} before you can start filling array elements.
+\ffunc{set...ArraySize()} before you can start filling array elements.
 
 
 \subsubsection{String members}
@@ -857,7 +857,7 @@ You can declare string-valued fields with the following syntax:
 \};
 \end{Verbatim}
 
-The generated getter and setter methods will return and accept \fname{const char*}
+The generated getter and setter methods will return and accept \ffunc{const char*}
 pointers:
 
 \begin{verbatim}
@@ -888,13 +888,13 @@ virtual void setChars(unsigned k, char a);
 \subsection{Inheritance, composition}
 
 So far we have discussed how to add fields of primitive types
-(\fname{int}, \fname{double}, \fname{char}, ...) to \fname{cMessage}.
+(\ffunc{int}, \ffunc{double}, \ffunc{char}, ...) to \ffunc{cMessage}.
 This might be sufficient for simple models, but if you have
 more complex models, you'll probably need to:
 
 \begin{itemize}
   \item set up a hierarchy of message (packet) classes, that is,
-    not only subclass from \fname{cMessage} but also from your
+    not only subclass from \ffunc{cMessage} but also from your
     own message classes;
   \item use not only primitive types as fields, but also structs,
     classes or typedefs. Sometimes you'll want to use a C++ type
@@ -908,8 +908,8 @@ The following section describes how to do this.
 
 \subsubsection{Inheritance among message classes}
 
-By default, messages are subclassed from \fname{cMessage}. However, you can
-explicitly specify the base class using the \fname{extends} keyword:
+By default, messages are subclassed from \ffunc{cMessage}. However, you can
+explicitly specify the base class using the \ffunc{extends} keyword:
 
 \begin{Verbatim}[commandchars=\\\{\}]
 \tbf{message} FooPacket \tbf{extends} FooBase
@@ -931,22 +931,22 @@ for details).
 
 \subsubsection{Defining classes}
 
-Until now we have used the \fname{message} keyword to define classes, which
-implies that the base class is \fname{cMessage}, either directly or indirectly.
+Until now we have used the \ffunc{message} keyword to define classes, which
+implies that the base class is \ffunc{cMessage}, either directly or indirectly.
 
 But as part of complex messages, you'll need structs and other classes
-(rooted or not rooted in \fname{cOwnedObject}) as building blocks.
-Classes can be created with the \fname{class} class keyword;
+(rooted or not rooted in \ffunc{cOwnedObject}) as building blocks.
+Classes can be created with the \ffunc{class} class keyword;
 structs we'll cover in the next section.
 
 The syntax for defining classes is almost the same as defining messages,
-only the \fname{class} keyword is used instead of \fname{message}.
+only the \ffunc{class} keyword is used instead of \ffunc{message}.
 
 Slightly different code is generated for classes that are rooted in
-\fname{cOwnedObject} than for those which are not.
+\ffunc{cOwnedObject} than for those which are not.
 If there is no \ttt{extends}, the generated class will not be
-derived from \fname{cOwnedObject}, thus it will not have \fname{getName()},
-\fname{getClassName()}, etc. methods.
+derived from \ffunc{cOwnedObject}, thus it will not have \ffunc{getName()},
+\ffunc{getClassName()}, etc. methods.
 To create a class with those methods, you have to explicitly write
 \ttt{extends cOwnedObject}.
 
@@ -1019,7 +1019,7 @@ But because a struct has no member functions, there are limitations:
 \subsubsection{Using structs and classes as fields}
 
 In addition to primitive types, you can also use other structs or objects
-as a field. For example, if you have a struct named \fname{IPAddress},
+as a field. For example, if you have a struct named \ffunc{IPAddress},
 you can write the following:
 
 \begin{Verbatim}[commandchars=\\\{\}]
@@ -1029,14 +1029,14 @@ you can write the following:
 \};
 \end{Verbatim}
 
-The \fname{IPAddress} structure must be known in advance to the message compiler;
+The \ffunc{IPAddress} structure must be known in advance to the message compiler;
 that is, it must either be a struct or class defined earlier in the message
 description file, or it must be a C++ type with its header file
 included via \ttt{cplusplus \{\{...\}\}} and its type announced
 (see Announcing C++ types).
 
-The generated class will contain an \fname{IPAddress} data member
-(that is, \textbf{not} a pointer to an \fname{IPAddress}).
+The generated class will contain an \ffunc{IPAddress} data member
+(that is, \textbf{not} a pointer to an \ffunc{IPAddress}).
 The following getter and setter methods will be generated:
 
 \begin{verbatim}
@@ -1062,7 +1062,7 @@ announce those types to the message compiler. You also have to make sure
 that your header file gets included into the generated \ttt{\_m.h} file
 so that the C++ compiler can compile it.
 
-Suppose you have an \fname{IPAddress} structure, defined in an \ttt{ipaddress.h}
+Suppose you have an \ffunc{IPAddress} structure, defined in an \ttt{ipaddress.h}
 file:
 
 \begin{verbatim}
@@ -1072,7 +1072,7 @@ struct IPAddress {
 };
 \end{verbatim}
 
-To be able to use \fname{IPAddress} in a message definition, the message
+To be able to use \ffunc{IPAddress} in a message definition, the message
 file (say \ttt{foopacket.msg}) should contain the following lines:
 
 \begin{Verbatim}[commandchars=\\\{\}]
@@ -1083,36 +1083,36 @@ file (say \ttt{foopacket.msg}) should contain the following lines:
 \tbf{struct} IPAddress;
 \end{Verbatim}
 
-The effect of the first three lines is simply that the \fname{\#include}
+The effect of the first three lines is simply that the \ffunc{\#include}
 statement will be copied into the generated \ttt{foopacket\_m.h}
-file to let the C++ compiler know about the \fname{IPAddress} class.
+file to let the C++ compiler know about the \ffunc{IPAddress} class.
 The message compiler itself will not try to make sense of the
 text in the body of the \ttt{cplusplus \{\{ ... \}\}} directive.
 
 The next line, \ttt{struct IPAddress}, tells the message compiler that
-\fname{IPAddress} is a C++ struct. This information will (among others)
+\ffunc{IPAddress} is a C++ struct. This information will (among others)
 affect the generated code.
 
-Classes can be announced using the \fname{class} keyword:
+Classes can be announced using the \ffunc{class} keyword:
 
 \begin{Verbatim}[commandchars=\\\{\}]
 \tbf{class} cSubQueue;
 \end{Verbatim}
 
-The above syntax assumes that the class is derived from \fname{cOwnedObject}
-either directly or indirectly. If it is not, the \fname{noncobject}
+The above syntax assumes that the class is derived from \ffunc{cOwnedObject}
+either directly or indirectly. If it is not, the \ffunc{noncobject}
 keyword should be used:
 
 \begin{Verbatim}[commandchars=\\\{\}]
 \tbf{class} \tbf{noncobject} IPAddress;
 \end{Verbatim}
 
-The distinction between classes derived and not derived from \fname{cOwnedObject}
+The distinction between classes derived and not derived from \ffunc{cOwnedObject}
 is important because the generated code differs at places.
 The generated code is set up so that if you incidentally
-forget the \fname{noncobject} keyword (and thereby mislead the
+forget the \ffunc{noncobject} keyword (and thereby mislead the
 message compiler into thinking that your class is rooted in
-\fname{cOwnedObject} when in fact it is not), you'll get a C++ compiler
+\ffunc{cOwnedObject} when in fact it is not), you'll get a C++ compiler
 error in the generated header file.
 
 
@@ -1125,10 +1125,10 @@ error in the generated header file.
 Sometimes you need the generated code to do something
 more or do something differently than the version generated
 by the message compiler.
-For example, when setting a integer field named \fname{payloadLength},
+For example, when setting a integer field named \ffunc{payloadLength},
 you might also need to adjust the packet length. That is,
 the following default (generated) version of the
-\fname{setPayloadLength()} method is not suitable:
+\ffunc{setPayloadLength()} method is not suitable:
 
 \begin{verbatim}
 void FooPacket::setPayloadLength(int payloadLength)
@@ -1171,9 +1171,9 @@ message:
 \end{Verbatim}
 
 If you process the above code with the message compiler,
-the generated code will contain a \fname{FooPacket\_Base} class
-instead of \fname{FooPacket}. Then you would subclass
-\fname{FooPacket\_Base} to produce \fname{FooPacket},
+the generated code will contain a \ffunc{FooPacket\_Base} class
+instead of \ffunc{FooPacket}. Then you would subclass
+\ffunc{FooPacket\_Base} to produce \ffunc{FooPacket},
 while doing your customizations by redefining the necessary methods.
 
 \begin{verbatim}
@@ -1192,8 +1192,8 @@ class FooPacket_Base : public cMessage
 \end{verbatim}
 
 There is a minimum amount of code you have to write
-for \fname{FooPacket}, because not everything can be
-pre-generated as part of \fname{FooPacket\_Base}, e.g.
+for \ffunc{FooPacket}, because not everything can be
+pre-generated as part of \ffunc{FooPacket\_Base}, e.g.
 constructors cannot be inherited. This minimum
 code is the following (you'll find it the generated C++ header
 too, as a comment):
@@ -1212,8 +1212,8 @@ class FooPacket : public FooPacket_Base
 Register_Class(FooPacket);
 \end{verbatim}
 
-Note that it is important that you redefine \fname{dup()} and
-provide an assignment operator (\fname{operator=()}).
+Note that it is important that you redefine \ffunc{dup()} and
+provide an assignment operator (\ffunc{operator=()}).
 
 So, returning to our original example about payload length
 affecting packet length, the code you'd write is the following:
@@ -1247,7 +1247,7 @@ the way the value is stored inside the class,
 and still benefit from inspectability in Tkenv.
 
 For example, this is the situation when you want to store a bitfield
-in a single \fname{int} or \fname{short}, and still you want
+in a single \ffunc{int} or \ffunc{short}, and still you want
 to present bits as individual packet fields.
 It is also useful for implementing computed fields.
 
@@ -1261,7 +1261,7 @@ You can declare any field to be abstract with the following syntax:
 \};
 \end{Verbatim}
 
-For an \fname{abstract} field, the message compiler generates
+For an \ffunc{abstract} field, the message compiler generates
 no data member, and generated getter/setter methods will be pure
 virtual:
 
@@ -1530,10 +1530,10 @@ Several of the example simulations (Token Ring, Dyna, Hypercube)
 use message definitions. For example, in Dyna you'll find this:
 
 \begin{itemize}
- \item \ttt{dynapacket.msg} defines \fname{DynaPacket} and \fname{DynaDataPacket};
+ \item \ttt{dynapacket.msg} defines \ffunc{DynaPacket} and \ffunc{DynaDataPacket};
  \item \ttt{dynapacket\_m.h} and \ttt{dynapacket\_m.cc} are produced
    by the message subclassing compiler from it, and they contain
-   the generated \fname{DynaPacket} and \fname{DynaDataPacke}t
+   the generated \ffunc{DynaPacket} and \ffunc{DynaDataPacke}t
    C++ classes (plus code for Tkenv inspectors);
  \item other model files (\ttt{client.cc}, \ttt{server.cc}, ...)
    use the generated message classes
@@ -1549,7 +1549,7 @@ possible to inspect message contents in Tkenv.
 To illustrate why this is necessary, suppose you manually subclass
 \cclass{cMessage} to get a new message class. You could write the following:
   \footnote{Note that the code is only for illustration.
-  In real code, \fname{freq} and \fname{power} should be private members,
+  In real code, \ffunc{freq} and \ffunc{power} should be private members,
   and getter/setter methods should exist to access them.
   Also, the above class definition misses several member functions
   (constructor, assignment operator, etc.) that should be written.}
@@ -1576,7 +1576,7 @@ msg->power = 10.0;
 %% FIXME remove this section?
 
 You'll notice one drawback of this solution when you try to use
-Tkenv for debugging. While \fname{cMsgPar}-based message parameters can be viewed in
+Tkenv for debugging. While \ffunc{cMsgPar}-based message parameters can be viewed in
 message inspector windows, fields added via subclassing do not appear
 there. The reason is that Tkenv, being just another C++ library in your
 simulation program, doesn't know about your C++ instance variables.
@@ -1587,7 +1587,7 @@ like for example Java does.
 There is a solution however: one can supply Tkenv with missing ``reflection''
 information about the new class. Reflection info might take the form of
 a separate C++ class whose methods return information about the
-\fname{RadioMsg} fields. This descriptor class might look like this:
+\ffunc{RadioMsg} fields. This descriptor class might look like this:
 
 \begin{verbatim}
 class RadioMsgDescriptor : public Descriptor
@@ -1610,12 +1610,12 @@ class RadioMsgDescriptor : public Descriptor
 };
 \end{verbatim}
 
-Then you have to inform Tkenv that a \fname{RadioMsgDescriptor} exists and that it
-should be used whenever Tkenv finds messages of type \fname{RadioMsg} (as it is
-currently implemented, whenever the object's \fname{getClassName()} method returns
-\ttt{"RadioMsg"}). So when you inspect a \fname{RadioMsg} in your simulation, Tkenv
-can use \fname{RadioMsgDescriptor} to extract and display the values of
-the \fname{freq} and \fname{power} variables.
+Then you have to inform Tkenv that a \ffunc{RadioMsgDescriptor} exists and that it
+should be used whenever Tkenv finds messages of type \ffunc{RadioMsg} (as it is
+currently implemented, whenever the object's \ffunc{getClassName()} method returns
+\ttt{"RadioMsg"}). So when you inspect a \ffunc{RadioMsg} in your simulation, Tkenv
+can use \ffunc{RadioMsgDescriptor} to extract and display the values of
+the \ffunc{freq} and \ffunc{power} variables.
 
 The actual implementation is somewhat more complicated than this, but not
 much.

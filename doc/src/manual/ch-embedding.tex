@@ -20,7 +20,7 @@ The rectangles in the picture represent components:
     library\index{simulation!kernel}. Sim exists as a library you link
     your simulation program with.}
   \item{\textbf{Envir} is another library which contains all code
-    that is common to all user interfaces. \fname{main()} is also in Envir.
+    that is common to all user interfaces. \ffunc{main()} is also in Envir.
     Envir provides services like ini file handling for specific user interface
     implementations. Envir presents itself towards Sim and the executing model
     via the \ttt{ev} facade object, hiding all other user interface internals.
@@ -97,7 +97,7 @@ don't just want to change one or two aspects of the simulator
 a'la Cmdenv or Tkenv -- if so, see chapter \ref{cha:plugin-exts}.
 
 For the following discussion, we assume that you write the embedding
-program from scratch, i.e. starting from a \fname{main()} function.
+program from scratch, i.e. starting from a \ffunc{main()} function.
 
 \subsection{The main() function}
 
@@ -228,34 +228,34 @@ and \ttt{*cSimulation::getActiveSimulation()->getEnvir()}.
 \end{note}
 
 Then we set up the network in the simulation manager. The
-\ttt{sim->}\fname{setupNetwork()} method creates the system module and
+\ttt{sim->}\ffunc{setupNetwork()} method creates the system module and
 recursively all modules and their interconnections; module parameters are
 also read from the configuration (where needed) and assigned. If there is
 an error (e.g. module type not found), an exception will be thrown. The
 exception object is some kind of \cclass{std::exception}, usually a
 \cclass{cRuntimeError}.
 
-If network setup was successful, we call \ttt{sim->}\fname{startRun()}, one
-side effect of which is that the \fname{initialize()} methods of modules
+If network setup was successful, we call \ttt{sim->}\ffunc{startRun()}, one
+side effect of which is that the \ffunc{initialize()} methods of modules
 and channels get invoked. This step also results in an exception if
-something goes wrong in an \fname{initialize()}.
+something goes wrong in an \ffunc{initialize()}.
 
 The following lines actually run the simulation, by calling
-\ttt{sim->}\fname{selectNextModule()} and \ttt{sim->}\fname{doOneEvent()}
+\ttt{sim->}\ffunc{selectNextModule()} and \ttt{sim->}\ffunc{doOneEvent()}
 in an event loop, until the simulation time limit is reached or some
 exception occurs. Exceptions subclassed from \cclass{cTerminationException}
 signal the normal termination of the simulation; other exceptions signal
 various errors.
 
 If the simulation has completed successfully (\ttt{ok==true}), the code
-goes on to call the \fname{finish()} methods of modules and channels. Then,
-regardless of whether there was an error, \ttt{sim->}\fname{endRun()} has
+goes on to call the \ffunc{finish()} methods of modules and channels. Then,
+regardless of whether there was an error, \ttt{sim->}\ffunc{endRun()} has
 to be called, and the network is torn down with
-\ttt{sim->}\fname{deleteNetwork()}.
+\ttt{sim->}\ffunc{deleteNetwork()}.
 
 Finally, we deallocate the simulation manager object, but the active
 simulation manager is not allowed to be deleted, so we first deactivate it
-with \fname{setActiveSimulation(NULL)}.
+with \ffunc{setActiveSimulation(NULL)}.
 
 
 \subsection{Providing an environment object}
@@ -267,13 +267,13 @@ pure virtual methods, with either an empty body, or with a body that throws
 an \ttt{"unsupported method called"} exception. You can redefine methods
 to be more sophisticated later on, as you are progressing with the development.
 
-One method that you surely want to redefine is \fname{readParameter()}; that's
+One method that you surely want to redefine is \ffunc{readParameter()}; that's
 how module parameters get their values. For debugging purposes, you may also
-redefine \fname{sputn()} where module log messages are written.
+redefine \ffunc{sputn()} where module log messages are written.
 \cclass{cNullEnvir} only provides one random number generator, so your
 simulation model uses more than one, you also need to redefine the
-\fname{getNumRNGs()} and \fname{getRNG(k)} methods. To print or store
-simulation records, redefine \fname{recordScalar()}, \fname{recordStatistic()}
+\ffunc{getNumRNGs()} and \ffunc{getRNG(k)} methods. To print or store
+simulation records, redefine \ffunc{recordScalar()}, \ffunc{recordStatistic()}
 and/or the output vector related methods. Other \cclass{cEnvir} methods
 are invoked from the simulation kernel to inform the environment about
 messages being sent, events scheduled and cancelled, modules created and so on.
@@ -309,8 +309,8 @@ class CustomSimulationEnv : public cNullEnvir
 
 The configuration object needs to subclass from \cclass{cConfiguration}.
 \cclass{cConfiguration} also has several methods, but the typed ones
-(\fname{getAsBool()}, \fname{getAsInt()}, etc.) have default implementations
-that delegate to the much fewer string-based methods (\fname{getConfigValue()}, etc.).
+(\ffunc{getAsBool()}, \ffunc{getAsInt()}, etc.) have default implementations
+that delegate to the much fewer string-based methods (\ffunc{getConfigValue()}, etc.).
 
 It is fairly straightforward to implement a configuration class that
 emulates an empty ini file:
@@ -346,20 +346,20 @@ class EmptyConfig : public cConfiguration
 \subsection{Loading NED files}
 
 NED files can be loaded with any of the following static methods of
-\cclass{cSimulation}: \fname{loadNedSourceFolder()}, \fname{loadNedFile()},
-and \fname{loadNedText()}. The first one loads a whole subdirectory tree,
+\cclass{cSimulation}: \ffunc{loadNedSourceFolder()}, \ffunc{loadNedFile()},
+and \ffunc{loadNedText()}. The first one loads a whole subdirectory tree,
 the second one loads a single NED file, and the third takes a literal
 string containing NED code and parses that one.
 
 \begin{note}
-One use of \fname{loadNedText()} is to parse NED sources previously converted
+One use of \ffunc{loadNedText()} is to parse NED sources previously converted
 to C++ string constants and linked into the executable. This allows for
 creating executables that are self-contained, and do not need NED files
 to be distributed with them.
 \end{note}
 
 The above functions can be mixed as well, but after the last call,
-\fname{doneLoadingNedFiles()} must be invoked (it checks for unresolved
+\ffunc{doneLoadingNedFiles()} must be invoked (it checks for unresolved
 NED types).
 
 Loading NED files has global effect, and they cannot be unloaded.
@@ -373,39 +373,39 @@ remove the dependency on the \ttt{oppnedxml} library and the code in
 
 \begin{note}
 When the only purpose is to get rid of NED files as external dependency
-of the program, it is simpler to use \fname{loadNedText()} on NED files
+of the program, it is simpler to use \ffunc{loadNedText()} on NED files
 converted to C++ string constants instead.
 \end{note}
 
 The trick is to write \cclass{cModuleType} and \cclass{cChannelType} objects
 for your simple module, compound module and channel types, and register them
 manually. For example, \cclass{cModuleType} has pure virtual methods called
-\fname{createModuleObject()}, \fname{addParametersAndGatesTo(module)},
-\fname{setupGateVectors(module)}, \fname{buildInside(module)}, which you
-need to implement. The body of the \fname{buildInside()} method would
+\ffunc{createModuleObject()}, \ffunc{addParametersAndGatesTo(module)},
+\ffunc{setupGateVectors(module)}, \ffunc{buildInside(module)}, which you
+need to implement. The body of the \ffunc{buildInside()} method would
 be similar to C++ files generated by \fprog{nedtool} of {\opp} 3.x.
 
 
 \subsection{Assigning module parameters}
 
 As already mentioned, modules get values for their input parameters
-by calling the \fname{readParameter()} method of the environment object
+by calling the \ffunc{readParameter()} method of the environment object
 (\cclass{cEnvir}).
 
 \begin{note}
-\fname{readParameter()} is only called for parameters that have not
+\ffunc{readParameter()} is only called for parameters that have not
 been set to a fixed (i.e. non-\ttt{default}) value in the NED files.
 \end{note}
 
-The \fname{readParameter()} method should be written so that it can assign
+The \ffunc{readParameter()} method should be written so that it can assign
 the parameter. For doing so, it can recognize the parameter from its name
 (\ttt{par->getName()}), from its full path (\ttt{par->getFullPath()}),
 from the owner module's class (\ttt{par->getOwner()->getClassName()})
 or NED type name (\ttt{((cComponent *)par->getOwner())->getNedTypeName()}).
 Then it can set the parameter using one of the typed setter methods
-(\fname{setBoolValue()}, \fname{setLongValue()}, etc.), or set it
-to an expression provided in string form (\fname{parse()} method).
-It can also accept the default value if there is one (\fname{acceptDefault()}).
+(\ffunc{setBoolValue()}, \ffunc{setLongValue()}, etc.), or set it
+to an expression provided in string form (\ffunc{parse()} method).
+It can also accept the default value if there is one (\ffunc{acceptDefault()}).
 
 The following code is a straightforward example that answers parameter
 value requests from a pre-filled table.
@@ -440,8 +440,8 @@ simulation.
 Modules in the simulation are C++ objects. If you add the appropriate
 public getter methods to the module classes, you can call them from your
 main program to obtain statistics. Modules may be looked up with the
-\fname{getModuleByPath()} method of \cclass{cSimulation}, then cast to the
-specific module type via \fname{check\_and\_cast<>()} so that the getter
+\ffunc{getModuleByPath()} method of \cclass{cSimulation}, then cast to the
+specific module type via \ffunc{check\_and\_cast<>()} so that the getter
 methods can be invoked.
 
 \begin{verbatim}
@@ -458,8 +458,8 @@ if modules come from external projects.
 
 \subsubsection{Via \cclass{cEnvir} callbacks}
 
-A more general way is to catch \fname{recordScalar()} method calls in the
-simulation model. \cclass{cModule}'s \fname{recordScalar()} method
+A more general way is to catch \ffunc{recordScalar()} method calls in the
+simulation model. \cclass{cModule}'s \ffunc{recordScalar()} method
 delegates to the similar function in \cclass{cEnvir}. You may define the
 latter function such that it stores all recorded scalars (for example in an
 \ttt{std::map}), where the main program can find them later.
@@ -497,7 +497,7 @@ code modification in the main program.
 
 \subsection{The simulation loop}
 
-To run the simulation, the \fname{selectNextModule()} and \fname{doOneEvent}
+To run the simulation, the \ffunc{selectNextModule()} and \ffunc{doOneEvent}
 methods of \cclass{cSimulation} must be called in a loop:
 
 \begin{verbatim}
@@ -509,7 +509,7 @@ while (sim->getSimTime() < limit)
 \end{verbatim}
 
 It depends on the concrete scheduler class whether
-\fname{selectNextModule()} may return \ttt{NULL}. The default
+\ffunc{selectNextModule()} may return \ttt{NULL}. The default
 \cclass{cSequentialScheduler} never returns \ttt{NULL}.
 
 Execution may terminate in various ways. Runtime errors cause a
@@ -523,7 +523,7 @@ results reach a required accuracy. It is relatively straightforward to
 build in progress reporting and interactivity (start/stop) as well.
 
 Animation can be hooked up to the appropriate callback methods of
-\cclass{cEnvir}: \fname{beginSend()}, \fname{sendHop()}, \fname{endSend()},
+\cclass{cEnvir}: \ffunc{beginSend()}, \ffunc{sendHop()}, \ffunc{endSend()},
 and others.
 
 
@@ -531,7 +531,7 @@ and others.
 
 It is possible for several instances of \cclass{cSimulation} to coexist,
 and also to set up and simulate a network in each instance. However, this
-requires frequent use of \fname{cSimulation::set\-Active\-Simulation()}:
+requires frequent use of \ffunc{cSimulation::set\-Active\-Simulation()}:
 before invoking any \cclass{cSimulation} method or module method,
 the corresponding \cclass{cSimulation} instance needs to be designated
 as the active simulation manager. This is necessary because several models
@@ -568,7 +568,7 @@ kernel.
 
 The default event scheduler is \cclass{cSequentialScheduler}. To replace
 it with a different scheduler (e.g. \cclass{cRealTimeScheduler} or your
-own scheduler class), add a \fname{setScheduler()} call into \ttt{main()}:
+own scheduler class), add a \ffunc{setScheduler()} call into \ttt{main()}:
 
 \begin{verbatim}
 cScheduler *scheduler = new CustomScheduler();
@@ -576,7 +576,7 @@ simulation.setScheduler(scheduler);
 \end{verbatim}
 
 It is usually not a good idea to change schedulers in the middle of
-a simulation, so \fname{setScheduler()} may only be called when
+a simulation, so \ffunc{setScheduler()} may only be called when
 no network is set up.
 
 
@@ -592,12 +592,12 @@ against concurrent access.
 % probably do not want to keep the appearance of the simulation program, so
 % you do not want Cmdenv and Tkenv. You may or may not want to keep Envir.
 % You can keep Envir if its philosophy and the infrastructure it provides
-% (\ttt{omnetpp.ini}, certain command-line options etc.) fit into your
+% (\ffilename{omnetpp.ini}, certain command-line options etc.) fit into your
 % design. Then your application, the embedding program will take the place of
 % Cmdenv and Tkenv.
 %
 % If Envir does not fit your needs (for example, you want the model
-% parameters to come from a database not from \ttt{omnetpp.ini}), then you
+% parameters to come from a database not from \ffilename{omnetpp.ini}), then you
 % have to replace it. Your Envir replacement (the embedding application,
 % practically) must implement the \cclass{cEnvir} member functions from
 % \ttt{envir/cenvir.h}, but you have full control over the simulation.
@@ -651,10 +651,10 @@ against concurrent access.
 %   \item A portable coroutine package creates all coroutine stacks
 %      inside the main stack. It is based on Kofoed's solution\cite{Kofoed95}.
 %      It allocates stack by deep-deep recursions and then plays with
-%      \fname{setjmp()} and \fname{longjmp()} to switch from one to another.
+%      \ffunc{setjmp()} and \ffunc{longjmp()} to switch from one to another.
 %
-%   \item On Windows, the Fiber functions (\fname{CreateFiber()},
-%      \fname{SwitchToFiber()}, etc) are used, which are part of
+%   \item On Windows, the Fiber functions (\ffunc{CreateFiber()},
+%      \ffunc{SwitchToFiber()}, etc) are used, which are part of
 %      the standard Win32 API.
 % \end{itemize}
 %
@@ -799,7 +799,7 @@ against concurrent access.
 % {\raggedright List of available classes of which one can create
 % an instance.
 % Every \cclass{cClassRegister} object is a factory for objects
-% of a specific class. The list is used by the \fname{createOne()} function:
+% of a specific class. The list is used by the \ffunc{createOne()} function:
 % it can create an object of any class, given the class name as a string.
 % (E.g. the statement \ttt{ptr = createOne("cArray")} creates a \ttt{cArray} object.)
 % To enable a class to work with \ttt{createOne()}, one has to register it using the
@@ -830,9 +830,9 @@ against concurrent access.
 %
 % \subsection{The main() function}
 %
-% The \fname{main()} function of {\opp} simply sets up the user
+% The \ffunc{main()} function of {\opp} simply sets up the user
 % interface and runs it. Actual simulation is done in
-% \fname{cEnvir::run()} (see later).
+% \ffunc{cEnvir::run()} (see later).
 %
 %
 % \subsection{The cEnvir interface}

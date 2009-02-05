@@ -18,7 +18,7 @@ The following plug-in interfaces are supported:
      allows for implementing real-time, hardware-in-the-loop, distributed
      and distributed parallel simulation.}
    \item{\cclass{cConfigurationEx}. Configuration provider plug-in.
-     This plug-in interface lets you replace \ttt{omnetpp.ini}
+     This plug-in interface lets you replace \ffilename{omnetpp.ini}
      with some other implementation, for example a database.}
    \item{\cclass{cOutputScalarManager}. It handles recording the scalar output data.
      The default output scalar manager is \cclass{cFileOutputScalarManager},
@@ -46,7 +46,7 @@ To actually implement and select a plug-in for use:
      executable. IMPORTANT: make sure the executable actually contains
      the code of your class! Over-optimizing linkers (esp. on Unix)
      tend to leave out code to which there seem to be no external reference.
-   \item Add an entry to \ttt{omnetpp.ini} to tell Envir use your class
+   \item Add an entry to \ffilename{omnetpp.ini} to tell Envir use your class
      instead of the default one. For RNGs, this setting is \ttt{rng-class}
      in the \ttt{[General]} section.
 \end{enumerate}
@@ -290,7 +290,7 @@ mistyped option names and other errors.
 
 \subsection{Reading values from the configuration}
 
-The configuration is accessible via the \fname{getConfig()} method of \cclass{cEnvir}.
+The configuration is accessible via the \ffunc{getConfig()} method of \cclass{cEnvir}.
 It returns a pointer to the configuration object (\cclass{cConfiguration}):
 
 \begin{verbatim}
@@ -357,11 +357,11 @@ class FooEnv : public EnvirBase
 Register_OmnetApp("FooEnv", FooEnv, 30, "an experimental user interface");
 \end{verbatim}
 
-The \fname{envirbase.h} header comes from the \ttt{src/envir} directory,
+The \ffilename{envirbase.h} header comes from the \ttt{src/envir} directory,
 so it is necessary to add it to the include path (\ttt{-I}).
 
 The arguments to \fmac{Register\_OmnetApp()} include the user interface name
-(for use with the \ttt{-u} and \ttt{user-interface=} options),
+(for use with the \ttt{-u} and \fconfig{user-interface} options),
 the C++ class that implements it, a weight for default user interface selection
 (if \ttt{-u} is missing, the user interface with the largest weight will get
 activated), and a description string (for help and other purposes).

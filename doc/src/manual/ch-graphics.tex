@@ -48,7 +48,7 @@ The following NED sample shows where to place display strings in the code:
 simple Queue
 {
     parameters:
-        @display("i=block/queue"); 
+        @display("i=block/queue");
     ...
 }
 
@@ -160,7 +160,7 @@ The following example colorizes the \ttt{block/source} icon, 20\% red
 If you want to show state information about your module, you can use the \ttt{i2} tag to
 add a small status icon to your main icon. This icon is displayed in the upper right corner
 of your main icon. In most cases the \ttt{i2} tag is specified at runtime using
-the \fname{setDisplayString()} method, so the icon can be changed dynamically based on the
+the \ffunc{setDisplayString()} method, so the icon can be changed dynamically based on the
 module's internal state.
 \begin{verbatim}
 @display("i=block/queue;i2=status/busy")
@@ -202,7 +202,7 @@ You can specify the ratio between 1 pixel and 1 unit with the \ttt{bgs} tag.
 
 The \ttt{p} tag allows the automatic arrangement of module vectors. They can be
 arranged in a row, a column, a matrix or a ring or you may specify their positions
-later at runtime using the \fname{setDisplayString()} method. The rest of the arguments
+later at runtime using the \ffunc{setDisplayString()} method. The rest of the arguments
 in the \ttt{p} tag depends on the layout type:
 
 \begin{itemize}
@@ -253,7 +253,7 @@ Sometimes you want to annotate your modules with additional information
 to make your model more transparent. One special case is when you want to
 show the length of a queue (\cclass{cQueue}) embedded somewhere in a module.
 In the following example the Server simple module contains a \cclass{cQueue} object,
-which was named by the \fname{queue.setName("procqueue")} method.
+which was named by the \ffunc{queue.setName("procqueue")} method.
 If we specify \ttt{q=procqueue} in the display string, Tkenv will descend into
 the module (several levels deep if needed) and look for a queue object
 named "procqueue". It will display the length of the queue object along the module.
@@ -281,7 +281,7 @@ them module with the mouse.
 
 \begin{note}
   Generally it makes no sense to assign static texts in the NED file. Usually the
-  \ttt{t} and \ttt{tt} tags are used at runtime with the \fname{setDisplayString()}
+  \ttt{t} and \ttt{tt} tags are used at runtime with the \ffunc{setDisplayString()}
   method.
 \end{note}
 
@@ -305,7 +305,7 @@ Tkenv. They mostly deal with the module background.
 
 In some cases it is required that the module's physical position should be modeled
 also in your model. In this case you would set the submodule display strings with
-the \fname{setDisplayString()} method at run time, but it would be also nice to
+the \ffunc{setDisplayString()} method at run time, but it would be also nice to
 customize the area in what the modules are moving. It is possible to manipulate
 what a module's background looks like or whether we can use measurement units instead
 of pixels to set the position of the modules. The following example demonstrates the use
@@ -313,8 +313,8 @@ of module background tags. The coordinates are given in km (SI unit).
 The \ttt{bgs=$pixelsperunit$,$unit$} specifies pixel/unit ratio, i.e. 1km is 0.075 pixel on the screen.
 The whole area is 6000x4500km (\ttt{bgb=}) and the map of Europe is used as a
 background and stretched to fill the module background.
-A light grey grid is drawn with a 1000km distance between major ticks, 
-and 2 minor ticks per major tick (\ttt{bgg=tickdistance,minorpermajorticks,color}). 
+A light grey grid is drawn with a 1000km distance between major ticks,
+and 2 minor ticks per major tick (\ttt{bgg=tickdistance,minorpermajorticks,color}).
 See Figure \ref{fig:graphics-bgtags}.
 
 \begin{verbatim}
@@ -379,7 +379,7 @@ dependent coloring can also be turned off there.
 
 \subsubsection{Specifying message display strings}
 Message objects do not store a display string by default, but you can redefine
-the \cclass{cMessage}'s \fname{getDisplayString()} method and make it return
+the \cclass{cMessage}'s \ffunc{getDisplayString()} method and make it return
 one.
 
 Example of using an icon to represent a message:
@@ -390,9 +390,9 @@ const char *CustomPacket::getDisplayString() const
 }
 \end{verbatim}
 
-Or better: If you add the field \fname{displayString} to your message
+Or better: If you add the field \ffunc{displayString} to your message
 definition (.msg file) the message compiler will automatically generate
-the \fname{set/getDisplayString} methods for you:
+the \ffunc{set/getDisplayString} methods for you:
 
 \begin{verbatim}
 message Job
@@ -466,7 +466,7 @@ as background color.
 
 In message display strings, \ttt{kind} can also be used as a special color name.
 It will map to a color depending on the message kind.
-(See the \fname{getKind()} method of \cclass{cMessage}.)
+(See the \ffunc{getKind()} method of \cclass{cMessage}.)
 
 \subsection{Icon colorization}
 
@@ -519,7 +519,7 @@ export OMNETPP_IMAGE_PATH="/home/you/images;./images"
 to \ttt{~/.bashrc} or \ttt{~/.bash\_profile} will do; on Windows, environment variables
 can be set via the \textit{My Computer --> Properties} dialog.
 
-You can extend the image path from \ttt{omnetpp.ini} with the
+You can extend the image path from \ffilename{omnetpp.ini} with the
 \ttt{tkenv-image-path} option, which gets prepended to the environment
 variable's value.
 
@@ -620,7 +620,7 @@ channels, modules and gates. \cclass{cDisplayString} also lets you
 manipulate the string.
 
 To get a pointer to the \cclass{cDisplayString} object, you can call
-the components's \fname{getDisplayString()} method:
+the components's \ffunc{getDisplayString()} method:
 
 \begin{verbatim}
 // Setting a module's position, icon and status icon:
@@ -641,9 +641,9 @@ dispStr->parse("ls=red");
 
 \begin{note}
 In {\opp} 3.x, to manipulate the appearance of a compound module you had to use
-the \fname{backgroundDisplayString()} method. This method is no longer 
-supported in {\opp} 4.0, because there is no separate background display string. 
-Use the \fname{getDisplayString()} method instead with the background
+the \ffunc{backgroundDisplayString()} method. This method is no longer
+supported in {\opp} 4.0, because there is no separate background display string.
+Use the \ffunc{getDisplayString()} method instead with the background
 specific tags, i.e. those starting with \ttt{bg}.
 \end{note}
 
@@ -681,7 +681,7 @@ ev << dispStr->str();  // result: "x=joe,,jim;a=1,2;p=beta,,3"
 
 Modules can let the user know about important events (such as a node
 going down or coming up) by displaying a bubble with a short message
-("Going down", "Coming up", etc.) This is done by the \fname{bubble()} method
+("Going down", "Coming up", etc.) This is done by the \ffunc{bubble()} method
 of \cclass{cComponent}. The method takes the string to be displayed
 as a \ttt{const char *} pointer.
 
