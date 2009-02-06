@@ -1036,10 +1036,10 @@ module BinaryTree {
 \section{Submodules}
 \label{sec:ch-ned-lang:submodules}
 
-Modules a compound module consist of are called its submodules.
+Modules that a compound module is composed of are called its submodules.
 A submodule has a name, and it is an instance of a compound or simple
 module type. In the NED definition of a submodule, this module type
-may be explicitly written, but, as we'll see later, it is also possible
+may be given explicitly, but, as we'll see later, it is also possible
 to specify the type with a string expression (see section
 \ref{sec:ch-ned-lang:submodule-like}.)
 
@@ -1128,6 +1128,8 @@ parent module, or inside compound submodules.
 Input and output gates are connected with a normal arrow, and inout gates
 with a double-headed arrow ``\ttt{<-{}->}''. To connect the two gates
 with a channel, use two arrows and put the channel specification in between.
+The same syntax is used to add properties such as \ttt{@display} to the
+connection.
 
 Some examples have already been shown in the Warmup section
 (\ref{sec:ch-ned-lang:warmup}); let's see some more.
@@ -1137,6 +1139,33 @@ XXX examples
 XXX explain \$i / \$o
 
 XXX explain ++
+
+Gates are specified as \textit{modulespec.gatespec} (to connect a submodule),
+or as \textit{gatespec} (to connect the compound module). \textit{modulespec}
+is either a submodule name (for scalar submodules), or a submodule name plus
+an index in square brackets (for submodule vectors). For scalar gates,
+\textit{gatespec} is the gate name; for gate vectors it is either the gate name
+plus an index in square brackets, or \textit{gatename}\ttt{++}.
+
+The \textit{gatename}\ttt{++} notation causes the first unconnected gate index
+to be used. If all gates of the given gate vector are connected, the behavior
+is different for submodules and for the enclosing compound module.
+For submodules, the gate vector expands by one. For a compound module,
+after the last gate is connected, \ttt{++} will stop with on error.
+
+\begin{note}
+    Why is it not possible to expand a gate vector of the compound
+    module? The model structure is built in top-down order, so new gates
+    would be left unconnected on the outside, as there is no way in NED to
+    "go back" and connect them afterwards.
+\end{note}
+
+When the \ttt{++} operator is used with \ttt{\$i} or \ttt{\$o}
+(e.g. \ttt{g\$i++} or \ttt{g\$o++}, see later), it will actually add
+a gate pair (input+output) to maintain equal gate size for the two
+directions.
+
+XXX examples
 
 
 \subsubsection{Channel specification}
