@@ -75,7 +75,7 @@
 <!-- ***************************************************  -->
 
 <!--  Specifies the default point size for body text. The body font size is specified in two parameters (body.font.master and body.font.size) so that math can be performed on the font size by XSLT. -->
-<xsl:param name="body.font.master">12</xsl:param>
+<xsl:param name="body.font.master">10</xsl:param>
 <xsl:param name="body.font.family">Bookman</xsl:param>
 <xsl:param name="title.font.family">Bookman</xsl:param>
 
