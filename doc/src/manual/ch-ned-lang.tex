@@ -98,7 +98,6 @@ The nodes are routers themselves as well. We assume that the application
 uses datagram-based communication, so that we can leave out the
 transport layer from the model.
 
-%% XXX keep the example simple!
 
 \subsection{The network}
 \label{sec:ch-ned-lang:warmup:network}
@@ -110,7 +109,6 @@ Let the network topology be as in Figure \ref{fig:ned-routing-topology}.
 
 \begin{figure}[htbp]
   \centering
-  %% XXX \includegraphics[scale=0.6]{figures/ned-net6-topology}
   \includegraphics[scale=0.6]{figures/ned-routing-network}
   \caption{The network}
   \label{fig:ned-routing-topology}
@@ -664,7 +662,11 @@ going to be read by other parts of the simulation model.
 \end{itemize}
 
 \begin{note}
-    XXX "deliver on first bit": this can be specified in C++
+    There is no channel parameter that would decide whether the channel
+    delivers the message object to the destination module at the end or
+    at the start of the reception; that is decided by the C++ code
+    of the target simple module. See the \ffunc{setDeliverOn\-Reception\-Start()}
+    method of \cclass{cGate}.
 \end{note}
 
 The following example shows how to create a new channel type by
@@ -731,7 +733,7 @@ Parameters can get their value from NED files or from the configuration
 (\ffilename{omnetpp.ini}). A default value can also be given (\ttt{default(}...\ttt{)}),
 which gets used if the parameter is not assigned otherwise.
 
-Let use see an example before we go into details:
+Let us see an example before we go into details:
 
 \begin{ned}
 simple App
@@ -769,8 +771,6 @@ To better understand \fkeyword{volatile}, let's suppose we have an
 \ttt{ActiveQueue} simple module that has a \ttt{volatile double} parameter
 named \ttt{serviceTime}.
 
-XXX ??? random serviceTime altalaban hulyeseg, maradjunk az iatime-nel
-
 The queue module's C++ implementation would re-read the \ttt{serviceTime}
 parameter at runtime for every job serviced; so if \ttt{serviceTime} is
 assigned an expression like \ttt{uniform(0.5s, 1.5s)}, every job would have
@@ -792,19 +792,37 @@ the parameter can be used a source of random numbers.
 \subsubsection{Units}
 
 One can declare a parameter to have an associated unit of measurement,
-by adding the \ttt{@unit} property.
+by adding the \ttt{@unit} property. An example:
 
-The \ttt{serviceTime} parameter is decorated with \ttt{@unit(s)}. This means
+\begin{ned}
+simple App
+{
+    parameters:
+        volatile double sendIaTime @unit(s) = default(exponential(1s));
+        volatile int packetLength @unit(byte) = default(4KB);
+    ...
+}
+\end{ned}
+
+The \ttt{sendIaTime} parameter is decorated with \ttt{@unit(s)}. This means
 that the value must be specified in either seconds, or in a measurement unit {\opp}
 can convert to seconds, like milliseconds or hours; dimensionless numbers
-will not be accepted. The {\opp} runtime does a full and rigorous unit check on
-parameters to ensure ``unit safety'' of models.
+will not be accepted. The \ttt{packetLength} parameter, which has the unit
+\ttt{byte}, accepts values in \ttt{KB}, \ttt{kilobyte}, \ttt{MB}, etc.
 
-XXX example
+\begin{note}
+    The list of units accepted by {\opp} is listed in the Appendix, see
+    \ref{ch-ned-ref:sec:units}. Unknown units (\ttt{bogomips}, etc.)
+    can also be used, but there are no conversions for them,
+    i.e. decimal prefixes will not be recognized.
+\end{note}
 
-XXX @unit cannot be overridden in subclasses or in a submodule declaration
+The {\opp} runtime does a full and rigorous unit check on
+parameters to ensure ``unit safety'' of models. Constants should
+always include the measurement unit.
 
-XXX see \_\_SCRATCH for more....
+The \ttt{@unit} property of a parameter cannot be added or overridden
+in subclasses or in submodule declarations.
 
 
 \subsubsection{XML parameters}
@@ -830,26 +848,48 @@ to a specific XML file (or to an element inside an XML file) via the
 \ttt{xmldoc()} operator. You can assign \ttt{xml} parameters both from NED
 and from \ffilename{omnetpp.ini}.
 
-XXX add a complete example!
+The following example declares an \ttt{xml} parameter, and assigns an
+XML file to it:
 
 \begin{ned}
-simple TrafficGenerator {
+simple TrafGen {
     parameters:
         xml profile;
     gates:
         output out;
 }
 
-module TrafficGenerator {
-    XXX several submods, and assign!
-    parameters:
-        xml profile;
-    gates:
-        output out;
+module Node {
+    submodules:
+        trafGen1 : TrafGen {
+            profile = xmldoc("data.xml");
+        }
+        ...
 }
 \end{ned}
 
-XXX example 2, with xpath!
+It is also possible to assign an XML element within a file to the parameter:
+
+\begin{ned}
+module Node {
+    submodules:
+        trafGen1 : TrafGen {
+            profile = xmldoc("all.xml", "profile[@id='gen1']");
+        }
+        trafGen2 : TrafGen {
+            profile = xmldoc("all.xml", "profile[@id='gen2']");
+        }
+}
+\end{ned}
+
+\begin{filelisting}
+<?xml>
+XXX example
+\end{filelisting}
+
+XXX other xmldoc syntax (=PARENTMODULEINDEX etc)
+
+
 
 \section{Gates}
 \label{sec:ch-ned-lang:gates}
@@ -1109,7 +1149,7 @@ multiple connections easily.
 
 Example...
 
-Let use see more connection examples.
+Let us see more connection examples.
 
 \subsubsection{Chain}
 
