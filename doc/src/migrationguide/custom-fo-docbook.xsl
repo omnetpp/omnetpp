@@ -86,8 +86,9 @@
 <!-- ***************************************************  -->
 
 <!--  Specifies the default point size for body text. The body font size is specified in two parameters (body.font.master and body.font.size) so that math can be performed on the font size by XSLT. -->
-<xsl:param name="body.font.master">12</xsl:param>
-
+<xsl:param name="body.font.master">10</xsl:param>
+<xsl:param name="body.font.family">Bookman</xsl:param>
+<xsl:param name="title.font.family">Bookman</xsl:param>
 
 <!-- Select the paper type. The paper type is a convenient way to specify the paper size. The list of known paper sizes includes USletter and most of the A, B, and C sizes. See page.width.portrait, for example.  -->
 <xsl:param name="paper.type">A4</xsl:param>

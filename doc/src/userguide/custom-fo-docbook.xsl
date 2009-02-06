@@ -166,11 +166,11 @@
 <!-- ***************  Figure, table, and other titles  *********************  -->
 <!-- ***************************************************  -->
 <xsl:param name="formal.title.placement">
-figure before
-example before
-equation before
-table before
-procedure before
+figure after
+example after
+equation after
+table after
+procedure after
 </xsl:param>
 
 </xsl:stylesheet>

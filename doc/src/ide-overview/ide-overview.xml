@@ -227,7 +227,7 @@
       the user browse them.  Results can be sorted and filtered. Simple filtering is possible with combo
       boxes, or when that's not enough, the user can write arbitrarily complex filters using a generic pattern
       matching expression language. Selected or filtered data can be immediately plotted, or remembered in
-      named
+      named datasets
       <emphasis> for further processing</emphasis>
       .
     </para>

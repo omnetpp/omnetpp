@@ -31,7 +31,7 @@ pdf:
 	xsltproc --xinclude --output tmp.xml --stringparam output pdf trans.xsl tmp0.xml
 	perl -pe "s!\@DOCBOOK_STYLESHEET\@!file:///$(DOCBOOK)/fo/docbook.xsl!g" custom-fo-docbook.xsl >custom-fo-docbook-tmp.xsl
 	xsltproc  --output tmp.fo custom-fo-docbook-tmp.xsl tmp.xml
-	$(FOP) -fo tmp.fo -pdf migration.pdf
+	$(FOP) -fo tmp.fo -c ../fop.xconf -pdf migration.pdf
 	rm -f tmp.fo tmp.xml tmp0.xml
 	rm -f custom-fo-docbook-tmp.xsl
 	cp migration.pdf ../..
