@@ -748,7 +748,31 @@ simple App
 }
 \end{ned}
 
+XXX explain the example
+
+
 \subsubsection{Values}
+
+Parameters can get values from NED code, from the configuration (ini files,
+see FIXME), or interactively from the user. It is also possible to give
+them a default value (see \ttt{default(-1)} in the example), which gets
+used if the parameter is not assigned at all in the configuration, or it is
+explicitly declared to use the default (\ttt{=default} syntax).
+
+\begin{note}
+    How do you decide whether to assign a parameter from NED or from an ini
+    file? The point of ini files is a cleaner separation of the \textit{model}
+    and \textit{experiments}. NED files (together with C++ code) are considered
+    to be part of the model, and to be more or less constant. Ini files, on
+    the other hand, are for experimenting with the model, by running it
+    several times with different parameters. Thus, parameters that are expected
+    to change (or make sense to be changed) during experimentation should be
+    put into ini files.
+\end{note}
+
+Parameter values may be expressions. The syntax and operators are similar
+to C.
+
 
 may be assigned in submodules
 
@@ -757,6 +781,7 @@ via inheritance  (examples!!!)
 in the configuration
 
 C-like expression etc
+
 
 \subsubsection{volatile}
 
@@ -798,17 +823,17 @@ by adding the \ttt{@unit} property. An example:
 simple App
 {
     parameters:
-        volatile double sendIaTime @unit(s) = default(exponential(1s));
+        volatile double sendIaTime @unit(s) = default(exponential(350ms));
         volatile int packetLength @unit(byte) = default(4KB);
     ...
 }
 \end{ned}
 
-The \ttt{sendIaTime} parameter is decorated with \ttt{@unit(s)}. This means
-that the value must be specified in either seconds, or in a measurement unit {\opp}
-can convert to seconds, like milliseconds or hours; dimensionless numbers
-will not be accepted. The \ttt{packetLength} parameter, which has the unit
-\ttt{byte}, accepts values in \ttt{KB}, \ttt{kilobyte}, \ttt{MB}, etc.
+The \ttt{@unit(s)} and \ttt{@unit(byte)} bits declare the measurement unit
+for the parameter. Values assigned to parameters must have the same or
+compatible unit, i.e. \ttt{@unit(s)} accepts milliseconds, nanoseconds,
+minutes, hours, etc., and \ttt{@unit(byte)} accepts kilobytes, megabytes,
+etc. as well.
 
 \begin{note}
     The list of units accepted by {\opp} is listed in the Appendix, see
