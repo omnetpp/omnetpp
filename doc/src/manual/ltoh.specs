@@ -158,11 +158,11 @@ htmlfile_spec := $BASE.htm
 :b/e	:\begin{equation}:<blockquote>:</blockquote>:
 :b/e	:\begin{sloppypar}:<p>:</p>:
 :b/e	:\begin{thebibliography}(\{.*?\})?:<H1>References</H1>::
-:b/e	:\begin{note}:<ul><b>NOTE</b><br>:</ul>:
-:b/e	:\begin{warning}:<ul><b>WARNING</b><br>:</ul>:
-:b/e	:\begin{caution}:<ul><b>CAUTION</b><br>:</ul>:
-:b/e	:\begin{rationale}:<ul><b>Rationale</b><br>:</ul>:
-:b/e	:\begin{important}:<ul><b>IMPORTANT</b><br>:</ul>:
+:b/e	:\begin{note}:<ul class="note"><b>NOTE</b><br>:</ul>:
+:b/e	:\begin{warning}:<ul class="warning"><b>WARNING</b><br>:</ul>:
+:b/e	:\begin{caution}:<ul class="caution"><b>CAUTION</b><br>:</ul>:
+:b/e	:\begin{rationale}:<ul class="rationale"><b>Rationale</b><br>:</ul>:
+:b/e	:\begin{important}:<ul class="important"><b>IMPORTANT</b><br>:</ul>:
 #XXX Warning: the following names are now hardcoded into ltoh.pl! We need a "vb/e" category in ltoh, for "verbatim-like begin/end" where \,{,} needs to be left alone
 :b/e	:\begin{ned}(\[.*?\])?:<pre class="ned">:</pre>:
 :b/e	:\begin{msg}(\[.*?\])?:<pre class="msg">:</pre>:
@@ -170,6 +170,6 @@ htmlfile_spec := $BASE.htm
 :b/e	:\begin{inifile}(\[.*?\])?:<pre class="inifile">:</pre>:
 :b/e	:\begin{filelisting}(\[.*?\])?:<pre class="filelisting">:</pre>:
 :b/e	:\begin{commandline}(\[.*?\])?:<pre class="commandline">:</pre>:
-:b/e	:\begin{Verbatim}(\[.*?\])?:<pre>:</pre>:
+:b/e	:\begin{Verbatim}(\[.*?\])?:<pre class="verbatim">:</pre>:
 :b/e	:\begin{center}:<center>:</center>:
 
