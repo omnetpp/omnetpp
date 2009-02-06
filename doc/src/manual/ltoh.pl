@@ -592,10 +592,10 @@ sub do_comment_verbatim {
         $line =~ s/\\&/&amp;/xg;
         $line =~ s/ < /&lt;/xg;
         $line =~ s/ > /&gt;/xg;
-        if ($line =~ s:\\begin{verbatim}:<pre>: ) {
+        if ($line =~ s/\\begin{(verbatim|ned|msg|cpp|inifile|filelisting|commandline)}/<pre class="$1">/ ) {
             vec($orig_inh, $i, 1) = $true;      # inhibit further processing
             $inh = $true;
-        } elsif ($line =~ s:\\end{verbatim}:</pre>: ) {
+        } elsif ($line =~ s/\\end{(verbatim|ned|msg|cpp|inifile|filelisting|commandline)}/<\/pre>/ ) {
             vec($orig_inh, $i, 1) = $true;      # inhibit further processing
             $inh = $false;              # allow processing on next line
         } elsif ($inh == $false && $line =~ s:^([ \t]*%.*):<!-- $1 -->: ) {

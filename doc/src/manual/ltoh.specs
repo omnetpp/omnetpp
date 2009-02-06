@@ -163,6 +163,7 @@ htmlfile_spec := $BASE.htm
 :b/e	:\begin{caution}:<ul><b>CAUTION</b><br>:</ul>:
 :b/e	:\begin{rationale}:<ul><b>Rationale</b><br>:</ul>:
 :b/e	:\begin{important}:<ul><b>IMPORTANT</b><br>:</ul>:
+#XXX Warning: the following names are now hardcoded into ltoh.pl! We need a "vb/e" category in ltoh, for "verbatim-like begin/end" where \,{,} needs to be left alone
 :b/e	:\begin{ned}(\[.*?\])?:<pre class="ned">:</pre>:
 :b/e	:\begin{msg}(\[.*?\])?:<pre class="msg">:</pre>:
 :b/e	:\begin{cpp}(\[.*?\])?:<pre class="cpp">:</pre>:
