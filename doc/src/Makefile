@@ -6,7 +6,7 @@ DOXYGEN=doxygen
 #
 # Targets
 #
-all: apis do-tictoc-tutorial do-manual do-userguide do-migrationguide
+all: apis do-tictoc-tutorial do-manual do-userguide do-migrationguide do-ide-overview
 
 apis: api nedxml-api parsim-api
 
@@ -28,6 +28,9 @@ do-userguide:
 do-migrationguide:
 	cd migrationguide && $(MAKE)
 
+do-ide-overview:
+	cd ide-overview && $(MAKE)
+
 do-tictoc-tutorial:
 	cd tictoc-tutorial && $(MAKE)
 
@@ -39,5 +42,6 @@ clean:
 	cd manual && $(MAKE) clean
 	cd userguide && $(MAKE) clean
 	cd migrationguide && $(MAKE) clean
+	cd ide-overview && $(MAKE) clean
 	cd tictoc-tutorial && $(MAKE) clean
 

@@ -32,6 +32,9 @@ do-userguide:
 do-migrationguide:
 	cd migrationguide && $(MAKE)
 
+do-ide-overview:
+	cd ide-overview && $(MAKE)
+
 do-tictoc-tutorial:
 	cd tictoc-tutorial && $(MAKE) -f Makefile.vc
 
@@ -43,5 +46,6 @@ clean:
 	cd manual && $(MAKE) -f Makefile.vc clean
 	cd userguide && $(MAKE) -f Makefile.vc clean
 	cd migrationguide && $(MAKE) -f Makefile.vc clean
+	cd ide-overview && $(MAKE) -f Makefile.vc clean
 	cd tictoc-tutorial && $(MAKE) -f Makefile.vc clean
 
