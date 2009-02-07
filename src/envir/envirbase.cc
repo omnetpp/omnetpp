@@ -585,8 +585,13 @@ void EnvirBase::dumpComponentList(const char *category)
                 cObject *obj = table->get(i);
                 cNEDFunction *nf = dynamic_cast<cNEDFunction *>(obj);
                 const char *fcat = nf ? nf->getCategory() : "math";
+                const char *desc = nf ? nf->getDescription() : NULL;
                 if (fcat==category)
+                {
                     ev << "  " << obj->getFullName() << " : " << obj->info() << "\n";
+                    if (desc)
+                        ev << "    " << desc << "\n";
+                }
             }
         }
         ev << "\n";
