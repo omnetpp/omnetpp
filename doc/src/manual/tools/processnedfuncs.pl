@@ -1,5 +1,5 @@
 #
-# formats output of opp_run -h nedfunctions into latex
+# formats output of opp_run -h nedfunctions into latex, for appendix-ned-functions.tex
 #
 
 $txt = "";

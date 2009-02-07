@@ -24,33 +24,43 @@ following. The question mark (as in ``\ttt{rng?}'') marks optional arguments.
 
 \begin{description}
 \item[acos]: \ttt{double acos(double)} \\
+    Trigonometric function; see standard C function of the same name
 \item[asin]: \ttt{double asin(double)} \\
+    Trigonometric function; see standard C function of the same name
 \item[atan]: \ttt{double atan(double)} \\
+    Trigonometric function; see standard C function of the same name
 \item[atan2]: \ttt{double atan2(double, double)} \\
+    Trigonometric function; see standard C function of the same name
 \item[ceil]: \ttt{double ceil(double)} \\
+    Rounds down; see standard C function of the same name
 \item[cos]: \ttt{double cos(double)} \\
+    Trigonometric function; see standard C function of the same name
 \item[exp]: \ttt{double exp(double)} \\
+    Exponential; see standard C function of the same name
 \item[fabs]: \ttt{quantity fabs(quantity x)} \\
     Returns the absolute value of the quantity.
 \item[floor]: \ttt{double floor(double)} \\
+    Rounds up; see standard C function of the same name
 \item[fmod]: \ttt{quantity fmod(quantity x, quantity y)} \\
-    Returns x modulo y as real numbers; unit conversion takes place if needed.
-\item[genk\_exponential]: \ttt{double genk\_exponential(double, double)} \\
-\item[genk\_intuniform]: \ttt{double genk\_intuniform(double, double, double)} \\
-\item[genk\_normal]: \ttt{double genk\_normal(double, double, double)} \\
-\item[genk\_truncnormal]: \ttt{double genk\_truncnormal(double, double, double)} \\
-\item[genk\_uniform]: \ttt{double genk\_uniform(double, double, double)} \\
+    Returns the floating-point remainder of x/y; unit conversion takes place if needed.
 \item[hypot]: \ttt{double hypot(double, double)} \\
+    Length of the hypotenuse; see standard C function of the same name
 \item[log]: \ttt{double log(double)} \\
+    Natural logarithm; see standard C function of the same name
 \item[log10]: \ttt{double log10(double)} \\
+    Base-10 logarithm; see standard C function of the same name
 \item[max]: \ttt{quantity max(quantity a, quantity b)} \\
     Returns the greater one of the two quantities; unit conversion takes place if needed.
 \item[min]: \ttt{quantity min(quantity a, quantity b)} \\
     Returns the smaller one of the two quantities; unit conversion takes place if needed.
 \item[pow]: \ttt{double pow(double, double)} \\
+    Power; see standard C function of the same name
 \item[sin]: \ttt{double sin(double)} \\
+    Trigonometric function; see standard C function of the same name
 \item[sqrt]: \ttt{double sqrt(double)} \\
+    Square root; see standard C function of the same name
 \item[tan]: \ttt{double tan(double)} \\
+    Trigonometric function; see standard C function of the same name
 
 \end{description}
 
@@ -76,13 +86,13 @@ following. The question mark (as in ``\ttt{rng?}'') marks optional arguments.
 \item[cauchy]: \ttt{quantity cauchy(quantity a, quantity b, long rng?)} \\
     Returns a random number from the Cauchy distribution
 \item[chi\_square]: \ttt{double chi\_square(long k, long rng?)} \\
-    Returns a random number from the Chi\_square distribution
+    Returns a random number from the Chi-square distribution
 \item[erlang\_k]: \ttt{quantity erlang\_k(long k, quantity mean, long rng?)} \\
-    Returns a random number from the Erlang\_k distribution
+    Returns a random number from the Erlang distribution
 \item[exponential]: \ttt{quantity exponential(quantity mean, long rng?)} \\
     Returns a random number from the Exponential distribution
 \item[gamma\_d]: \ttt{quantity gamma\_d(double alpha, quantity theta, long rng?)} \\
-    Returns a random number from the Gamma\_d distribution
+    Returns a random number from the Gamma distribution
 \item[lognormal]: \ttt{double lognormal(double m, double w, long rng?)} \\
     Returns a random number from the Lognormal distribution
 \item[normal]: \ttt{quantity normal(quantity mean, quantity stddev, long rng?)} \\
@@ -94,7 +104,7 @@ following. The question mark (as in ``\ttt{rng?}'') marks optional arguments.
 \item[triang]: \ttt{quantity triang(quantity a, quantity b, quantity c, long rng?)} \\
     Returns a random number from the Triangular distribution
 \item[truncnormal]: \ttt{quantity truncnormal(quantity mean, quantity stddev, long rng?)} \\
-    Returns a random number from the Truncnormal distribution
+    Returns a random number from the Truncated Normal distribution
 \item[uniform]: \ttt{quantity uniform(quantity a, quantity b, long rng?)} \\
     Returns a random number from the Uniform distribution
 \item[weibull]: \ttt{quantity weibull(quantity a, quantity b, long rng?)} \\

@@ -272,7 +272,7 @@ and two gates named \ttt{out} and \ttt{in} for sending and receiving
 application packets.
 
 The argument of \ttt{@display()} is called a \textit{display string},
-and it defines the default rendering of the module in graphical environments;
+and it defines the rendering of the module in graphical environments;
 \ttt{"i=..."} defines the default icon.
 
 Generally, \ttt{@}-words like \ttt{@display} are called \textit{properties}
@@ -772,17 +772,44 @@ XXX example: module and inifile:  =value;  =default; =ask; =expression
     put into ini files.
 \end{note}
 
-Parameter values may be expressions. The syntax and operators are similar
-to C.
-
-
 may be assigned in submodules
 
 via inheritance  (examples!!!)
 
 in the configuration
 
-C-like expression etc
+
+\subsubsection{Parameter expressions}
+
+Parameter values may be given with expressions. NED language expressions
+have a C-like syntax, with some variations on operator names: binary and
+logical XOR are \ttt{\#} and \ttt{\#\#}, while \ttt{\^} has been reassigned
+to \textit{power-of} instead. The \ttt{+} operator does string
+concatenation as well as numeric addition. Expressions can use several functions
+(\ttt{fabs()}, \ttt{sin()}, \ttt{toUpper()}, etc.).
+
+\begin{note}
+    The list of NED functions can be read in Appendix \ref{cha:ned-functions}.
+    The user can also extend NED with new functions; this feature is described
+    in XXX.
+\end{note}
+
+XXX also sources of random numbers
+
+Expressions may refer to module parameters, gate vector and module vector sizes
+(using the \fkeyword{sizeof} operator) and the index of the current module
+in a submodule vector (\fkeyword{index}).
+
+XXX note: fullPath() etc functions!
+
+A Expressions may refer to parameters of the compound module being defined,
+of the current module (with the \ttt{this.} prefix), and to parameters
+of already defined submodules, with the syntax \ttt{submodule.parametername}
+(or \ttt{submodule[index].parametername}).
+
+XXX example: address = address;  delay=this.distance/this.speed;
+
+XXX there are no parameter arrays, but... demonstrate the choose() function
 
 
 \subsubsection{volatile}
@@ -1047,12 +1074,45 @@ NED supports submodule arrays (vectors) as well. Submodule vector size,
 unlike gate vector size, must always be specified and cannot be left
 open as with gates.
 
-Syntactically, a submodule may have a curly brace block as body, where
-it is possible to assign parameters (see \ttt{address} in the example),
-set the size of gate vectors, and add/modify properties like the
-display string (\ttt{@display}).
+The basic syntax of submodules is shown below:
 
-XXX kettevenni a kovetkezo peldat:
+\begin{ned}
+module Node
+{
+    submodules:
+        routing: Routing;   // a submodule
+        queue[sizeof(port)]: Queue;  // submodule vector
+        ...
+}
+\end{ned}
+
+A submodule vector may also be used to implement a conditional submodule,
+like in the example below:
+
+\begin{ned}
+module Host
+{
+    parameters:
+        bool withTCP = default(true);
+    submodules:
+        tcp[withTCP ? 1 : 0]: TCP;  // conditional submodule
+        ...
+    connections:
+        tcp[0].ipOut --> ip.tcpIn if withTCP;
+        tcp[0].ipIn <-- ip.tcpOut if withTCP;
+        ...
+}
+\end{ned}
+
+As already seen in previous code examples, a submodule may also have a
+curly brace block as body, where one can assign parameters, set the size of gate vectors, and add/modify
+properties like the display string (\ttt{@display}). It is not possible to
+add new parameters and gates.
+
+Display strings specified here will be merged with the display string
+from the type to get the effective display string. This is described
+in chapter \ref{cha:graphics}.
+
 \begin{ned}
 module Node
 {
@@ -1066,27 +1126,11 @@ module Node
                 in[sizeof(port)];  // set gate vector size
                 out[sizeof(port)];
         }
-
-        queue[sizeof(port)]: Queue;
-
+        queue[sizeof(port)]: Queue {
+            @display("t=queue id $id"); // modify display string
+            id = 1000+index;  // different "id" parameter for each element
+        }
     connections:
-        ...
-}
-\end{ned}
-
-A submodule vector may also be used to implement a conditional submodule:
-
-\begin{ned}
-module Host
-{
-    parameters:
-        bool withTCP = default(true);
-    submodules:
-        tcp[withTCP ? 1 : 0]: TCP;
-        ...
-    connections:
-        tcp[0].ipOut --> ip.tcpIn if withTCP;
-        tcp[0].ipIn <-- ip.tcpOut if withTCP;
         ...
 }
 \end{ned}
@@ -1104,14 +1148,9 @@ is the same as
       }
 \end{ned}
 
-Display strings specified here will be merged with the display string
-from the type to get the effective display string. This is described
-in chapter \ref{cha:graphics}.
-
 It is possible to add new submodules to an existing compound module via
-subclassing.
-
-XXX example.
+subclassing; this has been described in the section
+\ref{sec:ch-ned-lang:compound-modules}.
 
 
 
@@ -1137,6 +1176,12 @@ Some examples have already been shown in the Warmup section
 XXX examples
 
 XXX explain \$i / \$o
+
+It has been mentioned that an inout gate is basically an input and an
+output gate glued together. These sub-gates can also be addressed (and
+connected) individually if needed, as \ttt{port\$i} and \ttt{port\$o} (or
+for vector gates, as \ttt{port\$i[$k$]} and \ttt{port\$o[$k$]}).
+
 
 XXX explain ++
 
