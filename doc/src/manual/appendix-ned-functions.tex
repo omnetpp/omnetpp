@@ -1,89 +1,177 @@
 \appendixchapter{NED Functions}
 \label{cha:ned-functions}
 
-This appendix lists the functions that can be used in NED
-expressions and ini files:
+The functions that can be used in NED expressions and ini files are the
+following. The question mark (as in ``\ttt{rng?}'') marks optional arguments.
 
 %
-% generated with a simulation executable's "-h nedfunctions" option
+% generated with "opp_run -h nedfunctions" option and tools/processnedfuncs.pl
 %
 
-%TBD docu
+\subsubsection{Category "conversion":}
 
-\begin{verbatim}
-acos : (double) -> double
-ancestorIndex : (long) -> long
-asin : (double) -> double
-atan : (double) -> double
-atan2 : (double,double) -> double
-bernoulli : (double[,long]) -> long
-beta : (double,double[,long]) -> double
-binomial : (long,double[,long]) -> long
-cauchy : (quantity,quantity[,long]) -> quantity
-ceil : (double) -> double
-chi_square : (long[,long]) -> double
-choose : (long,string) -> string
-contains : (string,string) -> bool
-convertUnit : (quantity,string) -> quantity
-cos : (double) -> double
-double : (any) -> double
-dropUnit : (quantity) -> double
-endsWith : (string,string) -> bool
-erlang_k : (long,quantity[,long]) -> quantity
-exp : (double) -> double
-exponential : (quantity[,long]) -> quantity
-fabs : (quantity) -> quantity
-floor : (double) -> double
-fmod : (quantity,quantity) -> quantity
-fullName : () -> string
-fullPath : () -> string
-gamma_d : (double,quantity[,long]) -> quantity
-genk_exponential : (double,double) -> double
-genk_intuniform : (double,double,double) -> double
-genk_normal : (double,double,double) -> double
-genk_truncnormal : (double,double,double) -> double
-genk_uniform : (double,double,double) -> double
-geometric : (double[,long]) -> long
-hypot : (double,double) -> double
-indexOf : (string,string) -> long
-int : (any) -> long
-intuniform : (long,long[,long]) -> long
-length : (string) -> long
-log : (double) -> double
-log10 : (double) -> double
-lognormal : (double,double[,long]) -> double
-max : (quantity,quantity) -> quantity
-min : (quantity,quantity) -> quantity
-negbinomial : (long,double[,long]) -> long
-normal : (quantity,quantity[,long]) -> quantity
-parentIndex : () -> long
-pareto_shifted : (double,quantity,quantity[,long]) -> quantity
-poisson : (double[,long]) -> long
-pow : (double,double) -> double
-replace : (string,string,string[,long]) -> string
-replaceFirst : (string,string,string[,long]) -> string
-replaceUnit : (quantity,string) -> quantity
-sin : (double) -> double
-sqrt : (double) -> double
-startsWith : (string,string) -> bool
-string : (any) -> string
-student_t : (long[,long]) -> double
-substring : (string,long[,long]) -> string
-substringAfter : (string,string) -> string
-substringAfterLast : (string,string) -> string
-substringBefore : (string,string) -> string
-substringBeforeLast : (string,string) -> string
-tail : (string,long) -> string
-tan : (double) -> double
-toLower : (string) -> string
-toUpper : (string) -> string
-triang : (quantity,quantity,quantity[,long]) -> quantity
-trim : (string) -> string
-truncnormal : (quantity,quantity[,long]) -> quantity
-uniform : (quantity,quantity[,long]) -> quantity
-unitOf : (quantity) -> string
-weibull : (quantity,quantity[,long]) -> quantity
-\end{verbatim}
+\begin{description}
+\item[double]: \ttt{double double(any x)} \\
+    Converts x to double, and returns the result. A boolean argument becomes 0 or 1; a string is interpreted as number; an XML argument causes an error.
+\item[int]: \ttt{long int(any x)} \\
+    Converts x to long, and returns the result. A boolean argument becomes 0 or 1; a double is converted using floor(); a string is interpreted as number; an XML argument causes an error.
+\item[string]: \ttt{string string(any x)} \\
+    Converts x to string, and returns the result.
+
+\end{description}
+
+\subsubsection{Category "math":}
+
+\begin{description}
+\item[acos]: \ttt{double acos(double)} \\
+\item[asin]: \ttt{double asin(double)} \\
+\item[atan]: \ttt{double atan(double)} \\
+\item[atan2]: \ttt{double atan2(double, double)} \\
+\item[ceil]: \ttt{double ceil(double)} \\
+\item[cos]: \ttt{double cos(double)} \\
+\item[exp]: \ttt{double exp(double)} \\
+\item[fabs]: \ttt{quantity fabs(quantity x)} \\
+    Returns the absolute value of the quantity.
+\item[floor]: \ttt{double floor(double)} \\
+\item[fmod]: \ttt{quantity fmod(quantity x, quantity y)} \\
+    Returns x modulo y as real numbers; unit conversion takes place if needed.
+\item[genk\_exponential]: \ttt{double genk\_exponential(double, double)} \\
+\item[genk\_intuniform]: \ttt{double genk\_intuniform(double, double, double)} \\
+\item[genk\_normal]: \ttt{double genk\_normal(double, double, double)} \\
+\item[genk\_truncnormal]: \ttt{double genk\_truncnormal(double, double, double)} \\
+\item[genk\_uniform]: \ttt{double genk\_uniform(double, double, double)} \\
+\item[hypot]: \ttt{double hypot(double, double)} \\
+\item[log]: \ttt{double log(double)} \\
+\item[log10]: \ttt{double log10(double)} \\
+\item[max]: \ttt{quantity max(quantity a, quantity b)} \\
+    Returns the greater one of the two quantities; unit conversion takes place if needed.
+\item[min]: \ttt{quantity min(quantity a, quantity b)} \\
+    Returns the smaller one of the two quantities; unit conversion takes place if needed.
+\item[pow]: \ttt{double pow(double, double)} \\
+\item[sin]: \ttt{double sin(double)} \\
+\item[sqrt]: \ttt{double sqrt(double)} \\
+\item[tan]: \ttt{double tan(double)} \\
+
+\end{description}
+
+\subsubsection{Category "ned":}
+
+\begin{description}
+\item[ancestorIndex]: \ttt{long ancestorIndex(long numLevels)} \\
+    Returns the index of the ancestor module numLevels levels above the module or channel in context.
+\item[fullName]: \ttt{string fullName()} \\
+    Returns the full name of the module or channel in context.
+\item[fullPath]: \ttt{string fullPath()} \\
+    Returns the full path of the module or channel in context.
+\item[parentIndex]: \ttt{long parentIndex()} \\
+    Returns the index of the parent module, which has to be part of module vector.
+
+\end{description}
+
+\subsubsection{Category "random/continuous":}
+
+\begin{description}
+\item[beta]: \ttt{double beta(double alpha1, double alpha2, long rng?)} \\
+    Returns a random number from the Beta distribution
+\item[cauchy]: \ttt{quantity cauchy(quantity a, quantity b, long rng?)} \\
+    Returns a random number from the Cauchy distribution
+\item[chi\_square]: \ttt{double chi\_square(long k, long rng?)} \\
+    Returns a random number from the Chi\_square distribution
+\item[erlang\_k]: \ttt{quantity erlang\_k(long k, quantity mean, long rng?)} \\
+    Returns a random number from the Erlang\_k distribution
+\item[exponential]: \ttt{quantity exponential(quantity mean, long rng?)} \\
+    Returns a random number from the Exponential distribution
+\item[gamma\_d]: \ttt{quantity gamma\_d(double alpha, quantity theta, long rng?)} \\
+    Returns a random number from the Gamma\_d distribution
+\item[lognormal]: \ttt{double lognormal(double m, double w, long rng?)} \\
+    Returns a random number from the Lognormal distribution
+\item[normal]: \ttt{quantity normal(quantity mean, quantity stddev, long rng?)} \\
+    Returns a random number from the Normal distribution
+\item[pareto\_shifted]: \ttt{quantity pareto\_shifted(double a, quantity b, quantity c, long rng?)} \\
+    Returns a random number from the Pareto-shifted distribution
+\item[student\_t]: \ttt{double student\_t(long i, long rng?)} \\
+    Returns a random number from the Student-t distribution
+\item[triang]: \ttt{quantity triang(quantity a, quantity b, quantity c, long rng?)} \\
+    Returns a random number from the Triangular distribution
+\item[truncnormal]: \ttt{quantity truncnormal(quantity mean, quantity stddev, long rng?)} \\
+    Returns a random number from the Truncnormal distribution
+\item[uniform]: \ttt{quantity uniform(quantity a, quantity b, long rng?)} \\
+    Returns a random number from the Uniform distribution
+\item[weibull]: \ttt{quantity weibull(quantity a, quantity b, long rng?)} \\
+    Returns a random number from the Weibull distribution
+
+\end{description}
+
+\subsubsection{Category "random/discrete":}
+
+\begin{description}
+\item[bernoulli]: \ttt{long bernoulli(double p, long rng?)} \\
+    Returns a random number from the Bernoulli distribution
+\item[binomial]: \ttt{long binomial(long n, double p, long rng?)} \\
+    Returns a random number from the Binomial distribution
+\item[geometric]: \ttt{long geometric(double p, long rng?)} \\
+    Returns a random number from the Geometric distribution
+\item[intuniform]: \ttt{long intuniform(long a, long b, long rng?)} \\
+    Returns a random number from the Intuniform distribution
+\item[negbinomial]: \ttt{long negbinomial(long n, double p, long rng?)} \\
+    Returns a random number from the Negbinomial distribution
+\item[poisson]: \ttt{long poisson(double lambda, long rng?)} \\
+    Returns a random number from the Poisson distribution
+
+\end{description}
+
+\subsubsection{Category "strings":}
+
+\begin{description}
+\item[choose]: \ttt{string choose(long index, string list)} \\
+    Interprets list as a space-separated list, and returns the item at the given index. Negative and out-of-bounds indices cause an error.
+\item[contains]: \ttt{bool contains(string s, string substr)} \\
+    Returns true if string s contains substr as substring
+\item[endsWith]: \ttt{bool endsWith(string s, string substr)} \\
+    Returns true if s ends with the substring substr.
+\item[indexOf]: \ttt{long indexOf(string s, string substr)} \\
+    Returns the position of the first occurrence of substring substr in s, or -1 if s does not contain substr.
+\item[length]: \ttt{long length(string s)} \\
+    Returns the length of the string
+\item[replace]: \ttt{string replace(string s, string substr, string repl, long startPos?)} \\
+    Replaces all occurrences of substr in s with the string repl. If startPos is given, search begins from position startPos in s.
+\item[replaceFirst]: \ttt{string replaceFirst(string s, string substr, string repl, long startPos?)} \\
+    Replaces the first occurrence of substr in s with the string repl. If startPos is given, search begins from position startPos in s.
+\item[startsWith]: \ttt{bool startsWith(string s, string substr)} \\
+    Returns true if s begins with the substring substr.
+\item[substring]: \ttt{string substring(string s, long pos, long len?)} \\
+    Return the substring of s starting at the given position, either to the end of the string or maximum len characters
+\item[substringAfter]: \ttt{string substringAfter(string s, string substr)} \\
+    Returns the substring of s after the first occurrence of substr, or the empty string if s does not contain substr.
+\item[substringAfterLast]: \ttt{string substringAfterLast(string s, string substr)} \\
+    Returns the substring of s after the last occurrence of substr, or the empty string if s does not contain substr.
+\item[substringBefore]: \ttt{string substringBefore(string s, string substr)} \\
+    Returns the substring of s before the first occurrence of substr, or the empty string if s does not contain substr.
+\item[substringBeforeLast]: \ttt{string substringBeforeLast(string s, string substr)} \\
+    Returns the substring of s before the last occurrence of substr, or the empty string if s does not contain substr.
+\item[tail]: \ttt{string tail(string s, long len)} \\
+    Returns the last len character of s, or the full s if it is shorter than len characters.
+\item[toLower]: \ttt{string toLower(string s)} \\
+    Converts s to all lowercase, and returns the result.
+\item[toUpper]: \ttt{string toUpper(string s)} \\
+    Converts s to all uppercase, and returns the result.
+\item[trim]: \ttt{string trim(string s)} \\
+    Discards whitespace from the start and end of s, and returns the result.
+
+\end{description}
+
+\subsubsection{Category "units":}
+
+\begin{description}
+\item[convertUnit]: \ttt{quantity convertUnit(quantity x, string unit)} \\
+    Converts x to the given unit.
+\item[dropUnit]: \ttt{double dropUnit(quantity x)} \\
+    Removes the unit of measurement from quantity x.
+\item[replaceUnit]: \ttt{quantity replaceUnit(quantity x, string unit)} \\
+    Replaces the unit of x with the given unit.
+\item[unitOf]: \ttt{string unitOf(quantity x)} \\
+    Returns the unit of the given quantity.
+\end{description}
 
 %%% Local Variables:
 %%% mode: latex
