@@ -18,6 +18,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include <fstream>
+#include <set>
 
 #include "args.h"
 #include "envirbase.h"
@@ -37,6 +38,7 @@
 #include "fnamelisttokenizer.h"
 #include "chasher.h"
 #include "cconfigoption.h"
+#include "cnedfunction.h"
 #include "regmacros.h"
 #include "stringutil.h"
 #include "enumstr.h"
@@ -568,10 +570,24 @@ void EnvirBase::dumpComponentList(const char *category)
         ev << "Functions that can be used in NED expressions and in omnetpp.ini:\n";
         cRegistrationList *table = nedFunctions.getInstance();
         table->sort();
+        std::set<std::string> categories;
         for (int i=0; i<table->size(); i++)
         {
-            cObject *obj = table->get(i);
-            ev << "  " << obj->getFullName() << " : " << obj->info() << "\n";
+            cNEDFunction *nf = dynamic_cast<cNEDFunction *>(table->get(i));
+            categories.insert(nf ? nf->getCategory() : "math"); // merge cMathFunctions into "math" category
+        }
+        for (std::set<std::string>::iterator ci=categories.begin(); ci!=categories.end(); ++ci)
+        {
+            std::string category = (*ci);
+            ev << "\n Category \"" << category << "\":\n";
+            for (int i=0; i<table->size(); i++)
+            {
+                cObject *obj = table->get(i);
+                cNEDFunction *nf = dynamic_cast<cNEDFunction *>(obj);
+                const char *fcat = nf ? nf->getCategory() : "math";
+                if (fcat==category)
+                    ev << "  " << obj->getFullName() << " : " << obj->info() << "\n";
+            }
         }
         ev << "\n";
     }
