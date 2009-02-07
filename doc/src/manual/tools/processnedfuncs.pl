@@ -1,0 +1,16 @@
+#
+# formats output of opp_run -h nedfunctions into latex
+#
+
+$txt = "";
+while (<>) { chomp; s/\r$//; $txt .= $_ . "\n"; }
+
+$txt =~ s/_/\\_/sg;
+$txt =~ s/^ (Category.*)/\\end{description}\n\n\\subsubsection{$1}\n\n\\begin{description}/mg;
+$txt =~ s/^  ([^ :]+) *: *(.*)/\\item[$1]: \\ttt{$2} \\\\/mg;
+
+$txt =~ s/^.*?(\\subsubsection)/$1/s;
+$txt =~ s/End\.\s*//s;
+$txt =~ s/\s*$/\n\\end{description}\n/s;
+
+print $txt;
