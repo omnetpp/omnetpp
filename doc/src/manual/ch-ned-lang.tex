@@ -753,13 +753,73 @@ XXX explain the example
 
 \subsubsection{Values}
 
-Parameters can get values from NED code, from the configuration (ini files,
-see FIXME), or interactively from the user. It is also possible to give
-them a default value (see \ttt{default(-1)} in the example), which gets
-used if the parameter is not assigned at all in the configuration, or it is
-explicitly declared to use the default (\ttt{=default} syntax).
+Parameters may get their values from several places: from NED code, from
+the configuration (\ffilename{omnetpp.ini}), or even, interactively from the
+user.
 
-XXX example: module and inifile:  =value;  =default; =ask; =expression
+The following example shows how parameters of an \ttt{App} module (from the
+previous example) may be assigned when \ttt{App} gets used as a submodule:
+
+\begin{ned}
+module Node
+{
+    submodules:
+        app : App {
+            sendIaTime = 3s;
+            packetLength = 1024B; // B=byte
+        }
+        ...
+}
+\end{ned}
+
+After the above definition, the \ttt{app} submodule's parameters cannot
+be changed from \ffilename{omnetpp.ini} any more.
+
+\begin{important}
+    A value assigned in NED cannot be overwritten from ini files; they
+    count as "hardcoded" as far as ini files are concerned.
+\end{important}
+
+Provided that the value isn't set in the NED file, a parameter can be assigned
+in the configuration in the following way:
+
+\begin{inifile}
+**.sendIaTime = 100ms
+\end{inifile}
+
+The above line applies to all parameters called \ttt{sendIaTime}, whichever
+module they belong to; it is possible to write more selective assignments
+by replacing \ttt{**} with more specific patterns. Parameter assignments in
+the configuration are described in section
+\ref{sec:ch-config-sim:parameter-settings}.
+
+One can also write expressions, including stochastic expressions, in the ini file:
+
+\begin{inifile}
+**.sendIaTime = 2s + exponential(100ms)
+\end{inifile}
+
+If there is no assignment in the ini file, the default value (given with
+\ttt{=default(...)} in NED) is applied implicitly. If there is no default
+value, the user will be asked, provided the simulation program is allowed
+to do that; otherwise there will be an error. (Interactive mode is
+typically disabled for batch executions where it would do more harm than
+good.)
+
+It is also possible to explicitly apply the default (this can sometimes
+be useful):
+
+\begin{inifile}
+**.sendIaTime = default
+\end{inifile}
+
+Finally, one can explicitly ask the simulator to prompt the user interactively
+for the value (again, provided that interactivity is enabled, otherwise
+this will result in an error):
+
+\begin{inifile}
+**.sendIaTime = ask
+\end{inifile}
 
 \begin{note}
     How do you decide whether to assign a parameter from NED or from an ini
@@ -772,21 +832,16 @@ XXX example: module and inifile:  =value;  =default; =ask; =expression
     put into ini files.
 \end{note}
 
-may be assigned in submodules
 
-via inheritance  (examples!!!)
-
-in the configuration
-
-
-\subsubsection{Parameter expressions}
+\subsubsection{Expressions}
 
 Parameter values may be given with expressions. NED language expressions
 have a C-like syntax, with some variations on operator names: binary and
 logical XOR are \ttt{\#} and \ttt{\#\#}, while \ttt{\^} has been reassigned
 to \textit{power-of} instead. The \ttt{+} operator does string
-concatenation as well as numeric addition. Expressions can use several functions
-(\ttt{fabs()}, \ttt{sin()}, \ttt{toUpper()}, etc.).
+concatenation as well as numeric addition. Expressions can use various
+numeric, string, stochastic and other functions (\ttt{fabs()}, \ttt{toUpper()},
+\ttt{uniform()}, \ttt{erlang\_k()}, etc.).
 
 \begin{note}
     The list of NED functions can be read in Appendix \ref{cha:ned-functions}.
@@ -1241,6 +1296,8 @@ assigned in an connection without an explicit channel type, it will be an error
 
 XXX channel type as parameter; here or later?
 
+XXX example: how to set channel parameters from the ini file?
+
 
 \section{Multiple connections}
 \label{sec:ch-ned-lang:multiple-connections}
@@ -1248,9 +1305,9 @@ XXX channel type as parameter; here or later?
 Simple programming constructs (loop, conditional) allow creating
 multiple connections easily.
 
-Example...
+XXX explain for; nesting; explain if;
 
-Let us see more connection examples.
+This will be shown in the following examples.
 
 \subsubsection{Chain}
 
@@ -1845,12 +1902,12 @@ period", and two asterisks ("\ttt{**}") mean "any character sequence which may
 contain period".
 
 So, any of the following lines can be used to import a type called
-\ttt{inet.protocols.net\-work.ip.RoutingTable}:
+\ttt{inet.protocols.net\-worklayer.ip.RoutingTable}:
 
 \begin{ned}
-import inet.protocols.network.ip.RoutingTable;
-import inet.protocols.network.ip.*;
-import inet.protocols.network.ip.Ro*Ta*;
+import inet.protocols.networklayer.ip.RoutingTable;
+import inet.protocols.networklayer.ip.*;
+import inet.protocols.networklayer.ip.Ro*Ta*;
 import inet.protocols.*.ip.*;
 import inet.**.RoutingTable;
 \end{ned}
