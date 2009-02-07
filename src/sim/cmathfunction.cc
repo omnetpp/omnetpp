@@ -88,10 +88,10 @@ cMathFunction::cMathFunction(const char *name, MathFunc4Args f, int ac) :
 std::string cMathFunction::info() const
 {
     std::stringstream out;
-    out << "(";
+    out << "double " << getName() << "(";
     for (int i=0; i<argc; i++)
-        out << (i?",":"") << "double";
-    out << ") -> double";
+        out << (i?", ":"") << "double";
+    out << ")";
     return out.str();
 }
 

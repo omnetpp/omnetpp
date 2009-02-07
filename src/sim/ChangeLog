@@ -1,3 +1,10 @@
+2009-02-07  Andras Varga
+
+	* cNEDFunction and Define_NED_Function(): changed signature string
+	to a C-like syntax.
+
+	* debug-on-errors: changes to the printed message
+
 2009-02-04  Andras Varga
 
 	* nedsupport.cc: fix: NED: a channel type could not refer to local 

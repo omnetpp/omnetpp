@@ -356,6 +356,10 @@ class cMathFunction extends cNoncopyableOwnedObject
 class cNEDFunction extends cNoncopyableOwnedObject
 {
     string signature @hint(Argument types and return value);
+    string category @hint(Function category);
+    string description;
+    char returnType;
+    char argType[] @sizeGetter(getMaxArgs);
     int minArgs @hint(Number of mandatory arguments);
     int maxArgs @hint(Maximum number of arguments);
 }

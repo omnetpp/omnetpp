@@ -232,7 +232,6 @@ void cRuntimeError::breakIntoDebuggerIfRequested()
                "view the call stack (in gdb: \"bt\" command) to see the context of the\n"
                "runtime error.\n\n"
 #endif
-               "See error text below:\n\n"
                );
         if (!hascontext)
             printf("<!> Error: %s.\n", what());
@@ -242,6 +241,7 @@ void cRuntimeError::breakIntoDebuggerIfRequested()
         else
             printf("<!> Error in module (%s) %s (id=%d): %s.\n",
                    getContextClassName(), getContextFullPath(), getModuleID(), what());
+        printf("\nTRAPPING on the exception above, due to a debug-on-errors=true configuration option. Is your debugger ready?\n");
         fflush(stdout);
 
         // cause debugger interrupt or signal

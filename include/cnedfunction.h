@@ -63,13 +63,14 @@ class SIM_API cNEDFunction : public cNoncopyableOwnedObject
     //@{
     /**
      * Constructor. Signature is expected in the following syntax:
-     *  - argument list and return type are separated with "->"
-     *  - argument types and return types are one of: B,L,D,Q,S,X,*
-     *    (for Bool, Long, Double, Quantity, String, XML, any)
-     *  - "/" marks end of mandatory args and start of optional args
-     * Examples: "QQ->D"; "SD/D->S"
+     *     returntype name(argtype argname,...),
+     * where types can be bool, long, double, quantity, string, xml, any;
+     * names of optional args end in '?'. The object name will be
+     * the function name, as extracted from the signature string.
+     *
+     * Example: "quantity uniform(quantity a, quantity b, long rng?)"
      */
-    cNEDFunction(const char *name, NEDFunction f, const char *signature, const char *category=NULL, const char *description=NULL);
+    cNEDFunction(NEDFunction f, const char *signature, const char *category=NULL, const char *description=NULL);
 
     /**
      * Destructor.

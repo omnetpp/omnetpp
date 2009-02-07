@@ -1,3 +1,8 @@
+2009-02-07  Andras Varga
+
+	* cNEDFunction and Define_NED_Function(): changed signature string
+	to a C-like syntax.
+
 2009-01-13  Andras Varga
 
 	* Several changes to make it easier to use the simulation kernel

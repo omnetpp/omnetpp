@@ -21,6 +21,7 @@
 #include "globals.h"
 #include "cexception.h"
 #include "stringutil.h"
+#include "stringtokenizer.h"
 #include "opp_ctype.h"
 
 USING_NAMESPACE
@@ -28,9 +29,9 @@ USING_NAMESPACE
 //XXX also: wrap invocation of function, so that cNEDFunction checks arg types etc
 //XXX also: old Define_Function be implemented with cNEDFunction (ie an adapter func)
 
-cNEDFunction::cNEDFunction(const char *name, NEDFunction f, const char *signature,
+cNEDFunction::cNEDFunction(NEDFunction f, const char *signature,
                            const char *category, const char *description) :
-  cNoncopyableOwnedObject(name,false)
+  cNoncopyableOwnedObject(NULL,false)
 {
     ASSERT(f);
     signature = opp_nulltoempty(signature);
@@ -44,34 +45,91 @@ cNEDFunction::cNEDFunction(const char *name, NEDFunction f, const char *signatur
     parseSignature(signature);
 }
 
+static bool contains(const std::string& str, const std::string& substr)
+{
+    return str.find(substr) != std::string::npos;
+}
+
+static std::string substringBefore(const std::string& str, const std::string& substr)
+{
+    size_t pos = str.find(substr);
+    return pos==std::string::npos ? "" : str.substr(0,pos);
+}
+
+static std::string substringAfter(const std::string& str, const std::string& substr)
+{
+    size_t pos = str.find(substr);
+    return pos==std::string::npos ? "" : str.substr(pos+substr.size());
+}
+
+static char parseType(const std::string& str)
+{
+    if (str=="bool")
+        return 'B';
+    if (str=="long")
+        return 'L';
+    if (str=="double")
+        return 'D';
+    if (str=="quantity")
+        return 'Q';
+    if (str=="string")
+        return 'S';
+    if (str=="xml")
+        return 'X';
+    if (str=="any")
+        return '*';
+    return 0;
+}
+
+static bool splitTypeAndName(const std::string& pair, char& type, std::string& name)
+{
+    std::vector<std::string> v = StringTokenizer(pair.c_str()).asVector();
+    if (v.size()!=2)
+        return false;
+    type = parseType(v[0]);
+    name = v[1];
+    return type!=0;
+}
+
+static const char *syntaxErrorMessage =
+        "Define_NED_Function(): syntax error in signature \"%s\": "
+        "should be <rettype> name(<argtype> argname,...), "
+        "where types can be bool, long, double, quantity, string, xml, any; "
+        "names of optional args end in '?'";
+
 void cNEDFunction::parseSignature(const char *signature)
 {
-    // parse argument list
-    const char *s = opp_nulltoempty(signature);
+    std::string str = opp_nulltoempty(signature);
+    std::string typeAndName = opp_trim(substringBefore(str, "(").c_str());
+    char type;
+    std::string name;
+    if (!splitTypeAndName(typeAndName, type, name))
+        throw cRuntimeError(syntaxErrorMessage, signature);
+    setName(name.c_str());
+    rettype = type;
+
+    std::string rest = opp_trim(substringAfter(str, "(").c_str());
+    bool missingRParen = !contains(rest, ")");
+    std::string argList = opp_trim(substringBefore(rest, ")").c_str());
+    std::string trailingGarbage = opp_trim(substringAfter(rest, ")").c_str());
+    if (missingRParen || trailingGarbage.size()!=0)
+        throw cRuntimeError(syntaxErrorMessage, signature);
+
     minargc = -1;
-    for (; *s; s++) {
-        char c = *s;
-        if (strchr("BLDQSX*", c)!=NULL)
-            argtypes += c;
-        else if (c=='/')
-            minargc = argtypes.size();
-        else if (c=='-' && *(s+1)=='>') {
-            s += 2;
-            break;
-        }
-        else
-            throw cRuntimeError("Define_NED_Function(%s): invalid character '%c' in signature \"%s\"", getName(), c, signature);
+    std::vector<std::string> args = StringTokenizer(argList.c_str(), ",").asVector();
+    for (int i=0; i < (int)args.size(); i++)
+    {
+        char argType;
+        std::string argName;
+        if (!splitTypeAndName(args[i], argType, argName))
+            throw cRuntimeError(syntaxErrorMessage, signature);
+        argtypes += argType;
+        if (contains(argName,"?") && minargc==-1)
+            minargc = i;
     }
     maxargc = argtypes.size();
     if (minargc==-1)
         minargc = maxargc;
-
-    // parse return type
-    if (strchr("BLDQSX*", *s)==NULL)
-        throw cRuntimeError("Define_NED_Function(%s): invalid return type '%c' in signature \"%s\"", getName(), *s, signature);
-    rettype = *s++;
-    if (*s)
-        throw cRuntimeError("Define_NED_Function(%s): trailing garbage in signature \"%s\"", getName(), signature);
 }
 
 void cNEDFunction::checkArgs(cDynamicExpression::Value argv[], int argc)
@@ -112,7 +170,7 @@ static const char *getTypeName(char t)
         case 'D': return "double";
         case 'Q': return "quantity";
         case 'S': return "string";
-        case 'X': return "cXMLElement";
+        case 'X': return "xml";
         case '*': return "any";
         default:  return "?";
     }
@@ -120,12 +178,7 @@ static const char *getTypeName(char t)
 
 std::string cNEDFunction::info() const
 {
-    std::stringstream out;
-    out << "(";
-    for (int i = 0; i < getMaxArgs(); i++)
-        out << (i==getMinArgs() ? "[" : "") << (i?",":"") << getTypeName(getArgType(i));
-    out << (getMinArgs()!=getMaxArgs() ? "]" : "") << ") -> " << getTypeName(getReturnType());
-    return out.str();
+    return getSignature();
 }
 
 cNEDFunction *cNEDFunction::find(const char *name, int argcount)

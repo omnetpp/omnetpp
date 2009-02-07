@@ -53,37 +53,38 @@ NAMESPACE_BEGIN
   EXECUTE_ON_STARTUP(nedFunctions.getInstance()->add(new cMathFunction(#NAME,FUNCTION,ARGCOUNT));)
 
 /**
- * Registers a C/C++ function for use in NED and ini files. The function
- * may take several arguments of type bool, long, double, string or XML element,
- * and must return a value of any of the above types. The argument types
- * should be passed into the macro as a string literal consisting of letters
- * "B", "L", "D", "S", "X", "*" (for any), and the return type is a similar
- * one-letter string ("*" is for unknown or variable return type).
- * Corresponding C/C++ typedefs: MathFuncNoArg, MathFunc1Arg, MathFunc2Args,
- * MathFunc3Args, MathFunc4Args.
+ * Registers a C/C++ function for use in NED and ini files; see cNEDFunction.
+ * FUNCTION is a pointer to the function, and SIGNATURE is the function's
+ * signature in NED.
+ *
+ * The C++ function should have the following signature:
+ * <pre>Value f(cComponent *context, Value argv[], int argc)</pre>
+ * where Value stands for cDynamicExpression::Value.
+ *
+ * SIGNATURE is a string with the following syntax:
+ * <pre>returntype name(argtype argname,...)</pre>
+ * where types can be bool, long, double, quantity, string, xml, any
+ * (where quantity is a double with a unit of measurement); names of
+ * optional args should end in '?'.
+ *
+ * Example:
+ * <pre>
+ * Define_NED_Function(uniformFunc,"quantity uniform(quantity a, quantity b, long rng?)")
+ * </pre>
  *
  * @hideinitializer
  */
-#define Define_NED_Function(NAME,SIGNATURE) \
-  EXECUTE_ON_STARTUP(nedFunctions.getInstance()->add(new cNEDFunction(#NAME,NAME,SIGNATURE));)
+#define Define_NED_Function(FUNCTION,SIGNATURE) \
+  EXECUTE_ON_STARTUP(nedFunctions.getInstance()->add(new cNEDFunction(FUNCTION,SIGNATURE));)
 
 /**
- * Like Define_NED_Function(), but it allows registering a function with a
- * different name from its implementation.
- *
- * @hideinitializer
- */
-#define Define_NED_Function2(NAME,FUNCTION,SIGNATURE) \
-  EXECUTE_ON_STARTUP(nedFunctions.getInstance()->add(new cNEDFunction(#NAME,FUNCTION,SIGNATURE));)
-
-/**
- * Like Define_NED_Function2(), but allows one to specify a category string
+ * Like Define_NED_Function(), but allows one to specify a category string
  * and documentation as well.
  *
  * @hideinitializer
  */
-#define Define_NED_Function3(NAME,FUNCTION,SIGNATURE,CATEGORY,DESCRIPTION) \
-  EXECUTE_ON_STARTUP(nedFunctions.getInstance()->add(new cNEDFunction(#NAME,FUNCTION,SIGNATURE,CATEGORY,DESCRIPTION));)
+#define Define_NED_Function2(FUNCTION,SIGNATURE,CATEGORY,DESCRIPTION) \
+  EXECUTE_ON_STARTUP(nedFunctions.getInstance()->add(new cNEDFunction(FUNCTION,SIGNATURE,CATEGORY,DESCRIPTION));)
 
 /**
  * Register class. This defines a factory object which makes it possible
