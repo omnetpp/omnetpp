@@ -405,11 +405,10 @@ How does it get run? First of all, Cmdenv with the '-x' option will tell you how
 simulation runs a given section expands to. (You'll of course use Cmdenv for batch runs,
 not Tkenv.)
 
-%%XXX FIXME this commandchars=... stuff does not work!
-\begin{commandline}[commandchars=\\\{\}]
-\$ aloha -u Cmdenv -x AlohaStudy
+\begin{commandline}
+$ aloha -u Cmdenv -x AlohaStudy
 
-{\opp} Discrete Event Simulation
+`\opp` Discrete Event Simulation
 ...
 Config: AlohaStudy
 Number of runs: 24
@@ -427,26 +426,26 @@ meaningful names to them. Please ignore the
 for now.
 
 
-\begin{commandline}[commandchars=\\\{\}]
-\$ aloha -u Cmdenv -x AlohaStudy -g
-{\opp} Discrete Event Simulation
+\begin{commandline}
+$ aloha -u Cmdenv -x AlohaStudy -g
+`\opp` Discrete Event Simulation
 ...
 Config: AlohaStudy
 Number of runs: 24
-Run 0: \$0=1, \$1=0.2, \$repetition=0
-Run 1: \$0=1, \$1=0.4, \$repetition=0
-Run 2: \$0=1, \$1=0.6, \$repetition=0
-Run 3: \$0=2, \$1=0.2, \$repetition=0
-Run 4: \$0=2, \$1=0.4, \$repetition=0
-Run 5: \$0=2, \$1=0.6, \$repetition=0
-Run 6: \$0=5, \$1=0.2, \$repetition=0
-Run 7: \$0=5, \$1=0.4, \$repetition=0
+Run 0: $0=1, $1=0.2, $repetition=0
+Run 1: $0=1, $1=0.4, $repetition=0
+Run 2: $0=1, $1=0.6, $repetition=0
+Run 3: $0=2, $1=0.2, $repetition=0
+Run 4: $0=2, $1=0.4, $repetition=0
+Run 5: $0=2, $1=0.6, $repetition=0
+Run 6: $0=5, $1=0.2, $repetition=0
+Run 7: $0=5, $1=0.4, $repetition=0
 ...
-Run 19: \$0=40, \$1=0.4, \$repetition=0
-Run 20: \$0=40, \$1=0.6, \$repetition=0
-Run 21: \$0=50, \$1=0.2, \$repetition=0
-Run 22: \$0=50, \$1=0.4, \$repetition=0
-Run 23: \$0=50, \$1=0.6, \$repetition=0
+Run 19: $0=40, $1=0.4, $repetition=0
+Run 20: $0=40, $1=0.6, $repetition=0
+Run 21: $0=50, $1=0.2, $repetition=0
+Run 22: $0=50, $1=0.4, $repetition=0
+Run 23: $0=50, $1=0.6, $repetition=0
 \end{commandline}
 
 
@@ -473,16 +472,16 @@ Actually, it is also possible to get Cmdenv execute all runs in one go,
 by simply omitting the '-r' option.
 
 
-\begin{commandline}[commandchars=\\\{\}]
-\$ aloha -u Cmdenv -c AlohaStudy
+\begin{commandline}
+$ aloha -u Cmdenv -c AlohaStudy
 
-{\opp} Discrete Event Simulation
-Preparing for running configuration AlohaStudy, run \#0...
+`\opp` Discrete Event Simulation
+Preparing for running configuration AlohaStudy, run #0...
 ...
-Preparing for running configuration AlohaStudy, run \#1...
+Preparing for running configuration AlohaStudy, run #1...
 ...
 ...
-Preparing for running configuration AlohaStudy, run \#23...
+Preparing for running configuration AlohaStudy, run #23...
 \end{commandline}
 
 

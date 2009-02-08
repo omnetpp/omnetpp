@@ -1535,8 +1535,8 @@ struct cKSplit::Grid
 {
   int parent;   // index of parent grid
   int reldepth; // depth = (reldepth - rootgrid's reldepth)
-  long total;   // sum of cells & all subgrids (includes `mother')
-  int mother;   // observations `inherited' from mother cell
+  long total;   // sum of cells & all subgrids (includes "mother")
+  int mother;   // observations "inherited" from mother cell
   int cells[K]; // cell values
 };
 \end{cpp}
@@ -2049,24 +2049,24 @@ An example of a snapshot file:
 \begin{filelisting}
 [...]
 
-(cSimulation) `simulation' begin
+(cSimulation) 'simulation' begin
   Modules in the network:
-    `token' #1 (TokenRing)
-      `comp[0]' #2 (Computer)
-        `mac' #3 (TokenRingMAC)
-        `gen' #4 (Generator)
-        `sink' #5 (Sink)
-      `comp[1]' #6 (Computer)
-        `mac' #7 (TokenRingMAC)
-        `gen' #8 (Generator)
-        `sink' #9 (Sink)
-      `comp[2]' #10 (Computer)
-        `mac' #11 (TokenRingMAC)
-        `gen' #12 (Generator)
-        `sink' #13 (Sink)
+    'token' #1 (TokenRing)
+      'comp[0]' #2 (Computer)
+        'mac' #3 (TokenRingMAC)
+        'gen' #4 (Generator)
+        'sink' #5 (Sink)
+      'comp[1]' #6 (Computer)
+        'mac' #7 (TokenRingMAC)
+        'gen' #8 (Generator)
+        'sink' #9 (Sink)
+      'comp[2]' #10 (Computer)
+        'mac' #11 (TokenRingMAC)
+        'gen' #12 (Generator)
+        'sink' #13 (Sink)
 end
 
-(TokenRing) `token' begin
+(TokenRing) 'token' begin
   #1 params     (cArray) (n=6)
   #1 gates      (cArray) (empty)
   comp[0]          (cCompoundModule,#2)
@@ -2074,7 +2074,7 @@ end
   comp[2]          (cCompoundModule,#10)
 end
 
-(cArray) `token.parameters' begin
+(cArray) 'token.parameters' begin
   num_stations (cModulePar) 3 (L)
   num_messages (cModulePar) 10000 (L)
   ia_time      (cModulePar) truncnormal(0.005,0.003) (F)
@@ -2085,7 +2085,7 @@ end
 
 [...]
 
-(cQueue) `token.comp[0].mac.local-objects.send-queue' begin
+(cQueue) 'token.comp[0].mac.local-objects.send-queue' begin
   0-->1         (cMessage) Tarr=0.0158105774 ( 15ms) Src=#4 Dest=#3
   0-->2         (cMessage) Tarr=0.0163553310 ( 16ms) Src=#4 Dest=#3
   0-->1         (cMessage) Tarr=0.0205628236 ( 20ms) Src=#4 Dest=#3
@@ -2099,7 +2099,7 @@ end
   0-->2         (cMessage) Tarr=0.0514466766 ( 51ms) Src=#4 Dest=#3
 end
 
-(cMessage) `token.comp[0].mac.local-objects.send-queue.0-->1' begin
+(cMessage) 'token.comp[0].mac.local-objects.send-queue.0-->1' begin
   #4 --> #3
   sent:         0.0158105774 ( 15ms)
   arrived:      0.0158105774 ( 15ms)

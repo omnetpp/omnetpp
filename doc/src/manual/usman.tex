@@ -179,8 +179,10 @@
     morestring=[b]",
 }
 
-%% thick ruler on the left
+%% thick ruler on the left; also, designate backtick as LaTeX escape character
+%% (e.g. \opp needs to be written as `\opp` inside listing blocks)
 \lstset{
+    escapechar=`,
     basicstyle=\ttfamily,
     showstringspaces=false,
     frame=leftline,

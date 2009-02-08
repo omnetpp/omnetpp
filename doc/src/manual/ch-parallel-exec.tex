@@ -365,96 +365,41 @@ everywhere else (Figure \ref{fig:inst}).
 
 Parallel simulation configuration is the \ttt{[General]} section of \ttt{omnetpp.ini}.
 
-\begin{longtable}{|p{6.5cm}|p{7.5cm}|}
-\hline
-\tabheadcol
-\tbf{Entry and default value} & \tbf{Description}\\\hline
-\multicolumn{2}{|l|}{\tbf{[General]}}\\\hline
+The parallel distributed simulation feature can be turned on with the
+\fconfig{parallel-simulation} boolean option.
 
-parallel-simulation = <true/false>\linebreak
-default: false
-&
-Enables parallel distributed simulation. The following configuration
-entries are only examined if \ttt{parallel-simulation=true}
-\\\hline
+The \fconfig{parsim-communications-class} selects the class that implements
+communication between partitions. The class must implement the
+cParsimCommunications interface.
 
-parsim-debug = <true/false>\linebreak
-default: true
-&
-Enables debugging output
-\\\hline
+XXX what choices there are
 
-parsim-mpicommunications-mpibuffer = <bytes>\linebreak
-default: 256K * (numPartitions-1) + 16K
-&
-Size of MPI send buffer to allocate; see MPI\_Buffer\_attach()
-MPI call. If the buffer is too small, a deadlock can occur.
-\\\hline
+The \fconfig{parsim-synchronization-class} selects the parallel simulation algorithm.
+The class must implement the cParsimSynchronizer interface.
 
-parsim-namedpipecommunications-prefix = <string>\linebreak
-default: "omnetpp" or "comm/"
-&
-Controls the naming of named pipes.
-Windows: default value is "omnetpp", which means that pipe names will be of the form
-"{\textbackslash}{\textbackslash}.{\textbackslash}pipe{\textbackslash}omnetpp-xx-yy"
-(where xx and yy are numbers).
-Unix: default value is "comm/", which means that the named pipes will
-be created with the name "comm/pipe-xx-yy". The "comm/" subdirectory must
-already exist when the simulation is launched.
-\\\hline
+XXX what choices there are
 
-parsim-filecommunications-prefix = <string>\linebreak
-default: "comm/"
-&
-(see below)
-\\\hline
+The following two options configure the Null Message Algorithm, so
+they are only effective if \cclass{cNullMessageProtocol} has been selected
+as synchronization class:
 
-parsim-filecommunications-preserve-read = <true/false>\linebreak
-default: false
-&
-(see below)
-\\\hline
+\begin{itemize}
+  \item \fconfig{parsim-nullmessageprotocol-lookahead-class}
+    selects the lookahead class for the NMA; the class must be subclassed
+    from \cclass{cNMPLookahead}. The default class is \cclass{cLinkDelayLookahead}.
 
-parsim-filecommunications-read-prefix = <string>\linebreak
-default: "comm/read/"
-&
-The above 3 options control the \cclass{cFileCommunications} class.
-By default, it deletes files that were read. By enabling the
-"preserve-read" setting, you can make it move read files to
-another directory instead ("comm/read/" by default).
-BEWARE: for mysterious reasons, it appears that there cannot be more
-than about 19800 files in a directory. When that point is reached,
-an exception is thrown somewhere inside the standard C library, which
-materializes itself in {\opp} as an "Error: (null)" message...
-Strangely, this can be reproduced in both Linux and Windows.
-\\\hline
+  \item \fconfig{parsim-nullmessageprotocol-laziness} expects a number
+    in the $(0,1)$ interval (the default is 0.5), and it ontrols how often
+    NMA should send out null messages; the value is understood in proportion
+    to the lookahead, e.g. 0.5 means every $lookahead/2$ simsec.
+\end{itemize}
 
-parsim-nullmessageprotocol-lookahead-class = <class name string>\linebreak
-default: "cLinkDelayLookahead"
-&
-Selects the lookahead class for the Null Message Algorithm; the
-class must be subclassed from cNMPLookahead.
-\\\hline
+The \fconfig{parsim-debug} boolean option enables/disables printing
+log messages about the parallel simulation algorithm. It is turned on
+by default, but for production runs we recommend turning it off.
 
-parsim-nullmessageprotocol-laziness = <0..1>\linebreak
-default: 0.5
-&
-Controls how often the Null Message Algorithm should send out null
-messages; the value is understood in proportion to the lookahead,
-e.g. 0.5 means every lookahead/2 simsec.
-\\\hline
-
-parsim-idealsimulationprotocol-tablesize = <int>\linebreak
-default: 100,000
-&
-Size of chunks (in table entries) in which the external events
-file (recorded by cISPEventLogger) should be loaded.
-(one entry is 8 bytes, so 100,000 corresponds to ~800K allocated
-memory)
-
-\end{longtable}
-
-
+Other configuration options configure MPI buffer sizes and other details;
+see options that begin with \ttt{parsim-} in Appendix \ref{cha:config-options}.
 
 
 When you are using cross-mounted home directories (the simulation's
@@ -491,9 +436,11 @@ architecture is depicted in Figure \ref{fig:parsim-arch}.
 The parallel simulation subsytem is an optional component
 itself, which can be removed from the simulation kernel
 if not needed. It consists of three layers, from the bottom up:
-communication layer, partitioning layer and synchronization layer.
+Communications Layer, Partitioning Layer and Synchronization Layer.
 
-The purpose of the \textit{Communication layer} is to
+\subsubsection{The Communications Layer}
+
+The purpose of the Communications Layer is to
 provide elementary messaging services between partitions for the
 upper layer. The services include send, blocking receive,
 nonblocking receive and broadcast. The send/receive operations
@@ -501,26 +448,30 @@ work with \textit{buffers}, which encapsulate packing and unpacking
 operations for primitive C++ types. The message class and
 other classes in the simulation library can pack and unpack
 themselves into such buffers. The Communications layer API
-is defined in the \texttt{cFileCommunications} interface
+is defined in the \texttt{cParsimCommunications} interface
 (abstract class); specific implementations like the MPI
 one (\texttt{cMPICommunications}) subclass from this,
 and encapsulate MPI send/receive calls. The matching buffer
 class \texttt{cMPICommBuffer} encapsulates MPI pack/unpack
 operations.
 
-The \textit{Partitioning layer} is responsible for instantiating
+\subsubsection{The Partitioning Layer}
+
+The Partitioning Layer is responsible for instantiating
 modules on different LPs according to the partitioning specified
 in the configuration, for configuring proxy gates.
 During the simulation, this layer also ensures that cross-partition
 simulation messages reach their destinations. It intercepts messages
 that arrive at proxy gates and transmits them to the destination LP
-using the services of the communication layer. The receiving LP
+using the services of the Communications Layer. The receiving LP
 unpacks the message and injects it at the gate the proxy gate points at.
 The implementation basically encapsulates the
 \texttt{cParsimSegment}, \texttt{cPlaceholderModule},
 \texttt{cProxyGate} classes.
 
-The \textit{Synchronization layer} encapsulates the parallel
+\subsubsection{The Synchronization Layer}
+
+The Synchronization Layer encapsulates the parallel
 simulation algorithm. Parallel simulation algorithms are also represented
 by classes, subclassed from the \texttt{cParsimSynchronizer} abstract class.
 The parallel simulation algorithm is invoked on the following hooks:
@@ -544,7 +495,7 @@ parallel simulation algorithm to process its own internal messages
 from other partitions; the null message algorithm processes
 incoming null messages here.
 
-The null message protocol implementation itself is modular,
+The Null Message Protocol implementation itself is modular,
 it employs a separate, configurable lookahead discovery object.
 Currently only link delay based lookahead discovery has been
 implemented, but it is possible to implement more sophisticated
