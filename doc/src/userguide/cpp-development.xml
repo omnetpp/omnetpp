@@ -54,7 +54,7 @@
         <listitem>
           .buildspec : Contains all settings specific to &Omnetpp;. Basically this file
           contains the settings passed to the makefile generator. You can configure all
-          &Omnetpp; specific settings in the project properties dialog, on the 
+          &Omnetpp; specific settings in the project properties dialog, on the
           &Omnetpp;/Makemakepage. Everything you set on this page will be stored in
           the .buildspec file.
         </listitem>
@@ -121,13 +121,13 @@
       The &Omnetpp; IDE adds several extensions to the standard CDT to make the building of
       simulations much easier. The project properties dialog is extended with a special
       page - &Omnetpp; / Makemake - where you can configure the options used for
-      automatically generate the makefile(s). 
+      automatically generate the makefile(s).
       A separate makefile will be created according to the settings you specify in the
       dialog. On the C/C++ Build page you can specify which makefile will be called by the
       IDE build process when you initiate a Build action. By default the Build directory
       is specified as ${ProjDirPath} which is the root directory of your project.
       You can set any directory for the build directory, but keep in mind that it
-      should contain an automatically generated makefile or you have to create a 
+      should contain an automatically generated makefile or you have to create a
       makefile manually there (not recommended). If you have
       several source directories make sure that the primary makefile calls the
       sub-makefiles correctly.
@@ -143,8 +143,8 @@
     <para>
       You can open the the property dialog by right clicking on a folder or project and
       selecting the
-      <guimenuitem>Properties</guimenuitem>
-      menu. Choose the <guimenuitem>&Omnetpp; | Makemake</guimenuitem>  page from here.
+      ``Properties''
+      menu. Choose the ``&Omnetpp; | Makemake''  page from here.
     </para>
     <para>
       Before you start modifying the settings, make sure that you select the folder
@@ -158,13 +158,13 @@
       Creating a source folder here, will affect all configuration.
     </note>
     <picture file="pictures/CPP-SourceFolder.png">Setting a source folder</picture>
-    <note>To regenerate your makefile on the command line, you can export the settings 
-       by pressing the <guibutton>Export</guibutton> button. This action will create 
-       a file with the name ``makemakefiles''.
-       After exporting, execute ``make -f makemakefiles'' from the command line.</note>
+    <note>To regenerate your makefile on the command line, you can export the settings
+       by pressing the <guibutton>Export</guibutton> button. This action will create
+       a file with the name [[makemakefiles]].
+       After exporting, execute [[make -f makemakefiles]] from the command line.</note>
     <para>
-      Press the <guibutton>Makemake</guibutton> button to generate a makefile automatically 
-      in the selected folder. Manually written makefiles can be used by selecting 
+      Press the <guibutton>Makemake</guibutton> button to generate a makefile automatically
+      in the selected folder. Manually written makefiles can be used by selecting
       <guibutton>Custom Make</guibutton>.
     </para>
     <para>
@@ -191,7 +191,7 @@
     <picture file="pictures/CPP-ConfigureProject2.png">Target definition</picture>
     <picture file="pictures/CPP-ConfigureProject.png">Scope of makefile</picture>
     <para>
-      The <guimenuitem>Scope</guimenuitem> tab allows you to 
+      The ``Scope'' tab allows you to
       configure the scope of the makefile and what source files will be included.
       <itemizedlist>
         <listitem>
@@ -208,7 +208,7 @@
     </para>
 
     <picture file="pictures/CPP-ConfigureProject3.png">Compiler options</picture>
-    <para> The <guimenuitem>Compile</guimenuitem> tab allows you to adjust the parameters passed to the
+    <para> The ``Compile'' tab allows you to adjust the parameters passed to the
       compiler during the build process. The build system discovers the necessary include
       directories automatically. You can specify where the system should look for input
       files. You can scan all subfolders in the source directory or even allow to scan all
@@ -255,12 +255,12 @@
     </para>
     <picture file="pictures/CPP-ConfigureProject4.png">Linker options</picture>
 
-    <para>The <guimenu>Custom</guimenu> tab allows the customization of the makefiles by inserting handwritten
+    <para>The ``Custom'' tab allows the customization of the makefiles by inserting handwritten
     makefile fragments inside the automatically generated makefile. It is possible to add additional
     variables, targets, rules. The fragment code entered here will be written into the Makefrag file.
     </para>
-    <para>The <guimenu>Preview</guimenu> tab just displays the final command line with all options that
-    will be passed to ``opp_makemake'' to generate the makefile.</para>
+    <para>The ``Preview'' tab just displays the final command line with all options that
+    will be passed to [[opp_makemake]] to generate the makefile.</para>
   </sect1>
 
   <sect1>
@@ -272,7 +272,7 @@
       NED path can be correctly set.</para>
     <para>
       To set the project dependence, right click on your project and select
-      <guimenuitem>Properties</guimenuitem>
+      ``Properties''
       . In the Properties dialog select Project References page and click on the projects
       you are depending on. If those projects provide shared or static libraries as their
       output the linker will automatically include those libraries during link phase. It
@@ -316,13 +316,13 @@
       Once you have created your source files and configured your project settings, you
       can build your executable. Before doing this, check if the active build
       configuration is correctly set for your project. Select
-      <guimenuitem>Build Configurations | Set Active</guimenuitem>
+      ``Build Configurations | Set Active''
       from the project context menu and choose which configuration should be built.
     </para>
     <picture file="pictures/CPP-BuildConfiguration.png">Activating a build configuration </picture>
     <para>
       Once the correct configuration is active select
-      <guimenu>Build Project</guimenu>
+      ``Build Project''
       from the Project menu or from the project context menu. This should start the build
       process. First a makefile will be created in each source folder (according to the
       project configuration Makemake page) and then the primary makefile will be called to
@@ -344,9 +344,9 @@
     <title>Running or Debugging the Project</title>
     <para>
       If you want to run or debug yor simulation open the
-      <guimenu>Run</guimenu>
+      ``Run''
       menu and choose the
-      <guimenuitem>Run/Debug Configurations...</guimenuitem>
+      ``Run/Debug Configurations...''
       dialog. For a more detailed discussion please visit the Launching and Debugging
       chapter.
     </para>

@@ -205,14 +205,14 @@
       the IDE creates the cartesian product from these variables and assigns a run number
       to each product. It is possible to execute one, more or all runs of the simulation
       by specifying the
-      <literal>Run number</literal>
+      [[Run number]]
       field in the Run Dialog. You can specify a single number (e.g. 3), and a combination
       of more numbers (e.g. 2,3,6,7..11) or all run numbers (using *).
     </para>
     <tip>
       If you already have specified your executable, the configuration which should be
       run and selected the Command line environment, you may try to hover over the
-      <literal>Run Number</literal>
+      [[Run Number]]
       field. This will give you a description of the possible runs and how they are
       associated with the iteration variable values.
     </tip>
@@ -222,7 +222,7 @@
     <para>
       If you have a multi-core or multi-processor system and have ample of memory, you may
       try to set the
-      <literal>Processes to run parallel</literal>
+      [[Processes to run parallel]]
       field to a higher number. This will allow the IDE to start more simulation process
       in parallel resulting in a much lower overall simulation time for the whole batch.
     </para>
@@ -239,7 +239,7 @@
     <para>
       The &Omnetpp; IDE integrates with the CDT (C/C++ Development Tooling) of Eclipse. If you want to
       debug your application you have to do it by starting it from the
-      <guimenuitem>Run|Debug Configurations</guimenuitem>
+      ``Run|Debug Configurations''
       . You should launch your debugging session exactly the same way you were running it.
     </para>
     <note>
@@ -268,7 +268,7 @@
     quick methods to create a launch configuration. You can select a file by either clicking on
     it in the Project Explorer, or simply by opening it for editing. After selection, just click on the
     <guibutton>Run</guibutton> or <guibutton>Debug</guibutton> icon on the toolbar, or right click on
-    the file and choose the <guimenuitem>Run As...</guimenuitem> or <guimenuitem>Debug As...</guimenuitem>
+    the file and choose the ``Run As...'' or ``Debug As...''
     menu.</para>
       <itemizedlist>
         <listitem>If a directory is selected and contains a single Ini file, the IDE will use
@@ -292,7 +292,7 @@
       started processes in the Debug View. To open the Debug View automatically during
       launch, check the Show Debug View on Launch in the run configuration dialog, or
       select
-      <guimenuitem>Window / Show View... / Other... / Debug / Debug</guimenuitem>
+      ``Window / Show View... / Other... / Debug / Debug''
       . Select a process and click the terminate button to stop a specific simulation run
       or use the context menu for more options to control the process execution.  
     </para>
@@ -344,7 +344,7 @@
       <note>
         By default cmdenv reports progress only on every 100000th event. If you feel that
         the progress should be more often reported set the
-        <literal>cmdenv-status-frequency</literal>
+        [[cmdenv-status-frequency]]
         option in your Ini file to a lower value.
       </note>
     </sect3>

@@ -55,7 +55,7 @@
     <title>Creating new NED files</title>
     <para>
       Once you have an empty &Omnetpp; project, you can create new NED files. Choosing
-      <guimenuitem>File|New|Network Description File</guimenuitem>
+      ``File|New|Network Description File''
       from the menu will bring up a wizard where you can specify the target directory and
       the file/module name. You may choose to create an empty NED file, or a
       simple/compound module, or a network. Once you press the
@@ -144,9 +144,9 @@
         and then modifying its type. They will display the default icon (if any) and a
         short documentation if you hover the mouse over them. You may configure the
         Palette by right clicking on a button and selecting
-        <guimenuitem>Settings...</guimenuitem>
+        ``Settings...''
         or filter its content by selecting
-        <guimenuitem>Select Packages...</guimenuitem>
+        ``Select Packages...''
       </para>
       <para>
         Right-clicking any element in the edited NED file will bring up a context menu
@@ -175,7 +175,7 @@
         <title>Creating and changing connections</title>
         <para>
           Select the
-          <guimenuitem>connection tool</guimenuitem>
+          ``connection tool''
           (if there are channels defined in the project, you can use the drop down to
           select which channel type the connection should have). First click the source
           module, then the destination. A pop-up menu will appear, asking which gates
@@ -199,9 +199,9 @@
           the target modules. Compound modules can be selected by clicking on their border
           or title. If you want to select only connections with the selection rectangle,
           use the
-          <guimenuitem>connection selector</guimenuitem>
+          ``connection selector''
           tool in the dropdown menu of the
-          <guimenuitem>connection tool</guimenuitem>
+          ``connection tool''
           . The
           <keycap>CTRL</keycap>
           and
@@ -236,12 +236,12 @@
         </para>
         <para>
           If you turn on
-          <guimenuitem>Snap to Geometry</guimenuitem>
+          ``Snap to Geometry''
           in the
-          <guimenu>View</guimenu>
+          ``View''
           menu, helper lines will appear to allow you to align to other modules. Selecting
           more than one submodule activates the
-          <guimenuitem>Alignment</guimenuitem>
+          ``Alignment''
           menu (found both in the View menu and in the context menu).
         </para>
       </sect3>
@@ -285,7 +285,7 @@
         <title>Choosing icon for a module</title>
         <para>
           To choose an icon for a module right click on it and select the
-          <guimenuitem>Choose an Icon...</guimenuitem>
+          ``Choose an Icon...''
           menu item from the context menu or select the module and modify the icon
           property in the Properties View.
         </para>
@@ -306,7 +306,7 @@
         <para>
           If you want to see the selected element in a different view select the element
           and right click on it. Choose
-          <guimenuitem>Show In</guimenuitem>
+          ``Show In''
           from the context menu and select the desired view.
         </para>
       </sect3>
@@ -418,7 +418,7 @@
           If you have a NED file with older syntax, you still can open it. A context menu
           item allows you to convert it to the new syntax. If the NED file is already
           using the new syntax the
-          <guimenuitem>Convert to 4.0 Format</guimenuitem>
+          ``Convert to 4.0 Format''
           menu item is disabled.
         </para>
       </sect3>
@@ -462,7 +462,7 @@
           This function does a general repair on all selected NED files. Throws out or
           adds import statement as needed, checks whether the file's package declaration
           is correct and reformats the source code. It can be activated by clicking on the
-          <guimenuitem>Clean Up NED Files</guimenuitem>
+          ``Clean Up NED Files''
           menu item from the main menu.
         </para>
       </sect3>
@@ -471,7 +471,7 @@
         <para>
           It is possible to reformat the whole NED file according to the recommended
           coding guidelines by activating the
-          <guimenuitem>Format Source</guimenuitem>
+          ``Format Source''
           context menu item or by pressing the
           <keycap>CTRL+SHIFT+F</keycap>
           key combination.
@@ -514,7 +514,7 @@
           </para>
           <para>
             It is also possible to export images from all (or selected) NED files; the
-            corresponding wizard can be found under File|Export… in the menu.
+            corresponding wizard can be found under ``File|Export...'' in the menu.
           </para>
         </sect3>
       </sect2>
@@ -525,9 +525,9 @@
     <title>Associated Views</title>
     <para>
       There are several views related to the NED editor. These views can be displayed (if
-      not already open) by choosing Window|Show View in the menu or by selecting a NED
+      not already open) by choosing ``Window|Show View'' in the menu or by selecting a NED
       element in the graphical editor and selecting
-      <guimenuitem>Show In</guimenuitem>
+      ``Show In''
       from the context menu.
     </para>
     <sect2>
@@ -558,7 +558,7 @@
         The Palette is normally displayed on the left or right side of the editor area,
         and contains tools to create various NED elements. It is possible to hide it by
         clicking on the little arrow in the corner, and to detach it from the editor and
-        display it as a normal Eclipse view (Window|Show View|Other…|General|Palette).
+        display it as a normal Eclipse view (``Window|Show View|Other...|General|Palette'').
       </para>
     </sect2>
     <sect2>

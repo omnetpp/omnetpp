@@ -43,7 +43,7 @@
     <title>Creating an eventlog file</title>
     <para>
       The Inifile Editor in the &Omnetpp; IDE provides a group of widgets in the
-      <guilabel>Output Files</guilabel> section to configure automatic eventlog
+      ``Output Files'' section to configure automatic eventlog
       recording. To enable it, simply put a checkmark next to its checkbox, or insert the
       line <screen>record-eventlog = true</screen> into the inifile.
     </para>
@@ -84,8 +84,8 @@
       enabled, by adding or uncommenting the line <screen>record-eventlog = true</screen>
       in <filename>omnetpp.ini</filename> file in the simulation's directory. To open the
       generated eventlog in the &Omnetpp; IDE, go to the example's
-      <filename>results</filename> directory in the <guilabel>Resource
-      Navigator</guilabel> view, and double-click the log file. By default, the file
+      <filename>results</filename> directory in the ``Resource
+      Navigator'' view, and double-click the log file. By default, the file
       will open in the Sequence Chart.
       <tip>
 	To open the file in the Eventlog Table as editor, right-click the file, and
@@ -133,8 +133,8 @@
       <para>
 	Let us demonstrate on this simple example how filtering works with the Sequence
 	Chart. Open the Filter Fialog with the toolbar button <icon name="filter.png"/>
-	and put a checkmark for node '0' and '3' on the <guilabel>Module filter|by
-	name</guilabel> panel, and apply it. The chart now displays only two axes that
+	and put a checkmark for node '0' and '3' on the ``Module filter|by
+	name'' panel, and apply it. The chart now displays only two axes that
 	correspond to the two selected nodes.  Note that the arrows on this figure are
 	decorated with zigzags, meaning that they represent a sequence of message
 	sends. Such arrows will be called virtual message sends in the rest of this
@@ -182,7 +182,7 @@
 	out. Actually what happens is that the queue enqueues the job because it is busy
 	serving the message received at <eventnumber>10</eventnumber>.  Since this queue
 	is a FIFO, it will send out the first message at <eventnumber>13</eventnumber>. To
-	see how this happens, turn on <guilabel>Show Reuse Messages</guilabel> from the
+	see how this happens, turn on ``Show Reuse Messages'' from the
 	context menu; the result is shown in <xref
 	linkend="pictures/SequenceChart-Examples-FIFOReuse.png"/>.  It displays a couple
 	of green dotted arrows, one of which starts at <eventnumber>12</eventnumber> and
@@ -209,8 +209,8 @@
       </note>
       <para>
 	The last part of this example is about filtering out the queue from the
-	chart. Open the <guilabel>Filter Dialog</guilabel>, and put a checkmark for 'sink'
-	and 'source' on the <guilabel>Module filter|by NED type</guilabel> panel, and
+	chart. Open the ``Filter Dialog'', and put a checkmark for 'sink'
+	and 'source' on the ``Module filter|by NED type'' panel, and
 	apply it. If you look at the result in <xref
 	linkend="pictures/SequenceChart-Examples-FIFOFiltered.png"/>, then you will see
 	zigzag arrows going from the 'source' to the 'sink'. These arrows represent the
@@ -338,15 +338,15 @@
 	</para>
 	<para>
 	  Let us ignore the 'move' messages, and focus on the MAC layer instead. To begin
-	  with, open the <guilabel>Filter Dialog</guilabel>, and put a checkmark for
-	  'Ieee80211Mac' and 'Ieee80211Radio' on the <guilabel>Module filter|by NED
-	  type</guilabel> panel, and apply it. The chart will have four axes, two for the
+	  with, open the ``Filter Dialog'', and put a checkmark for
+	  'Ieee80211Mac' and 'Ieee80211Radio' on the ``Module filter|by NED
+	  type'' panel, and apply it. The chart will have four axes, two for the
 	  MAC and two for the radio simple modules.
 	</para>
 	<para>
 	  The next step is to attach vector data to these axes. Open the context menu for
-	  each axis by clicking on them one by one, and select the <guilabel>Attach Vector
-	  to Axis</guilabel> submenu. Accept the vector file offered by default, and
+	  each axis by clicking on them one by one, and select the ``Attach Vector
+	  to Axis'' submenu. Accept the vector file offered by default, and
 	  choose the vector 'mac:State' for the MAC modules, and 'mac:RadioState' for the
 	  radio modules. You will have to edit the filter in the vector selection dialog
 	  (i.e. delete the last segment) for the radio modules, because at the moment the
@@ -386,7 +386,7 @@
 	  linkend="pictures/SequenceChart-Examples-WirelessSuccessfulPing.png"/> the
 	  second complete successful ping procedure between <eventnumber>170</eventnumber>
 	  and <eventnumber>206</eventnumber>. To focus on the second successful ping
-	  message exchange, open the <guilabel>Filter Dialog</guilabel>, and enter these
+	  message exchange, open the ``Filter Dialog'', and enter these
 	  numbers in the range filter.
 	</para>
 	<para>
@@ -426,7 +426,7 @@
 	<commercial>
 	  <para>
 	    You can export this sequence chart for documentation purposes using the
-	    context menu's <guilabel>Export to SVG</guilabel> option.
+	    context menu's ``Export to SVG'' option.
 	  </para>
 	</commercial>
       </sect3>
@@ -435,7 +435,7 @@
 	<para>
 	  To see how the chart looks when the ping messages get lost in the air, first
 	  turn off range filtering. Then go to <eventnumber>1269</eventnumber> by
-	  selecting the <guimenuitem>Goto Event</guimenuitem> option from the Eventlog
+	  selecting the ``Goto Event'' option from the Eventlog
 	  Table view's context menu. In <xref
 	  linkend="pictures/SequenceChart-Examples-WirelessUnsuccessfulPing.png"/> you can
 	  see how the receiver radio does not send up the incoming message to its MAC
@@ -607,8 +607,8 @@
 	  <listitem>
 	    Custom nonlinear -- like nonlinear. This is useful in those rare cases when
 	    the automatic nonlinear mode does not work well. The best practice is to
-	    switch to <guilabel>Nonlinear</guilabel> mode first, and then to
-	    <guilabel>Custom nonlinear</guilabel>, so that the chart will continuously
+	    switch to ``Nonlinear'' mode first, and then to
+	    ``Custom nonlinear'', so that the chart will continuously
 	    refresh during changing the parameters. At the extreme, you can set the
 	    parameters so that the nonlinear mode becomes equivalent to linear mode or
 	    step mode.
@@ -645,14 +645,14 @@
       <para>
 	It is not uncommon that some axes do not have events at all. These axes would just
 	uselessly occupy some place on the screen, so by default they will be omitted from
-	the chart unless the <guilabel>Show Axes Without Events</guilabel> option is
+	the chart unless the ``Show Axes Without Events'' option is
 	turned on. The discovery process is done lazily as you navigate through the chart,
 	and it may add new axes dynamically as soon as it turns out that they actually
 	have events.
       </para>
       <para>
-	Module axes can be reordered with the option <guilabel>Axis Ordering
-	Mode</guilabel> <icon name="axisordering.gif"/>. Ordering can be manual, or sorted
+	Module axes can be reordered with the option ``Axis Ordering
+	Mode'' <icon name="axisordering.gif"/>. Ordering can be manual, or sorted
 	by module name, by module id or by minimizing the total number axes that arrows
 	are crossing.
       </para>
@@ -715,8 +715,8 @@
 	represented by a green dotted arrow between the two events. These arrows are not
 	shown by default due to timer self-messages usually being reused
 	continuously. This would add unnecessary clutter to the chart and would make it
-	hard to understand. To show and hide these arrows, use the <guilabel>Show Reuse
-	Messages</guilabel> <icon name="reusearrows.png"/> button on the toolbar.
+	hard to understand. To show and hide these arrows, use the ``Show Reuse
+	Messages'' <icon name="reusearrows.png"/> button on the toolbar.
       </para>
       <para>
 	Sometimes, depending on the zoom factor, a message send goes far away on the
@@ -734,8 +734,8 @@
       <title>Attaching Vectors</title>
       <para>
 	It is possible to attach Vector data to individual axes from the context menu by
-	right clicking on the desired axis and selecting <guilabel>Attach Vector to
-	Axis</guilabel> from the corresponding submenu. In this case the solid line of the
+	right clicking on the desired axis and selecting ``Attach Vector to
+	Axis'' from the corresponding submenu. In this case the solid line of the
 	axis will be turned into a colored thick bar. If the vector is of type enum and
 	its element names have been registered with the C++ macro Register_Enum, then the
 	chart will display those names inside the bar. Otherwise it will simply display
@@ -746,10 +746,10 @@
     <sect2>
       <title>Zooming</title>
       <para>
-	To zoom in or out horizontally along the timeline, use the <guilabel>Zoom
-	In</guilabel> <icon name="zoomplus.png"/> and <guilabel>Zoom Out</guilabel> <icon
+	To zoom in or out horizontally along the timeline, use the ``Zoom
+	In'' <icon name="zoomplus.png"/> and ``Zoom Out'' <icon
 	name="zoomminus.png"/> buttons on the toolbar. To decrease or increase the
-	distance between the axes use the <guilabel>Increase/Decrease Spacing</guilabel>
+	distance between the axes use the ``Increase/Decrease Spacing''
 	<icon name="incr_spacing.png"/> <icon name="decr_spacing.png"/> commands.
 	<warning>
 	  When you zoom out more events and messages become visible on the chart making it
@@ -847,7 +847,7 @@
 	meaning that there are no matching events at all.
       </para>
       <para>
-	To filter the Sequence Chart, open the <guilabel>Filter Dialog</guilabel> use the
+	To filter the Sequence Chart, open the ``Filter Dialog'' use the
 	filter button <icon name="filter.png"/> on the toolbar. You can also filter from
 	the context menu using the shortcuts provided for events and message sends
 	currently under the mouse.
@@ -880,27 +880,27 @@
       <title>Display Mode</title>
       <para>
 	The eventlog file content may be displayed in two different notations. The
-	<guilabel>Raw</guilabel> data notation shows exactly what is present in the file.
+	``Raw'' data notation shows exactly what is present in the file.
       </para>
       <picture file="pictures/EventlogTable-RawMode.png">
-	<guilabel>Raw</guilabel> notation
+	``Raw'' notation
       </picture>
       <para>
-	On the other hand the <guilabel>Descriptive</guilabel> notation displays the log
+	On the other hand the ``Descriptive'' notation displays the log
 	file after some preprocessing into a human readable form. It also resolves
 	references and types, so that less navigation is required to understand what is
-	going on. To switch between the two, use the <guilabel>Display Mode</guilabel>
+	going on. To switch between the two, use the ``Display Mode''
 	<icon name="displaymode.png"/> button on the toolbar or the context menu.
       </para>
       <picture file="pictures/EventlogTable-DescriptiveMode.png">
-	<guilabel>Descriptive</guilabel> notation
+	``Descriptive'' notation
       </picture>
     </sect2>
     <sect2>
       <title>Name Mode</title>
       <para>
 	There are three different ways to display names in the Eventlog table, it is
-	configurable by the <guilabel>Name Mode</guilabel> <icon name="namemode.gif"/>
+	configurable by the ``Name Mode'' <icon name="namemode.gif"/>
 	option. Full path and full name shows what you would expect. The smart mode uses
 	the context where the line is to decide whether a full path or a full name should
 	be displayed. For each event line this mode always displays the full path. For all
@@ -912,7 +912,7 @@
     <sect2>
       <title>Type Mode</title>
       <para>
-	The option called <guilabel>Type Mode</guilabel> can be used to switch between
+	The option called ``Type Mode'' can be used to switch between
 	displaying the C++ class name or the NED type name in parenthesis just before the
 	name of modules. This is rarely used so only available from the context menu.
       </para>
@@ -920,13 +920,13 @@
     <sect2>
       <title>Line Filter</title>
       <para>
-	The Eventlog Table may be filtered by using the <guilabel>Line Filter</guilabel>
+	The Eventlog Table may be filtered by using the ``Line Filter''
 	<icon name="LineFilterMode.png"/> button on the toolbar. This option allows
 	filtering for lines with specific kinds. There are some predefined filters,
       </para>
       <para>
 	You can also provide a custom filter pattern, referring to fields present in
-	<guilabel>Raw</guilabel> mode, using a match expresssion. The following example is
+	``Raw'' mode, using a match expresssion. The following example is
 	a custom filter, which will show message sends where the message's class is
 	AirFrame. <screen>BS and c(AirFrame)</screen> Please refer to the &Omnetpp; 4.0
 	Manual for more details on match expressions.
@@ -944,8 +944,8 @@
 	menu, which can also be used with the keyboard.
       </para>
       <para>
-	The simplest are the <guilabel>Goto Event</guilabel> and the <guilabel>Goto
-	Simulation Time</guilabel>, both of which simply jump to the given location.
+	The simplest are the ``Goto Event'' and the ``Goto
+	Simulation Time'', both of which simply jump to the given location.
       </para>
       <para>
 	There are navigation options to go to the previous (<keycap>ALT+UP</keycap>) or
@@ -980,12 +980,12 @@
       <para>
 	For performance reasons, the search <icon name="Search.gif"/> function works
 	directly on the eventlog file and not the text displayed in the Eventlog table. It
-	means that some static text present in <guilabel>Descriptive</guilabel> mode
+	means that some static text present in ``Descriptive'' mode
 	cannot be found. Usually it is easier to figure out what to search for in
-	<guilabel>Raw</guilabel> mode, where the eventlog file's content is directly
+	``Raw'' mode, where the eventlog file's content is directly
 	displayed. The search can work in both directions starting from the current
 	selection, and may be case insensitive. To repeat the last search, use the
-	<guilabel>Find Next</guilabel> <icon name="SearchNext.gif"/> command.
+	``Find Next'' <icon name="SearchNext.gif"/> command.
       </para>
     </sect2>
     <sect2>
@@ -1066,7 +1066,7 @@
     </para>
     <para>
       The combination of various filter options might be complicated and hard to
-      understand. To make it easier, the <guilabel>Filter Dialog</guilabel> automatically
+      understand. To make it easier, the ``Filter Dialog'' automatically
       displays the current filter in a human readable form at the bottom of the dialog.
     </para>
     <picture file="SequenceChart-FilterDialog.png">
@@ -1151,7 +1151,7 @@
 	Sometimes computing the filter's result takes a lot of time, especially when
 	tracing causes/consequences without specifying proper range limits in terms of
 	event numbers or simulation times. If you canel the long running operation, then
-	you can go back to the <guilabel>Filter Dialog</guilabel> to modify the filter
+	you can go back to the ``Filter Dialog'' to modify the filter
 	parameters, or simply turn it off. To restart drawing, use the refresh button
 	<icon name="refresh.gif"/> on the toolbar.
 	<tip>
@@ -1183,8 +1183,8 @@
     <para>
       It is possible to open the same eventlog file in multiple editors, and to navigate
       to different locations, or use different diplay modes or filters in them. Once an
-      eventlog is open in an editor, you can use the <guimenuitem>Window|New
-      Editor</guimenuitem> to open it again.
+      eventlog is open in an editor, you can use the ``Window|New
+      Editor'' to open it again.
       <tip>
 	Dragging one of the editors from the tabbed pane to the side of the editors' area
 	allows you to interact with the two simultaneously.
@@ -1210,8 +1210,8 @@
 	memory is filled up with the content lazily. Since it is difficult to reliably
 	identify when the system is going low on physical memory, it is up to the user to
 	release the allocated memory when needed. This operation, although usually not
-	required, is available from the context menu as <guimenuitem>Release
-	Memory</guimenuitem>. It does not affect the user interface in any way.
+	required, is available from the context menu as ``Release
+	Memory''. It does not affect the user interface in any way.
       </para>
       <para>
 	The fact that the eventlog file is loaded lazily and optionally filtered also

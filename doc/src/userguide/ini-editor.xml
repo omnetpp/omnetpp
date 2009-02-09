@@ -19,7 +19,7 @@
       <para>
       The syntax and features of ini files have changed since &Omnetpp; 3.x as well.
       These changes are summarized in the "Configuring Simulations" chapter of the
-       "&Omnetpp; 4.0. User Manual". 
+       "&Omnetpp; 4.0. User Manual".
       </para>
     </note>
     <para>
@@ -37,11 +37,8 @@
   <sect1>
     <title>Creating INI files</title>
     <para>To create a new ini file, choose
-      <menuchoice>
-        <guimenu>File</guimenu>
-        <guisubmenu>New</guisubmenu>
-        <guimenuitem>Initialization File</guimenuitem>
-      </menuchoice> from the menu. It opens a wizard where you can enter the 
+        ``File | New | Initialization File''
+       from the menu. It opens a wizard where you can enter the
       name of the new file and select the name of the network to be configured.
     </para>
     <picture file="pictures/INI-NewWizard.png">New Initialization File dialog</picture>
@@ -68,7 +65,7 @@
         Config sections. This way you can factor out the common settings into a "base" configuration.
       </para>
       <para>
-        On the first page of form editor you can edit the sections. The sections are displayed 
+        On the first page of form editor you can edit the sections. The sections are displayed
         as a tree, the nodes inherit settings from their parent. The icon before the section name
         shows how many runs are configured in that section (see <xref linkend="section-icons-legend"/>).
         You can use drag and drop to reorganize the sections. The selected section can be deleted,
@@ -114,7 +111,7 @@
       </para>
       <picture file="pictures/INI-AddParams.png">Add missing module parameters dialog</picture>
       <para>
-        The rest of the settings do not belong to modules, for example configuration of 
+        The rest of the settings do not belong to modules, for example configuration of
         random number generators, output vectors, simulation time limit. These settings
         can be edited from the forms listed under the Configuration node. If the field
         has a default value and it is not set then the default value is displayed in gray.
@@ -157,7 +154,7 @@
       <sect3>
         <title>Tooltip</title>
         <para>
-        If you hover over a section or parameter, a tooltip appears showing the properties 
+        If you hover over a section or parameter, a tooltip appears showing the properties
         of the section or parameter. For sections the inheritance chain, the network name,
         number of errors and warnings and the yet unassigned parameters are displayed.
         For parameters the definition, description and the module name is displayed.
@@ -167,7 +164,7 @@
         <title>Add unassigned parameters</title>
         <para>
           You can add the names of unassigned module parameters to a Config section by choosing
-          <guimenuitem>Add Missing keys...</guimenuitem> from the context menu.
+          ``Add Missing keys...'' from the context menu.
         </para>
       </sect3>
       <sect3>
@@ -182,7 +179,7 @@
         <para>
           If you press the <keycap>Ctrl</keycap> key and click on a module parameter name,
           then the declaration of the parameter will be shown in the NED editor. You can
-          navigate from a network name to its definition too.           
+          navigate from a network name to its definition too.
         </para>
       </sect3>
       <sect3>
@@ -190,21 +187,21 @@
         <para>
           Errors are marked at the left/right side of the editor. You can move to the
           next/previous error by pressing <keycombo><keycap>Ctrl</keycap><keycap>.</keycap></keycombo>
-          and <keycombo><keycap>Ctrl</keycap><keycap>,</keycap></keycombo> respectively. 
+          and <keycombo><keycap>Ctrl</keycap><keycap>,</keycap></keycombo> respectively.
           You can get the error message in a tooltip if you hover over the <icon name="Error.png"/> marker.
         </para>
       </sect3>
     </sect2>
   </sect1>
 
-  <!-- TODO examples? -->  
+  <!-- TODO examples? -->
 
   <sect1>
     <title>Associated Views</title>
     <para>
       There are several views related to the INI editor. These views can be displayed (if
       not already open) by choosing the view from the
-      <guimenuitem>Window | Show View</guimenuitem>
+      ``Window | Show View''
       submenu.
     </para>
     <sect2>
@@ -244,11 +241,11 @@
           <colspec colwidth='2*'/>
           <tbody>
             <row><entry><icon name="par_ned.png"/></entry><entry>value is set in the NED file</entry></row>
-            <row><entry><icon name="par_neddefault.png"/></entry><entry>default from the NED file is explicitly set in the INI file (``**.paramname=default'')</entry></row>
+            <row><entry><icon name="par_neddefault.png"/></entry><entry>default from the NED file is explicitly set in the INI file ([[**.paramname=default]])</entry></row>
             <row><entry><icon name="par_implicitdefault.png"/></entry><entry>default from the NED file is automatically applied, because no value is specified in the INI file</entry></row>
             <row><entry><icon name="par_ini.png"/></entry><entry>value is set in the INI file (may override the value from the NED file)</entry></row>
             <row><entry><icon name="par_inineddefault.png"/></entry><entry>value is set in the INI file to the same value as the NED default</entry></row>
-            <row><entry><icon name="par_iniask.png"/></entry><entry>will ask the user at runtime (``**.paramname=ask'')</entry></row>
+            <row><entry><icon name="par_iniask.png"/></entry><entry>will ask the user at runtime ([[**.paramname=ask]])</entry></row>
             <row><entry><icon name="par_unassigned.png"/></entry><entry>unassigned -- has no value specified neither in NED nor in INI file</entry></row>
           </tbody>
         </tgroup>
