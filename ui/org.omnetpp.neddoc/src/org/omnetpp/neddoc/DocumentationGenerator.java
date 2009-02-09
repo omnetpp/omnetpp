@@ -135,7 +135,7 @@ public class DocumentationGenerator {
     protected IPath documentationRootPath;
     protected IPath rootRelativeDoxyPath;
     protected IPath doxyRelativeRootPath;
-    protected IPath absoluteDoxyConfigFilePath;
+    protected IPath absoluteDoxyConfigFilePath; //FIXME should be IFile! because error message about missing doxyfile should show workspace path not filesystem path!
     protected IPath rootRelativeNeddocPath;
     protected IPath neddocRelativeRootPath;
     protected IProject project;
@@ -487,7 +487,7 @@ public class DocumentationGenerator {
                 if (!doxyConfigFile.exists()) {
                     DisplayUtils.runNowOrSyncInUIThread(new java.lang.Runnable() {
                         public void run() {
-                            if (MessageDialog.openQuestion(null, "Missing configuration file", "Doxygen configuration file does not exists at: " + absoluteDoxyConfigFilePath + "\nDo you want to create a default?"))
+                            if (MessageDialog.openQuestion(null, "Missing configuration file", "Doxygen configuration file does not exist: " + absoluteDoxyConfigFilePath + "\n\nDo you want to create a default one?"))
                                 DocumentationGeneratorPropertyPage.generateDefaultDoxyConfigurationFile(project, doxyExecutablePath, absoluteDoxyConfigFilePath.toOSString());
                         }
                     });
@@ -512,7 +512,7 @@ public class DocumentationGenerator {
                     }
                 }
                 else
-                    throw new IllegalStateException("Doxygen configuration file not found at: " + absoluteDoxyConfigFilePath);
+                    throw new IllegalStateException("Doxygen configuration file not found: " + absoluteDoxyConfigFilePath);
             }
             finally {
                 monitor.done();
@@ -851,8 +851,8 @@ public class DocumentationGenerator {
 
         // NOTE: don't put whitespace between img elements        
         out("<p>" +
-            "<img src=\"ftv2pnode.png\" alt=\"o\" width=\"16\" height=\"22\" onclick=\"toggleFolder('" + folderId +"', this)\"/>" +
-            "<img src=\"ftv2folderclosed.png\" alt=\"+\" width=\"24\" height=\"22\" onclick=\"toggleFolder('" + folderId +"', this)\"/>\r\n" +
+            "<img src=\"ftv2pnode.png\" alt=\"\" width=\"16\" height=\"22\" onclick=\"toggleFolder('" + folderId +"', this)\"/>" +
+            "<img src=\"ftv2folderclosed.png\" alt=\"\" width=\"20\" height=\"20\" onclick=\"toggleFolder('" + folderId +"', this)\"/>\r\n" +
             "<span class=\"indextitle\">" + WordUtils.capitalize(title) + "</span>\r\n" +
             "</p>\r\n" +
             "<div id=\"" + folderId + "\">");
@@ -869,9 +869,9 @@ public class DocumentationGenerator {
     protected void generateNavigationMenuItem(String title, String url, String target) throws IOException {
         // NOTE: don't put whitespace between img elements        
         out("<p>" +
-            "<img src=\"ftv2vertline.png\" alt=\"|\" width=\"16\" height=\"22\"/>" +
-            "<img src=\"ftv2node.png\" alt=\"o\" width=\"16\" height=\"22\"/>" +
-            "<img src=\"ftv2doc.png\" alt=\"*\" width=\"24\" height=\"22\"/>\r\n" +
+            "<img src=\"ftv2vertline.png\" alt=\"\" width=\"16\" height=\"22\"/>" +
+            "<img src=\"ftv2node.png\" alt=\"\" width=\"16\" height=\"22\"/>" +
+            "<img src=\"ftv2doc.png\" alt=\"\" width=\"20\" height=\"20\"/>\r\n" +
             "<a href=\"" + url + "\" target=\"" + target + "\">" + title + "</a>\r\n" +
             "</p>\r\n");
     }

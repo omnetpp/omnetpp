@@ -222,7 +222,7 @@ public class GeneratorConfigurationDialog
     private void createContentOptions(Composite container) {
         Group group = new Group(container, SWT.NONE);
         group.setLayout(new RowLayout(SWT.VERTICAL));
-        group.setText("Generate:");
+        group.setText("Generate");
         group.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false, 2, 1));
 
         boolean dotAvailable = OmnetppPreferencePage.isGraphvizDotAvailable();
@@ -260,7 +260,7 @@ public class GeneratorConfigurationDialog
         Group group = new Group(container, SWT.NONE);
         group.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, false, false, 2, 1));
         group.setLayout(new GridLayout(3, false));
-        group.setText("Target folders:");
+        group.setText("Target folders");
 
         insideProjectsButton = new Button(group, SWT.RADIO);
         insideProjectsButton.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 3, 1));

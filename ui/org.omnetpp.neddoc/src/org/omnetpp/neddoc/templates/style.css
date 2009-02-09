@@ -9,15 +9,15 @@ tt { font-family:Courier,Courier New,Fixed,Terminal }
 img         { border:none }
 .navbar     { font-size:8pt; }
 .navbarlink { font-size:8pt; }
-.indextitle { font-size:12pt; }
+.indextitle { font-weight:bold; }
 .comptitle  { font-size:14pt; }
 .subtitle   { font-size:12pt; margin-bottom: 3px }
 .footer     { font-size:8pt; margin-top:0px; text-align:center; color:#303030; }
 .inherited  { color:#A0A0A0 }
-.navigation h3 { margin: 0px; margin-top: 1em; font-size: 11pt; }
-.navigation p   { margin: 0px; white-space: nowrap; } 
+.navigation h3  { margin: 0px; margin-top: 1em; font-size: 11pt; }
+.navigation p   { margin: 0px; white-space: nowrap; }
 .navigation div { display: none; margin: 0px; }
-.navigation img { vertical-align: middle; } 
+.navigation img { vertical-align: middle; }
 FIXME.paramtable { border:2px ridge; border-collapse:collapse;}
 .src-keyword { font-weight:bold }
 .src-comment { font-style:italic; color:#404040 }
