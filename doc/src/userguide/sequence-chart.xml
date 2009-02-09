@@ -307,7 +307,7 @@
       </para>
       <para>
 	We also would like to record some message details during the simulation. To do
-	that, comment out the following line from omnetpp.ini:
+	that, comment out the following line from [[omnetpp.ini]]:
 	<screen>eventlog-message-detail-pattern = *:(not declaredOn(cMessage) and not
 	declaredOn(cNamedObject) and not declaredOn(cObject))</screen>
       </para>

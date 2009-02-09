@@ -8,7 +8,7 @@
     <title>Overview</title>
     <para>
       In &Omnetpp;, simulation models are parameterized and configured for execution using
-      configuration files with the .ini extension, called ini files. Ini files are text
+      configuration files with the [[.ini]] extension, called ini files. Ini files are text
       files which can be edited using any text editor. However, &Omnetpp; 4.0 introduces a
       tool expressly designed for editing ini files. The Inifile Editor is part of the
       &Omnetpp; IDE, and it can very efficiently assist the user in authoring ini files,
