@@ -46,10 +46,10 @@
     <para>We double-clicked the README.txt file, and its contents are loaded into the
       editor area. Eclipse automatically launches the editor associated with a particular
       file type, so you can start editing right away.</para>
-    <para>The Property view contains information on the particular object that is
+    <para>The ``Properties View'' contains information on the particular object that is
       selected in the editor area, or one of the other views that serve as a selection
       provider.</para>
-    <para>A number of views are docked at the bottom of the window. The Problems View
+    <para>A number of views are docked at the bottom of the window. The ``Problems View''
       references code lines where Eclipse encountered a problem. The Editor windows
       also provide visual feedback by placing a red "X" icon in front of the line of code
       that is causing the problem.</para>
@@ -89,9 +89,9 @@
       use a wizard: just choose
       ``File|New|&Omnetpp; Project...''
       from the menu, specify a project name, and click the
-      <guibutton>Finish</guibutton>
+      ``Finish''
       button. If you do not plan to write simple modules, you may unselect the
-      <guibutton>C++ Support</guibutton>
+      ``C++ Support''
       checkbox which will disable all C++ related features on the project.
       <picture file="pictures/Intro-NewProjectWizard.png"> Creating a new &Omnetpp; Project </picture>
     </para>

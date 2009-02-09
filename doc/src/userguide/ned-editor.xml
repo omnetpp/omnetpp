@@ -39,12 +39,12 @@
       As a side effect, currently if there are two modules with the same name anywhere in
       the workspace, they will collide, and both will be marked with an error.
       Furthermore, the name will be treated as undefined, and any other modules depending
-      on it will also generate an error. (Thus, a “no such module type” error may mean
+      on it will also generate an error. (Thus, a "no such module type" error may mean
       that actually there are more than one definitions which nullify each other.)
     </note>
     <para>
       When the IDE detects errors in a NED file, the problem will be flagged with an error
-      marker in the Project Explorer, and the Problems View will be updated to show the
+      marker in the Project Explorer, and the ``Problems View'' will be updated to show the
       description and location of the problem. Also error markers will appear in the text
       window or on the graphical representation of the problematic component. Opening a
       NED file which contains an error will open the file in text mode. Switching to
@@ -59,7 +59,7 @@
       from the menu will bring up a wizard where you can specify the target directory and
       the file/module name. You may choose to create an empty NED file, or a
       simple/compound module, or a network. Once you press the
-      <guibutton>Finish</guibutton>
+      ``Finish''
       button, a new NED file will be created with the requested content.
       <picture file="pictures/NED-NewWizard.png">Creating a new NED file</picture>
     </para>
@@ -152,12 +152,12 @@
         Right-clicking any element in the edited NED file will bring up a context menu
         allowing several actions like changing the icon, pinning/unpinning a submodule,
         re-layouting a compound module, or deleting/renaming the element. There are also
-        items to activate various views, for example the Properties View where you can
+        items to activate various views, for example the ``Properties View'' where you can
         edit properties of the element.
       </para>
       <para>
         Hovering over an element will display its documentation (the comment in the NED
-        source above the definition) in a “tooltip” if it has one. Pressing
+        source above the definition) in a "tooltip" if it has one. Pressing
         <keycap>F2</keycap>
         will make the tooltip window persistent, so that it can be resized and scrolled
         for more convenient reading.
@@ -219,7 +219,7 @@
           ,
           <keycap>Ctrl+Y</keycap>
           for undo/redo, and the DEL key for deletion. These functions are also available
-          in the Edit menu and in the context menu of the selected element.
+          in the ``Edit'' menu and in the context menu of the selected element.
         </para>
       </sect3>
       <sect3>
@@ -242,7 +242,7 @@
           menu, helper lines will appear to allow you to align to other modules. Selecting
           more than one submodule activates the
           ``Alignment''
-          menu (found both in the View menu and in the context menu).
+          menu (found both in the ``View'' menu and in the context menu).
         </para>
       </sect3>
       <sect3>
@@ -257,7 +257,7 @@
       <sect3>
         <title>Zooming</title>
         <para>
-          Zooming in and out is possible from the View menu, or using
+          Zooming in and out is possible from the ``View'' menu, or using
           <keycap>Ctrl+-</keycap>
           or
           <keycap>Ctrl+=,</keycap>
@@ -287,7 +287,7 @@
           To choose an icon for a module right click on it and select the
           ``Choose an Icon...''
           menu item from the context menu or select the module and modify the icon
-          property in the Properties View.
+          property in the ``Properties View''.
         </para>
       </sect3>
       <sect3>
@@ -299,7 +299,7 @@
           editor.
         </para>
         <para>
-          Navigating inside a longer NED file is much easier if you open the Outline View
+          Navigating inside a longer NED file is much easier if you open the ``Outline View''
           to see the internal structure of the file. Selecting an element in the outline
           will select the same element in the graphical editor.
         </para>
@@ -314,7 +314,7 @@
         <title>Opening a NED type</title>
         <para>
           If you know only the name of a type of a module or other NED element, you can
-          use the Open NED Type dialog by pressing
+          use the ``Open NED Type'' dialog by pressing
           <keycap>Ctrl+SHIFT+N</keycap>
           . Type the name, or search with wildcards. The requested type will be opened in
           an editor. This feature is not tied to the graphical editor: the Open NED Type
@@ -325,7 +325,7 @@
         <title>Setting properties</title>
         <para>
           Elements of the display string and other properties associated with the selected
-          elements can be edited in the Properties View. The property view is grouped and
+          elements can be edited in the ``Properties View''. The property view is grouped and
           hierarchically organized however you can switch off this behavior on the view
           toolbar. Most properties can be edited directly in the view but some has also
           specific editors that can be activated by pressing the ellipsis button at the
@@ -402,7 +402,7 @@
       <para>
         The NED source is continually parsed as you type, and errors and warnings are
         displayed as markers on the editor rulers. At times when the NED text is
-        syntactically correct, the editor has full knowledge of “what is what” in the text
+        syntactically correct, the editor has full knowledge of "what is what" in the text
         buffer.
       </para>
       <picture file="pictures/NED-TextEditor.png">NED Source Editor</picture>
@@ -442,7 +442,7 @@
           <keycap>CTRL+SHIFT+G</keycap>
           searches for the selection in all NED files in the open projects. This function
           lets you quickly find references to the word or type currently under the cursor.
-          The results are shown in the standard Search View.
+          The results are shown in the standard ``Search View''.
         </para>
       </sect3>
       <sect3>
@@ -508,7 +508,7 @@
           <title>Exporting images</title>
           <para>
             To export a compound module as a picture, select the compound module and bring
-            up its context menu, select Export Image... and choose file name and type. The
+            up its context menu, select ``Export Image...'' and choose file name and type. The
             module will be exported to the file system. BMP, PNG, JPEG, SVG and PDF
             formats are supported.
           </para>
@@ -525,7 +525,7 @@
     <title>Associated Views</title>
     <para>
       There are several views related to the NED editor. These views can be displayed (if
-      not already open) by choosing ``Window|Show View'' in the menu or by selecting a NED
+      not already open) by choosing ``Window | Show View'' in the menu or by selecting a NED
       element in the graphical editor and selecting
       ``Show In''
       from the context menu.
@@ -533,7 +533,7 @@
     <sect2>
       <title>Outline View</title>
       <para>
-        The Outline View allows an overview of the current NED file. Clicking on an
+        The ``Outline View'' allows an overview of the current NED file. Clicking on an
         element will focus the corresponding element in the text or graphical view. It has
         limited editing functionality; you can copy/cut/paste and delete an object.
       </para>
@@ -542,7 +542,7 @@
     <sect2>
       <title>Property View</title>
       <para>
-        The Property View contains all properties of the selected graphical element.
+        The ``Property View'' contains all properties of the selected graphical element.
         Visual appearance, name, type and other properties can be changed in this view.
         Some fields has specialized editors that can be activated by clicking on the
         ellipsis button in the field editor. Fields marked with a small light bulb icon
@@ -558,13 +558,13 @@
         The Palette is normally displayed on the left or right side of the editor area,
         and contains tools to create various NED elements. It is possible to hide it by
         clicking on the little arrow in the corner, and to detach it from the editor and
-        display it as a normal Eclipse view (``Window|Show View|Other...|General|Palette'').
+        display it as a normal Eclipse view (``Window | Show View | Other... | General | Palette'').
       </para>
     </sect2>
     <sect2>
       <title>Problems View</title>
       <para>
-        The Problems View contains error and warning messages generated by the parser.
+        The ``Problems View'' contains error and warning messages generated by the parser.
         Double-clicking a line will open the problematic file and move to the appropriate
         marker.
       </para>
@@ -573,9 +573,9 @@
     <sect2>
       <title>NED Inheritance View</title>
       <para>
-        The Inheritance View displays the relationship between different NED types. Select
+        The ``Inheritance View'' displays the relationship between different NED types. Select
         a NED element in the graphical editor or move the cursor into a NED definition and
-        the Inheritance view will display the ancestors of this type. If you do not want
+        the ``Inheritance View'' will display the ancestors of this type. If you do not want
         the view to follow the selection in the editor, click the Pin icon on the view
         toolbar. This will fix the displayed type to the currently selected one.
       </para>
@@ -584,7 +584,7 @@
     <sect2>
       <title>Module Hierarchy View</title>
       <para>
-        The Module Hierarchy View shows the contained submodules and their parameters,
+        The ``Module Hierarchy View'' shows the contained submodules and their parameters,
         several levels deep. It also displays the parameters and other contained features.
       </para>
       <picture file="pictures/NED-ModuleHierarchyView.png">Module Hierarchy View</picture>
@@ -592,7 +592,7 @@
     <sect2>
       <title>Parameters View</title>
       <para>
-        The Parameters View shows parameters of the selected module, including inherited
+        The ``Parameters View'' shows parameters of the selected module, including inherited
         parameters, the values of the parameters and the origin of the values (NED
         definition, INI file or undefined).
       </para>

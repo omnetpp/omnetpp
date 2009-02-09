@@ -45,15 +45,15 @@
       To create a new analysis file choose
       `` File | New | Analysis File '' from the menu.
       Select the folder the new file created in and enter file name.
-      Press <guibutton>Finish</guibutton> and an empty analysis file is created
+      Press ``Finish'' and an empty analysis file is created
       and opened.
     </para>
     <picture file="pictures/ANF-NewAnalysisFileDialog.png">New Analysis File dialog</picture>
     <para>
       There is a quick way to create an analysis file for a result file.
-      Just double click on the result file in the Project Explorer View to open the
-      New Analysis File dialog. The folder and file name is filled in, according to
-      the location and name of the result file. Press <guibutton>Finish</guibutton>
+      Just double click on the result file in the ``Project Explorer View'' to open the
+      ``New Analysis File'' dialog. The folder and file name is filled in, according to
+      the location and name of the result file. Press ``Finish''
       and a new analysis file is created containing the vector and scalar files whose
       names corresponds to the result file. If the name of the result file contained
       a numeric suffix (e.g. aloha-10.vec), then all files with the same prefix will be added
@@ -85,8 +85,8 @@
           The first page displays the result files that serve as input to the analysis. The
           upper half specifies what files to select, by explicit filenames or by wildcards.
           New input files can be added to the analysis by dragging vector and scalar files
-          from the Project Explorer View, or by opening dialogs with the
-          <guibutton>Add File...</guibutton> or <guibutton>Wildcard...</guibutton>
+          from the ``Project Explorer View'', or by opening dialogs with the
+          ``Add File...'' or ``Wildcard...''
           buttons. If the file name starts with '/' it is interpreted relative
           to the workspace root, otherwise it is relative to the folder of the analysis
           file.
@@ -107,7 +107,7 @@
         </para>
         <tip>
           <para>
-            The Progress View displays the progress of the indexing process.
+            The ``Progress View'' displays the progress of the indexing process.
           </para>
         </tip>
         <para>
@@ -143,7 +143,7 @@
           plotted, or remembered in named datasets for further processing.
         </para>
         <para>
-          Pressing the <guibutton>Advanced</guibutton> button switches to advanced filter mode.
+          Pressing the ``Advanced'' button switches to advanced filter mode.
           In the text field you can enter a complex filter pattern.
         </para>
         <tip>
@@ -177,7 +177,7 @@
         </para>
         <para>
           The selected vector's data can also be displayed in a table. Make sure that the
-          Output Vector View is opened. If not, then you can open it from the context menu
+          ``Output Vector View'' is opened. If not, then you can open it from the context menu
           (``Show Output Vector View''). If you select a vector in the
           editor, the view will display its content.
         </para>
@@ -299,7 +299,7 @@
         <picture file="pictures/ANF-DatasetsPage.png">Defining datasets to be analyzed</picture>
         <tip>
           <para>
-          You can browse the dataset's content in the Dataset View. Open the view by selecting
+          You can browse the dataset's content in the ``Dataset View''. Open the view by selecting
           ``Show Dataset View'' from the context menu. Select a chart
           to display its content or another node to display the content of the dataset after that
           processing is applied.
@@ -359,7 +359,7 @@
           Right click on the processing node or chart, and select the format
           from the ``Export to File'' submenu. The file will
           contain the data of the chart, or the dataset after the selected processing is
-          applied. Enter the name of the file and press <guibutton>Finish</guibutton>.
+          applied. Enter the name of the file and press ``Finish''.
         </para>
 
         <para>
@@ -498,7 +498,7 @@
           Sometimes it is useful to display several charts on one page. When you create
           a chart, it is automatically added to a default chart sheet. Chart sheets
           and the their charts are displayed on the lower pane of the Datasets page.
-          To create a new chart sheet, use <guibutton>Chart Sheet</guibutton>
+          To create a new chart sheet, use ``Chart Sheet''
           button on the palette. You can add charts to it either by using the opening dialog or by
           dragging charts. To move charts between chart sheets use drag and drop or
           Cut/Paste. You can display the charts by double clicking on the chart sheet node.
@@ -557,9 +557,9 @@
           you can edit the properties of the selected line.
         </para>
         <para>
-          You can also use the Properties view to edit the chart. It is recommended to
+          You can also use the ``Properties View'' to edit the chart. It is recommended to
           display the properties grouped by their category.
-          (<icon name="Eclipse_ShowCategories.png"/> on the toolbar of the Properties View)
+          (<icon name="Eclipse_ShowCategories.png"/> on the toolbar of the ``Properties View'')
         </para>
         <chart-properties groups="ChartProperties">Common chart properties</chart-properties>
       </sect3>
@@ -608,8 +608,8 @@
         </para>
         <picture file="pictures/ANF-ScalarChart.png">Bar chart</picture>
         <para>
-          The scalar chart's content can be specified on the Content tab of their
-          Properties dialog. Attributes in the "Groups" list box determines the groups so that
+          The scalar chart's content can be specified on the ``Content'' tab of their
+          ``Properties'' dialog. Attributes in the "Groups" list box determines the groups so that
           within a group each attribute has the same value. Attributes in the "Bars"
           list box determines the bars, the bar height is the average of scalars
           that have the same values of "Bar" attributes. You can classify the attributes
@@ -640,7 +640,7 @@
           They are formed automatically from attributes of the vector (like file, run,
           module, vector name, etc.). If you want to name the lines otherwise, you can
           enter a name pattern in the ``Line names'' field of the
-          Properties dialog (Main tab). You can use "{file}", "{run}", "{module}", "{name}",
+          ``Properties'' dialog (``Main'' tab). You can use "{file}", "{run}", "{module}", "{name}",
           to refer to an attribute value, press
           <keycombo><keycap>Ctrl</keycap><keycap>Space</keycap></keycombo> for the complete
           list.
@@ -652,8 +652,8 @@
           from the context menu too.
         </para>
         <para>
-          Line charts are synchronized with Output Vector and Dataset views.
-          Select a data point and see that in the Output Vector and Dataset View
+          Line charts are synchronized with ``Output Vector'' and ``Dataset'' views.
+          Select a data point and see that in the Output Vector and ``Dataset View''
           the data point and the vector are selected.
         </para>
         <chart-properties groups="VectorChartProperties LineProperties">Line chart properties</chart-properties>
@@ -732,7 +732,7 @@
     <sect2>
       <title>Outline View</title>
       <para>
-        The Outline View shows an overview of the current analysis. Clicking on an
+        The ``Outline View'' shows an overview of the current analysis. Clicking on an
         element will select the corresponding element in the current editor. Tree editing
         operations also work in this view.
       </para>
@@ -753,7 +753,7 @@
     <sect2>
       <title>Output Vector View</title>
       <para>
-        The Output Vector View shows the content of the selected vector. It displays the
+        The ``Output Vector View'' shows the content of the selected vector. It displays the
         serial number, simulation time and value of the data points. When event numbers
         are recorded during the simulation, they are also displayed. Large output files
         are handled efficiently, only the visible part of the vector is read from the
@@ -770,7 +770,7 @@
     <sect2>
       <title>Dataset View</title>
       <para>
-        The Dataset View displays the dataset's content at the selected dataset item. It is
+        The ``Dataset View'' displays the dataset's content at the selected dataset item. It is
         divided into three tables similar to the ones on the Browse Data page. The tables can be
         selected by the
         <icon name="ShowScalars.gif"/><icon name="ShowVectors.gif"/><icon name="ShowHistograms.gif"/>

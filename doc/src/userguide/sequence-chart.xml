@@ -132,7 +132,7 @@
       </picture>
       <para>
 	Let us demonstrate on this simple example how filtering works with the Sequence
-	Chart. Open the Filter Fialog with the toolbar button <icon name="filter.png"/>
+	Chart. Open the ``Filter Dialog'' with the toolbar button <icon name="filter.png"/>
 	and put a checkmark for node '0' and '3' on the ``Module filter|by
 	name'' panel, and apply it. The chart now displays only two axes that
 	correspond to the two selected nodes.  Note that the arrows on this figure are
@@ -435,8 +435,7 @@
 	<para>
 	  To see how the chart looks when the ping messages get lost in the air, first
 	  turn off range filtering. Then go to <eventnumber>1269</eventnumber> by
-	  selecting the ``Goto Event'' option from the Eventlog
-	  Table view's context menu. In <xref
+	  selecting the ``Goto Event'' option from the ``Eventlog Table'' view's context menu. In <xref
 	  linkend="pictures/SequenceChart-Examples-WirelessUnsuccessfulPing.png"/> you can
 	  see how the receiver radio does not send up the incoming message to its MAC
 	  layer due to the signal level being too low. This actually happens at
@@ -815,8 +814,8 @@
       <title>Associated Views</title>
       <para>
 	When you open an eventlog file in the Sequence Chart editor, it will automatically
-	open the Eventlog Table view with the same file. If you select an event on the
-	Sequence Chart editor, then the Eventlog Table view will jump to the same event
+	open the ``Eventlog Table View'' with the same file. If you select an event on the
+	Sequence Chart editor, then the ``Eventlog Table View'' will jump to the same event
 	and vice versa. This interconnection makes navigation easier, and you can
 	immediately see the details of selected event's raw data.
       </para>
@@ -1020,8 +1019,8 @@
       <title>Associated Views</title>
       <para>
 	When you open an eventlog file in the Eventlog Table editor, it will automatically
-	open the Sequence Chart view with the same file. If you select an event on the
-	Eventlog Table editor, then the Sequence Chart view will jump to the same event
+	open the ``Sequence Chart View'' with the same file. If you select an event on the
+	Eventlog Table editor, then the ``Sequence Chart View'' will jump to the same event
 	and vice versa. This interconnection makes navigation easier, and you can
 	immediately see the cause and consequence relationships of the selected event.
       </para>
@@ -1169,7 +1168,7 @@
       also as a view. The difference between being an editor or a view is quite important,
       because there is only at most one instance of a view of the same kind. It means that
       even if multiple eventlog files are open in Sequence Chart editors, there are no
-      more than one Eventlog Table views shared between them. This singleton view will
+      more than one ``Eventlog Table'' views shared between them. This singleton view will
       automatically display the eventlog file of the active editor. It will also remember
       its position and state when switching among editors back and forth. For more details
       on what an editor and a view is, and what are the differences please refer to the

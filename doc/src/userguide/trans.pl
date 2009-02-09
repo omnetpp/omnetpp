@@ -7,8 +7,8 @@ while (<>) {
 }
 $txt =~ s|\[\[|<literal>|gs;
 $txt =~ s|\]\]|</literal>|gs;
-$txt =~ s|``|<guimenuitem>|gs;
-$txt =~ s|''|</guimenuitem>|gs;
+$txt =~ s|``|<emphasis>|gs;
+$txt =~ s|''|</emphasis>|gs;
 $txt =~ s|\(\s*(<.*?>)|($1|gs;
 $txt =~ s|(</.*?>)\s*([.)])|$1$2|gs;
 

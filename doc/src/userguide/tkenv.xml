@@ -203,7 +203,7 @@
       <para>
         Output vectors have also representation in the model. Double clicking on an output vector object
         displays the content graphically. You may set the display properties by clicking on the
-        <guibutton>Options...</guibutton>
+        ``Options...''
         button.
       </para>
       <note>
@@ -245,7 +245,7 @@
       <title>Run mode</title>
       <para>In Run mode, the simulation runs with all tracing aids on. Message animation is active and
         inspector windows are updated after each event. Output messages are displayed in the main window and
-        module output windows. You can stop the simulation with the Stop button on the toolbar. You can fully
+        module output windows. You can stop the simulation with the ``Stop'' button on the toolbar. You can fully
         interact with the user interface while the simulation is running: you can open inspectors etc.</para>
       <note>
         If you find this mode too slow or distracting, you may switch off the unneeded animation features in
@@ -264,7 +264,7 @@
       <para> In Express mode, the simulation runs at about the same speed as with Cmdenv, all tracing
         disabled. Module output is not recorded in the output windows any more. You can interact with the
         simulation only once in a while, thus the run-time overhead of the user interface is minimal. You have
-        to explicitly push the Update inspectors button if you want an update.</para>
+        to explicitly push the ``Update inspectors'' button if you want an update.</para>
     </sect2>
     <sect2>
       <title>Run until</title>
@@ -288,7 +288,7 @@
       displayed on the status bar.</para>
     <para>
       Simulations are created when Tkenv is started and the user has selected a network to simulate (or the
-      user clicked the New Network button to select a new one). First the simulation kernel loads all
+      user clicked the ``New Network'' button to select a new one). First the simulation kernel loads all
       necessary NED files and registers the loaded modules with the kernel. Object constructors are called at
       this point. The next phase is the initialization when all module's
       [[initialize()]] method is called.
@@ -377,7 +377,7 @@
       selecting
       ``Filter window contents''
       menu item. Individual modules can be selected/deselected. General logging behaviour can be controlled in
-      the Configuration dialog.
+      the ``Simulation Options'' dialog.
     </para>
     <note>
       All message lines in the log window are filtered according to the filter settings (older ones too).

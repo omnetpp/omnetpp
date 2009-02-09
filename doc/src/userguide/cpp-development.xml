@@ -39,30 +39,30 @@
       </note>
       Eclipse, CDT and the &Omnetpp; IDE uses several files in the project to store
       settings. The following files should be present in the project root directory (these
-      files are normally hidden by the IDE in the Project Explore view):
+      files are normally hidden by the IDE in the ``Project Explorer View''):
       <itemizedlist>
         <listitem>
-          .project : Eclipse stores the general project properties in this file, including
+          [[.project]] : Eclipse stores the general project properties in this file, including
           project name, dependencies from other projects, project type (i.e. whether
           &Omnetpp; specific features are supported at all)
         </listitem>
         <listitem>
-          .cproject : This file contains settings specific to C++ development including
+          [[.cproject]] : This file contains settings specific to C++ development including
           toolchain definition, configuration templates (i.e. debug / release), error
           parsers, debugger settings.
         </listitem>
         <listitem>
-          .buildspec : Contains all settings specific to &Omnetpp;. Basically this file
+          [[.buildspec]] : Contains all settings specific to &Omnetpp;. Basically this file
           contains the settings passed to the makefile generator. You can configure all
-          &Omnetpp; specific settings in the project properties dialog, on the
-          &Omnetpp;/Makemakepage. Everything you set on this page will be stored in
-          the .buildspec file.
+          &Omnetpp; specific settings in the ``Project Properties'' dialog, on the
+          ``&Omnetpp;/Makemakepage''. Everything you set on this page will be stored in
+          the [[.buildspec]] file.
         </listitem>
       </itemizedlist>
       <note>
         If you are creating a project where no C++ support is needed (i.e. you are using
         an existing precompiled simulation library and you edit only Ned and Ini files),
-        the .cproject and .buildspec files will not be present in your project.
+        the [[.cproject]] and [[.buildspec]] files will not be present in your project.
       </note>
     </para>
   </sect1>
@@ -110,7 +110,7 @@
     <para>
       Finally choose from the preset configurations. By default a debug and a release
       configuration can be created. Pressing the
-      <guibutton>Finish</guibutton>
+      ``Finish''
       button will create the project.
     </para>
     <picture file="pictures/CPP-NewProjectWizard3.png"> Selecting configurations </picture>
@@ -125,7 +125,7 @@
       A separate makefile will be created according to the settings you specify in the
       dialog. On the C/C++ Build page you can specify which makefile will be called by the
       IDE build process when you initiate a Build action. By default the Build directory
-      is specified as ${ProjDirPath} which is the root directory of your project.
+      is specified as [[${ProjDirPath}]] which is the root directory of your project.
       You can set any directory for the build directory, but keep in mind that it
       should contain an automatically generated makefile or you have to create a
       makefile manually there (not recommended). If you have
@@ -150,7 +150,7 @@
       Before you start modifying the settings, make sure that you select the folder
       you want to configure. If you want to convert the current folder to a source folder
       simply click on
-      <guibutton>Source Location</guibutton>
+      ``Source Location''
       . It is also possible to selectively include or exclude a whole directory tree if it is already
       inside a source tree.
     </para>
@@ -159,16 +159,16 @@
     </note>
     <picture file="pictures/CPP-SourceFolder.png">Setting a source folder</picture>
     <note>To regenerate your makefile on the command line, you can export the settings
-       by pressing the <guibutton>Export</guibutton> button. This action will create
+       by pressing the ``Export'' button. This action will create
        a file with the name [[makemakefiles]].
        After exporting, execute [[make -f makemakefiles]] from the command line.</note>
     <para>
-      Press the <guibutton>Makemake</guibutton> button to generate a makefile automatically
+      Press the ``Makemake'' button to generate a makefile automatically
       in the selected folder. Manually written makefiles can be used by selecting
-      <guibutton>Custom Make</guibutton>.
+      ``Custom Make''.
     </para>
     <para>
-      To configure how the makefile will be generated press the <guibutton>Options</guibutton> button.
+      To configure how the makefile will be generated press the ``Options'' button.
     </para>
     <para>
       On the first tab of the options dialog, you can specify how the final target of the makefile is created.
@@ -203,7 +203,7 @@
         </listitem>
       </itemizedlist>
       If you want to invoke additional makefiles from this makefile, click on the
-      <guibutton>More >></guibutton>
+      ``More >>''
       button and specify which directories should be visited.
     </para>
 
@@ -273,7 +273,7 @@
     <para>
       To set the project dependence, right click on your project and select
       ``Properties''
-      . In the Properties dialog select Project References page and click on the projects
+      . In the ``Properties'' dialog select Project References page and click on the projects
       you are depending on. If those projects provide shared or static libraries as their
       output the linker will automatically include those libraries during link phase. It
       is also possible to use executable files from other projects. In this case your
@@ -323,7 +323,7 @@
     <para>
       Once the correct configuration is active select
       ``Build Project''
-      from the Project menu or from the project context menu. This should start the build
+      from the ``Project'' menu or from the project context menu. This should start the build
       process. First a makefile will be created in each source folder (according to the
       project configuration Makemake page) and then the primary makefile will be called to
       start the build process. You should switch to the console view to see the actual
@@ -333,7 +333,7 @@
     <tip>
       If you have a multi core system you may try to configure &Omnetpp; to support parallel
       build. Open the Project properties dialog (Properties from the project context
-      menu), and select the C/C++ Build page and the Behavior tab. Click the use parallel
+      menu), and select the C/C++ Build page and the ``Behavior'' tab. Click the use parallel
       build checkbox and specify the number of parallel jobs (usually do not set this
       higher than the number of CPUs available in your system. (Warning: Never use the
       "Optimal jobs number" choice. It will start too many jobs at once and you will run
@@ -367,7 +367,7 @@
   </sect1>
   <sect1>
     <title>Problems View</title>
-    <para>Problems view contains the errors and warning generated by the build
+    <para>``Problems View'' contains the errors and warning generated by the build
       process. You can browse the problem list and double click any message to go to the
       problem location in the source file. Ned file and Ini file problems are also
       reported in this view along with the C++ problems. The editors are annotated with
