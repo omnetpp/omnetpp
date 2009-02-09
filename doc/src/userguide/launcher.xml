@@ -162,6 +162,7 @@
       </itemizedlist>
       <sect3>
         <title>Related command line arguments</title>
+        <!-- TODO add some troubleshooting -->
         <para> Most settings in the dialog simply translate to command-line options to the simulation
           executable. This is summarized in the following list:</para>
         <itemizedlist>
@@ -193,11 +194,11 @@
   <sect1>
     <title>Batch Execution</title>
     <para>
-      In previous versions of &Omnetpp; to run a simulation several times with different
+      In previous versions of &Omnetpp;, to run a simulation several times with different
       parameters, you had to create an external script that created an Ini file for each
       run and started the simulation with the specified file. In &Omnetpp; 4.0 it is no
-      longer needed. The vastly improved Ini file syntax allows you to specify loops for
-      specific parameters so you no longer need separate Ini files for each run. In
+      longer needed. The improved INI file syntax allows you to specify loops for
+      specific parameters so you no longer need separate INI files for each run. In
       addition the IDE itself supports starting your simulation several times.
     </para>
     <picture file="pictures/Launch-BatchRun.png">
@@ -205,29 +206,27 @@
     </picture>
     <note>Batch running is supported only in command line environment.</note>
     <para>
-      If you create a Configuration with one or more iteration variables, you will be able
-      to run your simulations using each possible value of these variables. Practically
-      the IDE creates the cartesian product from these variables and assigns a run number
+      If you create a [[Configuration]] with one or more iteration variables, you will be able
+      to run your simulations to explore the parameter space defined by those variables. Practically,
+      the IDE creates the Cartesian product from these variables and assigns a run number
       to each product. It is possible to execute one, more or all runs of the simulation
-      by specifying the
-      [[Run number]]
-      field in the ``Run Dialog''. You can specify a single number (e.g. 3), and a combination
-      of more numbers (e.g. 2,3,6,7..11) or all run numbers (using *).
+      by specifying the ``Run number''
+      field in the ``Run Dialog''. You can specify a single number (e.g. 3), a combination
+      of several numbers (e.g. 2,3,6,7..11) or all run numbers (using *).
     </para>
     <tip>
       If you already have specified your executable, the configuration which should be
       run and selected the Command line environment, you may try to hover over the
-      [[Run Number]]
-      field. This will give you a description of the possible runs and how they are
-      associated with the iteration variable values.
+      ``Run Number'' field. This will give you a description of the possible runs and how they are
+      associated with the iteration variable values. (The tooltip is calculated by
+      executing the simulation program with the [[-x Congiguration -G]] options in command line mode.)
     </tip>
     <picture file="pictures/Launch-BatchRun2.png">
       Iteration loop expansion in a tooltip
     </picture>
     <para>
       If you have a multi-core or multi-processor system and have ample of memory, you may
-      try to set the
-      [[Processes to run parallel]]
+      try to set the ``Processes to run parallel''
       field to a higher number. This will allow the IDE to start more simulation process
       in parallel resulting in a much lower overall simulation time for the whole batch.
     </para>
@@ -271,7 +270,7 @@
     <para>While the ``Launch'' dialog is very powerful, in most cases you just want to run your
     simulation as quick as possible. Based on the current selection the IDE provides several
     quick methods to create a launch configuration. You can select a file by either clicking on
-    it in the Project Explorer, or simply by opening it for editing. After selection, just click on the
+    it in the ``Project Explorer'', or simply by opening it for editing. After selection, just click on the
     ``Run'' or ``Debug'' icon on the toolbar, or right click on
     the file and choose the ``Run As...'' or ``Debug As...''
     menu.</para>
@@ -285,7 +284,7 @@
         to start this network.</listitem>
       </itemizedlist>
     <note>
-      If the information to launch the simulation is insufficient or ambiguous the IDE will ask you
+      If the information to launch the simulation is insufficient or ambiguous, the IDE will ask you
       before creating a configuration.
     </note>
   </sect1>

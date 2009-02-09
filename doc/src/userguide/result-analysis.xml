@@ -17,7 +17,7 @@
       instantly reproducible. This means that all processing and charts are stored as datasets; for example,
       if simulations need to be re-run due to a model bug or misconfiguration, existing charts need not be
       re-created all over again, but simply replacing the old result files with the new ones will result in
-      the charts being automatically displayed with the new data. 
+      the charts being automatically displayed with the new data.
     </para>
     <para> When creating an analysis the user first selects the input of the analysis by specifying file names
       or file name patterns (e.g. "adhoc-*.vec"). Data of interest can be selected into datasets by further
@@ -77,7 +77,7 @@
           contain. Note that &Omnetpp;
           4.0 result files contain a unique run ID and several metadata annotations in addition to the actual
           recorded data. The third tree organizes simulation runs according to their
-          experiment-measurement-replication labels. 
+          experiment-measurement-replication labels.
         </para>
         <para>
           The underlying assumption is that users will organize their simulation-based research into various
@@ -90,7 +90,7 @@
           several times, with different random number seeds. It is easy to set up such scenarios with the
           improved ini files of &Omnetpp;
           4.0, and then the experiment-measurement-replication labels will be assigned automatically -- please
-          refer to the chapter "Configuring and Running Simulations" in the manual for more discussion. 
+          refer to the chapter "Configuring and Running Simulations" in the manual for more discussion.
         </para>
       </sect3>
       <sect3>
@@ -104,8 +104,8 @@
           enter a complex filter pattern.</para>
         <tip>
           <para> You can easily display the data of a selected file, run, experiment, measurement or
-            replication if you double click on the required tree node in the lower part of the Inputs page. It
-            sets the appropriate filter and shows the data on the "Browse Data" page.</para>
+            replication if you double click on the required tree node in the lower part of the ``Inputs'' page. It
+            sets the appropriate filter and shows the data on the ``Browse Data'' page.</para>
           <para> If you right click on a table cell and select ``Set filter: ...'' action from the menu, you
             can set the value of that cell as the filter expression.</para>
         </tip>
@@ -132,7 +132,7 @@
           pattern filters for the value of a field of the result item, and has the form <![CDATA[<field_name>(<pattern>)]]>.
           The following table shows the valid field names. The name field can be omitted and simply the name
           pattern can be used as a filter expression. It must be quoted if it contains whitespace or
-          parenthesis. 
+          parenthesis.
           <informaltable>
             <tgroup cols="2">
               <colspec colwidth="1in" />
@@ -445,7 +445,7 @@
         <title>Chart sheets</title>
         <para> Sometimes it is useful to display several charts on one page. When you create a chart, it is
           automatically added to a default chart sheet. Chart sheets and the their charts are displayed on the
-          lower pane of the Datasets page. To create a new chart sheet, use ``Chart Sheet'' button on the
+          lower pane of the ``Datasets'' page. To create a new chart sheet, use ``Chart Sheet'' button on the
           palette. You can add charts to it either by using the opening dialog or by dragging charts. To move
           charts between chart sheets use drag and drop or Cut/Paste. You can display the charts by double
           clicking on the chart sheet node.</para>
@@ -461,19 +461,19 @@
           4.0 you can open charts for scalar, vector or histogram data with one click. Charts can be saved
           into the analysis file too. The Analysis Editor supports bar charts, line charts, histogram charts
           and scatter charts. Charts are interactive, they can be zoomed, scrolled, and a tooltip gives
-          information about the data items. 
+          information about the data items.
         </para>
         <para> Charts can be customized. There are options, among others, for titles, fonts, legend, grid
           lines, colors, line styles, symbols.</para>
       </sect3>
       <sect3>
         <title>Creating charts</title>
-        <para> To create a chart, use the palette on the Dataset page. Drag the chart button and drop it to
+        <para> To create a chart, use the palette on the ``Dataset'' page. Drag the chart button and drop it to
           the dataset at the position you want it to appear. If you press the chart button then it opens a
           dialog where you can edit the properties of the new chart. In this case the new chart will be added
           at the end of the selected dataset or after the selected dataset item.</para>
         <para>
-          Temporary charts can be created on the Browse Data page for quick view. Select the scalars, vectors
+          Temporary charts can be created on the ``Browse Data'' page for quick view. Select the scalars, vectors
           or histograms and choose ``Plot'' from the context menu. If you want to save such a temporary chart
           in the analysis, then choose ``Convert to dataset...'' from the context menu of the chart or
           <icon name="template.gif" />
@@ -684,7 +684,7 @@
       <title>Dataset View</title>
       <para>
         The ``Dataset View'' displays the dataset's content at the selected dataset item. It is
-        divided into three tables similar to the ones on the Browse Data page. The tables can be
+        divided into three tables similar to the ones on the ``Browse Data'' page. The tables can be
         selected by the
         <icon name="ShowScalars.gif"/><icon name="ShowVectors.gif"/><icon name="ShowHistograms.gif"/>
          icons. There is also a tool button (<icon name="filter.png"/>) to show or hide the filter.

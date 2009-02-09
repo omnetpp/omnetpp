@@ -92,7 +92,7 @@
       </para>
       <picture file="pictures/INI-NewSection.png">Creating new ini file section</picture>
       <para>
-        On the Parameters page of the form editor you can set module parameters. First you have to
+        On the ``Parameters'' page of the form editor you can set module parameters. First you have to
         select the section the parameters stored into. After selecting the section from the list,
         the form shows the name of the edited network and the fallback section.
         The table below the list box shows current settings of the section and all other sections
@@ -230,8 +230,8 @@
       </para>
       <para>
         If you want to fix the content of the view, press the <icon name="unpin.gif"/> button.
-        Then selecting a parameter in the view navigates to the location where the parameter is
-        set.
+        After pinning, the content of this view will not follow the selection made by the user
+        in other editors or views.
       </para>
       <picture file="pictures/INI-ParametersView.png">Parameters View</picture>
       <table>
@@ -250,6 +250,8 @@
           </tbody>
         </tgroup>
       </table>
+      <tip>Right clicking on any line will show a context menu that allows you to navigate 
+      to the definition of that parameter or module.</tip>
     </sect2>
     <sect2>
       <title>Module Hierarchy View</title>
@@ -259,6 +261,10 @@
         ned file or unassigned).
       </para>
       <picture file="pictures/INI-ModuleHierarchyView.png">Module Hierarchy View</picture>
+      <tip>Before you use the context menu to navigate to the [[NED]] definition, pin down the 
+      hierarchy view. This way you won't lose the context you are currently in and the the 
+      content if the view will not follow the selection.</tip>
+      
       <!-- TODO screenshot, context mem pinning -->
     </sect2>
     <sect2>

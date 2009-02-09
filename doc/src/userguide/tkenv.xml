@@ -122,30 +122,31 @@
     <para>The main window of the simulation environment contains:</para>
     <itemizedlist>
       <listitem>
-        Toolbar: you may access the main functions of the runtime environment. It is possible to step, run,
+        ``Toolbar'': you may access the main functions of the runtime environment. The toolbar is displayed
+        directly below the main window's menu. It is possible to step, run,
         stop, re-start or finish the simulation and configure the visual appearance and logging behaviour.
       </listitem>
       <listitem>
-        Status bar: contains information about the current state of the simulation. On the upper line it
+        ``Status bar'': contains information about the current state of the simulation. On the upper line it
         displays the current run number and network name, the current event number, the simulation time and
         the module name where the next simulation event will be delivered to. The middle line displays the
         number of messages in the FES, the total number of messages created during the simulation and finally
         the number of messages currently present in the whole simulation model. The last line contains
         performance data: How many events are processed in a real and in a simulated second along with the
-        ratio between the simulation-time and real-time.
+        relative speed between the simulation-time and real-time.
       </listitem>
       <listitem>
-        Timeline: displays the content of the FES on a logarithmic time scale. Double clicking on a dot will
+        ``Timeline'': displays the content of the FES on a logarithmic time scale. Double clicking on a dot will
         display the message inspector window. You can set what events are displayed on the timeline by setting
         message filters on the main configuration dialog's timeline tab (Tip: right click on the timeline to
         go directly to the timeline configuration dialog).
       </listitem>
       <listitem>
-        Object tree: displays all inspectable objects currently present in the memory. You may double click on
+        ``Object tree'': displays all inspectable objects currently present in the memory. You may double click on
         nodes to further inspect the given object in a separate window.
       </listitem>
       <listitem>
-        Log Window: contains the output of the simulation. You can filter the content of the window to include
+        ``Log Window'': contains the output of the simulation. You can filter the content of the window to include
         messages only from specific modules. Open the log window's context menu and select [[Filter window
         contents ]]. Note that the whole content of the log window will be filtered including all previous
         messages.
@@ -225,7 +226,9 @@
       corresponding buttons on Tkenv's toolbar:</para>
     <sect2>
       <title>Step mode</title>
-      <para>In Step mode, you can execute the simulation event-by-event.</para>
+      <para>In Step mode, you can execute the simulation event-by-event. The next event is always
+      shown on the status bar. The module where the next event will be delivered is highlighted
+      with a red rectangle on the graphical display.</para>
     </sect2>
     <sect2>
       <title>Run mode</title>
@@ -235,7 +238,7 @@
         fully interact with the user interface while the simulation is running: you can open inspectors etc.
       </para>
       <note>
-        If you find this mode too slow or distracting, you may switch off the unneeded animation features in
+        If you find this mode too slow or distracting, you may switch off animation features in
         the Tkenv configuration dialog.
       </note>
     </sect2>
@@ -243,7 +246,7 @@
       <title>Fast mode</title>
       <para> In Fast mode, animation is turned off. The inspectors and the message output windows are updated
         after in every 500ms (the actual number can be set in ``Options|Simulation options...'' and also in
-        the ini file). Fast mode is several times faster than the Run mode; the speedup can get close to 10
+        the INI file). Fast mode is several times faster than the Run mode; the speedup can get close to 10
         (or the configured event count).</para>
     </sect2>
     <sect2>
@@ -255,8 +258,11 @@
     </sect2>
     <sect2>
       <title>Run until</title>
-      <para> It is possible to run the simulation until a specified simulation time or event number. This is
-        an invaluable tool during debugging sessions. Just select ``Simulate | Run until...''</para>
+      <para>You can run the simulation until a specified simulation time, event number or 
+        until a specific message has been delivered or canceled. This is
+        an invaluable tool during debugging sessions. Just select ``Simulate | Run until...''. 
+        It is also possible to right click on an event in the simulation time-line and choose
+        the ``Run until this event'' menu item.</para>
     </sect2>
     <sect2>
       <title>Run until next event</title>
@@ -383,11 +389,11 @@
           Show next event maker : Highlight the module which will receive the next event.
         </listitem>
         <listitem>
-          Show a flashing arrow when a sendDirect() method call was executed.
+          Show a flashing arrow when a [[sendDirect()]] method call was executed.
         </listitem>
         <listitem>
           Direct method calls are also animated by default with flashing arrows if you have added the
-          Enter_Method() macro to your method body.
+          [[Enter_Method()]] macro to your method body.
         </listitem>
         <listitem>
           The display of message names, classes also can be turned off if needed.
@@ -395,8 +401,9 @@
       </itemizedlist>
     </sect2>
     <sect2>
-      <title>Timeline</title>
-      <para>On this page you can control which messages will be displayed on the timeline view.
+      <title>Configuring the timeline</title>
+      <para>On the ``timeline'' tab you can control which messages and events will be displayed on the timeline view
+        in the main window.
         Self/non-self messages can be disabled, and filter expressions can be specified based on message class
         or name.</para>
       <para> For object names wildcards ([["?"]], [["*"]]) are allowed. [["{a-exz}"]] matches any character in the range
