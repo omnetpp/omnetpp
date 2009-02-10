@@ -75,388 +75,6 @@
     </note>
   </sect1>
 
-  <sect1>
-    <title>Examples</title>
-    <para>
-      This section will guide you through the use of the Sequence Chart and Eventlog Table
-      tools, using example simulations from &Omnetpp; and the INET Framework.
-      Before running any of the simulations, make sure that eventlog recording is
-      enabled, by adding or uncommenting the line <screen>record-eventlog = true</screen>
-      in <filename>omnetpp.ini</filename> file in the simulation's directory. To open the
-      generated eventlog in the &Omnetpp; IDE, go to the example's
-      <filename>results</filename> directory in the ``Resource
-      Navigator'' view, and double-click the log file. By default, the file
-      will open in the Sequence Chart.
-      <tip>
-	To open the file in the Eventlog Table as editor, right-click the file, and
-	choose the corresponding item from the context menu's <guisubmenu>Open With</guisubmenu>
-	submenu.
-      </tip>
-    </para>
-    <sect2>
-      <title>Tictoc</title>
-      <para>
-	The Tictoc example is available in the &Omnetpp; installation under the directory
-	<filename>samples/tictoc</filename>. Tictoc is the most basic example in this
-	chapter, and it provides a quick overview on how to use and understand the Sequence
-	Chart.
-      </para>
-      <para>
-	Start the simulation, and choose the simplest configuration, 'Tictoc1', which
-	specifies only two nodes called 'tic' and 'toc'. During initializion, one of the
-	nodes will send a message to the other. From that on, every time a node
-	receives the message, it will simply send it back. This process continues until
-	you stop the simulation. In <xref
-	linkend="pictures/SequenceChart-Examples-TicTocTwoNodes.png"/> you can see how
-	this is represented on a Sequence Chart. The two horizontal black lines correspond
-	to the two nodes, and are labelled 'tic' and 'toc'. The red circles represent
-	events, and the blue arrows represent message sends. It is easy to see that all
-	message sends take 100 ms, and that the first sender is the node 'tic'.
-      </para>
-      <picture file="pictures/SequenceChart-Examples-TicTocTwoNodes.png">
-	Tictoc with two nodes
-      </picture>
-      <para>
-	In the next Tictoc example there are six nodes tossing a message around until it
-	reaches its destination. To generate the eventlog file, restart the simulation and
-	choose the configuration 'Tictoc9'. In <xref
-	linkend="pictures/SequenceChart-Examples-TicTocSeveralNodes.png"/> you can see how
-	the message goes from one node to another, starting from node '0' and passing through it
-	twice more, until it finally reaches its destination, node
-	'3'. The chart also shows that this example, unlike the previous one, starts with a
-	self-message instead of immediately sending a message from initialize to another
-	node.
-      </para>
-      <picture file="pictures/SequenceChart-Examples-TicTocSeveralNodes.png">
-	Tictoc with six nodes
-      </picture>
-      <para>
-	Let us demonstrate on this simple example how filtering works with the Sequence
-	Chart. Open the ``Filter Dialog'' with the toolbar button <icon name="filter.png"/>
-	and put a checkmark for node '0' and '3' on the ``Module filter|by
-	name'' panel, and apply it. The chart now displays only two axes that
-	correspond to the two selected nodes.  Note that the arrows on this figure are
-	decorated with zigzags, meaning that they represent a sequence of message
-	sends. Such arrows will be called virtual message sends in the rest of this
-	chapter.  The first two arrows show the message returning to node '0' at
-	<eventnumber>9</eventnumber> and <eventnumber>13</eventnumber>, and the third
-	shows that it reaches the destination at <eventnumber>16</eventnumber>.  The
-	events where the message was in between are filtered out.
-      </para>
-      <picture file="pictures/SequenceChart-Examples-TicTocSeveralNodesFiltered.png">
-	Filtering for node '0' and '3'
-      </picture>
-    </sect2>
-    <sect2>
-      <title>FIFO</title>
-      <para>
-	The FIFO example is available in the &Omnetpp; installation under the directory
-	<filename>samples/fifo</filename>. The FIFO is an important example, because it
-	uses a queue which is an essential part of discrete event simulations and
-	introduces the notion of message reuses.
-      </para>
-      <para>
-	When you start the simulation, choose the configuration 'low job arrival rate' and
-	let it run for a while. In <xref
-	linkend="pictures/SequenceChart-Examples-FIFO.png"/> you can see three modules, a
-	'source', a 'queue', and a 'sink'. The simulation starts with a self-message and
-	then the generator sends the first message to the queue at
-	<eventnumber>1</eventnumber>. It is immediately obvious that the message stays in
-	the queue for a certain period of time, between <eventnumber>2</eventnumber> and
-	<eventnumber>3</eventnumber>.
-      </para>
-      <tip>
-	When you select one event and hover with the mouse above the other,
-	the Sequence Chart will show the length of this time period in a tooltip.
-      </tip>
-      <para>
-	Finally, the message is sent to the 'sink' where it is
-	destroyed at <eventnumber>4</eventnumber>.
-      </para>
-      <picture file="pictures/SequenceChart-Examples-FIFO.png">
-	The FIFO example
-      </picture>
-      <para>
-	The interesting thing happens at <eventnumber>12</eventnumber> where the incoming
-	message suddenly disappears. It seems like the queue does not send that message
-	out. Actually what happens is that the queue enqueues the job because it is busy
-	serving the message received at <eventnumber>10</eventnumber>.  Since this queue
-	is a FIFO, it will send out the first message at <eventnumber>13</eventnumber>. To
-	see how this happens, turn on ``Show Reuse Messages'' from the
-	context menu; the result is shown in <xref
-	linkend="pictures/SequenceChart-Examples-FIFOReuse.png"/>.  It displays a couple
-	of green dotted arrows, one of which starts at <eventnumber>12</eventnumber> and
-	arrives at <eventnumber>17</eventnumber>. This is a reuse arrow; it means that the
-	message sent out from the queue at <eventnumber>17</eventnumber> is the same as
-	the one received and enqueued at <eventnumber>12</eventnumber>.  Note that the
-	service of this message actually begins at <eventnumber>13</eventnumber>. It is
-	the moment when the queue becomes free after completing the service of the job
-	received at <eventnumber>10</eventnumber>.
-      </para>
-      <picture file="pictures/SequenceChart-Examples-FIFOReuse.png">
-	Showing reuse messages
-      </picture>
-      <para>
-	Another type of message reuse can be seen on the arrow
-	from <eventnumber>3</eventnumber> to <eventnumber>6</eventnumber>:
-	it represents the fact that the queue reuses
-	the same timer message instead of creating a new one each time.
-      </para>
-      <note>
-        Whenever you see a reuse arrow, it means that the underlying implementation
-        remembers the message between the two events. It might be stored
-        in a pointer variable, a queue, or some other data structure.
-      </note>
-      <para>
-	The last part of this example is about filtering out the queue from the
-	chart. Open the ``Filter Dialog'', and put a checkmark for 'sink'
-	and 'source' on the ``Module filter|by NED type'' panel, and
-	apply it. If you look at the result in <xref
-	linkend="pictures/SequenceChart-Examples-FIFOFiltered.png"/>, then you will see
-	zigzag arrows going from the 'source' to the 'sink'. These arrows represent the
-	fact that a message is being sent through the queue from 'source' to 'sink'. The
-	first two arrows do not overlap in simulation time, which means the queue did not
-	have more than one message in it during that time. On the other hand, the third
-	and fourth arrows do overlap due to the fact that the forth job reached the queue
-	while it was busy with the third one. Scrolling forward you can find other places
-	where the queue becomes empty and arrows do not overlap again.
-      </para>
-      <picture file="pictures/SequenceChart-Examples-FIFOFiltered.png">
-	Filtering the queue out
-      </picture>
-    </sect2>
-    <sect2>
-      <title>Routing</title>
-      <para>
-	The Routing example is available in the &Omnetpp; installation under the directory
-	<filename>samples/routing</filename>. The predefined configuration called 'Net10'
-	specifies a network with 10 nodes, with each node having an application, a few
-	queues and a routing module inside. Three preselected nodes, namely the node '1',
-	'6', and '8' are destinations, while all nodes are message sources. The routing
-	module uses the shortest path algorithm to find the route to the destination. The
-	goal in this example is to create a sequence chart that shows messages which
-	travel simultaneously from multiple sources to their destinations.
-      </para>
-      <picture file="pictures/SequenceChart-Examples-RoutingNetwork.png">
-	Network with 10 nodes
-      </picture>
-      <para>
-	Since we don't care about the details what happens within nodes, we can just turn
-	on filtering for the NED type 'node.Node'. The chart will have 10 axes, each axis
-	drawn as two parallel solid black lines close to each other. These are the
-	compound modules that represent the nodes in the network. So far events could be
-	directly drawn on the simple module's axis where they occured, but now they will
-	be drawn on their ancestor compound module's axis.
-      </para>
-      <picture file="pictures/SequenceChart-Examples-Routing.png">
-	Filtering for nodes
-      </picture>
-      <para>
-	To reduce clutter, the chart will automatically omit events which are internal to
-	a compound module. An event is internal to a compound module if it only processes
-	a message from, and sends out messages to, other modules inside the compound
-	module.
-      </para>
-      <para>
-	If you look at <xref linkend="pictures/SequenceChart-Examples-Routing.png"/> you
-	will see a message going from node '7' at <eventnumber>10</eventnumber> to node
-	'1' at <eventnumber>23</eventnumber>. This message stays in node '2'
-	between <eventnumber>15</eventnumber> and <eventnumber>17</eventnumber>.
-	The gray background area between them means that zero simulation time has
-	elapsed, that is, the model does not account for processing time inside the
-	network nodes.
-      </para>
-      <note>
-        This model contains both finite propagation delay and transmission time;
-        arrows in the sequence chart correspond to the interval between the start
-        of the transmission and the end of the reception.
-      </note>
-      <para>
-	This example also demonstrates message detail recording configured by
-	<inifile>eventlog-message-detail-pattern = Packet:declaredOn(Packet)</inifile> in
-	the inifile. The exmample in <xref
-	linkend="pictures/SequenceChart-Examples-RoutingTooltip.png"/> shows the tooltip
-	presented for the second message send between <eventnumber>17</eventnumber> and
-	<eventnumber>23</eventnumber>.
-      </para>
-      <picture file="pictures/SequenceChart-Examples-RoutingTooltip.png">
-	Message detail tooltip
-      </picture>
-      <para>
-	It is very easy to find another message on the chart that goes through the network
-	parallel in simulation time. The one sent from node '3' at
-	<eventnumber>13</eventnumber> to node '8' arriving at
-	<eventnumber>19</eventnumber> is such a message.
-      </para>
-    </sect2>
-    <sect2>
-      <title>Wireless</title>
-      <para>
-	The Wirless example is available in the INET Framework under the directory
-	<filename>examples/adhoc/ieee80211</filename>. The predefined configuration called
-	'Config1' specifies two mobile hosts moving around on the playground, and
-	communicating via the IEEE 802.11 wireless protocol. The network devices are
-	configured for ad-hoc mode, and the transmitter power is set so that hosts can
-	move out of range. One of the hosts is continuously pinging the other.
-      </para>
-      <para>
-	In this section we will explore the protocol's MAC layer, using two sequence
-	charts. The first chart will show a successful ping message being sent through the
-	wireless channel, and the second will show ping messages getting lost and being
-	continuously re-sent.
-      </para>
-      <para>
-	We also would like to record some message details during the simulation. To do
-	that, comment out the following line from [[omnetpp.ini]]:
-	<screen>eventlog-message-detail-pattern = *:(not declaredOn(cMessage) and not
-	declaredOn(cNamedObject) and not declaredOn(cObject))</screen>
-      </para>
-      <para>
-	To generate the eventlog file, start the simulation environment and choose the
-	configuration 'host1 pinging host0'. Run the simulation in fast mode until about
-	event number <eventnumber>5000</eventnumber>.
-      </para>
-      <sect3>
-	<title>Preparing the result</title>
-	<para>
-	  When you open the Sequence Chart, it will show a couple of self-messages named
-	  'move' being scheduled regularly. These are self-messages that control the
-	  movement of the hosts on the playground. There is an axis labelled 'pingApp',
-	  which starts with a 'sendPing' message that is processed in an event far away on
-	  the chart. This is indicated by the so called split arrow.
-	</para>
-	<picture file="pictures/SequenceChart-Examples-WirelessBeginning.png">
-	  The beginning
-	</picture>
-	<para>
-	  You might notice that there are only three axes in <xref
-	  linkend="pictures/SequenceChart-Examples-WirelessBeginning.png"/> even though
-	  the simulation model clearly contains more simple modules. This is because the
-	  Sequence Chart displays the first few events by default and in this scenario
-	  they all happen to be within those modules. If you scroll forward or zoom out,
-	  then new axes will be added automatically as needed.
-	</para>
-	<para>
-	  Let us ignore the 'move' messages, and focus on the MAC layer instead. To begin
-	  with, open the ``Filter Dialog'', and put a checkmark for
-	  'Ieee80211Mac' and 'Ieee80211Radio' on the ``Module filter|by NED
-	  type'' panel, and apply it. The chart will have four axes, two for the
-	  MAC and two for the radio simple modules.
-	</para>
-	<para>
-	  The next step is to attach vector data to these axes. Open the context menu for
-	  each axis by clicking on them one by one, and select the ``Attach Vector
-	  to Axis'' submenu. Accept the vector file offered by default, and
-	  choose the vector 'mac:State' for the MAC modules, and 'mac:RadioState' for the
-	  radio modules. You will have to edit the filter in the vector selection dialog
-	  (i.e. delete the last segment) for the radio modules, because at the moment the
-	  radio state is actually recorded by the MAC module, so the default filter will
-	  not be right. When this step is completed, the chart should display four thick
-	  colored bars as module axes. The colors and labels on the bars specify the state
-	  of the corresponding state machine at the given simulation time.
-	</para>
-	<para>
-	  To make understanding easier, you might want to manually reorder the axis, so
-	  that the radio modules are put next to each other. Use the button <icon
-	  name="axisordering.gif"/> on the toolbar to switch to manual ordering. With a
-	  little zooming and scrolling you should be able to fit the first message
-	  exchange between the two hosts into the window.
-	</para>
-      </sect3>
-      <sect3>
-	<title>Successful ping</title>
-	<para>
-	  The first message sent by 'host1' is not a ping request but an ARP request. The
-	  processing of this message in 'host0' generates the corresponding ARP
-	  reply. This is shown by the zigzag arrow between <eventnumber>85</eventnumber>
-	  and <eventnumber>90</eventnumber>. The reply goes back to 'host1' which then
-	  sends a WLAN acknowledge in return. In this process 'host1' discovers the MAC
-	  address of 'host0' based on its IP address.
-	</para>
-	<picture file="pictures/SequenceChart-Examples-WirelessARP.png">
-	  Discovering the MAC address
-	</picture>
-	<para>
-	  The send procedure for the first ping message starts at
-	  <eventnumber>105</eventnumber> in 'host1', and finishes by receiving the
-	  acknowledge at <eventnumber>127</eventnumber>. The ping reply send procedure
-	  starts at <eventnumber>125</eventnumber> in 'host0' and finishes by receiving
-	  the WLAN acknowledge at <eventnumber>144</eventnumber>. If you scroll a little
-	  bit forward you can see as in <xref
-	  linkend="pictures/SequenceChart-Examples-WirelessSuccessfulPing.png"/> the
-	  second complete successful ping procedure between <eventnumber>170</eventnumber>
-	  and <eventnumber>206</eventnumber>. To focus on the second successful ping
-	  message exchange, open the ``Filter Dialog'', and enter these
-	  numbers in the range filter.
-	</para>
-	<para>
-	  Timing is critical in a protocol implementation, so let's take a look at it
-	  using the Sequence Chart. The first self message represents the fact that the
-	  MAC module listens to the radio for a DIFS period before sending the message
-	  out. The message send from <eventnumber>171</eventnumber> to
-	  <eventnumber>172</eventnumber> occurs in zero simulation time as indicated by
-	  the gray background. It represents the moment when the MAC module decides to
-	  send the ping request down to its radio module. The backoff procedure was
-	  skipped for this message, because there was no transmission during the DIFS
-	  period. If you look at <eventnumber>172</eventnumber> and
-	  <eventnumber>173</eventnumber> you will see how the message propagates through
-	  the air from 'radio1' to 'radio0'. This finite amount of time is calculated from
-	  the physical distance of the two modules and the speed of light. Also looking at
-	  <eventnumber>172</eventnumber> and <eventnumber>174</eventnumber> you can notice
-	  that the transmission time is not zero. This time interval is calculated from
-	  the message's length and the radio module's bitrate.
-	</para>
-	<picture file="pictures/SequenceChart-Examples-WirelessSuccessfulPing.png">
-	  The second ping procedure
-	</picture>
-	<para>
-	  Another interesting fact, which can be immediately drawn from the figure, is
-	  that the higher level protocol layers do not add delay for generating the ping
-	  reply message in 'host0' between <eventnumber>176</eventnumber> and
-	  <eventnumber>183</eventnumber>. The MAC layer procedure ends with sending back a
-	  WLAN acknowledge after waiting a SIFS period.
-	</para>
-	<para>
-	  And finally, you can get a quick overview about the relative timings of the IEEE
-	  802.11 protocol with switching to linear timeline mode. Use the button <icon
-	  name="timelinemode.png"/> on the toolbar, and notice how the figure changes
-	  dramatically. You might need to scroll and zoom in or out to see the
-	  details. This actually shows how useful the nonlinear timeline mode is.
-	</para>
-	<commercial>
-	  <para>
-	    You can export this sequence chart for documentation purposes using the
-	    context menu's ``Export to SVG'' option.
-	  </para>
-	</commercial>
-      </sect3>
-      <sect3>
-	<title>Unsuccessful ping</title>
-	<para>
-	  To see how the chart looks when the ping messages get lost in the air, first
-	  turn off range filtering. Then go to <eventnumber>1269</eventnumber> by
-	  selecting the ``Goto Event'' option from the ``Eventlog Table'' view's context menu. In <xref
-	  linkend="pictures/SequenceChart-Examples-WirelessUnsuccessfulPing.png"/> you can
-	  see how the receiver radio does not send up the incoming message to its MAC
-	  layer due to the signal level being too low. This actually happens at
-	  <eventnumber>1274</eventnumber> in 'host0'. A little bit later the transmitter
-	  MAC layer in 'host1' receives the timeout message at
-	  <eventnumber>1275</eventnumber>, and starts the backoff procedure before
-	  resending the very same ping message. This process goes on with statistically
-	  increasing backoff time intervals until <eventnumber>1317</eventnumber>. Finally
-	  the maximum number of retries is reached and the message is dropped.
-	</para>
-	<picture file="pictures/SequenceChart-Examples-WirelessUnsuccessfulPing.png">
-	  Ping messages get lost
-	</picture>
-	<para>
-	  The chart also makes clear that during the unsuccessful ping period there are no
-	  events occuring in the MAC layer of 'host0' and it is continuously in 'IDLE'
-	  state.
-	</para>
-      </sect3>
-    </sect2>
-  </sect1>
 
   <sect1>
     <title>Sequence Chart</title>
@@ -1039,28 +657,28 @@
   <sect1>
     <title>Filter Dialog</title>
     <para>
-      The content of an eventlog can be filtered within the &Omnetpp; IDE. This is called on
-      the fly filtering as opposed to the file content filtering provided by the Eventlog
-      Tool. To use on the fly filtering, open the filter configuration dialog with the
+      The content of an eventlog can be filtered within the &Omnetpp; IDE. This is 
+      on-the-fly filtering as opposed to the file content filtering provided by the [[Eventlog]]
+      tool. To use on the fly filtering, open the filter configuration dialog with the
       button <icon name="Filter.png"/> on the toolbar, enable some of the range, module,
       message, or trace filters, set the various filter parameters, and apply it. The
       result is another eventlog resident in memory, where some events are filtered out.
       <note>
-	Similarly to the command line Eventlog Tool, described in the &Omnetpp; 4.0 Manual,
-	the in memory filtering can only filter out whole events.
+	Similarly to the command line [[Eventlog]] tool, described in the &Omnetpp; 4.0 Manual,
+	the in-memory filtering can only filter out whole events.
       </note>
     </para>
     <para>
-      In memory, on the fly filtering means that the filter's result is not saved into an
+      In-memory, on-the-fly filtering means that the filter's result is not saved into an
       eventlog file, but it is rather lazily computed and stored within memory. This
       allows rapid switching between different views of the same eventlog within both the
       Sequence Chart and the Eventlog Table.
     </para>
     <para>
       The filter configuration dialog shown in <xref
-      linkend="SequenceChart-FilterDialog.png"/> has many options, they are organized into
+      linkend="SequenceChart-FilterDialog.png"/> has many options. They are organized into
       a tree each restricting the eventlog's content on its own. The individual filter
-      components may be turned on and off independently of each other. This allows
+      components may be turned on and off independent of each other. This allows
       remembering the filter settings even if some of them are temporarily not used.
     </para>
     <para>
@@ -1068,7 +686,7 @@
       understand. To make it easier, the ``Filter Dialog'' automatically
       displays the current filter in a human readable form at the bottom of the dialog.
     </para>
-    <picture file="SequenceChart-FilterDialog.png">
+    <picture file="pictures/SequenceChart-FilterDialog.png">
       Filter Dialog
     </picture>
     <sect2>
@@ -1149,9 +767,9 @@
       <para>
 	Sometimes computing the filter's result takes a lot of time, especially when
 	tracing causes/consequences without specifying proper range limits in terms of
-	event numbers or simulation times. If you canel the long running operation, then
+	event numbers or simulation times. If you cancel the long running operation, then
 	you can go back to the ``Filter Dialog'' to modify the filter
-	parameters, or simply turn it off. To restart drawing, use the refresh button
+	parameters, or simply turn the filter off. To restart drawing, use the refresh button
 	<icon name="refresh.gif"/> on the toolbar.
 	<tip>
 	  Providing a proper range filter is always a good idea to speed up computing the
@@ -1217,7 +835,7 @@
 	means that the exact number of lines and events it contains cannot be cheaply
 	determined. This affects the way scrollbars work in the lazy direction, horizontal
 	for the Sequence Chart, and vertical for the Eventlog Table. Basically these
-	scrollbars act as a non linear approximation in that direction. This is most of
+	scrollbars act as a non-linear approximation in that direction. This is most of
 	the time remains unnoticable for the user unless the file is really small.
       </para>
     </sect2>
@@ -1252,4 +870,386 @@
     </sect2>
   </sect1>
 
+  <sect1>
+    <title>Examples</title>
+    <para>
+      This section will guide you through the use of the Sequence Chart and Eventlog Table
+      tools, using example simulations from &Omnetpp; and the INET Framework.
+      Before running any of the simulations, make sure that eventlog recording is
+      enabled, by adding or uncommenting the line <screen>record-eventlog = true</screen>
+      in <filename>omnetpp.ini</filename> file in the simulation's directory. To open the
+      generated eventlog in the &Omnetpp; IDE, go to the example's
+      <filename>results</filename> directory in the ``Resource
+      Navigator'' view, and double-click the log file. By default, the file
+      will open in the Sequence Chart.
+      <tip>
+  To open the file in the Eventlog Table as editor, right-click the file, and
+  choose the corresponding item from the context menu's <guisubmenu>Open With</guisubmenu>
+  submenu.
+      </tip>
+    </para>
+    <sect2>
+      <title>Tictoc</title>
+      <para>
+  The Tictoc example is available in the &Omnetpp; installation under the directory
+  <filename>samples/tictoc</filename>. Tictoc is the most basic example in this
+  chapter, and it provides a quick overview on how to use and understand the Sequence
+  Chart.
+      </para>
+      <para>
+  Start the simulation, and choose the simplest configuration, 'Tictoc1', which
+  specifies only two nodes called 'tic' and 'toc'. During initializion, one of the
+  nodes will send a message to the other. From that on, every time a node
+  receives the message, it will simply send it back. This process continues until
+  you stop the simulation. In <xref
+  linkend="pictures/SequenceChart-Examples-TicTocTwoNodes.png"/> you can see how
+  this is represented on a Sequence Chart. The two horizontal black lines correspond
+  to the two nodes, and are labelled 'tic' and 'toc'. The red circles represent
+  events, and the blue arrows represent message sends. It is easy to see that all
+  message sends take 100 ms, and that the first sender is the node 'tic'.
+      </para>
+      <picture file="pictures/SequenceChart-Examples-TicTocTwoNodes.png">
+  Tictoc with two nodes
+      </picture>
+      <para>
+  In the next Tictoc example there are six nodes tossing a message around until it
+  reaches its destination. To generate the eventlog file, restart the simulation and
+  choose the configuration 'Tictoc9'. In <xref
+  linkend="pictures/SequenceChart-Examples-TicTocSeveralNodes.png"/> you can see how
+  the message goes from one node to another, starting from node '0' and passing through it
+  twice more, until it finally reaches its destination, node
+  '3'. The chart also shows that this example, unlike the previous one, starts with a
+  self-message instead of immediately sending a message from initialize to another
+  node.
+      </para>
+      <picture file="pictures/SequenceChart-Examples-TicTocSeveralNodes.png">
+  Tictoc with six nodes
+      </picture>
+      <para>
+  Let us demonstrate on this simple example how filtering works with the Sequence
+  Chart. Open the ``Filter Dialog'' with the toolbar button <icon name="filter.png"/>
+  and put a checkmark for node '0' and '3' on the ``Module filter|by
+  name'' panel, and apply it. The chart now displays only two axes that
+  correspond to the two selected nodes.  Note that the arrows on this figure are
+  decorated with zigzags, meaning that they represent a sequence of message
+  sends. Such arrows will be called virtual message sends in the rest of this
+  chapter.  The first two arrows show the message returning to node '0' at
+  <eventnumber>9</eventnumber> and <eventnumber>13</eventnumber>, and the third
+  shows that it reaches the destination at <eventnumber>16</eventnumber>.  The
+  events where the message was in between are filtered out.
+      </para>
+      <picture file="pictures/SequenceChart-Examples-TicTocSeveralNodesFiltered.png">
+  Filtering for node '0' and '3'
+      </picture>
+    </sect2>
+    <sect2>
+      <title>FIFO</title>
+      <para>
+  The FIFO example is available in the &Omnetpp; installation under the directory
+  <filename>samples/fifo</filename>. The FIFO is an important example, because it
+  uses a queue which is an essential part of discrete event simulations and
+  introduces the notion of message reuses.
+      </para>
+      <para>
+  When you start the simulation, choose the configuration 'low job arrival rate' and
+  let it run for a while. In <xref
+  linkend="pictures/SequenceChart-Examples-FIFO.png"/> you can see three modules, a
+  'source', a 'queue', and a 'sink'. The simulation starts with a self-message and
+  then the generator sends the first message to the queue at
+  <eventnumber>1</eventnumber>. It is immediately obvious that the message stays in
+  the queue for a certain period of time, between <eventnumber>2</eventnumber> and
+  <eventnumber>3</eventnumber>.
+      </para>
+      <tip>
+  When you select one event and hover with the mouse above the other,
+  the Sequence Chart will show the length of this time period in a tooltip.
+      </tip>
+      <para>
+  Finally, the message is sent to the 'sink' where it is
+  destroyed at <eventnumber>4</eventnumber>.
+      </para>
+      <picture file="pictures/SequenceChart-Examples-FIFO.png">
+  The FIFO example
+      </picture>
+      <para>
+  The interesting thing happens at <eventnumber>12</eventnumber> where the incoming
+  message suddenly disappears. It seems like the queue does not send that message
+  out. Actually what happens is that the queue enqueues the job because it is busy
+  serving the message received at <eventnumber>10</eventnumber>.  Since this queue
+  is a FIFO, it will send out the first message at <eventnumber>13</eventnumber>. To
+  see how this happens, turn on ``Show Reuse Messages'' from the
+  context menu; the result is shown in <xref
+  linkend="pictures/SequenceChart-Examples-FIFOReuse.png"/>.  It displays a couple
+  of green dotted arrows, one of which starts at <eventnumber>12</eventnumber> and
+  arrives at <eventnumber>17</eventnumber>. This is a reuse arrow; it means that the
+  message sent out from the queue at <eventnumber>17</eventnumber> is the same as
+  the one received and enqueued at <eventnumber>12</eventnumber>.  Note that the
+  service of this message actually begins at <eventnumber>13</eventnumber>. It is
+  the moment when the queue becomes free after completing the service of the job
+  received at <eventnumber>10</eventnumber>.
+      </para>
+      <picture file="pictures/SequenceChart-Examples-FIFOReuse.png">
+  Showing reuse messages
+      </picture>
+      <para>
+  Another type of message reuse can be seen on the arrow
+  from <eventnumber>3</eventnumber> to <eventnumber>6</eventnumber>:
+  it represents the fact that the queue reuses
+  the same timer message instead of creating a new one each time.
+      </para>
+      <note>
+        Whenever you see a reuse arrow, it means that the underlying implementation
+        remembers the message between the two events. It might be stored
+        in a pointer variable, a queue, or some other data structure.
+      </note>
+      <para>
+  The last part of this example is about filtering out the queue from the
+  chart. Open the ``Filter Dialog'', and put a checkmark for 'sink'
+  and 'source' on the ``Module filter|by NED type'' panel, and
+  apply it. If you look at the result in <xref
+  linkend="pictures/SequenceChart-Examples-FIFOFiltered.png"/>, then you will see
+  zigzag arrows going from the 'source' to the 'sink'. These arrows represent the
+  fact that a message is being sent through the queue from 'source' to 'sink'. The
+  first two arrows do not overlap in simulation time, which means the queue did not
+  have more than one message in it during that time. On the other hand, the third
+  and fourth arrows do overlap due to the fact that the forth job reached the queue
+  while it was busy with the third one. Scrolling forward you can find other places
+  where the queue becomes empty and arrows do not overlap again.
+      </para>
+      <picture file="pictures/SequenceChart-Examples-FIFOFiltered.png">
+  Filtering the queue out
+      </picture>
+    </sect2>
+    <sect2>
+      <title>Routing</title>
+      <para>
+  The Routing example is available in the &Omnetpp; installation under the directory
+  <filename>samples/routing</filename>. The predefined configuration called 'Net10'
+  specifies a network with 10 nodes, with each node having an application, a few
+  queues and a routing module inside. Three preselected nodes, namely the node '1',
+  '6', and '8' are destinations, while all nodes are message sources. The routing
+  module uses the shortest path algorithm to find the route to the destination. The
+  goal in this example is to create a sequence chart that shows messages which
+  travel simultaneously from multiple sources to their destinations.
+      </para>
+      <picture file="pictures/SequenceChart-Examples-RoutingNetwork.png">
+  Network with 10 nodes
+      </picture>
+      <para>
+  Since we don't care about the details what happens within nodes, we can just turn
+  on filtering for the NED type 'node.Node'. The chart will have 10 axes, each axis
+  drawn as two parallel solid black lines close to each other. These are the
+  compound modules that represent the nodes in the network. So far events could be
+  directly drawn on the simple module's axis where they occured, but now they will
+  be drawn on their ancestor compound module's axis.
+      </para>
+      <picture file="pictures/SequenceChart-Examples-Routing.png">
+  Filtering for nodes
+      </picture>
+      <para>
+  To reduce clutter, the chart will automatically omit events which are internal to
+  a compound module. An event is internal to a compound module if it only processes
+  a message from, and sends out messages to, other modules inside the compound
+  module.
+      </para>
+      <para>
+  If you look at <xref linkend="pictures/SequenceChart-Examples-Routing.png"/> you
+  will see a message going from node '7' at <eventnumber>10</eventnumber> to node
+  '1' at <eventnumber>23</eventnumber>. This message stays in node '2'
+  between <eventnumber>15</eventnumber> and <eventnumber>17</eventnumber>.
+  The gray background area between them means that zero simulation time has
+  elapsed, that is, the model does not account for processing time inside the
+  network nodes.
+      </para>
+      <note>
+        This model contains both finite propagation delay and transmission time;
+        arrows in the sequence chart correspond to the interval between the start
+        of the transmission and the end of the reception.
+      </note>
+      <para>
+  This example also demonstrates message detail recording configured by
+  <inifile>eventlog-message-detail-pattern = Packet:declaredOn(Packet)</inifile> in
+  the inifile. The exmample in <xref
+  linkend="pictures/SequenceChart-Examples-RoutingTooltip.png"/> shows the tooltip
+  presented for the second message send between <eventnumber>17</eventnumber> and
+  <eventnumber>23</eventnumber>.
+      </para>
+      <picture file="pictures/SequenceChart-Examples-RoutingTooltip.png">
+  Message detail tooltip
+      </picture>
+      <para>
+  It is very easy to find another message on the chart that goes through the network
+  parallel in simulation time. The one sent from node '3' at
+  <eventnumber>13</eventnumber> to node '8' arriving at
+  <eventnumber>19</eventnumber> is such a message.
+      </para>
+    </sect2>
+    <sect2>
+      <title>Wireless</title>
+      <para>
+  The Wirless example is available in the INET Framework under the directory
+  <filename>examples/adhoc/ieee80211</filename>. The predefined configuration called
+  'Config1' specifies two mobile hosts moving around on the playground, and
+  communicating via the IEEE 802.11 wireless protocol. The network devices are
+  configured for ad-hoc mode, and the transmitter power is set so that hosts can
+  move out of range. One of the hosts is continuously pinging the other.
+      </para>
+      <para>
+  In this section we will explore the protocol's MAC layer, using two sequence
+  charts. The first chart will show a successful ping message being sent through the
+  wireless channel, and the second will show ping messages getting lost and being
+  continuously re-sent.
+      </para>
+      <para>
+  We also would like to record some message details during the simulation. To do
+  that, comment out the following line from [[omnetpp.ini]]:
+  <screen>eventlog-message-detail-pattern = *:(not declaredOn(cMessage) and not
+  declaredOn(cNamedObject) and not declaredOn(cObject))</screen>
+      </para>
+      <para>
+  To generate the eventlog file, start the simulation environment and choose the
+  configuration 'host1 pinging host0'. Run the simulation in fast mode until about
+  event number <eventnumber>5000</eventnumber>.
+      </para>
+      <sect3>
+  <title>Preparing the result</title>
+  <para>
+    When you open the Sequence Chart, it will show a couple of self-messages named
+    'move' being scheduled regularly. These are self-messages that control the
+    movement of the hosts on the playground. There is an axis labelled 'pingApp',
+    which starts with a 'sendPing' message that is processed in an event far away on
+    the chart. This is indicated by the so called split arrow.
+  </para>
+  <picture file="pictures/SequenceChart-Examples-WirelessBeginning.png">
+    The beginning
+  </picture>
+  <para>
+    You might notice that there are only three axes in <xref
+    linkend="pictures/SequenceChart-Examples-WirelessBeginning.png"/> even though
+    the simulation model clearly contains more simple modules. This is because the
+    Sequence Chart displays the first few events by default and in this scenario
+    they all happen to be within those modules. If you scroll forward or zoom out,
+    then new axes will be added automatically as needed.
+  </para>
+  <para>
+    Let us ignore the 'move' messages, and focus on the MAC layer instead. To begin
+    with, open the ``Filter Dialog'', and put a checkmark for
+    'Ieee80211Mac' and 'Ieee80211Radio' on the ``Module filter|by NED
+    type'' panel, and apply it. The chart will have four axes, two for the
+    MAC and two for the radio simple modules.
+  </para>
+  <para>
+    The next step is to attach vector data to these axes. Open the context menu for
+    each axis by clicking on them one by one, and select the ``Attach Vector
+    to Axis'' submenu. Accept the vector file offered by default, and
+    choose the vector 'mac:State' for the MAC modules, and 'mac:RadioState' for the
+    radio modules. You will have to edit the filter in the vector selection dialog
+    (i.e. delete the last segment) for the radio modules, because at the moment the
+    radio state is actually recorded by the MAC module, so the default filter will
+    not be right. When this step is completed, the chart should display four thick
+    colored bars as module axes. The colors and labels on the bars specify the state
+    of the corresponding state machine at the given simulation time.
+  </para>
+  <para>
+    To make understanding easier, you might want to manually reorder the axis, so
+    that the radio modules are put next to each other. Use the button <icon
+    name="axisordering.gif"/> on the toolbar to switch to manual ordering. With a
+    little zooming and scrolling you should be able to fit the first message
+    exchange between the two hosts into the window.
+  </para>
+      </sect3>
+      <sect3>
+  <title>Successful ping</title>
+  <para>
+    The first message sent by 'host1' is not a ping request but an ARP request. The
+    processing of this message in 'host0' generates the corresponding ARP
+    reply. This is shown by the zigzag arrow between <eventnumber>85</eventnumber>
+    and <eventnumber>90</eventnumber>. The reply goes back to 'host1' which then
+    sends a WLAN acknowledge in return. In this process 'host1' discovers the MAC
+    address of 'host0' based on its IP address.
+  </para>
+  <picture file="pictures/SequenceChart-Examples-WirelessARP.png">
+    Discovering the MAC address
+  </picture>
+  <para>
+    The send procedure for the first ping message starts at
+    <eventnumber>105</eventnumber> in 'host1', and finishes by receiving the
+    acknowledge at <eventnumber>127</eventnumber>. The ping reply send procedure
+    starts at <eventnumber>125</eventnumber> in 'host0' and finishes by receiving
+    the WLAN acknowledge at <eventnumber>144</eventnumber>. If you scroll a little
+    bit forward you can see as in <xref
+    linkend="pictures/SequenceChart-Examples-WirelessSuccessfulPing.png"/> the
+    second complete successful ping procedure between <eventnumber>170</eventnumber>
+    and <eventnumber>206</eventnumber>. To focus on the second successful ping
+    message exchange, open the ``Filter Dialog'', and enter these
+    numbers in the range filter.
+  </para>
+  <para>
+    Timing is critical in a protocol implementation, so let's take a look at it
+    using the Sequence Chart. The first self message represents the fact that the
+    MAC module listens to the radio for a DIFS period before sending the message
+    out. The message send from <eventnumber>171</eventnumber> to
+    <eventnumber>172</eventnumber> occurs in zero simulation time as indicated by
+    the gray background. It represents the moment when the MAC module decides to
+    send the ping request down to its radio module. The backoff procedure was
+    skipped for this message, because there was no transmission during the DIFS
+    period. If you look at <eventnumber>172</eventnumber> and
+    <eventnumber>173</eventnumber> you will see how the message propagates through
+    the air from 'radio1' to 'radio0'. This finite amount of time is calculated from
+    the physical distance of the two modules and the speed of light. Also looking at
+    <eventnumber>172</eventnumber> and <eventnumber>174</eventnumber> you can notice
+    that the transmission time is not zero. This time interval is calculated from
+    the message's length and the radio module's bitrate.
+  </para>
+  <picture file="pictures/SequenceChart-Examples-WirelessSuccessfulPing.png">
+    The second ping procedure
+  </picture>
+  <para>
+    Another interesting fact, which can be immediately drawn from the figure, is
+    that the higher level protocol layers do not add delay for generating the ping
+    reply message in 'host0' between <eventnumber>176</eventnumber> and
+    <eventnumber>183</eventnumber>. The MAC layer procedure ends with sending back a
+    WLAN acknowledge after waiting a SIFS period.
+  </para>
+  <para>
+    And finally, you can get a quick overview about the relative timings of the IEEE
+    802.11 protocol with switching to linear timeline mode. Use the button <icon
+    name="timelinemode.png"/> on the toolbar, and notice how the figure changes
+    dramatically. You might need to scroll and zoom in or out to see the
+    details. This actually shows how useful the nonlinear timeline mode is.
+  </para>
+  <commercial>
+    <para>
+      You can export this sequence chart for documentation purposes using the
+      context menu's ``Export to SVG'' option.
+    </para>
+  </commercial>
+      </sect3>
+      <sect3>
+  <title>Unsuccessful ping</title>
+  <para>
+    To see how the chart looks when the ping messages get lost in the air, first
+    turn off range filtering. Then go to <eventnumber>1269</eventnumber> by
+    selecting the ``Goto Event'' option from the ``Eventlog Table'' view's context menu. In <xref
+    linkend="pictures/SequenceChart-Examples-WirelessUnsuccessfulPing.png"/> you can
+    see how the receiver radio does not send up the incoming message to its MAC
+    layer due to the signal level being too low. This actually happens at
+    <eventnumber>1274</eventnumber> in 'host0'. A little bit later the transmitter
+    MAC layer in 'host1' receives the timeout message at
+    <eventnumber>1275</eventnumber>, and starts the backoff procedure before
+    resending the very same ping message. This process goes on with statistically
+    increasing backoff time intervals until <eventnumber>1317</eventnumber>. Finally
+    the maximum number of retries is reached and the message is dropped.
+  </para>
+  <picture file="pictures/SequenceChart-Examples-WirelessUnsuccessfulPing.png">
+    Ping messages get lost
+  </picture>
+  <para>
+    The chart also makes clear that during the unsuccessful ping period there are no
+    events occuring in the MAC layer of 'host0' and it is continuously in 'IDLE'
+    state.
+  </para>
+      </sect3>
+    </sect2>
+  </sect1>
 </chapter>

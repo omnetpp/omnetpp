@@ -622,11 +622,13 @@
           <para> For each value of the x vector, the y values are selected from the same run and with the same
             simulation time.</para>
         </formalpara>
+        <picture file="pictures/ANF-ScatterChart.png">A scatter chart</picture>
         <para> By default, each data point that comes from the same y scalar belongs to the same line. This is
           not always what you want, because these values may have been generated in runs having different
           parameter settings and are not homogenous. You can specify scalars to determine the "iso" lines of
           the scatter chart. Only those points are connected by lines that have the same values of these "iso"
           attributes.</para>
+        <picture file="pictures/ANF-ScatterOptions.png">A scatter chart</picture>
         <tip>
           <para> If you want to use a module parameter as an iso attribute, you can record it as a scalar by
             setting "&lt;module&gt;.&lt;parameter_name&gt;.param-record-as-scalar=true"
