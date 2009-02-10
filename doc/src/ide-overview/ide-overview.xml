@@ -7,7 +7,7 @@
     <para>The OMNeT++ 4.0 Integrated Development Environment is based on the Eclipse platform, and extends
       it with new editors, views, wizards and other functionality. OMNeT++ adds functionality for creating and
       configuring models (NED and ini files), performing batch executions and analyzing the simulation
-      results, while Eclipse provides C++ editing, CVS/SVN integration and optionally other features (UML
+      results, while Eclipse provides C++ editing, CVS/SVN/GIT integration and optionally other features (UML
       modeling, bugtracker integration, database access, etc) via various open-source and commercial plug-ins.
     </para>
     <para>The following screenshots introduce the main components of the OMNeT++ IDE.</para>
@@ -232,11 +232,23 @@
       .
     </para>
     <picture file="pictures/img20.png">Defining datasets to be analyzed</picture>
-    <para>The Datasets page ...</para>
+    <para>It is possible to define reusable datasets, that are basically recipes 
+    how to select and process data received from the simulation. You can add selection
+    and data processing nodes to a dataset. Chart drawing is possible at any point in the
+    processing tree.</para>
     <picture file="pictures/img21.png">A Line Chart</picture>
+    <para>Line charts are typically drawn from time-series data stored in vector files. Pre-processing
+    of the data is possible in the dataset. The line chart component can be configured freely to 
+    display the vector data according to your needs.</para>
     <picture file="pictures/img22.png">A Bar Chart</picture>
+    <para>Bar charts are created from scalar results and histograms. Relevant data can be grouped and displayed 
+    via the Bar chart component. Colors, chart type and other display attributes can be set on the component.</para>
     <picture file="pictures/img23.png">Output Vector View</picture>
+    <para>The Output Vector view can be used to inspect the raw numerical data in case you really need it.</para>
+    
     <picture file="pictures/img24.png">Dataset View</picture>
+    <para>Dataset view is used to display the structure of your data processing network. 
+    </para>
   </sect1>
   
 </article>
