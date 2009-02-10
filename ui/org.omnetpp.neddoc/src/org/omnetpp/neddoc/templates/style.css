@@ -9,7 +9,7 @@ tt { font-family:Courier,Courier New,Fixed,Terminal }
 img         { border:none }
 .navbar     { font-size:8pt; }
 .navbarlink { font-size:8pt; }
-.indextitle { font-weight:bold; }
+.indextitle { }
 .comptitle  { font-size:14pt; }
 .subtitle   { font-size:12pt; margin-bottom: 3px }
 .footer     { font-size:8pt; margin-top:0px; text-align:center; color:#303030; }

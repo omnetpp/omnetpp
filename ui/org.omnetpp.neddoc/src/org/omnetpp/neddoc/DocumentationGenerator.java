@@ -51,11 +51,16 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.ui.parts.ScrollingGraphicalViewer;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.text.TextAttribute;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.ITokenScanner;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.ImageLoader;
 import org.omnetpp.common.IConstants;
 import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.common.util.FileUtils;
@@ -113,23 +118,32 @@ import de.unikassel.imageexport.exporters.PNGImageExporter;
 import de.unikassel.imageexport.wizards.ExportImagesOfDiagramFilesOperation;
 
 /**
- * This class generates documentation for a single OMNeT++ project. It calls doxygen if requested and generates
- * documentation from NED and MSG files found in the project. The result is a bunch of HTML and PNG files.
+ * This class generates documentation for a single OMNeT++ project. It calls 
+ * doxygen if requested, and generates documentation from NED and MSG files 
+ * found in the project. The result is a bunch of HTML and PNG files.
  *
- * The tool relies on the doxygen and graphviz dot executables which are invoked through the runtime's exec facility.
- * The documentation generation takes place in a background job (thread) and a progress monitor is used to present
- * its state to the user. The whole process might take several minutes for large projects such as the INET framework.
+ * The tool relies on the doxygen and graphviz dot executables which are 
+ * invoked through the runtime's exec facility. The documentation generation 
+ * takes place in a background job (thread) and a progress monitor is used to present
+ * its state to the user. The whole process might take several minutes for 
+ * large projects such as the INET framework.
  *
  * The generated documentation consists of the following things:
  *  - doxygen documentation (several different kind of pages)
  *  - one page for each NED and MSG file showing its content and a list of declared types
  *  - one page for each type defined in NED and MSG files showing the type's figure,
  *    an inheritance and a usage diagram and various other tables.
- *  - several index pages each listing the declared types of a kind such as simple modules, compound modules, channels, etc.
+ *  - several index pages each listing the declared types of a kind such as 
+ *    simple modules, compound modules, channels, etc.
  *  - other pages written by the user and extracted from NED and MSG file comments
  *  - separate full inheritance and usage diagrams for NED and MSG files
+ *  
+ * @author levy
  */
 public class DocumentationGenerator {
+    protected static final Image CC16_IMAGE = NeddocPlugin.getImageDescriptor("icons/full/misc/cc-16.png").createImage();
+    protected static final Image CC20_IMAGE = NeddocPlugin.getImageDescriptor("icons/full/misc/cc-20.png").createImage();
+    
     protected String dotExecutablePath;
     protected String doxyExecutablePath;
     protected IPath documentationRootPath;
@@ -540,7 +554,7 @@ public class DocumentationGenerator {
             }
         });
 
-            // a plain '-------' line outside <pre> is replaced by a divider (<hr> tag)
+        // a plain '-------' line outside <pre> is replaced by a divider (<hr> tag)
         comment = comment.replaceAll("(?s)\n[ \t]*------+[ \t]*\n", "\n<hr/>\n");
 
         // lines outside <pre> containing whitespace only count as blank
@@ -798,7 +812,7 @@ public class DocumentationGenerator {
 
             generateNavigationTreeIcons();
 
-            withGeneratingHTMLFile("navigation.html", "<script type=\"text/javascript\" src=\"tree.js\"></script>", new Runnable() {
+            withGeneratingHTMLFile("navigation.html", "<script type=\"text/javascript\" src=\"tree.js\"></script>", false, new Runnable() {
                 public void run() throws Exception {
                     out("<div class=\"navigation\" style=\"display: block;\">");
                     out("<h3>" + project.getName() + "</h3>");
@@ -806,7 +820,6 @@ public class DocumentationGenerator {
                     generateSelectedTopics();
                     generateProjectIndex();
                     generatePackageIndex();
-                    generateFileIndex();
 
                     generateTypeIndex("simple modules", SimpleModuleElementEx.class);
                     generateTypeIndex("compound modules", CompoundModuleElementEx.class);
@@ -820,6 +833,8 @@ public class DocumentationGenerator {
                     generateTypeIndex("classes", ClassElementEx.class);
                     generateTypeIndex("structs", StructElementEx.class);
                     generateTypeIndex("enums", EnumElementEx.class);
+
+                    generateFileIndex();
                     generateCppIndex();
 
                     out("</div>");
@@ -844,6 +859,7 @@ public class DocumentationGenerator {
         generateFileFromResource("icons/ftv2plastnode.png", "ftv2plastnode.png");
         generateFileFromResource("icons/ftv2pnode.png", "ftv2pnode.png");
         generateFileFromResource("icons/ftv2vertline.png", "ftv2vertline.png");
+        generateFileFromResource("icons/by-sa.png", "by-sa.png");
     }
 
     protected void withGeneratingNavigationMenuContainer(String title, Runnable content) throws Exception {
@@ -1545,6 +1561,7 @@ public class DocumentationGenerator {
                         if (sourceImageFile.exists()) {
                             IPath destinationImagePath = getFullNeddocPath().append(getOutputFileName(typeElement, "type", ".png"));
                             sourceImageFile.renameTo(destinationImagePath.toFile());
+                            watermark(destinationImagePath.toString());
                         }
                     }
 
@@ -1555,6 +1572,29 @@ public class DocumentationGenerator {
                 monitor.done();
             }
         }
+    }
+
+    protected void watermark(String imagePath) {
+        // load the image
+        ImageDescriptor desc = ImageDescriptor.createFromFile(null, imagePath);
+        Image image = desc.createImage();
+        int width = image.getBounds().width;
+        int height = image.getBounds().height;
+
+        // draw cc image on it
+        GC gc = new GC(image);
+        gc.setAlpha(20);
+        if (width >= 50 && height >= 50)
+            gc.drawImage(CC20_IMAGE, width-22, height-22);
+        else if (width >= 24 && height >= 24)
+            gc.drawImage(CC16_IMAGE, width-16, height-16);
+        gc.dispose();
+
+        // save it back
+        ImageLoader loader = new ImageLoader();
+        loader.data = new ImageData[] { image.getImageData() };
+        loader.save(imagePath, SWT.IMAGE_PNG);
+        image.dispose();
     }
 
     protected void generateTypeDiagram(final INedTypeElement typeElement) throws IOException {
@@ -1706,6 +1746,7 @@ public class DocumentationGenerator {
 
             generateDotOuput(dot, getOutputFile(imageFileName), "png");
             generateDotOuput(dot, getOutputFile(cmapFileName), "cmap");
+            watermark(getOutputFile(imageFileName).toString());
 
             out("<img src=\"" + imageFileName + "\" ismap=\"yes\" usemap=\"#usage-diagram\"/>");
             out("<map name=\"usage-diagram\">" + FileUtils.readTextFile(getOutputFile(cmapFileName)) + "</map>\r\n");
@@ -1781,6 +1822,7 @@ public class DocumentationGenerator {
 
             generateDotOuput(dot, getOutputFile(imageFileName), "png");
             generateDotOuput(dot, getOutputFile(cmapFileName), "cmap");
+            watermark(getOutputFile(imageFileName).toString());
 
             out("<img src=\"" + imageFileName + "\" ismap=\"yes\" usemap=\"#inheritance-diagram\"/>");
             out("<map name=\"inheritance-diagram\">" + FileUtils.readTextFile(getOutputFile(cmapFileName)) + "</map>\r\n");
@@ -1949,10 +1991,10 @@ public class DocumentationGenerator {
     }
 
     protected void withGeneratingHTMLFile(String fileName, Runnable content) throws Exception {
-        withGeneratingHTMLFile(fileName, null, content);
+        withGeneratingHTMLFile(fileName, null, true, content);
     }
 
-    protected void withGeneratingHTMLFile(String fileName, String header, Runnable content) throws Exception {
+    protected void withGeneratingHTMLFile(String fileName, String header, boolean copyrightFooter, Runnable content) throws Exception {
         File oldCurrentOutputFile = currentOutputFile;
 
         setCurrentOutputFile(fileName);
@@ -1969,6 +2011,12 @@ public class DocumentationGenerator {
 
         content.run();
         
+        if (copyrightFooter) {
+            String atag = "<a href=\"http://creativecommons.org/licenses/by-sa/3.0\" target=\"_top\">"; 
+            out("   <hr><p class=\"footer\">"+atag+"<img src=\"by-sa.png\"></a>" +
+                " This documentation is released under the "+atag+"Creative Commons license</a></p>\r\n");
+        }
+
         out("   </body>\r\n" +
             "</html>\r\n");
 
