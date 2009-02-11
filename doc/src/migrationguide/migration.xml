@@ -331,7 +331,7 @@
           executable (or ``opp_run -h all'' to get info about &Omnetpp; itself.)</para>
         </listitem>
         <listitem>
-          <para>For further information use <command>opp_run -h</command> or the ``-h'' switch
+          <para>For further information use ``opp_run -h'' or the ``-h'' switch
           on any simulation executable.</para>
         </listitem>
       </itemizedlist>
@@ -770,12 +770,22 @@ module Net {
     int ports;
 }
 
-simple Router8 extends Router {
+simple Router8 extends Router { // still uses the "Router" C++ class!
     ports = 8;
 }
 
 simple Router16 extends Router {
     ports = 16;
+}</screen>
+
+            <para>Note: the C++ class will be inherited from the base 
+            module, that is, all three module types will use the ``Router'' 
+            C++ class, even if you have ``Router8'' etc classes in C++! 
+            To replace the C++ class as well, you need to add a ``@class'' 
+            property:</para>
+
+<screen>simple AdvancedRouter extends Router {
+    @class(AdvancedRouter);  // makes it use the "AdvancedRouter" C++ class
 }</screen>
 
             <para>Inheritance can also be used to factor out
