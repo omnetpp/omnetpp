@@ -1,4 +1,0 @@
-//
-// Part of project {{ProjectName}}
-// Author: {{author}}, {{year}}
-//

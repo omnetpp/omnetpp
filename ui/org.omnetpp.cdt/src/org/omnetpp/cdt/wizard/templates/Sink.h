@@ -1,4 +1,4 @@
-{{copyright}}
+{{sourcefileheader}}
 
 #ifndef __{{PROJECTNAME}}_SINK_H
 #define __{{PROJECTNAME}}_SINK_H

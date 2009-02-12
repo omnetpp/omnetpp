@@ -1,4 +1,4 @@
-{{copyright}}
+{{sourcefileheader}}
 
 {{simulationspackage:}}package {{simulationspackage}};
 {{rootpackage:}}import {{rootpackage}}.Txc;

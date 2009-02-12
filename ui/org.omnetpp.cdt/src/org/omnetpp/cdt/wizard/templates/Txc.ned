@@ -1,4 +1,4 @@
-{{copyright}}
+{{sourcefileheader}}
 
 {{rootpackage:}}package {{rootpackage}};
 

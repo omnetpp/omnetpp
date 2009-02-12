@@ -14,6 +14,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.omnetpp.common.util.LicenseUtils;
 import org.omnetpp.common.util.ProcessUtils;
 import org.omnetpp.common.util.StringUtils;
 
@@ -29,6 +30,8 @@ public class ConfigurationPreferenceInitializer extends AbstractPreferenceInitia
         	store.setDefault(IConstants.PREF_OMNETPP_IMAGE_PATH, omnetppRoot.append("images").toOSString());
 		store.setDefault(IConstants.PREF_GRAPHVIZ_DOT_EXECUTABLE, getGraphvizDotExecutableDefault());
         store.setDefault(IConstants.PREF_DOXYGEN_EXECUTABLE, getDoxygenExecutableDefault());
+        store.setDefault(IConstants.PREF_DEFAULT_LICENSE, IConstants.IS_COMMERCIAL ? LicenseUtils.CUSTOM : LicenseUtils.LGPL);
+        store.setDefault(IConstants.PREF_CUSTOM_LICENSE_HEADER, LicenseUtils.DEFAULT_CUSTOM_LICENSE_HEADER);
 	}
 	
 	private IPath getOmnetppRootDefault() {

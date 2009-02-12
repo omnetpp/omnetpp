@@ -7,6 +7,8 @@
 
 package org.omnetpp.cdt.wizard;
 
+import java.util.Map;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -22,5 +24,5 @@ public interface IProjectTemplate {
     Image getImage();
     String getDescription();
     String getCategory();
-    void configure(IProject project, IProgressMonitor monitor) throws CoreException;
+    void configure(IProject project, Map<String, String> variables, IProgressMonitor monitor) throws CoreException;
 }

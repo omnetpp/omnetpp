@@ -113,7 +113,6 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
 
     
     public class TemplateSelectionPage extends WizardPage {
-
         private TreeViewer treeViewer;
 
         protected TemplateSelectionPage() {
@@ -196,7 +195,6 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
             return (element instanceof IProjectTemplate) ? (IProjectTemplate)element : null;
         }
     }
-
     
     /**
      * Customizations:
@@ -340,7 +338,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
 
                 // apply template: this may create files, set project properties, configure the CDT project, etc.
                 if (template != null)
-                    template.configure(project, monitor);
+                    template.configure(project, null, monitor);
             }
         };
 

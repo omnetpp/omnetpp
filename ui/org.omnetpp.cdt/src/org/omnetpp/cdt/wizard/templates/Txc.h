@@ -1,4 +1,4 @@
-{{copyright}}
+{{sourcefileheader}}
 
 #ifndef __{{PROJECTNAME}}_TCX_H
 #define __{{PROJECTNAME}}_TCX_H

@@ -1,4 +1,4 @@
-{{copyright}}
+{{sourcefileheader}}
 
 #include "Sink.h"
 

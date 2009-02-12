@@ -9,8 +9,10 @@ package org.omnetpp.ide.preferences;
 
 import java.io.File;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.preference.ComboFieldEditor;
 import org.eclipse.jface.preference.DirectoryFieldEditor;
 import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
@@ -20,27 +22,26 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.IConstants;
+import org.omnetpp.common.ui.MultiLineTextFieldEditor;
+import org.omnetpp.common.util.LicenseUtils;
 import org.omnetpp.common.util.ProcessUtils;
+import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.ide.OmnetppMainPlugin;
 
 /**
- * This class represents a preference page that
- * is contributed to the Preferences dialog. By
- * subclassing <samp>FieldEditorPreferencePage</samp>, we
- * can use the field support built into JFace that allows
- * us to create a page that is small and knows how to
- * save, restore and apply itself.
- * <p>
- * This page is used to modify preferences only. They
- * are stored in the preference store that belongs to
- * the main plug-in class. That way, preferences can
- * be accessed directly via the preference store.
+ * The OMNeT++ preference page that is contributed to the Preferences dialog.
+ * 
+ * XXX Problems with this page:
+ *  1. search does not work (try typing "Doxygen") -- this is probably due to nested group controls  
+ *  2. Custom license text does not resize (at all!)
+ *  3. basically, the whole layout management is a complete mess
  */
 public class OmnetppPreferencePage
 	extends FieldEditorPreferencePage
@@ -64,11 +65,33 @@ public class OmnetppPreferencePage
         Composite spacer2 = createComposite(group2, 3, 3, GridData.FILL_HORIZONTAL);
         addAndFillIntoGrid(new LookupExecutableFileFieldEditor(IConstants.PREF_DOXYGEN_EXECUTABLE, "Doxygen executable path:", spacer2), spacer2, 3);
         addAndFillIntoGrid(new LookupExecutableFileFieldEditor(IConstants.PREF_GRAPHVIZ_DOT_EXECUTABLE, "GraphViz Dot executable path:", spacer2), spacer2, 3);
+
+        String[] licenses = LicenseUtils.getLicenses();
+        String[][] licenseChoices = new String[licenses.length][];
+        for (int i=0; i<licenses.length; i++)
+            licenseChoices[i] = new String[] {licenses[i], licenses[i]};
+
+        Group group3 = createGroup(parent, "Project and file creation wizards", 3, 3, GridData.FILL_HORIZONTAL);
+        Composite spacer3 = createComposite(group3, 3, 3, GridData.FILL_HORIZONTAL);
+        addAndFillIntoGrid(new ComboFieldEditor(IConstants.PREF_DEFAULT_LICENSE, "License:", licenseChoices, spacer3), spacer3, 3);
+        if (ArrayUtils.contains(licenses, LicenseUtils.CUSTOM))
+           addAndFillIntoGrid(new MultiLineTextFieldEditor(IConstants.PREF_CUSTOM_LICENSE_HEADER, "Custom license source code header:", spacer3), spacer3, 3);
+        ((GridLayout)spacer3.getLayout()).numColumns = 3; // idiotic field editors change it in their fillIntoGrid methods!!!
+        // Note: at this point, horizSpan of the Combo and the Text is 1, but after an asyncExec it becomes 2!!! probably the dialog plays games
+
+//        UIUtils.dumpWidgetHierarchy(parent);
+//        final Composite finalParent = parent;
+//        Display.getDefault().asyncExec(new Runnable() {
+//            public void run() {
+//                System.out.println("ASYNC dumpWidgetHierarchy:");
+//                UIUtils.dumpWidgetHierarchy(finalParent);
+//            }
+//        });
 	}
 
 	protected void addAndFillIntoGrid(FieldEditor editor, Composite parent, int numColumns) {
 	    addField(editor);
-	    editor.fillIntoGrid(parent, numColumns);
+	    //editor.fillIntoGrid(parent, numColumns); -- apparently gets called the dialog or the page automatically
 	}
 	
 	// from SWTFactory

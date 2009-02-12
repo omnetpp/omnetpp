@@ -89,7 +89,7 @@ public abstract class ProjectTemplate implements IProjectTemplate {
         return monitor;
     }
 
-    public void configure(IProject project, IProgressMonitor monitor) throws CoreException {
+    public void configure(IProject project, Map<String, String> variables, IProgressMonitor monitor) throws CoreException {
         this.project = project;
         this.monitor = monitor;
         vars.clear();
@@ -106,7 +106,14 @@ public abstract class ProjectTemplate implements IProjectTemplate {
         setVariable("date", cal.get(Calendar.YEAR)+"-"+cal.get(Calendar.MONTH)+"-"+cal.get(Calendar.DAY_OF_MONTH));
         setVariable("year", ""+cal.get(Calendar.YEAR));
         setVariable("author", System.getProperty("user.name"));
-        setVariable("copyright", readResource("templates/defaultCopyright.txt")); // some default; may be overwritten
+        
+        // add user-defined variables (they may overwrite the defaults above)
+        if (variables != null)
+            for (String var : variables.keySet())
+                setVariable(var, variables.get(var));
+
+        //TODO copyright
+        //setVariable("sourcefileheader", license.getSourcefileComment());
         
         // do it!
         doConfigure();
