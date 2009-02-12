@@ -34,6 +34,7 @@ import org.omnetpp.cdt.makefile.BuildSpecification;
 import org.omnetpp.cdt.makefile.MakemakeOptions;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.FileUtils;
+import org.omnetpp.common.util.LicenseUtils;
 import org.omnetpp.common.util.StringUtils;
 
 /**
@@ -106,14 +107,14 @@ public abstract class ProjectTemplate implements IProjectTemplate {
         setVariable("date", cal.get(Calendar.YEAR)+"-"+cal.get(Calendar.MONTH)+"-"+cal.get(Calendar.DAY_OF_MONTH));
         setVariable("year", ""+cal.get(Calendar.YEAR));
         setVariable("author", System.getProperty("user.name"));
+        String license = LicenseUtils.getDefaultLicense();
+        setVariable("license", license.equals(LicenseUtils.NONE) ? "" : license);
+        setVariable("bannercomment", LicenseUtils.getBannerComment(license, "//"));
         
         // add user-defined variables (they may overwrite the defaults above)
         if (variables != null)
             for (String var : variables.keySet())
                 setVariable(var, variables.get(var));
-
-        //TODO copyright
-        //setVariable("sourcefileheader", license.getSourcefileComment());
         
         // do it!
         doConfigure();
@@ -151,35 +152,45 @@ public abstract class ProjectTemplate implements IProjectTemplate {
         }
     }
 
-    /**
-     * Utility method for doConfigure. Copies a resource into the project, 
-     * performing variable substitutions in it.
-     */
     protected void createFileFromResource(String projectRelativePath, String resourcePath) throws CoreException {
+        createFileFromResource(projectRelativePath, resourcePath, false);
+    }
+
+    /**
+     * Utility method for doConfigure. Copies a resource into the project,  
+     * performing variable substitutions in it. 
+     * evenIfBlank==false: do not save the file if contents would be blank (i.e. whitespace only). 
+     * evenIfBlank==true: always save. 
+     */
+    protected void createFileFromResource(String projectRelativePath, String resourcePath, boolean evenIfBlank) throws CoreException {
         String content = readResource(resourcePath);
         content = content.replace("\r\n", "\n");
-        createFile(projectRelativePath, content);
+        createFile(projectRelativePath, content, evenIfBlank);
     }
 
     /**
      * Utility method for doConfigure. Saves the given text into the project as a file, 
      * performing variable substitutions in it.
      */
-    protected void createFile(String projectRelativePath, String content) throws CoreException {
+    protected void createFile(String projectRelativePath, String content, boolean evenIfBlank) throws CoreException {
         // substitute variables (recursively)
         String oldContent = "";
         while (!content.equals(oldContent)) {
             oldContent = content;
             content = StringUtils.substituteIntoTemplate(content, vars, "{{", "}}");
         }
-        
-        // save it
-        byte[] bytes = content.getBytes(); 
-        IFile file = project.getFile(new Path(projectRelativePath));
-        if (!file.exists())
-            file.create(new ByteArrayInputStream(bytes), true, monitor);
-        else
-            file.setContents(new ByteArrayInputStream(bytes), true, false, monitor);
+
+        if (evenIfBlank || !StringUtils.isBlank(content)) {
+            content = content.trim() + "\n";
+
+            // save it
+            byte[] bytes = content.getBytes(); 
+            IFile file = project.getFile(new Path(projectRelativePath));
+            if (!file.exists())
+                file.create(new ByteArrayInputStream(bytes), true, monitor);
+            else
+                file.setContents(new ByteArrayInputStream(bytes), true, false, monitor);
+        }
     }
 
     /**

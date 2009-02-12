@@ -1,4 +1,4 @@
-{{sourcefileheader}}
+{{bannercomment}}
 
 #include "Txc.h"
 

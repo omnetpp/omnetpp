@@ -18,11 +18,11 @@ import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.FileFieldEditor;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.preference.StringFieldEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IWorkbench;
@@ -32,7 +32,6 @@ import org.omnetpp.common.IConstants;
 import org.omnetpp.common.ui.MultiLineTextFieldEditor;
 import org.omnetpp.common.util.LicenseUtils;
 import org.omnetpp.common.util.ProcessUtils;
-import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.ide.OmnetppMainPlugin;
 
 /**
@@ -73,12 +72,16 @@ public class OmnetppPreferencePage
 
         Group group3 = createGroup(parent, "Project and file creation wizards", 3, 3, GridData.FILL_HORIZONTAL);
         Composite spacer3 = createComposite(group3, 3, 3, GridData.FILL_HORIZONTAL);
+        addAndFillIntoGrid(new StringFieldEditor(IConstants.PREF_COPYRIGHT_LINE, "Copyright line:", spacer3), spacer3, 3);
         addAndFillIntoGrid(new ComboFieldEditor(IConstants.PREF_DEFAULT_LICENSE, "License:", licenseChoices, spacer3), spacer3, 3);
         if (ArrayUtils.contains(licenses, LicenseUtils.CUSTOM))
            addAndFillIntoGrid(new MultiLineTextFieldEditor(IConstants.PREF_CUSTOM_LICENSE_HEADER, "Custom license source code header:", spacer3), spacer3, 3);
         ((GridLayout)spacer3.getLayout()).numColumns = 3; // idiotic field editors change it in their fillIntoGrid methods!!!
         // Note: at this point, horizSpan of the Combo and the Text is 1, but after an asyncExec it becomes 2!!! probably the dialog plays games
 
+        //TODO disable "custom license header" when not "custom" is selected!!!! 
+        
+        
 //        UIUtils.dumpWidgetHierarchy(parent);
 //        final Composite finalParent = parent;
 //        Display.getDefault().asyncExec(new Runnable() {

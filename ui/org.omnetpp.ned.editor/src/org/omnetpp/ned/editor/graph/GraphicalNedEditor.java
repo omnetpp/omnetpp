@@ -211,7 +211,8 @@ public class GraphicalNedEditor
         // save palette filter to a persistent property
         PersistentResourcePropertyManager propertyManager = new PersistentResourcePropertyManager(NedEditorPlugin.PLUGIN_ID);
         try {
-            propertyManager.setProperty(getFile(), PROP_PALETTE_FILTER, getPaletteManager().getExcludedPackages());
+            if (getFile().getProject().exists())
+                propertyManager.setProperty(getFile(), PROP_PALETTE_FILTER, getPaletteManager().getExcludedPackages());
         }
         catch (Exception e) {
             NedEditorPlugin.logError("cannot save palette filter",  e);

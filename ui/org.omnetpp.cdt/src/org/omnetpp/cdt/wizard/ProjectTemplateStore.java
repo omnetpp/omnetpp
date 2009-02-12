@@ -45,7 +45,10 @@ public class ProjectTemplateStore {
         noncppTemplates.add(new ProjectTemplate("Empty project", SINGLE_DIR0, null, ICON_TEMPLATE) {
             @Override
             public void doConfigure() throws CoreException {
+                setVariable("namespace", "");
+                setVariable("rootpackage", "");
                 createBuildSpec(new String[] {".", DEFAULT_SRCFOLDER_OPTIONS});                
+                createFileFromResource("package.ned", "templates/package.ned");
             }
         });
         
@@ -54,7 +57,11 @@ public class ProjectTemplateStore {
         cppTemplates.add(new ProjectTemplate("Empty project", SINGLE_DIR, null, ICON_TEMPLATE) {
             @Override
             public void doConfigure() throws CoreException {
+                setVariable("namespace", "");
+                setVariable("rootpackage", "");
+                setVariable("simulationspackage", "");
                 createBuildSpec(new String[] {".", DEFAULT_SRCFOLDER_OPTIONS});                
+                createFileFromResource("package.ned", "templates/package.ned");
             }
         });
         cppTemplates.add(new ProjectTemplate("Tictoc example", SINGLE_DIR, null, ICON_TEMPLATE) {
@@ -64,6 +71,7 @@ public class ProjectTemplateStore {
                 setVariable("rootpackage", "");
                 setVariable("simulationspackage", "");
                 createBuildSpec(new String[] {".", DEFAULT_SRCFOLDER_OPTIONS});                
+                createFileFromResource("package.ned", "templates/package.ned");
                 createFileFromResource("Txc.ned", "templates/Txc.ned");
                 createFileFromResource("Txc.h", "templates/Txc.h");
                 createFileFromResource("Txc.cc", "templates/Txc.cc");
@@ -78,6 +86,7 @@ public class ProjectTemplateStore {
                 setVariable("rootpackage", "");
                 setVariable("simulationspackage", "");
                 createBuildSpec(new String[] {".", DEFAULT_SRCFOLDER_OPTIONS});                
+                createFileFromResource("package.ned", "templates/package.ned");
                 createFileFromResource("Source.ned", "templates/Source.ned");
                 createFileFromResource("Source.cc", "templates/Source.cc");
                 createFileFromResource("Source.h", "templates/Source.h");
@@ -93,9 +102,14 @@ public class ProjectTemplateStore {
         cppTemplates.add(new ProjectTemplate("Empty project", SRC_AND_SIMULATIONS, null, ICON_TEMPLATE) {
             @Override
             public void doConfigure() throws CoreException {
+                setVariable("namespace", "");
+                setVariable("rootpackage", "");
+                setVariable("simulationspackage", "");
                 createAndSetSourceFolders(new String[]{"src"});
                 createAndSetNedSourceFolders(new String[] {"src", "simulations"});
                 createBuildSpec(new String[] {".", DEFAULT_ROOTFOLDER_OPTIONS, "src", DEFAULT_SRCFOLDER_OPTIONS});                
+                createFileFromResource("src/package.ned", "templates/package.ned");
+                createFileFromResource("simulations/package.ned", "templates/simulationsPackage.ned");
             }
         });
         cppTemplates.add(new ProjectTemplate("Tictoc example", SRC_AND_SIMULATIONS, null, ICON_TEMPLATE) {
@@ -107,9 +121,11 @@ public class ProjectTemplateStore {
                 createBuildSpec(new String[] {".", DEFAULT_ROOTFOLDER_OPTIONS, "src", DEFAULT_SRCFOLDER_OPTIONS});                
                 createAndSetSourceFolders(new String[]{"src"});
                 createAndSetNedSourceFolders(new String[] {"src", "simulations"});
+                createFileFromResource("src/package.ned", "templates/package.ned");
                 createFileFromResource("src/Txc.ned", "templates/Txc.ned");
                 createFileFromResource("src/Txc.h", "templates/Txc.h");
                 createFileFromResource("src/Txc.cc", "templates/Txc.cc");
+                createFileFromResource("simulations/package.ned", "templates/simulationsPackage.ned");
                 createFileFromResource("simulations/Tictoc.ned", "templates/Tictoc.ned");
                 createFileFromResource("simulations/omnetpp.ini", "templates/Tictoc.ini");
             }

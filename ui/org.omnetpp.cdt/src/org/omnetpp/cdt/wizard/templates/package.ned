@@ -4,3 +4,5 @@
 {{namespace:}}// namespace of module C++ classes
 {{namespace:}}@namespace({{namespace}});
 
+{{license:}}@license({{license}});
+

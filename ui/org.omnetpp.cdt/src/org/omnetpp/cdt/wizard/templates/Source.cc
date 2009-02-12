@@ -1,4 +1,4 @@
-{{sourcefileheader}}
+{{bannercomment}}
 
 #include "Source.h"
 

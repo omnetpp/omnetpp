@@ -40,6 +40,7 @@ public interface IConstants {
 
     // preference IDs
 	public static final String PREF_OMNETPP_ROOT = "omnetppRoot";
+	public static final String PREF_COPYRIGHT_LINE = "copyrightLine";
     public static final String PREF_DEFAULT_LICENSE = "defaultLicense";
     public static final String PREF_CUSTOM_LICENSE_HEADER = "customLicenseHeader";
 	public static final String PREF_OMNETPP_IMAGE_PATH = "omnetppImagePath";

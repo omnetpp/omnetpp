@@ -1,4 +1,4 @@
-{{sourcefileheader}}
+{{bannercomment}}
 
 {{simulationspackage:}}package {{simulationspackage}};
 {{rootpackage:}}import {{rootpackage}}.Source;

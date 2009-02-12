@@ -1,4 +1,4 @@
-{{sourcefileheader}}
+{{bannercomment}}
 
 {{rootpackage:}}package {{rootpackage}};
 

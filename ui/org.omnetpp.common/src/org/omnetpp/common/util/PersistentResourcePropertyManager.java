@@ -39,8 +39,10 @@ public class PersistentResourcePropertyManager {
 	
 	public boolean hasProperty(IResource resource, String key) {
 		String fileName = getPropertyFileName(resource, key);
+		if (fileName == null)
+		    return false;
+
 		File file = new File(fileName);
-		
 		return file.exists();
 	}
 
@@ -48,14 +50,15 @@ public class PersistentResourcePropertyManager {
 		throws FileNotFoundException, IOException, ClassNotFoundException
 	{
 		String fileName = getPropertyFileName(resource, key);
+		if (fileName == null)
+		    return null;
+		
 		FileInputStream fileStream = null;
 		ObjectInputStream stream = null;
-
 		try {
     		fileStream = new FileInputStream(fileName);
     		stream = classLoader == null ? new ObjectInputStream(fileStream) : new ObjectInputStreamWithClassLoader(fileStream, classLoader);
     		Object object = stream.readObject();
-            
             return object;
 		}
 		finally {
@@ -71,8 +74,10 @@ public class PersistentResourcePropertyManager {
 		throws FileNotFoundException, IOException
 	{
 		String fileName = getPropertyFileName(resource, key);
+		if (fileName == null)
+		    throw new FileNotFoundException(resource.getProject().getFullPath().toString());
+		
 		ObjectOutputStream stream = null;
-
 		try {
     		stream = new ObjectOutputStream(new FileOutputStream(fileName));
     		stream.writeObject(value);
@@ -85,17 +90,24 @@ public class PersistentResourcePropertyManager {
 
 	public void removeProperty(IResource resource, String key) {
 		String fileName = getPropertyFileName(resource, key);
-		File file = new File(fileName);
+		if (fileName == null)
+		    return;  // OK
 
+		File file = new File(fileName);
 		if (file.exists() && !file.delete())
 			throw new RuntimeException("Unable to delete file: " + fileName);
 	}
 	
+	/**
+	 * Returns null if the project does not exist (may happens e.g. when a project gets
+	 * deleted, a NED editor learns it and wants to close, and closing wants to save stuff). 
+	 */
 	private String getPropertyFileName(IResource resource, String key) {
 		IProject project = resource.getProject();
+		if (!project.exists())  // usually, just got deleted
+		    return null;
+		
 		String fileNameKey = resource.getFullPath().toPortableString() + "?" + key;
-
-		// TODO: this needs some thinking to be less fragile
 		return project.getWorkingLocation(pluginId).append(String.valueOf(fileNameKey.hashCode())).toPortableString();
 	}
 }
