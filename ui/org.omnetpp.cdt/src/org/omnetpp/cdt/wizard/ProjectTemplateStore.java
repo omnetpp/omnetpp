@@ -41,17 +41,35 @@ public class ProjectTemplateStore {
         final String DEFAULT_ROOTFOLDER_OPTIONS = "--nolink --meta:recurse";
         
         // non-C++ projects
-        final String SINGLE_DIR0 = "Single-directory project";
-        noncppTemplates.add(new ProjectTemplate("Empty project", SINGLE_DIR0, null, ICON_TEMPLATE) {
+        final String NONCPP_SINGLEDIR = "Single-directory project";
+        noncppTemplates.add(new ProjectTemplate("Empty project", NONCPP_SINGLEDIR, null, ICON_TEMPLATE) {
             @Override
             public void doConfigure() throws CoreException {
                 setVariable("namespace", "");
-                setVariable("rootpackage", "");
-                createBuildSpec(new String[] {".", DEFAULT_SRCFOLDER_OPTIONS});                
-                createFileFromResource("package.ned", "templates/package.ned");
+                setVariable("simulationspackage", "");
+                createFileFromResource("package.ned", "templates/simulationsPackage.ned");
             }
         });
-        
+        final String NONCPP_SIMULATIONS = "Project with a \"simulations\" folder";
+        noncppTemplates.add(new ProjectTemplate("Empty project", NONCPP_SIMULATIONS, null, ICON_TEMPLATE) {
+            @Override
+            public void doConfigure() throws CoreException {
+                setVariable("namespace", "");
+                setVariable("simulationspackage", "");
+                createAndSetNedSourceFolders(new String[] {"simulations"});
+                createFileFromResource("simulations/package.ned", "templates/simulationsPackage.ned");
+            }
+        });
+        noncppTemplates.add(new ProjectTemplate("Empty project with packages", NONCPP_SIMULATIONS, null, ICON_TEMPLATE) {
+            @Override
+            public void doConfigure() throws CoreException {
+                setVariable("namespace", "");
+                setVariable("simulationspackage", "org.example.{{projectname}}.simulations");
+                createAndSetNedSourceFolders(new String[] {"simulations"});
+                createFileFromResource("simulations/package.ned", "templates/simulationsPackage.ned");
+            }
+        });
+
         // C++ projects
         final String SINGLE_DIR = "Single-directory project, for small simulations";
         cppTemplates.add(new ProjectTemplate("Empty project", SINGLE_DIR, null, ICON_TEMPLATE) {

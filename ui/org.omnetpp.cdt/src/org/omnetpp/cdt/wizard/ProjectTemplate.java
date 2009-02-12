@@ -108,7 +108,7 @@ public abstract class ProjectTemplate implements IProjectTemplate {
         setVariable("year", ""+cal.get(Calendar.YEAR));
         setVariable("author", System.getProperty("user.name"));
         String license = LicenseUtils.getDefaultLicense();
-        String licenseProperty = (license.equals(LicenseUtils.NONE) || license.equals(LicenseUtils.CUSTOM)) ? "" : license;
+        String licenseProperty = license.equals(LicenseUtils.NONE) ? "" : license; // @license(custom) is needed, so that wizards know when to create banners
         setVariable("license", licenseProperty); // for @license in package.ned
         setVariable("bannercomment", LicenseUtils.getBannerComment(license, "//"));
         

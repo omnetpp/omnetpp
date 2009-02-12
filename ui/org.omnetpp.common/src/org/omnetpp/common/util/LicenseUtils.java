@@ -70,10 +70,10 @@ public class LicenseUtils {
             return GNU_HEADER.replace("@KIND@", "Lesser General").replace("@VERSION@", "3");
         else if (license.equals(BSD))
             return BSD_HEADER;
-        else if (license.equals(NONE))
-            return "";
         else if (license.equals(CUSTOM))
             return CommonPlugin.getConfigurationPreferenceStore().getString(IConstants.PREF_CUSTOM_LICENSE_HEADER);
+        else if (license.equals(NONE))
+            return "";
         else
             throw new IllegalArgumentException("unrecognized license identifier: "+ license);
     }
