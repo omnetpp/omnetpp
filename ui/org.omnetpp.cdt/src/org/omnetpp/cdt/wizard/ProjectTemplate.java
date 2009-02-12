@@ -108,7 +108,8 @@ public abstract class ProjectTemplate implements IProjectTemplate {
         setVariable("year", ""+cal.get(Calendar.YEAR));
         setVariable("author", System.getProperty("user.name"));
         String license = LicenseUtils.getDefaultLicense();
-        setVariable("license", license.equals(LicenseUtils.NONE) ? "" : license);
+        String licenseProperty = (license.equals(LicenseUtils.NONE) || license.equals(LicenseUtils.CUSTOM)) ? "" : license;
+        setVariable("license", licenseProperty); // for @license in package.ned
         setVariable("bannercomment", LicenseUtils.getBannerComment(license, "//"));
         
         // add user-defined variables (they may overwrite the defaults above)

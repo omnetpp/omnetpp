@@ -88,10 +88,12 @@ public class LicenseUtils {
      * should be "//" for C++, NED and Java files.  
      */
     public static String getBannerComment(String license, String commentChars) {
-        commentChars = commentChars + " ";
         String txt = getCopyrightLine().trim() + "\n\n" + getLicenseNotice(license).trim();
-        txt = "\n" + txt.trim() + "\n";
-        txt = commentChars + txt.replace("\n", "\n" + commentChars) + "\n\n";
+        txt = txt.trim();
+        if (!txt.equals("")) {
+            txt = "\n" + txt + "\n";
+            txt = commentChars + txt.replace("\n", "\n" + commentChars + " ") + "\n\n";
+        }
         return txt;
     }
 }
