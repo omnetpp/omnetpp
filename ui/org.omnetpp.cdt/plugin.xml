@@ -260,7 +260,7 @@
             finalPerspective="org.omnetpp.main.OmnetppPerspective"
             icon="icons/full/obj16/newoproject.gif"
             id="org.omnetpp.cdt.wizard.omnetppCCProjectWizard"
-            name="OMNeT++ Project for C++..."
+            name="OMNeT++ Project..."
             preferredPerspectives="org.eclipse.cdt.ui.CPerspective, org.omnetpp.main.OmnetppPerspective"
             project="true">
          <description>

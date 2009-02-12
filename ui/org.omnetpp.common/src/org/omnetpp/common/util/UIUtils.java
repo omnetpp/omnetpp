@@ -8,6 +8,8 @@
 package org.omnetpp.common.util;
 
 import org.eclipse.jface.dialogs.IDialogSettings;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 public class UIUtils {
@@ -20,4 +22,19 @@ public class UIUtils {
         else
             return dialogSettings; 
     }
+
+    
+    public static void dumpWidgetHierarchy(Control control) {
+        dumpWidgetHierarchy(control, 0);
+    }
+
+    protected static void dumpWidgetHierarchy(Control control, int level) {
+        System.out.println(StringUtils.repeat("  ", level) + control.toString() + (!control.isVisible() ? " (not visible)" : "") + 
+                " " + control.getLayoutData() + " " + (control instanceof Composite ? ((Composite)control).getLayout() : ""));
+        
+        if (control instanceof Composite)
+            for (Control child : ((Composite)control).getChildren())
+                dumpWidgetHierarchy(child, level+1);
+    }
+
 }

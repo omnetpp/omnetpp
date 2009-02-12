@@ -336,7 +336,7 @@ public class ImageFactory {
         // if not found in the filesystem, look for it in the JAR file
         if ((result = createDescriptor(ImageFactory.class, IMAGE_DIR, baseName, "png", preferredSize)) != null)
             return result;
-        // serach for gifs if no PNG found
+        // search for GIFs if no PNG found
         for (String currPath : imageDirs)
             if ((result = createDescriptor(null, StringUtils.substituteVariables(currPath), baseName, "gif", preferredSize)) != null)
                 return result;
