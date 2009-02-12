@@ -234,6 +234,9 @@ public abstract class ProjectTemplate implements IProjectTemplate {
      * (Previous source entries get overwritten.)  
      */
     protected static void setSourceLocations(IProject project, IContainer[] folders) throws CoreException {
+        if (System.getProperty("org.omnetpp.test.unit.running") != null)
+            return; // in the test case we don't create a full CDT project, so the code below would throw NPE
+
         ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(project, true);
         int n = folders.length;
         for (ICConfigurationDescription configuration : projectDescription.getConfigurations()) {
