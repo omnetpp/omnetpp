@@ -27,9 +27,11 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
 import org.eclipse.ui.ide.IDE;
+import org.omnetpp.common.util.LicenseUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.NedEditorPlugin;
+import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 
 /**
  * Wizard page for creating a new NED file
@@ -98,20 +100,20 @@ public class NewNEDFileWizardPage1 extends WizardNewFileCreationPage {
 
 		// sample section generation checkboxes
 		emptyButton = new Button(group, SWT.RADIO);
-		emptyButton.setText("Empty file");
+		emptyButton.setText("Em&pty file");
 		emptyButton.addSelectionListener(listener);
 		emptyButton.setSelection(true);
 
 		simpleButton = new Button(group, SWT.RADIO);
-		simpleButton.setText("A new simple module");
+		simpleButton.setText("A new &simple module");
 		simpleButton.addSelectionListener(listener);
 
         compoundButton = new Button(group, SWT.RADIO);
-        compoundButton.setText("A new compound module");
+        compoundButton.setText("A new &compound module");
         compoundButton.addSelectionListener(listener);
 
         networkButton = new Button(group, SWT.RADIO);
-        networkButton.setText("A new network");
+        networkButton.setText("A new &network");
         networkButton.addSelectionListener(listener);
 
         //new Label(composite, SWT.NONE);
@@ -137,6 +139,12 @@ public class NewNEDFileWizardPage1 extends WizardNewFileCreationPage {
         // substitute name and package into the template
         String contents = NEDFILE_TEMPLATES[modelSelected].replaceAll("#NAME#", name);
 		contents = contents.replaceAll("#PACKAGEDECL#", packagedecl);
+
+		// prefix with banner comment
+		String license = NEDResourcesPlugin.getNEDResources().getSimplePropertyFor(newFile.getParent(), INEDTypeResolver.LICENSE_PROPERTY);
+		if (license==null || !LicenseUtils.isAcceptedLicense(license))
+		    license = LicenseUtils.getDefaultLicense();
+        contents = LicenseUtils.getBannerComment(license, "//") + contents;
 		return new ByteArrayInputStream(contents.getBytes());
 	}
     

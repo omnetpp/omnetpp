@@ -44,6 +44,8 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.core.NEDResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.NedEditorPlugin;
+import org.omnetpp.ned.model.ex.NedFileElementEx;
+import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 
 /**
  * Wizard page for creating a new NED file
@@ -225,7 +227,8 @@ public class NewNEDComponentWizardPage extends WizardPage {
 			// create CC and H files for simple modules
 			if (type == Type.SIMPLE) {
 			    nedResources.readNEDFile(newNedFile);
-			    String namespace = nedResources.getCppNamespaceForFile(newNedFile);
+			    NedFileElementEx nedFileElement = nedResources.getNedFileElement(newNedFile);
+                String namespace = nedResources.getSimplePropertyFor(nedFileElement, INEDTypeResolver.NAMESPACE_PROPERTY);
                 String namespaceBegin = "\n";
                 String namespaceEnd = "\n";
 

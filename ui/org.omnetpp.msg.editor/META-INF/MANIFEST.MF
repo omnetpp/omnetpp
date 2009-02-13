@@ -14,6 +14,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.resources,
  org.eclipse.jface.text,
  org.omnetpp.common,
- org.omnetpp.ide.nativelibs
+ org.omnetpp.ide.nativelibs,
+ org.omnetpp.ned.core,
+ org.omnetpp.ned.model
 Eclipse-LazyStart: true
 Export-Package: org.omnetpp.msg.editor.highlight

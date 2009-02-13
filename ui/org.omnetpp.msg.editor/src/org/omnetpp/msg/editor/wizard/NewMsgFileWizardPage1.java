@@ -26,8 +26,11 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
 import org.eclipse.ui.ide.IDE;
+import org.omnetpp.common.util.LicenseUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.msg.editor.MsgEditorPlugin;
+import org.omnetpp.ned.core.NEDResourcesPlugin;
+import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 
 /**
  * Wizard for creating a msg file
@@ -121,11 +124,11 @@ public class NewMsgFileWizardPage1 extends WizardNewFileCreationPage {
 		group.setText("Content");
 		group.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL));
 
-		Button emptyButton = createRadioButton(group, "Empty file", 0);
-		createRadioButton(group, "A basic example message class", 1);
-		createRadioButton(group, "An example message that subclasses from a message defined in another .msg file", 2);
-		createRadioButton(group, "An example message class that uses data types defined in C++", 3);
-		createRadioButton(group, "An example message class that can be customized in C++", 4);
+		Button emptyButton = createRadioButton(group, "Em&pty file", 0);
+		createRadioButton(group, "A &basic example message class", 1);
+		createRadioButton(group, "An example message that &subclasses from a message defined in another .msg file", 2);
+		createRadioButton(group, "An example message class that uses &data types defined in C++", 3);
+		createRadioButton(group, "An example message class that can be c&ustomized in C++", 4);
 
         emptyButton.setSelection(true);
 
@@ -154,6 +157,13 @@ public class NewMsgFileWizardPage1 extends WizardNewFileCreationPage {
 
         // substitute name into the template
         String contents = MSGFILE_TEMPLATES[templateSelected].replaceAll("#NAME#", name);
+
+        // prefix with banner comment
+        IFile newFile = createFileHandle(getContainerFullPath().append(getFileName()));
+        String license = NEDResourcesPlugin.getNEDResources().getSimplePropertyFor(newFile.getParent(), INEDTypeResolver.LICENSE_PROPERTY);
+        if (license==null || !LicenseUtils.isAcceptedLicense(license))
+            license = LicenseUtils.getDefaultLicense();
+        contents = LicenseUtils.getBannerComment(license, "//") + contents;
 		return new ByteArrayInputStream(contents.getBytes());
 	}
     

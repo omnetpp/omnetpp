@@ -7,6 +7,7 @@
 
 package org.omnetpp.common.util;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.IConstants;
 
@@ -59,6 +60,10 @@ public class LicenseUtils {
             return new String[] {GPL,LGPL,BSD};
     }
 
+    public static boolean isAcceptedLicense(String license) {
+        return ArrayUtils.contains(getLicenses(), license);
+    }
+    
     public static String getDefaultLicense() {
         return CommonPlugin.getConfigurationPreferenceStore().getString(IConstants.PREF_DEFAULT_LICENSE);
     }
