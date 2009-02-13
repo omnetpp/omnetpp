@@ -417,7 +417,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
             className = extendsChain.get(0).getName();
 
         NedFileElementEx fileElement = componentNode.getContainingNedFileElement();
-        String namespace = NEDResourcesPlugin.getNEDResources().getCppNamespaceForFile(fileElement);
+        String namespace = getResolver().getSimplePropertyFor(fileElement, INEDTypeResolver.NAMESPACE_PROPERTY);
         
         if (namespace == null)
             return className;

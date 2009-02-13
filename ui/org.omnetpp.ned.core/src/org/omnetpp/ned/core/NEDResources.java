@@ -88,10 +88,6 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
     private boolean debug = true;
 
-    private static final String NAMESPACE_PROPERTY = "namespace";
-	private static final String PACKAGE_NED_FILENAME = "package.ned";
-    private static final String NED_EXTENSION = "ned";
-    
     // singleton instance
     private static NEDResources instance = null;
     // list of objects that listen on *all* NED changes
@@ -452,41 +448,40 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 		return typeInfo;
 	}
 
-	public synchronized String getCppNamespaceForFile(IFile file) {
-	    return getCppNamespaceForFile(getNedFileElement(file));
+	public synchronized String getSimplePropertyFor(NedFileElementEx nedFileElement, String propertyName) {
+	    PropertyElementEx property = getPropertyFor(nedFileElement, propertyName);
+	    return property != null ? property.getSimpleValue() : null;
 	}
-	    
-	public synchronized String getCppNamespaceForFile(NedFileElementEx element) {
-	    PropertyElementEx property = element.getProperties().get(NAMESPACE_PROPERTY);
-	    
+
+	public synchronized String getSimplePropertyFor(IContainer folder, String propertyName) {
+        PropertyElementEx property = getPropertyFor(folder, propertyName);
+        return property != null ? property.getSimpleValue() : null;
+	}
+
+	public synchronized PropertyElementEx getPropertyFor(NedFileElementEx nedFileElement, String propertyName) {
+	    // look into this file, then into package.ned files in this folder and up
+	    PropertyElementEx property = nedFileElement.getProperties().get(propertyName);
 	    if (property != null)
-            return property.getSimpleValue();
-	    else {
-	        IFile file = getNedFile(element);
-	        IContainer sourceFolder = getNedSourceFolderFor(file);
-	        IContainer path = file.getParent();
-	        
-	        if (file.getName().equals(PACKAGE_NED_FILENAME)) {
-	            if (path.equals(sourceFolder))
-	                return null;
+	        return property;
+	    return getPropertyFor(getNedFile(nedFileElement).getParent(), propertyName); 
+	}
 
-	            path = path.getParent();
-	        }
-	        
-	        while (path != null) {
-	            IFile packageFile = path.getFile(new Path(PACKAGE_NED_FILENAME));
-
-	            if (packageFile.exists())
-	                return getCppNamespaceForFile(getNedFileElement(packageFile));
-
-                if (path.equals(sourceFolder))
-                    break;
-
-                path = path.getParent();
-	        }
-	        
-	        return null;
-	    }
+	public synchronized PropertyElementEx getPropertyFor(IContainer folder, String propertyName) {
+	    // look for package.ned in this folder and up
+        IContainer sourceFolder = getNedSourceFolderFor(folder);
+        while (true) {
+            IFile packageFile = folder.getFile(new Path(PACKAGE_NED_FILENAME));
+            if (packageFile.exists()) {
+                NedFileElementEx nedFileElement = getNedFileElement(packageFile);
+                PropertyElementEx property = nedFileElement.getProperties().get(propertyName);
+                if (property != null)
+                    return property;
+            }
+            if (folder.equals(sourceFolder) || folder instanceof IProject)
+                break;
+            folder = folder.getParent();
+        }
+        return null;
 	}
 	
     public synchronized INEDTypeInfo lookupNedType(String name, INedTypeLookupContext lookupContext) {
@@ -643,7 +638,11 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     }
 
     public IContainer getNedSourceFolderFor(IFile file) {
-    	IProject project = file.getProject();
+        return getNedSourceFolderFor(file.getParent());
+    }
+    
+    public IContainer getNedSourceFolderFor(IContainer folder) {
+    	IProject project = folder.getProject();
 		ProjectData projectData = projects.get(project);
 		if (projectData == null)
 			return null;
@@ -652,7 +651,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 		if (nedSourceFolders.length == 1 && nedSourceFolders[0] == project) // shortcut
 			return project;
 
-		for (IContainer container = file.getParent(); !container.equals(project); container = container.getParent())
+		for (IContainer container = folder; !container.equals(project); container = container.getParent())
 			if (ArrayUtils.contains(nedSourceFolders, container))
 				return container;
     	return null;

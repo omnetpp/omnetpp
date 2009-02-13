@@ -16,6 +16,7 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
+import org.omnetpp.ned.model.ex.PropertyElementEx;
 
 /*
  * For accessing NED types.
@@ -23,6 +24,10 @@ import org.omnetpp.ned.model.ex.NedFileElementEx;
  * @author Andras
  */
 public interface INEDTypeResolver {
+    public static final String PACKAGE_NED_FILENAME = "package.ned";
+    public static final String NED_EXTENSION = "ned";
+    public static final String NAMESPACE_PROPERTY = "namespace";
+    public static final String LICENSE_PROPERTY = "license";
 
 	public static final String NEDSYNTAXPROBLEM_MARKERID = "org.omnetpp.ned.core.nedsyntaxproblem";
     public static final String NEDCONSISTENCYPROBLEM_MARKERID = "org.omnetpp.ned.core.nedconsistencyproblem";
@@ -85,8 +90,18 @@ public interface INEDTypeResolver {
 	 * file is outside the project's NED source folders, or the project itself
 	 * does not have the OMNeT++ nature, or that nature is disabled (see
 	 * IProject.isNatureEnabled() on why a nature might be disabled.)
+	 * 
+	 * Equivalent to getNedSourceFolderFor(file.getParent()).
 	 */
     public IContainer getNedSourceFolderFor(IFile file);
+
+    /**
+     * Returns the NED source folder for the given folder. Returns null if the
+     * folder is outside the project's NED source folders, or the project itself
+     * does not have the OMNeT++ nature, or that nature is disabled (see
+     * IProject.isNatureEnabled() on why a nature might be disabled.)
+     */
+    public IContainer getNedSourceFolderFor(IContainer folder);
 
 	/**
 	 * Returns the expected package name for the given file. "" means the
@@ -251,5 +266,34 @@ public interface INEDTypeResolver {
 	 * Returned names are fully qualified.
 	 */
 	public Set<String> getChannelInterfaceQNames(IProject context);
+
+	/**
+	 * Convenience method. Calls getPropertyFor(nedFileElement,propertyName),
+	 * and if a property was found, returns its simple value (getSimpleValue());
+	 * otherwise returns null. 
+	 */
+    public String getSimplePropertyFor(NedFileElementEx nedFileElement, String propertyName);
+
+    /**
+     * Convenience method. Calls getPropertyFor(folder,propertyName),
+     * and if a property was found, returns its simple value (getSimpleValue());
+     * otherwise returns null. 
+     */
+    public String getSimplePropertyFor(IContainer folder, String propertyName);
+
+    /** 
+     * Searches for a file property with the given name in the given NED file, then
+     * in the package.ned file in the same folder, and in package.ned files 
+     * of parent folders up to the root (i.e. the containing NED source folder). 
+     * Returns null if not found.
+     */
+    public PropertyElementEx getPropertyFor(NedFileElementEx nedFileElement, String propertyName);
+
+    /** 
+     * Searches for a file property with the given name in the package.ned file
+     * in the given folder, and in package.ned files of parent folders up to the root 
+     * (i.e. the containing NED source folder). Returns null if not found.
+     */
+    public PropertyElementEx getPropertyFor(IContainer folder, String propertyName);
 }
 
