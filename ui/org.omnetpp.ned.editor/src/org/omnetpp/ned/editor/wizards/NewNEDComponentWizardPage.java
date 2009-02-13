@@ -40,6 +40,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
+import org.omnetpp.common.util.LicenseUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.core.NEDResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
@@ -214,6 +215,7 @@ public class NewNEDComponentWizardPage extends WizardPage {
 
             // make a valid identifier
 			name = StringUtils.makeValidIdentifier(name);
+
 			// determine package
 			newNedFile = getSelectedContainer().getFile(new Path(name+".ned"));
 			String packagedecl = nedResources.getExpectedPackageFor(newNedFile);
@@ -222,6 +224,15 @@ public class NewNEDComponentWizardPage extends WizardPage {
 			// substitute name and package into the template
 			String contents = NEDFILE_TEMPLATES[type.ordinal()].replaceAll("#NAME#", name);
 			contents = contents.replaceAll("#PACKAGEDECL#", packagedecl);
+
+			// determine license
+			String license = nedResources.getSimplePropertyFor(getSelectedContainer(), INEDTypeResolver.LICENSE_PROPERTY);
+			if (license==null || !LicenseUtils.isAcceptedLicense(license))
+			    license = LicenseUtils.getDefaultLicense();
+			String bannerComment = LicenseUtils.getBannerComment(license, "//");
+			
+			// create NED file
+			contents = bannerComment + contents;
 			newNedFile.create(new ByteArrayInputStream(contents.getBytes()), true, null);
 
 			// create CC and H files for simple modules
@@ -248,6 +259,7 @@ public class NewNEDComponentWizardPage extends WizardPage {
 				contents = contents.replaceAll("#UPPERCASENAME#", StringUtils.upperCase(name));
 				contents = contents.replaceAll("#NAMESPACE_BEGIN#", namespaceBegin);
                 contents = contents.replaceAll("#NAMESPACE_END#", namespaceEnd);
+                contents = bannerComment + contents;
 				newCCFile.create(new ByteArrayInputStream(contents.getBytes()), true, null);
 
 				newHFile = getSelectedContainer().getFile(new Path(name+".h"));
@@ -255,6 +267,7 @@ public class NewNEDComponentWizardPage extends WizardPage {
 				contents = contents.replaceAll("#UPPERCASENAME#", StringUtils.upperCase(name));
                 contents = contents.replaceAll("#NAMESPACE_BEGIN#", namespaceBegin);
                 contents = contents.replaceAll("#NAMESPACE_END#", namespaceEnd);
+                contents = bannerComment + contents;
 				newHFile.create(new ByteArrayInputStream(contents.getBytes()), true, null);
 			}
 		} catch (CoreException e) {
