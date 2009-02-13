@@ -400,7 +400,7 @@
          point="org.eclipse.ui.newWizards">
       <wizard
             category="org.eclipse.cdt.ui.newCCWizards"
-            class="org.omnetpp.cdt.wizard.NewClassCreationWizard_CCExt"
+            class="org.omnetpp.cdt.wizard.NewOmnetppClassCreationWizard"
             finalPerspective="org.eclipse.cdt.ui.CPerspective"
             icon="icons/full/etool16/newclass_wiz.gif"
             id="org.omnetpp.cdt.wizards.NewClassCreationWizard"

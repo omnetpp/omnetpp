@@ -35,9 +35,8 @@ import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
  *  
  * @author Andras
  */
-//TODO rename to NewOmnetppClassCreationWizard
 @SuppressWarnings("restriction")
-public class NewClassCreationWizard_CCExt extends NewClassCreationWizard {
+public class NewOmnetppClassCreationWizard extends NewClassCreationWizard {
 
     protected static class WizardPage extends NewClassCreationWizardPage {
         @Override
