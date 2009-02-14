@@ -168,7 +168,16 @@ class NEDXML_API NEDTypeInfo
      */
     virtual const char *implementationClassName() const;
 
-    /** The C++ namespace for this NED type (from @namespace() properties) */
+    /**
+     * Find a property with the given name in the type's NED file, then in the
+     * package.ned file of the NED file, then in parent package.ned files up
+     * to the root (the NED source folder this NED file is in). Returns
+     * the simple value of the property (1st value of default key), or
+     * empty string if not found.
+     */
+    virtual std::string getPackageProperty(const char *name) const;
+
+    /** The C++ namespace for this NED type; implemented as getPackageProperty("namespace"). */
     virtual std::string getCxxNamespace() const;
 
     /** Returns the first "extends" clause, or NULL */

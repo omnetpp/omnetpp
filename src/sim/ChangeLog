@@ -3,6 +3,11 @@
 	* cNEDFunction and Define_NED_Function(): changed signature string
 	to a C-like syntax.
 
+	* added desctiptions to both cNEDFunctions and cMathFunctions
+
+	* removed obsolete NED functions (genk_*: genk_uniform, genk_normal,
+	genk_exponential, etc)
+
 	* debug-on-errors: changes to the printed message
 
 2009-02-04  Andras Varga

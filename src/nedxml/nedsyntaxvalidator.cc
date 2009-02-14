@@ -93,13 +93,6 @@ static struct { const char *fname; int args; } known_funcs[] =
    {"hypergeometric",4},
    {"poisson",2},
 
-   /* OMNeT++: old genk_* stuff */
-   {"genk_uniform",3},
-   {"genk_intuniform",3},
-   {"genk_exponential",2},
-   {"genk_normal",3},
-   {"genk_truncnormal",3},
-
    /* END */
    {NULL,0}
 };
@@ -645,7 +638,7 @@ void NEDSyntaxValidator::validateElement(LiteralElement *node)
     {
         // check real
         char *s;
-	    setlocale(LC_NUMERIC, "C");
+        setlocale(LC_NUMERIC, "C");
         (void) strtod(value, &s);
         if (s && *s)
             errors->addError(node, "invalid real constant '%s'", value);

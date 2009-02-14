@@ -37,8 +37,6 @@ USING_NAMESPACE
 //    /* OMNeT++ */
 //    {"uniform", 2},      {"intuniform", 2},       {"exponential", 1},
 //    {"normal", 2},       {"truncnormal", 2},
-//    {"genk_uniform", 3}, {"genk_intuniform",  3}, {"genk_exponential", 2},
-//    {"genk_normal", 3},  {"genk_truncnormal", 3},
 //    {"min", 2},          {"max", 2},
 //
 //    /* OMNeT++, to support expressions */

@@ -38,6 +38,7 @@
 #include "fnamelisttokenizer.h"
 #include "chasher.h"
 #include "cconfigoption.h"
+#include "cmathfunction.h"
 #include "cnedfunction.h"
 #include "regmacros.h"
 #include "stringutil.h"
@@ -574,7 +575,8 @@ void EnvirBase::dumpComponentList(const char *category)
         for (int i=0; i<table->size(); i++)
         {
             cNEDFunction *nf = dynamic_cast<cNEDFunction *>(table->get(i));
-            categories.insert(nf ? nf->getCategory() : "math"); // merge cMathFunctions into "math" category
+            cMathFunction *mf = dynamic_cast<cMathFunction *>(table->get(i));
+            categories.insert(nf ? nf->getCategory() : mf ? mf->getCategory() : "???");
         }
         for (std::set<std::string>::iterator ci=categories.begin(); ci!=categories.end(); ++ci)
         {
@@ -583,9 +585,10 @@ void EnvirBase::dumpComponentList(const char *category)
             for (int i=0; i<table->size(); i++)
             {
                 cObject *obj = table->get(i);
-                cNEDFunction *nf = dynamic_cast<cNEDFunction *>(obj);
-                const char *fcat = nf ? nf->getCategory() : "math";
-                const char *desc = nf ? nf->getDescription() : NULL;
+                cNEDFunction *nf = dynamic_cast<cNEDFunction *>(table->get(i));
+                cMathFunction *mf = dynamic_cast<cMathFunction *>(table->get(i));
+                const char *fcat = nf ? nf->getCategory() : mf ? mf->getCategory() : "???";
+                const char *desc = nf ? nf->getDescription() : mf ? mf->getDescription() : "???";
                 if (fcat==category)
                 {
                     ev << "  " << obj->getFullName() << " : " << obj->info() << "\n";

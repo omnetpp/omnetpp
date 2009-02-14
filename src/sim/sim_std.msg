@@ -350,6 +350,8 @@ class cFSM extends cOwnedObject
 
 class cMathFunction extends cNoncopyableOwnedObject
 {
+    string category @hint(Function category);
+    string description;
     int numArgs @hint(Number of "double" parameters this function takes);
 }
 

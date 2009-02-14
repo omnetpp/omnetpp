@@ -84,36 +84,39 @@ typedef double (*MathFunc4Args)(double,double,double,double);
 class SIM_API cMathFunction : public cNoncopyableOwnedObject
 {
   private:
-    MathFunc f;
-    int argc;
+    MathFunc f;            // pointer to the function
+    int argc;              // argument count (up to 4 doubles)
+    std::string categ;     // category string; only used when listing all functions
+    std::string desc;      // optional documentation string
+
   public:
     /** @name Constructors, destructor, assignment */
     //@{
     /**
      * Constructor.
      */
-    cMathFunction(const char *name, MathFuncNoArg f, int argc=-1);
+    cMathFunction(const char *name, MathFuncNoArg f, int argc=-1, const char *category=NULL, const char *description=NULL);
 
     /**
      * Constructor.
      */
-    cMathFunction(const char *name, MathFunc1Arg f, int argc=-1);
+    cMathFunction(const char *name, MathFunc1Arg f, int argc=-1, const char *category=NULL, const char *description=NULL);
 
     /**
      * Constructor.
      */
 
-    cMathFunction(const char *name, MathFunc2Args f, int argc=-1);
+    cMathFunction(const char *name, MathFunc2Args f, int argc=-1, const char *category=NULL, const char *description=NULL);
 
     /**
      * Constructor.
      */
-    cMathFunction(const char *name, MathFunc3Args f, int argc=-1);
+    cMathFunction(const char *name, MathFunc3Args f, int argc=-1, const char *category=NULL, const char *description=NULL);
 
     /**
      * Constructor.
      */
-    cMathFunction(const char *name, MathFunc4Args f, int argc=-1);
+    cMathFunction(const char *name, MathFunc4Args f, int argc=-1, const char *category=NULL, const char *description=NULL);
 
     /**
      * Destructor.
@@ -171,6 +174,17 @@ class SIM_API cMathFunction : public cNoncopyableOwnedObject
      * Throws exception is actual arg count is different.
      */
     MathFunc4Args getMathFunc4Args() const;
+
+    /**
+     * Returns a string that can be useful in classifying NED functions,
+     * e.g. "trigonometric".
+     */
+    const char *getCategory() const  {return categ.c_str();}
+
+    /**
+     * Returns the function's documentation as a string.
+     */
+    const char *getDescription() const  {return desc.c_str();}
     //@}
 
     /**

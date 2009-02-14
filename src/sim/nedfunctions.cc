@@ -42,26 +42,26 @@ typedef cDynamicExpression::Value Value;  // abbreviation for local use
 // NED math.h functions
 //
 
-Define_Function(acos, 1)
-Define_Function(asin, 1)
-Define_Function(atan, 1)
-Define_Function(atan2, 2)
+Define_Function3(acos, 1,  "math", "Trigonometric function; see standard C function of the same name")
+Define_Function3(asin, 1,  "math", "Trigonometric function; see standard C function of the same name")
+Define_Function3(atan, 1,  "math", "Trigonometric function; see standard C function of the same name")
+Define_Function3(atan2, 2, "math", "Trigonometric function; see standard C function of the same name")
 
-Define_Function(sin, 1)
-Define_Function(cos, 1)
-Define_Function(tan, 1)
+Define_Function3(sin, 1,   "math", "Trigonometric function; see standard C function of the same name")
+Define_Function3(cos, 1,   "math", "Trigonometric function; see standard C function of the same name")
+Define_Function3(tan, 1,   "math", "Trigonometric function; see standard C function of the same name")
 
-Define_Function(ceil, 1)
-Define_Function(floor, 1)
+Define_Function3(ceil, 1,  "math", "Rounds down; see standard C function of the same name")
+Define_Function3(floor, 1, "math", "Rounds up; see standard C function of the same name")
 
-Define_Function(exp, 1)
-Define_Function(pow, 2)
-Define_Function(sqrt, 1)
+Define_Function3(exp, 1,   "math", "Exponential; see standard C function of the same name")
+Define_Function3(pow, 2,   "math", "Power; see standard C function of the same name")
+Define_Function3(sqrt, 1,  "math", "Square root; see standard C function of the same name")
 
-Define_Function(hypot, 2)
+Define_Function3(hypot, 2, "math", "Length of the hypotenuse; see standard C function of the same name")
 
-Define_Function(log, 1)
-Define_Function(log10, 1)
+Define_Function3(log, 1,   "math", "Natural logarithm; see standard C function of the same name")
+Define_Function3(log10, 1, "math", "Base-10 logarithm; see standard C function of the same name")
 
 
 DEF(nedf_fabs,
@@ -76,7 +76,7 @@ DEF(nedf_fabs,
 DEF(nedf_fmod,
     "quantity fmod(quantity x, quantity y)",
     "math",
-    "Returns x modulo y as real numbers; unit conversion takes place if needed.",
+    "Returns the floating-point remainder of x/y; unit conversion takes place if needed.",
 {
     double argv1converted = UnitConversion::convertUnit(argv[1].dbl, argv[1].dblunit, argv[0].dblunit);
     argv[0].dbl = fmod(argv[0].dbl, argv1converted);
@@ -457,7 +457,7 @@ DEF(nedf_ancestorIndex,
 //
 
 // continuous
-DEF(nedf_uniform, 
+DEF(nedf_uniform,
     "quantity uniform(quantity a, quantity b, long rng?)",
     "random/continuous",
     "Returns a random number from the Uniform distribution",
@@ -468,7 +468,7 @@ DEF(nedf_uniform,
     return argv[0];
 })
 
-DEF(nedf_exponential, 
+DEF(nedf_exponential,
     "quantity exponential(quantity mean, long rng?)",
     "random/continuous",
     "Returns a random number from the Exponential distribution",
@@ -492,7 +492,7 @@ DEF(nedf_normal,
 DEF(nedf_truncnormal,
     "quantity truncnormal(quantity mean, quantity stddev, long rng?)",
     "random/continuous",
-    "Returns a random number from the Truncnormal distribution",
+    "Returns a random number from the truncated Normal distribution",
 {
     int rng = argc==3 ? (int)argv[2].dbl : 0;
     double argv1converted = UnitConversion::convertUnit(argv[1].dbl, argv[1].dblunit, argv[0].dblunit);
@@ -503,7 +503,7 @@ DEF(nedf_truncnormal,
 DEF(nedf_gamma_d,
     "quantity gamma_d(double alpha, quantity theta, long rng?)",
     "random/continuous",
-    "Returns a random number from the Gamma_d distribution",
+    "Returns a random number from the Gamma distribution",
 {
     int rng = argc==3 ? (int)argv[2].dbl : 0;
     argv[1].dbl = gamma_d(argv[0].dbl, argv[1].dbl, rng);
@@ -523,7 +523,7 @@ DEF(nedf_beta,
 DEF(nedf_erlang_k,
     "quantity erlang_k(long k, quantity mean, long rng?)",
     "random/continuous",
-    "Returns a random number from the Erlang_k distribution",
+    "Returns a random number from the Erlang distribution",
 {
     if (argv[0].dbl < 0.0)
        throw cRuntimeError("erlang_k(): k parameter (number of phases) must be positive "
@@ -536,7 +536,7 @@ DEF(nedf_erlang_k,
 DEF(nedf_chi_square,
     "double chi_square(long k, long rng?)",
     "random/continuous",
-    "Returns a random number from the Chi_square distribution",
+    "Returns a random number from the Chi-square distribution",
 {
     if (argv[0].dbl < 0.0)
        throw cRuntimeError("chi_square(): k parameter (degrees of freedom) must be positive "
@@ -676,18 +676,4 @@ DEF(nedf_poisson,
     return argv[0];
 })
 
-//
-// Meaningful error for obsolete genk_ functions
-//
-
-static double obsolete_genk_function(...)
-{
-    throw cRuntimeError("Obsolete function -- use the one without the \"genk_\" prefix, and rng as last argument");
-}
-
-Define_Function2(genk_uniform, (MathFunc3Args)obsolete_genk_function, 3);
-Define_Function2(genk_intuniform, (MathFunc3Args)obsolete_genk_function, 3);
-Define_Function2(genk_exponential, (MathFunc2Args)obsolete_genk_function, 2);
-Define_Function2(genk_normal, (MathFunc3Args)obsolete_genk_function, 3);
-Define_Function2(genk_truncnormal, (MathFunc3Args)obsolete_genk_function, 3);
 

@@ -53,6 +53,22 @@ NAMESPACE_BEGIN
   EXECUTE_ON_STARTUP(nedFunctions.getInstance()->add(new cMathFunction(#NAME,FUNCTION,ARGCOUNT));)
 
 /**
+ * Like Define_Function(), but takes category and description strings as well.
+ *
+ * @hideinitializer
+ */
+#define Define_Function3(NAME,ARGCOUNT,CATEGORY,DESCRIPTION) \
+  EXECUTE_ON_STARTUP(nedFunctions.getInstance()->add(new cMathFunction(#NAME,NAME,ARGCOUNT,CATEGORY,DESCRIPTION));)
+
+/**
+ * Like Define_Function2(), but takes category and description strings as well.
+ *
+ * @hideinitializer
+ */
+#define Define_Function4(NAME,FUNCTION,ARGCOUNT,CATEGORY,DESCRIPTION) \
+  EXECUTE_ON_STARTUP(nedFunctions.getInstance()->add(new cMathFunction(#NAME,FUNCTION,ARGCOUNT,CATEGORY,DESCRIPTION));)
+
+/**
  * Registers a C/C++ function for use in NED and ini files; see cNEDFunction.
  * FUNCTION is a pointer to the function, and SIGNATURE is the function's
  * signature in NED.
