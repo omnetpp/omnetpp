@@ -210,7 +210,7 @@
       specifies what files to select, by explicit filenames or by wildcards. The lower half shows what files
       actually matched the input specification, and what runs they contain. Note that OMNeT++ 4.0 result files
       contain a unique run ID and several metadata annotations in addition to the actual recorded data.  The
-      third tree organizes simulation runs runs according to their experiment—measurement—replication labels.
+      third tree organizes simulation runs according to their experiment—measurement—replication labels.
     </para>
     <para>The underlying assumption is that users will organize their simulation-based research into
       various “experiments”. An experiment will consist of several “measurements”, which are typically (but
@@ -244,11 +244,13 @@
     <para>Bar charts are created from scalar results and histograms. Relevant data can be grouped and displayed 
     via the Bar chart component. Colors, chart type and other display attributes can be set on the component.</para>
     <picture file="pictures/img23.png">Output Vector View</picture>
-    <para>The Output Vector view can be used to inspect the raw numerical data in case you really need it.</para>
+    <para>The Output Vector view can be used to inspect the raw numerical data in case you really need it.
+    It can show the original data read from the vector file, or the result of a computation. Just select
+    a point on the line chart or a vector in the Dataset View and its content is displayed.</para>
     
     <picture file="pictures/img24.png">Dataset View</picture>
-    <para>Dataset view is used to display the structure of your data processing network. 
-    </para>
+    <para>Dataset view is used to show the result items contained by the dataset. The content of the
+    view corresponds to the state of the dataset after the selected processing is performed.</para>
   </sect1>
   
 </article>
