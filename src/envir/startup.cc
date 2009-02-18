@@ -257,6 +257,7 @@ int setupUserInterface(int argc, char *argv[], cConfiguration *cfg)
     classDescriptors.clear();
     configOptions.clear();
     omnetapps.clear();
+    cSimulation::clearLoadedNedFiles();
 
     return exitcode;
 }
