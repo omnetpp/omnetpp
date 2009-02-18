@@ -18,7 +18,7 @@ if java -version 2>&1 | grep -i "libgcj" >/dev/null 2>/dev/null; then
 fi
 
 # set default language so GCC will report errors in english. see bug #3
-export LANG=C
+export LANG=en_US.UTF-8
 
 case $PLATFORM in 
 *MINGW*)
