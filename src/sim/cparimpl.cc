@@ -30,7 +30,7 @@ USING_NAMESPACE
 
 long cParImpl::total_parimpl_objs;
 long cParImpl::live_parimpl_objs;
-cStringPool cParImpl::unitStringPool;
+cStringPool cParImpl::unitStringPool("cParImpl::unitStringPool");
 
 
 cParImpl::cParImpl()

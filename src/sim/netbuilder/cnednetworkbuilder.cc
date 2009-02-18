@@ -166,6 +166,7 @@ void cNEDNetworkBuilder::doParam(cComponent *component, ParamElement *paramNode,
     }
 
     try {
+        ASSERT(impl==NULL);
         if (isNewParam) {
             //printf("   +++ adding param %s\n", paramName);
             impl = cParImpl::createWithType(translateParamType(paramNode->getType()));

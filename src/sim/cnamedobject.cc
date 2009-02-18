@@ -34,7 +34,7 @@ Register_Class(cNamedObject);
 
 
 // static class members
-cStringPool cNamedObject::stringPool;
+cStringPool cNamedObject::stringPool("cNamedObject::stringPool");
 
 cNamedObject::cNamedObject()
 {

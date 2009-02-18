@@ -22,7 +22,7 @@ USING_NAMESPACE
 
 const char *cProperty::DEFAULTKEY = "";
 
-cStringPool cProperty::stringPool;
+cStringPool cProperty::stringPool("cProperty::stringPool");
 
 
 cProperty::cProperty(const char *name, const char *index) : cNamedObject(name, true)

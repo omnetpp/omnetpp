@@ -1,3 +1,7 @@
+2009-02-18  Andras Varga
+
+	* added cSimulation::clearLoadedNedFiles() function
+
 2009-02-07  Andras Varga
 
 	* cNEDFunction and Define_NED_Function(): changed signature string

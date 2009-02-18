@@ -15,11 +15,13 @@
 
 #include "cstringpool.h"
 #include "cownedobject.h"
+#include "stringutil.h"
 
 USING_NAMESPACE
 
-cStringPool::cStringPool()
+cStringPool::cStringPool(const char *poolName)
 {
+    name = opp_nulltoempty(poolName);
     alive = true;
 }
 
@@ -39,7 +41,7 @@ void cStringPool::dump() const
 {
     if (!pool.empty())
     {
-        printf("stringpool contents:\n");
+        printf("contents of stringpool \"%s\":\n", name.c_str());
         for (StringIntMap::const_iterator it = pool.begin(); it!=pool.end(); ++it)
             printf("  \"%s\" %p, %d ref(s)\n", it->first, it->first, it->second);
     }

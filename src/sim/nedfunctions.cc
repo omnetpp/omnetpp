@@ -23,6 +23,7 @@
 #include "cstringtokenizer.h"
 #include "unitconversion.h"
 #include "stringutil.h"
+#include "stringpool.h"
 #include "opp_ctype.h"
 
 USING_NAMESPACE
@@ -106,7 +107,7 @@ DEF(nedf_max,
 // Unit handling
 //
 
-static cStringPool stringPool;
+static CommonStringPool stringPool; // non-refcounted
 
 DEF(nedf_dropUnit,
     "double dropUnit(quantity x)",

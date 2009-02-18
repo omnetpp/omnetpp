@@ -29,7 +29,7 @@
 
 USING_NAMESPACE
 
-cStringPool cDynamicExpression::Elem::stringPool;
+cStringPool cDynamicExpression::Elem::stringPool("cDynamicExpression::Elem::stringPool");
 
 void cDynamicExpression::Elem::operator=(const Elem& other)
 {

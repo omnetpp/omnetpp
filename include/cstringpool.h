@@ -16,6 +16,7 @@
 #ifndef __CSTRINGPOOL_H
 #define __CSTRINGPOOL_H
 
+#include <string>
 #include <map>
 #include "simkerneldefs.h"
 #include "simutil.h"
@@ -41,12 +42,13 @@ class cStringPool
             return strcmp(s1,s2) < 0;  // note: (s1+1,s2+1) not good because either strings may be empty
         }
     };
+    std::string name;
     typedef std::map<char *,int,strless> StringIntMap;
     StringIntMap pool; // map<string,refcount>
     bool alive; // useful when stringpool is a global variable
 
   public:
-    cStringPool();
+    cStringPool(const char *poolName=NULL);
     ~cStringPool();
 
     /**
