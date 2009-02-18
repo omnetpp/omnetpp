@@ -22,6 +22,7 @@
 #include <vector>
 #include <set>
 #include <fstream>
+#include <utility>
 #include "scavedefs.h"
 #include "bigdecimal.h"
 #include "xyarray.h"
@@ -51,23 +52,43 @@ class SCAVE_API DataTable
             ColumnType  type;
             Column(const std::string name, ColumnType type) : name(name), type(type) {}
         };
+
+		class CellPtr {
+			private:
+				DataTable* table;
+				int row;
+				int column;
+			public:
+				CellPtr() :table(NULL), row(-1), column(-1) {}
+				CellPtr(DataTable *table, int row, int column) : table(table), column(column), row(row) {}
+				bool isNull() const { return table == NULL || row < 0 || row >= table->getNumRows() || column < 0 || column >= table->getNumColumns(); }
+				int getRow() const {return row; }
+				int getColumn() const { return column; }
+				void resetRow() { row = 0; }
+				void nextRow() { row++; }
+				bool operator<(const CellPtr &other) const;
+		};
     public:
         const std::string name;
         const std::string description;
     protected:
         std::vector<Column> header;
         DataTable(const std::string name, const std::string description) : name(name), description(description) {}
+        void addColumn(const Column &column) { header.push_back(column); }
     public:
+        virtual ~DataTable() {}
         int getNumColumns() const { return header.size(); }
         Column getColumn(int i) const { return header[i]; }
-        virtual ~DataTable() {}
         virtual int getNumRows() const = 0;
+        virtual bool isNull(int row, int col) const = 0;
         virtual double getDoubleValue(int row, int col) const = 0;
         virtual BigDecimal getBigDecimalValue(int row, int col) const = 0;
         virtual std::string getStringValue(int row, int col) const = 0;
 
     // rows (may contain NaN and infinity)
 };
+
+
 
 /**
  * A table containing an output vector or the result of processing output vectors.
@@ -81,6 +102,24 @@ class SCAVE_API XYDataTable : public DataTable
         XYDataTable(const std::string name, const std::string description,
             const std::string xColumnName, const std::string yColumnName, const XYArray *vec);
         virtual int getNumRows() const;
+        virtual bool isNull(int row, int col) const;
+        virtual double getDoubleValue(int row, int col) const;
+        virtual BigDecimal getBigDecimalValue(int row, int col) const;
+        virtual std::string getStringValue(int row, int col) const;
+};
+
+/**
+ * Table containing one X column and several Y columns.
+ */
+class SCAVE_API ScatterDataTable : public DataTable
+{
+    private:
+        const XYDataset *dataset;
+    public:
+        ScatterDataTable(const std::string name, const std::string description,
+            const StringVector columnNames, const XYDataset *data);
+        virtual int getNumRows() const;
+        virtual bool isNull(int row, int col) const;
         virtual double getDoubleValue(int row, int col) const;
         virtual BigDecimal getBigDecimalValue(int row, int col) const;
         virtual std::string getStringValue(int row, int col) const;
@@ -99,10 +138,44 @@ class SCAVE_API ScalarDataTable : public DataTable
             const IDList &idlist, ResultItemFields groupBy, ResultFileManager &manager);
 
         virtual int getNumRows() const;
+        virtual bool isNull(int row, int col) const;
         virtual double getDoubleValue(int row, int col) const;
         virtual BigDecimal getBigDecimalValue(int row, int col) const;
         virtual std::string getStringValue(int row, int col) const;
 };
+
+/**
+ * Computes the outer join of DataTables.
+ */
+class SCAVE_API JoinedDataTable : public DataTable
+{
+	private:
+		std::vector<DataTable*> joinedTables;
+		int tableCount;
+		int rowCount;
+		std::vector<std::pair<int,int> > columnMap; // maps column -> (tableIndex,tableColumn)
+		int* rowMap; // maps (row,tableIndex) -> tableRow
+		             //   implemented as a two dimensional array (has rowCount*tableCount elements)
+	public:
+        JoinedDataTable(const std::string name, const std::string description,
+            const std::vector<DataTable*> &joinedTables, int joinOnColumn);
+		virtual ~JoinedDataTable();
+
+        virtual int getNumRows() const;
+        virtual bool isNull(int row, int col) const;
+        virtual double getDoubleValue(int row, int col) const;
+        virtual BigDecimal getBigDecimalValue(int row, int col) const;
+        virtual std::string getStringValue(int row, int col) const;
+	private:
+		void addColumn(const Column &column, int tableIndex, int colIndex);
+		void mapTableCell(int row, int column, DataTable *&table, int &tableRow, int &tableCol) const;
+};
+
+inline void JoinedDataTable::addColumn(const Column &column, int tableIndex, int colIndex)
+{
+	header.push_back(column); //addColumn(column);
+	columnMap.push_back(std::make_pair(tableIndex, colIndex));
+}
 
 
 
@@ -129,9 +202,12 @@ class SCAVE_API ScaveExport
         void setPrecision(int prec) { this->prec = prec; }
         void setBaseFileName(const std::string baseFileName) { this->baseFileName = baseFileName; }
 
-        virtual void saveVector(const std::string name, const std::string description,
+        virtual void saveVector(const std::string &name, const std::string &description,
                         ID vectorID, bool computed, const XYArray *vec, ResultFileManager &manager,
                         int startIndex=0, int endIndex=-1);
+        virtual void saveVectors(const std::string &name, const std::string &description,
+                                     const IDList &vectors, const std::vector<XYArray*> xyarrays,
+                                     const ResultFileManager &manager);
         virtual void saveScalars(const std::string name, const std::string description, const IDList &scalars, ResultItemFields groupBy, ResultFileManager &manager);
 
         const std::string &getLastFileName() const { return fileName; }

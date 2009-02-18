@@ -186,9 +186,9 @@ class SCAVE_API ResultItemFields
         ResultItemFields(const std::string fieldName);
         ResultItemFields(const StringVector &fieldNames);
 
-        ResultItemFields complement();
-        bool hasField(ResultItemField field);
-        bool hasField(const std::string fieldName);
+        ResultItemFields complement() const;
+        bool hasField(ResultItemField field) const;
+        bool hasField(const std::string fieldName) const;
         bool less(ID id1, ID id2, ResultFileManager *manager) const;
         bool less(const ResultItem &d1, const ResultItem &d2) const;
         bool equal(ID id1, ID id2, ResultFileManager *manager) const;

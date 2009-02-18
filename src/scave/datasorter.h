@@ -68,40 +68,40 @@ class SCAVE_API XYDataset
         void sortRows();
         void sortColumns();
 
-        int getRowCount() { return rowOrder.size(); }
-        int getColumnCount() { return columnOrder.size(); }
-        ResultItemFields getRowFields() { return rowFields; }
-        ResultItemFields getColumnFields() { return columnFields; }
-        std::string getRowField(int row, ResultItemField field);
-        std::string getRowFieldNoCheck(int row, ResultItemField field);
-        std::string getColumnField(int column, ResultItemField field);
-        Statistics getValue(int row, int column);
+        int getRowCount() const { return rowOrder.size(); }
+        int getColumnCount() const { return columnOrder.size(); }
+        ResultItemFields getRowFields() const { return rowFields; }
+        ResultItemFields getColumnFields() const { return columnFields; }
+        std::string getRowField(int row, ResultItemField field) const;
+        std::string getRowFieldNoCheck(int row, ResultItemField field) const;
+        std::string getColumnField(int column, ResultItemField field) const;
+        Statistics getValue(int row, int column) const;
 };
 
 typedef std::vector<XYDataset> XYDatasetVector;
 
-inline std::string XYDataset::getRowField(int row, ResultItemField field)
+inline std::string XYDataset::getRowField(int row, ResultItemField field) const
 {
     if (row < 0 || row >= getRowCount() || !rowFields.hasField(field))
         return "";
     return field.getFieldValue(rowKeys[rowOrder[row]]);
 }
 
-inline std::string XYDataset::getRowFieldNoCheck(int row, ResultItemField field)
+inline std::string XYDataset::getRowFieldNoCheck(int row, ResultItemField field) const
 {
 	if (row < 0 || row >= getRowCount())
 		return "";
 	return field.getFieldValue(rowKeys[rowOrder[row]]);
 }
 
-inline std::string XYDataset::getColumnField(int column, ResultItemField field)
+inline std::string XYDataset::getColumnField(int column, ResultItemField field) const
 {
     if (column < 0 || column >= getColumnCount() || !columnFields.hasField(field))
         return "";
     return field.getFieldValue(columnKeys[columnOrder[column]]);
 }
 
-inline Statistics XYDataset::getValue(int row, int column)
+inline Statistics XYDataset::getValue(int row, int column) const
 {
     if (row < 0 || column < 0 || row >= getRowCount() || column >= getColumnCount())
         return Statistics();

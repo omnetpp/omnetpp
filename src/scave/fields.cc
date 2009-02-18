@@ -155,24 +155,24 @@ ResultItemFields::ResultItemFields(const StringVector &fieldNames)
         this->fields.push_back(ResultItemField(*fieldName));
 }
 
-bool ResultItemFields::hasField(ResultItemField field)
+bool ResultItemFields::hasField(ResultItemField field) const
 {
     return hasField(field.getName());
 }
 
-bool ResultItemFields::hasField(const string fieldName)
+bool ResultItemFields::hasField(const string fieldName) const
 {
-    for (vector<ResultItemField>::iterator field = fields.begin(); field != fields.end(); ++field)
+    for (vector<ResultItemField>::const_iterator field = fields.begin(); field != fields.end(); ++field)
         if (field->getName() == fieldName)
             return true;
     return false;
 }
 
-ResultItemFields ResultItemFields::complement()
+ResultItemFields ResultItemFields::complement() const
 {
     StringVector complementFields;
     StringVector fieldNames = getFieldNames();
-    for (StringVector::iterator fieldName = fieldNames.begin(); fieldName != fieldNames.end(); ++fieldName)
+    for (StringVector::const_iterator fieldName = fieldNames.begin(); fieldName != fieldNames.end(); ++fieldName)
         if (!hasField(*fieldName))
             complementFields.push_back(*fieldName);
     return ResultItemFields(complementFields);
