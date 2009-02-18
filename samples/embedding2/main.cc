@@ -193,5 +193,6 @@ int main(int argc, char *argv[])
     }
     while (againQuestion == "y");
 
+    cSimulation::clearLoadedNedFiles();
     return 0;
 }

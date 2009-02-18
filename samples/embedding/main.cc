@@ -87,6 +87,8 @@ int main(int argc, char *argv[])
     // exit
     cSimulation::setActiveSimulation(NULL);
     delete sim;
+
+    cSimulation::clearLoadedNedFiles();
     return 0;
 }
 
