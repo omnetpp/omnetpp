@@ -4,6 +4,8 @@
 #pragma SWIG nowarn=822
 
 %include "loadlib.i"
+#%include "enums.swg"
+#%javaconst(1);
 
 %{
 #include "scavedefs.h"
@@ -471,6 +473,8 @@ namespace std {
 %ignore IDFieldsEqual;
 %ignore IDFieldsLess;
 %ignore getAttribute;
+%ignore ResultItemFields::begin;
+%ignore ResultItemFields::end;
 
 %typemap(javacode) ResultItemField %{
 
@@ -529,6 +533,8 @@ namespace std {
 %ignore DataTable;
 %ignore XYDataTable;
 %ignore ScalarDataTable;
+%ignore ScatterDataTable;
+%ignore JoinedDataTable;
 %ignore MatlabStructExport;
 %ignore MatlabScriptExport;
 %ignore OctaveTextExport;
