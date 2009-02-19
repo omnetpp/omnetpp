@@ -59,8 +59,10 @@ sub testExport
   $expectedResultFileName = $resultFileName;
   $resultFileName =~ s/^(.*)\//result\//;
   $expectedResultFileName =~ s/^(.*)\//expected\//;
+  $command = "vector";
+  $command = "scalar" if ($fileName =~ /(.*)\.sca$/);
 
-  if (system("../../bin/scavetool.exe filter -O $resultFileName -F $format $fileName") == 0 && matchFiles($resultFileName, $expectedResultFileName))
+  if (system("../../bin/scavetool.exe $command -O $resultFileName -F $format $fileName") == 0 && matchFiles($resultFileName, $expectedResultFileName))
   {
     print("PASS: Exporting $fileName in $format\n");
   }
