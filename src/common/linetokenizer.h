@@ -24,7 +24,7 @@
 NAMESPACE_BEGIN
 
 /**
- * Tokenizes a line. Uses space as separator, and also honors quoted substrings
+ * Tokenizes a line. Uses space as default separator, and also honors quoted substrings
  * (that is, `one "two or three" four' is returned as 3 tokens `one',
  * `two or three', `four'). If a quote appears within a token, it needs to
  * be preceded by backslash. A backslash also needs to be quoted (ie.
@@ -33,6 +33,10 @@ NAMESPACE_BEGIN
 class COMMON_API LineTokenizer
 {
   private:
+	// separators
+	char sep1;
+	char sep2;
+
     int lineBufferSize;
     char *lineBuffer;
 
@@ -45,7 +49,7 @@ class COMMON_API LineTokenizer
     /**
      * Constructor.
      */
-    LineTokenizer(int lineBufferSize = 1000, int maxTokenNum=-1 /*=lineBufferSize/4*/);
+    LineTokenizer(int lineBufferSize = 1000, int maxTokenNum=-1 /*=lineBufferSize/4*/, char sep1=' ', char sep2='\t');
 
     /**
      * Destructor.

@@ -24,7 +24,8 @@
 USING_NAMESPACE
 
 
-LineTokenizer::LineTokenizer(int bufferSize, int maxTokenNum)
+LineTokenizer::LineTokenizer(int bufferSize, int maxTokenNum, char sep1, char sep2)
+	: sep1(sep1), sep2(sep2)
 {
     if (maxTokenNum < 0)
         maxTokenNum = bufferSize/4;
@@ -115,8 +116,8 @@ int LineTokenizer::tokenize(const char *line, int length)
     // loop through the tokens on the line
     for (;;)
     {
-        // skip spaces before token
-        while (*s==' ' || *s=='\t') s++;
+        // skip separators before token
+        while (*s==sep1 || *s==sep2) s++;
 
         char *token;
         if (!*s)
@@ -150,7 +151,7 @@ int LineTokenizer::tokenize(const char *line, int length)
             // parse unquoted string
             token = s;
             // try find end of string
-            while (*s && *s!=' ' && *s!='\t') s++;
+            while (*s && *s!=sep1 && *s!=sep2) s++;
             // terminate string with zero (if we are not already at end of the line)
             if (*s) *s++ = 0;
         }
