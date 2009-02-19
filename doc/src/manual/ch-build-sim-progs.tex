@@ -309,9 +309,9 @@ other makefiles, or if you want to do the linking manually.
 The Microsoft Visual C++ compiler handles shared library (DLL) linking (-s)
 differently and requires additional steps to compile and link correctly.
 You must choose a \ttt{<symbol>} for your project and annotate each class
-and dll-public declaration with \ttt{<symbol>_API}. If you generate your makefiles
-with the \ttt{-p <symbol>} option, \ttt{<symbol>_EXPORT} macro will be passed to
-the compiler causing <symbol>_API to be defined as __declspec(dllexport) in
+and dll-public declaration with \ttt{<symbol>\_API}. If you generate your makefiles
+with the \ttt{-p <symbol>} option, \ttt{<symbol>\_EXPORT} macro will be passed to
+the compiler causing <symbol>\_API to be defined as \_\_declspec(dllexport) in
 your sources. This step allows to correctly generate DLL exports in windows.
 \end{note}
 \fi
