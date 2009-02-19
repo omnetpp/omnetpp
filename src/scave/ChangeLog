@@ -1,3 +1,23 @@
+2009-02-19 Tamas Borbely
+
+	* Renamed 'summary' command of scavetool to 'list'.
+
+2009-02-19 Tamas Borbely
+
+	* The new 'scalar' command can apply processing operations too.
+	Currently only the 'scatter' operation accepted, and it creates
+	a scatter plot dataset from the scalars. Its format is:
+	"scatter(module,scalar,...)" where
+	  - module,scalar: identifies the scalar selected for the X axis
+	  - additional arguments identifies the iso attributes, they are
+            module, scalar pairs or names of run attributes
+
+2009-02-19 Tamas Borbely
+
+	* 'filter' command of scavetool had been split into 'vector' and
+	'scalar' commands.
+
+
 2008-12-12  ------ omnetpp-4.0rc1 released ------
 
 2008-11-26  Andras Varga

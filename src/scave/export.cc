@@ -43,16 +43,16 @@ bool DataTable::CellPtr::operator <(const DataTable::CellPtr &other) const
 	if (other.isNull())
 		return true;
 
-	DataTable::ColumnType keyColumnType = this->table->getColumn(this->column).type;
+	ColumnType keyColumnType = this->table->getColumn(this->column).type;
 	switch (keyColumnType)
 	{
-	case DataTable::DOUBLE:
+	case DOUBLE:
 		return this->table->getDoubleValue(this->row, this->column) <
 				 other.table->getDoubleValue(other.row, other.column);
-	case DataTable::BIGDECIMAL:
+	case BIGDECIMAL:
 		return this->table->getBigDecimalValue(this->row, this->column) <
 				 other.table->getBigDecimalValue(other.row, other.column);
-	case DataTable::STRING:
+	case STRING:
 		return this->table->getStringValue(this->row, this->column) <
 				 other.table->getStringValue(other.row, other.column);
 	}
@@ -63,8 +63,8 @@ bool DataTable::CellPtr::operator <(const DataTable::CellPtr &other) const
 /*=====================
  *       Vectors
  *=====================*/
-XYDataTable::XYDataTable(const string name, const string description,
-                         const string xColumnName, const string yColumnName, const XYArray *vec)
+XYDataTable::XYDataTable(const string &name, const string &description,
+                         const string &xColumnName, const string &yColumnName, const XYArray *vec)
     : DataTable(name, description), vec(vec)
 {
     header.push_back(Column(xColumnName, BIGDECIMAL));
@@ -106,29 +106,41 @@ double XYDataTable::getDoubleValue(int row, int col) const
         return dblNaN;
 }
 
+static string createNameForXYDatasetRow(const XYDataset &data, int row, const string &separator = "/")
+{
+	string name;
+	ResultItemFields rowFields = data.getRowFields();
+	bool first = true;
+	for (ResultItemFields::const_iterator rowField = rowFields.begin(); rowField != rowFields.end(); ++rowField)
+	{
+		if (!first) name += separator;
+		name += data.getRowField(row, *rowField);
+		first = false;
+	}
+	return name;
+}
+
 /*=====================
  *     Scatter plots
  *=====================*/
-ScatterDataTable::ScatterDataTable(const string name, const string description,
-                         const StringVector columnNames, const XYDataset *data)
+ScatterDataTable::ScatterDataTable(const string &name, const string &description, const XYDataset &data)
     : DataTable(name, description), dataset(data)
 {
-//	ASSERT(data->getRowCount() == columnNames.size());
-
-	for (int i = 0; i < columnNames.size(); ++i)
+	for (int row = 0; row < data.getRowCount(); ++row)
 	{
-		header.push_back(Column(columnNames[i], DOUBLE));
+		string columnName = createNameForXYDatasetRow(data, row);
+		header.push_back(Column(columnName, DOUBLE));
 	}
 }
 
 int ScatterDataTable::getNumRows() const
 {
-    return dataset->getColumnCount();
+    return dataset.getColumnCount();
 }
 
 bool ScatterDataTable::isNull(int row, int col) const
 {
-	return dataset->getValue(col, row).getCount() == 0;
+	return dataset.getValue(col, row).getCount() == 0;
 }
 
 string ScatterDataTable::getStringValue(int row, int col) const
@@ -145,7 +157,7 @@ BigDecimal ScatterDataTable::getBigDecimalValue(int row, int col) const
 
 double ScatterDataTable::getDoubleValue(int row, int col) const
 {
-	return dataset->getValue(col, row).getMean();
+	return dataset.getValue(col, row).getMean();
 }
 
 /*================================
@@ -314,10 +326,15 @@ JoinedDataTable::JoinedDataTable(const string name, const string description,
    {
 	   DataTable *table = joinedTables[tableIndex];
 	   int numColumns = table->getNumColumns();
-	   for (int j = 0; j < numColumns; ++j)
+	   for (int col = 0; col < numColumns; ++col)
 	   {
-		   if (j != joinOnColumn)
-			   addColumn(table->getColumn(j), tableIndex, j);
+		   Column column = table->getColumn(col);
+		   if (col != joinOnColumn)
+		   {
+			   if (!table-name.empty())
+				   column.name = table->name + "/" + column.name;
+			   addColumn(column, tableIndex, col);
+		   }
 	   }
    }
 
@@ -480,11 +497,37 @@ void ScaveExport::saveVectors(const string &name, const string &description,
     saveTable(table, 0, table.getNumRows());
 }
 
-void ScaveExport::saveScalars(const string name, const string description, const IDList &scalars, ResultItemFields groupBy, ResultFileManager &manager)
+void ScaveExport::saveScalars(const string &name, const string &description, const IDList &scalars, ResultItemFields groupBy, ResultFileManager &manager)
 {
     const ScalarDataTable table(name, description, scalars, groupBy, manager);
     saveTable(table, 0, table.getNumRows());
 }
+
+void ScaveExport::saveScalars(const string &name, const string &description,
+								const IDList &scalars, const string &moduleName, const string &scalarName,
+								ResultItemFields columnFields,
+								const std::vector<std::string> &isoModuleNames, const StringVector &isoScalarNames,
+								ResultItemFields isoFields, ResultFileManager &manager)
+{
+	ScalarDataSorter sorter(&manager);
+	StringVector rowFields;
+	rowFields.push_back(ResultItemField::MODULE);
+	rowFields.push_back(ResultItemField::NAME);
+	XYDatasetVector xyDatasets = sorter.prepareScatterPlot3(scalars, moduleName.c_str(), scalarName.c_str(),
+															ResultItemFields(rowFields), columnFields,
+															isoModuleNames, isoScalarNames, isoFields);
+	vector<DataTable *> tables;
+	for (XYDatasetVector::const_iterator it = xyDatasets.begin(); it != xyDatasets.end(); it++)
+	{
+		string name = ""; // TODO iso attr values
+		string description = "";
+		tables.push_back(new ScatterDataTable(name, description, *it));
+	}
+
+	JoinedDataTable table(name, description, tables, 0 /*first column is X*/);
+	saveTable(table, 0, table.getNumRows());
+}
+
 
 /*===============================
  *           Matlab

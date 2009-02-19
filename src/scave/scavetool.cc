@@ -18,6 +18,7 @@
 #include <assert.h>
 #include <sstream>
 #include "../common/ver.h"
+#include "linetokenizer.h"
 #include "resultfilemanager.h"
 #include "nodetype.h"
 #include "nodetyperegistry.h"
@@ -35,6 +36,7 @@
 
 USING_NAMESPACE
 
+using namespace std;
 
 void printUsage()
 {
@@ -48,21 +50,27 @@ void printUsage()
        "scalar files (.sca).\n"
        "\n"
        "Commands:\n"
-       "    f, filter   filter data in input files\n"
-       "    s, summary  prints summary info about input files\n"
-       "    i, info     prints list of available functions (to be used with `filter -a')\n"
-       "    x, index    generates index files for input files\n"
+       "    v, vector   filter and process data in vector files\n"
+       "    s, scalar   filter and process data in scalar files\n"
+       "    l, list     list summary info about input files\n"
+       "    i, info     print list of available functions (to be used with `vector -a')\n"
+       "    x, index    generate index files for vector files\n"
        "Options:\n"
-       " `filter' command:\n"
+       " `vector' command:\n"
        "    -p <pattern>    the filter expression (see syntax below)\n"
-       "    -a <function>   apply the given processing to the vector (see syntax below)\n"
+       "    -a <function>   apply the given processing to the selected vectors (see syntax below)\n"
        "                    This option may occur multiple times.\n"
-       "    -O <filename>   output file name\n"   //FIXME separate file for vectors and scalars I guess
-       "    -F <formatname> format of output file: vec, splitvec, matlab, octave, csv, splitcsv\n" //TODO sca files
+       "    -O <filename>   output file name\n"
+       "    -F <formatname> format of output file: vec (default), splitvec, matlab, octave, csv, splitcsv\n"
        "    -V              print info about progress (verbose)\n"
        //TODO option: print matching vectorIDs and exit
-       //TODO: dump scalars too!!!
-       " `summary' command:\n"
+       " `scalar' command:\n"
+       "    -p <pattern>    the filter expression (see syntax below)\n"
+       "    -a <function>   apply the given processing to the selected scalars (see syntax below)\n"
+       "    -O <filename>   output file name\n"
+       "    -F <formatname> format of output file: csv (default), matlab, octave\n" //TODO sca files
+       "    -V              print info about progress (verbose)\n"
+       " `list' command:\n"
        //TODO allow filtering by patterns here too?
        //TODO specifying more than one flag should list tuples e.g. (module,statistic) pairs
        // occurring in the input files
@@ -79,9 +87,10 @@ void printUsage()
        "    -r   rebuild vector file (rearranges records into blocks)\n"
        "    -V   print info about progress (verbose)\n"
        "\n"
-       "Function syntax (for `filter -a'): <name>(<parameterlist>).\n"
+       "Function syntax (for `vector -a'): <name>(<parameterlist>).\n"
        "Examples: winavg(10), mean()\n"
        "\n"
+       // TODO scalar functions
        "Pattern syntax: one or more <fieldname>(<pattern>) pairs, combined with AND,\n"
        "OR, NOT operators.\n"
        "  <fieldname> is one of:\n"
@@ -106,10 +115,12 @@ void printUsage()
        "\n"
        "Examples:\n"
        "    scavetool filter -p \"queueing time\" -a winavg(10) -O out.vec\n\n" //TODO more
+       "    scavetool scalar -p \"module(sink) OR module(queue)\""
+                            "-a \"scatter(.,load,queue,\\\"queue length\\\")\" -O out.csv -F csv\n\n"
     );
 }
 
-static void loadFiles(ResultFileManager &manager, const std::vector<std::string> &fileNames, bool verbose)
+static void loadFiles(ResultFileManager &manager, const vector<string> &fileNames, bool verbose)
 {
     // load files
     ResultFileManager resultFileManager;
@@ -135,24 +146,35 @@ static void loadFiles(ResultFileManager &manager, const std::vector<std::string>
                 if (verbose) printf(" %d lines\n", f->numLines);
             }
         }
-        catch (std::exception& e) {
+        catch (exception& e) {
             fprintf(stdout, "Exception: %s\n", e.what());
         }
     }
     if (verbose) printf("%d file(s) loaded\n", (int)manager.getFiles().size());
 }
 
-int filterCommand(int argc, char **argv)
+static string rebuildCommandLine(int argc, char **argv)
+{
+	// FIXME quotes
+	string result;
+	for (int i = 0; i < argc; i++)
+	{
+		if (i != 0) result += " ";
+		result += argv[i];
+	}
+	return result;
+}
+
+int vectorCommand(int argc, char **argv)
 {
     // options
     bool opt_verbose = false;
-    std::string opt_filterExpression;
-    std::string opt_outputFileName = "_out_";
-    std::string opt_outputFormat = "vec";  //TBD vec, splitvec, octave, split octave (and for octave: x, y, both),...
-    std::string opt_readerNodeType = "vectorfilereader";
-    std::vector<std::string> opt_filterList;
-    std::vector<std::string> opt_fileNames;
-    StringMap opt_runAttrPatterns; //FIXME options to fill this
+    string opt_filterExpression;
+    string opt_outputFileName = "_out_";
+    string opt_outputFormat = "vec";  //TBD vec, splitvec, octave, split octave (and for octave: x, y, both),...
+    string opt_readerNodeType = "vectorfilereader";
+    vector<string> opt_filterList;
+    vector<string> opt_fileNames;
 
     // parse options
     bool endOpts = false;
@@ -181,7 +203,6 @@ int filterCommand(int argc, char **argv)
             {fprintf(stderr, "unknown option `%s'", opt);return 1;}
     }
 
-    // only exactly one of the next ones may be true
     bool opt_writeSeparateFiles = false;
     if (opt_outputFormat.find("split") == 0)
     {
@@ -197,11 +218,8 @@ int filterCommand(int argc, char **argv)
 
         // filter statistics
         IDList vectorIDList = resultFileManager.filterIDList(resultFileManager.getAllVectors(), opt_filterExpression.c_str());
-        IDList scalarIDList = resultFileManager.filterIDList(resultFileManager.getAllScalars(), opt_filterExpression.c_str());
 
-        if (opt_verbose) printf("module and name filter matches %d vectors and %d scalars\n",
-                            vectorIDList.size(), scalarIDList.size());
-
+        if (opt_verbose) printf("filter expression matches %d vectors\n", vectorIDList.size());
         if (opt_verbose) printf("done collecting inputs\n\n");
 
         //
@@ -213,7 +231,7 @@ int filterCommand(int argc, char **argv)
         // create filereader for each vector file
         if (opt_verbose) printf("creating vector file reader(s)\n");
         ResultFileList& filteredVectorFileList = *resultFileManager.getUniqueFiles(vectorIDList); //FIXME delete after done?
-        std::map<ResultFile*, Node*> vectorFileReaders;
+        map<ResultFile*, Node*> vectorFileReaders;
         NodeType *readerNodeType = registry->getNodeType(opt_readerNodeType.c_str());
         if (!readerNodeType)
         {
@@ -234,7 +252,7 @@ int filterCommand(int argc, char **argv)
         // create writer node, if each vector is written into the same file
         VectorFileWriterNode *vectorFileWriterNode = NULL;
 
-        std::vector<ArrayBuilderNode*> arrayBuilders; // for exporting
+        vector<ArrayBuilderNode*> arrayBuilders; // for exporting
 
         for (int i=0; i<vectorIDList.size(); i++)
         {
@@ -247,7 +265,7 @@ int filterCommand(int argc, char **argv)
             Port *outPort = readerNodeType->getPort(readerNode, portName);
 
             // add filters
-                for (int k=0; k<(int)opt_filterList.size(); k++)
+            for (int k=0; k<(int)opt_filterList.size(); k++)
             {
                 //TODO support filter to merge all into a single vector
                 if (opt_verbose) printf("adding filter to vector: %s\n", opt_filterList[k].c_str());
@@ -268,9 +286,9 @@ int filterCommand(int argc, char **argv)
                     if (opt_verbose) printf("adding separate writers for each vector\n");
                     char buf[16];
                     sprintf(buf, "%d", i);
-                    std::string fname = opt_outputFileName+buf+".vec";
+                    string fname = opt_outputFileName+buf+".vec";
 
-                    std::stringstream header;
+                    stringstream header;
                     header << "# vector " << vector.vectorId << " " <<
                               QUOTE(vector.moduleNameRef->c_str()) << " " <<
                               QUOTE(vector.nameRef->c_str()) << "\n";
@@ -285,7 +303,7 @@ int filterCommand(int argc, char **argv)
 					if (!vectorFileWriterNode)
 					{
 						if (opt_verbose) printf("adding vector file writer\n");
-						std::string fileName = opt_outputFileName + ".vec";
+						string fileName = opt_outputFileName + ".vec";
 						vectorFileWriterNode = new VectorFileWriterNode(fileName.c_str(), "# generated by scavetool");
 						dataflowManager.addNode(vectorFileWriterNode);
 					}
@@ -325,8 +343,8 @@ int filterCommand(int argc, char **argv)
 							ID vectorID = vectorIDList.get(i);
 							bool computed = opt_filterList.size() > 0;
 							const VectorResult& vector = resultFileManager.getVector(vectorID);
-							std::string name = *vector.nameRef;
-							std::string descr = *vector.nameRef + "; "
+							string name = *vector.nameRef;
+							string descr = *vector.nameRef + "; "
 											  + *vector.moduleNameRef + "; "
 											  + vector.fileRunRef->fileRef->fileSystemFilePath + "; "
 											  + vector.fileRunRef->runRef->runName;
@@ -340,39 +358,21 @@ int filterCommand(int argc, char **argv)
                     	if (vectorIDList.size() > 0)
                     	{
 							// all vectors in one file
-							std::vector<XYArray*> xyArrays;
+							vector<XYArray*> xyArrays;
 							for (int i=0; i<vectorIDList.size(); i++)
-							{
 								xyArrays.push_back(arrayBuilders[i]->getArray());
-							}
 
-							std::string desc = "generated by '";
-							for (int i = 0; i < argc; i++)
-							{
-								if (i != 0)
-									desc += " ";
-								desc += argv[i];
-							}
-							desc += "'";
-
+							string desc = "generated by '" + rebuildCommandLine(argc, argv) + "'";
 							exporter->saveVectors("vectors", desc, vectorIDList, xyArrays, resultFileManager);
 
 							for (int i = 0; i < vectorIDList.size(); i++)
 								delete arrayBuilders[i]->getArray();
                     	}
                     }
-                    // write scalars
-                    if (!scalarIDList.isEmpty())
-                    {
-                        ResultItemFields fields(ResultItemField::NAME); // TODO option
-                        // TODO option to choose columns (allow averaging in cells)
-                        exporter->saveScalars("scalars", "scalar desc", scalarIDList,
-                            fields.complement(), resultFileManager);
-                    }
 
                     delete exporter;
                 }
-                catch (std::exception&)
+                catch (exception&)
                 {
                     delete exporter;
                     throw;
@@ -387,7 +387,7 @@ int filterCommand(int argc, char **argv)
 
         if (opt_verbose) printf("done\n");
     }
-    catch (std::exception& e)
+    catch (exception& e)
     {
         fprintf(stdout, "Exception: %s\n", e.what());
         return 1;
@@ -396,17 +396,193 @@ int filterCommand(int argc, char **argv)
     return 0;
 }
 
+static void parseScalarFunction(const string &functionCall, /*out*/string &name, /*out*/ vector<string> &params)
+{
+    params.clear();
+    string::size_type paren = functionCall.find('(');
+    if (paren == string::npos) {
+        // no left paren -- treat the whole string as function name
+        name = functionCall;
+        return;
+    }
+
+    // check that string ends in right paren
+    string::size_type size = functionCall.length();
+    if (functionCall[size-1]!=')')
+        throw opp_runtime_error("syntax error in filter spec `%s'", functionCall.c_str());
+
+    // filter name is the part before the left paren
+    name.assign(functionCall, 0, paren);
+
+    // param list is the part between the parens -- split it up along commas
+    string paramlist(functionCall, paren+1, size-paren-2);
+    LineTokenizer tokenizer(paramlist.length()+1, 100, ',', ',');
+    tokenizer.tokenize(paramlist.c_str(), paramlist.length());
+    char **tokens = tokenizer.tokens();
+    for (int i = 0; i < tokenizer.numTokens(); ++i)
+    	params.push_back(unquoteString(tokens[i]));
+}
+
+int scalarCommand(int argc, char **argv)
+{
+    // options
+    bool opt_verbose = false;
+    string opt_filterExpression;
+    string opt_outputFileName = "_out_";
+    string opt_outputFormat = "csv";
+    string opt_applyFunction;
+    vector<string> opt_fileNames;
+
+    // parse options
+    bool endOpts = false;
+    for (int i=2; i<argc; i++)
+    {
+        const char *opt = argv[i];
+        if (endOpts)
+            opt_fileNames.push_back(argv[i]);
+        else if (!strcmp(opt, "--"))
+            endOpts = true;
+        else if (!strcmp(opt, "-p") && i!=argc-1)
+            opt_filterExpression = unquoteString(argv[++i]);
+        else if (!strcmp(opt, "-a") && i!=argc-1)
+            opt_applyFunction = unquoteString(argv[++i]);
+        else if (!strcmp(opt, "-O") && i!=argc-1)
+            opt_outputFileName = argv[++i];
+        else if (!strcmp(opt, "-F") && i!=argc-1)
+            opt_outputFormat = argv[++i];
+        else if (!strcmp(opt, "-V"))
+            opt_verbose = true;
+        else if (opt[0] != '-')
+            opt_fileNames.push_back(argv[i]);
+        else
+            {cerr << "unknown option `" << opt << "'" << endl; return 1;}
+    }
+
+    int rc = 0;
+
+    try
+    {
+        // load files
+        ResultFileManager resultFileManager;
+        loadFiles(resultFileManager, opt_fileNames, opt_verbose);
+
+        // filter scalars
+        IDList scalarIDList = resultFileManager.filterIDList(resultFileManager.getAllScalars(), opt_filterExpression.c_str());
+        if (opt_verbose) cout << "filter expression matches " << scalarIDList.size() << "scalars" << endl;
+        if (opt_verbose) cout << "done collecting inputs" << endl << endl;
+
+		if (!scalarIDList.isEmpty())
+		{
+			ScaveExport *exporter = ExporterFactory::createExporter(opt_outputFormat);
+			if (exporter)
+			{
+				try
+				{
+					exporter->setBaseFileName(opt_outputFileName);
+					string desc = "generated by '" + rebuildCommandLine(argc, argv) + "'";
+
+					if (opt_applyFunction.empty())
+					{
+						ResultItemFields fields(ResultItemField::NAME); // TODO option
+						// TODO option to choose columns (allow averaging in cells)
+						exporter->saveScalars("scalars", desc, scalarIDList,
+							fields.complement(), resultFileManager);
+					}
+					else
+					{
+						string function;
+						vector<string> params;
+						parseScalarFunction(opt_applyFunction, function, params);
+						if (function == "scatter")
+						{
+							if (params.size() >= 2)
+							{
+								string moduleName = params[0];
+								string scalarName = params[1];
+								vector<string> rowFields;
+								rowFields.push_back(ResultItemField::MODULE);
+								rowFields.push_back(ResultItemField::NAME);
+								vector<string> isoModuleNames;
+								vector<string> isoScalarNames;
+								vector<string> isoRunAttributes;
+								for (vector<string>::iterator param = params.begin()+2; param != params.end(); ++param)
+								{
+									if (RunAttribute::isAttributeName(*param))
+									{
+										isoRunAttributes.push_back(*param);
+									}
+									else
+									{
+										if ((param+1) == params.end())
+										{
+											cout << "Missing scalar name after '" << *param << "'" << endl;
+											rc = 1;
+											break;
+										}
+										isoModuleNames.push_back(*param);
+										isoScalarNames.push_back(*++param);
+									}
+								}
+
+								if (rc == 0)
+								{
+									exporter->saveScalars("scalars", desc, scalarIDList,
+										moduleName, scalarName, ResultItemFields(rowFields).complement(),
+										isoModuleNames, isoScalarNames, ResultItemFields(isoRunAttributes),
+										resultFileManager);
+								}
+							}
+							else
+							{
+								cout << "Missing parameters in: " << opt_applyFunction << endl;
+								rc = 1;
+							}
+						}
+						else
+						{
+							cout << "Unknown scalar function: " << function << endl;
+							rc = 1;
+						}
+					}
+
+					delete exporter;
+				}
+				catch (exception&)
+				{
+					delete exporter;
+					throw;
+				}
+			}
+			else
+			{
+				cout << "Unknown output file format: " << opt_outputFormat << endl;
+				rc = 1;
+			}
+		}
+
+        if (opt_verbose && rc == 0) cout << "done" << endl;
+    }
+    catch (exception& e)
+    {
+        cout << "Exception: " << e.what() << endl;
+        rc = 1;
+    }
+
+    return rc;
+}
+
+
 //TODO allow filtering by patterns here too?
 //TODO specifying more than one flag should list tuples e.g. (module,statistic) pairs
 // occurring in the input files
-int summaryCommand(int argc, char **argv)
+int listCommand(int argc, char **argv)
 {
 	bool opt_name = false;
 	bool opt_module = false;
 	bool opt_run = false;
 	bool opt_config = false;
 	int count = 0;
-    std::vector<std::string> opt_fileNames;
+    vector<string> opt_fileNames;
 
     for (int i=2; i<argc; i++)
     {
@@ -545,7 +721,7 @@ int indexCommand(int argc, char **argv)
     // process args
     bool opt_verbose = false;
     bool opt_rebuild = false;
-    std::vector<std::string> opt_fileNames;
+    vector<string> opt_fileNames;
     for (int i=2; i<argc; i++)
     {
         const char *opt = argv[i];
@@ -572,7 +748,7 @@ int indexCommand(int argc, char **argv)
             else
                 indexer.generateIndex(fileName);
         }
-        catch (std::exception& e) {
+        catch (exception& e) {
             fprintf(stderr, "Exception: %s\n", e.what());
             rc=1;
         }
@@ -592,10 +768,12 @@ int main(int argc, char **argv)
     }
 
     const char *command = argv[1];
-    if (!strcmp(command, "f") || !strcmp(command, "filter"))
-        return filterCommand(argc, argv);
-    else if (!strcmp(command, "s") || !strcmp(command, "summary"))
-        return summaryCommand(argc, argv);
+    if (!strcmp(command, "v") || !strcmp(command, "vector"))
+        return vectorCommand(argc, argv);
+    else if (!strcmp(command, "s") || !strcmp(command, "scalar"))
+        return scalarCommand(argc, argv);
+    else if (!strcmp(command, "l") || !strcmp(command, "list"))
+        return listCommand(argc, argv);
     else if (!strcmp(command, "i") || !strcmp(command, "info"))
         return infoCommand(argc, argv);
     else if (!strcmp(command, "x") || !strcmp(command, "index"))

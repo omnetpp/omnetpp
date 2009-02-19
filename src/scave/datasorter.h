@@ -205,11 +205,11 @@ class SCAVE_API ScalarDataSorter
             ResultItemFields rowFields, ResultItemFields columnFields);
 
     /**
-     * TODO
+     *
      */
     XYDatasetVector prepareScatterPlot3(const IDList& idlist, const char *moduleName, const char *scalarName,
             ResultItemFields rowFields, ResultItemFields columnFields,
-            const StringVector isoModuleNames, const StringVector isoScalarNames, ResultItemFields isoFields);
+            const StringVector &isoModuleNames, const StringVector &isoScalarNames, ResultItemFields isoFields);
 
 
     /**

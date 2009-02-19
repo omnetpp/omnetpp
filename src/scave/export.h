@@ -73,7 +73,7 @@ class SCAVE_API DataTable
         const std::string description;
     protected:
         std::vector<Column> header;
-        DataTable(const std::string name, const std::string description) : name(name), description(description) {}
+        DataTable(const std::string &name, const std::string &description) : name(name), description(description) {}
         void addColumn(const Column &column) { header.push_back(column); }
     public:
         virtual ~DataTable() {}
@@ -99,8 +99,8 @@ class SCAVE_API XYDataTable : public DataTable
     private:
         const XYArray *vec;
     public:
-        XYDataTable(const std::string name, const std::string description,
-            const std::string xColumnName, const std::string yColumnName, const XYArray *vec);
+        XYDataTable(const std::string &name, const std::string &description,
+            const std::string &xColumnName, const std::string &yColumnName, const XYArray *vec);
         virtual int getNumRows() const;
         virtual bool isNull(int row, int col) const;
         virtual double getDoubleValue(int row, int col) const;
@@ -114,10 +114,9 @@ class SCAVE_API XYDataTable : public DataTable
 class SCAVE_API ScatterDataTable : public DataTable
 {
     private:
-        const XYDataset *dataset;
+        const XYDataset &dataset;
     public:
-        ScatterDataTable(const std::string name, const std::string description,
-            const StringVector columnNames, const XYDataset *data);
+        ScatterDataTable(const std::string &name, const std::string &description, const XYDataset &data);
         virtual int getNumRows() const;
         virtual bool isNull(int row, int col) const;
         virtual double getDoubleValue(int row, int col) const;
@@ -208,7 +207,14 @@ class SCAVE_API ScaveExport
         virtual void saveVectors(const std::string &name, const std::string &description,
                                      const IDList &vectors, const std::vector<XYArray*> xyarrays,
                                      const ResultFileManager &manager);
-        virtual void saveScalars(const std::string name, const std::string description, const IDList &scalars, ResultItemFields groupBy, ResultFileManager &manager);
+        virtual void saveScalars(const std::string &name, const std::string &description,
+									const IDList &scalars, ResultItemFields groupBy, ResultFileManager &manager);
+
+        virtual void saveScalars(const std::string &name, const std::string &description,
+									const IDList &scalars, const std::string &moduleName, const std::string &scalarName,
+									ResultItemFields columnFields,
+									const std::vector<std::string> &isoModuleNames, const StringVector &isoScalarNames,
+									ResultItemFields isoFields, ResultFileManager &manager);
 
         const std::string &getLastFileName() const { return fileName; }
     protected:

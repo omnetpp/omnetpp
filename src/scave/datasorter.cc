@@ -458,12 +458,12 @@ struct IsoGroupingFn : public std::binary_function<ResultItem, ResultItem, bool>
     ResultItemFields fields;
 
     IsoGroupingFn() {}
-    IDList init(const IDList &idlist, StringVector moduleNames, StringVector scalarNames,
+    IDList init(const IDList &idlist, const StringVector &moduleNames, const StringVector &scalarNames,
 				ResultItemFields fields, ResultFileManager *manager);
     bool operator()(const ResultItem &d1, const ResultItem &d2) const;
 };
 
-IDList IsoGroupingFn::init(const IDList &idlist, StringVector moduleNames, StringVector scalarNames,
+IDList IsoGroupingFn::init(const IDList &idlist, const StringVector &moduleNames, const StringVector &scalarNames,
 							ResultItemFields fields, ResultFileManager *manager)
 {
 	this->fields = fields;
@@ -536,7 +536,7 @@ bool IsoGroupingFn::operator()(const ResultItem &d1, const ResultItem &d2) const
 
 XYDatasetVector ScalarDataSorter::prepareScatterPlot3(const IDList& idlist, const char *moduleName, const char *scalarName,
         ResultItemFields rowFields, ResultItemFields columnFields,
-        const StringVector isoModuleNames, const StringVector isoScalarNames, ResultItemFields isoFields)
+        const StringVector &isoModuleNames, const StringVector &isoScalarNames, ResultItemFields isoFields)
 {
     // group data according to iso fields
     IsoGroupingFn grouping;

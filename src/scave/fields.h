@@ -179,6 +179,8 @@ class SCAVE_API ResultItemFields
     private:
         std::vector<ResultItemField> fields;
     public:
+    	typedef std::vector<ResultItemField>::const_iterator const_iterator;
+
         static StringVector getFieldNames();
 
         ResultItemFields() {};
@@ -189,6 +191,8 @@ class SCAVE_API ResultItemFields
         ResultItemFields complement() const;
         bool hasField(ResultItemField field) const;
         bool hasField(const std::string fieldName) const;
+        const_iterator begin() const { return fields.begin(); };
+        const_iterator end() const { return fields.end(); };
         bool less(ID id1, ID id2, ResultFileManager *manager) const;
         bool less(const ResultItem &d1, const ResultItem &d2) const;
         bool equal(ID id1, ID id2, ResultFileManager *manager) const;
