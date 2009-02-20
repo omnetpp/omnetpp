@@ -1351,14 +1351,14 @@ proc modelinfo_dialog {{w ""}} {
     }
 
     global fonts
-    set w .dlg
-    catch {destroy $w}
-    createOkCancelDialog $w "Model Information"
-    $w.f config -border 0
-    message $w.f.txt -text $msg -font $fonts(normal) -width 400
-    pack $w.f.txt -expand 1 -fill both
-    destroy $w.buttons.cancelbutton
-    execOkCancelDialog $w
-    destroy $w
+    set dlg $w.dlg
+    catch {destroy $dlg}
+    createOkCancelDialog $dlg "Model Information"
+    $dlg.f config -border 0
+    message $dlg.f.txt -text $msg -font $fonts(normal) -width 400
+    pack $dlg.f.txt -expand 1 -fill both
+    destroy $dlg.buttons.cancelbutton
+    execOkCancelDialog $dlg
+    destroy $dlg
 }
 

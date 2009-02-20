@@ -108,22 +108,19 @@ clean:
 $O/arrow.o: arrow.cc \
   ../../include/regmacros.h \
   ../../include/cownedobject.h \
+  ../../include/cvisitor.h \
   tkdefs.h \
   ../../include/cobject.h \
+  tkutil.h \
+  arrow.h \
   ../../include/platdep/platdefs.h \
   ../../include/cstringpool.h \
-  ../../include/cnamedobject.h \
-  ../../include/simtime.h \
-  ../../include/cvisitor.h \
-  ../../include/simtime_t.h \
-  ../../include/cenvir.h \
-  arrow.h \
-  tkutil.h \
-  ../../include/platdep/platmisc.h \
   ../../include/opp_string.h \
+  ../../include/platdep/platmisc.h \
   ../../include/simutil.h \
   ../../include/cexception.h \
   ../../include/simkerneldefs.h \
+  ../../include/cnamedobject.h \
   ../../include/platdep/intxtypes.h \
   ../../include/errmsg.h
 $O/inspector.o: inspector.cc \
@@ -146,8 +143,8 @@ $O/inspector.o: inspector.cc \
   ../../include/cenum.h \
   ../../include/cdynamicexpression.h \
   ../../include/platdep/timeutil.h \
-  ../../include/cdelaychannel.h \
   ../../include/cconfiguration.h \
+  ../../include/cdelaychannel.h \
   ../../include/chasher.h \
   ../../include/nedsupport.h \
   ../../include/ccommbuffer.h \
@@ -213,9 +210,9 @@ $O/inspector.o: inspector.cc \
   ../../include/chistogram.h \
   ../../include/cdisplaystring.h \
   tkdefs.h \
+  ../../include/cnullenvir.h \
   ../../include/cobject.h \
   ../../include/cnedfunction.h \
-  ../envir/bootenv.h \
   ../../include/cstringpool.h \
   ../../include/cdefaultlist.h \
   ../../include/cdensityestbase.h \
@@ -250,8 +247,8 @@ $O/inspfactory.o: inspfactory.cc \
   ../../include/cenum.h \
   ../../include/cdynamicexpression.h \
   ../../include/platdep/timeutil.h \
-  ../../include/cdelaychannel.h \
   ../../include/cconfiguration.h \
+  ../../include/cdelaychannel.h \
   ../../include/chasher.h \
   ../../include/nedsupport.h \
   ../../include/ccommbuffer.h \
@@ -317,9 +314,9 @@ $O/inspfactory.o: inspfactory.cc \
   ../../include/chistogram.h \
   ../../include/cdisplaystring.h \
   tkdefs.h \
+  ../../include/cnullenvir.h \
   ../../include/cobject.h \
   ../../include/cnedfunction.h \
-  ../envir/bootenv.h \
   inspfactory.h \
   ../../include/cstringpool.h \
   ../../include/cdefaultlist.h \
@@ -365,7 +362,6 @@ $O/layouterenv.o: layouterenv.cc \
   ../../include/platdep/intxtypes.h \
   ../../include/ccomponenttype.h \
   tklib.h \
-  ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
   modinsp.h \
   ../../include/coutvector.h \
@@ -377,8 +373,8 @@ $O/layouterenv.o: layouterenv.cc \
   ../../include/cgate.h \
   ../../include/simtime.h \
   ../../include/carray.h \
-  ../../include/cenvir.h \
   ../../include/simtime_t.h \
+  ../../include/cenvir.h \
   ../../include/cmsgpar.h \
   ../../include/cstatistic.h \
   inspector.h \
@@ -394,8 +390,8 @@ $O/layouterenv.o: layouterenv.cc \
   ../../include/cdensityestbase.h \
   ../../include/cdefaultlist.h \
   ../../include/cstddev.h \
-  ../../include/simutil.h \
-  ../../include/cmessageheap.h
+  ../../include/cmessageheap.h \
+  ../../include/simutil.h
 $O/logbuffer.o: logbuffer.cc \
   ../../include/regmacros.h \
   logbuffer.h \
@@ -415,13 +411,12 @@ $O/logbuffer.o: logbuffer.cc \
   ../../include/cexception.h \
   ../../include/platdep/intxtypes.h \
   tklib.h \
-  ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
   ../../include/cclassfactory.h \
   ../../include/cgate.h \
   ../../include/simtime.h \
-  ../../include/simtime_t.h \
   ../../include/cenvir.h \
+  ../../include/simtime_t.h \
   ../../include/opp_string.h \
   ../../include/simkerneldefs.h \
   ../../include/csimulation.h \
@@ -462,7 +457,6 @@ $O/modinsp.o: modinsp.cc \
   ../../include/platdep/intxtypes.h \
   ../../include/ccomponenttype.h \
   tklib.h \
-  ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
   modinsp.h \
   ../../include/coutvector.h \
@@ -474,8 +468,8 @@ $O/modinsp.o: modinsp.cc \
   ../../include/cgate.h \
   ../../include/simtime.h \
   ../../include/carray.h \
-  ../../include/cenvir.h \
   ../../include/simtime_t.h \
+  ../../include/cenvir.h \
   ../../include/cmsgpar.h \
   ../../include/cstatistic.h \
   inspector.h \
@@ -487,14 +481,13 @@ $O/modinsp.o: modinsp.cc \
   ../../include/cdisplaystring.h \
   ../../include/cobject.h \
   tkdefs.h \
-  ../envir/bootenv.h \
   inspfactory.h \
   ../../include/cstringpool.h \
   ../../include/cdensityestbase.h \
   ../../include/cdefaultlist.h \
   ../../include/cstddev.h \
-  ../../include/simutil.h \
   ../../include/cmessageheap.h \
+  ../../include/simutil.h \
   tkenv.h
 $O/objinsp.o: objinsp.cc \
   ../envir/args.h \
@@ -517,8 +510,8 @@ $O/objinsp.o: objinsp.cc \
   ../../include/cenum.h \
   ../../include/cdynamicexpression.h \
   ../../include/platdep/timeutil.h \
-  ../../include/cdelaychannel.h \
   ../../include/cconfiguration.h \
+  ../../include/cdelaychannel.h \
   ../../include/chasher.h \
   ../../include/nedsupport.h \
   ../../include/ccommbuffer.h \
@@ -584,9 +577,9 @@ $O/objinsp.o: objinsp.cc \
   ../../include/chistogram.h \
   ../../include/cdisplaystring.h \
   tkdefs.h \
+  ../../include/cnullenvir.h \
   ../../include/cobject.h \
   ../../include/cnedfunction.h \
-  ../envir/bootenv.h \
   inspfactory.h \
   ../../include/cstringpool.h \
   ../../include/cdefaultlist.h \
@@ -630,7 +623,6 @@ $O/statinsp.o: statinsp.cc \
   ../../include/platdep/intxtypes.h \
   ../../include/ccomponenttype.h \
   tklib.h \
-  ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
   ../../include/coutvector.h \
   ../../include/cclassfactory.h \
@@ -639,8 +631,8 @@ $O/statinsp.o: statinsp.cc \
   ../../include/cgate.h \
   ../../include/simtime.h \
   ../../include/carray.h \
-  ../../include/cenvir.h \
   ../../include/simtime_t.h \
+  ../../include/cenvir.h \
   ../../include/cmsgpar.h \
   ../../include/cstatistic.h \
   inspector.h \
@@ -651,16 +643,16 @@ $O/statinsp.o: statinsp.cc \
   ../../include/csimulation.h \
   tkdefs.h \
   ../../include/cobject.h \
-  ../envir/bootenv.h \
   inspfactory.h \
   ../../include/cstringpool.h \
   ../../include/cdefaultlist.h \
   ../../include/cdensityestbase.h \
   ../../include/cstddev.h \
-  ../../include/simutil.h \
   ../../include/cmessageheap.h \
+  ../../include/simutil.h \
   tkenv.h \
   statinsp.h
+$O/tclcode.o: tclcode.cc
 $O/tkcmd.o: tkcmd.cc \
   ../envir/args.h \
   ../../include/regmacros.h \
@@ -694,7 +686,6 @@ $O/tkcmd.o: tkcmd.cc \
   ../../include/platdep/intxtypes.h \
   ../../include/ccomponenttype.h \
   tklib.h \
-  ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
   ../../include/coutvector.h \
   ../../include/cqueue.h \
@@ -719,12 +710,11 @@ $O/tkcmd.o: tkcmd.cc \
   ../../include/cdisplaystring.h \
   tkdefs.h \
   ../../include/cobject.h \
-  ../envir/bootenv.h \
   inspfactory.h \
   ../../include/cstringpool.h \
   ../../include/cdefaultlist.h \
-  ../../include/cmessageheap.h \
   ../../include/simutil.h \
+  ../../include/cmessageheap.h \
   tkenv.h
 $O/tkenv.o: tkenv.cc \
   ../envir/args.h \
@@ -749,6 +739,7 @@ $O/tkenv.o: tkenv.cc \
   ../../include/envirext.h \
   ../../include/cscheduler.h \
   ../../include/cpar.h \
+  tclcode.cc \
   ../../include/globals.h \
   ../envir/appreg.h \
   ../../include/cvisitor.h \
@@ -760,7 +751,6 @@ $O/tkenv.o: tkenv.cc \
   ../../include/platdep/intxtypes.h \
   ../../include/ccomponenttype.h \
   tklib.h \
-  ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
   modinsp.h \
   ../../include/coutvector.h \
@@ -772,8 +762,8 @@ $O/tkenv.o: tkenv.cc \
   ../../include/cgate.h \
   ../../include/simtime.h \
   ../../include/carray.h \
-  ../../include/simtime_t.h \
   ../../include/cenvir.h \
+  ../../include/simtime_t.h \
   ../../include/cmsgpar.h \
   ../../include/cstatistic.h \
   ../../include/cconfigoption.h \
@@ -787,7 +777,6 @@ $O/tkenv.o: tkenv.cc \
   ../../include/cobject.h \
   tkdefs.h \
   inspfactory.h \
-  ../envir/bootenv.h \
   ../../include/cstringpool.h \
   ../../include/cdensityestbase.h \
   ../../include/cdefaultlist.h \
@@ -823,15 +812,14 @@ $O/tklib.o: tklib.cc \
   ../../include/platdep/intxtypes.h \
   ../../include/ccomponenttype.h \
   tklib.h \
-  ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
   ../../include/cclassfactory.h \
   ../envir/eventlogfilemgr.h \
-  ../../include/cgate.h \
   ../../include/simtime.h \
+  ../../include/cgate.h \
   ../../include/carray.h \
-  ../../include/cenvir.h \
   ../../include/simtime_t.h \
+  ../../include/cenvir.h \
   ../../include/cchannel.h \
   ../envir/intervals.h \
   ../../include/opp_string.h \
@@ -839,7 +827,6 @@ $O/tklib.o: tklib.cc \
   ../../include/csimulation.h \
   tkdefs.h \
   ../../include/cobject.h \
-  ../envir/bootenv.h \
   ../../include/cstringpool.h \
   ../../include/cdefaultlist.h \
   ../../include/cmessageheap.h \
@@ -872,15 +859,14 @@ $O/tkutil.o: tkutil.cc \
   ../../include/cexception.h \
   ../../include/platdep/intxtypes.h \
   ../../include/ccomponenttype.h \
-  ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
   ../../include/cclassfactory.h \
   ../envir/eventlogfilemgr.h \
   ../../include/cgate.h \
   ../../include/simtime.h \
   ../../include/carray.h \
-  ../../include/cenvir.h \
   ../../include/simtime_t.h \
+  ../../include/cenvir.h \
   ../../include/cchannel.h \
   ../envir/intervals.h \
   ../../include/opp_string.h \
@@ -888,9 +874,9 @@ $O/tkutil.o: tkutil.cc \
   ../../include/csimulation.h \
   tkdefs.h \
   ../../include/cobject.h \
-  ../envir/bootenv.h \
   ../../include/cstringpool.h \
   ../../include/cdefaultlist.h \
+  ../common/ver.h \
   ../../include/cmessageheap.h \
   ../../include/simutil.h \
   tkenv.h
@@ -923,7 +909,6 @@ $O/visitor.o: visitor.cc \
   ../../include/cexception.h \
   ../../include/platdep/intxtypes.h \
   ../../include/ccomponenttype.h \
-  ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
   ../../include/cwatch.h \
   ../../include/coutvector.h \
@@ -945,11 +930,10 @@ $O/visitor.o: visitor.cc \
   ../../include/csimulation.h \
   tkdefs.h \
   ../../include/cobject.h \
-  ../envir/bootenv.h \
   ../../include/cstringpool.h \
   ../../include/cdefaultlist.h \
   tkenv.h \
-  ../../include/cmessageheap.h \
-  ../../include/simutil.h
+  ../../include/simutil.h \
+  ../../include/cmessageheap.h
 $O/tkImgPNG.o: tkImgPNG.c
 $O/tkImgPNGInit.o: tkImgPNGInit.c
