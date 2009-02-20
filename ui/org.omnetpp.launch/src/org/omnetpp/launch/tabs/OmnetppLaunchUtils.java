@@ -551,6 +551,7 @@ public class OmnetppLaunchUtils {
 	 * @return The created process object,
 	 * @throws CoreException if process is not started correctly
 	 */
+	// FIXME if requestInfo specified 
 	public static Process startSimulationProcess(ILaunchConfiguration configuration, String additionalArgs, 
 			         boolean requestInfo, StringBuilder infoBuffer) throws CoreException {
 		String[] cmdLine = createCommandLine(configuration, additionalArgs);
@@ -561,8 +562,22 @@ public class OmnetppLaunchUtils {
 			int i = ArrayUtils.indexOf(cmdLine, "-c");
 			if (i >= 0)
 				cmdLine[i] = "-x";   // replace the -c with -x
-			else
-				cmdLine = (String[]) ArrayUtils.addAll(cmdLine, new String[] {"-x", "General"});
+			else {
+				cmdLine = (String[]) ArrayUtils.add(cmdLine, 1, "-x");
+				cmdLine = (String[]) ArrayUtils.add(cmdLine, 2, "General");
+			}
+
+			// replace the envir command line option to use Cmdenv (or add if not exist)
+			i = ArrayUtils.indexOf(cmdLine, "-u");
+			if (i >= 0 && cmdLine.length > i+1)
+				cmdLine[i+1] = "Cmdenv";   
+			else {
+				cmdLine = (String[]) ArrayUtils.add(cmdLine, 1, "-u");
+				cmdLine = (String[]) ArrayUtils.add(cmdLine, 2, "Cmdenv");
+			}
+
+			cmdLine = (String[]) ArrayUtils.add(cmdLine, 1, "-g");
+			
 		}
 
 		String wdAttr = getWorkingDirectoryPath(configuration).toString();
@@ -620,7 +635,7 @@ public class OmnetppLaunchUtils {
 		try {
 			configuration = convertLaunchConfig(configuration, ILaunchManager.RUN_MODE);
 			StringBuilder info = new StringBuilder();
-			Process proc = OmnetppLaunchUtils.startSimulationProcess(configuration, "-u Cmdenv -g", true, info);
+			Process proc = OmnetppLaunchUtils.startSimulationProcess(configuration, "", true, info);
 			final int BUFFERSIZE = 8192;
 			byte bytes[] = new byte[BUFFERSIZE];
 			StringBuffer stringBuffer = new StringBuffer(BUFFERSIZE);
