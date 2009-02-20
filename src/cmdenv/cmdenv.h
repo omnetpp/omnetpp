@@ -75,9 +75,7 @@ class CMDENV_API Cmdenv : public EnvirBase
      virtual unsigned getExtraStackForEnvir() const;
 
    protected:
-     virtual void setup();
      virtual void run();
-     virtual void shutdown();
      virtual void printUISpecificHelp();
 
      virtual void readOptions();

@@ -180,16 +180,8 @@ void Cmdenv::askParameter(cPar *par)
     }
 }
 
-void Cmdenv::setup()
-{
-    EnvirBase::setup();
-}
-
 void Cmdenv::run()
 {
-    if (!initialized)
-        return;
-
     // '-c' and '-r' option: configuration to activate, and run numbers to run.
     // Both command-line options take precedence over inifile settings.
     // (NOTE: inifile settings *already* got read at this point! as EnvirBase::setup()
@@ -319,16 +311,9 @@ void Cmdenv::run()
             break;
     }
 
-    exitcode = had_error ? 1 : sigint_received ? 2 : 0;
-}
-
-void Cmdenv::shutdown()
-{
-    if (!initialized)
-        return;
-
     ::fflush(fout);
-    EnvirBase::shutdown();
+
+    exitcode = had_error ? 1 : sigint_received ? 2 : 0;
 }
 
 // note: also updates "since" (sets it to the current time) if answer is "true"

@@ -164,13 +164,11 @@ static void signalHandler(int signum)
    exit(2);
 }
 
-void Tkenv::setup()
+void Tkenv::run()
 {
-    // initialize base class
-    EnvirBase::setup();  // includes readOptions()
-    if (!initialized)
-        return;
-
+    //
+    // SETUP
+    //
     try
     {
         // set signal handler
@@ -257,21 +255,16 @@ void Tkenv::setup()
         interp = NULL;
         throw;
     }
-}
 
-void Tkenv::run()
-{
-    if (!initialized)
-        return;
-
+    //
+    // RUN
+    //
     CHK(Tcl_Eval(interp,"startup_commands"));
     runTk(interp);
-}
 
-void Tkenv::shutdown()
-{
-    if (!initialized)
-        return;
+    //
+    // SHUTDOWN
+    //
 
     // close all inspectors before exiting
     for(;;)
@@ -289,9 +282,6 @@ void Tkenv::shutdown()
 
     // pull down inspector factories
     inspectorfactories.clear();
-
-    // shut down base class
-    EnvirBase::shutdown();
 }
 
 void Tkenv::printUISpecificHelp()

@@ -193,7 +193,6 @@ EnvirBase::EnvirBase()
     parsimpartition = NULL;
 #endif
 
-    initialized = false;
     exitcode = 0;
 }
 
@@ -227,8 +226,8 @@ int EnvirBase::run(int argc, char *argv[], cConfiguration *configobject)
 
     if (simulationRequired())
     {
-        setup();
-        run();
+        if (setup())
+            run();
         shutdown();
     }
     return exitcode;
@@ -310,7 +309,7 @@ bool EnvirBase::simulationRequired()
     return true;
 }
 
-void EnvirBase::setup()
+bool EnvirBase::setup()
 {
     try
     {
@@ -400,9 +399,9 @@ void EnvirBase::setup()
     catch (std::exception& e)
     {
         displayError(e);
-        return;  // don't set initialized to true
+        return false; // don't run the app
     }
-    initialized = true;
+    return true;
 }
 
 void EnvirBase::printHelp()
@@ -702,9 +701,6 @@ int EnvirBase::getParsimNumPartitions() const
 
 void EnvirBase::shutdown()
 {
-    if (!initialized)
-        return;
-
     try
     {
         simulation.deleteNetwork();

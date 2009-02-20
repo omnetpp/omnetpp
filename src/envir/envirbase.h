@@ -63,7 +63,6 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     cConfigurationEx *cfg;
     ArgList *args;
     cXMLDocCache *xmlcache;
-    bool initialized;
     int exitcode;
 
     //
@@ -210,7 +209,7 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
   protected:
     // functions added locally
     virtual bool simulationRequired();
-    virtual void setup();
+    virtual bool setup();  // true==OK
     virtual void run() = 0;
     virtual void shutdown();
 
