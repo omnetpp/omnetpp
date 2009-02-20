@@ -15,8 +15,13 @@ network Net
     submodules:
         gen: Source;
         sink: Sink;
+        fifo: Fifo {
+            @display("p=114,156");
+            serviceTime = exponential(1s);
+        }
     connections:
-        gen.out --> sink.in;
+        gen.out --> fifo.in;
+        fifo.out --> sink.in;
 }
 
 
