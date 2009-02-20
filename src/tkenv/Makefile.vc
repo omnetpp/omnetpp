@@ -368,8 +368,8 @@ $O/logbuffer.obj: logbuffer.cc \
   ../../include/cmodule.h \
   logbuffer.h \
   ../../include/csimulation.h \
-  ../../include/simtime.h \
   tkutil.h \
+  ../../include/simtime.h \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
   ../../include/cobject.h \
@@ -766,6 +766,7 @@ $O/tkutil.obj: tkutil.cc \
   ../../include/ccomponenttype.h \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
+  ../common/ver.h \
   ../../include/cchannel.h \
   ../../include/ccomponent.h \
   visitor.h \

@@ -76,7 +76,7 @@ class CMDENV_API Cmdenv : public EnvirBase
 
    protected:
      virtual void setup();
-     virtual int run();
+     virtual void run();
      virtual void shutdown();
      virtual void printUISpecificHelp();
 

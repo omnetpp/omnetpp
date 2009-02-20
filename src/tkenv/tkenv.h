@@ -172,7 +172,7 @@ class TKENV_API Tkenv : public EnvirBase
   protected:
       // redefined virtual functions from EnvirBase
       virtual void setup();
-      virtual int run();
+      virtual void run();
       virtual void shutdown();
       virtual void printUISpecificHelp();
 

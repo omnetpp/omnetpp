@@ -182,62 +182,13 @@ void Cmdenv::askParameter(cPar *par)
 
 void Cmdenv::setup()
 {
-    // initialize base class
-    EnvirBase::setup();    // implies readOptions()
-    if (!initialized)
-        return;
-
-    cConfigurationEx *cfg = getConfigEx();
-
-    // -a option: print all config names, and number of runs in them
-    if (args->optionGiven('a'))
-    {
-        ev.printf("\n");
-        std::vector<std::string> configNames = cfg->getConfigNames();
-        for (int i=0; i<(int)configNames.size(); i++)
-            ev.printf("Config %s: %d\n", configNames[i].c_str(), cfg->getNumRunsInConfig(configNames[i].c_str()));
-        initialized = false; // don't run simulation
-    }
-
-    // '-x' option: print number of runs in the given config, and exit (overrides configname)
-    const char *configToPrint = args->optionValue('x');
-    if (configToPrint)
-    {
-        //
-        // IMPORTANT: the simulation launcher will parse the output of this
-        // option, so it should be modified with care and the two kept in sync
-        // (see OmnetppLaunchUtils.getSimulationRunInfo()).
-        //
-        // Rules:
-        // (1) the number of runs should appear on the rest of the line
-        //     after the "Number of runs:" text
-        // (2) per-run information lines should span from the "Number of runs:"
-        //     line until the next blank line ("\n\n").
-        //
-
-        // '-g'/'-G' options: modifies -x: print unrolled config, iteration variables, etc as well
-        bool unrollBrief = args->optionGiven('g');
-        bool unrollDetailed = args->optionGiven('G');
-
-        ev.printf("\n");
-        ev.printf("Config: %s\n", configToPrint);
-        ev.printf("Number of runs: %d\n", cfg->getNumRunsInConfig(configToPrint));
-
-        if (unrollBrief || unrollDetailed)
-        {
-            std::vector<std::string> runs = cfg->unrollConfig(configToPrint, unrollDetailed);
-            const char *fmt = unrollDetailed ? "Run %d:\n%s" : "Run %d: %s\n";
-            for (int i=0; i<(int)runs.size(); i++)
-                ev.printf(fmt, i, runs[i].c_str());
-        }
-        initialized = false; // don't run simulation
-    }
+    EnvirBase::setup();
 }
 
-int Cmdenv::run()
+void Cmdenv::run()
 {
     if (!initialized)
-        return 1;
+        return;
 
     // '-c' and '-r' option: configuration to activate, and run numbers to run.
     // Both command-line options take precedence over inifile settings.
@@ -267,7 +218,8 @@ int Cmdenv::run()
     if (runiterator.hasError())
     {
         ev.printfmsg("Error parsing list of runs to execute: `%s'", opt_runstoexec.c_str());
-        return 1;
+        exitcode = 1;
+        return;
     }
 
     // we'll return nonzero exitcode if any run was terminated with error
@@ -367,12 +319,7 @@ int Cmdenv::run()
             break;
     }
 
-    if (had_error)
-        return 1;
-    else if (sigint_received)
-        return 2;
-    else
-        return 0;
+    exitcode = had_error ? 1 : sigint_received ? 2 : 0;
 }
 
 void Cmdenv::shutdown()
@@ -380,8 +327,8 @@ void Cmdenv::shutdown()
     if (!initialized)
         return;
 
-    EnvirBase::shutdown();
     ::fflush(fout);
+    EnvirBase::shutdown();
 }
 
 // note: also updates "since" (sets it to the current time) if answer is "true"

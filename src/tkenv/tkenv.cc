@@ -259,19 +259,20 @@ void Tkenv::setup()
     }
 }
 
-int Tkenv::run()
+void Tkenv::run()
 {
     if (!initialized)
-        return 1;
+        return;
 
     CHK(Tcl_Eval(interp,"startup_commands"));
     runTk(interp);
-
-    return 0;
 }
 
 void Tkenv::shutdown()
 {
+    if (!initialized)
+        return;
+
     // close all inspectors before exiting
     for(;;)
     {

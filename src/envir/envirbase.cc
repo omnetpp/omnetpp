@@ -194,6 +194,7 @@ EnvirBase::EnvirBase()
 #endif
 
     initialized = false;
+    exitcode = 0;
 }
 
 EnvirBase::~EnvirBase()
@@ -224,15 +225,18 @@ int EnvirBase::run(int argc, char *argv[], cConfiguration *configobject)
     if (!cfg)
         throw cRuntimeError("Cannot cast configuration object %s to cConfigurationEx", configobject->getClassName());
 
-    setup();
-    int exitcode = run();
-    shutdown();
+    if (simulationRequired())
+    {
+        setup();
+        run();
+        shutdown();
+    }
     return exitcode;
 }
 
-void EnvirBase::setup()
+bool EnvirBase::simulationRequired()
 {
-    // handle -h command-line option
+    // handle -h and -v command-line options
     if (args->optionGiven('h'))
     {
         const char *category = args->optionValue('h',0);
@@ -240,7 +244,7 @@ void EnvirBase::setup()
             printHelp();
         else
             dumpComponentList(category);
-        return;  // don't set initialized==true
+        return false;
     }
 
     if (args->optionGiven('v'))
@@ -254,9 +258,60 @@ void EnvirBase::setup()
                                          opp_typename(typeid(simtime_t)),
                                          sizeof(statbuf.st_size)>=8 ? "yes" : "no");
         ev << buildOptions << "\n";
-        return;  // don't set initialized==true
+        return false;
     }
 
+    cConfigurationEx *cfg = getConfigEx();
+
+    // -a option: print all config names, and number of runs in them
+    if (args->optionGiven('a'))
+    {
+        ev.printf("\n");
+        std::vector<std::string> configNames = cfg->getConfigNames();
+        for (int i=0; i<(int)configNames.size(); i++)
+            ev.printf("Config %s: %d\n", configNames[i].c_str(), cfg->getNumRunsInConfig(configNames[i].c_str()));
+        return false;
+    }
+
+    // '-x' option: print number of runs in the given config, and exit (overrides configname)
+    const char *configToPrint = args->optionValue('x');
+    if (configToPrint)
+    {
+        //
+        // IMPORTANT: the simulation launcher will parse the output of this
+        // option, so it should be modified with care and the two kept in sync
+        // (see OmnetppLaunchUtils.getSimulationRunInfo()).
+        //
+        // Rules:
+        // (1) the number of runs should appear on the rest of the line
+        //     after the "Number of runs:" text
+        // (2) per-run information lines should span from the "Number of runs:"
+        //     line until the next blank line ("\n\n").
+        //
+
+        // '-g'/'-G' options: modifies -x: print unrolled config, iteration variables, etc as well
+        bool unrollBrief = args->optionGiven('g');
+        bool unrollDetailed = args->optionGiven('G');
+
+        ev.printf("\n");
+        ev.printf("Config: %s\n", configToPrint);
+        ev.printf("Number of runs: %d\n", cfg->getNumRunsInConfig(configToPrint));
+
+        if (unrollBrief || unrollDetailed)
+        {
+            std::vector<std::string> runs = cfg->unrollConfig(configToPrint, unrollDetailed);
+            const char *fmt = unrollDetailed ? "Run %d:\n%s" : "Run %d: %s\n";
+            for (int i=0; i<(int)runs.size(); i++)
+                ev.printf(fmt, i, runs[i].c_str());
+        }
+        return false;
+    }
+
+    return true;
+}
+
+void EnvirBase::setup()
+{
     try
     {
         // ensure correct numeric format in output files
@@ -341,26 +396,6 @@ void EnvirBase::setup()
             }
         }
         simulation.doneLoadingNedFiles();
-
-        // load NED files from the "preload-ned-files=" config entry.
-        // XXX This code is now obsolete, as we load NED files from NEDPATH trees
-        //std::vector<std::string> nedfiles = getConfig()->getAsFilenames(CFGID_PRELOAD_NED_FILES);
-        //if (!nedfiles.empty())
-        //{
-        //    // iterate through file names
-        //    ev.printf("\n");
-        //    for (int i=0; i<(int)nedfiles.size(); i++)
-        //    {
-        //        const char *fname = nedfiles[i].c_str();
-        //        if (fname[0]=='@' && fname[1]=='@')
-        //            globAndLoadListFile(fname+2, true);
-        //        else if (fname[0]=='@')
-        //            globAndLoadListFile(fname+1, false);
-        //        else if (fname[0])
-        //            globAndLoadNedFile(fname);
-        //    }
-        //    simulation.doneLoadingNedFiles();
-        //}
     }
     catch (std::exception& e)
     {
@@ -1122,73 +1157,7 @@ void EnvirBase::readPerRunOptions()
         eventlogmgr = new EventlogFileManager();
         eventlogmgr->setup();
     }
-
 }
-
-//void EnvirBase::globAndLoadNedFile(const char *fnamepattern)
-//{
-//    try {
-//        FileGlobber glob(fnamepattern);
-//        const char *fname;
-//        while ((fname=glob.getNext())!=NULL)
-//        {
-//            ev.printf("Loading NED file: %s\n", fname);
-//            simulation.loadNedFile(fname);
-//        }
-//    }
-//    catch (std::runtime_error e) {
-//        throw cRuntimeError(e.what());
-//    }
-//}
-//
-//void EnvirBase::globAndLoadListFile(const char *fnamepattern, bool istemplistfile)
-//{
-//    try {
-//        FileGlobber glob(fnamepattern);
-//        const char *fname;
-//        while ((fname=glob.getNext())!=NULL)
-//        {
-//            processListFile(fname, istemplistfile);
-//        }
-//    }
-//     catch (std::runtime_error e) {
-//        throw cRuntimeError(e.what());
-//    }
-//}
-//
-//void EnvirBase::processListFile(const char *listfilename, bool istemplistfile)
-//{
-//    std::ifstream in(listfilename, std::ios::in);
-//    if (in.fail())
-//        throw cRuntimeError("Cannot open list file '%s'",listfilename);
-//
-//    ev.printf("Processing listfile: %s\n", listfilename);
-//
-//    // @listfile: files should be relative to list file, so try cd into list file's directory
-//    // @@listfile (temp=true): don't cd.
-//    PushDir d(istemplistfile ? NULL : directoryOf(listfilename).c_str());
-//
-//    const int maxline=1024;
-//    char line[maxline];
-//    while (in.getline(line, maxline))
-//    {
-//        int len = in.gcount();
-//        if (line[len-1]=='\n')
-//            line[len-1] = '\0';
-//        const char *fname = line;
-//
-//        if (fname[0]=='@' && fname[1]=='@')
-//            globAndLoadListFile(fname+2, true);
-//        else if (fname[0]=='@')
-//            globAndLoadListFile(fname+1, false);
-//        else if (fname[0] && fname[0]!='#')
-//            globAndLoadNedFile(fname);
-//    }
-//
-//    if (in.bad())
-//        throw cRuntimeError("Error reading list file '%s'",listfilename);
-//    in.close();
-//}
 
 //-------------------------------------------------------------
 

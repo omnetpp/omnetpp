@@ -215,8 +215,8 @@ $O/export.obj: export.cc \
   statistics.h \
   ../common/commondefs.h \
   ../common/patternmatcher.h \
-  ../common/exception.h \
   ../common/bigdecimal.h \
+  ../common/exception.h \
   ../common/opp_ctype.h \
   scaveutils.h \
   ../common/commonutil.h \

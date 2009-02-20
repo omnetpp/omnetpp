@@ -60,10 +60,11 @@ class cParsimSynchronizer;
 class ENVIR_API EnvirBase : public cRunnableEnvir
 {
   protected:
-    bool initialized;
     cConfigurationEx *cfg;
     ArgList *args;
     cXMLDocCache *xmlcache;
+    bool initialized;
+    int exitcode;
 
     //
     // Configuration options
@@ -208,8 +209,9 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
 
   protected:
     // functions added locally
+    virtual bool simulationRequired();
     virtual void setup();
-    virtual int run() = 0;
+    virtual void run() = 0;
     virtual void shutdown();
 
     virtual void startRun();
