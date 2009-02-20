@@ -1,0 +1,48 @@
+%description:
+Tests scenario generation: unnamed variables
+
+%inifile: omnetpp.ini
+[Config Test]
+**.gen.msgLength = 100
+**.gen.sendIaTime = exponential( ${0.2..0.8 step 0.2}s )
+**.fifo.bitsPerSec = ${1000bps,2000bps}
+
+%extraargs: -G -x Test
+
+%contains: stdout
+Config: Test
+Number of runs: 8
+Run 0:
+	# $0=0.2, $1=1000bps, $repetition=0
+	**.gen.sendIaTime = exponential( 0.2s )
+	**.fifo.bitsPerSec = 1000bps
+Run 1:
+	# $0=0.2, $1=2000bps, $repetition=0
+	**.gen.sendIaTime = exponential( 0.2s )
+	**.fifo.bitsPerSec = 2000bps
+Run 2:
+	# $0=0.4, $1=1000bps, $repetition=0
+	**.gen.sendIaTime = exponential( 0.4s )
+	**.fifo.bitsPerSec = 1000bps
+Run 3:
+	# $0=0.4, $1=2000bps, $repetition=0
+	**.gen.sendIaTime = exponential( 0.4s )
+	**.fifo.bitsPerSec = 2000bps
+Run 4:
+	# $0=0.6, $1=1000bps, $repetition=0
+	**.gen.sendIaTime = exponential( 0.6s )
+	**.fifo.bitsPerSec = 1000bps
+Run 5:
+	# $0=0.6, $1=2000bps, $repetition=0
+	**.gen.sendIaTime = exponential( 0.6s )
+	**.fifo.bitsPerSec = 2000bps
+Run 6:
+	# $0=0.8, $1=1000bps, $repetition=0
+	**.gen.sendIaTime = exponential( 0.8s )
+	**.fifo.bitsPerSec = 1000bps
+Run 7:
+	# $0=0.8, $1=2000bps, $repetition=0
+	**.gen.sendIaTime = exponential( 0.8s )
+	**.fifo.bitsPerSec = 2000bps
+
+End.

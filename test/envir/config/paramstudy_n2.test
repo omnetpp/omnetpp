@@ -1,0 +1,14 @@
+%description:
+Tests scenario generation
+
+%inifile: omnetpp.ini
+[Config Bogus]
+*.a = ${a=1,2,korte}
+constraint = a > 1  # --> "korte" cannot be interpreted here
+
+%extraargs: -G -x Bogus
+
+%exitcode: 1
+%contains: stderr
+Wrong value for iteration variable a
+

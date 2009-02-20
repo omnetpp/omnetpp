@@ -1,0 +1,61 @@
+%description:
+Tests scenario generation: unnamed nested iterations
+
+%inifile: omnetpp.ini
+[Config Test]
+**.alma = ${1..2,5,10}
+**.korte = ${100,200,300}
+
+%extraargs: -G -x Test
+
+%contains: stdout
+Run 0:
+	# $0=1, $1=100, $repetition=0
+	**.alma = 1
+	**.korte = 100
+Run 1:
+	# $0=1, $1=200, $repetition=0
+	**.alma = 1
+	**.korte = 200
+Run 2:
+	# $0=1, $1=300, $repetition=0
+	**.alma = 1
+	**.korte = 300
+Run 3:
+	# $0=2, $1=100, $repetition=0
+	**.alma = 2
+	**.korte = 100
+Run 4:
+	# $0=2, $1=200, $repetition=0
+	**.alma = 2
+	**.korte = 200
+Run 5:
+	# $0=2, $1=300, $repetition=0
+	**.alma = 2
+	**.korte = 300
+Run 6:
+	# $0=5, $1=100, $repetition=0
+	**.alma = 5
+	**.korte = 100
+Run 7:
+	# $0=5, $1=200, $repetition=0
+	**.alma = 5
+	**.korte = 200
+Run 8:
+	# $0=5, $1=300, $repetition=0
+	**.alma = 5
+	**.korte = 300
+Run 9:
+	# $0=10, $1=100, $repetition=0
+	**.alma = 10
+	**.korte = 100
+Run 10:
+	# $0=10, $1=200, $repetition=0
+	**.alma = 10
+	**.korte = 200
+Run 11:
+	# $0=10, $1=300, $repetition=0
+	**.alma = 10
+	**.korte = 300
+
+

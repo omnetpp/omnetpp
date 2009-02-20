@@ -9,16 +9,18 @@ if "x%TESTFILES%" == "x" set TESTFILES=*.test
 
 path %~dp0\..\bin;%PATH%
 mkdir work 2>nul
-del work\work.exe 2>nul
+echo.>work\dummy.cc
+set NEDPATH=.
+set EXTRA_INCLUDES=-I../../../../src/envir -I../../../../src/common -I../../../../include/platdep
 
-call opp_test -N -g -v %TESTFILES% || goto end
+call opp_test %OPT% -g -v %TESTFILES% || goto end
 
 cd work || goto end
-call opp_nmakemake -N -x -I../../../../src/common -I../../../../src/envir -I../../../../include/platdep -f -e cc -u cmdenv || goto end
+call opp_nmakemake -f -e cc --deep --no-deep-includes %EXTRA_INCLUDES% || goto end
 nmake -f makefile.vc || cd .. && goto end
 cd .. || goto end
 
-call opp_test -N -r -v %TESTFILES% || goto end
+call opp_test %OPT% -r -v %TESTFILES% || goto end
 
 echo.
 echo Results can be found in work/

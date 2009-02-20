@@ -1,0 +1,13 @@
+%description:
+Tests scenario generation
+
+%inifile: omnetpp.ini
+[Config Bogus]
+*.a = ${a=1,2,korte}
+
+%extraargs: -G -x NoSuchConfig
+
+%exitcode: 1
+%contains: stderr
+No such config: NoSuchConfig
+
