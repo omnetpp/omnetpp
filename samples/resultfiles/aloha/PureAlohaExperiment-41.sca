@@ -1,0 +1,110 @@
+version 2
+run PureAlohaExperiment-41-20090220-15:51:20-31577
+attr configname PureAlohaExperiment
+attr datetime 20090220-15:51:20
+attr experiment PureAlohaExperiment
+attr inifile omnetpp.ini
+attr iterationvars "$numHosts=20, $mean=9"
+attr iterationvars2 "$numHosts=20, $mean=9, $repetition=1"
+attr mean 9
+attr measurement "$numHosts=20, $mean=9"
+attr network Aloha
+attr numHosts 20
+attr processid 31577
+attr repetition 1
+attr replication #1
+attr resultdir results
+attr runnumber 41
+attr seedset 41
+
+scalar . 	mean 	9
+scalar . 	numHosts 	20
+scalar Aloha.server 	duration 	5400.1032806792
+scalar Aloha.server 	"total frames" 	11899
+scalar Aloha.server 	"collided frames" 	2279
+scalar Aloha.server 	"total receive time" 	768.8391666615
+scalar Aloha.server 	"total collision time" 	295.05439395408
+scalar Aloha.server 	"channel utilization" 	0.14238173296637
+statistic Aloha.server 	"collision multiplicity"
+field count 1867
+field mean 2.2206748794858
+field stddev 0.52640968280823
+field sum 4146
+field sqrsum 9724
+field min 2
+field max 6
+attr isDiscrete  1
+attr unit  packets
+bin	-INF	0
+bin	-0.5	0
+bin	0.5	0
+bin	1.5	1534
+bin	2.5	270
+bin	3.5	50
+bin	4.5	10
+bin	5.5	3
+bin	6.5	0
+bin	7.5	0
+bin	8.5	0
+bin	9.5	0
+statistic Aloha.server 	"collision length"
+field count 1867
+field mean 0.15803663307664
+field stddev 0.042022387160453
+field sum 295.05439395408
+field sqrsum 49.924536983259
+field min 0.099193497419
+field max 0.435556487574
+attr unit  s
+bin	-INF	0
+bin	0	0
+bin	0.01536523778868	0
+bin	0.03073047557736	0
+bin	0.04609571336604	0
+bin	0.06146095115472	0
+bin	0.0768261889434	0
+bin	0.09219142673208	128
+bin	0.10755666452076	270
+bin	0.12292190230944	287
+bin	0.13828714009812	271
+bin	0.1536523778868	252
+bin	0.16901761567548	236
+bin	0.18438285346416	243
+bin	0.19974809125284	32
+bin	0.21511332904152	42
+bin	0.2304785668302	27
+bin	0.24584380461888	21
+bin	0.26120904240756	22
+bin	0.27657428019624	13
+bin	0.29193951798492	12
+bin	0.3073047557736	3
+bin	0.32266999356228	2
+bin	0.33803523135096	0
+bin	0.35340046913964	0
+bin	0.36876570692832	3
+bin	0.384130944717	1
+bin	0.39949618250568	1
+bin	0.41486142029436	0
+bin	0.43022665808304	1
+bin	0.44559189587172	0
+bin	0.4609571336604	0
+bin	0.47632237144908	0
+bin	0.49168760923776	0
+bin	0.50705284702644	0
+bin	0.52241808481512	0
+bin	0.5377833226038	0
+bin	0.55314856039248	0
+bin	0.56851379818116	0
+bin	0.58387903596984	0
+bin	0.59924427375852	0
+bin	0.6146095115472	0
+bin	0.62997474933588	0
+bin	0.64533998712456	0
+bin	0.66070522491324	0
+bin	0.67607046270192	0
+bin	0.6914357004906	0
+bin	0.70680093827928	0
+bin	0.72216617606796	0
+bin	0.73753141385664	0
+bin	0.75289665164532	0
+bin	0.768261889434	0

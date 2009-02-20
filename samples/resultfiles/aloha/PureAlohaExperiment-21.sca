@@ -1,107 +1,110 @@
-run PureAlohaExperiment-21-20080513-12:08:49-3436
+version 2
+run PureAlohaExperiment-21-20090220-15:51:16-31557
 attr configname PureAlohaExperiment
-attr datetime 20080513-12:08:49
+attr datetime 20090220-15:51:16
 attr experiment PureAlohaExperiment
 attr inifile omnetpp.ini
-attr iterationvars $mean=15
-attr iterationvars2 "$mean=15, $repetition=1"
-attr mean 15
-attr measurement $mean=15
+attr iterationvars "$numHosts=15, $mean=4"
+attr iterationvars2 "$numHosts=15, $mean=4, $repetition=1"
+attr mean 4
+attr measurement "$numHosts=15, $mean=4"
 attr network Aloha
-attr processid 3436
+attr numHosts 15
+attr processid 31557
 attr repetition 1
 attr replication #1
 attr resultdir results
 attr runnumber 21
 attr seedset 21
 
-scalar . 	mean 	15
-scalar Aloha.server 	duration 	5400.4287576806
-scalar Aloha.server 	"total frames" 	7163
-scalar Aloha.server 	"collided frames" 	875
-scalar Aloha.server 	"total receive time" 	547.6975000006
-scalar Aloha.server 	"total collision time" 	118.16688047683
-scalar Aloha.server 	"channel utilization" 	0.10144876402169
+scalar . 	mean 	4
+scalar . 	numHosts 	15
+scalar Aloha.server 	duration 	5400.000495982
+scalar Aloha.server 	"total frames" 	19797
+scalar Aloha.server 	"collided frames" 	5715
+scalar Aloha.server 	"total receive time" 	984.32833332672
+scalar Aloha.server 	"total collision time" 	681.54670696903
+scalar Aloha.server 	"channel utilization" 	0.18228750401605
 statistic Aloha.server 	"collision multiplicity"
-field count 765
-field mean 2.1437908496732
-field stddev 0.40960811071855
-field sum 1640
-field sqrsum 3644
+field count 4155
+field mean 2.375210589651
+field stddev 0.71068038404426
+field sum 9869
+field sqrsum 25539
 field min 2
-field max 5
+field max 9
 attr isDiscrete  1
 attr unit  packets
 bin	-INF	0
 bin	-0.5	0
 bin	0.5	0
-bin	1.5	670
-bin	2.5	82
-bin	3.5	11
-bin	4.5	2
-bin	5.5	0
-bin	6.5	0
+bin	1.5	3003
+bin	2.5	858
+bin	3.5	211
+bin	4.5	62
+bin	5.5	14
+bin	6.5	6
 bin	7.5	0
-bin	8.5	0
+bin	8.5	1
 bin	9.5	0
 statistic Aloha.server 	"collision length"
-field count 765
-field mean 0.15446651042723
-field stddev 0.037619650681855
-field sum 118.16688047683
-field sqrsum 19.33406759704
-field min 0.099369470054171
-field max 0.3661144714273
+field count 4155
+field mean 0.16403049505873
+field stddev 0.047901944061883
+field sum 681.54670696903
+field sqrsum 121.32619655113
+field min 0.09918512978
+field max 0.511164274489
 attr unit  s
 bin	-INF	0
 bin	0	0
-bin	0.014644578857092	0
-bin	0.029289157714184	0
-bin	0.043933736571275	0
-bin	0.058578315428367	0
-bin	0.073222894285459	0
-bin	0.087867473142551	22
-bin	0.10251205199964	114
-bin	0.11715663085673	105
-bin	0.13180120971383	106
-bin	0.14644578857092	107
-bin	0.16109036742801	93
-bin	0.1757349462851	103
-bin	0.19037952514219	73
-bin	0.20502410399929	10
-bin	0.21966868285638	10
-bin	0.23431326171347	5
-bin	0.24895784057056	4
-bin	0.26360241942765	7
-bin	0.27824699828474	2
-bin	0.29289157714184	1
-bin	0.30753615599893	1
-bin	0.32218073485602	0
-bin	0.33682531371311	0
-bin	0.3514698925702	1
-bin	0.3661144714273	1
-bin	0.38075905028439	0
-bin	0.39540362914148	0
-bin	0.41004820799857	0
-bin	0.42469278685566	0
-bin	0.43933736571275	0
-bin	0.45398194456985	0
-bin	0.46862652342694	0
-bin	0.48327110228403	0
-bin	0.49791568114112	0
-bin	0.51256025999821	0
-bin	0.5272048388553	0
-bin	0.5418494177124	0
-bin	0.55649399656949	0
-bin	0.57113857542658	0
-bin	0.58578315428367	0
-bin	0.60042773314076	0
-bin	0.61507231199786	0
-bin	0.62971689085495	0
-bin	0.64436146971204	0
-bin	0.65900604856913	0
-bin	0.67365062742622	0
-bin	0.68829520628331	0
-bin	0.70293978514041	0
-bin	0.7175843639975	0
-bin	0.73222894285459	0
+bin	0.01455003261388	0
+bin	0.02910006522776	0
+bin	0.04365009784164	0
+bin	0.05820013045552	0
+bin	0.0727501630694	0
+bin	0.08730019568328	99
+bin	0.10185022829716	498
+bin	0.11640026091104	541
+bin	0.13095029352492	506
+bin	0.1455003261388	520
+bin	0.16005035875268	504
+bin	0.17460039136656	504
+bin	0.18915042398044	383
+bin	0.20370045659432	132
+bin	0.2182504892082	108
+bin	0.23280052182208	108
+bin	0.24735055443596	79
+bin	0.26190058704984	44
+bin	0.27645061966372	41
+bin	0.2910006522776	26
+bin	0.30555068489148	18
+bin	0.32010071750536	8
+bin	0.33465075011924	15
+bin	0.34920078273312	7
+bin	0.363750815347	3
+bin	0.37830084796088	3
+bin	0.39285088057476	1
+bin	0.40740091318864	3
+bin	0.42195094580252	0
+bin	0.4365009784164	1
+bin	0.45105101103028	1
+bin	0.46560104364416	0
+bin	0.48015107625804	0
+bin	0.49470110887192	1
+bin	0.5092511414858	1
+bin	0.52380117409968	0
+bin	0.53835120671356	0
+bin	0.55290123932744	0
+bin	0.56745127194132	0
+bin	0.5820013045552	0
+bin	0.59655133716908	0
+bin	0.61110136978296	0
+bin	0.62565140239684	0
+bin	0.64020143501072	0
+bin	0.6547514676246	0
+bin	0.66930150023848	0
+bin	0.68385153285236	0
+bin	0.69840156546624	0
+bin	0.71295159808012	0
+bin	0.727501630694	0
