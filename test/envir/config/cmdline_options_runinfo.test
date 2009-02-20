@@ -12,7 +12,6 @@ Aloha.host[*].iaTime = exponential(${mean=1,3}s)
 
 %contains: stdout
 Setting up Cmdenv...
-Loading NED files from .: 1
 
 Config: Scenario
 Number of runs: 8
