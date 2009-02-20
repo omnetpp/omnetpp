@@ -1303,13 +1303,23 @@ Examples:
             matches objects of class cMessage and message kind 3.
 }
 
-proc modelinfo_dialog {} {
+proc modelinfo_dialog {{w ""}} {
     if {[network_present] == 0} {return 0}
-    set netwptr [opp_object_systemmodule]
-    set netwname [opp_getobjectfullname $netwptr]
-    set typeptrs [opp_getcomponenttypes $netwptr]
 
-    set msg "Network \"$netwname\" uses the following simple modules:\n\n"
+    if {$w==""} {
+        set modptr [opp_object_systemmodule]
+    } else {
+        regexp {\.(ptr.*)-[0-9]+} $w match modptr
+    }
+    if {$modptr==[opp_object_systemmodule]} {
+        set what "Network"
+    } else {
+        set what "Module"
+    }
+    set modname [opp_getobjectfullname $modptr]
+    set typeptrs [opp_getcomponenttypes $modptr]
+
+    set msg "$what \"$modname\" uses the following simple modules:\n\n"
 
     set unspec 0
     set inval 0

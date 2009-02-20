@@ -263,7 +263,6 @@ proc create_omnetpp_window {} {
       {sep4     -separator}
       {finish   -image $icons(finish)  -command {call_finish}}
       {sep02     -separator}
-      {minfo    -image $icons(info)    -command {modelinfo_dialog}}
       {network  -image $icons(network) -command {inspect_systemmodule}}
       {objs     -image $icons(findobj) -command {inspect_filteredobjectlist}}
       {sep6     -separator}
@@ -292,7 +291,6 @@ proc create_omnetpp_window {} {
     set help_tips(.toolbar.restart) {Rebuild network}
     set help_tips(.toolbar.finish)  {Call finish()}
     set help_tips(.toolbar.network) {Inspect network}
-    set help_tips(.toolbar.minfo)   {Model information}
     set help_tips(.toolbar.objs)    {Find and inspect messages, queues, watched variables, statistics, etc (Ctrl+S)}
     set help_tips(.toolbar.tline)   {Show/hide timeline}
     set help_tips(.toolbar.tree)    {Show/hide object tree}

@@ -20,6 +20,7 @@
 proc moduleinspector_add_run_buttons {w} {
     global icons help_tips
 
+    pack_iconbutton $w.toolbar.minfo   -image $icons(info) -command "modelinfo_dialog $w"
     pack_iconbutton $w.toolbar.type    -image $icons(modtype) -command "inspect_componenttype $w"
     #pack_iconbutton $w.toolbar.sep15   -separator
     pack_iconbutton $w.toolbar.objs    -image $icons(findobj) -command "inspect_filteredobjectlist $w"
@@ -44,6 +45,7 @@ proc moduleinspector_add_run_buttons {w} {
     bind $w <Control-F4> "runsimulation_local $w fast"
 
     set help_tips($w.toolbar.type)    {Inspect component type}
+    set help_tips(.toolbar.minfo)     {Model information}
     set help_tips($w.toolbar.objs)    {Find and inspect messages, queues, watched variables, statistics, etc (Ctrl+S)}
     set help_tips($w.toolbar.mrun)    {Run until next event in this module}
     set help_tips($w.toolbar.mfast)   {Fast run until next event in this module (Ctrl+F4)}
