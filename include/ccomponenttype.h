@@ -81,11 +81,17 @@ class SIM_API cComponentType : public cNoncopyableOwnedObject
     // we need the runtime type not the NED type of the submodule.)
     virtual cProperties *getConnectionProperties(int connectionId, const char *channelType) const = 0;
 
+    // internal: sharedParMap access
     cParImpl *getSharedParImpl(const char *key) const;
     void putSharedParImpl(const char *key, cParImpl *value);
 
+    // internal: sharedParSet access
     cParImpl *getSharedParImpl(cParImpl *p) const;
     void putSharedParImpl(cParImpl *p);
+
+  public:
+    // internal: delegates to the similar NedTypeInfo method
+    virtual std::string getPackageProperty(const char *name) const {return "";}
 
   public:
     /** @name Constructors, destructor, assignment */

@@ -1303,5 +1303,52 @@ Examples:
             matches objects of class cMessage and message kind 3.
 }
 
+proc modelinfo_dialog {} {
+    if {[network_present] == 0} {return 0}
+    set netwptr [opp_object_systemmodule]
+    set netwname [opp_getobjectfullname $netwptr]
+    set typeptrs [opp_getcomponenttypes $netwptr]
 
+    set msg "Network \"$netwname\" uses the following simple modules:\n\n"
+
+    set unspec 0
+    set inval 0
+    set isapl [opp_isapl]
+    foreach typeptr $typeptrs {
+        set typename [opp_getobjectname $typeptr]
+        set lc [opp_getobjectfield $typeptr lcprop]
+        if {$isapl} {
+            if {$lc==""} {
+                set lc "UNSPECIFIED*"; set unspec 1
+            } elseif {[string first $lc "GPL LGPL BSD"]==-1} {
+                set lc "$lc - INVALID LICENSE*"; set inval 1
+            }
+        } else {
+            if {$lc==""} {
+                set lc "unspecified*"; set unspec 1
+            }
+        }
+        append msg "  $typename\t  (license: $lc)\n"
+    }
+    if {$isapl && $unspec} {
+        append msg "\nModule licenses may be declared in the package.ned file, with @license(<license>). OMNeT++ recognizes the following licenses: GPL, LGPL, BSD.\n"
+    } elseif {$unspec} {
+        append msg "\nModule licenses may be optionally declared in the package.ned file, with @license(<license>). OMNeT++ recognizes the following open-source licenses: GPL, LGPL, BSD. Other license codes (e.g. proprietary ones) are also accepted.\n"
+    } elseif {$inval} {
+        append msg "\nOMNeT++ recognizes the following license codes in @license(): GPL, LGPL, BSD. The commercial version OMNEST accepts any license declaration.\n"
+    } else {
+        append msg "\nModule licenses are declared in package.ned, with @license(<license>).\n"
+    }
+
+    global fonts
+    set w .dlg
+    catch {destroy $w}
+    createOkCancelDialog $w "Model Information"
+    $w.f config -border 0
+    message $w.f.txt -text $msg -font $fonts(normal) -width 400
+    pack $w.f.txt -expand 1 -fill both
+    destroy $w.buttons.cancelbutton
+    execOkCancelDialog $w
+    destroy $w
+}
 

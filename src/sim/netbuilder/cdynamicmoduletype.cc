@@ -114,4 +114,9 @@ cProperties *cDynamicModuleType::getConnectionProperties(int connectionId, const
     return decl->getConnectionProperties(connectionId, channelType);
 }
 
+std::string cDynamicModuleType::getPackageProperty(const char *name) const
+{
+    cNEDDeclaration *decl = getDecl();
+    return decl->getPackageProperty(name);
+}
 

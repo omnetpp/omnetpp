@@ -31,6 +31,7 @@
 #include "patternmatcher.h"
 #include "visitor.h"
 #include "tkutil.h"
+#include "../common/ver.h"
 
 NAMESPACE_BEGIN
 
@@ -191,6 +192,12 @@ int fillListboxWithChildObjects(cObject *object, Tcl_Interp *interp, const char 
     }
     return n;
 }
+
+bool isAPL()
+{
+    return OMNETPP_EDITION[0]=='A';
+}
+
 
 //----------------------------------------------------------------------
 

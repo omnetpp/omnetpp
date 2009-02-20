@@ -98,6 +98,8 @@ void *strToVoidPtr(const char *s);
 inline char *ptrToStr(cObject *ptr, char *buffer=NULL) {return voidPtrToStr((void *)ptr, buffer);}
 inline cObject *strToPtr(const char *s) {return (cObject *)strToVoidPtr(s);}
 
+bool isAPL();
+
 void setObjectListResult(Tcl_Interp *interp, cCollectObjectsVisitor *visitor);
 
 void insertIntoInspectorListbox(Tcl_Interp *interp, const char *listbox, cObject *obj, bool fullpath);

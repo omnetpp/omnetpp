@@ -89,3 +89,9 @@ cProperties *cDynamicChannelType::getConnectionProperties(int connectionId, cons
     throw cRuntimeError("cDynamicChannelType::getConnectionProperties(): channels do not contain further connections");
 }
 
+std::string cDynamicChannelType::getPackageProperty(const char *name) const
+{
+    cNEDDeclaration *decl = getDecl();
+    return decl->getPackageProperty(name);
+}
+

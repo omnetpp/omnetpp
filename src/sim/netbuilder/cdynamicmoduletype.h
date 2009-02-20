@@ -52,6 +52,7 @@ class SIM_API cDynamicModuleType : public cModuleType
     virtual cProperties *getGateProperties(const char *gateName) const;
     virtual cProperties *getSubmoduleProperties(const char *submoduleName, const char *submoduleType) const;
     virtual cProperties *getConnectionProperties(int connectionId, const char *channelType) const;
+    virtual std::string getPackageProperty(const char *name) const;
 
   public:
     /**

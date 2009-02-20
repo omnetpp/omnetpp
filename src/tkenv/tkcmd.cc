@@ -86,6 +86,7 @@ int rebuild_cmd(ClientData, Tcl_Interp *, int, const char **);
 int startAll_cmd(ClientData, Tcl_Interp *, int, const char **);
 int finishSimulation_cmd(ClientData, Tcl_Interp *, int, const char **);
 int loadLib_cmd(ClientData, Tcl_Interp *, int, const char **);
+int isAPL_cmd(ClientData, Tcl_Interp *, int, const char **);
 
 int getActiveConfigName_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getActiveRunNumber_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -110,6 +111,7 @@ int getNumChildObjects_cmd(ClientData, Tcl_Interp *, int, const char **);
 int hasChildObjects_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getSubObjects_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getSubObjectsFilt_cmd(ClientData, Tcl_Interp *, int, const char **);
+int getComponentTypes_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getSimulationState_cmd(ClientData, Tcl_Interp *, int, const char **);
 int stopSimulation_cmd(ClientData, Tcl_Interp *, int, const char **);
 int simulationIsStopping_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -185,6 +187,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_start_all",        startAll_cmd       }, // args: -
    { "opp_finish_simulation",finishSimulation_cmd}, // args: -
    { "opp_loadlib",          loadLib_cmd        }, // args: <fname>
+   { "opp_isapl",            isAPL_cmd          }, // args: -
    // Utility commands
    { "opp_getactiveconfigname",getActiveConfigName_cmd}, // args: -  ret: current config name
    { "opp_getactiverunnumber", getActiveRunNumber_cmd }, // args: -  ret: current run number
@@ -213,6 +216,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_haschildobjects",  hasChildObjects_cmd      }, // args: <pointer> ret: 0 or 1
    { "opp_getsubobjects",    getSubObjects_cmd        }, // args: <pointer> ret: list with all object ptrs in subtree
    { "opp_getsubobjectsfilt",getSubObjectsFilt_cmd    }, // args: <pointer> <args> ret: filtered list of object ptrs in subtree
+   { "opp_getcomponenttypes",getComponentTypes_cmd    }, // args: <module> ret: list of cComponentType ptrs
    { "opp_getsimulationstate", getSimulationState_cmd }, // args: -  ret: NONET,READY,RUNNING,ERROR,TERMINATED,etc.
    { "opp_stopsimulation",   stopSimulation_cmd       }, // args: -
    { "opp_simulationisstopping", simulationIsStopping_cmd}, // args: -
@@ -545,6 +549,13 @@ int loadLib_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    return TCL_OK;
 }
 
+int isAPL_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
+   Tcl_SetResult(interp, TCLCONST(isAPL() ? "1" : "0"), TCL_STATIC);
+   return TCL_OK;
+}
+
 //--------------
 
 int getActiveConfigName_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
@@ -721,6 +732,12 @@ int getObjectField_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
            char buf[20];
            sprintf(buf,"%d", dynamic_cast<cQueue *>(object)->getLength());
            Tcl_SetResult(interp, buf, TCL_VOLATILE);
+       } else {
+           Tcl_SetResult(interp, TCLCONST("no such field in this object"), TCL_STATIC); return TCL_ERROR;
+       }
+   } else if (!strcmp(field,"lcprop")) {
+       if (dynamic_cast<cComponentType *>(object)) {
+           Tcl_SetResult(interp, TCLCONST(dynamic_cast<cComponentType *>(object)->getPackageProperty("l" "i" "c" "e" "n" "s" "e").c_str()), TCL_VOLATILE);
        } else {
            Tcl_SetResult(interp, TCLCONST("no such field in this object"), TCL_STATIC); return TCL_ERROR;
        }
@@ -950,6 +967,30 @@ int getSubObjectsFilt_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
    setObjectListResult(interp, &visitor);
    return TCL_OK;
    E_CATCH
+}
+
+static void collectTypes(cModule *mod, std::set<cComponentType*>& types)
+{
+   types.insert(mod->getComponentType());
+   for (cModule::SubmoduleIterator submod(mod); !submod.end(); submod++)
+       collectTypes(submod(), types);
+}
+
+int getComponentTypes_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
+   cObject *object = strToPtr(argv[1]);
+   cModule *mod = dynamic_cast<cModule *>(object);
+   if (!mod) {Tcl_SetResult(interp, TCLCONST("wrong or null module pointer"), TCL_STATIC); return TCL_ERROR;}
+
+   std::set<cComponentType*> types;
+   collectTypes(mod, types);
+
+   Tcl_Obj *listobj = Tcl_NewListObj(0, NULL);
+   for (std::set<cComponentType*>::iterator i=types.begin(); i!=types.end(); i++)
+       Tcl_ListObjAppendElement(interp, listobj, Tcl_NewStringObj(ptrToStr(*i), -1));
+   Tcl_SetObjResult(interp, listobj);
+   return TCL_OK;
 }
 
 int getSimulationState_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
