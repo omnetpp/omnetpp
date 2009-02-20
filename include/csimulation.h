@@ -288,7 +288,7 @@ class SIM_API cSimulation : public cNoncopyableOwnedObject
      * called immediately before exiting, because cModuleType/cChannelType
      * objects may depend on the corresponding NED declarations being loaded.
      */
-    static void cSimulation::clearLoadedNedFiles();
+    static void clearLoadedNedFiles();
     //@}
 
     /** @name Setting up and finishing a simulation run. */
