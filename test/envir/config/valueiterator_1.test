@@ -1,8 +1,10 @@
 %description:
 Tests the ValueIterator class in envir
 
-%global:
+%includes:
 #include "valueiterator.h"
+
+%global:
 
 static void expand(const char *txt)
 {
@@ -28,9 +30,12 @@ ev << ".\n";
 
 %exitcode: 0
 
+%subst: /e\+0+/e+/
+%subst: /e-0+/e-/
+
 %contains: stdout
 '1,2, foo , bar' -> len=4: (1) (2) ( foo ) ( bar)
 '10..12, 19, -5..-3, 110..150 step 10' -> len=12: (10) (11) (12) ( 19) (-5) (-4) (-3) (110) (120) (130) (140) (150)
-'-2.043e10..3E10 step 1e10, X' -> len=7: (-2.043e+010) (-1.043e+010) (-4.3e+008) (9.57e+009) (1.957e+010) (2.957e+010) ( X)
+'-2.043e10..3E10 step 1e10, X' -> len=7: (-2.043e+10) (-1.043e+10) (-4.3e+8) (9.57e+9) (1.957e+10) (2.957e+10) ( X)
 '-1.1e-1..1e-1 step 1e-1, X' -> len=4: (-0.11) (-0.01) (0.09) ( X)
 .

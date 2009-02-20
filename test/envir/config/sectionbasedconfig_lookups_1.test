@@ -5,12 +5,14 @@ Strategy: generate a long inifile with random contents, and perform
 random lookups against it. Accelerated lookups should yield the same
 results as naive, linear lookups.
 
-%global:
+%includes:
 #include <fstream>
 #include "inifilereader.h"
 #include "sectionbasedconfig.h"
 #include "lcgrandom.h"
 #include "patternmatcher.h"
+
+%global:
 
 enum State {ALPHA, WILDCARD, DOT};
 

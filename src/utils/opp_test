@@ -67,6 +67,7 @@ b=has body, f=value is filename)
 
     'env'                => 'v',
     'testprog'           => '1v',
+    'extraargs'          => '1v',
     'exitcode'           => '1v',
     'ignore-exitcode'    => '1v'
 );
@@ -521,8 +522,9 @@ sub testcase_run()
 
     # run the program
     if ($mode eq 'run') {
+        my $myargs = $values{'extraargs(1)'};
         if ($values{'testprog(1)'} ne '') {
-            $exitcode = exec_program($values{'testprog(1)'}." $extraargs", "$workdir/$testname", $outfname, $errfname);
+            $exitcode = exec_program($values{'testprog(1)'}." $myargs $extraargs", "$workdir/$testname", $outfname, $errfname);
         }
         else {
             if (! -f "$workdir/$testprogram") {
@@ -532,7 +534,7 @@ sub testcase_run()
                 print STDERR "$arg0: error: test program '$workdir/$testprogram' is not executable\n"; exit(1);
             }
             $sep = $isWindows ? "\\" : "/";
-            $exitcode = exec_program("..$sep$testprogram -u Cmdenv $extraargs -f $inifname", "$workdir/$testname", $outfname, $errfname);
+            $exitcode = exec_program("..$sep$testprogram -u Cmdenv $myargs $extraargs -f $inifname", "$workdir/$testname", $outfname, $errfname);
         }
         if ($exitcode != 0) {
             if ($exitcode == -1) {

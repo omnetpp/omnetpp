@@ -1,3 +1,7 @@
+2009-02-20  Rudolf Hornig
+
+	* opp_test: implemented %extraargs 
+
 2009-01-02  Andras Varga
 
 	* added opp_runall
