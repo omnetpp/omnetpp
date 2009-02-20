@@ -7,6 +7,7 @@
 
 package org.omnetpp.neddoc;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -112,6 +113,9 @@ import org.omnetpp.neddoc.properties.DocumentationGeneratorPropertyPage;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.sun.org.apache.xml.internal.security.exceptions.Base64DecodingException;
+import com.sun.org.apache.xml.internal.security.utils.Base64;
+
 import de.unikassel.imageexport.exporters.ImageExporter;
 import de.unikassel.imageexport.exporters.ImageExporterDescriptor;
 import de.unikassel.imageexport.exporters.PNGImageExporter;
@@ -141,8 +145,36 @@ import de.unikassel.imageexport.wizards.ExportImagesOfDiagramFilesOperation;
  * @author levy
  */
 public class DocumentationGenerator {
-    protected static final Image CC16_IMAGE = NeddocPlugin.getImageDescriptor("icons/full/misc/cc-16.png").createImage();
-    protected static final Image CC20_IMAGE = NeddocPlugin.getImageDescriptor("icons/full/misc/cc-20.png").createImage();
+    // Watermark images. We don't load them from the jar file -- that would
+    // make them a little too easy to get rid of.  --Andras
+    private static final Image CC16_IMAGE = createImage(
+            "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAA" + 
+    		"AARnQU1BAACxjwv8YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAA" + 
+    		"OpgAABdwnLpRPAAAAAlwSFlzAAAOwwAADsMBx2+oZAAAABh0RVh0U29mdHdhcmUA" + 
+    		"UGFpbnQuTkVUIHYzLjM2qefiJQAAAVRJREFUOE+1ks8rRFEUx8ePaMSKEBmlsbKy" + 
+    		"YGHB3oKY/4CaPRuUlY0ov1JsbITmD6CwmIxomlLTbBQlMsjGjo2ifL46T7fpvXkr" + 
+    		"tz6de8/5vvPOvedEIv+wKsk5AjtwZmg/CoqVXZ1Ec/ABBzALM7AP73AF8aAM7QQe" + 
+    		"4QRafETN+A7hFbr8kujDDNSUqbGa2DFcQIWr6+fwBd3mbLJSPZGqi1msA/sJg26C" + 
+    		"BQ5pc4xj36AAezBtZd9i501zil10E+jBNsxxjp2DKmiEFxiDeqgzzTo25SbY5bBl" + 
+    		"Dt1x1cTD2DtIQhsMmGbTqvvLoVbl7dSHvYFnmAL1vwj3kDDNJda7zq9LvdUjDrll" + 
+    		"Bex78X9DT2l8G8eDlRqUR925Li3fE0fZaHRVrkbZ7bP2eg9dIwsNQX+oJbAC6vMT" + 
+    		"HIGmT0nlWwP9KHS1opiEZViCCfAb79BEoYIfHho+6oefKLwAAAAASUVORK5CYII=");
+    private static final Image CC20_IMAGE = createImage(
+            "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IArs4c6QAA" + 
+            "AARnQU1BAACxjwv8YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAA" + 
+            "OpgAABdwnLpRPAAAAAlwSFlzAAAOwwAADsMBx2+oZAAAABh0RVh0U29mdHdhcmUA" + 
+            "UGFpbnQuTkVUIHYzLjM2qefiJQAAAcRJREFUOE+9lEso5XEUx5E8IjXIBjGxmZFx" + 
+            "JY+yMhvZ6E5iSmMzZeOxGGSpPHayp2xs2GClmUlkJaVEYkGjbGi8kijk+fnWubdf" + 
+            "13XvRTn16fzu93fO+T3u+f2jot7ZslnvO3QYDXhpL7YiMv7CPTwEIG0WSiKt+pPA" + 
+            "aziBfiiDNEiFUuiFY7iB9nBFG21XC/iMEMHpdgLtvuW5uFwmLmAJEsOtzHwczNlp" + 
+            "PgeLH0W8grwIivlCMm0TE4E5CQjnMGYT0XaUGbwWygfF6P5+wxDoTmXDcAlJbtFy" + 
+            "fug+6k3UvdxBH6joiCWe4rtgGVot1mu5lW7Bbyb6WuEPv1csIMb8Hl67lfk0jYst" + 
+            "t84tWGtihYnT+B1LVMtkwT+YsvmP+BQbq5V0Ou3UbwUmNptSjVefLcI2jINei5pa" + 
+            "uz+Abov9Ybket6COoCPNO+IXxr9A9xprehW+E746cZOMj5wY/1SPrVTjrhRmrFd0" + 
+            "C4PB4pIRdU+H8CmCojnE7MI++FroSVohit6w0FdG/Rho0rzwH85ALRfS9Iw2Qf/c" + 
+            "BgxAk6GPxbrNbeH1VYrI4olqgzVwP2Ear9qcXs6rTPfjsd18eFWFtyQ9Ar+WYlGW" + 
+            "Qvp8AAAAAElFTkSuQmCC");
+    private static final boolean APPLY_CC = !IConstants.IS_COMMERCIAL;  
     
     protected String dotExecutablePath;
     protected String doxyExecutablePath;
@@ -169,7 +201,17 @@ public class DocumentationGenerator {
     protected GeneratorConfiguration configuration;
     protected ArrayList<String> packageNames;
     protected int treeFolderIndex = 0;
-
+    
+    static Image createImage(String base64Data) {
+        try {
+            return new Image(null, new ImageData(new ByteArrayInputStream(Base64.decode(base64Data))));
+        }
+        catch (Base64DecodingException e) {
+            NeddocPlugin.logError(e);
+            return null;
+        }
+    }
+    
     public DocumentationGenerator(IProject project) {
         this.project = project;
 
@@ -1561,7 +1603,8 @@ public class DocumentationGenerator {
                         if (sourceImageFile.exists()) {
                             IPath destinationImagePath = getFullNeddocPath().append(getOutputFileName(typeElement, "type", ".png"));
                             sourceImageFile.renameTo(destinationImagePath.toFile());
-                            watermark(destinationImagePath.toString());
+                            if (APPLY_CC)
+                                watermark(destinationImagePath.toString());
                         }
                     }
 
@@ -1746,7 +1789,8 @@ public class DocumentationGenerator {
 
             generateDotOuput(dot, getOutputFile(imageFileName), "png");
             generateDotOuput(dot, getOutputFile(cmapFileName), "cmap");
-            watermark(getOutputFile(imageFileName).toString());
+            if (APPLY_CC)
+                watermark(getOutputFile(imageFileName).toString());
 
             out("<img src=\"" + imageFileName + "\" ismap=\"yes\" usemap=\"#usage-diagram\"/>");
             out("<map name=\"usage-diagram\">" + FileUtils.readTextFile(getOutputFile(cmapFileName)) + "</map>\r\n");
@@ -1822,7 +1866,8 @@ public class DocumentationGenerator {
 
             generateDotOuput(dot, getOutputFile(imageFileName), "png");
             generateDotOuput(dot, getOutputFile(cmapFileName), "cmap");
-            watermark(getOutputFile(imageFileName).toString());
+            if (APPLY_CC)
+                watermark(getOutputFile(imageFileName).toString());
 
             out("<img src=\"" + imageFileName + "\" ismap=\"yes\" usemap=\"#inheritance-diagram\"/>");
             out("<map name=\"inheritance-diagram\">" + FileUtils.readTextFile(getOutputFile(cmapFileName)) + "</map>\r\n");
@@ -2011,7 +2056,7 @@ public class DocumentationGenerator {
 
         content.run();
         
-        if (copyrightFooter) {
+        if (copyrightFooter && APPLY_CC) {
             String atag = "<a href=\"http://creativecommons.org/licenses/by-sa/3.0\" target=\"_top\">"; 
             out("   <hr><p class=\"footer\">"+atag+"<img src=\"by-sa.png\"></a>" +
                 " This documentation is released under the "+atag+"Creative Commons license</a></p>\r\n");

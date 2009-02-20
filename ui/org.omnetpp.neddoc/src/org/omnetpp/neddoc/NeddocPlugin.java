@@ -7,6 +7,8 @@
 
 package org.omnetpp.neddoc;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.omnetpp.common.util.UIUtils;
@@ -88,5 +90,19 @@ public class NeddocPlugin extends AbstractUIPlugin {
 
     public void restoreGeneratorConfiguration(GeneratorConfiguration generatorConfiguration) {
         generatorConfiguration.restore(UIUtils.getDialogSettings(this, GeneratorConfigurationDialog.class.getName()));
+    }
+
+    public static void logError(Throwable exception) {
+        logError(exception.toString(), exception);
+    }
+    
+    public static void logError(String message, Throwable exception) {
+        if (plugin != null) {
+            plugin.getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, 0, message, exception));
+        }
+        else {
+            System.err.println(message);
+            exception.printStackTrace();
+        }
     }
 }
