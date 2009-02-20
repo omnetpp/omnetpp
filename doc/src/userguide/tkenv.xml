@@ -197,14 +197,14 @@
         displays the content graphically. You may set the display properties by clicking on the ``Options...''
         button.</para>
       <note>
-        To save memory, output vector windows start gathering data only when you open them. No data priory to
+        To save memory, output vector windows start gathering data only when you open them. No data prior to
         the opening will be displayed.
       </note>
       <picture file="pictures/Tkenv-histogram.png">A real-time histogram window</picture>
       <para> Histogram inspectors provide a real-time display for the registered histograms.</para>
       <note>
         Histograms may not be available right after the simulation start, because the simulation kernel must
-        gather some statistics to determine the histogram properties (number of cells, cell size etc.) before
+        gather some statistics to determine the histogram properties (number of cells, cell size, etc.) before
         it can actually start collecting the data.
       </note>
       <picture file="pictures/Tkenv-queue.png">Peeking into a queue</picture>
@@ -465,7 +465,7 @@
       <note>
         Inspectors are identified by their object name. If you have several components that share the same
         name (this is especially common for messages), you may end up with a lot of inspector windows when you
-        start your simulation.
+        start your simulation. In such cases, you may simply delete the [[.tkenvrc]] file.
       </note>
     </sect2>
   </sect1>
