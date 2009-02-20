@@ -6,17 +6,6 @@
   <datasets>
     <datasets name="Utilization">
       <items xsi:type="scave:Add" filterPattern="module(Aloha.server) AND name(&quot;channel utilization&quot;)"/>
-      <items xsi:type="scave:BarChart" name="Utilization">
-        <properties name="X.Axis.Title" value="Mean of exponential packet inter arrival time"/>
-        <properties name="Y.Axis.Title" value="Utilization"/>
-        <properties name="X.Label.Wrap" value="false"/>
-        <groupByFields>measurement</groupByFields>
-        <averagedFields>module</averagedFields>
-        <averagedFields>name</averagedFields>
-        <averagedFields>experiment</averagedFields>
-        <averagedFields>replication</averagedFields>
-        <averagedFields>run</averagedFields>
-      </items>
       <items xsi:type="scave:Add" filterPattern="name(mean) "/>
       <items xsi:type="scave:ScatterChart" name="Load vs Utilization" xDataPattern="module(.) AND name(mean)">
         <properties name="X.Axis.Title" value="Mean packet interarrival time"/>
@@ -33,6 +22,6 @@
     </datasets>
   </datasets>
   <chartSheets>
-    <chartSheets name="Default sheet" charts="//@datasets/@datasets.0/@items.3 //@datasets/@datasets.1/@items.1 //@datasets/@datasets.0/@items.1"/>
+    <chartSheets name="Default sheet" charts="//@datasets/@datasets.0/@items.2 //@datasets/@datasets.1/@items.1"/>
   </chartSheets>
 </scave:Analysis>
