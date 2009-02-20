@@ -1316,7 +1316,7 @@ proc modelinfo_dialog {{w ""}} {
     } else {
         set what "Module"
     }
-    set modname [opp_getobjectfullname $modptr]
+    set modname [opp_getobjectfullpath $modptr]
     set typeptrs [opp_getcomponenttypes $modptr]
 
     set msg "$what \"$modname\" uses the following simple modules:\n\n"
@@ -1325,7 +1325,7 @@ proc modelinfo_dialog {{w ""}} {
     set inval 0
     set isapl [opp_isapl]
     foreach typeptr $typeptrs {
-        set typename [opp_getobjectname $typeptr]
+        set typename [opp_getobjectfullname $typeptr]
         set lc [opp_getobjectfield $typeptr lcprop]
         if {$isapl} {
             if {$lc==""} {
@@ -1338,7 +1338,7 @@ proc modelinfo_dialog {{w ""}} {
                 set lc "unspecified*"; set unspec 1
             }
         }
-        append msg "  $typename\t  (license: $lc)\n"
+        append msg "  $typename   (license: $lc)\n"
     }
     if {$isapl && $unspec} {
         append msg "\nModule licenses may be declared in the package.ned file, with @license(<license>). OMNeT++ recognizes the following licenses: GPL, LGPL, BSD.\n"
