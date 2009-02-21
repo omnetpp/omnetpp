@@ -8,5 +8,7 @@ Tests scenario generation: parallel iterations: not enough values
 
 %extraargs: -G -x Test
 
-%contains: stdout
-XXX (currently asserts...)
+%exitcode: 1
+
+%contains: stderr
+<!> Scenario generator: parallel iterator ${...!i} does not have enough values

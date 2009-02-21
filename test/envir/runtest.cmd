@@ -11,7 +11,7 @@ path %~dp0\..\bin;%PATH%
 mkdir work 2>nul
 echo.>work\dummy.cc
 set NEDPATH=.
-set EXTRA_INCLUDES=-I../../../../src/envir -I../../../../src/common -I../../../../include/platdep
+set EXTRA_INCLUDES=-I../../../src/envir -I../../../src/common -I../../../include/platdep
 
 call opp_test %OPT% -g -v %TESTFILES% || goto end
 

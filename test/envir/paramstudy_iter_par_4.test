@@ -1,5 +1,5 @@
 %description:
-Tests scenario generation: parallel iterations: not enough values
+Tests scenario generation: parallel iterations
 
 %inifile: omnetpp.ini
 [Config Test]

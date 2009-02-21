@@ -117,7 +117,7 @@ int ValueIterator::length() const
 
 std::string ValueIterator::get(int index) const
 {
-    if (index<0 || index>length())
+    if (index<0 || index>=length())
         throw cRuntimeError("ValueIterator: index %d out of bounds", index);
 
     int k = 0;

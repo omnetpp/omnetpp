@@ -567,7 +567,10 @@ std::string SectionBasedConfiguration::substituteVariables(const char *text, int
             if (it==variables.end())
                 throw cRuntimeError("no such variable: ${%s}", parvar.c_str());
             int parvarPos = atoi(it->second.c_str());
-            value = ValueIterator(iterationstring.c_str()).get(parvarPos);
+            ValueIterator v(iterationstring.c_str());
+            if (parvarPos >= v.length())
+                throw cRuntimeError("parallel iterator ${...!%s} does not have enough values", parvar.c_str());
+            value = v.get(parvarPos);
         }
         result.replace(pos-result.c_str(), endPos-pos+1, value);
         k++;

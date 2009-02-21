@@ -1,5 +1,5 @@
 %description:
-Tests scenario generation: unnamed variables
+Tests scenario generation: unnamed variables with alpha values
 
 %inifile: omnetpp.ini
 [Config Test]

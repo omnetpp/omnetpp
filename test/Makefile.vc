@@ -7,7 +7,11 @@ test_core:
 test_makemake:
 	cd makemake && runtest.cmd
 
+test_envir:
+	cd envir && runtest.cmd
+
 clean:
 	-del /q core\work 2>nul
 	-del /q makemake\work 2>nul
 	-del /q makemake\out 2>nul
+	-del /q envir\out 2>nul
