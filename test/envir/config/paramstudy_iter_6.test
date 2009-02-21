@@ -1,0 +1,11 @@
+%description:
+Tests scenario generation: unnamed variables
+
+%inifile: omnetpp.ini
+[Config Test]
+*.a = ${alpha,beta,gamma}
+
+%extraargs: -G -x Test
+
+%contains: stdout
+XXX

@@ -1,0 +1,12 @@
+%description:
+Tests scenario generation: parallel iterations: not enough values
+
+%inifile: omnetpp.ini
+[Config Test]
+**.a = ${i=1..4}
+**.b = ${"alpha","beta","gamma","delta" ! i}
+
+%extraargs: -G -x Test
+
+%contains: stdout
+XXX

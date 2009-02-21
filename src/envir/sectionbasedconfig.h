@@ -173,9 +173,7 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     void clear();
     int internalFindSection(const char *section) const;
     int internalGetSectionId(const char *section) const;
-    int internalFindEntry(const char *section, const char *key) const;
     int internalFindEntry(int sectionId, const char *key) const;
-    bool internalFindEntry(const std::vector<int>& sectionChain, const char *key, int& outSectionId, int& outEntryId) const;
     const char *internalGetValue(const std::vector<int>& sectionChain, const char *key, const char *fallbackValue=NULL) const;
     int resolveConfigName(const char *configName) const;
     std::vector<int> resolveSectionChain(int sectionId) const;

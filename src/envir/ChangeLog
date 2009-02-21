@@ -1,3 +1,12 @@
+2009-02-21  Andras Varga
+
+	* bugfixes: --repeat and --constraint command-line options were ignored
+	when using -x option ("dump scenarios generated from config")
+
+2009-02-20  Andras Varga
+
+	* refactoring around EnvirBase initialization and running
+
 2008-12-12  ------ omnetpp-4.0rc1 released ------
 
 2008-12-03  Andras Varga

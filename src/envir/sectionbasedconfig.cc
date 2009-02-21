@@ -179,7 +179,7 @@ std::string SectionBasedConfiguration::getConfigDescription(const char *configNa
 
     // determine the list of sections, from this one up to [General]
     std::vector<int> sectionChain = resolveSectionChain(sectionId);
-    return opp_nulltoempty(internalGetValue(sectionChain, "description"));
+    return opp_nulltoempty(internalGetValue(sectionChain, CFGID_DESCRIPTION->getName()));
 }
 
 std::string SectionBasedConfiguration::getBaseConfig(const char *configName) const
@@ -187,7 +187,7 @@ std::string SectionBasedConfiguration::getBaseConfig(const char *configName) con
     int sectionId = resolveConfigName(configName);
     if (sectionId == -1)
         throw cRuntimeError("No such config: %s", configName);
-    int entryId = internalFindEntry(sectionId, "extends");
+    int entryId = internalFindEntry(sectionId, CFGID_EXTENDS->getName());
     std::string extends = entryId==-1 ? "" : ini->getEntry(sectionId, entryId).getValue();
     if (extends.empty())
         extends = "General";
@@ -238,8 +238,7 @@ void SectionBasedConfiguration::activateConfig(const char *configName, int runNu
     std::vector<IterationVariable> itervars = collectIterationVariables(sectionChain);
 
     // see if there's a constraint given
-    int constraintEntryId = internalFindEntry(sectionId, "constraint");
-    const char *constraint = constraintEntryId!=-1 ? ini->getEntry(sectionId, constraintEntryId).getValue() : NULL;
+    const char *constraint = internalGetValue(sectionChain, CFGID_CONSTRAINT->getName(), NULL);
 
     // determine the values to substitute into the iteration vars (${...})
     try
@@ -327,8 +326,7 @@ int SectionBasedConfiguration::getNumRunsInConfig(const char *configName) const
     std::vector<IterationVariable> v = collectIterationVariables(sectionChain);
 
     // see if there's a constraint given
-    int constraintEntryId = internalFindEntry(sectionId, "constraint");
-    const char *constraint = constraintEntryId!=-1 ? ini->getEntry(sectionId, constraintEntryId).getValue() : NULL;
+    const char *constraint = internalGetValue(sectionChain, CFGID_CONSTRAINT->getName(), NULL);
 
     // count the runs and return the result
     try {
@@ -350,8 +348,7 @@ std::vector<std::string> SectionBasedConfiguration::unrollConfig(const char *con
     std::vector<IterationVariable> itervars = collectIterationVariables(sectionChain);
 
     // see if there's a constraint given
-    int constraintEntryId = internalFindEntry(sectionId, "constraint"); //XXX use constant (multiple places here!)
-    const char *constraint = constraintEntryId!=-1 ? ini->getEntry(sectionId, constraintEntryId).getValue() : NULL;
+    const char *constraint = internalGetValue(sectionChain, CFGID_CONSTRAINT->getName(), NULL);
 
     // setupVariables() overwrites variables[], so we need to save/restore it
     StringMap savedVariables = variables;
@@ -456,7 +453,7 @@ std::vector<SectionBasedConfiguration::IterationVariable> SectionBasedConfigurat
     }
 
     // register ${repetition}, based on the repeat= config entry
-    const char *repeat = internalGetValue(sectionChain, "repeat");
+    const char *repeat = internalGetValue(sectionChain, CFGID_REPEAT->getName());
     int repeatCount = (int) parseLong(repeat, NULL, 1);
     IterationVariable repetition;
     repetition.varid = repetition.varname = CFGVAR_REPETITION;
@@ -645,7 +642,7 @@ std::vector<int> SectionBasedConfiguration::resolveSectionChain(const char *sect
         if (std::find(sectionChain.begin(), sectionChain.end(), sectionId) != sectionChain.end())
             throw cRuntimeError("Cycle detected in section fallback chain at: [%s]", ini->getSectionName(sectionId));
         sectionChain.push_back(sectionId);
-        int entryId = internalFindEntry(sectionId, "extends");
+        int entryId = internalFindEntry(sectionId, CFGID_EXTENDS->getName());
         std::string extends = entryId==-1 ? "" : ini->getEntry(sectionId, entryId).getValue();
         if (extends.empty() && generalSectionId!=-1 && sectionId!=generalSectionId)
             extends = "General";
@@ -783,11 +780,6 @@ int SectionBasedConfiguration::internalGetSectionId(const char *section) const
     return sectionId;
 }
 
-int SectionBasedConfiguration::internalFindEntry(const char *section, const char *key) const
-{
-    return internalFindEntry(internalGetSectionId(section), key);
-}
-
 int SectionBasedConfiguration::internalFindEntry(int sectionId, const char *key) const
 {
     // not very efficient (linear search), but we only invoke from activateConfig(),
@@ -798,24 +790,12 @@ int SectionBasedConfiguration::internalFindEntry(int sectionId, const char *key)
     return -1;
 }
 
-bool SectionBasedConfiguration::internalFindEntry(const std::vector<int>& sectionChain, const char *key, int& outSectionId, int& outEntryId) const
-{
-    for (int i=0; i<(int)sectionChain.size(); i++)
-    {
-        int sectionId = sectionChain[i];
-        int entryId = internalFindEntry(sectionId, key);
-        if (entryId != -1)
-        {
-            outSectionId = sectionId;
-            outEntryId = entryId;
-            return true;
-        }
-    }
-    return false;
-}
-
 const char *SectionBasedConfiguration::internalGetValue(const std::vector<int>& sectionChain, const char *key, const char *fallbackValue) const
 {
+    for (int i=0; i<(int)commandLineOptions.size(); i++)
+        if (strcmp(key, commandLineOptions[i].getKey())==0)
+            return commandLineOptions[i].getValue();
+
     for (int i=0; i<(int)sectionChain.size(); i++)
     {
         int sectionId = sectionChain[i];
@@ -924,7 +904,7 @@ void SectionBasedConfiguration::validate(const char *ignorableConfigKeys) const
                     throw cRuntimeError("Configuration key %s may only occur in the [General] section", key);
 
                 // check section hierarchy
-                if (strcmp(key, "extends")==0)
+                if (strcmp(key, CFGID_EXTENDS->getName())==0)
                 {
                     if (strcmp(section, "General")==0)
                         throw cRuntimeError("The [General] section cannot extend other sections");
@@ -948,8 +928,7 @@ void SectionBasedConfiguration::validate(const char *ignorableConfigKeys) const
                 if (containsHyphen)
                 {
                     // this is a per-object config
-                    //XXX groupName (probably) should not contain wildcard
-                    // FIXME but surely not "**" !!!!
+                    //XXX groupName (probably) should not contain wildcard; but surely not "**" !!!!
                     cConfigOption *e = lookupConfigOption(groupName.c_str());
                     if (!e && isIgnorableConfigKey(ignorableConfigKeys, groupName.c_str()))
                         continue;
