@@ -104,12 +104,18 @@ void SectionBasedConfiguration::setCommandLineConfigOptions(const std::map<std::
     for (StringMap::const_iterator it=options.begin(); it!=options.end(); it++)
     {
         // validate the key, then store the option
+        //XXX we should better use the code in the validate() method...
         const char *key = it->first.c_str();
         const char *value = it->second.c_str();
-        //TODO check only the part after the last dot, i.e. recognize per-object keys as well
-        cConfigOption *e = lookupConfigOption(key);
+        const char *option = strchr(key,'.') ? strrchr(key,'.')+1 : key; // check only the part after the last dot, i.e. recognize per-object keys as well
+        cConfigOption *e = lookupConfigOption(option);
         if (!e)
             throw cRuntimeError("Unknown command-line configuration option --%s", key);
+        if (!e->isPerObject() && key!=option)
+            throw cRuntimeError("Wrong command-line configuration option --%s: %s is not a per-object option", key, e->getName());
+        std::string tmp;
+        if (e->isPerObject() && key==option)
+            key = (tmp=std::string("**.")+key).c_str(); // prepend with "**." (XXX this should be done in inifile contents too)
         if (!value[0])
             throw cRuntimeError("Missing value for command-line configuration option --%s", key);
         commandLineOptions.push_back(KeyValue1(NULL, key, value));
