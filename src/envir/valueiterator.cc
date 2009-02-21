@@ -19,6 +19,7 @@
 #include <locale.h>
 #include "opp_ctype.h"
 #include "valueiterator.h"
+#include "stringutil.h"
 #include "commonutil.h"
 #include "stringtokenizer.h"
 #include "cexception.h"
@@ -46,7 +47,7 @@ void ValueIterator::parse(const char *s)
     while (tokenizer.hasMoreTokens())
     {
         Item item;
-        item.text = tokenizer.nextToken();
+        item.text = opp_trim(tokenizer.nextToken());
         parseAsNumericRegion(item);
         item.n = item.isNumeric ? std::max(0, (int)floor((item.to - item.from + item.step) / item.step)) : 1;
         items.push_back(item);

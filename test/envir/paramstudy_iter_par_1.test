@@ -3,8 +3,8 @@ Tests scenario generation: parallel iterations
 
 %inifile: omnetpp.ini
 [Config Test]
-**.a = ${i=1..4}
-**.b = ${100,200,300,400 ! i}
+**.a = ${i=10..40 step 10}
+**.b = ${100,200,300,400! i}
 
 %extraargs: -G -x Test
 
@@ -12,20 +12,20 @@ Tests scenario generation: parallel iterations
 Config: Test
 Number of runs: 4
 Run 0:
-        # $i=1, $repetition=0
-        **.a = 1
-        **.b = 100
+	# $i=10, $repetition=0
+	**.a = 10
+	**.b = 100
 Run 1:
-        # $i=2, $repetition=0
-        **.a = 2
-        **.b = 200
+	# $i=20, $repetition=0
+	**.a = 20
+	**.b = 200
 Run 2:
-        # $i=3, $repetition=0
-        **.a = 3
-        **.b = 300
+	# $i=30, $repetition=0
+	**.a = 30
+	**.b = 300
 Run 3:
-        # $i=4, $repetition=0
-        **.a = 4
-        **.b = 400
+	# $i=40, $repetition=0
+	**.a = 40
+	**.b = 400
 
 End.

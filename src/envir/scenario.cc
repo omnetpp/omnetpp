@@ -43,6 +43,8 @@ class Resolver : public Expression::Resolver
 
 Expression::Functor *Resolver::resolveVariable(const char *varname)
 {
+    if (varname[0]=='$')
+        varname++;
     return new Scenario::VariableReference(hostobject, varname);
 }
 
@@ -116,7 +118,11 @@ int Scenario::getNumRuns()
         return 0;
     int count = 1;
     while (next())
-        count++;  //XXX set some maximum!
+    {
+        if (count>1000000)
+            throw cRuntimeError("Are you sure you want to generate more than one million runs?");
+        count++;
+    }
     return count;
 }
 

@@ -1,5 +1,5 @@
 %description:
-Tests scenario generation: parallel iterations
+Tests scenario generation: parallel iterations: named parallel iterator -- UNIMPLEMENTED FEATURE
 
 %inifile: omnetpp.ini
 [Config Test]
@@ -9,4 +9,4 @@ Tests scenario generation: parallel iterations
 %extraargs: -G -x Test
 
 %contains: stdout
-XXX
+XXX: UNIMPLEMENTED FEATURE

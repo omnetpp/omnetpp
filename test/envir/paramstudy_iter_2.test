@@ -17,17 +17,17 @@ Run 0:
 	*.a = 1
 	*.b = "Hapci"
 Run 1:
-	# $x=1, $y= "Morgo", $repetition=0
+	# $x=1, $y="Morgo", $repetition=0
 	*.a = 1
-	*.b =  "Morgo"
+	*.b = "Morgo"
 Run 2:
 	# $x=2, $y="Hapci", $repetition=0
 	*.a = 2
 	*.b = "Hapci"
 Run 3:
-	# $x=2, $y= "Morgo", $repetition=0
+	# $x=2, $y="Morgo", $repetition=0
 	*.a = 2
-	*.b =  "Morgo"
+	*.b = "Morgo"
 
 End.
 

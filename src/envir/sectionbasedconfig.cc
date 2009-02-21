@@ -494,6 +494,11 @@ void SectionBasedConfiguration::parseVariable(const char *pos, std::string& outV
             // ${x=...} syntax -- OK
             valuebegin = s+1;
         }
+        else if (strchr(s,',')) {
+            // part of a valuelist -- OK
+            valuebegin = varbegin;
+            varbegin = varend = NULL;
+        }
         else {
             throw cRuntimeError("missing '=' after '${varname'");
         }
