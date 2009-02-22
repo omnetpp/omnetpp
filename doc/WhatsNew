@@ -6,14 +6,34 @@ OMNeT++ 4.0rc2 (Feb 2009)
 Improvements since rc1:
 
 Documentation:
-  - revised manual. New/rewritten chapters include: ...  Still to do: ...
-  - revised user guide
+  - Significant work went into updating the Manual. The following chapters are
+    either new, or have been rewritten or significantly expanded:
+      3 The NED Language
+      7 Building Simulation Programs
+      8 Configuring Simulations
+      9 Running Simulations
+      10 Network Graphics And Animation
+      11 Analyzing Simulation Results
+      15 Plug-in Extensions
+      16 Embedding the Simulation Kernel
+      17 Appendix: NED Reference
+    Chapters that need further work are:
+      4 Simple Modules
+      6 The Simulation Library
+
+  - Revised the User Guide. Text and screenshots have been updated to the
+    current state of the UI.
 
 IDE:
-  - added the git plugin
-  - added documentation generator - explain CC
-  - adds copyright headers to files; license may be declared with @license,
-    and Tkenv displays it
+  - added the GIT plugin (now the IDE supports CVS, Subversion and GIT)
+
+  - added the NED documentation generator. The generated documentation is
+    under the Creative Commons license.
+
+  - the IDE now generates GPL/LGPL/BSD copyright into newly created files;
+    license may be declared by adding a @license property in package.ned
+
+  - various bugfixes
 
 Simulation kernel:
   There were several changes to make it easier to use the simulation kernel
@@ -96,6 +116,11 @@ Tools:
     which creates a scatter plot dataset from the scalars.
 
   - opp_test: added a %extraargs option (was needed for new test/envir tests)
+
+Packaging:
+  - the Windows package now contains MinGW-GIT (the "git" command-line tool,
+    and gitk). Please use the hyphen-less form of commands (e.g. git checkout
+    instead of git-checkout).
 
 Several bugfixes:
   - see http://dev.omnetpp.org/bugs/changelog_page.php
