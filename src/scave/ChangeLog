@@ -1,3 +1,9 @@
+2009-02-22: Andras Varga
+
+	* added descriptions to the examples in the scavetool help text.
+	
+	* documented the "scalar" filter in the scavetool help text.
+
 2009-02-19 Tamas Borbely
 
 	* Renamed 'summary' command of scavetool to 'list'.

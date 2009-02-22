@@ -53,20 +53,23 @@ void printUsage()
        "    v, vector   filter and process data in vector files\n"
        "    s, scalar   filter and process data in scalar files\n"
        "    l, list     list summary info about input files\n"
-       "    i, info     print list of available functions (to be used with `vector -a')\n"
+       "    i, info     print list of available functions (to be used with `-a')\n"
        "    x, index    generate index files for vector files\n"
        "Options:\n"
        " `vector' command:\n"
        "    -p <pattern>    the filter expression (see syntax below)\n"
-       "    -a <function>   apply the given processing to the selected vectors (see syntax below)\n"
-       "                    This option may occur multiple times.\n"
+       "    -a <function>   apply the given processing to the selected vectors (see syntax below);\n"
+       "                    the `info' command prints the names of available operations. This option\n"
+       "                    may occur multiple times.\n"
        "    -O <filename>   output file name\n"
        "    -F <formatname> format of output file: vec (default), splitvec, matlab, octave, csv, splitcsv\n"
        "    -V              print info about progress (verbose)\n"
        //TODO option: print matching vectorIDs and exit
        " `scalar' command:\n"
        "    -p <pattern>    the filter expression (see syntax below)\n"
-       "    -a <function>   apply the given processing to the selected scalars (see syntax below)\n"
+       "    -a <function>   apply the given processing to the selected scalars (see syntax below);\n"
+       "                    the `info' command prints the names of available operations. This option\n"
+       "                    may occur multiple times.\n"
        "    -O <filename>   output file name\n"
        "    -F <formatname> format of output file: csv (default), matlab, octave\n" //TODO sca files
        "    -V              print info about progress (verbose)\n"
@@ -114,9 +117,13 @@ void printUsage()
        "    module(\"**.sink\") AND (name(\"queueing time\") OR name(\"transmission time\"))\n"
        "\n"
        "Examples:\n"
-       "    scavetool filter -p \"queueing time\" -a winavg(10) -O out.vec\n\n" //TODO more
-       "    scavetool scalar -p \"module(sink) OR module(queue)\""
-                            "-a \"scatter(.,load,queue,\\\"queue length\\\")\" -O out.csv -F csv\n\n"
+       "    scavetool vector -p \"queueing time\" -a winavg(10) -O out.vec *.vec\n"
+       "        Saves the queueing time vectors to out.vec, after applying a window \n"
+       "        average filter.\n"
+       "\n"
+       "    scavetool scalar -p \"module(sink) OR module(queue)\" -a \"scatter(.,load,queue,\\\"queue length\\\")\" -O out.csv -F csv *.sca\n"
+       "        Creates a scatter plot with the load attribute on the x axis, and queue length\n"
+       "        for iso lines.\n"
     );
 }
 
@@ -155,14 +162,14 @@ static void loadFiles(ResultFileManager &manager, const vector<string> &fileName
 
 static string rebuildCommandLine(int argc, char **argv)
 {
-	// FIXME quotes
-	string result;
-	for (int i = 0; i < argc; i++)
-	{
-		if (i != 0) result += " ";
-		result += argv[i];
-	}
-	return result;
+    // FIXME quotes
+    string result;
+    for (int i = 0; i < argc; i++)
+    {
+        if (i != 0) result += " ";
+        result += argv[i];
+    }
+    return result;
 }
 
 int vectorCommand(int argc, char **argv)
@@ -206,8 +213,8 @@ int vectorCommand(int argc, char **argv)
     bool opt_writeSeparateFiles = false;
     if (opt_outputFormat.find("split") == 0)
     {
-    	opt_outputFormat = opt_outputFormat.substr(5);
-    	opt_writeSeparateFiles = true;
+        opt_outputFormat = opt_outputFormat.substr(5);
+        opt_writeSeparateFiles = true;
     }
 
     try
@@ -280,8 +287,8 @@ int vectorCommand(int argc, char **argv)
             // create writer getNode(s) and connect
             if (opt_outputFormat == "vec")
             {
-            	if (opt_writeSeparateFiles)
-            	{
+                if (opt_writeSeparateFiles)
+                {
                     // every vector goes to its own file, with two columns (time+value) separated by spaces/tab
                     if (opt_verbose) printf("adding separate writers for each vector\n");
                     char buf[16];
@@ -297,20 +304,20 @@ int vectorCommand(int argc, char **argv)
                     FileWriterNode *writerNode = new FileWriterNode(fname.c_str(), header.str().c_str());
                     dataflowManager.addNode(writerNode);
                     dataflowManager.connect(outPort, &(writerNode->in));
-            	}
-            	else {
-					// everything goes to a common vector file
-					if (!vectorFileWriterNode)
-					{
-						if (opt_verbose) printf("adding vector file writer\n");
-						string fileName = opt_outputFileName + ".vec";
-						vectorFileWriterNode = new VectorFileWriterNode(fileName.c_str(), "# generated by scavetool");
-						dataflowManager.addNode(vectorFileWriterNode);
-					}
+                }
+                else {
+                    // everything goes to a common vector file
+                    if (!vectorFileWriterNode)
+                    {
+                        if (opt_verbose) printf("adding vector file writer\n");
+                        string fileName = opt_outputFileName + ".vec";
+                        vectorFileWriterNode = new VectorFileWriterNode(fileName.c_str(), "# generated by scavetool");
+                        dataflowManager.addNode(vectorFileWriterNode);
+                    }
 
-					Port *writerNodePort = vectorFileWriterNode->addVector(vector); // FIXME: renumber vectors
-					dataflowManager.connect(outPort, writerNodePort);
-            	}
+                    Port *writerNodePort = vectorFileWriterNode->addVector(vector); // FIXME: renumber vectors
+                    dataflowManager.connect(outPort, writerNodePort);
+                }
             }
             else
             {
@@ -337,37 +344,37 @@ int vectorCommand(int argc, char **argv)
                     exporter->setBaseFileName(opt_outputFileName);
                     if (opt_writeSeparateFiles)
                     {
-						// separate vectors
-						for (int i=0; i<vectorIDList.size(); i++)
-						{
-							ID vectorID = vectorIDList.get(i);
-							bool computed = opt_filterList.size() > 0;
-							const VectorResult& vector = resultFileManager.getVector(vectorID);
-							string name = *vector.nameRef;
-							string descr = *vector.nameRef + "; "
-											  + *vector.moduleNameRef + "; "
-											  + vector.fileRunRef->fileRef->fileSystemFilePath + "; "
-											  + vector.fileRunRef->runRef->runName;
-							XYArray *xyArray = arrayBuilders[i]->getArray();
-							exporter->saveVector(name, descr, vectorID, computed, xyArray, resultFileManager);
-							delete xyArray;
-						}
+                        // separate vectors
+                        for (int i=0; i<vectorIDList.size(); i++)
+                        {
+                            ID vectorID = vectorIDList.get(i);
+                            bool computed = opt_filterList.size() > 0;
+                            const VectorResult& vector = resultFileManager.getVector(vectorID);
+                            string name = *vector.nameRef;
+                            string descr = *vector.nameRef + "; "
+                                              + *vector.moduleNameRef + "; "
+                                              + vector.fileRunRef->fileRef->fileSystemFilePath + "; "
+                                              + vector.fileRunRef->runRef->runName;
+                            XYArray *xyArray = arrayBuilders[i]->getArray();
+                            exporter->saveVector(name, descr, vectorID, computed, xyArray, resultFileManager);
+                            delete xyArray;
+                        }
                     }
                     else // same file
                     {
-                    	if (vectorIDList.size() > 0)
-                    	{
-							// all vectors in one file
-							vector<XYArray*> xyArrays;
-							for (int i=0; i<vectorIDList.size(); i++)
-								xyArrays.push_back(arrayBuilders[i]->getArray());
+                        if (vectorIDList.size() > 0)
+                        {
+                            // all vectors in one file
+                            vector<XYArray*> xyArrays;
+                            for (int i=0; i<vectorIDList.size(); i++)
+                                xyArrays.push_back(arrayBuilders[i]->getArray());
 
-							string desc = "generated by '" + rebuildCommandLine(argc, argv) + "'";
-							exporter->saveVectors("vectors", desc, vectorIDList, xyArrays, resultFileManager);
+                            string desc = "generated by '" + rebuildCommandLine(argc, argv) + "'";
+                            exporter->saveVectors("vectors", desc, vectorIDList, xyArrays, resultFileManager);
 
-							for (int i = 0; i < vectorIDList.size(); i++)
-								delete arrayBuilders[i]->getArray();
-                    	}
+                            for (int i = 0; i < vectorIDList.size(); i++)
+                                delete arrayBuilders[i]->getArray();
+                        }
                     }
 
                     delete exporter;
@@ -420,7 +427,7 @@ static void parseScalarFunction(const string &functionCall, /*out*/string &name,
     tokenizer.tokenize(paramlist.c_str(), paramlist.length());
     char **tokens = tokenizer.tokens();
     for (int i = 0; i < tokenizer.numTokens(); ++i)
-    	params.push_back(unquoteString(tokens[i]));
+        params.push_back(unquoteString(tokens[i]));
 }
 
 int scalarCommand(int argc, char **argv)
@@ -471,94 +478,94 @@ int scalarCommand(int argc, char **argv)
         if (opt_verbose) cout << "filter expression matches " << scalarIDList.size() << "scalars" << endl;
         if (opt_verbose) cout << "done collecting inputs" << endl << endl;
 
-		if (!scalarIDList.isEmpty())
-		{
-			ScaveExport *exporter = ExporterFactory::createExporter(opt_outputFormat);
-			if (exporter)
-			{
-				try
-				{
-					exporter->setBaseFileName(opt_outputFileName);
-					string desc = "generated by '" + rebuildCommandLine(argc, argv) + "'";
+        if (!scalarIDList.isEmpty())
+        {
+            ScaveExport *exporter = ExporterFactory::createExporter(opt_outputFormat);
+            if (exporter)
+            {
+                try
+                {
+                    exporter->setBaseFileName(opt_outputFileName);
+                    string desc = "generated by '" + rebuildCommandLine(argc, argv) + "'";
 
-					if (opt_applyFunction.empty())
-					{
-						ResultItemFields fields(ResultItemField::NAME); // TODO option
-						// TODO option to choose columns (allow averaging in cells)
-						exporter->saveScalars("scalars", desc, scalarIDList,
-							fields.complement(), resultFileManager);
-					}
-					else
-					{
-						string function;
-						vector<string> params;
-						parseScalarFunction(opt_applyFunction, function, params);
-						if (function == "scatter")
-						{
-							if (params.size() >= 2)
-							{
-								string moduleName = params[0];
-								string scalarName = params[1];
-								vector<string> rowFields;
-								rowFields.push_back(ResultItemField::MODULE);
-								rowFields.push_back(ResultItemField::NAME);
-								vector<string> isoModuleNames;
-								vector<string> isoScalarNames;
-								vector<string> isoRunAttributes;
-								for (vector<string>::iterator param = params.begin()+2; param != params.end(); ++param)
-								{
-									if (RunAttribute::isAttributeName(*param))
-									{
-										isoRunAttributes.push_back(*param);
-									}
-									else
-									{
-										if ((param+1) == params.end())
-										{
-											cout << "Missing scalar name after '" << *param << "'" << endl;
-											rc = 1;
-											break;
-										}
-										isoModuleNames.push_back(*param);
-										isoScalarNames.push_back(*++param);
-									}
-								}
+                    if (opt_applyFunction.empty())
+                    {
+                        ResultItemFields fields(ResultItemField::NAME); // TODO option
+                        // TODO option to choose columns (allow averaging in cells)
+                        exporter->saveScalars("scalars", desc, scalarIDList,
+                            fields.complement(), resultFileManager);
+                    }
+                    else
+                    {
+                        string function;
+                        vector<string> params;
+                        parseScalarFunction(opt_applyFunction, function, params);
+                        if (function == "scatter")
+                        {
+                            if (params.size() >= 2)
+                            {
+                                string moduleName = params[0];
+                                string scalarName = params[1];
+                                vector<string> rowFields;
+                                rowFields.push_back(ResultItemField::MODULE);
+                                rowFields.push_back(ResultItemField::NAME);
+                                vector<string> isoModuleNames;
+                                vector<string> isoScalarNames;
+                                vector<string> isoRunAttributes;
+                                for (vector<string>::iterator param = params.begin()+2; param != params.end(); ++param)
+                                {
+                                    if (RunAttribute::isAttributeName(*param))
+                                    {
+                                        isoRunAttributes.push_back(*param);
+                                    }
+                                    else
+                                    {
+                                        if ((param+1) == params.end())
+                                        {
+                                            cout << "Missing scalar name after '" << *param << "'" << endl;
+                                            rc = 1;
+                                            break;
+                                        }
+                                        isoModuleNames.push_back(*param);
+                                        isoScalarNames.push_back(*++param);
+                                    }
+                                }
 
-								if (rc == 0)
-								{
-									exporter->saveScalars("scalars", desc, scalarIDList,
-										moduleName, scalarName, ResultItemFields(rowFields).complement(),
-										isoModuleNames, isoScalarNames, ResultItemFields(isoRunAttributes),
-										resultFileManager);
-								}
-							}
-							else
-							{
-								cout << "Missing parameters in: " << opt_applyFunction << endl;
-								rc = 1;
-							}
-						}
-						else
-						{
-							cout << "Unknown scalar function: " << function << endl;
-							rc = 1;
-						}
-					}
+                                if (rc == 0)
+                                {
+                                    exporter->saveScalars("scalars", desc, scalarIDList,
+                                        moduleName, scalarName, ResultItemFields(rowFields).complement(),
+                                        isoModuleNames, isoScalarNames, ResultItemFields(isoRunAttributes),
+                                        resultFileManager);
+                                }
+                            }
+                            else
+                            {
+                                cout << "Missing parameters in: " << opt_applyFunction << endl;
+                                rc = 1;
+                            }
+                        }
+                        else
+                        {
+                            cout << "Unknown scalar function: " << function << endl;
+                            rc = 1;
+                        }
+                    }
 
-					delete exporter;
-				}
-				catch (exception&)
-				{
-					delete exporter;
-					throw;
-				}
-			}
-			else
-			{
-				cout << "Unknown output file format: " << opt_outputFormat << endl;
-				rc = 1;
-			}
-		}
+                    delete exporter;
+                }
+                catch (exception&)
+                {
+                    delete exporter;
+                    throw;
+                }
+            }
+            else
+            {
+                cout << "Unknown output file format: " << opt_outputFormat << endl;
+                rc = 1;
+            }
+        }
 
         if (opt_verbose && rc == 0) cout << "done" << endl;
     }
@@ -577,18 +584,18 @@ int scalarCommand(int argc, char **argv)
 // occurring in the input files
 int listCommand(int argc, char **argv)
 {
-	bool opt_name = false;
-	bool opt_module = false;
-	bool opt_run = false;
-	bool opt_config = false;
-	int count = 0;
+    bool opt_name = false;
+    bool opt_module = false;
+    bool opt_run = false;
+    bool opt_config = false;
+    int count = 0;
     vector<string> opt_fileNames;
 
     for (int i=2; i<argc; i++)
     {
         const char *opt = argv[i];
         if (opt[0] == '-')
-        	count++;
+            count++;
         if (strcmp(opt, "-n") == 0)
             opt_name = true;
         else if (strcmp(opt, "-m") == 0)
@@ -603,11 +610,11 @@ int listCommand(int argc, char **argv)
             {fprintf(stderr, "unknown option `%s'", opt);return 1;}
     }
     if (count == 0)
-    	opt_name = true;
+        opt_name = true;
     else if (count > 1)
     {
-    	fprintf(stderr, "expects only one option");
-    	return 1;
+        fprintf(stderr, "expects only one option");
+        return 1;
     }
 
     ResultFileManager manager;
@@ -616,36 +623,36 @@ int listCommand(int argc, char **argv)
     StringSet *result = NULL;
     if (opt_name)
     {
-    	IDList ids = manager.getAllItems();
-    	result = manager.getUniqueNames(ids);
+        IDList ids = manager.getAllItems();
+        result = manager.getUniqueNames(ids);
     }
     else if (opt_module)
     {
-    	IDList ids = manager.getAllItems();
-    	result = manager.getUniqueModuleNames(ids);
+        IDList ids = manager.getAllItems();
+        result = manager.getUniqueModuleNames(ids);
     }
     else if (opt_run)
     {
-    	const RunList &runs = manager.getRuns();
-    	result = new StringSet;
-    	for (RunList::const_iterator it=runs.begin(); it!=runs.end(); ++it)
-    	{
-    		result->insert((*it)->runName);
-    	}
+        const RunList &runs = manager.getRuns();
+        result = new StringSet;
+        for (RunList::const_iterator it=runs.begin(); it!=runs.end(); ++it)
+        {
+            result->insert((*it)->runName);
+        }
     }
     else if (opt_config)
     {
-    	const RunList &runs = manager.getRuns();
-    	result = manager.getUniqueRunAttributeValues(runs, RunAttribute::CONFIGNAME);
+        const RunList &runs = manager.getRuns();
+        result = manager.getUniqueRunAttributeValues(runs, RunAttribute::CONFIGNAME);
     }
 
     if (result != NULL)
     {
-    	for (StringSet::iterator it=result->begin(); it != result->end(); ++it)
-    	{
-    		printf("%s\n", it->c_str());
-    	}
-    	delete result;
+        for (StringSet::iterator it=result->begin(); it != result->end(); ++it)
+        {
+            printf("%s\n", it->c_str());
+        }
+        delete result;
     }
 
     return 0;
@@ -669,6 +676,13 @@ int infoCommand(int argc, char **argv)
             {fprintf(stderr, "unknown option `%s'", opt);return 1;}
     }
 
+    printf("\nScalar operations:\n\n");
+    printf("scatter(module,scalar,...):\n"
+           "  Create scatter plot. The first two arguments identifys the scalar selected\n"
+           "  for the X axis. Additional arguments identify the iso attributes; they are\n"
+           "  (module, scalar) pairs, or names of run attributes.\n");
+
+    printf("\nVector operations:\n\n");
     NodeTypeRegistry *registry = NodeTypeRegistry::getInstance();
     NodeTypeVector nodeTypes = registry->getNodeTypes();
     for (int i=0; i<(int)nodeTypes.size(); i++)
