@@ -1,8 +1,129 @@
 What's New
 ==========
 
-OMNeT++ 4.0 rc 1 (Dec 2008)
----------------------------
+OMNeT++ 4.0rc2 (Feb 2009)
+-------------------------
+Improvements since rc1:
+
+Documentation:
+  - revised manual. New/rewritten chapters include: ...  Still to do: ...
+  - revised user guide
+
+IDE:
+  - added the git plugin
+  - added documentation generator - explain CC
+  - adds copyright headers to files; license may be declared with @license,
+    and Tkenv displays it
+
+Simkernel:
+        * Several changes to make it easier to use the simulation kernel
+        as a C++ library, for embedding simulations into other programs:
+
+        * added cSimulation::clearLoadedNedFiles() function
+
+        - created cRunnableEnvir by factoring out run() method from cEnvir;
+        simulation user interfaces like Cmdenv or Tkenv subclass from
+        cRunnableEnvir, but other custom environment objects do not need to.
+
+        - added cNullEnvir, a default do-nothing implementation for cEnvir.
+
+        - cConfiguration split to a smaller cConfiguration plus a
+        cConfigurationEx class that adds the rest of the methods.
+        When the simulation kernel is used as library, only cConfiguration
+        needs to be implemented. cConfigurationEx is needed only when one
+        wants to plug in a different configuration object into the existing
+        Envir library, replacing SectionBasedConfig.
+
+        - cSimulation now creates a cSequentialScheduler by default (no need
+        to do it manually); if it's not good, a different scheduler object
+        can be installed with the setScheduler() method.
+
+        - support for multiple instances of cSimulation. "simulation" is
+        no longer a global variable but a macro that expands to
+        cSimulation::getActiveSimulation(). Multiple cSimulation objects
+        may coexist; before invoking any function in the simulation library,
+        the correct cSimulation instance must be activated with
+        cSimulation::setActiveSimulation().
+
+        - multiple environment objects may coexist; in fact, there must be
+        exactly one associated with every cSimulation instance. "ev" now
+        maps to cSimulation::getActiveEnvir() which is short for
+        cSimulation::getActiveSimulation->getEnvir(). cSimulation::
+        setActiveSimulation() which activates a cSimulation instance
+        also activates its corresponding environment object.
+
+        - added cSimulation::loadNedText(), to facilitate creating
+        self-contained executables by embedding NED source as string
+        literals.
+
+        - two new related examples: samples/embedding and samples/embedding2.
+
+        * csimulation.cc: simulation.init() gets called automatically, via
+        EXECUTE_ON_STARTUP()
+
+        * csimulation.cc: calls to scheduler->startRun()/endRun() merged into
+        cSimulation::startRun()/endRun()
+
+        * csimulation.cc: scheduler object now gets deleted by cSimulation, not
+        externally by Envir
+
+Samples:
+  - added embedding examples
+
+NED:
+  - fix: channel types could not refer to local parameters ("this.param" caused
+    an error)
+
+  - refactored the registration of user-defined NED functions: added the
+    possibility to register a documentation string (which gets printed in the
+    "opp_run -h nedfunctions" output); cNEDFunction and Define_NED_Function()
+    now expects the function signature in a C-like syntax.
+
+Message files:
+  - opp_msgc: improvement related to bug #33. Type *announcement* now can
+    specify the base class of the declared class: "class B extends A;".
+    To declare that the class does not have any base class interesting to
+    opp_msgc, one must declare it as "extends void". See src/nedxml/ChangeLog
+    for examples and more details.
+
+Tkenv:
+  - message display strings made consistent with module display strings: the
+    "o" tag was removed, use "b=width,height,shape,color,borderwidth" instead.
+    Also, a special color name "kind" has been introduced, which maps
+    to a color depending on the message kind.
+
+  - fixed bug #34: in Fast mode, bubble didn't get displayed for recently
+    created modules
+
+Cmdenv/Tkenv:
+
+  - added -a option: lists all configurations and the number of runs in them
+
+  - bugfixes: --repeat and --constraint command-line options were ignored
+    when using -x option
+
+  - on the command-line, accept per-object configuration options, also without
+    object name pattern. Thus, both of the following are accepted, and are
+    equivalent:
+       opp_run --**.vector-recording=false
+       opp_run --vector-recording=false
+
+Tools:
+  - added opp_runall tool
+
+  - scavetool: renamed "summary" command to "list"; split the "filter" command
+    into "vector" and "scalar" commands. The new "scalar" command can apply
+    processing operations too. Currently it only supports the "scatter" operation,
+    which creates a scatter plot dataset from the scalars.
+
+  - opp_test: added a %extraargs option (was needed for new test/envir tests)
+
+Several bugfixes:
+  - see http://dev.omnetpp.org/bugs/changelog_page.php
+
+
+OMNeT++ 4.0rc1 (Dec 2008)
+-------------------------
 Improvements since beta 8:
 
 General:

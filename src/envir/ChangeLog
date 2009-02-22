@@ -1,5 +1,11 @@
 2009-02-21  Andras Varga
 
+	* on the command-line, accept per-object configuration options, also
+	without object name pattern. Thus, both of the following are accepted,
+	and are equivalent:
+	    opp_run --**.vector-recording=false
+	    opp_run --vector-recording=false
+
 	* bugfixes: --repeat and --constraint command-line options were ignored
 	when using -x option ("dump scenarios generated from config")
 
