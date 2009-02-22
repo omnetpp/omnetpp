@@ -15,57 +15,37 @@ IDE:
   - adds copyright headers to files; license may be declared with @license,
     and Tkenv displays it
 
-Simkernel:
-        * Several changes to make it easier to use the simulation kernel
-        as a C++ library, for embedding simulations into other programs:
+Simulation kernel:
+  There were several changes to make it easier to use the simulation kernel
+  as a C++ library, to embed simulations into programs:
 
-        * added cSimulation::clearLoadedNedFiles() function
+  - support for multiple instances of cSimulation. "simulation" is no longer
+    a global variable but a macro that expands to cSimulation::getActive-
+    Simulation(). Multiple cSimulation objects may coexist; before invoking
+    any function in the simulation library, the correct cSimulation instance
+    must be activated with cSimulation::setActiveSimulation().
 
-        - created cRunnableEnvir by factoring out run() method from cEnvir;
-        simulation user interfaces like Cmdenv or Tkenv subclass from
-        cRunnableEnvir, but other custom environment objects do not need to.
+  - one environment object per cSimulation instance. "ev" now maps to
+    cSimulation::getActiveEnvir(), which is short for cSimulation::getActive-
+    Simulation->getEnvir().
 
-        - added cNullEnvir, a default do-nothing implementation for cEnvir.
+  - added cNullEnvir, a default do-nothing implementation for cEnvir, from
+    which users can start subclassing their own custom environment objects
 
-        - cConfiguration split to a smaller cConfiguration plus a
-        cConfigurationEx class that adds the rest of the methods.
-        When the simulation kernel is used as library, only cConfiguration
-        needs to be implemented. cConfigurationEx is needed only when one
-        wants to plug in a different configuration object into the existing
-        Envir library, replacing SectionBasedConfig.
+  - created cRunnableEnvir by factoring out run() method from cEnvir;
+    simulation user interfaces like Cmdenv or Tkenv subclass from
+    cRunnableEnvir, but other custom environment objects do not need to.
 
-        - cSimulation now creates a cSequentialScheduler by default (no need
-        to do it manually); if it's not good, a different scheduler object
-        can be installed with the setScheduler() method.
+  - cConfiguration was split to a smaller cConfiguration plus a cConfigurationEx
+    class that adds the rest of the methods. When the simulation kernel is
+    used as library, only cConfiguration needs to be implemented.
+    cConfigurationEx is needed only when one wants to plug in a different
+    configuration object into the existing Envir library, replacing
+    SectionBasedConfig.
 
-        - support for multiple instances of cSimulation. "simulation" is
-        no longer a global variable but a macro that expands to
-        cSimulation::getActiveSimulation(). Multiple cSimulation objects
-        may coexist; before invoking any function in the simulation library,
-        the correct cSimulation instance must be activated with
-        cSimulation::setActiveSimulation().
-
-        - multiple environment objects may coexist; in fact, there must be
-        exactly one associated with every cSimulation instance. "ev" now
-        maps to cSimulation::getActiveEnvir() which is short for
-        cSimulation::getActiveSimulation->getEnvir(). cSimulation::
-        setActiveSimulation() which activates a cSimulation instance
-        also activates its corresponding environment object.
-
-        - added cSimulation::loadNedText(), to facilitate creating
-        self-contained executables by embedding NED source as string
-        literals.
-
-        - two new related examples: samples/embedding and samples/embedding2.
-
-        * csimulation.cc: simulation.init() gets called automatically, via
-        EXECUTE_ON_STARTUP()
-
-        * csimulation.cc: calls to scheduler->startRun()/endRun() merged into
-        cSimulation::startRun()/endRun()
-
-        * csimulation.cc: scheduler object now gets deleted by cSimulation, not
-        externally by Envir
+  - find more details and examples in the manual, in include/ChangeLog,
+    in src/sim/ChangeLog, and in the new sample simulations embedding
+    and embedding2.
 
 Samples:
   - added embedding examples
@@ -96,7 +76,6 @@ Tkenv:
     created modules
 
 Cmdenv/Tkenv:
-
   - added -a option: lists all configurations and the number of runs in them
 
   - bugfixes: --repeat and --constraint command-line options were ignored
