@@ -4,11 +4,11 @@ Tests scenario generation
 %inifile: omnetpp.ini
 [Config Bogus]
 *.a = ${a=1,2,korte}
-constraint = bubu > 1
+constraint = a > 1  # "korte" should generate an error here
 
 %extraargs: -g -x Bogus
 
 %exitcode: 1
 %contains: stderr
-Cannot evaluate constraint expression: Unknown iteration variable: bubu
+Wrong value for iteration variable a
 

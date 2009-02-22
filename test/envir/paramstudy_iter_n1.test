@@ -1,0 +1,14 @@
+%description:
+Tests scenario generation: referring to nonexistent iteration variable
+
+%inifile: omnetpp.ini
+[Config Test]
+*.foo = ${x=1..5}
+*.bar = ${bubu}
+
+%extraargs: -G -x Test
+
+%exitcode: 1
+
+%contains: stderr
+Scenario generator: no such variable: ${bubu}.
