@@ -95,7 +95,7 @@ class SIM_API cDefaultList : public cNoncopyableOwnedObject
     virtual bool isSoftOwner() const {return true;}
 
     /**
-     * Produces a one-line description of object contents.
+     * Produces a one-line description of the object's contents.
      * See cObject for more details.
      */
     virtual std::string info() const;

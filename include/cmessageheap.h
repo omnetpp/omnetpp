@@ -123,7 +123,7 @@ class SIM_API cMessageHeap : public cOwnedObject
     virtual cMessageHeap *dup() const  {return new cMessageHeap(*this);}
 
     /**
-     * Produces a one-line description of object contents.
+     * Produces a one-line description of the object's contents.
      * See cObject for more details.
      */
     virtual std::string info() const;

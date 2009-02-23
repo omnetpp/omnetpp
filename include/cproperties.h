@@ -85,7 +85,7 @@ class SIM_API cProperties : public cObject
     virtual const char *getName() const  {return "properties";}
 
     /**
-     * Produces a one-line description of object contents.
+     * Produces a one-line description of the object's contents.
      */
     virtual std::string info() const;
 

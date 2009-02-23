@@ -43,7 +43,7 @@ class  cModuleType;
 class  cEnvir;
 class  cDefaultList;
 
-SIM_API extern cDefaultList defaultList; //XXX twice
+SIM_API extern cDefaultList defaultList; // also in globals.h
 
 /**
  * The active simulation manager instance.

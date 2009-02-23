@@ -90,7 +90,7 @@ class SIM_API cOutVector : public cNoncopyableOwnedObject
     virtual void setName(const char *name);
 
     /**
-     * Produces a one-line description of object contents.
+     * Produces a one-line description of the object's contents.
      * See cObject for more details.
      */
     virtual std::string info() const;

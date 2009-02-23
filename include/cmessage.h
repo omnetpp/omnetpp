@@ -106,7 +106,7 @@ enum eMessageKind
  *
  * @ingroup SimCore
  */
-//XXX optimize? are there too many useless fields, like created,frommod,fromgate (note: sendtime and tstamp *do* actually get used in practice)
+//XXX note: sizeof(cMessage) could be made a little smaller: the fields created, frommod, fromgate are rarely used by models (note: sendtime and tstamp *do* get used in practice)
 class SIM_API cMessage : public cOwnedObject
 {
     friend class cMessageHeap;
@@ -129,7 +129,7 @@ class SIM_API cMessage : public cOwnedObject
     int heapindex;             // used by cMessageHeap (-1 if not on heap)
     unsigned long insertordr;  // used by cMessageHeap
 
-    eventnumber_t prev_event_num; // event number of the sending, scheduling this message
+    eventnumber_t prev_event_num; // event number of the sending/scheduling this message
 
     long msgid;                // a unique message identifier assigned upon message creation
     long msgtreeid;            // a message identifier that is inherited by dup, if non dupped it is msgid
@@ -221,7 +221,7 @@ class SIM_API cMessage : public cOwnedObject
     virtual cMessage *dup() const  {return new cMessage(*this);}
 
     /**
-     * Produces a one-line description of object contents.
+     * Produces a one-line description of the object's contents.
      * See cObject for more details.
      */
     virtual std::string info() const;
@@ -766,7 +766,7 @@ class SIM_API cPacket : public cMessage
     virtual cPacket *dup() const  {return new cPacket(*this);}
 
     /**
-     * Produces a one-line description of object contents.
+     * Produces a one-line description of the object's contents.
      * See cObject for more details.
      */
     virtual std::string info() const;

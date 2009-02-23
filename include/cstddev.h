@@ -76,7 +76,7 @@ class SIM_API cStdDev : public cStatistic
     virtual cStdDev *dup() const  {return new cStdDev(*this);}
 
     /**
-     * Produces a one-line description of object contents.
+     * Produces a one-line description of the object's contents.
      * See cObject for more details.
      */
     virtual std::string info() const;
@@ -267,7 +267,7 @@ class SIM_API cWeightedStdDev : public cStdDev
     virtual cWeightedStdDev *dup() const  {return new cWeightedStdDev(*this);}
 
     /**
-     * Produces a one-line description of object contents.
+     * Produces a one-line description of the object's contents.
      * See cObject for more details.
      */
     virtual std::string info() const;

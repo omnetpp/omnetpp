@@ -76,7 +76,7 @@ class SIM_API cPacketQueue : public cQueue
     virtual cPacketQueue *dup() const  {return new cPacketQueue(*this);}
 
     /**
-     * Produces a one-line description of object contents.
+     * Produces a one-line description of the object's contents.
      * See cObject for more details.
      */
     virtual std::string info() const;

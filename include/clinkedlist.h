@@ -180,7 +180,7 @@ class SIM_API CLINKEDLIST_DEPRECATED cLinkedList : public cOwnedObject
     virtual cLinkedList *dup() const  {return new cLinkedList(*this);}
 
     /**
-     * Produces a one-line description of object contents.
+     * Produces a one-line description of the object's contents.
      * See cObject for more details.
      */
     virtual std::string info() const;

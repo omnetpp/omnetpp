@@ -28,35 +28,36 @@ class cQueue;
 class cCoroutine;
 
 /**
- * Base class for all simple module classes.
- * cSimpleModule, although stuffed with simulation-related functionality,
- * doesn't do anything useful by itself: one has to subclass from it
- * and redefine one or more virtual member functions to make it do useful work:
+ * Base class for all simple module classes. cSimpleModule, although packed
+ * with simulation-related functionality, doesn't do anything useful by itself:
+ * one has to subclass from it and redefine one or more virtual member
+ * functions to make it do useful work. These functions are:
  *
  *    - void initialize()
  *    - void handleMessage(cMessage *msg)
  *    - void activity()
  *    - void finish()
  *
- * initialize() is called after \opp created the module.
+ * initialize() is called after \opp created the module. Multi-stage
+ * initialization can be achieved by redefining the initialize(int stage)
+ * method instead, and also redefining the numInitStages() const method to
+ * return the required number of stages.
  *
- * One has to redefine handleMessage() to contain
- * the internal logic of the module. handleMessage() is called
- * by the simulation kernel when the module receives a message.
- * (An alternative to handleMessage() is activity(), but activity()
- * is not recommended for serious model development because of
- * scalability and debuggability problems. It also tends to lead
- * to messy simple module implementations.)
+ * One has to redefine handleMessage() to contain the internal logic of
+ * the module. handleMessage() is called by the simulation kernel when the
+ * module receives a message. (An alternative to handleMessage() is
+ * activity(), but activity() is not recommended for serious model development
+ * because of scalability and debugging issues. activity() also tends to lead
+ * to messy module implementations.)
  *
- * You can send() messages to other modules, or use scheduleAt() +
- * cancelEvent() to implement delays, timers or timeouts.
- * Messages sent or scheduled (but not cancelled) are delivered
- * to modules via handleMessage(), or (if using activity()) via
- * receive().
+ * You can send() messages to other modules, or use scheduleAt()+cancelEvent()
+ * to implement delays, timers or timeouts. Messages sent or scheduled (but
+ * not cancelled) are delivered to modules via handleMessage(), or, when using
+ * activity(), via receive().
  *
  * The finish() functions are called when the simulation terminates
- * successfully. Typical use of finish() is recording statistics
- * collected during simulation.
+ * successfully. Typical use of finish() is recording statistics collected
+ * during simulation.
  *
  * @ingroup SimCore
  */
@@ -142,7 +143,7 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
     /** @name Redefined cObject member functions. */
     //@{
     /**
-     * Produces a one-line description of object contents.
+     * Produces a one-line description of the object's contents.
      * See cObject for more details.
      */
     virtual std::string info() const;
@@ -309,9 +310,22 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
      * dedicated gates for receiving via sendDirect(). You cannot have a gate
      * which receives messages via both connections and sendDirect().
      *
-     * The time the message gets delivered to the receiver depends on the
-     * deliverOnReceptionStart....TODO
-     * XXX refine, e.g. cover duration and inputGate.setDeliverOnReceptionStart() !!!
+     * When a nonzero duration is given, that signifies the duration of the packet
+     * transmission, that is, the time difference between the transmission (or
+     * reception) of the start of the packet and that of the end of the packet.
+     * The destination module can choose whether it wants the simulation kernel
+     * to deliver the packet object to it at the start or at the end of the
+     * reception. The default is the latter; the module can change it by calling
+     * setDeliverOnReceptionStart() on the final input gate (that is, on
+     * inputGate->getPathEndGate()). setDeliverOnReceptionStart() needs to be
+     * called in advance, for example in the initialize() method of the module.
+     * When a module receives a packet, it can call the isReceptionStart() and
+     * getDuration() methods on the packet to find out whether it represents
+     * the start or the end of the reception, and the duration of the
+     * transmission.
+     *
+     * For messages that are not packets (i.e. not subclassed from cPacket),
+     * the duration parameter is ignored, that is, it will be taken as zero.
      */
     int sendDirect(cMessage *msg, simtime_t propagationDelay, simtime_t duration, cGate *inputGate);
     //@}

@@ -71,7 +71,7 @@ class SIM_API cChannel : public cComponent //implies noncopyable
     /** @name Redefined cObject member functions. */
     //@{
     /**
-     * Produces a one-line description of object contents.
+     * Produces a one-line description of the object's contents.
      * See cObject for more details.
      */
     virtual std::string info() const;
@@ -145,7 +145,10 @@ class SIM_API cChannel : public cComponent //implies noncopyable
     cGate *getSourceGate() const  {return srcgatep;}
 
     /**
-     * XXX ilyenbol csak 1 lehet a path-ban
+     * Returns true if the channel models a nonzero-duration transmission,
+     * that is, sets the duration field of cPacket. Only one transmission
+     * channel is allowed per connection path (see cGate methods getPreviousGate(),
+     * getNextGate(), getPathStartGate(), getPathEndGate()).
      */
     virtual bool isTransmissionChannel() const = 0;
     //@}

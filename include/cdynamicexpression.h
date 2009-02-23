@@ -278,7 +278,7 @@ class SIM_API cDynamicExpression : public cExpression
     virtual cDynamicExpression *dup() const  {return new cDynamicExpression(*this);}
 
     /**
-     * Produces a one-line description of object contents.
+     * Produces a one-line description of the object's contents.
      * See cObject for more details.
      */
     virtual std::string info() const;

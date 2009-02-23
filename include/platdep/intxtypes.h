@@ -18,7 +18,7 @@
 
 #include <limits.h>   // __WORDSIZE
 
-//XXX we may need to determine HAVE_STDINT_H in configure
+// All systems except Visual C++ are expected to have <stdint.h>
 #if defined SWIG || defined _MSC_VER
 #define HAVE_STDINT_H 0
 #else

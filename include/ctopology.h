@@ -362,7 +362,7 @@ class SIM_API cTopology : public cOwnedObject
     virtual cTopology *dup() const  {return new cTopology(*this);}
 
     /**
-     * Produces a one-line description of object contents.
+     * Produces a one-line description of the object's contents.
      * See cObject for more details.
      */
     virtual std::string info() const;

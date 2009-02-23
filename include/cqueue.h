@@ -44,11 +44,11 @@ typedef int (*CompareFunc)(cObject *a, cObject *b);
  * cQueue may be set up to act as a priority queue. This requires the user to
  * supply a comparison function.
  *
- * By default, cQueue's destructor deletes all contained objects. This behaviour
- * can be changed by calling setTakeOwnership(false) before inserting objects.
- * More precisely, the behaviour can be controlled per-object: the
- * insertion-time state of the <i>takeOwnership</i> flag will determine
- * whether the inserted object will be deleted by the cQueue destructor or not.
+ * Ownership of cOwnedObjects may be controlled by invoking setTakeOwnership()
+ * prior to inserting objects. Objects that cannot track their ownership
+ * (cObject but not cOwnedObject) are always treated as owned. Whether an
+ * object is owned or not affects the operation of the destructor, clean(),
+ * the copy constructor and the dup() method.
  *
  * @see Iterator
  * @ingroup Containers
@@ -164,14 +164,14 @@ class SIM_API cQueue : public cOwnedObject
     //@{
 
     /**
-     * Duplication and assignment work all right with cQueue.
+     * Duplication and assignment are supported by cQueue.
      * Contained objects that are owned by the queue will be duplicated
      * so that the new queue will have its own copy of them.
      */
     virtual cQueue *dup() const  {return new cQueue(*this);}
 
     /**
-     * Produces a one-line description of object contents.
+     * Produces a one-line description of the object's contents.
      * See cObject for more details.
      */
     virtual std::string info() const;

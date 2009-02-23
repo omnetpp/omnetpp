@@ -37,13 +37,12 @@ class  cModuleType;
  * cModule provides gates, parameters, RNG mapping, display strings,
  * and a set of virtual methods.
  *
- * For navigating around in the module tree, see:
+ * For navigating the module tree, see:
  * getParentModule(), getSubmodule(), cModule::SubmoduleIterator,
  * getModuleByRelativePath(), cSimulation::getModuleByPath().
  *
  * @ingroup SimCore
  */
-//XXX write better comment
 class SIM_API cModule : public cComponent //implies noncopyable
 {
     friend class cGate;

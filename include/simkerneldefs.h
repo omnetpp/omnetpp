@@ -25,8 +25,7 @@
 #include "platdep/platdefs.h"
 #include "platdep/intxtypes.h"
 
-// OMNeT++ version -- must match NEDC_VERSION and MSGC_VERSION in nedxml!
-//XXX move to platdefs.h? and remove NEDC_VERSION
+// OMNeT++ version -- must match NEDC_VERSION and MSGC_VERSION in nedxml
 #define OMNETPP_VERSION 0x0400
 
 #if defined(SIM_EXPORT)

@@ -170,7 +170,7 @@ class SIM_API cGate : public cObject, noncopyable
     virtual void forEachChild(cVisitor *v);
 
     /**
-     * Produces a one-line description of object contents.
+     * Produces a one-line description of the object's contents.
      * See cObject for more details.
      */
     virtual std::string info() const;

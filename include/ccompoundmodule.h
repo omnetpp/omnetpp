@@ -55,7 +55,7 @@ class SIM_API cCompoundModule : public cModule //implies noncopyable
     /** @name Redefined cObject member functions. */
     //@{
     /**
-     * Produces a one-line description of object contents.
+     * Produces a one-line description of the object's contents.
      * See cObject for more details.
      */
     virtual std::string info() const;

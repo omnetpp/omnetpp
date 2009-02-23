@@ -66,7 +66,7 @@ class SIM_API cExpression : public cObject
     virtual cExpression *dup() const {copyNotSupported(); return NULL;}
 
     /**
-     * Produces a one-line description of object contents.
+     * Produces a one-line description of the object's contents.
      * See cObject for more details.
      */
     virtual std::string info() const {return "";}

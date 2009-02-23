@@ -31,15 +31,11 @@ NAMESPACE_BEGIN
  * cArray works as an array, but if it gets full, it grows automatically by
  * a specified delta.
  *
- * By default, cArray's destructor deletes all contained objects. This behaviour
- * can be changed by calling setTakeOwnership(false) before inserting objects.
- * More precisely, the behaviour can be controlled per-object: the
- * insertion-time state of the <i>takeOwnership</i> flag will determine
- * whether the inserted object will be deleted by the cArray destructor or not.
- *
-//FIXME even more complicated: non-cOwnedObject ones are NOT deleted, ever;
-// even if their getOwner() returns the array
-//cOwnedObjects are only deleted if their owner is the array
+ * Ownership of cOwnedObjects may be controlled by invoking setTakeOwnership()
+ * prior to inserting objects. Objects that cannot track their ownership
+ * (cObject but not cOwnedObject) are always treated as owned. Whether an
+ * object is owned or not affects the operation of the destructor, clean(),
+ * the copy constructor and the dup() method.
  *
  * @ingroup Containers
  */
@@ -114,8 +110,7 @@ class SIM_API cArray : public cOwnedObject
 
     /**
      * Copy constructor. Contained objects that are owned by cArray
-     * (that is, whose getOwner() is the cArray) will
-     * be duplicated so that the new cArray will have its own
+     * will be duplicated so that the new cArray will have its own
      * copy of them.
      */
     cArray(const cArray& list);
@@ -146,14 +141,14 @@ class SIM_API cArray : public cOwnedObject
     //@{
 
     /**
-     * Duplication and assignment work all right with cArray.
+     * Duplication and assignment are supported by cArray.
      * Contained objects that are owned by cArray will be duplicated
      * so that the new cArray will have its own copy of them.
      */
     virtual cArray *dup() const  {return new cArray(*this);}
 
     /**
-     * Produces a one-line description of object contents.
+     * Produces a one-line description of the object's contents.
      * See cObject for more details.
      */
     virtual std::string info() const;
@@ -190,8 +185,8 @@ class SIM_API cArray : public cOwnedObject
     int size() const {return last+1;}
 
     /**
-     * As a result, the container will be empty. Contained objects that
-     * were owned by the container will be deleted.
+     * Makes the container empty. Contained objects that were owned by the
+     * container will be deleted.
      */
     void clear();
 

@@ -306,7 +306,7 @@ Simulation library:
         (ie. pointer types are incompatible). Useful with message subclassing.
 
 (!!!)   MSVC compile flags change: exception handling and RTTI MUST be ON
-        from now. You must compile EVERY source flie using /GR, otherwise
+        from now. You must compile EVERY source file using /GR, otherwise
         simulations will crash with RTTI exception!
 
 (!)     redefining className() in your classes is now not necessary (because

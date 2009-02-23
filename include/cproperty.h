@@ -118,7 +118,7 @@ class SIM_API cProperty : public cNamedObject
     virtual cProperty *dup() const   {return new cProperty(*this);}
 
     /**
-     * Produces a one-line description of object contents.
+     * Produces a one-line description of the object's contents.
      */
     virtual std::string info() const;
 

@@ -156,7 +156,7 @@ class SIM_API cMsgPar : public cOwnedObject
     virtual cMsgPar *dup() const  {return new cMsgPar(*this);}
 
     /**
-     * Produces a one-line description of object contents.
+     * Produces a one-line description of the object's contents.
      * See cObject for more details.
      */
     virtual std::string info() const;
