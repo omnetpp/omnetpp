@@ -1327,18 +1327,22 @@ proc modelinfo_dialog {{w ""}} {
     foreach typeptr $typeptrs {
         set typename [opp_getobjectfullname $typeptr]
         set lc [opp_getobjectfield $typeptr lcprop]
-        if {$isapl} {
-            if {$lc==""} {
-                set lc "UNSPECIFIED*"; set unspec 1
-            } elseif {[string first $lc "GPL LGPL BSD"]==-1} {
-                set lc "$lc - INVALID LICENSE*"; set inval 1
-            }
+        if {$lc=="omnetpp"} {
+            append msg "  $typename   (part of OMNeT++)\n"
         } else {
-            if {$lc==""} {
-                set lc "unspecified*"; set unspec 1
+            if {$isapl} {
+                if {$lc==""} {
+                    set lc "UNSPECIFIED*"; set unspec 1
+                } elseif {[string first $lc "GPL LGPL BSD"]==-1} {
+                    set lc "$lc - INVALID LICENSE*"; set inval 1
+                }
+            } else {
+                if {$lc==""} {
+                    set lc "unspecified*"; set unspec 1
+                }
             }
+            append msg "  $typename   (license: $lc)\n"
         }
-        append msg "  $typename   (license: $lc)\n"
     }
     if {$isapl && $unspec} {
         append msg "\nModule licenses may be declared in the package.ned file, with @license(<license>). OMNeT++ recognizes the following licenses: GPL, LGPL, BSD.\n"

@@ -20,3 +20,6 @@ package org.omnetpp.queueing;
 
 // C++ classes are in the 'queueing' namespace
 @namespace(queueing);
+
+// this sample simulation is part of OMNeT++
+@license(omnetpp);

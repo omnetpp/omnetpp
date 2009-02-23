@@ -135,7 +135,7 @@ double simulateAloha(simtime_t limit, int numHosts, double iaMean)
     }
 
     if (ok)
-        sim->callFinish();  //FIXME what if there's an exception during finish()?
+        sim->callFinish();  //XXX may throw exception
 
     // finish the simulation and clean up the network
     sim->endRun();
