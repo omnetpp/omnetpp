@@ -58,14 +58,14 @@ The NED path can be specified in several ways:
 \begin{itemize}
   \item using the \ttt{NEDPATH} environment variable
   \item using the \ttt{-n} command-line option
-  \item in ini files, with the \ttt{ned-path} configuration option
+  \item in ini files, with the \fconfig{ned-path} configuration option
 \end{itemize}
 
 NED path resolution rules are as follows:
 \begin{itemize}
   \item {\opp} checks for NED path specified on the command line with the \ttt{-n} option
   \item if not found on the command line, it checks for the NEDPATH environment variable
-  \item the \ttt{ned-path} entry from the ini file gets appended to the result of the above steps
+  \item the \fconfig{ned-path} entry from the ini file gets appended to the result of the above steps
   \item if the result is still empty, it falls back to "." (the current directory)
 \end{itemize}
 
@@ -185,22 +185,22 @@ The above example will load the model found in \ttt{libmymodel.so} and execute i
 There are several useful configuration options that control how a simulation is run.
 
 \begin{itemize}
-  \item \ttt{cmdenv-express-mode} -- Provides only minimal status updates on the console.
-  \item \ttt{cmdenv-interactive} -- Allows asking interactively for missing
+  \item \fconfig{cmdenv-express-mode} -- Provides only minimal status updates on the console.
+  \item \fconfig{cmdenv-interactive} -- Allows asking interactively for missing
         parameter values.
-  \item \ttt{cmdenv-status-frequency} -- How often the status is written to the console.
-  \item \ttt{cpu-time-limit} -- Limit how long the simulation should run (in wall clock time)
-  \item \ttt{sim-time-limit} -- Limit how long the simulation should run (in simulation time)
-  \item \ttt{debug-on-errors} -- If the runtime detects any error it will generate a breakpoint
+  \item \fconfig{cmdenv-status-frequency} -- How often the status is written to the console.
+  \item \fconfig{cpu-time-limit} -- Limit how long the simulation should run (in wall clock time)
+  \item \fconfig{sim-time-limit} -- Limit how long the simulation should run (in simulation time)
+  \item \fconfig{debug-on-errors} -- If the runtime detects any error it will generate a breakpoint
         so you will be able to check the location and the context of the problem in your debugger.
-  \item \ttt{fingerprint} -- The simulation kernel computes a checksum while running the simulation.
+  \item \fconfig{fingerprint} -- The simulation kernel computes a checksum while running the simulation.
           It is calculated from the module id and from the current simulation time of each event.
-          If you specify the \ttt{fingerprint} option in the config file, the simulation runtime will
-          comapre the computed checksum with the provided one. If there is a difference it will
+          If you specify the \fconfig{fingerprint} option in the config file, the simulation runtime will
+          compare the computed checksum with the provided one. If there is a difference it will
           generate an error. This feature is very useful if you make some cosmetic changes to your
           source and want to be reasonable sure that your changes did not altered the behaviour
           f the model.
-  \item \ttt{record-eventlog} -- You can turn on the recording of the simulator events. The
+  \item \fconfig{record-eventlog} -- You can turn on the recording of the simulator events. The
            resulting file can be analyzed later in the IDE with the sequence chart tool.
 \end{itemize}
 
@@ -298,7 +298,7 @@ ini file sections; if no runs are specified in the ini file, Cmdenv does one run
 The -r command line option overrides this ini file setting.
 
 
-Cmdenv can be executed in two modes, selected by the \ttt{cmdenv-express-mode}
+Cmdenv can be executed in two modes, selected by the \fconfig{cmdenv-express-mode}
 ini file option:
 
 \begin{itemize}
@@ -310,12 +310,13 @@ ini file option:
         simulation.
 \end{itemize}
 
-\fpar{cmdenv-performance-display} affects express mode only: it controls
+\fconfig{cmdenv-performance-display} affects express mode only: it controls
 whether to print performance information. Turning it on results in a 3-line
 entry printed on each update, containing ev/sec, simsec/sec, ev/simsec,
 number of messages created/still present/currently scheduled in FES\index{FES}.
 
-For a full list of options, see the cmdenv-* in the appendix
+For a full list of options, see the ones beginning with \ttt{cmdenv} in
+Appendix \ref{cha:config-options}.
 
 
 \subsection{Interpreting Cmdenv output}
@@ -422,21 +423,21 @@ option allows only specifying a single run. Multiple runs are not supported.
 
 Tkenv configuration options:
 \begin{itemize}
-  \item{\ttt{tkenv-default-config}:
+  \item{\fconfig{tkenv-default-config}:
     Specifies which config Tkenv should set up automatically on startup. The
     default is to ask the user.}
 
-  \item{\ttt{tkenv-default-run}: Specifies which run (of the default
+  \item{\fconfig{tkenv-default-run}: Specifies which run (of the default
     config, see tkenv-default-config) Tkenv
     should set up automatically on startup. The default is to ask the user.}
 
-  \item{\ttt{tkenv-extra-stack}:
+  \item{\fconfig{tkenv-extra-stack}:
     Specifies the extra amount of stack that is reserved for each activity()
     simple module when the simulation is run under Tkenv.}
 
-  \item{\ttt{tkenv-image-path}: Specifies the path for loading module icons.}
+  \item{\fconfig{tkenv-image-path}: Specifies the path for loading module icons.}
 
-  \item{\ttt{tkenv-plugin-path}:
+  \item{\fconfig{tkenv-plugin-path}:
     Specifies the search path for Tkenv plugins. Tkenv plugins are .tcl files
     that get evaluated on startup.}
 \end{itemize}
@@ -469,8 +470,8 @@ justification for this purpose.
 
 Of course before running simulation batches you must set a condition to
 stop your simulation. This is usually a time limit set by the
-\ttt{sim-time-limit} configuration option, but you can limit your simulation
-by using wall clock time (\ttt{cpu-time-limit}) or by directly ending a
+\fconfig{sim-time-limit} configuration option, but you can limit your simulation
+by using wall clock time (\fconfig{cpu-time-limit}) or by directly ending a
 simulation with an API call if some condition is true.
 
 \subsection{Using Cmdenv}
@@ -755,7 +756,7 @@ on all computers in the cluster. However, because all {\opp} simulation
 processes run with the same settings, they would overwrite each other's
 output files (e.g. \ttt{omnetpp.vec}, \ttt{omnetpp.sca}).
 Your can prevent this from happening using the
-\ttt{fname-append-host} ini file entry:
+\fconfig{fname-append-host} ini file entry:
 
 \begin{inifile}
 [General]
