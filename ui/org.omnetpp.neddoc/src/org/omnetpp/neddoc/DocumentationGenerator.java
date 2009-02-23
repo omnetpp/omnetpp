@@ -32,6 +32,7 @@ import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.WordUtils;
+import org.eclipse.core.internal.preferences.Base64;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -62,6 +63,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageLoader;
+import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.IConstants;
 import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.common.util.FileUtils;
@@ -113,9 +115,6 @@ import org.omnetpp.neddoc.properties.DocumentationGeneratorPropertyPage;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.sun.org.apache.xml.internal.security.exceptions.Base64DecodingException;
-import com.sun.org.apache.xml.internal.security.utils.Base64;
-
 import de.unikassel.imageexport.exporters.ImageExporter;
 import de.unikassel.imageexport.exporters.ImageExporterDescriptor;
 import de.unikassel.imageexport.exporters.PNGImageExporter;
@@ -144,6 +143,7 @@ import de.unikassel.imageexport.wizards.ExportImagesOfDiagramFilesOperation;
  *  
  * @author levy
  */
+@SuppressWarnings("restriction")
 public class DocumentationGenerator {
     // Watermark images. We don't load them from the jar file -- that would
     // make them a little too easy to get rid of.  --Andras
@@ -203,13 +203,7 @@ public class DocumentationGenerator {
     protected int treeFolderIndex = 0;
     
     static Image createImage(String base64Data) {
-        try {
-            return new Image(null, new ImageData(new ByteArrayInputStream(Base64.decode(base64Data))));
-        }
-        catch (Base64DecodingException e) {
-            NeddocPlugin.logError(e);
-            return null;
-        }
+        return new Image(Display.getDefault(), new ImageData(new ByteArrayInputStream(Base64.decode(base64Data.getBytes()))));
     }
     
     public DocumentationGenerator(IProject project) {
