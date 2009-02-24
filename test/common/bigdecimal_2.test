@@ -4,6 +4,7 @@ Tests the BigDecimal::BigDecimal(double) method
 %includes:
 
 #include <iostream>
+#include <iomanip>
 #include "bigdecimal.h"
 
 %global:
@@ -12,9 +13,6 @@ static double zero = 0.0;
 
 static void convertAndPrint(double d)
 {
-    ev.precision(16);
-    ev << d;
-    ev << " ==> ";
     try {
         BigDecimal bd(d);
         ev << bd.str() << ", intVal=" << bd.getIntValue() << ", scale=" << bd.getScale() <<"\n";
@@ -25,45 +23,45 @@ static void convertAndPrint(double d)
 
 %activity:
 
-#define T(x) convertAndPrint(x)
+#define T(x) ev << #x <<  " ==> "; convertAndPrint(x)
 
 ev << "\n";
 
 // positive cases
-T(0);
-T(1);
-T(-1);
-T(1234567890123456);
+T(0.0);
+T(1.0);
+T(-1.0);
+T(1234567890123456.0);
 T(1234567890123.456);
 T(1234567890.123456);
 T(123456.7890123456);
 T(123.4567890123456);
 T(0.1234567890123456);
-T(-1234567890123456);
+T(-1234567890123456.0);
 T(zero/zero);
 T(1/zero);
 T(-1/zero);
 
 // negative cases
-T(12345678901234567890); // overflow
+T(12345678901234567890.0); // overflow
 
 
 ev << ".\n";
 
 
 %contains: stdout
-0 ==> 0, intVal=0, scale=0
-1 ==> 1, intVal=1, scale=0
--1 ==> -1, intVal=-1, scale=0
-1234567890123456 ==> 1234567890123456, intVal=1234567890123456, scale=0
+0.0 ==> 0, intVal=0, scale=0
+1.0 ==> 1, intVal=1, scale=0
+-1.0 ==> -1, intVal=-1, scale=0
+1234567890123456.0 ==> 1234567890123456, intVal=1234567890123456, scale=0
 1234567890123.456 ==> 1234567890123.456053, intVal=1234567890123456053, scale=-6
 1234567890.123456 ==> 1234567890.123456, intVal=1234567890123456, scale=-6
 123456.7890123456 ==> 123456.7890123456015, intVal=1234567890123456015, scale=-13
 123.4567890123456 ==> 123.4567890123455806, intVal=1234567890123455806, scale=-16
 0.1234567890123456 ==> 0.123456789012345579, intVal=123456789012345579, scale=-18
--1234567890123456 ==> -1234567890123456, intVal=-1234567890123456, scale=0
--1.#IND ==> NaN, intVal=0, scale=2147483647
-1.#INF ==> +Inf, intVal=1, scale=2147483647
--1.#INF ==> -Inf, intVal=-1, scale=2147483647
-1.234567890123457e+019 ==> ERROR: BigDecimal::normalize(): arithmetic overflow
+-1234567890123456.0 ==> -1234567890123456, intVal=-1234567890123456, scale=0
+zero/zero ==> NaN, intVal=0, scale=2147483647
+1/zero ==> +Inf, intVal=1, scale=2147483647
+-1/zero ==> -Inf, intVal=-1, scale=2147483647
+12345678901234567890.0 ==> ERROR: BigDecimal::normalize(): arithmetic overflow
 .
