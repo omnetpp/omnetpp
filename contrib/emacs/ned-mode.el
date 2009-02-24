@@ -52,10 +52,10 @@ Special commands:
 (defvar ned-font-lock-keywords
   '(("//.*" . font-lock-comment-face)
     ("\".*\"" . font-lock-string-face)
-    ("\\<\\(nocheck\\|if\\)\\>" . font-lock-keyword-face)
-    ("\\<\\(submodules\\|machines\\|display\\|gatesizes\\|gates\\|in\\|out\\|parameters\\|on\\|connections\\)\\>.*:" 1 font-lock-keyword-face)
-    ("\\<\\(include\\|channel\\|endchannel\\|delay\\|error\\|datarate\\|simple\\|endsimple\\|module\\|endmodule\\|network\\|endnetwork\\|const\\|numeric\\|string\\|bool\\|char\\|anytype\\|ancestor\\|ref\\)\\>" 1 font-lock-keyword-face)
-    ("\\(channel\\|simple\\|module\\|network\\)[ \t]*\\([A-Za-z0-9_-]*\\)" 2 font-lock-function-name-face)
+    ("\\<\\(allowunconnected\\|if\\)\\>" . font-lock-keyword-face)
+    ("\\<\\(types\\|submodules\\|gates\\|input\\|output\\|inout\\|parameters\\|connections\\)\\>.*:" 1 font-lock-keyword-face)
+    ("\\<\\(package\\|property\\|channel\\|channelinterface\\|simple\\|module\\|moduleinterface\\|network\\|const\\|volatile\\|extends\\|index\\|like\\|default\\|sizeof\\|this\\|true\\false\\||input\\|int\\|double\\|string\\|bool\\|char\\|xml\\|xmldoc\\)\\>" 1 font-lock-keyword-face)
+    ("\\(package\\|import\\|channel\\|channelinterface\\|simple\\|moduleinterface\\|module\\|network\\)[ \t]*\\([A-Za-z0-9_-]*\\)" 2 font-lock-function-name-face)
 ;;    ("\\(.*\\)[ \t]*:" 1 font-lock-function-name-face)
     ("[ \t]*\\(for\\).*\\(\\.\\.\\|to\\).*\\(do\\)"
      (1 font-lock-keyword-face)

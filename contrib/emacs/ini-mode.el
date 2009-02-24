@@ -50,9 +50,7 @@ Special commands:
 )
 
 (defvar ini-font-lock-keywords
-  '(("//.*" . font-lock-comment-face)
-    (";.*" . font-lock-comment-face)
-    ("#.*" . font-lock-comment-face)
+  '(("#.*" . font-lock-comment-face)
     ("\".*\"" . font-lock-string-face)
     ("\\[.*\\]" . font-lock-keyword-face)
     )
