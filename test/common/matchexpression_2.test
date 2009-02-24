@@ -32,7 +32,7 @@ dottedpath = true;
 fullstring = true;
 casesensitive = true;
 
-cMessage *msg = new cMessage("hello");
+cPacket *msg = new cPacket("hello");
 msg->setKind(42);
 msg->setBitLength(999);
 
@@ -41,19 +41,19 @@ match("he* AND *lo", msg);
 match("bubu", msg);
 match("kind(42)", msg);
 match("kind(41)", msg);
-match("length({990..1000})", msg);
-match("length({980..990})", msg);
+match("bitLength({990..1000})", msg);
+match("bitLength({980..990})", msg);
 
 ev << "done\n";
 
 %exitcode: 0
 
 %contains: stdout
-hello | (cMessage)hello --> true
-he* AND *lo | (cMessage)hello --> true
-bubu | (cMessage)hello --> false
-kind(42) | (cMessage)hello --> true
-kind(41) | (cMessage)hello --> false
-length({990..1000}) | (cMessage)hello --> true
-length({980..990}) | (cMessage)hello --> false
+hello | (cPacket)hello --> true
+he* AND *lo | (cPacket)hello --> true
+bubu | (cPacket)hello --> false
+kind(42) | (cPacket)hello --> true
+kind(41) | (cPacket)hello --> false
+bitLength({990..1000}) | (cPacket)hello --> true
+bitLength({980..990}) | (cPacket)hello --> false
 done

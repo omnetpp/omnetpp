@@ -10,7 +10,6 @@ Tests the BigDecimal operator+.
 
 static void add(const char *x, const char *y)
 {
-//    ev.precision(16);
     ev << x << "," << y;
     ev << ": ";
     try {
