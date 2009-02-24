@@ -1030,9 +1030,8 @@ requirement, you can annotate selected gates with the \ttt{@loose}
 property, which turns off connectivity check for that gate. Also, input
 gates that solely exist so that the module can receive messages via
 \ffunc{sendDirect()} (see \ref{sec:simple-modules:direct-sending}) should
-be annotated with \ttt{@directIn}. (\ttt{@directIn} gates must remain
-unconnected.) It is also possible to turn off connectivity check for all
-gates within a compound module, by specifying the
+be annotated with \ttt{@directIn}. It is also possible to turn off connectivity
+check for all gates within a compound module, by specifying the
 \fkeyword{allowunconnected} keyword in the module's connections section.
 
 Let us see some examples.
