@@ -47,8 +47,9 @@ blockColor: myLightGray
 # Reserved words
 
 color: myDarkYellow, normal, myDarkYellow, normal
-token: %activity %contains %description %exitcode %file %global %ignore-exitcode
-token: %inifile %module %module_a %module_b %not-contains
+token: %description %activity %includes %global %module %module_a %module_b %inifile %file %network %subst
+token: %contains %not-contains %contains-regex %not-contains-regex
+token: %env %testprog %extraargs %exitcode %ignore-exitcode
 
 color: blue, normal, blue, bold
 token: asm auto break case catch cdecl char class const continue default delete
