@@ -43,10 +43,10 @@ blockColor: myLightGray
 # Reserved words
 
 color: blue, normal, blue, bold
-token: ancestor any bool channel connections const datarate delay display do endchannel
-token: endfor endmodule endnetwork endsimple error false for gates gatesizes if
-token: import in index input like machines module network nocheck numeric on out
-token: parameters ref simple sizeof string submodules true
+token: allowunconnected bool channel channelinterface connections const
+token: default double extends false for gates if import index inout input int like
+token: module moduleinterface network output package parameters property simple
+token: sizeof string submodules this true types volatile xml xmldoc
 
 # Comments
 color: darkcyan, normal, darkcyan, normal
