@@ -748,7 +748,7 @@ simple App
 }
 \end{ned}
 
-XXX explain the example
+%% XXX explain the example
 
 
 \subsubsection{Values}
@@ -849,22 +849,22 @@ numeric, string, stochastic and other functions (\ttt{fabs()}, \ttt{toUpper()},
     in XXX.
 \end{note}
 
-XXX also sources of random numbers
+%% XXX also sources of random numbers
 
 Expressions may refer to module parameters, gate vector and module vector sizes
 (using the \fkeyword{sizeof} operator) and the index of the current module
 in a submodule vector (\fkeyword{index}).
 
-XXX note: fullPath() etc functions!
+%% XXX note: fullPath() etc functions!
 
 A Expressions may refer to parameters of the compound module being defined,
 of the current module (with the \ttt{this.} prefix), and to parameters
 of already defined submodules, with the syntax \ttt{submodule.parametername}
 (or \ttt{submodule[index].parametername}).
 
-XXX example: address = address;  delay=this.distance/this.speed;
+%% XXX example: address = address;  delay=this.distance/this.speed;
 
-XXX there are no parameter arrays, but... demonstrate the choose() function
+%% XXX there are no parameter arrays, but... demonstrate the choose() function
 
 
 \subsubsection{volatile}
@@ -996,7 +996,7 @@ module Node {
 XXX example
 \end{filelisting}
 
-XXX other xmldoc syntax (=PARENTMODULEINDEX etc)
+%% XXX other xmldoc syntax (=PARENTMODULEINDEX etc)
 
 
 
@@ -1227,9 +1227,9 @@ connection.
 Some examples have already been shown in the Warmup section
 (\ref{sec:ch-ned-lang:warmup}); let's see some more.
 
-XXX examples
+%% XXX examples
 
-XXX explain \$i / \$o
+%% XXX explain \$i / \$o
 
 It has been mentioned that an inout gate is basically an input and an
 output gate glued together. These sub-gates can also be addressed (and
@@ -1237,7 +1237,7 @@ connected) individually if needed, as \ttt{port\$i} and \ttt{port\$o} (or
 for vector gates, as \ttt{port\$i[$k$]} and \ttt{port\$o[$k$]}).
 
 
-XXX explain ++
+%% XXX explain ++
 
 Gates are specified as \textit{modulespec.gatespec} (to connect a submodule),
 or as \textit{gatespec} (to connect the compound module). \textit{modulespec}
@@ -1264,7 +1264,7 @@ When the \ttt{++} operator is used with \ttt{\$i} or \ttt{\$o}
 a gate pair (input+output) to maintain equal gate size for the two
 directions.
 
-XXX examples
+%% XXX examples
 
 
 \subsubsection{Channel specification}
@@ -1293,9 +1293,9 @@ is \ttt{ned.IdealChannel}. Naturally, if other parameter names are
 assigned in an connection without an explicit channel type, it will be an error
 (with \textit{``ned.DelayChannel has no such parameter''} or similar message).
 
-XXX channel type as parameter; here or later?
+%% XXX channel type as parameter; here or later?
 
-XXX example: how to set channel parameters from the ini file?
+%% XXX example: how to set channel parameters from the ini file?
 
 
 \section{Multiple connections}
@@ -1304,7 +1304,7 @@ XXX example: how to set channel parameters from the ini file?
 Simple programming constructs (loop, conditional) allow creating
 multiple connections easily.
 
-XXX explain for; nesting; explain if;
+%% XXX explain for; nesting; explain if;
 
 This will be shown in the following examples.
 
@@ -1530,9 +1530,8 @@ module SensorNode like INode
 }
 \end{ned}
 
-of course, typ
-XXX expressions accepted; show a some examples
-XXX Note: parser may get confused around <>; you may help it by adding parens, i.e. <(typeName+"Module")>
+%% XXX expressions accepted; show a some examples
+%% XXX Note: parser may get confused around <>; you may help it by adding parens, i.e. <(typeName+"Module")>
 
 
 \section{Properties (metadata annotations)}
@@ -1545,7 +1544,7 @@ connections, NED files, packages, and virtually anything in NED.
 previous sections, but those examples only scratch the surface of what can
 be done with properties.
 
-XXX @isNetwork (valahol leirni azt is; BTW "network" nincs leirva sectionben)
+%% XXX @isNetwork (valahol leirni azt is; BTW "network" nincs leirva sectionben)
 
 Using properties, one can attach extra information to NED elements. Some
 properties are interpreted by NED, by the simulation kernel; other

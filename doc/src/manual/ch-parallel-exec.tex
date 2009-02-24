@@ -370,14 +370,14 @@ The parallel distributed simulation feature can be turned on with the
 
 The \fconfig{parsim-communications-class} selects the class that implements
 communication between partitions. The class must implement the
-cParsimCommunications interface.
+\cclass{cParsimCommunications} interface.
 
-XXX what choices there are
+%% XXX what choices there are
 
 The \fconfig{parsim-synchronization-class} selects the parallel simulation algorithm.
 The class must implement the cParsimSynchronizer interface.
 
-XXX what choices there are
+%% XXX what choices there are
 
 The following two options configure the Null Message Algorithm, so
 they are only effective if \cclass{cNullMessageProtocol} has been selected

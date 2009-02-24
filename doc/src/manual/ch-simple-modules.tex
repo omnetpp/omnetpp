@@ -477,50 +477,17 @@ checks for that first, and cancels the message before deletion if necessary.
 
 \end{description}
 
+{\opp} prints the list of unreleased objects at the end of the simulation.
+Simulation models that dump \textit{"undisposed object ..."} messages need
+to get their module destructors fixed. As a temporary measure, these
+messages may be hidden by setting \ttt{print-undisposed=false} in the
+configuration.
 
-\subsection{"Garbage collection" and compatibility}
-\label{sec:garbage-collection}
-
-FIXME
-
-{\opp} versions before the 3.2 release had a feature which often was,
-informally and also somewhat incorrectly, called \textit{"garbage
-collection"} (GC). The purpose of this feature was to mitigate the need for
-writing destructors, and often constructors as well by providing automatic
-cleanup at the end of the simulation. (It did not do anything during
-simulation, as the name might suggest.)
-
-{\opp} (all versions) keep track of user-allocated simulation objects
-(typically: messages) and their ownerships. What the \textit{"garbage
-collection"} feature did was that during the cleanup of the model, after
-each module destructor finished, it checked whether there were simulations
-objects left that were apparently owned by that module but not deallocated
-by the destructor -- and if it found such objects, it invoked \ttt{delete}
-on them.
-
-It worked out nicely in 90 percent of cases, but occasionally it resulted
-in spurious crashes which were hard to debug for users not familiar
-with {\opp} internals or lacking advanced C++ skills.
-    \footnote{These crashes occurred due to lack of information available
-              to the GC mechanism, e.g. C++ provides no way to detect
-              from the pointer whether an object is part of an array, or is
-              inside a struct or class. The solution was to use pointers:
-              pointer array, pointer as class member, etc.}
-
-Starting from {\opp} 3.2, this cleanup-time GC mechanism has been disabled by default
-(\ttt{perform-gc=} configuration option, see \ref{sec:ch-config-sim:general-section}),
-and it generally not recommended to turn it back on. It does not do any harm
-to run any simulation model without GC (apart from the memory leak).
-
-FIXME perform-gc was removed in 4.0
-
-It is expected that existing modules will be updated sooner or later, by adding
-proper constructors and destructors. To catalyse this process, {\opp} dumps the
-list of unreleased objects at the end of the simulation. This dump can also be
-turned off in the configuration (\ttt{print-undisposed=} configuration option,
-see \ref{sec:ch-config-sim:general-section}).
-
-
+\begin{note}
+    The \ttt{perform-gc} configuration option has been removed in {\opp} 4.0.
+    Automatic garbage collection cannot be implemented reliably, due to the
+    limitations of the C++ language.
+\end{note}
 
 \subsection{An example}
 
@@ -2070,12 +2037,9 @@ else
 \end{cpp}
 
 
-
 \subsection{The connection's channel}
 
-dsfsdfdfdsf
-FIXME
-
+TODO
 
 
 \section{Sending and receiving messages}
@@ -2226,7 +2190,7 @@ duration.
 
 \subsection{Delay, data rate, bit error rate, packet error rate}
 
-FIXME revise!
+%% FIXME revise!
 
 Connections can be assigned three parameters, which facilitate
 the modeling of communication networks, but can be useful for
@@ -2380,8 +2344,8 @@ follows this approach.
 
 
 
---------------------------
-FIXME TODO
+%%--------------------------
+%% FIXME TODO
 
 Connection attributes (propagation delay, transmission data rate,
 bit error rate) are represented by the channel object, which
