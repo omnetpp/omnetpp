@@ -1,5 +1,8 @@
 
-all: test_core test_makemake
+all: test_common test_core test_envir test_makemake
+
+test_common:
+	cd common && ./runtest
 
 test_core:
 	cd core && ./runtest
@@ -12,6 +15,7 @@ test_envir:
 
 clean:
 	rm -rf core/work
+	rm -rf common/work
 	rm -rf makemake/work
 	rm -rf makemake/out
 	rm -rf envir/work

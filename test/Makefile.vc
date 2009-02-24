@@ -1,5 +1,8 @@
 
-all: test_core test_makemake
+all: test_common test_core test_envir test_makemake
+
+test_common:
+	cd common && runtest.cmd
 
 test_core:
 	cd core && runtest.cmd
@@ -11,6 +14,7 @@ test_envir:
 	cd envir && runtest.cmd
 
 clean:
+	-del /q common\work 2>nul
 	-del /q core\work 2>nul
 	-del /q makemake\work 2>nul
 	-del /q makemake\out 2>nul
