@@ -27,7 +27,7 @@ NAMESPACE_BEGIN
 /**
  * Simple front-end to NED2Generator.
  *
- * @ingroup NED2Generator
+ * @ingroup NEDGenerator
  */
 NEDXML_API void generateNED2(std::ostream& out, NEDElement *node, NEDErrorStore *e);
 
@@ -35,7 +35,7 @@ NEDXML_API void generateNED2(std::ostream& out, NEDElement *node, NEDErrorStore 
  * Generates NED code from a NED object tree.
  * Assumes object tree has already passed all validation stages (DTD, syntax, semantic).
  *
- * @ingroup NED2Generator
+ * @ingroup NEDGenerator
  */
 class NEDXML_API NED2Generator
 {

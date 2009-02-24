@@ -35,7 +35,7 @@
  * - @ref XMLParser
  * - @ref XMLGenerator
  * - @ref Validation
- * - @ref NEDCompiler
+ * - @ref NEDResources
  * - @ref NEDGenerator
  * - @ref CppGenerator
  *
@@ -173,7 +173,7 @@
  */
 
 /**
- * @defgroup NEDCompiler  Controlling the compilation process
+ * @defgroup NEDResources  NED Resources
  *
  */
 

@@ -39,7 +39,7 @@ class NEDResourceCache;
  * channels and channel interfaces. All instances are created and managed
  * by NEDResourceCache.
  *
- * @ingroup NEDCompiler
+ * @ingroup NEDResources
  */
 class NEDXML_API NEDTypeInfo2
 {

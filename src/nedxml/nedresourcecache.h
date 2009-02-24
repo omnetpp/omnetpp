@@ -43,7 +43,7 @@ struct NEDLookupContext
  * This class can be turned into a cache (discarding and reloading
  * NED files on demand) if such need arises.
  *
- * @ingroup NEDCompiler
+ * @ingroup NEDResources
  */
 class NEDXML_API NEDResourceCache
 {
