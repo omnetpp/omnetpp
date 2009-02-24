@@ -29,11 +29,12 @@ cStringPool::~cStringPool()
 {
     // do not release strings -- clients are supposed to call releaseString()
     // for their strings, so cStringPool gets empty by itself.
-#ifndef NDEBUG
-    // dump unreleased strings, except after Ctrl+C on Windows
-    if (!cStaticFlag::isExiting())
-        dump();
-#endif
+
+    // we may want to dump unreleased strings (except after Ctrl+C on Windows)
+    //TODO: put it into some #ifdef DEVELOPER_DEBUG
+    //if (!cStaticFlag::isExiting())
+    //    dump();
+
     alive = false;
 }
 

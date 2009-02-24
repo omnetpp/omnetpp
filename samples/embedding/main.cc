@@ -61,37 +61,6 @@ class MinimalEnv : public cNullEnvir
 
 };
 
-void simulate(const char *networkName, simtime_t limit);
-
-int main(int argc, char *argv[])
-{
-    // the following line MUST be at the top of main()
-    cStaticFlag dummy;
-
-    // initializations
-    ExecuteOnStartup::executeAll();
-    SimTime::setScaleExp(-12);
-
-    // set up an environment for the simulation
-    cEnvir *env = new MinimalEnv(argc, argv, new EmptyConfig());
-    cSimulation *sim = new cSimulation("simulation", env);
-    cSimulation::setActiveSimulation(sim);
-
-    // load NED files
-    sim->loadNedSourceFolder("model");
-    sim->doneLoadingNedFiles();
-
-    // set up and run a simulation model
-    simulate("Net", 1000);
-
-    // exit
-    cSimulation::setActiveSimulation(NULL);
-    delete sim;
-
-    cSimulation::clearLoadedNedFiles();
-    return 0;
-}
-
 void simulate(const char *networkName, simtime_t limit)
 {
     // set up the network
@@ -124,10 +93,45 @@ void simulate(const char *networkName, simtime_t limit)
     }
 
     if (ok)
-        simulation.callFinish();  //FIXME what if there's an exception during finish()?
+        simulation.callFinish();  //XXX may throw exception
 
     // finish the simulation and clean up the network
     simulation.endRun();
     simulation.deleteNetwork();
 }
 
+int main(int argc, char *argv[])
+{
+    // the following line MUST be at the top of main()
+    cStaticFlag dummy;
+
+    // initializations
+    ExecuteOnStartup::executeAll();
+    SimTime::setScaleExp(-12);
+
+    // set up an environment for the simulation
+    cEnvir *env = new MinimalEnv(argc, argv, new EmptyConfig());
+    cSimulation *sim = new cSimulation("simulation", env);
+    cSimulation::setActiveSimulation(sim);
+
+    // load NED files
+    sim->loadNedSourceFolder("model");
+    sim->doneLoadingNedFiles();
+
+    // set up and run a simulation model
+    simulate("Net", 1000);
+
+    // exit
+    cSimulation::setActiveSimulation(NULL);
+    delete sim;
+
+    // properly clean up everything (optional)
+    componentTypes.clear();
+    nedFunctions.clear();
+    classes.clear();
+    enums.clear();
+    classDescriptors.clear();
+    configOptions.clear();
+    cSimulation::clearLoadedNedFiles();
+    return 0;
+}

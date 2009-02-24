@@ -1,3 +1,7 @@
+2009-02-24  Andras Varga
+
+	* cStringPool: commented out dump() call in the destructor
+
 2009-02-07  Andras Varga
 
 	* cNEDFunction and Define_NED_Function(): changed signature string

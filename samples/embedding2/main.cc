@@ -160,13 +160,14 @@ int main(int argc, char *argv[])
     ExecuteOnStartup::executeAll();
     SimTime::setScaleExp(-12);
 
-    // load NED files
+    // load NED definitions from string constants (this program doesn't need external NED files!)
     cSimulation::loadNedText("aloha", ALOHA_NED);
     cSimulation::loadNedText("server", SERVER_NED);
     cSimulation::loadNedText("host", HOST_NED);
     //cSimulation::loadNedSourceFolder("./model");
     cSimulation::doneLoadingNedFiles();
 
+    // run simulations until user tells us to exit
     std::string againQuestion;
     do {
         int numHosts;
@@ -193,6 +194,13 @@ int main(int argc, char *argv[])
     }
     while (againQuestion == "y");
 
+    // properly clean up everything before exiting (optional)
+    componentTypes.clear();
+    nedFunctions.clear();
+    classes.clear();
+    enums.clear();
+    classDescriptors.clear();
+    configOptions.clear();
     cSimulation::clearLoadedNedFiles();
     return 0;
 }
