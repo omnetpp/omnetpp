@@ -52,7 +52,7 @@ DM id 25 pe 15
 A correct eventlog also fulfills the following requirements:
 \begin{itemize}
    \item simulation events are in increasing event number and simulation time order
-   \item FIXME anything more?
+%%   \item FIXME anything more?
 \end{itemize}
 
 The various entry types and their supported attributes are as follows:
@@ -166,7 +166,6 @@ CE CancelEventEntry // canceling an event caused by self message
 BS BeginSendEntry // beginning to send a message
 {
    id long messageId                       // life time unique id of the message being sent
-   //XXX what about writing dup, encapsulate/decapsulate as separate lines?
    tid long messageTreeId                  // id of the message inherited by dup
    eid long messageEncapsulationId   -1    // id of the message inherited by encapsulation
    etid long messageEncapsulationTreeId -1 // id of the message inherited by both dup and encapsulation
@@ -178,7 +177,6 @@ BS BeginSendEntry // beginning to send a message
    l int64 messageLength   0               // message length in bits
    er bool hasBitError   false             // true indicates the message has bit errors
    d string detail       NULL              // detailed information of message content when recording message data is turned on
-   //XXX and many other fields, including message contents
 }
 
 ES EndSendEntry // prediction of the arrival of a message
