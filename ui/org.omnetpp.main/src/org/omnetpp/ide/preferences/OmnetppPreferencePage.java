@@ -72,7 +72,7 @@ public class OmnetppPreferencePage
 
         Group group3 = createGroup(parent, "Project and file creation wizards", 3, 3, GridData.FILL_HORIZONTAL);
         Composite spacer3 = createComposite(group3, 3, 3, GridData.FILL_HORIZONTAL);
-        addAndFillIntoGrid(new StringFieldEditor(IConstants.PREF_COPYRIGHT_LINE, "Copyright line:", spacer3), spacer3, 3);
+        addAndFillIntoGrid(new StringFieldEditor(IConstants.PREF_COPYRIGHT_LINE, "Copyright line:", 50, spacer3), spacer3, 3);
         addAndFillIntoGrid(new ComboFieldEditor(IConstants.PREF_DEFAULT_LICENSE, "License:", licenseChoices, spacer3), spacer3, 3);
         if (ArrayUtils.contains(licenses, LicenseUtils.CUSTOM))
            addAndFillIntoGrid(new MultiLineTextFieldEditor(IConstants.PREF_CUSTOM_LICENSE_HEADER, "Custom license source code header:", spacer3), spacer3, 3);

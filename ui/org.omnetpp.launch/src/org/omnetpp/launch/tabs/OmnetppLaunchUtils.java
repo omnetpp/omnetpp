@@ -319,7 +319,8 @@ public class OmnetppLaunchUtils {
         String path = envir.get("PATH");
         // if the path was not set by hand, generate automatically
         if (StringUtils.isBlank(path)) {
-        	envir.put("PATH",Platform.getOS().equals(Platform.OS_WIN32) ? StringUtils.substituteVariables("${opp_ld_library_path_loc:"+wdirStr+"}" + pathSep) : "" +
+        	String win32_ld_library_path = Platform.getOS().equals(Platform.OS_WIN32) ? StringUtils.substituteVariables("${opp_ld_library_path_loc:"+wdirStr+"}" + pathSep) : "";
+            envir.put("PATH",win32_ld_library_path +
         			         StringUtils.substituteVariables("${opp_bin_dir}" + pathSep) + 
         			         StringUtils.substituteVariables("${opp_additional_path}" + pathSep) +  // msys/bin, mingw/bin, etc 
         			         StringUtils.substituteVariables("${env_var:PATH}"));
