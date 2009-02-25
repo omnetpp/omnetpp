@@ -24,7 +24,7 @@ Simulation model makefiles also include the configuser.vc file.
 
 Both Makefile.inc and configuser.vc contain a variable named TOOLCHAIN_NAME,
 whose value identifies the compiler on that platform. Currently used
-values are: "gcc", "icpc" (Intel), "vc71", "vc80", "mingw", "cygwin".
+values are: "gcc", "icpc" (Intel), "vc71", "vc80", "vc90", "mingw".
 This will be used to generate names for directories that hold libs
 compiled with various compilers.
 
