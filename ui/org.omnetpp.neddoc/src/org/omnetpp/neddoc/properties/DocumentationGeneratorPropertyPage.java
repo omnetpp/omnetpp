@@ -34,6 +34,7 @@ import org.eclipse.ui.dialogs.PropertyPage;
 import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.views.navigator.ResourceComparator;
+import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.IConstants;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.ProcessUtils;
@@ -99,7 +100,7 @@ public class DocumentationGeneratorPropertyPage
 
         doxyConfigFilePath = addTextAndBrowse(group, "Configuration file path:", false);
         
-        IPreferenceStore store = OmnetppMainPlugin.getDefault().getPreferenceStore();
+        IPreferenceStore store = CommonPlugin.getConfigurationPreferenceStore();
         final String doxyExecutablePath = store.getString(IConstants.PREF_DOXYGEN_EXECUTABLE);
 
         Button button = new Button(group, SWT.PUSH);

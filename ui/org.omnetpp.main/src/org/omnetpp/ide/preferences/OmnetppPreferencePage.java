@@ -140,13 +140,13 @@ public class OmnetppPreferencePage
 	}
 
     public static boolean isGraphvizDotAvailable() {
-        IPreferenceStore store = OmnetppMainPlugin.getDefault().getPreferenceStore();
+        IPreferenceStore store = CommonPlugin.getConfigurationPreferenceStore();
         String graphvizDotExecutablePath = store.getString(IConstants.PREF_GRAPHVIZ_DOT_EXECUTABLE);
         return graphvizDotExecutablePath != null && new File(ProcessUtils.lookupExecutable(graphvizDotExecutablePath)).exists();
     }
 
     public static boolean isDoxygenAvailable() {
-        IPreferenceStore store = OmnetppMainPlugin.getDefault().getPreferenceStore();
+        IPreferenceStore store = CommonPlugin.getConfigurationPreferenceStore();
         String doxyExecutablePath = store.getString(IConstants.PREF_DOXYGEN_EXECUTABLE);
         return doxyExecutablePath != null && new File(ProcessUtils.lookupExecutable(doxyExecutablePath)).exists();
     }

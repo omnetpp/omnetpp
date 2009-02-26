@@ -63,6 +63,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.widgets.Display;
+import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.IConstants;
 import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.common.util.FileUtils;
@@ -212,7 +213,7 @@ public class DocumentationGenerator {
         nedResources = NEDResourcesPlugin.getNEDResources();
         msgResources = NEDResourcesPlugin.getMSGResources();
 
-        IPreferenceStore store = org.omnetpp.ide.OmnetppMainPlugin.getDefault().getPreferenceStore();
+        IPreferenceStore store = CommonPlugin.getConfigurationPreferenceStore();
         dotExecutablePath = ProcessUtils.lookupExecutable(store.getString(IConstants.PREF_GRAPHVIZ_DOT_EXECUTABLE));
         doxyExecutablePath = ProcessUtils.lookupExecutable(store.getString(IConstants.PREF_DOXYGEN_EXECUTABLE));
     }
