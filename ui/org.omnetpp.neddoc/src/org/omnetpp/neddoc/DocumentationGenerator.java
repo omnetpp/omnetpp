@@ -739,15 +739,10 @@ public class DocumentationGenerator {
     }
 
     protected void generateFileFromResource(final String resourcePath, String fileName) throws Exception {
-        withGeneratingFile(fileName, new Runnable() {
-            public void run() throws Exception {
-                InputStream stream = getClass().getResourceAsStream("templates/" + resourcePath);
-                if (stream == null)
-                    throw new RuntimeException("Resource not found: " + resourcePath);
-                else
-                    out(FileUtils.readBinaryFile(stream));
-            }
-        });
+        InputStream stream = getClass().getResourceAsStream("templates/" + resourcePath);
+        if (stream == null)
+            throw new RuntimeException("Resource not found: " + resourcePath);
+        FileUtils.copy(stream, getOutputFile(fileName));
     }
 
     protected void generateCSS() throws Exception {
@@ -763,37 +758,33 @@ public class DocumentationGenerator {
         final IPath remainingPath = rootRelativeNeddocPath.removeFirstSegments(count);
         final IPath reversePath = getReversePath(remainingPath);
 
-        withGeneratingFile(reversePath.append("index.html").toPortableString(), new Runnable() {
-            public void run() throws Exception {
-                out("<html>\r\n" + 
-            		"   <head>\r\n" + 
-            		"      <title>Redirect Page</title>\r\n" + 
-            		"      <meta http-equiv=\"refresh\" content=\"0;url=" + remainingPath.append("index.html").toPortableString() + "\"></head>\r\n" + 
-            		"   <body/>\r\n" + 
-            		"</html>");
-            }
-        });
+        FileUtils.writeTextFile(getOutputFile(reversePath.append("index.html").toPortableString()),
+                "<html>\r\n" + 
+                "   <head>\r\n" + 
+                "      <title>Redirect Page</title>\r\n" + 
+                "      <meta http-equiv=\"refresh\" content=\"0;url=" + remainingPath.append("index.html").toPortableString() + "\"></head>\r\n" + 
+                "   <body/>\r\n" + 
+                "</html>"
+        );
     }
 
     protected void generateHTMLFrame() throws Exception {
-        withGeneratingFile("index.html", new Runnable() {
-            public void run() throws Exception {
-                out("<html>\r\n" + 
-            		"   <head>\r\n" + 
-            		"      <title>Model documentation -- generated from NED files</title>\r\n" + 
-            		"   </head>\r\n" + 
-            		"   <frameset cols=\"25%,75%\">\r\n" + 
-            		"      <frame src=\"navigation.html\" name=\"componentsframe\"/>\r\n" + 
-            		"      <frame src=\"overview.html\" name=\"mainframe\"/>\r\n" + 
-            		"   </frameset>\r\n" + 
-            		"   <noframes>\r\n" + 
-            		"      <h2>Frame Alert</h2>\r\n" + 
-            		"      <p>This document is designed to be viewed using HTML frames. If you see this message,\r\n" + 
-            		"      you are using a non-frame-capable browser.</p>\r\n" + 
-            		"   </noframes>\r\n" + 
-            		"</html>\r\n");
-            }
-        });
+        FileUtils.writeTextFile(getOutputFile("index.html"), 
+                "<html>\r\n" + 
+                "   <head>\r\n" + 
+                "      <title>Model documentation -- generated from NED files</title>\r\n" + 
+                "   </head>\r\n" + 
+                "   <frameset cols=\"25%,75%\">\r\n" + 
+                "      <frame src=\"navigation.html\" name=\"componentsframe\"/>\r\n" + 
+                "      <frame src=\"overview.html\" name=\"mainframe\"/>\r\n" + 
+                "   </frameset>\r\n" + 
+                "   <noframes>\r\n" + 
+                "      <h2>Frame Alert</h2>\r\n" + 
+                "      <p>This document is designed to be viewed using HTML frames. If you see this message,\r\n" + 
+                "      you are using a non-frame-capable browser.</p>\r\n" + 
+                "   </noframes>\r\n" + 
+                "</html>\r\n"
+                );
     }
 
     protected void generateProjectIndexReference(IProject project) throws IOException, CoreException {
@@ -2017,16 +2008,6 @@ public class DocumentationGenerator {
                 out(content);
             }
         });
-    }
-
-    protected void withGeneratingFile(String fileName, Runnable content) throws Exception {
-        File oldCurrentOutputFile = currentOutputFile;
-
-        setCurrentOutputFile(fileName);
-        content.run();
-
-        if (oldCurrentOutputFile != null)
-            currentOutputFile = oldCurrentOutputFile;
     }
 
     protected void withGeneratingHTMLFile(String fileName, Runnable content) throws Exception {
