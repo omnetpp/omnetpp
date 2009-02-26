@@ -10,7 +10,6 @@ package org.omnetpp.neddoc;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -188,8 +187,9 @@ public class DocumentationGenerator {
     protected NEDResources nedResources;
     protected MsgResources msgResources;
     protected IProgressMonitor monitor;
-    protected File currentOutputFile;
-    protected Map<File, FileOutputStream> outputStreams = new HashMap<File, FileOutputStream>();
+
+    protected FileOutputStream currentOutputStream;
+    
     protected ArrayList<IFile> files = new ArrayList<IFile>();
     protected ArrayList<ITypeElement> typeElements = new ArrayList<ITypeElement>();
     protected Map<ITypeElement, ArrayList<ITypeElement>> subtypesMap = new HashMap<ITypeElement, ArrayList<ITypeElement>>();
@@ -281,15 +281,6 @@ public class DocumentationGenerator {
                     throw new RuntimeException(e);
                 }
                 finally {
-                    for (FileOutputStream outputStream : outputStreams.values()) {
-                        try {
-                            outputStream.close();
-                        }
-                        catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-
                     try {
                         refreshFolder(getFullDoxyPath());
                         refreshFolder(getFullNeddocPath());
@@ -2015,9 +2006,10 @@ public class DocumentationGenerator {
     }
 
     protected void withGeneratingHTMLFile(String fileName, String header, boolean copyrightFooter, Runnable content) throws Exception {
-        File oldCurrentOutputFile = currentOutputFile;
+        FileOutputStream oldCurrentOutputStream = currentOutputStream;
 
-        setCurrentOutputFile(fileName);
+        File file = getOutputFile(fileName);
+        currentOutputStream = new FileOutputStream(file);
         
         out("<html>\r\n" +
             "   <head>\r\n" +
@@ -2040,8 +2032,9 @@ public class DocumentationGenerator {
         out("   </body>\r\n" +
             "</html>\r\n");
 
-        if (oldCurrentOutputFile != null)
-            currentOutputFile = oldCurrentOutputFile;
+        currentOutputStream.close();
+
+        currentOutputStream = oldCurrentOutputStream;
     }
 
     protected void generateDotOuput(DotGraph dot, File outputFile, String format) throws IOException {
@@ -2060,27 +2053,18 @@ public class DocumentationGenerator {
             return type;
     }
 
-    protected void setCurrentOutputFile(String fileName) throws FileNotFoundException {
-        File file = getOutputFile(fileName);
-
-        if (!outputStreams.containsKey(fileName))
-            outputStreams.put(file, new FileOutputStream(file));
-
-        currentOutputFile = file;
-    }
-
     protected void out(String string) throws IOException {
         if (monitor.isCanceled())
             throw new CancellationException();
 
-        outputStreams.get(currentOutputFile).write(string.getBytes());
+        currentOutputStream.write(string.getBytes());
     }
 
     protected void out(byte[] data) throws IOException {
         if (monitor.isCanceled())
             throw new CancellationException();
 
-        outputStreams.get(currentOutputFile).write(data);
+        currentOutputStream.write(data);
     }
 
     protected void outMapReference(INedTypeElement model, IFigure figure) throws IOException {
