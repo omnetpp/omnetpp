@@ -12,8 +12,7 @@ import org.omnetpp.common.simulation.model.GateId;
 import org.omnetpp.experimental.animation.controller.AnimationPosition;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
 import org.omnetpp.figures.ConnectionFigure;
-import org.omnetpp.figures.GateAnchor;
-import org.omnetpp.figures.ModuleFigure;
+import org.omnetpp.figures.anchors.GateAnchor;
 
 public class CreateConnectionAnimation extends AbstractInfiniteAnimation {
 	protected GateId sourceGateId;
