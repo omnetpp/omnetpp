@@ -321,7 +321,7 @@ void cWeightedStdDev::collect2(double value, double weight)
     }
     else if (weight < 0)
     {
-        throw new cRuntimeError(this, "collect2(): negative weight %g", weight);
+        throw cRuntimeError(this, "collect2(): negative weight %g", weight);
     }
 }
 

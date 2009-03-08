@@ -83,7 +83,7 @@ void cQueue::parsimPack(cCommBuffer *buffer)
     cOwnedObject::parsimPack(buffer);
 
     if (compare)
-        throw new cRuntimeError(this,"parsimPack(): cannot transmit comparison function");
+        throw cRuntimeError(this,"parsimPack(): cannot transmit comparison function");
 
     buffer->pack(n);
 
