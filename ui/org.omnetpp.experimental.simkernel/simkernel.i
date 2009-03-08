@@ -32,7 +32,7 @@
 
 %{
 #include "omnetpp.h"
-#include "src/javaenv/javaenv.h"
+#include "javaenv/javaenv.h"
 
 // accessor for global vars
 inline cSimulation *getSimulation() {return &simulation;}
@@ -60,6 +60,18 @@ inline void evSetup(const char *inifile) { //XXX
 
 %include "std_common.i"
 %include "std_string.i"
+
+// hide some macros from swig (copied from nativelibs/common.i)
+#define COMMON_API
+#define OPP_DLLEXPORT
+#define OPP_DLLIMPORT
+
+#define NAMESPACE_BEGIN
+#define NAMESPACE_END
+#define USING_NAMESPACE
+
+#define _OPPDEPRECATED
+
 
 #pragma SWIG nowarn=516;  // "Overloaded method x ignored. Method y used."
 
@@ -89,9 +101,8 @@ inline void evSetup(const char *inifile) { //XXX
 %ignore cEnvir::printf;
 
 // ignore methods that are useless from Java
-%ignore writeContents;
-%ignore netPack;
-%ignore netUnpack;
+%ignore parsimPack;
+%ignore parsimUnpack;
 
 // ignore non-inspectable classes
 %ignore cCommBuffer;
