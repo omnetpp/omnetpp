@@ -192,8 +192,6 @@
 	- now all our exceptions subclass from std::exception (e.g. cException extends std::exception)
 	- exceptions are now thrown by value not by pointer (s/throw new/throw/g)
 	- hint: catch std::exception if you don't need the exception to be of a specific type
-	- XXX opp_runtime_error currently doesn't obey debug-on-errors.
-	- TODO before release: make sure there's no "throw new" ANYWHERE in the sources!
 
 	DisplayString:
 	- parse() no longer interprets literal "\t", "\n" escape sequences; it is the job of the
