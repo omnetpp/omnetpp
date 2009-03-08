@@ -885,7 +885,7 @@ void Tkenv::updateNetworkRunDisplay()
     CHK(Tcl_VarEval(interp, NETWORK_LABEL " config -text {",
                         "Run #",runnr,": ",networkname,
                         "}", NULL ));
-    CHK(Tcl_VarEval(interp, "wm title . {OMNeT++/Tkenv - ", getWindowTitlePrefix(), networkname, (isAPL() ? " - NOT FOR COMMERCIAL USE" : ""), "}",NULL));
+    CHK(Tcl_VarEval(interp, "wm title . {OMNeT++/Tkenv - ", getWindowTitlePrefix(), networkname, "}",NULL));
 }
 
 void Tkenv::updateSimtimeDisplay()
