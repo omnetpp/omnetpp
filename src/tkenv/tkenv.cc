@@ -475,6 +475,11 @@ inline bool elapsed(long millis, struct timeval& since)
     return ret;
 }
 
+inline void resetElapsedTime(struct timeval& t)
+{
+    gettimeofday(&t, NULL);
+}
+
 bool Tkenv::doRunSimulation()
 {
     //
@@ -538,6 +543,7 @@ bool Tkenv::doRunSimulation()
             }
             updateInspectors();
             Tcl_Eval(interp, "update");
+            resetElapsedTime(last_update); // exclude UI update time [bug #52]
         }
 
         // exit conditions
@@ -611,6 +617,7 @@ bool Tkenv::doRunSimulationExpress()
             if (opt_expressmode_autoupdate)
                 updateInspectors();
             Tcl_Eval(interp, "update");
+            resetElapsedTime(last_update); // exclude UI update time [bug #52]
             if (runmode!=RUNMODE_EXPRESS)
                 return true;  // should continue, but in a different mode
         }

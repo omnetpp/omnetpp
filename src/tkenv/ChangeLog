@@ -1,4 +1,11 @@
-2009-01-05 Rudolf Hornig
+2009-03-08  Andras Varga
+
+	* fixed #52: exclude display update time when doing time-based updates 
+	in Express and Fast modes
+
+2009-02-27  ------ omnetpp-4.0rc2 released ------
+
+2009-01-05  Rudolf Hornig
     
         * fixed: display string for messages made consistent with module display
         strings: "o" tag removed, use b=width,height,shape,color,borderwidth instead.
