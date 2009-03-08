@@ -121,33 +121,13 @@ inline void evSetup(const char *inifile) { //XXX
     $1 = j$1;
 }
 
-%rename cPolymorphic::className getClassName;
-
-%rename cObject::name getName;
-%rename cObject::fullName getFullName;
-%rename cObject::fullPath getFullPath;
-
 %typemap(javainterfaces) cSimulation "org.omnetpp.common.simulation.model.IRuntimeSimulation";
-%rename cSimulation::systemModule getRootModule;
-%rename cSimulation::moduleByPath getModuleByPath;
-%rename cSimulation::module getModuleByID;
 
 %typemap(javainterfaces) cModule "org.omnetpp.common.simulation.model.IRuntimeModule";
-%rename cModule::id getId;
-%rename cModule::index getIndex;
-%rename cModule::size getSize;
-%rename cModule::parentModule getParentModule;
-%rename cModule::submodule getSubmodule;
-%rename cModule::gates getNumGates;
-%rename cModule::gate getGate;
 %typemap(javaimports) cModule
   "import org.omnetpp.common.displaymodel.DisplayString;\n"
   "import org.omnetpp.common.displaymodel.IDisplayString;";
-%extend cModule {
-  const char *getTypeName() {
-    return self->moduleType()->name();
-  }
-}
+
 %typemap(javacode) cModule %{
   public IDisplayString getDisplayString() {
     return new DisplayString(null, null, displayString().getString());
@@ -177,13 +157,10 @@ inline void evSetup(const char *inifile) { //XXX
 %};
 
 %typemap(javainterfaces) cGate "org.omnetpp.common.simulation.model.IRuntimeGate";
-%rename cGate::id getId;
-%rename cGate::index getIndex;
-%rename cGate::size getSize;
-%rename cGate::ownerModule getOwnerModule;
 %typemap(javaimports) cGate
   "import org.omnetpp.common.displaymodel.DisplayString;\n"
   "import org.omnetpp.common.displaymodel.IDisplayString;";
+
 %typemap(javacode) cGate %{
   public IDisplayString getDisplayString() {
     return new DisplayString(null, null, displayString().getString());
@@ -191,35 +168,23 @@ inline void evSetup(const char *inifile) { //XXX
 %};
 
 %typemap(javainterfaces) cMessage "org.omnetpp.common.simulation.model.IRuntimeMessage";
-%rename cMessage::kind getKind;
-%rename cMessage::priority getPriority;
-%rename cMessage::length getLength;
-%rename cMessage::senderModuleId getSenderModuleId;
-%rename cMessage::senderGateId getSenderGateId;
-%rename cMessage::arrivalModuleId getArrivalModuleId;
-%rename cMessage::arrivalGateId getArrivalGateId;
-%rename cMessage::sendingTime getSendingTime;
-%rename cMessage::arrivalTime getArrivalTime;
-%rename cMessage::id getId;
-%rename cMessage::treeId getTreeId;
-%rename cMessage::encapsulationId getEncapsulationId;
-%rename cMessage::encapsulationTreeId getEncapsulationTreeId;
 
 // SWIG doesn't understand nested classes, turn off corresponding warnings
 //%warnfilter(312) cTopology::Node; -- this doesn't seem to work
 //%warnfilter(312) cTopology; -- nor this
 
 // now include all header files
-%include "defs.h"
-%include "cpolymorphic.h"
+%include "simkerneldefs.h"
 %include "cobject.h"
+%include "cnamedobject.h"
+%include "cownedobject.h"
 %include "cvisitor.h"
 //%include "opp_string.h"
 //%include "random.h"
 //%include "distrib.h"
 %include "cexception.h"
 %include "cdefaultlist.h"
-%include "csimul.h"
+%include "csimulation.h"
 //%include "ctypes.h"
 //%include "carray.h"
 //%include "cqueue.h"
@@ -246,11 +211,11 @@ inline void evSetup(const char *inifile) { //XXX
 //%include "cenum.h"
 //%include "cstruct.h"
 //%include "cchannel.h"
-%include "cdispstr.h"
+%include "cdisplaystring.h"
 //%include "cxmlelement.h"
 %include "cenvir.h"
 
-%include "src/javaenv/javaenv.h"
+%include "javaenv/javaenv.h"
 
 //%include "util.h" -- no need to wrap
 //%include "macros.h" -- no need to wrap

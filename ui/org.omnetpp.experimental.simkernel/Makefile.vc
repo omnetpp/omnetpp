@@ -1,7 +1,7 @@
 #
 # Global definitions
 #
-OMNETPP_ROOT=..\..\..\sandbox\omnetpp
+OMNETPP_ROOT=..\..
 
 !include $(OMNETPP_ROOT)\configuser.vc
 
