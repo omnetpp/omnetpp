@@ -49,6 +49,7 @@ void Node1::activity()
     cDatarateChannel *ch = cChannelType::createDatarateChannel("channel");
     dumpParams("After creation", ch);
 
+    ch->setDisabled(true);
     ch->setDelay(0.001);
     ch->setDatarate(10000);
     ch->setBitErrorRate(0.001);
@@ -58,6 +59,7 @@ void Node1::activity()
     gate("out")->connectTo(node2->gate("in"), ch);
     dumpParams("After connecting", ch);
 
+    ch->setDisabled(false);
     ch->setDelay(0.002);
     ch->setDatarate(20000);
     ch->setBitErrorRate(0.002);
@@ -85,14 +87,14 @@ After creation:
  ber=0
  per=0
 After setting pars:
- disabled=false
+ disabled=true
  delay=0.001
  datarate=10000
  ber=0.001
  per=0
 Initializing channel Test.node1.out.channel, stage 0
 After connecting:
- disabled=false
+ disabled=true
  delay=0.001
  datarate=10000
  ber=0.001
