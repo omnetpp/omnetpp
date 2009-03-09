@@ -4,14 +4,14 @@
   <title>A QUICK OVERVIEW OF THE &Omnetpp; 4.0 IDE</title>
   <sect1>
     <title>Introduction</title>
-    <para>The OMNeT++ 4.0 Integrated Development Environment is based on the Eclipse platform, and extends
-      it with new editors, views, wizards and other functionality. OMNeT++ adds functionality for creating and
+    <para>The &Omnetpp; 4.0 Integrated Development Environment is based on the Eclipse platform, and extends
+      it with new editors, views, wizards and other functionality. &Omnetpp; adds functionality for creating and
       configuring models (NED and ini files), performing batch executions and analyzing the simulation
       results, while Eclipse provides C++ editing, CVS/SVN/GIT integration and optionally other features (UML
       modeling, bugtracker integration, database access, etc) via various open-source and commercial plug-ins.
     </para>
-    <para>The following screenshots introduce the main components of the OMNeT++ IDE.</para>
-    <picture file="pictures/img1.png">The OMNeT++ 4.0 IDE, editing a NED file</picture>
+    <para>The following screenshots introduce the main components of the &Omnetpp; IDE.</para>
+    <picture file="pictures/img1.png">The &Omnetpp; 4.0 IDE, editing a NED file</picture>
   </sect1>
   <sect1>
     <title>The NED Editor</title>
@@ -38,7 +38,7 @@
       etc. are also available. Documentation of referenced module types can be viewed by hovering over the NED
       type name. The NED source is continually parsed and validated as the user is typing, and errors are
       displayed at real time on the left margin. Syntax highlighting, automatic indentation, and automatic
-      conversion from the OMNeT++ 3.x NED syntax are also provided.</para>
+      conversion from the &Omnetpp; 3.x NED syntax are also provided.</para>
     <picture file="pictures/img5.png">Outline View</picture>
     <para>The Outline View shows the structure of NED files in both graphical and text editing mode, and
       allows navigation as well.</para>
@@ -61,7 +61,7 @@
       persistent for easier reading. The structure of the ini file (sections and their inheritance tree) is also
       visualized and editable via drag&amp;drop and dialogs. Validation and content assist 
         (Ctrl+Space) are also provided where  needed. The editor supports unlimited undo/redo, and
-         automatic conversion from OMNeT++ 3.x ini files.</para>
+         automatic conversion from &Omnetpp; 3.x ini files.</para>
     <picture file="pictures/img7.png">The ini file source editor</picture>
     <para>The text editor lets the user work with the ini file directly, which will be more efficient for
       advanced users than forms. Unlimited undo/redo, syntax coloring, completion of configuration keys, values
@@ -116,7 +116,7 @@
   </sect1>
   <sect1>
     <title>Simulation Launcher</title>
-    <para>The OMNeT++ IDE makes it possible to run simulations directly from the integrated environment. It
+    <para>The &Omnetpp; IDE makes it possible to run simulations directly from the integrated environment. It
       is possible to run a simulation as a normal C/C++ application and perform C++ source-level debugging on
       it; to run it as a standalone application (under Tkenv or Cmdenv); or to run batches of simulations
       where runs differ in module parameter settings or random number seeds. (NOTE: an Eclipse-based runtime
@@ -127,7 +127,7 @@
       In the Eclipse IDE, the various ways of launching a program being developed is described by launch
       configurations. There are various launch configuration types (C/C++ Application, Java Application, etc).
       To launch a program for the first time, the user creates an instance of a launch configuration, fills in
-      a form (program name, command-line arguments, etc.), and hits the Run button. OMNeT++ provides launch
+      a form (program name, command-line arguments, etc.), and hits the Run button. &Omnetpp; provides launch
       configuration types for simulations: one extends the normal “C/C++ Local Application” launch type with a
       <emphasis>Simulation</emphasis>
       tab (for convenient editing of simulation-related command-line options), and a standalone launch type
@@ -164,7 +164,7 @@
   </sect1>
   <sect1>
     <title>Sequence Chart</title>
-    <para>The OMNeT++ 4.0 simulation kernel is capable of logging various events during simulation:
+    <para>The &Omnetpp; 4.0 simulation kernel is capable of logging various events during simulation:
       scheduling and canceling self-messages, sending messages, display changes, module and connection
       creation and deletion, user log messages, etc. The result is an event log file which contains detailed
       information of the simulation, and later can be used for various purposes, such as visualizing message
@@ -190,7 +190,7 @@
   </sect1>
   <sect1>
     <title>Scave (Result Analysis)</title>
-    <para>Scave is the result analysis tool of OMNeT++, and its task is to help the user process and
+    <para>Scave is the result analysis tool of &Omnetpp;, and its task is to help the user process and
       visualize simulation results saved into vector and scalar files. Scave is designed so that the user can
       work equally well on the output of a single simulation run (one or two files) and the result of
       simulation batches (which may be several hundred files, possibly in multiple directories). Ad-hoc
@@ -202,13 +202,13 @@
     <para>Scave is implemented as a multi-page editor. What the editor edits is the “recipe”: what result
       files to take as inputs, what data to select from them, what (optional) processing to apply, and what
       kind of charts to create from them. The pages (tabs) of the editor roughly correspond to these steps.
-      You will see that Scave is much more than just a union of the OMNeT++ 3.x Scalars and Plove tools.
+      You will see that Scave is much more than just a union of the &Omnetpp; 3.x Scalars and Plove tools.
     </para>
     <picture file="pictures/img18.png">Specifying input files for data analysis
     </picture>
     <para>The first page displays the result files that serve as input to the analysis. The upper half
       specifies what files to select, by explicit filenames or by wildcards. The lower half shows what files
-      actually matched the input specification, and what runs they contain. Note that OMNeT++ 4.0 result files
+      actually matched the input specification, and what runs they contain. Note that &Omnetpp; 4.0 result files
       contain a unique run ID and several metadata annotations in addition to the actual recorded data.  The
       third tree organizes simulation runs according to their experiment—measurement—replication labels.
     </para>
@@ -217,9 +217,9 @@
       not necessarily) simulations done with the same model but with different parameter settings; that is,
       the user will explore the parameter space with several simulation runs. And, to gain statistical
       confidence in the results, each measurement will be possibly repeated several times, with different
-      random number seeds. It is easy to set up such scenarios with the improved ini files of OMNeT++ 4.0, and
+      random number seeds. It is easy to set up such scenarios with the improved ini files of &Omnetpp; 4.0, and
       then the experiment-measurement-replication labels will be assigned more-or-less automatically – please
-      refer to the Inifile document (“Configuring Simulations in OMNeT++ 4.0”) for more discussion.</para>
+      refer to the Inifile document (“Configuring Simulations in &Omnetpp; 4.0”) for more discussion.</para>
     <picture file="pictures/img19.png">Browsing vector and scalar data generated
       by the simulation</picture>
     <para>
