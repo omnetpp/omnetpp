@@ -1,0 +1,106 @@
+%description:
+Test dynamic creation and setup of DatarateChannels
+
+%file: test.ned
+
+simple Node1
+{
+    gates:
+        output out @loose;
+}
+
+simple Node2
+{
+    gates:
+        input in @loose;
+}
+
+network Test
+{
+    submodules:
+        node1: Node1;
+        node2: Node2;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+namespace @TESTNAME@ {
+
+class Node1 : public cSimpleModule
+{
+  public:
+    Node1() : cSimpleModule(16384) { }
+    virtual void activity();
+};
+
+Define_Module(Node1);
+
+static void dumpParams(const char *label, cComponent *c)
+{
+    EV << label << ":\n";
+    for (int i=0; i<c->getNumParams(); i++)
+        EV << " " << c->par(i).getFullName() << "=" << c->par(i).info() << "\n";
+}
+
+void Node1::activity()
+{
+    cDatarateChannel *ch = cChannelType::createDatarateChannel("channel");
+    dumpParams("After creation", ch);
+
+    ch->setDelay(0.001);
+    ch->setDatarate(10000);
+    ch->setBitErrorRate(0.001);
+    dumpParams("After setting pars", ch);
+
+    cModule *node2 = getParentModule()->getSubmodule("node2");
+    gate("out")->connectTo(node2->gate("in"), ch);
+    dumpParams("After connecting", ch);
+
+    ch->setDelay(0.002);
+    ch->setDatarate(20000);
+    ch->setBitErrorRate(0.002);
+    dumpParams("After changing pars", ch);
+    EV << ".\n";
+}
+
+
+class Node2 : public cSimpleModule
+{
+  public:
+    Node2() : cSimpleModule(16384) { }
+    virtual void activity() { }
+};
+
+Define_Module(Node2);
+
+}; //namespace
+
+%contains: stdout
+After creation:
+ disabled=false
+ delay=0
+ datarate=0
+ ber=0
+ per=0
+After setting pars:
+ disabled=false
+ delay=0.001
+ datarate=10000
+ ber=0.001
+ per=0
+Initializing channel Test.node1.out.channel, stage 0
+After connecting:
+ disabled=false
+ delay=0.001
+ datarate=10000
+ ber=0.001
+ per=0
+After changing pars:
+ disabled=false
+ delay=0.002
+ datarate=20000
+ ber=0.002
+ per=0
+.
