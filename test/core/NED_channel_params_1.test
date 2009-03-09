@@ -1,5 +1,5 @@
 %description:
-Tests @class with channels.
+Tests channel param referring to own parameters.
 
 %file: test.ned
 
