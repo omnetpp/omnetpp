@@ -206,7 +206,9 @@ class SIM_API cIdealChannel : public cChannel //implies noncopyable
     /** @name Constructors, destructor */
     //@{
     /**
-     * Constructor.
+     * Constructor. This is only for internal purposes, and should not
+     * be used when creating channels dynamically; use the create()
+     * factory method instead.
      */
     explicit cIdealChannel(const char *name=NULL) : cChannel(name) {}
 
@@ -214,6 +216,12 @@ class SIM_API cIdealChannel : public cChannel //implies noncopyable
      * Destructor.
      */
     virtual ~cIdealChannel() {}
+
+    /**
+     * Utility function for dynamic channel creation. Equivalent to
+     * <tt>cChannelType::getIdealChannelType()->create(name)</tt>.
+     */
+    static cIdealChannel *create(const char *name);
     //@}
 
     /** @name Redefined cChannel member functions. */

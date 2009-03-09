@@ -294,17 +294,17 @@ cChannelType *cChannelType::getDatarateChannelType()
 
 cIdealChannel *cChannelType::createIdealChannel(const char *name)
 {
-    return dynamic_cast<cIdealChannel *>(getIdealChannelType()->create(name));
+    return cIdealChannel::create(name);
 }
 
 cDelayChannel *cChannelType::createDelayChannel(const char *name)
 {
-    return dynamic_cast<cDelayChannel *>(getDelayChannelType()->create(name));
+    return cDelayChannel::create(name);
 }
 
 cDatarateChannel *cChannelType::createDatarateChannel(const char *name)
 {
-    return dynamic_cast<cDatarateChannel *>(getDatarateChannelType()->create(name));
+    return cDatarateChannel::create(name);
 }
 
 

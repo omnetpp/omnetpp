@@ -65,7 +65,9 @@ class SIM_API cDatarateChannel : public cChannel //implies noncopyable
     //@{
 
     /**
-     * Constructor.
+     * Constructor. This is only for internal purposes, and should not
+     * be used when creating channels dynamically; use the create()
+     * factory method instead.
      */
     explicit cDatarateChannel(const char *name=NULL);
 
@@ -73,6 +75,12 @@ class SIM_API cDatarateChannel : public cChannel //implies noncopyable
      * Destructor.
      */
     virtual ~cDatarateChannel();
+
+    /**
+     * Utility function for dynamic channel creation. Equivalent to
+     * <tt>cChannelType::getDatarateChannelType()->create(name)</tt>.
+     */
+    static cDatarateChannel *create(const char *name);
     //@}
 
     /** @name Redefined cObject member functions. */

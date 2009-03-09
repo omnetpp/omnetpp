@@ -160,6 +160,7 @@ OMNeT++ 4.0
           methods getPacketErrorRate/setPacketErrorRate)
         - added cIdealChannel which lets messages through without any change
           and without any delay.
+        - added cDelayChannel
         - getFromGate() renamed to getSourceGate()
         - breaking change in cDatarateChannel behaviour: implicit queueing is
           no longer supported: sending on a busy gate (that is, when simTime() <

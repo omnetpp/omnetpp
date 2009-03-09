@@ -9,7 +9,7 @@ Basic test for cGate::deliverOnReceptionStart().
 addGate("out", cGate::OUTPUT);
 addGate("in", cGate::INPUT);
 
-cDatarateChannel *channel = cChannelType::createDatarateChannel("channel");
+cDatarateChannel *channel = cDatarateChannel::create("channel");
 channel->setDatarate(1000);  // 1Kbps
 channel->setDelay(0.1);  // 100ms
 gate("out")->connectTo(gate("in"), channel);

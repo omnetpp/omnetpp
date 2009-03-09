@@ -42,7 +42,7 @@ Define_Module(Sender);
 void Sender::activity()
 {
    // create and set channel
-   cDatarateChannel *ch = cChannelType::createDatarateChannel("chan");
+   cDatarateChannel *ch = cDatarateChannel::create("chan");
    ch->setDelay(0.1);
    gate("out")->reconnectWith(ch);
 

@@ -34,6 +34,10 @@ using std::ostream;
 
 Register_Class(cDelayChannel);
 
+cDelayChannel *cDelayChannel::create(const char *name)
+{
+    return dynamic_cast<cDelayChannel *>(cChannelType::getDelayChannelType()->create(name));
+}
 
 void cDelayChannel::finalizeParameters()
 {

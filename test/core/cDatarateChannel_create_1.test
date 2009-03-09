@@ -46,7 +46,7 @@ static void dumpParams(const char *label, cComponent *c)
 
 void Node1::activity()
 {
-    cDatarateChannel *ch = cChannelType::createDatarateChannel("channel");
+    cDatarateChannel *ch = cDatarateChannel::create("channel");
     dumpParams("After creation", ch);
 
     ch->setDisabled(true);
@@ -64,15 +64,17 @@ void Node1::activity()
     ch->setDatarate(20000);
     ch->setBitErrorRate(0.002);
     dumpParams("After changing pars", ch);
+
     EV << ".\n";
+
+    send(new cPacket("pk"), "out");
 }
 
 
 class Node2 : public cSimpleModule
 {
   public:
-    Node2() : cSimpleModule(16384) { }
-    virtual void activity() { }
+    virtual void handleMessage(cMessage *msg) { delete msg; }
 };
 
 Define_Module(Node2);

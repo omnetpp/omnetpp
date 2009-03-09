@@ -1,3 +1,10 @@
+2009-03-09  Andras Varga
+
+	* added factory methods cIdealChannel::create(), cDelayChannel::create(),
+	cDatarateChannel::create(), which are easier to find and remember than 
+	previous ones (cChannelType::createIdealChannel()/createDelayChannel()/
+	createDatarateChannel() -- those are deprecated now).
+
 2009-02-27  ------ omnetpp-4.0rc2 released ------
 
 2009-02-18  Andras Varga

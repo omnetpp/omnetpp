@@ -421,7 +421,7 @@ cDisplayString& cGate::getDisplayString()
 {
     if (!getChannel())
     {
-        installChannel(cChannelType::createIdealChannel("channel"));
+        installChannel(cIdealChannel::create("channel"));
         channelp->callInitialize();
     }
     return getChannel()->getDisplayString();

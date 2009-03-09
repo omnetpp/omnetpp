@@ -57,7 +57,9 @@ class SIM_API cDelayChannel : public cChannel //implies noncopyable
     /** @name Constructors, destructor */
     //@{
     /**
-     * Constructor.
+     * Constructor. This is only for internal purposes, and should not
+     * be used when creating channels dynamically; use the create()
+     * factory method instead.
      */
     explicit cDelayChannel(const char *name=NULL) : cChannel(name) {}
 
@@ -65,6 +67,12 @@ class SIM_API cDelayChannel : public cChannel //implies noncopyable
      * Destructor.
      */
     virtual ~cDelayChannel() {}
+
+    /**
+     * Utility function for dynamic channel creation. Equivalent to
+     * <tt>cChannelType::getDelayChannelType()->create(name)</tt>.
+     */
+    static cDelayChannel *create(const char *name);
     //@}
 
     /** @name Redefined cChannel member functions. */
