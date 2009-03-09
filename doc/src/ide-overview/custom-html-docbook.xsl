@@ -163,7 +163,7 @@ article title
 <!-- ***************  Figure, table, and other titles  *********************  -->
 <!-- ***************************************************  -->
 <xsl:param name="formal.title.placement">
-figure after
+figure before
 example before
 equation before
 table before
