@@ -605,7 +605,7 @@ The solution is to encapsulate the variables into simple modules
 as private or protected data members, and expose them via public methods.
 Other modules can then call these public methods to get or set the values.
 Calling methods of other modules will be discussed in section
-\ref{ch:simple-modules:direct-method-calls}.
+\ref{sec:simple-modules:direct-method-calls}.
 Examples of such modules are the \ttt{Blackboard} in the \textit{Mobility Framework},
 and \ttt{InterfaceTable} and \ttt{RoutingTable} in the \textit{INET Framework}.
 
@@ -1647,7 +1647,7 @@ overloaded assignment operators for various types including \ttt{bool},
 
 To let a module get notified about parameter changes, override
 its \ffunc{handleParameterChange()} method, see
-\ref{sec:handleParameterChange}.
+\ref{sec:simple-modules:handleParameterChange}.
 
 
 \subsection{Further cPar methods}
@@ -2368,7 +2368,7 @@ double r = chan->getDatarate();
 
 You can also change the channel attributes with the corresponding
 \ttt{setXXX()} functions. Note, however, that (as it was explained in
-section \ref{ch:simple-modules:packet-transmission})
+section \ref{sec:simple-modules:packet-transmission})
 changes will not affect messages already sent, even if they have not
 begun transmission yet.
 
