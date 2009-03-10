@@ -68,12 +68,7 @@ Simulation kernel:
   to 4.0 is assisted by scripts that perform this renaming (and several other
   adjustments) in the source code.
 
-  Channels can now have
-
-  channels made first-class citizens
-
-
-  fingerprint
+  Channels can now have...
 
 NED:
   The NED language has been revised and significantly extended. An overview
@@ -144,6 +139,11 @@ Ini files:
   Configuration options are now checked; mistyped configuration options are
   reported. Configuration options can be given on the command-line as well,
   overriding the values specified in the ini file.
+
+  The new "fingerprint" ini file option allows for quick-and-simple regression
+  tests. The fingerprint is basically a hash of event times and module IDs
+  during the simulation, and it can detect if the simulation follows a
+  different trajectory after a supposedly "harmless" code change.
 
 Result analysis
   The new result analysis tool in the IDE (which replaces plove and scave)
