@@ -83,9 +83,8 @@ NED:
   tool is provided to convert old NED files to the new syntax.
 
   A Java-like package system has been introduced to make the language scale
-  to large model frameworks, and to prevent name clashes.
-
-NEDPATH!!!!!!!!!
+  to large model frameworks and to prevent name clashes; NED files files are
+  now read from directory trees listed on the NEDPATH.
 
   Channels have been made first-class citizens. They can have arbitrary
   parameters like modules do, and may have custom C++ implementation classes.
@@ -111,22 +110,27 @@ NEDPATH!!!!!!!!!
   module types that implemented IMobility (RandomWalkMobility, TurtleMobility,
   etc.)
 
-  inout gates
+  Inout gates and bidirectional gates are now supported. In the C++ code,
+  inout gates appear as (input,output) gate pairs.
 
-  parameter defaults
+  Parameters can now have default values. The default value can be overridden
+  in the ini file. If the ini file does not assign any value to the parameter,
+  the default values get used automatically.
+
+  Support for arithmetic expressions has become more complete, e.g. string
+  manipulation is also possible.
 
   It is possible to annotate module or channel types, parameters, gates and
   submodules by adding properties. Metadata are not used by the simulation
   kernel directly, but they can carry extra information for various tools,
   the runtime environment, or even for other modules in the model. For
-  example, a module’s graphical representation (icon, etc) or the prompt
+  example, a module's graphical representation (icon, etc) or the prompt
   string and measurement unit (milliwatt, etc) of a parameter are already
   specified as metadata annotations.
 
-  default icons
-
-  more complete expression support
-
+  Default icons (in general, default display strings) are now supported.
+  Display strings are represented as metadata annotation (@display property),
+  which can be modified via inhertance.
 
 Ini files:
   Instead of runs, named configuration sections were introduced in the ini
@@ -137,9 +141,9 @@ Ini files:
   them. The notion of experiment, measurement and replication was introduced to
   help the general workflow of result analysis.
 
-  Configuration options are now checked; mistyped configuration options are reported.
-  Configuration options can be given on the command-line as well, overriding the values
-  specified in the ini file.
+  Configuration options are now checked; mistyped configuration options are
+  reported. Configuration options can be given on the command-line as well,
+  overriding the values specified in the ini file.
 
 Result analysis
   The new result analysis tool in the IDE (which replaces plove and scave)
@@ -149,7 +153,7 @@ Result analysis
   the simulation or the whole experiment.
 
   The vector and scalar file format has changed to support the new features
-  of the IDE. Data in vector files is now clustered, and indexed for efficiency.
+  of the IDE. Vector files are now indexed for efficiency.
 
 
 OMNeT++ 4.0rc2 (Feb 2009)
