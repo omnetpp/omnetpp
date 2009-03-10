@@ -76,66 +76,61 @@ Simulation kernel:
   fingerprint
 
 NED:
+  The NED language has been revised and significantly extended. An overview
+  of changes:
 
-Hierarchical The traditional way to deal with complexity is via introducing hierarchies. In
-OMNeT++, any module which would be too complex as a single entity can be broken
-down into smaller modules, and used as a compound module.
+  The language syntax has been changed to make it more consistent. A migration
+  tool is provided to convert old NED files to the new syntax.
 
-Component-Based Simple modules and compound modules are inherently reusable, which
-not only reduces code copying, but more importantly, allows component libraries (like
-the INET Framework, MiXiM, Castalia, etc.) to exist.
+  A Java-like package system has been introduced to make the language scale
+  to large model frameworks, and to prevent name clashes.
 
-Interfaces Module and channel interfaces can be used as a placeholder where normally a
-module or channel type would be used, and the concrete module or channel type is
-determined at network setup time by a parameter. Concrete module types have to “im-
-plement” the interface they can substitute. For example, given a compound module
-type named MobileHost contains a mobility submodule of the type IMobility (where
-IMobility is a module interface), the actual type of mobility may be chosen from the
-module types that implemented IMobility (RandomWalkMobility, TurtleMobility,
-etc.)
+NEDPATH!!!!!!!!!
 
-Inheritance Modules and channels can be subclassed. Derived modules and channels may
-add new parameters, gates, and (in the case of compound modules) new submodules and
-connections. They may set existing parameters to a speci?c value, and also set the gate
-size of a gate vector. This makes it possible, for example, to take a GenericTCPClientApp
-module and derive an FTPClientApp from it by setting certain parameters to a ?xed
-value; or to derive a WebClientHost compound module from a BaseHost compound
-module by adding a WebClientApp submodule and connecting it to the inherited TCP
-submodule.
+  Channels have been made first-class citizens. They can have arbitrary
+  parameters like modules do, and may have custom C++ implementation classes.
+  Three predefined channel types have been created, ned.IdealChannel,
+  ned.DelayChannel and ned.DatarateChannel.
 
-Packages The NED language features a Java-like package structure, to reduce the risk of
-name clashes between different models. NEDPATH (similar to Java’s CLASSPATH) was also
-introduced to make it easier to specify dependencies among simulation models.
-Inner types Channel types and module types used locally by a compound module can be
-de?ned within the compound module, in order to reduce namespace pollution.
+  Inheritance is now supported for module and channel types. Derived modules
+  and channels may add new parameters and gates, may set or modify parameter
+  values and gate vector size, and (in the case of compound modules) may add
+  new submodules and connections.
 
-Metadata annotations It is possible to annotate module or channel types, parameters, gates
-and submodules by adding properties. Metadata are not used by the simulation kernel
-directly, but they can carry extra information for various tools, the runtime environment,
-or even for other modules in the model. For example, a module’s graphical representation
-(icon, etc) or the prompt string and measurement unit (milliwatt, etc) of a parameter are
-already speci?ed as metadata annotations.
+  Inner types are now supported. This is most useful for making channel
+  definitions local to the network definition that uses them.
 
-
-
-  The NED language has been revised and significantly extended.
-
-  package system
-
-  channel types. Channels can now hav arbitrary parameters
-
-  inheritance
-
-  inner types
+  Module and channel interfaces have been introduced, to make "like"
+  relationships more explicit. Module and channel interfaces can be used as
+  a placeholder where normally a module or channel type would be used, and the
+  concrete module or channel type is determined at network setup time by a
+  parameter. Concrete module types have to "implement" the interface they can
+  substitute. For example, given a compound module type named MobileHost
+  contains a mobility submodule of the type IMobility (where IMobility is
+  a module interface), the actual type of mobility may be chosen from the
+  module types that implemented IMobility (RandomWalkMobility, TurtleMobility,
+  etc.)
 
   inout gates
 
-  interfaces
+  parameter defaults
+
+  It is possible to annotate module or channel types, parameters, gates and
+  submodules by adding properties. Metadata are not used by the simulation
+  kernel directly, but they can carry extra information for various tools,
+  the runtime environment, or even for other modules in the model. For
+  example, a module’s graphical representation (icon, etc) or the prompt
+  string and measurement unit (milliwatt, etc) of a parameter are already
+  specified as metadata annotations.
+
+  default icons
 
   more complete expression support
 
+
 Ini files:
-  Instead of runs, named configuration sections were introduced in the ini file.
+  Instead of runs, named configuration sections were introduced in the ini
+  file.
 
   The concept of "runs" have been refined to provide parameter study support;
   Ini files now can specify parameter ranges and the runtime is able to explore
@@ -147,14 +142,15 @@ Ini files:
   specified in the ini file.
 
 Result analysis
-  The new result analysis tool (replacing plove and scave) supports the notion of
-  experiments, measurements and replication. The IDE now stores all operations
-  required to create a diagramm or chart in a "receipe" file. It can recreate the 
-  charts and diagrams automatically after re-running the simulation or the whole
-  experiment.
+  The new result analysis tool in the IDE (which replaces plove and scave)
+  supports the notion of experiments, measurements and replication. The IDE
+  now stores all operations required to create a diagram or chart in a "recipe"
+  file. It can recreate the charts and diagrams automatically after re-running
+  the simulation or the whole experiment.
 
-  The vector and scalar file format has changed to support the new features of the IDE. 
-  Vector files are now indexed for efficiency.   
+  The vector and scalar file format has changed to support the new features
+  of the IDE. Data in vector files is now clustered, and indexed for efficiency.
+
 
 OMNeT++ 4.0rc2 (Feb 2009)
 -------------------------
