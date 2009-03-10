@@ -57,7 +57,7 @@ Simulation kernel:
   and two corresponding code examples have been added to the distribution.
 
   There have been several complaints about precision loss due to simtime_t
-  being represented with the C type "double. In 4.0, double has been replaced
+  being represented with the C type "double". In 4.0, double has been replaced
   with an int64-based fixed-point representation; the precision can be
   configured in omnetpp.ini as a power of ten, with the default being
   picosecond resolution (1e-12).
@@ -68,7 +68,17 @@ Simulation kernel:
   to 4.0 is assisted by scripts that perform this renaming (and several other
   adjustments) in the source code.
 
-  Channels can now have...
+  cMessage has been split into a base cMessage plus a cPacket class.
+  The bit length, encapsulated message and error flag fields have been
+  moved to cPacket.
+
+  Modules have now the possibility to receive nonzero-duration messages
+  at the beginning of the reception; this is done by reconfiguring the
+  gate object.
+
+  sendDirect() calls now expect the propagation delay and transmission
+  duration values in separate arguments; this was done to facilitate
+  the animation of wireless transmissions later.
 
 NED:
   The NED language has been revised and significantly extended. An overview
@@ -99,11 +109,7 @@ NED:
   a placeholder where normally a module or channel type would be used, and the
   concrete module or channel type is determined at network setup time by a
   parameter. Concrete module types have to "implement" the interface they can
-  substitute. For example, given a compound module type named MobileHost
-  contains a mobility submodule of the type IMobility (where IMobility is
-  a module interface), the actual type of mobility may be chosen from the
-  module types that implemented IMobility (RandomWalkMobility, TurtleMobility,
-  etc.)
+  substitute.
 
   Inout gates and bidirectional gates are now supported. In the C++ code,
   inout gates appear as (input,output) gate pairs.
@@ -116,12 +122,10 @@ NED:
   manipulation is also possible.
 
   It is possible to annotate module or channel types, parameters, gates and
-  submodules by adding properties. Metadata are not used by the simulation
-  kernel directly, but they can carry extra information for various tools,
-  the runtime environment, or even for other modules in the model. For
-  example, a module's graphical representation (icon, etc) or the prompt
-  string and measurement unit (milliwatt, etc) of a parameter are already
-  specified as metadata annotations.
+  submodules with properties. Metadata can carry extra information for
+  various tools, the runtime environment, or even for other modules in the
+  model. Examples include display strings, parameter prompt string and unit
+  of measurement.
 
   Default icons (in general, default display strings) are now supported.
   Display strings are represented as metadata annotation (@display property),
@@ -145,7 +149,7 @@ Ini files:
   during the simulation, and it can detect if the simulation follows a
   different trajectory after a supposedly "harmless" code change.
 
-Result analysis
+Result analysis:
   The new result analysis tool in the IDE (which replaces plove and scave)
   supports the notion of experiments, measurements and replication. The IDE
   now stores all operations required to create a diagram or chart in a "recipe"
