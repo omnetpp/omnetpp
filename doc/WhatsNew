@@ -28,6 +28,20 @@ Tooling:
   builds programs that execute without a Unix emulation layer. The MSVC
   compiler is only supported in the commercial version of OMNeT++.
 
+Build system:
+  In order to facilitate working with large simulation models like the INET
+  Framework, the makefile generator opp_makemake has been extended with the
+  --deep option. With --deep, opp_makemake generates a makefile that takes
+  care of building a whole source directory tree.
+
+  Another big change is out-of-directory builds for both the OMNeT++ libraries
+  and simulation models: object files and other by-products of the build
+  process go in a separate directory tree (out/).
+
+  Simulation models can now easily be compiled with debug/release compiler
+  options, simply with the commands "make MODE=debug" and "make MODE=release";
+  there is no need to modify configure.user.
+
 Simulation kernel:
   Simulation kernel internals have been redesigned with memory efficiency in
   mind, to support large-scale simulations better. Techniques include string
@@ -54,6 +68,7 @@ Simulation kernel:
   to 4.0 is assisted by scripts that perform this renaming (and several other
   adjustments) in the source code.
 
+  Channels can now have
 
   channels made first-class citizens
 
@@ -61,11 +76,53 @@ Simulation kernel:
   fingerprint
 
 NED:
+
+Hierarchical The traditional way to deal with complexity is via introducing hierarchies. In
+OMNeT++, any module which would be too complex as a single entity can be broken
+down into smaller modules, and used as a compound module.
+
+Component-Based Simple modules and compound modules are inherently reusable, which
+not only reduces code copying, but more importantly, allows component libraries (like
+the INET Framework, MiXiM, Castalia, etc.) to exist.
+
+Interfaces Module and channel interfaces can be used as a placeholder where normally a
+module or channel type would be used, and the concrete module or channel type is
+determined at network setup time by a parameter. Concrete module types have to “im-
+plement” the interface they can substitute. For example, given a compound module
+type named MobileHost contains a mobility submodule of the type IMobility (where
+IMobility is a module interface), the actual type of mobility may be chosen from the
+module types that implemented IMobility (RandomWalkMobility, TurtleMobility,
+etc.)
+
+Inheritance Modules and channels can be subclassed. Derived modules and channels may
+add new parameters, gates, and (in the case of compound modules) new submodules and
+connections. They may set existing parameters to a speci?c value, and also set the gate
+size of a gate vector. This makes it possible, for example, to take a GenericTCPClientApp
+module and derive an FTPClientApp from it by setting certain parameters to a ?xed
+value; or to derive a WebClientHost compound module from a BaseHost compound
+module by adding a WebClientApp submodule and connecting it to the inherited TCP
+submodule.
+
+Packages The NED language features a Java-like package structure, to reduce the risk of
+name clashes between different models. NEDPATH (similar to Java’s CLASSPATH) was also
+introduced to make it easier to specify dependencies among simulation models.
+Inner types Channel types and module types used locally by a compound module can be
+de?ned within the compound module, in order to reduce namespace pollution.
+
+Metadata annotations It is possible to annotate module or channel types, parameters, gates
+and submodules by adding properties. Metadata are not used by the simulation kernel
+directly, but they can carry extra information for various tools, the runtime environment,
+or even for other modules in the model. For example, a module’s graphical representation
+(icon, etc) or the prompt string and measurement unit (milliwatt, etc) of a parameter are
+already speci?ed as metadata annotations.
+
+
+
   The NED language has been revised and significantly extended.
 
   package system
 
-  channel types
+  channel types. Channels can now hav arbitrary parameters
 
   inheritance
 
@@ -86,10 +143,6 @@ Result analysis
   experiment, measurement, replication support (in the IDE as well)
 
   new file formats; indexed vector files for efficiency
-
-Build system:
-  deep; out-of-directory; both debug and release
-
 
 
 OMNeT++ 4.0rc2 (Feb 2009)
