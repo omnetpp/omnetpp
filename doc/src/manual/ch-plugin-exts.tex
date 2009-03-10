@@ -224,8 +224,6 @@ configuration option.
 \section{Accessing the configuration}
 \label{sec:plugin-exts:accessing-config}
 
-config is the ini file plus --ccc=vvv options
-
 \subsection{Defining new configuration options}
 
 New configuration options need to be declared with one of the appropriate
@@ -247,8 +245,13 @@ Config options come in three flavours, as indicated by the macro names:
       only accepted in the \ttt{[General]} section but not in
       \ttt{[Config <name>]} sections)
   \item \textit{Per-Run} options can be specified in any section
-      (i.e. both in \ttt{[General]} and in \ttt{[Config <name>]} sections)
-  \item \textit{Per-Object} options ...
+      (i.e. both in \ttt{[General]} and in \ttt{[Config <name>]} sections).
+      They are specific to a particular section. Their names always contain
+      a hyphen (-) character.
+  \item \textit{Per-Object} options can be specified in any section
+      (i.e. both in \ttt{[General]} and in \ttt{[Config <name>]} sections).
+      They are specific to an object or group of objects and their name must
+      not contain a hypen (-) character.
 \end{itemize}
 
 The macro arguments are as follows:
@@ -301,7 +304,13 @@ cConfiguration *config = ev.getConfig();
 
 \cclass{cConfiguration} provides several methods for querying the configuration.
 
-no sections: flattened view etc.
+\begin{note}
+The configuration object provides a flattened view of the INI file. Sections
+inheriting from each other are merged for you. Configuration options provided
+on the command line in the form \ttt{--option=value} are added first to the object.
+This ensures that the command line options take precedence over the values specified
+in the INI file.
+\end{note}
 
 \begin{cpp}
 const char *getAsCustom(cConfigOption *entry, const char *fallbackValue=NULL);
