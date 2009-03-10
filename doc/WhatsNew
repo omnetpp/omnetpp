@@ -3,6 +3,39 @@ What's New
 
 OMNeT++ 4.0 (March 2009)
 -------------------------
+This is a major revision of the whole simulation platform, with fundamental
+changes in nearly every component. Changes since version 3.4b2:
+
+GUI:
+  An Eclipse-based comprehensive simulation IDE has been introduced to replace
+  the previous standalone GUI programs gned, scalars and plove. The IDE supports
+  all stages of a simulation project: developing, building, configuring and
+  running simulation models, and analysing results. It also supports
+  visualizing simulation execution traces as sequence charts, and generating
+  documentation. We are also bundling version control (cvs, svn, git) Eclipse
+  plug-ins with the IDE. The IDE is supported on the three major platforms,
+  Linux, Mac OS X and Windows. Since Eclipse is extremely extensible, we expect
+  that OMNeT++-based simulation frameworks will contribute their own custom
+  wizards into the IDE.
+
+Tooling:
+  On the Windows platform, we have standardized on using the MinGW compiler.
+  We are bundling a version of MSys and MinGW with the distribution, along
+  with MinGW versions of several open-source programs and libraries needed
+  or found useful with OMNeT++, such as gdb, perl, libxml, gmp, graphviz,
+  Tcl/Tk, svn and git. MinGW was chosen over Cygwin because MinGW builds and
+  uses libraries in the native Windows (MSVC-compatible) binary format, and
+  builds programs that execute without a Unix emulation layer. The MSVC
+  compiler is only supported in the commercial version of OMNeT++.
+
+Simulation kernel:
+
+NED:
+
+Ini files:
+
+Build system:
+
 
 
 OMNeT++ 4.0rc2 (Feb 2009)
