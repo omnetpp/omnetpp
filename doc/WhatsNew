@@ -29,12 +29,66 @@ Tooling:
   compiler is only supported in the commercial version of OMNeT++.
 
 Simulation kernel:
+  Simulation kernel internals have been redesigned with memory efficiency in
+  mind, to support large-scale simulations better. Techniques include string
+  pooling (storing freqeuently occurring strings such as module, gate and
+  parameter names only in one copy), shared parameter value instances,
+  gate vector descriptors (gate name, type and size are only stored once
+  for the whole gate vector), and optimal packing of object fields (e.g.
+  packing several boolean variables into an unsigned int).
+
+  The simulation kernel as a library has been made significantly easier to
+  embed in other (non-OMNeT++) programs. The way of using the OMNeT++
+  simulation kernel as a plain C++ library has been documented in the Manual,
+  and two corresponding code examples have been added to the distribution.
+
+  There have been several complaints about precision loss due to simtime_t
+  being represented with the C type "double. In 4.0, double has been replaced
+  with an int64-based fixed-point representation; the precision can be
+  configured in omnetpp.ini as a power of ten, with the default being
+  picosecond resolution (1e-12).
+
+  Regarding the API, several functions have been given better or more
+  consistent names, with the most visible change being that getter methods
+  have been prefixed with the word "get". Migration of simulation models
+  to 4.0 is assisted by scripts that perform this renaming (and several other
+  adjustments) in the source code.
+
+
+  channels made first-class citizens
+
+
+  fingerprint
 
 NED:
+  The NED language has been revised and significantly extended.
+
+  package system
+
+  channel types
+
+  inheritance
+
+  inner types
+
+  inout gates
+
+  interfaces
+
+  more complete expression support
 
 Ini files:
+  the concept of "runs" have been refined to provide parameter study support;
+
+  configuration options are now checked; can be given on the command-line as well
+
+Result analysis
+  experiment, measurement, replication support (in the IDE as well)
+
+  new file formats; indexed vector files for efficiency
 
 Build system:
+  deep; out-of-directory; both debug and release
 
 
 
