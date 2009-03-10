@@ -135,15 +135,26 @@ already speci?ed as metadata annotations.
   more complete expression support
 
 Ini files:
-  the concept of "runs" have been refined to provide parameter study support;
+  Instead of runs, named configuration sections were introduced in the ini file.
 
-  configuration options are now checked; can be given on the command-line as well
+  The concept of "runs" have been refined to provide parameter study support;
+  Ini files now can specify parameter ranges and the runtime is able to explore
+  them. The notion of experiment, measurement and replication was introduced to
+  help the general workflow of result analysis.
+
+  Configuration options are now checked; mistyped configuration options are reported.
+  Configuration options can be given on the command-line as well, overriding the values
+  specified in the ini file.
 
 Result analysis
-  experiment, measurement, replication support (in the IDE as well)
+  The new result analysis tool (replacing plove and scave) supports the notion of
+  experiments, measurements and replication. The IDE now stores all operations
+  required to create a diagramm or chart in a "receipe" file. It can recreate the 
+  charts and diagrams automatically after re-running the simulation or the whole
+  experiment.
 
-  new file formats; indexed vector files for efficiency
-
+  The vector and scalar file format has changed to support the new features of the IDE. 
+  Vector files are now indexed for efficiency.   
 
 OMNeT++ 4.0rc2 (Feb 2009)
 -------------------------
