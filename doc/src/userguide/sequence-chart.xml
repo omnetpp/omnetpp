@@ -676,7 +676,7 @@
     </para>
     <para>
       The filter configuration dialog shown in <xref
-      linkend="SequenceChart-FilterDialog.png"/> has many options. They are organized into
+      linkend="pictures/SequenceChart-FilterDialog.png"/> has many options. They are organized into
       a tree each restricting the eventlog's content on its own. The individual filter
       components may be turned on and off independent of each other. This allows
       remembering the filter settings even if some of them are temporarily not used.
