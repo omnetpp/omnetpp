@@ -32,11 +32,7 @@
 
 %{
 #include "omnetpp.h"
-#include "javaenv/javaenv.h"
-
-// accessor for global vars
-inline cSimulation *getSimulation() {return &simulation;}
-inline cEnvir *getEV() {return &ev;}
+//XXX #include "javaenv/javaenv.h"
 
 #include <direct.h>
 inline void changeToDir(const char *dir)  //XXX
@@ -53,7 +49,7 @@ inline void changeToDir(const char *dir)  //XXX
 inline void evSetup(const char *inifile) { //XXX
     char *argv[] = {"exe", "-f", (char *)inifile, NULL};
     int argc = 3;
-    ev.setup(argc, argv);
+//XXX    ev.setup(argc, argv);
 }
 
 %}
@@ -108,7 +104,6 @@ inline void evSetup(const char *inifile) { //XXX
 %ignore cCommBuffer;
 %ignore cContextSwitcher;
 %ignore cContextTypeSwitcher;
-//%ignore cEnvir;
 %ignore cConfiguration;
 %ignore cOutputVectorManager;
 %ignore cOutputScalarManager;
@@ -118,9 +113,27 @@ inline void evSetup(const char *inifile) { //XXX
 %ignore cParsimCommunications;
 %ignore ModNameParamResolver;
 %ignore StringMapParamResolver;
+%ignore cSubModIterator;
 
-%ignore simulation;
-%ignore ev;
+// ignore global variables
+%ignore defaultList;
+%ignore componentTypes;
+%ignore nedFunctions;
+%ignore classes;
+%ignore enums;
+%ignore classDescriptors;
+%ignore configOptions;
+
+// ignore macros that confuse swig
+/*
+#define GATEID_LBITS  20
+#define GATEID_HBITS  (8*sizeof(int)-GATEID_LBITS)   // usually 12
+#define GATEID_HMASK  ((~0)<<GATEID_LBITS)           // usually 0xFFF00000
+#define GATEID_LMASK  (~GATEID_HMASK)                // usually 0x000FFFFF
+*/
+%ignore MAX_VECTORGATES;
+%ignore MAX_SCALARGATES;
+%ignore MAX_VECTORGATESIZE;
 
 
 // typemaps to wrap Javaenv::setJCallback(JNIEnv *jenv, jobject jcallbackobj):
@@ -226,7 +239,7 @@ inline void evSetup(const char *inifile) { //XXX
 //%include "cxmlelement.h"
 %include "cenvir.h"
 
-%include "javaenv/javaenv.h"
+//XXX %include "javaenv/javaenv.h"
 
 //%include "util.h" -- no need to wrap
 //%include "macros.h" -- no need to wrap
@@ -243,9 +256,7 @@ inline void evSetup(const char *inifile) { //XXX
 //%include "crng.h" -- no need to wrap
 
 
-// refinements
-cSimulation *getSimulation();
-cEnvir *getEV();
+
 void evSetup(const char *inifile); //XXX
 void changeToDir(const char *dir); //XXX
 

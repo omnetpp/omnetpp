@@ -33,74 +33,19 @@ SAMPLES_OBJS = $(OMNETPP_ROOT)/samples/aloha/*.obj \
              $(OMNETPP_ROOT)/samples/tokenring/*.obj \
              $(OMNETPP_ROOT)/samples/sockets/*.obj
 
-INET = D:/home/omnetpp40/sandbox/INET
-
-INET_OBJS = \
-	$(INET)/Network/Quagga/quaggasrc/quagga/ospfd/ospfd.lib \
-	$(INET)/Network/Quagga/quaggasrc/quagga/ripd/ripd.lib \
-	$(INET)/Network/Quagga/quaggasrc/quagga/zebra/zebra.lib \
-	$(INET)/Network/Quagga/quaggasrc/quagga/lib/libzebra.lib \
-	$(INET)/Network/Quagga/quaggasrc/quagga/globalvars.obj \
-	$(INET)/Transport/Contract/*.obj \
-	$(INET)/Network/Contract/*.obj \
-	$(INET)/NetworkInterfaces/Contract/*.obj \
-	$(INET)/Base/*.obj \
-	$(INET)/Util/*.obj \
-	$(INET)/Network/IPv4/*.obj \
-	$(INET)/Network/AutoRouting/*.obj \
-	$(INET)/Network/Queue/*.obj \
-	$(INET)/Network/Quagga/*.obj \
-	$(INET)/Network/OSPFv2/*.obj \
-	$(INET)/Network/OSPFv2/Interface/*.obj \
-	$(INET)/Network/OSPFv2/MessageHandler/*.obj \
-	$(INET)/Network/OSPFv2/Neighbor/*.obj \
-	$(INET)/Network/OSPFv2/Router/*.obj \
-	$(INET)/Transport/TCP/*.obj \
-	$(INET)/Transport/TCP/flavours/*.obj \
-	$(INET)/Transport/TCP/queues/*.obj \
-	$(INET)/Transport/UDP/*.obj \
-	$(INET)/NetworkInterfaces/*.obj \
-	$(INET)/Network/ARP/*.obj \
-	$(INET)/NetworkInterfaces/Ethernet/*.obj \
-	$(INET)/NetworkInterfaces/EtherSwitch/*.obj \
-	$(INET)/NetworkInterfaces/PPP/*.obj \
-	$(INET)/Applications/Generic/*.obj \
-	$(INET)/Applications/Ethernet/*.obj \
-	$(INET)/Applications/TCPApp/*.obj \
-	$(INET)/Applications/UDPApp/*.obj \
-	$(INET)/Applications/PingApp/*.obj \
-	$(INET)/Util/HeaderSerializers/*.obj \
-	$(INET)/Nodes/INET/*.obj \
-	$(INET)/Network/IPv6/*.obj \
-	$(INET)/Network/ICMPv6/*.obj \
-	$(INET)/Nodes/IPv6/*.obj \
-	$(INET)/Network/MPLS/*.obj \
-	$(INET)/Network/LDP/*.obj \
-	$(INET)/Network/RSVP_TE/*.obj \
-	$(INET)/Network/TED/*.obj \
-	$(INET)/Network/Extras/*.obj \
-	$(INET)/Nodes/MPLS/*.obj \
-	$(INET)/World/*.obj \
-	$(INET)/Mobility/*.obj \
-	$(INET)/NetworkInterfaces/MFCore/*.obj \
-	$(INET)/NetworkInterfaces/MF80211/*.obj \
-	$(INET)/NetworkInterfaces/MF80211/macLayer/*.obj \
-	$(INET)/NetworkInterfaces/MF80211/phyLayer/*.obj \
-	$(INET)/NetworkInterfaces/MF80211/phyLayer/decider/*.obj \
-	$(INET)/NetworkInterfaces/MF80211/phyLayer/snrEval/*.obj \
-	$(INET)/NetworkInterfaces/Ieee80211/*.obj \
-	$(INET)/NetworkInterfaces/Ieee80211/Mac/*.obj \
-	$(INET)/NetworkInterfaces/Ieee80211/Mgmt/*.obj
+OMNETPP_LIB_SUBDIR = $(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
              
 LIBS = \
+       /libpath:"$(OMNETPP_LIB_SUBDIR)" /libpath:"$(OMNETPP_LIB_DIR)" \
        $(SAMPLES_OBJS) \
-#       $(INET_OBJS) \
-       $(OMNETPP_ROOT)/lib/sim_std.lib \
-       $(OMNETPP_ROOT)/lib/nedxml.lib \
-       $(OMNETPP_ROOT)/lib/envir.lib \
+       $(KERNEL_LIBS) \
+       $(SYS_LIBS)
+#       $(OMNETPP_ROOT)/lib/sim_std.lib \
+#       $(OMNETPP_ROOT)/lib/nedxml.lib \
+#       $(OMNETPP_ROOT)/lib/envir.lib \
 #       $(OMNETPP_ROOT)/lib/cmdenv.lib \
-       $(OMNETPP_ROOT)/lib/javaenv.lib \
-       $(XML_LIBS) $(SYS_LIBS)
+#       $(OMNETPP_ROOT)/lib/javaenv.lib \
+#       $(XML_LIBS) $(SYS_LIBS)
 
 #
 # Automatic rules
