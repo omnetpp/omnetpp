@@ -18,20 +18,18 @@ OBJS = simkernel_wrap.obj
 JAVAPKG = org.omnetpp.experimental.simkernel.swig
 JAVADIR = src\$(JAVAPKG:.=\)
 
-SAMPLES_OBJS = $(OMNETPP_ROOT)/samples/aloha/*.obj \
-             $(OMNETPP_ROOT)/samples/cqn/*.obj \
-             $(OMNETPP_ROOT)/samples/dyna/*.obj \
-             $(OMNETPP_ROOT)/samples/fddi/*.obj \
-             $(OMNETPP_ROOT)/samples/fifo/*.obj \
-             $(OMNETPP_ROOT)/samples/hcube/*.obj \
-             $(OMNETPP_ROOT)/samples/hist/*.obj \
-             $(OMNETPP_ROOT)/samples/neddemo/*.obj \
-             $(OMNETPP_ROOT)/samples/p-to-p/*.obj \
-             $(OMNETPP_ROOT)/samples/queueing/*.obj \
-             $(OMNETPP_ROOT)/samples/routing/*.obj \
-             $(OMNETPP_ROOT)/samples/tictoc/*.obj \
-             $(OMNETPP_ROOT)/samples/tokenring/*.obj \
-             $(OMNETPP_ROOT)/samples/sockets/*.obj
+SAMPLES_OBJS = \
+             $(OMNETPP_ROOT)/samples/aloha/out/msvc-debug/*.obj \
+             $(OMNETPP_ROOT)/samples/cqn/out/msvc-debug/*.obj \
+             $(OMNETPP_ROOT)/samples/dyna/out/msvc-debug/*.obj \
+             $(OMNETPP_ROOT)/samples/fifo/out/msvc-debug/*.obj \
+             $(OMNETPP_ROOT)/samples/hcube/out/msvc-debug/*.obj \
+             $(OMNETPP_ROOT)/samples/hist/out/msvc-debug/*.obj \
+             $(OMNETPP_ROOT)/samples/neddemo/out/msvc-debug/*.obj \
+             $(OMNETPP_ROOT)/samples/queueinglib/out/msvc-debug/*.obj \
+             $(OMNETPP_ROOT)/samples/routing/out/msvc-debug/*.obj \
+             $(OMNETPP_ROOT)/samples/tictoc/out/msvc-debug/*.obj \
+             $(OMNETPP_ROOT)/samples/sockets/out/msvc-debug/*.obj
 
 OMNETPP_LIB_SUBDIR = $(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
              
