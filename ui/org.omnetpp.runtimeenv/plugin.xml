@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+
+   <extension
+         id="application"
+         point="org.eclipse.core.runtime.applications">
+      <application>
+         <run
+               class="org.omnetpp.runtimeenv.Application">
+         </run>
+      </application>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            name="Perspective"
+            class="org.omnetpp.runtimeenv.Perspective"
+            id="org.omnetpp.runtimeenv.perspective">
+      </perspective>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            name="View"
+            class="org.omnetpp.runtimeenv.View"
+            id="org.omnetpp.runtimeenv.view">
+      </view>
+   </extension>
+
+</plugin>
