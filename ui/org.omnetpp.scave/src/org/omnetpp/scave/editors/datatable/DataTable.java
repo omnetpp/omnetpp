@@ -404,8 +404,7 @@ public class DataTable extends Table {
 			return;
 		
 		long id = idlist.get(lineNumber);
-		ResultItem result = manager.getItem(id);
-		item.setData(ITEM_KEY, result);
+		item.setData(ITEM_KEY, (Long)id);
 
 		for (int i = 0; i < visibleColumns.size(); ++i) {
 			Column column = visibleColumns.get(i);
@@ -662,7 +661,9 @@ public class DataTable extends Table {
 	
 	public ResultItem getSelectedItem() {
 		if (selectedItem != null && !selectedItem.isDisposed()) {
-			return (ResultItem)selectedItem.getData(ITEM_KEY);
+			long id = (Long)selectedItem.getData(ITEM_KEY);
+			if (!manager.isStaleID(id))
+				return manager.getItem(id);
 		}
 		return null;
 	}

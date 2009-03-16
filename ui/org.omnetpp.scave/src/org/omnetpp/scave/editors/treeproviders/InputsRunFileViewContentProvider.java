@@ -13,6 +13,8 @@ import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engine.ResultFileList;
 import org.omnetpp.scave.engine.Run;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
+import org.omnetpp.scave.model2.ResultFilePayload;
+import org.omnetpp.scave.model2.RunPayload;
 
 /**
  * Content provider for the "Run/File" tree of the Inputs page.
@@ -24,11 +26,11 @@ public class InputsRunFileViewContentProvider extends CachedTreeContentProvider 
 		ResultFileManagerEx manager = (ResultFileManagerEx)element;
 		GenericTreeNode root = new GenericTreeNode(manager);
 		for (Run run : Sorter.sort(manager.getRuns())) {
-			GenericTreeNode runNode = new GenericTreeNode(run);
+			GenericTreeNode runNode = new GenericTreeNode(new RunPayload(run));
 			root.addChild(runNode);
 			ResultFileList filelist = manager.getFilesForRun(run);
 			for (ResultFile file : Sorter.sort(filelist)) {
-				GenericTreeNode fileNode = new GenericTreeNode(file);
+				GenericTreeNode fileNode = new GenericTreeNode(new ResultFilePayload(file));
 				runNode.addChild(fileNode);
 			}
 		}

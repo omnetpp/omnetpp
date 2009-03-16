@@ -14,12 +14,12 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.ui.BrowseDataPage;
-import org.omnetpp.scave.engine.ResultFile;
-import org.omnetpp.scave.engine.Run;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model2.Filter;
 import org.omnetpp.scave.model2.FilterUtil;
+import org.omnetpp.scave.model2.ResultFilePayload;
 import org.omnetpp.scave.model2.RunAttributePayload;
+import org.omnetpp.scave.model2.RunPayload;
 
 /**
  * Sets the filters on the "Browse data" page with the attributes of the
@@ -75,12 +75,12 @@ public class SetFilterAction extends AbstractScaveAction {
 			if (filterUtil==null) 
 				filterUtil = new FilterUtil();
 
-			if (payload instanceof ResultFile) {
-				ResultFile resultFile = (ResultFile)payload;
+			if (payload instanceof ResultFilePayload) {
+				ResultFilePayload resultFile = (ResultFilePayload)payload;
 				filterUtil.setField(FILE, resultFile.getFilePath());
 			}
-			else if (payload instanceof Run) {
-				Run run = (Run)payload;
+			else if (payload instanceof RunPayload) {
+				RunPayload run = (RunPayload)payload;
 				filterUtil.setField(RUN, run.getRunName());
 			}
 			else if (payload instanceof RunAttributePayload) {

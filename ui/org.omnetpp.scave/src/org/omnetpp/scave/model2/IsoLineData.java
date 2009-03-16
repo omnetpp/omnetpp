@@ -16,7 +16,6 @@ import static org.omnetpp.scave.engine.ResultItemField.NAME;
 import org.apache.commons.lang.ObjectUtils;
 import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.scave.engine.RunAttribute;
 
 public class IsoLineData implements Comparable<IsoLineData>
 {

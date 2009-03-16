@@ -20,6 +20,8 @@ import org.omnetpp.scave.engine.Run;
 import org.omnetpp.scave.engine.RunAttribute;
 import org.omnetpp.scave.engine.RunList;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
+import org.omnetpp.scave.model2.ResultFilePayload;
+import org.omnetpp.scave.model2.RunPayload;
 
 /**
  * Content provider for the "Logical view" tree of the Inputs page.
@@ -37,9 +39,9 @@ public class InputsLogicalViewContentProvider extends CachedTreeContentProvider 
 				GenericTreeNode experimentNode = root.getOrCreateChild(getRunAttribute(run, EXPERIMENT, null), Sorter.runAttributeComparator);
 				GenericTreeNode measurementNode = experimentNode.getOrCreateChild(getRunAttribute(run, MEASUREMENT, null), Sorter.runAttributeComparator);
 				String remarkOnReplication = "(seedset=#" + StringUtils.defaultIfEmpty(run.getAttribute(RunAttribute.SEEDSET),"n.a.")+")";
-				GenericTreeNode replicationNode = measurementNode.getOrCreateChild(getRunAttribute(run, REPLICATION, remarkOnReplication), Sorter.runComparator);
-				GenericTreeNode runNode = replicationNode.getOrCreateChild(run, Sorter.resultFileComparator);
-				runNode.getOrCreateChild(file);
+				GenericTreeNode replicationNode = measurementNode.getOrCreateChild(getRunAttribute(run, REPLICATION, remarkOnReplication), Sorter.runPayloadComparator);
+				GenericTreeNode runNode = replicationNode.getOrCreateChild(new RunPayload(run), Sorter.resultFilePayloadComparator);
+				runNode.getOrCreateChild(new ResultFilePayload(file));
 			}
 		}
 		return root;

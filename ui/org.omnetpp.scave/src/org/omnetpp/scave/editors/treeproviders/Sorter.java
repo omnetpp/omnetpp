@@ -16,12 +16,16 @@ import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engine.ResultFileList;
 import org.omnetpp.scave.engine.Run;
 import org.omnetpp.scave.engine.RunList;
+import org.omnetpp.scave.model2.ResultFilePayload;
 import org.omnetpp.scave.model2.RunAttributePayload;
+import org.omnetpp.scave.model2.RunPayload;
 
 public class Sorter {
 	
 	public static final Comparator<ResultFile> resultFileComparator = new ResultFileComparator();
+	public static final Comparator<ResultFilePayload> resultFilePayloadComparator = new ResultFilePayloadComparator();
 	public static final Comparator<Run> runComparator = new RunComparator();
+	public static final Comparator<RunPayload> runPayloadComparator = new RunPayloadComparator();
 	public static final Comparator<RunAttributePayload> runAttributeComparator = new RunAttributeComparator();
 	
 	private static class ResultFileComparator implements Comparator<ResultFile>, Serializable
@@ -30,6 +34,15 @@ public class Sorter {
 
 		public int compare(ResultFile left, ResultFile right) {
 			return StringUtils.dictionaryCompare(left.getFileName(), right.getFileName());
+		}
+	}
+	
+	private static class ResultFilePayloadComparator implements Comparator<ResultFilePayload>, Serializable
+	{
+		private static final long serialVersionUID = 1L;
+
+		public int compare(ResultFilePayload left, ResultFilePayload right) {
+			return StringUtils.dictionaryCompare(left.getFilePath(), right.getFilePath());
 		}
 	}
 	
@@ -42,6 +55,15 @@ public class Sorter {
 		}
 	}
 	
+	private static class RunPayloadComparator implements Comparator<RunPayload>, Serializable
+	{
+		private static final long serialVersionUID = 1L;
+
+		public int compare(RunPayload left, RunPayload right) {
+			return StringUtils.dictionaryCompare(left.getRunName(), right.getRunName());
+		}
+	}
+
 	private static class RunAttributeComparator implements Comparator<RunAttributePayload>, Serializable
 	{
 		private static final long serialVersionUID = 1L;
