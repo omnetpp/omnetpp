@@ -29,10 +29,30 @@
   }
 %}
 
+%exception {
+    try {
+        $action
+    } catch (std::exception& e) {
+        SWIG_JavaThrowException(jenv, SWIG_JavaRuntimeException, const_cast<char*>(e.what()));
+        return $null;
+    }
+}
+
+%typemap(javacode) cObject %{
+    public cObject disown() {
+        swigCMemOwn = false;
+        return this;
+    }
+%}
+%typemap(javacode) cEnvir %{
+    public cEnvir disown() {
+        swigCMemOwn = false;
+        return this;
+    }
+%}
 
 %{
 #include "omnetpp.h"
-//XXX #include "javaenv/javaenv.h"
 
 #include <direct.h>
 inline void changeToDir(const char *dir)  //XXX
@@ -102,11 +122,10 @@ inline void evSetup(const char *inifile) { //XXX
 %ignore parsimPack;
 %ignore parsimUnpack;
 
-// ignore non-inspectable classes
+// ignore non-inspectable and deprecated classes
 %ignore cCommBuffer;
 %ignore cContextSwitcher;
 %ignore cContextTypeSwitcher;
-%ignore cConfiguration;
 %ignore cOutputVectorManager;
 %ignore cOutputScalarManager;
 %ignore cOutputSnapshotManager;
@@ -116,6 +135,7 @@ inline void evSetup(const char *inifile) { //XXX
 %ignore ModNameParamResolver;
 %ignore StringMapParamResolver;
 %ignore cSubModIterator;
+%ignore cLinkedList;
 
 // ignore global variables
 %ignore defaultList;
@@ -136,6 +156,18 @@ inline void evSetup(const char *inifile) { //XXX
 %ignore MAX_VECTORGATES;
 %ignore MAX_SCALARGATES;
 %ignore MAX_VECTORGATESIZE;
+
+
+// ignore problematic methods/class
+%ignore cDynamicExpression::evaluate; // returns inner type (swig is not prepared to handle them)
+%ignore cDensityEstBase::getCellInfo; // returns inner type (swig is not prepared to handle them)
+%ignore cKSplit;  // several methods are problematic
+%ignore cPacketQueue;  // Java compile problems (cMessage/cPacket conversion)
+
+%ignore critfunc_const;
+%ignore critfunc_depth;
+%ignore divfunc_const;
+%ignore divfunc_babak;
 
 
 // typemaps to wrap Javaenv::setJCallback(JNIEnv *jenv, jobject jcallbackobj):
@@ -163,10 +195,7 @@ inline void evSetup(const char *inifile) { //XXX
 
   @Override
   public int hashCode() {
-    final int PRIME = 31;
-    int result = 1;
-    result = PRIME * result + getId();
-    return result;
+    return getId();
   }
 
   @Override
@@ -199,79 +228,100 @@ inline void evSetup(const char *inifile) { //XXX
 */
 
 
-%typemap(javacode) cSimulation %{
-    public cSimulation disown() {
-        swigCMemOwn = false;
-        return this;
-    }
-%}
-
 //XXX temporarily disabled; TO BE PUT BACK: %typemap(javainterfaces) cMessage "org.omnetpp.common.simulation.model.IRuntimeMessage";
 
-// SWIG doesn't understand nested classes, turn off corresponding warnings
-//%warnfilter(312) cTopology::Node; -- this doesn't seem to work
-//%warnfilter(312) cTopology; -- nor this
 
-// now include all header files
 %include "simkerneldefs.h"
+%include "carray.h"
+//%include "cboolparimpl.h"
+%include "cclassfactory.h"
+%include "ccommbuffer.h"
+%include "ccomponent.h"
+%include "ccomponenttype.h"
+%include "ccompoundmodule.h"
+%include "cchannel.h"
+%include "cdelaychannel.h"
+%include "cdataratechannel.h"
+%include "cconfiguration.h"
+%include "ccoroutine.h"
+%include "cdefaultlist.h"
+%include "cdensityestbase.h"
+%include "cdetect.h"
+%include "cconfigoption.h"
+%include "cdisplaystring.h"
+//%include "cdoubleparimpl.h"
+%include "cdynamicexpression.h"
+%include "cenum.h"
+%include "cenvir.h"
+%include "cexception.h"
+%include "cexpression.h"
+%include "chasher.h"
+%include "cfsm.h"
+%include "cmathfunction.h"
+%include "cgate.h"
+%include "chistogram.h"
+%include "cksplit.h"
+%include "clcg32.h"
+%include "clinkedlist.h"
+//%include "clongparimpl.h"
+%include "cmersennetwister.h"
+%include "simtime.h"
+%include "simtime_t.h"
+%include "cmessage.h"
+%include "cmsgpar.h"
+%include "cmodule.h"
+%include "cmessageheap.h"
+%include "cnedfunction.h"
 %include "cobject.h"
 %include "cnamedobject.h"
+%include "cnullenvir.h"
 %include "cownedobject.h"
-%include "cvisitor.h"
-//%include "opp_string.h"
-//%include "random.h"
-//%include "distrib.h"
-%include "cexception.h"
-%include "cdefaultlist.h"
-%include "csimulation.h"
-//%include "ctypes.h"
-//%include "carray.h"
-//%include "cqueue.h"
-//%include "cllist.h"
-%include "globals.h"
-//%include "cpar.h"
-%include "cgate.h"
-%include "cmessage.h"
-//%include "cpacket.h"
-//%include "cmsgheap.h"
-%include "cmodule.h"
+%include "coutvector.h"
+%include "cpar.h"
+//%include "cparimpl.h"
+%include "cparsimcomm.h"
+%include "cproperties.h"
+%include "cproperty.h"
+%include "cpsquare.h"
+%include "cqueue.h"
+%include "cpacketqueue.h"
+%include "crng.h"
+%include "cscheduler.h"
 %include "csimplemodule.h"
-//%include "cstat.h"
-//%include "cdensity.h"
-//%include "chist.h"
-//%include "cvarhist.h"
-//%include "cpsquare.h"
-//%include "cksplit.h"
-//%include "coutvector.h"
-//%include "cdetect.h"
-//%include "ctopo.h"
-//%include "cfsm.h"
-//%include "protocol.h"
-//%include "cenum.h"
-//%include "cstruct.h"
-//%include "cchannel.h"
-%include "cdisplaystring.h"
-//%include "cxmlelement.h"
-%include "cenvir.h"
-
-//XXX %include "javaenv/javaenv.h"
-
-//%include "util.h" -- no need to wrap
-//%include "macros.h" -- no need to wrap
-//%include "cwatch.h" -- no need to wrap
-//%include "cstlwatch.h" -- no need to wrap
-//%include "onstartup.h" -- no need to wrap
-//%include "envirext.h" -- no need to wrap
-//%include "cconfiguration.h" -- no need to wrap
-//%include "cstrtokenizer.h" -- no need to wrap
-//%include "cscheduler.h" -- no need to wrap
-//%include "compat.h" -- no need to wrap
-//%include "cparsimcomm.h" -- no need to wrap
-//%include "ccommbuffer.h" -- no need to wrap
-//%include "crng.h" -- no need to wrap
-
+%include "csimulation.h"
+%include "cstatistic.h"
+%include "cstddev.h"
+%include "cstlwatch.h"
+//%include "cstringparimpl.h"
+//%include "cstringpool.h"
+%include "cstringtokenizer.h"
+%include "cclassdescriptor.h"
+%include "ctopology.h"
+%include "cvarhist.h"
+%include "cvisitor.h"
+%include "cwatch.h"
+%include "cxmlelement.h"
+//%include "cxmlparimpl.h"
+%include "distrib.h"
+%include "envirext.h"
+%include "errmsg.h"
+%include "globals.h"
+%include "index.h"
+%include "mersennetwister.h"
+%include "onstartup.h"
+%include "opp_string.h"
+%include "random.h"
+%include "regmacros.h"
+%include "simutil.h"
+//%include "nedsupport.h"
+%include "packing.h"
+%include "compat.h"
 
 
 void evSetup(const char *inifile); //XXX
 void changeToDir(const char *dir); //XXX
 
+%{
+#include "javaenv/tmp.h"
+%}
+%include "javaenv/tmp.h"
