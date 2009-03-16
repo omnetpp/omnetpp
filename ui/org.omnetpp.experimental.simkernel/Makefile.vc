@@ -1,9 +1,20 @@
 #
 # Global definitions
 #
-OMNETPP_ROOT=..\..
+!include ..\..\configuser.vc
 
-!include $(OMNETPP_ROOT)\configuser.vc
+# Make sure that output locations are set
+!if "$(OMNETPP_BIN_DIR)"==""
+!error OMNETPP_BIN_DIR must be correctly set
+!endif
+!if "$(OMNETPP_OUT_DIR)"==""
+!error OMNETPP_OUT_DIR must be correctly set
+!endif
+!if "$(OMNETPP_LIB_DIR)"==""
+!error OMNETPP_LIB_DIR must be correctly set
+!endif
+
+O=out/$(TOOLCHAIN_NAME)-$(MODE)
 
 JDK="$(TOOLS_DIR)\jdk1.5.0"
 #SWIG="$(TOOLS_DIR)\SWIG-1.3.25\swig.exe"
@@ -13,9 +24,17 @@ SWIG="$(TOOLS_DIR)\SWIGWIN-1.3.38\swig.exe"
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) -I$(JDK)\include -I$(JDK)\include\win32 -I$(OMNETPP_INCL_DIR) -I$(OMNETPP_INCL_DIR)/platdep -I$(OMNETPP_ROOT)/src/envir
+COMMON=$(OMNETPP_ROOT)\src\common
+ENVIR=$(OMNETPP_ROOT)\src\envir
+NEDXML=$(OMNETPP_ROOT)\src\nedxml
+SCAVE=$(OMNETPP_ROOT)\src\scave
+LAYOUT=$(OMNETPP_ROOT)\src\layout
+EVENTLOG=$(OMNETPP_ROOT)\src\eventlog
 
-OBJS = simkernel_wrap.obj
+INCLUDES=-I$(OMNETPP_INCL_DIR) -I$(COMMON) -I$(ENVIR) -I$(NEDXML) -I$(SCAVE) -I$(LAYOUT) -I$(EVENTLOG) -I$(OMNETPP_INCL_DIR)/platdep
+COPTS=$(CFLAGS) -I$(JDK)\include -I$(JDK)\include\win32 $(INCLUDES)
+
+OBJS = $O/simkernel_wrap.obj $O/javaenv/visitor.obj
 JAVAPKG = org.omnetpp.experimental.simkernel.swig
 JAVADIR = src\$(JAVAPKG:.=\)
 
@@ -39,24 +58,26 @@ LIBS = \
        $(SAMPLES_OBJS) \
        $(KERNEL_LIBS) \
        $(SYS_LIBS)
-#       $(OMNETPP_ROOT)/lib/sim_std.lib \
-#       $(OMNETPP_ROOT)/lib/nedxml.lib \
-#       $(OMNETPP_ROOT)/lib/envir.lib \
-#       $(OMNETPP_ROOT)/lib/cmdenv.lib \
-#       $(OMNETPP_ROOT)/lib/javaenv.lib \
-#       $(XML_LIBS) $(SYS_LIBS)
 
 #
 # Automatic rules
 #
 .SUFFIXES : .cc
 
-.cc.obj:
+{.}.cc{$O}.obj:
 	$(CXX) /Fo"$@" $(COPTS) /c /Tp $<
 
-.cxx.obj:
+{.}.cxx{$O}.obj:
 	$(CXX) /Fo"$@" $(COPTS) /c /Tp $<
 
+{javaenv}.cc{$O/javaenv}.obj:
+	-@md $(O:/=\)\javaenv 2>nul
+	$(CXX) -c $(COPTS) /Fo"$@" -Tp $<
+
+$(OBJS): $O
+
+$O:
+	md $(@:/=\)
 
 #
 # Targets
