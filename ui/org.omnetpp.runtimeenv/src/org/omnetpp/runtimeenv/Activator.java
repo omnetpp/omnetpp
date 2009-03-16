@@ -3,7 +3,9 @@ package org.omnetpp.runtimeenv;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.omnetpp.experimental.simkernel.swig.EmptyConfig;
+import org.omnetpp.experimental.simkernel.swig.ExecuteOnStartup;
 import org.omnetpp.experimental.simkernel.swig.MinimalEnv;
+import org.omnetpp.experimental.simkernel.swig.SimTime;
 import org.omnetpp.experimental.simkernel.swig.cConfiguration;
 import org.omnetpp.experimental.simkernel.swig.cModuleType;
 import org.omnetpp.experimental.simkernel.swig.cSimulation;
@@ -34,9 +36,13 @@ public class Activator extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
-		
-        // set up an active simulation object
+
+		// library initializations
 		cStaticFlag.set(true);
+	    ExecuteOnStartup.executeAll();
+	    SimTime.setScaleExp(-12);
+	    
+	    // set up an active simulation object
 	    cConfiguration config = new EmptyConfig();
         MinimalEnv env = new MinimalEnv(0, null, config);
         config.disown();

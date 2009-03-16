@@ -20,6 +20,7 @@ import org.eclipse.core.runtime.Assert;
  * 
  * @author andras
  */
+//XXX use org.eclipse.jface.viewers.TreeNode instead? (just discovered such thing exists)
 public class GenericTreeNode {
 	private static final GenericTreeNode[] EMPTY_ARRAY = new GenericTreeNode[0];
 

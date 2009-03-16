@@ -86,6 +86,15 @@ void cCollectObjectsVisitor::visit(cObject *obj)
     obj->forEachChild(this);
 }
 
+//std::vector<cObject *> cCollectObjectsVisitor::asVector()
+//{
+//    std::vector<cObject *> result;
+//    result.resize(count);
+//    for (int i=0; i<count; i++)
+//        result[i] = arr[i];
+//    return result;
+//}
+
 //-----------------------------------------------------------------------
 
 cFilteredCollectObjectsVisitor::cFilteredCollectObjectsVisitor()

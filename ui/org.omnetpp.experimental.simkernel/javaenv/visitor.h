@@ -53,6 +53,8 @@ class cCollectObjectsVisitor : public cVisitor
     void setSizeLimit(int limit);
     cObject **getArray()  {return arr;}
     int getArraySize()  {return count;}
+    cObject *get(int k)  {return k>=0 && k<count ? arr[k] : NULL;}
+//    std::vector<cObject *> asVector();
 };
 
 

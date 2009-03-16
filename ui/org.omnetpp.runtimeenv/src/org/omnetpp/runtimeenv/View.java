@@ -1,9 +1,8 @@
 package org.omnetpp.runtimeenv;
 
-import org.eclipse.jface.viewers.IStructuredContentProvider;
-import org.eclipse.jface.viewers.ITableLabelProvider;
+import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
@@ -11,46 +10,66 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
+import org.omnetpp.experimental.simkernel.swig.cCollectChildrenVisitor;
+import org.omnetpp.experimental.simkernel.swig.cObject;
 import org.omnetpp.experimental.simkernel.swig.cSimulation;
-import org.omnetpp.experimental.simkernel.swig.cStaticFlag;
 
 public class View extends ViewPart {
 	public static final String ID = "org.omnetpp.runtimeenv.view";
 
-	private TableViewer viewer;
+	private TreeViewer viewer;
 
-	/**
-	 * The content provider class is responsible for providing objects to the
-	 * view. It can wrap existing objects in adapters or simply return objects
-	 * as-is. These objects may be sensitive to the current input of the view,
-	 * or ignore it and always show the same content (like Task List, for
-	 * example).
-	 */
-	class ViewContentProvider implements IStructuredContentProvider {
-		public void inputChanged(Viewer v, Object oldInput, Object newInput) {
-		}
+	class ViewContentProvider implements ITreeContentProvider {
+	    public Object[] getChildren(Object parentElement) {
+	        if (parentElement instanceof cObject) {
+	            cObject o = (cObject)parentElement;
+	            cCollectChildrenVisitor visitor = new cCollectChildrenVisitor(o);
+                visitor.process(o);
+                int n = visitor.getArraySize();
+                Object[] result = new Object[n];
+                for (int i=0; i<n; i++)
+                    result[i] = visitor.get(i);
+                return result;
+	        }
+	        return new Object[0];
+	    }
 
-		public void dispose() {
-		}
+	    public Object[] getElements(Object inputElement) {
+	        return getChildren(inputElement);
+	    }
 
-		public Object[] getElements(Object parent) {
-			return new String[] { "One", "Two", "Three" };
-		}
+	    public Object getParent(Object element) {
+            if (element instanceof cObject)
+                return ((cObject)element).getOwner();
+            return null;
+	    }
+
+	    public boolean hasChildren(Object element) {
+	        return getChildren(element).length > 0;  //FIXME make it more efficient
+	    }
+
+	    public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+	        // Do nothing
+	    }
+
+	    public void dispose() {
+            // Do nothing
+        }
 	}
 
-	class ViewLabelProvider extends LabelProvider implements
-			ITableLabelProvider {
-		public String getColumnText(Object obj, int index) {
-			return getText(obj);
-		}
-
-		public Image getColumnImage(Object obj, int index) {
-			return getImage(obj);
-		}
-
+	class ViewLabelProvider extends LabelProvider {
+	    @Override
+	    public String getText(Object element) {
+	        if (element instanceof cObject) {
+	            cObject obj = (cObject) element;
+	            return "(" + obj.getClassName() + ") " + obj.getFullName() + " -- " + obj.info();
+	        }
+	        return super.getText(element);
+	    }
+	    
+        @Override
 		public Image getImage(Object obj) {
-			return PlatformUI.getWorkbench().getSharedImages().getImage(
-					ISharedImages.IMG_OBJ_ELEMENT);
+			return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_ELEMENT);
 		}
 	}
 
@@ -59,10 +78,10 @@ public class View extends ViewPart {
 	 * it.
 	 */
 	public void createPartControl(Composite parent) {
-		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+		viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		viewer.setContentProvider(new ViewContentProvider());
 		viewer.setLabelProvider(new ViewLabelProvider());
-		viewer.setInput(getViewSite());
+		viewer.setInput(cSimulation.getActiveSimulation());
 	}
 
 	/**
