@@ -34,7 +34,7 @@ EVENTLOG=$(OMNETPP_ROOT)\src\eventlog
 INCLUDES=-I$(OMNETPP_INCL_DIR) -I$(COMMON) -I$(ENVIR) -I$(NEDXML) -I$(SCAVE) -I$(LAYOUT) -I$(EVENTLOG) -I$(OMNETPP_INCL_DIR)/platdep
 COPTS=$(CFLAGS) -I$(JDK)\include -I$(JDK)\include\win32 $(INCLUDES)
 
-OBJS = $O/simkernel_wrap.obj $O/javaenv/visitor.obj
+OBJS = $O/simkernel_wrap.obj $O/javaenv/visitor.obj $O/javaenv/jutil.obj
 JAVAPKG = org.omnetpp.experimental.simkernel.swig
 JAVADIR = src\$(JAVAPKG:.=\)
 
@@ -52,10 +52,11 @@ SAMPLES_OBJS = \
              $(OMNETPP_ROOT)/samples/sockets/out/msvc-debug/*.obj
 
 OMNETPP_LIB_SUBDIR = $(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
-             
+
 LIBS = \
        /libpath:"$(OMNETPP_LIB_SUBDIR)" /libpath:"$(OMNETPP_LIB_DIR)" \
        $(SAMPLES_OBJS) \
+       oppenvir$D.lib \
        $(KERNEL_LIBS) \
        $(SYS_LIBS)
 
@@ -74,11 +75,6 @@ LIBS = \
 	-@md $(O:/=\)\javaenv 2>nul
 	$(CXX) -c $(COPTS) /Fo"$@" -Tp $<
 
-$(OBJS): $O
-
-$O:
-	md $(@:/=\)
-
 #
 # Targets
 #
@@ -90,6 +86,11 @@ simkernel_wrap.cxx: simkernel.i Makefile.vc $(OMNETPP_ROOT)/include/*.h  # and m
 
 simkernel.dll : $(OBJS)
 	$(LINK) /dll /out:"simkernel.dll" $(OBJS) $(LIBS) $(LDFLAGS)
+
+$(OBJS): $O
+
+$O:
+	md $(@:/=\)
 
 depend:
 	$(MAKEDEPEND) -I../../include -fMakefile.vc -- *.cc

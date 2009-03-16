@@ -1,5 +1,5 @@
 //==========================================================================
-//  UTIL.CC - part of
+//  JUTIL.CC - part of
 //
 //                    OMNeT++/OMNEST
 //==========================================================================
@@ -14,7 +14,9 @@
 
 #include <stdio.h>
 #include <string.h>
-#include "util.h"
+#include "jutil.h"
+#include "ccomponent.h"
+#include "ccomponenttype.h"
 
 NAMESPACE_BEGIN
 
