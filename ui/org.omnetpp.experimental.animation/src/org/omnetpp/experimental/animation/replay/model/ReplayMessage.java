@@ -7,6 +7,8 @@
 
 package org.omnetpp.experimental.animation.replay.model;
 
+import java.math.BigDecimal;
+
 import org.omnetpp.common.simulation.model.IRuntimeMessage;
 
 public class ReplayMessage implements IRuntimeMessage {
@@ -51,7 +53,7 @@ public class ReplayMessage implements IRuntimeMessage {
 		this.length = length;
 	}
 
-	public int getKind() {
+	public short getKind() {
 		return kind;
 	}
 
@@ -59,7 +61,7 @@ public class ReplayMessage implements IRuntimeMessage {
 		this.kind = kind;
 	}
 
-	public int getPriority() {
+	public short getSchedulingPriority() {
 		return priority;
 	}
 
@@ -87,11 +89,11 @@ public class ReplayMessage implements IRuntimeMessage {
 		return arrivalGateId;
 	}
 
-	public double getSendingTime()  {
+	public BigDecimal getSendingTime()  {
 		return sendingTime;
 	}
 
-	public double getArrivalTime() {
+	public BigDecimal getArrivalTime() {
 		return arrivalTime;
 	}
 

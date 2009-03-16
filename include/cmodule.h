@@ -201,7 +201,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
         cChannel *operator++(int) {return end() ? NULL : channels[k++];}
     };
 
-  public:
+  private:
     static std::string lastmodulefullpath; // cached result of last getFullPath() call
     static const cModule *lastmodulefullpathmod; // module of lastmodulefullpath
 

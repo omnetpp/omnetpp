@@ -83,7 +83,7 @@ public class ReplayModule implements IRuntimeModule {
 		return size!=-1;
 	}
 	
-	public int getSize() {
+	public int getVectorSize() {
 		return size;
 	}
 
@@ -126,7 +126,7 @@ public class ReplayModule implements IRuntimeModule {
 		//FIXME use more efficient data structure to avoid linear search! e.g. map of submodule vectors etc
 		if (submodules != null)
 			for (ReplayModule m : submodules)
-				if (name.equals(m.getName()) && m.getSize()<0)
+				if (name.equals(m.getName()) && m.getVectorSize()<0)
 					return m;
 
 		return null;

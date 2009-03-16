@@ -196,4 +196,10 @@ ostream& operator<< (ostream& os, const cOwnedObject& o)
     return os << "(" << o.getClassName() << ")" << o.getFullName();
 }
 
+//-----
+
+static struct X {
+    ~X() {if (cStaticFlag::isSet()) printf("<!> Warning: cStaticFlag flag still set while shutting down! Make sure it always gets cleared at latest when exiting main().\n");}
+} x;
+
 NAMESPACE_END

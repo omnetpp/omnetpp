@@ -277,7 +277,7 @@ public class LiveAnimationController extends ReplayAnimationController implement
 		replayModule.setId(module.getId());
 		replayModule.setName(module.getName());
 		replayModule.setIndex(module.getIndex());
-		replayModule.setSize(!module.isVector() ? -1 : module.getSize());
+		replayModule.setSize(!module.isVector() ? -1 : module.getVectorSize());
 		
 		return replayModule;
 	}

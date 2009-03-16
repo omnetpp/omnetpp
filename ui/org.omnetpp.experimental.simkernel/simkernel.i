@@ -94,7 +94,9 @@ inline void evSetup(const char *inifile) { //XXX
 %ignore operator cObject *;
 %ignore operator cXMLElement *;
 %ignore cSimulation::operator=;
+
 %ignore cEnvir::printf;
+%ignore cGate::setChannel;
 
 // ignore methods that are useless from Java
 %ignore parsimPack;
@@ -145,17 +147,19 @@ inline void evSetup(const char *inifile) { //XXX
     $1 = j$1;
 }
 
-%typemap(javainterfaces) cSimulation "org.omnetpp.common.simulation.model.IRuntimeSimulation";
+//XXX temporarily disabled; TO BE PUT BACK: %typemap(javainterfaces) cSimulation "org.omnetpp.common.simulation.model.IRuntimeSimulation";
 
-%typemap(javainterfaces) cModule "org.omnetpp.common.simulation.model.IRuntimeModule";
+//XXX temporarily disabled; TO BE PUT BACK: %typemap(javainterfaces) cModule "org.omnetpp.common.simulation.model.IRuntimeModule";
+
+/*
 %typemap(javaimports) cModule
   "import org.omnetpp.common.displaymodel.DisplayString;\n"
   "import org.omnetpp.common.displaymodel.IDisplayString;";
-
+*/
 %typemap(javacode) cModule %{
-  public IDisplayString getDisplayString() {
-    return new DisplayString(null, null, displayString().getString());
-  }
+//  public IDisplayString getDisplayString() {
+//    return new DisplayString(null, null, displayString().getString());
+//  }
 
   @Override
   public int hashCode() {
@@ -180,7 +184,9 @@ inline void evSetup(const char *inifile) { //XXX
   }
 %};
 
-%typemap(javainterfaces) cGate "org.omnetpp.common.simulation.model.IRuntimeGate";
+//XXX temporarily disabled; TO BE PUT BACK: %typemap(javainterfaces) cGate "org.omnetpp.common.simulation.model.IRuntimeGate";
+
+/*
 %typemap(javaimports) cGate
   "import org.omnetpp.common.displaymodel.DisplayString;\n"
   "import org.omnetpp.common.displaymodel.IDisplayString;";
@@ -190,8 +196,17 @@ inline void evSetup(const char *inifile) { //XXX
     return new DisplayString(null, null, displayString().getString());
   }
 %};
+*/
 
-%typemap(javainterfaces) cMessage "org.omnetpp.common.simulation.model.IRuntimeMessage";
+
+%typemap(javacode) cSimulation %{
+    public cSimulation disown() {
+        swigCMemOwn = false;
+        return this;
+    }
+%}
+
+//XXX temporarily disabled; TO BE PUT BACK: %typemap(javainterfaces) cMessage "org.omnetpp.common.simulation.model.IRuntimeMessage";
 
 // SWIG doesn't understand nested classes, turn off corresponding warnings
 //%warnfilter(312) cTopology::Node; -- this doesn't seem to work

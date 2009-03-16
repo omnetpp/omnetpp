@@ -17,7 +17,7 @@ public interface IRuntimeModule {
 
 	public int getIndex();
 
-	public int getSize();
+	public int getVectorSize();
 
 	public boolean isVector();
 	
@@ -36,8 +36,6 @@ public interface IRuntimeModule {
     public IRuntimeModule getSubmodule(String name);
 
     public IRuntimeModule getSubmodule(String name, int index);
-    
-    public int getNumGates();
     
     public IRuntimeGate getGate(int i); 
 }

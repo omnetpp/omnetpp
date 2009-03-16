@@ -280,7 +280,7 @@ class SIM_API cNoncopyableOwnedObject : public cOwnedObject, noncopyable
 
 
 //
-// Internal helper class for cOwnedObject.
+// Internal class: provides a flag that shows if control is in the main() function.
 //
 class SIM_API cStaticFlag
 {
@@ -290,6 +290,7 @@ class SIM_API cStaticFlag
   public:
     cStaticFlag()  {staticflag = true;}
     ~cStaticFlag() {staticflag = false;}
+    static void set(bool b) {staticflag = b;}
     static void setExiting() {exitingflag = true;}
     static bool isExiting() {return exitingflag;}
     static bool isSet() {return staticflag;}

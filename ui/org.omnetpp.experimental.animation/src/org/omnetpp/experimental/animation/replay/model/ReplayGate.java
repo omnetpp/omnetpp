@@ -44,7 +44,7 @@ public class ReplayGate implements IRuntimeGate {
 		return index!=-1;
 	}
 	
-	public int getSize() {
+	public int getVectorSize() {
 		return size;
 	}
 

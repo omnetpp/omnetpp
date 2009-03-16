@@ -7,26 +7,28 @@
 
 package org.omnetpp.common.simulation.model;
 
+import java.math.BigDecimal;
+
 public interface IRuntimeMessage {
     /**
      * Returns message kind.
      */
-    public int getKind();
+    public short getKind();
 
     /**
      * Returns message priority.
      */
-    public int getPriority();
+    public short getSchedulingPriority();
 
     /**
      * Returns message length (bits).
      */
-    public int getLength();
+//XXX    public int getBitLength();
 
     /**
      * Returns true if bit error flag is set, false otherwise.
      */
-    public boolean hasBitError();
+//XXX    public boolean hasBitError();
 
 	/**
 	 * Return true if message was posted by scheduleAt().
@@ -61,14 +63,14 @@ public interface IRuntimeMessage {
 	 * Returns time when the message was sent/scheduled or 0 if the message
 	 * hasn't been sent yet.
 	 */
-	public double getSendingTime();
+	public BigDecimal getSendingTime();
 
 	/**
 	 * Returns time when the message arrived (or will arrive if it
 	 * is currently scheduled or is underway), or 0 if the message
 	 * hasn't been sent/scheduled yet.
 	 */
-	public double getArrivalTime();
+	public BigDecimal getArrivalTime();
 	
     /**
      * Returns a unique message identifier assigned upon message creation.
@@ -84,12 +86,12 @@ public interface IRuntimeMessage {
     /**
      * Returns the sequenceId() of the innermost encapsulated message.
      */
- 	public int getEncapsulationId();
+//XXX 	public int getEncapsulationId();
 
     /**
      * Returns the treeId() of the innermost encapsulated message.
      */
-	public int getEncapsulationTreeId();
+//XXX	public int getEncapsulationTreeId();
 
 	// FIXME: IObject?
 	public String getName();

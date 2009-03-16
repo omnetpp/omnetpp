@@ -115,8 +115,8 @@ int main(int argc, char *argv[])
     cSimulation::setActiveSimulation(sim);
 
     // load NED files
-    sim->loadNedSourceFolder("model");
-    sim->doneLoadingNedFiles();
+    cSimulation::loadNedSourceFolder("model");
+    cSimulation::doneLoadingNedFiles();
 
     // set up and run a simulation model
     simulate("Net", 1000);

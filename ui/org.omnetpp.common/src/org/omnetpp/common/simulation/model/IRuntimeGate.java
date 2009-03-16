@@ -14,7 +14,7 @@ public interface IRuntimeGate {
 
 	public int getIndex();
 
-	public int getSize();
+	public int getVectorSize();
 
 	public boolean isVector();
 	

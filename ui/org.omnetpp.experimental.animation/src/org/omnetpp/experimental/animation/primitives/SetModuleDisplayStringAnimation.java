@@ -38,7 +38,7 @@ public class SetModuleDisplayStringAnimation extends AbstractInfiniteAnimation {
 			SubmoduleFigure moduleFigure = (SubmoduleFigure)animationEnvironment.getFigure(module);
 			SubmoduleConstraint submoduleConstraint = new SubmoduleConstraint(displayString, new Float(1.0));
 			submoduleConstraint.setVectorName(module.getFullPath());
-			submoduleConstraint.setVectorSize(module.getSize());
+			submoduleConstraint.setVectorSize(module.getVectorSize());
 			submoduleConstraint.setVectorIndex(module.getIndex());
 			
 			oldDisplayString = moduleFigure.getLastDisplayString();
