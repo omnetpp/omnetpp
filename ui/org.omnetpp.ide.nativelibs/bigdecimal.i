@@ -4,6 +4,7 @@
  *                            to java.math.BigDecimal
  * WARN: be sure that BigDecimal does not contain NaN/Infinity, because they
  *       cannot be mapped to java.math.BigDecimal. (Nil is mapped to null)
+ * *** THIS IS CURRENTLY UNUSED, WE USE OUR OWN BigDecimal CLASS INSTEAD ***
  *--------------------------------------------------------------------------*/
 %define JAVA_MATH_BIGDECIMAL()
 %typemap(jni) BigDecimal "jobject";
