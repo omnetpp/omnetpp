@@ -169,25 +169,6 @@ namespace std {
  *                    ResultFileManager
  *---------------------------------------------------------------------------*/
 
-//
-// Add polymorphic return type to ResultFileManager::getItem(),
-// because plain ResultItem does not contain the type (VECTOR, SCALAR, etc).
-//
-%rename(_getItem) ResultFileManager::getItem;
-%javamethodmodifiers ResultFileManager::_getItem "protected";
-%typemap(javacode) ResultFileManager %{
-    public ResultItem getItem(long id) {
-        int type = getTypeOf(id);
-        if (type==SCALAR)
-            return getScalar(id);
-        else if (type==VECTOR)
-            return getVector(id);
-        else if (type==HISTOGRAM)
-            return getHistogram(id);
-        else
-            throw new RuntimeException("unknown ID type");
-    }
-%}
 
 //
 // The following code is for IDList::getSubsetByIndices():
@@ -306,29 +287,7 @@ int strdictcmp(const char *s1, const char *s2);
 %include "statistics.h"
 
 /* ------------- idlist.h  ----------------- */
-
-%typemap(javacode) IDList %{
-    public static final IDList EMPTY = new IDList();
-
-    public void swigDisown() {
-        swigCMemOwn = false;
-    }
-    public Long[] toArray() {
-        int sz = (int) size();
-        Long[] array = new Long[sz];
-        for (int i=0; i<sz; i++)
-            array[i] = Long.valueOf(get(i));
-        return array;
-    }
-    public static IDList fromArray(Long[] array) {
-        IDList list = new IDList();
-        for (int i=0; i<array.length; i++)
-            list.add(array[i].longValue());
-        return list;
-    }
-%}
-
-%include "idlist.h"
+%include "idlist.i"
 
 /* ------------- resultfilemanager.h  ----------------- */
 %ignore ResultFileManager::dump;
@@ -355,6 +314,37 @@ int strdictcmp(const char *s1, const char *s2);
    std::string getModuleName() {return *self->moduleNameRef;}
    std::string getName() {return *self->nameRef;}
 }
+
+%typemap(javaimports) ResultFileManager %{
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+%}
+
+//
+// Add polymorphic return type to ResultFileManager::getItem(),
+// because plain ResultItem does not contain the type (VECTOR, SCALAR, etc).
+//
+%rename(_getItem) ResultFileManager::getItem;
+%javamethodmodifiers ResultFileManager::_getItem "protected";
+
+%typemap(javacode) ResultFileManager %{
+  protected ReadWriteLock lock = new ReentrantReadWriteLock();
+  protected Lock readLock = lock.readLock();
+  protected Lock writeLock = lock.writeLock();
+
+  public ResultItem getItem(long id) {
+      int type = getTypeOf(id);
+      if (type==SCALAR)
+          return getScalar(id);
+      else if (type==VECTOR)
+          return getVector(id);
+      else if (type==HISTOGRAM)
+          return getHistogram(id);
+      else
+          throw new RuntimeException("unknown ID type");
+  }
+%}
 
 FIX_STRING_MEMBER(ResultFile, filePath, FilePath);
 FIX_STRING_MEMBER(ResultFile, directory, Directory);

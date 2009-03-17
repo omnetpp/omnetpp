@@ -69,8 +69,8 @@ import org.omnetpp.scave.engineext.IResultFilesChangeListener;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.DatasetItem;
 import org.omnetpp.scave.model.ResultType;
-import org.omnetpp.scave.model2.DatasetManager;
 import org.omnetpp.scave.model2.ChartLine;
+import org.omnetpp.scave.model2.DatasetManager;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
@@ -114,10 +114,6 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 	private ListenerList selectionChangeListeners = new ListenerList();
 	
 	private Runnable scheduledUpdate; 
-	
-	private static final IDList EMPTY = new IDList();
-	
-	
 	
 	@Override
 	public void init(IViewSite site) throws PartInitException {
@@ -507,9 +503,9 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 			histogramsPanel.setIDList(histograms);
 		}
 		else {
-			scalarsPanel.setIDList(EMPTY);
-			vectorsPanel.setIDList(EMPTY);
-			histogramsPanel.setIDList(EMPTY);
+			scalarsPanel.setIDList(IDList.EMPTY);
+			vectorsPanel.setIDList(IDList.EMPTY);
+			histogramsPanel.setIDList(IDList.EMPTY);
 		}
 	}
 	

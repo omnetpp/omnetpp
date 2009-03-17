@@ -49,8 +49,6 @@ public class FilteredDataPanel extends Composite {
 	private DataTable table;
 	private IDList idlist; // the unfiltered data list
 	
-	private static final IDList EMPTY_IDLIST = new IDList();
-
 	public FilteredDataPanel(Composite parent, int style, ResultType type) {
 		super(parent, style);
 		initialize(type);
@@ -142,7 +140,7 @@ public class FilteredDataPanel extends Composite {
 		
 		if (table.getResultFileManager() == null) {
 			// no result file manager, show empty table
-			table.setIDList(EMPTY_IDLIST);
+			table.setIDList(new IDList());
 		}
 		else if (isFilterPatternValid()) {
 			// run the filter on the unfiltered IDList, and set the result to the table

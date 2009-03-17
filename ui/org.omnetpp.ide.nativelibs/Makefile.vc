@@ -85,10 +85,10 @@ nedxml.cxx : nedxml.i
 	-mkdir $(NEDXML_JAVADIR) >nul
 	$(SWIG) -c++ -java $(SWIGOPTS) -package $(NEDXML_JAVAPKG) -outdir $(NEDXML_JAVADIR) -o $@ $**
 
-scave.cxx : scave.i
+scave.cxx : scave.i idlist.i
 	-del $(SCAVE_JAVADIR)\*.java >nul
 	-mkdir $(SCAVE_JAVADIR) >nul
-	$(SWIG) -c++ -java $(SWIGOPTS) -package $(SCAVE_JAVAPKG) -outdir $(SCAVE_JAVADIR) -o $@ $**
+	$(SWIG) -c++ -java $(SWIGOPTS) -package $(SCAVE_JAVAPKG) -outdir $(SCAVE_JAVADIR) -o $@ scave.i
 
 layout.cxx : layout.i
 	-del $(LAYOUT_JAVADIR)\*.java >nul
