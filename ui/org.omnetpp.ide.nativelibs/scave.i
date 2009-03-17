@@ -345,6 +345,10 @@ int strdictcmp(const char *s1, const char *s2);
 %ignore ResultItem::moduleNameRef;
 %ignore ResultItem::nameRef;
 
+// do not allow direct access to unwrapped ResultFileManager
+%ignore ResultFile::resultFileManager;
+%ignore Run::resultFileManager;
+
 %newobject ResultItem::getEnum() const;
 
 %extend ResultItem {
