@@ -376,7 +376,7 @@ class SCAVE_API ResultFileManager
     IDList filterIDList(const IDList& idlist,
                         const FileRunList *fileRunFilter,
                         const char *moduleFilter,
-                        const char *nameFilter);
+                        const char *nameFilter) const;
 
     IDList filterIDList(const IDList &idlist, const char *pattern) const;
 
@@ -388,7 +388,7 @@ class SCAVE_API ResultFileManager
     static void checkPattern(const char *pattern);
 
     // computed data
-    ID getComputedID(ComputationID computationID, ID inputID);
+    ID getComputedID(ComputationID computationID, ID inputID) const;
     ID addComputedVector(int vectorId, const char *name, const char *file, const StringMap &attributes, ComputationID computationID, ID inputID, ComputationNode node);
 
     /**

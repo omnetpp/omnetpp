@@ -550,7 +550,7 @@ FileRunList ResultFileManager::getFileRuns(const ResultFileList *fileList, const
 IDList ResultFileManager::filterIDList(const IDList& idlist,
                                        const FileRunList *fileRunFilter,
                                        const char *moduleFilter,
-                                       const char *nameFilter)
+                                       const char *nameFilter) const
 {
     // "*" means no filtering, so ignore it
     if (!strcmp(moduleFilter,"*")) moduleFilter = "";
@@ -796,10 +796,10 @@ ID ResultFileManager::addComputedVector(int vectorId, const char *name, const ch
     return id;
 }
 
-ID ResultFileManager::getComputedID(ComputationID computationID, ID input)
+ID ResultFileManager::getComputedID(ComputationID computationID, ID input) const
 {
     std::pair<ComputationID, ID> key = std::make_pair(computationID, input);
-    ComputedIDCache::iterator it = computedIDCache.find(key);
+    ComputedIDCache::const_iterator it = computedIDCache.find(key);
     if (it != computedIDCache.end())
       return it->second;
     else
