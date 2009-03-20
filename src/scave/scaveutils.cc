@@ -59,13 +59,14 @@ bool parseDouble(const char *s, double& dest)
     {
         return true;
     }
-    if (strstr(s,"INF") || strstr(s, "inf"))
+    if (strncasecmp(s, "inf", 3) == 0 ||
+    		(*s && strncasecmp(s+1, "inf", 3) == 0))
     {
         dest = dblPositiveInfinity;  // +INF or -INF
         if (*s=='-') dest = -dest;
         return true;
     }
-    if (strstr(s, "IND") || strcmp(s,"nan")==0)
+    if (strstr(s, "IND") || strcasecmp(s,"nan")==0)
     {
         dest = dblNaN;
         return true;
