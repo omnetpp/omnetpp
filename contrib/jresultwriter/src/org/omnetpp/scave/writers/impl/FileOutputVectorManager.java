@@ -97,10 +97,10 @@ public class FileOutputVectorManager implements IOutputVectorManager {
             sum += value;
             sqrSum += value*value;
 
+            ++nbuffered;
+
             // flush if needed
             changed(this);
-
-            ++nbuffered;
 
             return false;
         }
@@ -171,7 +171,7 @@ public class FileOutputVectorManager implements IOutputVectorManager {
 
     public void close() throws IOException {
         if (out != null) {
-            flushAndCheck();
+            flush();
             out.close();
             indexOut.close();
         }
