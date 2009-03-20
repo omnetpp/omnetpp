@@ -15,10 +15,10 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.jface.text,
  org.eclipse.ui.workbench.texteditor,
  org.eclipse.ui.forms,
- org.eclipse.gef,
  org.omnetpp.scave.model,
  org.omnetpp.scave.builder,
- org.omnetpp.ide.nativelibs
+ org.omnetpp.ide.nativelibs,
+ org.eclipse.draw2d
 Eclipse-LazyStart: true
 Bundle-Vendor: OpenSim Ltd.
 Bundle-ClassPath: .

@@ -101,19 +101,17 @@
         point="org.eclipse.core.runtime.products">
      <product
            application="org.eclipse.ui.ide.workbench"
-           name="%productName">
+           name="OMNeT++ Scalar and Vector Analyser">
         <property
               name="preferenceCustomization"
               value="plugin_customization.ini"/>
         <property
               name="windowImages"
-              value="eclipse.gif,eclipse32.gif,eclipse48.gif,eclipse.png,eclipse32.png"/>
+              value="icons/logo16.png,icons/logo32.png,icons/logo48.png,icons/logo64.png,icons/logo128.png"/>
         <property
               name="aboutText"
-              value="%productBlurb"/>
-        <property
-              name="aboutImage"
-              value="eclipse_lg.gif"/>
+              value="OMNeT++ Vector and Scalar Analyser tool. Part of the OMNeT++ IDE. \n
+See www.omnetpp.org."/>
         <property
               name="startupForegroundColor"
               value="C8D5EA"/>
@@ -125,7 +123,7 @@
               value="7,220,441,20"/>
         <property
               name="appName"
-              value="%productName">
+              value="OMNeT++ Scalar and Vector Analyser">
         </property>
      </product>
   </extension>
