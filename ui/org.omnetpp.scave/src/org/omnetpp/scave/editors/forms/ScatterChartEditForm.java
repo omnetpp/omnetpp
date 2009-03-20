@@ -57,7 +57,8 @@ public class ScatterChartEditForm extends BaseLineChartEditForm {
 	private List<TreeItem> isoLineSelectionTreeItems;
 	private Button avgReplicationsCheckbox;
 	
-	private IsoLineData[] data = new IsoLineData[0];
+	private IsoLineData[] xData = new IsoLineData[0];
+	private IsoLineData[] isoData = new IsoLineData[0];
 	
 	public ScatterChartEditForm(ScatterChart chart, EObject parent, Map<String,Object> formParameters, ResultFileManager manager) {
 		super(chart, parent, formParameters, manager);
@@ -66,7 +67,8 @@ public class ScatterChartEditForm extends BaseLineChartEditForm {
 		if (dataset != null) {
 			IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, chart, ResultType.SCALAR_LITERAL);
 			idlist.merge(DatasetManager.getIDListFromDataset(manager, dataset, chart, ResultType.VECTOR_LITERAL));
-			data = ScaveModelUtil.getModuleAndDataPairs(idlist, manager);
+			xData = ScaveModelUtil.getModuleAndDataPairs(idlist, manager, false);
+			isoData = ScaveModelUtil.getModuleAndDataPairs(idlist, manager, true);
 		}
 	}
 	
@@ -120,9 +122,9 @@ public class ScatterChartEditForm extends BaseLineChartEditForm {
 			group = createGroup("X data", panel, 2, 2);
 			createLabel("Select the scalar whose values displayed on the X axis.",
 					group, 2);
-			String[] items = new String [data.length];
+			String[] items = new String [xData.length];
 			for (int i = 0; i < items.length; ++i)
-				items[i] = data[i].asListItem();
+				items[i] = xData[i].asListItem();
 			xModuleAndDataCombo = createComboField("", group, items);
 			if (items.length > 0)
 				xModuleAndDataCombo.setText(items[0]);
@@ -134,7 +136,7 @@ public class ScatterChartEditForm extends BaseLineChartEditForm {
 			isoLineSelectionTree = new Tree(group,
 					SWT.BORDER | SWT.CHECK | SWT.HIDE_SELECTION | SWT.V_SCROLL);
 			gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
-			int itemsVisible = Math.max(Math.min(data.length, 15), 3);
+			int itemsVisible = Math.max(Math.min(isoData.length, 15), 3);
 			gridData.heightHint = itemsVisible * isoLineSelectionTree.getItemHeight();
 			isoLineSelectionTree.setLayoutData(gridData);
 			TreeItem scalars = new TreeItem(isoLineSelectionTree, SWT.NONE);
@@ -143,13 +145,13 @@ public class ScatterChartEditForm extends BaseLineChartEditForm {
 			attributes.setText("run attributes");
 			
 			isoLineSelectionTreeItems = new ArrayList<TreeItem>();
-			for (int i = 0; i < data.length; ++i) {
-				TreeItem parent = data[i].getModuleName() != null && data[i].getDataName() != null ?
+			for (int i = 0; i < isoData.length; ++i) {
+				TreeItem parent = isoData[i].getModuleName() != null && isoData[i].getDataName() != null ?
 									scalars : attributes;
 				TreeItem treeItem = new TreeItem(parent, SWT.NONE);
 				treeItem.setChecked(false);
-				treeItem.setText(data[i].asListItem());
-				treeItem.setData(data[i].asFilterPattern());
+				treeItem.setText(isoData[i].asListItem());
+				treeItem.setData(isoData[i].asFilterPattern());
 				isoLineSelectionTreeItems.add(treeItem);
 			}
 			scalars.setExpanded(true);
@@ -178,7 +180,7 @@ public class ScatterChartEditForm extends BaseLineChartEditForm {
 		switch (feature.getFeatureID()) {
 		case ScaveModelPackage.SCATTER_CHART__XDATA_PATTERN:
 			int index = xModuleAndDataCombo.getSelectionIndex();
-			return index >= 0 ? data[index].asFilterPattern() : null; 
+			return index >= 0 ? xData[index].asFilterPattern() : null; 
 		case ScaveModelPackage.SCATTER_CHART__ISO_DATA_PATTERN:
 			List<String> patterns = new ArrayList<String>();
 			for (TreeItem item : isoLineSelectionTreeItems) {
@@ -199,9 +201,9 @@ public class ScatterChartEditForm extends BaseLineChartEditForm {
 			if (xModuleAndDataCombo != null) {
 				IsoLineData xModuleAndData = null;
 				if (value instanceof String) {
-					int index = ArrayUtils.indexOf(data, IsoLineData.fromFilterPattern((String)value));
+					int index = ArrayUtils.indexOf(xData, IsoLineData.fromFilterPattern((String)value));
 					if (index >= 0)
-						xModuleAndData = data[index];
+						xModuleAndData = xData[index];
 				}
 				
 				if (xModuleAndData != null)

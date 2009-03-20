@@ -286,7 +286,7 @@ public class DatasetManager {
 			List<IsoLineData[]> isoLineIds = null;
 			if (!scalars.isEmpty()) {
 				IsoLineData xData = IsoLineData.fromFilterPattern(chart.getXDataPattern());
-				Assert.isLegal(xData != null && xData.isValid(), "X data is not selected.");
+				Assert.isLegal(xData != null && xData.getModuleName() != null && xData.getDataName() != null, "X data is not selected.");
 				
 				String xModuleName = xData.getModuleName();
 				String xScalarName = xData.getDataName();
