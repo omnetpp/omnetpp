@@ -24,7 +24,7 @@ L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 
 COPTS=$(CFLAGS) -I. -I$(OMNETPP_INCL_DIR)/platdep
 
-IMPLIBS=
+IMPLIBS= $(PTHREAD_LIBS)
 
 OBJS= $O/lcgrandom.o $O/filereader.o $O/linetokenizer.o \
       $O/stringpool.o $O/stringtokenizer.o $O/fnamelisttokenizer.o \
@@ -34,7 +34,7 @@ OBJS= $O/lcgrandom.o $O/filereader.o $O/linetokenizer.o \
       $O/fileutil.o $O/stringutil.o $O/commonutil.o $O/exception.o $O/bigdecimal.o \
       $O/enumstr.o
 
-ifeq ("$(HAVE_PTHREADS)","yes")
+ifeq ("$(HAVE_PTHREAD)","yes")
 OBJS+= $O/rwlock.o
 endif
 
@@ -64,7 +64,7 @@ $L/$(LIBNAME)$(A_LIB_SUFFIX) : $(OBJS)
 
 $L/$(LIBNAME)$(SO_LIB_SUFFIX) : $(OBJS)
 	mkdir -p $L
-	$(SHLIB_LD) $(LDFLAGS) -o $O/$(LIBNAME)$(SO_LIB_SUFFIX) $(OBJS)
+	$(SHLIB_LD) $(LDFLAGS) -o $O/$(LIBNAME)$(SO_LIB_SUFFIX) $(OBJS) $(IMPLIBS)
 	cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(SO_LIB_SUFFIX).$(OMNETPP_VERSION) $L $(LIBNAME)$(SO_LIB_SUFFIX)
 
 $L/$(LIBNAME)$(DLL_LIB_SUFFIX) : $(OBJS)
@@ -190,6 +190,10 @@ $O/patternmatcher.o: patternmatcher.cc \
   stringutil.h \
   opp_ctype.h \
   exception.h
+$O/rwlock.o: rwlock.cc \
+  rwlock.h \
+  commondefs.h \
+  exception.h
 $O/stringpool.o: stringpool.cc \
   commondefs.h \
   stringpool.h
@@ -210,3 +214,4 @@ $O/unitconversion.o: unitconversion.cc \
   stringutil.h \
   opp_ctype.h \
   exception.h
+$O/x.o: x.cc

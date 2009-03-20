@@ -14,6 +14,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include "errno.h"
 #include "rwlock.h"
 #include "exception.h"
 
@@ -40,8 +41,10 @@ inline void handleErrors(int rc, const char *msg)
 }
 
 ReentrantReadWriteLock::ReentrantReadWriteLock()
-	: rwlock(PTHREAD_RWLOCK_INITIALIZER), _readLock(*this), _writeLock(*this)
+	: _readLock(*this), _writeLock(*this)
 {
+	pthread_rwlock_t tmp = PTHREAD_RWLOCK_INITIALIZER;
+	rwlock = tmp;
 	int rc = pthread_key_create(&key, deleteThreadLocalState);
 	handleErrors(rc, "Can not create key for thread local storage");
 }

@@ -948,6 +948,26 @@ else
 fi
 
 #----------------------
+# Check for PTHREAD.
+#----------------------
+
+if test -n "$PTHREAD_LIBS"; then
+    OPP_CHECK_LIB(PTHREAD, pthread.h, pthread_rwlock_rdlock(0), $CFLAGS_RELEASE $PTHREAD_CFLAGS, $PTHREAD_LIBS, pthread_ok)
+else
+    PTHREAD_LIBS="-lpthread"
+    OPP_CHECK_LIB(PTHREAD, pthread.h, pthread_rwlock_rdlock(0), $CFLAGS_RELEASE $PTHREAD_CFLAGS, $PTHREAD_LIBS, pthread_ok)
+fi
+if test $pthread_ok = yes; then
+    HAVE_PTHREAD=yes
+    CFLAGS_RELEASE="$CFLAGS_RELEASE $PTHREAD_CFLAGS -DTHREADED"
+    CFLAGS_DEBUG="$CFLAGS_DEBUG $PTHREAD_CFLAGS -DTHREADED"
+else
+    HAVE_PTHREAD=no
+    PTHREAD_CFLAGS=""
+    PTHREAD_LIBS=""
+fi
+
+#----------------------
 # Check for XML parsers: EXPAT and/or LIBXML
 #----------------------
 if test -n "$LIBXML_LIBS"; then
@@ -1099,6 +1119,9 @@ AC_SUBST(HAVE_PCAP)
 AC_SUBST(PCAP_CFLAGS)
 AC_SUBST(PCAP_LIBS)
 AC_SUBST(SYS_LIBS)
+AC_SUBST(HAVE_PTHREAD)
+AC_SUBST(PTHREAD_CFLAGS)
+AC_SUBST(PTHREAD_LIBS)
 
 AC_SUBST(XMLPARSER)
 AC_SUBST(XML_CFLAGS)

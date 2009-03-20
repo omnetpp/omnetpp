@@ -22,9 +22,9 @@ LIBNAME=liboppscave$D
 O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/scave
 L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 
-COPTS=$(CFLAGS) $(XML_CFLAGS) $(PTHREADS_CFLAGS) -I. -I../common -I$(OMNETPP_INCL_DIR)/platdep
+COPTS=$(CFLAGS) $(XML_CFLAGS) $(PTHREAD_CFLAGS) -I. -I../common -I$(OMNETPP_INCL_DIR)/platdep
 
-IMPLIBS= -L$L -loppcommon$D $(PTHREADS_LIBS)
+IMPLIBS= -L$L -loppcommon$D
 
 OBJS= $O/arraybuilder.o $O/channel.o $O/commonnodes.o $O/compoundfilter.o \
       $O/dataflowmanager.o $O/datasorter.o $O/diffquot.o \
@@ -218,8 +218,8 @@ $O/export.o: export.cc \
   scaveutils.h \
   ../common/stringutil.h \
   ../common/patternmatcher.h \
-  ../common/commonutil.h \
   ../common/exception.h \
+  ../common/commonutil.h \
   resultfilemanager.h \
   enumtype.h \
   ../common/bigdecimal.h \
@@ -474,8 +474,8 @@ $O/scavetool.o: scavetool.cc \
   ../common/progressmonitor.h \
   enumtype.h \
   resultfilemanager.h \
-  ../common/linetokenizer.h \
   dataflowmanager.h \
+  ../common/linetokenizer.h \
   arraybuilder.h \
   statistics.h \
   filternodes.h \

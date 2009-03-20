@@ -700,6 +700,9 @@ HAVE_PCAP
 PCAP_CFLAGS
 PCAP_LIBS
 SYS_LIBS
+HAVE_PTHREAD
+PTHREAD_CFLAGS
+PTHREAD_LIBS
 XMLPARSER
 XML_CFLAGS
 XML_LIBS
@@ -7203,6 +7206,142 @@ else
 fi
 
 #----------------------
+# Check for PTHREAD.
+#----------------------
+
+if test -n "$PTHREAD_LIBS"; then
+
+   save_CXXFLAGS=$CXXFLAGS
+   save_LIBS=$LIBS
+
+   CXXFLAGS="$CFLAGS_RELEASE $PTHREAD_CFLAGS"
+   LIBS="$PTHREAD_LIBS"
+
+   { echo "$as_me:$LINENO: checking for PTHREAD with CFLAGS=\"$CFLAGS_RELEASE $PTHREAD_CFLAGS\" LIBS=\"$PTHREAD_LIBS\"" >&5
+echo $ECHO_N "checking for PTHREAD with CFLAGS=\"$CFLAGS_RELEASE $PTHREAD_CFLAGS\" LIBS=\"$PTHREAD_LIBS\"... $ECHO_C" >&6; }
+
+   cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <pthread.h>
+int
+main ()
+{
+pthread_rwlock_rdlock(0);
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (ac_try="$ac_link"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
+  (eval "$ac_link") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_cxx_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest$ac_exeext &&
+       $as_test_x conftest$ac_exeext; then
+  { echo "$as_me:$LINENO: result: yes" >&5
+echo "${ECHO_T}yes" >&6; }; pthread_ok=yes;
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+	{ echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6; }; pthread_ok=no;
+fi
+
+rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
+      conftest$ac_exeext conftest.$ac_ext
+
+   CXXFLAGS=$save_CXXFLAGS
+   LIBS=$save_LIBS
+
+else
+    PTHREAD_LIBS="-lpthread"
+
+   save_CXXFLAGS=$CXXFLAGS
+   save_LIBS=$LIBS
+
+   CXXFLAGS="$CFLAGS_RELEASE $PTHREAD_CFLAGS"
+   LIBS="$PTHREAD_LIBS"
+
+   { echo "$as_me:$LINENO: checking for PTHREAD with CFLAGS=\"$CFLAGS_RELEASE $PTHREAD_CFLAGS\" LIBS=\"$PTHREAD_LIBS\"" >&5
+echo $ECHO_N "checking for PTHREAD with CFLAGS=\"$CFLAGS_RELEASE $PTHREAD_CFLAGS\" LIBS=\"$PTHREAD_LIBS\"... $ECHO_C" >&6; }
+
+   cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <pthread.h>
+int
+main ()
+{
+pthread_rwlock_rdlock(0);
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (ac_try="$ac_link"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
+  (eval "$ac_link") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_cxx_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest$ac_exeext &&
+       $as_test_x conftest$ac_exeext; then
+  { echo "$as_me:$LINENO: result: yes" >&5
+echo "${ECHO_T}yes" >&6; }; pthread_ok=yes;
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+	{ echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6; }; pthread_ok=no;
+fi
+
+rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
+      conftest$ac_exeext conftest.$ac_ext
+
+   CXXFLAGS=$save_CXXFLAGS
+   LIBS=$save_LIBS
+
+fi
+if test $pthread_ok = yes; then
+    HAVE_PTHREAD=yes
+    CFLAGS_RELEASE="$CFLAGS_RELEASE $PTHREAD_CFLAGS -DTHREADED"
+    CFLAGS_DEBUG="$CFLAGS_DEBUG $PTHREAD_CFLAGS -DTHREADED"
+else
+    HAVE_PTHREAD=no
+    PTHREAD_CFLAGS=""
+    PTHREAD_LIBS=""
+fi
+
+#----------------------
 # Check for XML parsers: EXPAT and/or LIBXML
 #----------------------
 if test -n "$LIBXML_LIBS"; then
@@ -7693,6 +7832,9 @@ ac_config_files="$ac_config_files Makefile.inc test/core/runtest"
 #----------------------
 # Substitutions.
 #----------------------
+
+
+
 
 
 
@@ -8580,6 +8722,9 @@ HAVE_PCAP!$HAVE_PCAP$ac_delim
 PCAP_CFLAGS!$PCAP_CFLAGS$ac_delim
 PCAP_LIBS!$PCAP_LIBS$ac_delim
 SYS_LIBS!$SYS_LIBS$ac_delim
+HAVE_PTHREAD!$HAVE_PTHREAD$ac_delim
+PTHREAD_CFLAGS!$PTHREAD_CFLAGS$ac_delim
+PTHREAD_LIBS!$PTHREAD_LIBS$ac_delim
 XMLPARSER!$XMLPARSER$ac_delim
 XML_CFLAGS!$XML_CFLAGS$ac_delim
 XML_LIBS!$XML_LIBS$ac_delim
@@ -8598,7 +8743,7 @@ LIBOBJS!$LIBOBJS$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 42; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 45; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5
