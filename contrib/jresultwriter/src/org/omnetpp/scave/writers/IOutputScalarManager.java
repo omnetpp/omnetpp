@@ -11,9 +11,10 @@ import java.util.Map;
 public interface IOutputScalarManager extends IResultManager {
     /**
      * Opens collecting. Called at the beginning of a simulation run.
+     * @param runID TODO
      * @throws IOException 
      */
-    void open(Map<String,String> runAttributes) throws IOException;
+    void open(String runID, Map<String,String> runAttributes) throws IOException;
 
     /**
      * Closes collecting. Called at the end of a simulation run.

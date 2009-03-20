@@ -15,11 +15,10 @@ import org.omnetpp.scave.writers.IStatisticalSummary2;
  *  
  * @author Andras
  */
-//TODO runID not handled!!!
-//TODO constants for attribute names!
 public class FileOutputScalarManager implements IOutputScalarManager {
     public static final int FILE_VERSION = 2;
     
+    protected String runID;
     protected File file;
     protected PrintStream out;
     
@@ -27,11 +26,16 @@ public class FileOutputScalarManager implements IOutputScalarManager {
         file = new File(fileName);
     }
 
-    public void open(Map<String, String> runAttributes) throws IOException {
+    public void open(String runID, Map<String, String> runAttributes) throws IOException {
+        this.runID = runID;
         out = new PrintStream(file);
+
         out.println("version " + FILE_VERSION);
+        out.println();
+        out.println("run " + q(runID));
         writeAttributes(runAttributes);
         out.println();
+
         flushAndCheck();
     }
 

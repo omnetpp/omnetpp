@@ -20,6 +20,7 @@ import org.omnetpp.scave.writers.IOutputVectorManager;
 public class FileOutputVectorManager implements IOutputVectorManager {
     public static final int FILE_VERSION = 2;
     
+    protected String runID;
     protected File file;
     protected FileOutputStream fos;
     protected PrintStream out;
@@ -153,16 +154,22 @@ public class FileOutputVectorManager implements IOutputVectorManager {
         this.totalLimit = totalLimit;
     }
 
-    public void open(Map<String, String> runAttributes) throws IOException {
+    public void open(String runID, Map<String, String> runAttributes) throws IOException {
+        this.runID = runID;
         fos = new FileOutputStream(file);
         out = new PrintStream(fos);
         
         out.println("version " + FILE_VERSION);
+        out.println();
+        out.println("run " + q(runID));
         writeAttributes(out, runAttributes);
         out.println();
 
         indexOut = new PrintStream(indexFile);
         indexOut.println("version " + FILE_VERSION);
+        indexOut.println();
+        indexOut.println("run " + q(runID));
+        writeAttributes(indexOut, runAttributes);
         writeAttributes(indexOut, runAttributes);
         indexOut.println();
         
