@@ -78,13 +78,13 @@ class SCAVE_API IDList
         void intersect(IDList& ids);  // this = intersection(this,ids)
         IDList getSubsetByIndices(int *array, int n) const;
         IDList dup() const;
-        void sortByFileAndRun(ResultFileManager *mgr, bool ascending);
-        void sortByRunAndFile(ResultFileManager *mgr, bool ascending);
         int getItemTypes() const;  // SCALAR, VECTOR or their binary OR
         bool areAllScalars() const;
         bool areAllVectors() const;
         bool areAllHistograms() const;
         // sorting
+        void sortByFileAndRun(ResultFileManager *mgr, bool ascending);
+        void sortByRunAndFile(ResultFileManager *mgr, bool ascending);
         void sortByDirectory(ResultFileManager *mgr, bool ascending);
         void sortByFileName(ResultFileManager *mgr, bool ascending);
         void sortByRun(ResultFileManager *mgr, bool ascending);

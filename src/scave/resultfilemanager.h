@@ -33,6 +33,10 @@
 #include "statistics.h"
 #include "scaveutils.h"
 
+#ifdef THREADED
+#include "rwlock.h"
+#endif
+
 NAMESPACE_BEGIN
 
 class Run;
@@ -255,6 +259,9 @@ class SCAVE_API ResultFileManager
     StringPool classNames; // currently not used
 
     ComputedIDCache computedIDCache;
+#ifdef THREADED
+    ReentrantReadWriteLock lock;
+#endif
 
     struct sParseContext
     {

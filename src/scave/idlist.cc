@@ -27,6 +27,13 @@
 #include "stringutil.h"
 #include "scaveutils.h"
 
+#ifdef THREADED
+#include "rwlock.h"
+#define READER_MUTEX ReaderMutex __reader_mutex_(mgr->lock);
+#else
+#define READER_MUTEX
+#endif
+
 USING_NAMESPACE
 
 IDList::IDList(const IDList& ids)
@@ -272,6 +279,7 @@ CMP(EndTimeLess, uncheckedGetVector(a).endTime < uncheckedGetVector(b).endTime)
 template <class T>
 void IDList::sortBy(ResultFileManager *mgr, bool ascending, T& comparator)
 {
+	READER_MUTEX
     checkIntegrity(mgr);
     // optimization: maybe it's sorted the other way round, so we reverse it to speed up sorting
     if (v->size()>=2 && comparator(v->at(0), v->at(v->size()-1))!=ascending)
@@ -285,6 +293,7 @@ void IDList::sortBy(ResultFileManager *mgr, bool ascending, T& comparator)
 template <class T>
 void IDList::sortScalarsBy(ResultFileManager *mgr, bool ascending, T& comparator)
 {
+	READER_MUTEX
     checkIntegrityAllScalars(mgr);
     // optimization: maybe it's sorted the other way round, so we reverse it to speed up sorting
     if (v->size()>=2 && comparator(v->at(0), v->at(v->size()-1))!=ascending)
@@ -298,6 +307,7 @@ void IDList::sortScalarsBy(ResultFileManager *mgr, bool ascending, T& comparator
 template <class T>
 void IDList::sortVectorsBy(ResultFileManager *mgr, bool ascending, T& comparator)
 {
+	READER_MUTEX
     checkIntegrityAllVectors(mgr);
     // optimization: maybe it's sorted the other way round, so we reverse it to speed up sorting
     if (v->size()>=2 && comparator(v->at(0), v->at(v->size()-1))!=ascending)
