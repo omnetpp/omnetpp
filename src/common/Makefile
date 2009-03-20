@@ -34,6 +34,10 @@ OBJS= $O/lcgrandom.o $O/filereader.o $O/linetokenizer.o \
       $O/fileutil.o $O/stringutil.o $O/commonutil.o $O/exception.o $O/bigdecimal.o \
       $O/enumstr.o
 
+ifeq ("$(HAVE_PTHREADS)","yes")
+OBJS+= $O/rwlock.o
+endif
+
 GENERATED_SOURCES= expression.tab.hh expression.tab.cc lex.expressionyy.cc \
                    matchexpression.tab.hh matchexpression.tab.cc
 

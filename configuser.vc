@@ -88,10 +88,20 @@ DOXYGEN_DIR=$(TOOLS_DIR)/doxygen
 #
 # GNU Bison and Flex. Bison 2.0+ is required, 1.x versions will not work!
 #
-#YACC=$(TOOLS_DIR:\=/)/bison-2.1/bin/bison.exe
-#LEX=$(TOOLS_DIR:\=/)/UnxUtils/usr/local/wbin/flex.exe
-YACC=$(OPT_DIR:\=/)/bin/bison.exe
-LEX=$(OPT_DIR:\=/)/bin/flex.exe
+YACC=$(TOOLS_DIR:\=/)/bison-2.1/bin/bison.exe
+LEX=$(TOOLS_DIR:\=/)/UnxUtils/usr/local/wbin/flex.exe
+#YACC=$(OPT_DIR:\=/)/bin/bison.exe
+#LEX=$(OPT_DIR:\=/)/bin/flex.exe
+
+#
+# WinPCap. For INET framework SCTP module.
+#
+PCAP_DIR=$(TOOLS_DIR)/WpdPack
+
+#
+# If you want thread-safe libs, install pthreads and set its path.
+#
+#PTHREADS_DIR=$(TOOLS_DIR)/pthreads-2.8.0
 
 #
 # If you want to build .lib files instead of .dlls, specify "no" below.
@@ -228,6 +238,14 @@ XML_LIBS=$(LIBXML_LIBS)
 !error XMLPARSER must be set to "expat", "libxml" or "none" in configuser.vc
 !endif
 
+PCAP_CFLAGS=/I "$(PCAP_DIR)/Include"
+PCAP_LIBS=wpcap.lib /libpath:"$(PCAP_DIR)/Lib"
+
+!if "$(PTHREADS_DIR)"!=""
+PTHREADS_CFLAGS=/I "$(PTHREADS_DIR)/include"
+PTHREADS_LIBS=pthreadVC2.lib wsock32.lib /libpath:"$(PTHREADS_DIR)/lib"
+!endif
+
 #
 # Definitions for makemake-generated makefiles
 #
@@ -350,6 +368,14 @@ CFLAGS=$(CFLAGS) /DWITH_NETBUILDER
 
 CFLAGS=$(CFLAGS) -DXMLPARSER=$(XMLPARSER)
 
+!if "$(PTHREADS_DIR)"!=""
+HAVE_PTHREADS=yes
+CFLAGS=$(CFLAGS) /DTHREADED
+#!if "$(SHARED_LIBS)"=="no"
+#CFLAGS=$(CFLAGS) /DPTW32_STATIC_LIB
+#!endif
+!endif
+
 #
 # The Visual C++ compiler used: "vc71", "vc80", etc. This selects which set of
 # libraries simulation models will be linked with: linker path will be set as
@@ -394,3 +420,6 @@ CONFIGNAME=msvc-$(MODE)
 #XXX add SWIG and JAVA_CFLAGS here as well
 
 #CFLAGS = $(CFLAGS) -DUSE_NAMESPACE
+
+#CFLAGS = $(CFLAGS) -DUSE_DOUBLE_SIMTIME
+

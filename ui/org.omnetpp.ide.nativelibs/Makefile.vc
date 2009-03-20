@@ -54,7 +54,7 @@ DLL_TARGET_DIR = ..\org.omnetpp.ide.nativelibs.win32.x86
 # Local definitions
 #
 INCLUDES=-I$(COMMON) -I$(NEDXML) -I$(SCAVE) -I$(LAYOUT) -I$(EVENTLOG) -I$(OMNETPP_INCL_DIR)/platdep
-COPTS=$(CFLAGS) -I$(JDK)\include -I$(JDK)\include\win32 $(INCLUDES)
+COPTS=$(CFLAGS) $(PTHREADS_CFLAGS) -I$(JDK)\include -I$(JDK)\include\win32 $(INCLUDES)
 SWIGOPTS=$(SWIGFLAGS) $(INCLUDES)
 
 #
@@ -101,7 +101,7 @@ eventlog.cxx : eventlog.i
 	$(SWIG) -c++ -java $(SWIGOPTS) -package $(EVENTLOG_JAVAPKG) -outdir $(EVENTLOG_JAVADIR) -o $@ $**
 
 $O/$(DLL): $(OBJS) $(LIBS)
-	$(LINK) /dll /out:$(O:/=\)\$(DLL) $(OBJS) $(LIBS) $(LDFLAGS)
+	$(LINK) /dll /out:$(O:/=\)\$(DLL) $(OBJS) $(LIBS) $(PTHREADS_LIBS) $(LDFLAGS)
 
 $(DLL_TARGET_DIR)/$(DLL): $O/$(DLL)
 !if "$(LIB_SUFFIX)"==".lib"

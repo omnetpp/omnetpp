@@ -21,7 +21,8 @@ LIBNAME=oppcommon$D
 O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/common
 L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 
-COPTS=$(CFLAGS) -I"$(OMNETPP_INCL_DIR)/platdep" -I. /Fd"$O/$(LIBNAME).pdb"
+COPTS=$(CFLAGS) $(PTHREADS_CFLAGS) -I"$(OMNETPP_INCL_DIR)/platdep" -I. /Fd"$O/$(LIBNAME).pdb"
+IMPLIBS= $(PTHREADS_LIBS)
 
 OBJS= $O/lcgrandom.obj $O/filereader.obj $O/linetokenizer.obj \
       $O/stringpool.obj $O/stringtokenizer.obj $O/fnamelisttokenizer.obj \
@@ -30,6 +31,10 @@ OBJS= $O/lcgrandom.obj $O/filereader.obj $O/linetokenizer.obj \
       $O/patternmatcher.obj $O/unitconversion.obj $O/displaystring.obj $O/fileglobber.obj \
       $O/fileutil.obj $O/stringutil.obj $O/commonutil.obj $O/exception.obj $O/bigdecimal.obj \
       $O/enumstr.obj
+
+!if "$(HAVE_PTHREADS)"=="yes"
+OBJS= $(OBJS) $O/rwlock.obj
+!endif
 
 GENERATED_SOURCES= expression.tab.hh expression.tab.cc lex.expressionyy.cc \
                    matchexpression.tab.hh matchexpression.tab.cc
@@ -58,7 +63,7 @@ $O/$(LIBNAME).lib : $(OBJS) $L
 	-copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 2>nul
 
 $O/$(LIBNAME).dll : $(OBJS) $L
-	$(SHLIB_LD) /out:"$@" /subsystem:console $(OBJS)
+	$(SHLIB_LD) /out:"$@" /subsystem:console $(OBJS) $(IMPLIBS)
 	copy $(O:/=\)\$(LIBNAME).dll $(OMNETPP_BIN_DIR:/=\)
 	-copy /b $(O:/=\)\$(LIBNAME).dll.manifest $(OMNETPP_BIN_DIR:/=\) 2>nul
 	copy $(O:/=\)\$(LIBNAME).lib $(L:/=\)
@@ -190,6 +195,10 @@ $O/patternmatcher.obj: patternmatcher.cc \
   opp_ctype.h \
   commonutil.h \
   commondefs.h
+$O/rwlock.obj: rwlock.cc \
+  exception.h \
+  commondefs.h \
+  rwlock.h
 $O/stringpool.obj: stringpool.cc \
   stringpool.h \
   commondefs.h
