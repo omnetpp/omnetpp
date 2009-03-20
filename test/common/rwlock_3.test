@@ -1,0 +1,36 @@
+%description:
+Tests the ReadWriteLock class
+
+%includes:
+
+#include "rwlock.h"
+
+%activity:
+
+try
+{
+  ReentrantReadWriteLock lock;
+  ev << "Lock created\n";
+  lock.readLock().lock();
+  ev << "Read lock acquired\n";
+  lock.writeLock().lock();
+  ev << "Write lock acquired\n";
+  lock.writeLock().unlock();
+  ev << "Write lock released\n";
+  lock.readLock().unlock();
+  ev << "Read lock released\n";
+}
+catch (std::exception &e)
+{
+  ev << "ERROR: " << e.what() << "\n";
+}
+
+ev << ".\n";
+
+%contains: stdout
+Lock created
+Read lock acquired
+Write lock acquired
+Write lock released
+Read lock released
+.

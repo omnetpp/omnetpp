@@ -13,7 +13,7 @@ mkdir work 2>nul
 call opp_test %OPT% -g -v %TESTFILES% || goto end
 
 cd work || goto end
-call opp_nmakemake -f -e cc --deep --no-deep-includes -I../../../src/common -I../../../src/envir -I../../../include/platdep || goto end
+call opp_nmakemake -f -e cc --deep --no-deep-includes -I../../../src/common -I../../../src/envir -I../../../include/platdep -I $(PTHREADS_DIR)/include -lpthreadVC2 -L$(PTHREADS_DIR)/lib || goto end
 nmake -f makefile.vc || cd .. && goto end
 cd .. || goto end
 
