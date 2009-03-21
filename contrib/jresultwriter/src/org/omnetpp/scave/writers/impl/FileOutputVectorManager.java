@@ -10,6 +10,7 @@ import java.util.Set;
 
 import org.omnetpp.scave.writers.IOutputVector;
 import org.omnetpp.scave.writers.IOutputVectorManager;
+import org.omnetpp.scave.writers.ISimulationTimeProvider;
 
 /**
  * An output vector manager that writes OMNeT++ vector (".vec") files.
@@ -29,6 +30,8 @@ public class FileOutputVectorManager extends OutputFileManager implements IOutpu
     protected File indexFile;
     protected FileOutputStream indexStream;
     protected PrintStream indexOut;
+    
+    protected ISimulationTimeProvider simtimeProvider;
 
     protected int perVectorLimit = 1000;
     protected int totalLimit = 1000000;
@@ -66,6 +69,10 @@ public class FileOutputVectorManager extends OutputFileManager implements IOutpu
                 throw new IllegalStateException("Output vector already closed");
 
             writeBlock();  // implies file flushing as well
+        }
+
+        public boolean record(double value) throws IOException {
+            return record(simtimeProvider.getSimulationTime(), value);
         }
 
         public boolean record(Number time, double value) throws IOException {

@@ -25,9 +25,20 @@ public interface IOutputVector {
     void close() throws IOException;
 
     /**
+     * Record a value with the current simulation time as timestamp into the 
+     * output vector. The return value is true if the data was actually 
+     * recorded, and false if it was not recorded (because of filtering, etc.)
+     * @throws IOException 
+     */
+    boolean record(double value) throws IOException;
+
+    /**
      * Record a value with the given time stamp into the output vector. The 
      * return value is true if the data was actually recorded, and false 
      * if it was not recorded (because of filtering, etc.)
+     * 
+     * XXX must be increasing timestamp order
+     * 
      * @throws IOException 
      */
     boolean record(Number time, double value) throws IOException;

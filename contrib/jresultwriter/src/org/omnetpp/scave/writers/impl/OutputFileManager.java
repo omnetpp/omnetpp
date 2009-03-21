@@ -2,6 +2,9 @@ package org.omnetpp.scave.writers.impl;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.lang.management.ManagementFactory;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -10,6 +13,12 @@ import java.util.Map;
  * @author Andras
  */
 public abstract class OutputFileManager  {
+
+    public static String generateRunID(String baseString) {
+        String dateTime = new SimpleDateFormat("yyyyMMdd-HH:mm:ss").format(new Date());
+        String pid = ManagementFactory.getRuntimeMXBean().getName();
+        return baseString + "-" + dateTime + "-" + pid;
+    }
 
     protected void writeRunHeader(PrintStream out, String runID, Map<String, String> runAttributes) throws IOException {
         out.println("run " + q(runID));
