@@ -19,7 +19,9 @@ import org.omnetpp.scave.writers.ISimulationTimeProvider;
  */
 //XXX eletciklust tisztazni
 //XXX ETV-t is tamogatni
-//XXX too many "throws IOException"?
+//XXX too many "throws IOException"? wrap!!!
+//XXX csak azokat a vektorokat irja ki, amibe irtak is!
+//XXX elejen torolje a fajlt, es csak akkor krealja ha irtak bele
 public class FileOutputVectorManager extends OutputFileManager implements IOutputVectorManager {
     public static final int FILE_VERSION = 2;
     
@@ -32,7 +34,8 @@ public class FileOutputVectorManager extends OutputFileManager implements IOutpu
     protected PrintStream indexOut;
     
     protected ISimulationTimeProvider simtimeProvider;
-
+    protected boolean recordEventNumbers = true;
+    
     protected int perVectorLimit = 1000;
     protected int totalLimit = 1000000;
     
@@ -130,7 +133,7 @@ public class FileOutputVectorManager extends OutputFileManager implements IOutpu
             // write index
             indexOut.println(id + " " + blockOffset + " " + blockSize + " " + 
                     blockStartTime + " " + blockEndTime + " " + 
-                    min + " " + max + " " + sum + " " + sqrSum);
+                    n + " " + min + " " + max + " " + sum + " " + sqrSum);
             
             // reset block
             nbuffered -= n;
@@ -148,20 +151,36 @@ public class FileOutputVectorManager extends OutputFileManager implements IOutpu
         indexFile = new File(indexFileName);
     }
 
-    public int getPerVectorLimit() {
+    public ISimulationTimeProvider getSimtimeProvider() {
+        return simtimeProvider;
+    }
+
+    public void setSimtimeProvider(ISimulationTimeProvider simtimeProvider) {
+        this.simtimeProvider = simtimeProvider;
+    }
+
+    public boolean getRecordEventNumbers() {
+        return recordEventNumbers;
+    }
+
+    public void setRecordEventNumbers(boolean recordEventNumbers) {
+        this.recordEventNumbers = recordEventNumbers;
+    }
+
+    public int getPerVectorBufferLimit() {
         return perVectorLimit;
     }
 
-    public void setPerVectorLimit(int perVectorLimit) {
-        this.perVectorLimit = perVectorLimit;
+    public void setPerVectorBufferLimit(int count) {
+        this.perVectorLimit = count;
     }
 
-    public int getTotalLimit() {
+    public int getTotalBufferLimit() {
         return totalLimit;
     }
 
-    public void setTotalLimit(int totalLimit) {
-        this.totalLimit = totalLimit;
+    public void setTotalBufferLimit(int count) {
+        this.totalLimit = count;
     }
 
     public void open(String runID, Map<String, String> runAttributes) throws IOException {
@@ -190,7 +209,7 @@ public class FileOutputVectorManager extends OutputFileManager implements IOutpu
            
             // record size and timestamp of the vector file, for up-to-date checks 
             indexStream.getChannel().position(0);
-            indexOut.print("file " + file.length() + " " + file.lastModified());
+            indexOut.print("file " + file.length() + " " + file.lastModified()/1000);
             indexOut.close();
         }
         vectors.clear();
