@@ -17,14 +17,17 @@ import org.omnetpp.scave.writers.IOutputVectorManager;
  * @author Andras
  */
 //XXX factor out common parts from the 2 file-based managers into a common base class
+//XXX eletciklust tisztazni
+//XXX ETV-t is tamogatni
 public class FileOutputVectorManager implements IOutputVectorManager {
     public static final int FILE_VERSION = 2;
     
     protected String runID;
     protected File file;
-    protected FileOutputStream fos;
+    protected FileOutputStream stream;
     protected PrintStream out;
     protected File indexFile;
+    protected FileOutputStream indexStream;
     protected PrintStream indexOut;
 
     protected int perVectorLimit = 1000;
@@ -108,10 +111,10 @@ public class FileOutputVectorManager implements IOutputVectorManager {
 
         protected void writeBlock() throws IOException {
             // write data
-            long blockOffset = fos.getChannel().position();
+            long blockOffset = stream.getChannel().position();
             for (int i=0; i<n; i++)
                 out.println(id + " " + times[i] + " " + values[i]);
-            long blockSize = fos.getChannel().position() - blockOffset;
+            long blockSize = stream.getChannel().position() - blockOffset;
 
             // make sure that the offsets referred to by the index file are exists in the vector file
             // so the index can be used to access the vector file while it is being written
@@ -156,8 +159,8 @@ public class FileOutputVectorManager implements IOutputVectorManager {
 
     public void open(String runID, Map<String, String> runAttributes) throws IOException {
         this.runID = runID;
-        fos = new FileOutputStream(file);
-        out = new PrintStream(fos);
+        stream = new FileOutputStream(file);
+        out = new PrintStream(stream);
         
         out.println("version " + FILE_VERSION);
         out.println();
@@ -165,7 +168,9 @@ public class FileOutputVectorManager implements IOutputVectorManager {
         writeAttributes(out, runAttributes);
         out.println();
 
-        indexOut = new PrintStream(indexFile);
+        indexStream = new FileOutputStream(indexFile);
+        indexOut = new PrintStream(indexStream);
+        indexOut.format("%64s\n", " "); // room for "file ...." line
         indexOut.println("version " + FILE_VERSION);
         indexOut.println();
         indexOut.println("run " + q(runID));
@@ -180,6 +185,10 @@ public class FileOutputVectorManager implements IOutputVectorManager {
         if (out != null) {
             flush();
             out.close();
+           
+            // record size and timestamp of the vector file, for up-to-date checks 
+            indexStream.getChannel().position(0);
+            indexOut.print("file " + file.length() + " " + file.lastModified());
             indexOut.close();
         }
         vectors.clear();
