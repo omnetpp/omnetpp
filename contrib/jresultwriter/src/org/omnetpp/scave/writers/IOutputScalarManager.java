@@ -1,30 +1,27 @@
 package org.omnetpp.scave.writers;
 
-import java.io.IOException;
 import java.util.Map;
 
 /**
- * Abstract base class for handling recording of output scalar data.
- *
+ * Interface for recording output scalar data.
+ * Errors throw ResultRecordingException.
+ *  
  * @author Andras
  */
 public interface IOutputScalarManager extends IResultManager {
     /**
      * Opens collecting. Called at the beginning of a simulation run.
      * @param runID TODO
-     * @throws IOException
      */
     void open(String runID, Map<String,String> runAttributes);
 
     /**
      * Closes collecting. Called at the end of a simulation run.
-     * @throws IOException
      */
     void close();
 
     /**
      * Force writing out all buffered output.
-     * @throws IOException
      */
     void flush();
 

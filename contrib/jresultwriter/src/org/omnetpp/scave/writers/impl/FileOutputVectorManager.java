@@ -16,12 +16,14 @@ import org.omnetpp.scave.writers.ResultRecordingException;
 
 /**
  * An output vector manager that writes OMNeT++ vector (".vec") files.
+ * Recording event numbers ("ETV" vectors) is not supported, because it is
+ * practically only useful for sequence charts.
  *
  * @author Andras
  */
-//XXX ETV-t is tamogatni
 //XXX csak azokat a vektorokat irja ki, amibe irtak is (lazy flag)!  flag: append or replace
 //XXX elejen torolje a fajlt, es csak akkor krealja ha irtak bele (lazy flag)
+//XXX dokumentacio
 public class FileOutputVectorManager extends OutputFileManager implements IOutputVectorManager {
     public static final int FILE_VERSION = 2;
 
@@ -34,7 +36,6 @@ public class FileOutputVectorManager extends OutputFileManager implements IOutpu
     protected PrintStream indexOut;
 
     protected ISimulationTimeProvider simtimeProvider;
-    protected boolean recordEventNumbers = true;
 
     protected int perVectorLimit = 1000;
     protected int totalLimit = 1000000;
@@ -168,14 +169,6 @@ public class FileOutputVectorManager extends OutputFileManager implements IOutpu
 
     public void setSimtimeProvider(ISimulationTimeProvider simtimeProvider) {
         this.simtimeProvider = simtimeProvider;
-    }
-
-    public boolean getRecordEventNumbers() {
-        return recordEventNumbers;
-    }
-
-    public void setRecordEventNumbers(boolean recordEventNumbers) {
-        this.recordEventNumbers = recordEventNumbers;
     }
 
     public int getPerVectorBufferLimit() {
