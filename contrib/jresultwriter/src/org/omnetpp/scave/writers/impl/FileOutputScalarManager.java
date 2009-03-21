@@ -20,25 +20,33 @@ public class FileOutputScalarManager extends OutputFileManager implements IOutpu
     public static final int FILE_VERSION = 2;
 
     protected String runID;
+    protected Map<String, String> runAttributes;
     protected File file;
     protected PrintStream out;
 
     public FileOutputScalarManager(String fileName) {
         file = new File(fileName);
+        if (file.exists() && !file.delete())
+            throw new ResultRecordingException("Cannot delete old output scalar file " + file.getPath());
     }
 
     public void open(String runID, Map<String, String> runAttributes) {
+        this.runID = runID;
+        this.runAttributes = runAttributes;
+    }
+
+    protected void open() {
         try {
-            this.runID = runID;
             out = new PrintStream(file);
-            out.println("version " + FILE_VERSION);
-            out.println();
-            writeRunHeader(out, runID, runAttributes);
-            flushAndCheck();
         }
         catch (FileNotFoundException e) {
             throw new ResultRecordingException("Cannot open output scalar file " + file.getPath() + e.getMessage(), e);
         }
+        
+        out.println("version " + FILE_VERSION);
+        out.println();
+        writeRunHeader(out, runID, runAttributes);
+        flushAndCheck();
     }
 
     public void close() {
@@ -63,18 +71,23 @@ public class FileOutputScalarManager extends OutputFileManager implements IOutpu
     }
 
     public void recordScalar(String componentPath, String name, double value, Map<String, String> attributes) {
+        if (out == null)
+            open();
         out.println("scalar " + q(componentPath) + " " + q(name) + " " + value);
         writeAttributes(out, attributes);
     }
 
     public void recordScalar(String componentPath, String name, Number value, Map<String, String> attributes) {
+        if (out == null)
+            open();
         out.println("scalar " + q(componentPath) + " " + q(name) + " " + value.toString());
         writeAttributes(out, attributes);
     }
 
     public void recordStatistic(String componentPath, String name, IStatisticalSummary statistic, Map<String, String> attributes) {
+        if (out == null)
+            open();
         out.println("statistic " + q(componentPath) + " " + q(name));
-
         writeField("count", statistic.getN());
         writeField("mean", statistic.getMean());
         writeField("stddev", statistic.getStandardDeviation());

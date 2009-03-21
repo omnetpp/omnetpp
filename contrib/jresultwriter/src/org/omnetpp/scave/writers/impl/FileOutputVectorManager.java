@@ -1,5 +1,6 @@
 package org.omnetpp.scave.writers.impl;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -21,13 +22,14 @@ import org.omnetpp.scave.writers.ResultRecordingException;
  *
  * @author Andras
  */
-//XXX csak azokat a vektorokat irja ki, amibe irtak is (lazy flag)!  flag: append or replace
-//XXX elejen torolje a fajlt, es csak akkor krealja ha irtak bele (lazy flag)
+//XXX flag: append or replace
+//XXX elejen torolje a fajlt
 //XXX dokumentacio
 public class FileOutputVectorManager extends OutputFileManager implements IOutputVectorManager {
     public static final int FILE_VERSION = 2;
 
     protected String runID;
+    protected Map<String, String> runAttributes;
     protected File file;
     protected FileOutputStream stream;
     protected PrintStream out;
@@ -47,6 +49,8 @@ public class FileOutputVectorManager extends OutputFileManager implements IOutpu
 
     class OutputVector implements IOutputVector {
         int id;
+        byte[] header;
+        
         int n = 0;
         Number[] times = new Number[10];
         double[] values = new double[10];
@@ -60,11 +64,22 @@ public class FileOutputVectorManager extends OutputFileManager implements IOutpu
 
         public OutputVector(int id, String componentPath, String vectorName, Map<String, String> attributes) {
             this.id = id;
-            String vectorDecl = "vector " + id + " " + q(componentPath) + " " + q(vectorName) + " TV";
-            out.println(vectorDecl);
-            writeAttributes(out, attributes);
-            indexOut.println(vectorDecl);
-            writeAttributes(indexOut, attributes);
+
+            // postpone writing out vector declaration until there's actually something to record
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            PrintStream tmp = new PrintStream(bos);
+            tmp.println("vector " + id + " " + q(componentPath) + " " + q(vectorName) + " TV");
+            writeAttributes(tmp, attributes);
+            tmp.close();
+            header = bos.toByteArray();
+        }
+
+        protected void writeVectorHeader() throws IOException {
+            if (out == null)
+                open();
+            out.write(header);
+            indexOut.write(header);
+            header = null;
         }
 
         public void close() {
@@ -127,6 +142,10 @@ public class FileOutputVectorManager extends OutputFileManager implements IOutpu
 
         protected void writeBlock() {
             try {
+                // write out vector declaration if not yet done
+                if (header != null)
+                    writeVectorHeader();
+
                 // write data
                 long blockOffset = stream.getChannel().position();
                 for (int i=0; i<n; i++)
@@ -158,9 +177,13 @@ public class FileOutputVectorManager extends OutputFileManager implements IOutpu
 
     public FileOutputVectorManager(String fileName) {
         file = new File(fileName);
+        if (file.exists() && !file.delete())
+            throw new ResultRecordingException("Cannot delete old output vector file " + file.getPath());
 
         String indexFileName = fileName.replaceFirst("\\.[^./\\:]*$", "") + ".vci";
         indexFile = new File(indexFileName);
+        if (indexFile.exists() && !indexFile.delete())
+            throw new ResultRecordingException("Cannot delete old output vector file " + indexFile.getPath());
     }
 
     public ISimulationTimeProvider getSimtimeProvider() {
@@ -188,27 +211,36 @@ public class FileOutputVectorManager extends OutputFileManager implements IOutpu
     }
 
     public void open(String runID, Map<String, String> runAttributes) {
+        this.runID = runID;
+        this.runAttributes = runAttributes;
+    }
+
+    protected void open() {
         try {
-            this.runID = runID;
             stream = new FileOutputStream(file);
-            out = new PrintStream(stream);
-
-            out.println("version " + FILE_VERSION);
-            out.println();
-            writeRunHeader(out, runID, runAttributes);
-
-            indexStream = new FileOutputStream(indexFile);
-            indexOut = new PrintStream(indexStream);
-            indexOut.format("%64s\n", " "); // room for "file ...." line
-            indexOut.println("version " + FILE_VERSION);
-            indexOut.println();
-            writeRunHeader(indexOut, runID, runAttributes);
-
-            flushAndCheck();
-        }
+        } 
         catch (FileNotFoundException e) {
-            throw new ResultRecordingException("Cannot open output vector file " + file.getPath() + " or corresponding index file" + e.getMessage(), e);
+            throw new ResultRecordingException("Cannot open output vector file " + file.getPath(), e);
         }
+        try {
+            indexStream = new FileOutputStream(indexFile);
+        } 
+        catch (FileNotFoundException e) {
+            throw new ResultRecordingException("Cannot open output vector index file " + indexFile.getPath(), e);
+        }
+
+        out = new PrintStream(stream);
+        out.println("version " + FILE_VERSION);
+        out.println();
+        writeRunHeader(out, runID, runAttributes);
+
+        indexOut = new PrintStream(indexStream);
+        indexOut.format("%64s\n", " "); // room for "file ...." line
+        indexOut.println("version " + FILE_VERSION);
+        indexOut.println();
+        writeRunHeader(indexOut, runID, runAttributes);
+
+        flushAndCheck();
     }
 
     public void close() {
