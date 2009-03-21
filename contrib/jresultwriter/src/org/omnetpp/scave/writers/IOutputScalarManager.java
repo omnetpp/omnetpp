@@ -5,28 +5,28 @@ import java.util.Map;
 
 /**
  * Abstract base class for handling recording of output scalar data.
- * 
+ *
  * @author Andras
  */
 public interface IOutputScalarManager extends IResultManager {
     /**
      * Opens collecting. Called at the beginning of a simulation run.
      * @param runID TODO
-     * @throws IOException 
+     * @throws IOException
      */
-    void open(String runID, Map<String,String> runAttributes) throws IOException;
+    void open(String runID, Map<String,String> runAttributes);
 
     /**
      * Closes collecting. Called at the end of a simulation run.
-     * @throws IOException 
+     * @throws IOException
      */
-    void close() throws IOException;
+    void close();
 
     /**
      * Force writing out all buffered output.
-     * @throws IOException 
+     * @throws IOException
      */
-    void flush() throws IOException;
+    void flush();
 
     /**
      * Returns the output scalar file name. Returns NULL if this object is not
@@ -46,7 +46,7 @@ public interface IOutputScalarManager extends IResultManager {
 
     /**
      * Records a histogram or statistic object into the scalar result file.
-     * If the object additionally implements the IStatisticalSummary2 and/or 
+     * If the object additionally implements the IStatisticalSummary2 and/or
      * IHistogramSummary interfaces, more data are recorded.
      */
     void recordStatistic(String componentPath, String statisticName, IStatisticalSummary statistic, Map<String,String> attributes);

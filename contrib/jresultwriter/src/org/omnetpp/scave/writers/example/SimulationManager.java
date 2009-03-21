@@ -1,6 +1,5 @@
 package org.omnetpp.scave.writers.example;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -21,19 +20,14 @@ public class SimulationManager {
     IOutputVectorManager vectorManager;
 
     public SimulationManager(String resultFilenameBase, String runID, Map<String,String> runAttributes) {
-        try {
-            scalarManager = new FileOutputScalarManager(resultFilenameBase+".sca");
-            vectorManager = new FileOutputVectorManager(resultFilenameBase+".vec");
-            vectorManager.setSimtimeProvider(new ISimulationTimeProvider() {
-                public long getEventNumber() { return 0; /*not counted*/ }
-                public Number getSimulationTime() { return now; }
-            });
-            scalarManager.open(runID, runAttributes);
-            vectorManager.open(runID, runAttributes);
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
+        scalarManager = new FileOutputScalarManager(resultFilenameBase+".sca");
+        vectorManager = new FileOutputVectorManager(resultFilenameBase+".vec");
+        vectorManager.setSimtimeProvider(new ISimulationTimeProvider() {
+            public long getEventNumber() { return 0; /*not counted*/ }
+            public Number getSimulationTime() { return now; }
+        });
+        scalarManager.open(runID, runAttributes);
+        vectorManager.open(runID, runAttributes);
     }
 
     void simulate(double timeLimit) {
@@ -46,13 +40,8 @@ public class SimulationManager {
         for (Component c : components)
             c.recordSummaryResults();
 
-        try {
-            scalarManager.close();
-            vectorManager.close();
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
+        scalarManager.close();
+        vectorManager.close();
     }
 
 }

@@ -1,6 +1,5 @@
 package org.omnetpp.scave.writers.impl;
 
-import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.management.ManagementFactory;
 import java.text.SimpleDateFormat;
@@ -9,7 +8,7 @@ import java.util.Map;
 
 /**
  * Common base class for FileOutputVectorManager and FileOutputScalarManager
- *  
+ *
  * @author Andras
  */
 public abstract class OutputFileManager  {
@@ -20,7 +19,7 @@ public abstract class OutputFileManager  {
         return baseString + "-" + dateTime + "-" + pid;
     }
 
-    protected void writeRunHeader(PrintStream out, String runID, Map<String, String> runAttributes) throws IOException {
+    protected void writeRunHeader(PrintStream out, String runID, Map<String, String> runAttributes) {
         out.println("run " + q(runID));
         writeAttributes(out, runAttributes);
         out.println();
@@ -31,7 +30,7 @@ public abstract class OutputFileManager  {
             for (String attr : attributes.keySet())
                 out.println("attr " + q(attr) + " " + q(attributes.get(attr)));
     }
-    
+
     /**
      * Quotes the given string if needed.
      */
@@ -47,7 +46,7 @@ public abstract class OutputFileManager  {
                 break;
             }
         }
-        
+
         if (needsQuotes) {
             StringBuilder buf = new StringBuilder();
             buf.append('"');
@@ -62,7 +61,7 @@ public abstract class OutputFileManager  {
                     case '\t': buf.append("\\t"); break;
                     case '"':  buf.append("\\\""); break;
                     case '\\': buf.append("\\\\"); break;
-                    default: 
+                    default:
                         if (!Character.isISOControl(ch))
                             buf.append(ch);
                         else

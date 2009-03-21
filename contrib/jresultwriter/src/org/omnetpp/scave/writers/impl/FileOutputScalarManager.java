@@ -1,7 +1,7 @@
 package org.omnetpp.scave.writers.impl;
 
 import java.io.File;
-import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.util.Map;
 
@@ -9,49 +9,53 @@ import org.omnetpp.scave.writers.IHistogramSummary;
 import org.omnetpp.scave.writers.IOutputScalarManager;
 import org.omnetpp.scave.writers.IStatisticalSummary;
 import org.omnetpp.scave.writers.IStatisticalSummary2;
+import org.omnetpp.scave.writers.ResultRecordingException;
 
 /**
  * An output scalar manager that writes OMNeT++ scalar (".sca") files.
- *  
+ *
  * @author Andras
  */
 public class FileOutputScalarManager extends OutputFileManager implements IOutputScalarManager {
     public static final int FILE_VERSION = 2;
-    
+
     protected String runID;
     protected File file;
     protected PrintStream out;
-    
+
     public FileOutputScalarManager(String fileName) {
         file = new File(fileName);
     }
 
-    public void open(String runID, Map<String, String> runAttributes) throws IOException {
-        this.runID = runID;
-        out = new PrintStream(file);
-
-        out.println("version " + FILE_VERSION);
-        out.println();
-        writeRunHeader(out, runID, runAttributes);
-
-        flushAndCheck();
+    public void open(String runID, Map<String, String> runAttributes) {
+        try {
+            this.runID = runID;
+            out = new PrintStream(file);
+            out.println("version " + FILE_VERSION);
+            out.println();
+            writeRunHeader(out, runID, runAttributes);
+            flushAndCheck();
+        }
+        catch (FileNotFoundException e) {
+            throw new ResultRecordingException("Cannot open output scalar file " + file.getPath() + e.getMessage(), e);
+        }
     }
 
-    public void close() throws IOException {
+    public void close() {
         if (out != null) {
             flushAndCheck();
             out.close();
         }
     }
 
-    public void flush() throws IOException {
+    public void flush() {
         if (out != null)
             flushAndCheck();
     }
 
-    protected void flushAndCheck() throws IOException {
+    protected void flushAndCheck() {
         if (out.checkError()) // implies flush()
-            throw new IOException("Cannot write output scalar file " + file.getPath());
+            throw new ResultRecordingException("Cannot write output scalar file " + file.getPath());
     }
 
     public String getFileName() {
@@ -70,7 +74,7 @@ public class FileOutputScalarManager extends OutputFileManager implements IOutpu
 
     public void recordStatistic(String componentPath, String name, IStatisticalSummary statistic, Map<String, String> attributes) {
         out.println("statistic " + q(componentPath) + " " + q(name));
-  
+
         writeField("count", statistic.getN());
         writeField("mean", statistic.getMean());
         writeField("stddev", statistic.getStandardDeviation());
@@ -78,7 +82,7 @@ public class FileOutputScalarManager extends OutputFileManager implements IOutpu
         writeField("sqrsum", statistic.getSqrSum());
         writeField("min", statistic.getMin());
         writeField("max", statistic.getMax());
-        
+
         if (statistic instanceof IStatisticalSummary2) {
             IStatisticalSummary2 statistic2 = (IStatisticalSummary2)statistic;
             if (statistic2.isWeighted())

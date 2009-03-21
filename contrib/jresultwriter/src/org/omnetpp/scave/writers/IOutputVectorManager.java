@@ -6,28 +6,28 @@ import java.util.Map;
 
 /**
  * Abstract base class for output vector managers.
- * 
+ *
  * @author Andras
  */
 public interface IOutputVectorManager extends IResultManager {
     /**
      * Opens collecting. Called at the beginning of a simulation run.
      * @param runID TODO
-     * @throws IOException 
+     * @throws IOException
      */
-    void open(String runID, Map<String,String> runAttributes) throws IOException;
+    void open(String runID, Map<String,String> runAttributes);
 
     /**
      * Closes collecting. Called at the end of a simulation run.
-     * @throws IOException 
+     * @throws IOException
      */
-    void close() throws IOException;
+    void close();
 
     /**
      * Force writing out all buffered output.
-     * @throws IOException 
+     * @throws IOException
      */
-    void flush() throws IOException;
+    void flush();
 
     /**
      * Returns the output vector file name. Returns null if this object is not
@@ -39,17 +39,17 @@ public interface IOutputVectorManager extends IResultManager {
      * Creates an output vector.
      */
     IOutputVector createVector(String componentPath, String vectorName, Map<String,String> attributes);
-    
+
     /**
      * XXX
      * @return
      */
     ISimulationTimeProvider getSimtimeProvider();
- 
+
     /**
      * XXX
      * @param simtimeProvider
      */
     void setSimtimeProvider(ISimulationTimeProvider simtimeProvider);
-    
+
 }

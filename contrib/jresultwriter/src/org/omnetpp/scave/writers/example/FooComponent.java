@@ -1,7 +1,5 @@
 package org.omnetpp.scave.writers.example;
 
-import java.io.IOException;
-
 import org.omnetpp.scave.writers.IOutputVector;
 
 public class FooComponent extends Component {
@@ -16,7 +14,7 @@ public class FooComponent extends Component {
         super(name, sim, parent);
 
         delayVec = createOutputVector("delay");
-        
+
         mySelfEvent = new Event() {
             void execute() {
                 handleEvent(this);
@@ -31,17 +29,12 @@ public class FooComponent extends Component {
         double delay = Math.random();
         schedule(now() + delay, mySelfEvent);
 
-        try {
-            delayVec.record(delay);
-        }
-        catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        delayVec.record(delay);
+
         numEvents++;
         delaySqrSum += delay * delay;
     }
-    
+
     @Override
     protected void recordSummaryResults() {
         recordScalar("numEvents", numEvents);
