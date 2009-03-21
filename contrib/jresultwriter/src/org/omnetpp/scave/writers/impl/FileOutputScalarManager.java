@@ -15,7 +15,7 @@ import org.omnetpp.scave.writers.IStatisticalSummary2;
  *  
  * @author Andras
  */
-public class FileOutputScalarManager implements IOutputScalarManager {
+public class FileOutputScalarManager extends OutputFileManager implements IOutputScalarManager {
     public static final int FILE_VERSION = 2;
     
     protected String runID;
@@ -32,9 +32,7 @@ public class FileOutputScalarManager implements IOutputScalarManager {
 
         out.println("version " + FILE_VERSION);
         out.println();
-        out.println("run " + q(runID));
-        writeAttributes(runAttributes);
-        out.println();
+        writeRunHeader(out, runID, runAttributes);
 
         flushAndCheck();
     }
@@ -62,12 +60,12 @@ public class FileOutputScalarManager implements IOutputScalarManager {
 
     public void recordScalar(String componentPath, String name, double value, Map<String, String> attributes) {
         out.println("scalar " + q(componentPath) + " " + q(name) + " " + value);
-        writeAttributes(attributes);
+        writeAttributes(out, attributes);
     }
 
     public void recordScalar(String componentPath, String name, Number value, Map<String, String> attributes) {
         out.println("scalar " + q(componentPath) + " " + q(name) + " " + value.toString());
-        writeAttributes(attributes);
+        writeAttributes(out, attributes);
     }
 
     public void recordStatistic(String componentPath, String name, IStatisticalSummary statistic, Map<String, String> attributes) {
@@ -92,7 +90,7 @@ public class FileOutputScalarManager implements IOutputScalarManager {
             }
         }
 
-        writeAttributes(attributes);
+        writeAttributes(out, attributes);
 
         if (statistic instanceof IHistogramSummary) {
             IHistogramSummary histogram = (IHistogramSummary)statistic;
@@ -109,54 +107,5 @@ public class FileOutputScalarManager implements IOutputScalarManager {
     protected void writeField(String name, double value) {
         if (!Double.isNaN(value))
             out.println("field " + q(name) + " " + value);
-    }
-
-    protected void writeAttributes(Map<String, String> attributes) {
-        if (attributes != null)
-            for (String attr : attributes.keySet())
-                out.println("attr " + q(attr) + " " + q(attributes.get(attr)));
-    }
-    
-    /**
-     * Quotes the given string if needed.
-     */
-    protected static String q(String s) {
-        if (s == null || s.length() == 0)
-            return "\"\"";
-
-        boolean needsQuotes = false;
-        for (int i=0; i<s.length(); i++) {
-            char ch = s.charAt(i);
-            if (ch == '\\' || ch == '"' || Character.isWhitespace(ch) || Character.isISOControl(ch)) {
-                needsQuotes = true;
-                break;
-            }
-        }
-        
-        if (needsQuotes) {
-            StringBuilder buf = new StringBuilder();
-            buf.append('"');
-            for (int i=0; i<s.length(); i++) {
-                char ch = s.charAt(i);
-                switch (ch)
-                {
-                    case '\b': buf.append("\\b"); break;
-                    case '\f': buf.append("\\f"); break;
-                    case '\n': buf.append("\\n"); break;
-                    case '\r': buf.append("\\r"); break;
-                    case '\t': buf.append("\\t"); break;
-                    case '"':  buf.append("\\\""); break;
-                    case '\\': buf.append("\\\\"); break;
-                    default: 
-                        if (!Character.isISOControl(ch))
-                            buf.append(ch);
-                        else
-                            buf.append(String.format("\\x%02.2x", ch));
-                }
-            }
-            buf.append('"');
-            s = buf.toString();
-        }
-        return s;
     }
 }

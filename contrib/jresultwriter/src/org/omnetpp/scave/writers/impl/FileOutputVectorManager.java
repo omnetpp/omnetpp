@@ -16,10 +16,10 @@ import org.omnetpp.scave.writers.IOutputVectorManager;
  *  
  * @author Andras
  */
-//XXX factor out common parts from the 2 file-based managers into a common base class
 //XXX eletciklust tisztazni
 //XXX ETV-t is tamogatni
-public class FileOutputVectorManager implements IOutputVectorManager {
+//XXX too many "throws IOException"?
+public class FileOutputVectorManager extends OutputFileManager implements IOutputVectorManager {
     public static final int FILE_VERSION = 2;
     
     protected String runID;
@@ -164,19 +164,14 @@ public class FileOutputVectorManager implements IOutputVectorManager {
         
         out.println("version " + FILE_VERSION);
         out.println();
-        out.println("run " + q(runID));
-        writeAttributes(out, runAttributes);
-        out.println();
+        writeRunHeader(out, runID, runAttributes);
 
         indexStream = new FileOutputStream(indexFile);
         indexOut = new PrintStream(indexStream);
         indexOut.format("%64s\n", " "); // room for "file ...." line
         indexOut.println("version " + FILE_VERSION);
         indexOut.println();
-        indexOut.println("run " + q(runID));
-        writeAttributes(indexOut, runAttributes);
-        writeAttributes(indexOut, runAttributes);
-        indexOut.println();
+        writeRunHeader(indexOut, runID, runAttributes);
         
         flushAndCheck();
     }
@@ -234,54 +229,5 @@ public class FileOutputVectorManager implements IOutputVectorManager {
             for (OutputVector v : vectors)
                 v.writeBlock();
         }
-    }
-    
-    protected static void writeAttributes(PrintStream out, Map<String, String> attributes) {
-        if (attributes != null)
-            for (String attr : attributes.keySet())
-                out.println("attr " + q(attr) + " " + q(attributes.get(attr)));
-    }
-    
-    /**
-     * Quotes the given string if needed.
-     */
-    protected static String q(String s) {
-        if (s == null || s.length() == 0)
-            return "\"\"";
-
-        boolean needsQuotes = false;
-        for (int i=0; i<s.length(); i++) {
-            char ch = s.charAt(i);
-            if (ch == '\\' || ch == '"' || Character.isWhitespace(ch) || Character.isISOControl(ch)) {
-                needsQuotes = true;
-                break;
-            }
-        }
-        
-        if (needsQuotes) {
-            StringBuilder buf = new StringBuilder();
-            buf.append('"');
-            for (int i=0; i<s.length(); i++) {
-                char ch = s.charAt(i);
-                switch (ch)
-                {
-                    case '\b': buf.append("\\b"); break;
-                    case '\f': buf.append("\\f"); break;
-                    case '\n': buf.append("\\n"); break;
-                    case '\r': buf.append("\\r"); break;
-                    case '\t': buf.append("\\t"); break;
-                    case '"':  buf.append("\\\""); break;
-                    case '\\': buf.append("\\\\"); break;
-                    default: 
-                        if (!Character.isISOControl(ch))
-                            buf.append(ch);
-                        else
-                            buf.append(String.format("\\x%02.2x", ch));
-                }
-            }
-            buf.append('"');
-            s = buf.toString();
-        }
-        return s;
     }
 }
