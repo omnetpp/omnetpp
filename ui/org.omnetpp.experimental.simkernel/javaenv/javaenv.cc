@@ -24,14 +24,14 @@
 #include "cenvir.h"
 #include "csimplemodule.h"
 #include "cmessage.h"
-#include "ctypes.h"
-#include "speedmtr.h"
+//#include "ctypes.h"
+#include "speedometer.h"
 #include "cscheduler.h"
 
 #include "javaenv.h"
 #include "jcallback.h"
-#include "platdep/time.h"
-#include "../utils/ver.h"
+#include "platdep/timeutil.h"
+//#include "../utils/ver.h"
 
 
 #define SPEEDOMETER_UPDATEMILLISECS 1000
