@@ -1,44 +1,50 @@
 package org.omnetpp.scave.writers.example;
 
+import java.lang.management.ManagementFactory;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import org.omnetpp.scave.writers.IResultManager;
 import org.omnetpp.scave.writers.impl.FileOutputScalarManager;
 
 public class Main {
-//    public static void main(String[] args) {
-//        String runID = FileOutputScalarManager.generateRunID("bubu");
-//        Map<String,String> runAttributes = new HashMap<String, String>();
-//        runAttributes.put(IResultManager.ATTR_NETWORK, "BubuNetwork");
-//
-//        SimulationManager sim = new SimulationManager("./bubu", runID, runAttributes);
-//
-//        //TODO multiple simulations! experiment-measurement-replication
-//        Component top = new Component("top", sim, null);
-//        new FooComponent("alice", sim, top);
-//        new FooComponent("bob", sim, top);
-//        new FooComponent("cecil", sim, top);
-//
-//        sim.simulate(5000.0);
-//    }
-
-
+    static final long[] GOOD_SEEDS = new long[]{634,3424,744,2525,852}; // completely made up
+    
     public static void main(String[] args) {
-        //TODO multiple simulations! experiment-measurement-replication
-        int n = 20;
-        double interarrivalTime = 10;
-        double packetDuration = 1;
+        int runNumber = 0;
+        for (int numHosts : new int[]{5, 10, 20})
+            for (double interarrivalTime = 0.2; interarrivalTime < 2; interarrivalTime += 0.2)
+                for (int trial=0; trial<3; trial++)
+                    simulateAloha(runNumber++, numHosts, interarrivalTime, trial);
+    }
 
-        String runID = FileOutputScalarManager.generateRunID("aloha");
+    public static void simulateAloha(int runNumber, int numHosts, double interarrivalTime, int trial) {
+        System.out.println("Run #" + runNumber+ ": numHosts="+numHosts + ", interarrivalTime="+interarrivalTime+", trial "+trial);
+        double packetDuration = 1.0;
+
+        String runID = FileOutputScalarManager.generateRunID("aloha-"+runNumber);
         Map<String,String> runAttributes = new HashMap<String, String>();
-        runAttributes.put(IResultManager.ATTR_NETWORK, "AlohaNetwork");
-        SimulationManager sim = new SimulationManager("./aloha", runID, runAttributes);
+        runAttributes.put(IResultManager.ATTR_NETWORK, "Aloha");
+        runAttributes.put(IResultManager.ATTR_RUNNUMBER, ""+runNumber);
+        runAttributes.put(IResultManager.ATTR_EXPERIMENT, "");
+        runAttributes.put(IResultManager.ATTR_MEASUREMENT, "");
+        runAttributes.put(IResultManager.ATTR_REPLICATION, ""+trial);        runAttributes.put(IResultManager.ATTR_DATETIME, new SimpleDateFormat("yyyyMMdd-HH:mm:ss").format(new Date()));
+        runAttributes.put(IResultManager.ATTR_PROCESSID, ManagementFactory.getRuntimeMXBean().getName());
+        runAttributes.put(IResultManager.ATTR_REPETITION, ""+trial);
+        runAttributes.put(IResultManager.ATTR_SEEDSET, ""+trial);
+        runAttributes.put(IResultManager.ATTR_ITERATIONVARS, "");
+        runAttributes.put(IResultManager.ATTR_ITERATIONVARS2, "");
+        
+        SimulationManager sim = new SimulationManager(runID, runAttributes, "./aloha-"+runNumber);
 
         Component top = new Component("top", sim, null);
         AlohaServer alohaServer = new AlohaServer("server", sim, top);
-        for (int i=0; i<n; i++)
-            new AlohaHost("host"+i, sim, top, interarrivalTime, packetDuration, alohaServer);
+        Random random = new Random(GOOD_SEEDS[trial]);
+        for (int i=0; i<numHosts; i++)
+            new AlohaHost("host"+i, sim, top, interarrivalTime, packetDuration, alohaServer, random);
 
         sim.simulate(5000.0);
     }

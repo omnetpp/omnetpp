@@ -1,33 +1,23 @@
 package org.omnetpp.scave.writers.example;
 
 import org.omnetpp.scave.writers.IOutputVector;
+import org.omnetpp.scave.writers.IResultManager;
 
 public class AlohaServer extends Component {
-    // state variables, event pointers
+    // state variables
     int numCurrentTransmissions = 0;
     boolean collision = false;
     double rxStartTime;
-    
 
     // statistics
     long totalPackets = 0;
     double totalReceiveTime = 0; // non-collision
     double totalCollisionTime = 0;
     IOutputVector numCurrentTransmissionsVector;
-
-    
-    // statistics
-    //XXX unused
-    long collidedPackets;
-    double currentChannelUtilization;
-
-    IOutputVector collisionMultiplicityVector;
-    IOutputVector collisionLengthVector;
-    IOutputVector channelUtilizationVector;
-    
+  
     public AlohaServer(String name, SimulationManager sim, Component parent) {
         super(name, sim, parent);
-        numCurrentTransmissionsVector = createOutputVector("numTransmissions");
+        numCurrentTransmissionsVector = createOutputVector("numTransmissions", null, null, IResultManager.SAMPLE_HOLD);
         numCurrentTransmissionsVector.record(0);
     }
 
@@ -57,9 +47,9 @@ public class AlohaServer extends Component {
     @Override
     protected void recordSummaryResults() {
         recordScalar("totalPackets", totalPackets);
-        recordScalar("totalCollisionTime", totalCollisionTime);
-        recordScalar("totalReceiveTime", totalReceiveTime);
-        recordScalar("channelBusy (%)", 100 * (totalReceiveTime+totalCollisionTime) / now());
-        recordScalar("utilization (%)", 100 * totalReceiveTime / now());
+        recordScalar("totalCollisionTime", totalCollisionTime, "s");
+        recordScalar("totalReceiveTime", totalReceiveTime, "s");
+        recordScalar("channelBusy", 100 * (totalReceiveTime+totalCollisionTime) / now(), "%");
+        recordScalar("utilization", 100 * totalReceiveTime / now(), "%");
     }
 }
