@@ -50,7 +50,7 @@ class COMMON_API BigDecimal
     static const int minScale = -18; // XXX the range length must be <= 18, see buffer allocation in ttoa()
     static const int maxScale = 0;
 
-    void checkScale(int scale)
+    void checkScale(int scale) const
     {
         if (scale < minScale || scale > maxScale)
             throw opp_runtime_error("Scale must be between %d and %d.", minScale, maxScale);
@@ -170,6 +170,11 @@ class COMMON_API BigDecimal
      * Sets the scale exponent.
      */
     void setScale(int s) { checkScale(s); scale = s; normalize(); };
+
+    /**
+     * Returns the mantissa as if scale was the given value;
+     */
+    int64 getMantissaForScale(int scale) const;
 
     /**
      * Converts the given string to big decimal. Throws an error if

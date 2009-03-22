@@ -298,6 +298,20 @@ bool BigDecimal::operator<(const BigDecimal &x) const
     return negatives ? !result : result;
 }
 
+int64 BigDecimal::getMantissaForScale(int reqScale) const
+{
+    if (isSpecial())
+        throw opp_runtime_error("BigDecimal: cannot return mantissa for Nil, NaN or +/-Inf value");
+    checkScale(reqScale);
+    int scaleDiff = scale - reqScale;
+    if (scaleDiff == 0)
+        return intVal;
+    else if (scaleDiff < 0)
+        return intVal / powersOfTen[-scaleDiff];
+    else
+        return intVal * powersOfTen[scaleDiff];
+}
+
 double BigDecimal::dbl() const
 {
     if (isSpecial())
