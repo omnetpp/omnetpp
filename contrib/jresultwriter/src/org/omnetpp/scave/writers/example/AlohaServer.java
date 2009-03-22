@@ -5,17 +5,20 @@ import org.omnetpp.scave.writers.IOutputVector;
 public class AlohaServer extends Component {
     // state variables, event pointers
     int numCurrentTransmissions = 0;
+    boolean collision = false;
+    double rxStartTime;
+    
 
     // statistics
+    long totalPackets = 0;
+    double totalReceiveTime = 0; // non-collision
+    double totalCollisionTime = 0;
     IOutputVector numCurrentTransmissionsVector;
 
     
     // statistics
     //XXX unused
-    long totalFrames;
-    long collidedFrames;
-    double totalReceiveTime;
-    double totalCollisionTime;
+    long collidedPackets;
     double currentChannelUtilization;
 
     IOutputVector collisionMultiplicityVector;
@@ -29,17 +32,34 @@ public class AlohaServer extends Component {
     }
 
     public void packetReceptionStart() {
+        if (numCurrentTransmissions == 0)
+            rxStartTime = now();
+        else
+            collision = true;
         numCurrentTransmissions++;
         numCurrentTransmissionsVector.record(numCurrentTransmissions);
+        
+        totalPackets++;
     }
 
     protected void packetReceptionEnd() {
         numCurrentTransmissions--;
         numCurrentTransmissionsVector.record(numCurrentTransmissions);
+        if (numCurrentTransmissions == 0) {
+            if (collision)
+                totalCollisionTime += now() - rxStartTime;
+            else
+                totalReceiveTime += now() - rxStartTime;
+            collision = false;
+        }
     }
 
     @Override
     protected void recordSummaryResults() {
-        //TODO
+        recordScalar("totalPackets", totalPackets);
+        recordScalar("totalCollisionTime", totalCollisionTime);
+        recordScalar("totalReceiveTime", totalReceiveTime);
+        recordScalar("channelBusy (%)", 100 * (totalReceiveTime+totalCollisionTime) / now());
+        recordScalar("utilization (%)", 100 * totalReceiveTime / now());
     }
 }
