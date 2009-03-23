@@ -9,12 +9,12 @@ package org.omnetpp.experimental.animation.primitives;
 
 import org.eclipse.draw2d.MouseEvent;
 import org.eclipse.draw2d.MouseListener;
-import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.experimental.animation.controller.AnimationPosition;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
 import org.omnetpp.experimental.animation.replay.model.ReplayModule;
 import org.omnetpp.experimental.animation.replay.model.ReplaySimulation;
 import org.omnetpp.figures.SubmoduleFigure;
+import org.omnetpp.ned.model.DisplayString;
 
 public class CreateModuleAnimation extends AbstractInfiniteAnimation {
 	protected ReplayModule module;

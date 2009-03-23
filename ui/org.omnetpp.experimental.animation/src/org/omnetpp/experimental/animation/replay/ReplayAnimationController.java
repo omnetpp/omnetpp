@@ -20,7 +20,6 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.simulation.model.ConnectionId;
 import org.omnetpp.common.simulation.model.GateId;
@@ -46,6 +45,7 @@ import org.omnetpp.experimental.animation.replay.model.ReplayModule;
 import org.omnetpp.experimental.animation.replay.model.ReplaySimulation;
 import org.omnetpp.experimental.animation.widgets.AnimationCanvas;
 import org.omnetpp.figures.CompoundModuleFigure;
+import org.omnetpp.ned.model.DisplayString;
 
 /**
  * The animation controller is responsible for managing the animation primitives, navigating back and forth and
@@ -1346,8 +1346,8 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 					lastLoadedMessage = new ReplayMessage();
 					lastLoadedMessage.setName(getToken(tokens, "n"));
 					lastLoadedMessage.setClassName(getToken(tokens, "c"));
-					lastLoadedMessage.setKind(getIntegerToken(tokens, "k"));
-					lastLoadedMessage.setLength(getIntegerToken(tokens, "l"));
+					lastLoadedMessage.setKind((short)getIntegerToken(tokens, "k"));
+					lastLoadedMessage.setBitLength((long)getIntegerToken(tokens, "l")); //FIXME longToken!
 					int id = getIntegerToken(tokens, "id", -1);
 					lastLoadedMessage.setId(id);
 					lastLoadedMessage.setTreeId(getIntegerToken(tokens, "tid", id));

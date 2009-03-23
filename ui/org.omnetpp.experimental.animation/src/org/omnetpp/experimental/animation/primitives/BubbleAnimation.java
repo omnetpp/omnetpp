@@ -16,7 +16,6 @@ import org.omnetpp.common.simulation.model.IRuntimeModule;
 import org.omnetpp.experimental.animation.controller.AnimationPosition;
 import org.omnetpp.experimental.animation.controller.Timer;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
-import org.omnetpp.figures.ModuleFigure;
 
 public class BubbleAnimation extends AbstractAnimationPrimitive {
 	protected int moduleId;

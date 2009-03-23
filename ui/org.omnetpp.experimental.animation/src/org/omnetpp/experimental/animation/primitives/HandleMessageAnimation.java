@@ -14,7 +14,6 @@ import org.omnetpp.common.simulation.model.IRuntimeMessage;
 import org.omnetpp.common.simulation.model.IRuntimeModule;
 import org.omnetpp.experimental.animation.controller.AnimationPosition;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
-import org.omnetpp.figures.ModuleFigure;
 
 public class HandleMessageAnimation extends AbstractAnimationPrimitive {
 	protected IRuntimeMessage message;

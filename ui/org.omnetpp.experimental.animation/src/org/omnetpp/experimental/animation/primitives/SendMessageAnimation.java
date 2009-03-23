@@ -51,7 +51,7 @@ public class SendMessageAnimation extends AbstractSendMessageAnimation {
 				" propagation time: " + propagationTime +
 				" transmission time: " + transmissionTime);
 
-		Color color = ColorFactory.getGoodColor(msg == null ? 0 : msg.getEncapsulationId()); 
+		Color color = ColorFactory.getGoodDarkColor(msg == null ? 0 : msg.getEncapsulationId()); 
 		messageEllipse = new Ellipse();
 		messageEllipse.setSize(20, 20);
 		messageEllipse.setForegroundColor(color);

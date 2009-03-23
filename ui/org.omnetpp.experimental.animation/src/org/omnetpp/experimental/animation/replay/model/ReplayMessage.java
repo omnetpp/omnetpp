@@ -1,13 +1,11 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
 package org.omnetpp.experimental.animation.replay.model;
-
-import java.math.BigDecimal;
 
 import org.omnetpp.common.simulation.model.IRuntimeMessage;
 
@@ -15,16 +13,16 @@ public class ReplayMessage implements IRuntimeMessage {
 	private String name;
 	private String className;
 
-	private int kind;
-	private int priority;
-	private int length;
+	private short kind;
+	private short priority;
+	private long length;
 	private boolean error;
 
 	private int id;
 	private int treeId;
 	private int encapsulationId;
 	private int encapsulationTreeId;
-	
+
 	private int senderModuleId, senderGateId;
 	private int arrivalModuleId, arrivalGateId;
 	private double sendingTime, arrivalTime;
@@ -45,11 +43,11 @@ public class ReplayMessage implements IRuntimeMessage {
 		this.error = error;
 	}
 
-	public int getLength() {
+	public long getBitLength() {
 		return length;
 	}
 
-	public void setLength(int length) {
+	public void setBitLength(long length) {
 		this.length = length;
 	}
 
@@ -57,7 +55,7 @@ public class ReplayMessage implements IRuntimeMessage {
 		return kind;
 	}
 
-	public void setKind(int kind) {
+	public void setKind(short kind) {
 		this.kind = kind;
 	}
 
@@ -65,7 +63,7 @@ public class ReplayMessage implements IRuntimeMessage {
 		return priority;
 	}
 
-	public void setPriority(int priority) {
+	public void setSchedulingPriority(short priority) {
 		this.priority = priority;
 	}
 
@@ -89,11 +87,11 @@ public class ReplayMessage implements IRuntimeMessage {
 		return arrivalGateId;
 	}
 
-	public BigDecimal getSendingTime()  {
+	public double getSendingTime()  {
 		return sendingTime;
 	}
 
-	public BigDecimal getArrivalTime() {
+	public double getArrivalTime() {
 		return arrivalTime;
 	}
 

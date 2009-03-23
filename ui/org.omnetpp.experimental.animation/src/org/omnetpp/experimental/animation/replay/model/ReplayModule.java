@@ -10,8 +10,8 @@ package org.omnetpp.experimental.animation.replay.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.simulation.model.IRuntimeModule;
+import org.omnetpp.ned.model.DisplayString;
 
 
 public class ReplayModule implements IRuntimeModule {

@@ -7,13 +7,13 @@
 
 package org.omnetpp.experimental.animation.primitives;
 
-import org.omnetpp.common.displaymodel.DisplayString;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.simulation.model.ConnectionId;
 import org.omnetpp.common.simulation.model.IRuntimeModule;
 import org.omnetpp.experimental.animation.controller.AnimationPosition;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
 import org.omnetpp.figures.ConnectionFigure;
+import org.omnetpp.ned.model.DisplayString;
 
 public class SetConnectionDisplayStringAnimation extends AbstractInfiniteAnimation {
 	protected ConnectionId connectionId;

@@ -49,7 +49,7 @@ public class SendBroadcastAnimation extends AbstractSendMessageAnimation {
 			}
 		};
 		circle.setFill(false);
-		circle.setForegroundColor(ColorFactory.getGoodColor(msg == null ? 0 : msg.getEncapsulationId()));
+		circle.setForegroundColor(ColorFactory.getGoodDarkColor(msg == null ? 0 : msg.getEncapsulationId()));
 	}
 	
 	@Override

@@ -26,7 +26,6 @@ import org.omnetpp.experimental.animation.replay.model.ReplayMessage;
 import org.omnetpp.experimental.animation.replay.model.ReplayModule;
 import org.omnetpp.experimental.animation.widgets.AnimationCanvas;
 import org.omnetpp.experimental.simkernel.IEnvirCallback;
-import org.omnetpp.experimental.simkernel.swig.Javaenv;
 import org.omnetpp.experimental.simkernel.swig.Simkernel;
 import org.omnetpp.experimental.simkernel.swig.cGate;
 import org.omnetpp.experimental.simkernel.swig.cMessage;
@@ -84,7 +83,7 @@ public class LiveAnimationController extends ReplayAnimationController implement
 	}
 
 	public double getLiveSimulationTime() {
-		return liveSimulation.simTime();
+		return liveSimulation.getSimTime();
    }
 	
 	public double guessNextEventLiveSimulationTime() {
@@ -287,7 +286,7 @@ public class LiveAnimationController extends ReplayAnimationController implement
 		replayMessage.setName(msg.getName());
 		replayMessage.setClassName(msg.getClassName());
 		replayMessage.setKind(msg.getKind());
-		replayMessage.setLength(msg.getLength());
+		replayMessage.setBitLength(msg.getBitLength());
 		replayMessage.setId(msg.getId());
 		replayMessage.setTreeId(msg.getTreeId());
 		replayMessage.setEncapsulationId(msg.getEncapsulationId());
@@ -305,7 +304,7 @@ public class LiveAnimationController extends ReplayAnimationController implement
 	}
 
 	public void connectionCreated(cGate gate) {
-		cGate targetGate = gate.destinationGate();
+		cGate targetGate = gate.getNextGate();
 		addAnimationPrimitive(new CreateConnectionAnimation(this, getLiveSimulationPosition(), new GateId(gate.getOwnerModule().getId(), gate.getId()), new GateId(targetGate.getOwnerModule().getId(), targetGate.getId())));
 	}
 
