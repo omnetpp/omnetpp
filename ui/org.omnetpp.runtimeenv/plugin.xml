@@ -27,5 +27,15 @@
             id="org.omnetpp.runtimeenv.view">
       </view>
    </extension>
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            class="org.omnetpp.runtimeenv.editors.ModelCanvas"
+            icon="icons/sample.gif"
+            id="org.omnetpp.runtimeenv.editors.ModelCanvas"
+            matchingStrategy="org.omnetpp.runtimeenv.editors.EditorMatchingStrategy"
+            name="Module Viewer">
+      </editor>
+   </extension>
 
 </plugin>

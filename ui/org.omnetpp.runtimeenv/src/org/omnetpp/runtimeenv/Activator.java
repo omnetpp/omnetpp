@@ -1,6 +1,13 @@
 package org.omnetpp.runtimeenv;
 
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.omnetpp.experimental.simkernel.swig.EmptyConfig;
 import org.omnetpp.experimental.simkernel.swig.ExecuteOnStartup;
@@ -10,6 +17,8 @@ import org.omnetpp.experimental.simkernel.swig.cConfiguration;
 import org.omnetpp.experimental.simkernel.swig.cModuleType;
 import org.omnetpp.experimental.simkernel.swig.cSimulation;
 import org.omnetpp.experimental.simkernel.swig.cStaticFlag;
+import org.omnetpp.runtimeenv.editors.ModelCanvas;
+import org.omnetpp.runtimeenv.editors.ModuleIDEditorInput;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -57,10 +66,30 @@ public class Activator extends AbstractUIPlugin {
 		    cSimulation.doneLoadingNedFiles();
 		    cModuleType networkType = cModuleType.find("Aloha_tmp");
 		    if (networkType == null)
-		        System.out.println("network not found");
-		    else
-		        simulation.setupNetwork(networkType);
-		} catch (Exception e) {
+		        throw new RuntimeException("network not found");
+		    simulation.setupNetwork(networkType);
+		    
+            Display.getDefault().asyncExec(new Runnable() {
+                @Override
+                public void run() {
+                    IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+                    if (workbenchWindow == null) {
+                        Display.getDefault().asyncExec(this); //FIXME this is a dirty hack
+                        return;
+                    }
+
+                    IWorkbenchPage page = workbenchWindow.getActivePage();
+                    int moduleID = cSimulation.getActiveSimulation().getSystemModule().getId();
+                    try {
+                        page.openEditor(new ModuleIDEditorInput(moduleID), ModelCanvas.EDITOR_ID);
+                    }
+                    catch (PartInitException e) {
+                        e.printStackTrace(); //XXX
+                    }
+                }
+            });
+		} 
+		catch (Exception e) {
 		    e.printStackTrace();
 		}
 	}
@@ -100,4 +129,12 @@ public class Activator extends AbstractUIPlugin {
 	public static ImageDescriptor getImageDescriptor(String path) {
 		return imageDescriptorFromPlugin(PLUGIN_ID, path);
 	}
+	
+	/**
+	 * Copied from IDE.openEditor().
+	 */
+	public static IEditorPart openEditor(IWorkbenchPage page, IEditorInput input, String editorId) throws PartInitException {
+	    return page.openEditor(input, editorId);
+	}
+
 }
