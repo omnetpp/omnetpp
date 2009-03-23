@@ -1,7 +1,8 @@
 %module Simkernel
 
 %include commondefs.i
-%include simtime.i
+//%include simtime.i
+%include simtime_tmp.i   //until we rewrite java code to use bigdecimal
 
 //
 // PROBLEMS:
