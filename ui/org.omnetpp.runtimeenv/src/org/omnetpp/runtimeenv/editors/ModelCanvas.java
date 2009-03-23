@@ -1,6 +1,9 @@
 package org.omnetpp.runtimeenv.editors;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.draw2d.Label;
+import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
@@ -8,6 +11,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
+import org.omnetpp.runtimeenv.animation.widgets.AnimationCanvas;
 
 public class ModelCanvas extends EditorPart {
     public static final String EDITOR_ID = "org.omnetpp.runtimeenv.editors.ModelCanvas";
@@ -50,6 +54,12 @@ public class ModelCanvas extends EditorPart {
 //        createSpeedSlider();
 //
 //        coolBar.setWrapIndices(new int[] {2,3});
+        
+        AnimationCanvas canvas = new AnimationCanvas(parent, SWT.DOUBLE_BUFFERED);
+        Label testFigure = new Label("bubu");
+        canvas.getRootFigure().add(testFigure);
+        canvas.getRootFigure().setConstraint(testFigure, new Rectangle(0,0,100,100));
+
     }
 
     @Override
