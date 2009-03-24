@@ -96,6 +96,9 @@ public class FileOutputVectorManager extends OutputFileManager implements IOutpu
         }
 
         public boolean record(double value) {
+            if (simtimeProvider == null)
+                throw new IllegalStateException("Simtime provider not yet specified");
+            
             return record(simtimeProvider.getSimulationTime(), value);
         }
 
@@ -163,9 +166,14 @@ public class FileOutputVectorManager extends OutputFileManager implements IOutpu
                         blockStartTime + " " + blockEndTime + " " +
                         n + " " + min + " " + max + " " + sum + " " + sqrSum);
 
+
                 // reset block
                 nbuffered -= n;
                 n = 0;
+                min = Double.NaN;
+                max = Double.NaN;
+                sum = 0;
+                sqrSum = 0;
                 times = new Number[10];
                 values = new double[10];
             } 
@@ -183,7 +191,7 @@ public class FileOutputVectorManager extends OutputFileManager implements IOutpu
         String indexFileName = fileName.replaceFirst("\\.[^./\\:]*$", "") + ".vci";
         indexFile = new File(indexFileName);
         if (indexFile.exists() && !indexFile.delete())
-            throw new ResultRecordingException("Cannot delete old output vector file " + indexFile.getPath());
+            throw new ResultRecordingException("Cannot delete old output vector index file " + indexFile.getPath());
     }
 
     public ISimulationTimeProvider getSimtimeProvider() {

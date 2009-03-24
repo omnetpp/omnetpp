@@ -18,7 +18,7 @@ public class SimulationManager {
 
     IOutputScalarManager scalarManager;
     IOutputVectorManager vectorManager;
-
+    
     public SimulationManager(String runID, Map<String,String> runAttributes, String resultFilenameBase) {
         scalarManager = new FileOutputScalarManager(resultFilenameBase+".sca");
         vectorManager = new FileOutputVectorManager(resultFilenameBase+".vec");
