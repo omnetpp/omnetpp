@@ -1,7 +1,7 @@
 package org.omnetpp.scave.writers;
 
 /**
- * Extends IStatisticalSummary with weighted statistics 
+ * Extends IStatisticalSummary with weighted statistics. 
  * 
  * @author Andras 
  */

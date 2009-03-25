@@ -115,8 +115,8 @@ public class FileOutputScalarManager extends OutputFileManager implements IOutpu
             if (n > 0) {
                 out.println("bin -INF " + histogram.getUnderflowCell());
                 for (int i=0; i<n; i++)
-                    out.print("bin " + histogram.getBasepoint(i) + " " + histogram.getCellValue(i));
-                out.println("bin " + histogram.getBasepoint(n) + histogram.getOverflowCell());
+                    out.print("bin " + histogram.getCellBoundary(i) + " " + histogram.getCellValue(i));
+                out.println("bin " + histogram.getCellBoundary(n) + histogram.getOverflowCell());
             }
         }
     }

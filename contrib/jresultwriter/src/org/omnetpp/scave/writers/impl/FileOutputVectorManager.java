@@ -22,9 +22,6 @@ import org.omnetpp.scave.writers.ResultRecordingException;
  *
  * @author Andras
  */
-//XXX flag: append or replace
-//XXX elejen torolje a fajlt
-//XXX dokumentacio
 public class FileOutputVectorManager extends OutputFileManager implements IOutputVectorManager {
     public static final int FILE_VERSION = 2;
 

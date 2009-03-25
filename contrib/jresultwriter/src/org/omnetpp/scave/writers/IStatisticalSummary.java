@@ -5,6 +5,8 @@ package org.omnetpp.scave.writers;
  *  
  * This is a copy of org.apache.commons.math.stat.descriptive.StatisticalSummary.
  * 
+ * @see IHistogramSummary
+ * 
  * @author Andras 
  */
 public interface IStatisticalSummary {
