@@ -14,6 +14,9 @@ import org.omnetpp.scave.writers.ResultRecordingException;
 /**
  * An output scalar manager that writes OMNeT++ scalar (".sca") files.
  *
+ * This class does not support filtering (of scalars or recorded data),
+ * this functionality may be added via subclasses.
+ *
  * @author Andras
  */
 public class FileOutputScalarManager extends OutputFileManager implements IOutputScalarManager {

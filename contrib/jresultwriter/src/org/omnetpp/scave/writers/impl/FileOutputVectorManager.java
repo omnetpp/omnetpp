@@ -19,6 +19,9 @@ import org.omnetpp.scave.writers.ResultRecordingException;
  * An output vector manager that writes OMNeT++ vector (".vec") files.
  * Recording event numbers ("ETV" vectors) is not supported, because it is
  * practically only useful for sequence charts.
+ * 
+ * This class does not support filtering (of vectors or recorded data)
+ * at all -- this functionality may be added via subclasses.
  *
  * @author Andras
  */
