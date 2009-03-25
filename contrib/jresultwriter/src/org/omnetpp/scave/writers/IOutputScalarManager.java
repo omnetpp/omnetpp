@@ -10,22 +10,6 @@ import java.util.Map;
  */
 public interface IOutputScalarManager extends IResultManager {
     /**
-     * Opens collecting. Called at the beginning of a simulation run.
-     * @param runID TODO
-     */
-    void open(String runID, Map<String,String> runAttributes);
-
-    /**
-     * Closes collecting. Called at the end of a simulation run.
-     */
-    void close();
-
-    /**
-     * Force writing out all buffered output.
-     */
-    void flush();
-
-    /**
      * Returns the output scalar file name. Returns NULL if this object is not
      * producing file output.
      */
