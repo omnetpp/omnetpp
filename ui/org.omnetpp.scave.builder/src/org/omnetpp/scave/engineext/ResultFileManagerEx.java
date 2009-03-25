@@ -7,6 +7,8 @@
 
 package org.omnetpp.scave.engineext;
 
+import java.util.concurrent.locks.Lock;
+
 import org.eclipse.core.runtime.ListenerList;
 import org.omnetpp.scave.engine.FileRun;
 import org.omnetpp.scave.engine.FileRunList;
@@ -36,6 +38,7 @@ import org.omnetpp.scave.engine.VectorResult;
  * 
  * @author andras
  */
+// TODO add lock object to the C++ class, and remove the locking from this wrapper class
 public class ResultFileManagerEx extends ResultFileManager {
 
 	private ListenerList changeListeners = new ListenerList();
@@ -71,6 +74,14 @@ public class ResultFileManagerEx extends ResultFileManager {
 	protected void notifyDisposeListeners() {
 		for (Object listener : disposeListeners.getListeners())
 			((IResultFileManagerDisposeListener)listener).resultFileManagerDisposed(this);
+	}
+	
+	public Lock getReadLock() {
+		return readLock;
+	}
+	
+	public Lock getWriteLock() {
+		return writeLock;
 	}
 	
 	/*-------------------------------------------

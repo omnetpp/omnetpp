@@ -24,15 +24,22 @@ public class InputsRunFileViewContentProvider extends CachedTreeContentProvider 
 	public GenericTreeNode buildTree(Object element) {
 		// Manager/Run/ResultFile
 		ResultFileManagerEx manager = (ResultFileManagerEx)element;
-		GenericTreeNode root = new GenericTreeNode(manager);
-		for (Run run : Sorter.sort(manager.getRuns())) {
-			GenericTreeNode runNode = new GenericTreeNode(new RunPayload(run));
-			root.addChild(runNode);
-			ResultFileList filelist = manager.getFilesForRun(run);
-			for (ResultFile file : Sorter.sort(filelist)) {
-				GenericTreeNode fileNode = new GenericTreeNode(new ResultFilePayload(file));
-				runNode.addChild(fileNode);
+		manager.getReadLock().lock();
+		GenericTreeNode root;
+		try {
+			root = new GenericTreeNode(manager);
+			for (Run run : Sorter.sort(manager.getRuns())) {
+				GenericTreeNode runNode = new GenericTreeNode(new RunPayload(run));
+				root.addChild(runNode);
+				ResultFileList filelist = manager.getFilesForRun(run);
+				for (ResultFile file : Sorter.sort(filelist)) {
+					GenericTreeNode fileNode = new GenericTreeNode(new ResultFilePayload(file));
+					runNode.addChild(fileNode);
+				}
 			}
+		}
+		finally {
+			manager.getReadLock().unlock();
 		}
 		return root;
 	}
