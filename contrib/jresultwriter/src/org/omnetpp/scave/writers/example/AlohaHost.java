@@ -30,7 +30,7 @@ public class AlohaHost extends Component {
         this.alohaServer = alohaServer;
         this.rng = rng;
         
-        radioStateVector = createOutputVector("radioState", null, null, IResultManager.SAMPLE_HOLD);
+        radioStateVector = createOutputVector("radioState", null, null, IResultManager.IM_SAMPLE_HOLD);
         radioStateVector.record(0); //"idle"
 
         startTxEvent = new Event() {

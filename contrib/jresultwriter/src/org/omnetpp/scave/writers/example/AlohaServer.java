@@ -17,7 +17,7 @@ public class AlohaServer extends Component {
   
     public AlohaServer(String name, SimulationManager sim, Component parent) {
         super(name, sim, parent);
-        numCurrentTransmissionsVector = createOutputVector("numConcurrentTransmissions", null, null, IResultManager.SAMPLE_HOLD);
+        numCurrentTransmissionsVector = createOutputVector("numConcurrentTransmissions", null, null, IResultManager.IM_SAMPLE_HOLD);
         numCurrentTransmissionsVector.record(0);
     }
 
