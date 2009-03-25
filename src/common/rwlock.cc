@@ -192,6 +192,9 @@ void ReentrantReadWriteLock::unlockRead()
 
 	--tls.readLockCount;
 
+	if (writeLockCount > 0 && pthread_equal(pthread_self(), writerThread))
+		return;
+
 	if (tls.readLockCount == 0)
 	{
 		int rc = pthread_rwlock_unlock(&rwlock);
