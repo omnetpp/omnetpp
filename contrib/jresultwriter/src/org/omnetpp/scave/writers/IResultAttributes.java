@@ -11,16 +11,17 @@ public interface IResultAttributes {
     // --- run attributes ---
 
     /**
-     * Run attribute: The sequence number of the simulation run among the total
-     * number of runs in a parameter study.
-     */
-    static final String ATTR_RUNNUMBER   = "runnumber";
-
-    /**
-     * Run attribute: The sequence number of the simulation run among the total
-     * number of runs in a parameter study.
+     * Run attribute: the name of the simulation model being run.
      */
     static final String ATTR_NETWORK     = "network";
+
+    /**
+     * Run attribute: the sequence number of the simulation run among the total
+     * number of runs in a parameter study. For example, if the simulator is run
+     * with 60 inputs, 10 trials (repetitions) each, the run number is between 
+     * 0 and 599.
+     */
+    static final String ATTR_RUNNUMBER   = "runnumber";
 
     /**
      * Run attribute: name of the experiment (=parameter study).
@@ -40,28 +41,53 @@ public interface IResultAttributes {
      * value is "#" plus the value of ATTR_REPETITION, if present.
      */
     static final String ATTR_REPLICATION = "replication";
+    
+    /**
+     * Concatenation of the inputs being varied during the experiment (=parameter study),
+     * e.g. <code>"nhosts=10,mean=0.2s"</code>.
+     */
     static final String ATTR_ITERATIONVARS = "iterationvars";
+    
+    /**
+     * The value of ATTR_ITERATIONVARS plus the replication label (ATTR_REPLICATION).
+     */
     static final String ATTR_ITERATIONVARS2 = "iterationvars2";
+    
+    /**
+     * Run attribute: the date and time of running the simulation. The preferred 
+     * format is <code>"yyyyMMdd-hh:mm:ss"</code>.
+     */
     static final String ATTR_DATETIME    = "datetime";
+    
+    /**
+     * Run attribute: the process ID of running the simulation.
+     */
     static final String ATTR_PROCESSID   = "processid";
-    static final String ATTR_RESULTDIR   = "resultdir";
 
     /**
      * Run attribute: serial number of the given trial within the measurement.
+     * For example, if the simulation is run 10 times with every input 
+     * (i.e. with 10 different seed sets), then repetition is a number in the 
+     * 0..9 interval.
      */
     static final String ATTR_REPETITION  = "repetition";
     
+    /**
+     * Identifies the RNG seed or set of RNG seeds used for the simulation.
+     */
     static final String ATTR_SEEDSET     = "seedset";
 
     /**
-     * Run attribute; name of the (main) configuration file of the simulation,
-     * if such thing exists.
+     * Run attribute; name of the (main) configuration file of the simulation
+     * if such thing exists in the given simulator framework; otherwise this
+     * attribute should be omitted.
      */
     static final String ATTR_INIFILE     = "inifile";
 
     /**
-     * Name of the active configuration in the config file of the simulation,
-     * if such thing exists.
+     * Run attribute; name of the active configuration in the config file 
+     * of the simulation if such thing exists in the given simulator 
+     * framework; otherwise this attribute should be omitted.
      */
     static final String ATTR_CONFIGNAME  = "configname";
     
