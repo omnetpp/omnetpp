@@ -217,11 +217,14 @@ void cArray::clear()
     for (int i=0; i<=last; i++)
     {
         cObject *obj = vect[i];
-        if (!obj->isOwnedObject())
-            delete obj;
-        else if (obj->getOwner()==this)
-            dropAndDelete(static_cast<cOwnedObject *>(obj));
-        vect[i] = NULL;  // this is not strictly necessary
+        if (obj)
+        {
+            if (!obj->isOwnedObject())
+                delete obj;
+            else if (obj->getOwner()==this)
+                dropAndDelete(static_cast<cOwnedObject *>(obj));
+            vect[i] = NULL;  // this is not strictly necessary
+        }
     }
     firstfree = 0;
     last = -1;

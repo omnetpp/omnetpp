@@ -1,3 +1,8 @@
+2009-03-25  Andras Varga
+
+	* bugfix: cArray::clear() crashed if there was a hole (NULL element)
+	in the array; the bug got introduced in 4.0 [reported by Roland Bless]
+
 2009-02-27  ------ omnetpp-4.0rc2 released ------
 
 2009-02-24  Andras Varga
