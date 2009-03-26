@@ -22,16 +22,32 @@
    <extension
          point="org.eclipse.ui.views">
       <view
-            name="View"
-            class="org.omnetpp.runtimeenv.View"
-            id="org.omnetpp.runtimeenv.view">
+            allowMultiple="false"
+            class="org.omnetpp.runtimeenv.views.ObjectTreeView"
+            icon="icons/eview16/objecttree.png"
+            id="org.omnetpp.runtimeenv.ObjectTreeView"
+            name="Object Tree">
+      </view>
+      <view
+            allowMultiple="true"
+            class="org.omnetpp.runtimeenv.views.ObjectPropertiesView"
+            icon="icons/eview16/objectproperties.png"
+            id="org.omnetpp.runtimeenv.ObjectPropertiesView"
+            name="Object Properties">
+      </view>
+      <view
+            allowMultiple="true"
+            class="org.omnetpp.runtimeenv.views.ModuleOutputView"
+            icon="icons/eview16/moduleoutput.png"
+            id="org.omnetpp.runtimeenv.ModuleOutputView"
+            name="Module Output">
       </view>
    </extension>
    <extension
          point="org.eclipse.ui.editors">
       <editor
             class="org.omnetpp.runtimeenv.editors.ModelCanvas"
-            icon="icons/sample.gif"
+            icon="icons/eview16/modulegraphic.png"
             id="org.omnetpp.runtimeenv.editors.ModelCanvas"
             matchingStrategy="org.omnetpp.runtimeenv.editors.EditorMatchingStrategy"
             name="Module Viewer">
