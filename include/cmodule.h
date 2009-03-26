@@ -185,7 +185,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
          * Returns the current object, or NULL if the iterator is not
          * at a valid position.
          */
-        cChannel *operator()() {return k < (int)channels.size() ? channels[k] : NULL;}
+        cChannel *operator()() const {return k < (int)channels.size() ? channels[k] : NULL;}
 
         /**
          * Returns true if the iterator has reached the end.
