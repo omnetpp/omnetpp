@@ -58,6 +58,7 @@
 
 %{
 #include "omnetpp.h"
+#include "innerclasses.h"
 
 #include <direct.h>
 inline void changeToDir(const char *dir)  //XXX
@@ -243,6 +244,7 @@ namespace std {
 
 //XXX temporarily disabled; TO BE PUT BACK: %typemap(javainterfaces) cMessage "org.omnetpp.common.simulation.model.IRuntimeMessage";
 
+%include "innerclasses.h"
 
 %include "simkerneldefs.h"
 %include "simtime.h"
