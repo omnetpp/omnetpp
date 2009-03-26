@@ -9,6 +9,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.experimental.simkernel.swig.EmptyConfig;
 import org.omnetpp.experimental.simkernel.swig.ExecuteOnStartup;
 import org.omnetpp.experimental.simkernel.swig.MinimalEnv;
@@ -46,6 +47,8 @@ public class Activator extends AbstractUIPlugin {
 		super.start(context);
 		plugin = this;
 
+		ImageFactory.setImageDirs(new String[]{"C:\\home\\omnetpp40\\omnetpp\\images"}); //FIXME just temporary
+		
 		// library initializations
 		cStaticFlag.set(true);
 	    ExecuteOnStartup.executeAll();

@@ -10,7 +10,7 @@ public class Perspective implements IPerspectiveFactory {
 		layout.setEditorAreaVisible(true);
 		layout.setFixed(false);
 		
-		layout.addStandaloneView(View.ID,  false, IPageLayout.LEFT, 1.0f, editorArea);
+		layout.addStandaloneView(View.ID,  false, IPageLayout.LEFT, .25f, editorArea);
 	}
 
 }

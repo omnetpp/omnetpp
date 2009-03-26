@@ -7,7 +7,6 @@
 
 package org.omnetpp.common.simulation.model;
 
-import java.math.BigDecimal;
 
 public interface IRuntimeMessage {
     /**
@@ -63,14 +62,14 @@ public interface IRuntimeMessage {
 	 * Returns time when the message was sent/scheduled or 0 if the message
 	 * hasn't been sent yet.
 	 */
-	public BigDecimal getSendingTime();
+	public double getSendingTime();
 
 	/**
 	 * Returns time when the message arrived (or will arrive if it
 	 * is currently scheduled or is underway), or 0 if the message
 	 * hasn't been sent/scheduled yet.
 	 */
-	public BigDecimal getArrivalTime();
+	public double getArrivalTime();
 	
     /**
      * Returns a unique message identifier assigned upon message creation.
@@ -86,12 +85,12 @@ public interface IRuntimeMessage {
     /**
      * Returns the sequenceId() of the innermost encapsulated message.
      */
-//XXX 	public int getEncapsulationId();
+ 	public int getEncapsulationId();
 
     /**
      * Returns the treeId() of the innermost encapsulated message.
      */
-//XXX	public int getEncapsulationTreeId();
+	public int getEncapsulationTreeId();
 
 	// FIXME: IObject?
 	public String getName();
