@@ -7,6 +7,7 @@
 
 package org.omnetpp.common.virtualtable;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.Viewer;
 import org.omnetpp.common.Debug;
 
@@ -97,7 +98,9 @@ public class LongVirtualTableContentProvider implements IVirtualTableContentProv
 		
 		sleep(distance);
 
-		return value + distance;
+		long result = value + distance;
+		Assert.isTrue(result >=0 && result <= maxValue);
+		return result;
 	}
 
 	public Long getClosestElement(Long element) {

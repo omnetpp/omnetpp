@@ -23,7 +23,7 @@ public class ModuleOutputView extends ViewPart {
 	    //FIXME we don't want no columns or table header, but without the following nothing gets displayed at all
 	    //FIXME and table header cannot be turned off
 	    //FIXME 1-2 pixels on the left are not visible (off-canvas)
-	    //FIXME scroll to the end, then resize: last element gets repeated!!!
+	    //FIXME scroll to the end, then resize: last element gets repeated!!! (this seems to be the problem of LongVirtualTableContentProvider ?)
 	    //FIXME how to draw unselected element with different foreground (white)?
 	    table.createColumn();
         TableColumn tableColumn = table.createColumn();;
