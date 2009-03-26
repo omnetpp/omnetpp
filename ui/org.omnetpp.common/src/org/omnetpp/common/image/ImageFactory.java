@@ -132,7 +132,7 @@ public class ImageFactory {
     // for 16x16 rescaled icons
     private static ImageRegistry iconImageRegistry = new ImageRegistry(Display.getDefault());
     private static String[] imageDirs;
-    private static List<String> imageNameList = null;
+	private static List<String> imageNameList = null;
     // image size constants
     public static final int SIZE_VS = -40;
     public static final int SIZE_S = -60;
@@ -146,6 +146,21 @@ public class ImageFactory {
         imageRegistry.put(DEFAULT_KEY, new NedImageDescriptor(ImageFactory.class, DEFAULT_NAME));
     }
     
+    
+    /**
+     * The current image directories as a string array (file system path)
+     */
+    public static String[] getImageDirs() {
+		return imageDirs;
+	}
+
+	/**
+	 * Sets the image directories as file system paths. Must be called BEFORE accessing the image factory.
+	 */
+	public static void setImageDirs(String[] imageDirs) {
+		ImageFactory.imageDirs = imageDirs;
+	}
+
     /**
      * @param imageId
      * @return a 16x16 image or null if there is no icon for that id
