@@ -65,9 +65,7 @@ public class CompoundModuleFigure extends NedFigure
     protected SpringEmbedderLayout layouter;
 
     // TODO implement ruler
-    @SuppressWarnings("unused")
     protected float scale = 1.0f;
-    @SuppressWarnings("unused")
     protected String unit = "px";
 
     // background layer to provide background coloring, images and grid drawing
