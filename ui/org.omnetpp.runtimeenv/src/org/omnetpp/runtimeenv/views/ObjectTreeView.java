@@ -1,4 +1,4 @@
-package org.omnetpp.runtimeenv;
+package org.omnetpp.runtimeenv.views;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -14,8 +14,8 @@ import org.omnetpp.experimental.simkernel.swig.cCollectChildrenVisitor;
 import org.omnetpp.experimental.simkernel.swig.cObject;
 import org.omnetpp.experimental.simkernel.swig.cSimulation;
 
-public class View extends ViewPart {
-	public static final String ID = "org.omnetpp.runtimeenv.view";
+public class ObjectTreeView extends ViewPart {
+	public static final String ID = "org.omnetpp.runtimeenv.ObjectTreeView";
 
 	private TreeViewer viewer;
 

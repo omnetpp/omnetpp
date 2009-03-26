@@ -11,6 +11,7 @@ import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
+import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.ui.SizeConstraint;
 
 /**
@@ -26,7 +27,8 @@ public class LongVirtualTableRowRenderer extends LabelProvider implements IVirtu
 	}
 
 	public void drawCell(GC gc, Long element, int index) {
-		gc.drawText(element.toString(), 0, 0);
+	    gc.setForeground(ColorFactory.BLACK);
+		gc.drawText("the number " + element.toString(), 5, 0); //XXX if we start at x=0, 1-2 pixel columns are off-screen
 	}
 
 	public int getRowHeight(GC gc) {

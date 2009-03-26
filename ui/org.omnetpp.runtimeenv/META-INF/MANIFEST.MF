@@ -10,7 +10,6 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.jface.text,
  org.eclipse.ui.editors,
  org.eclipse.draw2d,
- org.eclipse.gef;bundle-version="3.4.0",
  org.omnetpp.experimental.simkernel,
  org.omnetpp.figures,
  org.omnetpp.common
