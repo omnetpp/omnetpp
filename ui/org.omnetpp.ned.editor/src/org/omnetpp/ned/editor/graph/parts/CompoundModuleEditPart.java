@@ -85,7 +85,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
 
     @Override
     public IFigure getContentPane() {
-        return getCompoundModuleFigure().getSubmoduleContainer();
+        return getCompoundModuleFigure().getSubmoduleLayer();
     }
 
     // overridden so submodules are added to the contentPane while TypesEditPart is never added as a child

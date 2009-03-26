@@ -9,7 +9,16 @@ package org.omnetpp.figures;
 
 
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.draw2d.*;
+import org.eclipse.draw2d.Ellipse;
+import org.eclipse.draw2d.Graphics;
+import org.eclipse.draw2d.ImageFigure;
+import org.eclipse.draw2d.Label;
+import org.eclipse.draw2d.Layer;
+import org.eclipse.draw2d.PositionConstants;
+import org.eclipse.draw2d.RectangleFigure;
+import org.eclipse.draw2d.RoundedRectangle;
+import org.eclipse.draw2d.Shape;
+import org.eclipse.draw2d.StackLayout;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.PrecisionPoint;
@@ -20,14 +29,12 @@ import org.eclipse.gef.handles.HandleBounds;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
-
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.figures.CompoundModuleFigure.SubmoduleLayer;
 import org.omnetpp.figures.misc.AttachedLayer;
-import org.omnetpp.figures.misc.ILayerSupport;
-import org.omnetpp.figures.misc.ILayerSupport.LayerID;
 
 /**
  * Figure representing a submodule inside a compound module figure. Contains several figures attached
@@ -41,9 +48,6 @@ import org.omnetpp.figures.misc.ILayerSupport.LayerID;
 // TODO maybe we should use locators to place the different figures relative to the main figure
 // instead of using attachedLayers
 public class SubmoduleFigure extends NedFigure implements HandleBounds {
-	// parent figures for attached figures
-    protected Layer foregroundLayer;
-    protected Layer backgroundLayer;
 
     // state info, from the display string. Note: much of the state is stored inside sub-figures
     private Point preferredLocation;
@@ -98,34 +102,15 @@ public class SubmoduleFigure extends NedFigure implements HandleBounds {
         graphics.popState();
     }
 
-    /**
-     * Returns the requested layer from the first ancestor that supports multiple layers for decorations
-     * and contains the a layer with the given id
-     * @param id Layer id
-     * @return The layer with the given id from the first ancestor that implements the ILayerSupport IF
-     */
-    protected Layer getAncestorLayer(LayerID id) {
-        IFigure figureIter = getParent();
-        // look for a parent who is an instance of ILayerSupport and get the layer from it
-        while (figureIter != null) {
-            if (figureIter instanceof ILayerSupport) {
-                Layer layer = ((ILayerSupport)figureIter).getLayer(id);
-                if (layer != null)
-                    return layer;
-            }
-            figureIter = figureIter.getParent();
-        }
-        return null;
-    }
-
     @Override
     public void addNotify() {
         // functions here need to access the parent or ancestor figures, so these setup
         // procedures cannot be done in the constructor
+    	Assert.isTrue(getParent() instanceof SubmoduleLayer, "SubmoduleFigure can be added directly only to a SubmoduleLayer (inside of a CompoundModuleFigure)");
 
         // look for decorator layers among the ancestor (compound module figure)
-        foregroundLayer = getAncestorLayer(ILayerSupport.LayerID.FRONT_DECORATION);
-        backgroundLayer = getAncestorLayer(ILayerSupport.LayerID.BACKGROUND_DECORATION);
+        Layer foregroundLayer = ((SubmoduleLayer)getParent()).getCompoundModuleFigure().getForegroundDecorationLayer();
+        Layer backgroundLayer = ((SubmoduleLayer)getParent()).getCompoundModuleFigure().getBackgroundDecorationLayer();
 
         // add main figures
         // TODO figures should be added and created only ON DEMAND!!!

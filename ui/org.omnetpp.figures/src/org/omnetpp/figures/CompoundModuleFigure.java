@@ -8,10 +8,7 @@
 package org.omnetpp.figures;
 
 import org.eclipse.draw2d.ColorConstants;
-import org.eclipse.draw2d.Connection;
 import org.eclipse.draw2d.ConnectionLayer;
-import org.eclipse.draw2d.ConnectionRouter;
-import org.eclipse.draw2d.FanRouter;
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.FreeformLayer;
 import org.eclipse.draw2d.FreeformLayeredPane;
@@ -39,7 +36,6 @@ import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.figures.layout.SpringEmbedderLayout;
 import org.omnetpp.figures.misc.ILayerSupport;
 import org.omnetpp.figures.routers.CompoundModuleConnectionRouter;
-import org.omnetpp.figures.routers.CompoundModuleShortestPathConnectionRouter;
 
 /**
  * A figure representing a compound module. Also displays a caption with the name and the default
@@ -66,8 +62,11 @@ public class CompoundModuleFigure extends NedFigure
     private Color gridColor;
     private Color moduleBackgroundColor = ERROR_BACKGROUND_COLOR;
     private Color moduleBorderColor = ERROR_BORDER_COLOR;
+    private BackgroundLayer backgroundLayer;
+    private Layer backDecorationLayer;
+    private SubmoduleLayer submoduleLayer;
+    private Layer frontDecorationLayer;
     private ConnectionLayer connectionLayer;
-    private Layer submoduleLayer;
     private FreeformLayer messageLayer;
     private SpringEmbedderLayout layouter;
 
@@ -163,6 +162,11 @@ public class CompoundModuleFigure extends NedFigure
                 layouter.requestAutoLayout();
             super.add(child, constraint, index);
         }
+        
+        public CompoundModuleFigure getCompoundModuleFigure() {
+        	return CompoundModuleFigure.this;
+        }
+        
     }
 
     /**
@@ -251,12 +255,12 @@ public class CompoundModuleFigure extends NedFigure
         // contains all layers used inside a compound modules submodule area
         layeredPane = new FreeformLayeredPane();
         layeredPane.setLayoutManager(new StackLayout());
-        layeredPane.addLayerAfter(new BackgroundLayer(), LayerID.BACKGROUND, null);
-        layeredPane.addLayerAfter(new NonExtendableFreeformLayer(), LayerID.BACKGROUND_DECORATION, LayerID.BACKGROUND);
-        layeredPane.addLayerAfter(submoduleLayer = new SubmoduleLayer(), LayerID.DEFAULT, LayerID.BACKGROUND_DECORATION);
-        layeredPane.addLayerAfter(new NonExtendableFreeformLayer(), LayerID.FRONT_DECORATION, LayerID.DEFAULT);
-        layeredPane.addLayerAfter(connectionLayer = new NedConnectionLayer(), LayerID.CONNECTION, LayerID.FRONT_DECORATION);
-        layeredPane.addLayerAfter(messageLayer = new NonExtendableFreeformLayer(), LayerID.MESSAGE, LayerID.CONNECTION);
+        layeredPane.addLayerAfter(backgroundLayer = new BackgroundLayer(), null, null);
+        layeredPane.addLayerAfter(backDecorationLayer = new NonExtendableFreeformLayer(), null, null);
+        layeredPane.addLayerAfter(submoduleLayer = new SubmoduleLayer(), null, null);
+        layeredPane.addLayerAfter(frontDecorationLayer = new NonExtendableFreeformLayer(), null, null);
+        layeredPane.addLayerAfter(connectionLayer = new NedConnectionLayer(), null, null);
+        layeredPane.addLayerAfter(messageLayer = new NonExtendableFreeformLayer(), null, null);
 
         submoduleLayer.setLayoutManager(layouter = new SpringEmbedderLayout(this));
 
@@ -275,33 +279,25 @@ public class CompoundModuleFigure extends NedFigure
         // ---- FreeformLayeredPane (viewportContent)
         // ------ backgroundLayer (compound module background. images, colors, grid etc)
         // ------ backgroundDecorationLayer (submodule background decoration (range indicator etc). non extendable
-        // ------ pane (pain layer used to display submodules - size is automatically calculated from child size and positions)
+        // ------ submoduleLayer (palin layer used to display submodules - size is automatically calculated from child size and positions)
         // ------ foregroundDecorationLayer (text messages, decorator icons etc)
         // ------ connection (connections inside a compound module)
         // ------ message layer (used to display message animation effects)
 
         // set the connection routing
-        FanRouter fr = new FanRouter();
-        fr.setSeparation(10);
-        CompoundModuleShortestPathConnectionRouter spcr =
-        	new CompoundModuleShortestPathConnectionRouter(submoduleLayer);
-        spcr.setSpacing(10);
-        fr.setNextRouter(spcr);
+//        FanRouter fr = new FanRouter();
+//        fr.setSeparation(10);
+//        CompoundModuleShortestPathConnectionRouter spcr =
+//        	new CompoundModuleShortestPathConnectionRouter(submoduleLayer);
+//        spcr.setSpacing(10);
+//        fr.setNextRouter(spcr);
 // use this for fan router
 //        setConnectionRouter(fr);
 // use this for shortest path router
 //        setConnectionRouter(spcr);
-// simple straight connection router
-        setConnectionRouter(new CompoundModuleConnectionRouter());
-    }
 
-    public void setConnectionRouter(ConnectionRouter router) {
-		connectionLayer.setConnectionRouter(router);
-	}
-
-    public IFigure getSubmoduleContainer() {
-        // this is the figure which is used to add submodule children by the editpart
-        return submoduleLayer;
+        // simple straight connection router
+        connectionLayer.setConnectionRouter(new CompoundModuleConnectionRouter());
     }
 
     public IFigure getInnerTypeContainer() {
@@ -309,9 +305,6 @@ public class CompoundModuleFigure extends NedFigure
         return innerTypeContainer;
     }
 
-    public IFigure getConnectionContainer() {
-        return connectionLayer;
-    }
     /**
      * @see org.eclipse.gef.handles.HandleBounds#getHandleBounds()
      */
@@ -355,10 +348,6 @@ public class CompoundModuleFigure extends NedFigure
      */
     public CompoundModuleLineBorder getCompoundModuleBorder() {
     	return (CompoundModuleLineBorder)mainContainer.getBorder();
-    }
-
-    public Layer getLayer(LayerID layerId) {
-        return layeredPane.getLayer(layerId);
     }
 
 	/**
@@ -486,50 +475,33 @@ public class CompoundModuleFigure extends NedFigure
         invalidate();
 	}
 
-	/**
-	 * Adds the given submodule child figure to the correct layer
-	 */
-	public void addSubmoduleFigure(SubmoduleFigure submoduleFig) {
-		submoduleLayer.add(submoduleFig);
-	}
-
-	/**
-	 * Removes a submodule child figure from the compound module
-	 */
-	public void removeSubmoduleFigure(SubmoduleFigure submoduleFig) {
-		submoduleLayer.remove(submoduleFig);
-	}
-
-	/**
-	 * Adds a connection figure to the connection layer of the compound module
-	 */
-	public void addConnectionFigure(Connection conn) {
-		connectionLayer.add(conn);
-	}
-
-	/**
-	 * Removes a connection child figure from the compound module
-	 */
-	public void removeConnectionFigure(Connection conn) {
-		connectionLayer.remove(conn);
-	}
-
-	/**
-	 * Adds a message decoration figure above connection layer of the compound module
-	 */
-	public void addMessageFigure(IFigure messageFigure) {
-		messageLayer.add(messageFigure);
-	}
-
-	/**
-	 * Removes a message decoration child figure from the compound module
-	 */
-	public void removeMessageFigure(IFigure messageFigure) {
-		messageLayer.remove(messageFigure);
-	}
 
     public Dimension getBackgroundSize() {
         return backgroundSize;
     }
+
+    public Layer getBackgroundLayer() {
+    	return backgroundLayer;
+    }
+    
+	public Layer getBackgroundDecorationLayer() {
+		return backDecorationLayer;
+	}
+
+	public Layer getConnectionLayer() {
+		return connectionLayer;
+	}
+
+	public Layer getSubmoduleLayer() {
+		return submoduleLayer;
+	}
+
+	public Layer getForegroundDecorationLayer() {
+		return frontDecorationLayer;
+	}
+
+	public Layer getMessageLayer() {
+		return messageLayer;
+	}
 
 }

@@ -16,11 +16,10 @@ import org.eclipse.draw2d.Layer;
  * @author rhornig
  */
 public interface ILayerSupport {
-	enum LayerID { BACKGROUND, BACKGROUND_DECORATION, DEFAULT, FRONT_DECORATION, CONNECTION, MESSAGE }
-
-    /**
-     * Returns the layer with the given id, or null if it does not exist
-     */
-    public Layer getLayer(LayerID layerId);
-
+    public Layer getBackgroundLayer();
+    public Layer getBackgroundDecorationLayer();
+    public Layer getSubmoduleLayer();
+    public Layer getForegroundDecorationLayer();
+    public Layer getConnectionLayer();
+    public Layer getMessageLayer();
 }

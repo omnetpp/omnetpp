@@ -54,8 +54,8 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart
     @Override
     public void activateFigure() {
     	// add the connection to the compound module's connection layer instead of the global one
-    	((CompoundModuleEditPart)getParent()).getCompoundModuleFigure()
-    			.addConnectionFigure(getConnectionFigure());
+    	((CompoundModuleEditPart)getParent()).getCompoundModuleFigure().getConnectionLayer()
+    			.add(getConnectionFigure());
     }
 
     @Override
