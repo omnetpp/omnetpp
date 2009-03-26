@@ -110,17 +110,16 @@
               value="icons/logo16.png,icons/logo32.png,icons/logo48.png,icons/logo64.png,icons/logo128.png"/>
         <property
               name="aboutText"
-              value="OMNeT++ Vector and Scalar Analyser tool. Part of the OMNeT++ IDE. \n
-See www.omnetpp.org."/>
+              value="OMNeT++ Vector and Scalar Analyser tool. Part of the OMNeT++ IDE.&#x0A;See www.omnetpp.org."/>
         <property
               name="startupForegroundColor"
-              value="C8D5EA"/>
+              value="000000"/>
         <property
               name="startupProgressRect"
-              value="0,280,455,15"/>
+              value="10,10,298,10"/>
         <property
               name="startupMessageRect"
-              value="7,220,441,20"/>
+              value="10,20,500,25"/>
         <property
               name="appName"
               value="OMNeT++ Scalar and Vector Analyser">
