@@ -183,6 +183,14 @@ namespace std {
 %ignore divfunc_const;
 %ignore divfunc_babak;
 
+%ignore cMsgPar::operator=(void*);
+
+%typemap(javacode) cClassDescriptor %{
+  public static long getCPtr(cObject obj) { // make method public
+    return cObject.getCPtr(obj);
+  }
+%}
+
 
 // typemaps to wrap Javaenv::setJCallback(JNIEnv *jenv, jobject jcallbackobj):
 // %typemap(in, numinputs=0): unfortunately, generated java code doesn't compile
