@@ -13,9 +13,13 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
 import org.omnetpp.experimental.simkernel.swig.cModule;
+import org.omnetpp.experimental.simkernel.swig.cModule_SubmoduleIterator;
 import org.omnetpp.experimental.simkernel.swig.cSimulation;
 import org.omnetpp.figures.CompoundModuleFigure;
+import org.omnetpp.figures.ConnectionFigure;
 import org.omnetpp.figures.SubmoduleFigure;
+import org.omnetpp.figures.anchors.CompoundModuleGateAnchor;
+import org.omnetpp.figures.anchors.GateAnchor;
 import org.omnetpp.figures.layout.SubmoduleConstraint;
 import org.omnetpp.runtimeenv.animation.widgets.AnimationCanvas;
 
@@ -54,32 +58,26 @@ public class ModelCanvas extends EditorPart {
         moduleFigure.setDisplayString(module.getDisplayString());
         canvas.getRootFigure().setConstraint(moduleFigure, new Rectangle(0,0,500,500));
         
-        cModule submodule = module.getSubmodule("server");
-        SubmoduleFigure submoduleFigure = new SubmoduleFigure();
-        submoduleFigure.setDisplayString(submodule.getDisplayString());
-        submoduleFigure.setName(submodule.getFullName());
-        submoduleFigure.setPinDecoration(false);
-        moduleFigure.addSubmoduleFigure(submoduleFigure);
-
-        SubmoduleConstraint constraint = new SubmoduleConstraint();
-        constraint.setLocation(submoduleFigure.getPreferredLocation());
-        constraint.setSize(submoduleFigure.getPreferredSize());
-        Assert.isTrue(constraint.height != -1 && constraint.width != -1);
-        moduleFigure.getSubmoduleContainer().setConstraint(submoduleFigure, constraint);
-
-        for (int i=0; i<5; i++) {            
-            submodule = module.getSubmodule("host", i);
-            submoduleFigure = new SubmoduleFigure();
+        for (cModule_SubmoduleIterator it = new cModule_SubmoduleIterator(module); !it.end(); it.next()) {
+            cModule submodule = it.get();
+            SubmoduleFigure submoduleFigure = new SubmoduleFigure();
             submoduleFigure.setDisplayString(submodule.getDisplayString());
             submoduleFigure.setName(submodule.getFullName());
             submoduleFigure.setPinDecoration(false);
-            moduleFigure.addSubmoduleFigure(submoduleFigure);
-
-            constraint = new SubmoduleConstraint();
+            moduleFigure.getSubmoduleLayer().add(submoduleFigure);
+            
+            SubmoduleConstraint constraint = new SubmoduleConstraint();
             constraint.setLocation(submoduleFigure.getPreferredLocation());
             constraint.setSize(submoduleFigure.getPreferredSize());
             Assert.isTrue(constraint.height != -1 && constraint.width != -1);
-            moduleFigure.getSubmoduleContainer().setConstraint(submoduleFigure, constraint);
+            moduleFigure.getSubmoduleLayer().setConstraint(submoduleFigure, constraint);
+            
+            //TODO just testing
+            ConnectionFigure connectionFigure = new ConnectionFigure();
+            connectionFigure.setArrowHeadEnabled(true);
+            connectionFigure.setSourceAnchor(new GateAnchor(submoduleFigure));
+            connectionFigure.setTargetAnchor(new CompoundModuleGateAnchor(moduleFigure));
+            moduleFigure.getConnectionLayer().add(connectionFigure);
         }
 
         moduleFigure.addMouseListener(new MouseListener() {
