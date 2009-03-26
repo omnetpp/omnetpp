@@ -26,7 +26,7 @@ import org.eclipse.gef.editpolicies.ResizableEditPolicy;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
 
-import org.omnetpp.figures.CompoundModuleFigure;
+import org.omnetpp.figures.CompoundModuleTypeFigure;
 import org.omnetpp.ned.editor.graph.commands.CloneCommand;
 import org.omnetpp.ned.editor.graph.commands.CreateNedTypeElementCommand;
 import org.omnetpp.ned.editor.graph.commands.ReorderCommand;
@@ -154,7 +154,7 @@ public class NedFileLayoutEditPolicy extends FlowLayoutEditPolicy {
         // create the constraint change command
         if (child.getModel() instanceof CompoundModuleElementEx) {
             CompoundModuleElementEx module = (CompoundModuleElementEx) child.getModel();
-            CompoundModuleFigure cfigure = (CompoundModuleFigure)((GraphicalEditPart)child).getFigure();
+            CompoundModuleTypeFigure cfigure = (CompoundModuleTypeFigure)((GraphicalEditPart)child).getFigure();
             SetCompoundModuleConstraintCommand cmd = new SetCompoundModuleConstraintCommand(module);
             // from the constraint size subtract the difference between the whole figure size and
             // the selection rectangle

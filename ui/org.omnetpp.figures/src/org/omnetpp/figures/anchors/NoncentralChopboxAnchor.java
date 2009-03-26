@@ -11,7 +11,7 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.ScalableFigure;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.omnetpp.figures.CompoundModuleFigure;
+import org.omnetpp.figures.CompoundModuleTypeFigure;
 
 /**
  * Creates a special chopbox anchor, where the reference point is not the owner figure's center
@@ -56,8 +56,8 @@ public class NoncentralChopboxAnchor extends GateAnchor {
     @Override
     protected Rectangle getBox() {
         // if the owner is a label use only its icon area
-        if (getOwner() instanceof CompoundModuleFigure) {
-            Rectangle ib = ((CompoundModuleFigure)getOwner()).getHandleBounds();
+        if (getOwner() instanceof CompoundModuleTypeFigure) {
+            Rectangle ib = ((CompoundModuleTypeFigure)getOwner()).getHandleBounds();
             return ib;
         }
 

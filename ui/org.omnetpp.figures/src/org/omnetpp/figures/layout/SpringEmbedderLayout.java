@@ -17,6 +17,7 @@ import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.omnetpp.common.Debug;
+import org.omnetpp.figures.CompoundModuleTypeFigure;
 import org.omnetpp.figures.CompoundModuleFigure;
 import org.omnetpp.figures.SubmoduleFigure;
 
@@ -95,10 +96,10 @@ public class SpringEmbedderLayout extends XYLayout {
                 if (srcFig == null || targetFig == null)
                     continue;
 				// if this is an edge coming from outside to a submodule
-				if (srcFig instanceof CompoundModuleFigure) {
+				if (srcFig instanceof CompoundModuleTypeFigure) {
 					autoLayouter.addEdgeToBorder(targetFig, 0);
 				} // else if this is an edge going out from a submodule
-				else if (targetFig instanceof CompoundModuleFigure) {
+				else if (targetFig instanceof CompoundModuleTypeFigure) {
 					autoLayouter.addEdgeToBorder(srcFig, 0);
 				}
 				else {  // both are submodules

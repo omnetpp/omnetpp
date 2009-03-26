@@ -7,17 +7,18 @@
 
 package org.omnetpp.ned.editor.graph.figures;
 
+import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.gef.handles.HandleBounds;
 import org.eclipse.gef.tools.CellEditorLocator;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.figures.CompoundModuleFigure;
+import org.omnetpp.figures.CompoundModuleTypeFigure;
 import org.omnetpp.ned.editor.graph.misc.IDirectEditSupport;
 import org.omnetpp.ned.editor.graph.misc.LabelCellEditorLocator;
 
 /**
  * EDITING specific parts of the figure. Selection rectangle, direct editing etc.
  */
-public class CompoundModuleFigureEx extends CompoundModuleFigure implements
+public class CompoundModuleFigureEx extends CompoundModuleTypeFigure implements
 		HandleBounds, IDirectEditSupport {
 
     protected String tmpName;
@@ -39,6 +40,16 @@ public class CompoundModuleFigureEx extends CompoundModuleFigure implements
         }
         invalidate();
         validate();
+    }
+
+    /**
+     * Returns whether the point is on the border area, where dragging and selection and connection start/end is possible
+     */
+    public boolean isOnBorder(int x, int y) {
+        Point mouse = new Point(x,y);
+        translateToRelative(mouse);
+        return getBounds().contains(mouse) &&
+            !mainContainer.getClientArea().shrink(2*BORDER_SNAP_WIDTH, 2*BORDER_SNAP_WIDTH).contains(mouse);
     }
 
 }

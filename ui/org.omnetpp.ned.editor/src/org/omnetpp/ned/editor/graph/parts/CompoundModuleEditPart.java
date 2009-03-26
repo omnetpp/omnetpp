@@ -30,7 +30,7 @@ import org.eclipse.gef.editparts.ViewportAutoexposeHelper;
 import org.eclipse.gef.editparts.ViewportExposeHelper;
 import org.eclipse.gef.editparts.ViewportMouseWheelHelper;
 import org.eclipse.gef.editpolicies.SnapFeedbackPolicy;
-import org.omnetpp.figures.CompoundModuleFigure;
+import org.omnetpp.figures.CompoundModuleTypeFigure;
 import org.omnetpp.figures.anchors.CompoundModuleGateAnchor;
 import org.omnetpp.figures.anchors.GateAnchor;
 import org.omnetpp.ned.editor.graph.figures.CompoundModuleFigureEx;
@@ -81,8 +81,8 @@ public class CompoundModuleEditPart extends ModuleEditPart {
     /**
      * Convenience method to return the figure object with the correct type
      */
-    public CompoundModuleFigure getCompoundModuleFigure() {
-        return (CompoundModuleFigure) getFigure();
+    public CompoundModuleFigureEx getCompoundModuleFigure() {
+        return (CompoundModuleFigureEx) getFigure();
     }
 
     /**

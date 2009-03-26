@@ -12,7 +12,7 @@ import org.eclipse.draw2d.PositionConstants;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 
-import org.omnetpp.figures.CompoundModuleFigure;
+import org.omnetpp.figures.CompoundModuleTypeFigure;
 
 /**
  * Gate anchor used by the compound module. It can be locked to a specific point
@@ -91,7 +91,7 @@ public class CompoundModuleGateAnchor extends GateAnchor {
 	 * placed).
 	 */
 	protected Rectangle getBox() {
-		return ((CompoundModuleFigure)getOwner()).getAnchorBounds();
+		return ((CompoundModuleTypeFigure)getOwner()).getAnchorBounds();
 	}
 
 	/**

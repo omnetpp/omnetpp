@@ -7,9 +7,7 @@
 
 package org.omnetpp.figures;
 
-import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.ConnectionLayer;
-import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.FreeformLayer;
 import org.eclipse.draw2d.FreeformLayeredPane;
 import org.eclipse.draw2d.FreeformViewport;
@@ -17,11 +15,9 @@ import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Layer;
 import org.eclipse.draw2d.LayeredPane;
-import org.eclipse.draw2d.MarginBorder;
 import org.eclipse.draw2d.ScrollPane;
 import org.eclipse.draw2d.StackLayout;
 import org.eclipse.draw2d.ToolbarLayout;
-import org.eclipse.draw2d.XYLayout;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Point;
@@ -37,7 +33,7 @@ import org.omnetpp.figures.misc.ILayerSupport;
 import org.omnetpp.figures.routers.CompoundModuleConnectionRouter;
 
 /**
- * A figure representing a compound module. Also displays a caption with the name and the default
+ * A figure representing a compound module (only the client area. No border, title or inner type container).
  * image (if any)
  *
  * @author rhornig
@@ -45,35 +41,34 @@ import org.omnetpp.figures.routers.CompoundModuleConnectionRouter;
 public class CompoundModuleFigure extends NedFigure
 				implements ILayerSupport {
 
-    private static final int ERROR_BORDER_WIDTH = 2;
     public static final Color ERROR_BACKGROUND_COLOR = ColorFactory.RED;
     public static final Color ERROR_BORDER_COLOR = ColorFactory.RED4;
-    private static final int BORDER_SNAP_WIDTH = 3;
+    protected static final int ERROR_BORDER_WIDTH = 2;
+    protected static final int BORDER_SNAP_WIDTH = 3;
 
-    private Figure innerTypeContainer;
-    private ScrollPane mainContainer;
-    private LayeredPane layeredPane;
-    private Image backgroundImage;
-    private String backgroundImageArrangement = "fix";
-    private Dimension backgroundSize;
-    private int gridTickDistance;
-    private int gridNoOfMinorTics;
-    private Color gridColor;
-    private Color moduleBackgroundColor = ERROR_BACKGROUND_COLOR;
-    private Color moduleBorderColor = ERROR_BORDER_COLOR;
-    private BackgroundLayer backgroundLayer;
-    private Layer backDecorationLayer;
-    private SubmoduleLayer submoduleLayer;
-    private Layer frontDecorationLayer;
-    private ConnectionLayer connectionLayer;
-    private FreeformLayer messageLayer;
-    private SpringEmbedderLayout layouter;
+    protected ScrollPane mainContainer;
+    protected LayeredPane layeredPane;
+    protected Image backgroundImage;
+    protected String backgroundImageArrangement = "fix";
+    protected Dimension backgroundSize;
+    protected int gridTickDistance;
+    protected int gridNoOfMinorTics;
+    protected Color gridColor;
+    protected Color moduleBackgroundColor = ERROR_BACKGROUND_COLOR;
+    protected Color moduleBorderColor = ERROR_BORDER_COLOR;
+    protected BackgroundLayer backgroundLayer;
+    protected Layer backDecorationLayer;
+    protected SubmoduleLayer submoduleLayer;
+    protected Layer frontDecorationLayer;
+    protected ConnectionLayer connectionLayer;
+    protected FreeformLayer messageLayer;
+    protected SpringEmbedderLayout layouter;
 
     // TODO implement ruler
     @SuppressWarnings("unused")
-    private float scale = 1.0f;
+    protected float scale = 1.0f;
     @SuppressWarnings("unused")
-    private String unit = "px";
+    protected String unit = "px";
 
     // background layer to provide background coloring, images and grid drawing
     class BackgroundLayer extends FreeformLayer {
@@ -210,23 +205,6 @@ public class CompoundModuleFigure extends NedFigure
         }
     }
     
-    /**
-     * Used at the left inner types compartment.
-     */
-    class InnerTypesBorder extends MarginBorder {
-        InnerTypesBorder(int t, int l, int b, int r) {
-            super(t, l, b, r);
-        }
-
-        @Override
-        public void paint(IFigure f, Graphics g, Insets i) {
-            Rectangle r = getPaintRectangle(f, i);
-            g.setForegroundColor(ColorConstants.buttonDarker);
-            int x = r.x + insets.left/4;
-            g.drawLine(x, r.y, x, r.bottom());
-        }
-    }
-
     public CompoundModuleFigure() {
         super();
 
@@ -235,22 +213,6 @@ public class CompoundModuleFigure extends NedFigure
         tb.setSpacing(2);
         tb.setStretchMinorAxis(false);
         setLayoutManager(tb);
-        // position the error marker above the problemMarker figure
-        Layer nameHelperLayer = new Layer();
-        nameHelperLayer.setLayoutManager(new XYLayout());
-        nameHelperLayer.add(nameFigure, new Rectangle(0,0,-1,-1));
-        nameHelperLayer.add(problemMarkerFigure, new Rectangle(-1,0,16,16));
-        add(nameHelperLayer);
-
-        // create the container for the inner types
-        innerTypeContainer = new Figure();
-        ToolbarLayout typesLayout = new ToolbarLayout();
-        typesLayout.setStretchMinorAxis(false);
-        typesLayout.setSpacing(5);
-        innerTypeContainer.setBorder(new InnerTypesBorder(0, 20, 0, 0 ));
-        innerTypeContainer.setLayoutManager(typesLayout);
-        add(innerTypeContainer);
-
         // contains all layers used inside a compound modules submodule area
         layeredPane = new FreeformLayeredPane();
         layeredPane.setLayoutManager(new StackLayout());
@@ -269,7 +231,6 @@ public class CompoundModuleFigure extends NedFigure
         mainContainer.setScrollBarVisibility(ScrollPane.NEVER);
         mainContainer.setViewport(new FreeformViewport());
         mainContainer.setContents(layeredPane);
-        mainContainer.setBorder(new CompoundModuleLineBorder());
         add(mainContainer);
 
         // this effectively creates the following hierarchy:
@@ -299,11 +260,6 @@ public class CompoundModuleFigure extends NedFigure
         connectionLayer.setConnectionRouter(new CompoundModuleConnectionRouter());
     }
 
-    public IFigure getInnerTypeContainer() {
-        // this is the figure which is used to add inner types
-        return innerTypeContainer;
-    }
-
     /**
      * @see org.eclipse.gef.handles.HandleBounds#getHandleBounds()
      */
@@ -326,27 +282,10 @@ public class CompoundModuleFigure extends NedFigure
 
     }
 
-    /**
-     * Returns whether the point is on the border area, where dragging and selection and connection start/end is possible
-     */
-    public boolean isOnBorder(int x, int y) {
-        Point mouse = new Point(x,y);
-        translateToRelative(mouse);
-        return getBounds().contains(mouse) &&
-            !mainContainer.getClientArea().shrink(2*BORDER_SNAP_WIDTH, 2*BORDER_SNAP_WIDTH).contains(mouse);
-    }
-
     @Override
     public Dimension getPreferredSize(int w, int h) {
     	// IMPORTANT: we do not care about external size hints so we do not pass the downwards
         return super.getPreferredSize(-1, -1);
-    }
-
-    /**
-     * Helper function to return the current border
-     */
-    public CompoundModuleLineBorder getCompoundModuleBorder() {
-    	return (CompoundModuleLineBorder)mainContainer.getBorder();
     }
 
 	/**
@@ -363,8 +302,6 @@ public class CompoundModuleFigure extends NedFigure
 
 		// the global background is the same as the border color
 		mainContainer.setBackgroundColor(moduleBorderColor);
-		getCompoundModuleBorder().setColor(moduleBorderColor);
-		getCompoundModuleBorder().setWidth(borderWidth < 0 ? ERROR_BORDER_WIDTH : borderWidth);
 		// background image
 		backgroundImage = img;
 		backgroundImageArrangement = arrange != null ? arrange : "";
@@ -384,12 +321,6 @@ public class CompoundModuleFigure extends NedFigure
 		invalidate();
 	}
 
-	protected void setDefaultShape(Image img, String shape, int shapeWidth, int shapeHeight, Color shapeFillColor, Color shapeBorderColor, int shapeBorderWidth) {
-        if (img == null)
-            img = ImageFactory.getImage(ImageFactory.DEFAULT_KEY);
-		nameFigure.setIcon(img);
-	}
-
 	/**
 	 * Scaling and unit support.
 	 * @param scale scale value (a value of 18 means: 1 unit = 18 pixels)
@@ -407,21 +338,6 @@ public class CompoundModuleFigure extends NedFigure
 	 */
 	@Override
     public void setDisplayString(IDisplayString dps) {
-		// setup the figure's properties
-        // set the icon showing the default representation in the titlebar
-        Image img = ImageFactory.getImage(
-        		dps.getAsString(IDisplayString.Prop.IMAGE),
-        		dps.getAsString(IDisplayString.Prop.IMAGESIZE),
-        		ColorFactory.asRGB(dps.getAsString(IDisplayString.Prop.IMAGECOLOR)),
-        		dps.getAsInt(IDisplayString.Prop.IMAGECOLORPERCENTAGE,0));
-        setDefaultShape(img,
-        		dps.getAsString(IDisplayString.Prop.SHAPE),
-        		dps.getAsInt(IDisplayString.Prop.WIDTH, -1),
-        		dps.getAsInt(IDisplayString.Prop.HEIGHT, -1),
-        		ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.FILLCOL)),
-        		ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.BORDERCOL)),
-        		dps.getAsInt(IDisplayString.Prop.BORDERWIDTH, -1));
-
         // background color / image
         Image imgback = ImageFactory.getImage(
         		dps.getAsString(IDisplayString.Prop.MODULE_IMAGE), null, null, 0);

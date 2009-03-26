@@ -13,7 +13,7 @@ import org.eclipse.draw2d.LineBorder;
 import org.eclipse.draw2d.geometry.Insets;
 
 /**
- * TODO add documentation
+ * A special border for compound modules
  *
  * @author rhornig
  */
