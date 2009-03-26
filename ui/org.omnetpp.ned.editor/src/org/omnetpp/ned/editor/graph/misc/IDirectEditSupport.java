@@ -5,7 +5,7 @@
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-package org.omnetpp.figures.misc;
+package org.omnetpp.ned.editor.graph.misc;
 
 import org.eclipse.gef.tools.CellEditorLocator;
 

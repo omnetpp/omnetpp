@@ -8,8 +8,8 @@
 package org.omnetpp.ned.editor.graph.parts;
 
 import org.eclipse.draw2d.IFigure;
-
 import org.omnetpp.figures.NedTypeFigure;
+import org.omnetpp.ned.editor.graph.figures.NedTypeFigureEx;
 import org.omnetpp.ned.editor.graph.properties.util.TypeNameValidator;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INEDElement;
@@ -42,7 +42,7 @@ public class NedTypeEditPart extends NedEditPart {
      */
     @Override
 	protected IFigure createFigure() {
-		return new NedTypeFigure();
+		return new NedTypeFigureEx();
 	}
 
     public NedTypeFigure getNedTypeFigure() {

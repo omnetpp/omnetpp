@@ -20,7 +20,6 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
 
-import org.omnetpp.figures.misc.IDirectEditSupport;
 import org.omnetpp.ned.model.interfaces.IHasName;
 
 /**

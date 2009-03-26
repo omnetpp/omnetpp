@@ -12,15 +12,11 @@ import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.ImageFigure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.PositionConstants;
-import org.eclipse.gef.tools.CellEditorLocator;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
-
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.figures.misc.IDirectEditSupport;
-import org.omnetpp.figures.misc.LabelCellEditorLocator;
 
 /**
  * It is the common base to all selectable figures in the editor.
@@ -29,12 +25,11 @@ import org.omnetpp.figures.misc.LabelCellEditorLocator;
  *
  * @author rhornig
  */
-abstract public class NedFigure extends Figure implements IDirectEditSupport {
+abstract public class NedFigure extends Figure {
 	protected static final Image ICON_ERROR = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_ERROR_TSK); //ImageFactory.getImage(ImageFactory.DECORATOR_IMAGE_ERROR);
 	protected static final Image ICON_WARNING = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_WARN_TSK); //ImageFactory.getImage(ImageFactory.DECORATOR_IMAGE_WARNING);
 	protected static final Image ICON_INFO = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_INFO_TSK); //ImageFactory.getImage(ImageFactory.DECORATOR_IMAGE_INFO);
 
-    private String tmpName;
     protected Label nameFigure = new Label();
     protected TooltipFigure tooltipFigure;
     protected ImageFigure problemMarkerFigure = new ImageFigure();
@@ -66,25 +61,6 @@ abstract public class NedFigure extends Figure implements IDirectEditSupport {
     	}
 		return image;
 	}
-
-	// Direct edit support
-    public CellEditorLocator getDirectEditCellEditorLocator() {
-        return new LabelCellEditorLocator(nameFigure);
-    }
-
-    public void showLabelUnderCellEditor(boolean visible) {
-        // HACK to hide the text part only of the label
-        if (!visible) {
-            tmpName = nameFigure.getText();
-            nameFigure.setText("");
-        }
-        else {
-            if (StringUtils.isEmpty(nameFigure.getText()))
-                nameFigure.setText(tmpName);
-        }
-        invalidate();
-        validate();
-    }
 
     protected void setTooltipText(String tttext) {
         if (StringUtils.isEmpty(tttext)) {

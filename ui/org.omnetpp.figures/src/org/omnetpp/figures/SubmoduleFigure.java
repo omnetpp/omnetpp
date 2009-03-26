@@ -25,7 +25,6 @@ import org.eclipse.draw2d.geometry.PrecisionPoint;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.draw2d.text.FlowPage;
 import org.eclipse.draw2d.text.TextFlow;
-import org.eclipse.gef.handles.HandleBounds;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
@@ -47,7 +46,7 @@ import org.omnetpp.figures.misc.AttachedLayer;
 // FIXME change this so that figures are created on demand.
 // TODO maybe we should use locators to place the different figures relative to the main figure
 // instead of using attachedLayers
-public class SubmoduleFigure extends NedFigure implements HandleBounds {
+public class SubmoduleFigure extends NedFigure {
 
     // state info, from the display string. Note: much of the state is stored inside sub-figures
     private Point preferredLocation;

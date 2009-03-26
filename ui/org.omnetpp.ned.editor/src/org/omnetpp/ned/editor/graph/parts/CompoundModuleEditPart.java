@@ -16,15 +16,24 @@ import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.XYLayout;
 import org.eclipse.draw2d.geometry.Point;
-import org.eclipse.gef.*;
+import org.eclipse.gef.AutoexposeHelper;
+import org.eclipse.gef.CompoundSnapToHelper;
+import org.eclipse.gef.ConnectionEditPart;
+import org.eclipse.gef.EditPart;
+import org.eclipse.gef.EditPolicy;
+import org.eclipse.gef.ExposeHelper;
+import org.eclipse.gef.GraphicalEditPart;
+import org.eclipse.gef.MouseWheelHelper;
+import org.eclipse.gef.SnapToGeometry;
+import org.eclipse.gef.SnapToHelper;
 import org.eclipse.gef.editparts.ViewportAutoexposeHelper;
 import org.eclipse.gef.editparts.ViewportExposeHelper;
 import org.eclipse.gef.editparts.ViewportMouseWheelHelper;
 import org.eclipse.gef.editpolicies.SnapFeedbackPolicy;
-
 import org.omnetpp.figures.CompoundModuleFigure;
 import org.omnetpp.figures.anchors.CompoundModuleGateAnchor;
 import org.omnetpp.figures.anchors.GateAnchor;
+import org.omnetpp.ned.editor.graph.figures.CompoundModuleFigureEx;
 import org.omnetpp.ned.editor.graph.parts.policies.CompoundModuleLayoutEditPolicy;
 import org.omnetpp.ned.editor.graph.properties.util.TypeNameValidator;
 import org.omnetpp.ned.model.INEDElement;
@@ -64,7 +73,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
      */
     @Override
     protected IFigure createFigure() {
-        IFigure fig = new CompoundModuleFigure();
+        IFigure fig = new CompoundModuleFigureEx();
         gateAnchor = new CompoundModuleGateAnchor(fig);
         return fig;
     }

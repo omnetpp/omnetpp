@@ -14,13 +14,13 @@ import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.gef.commands.Command;
-
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.figures.SubmoduleFigure;
 import org.omnetpp.figures.anchors.GateAnchor;
 import org.omnetpp.figures.layout.SubmoduleConstraint;
 import org.omnetpp.ned.editor.graph.commands.ReconnectCommand;
+import org.omnetpp.ned.editor.graph.figures.SubmoduleFigureEx;
 import org.omnetpp.ned.editor.graph.properties.util.SubmoduleNameValidator;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INEDElement;
@@ -50,7 +50,7 @@ public class SubmoduleEditPart extends ModuleEditPart {
      */
     @Override
     protected IFigure createFigure() {
-        SubmoduleFigure fig = new SubmoduleFigure();
+        SubmoduleFigure fig = new SubmoduleFigureEx();
         // set the pin decoration image for the image (The compound module requests an auto-layout
         // if we add an figure without pin. ie. submodule created in the text editor without 
         // a display string
