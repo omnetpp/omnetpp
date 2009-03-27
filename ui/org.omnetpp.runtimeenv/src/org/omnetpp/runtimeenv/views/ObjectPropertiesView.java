@@ -1,6 +1,7 @@
 package org.omnetpp.runtimeenv.views;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -16,6 +17,10 @@ import org.omnetpp.experimental.simkernel.swig.cCollectChildrenVisitor;
 import org.omnetpp.experimental.simkernel.swig.cObject;
 import org.omnetpp.experimental.simkernel.swig.cSimulation;
 
+//XXX what's lost, compared to Tcl:
+// - bold (\b)
+// - editable
+// - multi-line text
 public class ObjectPropertiesView extends ViewPart {
 	public static final String ID = "org.omnetpp.runtimeenv.ObjectPropertiesView";
 
@@ -90,7 +95,7 @@ public class ObjectPropertiesView extends ViewPart {
                     return getElementsInArray(key.ptr, key.desc, key.fieldID);
                 boolean isCompound = key.desc.getFieldIsCompound(key.ptr, key.fieldID);
                 if (isCompound)
-                    return getFieldsOfCompoundField(key.ptr, key.desc, key.fieldID, 0);
+                    return getFieldsOfCompoundField(key.ptr, key.desc, key.fieldID, -1);
             }
             else if (element instanceof ArrayElementKey) {
                 ArrayElementKey key = (ArrayElementKey)element;
@@ -224,95 +229,76 @@ public class ObjectPropertiesView extends ViewPart {
 			return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_ELEMENT);
 		}
         
-        public String getFieldText(long ptr, cClassDescriptor desc, int fieldID, int index) {
-            return desc.getFieldName(ptr, fieldID) + "=" + ""; //XXX copy Tcl function to do this!!! key.desc.getFieldAsString(ptr, fieldID);
-/*XXX TODO:
-proc getFieldNodeInfo_getFieldText {obj sd fieldid index} {
-
-    set typename [opp_classdescriptor $obj $sd fieldtypename $fieldid]
-    set isarray [opp_classdescriptor $obj $sd fieldisarray $fieldid]
-    set iscompound [opp_classdescriptor $obj $sd fieldiscompound $fieldid]
-    set ispoly [opp_classdescriptor $obj $sd fieldiscpolymorphic $fieldid]
-    set isobject [opp_classdescriptor $obj $sd fieldiscobject $fieldid]
-    set iseditable [opp_classdescriptor $obj $sd fieldiseditable $fieldid]
-
-    # field name can be overridden with @label property
-    set name [opp_classdescriptor $obj $sd fieldproperty $fieldid "label"]
-    if {$name==""} {set name [opp_classdescriptor $obj $sd fieldname $fieldid]}
-
-    # if it's an unexpanded array, return "name[size]" immediately
-    if {$isarray && $index==""} {
-        set size [opp_classdescriptor $obj $sd fieldarraysize $fieldid]
-        return "$name\[$size\] ($typename)"
-    }
-
-    # when showing array elements, omit name and just show "[index]" instead
-    if {$index!=""} {
-        set name "\[$index\]"
-    }
-
-    # we'll want to print the field type, except for expanded array elements
-    # (no need to repeat it, as it's printed in the "name[size]" node already)
-    if {$index==""} {
-        set typenametext " ($typename)"
-    } else {
-        set typenametext ""
-    }
-
-    # "editable" flag
-    if {$iseditable} {
-        set typenametext " \[...\] $typenametext"
-    }
-
-    if {$iscompound} {
-        # if it's an object, try to say something about it...
-        if {$ispoly} {
-            set fieldobj [opp_classdescriptor $obj $sd fieldstructpointer $fieldid $index]
-            if [opp_isnull $fieldobj] {return "$name = \bNULL\b$typenametext"}
-            if {!$isobject || [opp_getobjectowner $fieldobj]==$obj} {
-                set fieldobjname [opp_getobjectfullname $fieldobj]
-            } else {
-                set fieldobjname [opp_getobjectfullpath $fieldobj]
+        public String getFieldText(long object, cClassDescriptor desc, int field, int index) {
+            String typeName = desc.getFieldTypeString(object, field);
+            boolean isArray = desc.getFieldIsArray(object, field);
+            boolean isCompound = desc.getFieldIsCompound(object, field);
+            boolean isPoly = desc.getFieldIsCPolymorphic(object, field);
+            boolean isObject = desc.getFieldIsCObject(object, field);
+            boolean isEditable = desc.getFieldIsEditable(object, field);
+        
+            // field name can be overridden with @label property
+            String name = desc.getFieldProperty(object, field, "label");
+            if (StringUtils.isEmpty(name))
+                name = desc.getFieldName(object, field);
+        
+            // if it's an unexpanded array, return "name[size]" immediately
+            if (isArray && index == -1) {
+                int size = desc.getArraySize(object, field);
+                return name + "[" + size + "] (" + typeName + ")";
             }
-            set fieldobjname [opp_getobjectfullname $fieldobj]
-            set fieldobjclassname [opp_getobjectshorttypename $fieldobj]
-            set fieldobjinfo [opp_getobjectinfostring $fieldobj]
-            if {$fieldobjinfo!=""} {
-                set fieldobjinfotext ": $fieldobjinfo"
+        
+            // when showing array elements, omit name and just show "[index]" instead
+            if (index != -1)
+                name = "[" + index + "]";
+        
+            // we'll want to print the field type, except for expanded array elements
+            // (no need to repeat it, as it's printed in the "name[size]" node already)
+            String typeNameText = (index == -1) ? " (" + typeName + ")" : "";
+        
+            // "editable" flag
+            if (isEditable)
+                typeNameText = " [...] " + typeNameText;
+        
+            if (isCompound) {
+                // if it's an object, try to say something about it...
+                if (isPoly) {
+                    cObject fieldObj = null; //FIXME TODO: desc.getFieldStructPointer(object, field, index);
+                    if (fieldObj == null)
+                        return name + " = NULL" + typeNameText;
+                    String fieldObjName;
+                    if (!isObject || cClassDescriptor.getCPtr(fieldObj.getOwner()) == object)
+                        fieldObjName = fieldObj.getFullName();
+                    else
+                        fieldObjName = fieldObj.getFullPath();
+                    String className = fieldObj.getClassName(); //FIXME use shorttypename!!!
+                    String info = fieldObj.info();
+                    String infoText = info.equals("") ? "" : ": " + info;
+                    return name + " = " + "(" + className + ") " + fieldObjName + infoText + typeNameText;
+                } else {
+                    // a value can be generated via operator<<
+                    String value = "bubu"; //TODO if [catch {set value [opp_classdescriptor $obj $sd fieldvalue $fieldid $index]} err] {set value "<!> Error: $err"}
+                    if (value.equals(""))
+                        return name + typeNameText;
+                    else
+                        return name + " = " + value + typeNameText;
+                }
             } else {
-                set fieldobjinfotext ""
+                // plain field, return "name = value" text
+                String value = "bubu"; //TODO if [catch {set value [opp_classdescriptor $obj $sd fieldvalue $fieldid $index]} err] {set value "<!> Error: $err"}
+                String enumname = desc.getFieldProperty(object, field, "enum");
+                if (!StringUtils.isEmpty(enumname)) {
+                    typeName = typeName + " - enum " + enumname;
+                    String symbolicname = "bubu"; //TODO [opp_getnameforenum $enumname $value]
+                    value = symbolicname + "(" + value + ")";
+                }
+                if (typeName.equals("string")) 
+                    value = "'" + value + "'";
+                if (value.equals(""))
+                    return name + typeNameText;
+                else
+                    return name + " = " + value + typeNameText;
             }
-            return "$name = \b($fieldobjclassname) $fieldobjname$fieldobjinfotext\b$typenametext"
-        } else {
-            # a value can be generated via operator<<
-            if [catch {set value [opp_classdescriptor $obj $sd fieldvalue $fieldid $index]} err] {set value "<!> Error: $err"}
-            if {$value==""} {
-                return "$name$typenametext"
-            } else {
-                return "$name = \b$value\b$typenametext"
-            }
-        }
-    } else {
-        # plain field, return "name = value" text
-        if [catch {set value [opp_classdescriptor $obj $sd fieldvalue $fieldid $index]} err] {set value "<!> Error: $err"}
-        set enumname [opp_classdescriptor $obj $sd fieldproperty $fieldid "enum"]
-        if {$enumname!=""} {
-            append typename " - enum $enumname"
-            set symbolicname [opp_getnameforenum $enumname $value]
-            set value "$symbolicname ($value)"
-        }
-        #if {$typename=="string"} {set value "\"$value\""}
-        if {$typename=="string"} {set value "'$value'"}
-        if {$value==""} {
-            return "$name$typenametext"
-        } else {
-            return "$name = \b$value\b$typenametext"
-        }
-    }
-}
-            
- */
-            
         }
 	}
 
