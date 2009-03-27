@@ -16,6 +16,7 @@ import org.omnetpp.experimental.simkernel.swig.cClassDescriptor;
 import org.omnetpp.experimental.simkernel.swig.cCollectChildrenVisitor;
 import org.omnetpp.experimental.simkernel.swig.cObject;
 import org.omnetpp.experimental.simkernel.swig.cSimulation;
+import org.omnetpp.runtimeenv.Activator;
 
 //XXX what's lost, compared to Tcl:
 // - bold (\b)
@@ -225,8 +226,31 @@ public class ObjectPropertiesView extends ViewPart {
 	    }
 	    
         @Override
-		public Image getImage(Object obj) {
-			return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_ELEMENT);
+		public Image getImage(Object element) {
+            if (element instanceof cObject) {
+                //FIXME cache image by object's classname!
+                cObject object = (cObject)element;
+                long ptr = cClassDescriptor.getCPtr(object);
+                cClassDescriptor desc = cClassDescriptor.getDescriptorFor(object);
+                String icon = desc.getProperty("icon");
+                if (!StringUtils.isEmpty(icon)) {
+                    return Activator.getImageDescriptor("icons/obj16/"+icon+".png").createImage(); //FIXME TODO error check, caching, look into image path, etc
+                }
+            }
+            else if (element instanceof StructKey) {
+                return Activator.getImageDescriptor("icons/obj16/field.png").createImage(); //FIXME TODO error check, caching, look into image path, etc
+            }
+            else if (element instanceof GroupKey) {
+                return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER);
+            }
+            else if (element instanceof FieldKey) {
+                return Activator.getImageDescriptor("icons/obj16/field.png").createImage(); //FIXME TODO error check, caching, look into image path, etc
+            }
+            else if (element instanceof ArrayElementKey) {
+                return Activator.getImageDescriptor("icons/obj16/field.png").createImage(); //FIXME TODO error check, caching, look into image path, etc
+            }
+            
+			return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_ERROR_TSK);
 		}
         
         public String getFieldText(long object, cClassDescriptor desc, int field, int index) {
