@@ -60,21 +60,24 @@ public class ObjectPropertiesView extends ViewPart {
 	
 	class ViewContentProvider implements ITreeContentProvider {
 	    public Object[] getChildren(Object element) {
-	        //XXX handle cases when there's no cClassDescriptor found
 	        if (element instanceof cObject) {
 	            cObject object = (cObject)element;
 	            long ptr = cClassDescriptor.getCPtr(object);
                 cClassDescriptor desc = cClassDescriptor.getDescriptorFor(object);
-                Object[] ungroupedFields = getFieldsInGroup(ptr, desc, "");
-                Object[] groups = getGroupKeys(ptr, desc);
-                Object[] childObjects = getChildObjects(object); //FIXME needed?
-                return ArrayUtils.addAll(ArrayUtils.addAll(ungroupedFields, groups), childObjects);
+                if (desc == null) {
+                    return getChildObjects(object);
+                } else {
+                    Object[] ungroupedFields = getFieldsInGroup(ptr, desc, "");
+                    Object[] groups = getGroupKeys(ptr, desc);
+                    Object[] childObjects = getChildObjects(object); //FIXME needed?
+                    return ArrayUtils.addAll(ArrayUtils.addAll(ungroupedFields, groups), childObjects);
+                }
 	        }
             else if (element instanceof StructKey) {
                 StructKey key = (StructKey)element;
-                Object[] children1 = getFieldsInGroup(key.ptr, key.desc, "");
-                Object[] children2 = getGroupKeys(key.ptr, key.desc);
-                return ArrayUtils.addAll(children1, children2);
+                Object[] ungroupedFields = getFieldsInGroup(key.ptr, key.desc, "");
+                Object[] groups = getGroupKeys(key.ptr, key.desc);
+                return ArrayUtils.addAll(ungroupedFields, groups);
             }
             else if (element instanceof GroupKey) {
                 GroupKey key = (GroupKey)element;
@@ -82,55 +85,36 @@ public class ObjectPropertiesView extends ViewPart {
             }
             else if (element instanceof FieldKey) {
                 FieldKey key = (FieldKey)element;
-                //TODO
                 boolean isArray = key.desc.getFieldIsArray(key.ptr, key.fieldID);
-                if (isArray) {
-                    // expand array: enumerate all indices
+                if (isArray)
                     return getElementsInArray(key.ptr, key.desc, key.fieldID);
-                }
                 boolean isCompound = key.desc.getFieldIsCompound(key.ptr, key.fieldID);
-                if (isCompound) {
-                    // return children of this class/struct
-                    long fieldPtr = key.desc.getFieldStructPointer(key.ptr, key.fieldID, 0);
-                    if (fieldPtr == 0)
-                        return new Object[0];
-                    boolean isPoly = key.desc.getFieldIsCPolymorphic(key.ptr, key.fieldID);
-                    if (isPoly) {
-                        return getChildren(null); //FIXME cast fieldPtr to cObject
-                    } else {
-                        String fieldStructName = key.desc.getFieldStructName(key.ptr, key.fieldID);
-                        cClassDescriptor fieldDesc = cClassDescriptor.getDescriptorFor(fieldStructName);
-                        if (fieldDesc == null)
-                            return new Object[0]; // nothing known about it
-                        return getChildren(new StructKey(fieldPtr, fieldDesc));
-                    }
-                }
-                return new Object[0];
+                if (isCompound)
+                    return getFieldsOfCompoundField(key.ptr, key.desc, key.fieldID, 0);
             }
             else if (element instanceof ArrayElementKey) {
-                //FIXME this is same as above, except this has "key.index" instead of "0"
                 ArrayElementKey key = (ArrayElementKey)element;
-                boolean isCompound = key.desc.getFieldIsCompound(key.ptr, key.fieldID);
-                if (isCompound) {
-                    // return children of this class/struct
-                    long fieldPtr = key.desc.getFieldStructPointer(key.ptr, key.fieldID, key.index);
-                    if (fieldPtr == 0)
-                        return new Object[0];
-                    boolean isPoly = key.desc.getFieldIsCPolymorphic(key.ptr, key.fieldID);
-                    if (isPoly) {
-                        return getChildren(null); //FIXME cast fieldPtr to cObject
-                    } else {
-                        String fieldStructName = key.desc.getFieldStructName(key.ptr, key.fieldID);
-                        cClassDescriptor fieldDesc = cClassDescriptor.getDescriptorFor(fieldStructName);
-                        if (fieldDesc == null)
-                            return new Object[0]; // nothing known about it
-                        return getChildren(new StructKey(fieldPtr, fieldDesc));
-                    }
-                }
-                return new Object[0];
+                return getFieldsOfCompoundField(key.ptr, key.desc, key.fieldID, key.index);
             }
 	        return new Object[0];
 	    }
+
+        private Object[] getFieldsOfCompoundField(long ptr, cClassDescriptor desc, int fieldID, int index) {
+            // return children of this class/struct
+            long fieldPtr = desc.getFieldStructPointer(ptr, fieldID, index);
+            if (fieldPtr == 0)
+                return new Object[0];
+            boolean isCObject = desc.getFieldIsCPolymorphic(ptr, fieldID);
+            if (isCObject) {
+                return getChildren(null); //FIXME cast fieldPtr to cObject
+            } else {
+                String fieldStructName = desc.getFieldStructName(ptr, fieldID);
+                cClassDescriptor fieldDesc = cClassDescriptor.getDescriptorFor(fieldStructName);
+                if (fieldDesc == null)
+                    return new Object[0]; // nothing known about it
+                return getChildren(new StructKey(fieldPtr, fieldDesc));
+            }
+        }
 
         private Object[] getChildObjects(cObject o) {
             cCollectChildrenVisitor visitor = new cCollectChildrenVisitor(o);
@@ -166,7 +150,7 @@ public class ObjectPropertiesView extends ViewPart {
 	        else if (element instanceof cObject)
 	            return getChildren(element).length!=0;  //FIXME make it more efficient (this counts all children!)
 	        else
-	            return getChildren(element).length > 0; //FIXME make it more efficient (this counts all children!)
+	            return getChildren(element).length!=0; //FIXME make it more efficient (this counts all children!)
 	    }
 
 	    protected Object[] getGroupKeys(long ptr, cClassDescriptor desc) {
