@@ -66,6 +66,7 @@ struct cDensityEstBase_Cell;
 
 class cObject
 {
+    @icon(cogwheel);
     string className @group(base) @hint(C++ class name);
     string fullName @group(base) @hint(If object is part of a module/gate vector: name with index);
     string fullPath @group(base) @hint(Hierarchical name, composed of full names of this object and its owners/parents);
@@ -122,6 +123,7 @@ class cComponent extends cDefaultList
 
 class cChannel extends cComponent
 {
+    @icon(channel);
     cDisplayString displayString @group(general) @hint(Controls appearance of this channel in the GUI);
 }
 
@@ -157,6 +159,7 @@ class cModule extends cComponent
 
 class cSimpleModule extends cModule
 {
+    @icon(simple);
     bool isTerminated @getter(isTerminated) @group(general) @hint(Whether this module has terminated);
     bool usesActivity @getter(usesActivity) @group(activity) @hint(Whether this simple module was programmed using the "activity" or the "handleMessage" C++ method);
     unsigned int stackSize @group(activity) @hint(If module uses "activity": stack size allocated for this module -- zero means info not available);
@@ -165,7 +168,10 @@ class cSimpleModule extends cModule
 
 class cCompoundModule extends cModule
 {
+    @icon(compound);
 }
+
+//FIXME TODO: use @icon(placeholder) for cPlaceholderModule
 
 //----
 
@@ -191,6 +197,7 @@ class cRegistrationList extends cNamedObject
 
 class cGate extends cObject
 {
+    @icon(gate);
     char type @group(general) @enum(cGate_Type) @hint(Gate type);
     int id @group(general) @hint(Gate id, unique within this module);
     bool isVector @getter(isVector) @group(general) @hint(Whether this gate is part of a gate vector);
@@ -215,12 +222,14 @@ class cGate extends cObject
 
 class cArray extends cOwnedObject
 {
+    @icon(container);
     bool takeOwnership @group(general) @editable @hint(Whether the array should own the objects inserted into it);
     cOwnedObject *contents[] @getter(get) @sizeGetter(size) @hint(Objects contained in the array);
 }
 
 class cMessage extends cOwnedObject
 {
+    @icon(message);
     long id @group(message) @hint(Automatically assigned unique identifier);
     long treeId @group(message) @hint(Identifier shared between the message and its copies);
     short kind @group(message) @editable @hint(Generic user-settable attribute, usually carries "type" or "role" or "category" of message);
@@ -251,6 +260,7 @@ class cMessage extends cOwnedObject
 
 class cPacket extends cMessage
 {
+    @icon(packet);
     int64 bitLength @group(message) @editable @hint(Simulated length of the message in bits, affects transmission time and probability of bit errors when sent through a channel);
     int64 byteLength @group(message) @editable @hint(Length in bytes, i.e. length in bits divided by eight);
     bool hasBitError @getter(hasBitError) @group(message) @setter(setBitError) @editable @hint(Indicates that a bit error occurred when the message was sent through a channel with nonzero bit error rate);
@@ -263,6 +273,7 @@ class cPacket extends cMessage
 
 class cStatistic extends cOwnedObject
 {
+    @icon(statistic);
     long count @hint(Number of observations collected so far);
     double weights @hint(Sum of weights, which equals the number of observations in the unweighted case);
     double sum @hint(Sum of observations);
@@ -368,6 +379,7 @@ class cNEDFunction extends cNoncopyableOwnedObject
 
 class cOutVector extends cNoncopyableOwnedObject
 {
+    @icon(outvector);
     bool isEnabled @getter(isEnabled) @setter(setEnabled) @editable @hint(If disabled, values passed to this object to record are simply discarded);
     long valuesReceived @hint(Number of values passed to this object to record);
     long valuesStored @hint(Number of values actually stored on the disk);
@@ -375,6 +387,7 @@ class cOutVector extends cNoncopyableOwnedObject
 
 class cPar extends cObject
 {
+    @icon(param);
     string value @getter(str) @setter(parse) @editable;
     char type @enum(cPar_Type) @hint(Parameter type);
     string unit @hint(For long and double types only);
@@ -394,17 +407,20 @@ class cMsgPar extends cOwnedObject
 
 class cLinkedList extends cOwnedObject
 {
+    @icon(queue);
     int length @hint(Number of items contained);
 }
 
 class cMessageHeap extends cOwnedObject
 {
+    @icon(container);
     int length @hint(Number of items contained);
     cMessage *messages[] @getter(peek) @sizeGetter(getLength) @hint(Self-messages currently scheduled and messages currently in transit);
 }
 
 class cQueue extends cOwnedObject
 {
+    @icon(queue);
     bool takeOwnership @group(general) @editable @hint(Whether the queue should own the objects inserted into it);
     int length @hint(Number of items in the queue);
     cOwnedObject *contents[] @getter(get) @sizeGetter(getLength) @hint(Queue contents);
@@ -423,6 +439,7 @@ class cHasher extends void
 
 class cSimulation extends cNoncopyableOwnedObject
 {
+    @icon(container);
     simtime_t simTime @hint(The current simulation time in seconds);
     int64 eventNumber @hint(The current event number -- counts from 0 up);
     cMessageHeap messageQueue @label(futureEvents) @hint(Self-messages scheduled, and messages in transit);
