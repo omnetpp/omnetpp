@@ -242,13 +242,24 @@ public class ObjectPropertiesView extends ViewPart {
                 return Activator.getImageDescriptor("icons/obj16/field.png").createImage(); //FIXME TODO error check, caching, look into image path, etc
             }
             else if (element instanceof GroupKey) {
-                return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER);
+                return Activator.getImageDescriptor("icons/obj16/fieldgroup.png").createImage(); //FIXME TODO error check, caching, look into image path, etc
+                //return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER);
             }
             else if (element instanceof FieldKey) {
-                return Activator.getImageDescriptor("icons/obj16/field.png").createImage(); //FIXME TODO error check, caching, look into image path, etc
+                FieldKey key = (FieldKey)element;
+                boolean isObject = key.desc.getFieldIsCObject(key.ptr, key.fieldID);
+                if (isObject)
+                    return getImage(key.desc.getFieldAsCObject(key.ptr, key.fieldID, -1));
+                else
+                    return Activator.getImageDescriptor("icons/obj16/field.png").createImage(); //FIXME TODO error check, caching, look into image path, etc
             }
             else if (element instanceof ArrayElementKey) {
-                return Activator.getImageDescriptor("icons/obj16/field.png").createImage(); //FIXME TODO error check, caching, look into image path, etc
+                ArrayElementKey key = (ArrayElementKey)element;
+                boolean isObject = key.desc.getFieldIsCObject(key.ptr, key.fieldID);
+                if (isObject)
+                    return getImage(key.desc.getFieldAsCObject(key.ptr, key.fieldID, key.index));
+                else
+                    return Activator.getImageDescriptor("icons/obj16/field.png").createImage(); //FIXME TODO error check, caching, look into image path, etc
             }
             
 			return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_ERROR_TSK);
@@ -300,7 +311,8 @@ public class ObjectPropertiesView extends ViewPart {
                     String info = fieldObj.info();
                     String infoText = info.equals("") ? "" : ": " + info;
                     return name + " = " + "(" + className + ") " + fieldObjName + infoText + typeNameText;
-                } else {
+                } 
+                else {
                     // a value was generated via operator<<
                     String value = desc.getFieldAsString(object, field, index);
                     if (value.equals(""))

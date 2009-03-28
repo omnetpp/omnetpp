@@ -33,6 +33,8 @@ public class Activator extends AbstractUIPlugin {
 	// The shared instance
 	private static Activator plugin;
 	
+	private static SimulationManager simulationManager = new SimulationManager();
+	
 	/**
 	 * The constructor
 	 */
@@ -71,6 +73,7 @@ public class Activator extends AbstractUIPlugin {
 		    if (networkType == null)
 		        throw new RuntimeException("network not found");
 		    simulation.setupNetwork(networkType);
+		    simulation.getSystemModule().callInitialize();
 		    
             Display.getDefault().asyncExec(new Runnable() {
                 @Override
@@ -140,4 +143,7 @@ public class Activator extends AbstractUIPlugin {
 	    return page.openEditor(input, editorId);
 	}
 
+	public static SimulationManager getSimulationManager() {
+	    return simulationManager;
+	}
 }
