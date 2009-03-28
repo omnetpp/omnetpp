@@ -2142,12 +2142,8 @@ int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
       if (argc!=5 && argc!=6) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
       int fld = atoi(argv[4]);
       int i = (argc==6) ? atoi(argv[5]) : 0;
-      if (!sd->getFieldAsString(object, fld, i, tmpbuf, sizeof(tmpbuf)-1))
-      {
-         Tcl_SetResult(interp, TCLCONST("error in getFieldAsString()"), TCL_STATIC);
-         return TCL_ERROR;
-      }
-      Tcl_SetResult(interp, tmpbuf, TCL_VOLATILE);
+      std::string value = sd->getFieldAsString(object, fld, i);
+      Tcl_SetResult(interp, TCLCONST(value.c_str()), TCL_VOLATILE);
       return TCL_OK;
    }
 

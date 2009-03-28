@@ -58,7 +58,7 @@ void NetBuilder::connect(cGate *src, cGate *dest, double delay, double ber, doub
     cChannel *channel = NULL;
     if (delay>0 || ber>0 || datarate>0)
     {
-        cDatarateChannel *channel = cChannelType::createDatarateChannel("channel");
+        cDatarateChannel *channel = cDatarateChannel::create("channel");
         if (delay>0)
             channel->setDelay(delay);
         if (ber>0)

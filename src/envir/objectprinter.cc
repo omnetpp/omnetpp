@@ -181,16 +181,16 @@ void ObjectPrinter::printObjectToStream(std::ostream& ostream, void *object, cCl
                             ostream << "}\n";
                         }
                         else {
-                            descriptor->getFieldAsString(object, fieldIndex, elementIndex, buffer, sizeof(buffer));
-                            ostream << QUOTE(buffer) << "\n";
+                            std::string value = descriptor->getFieldAsString(object, fieldIndex, elementIndex);
+                            ostream << QUOTE(value.c_str()) << "\n";
                         }
                     }
                     else
                         ostream << "<NULL>\n";
                 }
                 else {
-                    descriptor->getFieldAsString(object, fieldIndex, elementIndex, buffer, sizeof(buffer));
-                    ostream << QUOTE(buffer) << "\n";
+                    std::string value = descriptor->getFieldAsString(object, fieldIndex, elementIndex);
+                    ostream << QUOTE(value.c_str()) << "\n";
                 }
             }
         }

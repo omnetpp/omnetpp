@@ -32,10 +32,11 @@ USING_NAMESPACE
 
 #define LL  INT64_PRINTF_FORMAT  /* abbreviation */
 
-void cClassDescriptor::long2string(long l, char *buf, int bufsize)
+std::string cClassDescriptor::long2string(long l)
 {
-    ASSERT(bufsize>=32);
+    char buf[32];
     sprintf(buf, "%ld", l);
+    return buf;
 }
 
 long cClassDescriptor::string2long(const char *s)
@@ -43,10 +44,11 @@ long cClassDescriptor::string2long(const char *s)
     return strtol(s, NULL, 10);
 }
 
-void cClassDescriptor::ulong2string(unsigned long l, char *buf, int bufsize)
+std::string cClassDescriptor::ulong2string(unsigned long l)
 {
-    ASSERT(bufsize>=32);
+    char buf[32];
     sprintf(buf, "%lu", l);
+    return buf;
 }
 
 unsigned long cClassDescriptor::string2ulong(const char *s)
@@ -54,10 +56,11 @@ unsigned long cClassDescriptor::string2ulong(const char *s)
     return strtoul(s, NULL, 10);
 }
 
-void cClassDescriptor::int642string(int64 l, char *buf, int bufsize)
+std::string cClassDescriptor::int642string(int64 l)
 {
-    ASSERT(bufsize>=32);
+    char buf[32];
     sprintf(buf, "%"LL"d", l);
+    return buf;
 }
 
 int64 cClassDescriptor::string2int64(const char *s)
@@ -65,10 +68,11 @@ int64 cClassDescriptor::string2int64(const char *s)
     return strtoll(s, NULL, 10);
 }
 
-void cClassDescriptor::uint642string(uint64 l, char *buf, int bufsize)
+std::string cClassDescriptor::uint642string(uint64 l)
 {
-    ASSERT(bufsize>=32);
+    char buf[32];
     sprintf(buf, "%"LL"u", l);
+    return buf;
 }
 
 uint64 cClassDescriptor::string2uint64(const char *s)
@@ -76,10 +80,9 @@ uint64 cClassDescriptor::string2uint64(const char *s)
     return strtoull(s, NULL, 10);
 }
 
-void cClassDescriptor::bool2string(bool b, char *buf, int bufsize)
+std::string cClassDescriptor::bool2string(bool b)
 {
-    ASSERT(bufsize>=7);
-    strcpy(buf, b ? "true" : "false");
+    return b ? "true" : "false";
 }
 
 bool cClassDescriptor::string2bool(const char *s)
@@ -88,10 +91,11 @@ bool cClassDescriptor::string2bool(const char *s)
 }
 
 
-void cClassDescriptor::double2string(double d, char *buf, int bufsize)
+std::string cClassDescriptor::double2string(double d)
 {
-    ASSERT(bufsize>=20);
+    char buf[32];
     sprintf(buf, "%f", d);
+    return buf;
 }
 
 
@@ -100,23 +104,20 @@ double cClassDescriptor::string2double(const char *s)
     return atof(s);
 }
 
-void cClassDescriptor::enum2string(long e, const char *enumname, char *buf, int bufsize)
+std::string cClassDescriptor::enum2string(long e, const char *enumname)
 {
-    ASSERT(bufsize>=30); // FIXME: very crude check
+    char buf[32];
+    sprintf(buf, "%ld", e);
 
-    sprintf(buf,"%ld",e);
     cEnum *enump = cEnum::find(enumname);
-    if (!enump) {
-        // this enum type is not registered
-        return;
-    }
-    const char *s = enump->getStringFor(e);
-    if (!s) {
-        // no string for this numeric value
-        sprintf(buf+strlen(buf), " (unknown)");
-        return;
-    }
-    sprintf(buf+strlen(buf), " (%s)",s);
+    if (!enump)
+        return buf; // this enum type is not registered
+
+    const char *name = enump->getStringFor(e);
+    if (!name)
+        return strcat(buf, " (unknown)");  // no string for this numeric value
+
+    return std::string(buf) + " (" + name + ")";
 }
 
 long cClassDescriptor::string2enum(const char *s, const char *enumname)
@@ -134,34 +135,6 @@ long cClassDescriptor::string2enum(const char *s, const char *enumname)
 
     // TBD should strip possible spaces, parens etc.
     return enump->lookup(s,0);
-}
-
-void cClassDescriptor::oppstring2string(const opp_string& str, char *buf, int buflen)
-{
-    strncpy(buf, str.c_str(), buflen);
-    buf[buflen-1] = '\0';
-}
-
-void cClassDescriptor::oppstring2string(const std::string& str, char *buf, int buflen)
-{
-    strncpy(buf, str.c_str(), buflen);
-    buf[buflen-1] = '\0';
-}
-
-void cClassDescriptor::string2oppstring(const char *s, opp_string& str)
-{
-    str = s ? s : "";
-}
-
-void cClassDescriptor::oppstring2string(const char *s, char *buf, int buflen)
-{
-    strncpy(buf, s ? s : "", buflen);
-    buf[buflen-1] = '\0';
-}
-
-void cClassDescriptor::string2oppstring(const char *s, std::string& str)
-{
-    str = s ? s : "";
 }
 
 

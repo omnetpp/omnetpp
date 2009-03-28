@@ -902,7 +902,7 @@ void NEDCppGenerator::generateDescriptorClass(NEDCppGenerator::ClassDesc& cld, N
     out << "    virtual const char *getFieldProperty(void *object, int field, const char *propertyname);\n";
     out << "    virtual int getArraySize(void *object, int field);\n";
     out << "\n";
-    out << "    virtual bool getFieldAsString(void *object, int field, int i, char *resultbuf, int bufsize);\n";
+    out << "    virtual bool getFieldAsString(void *object, int field, int i);\n";
     out << "    virtual bool setFieldAsString(void *object, int field, int i, const char *value);\n";
     out << "\n";
     out << "    virtual const char *getFieldStructName(void *object, int field);\n";
@@ -1020,7 +1020,7 @@ void NEDCppGenerator::generateDescriptorClass(NEDCppGenerator::ClassDesc& cld, N
     out << "\n";
 
     // getFieldAsString()
-    out << "bool " << cld.msgdescclass << "::getFieldAsString(int field, int i, char *resultbuf, int bufsize)\n";
+    out << "std::string " << cld.msgdescclass << "::getFieldAsString(int field, int i)\n";
     out << "{\n";
     if (cld.hasbasedescriptor)
     {

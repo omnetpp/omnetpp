@@ -102,11 +102,10 @@ const char *MatchableObjectAdapter::getAttribute(const char *name) const
     char *name2 = new char[strlen(name)+1];
     strcpy(name2, name);
     bool found = findDescriptorField(desc, obj, name2, fieldId, index);
-    if (!found) return NULL;
+    if (!found)
+        return NULL;
 
-    char buf[256];
-    desc->getFieldAsString(obj, fieldId, index, buf, 256);
-    tmp = buf;
+    tmp = desc->getFieldAsString(obj, fieldId, index);
     return tmp.c_str();
 }
 

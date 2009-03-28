@@ -66,26 +66,26 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
 
   protected:
     // utility functions for converting from/to strings
-    static void long2string(long l, char *buf, int bufsize);
+    static std::string long2string(long l);
     static long string2long(const char *s);
-    static void ulong2string(unsigned long l, char *buf, int bufsize);
+    static std::string ulong2string(unsigned long l);
     static unsigned long string2ulong(const char *s);
-    static void int642string(int64 l, char *buf, int bufsize);
+    static std::string int642string(int64 l);
     static int64 string2int64(const char *s);
-    static void uint642string(uint64 l, char *buf, int bufsize);
+    static std::string uint642string(uint64 l);
     static uint64 string2uint64(const char *s);
-    static void bool2string(bool b, char *buf, int bufsize);
+    static std::string bool2string(bool b);
     static bool string2bool(const char *s);
-    static void double2string(double d, char *buf, int bufsize);
-    static void double2string(SimTime t, char *buf, int bufsize) {strcpy(buf, t.str().c_str());}
+    static std::string double2string(double d);
+    static std::string double2string(SimTime t) {return t.str();}
     static double string2double(const char *s);
-    static void enum2string(long e, const char *enumname, char *buf, int bufsize);
+    static std::string enum2string(long e, const char *enumname);
     static long string2enum(const char *s, const char *enumname);
-    static void oppstring2string(const char *s, char *buf, int bufsize);
-    static void oppstring2string(const opp_string& str, char *buf, int bufsize);
-    static void oppstring2string(const std::string& str, char *buf, int bufsize);
-    static void string2oppstring(const char *s, opp_string& str);
-    static void string2oppstring(const char *s, std::string& str);
+    static std::string oppstring2string(const char *s) {return s?s:"";}
+    static std::string oppstring2string(const opp_string& s) {return s.c_str();}
+    static std::string oppstring2string(const std::string& s)  {return s;}
+    static void string2oppstring(const char *s, opp_string& str) {str = s?s:"";}
+    static void string2oppstring(const char *s, std::string& str) {str = s?s:"";}
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -212,11 +212,10 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
 
     /**
      * Must be redefined in subclasses to return the value of the given field
-     * in the client object as a string. Returns true if no error occurred,
-     * false otherwise. For compound fields, the message compiler generates
-     * code which calls operator<<.
+     * in the client object as a string. For compound fields, the message
+     * compiler generates code which calls operator<<.
      */
-    virtual bool getFieldAsString(void *object, int field, int i, char *buf, int bufsize) const = 0;
+    virtual std::string getFieldAsString(void *object, int field, int i) const = 0;
 
     /**
      * Must be redefined in subclasses to set the value of a field

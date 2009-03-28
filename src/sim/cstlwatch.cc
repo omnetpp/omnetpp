@@ -40,7 +40,7 @@ class SIM_API cStdVectorWatcherDescriptor : public cClassDescriptor //noncopyabl
     virtual const char *getFieldProperty(void *object, int field, const char *propertyname) const;
     virtual int getArraySize(void *object, int field) const;
 
-    virtual bool getFieldAsString(void *object, int field, int i, char *resultbuf, int bufsize) const;
+    virtual std::string getFieldAsString(void *object, int field, int i) const;
     virtual bool setFieldAsString(void *object, int field, int i, const char *value) const;
 
     virtual const char *getFieldStructName(void *object, int field) const;
@@ -108,12 +108,12 @@ int cStdVectorWatcherDescriptor::getArraySize(void *object, int field) const
     }
 }
 
-bool cStdVectorWatcherDescriptor::getFieldAsString(void *object, int field, int i, char *resultbuf, int bufsize) const
+std::string cStdVectorWatcherDescriptor::getFieldAsString(void *object, int field, int i) const
 {
     cStdVectorWatcherBase *pp = (cStdVectorWatcherBase *)object;
     switch (field) {
-        case 0: oppstring2string(pp->at(i), resultbuf, bufsize); return true;
-        default: return false;
+        case 0: return pp->at(i);
+        default: return "";
     }
 }
 

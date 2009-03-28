@@ -3,14 +3,14 @@
 # opp_msgc: translates MSG files into C++ code.
 #
 
-$MSGC_VERSION = "4.0";
-$MSGC_VERSION_HEX = "0x0400";
+$MSGC_VERSION = "4.1";
+$MSGC_VERSION_HEX = "0x0401";
 
 
 #
 # If no args, print usage
 #
-$Usage = 'opp_msgc - part of OMNeT++. (c) 2002-2008 Andras Varga
+$Usage = 'opp_msgc - part of OMNeT++. (c) 2002-2009 Andras Varga
 Translates .msg files into C++
 
 Usage: opp_msgc [-s <cc-file-suffix>] [-t <h-file-suffix>]
@@ -1609,7 +1609,7 @@ sub generateDescriptorClass
     print CC "    virtual const char *getFieldProperty(void *object, int field, const char *propertyname) const;\n";
     print CC "    virtual int getArraySize(void *object, int field) const;\n";
     print CC "\n";
-    print CC "    virtual bool getFieldAsString(void *object, int field, int i, char *resultbuf, int bufsize) const;\n";
+    print CC "    virtual std::string getFieldAsString(void *object, int field, int i) const;\n";
     print CC "    virtual bool setFieldAsString(void *object, int field, int i, const char *value) const;\n";
     print CC "\n";
     print CC "    virtual const char *getFieldStructName(void *object, int field) const;\n";
@@ -1783,12 +1783,12 @@ sub generateDescriptorClass
     print CC "\n";
 
     # getFieldAsString()
-    print CC "bool $msgdescclass\:\:getFieldAsString(void *object, int field, int i, char *resultbuf, int bufsize) const\n";
+    print CC "std::string $msgdescclass\:\:getFieldAsString(void *object, int field, int i) const\n";
     print CC "{\n";
     print CC "    cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     print CC "    if (basedesc) {\n";
     print CC "        if (field < basedesc->getFieldCount(object))\n";
-    print CC "            return basedesc->getFieldAsString(object,field,i,resultbuf,bufsize);\n";
+    print CC "            return basedesc->getFieldAsString(object,field,i);\n";
     print CC "        field -= basedesc->getFieldCount(object);\n";
     print CC "    }\n";
     print CC "    $msgclass *pp = ($msgclass *)object; (void)pp;\n";
@@ -1799,40 +1799,40 @@ sub generateDescriptorClass
             if ($classtype eq 'struct') {
                 if ($fisarray{$fieldlist[$i]}) {
                     if ($farraysize{$fieldlist[$i]} ne '') {
-                        print CC "        case $i: if (i>=$farraysize{$fieldlist[$i]}) return false;\n";
+                        print CC "        case $i: if (i>=$farraysize{$fieldlist[$i]}) return \"\";\n";
                     } else {
-                        print CC "        case $i: if (i>=pp->$varsize{$fieldlist[$i]}) return false;\n";
+                        print CC "        case $i: if (i>=pp->$varsize{$fieldlist[$i]}) return \"\";\n";
                     }
-                    print CC "                $tostring{$fieldlist[$i]}(pp->$var{$fieldlist[$i]}\[i\],resultbuf,bufsize); return true;\n";
+                    print CC "                return $tostring{$fieldlist[$i]}(pp->$var{$fieldlist[$i]}\[i\]);\n";
                 } else {
-                    print CC "        case $i: $tostring{$fieldlist[$i]}(pp->$var{$fieldlist[$i]},resultbuf,bufsize); return true;\n";
+                    print CC "        case $i: return $tostring{$fieldlist[$i]}(pp->$var{$fieldlist[$i]});\n";
                 }
             } else {
                 if ($fisarray{$fieldlist[$i]}) {
-                    print CC "        case $i: $tostring{$fieldlist[$i]}(pp->$getter{$fieldlist[$i]}(i),resultbuf,bufsize); return true;\n";
+                    print CC "        case $i: return $tostring{$fieldlist[$i]}(pp->$getter{$fieldlist[$i]}(i));\n";
                 } else {
-                    print CC "        case $i: $tostring{$fieldlist[$i]}(pp->$getter{$fieldlist[$i]}(),resultbuf,bufsize); return true;\n";
+                    print CC "        case $i: return $tostring{$fieldlist[$i]}(pp->$getter{$fieldlist[$i]}());\n";
                 }
             }
         } elsif ($fkind{$fieldlist[$i]} eq 'struct') {
             if ($classtype eq 'struct') {
                 if ($fisarray{$fieldlist[$i]}) {
-                    print CC "        case $i: {std::stringstream out; out << pp->$var{$fieldlist[$i]}\[i\]; opp_strprettytrunc(resultbuf,out.str().c_str(),bufsize-1); return true;}\n";
+                    print CC "        case $i: {std::stringstream out; out << pp->$var{$fieldlist[$i]}\[i\]; return out.str();}\n";
                 } else {
-                    print CC "        case $i: {std::stringstream out; out << pp->$var{$fieldlist[$i]}; opp_strprettytrunc(resultbuf,out.str().c_str(),bufsize-1); return true;}\n";
+                    print CC "        case $i: {std::stringstream out; out << pp->$var{$fieldlist[$i]}; return out.str()}\n";
                 }
             } else {
                 if ($fisarray{$fieldlist[$i]}) {
-                    print CC "        case $i: {std::stringstream out; out << pp->$getter{$fieldlist[$i]}(i); opp_strprettytrunc(resultbuf,out.str().c_str(),bufsize-1); return true;}\n";
+                    print CC "        case $i: {std::stringstream out; out << pp->$getter{$fieldlist[$i]}(i); return out.str();}\n";
                 } else {
-                    print CC "        case $i: {std::stringstream out; out << pp->$getter{$fieldlist[$i]}(); opp_strprettytrunc(resultbuf,out.str().c_str(),bufsize-1); return true;}\n";
+                    print CC "        case $i: {std::stringstream out; out << pp->$getter{$fieldlist[$i]}(); return out.str();}\n";
                 }
             }
         } else {
             die 'internal error';
         }
     }
-    print CC "        default: return false;\n";
+    print CC "        default: return \"\";\n";
     print CC "    }\n";
     print CC "}\n";
     print CC "\n";

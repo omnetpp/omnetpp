@@ -1,3 +1,8 @@
+2009-03-28  Andras Varga
+
+	* cClassDescriptor: getFieldAsString() signature change (return 
+	std::string instead of taking char *buf, int bufsize)
+
 2009-03-09  Andras Varga
 
 	* added factory methods cIdealChannel::create(), cDelayChannel::create(),

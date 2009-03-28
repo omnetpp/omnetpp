@@ -14,6 +14,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.omnetpp.experimental.simkernel.swig.cClassDescriptor;
 import org.omnetpp.experimental.simkernel.swig.cCollectChildrenVisitor;
+import org.omnetpp.experimental.simkernel.swig.cEnum;
 import org.omnetpp.experimental.simkernel.swig.cObject;
 import org.omnetpp.experimental.simkernel.swig.cSimulation;
 import org.omnetpp.runtimeenv.Activator;
@@ -300,8 +301,8 @@ public class ObjectPropertiesView extends ViewPart {
                     String infoText = info.equals("") ? "" : ": " + info;
                     return name + " = " + "(" + className + ") " + fieldObjName + infoText + typeNameText;
                 } else {
-                    // a value can be generated via operator<<
-                    String value = "bubu"; //TODO if [catch {set value [opp_classdescriptor $obj $sd fieldvalue $fieldid $index]} err] {set value "<!> Error: $err"}
+                    // a value was generated via operator<<
+                    String value = desc.getFieldAsString(object, field, index);
                     if (value.equals(""))
                         return name + typeNameText;
                     else
@@ -309,15 +310,23 @@ public class ObjectPropertiesView extends ViewPart {
                 }
             } else {
                 // plain field, return "name = value" text
-                String value = "bubu"; //TODO if [catch {set value [opp_classdescriptor $obj $sd fieldvalue $fieldid $index]} err] {set value "<!> Error: $err"}
-                String enumname = desc.getFieldProperty(object, field, "enum");
-                if (!StringUtils.isEmpty(enumname)) {
-                    typeName = typeName + " - enum " + enumname;
-                    String symbolicname = "bubu"; //TODO [opp_getnameforenum $enumname $value]
-                    value = symbolicname + "(" + value + ")";
-                }
+                String value = desc.getFieldAsString(object, field, index);
                 if (typeName.equals("string")) 
                     value = "'" + value + "'";
+
+                String enumName = desc.getFieldProperty(object, field, "enum");
+                if (!StringUtils.isEmpty(enumName)) {
+                    typeNameText = typeNameText + " - enum " + enumName;
+                    cEnum enumDef = cEnum.find(enumName);
+                    if (enumDef != null) {
+                        try {
+                            String symbolicName = enumDef.getStringFor(Integer.parseInt(value));
+                            value = StringUtils.defaultIfEmpty(symbolicName, "???") + " (" + value + ")";
+                        } 
+                        catch (NumberFormatException e) { }
+                    }
+                }
+
                 if (value.equals(""))
                     return name + typeNameText;
                 else
