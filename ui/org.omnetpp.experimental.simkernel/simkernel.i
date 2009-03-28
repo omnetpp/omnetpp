@@ -191,6 +191,12 @@ namespace std {
   }
 %}
 
+%extend cClassDescriptor {
+   cObject *getFieldAsCObject(void *object, int field, int index) {
+       return self->getFieldIsCObject(object,field) ? (cObject *)self->getFieldStructPointer(object,field,index) : NULL;
+   }
+}
+
 
 // typemaps to wrap Javaenv::setJCallback(JNIEnv *jenv, jobject jcallbackobj):
 // %typemap(in, numinputs=0): unfortunately, generated java code doesn't compile

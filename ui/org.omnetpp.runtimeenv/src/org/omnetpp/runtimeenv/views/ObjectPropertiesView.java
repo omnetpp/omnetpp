@@ -113,7 +113,7 @@ public class ObjectPropertiesView extends ViewPart {
                 return new Object[0];
             boolean isCObject = desc.getFieldIsCPolymorphic(ptr, fieldID);
             if (isCObject) {
-                return getChildren(null); //FIXME cast fieldPtr to cObject
+                return getChildren(desc.getFieldAsCObject(ptr, fieldID, index));
             } else {
                 String fieldStructName = desc.getFieldStructName(ptr, fieldID);
                 cClassDescriptor fieldDesc = cClassDescriptor.getDescriptorFor(fieldStructName);
@@ -213,7 +213,7 @@ public class ObjectPropertiesView extends ViewPart {
 	        }
             else if (element instanceof GroupKey) {
                 GroupKey key = (GroupKey)element;
-                return "<" + key.groupName + ">";
+                return "[" + key.groupName + "]";
             }
             else if (element instanceof FieldKey) {
                 FieldKey key = (FieldKey)element;
@@ -288,7 +288,7 @@ public class ObjectPropertiesView extends ViewPart {
             if (isCompound) {
                 // if it's an object, try to say something about it...
                 if (isPoly) {
-                    cObject fieldObj = null; //FIXME TODO: desc.getFieldStructPointer(object, field, index);
+                    cObject fieldObj = desc.getFieldAsCObject(object, field, index);
                     if (fieldObj == null)
                         return name + " = NULL" + typeNameText;
                     String fieldObjName;
