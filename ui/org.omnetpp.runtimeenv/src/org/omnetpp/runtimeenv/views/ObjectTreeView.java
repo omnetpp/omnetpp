@@ -13,8 +13,10 @@ import org.eclipse.ui.part.ViewPart;
 import org.omnetpp.experimental.simkernel.swig.cCollectChildrenVisitor;
 import org.omnetpp.experimental.simkernel.swig.cObject;
 import org.omnetpp.experimental.simkernel.swig.cSimulation;
+import org.omnetpp.runtimeenv.Activator;
+import org.omnetpp.runtimeenv.ISimulationListener;
 
-public class ObjectTreeView extends ViewPart {
+public class ObjectTreeView extends ViewPart implements ISimulationListener {
 	public static final String ID = "org.omnetpp.runtimeenv.ObjectTreeView";
 
 	private TreeViewer viewer;
@@ -82,6 +84,8 @@ public class ObjectTreeView extends ViewPart {
 		viewer.setContentProvider(new ViewContentProvider());
 		viewer.setLabelProvider(new ViewLabelProvider());
 		viewer.setInput(cSimulation.getActiveSimulation());
+
+		Activator.getSimulationManager().addChangeListener(this);
 	}
 
 	/**
@@ -90,4 +94,15 @@ public class ObjectTreeView extends ViewPart {
 	public void setFocus() {
 		viewer.getControl().setFocus();
 	}
+
+	@Override
+    public void changed() {
+        viewer.refresh();
+    }
+
+    @Override
+    public void dispose() {
+        Activator.getSimulationManager().removeChangeListener(this);
+        super.dispose();
+    }
 }

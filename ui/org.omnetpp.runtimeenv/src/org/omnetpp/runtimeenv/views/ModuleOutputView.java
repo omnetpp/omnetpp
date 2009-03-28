@@ -7,8 +7,11 @@ import org.eclipse.ui.part.ViewPart;
 import org.omnetpp.common.virtualtable.LongVirtualTableContentProvider;
 import org.omnetpp.common.virtualtable.LongVirtualTableRowRenderer;
 import org.omnetpp.common.virtualtable.VirtualTable;
+import org.omnetpp.experimental.simkernel.swig.LogBuffer;
+import org.omnetpp.runtimeenv.Activator;
+import org.omnetpp.runtimeenv.ISimulationListener;
 
-public class ModuleOutputView extends ViewPart {
+public class ModuleOutputView extends ViewPart implements ISimulationListener {
     public static final String ID = "org.omnetpp.runtimeenv.ModuleOutputView";
 
     protected VirtualTable<Long> table;
@@ -33,6 +36,8 @@ public class ModuleOutputView extends ViewPart {
 	    table.setContentProvider(new LongVirtualTableContentProvider());
 	    table.setRowRenderer(new LongVirtualTableRowRenderer());
 	    table.setInput(new Long(1000));
+	    
+	    Activator.getSimulationManager().addChangeListener(this);
 	}
 
 	/**
@@ -41,4 +46,18 @@ public class ModuleOutputView extends ViewPart {
 	public void setFocus() {
 	    table.setFocus();
 	}
+	
+	@Override
+	public void changed() {
+//	    LogBuffer logBuffer = Activator.getSimulationManager().getLogBuffer();
+	    
+	    table.refresh();
+	}
+
+	@Override
+	public void dispose() {
+        Activator.getSimulationManager().removeChangeListener(this);
+	    super.dispose();
+	}
+
 }

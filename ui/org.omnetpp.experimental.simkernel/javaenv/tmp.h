@@ -55,5 +55,38 @@ class MinimalEnv : public cNullEnvir
 
 };
 
+#include "logbuffer.h"
+class NotSoMinimalEnv : public MinimalEnv
+{
+  private:
+    LogBuffer logBuffer;
+
+  public:
+    // constructor
+    NotSoMinimalEnv(int ac, char **av, cConfiguration *c) : MinimalEnv(ac, av, c) {}
+
+    LogBuffer *getLogBuffer() {
+        return &logBuffer;
+    }
+
+    virtual void simulationEvent(cMessage *msg) {
+        cModule *module = simulation.getContextModule();
+        const char *banner = "*** Another event again... ****";
+        logBuffer.addEvent(simulation.getEventNumber(), simulation.getSimTime(), module, banner);
+    }
+
+    virtual void sputn(const char *s, int n) {
+        (void) ::fwrite(s,1,n,stdout);
+        cModule *module = simulation.getContextModule();
+        if (module)
+            logBuffer.addLogLine(std::string(s,n).c_str()); //FIXME too much copying! reuse original string if no quoting needed
+        else
+            logBuffer.addInfo(std::string(s,n).c_str()); //FIXME too much copying! reuse original string if no quoting needed
+    }
+
+};
+
+
+
 #endif
 

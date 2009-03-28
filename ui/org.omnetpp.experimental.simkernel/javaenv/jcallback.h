@@ -28,7 +28,7 @@ class JCallback
         jobject jcallbackobj;
 
         jmethodID objectDeleted_ID;
-        jmethodID messageDelivered_ID;
+        jmethodID simulationEvent_ID;
 
         jmethodID messageScheduled_ID;
         jmethodID messageCancelled_ID;
@@ -76,19 +76,23 @@ class JCallback
         ~JCallback();
 
         void objectDeleted(cObject *object);
-        void messageDelivered(cMessage *msg);
+        void simulationEvent(cMessage *msg);
 
         void messageScheduled(cMessage *msg);
         void messageCancelled(cMessage *msg);
         void beginSend(cMessage *msg);
-        void messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay=0, simtime_t transmissionDelay=0);
-        void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay=0);
-        void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay, simtime_t transmissionStartTime=-1);
+        void messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay);
+        void messageSendHop(cMessage *msg, cGate *srcGate);
+        void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay);
 
-        bool idle();
+        void endSend(cMessage *msg); //new!!!
+        void messageDeleted(cMessage *msg);
+        void moduleReparented(cModule *module, cModule *oldparent);
+        void componentMethodBegin(cComponent *from, cComponent *to, const char *methodFmt, va_list va);
+        void componentMethodEnd();
+
         void bubble(cModule *mod, const char *text);
         void breakpointHit(const char *lbl, cSimpleModule *mod);
-        void moduleMethodCalled(cModule *from, cModule *to, const char *method);
         void moduleCreated(cModule *newmodule);
         void moduleDeleted(cModule *module);
         void moduleReparented(cModule *module, cModule *oldparent);

@@ -21,9 +21,12 @@ import org.omnetpp.figures.SubmoduleFigure;
 import org.omnetpp.figures.anchors.CompoundModuleGateAnchor;
 import org.omnetpp.figures.anchors.GateAnchor;
 import org.omnetpp.figures.layout.SubmoduleConstraint;
+import org.omnetpp.runtimeenv.Activator;
+import org.omnetpp.runtimeenv.ISimulationListener;
 import org.omnetpp.runtimeenv.animation.widgets.AnimationCanvas;
 
-//FIXME we require the GEF plugin only because SubmoduleFigure implements HandleBounds!!! Remove that! 
+//TODO canvas selection mechanism
+//TODO submodule context menu: "Open (go into)", "Add to this canvas", "Open in new network view" 
 public class ModelCanvas extends EditorPart {
     public static final String EDITOR_ID = "org.omnetpp.runtimeenv.editors.ModelCanvas";
 
@@ -92,6 +95,14 @@ public class ModelCanvas extends EditorPart {
 
             @Override
             public void mouseReleased(MouseEvent me) {}
+        });
+        
+        //FIXME remove this listener when editor gets closed
+        Activator.getSimulationManager().addChangeListener(new ISimulationListener() {
+            @Override
+            public void changed() {
+                //FIXME update display!
+            }
         });
 
     }

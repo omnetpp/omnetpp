@@ -197,6 +197,7 @@ namespace std {
    }
 }
 
+%ignore LogBuffer::getEntries; //XXX temp
 
 // typemaps to wrap Javaenv::setJCallback(JNIEnv *jenv, jobject jcallbackobj):
 // %typemap(in, numinputs=0): unfortunately, generated java code doesn't compile
@@ -354,6 +355,8 @@ void changeToDir(const char *dir); //XXX
 %{
 #include "javaenv/tmp.h"
 #include "javaenv/visitor.h"
+#include "javaenv/logbuffer.h"
 %}
 %include "javaenv/tmp.h"
 %include "javaenv/visitor.h"
+%include "javaenv/logbuffer.h"

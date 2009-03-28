@@ -64,7 +64,7 @@ JCallback::JCallback(JNIEnv *jenv, jobject jcallbackobj) :
 #define STR  "Ljava/lang/String;"
 
     objectDeleted_ID = jenv->GetMethodID(clazz, "objectDeleted", "(" OBJ ")V");
-    messageDelivered_ID = jenv->GetMethodID(clazz, "messageDelivered", "(" MSG ")V");
+    simulationEvent_ID = jenv->GetMethodID(clazz, "simulationEvent", "(" MSG ")V");
 
     messageScheduled_ID = jenv->GetMethodID(clazz, "messageScheduled", "(" MSG ")V");
     messageCancelled_ID = jenv->GetMethodID(clazz, "messageCancelled", "(" MSG ")V");
@@ -126,10 +126,10 @@ void JCallback::objectDeleted(cObject *object)
     // checkExceptions();
 }
 
-void JCallback::messageDelivered(cMessage *msg)
+void JCallback::simulationEvent(cMessage *msg)
 {
-    TRACE("messageDelivered");
-    jenv->CallVoidMethod(jcallbackobj, messageDelivered_ID, cmessageClass.wrap(msg));
+    TRACE("simulationEvent");
+    jenv->CallVoidMethod(jcallbackobj, simulationEvent_ID, cmessageClass.wrap(msg));
     checkExceptions();
 }
 

@@ -1,25 +1,11 @@
 package org.omnetpp.runtimeenv;
 
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.omnetpp.common.image.ImageFactory;
-import org.omnetpp.experimental.simkernel.swig.EmptyConfig;
-import org.omnetpp.experimental.simkernel.swig.ExecuteOnStartup;
-import org.omnetpp.experimental.simkernel.swig.MinimalEnv;
-import org.omnetpp.experimental.simkernel.swig.SimTime;
-import org.omnetpp.experimental.simkernel.swig.cConfiguration;
-import org.omnetpp.experimental.simkernel.swig.cModuleType;
-import org.omnetpp.experimental.simkernel.swig.cSimulation;
-import org.omnetpp.experimental.simkernel.swig.cStaticFlag;
-import org.omnetpp.runtimeenv.editors.ModelCanvas;
-import org.omnetpp.runtimeenv.editors.ModuleIDEditorInput;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -33,7 +19,7 @@ public class Activator extends AbstractUIPlugin {
 	// The shared instance
 	private static Activator plugin;
 	
-	private static SimulationManager simulationManager = new SimulationManager();
+	private static SimulationManager simulationManager;
 	
 	/**
 	 * The constructor
@@ -48,56 +34,7 @@ public class Activator extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
-
-		ImageFactory.setImageDirs(new String[]{"C:\\home\\omnetpp40\\omnetpp\\images"}); //FIXME just temporary
-		
-		// library initializations
-		cStaticFlag.set(true);
-	    ExecuteOnStartup.executeAll();
-	    SimTime.setScaleExp(-12);
-	    
-	    // set up an active simulation object
-	    cConfiguration config = new EmptyConfig();
-        MinimalEnv env = new MinimalEnv(0, null, config);
-        config.disown();
-        cSimulation simulation = new cSimulation("simulation", env);
-        env.disown();
-		cSimulation.setActiveSimulation(simulation);
-		simulation.disown();
-		System.out.println(simulation.getName());
-
-		try {
-		    cSimulation.loadNedSourceFolder("c:/home/omnetpp40/omnetpp/samples/aloha"); //XXX
-		    cSimulation.doneLoadingNedFiles();
-		    cModuleType networkType = cModuleType.find("Aloha_tmp");
-		    if (networkType == null)
-		        throw new RuntimeException("network not found");
-		    simulation.setupNetwork(networkType);
-		    simulation.getSystemModule().callInitialize();
-		    
-            Display.getDefault().asyncExec(new Runnable() {
-                @Override
-                public void run() {
-                    IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-                    if (workbenchWindow == null) {
-                        Display.getDefault().asyncExec(this); //FIXME this is a dirty hack
-                        return;
-                    }
-
-                    IWorkbenchPage page = workbenchWindow.getActivePage();
-                    int moduleID = cSimulation.getActiveSimulation().getSystemModule().getId();
-                    try {
-                        page.openEditor(new ModuleIDEditorInput(moduleID), ModelCanvas.EDITOR_ID);
-                    }
-                    catch (PartInitException e) {
-                        e.printStackTrace(); //XXX
-                    }
-                }
-            });
-		} 
-		catch (Exception e) {
-		    e.printStackTrace();
-		}
+	    simulationManager = new SimulationManager();
 	}
 
 	/*
@@ -105,12 +42,8 @@ public class Activator extends AbstractUIPlugin {
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext context) throws Exception {
-	    // delete the active simulation object
-	    cSimulation simulation = cSimulation.getActiveSimulation();
-	    cSimulation.setActiveSimulation(null);
-	    if (simulation != null)
-	        simulation.delete();
-        cStaticFlag.set(false);
+        simulationManager.dispose();
+        simulationManager = null;
         
 		plugin = null;
 		super.stop(context);

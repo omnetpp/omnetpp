@@ -18,12 +18,15 @@ import org.omnetpp.experimental.simkernel.swig.cEnum;
 import org.omnetpp.experimental.simkernel.swig.cObject;
 import org.omnetpp.experimental.simkernel.swig.cSimulation;
 import org.omnetpp.runtimeenv.Activator;
+import org.omnetpp.runtimeenv.ISimulationListener;
 
 //XXX what's lost, compared to Tcl:
 // - bold (\b)
 // - editable
 // - multi-line text
-public class ObjectPropertiesView extends ViewPart {
+//TODO should follow canvas selection
+//TODO should enable pinning, and creation of new View instances
+public class ObjectPropertiesView extends ViewPart implements ISimulationListener {
 	public static final String ID = "org.omnetpp.runtimeenv.ObjectPropertiesView";
 
 	private TreeViewer viewer;
@@ -356,6 +359,7 @@ public class ObjectPropertiesView extends ViewPart {
 		viewer.setContentProvider(new ViewContentProvider());
 		viewer.setLabelProvider(new ViewLabelProvider());
 		viewer.setInput(cSimulation.getActiveSimulation());
+        Activator.getSimulationManager().addChangeListener(this);
 	}
 
 	/**
@@ -364,4 +368,15 @@ public class ObjectPropertiesView extends ViewPart {
 	public void setFocus() {
 		viewer.getControl().setFocus();
 	}
+
+	@Override
+    public void changed() {
+        viewer.refresh();
+    }
+
+    @Override
+    public void dispose() {
+        Activator.getSimulationManager().removeChangeListener(this);
+        super.dispose();
+    }
 }
