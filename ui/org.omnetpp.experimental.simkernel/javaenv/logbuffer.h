@@ -41,7 +41,7 @@ class LogBuffer
         int *moduleIds;  // from this module up to the root; zero-terminated; NULL for info messages
         const char *banner;
         std::vector<const char *> lines;
-        int numChars; // banner plus lines  FIXME should include newlines!!!!!
+        int numChars; // banner plus lines  FIXME should include newlines that are NOT stored in the strings!!!!!
 
       public:
         Entry() {eventNumber=0; simtime=0; moduleIds=NULL; banner=NULL; numChars=0;}

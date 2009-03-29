@@ -78,10 +78,11 @@ class NotSoMinimalEnv : public MinimalEnv
     virtual void sputn(const char *s, int n) {
         (void) ::fwrite(s,1,n,stdout);
         cModule *module = simulation.getContextModule();
+        // note: we must strip the trailing "\n"
         if (module)
-            logBuffer.addLogLine(std::string(s,n).c_str()); //FIXME too much copying! reuse original string if no quoting needed
+            logBuffer.addLogLine(std::string(s,n-1).c_str()); //FIXME too much copying! reuse original string if no quoting needed
         else
-            logBuffer.addInfo(std::string(s,n).c_str()); //FIXME too much copying! reuse original string if no quoting needed
+            logBuffer.addInfo(std::string(s,n-1).c_str()); //FIXME too much copying! reuse original string if no quoting needed
     }
 
 };

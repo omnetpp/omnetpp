@@ -14,6 +14,10 @@ import org.omnetpp.experimental.simkernel.swig.cSimulation;
 import org.omnetpp.runtimeenv.Activator;
 import org.omnetpp.runtimeenv.ISimulationListener;
 
+//FIXME TODO: reuse the same LogBufferView object!
+//FIXME remove try/catch from content provider (or it should log?) 
+//TODO filtering etc
+//TODO banners with different color
 public class ModuleOutputView extends ViewPart implements ISimulationListener {
     
     protected class LogBufferContent implements StyledTextContent {
@@ -24,40 +28,50 @@ public class ModuleOutputView extends ViewPart implements ISimulationListener {
         }
         
         @Override
+        public int getLineCount() {
+            return (int)logBufferView.getNumLines();
+        }
+
+        @Override
         public int getCharCount() {
-            return (int)logBufferView.getNumChars();
+            try {
+                return (int)logBufferView.getNumChars();
+            } catch (RuntimeException e) { e.printStackTrace(); return 0; }
         }
 
         @Override
         public String getLine(int lineIndex) {
-            return logBufferView.getLine(lineIndex);
+            try {
+                return logBufferView.getLine(lineIndex);
+            } catch (RuntimeException e) { e.printStackTrace(); return ""; }
         }
 
         @Override
         public int getLineAtOffset(int offset) {
-            return (int)logBufferView.getLineAtOffset(offset);
+            try {
+                return (int)logBufferView.getLineAtOffset(offset);
+            } catch (RuntimeException e) { e.printStackTrace(); return 0; }
         }
 
         @Override
-        public int getLineCount() {
-            return (int)logBufferView.getNumLines();
+        public int getOffsetAtLine(int lineIndex) {
+            try {
+                return (int)logBufferView.getOffsetAtLine(lineIndex);
+            } catch (RuntimeException e) { e.printStackTrace(); return 0; }
+        }
+
+        @Override
+        public String getTextRange(int start, int length) {
+            try {
+                return logBufferView.getTextRange(start, length);
+            } catch (RuntimeException e) { e.printStackTrace(); return ""; }
         }
 
         @Override
         public String getLineDelimiter() {
             return "\n";
         }
-
-        @Override
-        public int getOffsetAtLine(int lineIndex) {
-            return (int)logBufferView.getOffsetAtLine(lineIndex);
-        }
-
-        @Override
-        public String getTextRange(int start, int length) {
-            return logBufferView.getTextRange(start, length);
-        }
-
+        
         @Override
         public void setText(String text) {
             // nothing - editing not supported
@@ -153,6 +167,7 @@ public class ModuleOutputView extends ViewPart implements ISimulationListener {
 	    //DBG styledText.setContent(new DebugStyledTextContent());
 
 	    LogBuffer logBuffer = Activator.getSimulationManager().getLogBuffer();
+	    //logBuffer.dump();
 	    int systemModuleID = cSimulation.getActiveSimulation().getSystemModule().getId();
         LogBufferView logBufferView = new LogBufferView(logBuffer, systemModuleID, new IntVector());
 	    styledText.setContent(new LogBufferContent(logBufferView));
@@ -171,10 +186,12 @@ public class ModuleOutputView extends ViewPart implements ISimulationListener {
 	public void changed() {
 	    //XXX this is same as above
         LogBuffer logBuffer = Activator.getSimulationManager().getLogBuffer();
+        //logBuffer.dump();
         int systemModuleID = cSimulation.getActiveSimulation().getSystemModule().getId();
         LogBufferView logBufferView = new LogBufferView(logBuffer, systemModuleID, new IntVector());
         styledText.setContent(new LogBufferContent(logBufferView));
-
+        styledText.setCaretOffset((int)logBufferView.getNumChars()-1);
+        styledText.showSelection();
         styledText.redraw();
 	}
 

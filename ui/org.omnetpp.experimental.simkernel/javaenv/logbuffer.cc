@@ -56,7 +56,7 @@ void LogBuffer::fillEntry(Entry& entry, eventnumber_t e, simtime_t t, cModule *m
     entry.eventNumber = e;
     entry.simtime = t;
     entry.banner = opp_strdup(banner);
-    entry.numChars = banner ? strlen(banner) : 0;
+    entry.numChars = banner ? strlen(banner)+1: 1;
 
     // store all moduleIds up to the root
     if (mod)
@@ -87,7 +87,7 @@ void LogBuffer::addLogLine(const char *text)
     if (entries.empty())
     {
         // this is likely the initialize() phase -- hence no banner
-        addEvent(0, 0, NULL, "{}");
+        addEvent(0, 0, NULL, "-");
         Entry& entry = entries.back();
         entry.moduleIds = new int[1]; // add empty array, to distinguish entry from an info entry
         entry.moduleIds[0] = 0;
@@ -97,8 +97,10 @@ void LogBuffer::addLogLine(const char *text)
 
     Entry& entry = entries.back();
     entry.lines.push_back(opp_strdup(text));
+    size_t lineLength = strlen(text); //FIXME opp_strdup() already counted that!!!
+    entry.numChars += lineLength + 1;
     totalStrings++;
-    totalChars += strlen(text);
+    totalChars += lineLength;
 
     discardIfMemoryLimitExceeded();
 }
@@ -136,15 +138,17 @@ void LogBuffer::discardIfMemoryLimitExceeded()
 
 void LogBuffer::dump() const
 {
-    printf("LogBuffer: %d entries\n", numEntries);
+    printf("\nLogBuffer dump (%d entries):\n", numEntries);
 
     int k=0;
     for (std::list<Entry>::const_iterator it=entries.begin(); it!=entries.end(); it++)
     {
         const LogBuffer::Entry& entry = *it;
-        printf("[%d] #%"LL"d t=%s moduleId=%d: %s", k, entry.eventNumber, SIMTIME_STR(entry.simtime), entry.moduleIds?entry.moduleIds[0]:-1, entry.banner);
-        for (int i=0; i<(int)entry.lines.size(); i++)
-            printf("\t[l%d]:%s", k, entry.lines[i]);
+        printf("[%d] event #%ld T=%s moduleId=%d numLines=%d numChars=%d:\n",
+               k, (long)entry.getEventNumber(), SIMTIME_STR(entry.getSimtime()), entry.getModuleId(),
+               (int)entry.getNumLines(), (int)entry.getNumChars());
+        for (int i=0; i<(int)entry.getNumLines(); i++)
+            printf("\tlen=%d >>%s<<\n", (int)entry.getLineLength(i), entry.getLine(i));
         k++;
     }
 }
