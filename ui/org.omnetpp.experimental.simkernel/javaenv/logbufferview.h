@@ -47,8 +47,8 @@ class LogBufferView
       bool isGood(const LogBuffer::Entry& entry) const;
       void gotoLine(size_t lineIndex);
       void gotoOffset(size_t offset);
-      void gotoNextLine();
-      void gotoPreviousLine();
+      void gotoNextLineInEntry();
+      void gotoPreviousLineInEntry();
       void incCurrentEntry();
       void decCurrentEntry();
 
@@ -56,8 +56,8 @@ class LogBufferView
       LogBufferView(LogBuffer *log, int moduleId, const std::set<int>& excludedModuleIds);
       ~LogBufferView();
 
-      size_t getLineCount() {return totalLines;}
-      size_t getCharCount() {return totalChars;}
+      size_t getNumLines() {return totalLines;}
+      size_t getNumChars() {return totalChars;}
 
       const char *getLine(size_t lineIndex);
       size_t getLineAtOffset(size_t offset);

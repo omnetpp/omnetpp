@@ -43,11 +43,9 @@ class LogBuffer
         std::vector<const char *> lines;
         int numChars; // banner plus lines  FIXME should include newlines!!!!!
 
-      private:
+      public:
         Entry() {eventNumber=0; simtime=0; moduleIds=NULL; banner=NULL; numChars=0;}
         ~Entry();
-
-      public:
         eventnumber_t getEventNumber() const {return eventNumber;}
         simtime_t getSimtime() const {return simtime;}
         int getModuleId() const {return !moduleIds ? 0 : moduleIds[0];}
