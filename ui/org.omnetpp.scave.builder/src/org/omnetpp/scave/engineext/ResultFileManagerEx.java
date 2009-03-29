@@ -76,14 +76,6 @@ public class ResultFileManagerEx extends ResultFileManager {
 			((IResultFileManagerDisposeListener)listener).resultFileManagerDisposed(this);
 	}
 	
-	public Lock getReadLock() {
-		return readLock;
-	}
-	
-	public Lock getWriteLock() {
-		return writeLock;
-	}
-	
 	/*-------------------------------------------
 	 *               Writer methods
 	 *-------------------------------------------*/

@@ -494,6 +494,7 @@ public class DataflowNetworkBuilder {
 	 */
 	public DataflowManager build(IDList idlist) {
 		long start = System.currentTimeMillis();
+		resultfileManager.getReadLock().lock();
 		try {
 			warnings.clear();
 			for (int i = 0; i < (int)idlist.size(); ++i) {
@@ -503,6 +504,7 @@ public class DataflowNetworkBuilder {
 			return buildNetwork();
 		}
 		finally {
+			resultfileManager.getReadLock().lock();
 			if (debug)
 				Debug.format("build dataflow network: %dms%n", System.currentTimeMillis() - start);
 		}
@@ -514,6 +516,7 @@ public class DataflowNetworkBuilder {
 	 */
 	public DataflowManager build(Dataset dataset, DatasetItem target, boolean createDataflowManager) {
 		long start = System.currentTimeMillis();
+		resultfileManager.getReadLock().lock();
 		try {
 			warnings.clear();
 			buildInternal(dataset, target);
@@ -521,6 +524,7 @@ public class DataflowNetworkBuilder {
 			return createDataflowManager ? buildNetwork() : null;
 		}
 		finally {
+			resultfileManager.getReadLock().unlock();
 			if (debug)
 				Debug.format("build dataflow network: %dms%n", System.currentTimeMillis() - start);
 		}
@@ -532,6 +536,7 @@ public class DataflowNetworkBuilder {
 	 */
 	public DataflowManager build(Dataset dataset, DatasetItem target, String fileName) {
 		long start = System.currentTimeMillis();
+		resultfileManager.getReadLock().lock();
 		try {
 			warnings.clear();
 			buildInternal(dataset, target);
@@ -539,6 +544,7 @@ public class DataflowNetworkBuilder {
 			return buildNetwork();
 		}
 		finally {
+			resultfileManager.getReadLock().unlock();
 			if (debug)
 				Debug.format("build dataflow network: %dms%n", System.currentTimeMillis() - start);
 		}

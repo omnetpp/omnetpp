@@ -68,18 +68,24 @@ public class ExportJob extends WorkspaceJob
 
 		try {
 			monitor.beginTask("Exporting", calculateTotalWork());
-			
-			status = exportVectors(exporter, monitor);
-			if (status.getSeverity() != IStatus.OK)
-				return status;
 
-			status = exportScalars(exporter, monitor);
-			if (status.getSeverity() != IStatus.OK)
-				return status;
-			
-			status = exportHistograms(exporter, monitor);
-			if (status.getSeverity() != IStatus.OK)
-				return status;
+			manager.getReadLock().lock();
+			try {
+				status = exportVectors(exporter, monitor);
+				if (status.getSeverity() != IStatus.OK)
+					return status;
+	
+				status = exportScalars(exporter, monitor);
+				if (status.getSeverity() != IStatus.OK)
+					return status;
+				
+				status = exportHistograms(exporter, monitor);
+				if (status.getSeverity() != IStatus.OK)
+					return status;
+			}
+			finally {
+				manager.getReadLock().unlock();
+			}
 			
 			return Status.OK_STATUS;
 		}

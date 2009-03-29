@@ -15,6 +15,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
+import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.ResultType;
@@ -42,12 +43,21 @@ public class CreateTempChartAction extends AbstractScaveAction {
 			return;
 
 		String datasetName = "dataset";
-		Dataset dataset =
-			ScaveModelUtil.createTemporaryDataset(
-					datasetName,
-					activePanel.getTable().getSelectedIDs(),
-					null,
-					activePanel.getTable().getResultFileManager());
+		Dataset dataset;
+		ResultFileManager manager = activePanel.getTable().getResultFileManager();
+		manager.getReadLock().lock();
+		try {
+			dataset =
+				ScaveModelUtil.createTemporaryDataset(
+						datasetName,
+						activePanel.getTable().getSelectedIDs(),
+						null,
+						manager);
+		}
+		finally {
+			manager.getReadLock().unlock();
+		}
+		
 		String chartName = "temp" + ++counter; //FIXME generate proper name
 		ResultType type = activePanel.getTable().getType();
 		Chart chart = ScaveModelUtil.createChart(chartName, type);

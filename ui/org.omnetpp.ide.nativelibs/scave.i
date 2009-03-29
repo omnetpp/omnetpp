@@ -332,6 +332,14 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
   protected ReadWriteLock lock = new ReentrantReadWriteLock();
   protected Lock readLock = lock.readLock();
   protected Lock writeLock = lock.writeLock();
+  
+  public Lock getReadLock() {
+    return readLock;
+  }
+	
+  public Lock getWriteLock() {
+    return writeLock;
+  }
 
   public ResultItem getItem(long id) {
       int type = getTypeOf(id);
