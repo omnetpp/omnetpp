@@ -7,10 +7,141 @@ import org.eclipse.swt.custom.StyledTextContent;
 import org.eclipse.swt.custom.TextChangeListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
+import org.omnetpp.experimental.simkernel.swig.IntVector;
+import org.omnetpp.experimental.simkernel.swig.LogBuffer;
+import org.omnetpp.experimental.simkernel.swig.LogBufferView;
+import org.omnetpp.experimental.simkernel.swig.cSimulation;
 import org.omnetpp.runtimeenv.Activator;
 import org.omnetpp.runtimeenv.ISimulationListener;
 
 public class ModuleOutputView extends ViewPart implements ISimulationListener {
+    
+    protected class LogBufferContent implements StyledTextContent {
+        private LogBufferView logBufferView;
+        
+        public LogBufferContent(LogBufferView logBufferView) {
+            this.logBufferView = logBufferView;    
+        }
+        
+        @Override
+        public int getCharCount() {
+            return (int)logBufferView.getNumChars();
+        }
+
+        @Override
+        public String getLine(int lineIndex) {
+            return logBufferView.getLine(lineIndex);
+        }
+
+        @Override
+        public int getLineAtOffset(int offset) {
+            return (int)logBufferView.getLineAtOffset(offset);
+        }
+
+        @Override
+        public int getLineCount() {
+            return (int)logBufferView.getNumLines();
+        }
+
+        @Override
+        public String getLineDelimiter() {
+            return "\n";
+        }
+
+        @Override
+        public int getOffsetAtLine(int lineIndex) {
+            return (int)logBufferView.getOffsetAtLine(lineIndex);
+        }
+
+        @Override
+        public String getTextRange(int start, int length) {
+            return logBufferView.getTextRange(start, length);
+        }
+
+        @Override
+        public void setText(String text) {
+            // nothing - editing not supported
+        }
+
+        @Override
+        public void replaceTextRange(int start, int replaceLength, String text) {
+            // nothing - editing not supported
+        }
+
+        @Override
+        public void addTextChangeListener(TextChangeListener listener) {
+            // nothing - editing not supported
+        }
+
+        @Override
+        public void removeTextChangeListener(TextChangeListener listener) {
+            // nothing - editing not supported
+        }
+    }
+
+    //XXX just for debugging
+    private final class DebugStyledTextContent implements StyledTextContent {
+        final int LINELEN = 100;
+        final int NUMLINES = 1000000;
+
+        @Override
+        public void addTextChangeListener(TextChangeListener listener) {
+        }
+
+        @Override
+        public int getCharCount() {
+            System.out.println("getCharCount");
+            return NUMLINES * LINELEN;
+        }
+
+        @Override
+        public String getLine(int lineIndex) {
+            System.out.println("getLine " + lineIndex);
+            return "this is line " + lineIndex + " " + StringUtils.repeat("x", LINELEN);
+        }
+
+        @Override
+        public int getLineAtOffset(int offset) {
+            System.out.println("getLineAtOffset " + offset);
+            return offset / LINELEN;
+        }
+
+        @Override
+        public int getLineCount() {
+            System.out.println("getLineCount");
+            return NUMLINES;
+        }
+
+        @Override
+        public String getLineDelimiter() {
+            return "\n";
+        }
+
+        @Override
+        public int getOffsetAtLine(int lineIndex) {
+            System.out.println("getOffsetAtLine " + lineIndex);
+            return lineIndex * LINELEN;
+        }
+
+        @Override
+        public String getTextRange(int start, int length) {
+            System.out.println("getTextRange " + start + "+" + length);
+            return "range " + start + "+" + length;  //FIXME
+        }
+
+        @Override
+        public void removeTextChangeListener(TextChangeListener listener) {
+        }
+
+        @Override
+        public void replaceTextRange(int start, int replaceLength, String text) {
+        }
+
+        @Override
+        public void setText(String text) {
+        }
+    }
+
     public static final String ID = "org.omnetpp.runtimeenv.ModuleOutputView";
 
     // note: memory consumption of StyledText is 8 bytes per line; 
@@ -19,66 +150,12 @@ public class ModuleOutputView extends ViewPart implements ISimulationListener {
     
 	public void createPartControl(Composite parent) {
 	    styledText = new StyledText(parent, SWT.NONE);
-	    styledText.setContent(new StyledTextContent() {
-	        final int LINELEN = 100;
-	        final int NUMLINES = 1000000;
-	        
-            @Override
-            public void addTextChangeListener(TextChangeListener listener) {
-            }
+	    //DBG styledText.setContent(new DebugStyledTextContent());
 
-            @Override
-            public int getCharCount() {
-                System.out.println("getCharCount");
-                return NUMLINES * LINELEN;
-            }
-
-            @Override
-            public String getLine(int lineIndex) {
-                System.out.println("getLine " + lineIndex);
-                return "this is line " + lineIndex + " " + StringUtils.repeat("x", LINELEN);
-            }
-
-            @Override
-            public int getLineAtOffset(int offset) {
-                System.out.println("getLineAtOffset " + offset);
-                return offset / LINELEN;
-            }
-
-            @Override
-            public int getLineCount() {
-                System.out.println("getLineCount");
-                return NUMLINES;
-            }
-
-            @Override
-            public String getLineDelimiter() {
-                return "\n";
-            }
-
-            @Override
-            public int getOffsetAtLine(int lineIndex) {
-                System.out.println("getOffsetAtLine " + lineIndex);
-                return lineIndex * LINELEN;
-            }
-
-            @Override
-            public String getTextRange(int start, int length) {
-                System.out.println("getTextRange " + start + "+" + length);
-                return "range " + start + "+" + length;  //FIXME
-            }
-
-            @Override
-            public void removeTextChangeListener(TextChangeListener listener) {
-            }
-
-            @Override
-            public void replaceTextRange(int start, int replaceLength, String text) {
-            }
-
-            @Override
-            public void setText(String text) {
-            }});
+	    LogBuffer logBuffer = Activator.getSimulationManager().getLogBuffer();
+	    int systemModuleID = cSimulation.getActiveSimulation().getSystemModule().getId();
+        LogBufferView logBufferView = new LogBufferView(logBuffer, systemModuleID, new IntVector());
+	    styledText.setContent(new LogBufferContent(logBufferView));
 	    
 	    Activator.getSimulationManager().addChangeListener(this);
 	}
@@ -92,8 +169,13 @@ public class ModuleOutputView extends ViewPart implements ISimulationListener {
 	
 	@Override
 	public void changed() {
-//	    LogBuffer logBuffer = Activator.getSimulationManager().getLogBuffer();
-	    styledText.redraw();
+	    //XXX this is same as above
+        LogBuffer logBuffer = Activator.getSimulationManager().getLogBuffer();
+        int systemModuleID = cSimulation.getActiveSimulation().getSystemModule().getId();
+        LogBufferView logBufferView = new LogBufferView(logBuffer, systemModuleID, new IntVector());
+        styledText.setContent(new LogBufferContent(logBufferView));
+
+        styledText.redraw();
 	}
 
 	@Override

@@ -85,6 +85,7 @@ inline void evSetup(const char *inifile) { //XXX
 %include "std_vector.i"
 
 namespace std {
+   %template(IntVector) vector<int>;
    %template(StringVector) vector<std::string>;
    %template(PStringVector) vector<const char *>;
    %template(cObjectVector) vector<cObject *>;
@@ -356,7 +357,9 @@ void changeToDir(const char *dir); //XXX
 #include "javaenv/tmp.h"
 #include "javaenv/visitor.h"
 #include "javaenv/logbuffer.h"
+#include "javaenv/logbufferview.h"
 %}
 %include "javaenv/tmp.h"
 %include "javaenv/visitor.h"
 %include "javaenv/logbuffer.h"
+%include "javaenv/logbufferview.h"

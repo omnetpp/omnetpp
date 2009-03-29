@@ -56,7 +56,7 @@ class LogBufferView
       void decCurrentEntry();
 
     public:
-      LogBufferView(LogBuffer *log, int moduleId, const std::set<int>& excludedModuleIds);
+      LogBufferView(LogBuffer *log, int moduleId, const std::vector<int>& excludedModuleIds);
       ~LogBufferView();
 
       size_t getNumLines() {return totalLines;}

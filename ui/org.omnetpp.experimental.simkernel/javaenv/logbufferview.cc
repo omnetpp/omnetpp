@@ -20,11 +20,12 @@
 
 USING_NAMESPACE
 
-LogBufferView::LogBufferView(LogBuffer *log, int moduleId, const std::set<int>& excludedModuleIds)
+LogBufferView::LogBufferView(LogBuffer *log, int moduleId, const std::vector<int>& excludedModuleIds)
 {
     this->log = log;
     this->rootModuleId = moduleId;
-    this->excludedModuleIds = excludedModuleIds;
+    for (int i=0; i<excludedModuleIds.size(); i++)
+        this->excludedModuleIds.insert(excludedModuleIds[i]);
 
     // count lines and chars
     totalLines = 0;
