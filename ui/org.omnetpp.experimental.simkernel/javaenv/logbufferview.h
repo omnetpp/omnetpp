@@ -47,6 +47,8 @@ class LogBufferView
       bool isGood(const LogBuffer::Entry& entry) const;
       void gotoLine(size_t lineIndex);
       void gotoOffset(size_t offset);
+      void gotoBeginning();
+      void gotoEnd();
       void gotoNextLineInEntry();
       void gotoPreviousLineInEntry();
       void incCurrentEntry();

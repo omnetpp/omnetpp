@@ -106,6 +106,37 @@ void LogBufferView::gotoPreviousLineInEntry()
     currentLineIndex--;
 }
 
+void LogBufferView::gotoBeginning()
+{
+    currentEntry = log->getEntries().begin();
+    while (!isGood(*currentEntry) && currentEntry!=log->getEntries().end())
+        ++currentEntry;
+    if (currentEntry == log->getEntries().end())
+        currentPosValid = false;
+    else {
+        currentPosValid = true;
+        entryLineNo = 0;
+        currentLineIndex = 0;
+        currentLineOffset = 0;
+    }
+}
+
+void LogBufferView::gotoEnd()
+{
+    currentEntry = log->getEntries().end();
+    --currentEntry;
+    while (!isGood(*currentEntry) && currentEntry!=log->getEntries().begin())
+        --currentEntry;
+    if (!isGood(*currentEntry))
+        currentPosValid = false;
+    else {
+        currentPosValid = true;
+        entryLineNo = currentEntry->getNumLines() - 1;
+        currentLineIndex = getNumLines() - 1;
+        currentLineOffset = getNumChars() - currentEntry->getLineLength(entryLineNo);
+    }
+}
+
 inline size_t distance(size_t a, size_t b) { return a<b ? b-a : a-b; }
 
 void LogBufferView::gotoLine(size_t lineIndex)
@@ -115,36 +146,9 @@ void LogBufferView::gotoLine(size_t lineIndex)
     size_t distanceToEnd = getNumLines() - lineIndex;
     size_t distanceToCurrent = currentPosValid ? distance(currentLineIndex,lineIndex) : getNumLines();
     if (distanceToBeg < distanceToEnd && distanceToBeg < distanceToCurrent)
-    {
-        // go to the beginning
-        currentEntry = log->getEntries().begin();
-        while (!isGood(*currentEntry) && currentEntry!=log->getEntries().end())
-            ++currentEntry;
-        if (currentEntry == log->getEntries().end())
-            currentPosValid = false;
-        else {
-            currentPosValid = true;
-            entryLineNo = 0;
-            currentLineIndex = 0;
-            currentLineOffset = 0;
-        }
-    }
+        gotoBeginning();
     else if (distanceToEnd < distanceToBeg && distanceToEnd < distanceToCurrent)
-    {
-        // go to the end
-        currentEntry = log->getEntries().end();
-        --currentEntry;
-        while (!isGood(*currentEntry) && currentEntry!=log->getEntries().begin())
-            --currentEntry;
-        if (!isGood(*currentEntry))
-            currentPosValid = false;
-        else {
-            currentPosValid = true;
-            entryLineNo = currentEntry->getNumLines() - 1;
-            currentLineIndex = getNumLines() - 1;
-            currentLineOffset = getNumChars() - currentEntry->getLineLength(entryLineNo);
-        }
-    }
+        gotoEnd();
 
     if (!currentPosValid)
         return;
@@ -192,9 +196,57 @@ void LogBufferView::gotoLine(size_t lineIndex)
 void LogBufferView::gotoOffset(size_t offset)
 {
     // find suitable starting point
+    size_t distanceToBeg = offset;
+    size_t distanceToEnd = getNumChars() - offset;
+    size_t distanceToCurrent = currentPosValid ? distance(currentLineOffset,offset) : getNumChars();
+    if (distanceToBeg < distanceToEnd && distanceToBeg < distanceToCurrent)
+        gotoBeginning();
+    else if (distanceToEnd < distanceToBeg && distanceToEnd < distanceToCurrent)
+        gotoEnd();
 
-    // walk to given offset
-    //TODO
+    if (!currentPosValid)
+        return;
+
+//FIXME REWRITE FROM HERE!!!
+
+    // position INTO the required entry. First, go backward whole entries if needed
+    if (lineIndex < currentLineIndex - entryLineNo) {
+        // seek to the beginning of this entry
+        while (entryLineNo > 0)
+            gotoPreviousLineInEntry();
+
+        // go backward a few entries
+        while (lineIndex < currentLineIndex) {
+            decCurrentEntry();
+            if (!currentPosValid)
+                return;
+            currentLineIndex -= currentEntry->getNumLines();
+            currentLineOffset -= currentEntry->getNumChars();
+        }
+
+    }
+
+    // go forward whole entries if needed
+    if (lineIndex >= currentLineIndex - entryLineNo + currentEntry->getNumLines()) {
+        // seek to the beginning of this entry
+        while (entryLineNo > 0)
+            gotoPreviousLineInEntry();
+
+        // go forward a few entries
+        while (lineIndex >= currentLineIndex + currentEntry->getNumLines()) {
+            currentLineIndex += currentEntry->getNumLines();
+            currentLineOffset += currentEntry->getNumChars();
+            incCurrentEntry();
+            if (!currentPosValid)
+                return;
+        }
+    }
+
+    // position within the entry
+    while (lineIndex > currentLineIndex)
+        gotoNextLineInEntry();
+    while (lineIndex < currentLineIndex)
+        gotoPreviousLineInEntry();
 }
 
 const char *LogBufferView::getLine(size_t lineIndex)
