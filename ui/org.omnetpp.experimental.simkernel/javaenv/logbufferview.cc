@@ -216,7 +216,7 @@ void LogBufferView::gotoOffset(size_t offset)
             gotoPreviousLineInEntry();
 
         // go backward a few entries
-        while (lineIndex < currentLineIndex) {
+        while (offset < currentLineOffset) {
             decCurrentEntry();
             if (!currentPosValid)
                 return;
@@ -233,7 +233,7 @@ void LogBufferView::gotoOffset(size_t offset)
             gotoPreviousLineInEntry();
 
         // go forward a few entries
-        while (lineIndex >= currentLineIndex + currentEntry->getNumLines()) {
+        while (offset >= currentLineOffset + currentEntry->getNumChars()) {
             currentLineIndex += currentEntry->getNumLines();
             currentLineOffset += currentEntry->getNumChars();
             incCurrentEntry();
@@ -243,9 +243,9 @@ void LogBufferView::gotoOffset(size_t offset)
     }
 
     // position within the entry
-    while (lineIndex > currentLineIndex)
+    while (offset >= currentLineOffset + currentEntry->getLineLength())
         gotoNextLineInEntry();
-    while (lineIndex < currentLineIndex)
+    while (offset < currentLineOffset)
         gotoPreviousLineInEntry();
 }
 
