@@ -1,41 +1,84 @@
 package org.omnetpp.runtimeenv.views;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.custom.StyledTextContent;
+import org.eclipse.swt.custom.TextChangeListener;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.part.ViewPart;
-import org.omnetpp.common.virtualtable.LongVirtualTableContentProvider;
-import org.omnetpp.common.virtualtable.LongVirtualTableRowRenderer;
-import org.omnetpp.common.virtualtable.VirtualTable;
-import org.omnetpp.experimental.simkernel.swig.LogBuffer;
 import org.omnetpp.runtimeenv.Activator;
 import org.omnetpp.runtimeenv.ISimulationListener;
 
 public class ModuleOutputView extends ViewPart implements ISimulationListener {
     public static final String ID = "org.omnetpp.runtimeenv.ModuleOutputView";
 
-    protected VirtualTable<Long> table;
+    // note: memory consumption of StyledText is 8 bytes per line; 
+    // see  StyledTextRenderer.lineWidth[] and lineHeight[]
+    protected StyledText styledText;
     
-    /**
-	 * This is a callback that will allow us to create the viewer and initialize
-	 * it.
-	 */
 	public void createPartControl(Composite parent) {
-	    table = new VirtualTable<Long>(parent, SWT.NONE);
+	    styledText = new StyledText(parent, SWT.NONE);
+	    styledText.setContent(new StyledTextContent() {
+	        final int LINELEN = 100;
+	        final int NUMLINES = 1000000;
+	        
+            @Override
+            public void addTextChangeListener(TextChangeListener listener) {
+            }
 
-	    //FIXME we don't want no columns or table header, but without the following nothing gets displayed at all
-	    //FIXME and table header cannot be turned off
-	    //FIXME 1-2 pixels on the left are not visible (off-canvas)
-	    //FIXME scroll to the end, then resize: last element gets repeated!!! (this seems to be the problem of LongVirtualTableContentProvider ?)
-	    //FIXME how to draw unselected element with different foreground (white)?
-	    table.createColumn();
-        TableColumn tableColumn = table.createColumn();;
-        tableColumn.setWidth(800);  //XXX +Infinity?
-        tableColumn.setText("Message");
+            @Override
+            public int getCharCount() {
+                System.out.println("getCharCount");
+                return NUMLINES * LINELEN;
+            }
 
-	    table.setContentProvider(new LongVirtualTableContentProvider());
-	    table.setRowRenderer(new LongVirtualTableRowRenderer());
-	    table.setInput(new Long(1000));
+            @Override
+            public String getLine(int lineIndex) {
+                System.out.println("getLine " + lineIndex);
+                return "this is line " + lineIndex + " " + StringUtils.repeat("x", LINELEN);
+            }
+
+            @Override
+            public int getLineAtOffset(int offset) {
+                System.out.println("getLineAtOffset " + offset);
+                return offset / LINELEN;
+            }
+
+            @Override
+            public int getLineCount() {
+                System.out.println("getLineCount");
+                return NUMLINES;
+            }
+
+            @Override
+            public String getLineDelimiter() {
+                return "\n";
+            }
+
+            @Override
+            public int getOffsetAtLine(int lineIndex) {
+                System.out.println("getOffsetAtLine " + lineIndex);
+                return lineIndex * LINELEN;
+            }
+
+            @Override
+            public String getTextRange(int start, int length) {
+                System.out.println("getTextRange " + start + "+" + length);
+                return "range " + start + "+" + length;  //FIXME
+            }
+
+            @Override
+            public void removeTextChangeListener(TextChangeListener listener) {
+            }
+
+            @Override
+            public void replaceTextRange(int start, int replaceLength, String text) {
+            }
+
+            @Override
+            public void setText(String text) {
+            }});
 	    
 	    Activator.getSimulationManager().addChangeListener(this);
 	}
@@ -44,14 +87,13 @@ public class ModuleOutputView extends ViewPart implements ISimulationListener {
 	 * Passing the focus request to the viewer's control.
 	 */
 	public void setFocus() {
-	    table.setFocus();
+	    styledText.setFocus();
 	}
 	
 	@Override
 	public void changed() {
 //	    LogBuffer logBuffer = Activator.getSimulationManager().getLogBuffer();
-	    
-	    table.refresh();
+	    styledText.redraw();
 	}
 
 	@Override

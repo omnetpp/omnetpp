@@ -76,7 +76,6 @@ class LogBuffer
 
 NAMESPACE_END
 
-
 #endif
 
 

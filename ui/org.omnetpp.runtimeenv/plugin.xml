@@ -245,12 +245,12 @@
                   tooltip="Run until..."/>
             <command
                   commandId="org.omnetpp.runtimeenv.commands.stopCommand"
-                  icon="icons/etool16/stop.png"
+                  icon="icons/etool16/stop_wide.png"
                   id="org.omnetpp.runtimeenv.toolbars.stopCommand"
                   tooltip="Stop"/>
             <command
                   commandId="org.omnetpp.runtimeenv.commands.callFinishCommand"
-                  icon="icons/etool16/finish.png"
+                  icon="icons/etool16/finish_wide.png"
                   id="org.omnetpp.runtimeenv.toolbars.callFinishCommand"
                   tooltip="Call finish()"/>
          </toolbar>

@@ -1,0 +1,73 @@
+//==========================================================================
+//  LOGBUFFERVIEW.H - part of
+//
+//                     OMNeT++/OMNEST
+//            Discrete System Simulation in C++
+//
+//==========================================================================
+
+/*--------------------------------------------------------------*
+  Copyright (C) 1992-2008 Andras Varga
+  Copyright (C) 2006-2008 OpenSim Ltd.
+
+  This file is distributed WITHOUT ANY WARRANTY. See the file
+  `license' for details on this and other legal matters.
+*--------------------------------------------------------------*/
+
+#ifndef __LOGBUFFERVIEW_H
+#define __LOGBUFFERVIEW_H
+
+#include <set>
+#include "logbuffer.h"
+
+NAMESPACE_BEGIN
+
+class LogBufferView
+{
+    private:
+      LogBuffer *log;
+
+      // display messages from the "root" module's module tree,
+      // except those from modules in excludedModuleIds.
+      int rootModuleId;
+      std::set<int> excludedModuleIds;
+
+      // total size of filtered view
+      size_t totalLines;
+      size_t totalChars;  // including newlines
+
+      // current position
+      bool currentPosValid;
+      size_t currentLineIndex; // 0-based
+      size_t currentLineOffset; // always points to beginning of line
+      std::list<LogBuffer::Entry>::const_iterator currentEntry;
+      int entryLineNo;  // 0 for banner; 1,2,3,... for log lines
+
+    private:
+      bool isGood(const LogBuffer::Entry& entry) const;
+      const char *currentLine() const;
+      void gotoLine(size_t lineIndex);
+      void gotoOffset(size_t offset);
+      void gotoNextLine();
+      void gotoPreviousLine();
+
+    public:
+      LogBufferView(LogBuffer *log, int moduleId, const std::set<int>& excludedModuleIds);
+      ~LogBufferView();
+
+      size_t getLineCount() {return totalLines;}
+      size_t getCharCount() {return totalChars;}
+
+      const char *getLine(size_t lineIndex);
+      size_t getLineAtOffset(size_t offset);
+      size_t getOffsetAtLine(size_t lineIndex);
+
+      std::string getTextRange(int start, int length);
+};
+
+NAMESPACE_END
+
+
+#endif
+
+

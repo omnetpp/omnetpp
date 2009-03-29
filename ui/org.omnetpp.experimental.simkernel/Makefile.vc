@@ -37,7 +37,8 @@ COPTS=$(CFLAGS) -I$(JDK)\include -I$(JDK)\include\win32 $(INCLUDES)
 OBJS = $O/simkernel_wrap.obj \
        $O/javaenv/visitor.obj \
        $O/javaenv/jutil.obj \
-       $O/javaenv/logbuffer.obj
+       $O/javaenv/logbuffer.obj \
+       $O/javaenv/logbufferview.obj
 #       $O/javaenv/javaenv.obj \
 #       $O/javaenv/jcallback.obj
 
