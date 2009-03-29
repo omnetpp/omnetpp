@@ -33,16 +33,29 @@ class cModule;
 class LogBuffer
 {
   public:
-    struct Entry {
+    class Entry {
+      private:
+        friend class LogBuffer;
         eventnumber_t eventNumber;
         simtime_t simtime;
         int *moduleIds;  // from this module up to the root; zero-terminated; NULL for info messages
         const char *banner;
         std::vector<const char *> lines;
-        int numChars; // banner plus lines
+        int numChars; // banner plus lines  FIXME should include newlines!!!!!
 
+      private:
         Entry() {eventNumber=0; simtime=0; moduleIds=NULL; banner=NULL; numChars=0;}
         ~Entry();
+
+      public:
+        eventnumber_t getEventNumber() const {return eventNumber;}
+        simtime_t getSimtime() const {return simtime;}
+        int getModuleId() const {return !moduleIds ? 0 : moduleIds[0];}
+        bool isFromTreeOf(int moduleId) const;
+        size_t getNumLines() const {return 1+lines.size();} //XXX if banner!=NULL
+        size_t getNumChars() const {return numChars;} // incl. newlines
+        size_t getLineLength(size_t lineIndex) const {return strlen(getLine(lineIndex))+1;} // incl. newline
+        const char *getLine(size_t lineIndex) const {return lineIndex==0 ? banner : lines[lineIndex-1];}
     };
 
   protected:

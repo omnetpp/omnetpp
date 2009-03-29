@@ -28,6 +28,15 @@ LogBuffer::Entry::~Entry()
         delete[] lines[i];
 }
 
+bool LogBuffer::Entry::isFromTreeOf(int moduleId) const
+{
+    // check that moduleId is contained in our module path up to the root
+    for (int *p = moduleIds; *p; p++)
+        if (*p == moduleId)
+            return true;
+    return false;
+}
+
 //----
 
 LogBuffer::LogBuffer(int memoryLimit)

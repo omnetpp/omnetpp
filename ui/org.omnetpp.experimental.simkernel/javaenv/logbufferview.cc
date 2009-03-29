@@ -15,6 +15,7 @@
 *--------------------------------------------------------------*/
 
 #include <string.h>
+#include "commonutil.h"
 #include "logbufferview.h"
 
 USING_NAMESPACE
@@ -34,8 +35,8 @@ LogBufferView::LogBufferView(LogBuffer *log, int moduleId, const std::set<int>& 
         const LogBuffer::Entry& entry = *it;
         if (isGood(entry))
         {
-            totalLines += 1 + entry.lines.size();  //+1=banner
-            totalChars += entry.numChars; //XXX does this include newlines???
+            totalLines += entry.getNumLines();
+            totalChars += entry.getNumChars();
         }
     }
 
@@ -49,45 +50,86 @@ LogBufferView::~LogBufferView()
 
 bool LogBufferView::isGood(const LogBuffer::Entry& entry) const
 {
+    int entryModuleId = entry.getModuleId();
+
     // "info" lines (no module ID) are always included
-    if (!entry.moduleIds)
+    if (entryModuleId == 0)
         return true;
 
-    // check that this module is covered in entry.moduleIds[] (module path up to the root)
-    bool found = false;
-    for (int *p = entry.moduleIds; !found && *p; p++)
-        if (*p == rootModuleId)
-            found = true;
-    // also, it must not be excluded
-    return found && excludedModuleIds.find(entry.moduleIds[0])==excludedModuleIds.end();
+    // otherwise, it must be under our "root" module, and must not be excluded
+    return entry.isFromTreeOf(rootModuleId) && excludedModuleIds.find(entryModuleId)==excludedModuleIds.end();
 }
 
-const char *LogBufferView::currentLine() const
+void LogBufferView::incCurrentEntry()
 {
-    return entryLineNo==0 ? currentEntry->banner : currentEntry->lines[entryLineNo-1];
+    Assert(currentPosValid);
+    while (true)
+    {
+        currentEntry++;
+        if (currentEntry == log->getEntries().end()) {
+            currentPosValid = false;
+            break;
+        }
+        if (isGood(*currentEntry))
+            break;
+    }
+}
+
+void LogBufferView::decCurrentEntry()
+{
+    Assert(currentPosValid);
+    while (true)
+    {
+        if (currentEntry == log->getEntries().begin()) {
+            currentPosValid = false;
+            break;
+        }
+        currentEntry--;
+        if (isGood(*currentEntry))
+            break;
+    }
 }
 
 void LogBufferView::gotoNextLine()
 {
-    if (entryLineNo < 1 + currentEntry->lines.size())
+    Assert(currentPosValid);
+    if (entryLineNo < currentEntry->getNumLines()-1)
     {
-        currentLineOffset += strlen(currentLine()) + 1;  //+1=LF
+        currentLineOffset += currentEntry->getLineLength(entryLineNo);
         currentLineIndex++;
         entryLineNo++;
     }
     else
     {
-        currentLineOffset += strlen(currentLine()) + 1;  //+1=LF
+        currentLineOffset += currentEntry->getLineLength(entryLineNo);
         currentLineIndex++;
-        currentEntry++;
         entryLineNo = 0;
-        if (currentEntry == log->lines().end())
-            XXX;  //invalidpos?
+        currentEntry++;   //XXX and filter???
+        if (currentEntry == log->getEntries().end())
+            currentPosValid = false;
     }
 }
 
 void LogBufferView::gotoPreviousLine()
 {
+    Assert(currentPosValid);
+    if (entryLineNo > 0)
+    {
+        entryLineNo--;
+        currentLineOffset -= currentEntry->getLineLength(entryLineNo);
+        currentLineIndex--;
+    }
+    else
+    {
+        if (currentEntry == log->getEntries().begin())
+            currentPosValid = false;
+        else {
+            currentEntry--;  //XXX and filter???
+            entryLineNo = currentEntry->getNumLines();
+            currentLineOffset -= currentEntry->getLineLength(entryLineNo);
+            currentLineIndex--;
+        }
+    }
 }
 
 inline size_t distance(size_t a, size_t b) { return a<b ? b-a : a-b; }
@@ -98,9 +140,9 @@ void LogBufferView::gotoLine(size_t lineIndex)
     //TODO if (!currentPosValid || distance(currentLineIndex,lineIndex)
 
     // walk forward to given line index
-    while (lineIndex > currentLineIndex)
+    while (currentPosValid && lineIndex > currentLineIndex)
     {
-        size_t entryLinesRemaining = currentEntry->lines.size() - entryLineNo; // counting +1 banner too
+        size_t entryLinesRemaining = currentEntry->getNumLines() - entryLineNo;
         size_t distanceToGo = lineIndex - currentLineIndex;
         if (distanceToGo <= entryLinesRemaining)
         {
@@ -117,14 +159,14 @@ void LogBufferView::gotoLine(size_t lineIndex)
         else
         {
             // skip this whole entry at once
-            currentLineIndex += 1+currentEntry->lines.size();
-            currentLineOffset += currentEntry->numChars;
-            currentEntry++; //XXX what if end()
+            currentLineIndex += currentEntry->getNumLines();
+            currentLineOffset += currentEntry->getNumChars();
+            incCurrentEntry();
         }
     }
 
     // walk backward to given line index
-    while (lineIndex < currentLineIndex)
+    while (currentPosValid && lineIndex < currentLineIndex)
     {
         size_t entryLinesRemaining = entryLineNo;
         size_t distanceToGo = currentLineIndex - lineIndex;
@@ -144,9 +186,9 @@ void LogBufferView::gotoLine(size_t lineIndex)
         {
             // at line 0 of an entry -- skip to the beginning of the previous entry at once
             //XXX isn't that too much???
-            currentEntry--; //XXX what if begin()?
-            currentLineIndex -= 1+currentEntry->lines.size();
-            currentLineOffset -= currentEntry->numChars;
+            decCurrentEntry(); //XXX what if begin()?
+            currentLineIndex -= currentEntry->getNumLines();
+            currentLineOffset -= currentEntry->getNumChars();
         }
     }
 }
@@ -162,24 +204,28 @@ void LogBufferView::gotoOffset(size_t offset)
 const char *LogBufferView::getLine(size_t lineIndex)
 {
     gotoLine(lineIndex);
-    return currentLine();
+    Assert(currentPosValid);
+    return currentEntry->getLine(entryLineNo);
 }
 
 size_t LogBufferView::getLineAtOffset(size_t offset)
 {
     gotoOffset(offset);
+    Assert(currentPosValid);
     return currentLineIndex;
 }
 
 size_t LogBufferView::getOffsetAtLine(size_t lineIndex)
 {
     gotoLine(lineIndex);
+    Assert(currentPosValid);
     return currentLineOffset;
 }
 
 std::string LogBufferView::getTextRange(int start, int length)
 {
     gotoOffset(start);
+    Assert(currentPosValid);
     //TODO....
     return "TODO";
 }

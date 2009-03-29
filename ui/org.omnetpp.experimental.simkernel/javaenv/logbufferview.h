@@ -41,15 +41,16 @@ class LogBufferView
       size_t currentLineIndex; // 0-based
       size_t currentLineOffset; // always points to beginning of line
       std::list<LogBuffer::Entry>::const_iterator currentEntry;
-      int entryLineNo;  // 0 for banner; 1,2,3,... for log lines
+      int entryLineNo;
 
     private:
       bool isGood(const LogBuffer::Entry& entry) const;
-      const char *currentLine() const;
       void gotoLine(size_t lineIndex);
       void gotoOffset(size_t offset);
       void gotoNextLine();
       void gotoPreviousLine();
+      void incCurrentEntry();
+      void decCurrentEntry();
 
     public:
       LogBufferView(LogBuffer *log, int moduleId, const std::set<int>& excludedModuleIds);
