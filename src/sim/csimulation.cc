@@ -79,7 +79,7 @@ cSimulation::cSimulation(const char *name, cEnvir *env) : cNoncopyableOwnedObjec
     networktype = NULL;
     hasherp = NULL;
 
-    sim_time = 0;
+    sim_time = SIMTIME_ZERO;
     event_num = 0;
 
     msgQueue.setName("scheduled-events");
