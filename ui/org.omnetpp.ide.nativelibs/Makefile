@@ -62,7 +62,7 @@ DLL_TARGET_DIR = ../org.omnetpp.ide.nativelibs.$(PLATFORM)
 # Local definitions
 #
 INCLUDES=-I$(COMMON) -I$(NEDXML) -I$(SCAVE) -I$(LAYOUT) -I$(EVENTLOG) -I$(OMNETPP_INCL_DIR)/platdep
-COPTS=$(CFLAGS) $(JAVA_CFLAGS) $(INCLUDES)
+COPTS=$(CFLAGS) $(PTHREAD_CFLAGS) $(JAVA_CFLAGS) $(INCLUDES)
 
 #
 # Automatic rules
@@ -110,7 +110,7 @@ eventlog.cxx : eventlog.i
 	$(SWIG) -c++ -java $(INCLUDES) -package $(EVENTLOG_JAVAPKG) -outdir $(EVENTLOG_JAVADIR) -o $@ $<
 
 $O/$(DLL): $(OBJS)
-	$(SHLIB_LD) $(LDFLAGS) -o $O/$(DLL) $(OBJS) $(LIBS)
+	$(SHLIB_LD) $(LDFLAGS) -o $O/$(DLL) $(OBJS) $(PTHREAD_LIBS) $(LIBS)
 	strip $(STRIP_FLAGS) $O/$(DLL)
 
 $(DLL_TARGET_DIR)/$(DLL): $O/$(DLL)
