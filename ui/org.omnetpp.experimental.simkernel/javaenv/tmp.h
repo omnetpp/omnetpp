@@ -50,8 +50,10 @@ class MinimalEnv : public cNullEnvir
 
     // see module output
     virtual void sputn(const char *s, int n) {
-        (void) ::fwrite(s,1,n,stdout);
+        //XXX (void) ::fwrite(s,1,n,stdout);
     }
+
+    virtual bool isGUI() const {return true;}
 
 };
 
@@ -76,7 +78,7 @@ class NotSoMinimalEnv : public MinimalEnv
     }
 
     virtual void sputn(const char *s, int n) {
-        (void) ::fwrite(s,1,n,stdout);
+        //XXX (void) ::fwrite(s,1,n,stdout);
         cModule *module = simulation.getContextModule();
         // note: we must strip the trailing "\n"
         if (module)

@@ -29,6 +29,7 @@ import org.omnetpp.runtimeenv.animation.widgets.AnimationCanvas;
 //TODO submodule context menu: "Open (go into)", "Add to this canvas", "Open in new network view" 
 public class ModelCanvas extends EditorPart {
     public static final String EDITOR_ID = "org.omnetpp.runtimeenv.editors.ModelCanvas";
+    private CompoundModuleFigure moduleFigure;
 
     @Override
     public void init(IEditorSite site, IEditorInput input) throws PartInitException {
@@ -56,7 +57,7 @@ public class ModelCanvas extends EditorPart {
 
         int moduleID = ((ModuleIDEditorInput)getEditorInput()).getModuleID();
         cModule module = cSimulation.getActiveSimulation().getModule(moduleID);
-        final CompoundModuleFigure moduleFigure = new CompoundModuleFigure();
+        moduleFigure = new CompoundModuleFigure();
         canvas.getRootFigure().add(moduleFigure);
         moduleFigure.setDisplayString(module.getDisplayString());
         canvas.getRootFigure().setConstraint(moduleFigure, new Rectangle(0,0,500,500));
@@ -101,7 +102,10 @@ public class ModelCanvas extends EditorPart {
         Activator.getSimulationManager().addChangeListener(new ISimulationListener() {
             @Override
             public void changed() {
-                //FIXME update display!
+                moduleFigure.invalidate();
+                moduleFigure.invalidateTree();
+                
+                System.out.println(cSimulation.getActiveSimulation().getSystemModule().getSubmodule("server").getDisplayString().str());
             }
         });
 

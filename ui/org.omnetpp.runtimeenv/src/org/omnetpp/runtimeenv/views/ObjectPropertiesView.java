@@ -2,16 +2,23 @@ package org.omnetpp.runtimeenv.views;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jface.viewers.DecoratingStyledCellLabelProvider;
+import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ITreeContentProvider;
-import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider.IStyledLabelProvider;
+import org.eclipse.jface.viewers.StyledString.Styler;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.TextStyle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
+import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.experimental.simkernel.swig.cClassDescriptor;
 import org.omnetpp.experimental.simkernel.swig.cCollectChildrenVisitor;
 import org.omnetpp.experimental.simkernel.swig.cEnum;
@@ -77,6 +84,7 @@ public class ObjectPropertiesView extends ViewPart implements ISimulationListene
                 if (desc == null) {
                     return getChildObjects(object);
                 } else {
+                    //Object[] allFields = getFieldsInGroup(ptr, desc, null); -- use this to present all fields at once (without groups)
                     Object[] ungroupedFields = getFieldsInGroup(ptr, desc, "");
                     Object[] groups = getGroupKeys(ptr, desc);
                     Object[] childObjects = getChildObjects(object); //FIXME needed?
@@ -187,7 +195,7 @@ public class ObjectPropertiesView extends ViewPart implements ISimulationListene
             int numFieldKeys = 0;
             for (int i=0; i<numFields; i++) {
                 String fieldGroupName = desc.getFieldProperty(ptr, i, "group");
-                if (groupName.equals(fieldGroupName))
+                if (groupName==null || groupName.equals(fieldGroupName))
                     fieldKeys[numFieldKeys++] = new FieldKey(ptr, desc, i);
             }
             return ArrayUtils.subarray(fieldKeys, 0, numFieldKeys);
@@ -202,13 +210,21 @@ public class ObjectPropertiesView extends ViewPart implements ISimulationListene
         }
 	}
 
-	class ViewLabelProvider extends LabelProvider {
-	    @Override
-	    public String getText(Object element) {
+	class ViewLabelProvider implements IStyledLabelProvider {
+        private class ColorStyler extends Styler {
+            Color color;
+            public ColorStyler(Color color) { this.color = color; }
+            @Override public void applyStyles(TextStyle textStyle) { textStyle.foreground = color; }
+        };
+	    private Styler blueStyle = new ColorStyler(ColorFactory.BLUE3);
+	    private Styler greyStyle = new ColorStyler(ColorFactory.GREY60);
+
+        public String getText(Object element) {
+            //note: we use "\b...\b" for blue, and "\f" for grey coloring
 	        if (element instanceof cObject) {
 	            cObject obj = (cObject) element;
 	            String typeName = obj.getClassName();  //XXX use opp_getobjectshorttypename
-	            return obj.getFullName() + " (" + typeName + ")";
+	            return obj.getFullName() + " \f(" + typeName + ")";
 	        }
 	        else if (element instanceof StructKey) {
 	            StructKey key = (StructKey)element;
@@ -216,7 +232,7 @@ public class ObjectPropertiesView extends ViewPart implements ISimulationListene
 	        }
             else if (element instanceof GroupKey) {
                 GroupKey key = (GroupKey)element;
-                return "[" + key.groupName + "]";
+                return key.groupName;
             }
             else if (element instanceof FieldKey) {
                 FieldKey key = (FieldKey)element;
@@ -226,7 +242,7 @@ public class ObjectPropertiesView extends ViewPart implements ISimulationListene
                 ArrayElementKey key = (ArrayElementKey)element;
                 return getFieldText(key.ptr, key.desc, key.fieldID, key.index);
             }
-	        return super.getText(element);
+	        return element.toString();
 	    }
 	    
         @Override
@@ -246,7 +262,6 @@ public class ObjectPropertiesView extends ViewPart implements ISimulationListene
             }
             else if (element instanceof GroupKey) {
                 return Activator.getImageDescriptor("icons/obj16/fieldgroup.png").createImage(); //FIXME TODO error check, caching, look into image path, etc
-                //return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER);
             }
             else if (element instanceof FieldKey) {
                 FieldKey key = (FieldKey)element;
@@ -284,7 +299,7 @@ public class ObjectPropertiesView extends ViewPart implements ISimulationListene
             // if it's an unexpanded array, return "name[size]" immediately
             if (isArray && index == -1) {
                 int size = desc.getArraySize(object, field);
-                return name + "[" + size + "] (" + typeName + ")";
+                return name + "[" + size + "] \f(" + typeName + ")";
             }
         
             // when showing array elements, omit name and just show "[index]" instead
@@ -293,7 +308,7 @@ public class ObjectPropertiesView extends ViewPart implements ISimulationListene
         
             // we'll want to print the field type, except for expanded array elements
             // (no need to repeat it, as it's printed in the "name[size]" node already)
-            String typeNameText = (index == -1) ? " (" + typeName + ")" : "";
+            String typeNameText = (index == -1) ? " \f(" + typeName + ")" : "";
         
             // "editable" flag
             if (isEditable)
@@ -321,7 +336,7 @@ public class ObjectPropertiesView extends ViewPart implements ISimulationListene
                     if (value.equals(""))
                         return name + typeNameText;
                     else
-                        return name + " = " + value + typeNameText;
+                        return name + " = \b" + value + "\b" + typeNameText;
                 }
             } else {
                 // plain field, return "name = value" text
@@ -345,8 +360,50 @@ public class ObjectPropertiesView extends ViewPart implements ISimulationListene
                 if (value.equals(""))
                     return name + typeNameText;
                 else
-                    return name + " = " + value + typeNameText;
+                    return name + " = " + "\b" + value + "\b" + typeNameText;
             }
+        }
+
+        @Override
+        public StyledString getStyledText(Object element) {
+            String text = getText(element);
+            int blueStartIndex = text.indexOf('\b', 0);
+            int blueLength = blueStartIndex==-1 ? -1 : text.indexOf('\b', blueStartIndex+1)-blueStartIndex-1;
+            if (blueLength > 0)
+                text = text.replace("\b", "");
+            int greyStartIndex = text.indexOf('\f');
+            if (greyStartIndex != -1)
+                text = text.replace("\f", "");
+            int greenStartIndex = text.indexOf('\r');
+            if (greenStartIndex != -1)
+                text = text.replace("\r", "");
+
+            StyledString styledString = new StyledString(text);
+            if (greyStartIndex >= 0)
+                styledString.setStyle(greyStartIndex, text.length()-greyStartIndex, greyStyle);
+            if (blueLength > 0)
+                styledString.setStyle(blueStartIndex, blueLength, blueStyle);
+            return styledString;
+        }
+
+        @Override
+        public boolean isLabelProperty(Object element, String property) {
+            return true;
+        }
+
+        @Override
+        public void dispose() {
+            // nothing
+        }
+
+        @Override
+        public void addListener(ILabelProviderListener listener) {
+            // nothing
+        }
+
+        @Override
+        public void removeListener(ILabelProviderListener listener) {
+            // nothing
         }
 	}
 
@@ -357,7 +414,8 @@ public class ObjectPropertiesView extends ViewPart implements ISimulationListene
 	public void createPartControl(Composite parent) {
 		viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		viewer.setContentProvider(new ViewContentProvider());
-		viewer.setLabelProvider(new ViewLabelProvider());
+		//viewer.setLabelProvider(new ViewLabelProvider());
+		viewer.setLabelProvider(new DecoratingStyledCellLabelProvider(new ViewLabelProvider(), null, null));
 		viewer.setInput(cSimulation.getActiveSimulation());
         Activator.getSimulationManager().addChangeListener(this);
 	}

@@ -52,7 +52,7 @@ public class SimulationManager {
             if (networkType == null)
                 throw new RuntimeException("network not found");
             simulation.setupNetwork(networkType);
-            simulation.getSystemModule().callInitialize();
+            simulation.startRun();
             
             Display.getDefault().asyncExec(new Runnable() {
                 @Override

@@ -1,12 +1,16 @@
 package org.omnetpp.runtimeenv.views;
 
-import org.apache.commons.lang.StringUtils;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.LineStyleEvent;
+import org.eclipse.swt.custom.LineStyleListener;
+import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.custom.StyledTextContent;
 import org.eclipse.swt.custom.TextChangeListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
+import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.experimental.simkernel.swig.IntVector;
 import org.omnetpp.experimental.simkernel.swig.LogBuffer;
 import org.omnetpp.experimental.simkernel.swig.LogBufferView;
@@ -19,6 +23,7 @@ import org.omnetpp.runtimeenv.ISimulationListener;
 //TODO filtering etc
 //TODO banners with different color
 public class ModuleOutputView extends ViewPart implements ISimulationListener {
+    public static final String ID = "org.omnetpp.runtimeenv.ModuleOutputView";
     
     protected class LogBufferContent implements StyledTextContent {
         private LogBufferView logBufferView;
@@ -93,84 +98,28 @@ public class ModuleOutputView extends ViewPart implements ISimulationListener {
         }
     }
 
-    //XXX just for debugging
-    private final class DebugStyledTextContent implements StyledTextContent {
-        final int LINELEN = 100;
-        final int NUMLINES = 1000000;
-
-        @Override
-        public void addTextChangeListener(TextChangeListener listener) {
-        }
-
-        @Override
-        public int getCharCount() {
-            System.out.println("getCharCount");
-            return NUMLINES * LINELEN;
-        }
-
-        @Override
-        public String getLine(int lineIndex) {
-            System.out.println("getLine " + lineIndex);
-            return "this is line " + lineIndex + " " + StringUtils.repeat("x", LINELEN);
-        }
-
-        @Override
-        public int getLineAtOffset(int offset) {
-            System.out.println("getLineAtOffset " + offset);
-            return offset / LINELEN;
-        }
-
-        @Override
-        public int getLineCount() {
-            System.out.println("getLineCount");
-            return NUMLINES;
-        }
-
-        @Override
-        public String getLineDelimiter() {
-            return "\n";
-        }
-
-        @Override
-        public int getOffsetAtLine(int lineIndex) {
-            System.out.println("getOffsetAtLine " + lineIndex);
-            return lineIndex * LINELEN;
-        }
-
-        @Override
-        public String getTextRange(int start, int length) {
-            System.out.println("getTextRange " + start + "+" + length);
-            return "range " + start + "+" + length;  //FIXME
-        }
-
-        @Override
-        public void removeTextChangeListener(TextChangeListener listener) {
-        }
-
-        @Override
-        public void replaceTextRange(int start, int replaceLength, String text) {
-        }
-
-        @Override
-        public void setText(String text) {
-        }
-    }
-
-    public static final String ID = "org.omnetpp.runtimeenv.ModuleOutputView";
-
     // note: memory consumption of StyledText is 8 bytes per line; 
     // see  StyledTextRenderer.lineWidth[] and lineHeight[]
     protected StyledText styledText;
     
 	public void createPartControl(Composite parent) {
-	    styledText = new StyledText(parent, SWT.NONE);
-	    //DBG styledText.setContent(new DebugStyledTextContent());
+	    styledText = new StyledText(parent, SWT.V_SCROLL | SWT.H_SCROLL);
+	    styledText.setFont(JFaceResources.getTextFont());
+        styledText.addLineStyleListener(new LineStyleListener() {
+            @Override
+            public void lineGetStyle(LineStyleEvent event) {
+                //LogBufferView logBufferView = ((LogBufferContent)styledText.getContent()).logBufferView;
+                
+                //event.indent = 10;
+                event.styles = new StyleRange[] { new StyleRange(event.lineOffset, event.lineText.length(), ColorFactory.BLUE2, ColorFactory.WHITE, SWT.BOLD) };
+            }});
 
 	    LogBuffer logBuffer = Activator.getSimulationManager().getLogBuffer();
 	    //logBuffer.dump();
 	    int systemModuleID = cSimulation.getActiveSimulation().getSystemModule().getId();
         LogBufferView logBufferView = new LogBufferView(logBuffer, systemModuleID, new IntVector());
 	    styledText.setContent(new LogBufferContent(logBufferView));
+	    
 	    
 	    Activator.getSimulationManager().addChangeListener(this);
 	}
