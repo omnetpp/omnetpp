@@ -79,6 +79,9 @@ void LogBuffer::addEvent(eventnumber_t e, simtime_t t, cModule *mod, const char 
     fillEntry(entries.back(), e, t, mod, banner);
     totalLines++;
     totalChars += entries.back().numChars;
+
+    linesAdded(1, entries.back().getNumChars());
+
     discardIfMemoryLimitExceeded();
 }
 
@@ -101,6 +104,7 @@ void LogBuffer::addLogLine(const char *text)
     entry.numChars += lineLength + 1;
     totalLines++;
     totalChars += lineLength + 1;
+
     linesAdded(1, lineLength + 1);
 
     discardIfMemoryLimitExceeded();
@@ -113,6 +117,7 @@ void LogBuffer::addInfo(const char *text)
     fillEntry(entries.back(), 0, 0, NULL, text);
     totalLines++;
     totalChars += entries.back().getNumChars();
+
     linesAdded(1, entries.back().getNumChars());
 
     discardIfMemoryLimitExceeded();

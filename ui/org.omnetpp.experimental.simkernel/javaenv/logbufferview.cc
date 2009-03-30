@@ -60,7 +60,7 @@ void LogBufferView::linesAdded(size_t numLines, size_t numChars)
     totalChars += numChars;
     // currentPos stays valid
 
-    Assert((verifyTotals(), true));
+    //verifyTotals();
 }
 
 void LogBufferView::linesDiscarded(size_t numLines, size_t numChars)
@@ -78,7 +78,7 @@ void LogBufferView::linesDiscarded(size_t numLines, size_t numChars)
         }
     }
 
-    Assert((verifyTotals(), true));
+    //verifyTotals();
 }
 
 void LogBufferView::verifyTotals()

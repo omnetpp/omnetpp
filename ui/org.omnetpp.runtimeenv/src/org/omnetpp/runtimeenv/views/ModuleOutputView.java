@@ -1,5 +1,6 @@
 package org.omnetpp.runtimeenv.views;
 
+import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.LineStyleEvent;
@@ -8,7 +9,10 @@ import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.custom.StyledTextContent;
 import org.eclipse.swt.custom.TextChangeListener;
+import org.eclipse.swt.custom.TextChangedEvent;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.part.ViewPart;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.experimental.simkernel.swig.IntVector;
@@ -18,7 +22,8 @@ import org.omnetpp.experimental.simkernel.swig.cSimulation;
 import org.omnetpp.runtimeenv.Activator;
 import org.omnetpp.runtimeenv.ISimulationListener;
 
-//FIXME TODO: reuse the same LogBufferView object!
+// Note: drawString() is capable of about 50,000 strings/sec! so we should be able to do 1000+ events/sec.
+// However, with StyledText, performance is limited to about 20 events/sec. 
 //FIXME remove try/catch from content provider (or it should log?) 
 //TODO filtering etc
 //TODO support opening multiple instances
@@ -27,9 +32,15 @@ public class ModuleOutputView extends ViewPart implements ISimulationListener {
     
     protected class LogBufferContent implements StyledTextContent {
         private LogBufferView logBufferView;
+        private ListenerList listeners = new ListenerList();
         
         public LogBufferContent(LogBufferView logBufferView) {
             this.logBufferView = logBufferView;    
+        }
+        
+        public void fireTextChanged() {
+            for (Object o : listeners.getListeners())
+                ((TextChangeListener)o).textChanged(new TextChangedEvent(this));
         }
         
         @Override
@@ -89,12 +100,12 @@ public class ModuleOutputView extends ViewPart implements ISimulationListener {
 
         @Override
         public void addTextChangeListener(TextChangeListener listener) {
-            // nothing - editing not supported
+            listeners.add(listener);
         }
 
         @Override
         public void removeTextChangeListener(TextChangeListener listener) {
-            // nothing - editing not supported
+            listeners.remove(listener);
         }
     }
 
@@ -122,8 +133,22 @@ public class ModuleOutputView extends ViewPart implements ISimulationListener {
         LogBufferView logBufferView = new LogBufferView(logBuffer, systemModuleID, new IntVector());
 	    styledText.setContent(new LogBufferContent(logBufferView));
 	    
-	    
 	    Activator.getSimulationManager().addChangeListener(this);
+	    
+	    
+	    //XXX PERF TEST
+	    Display.getDefault().asyncExec(new Runnable() {
+            @Override
+            public void run() {
+                long t = System.currentTimeMillis();
+                GC gc = new GC(styledText);
+                int n = 100000;
+                for (int i=0; i<n; i++) {
+                    gc.drawString("LogBufferView logBufferView = new LogBufferView(logBuffer, systemModuleID, new IntVector());", 10, (int)(10+50*Math.random()));
+                }
+                long dt = System.currentTimeMillis()-t;
+                System.out.println(dt + "ms, strings/sec: " + n * 1000.0 / dt);
+            }});
 	}
 
 	/**
@@ -135,15 +160,23 @@ public class ModuleOutputView extends ViewPart implements ISimulationListener {
 	
 	@Override
 	public void changed() {
-	    //XXX this is same as above
-        LogBuffer logBuffer = Activator.getSimulationManager().getLogBuffer();
-        //logBuffer.dump();
-        int systemModuleID = cSimulation.getActiveSimulation().getSystemModule().getId();
-        LogBufferView logBufferView = new LogBufferView(logBuffer, systemModuleID, new IntVector());
-        styledText.setContent(new LogBufferContent(logBufferView));
-        styledText.setCaretOffset((int)logBufferView.getOffsetAtLine(logBufferView.getNumLines()-1));
+	    styledText.setContent(styledText.getContent());
+        styledText.setCaretOffset(styledText.getOffsetAtLine(styledText.getLineCount()-1));
         styledText.showSelection();
         styledText.redraw();
+	    
+//	    LogBufferView logBufferView = ((LogBufferContent)styledText.getContent()).logBufferView;
+//        GC gc = new GC(styledText);
+//        gc.setBackground(ColorFactory.WHITE);
+//        gc.setForeground(ColorFactory.BLACK);
+//        gc.setFont(JFaceResources.getTextFont());
+//        Point size = styledText.getSize();
+//        gc.fillRectangle(0, 0, size.x, size.y);
+//        int line = (int)logBufferView.getNumLines()-1;
+//        for (int y = size.y; y > 0; ) {
+//	        gc.drawString(logBufferView.getLine(line--), 0, y);
+//	        y -= 16;
+//	    }
 	}
 
 	@Override
