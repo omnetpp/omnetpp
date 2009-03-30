@@ -1,5 +1,6 @@
 package org.omnetpp.runtimeenv.views;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -7,9 +8,8 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
+import org.omnetpp.experimental.simkernel.swig.cClassDescriptor;
 import org.omnetpp.experimental.simkernel.swig.cCollectChildrenVisitor;
 import org.omnetpp.experimental.simkernel.swig.cObject;
 import org.omnetpp.experimental.simkernel.swig.cSimulation;
@@ -70,9 +70,19 @@ public class ObjectTreeView extends ViewPart implements ISimulationListener {
 	    }
 	    
         @Override
-		public Image getImage(Object obj) {
-			return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_ELEMENT);
-		}
+        public Image getImage(Object element) {
+            if (element instanceof cObject) {
+                //FIXME cache image by object's classname!
+                cObject object = (cObject)element;
+                long ptr = cClassDescriptor.getCPtr(object);
+                cClassDescriptor desc = cClassDescriptor.getDescriptorFor(object);
+                String icon = desc.getProperty("icon");
+                if (!StringUtils.isEmpty(icon)) {
+                    return Activator.getImageDescriptor("icons/obj16/"+icon+".png").createImage(); //FIXME TODO error check, caching, look into image path, etc
+                }
+            }
+            return null;
+        }
 	}
 
 	/**
