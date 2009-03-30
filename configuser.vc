@@ -242,8 +242,8 @@ PCAP_CFLAGS=/I "$(PCAP_DIR)/Include"
 PCAP_LIBS=wpcap.lib /libpath:"$(PCAP_DIR)/Lib"
 
 !if "$(PTHREADS_DIR)"!=""
-PTHREADS_CFLAGS=/I "$(PTHREADS_DIR)/include"
-PTHREADS_LIBS=pthreadVC2.lib wsock32.lib /libpath:"$(PTHREADS_DIR)/lib"
+PTHREAD_CFLAGS=/I "$(PTHREADS_DIR)/include"
+PTHREAD_LIBS=pthreadVC2.lib wsock32.lib /libpath:"$(PTHREADS_DIR)/lib"
 !endif
 
 #
