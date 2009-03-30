@@ -21,7 +21,7 @@ import org.omnetpp.runtimeenv.ISimulationListener;
 //FIXME TODO: reuse the same LogBufferView object!
 //FIXME remove try/catch from content provider (or it should log?) 
 //TODO filtering etc
-//TODO banners with different color
+//TODO support opening multiple instances
 public class ModuleOutputView extends ViewPart implements ISimulationListener {
     public static final String ID = "org.omnetpp.runtimeenv.ModuleOutputView";
     
@@ -108,10 +108,12 @@ public class ModuleOutputView extends ViewPart implements ISimulationListener {
         styledText.addLineStyleListener(new LineStyleListener() {
             @Override
             public void lineGetStyle(LineStyleEvent event) {
-                //LogBufferView logBufferView = ((LogBufferContent)styledText.getContent()).logBufferView;
-                
-                //event.indent = 10;
-                event.styles = new StyleRange[] { new StyleRange(event.lineOffset, event.lineText.length(), ColorFactory.BLUE2, ColorFactory.WHITE, SWT.BOLD) };
+                LogBufferView logBufferView = ((LogBufferContent)styledText.getContent()).logBufferView;
+                int lineType = logBufferView.getLineType(logBufferView.getLineAtOffset(event.lineOffset));
+                if (lineType == LogBuffer.LINE_BANNER)
+                    event.styles = new StyleRange[] { new StyleRange(event.lineOffset, event.lineText.length(), ColorFactory.BLUE4, ColorFactory.WHITE, SWT.NORMAL) };
+                else if (lineType == LogBuffer.LINE_INFO)
+                    event.styles = new StyleRange[] { new StyleRange(event.lineOffset, event.lineText.length(), ColorFactory.GREEN4, ColorFactory.WHITE, SWT.NORMAL) };
             }});
 
 	    LogBuffer logBuffer = Activator.getSimulationManager().getLogBuffer();
@@ -139,7 +141,7 @@ public class ModuleOutputView extends ViewPart implements ISimulationListener {
         int systemModuleID = cSimulation.getActiveSimulation().getSystemModule().getId();
         LogBufferView logBufferView = new LogBufferView(logBuffer, systemModuleID, new IntVector());
         styledText.setContent(new LogBufferContent(logBufferView));
-        styledText.setCaretOffset((int)logBufferView.getNumChars()-1);
+        styledText.setCaretOffset((int)logBufferView.getOffsetAtLine(logBufferView.getNumLines()-1));
         styledText.showSelection();
         styledText.redraw();
 	}

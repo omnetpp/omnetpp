@@ -63,6 +63,7 @@ class LogBufferView
       size_t getNumChars() {return totalChars;}
 
       const char *getLine(size_t lineIndex);
+      int getLineType(size_t lineIndex); // LINE_INFO, LINE_BANNER, LINE_LOG
       size_t getLineAtOffset(size_t offset);
       size_t getOffsetAtLine(size_t lineIndex);
 

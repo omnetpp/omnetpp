@@ -139,6 +139,7 @@ public class SimulationManager {
                 while (Display.getCurrent().readAndDispatch());
             }
         }
+//XXX
 //        catch (cTerminationException& e) {
 //            printf("Finished: %s\n", e.what());
 //        }

@@ -102,10 +102,10 @@ public class ModelCanvas extends EditorPart {
         Activator.getSimulationManager().addChangeListener(new ISimulationListener() {
             @Override
             public void changed() {
-                moduleFigure.invalidate();
-                moduleFigure.invalidateTree();
+             //   moduleFigure.invalidate();
+             //   moduleFigure.invalidateTree();
                 
-                System.out.println(cSimulation.getActiveSimulation().getSystemModule().getSubmodule("server").getDisplayString().str());
+             //   System.out.println(cSimulation.getActiveSimulation().getSystemModule().getSubmodule("server").getDisplayString().str());
             }
         });
 

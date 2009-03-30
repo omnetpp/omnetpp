@@ -266,6 +266,13 @@ const char *LogBufferView::getLine(size_t lineIndex)
     return currentEntry->getLine(entryLineNo);
 }
 
+int LogBufferView::getLineType(size_t lineIndex)
+{
+    gotoLine(lineIndex);
+    Assert(currentPosValid);
+    return currentEntry->getLineType(entryLineNo);
+}
+
 size_t LogBufferView::getLineAtOffset(size_t offset)
 {
     gotoOffset(offset);

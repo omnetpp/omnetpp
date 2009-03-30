@@ -33,6 +33,10 @@ class cModule;
 class LogBuffer
 {
   public:
+    // line type
+    enum { LINE_INFO = 0, LINE_BANNER = 1, LINE_LOG = 2 };
+
+    // log entry
     class Entry {
       private:
         friend class LogBuffer;
@@ -54,6 +58,7 @@ class LogBuffer
         size_t getNumChars() const {return numChars;} // incl. newlines
         size_t getLineLength(size_t lineIndex) const {return strlen(getLine(lineIndex))+1;} // incl. newline
         const char *getLine(size_t lineIndex) const {return lineIndex==0 ? banner : lines[lineIndex-1];}
+        int getLineType(size_t lineIndex) const {return !moduleIds ? LINE_INFO : lineIndex==0 ? LINE_BANNER : LINE_LOG;}
     };
 
   protected:

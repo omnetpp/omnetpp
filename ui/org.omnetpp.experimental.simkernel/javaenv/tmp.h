@@ -3,6 +3,12 @@
 #ifndef TMP_H
 #define TMP_H
 
+#define MAX_OBJECTFULLPATH 1024
+#define MAX_CLASSNAME      100
+
+#define LL  INT64_PRINTF_FORMAT
+
+
 /**
  * Emulates an empty omnetpp.ini, causing config options' default values
  * to be used.
@@ -73,7 +79,36 @@ class NotSoMinimalEnv : public MinimalEnv
 
     virtual void simulationEvent(cMessage *msg) {
         cModule *module = simulation.getContextModule();
-        const char *banner = "*** Another event again... ****";
+        printEventBanner(msg, module);
+    }
+
+    // method copied from 4.0 Tkenv
+    void printEventBanner(cMessage *msg, cModule *module) {
+        bool opt_short_banners = false; //FIXME
+
+        // produce banner text
+        char banner[2*MAX_OBJECTFULLPATH+2*MAX_CLASSNAME+60];
+        if (opt_short_banners)
+            sprintf(banner,"** Event #%"LL"d  T=%s  %s, on `%s'",
+                    simulation.getEventNumber(),
+                    SIMTIME_STR(simulation.getSimTime()),
+                    module->getFullPath().c_str(),
+                    msg->getFullName()
+                  );
+        else
+            sprintf(banner,"** Event #%"LL"d  T=%s  %s (%s, id=%d), on %s`%s' (%s, id=%ld)",
+                    simulation.getEventNumber(),
+                    SIMTIME_STR(simulation.getSimTime()),
+                    module->getFullPath().c_str(),
+                    module->getComponentType()->getName(),
+                    module->getId(),
+                    (msg->isSelfMessage() ? "selfmsg " : ""),
+                    msg->getFullName(),
+                    msg->getClassName(),
+                    msg->getId()
+                  );
+
+        // insert into log buffer
         logBuffer.addEvent(simulation.getEventNumber(), simulation.getSimTime(), module, banner);
     }
 
