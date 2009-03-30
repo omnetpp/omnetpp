@@ -1,3 +1,5 @@
+2009-03-12  ------ omnetpp-4.0 released ------
+
 2009-03-28  Andras Varga
 
 	* cClassDescriptor: getFieldAsString() signature change (return 
