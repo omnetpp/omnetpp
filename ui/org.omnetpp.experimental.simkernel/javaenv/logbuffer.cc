@@ -44,7 +44,7 @@ LogBuffer::LogBuffer(int memoryLimit)
     numEntries =0;
     memLimit = memoryLimit;
     totalChars = 0;
-    totalStrings = 0;
+    totalLines = 0;
 }
 
 LogBuffer::~LogBuffer()
@@ -77,7 +77,7 @@ void LogBuffer::addEvent(eventnumber_t e, simtime_t t, cModule *mod, const char 
     entries.push_back(Entry());
     numEntries++;
     fillEntry(entries.back(), e, t, mod, banner);
-    totalStrings++;
+    totalLines++;
     totalChars += entries.back().numChars;
     discardIfMemoryLimitExceeded();
 }
@@ -99,8 +99,9 @@ void LogBuffer::addLogLine(const char *text)
     entry.lines.push_back(opp_strdup(text));
     size_t lineLength = strlen(text); //FIXME opp_strdup() already counted that!!!
     entry.numChars += lineLength + 1;
-    totalStrings++;
-    totalChars += lineLength;
+    totalLines++;
+    totalChars += lineLength + 1;
+    linesAdded(1, lineLength + 1);
 
     discardIfMemoryLimitExceeded();
 }
@@ -110,8 +111,10 @@ void LogBuffer::addInfo(const char *text)
     entries.push_back(Entry());
     numEntries++;
     fillEntry(entries.back(), 0, 0, NULL, text);
-    totalStrings++;
-    totalChars += entries.back().numChars;
+    totalLines++;
+    totalChars += entries.back().getNumChars();
+    linesAdded(1, entries.back().getNumChars());
+
     discardIfMemoryLimitExceeded();
 }
 
@@ -123,15 +126,51 @@ void LogBuffer::setMemoryLimit(size_t limit)
 
 void LogBuffer::discardIfMemoryLimitExceeded()
 {
+    size_t numLinesDiscarded = 0;
+    size_t numCharsDiscarded = 0;
+
     while (estimatedMemUsage() > memLimit && numEntries > 1)  // leave at least 1 entry
     {
         // discard first entry
         Entry& entry = entries.front();
-        totalChars -= entry.numChars;
-        totalStrings -= entry.lines.size()+1;
+        size_t numLines = entry.getNumLines();
+        size_t numChars = entry.getNumChars();
         entries.pop_front();
         numEntries--;
+
+        totalChars -= numChars;
+        totalLines -= numLines;
+        numLinesDiscarded += numLines;
+        numCharsDiscarded += numChars;
     }
+    linesDiscarded(numLinesDiscarded, numCharsDiscarded);
+}
+
+void LogBuffer::addListener(IListener *listener)
+{
+    listeners.push_back(listener);
+}
+
+void LogBuffer::removeListener(IListener *listener)
+{
+    for (int i=0; i<(int)listeners.size(); i++) {
+        if (listeners[i] == listener) {
+            listeners.erase(listeners.begin() + i);
+            return;
+        }
+    }
+}
+
+void LogBuffer::linesAdded(size_t numLines, size_t numChars)
+{
+    for (int i=0; i<(int)listeners.size(); i++)
+        listeners[i]->linesAdded(numLines, numChars);
+}
+
+void LogBuffer::linesDiscarded(size_t numLines, size_t numChars)
+{
+    for (int i=0; i<(int)listeners.size(); i++)
+        listeners[i]->linesDiscarded(numLines, numChars);
 }
 
 #define LL  INT64_PRINTF_FORMAT

@@ -22,7 +22,7 @@
 
 NAMESPACE_BEGIN
 
-class LogBufferView
+class LogBufferView : private LogBuffer::IListener
 {
     private:
       LogBuffer *log;
@@ -45,6 +45,8 @@ class LogBufferView
       size_t entryLineOffset;
 
     private:
+      void countLines();
+      void verifyTotals();
       bool isGood(const LogBuffer::Entry& entry) const;
       void gotoLine(size_t lineIndex);
       void gotoOffset(size_t offset);
@@ -54,6 +56,9 @@ class LogBufferView
       void gotoPreviousLineInEntry();
       void incCurrentEntry();
       void decCurrentEntry();
+
+      void linesAdded(size_t numLines, size_t numChars);
+      void linesDiscarded(size_t numLines, size_t numChars);
 
     public:
       LogBufferView(LogBuffer *log, int moduleId, const std::vector<int>& excludedModuleIds);

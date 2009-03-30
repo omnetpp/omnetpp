@@ -33,6 +33,16 @@ class cModule;
 class LogBuffer
 {
   public:
+    class IListener {
+      public:
+        /** Called when lines get appended at the end of the buffer */
+        virtual void linesAdded(size_t numLines, size_t numChars) = 0;
+        /** Called when old lines get discarded at the beginning of the buffer */
+        virtual void linesDiscarded(size_t numLines, size_t numChars) = 0;
+        /** Virtual dtor */
+        virtual ~IListener() {}
+    };
+
     // line type
     enum { LINE_INFO = 0, LINE_BANNER = 1, LINE_LOG = 2 };
 
@@ -64,18 +74,24 @@ class LogBuffer
   protected:
     size_t memLimit;
     size_t totalChars;
-    size_t totalStrings;
+    size_t totalLines;
     std::list<Entry> entries;
     size_t numEntries;  // gcc's list::size() is O(n)...
+    std::vector<IListener*> listeners;
 
   protected:
     void discardIfMemoryLimitExceeded();
-    size_t estimatedMemUsage() {return totalChars + 8*totalStrings + numEntries*(8+2*sizeof(void*)+sizeof(Entry)+32); }
+    size_t estimatedMemUsage() {return totalChars + 8*totalLines + numEntries*(8+2*sizeof(void*)+sizeof(Entry)+32); }
     void fillEntry(Entry& entry, eventnumber_t e, simtime_t t, cModule *mod, const char *banner);
+    void linesAdded(size_t numLines, size_t numChars);
+    void linesDiscarded(size_t numLines, size_t numChars);
 
   public:
     LogBuffer(int memLimit=10*1024*1024);  // 10MB
     ~LogBuffer();
+
+    void addListener(IListener *listener);
+    void removeListener(IListener *listener);
 
     void addEvent(eventnumber_t e, simtime_t t, cModule *moduleIds, const char *banner);
     void addLogLine(const char *text);

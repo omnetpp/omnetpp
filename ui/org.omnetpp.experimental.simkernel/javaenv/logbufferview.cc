@@ -27,7 +27,19 @@ LogBufferView::LogBufferView(LogBuffer *log, int moduleId, const std::vector<int
     for (int i=0; i<excludedModuleIds.size(); i++)
         this->excludedModuleIds.insert(excludedModuleIds[i]);
 
-    // count lines and chars
+    countLines();
+    currentPosValid = false;
+
+    log->addListener(this);
+}
+
+LogBufferView::~LogBufferView()
+{
+    log->removeListener(this);
+}
+
+void LogBufferView::countLines()
+{
     totalLines = 0;
     totalChars = 0;
     const std::list<LogBuffer::Entry>& entries = log->getEntries();
@@ -40,13 +52,42 @@ LogBufferView::LogBufferView(LogBuffer *log, int moduleId, const std::vector<int
             totalChars += entry.getNumChars();
         }
     }
-
-    // not at a valid position
-    currentPosValid = false;
 }
 
-LogBufferView::~LogBufferView()
+void LogBufferView::linesAdded(size_t numLines, size_t numChars)
 {
+    totalLines += numLines;
+    totalChars += numChars;
+    // currentPos stays valid
+
+    Assert((verifyTotals(), true));
+}
+
+void LogBufferView::linesDiscarded(size_t numLines, size_t numChars)
+{
+    totalLines -= numLines;
+    totalChars -= numChars;
+
+    if (currentPosValid)
+    {
+        if (currentLineIndex < numLines)
+            currentPosValid = false;
+        else {
+            currentLineIndex -= numLines;
+            currentLineOffset -= numChars;
+        }
+    }
+
+    Assert((verifyTotals(), true));
+}
+
+void LogBufferView::verifyTotals()
+{
+    size_t oldTotalLines = totalLines;
+    size_t oldTotalChars = totalChars;
+    countLines();
+    Assert(oldTotalLines==totalLines);
+    Assert(oldTotalChars==totalChars);
 }
 
 bool LogBufferView::isGood(const LogBuffer::Entry& entry) const
