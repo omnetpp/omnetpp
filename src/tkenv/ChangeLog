@@ -1,3 +1,5 @@
+2009-03-12  ------ omnetpp-4.0 released ------
+
 2009-03-08  Andras Varga
 
 	* fixed #52: exclude display update time when doing time-based updates 

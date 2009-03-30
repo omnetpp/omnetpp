@@ -1,3 +1,5 @@
+2009-03-12  ------ omnetpp-4.0 released ------
+
 2009-03-25  Andras Varga
 
 	* bugfix: cArray::clear() crashed if there was a hole (NULL element)
