@@ -9,6 +9,12 @@ import org.eclipse.swt.graphics.Color;
  */
 public interface TextViewerContent {
     /**
+     * Return the number of lines.  Should answer 1 when no text is specified.
+     * The TextViewer widget relies on this behavior for drawing the cursor.
+     */
+    public int getLineCount();
+
+    /**
      * Return the number of characters in the content.
      */
     public int getCharCount();
@@ -44,22 +50,6 @@ public interface TextViewerContent {
      * </ul>
      */
     public int getLineAtOffset(int offset);
-
-    /**
-     * Return the number of lines.  Should answer 1 when no text is specified.
-     * The  TextViewer widget relies on this behavior for drawing the cursor.
-     * <p>
-     *
-     * @return the number of lines.  For example:
-     * <ul>
-     * <li>	text value ==> getLineCount		
-     * <li>	null ==> 1		
-     * <li>	"" ==> 1		
-     * <li>	"a\n" ==> 2			
-     * <li>	"\n\n" ==> 3			
-     * </ul>
-     */
-    public int getLineCount();
 
     /**
      * Return the character offset of the first character of the given line.
