@@ -13,6 +13,7 @@ import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Canvas;
@@ -40,8 +41,9 @@ public class TextViewer extends Canvas {
     protected Color backgroundColor = ColorFactory.WHITE;
     protected Color foregroundColor = ColorFactory.BLACK;
     protected int leftMargin = 0;
-    protected int lineHeight; // measured from font
+    protected int lineHeight, averageCharWidth; // measured from font
     protected int topLineIndex;
+    protected int horizontalScrollOffset; // in pixels
     protected boolean caretState;
     protected int caretLineIndex, caretColumn;
     protected int selectionStartLineIndex, selectionStartColumn;
@@ -136,7 +138,10 @@ public class TextViewer extends Canvas {
 
         @Override
         public void mouseDown(MouseEvent e) {
-            // TODO Auto-generated method stub
+            Point pos = getLineColumnAt(e.x, e.y);
+            caretLineIndex = pos.y;
+            caretColumn = pos.x;
+            redraw();
         }
 
         @Override
@@ -156,7 +161,7 @@ public class TextViewer extends Canvas {
     }
     
     public TextViewer(Composite parent, int style) {
-       super(parent, style | SWT.H_SCROLL | SWT.V_SCROLL);
+        super(parent, style | SWT.H_SCROLL | SWT.V_SCROLL | SWT.NO_REDRAW_RESIZE | SWT.DOUBLE_BUFFERED | SWT.NO_BACKGROUND);
         
         setFont(JFaceResources.getTextFont());
         
@@ -175,11 +180,6 @@ public class TextViewer extends Canvas {
             }
         });
         
-    }
-
-    protected void adjustScrollbars() {
-        getVerticalBar().setSelection(topLineIndex);
-        getHorizontalBar().setSelection(0);
     }
 
     protected void installListeners() {
@@ -209,29 +209,6 @@ public class TextViewer extends Canvas {
 
     }
 
-    protected void handleVerticalScroll(Event event) {
-        topLineIndex = getVerticalBar().getSelection();
-        redraw();
-    }
-
-    protected void handleHorizontalScroll(Event event) {
-        //TODO
-        //topLineIndex = getVerticalBar().getSelection();
-        //redraw();
-    }
-
-    protected void configureScrollbars() {
-        int numVisibleLines = getNumVisibleLines();
-        ScrollBar vsb = getVerticalBar();
-        vsb.setValues(vsb.getSelection(), 0, content.getLineCount(), numVisibleLines, 1, numVisibleLines);
-
-        int numVisibleColumns = getNumVisibleColumns();
-        int maxLineLength = 1000; //FIXME
-        ScrollBar hsb = getHorizontalBar();
-        hsb.setValues(hsb.getSelection(), 0, maxLineLength, numVisibleColumns, 1, numVisibleColumns);
-    }
-
-
     public void setContent(StyledTextContent content) {
         this.content = content;
         redraw();
@@ -243,8 +220,14 @@ public class TextViewer extends Canvas {
     
     public void setFont(Font font) {
         this.font = font;
-        //int height = font.getFontData()[0].getHeight(); //XXX this is in points not pixels!
-        lineHeight = 16; //FIXME measure or calculate from font size in points
+        
+        GC gc = new GC(Display.getCurrent());
+        gc.setFont(font);
+        FontMetrics fontMetrics = gc.getFontMetrics();
+        lineHeight = fontMetrics.getHeight();
+        averageCharWidth = fontMetrics.getAverageCharWidth();
+        gc.dispose();
+        
         redraw();
     }
 
@@ -330,8 +313,15 @@ public class TextViewer extends Canvas {
     }
 
     public int getNumVisibleColumns() {
-        int charWidth = 8; //FIXME hardcoded....
-        return  (getClientArea().width + charWidth - 1) / charWidth;
+        return  (getClientArea().width + averageCharWidth - 1) / averageCharWidth;
+    }
+
+    public Point getLineColumnAt(int x, int y) {
+        int lineIndex = topLineIndex + y / lineHeight;
+        int column = (x - leftMargin + horizontalScrollOffset) / averageCharWidth; //XXX this only works for monospace fonts
+        lineIndex = Math.max(0, Math.min(content.getLineCount()-1, lineIndex));
+        column = Math.max(0, column);
+        return new Point(column, lineIndex);
     }
 
     protected void adjustTopIndex() {
@@ -357,24 +347,52 @@ public class TextViewer extends Canvas {
         if (lineIndex < 0)  
             lineIndex = 0;
 
+        int x = leftMargin - horizontalScrollOffset;
+        
         // draw the lines
         for (int y = 0; y < size.y && lineIndex < numLines; y += lineHeight) {
-            drawLine(gc, lineIndex++, y);
+            drawLine(gc, lineIndex++, x, y);
         }
         
         configureScrollbars(); //FIXME surely not here! (also: this cuts performance in half!)
     }
 
-    protected void drawLine(GC gc, int lineIndex, int y) {
+    protected void drawLine(GC gc, int lineIndex, int x, int y) {
         String line = content.getLine(lineIndex);
-        gc.drawString(line, leftMargin, y);
+        gc.drawString(line, x, y);
         
         if (lineIndex == caretLineIndex && caretState) {
             // draw caret
             String linePrefix = caretColumn >= line.length() ? line : line.substring(0, caretColumn);
-            int caretX = leftMargin + gc.textExtent(linePrefix).x;
+            int caretX = x + gc.textExtent(linePrefix).x;
             gc.drawRectangle(caretX, y, 1, lineHeight-1);
         }
+    }
+
+    protected void configureScrollbars() {
+        int numVisibleLines = getNumVisibleLines();
+        ScrollBar vsb = getVerticalBar();
+        vsb.setValues(vsb.getSelection(), 0, content.getLineCount(), numVisibleLines, 1, numVisibleLines);
+        
+        int maxWidth = 200*averageCharWidth; //FIXME
+        int width = getClientArea().width;
+        ScrollBar hsb = getHorizontalBar();
+        hsb.setValues(hsb.getSelection(), 0, maxWidth, width, 4, width);
+    }
+
+    protected void handleVerticalScroll(Event event) {
+        topLineIndex = getVerticalBar().getSelection();
+        redraw();
+    }
+
+    protected void handleHorizontalScroll(Event event) {
+        horizontalScrollOffset = getHorizontalBar().getSelection();
+        redraw();
+    }
+
+    protected void adjustScrollbars() {
+        getVerticalBar().setSelection(topLineIndex);
+        getHorizontalBar().setSelection(horizontalScrollOffset);
     }
 
 }

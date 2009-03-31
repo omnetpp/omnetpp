@@ -22,8 +22,6 @@ import org.omnetpp.runtimeenv.ISimulationListener;
 public class ModuleOutputView extends ViewPart implements ISimulationListener {
     public static final String ID = "org.omnetpp.runtimeenv.ModuleOutputView";
 
-    // note: memory consumption of StyledText is 8 bytes per line; 
-    // see  StyledTextRenderer.lineWidth[] and lineHeight[]
 //    protected StyledText styledText; //XXX out
     protected TextViewer textViewer;
 
