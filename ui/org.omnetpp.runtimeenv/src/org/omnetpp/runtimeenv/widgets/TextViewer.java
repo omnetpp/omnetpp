@@ -30,7 +30,10 @@ import org.eclipse.swt.widgets.ScrollBar;
  * @author Andras
  */
 //FIXME mouse selection is sluggish
-//FIXME last line not fully visible (even if cursor is there)
+//FIXME last line not fully visible (even if cursor is there) -- when cursor is in the bottom line, adjust to widget edge?
+//TODO implement clipboard
+//TODO cursor should be solid while moving
+//TODO minor glitches with word selection (esp with single-letter words)
 public class TextViewer extends Canvas {
     protected TextViewerContent content;
     protected TextChangeListener textChangeListener;
@@ -375,6 +378,7 @@ public class TextViewer extends Canvas {
     }
 
     protected void doCursorPrevious(boolean select) {
+        caretColumn = Math.min(caretColumn, content.getLine(caretLineIndex).length());
         if (caretColumn > 0) 
             caretColumn--;
         else if (caretLineIndex > 0) {
@@ -641,7 +645,7 @@ public class TextViewer extends Canvas {
     }
 
     public int getCaretOffset() {
-        return content.getOffsetAtLine(caretLineIndex) + caretColumn;
+        return content.getOffsetAtLine(caretLineIndex) + Math.min(caretColumn, content.getLine(caretLineIndex).length());
     }
 
     public void setSelection(int startLineIndex, int startColumn, int endLineIndex, int endColumn) {
@@ -653,7 +657,7 @@ public class TextViewer extends Canvas {
     }
 
     public int getSelectionAnchor() {
-        return content.getOffsetAtLine(selectionAnchorLineIndex) + selectionAnchorColumn;
+        return content.getOffsetAtLine(selectionAnchorLineIndex) + Math.min(selectionAnchorColumn, content.getLine(selectionAnchorLineIndex).length());
     }
 
     public void setSelectionAnchor(int offset) {
