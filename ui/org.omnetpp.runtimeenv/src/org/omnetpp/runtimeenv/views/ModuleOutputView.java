@@ -1,11 +1,7 @@
 package org.omnetpp.runtimeenv.views;
 
 import org.eclipse.core.runtime.ListenerList;
-import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.LineStyleEvent;
-import org.eclipse.swt.custom.LineStyleListener;
-import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.custom.StyledTextContent;
 import org.eclipse.swt.custom.TextChangeListener;
@@ -14,7 +10,6 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.part.ViewPart;
-import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.experimental.simkernel.swig.IntVector;
 import org.omnetpp.experimental.simkernel.swig.LogBuffer;
 import org.omnetpp.experimental.simkernel.swig.LogBufferView;
@@ -29,7 +24,12 @@ import org.omnetpp.runtimeenv.ISimulationListener;
 //TODO support opening multiple instances
 public class ModuleOutputView extends ViewPart implements ISimulationListener {
     public static final String ID = "org.omnetpp.runtimeenv.ModuleOutputView";
-    
+
+    // note: memory consumption of StyledText is 8 bytes per line; 
+    // see  StyledTextRenderer.lineWidth[] and lineHeight[]
+    protected StyledText styledText; //XXX out
+    protected TextViewer textViewer;
+
     protected class LogBufferContent implements StyledTextContent {
         private LogBufferView logBufferView;
         private ListenerList listeners = new ListenerList();
@@ -109,61 +109,64 @@ public class ModuleOutputView extends ViewPart implements ISimulationListener {
         }
     }
 
-    // note: memory consumption of StyledText is 8 bytes per line; 
-    // see  StyledTextRenderer.lineWidth[] and lineHeight[]
-    protected StyledText styledText;
-    
 	public void createPartControl(Composite parent) {
-	    styledText = new StyledText(parent, SWT.V_SCROLL | SWT.H_SCROLL);
-	    styledText.setFont(JFaceResources.getTextFont());
-        styledText.addLineStyleListener(new LineStyleListener() {
-            @Override
-            public void lineGetStyle(LineStyleEvent event) {
-                LogBufferView logBufferView = ((LogBufferContent)styledText.getContent()).logBufferView;
-                int lineType = logBufferView.getLineType(logBufferView.getLineAtOffset(event.lineOffset));
-                if (lineType == LogBuffer.LINE_BANNER)
-                    event.styles = new StyleRange[] { new StyleRange(event.lineOffset, event.lineText.length(), ColorFactory.BLUE4, ColorFactory.WHITE, SWT.NORMAL) };
-                else if (lineType == LogBuffer.LINE_INFO)
-                    event.styles = new StyleRange[] { new StyleRange(event.lineOffset, event.lineText.length(), ColorFactory.GREEN4, ColorFactory.WHITE, SWT.NORMAL) };
-            }});
+//	    styledText = new StyledText(parent, SWT.V_SCROLL | SWT.H_SCROLL);
+//	    styledText.setFont(JFaceResources.getTextFont());
+//        styledText.addLineStyleListener(new LineStyleListener() {
+//            @Override
+//            public void lineGetStyle(LineStyleEvent event) {
+//                LogBufferView logBufferView = ((LogBufferContent)styledText.getContent()).logBufferView;
+//                int lineType = logBufferView.getLineType(logBufferView.getLineAtOffset(event.lineOffset));
+//                if (lineType == LogBuffer.LINE_BANNER)
+//                    event.styles = new StyleRange[] { new StyleRange(event.lineOffset, event.lineText.length(), ColorFactory.BLUE4, ColorFactory.WHITE, SWT.NORMAL) };
+//                else if (lineType == LogBuffer.LINE_INFO)
+//                    event.styles = new StyleRange[] { new StyleRange(event.lineOffset, event.lineText.length(), ColorFactory.GREEN4, ColorFactory.WHITE, SWT.NORMAL) };
+//            }});
 
 	    LogBuffer logBuffer = Activator.getSimulationManager().getLogBuffer();
 	    //logBuffer.dump();
 	    int systemModuleID = cSimulation.getActiveSimulation().getSystemModule().getId();
         LogBufferView logBufferView = new LogBufferView(logBuffer, systemModuleID, new IntVector());
-	    styledText.setContent(new LogBufferContent(logBufferView));
+//	    styledText.setContent(new LogBufferContent(logBufferView));
+
+        textViewer = new TextViewer(parent, SWT.DOUBLE_BUFFERED);
+        textViewer.setContent(new LogBufferContent(logBufferView));
 	    
 	    Activator.getSimulationManager().addChangeListener(this);
 	    
 	    
-	    //XXX PERF TEST
-	    Display.getDefault().asyncExec(new Runnable() {
-            @Override
-            public void run() {
-                long t = System.currentTimeMillis();
-                GC gc = new GC(styledText);
-                int n = 100000;
-                for (int i=0; i<n; i++) {
-                    gc.drawString("LogBufferView logBufferView = new LogBufferView(logBuffer, systemModuleID, new IntVector());", 10, (int)(10+50*Math.random()));
-                }
-                long dt = System.currentTimeMillis()-t;
-                System.out.println(dt + "ms, strings/sec: " + n * 1000.0 / dt);
-            }});
+//	    //XXX PERF TEST
+//	    Display.getDefault().asyncExec(new Runnable() {
+//            @Override
+//            public void run() {
+//                long t = System.currentTimeMillis();
+//                GC gc = new GC(styledText);
+//                int n = 100000;
+//                for (int i=0; i<n; i++) {
+//                    gc.drawString("LogBufferView logBufferView = new LogBufferView(logBuffer, systemModuleID, new IntVector());", 10, (int)(10+50*Math.random()));
+//                }
+//                long dt = System.currentTimeMillis()-t;
+//                System.out.println(dt + "ms, strings/sec: " + n * 1000.0 / dt);
+//            }});
 	}
 
 	/**
 	 * Passing the focus request to the viewer's control.
 	 */
 	public void setFocus() {
-	    styledText.setFocus();
+	    //styledText.setFocus();
+	    textViewer.setFocus();
 	}
 	
 	@Override
 	public void changed() {
-	    styledText.setContent(styledText.getContent());
-        styledText.setCaretOffset(styledText.getOffsetAtLine(styledText.getLineCount()-1));
-        styledText.showSelection();
-        styledText.redraw();
+//	    styledText.setContent(styledText.getContent());
+//        styledText.setCaretOffset(styledText.getOffsetAtLine(styledText.getLineCount()-1));
+//        styledText.showSelection();
+//        styledText.redraw();
+
+	    textViewer.redraw();
+	    textViewer.setTopLineIndex(textViewer.getContent().getLineCount()-1); //XXX
 	    
 //	    LogBufferView logBufferView = ((LogBufferContent)styledText.getContent()).logBufferView;
 //        GC gc = new GC(styledText);
