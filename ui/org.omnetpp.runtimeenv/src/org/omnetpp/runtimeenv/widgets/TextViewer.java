@@ -34,6 +34,7 @@ import org.omnetpp.common.color.ColorFactory;
  * 
  * @author Andras
  */
+//TODO add ourselves as listener to content object
 public class TextViewer extends Canvas {
     protected TextViewerContent content = null;
     protected Font font;
