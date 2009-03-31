@@ -21,7 +21,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.ScrollBar;
-import org.omnetpp.common.color.ColorFactory;
 
 
 /**
@@ -38,8 +37,10 @@ import org.omnetpp.common.color.ColorFactory;
 public class TextViewer extends Canvas {
     protected TextViewerContent content = null;
     protected Font font;
-    protected Color backgroundColor = ColorFactory.WHITE;
-    protected Color foregroundColor = ColorFactory.BLACK;
+    protected Color backgroundColor;
+    protected Color foregroundColor;
+    protected Color selectionBackgroundColor;
+    protected Color selectionForegroundColor;
     protected int leftMargin = 0;
     protected int lineHeight, averageCharWidth; // measured from font
     protected int topLineIndex;
@@ -141,6 +142,10 @@ public class TextViewer extends Canvas {
             Point pos = getLineColumnAt(e.x, e.y);
             caretLineIndex = pos.y;
             caretColumn = pos.x;
+            
+            selectionEndLineIndex = caretLineIndex; //XXX just testing
+            selectionEndColumn = caretColumn;
+
             redraw();
         }
 
@@ -162,7 +167,12 @@ public class TextViewer extends Canvas {
     
     public TextViewer(Composite parent, int style) {
         super(parent, style | SWT.H_SCROLL | SWT.V_SCROLL | SWT.NO_REDRAW_RESIZE | SWT.DOUBLE_BUFFERED | SWT.NO_BACKGROUND);
-        
+
+        backgroundColor = getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND);
+        foregroundColor = getDisplay().getSystemColor(SWT.COLOR_LIST_FOREGROUND);
+        selectionBackgroundColor = getDisplay().getSystemColor(SWT.COLOR_LIST_SELECTION);
+        selectionForegroundColor = getDisplay().getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT);
+
         setFont(JFaceResources.getTextFont());
         
         installListeners();
@@ -179,7 +189,11 @@ public class TextViewer extends Canvas {
                 }
             }
         });
-        
+
+        //XXX just testing
+        selectionStartLineIndex = 2;
+        selectionStartColumn = 5;
+
     }
 
     protected void installListeners() {
@@ -364,6 +378,20 @@ public class TextViewer extends Canvas {
         else {
             gc.setForeground(color);
             gc.drawString(line, x, y);
+            gc.setForeground(foregroundColor);
+        }
+
+        if (lineIndex >= selectionStartLineIndex && lineIndex <= selectionEndLineIndex) {
+            // mixed line
+            int startCol = lineIndex==selectionStartLineIndex ? selectionStartColumn : 0;
+            int endCol = lineIndex==selectionEndLineIndex ? selectionEndColumn : line.length();
+            int startColOffset = gc.textExtent(line.substring(0, startCol)).x;
+            String selection = line.substring(startCol, endCol);
+
+            gc.setBackground(selectionBackgroundColor);
+            gc.setForeground(selectionForegroundColor);
+            gc.drawText(selection, x + startColOffset, y);
+            gc.setBackground(backgroundColor);
             gc.setForeground(foregroundColor);
         }
         
