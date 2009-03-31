@@ -30,6 +30,8 @@ import org.eclipse.swt.widgets.ScrollBar;
  * @author Andras
  */
 //TODO add ourselves as listener to content object
+//FIXME mouse selection is sluggish
+//FIXME last line not fully visible (even if cursor is there)
 public class TextViewer extends Canvas {
     protected TextViewerContent content = null;
     protected Font font;
