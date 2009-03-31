@@ -30,9 +30,9 @@ import org.eclipse.swt.widgets.ScrollBar;
  * @author Andras
  */
 //FIXME mouse selection is sluggish
-//FIXME last line not fully visible (even if cursor is there) -- when cursor is in the bottom line, adjust to widget edge?
-//TODO implement clipboard
-//TODO cursor should be solid while moving
+//FIXME last line not fully visible (even if cursor is there) -- "boolean topAlign", and flip it when cursor reaches first/last screen line?
+//TODO implement clipboard (from StyledText)
+//TODO cursor should be solid while moving (restart timer on any key/mouse/textchange event)
 //TODO minor glitches with word selection (esp with single-letter words)
 public class TextViewer extends Canvas {
     protected TextViewerContent content;
