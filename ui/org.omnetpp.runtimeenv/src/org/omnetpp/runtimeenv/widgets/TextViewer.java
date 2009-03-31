@@ -45,9 +45,10 @@ public class TextViewer extends Canvas {
     protected int caretLineIndex, caretColumn;
     protected int selectionAnchorLineIndex, selectionAnchorColumn; // selection is between anchor and caret
     protected Map<Integer,Integer> keyActionMap = new HashMap<Integer, Integer>(); // key: keycode, value: ST.xxx constants
+    protected Listener listener;
+    protected int clickCount;
 
     final static boolean IS_CARBON, IS_GTK, IS_MOTIF;
-    private Listener listener;
     static {
         String platform = SWT.getPlatform();
         IS_CARBON = "carbon".equals(platform);
@@ -228,10 +229,8 @@ public class TextViewer extends Canvas {
     }
 
     private static int clip(int lower, int upper, int x) {
-        if (x < lower)
-            x = lower;
-        if (x > upper) 
-            x = upper;
+        if (x < lower) x = lower;
+        if (x > upper) x = upper;
         return x;
     }
 
@@ -272,48 +271,6 @@ public class TextViewer extends Canvas {
 //            }
 //        }
 //        clipboardSelection = null;
-    }
-
-    protected void handleMouseDown(Event event) {
-        int clickCount = event.count;
-        Point lineColumn = getLineColumnAt(event.x, event.y);
-        caretLineIndex = clip(0, content.getLineCount()-1, lineColumn.y);
-        caretColumn = clip(0, content.getLine(caretLineIndex).length(), lineColumn.x);
-
-        if (clickCount == 1) {
-            clearSelection();
-        } 
-        else if (clickCount % 2 == 0) {
-            // double click - select word
-            selectionAnchorColumn = 0; //XXX
-        } 
-        else {
-            // triple click - select full line
-            selectionAnchorLineIndex = caretLineIndex;
-            selectionAnchorColumn = 0;
-            if (caretLineIndex < content.getLineCount()-1) {
-                caretLineIndex++;
-                caretColumn = 0;
-            } else {
-                caretColumn = content.getLine(caretLineIndex).length();
-            }
-        }
-    }
-
-    protected void handleMouseUp(Event event) {
-    }
-
-    protected void handleMouseMove(Event event) {
-        if (event.button == 1) {
-            Point lineColumn = getLineColumnAt(event.x, event.y);
-            caretLineIndex = clip(0, content.getLineCount()-1, lineColumn.y);
-            caretColumn = clip(0, content.getLine(caretLineIndex).length(), lineColumn.x);
-        }
-    }
-
-    protected void handleResize(Event event) {
-        // TODO Auto-generated method stub
-        configureScrollbars();
     }
 
     // code from StyledText
@@ -376,7 +333,7 @@ public class TextViewer extends Canvas {
             // Modification         
             case ST.COPY: copy(); break;
         }
-        showCaret();
+        revealCaret();
         adjustScrollbars();
         redraw();
     }
@@ -384,7 +341,7 @@ public class TextViewer extends Canvas {
     /**
      * Scroll the caret into view
      */
-    protected void showCaret() {
+    protected void revealCaret() {
         if (caretLineIndex < topLineIndex)
             topLineIndex = caretLineIndex;
         if (caretLineIndex >= topLineIndex + getNumVisibleLines())
@@ -456,12 +413,44 @@ public class TextViewer extends Canvas {
     }
     
     protected void doWordPrevious(boolean select) {
-        // TODO Auto-generated method stub
+        String line = content.getLine(caretLineIndex);
+        int pos = caretColumn;
+        if (pos == 0) {
+            // go to end of previous line
+            if (caretLineIndex > 0) {
+                caretLineIndex--;
+                caretColumn = content.getLine(caretLineIndex).length();
+            }
+        } else {
+            // go to start of current or previous word
+            pos--; // move at least one character
+            while (pos > 0 && !isWordChar(line.charAt(pos-1))) 
+                pos--;
+            while (pos > 0 && isWordChar(line.charAt(pos-1)))
+                pos--;
+            caretColumn = pos;
+        }
         if (!select) clearSelection();
     }
 
     protected void doWordNext(boolean select) {
-        // TODO Auto-generated method stub
+        String line = content.getLine(caretLineIndex);
+        int pos = caretColumn;
+        if (pos == line.length()) {
+            // go to start of next line
+            if (caretLineIndex < content.getLineCount()-1) {
+                caretLineIndex++;
+                caretColumn = 0;
+            }
+        } else {
+            // go to end of current or next word
+            pos++; // move at least one character
+            while (pos < line.length() && isWordChar(line.charAt(pos)))
+                pos++;
+            while (pos < line.length() && !isWordChar(line.charAt(pos))) 
+                pos++;
+            caretColumn = pos;
+        }
         if (!select) clearSelection();
     }
 
@@ -503,6 +492,57 @@ public class TextViewer extends Canvas {
 
     protected void copy() {
         // TODO Auto-generated method stub
+    }
+
+    protected boolean isWordChar(char ch) {
+        return Character.isLetterOrDigit(ch) || ch=='_' || ch=='@';
+    }
+
+    protected void handleMouseDown(Event event) {
+        clickCount = event.count;
+        Point lineColumn = getLineColumnAt(event.x, event.y);
+        caretLineIndex = clip(0, content.getLineCount()-1, lineColumn.y);
+        caretColumn = clip(0, content.getLine(caretLineIndex).length(), lineColumn.x);
+
+        if (clickCount == 1) {
+            boolean select = (event.stateMask & SWT.MOD2) != 0;
+            if (!select)
+                clearSelection();
+        } 
+        else if (clickCount % 2 == 0) {
+            // double click - select word
+            doWordPrevious(false);
+            doWordNext(true);
+        } 
+        else {
+            // triple click - select full line
+            selectionAnchorLineIndex = caretLineIndex;
+            selectionAnchorColumn = 0;
+            if (caretLineIndex < content.getLineCount()-1) {
+                caretLineIndex++;
+                caretColumn = 0;
+            } else {
+                caretColumn = content.getLine(caretLineIndex).length();
+            }
+        }
+    }
+
+    protected void handleMouseUp(Event event) {
+        clickCount = 0;
+    }
+
+    protected void handleMouseMove(Event event) {
+        if (clickCount > 0) {
+            Point lineColumn = getLineColumnAt(event.x, event.y);
+            caretLineIndex = clip(0, content.getLineCount()-1, lineColumn.y);
+            caretColumn = clip(0, content.getLine(caretLineIndex).length(), lineColumn.x);
+        }
+    }
+
+    protected void handleResize(Event event) {
+        configureScrollbars();
+        revealCaret();
+        adjustScrollbars();
     }
 
     public void setContent(TextViewerContent content) {
@@ -616,10 +656,6 @@ public class TextViewer extends Canvas {
         lineIndex = clip(0, content.getLineCount()-1, lineIndex);
         column = Math.max(0, column);
         return new Point(column, lineIndex);
-    }
-
-    protected void adjustTopIndex() {
-        // TODO Auto-generated method stub
     }
 
     protected void handlePaint(Event e) {
