@@ -2,30 +2,29 @@ package org.omnetpp.runtimeenv.views;
 
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.StyledTextContent;
-import org.eclipse.swt.custom.TextChangeListener;
-import org.eclipse.swt.custom.TextChangedEvent;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
+import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.experimental.simkernel.swig.IntVector;
 import org.omnetpp.experimental.simkernel.swig.LogBuffer;
 import org.omnetpp.experimental.simkernel.swig.LogBufferView;
 import org.omnetpp.experimental.simkernel.swig.cSimulation;
 import org.omnetpp.runtimeenv.Activator;
 import org.omnetpp.runtimeenv.ISimulationListener;
+import org.omnetpp.runtimeenv.widgets.TextChangeListener;
+import org.omnetpp.runtimeenv.widgets.TextViewer;
+import org.omnetpp.runtimeenv.widgets.TextViewerContent;
 
-// Note: drawString() is capable of about 50,000 strings/sec! so we should be able to do 1000+ events/sec.
-// However, with StyledText, performance is limited to about 20 events/sec. 
-//FIXME remove try/catch from content provider (or it should log?) 
 //TODO filtering etc
 //TODO support opening multiple instances
+//FIXME remove try/catch from content provider (or it should log?) 
 public class ModuleOutputView extends ViewPart implements ISimulationListener {
     public static final String ID = "org.omnetpp.runtimeenv.ModuleOutputView";
 
-//    protected StyledText styledText; //XXX out
     protected TextViewer textViewer;
 
-    protected class LogBufferContent implements StyledTextContent {
+    protected class LogBufferContent implements TextViewerContent {
         private LogBufferView logBufferView;
         private ListenerList listeners = new ListenerList();
         
@@ -35,7 +34,7 @@ public class ModuleOutputView extends ViewPart implements ISimulationListener {
         
         public void fireTextChanged() {
             for (Object o : listeners.getListeners())
-                ((TextChangeListener)o).textChanged(new TextChangedEvent(this));
+                ((TextChangeListener)o).textChanged(this);
         }
         
         @Override
@@ -55,6 +54,17 @@ public class ModuleOutputView extends ViewPart implements ISimulationListener {
             try {
                 return logBufferView.getLine(lineIndex);
             } catch (RuntimeException e) { e.printStackTrace(); return ""; }
+        }
+
+        @Override
+        public Color getLineColor(int lineIndex) {
+            int lineType = logBufferView.getLineType(lineIndex);
+            if (lineType == LogBuffer.LINE_BANNER)
+                return ColorFactory.BLUE4;
+            else if (lineType == LogBuffer.LINE_INFO)
+                return ColorFactory.GREEN4;
+            else
+                return null;
         }
 
         @Override
@@ -79,21 +89,6 @@ public class ModuleOutputView extends ViewPart implements ISimulationListener {
         }
 
         @Override
-        public String getLineDelimiter() {
-            return "\n";
-        }
-        
-        @Override
-        public void setText(String text) {
-            // nothing - editing not supported
-        }
-
-        @Override
-        public void replaceTextRange(int start, int replaceLength, String text) {
-            // nothing - editing not supported
-        }
-
-        @Override
         public void addTextChangeListener(TextChangeListener listener) {
             listeners.add(listener);
         }
@@ -102,27 +97,13 @@ public class ModuleOutputView extends ViewPart implements ISimulationListener {
         public void removeTextChangeListener(TextChangeListener listener) {
             listeners.remove(listener);
         }
+
     }
 
 	public void createPartControl(Composite parent) {
-//	    styledText = new StyledText(parent, SWT.V_SCROLL | SWT.H_SCROLL);
-//	    styledText.setFont(JFaceResources.getTextFont());
-//        styledText.addLineStyleListener(new LineStyleListener() {
-//            @Override
-//            public void lineGetStyle(LineStyleEvent event) {
-//                LogBufferView logBufferView = ((LogBufferContent)styledText.getContent()).logBufferView;
-//                int lineType = logBufferView.getLineType(logBufferView.getLineAtOffset(event.lineOffset));
-//                if (lineType == LogBuffer.LINE_BANNER)
-//                    event.styles = new StyleRange[] { new StyleRange(event.lineOffset, event.lineText.length(), ColorFactory.BLUE4, ColorFactory.WHITE, SWT.NORMAL) };
-//                else if (lineType == LogBuffer.LINE_INFO)
-//                    event.styles = new StyleRange[] { new StyleRange(event.lineOffset, event.lineText.length(), ColorFactory.GREEN4, ColorFactory.WHITE, SWT.NORMAL) };
-//            }});
-
 	    LogBuffer logBuffer = Activator.getSimulationManager().getLogBuffer();
-	    //logBuffer.dump();
 	    int systemModuleID = cSimulation.getActiveSimulation().getSystemModule().getId();
         LogBufferView logBufferView = new LogBufferView(logBuffer, systemModuleID, new IntVector());
-//	    styledText.setContent(new LogBufferContent(logBufferView));
 
         textViewer = new TextViewer(parent, SWT.DOUBLE_BUFFERED);
         textViewer.setContent(new LogBufferContent(logBufferView));
@@ -149,16 +130,11 @@ public class ModuleOutputView extends ViewPart implements ISimulationListener {
 	 * Passing the focus request to the viewer's control.
 	 */
 	public void setFocus() {
-	    //styledText.setFocus();
 	    textViewer.setFocus();
 	}
 	
 	@Override
 	public void changed() {
-//	    styledText.setContent(styledText.getContent());
-//        styledText.setCaretOffset(styledText.getOffsetAtLine(styledText.getLineCount()-1));
-//        styledText.showSelection();
-
 	    textViewer.redraw();
 	    textViewer.setTopLineIndex(textViewer.getContent().getLineCount()-1); //XXX
 	    

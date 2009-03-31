@@ -1,8 +1,7 @@
-package org.omnetpp.runtimeenv.views;
+package org.omnetpp.runtimeenv.widgets;
 
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.StyledTextContent;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseEvent;
@@ -27,7 +26,7 @@ import org.omnetpp.common.color.ColorFactory;
 
 /**
  * For efficient viewing of a large amount of text. We use this instead of 
- * StyledText plus a custom StyledTextContent class, because StyledTextRenderer 
+ * StyledText plus a custom ITextViewerContent class, because StyledTextRenderer 
  * is very slow. Its throughput is about 20..30 events/sec, while this class
  * has about 200..300 (counting with average 2 lines/event). Also, this class 
  * has constant memory consumption (StyleTextRenderer consumes minimum 8 bytes 
@@ -36,7 +35,7 @@ import org.omnetpp.common.color.ColorFactory;
  * @author Andras
  */
 public class TextViewer extends Canvas {
-    protected StyledTextContent content = null;
+    protected TextViewerContent content = null;
     protected Font font;
     protected Color backgroundColor = ColorFactory.WHITE;
     protected Color foregroundColor = ColorFactory.BLACK;
@@ -209,12 +208,12 @@ public class TextViewer extends Canvas {
 
     }
 
-    public void setContent(StyledTextContent content) {
+    public void setContent(TextViewerContent content) {
         this.content = content;
         redraw();
     }
 
-    public StyledTextContent getContent() {
+    public TextViewerContent getContent() {
         return content;
     }
     
@@ -350,16 +349,22 @@ public class TextViewer extends Canvas {
         int x = leftMargin - horizontalScrollOffset;
         
         // draw the lines
-        for (int y = 0; y < size.y && lineIndex < numLines; y += lineHeight) {
+        for (int y = 0; y < size.y && lineIndex < numLines; y += lineHeight)
             drawLine(gc, lineIndex++, x, y);
-        }
         
         configureScrollbars(); //FIXME surely not here! (also: this cuts performance in half!)
     }
 
     protected void drawLine(GC gc, int lineIndex, int x, int y) {
         String line = content.getLine(lineIndex);
-        gc.drawString(line, x, y);
+        Color color = content.getLineColor(lineIndex);
+        if (color == null)
+            gc.drawString(line, x, y);
+        else {
+            gc.setForeground(color);
+            gc.drawString(line, x, y);
+            gc.setForeground(foregroundColor);
+        }
         
         if (lineIndex == caretLineIndex && caretState) {
             // draw caret
