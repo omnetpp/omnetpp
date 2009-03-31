@@ -2,13 +2,10 @@ package org.omnetpp.runtimeenv.views;
 
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.custom.StyledTextContent;
 import org.eclipse.swt.custom.TextChangeListener;
 import org.eclipse.swt.custom.TextChangedEvent;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.part.ViewPart;
 import org.omnetpp.experimental.simkernel.swig.IntVector;
 import org.omnetpp.experimental.simkernel.swig.LogBuffer;
@@ -27,7 +24,7 @@ public class ModuleOutputView extends ViewPart implements ISimulationListener {
 
     // note: memory consumption of StyledText is 8 bytes per line; 
     // see  StyledTextRenderer.lineWidth[] and lineHeight[]
-    protected StyledText styledText; //XXX out
+//    protected StyledText styledText; //XXX out
     protected TextViewer textViewer;
 
     protected class LogBufferContent implements StyledTextContent {
@@ -163,7 +160,6 @@ public class ModuleOutputView extends ViewPart implements ISimulationListener {
 //	    styledText.setContent(styledText.getContent());
 //        styledText.setCaretOffset(styledText.getOffsetAtLine(styledText.getLineCount()-1));
 //        styledText.showSelection();
-//        styledText.redraw();
 
 	    textViewer.redraw();
 	    textViewer.setTopLineIndex(textViewer.getContent().getLineCount()-1); //XXX
@@ -180,6 +176,7 @@ public class ModuleOutputView extends ViewPart implements ISimulationListener {
 //	        gc.drawString(logBufferView.getLine(line--), 0, y);
 //	        y -= 16;
 //	    }
+//        gc.dispose();
 	}
 
 	@Override

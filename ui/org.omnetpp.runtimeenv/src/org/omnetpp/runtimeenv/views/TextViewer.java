@@ -18,13 +18,19 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.ScrollBar;
 import org.omnetpp.common.color.ColorFactory;
 
 
 /**
- * For efficient viewing of a large amount of text. About 10x faster than 
- * StyledText, and has constant memory consumption (StyleTextRenderer consumes 
- * minimum 8 bytes per line, see lineWidth[] and lineHeight[] arrays).
+ * For efficient viewing of a large amount of text. We use this instead of 
+ * StyledText plus a custom StyledTextContent class, because StyledTextRenderer 
+ * is very slow. Its throughput is about 20..30 events/sec, while this class
+ * has about 200..300 (counting with average 2 lines/event). Also, this class 
+ * has constant memory consumption (StyleTextRenderer consumes minimum 8 bytes 
+ * per line, see lineWidth[] and lineHeight[] arrays).
  * 
  * @author Andras
  */
@@ -50,15 +56,20 @@ public class TextViewer extends Canvas {
 
         @Override
         public void keyPressed(KeyEvent e) {
+            //TODO see StyledText: createKeyBindings(), invokeAction()
             caretState = true;  //XXX also restart blink timer
             switch (e.keyCode) {
                 case SWT.ARROW_UP:
                     caretLineIndex = Math.max(0, caretLineIndex-1);
+                    adjustTopIndex();
                     redraw();
+                    adjustScrollbars();
                     break;
                 case SWT.ARROW_DOWN:
                     caretLineIndex = Math.max(0, Math.min(content.getLineCount()-1, caretLineIndex+1));
+                    adjustTopIndex();
                     redraw();
+                    adjustScrollbars();
                     break;
                 case SWT.ARROW_LEFT:
                     if (caretColumn > 0) 
@@ -67,7 +78,9 @@ public class TextViewer extends Canvas {
                         caretLineIndex--;
                         caretColumn = content.getLine(caretLineIndex).length();
                     }
+                    adjustTopIndex();
                     redraw();
+                    adjustScrollbars();
                     break;
                 case SWT.ARROW_RIGHT:
                     if (caretColumn < content.getLine(caretLineIndex).length())
@@ -76,29 +89,37 @@ public class TextViewer extends Canvas {
                         caretLineIndex++;
                         caretColumn = 0;
                     }
+                    adjustTopIndex();
                     redraw();
+                    adjustScrollbars();
                     break;
                 case SWT.PAGE_DOWN:
-                    int numVisibleLines = (getSize().y + lineHeight - 1) / lineHeight;
-                    caretLineIndex += Math.max(1, numVisibleLines-2);
+                    int pageLines = Math.max(1, getNumVisibleLines()-1);
+                    caretLineIndex += pageLines;
+                    topLineIndex += pageLines;
                     if (caretLineIndex >= content.getLineCount())
                         caretLineIndex = content.getLineCount()-1;
                     redraw();
+                    adjustScrollbars();
                     break;
                 case SWT.PAGE_UP:
-                    int numVisibleLines2 = (getSize().y + lineHeight - 1) / lineHeight;
-                    caretLineIndex -= Math.max(1, numVisibleLines2-2);
+                    int pageLines2 = Math.max(1, getNumVisibleLines()-1);
+                    caretLineIndex -= pageLines2;
+                    topLineIndex -= pageLines2;
                     if (caretLineIndex < 0)
                         caretLineIndex = 0;
                     redraw();
+                    adjustScrollbars();
                     break;
                 case SWT.HOME:
                     caretColumn = 0;
                     redraw();
+                    adjustScrollbars();
                     break;
                 case SWT.END:
                     caretColumn = content.getLine(caretLineIndex).length();
                     redraw();
+                    adjustScrollbars();
                     break;
             }
         }
@@ -135,11 +156,11 @@ public class TextViewer extends Canvas {
     }
     
     public TextViewer(Composite parent, int style) {
-        super(parent, style | SWT.H_SCROLL | SWT.V_SCROLL);
+       super(parent, style | SWT.H_SCROLL | SWT.V_SCROLL);
         
         setFont(JFaceResources.getTextFont());
         
-        addListeners();
+        installListeners();
         
         // cursor blinking
         //XXX disable if not focused
@@ -153,16 +174,63 @@ public class TextViewer extends Canvas {
                 }
             }
         });
+        
     }
 
-    protected void addListeners() {
+    protected void adjustScrollbars() {
+        getVerticalBar().setSelection(topLineIndex);
+        getHorizontalBar().setSelection(0);
+    }
+
+    protected void installListeners() {
         TextViewerListener listener = new TextViewerListener();
         addPaintListener(listener);
         addKeyListener(listener);
         addMouseListener(listener);
         addMouseMoveListener(listener);
         addMouseWheelListener(listener);
+        
+        ScrollBar verticalBar = getVerticalBar();
+        if (verticalBar != null) {
+            verticalBar.addListener(SWT.Selection, new Listener() {
+                public void handleEvent(Event event) {
+                    handleVerticalScroll(event);
+                }
+            });
+        }
+        ScrollBar horizontalBar = getHorizontalBar();
+        if (horizontalBar != null) {
+            horizontalBar.addListener(SWT.Selection, new Listener() {
+                public void handleEvent(Event event) {
+                    handleHorizontalScroll(event);
+                }
+            });
+        }
+
     }
+
+    protected void handleVerticalScroll(Event event) {
+        topLineIndex = getVerticalBar().getSelection();
+        redraw();
+    }
+
+    protected void handleHorizontalScroll(Event event) {
+        //TODO
+        //topLineIndex = getVerticalBar().getSelection();
+        //redraw();
+    }
+
+    protected void configureScrollbars() {
+        int numVisibleLines = getNumVisibleLines();
+        ScrollBar vsb = getVerticalBar();
+        vsb.setValues(vsb.getSelection(), 0, content.getLineCount(), numVisibleLines, 1, numVisibleLines);
+
+        int numVisibleColumns = getNumVisibleColumns();
+        int maxLineLength = 1000; //FIXME
+        ScrollBar hsb = getHorizontalBar();
+        hsb.setValues(hsb.getSelection(), 0, maxLineLength, numVisibleColumns, 1, numVisibleColumns);
+    }
+
 
     public void setContent(StyledTextContent content) {
         this.content = content;
@@ -204,6 +272,7 @@ public class TextViewer extends Canvas {
 
     public void setTopLineIndex(int topLineIndex) {
         this.topLineIndex = topLineIndex;
+        adjustScrollbars();
         redraw();
     }
 
@@ -256,6 +325,19 @@ public class TextViewer extends Canvas {
         return lineHeight;
     }
 
+    public int getNumVisibleLines() {
+        return  (getClientArea().height + lineHeight - 1) / lineHeight;
+    }
+
+    public int getNumVisibleColumns() {
+        int charWidth = 8; //FIXME hardcoded....
+        return  (getClientArea().width + charWidth - 1) / charWidth;
+    }
+
+    protected void adjustTopIndex() {
+        // TODO Auto-generated method stub
+    }
+
     protected void handlePaintEvent(PaintEvent e) {
         GC gc = e.gc;
         gc.setBackground(backgroundColor);
@@ -267,7 +349,7 @@ public class TextViewer extends Canvas {
         
         int lineIndex = topLineIndex;
         int numLines = content.getLineCount();
-        int numVisibleLines = (size.y + lineHeight - 1) / lineHeight;
+        int numVisibleLines = getNumVisibleLines();
 
         // adjust lineIndex
         if (lineIndex > numLines-numVisibleLines)
@@ -279,6 +361,8 @@ public class TextViewer extends Canvas {
         for (int y = 0; y < size.y && lineIndex < numLines; y += lineHeight) {
             drawLine(gc, lineIndex++, y);
         }
+        
+        configureScrollbars(); //FIXME surely not here! (also: this cuts performance in half!)
     }
 
     protected void drawLine(GC gc, int lineIndex, int y) {

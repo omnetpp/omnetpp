@@ -128,15 +128,27 @@ public class SimulationManager {
     public void run() {
         cSimulation sim = cSimulation.getActiveSimulation();
         stopRequested = false;
+        long tStart = System.currentTimeMillis();
+        long numEvents = 0;
         try {
             while (sim.getSimTime() < 100000 && !stopRequested) {
                 cSimpleModule mod = sim.selectNextModule();
                 if (mod == null)
                     break;  //XXX
                 sim.doOneEvent(mod);
-                
+
                 updateUI();
                 while (Display.getCurrent().readAndDispatch());
+                
+                //XXX preliminary speed metering, for debugging purposes
+                numEvents++;
+                if ((numEvents&16) == 0 && System.currentTimeMillis()-tStart > 1000) {
+                    long t = System.currentTimeMillis();
+                    long dt = t - tStart;
+                    System.out.println("events/sec: " + (numEvents * 1000.0 / dt));
+                    numEvents = 0;
+                    tStart = t;
+                }
             }
         }
 //XXX
