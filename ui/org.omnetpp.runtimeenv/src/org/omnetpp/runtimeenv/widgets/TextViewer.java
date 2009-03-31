@@ -43,8 +43,7 @@ public class TextViewer extends Canvas {
     protected int horizontalScrollOffset; // in pixels
     protected boolean caretState;
     protected int caretLineIndex, caretColumn;
-    protected int selectionStartLineIndex, selectionStartColumn;
-    protected int selectionEndLineIndex, selectionEndColumn;
+    protected int selectionAnchorLineIndex, selectionAnchorColumn; // selection is between anchor and caret
     protected Map<Integer,Integer> keyActionMap = new HashMap<Integer, Integer>(); // key: keycode, value: ST.xxx constants
 
     final static boolean IS_CARBON, IS_GTK, IS_MOTIF;
@@ -83,11 +82,6 @@ public class TextViewer extends Canvas {
                 }
             }
         });
-
-        //XXX just testing
-        selectionStartLineIndex = 2;
-        selectionStartColumn = 5;
-
     }
 
     protected void installListeners() {
@@ -233,6 +227,14 @@ public class TextViewer extends Canvas {
         return action == null ? SWT.NULL : action.intValue();
     }
 
+    private static int clip(int lower, int upper, int x) {
+        if (x < lower)
+            x = lower;
+        if (x > upper) 
+            x = upper;
+        return x;
+    }
+
     // code from StyledText
     protected void handleDispose(Event event) {
         removeListener(SWT.Dispose, listener);
@@ -273,15 +275,40 @@ public class TextViewer extends Canvas {
     }
 
     protected void handleMouseDown(Event event) {
-        // TODO Auto-generated method stub
+        int clickCount = event.count;
+        Point lineColumn = getLineColumnAt(event.x, event.y);
+        caretLineIndex = clip(0, content.getLineCount()-1, lineColumn.y);
+        caretColumn = clip(0, content.getLine(caretLineIndex).length(), lineColumn.x);
+
+        if (clickCount == 1) {
+            clearSelection();
+        } 
+        else if (clickCount % 2 == 0) {
+            // double click - select word
+            selectionAnchorColumn = 0; //XXX
+        } 
+        else {
+            // triple click - select full line
+            selectionAnchorLineIndex = caretLineIndex;
+            selectionAnchorColumn = 0;
+            if (caretLineIndex < content.getLineCount()-1) {
+                caretLineIndex++;
+                caretColumn = 0;
+            } else {
+                caretColumn = content.getLine(caretLineIndex).length();
+            }
+        }
     }
 
     protected void handleMouseUp(Event event) {
-        // TODO Auto-generated method stub
     }
 
     protected void handleMouseMove(Event event) {
-        // TODO Auto-generated method stub
+        if (event.button == 1) {
+            Point lineColumn = getLineColumnAt(event.x, event.y);
+            caretLineIndex = clip(0, content.getLineCount()-1, lineColumn.y);
+            caretColumn = clip(0, content.getLine(caretLineIndex).length(), lineColumn.x);
+        }
     }
 
     protected void handleResize(Event event) {
@@ -358,16 +385,26 @@ public class TextViewer extends Canvas {
      * Scroll the caret into view
      */
     protected void showCaret() {
-        // TODO Auto-generated method stub
-        
+        if (caretLineIndex < topLineIndex)
+            topLineIndex = caretLineIndex;
+        if (caretLineIndex >= topLineIndex + getNumVisibleLines())
+            topLineIndex = caretLineIndex - getNumVisibleLines() + 1;
+
+        // TODO with columns too
+//        if (caretColumn < )
+//            topLineIndex = caretLineIndex;
+//        if (caretLineIndex >= topLineIndex + getNumVisibleLines())
+//            topLineIndex = caretLineIndex - getNumVisibleLines() + 1;
     }
 
     protected void doLineUp(boolean select) {
         caretLineIndex = Math.max(0, caretLineIndex-1);
+        if (!select) clearSelection();
     }
 
     protected void doLineDown(boolean select) {
-        caretLineIndex = Math.max(0, Math.min(content.getLineCount()-1, caretLineIndex+1));
+        caretLineIndex = clip(0, content.getLineCount()-1, caretLineIndex+1);
+        if (!select) clearSelection();
     }
 
     protected void doCursorPrevious(boolean select) {
@@ -377,6 +414,7 @@ public class TextViewer extends Canvas {
             caretLineIndex--;
             caretColumn = content.getLine(caretLineIndex).length();
         }
+        if (!select) clearSelection();
     }
 
     protected void doCursorNext(boolean select) {
@@ -386,14 +424,16 @@ public class TextViewer extends Canvas {
             caretLineIndex++;
             caretColumn = 0;
         }
+        if (!select) clearSelection();
     }
 
     protected void doPageUp(boolean select) {
-        int pageLines2 = Math.max(1, getNumVisibleLines()-1);
-        caretLineIndex -= pageLines2;
-        topLineIndex -= pageLines2;
+        int pageLines = Math.max(1, getNumVisibleLines()-1);
+        caretLineIndex -= pageLines;
+        topLineIndex -= pageLines;
         if (caretLineIndex < 0)
             caretLineIndex = 0;
+        if (!select) clearSelection();
     }
 
     protected void doPageDown(boolean select) {
@@ -402,50 +442,63 @@ public class TextViewer extends Canvas {
         topLineIndex += pageLines;
         if (caretLineIndex >= content.getLineCount())
             caretLineIndex = content.getLineCount()-1;
+        if (!select) clearSelection();
     }
 
     protected void doLineStart(boolean select) {
         caretColumn = 0;
+        if (!select) clearSelection();
     }
 
     protected void doLineEnd(boolean select) {
         caretColumn = content.getLine(caretLineIndex).length();
+        if (!select) clearSelection();
     }
     
     protected void doWordPrevious(boolean select) {
         // TODO Auto-generated method stub
+        if (!select) clearSelection();
     }
 
     protected void doWordNext(boolean select) {
         // TODO Auto-generated method stub
+        if (!select) clearSelection();
     }
 
     protected void doPageStart(boolean select) {
         caretLineIndex = topLineIndex;
         caretColumn = 0;
+        if (!select) clearSelection();
     }
     
     protected void doPageEnd(boolean select) {
         caretLineIndex = topLineIndex + getNumVisibleLines();
         caretColumn = content.getLine(caretLineIndex).length();
+        if (!select) clearSelection();
     }
 
     protected void doContentStart(boolean select) {
         caretLineIndex = 0;
         caretColumn = 0;
+        if (!select) clearSelection();
     }
 
     protected void doContentEnd(boolean select) {
         caretLineIndex = content.getLineCount()-1;
         caretColumn = content.getLine(caretLineIndex).length();
+        if (!select) clearSelection();
     }
 
     protected void selectAll() {
-        // TODO Auto-generated method stub
+        selectionAnchorLineIndex = 0;
+        selectionAnchorColumn = 0;
+        caretLineIndex = content.getLineCount()-1;
+        caretColumn = content.getLine(caretLineIndex).length();
     }
 
-    protected void clearSelection(boolean select) {
-        // TODO Auto-generated method stub
+    protected void clearSelection() {
+        selectionAnchorLineIndex = caretLineIndex;
+        selectionAnchorColumn = caretColumn;
     }
 
     protected void copy() {
@@ -511,40 +564,38 @@ public class TextViewer extends Canvas {
         caretColumn = column;
     }
 
-    public int getCaretLineIndex() {
-        return caretLineIndex;
+    public void setCaretOffset(int offset) {
+        offset = clip(0, content.getCharCount(), offset);
+        caretLineIndex = content.getLineAtOffset(offset);
+        caretColumn = offset - content.getOffsetAtLine(caretLineIndex);
     }
 
-    public int getCaretColumn() {
-        return caretColumn;
+    public int getCaretOffset() {
+        return content.getOffsetAtLine(caretLineIndex) + caretColumn;
     }
 
-    public void setSelectionStart(int lineIndex, int column) {
-        selectionStartLineIndex = lineIndex;
-        selectionStartColumn = column;
+    public void setSelection(int startLineIndex, int startColumn, int endLineIndex, int endColumn) {
+        selectionAnchorLineIndex = startLineIndex;
+        selectionAnchorColumn = startColumn;
+        caretLineIndex = endLineIndex;
+        caretColumn = endColumn;
         redraw();
     }
 
-    public int getSelectionStartLineIndex() {
-        return selectionStartLineIndex;
+    public int getSelectionAnchor() {
+        return content.getOffsetAtLine(selectionAnchorLineIndex) + selectionAnchorColumn;
     }
 
-    public int getSelectionStartColumn() {
-        return selectionStartColumn;
+    public void setSelectionAnchor(int offset) {
+        offset = clip(0, content.getCharCount(), offset);
+        selectionAnchorLineIndex = content.getLineAtOffset(offset);
+        selectionAnchorColumn = offset - content.getOffsetAtLine(selectionAnchorLineIndex);
     }
-
-    public void setSelectionEnd(int lineIndex, int column) {
-        selectionEndLineIndex = lineIndex;
-        selectionEndColumn = column;
-        redraw();
-    }
-
-    public int getSelectionEndLineIndex() {
-        return selectionEndLineIndex;
-    }
-
-    public int getSelectionEndColumn() {
-        return selectionEndColumn;
+    
+    public Point getSelection() {
+        int a = getSelectionAnchor();
+        int b = getCaretOffset();
+        return a < b ? new Point(a,b) : new Point(b,a);
     }
 
     public int getLineHeight() {
@@ -562,7 +613,7 @@ public class TextViewer extends Canvas {
     public Point getLineColumnAt(int x, int y) {
         int lineIndex = topLineIndex + y / lineHeight;
         int column = (x - leftMargin + horizontalScrollOffset) / averageCharWidth; //XXX this only works for monospace fonts
-        lineIndex = Math.max(0, Math.min(content.getLineCount()-1, lineIndex));
+        lineIndex = clip(0, content.getLineCount()-1, lineIndex);
         column = Math.max(0, column);
         return new Point(column, lineIndex);
     }
@@ -600,6 +651,7 @@ public class TextViewer extends Canvas {
     }
 
     protected void drawLine(GC gc, int lineIndex, int x, int y) {
+        // draw the line in the specified color
         String line = content.getLine(lineIndex);
         Color color = content.getLineColor(lineIndex);
         if (color == null)
@@ -610,18 +662,27 @@ public class TextViewer extends Canvas {
             gc.setForeground(foregroundColor);
         }
 
-        if (lineIndex >= selectionStartLineIndex && lineIndex <= selectionEndLineIndex) {
-            // mixed line
-            int startCol = lineIndex==selectionStartLineIndex ? selectionStartColumn : 0;
-            int endCol = lineIndex==selectionEndLineIndex ? selectionEndColumn : line.length();
-            int startColOffset = gc.textExtent(line.substring(0, startCol)).x;
-            String selection = line.substring(startCol, endCol);
+        // if there is selection, draw it
+        if (selectionAnchorLineIndex!=caretLineIndex || selectionAnchorColumn!=caretColumn) {
+            Point p = getSelection();
+            int selStartLineIndex = content.getLineAtOffset(p.x);
+            int selStartColumn = p.x - content.getOffsetAtLine(selStartLineIndex);
+            int selEndLineIndex = content.getLineAtOffset(p.y);
+            int selEndColumn = p.y - content.getOffsetAtLine(selEndLineIndex);
 
-            gc.setBackground(selectionBackgroundColor);
-            gc.setForeground(selectionForegroundColor);
-            gc.drawText(selection, x + startColOffset, y);
-            gc.setBackground(backgroundColor);
-            gc.setForeground(foregroundColor);
+            // if lineIndex is in the selected region, redraw the selected part
+            if (lineIndex >= selStartLineIndex && lineIndex <= selEndLineIndex) {
+                int startColumn = lineIndex==selStartLineIndex ? selStartColumn : 0;
+                int endColumn = lineIndex==selEndLineIndex ? selEndColumn : line.length();
+                int startColOffset = gc.textExtent(line.substring(0, startColumn)).x;
+                String selection = line.substring(startColumn, endColumn);
+
+                gc.setBackground(selectionBackgroundColor);
+                gc.setForeground(selectionForegroundColor);
+                gc.drawText(selection, x + startColOffset, y);
+                gc.setBackground(backgroundColor);
+                gc.setForeground(foregroundColor);
+            }
         }
         
         if (lineIndex == caretLineIndex && caretState) {
