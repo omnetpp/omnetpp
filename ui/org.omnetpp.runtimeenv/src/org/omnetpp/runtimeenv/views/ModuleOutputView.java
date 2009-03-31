@@ -135,8 +135,8 @@ public class ModuleOutputView extends ViewPart implements ISimulationListener {
 	
 	@Override
 	public void changed() {
-	    textViewer.redraw();
-	    textViewer.setTopLineIndex(textViewer.getContent().getLineCount()-1); //XXX
+	    textViewer.refresh();
+	    textViewer.setTopLineIndex(textViewer.getContent().getLineCount()-1);
 	    
 //	    LogBufferView logBufferView = ((LogBufferContent)styledText.getContent()).logBufferView;
 //        GC gc = new GC(styledText);

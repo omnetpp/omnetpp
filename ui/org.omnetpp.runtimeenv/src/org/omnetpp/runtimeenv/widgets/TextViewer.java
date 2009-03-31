@@ -29,11 +29,11 @@ import org.eclipse.swt.widgets.ScrollBar;
  * 
  * @author Andras
  */
-//TODO add ourselves as listener to content object
 //FIXME mouse selection is sluggish
 //FIXME last line not fully visible (even if cursor is there)
 public class TextViewer extends Canvas {
-    protected TextViewerContent content = null;
+    protected TextViewerContent content;
+    protected TextChangeListener textChangeListener;
     protected Font font;
     protected Color backgroundColor;
     protected Color foregroundColor;
@@ -69,6 +69,13 @@ public class TextViewer extends Canvas {
 
         setFont(JFaceResources.getTextFont());
         
+        textChangeListener = new TextChangeListener() {
+            @Override
+            public void textChanged(TextViewerContent textViewer) {
+                contentChanged();
+            }
+        };
+
         installListeners();
         
         createKeyBindings();
@@ -241,7 +248,8 @@ public class TextViewer extends Canvas {
         removeListener(SWT.Dispose, listener);
         notifyListeners(SWT.Dispose, event);
         event.type = SWT.None;
-        // TODO content.removeTextChangeListener(textChangeListener);
+        if (content != null)
+            content.removeTextChangeListener(textChangeListener);
         // TODO dispose clipboard etc
     }
 
@@ -548,14 +556,34 @@ public class TextViewer extends Canvas {
     }
 
     public void setContent(TextViewerContent content) {
+        if (this.content != null)
+            this.content.removeTextChangeListener(textChangeListener);
         this.content = content;
-        redraw();
+        if (content != null)
+            content.addTextChangeListener(textChangeListener);
+
+        contentChanged();
     }
 
     public TextViewerContent getContent() {
         return content;
     }
     
+    public void refresh() {
+        contentChanged();
+    }
+    
+    protected void contentChanged() {
+        caretLineIndex = clip(0, content.getLineCount()-1, caretLineIndex);
+        caretColumn = clip(0, content.getLine(caretLineIndex).length(), caretColumn);
+        selectionAnchorLineIndex = clip(0, content.getLineCount()-1, selectionAnchorLineIndex);
+        selectionAnchorColumn = clip(0, content.getLine(caretLineIndex).length(), selectionAnchorColumn);
+        configureScrollbars();
+        revealCaret();
+        adjustScrollbars();
+        redraw();
+    }
+
     public void setFont(Font font) {
         this.font = font;
         
