@@ -28,6 +28,7 @@ public class GraphicalModulePart {
     protected CompoundModuleFigure moduleFigure;
     protected int moduleID;
     protected Map<Integer,SubmoduleFigure> submodules = new HashMap<Integer,SubmoduleFigure>();
+    protected Map<Integer,String> lastSubmoduleDisplayStrings = new HashMap<Integer,String>();
     protected ISimulationListener simulationListener;
     protected MouseListener mouseListener;
     
@@ -90,6 +91,7 @@ public class GraphicalModulePart {
     }
 
     protected void refreshChildren() {
+        //TODO only call this function if there were any moduleCreated/moduleDeleted notifications from the simkernel
         cSimulation sim = cSimulation.getActiveSimulation();
         ArrayList<Integer> toBeRemoved = null;
         ArrayList<Integer> toBeAdded = null;
@@ -105,7 +107,7 @@ public class GraphicalModulePart {
 
         // find submodules that not yet have a figure
         for (cModule_SubmoduleIterator it = new cModule_SubmoduleIterator(sim.getModule(moduleID)); !it.end(); it.next()) {
-            int id = it.get().getId();
+            int id = it.get().getId();  //FIXME performance: add getModuleId() to the iterator directly
             if (!submodules.containsKey(id)) {
                 if (toBeAdded == null)
                     toBeAdded = new ArrayList<Integer>();
@@ -118,6 +120,7 @@ public class GraphicalModulePart {
             for (int id : toBeRemoved) {
                 moduleFigure.getSubmoduleLayer().remove(submodules.get(id));
                 submodules.remove(id);
+                lastSubmoduleDisplayStrings.remove(id);
             }
         }
         if (toBeAdded != null) {
@@ -128,6 +131,7 @@ public class GraphicalModulePart {
                 submoduleFigure.setName(sim.getModule(id).getFullName());
                 moduleFigure.getSubmoduleLayer().add(submoduleFigure);
                 submodules.put(id, submoduleFigure);
+                lastSubmoduleDisplayStrings.put(id, null);
             }
         }
     }
@@ -135,16 +139,21 @@ public class GraphicalModulePart {
     protected void refreshVisuals() {
         cSimulation sim = cSimulation.getActiveSimulation();
         for (int id : submodules.keySet()) {
-            SubmoduleFigure submoduleFigure = submodules.get(id);
             cDisplayString displayString = sim.getModule(id).getDisplayString();
-            submoduleFigure.setDisplayString(displayString);
+            String displayStringText = displayString.toString();
+            if (!displayStringText.equals(lastSubmoduleDisplayStrings.get(id))) {
+                SubmoduleFigure submoduleFigure = submodules.get(id);
+                submoduleFigure.setDisplayString(displayString);
 
-            // layouting magic
-            SubmoduleConstraint constraint = new SubmoduleConstraint();
-            constraint.setLocation(submoduleFigure.getPreferredLocation());
-            constraint.setSize(submoduleFigure.getPreferredSize());
-            Assert.isTrue(constraint.height != -1 && constraint.width != -1);
-            moduleFigure.getSubmoduleLayer().setConstraint(submoduleFigure, constraint);
+                // layouting magic
+                SubmoduleConstraint constraint = new SubmoduleConstraint();
+                constraint.setLocation(submoduleFigure.getPreferredLocation());
+                constraint.setSize(submoduleFigure.getPreferredSize());
+                Assert.isTrue(constraint.height != -1 && constraint.width != -1);
+                moduleFigure.getSubmoduleLayer().setConstraint(submoduleFigure, constraint);
+                
+                lastSubmoduleDisplayStrings.put(id, displayStringText);
+            }
         }
     }
 
