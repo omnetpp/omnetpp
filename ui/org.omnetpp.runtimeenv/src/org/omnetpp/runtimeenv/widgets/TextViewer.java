@@ -633,19 +633,19 @@ public class TextViewer extends Canvas {
     }
     
     protected void contentChanged() {
-        // NOTE: for performance reasons, we reset caret to the end of the content:
-        // this way we don't need call content.getLine(lineIndex) for a line index
-        // that's far away from the displayed area (the underlying content provider
-        // uses an iterator, so it would take time for it to move to the caret line!)
-        // If you really want to preserve the original position, store it and restore
-        // it after the content change.
-        caretLineIndex = selectionAnchorLineIndex = content.getLineCount() - 1;
-        caretColumn = selectionAnchorColumn = 0;
+        // adjust caret and selection line index
+        caretLineIndex = clip(0, content.getLineCount()-1, caretLineIndex);
+        selectionAnchorLineIndex = clip(0, content.getLineCount()-1, selectionAnchorLineIndex);
 
-        // commented out because verifying the column is too costly:
-        //caretLineIndex = clip(0, content.getLineCount()-1, caretLineIndex);
+        // NOTE: for performance reasons, DO NOT ADJUST COLUMN INDICES!!! An out-of-bounds
+        // column index causes no problem, but to clip it to the line length would require
+        // us to ask the content provide for the line -- at that can be very COSTLY if
+        // the line index is far from the currently displayed line range. (The underlying
+        // content provider was not designed for random access, it takes O(n) time to 
+        // return a random line!!!)
+        //
+        // So, do NOT do this:
         //caretColumn = clip(0, content.getLine(caretLineIndex).length(), caretColumn);
-        //selectionAnchorLineIndex = clip(0, content.getLineCount()-1, selectionAnchorLineIndex);
         //selectionAnchorColumn = clip(0, content.getLine(caretLineIndex).length(), selectionAnchorColumn);
         
         configureScrollbars();
@@ -699,17 +699,32 @@ public class TextViewer extends Canvas {
         return topLineIndex;
     }
 
+    /**
+     * This is the efficient way to set the caret position.
+     */
     public void setCaretPosition(int lineIndex, int column) {
-        caretLineIndex = lineIndex;
-        caretColumn = column;
+        caretLineIndex = clip(0, lineIndex, content.getLineCount()-1);
+        caretColumn = Math.max(0, column);  // do NOT clip to line length! content provider may be O(n)
+        clearSelection();
+        redraw();
     }
 
+    /** 
+     * Sets the caret offset. CAUTION: Due to O(n) content provider, this method 
+     * is inefficient if the caret is off-screen by several lines. 
+     */
     public void setCaretOffset(int offset) {
         offset = clip(0, content.getCharCount(), offset);
         caretLineIndex = content.getLineAtOffset(offset);
         caretColumn = offset - content.getOffsetAtLine(caretLineIndex);
+        clearSelection();
+        redraw();
     }
 
+    /** 
+     * Returns the caret offset. CAUTION: Due to O(n) content provider, this method 
+     * is inefficient if the caret is off-screen by several lines. 
+     */
     public int getCaretOffset() {
         return content.getOffsetAtLine(caretLineIndex) + Math.min(caretColumn, content.getLine(caretLineIndex).length());
     }
@@ -730,6 +745,7 @@ public class TextViewer extends Canvas {
         offset = clip(0, content.getCharCount(), offset);
         selectionAnchorLineIndex = content.getLineAtOffset(offset);
         selectionAnchorColumn = offset - content.getOffsetAtLine(selectionAnchorLineIndex);
+        redraw();
     }
     
     public Point getSelection() {
