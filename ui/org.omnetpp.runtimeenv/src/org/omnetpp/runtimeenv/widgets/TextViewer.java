@@ -39,6 +39,8 @@ import org.eclipse.swt.widgets.ScrollBar;
 //TODO cursor should be solid while moving (restart timer on any key/mouse/textchange event)
 //TODO minor glitches with word selection (esp with single-letter words)
 //TODO drag-autoscroll
+//TODO try with proportional font?
+//TODO finish horiz scrolling!
 public class TextViewer extends Canvas {
     protected TextViewerContent content;
     protected TextChangeListener textChangeListener;
