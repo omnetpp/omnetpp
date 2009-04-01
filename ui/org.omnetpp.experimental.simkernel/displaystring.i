@@ -15,6 +15,8 @@
 }
 
 %typemap(javacode) cDisplayString %{
+  private static final cDisplayString emptyDefaults = new cDisplayString(EMPTY_DEFAULTS_STR);
+
   public boolean containsProperty(Prop prop) {
     return getTagArgNull(prop.getTagName(), prop.getPos()) != null;
   }
@@ -26,6 +28,7 @@
   public float getAsFloat(Prop prop, float defaultValue) {
     try {
       String propValue = getTagArgNull(prop.getTagName(), prop.getPos());
+      if (propValue==null) propValue = emptyDefaults.getTagArgNull(prop.getTagName(), prop.getPos());
       return propValue==null ? defaultValue : Float.valueOf(propValue);
     } catch (NumberFormatException e) { }
     return defaultValue;
@@ -34,13 +37,16 @@
   public int getAsInt(Prop prop, int defaultValue) {
     try {
       String propValue = getTagArgNull(prop.getTagName(), prop.getPos());
+      if (propValue==null) propValue = emptyDefaults.getTagArgNull(prop.getTagName(), prop.getPos());
       return propValue==null ? defaultValue : Integer.valueOf(propValue);
     } catch (NumberFormatException e) { }
     return defaultValue;
   }
 
   public String getAsString(Prop prop) {
-    return getTagArg(prop.getTagName(), prop.getPos());
+    String propValue = getTagArgNull(prop.getTagName(), prop.getPos());
+    if (propValue==null) propValue = emptyDefaults.getTagArgNull(prop.getTagName(), prop.getPos());
+    return propValue==null ? "" : propValue;
   }
 
   public Dimension getCompoundSize(Float scale) {
