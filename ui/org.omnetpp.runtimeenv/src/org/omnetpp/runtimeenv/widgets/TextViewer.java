@@ -35,10 +35,11 @@ import org.eclipse.swt.widgets.ScrollBar;
  * 
  * @author Andras
  */
-//FIXME mouse selection is sluggish
 //FIXME last line not fully visible (even if cursor is there) -- "boolean topAlign", and flip it when cursor reaches first/last screen line?
 //TODO cursor should be solid while moving (restart timer on any key/mouse/textchange event)
 //TODO minor glitches with word selection (esp with single-letter words)
+//TODO mouse wheel support
+//TODO drag-autoscroll
 public class TextViewer extends Canvas {
     protected TextViewerContent content;
     protected TextChangeListener textChangeListener;
@@ -51,8 +52,8 @@ public class TextViewer extends Canvas {
     protected int lineHeight, averageCharWidth; // measured from font
     protected int topLineIndex;
     protected int horizontalScrollOffset; // in pixels
-    protected boolean caretState;
-    protected int caretLineIndex, caretColumn;
+    protected boolean caretShown = true; // during blinking
+    protected int caretLineIndex, caretColumn;  // caretColumn may be greater than line length!
     protected int selectionAnchorLineIndex, selectionAnchorColumn; // selection is between anchor and caret
     protected Map<Integer,Integer> keyActionMap = new HashMap<Integer, Integer>(); // key: keycode, value: ST.xxx constants
     protected Listener listener;
@@ -98,7 +99,7 @@ public class TextViewer extends Canvas {
             @Override
             public void run() {
                 if (!isDisposed()) {
-                    caretState = !caretState;
+                    caretShown = !caretShown;
                     redraw();
                     Display.getCurrent().timerExec(500, this);
                 }
@@ -607,6 +608,7 @@ public class TextViewer extends Canvas {
                 caretColumn = content.getLine(caretLineIndex).length();
             }
         }
+        redraw();
     }
 
     protected void handleMouseUp(Event event) {
@@ -619,12 +621,14 @@ public class TextViewer extends Canvas {
             caretLineIndex = clip(0, content.getLineCount()-1, lineColumn.y);
             caretColumn = clip(0, content.getLine(caretLineIndex).length(), lineColumn.x);
         }
+        redraw();
     }
 
     protected void handleResize(Event event) {
         configureScrollbars();
         revealCaret();
         adjustScrollbars();
+        redraw();
     }
 
     public void setContent(TextViewerContent content) {
@@ -823,7 +827,7 @@ public class TextViewer extends Canvas {
             }
         }
         
-        if (lineIndex == caretLineIndex && caretState) {
+        if (lineIndex == caretLineIndex && caretShown) {
             // draw caret
             String linePrefix = caretColumn >= line.length() ? line : line.substring(0, caretColumn);
             int caretX = x + gc.textExtent(linePrefix).x;
