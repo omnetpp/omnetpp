@@ -1,5 +1,6 @@
 package org.omnetpp.runtimeenv.editors;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,10 +13,7 @@ import org.omnetpp.experimental.simkernel.swig.cModule;
 import org.omnetpp.experimental.simkernel.swig.cModule_SubmoduleIterator;
 import org.omnetpp.experimental.simkernel.swig.cSimulation;
 import org.omnetpp.figures.CompoundModuleFigure;
-import org.omnetpp.figures.ConnectionFigure;
 import org.omnetpp.figures.SubmoduleFigure;
-import org.omnetpp.figures.anchors.CompoundModuleGateAnchor;
-import org.omnetpp.figures.anchors.GateAnchor;
 import org.omnetpp.figures.layout.SubmoduleConstraint;
 import org.omnetpp.runtimeenv.Activator;
 import org.omnetpp.runtimeenv.ISimulationListener;
@@ -47,28 +45,14 @@ public class GraphicalModulePart {
 
         moduleFigure.setDisplayString(module.getDisplayString());
         
-        for (cModule_SubmoduleIterator it = new cModule_SubmoduleIterator(module); !it.end(); it.next()) {
-            cModule submodule = it.get();
-            SubmoduleFigure submoduleFigure = new SubmoduleFigure();
-            submodules.put(submodule.getId(), submoduleFigure);
-            submoduleFigure.setDisplayString(submodule.getDisplayString());
-            submoduleFigure.setName(submodule.getFullName());
-            submoduleFigure.setPinDecoration(false);
-            moduleFigure.getSubmoduleLayer().add(submoduleFigure);
-            
-            SubmoduleConstraint constraint = new SubmoduleConstraint();
-            constraint.setLocation(submoduleFigure.getPreferredLocation());
-            constraint.setSize(submoduleFigure.getPreferredSize());
-            Assert.isTrue(constraint.height != -1 && constraint.width != -1);
-            moduleFigure.getSubmoduleLayer().setConstraint(submoduleFigure, constraint);
-            
-            //TODO just testing
-            ConnectionFigure connectionFigure = new ConnectionFigure();
-            connectionFigure.setArrowHeadEnabled(true);
-            connectionFigure.setSourceAnchor(new GateAnchor(submoduleFigure));
-            connectionFigure.setTargetAnchor(new CompoundModuleGateAnchor(moduleFigure));
-            moduleFigure.getConnectionLayer().add(connectionFigure);
-        }
+//            //TODO just testing
+//            ConnectionFigure connectionFigure = new ConnectionFigure();
+//            connectionFigure.setArrowHeadEnabled(true);
+//            connectionFigure.setSourceAnchor(new GateAnchor(submoduleFigure));
+//            connectionFigure.setTargetAnchor(new CompoundModuleGateAnchor(moduleFigure));
+//            moduleFigure.getConnectionLayer().add(connectionFigure);
+
+        update();
 
         moduleFigure.addMouseListener(mouseListener = new MouseListener() {
             @Override
@@ -91,6 +75,7 @@ public class GraphicalModulePart {
                 update();
             }
         });
+        
     }
 
     public void dispose() {
@@ -98,10 +83,67 @@ public class GraphicalModulePart {
     }
     
     protected void update() {
-        //XXX
-        //   moduleFigure.invalidate();
-        //   moduleFigure.invalidateTree();
-        //   System.out.println(cSimulation.getActiveSimulation().getSystemModule().getSubmodule("server").getDisplayString().str());
+        refreshChildren();
+        refreshVisuals();
+        //XXX System.out.println(cSimulation.getActiveSimulation().getSystemModule().getSubmodule("server").getDisplayString().str());
+    }
+
+    protected void refreshChildren() {
+        cSimulation sim = cSimulation.getActiveSimulation();
+        ArrayList<Integer> toBeRemoved = null;
+        ArrayList<Integer> toBeAdded = null;
+        
+        // find submodule figures whose module has been deleted
+        for (int id : submodules.keySet()) {
+            if (sim.getModule(id) == null) { //FIXME create & use moduleExists(id) for efficiency
+                if (toBeRemoved == null)
+                    toBeRemoved = new ArrayList<Integer>();
+                toBeRemoved.add(id);
+            }
+        }
+
+        // find submodules that not yet have a figure
+        for (cModule_SubmoduleIterator it = new cModule_SubmoduleIterator(sim.getModule(moduleID)); !it.end(); it.next()) {
+            int id = it.get().getId();
+            if (!submodules.containsKey(id)) {
+                if (toBeAdded == null)
+                    toBeAdded = new ArrayList<Integer>();
+                toBeAdded.add(id);
+            }
+        }
+
+        // do the removals and additions
+        if (toBeRemoved != null) {
+            for (int id : toBeRemoved) {
+                moduleFigure.remove(submodules.get(id));
+                submodules.remove(id);
+            }
+        }
+        if (toBeAdded != null) {
+            for (int id : toBeAdded) {
+                // create figure
+                SubmoduleFigure submoduleFigure = new SubmoduleFigure();
+                submoduleFigure.setPinDecoration(false);
+                submoduleFigure.setName(sim.getModule(id).getFullName());
+                moduleFigure.getSubmoduleLayer().add(submoduleFigure);
+                submodules.put(id, submoduleFigure);
+            }
+        }
+    }
+
+    protected void refreshVisuals() {
+        cSimulation sim = cSimulation.getActiveSimulation();
+        for (int id : submodules.keySet()) {
+            SubmoduleFigure submoduleFigure = submodules.get(id);
+            submoduleFigure.setDisplayString(sim.getModule(id).getDisplayString());
+
+            // layouting magic
+            SubmoduleConstraint constraint = new SubmoduleConstraint();
+            constraint.setLocation(submoduleFigure.getPreferredLocation());
+            constraint.setSize(submoduleFigure.getPreferredSize());
+            Assert.isTrue(constraint.height != -1 && constraint.width != -1);
+            moduleFigure.getSubmoduleLayer().setConstraint(submoduleFigure, constraint);
+        }
     }
 
     protected void handleMousePressed(MouseEvent me) {
