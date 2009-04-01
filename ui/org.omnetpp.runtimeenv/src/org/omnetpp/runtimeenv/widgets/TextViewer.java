@@ -350,6 +350,7 @@ public class TextViewer extends Canvas {
             topLineIndex = caretLineIndex;
         if (caretLineIndex >= topLineIndex + getNumVisibleLines())
             topLineIndex = caretLineIndex - getNumVisibleLines() + 1;
+        topLineIndex = clip(0, Math.max(0, content.getLineCount()-getNumVisibleLines()), topLineIndex);
 
         // TODO with columns too
 //        if (caretColumn < )
@@ -392,7 +393,7 @@ public class TextViewer extends Canvas {
     protected void doPageUp(boolean select) {
         int pageLines = Math.max(1, getNumVisibleLines()-1);
         caretLineIndex = Math.max(0, caretLineIndex - pageLines);
-        topLineIndex = Math.max(0, topLineIndex - pageLines);
+        topLineIndex = clip(0, Math.max(0,content.getLineCount()-getNumVisibleLines()), topLineIndex - pageLines);
         if (!select) clearSelection();
     }
 
@@ -400,7 +401,7 @@ public class TextViewer extends Canvas {
         int pageLines = Math.max(1, getNumVisibleLines()-1);
         int lastLineIndex = content.getLineCount()-1;
         caretLineIndex = Math.min(lastLineIndex, caretLineIndex + pageLines);
-        topLineIndex = Math.min(lastLineIndex, topLineIndex + pageLines);
+        topLineIndex = clip(0, Math.max(0,content.getLineCount()-getNumVisibleLines()), topLineIndex + pageLines);
         if (!select) clearSelection();
     }
 
@@ -463,7 +464,7 @@ public class TextViewer extends Canvas {
     }
     
     protected void doPageEnd(boolean select) {
-        caretLineIndex = topLineIndex + getNumVisibleLines();
+        caretLineIndex = Math.min(content.getLineCount()-1, topLineIndex + getNumVisibleLines());
         caretColumn = content.getLine(caretLineIndex).length();
         if (!select) clearSelection();
     }
@@ -603,7 +604,7 @@ public class TextViewer extends Canvas {
 
     protected void handleMouseWheel(Event event) {
         topLineIndex += event.count;
-        topLineIndex = clip(0, content.getLineCount()-getNumVisibleLines(), topLineIndex);
+        adjustScrollbars();
         redraw();
     }
 
@@ -679,7 +680,7 @@ public class TextViewer extends Canvas {
 
     public void setTopLineIndex(int topLineIndex) {
         this.topLineIndex = topLineIndex;
-        adjustScrollbars();
+        adjustScrollbars(); // this will fix the value if it was out of range
         redraw();
     }
 
@@ -755,13 +756,11 @@ public class TextViewer extends Canvas {
         Rectangle r = getClientArea();
         gc.fillRectangle(r.x, r.y, r.width, r.height);
         
-        int lineIndex = topLineIndex;
         int numLines = content.getLineCount();
         int numVisibleLines = getNumVisibleLines();
 
-        //FIXME topLineIndex must be at most Math.max(0,numLines-numVisibleLines-1) at all times!
-        Assert.isTrue(topLineIndex>=0 && topLineIndex<numLines);
-        Assert.isTrue(caretLineIndex>=0 && caretLineIndex<numLines);
+        Assert.isTrue(topLineIndex >= 0 && topLineIndex <= Math.max(0,numLines-numVisibleLines));
+        Assert.isTrue(caretLineIndex >= 0 && caretLineIndex < numLines);
         
         if (!alignTop && caretLineIndex==topLineIndex)
             alignTop = true;
@@ -773,6 +772,7 @@ public class TextViewer extends Canvas {
         int x = leftMargin - horizontalScrollOffset;
         
         // draw the lines
+        int lineIndex = topLineIndex;
         for (int y = startY; y < r.y+r.height && lineIndex < numLines; y += lineHeight) {
             drawLine(gc, lineIndex++, x, y);
         }
@@ -844,7 +844,11 @@ public class TextViewer extends Canvas {
         redraw();
     }
 
+    /**
+     * Fix topLineIndex and adjust scrollbar selections.
+     */
     protected void adjustScrollbars() {
+        topLineIndex = clip(0, Math.max(0,content.getLineCount()-getNumVisibleLines()), topLineIndex);
         getVerticalBar().setSelection(topLineIndex);
         getHorizontalBar().setSelection(horizontalScrollOffset);
     }
