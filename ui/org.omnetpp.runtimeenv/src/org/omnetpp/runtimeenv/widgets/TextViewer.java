@@ -38,7 +38,6 @@ import org.eclipse.swt.widgets.ScrollBar;
 //FIXME last line not fully visible (even if cursor is there) -- "boolean topAlign", and flip it when cursor reaches first/last screen line?
 //TODO cursor should be solid while moving (restart timer on any key/mouse/textchange event)
 //TODO minor glitches with word selection (esp with single-letter words)
-//TODO mouse wheel support
 //TODO drag-autoscroll
 public class TextViewer extends Canvas {
     protected TextViewerContent content;
@@ -117,6 +116,7 @@ public class TextViewer extends Canvas {
                     case SWT.MouseDown: handleMouseDown(event); break;
                     case SWT.MouseUp: handleMouseUp(event); break;
                     case SWT.MouseMove: handleMouseMove(event); break;
+                    case SWT.MouseWheel: handleMouseWheel(event); break;
                     case SWT.Paint: handlePaint(event); break;
                     case SWT.Resize: handleResize(event); break;
                 }
@@ -128,6 +128,7 @@ public class TextViewer extends Canvas {
         addListener(SWT.MouseDown, listener);
         addListener(SWT.MouseUp, listener);
         addListener(SWT.MouseMove, listener);
+        addListener(SWT.MouseWheel, listener);
         addListener(SWT.Paint, listener);
         addListener(SWT.Resize, listener);
 
@@ -624,9 +625,14 @@ public class TextViewer extends Canvas {
         redraw();
     }
 
+    protected void handleMouseWheel(Event event) {
+        topLineIndex += event.count;
+        topLineIndex = clip(0, content.getLineCount()-getNumVisibleLines(), topLineIndex);
+        redraw();
+    }
+
     protected void handleResize(Event event) {
         configureScrollbars();
-        revealCaret();
         adjustScrollbars();
         redraw();
     }
