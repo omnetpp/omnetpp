@@ -16,6 +16,10 @@ import org.omnetpp.experimental.simkernel.swig.cSimulation;
 import org.omnetpp.runtimeenv.Activator;
 import org.omnetpp.runtimeenv.ISimulationListener;
 
+/**
+ * 
+ * @author Andras
+ */
 public class ObjectTreeView extends ViewPart implements ISimulationListener {
 	public static final String ID = "org.omnetpp.runtimeenv.ObjectTreeView";
 

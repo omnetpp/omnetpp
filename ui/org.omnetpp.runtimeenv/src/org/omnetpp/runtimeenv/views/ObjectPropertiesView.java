@@ -27,6 +27,10 @@ import org.omnetpp.experimental.simkernel.swig.cSimulation;
 import org.omnetpp.runtimeenv.Activator;
 import org.omnetpp.runtimeenv.ISimulationListener;
 
+/**
+ * 
+ * @author Andras
+ */
 //XXX what's lost, compared to Tcl:
 // - bold (\b)
 // - editable

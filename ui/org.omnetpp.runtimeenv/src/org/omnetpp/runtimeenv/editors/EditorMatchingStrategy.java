@@ -4,6 +4,10 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorMatchingStrategy;
 import org.eclipse.ui.IEditorReference;
 
+/**
+ * 
+ * @author Andras
+ */
 //FIXME maybe not needed at all
 public class EditorMatchingStrategy implements IEditorMatchingStrategy {
     @Override

@@ -19,6 +19,10 @@ import org.omnetpp.experimental.simkernel.swig.cMessage;
 import org.omnetpp.experimental.simkernel.swig.cModuleType;
 import org.omnetpp.experimental.simkernel.swig.cSimulation;
 
+/**
+ * 
+ * @author Andras
+ */
 public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 
     public ApplicationWorkbenchWindowAdvisor(IWorkbenchWindowConfigurer configurer) {

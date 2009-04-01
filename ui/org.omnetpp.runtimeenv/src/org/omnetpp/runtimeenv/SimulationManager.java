@@ -22,6 +22,10 @@ import org.omnetpp.experimental.simkernel.swig.cStaticFlag;
 import org.omnetpp.runtimeenv.editors.ModelCanvas;
 import org.omnetpp.runtimeenv.editors.ModuleIDEditorInput;
 
+/**
+ * 
+ * @author Andras
+ */
 public class SimulationManager {
     protected ListenerList listeners = new ListenerList();
     protected boolean stopRequested = false;

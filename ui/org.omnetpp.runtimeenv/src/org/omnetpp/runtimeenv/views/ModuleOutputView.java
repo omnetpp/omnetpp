@@ -16,6 +16,10 @@ import org.omnetpp.runtimeenv.widgets.TextChangeListener;
 import org.omnetpp.runtimeenv.widgets.TextViewer;
 import org.omnetpp.runtimeenv.widgets.TextViewerContent;
 
+/**
+ * 
+ * @author Andras
+ */
 //TODO filtering etc
 //TODO support opening multiple instances
 //FIXME remove try/catch from content provider (or it should log?) 

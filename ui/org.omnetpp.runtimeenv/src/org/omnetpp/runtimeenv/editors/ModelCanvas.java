@@ -25,16 +25,22 @@ import org.omnetpp.runtimeenv.Activator;
 import org.omnetpp.runtimeenv.ISimulationListener;
 import org.omnetpp.runtimeenv.animation.widgets.AnimationCanvas;
 
+/**
+ * 
+ * @author Andras
+ */
 //TODO canvas selection mechanism
 //TODO submodule context menu: "Open (go into)", "Add to this canvas", "Open in new network view" 
 public class ModelCanvas extends EditorPart {
     public static final String EDITOR_ID = "org.omnetpp.runtimeenv.editors.ModelCanvas";
-    private CompoundModuleFigure moduleFigure;
+    protected AnimationCanvas canvas;
+    protected GraphicalModulePart modulePart;
 
     @Override
     public void init(IEditorSite site, IEditorInput input) throws PartInitException {
         if (!(input instanceof ModuleIDEditorInput))
             throw new PartInitException("Invalid input: it must be a module in the simulation");
+        
         setSite(site);
         setInput(input);
         setPartName(input.getName());
@@ -42,79 +48,18 @@ public class ModelCanvas extends EditorPart {
 
     @Override
     public void createPartControl(Composite parent) {
-//        parent.setLayout(new FormLayout());
-//        parent.setBackground(new Color(null, 228, 228, 228));
-//        
-//        createCoolbar();
-//        createSimulationToolbar();
-//        createNavigationToolbar();
-//        createTimeGauges();
-//        createSpeedSlider();
-//
-//        coolBar.setWrapIndices(new int[] {2,3});
+        //parent.setLayout(new FormLayout());
+        //parent.setBackground(new Color(null, 228, 228, 228));
         
-        AnimationCanvas canvas = new AnimationCanvas(parent, SWT.DOUBLE_BUFFERED);
+        canvas = new AnimationCanvas(parent, SWT.DOUBLE_BUFFERED);
 
         int moduleID = ((ModuleIDEditorInput)getEditorInput()).getModuleID();
-        cModule module = cSimulation.getActiveSimulation().getModule(moduleID);
-        moduleFigure = new CompoundModuleFigure();
-        canvas.getRootFigure().add(moduleFigure);
-        moduleFigure.setDisplayString(module.getDisplayString());
-        canvas.getRootFigure().setConstraint(moduleFigure, new Rectangle(0,0,500,500));
-        
-        for (cModule_SubmoduleIterator it = new cModule_SubmoduleIterator(module); !it.end(); it.next()) {
-            cModule submodule = it.get();
-            SubmoduleFigure submoduleFigure = new SubmoduleFigure();
-            submoduleFigure.setDisplayString(submodule.getDisplayString());
-            submoduleFigure.setName(submodule.getFullName());
-            submoduleFigure.setPinDecoration(false);
-            moduleFigure.getSubmoduleLayer().add(submoduleFigure);
-            
-            SubmoduleConstraint constraint = new SubmoduleConstraint();
-            constraint.setLocation(submoduleFigure.getPreferredLocation());
-            constraint.setSize(submoduleFigure.getPreferredSize());
-            Assert.isTrue(constraint.height != -1 && constraint.width != -1);
-            moduleFigure.getSubmoduleLayer().setConstraint(submoduleFigure, constraint);
-            
-            //TODO just testing
-            ConnectionFigure connectionFigure = new ConnectionFigure();
-            connectionFigure.setArrowHeadEnabled(true);
-            connectionFigure.setSourceAnchor(new GateAnchor(submoduleFigure));
-            connectionFigure.setTargetAnchor(new CompoundModuleGateAnchor(moduleFigure));
-            moduleFigure.getConnectionLayer().add(connectionFigure);
-        }
-
-        moduleFigure.addMouseListener(new MouseListener() {
-            @Override
-            public void mouseDoubleClicked(MouseEvent me) {}
-
-            @Override
-            public void mousePressed(MouseEvent me) {
-                IFigure target = moduleFigure.findFigureAt(me.x, me.y);
-                System.out.println(target);
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent me) {}
-        });
-        
-        //FIXME remove this listener when editor gets closed
-        Activator.getSimulationManager().addChangeListener(new ISimulationListener() {
-            @Override
-            public void changed() {
-             //   moduleFigure.invalidate();
-             //   moduleFigure.invalidateTree();
-                
-             //   System.out.println(cSimulation.getActiveSimulation().getSystemModule().getSubmodule("server").getDisplayString().str());
-            }
-        });
-
+        modulePart = new GraphicalModulePart(canvas.getRootFigure(), moduleID);
     }
 
     @Override
     public void setFocus() {
-        // TODO Auto-generated method stub
-        
+        canvas.setFocus();
     }
 
     @Override

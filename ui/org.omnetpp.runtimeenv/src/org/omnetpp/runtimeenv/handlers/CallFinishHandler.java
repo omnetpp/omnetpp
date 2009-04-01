@@ -5,6 +5,10 @@ import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.omnetpp.runtimeenv.Activator;
 
+/**
+ * Handler for the "Call Finish" action
+ * @author Andras
+ */
 public class CallFinishHandler extends AbstractHandler {
 	public CallFinishHandler() {
 	}

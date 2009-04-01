@@ -8,6 +8,7 @@ import org.eclipse.ui.PlatformUI;
 
 /**
  * This class controls all aspects of the application's execution
+ * @author Andras
  */
 public class Application implements IApplication {
 

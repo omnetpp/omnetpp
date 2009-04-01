@@ -6,6 +6,8 @@ import org.eclipse.swt.graphics.Color;
 /**
  * Clients may implement the TextViewerContent interface to provide a 
  * content for the TextViewer widget.
+ * 
+ * @author Andras
  */
 public interface TextViewerContent {
     /**

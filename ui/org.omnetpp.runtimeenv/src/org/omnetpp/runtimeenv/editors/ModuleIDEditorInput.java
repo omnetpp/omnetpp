@@ -6,6 +6,10 @@ import org.eclipse.ui.IPersistableElement;
 import org.omnetpp.experimental.simkernel.swig.cModule;
 import org.omnetpp.experimental.simkernel.swig.cSimulation;
 
+/**
+ * 
+ * @author Andras
+ */
 public class ModuleIDEditorInput implements IEditorInput {
     private int moduleID;
 

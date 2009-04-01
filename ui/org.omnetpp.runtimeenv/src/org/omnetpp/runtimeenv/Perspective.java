@@ -7,6 +7,11 @@ import org.omnetpp.runtimeenv.views.ModuleOutputView;
 import org.omnetpp.runtimeenv.views.ObjectPropertiesView;
 import org.omnetpp.runtimeenv.views.ObjectTreeView;
 
+
+/**
+ * 
+ * @author Andras
+ */
 public class Perspective implements IPerspectiveFactory {
 
 	public void createInitialLayout(IPageLayout layout) {
