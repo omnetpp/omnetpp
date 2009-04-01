@@ -57,7 +57,8 @@ SAMPLES_OBJS = \
              $(OMNETPP_ROOT)/samples/queueinglib/out/msvc-debug/*.obj \
              $(OMNETPP_ROOT)/samples/routing/out/msvc-debug/*.obj \
              $(OMNETPP_ROOT)/samples/tictoc/out/msvc-debug/*.obj \
-             $(OMNETPP_ROOT)/samples/sockets/out/msvc-debug/*.obj
+             $(OMNETPP_ROOT)/samples/sockets/out/msvc-debug/*.obj \
+             $(OMNETPP_ROOT)/test/anim/dynamic/out/msvc-debug/*.obj
 
 OMNETPP_LIB_SUBDIR = $(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 
