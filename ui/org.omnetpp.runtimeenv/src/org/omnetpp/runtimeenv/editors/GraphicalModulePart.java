@@ -9,6 +9,7 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.MouseEvent;
 import org.eclipse.draw2d.MouseListener;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.omnetpp.experimental.simkernel.swig.cDisplayString;
 import org.omnetpp.experimental.simkernel.swig.cModule;
 import org.omnetpp.experimental.simkernel.swig.cModule_SubmoduleIterator;
 import org.omnetpp.experimental.simkernel.swig.cSimulation;
@@ -115,7 +116,7 @@ public class GraphicalModulePart {
         // do the removals and additions
         if (toBeRemoved != null) {
             for (int id : toBeRemoved) {
-                moduleFigure.remove(submodules.get(id));
+                moduleFigure.getSubmoduleLayer().remove(submodules.get(id));
                 submodules.remove(id);
             }
         }
@@ -135,7 +136,8 @@ public class GraphicalModulePart {
         cSimulation sim = cSimulation.getActiveSimulation();
         for (int id : submodules.keySet()) {
             SubmoduleFigure submoduleFigure = submodules.get(id);
-            submoduleFigure.setDisplayString(sim.getModule(id).getDisplayString());
+            cDisplayString displayString = sim.getModule(id).getDisplayString();
+            submoduleFigure.setDisplayString(displayString);
 
             // layouting magic
             SubmoduleConstraint constraint = new SubmoduleConstraint();

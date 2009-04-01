@@ -97,6 +97,10 @@
       return (int)(unit * overrideScale);
     return (int)(unit * getScale());
   }
+
+  public String toString() {
+    return str();
+  }
 %};
 
 

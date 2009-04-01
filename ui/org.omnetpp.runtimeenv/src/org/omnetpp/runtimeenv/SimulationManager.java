@@ -15,6 +15,7 @@ import org.omnetpp.experimental.simkernel.swig.LogBuffer;
 import org.omnetpp.experimental.simkernel.swig.NotSoMinimalEnv;
 import org.omnetpp.experimental.simkernel.swig.SimTime;
 import org.omnetpp.experimental.simkernel.swig.cConfiguration;
+import org.omnetpp.experimental.simkernel.swig.cCoroutine;
 import org.omnetpp.experimental.simkernel.swig.cModuleType;
 import org.omnetpp.experimental.simkernel.swig.cSimpleModule;
 import org.omnetpp.experimental.simkernel.swig.cSimulation;
@@ -38,6 +39,7 @@ public class SimulationManager {
         cStaticFlag.set(true);
         ExecuteOnStartup.executeAll();
         SimTime.setScaleExp(-12);
+        cCoroutine.init(10*1024*1024, 1024*1024);
         
         // set up an active simulation object
         cConfiguration config = new EmptyConfig();
@@ -50,9 +52,10 @@ public class SimulationManager {
         System.out.println(simulation.getName());
 
         try {
-            cSimulation.loadNedSourceFolder("c:/home/omnetpp40/omnetpp/samples/aloha"); //XXX
+            //cSimulation.loadNedSourceFolder("c:/home/omnetpp40/omnetpp/samples/aloha"); //XXX
+            cSimulation.loadNedSourceFolder("C:/home/omnetpp40/omnetpp/test/anim/dynamic"); //XXX
             cSimulation.doneLoadingNedFiles();
-            cModuleType networkType = cModuleType.find("Aloha_tmp");
+            cModuleType networkType = cModuleType.find("Net2"); //"Aloha_tmp");
             if (networkType == null)
                 throw new RuntimeException("network not found");
             simulation.setupNetwork(networkType);
