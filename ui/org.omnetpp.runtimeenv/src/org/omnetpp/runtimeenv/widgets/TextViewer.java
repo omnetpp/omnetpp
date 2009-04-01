@@ -633,10 +633,21 @@ public class TextViewer extends Canvas {
     }
     
     protected void contentChanged() {
-        caretLineIndex = clip(0, content.getLineCount()-1, caretLineIndex);
-        caretColumn = clip(0, content.getLine(caretLineIndex).length(), caretColumn);
-        selectionAnchorLineIndex = clip(0, content.getLineCount()-1, selectionAnchorLineIndex);
-        selectionAnchorColumn = clip(0, content.getLine(caretLineIndex).length(), selectionAnchorColumn);
+        // NOTE: for performance reasons, we reset caret to the end of the content:
+        // this way we don't need call content.getLine(lineIndex) for a line index
+        // that's far away from the displayed area (the underlying content provider
+        // uses an iterator, so it would take time for it to move to the caret line!)
+        // If you really want to preserve the original position, store it and restore
+        // it after the content change.
+        caretLineIndex = selectionAnchorLineIndex = content.getLineCount() - 1;
+        caretColumn = selectionAnchorColumn = 0;
+
+        // commented out because verifying the column is too costly:
+        //caretLineIndex = clip(0, content.getLineCount()-1, caretLineIndex);
+        //caretColumn = clip(0, content.getLine(caretLineIndex).length(), caretColumn);
+        //selectionAnchorLineIndex = clip(0, content.getLineCount()-1, selectionAnchorLineIndex);
+        //selectionAnchorColumn = clip(0, content.getLine(caretLineIndex).length(), selectionAnchorColumn);
+        
         configureScrollbars();
         revealCaret();
         adjustScrollbars();
@@ -776,8 +787,6 @@ public class TextViewer extends Canvas {
         for (int y = startY; y < r.y+r.height && lineIndex < numLines; y += lineHeight) {
             drawLine(gc, lineIndex++, x, y);
         }
-        
-        configureScrollbars(); //FIXME surely not here! (also: this cuts performance in half!)
     }
 
     protected void drawLine(GC gc, int lineIndex, int x, int y) {
@@ -794,16 +803,20 @@ public class TextViewer extends Canvas {
 
         // if there is selection, draw it
         if (selectionAnchorLineIndex!=caretLineIndex || selectionAnchorColumn!=caretColumn) {
-            Point p = getSelection();
-            int selStartLineIndex = content.getLineAtOffset(p.x);
-            int selStartColumn = p.x - content.getOffsetAtLine(selStartLineIndex);
-            int selEndLineIndex = content.getLineAtOffset(p.y);
-            int selEndColumn = p.y - content.getOffsetAtLine(selEndLineIndex);
+            int selStartLine = caretLineIndex;
+            int selStartColumn = caretColumn;
+            int selEndLine = selectionAnchorLineIndex;
+            int selEndColumn = selectionAnchorColumn;
+            if (selStartLine > selEndLine || (selStartLine==selEndLine && selStartColumn > selEndColumn)) {
+                // swap so that start < end
+                int tmp = selStartLine; selStartLine = selEndLine; selEndLine = tmp; 
+                tmp = selStartColumn; selStartColumn = selEndColumn; selEndColumn = tmp; 
+            }
 
             // if lineIndex is in the selected region, redraw the selected part
-            if (lineIndex >= selStartLineIndex && lineIndex <= selEndLineIndex) {
-                int startColumn = lineIndex==selStartLineIndex ? selStartColumn : 0;
-                int endColumn = lineIndex==selEndLineIndex ? selEndColumn : line.length();
+            if (lineIndex >= selStartLine && lineIndex <= selEndLine) {
+                int startColumn = lineIndex==selStartLine ? selStartColumn : 0;
+                int endColumn = lineIndex==selEndLine ? selEndColumn : line.length();
                 int startColOffset = gc.textExtent(line.substring(0, startColumn)).x;
                 String selection = line.substring(startColumn, endColumn);
 
