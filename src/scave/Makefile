@@ -24,7 +24,7 @@ L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 
 COPTS=$(CFLAGS) $(XML_CFLAGS) $(PTHREAD_CFLAGS) -I. -I../common -I$(OMNETPP_INCL_DIR)/platdep
 
-IMPLIBS= -L$L -loppcommon$D
+IMPLIBS= -L$L -loppcommon$D $(PTHREAD_LIBS)
 
 OBJS= $O/arraybuilder.o $O/channel.o $O/commonnodes.o $O/compoundfilter.o \
       $O/dataflowmanager.o $O/datasorter.o $O/diffquot.o \

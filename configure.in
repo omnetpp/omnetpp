@@ -268,6 +268,7 @@ if test "$TOOLCHAIN" = "mingw"; then
     AR=${AR:-i586-mingw32msvc-ar cr}
     SHLIB_LD=${SHLIB_LD:-$CXX -shared}
     DLLTOOL=${DLLTOOL:-i586-mingw32msvc-dlltool}
+    STRIP=${STRIP:-i586-mingw32msvc-strip}
     RANLIB=${RANLIB:-i586-mingw32msvc-ranlib}
 else
     if test "$CXX" = "icpc"; then
@@ -302,6 +303,7 @@ else
         SHLIB_LD=${SHLIB_LD:-$CXX -shared}
     fi    
     DLLTOOL=${DLLTOOL:-dlltool}
+    STRIP=${STRIP:-strip}
     AC_PROG_RANLIB
 fi
 
@@ -948,26 +950,6 @@ else
 fi
 
 #----------------------
-# Check for PTHREAD.
-#----------------------
-
-if test -n "$PTHREAD_LIBS"; then
-    OPP_CHECK_LIB(PTHREAD, pthread.h, pthread_rwlock_rdlock(0), $CFLAGS_RELEASE $PTHREAD_CFLAGS, $PTHREAD_LIBS, pthread_ok)
-else
-    PTHREAD_LIBS="-lpthread"
-    OPP_CHECK_LIB(PTHREAD, pthread.h, pthread_rwlock_rdlock(0), $CFLAGS_RELEASE $PTHREAD_CFLAGS, $PTHREAD_LIBS, pthread_ok)
-fi
-if test $pthread_ok = yes; then
-    HAVE_PTHREAD=yes
-    CFLAGS_RELEASE="$CFLAGS_RELEASE $PTHREAD_CFLAGS -DTHREADED"
-    CFLAGS_DEBUG="$CFLAGS_DEBUG $PTHREAD_CFLAGS -DTHREADED"
-else
-    HAVE_PTHREAD=no
-    PTHREAD_CFLAGS=""
-    PTHREAD_LIBS=""
-fi
-
-#----------------------
 # Check for XML parsers: EXPAT and/or LIBXML
 #----------------------
 if test -n "$LIBXML_LIBS"; then
@@ -1092,6 +1074,7 @@ AC_SUBST(AR)
 AC_SUBST(RANLIB)
 AC_SUBST(SHLIB_LD)
 AC_SUBST(DLLTOOL)
+AC_SUBST(STRIP)
 AC_SUBST(WISH)
 AC_SUBST(MAKEDEPEND)
 
