@@ -327,12 +327,3 @@ size_t LogBufferView::getOffsetAtLine(size_t lineIndex)
     Assert(currentPosValid);
     return currentLineOffset;
 }
-
-std::string LogBufferView::getTextRange(int start, int length)
-{
-    gotoOffset(start);
-    Assert(currentPosValid);
-    //TODO....
-    return "TODO";
-}
-

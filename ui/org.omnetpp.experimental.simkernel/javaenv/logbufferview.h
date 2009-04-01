@@ -71,8 +71,6 @@ class LogBufferView : private LogBuffer::IListener
       int getLineType(size_t lineIndex); // LINE_INFO, LINE_BANNER, LINE_LOG
       size_t getLineAtOffset(size_t offset);
       size_t getOffsetAtLine(size_t lineIndex);
-
-      std::string getTextRange(int start, int length);
 };
 
 NAMESPACE_END

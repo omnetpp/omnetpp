@@ -3,9 +3,15 @@ package org.omnetpp.runtimeenv.widgets;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTError;
 import org.eclipse.swt.custom.ST;
+import org.eclipse.swt.dnd.Clipboard;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.TextTransfer;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontMetrics;
@@ -31,7 +37,6 @@ import org.eclipse.swt.widgets.ScrollBar;
  */
 //FIXME mouse selection is sluggish
 //FIXME last line not fully visible (even if cursor is there) -- "boolean topAlign", and flip it when cursor reaches first/last screen line?
-//TODO implement clipboard (from StyledText)
 //TODO cursor should be solid while moving (restart timer on any key/mouse/textchange event)
 //TODO minor glitches with word selection (esp with single-letter words)
 public class TextViewer extends Canvas {
@@ -52,6 +57,9 @@ public class TextViewer extends Canvas {
     protected Map<Integer,Integer> keyActionMap = new HashMap<Integer, Integer>(); // key: keycode, value: ST.xxx constants
     protected Listener listener;
     protected int clickCount;
+    protected Clipboard clipboard;
+
+    protected static final int MAX_CLIPBOARD_SIZE = 10*1024*1024; //10Meg
 
     final static boolean IS_CARBON, IS_GTK, IS_MOTIF;
     static {
@@ -71,6 +79,7 @@ public class TextViewer extends Canvas {
         selectionForegroundColor = getDisplay().getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT);
 
         setFont(JFaceResources.getTextFont());
+        clipboard = new Clipboard(getDisplay());
         
         textChangeListener = new TextChangeListener() {
             @Override
@@ -253,7 +262,8 @@ public class TextViewer extends Canvas {
         event.type = SWT.None;
         if (content != null)
             content.removeTextChangeListener(textChangeListener);
-        // TODO dispose clipboard etc
+        clipboard.dispose();
+        clipboard = null;
     }
 
     protected void handleKeyDown(Event event) {
@@ -504,10 +514,68 @@ public class TextViewer extends Canvas {
         selectionAnchorColumn = caretColumn;
     }
 
-    protected void copy() {
-        // TODO Auto-generated method stub
+    /**
+     * Copies the selected text to the <code>DND.CLIPBOARD</code> clipboard.
+     */
+    public void copy() {
+        copy(DND.CLIPBOARD);
     }
 
+    /**
+     * Copies the selected text to the specified clipboard.  The text will be put in the 
+     * clipboard in plain text format
+     * <p>
+     * The clipboardType is  one of the clipboard constants defined in class 
+     * <code>DND</code>.  The <code>DND.CLIPBOARD</code>  clipboard is 
+     * used for data that is transferred by keyboard accelerator (such as Ctrl+C/Ctrl+V) 
+     * or by menu action.  The <code>DND.SELECTION_CLIPBOARD</code> 
+     * clipboard is used for data that is transferred by selecting text and pasting 
+     * with the middle mouse button.
+     */
+    public void copy(int clipboardType) {
+        if (clipboardType != DND.CLIPBOARD && clipboardType != DND.SELECTION_CLIPBOARD) return;
+        Point selection = getSelection();
+        int length = selection.y - selection.x;
+        if (length > 0) {
+            try {
+                String text = getTextRange(selection.x, length);
+                setClipboardContent(text, clipboardType);
+            } 
+            catch (SWTError error) {
+                // Copy to clipboard failed. This happens when another application 
+                // is accessing the clipboard while we copy. Ignore the error.
+                if (error.code != DND.ERROR_CANNOT_SET_CLIPBOARD) {
+                    throw error;
+                }
+            }
+        }
+    }
+
+    protected String getTextRange(int offset, int length) {
+        offset = clip(0, content.getCharCount()-1, offset);
+        length = clip(0, content.getCharCount()-offset, length);
+        boolean truncate = length > MAX_CLIPBOARD_SIZE;
+        if (truncate) length = MAX_CLIPBOARD_SIZE; 
+        int startLine = content.getLineAtOffset(offset);
+        StringBuilder b = new StringBuilder();
+        b.append(content.getLine(startLine).substring(offset-content.getOffsetAtLine(startLine))).append('\n');
+        int line = startLine+1;
+        while (b.length() < length) {
+            Assert.isTrue(line < content.getLineCount());
+            b.append(content.getLine(line++)).append('\n');
+        }
+        return b.substring(0, length) + (truncate ? "... [truncated]" : "");
+    }
+
+    // based on StyledText
+    protected void setClipboardContent(String text, int clipboardType) {
+        if (clipboardType == DND.SELECTION_CLIPBOARD && !(IS_MOTIF || IS_GTK)) return;
+        TextTransfer plainTextTransfer = TextTransfer.getInstance();
+        Object[] data = new Object[]{text};
+        Transfer[] types = new Transfer[]{plainTextTransfer};
+        clipboard.setContents(data, types, clipboardType);
+    }
+    
     protected boolean isWordChar(char ch) {
         return Character.isLetterOrDigit(ch) || ch=='_' || ch=='@';
     }

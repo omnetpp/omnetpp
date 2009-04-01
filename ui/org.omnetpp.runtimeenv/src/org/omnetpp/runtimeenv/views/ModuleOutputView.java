@@ -82,13 +82,6 @@ public class ModuleOutputView extends ViewPart implements ISimulationListener {
         }
 
         @Override
-        public String getTextRange(int start, int length) {
-            try {
-                return logBufferView.getTextRange(start, length);
-            } catch (RuntimeException e) { e.printStackTrace(); return ""; }
-        }
-
-        @Override
         public void addTextChangeListener(TextChangeListener listener) {
             listeners.add(listener);
         }

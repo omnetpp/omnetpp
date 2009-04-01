@@ -72,17 +72,6 @@ public interface TextViewerContent {
     public int getOffsetAtLine(int lineIndex);
 
     /**
-     * Returns a string representing the content at the given range.
-     * <p>
-     *
-     * @param start the start offset of the text to return. Offset 0 is the 
-     * 	first character of the document.
-     * @param length the length of the text to return
-     * @return the text at the given range
-     */
-    public String getTextRange(int start, int length);
-
-    /**
      * Return the color for the specified line.
      * 
      * @return the color, or null to indicate using the default foreground color
