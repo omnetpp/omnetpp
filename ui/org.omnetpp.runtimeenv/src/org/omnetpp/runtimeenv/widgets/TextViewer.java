@@ -17,6 +17,7 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -30,12 +31,11 @@ import org.eclipse.swt.widgets.ScrollBar;
  * StyledText plus a custom ITextViewerContent class, because StyledTextRenderer 
  * is very slow. Its throughput is about 20..30 events/sec, while this class
  * has about 200..300 (counting with average 2 lines/event). Also, this class 
- * has constant memory consumption (StyleTextRenderer consumes minimum 8 bytes 
- * per line, see lineWidth[] and lineHeight[] arrays).
+ * has very low and constant memory consumption (StyleTextRenderer consumes 
+ * minimum 8 bytes per line, see lineWidth[] and lineHeight[] arrays).
  * 
  * @author Andras
  */
-//FIXME last line not fully visible (even if cursor is there) -- "boolean topAlign", and flip it when cursor reaches first/last screen line?
 //TODO cursor should be solid while moving (restart timer on any key/mouse/textchange event)
 //TODO minor glitches with word selection (esp with single-letter words)
 //TODO drag-autoscroll
@@ -50,6 +50,7 @@ public class TextViewer extends Canvas {
     protected int leftMargin = 0;
     protected int lineHeight, averageCharWidth; // measured from font
     protected int topLineIndex;
+    protected boolean alignTop = true; // whether to align the top or the bottom line to window edge
     protected int horizontalScrollOffset; // in pixels
     protected boolean caretShown = true; // during blinking
     protected int caretLineIndex, caretColumn;  // caretColumn may be greater than line length!
@@ -269,33 +270,11 @@ public class TextViewer extends Canvas {
     }
 
     protected void handleKeyDown(Event event) {
-        //XXX TODO:
-        //if (clipboardSelection == null)
-        //    clipboardSelection = new Point(selection.x, selection.y);
-
         handleKey(event);
     }
 
     protected void handleKeyUp(Event event) {
-//XXX TODO        
-//        if (clipboardSelection != null) {
-//            if (clipboardSelection.x != selection.x || clipboardSelection.y != selection.y) {
-//                try {
-//                    if (selection.y - selection.x > 0) {
-//                        setClipboardContent(selection.x, selection.y - selection.x, DND.SELECTION_CLIPBOARD);
-//                    }
-//                } catch (SWTError error) {
-//                    // Copy to clipboard failed. This happens when another application 
-//                    // is accessing the clipboard while we copy. Ignore the error.
-//                    // Fixes 1GDQAVN
-//                    // Rethrow all other errors. Fixes bug 17578.
-//                    if (error.code != DND.ERROR_CANNOT_SET_CLIPBOARD) {
-//                        throw error;
-//                    }
-//                }
-//            }
-//        }
-//        clipboardSelection = null;
+        // nothing to do
     }
 
     // code from StyledText
@@ -412,19 +391,16 @@ public class TextViewer extends Canvas {
 
     protected void doPageUp(boolean select) {
         int pageLines = Math.max(1, getNumVisibleLines()-1);
-        caretLineIndex -= pageLines;
-        topLineIndex -= pageLines;
-        if (caretLineIndex < 0)
-            caretLineIndex = 0;
+        caretLineIndex = Math.max(0, caretLineIndex - pageLines);
+        topLineIndex = Math.max(0, topLineIndex - pageLines);
         if (!select) clearSelection();
     }
 
     protected void doPageDown(boolean select) {
         int pageLines = Math.max(1, getNumVisibleLines()-1);
-        caretLineIndex += pageLines;
-        topLineIndex += pageLines;
-        if (caretLineIndex >= content.getLineCount())
-            caretLineIndex = content.getLineCount()-1;
+        int lastLineIndex = content.getLineCount()-1;
+        caretLineIndex = Math.min(lastLineIndex, caretLineIndex + pageLines);
+        topLineIndex = Math.min(lastLineIndex, topLineIndex + pageLines);
         if (!select) clearSelection();
     }
 
@@ -621,8 +597,8 @@ public class TextViewer extends Canvas {
             Point lineColumn = getLineColumnAt(event.x, event.y);
             caretLineIndex = clip(0, content.getLineCount()-1, lineColumn.y);
             caretColumn = clip(0, content.getLine(caretLineIndex).length(), lineColumn.x);
+            redraw();
         }
-        redraw();
     }
 
     protected void handleMouseWheel(Event event) {
@@ -776,24 +752,30 @@ public class TextViewer extends Canvas {
         gc.setForeground(foregroundColor);
         gc.setFont(font);
         
-        Point size = getSize();
-        gc.fillRectangle(0, 0, size.x, size.y);
+        Rectangle r = getClientArea();
+        gc.fillRectangle(r.x, r.y, r.width, r.height);
         
         int lineIndex = topLineIndex;
         int numLines = content.getLineCount();
         int numVisibleLines = getNumVisibleLines();
 
-        // adjust lineIndex
-        if (lineIndex > numLines-numVisibleLines)
-            lineIndex = numLines-numVisibleLines;
-        if (lineIndex < 0)  
-            lineIndex = 0;
-
+        //FIXME topLineIndex must be at most Math.max(0,numLines-numVisibleLines-1) at all times!
+        Assert.isTrue(topLineIndex>=0 && topLineIndex<numLines);
+        Assert.isTrue(caretLineIndex>=0 && caretLineIndex<numLines);
+        
+        if (!alignTop && caretLineIndex==topLineIndex)
+            alignTop = true;
+        if (alignTop && caretLineIndex==topLineIndex+numVisibleLines-1)
+            alignTop = false;
+        
+        int startY = r.x + (alignTop ? 0 : -(r.height % lineHeight));
+        
         int x = leftMargin - horizontalScrollOffset;
         
         // draw the lines
-        for (int y = 0; y < size.y && lineIndex < numLines; y += lineHeight)
+        for (int y = startY; y < r.y+r.height && lineIndex < numLines; y += lineHeight) {
             drawLine(gc, lineIndex++, x, y);
+        }
         
         configureScrollbars(); //FIXME surely not here! (also: this cuts performance in half!)
     }
