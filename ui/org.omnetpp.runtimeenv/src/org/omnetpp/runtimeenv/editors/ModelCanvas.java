@@ -6,28 +6,32 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MenuDetectEvent;
 import org.eclipse.swt.events.MenuDetectListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
 import org.omnetpp.runtimeenv.Activator;
-import org.omnetpp.runtimeenv.animation.widgets.AnimationCanvas;
 import org.omnetpp.runtimeenv.figures.SubmoduleFigureEx;
+import org.omnetpp.runtimeenv.util.FormLayoutMouseListener;
+import org.omnetpp.runtimeenv.util.FormLayoutMouseListenerTest;
+import org.omnetpp.runtimeenv.widgets.FigureCanvas;
 
 /**
  * 
  * @author Andras
  */
 //TODO canvas selection mechanism
-//TODO submodule context menu: "Open (go into)", "Add to this canvas", "Open in new network view" 
+//TODO submodule context menu: "Open (go into)", "Add to this canvas", "Open in new network view"
+//TODO may need to refactor everything so that a module canvas is a figure
 public class ModelCanvas extends EditorPart {
     public static final String EDITOR_ID = "org.omnetpp.runtimeenv.editors.ModelCanvas";
-    protected AnimationCanvas canvas;
-    protected GraphicalModulePart modulePart;
+    protected Composite composite;
 
     @Override
     public void init(IEditorSite site, IEditorInput input) throws PartInitException {
@@ -41,25 +45,41 @@ public class ModelCanvas extends EditorPart {
 
     @Override
     public void createPartControl(Composite parent) {
-        //parent.setLayout(new FormLayout());
-        //parent.setBackground(new Color(null, 228, 228, 228));
+        composite = new Composite(parent, SWT.BORDER);
+        composite.setBackground(new Color(null, 228, 228, 228));
         
-        canvas = new AnimationCanvas(parent, SWT.DOUBLE_BUFFERED);
+        composite.setLayout(new FormLayout());
+        //composite.setLayout(new FillLayout(SWT.VERTICAL));
 
         int moduleID = ((ModuleIDEditorInput)getEditorInput()).getModuleID();
-        modulePart = new GraphicalModulePart(canvas.getRootFigure(), moduleID);
+        createModuleCanvas(moduleID);
 
-        final MenuManager contextMenuManager = new MenuManager("#popup");
-        //contextMenuManager.setRemoveAllWhenShown(true);
+        FormLayoutMouseListenerTest.run(parent.getShell());
+}
+
+    private void createModuleCanvas(int moduleID) {
+        final FigureCanvas canvas = new FigureCanvas(composite, SWT.BORDER | SWT.DOUBLE_BUFFERED);
+
+        FormData formData = new FormData();
+        //formData.left = new FormAttachment(0, 0);
+        //formData.top = new FormAttachment(0, 0);  //XXX (coolBar.getParent(), 0);
+        //formData.right = new FormAttachment(100, 0);
+        //formData.bottom = new FormAttachment(100, 0);
+        formData.width = 500;
+        formData.height = 500;
+        canvas.setLayoutData(formData);
+        FormLayoutMouseListener listener = new FormLayoutMouseListener(composite, true, true);
+        canvas.addMouseListener(listener);
+        canvas.addMouseMoveListener(listener);
+        canvas.addMouseTrackListener(listener);
         
-//        contextMenuManager.addMenuListener(new IMenuListener() {
-//            @Override
-//            public void menuAboutToShow(IMenuManager manager) {
-//                manager.add(new Action("Sample Action " + Math.random()) {}); //XXX
-//            }
-//        });
-//        canvas.setMenu(new Menu(canvas));
+        GraphicalModulePart modulePart = new GraphicalModulePart(canvas.getRootFigure(), moduleID);
 
+        addContextMenu(canvas, modulePart); //FIXME 1 arg enough
+    }
+
+    private void addContextMenu(final FigureCanvas canvas, final GraphicalModulePart modulePart) {
+        final MenuManager contextMenuManager = new MenuManager("#popup");
         canvas.setMenu(contextMenuManager.createContextMenu(canvas));
         
         canvas.addMenuDetectListener(new MenuDetectListener() {
@@ -67,19 +87,20 @@ public class ModelCanvas extends EditorPart {
             public void menuDetected(MenuDetectEvent e) {
                 System.out.println("MenuDetectEvent");
                 Point p = canvas.toControl(e.x, e.y);
-                GraphicalModulePart part = findModulePartAt(p.x, p.y);
-                SubmoduleFigureEx submoduleFigure = part.findSubmoduleAt(p.x, p.y);
+                //part = findModulePartAt(p.x, p.y);
+                SubmoduleFigureEx submoduleFigure = modulePart.findSubmoduleAt(p.x, p.y);
                 if (submoduleFigure != null) {
                     final int submoduleID = submoduleFigure.getModuleID();
                     contextMenuManager.removeAll();
 
+                    //XXX factor out actions
                     contextMenuManager.add(new Action("Open in New Canvas") {
                         @Override
                         public void run() {
                             System.out.println("opening editor for " + submoduleID);
                             IWorkbenchPage page = Activator.getActiveWorkbenchPage();
                             if (page != null) {
-                                IEditorPart editr = Activator.openEditor(new ModuleIDEditorInput(submoduleID), EDITOR_ID);
+                                Activator.openEditor(new ModuleIDEditorInput(submoduleID), EDITOR_ID);
                             }
                         }
                     }); //XXX
@@ -87,23 +108,18 @@ public class ModelCanvas extends EditorPart {
                     contextMenuManager.add(new Action("Open on This Canvas") {
                         @Override
                         public void run() {
-                            new GraphicalModulePart(canvas.getRootFigure(), submoduleID);
+                            createModuleCanvas(submoduleID);
+                            //new GraphicalModulePart(canvas.getRootFigure(), submoduleID);
                         }
-                    }); //XXX
-                    
-                    
+                    });
                 }
             }
         });
     }
 
-    protected GraphicalModulePart findModulePartAt(int x, int y) {
-        return modulePart; //XXX for now...
-    }
-
     @Override
     public void setFocus() {
-        canvas.setFocus();
+        //canvas.setFocus();
     }
 
     @Override

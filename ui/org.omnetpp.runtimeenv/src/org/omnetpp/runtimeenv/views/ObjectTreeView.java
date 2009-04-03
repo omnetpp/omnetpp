@@ -20,6 +20,7 @@ import org.omnetpp.runtimeenv.ISimulationListener;
  * 
  * @author Andras
  */
+//TODO we should support user-supplied images as well
 public class ObjectTreeView extends ViewPart implements ISimulationListener {
 	public static final String ID = "org.omnetpp.runtimeenv.ObjectTreeView";
 
@@ -78,11 +79,10 @@ public class ObjectTreeView extends ViewPart implements ISimulationListener {
             if (element instanceof cObject) {
                 //FIXME cache image by object's classname!
                 cObject object = (cObject)element;
-                long ptr = cClassDescriptor.getCPtr(object);
                 cClassDescriptor desc = cClassDescriptor.getDescriptorFor(object);
                 String icon = desc.getProperty("icon");
                 if (!StringUtils.isEmpty(icon)) {
-                    return Activator.getImageDescriptor("icons/obj16/"+icon+".png").createImage(); //FIXME TODO error check, caching, look into image path, etc
+                    return Activator.getCachedImage("icons/obj16/"+icon+".png");
                 }
             }
             return null;

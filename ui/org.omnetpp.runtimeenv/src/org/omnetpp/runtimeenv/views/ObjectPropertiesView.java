@@ -37,6 +37,8 @@ import org.omnetpp.runtimeenv.ISimulationListener;
 // - multi-line text
 //TODO should follow canvas selection
 //TODO should enable pinning, and creation of new View instances
+//TODO we should support user-supplied images as well
+//FIXME extremely slow!!!! much slower than the graphical canvas or the module log!!!!
 public class ObjectPropertiesView extends ViewPart implements ISimulationListener {
 	public static final String ID = "org.omnetpp.runtimeenv.ObjectPropertiesView";
 
@@ -254,18 +256,17 @@ public class ObjectPropertiesView extends ViewPart implements ISimulationListene
             if (element instanceof cObject) {
                 //FIXME cache image by object's classname!
                 cObject object = (cObject)element;
-                long ptr = cClassDescriptor.getCPtr(object);
                 cClassDescriptor desc = cClassDescriptor.getDescriptorFor(object);
                 String icon = desc.getProperty("icon");
                 if (!StringUtils.isEmpty(icon)) {
-                    return Activator.getImageDescriptor("icons/obj16/"+icon+".png").createImage(); //FIXME TODO error check, caching, look into image path, etc
+                    return Activator.getCachedImage("icons/obj16/"+icon+".png");
                 }
             }
             else if (element instanceof StructKey) {
-                return Activator.getImageDescriptor("icons/obj16/field.png").createImage(); //FIXME TODO error check, caching, look into image path, etc
+                return Activator.getCachedImage("icons/obj16/field.png");
             }
             else if (element instanceof GroupKey) {
-                return Activator.getImageDescriptor("icons/obj16/fieldgroup.png").createImage(); //FIXME TODO error check, caching, look into image path, etc
+                return Activator.getCachedImage("icons/obj16/fieldgroup.png");
             }
             else if (element instanceof FieldKey) {
                 FieldKey key = (FieldKey)element;
@@ -273,7 +274,7 @@ public class ObjectPropertiesView extends ViewPart implements ISimulationListene
                 if (isObject)
                     return getImage(key.desc.getFieldAsCObject(key.ptr, key.fieldID, -1));
                 else
-                    return Activator.getImageDescriptor("icons/obj16/field.png").createImage(); //FIXME TODO error check, caching, look into image path, etc
+                    return Activator.getCachedImage("icons/obj16/field.png");
             }
             else if (element instanceof ArrayElementKey) {
                 ArrayElementKey key = (ArrayElementKey)element;
@@ -281,7 +282,7 @@ public class ObjectPropertiesView extends ViewPart implements ISimulationListene
                 if (isObject)
                     return getImage(key.desc.getFieldAsCObject(key.ptr, key.fieldID, key.index));
                 else
-                    return Activator.getImageDescriptor("icons/obj16/field.png").createImage(); //FIXME TODO error check, caching, look into image path, etc
+                    return Activator.getCachedImage("icons/obj16/field.png");
             }
             
 			return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_ERROR_TSK);

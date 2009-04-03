@@ -3,6 +3,8 @@ package org.omnetpp.runtimeenv;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
@@ -77,16 +79,35 @@ public class Activator extends AbstractUIPlugin {
         }
     }
 	
-	/**
-	 * Returns an image descriptor for the image file at the given
-	 * plug-in relative path
-	 *
-	 * @param path the path
-	 * @return the image descriptor
-	 */
-	public static ImageDescriptor getImageDescriptor(String path) {
-		return imageDescriptorFromPlugin(PLUGIN_ID, path);
-	}
+    /**
+     * Returns an image descriptor for the image file at the given
+     * plug-in relative path.
+     */
+    public static ImageDescriptor getImageDescriptor(String path) {
+        return imageDescriptorFromPlugin(PLUGIN_ID, path);
+    }
+    
+    /**
+     * Creates an image. IMPORTANT: The image is NOT cached! Callers 
+     * are responsible for disposal of the image. 
+     */
+    public static Image getImage(String path) {
+        return getImageDescriptor(path).createImage();
+    }
+
+    /**
+     * Like getImage(), but the image gets cached in an internal image registry,
+     * so clients do not need to (moreover, must not) dispose of the image.
+     */
+    public static Image getCachedImage(String path) {
+        ImageRegistry imageRegistry = getDefault().getImageRegistry();
+        Image image = imageRegistry.get(path);
+        if (image==null) {
+            image = getImage(path);
+            imageRegistry.put(path, image);
+        }
+        return image;
+    }
 	
 	public static IWorkbenchPage getActiveWorkbenchPage() {
         IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();

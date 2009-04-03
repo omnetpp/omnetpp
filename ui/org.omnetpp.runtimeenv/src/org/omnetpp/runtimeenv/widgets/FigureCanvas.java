@@ -5,32 +5,33 @@
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-package org.omnetpp.runtimeenv.animation.widgets;
+package org.omnetpp.runtimeenv.widgets;
 
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.LayoutManager;
 import org.eclipse.draw2d.LightweightSystem;
-import org.eclipse.draw2d.ToolbarLayout;
+import org.eclipse.draw2d.XYLayout;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.omnetpp.figures.CompoundModuleFigure;
 
-public class AnimationCanvas extends Canvas {
+//XXX was: AnimationCanvas in org.omnetpp.experimental.animation
+public class FigureCanvas extends Canvas {
 	protected IFigure contents;
 	protected LightweightSystem lws;
 
-	public AnimationCanvas(Composite parent, int style) {
+	public FigureCanvas(Composite parent, int style) {
 		super(parent, style);
 
 		init();
 	}
 
 	protected void init() {
-		//LayoutManager contentsLayout = new XYLayout();
-	    LayoutManager contentsLayout = new ToolbarLayout();
+		LayoutManager contentsLayout = new XYLayout();
+	    //LayoutManager contentsLayout = new ToolbarLayout();
 
 		contents = new Figure();
 		contents.setLayoutManager(contentsLayout);

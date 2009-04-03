@@ -12,20 +12,19 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.omnetpp.common.canvas.BorderedComposite;
-import org.omnetpp.runtimeenv.widgets.FigureCanvas;
 
 
 /**
  * 
- * @author Andras
+ * @author Levy
  */
 //XXX from inner class of ReplayAnimationEditor
+//XXX unreliable: often it does not allow resizing a control, then in the next second suddenly it does (???)
 public class FormLayoutMouseListener implements MouseListener, MouseMoveListener, MouseTrackListener {
-    protected Composite parent;  //XXX new!
+    protected Composite parent;
     protected boolean allowHorizontalResize;
     protected boolean allowVerticalResize;
-    protected Composite dragControl;
+    protected Control dragControl;
     protected int borderSize = 4;  // as inset of dragControl
     protected Point dragStart;
     protected Point dragStartControlSize;
@@ -50,14 +49,15 @@ public class FormLayoutMouseListener implements MouseListener, MouseMoveListener
         extractDragControlInformation(e);
 
         if ((e.stateMask & SWT.CONTROL) != 0) {
-            if (dragControl.getChildren()[0] instanceof FigureCanvas) {
-                FigureCanvas figureCanvas = (FigureCanvas)dragControl.getChildren()[0];
-                Point size = figureCanvas.getPreferredSize();
-                FormData formData = (FormData)dragControl.getLayoutData();
-                formData.right = new FormAttachment(0, dragControl.getLocation().x + size.x + borderSize * 2);
-                formData.bottom = new FormAttachment(0, dragControl.getLocation().y + size.y + borderSize * 2);
-                parent.layout();
-            }
+//FIXME find another way to determine preferred size!!!!            
+//            if (dragControl.getChildren()[0] instanceof FigureCanvas) {
+//                FigureCanvas figureCanvas = (FigureCanvas)dragControl.getChildren()[0];
+//                Point size = figureCanvas.getPreferredSize();
+//                FormData formData = (FormData)dragControl.getLayoutData();
+//                formData.right = new FormAttachment(0, dragControl.getLocation().x + size.x + borderSize * 2);
+//                formData.bottom = new FormAttachment(0, dragControl.getLocation().y + size.y + borderSize * 2);
+//                parent.layout();
+//            }
         }
         else {
             Point delta = new Point(0, 0);
@@ -96,7 +96,6 @@ public class FormLayoutMouseListener implements MouseListener, MouseMoveListener
     }
 
     public void mouseDown(MouseEvent e) {
-        System.out.println("mouseDown");
         extractDragControlInformation(e);
         dragControl.moveAbove(null);
         dragStart = dragControl.toDisplay(e.x, e.y);
@@ -110,7 +109,6 @@ public class FormLayoutMouseListener implements MouseListener, MouseMoveListener
 
     public void mouseMove(MouseEvent e) {
         if (dragControl != null) {
-            System.out.println("mouseDrag");
             Control control = (Control)e.widget;
             Point p = control.toDisplay(e.x, e.y);
             Point delta = new Point(p.x - dragStart.x, p.y - dragStart.y);
@@ -154,7 +152,7 @@ public class FormLayoutMouseListener implements MouseListener, MouseMoveListener
     }
 
     protected void extractDragControlInformation(MouseEvent e) {
-        dragControl = (BorderedComposite)e.widget;
+        dragControl = (Control) e.widget;
         dragStartControlSize = dragControl.getSize();
         dragStartControlLocation = dragControl.getLocation();
     }
@@ -298,7 +296,7 @@ public class FormLayoutMouseListener implements MouseListener, MouseMoveListener
                 dockingValue - maximumValueIncrease <= currentValue &&
                 currentValue <= dockingValue + maximumValueDecrease)
         {
-            /* TODO: if you ever want to attach to siblings then use this and break dependeny cycles
+            /* TODO: if you ever want to attach to siblings then use this and break dependency cycles
 				if (dockingControl != null) {
 					formAttachments[0] = new FormAttachment(dockingControl, smallerValue ? 0 : -size);
 					formAttachments[1] = new FormAttachment(dockingControl, smallerValue ? size : 0);
