@@ -49,7 +49,6 @@
             class="org.omnetpp.runtimeenv.editors.ModelCanvas"
             icon="icons/eview16/modulegraphic.png"
             id="org.omnetpp.runtimeenv.editors.ModelCanvas"
-            matchingStrategy="org.omnetpp.runtimeenv.editors.EditorMatchingStrategy"
             name="Module Viewer">
       </editor>
    </extension>

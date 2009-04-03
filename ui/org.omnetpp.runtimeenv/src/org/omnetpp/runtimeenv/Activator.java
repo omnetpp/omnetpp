@@ -1,10 +1,14 @@
 package org.omnetpp.runtimeenv;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -59,6 +63,20 @@ public class Activator extends AbstractUIPlugin {
 		return plugin;
 	}
 
+    public static void logError(Throwable exception) {
+        logError(exception.toString(), exception);
+    }
+    
+    public static void logError(String message, Throwable exception) {
+        if (plugin != null) {
+            plugin.getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, 0, message, exception));
+        }
+        else {
+            System.err.println(message);
+            exception.printStackTrace();
+        }
+    }
+	
 	/**
 	 * Returns an image descriptor for the image file at the given
 	 * plug-in relative path
@@ -70,11 +88,23 @@ public class Activator extends AbstractUIPlugin {
 		return imageDescriptorFromPlugin(PLUGIN_ID, path);
 	}
 	
-	/**
-	 * Copied from IDE.openEditor().
-	 */
-	public static IEditorPart openEditor(IWorkbenchPage page, IEditorInput input, String editorId) throws PartInitException {
-	    return page.openEditor(input, editorId);
+	public static IWorkbenchPage getActiveWorkbenchPage() {
+        IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+        return window == null ? null : window.getActivePage();
+    }
+	
+	public static IEditorPart openEditor(IEditorInput input, String editorId) {
+	    IWorkbenchPage page = getActiveWorkbenchPage();
+	    if (page != null) {
+	        try {
+                return page.openEditor(input, editorId);
+            }
+            catch (PartInitException e) {
+                logError("Cannot open editor for " + input, e);
+                e.printStackTrace();  //TODO error dialog or something!
+            }
+	    }
+	    return null;
 	}
 
 	public static SimulationManager getSimulationManager() {

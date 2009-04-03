@@ -14,10 +14,10 @@ import org.omnetpp.experimental.simkernel.swig.cModule;
 import org.omnetpp.experimental.simkernel.swig.cModule_SubmoduleIterator;
 import org.omnetpp.experimental.simkernel.swig.cSimulation;
 import org.omnetpp.figures.CompoundModuleFigure;
-import org.omnetpp.figures.SubmoduleFigure;
 import org.omnetpp.figures.layout.SubmoduleConstraint;
 import org.omnetpp.runtimeenv.Activator;
 import org.omnetpp.runtimeenv.ISimulationListener;
+import org.omnetpp.runtimeenv.figures.SubmoduleFigureEx;
 
 /**
  * 
@@ -27,7 +27,7 @@ public class GraphicalModulePart {
     //may add cSimulation and SimulationManager as well
     protected CompoundModuleFigure moduleFigure;
     protected int moduleID;
-    protected Map<Integer,SubmoduleFigure> submodules = new HashMap<Integer,SubmoduleFigure>();
+    protected Map<Integer,SubmoduleFigureEx> submodules = new HashMap<Integer,SubmoduleFigureEx>();
     protected Map<Integer,String> lastSubmoduleDisplayStrings = new HashMap<Integer,String>();
     protected ISimulationListener simulationListener;
     protected MouseListener mouseListener;
@@ -77,7 +77,6 @@ public class GraphicalModulePart {
                 update();
             }
         });
-        
     }
 
     public void dispose() {
@@ -126,7 +125,8 @@ public class GraphicalModulePart {
         if (toBeAdded != null) {
             for (int id : toBeAdded) {
                 // create figure
-                SubmoduleFigure submoduleFigure = new SubmoduleFigure();
+                SubmoduleFigureEx submoduleFigure = new SubmoduleFigureEx();
+                submoduleFigure.setModuleID(id);
                 submoduleFigure.setPinDecoration(false);
                 submoduleFigure.setName(sim.getModule(id).getFullName());
                 moduleFigure.getSubmoduleLayer().add(submoduleFigure);
@@ -142,7 +142,7 @@ public class GraphicalModulePart {
             cDisplayString displayString = sim.getModule(id).getDisplayString();
             String displayStringText = displayString.toString();
             if (!displayStringText.equals(lastSubmoduleDisplayStrings.get(id))) {
-                SubmoduleFigure submoduleFigure = submodules.get(id);
+                SubmoduleFigureEx submoduleFigure = submodules.get(id);
                 submoduleFigure.setDisplayString(displayString);
 
                 // layouting magic
@@ -158,9 +158,7 @@ public class GraphicalModulePart {
     }
 
     protected void handleMousePressed(MouseEvent me) {
-        // TODO Auto-generated method stub
-        IFigure target = moduleFigure.findFigureAt(me.x, me.y);
-        System.out.println(target);
+        System.out.println(findSubmoduleAt(me.x,me.y));
     }
 
     protected void handleMouseDoubleClick(MouseEvent me) {
@@ -169,5 +167,12 @@ public class GraphicalModulePart {
     
     protected void handleMouseReleased(MouseEvent me) {
         // TODO Auto-generated method stub
+    }
+    
+    public SubmoduleFigureEx findSubmoduleAt(int x, int y) {
+        IFigure target = moduleFigure.findFigureAt(x, y);
+        while (target != null && !(target instanceof SubmoduleFigureEx))
+            target = target.getParent();
+        return (SubmoduleFigureEx)target;
     }
 }

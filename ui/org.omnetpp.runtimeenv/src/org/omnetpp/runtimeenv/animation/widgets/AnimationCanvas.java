@@ -9,8 +9,9 @@ package org.omnetpp.runtimeenv.animation.widgets;
 
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.LayoutManager;
 import org.eclipse.draw2d.LightweightSystem;
-import org.eclipse.draw2d.XYLayout;
+import org.eclipse.draw2d.ToolbarLayout;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Canvas;
@@ -28,7 +29,8 @@ public class AnimationCanvas extends Canvas {
 	}
 
 	protected void init() {
-		XYLayout contentsLayout = new XYLayout();
+		//LayoutManager contentsLayout = new XYLayout();
+	    LayoutManager contentsLayout = new ToolbarLayout();
 
 		contents = new Figure();
 		contents.setLayoutManager(contentsLayout);
