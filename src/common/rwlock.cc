@@ -20,6 +20,20 @@
 
 USING_NAMESPACE
 
+#ifdef _WIN32 
+#ifdef PTW32_STATIC_LIB
+// required only if the pthread library is used as a static library
+class PThreadInit 
+{
+  public:
+    PThreadInit() { pthread_win32_process_attach_np (); }
+    ~PThreadInit() { pthread_win32_process_detach_np (); }
+};
+
+static PThreadInit dummy;
+#endif
+#endif
+
 void ReentrantReadWriteLock::deleteThreadLocalState(void *tls)
 {
 	if (tls)
