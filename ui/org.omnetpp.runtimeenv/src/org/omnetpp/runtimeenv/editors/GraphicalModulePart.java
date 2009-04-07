@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.draw2d.FocusBorder;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.MouseEvent;
 import org.eclipse.draw2d.MouseListener;
@@ -13,11 +14,12 @@ import org.omnetpp.experimental.simkernel.swig.cDisplayString;
 import org.omnetpp.experimental.simkernel.swig.cModule;
 import org.omnetpp.experimental.simkernel.swig.cModule_SubmoduleIterator;
 import org.omnetpp.experimental.simkernel.swig.cSimulation;
-import org.omnetpp.figures.CompoundModuleFigure;
 import org.omnetpp.figures.layout.SubmoduleConstraint;
 import org.omnetpp.runtimeenv.Activator;
 import org.omnetpp.runtimeenv.ISimulationListener;
+import org.omnetpp.runtimeenv.figures.CompoundModuleFigureEx;
 import org.omnetpp.runtimeenv.figures.SubmoduleFigureEx;
+import org.omnetpp.runtimeenv.widgets.FigureCanvas;
 
 /**
  * 
@@ -25,12 +27,13 @@ import org.omnetpp.runtimeenv.figures.SubmoduleFigureEx;
  */
 public class GraphicalModulePart {
     //may add cSimulation and SimulationManager as well
-    protected CompoundModuleFigure moduleFigure;
+    protected CompoundModuleFigureEx moduleFigure;
     protected int moduleID;
     protected Map<Integer,SubmoduleFigureEx> submodules = new HashMap<Integer,SubmoduleFigureEx>();
     protected Map<Integer,String> lastSubmoduleDisplayStrings = new HashMap<Integer,String>();
     protected ISimulationListener simulationListener;
     protected MouseListener mouseListener;
+    private boolean isSelected;
     
     /**
      * Constructor.
@@ -41,7 +44,8 @@ public class GraphicalModulePart {
         this.moduleID = moduleID;
         cModule module = cSimulation.getActiveSimulation().getModule(moduleID);
 
-        moduleFigure = new CompoundModuleFigure();
+        moduleFigure = new CompoundModuleFigureEx();
+        moduleFigure.setModulePart(this);
         parentFigure.add(moduleFigure);
         parentFigure.setConstraint(moduleFigure, new Rectangle(0,0,500,500));  //XXX
 
@@ -81,6 +85,19 @@ public class GraphicalModulePart {
 
     public void dispose() {
         Activator.getSimulationManager().removeChangeListener(simulationListener);
+    }
+
+    public CompoundModuleFigureEx getModuleFigure() {
+        return moduleFigure;
+    }
+    
+    public boolean isSelected() {
+        return isSelected;
+    }
+    
+    public void setSelected(boolean isSelected) {
+        this.isSelected = isSelected;
+        moduleFigure.setDragHandlesShown(isSelected);
     }
     
     protected void update() {
@@ -169,10 +186,18 @@ public class GraphicalModulePart {
         // TODO Auto-generated method stub
     }
     
+    public static GraphicalModulePart findModulePartAt(FigureCanvas canvas, int x, int y) {
+        IFigure target = canvas.getRootFigure().findFigureAt(x, y);
+        while (target != null && !(target instanceof CompoundModuleFigureEx))
+            target = target.getParent();
+        return target==null ? null : ((CompoundModuleFigureEx)target).getModulePart();
+    }
+
     public SubmoduleFigureEx findSubmoduleAt(int x, int y) {
         IFigure target = moduleFigure.findFigureAt(x, y);
         while (target != null && !(target instanceof SubmoduleFigureEx))
             target = target.getParent();
         return (SubmoduleFigureEx)target;
     }
+
 }
