@@ -1,13 +1,19 @@
 package org.omnetpp.runtimeenv.editors;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.LayoutListener;
 import org.eclipse.draw2d.MouseEvent;
 import org.eclipse.draw2d.MouseListener;
 import org.eclipse.draw2d.XYLayout;
+import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.MenuDetectEvent;
 import org.eclipse.swt.events.MenuDetectListener;
 import org.eclipse.swt.graphics.Color;
@@ -32,6 +38,7 @@ import org.omnetpp.runtimeenv.widgets.FigureCanvas;
 //TODO canvas selection mechanism
 public class ModelCanvas extends EditorPart {
     public static final String EDITOR_ID = "org.omnetpp.runtimeenv.editors.ModelCanvas";
+    private ScrolledComposite sc;
     protected FigureCanvas canvas;
 
     @Override
@@ -47,10 +54,27 @@ public class ModelCanvas extends EditorPart {
 
     @Override
     public void createPartControl(Composite parent) {
+        sc = new ScrolledComposite(parent, SWT.V_SCROLL | SWT.H_SCROLL);
+        
         // create canvas
-        canvas = new FigureCanvas(parent, SWT.BORDER | SWT.DOUBLE_BUFFERED);  //FIXME wrap canvas into a ScrolledComposite!!
+        canvas = new FigureCanvas(sc, SWT.BORDER | SWT.DOUBLE_BUFFERED);
+        sc.setContent(canvas);
         canvas.setBackground(new Color(null, 228, 228, 228));
         canvas.getRootFigure().setLayoutManager(new XYLayout());
+
+        // recalculate canvas size when figures change or editor area gets resized
+        canvas.getRootFigure().addLayoutListener(new LayoutListener.Stub() {
+            @Override
+            public void postLayout(IFigure container) {
+                recalculateCanvasSize();
+            }
+        });
+        sc.addControlListener(new ControlAdapter() {
+            @Override
+            public void controlResized(ControlEvent e) {
+                recalculateCanvasSize();
+            }
+        });
         
         // create context menu
         final MenuManager contextMenuManager = new MenuManager("#popup");
@@ -66,6 +90,12 @@ public class ModelCanvas extends EditorPart {
         int moduleID = ((ModuleIDEditorInput)getEditorInput()).getModuleID();
         createModulePart(moduleID);
     }
+
+    protected void recalculateCanvasSize() {
+        Dimension size = canvas.getRootFigure().getPreferredSize();
+        org.eclipse.swt.graphics.Rectangle clientArea = sc.getClientArea();
+        canvas.setSize(Math.max(size.width, clientArea.width), Math.max(size.height, clientArea.height));
+    } 
 
     protected void populateContextMenu(final MenuManager contextMenuManager, MenuDetectEvent e) {
         Point p = canvas.toControl(e.x, e.y);

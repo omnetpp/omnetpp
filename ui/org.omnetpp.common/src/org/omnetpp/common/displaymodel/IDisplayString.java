@@ -339,20 +339,20 @@ public interface IDisplayString {
 
 
     /**
-     * True if the property is specified in the display string or in the fallback chain.
-     * (except the EMPTY_DEFAULTS)
+     * Returns true if the property is specified in the display string or 
+     * in the fallback chain (except the EMPTY_DEFAULTS).
      */
     public boolean containsProperty(Prop prop);
 
     /**
-     * True if the tag is specified in the display string or in the fallback chain.
-     * (except the EMPTY_DEFAULTS)
+     * Returns true if the tag is specified in the display string or in the 
+     * fallback chain (except the EMPTY_DEFAULTS).
      */
     public boolean containsTag(Tag tagName);
 
     /**
      * The value of the property. If the property is empty looks for default values and fallback
-     * values in ancestor types. If nothing found, returns <code>NULL</code>.
+     * values in ancestor types. If nothing found, returns <code>null</code>.
      */
 	public String getAsString(Prop property);
 
@@ -370,16 +370,16 @@ public interface IDisplayString {
 
 	/**
 	 * The scaling to be applied on the element. Uses fallback if not specified locally.
-	 * Returns 1.0 if not specified. NOTE that scaling factor is available ONLY in compound module
+	 * Returns 1.0 if not specified. NOTE: scaling factor is available ONLY in compound module
 	 * display strings.
 	 */
 	public float getScale();
 
 	/**
 	 * Returns the pixel based location for the module. Converts the unit based values of P tag to pixel.
-	 * Uses fallback if not specified locally. If either location property is missing it returns NULL
+	 * Uses fallback if not specified locally. If either location property is missing it returns null
 	 * (meaning the module is unpinned)
-     * @param scale A scaling parameter to convert to and from unit. If it's NULL the local scaling
+     * @param scale A scaling parameter to convert to and from unit. If it's null the local scaling
      *              factor stored in the display string will be used
 	 */
 	public Point getLocation(Float scale);
@@ -387,7 +387,7 @@ public interface IDisplayString {
 	/**
 	 * Returns The size of submodule (B tag) (in pixels). Uses fallback if not specified locally.
      * If width or height is missing returns -1 instead.
-     * @param scale A scaling parameter to convert to and from unit. If it's NULL the local scaling
+     * @param scale A scaling parameter to convert to and from unit. If it's null the local scaling
      *              factor stored in the display string will be used
 	 */
 	public Dimension getSize(Float scale);
@@ -396,7 +396,7 @@ public interface IDisplayString {
      * The size of module (in pixel) if represented as compound module (BGB tag).
      * Uses fallback if the property is not specified locally.
      * If width or height is missing returns -1 instead.
-     * @param scale A scaling parameter to convert to and from unit. If it's NULL the local scaling
+     * @param scale A scaling parameter to convert to and from unit. If it's null the local scaling
      *              factor stored in the display string will be used
      */
 	public Dimension getCompoundSize(Float scale);
@@ -404,7 +404,7 @@ public interface IDisplayString {
     /**
      * Returns the range converted to pixels. Uses fallback if the property is not specified locally.
      * Returns -1 if no range was specified.
-     * @param scale A scaling parameter to convert to and from unit. If it's NULL the local scaling
+     * @param scale A scaling parameter to convert to and from unit. If it's null, the local scaling
      *              factor stored in the display string will be used
      */
     public int getRange(Float scale);
@@ -412,7 +412,7 @@ public interface IDisplayString {
     /**
 	 * Converts the provided value (in pixel) to unit
 	 * @param pixel
-     * @param overrideScale If not NULL it will be used as scaling factor instead of the stored one
+     * @param overrideScale If not null, it will be used as scaling factor instead of the stored one
 	 * @return Value in units
 	 */
 	public float pixel2unit(int pixel, Float overrideScale);
@@ -420,7 +420,7 @@ public interface IDisplayString {
 	/**
 	 * Converts the provided value (in unit) to pixel
 	 * @param unit
-     * @param overrideScale If not NULL it will be used as scaling factor instead of the stored one
+     * @param overrideScale If not null, it will be used as scaling factor instead of the stored one
 	 * @return Value in pixels
 	 */
 	public int unit2pixel(float unit, Float overrideScale);

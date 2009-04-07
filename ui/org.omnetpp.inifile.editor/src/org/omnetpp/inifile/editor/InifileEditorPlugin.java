@@ -55,11 +55,6 @@ public class InifileEditorPlugin extends AbstractUIPlugin {
 		super.stop(context);
 	}
 
-	/**
-	 * Returns the shared instance
-	 *
-	 * @return the shared instance
-	 */
 	public static InifileEditorPlugin getDefault() {
 		return plugin;
 	}
