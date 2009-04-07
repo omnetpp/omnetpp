@@ -1,10 +1,11 @@
 package org.omnetpp.runtimeenv.editors;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.LayoutListener;
-import org.eclipse.draw2d.MouseEvent;
-import org.eclipse.draw2d.MouseListener;
 import org.eclipse.draw2d.XYLayout;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
@@ -19,6 +20,7 @@ import org.eclipse.swt.events.MenuDetectListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IWorkbenchPage;
@@ -26,9 +28,8 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
 import org.omnetpp.common.ui.SelectionProvider;
 import org.omnetpp.runtimeenv.Activator;
-import org.omnetpp.runtimeenv.figures.CompoundModuleFigureEx;
 import org.omnetpp.runtimeenv.figures.SubmoduleFigureEx;
-import org.omnetpp.runtimeenv.util.CompoundModuleFigureMouseListener;
+import org.omnetpp.runtimeenv.util.InspectorMouseListener;
 import org.omnetpp.runtimeenv.widgets.FigureCanvas;
 
 /**
@@ -38,8 +39,9 @@ import org.omnetpp.runtimeenv.widgets.FigureCanvas;
 //TODO canvas selection mechanism
 public class ModelCanvas extends EditorPart {
     public static final String EDITOR_ID = "org.omnetpp.runtimeenv.editors.ModelCanvas";
-    private ScrolledComposite sc;
+    protected ScrolledComposite sc;
     protected FigureCanvas canvas;
+    protected List<IInspectorPart> inspectors = new ArrayList<IInspectorPart>();
 
     @Override
     public void init(IEditorSite site, IEditorInput input) throws PartInitException {
@@ -57,9 +59,9 @@ public class ModelCanvas extends EditorPart {
         sc = new ScrolledComposite(parent, SWT.V_SCROLL | SWT.H_SCROLL);
         
         // create canvas
-        canvas = new FigureCanvas(sc, SWT.BORDER | SWT.DOUBLE_BUFFERED);
+        canvas = new FigureCanvas(sc, SWT.DOUBLE_BUFFERED);
         sc.setContent(canvas);
-        canvas.setBackground(new Color(null, 228, 228, 228));
+        canvas.setBackground(new Color(null, 235, 235, 235));
         canvas.getRootFigure().setLayoutManager(new XYLayout());
 
         // recalculate canvas size when figures change or editor area gets resized
@@ -125,27 +127,35 @@ public class ModelCanvas extends EditorPart {
         }
     }
 
-    private GraphicalModulePart createModulePart(int moduleID) {
-        final GraphicalModulePart modulePart = new GraphicalModulePart(canvas.getRootFigure(), moduleID);
-        CompoundModuleFigureEx moduleFigure = modulePart.getModuleFigure();
-        canvas.getRootFigure().setConstraint(moduleFigure, new Rectangle(20,20,-1,-1)); //TODO proper positioning
-
-        // add selection support
-        moduleFigure.addMouseListener(new MouseListener.Stub() {
-            @Override
-            public void mousePressed(MouseEvent me) {
-                if (!modulePart.isSelected()) {
-                    modulePart.setSelected(true);
-                    me.consume();
-                }
-            }
-        });
-        
-        // add move/resize support
-        new CompoundModuleFigureMouseListener(moduleFigure);
+    protected GraphicalModulePart createModulePart(int moduleID) {
+        int lastY = canvas.getRootFigure().getPreferredSize().height;
+        GraphicalModulePart modulePart = new GraphicalModulePart(canvas.getRootFigure(), moduleID);
+        addInspectorPart(modulePart, 0, lastY+5);
         return modulePart;
     }
 
+    protected void addInspectorPart(IInspectorPart inspectorPart, final int x, final int y) {
+        final IFigure moduleFigure = inspectorPart.getFigure();
+        canvas.getRootFigure().setConstraint(moduleFigure, new Rectangle(x,y,-1,-1));
+        
+        // reveal new inspector on canvas
+        Display.getCurrent().asyncExec(new Runnable() {
+            @Override
+            public void run() {
+                if (!sc.isDisposed())
+                    reveal(moduleFigure); //XXX also select it
+            }});
+        
+        // add move/resize/selection support
+        inspectors.add(inspectorPart);
+        new InspectorMouseListener(inspectorPart);
+    }
+
+    public void reveal(IFigure figure) {
+        Rectangle bounds = figure.getBounds(); //XXX maybe not good if coords are parent-relative
+        sc.setOrigin(bounds.x, bounds.y);
+    }
+    
     @Override
     public void setFocus() {
         canvas.setFocus();

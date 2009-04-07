@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.draw2d.FocusBorder;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.MouseEvent;
 import org.eclipse.draw2d.MouseListener;
@@ -25,7 +24,7 @@ import org.omnetpp.runtimeenv.widgets.FigureCanvas;
  * 
  * @author Andras
  */
-public class GraphicalModulePart {
+public class GraphicalModulePart implements IInspectorPart {
     //may add cSimulation and SimulationManager as well
     protected CompoundModuleFigureEx moduleFigure;
     protected int moduleID;
@@ -87,7 +86,7 @@ public class GraphicalModulePart {
         Activator.getSimulationManager().removeChangeListener(simulationListener);
     }
 
-    public CompoundModuleFigureEx getModuleFigure() {
+    public IInspectorFigure getFigure() {
         return moduleFigure;
     }
     
@@ -198,6 +197,11 @@ public class GraphicalModulePart {
         while (target != null && !(target instanceof SubmoduleFigureEx))
             target = target.getParent();
         return (SubmoduleFigureEx)target;
+    }
+
+    public IFigure getCloseButtonFigure() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }
