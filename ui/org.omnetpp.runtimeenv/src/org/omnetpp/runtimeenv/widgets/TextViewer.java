@@ -5,6 +5,9 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
 import org.eclipse.swt.custom.ST;
@@ -24,6 +27,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.ScrollBar;
+import org.omnetpp.common.ui.SelectionProvider;
 
 
 /**
@@ -41,7 +45,7 @@ import org.eclipse.swt.widgets.ScrollBar;
 //TODO drag-autoscroll
 //TODO try with proportional font?
 //TODO finish horiz scrolling!
-public class TextViewer extends Canvas {
+public class TextViewer extends Canvas implements ISelectionProvider {
     protected TextViewerContent content;
     protected TextChangeListener textChangeListener;
     protected Font font;
@@ -61,6 +65,7 @@ public class TextViewer extends Canvas {
     protected Listener listener;
     protected int clickCount;
     protected Clipboard clipboard;
+    protected ISelectionProvider selectionProvider = new SelectionProvider();
 
     protected static final int MAX_CLIPBOARD_SIZE = 10*1024*1024; //10Meg
 
@@ -515,7 +520,7 @@ public class TextViewer extends Canvas {
      */
     public void copy(int clipboardType) {
         if (clipboardType != DND.CLIPBOARD && clipboardType != DND.SELECTION_CLIPBOARD) return;
-        Point selection = getSelection();
+        Point selection = getSelectionRange();
         int length = selection.y - selection.x;
         if (length > 0) {
             try {
@@ -750,7 +755,7 @@ public class TextViewer extends Canvas {
         redraw();
     }
     
-    public Point getSelection() {
+    public Point getSelectionRange() {
         int a = getSelectionAnchor();
         int b = getCaretOffset();
         return a < b ? new Point(a,b) : new Point(b,a);
@@ -882,6 +887,26 @@ public class TextViewer extends Canvas {
         topLineIndex = clip(0, Math.max(0,content.getLineCount()-getNumVisibleLines()), topLineIndex);
         getVerticalBar().setSelection(topLineIndex);
         getHorizontalBar().setSelection(horizontalScrollOffset);
+    }
+
+    @Override
+    public void addSelectionChangedListener(ISelectionChangedListener listener) {
+        selectionProvider.addSelectionChangedListener(listener);
+    }
+
+    @Override
+    public void removeSelectionChangedListener(ISelectionChangedListener listener) {
+        selectionProvider.removeSelectionChangedListener(listener);
+    }
+
+    @Override
+    public void setSelection(ISelection selection) {
+        selectionProvider.setSelection(selection);  //FIXME synchronize this with the text selection!!!! (it does nothing as it is!!)
+    }
+
+    @Override
+    public ISelection getSelection() {
+        return selectionProvider.getSelection();  //FIXME synchronize this with the text selection!!!! (it does nothing as it is!!)
     }
 
 }

@@ -1,6 +1,10 @@
 package org.omnetpp.runtimeenv.views;
 
 import org.eclipse.core.runtime.ListenerList;
+import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
@@ -28,6 +32,7 @@ public class ModuleOutputView extends PinnableView implements ISimulationListene
     public static final String ID = "org.omnetpp.runtimeenv.ModuleOutputView";
 
     protected TextViewer textViewer;
+    protected MenuManager contextMenuManager = new MenuManager("#PopupMenu");
 
     protected class LogBufferContent implements TextViewerContent {
         private LogBufferView logBufferView;
@@ -123,11 +128,29 @@ public class ModuleOutputView extends PinnableView implements ISimulationListene
 //                long dt = System.currentTimeMillis()-t;
 //                System.out.println(dt + "ms, strings/sec: " + n * 1000.0 / dt);
 //            }});
+
+	    // create context menu
+        getViewSite().registerContextMenu(contextMenuManager, textViewer);
+        textViewer.setMenu(contextMenuManager.createContextMenu(textViewer));
+	    
+	    createActions();
 	    
 	    return textViewer;
 	}
 
-	/**
+	protected void createActions() {
+        IAction pinAction = getOrCreatePinAction();
+
+        contextMenuManager.add(pinAction); //TODO expand context menu: Copy, etc.
+        
+        IToolBarManager toolBarManager = getViewSite().getActionBars().getToolBarManager();
+        toolBarManager.add(pinAction);
+    
+        IMenuManager menuManager = getViewSite().getActionBars().getMenuManager();
+        menuManager.add(pinAction);
+    }
+
+    /**
 	 * Passing the focus request to the viewer's control.
 	 */
 	public void setFocus() {
