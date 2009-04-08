@@ -136,11 +136,6 @@ public abstract class PinnableView extends ViewWithMessagePart {
 		scheduleRebuildContent();
 	}
 
-	protected void nedModelChanged() {
-		//Debug.println("*** NED MODEL CHANGE");
-		scheduleRebuildContent();
-	}
-
 	public void scheduleRebuildContent() {
         rebuildContentJob.restartTimer();
 	}

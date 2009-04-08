@@ -62,6 +62,11 @@ public abstract class AbstractModuleView extends PinnableView implements IShowIn
             NEDResourcesPlugin.getNEDResources().addNEDModelChangeListener(nedChangeListener);
     }
 
+    protected void nedModelChanged() {
+        //Debug.println("*** NED MODEL CHANGE");
+        scheduleRebuildContent();
+    }
+
     /**
      * Utility function for subclasses: tries to find a NED element among the parents 
      * which may have parameters (simple module, compound module, channel, submodule).

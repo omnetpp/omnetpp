@@ -45,6 +45,8 @@ import org.omnetpp.common.ui.SelectionProvider;
 //TODO drag-autoscroll
 //TODO try with proportional font?
 //TODO finish horiz scrolling!
+//TODO implement selectionprovider stuff
+//TODO mouse wheel does not works
 public class TextViewer extends Canvas implements ISelectionProvider {
     protected TextViewerContent content;
     protected TextChangeListener textChangeListener;
