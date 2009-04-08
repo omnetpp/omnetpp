@@ -4,8 +4,9 @@ import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.part.ViewPart;
+import org.eclipse.swt.widgets.Control;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.ui.PinnableView;
 import org.omnetpp.experimental.simkernel.swig.IntVector;
 import org.omnetpp.experimental.simkernel.swig.LogBuffer;
 import org.omnetpp.experimental.simkernel.swig.LogBufferView;
@@ -23,7 +24,7 @@ import org.omnetpp.runtimeenv.widgets.TextViewerContent;
 //TODO filtering etc
 //TODO support opening multiple instances
 //FIXME remove try/catch from content provider (or it should log?) 
-public class ModuleOutputView extends ViewPart implements ISimulationListener {
+public class ModuleOutputView extends PinnableView implements ISimulationListener {
     public static final String ID = "org.omnetpp.runtimeenv.ModuleOutputView";
 
     protected TextViewer textViewer;
@@ -97,7 +98,8 @@ public class ModuleOutputView extends ViewPart implements ISimulationListener {
 
     }
 
-	public void createPartControl(Composite parent) {
+    @Override
+	protected Control createViewControl(Composite parent) {
 	    LogBuffer logBuffer = Activator.getSimulationManager().getLogBuffer();
 	    int systemModuleID = cSimulation.getActiveSimulation().getSystemModule().getId();
         LogBufferView logBufferView = new LogBufferView(logBuffer, systemModuleID, new IntVector());
@@ -121,6 +123,8 @@ public class ModuleOutputView extends ViewPart implements ISimulationListener {
 //                long dt = System.currentTimeMillis()-t;
 //                System.out.println(dt + "ms, strings/sec: " + n * 1000.0 / dt);
 //            }});
+	    
+	    return textViewer;
 	}
 
 	/**
@@ -156,5 +160,15 @@ public class ModuleOutputView extends ViewPart implements ISimulationListener {
         Activator.getSimulationManager().removeChangeListener(this);
 	    super.dispose();
 	}
+
+	int tmp = 0;
+    @Override
+    protected void rebuildContent() { 
+        //XXX dummy impl!
+        if (++tmp % 2 == 0)
+            hideMessage();
+        else 
+            showMessage("Selection: " + getAssociatedEditorSelection());
+    }
 
 }
