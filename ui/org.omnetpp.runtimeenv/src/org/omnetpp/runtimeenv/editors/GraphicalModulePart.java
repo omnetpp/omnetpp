@@ -123,6 +123,10 @@ public class GraphicalModulePart implements IInspectorPart {
             setSelection(new StructuredSelection()); //XXX rather: removeFromSelection()!
     }
     
+    public int getModuleID() {
+        return moduleID;
+    }
+    
     protected void update() {
         refreshChildren();
         refreshVisuals();

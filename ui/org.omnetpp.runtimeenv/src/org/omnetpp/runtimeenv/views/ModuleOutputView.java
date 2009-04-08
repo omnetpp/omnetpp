@@ -5,6 +5,8 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
@@ -17,6 +19,7 @@ import org.omnetpp.experimental.simkernel.swig.LogBufferView;
 import org.omnetpp.experimental.simkernel.swig.cSimulation;
 import org.omnetpp.runtimeenv.Activator;
 import org.omnetpp.runtimeenv.ISimulationListener;
+import org.omnetpp.runtimeenv.editors.GraphicalModulePart;
 import org.omnetpp.runtimeenv.widgets.TextChangeListener;
 import org.omnetpp.runtimeenv.widgets.TextViewer;
 import org.omnetpp.runtimeenv.widgets.TextViewerContent;
@@ -184,14 +187,30 @@ public class ModuleOutputView extends PinnableView implements ISimulationListene
 	    super.dispose();
 	}
 
-	int tmp = 0;
     @Override
-    protected void rebuildContent() { 
-        //XXX dummy impl!
-        if (++tmp % 2 == 0)
-            hideMessage();
-        else 
-            showMessage("Selection: " + getAssociatedEditorSelection());
+    protected void rebuildContent() {
+        // filter the displayed log to the first module in the editor selection
+        //XXX to *all* modules in the editor selection?
+        
+        int moduleID = -1;
+        ISelection selection = getAssociatedEditorSelection();
+        if (selection instanceof IStructuredSelection) {
+            Object[] sel = ((IStructuredSelection)selection).toArray();
+            for (Object s : sel) {
+                if (s instanceof GraphicalModulePart) {
+                    GraphicalModulePart x = (GraphicalModulePart)s;
+                    moduleID = x.getModuleID();
+                    break;
+                }
+            }
+        }
+        if (moduleID == -1)
+            moduleID = cSimulation.getActiveSimulation().getSystemModule().getId();
+
+        //XXX do nothing if already the same filter is set
+        LogBuffer logBuffer = Activator.getSimulationManager().getLogBuffer();
+        LogBufferView logBufferView = new LogBufferView(logBuffer, moduleID, new IntVector());
+        textViewer.setContent(new LogBufferContent(logBufferView));
     }
 
 }
