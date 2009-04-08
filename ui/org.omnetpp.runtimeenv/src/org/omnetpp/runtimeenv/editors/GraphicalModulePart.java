@@ -11,6 +11,8 @@ import org.eclipse.draw2d.MouseListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.omnetpp.common.ui.SelectionProvider;
 import org.omnetpp.experimental.simkernel.swig.cDisplayString;
@@ -62,6 +64,7 @@ public class GraphicalModulePart implements IInspectorPart {
 
         update();
 
+        // handle mouse
         moduleFigure.addMouseListener(mouseListener = new MouseListener() {
             @Override
             public void mouseDoubleClicked(MouseEvent me) {
@@ -77,10 +80,25 @@ public class GraphicalModulePart implements IInspectorPart {
             }
         });
         
+        // update the inspector when something happens in the simulation
         Activator.getSimulationManager().addChangeListener(simulationListener = new ISimulationListener() {
             @Override
             public void changed() {
                 update();
+            }
+        });
+        
+        // reflect selection changes
+        selectionProvider.addSelectionChangedListener(new ISelectionChangedListener() {
+            @Override
+            public void selectionChanged(SelectionChangedEvent event) {
+                // update visual feedback
+                isSelected = false;
+                if (event.getSelection() instanceof IStructuredSelection) {
+                    IStructuredSelection selection = (IStructuredSelection)event.getSelection();
+                    isSelected = selection.toList().contains(GraphicalModulePart.this);
+                    moduleFigure.setDragHandlesShown(isSelected);
+                }
             }
         });
     }
@@ -98,10 +116,7 @@ public class GraphicalModulePart implements IInspectorPart {
     }
     
     public void setSelected(boolean isSelected) {
-        this.isSelected = isSelected;
-        moduleFigure.setDragHandlesShown(isSelected);
-        
-        // update selection
+        // update selection (this also triggers update of figure and isSelected flag)
         if (isSelected)
             setSelection(new StructuredSelection(this)); //XXX rather: addToSelection()!  
         else
@@ -183,7 +198,7 @@ public class GraphicalModulePart implements IInspectorPart {
     }
 
     protected void handleMousePressed(MouseEvent me) {
-        System.out.println(findSubmoduleAt(me.x,me.y));
+        System.out.println("clicked submodule: " + findSubmoduleAt(me.x,me.y));
     }
 
     protected void handleMouseDoubleClick(MouseEvent me) {
@@ -226,5 +241,10 @@ public class GraphicalModulePart implements IInspectorPart {
     @Override
     public void removeSelectionChangedListener(ISelectionChangedListener listener) {
         selectionProvider.removeSelectionChangedListener(listener);
+    }
+    
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + " moduleID=" + moduleID;
     }
 }

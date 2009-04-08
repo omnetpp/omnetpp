@@ -40,12 +40,14 @@ import org.omnetpp.runtimeenv.widgets.FigureCanvas;
  * @author Andras
  */
 //TODO canvas selection mechanism
+//XXX snap to grid for the move/resize?
 public class ModelCanvas extends EditorPart {
     public static final String EDITOR_ID = "org.omnetpp.runtimeenv.editors.ModelCanvas";
     protected ScrolledComposite sc;
     protected FigureCanvas canvas;
     protected List<IInspectorPart> inspectors = new ArrayList<IInspectorPart>();
     protected ISelectionChangedListener inspectorSelectionListener;
+    protected boolean selectionUpdateInProgress;
 
     @Override
     public void init(IEditorSite site, IEditorInput input) throws PartInitException {
@@ -155,7 +157,7 @@ public class ModelCanvas extends EditorPart {
         canvas.getRootFigure().add(moduleFigure);
         canvas.getRootFigure().setConstraint(moduleFigure, new Rectangle(x, y, -1, -1));
         
-        // reveal new inspector on canvas
+        // reveal new inspector on canvas (later when layouting already took place)
         Display.getCurrent().asyncExec(new Runnable() {
             @Override
             public void run() {
@@ -190,8 +192,18 @@ public class ModelCanvas extends EditorPart {
     }
 
     protected void inspectorSelectionChanged(SelectionChangedEvent event) {
-        // for now, simply just take over that selection
-        getSite().getSelectionProvider().setSelection(event.getSelection());
+        if (!selectionUpdateInProgress) {
+            System.out.println("ModelCanvas: distributing selection " + event.getSelection());
+            
+            // for now, simply just take over that selection, and distribute 
+            // it to all inspectors (but disable further notifications meanwhile,
+            // to prevent recursion)
+            selectionUpdateInProgress = true;
+            getSite().getSelectionProvider().setSelection(event.getSelection());
+            for (IInspectorPart inspector : inspectors)
+                inspector.setSelection(event.getSelection());
+            selectionUpdateInProgress = false;
+        }
     }
 
     @Override
