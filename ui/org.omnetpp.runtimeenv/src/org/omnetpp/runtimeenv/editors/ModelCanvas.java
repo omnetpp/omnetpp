@@ -32,7 +32,6 @@ import org.eclipse.ui.part.EditorPart;
 import org.omnetpp.common.ui.SelectionProvider;
 import org.omnetpp.runtimeenv.Activator;
 import org.omnetpp.runtimeenv.figures.SubmoduleFigureEx;
-import org.omnetpp.runtimeenv.util.InspectorMouseListener;
 import org.omnetpp.runtimeenv.widgets.FigureCanvas;
 
 /**
