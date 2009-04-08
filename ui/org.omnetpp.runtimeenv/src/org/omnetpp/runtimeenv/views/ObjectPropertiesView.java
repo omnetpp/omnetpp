@@ -2,8 +2,14 @@ package org.omnetpp.runtimeenv.views;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.DecoratingStyledCellLabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -15,22 +21,26 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.TextStyle;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.part.ViewPart;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.ui.PinnableView;
 import org.omnetpp.experimental.simkernel.swig.cClassDescriptor;
 import org.omnetpp.experimental.simkernel.swig.cCollectChildrenVisitor;
 import org.omnetpp.experimental.simkernel.swig.cEnum;
+import org.omnetpp.experimental.simkernel.swig.cModule;
 import org.omnetpp.experimental.simkernel.swig.cObject;
 import org.omnetpp.experimental.simkernel.swig.cSimulation;
 import org.omnetpp.runtimeenv.Activator;
 import org.omnetpp.runtimeenv.ISimulationListener;
+import org.omnetpp.runtimeenv.editors.GraphicalModulePart;
 
 /**
  * 
  * @author Andras
  */
+//XXX should display name and class of object shown!!!
 //XXX what's lost, compared to Tcl:
 // - bold (\b)
 // - editable
@@ -39,10 +49,11 @@ import org.omnetpp.runtimeenv.ISimulationListener;
 //TODO should enable pinning, and creation of new View instances
 //TODO we should support user-supplied images as well
 //FIXME extremely slow!!!! much slower than the graphical canvas or the module log!!!!
-public class ObjectPropertiesView extends ViewPart implements ISimulationListener {
+public class ObjectPropertiesView extends PinnableView implements ISimulationListener {
 	public static final String ID = "org.omnetpp.runtimeenv.ObjectPropertiesView";
 
-	private TreeViewer viewer;
+	protected TreeViewer viewer;
+    protected MenuManager contextMenuManager = new MenuManager("#PopupMenu");
 
 	class StructKey {
         long ptr;
@@ -416,14 +427,35 @@ public class ObjectPropertiesView extends ViewPart implements ISimulationListene
 	 * This is a callback that will allow us to create the viewer and initialize
 	 * it.
 	 */
-	public void createPartControl(Composite parent) {
+    @Override
+    protected Control createViewControl(Composite parent) {
 		viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		viewer.setContentProvider(new ViewContentProvider());
 		//viewer.setLabelProvider(new ViewLabelProvider());
 		viewer.setLabelProvider(new DecoratingStyledCellLabelProvider(new ViewLabelProvider(), null, null));
 		viewer.setInput(cSimulation.getActiveSimulation());
         Activator.getSimulationManager().addChangeListener(this);
+        
+        // create context menu
+        getViewSite().registerContextMenu(contextMenuManager, viewer);
+        viewer.getTree().setMenu(contextMenuManager.createContextMenu(viewer.getTree()));
+        
+        createActions();
+        
+        return viewer.getTree();
 	}
+
+    protected void createActions() {
+        IAction pinAction = getOrCreatePinAction();
+
+        contextMenuManager.add(pinAction); //TODO expand context menu: Copy, etc.
+        
+        IToolBarManager toolBarManager = getViewSite().getActionBars().getToolBarManager();
+        toolBarManager.add(pinAction);
+    
+        IMenuManager menuManager = getViewSite().getActionBars().getMenuManager();
+        menuManager.add(pinAction);
+    }
 
 	/**
 	 * Passing the focus request to the viewer's control.
@@ -441,5 +473,30 @@ public class ObjectPropertiesView extends ViewPart implements ISimulationListene
     public void dispose() {
         Activator.getSimulationManager().removeChangeListener(this);
         super.dispose();
+    }
+
+    @Override
+    protected void rebuildContent() {
+        // set first selected object as input
+        //XXX need something more general than GraphicalModulePart!
+        
+        int moduleID = -1;
+        ISelection selection = getAssociatedEditorSelection();
+        if (selection instanceof IStructuredSelection) {
+            Object[] sel = ((IStructuredSelection)selection).toArray();
+            for (Object s : sel) {
+                if (s instanceof GraphicalModulePart) {
+                    GraphicalModulePart x = (GraphicalModulePart)s;
+                    moduleID = x.getModuleID();
+                    break;
+                }
+            }
+        }
+        if (moduleID == -1)
+            moduleID = cSimulation.getActiveSimulation().getSystemModule().getId();
+
+        cModule module = cSimulation.getActiveSimulation().getModule(moduleID);
+        if (!module.equals(viewer.getInput()))
+            viewer.setInput(module);
     }
 }
