@@ -8,7 +8,11 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.MouseEvent;
 import org.eclipse.draw2d.MouseListener;
-import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.jface.viewers.StructuredSelection;
+import org.omnetpp.common.ui.SelectionProvider;
 import org.omnetpp.experimental.simkernel.swig.cDisplayString;
 import org.omnetpp.experimental.simkernel.swig.cModule;
 import org.omnetpp.experimental.simkernel.swig.cModule_SubmoduleIterator;
@@ -32,21 +36,20 @@ public class GraphicalModulePart implements IInspectorPart {
     protected Map<Integer,String> lastSubmoduleDisplayStrings = new HashMap<Integer,String>();
     protected ISimulationListener simulationListener;
     protected MouseListener mouseListener;
-    private boolean isSelected;
+    protected boolean isSelected;
+    protected ISelectionProvider selectionProvider = new SelectionProvider();
     
     /**
      * Constructor.
      * @param parentFigure typically the root figure on the canvas
      * @param moduleID id of the compound module to be displayed
      */
-    public GraphicalModulePart(IFigure parentFigure, int moduleID) {
+    public GraphicalModulePart(int moduleID) {
         this.moduleID = moduleID;
         cModule module = cSimulation.getActiveSimulation().getModule(moduleID);
 
         moduleFigure = new CompoundModuleFigureEx();
         moduleFigure.setModulePart(this);
-        parentFigure.add(moduleFigure);
-        parentFigure.setConstraint(moduleFigure, new Rectangle(0,0,500,500));  //XXX
 
         moduleFigure.setDisplayString(module.getDisplayString());
         
@@ -97,6 +100,12 @@ public class GraphicalModulePart implements IInspectorPart {
     public void setSelected(boolean isSelected) {
         this.isSelected = isSelected;
         moduleFigure.setDragHandlesShown(isSelected);
+        
+        // update selection
+        if (isSelected)
+            setSelection(new StructuredSelection(this)); //XXX rather: addToSelection()!  
+        else
+            setSelection(new StructuredSelection()); //XXX rather: removeFromSelection()!
     }
     
     protected void update() {
@@ -199,9 +208,23 @@ public class GraphicalModulePart implements IInspectorPart {
         return (SubmoduleFigureEx)target;
     }
 
-    public IFigure getCloseButtonFigure() {
-        // TODO Auto-generated method stub
-        return null;
+    @Override
+    public ISelection getSelection() {
+        return selectionProvider.getSelection();
+    }
+    
+    @Override
+    public void setSelection(ISelection selection) {
+        selectionProvider.setSelection(selection);
     }
 
+    @Override
+    public void addSelectionChangedListener(ISelectionChangedListener listener) {
+        selectionProvider.addSelectionChangedListener(listener);
+    }
+    
+    @Override
+    public void removeSelectionChangedListener(ISelectionChangedListener listener) {
+        selectionProvider.removeSelectionChangedListener(listener);
+    }
 }

@@ -3,6 +3,7 @@ package org.omnetpp.runtimeenv.editors;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.LayoutListener;
@@ -11,6 +12,8 @@ import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.ControlAdapter;
@@ -42,6 +45,7 @@ public class ModelCanvas extends EditorPart {
     protected ScrolledComposite sc;
     protected FigureCanvas canvas;
     protected List<IInspectorPart> inspectors = new ArrayList<IInspectorPart>();
+    protected ISelectionChangedListener inspectorSelectionListener;
 
     @Override
     public void init(IEditorSite site, IEditorInput input) throws PartInitException {
@@ -51,7 +55,15 @@ public class ModelCanvas extends EditorPart {
         setSite(site);
         setInput(input);
         setPartName(input.getName());
+        
         site.setSelectionProvider(new SelectionProvider());
+        
+        inspectorSelectionListener = new ISelectionChangedListener() {
+            @Override
+            public void selectionChanged(SelectionChangedEvent event) {
+                inspectorSelectionChanged(event);
+            }
+        };
     }
 
     @Override
@@ -128,15 +140,20 @@ public class ModelCanvas extends EditorPart {
     }
 
     protected GraphicalModulePart createModulePart(int moduleID) {
-        int lastY = canvas.getRootFigure().getPreferredSize().height;
-        GraphicalModulePart modulePart = new GraphicalModulePart(canvas.getRootFigure(), moduleID);
-        addInspectorPart(modulePart, 0, lastY+5);
+        GraphicalModulePart modulePart = new GraphicalModulePart(moduleID);
+        addInspectorPart(modulePart);
         return modulePart;
     }
 
+    protected void addInspectorPart(IInspectorPart inspectorPart) {
+        int lastY = canvas.getRootFigure().getPreferredSize().height;
+        addInspectorPart(inspectorPart, 0, lastY+5);
+    }
+    
     protected void addInspectorPart(IInspectorPart inspectorPart, final int x, final int y) {
         final IFigure moduleFigure = inspectorPart.getFigure();
-        canvas.getRootFigure().setConstraint(moduleFigure, new Rectangle(x,y,-1,-1));
+        canvas.getRootFigure().add(moduleFigure);
+        canvas.getRootFigure().setConstraint(moduleFigure, new Rectangle(x, y, -1, -1));
         
         // reveal new inspector on canvas
         Display.getCurrent().asyncExec(new Runnable() {
@@ -149,8 +166,19 @@ public class ModelCanvas extends EditorPart {
         // add move/resize/selection support
         inspectors.add(inspectorPart);
         new InspectorMouseListener(inspectorPart);
+        
+        // listen on selection changes
+        inspectorPart.addSelectionChangedListener(inspectorSelectionListener);        
     }
 
+    public void removeInspectorPart(IInspectorPart inspectorPart) {
+        Assert.isTrue(inspectors.contains(inspectorPart));
+        inspectors.remove(inspectorPart);
+        canvas.getRootFigure().remove(inspectorPart.getFigure());
+        inspectorPart.removeSelectionChangedListener(inspectorSelectionListener);        
+        //XXX what else?
+    }
+    
     public void reveal(IFigure figure) {
         Rectangle bounds = figure.getBounds(); //XXX maybe not good if coords are parent-relative
         sc.setOrigin(bounds.x, bounds.y);
@@ -159,6 +187,11 @@ public class ModelCanvas extends EditorPart {
     @Override
     public void setFocus() {
         canvas.setFocus();
+    }
+
+    protected void inspectorSelectionChanged(SelectionChangedEvent event) {
+        // for now, simply just take over that selection
+        getSite().getSelectionProvider().setSelection(event.getSelection());
     }
 
     @Override
