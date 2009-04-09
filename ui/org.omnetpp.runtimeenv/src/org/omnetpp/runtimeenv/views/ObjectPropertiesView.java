@@ -10,6 +10,8 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.DecoratingStyledCellLabelProvider;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -37,6 +39,8 @@ import org.omnetpp.experimental.simkernel.swig.cSimulation;
 import org.omnetpp.runtimeenv.Activator;
 import org.omnetpp.runtimeenv.ISimulationListener;
 import org.omnetpp.runtimeenv.editors.GraphicalModulePart;
+import org.omnetpp.runtimeenv.editors.ModelCanvas;
+import org.omnetpp.runtimeenv.editors.ModuleIDEditorInput;
 
 /**
  * 
@@ -486,7 +490,6 @@ public class ObjectPropertiesView extends PinnableView implements ISimulationLis
     protected Control createViewControl(Composite parent) {
 		viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		viewer.setContentProvider(new ViewContentProvider());
-		//viewer.setLabelProvider(new ViewLabelProvider());
 		viewer.setLabelProvider(new DecoratingStyledCellLabelProvider(new ViewLabelProvider(), null, null));
 		viewer.setInput(cSimulation.getActiveSimulation());
         Activator.getSimulationManager().addChangeListener(this);
@@ -497,8 +500,25 @@ public class ObjectPropertiesView extends PinnableView implements ISimulationLis
         
         createActions();
         
+        // add double-click support
+        viewer.addDoubleClickListener(new IDoubleClickListener() {
+            public void doubleClick(DoubleClickEvent event) {
+                Object element = ((IStructuredSelection)event.getSelection()).getFirstElement();
+                if (element instanceof cObject)
+                    openInspector((cObject)element);
+            }
+        });
+        
         return viewer.getTree();
 	}
+
+    protected void openInspector(cObject element) {
+        if (cModule.cast(element) != null) {
+            cModule module = cModule.cast(element);
+            Activator.openEditor(new ModuleIDEditorInput(module.getId()), ModelCanvas.EDITOR_ID);
+        }
+        //XXX open other types of objects too (use inspector framework)
+    }
 
     protected void createActions() {
         IAction pinAction = getOrCreatePinAction();

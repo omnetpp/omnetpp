@@ -1,6 +1,7 @@
 package org.omnetpp.runtimeenv;
 
 import org.eclipse.jface.action.GroupMarker;
+import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.ui.IWorkbenchActionConstants;
@@ -9,6 +10,7 @@ import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.actions.ActionFactory.IWorkbenchAction;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
+import org.eclipse.ui.internal.ShowViewMenu;
 
 /**
  * An action bar advisor is responsible for creating, adding, and disposing of
@@ -27,12 +29,15 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
     private IWorkbenchAction closeAction;
     private IWorkbenchAction closeAllAction;
     private IWorkbenchAction aboutAction;
+    private IWorkbenchAction preferencesAction;
+    private IContributionItem showViewMenu;
 
 	public ApplicationActionBarAdvisor(IActionBarConfigurer configurer) {
 		super(configurer);
 	}
 
-	protected void makeActions(final IWorkbenchWindow window) {
+	@SuppressWarnings("restriction")
+    protected void makeActions(final IWorkbenchWindow window) {
 		// Creates the actions and registers them.
 		// Registering is needed to ensure that key bindings work.
 		// The corresponding commands key bindings are defined in the plugin.xml
@@ -57,6 +62,11 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
         aboutAction = ActionFactory.ABOUT.create(window);
         register(aboutAction);
 
+        preferencesAction = ActionFactory.PREFERENCES.create(window);
+        register(preferencesAction);
+        
+        showViewMenu = new ShowViewMenu(window, "show view XXX");
+
 	}
 
 	protected void fillMenuBar(IMenuManager menuBar) {
@@ -75,6 +85,8 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 
 		MenuManager windowMenu = new MenuManager("&Window", IWorkbenchActionConstants.M_WINDOW);
 		menuBar.add(windowMenu);
+		windowMenu.add(preferencesAction);
+		windowMenu.add(showViewMenu);  //FIXME does not work well...
 
 		MenuManager helpMenu = new MenuManager("&Help", IWorkbenchActionConstants.M_HELP);
 		menuBar.add(helpMenu);
