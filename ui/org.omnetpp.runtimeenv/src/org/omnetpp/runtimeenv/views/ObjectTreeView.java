@@ -1,8 +1,10 @@
 package org.omnetpp.runtimeenv.views;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.DecoratingStyledCellLabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -10,6 +12,8 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider.IStyledLabelProvider;
 import org.eclipse.jface.viewers.StyledString.Styler;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.TextStyle;
@@ -19,10 +23,13 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.experimental.simkernel.swig.cClassDescriptor;
+import org.omnetpp.experimental.simkernel.swig.cModule;
 import org.omnetpp.experimental.simkernel.swig.cObject;
 import org.omnetpp.experimental.simkernel.swig.cSimulation;
 import org.omnetpp.runtimeenv.Activator;
 import org.omnetpp.runtimeenv.ISimulationListener;
+import org.omnetpp.runtimeenv.editors.ModelCanvas;
+import org.omnetpp.runtimeenv.editors.ModuleIDEditorInput;
 
 /**
  * 
@@ -32,7 +39,8 @@ import org.omnetpp.runtimeenv.ISimulationListener;
 public class ObjectTreeView extends ViewPart implements ISimulationListener {
 	public static final String ID = "org.omnetpp.runtimeenv.ObjectTreeView";
 
-	private TreeViewer viewer;
+	protected TreeViewer viewer;
+    protected MenuManager contextMenuManager = new MenuManager("#PopupMenu");
 
 	class ViewContentProvider implements ITreeContentProvider {
 	    public Object[] getChildren(Object element) {
@@ -147,10 +155,34 @@ public class ObjectTreeView extends ViewPart implements ISimulationListener {
         viewer.setLabelProvider(new DecoratingStyledCellLabelProvider(new ViewLabelProvider(), null, null));
 		viewer.setInput(cSimulation.getActiveSimulation());
 
+        // create context menu
+        getViewSite().registerContextMenu(contextMenuManager, viewer);
+        viewer.getTree().setMenu(contextMenuManager.createContextMenu(viewer.getTree()));
+        //TODO dynamic menu based on which object is selected
+        
+        //TODO double-click: should open inspector (make an inspector framework!!!)
+
+        //
+        viewer.getTree().addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetDefaultSelected(SelectionEvent e) {
+                Object element = ((IStructuredSelection)viewer.getSelection()).getFirstElement();
+                if (element instanceof cObject)
+                    openInspector((cObject)element);
+            }
+        });
 		Activator.getSimulationManager().addChangeListener(this);
 	}
 
-	/**
+    protected void openInspector(cObject element) {
+        if (cModule.cast(element) != null) {
+            cModule module = cModule.cast(element);
+            Activator.openEditor(new ModuleIDEditorInput(module.getId()), ModelCanvas.EDITOR_ID);
+        }
+        //XXX open other types of objects too (use inspector framework)
+    }
+
+    /**
 	 * Passing the focus request to the viewer's control.
 	 */
 	public void setFocus() {

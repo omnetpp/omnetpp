@@ -31,6 +31,7 @@ import org.omnetpp.runtimeenv.widgets.TextViewerContent;
 //TODO filtering etc
 //TODO support opening multiple instances
 //FIXME remove try/catch from content provider (or it should log?) 
+//XXX should be able to follow views too, not only editors
 public class ModuleOutputView extends PinnableView implements ISimulationListener {
     public static final String ID = "org.omnetpp.runtimeenv.ModuleOutputView";
 
