@@ -44,10 +44,26 @@
 }
 
 %typemap(javacode) cObject %{
-    public cObject disown() {
-        swigCMemOwn = false;
-        return this;
-    }
+  public cObject disown() {
+    swigCMemOwn = false;
+    return this;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (!(obj instanceof cObject))  // note: cannot do getClass()==obj.getClass() because we don't have polymorphic return types! (e.g. getOwner() always returns a cObject)
+      return false;
+    return swigCPtr == ((cObject)obj).swigCPtr;
+  }
+
+  @Override
+  public int hashCode() {
+    return (int)((swigCPtr>>2)&0xffffffff) + 31*(int)(swigCPtr >> 34);
+  }
 %}
 %typemap(javacode) cEnvir %{
     public cEnvir disown() {

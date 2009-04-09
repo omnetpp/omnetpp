@@ -125,7 +125,24 @@ public class SimulationManager {
     }
 
     public void step() {
-        // TODO Auto-generated method stub
+        cSimulation sim = cSimulation.getActiveSimulation();
+        try {
+            cSimpleModule mod = sim.selectNextModule();
+            if (mod == null)
+                System.out.println("no more events"); //XXX
+            else {
+                sim.doOneEvent(mod);
+
+                updateUI();
+            }
+        }
+//XXX
+//        catch (cTerminationException& e) {
+//            printf("Finished: %s\n", e.what());
+//        }
+        catch (RuntimeException e) {
+            e.printStackTrace();
+        }
     }
 
     public void slowRun() {

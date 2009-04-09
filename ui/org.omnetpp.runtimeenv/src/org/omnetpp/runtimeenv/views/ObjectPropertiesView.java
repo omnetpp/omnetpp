@@ -1,5 +1,8 @@
 package org.omnetpp.runtimeenv.views;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.action.IAction;
@@ -55,46 +58,114 @@ public class ObjectPropertiesView extends PinnableView implements ISimulationLis
 	protected TreeViewer viewer;
     protected MenuManager contextMenuManager = new MenuManager("#PopupMenu");
 
-	class StructKey {
+    class KeyBase {
+        Object parent; // otherwise setExpandedElements and preserving selection doesn't work
         long ptr;
-	    cClassDescriptor desc;
+        cClassDescriptor desc;
 
-	    public StructKey(long ptr, cClassDescriptor desc) {
-	        this.desc = desc; this.ptr = ptr;
+        public KeyBase(Object parent, long ptr, cClassDescriptor desc) {
+            this.parent = parent; this.desc = desc; this.ptr = ptr;
+        }
+        @Override
+        public int hashCode() {
+            return (int)ptr + 7*(int)(ptr>>32) + 31*desc.hashCode();
+        }
+    }
+
+    class StructKey extends KeyBase {
+	    public StructKey(Object parent, long ptr, cClassDescriptor desc) {
+	        super(parent, ptr, desc);
 	    }
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            GroupKey other = (GroupKey)obj;
+            return ptr == other.ptr && desc.equals(other.desc);
+        }
 	}
-	class GroupKey {
-	    long ptr;
-	    cClassDescriptor desc;
+	class GroupKey extends KeyBase {
         String groupName;
 
-        public GroupKey(long ptr, cClassDescriptor desc, String groupName) {
-            this.desc = desc; this.groupName = groupName; this.ptr = ptr;
+        public GroupKey(Object parent, long ptr, cClassDescriptor desc, String groupName) {
+            super(parent, ptr, desc);
+            this.groupName = groupName;
+        }
+        
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            GroupKey other = (GroupKey)obj;
+            return ptr == other.ptr && desc.equals(other.desc) && groupName.equals(other.groupName);
+        }
+        @Override
+        public int hashCode() {
+            return super.hashCode() + 47*groupName.hashCode();
         }
 	}
-	class FieldKey {
-	    long ptr;
-	    cClassDescriptor desc;
+	class FieldKey extends KeyBase {
 	    int fieldID;
 
-	    public FieldKey(long ptr, cClassDescriptor desc, int fieldID) {
-            this.desc = desc; this.fieldID = fieldID; this.ptr = ptr;
+	    public FieldKey(Object parent, long ptr, cClassDescriptor desc, int fieldID) {
+            super(parent, ptr, desc);
+	        this.fieldID = fieldID;
+        }
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+              if (obj == null)
+                return false;
+              if (getClass() != obj.getClass())
+                return false;
+            FieldKey other = (FieldKey)obj;
+            return ptr == other.ptr && desc.equals(other.desc) && fieldID == other.fieldID;
+        }
+        @Override
+        public int hashCode() {
+            return super.hashCode() + 47*fieldID;
         }
 	}
-	class ArrayElementKey {
-	    long ptr;
-	    cClassDescriptor desc;
+	class ArrayElementKey extends KeyBase {
 	    int fieldID;
 	    int index;
 
-	    public ArrayElementKey(long ptr, cClassDescriptor desc, int fieldID, int index) {
-            this.desc = desc; this.fieldID = fieldID; this.index = index; this.ptr = ptr;
+	    public ArrayElementKey(Object parent, long ptr, cClassDescriptor desc, int fieldID, int index) {
+            super(parent, ptr, desc);
+	        this.fieldID = fieldID; this.index = index;
+        }
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+              if (obj == null)
+                return false;
+              if (getClass() != obj.getClass())
+                return false;
+            ArrayElementKey other = (ArrayElementKey)obj;
+            return ptr == other.ptr && desc.equals(other.desc) && fieldID == other.fieldID && index == other.index;
+        }
+        @Override
+        public int hashCode() {
+            return super.hashCode() + 47*fieldID + 113*index;
         }
 	}
 	
 	class ViewContentProvider implements ITreeContentProvider {
 	    public Object[] getChildren(Object element) {
-	        if (element instanceof cObject) {
+	        if (element instanceof Object[]) {
+	            return (Object[])element;
+	        }
+	        else if (element instanceof cObject) {
 	            cObject object = (cObject)element;
 	            long ptr = cClassDescriptor.getCPtr(object);
                 cClassDescriptor desc = cClassDescriptor.getDescriptorFor(object);
@@ -102,39 +173,39 @@ public class ObjectPropertiesView extends PinnableView implements ISimulationLis
                     return getChildObjects(object);
                 } else {
                     //Object[] allFields = getFieldsInGroup(ptr, desc, null); -- use this to present all fields at once (without groups)
-                    Object[] ungroupedFields = getFieldsInGroup(ptr, desc, "");
-                    Object[] groups = getGroupKeys(ptr, desc);
+                    Object[] ungroupedFields = getFieldsInGroup(element, ptr, desc, "");
+                    Object[] groups = getGroupKeys(element, ptr, desc);
                     Object[] childObjects = getChildObjects(object); //FIXME needed?
                     return ArrayUtils.addAll(ArrayUtils.addAll(ungroupedFields, groups), childObjects);
                 }
 	        }
             else if (element instanceof StructKey) {
                 StructKey key = (StructKey)element;
-                Object[] ungroupedFields = getFieldsInGroup(key.ptr, key.desc, "");
-                Object[] groups = getGroupKeys(key.ptr, key.desc);
+                Object[] ungroupedFields = getFieldsInGroup(element, key.ptr, key.desc, "");
+                Object[] groups = getGroupKeys(element, key.ptr, key.desc);
                 return ArrayUtils.addAll(ungroupedFields, groups);
             }
             else if (element instanceof GroupKey) {
                 GroupKey key = (GroupKey)element;
-                return getFieldsInGroup(key.ptr, key.desc, key.groupName);
+                return getFieldsInGroup(element, key.ptr, key.desc, key.groupName);
             }
             else if (element instanceof FieldKey) {
                 FieldKey key = (FieldKey)element;
                 boolean isArray = key.desc.getFieldIsArray(key.ptr, key.fieldID);
                 if (isArray)
-                    return getElementsInArray(key.ptr, key.desc, key.fieldID);
+                    return getElementsInArray(element, key.ptr, key.desc, key.fieldID);
                 boolean isCompound = key.desc.getFieldIsCompound(key.ptr, key.fieldID);
                 if (isCompound)
-                    return getFieldsOfCompoundField(key.ptr, key.desc, key.fieldID, -1);
+                    return getFieldsOfCompoundField(element, key.ptr, key.desc, key.fieldID, -1);
             }
             else if (element instanceof ArrayElementKey) {
                 ArrayElementKey key = (ArrayElementKey)element;
-                return getFieldsOfCompoundField(key.ptr, key.desc, key.fieldID, key.index);
+                return getFieldsOfCompoundField(element, key.ptr, key.desc, key.fieldID, key.index);
             }
 	        return new Object[0];
 	    }
 
-        private Object[] getFieldsOfCompoundField(long ptr, cClassDescriptor desc, int fieldID, int index) {
+        private Object[] getFieldsOfCompoundField(Object parent, long ptr, cClassDescriptor desc, int fieldID, int index) {
             // return children of this class/struct
             long fieldPtr = desc.getFieldStructPointer(ptr, fieldID, index);
             if (fieldPtr == 0)
@@ -147,7 +218,7 @@ public class ObjectPropertiesView extends PinnableView implements ISimulationLis
                 cClassDescriptor fieldDesc = cClassDescriptor.getDescriptorFor(fieldStructName);
                 if (fieldDesc == null)
                     return new Object[0]; // nothing known about it
-                return getChildren(new StructKey(fieldPtr, fieldDesc));
+                return getChildren(new StructKey(parent, fieldPtr, fieldDesc));
             }
         }
 
@@ -161,11 +232,11 @@ public class ObjectPropertiesView extends PinnableView implements ISimulationLis
             return result2;
         }
 
-	    protected Object[] getElementsInArray(long ptr, cClassDescriptor desc, int fieldID) {
+	    protected Object[] getElementsInArray(Object parent, long ptr, cClassDescriptor desc, int fieldID) {
 	        int n = desc.getArraySize(ptr, fieldID);
 	        Object[] result = new Object[n];
 	        for (int i=0; i<n; i++)
-	            result[i] = new ArrayElementKey(ptr, desc, fieldID, i);
+	            result[i] = new ArrayElementKey(parent, ptr, desc, fieldID, i);
             return result;
         }
 
@@ -176,6 +247,8 @@ public class ObjectPropertiesView extends PinnableView implements ISimulationLis
 	    public Object getParent(Object element) {
 	        if (element instanceof cObject)
 	            return ((cObject)element).getOwner();
+            if (element instanceof KeyBase)
+                return ((KeyBase)element).parent;
 	        return null;
 	    }
 
@@ -188,7 +261,7 @@ public class ObjectPropertiesView extends PinnableView implements ISimulationLis
 	            return getChildren(element).length!=0; //FIXME make it more efficient (this counts all children!)
 	    }
 
-	    protected Object[] getGroupKeys(long ptr, cClassDescriptor desc) {
+	    protected Object[] getGroupKeys(Object parent, long ptr, cClassDescriptor desc) {
 	        // collect unique group names
 	        int numFields = desc.getFieldCount(ptr);
 	        Object[] groupNames = new Object[0];
@@ -201,19 +274,19 @@ public class ObjectPropertiesView extends PinnableView implements ISimulationLis
 	        // convert to GroupKey[] in-place
 	        Object[] result = groupNames;
 	        for (int i=0; i<result.length; i++)
-	            result[i] = new GroupKey(ptr, desc, (String)result[i]);
+	            result[i] = new GroupKey(parent, ptr, desc, (String)result[i]);
 	        return result;
 	        
 	    }
 
-	    protected Object[] getFieldsInGroup(long ptr, cClassDescriptor desc, String groupName) {
+	    protected Object[] getFieldsInGroup(Object parent, long ptr, cClassDescriptor desc, String groupName) {
             int numFields = desc.getFieldCount(ptr);
             Object[] fieldKeys = new Object[numFields]; // upper bound
             int numFieldKeys = 0;
             for (int i=0; i<numFields; i++) {
                 String fieldGroupName = desc.getFieldProperty(ptr, i, "group");
                 if (groupName==null || groupName.equals(fieldGroupName))
-                    fieldKeys[numFieldKeys++] = new FieldKey(ptr, desc, i);
+                    fieldKeys[numFieldKeys++] = new FieldKey(parent, ptr, desc, i);
             }
             return ArrayUtils.subarray(fieldKeys, 0, numFieldKeys);
 	    }
@@ -466,7 +539,9 @@ public class ObjectPropertiesView extends PinnableView implements ISimulationLis
 
 	@Override
     public void changed() {
+	    Object[] expandedElements = viewer.getExpandedElements();
         viewer.refresh();
+        viewer.setExpandedElements(expandedElements);
     }
 
     @Override
@@ -477,26 +552,29 @@ public class ObjectPropertiesView extends PinnableView implements ISimulationLis
 
     @Override
     protected void rebuildContent() {
-        // set first selected object as input
         //XXX need something more general than GraphicalModulePart!
-        
-        int moduleID = -1;
+        List<Object> input = new ArrayList<Object>();
         ISelection selection = getAssociatedEditorSelection();
         if (selection instanceof IStructuredSelection) {
             Object[] sel = ((IStructuredSelection)selection).toArray();
-            for (Object s : sel) {
-                if (s instanceof GraphicalModulePart) {
-                    GraphicalModulePart x = (GraphicalModulePart)s;
-                    moduleID = x.getModuleID();
-                    break;
+            for (Object o : sel) {
+                if (o instanceof GraphicalModulePart) {
+                    GraphicalModulePart part = (GraphicalModulePart)o;
+                    cModule module = cSimulation.getActiveSimulation().getModule(part.getModuleID());
+                    if (module != null)
+                        input.add(module);
                 }
             }
         }
-        if (moduleID == -1)
-            moduleID = cSimulation.getActiveSimulation().getSystemModule().getId();
 
-        cModule module = cSimulation.getActiveSimulation().getModule(moduleID);
-        if (!module.equals(viewer.getInput()))
-            viewer.setInput(module);
+        if (input.isEmpty()) {
+            cModule systemModule = cSimulation.getActiveSimulation().getSystemModule();
+            if (systemModule != null)
+                input.add(systemModule);
+        }
+
+        Object[] array = input.toArray();
+        if (!array.equals(viewer.getInput()))
+            viewer.setInput(array);
     }
 }
