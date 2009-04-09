@@ -2,7 +2,7 @@
 
 %include commondefs.i
 //%include simtime.i
-%include simtime_tmp.i   //until we rewrite java code to use bigdecimal
+%include simtime_tmp.i   //XXX until we rewrite java code to use bigdecimal
 %include displaystring.i
 
 //
@@ -49,6 +49,16 @@
     return this;
   }
 
+  public Object[] getChildObjects() {
+    cCollectChildrenVisitor visitor = new cCollectChildrenVisitor(this);
+    visitor.process(this);
+    int m = visitor.getArraySize();
+    Object[] result2 = new Object[m];
+    for (int i=0; i<m; i++)
+      result2[i] = visitor.get(i);
+    return result2;
+  }
+
   @Override
   public boolean equals(Object obj) {
     if (this == obj)
@@ -65,6 +75,16 @@
     return (int)((swigCPtr>>2)&0xffffffff) + 31*(int)(swigCPtr >> 34);
   }
 %}
+
+%extend cObject {
+  bool hasChildObjects() {
+    cCollectChildrenVisitor visitor(self);
+    visitor.setSizeLimit(1);
+    visitor.process(self);
+    return visitor.getArraySize() > 0;
+  }
+}
+
 %typemap(javacode) cEnvir %{
     public cEnvir disown() {
         swigCMemOwn = false;
@@ -75,6 +95,7 @@
 %{
 #include "omnetpp.h"
 #include "innerclasses.h"
+#include "javaenv/visitor.h"
 
 #include <direct.h>
 inline void changeToDir(const char *dir)  //XXX

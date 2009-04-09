@@ -30,7 +30,6 @@ import org.eclipse.ui.PlatformUI;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.ui.PinnableView;
 import org.omnetpp.experimental.simkernel.swig.cClassDescriptor;
-import org.omnetpp.experimental.simkernel.swig.cCollectChildrenVisitor;
 import org.omnetpp.experimental.simkernel.swig.cEnum;
 import org.omnetpp.experimental.simkernel.swig.cModule;
 import org.omnetpp.experimental.simkernel.swig.cObject;
@@ -166,12 +165,12 @@ public class ObjectPropertiesView extends PinnableView implements ISimulationLis
 	            long ptr = cClassDescriptor.getCPtr(object);
                 cClassDescriptor desc = cClassDescriptor.getDescriptorFor(object);
                 if (desc == null) {
-                    return getChildObjects(object);
+                    return object.getChildObjects();
                 } else {
                     //Object[] allFields = getFieldsInGroup(ptr, desc, null); -- use this to present all fields at once (without groups)
                     Object[] ungroupedFields = getFieldsInGroup(element, ptr, desc, "");
                     Object[] groups = getGroupKeys(element, ptr, desc);
-                    Object[] childObjects = getChildObjects(object); //FIXME needed?
+                    Object[] childObjects = object.getChildObjects(); //FIXME needed?
                     return ArrayUtils.addAll(ArrayUtils.addAll(ungroupedFields, groups), childObjects);
                 }
 	        }
@@ -218,16 +217,6 @@ public class ObjectPropertiesView extends PinnableView implements ISimulationLis
             }
         }
 
-        private Object[] getChildObjects(cObject o) {
-            cCollectChildrenVisitor visitor = new cCollectChildrenVisitor(o);
-            visitor.process(o);
-            int m = visitor.getArraySize();
-            Object[] result2 = new Object[m];
-            for (int i=0; i<m; i++)
-                result2[i] = visitor.get(i);
-            return result2;
-        }
-
 	    protected Object[] getElementsInArray(Object parent, long ptr, cClassDescriptor desc, int fieldID) {
 	        int n = desc.getArraySize(ptr, fieldID);
 	        Object[] result = new Object[n];
@@ -252,7 +241,7 @@ public class ObjectPropertiesView extends PinnableView implements ISimulationLis
 	        if (element instanceof GroupKey)
 	            return true;   
 	        else if (element instanceof cObject)
-	            return getChildren(element).length!=0;  //FIXME make it more efficient (this counts all children!)
+	            return ((cObject)element).hasChildObjects();
 	        else
 	            return getChildren(element).length!=0; //FIXME make it more efficient (this counts all children!)
 	    }
@@ -459,9 +448,6 @@ public class ObjectPropertiesView extends PinnableView implements ISimulationLis
             int greyStartIndex = text.indexOf('\f');
             if (greyStartIndex != -1)
                 text = text.replace("\f", "");
-            int greenStartIndex = text.indexOf('\r');
-            if (greenStartIndex != -1)
-                text = text.replace("\r", "");
 
             StyledString styledString = new StyledString(text);
             if (greyStartIndex >= 0)
