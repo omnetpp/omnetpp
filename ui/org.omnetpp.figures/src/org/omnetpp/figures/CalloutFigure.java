@@ -7,9 +7,16 @@
 
 package org.omnetpp.figures;
 
-import org.eclipse.draw2d.*;
+import org.eclipse.draw2d.ColorConstants;
+import org.eclipse.draw2d.Ellipse;
+import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.Layer;
+import org.eclipse.draw2d.MarginBorder;
+import org.eclipse.draw2d.RoundedRectangle;
+import org.eclipse.draw2d.Shape;
+import org.eclipse.draw2d.ToolbarLayout;
+import org.eclipse.draw2d.XYLayout;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.eclipse.swt.SWT;
 
 /**
  * A figure that resembles a cartoon style callout box. Can show/hide itself using a timer
@@ -53,13 +60,4 @@ public class CalloutFigure extends Layer {
         mainShape.removeAll();
     }
 
-    @Override
-    public void paint(Graphics graphics) {
-        graphics.pushState();
-        // set antialiasing on content and child/derived figures
-        if (NedFileFigure.antialias != SWT.DEFAULT)
-            graphics.setAntialias(NedFileFigure.antialias);
-        super.paint(graphics);
-        graphics.popState();
-    }
 }

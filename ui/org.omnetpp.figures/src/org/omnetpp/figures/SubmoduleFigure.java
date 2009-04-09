@@ -10,7 +10,6 @@ package org.omnetpp.figures;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.Ellipse;
-import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.ImageFigure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.Layer;
@@ -25,7 +24,6 @@ import org.eclipse.draw2d.geometry.PrecisionPoint;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.draw2d.text.FlowPage;
 import org.eclipse.draw2d.text.TextFlow;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.omnetpp.common.color.ColorFactory;
@@ -89,16 +87,6 @@ public class SubmoduleFigure extends NedFigure {
         
         textAttachLayer = new AttachedLayer(this, PositionConstants.NORTH, textFlowPage, PositionConstants.SOUTH, 0, -1);
         rangeAttachLayer = new AttachedLayer(this, PositionConstants.CENTER, rangeFigure, PositionConstants.CENTER);
-    }
-
-    @Override
-    public void paint(Graphics graphics) {
-        graphics.pushState();
-        // set antialiasing on content and child/derived figures
-        if (NedFileFigure.antialias != SWT.DEFAULT)
-            graphics.setAntialias(NedFileFigure.antialias);
-        super.paint(graphics);
-        graphics.popState();
     }
 
     @Override

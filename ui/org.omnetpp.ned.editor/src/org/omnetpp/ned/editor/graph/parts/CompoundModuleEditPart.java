@@ -182,6 +182,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
 	/**
 	 * Returns whether the compound module is selectable (mouse is over the bordering area)
 	 * for the selection tool based on the current mouse target coordinates.
+	 * Coordinates are viewport relative.
 	 */
 	public boolean isOnBorder(int x, int y) {
 		return getCompoundModuleFigure().isOnBorder(x, y);

@@ -8,6 +8,7 @@
 package org.omnetpp.figures;
 
 import org.eclipse.draw2d.CompoundBorder;
+import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.Layer;
 import org.eclipse.draw2d.LineBorder;
@@ -26,7 +27,7 @@ import org.omnetpp.common.color.ColorFactory;
  */
 public class NedFileFigure extends Layer {
 	// global switch for antialiasing
-	public static int antialias = SWT.ON;
+	private static int antialias = SWT.ON;
 
 	protected String problemMessage;
 
@@ -68,5 +69,13 @@ public class NedFileFigure extends Layer {
 			}
 		}
 		invalidate();
+	}
+
+	@Override
+	public void paint(Graphics graphics) {
+		// set antialiasing on content and child/derived figures
+		if (NedFileFigure.antialias != SWT.DEFAULT)
+			graphics.setAntialias(NedFileFigure.antialias);
+		super.paint(graphics);
 	}
 }

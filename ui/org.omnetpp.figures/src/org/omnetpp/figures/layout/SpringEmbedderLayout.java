@@ -192,11 +192,15 @@ public class SpringEmbedderLayout extends XYLayout {
 	    requestAutoLayout = true;
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
-	protected Dimension calculatePreferredSize(IFigure f, int hint, int hint2) {
-	    if (f.getChildren().size() == 0)
-	        return new Dimension(DEFAULT_SIZE);
-	    Rectangle rect = new Rectangle();
+	protected Dimension calculatePreferredSize(IFigure f, int hHint, int wHint) {
+		System.out.println("caculate");
+		// if we have a size hint, we always use that for the size
+		if (hHint >= 0 && wHint >= 0)
+			return new Dimension(hHint,wHint);
+		
+	    Rectangle rect = null;
 	    for(IFigure child : (List<IFigure>)f.getChildren()) {
 	        Rectangle r = (Rectangle)constraints.get(child);
 	        if (r == null)
@@ -218,10 +222,19 @@ public class SpringEmbedderLayout extends XYLayout {
 	            // add the label bounds to it
 	            r.union(((SubmoduleFigure)child).getLabelBounds());
 	        }
+	        
+	        if (rect == null)
+	        	rect = r.getCopy();
+	        
 	        rect.union(r);
 	    }
 	    
-	    return new Dimension(rect.width + f.getInsets().getWidth(), rect.height + f.getInsets().getHeight()).
+	    // use the default size if no submodule children were present
+	    if (rect == null)
+	    	return new Dimension(DEFAULT_SIZE);
+	    
+	    // we use the same amount of space on the up/down and the left/right side
+	    return new Dimension(rect.x + Math.max(rect.x,0) + rect.width + f.getInsets().getWidth(), rect.y + Math.max(rect.y,0) + rect.height + f.getInsets().getHeight()).
 	        union(getBorderPreferredSize(f));
 	}
 }

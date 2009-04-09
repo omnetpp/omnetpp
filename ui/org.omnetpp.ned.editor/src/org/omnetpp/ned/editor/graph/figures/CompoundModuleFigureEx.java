@@ -8,6 +8,7 @@
 package org.omnetpp.ned.editor.graph.figures;
 
 import org.eclipse.draw2d.geometry.Point;
+import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.handles.HandleBounds;
 import org.eclipse.gef.tools.CellEditorLocator;
 import org.omnetpp.common.util.StringUtils;
@@ -43,13 +44,19 @@ public class CompoundModuleFigureEx extends CompoundModuleTypeFigure implements
     }
 
     /**
-     * Returns whether the point is on the border area, where dragging and selection and connection start/end is possible
+     * Returns whether the point is on the border area, where dragging and selection and connection start/end is possible.
+	 * Coordinates are viewport relative.
      */
     public boolean isOnBorder(int x, int y) {
+    	// translate the mouse coordinates to root figure relative
         Point mouse = new Point(x,y);
         translateToRelative(mouse);
-        return getBounds().contains(mouse) &&
-            !mainContainer.getClientArea().shrink(2*BORDER_SNAP_WIDTH, 2*BORDER_SNAP_WIDTH).contains(mouse);
+        
+        // translate the client area coordinates to root figure relative
+        Rectangle clientArea = mainContainer.getClientArea().shrink(2*BORDER_SNAP_WIDTH, 2*BORDER_SNAP_WIDTH);
+        mainContainer.translateToParent(clientArea);
+        translateToParent(clientArea);
+        return getBounds().contains(mouse) && !clientArea.contains(mouse);
     }
 
 }
