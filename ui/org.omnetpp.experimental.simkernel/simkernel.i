@@ -259,25 +259,6 @@ namespace std {
 //  public IDisplayString getDisplayString() {
 //    return new DisplayString(null, null, displayString().getString());
 //  }
-
-  @Override
-  public int hashCode() {
-    return getId();
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    if (this == obj)
-      return true;
-    if (obj == null)
-      return false;
-    if (getClass() != obj.getClass())
-      return false;
-    final cModule other = (cModule) obj;
-    if (getId() != other.getId())
-      return false;
-    return true;
-  }
 %};
 
 //XXX temporarily disabled; TO BE PUT BACK: %typemap(javainterfaces) cGate "org.omnetpp.common.simulation.model.IRuntimeGate";
@@ -294,8 +275,33 @@ namespace std {
 %};
 */
 
-
 //XXX temporarily disabled; TO BE PUT BACK: %typemap(javainterfaces) cMessage "org.omnetpp.common.simulation.model.IRuntimeMessage";
+
+// Cast etc from jsimplemodule
+%define BASECLASS(CLASS)
+%ignore CLASS::CLASS(const CLASS&);
+%ignore CLASS::operator=(const CLASS&);
+%enddef
+
+%define DERIVEDCLASS(CLASS,BASECLASS)
+%ignore CLASS::CLASS(const CLASS&);
+%ignore CLASS::operator=(const CLASS&);
+%extend CLASS {
+  static CLASS *cast(BASECLASS *obj) {return dynamic_cast<CLASS *>(obj);}
+}
+%enddef
+
+//TODO: for all cObject-based classes
+DERIVEDCLASS(cComponent,cObject);
+DERIVEDCLASS(cModule,cObject);
+DERIVEDCLASS(Channel,cObject);
+DERIVEDCLASS(cGate,cObject);
+DERIVEDCLASS(cPar,cObject);
+DERIVEDCLASS(cQueue,cObject);
+DERIVEDCLASS(cMessage,cObject);
+DERIVEDCLASS(cPacket,cObject);
+
+
 
 %include "innerclasses.h"
 
