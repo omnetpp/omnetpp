@@ -43,15 +43,11 @@ import org.omnetpp.runtimeenv.editors.GraphicalModulePart;
  * 
  * @author Andras
  */
-//XXX should display name and class of object shown!!!
-//XXX what's lost, compared to Tcl:
-// - bold (\b)
-// - editable
-// - multi-line text
-//TODO should follow canvas selection
-//TODO should enable pinning, and creation of new View instances
+//XXX should display full path of root objects
 //TODO we should support user-supplied images as well
 //FIXME extremely slow!!!! much slower than the graphical canvas or the module log!!!!
+//FIXME because of the delayed update (PinnableView), more prone to crashes by showing obsolete objects?
+//XXX what's lost, compared to Tcl: bold; field editing; expanding multi-line text
 public class ObjectPropertiesView extends PinnableView implements ISimulationListener {
 	public static final String ID = "org.omnetpp.runtimeenv.ObjectPropertiesView";
 
@@ -539,9 +535,7 @@ public class ObjectPropertiesView extends PinnableView implements ISimulationLis
 
 	@Override
     public void changed() {
-	    Object[] expandedElements = viewer.getExpandedElements();
         viewer.refresh();
-        viewer.setExpandedElements(expandedElements);
     }
 
     @Override
@@ -574,7 +568,8 @@ public class ObjectPropertiesView extends PinnableView implements ISimulationLis
         }
 
         Object[] array = input.toArray();
-        if (!array.equals(viewer.getInput()))
-            viewer.setInput(array);
+        Object[] expandedElements = viewer.getExpandedElements();
+        viewer.setInput(array);
+        viewer.setExpandedElements(expandedElements);
     }
 }
