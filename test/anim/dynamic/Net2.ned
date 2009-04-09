@@ -1,5 +1,5 @@
 module Subnet {
-    @display("bgg=20"); 
+    @display("bgg=20;i=misc/cloud"); 
     submodules:
         controller : Controller2;
 }
