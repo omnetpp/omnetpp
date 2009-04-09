@@ -7,7 +7,6 @@
 
 package org.omnetpp.figures;
 
-import org.eclipse.core.resources.IMarker;
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.ImageFigure;
 import org.eclipse.draw2d.Label;
@@ -35,6 +34,13 @@ abstract public class NedFigure extends Figure {
     protected ImageFigure problemMarkerFigure = new ImageFigure();
     protected TooltipFigure problemMarkerTooltipFigure;
 
+    // the following constants have been copied here from IMarker so that we don't
+    // need to pull in org.eclipse.core.resources for our simulation runtime;
+    // they must be kept in sync with IMarker values.
+    public static final int SEVERITY_ERROR = 2;
+    public static final int SEVERITY_WARNING = 1;
+    public static final int SEVERITY_INFO = 0;
+
     public NedFigure() {
         // left align everything inside the figure
         nameFigure.setLabelAlignment(PositionConstants.LEFT);
@@ -54,9 +60,9 @@ abstract public class NedFigure extends Figure {
 		Image image;
     	switch (severity) {
 	    	case -1: image = null; break;
-	    	case IMarker.SEVERITY_ERROR: image = ICON_ERROR; break;
-	    	case IMarker.SEVERITY_WARNING: image = ICON_WARNING; break;
-	    	case IMarker.SEVERITY_INFO: image = ICON_INFO; break;
+	    	case SEVERITY_ERROR: image = ICON_ERROR; break;
+	    	case SEVERITY_WARNING: image = ICON_WARNING; break;
+	    	case SEVERITY_INFO: image = ICON_INFO; break;
 	    	default: throw new RuntimeException("invalid severity value");
     	}
 		return image;

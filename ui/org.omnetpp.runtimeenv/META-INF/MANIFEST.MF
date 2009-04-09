@@ -7,8 +7,6 @@ Bundle-Activator: org.omnetpp.runtimeenv.Activator
 Bundle-Vendor: Opensim Ltd.
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- org.eclipse.jface.text,
- org.eclipse.ui.editors,
  org.eclipse.draw2d,
  org.omnetpp.experimental.simkernel,
  org.omnetpp.figures,
