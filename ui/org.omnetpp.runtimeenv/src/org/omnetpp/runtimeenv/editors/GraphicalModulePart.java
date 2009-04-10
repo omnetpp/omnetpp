@@ -21,7 +21,6 @@ import org.omnetpp.experimental.simkernel.swig.cSimulation;
 import org.omnetpp.figures.layout.SubmoduleConstraint;
 import org.omnetpp.runtimeenv.figures.CompoundModuleFigureEx;
 import org.omnetpp.runtimeenv.figures.SubmoduleFigureEx;
-import org.omnetpp.runtimeenv.widgets.FigureCanvas;
 
 /**
  * 
@@ -177,13 +176,6 @@ public class GraphicalModulePart extends InspectorPart {
         // TODO Auto-generated method stub
     }
     
-    public static GraphicalModulePart findModulePartAt(FigureCanvas canvas, int x, int y) {
-        IFigure target = canvas.getRootFigure().findFigureAt(x, y);
-        while (target != null && !(target instanceof CompoundModuleFigureEx))
-            target = target.getParent();
-        return target==null ? null : (GraphicalModulePart)((CompoundModuleFigureEx)target).getInspectorPart();
-    }
-
     public SubmoduleFigureEx findSubmoduleAt(int x, int y) {
         IFigure target = figure.findFigureAt(x, y);
         while (target != null && !(target instanceof SubmoduleFigureEx))

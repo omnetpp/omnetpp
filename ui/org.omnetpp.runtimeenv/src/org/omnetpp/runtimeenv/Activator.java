@@ -15,10 +15,10 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.omnetpp.experimental.simkernel.swig.cModule;
 import org.omnetpp.experimental.simkernel.swig.cObject;
+import org.omnetpp.runtimeenv.editors.BlankCanvasEditorInput;
 import org.omnetpp.runtimeenv.editors.GraphicalModulePart;
 import org.omnetpp.runtimeenv.editors.IInspectorPart;
 import org.omnetpp.runtimeenv.editors.ModelCanvas;
-import org.omnetpp.runtimeenv.editors.ModuleIDEditorInput;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -135,33 +135,37 @@ public class Activator extends AbstractUIPlugin {
 	    return null;
 	}
 
-    public static void openInspector2(cObject obj) {
+    public static void openInspector2(cObject obj, boolean useNewCanvas) {
         //XXX temp function
         try {
-            openInspector(obj);
+            openInspector(obj, useNewCanvas);
         }
         catch (CoreException e) {
             e.printStackTrace(); //XXX
         }
     }
-    public static void openInspector(cObject obj) throws CoreException {
-        //FIXME make some OpenInspectorAction or Handler?
-        if (cModule.cast(obj) != null) {
-            //XXX open new generic canvas, and put inspector on it, created with createInspectorFor()?
-            cModule module = cModule.cast(obj);
-            Activator.openEditor(new ModuleIDEditorInput(module.getId()), ModelCanvas.EDITOR_ID);
-            return;
-        }
-        throw new CoreException(new Status(IStatus.ERROR, PLUGIN_ID, "No inspector for object " + obj));
+
+    public static IInspectorPart openInspector(cObject obj, boolean useNewCanvas) throws CoreException {
+    	//FIXME turn this into some OpenInspectorAction or Handler?
+    	IInspectorPart part = createInspectorFor(obj);
+    	if (part == null) {
+    		//XXX dialog or something?
+    		//throw new CoreException(new Status(IStatus.ERROR, PLUGIN_ID, "No inspector for object " + obj));
+    		return null;
+    	}
+        IEditorPart editor;
+        if (useNewCanvas || !(getActiveWorkbenchPage().getActiveEditor() instanceof ModelCanvas))
+        	editor = openEditor(new BlankCanvasEditorInput("XXX"), ModelCanvas.EDITOR_ID);
+        else
+        	editor = getActiveWorkbenchPage().getActiveEditor();
+        ((ModelCanvas)editor).addInspectorPart(part);
+        return part;
     }
     
-	public IInspectorPart createInspectorFor(cObject obj) {
+	public static IInspectorPart createInspectorFor(cObject obj) {
 	    //XXX this function should go into some InspectorFactory class or so
-        if (cModule.cast(obj) != null) {
+        if (cModule.cast(obj) != null)
             return new GraphicalModulePart(cModule.cast(obj));
-//            cModule module = ;
-//            Activator.openEditor(new ModuleIDEditorInput(module.getId()), ModelCanvas.EDITOR_ID);
-        }
         return null;
 	}
 

@@ -26,7 +26,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
-import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
 import org.omnetpp.common.ui.SelectionProvider;
@@ -52,7 +51,7 @@ public class ModelCanvas extends EditorPart {
 
     @Override
     public void init(IEditorSite site, IEditorInput input) throws PartInitException {
-        if (!(input instanceof ModuleIDEditorInput))
+        if (!(input instanceof BlankCanvasEditorInput))
             throw new PartInitException("Invalid input: it must be a module in the simulation");
         
         setSite(site);
@@ -103,10 +102,6 @@ public class ModelCanvas extends EditorPart {
                 populateContextMenu(contextMenuManager, e);
             }
         });
-
-        int moduleID = ((ModuleIDEditorInput)getEditorInput()).getModuleID();
-        cModule module = cSimulation.getActiveSimulation().getModule(moduleID);
-        createModulePart(module);
     }
 
     protected void recalculateCanvasSize() {
@@ -116,45 +111,38 @@ public class ModelCanvas extends EditorPart {
     } 
 
     protected void populateContextMenu(final MenuManager contextMenuManager, MenuDetectEvent e) {
+    	//XXX why is this here? why not in the GraphicalModulePart?
         Point p = canvas.toControl(e.x, e.y);
-        GraphicalModulePart modulePart = GraphicalModulePart.findModulePartAt(canvas, p.x, p.y);
+        IInspectorPart inspectorPart = InspectorPart.findInspectorPartAt(canvas, p.x, p.y);
+		GraphicalModulePart modulePart = (inspectorPart instanceof GraphicalModulePart) ? (GraphicalModulePart)inspectorPart : null;
         SubmoduleFigureEx submoduleFigure = modulePart==null? null : modulePart.findSubmoduleAt(p.x, p.y);
         if (submoduleFigure != null) {
-            final int submoduleID = submoduleFigure.getModuleID();
+            int submoduleID = submoduleFigure.getModuleID();
+            final cModule module = cSimulation.getActiveSimulation().getModule(submoduleID);
 
             //XXX factor out actions
             contextMenuManager.add(new Action("Open in New Canvas") {
                 @Override
                 public void run() {
-                    System.out.println("opening editor for " + submoduleID);
-                    IWorkbenchPage page = Activator.getActiveWorkbenchPage();
-                    if (page != null) {
-                        Activator.openEditor(new ModuleIDEditorInput(submoduleID), EDITOR_ID);
-                    }
+                    Activator.openInspector2(module, true);
                 }
             });
 
-            contextMenuManager.add(new Action("Open on This Canvas") {
+            contextMenuManager.add(new Action("Add to Canvas") {
                 @Override
                 public void run() {
-                    createModulePart(cSimulation.getActiveSimulation().getModule(submoduleID));
+                    Activator.openInspector2(module, false);
                 }
             });
         }
     }
 
-    protected GraphicalModulePart createModulePart(cModule module) {
-        GraphicalModulePart modulePart = new GraphicalModulePart(module);
-        addInspectorPart(modulePart);
-        return modulePart;
-    }
-
-    protected void addInspectorPart(IInspectorPart inspectorPart) {
+    public void addInspectorPart(IInspectorPart inspectorPart) {
         int lastY = canvas.getRootFigure().getPreferredSize().height;
         addInspectorPart(inspectorPart, 0, lastY+5);
     }
     
-    protected void addInspectorPart(IInspectorPart inspectorPart, final int x, final int y) {
+    public void addInspectorPart(IInspectorPart inspectorPart, final int x, final int y) {
         final IFigure moduleFigure = inspectorPart.getFigure();
         canvas.getRootFigure().add(moduleFigure);
         canvas.getRootFigure().setConstraint(moduleFigure, new Rectangle(x, y, -1, -1));

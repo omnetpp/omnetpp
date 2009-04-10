@@ -162,7 +162,7 @@ public class ObjectTreeView extends ViewPart implements ISimulationListener {
             public void doubleClick(DoubleClickEvent event) {
                 Object element = ((IStructuredSelection)event.getSelection()).getFirstElement();
                 if (element instanceof cObject)
-                    Activator.openInspector2((cObject)element);
+                    Activator.openInspector2((cObject)element, false); //XXX how to decide whether on new canvas or same canvas?
             }
         });
 		Activator.getSimulationManager().addChangeListener(this);

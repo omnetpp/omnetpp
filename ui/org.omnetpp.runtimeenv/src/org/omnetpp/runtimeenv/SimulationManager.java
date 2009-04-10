@@ -16,12 +16,13 @@ import org.omnetpp.experimental.simkernel.swig.NotSoMinimalEnv;
 import org.omnetpp.experimental.simkernel.swig.SimTime;
 import org.omnetpp.experimental.simkernel.swig.cConfiguration;
 import org.omnetpp.experimental.simkernel.swig.cCoroutine;
+import org.omnetpp.experimental.simkernel.swig.cModule;
 import org.omnetpp.experimental.simkernel.swig.cModuleType;
 import org.omnetpp.experimental.simkernel.swig.cSimpleModule;
 import org.omnetpp.experimental.simkernel.swig.cSimulation;
 import org.omnetpp.experimental.simkernel.swig.cStaticFlag;
+import org.omnetpp.runtimeenv.editors.BlankCanvasEditorInput;
 import org.omnetpp.runtimeenv.editors.ModelCanvas;
-import org.omnetpp.runtimeenv.editors.ModuleIDEditorInput;
 
 /**
  * 
@@ -71,9 +72,10 @@ public class SimulationManager {
                     }
 
                     IWorkbenchPage page = workbenchWindow.getActivePage();
-                    int moduleID = cSimulation.getActiveSimulation().getSystemModule().getId();
+                    cModule module = cSimulation.getActiveSimulation().getSystemModule();
                     try {
-                        page.openEditor(new ModuleIDEditorInput(moduleID), ModelCanvas.EDITOR_ID);
+                        page.openEditor(new BlankCanvasEditorInput(""), ModelCanvas.EDITOR_ID);
+                        Activator.openInspector2(module, false);
                     }
                     catch (PartInitException e) {
                         e.printStackTrace(); //XXX

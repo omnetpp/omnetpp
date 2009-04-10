@@ -1,9 +1,11 @@
 package org.omnetpp.runtimeenv.editors;
 
+import org.eclipse.draw2d.IFigure;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.omnetpp.experimental.simkernel.swig.cObject;
 import org.omnetpp.runtimeenv.Activator;
 import org.omnetpp.runtimeenv.ISimulationListener;
+import org.omnetpp.runtimeenv.widgets.FigureCanvas;
 
 /**
  * Default implementation for IInspectorPart, base class for inspector classes
@@ -29,6 +31,14 @@ public abstract class InspectorPart implements IInspectorPart {
 	public void dispose() {
 	    Activator.getSimulationManager().removeChangeListener(simulationListener);
 	}
+
+    public static IInspectorPart findInspectorPartAt(FigureCanvas canvas, int x, int y) {
+        IFigure target = canvas.getRootFigure().findFigureAt(x, y);
+        while (target != null && !(target instanceof IInspectorFigure))
+            target = target.getParent();
+        return target==null ? null : ((IInspectorFigure)target).getInspectorPart();
+    }
+
 
 	@Override
 	public cObject getObject() {

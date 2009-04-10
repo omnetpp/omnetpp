@@ -503,7 +503,7 @@ public class ObjectPropertiesView extends PinnableView implements ISimulationLis
             public void doubleClick(DoubleClickEvent event) {
                 Object element = ((IStructuredSelection)event.getSelection()).getFirstElement();
                 if (element instanceof cObject)
-                    Activator.openInspector2((cObject)element);
+                    Activator.openInspector2((cObject)element, false); //XXX how to decide whether on new canvas or same canvas?
             }
         });
         
@@ -542,7 +542,7 @@ public class ObjectPropertiesView extends PinnableView implements ISimulationLis
 
     @Override
     protected void rebuildContent() {
-        //XXX need something more general than GraphicalModulePart!
+        //XXX need something more general... 
         List<Object> input = new ArrayList<Object>();
         ISelection selection = getAssociatedEditorSelection();
         if (selection instanceof IStructuredSelection) {
