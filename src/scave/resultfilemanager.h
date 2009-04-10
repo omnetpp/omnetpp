@@ -336,6 +336,12 @@ class SCAVE_API ResultFileManager
     ResultFileManager();
     ~ResultFileManager();
 
+#ifdef THREADED
+    ILock& getReadLock() { return lock.readLock(); }
+    ILock& getWriteLock() { return lock.writeLock(); }
+#endif
+
+
     // navigation
     ResultFileList getFiles() const; // filters out NULLs
     const RunList& getRuns() const {return runList;}

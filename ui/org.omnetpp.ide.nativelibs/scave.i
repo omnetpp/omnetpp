@@ -26,6 +26,8 @@
 #include "export.h"
 %}
 
+#define THREADED
+
 %include "commondefs.i"
 %include "bigdecimal.i"
 
@@ -44,6 +46,8 @@
 %typemap(jni) ID "jlong";
 
 COMMON_ENGINE_BIGDECIMAL();
+
+USE_COMMON_ENGINE_ILOCK();
 
 %include "std_common.i"
 %include "std_string.i"
@@ -315,12 +319,6 @@ int strdictcmp(const char *s1, const char *s2);
    std::string getName() {return *self->nameRef;}
 }
 
-%typemap(javaimports) ResultFileManager %{
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-%}
-
 //
 // Add polymorphic return type to ResultFileManager::getItem(),
 // because plain ResultItem does not contain the type (VECTOR, SCALAR, etc).
@@ -329,17 +327,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 %javamethodmodifiers ResultFileManager::_getItem "protected";
 
 %typemap(javacode) ResultFileManager %{
-  protected ReadWriteLock lock = new ReentrantReadWriteLock();
-  protected Lock readLock = lock.readLock();
-  protected Lock writeLock = lock.writeLock();
-  
-  public Lock getReadLock() {
-    return readLock;
-  }
-	
-  public Lock getWriteLock() {
-    return writeLock;
-  }
 
   public ResultItem getItem(long id) {
       int type = getTypeOf(id);

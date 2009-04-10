@@ -73,3 +73,28 @@
   }
 %}
 %enddef 
+
+/*
+ * ILock
+ */
+%define USE_COMMON_ENGINE_ILOCK()
+class ILock;
+%typemap(jstype) ILock "org.omnetpp.common.engine.ILock";
+%typemap(javaout) ILock {
+    long cPtr = $jnicall;
+    return (cPtr == 0) ? null : new org.omnetpp.common.engine.ILock(cPtr, $owner);
+}
+
+%typemap(jstype) ILock* "org.omnetpp.common.engine.ILock";
+%typemap(javaout) ILock* {
+    long cPtr = $jnicall;
+    return (cPtr == 0) ? null : new org.omnetpp.common.engine.ILock(cPtr, $owner);
+}
+
+%typemap(jstype) ILock& "org.omnetpp.common.engine.ILock";
+%typemap(javaout) ILock& {
+    long cPtr = $jnicall;
+    return (cPtr == 0) ? null : new org.omnetpp.common.engine.ILock(cPtr, $owner);
+}
+
+%enddef

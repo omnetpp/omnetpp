@@ -8,6 +8,7 @@
 #include "patternmatcher.h"
 #include "unitconversion.h"
 #include "bigdecimal.h"
+#include "rwlock.h"
 %}
 
 %include "commondefs.i"
@@ -19,6 +20,8 @@ namespace std {
    %template(StringVector) vector<string>;
    %template(PStringVector) vector<const char *>;
 }
+
+#define THREADED
 
 // hide export/import macros from swig
 #define COMMON_API
@@ -106,4 +109,9 @@ SWIG_JAVABODY_METHODS(public, public, BigDecimal)
 %include "bigdecimal.h"
 
 
+/* -------------------- rwlock.h -------------------------- */
+%ignore ReaderMutex;
+%ignore WriterMutex;
+SWIG_JAVABODY_METHODS(public, public, ILock)
 
+%include "rwlock.h"
