@@ -550,7 +550,7 @@ public class ObjectPropertiesView extends PinnableView implements ISimulationLis
             for (Object o : sel) {
                 if (o instanceof GraphicalModulePart) {
                     GraphicalModulePart part = (GraphicalModulePart)o;
-                    cModule module = cSimulation.getActiveSimulation().getModule(part.getModuleID());
+                    cModule module = cModule.cast(part.getObject());
                     if (module != null)
                         input.add(module);
                 }

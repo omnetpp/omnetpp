@@ -16,6 +16,7 @@ import org.omnetpp.common.ui.PinnableView;
 import org.omnetpp.experimental.simkernel.swig.IntVector;
 import org.omnetpp.experimental.simkernel.swig.LogBuffer;
 import org.omnetpp.experimental.simkernel.swig.LogBufferView;
+import org.omnetpp.experimental.simkernel.swig.cModule;
 import org.omnetpp.experimental.simkernel.swig.cSimulation;
 import org.omnetpp.runtimeenv.Activator;
 import org.omnetpp.runtimeenv.ISimulationListener;
@@ -200,7 +201,7 @@ public class ModuleOutputView extends PinnableView implements ISimulationListene
             for (Object s : sel) {
                 if (s instanceof GraphicalModulePart) {
                     GraphicalModulePart x = (GraphicalModulePart)s;
-                    moduleID = x.getModuleID();
+                    moduleID = cModule.cast(x.getObject()).getId();
                     break;
                 }
             }

@@ -1,6 +1,7 @@
 package org.omnetpp.runtimeenv.editors;
 
 import org.eclipse.jface.viewers.ISelectionProvider;
+import org.omnetpp.experimental.simkernel.swig.cObject;
 
 
 /**
@@ -14,10 +15,20 @@ import org.eclipse.jface.viewers.ISelectionProvider;
  */
 public interface IInspectorPart extends ISelectionProvider {
 
+	/**
+	 * Returns the inspected object.
+	 */
+	cObject getObject();
+	
     /**
      * Returns the corresponding figure.
      */
     IInspectorFigure getFigure();
+
+    /**
+     * Returns whether this inspector can be maximized to fill the canvas.
+     */
+    boolean isMaximizable();
     
     /**
      * Returns true if this inspector is selected.

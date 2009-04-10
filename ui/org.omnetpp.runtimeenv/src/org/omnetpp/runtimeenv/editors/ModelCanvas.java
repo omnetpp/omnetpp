@@ -30,6 +30,8 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
 import org.omnetpp.common.ui.SelectionProvider;
+import org.omnetpp.experimental.simkernel.swig.cModule;
+import org.omnetpp.experimental.simkernel.swig.cSimulation;
 import org.omnetpp.runtimeenv.Activator;
 import org.omnetpp.runtimeenv.figures.SubmoduleFigureEx;
 import org.omnetpp.runtimeenv.widgets.FigureCanvas;
@@ -103,7 +105,8 @@ public class ModelCanvas extends EditorPart {
         });
 
         int moduleID = ((ModuleIDEditorInput)getEditorInput()).getModuleID();
-        createModulePart(moduleID);
+        cModule module = cSimulation.getActiveSimulation().getModule(moduleID);
+        createModulePart(module);
     }
 
     protected void recalculateCanvasSize() {
@@ -134,14 +137,14 @@ public class ModelCanvas extends EditorPart {
             contextMenuManager.add(new Action("Open on This Canvas") {
                 @Override
                 public void run() {
-                    createModulePart(submoduleID);
+                    createModulePart(cSimulation.getActiveSimulation().getModule(submoduleID));
                 }
             });
         }
     }
 
-    protected GraphicalModulePart createModulePart(int moduleID) {
-        GraphicalModulePart modulePart = new GraphicalModulePart(moduleID);
+    protected GraphicalModulePart createModulePart(cModule module) {
+        GraphicalModulePart modulePart = new GraphicalModulePart(module);
         addInspectorPart(modulePart);
         return modulePart;
     }

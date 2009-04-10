@@ -18,6 +18,7 @@ import org.omnetpp.common.ui.SelectionProvider;
 import org.omnetpp.experimental.simkernel.swig.cDisplayString;
 import org.omnetpp.experimental.simkernel.swig.cModule;
 import org.omnetpp.experimental.simkernel.swig.cModule_SubmoduleIterator;
+import org.omnetpp.experimental.simkernel.swig.cObject;
 import org.omnetpp.experimental.simkernel.swig.cSimulation;
 import org.omnetpp.figures.layout.SubmoduleConstraint;
 import org.omnetpp.runtimeenv.Activator;
@@ -33,7 +34,7 @@ import org.omnetpp.runtimeenv.widgets.FigureCanvas;
 public class GraphicalModulePart implements IInspectorPart {
     //may add cSimulation and SimulationManager as well
     protected CompoundModuleFigureEx moduleFigure;
-    protected int moduleID;
+    protected cModule module;
     protected Map<Integer,SubmoduleFigureEx> submodules = new HashMap<Integer,SubmoduleFigureEx>();
     protected Map<Integer,String> lastSubmoduleDisplayStrings = new HashMap<Integer,String>();
     protected ISimulationListener simulationListener;
@@ -46,9 +47,8 @@ public class GraphicalModulePart implements IInspectorPart {
      * @param parentFigure typically the root figure on the canvas
      * @param moduleID id of the compound module to be displayed
      */
-    public GraphicalModulePart(int moduleID) {
-        this.moduleID = moduleID;
-        cModule module = cSimulation.getActiveSimulation().getModule(moduleID);
+    public GraphicalModulePart(cModule module) {
+        this.module = module;
 
         moduleFigure = new CompoundModuleFigureEx();
         moduleFigure.setModulePart(this);
@@ -107,24 +107,33 @@ public class GraphicalModulePart implements IInspectorPart {
         Activator.getSimulationManager().removeChangeListener(simulationListener);
     }
 
-    public IInspectorFigure getFigure() {
+	@Override
+	public cObject getObject() {
+		return module;
+	}
+
+	@Override
+	public IInspectorFigure getFigure() {
         return moduleFigure;
     }
     
-    public boolean isSelected() {
+	@Override
+	public boolean isMaximizable() {
+		return false;
+	}
+
+	@Override
+	public boolean isSelected() {
         return isSelected;
     }
     
+	@Override
     public void setSelected(boolean isSelected) {
         // update selection (this also triggers update of figure and isSelected flag)
         if (isSelected)
             setSelection(new StructuredSelection(this)); //XXX rather: addToSelection()!  
         else
             setSelection(new StructuredSelection()); //XXX rather: removeFromSelection()!
-    }
-    
-    public int getModuleID() {
-        return moduleID;
     }
     
     protected void update() {
@@ -149,7 +158,7 @@ public class GraphicalModulePart implements IInspectorPart {
         }
 
         // find submodules that not yet have a figure
-        for (cModule_SubmoduleIterator it = new cModule_SubmoduleIterator(sim.getModule(moduleID)); !it.end(); it.next()) {
+        for (cModule_SubmoduleIterator it = new cModule_SubmoduleIterator(module); !it.end(); it.next()) {
             int id = it.get().getId();  //FIXME performance: add getModuleId() to the iterator directly
             if (!submodules.containsKey(id)) {
                 if (toBeAdded == null)
@@ -249,6 +258,6 @@ public class GraphicalModulePart implements IInspectorPart {
     
     @Override
     public String toString() {
-        return getClass().getSimpleName() + " moduleID=" + moduleID;
+        return getClass().getSimpleName() + ":(" + module.getClassName() + ")" + module.getFullPath();
     }
 }

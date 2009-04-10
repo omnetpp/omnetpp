@@ -158,7 +158,7 @@ public class Activator extends AbstractUIPlugin {
 	public IInspectorPart createInspectorFor(cObject obj) {
 	    //XXX this function should go into some InspectorFactory class or so
         if (cModule.cast(obj) != null) {
-            return new GraphicalModulePart(cModule.cast(obj).getId());
+            return new GraphicalModulePart(cModule.cast(obj));
 //            cModule module = ;
 //            Activator.openEditor(new ModuleIDEditorInput(module.getId()), ModelCanvas.EDITOR_ID);
         }
