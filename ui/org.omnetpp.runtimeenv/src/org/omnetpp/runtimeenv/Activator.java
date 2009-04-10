@@ -1,5 +1,6 @@
 package org.omnetpp.runtimeenv;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -12,6 +13,12 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.omnetpp.experimental.simkernel.swig.cModule;
+import org.omnetpp.experimental.simkernel.swig.cObject;
+import org.omnetpp.runtimeenv.editors.GraphicalModulePart;
+import org.omnetpp.runtimeenv.editors.IInspectorPart;
+import org.omnetpp.runtimeenv.editors.ModelCanvas;
+import org.omnetpp.runtimeenv.editors.ModuleIDEditorInput;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -128,6 +135,37 @@ public class Activator extends AbstractUIPlugin {
 	    return null;
 	}
 
+    public static void openInspector2(cObject obj) {
+        //XXX temp function
+        try {
+            openInspector(obj);
+        }
+        catch (CoreException e) {
+            e.printStackTrace(); //XXX
+        }
+    }
+    public static void openInspector(cObject obj) throws CoreException {
+        //FIXME make some OpenInspectorAction or Handler?
+        if (cModule.cast(obj) != null) {
+            //XXX open new generic canvas, and put inspector on it, created with createInspectorFor()?
+            cModule module = cModule.cast(obj);
+            Activator.openEditor(new ModuleIDEditorInput(module.getId()), ModelCanvas.EDITOR_ID);
+            return;
+        }
+        throw new CoreException(new Status(IStatus.ERROR, PLUGIN_ID, "No inspector for object " + obj));
+    }
+    
+	public IInspectorPart createInspectorFor(cObject obj) {
+	    //XXX this function should go into some InspectorFactory class or so
+        if (cModule.cast(obj) != null) {
+            return new GraphicalModulePart(cModule.cast(obj).getId());
+//            cModule module = ;
+//            Activator.openEditor(new ModuleIDEditorInput(module.getId()), ModelCanvas.EDITOR_ID);
+        }
+        return null;
+	}
+
+	
 	public static SimulationManager getSimulationManager() {
 	    return simulationManager;
 	}

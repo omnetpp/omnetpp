@@ -23,13 +23,10 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.experimental.simkernel.swig.cClassDescriptor;
-import org.omnetpp.experimental.simkernel.swig.cModule;
 import org.omnetpp.experimental.simkernel.swig.cObject;
 import org.omnetpp.experimental.simkernel.swig.cSimulation;
 import org.omnetpp.runtimeenv.Activator;
 import org.omnetpp.runtimeenv.ISimulationListener;
-import org.omnetpp.runtimeenv.editors.ModelCanvas;
-import org.omnetpp.runtimeenv.editors.ModuleIDEditorInput;
 
 /**
  * 
@@ -165,19 +162,11 @@ public class ObjectTreeView extends ViewPart implements ISimulationListener {
             public void doubleClick(DoubleClickEvent event) {
                 Object element = ((IStructuredSelection)event.getSelection()).getFirstElement();
                 if (element instanceof cObject)
-                    openInspector((cObject)element);
+                    Activator.openInspector2((cObject)element);
             }
         });
 		Activator.getSimulationManager().addChangeListener(this);
 	}
-
-    protected void openInspector(cObject element) {
-        if (cModule.cast(element) != null) {
-            cModule module = cModule.cast(element);
-            Activator.openEditor(new ModuleIDEditorInput(module.getId()), ModelCanvas.EDITOR_ID);
-        }
-        //XXX open other types of objects too (use inspector framework)
-    }
 
     /**
 	 * Passing the focus request to the viewer's control.

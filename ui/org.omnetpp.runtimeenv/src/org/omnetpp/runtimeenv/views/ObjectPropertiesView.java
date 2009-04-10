@@ -39,8 +39,6 @@ import org.omnetpp.experimental.simkernel.swig.cSimulation;
 import org.omnetpp.runtimeenv.Activator;
 import org.omnetpp.runtimeenv.ISimulationListener;
 import org.omnetpp.runtimeenv.editors.GraphicalModulePart;
-import org.omnetpp.runtimeenv.editors.ModelCanvas;
-import org.omnetpp.runtimeenv.editors.ModuleIDEditorInput;
 
 /**
  * 
@@ -505,20 +503,12 @@ public class ObjectPropertiesView extends PinnableView implements ISimulationLis
             public void doubleClick(DoubleClickEvent event) {
                 Object element = ((IStructuredSelection)event.getSelection()).getFirstElement();
                 if (element instanceof cObject)
-                    openInspector((cObject)element);
+                    Activator.openInspector2((cObject)element);
             }
         });
         
         return viewer.getTree();
 	}
-
-    protected void openInspector(cObject element) {
-        if (cModule.cast(element) != null) {
-            cModule module = cModule.cast(element);
-            Activator.openEditor(new ModuleIDEditorInput(module.getId()), ModelCanvas.EDITOR_ID);
-        }
-        //XXX open other types of objects too (use inspector framework)
-    }
 
     protected void createActions() {
         IAction pinAction = getOrCreatePinAction();

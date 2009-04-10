@@ -4,7 +4,9 @@ import org.eclipse.jface.viewers.ISelectionProvider;
 
 
 /**
- * Represents an inspector.
+ * Represents an inspector. An inspector presents a simulation object in the 
+ * runtime GUI. The visual representation of an inspector is a Draw2D figure
+ * that can be placed on a canvas.
  * 
  * The inspector is also a selection provider. When this inspector is selected 
  * (see isSelected()), the selection should include this inspector (or its 
