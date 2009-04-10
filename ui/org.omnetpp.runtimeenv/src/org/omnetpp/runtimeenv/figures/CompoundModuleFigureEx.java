@@ -1,36 +1,35 @@
 package org.omnetpp.runtimeenv.figures;
 
 import org.eclipse.draw2d.LineBorder;
-import org.eclipse.draw2d.MarginBorder;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.swt.SWT;
 import org.omnetpp.figures.CompoundModuleFigure;
-import org.omnetpp.runtimeenv.editors.GraphicalModulePart;
 import org.omnetpp.runtimeenv.editors.IInspectorFigure;
+import org.omnetpp.runtimeenv.editors.IInspectorPart;
 
 //FIXME draw proper resize handles, and make the mouse listener recognize it
 public class CompoundModuleFigureEx extends CompoundModuleFigure implements IInspectorFigure {
-    protected GraphicalModulePart modulePart;
+    protected IInspectorPart inspectorPart;
 
     public CompoundModuleFigureEx() {
         setMinimumSize(new Dimension(20,20));
-        setBorder(new MarginBorder(5));
+        setBorder(new LineBorder(2));
     }
-    
+
     public void setDragHandlesShown(boolean b) {
-        setBorder(b ? new LineBorder(4) : new MarginBorder(4)); //XXX for now
+        setBorder(b ? new LineBorder(4) : new LineBorder(2)); //XXX for now
     }
 
     public boolean getDragHandlesShown() {
-        return getBorder() instanceof LineBorder; //XXX for now
+        return ((LineBorder)getBorder()).getWidth()==4; //XXX for now
     }
 
-    public GraphicalModulePart getModulePart() {
-        return modulePart;
+    public IInspectorPart getInspectorPart() {
+        return inspectorPart;
     }
 
-    public void setModulePart(GraphicalModulePart modulePart) {
-        this.modulePart = modulePart;
+    public void setInspectorPart(IInspectorPart inspectorPart) {
+        this.inspectorPart = inspectorPart;
     }
 
     @Override

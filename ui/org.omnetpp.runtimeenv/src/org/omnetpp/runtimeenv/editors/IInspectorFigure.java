@@ -4,6 +4,11 @@ import org.eclipse.draw2d.IFigure;
 
 public interface IInspectorFigure extends IFigure {
 
+	/**
+	 * Returns the corresponding inspector part.
+	 */
+	IInspectorPart getInspectorPart();
+	
     /**
      * If there's a move/resize handle at the given coordinates
      * (figure coordinates), return a binary OR of the appropriate

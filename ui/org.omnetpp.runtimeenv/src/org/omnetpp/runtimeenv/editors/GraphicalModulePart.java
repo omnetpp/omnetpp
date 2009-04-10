@@ -51,7 +51,7 @@ public class GraphicalModulePart implements IInspectorPart {
         this.module = module;
 
         moduleFigure = new CompoundModuleFigureEx();
-        moduleFigure.setModulePart(this);
+        moduleFigure.setInspectorPart(this);
 
         moduleFigure.setDisplayString(module.getDisplayString());
         
@@ -226,7 +226,7 @@ public class GraphicalModulePart implements IInspectorPart {
         IFigure target = canvas.getRootFigure().findFigureAt(x, y);
         while (target != null && !(target instanceof CompoundModuleFigureEx))
             target = target.getParent();
-        return target==null ? null : ((CompoundModuleFigureEx)target).getModulePart();
+        return target==null ? null : (GraphicalModulePart)((CompoundModuleFigureEx)target).getInspectorPart();
     }
 
     public SubmoduleFigureEx findSubmoduleAt(int x, int y) {
