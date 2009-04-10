@@ -1,10 +1,33 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Common Core Plug-in
+Bundle-Name: OMNeT++ Common Core
 Bundle-SymbolicName: org.omnetpp.common.core
 Bundle-Version: 4.0.0
-Bundle-Activator: org.omnetpp.common.core.Activator
-Bundle-Vendor: Opensim Ltd
-Require-Bundle: org.eclipse.core.runtime
+Bundle-Activator: org.omnetpp.common.CommonCorePlugin
+Bundle-Vendor: OpenSim Ltd
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.core.variables;bundle-version="3.2.100",
+ org.eclipse.core.filesystem;bundle-version="1.2.0",
+ org.eclipse.ui;bundle-version="3.4.0",
+ org.eclipse.jface;bundle-version="3.4.0",
+ org.eclipse.jface.text;bundle-version="3.4.0",
+ org.eclipse.draw2d;bundle-version="3.4.0",
+ org.omnetpp.ide.nativelibs;bundle-version="4.0.0"
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ActivationPolicy: lazy
+Export-Package: org.apache.commons.lang,
+ org.apache.commons.lang.builder,
+ org.apache.commons.lang.enums,
+ org.apache.commons.lang.exception,
+ org.apache.commons.lang.math,
+ org.apache.commons.lang.mutable,
+ org.apache.commons.lang.text,
+ org.apache.commons.lang.time,
+ org.omnetpp.common,
+ org.omnetpp.common.color,
+ org.omnetpp.common.displaymodel,
+ org.omnetpp.common.image,
+ org.omnetpp.common.ui,
+ org.omnetpp.common.util
+Bundle-ClassPath: lib/commons-lang-2.3.jar,
+ .

@@ -5,12 +5,9 @@ Bundle-SymbolicName: org.omnetpp.experimental.simkernel
 Bundle-Version: 1.0.0
 Bundle-Activator: org.omnetpp.experimental.simkernel.SimkernelPlugin
 Bundle-Localization: plugin
-Require-Bundle: org.eclipse.ui,
- org.eclipse.core.runtime,
- org.eclipse.core.resources,
- org.omnetpp.common,
- org.omnetpp.ide.nativelibs,
- org.eclipse.draw2d
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.draw2d,
+ org.omnetpp.common.core;bundle-version="4.0.0"
 Eclipse-LazyStart: true
 Export-Package: org.omnetpp.experimental.simkernel,
  org.omnetpp.experimental.simkernel.swig

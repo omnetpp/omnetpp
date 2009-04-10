@@ -7,13 +7,13 @@
 
 package org.omnetpp.experimental.simkernel;
 
-import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.eclipse.core.runtime.Plugin;
 import org.osgi.framework.BundleContext;
 
 /**
  * The main plugin class to be used in the desktop.
  */
-public class SimkernelPlugin extends AbstractUIPlugin {
+public class SimkernelPlugin extends Plugin {
 
 	// The shared instance.
 	private static SimkernelPlugin plugin;

@@ -4,12 +4,12 @@ Bundle-Name: OMNeT++ Simulation Runtime Environment
 Bundle-SymbolicName: org.omnetpp.runtimeenv; singleton:=true
 Bundle-Version: 4.1.0
 Bundle-Activator: org.omnetpp.runtimeenv.Activator
-Bundle-Vendor: Opensim Ltd.
+Bundle-Vendor: OpenSim Ltd.
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.draw2d,
  org.omnetpp.experimental.simkernel,
  org.omnetpp.figures,
- org.omnetpp.common
+ org.omnetpp.common.core;bundle-version="4.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy

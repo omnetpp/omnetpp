@@ -33,7 +33,7 @@ public class SimulationManager {
     protected NotSoMinimalEnv env;
 
     public SimulationManager() {
-        ImageFactory.setImageDirs(new String[]{"C:\\home\\omnetpp40\\omnetpp\\images"}); //FIXME just temporary
+        ImageFactory.initialize(new String[]{"C:\\home\\omnetpp40\\omnetpp\\images"}); //FIXME just temporary
         
         // library initializations
         cStaticFlag.set(true);

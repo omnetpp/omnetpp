@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.commons.collections.Predicate;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.emf.edit.ui.dnd.LocalTransfer;
 import org.eclipse.emf.edit.ui.dnd.ViewerDragAdapter;
@@ -59,6 +58,7 @@ import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.common.ui.GenericTreeUtils;
 import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.ui.SizeConstraint;
+import org.omnetpp.common.util.IPredicate;
 import org.omnetpp.inifile.editor.actions.AddInifileKeysAction;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.model.ConfigOption;
@@ -495,8 +495,8 @@ public class SectionsPage extends FormPage {
 		// compares the maxNumErrors and isNonexistent fields as well (this is required for
 		// treeEquals() in refresh())
 		GenericTreeNode root = (GenericTreeNode)treeViewer.getInput();
-		Object sectionData = GenericTreeUtils.findFirstMatchingNode(root, new Predicate() {
-			public boolean evaluate(Object object) {
+		Object sectionData = GenericTreeUtils.findFirstMatchingNode(root, new IPredicate() {
+			public boolean matches(Object object) {
 				return object instanceof SectionData && ((SectionData)object).sectionName.equals(section);
 			}
 		}); 
