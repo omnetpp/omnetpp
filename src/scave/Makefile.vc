@@ -21,8 +21,8 @@ LIBNAME=oppscave$D
 O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/scave
 L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 
-COPTS= $(CFLAGS) $(XML_CFLAGS) $(PTHREADS_CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" /Fd"$O/$(LIBNAME).pdb"
-IMPLIBS= $O/../common/oppcommon$D.lib $(XML_LIBS) $(PTHREADS_LIBS)
+COPTS= $(CFLAGS) $(XML_CFLAGS) $(PTHREAD_CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" /Fd"$O/$(LIBNAME).pdb"
+IMPLIBS= $O/../common/oppcommon$D.lib $(XML_LIBS) $(PTHREAD_LIBS)
 
 OBJS= $O/arraybuilder.obj $O/channel.obj $O/commonnodes.obj $O/compoundfilter.obj \
       $O/dataflowmanager.obj $O/datasorter.obj $O/diffquot.obj \
@@ -73,7 +73,7 @@ $O/scavetool.exe : $O/scavetool.obj $O/$(LIBNAME)$(LIB_SUFFIX)
 
 $O/scavetool.obj : scavetool.cc $O
 	@: Note: not in OBJS because scavetool.cc must be compiled *without* -DSCAVE_EXPORT
-	$(CXX) $(CFLAGS) $(PTHREADS_CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" /c /Fo"$@" /Tp scavetool.cc
+	$(CXX) $(CFLAGS) $(PTHREAD_CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" /c /Fo"$@" /Tp scavetool.cc
 
 $(OBJS): $O
 

@@ -101,7 +101,8 @@ PCAP_DIR=$(TOOLS_DIR)/WpdPack
 #
 # If you want thread-safe libs, install pthreads and set its path.
 #
-#PTHREADS_DIR=$(TOOLS_DIR)/pthreads-2.8.0
+PTHREADS_DIR=$(TOOLS_DIR)/pthreads-2.8.0
+USE_PTHREADS_STATIC_LIB=yes
 
 #
 # If you want to build .lib files instead of .dlls, specify "no" below.
@@ -371,9 +372,9 @@ CFLAGS=$(CFLAGS) -DXMLPARSER=$(XMLPARSER)
 !if "$(PTHREADS_DIR)"!=""
 HAVE_PTHREADS=yes
 CFLAGS=$(CFLAGS) /DTHREADED
-#!if "$(SHARED_LIBS)"=="no"
-#CFLAGS=$(CFLAGS) /DPTW32_STATIC_LIB
-#!endif
+!if "$(USE_PTHREADS_STATIC_LIB)"=="yes"
+CFLAGS=$(CFLAGS) /DPTW32_STATIC_LIB
+!endif
 !endif
 
 #

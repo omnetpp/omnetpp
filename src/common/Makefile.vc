@@ -21,8 +21,8 @@ LIBNAME=oppcommon$D
 O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/common
 L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 
-COPTS=$(CFLAGS) $(PTHREADS_CFLAGS) -I"$(OMNETPP_INCL_DIR)/platdep" -I. /Fd"$O/$(LIBNAME).pdb"
-IMPLIBS= $(PTHREADS_LIBS)
+COPTS=$(CFLAGS) $(PTHREAD_CFLAGS) -I"$(OMNETPP_INCL_DIR)/platdep" -I. /Fd"$O/$(LIBNAME).pdb"
+IMPLIBS= $(PTHREAD_LIBS)
 
 OBJS= $O/lcgrandom.obj $O/filereader.obj $O/linetokenizer.obj \
       $O/stringpool.obj $O/stringtokenizer.obj $O/fnamelisttokenizer.obj \
