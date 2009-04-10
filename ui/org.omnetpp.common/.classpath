@@ -11,11 +11,6 @@
 			<attribute name="javadoc_location" value="jar:platform:/resource/org.omnetpp.common/misc/commons-collections-3.2-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="lib/commons-lang-2.3.jar" sourcepath="misc/commons-lang-2.3-sources.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:platform:/resource/org.omnetpp.common/misc/commons-lang-2.3-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins">
 		<accessrules>

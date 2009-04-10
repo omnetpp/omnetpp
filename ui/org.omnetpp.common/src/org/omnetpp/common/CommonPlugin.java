@@ -14,6 +14,7 @@ import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
+import org.omnetpp.common.image.ImageFactory;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -44,6 +45,8 @@ public class CommonPlugin extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
         PLUGIN_ID = getBundle().getSymbolicName();
+
+        ImageFactory.initialize(getConfigurationPreferenceStore().getString(IConstants.PREF_OMNETPP_IMAGE_PATH).split(";"));
 	}
 
 	/*
