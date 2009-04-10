@@ -38,7 +38,7 @@ import org.omnetpp.experimental.simkernel.swig.cObject;
 import org.omnetpp.experimental.simkernel.swig.cSimulation;
 import org.omnetpp.runtimeenv.Activator;
 import org.omnetpp.runtimeenv.ISimulationListener;
-import org.omnetpp.runtimeenv.editors.GraphicalModulePart;
+import org.omnetpp.runtimeenv.editors.IInspectorPart;
 
 /**
  * 
@@ -547,9 +547,9 @@ public class ObjectPropertiesView extends PinnableView implements ISimulationLis
         ISelection selection = getAssociatedEditorSelection();
         if (selection instanceof IStructuredSelection) {
             Object[] sel = ((IStructuredSelection)selection).toArray();
-            for (Object o : sel) {
-                if (o instanceof GraphicalModulePart) {
-                    GraphicalModulePart part = (GraphicalModulePart)o;
+            for (Object obj : sel) {
+                if (obj instanceof IInspectorPart) {
+                    IInspectorPart part = (IInspectorPart)obj;
                     cModule module = cModule.cast(part.getObject());
                     if (module != null)
                         input.add(module);

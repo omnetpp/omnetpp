@@ -20,7 +20,7 @@ import org.omnetpp.experimental.simkernel.swig.cModule;
 import org.omnetpp.experimental.simkernel.swig.cSimulation;
 import org.omnetpp.runtimeenv.Activator;
 import org.omnetpp.runtimeenv.ISimulationListener;
-import org.omnetpp.runtimeenv.editors.GraphicalModulePart;
+import org.omnetpp.runtimeenv.editors.IInspectorPart;
 import org.omnetpp.runtimeenv.widgets.TextChangeListener;
 import org.omnetpp.runtimeenv.widgets.TextViewer;
 import org.omnetpp.runtimeenv.widgets.TextViewerContent;
@@ -198,10 +198,10 @@ public class ModuleOutputView extends PinnableView implements ISimulationListene
         ISelection selection = getAssociatedEditorSelection();
         if (selection instanceof IStructuredSelection) {
             Object[] sel = ((IStructuredSelection)selection).toArray();
-            for (Object s : sel) {
-                if (s instanceof GraphicalModulePart) {
-                    GraphicalModulePart x = (GraphicalModulePart)s;
-                    moduleID = cModule.cast(x.getObject()).getId();
+            for (Object obj : sel) {
+                if (obj instanceof IInspectorPart) {
+                    IInspectorPart part = (IInspectorPart)obj;
+                    moduleID = cModule.cast(part.getObject()).getId();
                     break;
                 }
             }

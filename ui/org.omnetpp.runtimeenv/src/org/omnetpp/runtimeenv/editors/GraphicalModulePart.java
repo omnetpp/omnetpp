@@ -13,16 +13,12 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.omnetpp.common.ui.SelectionProvider;
 import org.omnetpp.experimental.simkernel.swig.cDisplayString;
 import org.omnetpp.experimental.simkernel.swig.cModule;
 import org.omnetpp.experimental.simkernel.swig.cModule_SubmoduleIterator;
-import org.omnetpp.experimental.simkernel.swig.cObject;
 import org.omnetpp.experimental.simkernel.swig.cSimulation;
 import org.omnetpp.figures.layout.SubmoduleConstraint;
-import org.omnetpp.runtimeenv.Activator;
-import org.omnetpp.runtimeenv.ISimulationListener;
 import org.omnetpp.runtimeenv.figures.CompoundModuleFigureEx;
 import org.omnetpp.runtimeenv.figures.SubmoduleFigureEx;
 import org.omnetpp.runtimeenv.widgets.FigureCanvas;
@@ -31,29 +27,22 @@ import org.omnetpp.runtimeenv.widgets.FigureCanvas;
  * 
  * @author Andras
  */
-public class GraphicalModulePart implements IInspectorPart {
-    //may add cSimulation and SimulationManager as well
-    protected CompoundModuleFigureEx moduleFigure;
-    protected cModule module;
+public class GraphicalModulePart extends InspectorPart {
     protected Map<Integer,SubmoduleFigureEx> submodules = new HashMap<Integer,SubmoduleFigureEx>();
     protected Map<Integer,String> lastSubmoduleDisplayStrings = new HashMap<Integer,String>();
-    protected ISimulationListener simulationListener;
     protected MouseListener mouseListener;
-    protected boolean isSelected;
     protected ISelectionProvider selectionProvider = new SelectionProvider();
     
     /**
      * Constructor.
-     * @param parentFigure typically the root figure on the canvas
-     * @param moduleID id of the compound module to be displayed
      */
     public GraphicalModulePart(cModule module) {
-        this.module = module;
+        this.object = module;
 
-        moduleFigure = new CompoundModuleFigureEx();
-        moduleFigure.setInspectorPart(this);
+        figure = new CompoundModuleFigureEx();
+        figure.setInspectorPart(this);
 
-        moduleFigure.setDisplayString(module.getDisplayString());
+        ((CompoundModuleFigureEx)figure).setDisplayString(module.getDisplayString());
         
 //            //TODO just testing
 //            ConnectionFigure connectionFigure = new ConnectionFigure();
@@ -65,7 +54,7 @@ public class GraphicalModulePart implements IInspectorPart {
         update();
 
         // handle mouse
-        moduleFigure.addMouseListener(mouseListener = new MouseListener() {
+        figure.addMouseListener(mouseListener = new MouseListener() {
             @Override
             public void mouseDoubleClicked(MouseEvent me) {
                 handleMouseDoubleClick(me);
@@ -80,14 +69,6 @@ public class GraphicalModulePart implements IInspectorPart {
             }
         });
         
-        // update the inspector when something happens in the simulation
-        Activator.getSimulationManager().addChangeListener(simulationListener = new ISimulationListener() {
-            @Override
-            public void changed() {
-                update();
-            }
-        });
-        
         // reflect selection changes
         selectionProvider.addSelectionChangedListener(new ISelectionChangedListener() {
             @Override
@@ -97,53 +78,26 @@ public class GraphicalModulePart implements IInspectorPart {
                 if (event.getSelection() instanceof IStructuredSelection) {
                     IStructuredSelection selection = (IStructuredSelection)event.getSelection();
                     isSelected = selection.toList().contains(GraphicalModulePart.this);
-                    moduleFigure.setDragHandlesShown(isSelected);
+                    ((CompoundModuleFigureEx)figure).setDragHandlesShown(isSelected);
                 }
             }
         });
     }
 
-    public void dispose() {
-        Activator.getSimulationManager().removeChangeListener(simulationListener);
-    }
-
-	@Override
-	public cObject getObject() {
-		return module;
-	}
-
-	@Override
-	public IInspectorFigure getFigure() {
-        return moduleFigure;
-    }
-    
 	@Override
 	public boolean isMaximizable() {
 		return false;
 	}
-
-	@Override
-	public boolean isSelected() {
-        return isSelected;
-    }
     
-	@Override
-    public void setSelected(boolean isSelected) {
-        // update selection (this also triggers update of figure and isSelected flag)
-        if (isSelected)
-            setSelection(new StructuredSelection(this)); //XXX rather: addToSelection()!  
-        else
-            setSelection(new StructuredSelection()); //XXX rather: removeFromSelection()!
-    }
-    
-    protected void update() {
+    @Override
+	protected void update() {
         refreshChildren();
         refreshVisuals();
-        //XXX System.out.println(cSimulation.getActiveSimulation().getSystemModule().getSubmodule("server").getDisplayString().str());
     }
 
     protected void refreshChildren() {
         //TODO only call this function if there were any moduleCreated/moduleDeleted notifications from the simkernel
+    	CompoundModuleFigureEx moduleFigure = (CompoundModuleFigureEx)figure;
         cSimulation sim = cSimulation.getActiveSimulation();
         ArrayList<Integer> toBeRemoved = null;
         ArrayList<Integer> toBeAdded = null;
@@ -158,7 +112,7 @@ public class GraphicalModulePart implements IInspectorPart {
         }
 
         // find submodules that not yet have a figure
-        for (cModule_SubmoduleIterator it = new cModule_SubmoduleIterator(module); !it.end(); it.next()) {
+        for (cModule_SubmoduleIterator it = new cModule_SubmoduleIterator(cModule.cast(object)); !it.end(); it.next()) {
             int id = it.get().getId();  //FIXME performance: add getModuleId() to the iterator directly
             if (!submodules.containsKey(id)) {
                 if (toBeAdded == null)
@@ -190,6 +144,7 @@ public class GraphicalModulePart implements IInspectorPart {
     }
 
     protected void refreshVisuals() {
+    	CompoundModuleFigureEx moduleFigure = (CompoundModuleFigureEx)figure;
         cSimulation sim = cSimulation.getActiveSimulation();
         for (int id : submodules.keySet()) {
             cDisplayString displayString = sim.getModule(id).getDisplayString();
@@ -230,7 +185,7 @@ public class GraphicalModulePart implements IInspectorPart {
     }
 
     public SubmoduleFigureEx findSubmoduleAt(int x, int y) {
-        IFigure target = moduleFigure.findFigureAt(x, y);
+        IFigure target = figure.findFigureAt(x, y);
         while (target != null && !(target instanceof SubmoduleFigureEx))
             target = target.getParent();
         return (SubmoduleFigureEx)target;
@@ -254,10 +209,5 @@ public class GraphicalModulePart implements IInspectorPart {
     @Override
     public void removeSelectionChangedListener(ISelectionChangedListener listener) {
         selectionProvider.removeSelectionChangedListener(listener);
-    }
-    
-    @Override
-    public String toString() {
-        return getClass().getSimpleName() + ":(" + module.getClassName() + ")" + module.getFullPath();
     }
 }
