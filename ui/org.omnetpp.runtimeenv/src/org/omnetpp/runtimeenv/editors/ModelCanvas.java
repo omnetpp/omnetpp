@@ -69,6 +69,13 @@ public class ModelCanvas extends EditorPart {
     }
 
     @Override
+    public void dispose() {
+    	for (IInspectorPart inspectorPart : inspectors.toArray(new IInspectorPart[]{}))
+    		removeInspectorPart(inspectorPart);
+    	super.dispose();
+    }
+    
+    @Override
     public void createPartControl(Composite parent) {
         sc = new ScrolledComposite(parent, SWT.V_SCROLL | SWT.H_SCROLL);
         

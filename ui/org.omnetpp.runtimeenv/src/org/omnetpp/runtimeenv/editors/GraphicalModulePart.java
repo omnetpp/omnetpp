@@ -36,7 +36,7 @@ public class GraphicalModulePart extends InspectorPart {
      * Constructor.
      */
     public GraphicalModulePart(cModule module) {
-        this.object = module;
+    	super(module);
 
         figure = new CompoundModuleFigureEx();
         figure.setInspectorPart(this);

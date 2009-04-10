@@ -16,8 +16,10 @@ public abstract class InspectorPart implements IInspectorPart {
 	protected ISimulationListener simulationListener;
 	protected boolean isSelected;
 
-	public InspectorPart() {
+	public InspectorPart(cObject object) {
 		super();
+		
+		this.object = object;
 
 		// update the inspector when something happens in the simulation
 		Activator.getSimulationManager().addChangeListener(simulationListener = new ISimulationListener() {
