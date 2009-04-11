@@ -9,6 +9,7 @@ package org.omnetpp.figures.layout;
 
 import java.util.List;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.Connection;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.LayoutManager;
@@ -65,23 +66,19 @@ public class SpringEmbedderLayout extends XYLayout {
 		// if the size is not present, use a default size;
 		if (width <= 0) width = DEFAULT_MAX_WIDTH;
 		if (height <= 0) height = DEFAULT_MAX_HEIGHT;
-		//autoLayouter.setConfineToArea(width, height, 50);
 		autoLayouter.setScaleToArea(width, height, 50);
 
 		// iterate over the nodes and add them to the algorithm
 		// all child figures on this layer are considered as node
 		for (IFigure node : (List<IFigure>)nodeParent.getChildren()) {
 			// get the associated constraint (coordinates) if any
-            Rectangle constr = (Rectangle)getConstraint(node);
+			SubmoduleConstraint constr = (SubmoduleConstraint)getConstraint(node);
+			Assert.isNotNull(constr,"A figure must have an associated constraint");
 
-            if (constr == null || constr.x == Integer.MIN_VALUE && constr.y == Integer.MIN_VALUE) {
-            	autoLayouter.addMovableNode(node, node.getBounds().x, node.getBounds().y, node.getPreferredSize().width, node.getPreferredSize().height);
-            }
-            else
-            	// add as fixed node
-            	autoLayouter.addFixedNode(node,
-            			constr.x, constr.y,
-            			constr.width, constr.height);
+            if (!constr.isPinned()) 
+            	autoLayouter.addMovableNode(node, constr.x, constr.y, constr.width, constr.height);
+            else 
+            	autoLayouter.addFixedNode(node, constr.x, constr.y, constr.width, constr.height);
 		}
 
 		// iterate over the connections and add them to the algorithm
@@ -135,21 +132,19 @@ public class SpringEmbedderLayout extends XYLayout {
     	// lay out the children according to the auto-layouter
         Point offset = getOrigin(parent);
         for (IFigure f : (List<IFigure>)parent.getChildren()) {
-            Rectangle oldBounds = f.getBounds().getCopy();
-            Rectangle constr = ((Rectangle)getConstraint(f)).getCopy();
-            boolean isUnpinned = constr.x == Integer.MIN_VALUE && constr.y == Integer.MIN_VALUE;
-            // first set the size of the figure from the provided constraint object
-            f.setSize(constr.getSize());
+            Rectangle constr = ((Rectangle)getConstraint(f));
+            Assert.isNotNull(constr, "Figure must have an associated constraint");
+            
+            // by default use the size and location from the constraint object (must create a copy!)
+            Rectangle newBounds = constr.getCopy();
 
-            // calculate the new location
-            Rectangle newBounds = f.getBounds().getCopy();
             // get the computed location from the auto-layout algorithm (if there is an algorithm at all)
-            Point loc = alg != null ? alg.getNodePosition(f) : null;
-            // set the location (if algorithm has calculated, get if from the algorithm
-            // if the alg. was not and the module is pinned, simply use the coord from the constraint
-            // if the module was unpinned, use the original bounds center (ie, keep the figuire's center
-            // while changing its size
-            newBounds.setLocation(loc != null ? loc : isUnpinned ? oldBounds.getCenter() : constr.getLocation());
+            if (alg != null) {
+            	Point locFromAlg = alg.getNodePosition(f);
+            	Assert.isNotNull(locFromAlg, "There is a figure witout a position calculated by the layouting algorythm");
+            	// use the location from the layouting algorithm
+            	newBounds.setLocation(locFromAlg);
+            }
 
             newBounds.translate(offset);
             // translate to the middle of the figure
@@ -191,42 +186,32 @@ public class SpringEmbedderLayout extends XYLayout {
 	public void requestAutoLayout() {
 	    requestAutoLayout = true;
 	}
+
+	
+	// XXX this algorithm is using ONLY the figure bounds. It might be much better to move
+	// it to submoduleLayer.getPreferredSize
 	
 	@SuppressWarnings("unchecked")
 	@Override
 	protected Dimension calculatePreferredSize(IFigure f, int hHint, int wHint) {
-		System.out.println("caculate");
 		// if we have a size hint, we always use that for the size
 		if (hHint >= 0 && wHint >= 0)
 			return new Dimension(hHint,wHint);
 		
 	    Rectangle rect = null;
 	    for(IFigure child : (List<IFigure>)f.getChildren()) {
-	        Rectangle r = (Rectangle)constraints.get(child);
-	        if (r == null)
-	            continue;
-	        
-	        // translate the x,y as we use the center of the figure in the constraint
-	        r = r.getTranslated(-r.width/2, -r.height/2);
-
-	        if (r.width == -1 || r.height == -1) {
-	            Dimension preferredSize = child.getPreferredSize(r.width, r.height);
-	            r = r.getCopy();
-	            if (r.width == -1)
-	                r.width = preferredSize.width;
-	            if (r.height == -1)
-	                r.height = preferredSize.height;
-	        }
-	        
-	        if (child instanceof SubmoduleFigure) {
-	            // add the label bounds to it
-	            r.union(((SubmoduleFigure)child).getLabelBounds());
-	        }
+	        Rectangle r = child.getBounds();
 	        
 	        if (rect == null)
 	        	rect = r.getCopy();
+	        else
+	        	rect.union(r);
 	        
-	        rect.union(r);
+	        if (child instanceof SubmoduleFigure) {
+	            // add the label bounds to it
+	            rect.union(((SubmoduleFigure)child).getLabelBounds());
+	        }
+	        
 	    }
 	    
 	    // use the default size if no submodule children were present
@@ -234,7 +219,60 @@ public class SpringEmbedderLayout extends XYLayout {
 	    	return new Dimension(DEFAULT_SIZE);
 	    
 	    // we use the same amount of space on the up/down and the left/right side
-	    return new Dimension(rect.x + Math.max(rect.x,0) + rect.width + f.getInsets().getWidth(), rect.y + Math.max(rect.y,0) + rect.height + f.getInsets().getHeight()).
+	    Dimension result = new Dimension(rect.x + Math.max(rect.x,0) + rect.width + f.getInsets().getWidth(), rect.y + Math.max(rect.y,0) + rect.height + f.getInsets().getHeight()).
 	        union(getBorderPreferredSize(f));
+	    System.out.println("SpringEmbedderLayout.calculatePreferredSize: "+result);
+		return result;
 	}
+
+
+//	@SuppressWarnings("unchecked")
+//	@Override
+//	protected Dimension calculatePreferredSize(IFigure f, int hHint, int wHint) {
+//		// if we have a size hint, we always use that for the size
+//		if (hHint >= 0 && wHint >= 0)
+//			return new Dimension(hHint,wHint);
+//		
+//	    Rectangle rect = null;
+//	    for(IFigure child : (List<IFigure>)f.getChildren()) {
+//	    	// FIXME should we use the figure bounds instead of the constraints?
+//	        Rectangle r = (Rectangle)constraints.get(child);
+//	        if (r == null)
+//	            continue;
+//	        
+//	        // translate the x,y as we use the center of the figure in the constraint
+//	        r = r.getTranslated(-r.width/2, -r.height/2);
+//	
+//	        if (r.width == -1 || r.height == -1) {
+//	            Dimension preferredSize = child.getPreferredSize(r.width, r.height);
+//	            r = r.getCopy();
+//	            if (r.width == -1)
+//	                r.width = preferredSize.width;
+//	            if (r.height == -1)
+//	                r.height = preferredSize.height;
+//	        }
+//	        
+//	        if (child instanceof SubmoduleFigure) {
+//	            // add the label bounds to it
+//	            r.union(((SubmoduleFigure)child).getLabelBounds());
+//	        }
+//	        
+//	        if (rect == null)
+//	        	rect = r.getCopy();
+//	        
+//	        rect.union(r);
+//	    }
+//	    
+//	    // use the default size if no submodule children were present
+//	    if (rect == null)
+//	    	return new Dimension(DEFAULT_SIZE);
+//	    
+//	    // we use the same amount of space on the up/down and the left/right side
+//	    Dimension result = new Dimension(rect.x + Math.max(rect.x,0) + rect.width + f.getInsets().getWidth(), rect.y + Math.max(rect.y,0) + rect.height + f.getInsets().getHeight()).
+//	        union(getBorderPreferredSize(f));
+//	    System.out.println("SpringEmbedderLayout.calculatePreferredSize: "+result);
+//		return result;
+//	}
+//
 }
+

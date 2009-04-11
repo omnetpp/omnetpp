@@ -143,16 +143,21 @@ public class SubmoduleEditPart extends ModuleEditPart {
         
         getSubmoduleFigure().setQueueText(StringUtils.isNotBlank(dps.getAsString(IDisplayString.Prop.QUEUE)) ? "#" : "");
 
-        // show/hide the pin marker
-        getSubmoduleFigure().setPinDecoration(dps.getLocation(scale) != null);
-
         // set layout constraints
         SubmoduleConstraint constraint = new SubmoduleConstraint();
-        constraint.setLocation(getSubmoduleFigure().getPreferredLocation());
+        Point dpsLoc = dps.getLocation(scale);
+        // check if the figure has a display string that specified a location (figure is fixed)
+        constraint.setPinned(dpsLoc != null);
+        // use the location specified in the display string (if any) for pinned nodes, 
+        // otherwise just use the current position of the figure
+        constraint.setLocation(dpsLoc != null ? dpsLoc : getSubmoduleFigure().getBounds().getCenter());
         constraint.setSize(getSubmoduleFigure().getPreferredSize());
         // Debug.println("constraint for " + nameToDisplay + ": " + constraint);
         Assert.isTrue(constraint.height != -1 && constraint.width != -1);
         getSubmoduleFigure().getParent().setConstraint(getSubmoduleFigure(), constraint);
+        
+        // show/hide the pin marker
+        getSubmoduleFigure().setPinDecoration(dpsLoc != null);
     }
 
     @Override

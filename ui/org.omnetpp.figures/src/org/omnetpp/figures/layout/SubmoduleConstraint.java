@@ -18,6 +18,7 @@ import org.eclipse.draw2d.geometry.Rectangle;
  */
 public class SubmoduleConstraint extends Rectangle {
 	static final long serialVersionUID = 1;
+	private boolean pinned = true;
 	protected String vectorName = null;
 	protected int vectorIndex = 0;
 	protected int vectorSize = 0;
@@ -44,6 +45,19 @@ public class SubmoduleConstraint extends Rectangle {
 
 	public int getVectorSize() {
 		return vectorSize;
+	}
+
+	/**
+	 * Set whether the module should be treated as fixed by the layouter alg.
+	 * If it is not pinned then the coordinates in this constraint should be treated
+	 * as initial values for the layouting .
+	 */
+	public void setPinned(boolean pinned) {
+		this.pinned = pinned;
+	}
+
+	public boolean isPinned() {
+		return pinned;
 	}
 
 }

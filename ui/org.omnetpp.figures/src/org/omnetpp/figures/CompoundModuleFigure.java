@@ -33,6 +33,11 @@ import org.omnetpp.figures.routers.CompoundModuleConnectionRouter;
  *
  * @author rhornig
  */
+// TODO layouting could be further optimized. If the compound module size is not defined the layouter
+// always recalculates the preferred size of the submoduleLayer whenever invalidate() is called because
+// invalidate() internally calls layout.invalidate() too.
+// mabe we should remove layout.invalidate() from the invalidate() method and call it ONLY if some
+// property has changed that requires the recalculation (e.g. submodule added/removed submodule size changed)
 public class CompoundModuleFigure extends NedFigure
 				implements ILayerSupport {
 
@@ -151,7 +156,7 @@ public class CompoundModuleFigure extends NedFigure
         
         @Override
         public Dimension getMinimumSize(int wHint, int hHint) {
-			return layouter.getPreferredSize(this, backgroundSize.width, backgroundSize.height);
+			return getPreferredSize(wHint, hHint);
         }
     }
 

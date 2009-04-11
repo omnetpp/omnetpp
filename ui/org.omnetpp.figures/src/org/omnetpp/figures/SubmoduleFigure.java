@@ -19,7 +19,6 @@ import org.eclipse.draw2d.RoundedRectangle;
 import org.eclipse.draw2d.Shape;
 import org.eclipse.draw2d.StackLayout;
 import org.eclipse.draw2d.geometry.Dimension;
-import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.PrecisionPoint;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.draw2d.text.FlowPage;
@@ -47,7 +46,6 @@ import org.omnetpp.figures.misc.AttachedLayer;
 public class SubmoduleFigure extends NedFigure {
 
     // state info, from the display string. Note: much of the state is stored inside sub-figures
-    private Point preferredLocation;
     protected boolean shapeVisible;
     protected float scale = 1.0f;
     protected String queueName = "";
@@ -306,12 +304,6 @@ public class SubmoduleFigure extends NedFigure {
 	 */
 	@Override
     public void setDisplayString(IDisplayString dps) {
-        // get the position from the display string. When a coordinate is missing
-		// in the display string, use Integer.MIN_VALUE. (means: it's UNPINNED)
-		preferredLocation = dps.getLocation(scale);
-        if (preferredLocation == null)
-        	preferredLocation = new Point(Integer.MIN_VALUE, Integer.MIN_VALUE);
-
 		// range support
         setRange(
         		dps.getRange(getScale()),
@@ -381,17 +373,6 @@ public class SubmoduleFigure extends NedFigure {
         this.scale = scale;
         invalidate();
     }
-
-	/**
-	 * Returns the position where the submodule wants to be (based on
-	 * display string contents). If the display string does not specify
-	 * a coordinate, Integer.MIN_VALUE is returned there. Valid only
-	 * after a setDisplayString() call.
-	 */
-    public Point getPreferredLocation() {
-		return preferredLocation;
-	}
-
 
     /* (non-Javadoc)
      * @see org.eclipse.draw2d.Figure#containsPoint(int, int)
