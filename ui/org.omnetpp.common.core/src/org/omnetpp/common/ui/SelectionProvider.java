@@ -12,6 +12,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 
 /**
  * A default implementation of ISelectionProvider.
@@ -20,8 +21,8 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
  */
 public class SelectionProvider implements ISelectionProvider
 {
-	ListenerList listeners = new ListenerList(ListenerList.IDENTITY);
-	ISelection selection;
+	protected ListenerList listeners = new ListenerList(ListenerList.IDENTITY);
+	protected ISelection selection = new StructuredSelection();
 	
 	public SelectionProvider() {
 	}

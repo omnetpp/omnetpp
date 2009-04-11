@@ -1,6 +1,8 @@
 package org.omnetpp.runtimeenv.editors;
 
-import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.swt.graphics.Point;
 import org.omnetpp.experimental.simkernel.swig.cObject;
 
 
@@ -13,7 +15,7 @@ import org.omnetpp.experimental.simkernel.swig.cObject;
  * (see isSelected()), the selection should include this inspector (or its 
  * inspected object) as well. 
  */
-public interface IInspectorPart extends ISelectionProvider {
+public interface IInspectorPart {
 
 	/**
 	 * Returns the inspected object.
@@ -36,7 +38,26 @@ public interface IInspectorPart extends ISelectionProvider {
     boolean isSelected();
 
     /**
-     * Sets the selected state of this inspector.
+     * The selection request handler's methods are typically called by the 
+     * inspector on mouse clicks, and the methods request that 
+     * some objects be added or removed from the canvas selection.
+     * Highlighting the selected objects takes place afterwards,
+     * in the selectionChanged() method being called by the canvas
+     * on all inspectors. 
      */
-    void setSelected(boolean b);
+    void setSelectionRequestHandler(ISelectionRequestHandler handler);
+
+    /**
+     * Returns selection request handler
+     */ 
+    ISelectionRequestHandler getSelectionRequestHandler();
+    
+    /**
+     * Called when the canvas selection changes. The inspector part should
+     * look at the objects in the selection, and highlight the relevant ones
+     * (the ones it displays) on the canvas
+     */
+    void selectionChanged(IStructuredSelection selection);
+
+    void populateContextMenu(MenuManager contextMenuManager, Point p);
 }

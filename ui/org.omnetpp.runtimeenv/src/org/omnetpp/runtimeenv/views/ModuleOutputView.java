@@ -17,6 +17,7 @@ import org.omnetpp.experimental.simkernel.swig.IntVector;
 import org.omnetpp.experimental.simkernel.swig.LogBuffer;
 import org.omnetpp.experimental.simkernel.swig.LogBufferView;
 import org.omnetpp.experimental.simkernel.swig.cModule;
+import org.omnetpp.experimental.simkernel.swig.cObject;
 import org.omnetpp.experimental.simkernel.swig.cSimulation;
 import org.omnetpp.runtimeenv.Activator;
 import org.omnetpp.runtimeenv.ISimulationListener;
@@ -59,16 +60,12 @@ public class ModuleOutputView extends PinnableView implements ISimulationListene
 
         @Override
         public int getCharCount() {
-            try {
-                return (int)logBufferView.getNumChars();
-            } catch (RuntimeException e) { e.printStackTrace(); return 0; }
+        	return (int)logBufferView.getNumChars();
         }
 
         @Override
         public String getLine(int lineIndex) {
-            try {
-                return logBufferView.getLine(lineIndex);
-            } catch (RuntimeException e) { e.printStackTrace(); return ""; }
+        	return logBufferView.getLine(lineIndex);
         }
 
         @Override
@@ -84,16 +81,12 @@ public class ModuleOutputView extends PinnableView implements ISimulationListene
 
         @Override
         public int getLineAtOffset(int offset) {
-            try {
-                return (int)logBufferView.getLineAtOffset(offset);
-            } catch (RuntimeException e) { e.printStackTrace(); return 0; }
+        	return (int)logBufferView.getLineAtOffset(offset);
         }
 
         @Override
         public int getOffsetAtLine(int lineIndex) {
-            try {
-                return (int)logBufferView.getOffsetAtLine(lineIndex);
-            } catch (RuntimeException e) { e.printStackTrace(); return 0; }
+        	return (int)logBufferView.getOffsetAtLine(lineIndex);
         }
 
         @Override
@@ -203,6 +196,10 @@ public class ModuleOutputView extends PinnableView implements ISimulationListene
                     IInspectorPart part = (IInspectorPart)obj;
                     moduleID = cModule.cast(part.getObject()).getId();
                     break;
+                }
+                if (obj instanceof cObject && cModule.cast((cObject)obj) != null) {
+                	moduleID = cModule.cast((cObject)obj).getId();
+                	break;
                 }
             }
         }

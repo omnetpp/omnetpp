@@ -74,6 +74,11 @@
   public int hashCode() {
     return (int)((swigCPtr>>2)&0xffffffff) + 31*(int)(swigCPtr >> 34);
   }
+
+  @Override
+  public String toString() {
+    return "("+getClassName()+")"+getFullPath();
+  }
 %}
 
 %extend cObject {

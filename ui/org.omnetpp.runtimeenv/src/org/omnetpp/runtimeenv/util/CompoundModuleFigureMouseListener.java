@@ -33,7 +33,7 @@ public class CompoundModuleFigureMouseListener implements MouseListener, MouseMo
     @Override
     public void mousePressed(MouseEvent me) {
         dragLeft = dragTop = dragRight = dragBottom = dragMove = false;
-        if (figure.getDragHandlesShown()) {
+        if (figure.getSelectionBorderShown()) {
             dragStart = me.getLocation();
             dragStartFigureBounds = figure.getBounds().getCopy();
             dragLeft = Math.abs(figure.getBounds().x - me.x) < 5;

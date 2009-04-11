@@ -1,7 +1,10 @@
 package org.omnetpp.runtimeenv.editors;
 
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.draw2d.InputEvent;
+import org.eclipse.draw2d.MouseEvent;
+import org.eclipse.draw2d.MouseListener;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.swt.graphics.Point;
 import org.omnetpp.experimental.simkernel.swig.cObject;
 import org.omnetpp.runtimeenv.figures.TextInspectorFigure;
 
@@ -12,13 +15,15 @@ public class TextInspectorPart extends InspectorPart {
 		figure = new TextInspectorFigure();
 		figure.setInspectorPart(this);
 		update();
+
+        figure.addMouseListener(new MouseListener.Stub() {
+			@Override
+			public void mousePressed(MouseEvent me) {
+                handleMousePressed(me);
+			}
+        });
 	}
 
-	@Override
-	public boolean isSelected() {
-		return true; //XXX only so that it can be moved
-	}
-	
 	@Override
 	protected void update() {
 		((TextInspectorFigure)figure).setTexts("(" + object.getClassName() + ") " + object.getFullPath(), object.info());
@@ -30,25 +35,16 @@ public class TextInspectorPart extends InspectorPart {
 	}
 
 	@Override
-	public void addSelectionChangedListener(ISelectionChangedListener listener) {
-		// TODO Auto-generated method stub
-
+	public void populateContextMenu(MenuManager contextMenuManager, Point p) {
+		// nothing for now
+		System.out.println(this + ": populateContextMenu invoked");
 	}
 
-	@Override
-	public ISelection getSelection() {
-		// TODO Auto-generated method stub
-		return null;
+	protected void handleMousePressed(MouseEvent me) {
+		if ((me.getState()& InputEvent.CONTROL) != 0)
+			selectionRequestHandler.toggleSelection(getObject());
+		else
+			selectionRequestHandler.select(getObject(), true);
+		me.consume();
 	}
-
-	@Override
-	public void removeSelectionChangedListener(ISelectionChangedListener listener) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void setSelection(ISelection selection) {
-		// TODO Auto-generated method stub
-	}
-
 }

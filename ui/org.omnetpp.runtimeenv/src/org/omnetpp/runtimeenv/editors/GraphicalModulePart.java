@@ -2,23 +2,24 @@ package org.omnetpp.runtimeenv.editors;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.InputEvent;
 import org.eclipse.draw2d.MouseEvent;
 import org.eclipse.draw2d.MouseListener;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.omnetpp.common.ui.SelectionProvider;
+import org.eclipse.swt.graphics.Point;
 import org.omnetpp.experimental.simkernel.swig.cDisplayString;
 import org.omnetpp.experimental.simkernel.swig.cModule;
 import org.omnetpp.experimental.simkernel.swig.cModule_SubmoduleIterator;
 import org.omnetpp.experimental.simkernel.swig.cSimulation;
 import org.omnetpp.figures.layout.SubmoduleConstraint;
+import org.omnetpp.runtimeenv.Activator;
 import org.omnetpp.runtimeenv.figures.CompoundModuleFigureEx;
 import org.omnetpp.runtimeenv.figures.SubmoduleFigureEx;
 
@@ -29,8 +30,6 @@ import org.omnetpp.runtimeenv.figures.SubmoduleFigureEx;
 public class GraphicalModulePart extends InspectorPart {
     protected Map<Integer,SubmoduleFigureEx> submodules = new HashMap<Integer,SubmoduleFigureEx>();
     protected Map<Integer,String> lastSubmoduleDisplayStrings = new HashMap<Integer,String>();
-    protected MouseListener mouseListener;
-    protected ISelectionProvider selectionProvider = new SelectionProvider();
     
     /**
      * Constructor.
@@ -52,34 +51,22 @@ public class GraphicalModulePart extends InspectorPart {
 
         update();
 
-        // handle mouse
-        figure.addMouseListener(mouseListener = new MouseListener() {
+        // mouse handling
+        figure.addMouseListener(new MouseListener() {
             @Override
             public void mouseDoubleClicked(MouseEvent me) {
                 handleMouseDoubleClick(me);
             }
-            @Override
-            public void mousePressed(MouseEvent me) {
+
+			@Override
+			public void mousePressed(MouseEvent me) {
                 handleMousePressed(me);
-            }
-            @Override
-            public void mouseReleased(MouseEvent me) {
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent me) {
                 handleMouseReleased(me);
-            }
-        });
-        
-        // reflect selection changes
-        selectionProvider.addSelectionChangedListener(new ISelectionChangedListener() {
-            @Override
-            public void selectionChanged(SelectionChangedEvent event) {
-                // update visual feedback
-                isSelected = false;
-                if (event.getSelection() instanceof IStructuredSelection) {
-                    IStructuredSelection selection = (IStructuredSelection)event.getSelection();
-                    isSelected = selection.toList().contains(GraphicalModulePart.this);
-                    ((CompoundModuleFigureEx)figure).setDragHandlesShown(isSelected);
-                }
-            }
+			}
         });
     }
 
@@ -164,42 +151,90 @@ public class GraphicalModulePart extends InspectorPart {
         }
     }
 
-    protected void handleMousePressed(MouseEvent me) {
-        System.out.println("clicked submodule: " + findSubmoduleAt(me.x,me.y));
+    protected void handleMouseDoubleClick(MouseEvent me) {
+    	SubmoduleFigureEx submoduleFigure = findSubmoduleAt(me.x,me.y);
+		System.out.println("clicked submodule: " + submoduleFigure);
+		if (submoduleFigure != null) {
+			int submoduleID = submoduleFigure.getModuleID();
+            cModule submodule = cSimulation.getActiveSimulation().getModule(submoduleID);
+            Activator.openInspector2(submodule, true); //XXX maybe rather: go into?
+		}
     }
 
-    protected void handleMouseDoubleClick(MouseEvent me) {
-        // TODO Auto-generated method stub
+    protected void handleMousePressed(MouseEvent me) {
+    	SubmoduleFigureEx submoduleFigure = findSubmoduleAt(me.x,me.y);
+		System.out.println("clicked submodule: " + submoduleFigure);
+		if (submoduleFigure == null) {
+            if ((me.getState()& InputEvent.CONTROL) != 0)
+            	selectionRequestHandler.toggleSelection(getObject());
+            else
+            	selectionRequestHandler.select(getObject(), true);
+            me.consume();
+		}
+		else {
+			int submoduleID = submoduleFigure.getModuleID();
+            cModule submodule = cSimulation.getActiveSimulation().getModule(submoduleID);
+            if ((me.getState()& InputEvent.CONTROL) != 0)
+            	selectionRequestHandler.toggleSelection(submodule);
+            else
+            	selectionRequestHandler.select(submodule, true);
+            me.consume();
+		}
     }
-    
+
     protected void handleMouseReleased(MouseEvent me) {
-        // TODO Auto-generated method stub
     }
-    
+
     public SubmoduleFigureEx findSubmoduleAt(int x, int y) {
         IFigure target = figure.findFigureAt(x, y);
         while (target != null && !(target instanceof SubmoduleFigureEx))
             target = target.getParent();
         return (SubmoduleFigureEx)target;
     }
-
-    @Override
-    public ISelection getSelection() {
-        return selectionProvider.getSelection();
-    }
     
     @Override
-    public void setSelection(ISelection selection) {
-        selectionProvider.setSelection(selection);
+    @SuppressWarnings("unchecked")
+    public void selectionChanged(IStructuredSelection selection) {
+    	super.selectionChanged(selection);
+    	
+    	// update selection border around submodules
+    	List list = selection.toList();
+    	cSimulation sim = cSimulation.getActiveSimulation();
+        for (SubmoduleFigureEx f : submodules.values()) {
+			cModule module = sim.getModule(f.getModuleID());
+			f.setSelectionBorderShown(list.contains(module));
+        }
     }
 
-    @Override
-    public void addSelectionChangedListener(ISelectionChangedListener listener) {
-        selectionProvider.addSelectionChangedListener(listener);
+    public void populateContextMenu(final MenuManager contextMenuManager, Point p) {
+		System.out.println(this + ": populateContextMenu invoked");
+        SubmoduleFigureEx submoduleFigure = findSubmoduleAt(p.x, p.y);
+        if (submoduleFigure != null) {
+            int submoduleID = submoduleFigure.getModuleID();
+            final cModule module = cSimulation.getActiveSimulation().getModule(submoduleID);
+
+            //XXX factor out actions
+            contextMenuManager.add(new Action("Go into") {
+                @Override
+                public void run() {
+                    //Close this inspector; open new inspector at these coordinates; also add to navigation history
+                }
+            });
+
+            contextMenuManager.add(new Action("Open in New Canvas") {
+                @Override
+                public void run() {
+                    Activator.openInspector2(module, true);
+                }
+            });
+
+            contextMenuManager.add(new Action("Add to Canvas") {
+                @Override
+                public void run() {
+                    Activator.openInspector2(module, false);
+                }
+            });
+        }
     }
-    
-    @Override
-    public void removeSelectionChangedListener(ISelectionChangedListener listener) {
-        selectionProvider.removeSelectionChangedListener(listener);
-    }
+
 }

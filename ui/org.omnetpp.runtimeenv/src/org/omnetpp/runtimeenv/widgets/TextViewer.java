@@ -816,7 +816,12 @@ public class TextViewer extends Canvas implements ISelectionProvider {
 
     protected void drawLine(GC gc, int lineIndex, int x, int y) {
         // draw the line in the specified color
-        String line = content.getLine(lineIndex);
+		String line = "**UNDEF**";
+    	try { 
+    		line = content.getLine(lineIndex);
+    	} catch (Exception e) { //XXX only for debugging!!
+    		System.out.println("EXCEPTION in TextViewer.drawLine(): line=" + lineIndex + "; numLines=" + getContent().getLineCount() + " -- " + e.getMessage());
+    	}
         Color color = content.getLineColor(lineIndex);
         if (color == null)
             gc.drawString(line, x, y);

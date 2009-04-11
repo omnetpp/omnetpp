@@ -1,7 +1,7 @@
 package org.omnetpp.runtimeenv.editors;
 
 import org.eclipse.draw2d.IFigure;
-import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.experimental.simkernel.swig.cObject;
 import org.omnetpp.runtimeenv.Activator;
 import org.omnetpp.runtimeenv.ISimulationListener;
@@ -14,6 +14,7 @@ public abstract class InspectorPart implements IInspectorPart {
 	protected cObject object;
 	protected IInspectorFigure figure;
 	protected ISimulationListener simulationListener;
+	protected ISelectionRequestHandler selectionRequestHandler;
 	protected boolean isSelected;
 
 	public InspectorPart(cObject object) {
@@ -53,25 +54,34 @@ public abstract class InspectorPart implements IInspectorPart {
 	}
 
 	@Override
-	public boolean isSelected() {
+	public boolean isSelected() {  //XXX needed? canvas holds the selection anyway, this only allows inconsistency!!!
 	    return isSelected;
 	}
 
-	@Override
-	public void setSelected(boolean isSelected) {
-	    // update selection (this also triggers update of figure and isSelected flag)
-	    if (isSelected)
-	        setSelection(new StructuredSelection(this)); //XXX rather: addToSelection()!  
-	    else
-	        setSelection(new StructuredSelection()); //XXX rather: removeFromSelection()!
-	}
-
 	protected abstract void update();
-
     
     @Override
     public String toString() {
         return getClass().getSimpleName() + ":(" + object.getClassName() + ")" + object.getFullPath();
     }
+
+    public void setSelectionRequestHandler(ISelectionRequestHandler handler) {
+    	selectionRequestHandler = handler;
+    }
+
+    @Override
+    public ISelectionRequestHandler getSelectionRequestHandler() {
+    	return selectionRequestHandler;
+    }
+    
+    @Override
+    public void selectionChanged(IStructuredSelection selection) {
+    	boolean oldSelectedState = isSelected;
+    	isSelected = selection.toList().contains(object);
+    	if (oldSelectedState != isSelected)
+    		figure.setSelectionBorder(isSelected);
+    }
+
+    
 
 }

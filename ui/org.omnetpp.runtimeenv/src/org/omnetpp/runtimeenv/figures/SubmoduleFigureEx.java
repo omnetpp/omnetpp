@@ -13,4 +13,8 @@ public class SubmoduleFigureEx extends SubmoduleFigure {
         this.moduleID = moduleID;
     }
 
+    public void setSelectionBorderShown(boolean b) {
+        setBorder(b ? new SelectionBorder() : null); //XXX for now
+    }
+
 }

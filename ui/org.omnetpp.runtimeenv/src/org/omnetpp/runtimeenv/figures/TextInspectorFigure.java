@@ -31,6 +31,8 @@ public class TextInspectorFigure extends RoundedRectangle implements IInspectorF
 		infoStringLabel = new Label();
 		infoStringLabel.setFont(JFaceResources.getBannerFont()); //XXX
 		add(infoStringLabel);
+
+		setSelectionBorder(false);
 	}
 	
 	@Override
@@ -57,6 +59,11 @@ public class TextInspectorFigure extends RoundedRectangle implements IInspectorF
 	@Override
 	public int getDragOperation(int x, int y) {
 		return SWT.TOP|SWT.BOTTOM|SWT.LEFT|SWT.RIGHT; // always move (only)
+	}
+
+	@Override
+	public void setSelectionBorder(boolean isSelected) {
+        setBorder(isSelected ? new SelectionBorder() : null); //XXX for now
 	}
 
 }

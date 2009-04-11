@@ -550,9 +550,10 @@ public class ObjectPropertiesView extends PinnableView implements ISimulationLis
             for (Object obj : sel) {
                 if (obj instanceof IInspectorPart) {
                     IInspectorPart part = (IInspectorPart)obj;
-                    cModule module = cModule.cast(part.getObject());
-                    if (module != null)
-                        input.add(module);
+                    input.add(part.getObject());
+                }
+                else if (obj instanceof cObject) {
+                	input.add((cObject)obj);
                 }
             }
         }

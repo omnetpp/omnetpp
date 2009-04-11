@@ -10,10 +10,9 @@ import org.eclipse.draw2d.LayoutListener;
 import org.eclipse.draw2d.XYLayout;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.ControlAdapter;
@@ -29,25 +28,19 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
 import org.omnetpp.common.ui.SelectionProvider;
-import org.omnetpp.experimental.simkernel.swig.cModule;
-import org.omnetpp.experimental.simkernel.swig.cSimulation;
-import org.omnetpp.runtimeenv.Activator;
-import org.omnetpp.runtimeenv.figures.SubmoduleFigureEx;
+import org.omnetpp.experimental.simkernel.swig.cObject;
 import org.omnetpp.runtimeenv.widgets.FigureCanvas;
 
 /**
  * 
  * @author Andras
  */
-//TODO canvas selection mechanism
 //XXX snap to grid for the move/resize?
-public class ModelCanvas extends EditorPart {
+public class ModelCanvas extends EditorPart implements ISelectionRequestHandler {
     public static final String EDITOR_ID = "org.omnetpp.runtimeenv.editors.ModelCanvas";
     protected ScrolledComposite sc;
     protected FigureCanvas canvas;
     protected List<IInspectorPart> inspectors = new ArrayList<IInspectorPart>();
-    protected ISelectionChangedListener inspectorSelectionListener;
-    protected boolean selectionUpdateInProgress;
 
     @Override
     public void init(IEditorSite site, IEditorInput input) throws PartInitException {
@@ -59,13 +52,6 @@ public class ModelCanvas extends EditorPart {
         setPartName(input.getName());
         
         site.setSelectionProvider(new SelectionProvider());
-        
-        inspectorSelectionListener = new ISelectionChangedListener() {
-            @Override
-            public void selectionChanged(SelectionChangedEvent event) {
-                inspectorSelectionChanged(event);
-            }
-        };
     }
 
     @Override
@@ -106,7 +92,10 @@ public class ModelCanvas extends EditorPart {
             @Override
             public void menuDetected(MenuDetectEvent e) {
                 contextMenuManager.removeAll();
-                populateContextMenu(contextMenuManager, e);
+                Point p = canvas.toControl(e.x, e.y);
+                IInspectorPart inspectorPart = InspectorPart.findInspectorPartAt(canvas, p.x, p.y);
+                if (inspectorPart != null)
+                	inspectorPart.populateContextMenu(contextMenuManager, p);
             }
         });
     }
@@ -116,33 +105,6 @@ public class ModelCanvas extends EditorPart {
         org.eclipse.swt.graphics.Rectangle clientArea = sc.getClientArea();
         canvas.setSize(Math.max(size.width, clientArea.width), Math.max(size.height, clientArea.height));
     } 
-
-    protected void populateContextMenu(final MenuManager contextMenuManager, MenuDetectEvent e) {
-    	//XXX why is this here? why not in the GraphicalModulePart?
-        Point p = canvas.toControl(e.x, e.y);
-        IInspectorPart inspectorPart = InspectorPart.findInspectorPartAt(canvas, p.x, p.y);
-		GraphicalModulePart modulePart = (inspectorPart instanceof GraphicalModulePart) ? (GraphicalModulePart)inspectorPart : null;
-        SubmoduleFigureEx submoduleFigure = modulePart==null? null : modulePart.findSubmoduleAt(p.x, p.y);
-        if (submoduleFigure != null) {
-            int submoduleID = submoduleFigure.getModuleID();
-            final cModule module = cSimulation.getActiveSimulation().getModule(submoduleID);
-
-            //XXX factor out actions
-            contextMenuManager.add(new Action("Open in New Canvas") {
-                @Override
-                public void run() {
-                    Activator.openInspector2(module, true);
-                }
-            });
-
-            contextMenuManager.add(new Action("Add to Canvas") {
-                @Override
-                public void run() {
-                    Activator.openInspector2(module, false);
-                }
-            });
-        }
-    }
 
     public void addInspectorPart(IInspectorPart inspectorPart) {
         int lastY = canvas.getRootFigure().getPreferredSize().height;
@@ -161,20 +123,22 @@ public class ModelCanvas extends EditorPart {
                 if (!sc.isDisposed())
                     reveal(moduleFigure); //XXX also select it
             }});
-        
-        // add move/resize/selection support
+
+        // register the inspector
         inspectors.add(inspectorPart);
-        new InspectorMouseListener(inspectorPart);
+
+        // add move/resize/selection support
+        new InspectorMouseListener(inspectorPart); //XXX
         
         // listen on selection changes
-        inspectorPart.addSelectionChangedListener(inspectorSelectionListener);        
+        inspectorPart.setSelectionRequestHandler(this);        
     }
 
     public void removeInspectorPart(IInspectorPart inspectorPart) {
         Assert.isTrue(inspectors.contains(inspectorPart));
         inspectors.remove(inspectorPart);
         canvas.getRootFigure().remove(inspectorPart.getFigure());
-        inspectorPart.removeSelectionChangedListener(inspectorSelectionListener);        
+        inspectorPart.setSelectionRequestHandler(null);        
         //XXX what else?
     }
     
@@ -188,22 +152,55 @@ public class ModelCanvas extends EditorPart {
         canvas.setFocus();
     }
 
-    protected void inspectorSelectionChanged(SelectionChangedEvent event) {
-        if (!selectionUpdateInProgress) {
-            System.out.println("ModelCanvas: distributing selection " + event.getSelection());
-            
-            // for now, simply just take over that selection, and distribute 
-            // it to all inspectors (but disable further notifications meanwhile,
-            // to prevent recursion)
-            selectionUpdateInProgress = true;
-            getSite().getSelectionProvider().setSelection(event.getSelection());
-            for (IInspectorPart inspector : inspectors)
-                inspector.setSelection(event.getSelection());
-            selectionUpdateInProgress = false;
-        }
+	@Override
+	@SuppressWarnings("unchecked")
+	public void select(cObject object, boolean removeOthers) {
+		if (removeOthers) {
+			fireSelectionChange(new StructuredSelection(object));
+		}
+		else {
+			IStructuredSelection selection = (IStructuredSelection)getSite().getSelectionProvider().getSelection();
+			if (!selection.toList().contains(object)) {
+				List list = new ArrayList(selection.toList());
+				list.add(object);
+				fireSelectionChange(new StructuredSelection(list));
+			}
+		}
+	}
+
+	@Override
+	public void toggleSelection(cObject object) {
+		IStructuredSelection selection = (IStructuredSelection)getSite().getSelectionProvider().getSelection();
+		if (selection.toList().contains(object))
+			deselect(object);
+		else 
+			select(object, false);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public void deselect(cObject object) {
+		IStructuredSelection selection = (IStructuredSelection)getSite().getSelectionProvider().getSelection();
+		if (selection.toList().contains(object)) {
+			List list = new ArrayList(selection.toList());
+			list.remove(object);
+			fireSelectionChange(new StructuredSelection(list));
+		}
+	}
+
+	@Override
+	public void deselectAll() {
+		fireSelectionChange(new StructuredSelection());
+	}
+
+    protected void fireSelectionChange(IStructuredSelection selection) {
+    	System.out.println("ModelCanvas: distributing selection " + selection);
+    	getSite().getSelectionProvider().setSelection(selection);
+    	for (IInspectorPart inspector : inspectors)
+    		inspector.selectionChanged(selection);
     }
 
-    @Override
+	@Override
     public void doSave(IProgressMonitor monitor) {
         // Nothing
     }
@@ -222,5 +219,4 @@ public class ModelCanvas extends EditorPart {
     public boolean isSaveAsAllowed() {
         return false;
     }
-
 }
