@@ -221,7 +221,6 @@ public class SpringEmbedderLayout extends XYLayout {
 	    // we use the same amount of space on the up/down and the left/right side
 	    Dimension result = new Dimension(rect.x + Math.max(rect.x,0) + rect.width + f.getInsets().getWidth(), rect.y + Math.max(rect.y,0) + rect.height + f.getInsets().getHeight()).
 	        union(getBorderPreferredSize(f));
-	    System.out.println("SpringEmbedderLayout.calculatePreferredSize: "+result);
 		return result;
 	}
 
