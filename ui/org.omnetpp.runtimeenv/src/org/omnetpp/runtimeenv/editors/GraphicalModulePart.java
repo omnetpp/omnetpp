@@ -169,7 +169,6 @@ public class GraphicalModulePart extends InspectorPart {
             	selectionRequestHandler.toggleSelection(getObject());
             else
             	selectionRequestHandler.select(getObject(), true);
-            me.consume();
 		}
 		else {
 			int submoduleID = submoduleFigure.getModuleID();
@@ -178,8 +177,8 @@ public class GraphicalModulePart extends InspectorPart {
             	selectionRequestHandler.toggleSelection(submodule);
             else
             	selectionRequestHandler.select(submodule, true);
-            me.consume();
 		}
+		//note: no me.consume()! it would kill the move/resize listener
     }
 
     protected void handleMouseReleased(MouseEvent me) {

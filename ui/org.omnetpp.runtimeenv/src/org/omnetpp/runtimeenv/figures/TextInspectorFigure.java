@@ -1,6 +1,7 @@
 package org.omnetpp.runtimeenv.figures;
 
 import org.eclipse.draw2d.Label;
+import org.eclipse.draw2d.LineBorder;
 import org.eclipse.draw2d.RoundedRectangle;
 import org.eclipse.draw2d.ToolbarLayout;
 import org.eclipse.draw2d.geometry.Insets;
@@ -63,7 +64,8 @@ public class TextInspectorFigure extends RoundedRectangle implements IInspectorF
 
 	@Override
 	public void setSelectionBorder(boolean isSelected) {
-        setBorder(isSelected ? new SelectionBorder() : null); //XXX for now
+        //setBorder(isSelected ? new SelectionBorder() : null); //XXX SelectionBorder crashes the VM !! ????
+        setBorder(isSelected ? new LineBorder(5) : null); //XXX for now
 	}
 
 }

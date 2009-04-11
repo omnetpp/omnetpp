@@ -16,6 +16,7 @@ public class TextInspectorPart extends InspectorPart {
 		figure.setInspectorPart(this);
 		update();
 
+		// add mouse selection support
         figure.addMouseListener(new MouseListener.Stub() {
 			@Override
 			public void mousePressed(MouseEvent me) {
@@ -41,10 +42,11 @@ public class TextInspectorPart extends InspectorPart {
 	}
 
 	protected void handleMousePressed(MouseEvent me) {
+		System.out.println("TextInspectorPart: mouse pressed");
 		if ((me.getState()& InputEvent.CONTROL) != 0)
 			selectionRequestHandler.toggleSelection(getObject());
 		else
 			selectionRequestHandler.select(getObject(), true);
-		me.consume();
+		//note: no me.consume()! it would kill the move/resize listener
 	}
 }

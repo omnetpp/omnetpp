@@ -77,7 +77,7 @@ public abstract class InspectorPart implements IInspectorPart {
     @Override
     public void selectionChanged(IStructuredSelection selection) {
     	boolean oldSelectedState = isSelected;
-    	isSelected = selection.toList().contains(object);
+    	isSelected = selection.toList().contains(object); //XXX or the inspectorPart???
     	if (oldSelectedState != isSelected)
     		figure.setSelectionBorder(isSelected);
     }
