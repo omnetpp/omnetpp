@@ -8,6 +8,8 @@ import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Cursor;
+import org.eclipse.swt.widgets.Display;
 
 
 /**
@@ -21,6 +23,17 @@ public class InspectorMouseListener implements MouseListener, MouseMotionListene
     protected Rectangle dragStartFigureBounds;
     protected int dragOperation; // SWT.LEFT/RIGHT/TOP/BOTTOM; move if all are set
 
+    private static Cursor CURSOR_SIZEE = new Cursor(Display.getDefault(), SWT.CURSOR_SIZEE);
+    private static Cursor CURSOR_SIZEW = new Cursor(Display.getDefault(), SWT.CURSOR_SIZEW);
+    private static Cursor CURSOR_SIZEN = new Cursor(Display.getDefault(), SWT.CURSOR_SIZEN);
+    private static Cursor CURSOR_SIZES = new Cursor(Display.getDefault(), SWT.CURSOR_SIZES);
+    private static Cursor CURSOR_SIZENE = new Cursor(Display.getDefault(), SWT.CURSOR_SIZENE);
+    private static Cursor CURSOR_SIZENW = new Cursor(Display.getDefault(), SWT.CURSOR_SIZENW);
+    private static Cursor CURSOR_SIZESE = new Cursor(Display.getDefault(), SWT.CURSOR_SIZESE);
+    private static Cursor CURSOR_SIZESW = new Cursor(Display.getDefault(), SWT.CURSOR_SIZESW);
+    private static Cursor CURSOR_SIZEALL = new Cursor(Display.getDefault(), SWT.CURSOR_SIZEALL);
+    private static Cursor CURSOR_ARROW = new Cursor(Display.getDefault(), SWT.CURSOR_ARROW);
+    
     public InspectorMouseListener(IInspectorPart inspectorPart) {
         this.inspectorPart = inspectorPart;
         inspectorPart.getFigure().addMouseListener(this);
@@ -100,5 +113,24 @@ public class InspectorMouseListener implements MouseListener, MouseMotionListene
 
     @Override
     public void mouseMoved(MouseEvent me) {
+    	IInspectorFigure figure = inspectorPart.getFigure();
+    	dragOperation = figure.getDragOperation(me.x, me.y);
+
+    	Cursor cursor;
+    	switch (dragOperation) {
+    	case SWT.LEFT: cursor = CURSOR_SIZEW; break;
+    	case SWT.RIGHT: cursor = CURSOR_SIZEE; break;
+    	case SWT.TOP: cursor = CURSOR_SIZEN; break;
+    	case SWT.BOTTOM: cursor = CURSOR_SIZES; break;
+    	
+    	case SWT.LEFT|SWT.TOP: cursor = CURSOR_SIZENW; break;
+    	case SWT.RIGHT|SWT.TOP: cursor = CURSOR_SIZENE; break;
+    	case SWT.LEFT|SWT.BOTTOM: cursor = CURSOR_SIZESW; break;
+    	case SWT.RIGHT|SWT.BOTTOM: cursor = CURSOR_SIZESE; break;
+    	
+    	case SWT.LEFT|SWT.RIGHT|SWT.TOP|SWT.BOTTOM: cursor = CURSOR_SIZEALL; break;
+    	default: cursor = CURSOR_ARROW;
+    	}
+    	figure.setCursor(cursor);
     }
 }
