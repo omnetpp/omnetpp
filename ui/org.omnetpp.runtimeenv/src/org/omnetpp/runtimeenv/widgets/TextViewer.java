@@ -43,10 +43,9 @@ import org.omnetpp.common.ui.SelectionProvider;
 //TODO cursor should be solid while moving (restart timer on any key/mouse/textchange event)
 //TODO minor glitches with word selection (esp with single-letter words)
 //TODO drag-autoscroll
-//TODO try with proportional font?
+//TODO try if it works with proportional font
 //TODO finish horiz scrolling!
 //TODO implement selectionprovider stuff
-//TODO mouse wheel does not works
 public class TextViewer extends Canvas implements ISelectionProvider {
     protected TextViewerContent content;
     protected TextChangeListener textChangeListener;
@@ -612,9 +611,10 @@ public class TextViewer extends Canvas implements ISelectionProvider {
     }
 
     protected void handleMouseWheel(Event event) {
-        topLineIndex += event.count;
-        adjustScrollbars();
-        redraw();
+    	// when scrolling down, bottom line should be entirely visible; 
+    	// when scrolling up, the top line should be entirely visible.
+    	// actual scrolling seems to be taken care of automatically (by ScrolledComposite?) 
+    	alignTop = event.count > 0;
     }
 
     protected void handleResize(Event event) {
