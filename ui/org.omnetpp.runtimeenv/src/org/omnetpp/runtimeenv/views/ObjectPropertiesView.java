@@ -164,11 +164,11 @@ public class ObjectPropertiesView extends PinnableView implements ISimulationLis
 	        }
 	        else if (element instanceof cObject) {
 	            cObject object = (cObject)element;
-	            long ptr = cClassDescriptor.getCPtr(object);
-                cClassDescriptor desc = cClassDescriptor.getDescriptorFor(object);
+                cClassDescriptor desc = object.getDescriptor();
                 if (desc == null) {
                     return object.getChildObjects();
                 } else {
+                	long ptr = cClassDescriptor.getCPtr(object);
                     //Object[] allFields = getFieldsInGroup(ptr, desc, null); -- use this to present all fields at once (without groups)
                     Object[] ungroupedFields = getFieldsInGroup(element, ptr, desc, "");
                     Object[] groups = getGroupKeys(element, ptr, desc);
@@ -243,7 +243,7 @@ public class ObjectPropertiesView extends PinnableView implements ISimulationLis
 	        if (element instanceof GroupKey)
 	            return true;   
 	        else if (element instanceof cObject)
-	            return ((cObject)element).hasChildObjects();
+	            return true; // has fields etc.
 	        else
 	            return getChildren(element).length!=0; //FIXME make it more efficient (this counts all children!)
 	    }
@@ -327,7 +327,7 @@ public class ObjectPropertiesView extends PinnableView implements ISimulationLis
             if (element instanceof cObject) {
                 //FIXME cache image by object's classname!
                 cObject object = (cObject)element;
-                cClassDescriptor desc = cClassDescriptor.getDescriptorFor(object);
+                cClassDescriptor desc = object.getDescriptor();
                 String icon = desc.getProperty("icon");
                 if (!StringUtils.isEmpty(icon)) {
                     return Activator.getCachedImage("icons/obj16/"+icon+".png");
