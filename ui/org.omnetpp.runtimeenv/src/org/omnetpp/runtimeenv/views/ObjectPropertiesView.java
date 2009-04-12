@@ -537,8 +537,24 @@ public class ObjectPropertiesView extends PinnableView2 implements ISimulationLi
         viewer.addDoubleClickListener(new IDoubleClickListener() {
             public void doubleClick(DoubleClickEvent event) {
                 Object element = ((IStructuredSelection)event.getSelection()).getFirstElement();
-                if (element instanceof cObject)
-                    Activator.openInspector2((cObject)element, false); //XXX how to decide whether on new canvas or same canvas?
+    	        if (element instanceof RootObj)
+    	            element = ((RootObj)element).object;
+
+    	        if (element instanceof FieldKey) {
+    	        	FieldKey key = (FieldKey)element;
+    	        	boolean isObject = key.desc.getFieldIsCObject(key.ptr, key.fieldID);
+    	        	if (isObject)
+    	        		element = key.desc.getFieldAsCObject(key.ptr, key.fieldID, -1);
+    	        }
+    	        else if (element instanceof ArrayElementKey) {
+    	        	ArrayElementKey key = (ArrayElementKey)element;
+    	        	boolean isObject = key.desc.getFieldIsCObject(key.ptr, key.fieldID);
+    	        	if (isObject)
+    	        		element = key.desc.getFieldAsCObject(key.ptr, key.fieldID, key.index);
+    	        }
+    	        
+    	        if (element instanceof cObject)
+                    Activator.openInspector2((cObject)element, false);
             }
         });
         
