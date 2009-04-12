@@ -22,6 +22,20 @@
 
 NAMESPACE_BEGIN
 
+/**
+ * This class is the underlying implementation for the Module Output View
+ * of the runtime env.
+ *
+ * This class provides a filtered view of a LogBuffer. Filtering is done by
+ * module IDs. When you specify a module ID, messages from that module and
+ * all submodules (ie the submodule tree) will be show, except those specified
+ * in the excludedModuleIDs set.
+ *
+ * Provides a line-based query interface. The API allows random access, but
+ * the implementation, being interator-based, is optimized for accessing
+ * contiguous ranges of lines.
+ *
+ */
 class LogBufferView : private LogBuffer::IListener
 {
     private:

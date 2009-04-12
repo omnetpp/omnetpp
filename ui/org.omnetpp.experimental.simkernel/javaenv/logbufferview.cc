@@ -61,7 +61,7 @@ void LogBufferView::entryAdded(const LogBuffer::Entry& entry)
         totalLines += entry.getNumLines();
         totalChars += entry.getNumChars();
     }
-    verifyTotals();
+    //verifyTotals(); -- put it back when debugging
 }
 
 void LogBufferView::lineAdded(const LogBuffer::Entry& entry, size_t numLineChars)
@@ -71,7 +71,7 @@ void LogBufferView::lineAdded(const LogBuffer::Entry& entry, size_t numLineChars
         totalLines++;
         totalChars += numLineChars;
     }
-    verifyTotals();
+    //verifyTotals(); -- put it back when debugging
 }
 
 void LogBufferView::discardingEntry(const LogBuffer::Entry& entry)
