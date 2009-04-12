@@ -33,16 +33,6 @@ class cModule;
 class LogBuffer
 {
   public:
-    class IListener {
-      public:
-        /** Called when lines get appended at the end of the buffer */
-        virtual void linesAdded(size_t numLines, size_t numChars) = 0;
-        /** Called when old lines get discarded at the beginning of the buffer */
-        virtual void linesDiscarded(size_t numLines, size_t numChars) = 0;
-        /** Virtual dtor */
-        virtual ~IListener() {}
-    };
-
     // line type
     enum { LINE_INFO = 0, LINE_BANNER = 1, LINE_LOG = 2 };
 
@@ -71,6 +61,18 @@ class LogBuffer
         int getLineType(size_t lineIndex) const {return !moduleIds ? LINE_INFO : lineIndex==0 ? LINE_BANNER : LINE_LOG;}
     };
 
+    class IListener {
+      public:
+        /** Called when an entry gets appended at the end of the buffer */
+        virtual void entryAdded(const Entry& entry) = 0;
+        /** Called when a line gets appended to an entry */
+        virtual void lineAdded(const Entry& entry, size_t numLineChars) = 0;
+        /** Called just before an entry gets discarded at the beginning of the buffer */
+        virtual void discardingEntry(const Entry& entry) = 0;
+        /** Virtual dtor */
+        virtual ~IListener() {}
+    };
+
   protected:
     size_t memLimit;
     size_t totalChars;
@@ -83,8 +85,9 @@ class LogBuffer
     void discardIfMemoryLimitExceeded();
     size_t estimatedMemUsage() {return totalChars + 8*totalLines + numEntries*(8+2*sizeof(void*)+sizeof(Entry)+32); }
     void fillEntry(Entry& entry, eventnumber_t e, simtime_t t, int *moduleIds, const char *banner);
-    void linesAdded(size_t numLines, size_t numChars);
-    void linesDiscarded(size_t numLines, size_t numChars);
+    void entryAdded(const Entry& entry);
+    void lineAdded(const Entry& entry, size_t numLineChars);
+    void discardingEntry(const Entry& entry);
     static int *extractAncestorModuleIds(cModule *mod);
 
   public:

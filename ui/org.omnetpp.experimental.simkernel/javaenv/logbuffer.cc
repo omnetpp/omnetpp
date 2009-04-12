@@ -90,7 +90,7 @@ void LogBuffer::addEvent(eventnumber_t e, simtime_t t, int *moduleIds, const cha
     totalLines++;
     totalChars += entries.back().numChars;
 
-    linesAdded(1, entries.back().getNumChars());
+    entryAdded(entries.back());
 
     discardIfMemoryLimitExceeded();
 }
@@ -115,7 +115,7 @@ void LogBuffer::addLogLine(const char *text)
     totalLines++;
     totalChars += lineLength + 1;
 
-    linesAdded(1, lineLength + 1);
+    lineAdded(entry, lineLength + 1);
 
     discardIfMemoryLimitExceeded();
 }
@@ -128,7 +128,7 @@ void LogBuffer::addInfo(const char *text)
     totalLines++;
     totalChars += entries.back().getNumChars();
 
-    linesAdded(1, entries.back().getNumChars());
+    entryAdded(entries.back());
 
     discardIfMemoryLimitExceeded();
 }
@@ -141,13 +141,11 @@ void LogBuffer::setMemoryLimit(size_t limit)
 
 void LogBuffer::discardIfMemoryLimitExceeded()
 {
-    size_t numLinesDiscarded = 0;
-    size_t numCharsDiscarded = 0;
-
     while (estimatedMemUsage() > memLimit && numEntries > 1)  // leave at least 1 entry
     {
         // discard first entry
         Entry& entry = entries.front();
+        discardingEntry(entry);
         size_t numLines = entry.getNumLines();
         size_t numChars = entry.getNumChars();
         entries.pop_front();
@@ -155,10 +153,7 @@ void LogBuffer::discardIfMemoryLimitExceeded()
 
         totalChars -= numChars;
         totalLines -= numLines;
-        numLinesDiscarded += numLines;
-        numCharsDiscarded += numChars;
     }
-    linesDiscarded(numLinesDiscarded, numCharsDiscarded);
 }
 
 void LogBuffer::addListener(IListener *listener)
@@ -176,16 +171,22 @@ void LogBuffer::removeListener(IListener *listener)
     }
 }
 
-void LogBuffer::linesAdded(size_t numLines, size_t numChars)
+void LogBuffer::entryAdded(const Entry& entry)
 {
     for (int i=0; i<(int)listeners.size(); i++)
-        listeners[i]->linesAdded(numLines, numChars);
+        listeners[i]->entryAdded(entry);
 }
 
-void LogBuffer::linesDiscarded(size_t numLines, size_t numChars)
+void LogBuffer::lineAdded(const Entry& entry, size_t numLineChars)
 {
     for (int i=0; i<(int)listeners.size(); i++)
-        listeners[i]->linesDiscarded(numLines, numChars);
+        listeners[i]->lineAdded(entry, numLineChars);
+}
+
+void LogBuffer::discardingEntry(const Entry& entry)
+{
+    for (int i=0; i<(int)listeners.size(); i++)
+        listeners[i]->discardingEntry(entry);
 }
 
 #define LL  INT64_PRINTF_FORMAT

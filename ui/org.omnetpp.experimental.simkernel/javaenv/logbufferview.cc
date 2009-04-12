@@ -54,31 +54,46 @@ void LogBufferView::countLines()
     }
 }
 
-void LogBufferView::linesAdded(size_t numLines, size_t numChars)
+void LogBufferView::entryAdded(const LogBuffer::Entry& entry)
 {
-    totalLines += numLines;
-    totalChars += numChars;
-    // currentPos stays valid
-
-    //verifyTotals();
+    if (isGood(entry))
+    {
+        totalLines += entry.getNumLines();
+        totalChars += entry.getNumChars();
+    }
+    verifyTotals();
 }
 
-void LogBufferView::linesDiscarded(size_t numLines, size_t numChars)
+void LogBufferView::lineAdded(const LogBuffer::Entry& entry, size_t numLineChars)
 {
-    totalLines -= numLines;
-    totalChars -= numChars;
-
-    if (currentPosValid)
+    if (isGood(entry))
     {
-        if (currentLineIndex < numLines)
-            currentPosValid = false;
-        else {
-            currentLineIndex -= numLines;
-            currentLineOffset -= numChars;
+        totalLines++;
+        totalChars += numLineChars;
+    }
+    verifyTotals();
+}
+
+void LogBufferView::discardingEntry(const LogBuffer::Entry& entry)
+{
+    if (isGood(entry))
+    {
+        totalLines -= entry.getNumLines();
+        totalChars -= entry.getNumChars();
+
+        if (currentPosValid)
+        {
+            if (currentLineIndex < entry.getNumLines())
+                currentPosValid = false;
+            else {
+                currentLineIndex -= entry.getNumLines();
+                currentLineOffset -= entry.getNumChars();
+            }
         }
     }
 
-    //verifyTotals();
+    // note: cannot call verifyTotals() here because entry hasn't been actually
+    // discarded from the underlying log yet
 }
 
 void LogBufferView::verifyTotals()
@@ -86,6 +101,7 @@ void LogBufferView::verifyTotals()
     size_t oldTotalLines = totalLines;
     size_t oldTotalChars = totalChars;
     countLines();
+
     Assert(oldTotalLines==totalLines);
     Assert(oldTotalChars==totalChars);
 }
@@ -190,13 +206,18 @@ inline size_t distance(size_t a, size_t b) { return a<b ? b-a : a-b; }
 
 void LogBufferView::gotoLine(size_t lineIndex)
 {
+    if (lineIndex<0 || lineIndex>=getNumLines())
+        throw opp_runtime_error("LogBufferView: line index %ld is out of range 0..%ld", (long)lineIndex, (long)getNumLines()-1);
+
     // find suitable starting point
     size_t distanceToBeg = lineIndex;
     size_t distanceToEnd = getNumLines() - lineIndex;
     size_t distanceToCurrent = currentPosValid ? distance(currentLineIndex,lineIndex) : getNumLines();
-    if (distanceToBeg < distanceToEnd && distanceToBeg < distanceToCurrent)
+    if (distanceToCurrent < distanceToBeg && distanceToCurrent < distanceToEnd)
+        ; // nop - use current position
+    else if (distanceToBeg < distanceToEnd)
         gotoBeginning();
-    else if (distanceToEnd < distanceToBeg && distanceToEnd < distanceToCurrent)
+    else
         gotoEnd();
 
     if (!currentPosValid)
@@ -246,6 +267,9 @@ void LogBufferView::gotoLine(size_t lineIndex)
 
 void LogBufferView::gotoOffset(size_t offset)
 {
+    if (offset<0 || offset>=getNumChars())
+        throw opp_runtime_error("LogBufferView: offset %ld is out of range 0..%ld", (long)offset, (long)getNumChars()-1);
+
     // find suitable starting point
     size_t distanceToBeg = offset;
     size_t distanceToEnd = getNumChars() - offset;

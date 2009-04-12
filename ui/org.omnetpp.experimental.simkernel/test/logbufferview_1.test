@@ -17,30 +17,29 @@ static int *createModule(int id)
     return result;
 }
 
+static void getLine(LogBufferView *logView, int lineIndex)
+{
+    ev << "- getting line " << lineIndex << " out of " << logView->getNumLines() << ": ";
+    ev << logView->getLine(lineIndex) << "\n";
+}
+
 static void exerciseLogView(LogBufferView *logView)
 {
-    int numLines = logView->getNumLines();
-    if (numLines >= 2)
-    {
-        // read extreme lines
-        logView->getLine(0);
-        logView->getLine(numLines-1);
-        logView->getLine(1);
-        logView->getLine(numLines-2);
+    ev << "Exercising logView:\n";
 
-        // read 100 random lines
-        for (int i=0; i<100; i++)
-            logView->getLine(intuniform(0, numLines-1));
-    }
+    int numLines = logView->getNumLines();
+
+    // read random lines
+    for (int i=0; i<2*numLines; i++)
+        getLine(logView, intuniform(0, numLines-1));
 }
 
 %activity:
-__asm int 3;
 
-LogBuffer log(1024); // 1K buffer
+LogBuffer log(800);  // small buffer, so that we can test discards as well
 
 std::vector<int> excludedModuleIds;
-LogBufferView logView(&log, 2, excludedModuleIds);
+LogBufferView logView(&log, 2, excludedModuleIds); // filter for module id=2
 
 log.addInfo("init line 1");
 log.addInfo("init line 2");
@@ -55,10 +54,12 @@ for (int eventNumber=0; eventNumber<10000; eventNumber++)
     for (int line=0; line<n; line++)
         log.addLogLine(opp_stringf("log line #%d at event #%d",line,eventNumber).c_str());
 
+    log.dump();
     exerciseLogView(&logView);
 }
 
-ev << ".\n";
+ev << "DONE.\n";
 
 %contains: stdout
-xxx
+DONE.
+

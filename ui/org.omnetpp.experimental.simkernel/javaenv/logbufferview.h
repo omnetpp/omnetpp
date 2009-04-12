@@ -57,8 +57,9 @@ class LogBufferView : private LogBuffer::IListener
       void incCurrentEntry();
       void decCurrentEntry();
 
-      void linesAdded(size_t numLines, size_t numChars);
-      void linesDiscarded(size_t numLines, size_t numChars);
+      void entryAdded(const LogBuffer::Entry& entry);
+      void lineAdded(const LogBuffer::Entry& entry, size_t numLineChars);
+      void discardingEntry(const LogBuffer::Entry& entry);
 
     public:
       LogBufferView(LogBuffer *log, int moduleId, const std::vector<int>& excludedModuleIds);
