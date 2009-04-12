@@ -30,7 +30,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.common.ui.PinnableView;
+import org.omnetpp.experimental.simkernel.swig.Simkernel;
 import org.omnetpp.experimental.simkernel.swig.cClassDescriptor;
 import org.omnetpp.experimental.simkernel.swig.cEnum;
 import org.omnetpp.experimental.simkernel.swig.cModule;
@@ -41,13 +41,18 @@ import org.omnetpp.runtimeenv.ISimulationListener;
 import org.omnetpp.runtimeenv.editors.IInspectorPart;
 
 /**
+ * A view to display a C++ cObject's contents, based on its cClassDescriptor.
  * 
  * @author Andras
  */
+//TODO cObject fields cannot be double-clicked
+//TODO merge "general" and "fields" groups? make "contents[]" ungrouped?
+//TODO pin to the current *selection* NOT to editor or view?
+//TODO forget a (tree root) object when it gets deleted!
 //TODO we should support user-supplied images as well
-//FIXME because of the delayed update (PinnableView), more prone to crashes by showing obsolete objects?
+//TODO re-export our selection...? (who understands StructKey etc?)
 //XXX what's lost, compared to Tcl: bold; field editing; expanding multi-line text
-public class ObjectPropertiesView extends PinnableView implements ISimulationListener {
+public class ObjectPropertiesView extends PinnableView2 implements ISimulationListener {
 	public static final String ID = "org.omnetpp.runtimeenv.ObjectPropertiesView";
 
 	protected TreeViewer viewer;
@@ -189,8 +194,9 @@ public class ObjectPropertiesView extends PinnableView implements ISimulationLis
                     //Object[] allFields = getFieldsInGroup(ptr, desc, null); -- use this to present all fields at once (without groups)
                     Object[] ungroupedFields = getFieldsInGroup(element, ptr, desc, "");
                     Object[] groups = getGroupKeys(element, ptr, desc);
-                    Object[] childObjects = object.getChildObjects(); //FIXME needed?
-                    return ArrayUtils.addAll(ArrayUtils.addAll(ungroupedFields, groups), childObjects);
+                    //Object[] childObjects = object.getChildObjects(); //FIXME needed?
+                    //return ArrayUtils.addAll(ArrayUtils.addAll(ungroupedFields, groups), childObjects);
+                    return ArrayUtils.addAll(ungroupedFields, groups);
                 }
 	        }
             else if (element instanceof StructKey) {
@@ -266,7 +272,7 @@ public class ObjectPropertiesView extends PinnableView implements ISimulationLis
 	        else if (element instanceof cObject)
 	            return true; // has fields etc.
 	        else
-	            return getChildren(element).length!=0; //FIXME make it more efficient (this counts all children!)
+	            return getChildren(element).length!=0; // may be made more efficient
 	    }
 
 	    protected Object[] getGroupKeys(Object parent, long ptr, cClassDescriptor desc) {
@@ -321,12 +327,12 @@ public class ObjectPropertiesView extends PinnableView implements ISimulationLis
             //note: we use "\b...\b" for blue, and "\f" for grey coloring
 	        if (element instanceof RootObj) {
 	            cObject obj = ((RootObj)element).object;
-	            String typeName = obj.getClassName();  //XXX use opp_getobjectshorttypename
+                String typeName = Simkernel.getObjectShortTypeName(obj);
 	            return obj.getFullPath() + " \f(" + typeName + ")";  // use fullPath for tree roots, not fullName
 	        }
 	        else if (element instanceof cObject) {
 	            cObject obj = (cObject) element;
-	            String typeName = obj.getClassName();  //XXX use opp_getobjectshorttypename
+                String typeName = Simkernel.getObjectShortTypeName(obj);
 	            return obj.getFullName() + " \f(" + typeName + ")";
 	        }
 	        else if (element instanceof StructKey) {
@@ -430,7 +436,7 @@ public class ObjectPropertiesView extends PinnableView implements ISimulationLis
                         fieldObjName = fieldObj.getFullName();
                     else
                         fieldObjName = fieldObj.getFullPath();
-                    String className = fieldObj.getClassName(); //FIXME use shorttypename!!!
+                    String className = Simkernel.getObjectShortTypeName(fieldObj);
                     String info = fieldObj.info();
                     String infoText = info.equals("") ? "" : ": " + info;
                     return name + " = " + "(" + className + ") " + fieldObjName + infoText + typeNameText;
@@ -571,9 +577,8 @@ public class ObjectPropertiesView extends PinnableView implements ISimulationLis
 
     @Override
     protected void rebuildContent() {
-        //XXX need something more general... 
         List<Object> input = new ArrayList<Object>();
-        ISelection selection = getAssociatedEditorSelection();
+        ISelection selection = getAssociatedPartSelection();
         if (selection instanceof IStructuredSelection) {
             Object[] sel = ((IStructuredSelection)selection).toArray();
             for (Object obj : sel) {

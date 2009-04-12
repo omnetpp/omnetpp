@@ -12,7 +12,6 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.common.ui.PinnableView;
 import org.omnetpp.experimental.simkernel.swig.IntVector;
 import org.omnetpp.experimental.simkernel.swig.LogBuffer;
 import org.omnetpp.experimental.simkernel.swig.LogBufferView;
@@ -33,8 +32,7 @@ import org.omnetpp.runtimeenv.widgets.TextViewerContent;
  */
 //TODO filtering (excludedmoduleIDs) etc
 //TODO support opening multiple instances
-//XXX should be able to follow views too, not only editors
-public class ModuleOutputView extends PinnableView implements ISimulationListener {
+public class ModuleOutputView extends PinnableView2 implements ISimulationListener {
     public static final String ID = "org.omnetpp.runtimeenv.ModuleOutputView";
 
     protected TextViewer textViewer;
@@ -185,7 +183,7 @@ public class ModuleOutputView extends PinnableView implements ISimulationListene
     protected void rebuildContent() {
         // filter the displayed log to modules in the editor selection
         LogBufferViewInput input = new LogBufferViewInput();
-        ISelection selection = getAssociatedEditorSelection();
+        ISelection selection = getAssociatedPartSelection();
         if (selection instanceof IStructuredSelection) {
             Object[] sel = ((IStructuredSelection)selection).toArray();
             for (Object obj : sel) {

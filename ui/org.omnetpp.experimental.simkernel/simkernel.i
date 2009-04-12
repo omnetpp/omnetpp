@@ -406,8 +406,10 @@ void changeToDir(const char *dir); //XXX
 #include "javaenv/visitor.h"
 #include "javaenv/logbuffer.h"
 #include "javaenv/logbufferview.h"
+#include "javaenv/jutil.h"
 %}
 %include "javaenv/tmp.h"
 %include "javaenv/visitor.h"
 %include "javaenv/logbuffer.h"
 %include "javaenv/logbufferview.h"
+%include "javaenv/jutil.h"

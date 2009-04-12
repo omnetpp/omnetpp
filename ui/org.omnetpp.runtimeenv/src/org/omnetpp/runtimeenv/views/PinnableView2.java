@@ -5,51 +5,43 @@
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-package org.omnetpp.common.ui;
+package org.omnetpp.runtimeenv.views;
 
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
-import org.omnetpp.common.CommonCorePlugin;
+import org.omnetpp.common.ui.ViewWithMessagePart;
 import org.omnetpp.common.util.ActionExt;
-import org.omnetpp.common.util.DelayedJob;
+import org.omnetpp.runtimeenv.Activator;
 
 /**
  * Abstract base class for views that normally show information that
- * belongs to the active editor's selection, but can be pinned to 
- * a given editor. Subclasses are expected to implement the doBuildContent() 
+ * belongs to the active workbenchpart's selection, but can be pinned to 
+ * a given editor or view. Subclasses are expected to implement the doBuildContent() 
  * method, which will be invoked whenever the selection changes.
  *
  * @author Andras
  */
-//XXX ne csak editorhoz hanem viewhoz is
-//XXX ne legyen delay
-public abstract class PinnableView extends ViewWithMessagePart {
-    private IEditorPart pinnedToEditor = null;
-	private ISelection pinnedToEditorSelection = null;
+public abstract class PinnableView2 extends ViewWithMessagePart {
+	private boolean isPinned = false;
+	private IWorkbenchPart associatedPart = null; // where the selection we display comes from
 	private IAction pinAction;
 	
 	private ISelectionListener selectionChangedListener;
 	private IPartListener partListener;
-    private DelayedJob rebuildContentJob = new DelayedJob(200) {
-        public void run() {
-            if (!PinnableView.this.isDisposed())
-                rebuildContent();
-        }
-    };
 
-	public PinnableView() {
+	public PinnableView2() {
 	}
 
 	@Override
 	public void createPartControl(Composite parent) {
 		super.createPartControl(parent);
 		hookListeners();
-		scheduleRebuildContent();
+		rebuildContent();
 	}
 
 	@Override
@@ -62,7 +54,7 @@ public abstract class PinnableView extends ViewWithMessagePart {
 		// Listen on selection changes
 		selectionChangedListener = new ISelectionListener() {
 			public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-				if (part != PinnableView.this) // ignore our own selection changes
+				if (part != PinnableView2.this) // ignore our own selection changes
 					// Debug.println("*** AbstractModule selection changed from: "+part);
 					workbenchSelectionChanged();
 			}
@@ -70,24 +62,22 @@ public abstract class PinnableView extends ViewWithMessagePart {
 		getSite().getPage().addPostSelectionListener(selectionChangedListener);
         getSite().getPage().addSelectionListener(selectionChangedListener);
 
-		// Listens to workbench changes, and invokes activeEditorChanged() whenever the
+		// Listens to workbench changes, and invokes activePartChanged() whenever the
 		// active editor changes. Listening on workbench changes is needed because
 		// editors don't always send selection changes when they get opened or closed.
 		//
 		// NOTE: the view only gets workbench events while it is visible. So we also
 		// need to update our contents on getting activated.
 		//
-		final IEditorPart initialEditor = getActiveEditor();
+		associatedPart = getActivePart()==this ? null : getActivePart();
 		partListener = new IPartListener() {
-			private IEditorPart activeEditor = initialEditor;
-
 			public void partActivated(IWorkbenchPart part) {
-				if (part == PinnableView.this) {
+				if (part == PinnableView2.this) {
 					viewActivated();
 				}
-				if (part instanceof IEditorPart) {
-					activeEditor = (IEditorPart) part;
-					activeEditorChanged();
+				else if (!isPinned) {
+					associatedPart = part;
+					activePartChanged();
 				}
 			}
 
@@ -95,14 +85,11 @@ public abstract class PinnableView extends ViewWithMessagePart {
 			}
 
 			public void partClosed(IWorkbenchPart part) {
-				if (part == pinnedToEditor) {
-					// unpin on closing of the editor we're pinned to
-					unpin();
-					activeEditorChanged();
-				}
-				if (part == activeEditor) {
-					activeEditor = null;
-					activeEditorChanged();
+				if (part == associatedPart) {
+					associatedPart = null;
+					if (isPinned)
+						unpin(); // unpin on closing of the editor we're pinned to
+					activePartChanged();
 				}
 			}
 
@@ -125,26 +112,22 @@ public abstract class PinnableView extends ViewWithMessagePart {
 	}
 
 	public void workbenchSelectionChanged() {
-		scheduleRebuildContent();
+		rebuildContent();
 	}
 
 	protected void viewActivated() {
 		//Debug.println("*** VIEW ACTIVATED");
-		scheduleRebuildContent();
+		rebuildContent();
 	}
 
-	protected void activeEditorChanged() {
+	protected void activePartChanged() {
 		//Debug.println("*** ACTIVE EDITOR CHANGED");
-		scheduleRebuildContent();
-	}
-
-	public void scheduleRebuildContent() {
-        rebuildContentJob.restartTimer();
+		rebuildContent();
 	}
 
 	protected IAction getOrCreatePinAction() {
 		if (pinAction == null) {
-			pinAction = new ActionExt("Pin", IAction.AS_CHECK_BOX, CommonCorePlugin.getImageDescriptor("icons/elcl16/pin.gif")) {
+			pinAction = new ActionExt("Pin", IAction.AS_CHECK_BOX, Activator.getImageDescriptor("icons/elcl16/pin.gif")) {
 				@Override
 				public void run() {
 					if (isChecked())
@@ -158,26 +141,29 @@ public abstract class PinnableView extends ViewWithMessagePart {
 	}	
 
 	/**
-	 * Returns the editor the view is pinned to, or the active editor if the view is not pinned.
+	 * Returns the associated editor or view (the selection of which we 
+	 * display), or null if there is none
 	 */
-	protected IEditorPart getAssociatedEditor() {
-		return pinnedToEditor != null ? pinnedToEditor : getActiveEditor();
+	protected IWorkbenchPart getAssociatedPart() {
+		return associatedPart;
 	}
 
 	/**
-	 * Returns the pinned selection if the view is pinned, or the active editor's selection 
-	 * if the view is not pinned.
+	 * Returns the selection of the associated part (the selection of which 
+	 * we display), or null if there is none
 	 */
-	protected ISelection getAssociatedEditorSelection() {
-		return pinnedToEditorSelection != null ? pinnedToEditorSelection : getActiveEditorSelection();
+	protected ISelection getAssociatedPartSelection() {
+		if (associatedPart == null)
+			return null;
+		ISelectionProvider selectionProvider = associatedPart.getSite().getSelectionProvider();
+		return selectionProvider == null ? null : selectionProvider.getSelection();
 	}
 	
 	/**
 	 * Pin the view to the current editor's current selection.
 	 */
 	public void pin() {
-		pinnedToEditor = getActiveEditor();
-		pinnedToEditorSelection = getActiveEditorSelection();
+		isPinned = true;
 		pinAction.setChecked(true);
         rebuildContent();  // to update label: "Pinned to: ..."
 	}
@@ -186,24 +172,9 @@ public abstract class PinnableView extends ViewWithMessagePart {
 	 * Unpin the view: let it follow the active editor selection.
 	 */
 	public void unpin() {
-		pinnedToEditor = null;
-		pinnedToEditorSelection = null;
+		isPinned = false;
 		pinAction.setChecked(false);
-        rebuildContent();
-	}
-
-	/**
-	 * Returns the editor this view is pinned to (see Pin action), or null if view is not pinned.
-	 */
-	public IEditorPart getPinnedToEditor() {
-		return pinnedToEditor;
-	}
-
-	/**
-	 * Returns the selection this view is pinned to (see Pin action), or null if view is not pinned.
-	 */
-	public ISelection getPinnedToEditorSelection() {
-		return pinnedToEditorSelection;
+        rebuildContent();  // to update label: "Pinned to: ..."
 	}
 
 	/**

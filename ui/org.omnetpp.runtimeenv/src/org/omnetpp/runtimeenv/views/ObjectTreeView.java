@@ -6,8 +6,10 @@ import org.eclipse.jface.viewers.DecoratingStyledCellLabelProvider;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ILabelProviderListener;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
@@ -22,6 +24,8 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.ui.SelectionProvider;
+import org.omnetpp.experimental.simkernel.swig.Simkernel;
 import org.omnetpp.experimental.simkernel.swig.cClassDescriptor;
 import org.omnetpp.experimental.simkernel.swig.cObject;
 import org.omnetpp.experimental.simkernel.swig.cSimulation;
@@ -82,7 +86,7 @@ public class ObjectTreeView extends ViewPart implements ISimulationListener {
             //note: we use "\b...\b" for blue, and "\f" for grey coloring
             if (element instanceof cObject) {
                 cObject obj = (cObject) element;
-                String typeName = obj.getClassName();  //XXX use opp_getobjectshorttypename
+                String typeName = Simkernel.getObjectShortTypeName(obj);
                 return obj.getFullName() + " \f(" + typeName + ")";
             }
             return element.toString();
@@ -157,14 +161,25 @@ public class ObjectTreeView extends ViewPart implements ISimulationListener {
         viewer.getTree().setMenu(contextMenuManager.createContextMenu(viewer.getTree()));
         //TODO dynamic menu based on which object is selected
         
-        //TODO double-click: should open inspector (make an inspector framework!!!)
+        // double-click opens an inspector
         viewer.addDoubleClickListener(new IDoubleClickListener() {
             public void doubleClick(DoubleClickEvent event) {
                 Object element = ((IStructuredSelection)event.getSelection()).getFirstElement();
                 if (element instanceof cObject)
-                    Activator.openInspector2((cObject)element, false); //XXX how to decide whether on new canvas or same canvas?
+                    Activator.openInspector2((cObject)element, false);
             }
         });
+        
+        // export our selection to the workbench
+		getViewSite().setSelectionProvider(new SelectionProvider());
+        viewer.addSelectionChangedListener(new ISelectionChangedListener() {
+			@Override
+			public void selectionChanged(SelectionChangedEvent event) {
+				getViewSite().getSelectionProvider().setSelection(event.getSelection());
+			}
+        });
+        
+        // update when something in the simulation changes
 		Activator.getSimulationManager().addChangeListener(this);
 	}
 

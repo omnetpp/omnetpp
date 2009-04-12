@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.InputEvent;
 import org.eclipse.draw2d.MouseEvent;
@@ -18,6 +17,7 @@ import org.omnetpp.experimental.simkernel.swig.cDisplayString;
 import org.omnetpp.experimental.simkernel.swig.cModule;
 import org.omnetpp.experimental.simkernel.swig.cModule_SubmoduleIterator;
 import org.omnetpp.experimental.simkernel.swig.cSimulation;
+import org.omnetpp.figures.layout.SpringEmbedderLayout;
 import org.omnetpp.figures.layout.SubmoduleConstraint;
 import org.omnetpp.runtimeenv.Activator;
 import org.omnetpp.runtimeenv.figures.CompoundModuleFigureEx;
@@ -140,15 +140,31 @@ public class GraphicalModulePart extends InspectorPart {
                 submoduleFigure.setDisplayString(displayString);
 
                 // layouting magic
+                //XXX BTW, why do we have a separate constraint object for each submodule...? 
                 SubmoduleConstraint constraint = new SubmoduleConstraint();
-                constraint.setLocation(submoduleFigure.getPreferredLocation());
+                org.eclipse.draw2d.geometry.Point dpsLoc = displayString.getLocation(1.0f); //FIXME should use scale here
+
+                // check if the figure has a display string that specified a location (figure is fixed)
+                constraint.setPinned(dpsLoc != null);
+
+                // use the location specified in the display string (if any) for pinned nodes, 
+                // otherwise just use the current position of the figure
+                constraint.setLocation(dpsLoc != null ? dpsLoc : new org.eclipse.draw2d.geometry.Point(Integer.MIN_VALUE, Integer.MIN_VALUE));
                 constraint.setSize(submoduleFigure.getPreferredSize());
-                Assert.isTrue(constraint.height != -1 && constraint.width != -1);
+                
+//                SubmoduleConstraint constraint = new SubmoduleConstraint();
+//                constraint.setLocation(submoduleFigure.getPreferredLocation());
+//                constraint.setSize(submoduleFigure.getPreferredSize());
+//                Assert.isTrue(constraint.height != -1 && constraint.width != -1);
+
                 moduleFigure.getSubmoduleLayer().setConstraint(submoduleFigure, constraint);
                 
                 lastSubmoduleDisplayStrings.put(id, displayStringText);
             }
         }
+        //FIXME remove the net line!
+        ((SpringEmbedderLayout)((CompoundModuleFigureEx)figure).getSubmoduleLayer().getLayoutManager()).requestAutoLayout();
+
     }
 
     protected void handleMouseDoubleClick(MouseEvent me) {
