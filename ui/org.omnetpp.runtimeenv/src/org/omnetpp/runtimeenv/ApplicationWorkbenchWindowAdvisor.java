@@ -5,12 +5,19 @@ import org.eclipse.jface.action.ICoolBarManager;
 import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.action.StatusLineContributionItem;
 import org.eclipse.jface.action.ToolBarManager;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.ISelectionListener;
+import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
 import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
@@ -95,15 +102,41 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 
         // experimental statusbar contributions
         IStatusLineManager statusLineManager = getWindowConfigurer().getActionBarConfigurer().getStatusLineManager();
-        final StatusLineContributionItem item = new StatusLineContributionItem(null);
-        statusLineManager.add(item);
+        final StatusLineContributionItem simtimeItem = new StatusLineContributionItem(null);
+        statusLineManager.add(simtimeItem);
 
         Activator.getSimulationManager().addChangeListener(new ISimulationListener() {
             @Override
             public void changed() {
                 String text = "T=" + cSimulation.getActiveSimulation().getSimTime();
-                item.setText(text);
+                simtimeItem.setText(text);
             }
         });
+        
+        // display selection in statusbar
+        getWindowConfigurer().getWindow().getSelectionService().addSelectionListener(new ISelectionListener() {
+			@Override
+			public void selectionChanged(IWorkbenchPart part, ISelection selection) {
+				// assemble text
+				String text = "";
+				if (!selection.isEmpty() && selection instanceof IStructuredSelection) {
+					IStructuredSelection ssel = (IStructuredSelection)selection;
+					if (ssel.toList().size() == 1)
+						text = ssel.getFirstElement().toString();
+					else
+						text = ssel.toList().size() + " items selected";
+				}
+
+				// display text in statusbar
+				IActionBars actionBars = null;
+				if (part instanceof IViewPart) 
+					actionBars = ((IViewPart)part).getViewSite().getActionBars();
+				if (part instanceof IEditorPart) 
+					actionBars = ((IEditorPart)part).getEditorSite().getActionBars();
+				if (actionBars != null)
+					actionBars.getStatusLineManager().setMessage(text);
+			}
+        });
+        
     }
 }

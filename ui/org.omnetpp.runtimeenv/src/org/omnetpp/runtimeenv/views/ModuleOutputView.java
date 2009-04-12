@@ -27,12 +27,12 @@ import org.omnetpp.runtimeenv.widgets.TextViewer;
 import org.omnetpp.runtimeenv.widgets.TextViewerContent;
 
 /**
+ * Displays log messages from modules.
  * 
  * @author Andras
  */
-//TODO filtering etc
+//TODO filtering (excludedmoduleIDs) etc
 //TODO support opening multiple instances
-//FIXME remove try/catch from content provider (or it should log?) 
 //XXX should be able to follow views too, not only editors
 public class ModuleOutputView extends PinnableView implements ISimulationListener {
     public static final String ID = "org.omnetpp.runtimeenv.ModuleOutputView";
@@ -183,9 +183,7 @@ public class ModuleOutputView extends PinnableView implements ISimulationListene
 
     @Override
     protected void rebuildContent() {
-        // filter the displayed log to the first module in the editor selection
-        //XXX to *all* modules in the editor selection?
-        
+        // filter the displayed log to modules in the editor selection
         LogBufferViewInput input = new LogBufferViewInput();
         ISelection selection = getAssociatedEditorSelection();
         if (selection instanceof IStructuredSelection) {
