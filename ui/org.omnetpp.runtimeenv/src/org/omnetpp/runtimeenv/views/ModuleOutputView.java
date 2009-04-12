@@ -16,9 +16,9 @@ import org.omnetpp.common.ui.PinnableView;
 import org.omnetpp.experimental.simkernel.swig.IntVector;
 import org.omnetpp.experimental.simkernel.swig.LogBuffer;
 import org.omnetpp.experimental.simkernel.swig.LogBufferView;
+import org.omnetpp.experimental.simkernel.swig.LogBufferViewInput;
 import org.omnetpp.experimental.simkernel.swig.cModule;
 import org.omnetpp.experimental.simkernel.swig.cObject;
-import org.omnetpp.experimental.simkernel.swig.cSimulation;
 import org.omnetpp.runtimeenv.Activator;
 import org.omnetpp.runtimeenv.ISimulationListener;
 import org.omnetpp.runtimeenv.editors.IInspectorPart;
@@ -104,8 +104,7 @@ public class ModuleOutputView extends PinnableView implements ISimulationListene
     @Override
 	protected Control createViewControl(Composite parent) {
 	    LogBuffer logBuffer = Activator.getSimulationManager().getLogBuffer();
-	    int systemModuleID = cSimulation.getActiveSimulation().getSystemModule().getId();
-        LogBufferView logBufferView = new LogBufferView(logBuffer, systemModuleID, new IntVector());
+        LogBufferView logBufferView = new LogBufferView(logBuffer, new LogBufferViewInput());
 
         textViewer = new TextViewer(parent, SWT.DOUBLE_BUFFERED);
         textViewer.setContent(new LogBufferContent(logBufferView));
@@ -187,28 +186,25 @@ public class ModuleOutputView extends PinnableView implements ISimulationListene
         // filter the displayed log to the first module in the editor selection
         //XXX to *all* modules in the editor selection?
         
-        int moduleID = -1;
+        LogBufferViewInput input = new LogBufferViewInput();
         ISelection selection = getAssociatedEditorSelection();
         if (selection instanceof IStructuredSelection) {
             Object[] sel = ((IStructuredSelection)selection).toArray();
             for (Object obj : sel) {
                 if (obj instanceof IInspectorPart) {
                     IInspectorPart part = (IInspectorPart)obj;
-                    moduleID = cModule.cast(part.getObject()).getId();
-                    break;
+                    int moduleID = cModule.cast(part.getObject()).getId();
+                    input.addModuleTree(moduleID, new IntVector());
                 }
-                if (obj instanceof cObject && cModule.cast((cObject)obj) != null) {
-                	moduleID = cModule.cast((cObject)obj).getId();
-                	break;
+                else if (obj instanceof cObject && cModule.cast((cObject)obj) != null) {
+                	int moduleID = cModule.cast((cObject)obj).getId();
+                    input.addModuleTree(moduleID, new IntVector());
                 }
             }
         }
-        if (moduleID == -1)
-            moduleID = cSimulation.getActiveSimulation().getSystemModule().getId();
 
-        //XXX do nothing if already the same filter is set
         LogBuffer logBuffer = Activator.getSimulationManager().getLogBuffer();
-        LogBufferView logBufferView = new LogBufferView(logBuffer, moduleID, new IntVector());
+        LogBufferView logBufferView = new LogBufferView(logBuffer, input);
         textViewer.setContent(new LogBufferContent(logBufferView));
     }
 
