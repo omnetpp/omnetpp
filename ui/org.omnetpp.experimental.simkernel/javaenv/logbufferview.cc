@@ -20,12 +20,27 @@
 
 USING_NAMESPACE
 
-LogBufferView::LogBufferView(LogBuffer *log, int moduleId, const std::vector<int>& excludedModuleIds)
+void LogBufferViewInput::addModuleTree(int moduleId, const std::vector<int>& excludedModuleIds)
+{
+    v.push_back(ModuleTree());
+    v.back().rootModuleId = moduleId;
+    v.back().excludedModuleIds = excludedModuleIds;
+}
+
+//---
+
+LogBufferView::LogBufferView(LogBuffer *log, const LogBufferViewInput& f)
 {
     this->log = log;
-    this->rootModuleId = moduleId;
-    for (int i=0; i<excludedModuleIds.size(); i++)
-        this->excludedModuleIds.insert(excludedModuleIds[i]);
+
+    for (int i=0; i<f.getNumModuleTrees(); i++)
+    {
+        filter.push_back(ModuleTree());
+        filter.back().rootModuleId = f.getModuleId(i);
+        const std::vector<int>& v = f.getExcludedModuleIds(i);
+        for (int j=0; j<(int)v.size(); j++)
+            filter.back().excludedModuleIds.insert(v[j]);
+    }
 
     countLines();
     currentPosValid = false;
@@ -46,7 +61,7 @@ void LogBufferView::countLines()
     for (std::list<LogBuffer::Entry>::const_iterator it=entries.begin(); it!=entries.end(); it++)
     {
         const LogBuffer::Entry& entry = *it;
-        if (isGood(entry))
+        if (isGoodEntry(entry))
         {
             totalLines += entry.getNumLines();
             totalChars += entry.getNumChars();
@@ -56,7 +71,7 @@ void LogBufferView::countLines()
 
 void LogBufferView::entryAdded(const LogBuffer::Entry& entry)
 {
-    if (isGood(entry))
+    if (isGoodEntry(entry))
     {
         totalLines += entry.getNumLines();
         totalChars += entry.getNumChars();
@@ -66,7 +81,7 @@ void LogBufferView::entryAdded(const LogBuffer::Entry& entry)
 
 void LogBufferView::lineAdded(const LogBuffer::Entry& entry, size_t numLineChars)
 {
-    if (isGood(entry))
+    if (isGoodEntry(entry))
     {
         totalLines++;
         totalChars += numLineChars;
@@ -76,7 +91,7 @@ void LogBufferView::lineAdded(const LogBuffer::Entry& entry, size_t numLineChars
 
 void LogBufferView::discardingEntry(const LogBuffer::Entry& entry)
 {
-    if (isGood(entry))
+    if (isGoodEntry(entry))
     {
         totalLines -= entry.getNumLines();
         totalChars -= entry.getNumChars();
@@ -106,16 +121,24 @@ void LogBufferView::verifyTotals()
     Assert(oldTotalChars==totalChars);
 }
 
-bool LogBufferView::isGood(const LogBuffer::Entry& entry) const
+bool LogBufferView::isGoodEntry(const LogBuffer::Entry& entry) const
 {
+    if (filter.empty())
+        return true;  // no filtering
+
     int entryModuleId = entry.getModuleId();
 
     // "info" lines (no module ID) are always included
     if (entryModuleId == 0)
         return true;
 
-    // otherwise, it must be under our "root" module, and must not be excluded
-    return entry.isFromTreeOf(rootModuleId) && excludedModuleIds.find(entryModuleId)==excludedModuleIds.end();
+    // otherwise, it must be under one of our filter modules, and must not be excluded
+    for (int i=0; i<(int)filter.size(); i++) {
+        const ModuleTree& f = filter[i];
+        if (entry.isFromTreeOf(f.rootModuleId) && f.excludedModuleIds.find(entryModuleId)==f.excludedModuleIds.end())
+            return true;
+    }
+    return false;
 }
 
 void LogBufferView::incCurrentEntry()
@@ -128,7 +151,7 @@ void LogBufferView::incCurrentEntry()
             currentPosValid = false;
             break;
         }
-        if (isGood(*currentEntry))
+        if (isGoodEntry(*currentEntry))
             break;
     }
 }
@@ -143,7 +166,7 @@ void LogBufferView::decCurrentEntry()
             break;
         }
         currentEntry--;
-        if (isGood(*currentEntry))
+        if (isGoodEntry(*currentEntry))
             break;
     }
 }
@@ -171,7 +194,7 @@ void LogBufferView::gotoPreviousLineInEntry()
 void LogBufferView::gotoBeginning()
 {
     currentEntry = log->getEntries().begin();
-    while (!isGood(*currentEntry) && currentEntry!=log->getEntries().end())
+    while (!isGoodEntry(*currentEntry) && currentEntry!=log->getEntries().end())
         ++currentEntry;
     if (currentEntry == log->getEntries().end())
         currentPosValid = false;
@@ -188,9 +211,9 @@ void LogBufferView::gotoEnd()
 {
     currentEntry = log->getEntries().end();
     --currentEntry;
-    while (!isGood(*currentEntry) && currentEntry!=log->getEntries().begin())
+    while (!isGoodEntry(*currentEntry) && currentEntry!=log->getEntries().begin())
         --currentEntry;
-    if (!isGood(*currentEntry))
+    if (!isGoodEntry(*currentEntry))
         currentPosValid = false;
     else {
         currentPosValid = true;
