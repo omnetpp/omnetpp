@@ -51,32 +51,42 @@ LogBuffer::~LogBuffer()
 {
 }
 
-void LogBuffer::fillEntry(Entry& entry, eventnumber_t e, simtime_t t, cModule *mod, const char *banner)
+void LogBuffer::fillEntry(Entry& entry, eventnumber_t e, simtime_t t, int *moduleIds, const char *banner)
 {
     entry.eventNumber = e;
     entry.simtime = t;
     entry.banner = opp_strdup(banner);
     entry.numChars = banner ? strlen(banner)+1: 1;
+    entry.moduleIds = moduleIds;
+}
+
+int *LogBuffer::extractAncestorModuleIds(cModule *mod)
+{
+    if (!mod)
+        return NULL;
 
     // store all moduleIds up to the root
-    if (mod)
-    {
-        int depth = 0;
-        for (cModule *p=mod; p; p=p->getParentModule())
-            depth++;
-        entry.moduleIds = new int[depth+1];
-        int i = 0;
-        for (cModule *p=mod; p; p=p->getParentModule(), i++)
-            entry.moduleIds[i] = p->getId();
-         entry.moduleIds[depth] = 0;
-    }
+    int depth = 0;
+    for (cModule *p=mod; p; p=p->getParentModule())
+       depth++;
+    int *result = new int[depth+1];
+    int i = 0;
+    for (cModule *p=mod; p; p=p->getParentModule(), i++)
+       result[i] = p->getId();
+    result[depth] = 0;
+    return result;
 }
 
 void LogBuffer::addEvent(eventnumber_t e, simtime_t t, cModule *mod, const char *banner)
 {
+    addEvent(e, t, extractAncestorModuleIds(mod), banner);
+}
+
+void LogBuffer::addEvent(eventnumber_t e, simtime_t t, int *moduleIds, const char *banner)
+{
     entries.push_back(Entry());
     numEntries++;
-    fillEntry(entries.back(), e, t, mod, banner);
+    fillEntry(entries.back(), e, t, moduleIds, banner);
     totalLines++;
     totalChars += entries.back().numChars;
 
@@ -90,7 +100,7 @@ void LogBuffer::addLogLine(const char *text)
     if (entries.empty())
     {
         // this is likely the initialize() phase -- hence no banner
-        addEvent(0, 0, NULL, "-");
+        addEvent(0, 0, (int*)NULL, "-");
         Entry& entry = entries.back();
         entry.moduleIds = new int[1]; // add empty array, to distinguish entry from an info entry
         entry.moduleIds[0] = 0;

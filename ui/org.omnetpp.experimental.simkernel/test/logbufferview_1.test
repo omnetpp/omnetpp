@@ -1,0 +1,64 @@
+%description:
+Stress test for LogBufferView
+
+%includes:
+
+#include "commonutil.h"
+#include "stringutil.h"
+#include "logbuffer.h"
+#include "logbufferview.h"
+
+%global:
+
+static int *createModule(int id)
+{
+    int *result = new int[3];
+    result[0] = id; result[1] = 1000; result[2] = 0;
+    return result;
+}
+
+static void exerciseLogView(LogBufferView *logView)
+{
+    int numLines = logView->getNumLines();
+    if (numLines >= 2)
+    {
+        // read extreme lines
+        logView->getLine(0);
+        logView->getLine(numLines-1);
+        logView->getLine(1);
+        logView->getLine(numLines-2);
+
+        // read 100 random lines
+        for (int i=0; i<100; i++)
+            logView->getLine(intuniform(0, numLines-1));
+    }
+}
+
+%activity:
+__asm int 3;
+
+LogBuffer log(1024); // 1K buffer
+
+std::vector<int> excludedModuleIds;
+LogBufferView logView(&log, 2, excludedModuleIds);
+
+log.addInfo("init line 1");
+log.addInfo("init line 2");
+log.addInfo("init line 3");
+
+simtime_t simtime = 0;
+for (int eventNumber=0; eventNumber<10000; eventNumber++)
+{
+    simtime += exponential(1.0);
+    log.addEvent(eventNumber, simtime, createModule(intuniform(1,3)), opp_stringf("ev#%d t=%s", eventNumber, SIMTIME_STR(simtime)).c_str());
+    int n = (int)floor(exponential(3));
+    for (int line=0; line<n; line++)
+        log.addLogLine(opp_stringf("log line #%d at event #%d",line,eventNumber).c_str());
+
+    exerciseLogView(&logView);
+}
+
+ev << ".\n";
+
+%contains: stdout
+xxx

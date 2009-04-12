@@ -82,9 +82,10 @@ class LogBuffer
   protected:
     void discardIfMemoryLimitExceeded();
     size_t estimatedMemUsage() {return totalChars + 8*totalLines + numEntries*(8+2*sizeof(void*)+sizeof(Entry)+32); }
-    void fillEntry(Entry& entry, eventnumber_t e, simtime_t t, cModule *mod, const char *banner);
+    void fillEntry(Entry& entry, eventnumber_t e, simtime_t t, int *moduleIds, const char *banner);
     void linesAdded(size_t numLines, size_t numChars);
     void linesDiscarded(size_t numLines, size_t numChars);
+    static int *extractAncestorModuleIds(cModule *mod);
 
   public:
     LogBuffer(int memLimit=10*1024*1024);  // 10MB
@@ -93,7 +94,8 @@ class LogBuffer
     void addListener(IListener *listener);
     void removeListener(IListener *listener);
 
-    void addEvent(eventnumber_t e, simtime_t t, cModule *moduleIds, const char *banner);
+    void addEvent(eventnumber_t e, simtime_t t, int *moduleIds, const char *banner);
+    void addEvent(eventnumber_t e, simtime_t t, cModule *mod, const char *banner);
     void addLogLine(const char *text);
     void addInfo(const char *text);
 
