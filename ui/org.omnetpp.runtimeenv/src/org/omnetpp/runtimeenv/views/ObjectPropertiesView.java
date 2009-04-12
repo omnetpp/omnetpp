@@ -44,9 +44,7 @@ import org.omnetpp.runtimeenv.editors.IInspectorPart;
  * 
  * @author Andras
  */
-//XXX should display full path of root objects
 //TODO we should support user-supplied images as well
-//FIXME extremely slow!!!! much slower than the graphical canvas or the module log!!!!
 //FIXME because of the delayed update (PinnableView), more prone to crashes by showing obsolete objects?
 //XXX what's lost, compared to Tcl: bold; field editing; expanding multi-line text
 public class ObjectPropertiesView extends PinnableView implements ISimulationListener {
@@ -55,6 +53,24 @@ public class ObjectPropertiesView extends PinnableView implements ISimulationLis
 	protected TreeViewer viewer;
     protected MenuManager contextMenuManager = new MenuManager("#PopupMenu");
 
+    // we want to display objects displayed as roots in the treeviewer with full path,
+    // so we wrap them into RootObj so that we can distinguish them from other cObjects
+    class RootObj { 
+    	cObject object;
+    	public RootObj(cObject object) {
+    		this.object = object;
+    	}
+    	@Override
+    	public int hashCode() {
+    		return object.hashCode();
+    	}
+    	@Override
+    	public boolean equals(Object obj) {
+    		if (obj instanceof RootObj)
+    			obj = ((RootObj)obj).object;
+    		return object.equals(obj);
+    	}
+    }
     class KeyBase {
         Object parent; // otherwise setExpandedElements and preserving selection doesn't work
         long ptr;
@@ -68,7 +84,6 @@ public class ObjectPropertiesView extends PinnableView implements ISimulationLis
             return (int)ptr + 7*(int)(ptr>>32) + 31*desc.hashCode();
         }
     }
-
     class StructKey extends KeyBase {
 	    public StructKey(Object parent, long ptr, cClassDescriptor desc) {
 	        super(parent, ptr, desc);
@@ -159,10 +174,12 @@ public class ObjectPropertiesView extends PinnableView implements ISimulationLis
 	
 	class ViewContentProvider implements ITreeContentProvider {
 	    public Object[] getChildren(Object element) {
-	        if (element instanceof Object[]) {
+	        if (element instanceof Object[])
 	            return (Object[])element;
-	        }
-	        else if (element instanceof cObject) {
+	        if (element instanceof RootObj)
+	        	element = ((RootObj)element).object;
+	        
+	        if (element instanceof cObject) {
 	            cObject object = (cObject)element;
                 cClassDescriptor desc = object.getDescriptor();
                 if (desc == null) {
@@ -236,12 +253,16 @@ public class ObjectPropertiesView extends PinnableView implements ISimulationLis
 	            return ((cObject)element).getOwner();
             if (element instanceof KeyBase)
                 return ((KeyBase)element).parent;
+	        if (element instanceof RootObj)
+	        	return null;
 	        return null;
 	    }
 
 	    public boolean hasChildren(Object element) {
+	        if (element instanceof RootObj)
+	        	element = ((RootObj)element).object;
 	        if (element instanceof GroupKey)
-	            return true;   
+	            return true;  // has fields in the group 
 	        else if (element instanceof cObject)
 	            return true; // has fields etc.
 	        else
@@ -298,7 +319,12 @@ public class ObjectPropertiesView extends PinnableView implements ISimulationLis
 
         public String getText(Object element) {
             //note: we use "\b...\b" for blue, and "\f" for grey coloring
-	        if (element instanceof cObject) {
+	        if (element instanceof RootObj) {
+	            cObject obj = ((RootObj)element).object;
+	            String typeName = obj.getClassName();  //XXX use opp_getobjectshorttypename
+	            return obj.getFullPath() + " \f(" + typeName + ")";  // use fullPath for tree roots, not fullName
+	        }
+	        else if (element instanceof cObject) {
 	            cObject obj = (cObject) element;
 	            String typeName = obj.getClassName();  //XXX use opp_getobjectshorttypename
 	            return obj.getFullName() + " \f(" + typeName + ")";
@@ -324,6 +350,9 @@ public class ObjectPropertiesView extends PinnableView implements ISimulationLis
 	    
         @Override
 		public Image getImage(Object element) {
+	        if (element instanceof RootObj)
+	            element = ((RootObj)element).object;
+	        
             if (element instanceof cObject) {
                 //FIXME cache image by object's classname!
                 cObject object = (cObject)element;
@@ -550,10 +579,10 @@ public class ObjectPropertiesView extends PinnableView implements ISimulationLis
             for (Object obj : sel) {
                 if (obj instanceof IInspectorPart) {
                     IInspectorPart part = (IInspectorPart)obj;
-                    input.add(part.getObject());
+                    input.add(new RootObj(part.getObject()));
                 }
                 else if (obj instanceof cObject) {
-                	input.add((cObject)obj);
+                	input.add(new RootObj((cObject)obj));
                 }
             }
         }
@@ -561,7 +590,7 @@ public class ObjectPropertiesView extends PinnableView implements ISimulationLis
         if (input.isEmpty()) {
             cModule systemModule = cSimulation.getActiveSimulation().getSystemModule();
             if (systemModule != null)
-                input.add(systemModule);
+                input.add(new RootObj(systemModule));
         }
 
         Object[] array = input.toArray();
