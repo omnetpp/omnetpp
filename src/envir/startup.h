@@ -20,9 +20,7 @@
 
 #include "envirdefs.h"
 
-class cConfiguration;
-
-int setupUserInterface(int argc, char *argv[], cConfiguration *cfg);
+int ENVIR_API setupUserInterface(int argc, char *argv[]);
 
 #endif
 

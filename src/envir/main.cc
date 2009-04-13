@@ -36,7 +36,7 @@ ENVIR_API int main(int argc, char *argv[])
     printf("Version: " OMNETPP_VERSION_STR ", build: " OMNETPP_BUILDID ", edition: " OMNETPP_EDITION "\n");
     printf("See the license for distribution terms and warranty disclaimer\n");
 
-    int exitcode = setupUserInterface(argc, argv, NULL);
+    int exitcode = setupUserInterface(argc, argv);
 
     printf("\nEnd.\n");
 

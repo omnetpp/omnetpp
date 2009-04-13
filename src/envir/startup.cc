@@ -73,7 +73,7 @@ static void verifyIntTypes()
 #undef LL
 }
 
-int setupUserInterface(int argc, char *argv[], cConfiguration *cfg)
+int setupUserInterface(int argc, char *argv[])
 {
     //
     // SETUP
