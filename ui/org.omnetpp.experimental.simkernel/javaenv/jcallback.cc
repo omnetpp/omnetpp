@@ -4,7 +4,7 @@
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
-//  contains:  OmnetTkApp member functions
+//  contains:  cEnvir Java callback
 //
 //==========================================================================
 
@@ -21,6 +21,8 @@
 
 
 #define PKGPREFIX "org/omnetpp/experimental/simkernel/swig/"
+
+#define SIMTIME_JWRAP(x) (jdouble)SIMTIME_DBL(x)
 
 JCallback::SWIGWrapper::SWIGWrapper(JNIEnv *jenv, const char *jclassName)
 {
@@ -47,8 +49,9 @@ jobject JCallback::SWIGWrapper::wrap(void *cptr)
 
 JCallback::JCallback(JNIEnv *jenv, jobject jcallbackobj) :
     cobjectClass(jenv, PKGPREFIX "cObject"),
-    cmessageClass(jenv, PKGPREFIX "cMessage"),
+    ccomponentClass(jenv, PKGPREFIX "cComponent"),
     cmoduleClass(jenv, PKGPREFIX "cModule"),
+    cmessageClass(jenv, PKGPREFIX "cMessage"),
     cgateClass(jenv, PKGPREFIX "cGate")
 {
     assert(jcallbackobj!=NULL);
@@ -57,7 +60,9 @@ JCallback::JCallback(JNIEnv *jenv, jobject jcallbackobj) :
 
     jclass clazz = jenv->GetObjectClass(jcallbackobj);
 
+#define T    "D"  //XXX use "L" PKGPREFIX "SimTime;"
 #define OBJ  "L" PKGPREFIX "cObject;"
+#define COM  "L" PKGPREFIX "cComponent;"
 #define MOD  "L" PKGPREFIX "cModule;"
 #define MSG  "L" PKGPREFIX "cMessage;"
 #define GAT  "L" PKGPREFIX "cGate;"
@@ -69,27 +74,34 @@ JCallback::JCallback(JNIEnv *jenv, jobject jcallbackobj) :
     messageScheduled_ID = jenv->GetMethodID(clazz, "messageScheduled", "(" MSG ")V");
     messageCancelled_ID = jenv->GetMethodID(clazz, "messageCancelled", "(" MSG ")V");
     beginSend_ID = jenv->GetMethodID(clazz, "beginSend", "(" MSG ")V");
-    messageSendDirect_ID = jenv->GetMethodID(clazz, "messageSendDirect", "(" MSG GAT "DD)V");
-    messageSendHop1_ID = jenv->GetMethodID(clazz, "messageSendHop", "(" MSG GAT "D)V");
-    messageSendHop3_ID = jenv->GetMethodID(clazz, "messageSendHop", "(" MSG GAT "DDD)V");
+    messageSendDirect_ID = jenv->GetMethodID(clazz, "messageSendDirect", "(" MSG GAT T T ")V");
+    messageSendHop_ID = jenv->GetMethodID(clazz, "messageSendHop", "(" MSG GAT ")V");
+    messageSendHop2_ID = jenv->GetMethodID(clazz, "messageSendHop", "(" MSG GAT T T ")V");
+    endSend_ID = jenv->GetMethodID(clazz, "endSend", "(" MSG ")V");
+    messageDeleted_ID = jenv->GetMethodID(clazz, "messageDeleted", "(" MSG ")V");
 
-    idle_ID = jenv->GetMethodID(clazz, "idle", "()Z");
-    bubble_ID = jenv->GetMethodID(clazz, "bubble", "(" MOD STR ")V");
-    breakpointHit_ID = jenv->GetMethodID(clazz, "breakpointHit", "(" STR MOD ")V");
-    moduleMethodCalled_ID = jenv->GetMethodID(clazz, "moduleMethodCalled", "(" MOD MOD STR ")V");
+    moduleReparented_ID = jenv->GetMethodID(clazz, "moduleReparented", "(" MOD MOD ")V");
+    componentMethodBegin_ID = jenv->GetMethodID(clazz, "gateCreated", "(" COM COM STR ")V");
+    componentMethodEnd_ID = jenv->GetMethodID(clazz, "componentMethodEnd", "()V");
     moduleCreated_ID = jenv->GetMethodID(clazz, "moduleCreated", "(" MOD ")V");
     moduleDeleted_ID = jenv->GetMethodID(clazz, "moduleDeleted", "(" MOD ")V");
-    moduleReparented_ID = jenv->GetMethodID(clazz, "moduleReparented", "(" MOD MOD ")V");
+    gateCreated_ID = jenv->GetMethodID(clazz, "gateCreated", "(" GAT ")V");
+    gateDeleted_ID = jenv->GetMethodID(clazz, "gateDeleted", "(" GAT ")V");
     connectionCreated_ID = jenv->GetMethodID(clazz, "connectionCreated", "(" GAT ")V");
-    connectionRemoved_ID = jenv->GetMethodID(clazz, "connectionRemoved", "(" GAT ")V");
-    gateDisplayStringChanged_ID = jenv->GetMethodID(clazz, "displayStringChanged", "(" GAT ")V");
-    moduleDisplayStringChanged_ID = jenv->GetMethodID(clazz, "displayStringChanged", "(" MOD ")V");
-    backgroundDisplayStringChanged_ID = jenv->GetMethodID(clazz, "backgroundDisplayStringChanged", "(" MOD ")V");
+    connectionDeleted_ID = jenv->GetMethodID(clazz, "connectionDeleted", "(" GAT ")V");
+    displayStringChanged_ID = jenv->GetMethodID(clazz, "displayStringChanged", "(" COM ")V");
+    undisposedObject_ID = jenv->GetMethodID(clazz, "undisposedObject", "(" OBJ ")V");
+    bubble_ID = jenv->GetMethodID(clazz, "bubble", "(" MOD STR ")V");
+    gets_ID = jenv->GetMethodID(clazz, "gets", "(" STR STR ")" STR);
+    idle_ID = jenv->GetMethodID(clazz, "idle", "()Z");
 
+#undef T
 #undef OBJ
+#undef COM
 #undef MOD
 #undef MSG
 #undef GAT
+#undef STR
 }
 
 JCallback::~JCallback()
@@ -117,13 +129,11 @@ void JCallback::checkExceptions()
     }
 }
 
-
 void JCallback::objectDeleted(cObject *object)
 {
-    //XXX this crashes?
-    // TRACE("objectDeleted");
-    // jenv->CallVoidMethod(jcallbackobj, objectDeleted_ID, cobjectClass.wrap(object));
-    // checkExceptions();
+    TRACE("objectDeleted");
+    jenv->CallVoidMethod(jcallbackobj, objectDeleted_ID, cobjectClass.wrap(object));
+    checkExceptions();
 }
 
 void JCallback::simulationEvent(cMessage *msg)
@@ -157,11 +167,11 @@ void JCallback::beginSend(cMessage *msg)
 void JCallback::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay)
 {
     TRACE("messageSendDirect");
-    jenv->CallVoidMethod(jcallbackobj, messageSendDirect_ID, cmessageClass.wrap(msg), cgateClass.wrap(toGate), (jdouble)propagationDelay, (jdouble)transmissionDelay);
+    jenv->CallVoidMethod(jcallbackobj, messageSendDirect_ID, cmessageClass.wrap(msg), cgateClass.wrap(toGate), SIMTIME_JWRAP(propagationDelay), SIMTIME_JWRAP(transmissionDelay));
     checkExceptions();
 }
 
-void JCallback::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay)
+void JCallback::messageSendHop(cMessage *msg, cGate *srcGate)
 {
 //__asm int 3;
 //
@@ -179,43 +189,49 @@ void JCallback::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagat
 //cgateClass.wrap(srcGate);
 
     TRACE("messageSendHop");
-    jenv->CallVoidMethod(jcallbackobj, messageSendHop1_ID, cmessageClass.wrap(msg), cgateClass.wrap(srcGate), (jdouble)propagationDelay);
+    jenv->CallVoidMethod(jcallbackobj, messageSendHop_ID, cmessageClass.wrap(msg), cgateClass.wrap(srcGate));
     checkExceptions();
 }
 
-void JCallback::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay, simtime_t transmissionStartTime)
+void JCallback::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay)
 {
     TRACE("messageSendHop");
-    jenv->CallVoidMethod(jcallbackobj, messageSendHop3_ID, cmessageClass.wrap(msg), cgateClass.wrap(srcGate), (jdouble)propagationDelay, (jdouble)transmissionDelay, (jdouble)transmissionStartTime);
+    jenv->CallVoidMethod(jcallbackobj, messageSendHop2_ID, cmessageClass.wrap(msg), cgateClass.wrap(srcGate), SIMTIME_JWRAP(propagationDelay), SIMTIME_JWRAP(transmissionDelay));
     checkExceptions();
 }
 
-bool JCallback::idle()
+void JCallback::endSend(cMessage *msg)
 {
-    TRACE("idle");
-    bool ret = jenv->CallBooleanMethod(jcallbackobj, idle_ID);
-    checkExceptions();
-    return ret;
-}
-
-void JCallback::bubble(cModule *mod, const char *text)
-{
-    TRACE("bubble");
-    jenv->CallVoidMethod(jcallbackobj, bubble_ID, cmoduleClass.wrap(mod), jenv->NewStringUTF(text));
+    TRACE("endSend");
+    jenv->CallVoidMethod(jcallbackobj, endSend_ID, cmessageClass.wrap(msg));
     checkExceptions();
 }
 
-void JCallback::breakpointHit(const char *lbl, cSimpleModule *mod)
+void JCallback::messageDeleted(cMessage *msg)
 {
-    TRACE("breakpointHit");
-    jenv->CallVoidMethod(jcallbackobj, breakpointHit_ID, jenv->NewStringUTF(lbl), cmoduleClass.wrap((cModule*)mod));
+    TRACE("messageDeleted");
+    jenv->CallVoidMethod(jcallbackobj, messageDeleted_ID, cmessageClass.wrap(msg));
     checkExceptions();
 }
 
-void JCallback::moduleMethodCalled(cModule *from, cModule *to, const char *method)
+void JCallback::moduleReparented(cModule *module, cModule *oldparent)
 {
-    TRACE("moduleMethodCalled");
-    jenv->CallVoidMethod(jcallbackobj, moduleMethodCalled_ID, cmoduleClass.wrap(from), cmoduleClass.wrap(to), jenv->NewStringUTF(method));
+    TRACE("moduleReparented");
+    jenv->CallVoidMethod(jcallbackobj, moduleReparented_ID, cmoduleClass.wrap(module), cmoduleClass.wrap(oldparent));
+    checkExceptions();
+}
+
+void JCallback::componentMethodBegin(cComponent *from, cComponent *to, const char *method)
+{
+    TRACE("componentMethodBegin");
+    jenv->CallVoidMethod(jcallbackobj, componentMethodBegin_ID, ccomponentClass.wrap(from), ccomponentClass.wrap(to), jenv->NewStringUTF(method));
+    checkExceptions();
+}
+
+void JCallback::componentMethodEnd()
+{
+    TRACE("componentMethodEnd");
+    jenv->CallVoidMethod(jcallbackobj, componentMethodEnd_ID);
     checkExceptions();
 }
 
@@ -233,10 +249,17 @@ void JCallback::moduleDeleted(cModule *module)
     checkExceptions();
 }
 
-void JCallback::moduleReparented(cModule *module, cModule *oldparent)
+void JCallback::gateCreated(cGate *newGate)
 {
-    TRACE("moduleReparented");
-    jenv->CallVoidMethod(jcallbackobj, moduleReparented_ID, cmoduleClass.wrap(module), cmoduleClass.wrap(oldparent));
+    TRACE("gateCreated");
+    jenv->CallVoidMethod(jcallbackobj, gateCreated_ID, cgateClass.wrap(newGate));
+    checkExceptions();
+}
+
+void JCallback::gateDeleted(cGate *gate)
+{
+    TRACE("gateDeleted");
+    jenv->CallVoidMethod(jcallbackobj, gateDeleted_ID, cgateClass.wrap(gate));
     checkExceptions();
 }
 
@@ -247,31 +270,55 @@ void JCallback::connectionCreated(cGate *srcgate)
     checkExceptions();
 }
 
-void JCallback::connectionRemoved(cGate *srcgate)
+void JCallback::connectionDeleted(cGate *srcgate)
 {
-    TRACE("connectionRemoved");
-    jenv->CallVoidMethod(jcallbackobj, connectionRemoved_ID, cgateClass.wrap(srcgate));
+    TRACE("connectionDeleted");
+    jenv->CallVoidMethod(jcallbackobj, connectionDeleted_ID, cgateClass.wrap(srcgate));
     checkExceptions();
 }
 
-void JCallback::displayStringChanged(cGate *gate)
+void JCallback::displayStringChanged(cComponent *component)
 {
     TRACE("displayStringChanged");
-    jenv->CallVoidMethod(jcallbackobj, gateDisplayStringChanged_ID, cgateClass.wrap(gate));
+    jenv->CallVoidMethod(jcallbackobj, displayStringChanged_ID, ccomponentClass.wrap(component));
     checkExceptions();
 }
 
-void JCallback::displayStringChanged(cModule *submodule)
+void JCallback::undisposedObject(cObject *obj)
 {
-    TRACE("displayStringChanged");
-    jenv->CallVoidMethod(jcallbackobj, moduleDisplayStringChanged_ID, cmoduleClass.wrap(submodule));
+    TRACE("undisposedObject");
+    jenv->CallVoidMethod(jcallbackobj, undisposedObject_ID, cobjectClass.wrap(obj));
     checkExceptions();
 }
 
-void JCallback::backgroundDisplayStringChanged(cModule *parentmodule)
+void JCallback::bubble(cModule *mod, const char *text)
 {
-    TRACE("backgroundDisplayStringChanged");
-    jenv->CallVoidMethod(jcallbackobj, backgroundDisplayStringChanged_ID, cmoduleClass.wrap(parentmodule));
+    TRACE("bubble");
+    jenv->CallVoidMethod(jcallbackobj, bubble_ID, cmoduleClass.wrap(mod), jenv->NewStringUTF(text));
     checkExceptions();
+}
+
+std::string JCallback::gets(const char *prompt, const char *defaultreply)
+{
+    TRACE("gets");
+    jstring str = (jstring)jenv->CallObjectMethod(jcallbackobj, gets_ID, jenv->NewStringUTF(prompt), jenv->NewStringUTF(defaultreply));
+
+    jsize len = jenv->GetStringLength(str);
+    jboolean isCopy;
+    const jchar *chars = jenv->GetStringChars(str, &isCopy);
+    std::string result((const char *)chars, len);
+    if (isCopy) jenv->ReleaseStringChars(str, chars);
+
+    checkExceptions();
+    return result;
+}
+
+
+bool JCallback::idle()
+{
+    TRACE("idle");
+    bool ret = jenv->CallBooleanMethod(jcallbackobj, idle_ID);
+    checkExceptions();
+    return ret;
 }
 

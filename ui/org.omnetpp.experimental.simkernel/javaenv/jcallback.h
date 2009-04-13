@@ -34,21 +34,25 @@ class JCallback
         jmethodID messageCancelled_ID;
         jmethodID beginSend_ID;
         jmethodID messageSendDirect_ID;
-        jmethodID messageSendHop1_ID;
-        jmethodID messageSendHop3_ID;
+        jmethodID messageSendHop_ID;
+        jmethodID messageSendHop2_ID;
+        jmethodID endSend_ID;
+        jmethodID messageDeleted_ID;
 
-        jmethodID idle_ID;
-        jmethodID bubble_ID;
-        jmethodID breakpointHit_ID;
-        jmethodID moduleMethodCalled_ID;
+        jmethodID moduleReparented_ID;
+        jmethodID componentMethodBegin_ID;
+        jmethodID componentMethodEnd_ID;
         jmethodID moduleCreated_ID;
         jmethodID moduleDeleted_ID;
-        jmethodID moduleReparented_ID;
+        jmethodID gateCreated_ID;
+        jmethodID gateDeleted_ID;
         jmethodID connectionCreated_ID;
-        jmethodID connectionRemoved_ID;
-        jmethodID gateDisplayStringChanged_ID;
-        jmethodID moduleDisplayStringChanged_ID;
-        jmethodID backgroundDisplayStringChanged_ID;
+        jmethodID connectionDeleted_ID;
+        jmethodID displayStringChanged_ID;
+        jmethodID undisposedObject_ID;
+        jmethodID bubble_ID;
+        jmethodID gets_ID;
+        jmethodID idle_ID;
 
         class SWIGWrapper {
            private:
@@ -62,8 +66,9 @@ class JCallback
         };
 
         SWIGWrapper cobjectClass;
-        SWIGWrapper cmessageClass;
+        SWIGWrapper ccomponentClass;
         SWIGWrapper cmoduleClass;
+        SWIGWrapper cmessageClass;
         SWIGWrapper cgateClass;
 
 
@@ -84,23 +89,23 @@ class JCallback
         void messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay);
         void messageSendHop(cMessage *msg, cGate *srcGate);
         void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay);
-
-        void endSend(cMessage *msg); //new!!!
+        void endSend(cMessage *msg);
         void messageDeleted(cMessage *msg);
-        void moduleReparented(cModule *module, cModule *oldparent);
-        void componentMethodBegin(cComponent *from, cComponent *to, const char *methodFmt, va_list va);
-        void componentMethodEnd();
 
-        void bubble(cModule *mod, const char *text);
-        void breakpointHit(const char *lbl, cSimpleModule *mod);
+        void moduleReparented(cModule *module, cModule *oldparent);
+        void componentMethodBegin(cComponent *from, cComponent *to, const char *method);
+        void componentMethodEnd();
         void moduleCreated(cModule *newmodule);
         void moduleDeleted(cModule *module);
-        void moduleReparented(cModule *module, cModule *oldparent);
+        void gateCreated(cGate *newgate);
+        void gateDeleted(cGate *gate);
         void connectionCreated(cGate *srcgate);
-        void connectionRemoved(cGate *srcgate);
-        void displayStringChanged(cGate *gate);
-        void displayStringChanged(cModule *submodule);
-        void backgroundDisplayStringChanged(cModule *parentmodule);
+        void connectionDeleted(cGate *srcgate);
+        void displayStringChanged(cComponent *component);
+        void undisposedObject(cObject *obj);
+        void bubble(cModule *mod, const char *text);
+        std::string gets(const char *prompt, const char *defaultreply);
+        bool idle();
 };
 
 #endif
