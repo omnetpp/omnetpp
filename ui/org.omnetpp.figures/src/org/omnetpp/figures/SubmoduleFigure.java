@@ -13,6 +13,7 @@ import org.eclipse.draw2d.Ellipse;
 import org.eclipse.draw2d.ImageFigure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.Layer;
+import org.eclipse.draw2d.LayoutManager;
 import org.eclipse.draw2d.PositionConstants;
 import org.eclipse.draw2d.RectangleFigure;
 import org.eclipse.draw2d.RoundedRectangle;
@@ -30,6 +31,7 @@ import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.figures.CompoundModuleFigure.SubmoduleLayer;
+import org.omnetpp.figures.layout.SubmoduleConstraint;
 import org.omnetpp.figures.misc.AttachedLayer;
 
 /**
@@ -406,5 +408,18 @@ public class SubmoduleFigure extends NedFigure {
 
     public boolean isPinned() {
         return pinFigure.isVisible();
+    }
+    
+    /**
+     * The constraint belonging to this figure. Used by the layout manager to arrange the
+     * submodule figures.
+     */
+    public SubmoduleConstraint getSubmoduleConstraint() {
+    	LayoutManager layoutManager = getParent().getLayoutManager();
+		return layoutManager != null ? (SubmoduleConstraint)layoutManager.getConstraint(this) : null;
+    }
+    
+    public void setSubmoduleConstraint(SubmoduleConstraint constraint) {
+    	getParent().setConstraint(this, constraint);
     }
 }

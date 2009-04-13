@@ -144,17 +144,25 @@ public class SubmoduleEditPart extends ModuleEditPart {
         getSubmoduleFigure().setQueueText(StringUtils.isNotBlank(dps.getAsString(IDisplayString.Prop.QUEUE)) ? "#" : "");
 
         // set layout constraints
-        SubmoduleConstraint constraint = new SubmoduleConstraint();
+        // use the existing constraint
+        SubmoduleConstraint constraint = getSubmoduleFigure().getSubmoduleConstraint();
+        if (constraint == null)                      // or create a new one if no constraint was created until now
+        	constraint = new SubmoduleConstraint();  // the location is unspecified in this constraint by default
+        
         Point dpsLoc = dps.getLocation(scale);
         // check if the figure has a display string that specified a location (figure is fixed)
         constraint.setPinned(dpsLoc != null);
-        // use the location specified in the display string (if any) for pinned nodes, 
-        // otherwise just use the current position of the figure
-        constraint.setLocation(dpsLoc != null ? dpsLoc : getSubmoduleFigure().getBounds().getCenter());
+        // use the location specified in the display string (if any) for pinned nodes,
+        // otherwise just use the current position stored in the constraint (which can be either unspecified or
+        // can store the result from the previous layout run)
+        if (constraint.isPinned())
+        	constraint.setLocation(dpsLoc);
+
+        // use the preferred size of the figure for constraint size
         constraint.setSize(getSubmoduleFigure().getPreferredSize());
+        Assert.isTrue(constraint.height != -1 && constraint.width != -1);        
         // Debug.println("constraint for " + nameToDisplay + ": " + constraint);
-        Assert.isTrue(constraint.height != -1 && constraint.width != -1);
-        getSubmoduleFigure().getParent().setConstraint(getSubmoduleFigure(), constraint);
+        getSubmoduleFigure().setSubmoduleConstraint(constraint);  // store the constraint (needed if a new constraint was created)
         
         // show/hide the pin marker
         getSubmoduleFigure().setPinDecoration(dpsLoc != null);

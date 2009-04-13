@@ -5,14 +5,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.InputEvent;
 import org.eclipse.draw2d.MouseEvent;
 import org.eclipse.draw2d.MouseListener;
+import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.swt.graphics.Point;
 import org.omnetpp.experimental.simkernel.swig.cDisplayString;
 import org.omnetpp.experimental.simkernel.swig.cModule;
 import org.omnetpp.experimental.simkernel.swig.cModule_SubmoduleIterator;
@@ -138,32 +139,37 @@ public class GraphicalModulePart extends InspectorPart {
             if (!displayStringText.equals(lastSubmoduleDisplayStrings.get(id))) {
                 SubmoduleFigureEx submoduleFigure = submodules.get(id);
                 submoduleFigure.setDisplayString(displayString);
+                
+                // FIXME should also set the scale factor here (from the containing compound module)
+                // otherwise range, size cannot be correctly displayed
 
-                // layouting magic
-                //XXX BTW, why do we have a separate constraint object for each submodule...? 
-                SubmoduleConstraint constraint = new SubmoduleConstraint();
-                org.eclipse.draw2d.geometry.Point dpsLoc = displayString.getLocation(1.0f); //FIXME should use scale here
-
+                // use the existing constraint if any
+                SubmoduleConstraint constraint = submoduleFigure.getSubmoduleConstraint();
+                if (constraint == null)                      // or create a new one if no constraint was created until now
+                	constraint = new SubmoduleConstraint();  // the location is unspecified in this constraint by default
+                
+                Point dpsLoc = displayString.getLocation(1.0f);  //FIXME should use scale here
                 // check if the figure has a display string that specified a location (figure is fixed)
                 constraint.setPinned(dpsLoc != null);
+                // use the location specified in the display string (if any) for pinned nodes,
+                // otherwise just use the current position stored in the constraint (which can be either unspecified or
+                // can store the result from the previous layout run)
+                if (constraint.isPinned())
+                	constraint.setLocation(dpsLoc);
 
-                // use the location specified in the display string (if any) for pinned nodes, 
-                // otherwise just use the current position of the figure
-                constraint.setLocation(dpsLoc != null ? dpsLoc : new org.eclipse.draw2d.geometry.Point(Integer.MIN_VALUE, Integer.MIN_VALUE));
+                // use the preferred size of the figure for constraint size
                 constraint.setSize(submoduleFigure.getPreferredSize());
-                
-//                SubmoduleConstraint constraint = new SubmoduleConstraint();
-//                constraint.setLocation(submoduleFigure.getPreferredLocation());
-//                constraint.setSize(submoduleFigure.getPreferredSize());
-//                Assert.isTrue(constraint.height != -1 && constraint.width != -1);
-
-                moduleFigure.getSubmoduleLayer().setConstraint(submoduleFigure, constraint);
+                Assert.isTrue(constraint.height != -1 && constraint.width != -1);        
+                // Debug.println("constraint for " + nameToDisplay + ": " + constraint);
+                submoduleFigure.setSubmoduleConstraint(constraint);  // store the constraint (needed if a new constraint was created)
                 
                 lastSubmoduleDisplayStrings.put(id, displayStringText);
             }
         }
         //FIXME remove the net line!
-        ((SpringEmbedderLayout)((CompoundModuleFigureEx)figure).getSubmoduleLayer().getLayoutManager()).requestAutoLayout();
+        // requesting an incremental layout (which moves only unspecified nodes automatically, other pinned/unpinned nodes 
+        // will be displayed according to the coordinates stored in the constarint object
+        ((SpringEmbedderLayout)((CompoundModuleFigureEx)figure).getSubmoduleLayer().getLayoutManager()).requestIncrementalLayout();
 
     }
 
@@ -221,7 +227,7 @@ public class GraphicalModulePart extends InspectorPart {
         }
     }
 
-    public void populateContextMenu(final MenuManager contextMenuManager, Point p) {
+    public void populateContextMenu(final MenuManager contextMenuManager, org.eclipse.swt.graphics.Point p) {
 		System.out.println(this + ": populateContextMenu invoked");
         SubmoduleFigureEx submoduleFigure = findSubmoduleAt(p.x, p.y);
         if (submoduleFigure != null) {

@@ -141,7 +141,7 @@ public class CompoundModuleFigure extends NedFigure
         public void add(IFigure child, Object constraint, int index) {
             // request an auto-layout whenever an unpinned submodule is added (added from the text editor) 
             if (child instanceof SubmoduleFigure && !((SubmoduleFigure)child).isPinned())
-                layouter.requestAutoLayout();
+                layouter.requestFullLayout();
             super.add(child, constraint, index);
         }
         
@@ -326,7 +326,7 @@ public class CompoundModuleFigure extends NedFigure
         // if the seed changed we explicitly have to force a re-layout
         if (seed != layouter.getSeed()) {
             layouter.setSeed(seed);
-            layouter.requestAutoLayout();
+            layouter.requestFullLayout();
         }
 
         invalidate();

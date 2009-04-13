@@ -23,6 +23,13 @@ public class SubmoduleConstraint extends Rectangle {
 	protected int vectorIndex = 0;
 	protected int vectorSize = 0;
 
+	public SubmoduleConstraint() {
+		x = Integer.MIN_VALUE;
+		y = Integer.MIN_VALUE;
+		width = -1;
+		height = -1;
+	}
+	
 	public void setVectorName(String name) {
 		this.vectorName = name;
 	}
@@ -48,7 +55,7 @@ public class SubmoduleConstraint extends Rectangle {
 	}
 
 	/**
-	 * Set whether the module should be treated as fixed by the layouter alg.
+	 * Set whether the module should be treated as fixed by a full layout alg.
 	 * If it is not pinned then the coordinates in this constraint should be treated
 	 * as initial values for the layouting .
 	 */
@@ -58,6 +65,17 @@ public class SubmoduleConstraint extends Rectangle {
 
 	public boolean isPinned() {
 		return pinned;
+	}
+
+	/**
+	 * If a constraint is unspecified (default) the layouter should assign a coordinate
+	 * at the next full or incremental layout. Accessing x,y,width,height when the constraint
+	 * is undefined results in unspecified value.  
+	 * If it is specified the module can be either unpinned (full layout can move it) 
+	 * or pinned (always fixed) 
+	 */
+	public boolean isUnspecified() {
+		return x == Integer.MIN_VALUE || y == Integer.MIN_VALUE;
 	}
 
 }
