@@ -304,10 +304,9 @@ std::string JCallback::gets(const char *prompt, const char *defaultreply)
     jstring str = (jstring)jenv->CallObjectMethod(jcallbackobj, gets_ID, jenv->NewStringUTF(prompt), jenv->NewStringUTF(defaultreply));
 
     jsize len = jenv->GetStringLength(str);
-    jboolean isCopy;
-    const jchar *chars = jenv->GetStringChars(str, &isCopy);
+    const jchar *chars = jenv->GetStringChars(str, NULL);
     std::string result((const char *)chars, len);
-    if (isCopy) jenv->ReleaseStringChars(str, chars);
+    jenv->ReleaseStringChars(str, chars);
 
     checkExceptions();
     return result;
