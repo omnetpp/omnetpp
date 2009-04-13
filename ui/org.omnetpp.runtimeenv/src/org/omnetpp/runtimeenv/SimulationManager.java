@@ -9,10 +9,11 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.omnetpp.common.image.ImageFactory;
+import org.omnetpp.experimental.simkernel.DummyEnvirCallback;
 import org.omnetpp.experimental.simkernel.swig.EmptyConfig;
 import org.omnetpp.experimental.simkernel.swig.ExecuteOnStartup;
+import org.omnetpp.experimental.simkernel.swig.Javaenv;
 import org.omnetpp.experimental.simkernel.swig.LogBuffer;
-import org.omnetpp.experimental.simkernel.swig.NotSoMinimalEnv;
 import org.omnetpp.experimental.simkernel.swig.SimTime;
 import org.omnetpp.experimental.simkernel.swig.cConfiguration;
 import org.omnetpp.experimental.simkernel.swig.cCoroutine;
@@ -31,7 +32,8 @@ import org.omnetpp.runtimeenv.editors.ModelCanvas;
 public class SimulationManager {
     protected ListenerList listeners = new ListenerList();
     protected boolean stopRequested = false;
-    protected NotSoMinimalEnv env;
+    //protected NotSoMinimalEnv env;
+    protected Javaenv env;
 
     public SimulationManager() {
         ImageFactory.initialize(new String[]{"C:\\home\\omnetpp40\\omnetpp\\images"}); //FIXME just temporary
@@ -44,7 +46,8 @@ public class SimulationManager {
         
         // set up an active simulation object
         cConfiguration config = new EmptyConfig();
-        env = new NotSoMinimalEnv(0, null, config);
+        //env = new NotSoMinimalEnv(0, null, config);
+        env = new Javaenv(0, null, config);
         config.disown();
         cSimulation simulation = new cSimulation("simulation", env);
         env.disown();
@@ -52,6 +55,8 @@ public class SimulationManager {
         simulation.disown();
         System.out.println(simulation.getName());
 
+        env.setJCallback(null, new DummyEnvirCallback());
+        
         try {
             //cSimulation.loadNedSourceFolder("c:/home/omnetpp40/omnetpp/samples/aloha"); //XXX
             cSimulation.loadNedSourceFolder("C:/home/omnetpp40/omnetpp/test/anim/dynamic"); //XXX
