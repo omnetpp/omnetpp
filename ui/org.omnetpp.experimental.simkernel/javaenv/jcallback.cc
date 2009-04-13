@@ -31,7 +31,7 @@ name = jclassName; //XXX remove, once "stale jclass" mystery is solved
     clazz = jenv->FindClass(jclassName);
     ctor = jenv->GetMethodID(clazz, "<init>", "(JZ)V");
     if (!clazz || !ctor) {
-        fprintf(stderr, "JCallback initialization failed: class or its ctor not found: %s\n", jclassName);
+        fprintf(stderr, "JCallback::SWIGWrapper initialization failed: class or its ctor not found: %s\n", jclassName);
         exit(1);
     }
 }
@@ -42,7 +42,7 @@ jobject JCallback::SWIGWrapper::wrap(void *cptr)
 
     clazz = jenv->FindClass(name); //XXX remove, once "stale jclass" mystery is solved
     ctor = jenv->GetMethodID(clazz, "<init>", "(JZ)V"); //XXX remove, once "stale jclass" mystery is solved
-
+    if (!clazz || !ctor) {fprintf(stderr, "JCallback::SWIGWrapper: no ctor method: %s\n", name); exit(1);}
     return jenv->NewObject(clazz, ctor, (jlong)cptr, false);
 }
 
@@ -68,32 +68,32 @@ JCallback::JCallback(JNIEnv *jenv, jobject jcallbackobj) :
 #define GAT  "L" PKGPREFIX "cGate;"
 #define STR  "Ljava/lang/String;"
 
-    objectDeleted_ID = jenv->GetMethodID(clazz, "objectDeleted", "(" OBJ ")V");
-    simulationEvent_ID = jenv->GetMethodID(clazz, "simulationEvent", "(" MSG ")V");
+    objectDeleted_ID = getMethodID(clazz, "objectDeleted", "(" OBJ ")V");
+    simulationEvent_ID = getMethodID(clazz, "simulationEvent", "(" MSG ")V");
 
-    messageScheduled_ID = jenv->GetMethodID(clazz, "messageScheduled", "(" MSG ")V");
-    messageCancelled_ID = jenv->GetMethodID(clazz, "messageCancelled", "(" MSG ")V");
-    beginSend_ID = jenv->GetMethodID(clazz, "beginSend", "(" MSG ")V");
-    messageSendDirect_ID = jenv->GetMethodID(clazz, "messageSendDirect", "(" MSG GAT T T ")V");
-    messageSendHop_ID = jenv->GetMethodID(clazz, "messageSendHop", "(" MSG GAT ")V");
-    messageSendHop2_ID = jenv->GetMethodID(clazz, "messageSendHop", "(" MSG GAT T T ")V");
-    endSend_ID = jenv->GetMethodID(clazz, "endSend", "(" MSG ")V");
-    messageDeleted_ID = jenv->GetMethodID(clazz, "messageDeleted", "(" MSG ")V");
+    messageScheduled_ID = getMethodID(clazz, "messageScheduled", "(" MSG ")V");
+    messageCancelled_ID = getMethodID(clazz, "messageCancelled", "(" MSG ")V");
+    beginSend_ID = getMethodID(clazz, "beginSend", "(" MSG ")V");
+    messageSendDirect_ID = getMethodID(clazz, "messageSendDirect", "(" MSG GAT T T ")V");
+    messageSendHop_ID = getMethodID(clazz, "messageSendHop", "(" MSG GAT ")V");
+    messageSendHop2_ID = getMethodID(clazz, "messageSendHop", "(" MSG GAT T T ")V");
+    endSend_ID = getMethodID(clazz, "endSend", "(" MSG ")V");
+    messageDeleted_ID = getMethodID(clazz, "messageDeleted", "(" MSG ")V");
 
-    moduleReparented_ID = jenv->GetMethodID(clazz, "moduleReparented", "(" MOD MOD ")V");
-    componentMethodBegin_ID = jenv->GetMethodID(clazz, "gateCreated", "(" COM COM STR ")V");
-    componentMethodEnd_ID = jenv->GetMethodID(clazz, "componentMethodEnd", "()V");
-    moduleCreated_ID = jenv->GetMethodID(clazz, "moduleCreated", "(" MOD ")V");
-    moduleDeleted_ID = jenv->GetMethodID(clazz, "moduleDeleted", "(" MOD ")V");
-    gateCreated_ID = jenv->GetMethodID(clazz, "gateCreated", "(" GAT ")V");
-    gateDeleted_ID = jenv->GetMethodID(clazz, "gateDeleted", "(" GAT ")V");
-    connectionCreated_ID = jenv->GetMethodID(clazz, "connectionCreated", "(" GAT ")V");
-    connectionDeleted_ID = jenv->GetMethodID(clazz, "connectionDeleted", "(" GAT ")V");
-    displayStringChanged_ID = jenv->GetMethodID(clazz, "displayStringChanged", "(" COM ")V");
-    undisposedObject_ID = jenv->GetMethodID(clazz, "undisposedObject", "(" OBJ ")V");
-    bubble_ID = jenv->GetMethodID(clazz, "bubble", "(" MOD STR ")V");
-    gets_ID = jenv->GetMethodID(clazz, "gets", "(" STR STR ")" STR);
-    idle_ID = jenv->GetMethodID(clazz, "idle", "()Z");
+    moduleReparented_ID = getMethodID(clazz, "moduleReparented", "(" MOD MOD ")V");
+    componentMethodBegin_ID = getMethodID(clazz, "componentMethodBegin", "(" COM COM STR ")V");
+    componentMethodEnd_ID = getMethodID(clazz, "componentMethodEnd", "()V");
+    moduleCreated_ID = getMethodID(clazz, "moduleCreated", "(" MOD ")V");
+    moduleDeleted_ID = getMethodID(clazz, "moduleDeleted", "(" MOD ")V");
+    gateCreated_ID = getMethodID(clazz, "gateCreated", "(" GAT ")V");
+    gateDeleted_ID = getMethodID(clazz, "gateDeleted", "(" GAT ")V");
+    connectionCreated_ID = getMethodID(clazz, "connectionCreated", "(" GAT ")V");
+    connectionDeleted_ID = getMethodID(clazz, "connectionDeleted", "(" GAT ")V");
+    displayStringChanged_ID = getMethodID(clazz, "displayStringChanged", "(" COM ")V");
+    undisposedObject_ID = getMethodID(clazz, "undisposedObject", "(" OBJ ")V");
+    bubble_ID = getMethodID(clazz, "bubble", "(" MOD STR ")V");
+    gets_ID = getMethodID(clazz, "gets", "(" STR STR ")" STR);
+    idle_ID = getMethodID(clazz, "idle", "()Z");
 
 #undef T
 #undef OBJ

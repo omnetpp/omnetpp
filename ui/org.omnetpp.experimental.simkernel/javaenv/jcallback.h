@@ -104,7 +104,7 @@ class JCallback
         void displayStringChanged(cComponent *component);
         void undisposedObject(cObject *obj);
         void bubble(cModule *mod, const char *text);
-        std::string gets(const char *prompt, const char *defaultreply);
+        std::string gets(const char *prompt, const char *defaultreply);  //XXX putsmsg, askyesno, etc
         bool idle();
 };
 

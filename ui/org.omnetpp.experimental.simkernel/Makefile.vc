@@ -39,8 +39,8 @@ OBJS = $O/simkernel_wrap.obj \
        $O/javaenv/jutil.obj \
        $O/javaenv/logbuffer.obj \
        $O/javaenv/logbufferview.obj \
-       $O/javaenv/jcallback.obj
-#       $O/javaenv/javaenv.obj \
+       $O/javaenv/jcallback.obj \
+       $O/javaenv/javaenv.obj
 
 
 JAVAPKG = org.omnetpp.experimental.simkernel.swig

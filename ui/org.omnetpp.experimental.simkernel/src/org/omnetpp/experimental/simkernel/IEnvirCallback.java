@@ -10,24 +10,29 @@ package org.omnetpp.experimental.simkernel;
 import org.omnetpp.experimental.simkernel.swig.*;
 
 public interface IEnvirCallback {
-	boolean idle();
-	void bubble(cModule mod, String text);
     void objectDeleted(cObject object);
-    void messageDelivered(cMessage msg);
+    void simulationEvent(cMessage msg);
+    
     void messageScheduled(cMessage msg);
     void messageCancelled(cMessage msg);
     void beginSend(cMessage msg);
     void messageSendDirect(cMessage msg, cGate toGate, double propagationDelay, double transmissionDelay);
-    void messageSendHop(cMessage msg, cGate srcGate, double propagationDelay);
-    void messageSendHop(cMessage msg, cGate srcGate, double propagationDelay, double transmissionDelay, double transmissionStartTime);
-    void breakpointHit(String label, cModule mod);
-    void moduleMethodCalled(cModule from, cModule to, String method);
+    void messageSendHop(cMessage msg, cGate srcGate);
+    void messageSendHop(cMessage msg, cGate srcGate, double propagationDelay, double transmissionDelay);
+    void endSend(cMessage msg);
+    void messageDeleted(cMessage msg);
+    void moduleReparented(cModule module, cModule oldparent);
+    void componentMethodBegin(cComponent from, cComponent to, String method);
+    void componentMethodEnd();
     void moduleCreated(cModule newmodule);
     void moduleDeleted(cModule module);
-    void moduleReparented(cModule module, cModule oldparent);
+    void gateCreated(cGate srcgate);
+    void gateDeleted(cGate srcgate);
     void connectionCreated(cGate srcgate);
-    void connectionRemoved(cGate srcgate);
-    void displayStringChanged(cGate gate);
-    void displayStringChanged(cModule submodule);
-    void backgroundDisplayStringChanged(cModule parentmodule);
+    void connectionDeleted(cGate srcgate);
+    void displayStringChanged(cComponent component);
+    void undisposedObject(cObject obj);
+    void bubble(cModule mod, String text);
+    String gets(String prompt, String defaultreply);
+    boolean idle();
 }

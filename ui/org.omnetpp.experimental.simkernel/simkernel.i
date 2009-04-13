@@ -244,12 +244,9 @@ namespace std {
 
 // typemaps to wrap Javaenv::setJCallback(JNIEnv *jenv, jobject jcallbackobj):
 // %typemap(in, numinputs=0): unfortunately, generated java code doesn't compile
-%typemap(in) JNIEnv *jenv {
-    $1 = jenv;
-}
-%typemap(in) jobject jcallbackobj {
-    $1 = j$1;
-}
+
+%typemap(in) JNIEnv* "$1 = jenv;";  // in Java, just pass "null" for this argument...
+%typemap(in) jobject "$1 = j$1;";
 
 //XXX temporarily disabled; TO BE PUT BACK: %typemap(javainterfaces) cSimulation "org.omnetpp.common.simulation.model.IRuntimeSimulation";
 
@@ -407,9 +404,11 @@ void changeToDir(const char *dir); //XXX
 #include "javaenv/logbuffer.h"
 #include "javaenv/logbufferview.h"
 #include "javaenv/jutil.h"
+#include "javaenv/javaenv.h"
 %}
 %include "javaenv/tmp.h"
 %include "javaenv/visitor.h"
 %include "javaenv/logbuffer.h"
 %include "javaenv/logbufferview.h"
 %include "javaenv/jutil.h"
+%include "javaenv/javaenv.h"
