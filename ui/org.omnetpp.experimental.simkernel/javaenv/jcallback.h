@@ -57,11 +57,11 @@ class JCallback
         class SWIGWrapper {
            private:
                JNIEnv *jenv;
-               const char *name; //XXX remove, once "stale jclass" mystery is solved
                jclass clazz;
                jmethodID ctor;
            public:
                SWIGWrapper(JNIEnv *jenv, const char *jclassName);
+               ~SWIGWrapper();
                jobject wrap(void *cptr);
         };
 

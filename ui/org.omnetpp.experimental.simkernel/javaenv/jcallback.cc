@@ -26,9 +26,8 @@
 
 JCallback::SWIGWrapper::SWIGWrapper(JNIEnv *jenv, const char *jclassName)
 {
-name = jclassName; //XXX remove, once "stale jclass" mystery is solved
     this->jenv = jenv;
-    clazz = jenv->FindClass(jclassName);
+    clazz = (jclass)jenv->NewGlobalRef(jenv->FindClass(jclassName));
     ctor = jenv->GetMethodID(clazz, "<init>", "(JZ)V");
     if (!clazz || !ctor) {
         fprintf(stderr, "JCallback::SWIGWrapper initialization failed: class or its ctor not found: %s\n", jclassName);
@@ -36,13 +35,14 @@ name = jclassName; //XXX remove, once "stale jclass" mystery is solved
     }
 }
 
+JCallback::SWIGWrapper::~SWIGWrapper()
+{
+    jenv->DeleteGlobalRef(clazz);
+}
+
 jobject JCallback::SWIGWrapper::wrap(void *cptr)
 {
     if (cptr==NULL) return 0;
-
-    clazz = jenv->FindClass(name); //XXX remove, once "stale jclass" mystery is solved
-    ctor = jenv->GetMethodID(clazz, "<init>", "(JZ)V"); //XXX remove, once "stale jclass" mystery is solved
-    if (!clazz || !ctor) {fprintf(stderr, "JCallback::SWIGWrapper: no ctor method: %s\n", name); exit(1);}
     return jenv->NewObject(clazz, ctor, (jlong)cptr, false);
 }
 
