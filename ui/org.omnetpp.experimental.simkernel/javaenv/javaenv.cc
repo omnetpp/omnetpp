@@ -20,8 +20,29 @@
 #include <stdio.h>
 #include <string>
 
+#include "appreg.h"
 #include "javaenv.h"
 
+//
+// Register the user interface
+//
+Register_OmnetApp("Javaenv", Javaenv, 30, "RCP-based graphical user interface");
+
+JNIEnv *Javaenv::jenv;
+jobject Javaenv::javaApp;
+
+
+void Javaenv::run()
+{
+    jclass clazz = jenv->GetObjectClass(javaApp);
+    jmethodID doStartMethodID = jenv->GetMethodID(clazz, "doStart", "()V");
+    if (doStartMethodID==NULL) {
+        fprintf(stderr, "Javaenv initialization failed: application object has no method doStart()\n");
+        exit(1);
+    }
+    jenv->CallVoidMethod(javaApp, doStartMethodID);  // this goes back Java and runs the appliation. it only returns when the application exits
+    jenv->DeleteGlobalRef(javaApp);
+}
 
 void Javaenv::setJCallback(JNIEnv *jenv, jobject jcallbackobj)
 {

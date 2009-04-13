@@ -34,7 +34,7 @@ public class Activator extends AbstractUIPlugin {
 	// The shared instance
 	private static Activator plugin;
 	
-	private static SimulationManager simulationManager;
+	public static SimulationManager simulationManager;  //FIXME for now, so that Application can set it
 	
 	/**
 	 * The constructor
@@ -49,7 +49,7 @@ public class Activator extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
-	    simulationManager = new SimulationManager();
+	    //FIXME not good --Application hasnt' started yet! simulationManager = new SimulationManager();
 	}
 
 	/*
@@ -57,8 +57,10 @@ public class Activator extends AbstractUIPlugin {
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext context) throws Exception {
-        simulationManager.dispose();
-        simulationManager = null;
+		if (simulationManager != null) {
+			simulationManager.dispose();
+			simulationManager = null;
+		}
         
 		plugin = null;
 		super.stop(context);

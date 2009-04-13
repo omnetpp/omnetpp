@@ -10,18 +10,13 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.experimental.simkernel.DummyEnvirCallback;
-import org.omnetpp.experimental.simkernel.swig.EmptyConfig;
-import org.omnetpp.experimental.simkernel.swig.ExecuteOnStartup;
 import org.omnetpp.experimental.simkernel.swig.Javaenv;
 import org.omnetpp.experimental.simkernel.swig.LogBuffer;
-import org.omnetpp.experimental.simkernel.swig.SimTime;
-import org.omnetpp.experimental.simkernel.swig.cConfiguration;
-import org.omnetpp.experimental.simkernel.swig.cCoroutine;
+import org.omnetpp.experimental.simkernel.swig.cEnvir;
 import org.omnetpp.experimental.simkernel.swig.cModule;
 import org.omnetpp.experimental.simkernel.swig.cModuleType;
 import org.omnetpp.experimental.simkernel.swig.cSimpleModule;
 import org.omnetpp.experimental.simkernel.swig.cSimulation;
-import org.omnetpp.experimental.simkernel.swig.cStaticFlag;
 import org.omnetpp.runtimeenv.editors.BlankCanvasEditorInput;
 import org.omnetpp.runtimeenv.editors.ModelCanvas;
 
@@ -32,35 +27,17 @@ import org.omnetpp.runtimeenv.editors.ModelCanvas;
 public class SimulationManager {
     protected ListenerList listeners = new ListenerList();
     protected boolean stopRequested = false;
-    //protected NotSoMinimalEnv env;
-    protected Javaenv env;
 
     public SimulationManager() {
-        ImageFactory.initialize(new String[]{"C:\\home\\omnetpp40\\omnetpp\\images"}); //FIXME just temporary
-        
-        // library initializations
-        cStaticFlag.set(true);
-        ExecuteOnStartup.executeAll();
-        SimTime.setScaleExp(-12);
-        cCoroutine.init(10*1024*1024, 1024*1024);
-        
-        // set up an active simulation object
-        cConfiguration config = new EmptyConfig();
-        //env = new NotSoMinimalEnv(0, null, config);
-        env = new Javaenv(0, null, config);
-        config.disown();
-        cSimulation simulation = new cSimulation("simulation", env);
-        env.disown();
-        cSimulation.setActiveSimulation(simulation);
-        simulation.disown();
-        System.out.println(simulation.getName());
+        ImageFactory.initialize(new String[]{"C:\\home\\omnetpp40\\omnetpp\\images"}); //FIXME just temporary; maybe into Application?
 
+        Javaenv env = Javaenv.cast(cSimulation.getActiveEnvir());
         env.setJCallback(null, new DummyEnvirCallback());
         
         try {
-            //cSimulation.loadNedSourceFolder("c:/home/omnetpp40/omnetpp/samples/aloha"); //XXX
-            cSimulation.loadNedSourceFolder("C:/home/omnetpp40/omnetpp/test/anim/dynamic"); //XXX
-            cSimulation.doneLoadingNedFiles();
+        	env.getConfigEx().activateConfig("General",0);
+        	env.readPerRunOptions();
+        	cSimulation simulation = cSimulation.getActiveSimulation();
             cModuleType networkType = cModuleType.find("Net2"); //"Aloha_tmp");
             if (networkType == null)
                 throw new RuntimeException("network not found");
@@ -77,7 +54,8 @@ public class SimulationManager {
                     }
 
                     IWorkbenchPage page = workbenchWindow.getActivePage();
-                    cModule module = cSimulation.getActiveSimulation().getSystemModule();
+                	cSimulation simulation = cSimulation.getActiveSimulation();
+                    cModule module = simulation.getSystemModule();
                     try {
                         page.openEditor(new BlankCanvasEditorInput(""), ModelCanvas.EDITOR_ID);
                         Activator.openInspector2(module, false);
@@ -94,12 +72,16 @@ public class SimulationManager {
     }
     
     public void dispose() {
+    	//FIXME do all such stuff in Application?
         // delete the active simulation object
-        cSimulation simulation = cSimulation.getActiveSimulation();
+//    	Simkernel.shutdownUserInterface();
+/*
+    	cSimulation simulation = cSimulation.getActiveSimulation();
         cSimulation.setActiveSimulation(null);
         if (simulation != null)
             simulation.delete();
-        cStaticFlag.set(false);
+*/            
+//        cStaticFlag.set(false);
     }
     
     public void addChangeListener(ISimulationListener listener) {
@@ -124,7 +106,8 @@ public class SimulationManager {
     }
 
     public LogBuffer getLogBuffer() {
-        return env.getLogBuffer();
+        cEnvir env = cSimulation.getActiveEnvir();
+        return Javaenv.cast(env).getLogBuffer();
     }
     
     public void rebuildNetwork() {

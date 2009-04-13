@@ -113,13 +113,6 @@ inline void changeToDir(const char *dir)  //XXX
     //   strcpy(buffer,"???");
     //printf("current working directory: %s\n", buffer);
 }
-
-inline void evSetup(const char *inifile) { //XXX
-    char *argv[] = {"exe", "-f", (char *)inifile, NULL};
-    int argc = 3;
-//XXX    ev.setup(argc, argv);
-}
-
 %}
 
 %include "std_common.i"
@@ -135,6 +128,7 @@ namespace std {
 
 // hide some macros from swig (copied from nativelibs/common.i)
 #define COMMON_API
+#define ENVIR_API
 #define OPP_DLLEXPORT
 #define OPP_DLLIMPORT
 
@@ -303,6 +297,10 @@ DERIVEDCLASS(cQueue,cObject);
 DERIVEDCLASS(cMessage,cObject);
 DERIVEDCLASS(cPacket,cObject);
 
+DERIVEDCLASS(EnvirBase,cEnvir);
+DERIVEDCLASS(Javaenv,cEnvir);
+
+DERIVEDCLASS(cConfigurationEx,cConfiguration);
 
 
 %include "innerclasses.h"
@@ -394,19 +392,23 @@ DERIVEDCLASS(cPacket,cObject);
 //%include "cxmlparimpl.h"
 //%include "nedsupport.h"
 
+%include "startup.h"  //from src/envir
 
-void evSetup(const char *inifile); //XXX
+
 void changeToDir(const char *dir); //XXX
 
 %{
-#include "javaenv/tmp.h"
+#include "envirbase.h"  //from src/envir
+#include "startup.h"  //from src/envir
 #include "javaenv/visitor.h"
 #include "javaenv/logbuffer.h"
 #include "javaenv/logbufferview.h"
 #include "javaenv/jutil.h"
 #include "javaenv/javaenv.h"
 %}
-%include "javaenv/tmp.h"
+
+%include "envirbase.h"  //from src/envir
+%include "startup.h"  //from src/envir
 %include "javaenv/visitor.h"
 %include "javaenv/logbuffer.h"
 %include "javaenv/logbufferview.h"

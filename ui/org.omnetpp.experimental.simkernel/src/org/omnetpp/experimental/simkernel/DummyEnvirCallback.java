@@ -71,8 +71,7 @@ public class DummyEnvirCallback implements IEnvirCallback {
 			System.out.println("moduleReparented called");
 	}
 
-	public void componentMethodBegin(cComponent from, cComponent to,
-			String method) {
+	public void componentMethodBegin(cComponent from, cComponent to, String method) {
 		if (debug)
 			System.out.println("componentMethodBegin called");
 	}

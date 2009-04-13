@@ -20,7 +20,7 @@
 #include <vector>
 #include <list>
 #include <stdio.h>
-#include "cnullenvir.h"
+#include "envirbase.h"
 #include "logbuffer.h"
 #include "jcallback.h"
 
@@ -30,24 +30,52 @@
 
 #define LL  INT64_PRINTF_FORMAT
 
-class Javaenv : public cNullEnvir
+class Javaenv : public EnvirBase
 {
   private:
+    static JNIEnv *jenv;
+    static jobject javaApp;
+
     LogBuffer logBuffer;
     JCallback *jcallback;
 
   public:
-    Javaenv(int ac, char **av, cConfiguration *c) : cNullEnvir(ac, av, c) { jcallback = NULL;}
-    ~Javaenv() { delete jcallback; }
+    static void setJavaApplication(JNIEnv *jenv_, jobject javaApp_) {
+        jenv = jenv_;
+        javaApp = jenv->NewGlobalRef(javaApp_);
+    }
+
+    Javaenv() : EnvirBase() {
+        jcallback = NULL;
+    }
+
+    ~Javaenv() {
+        delete jcallback;
+    }
+
+    void run();
 
     void setJCallback(JNIEnv *jenv, jobject jcallbackobj);
 
+    void putsmsg(const char *s) {printf("<!> %s\n",s); fflush(stdout);}
+    bool askyesno(const char *s) {printf("%s? NO!\n",s); return false;}
+    void messageSent_OBSOLETE(cMessage *,cGate *) {}
+    size_t getExtraStackForEnvir() const {return 65536;}
+    bool isGUI(void) const {return true;}
+    cEnvir& flush() {return *this;}
+    void printUISpecificHelp() {}
+    void askParameter(cPar *p) {ASSERT(false);}  //FIXME
+
+    void readPerRunOptions()  { EnvirBase::readPerRunOptions();}  // public so that we can call it from Java
+
+/*
     void readParameter(cPar *par) {
         if (par->containsValue())
             par->acceptDefault();
         else
             throw cRuntimeError("no value for parameter %s", par->getFullPath().c_str());
     }
+*/
 
     LogBuffer *getLogBuffer() {
         return &logBuffer;
@@ -90,7 +118,8 @@ class Javaenv : public cNullEnvir
     }
 
     virtual void sputn(const char *s, int n) {
-        //XXX (void) ::fwrite(s,1,n,stdout);
+        EnvirBase::sputn(s, n); fflush(stdout); //XXX just now
+        (void) ::fwrite(s,1,n,stdout);
         cModule *module = simulation.getContextModule();
         // note: we must strip the trailing "\n"
         if (module)
@@ -128,7 +157,6 @@ class Javaenv : public cNullEnvir
     bool idle();
 
 };
-
 
 #endif
 
