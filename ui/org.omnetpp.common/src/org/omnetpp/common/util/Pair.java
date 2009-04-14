@@ -24,6 +24,10 @@ public class Pair<T1,T2> {
 		this.first = first;
 		this.second = second;
 	}
+	
+	public static <T1,T2> Pair<T1,T2> pair(T1 first, T2 second) {
+		return new Pair<T1,T2>(first, second);
+	}
 
 	@Override
 	public int hashCode() {
