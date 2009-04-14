@@ -244,7 +244,11 @@ PCAP_LIBS=wpcap.lib /libpath:"$(PCAP_DIR)/Lib"
 
 !if "$(PTHREADS_DIR)"!=""
 PTHREAD_CFLAGS=/I "$(PTHREADS_DIR)/include"
+!if "$(USE_PTHREADS_STATIC_LIB)"=="yes"
+PTHREAD_LIBS=pthreadVC2static.lib wsock32.lib /libpath:"$(PTHREADS_DIR)/lib"
+!else
 PTHREAD_LIBS=pthreadVC2.lib wsock32.lib /libpath:"$(PTHREADS_DIR)/lib"
+!endif
 !endif
 
 #
