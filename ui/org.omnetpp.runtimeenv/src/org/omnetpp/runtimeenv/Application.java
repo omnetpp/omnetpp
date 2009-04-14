@@ -7,6 +7,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 import org.omnetpp.experimental.simkernel.swig.Javaenv;
 import org.omnetpp.experimental.simkernel.swig.Simkernel;
+import org.omnetpp.experimental.simkernel.swig.StringVector;
 import org.omnetpp.experimental.simkernel.swig.cStaticFlag;
 
 /**
@@ -21,12 +22,22 @@ public class Application implements IApplication {
 	 */
 	public Object start(IApplicationContext context) {
 		System.out.println("Entering Application.start()");
-        Simkernel.changeToDir("C:/home/omnetpp40/omnetpp/test/anim/dynamic"); //XXX
+        //Simkernel.changeToDir("C:/home/omnetpp40/omnetpp/test/anim/dynamic"); //XXX
+        Simkernel.changeToDir("C:/home/omnetpp40/omnetpp/samples/queuenet"); //XXX
         cStaticFlag.set(true); //FIXME also clear it later
-		Javaenv.setJavaApplication(null, this);
+
+		// assemble the command line
+		//XXX test code...
+		StringVector args = new StringVector();
+		args.add("programname");
+//		args.add("-c");   --XXX not yet observed by SimulationManager...
+//		args.add("Terminal");
+
+		// invoke setupUserInterface() in the C++ code. This will call back our doStart() method
+		// which runs the application and stores the exit code in the "result" field.
 		System.out.println("Calling setupUserInterface() C++ function in envir lib...");
-		Simkernel.setupUserInterface(0, null);  // this will call back doStart(), run the app, and store exitcode in result
-		//XXX argc, argv above!
+		Javaenv.setJavaApplication(null, this); // call back "this" object
+		Simkernel.setupUserInterface(args);  
 		return result;
 	}
 

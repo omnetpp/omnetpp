@@ -68,6 +68,9 @@ class Javaenv : public EnvirBase
 
     void readPerRunOptions()  { EnvirBase::readPerRunOptions();}  // public so that we can call it from Java
 
+    void startRun() {EnvirBase::startRun();}  //wrap to make public
+    void endRun() {EnvirBase::endRun();}      //wrap to make public
+
 /*
     void readParameter(cPar *par) {
         if (par->containsValue())

@@ -35,14 +35,17 @@ public class SimulationManager {
         env.setJCallback(null, new DummyEnvirCallback());
         
         try {
-        	env.getConfigEx().activateConfig("General",0);
+        	env.getConfigEx().activateConfig("Terminal",0); //XXX
         	env.readPerRunOptions();
-        	cSimulation simulation = cSimulation.getActiveSimulation();
-            cModuleType networkType = cModuleType.find("Net2"); //"Aloha_tmp");
+        	
+            String networkName = env.getConfigEx().getConfigValue("network");
+			cModuleType networkType = cModuleType.find(networkName);
             if (networkType == null)
                 throw new RuntimeException("network not found");
+
+            cSimulation simulation = cSimulation.getActiveSimulation();
             simulation.setupNetwork(networkType);
-            simulation.startRun();
+            env.startRun();
             
             Display.getDefault().asyncExec(new Runnable() {
                 @Override

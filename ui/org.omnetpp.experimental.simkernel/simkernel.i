@@ -291,7 +291,6 @@ inline int setupUserInterface(const std::vector<std::string>& args)
 void changeToDir(const char *dir); //XXX
 int setupUserInterface(const std::vector<std::string>& args);
 
-
 // Cast etc from jsimplemodule
 %define BASECLASS(CLASS)
 %ignore CLASS::CLASS(const CLASS&);
