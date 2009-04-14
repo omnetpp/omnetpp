@@ -34,7 +34,7 @@ public class SpringEmbedderLayout extends XYLayout {
 	private static final int DEFAULT_MAX_WIDTH = 740;
 	private static final int DEFAULT_MAX_HEIGHT = 500;
 	protected long algSeed = 1971;
-    private boolean requestAutoLayout = true;
+    private boolean requestLayout = true;
     private boolean incrementalLayout = false;
     private CompoundModuleFigure compoundFigure;
 
@@ -78,14 +78,13 @@ public class SpringEmbedderLayout extends XYLayout {
 
 			if(constr.isUnspecified()) {
 				// if unspec. use a random start position 
-				autoLayouter.addMovableNode(node, (int)(Math.random()*width), (int)(Math.random()*height), 
-						constr.width, constr.height);
+				autoLayouter.addMovableNode(node, constr.width, constr.height);
 			} else if (constr.isPinned() || incrementalLayout) {
 				// on incremental layout, everything is fixed except unspecified nodes 
 				autoLayouter.addFixedNode(node, constr.x, constr.y, constr.width, constr.height);
 			}
 			else
-				autoLayouter.addMovableNode(node, constr.x, constr.y, constr.width, constr.height);
+				autoLayouter.addMovableNode(node, constr.width, constr.height);
 		}
 
 		// iterate over the connections and add them to the algorithm
@@ -129,17 +128,18 @@ public class SpringEmbedderLayout extends XYLayout {
 	    
         AbstractGraphLayoutAlgorithm alg = null;
         // find the place of movable nodes if auto-layout requested
-        if (requestAutoLayout) {
+        if (requestLayout) {
             alg = createAutoLayouter();
             alg.setSeed((int)algSeed);
             alg.execute();
-            requestAutoLayout = false;
+            algSeed = alg.getSeed();
+            requestLayout = false;
         }
 
     	// lay out the children according to the auto-layouter
         Point offset = getOrigin(parent);
         for (IFigure f : (List<IFigure>)parent.getChildren()) {
-            Rectangle constr = ((Rectangle)getConstraint(f));
+            SubmoduleConstraint constr = ((SubmoduleConstraint)getConstraint(f));
             Assert.isNotNull(constr, "Figure must have an associated constraint");
             
             // by default use the size and location from the constraint object (must create a copy!)
@@ -152,6 +152,7 @@ public class SpringEmbedderLayout extends XYLayout {
             	// time as starting positions for the movable nodes
             	constr.setLocation(locFromAlg);
             }
+            Assert.isTrue(!constr.isUnspecified(), "A figure with unspecified location constraint detected. You must at least request an incremental layout after adding a new figure child.");
 
             Rectangle newBounds = constr.getCopy();
             newBounds.translate(offset);
@@ -196,7 +197,7 @@ public class SpringEmbedderLayout extends XYLayout {
 	 */
 	public void requestFullLayout() {
 		incrementalLayout = false;
-	    requestAutoLayout = true;
+	    requestLayout = true;
 	}
 	
 	/**
@@ -206,7 +207,7 @@ public class SpringEmbedderLayout extends XYLayout {
 	 */
 	public void requestIncrementalLayout() {
 		incrementalLayout = true;
-	    requestAutoLayout = true;
+	    requestLayout = true;
 	}
 	// XXX this algorithm is using ONLY the figure bounds. It might be much better to move
 	// it to submoduleLayer.getPreferredSize

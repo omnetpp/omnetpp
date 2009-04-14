@@ -18,7 +18,7 @@ package org.omnetpp.common;
  * @author Andras
  */
 public class Debug {
-    private static boolean debug;
+    public static boolean debug;
 
     public static boolean isDebugging() {
         return debug;

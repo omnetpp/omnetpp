@@ -74,7 +74,7 @@ public abstract class AbstractGraphLayoutAlgorithm
     /**
      * Add node that can be moved.
      */
-    public abstract void addMovableNode(Object mod, int x, int y, int width, int height);
+    public abstract void addMovableNode(Object mod, int width, int height);
 
     /**
      * Add fixed node
@@ -109,10 +109,17 @@ public abstract class AbstractGraphLayoutAlgorithm
     /**
      * Set rng seed
      */
-    void setSeed(int seed) {
+    public void setSeed(int seed) {
         rndseed = seed;
     }
 
+    /**
+     * The current seed of the random number generator
+     */
+    public int getSeed() {
+    	return rndseed;
+    }
+    
     /**
      * Set preferred graph edge length
      */

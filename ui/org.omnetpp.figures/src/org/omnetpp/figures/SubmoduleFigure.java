@@ -26,6 +26,7 @@ import org.eclipse.draw2d.text.FlowPage;
 import org.eclipse.draw2d.text.TextFlow;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
+import org.omnetpp.common.CommonCorePlugin;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.image.ImageFactory;
@@ -62,7 +63,7 @@ public class SubmoduleFigure extends NedFigure {
 
     protected ImageFigure imageFigure = new ImageFigure();
     protected ImageFigure decoratorImageFigure = new ImageFigure();
-    protected ImageFigure pinFigure = new ImageFigure(ImageFactory.getImage(ImageFactory.DEFAULT_PIN));
+    protected ImageFigure pinFigure = new ImageFigure(CommonCorePlugin.getImage("icons/obj16/pin.png"));
     protected AttachedLayer textAttachLayer;
 	private AttachedLayer rangeAttachLayer;
     protected TextFlow textFigure = new TextFlow();

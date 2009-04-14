@@ -11,6 +11,9 @@ Require-Bundle: org.eclipse.core.runtime,
  org.omnetpp.cdt;bundle-version="4.0.0",
  org.eclipse.core.resources;bundle-version="3.4.0",
  org.eclipse.ui;bundle-version="3.4.0",
- org.eclipse.cdt.core;bundle-version="5.0.0"
+ org.eclipse.cdt.core;bundle-version="5.0.0",
+ org.omnetpp.figures;bundle-version="4.0.0",
+ org.eclipse.draw2d;bundle-version="3.4.1",
+ org.omnetpp.ned.model;bundle-version="4.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy

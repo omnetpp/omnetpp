@@ -5,18 +5,15 @@
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-package org.omnetpp.runtimeenv.widgets;
+package org.omnetpp.common.ui;
 
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.LayoutManager;
 import org.eclipse.draw2d.LightweightSystem;
 import org.eclipse.draw2d.XYLayout;
-import org.eclipse.draw2d.geometry.Dimension;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
-import org.omnetpp.figures.CompoundModuleFigure;
 
 //XXX was: AnimationCanvas in org.omnetpp.experimental.animation
 public class FigureCanvas extends Canvas {
@@ -44,8 +41,4 @@ public class FigureCanvas extends Canvas {
 		return contents;
 	}
 
-	public Point getPreferredSize() {
-		Dimension dimension = ((CompoundModuleFigure)contents.getChildren().get(0)).getPreferredSize();
-		return new Point(dimension.width, dimension.height);
-	}
 }

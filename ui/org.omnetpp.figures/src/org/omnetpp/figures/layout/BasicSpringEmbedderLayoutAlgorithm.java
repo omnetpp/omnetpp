@@ -130,7 +130,7 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
     }
 
 	@Override
-	public void addMovableNode(Object mod, int x, int y, int width, int height) {
+	public void addMovableNode(Object mod, int width, int height) {
 	    Assert.isTrue(findNode(mod)==null);
 
 	    allNodesAreFixed = false;
@@ -254,8 +254,8 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
 	        }
 	        else // movable
 	        {
-	            n.x = 100 * privRand01();
-	            n.y = 100 * privRand01();
+	            n.x = width * privRand01();
+	            n.y = height * privRand01();
 	        }
 	        n.dx = n.dy = 0;
 	    }
