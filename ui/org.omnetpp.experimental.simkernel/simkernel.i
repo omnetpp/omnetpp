@@ -101,18 +101,6 @@
 #include "omnetpp.h"
 #include "innerclasses.h"
 #include "javaenv/visitor.h"
-
-#include <direct.h>
-inline void changeToDir(const char *dir)  //XXX
-{
-    printf("changing to: %s\n", dir);
-    _chdir(dir);
-
-    //char buffer[_MAX_PATH];
-    //if (_getcwd( buffer, _MAX_PATH)==NULL)
-    //   strcpy(buffer,"???");
-    //printf("current working directory: %s\n", buffer);
-}
 %}
 
 %include "std_common.i"
@@ -273,6 +261,37 @@ namespace std {
 
 //XXX temporarily disabled; TO BE PUT BACK: %typemap(javainterfaces) cMessage "org.omnetpp.common.simulation.model.IRuntimeMessage";
 
+
+%{
+
+#include <direct.h>
+inline void changeToDir(const char *dir)  //XXX
+{
+    printf("changing to: %s\n", dir);
+    _chdir(dir);
+
+    //char buffer[_MAX_PATH];
+    //if (_getcwd( buffer, _MAX_PATH)==NULL)
+    //   strcpy(buffer,"???");
+    //printf("current working directory: %s\n", buffer);
+}
+
+#include "startup.h"  // from src/envir
+inline int setupUserInterface(const std::vector<std::string>& args)
+{
+    int argc = args.size();
+    const char **argv = new const char *[argc];
+    for (int i=0; i<argc; i++)
+        argv[i] = args[i].c_str();
+    return setupUserInterface(argc, (char **)argv);
+}
+
+%};
+
+void changeToDir(const char *dir); //XXX
+int setupUserInterface(const std::vector<std::string>& args);
+
+
 // Cast etc from jsimplemodule
 %define BASECLASS(CLASS)
 %ignore CLASS::CLASS(const CLASS&);
@@ -392,14 +411,8 @@ DERIVEDCLASS(cConfigurationEx,cConfiguration);
 //%include "cxmlparimpl.h"
 //%include "nedsupport.h"
 
-%include "startup.h"  //from src/envir
-
-
-void changeToDir(const char *dir); //XXX
-
 %{
 #include "envirbase.h"  //from src/envir
-#include "startup.h"  //from src/envir
 #include "javaenv/visitor.h"
 #include "javaenv/logbuffer.h"
 #include "javaenv/logbufferview.h"
@@ -408,7 +421,6 @@ void changeToDir(const char *dir); //XXX
 %}
 
 %include "envirbase.h"  //from src/envir
-%include "startup.h"  //from src/envir
 %include "javaenv/visitor.h"
 %include "javaenv/logbuffer.h"
 %include "javaenv/logbufferview.h"
