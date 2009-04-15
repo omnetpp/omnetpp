@@ -29,7 +29,7 @@ public class RunPayload {
 			return false;
 
 		RunPayload other = (RunPayload) obj;
-		return runName == other.runName && runNumber == other.runNumber;
+		return runName.equals(other.runName) && runNumber == other.runNumber;
 	}
 
 	@Override
