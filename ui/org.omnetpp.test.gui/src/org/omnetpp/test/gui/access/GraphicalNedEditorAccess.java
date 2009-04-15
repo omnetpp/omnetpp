@@ -22,8 +22,8 @@ import org.omnetpp.common.util.IPredicate;
 import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.figures.ConnectionFigure;
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
-import org.omnetpp.ned.editor.graph.edit.ModuleConnectionEditPart;
-import org.omnetpp.ned.editor.graph.edit.NedEditPart;
+import org.omnetpp.ned.editor.graph.parts.ModuleConnectionEditPart;
+import org.omnetpp.ned.editor.graph.parts.NedEditPart;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.pojo.CompoundModuleElement;
 import org.omnetpp.ned.model.pojo.SimpleModuleElement;
@@ -34,8 +34,8 @@ import com.simulcraft.test.gui.access.EditorPartAccess;
 import com.simulcraft.test.gui.access.FigureAccess;
 import com.simulcraft.test.gui.access.FlyoutPaletteCompositeAccess;
 import com.simulcraft.test.gui.access.TextAccess;
-import com.simulcraft.test.gui.core.UIStep;
 import com.simulcraft.test.gui.core.InBackgroundThread;
+import com.simulcraft.test.gui.core.UIStep;
 
 
 public class GraphicalNedEditorAccess

@@ -8,8 +8,6 @@
 package org.omnetpp.test.gui.access;
 
 import org.omnetpp.inifile.editor.editors.InifileEditor;
-import org.omnetpp.inifile.editor.form.InifileFormEditor;
-import org.omnetpp.inifile.editor.text.InifileTextEditor;
 
 import com.simulcraft.test.gui.access.CompositeAccess;
 import com.simulcraft.test.gui.access.MultiPageEditorPartAccess;

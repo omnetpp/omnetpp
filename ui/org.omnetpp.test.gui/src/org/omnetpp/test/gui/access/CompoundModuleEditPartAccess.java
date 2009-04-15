@@ -16,7 +16,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.omnetpp.common.util.IPredicate;
 import org.omnetpp.common.util.ReflectionUtils;
-import org.omnetpp.ned.editor.graph.edit.CompoundModuleEditPart;
+import org.omnetpp.ned.editor.graph.parts.CompoundModuleEditPart;
 
 import com.simulcraft.test.gui.access.Access;
 import com.simulcraft.test.gui.access.EditPartAccess;

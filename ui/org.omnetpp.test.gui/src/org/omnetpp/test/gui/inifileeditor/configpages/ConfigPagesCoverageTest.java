@@ -20,7 +20,7 @@ import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.form.FormPage;
 import org.omnetpp.inifile.editor.form.GenericConfigPage;
 import org.omnetpp.inifile.editor.form.InifileFormEditor;
-import org.omnetpp.inifile.editor.model.ConfigKey;
+import org.omnetpp.inifile.editor.model.ConfigOption;
 import org.omnetpp.inifile.editor.model.ConfigRegistry;
 import org.omnetpp.test.gui.access.InifileFormEditorAccess;
 import org.omnetpp.test.gui.inifileeditor.InifileEditorTestCase;
@@ -44,11 +44,11 @@ public class ConfigPagesCoverageTest extends InifileEditorTestCase {
         categories.addAll(Arrays.asList(GenericConfigPage.getCategoryNames()));
 
         // collect keys supported by the editor forms
-        Set<ConfigKey> supportedKeys = new HashSet<ConfigKey>();
+        Set<ConfigOption> supportedKeys = new HashSet<ConfigOption>();
         for (String category : categories) {
             formEditor.activateCategoryPage(category);
             FormPage page = formEditorPart.getActiveCategoryPage();
-            for (ConfigKey key : page.getSupportedKeys())
+            for (ConfigOption key : page.getSupportedKeys())
                 supportedKeys.add(key);
         }
         
@@ -56,9 +56,9 @@ public class ConfigPagesCoverageTest extends InifileEditorTestCase {
         
         // see which keys are not supported anywhere
         Set<String> forgottenKeys = new HashSet<String>();
-        for (ConfigKey key : ConfigRegistry.getEntries())
-            if (!supportedKeys.contains(key) && !expectedForgottenKeys.contains(key.getKey()))
-                forgottenKeys.add(key.getKey());
+        for (ConfigOption key : ConfigRegistry.getEntries())
+            if (!supportedKeys.contains(key) && !expectedForgottenKeys.contains(key.getName()))
+                forgottenKeys.add(key.getName());
         Assert.assertTrue("forgotten config keys (do not occur in inifile form pages): "+StringUtils.join(forgottenKeys, ", "), forgottenKeys.isEmpty());
     }
 }

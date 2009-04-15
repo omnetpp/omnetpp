@@ -7,15 +7,15 @@
 
 package org.omnetpp.test.gui.access;
 
-import org.omnetpp.ned.editor.graph.edit.NedTypeEditPart;
+import org.omnetpp.ned.editor.graph.parts.NedTypeEditPart;
 
 import com.simulcraft.test.gui.access.EditPartAccess;
 
 
 public class NedTypeEditPartAccess extends EditPartAccess
 {
-	public NedTypeEditPartAccess(NedTypeEditPart NEDTypeEditPart) {
-		super(NEDTypeEditPart);
+	public NedTypeEditPartAccess(NedTypeEditPart nedTypeEditPart) {
+		super(nedTypeEditPart);
 	}
 	
 	public NedTypeEditPart getNEDTypeEditPart() {
