@@ -230,7 +230,7 @@ public class SpringEmbedderLayout extends XYLayout {
 	        
 	        if (child instanceof SubmoduleFigure) {
 	            // add the label bounds to it
-	            rect.union(((SubmoduleFigure)child).getLabelBounds());
+	            rect.union(((SubmoduleFigure)child).getNameBounds());
 	        }
 	        
 	    }

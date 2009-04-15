@@ -31,7 +31,7 @@ abstract public class NedFigure extends Figure {
 
     protected Label nameFigure = new Label();
     protected TooltipFigure tooltipFigure;
-    protected ImageFigure problemMarkerFigure = new ImageFigure();
+    protected ImageFigure problemMarkerFigure = new ImageFigure(); //FIXME create it ON DEMAND!  --Andras
     protected TooltipFigure problemMarkerTooltipFigure;
 
     // the following constants have been copied here from IMarker so that we don't

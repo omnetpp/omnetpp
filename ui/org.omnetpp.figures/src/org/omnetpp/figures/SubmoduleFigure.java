@@ -9,24 +9,17 @@ package org.omnetpp.figures;
 
 
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.draw2d.Ellipse;
-import org.eclipse.draw2d.ImageFigure;
-import org.eclipse.draw2d.Label;
+import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.Layer;
 import org.eclipse.draw2d.LayoutManager;
 import org.eclipse.draw2d.PositionConstants;
-import org.eclipse.draw2d.RectangleFigure;
-import org.eclipse.draw2d.RoundedRectangle;
-import org.eclipse.draw2d.Shape;
-import org.eclipse.draw2d.StackLayout;
+import org.eclipse.draw2d.TextUtilities;
 import org.eclipse.draw2d.geometry.Dimension;
+import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.PrecisionPoint;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.eclipse.draw2d.text.FlowPage;
-import org.eclipse.draw2d.text.TextFlow;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
-import org.omnetpp.common.CommonCorePlugin;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.image.ImageFactory;
@@ -41,52 +34,47 @@ import org.omnetpp.figures.misc.AttachedLayer;
  * not included when the boundary calculation is done. getPreferredLocation can be
  * queried after setDisplaystring is called so an appropriate constraint can be created for a layouter.
  *
- * @author rhornig
+ * @author andras
  */
-// FIXME change this so that figures are created on demand.
-// TODO maybe we should use locators to place the different figures relative to the main figure
-// instead of using attachedLayers
+//FIXME support multiple texts: t/t1/t2/t3/t4
 public class SubmoduleFigure extends NedFigure {
+    // supported shape types
+	protected static final int SHAPE_NONE = 0;
+	protected static final int SHAPE_OVAL = 1;
+	protected static final int SHAPE_RECT = 2;
+	protected static final int SHAPE_RECT2 = 3;
+	protected static final int SHAPE_TRI = 4;
+	protected static final int SHAPE_TRI2 = 5;
+	protected static final int SHAPE_HEX = 6;
+	protected static final int SHAPE_HEX2 = 7;
 
-    // state info, from the display string. Note: much of the state is stored inside sub-figures
-    protected boolean shapeVisible;
+	protected static final int TEXTPOS_LEFT = 1;
+	protected static final int TEXTPOS_RIGHT = 2;
+	protected static final int TEXTPOS_TOP = 3;
+
+    protected static final Image IMG_PIN = ImageFactory.getImage(ImageFactory.DEFAULT_PIN);
+	
+    // state info, from the display string
+    protected int centerX, centerY;
     protected float scale = 1.0f;
-    protected String queueName = "";
-
-    // figures which are part of the submodule figure. NOTE: all of them are created, the
-    // unused ones being set to invisible. This has to be optimized in the future.
-    protected Shape shapeFigure;
-    protected RectangleFigure rectShapeFigure = new RectangleFigure();
-    protected Ellipse ovalShapeFigure = new Ellipse();
-    protected RoundedRectangle rrectShapeFigure = new RoundedRectangle();
-    protected RegularPolygon polygonShapeFigure = new RegularPolygon(6,0);
-
-    protected ImageFigure imageFigure = new ImageFigure();
-    protected ImageFigure decoratorImageFigure = new ImageFigure();
-    protected ImageFigure pinFigure = new ImageFigure(CommonCorePlugin.getImage("icons/obj16/pin.png"));
-    protected AttachedLayer textAttachLayer;
-	private AttachedLayer rangeAttachLayer;
-    protected TextFlow textFigure = new TextFlow();
-    protected FlowPage textFlowPage = new FlowPage();
-    protected Label queueFigure = new Label();
-    protected Shape rangeFigure = new RangeFigure();
+    protected int shape;
+    protected int shapeWidth;
+    protected int shapeHeight;
+    protected Color shapeFillColor; 
+    protected Color shapeBorderColor;
+    protected int shapeBorderWidth;
+    protected Image image;
+    protected Image decoratorImage;
+    protected boolean pinVisible;
+    protected String text;
+    protected int textPos;
+    protected Color textColor;
+    protected String queueText;
+    private AttachedLayer rangeAttachLayer;
+    protected RangeFigure rangeFigure = new RangeFigure();  //FIXME make this on demand as well!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
     public SubmoduleFigure() {
-        setLayoutManager(new StackLayout());
-        rectShapeFigure.setVisible(false);
-        rrectShapeFigure.setVisible(false);
-        rrectShapeFigure.setCornerDimensions(new Dimension(30, 30));
-        ovalShapeFigure.setVisible(false);
-        polygonShapeFigure.setVisible(false);
-        rangeFigure.setOpaque(false);
-        shapeVisible = false;
-        textFlowPage.add(textFigure);
-        // use center alignment under the icon for the name
-        nameFigure.setTextAlignment(PositionConstants.CENTER);
-        nameFigure.setTextPlacement(PositionConstants.SOUTH);
-        
-        textAttachLayer = new AttachedLayer(this, PositionConstants.NORTH, textFlowPage, PositionConstants.SOUTH, 0, -1);
         rangeAttachLayer = new AttachedLayer(this, PositionConstants.CENTER, rangeFigure, PositionConstants.CENTER);
     }
 
@@ -100,50 +88,24 @@ public class SubmoduleFigure extends NedFigure {
         Layer foregroundLayer = ((SubmoduleLayer)getParent()).getCompoundModuleFigure().getForegroundDecorationLayer();
         Layer backgroundLayer = ((SubmoduleLayer)getParent()).getCompoundModuleFigure().getBackgroundDecorationLayer();
 
-        // add main figures
-        // TODO figures should be added and created only ON DEMAND!!!
-        add(rectShapeFigure);
-        add(rrectShapeFigure);
-        add(ovalShapeFigure);
-        add(polygonShapeFigure);
-        add(imageFigure);
-
         // setup decorations belonging to the background decoration layer
-        if (backgroundLayer != null)
-            backgroundLayer.add(rangeAttachLayer);
+        backgroundLayer.add(rangeAttachLayer);
 
-        if (foregroundLayer != null) {
-            // image decoration
-            foregroundLayer.add(new AttachedLayer(this, new PrecisionPoint(1.0, 0.0),
-                    decoratorImageFigure, new PrecisionPoint(0.75, 0.25), null));
-            // problem marker image
-            foregroundLayer.add(new AttachedLayer(this, new PrecisionPoint(0.0, 0.0),
-            		problemMarkerFigure, new PrecisionPoint(0.35, 0.35), null));
-            // "pin" image
-            foregroundLayer.add(new AttachedLayer(this, new PrecisionPoint(1.0, 0.0),
-            		pinFigure, new PrecisionPoint(0.5, 0.5), null));
-            // name decoration
-            foregroundLayer.add(new AttachedLayer(this, PositionConstants.SOUTH,
-                                        nameFigure, PositionConstants.NORTH));
-            // text comment decoration
-            foregroundLayer.add(textAttachLayer);
-            // queue description
-            foregroundLayer.add(new AttachedLayer(this, PositionConstants.SOUTH_EAST,
-                    queueFigure, PositionConstants.SOUTH_WEST, 2, 0));
-        }
+        // problem marker image
+        foregroundLayer.add(new AttachedLayer(this, new PrecisionPoint(0.0, 0.0),
+        		problemMarkerFigure, new PrecisionPoint(0.35, 0.35), null));
 
         super.addNotify();
     }
 
     protected void setRange(int radius, Color fillColor, Color borderColor, int borderWidth) {
         if (radius > 0) {
-            int rad = radius;
             rangeFigure.setVisible(true);
-            rangeFigure.setSize(rad*2, rad*2);
+            rangeFigure.setSize(radius*2, radius*2);
         }
         else {
         	rangeFigure.setVisible(false);
-            rangeFigure.setSize(0, 0);
+            rangeFigure.setSize(0, 0); //XXX minek?
         }
         rangeFigure.setFill(fillColor != null);
         rangeFigure.setBackgroundColor(fillColor);
@@ -158,181 +120,144 @@ public class SubmoduleFigure extends NedFigure {
     }
 
     public void setQueueText(String qtext) {
-        queueFigure.setVisible(qtext != null && !"".equals(qtext));
-        queueFigure.setText("q:"+qtext);
+    	queueText = qtext;
         invalidate();
     }
 
-    protected void setInfoText(String text, String alignment, Color color) {
-        textFigure.setVisible(text != null && !"".equals(text));
-        textFigure.setText(text);
-        textFigure.setForegroundColor(color);
-        // set alignment
-        if (alignment == null) return;
-        if ("t".equals(alignment.toLowerCase())) {
-            textFlowPage.setHorizontalAligment(PositionConstants.CENTER);
-            textAttachLayer.setRefPoints(PositionConstants.NORTH, PositionConstants.SOUTH);
-            textAttachLayer.setDeltaXY(0, -1);
-        }
-        else if ("l".equals(alignment.toLowerCase())) {
-            textFlowPage.setHorizontalAligment(PositionConstants.RIGHT);
-            textAttachLayer.setRefPoints(PositionConstants.NORTH_WEST, PositionConstants.NORTH_EAST);
-            textAttachLayer.setDeltaXY(-2, 0);
-        }
-        else if ("r".equals(alignment.toLowerCase())) {
-            textFlowPage.setHorizontalAligment(PositionConstants.LEFT);
-            textAttachLayer.setRefPoints(PositionConstants.NORTH_EAST, PositionConstants.NORTH_WEST);
-            textAttachLayer.setDeltaXY(2, 0);
-        }
-        if (textFigure.getParent() != null)
-        	textFigure.getParent().revalidate();
+    protected void setInfoText(String text, String pos, Color color) {
+    	this.text = text;
+    	this.textPos = pos.equalsIgnoreCase("l") ? TEXTPOS_LEFT : pos.equalsIgnoreCase("r") ? TEXTPOS_RIGHT : TEXTPOS_TOP;
+    	this.textColor = color;
         invalidate();
     }
 
     protected void setShape(Image image, String shapeName, int shapeWidth, int shapeHeight,
             Color shapeFillColor, Color shapeBorderColor, int shapeBorderWidth) {
 
-        // handle defaults. if no size is given and no icon is present, use a default icon
-        if (StringUtils.isEmpty(shapeName) && image == null)
+        if (StringUtils.isEmpty(shapeName))
+        	shape = SHAPE_NONE;
+        else if (shapeName.equalsIgnoreCase("oval"))
+        	shape = SHAPE_OVAL;
+        else if (shapeName.equalsIgnoreCase("rect"))
+            shape = SHAPE_RECT;
+        else if (shapeName.equalsIgnoreCase("rrect"))
+            shape = SHAPE_RECT2;
+        else if (shapeName.equalsIgnoreCase("tri"))
+            shape = SHAPE_TRI;
+        else if (shapeName.equalsIgnoreCase("tri2"))
+            shape = SHAPE_TRI2;
+        else if (shapeName.equalsIgnoreCase("hex"))
+            shape = SHAPE_HEX;
+        else if (shapeName.equalsIgnoreCase("hex2"))
+            shape = SHAPE_HEX2;
+        else
+        	shape = SHAPE_NONE;
+
+        Assert.isTrue(shapeHeight != -1 || shapeWidth != -1);
+        this.shapeWidth = shapeWidth;
+        this.shapeHeight = shapeHeight;
+
+        this.image = image;
+        
+        if (image == null && shape == SHAPE_NONE)
             image = ImageFactory.getImage(ImageFactory.DEFAULT_KEY);
 
-        // if image changed, update the figure
-        if (image != imageFigure.getImage()) {
-            imageFigure.setImage(image);
-            imageFigure.setVisible(image != null);
-        }
-        Dimension imageSize = image == null ?
-                new Dimension(0,0) : new Dimension(image.getBounds().width, image.getBounds().height);
-
-        // we set the image minimum size, so it will never be clipped
-        imageFigure.setPreferredSize(imageSize);
-
-        setPreferredSize(imageFigure.getPreferredSize());
-
-        // creating the shape
-        shapeFigure = null;
-        rectShapeFigure.setVisible(false);
-        rrectShapeFigure.setVisible(false);
-        ovalShapeFigure.setVisible(false);
-        polygonShapeFigure.setVisible(false);
-        shapeVisible = false;
-
-        // if there is no shape, we are done
-        if (StringUtils.isEmpty(shapeName))
-            return;
-
-        if ("rrect".equals(shapeName.toLowerCase())) {
-            shapeFigure = rrectShapeFigure;
-        }
-        else if ("oval".equals(shapeName.toLowerCase())) {
-            shapeFigure = ovalShapeFigure;
-        }
-        else if ("rect2".equals(shapeName.toLowerCase())) {
-            shapeFigure = polygonShapeFigure;
-            polygonShapeFigure.setGeometry(4, 0);
-        }
-        else if ("tri".equals(shapeName.toLowerCase())) {
-            shapeFigure = polygonShapeFigure;
-            polygonShapeFigure.setGeometry(3, 0);
-        }
-        else if ("tri2".equals(shapeName.toLowerCase())) {
-            shapeFigure = polygonShapeFigure;
-            polygonShapeFigure.setGeometry(3, 180);
-        }
-        else if ("hex".equals(shapeName.toLowerCase())) {
-            shapeFigure = polygonShapeFigure;
-            polygonShapeFigure.setGeometry(6, 30);
-        }
-        else if ("hex2".equals(shapeName.toLowerCase())) {
-            shapeFigure = polygonShapeFigure;
-            polygonShapeFigure.setGeometry(6, 0);
-        }
-        else {
-            shapeFigure = rectShapeFigure;
-        }
-
-        shapeVisible = true;
-        shapeFigure.setVisible(true);
-        shapeFigure.setOpaque(false);
-        shapeFigure.setFill(shapeFillColor != null);
-        shapeFigure.setBackgroundColor(shapeFillColor);
-        shapeFigure.setOutline(shapeBorderColor != null && shapeBorderWidth > 0);
-        shapeFigure.setForegroundColor(shapeBorderColor);
-        shapeFigure.setLineWidth(shapeBorderWidth);
-
-        // set the requested size of the object
-        Assert.isTrue(shapeHeight != -1 || shapeWidth != -1);
-        Dimension shapeSize = new Dimension(shapeWidth, shapeHeight);
-        shapeFigure.setSize(shapeSize);
-
-        // get back the real dimension (may differ from the width,height if one of them was < 0
-        // in this case that one is computed in a way that the figure's aspect ratio is unchanged
-        Dimension actualSize = shapeFigure.getSize();
-
-        // if only one of them is less than 0 then take the other dimension as reference (rectangular bounding)
-        if (actualSize.width < 0) actualSize.width = actualSize.height;
-        if (actualSize.height < 0) actualSize.height = actualSize.width;
-
-        // ensure  that the size is not smaller than the visible image's preferred size
-        if (imageFigure.isVisible())
-            actualSize.union(imageFigure.getPreferredSize());
-
-        setPreferredSize(actualSize);
         invalidate();
     }
 
-    /**
-     * Sets the external image decoration ("i2" tag)
-     */
-    protected void setDecorationImage(Image img) {
-        if (img != decoratorImageFigure.getImage())
-            decoratorImageFigure.setImage(img);
+    protected void calculateBounds() {
+        Rectangle bounds = getShapeBounds().union(getNameBounds()); //FIXME also the text, decoration image etc etc!!!
+        super.setBounds(bounds);
+    }
+    
+	protected Rectangle getShapeBounds() {
+		int width = shapeWidth>0 ? shapeWidth : shapeHeight;
+		int height = shapeHeight>0 ? shapeHeight : shapeWidth;
+        if (image != null) {
+            width = Math.max(width, image.getBounds().width);
+            height = Math.max(height, image.getBounds().height);
+        }
+		return new Rectangle(centerX-width/2, centerY-height/2, width, height);
+	}
 
-        decoratorImageFigure.setVisible(img != null);
-        invalidate();
+	/**
+	 * Sets the external image decoration ("i2" tag)
+	 */
+	protected void setDecorationImage(Image img) {
+		decoratorImage = img;
+		invalidate();
+	}
+
+    @Override
+    public void setBounds(Rectangle rect) {
+    	throw new UnsupportedOperationException(); // call setCenterLocation/setShape instead
+    }
+    
+    @Override
+    public void setLocation(Point p) {
+    	throw new UnsupportedOperationException(); // call setCenterLocation/setShape instead
+    }
+    
+    @Override
+    public void setSize(int w, int h) {
+    	throw new UnsupportedOperationException(); // call setCenterLocation/setShape instead
+    }
+
+    @Override
+    public void setPreferredSize(Dimension size) {
+    	throw new UnsupportedOperationException(); // call setCenterLocation/setShape instead
+    }
+    
+    @Override
+    public Dimension getPreferredSize(int hint, int hint2) {
+    	throw new UnsupportedOperationException(); // call setCenterLocation/setShape instead
     }
 
     public Rectangle getHandleBounds() {
-        return getBounds();
+        return getShapeBounds();
     }
 
     /**
-     * The bounds of the name label figure
+     * The bounds of the name label
      */
-    public Rectangle getLabelBounds() {
-        return nameFigure.getBounds();
+    public Rectangle getNameBounds() {
+        Rectangle shapeBounds = getShapeBounds();
+        Dimension textSize = TextUtilities.INSTANCE.getTextExtents(text, getFont());
+        return new Rectangle(centerX-textSize.width/2, shapeBounds.bottom(), textSize.width, textSize.height);
     }
-	/**
+
+    /**
 	 * Adjusts the image properties using a displayString object (except the location and size)
 	 */
 	@Override
-    public void setDisplayString(IDisplayString dps) {
+    public void setDisplayString(IDisplayString displayString) {
 		// range support
         setRange(
-        		dps.getRange(getScale()),
-        		ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.RANGEFILLCOL)),
-        		ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.RANGEBORDERCOL)),
-        		dps.getAsInt(IDisplayString.Prop.RANGEBORDERWIDTH, -1));
+        		displayString.getRange(getScale()),
+        		ColorFactory.asColor(displayString.getAsString(IDisplayString.Prop.RANGEFILLCOL)),
+        		ColorFactory.asColor(displayString.getAsString(IDisplayString.Prop.RANGEBORDERCOL)),
+        		displayString.getAsInt(IDisplayString.Prop.RANGEBORDERWIDTH, -1));
+        
         // tooltip support
-        setTooltipText(dps.getAsString(IDisplayString.Prop.TOOLTIP));
+        setTooltipText(displayString.getAsString(IDisplayString.Prop.TOOLTIP));
 
         // additional text support
-        setInfoText(dps.getAsString(IDisplayString.Prop.TEXT),
-        		dps.getAsString(IDisplayString.Prop.TEXTPOS),
-        		ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.TEXTCOLOR)));
+        setInfoText(displayString.getAsString(IDisplayString.Prop.TEXT),
+        		displayString.getAsString(IDisplayString.Prop.TEXTPOS),
+        		ColorFactory.asColor(displayString.getAsString(IDisplayString.Prop.TEXTCOLOR)));
 
         // shape support
-        String imgSize = dps.getAsString(IDisplayString.Prop.IMAGESIZE);
+        String imageSize = displayString.getAsString(IDisplayString.Prop.IMAGESIZE);
         Image img = ImageFactory.getImage(
-        		dps.getAsString(IDisplayString.Prop.IMAGE),
-        		imgSize,
-        		ColorFactory.asRGB(dps.getAsString(IDisplayString.Prop.IMAGECOLOR)),
-        		dps.getAsInt(IDisplayString.Prop.IMAGECOLORPERCENTAGE,0));
+        		displayString.getAsString(IDisplayString.Prop.IMAGE),
+        		imageSize,
+        		ColorFactory.asRGB(displayString.getAsString(IDisplayString.Prop.IMAGECOLOR)),
+        		displayString.getAsInt(IDisplayString.Prop.IMAGECOLORPERCENTAGE,0));
 
         // rectangle ("b" tag)
-        Dimension size = dps.getSize(scale);  // falls back to size in EMPTY_DEFAULTS
-        boolean widthExist = dps.containsProperty(IDisplayString.Prop.WIDTH);
-        boolean heightExist = dps.containsProperty(IDisplayString.Prop.HEIGHT);
+        Dimension size = displayString.getSize(scale);  // falls back to size in EMPTY_DEFAULTS
+        boolean widthExist = displayString.containsProperty(IDisplayString.Prop.WIDTH);
+        boolean heightExist = displayString.containsProperty(IDisplayString.Prop.HEIGHT);
 
         // if both are missing, use values from EMPTY_DEFAULTS, otherwise substitute
         // -1 for missing coordinate
@@ -341,23 +266,23 @@ public class SubmoduleFigure extends NedFigure {
         if (widthExist && !heightExist)
             size.height = -1;
 
-        String shape = dps.getAsString(IDisplayString.Prop.SHAPE);
-        if (!dps.containsTag(IDisplayString.Tag.b))
+        String shape = displayString.getAsString(IDisplayString.Prop.SHAPE);
+        if (!displayString.containsTag(IDisplayString.Tag.b))
         	shape = "";
         setShape(img, shape,
                 size.width,
                 size.height,
-        		ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.FILLCOL)),
-        		ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.BORDERCOL)),
-        		dps.getAsInt(IDisplayString.Prop.BORDERWIDTH, -1));
+        		ColorFactory.asColor(displayString.getAsString(IDisplayString.Prop.FILLCOL)),
+        		ColorFactory.asColor(displayString.getAsString(IDisplayString.Prop.BORDERCOL)),
+        		displayString.getAsInt(IDisplayString.Prop.BORDERWIDTH, -1));
 
         // set the decoration image properties
         setDecorationImage(
         		        ImageFactory.getImage(
-        				dps.getAsString(IDisplayString.Prop.OVIMAGE),
+        				displayString.getAsString(IDisplayString.Prop.OVIMAGE),
         				null,
-        				ColorFactory.asRGB(dps.getAsString(IDisplayString.Prop.OVIMAGECOLOR)),
-        				dps.getAsInt(IDisplayString.Prop.OVIMAGECOLORPCT,0)));
+        				ColorFactory.asRGB(displayString.getAsString(IDisplayString.Prop.OVIMAGECOLOR)),
+        				displayString.getAsInt(IDisplayString.Prop.OVIMAGECOLORPCT,0)));
 
         invalidate();
 	}
@@ -384,18 +309,14 @@ public class SubmoduleFigure extends NedFigure {
      */
     @Override
     public boolean containsPoint(int x, int y) {
-        // if the name label contains this point we consider it as our part and report true
-        if (nameFigure.containsPoint(x, y))
-            return true;
-        // otherwise use the default implementation
-        return super.containsPoint(x, y);
+    	return getShapeBounds().contains(x, y) || nameFigure.containsPoint(x, y);
     }
 
     /**
      * Whether the figure displays a shape
      */
     public boolean isShapeVisible() {
-        return shapeVisible;
+        return shape != SHAPE_NONE;
     }
 
     /**
@@ -403,12 +324,79 @@ public class SubmoduleFigure extends NedFigure {
      * user-specified position) on/off
      */
     public void setPinDecoration(boolean enabled) {
-        pinFigure.setVisible(enabled);
-        invalidate(); //XXX needed?
+    	pinVisible = enabled;
+        invalidate();
     }
 
     public boolean isPinned() {
-        return pinFigure.isVisible();
+        return pinVisible;
+    }
+    
+    @Override
+    public void paint(Graphics graphics) {
+    	super.paint(graphics);
+    	
+    	// draw shape
+    	if (shape != SHAPE_NONE) {
+    		graphics.pushState();
+    		graphics.setForegroundColor(shapeBorderColor);
+    		graphics.setBackgroundColor(shapeFillColor);
+    		graphics.setLineWidth(shapeBorderWidth);
+    		int left = centerX - shapeWidth/2;
+    		int top = centerY - shapeHeight/2;
+    		if (shape == SHAPE_OVAL) {
+    			graphics.drawOval(left, top, left+shapeWidth, top+shapeHeight);
+    		}
+    		else if (shape == SHAPE_RECT) {
+    			graphics.drawRectangle(left, top, left+shapeWidth, top+shapeHeight);
+    		}
+    		else {
+    			Assert.isTrue(false, "NOT IMPLEMENTED YET"); //XXX
+    		}
+    		graphics.popState();
+    	}
+    	
+    	// draw image
+        if (image != null) {
+        	org.eclipse.swt.graphics.Rectangle imageBounds = image.getBounds();
+        	graphics.drawImage(image, centerX - imageBounds.width/2, centerY - imageBounds.height/2);
+        }
+        
+        // draw text
+        if (!StringUtils.isEmpty(text)) {
+    		graphics.pushState();
+    		int x, y;
+    		Dimension textSize = TextUtilities.INSTANCE.getTextExtents(text, getFont());
+    		Rectangle shapeBounds = getShapeBounds();
+    		if (textPos == TEXTPOS_LEFT) {
+    			x = shapeBounds.x - textSize.width; 
+    			y = shapeBounds.y; 
+    		}
+    		if (textPos == TEXTPOS_RIGHT) {
+    			x = shapeBounds.right(); 
+    			y = shapeBounds.y; 
+    		}
+    		else {  // TEXTPOS_TOP
+    			x = centerX - textSize.width/2; 
+    			y = shapeBounds.x - textSize.height; 
+    		}
+    		graphics.drawText(text, x, y);
+    		graphics.popState();
+        }
+        
+        // draw decoration image
+        if (decoratorImage != null) {
+    		Rectangle shapeBounds = getShapeBounds();
+    		org.eclipse.swt.graphics.Rectangle decoratorImageBounds = decoratorImage.getBounds();
+			graphics.drawImage(decoratorImage, shapeBounds.x-decoratorImageBounds.width, shapeBounds.y - decoratorImageBounds.height/2);
+        }
+        	
+        if (pinVisible) {
+    		Rectangle shapeBounds = getShapeBounds();
+    		org.eclipse.swt.graphics.Rectangle pinImageBounds = IMG_PIN.getBounds();
+			graphics.drawImage(IMG_PIN, shapeBounds.x-pinImageBounds.width, shapeBounds.y - pinImageBounds.height/2);
+        }
+    	
     }
     
     /**
