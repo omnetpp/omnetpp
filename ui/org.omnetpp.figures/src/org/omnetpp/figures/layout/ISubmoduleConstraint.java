@@ -7,8 +7,8 @@
 
 package org.omnetpp.figures.layout;
 
-import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
+import org.eclipse.draw2d.geometry.Rectangle;
 
 /**
  * @author rhornig
@@ -47,12 +47,17 @@ public interface ISubmoduleConstraint {
 	public Object getVectorIdentifier();
 	
 	/**
-	 * The size of the submodule. This is used during the layouting process. This is NOT the same
-	 * as the bounds of the figure, because the figure might draw range indicators, and additional 
-	 * text annotation which is not treated as an "important" part of the figure. 
+	 * The bounds of the main shape of submodule. This is used during the layouting process. 
+	 * This is NOT the same as the bounds of the figure, because the figure might draw range 
+	 * indicators, and additional text annotation which is not treated as an "important" 
+	 * part of the figure. 
 	 */
-	public Dimension getSize();
+	public Rectangle getShapeBounds();
 	
+	/**
+	 * The bounds of the name label of the submodule.  
+	 */
+	public Rectangle getnameBounds();
 	/**
 	 * The size of the module vector. Returns 0 if it is not a module vector.
 	 */
