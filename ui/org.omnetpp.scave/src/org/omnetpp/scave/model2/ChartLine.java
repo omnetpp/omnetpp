@@ -8,7 +8,6 @@
 package org.omnetpp.scave.model2;
 
 import org.omnetpp.scave.engine.ResultFileManager;
-import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.model.Chart;
 
 /**
@@ -25,17 +24,14 @@ public class ChartLine {
 	private int series;
 	// the key of the line within the chart
 	private String key;
-	// the id of the result item that the line represents
-	private long id;
-	// the ResultFileManager that loaded the result item, and can resolve the id
-	private ResultFileManager manager;
+	// the reference to the result item that the line represents
+	private ResultItemRef itemRef;
 	
 	public ChartLine(Chart chart, int series, String key, long id, ResultFileManager manager) {
 		this.chart = chart;
 		this.series = series;
 		this.key = key;
-		this.id = id;
-		this.manager = manager;
+		this.itemRef = id != -1L && manager != null ? new ResultItemRef(id, manager) : null;
 	}
 	
 	public Chart getChart() {
@@ -50,21 +46,8 @@ public class ChartLine {
 		return key;
 	}
 	
-	public long getResultItemID() {
-		return id;
-	}
-	
-	public ResultFileManager getResultFileManager() {
-		return manager;
-	}
-	
-	public ResultItem getResultItem() {
-		try {
-			return id != -1 && manager != null ? manager.getItem(id) : null;
-		} catch (Exception e) {
-			// no such result item, the file was unloaded
-			return null;
-		}
+	public ResultItemRef getResultItemRef() {
+		return itemRef;
 	}
 	
 	public String toString() {

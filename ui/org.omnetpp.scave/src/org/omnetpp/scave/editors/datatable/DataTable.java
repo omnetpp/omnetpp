@@ -20,6 +20,7 @@ import static org.omnetpp.scave.engine.RunAttribute.RUNNUMBER;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.ListenerList;
@@ -167,10 +168,15 @@ public class DataTable extends Table {
 		initColumns();
 
 		addListener(SWT.SetData, new Listener() {
-			public void handleEvent(Event e) {
-				TableItem item = (TableItem)e.item;
-				int lineNumber = indexOf(item);
-				fillTableLine(item, lineNumber);
+			public void handleEvent(final Event e) {
+				ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
+					public Object call() {
+						TableItem item = (TableItem)e.item;
+						int lineNumber = indexOf(item);
+						fillTableLine(item, lineNumber);
+						return null;
+					}
+				});
 			}
 		});
 

@@ -7,9 +7,12 @@
 
 package org.omnetpp.scave.actions;
 
+import java.util.concurrent.Callable;
+
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
+import org.omnetpp.scave.engine.ResultFileManager;
 
 /**
  * ...
@@ -22,9 +25,15 @@ public class CopyToClipboardAction extends AbstractScaveAction {
 
 	@Override
 	protected void doRun(ScaveEditor editor, IStructuredSelection selection) {
-		FilteredDataPanel activePanel = editor.getBrowseDataPage().getActivePanel();
-		if (activePanel != null)
-			activePanel.getTable().copySelectionToClipboard();
+		final FilteredDataPanel activePanel = editor.getBrowseDataPage().getActivePanel();
+		if (activePanel != null) {
+			ResultFileManager.callWithReadLock(activePanel.getResultFileManager(), new Callable<Object>() {
+				public Object call() throws Exception {
+					activePanel.getTable().copySelectionToClipboard();
+					return null;
+				}
+			});
+		}
 	}
 
 	@Override

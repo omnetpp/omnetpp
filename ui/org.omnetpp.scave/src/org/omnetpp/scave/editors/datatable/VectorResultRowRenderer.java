@@ -20,8 +20,9 @@ import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.virtualtable.IVirtualTableRowRenderer;
 import org.omnetpp.scave.engine.EnumType;
 import org.omnetpp.scave.engine.OutputVectorEntry;
-import org.omnetpp.scave.engine.VectorResult;
+import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.ResultItem.Type;
+import org.omnetpp.scave.model2.ResultItemRef;
 import org.omnetpp.scave.model2.ResultItemValueFormatter;
 
 /**
@@ -44,11 +45,11 @@ public class VectorResultRowRenderer extends LabelProvider implements IVirtualTa
 	protected int fontHeight;
 	
 	public void setInput(Object input) {
-		if (input instanceof VectorResult) {
-			valueLabelProvider.setResultItem((VectorResult)input);
+		if (input instanceof ResultItemRef) {
+			valueLabelProvider.setResultItem((ResultItemRef)input);
 		}
 		else {
-			valueLabelProvider.setResultItem(null);
+			valueLabelProvider.setResultItem((ResultItem)null);
 		}
 	}
 

@@ -12,6 +12,7 @@ import static org.omnetpp.scave.editors.forms.IScaveObjectEditForm.PARAM_SELECTE
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -21,6 +22,7 @@ import org.eclipse.jface.viewers.TreePath;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.ui.EditDialog;
+import org.omnetpp.scave.engine.ResultFileManager;
 
 /**
  * Opens an edit dialog for the selected dataset, chart, chart sheet, etc.
@@ -47,21 +49,30 @@ public class EditAction extends AbstractScaveAction {
 	}
 
 	@Override
-	protected void doRun(ScaveEditor scaveEditor, IStructuredSelection selection) {
-		if (isApplicable(scaveEditor, selection)) {
-			EObject editedObject = getEditedObject(scaveEditor, selection);
-			Object selectedObject = selection.getFirstElement();
-			setFormParameter(PARAM_SELECTED_OBJECT, selectedObject);
-			EditDialog dialog = new EditDialog(scaveEditor.getSite().getShell(), editedObject, scaveEditor, formParameters);
-			EStructuralFeature[] features = dialog.getFeatures();
-			if (features.length > 0)
-				dialog.open();
-		}
+	protected void doRun(final ScaveEditor scaveEditor, final IStructuredSelection selection) {
+		ResultFileManager.callWithReadLock(scaveEditor.getResultFileManager(), new Callable<Object>() {
+			public Object call() throws Exception {
+				if (isApplicable(scaveEditor, selection)) {
+					EObject editedObject = getEditedObject(scaveEditor, selection);
+					Object selectedObject = selection.getFirstElement();
+					setFormParameter(PARAM_SELECTED_OBJECT, selectedObject);
+					EditDialog dialog = new EditDialog(scaveEditor.getSite().getShell(), editedObject, scaveEditor, formParameters);
+					EStructuralFeature[] features = dialog.getFeatures();
+					if (features.length > 0)
+						dialog.open();
+				}
+				return null;
+			}
+		});
 	}
 
 	@Override
-	public boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
-		return getEditedObject(editor, selection) != null;
+	public boolean isApplicable(final ScaveEditor editor, final IStructuredSelection selection) {
+		return ResultFileManager.callWithReadLock(editor.getResultFileManager(), new Callable<Boolean>() {
+			public Boolean call() throws Exception {
+				return getEditedObject(editor, selection) != null;
+			}
+		});
 	}
 	
 	 //TODO edit several objects together?

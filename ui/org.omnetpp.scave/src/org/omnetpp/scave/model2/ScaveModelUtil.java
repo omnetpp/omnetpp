@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Callable;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.common.command.Command;
@@ -513,21 +514,26 @@ public class ScaveModelUtil {
 		return chartsheet;
 	}
 
-	public static void dumpIDList(String header, IDList idlist, ResultFileManager manager) {
+	public static void dumpIDList(String header, final IDList idlist, final ResultFileManager manager) {
 		Debug.print(header);
 		if (idlist.size() == 0)
 			Debug.println("Empty");
 		else {
 			Debug.println();
-			for (int i = 0; i < idlist.size(); ++i) {
-				ResultItem r = manager.getItem(idlist.get(i));
-				Debug.println(
-					String.format("File: %s Run: %s Module: %s Name: %s",
-						r.getFileRun().getFile().getFilePath(),
-						r.getFileRun().getRun().getRunName(),
-						r.getModuleName(),
-						r.getName()));
-			}
+			ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
+				public Object call() {
+					for (int i = 0; i < idlist.size(); ++i) {
+						ResultItem r = manager.getItem(idlist.get(i));
+						Debug.println(
+							String.format("File: %s Run: %s Module: %s Name: %s",
+								r.getFileRun().getFile().getFilePath(),
+								r.getFileRun().getRun().getRunName(),
+								r.getModuleName(),
+								r.getName()));
+					}
+					return null;
+				}
+			});
 		}
 	}
 	

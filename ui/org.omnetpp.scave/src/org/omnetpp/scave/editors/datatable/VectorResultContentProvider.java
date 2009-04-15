@@ -7,13 +7,16 @@
 
 package org.omnetpp.scave.editors.datatable;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.Viewer;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.virtualtable.IVirtualTableContentProvider;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.engine.OutputVectorEntry;
+import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.engineext.IndexedVectorFileReaderEx;
+import org.omnetpp.scave.model2.ResultItemRef;
 
 /**
  * Implementation of the IVirtualTableContentProvider interface for 
@@ -120,21 +123,27 @@ public class VectorResultContentProvider implements IVirtualTableContentProvider
 	}
 
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+		Assert.isTrue(oldInput == null || oldInput instanceof ResultItemRef);
+		Assert.isTrue(newInput == null || newInput instanceof ResultItemRef);
+
 		if (reader != null) {
 			reader.delete();
 			reader = null;
 		}
 		
-		if (newInput instanceof VectorResult) {
-			VectorResult vector = (VectorResult)newInput;
-			int vectorId = vector.getVectorId();
-			String filename = vector.getFileRun().getFile().getFileSystemFilePath();
-				
-			try {
-				reader = new IndexedVectorFileReaderEx(filename, vectorId);
-			}
-			catch (Exception e) {
-				ScavePlugin.logError("Cannot open index file: "+filename, e);
+		if (newInput instanceof ResultItemRef) {
+			ResultItem item = ((ResultItemRef)newInput).resolve();
+			if (item instanceof VectorResult) {
+				VectorResult vector = (VectorResult)item;
+				int vectorId = vector.getVectorId();
+				String filename = vector.getFileRun().getFile().getFileSystemFilePath();
+					
+				try {
+					reader = new IndexedVectorFileReaderEx(filename, vectorId);
+				}
+				catch (Exception e) {
+					ScavePlugin.logError("Cannot open index file: "+filename, e);
+				}
 			}
 		}
 	}

@@ -14,6 +14,8 @@ import static org.omnetpp.scave.TestSupport.DATASET_VIEW_VECTORS_PANEL_ID;
 import static org.omnetpp.scave.TestSupport.WIDGET_ID;
 import static org.omnetpp.scave.TestSupport.enableGuiTest;
 
+import java.util.concurrent.Callable;
+
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.emf.common.notify.Notification;
@@ -59,18 +61,15 @@ import org.omnetpp.scave.editors.datatable.ChooseTableColumnsAction;
 import org.omnetpp.scave.editors.datatable.DataTable;
 import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
 import org.omnetpp.scave.editors.treeproviders.ScaveModelLabelProvider;
-import org.omnetpp.scave.engine.HistogramResult;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
-import org.omnetpp.scave.engine.ResultItem;
-import org.omnetpp.scave.engine.ScalarResult;
-import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.engineext.IResultFilesChangeListener;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.DatasetItem;
 import org.omnetpp.scave.model.ResultType;
 import org.omnetpp.scave.model2.ChartLine;
 import org.omnetpp.scave.model2.DatasetManager;
+import org.omnetpp.scave.model2.ResultItemRef;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
@@ -208,7 +207,12 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 		menuManager.add(setFilterAction);
 		table.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				setFilterAction.update(panel);
+				ResultFileManager.callWithReadLock(panel.getResultFileManager(), new Callable<Object>() {
+					public Object call() throws Exception {
+						setFilterAction.update(panel);
+						return null;
+					}
+				});
 			}
 		});
 		// XXX call getSite().registerContexMenu() ?
@@ -318,12 +322,14 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 				null);
 	}
 	
-	private FilteredDataPanel getFilteredDataPanel(ResultItem item) {
-		if (item instanceof ScalarResult)
+	private FilteredDataPanel getFilteredDataPanel(long id) {
+		int type = ResultFileManager.getTypeOf(id);
+		
+		if (type == ResultFileManager.SCALAR)
 			return scalarsPanel;
-		else if (item instanceof VectorResult)
+		else if (type == ResultFileManager.VECTOR)
 			return vectorsPanel;
-		else if (item instanceof HistogramResult)
+		else if (type == ResultFileManager.HISTOGRAM)
 			return histogramsPanel;
 		else
 			return null;
@@ -358,8 +364,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 	private void workbechSelectionChanged(ISelection selection) {
 		Dataset dataset = null;
 		DatasetItem item = null;
-		long id = -1L;
-		ResultFileManager manager = null;
+		ResultItemRef resultItem = null;
 		
 		if (selection == this.selection)
 			return;
@@ -377,15 +382,15 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 				ChartLine selectedLine = (ChartLine)selectedObject;
 				item = selectedLine.getChart();
 				dataset = ScaveModelUtil.findEnclosingDataset(item);
-				id = selectedLine.getResultItemID();
-				manager = selectedLine.getResultFileManager();
+				resultItem = selectedLine.getResultItemRef();
 			}
 		}
 		
 		if (dataset != null) {
 			setInput(dataset, item);
-			if (id != -1L && manager != null)
-				selectResultItem(id, manager);
+			if (resultItem != null && resultItem.getID() != -1L) {
+				selectResultItem(resultItem);
+			}
 		}
 		else {
 			setInput(null, null);
@@ -393,13 +398,12 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 		}
 	}
 	
-	private void selectResultItem(long id, ResultFileManager manager) {
-		ResultItem item = manager.getItem(id);
-		FilteredDataPanel panel = getFilteredDataPanel(item);
+	private void selectResultItem(ResultItemRef item) {
+		FilteredDataPanel panel = getFilteredDataPanel(item.getID());
 		if (panel != null && !panel.isDisposed()) {
 			DataTable table = panel.getTable();
 			if (!table.isDisposed()) {
-				table.setSelectionByID(id);
+				table.setSelectionByID(item.getID());
 			}
 		}
 	}
@@ -493,20 +497,33 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 	}
 	
 	private void updateDataTable() {
-		if (activeScaveEditor != null && selectedDataset != null) {
-			ResultFileManager manager = activeScaveEditor.getResultFileManager();
-			IDList scalars = DatasetManager.getIDListFromDataset(manager, selectedDataset, selectedItem, ResultType.SCALAR_LITERAL);
-			IDList vectors = DatasetManager.getIDListFromDataset(manager, selectedDataset, selectedItem, ResultType.VECTOR_LITERAL);
-			IDList histograms = DatasetManager.getIDListFromDataset(manager, selectedDataset, selectedItem, ResultType.HISTOGRAM_LITERAL);
-			scalarsPanel.setIDList(scalars);
-			vectorsPanel.setIDList(vectors);
-			histogramsPanel.setIDList(histograms);
-		}
-		else {
+		if (activeScaveEditor == null) {
+			Assert.isTrue(scalarsPanel.getResultFileManager() == null);
+			Assert.isTrue(vectorsPanel.getResultFileManager() == null);
+			Assert.isTrue(histogramsPanel.getResultFileManager() == null);
 			scalarsPanel.setIDList(IDList.EMPTY);
 			vectorsPanel.setIDList(IDList.EMPTY);
 			histogramsPanel.setIDList(IDList.EMPTY);
+			return;
 		}
+		
+		final ResultFileManager manager = activeScaveEditor.getResultFileManager();
+		ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
+			public Object call() {
+				IDList scalars = IDList.EMPTY;
+				IDList vectors = IDList.EMPTY;
+				IDList histograms = IDList.EMPTY;
+				if (selectedDataset != null) {
+					scalars = DatasetManager.getIDListFromDataset(manager, selectedDataset, selectedItem, ResultType.SCALAR_LITERAL);
+					vectors = DatasetManager.getIDListFromDataset(manager, selectedDataset, selectedItem, ResultType.VECTOR_LITERAL);
+					histograms = DatasetManager.getIDListFromDataset(manager, selectedDataset, selectedItem, ResultType.HISTOGRAM_LITERAL);
+				}
+				scalarsPanel.setIDList(scalars);
+				vectorsPanel.setIDList(vectors);
+				histogramsPanel.setIDList(histograms);
+				return null;
+			}
+		});
 	}
 	
 	private void showFilter(boolean show) {

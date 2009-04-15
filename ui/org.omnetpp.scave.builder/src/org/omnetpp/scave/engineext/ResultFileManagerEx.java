@@ -8,6 +8,7 @@
 package org.omnetpp.scave.engineext;
 
 import org.eclipse.core.runtime.ListenerList;
+import org.omnetpp.common.engine.ILock;
 import org.omnetpp.scave.engine.FileRun;
 import org.omnetpp.scave.engine.FileRunList;
 import org.omnetpp.scave.engine.HistogramResult;
@@ -72,42 +73,81 @@ public class ResultFileManagerEx extends ResultFileManager {
 	
 	@Override
 	public ResultFile loadFile(String filename) {
-		checkNotDeleted();
-		ResultFile file = super.loadFile(filename);
-		notifyChangeListeners();
-		return file;
+		getWriteLock().lock();
+		try {
+			checkNotDeleted();
+			ResultFile file = super.loadFile(filename);
+			notifyChangeListeners();
+			return file;
+		}
+		finally {
+			getWriteLock().unlock();
+		}
 	}
 
 	@Override
 	public ResultFile loadFile(String filename, String osFileName) {
-		checkNotDeleted();
-		ResultFile file = super.loadFile(filename, osFileName);
-		notifyChangeListeners();
-		return file;
+		getWriteLock().lock();
+		try {
+			checkNotDeleted();
+			ResultFile file = super.loadFile(filename, osFileName);
+			notifyChangeListeners();
+			return file;
+		}
+		finally {
+			getWriteLock().unlock();
+		}
 	}
 	
 	@Override
 	public void unloadFile(ResultFile file) {
-		checkNotDeleted();
-		super.unloadFile(file);
-		notifyChangeListeners();
+		getWriteLock().lock();
+		try {
+			checkNotDeleted();
+			super.unloadFile(file);
+			notifyChangeListeners();
+		}
+		finally {
+			getWriteLock().unlock();
+		}
 	}
 	
 	@Override
 	public long addComputedVector(int vectorId, String name, String file, StringMap attributes, long computationID, long input, Object processingOp) {
 		checkNotDeleted();
-		long id = super.addComputedVector(vectorId, name, file, attributes, computationID, input, processingOp);
-		notifyChangeListeners();
-		return id;
+		getWriteLock().lock();
+		try {
+			checkNotDeleted();
+			long id = super.addComputedVector(vectorId, name, file, attributes, computationID, input, processingOp);
+			notifyChangeListeners();
+			return id;
+		}
+		finally {
+			getWriteLock().unlock();
+		}
 	}
 
 	/*-------------------------------------------
 	 *               Reader methods
 	 *-------------------------------------------*/
+	
+	
 	public boolean isDisposed() {
 		return getCPtr(this) == 0;
 	}
 	
+	@Override
+	public ILock getReadLock() {
+		checkNotDeleted();
+		return super.getReadLock();
+	}
+
+	@Override
+	public ILock getWriteLock() {
+		checkNotDeleted();
+		return super.getWriteLock();
+	}
+
 	@Override
 	public IDList getAllScalars() {
 		checkNotDeleted();
@@ -167,12 +207,6 @@ public class ResultFileManagerEx extends ResultFileManager {
 	/*
 	 * The rest adds check() calls only.
 	 */
-
-	@Override
-	public ResultItem _getItem(long id) {
-		checkNotDeleted();
-		return super._getItem(id);
-	}
 
 	@Override
 	public ResultFileList filterFileList(ResultFileList fileList, String filePathPattern) {
@@ -303,24 +337,28 @@ public class ResultFileManagerEx extends ResultFileManager {
 	@Override
 	public ResultItem getItem(long id) {
 		checkNotDeleted();
+		checkReadLock();
 		return super.getItem(id);
 	}
 
 	@Override
 	public ScalarResult getScalar(long id) {
 		checkNotDeleted();
+		checkReadLock();
 		return super.getScalar(id);
 	}
 	
 	@Override
 	public VectorResult getVector(long id) {
 		checkNotDeleted();
+		checkReadLock();
 		return super.getVector(id);
 	}
 
 	@Override
 	public HistogramResult getHistogram(long id) {
 		checkNotDeleted();
+		checkReadLock();
 		return super.getHistogram(id);
 	}
 

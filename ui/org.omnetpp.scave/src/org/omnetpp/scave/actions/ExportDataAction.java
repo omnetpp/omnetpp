@@ -7,11 +7,14 @@
 
 package org.omnetpp.scave.actions;
 
+import java.util.concurrent.Callable;
+
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.ui.IWorkbenchWizard;
 import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
+import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.DatasetItem;
 import org.omnetpp.scave.wizard.AbstractExportWizard;
@@ -53,11 +56,16 @@ public class ExportDataAction extends AbstractScaveAction {
 	}
 
 	@Override
-	protected void doRun(ScaveEditor scaveEditor, IStructuredSelection selection) {
+	protected void doRun(final ScaveEditor scaveEditor, final IStructuredSelection selection) {
 		if (selection != null) {
-			IWorkbenchWizard wizard = createWizard();
+			final IWorkbenchWizard wizard = createWizard();
 			if (wizard != null) {
-				wizard.init(scaveEditor.getSite().getWorkbenchWindow().getWorkbench(), selection);
+				ResultFileManager.callWithReadLock(scaveEditor.getResultFileManager(), new Callable<Object>() {
+					public Object call() throws Exception {
+						wizard.init(scaveEditor.getSite().getWorkbenchWindow().getWorkbench(), selection);
+						return null;
+					}
+				});
 				WizardDialog dialog = new WizardDialog(scaveEditor.getSite().getShell(), wizard);
 				dialog.open();
 			}

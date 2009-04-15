@@ -14,6 +14,8 @@ import static org.omnetpp.scave.TestSupport.RUN_FILE_VIEW_TREE_ID;
 import static org.omnetpp.scave.TestSupport.WIDGET_ID;
 import static org.omnetpp.scave.TestSupport.enableGuiTest;
 
+import java.util.concurrent.Callable;
+
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
@@ -109,9 +111,14 @@ public class InputsPage extends ScaveEditorPage {
 						public void run() {
 							scheduledUpdate = null;
 							if (!isDisposed()) {
-								getFileRunTreeViewer().setInput(manager); // force refresh
-								getRunFileTreeViewer().setInput(manager);
-								getLogicalDataTreeViewer().setInput(manager);
+								ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
+									public Object call()  {
+										getFileRunTreeViewer().setInput(manager); // force refresh
+										getRunFileTreeViewer().setInput(manager);
+										getLogicalDataTreeViewer().setInput(manager);
+										return null;
+									}
+								});
 							}
 						}
 					};

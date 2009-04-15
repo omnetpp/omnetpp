@@ -7,6 +7,8 @@
 
 package org.omnetpp.scave.actions;
 
+import java.util.concurrent.Callable;
+
 import org.eclipse.emf.common.command.BasicCommandStack;
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.CommandStack;
@@ -38,25 +40,21 @@ public class CreateTempChartAction extends AbstractScaveAction {
 
 	@Override
 	protected void doRun(ScaveEditor editor, IStructuredSelection selection) {
-		FilteredDataPanel activePanel = editor.getBrowseDataPage().getActivePanel();
+		final FilteredDataPanel activePanel = editor.getBrowseDataPage().getActivePanel();
 		if (activePanel == null || activePanel.getTable().getSelectionCount() == 0)
 			return;
 
-		String datasetName = "dataset";
-		Dataset dataset;
-		ResultFileManager manager = activePanel.getTable().getResultFileManager();
-		manager.getReadLock().lock();
-		try {
-			dataset =
-				ScaveModelUtil.createTemporaryDataset(
+		final String datasetName = "dataset";
+		final ResultFileManager manager = activePanel.getTable().getResultFileManager();
+		Dataset dataset = ResultFileManager.callWithReadLock(manager, new Callable<Dataset>() {
+			public Dataset call() {
+				return ScaveModelUtil.createTemporaryDataset(
 						datasetName,
 						activePanel.getTable().getSelectedIDs(),
 						null,
 						manager);
-		}
-		finally {
-			manager.getReadLock().unlock();
-		}
+			}
+		});
 		
 		String chartName = "temp" + ++counter; //FIXME generate proper name
 		ResultType type = activePanel.getTable().getType();

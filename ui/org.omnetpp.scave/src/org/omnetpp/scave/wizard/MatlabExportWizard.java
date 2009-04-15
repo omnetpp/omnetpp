@@ -7,7 +7,6 @@
 
 package org.omnetpp.scave.wizard;
 
-import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.scave.ScavePlugin;

@@ -11,6 +11,7 @@ import static org.omnetpp.common.image.ImageFactory.TOOLBAR_IMAGE_TEMPLATE;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.concurrent.Callable;
 
 import org.eclipse.emf.common.command.CompoundCommand;
 import org.eclipse.emf.edit.command.AddCommand;
@@ -20,6 +21,7 @@ import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.window.Window;
 import org.omnetpp.common.image.ImageFactory;
+import org.omnetpp.common.util.Pair;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.ui.ChartPage;
 import org.omnetpp.scave.editors.ui.CreateChartTemplateDialog;
@@ -37,6 +39,8 @@ import org.omnetpp.scave.model.ResultType;
 import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave.model2.DatasetManager;
 import org.omnetpp.scave.model2.ScaveModelUtil;
+
+import static org.omnetpp.common.util.Pair.pair;
 
 /**
  * Creates a dataset from a temporary chart.
@@ -57,28 +61,27 @@ public class CreateChartTemplateAction extends AbstractScaveAction {
 	protected void doRun(ScaveEditor scaveEditor, IStructuredSelection selection) {
 		ScaveEditorPage page = scaveEditor.getActiveEditorPage();
 		if (page != null && page instanceof ChartPage) {
-			Chart chart = ((ChartPage)page).getChart();
+			final Chart chart = ((ChartPage)page).getChart();
 			if (ScaveModelUtil.isTemporaryChart(chart, scaveEditor)) {
-				Dataset dataset = ScaveModelUtil.findEnclosingDataset(chart);
+				final Dataset dataset = ScaveModelUtil.findEnclosingDataset(chart);
 
-				CreateChartTemplateDialog dialog = new CreateChartTemplateDialog(scaveEditor.getSite().getShell());
+				final CreateChartTemplateDialog dialog = new CreateChartTemplateDialog(scaveEditor.getSite().getShell());
 
 				if (dialog.open() == Window.OK) {
 					EditingDomain domain = scaveEditor.getEditingDomain();
 					ScaveModelPackage pkg = ScaveModelPackage.eINSTANCE;
-					ResultFileManager manager = scaveEditor.getResultFileManager();
-					Collection<Add> origAdds, adds;
-					manager.getReadLock().lock();
-					try {
-						ResultType type = resultTypeForChart(chart);
-						IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, null, type);
-						ResultItem[] items = ScaveModelUtil.getResultItems(idlist, manager);
-						origAdds = getOriginalAdds(dataset);
-						adds = ScaveModelUtil.createAddsWithFields(items, dialog.getFilterFields());
-					}
-					finally {
-						manager.getReadLock().unlock();
-					}
+					final ResultFileManager manager = scaveEditor.getResultFileManager();
+					Pair<Collection<Add>,Collection<Add>> adds =
+						ResultFileManager.callWithReadLock(manager, new Callable<Pair<Collection<Add>,Collection<Add>>>() {
+							public Pair<Collection<Add>, Collection<Add>> call() {
+								ResultType type = resultTypeForChart(chart);
+								IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, null, type);
+								ResultItem[] items = ScaveModelUtil.getResultItems(idlist, manager);
+								Collection<Add> origAdds = getOriginalAdds(dataset);
+								Collection<Add> adds = ScaveModelUtil.createAddsWithFields(items, dialog.getFilterFields());
+								return pair(origAdds, adds);
+							}
+						});
 
 					CompoundCommand command = new CompoundCommand();
 					command.append(SetCommand.create( // set dataset name
@@ -91,12 +94,12 @@ public class CreateChartTemplateAction extends AbstractScaveAction {
 										chart,
 										pkg.getChart_Name(),
 										dialog.getChartName()));
-					command.append(RemoveCommand.create(domain, origAdds)); // change Add items
+					command.append(RemoveCommand.create(domain, adds.first)); // change Add items
 					command.append(AddCommand.create(
 										domain,
 										dataset,
 										pkg.getDataset_Items(),
-										adds,
+										adds.second,
 										0));
 					command.append(RemoveCommand.create(domain, dataset)); // move Dataset
 					command.append(AddCommand.create(

@@ -8,6 +8,7 @@
 package org.omnetpp.scave.charting.properties;
 
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource;
@@ -50,7 +51,12 @@ public class VectorChartProperties extends ChartProperties
 			description="Properties of individual lines. Default is applied to all properties not set individually.")
 	public IPropertySource getLineProperties()
 	{
-		IXYDataset dataset = DatasetManager.createXYDataset(chart, null, false, manager, null);
+		IXYDataset dataset = ResultFileManager.callWithReadLock(manager, new Callable<IXYDataset>() {
+			public IXYDataset call() {
+				return DatasetManager.createXYDataset(chart, null, false, manager, null);
+			}
+		});
+
         String[] keys = null;
 		if (dataset != null) {
 			keys = new String[dataset.getSeriesCount()];

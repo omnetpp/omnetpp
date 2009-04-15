@@ -8,6 +8,7 @@
 package org.omnetpp.scave.actions;
 
 import java.util.Collection;
+import java.util.concurrent.Callable;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.ecore.EObject;
@@ -17,6 +18,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.omnetpp.scave.editors.ScaveEditor;
+import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.wizard.NewScaveObjectWizard;
 
 /**
@@ -46,17 +48,23 @@ public class NewAction extends AbstractScaveAction {
 	}
 
 	@Override
-	protected void doRun(ScaveEditor editor, IStructuredSelection selection) {
-		EObject parent = getParent(selection);
+	protected void doRun(final ScaveEditor editor, final IStructuredSelection selection) {
+		final EObject parent = getParent(selection);
+		final NewScaveObjectWizard wizard = new NewScaveObjectWizard(editor, parent);
 		if (isApplicable(editor, selection)) {
-			NewScaveObjectWizard wizard = new NewScaveObjectWizard(editor, parent);
-			WizardDialog dialog = new WizardDialog(editor.getSite().getShell(), wizard);
-			if (dialog.open() == Window.OK) {
+			int returnCode = ResultFileManager.callWithReadLock(editor.getResultFileManager(), new Callable<Integer>() {
+				public Integer call() throws Exception {
+					WizardDialog dialog = new WizardDialog(editor.getSite().getShell(), wizard);
+					return dialog.open();
+				}
+			});
+			
+			if (returnCode == Window.OK) {
 				Command command = CreateChildCommand.create(
-									editor.getEditingDomain(),
-									parent,
-									wizard.getNewChildDescriptor(),
-									selection.toList());  
+						editor.getEditingDomain(),
+						parent,
+						wizard.getNewChildDescriptor(),
+						selection.toList());  
 				editor.executeCommand(command);
 			}
 		}

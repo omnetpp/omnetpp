@@ -264,11 +264,13 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 
 		// we can load the result files now
         //XXX we should probably move this after creating the pages, but then we'll need something like browseDataPage.refresh()
-        tracker.synchronize();
+        // tracker.synchronize();
 
         createInputsPage();
         createBrowseDataPage();
         createDatasetsPage();
+        
+        tracker.synchronize();
 
         restoreState();
 

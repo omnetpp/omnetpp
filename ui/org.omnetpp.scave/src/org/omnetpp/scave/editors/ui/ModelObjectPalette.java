@@ -7,6 +7,8 @@
 
 package org.omnetpp.scave.editors.ui;
 
+import java.util.concurrent.Callable;
+
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.ecore.EClass;
@@ -36,6 +38,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.editors.ScaveEditor;
+import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.ChartSheet;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.ScaveModelFactory;
@@ -104,7 +107,12 @@ public class ModelObjectPalette {
 
 		toolButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				addAsChildOrSibling(elementPrototype);
+				ResultFileManager.callWithReadLock(editor.getResultFileManager(), new Callable<Object>() {
+					public Object call() throws Exception {
+						addAsChildOrSibling(elementPrototype);
+						return null;
+					}
+				});
 			}
 		});
 

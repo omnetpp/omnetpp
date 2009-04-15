@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
@@ -34,6 +35,9 @@ public class IDListSelection implements IStructuredSelection {
 	ResultType type;
 	
 	public IDListSelection(IDList idlist, ResultFileManager manager) {
+		Assert.isNotNull(idlist);
+		Assert.isNotNull(manager);
+		
 		this.elements = idlist.toArray();
 		this.manager = manager;
 		if (idlist.areAllScalars())
@@ -45,6 +49,8 @@ public class IDListSelection implements IStructuredSelection {
 	}
 	
 	public IDListSelection(long id, ResultFileManager manager) {
+		Assert.isNotNull(manager);
+
 		this.elements = new Long[] { id };
 		this.manager = manager;
 		int internalType = ResultFileManager.getTypeOf(id);
@@ -145,5 +151,18 @@ public class IDListSelection implements IStructuredSelection {
 
 	public boolean isEmpty() {
 		return elements.length == 0;
+	}
+	
+	public boolean equals(Object other) {
+		if (this == other)
+			return true;
+		if (other == null || getClass() != other.getClass())
+			return false;
+		IDListSelection otherSelection = (IDListSelection)other;
+		return manager == otherSelection.manager && Arrays.equals(elements, otherSelection.elements);
+	}
+	
+	public int hashCode() {
+		return 31 * manager.hashCode() + Arrays.hashCode(elements);
 	}
 }

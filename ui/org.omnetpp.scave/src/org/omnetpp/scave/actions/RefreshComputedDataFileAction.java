@@ -7,8 +7,11 @@
 
 package org.omnetpp.scave.actions;
 
+import java.util.concurrent.Callable;
+
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
+import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.ProcessingOp;
 import org.omnetpp.scave.model2.ComputedResultFileUpdater;
 
@@ -22,9 +25,15 @@ public class RefreshComputedDataFileAction extends AbstractScaveAction {
 	protected void doRun(ScaveEditor scaveEditor, IStructuredSelection selection) {
 		if (selection != null && selection.getFirstElement() instanceof ProcessingOp)
 		{
-			ProcessingOp selected = (ProcessingOp)selection.getFirstElement();
+			final ProcessingOp selected = (ProcessingOp)selection.getFirstElement();
 			selected.setComputationHash(0);
-			ComputedResultFileUpdater.instance().ensureComputedFile(selected, scaveEditor.getResultFileManager(), null);
+			final ResultFileManager manager = scaveEditor.getResultFileManager();
+			ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
+				public Object call() {
+					ComputedResultFileUpdater.instance().ensureComputedFile(selected, manager, null);
+					return null;
+				}
+			});
 		}
 	}
 

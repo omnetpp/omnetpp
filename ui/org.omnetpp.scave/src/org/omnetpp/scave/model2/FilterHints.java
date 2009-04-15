@@ -44,6 +44,8 @@ public class FilterHints {
 	}
 	
 	public FilterHints(ResultFileManager manager, IDList idlist) {
+		manager.checkReadLock();
+		
 		ResultFileList fileList = manager.getUniqueFiles(idlist);
 		RunList runList = manager.getUniqueRuns(idlist);
 

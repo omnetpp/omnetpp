@@ -27,6 +27,7 @@ import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
+import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
@@ -81,6 +82,7 @@ public class ScatterChartEditForm extends BaseLineChartEditForm {
 			xydataset = DatasetManager.createScatterPlotDataset((ScatterChart)chart, dataset, manager, null);
 		}
 		catch (Exception e) {
+			ScavePlugin.logError(e);
 			xydataset = null;
 		}
 

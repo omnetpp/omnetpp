@@ -7,9 +7,12 @@
 
 package org.omnetpp.scave.actions;
 
+import java.util.concurrent.Callable;
+
 import org.eclipse.jface.action.Action;
 import org.omnetpp.scave.editors.datatable.DataTable;
 import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
+import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.ResultItemField;
 import org.omnetpp.scave.model2.Filter;
@@ -24,9 +27,8 @@ import org.omnetpp.scave.model2.FilterUtil;
 public class SetFilterAction2 extends Action
 {
 	FilteredDataPanel panel;
-	ResultItem item;
-	ResultItemField field;
-	String value;
+	String fieldName;
+	String fieldValue;
 	
 	public SetFilterAction2() {
 		setDescription("Sets the filter according to the clicked table cell.");
@@ -38,22 +40,29 @@ public class SetFilterAction2 extends Action
 	 * the selected cell of the table changed.
 	 * It updates the parameters of the action.
 	 */
-	public void update(FilteredDataPanel panel) {
+	public void update(final FilteredDataPanel panel) {
 		this.panel = panel;
 		if (panel != null) {
-
-			DataTable table = panel.getTable();
-			item = table.getSelectedItem();
-			if (item != null && table.getSelectedField() != null) {
-				field = new ResultItemField(table.getSelectedField());
-				value = field.getFieldValue(item);
-				
-				if (value != null) {
-					setText(String.format("Set filter: %s=%s", field.getName(), value));
-					setEnabled(true);
-					return;
+			ResultFileManager.callWithReadLock(panel.getResultFileManager(), new Callable<Object>() {
+				public Object call() {
+					DataTable table = panel.getTable();
+					ResultItem item = table.getSelectedItem();
+					if (item != null && table.getSelectedField() != null) {
+						ResultItemField field = new ResultItemField(table.getSelectedField());
+						fieldName = field.getName();
+						fieldValue = field.getFieldValue(item);
+						
+						if (fieldValue != null) {
+							setText(String.format("Set filter: %s=%s", field.getName(), fieldValue));
+							setEnabled(true);
+							return null;
+						}
+					}
+					setText("Set filter");
+					setEnabled(false);
+					return null;
 				}
-			}
+			});
 
 		}
 		setText("Set filter");
@@ -62,9 +71,9 @@ public class SetFilterAction2 extends Action
 	
 	@Override
 	public void run() {
-		if (panel != null && field != null && value != null) {
+		if (panel != null && fieldName != null && fieldValue != null) {
 			FilterUtil filter = new FilterUtil();
-			filter.setField(field.getName(), value);
+			filter.setField(fieldName, fieldValue);
 			panel.setFilterParams(new Filter(filter.getFilterPattern()));
 		}
 	}

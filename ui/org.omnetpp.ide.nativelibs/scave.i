@@ -323,9 +323,7 @@ int strdictcmp(const char *s1, const char *s2);
 // Add polymorphic return type to ResultFileManager::getItem(),
 // because plain ResultItem does not contain the type (VECTOR, SCALAR, etc).
 //
-%rename(_getItem) ResultFileManager::getItem;
-%javamethodmodifiers ResultFileManager::_getItem "protected";
-
+%ignore ResultFileManager::getItem;
 %typemap(javacode) ResultFileManager %{
 
   public ResultItem getItem(long id) {
@@ -339,6 +337,26 @@ int strdictcmp(const char *s1, const char *s2);
       else
           throw new RuntimeException("unknown ID type");
   }
+
+  public static <T> T callWithReadLock(ResultFileManager manager, java.util.concurrent.Callable<T> callable) {
+    if (manager != null)
+      manager.getReadLock().lock();
+    try {
+      return callable.call();
+    }
+    catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+    finally {
+      if (manager != null)
+        manager.getReadLock().unlock();
+    }
+  }
+
+  public void checkReadLock() {
+    org.eclipse.core.runtime.Assert.isTrue(getReadLock().hasLock(), "Missing read lock.");
+  }
+
 %}
 
 FIX_STRING_MEMBER(ResultFile, filePath, FilePath);

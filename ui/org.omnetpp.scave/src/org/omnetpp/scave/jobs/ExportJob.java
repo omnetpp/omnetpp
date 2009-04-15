@@ -8,6 +8,7 @@
 package org.omnetpp.scave.jobs;
 
 import java.io.File;
+import java.util.concurrent.Callable;
 
 import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.CoreException;
@@ -58,7 +59,7 @@ public class ExportJob extends WorkspaceJob
 	}
 
 	@Override
-	public IStatus runInWorkspace(IProgressMonitor monitor)
+	public IStatus runInWorkspace(final IProgressMonitor monitor)
 			throws CoreException {
 		
 		if (exporter == null || manager == null)
@@ -69,25 +70,25 @@ public class ExportJob extends WorkspaceJob
 		try {
 			monitor.beginTask("Exporting", calculateTotalWork());
 
-			manager.getReadLock().lock();
-			try {
-				status = exportVectors(exporter, monitor);
-				if (status.getSeverity() != IStatus.OK)
-					return status;
-	
-				status = exportScalars(exporter, monitor);
-				if (status.getSeverity() != IStatus.OK)
-					return status;
-				
-				status = exportHistograms(exporter, monitor);
-				if (status.getSeverity() != IStatus.OK)
-					return status;
-			}
-			finally {
-				manager.getReadLock().unlock();
-			}
+			status = ResultFileManager.callWithReadLock(manager, new Callable<IStatus>() {
+				public IStatus call() throws Exception {
+					IStatus status = exportVectors(exporter, monitor);
+					if (status.getSeverity() != IStatus.OK)
+						return status;
+		
+					status = exportScalars(exporter, monitor);
+					if (status.getSeverity() != IStatus.OK)
+						return status;
+					
+					status = exportHistograms(exporter, monitor);
+					if (status.getSeverity() != IStatus.OK)
+						return status;
+					
+					return Status.OK_STATUS;
+				}
+			});
 			
-			return Status.OK_STATUS;
+			return status;
 		}
 		catch (Exception e) {
 			IStatus error = new Status(IStatus.ERROR, ScavePlugin.PLUGIN_ID, "Error occured during export", e);

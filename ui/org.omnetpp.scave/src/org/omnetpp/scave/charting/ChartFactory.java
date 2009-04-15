@@ -8,6 +8,7 @@
 package org.omnetpp.scave.charting;
 
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -105,8 +106,12 @@ public class ChartFactory {
 		// but as a background job:
 		//
 		startDatasetEvaluationJob(scalarChart, new IDatasetCalculation() {
-			public IDataset run(IProgressMonitor progressMonitor) {
-				return DatasetManager.createScalarDataset(chart, manager, progressMonitor);
+			public IDataset run(final IProgressMonitor progressMonitor) {
+				return ResultFileManager.callWithReadLock(manager, new Callable<IDataset>() {
+					public IDataset call() throws Exception {
+						return DatasetManager.createScalarDataset(chart, manager, progressMonitor);
+					}
+				});
 			}
 		});
 	}
@@ -117,8 +122,12 @@ public class ChartFactory {
 		// but as a background job:
 		//
 		startDatasetEvaluationJob(vectorChart, new IDatasetCalculation() {
-			public IDataset run(IProgressMonitor progressMonitor) {
-				return DatasetManager.createVectorDataset(chart, manager, progressMonitor);
+			public IDataset run(final IProgressMonitor progressMonitor) {
+				return ResultFileManager.callWithReadLock(manager, new Callable<IDataset>() {
+					public IDataset call() {
+						return DatasetManager.createVectorDataset(chart, manager, progressMonitor);
+					}
+				});
 			}
 		});
 	}
@@ -129,8 +138,12 @@ public class ChartFactory {
 		// but as a background job:
 		//
 		startDatasetEvaluationJob(histogramChart, new IDatasetCalculation() {
-			public IDataset run(IProgressMonitor progressMonitor) {
-				return DatasetManager.createHistogramDataset(chart, manager, progressMonitor);
+			public IDataset run(final IProgressMonitor progressMonitor) {
+				return ResultFileManager.callWithReadLock(manager, new Callable<IDataset>() {
+					public IDataset call() {
+						return DatasetManager.createHistogramDataset(chart, manager, progressMonitor);
+					}
+				});
 			}
 		});
 	}
@@ -141,8 +154,12 @@ public class ChartFactory {
 		// but as a background job:
 		//
 		startDatasetEvaluationJob(scatterChart, new IDatasetCalculation() {
-			public IDataset run(IProgressMonitor progressMonitor) {
-				return DatasetManager.createScatterPlotDataset((org.omnetpp.scave.model.ScatterChart)chart, manager, progressMonitor);
+			public IDataset run(final IProgressMonitor progressMonitor) {
+				return ResultFileManager.callWithReadLock(manager, new Callable<IDataset>() {
+					public IDataset call() {
+						return DatasetManager.createScatterPlotDataset((org.omnetpp.scave.model.ScatterChart)chart, manager, progressMonitor);
+					}
+				});
 			}
 		});
 	}

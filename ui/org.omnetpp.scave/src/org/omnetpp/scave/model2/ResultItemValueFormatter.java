@@ -34,6 +34,10 @@ public class ResultItemValueFormatter {
 		}
 	}
 	
+	public void setResultItem(ResultItemRef resultItemRef) {
+		setResultItem(resultItemRef.resolve());
+	}
+	
 	public String format(double value) {
 		if (type == Type.TYPE_DOUBLE) {
 			return String.valueOf(value);

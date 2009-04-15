@@ -8,6 +8,7 @@
 package org.omnetpp.scave.charting.properties;
 
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource;
@@ -81,7 +82,12 @@ public class HistogramChartProperties extends ChartProperties
 			description="Histogram plot properties.")
 	public IPropertySource getHistogramProperties()
 	{
-		IHistogramDataset dataset = DatasetManager.createHistogramDataset((HistogramChart)chart, manager, null);
+		IHistogramDataset dataset = ResultFileManager.callWithReadLock(manager, new Callable<IHistogramDataset>() {
+			public IHistogramDataset call() {
+				return DatasetManager.createHistogramDataset((HistogramChart)chart, manager, null);
+			}
+		});
+
         String[] keys = null;
 		if (dataset != null) {
 			keys = new String[dataset.getSeriesCount()];

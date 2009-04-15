@@ -7,6 +7,8 @@
 
 package org.omnetpp.scave.editors.ui;
 
+import java.util.concurrent.Callable;
+
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.swt.SWT;
@@ -134,7 +136,7 @@ public class BrowseDataPage extends ScaveEditorPage {
 		vectorsPanel.setResultFileManager(manager);
 		histogramsPanel.setResultFileManager(manager);
 		
-		refreshPage(manager);
+		//refreshPage(manager);
 	}
 
 	private void createTabFolder() {
@@ -216,8 +218,14 @@ public class BrowseDataPage extends ScaveEditorPage {
 						scheduledUpdate = new Runnable() {
 							public void run() {
 								scheduledUpdate = null;
-								if (!isDisposed())
-									refreshPage(manager);
+								if (!isDisposed()) {
+									ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
+										public Object call() {
+											refreshPage(manager);
+											return null;
+										}
+									});
+								}
 							}
 						};
 						getDisplay().asyncExec(scheduledUpdate);
@@ -231,14 +239,17 @@ public class BrowseDataPage extends ScaveEditorPage {
 		SelectionListener selectionChangeListener = new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				Object source = e.getSource();
-				if (source instanceof DataTable) {
-					FilteredDataPanel panel = getActivePanel();
-					if (panel != null && source == panel.getTable())
-						updateSelection();
-				}
-				else if (source == tabfolder) {
-					updateSelection();
+				FilteredDataPanel panel = getActivePanel();
+				if (panel != null) {
+					Object source = e.getSource();
+					if (source == panel.getTable() || source == tabfolder) {
+						ResultFileManager.callWithReadLock(panel.getResultFileManager(), new Callable<Object>() {
+							public Object call() throws Exception {
+								updateSelection();
+								return null;
+							}
+						});
+					}
 				}
 			}
 

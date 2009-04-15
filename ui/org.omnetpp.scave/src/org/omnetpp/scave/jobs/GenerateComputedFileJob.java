@@ -7,6 +7,8 @@
 
 package org.omnetpp.scave.jobs;
 
+import java.util.concurrent.Callable;
+
 import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
@@ -65,15 +67,22 @@ public class GenerateComputedFileJob extends WorkspaceJob
 			if (monitor != null)
 				monitor.beginTask("Generate computed file", 100);
 			
-			Dataset dataset = ScaveModelUtil.findEnclosingDataset(operation);
+			final Dataset dataset = ScaveModelUtil.findEnclosingDataset(operation);
 			if (dataset == null)
 				return ScavePlugin.getErrorStatus(0, "Operation removed from the dataset.", null);
 			
 			if (monitor != null)
 				monitor.subTask("Build dataflow network");
+			
+			final long[] computationHash = new long[1];
+			DataflowManager network = ResultFileManager.callWithReadLock(manager, new Callable<DataflowManager>() {
+				public DataflowManager call() {
+					computationHash[0] = DatasetManager.getComputationHash(operation, manager);
+					DataflowNetworkBuilder builder = new DataflowNetworkBuilder(manager);
+					return builder.build(dataset, operation, operation.getComputedFile());
+				}
+			});
 
-			DataflowNetworkBuilder builder = new DataflowNetworkBuilder(manager);
-			DataflowManager network = builder.build(dataset, operation, operation.getComputedFile());
 			if (debug) network.dump();
 			
 			IProgressMonitor subMonitor = null;
@@ -94,7 +103,7 @@ public class GenerateComputedFileJob extends WorkspaceJob
 			if (monitor != null && monitor.isCanceled())
 				return Status.CANCEL_STATUS;
 			
-			operation.setComputationHash(DatasetManager.getComputationHash(operation, manager));
+			operation.setComputationHash(computationHash[0]);
 			return Status.OK_STATUS;
 		} catch (Exception e) {
 			return ScavePlugin.getErrorStatus(e);

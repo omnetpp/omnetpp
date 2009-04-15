@@ -10,6 +10,7 @@ package org.omnetpp.scave.actions;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.edit.command.AddCommand;
@@ -22,6 +23,7 @@ import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.datatable.DataTable;
 import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
 import org.omnetpp.scave.editors.ui.DatasetSelectionDialog;
+import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Add;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Dataset;
@@ -52,7 +54,7 @@ public class AddSelectedToDatasetAction extends AbstractScaveAction {
 		if (activePanel == null)
 			return;
 		
-		DataTable table = activePanel.getTable();
+		final DataTable table = activePanel.getTable();
 		String filterPattern = activePanel.getFilter().getFilterPattern();
 		ResultType type = editor.getBrowseDataPage().getActivePanelType();
 		
@@ -80,12 +82,19 @@ public class AddSelectedToDatasetAction extends AbstractScaveAction {
 						break;
 				}
 
-				Collection<Add> addItems = addByFilter ?
-											Collections.singletonList(
-													ScaveModelUtil.createAdd(filterPattern, type)) :
-											ScaveModelUtil.createAdds(
-													table.getSelectedItems(),
-													null);
+				Collection<Add> addItems;
+				if (addByFilter) {
+					addItems = Collections.singletonList(
+								ScaveModelUtil.createAdd(filterPattern, type));
+				}
+				else {
+					ResultFileManager manager = table.getResultFileManager();
+					addItems = ResultFileManager.callWithReadLock(manager, new Callable<Collection<Add>>() {
+						public Collection<Add> call() {
+							return ScaveModelUtil.createAdds(table.getSelectedItems(), null);
+						}
+					});
+				}
 
 				Command command = AddCommand.create(
 							editor.getEditingDomain(),
