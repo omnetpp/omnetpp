@@ -20,10 +20,10 @@
 
 USING_NAMESPACE
 
-#ifdef _WIN32 
+#ifdef _WIN32
 #ifdef PTW32_STATIC_LIB
 // required only if the pthread library is used as a static library
-class PThreadInit 
+class PThreadInit
 {
   public:
     PThreadInit() { pthread_win32_process_attach_np (); }
@@ -133,6 +133,12 @@ bool ReentrantReadWriteLock::tryLockRead()
 	}
 }
 
+bool ReentrantReadWriteLock::hasReadLock()
+{
+	ThreadLocalState &tls = getThreadLocalState();
+	return tls.readLockCount > 0;
+}
+
 void ReentrantReadWriteLock::lockWrite()
 {
 	int rc;
@@ -195,6 +201,11 @@ bool ReentrantReadWriteLock::tryLockWrite()
 		handleErrors(rc, "Error in tryLockWrite()");
 		return false; // unreachable
 	}
+}
+
+bool ReentrantReadWriteLock::hasWriteLock()
+{
+	return writeLockCount > 0 && pthread_equal(pthread_self(), writerThread);
 }
 
 void ReentrantReadWriteLock::unlockRead()

@@ -30,6 +30,7 @@ class COMMON_API ILock
 		virtual void lock() = 0;
 		virtual bool tryLock() = 0;
 		virtual void unlock() = 0;
+		virtual bool hasLock() = 0;
 };
 
 class COMMON_API IReadWriteLock
@@ -84,9 +85,11 @@ class COMMON_API ReentrantReadWriteLock : public IReadWriteLock
 		void lockRead();
 		bool tryLockRead();
 		void unlockRead();
+		bool hasReadLock();
 		void lockWrite();
 		bool tryLockWrite();
 		void unlockWrite();
+		bool hasWriteLock();
 
 		class ReadLock : public ILock
 		{
@@ -97,6 +100,7 @@ class COMMON_API ReentrantReadWriteLock : public IReadWriteLock
 				virtual void lock() { rwl.lockRead(); }
 				virtual bool tryLock() { return rwl.tryLockRead(); }
 				virtual void unlock() { rwl.unlockRead(); }
+				virtual bool hasLock() { return rwl.hasReadLock(); }
 		};
 
 		class WriteLock : public ILock
@@ -108,6 +112,7 @@ class COMMON_API ReentrantReadWriteLock : public IReadWriteLock
 				virtual void lock() { rwl.lockWrite(); }
 				virtual bool tryLock() { return rwl.tryLockWrite(); }
 				virtual void unlock() { rwl.unlockWrite(); }
+				virtual bool hasLock() { return rwl.hasWriteLock(); }
 		};
 
 		ReadLock _readLock;
