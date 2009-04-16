@@ -105,7 +105,7 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint {
 
 		// problem marker image
 		foregroundLayer.add(new AttachedLayer(this, new PrecisionPoint(0.0, 0.0),
-				problemMarkerFigure, new PrecisionPoint(0.35, 0.35), null));
+				problemMarkerFigure, new PrecisionPoint(0.35, 0.35), null)); //XXX draw it instead!
 
 		super.addNotify();
 	}
@@ -183,7 +183,7 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint {
 				displayString.unit2pixel(displayString.getAsInt(IDisplayString.Prop.LAYOUT_PAR2, 0), scale),
 				displayString.unit2pixel(displayString.getAsInt(IDisplayString.Prop.LAYOUT_PAR3, 0), scale)
 		);
-		invalidate();
+		invalidate();  //XXX redundant? individual setters also call this...  Note: this nulls out parent.preferredSize! (??)
 	}
 
 	protected void setRange(int radius, Color fillColor, Color borderColor, int borderWidth) {
@@ -272,6 +272,7 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint {
 
 	protected void setBaseLocation(Point loc, VectorArrangement vectorArrangement, 
 			int vectorArrangementPar1, int vectorArrangementPar2, int vectorArrangementPar3) {
+		// clear centerLoc if something's changed
 		if ((baseLoc==null ? loc!=null : !baseLoc.equals(loc)) || 
 				this.vectorArrangement != vectorArrangement ||
 				this.vectorArrangementPar1 != vectorArrangementPar1 ||
