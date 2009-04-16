@@ -23,6 +23,8 @@
 
 #include "cenvir.h"
 #include "cexception.h"
+#include "ccomponent.h"
+#include "cmersennetwister.h"
 
 NAMESPACE_BEGIN
 

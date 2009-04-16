@@ -1,9 +1,9 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
-*--------------------------------------------------------------*/
+ *--------------------------------------------------------------*/
 
 package org.omnetpp.figures;
 
@@ -36,8 +36,9 @@ import org.omnetpp.figures.misc.AttachedLayer;
  * @author andras
  */
 //FIXME support multiple texts: t/t1/t2/t3/t4
+//FIXME should not extend NedFigure...
 public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint {
-    // supported shape types
+	// supported shape types
 	protected static final int SHAPE_NONE = 0;
 	protected static final int SHAPE_OVAL = 1;
 	protected static final int SHAPE_RECT = 2;
@@ -51,244 +52,309 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint {
 	protected static final int TEXTPOS_RIGHT = 2;
 	protected static final int TEXTPOS_TOP = 3;
 
-    protected static final Image IMG_PIN = ImageFactory.getImage(ImageFactory.DEFAULT_PIN);
+	protected static final Image IMG_PIN = ImageFactory.getImage(ImageFactory.DEFAULT_PIN);
 
-    // input for the layouting
-    protected float scale = 1.0f;
-    protected Point baseLoc;
-    protected Object vectorIdentifier;
-    protected int vectorSize;
-    protected int vectorIndex;
-    protected VectorArrangement vectorArrangement;
-    protected int vectorArrangementPar1, vectorArrangementPar2, vectorArrangementPar3;
+	// input for the layouting
+	protected float scale = 1.0f;
+	protected Point baseLoc;
+	protected Object vectorIdentifier;
+	protected int vectorSize;
+	protected int vectorIndex;
+	protected VectorArrangement vectorArrangement;
+	protected int vectorArrangementPar1, vectorArrangementPar2, vectorArrangementPar3;
 
-    // result of layouting
-    protected Point centerLoc;
+	// result of layouting
+	protected Point centerLoc;
 
-    // appearance
-    protected int shape;
-    protected int shapeWidth;
-    protected int shapeHeight;
-    protected Color shapeFillColor; 
-    protected Color shapeBorderColor;
-    protected int shapeBorderWidth;
-    protected Image image;
-    protected Image decoratorImage;
-    protected boolean pinVisible;
-    protected String nameText;
-    protected String text;
-    protected int textPos;
-    protected Color textColor;
-    protected String queueText;
-    private AttachedLayer rangeAttachLayer;
-    protected RangeFigure rangeFigure = new RangeFigure();  //FIXME make this on demand as well!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	// appearance
+	protected int shape;
+	protected int shapeWidth;
+	protected int shapeHeight;
+	protected Color shapeFillColor; 
+	protected Color shapeBorderColor;
+	protected int shapeBorderWidth;
+	protected Image image;
+	protected Image decoratorImage;
+	protected boolean pinVisible;
+	protected String nameText;
+	protected String text;
+	protected int textPos;
+	protected Color textColor;
+	protected String queueText;
+	private AttachedLayer rangeAttachLayer;
+	protected RangeFigure rangeFigure = new RangeFigure();  //FIXME make this on demand as well!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
-    
-    public SubmoduleFigure() {
-        rangeAttachLayer = new AttachedLayer(this, PositionConstants.CENTER, rangeFigure, PositionConstants.CENTER);
-    }
 
-    @Override
-    public void addNotify() {
-        // functions here need to access the parent or ancestor figures, so these setup
-        // procedures cannot be done in the constructor
-    	Assert.isTrue(getParent() instanceof SubmoduleLayer, "SubmoduleFigure can be added directly only to a SubmoduleLayer (inside of a CompoundModuleFigure)");
+	public SubmoduleFigure() {
+		rangeAttachLayer = new AttachedLayer(this, PositionConstants.CENTER, rangeFigure, PositionConstants.CENTER);
+	}
 
-        // look for decorator layers among the ancestor (compound module figure)
-        Layer foregroundLayer = ((SubmoduleLayer)getParent()).getCompoundModuleFigure().getForegroundDecorationLayer();
-        Layer backgroundLayer = ((SubmoduleLayer)getParent()).getCompoundModuleFigure().getBackgroundDecorationLayer();
+	@Override
+	public void addNotify() {
+		// functions here need to access the parent or ancestor figures, so these setup
+		// procedures cannot be done in the constructor
+		Assert.isTrue(getParent() instanceof SubmoduleLayer, "SubmoduleFigure can be added directly only to a SubmoduleLayer (inside of a CompoundModuleFigure)");
 
-        // setup decorations belonging to the background decoration layer
-        backgroundLayer.add(rangeAttachLayer);
+		// look for decorator layers among the ancestor (compound module figure)
+		Layer foregroundLayer = ((SubmoduleLayer)getParent()).getCompoundModuleFigure().getForegroundDecorationLayer();
+		Layer backgroundLayer = ((SubmoduleLayer)getParent()).getCompoundModuleFigure().getBackgroundDecorationLayer();
 
-        // problem marker image
-        foregroundLayer.add(new AttachedLayer(this, new PrecisionPoint(0.0, 0.0),
-        		problemMarkerFigure, new PrecisionPoint(0.35, 0.35), null));
+		// setup decorations belonging to the background decoration layer
+		backgroundLayer.add(rangeAttachLayer);
 
-        super.addNotify();
-    }
+		// problem marker image
+		foregroundLayer.add(new AttachedLayer(this, new PrecisionPoint(0.0, 0.0),
+				problemMarkerFigure, new PrecisionPoint(0.35, 0.35), null));
 
-    /**
+		super.addNotify();
+	}
+
+	/**
 	 * Adjusts the image properties using a displayString object (except the location and size)
 	 */
 	@Override
-    public void setDisplayString(IDisplayString displayString) {
+	public void setDisplayString(IDisplayString displayString) {
 		// range support
-        setRange(
-        		displayString.getRange(getScale()),
-        		ColorFactory.asColor(displayString.getAsString(IDisplayString.Prop.RANGEFILLCOL)),
-        		ColorFactory.asColor(displayString.getAsString(IDisplayString.Prop.RANGEBORDERCOL)),
-        		displayString.getAsInt(IDisplayString.Prop.RANGEBORDERWIDTH, -1));
-        
-        // tooltip support
-        setTooltipText(displayString.getAsString(IDisplayString.Prop.TOOLTIP));
+		setRange(
+				displayString.getRange(getScale()),
+				ColorFactory.asColor(displayString.getAsString(IDisplayString.Prop.RANGEFILLCOL)),
+				ColorFactory.asColor(displayString.getAsString(IDisplayString.Prop.RANGEBORDERCOL)),
+				displayString.getAsInt(IDisplayString.Prop.RANGEBORDERWIDTH, -1));
 
-        // additional text support
-        setInfoText(displayString.getAsString(IDisplayString.Prop.TEXT),
-        		displayString.getAsString(IDisplayString.Prop.TEXTPOS),
-        		ColorFactory.asColor(displayString.getAsString(IDisplayString.Prop.TEXTCOLOR)));
+		// tooltip support
+		setTooltipText(displayString.getAsString(IDisplayString.Prop.TOOLTIP));
 
-        // shape support
-        String imageSize = displayString.getAsString(IDisplayString.Prop.IMAGESIZE);
-        Image img = ImageFactory.getImage(
-        		displayString.getAsString(IDisplayString.Prop.IMAGE),
-        		imageSize,
-        		ColorFactory.asRGB(displayString.getAsString(IDisplayString.Prop.IMAGECOLOR)),
-        		displayString.getAsInt(IDisplayString.Prop.IMAGECOLORPERCENTAGE,0));
+		// additional text support
+		setInfoText(displayString.getAsString(IDisplayString.Prop.TEXT),
+				displayString.getAsString(IDisplayString.Prop.TEXTPOS),
+				ColorFactory.asColor(displayString.getAsString(IDisplayString.Prop.TEXTCOLOR)));
 
-        // rectangle ("b" tag)
-        Dimension size = displayString.getSize(scale);  // falls back to size in EMPTY_DEFAULTS
-        boolean widthExist = displayString.containsProperty(IDisplayString.Prop.WIDTH);
-        boolean heightExist = displayString.containsProperty(IDisplayString.Prop.HEIGHT);
+		// shape support
+		String imageSize = displayString.getAsString(IDisplayString.Prop.IMAGESIZE);
+		Image img = ImageFactory.getImage(
+				displayString.getAsString(IDisplayString.Prop.IMAGE),
+				imageSize,
+				ColorFactory.asRGB(displayString.getAsString(IDisplayString.Prop.IMAGECOLOR)),
+				displayString.getAsInt(IDisplayString.Prop.IMAGECOLORPERCENTAGE,0));
 
-        // if both are missing, use values from EMPTY_DEFAULTS, otherwise substitute
-        // -1 for missing coordinate
-        if (!widthExist && heightExist)
-            size.width = -1;
-        if (widthExist && !heightExist)
-            size.height = -1;
+		// rectangle ("b" tag)
+		Dimension size = displayString.getSize(scale);  // falls back to size in EMPTY_DEFAULTS
+		boolean widthExist = displayString.containsProperty(IDisplayString.Prop.WIDTH);
+		boolean heightExist = displayString.containsProperty(IDisplayString.Prop.HEIGHT);
 
-        String shape = displayString.getAsString(IDisplayString.Prop.SHAPE);
-        if (!displayString.containsTag(IDisplayString.Tag.b))
-        	shape = "";
-        setShape(img, shape,
-                size.width,
-                size.height,
-        		ColorFactory.asColor(displayString.getAsString(IDisplayString.Prop.FILLCOL)),
-        		ColorFactory.asColor(displayString.getAsString(IDisplayString.Prop.BORDERCOL)),
-        		displayString.getAsInt(IDisplayString.Prop.BORDERWIDTH, -1));
+		// if both are missing, use values from EMPTY_DEFAULTS, otherwise substitute
+		// -1 for missing coordinate
+		if (!widthExist && heightExist)
+			size.width = -1;
+		if (widthExist && !heightExist)
+			size.height = -1;
 
-        // set the decoration image properties
-        setDecorationImage(
-        		        ImageFactory.getImage(
-        				displayString.getAsString(IDisplayString.Prop.OVIMAGE),
-        				null,
-        				ColorFactory.asRGB(displayString.getAsString(IDisplayString.Prop.OVIMAGECOLOR)),
-        				displayString.getAsInt(IDisplayString.Prop.OVIMAGECOLORPCT,0)));
+		String shape = displayString.getAsString(IDisplayString.Prop.SHAPE);
+		if (!displayString.containsTag(IDisplayString.Tag.b))
+			shape = "";
+		setShape(img, shape,
+				size.width,
+				size.height,
+				ColorFactory.asColor(displayString.getAsString(IDisplayString.Prop.FILLCOL)),
+				ColorFactory.asColor(displayString.getAsString(IDisplayString.Prop.BORDERCOL)),
+				displayString.getAsInt(IDisplayString.Prop.BORDERWIDTH, -1));
 
-        // set the layouter input
-        String layout = displayString.getAsString(IDisplayString.Prop.LAYOUT);
-        layout = IDisplayString.Prop.LAYOUT.getEnumSpec().getNameFor(layout);
-        VectorArrangement arrangement;
-        if (StringUtils.isEmpty(layout))
-        	arrangement = ISubmoduleConstraint.VectorArrangement.exact;
-        else
-        	arrangement = ISubmoduleConstraint.VectorArrangement.valueOf(layout);
-        
+		// set the decoration image properties
+		setDecorationImage(
+				ImageFactory.getImage(
+						displayString.getAsString(IDisplayString.Prop.OVIMAGE),
+						null,
+						ColorFactory.asRGB(displayString.getAsString(IDisplayString.Prop.OVIMAGECOLOR)),
+						displayString.getAsInt(IDisplayString.Prop.OVIMAGECOLORPCT,0)));
+
+		// set the layouter input
+		String layout = displayString.getAsString(IDisplayString.Prop.LAYOUT);
+		layout = IDisplayString.Prop.LAYOUT.getEnumSpec().getNameFor(layout);
+		VectorArrangement arrangement;
+		if (StringUtils.isEmpty(layout))
+			arrangement = ISubmoduleConstraint.VectorArrangement.exact;
+		else
+			arrangement = ISubmoduleConstraint.VectorArrangement.valueOf(layout);
 		setBaseLocation(
-        		displayString.getLocation(scale),
-                arrangement,
-                displayString.unit2pixel(displayString.getAsInt(IDisplayString.Prop.LAYOUT_PAR1, 0), scale),
-                displayString.unit2pixel(displayString.getAsInt(IDisplayString.Prop.LAYOUT_PAR2, 0), scale),
-                displayString.unit2pixel(displayString.getAsInt(IDisplayString.Prop.LAYOUT_PAR3, 0), scale)
-        );
-        invalidate();
+				displayString.getLocation(scale),
+				arrangement,
+				displayString.unit2pixel(displayString.getAsInt(IDisplayString.Prop.LAYOUT_PAR1, 0), scale),
+				displayString.unit2pixel(displayString.getAsInt(IDisplayString.Prop.LAYOUT_PAR2, 0), scale),
+				displayString.unit2pixel(displayString.getAsInt(IDisplayString.Prop.LAYOUT_PAR3, 0), scale)
+		);
+		invalidate();
 	}
 
 	protected void setRange(int radius, Color fillColor, Color borderColor, int borderWidth) {
-    	if (radius <= 0) {
-    		rangeFigure.setVisible(false);
-    	}
-    	else {
-    		rangeFigure.setVisible(true);
-    		rangeFigure.setSize(radius*2, radius*2);
+		if (radius <= 0) {
+			rangeFigure.setVisible(false);
+		}
+		else {
+			rangeFigure.setVisible(true);
+			rangeFigure.setSize(radius*2, radius*2);
 
-    		rangeFigure.setFill(fillColor != null);
-    		rangeFigure.setBackgroundColor(fillColor);
-    		rangeFigure.setOutline(borderColor != null &&  borderWidth > 0);
-    		rangeFigure.setForegroundColor(borderColor);
-    		rangeFigure.setLineWidth(borderWidth);
+			rangeFigure.setFill(fillColor != null);
+			rangeFigure.setBackgroundColor(fillColor);
+			rangeFigure.setOutline(borderColor != null &&  borderWidth > 0);
+			rangeFigure.setForegroundColor(borderColor);
+			rangeFigure.setLineWidth(borderWidth);
 
-    		if (rangeAttachLayer != null)
-    			rangeAttachLayer.revalidate(); //XXX what's this?
-    	}
-        invalidate();
-    }
+			if (rangeAttachLayer != null)
+				rangeAttachLayer.revalidate(); //XXX what's this?
+		}
+		invalidate();
+	}
 
-    public void setQueueText(String qtext) {
-    	queueText = qtext;
-        invalidate();
-    }
+	public void setQueueText(String qtext) {
+		queueText = qtext;
+		invalidate();
+	}
 
-    protected void setInfoText(String text, String pos, Color color) {
-    	this.text = text;
-    	this.textPos = pos.equalsIgnoreCase("l") ? TEXTPOS_LEFT : pos.equalsIgnoreCase("r") ? TEXTPOS_RIGHT : TEXTPOS_TOP;
-    	this.textColor = color;
-        invalidate();
-    }
+	protected void setInfoText(String text, String pos, Color color) {
+		this.text = text;
+		this.textPos = pos.equalsIgnoreCase("l") ? TEXTPOS_LEFT : pos.equalsIgnoreCase("r") ? TEXTPOS_RIGHT : TEXTPOS_TOP;
+		this.textColor = color;
+		invalidate();
+	}
 
-    protected void setShape(Image image, String shapeName, int shapeWidth, int shapeHeight,
-            Color shapeFillColor, Color shapeBorderColor, int shapeBorderWidth) {
+	protected void setShape(Image image, String shapeName, int shapeWidth, int shapeHeight,
+			Color shapeFillColor, Color shapeBorderColor, int shapeBorderWidth) {
 
-        if (StringUtils.isEmpty(shapeName))
-        	shape = SHAPE_NONE;
-        else if (shapeName.equalsIgnoreCase("oval"))
-        	shape = SHAPE_OVAL;
-        else if (shapeName.equalsIgnoreCase("rect"))
-            shape = SHAPE_RECT;
-        else if (shapeName.equalsIgnoreCase("rrect"))
-            shape = SHAPE_RECT2;
-        else if (shapeName.equalsIgnoreCase("tri"))
-            shape = SHAPE_TRI;
-        else if (shapeName.equalsIgnoreCase("tri2"))
-            shape = SHAPE_TRI2;
-        else if (shapeName.equalsIgnoreCase("hex"))
-            shape = SHAPE_HEX;
-        else if (shapeName.equalsIgnoreCase("hex2"))
-            shape = SHAPE_HEX2;
-        else
-        	shape = SHAPE_NONE;
+		if (StringUtils.isEmpty(shapeName))
+			shape = SHAPE_NONE;
+		else if (shapeName.equalsIgnoreCase("oval"))
+			shape = SHAPE_OVAL;
+		else if (shapeName.equalsIgnoreCase("rect"))
+			shape = SHAPE_RECT;
+		else if (shapeName.equalsIgnoreCase("rrect"))
+			shape = SHAPE_RECT2;
+		else if (shapeName.equalsIgnoreCase("tri"))
+			shape = SHAPE_TRI;
+		else if (shapeName.equalsIgnoreCase("tri2"))
+			shape = SHAPE_TRI2;
+		else if (shapeName.equalsIgnoreCase("hex"))
+			shape = SHAPE_HEX;
+		else if (shapeName.equalsIgnoreCase("hex2"))
+			shape = SHAPE_HEX2;
+		else
+			shape = SHAPE_NONE;
 
-        Assert.isTrue(shapeHeight != -1 || shapeWidth != -1);
-        this.shapeWidth = shapeWidth;
-        this.shapeHeight = shapeHeight;
-        this.shapeBorderColor = shapeBorderColor;
-        this.shapeFillColor = shapeFillColor;
-        this.shapeBorderWidth = shapeBorderWidth;
+		Assert.isTrue(shapeHeight != -1 || shapeWidth != -1);
+		this.shapeWidth = shapeWidth;
+		this.shapeHeight = shapeHeight;
+		this.shapeBorderColor = shapeBorderColor;
+		this.shapeFillColor = shapeFillColor;
+		this.shapeBorderWidth = shapeBorderWidth;
 
-        this.image = image;
-        
-        if (image == null && shape == SHAPE_NONE)
-            image = ImageFactory.getImage(ImageFactory.DEFAULT_KEY);
+		this.image = image;
 
-        invalidate();
-    }
+		if (image == null && shape == SHAPE_NONE)
+			image = ImageFactory.getImage(ImageFactory.DEFAULT_KEY);
 
-    protected void setBaseLocation(Point p) {
-    	this.baseLoc = p;
-        invalidate();
-    }
+		invalidate();
+	}
 
-    public void setSubmoduleVectorIndex(Object vectorIdentifier, int vectorSize, int vectorIndex) {
-    	this.vectorIdentifier = vectorIdentifier;
-    	this.vectorSize = vectorSize;
-    	this.vectorIndex = vectorIndex;
-    }
-    
-    protected void setBaseLocation(Point p, VectorArrangement vectorArrangement, 
-    		int vectorArrangementPar1, int vectorArrangementPar2, int vectorArrangementPar3) {
-    	this.baseLoc = p;
-        this.vectorArrangement = vectorArrangement;
-        this.vectorArrangementPar1 = vectorArrangementPar1;
-        this.vectorArrangementPar2 = vectorArrangementPar2;
-        this.vectorArrangementPar3 = vectorArrangementPar3;
-        invalidate();
-    }
-    
-    protected void calculateBounds() {
-        Rectangle bounds = getShapeBounds().union(getNameBounds()); //FIXME also the text, decoration image etc etc!!!
-        super.setBounds(bounds);
-    }
-    
+	protected void setBaseLocation(Point p) {
+		this.baseLoc = p;
+		invalidate();
+	}
+
+	public void setSubmoduleVectorIndex(Object vectorIdentifier, int vectorSize, int vectorIndex) {
+		if (vectorIdentifier != null || this.vectorIdentifier != null) {
+			this.vectorIdentifier = vectorIdentifier;
+			this.vectorSize = vectorSize;
+			this.vectorIndex = vectorIndex;
+			centerLoc = null;
+			invalidate();
+		}
+	}
+
+	protected void setBaseLocation(Point loc, VectorArrangement vectorArrangement, 
+			int vectorArrangementPar1, int vectorArrangementPar2, int vectorArrangementPar3) {
+		if ((baseLoc==null ? loc!=null : !baseLoc.equals(loc)) || 
+				this.vectorArrangement != vectorArrangement ||
+				this.vectorArrangementPar1 != vectorArrangementPar1 ||
+				this.vectorArrangementPar2 != vectorArrangementPar2 ||
+				this.vectorArrangementPar3 != vectorArrangementPar3) {
+			this.baseLoc = loc;
+			this.vectorArrangement = vectorArrangement;
+			this.vectorArrangementPar1 = vectorArrangementPar1;
+			this.vectorArrangementPar2 = vectorArrangementPar2;
+			this.vectorArrangementPar3 = vectorArrangementPar3;
+			centerLoc = null; // force re-layout of this module
+			invalidate();
+		}
+	}
+
+	protected void calculateBounds() {
+		Rectangle shapeBounds = getShapeBounds();
+		Rectangle bounds = shapeBounds.getCopy().union(getNameBounds(shapeBounds));
+		Rectangle tmp;
+		if ((tmp = getTextBounds(shapeBounds)) != null)
+			bounds.union(tmp);
+		if ((tmp = getPinImageBounds(shapeBounds)) != null)
+			bounds.union(tmp);
+		if ((tmp = getDecorationImageBounds(shapeBounds)) != null)
+			bounds.union(tmp);
+		super.setBounds(bounds);
+	}
+
 	public Rectangle getShapeBounds() {
 		int width = shape==SHAPE_NONE ? 0 : shapeWidth>0 ? shapeWidth : shapeHeight;
 		int height = shape==SHAPE_NONE ? 0 : shapeHeight>0 ? shapeHeight : shapeWidth;
-        if (image != null) {
-        	width = Math.max(width, image.getBounds().width);
-            height = Math.max(height, image.getBounds().height);
-        }
+		if (image != null) {
+			width = Math.max(width, image.getBounds().width);
+			height = Math.max(height, image.getBounds().height);
+		}
 		return centerLoc==null ? new Rectangle(0,0,width,height) : new Rectangle(centerLoc.x-width/2, centerLoc.y-height/2, width, height);
+	}
+
+	/**
+	 * The bounds of the name label
+	 */
+	public Rectangle getNameBounds() {
+		Assert.isNotNull(centerLoc, "do not call before setCenterLocation()!");
+		return getNameBounds(getShapeBounds());
+	}
+
+	protected Rectangle getNameBounds(Rectangle shapeBounds) {
+		Dimension textSize = TextUtilities.INSTANCE.getTextExtents(nameText, getFont());
+		return new Rectangle(centerLoc.x-textSize.width/2, shapeBounds.bottom(), textSize.width, textSize.height);
+	}
+
+	protected Rectangle getTextBounds(Rectangle shapeBounds) {
+		if (StringUtils.isEmpty(text)) 
+			return null;
+		int x, y;
+		Dimension textSize = TextUtilities.INSTANCE.getTextExtents(text, getFont());
+		if (textPos == TEXTPOS_LEFT) {
+			x = shapeBounds.x - textSize.width; 
+			y = shapeBounds.y; 
+		}
+		if (textPos == TEXTPOS_RIGHT) {
+			x = shapeBounds.right(); 
+			y = shapeBounds.y; 
+		}
+		else {  // TEXTPOS_TOP
+			x = centerLoc.x - textSize.width/2; 
+			y = shapeBounds.y - textSize.height; 
+		}
+		return new Rectangle(x, y, textSize.width, textSize.height);
+	}
+
+	protected Rectangle getDecorationImageBounds(Rectangle shapeBounds) {
+		if (decoratorImage == null)
+			return null;
+		org.eclipse.swt.graphics.Rectangle imageBounds = decoratorImage.getBounds();
+		return new Rectangle(shapeBounds.right()-imageBounds.width, shapeBounds.y - imageBounds.height/4, imageBounds.width, imageBounds.height);
+	}
+
+	protected Rectangle getPinImageBounds(Rectangle shapeBounds) {
+		if (!pinVisible)
+			return null;
+		org.eclipse.swt.graphics.Rectangle imageBounds = IMG_PIN.getBounds();
+		return new Rectangle(shapeBounds.x-imageBounds.width, shapeBounds.y - imageBounds.height/2, imageBounds.width, imageBounds.height);
 	}
 
 	/**
@@ -299,102 +365,92 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint {
 		invalidate();
 	}
 
-    @Override
-    public void setBounds(Rectangle rect) {
-    	throw new UnsupportedOperationException(); // call setCenterLocation/setShape instead
-    }
-    
-    @Override
-    public void setLocation(Point p) {
-    	throw new UnsupportedOperationException(); // call setCenterLocation/setShape instead
-    }
-    
-    @Override
-    public void setSize(int w, int h) {
-    	throw new UnsupportedOperationException(); // call setCenterLocation/setShape instead
-    }
+	@Override
+	public void setBounds(Rectangle rect) {
+		throw new UnsupportedOperationException(); // call setCenterLocation/setShape instead
+	}
 
-    @Override
-    public void setPreferredSize(Dimension size) {
-    	throw new UnsupportedOperationException(); // call setCenterLocation/setShape instead
-    }
-    
-    @Override
-    public Dimension getPreferredSize(int hint, int hint2) {
-    	throw new UnsupportedOperationException(); // call setCenterLocation/setShape instead
-    }
+	@Override
+	public void setLocation(Point p) {
+		throw new UnsupportedOperationException(); // call setCenterLocation/setShape instead
+	}
 
-    public Rectangle getHandleBounds() {
-        return getShapeBounds();
-    }
+	@Override
+	public void setSize(int w, int h) {
+		throw new UnsupportedOperationException(); // call setCenterLocation/setShape instead
+	}
 
-    public void setName(String text) {
-    	nameText = text;
-    }
-    
-    public String getName() {
-    	return nameText;
-    }
+	@Override
+	public void setPreferredSize(Dimension size) {
+		throw new UnsupportedOperationException(); // call setCenterLocation/setShape instead
+	}
 
-    /**
-     * The bounds of the name label
-     */
-    public Rectangle getNameBounds() {
-    	Assert.isNotNull(centerLoc, "do not call before setCenterLocation()!");
-        Rectangle shapeBounds = getShapeBounds();
-        Dimension textSize = TextUtilities.INSTANCE.getTextExtents(nameText, getFont());
-        return new Rectangle(centerLoc.x-textSize.width/2, shapeBounds.bottom(), textSize.width, textSize.height);
-    }
+	@Override
+	public Dimension getPreferredSize(int hint, int hint2) {
+		throw new UnsupportedOperationException(); // call setCenterLocation/setShape instead
+	}
 
-    /**
-     * The current scaling factor for the submodule.
-     */
-    public float getScale() {
-        return scale;
-    }
+	public Rectangle getHandleBounds() {
+		return getShapeBounds();
+	}
 
-    /**
-     * Sets the scale factor used for drawing.
-     */
-    public void setScale(float scale) {
-        this.scale = scale;
-        invalidate();
-    }
+	public void setName(String text) {
+		nameText = text;
+	}
 
-    /* (non-Javadoc)
-     * @see org.eclipse.draw2d.Figure#containsPoint(int, int)
-     * We override it to include also the nameFigure, so clicking on submodule name would
-     * be counted also as a selection event.
-     */
-    @Override
-    public boolean containsPoint(int x, int y) {
-    	return getShapeBounds().contains(x, y) || nameFigure.containsPoint(x, y);
-    }
+	public String getName() {
+		return nameText;
+	}
 
-    /**
-     * Whether the figure displays a shape (and not image)
-     */
-    public boolean isShapeVisible() {
-        return shape != SHAPE_NONE;
-    }
+	/**
+	 * The current scaling factor for the submodule.
+	 */
+	public float getScale() {
+		return scale;
+	}
 
-    /**
-     * Turns the "pin" icon (which shows whether the submodule has a
-     * user-specified position) on/off
-     */
-    public void setPinVisible(boolean enabled) {
-    	pinVisible = enabled;
-        invalidate();
-    }
+	/**
+	 * Sets the scale factor used for drawing.
+	 */
+	public void setScale(float scale) {
+		this.scale = scale;
+		invalidate();
+	}
 
-    public boolean isPinVisible() {
-        return pinVisible;
-    }
-    
+	/* (non-Javadoc)
+	 * @see org.eclipse.draw2d.Figure#containsPoint(int, int)
+	 * We override it to include also the nameFigure, so clicking on submodule name would
+	 * be counted also as a selection event.
+	 */
+	@Override
+	public boolean containsPoint(int x, int y) {
+		return getShapeBounds().contains(x, y) || nameFigure.containsPoint(x, y);
+	}
+
+	/**
+	 * Whether the figure displays a shape (and not image)
+	 */
+	public boolean isShapeVisible() {
+		return shape != SHAPE_NONE;
+	}
+
+	/**
+	 * Turns the "pin" icon (which shows whether the submodule has a
+	 * user-specified position) on/off
+	 */
+	public void setPinVisible(boolean enabled) {
+		pinVisible = enabled;
+		invalidate();
+	}
+
+	public boolean isPinVisible() {
+		return pinVisible;
+	}
+
 	public Point getCenterLocation() {
 		return centerLoc;
 	}
-	
+
 	public void setCenterLocation(Point loc) {
 		this.centerLoc = loc;
 		if (loc != null)
@@ -433,86 +489,69 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint {
 		return vectorArrangementPar3;
 	}
 
-    @Override
-    public void paint(Graphics graphics) {
-    	super.paint(graphics);
-    	Assert.isNotNull(centerLoc, "setCenterLoc() must be called before painting");
-    	
-    	// draw shape
-    	if (shape != SHAPE_NONE) {
-    		graphics.pushState();
-    		graphics.setForegroundColor(shapeBorderColor);
-    		graphics.setBackgroundColor(shapeFillColor);
-    		graphics.setLineWidth(shapeBorderWidth);  //FIXME befele kellene hogy noljon
-    		int left = centerLoc.x - shapeWidth/2;
-    		int top = centerLoc.y - shapeHeight/2;
-    		if (shape == SHAPE_OVAL) {
-    			graphics.fillOval(left, top, shapeWidth, shapeHeight);
-    			graphics.drawOval(left, top, shapeWidth, shapeHeight);
-    		}
-    		else if (shape == SHAPE_RECT) {
-    			graphics.fillRectangle(left, top, shapeWidth, shapeHeight);
-    			graphics.drawRectangle(left, top, shapeWidth, shapeHeight);
-    		}
-    		else {
-    			Assert.isTrue(false, "NOT IMPLEMENTED YET"); //XXX
-    		}
-    		graphics.popState();
-    	}
-    	
-    	// draw image
-        if (image != null) {
-        	org.eclipse.swt.graphics.Rectangle imageBounds = image.getBounds();
-        	graphics.drawImage(image, centerLoc.x - imageBounds.width/2, centerLoc.y - imageBounds.height/2);
-        }
-        
-        // draw text
-        if (!StringUtils.isEmpty(text)) {
-    		graphics.pushState();
-    		int x, y;
-    		Dimension textSize = TextUtilities.INSTANCE.getTextExtents(text, getFont());
-    		Rectangle shapeBounds = getShapeBounds();
-    		if (textPos == TEXTPOS_LEFT) {
-    			x = shapeBounds.x - textSize.width; 
-    			y = shapeBounds.y; 
-    		}
-    		if (textPos == TEXTPOS_RIGHT) {
-    			x = shapeBounds.right(); 
-    			y = shapeBounds.y; 
-    		}
-    		else {  // TEXTPOS_TOP
-    			x = centerLoc.x - textSize.width/2; 
-    			y = shapeBounds.y - textSize.height; 
-    		}
-    		graphics.setForegroundColor(textColor);
-    		graphics.drawText(text, x, y);
-    		graphics.popState();
-        }
-        
-        // draw decoration image
-        if (decoratorImage != null) {
-    		Rectangle shapeBounds = getShapeBounds();
-    		org.eclipse.swt.graphics.Rectangle decoratorImageBounds = decoratorImage.getBounds();
-			graphics.drawImage(decoratorImage, shapeBounds.x-decoratorImageBounds.width, shapeBounds.y - decoratorImageBounds.height/2);
-        }
-        	
-        if (pinVisible) {
-    		Rectangle shapeBounds = getShapeBounds();
-    		org.eclipse.swt.graphics.Rectangle pinImageBounds = IMG_PIN.getBounds();
-			graphics.drawImage(IMG_PIN, shapeBounds.x-pinImageBounds.width, shapeBounds.y - pinImageBounds.height/2);
-        }
-        
-        if (!StringUtils.isEmpty(nameText)) {
-    		graphics.pushState();
-    		Dimension textSize = TextUtilities.INSTANCE.getTextExtents(nameText, getFont());
-    		Rectangle shapeBounds = getShapeBounds();
-    		int x = centerLoc.x - textSize.width/2; 
-    		int y = shapeBounds.bottom(); 
-    		graphics.setForegroundColor(ColorFactory.BLACK);
-    		graphics.drawText(nameText, x, y);
-    		graphics.popState();
-        }
-    	
-    }
-	
+	@Override
+	public void paint(Graphics graphics) {
+		super.paint(graphics);
+		Assert.isNotNull(centerLoc, "setCenterLoc() must be called before painting");
+
+		// draw shape
+		if (shape != SHAPE_NONE) {
+			graphics.pushState();
+			graphics.setForegroundColor(shapeBorderColor);
+			graphics.setBackgroundColor(shapeFillColor);
+			graphics.setLineWidth(shapeBorderWidth);  //FIXME befele kellene hogy noljon
+			int left = centerLoc.x - shapeWidth/2;
+			int top = centerLoc.y - shapeHeight/2;
+			if (shape == SHAPE_OVAL) {
+				graphics.fillOval(left, top, shapeWidth, shapeHeight);
+				graphics.drawOval(left, top, shapeWidth, shapeHeight);
+			}
+			else if (shape == SHAPE_RECT) {
+				graphics.fillRectangle(left, top, shapeWidth, shapeHeight);
+				graphics.drawRectangle(left, top, shapeWidth, shapeHeight);
+			}
+			else {
+				Assert.isTrue(false, "NOT IMPLEMENTED YET"); //XXX
+			}
+			graphics.popState();
+		}
+
+		// draw image
+		if (image != null) {
+			org.eclipse.swt.graphics.Rectangle imageBounds = image.getBounds();
+			graphics.drawImage(image, centerLoc.x - imageBounds.width/2, centerLoc.y - imageBounds.height/2);
+		}
+
+		Rectangle shapeBounds = null;  // do it on demand
+
+		// draw decoration image
+		if (decoratorImage != null) {
+			if (shapeBounds == null) shapeBounds = getShapeBounds();
+			Rectangle r = getDecorationImageBounds(shapeBounds);
+			graphics.drawImage(decoratorImage, r.x, r.y);
+		}
+
+		// draw text
+		if (!StringUtils.isEmpty(text)) {
+			if (shapeBounds == null) shapeBounds = getShapeBounds();
+			Rectangle r = getTextBounds(shapeBounds);
+			graphics.setForegroundColor(textColor);
+			graphics.drawText(text, r.x, r.y);
+		}
+
+		// draw pin
+		if (pinVisible) {
+			if (shapeBounds == null) shapeBounds = getShapeBounds();
+			Rectangle r = getPinImageBounds(shapeBounds);
+			graphics.drawImage(IMG_PIN, r.x, r.y);
+		}
+
+		// draw name string
+		if (!StringUtils.isEmpty(nameText)) {
+			if (shapeBounds == null) shapeBounds = getShapeBounds();
+			Rectangle r = getNameBounds(shapeBounds);
+			graphics.setForegroundColor(ColorFactory.BLACK);
+			graphics.drawText(nameText, r.x, r.y);
+		}
+	}
 }

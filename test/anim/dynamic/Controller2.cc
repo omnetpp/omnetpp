@@ -38,7 +38,7 @@ void Controller2::activity()
     cModuleType *type = cModuleType::find("Node");
     std::vector<cModule*> nodes;
 
-    for (int i=0; true; i++)
+    for (int i=1; true; i++)
     {
         if (intuniform(0,20)==0)
         {
@@ -81,7 +81,7 @@ void Controller2::activity()
             if (intuniform(0,3)==0)
             {
                 // change text
-                d.setTagArg("t", 0, stringf("changed at %d",i).c_str());
+                d.setTagArg("t", 0, stringf("text change at\nevent %d",i).c_str());
             }
         }
 
