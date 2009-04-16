@@ -40,8 +40,8 @@
 #include "stringutil.h"
 
 #ifdef THREADED
-#define READER_MUTEX ReaderMutex __reader_mutex_(lock);
-#define WRITER_MUTEX WriterMutex __writer_mutex_(lock);
+#define READER_MUTEX Mutex __reader_mutex_(getReadLock());
+#define WRITER_MUTEX Mutex __writer_mutex_(getWriteLock());
 #else
 #define READER_MUTEX
 #define WRITER_MUTEX

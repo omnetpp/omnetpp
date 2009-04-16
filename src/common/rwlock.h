@@ -33,6 +33,17 @@ class COMMON_API ILock
 		virtual bool hasLock() = 0;
 };
 
+class COMMON_API Mutex
+{
+	private:
+		ILock &lock;
+
+	public:
+		Mutex(ILock &lock) : lock(lock) { lock.lock(); }
+		Mutex(const ILock &lock) : lock(const_cast<ILock&>(lock)) { this->lock.lock(); }
+		~Mutex() { lock.unlock(); }
+};
+
 class COMMON_API IReadWriteLock
 {
 	public:
@@ -40,28 +51,6 @@ class COMMON_API IReadWriteLock
 		virtual ILock& readLock() = 0;
 		virtual ILock& writeLock() = 0;
 };
-
-class COMMON_API ReaderMutex
-{
-	private:
-		IReadWriteLock &lock;
-
-	public:
-		ReaderMutex(IReadWriteLock &lock) : lock(lock) { lock.readLock().lock(); }
-		ReaderMutex(const IReadWriteLock &lock) : lock(const_cast<IReadWriteLock&>(lock)) { this->lock.readLock().lock(); }
-		~ReaderMutex() { lock.readLock().unlock(); }
-};
-
-class COMMON_API WriterMutex
-{
-	private:
-		IReadWriteLock &lock;
-
-	public:
-		WriterMutex(IReadWriteLock &lock) : lock(lock) { lock.writeLock().lock(); }
-		~WriterMutex() { lock.writeLock().unlock(); }
-};
-
 
 class COMMON_API ReentrantReadWriteLock : public IReadWriteLock
 {

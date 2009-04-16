@@ -29,7 +29,7 @@
 
 #ifdef THREADED
 #include "rwlock.h"
-#define READER_MUTEX ReaderMutex __reader_mutex_(mgr->lock);
+#define READER_MUTEX Mutex __reader_mutex_(mgr->getReadLock());
 #else
 #define READER_MUTEX
 #endif

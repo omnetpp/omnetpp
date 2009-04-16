@@ -339,6 +339,8 @@ class SCAVE_API ResultFileManager
 #ifdef THREADED
     ILock& getReadLock() { return lock.readLock(); }
     ILock& getWriteLock() { return lock.writeLock(); }
+    ILock& getReadLock() const { return const_cast<ResultFileManager*>(this)->lock.readLock(); }
+    ILock& getWriteLock() const { return const_cast<ResultFileManager*>(this)->lock.writeLock(); }
 #endif
 
 
