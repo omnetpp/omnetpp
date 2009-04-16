@@ -55,7 +55,7 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint {
 
     // input for the layouting
     protected float scale = 1.0f;
-    protected int baseX = Integer.MIN_VALUE, baseY = Integer.MAX_VALUE;
+    protected Point baseLoc;
     protected Object vectorIdentifier;
     protected int vectorSize;
     protected int vectorIndex;
@@ -63,7 +63,7 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint {
     protected int vectorArrangementPar1, vectorArrangementPar2, vectorArrangementPar3;
 
     // result of layouting
-    protected int centerX = Integer.MIN_VALUE, centerY = Integer.MIN_VALUE;
+    protected Point centerLoc;
 
     // appearance
     protected int shape;
@@ -75,6 +75,7 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint {
     protected Image image;
     protected Image decoratorImage;
     protected boolean pinVisible;
+    protected String nameText;
     protected String text;
     protected int textPos;
     protected Color textColor;
@@ -166,6 +167,22 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint {
         				ColorFactory.asRGB(displayString.getAsString(IDisplayString.Prop.OVIMAGECOLOR)),
         				displayString.getAsInt(IDisplayString.Prop.OVIMAGECOLORPCT,0)));
 
+        // set the layouter input
+        String layout = displayString.getAsString(IDisplayString.Prop.LAYOUT);
+        layout = IDisplayString.Prop.LAYOUT.getEnumSpec().getNameFor(layout);
+        VectorArrangement arrangement;
+        if (StringUtils.isEmpty(layout))
+        	arrangement = ISubmoduleConstraint.VectorArrangement.exact;
+        else
+        	arrangement = ISubmoduleConstraint.VectorArrangement.valueOf(layout);
+        
+		setBaseLocation(
+        		displayString.getLocation(scale),
+                arrangement,
+                displayString.unit2pixel(displayString.getAsInt(IDisplayString.Prop.LAYOUT_PAR1, 0), scale),
+                displayString.unit2pixel(displayString.getAsInt(IDisplayString.Prop.LAYOUT_PAR2, 0), scale),
+                displayString.unit2pixel(displayString.getAsInt(IDisplayString.Prop.LAYOUT_PAR3, 0), scale)
+        );
         invalidate();
 	}
 
@@ -226,6 +243,9 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint {
         Assert.isTrue(shapeHeight != -1 || shapeWidth != -1);
         this.shapeWidth = shapeWidth;
         this.shapeHeight = shapeHeight;
+        this.shapeBorderColor = shapeBorderColor;
+        this.shapeFillColor = shapeFillColor;
+        this.shapeBorderWidth = shapeBorderWidth;
 
         this.image = image;
         
@@ -235,19 +255,40 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint {
         invalidate();
     }
 
+    protected void setBaseLocation(Point p) {
+    	this.baseLoc = p;
+        invalidate();
+    }
+
+    public void setSubmoduleVectorIndex(Object vectorIdentifier, int vectorSize, int vectorIndex) {
+    	this.vectorIdentifier = vectorIdentifier;
+    	this.vectorSize = vectorSize;
+    	this.vectorIndex = vectorIndex;
+    }
+    
+    protected void setBaseLocation(Point p, VectorArrangement vectorArrangement, 
+    		int vectorArrangementPar1, int vectorArrangementPar2, int vectorArrangementPar3) {
+    	this.baseLoc = p;
+        this.vectorArrangement = vectorArrangement;
+        this.vectorArrangementPar1 = vectorArrangementPar1;
+        this.vectorArrangementPar2 = vectorArrangementPar2;
+        this.vectorArrangementPar3 = vectorArrangementPar3;
+        invalidate();
+    }
+    
     protected void calculateBounds() {
         Rectangle bounds = getShapeBounds().union(getNameBounds()); //FIXME also the text, decoration image etc etc!!!
         super.setBounds(bounds);
     }
     
 	public Rectangle getShapeBounds() {
-		int width = shapeWidth>0 ? shapeWidth : shapeHeight;
-		int height = shapeHeight>0 ? shapeHeight : shapeWidth;
+		int width = shape==SHAPE_NONE ? 0 : shapeWidth>0 ? shapeWidth : shapeHeight;
+		int height = shape==SHAPE_NONE ? 0 : shapeHeight>0 ? shapeHeight : shapeWidth;
         if (image != null) {
-            width = Math.max(width, image.getBounds().width);
+        	width = Math.max(width, image.getBounds().width);
             height = Math.max(height, image.getBounds().height);
         }
-		return new Rectangle(centerX-width/2, centerY-height/2, width, height);
+		return centerLoc==null ? new Rectangle(0,0,width,height) : new Rectangle(centerLoc.x-width/2, centerLoc.y-height/2, width, height);
 	}
 
 	/**
@@ -287,13 +328,22 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint {
         return getShapeBounds();
     }
 
+    public void setName(String text) {
+    	nameText = text;
+    }
+    
+    public String getName() {
+    	return nameText;
+    }
+
     /**
      * The bounds of the name label
      */
     public Rectangle getNameBounds() {
+    	Assert.isNotNull(centerLoc, "do not call before setCenterLocation()!");
         Rectangle shapeBounds = getShapeBounds();
-        Dimension textSize = TextUtilities.INSTANCE.getTextExtents(text, getFont());
-        return new Rectangle(centerX-textSize.width/2, shapeBounds.bottom(), textSize.width, textSize.height);
+        Dimension textSize = TextUtilities.INSTANCE.getTextExtents(nameText, getFont());
+        return new Rectangle(centerLoc.x-textSize.width/2, shapeBounds.bottom(), textSize.width, textSize.height);
     }
 
     /**
@@ -342,16 +392,17 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint {
     }
     
 	public Point getCenterLocation() {
-		return centerX==Integer.MIN_VALUE ? null : new Point(centerX, centerY);
+		return centerLoc;
 	}
 	
 	public void setCenterLocation(Point loc) {
-		centerX = loc.x;
-		centerY = loc.y;
+		this.centerLoc = loc;
+		if (loc != null)
+			calculateBounds();
 	}
 
-	public Point getBasePosition() {
-		return baseX==Integer.MIN_VALUE ? null : new Point(baseX, baseY);
+	public Point getBaseLocation() {
+		return baseLoc;
 	}
 
 	public Object getVectorIdentifier() {
@@ -385,20 +436,23 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint {
     @Override
     public void paint(Graphics graphics) {
     	super.paint(graphics);
+    	Assert.isNotNull(centerLoc, "setCenterLoc() must be called before painting");
     	
     	// draw shape
     	if (shape != SHAPE_NONE) {
     		graphics.pushState();
     		graphics.setForegroundColor(shapeBorderColor);
     		graphics.setBackgroundColor(shapeFillColor);
-    		graphics.setLineWidth(shapeBorderWidth);
-    		int left = centerX - shapeWidth/2;
-    		int top = centerY - shapeHeight/2;
+    		graphics.setLineWidth(shapeBorderWidth);  //FIXME befele kellene hogy noljon
+    		int left = centerLoc.x - shapeWidth/2;
+    		int top = centerLoc.y - shapeHeight/2;
     		if (shape == SHAPE_OVAL) {
-    			graphics.drawOval(left, top, left+shapeWidth, top+shapeHeight);
+    			graphics.fillOval(left, top, shapeWidth, shapeHeight);
+    			graphics.drawOval(left, top, shapeWidth, shapeHeight);
     		}
     		else if (shape == SHAPE_RECT) {
-    			graphics.drawRectangle(left, top, left+shapeWidth, top+shapeHeight);
+    			graphics.fillRectangle(left, top, shapeWidth, shapeHeight);
+    			graphics.drawRectangle(left, top, shapeWidth, shapeHeight);
     		}
     		else {
     			Assert.isTrue(false, "NOT IMPLEMENTED YET"); //XXX
@@ -409,7 +463,7 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint {
     	// draw image
         if (image != null) {
         	org.eclipse.swt.graphics.Rectangle imageBounds = image.getBounds();
-        	graphics.drawImage(image, centerX - imageBounds.width/2, centerY - imageBounds.height/2);
+        	graphics.drawImage(image, centerLoc.x - imageBounds.width/2, centerLoc.y - imageBounds.height/2);
         }
         
         // draw text
@@ -427,9 +481,10 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint {
     			y = shapeBounds.y; 
     		}
     		else {  // TEXTPOS_TOP
-    			x = centerX - textSize.width/2; 
-    			y = shapeBounds.x - textSize.height; 
+    			x = centerLoc.x - textSize.width/2; 
+    			y = shapeBounds.y - textSize.height; 
     		}
+    		graphics.setForegroundColor(textColor);
     		graphics.drawText(text, x, y);
     		graphics.popState();
         }
@@ -445,6 +500,17 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint {
     		Rectangle shapeBounds = getShapeBounds();
     		org.eclipse.swt.graphics.Rectangle pinImageBounds = IMG_PIN.getBounds();
 			graphics.drawImage(IMG_PIN, shapeBounds.x-pinImageBounds.width, shapeBounds.y - pinImageBounds.height/2);
+        }
+        
+        if (!StringUtils.isEmpty(nameText)) {
+    		graphics.pushState();
+    		Dimension textSize = TextUtilities.INSTANCE.getTextExtents(nameText, getFont());
+    		Rectangle shapeBounds = getShapeBounds();
+    		int x = centerLoc.x - textSize.width/2; 
+    		int y = shapeBounds.bottom(); 
+    		graphics.setForegroundColor(ColorFactory.BLACK);
+    		graphics.drawText(nameText, x, y);
+    		graphics.popState();
         }
     	
     }

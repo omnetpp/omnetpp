@@ -140,8 +140,8 @@ public class CompoundModuleFigure extends NedFigure
         @Override
         public void add(IFigure child, Object constraint, int index) {
             // request an auto-layout whenever an unpinned submodule is added (added from the text editor) 
-            if (child instanceof SubmoduleFigure && !((SubmoduleFigure)child).isPinVisible())
-                layouter.requestFullLayout();
+//XXX            if (child instanceof SubmoduleFigure && !((SubmoduleFigure)child).isPinVisible())
+//                layouter.requestFullLayout();
             super.add(child, constraint, index);
         }
         
@@ -151,12 +151,15 @@ public class CompoundModuleFigure extends NedFigure
 
         @Override
         public Dimension getPreferredSize(int wHint, int hHint) {
+//        	return new Dimension(800,600); //XXX
 			return layouter.getPreferredSize(this, backgroundSize.width, backgroundSize.height);
 		}
         
         @Override
         public Dimension getMinimumSize(int wHint, int hHint) {
-			return getPreferredSize(wHint, hHint);
+        	// XXX calculate correctly
+        	return new Dimension(50,50);
+			// return getPreferresdSize(wHint, hHint);
         }
     }
 
@@ -324,10 +327,12 @@ public class CompoundModuleFigure extends NedFigure
 
         long seed = dps.getAsInt(IDisplayString.Prop.MODULE_LAYOUT_SEED, 1);
         // if the seed changed we explicitly have to force a re-layout
-        if (seed != layouter.getSeed()) {
-            layouter.setSeed(seed);
-            layouter.requestFullLayout();
-        }
+
+//        //XXX re-think this. incremental layout also changes the seed!
+//        if (seed != layouter.getSeed()) {
+//            layouter.setSeed(seed);
+//            layouter.requestFullLayout();
+//        }
 
         invalidate();
 	}

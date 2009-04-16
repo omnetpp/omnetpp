@@ -35,7 +35,8 @@ public class SimulationManager {
         env.setJCallback(null, new DummyEnvirCallback());
         
         try {
-        	env.getConfigEx().activateConfig("Terminal",0); //XXX
+        	//env.getConfigEx().activateConfig("Terminal",0); //XXX
+        	env.getConfigEx().activateConfig("Net2",0); //XXX
         	env.readPerRunOptions();
         	
             String networkName = env.getConfigEx().getConfigValue("network");

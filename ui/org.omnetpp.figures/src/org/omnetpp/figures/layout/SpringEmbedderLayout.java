@@ -10,10 +10,10 @@ package org.omnetpp.figures.layout;
 import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.draw2d.AbstractLayout;
 import org.eclipse.draw2d.Connection;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.LayoutManager;
-import org.eclipse.draw2d.XYLayout;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
@@ -23,23 +23,21 @@ import org.omnetpp.figures.SubmoduleFigure;
 
 
 /**
- * TODO add documentation
+ * This layouts submodules inside a compound module.
  *
  * @author rhornig
  */
-public class SpringEmbedderLayout extends XYLayout {
+public class SpringEmbedderLayout extends AbstractLayout {
     private static boolean debug = false;
 
     private static final Dimension DEFAULT_SIZE = new Dimension(300, 200);
 	private static final int DEFAULT_MAX_WIDTH = 740;
 	private static final int DEFAULT_MAX_HEIGHT = 500;
 	protected long algSeed = 1971;
-    private boolean requestLayout = true;
-    private boolean incrementalLayout = false;
     private CompoundModuleFigure compoundFigure;
 
 	/**
-	 *
+	 * Constructor.
 	 * @param nodeParent The parent figure of the nodes
 	 * @param connectionParent The parent figure of the connection figures
 	 */
@@ -72,24 +70,33 @@ public class SpringEmbedderLayout extends XYLayout {
 		// iterate over the nodes and add them to the algorithm
 		// all child figures on this layer are considered as node
 		for (IFigure node : (List<IFigure>)nodeParent.getChildren()) {
-			// get the associated constraint (coordinates) if any
-			SubmoduleConstraint constr = (SubmoduleConstraint)getConstraint(node);
-			Assert.isNotNull(constr,"A figure must have an associated constraint");
+			ISubmoduleConstraint constr = (ISubmoduleConstraint)node;
 
-			if(constr.isUnspecified()) {
-				// if unspec. use a random start position 
-				autoLayouter.addMovableNode(node, constr.width, constr.height);
-			} else if (constr.isPinned() || incrementalLayout) {
-				// on incremental layout, everything is fixed except unspecified nodes 
-				autoLayouter.addFixedNode(node, constr.x, constr.y, constr.width, constr.height);
+			Rectangle shapeBounds = constr.getShapeBounds();
+			Point centerLocation = constr.getCenterLocation();
+			if (centerLocation != null) {
+				// use cached (previously layouted) coordinates
+				autoLayouter.addFixedNode(node, centerLocation.x, centerLocation.y, shapeBounds.width, shapeBounds.height);
 			}
-			else
-				autoLayouter.addMovableNode(node, constr.width, constr.height);
+			else {
+				// lay out this node, and store the coordinates with setCenterLocation()
+				Point baseLoc = constr.getBaseLocation();
+				if (baseLoc != null) {
+					// on incremental layout, everything is fixed except unspecified nodes
+					//FIXME vector layout!!!!
+					autoLayouter.addFixedNode(node, baseLoc.x, baseLoc.y, shapeBounds.width, shapeBounds.height);
+				} 
+				else {
+					// if unspec. use a random start position 
+					//FIXME vector layout!!!!
+					autoLayouter.addMovableNode(node, shapeBounds.width, shapeBounds.height);
+				}
+			}
 		}
 
 		// iterate over the connections and add them to the algorithm
 		// all child figures of type Connection on this layer are considered as edge
-		for (IFigure edge : (List<IFigure>)edgeParent.getChildren())
+		for (IFigure edge : (List<IFigure>)edgeParent.getChildren()) {
 			if (edge instanceof Connection) {
 				Connection conn = (Connection)edge;
 				IFigure srcFig = conn.getSourceAnchor().getOwner();
@@ -107,71 +114,42 @@ public class SpringEmbedderLayout extends XYLayout {
 				else {  // both are submodules
 					autoLayouter.addEdge(srcFig, targetFig, 0);
 				}
-
 			}
+		}
 		return autoLayouter;
 	}
 
 
 	/**
      * Implements the algorithm to layout the components of the given container figure.
-     * Each component is laid out using its own layout constraint specifying its size
-     * and position. Copied from XYLayout BUT places the middle point of the children to the
-     * specified constraint location.
-     *
+     * 
      * @see LayoutManager#layout(IFigure)
      */
-	@Override
     @SuppressWarnings("unchecked")
     public void layout(IFigure parent) {
 	    long startTime = System.currentTimeMillis();
 	    
-        AbstractGraphLayoutAlgorithm alg = null;
-        // find the place of movable nodes if auto-layout requested
-        if (requestLayout) {
-            alg = createAutoLayouter();
-            alg.setSeed((int)algSeed);
-            alg.execute();
-            algSeed = alg.getSeed();
-            requestLayout = false;
-        }
+	    // find the place of movable nodes if auto-layout requested
+	    AbstractGraphLayoutAlgorithm alg = createAutoLayouter();
+	    alg.setSeed((int)algSeed);
+	    alg.execute();
+	    algSeed = alg.getSeed();
 
     	// lay out the children according to the auto-layouter
-        Point offset = getOrigin(parent);
         for (IFigure f : (List<IFigure>)parent.getChildren()) {
-            SubmoduleConstraint constr = ((SubmoduleConstraint)getConstraint(f));
-            Assert.isNotNull(constr, "Figure must have an associated constraint");
-            
-            // by default use the size and location from the constraint object (must create a copy!)
+        	ISubmoduleConstraint constr = (ISubmoduleConstraint)f;
 
-            // get the computed location from the auto-layout algorithm (if there is an algorithm at all)
-            if (alg != null) {
-            	Point locFromAlg = alg.getNodePosition(f);
-            	Assert.isNotNull(locFromAlg, "There is a figure witout a position calculated by the layouting algorythm");
-            	// we write back the calculated locations to the constraint so they can be used next
-            	// time as starting positions for the movable nodes
-            	constr.setLocation(locFromAlg);
-            }
-            Assert.isTrue(!constr.isUnspecified(), "A figure with unspecified location constraint detected. You must at least request an incremental layout after adding a new figure child.");
+        	// by default use the size and location from the constraint object (must create a copy!)
 
-            Rectangle newBounds = constr.getCopy();
-            newBounds.translate(offset);
-            // translate to the middle of the figure
-            newBounds.translate(-newBounds.width / 2, -newBounds.height / 2);
-            f.setBounds(newBounds);
+        	// get the computed location from the auto-layout algorithm (if there is an algorithm at all)
+        	Point locFromAlg = alg.getNodePosition(f);
+        	Assert.isNotNull(locFromAlg);
+        	// we write back the calculated locations to the constraint so they can be used next
+        	// time as starting positions for the movable nodes
+        	constr.setCenterLocation(locFromAlg);
         }
         if (debug)
             Debug.println("SpringEmbedderLayout: " + (System.currentTimeMillis()-startTime) + "ms");
-    }
-
-    /**
-     * Returns the point (0,0) as the origin. This is required for correct freeform handling.
-     * As we want to use it in a FreeformLayer
-     * @see XYLayout#getOrigin(IFigure)
-     */
-    @Override
-    public Point getOrigin(IFigure figure) {
-        return new Point();
     }
 
 	/**
@@ -195,20 +173,16 @@ public class SpringEmbedderLayout extends XYLayout {
 	 * from the current constraint). Nodes with unspecified location will be layouted
 	 * by generating a random starting position. 
 	 */
+	@SuppressWarnings("unchecked")
 	public void requestFullLayout() {
-		incrementalLayout = false;
-	    requestLayout = true;
+		// forget all cached coordinates 
+	    IFigure nodeParent = compoundFigure.getSubmoduleLayer(); 
+		for (IFigure node : (List<IFigure>)nodeParent.getChildren()) {
+			ISubmoduleConstraint constr = (ISubmoduleConstraint)node;
+			constr.setCenterLocation(null);
+		}
 	}
 	
-	/**
-	 * After calling this, the next layout process will call an incremental layout process. 
-	 * Pinned  and unpinned nodes will stay. Nodes with unspecified location will be layouted
-	 * by generating a random starting position. 
-	 */
-	public void requestIncrementalLayout() {
-		incrementalLayout = true;
-	    requestLayout = true;
-	}
 	// XXX this algorithm is using ONLY the figure bounds. It might be much better to move
 	// it to submoduleLayer.getPreferredSize
 	
@@ -219,8 +193,9 @@ public class SpringEmbedderLayout extends XYLayout {
 		if (hHint >= 0 && wHint >= 0)
 			return new Dimension(hHint,wHint);
 		
+		layout(f);  //XXX maybe not always needed ??
 	    Rectangle rect = null;
-	    for(IFigure child : (List<IFigure>)f.getChildren()) {
+	    for (IFigure child : (List<IFigure>)f.getChildren()) {
 	        Rectangle r = child.getBounds();
 	        
 	        if (rect == null)
@@ -244,55 +219,4 @@ public class SpringEmbedderLayout extends XYLayout {
 	        union(getBorderPreferredSize(f));
 		return result;
 	}
-
-
-//	@SuppressWarnings("unchecked")
-//	@Override
-//	protected Dimension calculatePreferredSize(IFigure f, int hHint, int wHint) {
-//		// if we have a size hint, we always use that for the size
-//		if (hHint >= 0 && wHint >= 0)
-//			return new Dimension(hHint,wHint);
-//		
-//	    Rectangle rect = null;
-//	    for(IFigure child : (List<IFigure>)f.getChildren()) {
-//	    	// FIXME should we use the figure bounds instead of the constraints?
-//	        Rectangle r = (Rectangle)constraints.get(child);
-//	        if (r == null)
-//	            continue;
-//	        
-//	        // translate the x,y as we use the center of the figure in the constraint
-//	        r = r.getTranslated(-r.width/2, -r.height/2);
-//	
-//	        if (r.width == -1 || r.height == -1) {
-//	            Dimension preferredSize = child.getPreferredSize(r.width, r.height);
-//	            r = r.getCopy();
-//	            if (r.width == -1)
-//	                r.width = preferredSize.width;
-//	            if (r.height == -1)
-//	                r.height = preferredSize.height;
-//	        }
-//	        
-//	        if (child instanceof SubmoduleFigure) {
-//	            // add the label bounds to it
-//	            r.union(((SubmoduleFigure)child).getLabelBounds());
-//	        }
-//	        
-//	        if (rect == null)
-//	        	rect = r.getCopy();
-//	        
-//	        rect.union(r);
-//	    }
-//	    
-//	    // use the default size if no submodule children were present
-//	    if (rect == null)
-//	    	return new Dimension(DEFAULT_SIZE);
-//	    
-//	    // we use the same amount of space on the up/down and the left/right side
-//	    Dimension result = new Dimension(rect.x + Math.max(rect.x,0) + rect.width + f.getInsets().getWidth(), rect.y + Math.max(rect.y,0) + rect.height + f.getInsets().getHeight()).
-//	        union(getBorderPreferredSize(f));
-//	    System.out.println("SpringEmbedderLayout.calculatePreferredSize: "+result);
-//		return result;
-//	}
-//
 }
-

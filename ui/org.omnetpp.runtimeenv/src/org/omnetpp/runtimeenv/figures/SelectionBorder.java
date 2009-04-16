@@ -7,6 +7,7 @@ import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.figures.SubmoduleFigure;
 
 //XXX draw selection too?
 public class SelectionBorder implements Border {
@@ -37,7 +38,11 @@ public class SelectionBorder implements Border {
 
 	@Override
 	public void paint(IFigure figure, Graphics graphics, Insets insets) {
-		Rectangle r = figure.getBounds().getCropped(insets);
+		Rectangle r;
+		if (figure instanceof SubmoduleFigure)
+			r = ((SubmoduleFigure)figure).getHandleBounds().getCropped(insets);  //XXX use interface
+		else
+			r = figure.getBounds().getCropped(insets);
 		graphics.setBackgroundColor(ColorFactory.BLACK);
 		graphics.fillRectangle(r.x, r.y, handleSize, handleSize);
 		graphics.fillRectangle(r.x, r.bottom()-handleSize, handleSize, handleSize);

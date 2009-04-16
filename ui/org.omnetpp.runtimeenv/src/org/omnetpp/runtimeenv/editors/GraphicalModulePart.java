@@ -5,12 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.InputEvent;
 import org.eclipse.draw2d.MouseEvent;
 import org.eclipse.draw2d.MouseListener;
-import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -18,8 +16,6 @@ import org.omnetpp.experimental.simkernel.swig.cDisplayString;
 import org.omnetpp.experimental.simkernel.swig.cModule;
 import org.omnetpp.experimental.simkernel.swig.cModule_SubmoduleIterator;
 import org.omnetpp.experimental.simkernel.swig.cSimulation;
-import org.omnetpp.figures.layout.SpringEmbedderLayout;
-import org.omnetpp.figures.layout.SubmoduleConstraint;
 import org.omnetpp.runtimeenv.Activator;
 import org.omnetpp.runtimeenv.figures.CompoundModuleFigureEx;
 import org.omnetpp.runtimeenv.figures.SubmoduleFigureEx;
@@ -131,46 +127,28 @@ public class GraphicalModulePart extends InspectorPart {
     }
 
     protected void refreshVisuals() {
-    	CompoundModuleFigureEx moduleFigure = (CompoundModuleFigureEx)figure;
         cSimulation sim = cSimulation.getActiveSimulation();
         for (int id : submodules.keySet()) {
-            cDisplayString displayString = sim.getModule(id).getDisplayString();
+            cModule submodule = sim.getModule(id);
+			cDisplayString displayString = submodule.getDisplayString();
             String displayStringText = displayString.toString();
+            
+            // update figure if display string changed since last time
             if (!displayStringText.equals(lastSubmoduleDisplayStrings.get(id))) {
                 SubmoduleFigureEx submoduleFigure = submodules.get(id);
                 submoduleFigure.setDisplayString(displayString);
-                
+                submoduleFigure.setSubmoduleVectorIndex(submodule.getName(), submodule.getVectorSize(), submodule.getIndex());
+
                 // FIXME should also set the scale factor here (from the containing compound module)
                 // otherwise range, size cannot be correctly displayed
-
-                // use the existing constraint if any
-                SubmoduleConstraint constraint = submoduleFigure.getSubmoduleConstraint();
-                if (constraint == null)                      // or create a new one if no constraint was created until now
-                	constraint = new SubmoduleConstraint();  // the location is unspecified in this constraint by default
-                
-                Point dpsLoc = displayString.getLocation(1.0f);  //FIXME should use scale here
-                // check if the figure has a display string that specified a location (figure is fixed)
-                constraint.setPinned(dpsLoc != null);
-                // use the location specified in the display string (if any) for pinned nodes,
-                // otherwise just use the current position stored in the constraint (which can be either unspecified or
-                // can store the result from the previous layout run)
-                if (constraint.isPinned())
-                	constraint.setLocation(dpsLoc);
-
-                // use the preferred size of the figure for constraint size
-                constraint.setSize(submoduleFigure.getPreferredSize());
-                Assert.isTrue(constraint.height != -1 && constraint.width != -1);        
-                // Debug.println("constraint for " + nameToDisplay + ": " + constraint);
-                submoduleFigure.setSubmoduleConstraint(constraint);  // store the constraint (needed if a new constraint was created)
                 
                 lastSubmoduleDisplayStrings.put(id, displayStringText);
             }
         }
-        //FIXME remove the net line!
-        // requesting an incremental layout (which moves only unspecified nodes automatically, other pinned/unpinned nodes 
-        // will be displayed according to the coordinates stored in the constarint object
-        ((SpringEmbedderLayout)((CompoundModuleFigureEx)figure).getSubmoduleLayer().getLayoutManager()).requestIncrementalLayout();
-
+        
+    	//CompoundModuleFigureEx moduleFigure = (CompoundModuleFigureEx)figure;
+//        Debug.debug = true;
+//        FigureUtils.debugPrintRootFigureHierarchy(figure);
     }
 
     protected void handleMouseDoubleClick(MouseEvent me) {

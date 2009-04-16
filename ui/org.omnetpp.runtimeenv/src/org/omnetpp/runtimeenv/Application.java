@@ -22,8 +22,8 @@ public class Application implements IApplication {
 	 */
 	public Object start(IApplicationContext context) {
 		System.out.println("Entering Application.start()");
-        //Simkernel.changeToDir("C:/home/omnetpp40/omnetpp/test/anim/dynamic"); //XXX
-        Simkernel.changeToDir("C:/home/omnetpp40/omnetpp/samples/queuenet"); //XXX
+        Simkernel.changeToDir("C:/home/omnetpp40/omnetpp/test/anim/dynamic"); //XXX
+        //Simkernel.changeToDir("C:/home/omnetpp40/omnetpp/samples/queuenet"); //XXX
         cStaticFlag.set(true); //FIXME also clear it later
 
 		// assemble the command line

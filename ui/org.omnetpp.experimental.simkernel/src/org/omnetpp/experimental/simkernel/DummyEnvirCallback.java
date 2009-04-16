@@ -14,7 +14,7 @@ import org.omnetpp.experimental.simkernel.swig.cModule;
 import org.omnetpp.experimental.simkernel.swig.cObject;
 
 public class DummyEnvirCallback implements IEnvirCallback {
-	public boolean debug = true;
+	public boolean debug = false;
 
 	public void objectDeleted(cObject object) {
 		if (debug)

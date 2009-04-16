@@ -15,7 +15,7 @@ import org.eclipse.draw2d.geometry.Rectangle;
  * Submodule layout is using this interface
  */
 public interface ISubmoduleConstraint {
-	enum VectorArrangement {exact, row, column, matrix, ring};
+	enum VectorArrangement {exact, row, column, matrix, ring}; // names must match with IDisplayString.Prop.LAYOUT names
 
 	/**
 	 * Returns the position that occurs in the display string, or null. For non-vector
@@ -23,7 +23,7 @@ public interface ISubmoduleConstraint {
 	 * will be this location plus an offset calculated from vectorArranment, vectorSize,
 	 * vectorIndex and vector arrangement parameters. 
 	 */
-	public Point getBasePosition();
+	public Point getBaseLocation();
 
 	/**
 	 * Identifies the vector this submodule belongs to, or null if the submodule
@@ -83,7 +83,10 @@ public interface ISubmoduleConstraint {
 	 * The bounds of the main shape of submodule. This is used during the layouting process. 
 	 * This is NOT the same as the bounds of the figure, because the figure might draw range 
 	 * indicators, and additional text annotation which is not treated as an "important" 
-	 * part of the figure. 
+	 * part of the figure.
+	 *  
+	 * The size of this bounds also serves as input to the layouter, so this method should 
+	 * return a rectangle with the correct size even if centerLocation is not set.   
 	 */
 	public Rectangle getShapeBounds();
 	
