@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Callable;
 
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileList;
@@ -39,13 +40,26 @@ public class FilterHints {
 	public FilterHints() {
 	}
 
-	public FilterHints(ResultFileManager manager, ResultType type) {
-		this(manager, ScaveModelUtil.getAllIDs(manager, type));
+	public FilterHints(final ResultFileManager manager, final ResultType type) {
+		ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
+			public Object call() throws Exception {
+				init(manager, ScaveModelUtil.getAllIDs(manager, type));
+				return null;
+			}
+		});
 	}
 	
-	public FilterHints(ResultFileManager manager, IDList idlist) {
+	public FilterHints(final ResultFileManager manager, final IDList idlist) {
+		ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
+			public Object call() throws Exception {
+				init(manager, idlist);
+				return null;
+			}
+		});
+	}
+	
+	private void init(ResultFileManager manager, IDList idlist) {
 		manager.checkReadLock();
-		
 		ResultFileList fileList = manager.getUniqueFiles(idlist);
 		RunList runList = manager.getUniqueRuns(idlist);
 

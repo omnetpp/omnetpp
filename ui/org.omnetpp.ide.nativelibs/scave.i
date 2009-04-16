@@ -312,6 +312,20 @@ int strdictcmp(const char *s1, const char *s2);
 %ignore ResultFile::resultFileManager;
 %ignore Run::resultFileManager;
 
+// unused methods
+%ignore ResultFileManager::filterRunList;
+%ignore ResultFileManager::filterFileList;
+%ignore ResultFileManager::getFileRuns;
+%ignore ResultFileManager::getUniqueFileRuns;
+%ignore ResultFileManager::getScalarsInFileRun;
+%ignore ResultFileManager::getHistogramsInFileRun;
+//%ignore ResultFileManager::getUniqueModuleNames;
+//%ignore ResultFileManager::getUniqueNames;
+//%ignore ResultFileManager::getUniqueAttributeValues;
+%ignore ResultFileManager::getUniqueRunAttributeValues;
+%ignore ResultFileManager::getUniqueModuleParamValues;
+//%ignore ResultFileManager::getFileAndRunNumberFilterHints;
+
 %newobject ResultItem::getEnum() const;
 
 %extend ResultItem {
@@ -339,8 +353,16 @@ int strdictcmp(const char *s1, const char *s2);
   }
 
   public static <T> T callWithReadLock(ResultFileManager manager, java.util.concurrent.Callable<T> callable) {
-    if (manager != null)
-      manager.getReadLock().lock();
+    return callWithLock(manager != null ? manager.getReadLock() : null, callable);
+  }
+
+  public static <T> T callWithWriteLock(ResultFileManager manager, java.util.concurrent.Callable<T> callable) {
+    return callWithLock(manager != null ? manager.getWriteLock() : null, callable);
+  }
+
+  private static <T> T callWithLock(org.omnetpp.common.engine.ILock lock, java.util.concurrent.Callable<T> callable) {
+    if (lock != null)
+      lock.lock();
     try {
       return callable.call();
     }
@@ -348,15 +370,19 @@ int strdictcmp(const char *s1, const char *s2);
       throw new RuntimeException(e);
     }
     finally {
-      if (manager != null)
-        manager.getReadLock().unlock();
+      if (lock != null)
+        lock.unlock();
     }
   }
+
 
   public void checkReadLock() {
     org.eclipse.core.runtime.Assert.isTrue(getReadLock().hasLock(), "Missing read lock.");
   }
 
+  public void checkWriteLock() {
+    org.eclipse.core.runtime.Assert.isTrue(getWriteLock().hasLock(), "Missing write lock.");
+  }
 %}
 
 FIX_STRING_MEMBER(ResultFile, filePath, FilePath);

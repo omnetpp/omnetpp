@@ -470,6 +470,7 @@ public class ScaveModelUtil {
 	
 
 	public static IsoLineData[] getModuleAndDataPairs(IDList idlist, ResultFileManager manager, boolean addRunAttributes) {
+		manager.checkReadLock();
 		Set<IsoLineData> values = new HashSet<IsoLineData>();
 		for (int i = 0; i < idlist.size(); ++i) {
 			long id = idlist.get(i);

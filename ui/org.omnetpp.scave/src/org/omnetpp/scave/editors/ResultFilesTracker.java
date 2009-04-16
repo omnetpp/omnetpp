@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Callable;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -44,6 +45,7 @@ import org.omnetpp.common.Debug;
 import org.omnetpp.scave.ContentTypes;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.engine.ResultFile;
+import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engineext.IndexFile;
 import org.omnetpp.scave.engineext.ResultFileFormatException;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
@@ -165,9 +167,15 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 			return;
 		
 		if (debug) Debug.println("ResultFileTracker.synchronize()");
-		Set<String> loadedFiles = new HashSet<String>();
-		for (ResultFile file : manager.getFiles().toArray())
-			loadedFiles.add(file.getFilePath());
+		Set<String> loadedFiles = 
+		ResultFileManager.callWithReadLock(manager, new Callable<Set<String>>() {
+			public Set<String> call() {
+				Set<String> loadedFiles = new HashSet<String>();
+				for (ResultFile file : manager.getFiles().toArray())
+					loadedFiles.add(file.getFilePath());
+				return loadedFiles;
+			}
+		});
 		
 		Set<String> filesToBeLoaded = new HashSet<String>();
 		List<InputFile> files = new ArrayList<InputFile>();
@@ -284,10 +292,12 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 	 */
 	private void unloadFile(String resourcePath) {
 		if (debug) Debug.format("  unloadFile: %s%n ", resourcePath);
-		ResultFile resultFile = manager.getFile(resourcePath);
-		if (resultFile != null) {
-			manager.unloadFile(resultFile);
-			if (debug) Debug.println("done");
+		synchronized (lock) {
+			ResultFile resultFile = manager.getFile(resourcePath);
+			if (resultFile != null) {
+				manager.unloadFile(resultFile);
+				if (debug) Debug.println("done");
+			}
 		}
 	}
 
