@@ -319,11 +319,11 @@ int strdictcmp(const char *s1, const char *s2);
 %ignore ResultFileManager::getUniqueFileRuns;
 %ignore ResultFileManager::getScalarsInFileRun;
 %ignore ResultFileManager::getHistogramsInFileRun;
+%ignore ResultFileManager::getUniqueRunAttributeValues;
+%ignore ResultFileManager::getUniqueModuleParamValues;
 //%ignore ResultFileManager::getUniqueModuleNames;
 //%ignore ResultFileManager::getUniqueNames;
 //%ignore ResultFileManager::getUniqueAttributeValues;
-%ignore ResultFileManager::getUniqueRunAttributeValues;
-%ignore ResultFileManager::getUniqueModuleParamValues;
 //%ignore ResultFileManager::getFileAndRunNumberFilterHints;
 
 %newobject ResultItem::getEnum() const;

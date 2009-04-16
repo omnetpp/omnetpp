@@ -48,7 +48,6 @@ import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engineext.IndexFile;
 import org.omnetpp.scave.engineext.ResultFileFormatException;
-import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.jobs.VectorFileIndexerJob;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
@@ -65,13 +64,13 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 	
 	private static final boolean debug = true;
 
-	private ResultFileManagerEx manager; //backreference to the manager it operates on, the manager is owned by the editor
+	private ResultFileManager manager; //backreference to the manager it operates on, the manager is owned by the editor
 	private Inputs inputs; // backreference to the Inputs element we watch
 	private IPath baseDir; // path of the directory which used to resolve relative paths as a base
 
 	private Object lock = new Object();
 	
-	public ResultFilesTracker(ResultFileManagerEx manager, Inputs inputs, IPath baseDir) {
+	public ResultFilesTracker(ResultFileManager manager, Inputs inputs, IPath baseDir) {
 		this.manager = manager;
 		this.inputs = inputs;
 		this.baseDir = baseDir;

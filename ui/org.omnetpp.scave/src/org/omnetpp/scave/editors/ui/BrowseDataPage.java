@@ -131,7 +131,7 @@ public class BrowseDataPage extends ScaveEditorPage {
 		configureContextMenu(histogramsPanel);
 
 		// set up contents
-		ResultFileManagerEx manager = scaveEditor.getResultFileManager();
+		ResultFileManager manager = scaveEditor.getResultFileManager();
 		scalarsPanel.setResultFileManager(manager);
 		vectorsPanel.setResultFileManager(manager);
 		histogramsPanel.setResultFileManager(manager);

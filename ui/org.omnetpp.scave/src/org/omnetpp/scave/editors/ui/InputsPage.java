@@ -41,7 +41,6 @@ import org.omnetpp.scave.editors.treeproviders.InputsRunFileViewContentProvider;
 import org.omnetpp.scave.editors.treeproviders.InputsViewLabelProvider;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engineext.IResultFilesChangeListener;
-import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
@@ -141,7 +140,7 @@ public class InputsPage extends ScaveEditorPage {
 		Analysis analysis = scaveEditor.getAnalysis();
         getInputFilesTreeViewer().setInput(analysis.getInputs());
 
-        ResultFileManagerEx manager = scaveEditor.getResultFileManager();
+        ResultFileManager manager = scaveEditor.getResultFileManager();
         getFileRunTreeViewer().setInput(manager);
         getRunFileTreeViewer().setInput(manager);
         getLogicalDataTreeViewer().setInput(manager);
