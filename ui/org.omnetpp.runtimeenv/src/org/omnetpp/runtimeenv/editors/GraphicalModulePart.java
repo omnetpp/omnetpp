@@ -121,7 +121,7 @@ public class GraphicalModulePart extends InspectorPart {
                 // create figure
                 SubmoduleFigureEx submoduleFigure = new SubmoduleFigureEx();
                 submoduleFigure.setModuleID(id);
-                submoduleFigure.setPinDecoration(false);
+                submoduleFigure.setPinVisible(false);
                 submoduleFigure.setName(sim.getModule(id).getFullName());
                 moduleFigure.getSubmoduleLayer().add(submoduleFigure);
                 submodules.put(id, submoduleFigure);

@@ -85,7 +85,7 @@ public class LayoutTest extends TestCase {
 		if (loc!=null)
 			constr.setLocation(loc);
 		constr.setSize(sm.getPreferredSize());
-		sm.setPinDecoration(constr.isPinned());
+		sm.setPinVisible(constr.isPinned());
 		sm.setSubmoduleConstraint(constr);
 //		System.out.println("----------");
 //		System.out.println("submodule added: "+sm);

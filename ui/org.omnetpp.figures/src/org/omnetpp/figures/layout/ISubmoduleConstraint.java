@@ -18,13 +18,49 @@ public interface ISubmoduleConstraint {
 	enum VectorArrangement {exact, row, column, matrix, ring};
 
 	/**
-	 * The center point of the main area (icon/shape) of a submodule figure.
-	 * Returns <code>null</code> if setCenterLocation() was not called before. This
-	 * means that the submodule was added to the parent recently and an auto-layout
-	 * should be executed to place the submodule inside the compound module.
+	 * Returns the position that occurs in the display string, or null. For non-vector
+	 * submodules this should be set as centerLocation; for submodule vectors, centerLocation
+	 * will be this location plus an offset calculated from vectorArranment, vectorSize,
+	 * vectorIndex and vector arrangement parameters. 
 	 */
-	public Point getCenterLocation();
+	public Point getBasePosition();
+
+	/**
+	 * Identifies the vector this submodule belongs to, or null if the submodule
+	 * is not in a vector.
+	 */
+	public Object getVectorIdentifier();
+
+	/**
+	 * The size of the module vector. Returns 0 if it is not a module vector.
+	 */
+	public int getVectorSize();
 	
+	/**
+	 * The index of the module in a vector (0..getVectorSize()-1)
+	 */
+	public int getVectorIndex();
+	
+	/**
+	 * The type of the vector arrangement (exact, column, etc...) 
+	 */
+	public VectorArrangement getVectorArrangement();
+	
+	/**
+	 * First argument to the vector arrangement.
+	 */
+	public int getVectorArrangementPar1();
+	
+	/**
+	 * Second argument to the vector arrangement.
+	 */
+	public int getVectorArrangementPar2();
+
+	/**
+	 * Third argument to the vector arrangement.
+	 */
+	public int getVectorArrangementPar3();
+
 	/**
 	 * Sets the location of a submodule (the center point of its main area icon/shape).
 	 * This method must store the currently set value which can be later returned by
@@ -34,17 +70,14 @@ public interface ISubmoduleConstraint {
 	 * size of the figure and the currently set center point.
 	 */
 	public void setCenterLocation(Point loc);
-	
+
 	/**
-	 * Returns whether the submodule is pinned. If it is pinned, the centerLoaction should 
-	 * have been set already (position is set in the display string)
+	 * The center point of the main area (icon/shape) of a submodule figure.
+	 * Returns <code>null</code> if setCenterLocation() was not called before. This
+	 * means that the submodule was added to the parent recently and an auto-layout
+	 * should be executed to place the submodule inside the compound module.
 	 */
-	public boolean isFixedPosition();
-	
-	/**
-	 * Identifies the vector this submodule belongs to.
-	 */
-	public Object getVectorIdentifier();
+	public Point getCenterLocation();
 	
 	/**
 	 * The bounds of the main shape of submodule. This is used during the layouting process. 
@@ -57,34 +90,5 @@ public interface ISubmoduleConstraint {
 	/**
 	 * The bounds of the name label of the submodule.  
 	 */
-	public Rectangle getnameBounds();
-	/**
-	 * The size of the module vector. Returns 0 if it is not a module vector.
-	 */
-	public int getVectorSize();
-	
-	/**
-	 * The index of the module in a vector (<vectorSIze())
-	 */
-	public int getVectorIndex();
-	
-	/**
-	 * The type of the vector arrangement (exact, column, etc...) 
-	 */
-	public VectorArrangement getVectorArrangement();
-	
-	/**
-	 * First argument to the vector arrangement.
-	 */
-	public int getLayoutPar1();
-	
-	/**
-	 * Second argument to the vector arrangement.
-	 */
-	public int getLayoutPar2();
-
-	/**
-	 * Third argument to the vector arrangement.
-	 */
-	public int getLayoutPar3();
+	public Rectangle getNameBounds();
 }

@@ -54,7 +54,7 @@ public class SubmoduleEditPart extends ModuleEditPart {
         // set the pin decoration image for the image (The compound module requests an auto-layout
         // if we add an figure without pin. ie. submodule created in the text editor without 
         // a display string
-        fig.setPinDecoration(getSubmoduleModel().getDisplayString().getLocation(1.0f) != null);
+        fig.setPinVisible(getSubmoduleModel().getDisplayString().getLocation(1.0f) != null);
 
         gateAnchor = new GateAnchor(fig);
         return fig;
@@ -165,7 +165,7 @@ public class SubmoduleEditPart extends ModuleEditPart {
         getSubmoduleFigure().setSubmoduleConstraint(constraint);  // store the constraint (needed if a new constraint was created)
         
         // show/hide the pin marker
-        getSubmoduleFigure().setPinDecoration(dpsLoc != null);
+        getSubmoduleFigure().setPinVisible(dpsLoc != null);
     }
 
     @Override

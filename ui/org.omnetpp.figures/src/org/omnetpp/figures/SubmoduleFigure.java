@@ -11,7 +11,6 @@ package org.omnetpp.figures;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.Layer;
-import org.eclipse.draw2d.LayoutManager;
 import org.eclipse.draw2d.PositionConstants;
 import org.eclipse.draw2d.TextUtilities;
 import org.eclipse.draw2d.geometry.Dimension;
@@ -25,7 +24,7 @@ import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.figures.CompoundModuleFigure.SubmoduleLayer;
-import org.omnetpp.figures.layout.SubmoduleConstraint;
+import org.omnetpp.figures.layout.ISubmoduleConstraint;
 import org.omnetpp.figures.misc.AttachedLayer;
 
 /**
@@ -37,7 +36,7 @@ import org.omnetpp.figures.misc.AttachedLayer;
  * @author andras
  */
 //FIXME support multiple texts: t/t1/t2/t3/t4
-public class SubmoduleFigure extends NedFigure {
+public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint {
     // supported shape types
 	protected static final int SHAPE_NONE = 0;
 	protected static final int SHAPE_OVAL = 1;
@@ -53,10 +52,20 @@ public class SubmoduleFigure extends NedFigure {
 	protected static final int TEXTPOS_TOP = 3;
 
     protected static final Image IMG_PIN = ImageFactory.getImage(ImageFactory.DEFAULT_PIN);
-	
-    // state info, from the display string
-    protected int centerX, centerY;
+
+    // input for the layouting
     protected float scale = 1.0f;
+    protected int baseX = Integer.MIN_VALUE, baseY = Integer.MAX_VALUE;
+    protected Object vectorIdentifier;
+    protected int vectorSize;
+    protected int vectorIndex;
+    protected VectorArrangement vectorArrangement;
+    protected int vectorArrangementPar1, vectorArrangementPar2, vectorArrangementPar3;
+
+    // result of layouting
+    protected int centerX = Integer.MIN_VALUE, centerY = Integer.MIN_VALUE;
+
+    // appearance
     protected int shape;
     protected int shapeWidth;
     protected int shapeHeight;
@@ -74,6 +83,7 @@ public class SubmoduleFigure extends NedFigure {
     protected RangeFigure rangeFigure = new RangeFigure();  //FIXME make this on demand as well!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
+    
     public SubmoduleFigure() {
         rangeAttachLayer = new AttachedLayer(this, PositionConstants.CENTER, rangeFigure, PositionConstants.CENTER);
     }
@@ -96,134 +106,6 @@ public class SubmoduleFigure extends NedFigure {
         		problemMarkerFigure, new PrecisionPoint(0.35, 0.35), null));
 
         super.addNotify();
-    }
-
-    protected void setRange(int radius, Color fillColor, Color borderColor, int borderWidth) {
-        if (radius > 0) {
-            rangeFigure.setVisible(true);
-            rangeFigure.setSize(radius*2, radius*2);
-        }
-        else {
-        	rangeFigure.setVisible(false);
-            rangeFigure.setSize(0, 0); //XXX minek?
-        }
-        rangeFigure.setFill(fillColor != null);
-        rangeFigure.setBackgroundColor(fillColor);
-        rangeFigure.setOutline(borderColor != null &&  borderWidth > 0);
-        rangeFigure.setForegroundColor(borderColor);
-        rangeFigure.setLineWidth(borderWidth);
-
-        if (rangeAttachLayer != null)
-        	rangeAttachLayer.revalidate();
-
-        invalidate();
-    }
-
-    public void setQueueText(String qtext) {
-    	queueText = qtext;
-        invalidate();
-    }
-
-    protected void setInfoText(String text, String pos, Color color) {
-    	this.text = text;
-    	this.textPos = pos.equalsIgnoreCase("l") ? TEXTPOS_LEFT : pos.equalsIgnoreCase("r") ? TEXTPOS_RIGHT : TEXTPOS_TOP;
-    	this.textColor = color;
-        invalidate();
-    }
-
-    protected void setShape(Image image, String shapeName, int shapeWidth, int shapeHeight,
-            Color shapeFillColor, Color shapeBorderColor, int shapeBorderWidth) {
-
-        if (StringUtils.isEmpty(shapeName))
-        	shape = SHAPE_NONE;
-        else if (shapeName.equalsIgnoreCase("oval"))
-        	shape = SHAPE_OVAL;
-        else if (shapeName.equalsIgnoreCase("rect"))
-            shape = SHAPE_RECT;
-        else if (shapeName.equalsIgnoreCase("rrect"))
-            shape = SHAPE_RECT2;
-        else if (shapeName.equalsIgnoreCase("tri"))
-            shape = SHAPE_TRI;
-        else if (shapeName.equalsIgnoreCase("tri2"))
-            shape = SHAPE_TRI2;
-        else if (shapeName.equalsIgnoreCase("hex"))
-            shape = SHAPE_HEX;
-        else if (shapeName.equalsIgnoreCase("hex2"))
-            shape = SHAPE_HEX2;
-        else
-        	shape = SHAPE_NONE;
-
-        Assert.isTrue(shapeHeight != -1 || shapeWidth != -1);
-        this.shapeWidth = shapeWidth;
-        this.shapeHeight = shapeHeight;
-
-        this.image = image;
-        
-        if (image == null && shape == SHAPE_NONE)
-            image = ImageFactory.getImage(ImageFactory.DEFAULT_KEY);
-
-        invalidate();
-    }
-
-    protected void calculateBounds() {
-        Rectangle bounds = getShapeBounds().union(getNameBounds()); //FIXME also the text, decoration image etc etc!!!
-        super.setBounds(bounds);
-    }
-    
-	protected Rectangle getShapeBounds() {
-		int width = shapeWidth>0 ? shapeWidth : shapeHeight;
-		int height = shapeHeight>0 ? shapeHeight : shapeWidth;
-        if (image != null) {
-            width = Math.max(width, image.getBounds().width);
-            height = Math.max(height, image.getBounds().height);
-        }
-		return new Rectangle(centerX-width/2, centerY-height/2, width, height);
-	}
-
-	/**
-	 * Sets the external image decoration ("i2" tag)
-	 */
-	protected void setDecorationImage(Image img) {
-		decoratorImage = img;
-		invalidate();
-	}
-
-    @Override
-    public void setBounds(Rectangle rect) {
-    	throw new UnsupportedOperationException(); // call setCenterLocation/setShape instead
-    }
-    
-    @Override
-    public void setLocation(Point p) {
-    	throw new UnsupportedOperationException(); // call setCenterLocation/setShape instead
-    }
-    
-    @Override
-    public void setSize(int w, int h) {
-    	throw new UnsupportedOperationException(); // call setCenterLocation/setShape instead
-    }
-
-    @Override
-    public void setPreferredSize(Dimension size) {
-    	throw new UnsupportedOperationException(); // call setCenterLocation/setShape instead
-    }
-    
-    @Override
-    public Dimension getPreferredSize(int hint, int hint2) {
-    	throw new UnsupportedOperationException(); // call setCenterLocation/setShape instead
-    }
-
-    public Rectangle getHandleBounds() {
-        return getShapeBounds();
-    }
-
-    /**
-     * The bounds of the name label
-     */
-    public Rectangle getNameBounds() {
-        Rectangle shapeBounds = getShapeBounds();
-        Dimension textSize = TextUtilities.INSTANCE.getTextExtents(text, getFont());
-        return new Rectangle(centerX-textSize.width/2, shapeBounds.bottom(), textSize.width, textSize.height);
     }
 
     /**
@@ -287,6 +169,133 @@ public class SubmoduleFigure extends NedFigure {
         invalidate();
 	}
 
+	protected void setRange(int radius, Color fillColor, Color borderColor, int borderWidth) {
+    	if (radius <= 0) {
+    		rangeFigure.setVisible(false);
+    	}
+    	else {
+    		rangeFigure.setVisible(true);
+    		rangeFigure.setSize(radius*2, radius*2);
+
+    		rangeFigure.setFill(fillColor != null);
+    		rangeFigure.setBackgroundColor(fillColor);
+    		rangeFigure.setOutline(borderColor != null &&  borderWidth > 0);
+    		rangeFigure.setForegroundColor(borderColor);
+    		rangeFigure.setLineWidth(borderWidth);
+
+    		if (rangeAttachLayer != null)
+    			rangeAttachLayer.revalidate(); //XXX what's this?
+    	}
+        invalidate();
+    }
+
+    public void setQueueText(String qtext) {
+    	queueText = qtext;
+        invalidate();
+    }
+
+    protected void setInfoText(String text, String pos, Color color) {
+    	this.text = text;
+    	this.textPos = pos.equalsIgnoreCase("l") ? TEXTPOS_LEFT : pos.equalsIgnoreCase("r") ? TEXTPOS_RIGHT : TEXTPOS_TOP;
+    	this.textColor = color;
+        invalidate();
+    }
+
+    protected void setShape(Image image, String shapeName, int shapeWidth, int shapeHeight,
+            Color shapeFillColor, Color shapeBorderColor, int shapeBorderWidth) {
+
+        if (StringUtils.isEmpty(shapeName))
+        	shape = SHAPE_NONE;
+        else if (shapeName.equalsIgnoreCase("oval"))
+        	shape = SHAPE_OVAL;
+        else if (shapeName.equalsIgnoreCase("rect"))
+            shape = SHAPE_RECT;
+        else if (shapeName.equalsIgnoreCase("rrect"))
+            shape = SHAPE_RECT2;
+        else if (shapeName.equalsIgnoreCase("tri"))
+            shape = SHAPE_TRI;
+        else if (shapeName.equalsIgnoreCase("tri2"))
+            shape = SHAPE_TRI2;
+        else if (shapeName.equalsIgnoreCase("hex"))
+            shape = SHAPE_HEX;
+        else if (shapeName.equalsIgnoreCase("hex2"))
+            shape = SHAPE_HEX2;
+        else
+        	shape = SHAPE_NONE;
+
+        Assert.isTrue(shapeHeight != -1 || shapeWidth != -1);
+        this.shapeWidth = shapeWidth;
+        this.shapeHeight = shapeHeight;
+
+        this.image = image;
+        
+        if (image == null && shape == SHAPE_NONE)
+            image = ImageFactory.getImage(ImageFactory.DEFAULT_KEY);
+
+        invalidate();
+    }
+
+    protected void calculateBounds() {
+        Rectangle bounds = getShapeBounds().union(getNameBounds()); //FIXME also the text, decoration image etc etc!!!
+        super.setBounds(bounds);
+    }
+    
+	public Rectangle getShapeBounds() {
+		int width = shapeWidth>0 ? shapeWidth : shapeHeight;
+		int height = shapeHeight>0 ? shapeHeight : shapeWidth;
+        if (image != null) {
+            width = Math.max(width, image.getBounds().width);
+            height = Math.max(height, image.getBounds().height);
+        }
+		return new Rectangle(centerX-width/2, centerY-height/2, width, height);
+	}
+
+	/**
+	 * Sets the external image decoration ("i2" tag)
+	 */
+	protected void setDecorationImage(Image img) {
+		decoratorImage = img;
+		invalidate();
+	}
+
+    @Override
+    public void setBounds(Rectangle rect) {
+    	throw new UnsupportedOperationException(); // call setCenterLocation/setShape instead
+    }
+    
+    @Override
+    public void setLocation(Point p) {
+    	throw new UnsupportedOperationException(); // call setCenterLocation/setShape instead
+    }
+    
+    @Override
+    public void setSize(int w, int h) {
+    	throw new UnsupportedOperationException(); // call setCenterLocation/setShape instead
+    }
+
+    @Override
+    public void setPreferredSize(Dimension size) {
+    	throw new UnsupportedOperationException(); // call setCenterLocation/setShape instead
+    }
+    
+    @Override
+    public Dimension getPreferredSize(int hint, int hint2) {
+    	throw new UnsupportedOperationException(); // call setCenterLocation/setShape instead
+    }
+
+    public Rectangle getHandleBounds() {
+        return getShapeBounds();
+    }
+
+    /**
+     * The bounds of the name label
+     */
+    public Rectangle getNameBounds() {
+        Rectangle shapeBounds = getShapeBounds();
+        Dimension textSize = TextUtilities.INSTANCE.getTextExtents(text, getFont());
+        return new Rectangle(centerX-textSize.width/2, shapeBounds.bottom(), textSize.width, textSize.height);
+    }
+
     /**
      * The current scaling factor for the submodule.
      */
@@ -313,7 +322,7 @@ public class SubmoduleFigure extends NedFigure {
     }
 
     /**
-     * Whether the figure displays a shape
+     * Whether the figure displays a shape (and not image)
      */
     public boolean isShapeVisible() {
         return shape != SHAPE_NONE;
@@ -323,15 +332,56 @@ public class SubmoduleFigure extends NedFigure {
      * Turns the "pin" icon (which shows whether the submodule has a
      * user-specified position) on/off
      */
-    public void setPinDecoration(boolean enabled) {
+    public void setPinVisible(boolean enabled) {
     	pinVisible = enabled;
         invalidate();
     }
 
-    public boolean isPinned() {
+    public boolean isPinVisible() {
         return pinVisible;
     }
     
+	public Point getCenterLocation() {
+		return centerX==Integer.MIN_VALUE ? null : new Point(centerX, centerY);
+	}
+	
+	public void setCenterLocation(Point loc) {
+		centerX = loc.x;
+		centerY = loc.y;
+	}
+
+	public Point getBasePosition() {
+		return baseX==Integer.MIN_VALUE ? null : new Point(baseX, baseY);
+	}
+
+	public Object getVectorIdentifier() {
+		return vectorIdentifier;
+	}
+
+	public VectorArrangement getVectorArrangement() {
+		return vectorArrangement;
+	}
+
+	public int getVectorIndex() {
+		return vectorIndex;
+	}
+
+	public int getVectorSize() {
+		return vectorSize;
+	}
+
+	public int getVectorArrangementPar1() {
+		return vectorArrangementPar1;
+	}
+
+	public int getVectorArrangementPar2() {
+		return vectorArrangementPar2;
+	}
+
+	public int getVectorArrangementPar3() {
+		return vectorArrangementPar3;
+	}
+
     @Override
     public void paint(Graphics graphics) {
     	super.paint(graphics);
@@ -398,17 +448,5 @@ public class SubmoduleFigure extends NedFigure {
         }
     	
     }
-    
-    /**
-     * The constraint belonging to this figure. Used by the layout manager to arrange the
-     * submodule figures.
-     */
-    public SubmoduleConstraint getSubmoduleConstraint() {
-    	LayoutManager layoutManager = getParent().getLayoutManager();
-		return layoutManager != null ? (SubmoduleConstraint)layoutManager.getConstraint(this) : null;
-    }
-    
-    public void setSubmoduleConstraint(SubmoduleConstraint constraint) {
-    	getParent().setConstraint(this, constraint);
-    }
+	
 }
