@@ -366,6 +366,9 @@ int strdictcmp(const char *s1, const char *s2);
     try {
       return callable.call();
     }
+    catch (RuntimeException e) {
+      throw e;
+    }
     catch (Exception e) {
       throw new RuntimeException(e);
     }
