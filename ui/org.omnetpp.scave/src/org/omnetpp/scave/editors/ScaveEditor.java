@@ -195,9 +195,16 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 		adapterFactory.removeListener(pageUpdater);
 
 		if (manager != null) {
-			manager.dispose(); // it would get garbage-collected anyway, but the sooner the better because it may have allocated large amounts of data
-			if (tracker != null)      // deactivate the tracker explicitly, because it might receive a notification
-				tracker.deactivate(); // in case of the ScaveEditor.dispose() was called from a notification.
+			// deactivate the tracker explicitly, because it might receive a notification
+			// in case of the ScaveEditor.dispose() was called from a notification.
+			boolean trackerInactive = true;
+			if (tracker != null) {
+				trackerInactive = tracker.deactivate();
+				tracker = null;
+			}
+			// it would get garbage-collected anyway, but the sooner the better because it may have allocated large amounts of data
+			if (trackerInactive)
+				manager.dispose();
 			manager = null;
 		}
 		super.dispose();

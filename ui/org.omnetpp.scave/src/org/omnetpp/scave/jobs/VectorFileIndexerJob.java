@@ -14,13 +14,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.core.runtime.jobs.ISchedulingRule;
+import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.runtime.jobs.MultiRule;
 import org.omnetpp.scave.engineext.IndexFile;
 
 /**
@@ -31,17 +33,21 @@ import org.omnetpp.scave.engineext.IndexFile;
 public class VectorFileIndexerJob extends WorkspaceJob {
 	
 	private List<IFile> filesToBeIndexed;
-	private Object lock;
 
-	public VectorFileIndexerJob(String name, IFile[] filesToBeIndexed, Object lock) {
+	public VectorFileIndexerJob(String name, IFile[] filesToBeIndexed) {
 		super(name);
-		setRule(ResourcesPlugin.getWorkspace().getRuleFactory().buildRule());
 		
+		ArrayList<ISchedulingRule> rule = new ArrayList<ISchedulingRule>();
 		this.filesToBeIndexed = new ArrayList<IFile>();
-		this.lock = lock;
 		for (IFile file : filesToBeIndexed)
-			if (toBeIndexed(file))
+			if (isVectorFile(file)) {
 				this.filesToBeIndexed.add(file);
+				rule.add(file);
+				rule.add(IndexFile.getIndexFileFor(file));
+			}
+		
+		setRule(MultiRule.combine(rule.toArray(new ISchedulingRule[rule.size()])));
+		setPriority(Job.LONG);
 	}
 
 	/**
@@ -60,13 +66,11 @@ public class VectorFileIndexerJob extends WorkspaceJob {
 						return Status.CANCEL_STATUS;
 
 					monitor.subTask("Indexing "+file.getName());
-					synchronized (lock) {
-						if (file.exists() && !isIndexFileUpToDate(file)) {
-							IProgressMonitor subMonitor = new SubProgressMonitor(monitor, 1);
-							IndexFile.performIndexing(file, subMonitor);
-							if (subMonitor.isCanceled())
-								return Status.CANCEL_STATUS;
-						}
+					if (file.exists() && !isIndexFileUpToDate(file)) {
+						IProgressMonitor subMonitor = new SubProgressMonitor(monitor, 1);
+						IndexFile.performIndexing(file, subMonitor);
+						if (subMonitor.isCanceled())
+							return Status.CANCEL_STATUS;
 					}
 				}
 			}
@@ -75,15 +79,5 @@ public class VectorFileIndexerJob extends WorkspaceJob {
 			}
 		}
 		return Status.OK_STATUS;
-	}
-
-	private boolean toBeIndexed(IFile file) {
-		if (isVectorFile(file)) {
-			synchronized (lock) {
-				return !isIndexFileUpToDate(file);
-			}
-		}
-		else
-			return false;
 	}
 }

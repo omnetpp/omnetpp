@@ -7,12 +7,6 @@
 
 package org.omnetpp.scave.editors;
 
-import static org.omnetpp.scave.common.ScaveMarkers.MARKERTYPE_SCAVEPROBLEM;
-import static org.omnetpp.scave.common.ScaveMarkers.deleteMarkers;
-import static org.omnetpp.scave.common.ScaveMarkers.setMarker;
-import static org.omnetpp.scave.engineext.IndexFile.isIndexFileUpToDate;
-import static org.omnetpp.scave.engineext.IndexFile.isVectorFile;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -20,7 +14,6 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
@@ -30,15 +23,10 @@ import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.content.IContentType;
-import org.eclipse.core.runtime.jobs.IJobChangeEvent;
-import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.edit.provider.INotifyChangedListener;
 import org.omnetpp.common.Debug;
@@ -47,8 +35,7 @@ import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engineext.IndexFile;
-import org.omnetpp.scave.engineext.ResultFileFormatException;
-import org.omnetpp.scave.jobs.VectorFileIndexerJob;
+import org.omnetpp.scave.jobs.ResultFileManagerUpdaterJob;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
 
@@ -67,18 +54,19 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 	private ResultFileManager manager; //backreference to the manager it operates on, the manager is owned by the editor
 	private Inputs inputs; // backreference to the Inputs element we watch
 	private IPath baseDir; // path of the directory which used to resolve relative paths as a base
+	private ResultFileManagerUpdaterJob updaterJob;
 
-	private Object lock = new Object();
-	
 	public ResultFilesTracker(ResultFileManager manager, Inputs inputs, IPath baseDir) {
 		this.manager = manager;
 		this.inputs = inputs;
 		this.baseDir = baseDir;
+		this.updaterJob = new ResultFileManagerUpdaterJob(manager);
 	}
 	
-	public void deactivate()
+	public boolean deactivate()
 	{
 		manager = null;
+		return updaterJob.cancel();
 	}
 
 	/**
@@ -246,16 +234,9 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 	 * Loads the file specified by <code>resourcePath</code> into the ResultFileManager.
 	 */
 	private void loadFile(String resourcePath) {
-		IPath path = new Path(resourcePath);
-		if (!path.isAbsolute())
-			path = baseDir.append(path);
-		IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
-		IResource resource = workspaceRoot.findMember(path);
-		if (resource instanceof IFile) {
-			IFile file = (IFile)resource;
-			if (isResultFile(file) && !isDerived(file))
-				loadFile(file);
-		}
+		IFile file = findResultFileInWorkspace(resourcePath);
+		if (file != null)
+			loadFile(file);
 	}
 
 	/**
@@ -264,121 +245,41 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 	 * When not, it generates the index first and then loads it from the index.
 	 */
 	private void loadFile(final IFile file) {
-		Assert.isLegal(isResultFile(file));
-		if (debug) Debug.format("  loadFile: %s ", file);
-		synchronized (lock) {
-			if (file.getLocation().toFile().exists()) {
-				String resourcePath = file.getFullPath().toString();
-				ResultFile resultFile = manager.getFile(resourcePath);
-				if (resultFile != null)
-					manager.unloadFile(resultFile);
-				loadFileInternal(file);
-			}
-		}
+		updaterJob.load(file);
+	}
+
+	/**
+	 * Unloads the file specified  by <code>resourcePath</code> from the ResultFileManager.
+	 * Has no effect when the file was not loaded.
+	 */
+	private void unloadFile(String resourcePath) {
+		IFile file = findResultFileInWorkspace(resourcePath);
+		if (file != null)
+			unloadFile(file);
 	}
 
 	/**
 	 * Unloads the specified <code>file</code> from the ResultFileManager.
 	 * Has no effect when the file was not loaded.
 	 */
-	private void unloadFile(IFile file) {
-		unloadFile(file.getFullPath().toString());
+	private void unloadFile(final IFile file) {
+		updaterJob.unload(file);
 	}
 	
-	/**
-	 * Unloads the file specified  by <code>resourcePath</code> from the ResultFileManager.
-	 * Has no effect when the file was not loaded.
-	 */
-	private void unloadFile(String resourcePath) {
-		if (debug) Debug.format("  unloadFile: %s%n ", resourcePath);
-		synchronized (lock) {
-			ResultFile resultFile = manager.getFile(resourcePath);
-			if (resultFile != null) {
-				manager.unloadFile(resultFile);
-				if (debug) Debug.println("done");
-			}
+	private IFile findResultFileInWorkspace(String resourcePath) {
+		IPath path = new Path(resourcePath);
+		if (!path.isAbsolute())
+			path = baseDir.append(path);
+		IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
+		IResource resource = workspaceRoot.findMember(path);
+		if (resource instanceof IFile) {
+			IFile file = (IFile)resource;
+			if (isResultFile(file) && !isDerived(file))
+				return file;
 		}
-	}
-
-	/**
-	 * Loads the specified <code>file</code> into the ResultFileManager.
-	 * If a vector file is loaded, it checks that the index file is up-to-date.
-	 * When not, it generates the index first and then loads it from the index.
-	 */
-	private void loadFileInternal(final IFile file) {
-		ResultFileFormatException fileFormatException = null;
-		Exception exception = null;
-		
-		try {
-			final String resourcePath = file.getFullPath().toString();
-			final String osPath = file.getLocation().toOSString();
-
-			synchronized (lock) {
-				// Do not try to load from the vector file whose index is not up-to-date,
-				// because the ResultFileManager loads it from the vector file and it takes too much time
-				// for ~100MB files.
-				// Create or update the index file first, and try again.
-				if (isVectorFile(file) && !isIndexFileUpToDate(file)) {
-					if (debug) Debug.format("indexing: %s%n", file);
-					VectorFileIndexerJob indexer = new VectorFileIndexerJob("Indexing "+file, new IFile[] {file}, lock);
-					indexer.setPriority(Job.LONG);
-					indexer.addJobChangeListener(new JobChangeAdapter() {
-						public void done(IJobChangeEvent event) {
-							// load from the newly created index file
-		 				    // even if the workspace is not refreshed automatically
-							if (event.getResult().getSeverity() != IStatus.ERROR) {
-								synchronized (lock) {
-									manager.loadFile(resourcePath, osPath);
-									if (debug) Debug.println("done");
-								}
-							}
-							else {
-								unloadFile(file);
-							}
-						}
-					});
-					indexer.schedule();
-				}
-				else {
-					manager.loadFile(resourcePath, osPath);
-					if (debug) Debug.println("done");
-				}
-			}
-		}
-		catch (ResultFileFormatException e) {
-			fileFormatException = e;
-			ScavePlugin.logError("Wrong file: " + file.getLocation().toOSString(), e);
-			if (debug) Debug.format("exception: %s ", e);
-		}
-		catch (Exception e) {
-			exception = e;
-			ScavePlugin.logError("Could not load file: " + file.getLocation().toOSString(), e);
-			if (debug) Debug.format("exception: %s ", e);
-		}
-		
-		if (fileFormatException != null) {
-			if (isVectorFile(file)) {
-				IFile indexFile = IndexFile.getIndexFileFor(file);
-				String message = fileFormatException.getMessage();
-				int lineNo = fileFormatException.getLineNo();
-				setMarker(indexFile, MARKERTYPE_SCAVEPROBLEM, IMarker.SEVERITY_ERROR, "Wrong file: "+message, lineNo);
-				setMarker(file, MARKERTYPE_SCAVEPROBLEM, IMarker.SEVERITY_WARNING, "Could not load file. Reason: "+message, -1);
-			}
-			else {
-				String message = fileFormatException.getMessage();
-				int lineNo = fileFormatException.getLineNo();
-				setMarker(file, MARKERTYPE_SCAVEPROBLEM, IMarker.SEVERITY_ERROR, "Wrong file: "+message, lineNo);
-			}
-		}
-		else if (exception != null) {
-			setMarker(file, MARKERTYPE_SCAVEPROBLEM, IMarker.SEVERITY_WARNING, "Could not load file. Reason: "+exception.getMessage(), -1);
-		}
-		else {
-			deleteMarkers(file, MARKERTYPE_SCAVEPROBLEM);
-		}
+		return null;
 	}
 	
-
 	/**
 	 * Returns true iff <code>file</code> is a result file (scalar or vector).
 	 */
