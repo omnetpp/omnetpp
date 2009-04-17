@@ -20,6 +20,7 @@ import org.eclipse.draw2d.text.TextFlow;
  *
  * @author rhornig
  */
+//FIXME obsolete class, change usages to ITooltipTextProvider, and remove!!!
 public class TooltipFigure extends FlowPage {
 
 	public interface ITextProvider {

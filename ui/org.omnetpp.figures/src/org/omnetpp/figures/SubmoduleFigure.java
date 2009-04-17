@@ -37,7 +37,7 @@ import org.omnetpp.figures.misc.AttachedLayer;
  */
 //FIXME support multiple texts: t/t1/t2/t3/t4
 //FIXME should not extend NedFigure...
-public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint {
+public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, ITooltipTextProvider {
 	// supported shape types
 	protected static final int SHAPE_NONE = 0;
 	protected static final int SHAPE_OVAL = 1;
@@ -67,6 +67,10 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint {
 	protected Point centerLoc;
 
 	// appearance
+	protected String nameText;
+	protected String tooltipText;
+	protected ITooltipTextProvider problemMarkerTextProvider;
+	protected Image problemMarkerImage;
 	protected int shape;
 	protected int shapeWidth;
 	protected int shapeHeight;
@@ -76,7 +80,6 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint {
 	protected Image image;
 	protected Image decoratorImage;
 	protected boolean pinVisible;
-	protected String nameText;
 	protected String text;
 	protected int textPos;
 	protected Color textColor;
@@ -111,7 +114,7 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint {
 	}
 
 	/**
-	 * Adjusts the image properties using a displayString object (except the location and size)
+	 * Adjust the properties using a display string object
 	 */
 	@Override
 	public void setDisplayString(IDisplayString displayString) {
@@ -186,6 +189,10 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint {
 		invalidate();  //XXX redundant? individual setters also call this...  Note: this nulls out parent.preferredSize! (??)
 	}
 
+	protected void setTooltipText(String tooltipText) {
+		this.tooltipText = tooltipText;
+	}
+	
 	protected void setRange(int radius, Color fillColor, Color borderColor, int borderWidth) {
 		if (radius <= 0) {
 			rangeFigure.setVisible(false);
@@ -206,6 +213,14 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint {
 		invalidate();
 	}
 
+    public void setProblemDecoration(int maxSeverity, ITooltipTextProvider textProvider) {
+        Image image = NedFigure.getProblemImageFor(maxSeverity);
+        if (image != null)
+            problemMarkerImage = image;
+        problemMarkerTextProvider = textProvider;
+        invalidate();
+    }
+	
 	public void setQueueText(String qtext) {
 		queueText = qtext;
 		invalidate();
@@ -403,6 +418,15 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint {
 		return nameText;
 	}
 
+	public String getTooltipText(int x, int y) {
+		if (problemMarkerTextProvider != null) {
+			String text = problemMarkerTextProvider.getTooltipText(x, y);
+			if (text != null)
+				return text;
+		}
+		return tooltipText;
+	}
+	
 	/**
 	 * The current scaling factor for the submodule.
 	 */

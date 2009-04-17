@@ -23,13 +23,17 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
 import org.omnetpp.common.ui.FigureCanvas;
 import org.omnetpp.common.ui.SelectionProvider;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.experimental.simkernel.swig.cObject;
+import org.omnetpp.figures.ITooltipTextProvider;
 
 /**
  * 
@@ -98,9 +102,21 @@ public class ModelCanvas extends EditorPart implements ISelectionRequestHandler 
                 	inspectorPart.populateContextMenu(contextMenuManager, p);
             }
         });
+        
+        // SWT-based tooltip for figures
+        Listener listener = new Listener() {
+            public void handleEvent(Event e) {
+                switch (e.type) {
+                    case SWT.MouseMove: canvas.setToolTipText(""); break;
+                    case SWT.MouseHover: canvas.setToolTipText(getFigureTooltip(e.x, e.y)); break;
+                }
+            }       
+        };
+        canvas.addListener(SWT.MouseMove, listener);
+        canvas.addListener(SWT.MouseHover, listener);
     }
 
-    protected void recalculateCanvasSize() {
+	protected void recalculateCanvasSize() {
         Dimension size = canvas.getRootFigure().getPreferredSize();
         org.eclipse.swt.graphics.Rectangle clientArea = sc.getClientArea();
         canvas.setSize(Math.max(size.width, clientArea.width), Math.max(size.height, clientArea.height));
@@ -166,6 +182,13 @@ public class ModelCanvas extends EditorPart implements ISelectionRequestHandler 
 				fireSelectionChange(new StructuredSelection(list));
 			}
 		}
+	}
+
+	protected String getFigureTooltip(int x, int y) {
+    	for (IFigure f = canvas.getRootFigure().findFigureAt(x,y); f != null; f = f.getParent())
+    		if (f instanceof ITooltipTextProvider)
+    			return ((ITooltipTextProvider)f).getTooltipText(x,y);
+		return null;
 	}
 
 	@Override
