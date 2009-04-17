@@ -405,6 +405,7 @@ ADD_CPTR_EQUALS_AND_HASHCODE(ResultFile);
 ADD_CPTR_EQUALS_AND_HASHCODE(Run);
 ADD_CPTR_EQUALS_AND_HASHCODE(FileRun);
 ADD_CPTR_EQUALS_AND_HASHCODE(ResultItem);
+ADD_CPTR_EQUALS_AND_HASHCODE(ResultFileManager);
 CHECK_RESULTFILE_FORMAT_EXCEPTION(ResultFileManager::loadFile)
 
 %newobject ResultFileManager::getUniqueFiles(const IDList&) const;
