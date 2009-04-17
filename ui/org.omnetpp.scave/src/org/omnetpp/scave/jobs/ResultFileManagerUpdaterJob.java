@@ -56,7 +56,6 @@ public class ResultFileManagerUpdaterJob extends Job {
 	}
 	
 	public void load(IFile file) {
-		//Assert.isLegal(isResultFile(file));
 		tasks.offer(new Task(Operation.Load, file));
 		if (getState() == NONE)
 			schedule();
