@@ -386,6 +386,18 @@ int strdictcmp(const char *s1, const char *s2);
   public void checkWriteLock() {
     org.eclipse.core.runtime.Assert.isTrue(getWriteLock().hasLock(), "Missing write lock.");
   }
+
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null || this.getClass() != obj.getClass())
+      return false;
+    return getCPtr(this) == getCPtr((ResultFileManager)obj);
+  }
+
+  public int hashCode() {
+    return (int)getCPtr(this);
+  }
 %}
 
 FIX_STRING_MEMBER(ResultFile, filePath, FilePath);
@@ -405,7 +417,6 @@ ADD_CPTR_EQUALS_AND_HASHCODE(ResultFile);
 ADD_CPTR_EQUALS_AND_HASHCODE(Run);
 ADD_CPTR_EQUALS_AND_HASHCODE(FileRun);
 ADD_CPTR_EQUALS_AND_HASHCODE(ResultItem);
-ADD_CPTR_EQUALS_AND_HASHCODE(ResultFileManager);
 CHECK_RESULTFILE_FORMAT_EXCEPTION(ResultFileManager::loadFile)
 
 %newobject ResultFileManager::getUniqueFiles(const IDList&) const;
