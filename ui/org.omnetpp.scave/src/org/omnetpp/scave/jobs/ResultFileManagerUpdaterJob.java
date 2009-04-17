@@ -116,11 +116,6 @@ public class ResultFileManagerUpdaterJob extends Job {
 			try {
 				ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
 					public Object call() throws Exception {
-						String resourcePath = file.getFullPath().toString();
-						ResultFile resultFile = manager.getFile(resourcePath);
-						if (resultFile != null)
-							manager.unloadFile(resultFile);
-						
 						// Do not try to load from the vector file whose index is not up-to-date,
 						// because the ResultFileManager loads it from the vector file and it takes too much time
 						// for ~100MB files.
@@ -186,7 +181,7 @@ public class ResultFileManagerUpdaterJob extends Job {
 	private void loadInternal(IFile file) {
 		final String resourcePath = file.getFullPath().toString();
 		final String osPath = file.getLocation().toOSString();
-		manager.loadFile(resourcePath, osPath);
+		manager.loadFile(resourcePath, osPath, true);
 		if (debug) Debug.println("done");
 	}
 	

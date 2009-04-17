@@ -100,6 +100,20 @@ public class ResultFileManagerEx extends ResultFileManager {
 	}
 	
 	@Override
+	public ResultFile loadFile(String filename, String osFileName, boolean reload) {
+		getWriteLock().lock();
+		try {
+			checkNotDeleted();
+			ResultFile file = super.loadFile(filename, osFileName, reload);
+			notifyChangeListeners();
+			return file;
+		}
+		finally {
+			getWriteLock().unlock();
+		}
+	}
+	
+	@Override
 	public void unloadFile(ResultFile file) {
 		getWriteLock().lock();
 		try {

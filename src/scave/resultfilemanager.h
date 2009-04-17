@@ -410,8 +410,9 @@ class SCAVE_API ResultFileManager
      * loading files. fileName is the file path in the Eclipse workspace;
      * the file is actually read from fileSystemFileName
      */
-    ResultFile *loadFile(const char *fileName, const char *fileSystemFileName=NULL);
+    ResultFile *loadFile(const char *fileName, const char *fileSystemFileName=NULL, bool reload=false);
     void unloadFile(ResultFile *file);
+
 
     bool isFileLoaded(const char *fileName) const;
     ResultFile *getFile(const char *fileName) const;

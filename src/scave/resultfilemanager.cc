@@ -1130,16 +1130,22 @@ static bool isFileReadable(const char *fileName)
         return false;
 }
 
-ResultFile *ResultFileManager::loadFile(const char *fileName, const char *fileSystemFileName)
+ResultFile *ResultFileManager::loadFile(const char *fileName, const char *fileSystemFileName, bool reload)
 {
 	WRITER_MUTEX
     // tricky part: we store "fileName" which is the Eclipse pathname of the file
     // (or some other "display name" of the file), but we actually load from
     // fileSystemFileName which is the fileName suitable for fopen()
 
-    // check
-    if (isFileLoaded(fileName))
-        return getFile(fileName);
+    // check if loaded
+	ResultFile *fileRef = getFile(fileName);
+    if (fileRef) {
+    	if (reload) {
+    		unloadFile(fileRef);
+    	}
+    	else
+    		return fileRef;
+    }
 
     // try if file can be opened, before we add it to our database
     if (fileSystemFileName==NULL)
@@ -1148,7 +1154,7 @@ ResultFile *ResultFileManager::loadFile(const char *fileName, const char *fileSy
         throw opp_runtime_error("cannot open `%s' for read", fileSystemFileName);
 
     // add to fileList
-    ResultFile *fileRef = NULL;
+    fileRef = NULL;
 
     try
     {
