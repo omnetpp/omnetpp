@@ -695,6 +695,15 @@ public class ColorFactory {
     }
 
     /**
+     * Returns a color from a color factory or defaultColor 
+     * if value is invalid or a nonexistent color.
+     */
+    public static Color asColor(String value, Color defaultColor) {
+    	Color color = asColor(value);
+    	return color == null ? defaultColor : color;
+    }
+    
+    /**
      * @param value The colors id
      * @return a 16x16 rectangle image filled with the given color (or null, if color id is not valid)
      */

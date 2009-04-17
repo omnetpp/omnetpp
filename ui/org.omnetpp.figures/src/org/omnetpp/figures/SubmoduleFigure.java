@@ -42,11 +42,11 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
 	protected static final int SHAPE_NONE = 0;
 	protected static final int SHAPE_OVAL = 1;
 	protected static final int SHAPE_RECT = 2;
-	protected static final int SHAPE_RECT2 = 3;
-	protected static final int SHAPE_TRI = 4;
-	protected static final int SHAPE_TRI2 = 5;
-	protected static final int SHAPE_HEX = 6;
-	protected static final int SHAPE_HEX2 = 7;
+//	protected static final int SHAPE_RECT2 = 3;
+//	protected static final int SHAPE_TRI = 4;
+//	protected static final int SHAPE_TRI2 = 5;
+//	protected static final int SHAPE_HEX = 6;
+//	protected static final int SHAPE_HEX2 = 7;
 
 	protected static final int TEXTPOS_LEFT = 1;
 	protected static final int TEXTPOS_RIGHT = 2;
@@ -121,8 +121,8 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
 		// range support
 		setRange(
 				displayString.getRange(getScale()),
-				ColorFactory.asColor(displayString.getAsString(IDisplayString.Prop.RANGEFILLCOL)),
-				ColorFactory.asColor(displayString.getAsString(IDisplayString.Prop.RANGEBORDERCOL)),
+				ColorFactory.asColor(displayString.getAsString(IDisplayString.Prop.RANGEFILLCOL), ColorFactory.RED),
+				ColorFactory.asColor(displayString.getAsString(IDisplayString.Prop.RANGEBORDERCOL), ColorFactory.RED),
 				displayString.getAsInt(IDisplayString.Prop.RANGEBORDERWIDTH, -1));
 
 		// tooltip support
@@ -131,7 +131,7 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
 		// additional text support
 		setInfoText(displayString.getAsString(IDisplayString.Prop.TEXT),
 				displayString.getAsString(IDisplayString.Prop.TEXTPOS),
-				ColorFactory.asColor(displayString.getAsString(IDisplayString.Prop.TEXTCOLOR)));
+				ColorFactory.asColor(displayString.getAsString(IDisplayString.Prop.TEXTCOLOR), ColorFactory.RED));
 
 		// shape support
 		String imageSize = displayString.getAsString(IDisplayString.Prop.IMAGESIZE);
@@ -159,8 +159,8 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
 		setShape(img, shape,
 				size.width,
 				size.height,
-				ColorFactory.asColor(displayString.getAsString(IDisplayString.Prop.FILLCOL)),
-				ColorFactory.asColor(displayString.getAsString(IDisplayString.Prop.BORDERCOL)),
+				ColorFactory.asColor(displayString.getAsString(IDisplayString.Prop.FILLCOL), ColorFactory.RED),
+				ColorFactory.asColor(displayString.getAsString(IDisplayString.Prop.BORDERCOL), ColorFactory.RED),
 				displayString.getAsInt(IDisplayString.Prop.BORDERWIDTH, -1));
 
 		// set the decoration image properties
@@ -173,12 +173,13 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
 
 		// set the layouter input
 		String layout = displayString.getAsString(IDisplayString.Prop.LAYOUT);
-		layout = IDisplayString.Prop.LAYOUT.getEnumSpec().getNameFor(layout);
 		VectorArrangement arrangement;
 		if (StringUtils.isEmpty(layout))
 			arrangement = ISubmoduleConstraint.VectorArrangement.exact;
-		else
+		else {
+			layout = IDisplayString.Prop.LAYOUT.getEnumSpec().getNameFor(layout);
 			arrangement = ISubmoduleConstraint.VectorArrangement.valueOf(layout);
+		}
 		setBaseLocation(
 				displayString.getLocation(scale),
 				arrangement,
@@ -194,6 +195,9 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
 	}
 	
 	protected void setRange(int radius, Color fillColor, Color borderColor, int borderWidth) {
+		Assert.isNotNull(fillColor);
+		Assert.isNotNull(borderColor);
+		
 		if (radius <= 0) {
 			rangeFigure.setVisible(false);
 		}
@@ -227,33 +231,41 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
 	}
 
 	protected void setInfoText(String text, String pos, Color color) {
+		Assert.isNotNull(color);
 		this.text = text;
-		this.textPos = pos.equalsIgnoreCase("l") ? TEXTPOS_LEFT : pos.equalsIgnoreCase("r") ? TEXTPOS_RIGHT : TEXTPOS_TOP;
+		if (!StringUtils.isEmpty(pos))
+			pos = IDisplayString.Prop.TEXTPOS.getEnumSpec().getNameFor(pos);
+		this.textPos = pos.equals("left") ? TEXTPOS_LEFT : pos.equals("right") ? TEXTPOS_RIGHT : TEXTPOS_TOP;
 		this.textColor = color;
 		invalidate();
 	}
 
 	protected void setShape(Image image, String shapeName, int shapeWidth, int shapeHeight,
 			Color shapeFillColor, Color shapeBorderColor, int shapeBorderWidth) {
+		Assert.isNotNull(shapeFillColor);
+		Assert.isNotNull(shapeBorderColor);
 
 		if (StringUtils.isEmpty(shapeName))
 			shape = SHAPE_NONE;
-		else if (shapeName.equalsIgnoreCase("oval"))
-			shape = SHAPE_OVAL;
-		else if (shapeName.equalsIgnoreCase("rect"))
-			shape = SHAPE_RECT;
-		else if (shapeName.equalsIgnoreCase("rrect"))
-			shape = SHAPE_RECT2;
-		else if (shapeName.equalsIgnoreCase("tri"))
-			shape = SHAPE_TRI;
-		else if (shapeName.equalsIgnoreCase("tri2"))
-			shape = SHAPE_TRI2;
-		else if (shapeName.equalsIgnoreCase("hex"))
-			shape = SHAPE_HEX;
-		else if (shapeName.equalsIgnoreCase("hex2"))
-			shape = SHAPE_HEX2;
-		else
-			shape = SHAPE_NONE;
+		else { 
+			shapeName = IDisplayString.Prop.SHAPE.getEnumSpec().getNameFor(shapeName);
+			if (shapeName.equalsIgnoreCase("oval"))
+				shape = SHAPE_OVAL;
+			else if (shapeName.equalsIgnoreCase("rectangle"))
+				shape = SHAPE_RECT;
+//			else if (shapeName.equalsIgnoreCase("rrect"))
+//				shape = SHAPE_RECT2;
+//			else if (shapeName.equalsIgnoreCase("tri"))
+//				shape = SHAPE_TRI;
+//			else if (shapeName.equalsIgnoreCase("tri2"))
+//				shape = SHAPE_TRI2;
+//			else if (shapeName.equalsIgnoreCase("hex"))
+//				shape = SHAPE_HEX;
+//			else if (shapeName.equalsIgnoreCase("hex2"))
+//				shape = SHAPE_HEX2;
+			else
+				shape = SHAPE_NONE;
+		}
 
 		Assert.isTrue(shapeHeight != -1 || shapeWidth != -1);
 		this.shapeWidth = shapeWidth;
@@ -348,7 +360,7 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
 			x = shapeBounds.x - textSize.width; 
 			y = shapeBounds.y; 
 		}
-		if (textPos == TEXTPOS_RIGHT) {
+		else if (textPos == TEXTPOS_RIGHT) {
 			x = shapeBounds.right(); 
 			y = shapeBounds.y; 
 		}
@@ -363,14 +375,14 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
 		if (decoratorImage == null)
 			return null;
 		org.eclipse.swt.graphics.Rectangle imageBounds = decoratorImage.getBounds();
-		return new Rectangle(shapeBounds.right()-imageBounds.width, shapeBounds.y - imageBounds.height/4, imageBounds.width, imageBounds.height);
+		return new Rectangle(shapeBounds.right()-3*imageBounds.width/4, shapeBounds.y - imageBounds.height/4, imageBounds.width, imageBounds.height);
 	}
 
 	protected Rectangle getPinImageBounds(Rectangle shapeBounds) {
 		if (!pinVisible)
 			return null;
 		org.eclipse.swt.graphics.Rectangle imageBounds = IMG_PIN.getBounds();
-		return new Rectangle(shapeBounds.x-imageBounds.width, shapeBounds.y - imageBounds.height/2, imageBounds.width, imageBounds.height);
+		return new Rectangle(shapeBounds.right()-imageBounds.width/2, shapeBounds.y - imageBounds.height/2, imageBounds.width, imageBounds.height);
 	}
 
 	/**
@@ -529,11 +541,19 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
 			int top = centerLoc.y - shapeHeight/2;
 			if (shape == SHAPE_OVAL) {
 				graphics.fillOval(left, top, shapeWidth, shapeHeight);
-				graphics.drawOval(left, top, shapeWidth, shapeHeight);
+				if (shapeBorderWidth > 0)
+					graphics.drawOval(left+shapeBorderWidth/2, 
+				               top+shapeBorderWidth/2, 
+				               shapeWidth-Math.max(1, shapeBorderWidth), 
+				               shapeHeight-Math.max(1, shapeBorderWidth));
 			}
 			else if (shape == SHAPE_RECT) {
 				graphics.fillRectangle(left, top, shapeWidth, shapeHeight);
-				graphics.drawRectangle(left, top, shapeWidth, shapeHeight);
+				if (shapeBorderWidth > 0)
+					graphics.drawRectangle(left+shapeBorderWidth/2, 
+							               top+shapeBorderWidth/2, 
+							               shapeWidth-Math.max(1, shapeBorderWidth), 
+							               shapeHeight-Math.max(1, shapeBorderWidth));
 			}
 			else {
 				Assert.isTrue(false, "NOT IMPLEMENTED YET"); //XXX
