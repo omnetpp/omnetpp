@@ -230,11 +230,15 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
 		}
 		invalidate();
 	}
-
+	
+	/**
+    * Display a "problem" image decoration on the submodule.
+    * @param maxSeverity  any of the IMarker.SEVERITY_xxx constants, or -1 for none
+    * @param textProvider callback to get the text to be displayed as a tooltip on hover event 
+    */
     public void setProblemDecoration(int maxSeverity, ITooltipTextProvider textProvider) {
         Image image = NedFigure.getProblemImageFor(maxSeverity);
-        if (image != null)
-            problemMarkerImage = image;
+        problemMarkerImage = image;
         problemMarkerTextProvider = textProvider;
         invalidate();
     }
@@ -332,7 +336,11 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
 		Rectangle tmp;
 		if ((tmp = getTextBounds(shapeBounds)) != null)
 			bounds.union(tmp);
+		if ((tmp = getQueueTextBounds(shapeBounds)) != null)
+			bounds.union(tmp);
 		if ((tmp = getPinImageBounds(shapeBounds)) != null)
+			bounds.union(tmp);
+		if ((tmp = getProblemMarkerImageBounds(shapeBounds)) != null)
 			bounds.union(tmp);
 		if ((tmp = getDecorationImageBounds(shapeBounds)) != null)
 			bounds.union(tmp);
@@ -382,6 +390,16 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
 		return new Rectangle(x, y, textSize.width, textSize.height);
 	}
 
+	protected Rectangle getQueueTextBounds(Rectangle shapeBounds) {
+		if (StringUtils.isEmpty(queueText)) 
+			return null;
+		int x, y;
+		Dimension textSize = TextUtilities.INSTANCE.getTextExtents(queueText, getFont());
+		x = shapeBounds.right(); 
+		y = shapeBounds.bottom()-textSize.height; 
+		return new Rectangle(x, y, textSize.width, textSize.height);
+	}
+	
 	protected Rectangle getDecorationImageBounds(Rectangle shapeBounds) {
 		if (decoratorImage == null)
 			return null;
@@ -396,6 +414,14 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
 		return new Rectangle(shapeBounds.right()-imageBounds.width/2, shapeBounds.y - imageBounds.height/2, imageBounds.width, imageBounds.height);
 	}
 
+	
+	protected Rectangle getProblemMarkerImageBounds(Rectangle shapeBounds) {
+		if (problemMarkerImage == null)
+			return null;
+		org.eclipse.swt.graphics.Rectangle imageBounds = problemMarkerImage.getBounds();
+		return new Rectangle(shapeBounds.x-4, shapeBounds.y-4, imageBounds.width, imageBounds.height);
+	}
+	
 	/**
 	 * Sets the external image decoration ("i2" tag)
 	 */
@@ -442,7 +468,9 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
 	}
 
 	public String getTooltipText(int x, int y) {
-		if (problemMarkerTextProvider != null) {
+		Rectangle markerBounds = getProblemMarkerImageBounds(getShapeBounds());
+		translateToAbsolute(markerBounds);
+		if (problemMarkerTextProvider != null && markerBounds.contains(x, y)) {
 			String text = problemMarkerTextProvider.getTooltipText(x, y);
 			if (text != null)
 				return text;
@@ -607,6 +635,14 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
 			graphics.drawText(text, r.x, r.y);
 		}
 
+		// draw queueText
+		if (!StringUtils.isEmpty(queueText)) {
+			if (shapeBounds == null) shapeBounds = getShapeBounds();
+			Rectangle r = getQueueTextBounds(shapeBounds);
+			graphics.setForegroundColor(ColorFactory.BLACK);
+			graphics.drawText(queueText, r.x, r.y);
+		}
+
 		// draw pin
 		if (pinVisible) {
 			if (shapeBounds == null) shapeBounds = getShapeBounds();
@@ -614,6 +650,13 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
 			graphics.drawImage(IMG_PIN, r.x, r.y);
 		}
 
+		// draw pin
+		if (problemMarkerImage != null) {
+			if (shapeBounds == null) shapeBounds = getShapeBounds();
+			Rectangle r = getProblemMarkerImageBounds(shapeBounds);
+			graphics.drawImage(problemMarkerImage, r.x, r.y);
+		}
+		
 		// draw name string
 		if (!StringUtils.isEmpty(nameText)) {
 			if (shapeBounds == null) shapeBounds = getShapeBounds();
