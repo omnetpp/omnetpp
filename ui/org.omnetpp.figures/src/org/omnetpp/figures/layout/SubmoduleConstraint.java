@@ -16,6 +16,7 @@ import org.eclipse.draw2d.geometry.Rectangle;
  *
  * @author rhornig
  */
+//FIXME obsolete class, remove... 
 public class SubmoduleConstraint extends Rectangle {
 	static final long serialVersionUID = 1;
 	private boolean pinned = true;

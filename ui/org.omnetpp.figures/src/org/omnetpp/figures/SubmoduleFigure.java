@@ -37,6 +37,8 @@ import org.omnetpp.figures.misc.AttachedLayer;
  */
 //FIXME support multiple texts: t/t1/t2/t3/t4
 //FIXME should not extend NedFigure...
+//FIXME alignment of multi-line text
+//FIXME count queueLength display into bounding box 
 public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, ITooltipTextProvider {
 	// supported shape types
 	protected static final int SHAPE_NONE = 0;
@@ -282,18 +284,15 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
 		invalidate();
 	}
 
-	protected void setBaseLocation(Point p) {
-		this.baseLoc = p;
-		invalidate();
-	}
-
 	public void setSubmoduleVectorIndex(Object vectorIdentifier, int vectorSize, int vectorIndex) {
-		if (vectorIdentifier != null || this.vectorIdentifier != null) {
+		if ((this.vectorIdentifier==null ? vectorIdentifier!=null : !this.vectorIdentifier.equals(vectorIdentifier)) ||
+				this.vectorSize != vectorSize || this.vectorIndex != vectorIndex) {
 			this.vectorIdentifier = vectorIdentifier;
 			this.vectorSize = vectorSize;
 			this.vectorIndex = vectorIndex;
+			//System.out.println(this+": setSubmoduleVectorIndex(): setting centerLoc=null");
 			centerLoc = null;
-			invalidate();
+			revalidate();  // invalidate() not enough here 
 		}
 	}
 
@@ -310,8 +309,9 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
 			this.vectorArrangementPar1 = vectorArrangementPar1;
 			this.vectorArrangementPar2 = vectorArrangementPar2;
 			this.vectorArrangementPar3 = vectorArrangementPar3;
+			//System.out.println(this+": setBaseLocation(): setting centerLoc=null");
 			centerLoc = null; // force re-layout of this module
-			invalidate();
+			revalidate();  // invalidate() not enough here 
 		}
 	}
 
@@ -489,9 +489,15 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
 	}
 
 	public void setCenterLocation(Point loc) {
-		this.centerLoc = loc;
-		if (loc != null)
+		if (loc == null) {
+			//System.out.println(this+": setCenterLocation(" + loc + ")");
+			centerLoc = null;
+		}
+		else if (!loc.equals(centerLoc)) {
+			//System.out.println(this+": setCenterLocation(" + loc + ")");
+			this.centerLoc = loc;
 			calculateBounds();
+		}
 	}
 
 	public Point getBaseLocation() {
@@ -529,6 +535,7 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
 	@Override
 	public void paint(Graphics graphics) {
 		super.paint(graphics);
+		//System.out.println(this+": paint(): centerLoc==" + centerLoc);
 		Assert.isNotNull(centerLoc, "setCenterLoc() must be called before painting");
 
 		// draw shape
@@ -536,24 +543,26 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
 			graphics.pushState();
 			graphics.setForegroundColor(shapeBorderColor);
 			graphics.setBackgroundColor(shapeFillColor);
-			graphics.setLineWidth(shapeBorderWidth);  //FIXME befele kellene hogy noljon
+			graphics.setLineWidth(shapeBorderWidth);
 			int left = centerLoc.x - shapeWidth/2;
 			int top = centerLoc.y - shapeHeight/2;
 			if (shape == SHAPE_OVAL) {
 				graphics.fillOval(left, top, shapeWidth, shapeHeight);
-				if (shapeBorderWidth > 0)
+				if (shapeBorderWidth > 0) {
 					graphics.drawOval(left+shapeBorderWidth/2, 
-				               top+shapeBorderWidth/2, 
-				               shapeWidth-Math.max(1, shapeBorderWidth), 
-				               shapeHeight-Math.max(1, shapeBorderWidth));
+							top+shapeBorderWidth/2, 
+							shapeWidth-Math.max(1, shapeBorderWidth), 
+							shapeHeight-Math.max(1, shapeBorderWidth));
+				}
 			}
 			else if (shape == SHAPE_RECT) {
 				graphics.fillRectangle(left, top, shapeWidth, shapeHeight);
-				if (shapeBorderWidth > 0)
+				if (shapeBorderWidth > 0) {
 					graphics.drawRectangle(left+shapeBorderWidth/2, 
-							               top+shapeBorderWidth/2, 
-							               shapeWidth-Math.max(1, shapeBorderWidth), 
-							               shapeHeight-Math.max(1, shapeBorderWidth));
+							top+shapeBorderWidth/2, 
+							shapeWidth-Math.max(1, shapeBorderWidth), 
+							shapeHeight-Math.max(1, shapeBorderWidth));
+				}
 			}
 			else {
 				Assert.isTrue(false, "NOT IMPLEMENTED YET"); //XXX
@@ -599,4 +608,9 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
 			graphics.drawText(nameText, r.x, r.y);
 		}
 	}
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName()+" "+nameText;
+    }
 }
