@@ -137,6 +137,8 @@ namespace std {
    %template(cObjectVector) vector<cObject *>;
 }
 
+
+
 // hide some macros from swig (copied from nativelibs/common.i)
 #define COMMON_API
 #define ENVIR_API

@@ -49,6 +49,31 @@
     return $jnicall;
   }
 
+
+/*--------------------------------------------------------------------------
+ * add utility methods to std::vector wrappers
+ *--------------------------------------------------------------------------*/
+namespace std {
+
+%typemap(javacode) vector<int> %{
+  public int[] toArray() {
+    int[] a = new int[(int)size()];
+    for (int i=0; i<a.length; i++)
+       a[i] = get(i);
+    return a;
+  }
+%}
+%typemap(javacode) vector<string> %{
+  public String[] toArray() {
+    String[] a = new String[(int)size()];
+    for (int i=0; i<a.length; i++)
+       a[i] = get(i);
+    return a;
+  }
+%}
+
+}
+
 /*--------------------------------------------------------------------------
  * IProgressMonitor
  *--------------------------------------------------------------------------*/
