@@ -6,30 +6,27 @@ import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
-import org.omnetpp.common.image.ImageFactory;
-import org.omnetpp.experimental.simkernel.DummyEnvirCallback;
 import org.omnetpp.experimental.simkernel.WrappedException;
 import org.omnetpp.experimental.simkernel.swig.Javaenv;
 import org.omnetpp.experimental.simkernel.swig.LogBuffer;
+import org.omnetpp.experimental.simkernel.swig.cConfigurationEx;
 import org.omnetpp.experimental.simkernel.swig.cEnvir;
 import org.omnetpp.experimental.simkernel.swig.cException;
 import org.omnetpp.experimental.simkernel.swig.cModule;
 import org.omnetpp.experimental.simkernel.swig.cModuleType;
 import org.omnetpp.experimental.simkernel.swig.cSimpleModule;
 import org.omnetpp.experimental.simkernel.swig.cSimulation;
-import org.omnetpp.runtimeenv.editors.BlankCanvasEditorInput;
-import org.omnetpp.runtimeenv.editors.ModelCanvas;
 
 /**
  * 
  * @author Andras
  */
+//XXX flusLastLine() everywhere
 public class SimulationManager {
-    protected ListenerList listeners = new ListenerList();
+	protected ListenerList listeners = new ListenerList();
     protected boolean stopRequested = false;
 
     /**
@@ -53,51 +50,36 @@ public class SimulationManager {
     protected SimState state = SimState.NONET;
 	protected boolean isConfigRun; //XXX unused currently
 
+    public enum RunMode {
+    	NOTRUNNING,
+    	STEP,
+    	NORMAL,
+    	FAST,
+    	EXPRESS
+	}
+
+	
     public SimulationManager() {
-        ImageFactory.initialize(new String[]{"C:\\home\\omnetpp40\\omnetpp\\images"}); //FIXME just temporary; maybe into Application?
+       
+        Display.getDefault().asyncExec(new Runnable() {
+        	@Override
+        	public void run() {
+        		// wait until the workbench window appears
+        		IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+        		if (workbenchWindow == null) {
+        			Display.getDefault().asyncExec(this); //FIXME this is a dirty hack
+        			return;
+        		}
 
-        Javaenv env = Javaenv.cast(cSimulation.getActiveEnvir());
-        env.setJCallback(null, new DummyEnvirCallback());
-        
-        try {
-        	//env.getConfigEx().activateConfig("Terminal",0); //XXX
-        	env.getConfigEx().activateConfig("Net2",0); //XXX
-        	env.readPerRunOptions();
-        	
-            String networkName = env.getConfigEx().getConfigValue("network");
-			cModuleType networkType = cModuleType.find(networkName);
-            if (networkType == null)
-                throw new RuntimeException("network not found");
+        		// set up the default config/run
+        		newRun("Net2", 0);
 
-            cSimulation simulation = cSimulation.getActiveSimulation();
-            simulation.setupNetwork(networkType);
-            env.startRun();
-            
-            Display.getDefault().asyncExec(new Runnable() {
-                @Override
-                public void run() {
-                    IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-                    if (workbenchWindow == null) {
-                        Display.getDefault().asyncExec(this); //FIXME this is a dirty hack
-                        return;
-                    }
-
-                    IWorkbenchPage page = workbenchWindow.getActivePage();
-                	cSimulation simulation = cSimulation.getActiveSimulation();
-                    cModule module = simulation.getSystemModule();
-                    try {
-                        page.openEditor(new BlankCanvasEditorInput(""), ModelCanvas.EDITOR_ID);
-                        Activator.openInspector2(module, false);
-                    }
-                    catch (PartInitException e) {
-                        e.printStackTrace(); //XXX
-                    }
-                }
-            });
-        } 
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+        		// inspect the network
+        		cModule systemModule = cSimulation.getActiveSimulation().getSystemModule();
+				if (systemModule != null)
+        			Activator.openInspector2(systemModule, true);
+        	}
+        });
     }
     
     public void dispose() {
@@ -147,7 +129,11 @@ public class SimulationManager {
     	return "";  //FIXME
     }
     
-	public void newNetwork(String networkName) {
+    public cConfigurationEx getConfig() {
+        return Javaenv.cast(cSimulation.getActiveEnvir()).getConfigEx();
+    }
+    
+    public void newNetwork(String networkName) {
 		try {
 			cSimulation simulation = cSimulation.getActiveSimulation();
 	        Javaenv env = Javaenv.cast(cSimulation.getActiveEnvir());
@@ -165,7 +151,7 @@ public class SimulationManager {
 
 			// set up new network with config General.
 			isConfigRun = false;
-			env.getConfigEx().activateConfig("General", 0);
+			getConfig().activateConfig("General", 0);
 			env.readPerRunOptions();
 			//TODO opt_network_name = network->getName();  // override config setting
 			//TODO answers.clear();
@@ -180,6 +166,7 @@ public class SimulationManager {
 		}
 
 		// update GUI
+		updateUI();
 		//XXX animating = false; // affects how network graphics is drawn!
 		//XXX updateNetworkRunDisplay();
     }
@@ -199,7 +186,7 @@ public class SimulationManager {
 
 	        // set up new network
 	        isConfigRun = true;
-	        env.getConfigEx().activateConfig(configName, runNumber);
+	        getConfig().activateConfig(configName, runNumber);
 	        env.readPerRunOptions();
 
 //TODO
@@ -210,7 +197,7 @@ public class SimulationManager {
 //	        }
 
 //	        cModuleType network = env.resolveNetwork(opt_network_name.c_str());  //XXX
-	        cModuleType network = env.resolveNetwork(env.getConfigEx().getConfigValue("network")); //FIXME use opt_network_name as above!
+	        cModuleType network = env.resolveNetwork(getConfig().getConfigValue("network")); //FIXME use opt_network_name as above!
 	        Assert.isNotNull(network);
 
 	        //XXX answers.clear();
@@ -225,12 +212,15 @@ public class SimulationManager {
 		}
 
 	    // update GUI
+		updateUI();
 	    //XXX animating = false; // affects how network graphics is drawn!
 	    //XXX updateNetworkRunDisplay();
 	}
 
     protected void displayError(RuntimeException e) {
-    	if (e instanceof WrappedException) {
+	    updateUI();
+
+	    if (e instanceof WrappedException) {
     		cException ce = ((WrappedException)e).getException();
     		String message;
     		if (!ce.hasContext())
@@ -239,13 +229,57 @@ public class SimulationManager {
     	        message = String.format("Error in component (%s) %s: %s.", ce.getContextClassName(), ce.getContextFullPath(), ce.what());
     	    else
     	        message = String.format("Error in module (%s) %s (id=%d): %s.", ce.getContextClassName(), ce.getContextFullPath(), ce.getModuleID(), ce.what());
-        	MessageDialog.openError(null, "Error", message); //XXX parent shell
+        	MessageDialog.openError(getShell(), "Error", message);
     	}
     	else {
-    		MessageDialog.openError(null, "Error", e.getMessage()); //XXX parent shell
+    		MessageDialog.openError(getShell(), "Error", e.getMessage());
     	}
 	}
 
+    public boolean isNetworkPresent() {
+        if (cSimulation.getActiveSimulation().getSystemModule() == null) {
+    		MessageDialog.openError(getShell(), "Error", "No network has been set up yet.");
+    		return false;
+        }
+        return true;
+    }
+
+    public boolean isNetworkReady() { //XXX rename to assertNetworkReady()
+        if (!isNetworkPresent())
+        	return false;
+        if (isSimulationOK())
+            return true;
+        if (!MessageDialog.openQuestion(getShell(), "Warning", "Cannot continue this simulation. Rebuild network?")) 
+        	return false;
+        rebuildNetwork();
+        return isSimulationOK();
+    }
+
+    public boolean isSimulationOK() {
+    	return state==SimState.NEW || state==SimState.RUNNING || state==SimState.READY;
+    }
+
+    public boolean isRunning() {
+    	return state==SimState.RUNNING || state==SimState.BUSY;
+    }
+    
+    public boolean checkRunning() {  //XXX rename to assertNotRunning()
+    	if (state==SimState.RUNNING) {
+    		MessageDialog.openInformation(getShell(), "Simulation Running", "Sorry, you cannot do this while the simulation is running.");
+    		return true;
+    	}
+    	if (state==SimState.BUSY) {
+    		MessageDialog.openInformation(getShell(), "Simulation Busy", "The simulation is waiting for external synchronization -- press STOP to interrupt it.");
+    		return true;
+    	}
+    	return false;
+    }
+
+    protected void setupUIForRunMode(RunMode mode, cModule module, boolean until) { 
+    	//XXX currently unused -- but see Tcl code
+    }
+    
+    
 	public void step() {
 	    Assert.isTrue(state==SimState.NEW || state==SimState.READY);
 
@@ -327,10 +361,29 @@ public class SimulationManager {
             e.printStackTrace();
         }
 	}
-	public void rebuildNetwork() {
-    }
 
-    public void slowRun() {
+	public void rebuildNetwork() {
+		// implements Simulate|Rebuild
+		if (checkRunning())
+			return;
+		if (!isNetworkPresent())
+			return;
+		cSimulation simulation = cSimulation.getActiveSimulation();
+		if (isConfigRun)
+			newRun(getConfig().getActiveConfigName(), getConfig().getActiveRunNumber());
+		else if (simulation.getNetworkType()!=null)
+			newNetwork(simulation.getNetworkType().getFullName());
+		else
+			confirm("No network has been set up yet.");
+		if (simulation.getSystemModule() != null)
+			Activator.openInspector2(simulation.getSystemModule(), true);
+	}
+
+	private void confirm(String message) {
+		MessageDialog.openConfirm(getShell(), "Confirm", message);
+	}
+
+	public void slowRun() {
         // TODO Auto-generated method stub
     }
 
@@ -386,6 +439,64 @@ public class SimulationManager {
     }
 
     public void callFinish() {
-        // TODO Auto-generated method stub
+    	// make sure state is not RUNNING, NONET, or FINISHCALLED
+    	if (checkRunning())
+    		return;
+    	if (!isNetworkPresent())
+    		return;
+    	if (state==SimState.FINISHCALLED) {
+    		MessageDialog.openInformation(getShell(), "Finish Called", "finish() has been invoked already.");
+    		return;
+    	}
+
+    	// let the user confirm the action, esp. if we are in the ERROR state
+    	if (state==SimState.ERROR) {
+    		if (!MessageDialog.openQuestion(getShell(), "Warning", "Simulation was stopped with error, calling finish() might produce unexpected results. Proceed anyway?"))
+    			return;
+    	} 
+    	else {
+    		if (!MessageDialog.openQuestion(getShell(), "Question", "Do you want to conclude this simulation run and invoke finish() on all modules?"))
+    			return;
+    	}
+
+    	//XXX busy "Invoking finish() on all modules..."
+    	doCallFinish();
+    	//XXX busy
     }
+
+	private void doCallFinish() {
+	    // strictly speaking, we shouldn't allow callFinish() after SIM_ERROR, but it comes handy in practice...
+	    Assert.isTrue(state==SimState.NEW || state==SimState.READY || state==SimState.TERMINATED || state==SimState.ERROR);
+
+	    //XXX logBuffer.addInfo("{** Calling finish() methods of modules\n}");
+
+        Javaenv env = Javaenv.cast(cSimulation.getActiveEnvir());
+
+	    // now really call finish()
+	    try {
+	        cSimulation.getActiveSimulation().callFinish();
+	        //XXX TODO env.checkFingerprint();
+	    }
+	    catch (RuntimeException e) {
+	        displayError(e);
+	    }
+
+	    // then endrun
+	    try {
+	        env.endRun();
+	    }
+	    catch (RuntimeException e) {
+	        displayError(e);
+	    }
+	    state = SimState.FINISHCALLED;
+
+	    updateUI();
+	}
+	
+	private Shell getShell() {
+		Shell activeShell = Display.getCurrent().getActiveShell();
+		if (activeShell != null)
+			return activeShell; 
+		return PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+	}
 }

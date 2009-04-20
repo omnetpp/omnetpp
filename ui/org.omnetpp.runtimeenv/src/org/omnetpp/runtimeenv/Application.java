@@ -5,9 +5,12 @@ import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
+import org.omnetpp.common.image.ImageFactory;
+import org.omnetpp.experimental.simkernel.DummyEnvirCallback;
 import org.omnetpp.experimental.simkernel.swig.Javaenv;
 import org.omnetpp.experimental.simkernel.swig.Simkernel;
 import org.omnetpp.experimental.simkernel.swig.StringVector;
+import org.omnetpp.experimental.simkernel.swig.cSimulation;
 import org.omnetpp.experimental.simkernel.swig.cStaticFlag;
 
 /**
@@ -22,6 +25,7 @@ public class Application implements IApplication {
 	 */
 	public Object start(IApplicationContext context) {
 		System.out.println("Entering Application.start()");
+        ImageFactory.initialize(new String[]{"C:\\home\\omnetpp40\\omnetpp\\images"}); //XXX
         Simkernel.changeToDir("C:/home/omnetpp40/omnetpp/test/anim/dynamic"); //XXX
         //Simkernel.changeToDir("C:/home/omnetpp40/omnetpp/samples/queuenet"); //XXX
         cStaticFlag.set(true); //FIXME also clear it later
@@ -44,11 +48,15 @@ public class Application implements IApplication {
 	protected void doStart() { // this will be called back from C++
 		System.out.println("Application.doStart() called back from C++ Javaapp::run(), starting workbench...");
 		Activator.simulationManager = new SimulationManager(); // needs to be after everything else ws set up in C++
-	    result = doDoStart();	
+
+		Javaenv env = Javaenv.cast(cSimulation.getActiveEnvir());
+        env.setJCallback(null, new DummyEnvirCallback());
+
+        result = reallyDoStart();	
 		System.out.println("Workbench exited");
 	}
 	
-	protected Object doDoStart() {
+	protected Object reallyDoStart() {
 		Display display = PlatformUI.createDisplay();
 		try {
 			int returnCode = PlatformUI.createAndRunWorkbench(display, new ApplicationWorkbenchAdvisor());

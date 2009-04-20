@@ -35,7 +35,7 @@ import org.omnetpp.common.ui.SelectionProvider;
  * StyledText plus a custom ITextViewerContent class, because StyledTextRenderer 
  * is very slow. Its throughput is about 20..30 events/sec, while this class
  * has about 200..300 (counting with average 2 lines/event). Also, this class 
- * has very low and constant memory consumption (StyleTextRenderer consumes 
+ * has very low and constant memory consumption (StyledTextRenderer consumes 
  * minimum 8 bytes per line, see lineWidth[] and lineHeight[] arrays).
  * 
  * @author Andras
@@ -46,6 +46,7 @@ import org.omnetpp.common.ui.SelectionProvider;
 //TODO try if it works with proportional font
 //TODO finish horiz scrolling!
 //TODO implement selectionprovider stuff
+//TODO when resizing vertically, content moves strangely (scrolls twice the resize speed, and jumps back every 8 pixels)
 public class TextViewer extends Canvas implements ISelectionProvider {
     protected TextViewerContent content;
     protected TextChangeListener textChangeListener;

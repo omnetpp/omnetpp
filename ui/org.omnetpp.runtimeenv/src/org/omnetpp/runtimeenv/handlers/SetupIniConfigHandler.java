@@ -3,12 +3,14 @@ package org.omnetpp.runtimeenv.handlers;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
+import org.eclipse.ui.dialogs.ISelectionStatusValidator;
 import org.eclipse.ui.dialogs.ListDialog;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.experimental.simkernel.swig.Javaenv;
@@ -17,7 +19,6 @@ import org.omnetpp.experimental.simkernel.swig.cModule;
 import org.omnetpp.experimental.simkernel.swig.cSimulation;
 import org.omnetpp.runtimeenv.Activator;
 import org.omnetpp.runtimeenv.SimulationManager;
-import org.omnetpp.runtimeenv.SimulationManager.SimState;
 
 
 /**
@@ -27,20 +28,6 @@ import org.omnetpp.runtimeenv.SimulationManager.SimState;
 public class SetupIniConfigHandler extends AbstractHandler {
 
 	public SetupIniConfigHandler() {
-	}
-
-	//XXX same as in SetupNetwork -- factor out somewhere
-	protected boolean checkRunning() {
-		SimState state = Activator.getSimulationManager().getState();
-		if (state==SimState.RUNNING) {
-			MessageDialog.openInformation(null, "Simulation Running", "Sorry, you cannot do this while the simulation is running.");
-			return true;
-		}
-		if (state==SimState.BUSY) {
-			MessageDialog.openInformation(null, "Simulation Busy", "The simulation is waiting for external synchronization -- press STOP to interrupt it.");
-			return true;
-		}
-		return false;
 	}
 
 	/**
@@ -137,6 +124,15 @@ public class SetupIniConfigHandler extends AbstractHandler {
 			setMessage("Select configuration and run:");
 			setAllowMultiple(false);
 			setInput("");
+			
+			setValidator(new ISelectionStatusValidator() {
+				@Override
+				public IStatus validate(Object[] selection) {
+					if (selection.length==0)
+						return new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, "Nothing is selected.", null);
+					return Status.OK_STATUS;
+				}
+			});
 		}
 		
 		public String getConfigName() {
@@ -159,20 +155,20 @@ public class SetupIniConfigHandler extends AbstractHandler {
 	}
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		if (checkRunning())
+		SimulationManager simulationManager = Activator.getSimulationManager();
+		if (simulationManager.checkRunning())
 			return null;
 		
 		RunSelectionDialog dialog = new RunSelectionDialog(null); //XXX parent
-
 		//XXX set old values
 		// set configname [opp_getactiveconfigname]
 		// set runnumber  [opp_getactiverunnumber]
 
-		if (dialog.open() == ListDialog.OK && dialog.getFirstResult() != null) {
+		if (dialog.open() == ListDialog.OK) {
 			String configName = dialog.getConfigName();
 			int runNumber = dialog.getRunNumber();
+			//XXX check something was selected
 			//XXX next stuff should be using a progress monitor...
-			SimulationManager simulationManager = Activator.getSimulationManager();
 			simulationManager.newRun(configName, runNumber);
 			cModule systemModule = cSimulation.getActiveSimulation().getSystemModule();
 			if (systemModule != null)
