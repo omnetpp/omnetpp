@@ -11,11 +11,9 @@ package org.omnetpp.figures;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.Layer;
-import org.eclipse.draw2d.PositionConstants;
 import org.eclipse.draw2d.TextUtilities;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
-import org.eclipse.draw2d.geometry.PrecisionPoint;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
@@ -25,7 +23,6 @@ import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.figures.CompoundModuleFigure.SubmoduleLayer;
 import org.omnetpp.figures.layout.ISubmoduleConstraint;
-import org.omnetpp.figures.misc.AttachedLayer;
 
 /**
  * Figure representing a submodule inside a compound module figure. Contains several figures attached
@@ -55,6 +52,7 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
 	protected static final int TEXTPOS_TOP = 3;
 
 	protected static final Image IMG_PIN = ImageFactory.getImage(ImageFactory.DEFAULT_PIN);
+	protected static final Image IMG_DEFAULT = ImageFactory.getImage(ImageFactory.DEFAULT);
 
 	// input for the layouting
 	protected float scale = 1.0f;
@@ -86,34 +84,32 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
 	protected int textPos;
 	protected Color textColor;
 	protected String queueText;
-	private AttachedLayer rangeAttachLayer;
-	protected RangeFigure rangeFigure = new RangeFigure();  //FIXME make this on demand as well!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	protected RangeFigure rangeFigure = null;
 
 
 
 	public SubmoduleFigure() {
-		rangeAttachLayer = new AttachedLayer(this, PositionConstants.CENTER, rangeFigure, PositionConstants.CENTER);
 	}
 
-	@Override
-	public void addNotify() {
-		// functions here need to access the parent or ancestor figures, so these setup
-		// procedures cannot be done in the constructor
-		Assert.isTrue(getParent() instanceof SubmoduleLayer, "SubmoduleFigure can be added directly only to a SubmoduleLayer (inside of a CompoundModuleFigure)");
-
-		// look for decorator layers among the ancestor (compound module figure)
-		Layer foregroundLayer = ((SubmoduleLayer)getParent()).getCompoundModuleFigure().getForegroundDecorationLayer();
-		Layer backgroundLayer = ((SubmoduleLayer)getParent()).getCompoundModuleFigure().getBackgroundDecorationLayer();
-
-		// setup decorations belonging to the background decoration layer
-		backgroundLayer.add(rangeAttachLayer);
-
-		// problem marker image
-		foregroundLayer.add(new AttachedLayer(this, new PrecisionPoint(0.0, 0.0),
-				problemMarkerFigure, new PrecisionPoint(0.35, 0.35), null)); //XXX draw it instead!
-
-		super.addNotify();
-	}
+//	@Override
+//	public void addNotify() {
+//		// functions here need to access the parent or ancestor figures, so these setup
+//		// procedures cannot be done in the constructor
+//		Assert.isTrue(getParent() instanceof SubmoduleLayer, "SubmoduleFigure can be added directly only to a SubmoduleLayer (inside of a CompoundModuleFigure)");
+//
+//		// look for decorator layers among the ancestor (compound module figure)
+//		Layer foregroundLayer = ((SubmoduleLayer)getParent()).getCompoundModuleFigure().getForegroundDecorationLayer();
+//		Layer backgroundLayer = ((SubmoduleLayer)getParent()).getCompoundModuleFigure().getBackgroundDecorationLayer();
+//
+//		// setup decorations belonging to the background decoration layer
+//		backgroundLayer.add(rangeAttachLayer);
+//
+//		// problem marker image
+//		foregroundLayer.add(new AttachedLayer(this, new PrecisionPoint(0.0, 0.0),
+//				problemMarkerFigure, new PrecisionPoint(0.35, 0.35), null)); //XXX draw it instead!
+//
+//		super.addNotify();
+//	}
 
 	/**
 	 * Adjust the properties using a display string object
@@ -123,8 +119,8 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
 		// range support
 		setRange(
 				displayString.getRange(getScale()),
-				ColorFactory.asColor(displayString.getAsString(IDisplayString.Prop.RANGEFILLCOL), ColorFactory.RED),
-				ColorFactory.asColor(displayString.getAsString(IDisplayString.Prop.RANGEBORDERCOL), ColorFactory.RED),
+				ColorFactory.asColor(displayString.getAsString(IDisplayString.Prop.RANGEFILLCOL)),
+				ColorFactory.asColor(displayString.getAsString(IDisplayString.Prop.RANGEBORDERCOL)),
 				displayString.getAsInt(IDisplayString.Prop.RANGEBORDERWIDTH, -1));
 
 		// tooltip support
@@ -142,6 +138,9 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
 				imageSize,
 				ColorFactory.asRGB(displayString.getAsString(IDisplayString.Prop.IMAGECOLOR)),
 				displayString.getAsInt(IDisplayString.Prop.IMAGECOLORPERCENTAGE,0));
+		
+		if (!displayString.containsProperty(IDisplayString.Prop.SHAPE) && !displayString.containsProperty(IDisplayString.Prop.IMAGE))
+			img = IMG_DEFAULT;
 
 		// rectangle ("b" tag)
 		Dimension size = displayString.getSize(scale);  // falls back to size in EMPTY_DEFAULTS
@@ -151,9 +150,9 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
 		// if both are missing, use values from EMPTY_DEFAULTS, otherwise substitute
 		// -1 for missing coordinate
 		if (!widthExist && heightExist)
-			size.width = -1;
-		if (widthExist && !heightExist)
-			size.height = -1;
+			size.width = size.height;
+		else if (widthExist && !heightExist)
+			size.height = size.width;
 
 		String shape = displayString.getAsString(IDisplayString.Prop.SHAPE);
 		if (!displayString.containsTag(IDisplayString.Tag.b))
@@ -196,25 +195,38 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
 		this.tooltipText = tooltipText;
 	}
 	
+	/**
+	 * @param radius
+	 * @param fillColor
+	 * @param borderColor can be null meaning that no outline should be drawn
+	 * @param borderWidth can be null meaning that no background should be drawn
+	 */
 	protected void setRange(int radius, Color fillColor, Color borderColor, int borderWidth) {
-		Assert.isNotNull(fillColor);
-		Assert.isNotNull(borderColor);
 		
 		if (radius <= 0) {
-			rangeFigure.setVisible(false);
+			if (rangeFigure != null)
+				rangeFigure.setVisible(false);
 		}
 		else {
+			if (rangeFigure == null) {
+				rangeFigure = new RangeFigure();
+				Layer backgroundLayer = ((SubmoduleLayer)getParent()).getCompoundModuleFigure().getBackgroundDecorationLayer();
+				backgroundLayer.add(rangeFigure);
+			}
 			rangeFigure.setVisible(true);
-			rangeFigure.setSize(radius*2, radius*2);
-
 			rangeFigure.setFill(fillColor != null);
 			rangeFigure.setBackgroundColor(fillColor);
 			rangeFigure.setOutline(borderColor != null &&  borderWidth > 0);
 			rangeFigure.setForegroundColor(borderColor);
 			rangeFigure.setLineWidth(borderWidth);
 
-			if (rangeAttachLayer != null)
-				rangeAttachLayer.revalidate(); //XXX what's this?
+			if (centerLoc != null) {
+				rangeFigure.setBounds(new Rectangle(centerLoc.x, centerLoc.y, 0, 0).expand(radius,radius));
+			} else 
+				rangeFigure.setBounds(new Rectangle(0, 0, 0, 0).expand(radius,radius));
+			
+			
+			rangeFigure.revalidate(); 
 		}
 		invalidate();
 	}
@@ -290,7 +302,6 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
 			this.vectorIdentifier = vectorIdentifier;
 			this.vectorSize = vectorSize;
 			this.vectorIndex = vectorIndex;
-			//System.out.println(this+": setSubmoduleVectorIndex(): setting centerLoc=null");
 			centerLoc = null;
 			revalidate();  // invalidate() not enough here 
 		}
@@ -329,8 +340,8 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
 	}
 
 	public Rectangle getShapeBounds() {
-		int width = shape==SHAPE_NONE ? 0 : shapeWidth>0 ? shapeWidth : shapeHeight;
-		int height = shape==SHAPE_NONE ? 0 : shapeHeight>0 ? shapeHeight : shapeWidth;
+		int width = shape==SHAPE_NONE ? 0 : shapeWidth;
+		int height = shape==SHAPE_NONE ? 0 : shapeHeight;
 		if (image != null) {
 			width = Math.max(width, image.getBounds().width);
 			height = Math.max(height, image.getBounds().height);
@@ -497,6 +508,9 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
 			//System.out.println(this+": setCenterLocation(" + loc + ")");
 			this.centerLoc = loc;
 			calculateBounds();
+			if (rangeFigure != null) 
+				rangeFigure.setBounds(rangeFigure.getBounds().setLocation(centerLoc.x-rangeFigure.getSize().width/2, 
+						                                      centerLoc.y - rangeFigure.getSize().height/2));
 		}
 	}
 
