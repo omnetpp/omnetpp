@@ -31,7 +31,6 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
 import org.omnetpp.common.ui.FigureCanvas;
 import org.omnetpp.common.ui.SelectionProvider;
-import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.experimental.simkernel.swig.cObject;
 import org.omnetpp.figures.ITooltipTextProvider;
 
