@@ -1,5 +1,11 @@
 %module Simkernel
 
+%{
+#include "omnetpp.h"
+#include "innerclasses.h"
+#include "javaenv/visitor.h"
+%}
+
 %include commondefs.i
 //%include simtime.i
 %include simtime_tmp.i   //XXX until we rewrite java code to use bigdecimal
@@ -34,10 +40,26 @@
   }
 %}
 
+%{
+static void opp_JavaThrowException(JNIEnv *jenv, cException& e) {
+    // wrap a copy of the C++ exception object into a Java exception, and throw it
+    jenv->ExceptionClear();
+    jclass clazz = jenv->FindClass("org/omnetpp/experimental/simkernel/WrappedException");
+    jmethodID ctor = jenv->GetMethodID(clazz, "<init>", "(J)V");
+    jobject excep = jenv->NewObject(clazz, ctor, (jlong)(void*)e.dup());
+    jenv->Throw((jthrowable&)excep);
+}
+%}
+
 %exception {
     try {
         $action
-    } catch (std::exception& e) {
+    }
+    catch (cException& e) {
+        opp_JavaThrowException(jenv, e);
+        return $null;
+    }
+    catch (std::exception& e) {
         SWIG_JavaThrowException(jenv, SWIG_JavaRuntimeException, const_cast<char*>(e.what()));
         return $null;
     }
@@ -91,16 +113,17 @@
 }
 
 %typemap(javacode) cEnvir %{
-    public cEnvir disown() {
-        swigCMemOwn = false;
-        return this;
-    }
+  public cEnvir disown() {
+    swigCMemOwn = false;
+    return this;
+  }
 %}
 
-%{
-#include "omnetpp.h"
-#include "innerclasses.h"
-#include "javaenv/visitor.h"
+%typemap(javacode) cException %{
+  // public constructor
+  public cException(long cPtr) {
+    this(cPtr, true);
+  }
 %}
 
 %include "std_common.i"
@@ -176,7 +199,7 @@ namespace std {
 %ignore cSubModIterator;
 %ignore cLinkedList;
 
-// ignore global variables
+// ignore global variables but add accessors for them
 %ignore defaultList;
 %ignore componentTypes;
 %ignore nedFunctions;
@@ -184,6 +207,23 @@ namespace std {
 %ignore enums;
 %ignore classDescriptors;
 %ignore configOptions;
+
+%{
+cDefaultList& getDefaultList() {return defaultList;}
+cRegistrationList *getRegisteredComponentTypes() {return componentTypes.getInstance();}
+cRegistrationList *getRegisteredNedFunctions() {return nedFunctions.getInstance();}
+cRegistrationList *getRegisteredClasses() {return classes.getInstance();}
+cRegistrationList *getRegisteredEnums() {return enums.getInstance();}
+cRegistrationList *getRegisteredClassDescriptors() {return classDescriptors.getInstance();}
+cRegistrationList *getRegisteredConfigOptions() {return configOptions.getInstance();}
+%}
+cDefaultList& getDefaultList();
+cRegistrationList *getRegisteredComponentTypes();
+cRegistrationList *getRegisteredNedFunctions();
+cRegistrationList *getRegisteredClasses();
+cRegistrationList *getRegisteredEnums();
+cRegistrationList *getRegisteredClassDescriptors();
+cRegistrationList *getRegisteredConfigOptions();
 
 // ignore macros that confuse swig
 /*
@@ -315,10 +355,16 @@ DERIVEDCLASS(cQueue,cObject);
 DERIVEDCLASS(cMessage,cObject);
 DERIVEDCLASS(cPacket,cObject);
 
+DERIVEDCLASS(cComponentType,cObject);
+DERIVEDCLASS(cModuleType,cObject);
+DERIVEDCLASS(cChannelType,cObject);
+
 DERIVEDCLASS(EnvirBase,cEnvir);
 DERIVEDCLASS(Javaenv,cEnvir);
-
 DERIVEDCLASS(cConfigurationEx,cConfiguration);
+DERIVEDCLASS(cException,std::exception);
+DERIVEDCLASS(cRuntimeError,std::exception);
+DERIVEDCLASS(cTerminationException,std::exception);
 
 
 %include "innerclasses.h"
@@ -395,6 +441,7 @@ DERIVEDCLASS(cConfigurationEx,cConfiguration);
 %include "onstartup.h"
 %include "opp_string.h"
 %include "random.h"
+%include "cregistrationlist.h"
 %include "regmacros.h"
 %include "simutil.h"
 %include "packing.h"
@@ -425,3 +472,5 @@ DERIVEDCLASS(cConfigurationEx,cConfiguration);
 %include "javaenv/logbufferview.h"
 %include "javaenv/jutil.h"
 %include "javaenv/javaenv.h"
+
+

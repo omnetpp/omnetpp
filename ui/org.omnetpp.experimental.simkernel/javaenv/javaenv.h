@@ -70,6 +70,7 @@ class Javaenv : public EnvirBase
 
     void startRun() {EnvirBase::startRun();}  //wrap to make public
     void endRun() {EnvirBase::endRun();}      //wrap to make public
+    cModuleType *resolveNetwork(const char *networkname) {return EnvirBase::resolveNetwork(networkname);} //wrap to make public
 
 /*
     void readParameter(cPar *par) {
