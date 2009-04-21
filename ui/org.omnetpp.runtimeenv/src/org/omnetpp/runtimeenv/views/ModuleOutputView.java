@@ -107,7 +107,7 @@ public class ModuleOutputView extends PinnableView2 implements ISimulationListen
         textViewer = new TextViewer(parent, SWT.DOUBLE_BUFFERED);
         textViewer.setContent(new LogBufferContent(logBufferView));
 	    
-	    Activator.getSimulationManager().addChangeListener(this);
+	    Activator.getSimulationManager().addSimulationListener(this);
 	    
 	    
 //	    //XXX PERF TEST
@@ -175,7 +175,7 @@ public class ModuleOutputView extends PinnableView2 implements ISimulationListen
 
 	@Override
 	public void dispose() {
-        Activator.getSimulationManager().removeChangeListener(this);
+        Activator.getSimulationManager().removeSimulationListener(this);
 	    super.dispose();
 	}
 

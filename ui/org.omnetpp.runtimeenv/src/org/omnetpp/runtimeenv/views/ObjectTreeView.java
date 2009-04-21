@@ -180,7 +180,7 @@ public class ObjectTreeView extends ViewPart implements ISimulationListener {
         });
         
         // update when something in the simulation changes
-		Activator.getSimulationManager().addChangeListener(this);
+		Activator.getSimulationManager().addSimulationListener(this);
 	}
 
     /**
@@ -197,7 +197,7 @@ public class ObjectTreeView extends ViewPart implements ISimulationListener {
 
     @Override
     public void dispose() {
-        Activator.getSimulationManager().removeChangeListener(this);
+        Activator.getSimulationManager().removeSimulationListener(this);
         super.dispose();
     }
 }

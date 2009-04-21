@@ -525,7 +525,7 @@ public class ObjectPropertiesView extends PinnableView2 implements ISimulationLi
 		viewer.setContentProvider(new ViewContentProvider());
 		viewer.setLabelProvider(new DecoratingStyledCellLabelProvider(new ViewLabelProvider(), null, null));
 		viewer.setInput(cSimulation.getActiveSimulation());
-        Activator.getSimulationManager().addChangeListener(this);
+        Activator.getSimulationManager().addSimulationListener(this);
         
         // create context menu
         getViewSite().registerContextMenu(contextMenuManager, viewer);
@@ -587,7 +587,7 @@ public class ObjectPropertiesView extends PinnableView2 implements ISimulationLi
 
     @Override
     public void dispose() {
-        Activator.getSimulationManager().removeChangeListener(this);
+        Activator.getSimulationManager().removeSimulationListener(this);
         super.dispose();
     }
 
