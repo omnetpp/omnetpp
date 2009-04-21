@@ -23,6 +23,16 @@
 #include "appreg.h"
 #include "javaenv.h"
 
+/*
+std::map<cObject*,jweak> wrappers;
+void wrapperCreated(cObject *p, jobject wrapper); // add weak reference to table (called from Java cObject ctor)
+void purge(); // remove table entries with dead weak references (but: iteration is slow!!!)
+void objectDeleted(cObject *p); // if there's a wrapper for it: clear cPtr in it, and remove from table
+//es: javabol minden cPtr accesst lecsekkelni!
+*/
+
+
+
 //
 // Register the user interface
 //
