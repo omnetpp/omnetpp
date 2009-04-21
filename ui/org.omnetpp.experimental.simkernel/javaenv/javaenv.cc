@@ -19,6 +19,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string>
+#include <map>
 
 #include "appreg.h"
 #include "javaenv.h"
@@ -30,6 +31,45 @@ void purge(); // remove table entries with dead weak references (but: iteration 
 void objectDeleted(cObject *p); // if there's a wrapper for it: clear cPtr in it, and remove from table
 //es: javabol minden cPtr accesst lecsekkelni!
 */
+
+//TODO: integrate and call as written above!!
+JNIEnv *jenv;
+typedef std::multimap<cObject*,jweak> RefMap;
+RefMap wrappers;
+
+// add weak reference to table (called from Java cObject ctor)
+void wrapperCreated(cObject *p, jobject wrapper)
+{
+    jweak ref = jenv->NewWeakGlobalRef(wrapper);
+    wrappers.insert( std::pair<cObject*,jweak>(p,ref) );
+}
+
+// remove table entries with dead weak references (but: iteration is slow!!!)
+void purge()
+{
+    for (RefMap::iterator i = wrappers.begin(); i != wrappers.end(); ++i) {
+        if (jenv->IsSameObject(i->second,NULL)) {
+            jenv->DeleteWeakGlobalRef(i->second);
+            wrappers.erase(i);
+        }
+    }
+}
+
+// if there's a wrapper for it: clear cPtr in it, and remove from table
+void objectDeleted(cObject *p)
+{
+    jclass cobjectClass = jenv->FindClass(".../cObject");
+    jmethodID zapMethodID = jenv->GetMethodID(cobjectClass, "zap", "()V"); //XXX factor out!
+    std::pair<RefMap::iterator,RefMap::iterator> range = wrappers.equal_range(p);
+    for (RefMap::iterator i = range.first; i != range.second; ++i) {
+        jobject ref = jenv->NewLocalRef(i->second);
+        if (!jenv->IsSameObject(i->second,NULL))
+            jenv->CallVoidMethod(ref, zapMethodID);
+        jenv->DeleteLocalRef(ref);
+        jenv->DeleteWeakGlobalRef(i->second);
+        wrappers.erase(i);
+    }
+}
 
 
 
