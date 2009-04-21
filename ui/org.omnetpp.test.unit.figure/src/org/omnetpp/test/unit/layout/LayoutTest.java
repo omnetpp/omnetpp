@@ -14,6 +14,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.junit.Test;
 import org.omnetpp.common.Debug;
+import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.ui.FigureCanvas;
 import org.omnetpp.figures.CompoundModuleFigure;
 import org.omnetpp.figures.SubmoduleFigure;
@@ -22,7 +23,12 @@ import org.omnetpp.figures.layout.SubmoduleConstraint;
 import org.omnetpp.ned.model.DisplayString;
 
 
+
 public class LayoutTest extends TestCase {
+
+	static {
+		ImageFactory.initialize(new String[] {System.getenv("HOME")+"/omnetpp/images"});
+	}
 
 	@Test
 	public void testLayout() {
@@ -47,47 +53,39 @@ public class LayoutTest extends TestCase {
 
 		// adding 3 pinned nodes
 		for (int y=50; y<=150; y += 50)
-			addSubmodule(cmodule, "p=40,"+y+";b=rect,40,40");
+			addSubmodule(cmodule, "pinned", "p=40,"+y);
 		((SpringEmbedderLayout)cmodule.getSubmoduleLayer().getLayoutManager()).requestFullLayout();
-		long t = System.currentTimeMillis();
-		while (System.currentTimeMillis()-t < 3000)
-			while (Display.getCurrent().readAndDispatch())
-				;
+		sleep();
 
 		// add 3 movable nodes
 		for (int i=0; i<3; ++i) 
-			addSubmodule(cmodule, "");
+			addSubmodule(cmodule, "movable A", "");
+		sleep();
+		
+		// adding additional movables (the previous 6 nodes should not change their location)
+		for (int i=0; i<3; ++i) 
+			addSubmodule(cmodule, "movable B", "");
+		sleep();
+
+		MessageDialog.openInformation(null, "End of test", "End of layout test");
+	}
+
+
+	private void sleep() {
+		long t;
 		t = System.currentTimeMillis();
 		while (System.currentTimeMillis()-t < 3000)
 			while (Display.getCurrent().readAndDispatch())
 				;
-		
-		// adding additional movables (the previous 6 nodes should not change their location)
-		for (int i=0; i<3; ++i) 
-			addSubmodule(cmodule, "");
-		t = System.currentTimeMillis();
-		while (System.currentTimeMillis()-t < 3000)
-			while (Display.getCurrent().readAndDispatch())
-
-		MessageDialog.openInformation(null, "End of test", "End of layout test");
 	}
 	
 	
-	private void addSubmodule(CompoundModuleFigure cmodule, String displayStr) {
+	private void addSubmodule(CompoundModuleFigure cmodule, String name, String displayStr) {
 		SubmoduleFigure sm = new SubmoduleFigure();
 		cmodule.getSubmoduleLayer().add(sm);
+		sm.setName(name);
 		DisplayString dps = new DisplayString(displayStr);
 		sm.setDisplayString(dps);
-		SubmoduleConstraint constr = new SubmoduleConstraint();
-		Point loc = dps.getLocation(1.0f);
-		constr.setPinned(loc != null);
-		if (loc!=null)
-			constr.setLocation(loc);
-		constr.setSize(sm.getPreferredSize());
-		sm.setPinVisible(constr.isPinned());
-		//sm.setSubmoduleConstraint(constr);
-//		System.out.println("----------");
-//		System.out.println("submodule added: "+sm);
-//		FigureUtils.debugPrintRootFigureHierarchy(cmodule);
+		sm.setPinVisible(dps.getLocation(1.0f) != null);
 	}
 }

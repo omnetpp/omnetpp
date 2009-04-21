@@ -139,16 +139,15 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
 				ColorFactory.asRGB(displayString.getAsString(IDisplayString.Prop.IMAGECOLOR)),
 				displayString.getAsInt(IDisplayString.Prop.IMAGECOLORPERCENTAGE,0));
 		
-		if (!displayString.containsProperty(IDisplayString.Prop.SHAPE) && !displayString.containsProperty(IDisplayString.Prop.IMAGE))
-			img = IMG_DEFAULT;
+//		if (!displayString.containsProperty(IDisplayString.Prop.SHAPE) && !displayString.containsProperty(IDisplayString.Prop.IMAGE))
+//			img = IMG_DEFAULT;
 
 		// rectangle ("b" tag)
 		Dimension size = displayString.getSize(scale);  // falls back to size in EMPTY_DEFAULTS
 		boolean widthExist = displayString.containsProperty(IDisplayString.Prop.WIDTH);
 		boolean heightExist = displayString.containsProperty(IDisplayString.Prop.HEIGHT);
 
-		// if both are missing, use values from EMPTY_DEFAULTS, otherwise substitute
-		// -1 for missing coordinate
+		// if one of the dimensions is missing use the other dimension instead
 		if (!widthExist && heightExist)
 			size.width = size.height;
 		else if (widthExist && !heightExist)
@@ -156,7 +155,7 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
 
 		String shape = displayString.getAsString(IDisplayString.Prop.SHAPE);
 		if (!displayString.containsTag(IDisplayString.Tag.b))
-			shape = "";
+			shape = null;
 		setShape(img, shape,
 				size.width,
 				size.height,
@@ -265,29 +264,32 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
 
 		if (StringUtils.isEmpty(shapeName))
 			shape = SHAPE_NONE;
-		else { 
+		else {
 			shapeName = IDisplayString.Prop.SHAPE.getEnumSpec().getNameFor(shapeName);
-			if (shapeName.equalsIgnoreCase("oval"))
+
+			if (StringUtils.isEmpty(shapeName))  
+				shape = SHAPE_RECT; // unknown -> rectangle
+			else if (shapeName.equalsIgnoreCase("oval"))
 				shape = SHAPE_OVAL;
 			else if (shapeName.equalsIgnoreCase("rectangle"))
 				shape = SHAPE_RECT;
-//			else if (shapeName.equalsIgnoreCase("rrect"))
-//				shape = SHAPE_RECT2;
-//			else if (shapeName.equalsIgnoreCase("tri"))
-//				shape = SHAPE_TRI;
-//			else if (shapeName.equalsIgnoreCase("tri2"))
-//				shape = SHAPE_TRI2;
-//			else if (shapeName.equalsIgnoreCase("hex"))
-//				shape = SHAPE_HEX;
-//			else if (shapeName.equalsIgnoreCase("hex2"))
-//				shape = SHAPE_HEX2;
 			else
-				shape = SHAPE_NONE;
+				Assert.isTrue(false); // unhandled shape
 		}
 
-		Assert.isTrue(shapeHeight != -1 || shapeWidth != -1);
-		this.shapeWidth = shapeWidth;
-		this.shapeHeight = shapeHeight;
+		// else if (shapeName.equalsIgnoreCase("rrect"))
+		// shape = SHAPE_RECT2;
+		// else if (shapeName.equalsIgnoreCase("tri"))
+		// shape = SHAPE_TRI;
+		// else if (shapeName.equalsIgnoreCase("tri2"))
+		// shape = SHAPE_TRI2;
+		// else if (shapeName.equalsIgnoreCase("hex"))
+		// shape = SHAPE_HEX;
+		// else if (shapeName.equalsIgnoreCase("hex2"))
+		// shape = SHAPE_HEX2;
+
+		this.shapeWidth = Math.max(shapeWidth, 0);
+		this.shapeHeight = Math.max(shapeHeight, 0);
 		this.shapeBorderColor = shapeBorderColor;
 		this.shapeFillColor = shapeFillColor;
 		this.shapeBorderWidth = shapeBorderWidth;
@@ -295,7 +297,7 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
 		this.image = image;
 
 		if (image == null && shape == SHAPE_NONE)
-			image = ImageFactory.getImage(ImageFactory.DEFAULT_KEY);
+			this.image = ImageFactory.getImage(ImageFactory.DEFAULT_KEY);
 
 		invalidate();
 	}
@@ -332,8 +334,10 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
 
 	protected void calculateBounds() {
 		Rectangle shapeBounds = getShapeBounds();
-		Rectangle bounds = shapeBounds.getCopy().union(getNameBounds(shapeBounds));
+		Rectangle bounds = shapeBounds.getCopy();
 		Rectangle tmp;
+		if ((tmp = getNameBounds(shapeBounds)) != null)
+			bounds.union(tmp);
 		if ((tmp = getTextBounds(shapeBounds)) != null)
 			bounds.union(tmp);
 		if ((tmp = getQueueTextBounds(shapeBounds)) != null)
@@ -366,6 +370,8 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
 	}
 
 	protected Rectangle getNameBounds(Rectangle shapeBounds) {
+		if (StringUtils.isEmpty(nameText)) 
+			return null;
 		Dimension textSize = TextUtilities.INSTANCE.getTextExtents(nameText, getFont());
 		return new Rectangle(centerLoc.x-textSize.width/2, shapeBounds.bottom(), textSize.width, textSize.height);
 	}
@@ -468,12 +474,15 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
 	}
 
 	public String getTooltipText(int x, int y) {
-		Rectangle markerBounds = getProblemMarkerImageBounds(getShapeBounds());
-		translateToAbsolute(markerBounds);
-		if (problemMarkerTextProvider != null && markerBounds.contains(x, y)) {
-			String text = problemMarkerTextProvider.getTooltipText(x, y);
-			if (text != null)
-				return text;
+		if (problemMarkerTextProvider != null && problemMarkerImage != null) {
+			Rectangle markerBounds = getProblemMarkerImageBounds(getShapeBounds());
+			translateToAbsolute(markerBounds);
+			if (markerBounds.contains(x, y)) {
+				String text = problemMarkerTextProvider.getTooltipText(x, y);
+				if (text != null)
+					return text;
+			}
+			
 		}
 		return tooltipText;
 	}
@@ -589,21 +598,35 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
 			int left = centerLoc.x - shapeWidth/2;
 			int top = centerLoc.y - shapeHeight/2;
 			if (shape == SHAPE_OVAL) {
-				graphics.fillOval(left, top, shapeWidth, shapeHeight);
-				if (shapeBorderWidth > 0) {
-					graphics.drawOval(left+shapeBorderWidth/2, 
-							top+shapeBorderWidth/2, 
-							shapeWidth-Math.max(1, shapeBorderWidth), 
-							shapeHeight-Math.max(1, shapeBorderWidth));
+				if (2*shapeBorderWidth > shapeWidth || 2*shapeBorderWidth > shapeHeight) {
+					// special case if border is wider than the shape itself 
+					graphics.setBackgroundColor(shapeBorderColor);
+					graphics.fillOval(left, top, shapeWidth, shapeHeight);
+				}
+				else {
+					graphics.fillOval(left, top, shapeWidth, shapeHeight);
+					if (shapeBorderWidth > 0) {
+						graphics.drawOval(left+shapeBorderWidth/2, 
+								top+shapeBorderWidth/2, 
+								shapeWidth-Math.max(1, shapeBorderWidth), 
+								shapeHeight-Math.max(1, shapeBorderWidth));
+					}
 				}
 			}
 			else if (shape == SHAPE_RECT) {
-				graphics.fillRectangle(left, top, shapeWidth, shapeHeight);
-				if (shapeBorderWidth > 0) {
-					graphics.drawRectangle(left+shapeBorderWidth/2, 
-							top+shapeBorderWidth/2, 
-							shapeWidth-Math.max(1, shapeBorderWidth), 
-							shapeHeight-Math.max(1, shapeBorderWidth));
+				if (2*shapeBorderWidth > shapeWidth || 2*shapeBorderWidth > shapeHeight) {
+					// special case if border is wider than the shape itself 
+					graphics.setBackgroundColor(shapeBorderColor);
+					graphics.fillRectangle(left, top, shapeWidth, shapeHeight);
+				}
+				else {
+					graphics.fillRectangle(left, top, shapeWidth, shapeHeight);
+					if (shapeBorderWidth > 0) {
+						graphics.drawRectangle(left+shapeBorderWidth/2, 
+								top+shapeBorderWidth/2, 
+								shapeWidth-Math.max(1, shapeBorderWidth), 
+								shapeHeight-Math.max(1, shapeBorderWidth));
+					}
 				}
 			}
 			else {
