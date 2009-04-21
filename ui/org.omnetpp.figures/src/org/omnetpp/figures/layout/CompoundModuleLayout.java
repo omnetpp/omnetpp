@@ -10,6 +10,7 @@ package org.omnetpp.figures.layout;
 import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.AssertionFailedException;
 import org.eclipse.draw2d.AbstractLayout;
 import org.eclipse.draw2d.Connection;
 import org.eclipse.draw2d.IFigure;
@@ -20,6 +21,7 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.omnetpp.common.Debug;
 import org.omnetpp.figures.CompoundModuleFigure;
 import org.omnetpp.figures.SubmoduleFigure;
+import org.omnetpp.figures.layout.ISubmoduleConstraint.VectorArrangement;
 
 
 /**
@@ -82,14 +84,15 @@ public class CompoundModuleLayout extends AbstractLayout {
 				// lay out this node, and store the coordinates with setCenterLocation()
 				Point baseLoc = constr.getBaseLocation();
 				if (baseLoc != null) {
-					// on incremental layout, everything is fixed except unspecified nodes
-					//FIXME vector layout!!!!
-					autoLayouter.addFixedNode(node, baseLoc.x, baseLoc.y, shapeBounds.width, shapeBounds.height);
+					Point offset = getArrangementOffset(constr, 80); // handle vector layouts; note: we use fixed spacing NOT shape size, because items in a vector may be of different sizes which would result in strange arrangements
+					autoLayouter.addFixedNode(node, baseLoc.x+offset.x, baseLoc.y+offset.y, shapeBounds.width, shapeBounds.height);
 				} 
-				else {
-					// if unspec. use a random start position 
-					//FIXME vector layout!!!!
+				else if (constr.getVectorIdentifier()==null || constr.getVectorArrangement()==VectorArrangement.none) {
 					autoLayouter.addMovableNode(node, shapeBounds.width, shapeBounds.height);
+				}
+				else {
+					Point offset = getArrangementOffset(constr, 80); // handle vector layouts
+					autoLayouter.addAnchoredNode(node, constr.getVectorIdentifier(), offset.x, offset.y, shapeBounds.width, shapeBounds.height);
 				}
 			}
 		}
@@ -119,6 +122,54 @@ public class CompoundModuleLayout extends AbstractLayout {
 		return autoLayouter;
 	}
 
+
+	protected Point getArrangementOffset(ISubmoduleConstraint constr, int spacing) {
+		int x, y;
+		switch (constr.getVectorArrangement()) {
+		case exact: {
+			x = fallback(constr.getVectorArrangementPar1(), 0); 
+			y = fallback(constr.getVectorArrangementPar2(), 0); 
+			break;
+		}
+		case row: { 
+			int dx = fallback(constr.getVectorArrangementPar1(), spacing); 
+			x = constr.getVectorIndex() * dx;
+			y = 0;
+			break;
+		}
+		case column: { 
+			int dy = fallback(constr.getVectorArrangementPar1(), spacing); 
+			x = 0;
+			y = constr.getVectorIndex() * dy;
+			break;
+		}
+		case matrix: { 
+			int numCols = fallback(constr.getVectorArrangementPar1(), 5);
+			int dx = fallback(constr.getVectorArrangementPar2(), spacing); 
+			int dy = fallback(constr.getVectorArrangementPar3(), spacing); 
+			int index = constr.getVectorIndex();
+			x = (index % numCols)*dx;
+			y = (index / numCols)*dy;
+			break;
+		}
+		case ring: {
+	        int rx = fallback(constr.getVectorArrangementPar1(), (int)(spacing*constr.getVectorSize()/(2*Math.PI)));
+	        int ry = fallback(constr.getVectorArrangementPar2(), rx);
+			double alpha = constr.getVectorIndex() * 2 * Math.PI / constr.getVectorSize();
+	        x = (int)(rx - rx*Math.sin(alpha));
+	        y = (int)(ry - ry*Math.cos(alpha));
+			break;
+		}
+		default: { 
+			throw new AssertionFailedException("unhandled vector arrangement " + constr.getVectorArrangement());
+		}
+		}
+		return new Point(x, y);
+	}
+
+	private int fallback(int vectorArrangementPar, int fallbackValue) {
+		return vectorArrangementPar == Integer.MIN_VALUE ? fallbackValue : vectorArrangementPar;
+	}
 
 	/**
      * Implements the algorithm to layout the components of the given container figure.
