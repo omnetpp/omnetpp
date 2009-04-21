@@ -33,6 +33,7 @@ import org.omnetpp.common.ui.FigureCanvas;
 import org.omnetpp.common.ui.SelectionProvider;
 import org.omnetpp.experimental.simkernel.swig.cObject;
 import org.omnetpp.figures.ITooltipTextProvider;
+import org.omnetpp.figures.misc.FigureUtils;
 
 /**
  * 
@@ -102,17 +103,7 @@ public class ModelCanvas extends EditorPart implements ISelectionRequestHandler 
             }
         });
         
-        // SWT-based tooltip for figures
-        Listener listener = new Listener() {
-            public void handleEvent(Event e) {
-                switch (e.type) {
-                    case SWT.MouseMove: canvas.setToolTipText(""); break;
-                    case SWT.MouseHover: canvas.setToolTipText(getFigureTooltip(e.x, e.y)); break;
-                }
-            }       
-        };
-        canvas.addListener(SWT.MouseMove, listener);
-        canvas.addListener(SWT.MouseHover, listener);
+        FigureUtils.addTooltipSupport(canvas, canvas.getRootFigure());
     }
 
 	protected void recalculateCanvasSize() {
@@ -181,13 +172,6 @@ public class ModelCanvas extends EditorPart implements ISelectionRequestHandler 
 				fireSelectionChange(new StructuredSelection(list));
 			}
 		}
-	}
-
-	protected String getFigureTooltip(int x, int y) {
-    	for (IFigure f = canvas.getRootFigure().findFigureAt(x,y); f != null; f = f.getParent())
-    		if (f instanceof ITooltipTextProvider)
-    			return ((ITooltipTextProvider)f).getTooltipText(x,y);
-		return null;
 	}
 
 	@Override
