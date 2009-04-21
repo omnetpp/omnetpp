@@ -84,7 +84,7 @@ public abstract class AbstractGraphLayoutAlgorithm
     /**
      * May be called after addAnchoredNode.
      */
-    public abstract void setAnchorPosition(String anchor, int x, int y);
+    public abstract void setAnchorPosition(Object anchor, int x, int y);
 
     /**
      * Add node that is anchored to a freely movable anchor point. Nodes anchored
@@ -94,7 +94,7 @@ public abstract class AbstractGraphLayoutAlgorithm
      *
      * offx, offy: offset to anchor point
      */
-    public abstract void addAnchoredNode(Object mod, String anchor, int offx, int offy, int width, int height);
+    public abstract void addAnchoredNode(Object mod, Object anchor, int offx, int offy, int width, int height);
 
     /**
      * Add connection (graph edge)
@@ -157,6 +157,9 @@ public abstract class AbstractGraphLayoutAlgorithm
      */
     public abstract Point getNodePosition(Object mod);
 
-    public abstract Point getAnchorPosition(String anchor);
+    /**
+     * Returns the position of the given anchor after layouting
+     */
+    public abstract Point getAnchorPosition(Object anchor);
 }
 

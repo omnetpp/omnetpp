@@ -175,7 +175,7 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
 		String layout = displayString.getAsString(IDisplayString.Prop.LAYOUT);
 		VectorArrangement arrangement;
 		if (StringUtils.isEmpty(layout))
-			arrangement = ISubmoduleConstraint.VectorArrangement.exact;
+			arrangement = ISubmoduleConstraint.VectorArrangement.none;
 		else {
 			layout = IDisplayString.Prop.LAYOUT.getEnumSpec().getNameFor(layout);
 			arrangement = ISubmoduleConstraint.VectorArrangement.valueOf(layout);
@@ -183,9 +183,9 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
 		setBaseLocation(
 				displayString.getLocation(scale),
 				arrangement,
-				displayString.unit2pixel(displayString.getAsInt(IDisplayString.Prop.LAYOUT_PAR1, 0), scale),
-				displayString.unit2pixel(displayString.getAsInt(IDisplayString.Prop.LAYOUT_PAR2, 0), scale),
-				displayString.unit2pixel(displayString.getAsInt(IDisplayString.Prop.LAYOUT_PAR3, 0), scale)
+				displayString.unit2pixel(displayString.getAsInt(IDisplayString.Prop.LAYOUT_PAR1, Integer.MIN_VALUE), scale),
+				displayString.unit2pixel(displayString.getAsInt(IDisplayString.Prop.LAYOUT_PAR2, Integer.MIN_VALUE), scale),
+				displayString.unit2pixel(displayString.getAsInt(IDisplayString.Prop.LAYOUT_PAR3, Integer.MIN_VALUE), scale)
 		);
 		invalidate();  //XXX redundant? individual setters also call this...  Note: this nulls out parent.preferredSize! (??)
 	}

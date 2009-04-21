@@ -15,7 +15,7 @@ import org.eclipse.draw2d.geometry.Rectangle;
  * Submodule layout is using this interface
  */
 public interface ISubmoduleConstraint {
-	enum VectorArrangement {exact, row, column, matrix, ring}; // names must match with IDisplayString.Prop.LAYOUT names
+	enum VectorArrangement {none, exact, row, column, matrix, ring}; // names must match with IDisplayString.Prop.LAYOUT names
 
 	/**
 	 * Returns the position that occurs in the display string, or null. For non-vector

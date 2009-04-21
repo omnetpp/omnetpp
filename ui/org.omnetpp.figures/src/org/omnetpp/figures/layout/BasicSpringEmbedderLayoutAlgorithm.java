@@ -30,7 +30,7 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
 {
     static class Anchor
     {
-        String name;      // anchor name
+        Object name;      // anchor identifier
         double x, y;      // position
         int refcount;     // how many nodes are anchored to it
         double dx, dy;    // internal: movement at each step (NOT preserved across iterations!)
@@ -164,7 +164,7 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
 	}
 
 	@Override
-	public void addAnchoredNode(Object mod, String anchorname, int offx, int offy, int width, int height) {
+	public void addAnchoredNode(Object mod, Object anchorname, int offx, int offy, int width, int height) {
 	    Assert.isTrue(findNode(mod)==null);
 
 	    haveAnchoredNode = true;
@@ -681,13 +681,13 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
     }
     
     @Override
-    public Point getAnchorPosition(String anchor) {
+    public Point getAnchorPosition(Object anchor) {
         // TODO NOT YET IMPLEMENTED
         return null;
     }
 
     @Override
-    public void setAnchorPosition(String anchor, int x, int y) {
+    public void setAnchorPosition(Object anchor, int x, int y) {
         // TODO NOT YET IMPLEMENTED
     }
 }
