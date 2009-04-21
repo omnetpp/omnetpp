@@ -23,7 +23,7 @@ public abstract class InspectorPart implements IInspectorPart {
 		this.object = object;
 
 		// update the inspector when something happens in the simulation
-		Activator.getSimulationManager().addChangeListener(simulationListener = new ISimulationListener() {
+		Activator.getSimulationManager().addSimulationListener(simulationListener = new ISimulationListener() {
 			@Override
 			public void changed() {
 				update();
@@ -32,7 +32,7 @@ public abstract class InspectorPart implements IInspectorPart {
 	}
 
 	public void dispose() {
-	    Activator.getSimulationManager().removeChangeListener(simulationListener);
+	    Activator.getSimulationManager().removeSimulationListener(simulationListener);
 	}
 
     public static IInspectorPart findInspectorPartAt(FigureCanvas canvas, int x, int y) {
@@ -41,7 +41,6 @@ public abstract class InspectorPart implements IInspectorPart {
             target = target.getParent();
         return target==null ? null : ((IInspectorFigure)target).getInspectorPart();
     }
-
 
 	@Override
 	public cObject getObject() {

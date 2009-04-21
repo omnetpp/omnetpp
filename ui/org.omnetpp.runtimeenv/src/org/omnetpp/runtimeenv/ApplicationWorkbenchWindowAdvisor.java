@@ -86,7 +86,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
         toolBarManager.add(networkName);
         toolBarManager.add(messageCounters);
 
-        Activator.getSimulationManager().addChangeListener(new ISimulationListener() {
+        Activator.getSimulationManager().addSimulationListener(new ISimulationListener() {
             @Override
             public void changed() {
                 simTime.getLabel().setText(" T="+cSimulation.getActiveSimulation().getSimTime() + " ");
@@ -105,7 +105,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
         final StatusLineContributionItem simtimeItem = new StatusLineContributionItem(null);
         statusLineManager.add(simtimeItem);
 
-        Activator.getSimulationManager().addChangeListener(new ISimulationListener() {
+        Activator.getSimulationManager().addSimulationListener(new ISimulationListener() {
             @Override
             public void changed() {
                 String text = "T=" + cSimulation.getActiveSimulation().getSimTime();

@@ -6,7 +6,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 import org.omnetpp.common.image.ImageFactory;
-import org.omnetpp.experimental.simkernel.DummyEnvirCallback;
 import org.omnetpp.experimental.simkernel.swig.Javaenv;
 import org.omnetpp.experimental.simkernel.swig.Simkernel;
 import org.omnetpp.experimental.simkernel.swig.StringVector;
@@ -50,7 +49,7 @@ public class Application implements IApplication {
 		Activator.simulationManager = new SimulationManager(); // needs to be after everything else ws set up in C++
 
 		Javaenv env = Javaenv.cast(cSimulation.getActiveEnvir());
-        env.setJCallback(null, new DummyEnvirCallback());
+        env.setJCallback(null, new EnvirCallback());
 
         result = reallyDoStart();	
 		System.out.println("Workbench exited");

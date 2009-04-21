@@ -17,6 +17,7 @@ import org.omnetpp.experimental.simkernel.swig.cEnvir;
 import org.omnetpp.experimental.simkernel.swig.cException;
 import org.omnetpp.experimental.simkernel.swig.cModule;
 import org.omnetpp.experimental.simkernel.swig.cModuleType;
+import org.omnetpp.experimental.simkernel.swig.cObject;
 import org.omnetpp.experimental.simkernel.swig.cSimpleModule;
 import org.omnetpp.experimental.simkernel.swig.cSimulation;
 
@@ -26,7 +27,8 @@ import org.omnetpp.experimental.simkernel.swig.cSimulation;
  */
 //XXX flusLastLine() everywhere
 public class SimulationManager {
-	protected ListenerList listeners = new ListenerList();
+	protected ListenerList simulationListeners = new ListenerList();
+	protected ListenerList objectDeletedlisteners = new ListenerList();
     protected boolean stopRequested = false;
 
     /**
@@ -95,16 +97,24 @@ public class SimulationManager {
 //        cStaticFlag.set(false);
     }
     
-    public void addChangeListener(ISimulationListener listener) {
-        listeners.add(listener);
+    public void addSimulationListener(ISimulationListener listener) {
+        simulationListeners.add(listener);
     }
 
-    public void removeChangeListener(ISimulationListener listener) {
-        listeners.remove(listener);
+    public void removeSimulationListener(ISimulationListener listener) {
+        simulationListeners.remove(listener);
+    }
+
+    public void addObjectDeletedListener(IObjectDeletedListener listener) {
+        objectDeletedlisteners.add(listener);
+    }
+
+    public void removeObjectDeletedListener(IObjectDeletedListener listener) {
+    	objectDeletedlisteners.remove(listener);
     }
 
     protected void updateUI() {
-        for (final Object listener : listeners.getListeners()) {
+        for (final Object listener : simulationListeners.getListeners()) {
             SafeRunner.run(new ISafeRunnable() {
                 public void handleException(Throwable e) {
                     // exception logged in SafeRunner#run
@@ -114,8 +124,23 @@ public class SimulationManager {
                 }
             });
         }
+        //System.gc();
+        //System.out.println("cObject wrapper counts: " + cObject.liveCount + " / " + cObject.totalCount);
     }
 
+    public void fireObjectDeleted(final cObject obj) {
+        for (final Object listener : objectDeletedlisteners.getListeners()) {
+            SafeRunner.run(new ISafeRunnable() {
+                public void handleException(Throwable e) {
+                    // exception logged in SafeRunner#run
+                }
+                public void run() throws Exception {
+                    ((IObjectDeletedListener)listener).objectDeleted(obj);
+                }
+            });
+        }
+    }
+    
     public LogBuffer getLogBuffer() {
         cEnvir env = cSimulation.getActiveEnvir();
         return Javaenv.cast(env).getLogBuffer();

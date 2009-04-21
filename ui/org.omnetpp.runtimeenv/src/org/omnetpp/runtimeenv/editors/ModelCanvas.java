@@ -23,8 +23,6 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
@@ -32,15 +30,18 @@ import org.eclipse.ui.part.EditorPart;
 import org.omnetpp.common.ui.FigureCanvas;
 import org.omnetpp.common.ui.SelectionProvider;
 import org.omnetpp.experimental.simkernel.swig.cObject;
-import org.omnetpp.figures.ITooltipTextProvider;
 import org.omnetpp.figures.misc.FigureUtils;
+import org.omnetpp.runtimeenv.Activator;
+import org.omnetpp.runtimeenv.IObjectDeletedListener;
 
 /**
  * 
  * @author Andras
  */
 //XXX snap to grid for the move/resize?
-public class ModelCanvas extends EditorPart implements ISelectionRequestHandler {
+//FIXME how to evaluate "$PARNAME" references in display strings???
+//XXX inspectors should close on objectDeleted()! should remove dead objects from the selection!!!!
+public class ModelCanvas extends EditorPart implements ISelectionRequestHandler, IObjectDeletedListener {
     public static final String EDITOR_ID = "org.omnetpp.runtimeenv.editors.ModelCanvas";
     protected ScrolledComposite sc;
     protected FigureCanvas canvas;
@@ -56,12 +57,15 @@ public class ModelCanvas extends EditorPart implements ISelectionRequestHandler 
         setPartName(input.getName());
         
         site.setSelectionProvider(new SelectionProvider());
+        
+        Activator.getSimulationManager().addObjectDeletedListener(this);
     }
 
     @Override
     public void dispose() {
     	for (IInspectorPart inspectorPart : inspectors.toArray(new IInspectorPart[]{}))
     		removeInspectorPart(inspectorPart);
+        Activator.getSimulationManager().removeObjectDeletedListener(this);
     	super.dispose();
     }
     
@@ -207,6 +211,22 @@ public class ModelCanvas extends EditorPart implements ISelectionRequestHandler 
     }
 
 	@Override
+	public void objectDeleted(cObject obj) {
+		// if we have an inspector for it, close the inspector
+    	for (IInspectorPart inspector : inspectors.toArray(new IInspectorPart[]{}))
+    		if (inspector.getObject().equals(obj))
+    			removeInspectorPart(inspector);
+		
+//		// remove dead object from the selection
+//    	IStructuredSelection selection = (IStructuredSelection)getSite().getSelectionProvider().getSelection();
+//    	for (Object o : selection.toList()) {
+//    		if (o.equals(obj) || ...)
+//    			deselectAll(); 
+//    		//&&&%%%$$$####@@@ FIXME not really, just remove
+//    	}
+	}
+
+	@Override
     public void doSave(IProgressMonitor monitor) {
         // Nothing
     }
@@ -225,4 +245,5 @@ public class ModelCanvas extends EditorPart implements ISelectionRequestHandler 
     public boolean isSaveAsAllowed() {
         return false;
     }
+
 }
