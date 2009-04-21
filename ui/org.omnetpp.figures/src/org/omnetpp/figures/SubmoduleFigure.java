@@ -22,7 +22,9 @@ import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.figures.CompoundModuleFigure.SubmoduleLayer;
+import org.omnetpp.figures.anchors.IAnchorBounds;
 import org.omnetpp.figures.layout.ISubmoduleConstraint;
+import org.omnetpp.figures.misc.ISelectionHandleBounds;
 
 /**
  * Figure representing a submodule inside a compound module figure. Contains several figures attached
@@ -36,7 +38,8 @@ import org.omnetpp.figures.layout.ISubmoduleConstraint;
 //FIXME should not extend NedFigure...
 //FIXME alignment of multi-line text
 //FIXME count queueLength display into bounding box 
-public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, ITooltipTextProvider {
+public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, IAnchorBounds, 
+					ISelectionHandleBounds, ITooltipTextProvider {
 	// supported shape types
 	protected static final int SHAPE_NONE = 0;
 	protected static final int SHAPE_OVAL = 1;
@@ -465,6 +468,10 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
 		return getShapeBounds();
 	}
 
+    public Rectangle getAnchorBounds() {
+    	return getShapeBounds();
+    }
+    
 	public void setName(String text) {
 		nameText = text;
 	}

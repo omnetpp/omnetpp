@@ -23,8 +23,10 @@ import org.eclipse.swt.graphics.Image;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.image.ImageFactory;
-import org.omnetpp.figures.layout.SpringEmbedderLayout;
+import org.omnetpp.figures.anchors.IAnchorBounds;
+import org.omnetpp.figures.layout.CompoundModuleLayout;
 import org.omnetpp.figures.misc.ILayerSupport;
+import org.omnetpp.figures.misc.ISelectionHandleBounds;
 import org.omnetpp.figures.routers.CompoundModuleConnectionRouter;
 
 /**
@@ -39,7 +41,7 @@ import org.omnetpp.figures.routers.CompoundModuleConnectionRouter;
 // mabe we should remove layout.invalidate() from the invalidate() method and call it ONLY if some
 // property has changed that requires the recalculation (e.g. submodule added/removed submodule size changed)
 public class CompoundModuleFigure extends NedFigure
-				implements ILayerSupport {
+				implements IAnchorBounds, ISelectionHandleBounds, ILayerSupport {
 
     public static final Color ERROR_BACKGROUND_COLOR = ColorFactory.RED;
     public static final Color ERROR_BORDER_COLOR = ColorFactory.RED4;
@@ -61,7 +63,7 @@ public class CompoundModuleFigure extends NedFigure
     protected Layer frontDecorationLayer;
     protected ConnectionLayer connectionLayer;
     protected Layer messageLayer;
-    protected SpringEmbedderLayout layouter;
+    protected CompoundModuleLayout layouter;
 
     // TODO implement ruler
     protected float scale = 1.0f;
@@ -189,7 +191,7 @@ public class CompoundModuleFigure extends NedFigure
         // set up the layouter. Preferred sizes should be set to 0 so the mainContainer
         // can follow the size of the submoduleLayer which uses the layouter to calculate the 
         // preferred size
-        submoduleLayer.setLayoutManager(layouter = new SpringEmbedderLayout(this));
+        submoduleLayer.setLayoutManager(layouter = new CompoundModuleLayout(this));
         messageLayer.setPreferredSize(0, 0);
         connectionLayer.setPreferredSize(0, 0);
         frontDecorationLayer.setPreferredSize(0, 0);

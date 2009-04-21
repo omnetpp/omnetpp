@@ -18,6 +18,7 @@ import org.eclipse.gef.Request;
 import org.eclipse.gef.editpolicies.ResizableEditPolicy;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
+import org.omnetpp.figures.misc.ISelectionHandleBounds;
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
 import org.omnetpp.ned.editor.graph.parts.EditPartUtil;
 
@@ -48,8 +49,10 @@ public class NedResizeEditPolicy extends ResizableEditPolicy {
 
         if (parent != null) parent.add(child);
 
-        Rectangle childBounds = part.getFigure().getBounds().getCopy();
-
+        Rectangle childBounds = part.getFigure() instanceof ISelectionHandleBounds ? 
+        				((ISelectionHandleBounds)part.getFigure()).getHandleBounds().getCopy() 
+        				: part.getFigure().getBounds().getCopy(); 
+        	
         IFigure walker = part.getFigure().getParent();
         while (walker != ((GraphicalEditPart) part.getParent()).getFigure()) {
             walker.translateToParent(childBounds);
@@ -85,7 +88,8 @@ public class NedResizeEditPolicy extends ResizableEditPolicy {
      */
     @Override
     protected Rectangle getInitialFeedbackBounds() {
-        return getHostFigure().getBounds();
+        return getHostFigure() instanceof ISelectionHandleBounds ? 
+        		((ISelectionHandleBounds)getHostFigure()).getHandleBounds() : getHostFigure().getBounds();
     }
 
     /* (non-Javadoc)

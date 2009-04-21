@@ -14,7 +14,6 @@ import java.util.Map;
 
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
-import org.eclipse.draw2d.XYLayout;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.gef.AutoexposeHelper;
 import org.eclipse.gef.CompoundSnapToHelper;
@@ -30,7 +29,6 @@ import org.eclipse.gef.editparts.ViewportAutoexposeHelper;
 import org.eclipse.gef.editparts.ViewportExposeHelper;
 import org.eclipse.gef.editparts.ViewportMouseWheelHelper;
 import org.eclipse.gef.editpolicies.SnapFeedbackPolicy;
-import org.omnetpp.figures.CompoundModuleTypeFigure;
 import org.omnetpp.figures.anchors.CompoundModuleGateAnchor;
 import org.omnetpp.figures.anchors.GateAnchor;
 import org.omnetpp.ned.editor.graph.figures.CompoundModuleFigureEx;
@@ -63,8 +61,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
     @Override
     protected void createEditPolicies() {
         super.createEditPolicies();
-        installEditPolicy(EditPolicy.LAYOUT_ROLE,
-                          new CompoundModuleLayoutEditPolicy((XYLayout) getContentPane().getLayoutManager()));
+        installEditPolicy(EditPolicy.LAYOUT_ROLE, new CompoundModuleLayoutEditPolicy());
         installEditPolicy("Snap Feedback", new SnapFeedbackPolicy());
     }
 

@@ -9,7 +9,6 @@ package org.omnetpp.ned.editor.graph.parts;
 
 import java.util.List;
 
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Point;
@@ -18,7 +17,6 @@ import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.figures.SubmoduleFigure;
 import org.omnetpp.figures.anchors.GateAnchor;
-import org.omnetpp.figures.layout.SubmoduleConstraint;
 import org.omnetpp.ned.editor.graph.commands.ReconnectCommand;
 import org.omnetpp.ned.editor.graph.figures.SubmoduleFigureEx;
 import org.omnetpp.ned.editor.graph.properties.util.SubmoduleNameValidator;

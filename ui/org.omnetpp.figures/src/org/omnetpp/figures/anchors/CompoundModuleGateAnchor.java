@@ -86,14 +86,6 @@ public class CompoundModuleGateAnchor extends GateAnchor {
 	}
 
 	/**
-	 * Returns the anchor bounds of this compound module (rectangle where the achors should be
-	 * placed).
-	 */
-	protected Rectangle getBox() {
-		return ((CompoundModuleFigure)getOwner()).getAnchorBounds();
-	}
-
-	/**
 	 * Returns the anchor's reference point.
 	 */
 	// TODO handle the reference point calculation correctly

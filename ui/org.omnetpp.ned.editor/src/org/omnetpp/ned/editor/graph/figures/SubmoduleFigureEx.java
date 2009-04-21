@@ -7,6 +7,7 @@
 
 package org.omnetpp.ned.editor.graph.figures;
 
+import org.eclipse.gef.handles.HandleBounds;
 import org.eclipse.gef.tools.CellEditorLocator;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.figures.SubmoduleFigure;
@@ -16,7 +17,7 @@ import org.omnetpp.ned.editor.graph.misc.LabelCellEditorLocator;
 /**
  * EDITING specific parts of the figure. Direct editing etc.
  */
-public class SubmoduleFigureEx extends SubmoduleFigure implements
+public class SubmoduleFigureEx extends SubmoduleFigure implements HandleBounds,
 		IDirectEditSupport {
 
     protected String tmpName;

@@ -2,15 +2,12 @@ package org.omnetpp.test.unit.layout;
 
 import junit.framework.TestCase;
 
-import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.junit.Test;
 import org.omnetpp.common.Debug;
@@ -18,8 +15,7 @@ import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.ui.FigureCanvas;
 import org.omnetpp.figures.CompoundModuleFigure;
 import org.omnetpp.figures.SubmoduleFigure;
-import org.omnetpp.figures.layout.SpringEmbedderLayout;
-import org.omnetpp.figures.layout.SubmoduleConstraint;
+import org.omnetpp.figures.layout.CompoundModuleLayout;
 import org.omnetpp.ned.model.DisplayString;
 
 
@@ -54,7 +50,7 @@ public class LayoutTest extends TestCase {
 		// adding 3 pinned nodes
 		for (int y=50; y<=150; y += 50)
 			addSubmodule(cmodule, "pinned", "p=40,"+y);
-		((SpringEmbedderLayout)cmodule.getSubmoduleLayer().getLayoutManager()).requestFullLayout();
+		((CompoundModuleLayout)cmodule.getSubmoduleLayer().getLayoutManager()).requestFullLayout();
 		sleep();
 
 		// add 3 movable nodes
