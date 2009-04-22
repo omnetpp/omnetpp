@@ -1,5 +1,6 @@
 package org.omnetpp.runtimeenv.editors;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.common.ui.FigureCanvas;
@@ -32,6 +33,7 @@ public abstract class InspectorPart implements IInspectorPart {
 	}
 
 	public void dispose() {
+		object = null;
 	    Activator.getSimulationManager().removeSimulationListener(simulationListener);
 	}
 
@@ -57,7 +59,9 @@ public abstract class InspectorPart implements IInspectorPart {
 	    return isSelected;
 	}
 
-	protected abstract void update();
+	protected void update() {
+		Assert.isTrue(object != null, "inspector already disposed");
+	}
     
     @Override
     public String toString() {

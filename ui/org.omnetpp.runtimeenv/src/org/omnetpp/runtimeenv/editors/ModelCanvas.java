@@ -147,9 +147,8 @@ public class ModelCanvas extends EditorPart implements ISelectionRequestHandler,
     public void removeInspectorPart(IInspectorPart inspectorPart) {
         Assert.isTrue(inspectors.contains(inspectorPart));
         inspectors.remove(inspectorPart);
-        canvas.getRootFigure().remove(inspectorPart.getFigure());
-        inspectorPart.setSelectionRequestHandler(null);        
-        //XXX what else?
+        canvas.getRootFigure().remove(inspectorPart.getFigure());  //XXX maybe do it in the inspector??
+        inspectorPart.dispose();
     }
     
     public void reveal(IFigure figure) {

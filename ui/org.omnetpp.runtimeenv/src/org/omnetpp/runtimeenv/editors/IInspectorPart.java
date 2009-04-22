@@ -21,7 +21,12 @@ public interface IInspectorPart {
 	 * Returns the inspected object.
 	 */
 	cObject getObject();
-	
+
+	/**
+	 * Must be called when the inspector is no longer needed
+	 */
+	void dispose();
+
     /**
      * Returns the corresponding figure.
      */

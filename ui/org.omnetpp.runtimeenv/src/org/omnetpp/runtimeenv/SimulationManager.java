@@ -74,7 +74,8 @@ public class SimulationManager {
         		}
 
         		// set up the default config/run
-        		newRun("Net2", 0);
+        		newRun("Terminal", 0);
+        		//newRun("Net2", 0);
 
         		// inspect the network
         		cModule systemModule = cSimulation.getActiveSimulation().getSystemModule();
@@ -113,6 +114,7 @@ public class SimulationManager {
     	objectDeletedlisteners.remove(listener);
     }
 
+    static int counter = 0;
     protected void updateUI() {
         for (final Object listener : simulationListeners.getListeners()) {
             SafeRunner.run(new ISafeRunnable() {
@@ -124,8 +126,14 @@ public class SimulationManager {
                 }
             });
         }
-        //System.gc();
-        //System.out.println("cObject wrapper counts: " + cObject.liveCount + " / " + cObject.totalCount);
+
+        if ((counter++ % 100) == 0) {
+        	Javaenv env = Javaenv.cast(cSimulation.getActiveEnvir());
+        	long oldSize = env.swigTableSize();
+        	env.swigPurge();
+        	System.out.println("purging: Swig table size before/after purge: " + oldSize + " / " + env.swigTableSize());
+        }
+//		System.out.println("Swig table size: " + env.swigTableSize());
     }
 
     public void fireObjectDeleted(final cObject obj) {
@@ -418,7 +426,7 @@ public class SimulationManager {
         long tStart = System.currentTimeMillis();
         long numEvents = 0;
         try {
-            while (sim.getSimTime() < 100000 && !stopRequested) {
+            while (!stopRequested) {
                 cSimpleModule mod = sim.selectNextModule();
                 if (mod == null)
                     break;  //XXX

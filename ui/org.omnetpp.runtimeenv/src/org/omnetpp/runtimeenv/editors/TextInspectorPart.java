@@ -27,6 +27,7 @@ public class TextInspectorPart extends InspectorPart {
 
 	@Override
 	protected void update() {
+		super.update();
 		((TextInspectorFigure)figure).setTexts("(" + object.getClassName() + ") " + object.getFullPath(), object.info());
 	}
 

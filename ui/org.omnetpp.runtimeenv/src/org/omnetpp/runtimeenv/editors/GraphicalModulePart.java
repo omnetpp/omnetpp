@@ -74,6 +74,7 @@ public class GraphicalModulePart extends InspectorPart {
     
     @Override
 	protected void update() {
+    	super.update();
         refreshChildren();
         refreshVisuals();
     }
