@@ -30,6 +30,29 @@
 
 #define LL  INT64_PRINTF_FORMAT
 
+/**
+ * Utility class. Purpose: zero out the cPtr in all SWIG Java proxy
+ * objects whose C++ peer gets deleted.
+ */
+//XXX es: javabol minden cPtr accesst lecsekkelni!
+class SwigSanitizer
+{
+  private:
+    JNIEnv *jenv;
+    typedef std::multimap<cObject*,jweak> RefMap;
+    RefMap wrappers;
+    jmethodID zapMethodID;
+  public:
+    SwigSanitizer(JNIEnv *je);
+    // add weak reference to table (called from Java cObject ctor)
+    void wrapperCreated(cObject *p, jobject wrapper);
+    // remove table entries where the Java object was already garbage collected
+    void purge();
+    // if there's a wrapper for it: clear cPtr in it, and remove from table
+    void objectDeleted(cObject *p);
+};
+
+
 class Javaenv : public EnvirBase
 {
   private:
@@ -38,6 +61,7 @@ class Javaenv : public EnvirBase
 
     LogBuffer logBuffer;
     JCallback *jcallback;
+    SwigSanitizer swigSanitizer;
 
   public:
     static void setJavaApplication(JNIEnv *jenv_, jobject javaApp_) {
@@ -45,7 +69,7 @@ class Javaenv : public EnvirBase
         javaApp = jenv->NewGlobalRef(javaApp_);
     }
 
-    Javaenv() : EnvirBase() {
+    Javaenv() : EnvirBase(), swigSanitizer(jenv) {
         jcallback = NULL;
     }
 
@@ -56,6 +80,14 @@ class Javaenv : public EnvirBase
     void run();
 
     void setJCallback(JNIEnv *jenv, jobject jcallbackobj);
+
+    void swigWrapperCreated(cObject *p, jobject wrapper) {
+        swigSanitizer.wrapperCreated(p, wrapper);
+    }
+
+    void swigPurge() {
+        swigSanitizer.purge();
+    }
 
     void putsmsg(const char *s) {printf("<!> %s\n",s); fflush(stdout);}
     bool askyesno(const char *s) {printf("%s? NO!\n",s); return false;}

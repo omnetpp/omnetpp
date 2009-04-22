@@ -24,50 +24,47 @@
 #include "appreg.h"
 #include "javaenv.h"
 
-/*
-std::map<cObject*,jweak> wrappers;
-void wrapperCreated(cObject *p, jobject wrapper); // add weak reference to table (called from Java cObject ctor)
-void purge(); // remove table entries with dead weak references (but: iteration is slow!!!)
-void objectDeleted(cObject *p); // if there's a wrapper for it: clear cPtr in it, and remove from table
-//es: javabol minden cPtr accesst lecsekkelni!
-*/
+SwigSanitizer::SwigSanitizer(JNIEnv *je)
+{
+    jenv = je;
+    ASSERT(jenv!=NULL);
+    jclass clazz = jenv->FindClass("org/omnetpp/experimental/simkernel/swig/cObject");
+    ASSERT(clazz!=NULL);
+    zapMethodID = jenv->GetMethodID(clazz, "zap", "()V");
+    ASSERT(zapMethodID!=NULL);
+}
 
-//TODO: integrate and call as written above!!
-JNIEnv *jenv;
-typedef std::multimap<cObject*,jweak> RefMap;
-RefMap wrappers;
-
-// add weak reference to table (called from Java cObject ctor)
-void wrapperCreated(cObject *p, jobject wrapper)
+void SwigSanitizer::wrapperCreated(cObject *p, jobject wrapper)
 {
     jweak ref = jenv->NewWeakGlobalRef(wrapper);
     wrappers.insert( std::pair<cObject*,jweak>(p,ref) );
 }
 
-// remove table entries with dead weak references (but: iteration is slow!!!)
-void purge()
+void SwigSanitizer::purge()
 {
-    for (RefMap::iterator i = wrappers.begin(); i != wrappers.end(); ++i) {
-        if (jenv->IsSameObject(i->second,NULL)) {
-            jenv->DeleteWeakGlobalRef(i->second);
-            wrappers.erase(i);
+    for (RefMap::iterator it = wrappers.begin(); it != wrappers.end(); /*nop*/) {
+        if (jenv->IsSameObject(it->second,NULL)) {
+            jenv->DeleteWeakGlobalRef(it->second);
+            RefMap::iterator tmp = it++;
+            wrappers.erase(tmp);
+        } else {
+            ++it;
         }
     }
 }
 
-// if there's a wrapper for it: clear cPtr in it, and remove from table
-void objectDeleted(cObject *p)
+void SwigSanitizer::objectDeleted(cObject *p)
 {
-    jclass cobjectClass = jenv->FindClass(".../cObject");
-    jmethodID zapMethodID = jenv->GetMethodID(cobjectClass, "zap", "()V"); //XXX factor out!
     std::pair<RefMap::iterator,RefMap::iterator> range = wrappers.equal_range(p);
-    for (RefMap::iterator i = range.first; i != range.second; ++i) {
-        jobject ref = jenv->NewLocalRef(i->second);
-        if (!jenv->IsSameObject(i->second,NULL))
+    for (RefMap::iterator it = range.first; it != range.second; /*nop*/) {
+        ASSERT(it->first == p);
+        jobject ref = jenv->NewLocalRef(it->second);
+        if (!jenv->IsSameObject(it->second,NULL))
             jenv->CallVoidMethod(ref, zapMethodID);
         jenv->DeleteLocalRef(ref);
-        jenv->DeleteWeakGlobalRef(i->second);
-        wrappers.erase(i);
+        jenv->DeleteWeakGlobalRef(it->second);
+        RefMap::iterator tmp = it++;
+        wrappers.erase(tmp);
     }
 }
 
@@ -110,6 +107,7 @@ void Javaenv::setJCallback(JNIEnv *jenv, jobject jcallbackobj)
 void Javaenv::objectDeleted(cObject *object)
 {
     //cEnvirBase::objectDeleted(object);
+    swigSanitizer.objectDeleted(object);
     if (jcallback) jcallback->objectDeleted(object);
 }
 
