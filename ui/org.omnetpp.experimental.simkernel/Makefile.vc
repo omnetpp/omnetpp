@@ -70,6 +70,25 @@ LIBS = \
        $(KERNEL_LIBS) \
        $(SYS_LIBS)
 
+JAVA_COBJECTS = \
+    cAccuracyDetection.java cADByStddev.java cArray.java cChannel.java \
+    cChannelType.java cClassDescriptor.java cClassFactory.java cComponent.java \
+    cComponentType.java cCompoundModule.java cConfigOption.java \
+    cConfiguration.java cConfigurationEx.java cDatarateChannel.java \
+    cDefaultList.java cDelayChannel.java cDensityEstBase.java cDoubleHistogram.java \
+    cEnum.java cEqdHistogramBase.java cFSM.java cGate.java cHistogramBase.java \
+    cIdealChannel.java cLongHistogram.java cMathFunction.java cMessage.java \
+    cMessageHeap.java cModule.java cModuleType.java cMsgPar.java \
+    cNamedObject.java cNEDFunction.java cNoncopyableOwnedObject.java \
+    cObject.java cOutVector.java cOwnedObject.java cPacket.java cPar.java \
+    cProperties.java cProperty.java cPSquare.java cQueue.java \
+    cRegistrationList.java cSimpleModule.java \
+    cSimulation.java cStatistic.java cStdDev.java cStdVectorWatcherBase.java \
+    cTDExpandingWindows.java cTopology.java cTransientDetection.java \
+    cVarHistogram.java cWatchBase.java cWatch_bool.java \
+    cWatch_char.java cWatch_cObject.java cWatch_cObjectPtr.java \
+    cWatch_stdstring.java cWatch_uchar.java cWeightedStdDev.java
+
 #
 # Automatic rules
 #
@@ -93,6 +112,9 @@ default: simkernel.dll
 simkernel_wrap.cxx: *.i javaenv/*.h Makefile.vc $(OMNETPP_ROOT)/include/*.h  # and many oher things
 	-del $(JAVADIR)\*.java >nul
 	$(SWIG) -c++ -java -package $(JAVAPKG) -I$(OMNETPP_ROOT)/include -I$(OMNETPP_ROOT)/src/envir -I$(OMNETPP_ROOT) -outdir $(JAVADIR) simkernel.i
+	@: Patch the generated Java files so that they access swigCPtr via getCPtr() that detects null pointers (see WrapperTable!)
+	-@for %%i in ( $(JAVA_COBJECTS) ) do @$(PERL) -i.bak -pe "s!\(swigCPtr, this!(getCPtr(), this!g" $(JAVADIR)\%%i
+	-@for %%i in ( $(JAVA_COBJECTS) ) do @$(PERL) -i.bak -pe "s!0 : obj.swigCPtr;!0 : obj.getCPtr();!g" $(JAVADIR)\%%i
 
 simkernel.dll : $(OBJS)
 	$(LINK) /dll /out:"simkernel.dll" $(OBJS) $(LIBS) $(LDFLAGS)

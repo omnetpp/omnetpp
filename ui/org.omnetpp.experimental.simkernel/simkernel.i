@@ -65,11 +65,47 @@ static void opp_JavaThrowException(JNIEnv *jenv, cException& e) {
     }
 }
 
-%typemap(javacode) cObject %{
+%typemap(javabody) cObject %{
+  private long swigCPtr;
+  protected boolean swigCMemOwn;
+
+  /* standard SWIG functions */
+
+  protected $javaclassname(long cPtr, boolean cMemoryOwn) {
+    swigCMemOwn = cMemoryOwn;
+    swigCPtr = cPtr;
+
+    Javaenv env = Javaenv.cast(cSimulation.getActiveEnvir());
+    env.swigWrapperCreated(this, this);
+  }
+
+  protected static long getCPtr($javaclassname obj) {
+    return (obj == null) ? 0 : obj.swigCPtr;
+  }
+
+  /* optional: override finalize() and add:
+    if (swigCPtr != 0) {
+      Javaenv env = Javaenv.cast(cSimulation.getActiveEnvir());
+      env.swigWrapperFinalized(this, this);
+    }
+  */
+
+  public void zap() {  // called from C++ code (WrapperTable) when C++ object gets deleted
+    swigCPtr = 0;
+  }
+
+  protected long getCPtr() { // used instead of all direct swigCPtr accesses
+    if (swigCPtr == 0)
+      throw new java.lang.IllegalStateException("underlying C++ object already deleted");
+    return swigCPtr;
+  }
+
   public cObject disown() {
     swigCMemOwn = false;
     return this;
   }
+
+  /* utility functions */
 
   public Object[] getChildObjects() {
     cCollectChildrenVisitor visitor = new cCollectChildrenVisitor(this);

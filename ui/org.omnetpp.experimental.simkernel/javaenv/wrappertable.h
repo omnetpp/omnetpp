@@ -52,11 +52,18 @@
 ---------------------
 */
 
+
 /**
  * Utility class. Purpose: zero out the cPtr in all SWIG Java proxy
  * objects whose C++ peer gets deleted.
+ *
+ * Performance note: we use std::multi_map. hash_table would be a little
+ * faster (esp. at iteration), but then we'd have to use std::vector
+ * for value (as there's no multi_hash_table), and also, it is not
+ * part of the C++ standard (MSVC: stdext::hash_map, __gnu_cxx::hash_map.)
+ * At 10,000 items, MS hash_table was only about 1.5 times faster than
+ * multi_map on lookup, and about 3..4 times faster on iteration.
  */
-//XXX es: javabol minden cPtr accesst lecsekkelni!
 class WrapperTable
 {
   private:
