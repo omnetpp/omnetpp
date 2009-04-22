@@ -176,12 +176,11 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
 
 		// set the layouter input
 		String layout = displayString.getAsString(IDisplayString.Prop.LAYOUT);
-		VectorArrangement arrangement;
-		if (StringUtils.isEmpty(layout))
-			arrangement = ISubmoduleConstraint.VectorArrangement.none;
-		else {
+		VectorArrangement arrangement = ISubmoduleConstraint.VectorArrangement.none;
+		if (StringUtils.isNotEmpty(layout)) {
 			layout = IDisplayString.Prop.LAYOUT.getEnumSpec().getNameFor(layout);
-			arrangement = ISubmoduleConstraint.VectorArrangement.valueOf(layout);
+			if (StringUtils.isNotEmpty(layout))
+				arrangement = ISubmoduleConstraint.VectorArrangement.valueOf(layout);
 		}
 		setBaseLocation(
 				displayString.getLocation(scale),

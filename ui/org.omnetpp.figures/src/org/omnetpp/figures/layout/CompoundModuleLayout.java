@@ -126,6 +126,11 @@ public class CompoundModuleLayout extends AbstractLayout {
 	protected Point getArrangementOffset(ISubmoduleConstraint constr, int spacing) {
 		int x, y;
 		switch (constr.getVectorArrangement()) {
+		case none: {
+			x = 0;
+			y = 0;
+			break;
+		}
 		case exact: {
 			x = fallback(constr.getVectorArrangementPar1(), 0); 
 			y = fallback(constr.getVectorArrangementPar2(), 0); 
