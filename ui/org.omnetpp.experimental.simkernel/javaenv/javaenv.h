@@ -23,68 +23,13 @@
 #include "envirbase.h"
 #include "logbuffer.h"
 #include "jcallback.h"
+#include "wrappertable.h"
 
 
 #define MAX_OBJECTFULLPATH 1024
 #define MAX_CLASSNAME      100
 
 #define LL  INT64_PRINTF_FORMAT
-
-/* into cObject:
-  protected cObject(long cPtr, boolean cMemoryOwn) {
-    swigCMemOwn = cMemoryOwn;
-    swigCPtr = cPtr;
-
-    //System.out.println("registering cobject " + swigCPtr);
-    Javaenv env = Javaenv.cast(cSimulation.getActiveEnvir());
-    env.swigWrapperCreated(this, this);
-  }
-
-  protected static long getCPtr(cObject obj) {
-    return (obj == null) ? 0 : obj.swigCPtr;
-  }
-
-  public void zap() {
-    //System.out.println("zapping " + swigCPtr);
-    swigCPtr = 0;
-  }
-
-  protected void finalize() {
-    if (swigCPtr != 0) {
-      Javaenv env = Javaenv.cast(cSimulation.getActiveEnvir());
-      env.swigWrapperFinalized(this, this);
-    }
-    delete();
-  }
-
- plus: check every swigCPtr access!!! (throw NPE if it's 0)
-*/
-
-/**
- * Utility class. Purpose: zero out the cPtr in all SWIG Java proxy
- * objects whose C++ peer gets deleted.
- */
-//XXX es: javabol minden cPtr accesst lecsekkelni!
-class SwigSanitizer
-{
-  private:
-    JNIEnv *jenv;
-    typedef std::multimap<cObject*,jweak> RefMap;
-    RefMap wrappers;
-    jmethodID zapMethodID;
-  public:
-    SwigSanitizer(JNIEnv *je);
-    // add weak reference to table (called from Java cObject ctor)
-    void wrapperCreated(cObject *p, jobject wrapper);
-    // should be called from finalize(); removes object from the table. Alleviates need for purge().
-    void wrapperFinalized(cObject *p, jobject wrapper);
-    // if there's a wrapper for it: clear cPtr in it, and remove from table
-    void objectDeleted(cObject *p);
-    // remove table entries where the Java object was already garbage collected (not very efficient!)
-    void purge();
-    // table size (useful for debugging)
-    size_t getTableSize() {return wrappers.size();}
-};
 
 
 class Javaenv : public EnvirBase
@@ -95,7 +40,7 @@ class Javaenv : public EnvirBase
 
     LogBuffer logBuffer;
     JCallback *jcallback;
-    SwigSanitizer swigSanitizer;
+    WrapperTable wrapperTable;
 
   public:
     static void setJavaApplication(JNIEnv *jenv_, jobject javaApp_) {
@@ -103,7 +48,7 @@ class Javaenv : public EnvirBase
         javaApp = jenv->NewGlobalRef(javaApp_);
     }
 
-    Javaenv() : EnvirBase(), swigSanitizer(jenv) {
+    Javaenv() : EnvirBase(), wrapperTable(jenv) {
         jcallback = NULL;
     }
 
@@ -116,19 +61,19 @@ class Javaenv : public EnvirBase
     void setJCallback(JNIEnv *jenv, jobject jcallbackobj);
 
     void swigWrapperCreated(cObject *p, jobject wrapper) {
-        swigSanitizer.wrapperCreated(p, wrapper);
+        wrapperTable.wrapperCreated(p, wrapper);
     }
 
     void swigWrapperFinalized(cObject *p, jobject wrapper) {
-        swigSanitizer.wrapperFinalized(p, wrapper);
+        wrapperTable.wrapperFinalized(p, wrapper);
     }
 
     void swigPurge() {
-        swigSanitizer.purge();
+        wrapperTable.purge();
     }
 
     size_t swigTableSize() {
-        return swigSanitizer.getTableSize();
+        return wrapperTable.getTableSize();
     }
 
     void putsmsg(const char *s) {printf("<!> %s\n",s); fflush(stdout);}
