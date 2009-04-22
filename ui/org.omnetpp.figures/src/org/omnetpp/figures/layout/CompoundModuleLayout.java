@@ -205,7 +205,8 @@ public class CompoundModuleLayout extends AbstractLayout {
         	constr.setCenterLocation(locFromAlg);
         }
         if (debug)
-            Debug.println("SpringEmbedderLayout: " + (System.currentTimeMillis()-startTime) + "ms");
+            Debug.println("CompoundModuleLayout: " + (System.currentTimeMillis()-startTime) + "ms");
+        System.out.println("layout()");
     }
 
 	/**

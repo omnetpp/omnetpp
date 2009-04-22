@@ -9,6 +9,7 @@ package org.omnetpp.figures;
 
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.Layer;
 import org.eclipse.draw2d.TextUtilities;
@@ -35,10 +36,8 @@ import org.omnetpp.figures.misc.ISelectionHandleBounds;
  * @author andras
  */
 //FIXME support multiple texts: t/t1/t2/t3/t4
-//FIXME should not extend NedFigure...
 //FIXME alignment of multi-line text
-//FIXME count queueLength display into bounding box 
-public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, IAnchorBounds, 
+public class SubmoduleFigure extends Figure implements ISubmoduleConstraint, IAnchorBounds, 
 					ISelectionHandleBounds, ITooltipTextProvider {
 	// supported shape types
 	protected static final int SHAPE_NONE = 0;
@@ -88,40 +87,26 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
 	protected Color textColor;
 	protected String queueText;
 	protected RangeFigure rangeFigure = null;
-
-
+	private String oldDisplayString = "";
 
 	public SubmoduleFigure() {
 	}
 
-//	@Override
-//	public void addNotify() {
-//		// functions here need to access the parent or ancestor figures, so these setup
-//		// procedures cannot be done in the constructor
-//		Assert.isTrue(getParent() instanceof SubmoduleLayer, "SubmoduleFigure can be added directly only to a SubmoduleLayer (inside of a CompoundModuleFigure)");
-//
-//		// look for decorator layers among the ancestor (compound module figure)
-//		Layer foregroundLayer = ((SubmoduleLayer)getParent()).getCompoundModuleFigure().getForegroundDecorationLayer();
-//		Layer backgroundLayer = ((SubmoduleLayer)getParent()).getCompoundModuleFigure().getBackgroundDecorationLayer();
-//
-//		// setup decorations belonging to the background decoration layer
-//		backgroundLayer.add(rangeAttachLayer);
-//
-//		// problem marker image
-//		foregroundLayer.add(new AttachedLayer(this, new PrecisionPoint(0.0, 0.0),
-//				problemMarkerFigure, new PrecisionPoint(0.35, 0.35), null)); //XXX draw it instead!
-//
-//		super.addNotify();
-//	}
-
 	/**
 	 * Adjust the properties using a display string object
 	 */
-	@Override
-	public void setDisplayString(IDisplayString displayString) {
+	public void setDisplayString(float scale, IDisplayString displayString) {
+		// OPTIMIZATION: do not change anything if the display string has not changed
+		String newDisplayString = displayString.toString();
+		if (this.scale == scale && newDisplayString.equals(oldDisplayString) )
+			return;
+		
+		this.scale = scale;
+		this.oldDisplayString = newDisplayString;
+		Rectangle oldShapeBounds = getShapeBounds();  // to compare at the end
 		// range support
 		setRange(
-				displayString.getRange(getScale()),
+				displayString.getRange(scale),
 				ColorFactory.asColor(displayString.getAsString(IDisplayString.Prop.RANGEFILLCOL)),
 				ColorFactory.asColor(displayString.getAsString(IDisplayString.Prop.RANGEBORDERCOL)),
 				displayString.getAsInt(IDisplayString.Prop.RANGEBORDERWIDTH, -1));
@@ -142,9 +127,6 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
 				ColorFactory.asRGB(displayString.getAsString(IDisplayString.Prop.IMAGECOLOR)),
 				displayString.getAsInt(IDisplayString.Prop.IMAGECOLORPERCENTAGE,0));
 		
-//		if (!displayString.containsProperty(IDisplayString.Prop.SHAPE) && !displayString.containsProperty(IDisplayString.Prop.IMAGE))
-//			img = IMG_DEFAULT;
-
 		// rectangle ("b" tag)
 		Dimension size = displayString.getSize(scale);  // falls back to size in EMPTY_DEFAULTS
 		boolean widthExist = displayString.containsProperty(IDisplayString.Prop.WIDTH);
@@ -189,7 +171,12 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
 				displayString.unit2pixel(displayString.getAsInt(IDisplayString.Prop.LAYOUT_PAR2, Integer.MIN_VALUE), scale),
 				displayString.unit2pixel(displayString.getAsInt(IDisplayString.Prop.LAYOUT_PAR3, Integer.MIN_VALUE), scale)
 		);
-		invalidate();  //XXX redundant? individual setters also call this...  Note: this nulls out parent.preferredSize! (??)
+		// recalculate the bounds in case icon size or shape size has changed
+		calculateBounds();  
+		// if the shapeBounds has changed, we should trigger the layouting
+		if (!getShapeBounds().equals(oldShapeBounds)) 
+			revalidate();
+		repaint();
 	}
 
 	protected void setTooltipText(String tooltipText) {
@@ -203,7 +190,6 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
 	 * @param borderWidth can be null meaning that no background should be drawn
 	 */
 	protected void setRange(int radius, Color fillColor, Color borderColor, int borderWidth) {
-		
 		if (radius <= 0) {
 			if (rangeFigure != null)
 				rangeFigure.setVisible(false);
@@ -226,10 +212,8 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
 			} else 
 				rangeFigure.setBounds(new Rectangle(0, 0, 0, 0).expand(radius,radius));
 			
-			
-			rangeFigure.revalidate(); 
+			rangeFigure.repaint(); 
 		}
-		invalidate();
 	}
 	
 	/**
@@ -241,12 +225,14 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
         Image image = NedFigure.getProblemImageFor(maxSeverity);
         problemMarkerImage = image;
         problemMarkerTextProvider = textProvider;
-        invalidate();
+		calculateBounds();
+        repaint();
     }
 	
 	public void setQueueText(String qtext) {
 		queueText = qtext;
-		invalidate();
+		calculateBounds();
+		repaint();
 	}
 
 	protected void setInfoText(String text, String pos, Color color) {
@@ -256,7 +242,6 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
 			pos = IDisplayString.Prop.TEXTPOS.getEnumSpec().getNameFor(pos);
 		this.textPos = pos.equals("left") ? TEXTPOS_LEFT : pos.equals("right") ? TEXTPOS_RIGHT : TEXTPOS_TOP;
 		this.textColor = color;
-		invalidate();
 	}
 
 	protected void setShape(Image image, String shapeName, int shapeWidth, int shapeHeight,
@@ -301,7 +286,6 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
 		if (image == null && shape == SHAPE_NONE)
 			this.image = ImageFactory.getImage(ImageFactory.DEFAULT_KEY);
 
-		invalidate();
 	}
 
 	public void setSubmoduleVectorIndex(Object vectorIdentifier, int vectorSize, int vectorIndex) {
@@ -311,7 +295,7 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
 			this.vectorSize = vectorSize;
 			this.vectorIndex = vectorIndex;
 			centerLoc = null;
-			revalidate();  // invalidate() not enough here 
+			revalidate();  // invalidate() not enough here. Layout must be triggered 
 		}
 	}
 
@@ -367,12 +351,11 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
 	 * The bounds of the name label
 	 */
 	public Rectangle getNameBounds() {
-		Assert.isNotNull(centerLoc, "do not call before setCenterLocation()!");
 		return getNameBounds(getShapeBounds());
 	}
 
 	protected Rectangle getNameBounds(Rectangle shapeBounds) {
-		if (StringUtils.isEmpty(nameText)) 
+		if (StringUtils.isEmpty(nameText) || centerLoc == null) 
 			return null;
 		Dimension textSize = TextUtilities.INSTANCE.getTextExtents(nameText, getFont());
 		return new Rectangle(centerLoc.x-textSize.width/2, shapeBounds.bottom(), textSize.width, textSize.height);
@@ -435,7 +418,6 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
 	 */
 	protected void setDecorationImage(Image img) {
 		decoratorImage = img;
-		invalidate();
 	}
 
 	@Override
@@ -473,6 +455,9 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
     
 	public void setName(String text) {
 		nameText = text;
+		if (centerLoc != null)
+			calculateBounds();
+		repaint();
 	}
 
 	public String getName() {
@@ -493,29 +478,14 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
 		return tooltipText;
 	}
 	
-	/**
-	 * The current scaling factor for the submodule.
-	 */
-	public float getScale() {
-		return scale;
-	}
-
-	/**
-	 * Sets the scale factor used for drawing.
-	 */
-	public void setScale(float scale) {
-		this.scale = scale;
-		invalidate();
-	}
-
 	/* (non-Javadoc)
 	 * @see org.eclipse.draw2d.Figure#containsPoint(int, int)
-	 * We override it to include also the nameFigure, so clicking on submodule name would
+	 * We override it to include also the nameBounds, so clicking on submodule name would
 	 * be counted also as a selection event.
 	 */
 	@Override
 	public boolean containsPoint(int x, int y) {
-		return getShapeBounds().contains(x, y) || nameFigure.containsPoint(x, y);
+		return getShapeBounds().contains(x, y) || getNameBounds().contains(x, y);
 	}
 
 	/**
@@ -530,8 +500,9 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
 	 * user-specified position) on/off
 	 */
 	public void setPinVisible(boolean enabled) {
+		if (pinVisible != enabled)
+			repaint();
 		pinVisible = enabled;
-		invalidate();
 	}
 
 	public boolean isPinVisible() {
@@ -592,7 +563,7 @@ public class SubmoduleFigure extends NedFigure implements ISubmoduleConstraint, 
 	@Override
 	public void paint(Graphics graphics) {
 		super.paint(graphics);
-		//System.out.println(this+": paint(): centerLoc==" + centerLoc);
+		System.out.println(this+": paint(): centerLoc==" + centerLoc);
 		Assert.isNotNull(centerLoc, "setCenterLoc() must be called before painting");
 
 		// draw shape

@@ -175,7 +175,7 @@ public class LayoutTest extends TestCase {
 		cmodule.getSubmoduleLayer().add(sm);
 		sm.setName(name);
 		DisplayString dps = new DisplayString(displayStr);
-		sm.setDisplayString(dps);
+		sm.setDisplayString(1.0f, dps);
 		sm.setPinVisible(dps.getLocation(1.0f) != null);
 		return sm;
 	}

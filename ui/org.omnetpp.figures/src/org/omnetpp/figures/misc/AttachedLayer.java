@@ -16,6 +16,7 @@ import org.eclipse.draw2d.geometry.*;
  *
  * @author rhornig
  */
+// FIXME no longer used. can be removed
 public class AttachedLayer extends Layer implements AncestorListener {
 
     protected IFigure refFigure;

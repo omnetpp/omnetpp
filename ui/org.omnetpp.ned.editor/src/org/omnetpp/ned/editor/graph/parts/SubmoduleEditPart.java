@@ -134,10 +134,9 @@ public class SubmoduleEditPart extends ModuleEditPart {
         // get the scale factor for this submodule (coming from the containing compound module's display string)
         // set it in the figure, so size and range indicator can use it
         float scale = getScale();
-        getSubmoduleFigure().setScale(scale);
 
         // set the rest of the display properties
-        getSubmoduleFigure().setDisplayString(dps);
+        getSubmoduleFigure().setDisplayString(scale, dps);
         
         getSubmoduleFigure().setQueueText(StringUtils.isNotBlank(dps.getAsString(IDisplayString.Prop.QUEUE)) ? "#" : "");
 
