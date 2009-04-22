@@ -40,13 +40,15 @@ void SwigSanitizer::wrapperCreated(cObject *p, jobject wrapper)
     wrappers.insert( std::pair<cObject*,jweak>(p,ref) );
 }
 
-void SwigSanitizer::purge()
+void SwigSanitizer::wrapperFinalized(cObject *p, jobject wrapper)
 {
-    for (RefMap::iterator it = wrappers.begin(); it != wrappers.end(); /*nop*/) {
-        if (jenv->IsSameObject(it->second,NULL)) {
+    std::pair<RefMap::iterator,RefMap::iterator> range = wrappers.equal_range(p);
+    for (RefMap::iterator it = range.first; it != range.second; /*nop*/) {
+        ASSERT(it->first == p);
+        if (jenv->IsSameObject(it->second,wrapper)) {
             jenv->DeleteWeakGlobalRef(it->second);
-            RefMap::iterator tmp = it++;
-            wrappers.erase(tmp);
+            wrappers.erase(it);
+            break; // one Java object may only be once in the table
         } else {
             ++it;
         }
@@ -65,6 +67,19 @@ void SwigSanitizer::objectDeleted(cObject *p)
         jenv->DeleteWeakGlobalRef(it->second);
         RefMap::iterator tmp = it++;
         wrappers.erase(tmp);
+    }
+}
+
+void SwigSanitizer::purge()
+{
+    for (RefMap::iterator it = wrappers.begin(); it != wrappers.end(); /*nop*/) {
+        if (jenv->IsSameObject(it->second,NULL)) {
+            jenv->DeleteWeakGlobalRef(it->second);
+            RefMap::iterator tmp = it++;
+            wrappers.erase(tmp);
+        } else {
+            ++it;
+        }
     }
 }
 

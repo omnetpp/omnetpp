@@ -30,6 +30,36 @@
 
 #define LL  INT64_PRINTF_FORMAT
 
+/* into cObject:
+  protected cObject(long cPtr, boolean cMemoryOwn) {
+    swigCMemOwn = cMemoryOwn;
+    swigCPtr = cPtr;
+
+    //System.out.println("registering cobject " + swigCPtr);
+    Javaenv env = Javaenv.cast(cSimulation.getActiveEnvir());
+    env.swigWrapperCreated(this, this);
+  }
+
+  protected static long getCPtr(cObject obj) {
+    return (obj == null) ? 0 : obj.swigCPtr;
+  }
+
+  public void zap() {
+    //System.out.println("zapping " + swigCPtr);
+    swigCPtr = 0;
+  }
+
+  protected void finalize() {
+    if (swigCPtr != 0) {
+      Javaenv env = Javaenv.cast(cSimulation.getActiveEnvir());
+      env.swigWrapperFinalized(this, this);
+    }
+    delete();
+  }
+
+ plus: check every swigCPtr access!!! (throw NPE if it's 0)
+*/
+
 /**
  * Utility class. Purpose: zero out the cPtr in all SWIG Java proxy
  * objects whose C++ peer gets deleted.
@@ -46,10 +76,14 @@ class SwigSanitizer
     SwigSanitizer(JNIEnv *je);
     // add weak reference to table (called from Java cObject ctor)
     void wrapperCreated(cObject *p, jobject wrapper);
-    // remove table entries where the Java object was already garbage collected
-    void purge();
+    // should be called from finalize(); removes object from the table. Alleviates need for purge().
+    void wrapperFinalized(cObject *p, jobject wrapper);
     // if there's a wrapper for it: clear cPtr in it, and remove from table
     void objectDeleted(cObject *p);
+    // remove table entries where the Java object was already garbage collected (not very efficient!)
+    void purge();
+    // table size (useful for debugging)
+    size_t getTableSize() {return wrappers.size();}
 };
 
 
@@ -85,8 +119,16 @@ class Javaenv : public EnvirBase
         swigSanitizer.wrapperCreated(p, wrapper);
     }
 
+    void swigWrapperFinalized(cObject *p, jobject wrapper) {
+        swigSanitizer.wrapperFinalized(p, wrapper);
+    }
+
     void swigPurge() {
         swigSanitizer.purge();
+    }
+
+    size_t swigTableSize() {
+        return swigSanitizer.getTableSize();
     }
 
     void putsmsg(const char *s) {printf("<!> %s\n",s); fflush(stdout);}
@@ -155,7 +197,7 @@ class Javaenv : public EnvirBase
 
     virtual void sputn(const char *s, int n) {
         EnvirBase::sputn(s, n); fflush(stdout); //XXX just now
-        (void) ::fwrite(s,1,n,stdout);
+//XXX        (void) ::fwrite(s,1,n,stdout);
         cModule *module = simulation.getContextModule();
         // note: we must strip the trailing "\n"
         if (module)
