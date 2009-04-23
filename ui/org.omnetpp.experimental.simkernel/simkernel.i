@@ -94,7 +94,7 @@ static void opp_JavaThrowException(JNIEnv *jenv, cException& e) {
     swigCPtr = 0;
   }
 
-  public boolean isDeleted() { // returns true if the underlying C++ object has already been deleted
+  public boolean isZombie() { // returns true if the underlying C++ object has already been deleted
     return swigCPtr == 0;
   }
 
