@@ -5,7 +5,6 @@ import org.eclipse.draw2d.Layer;
 import org.eclipse.draw2d.LayoutListener;
 import org.eclipse.draw2d.ScrollPane;
 import org.eclipse.draw2d.geometry.Dimension;
-import org.eclipse.swt.SWT;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.figures.CompoundModuleFigure;
 import org.omnetpp.runtimeenv.editors.IInspectorFigure;
@@ -42,14 +41,7 @@ public class CompoundModuleFigureEx extends ScrollPane implements IInspectorFigu
 
     @Override
     public int getDragOperation(int x, int y) {
-        //TODO properly detect resize handles
-        int result = 0;
-        if (Math.abs(getBounds().x - x) < 5) result |= SWT.LEFT;
-        if (Math.abs(getBounds().y - y) < 5)  result |= SWT.TOP;
-        if (Math.abs(getBounds().right() - x) < 5) result |= SWT.RIGHT;
-        if (Math.abs(getBounds().bottom() - y) < 5) result |= SWT.BOTTOM;
-        if (result==0) result = SWT.LEFT|SWT.TOP|SWT.RIGHT|SWT.BOTTOM;
-        return result;
+    	return FigureUtils.getBorderMoveResizeDragOperation(x, y, getBounds());
     }
     
 	public Layer getSubmoduleLayer() {

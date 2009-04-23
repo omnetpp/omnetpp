@@ -6,7 +6,6 @@ import org.eclipse.draw2d.RoundedRectangle;
 import org.eclipse.draw2d.ToolbarLayout;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.jface.resource.JFaceResources;
-import org.eclipse.swt.SWT;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.runtimeenv.editors.IInspectorFigure;
 import org.omnetpp.runtimeenv.editors.IInspectorPart;
@@ -59,7 +58,7 @@ public class TextInspectorFigure extends RoundedRectangle implements IInspectorF
 
 	@Override
 	public int getDragOperation(int x, int y) {
-		return SWT.TOP|SWT.BOTTOM|SWT.LEFT|SWT.RIGHT; // always move (only)
+    	return FigureUtils.getBorderMoveResizeDragOperation(x, y, getBounds());
 	}
 
 	@Override

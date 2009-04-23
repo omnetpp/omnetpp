@@ -131,6 +131,7 @@ public class ModelCanvas extends EditorPart implements IInspectorContainer {
 
         // register the inspector
         inspectors.add(inspectorPart);
+        inspectorPart.setContainer(this);
 
         // add move/resize/selection support
         new InspectorMouseListener(inspectorPart); //XXX
