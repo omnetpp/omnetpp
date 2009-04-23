@@ -40,6 +40,8 @@ import org.omnetpp.figures.routers.CompoundModuleConnectionRouter;
 // invalidate() internally calls layout.invalidate() too.
 // mabe we should remove layout.invalidate() from the invalidate() method and call it ONLY if some
 // property has changed that requires the recalculation (e.g. submodule added/removed submodule size changed)
+
+// FIXME check for invalidate() calls. Maybe we should change it to repaint() ???
 public class CompoundModuleFigure extends NedFigure
 				implements IAnchorBounds, ISelectionHandleBounds, ILayerSupport {
 
@@ -68,6 +70,8 @@ public class CompoundModuleFigure extends NedFigure
     // TODO implement ruler
     protected float scale = 1.0f;
     protected String unit = "px";
+	private long seed = 0;
+	private String oldDisplayString = null;
 
     // background layer to provide background coloring, images and grid drawing
     class BackgroundLayer extends Layer {
@@ -240,7 +244,6 @@ public class CompoundModuleFigure extends NedFigure
     	mainContainer.translateToParent(box);
     	translateToParent(box);
     	return box;
-
     }
 
 	/**
@@ -261,7 +264,6 @@ public class CompoundModuleFigure extends NedFigure
 		// background image
 		backgroundImage = img;
 		backgroundImageArrangement = arrange != null ? arrange : "";
-		invalidate();
 	}
 
 	/**
@@ -274,7 +276,6 @@ public class CompoundModuleFigure extends NedFigure
 		this.gridTickDistance = tickDistance;
 		this.gridNoOfMinorTics = noOfTics;
 		this.gridColor = gridColor;
-		invalidate();
 	}
 
 	/**
@@ -292,9 +293,17 @@ public class CompoundModuleFigure extends NedFigure
 	 * Adjusts the figure properties using a displayString object
 	 * @param dps The display string object containing the properties
 	 */
+	// TODO add display string caching
 	@Override
     public void setDisplayString(IDisplayString dps) {
-        // background color / image
+		// OPTIMIZATION: do not change anything if the display string has not changed
+		String newDisplayString = dps.toString();
+		if (newDisplayString.equals(oldDisplayString) )
+			return;
+		
+		this.oldDisplayString = newDisplayString;
+
+		// background color / image
         Image imgback = ImageFactory.getImage(
         		dps.getAsString(IDisplayString.Prop.MODULE_IMAGE), null, null, 0);
 
@@ -327,18 +336,20 @@ public class CompoundModuleFigure extends NedFigure
         // can affect the size of bounding box
         backgroundSize = dps.getCompoundSize(null);
 
-        long seed = dps.getAsInt(IDisplayString.Prop.MODULE_LAYOUT_SEED, 1);
+        long newSeed = dps.getAsInt(IDisplayString.Prop.MODULE_LAYOUT_SEED, 1);
         // if the seed changed we explicitly have to force a re-layout
 
-//        //XXX re-think this. incremental layout also changes the seed!
-//        if (seed != layouter.getSeed()) {
-//            layouter.setSeed(seed);
-//            layouter.requestFullLayout();
-//        }
+		if (seed != newSeed) {
+        	seed  = newSeed;
+            layouter.setSeed(seed);
+            layouter.requestFullLayout();
+            // a full new layout must be executed before any repainting occurs otherwise
+            // figures without centerLocation cannot be rendered
+            layouter.layout(submoduleLayer);  
+        }
 
-        invalidate();
+        repaint();
 	}
-
 
     public Dimension getBackgroundSize() {
         return backgroundSize;

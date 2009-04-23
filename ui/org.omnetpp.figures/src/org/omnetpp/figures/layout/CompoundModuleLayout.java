@@ -226,9 +226,9 @@ public class CompoundModuleLayout extends AbstractLayout {
 
 	/**
 	 * After calling this, the next layout process will call a full layout process. 
-	 * Pinned nodes will stay, unpinned nodes will move (with starting position taken
-	 * from the current constraint). Nodes with unspecified location will be layouted
-	 * by generating a random starting position. 
+	 * Pinned nodes will stay, unpinned nodes will move. 
+	 * Nodes with unspecified location will be layouted by generating a random 
+	 * starting position. 
 	 */
 	@SuppressWarnings("unchecked")
 	public void requestFullLayout() {

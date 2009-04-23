@@ -8,6 +8,7 @@
 package org.omnetpp.ned.editor.graph.parts;
 
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.gef.EditPolicy;
@@ -19,8 +20,8 @@ import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.eclipse.gef.tools.DirectEditManager;
 import org.eclipse.jface.viewers.ICellEditorValidator;
 import org.eclipse.jface.viewers.TextCellEditor;
-import org.omnetpp.figures.NedFigure;
-import org.omnetpp.figures.TooltipFigure;
+import org.omnetpp.figures.IProblemDecorationSupport;
+import org.omnetpp.figures.ITooltipTextProvider;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.graph.misc.IDirectEditSupport;
 import org.omnetpp.ned.editor.graph.misc.RenameDirectEditManager;
@@ -62,9 +63,10 @@ abstract public class NedEditPart extends AbstractGraphicalEditPart implements I
 	protected void refreshVisuals() {
 		super.refreshVisuals();
 
-		if (getFigure() instanceof NedFigure) {
-			TooltipFigure.ITextProvider textProvider = new TooltipFigure.ITextProvider() {
-				public String getTooltipText() {
+		// FIXME figures must implement an IProblemDecorator interface instead for setting the tooltip text
+		if (getFigure() instanceof IProblemDecorationSupport) {
+			ITooltipTextProvider textProvider = new ITooltipTextProvider() {
+				public String getTooltipText(int x, int y) {
 					String message = "";        
 					if (getNedModel().getMaxProblemSeverity() >= IMarker.SEVERITY_INFO) {
 						IMarker[] markers = NEDResourcesPlugin.getNEDResources().getMarkersForElement(getNedModel(), 11);
@@ -78,13 +80,11 @@ abstract public class NedEditPart extends AbstractGraphicalEditPart implements I
 							}
 						}
 					}
-
-					return message;
+					return StringUtils.strip(message);
 				}
-
 			};
 			
-			((NedFigure)getFigure()).setProblemDecoration(getNedModel().getMaxProblemSeverity(),textProvider);
+			((IProblemDecorationSupport)getFigure()).setProblemDecoration(getNedModel().getMaxProblemSeverity(), textProvider);
 		}
 	}
 

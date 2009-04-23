@@ -38,7 +38,7 @@ import org.omnetpp.figures.misc.ISelectionHandleBounds;
 //FIXME support multiple texts: t/t1/t2/t3/t4
 //FIXME alignment of multi-line text
 public class SubmoduleFigure extends Figure implements ISubmoduleConstraint, IAnchorBounds, 
-					ISelectionHandleBounds, ITooltipTextProvider {
+					ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 	// supported shape types
 	protected static final int SHAPE_NONE = 0;
 	protected static final int SHAPE_OVAL = 1;
@@ -87,7 +87,7 @@ public class SubmoduleFigure extends Figure implements ISubmoduleConstraint, IAn
 	protected Color textColor;
 	protected String queueText;
 	protected RangeFigure rangeFigure = null;
-	private String oldDisplayString = "";
+	private String oldDisplayString = null;
 
 	public SubmoduleFigure() {
 	}
@@ -98,7 +98,7 @@ public class SubmoduleFigure extends Figure implements ISubmoduleConstraint, IAn
 	public void setDisplayString(float scale, IDisplayString displayString) {
 		// OPTIMIZATION: do not change anything if the display string has not changed
 		String newDisplayString = displayString.toString();
-		if (this.scale == scale && newDisplayString.equals(oldDisplayString) )
+		if (this.scale == scale &&  newDisplayString.equals(oldDisplayString) )
 			return;
 		
 		this.scale = scale;
@@ -216,14 +216,8 @@ public class SubmoduleFigure extends Figure implements ISubmoduleConstraint, IAn
 		}
 	}
 	
-	/**
-    * Display a "problem" image decoration on the submodule.
-    * @param maxSeverity  any of the IMarker.SEVERITY_xxx constants, or -1 for none
-    * @param textProvider callback to get the text to be displayed as a tooltip on hover event 
-    */
     public void setProblemDecoration(int maxSeverity, ITooltipTextProvider textProvider) {
-        Image image = NedFigure.getProblemImageFor(maxSeverity);
-        problemMarkerImage = image;
+        problemMarkerImage = NedFigure.getProblemImageFor(maxSeverity);
         problemMarkerTextProvider = textProvider;
 		calculateBounds();
         repaint();
@@ -465,6 +459,8 @@ public class SubmoduleFigure extends Figure implements ISubmoduleConstraint, IAn
 	}
 
 	public String getTooltipText(int x, int y) {
+		// if there is a problem marker and an associated tooltip text provider
+		// and the cursor is over the marker, delegate to the problemmarker text provider
 		if (problemMarkerTextProvider != null && problemMarkerImage != null) {
 			Rectangle markerBounds = getProblemMarkerImageBounds(getShapeBounds());
 			translateToAbsolute(markerBounds);
@@ -473,7 +469,6 @@ public class SubmoduleFigure extends Figure implements ISubmoduleConstraint, IAn
 				if (text != null)
 					return text;
 			}
-			
 		}
 		return tooltipText;
 	}

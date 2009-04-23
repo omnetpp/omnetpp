@@ -7,6 +7,7 @@
 
 package org.omnetpp.figures.misc;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Canvas;
@@ -57,10 +58,15 @@ public class FigureUtils {
 			public void handleEvent(Event e) {
 				switch (e.type) {
 				case SWT.MouseMove:
-					canvas.setToolTipText("");
+					if (canvas.getToolTipText() != null)
+						canvas.setToolTipText(null);
 					break;
 				case SWT.MouseHover:
-					canvas.setToolTipText(getFigureTooltip(rootFigure, e.x, e.y));
+					String figureTooltip = getFigureTooltip(rootFigure, e.x, e.y);
+					// NOTE: should set the tooltip ONLY if it has changed otherwise
+					// it interferes with the HoverSupport
+					if (!ObjectUtils.equals(figureTooltip, canvas.getToolTipText()))
+						canvas.setToolTipText(figureTooltip);
 					break;
 				}
 			}
@@ -71,9 +77,10 @@ public class FigureUtils {
 	}
 
 	static private String getFigureTooltip(IFigure rootFigure, int x, int y) {
-		for (IFigure f = rootFigure.findFigureAt(x, y); f != null; f = f.getParent())
+		for (IFigure f = rootFigure.findFigureAt(x, y); f != null; f = f.getParent()) {
 			if (f instanceof ITooltipTextProvider)
 				return ((ITooltipTextProvider) f).getTooltipText(x, y);
+		}
 		return null;
 	}
 }

@@ -84,6 +84,7 @@ import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.common.util.PersistentResourcePropertyManager;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.figures.misc.FigureUtils;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.NedEditor;
 import org.omnetpp.ned.editor.NedEditorPlugin;
@@ -322,7 +323,10 @@ public class GraphicalNedEditor
         getEditorSite().registerContextMenu(ID, provider, viewer, false);
         viewer.setKeyHandler(new GraphicalViewerKeyHandler(viewer).setParent(getCommonKeyHandler()));
 
-        // add tooltip support
+		// generic system tooltip support for error markers
+		FigureUtils.addTooltipSupport(getFigureCanvas(), root.getFigure());
+		
+        // add hover tooltip support for help and documentation tooltips
         HoverSupport hoverSupport = new HoverSupport();
         hoverSupport.setHoverSizeConstaints(600, 200);
 		hoverSupport.adapt(getFigureCanvas(), new IHoverTextProvider() {
@@ -333,7 +337,7 @@ public class GraphicalNedEditor
                 // we do not show hover if a tooltip already set on the figure 
                 if (figureUnderMouse != null && figureUnderMouse.getToolTip() != null)
                     return null;
-                // or we are inside a compound module figure (we display tooltips only over the border a title for
+                // or we are inside a compound module figure (we display the hover only over the border a title for
                 // a compound module)
                 if (epUnderMouse instanceof CompoundModuleEditPart &&
                         !((CompoundModuleEditPart)epUnderMouse).getCompoundModuleFigure().isOnBorder(x, y))

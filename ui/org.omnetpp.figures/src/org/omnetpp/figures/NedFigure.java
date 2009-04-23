@@ -24,7 +24,8 @@ import org.omnetpp.common.util.StringUtils;
  *
  * @author rhornig
  */
-abstract public class NedFigure extends Figure {
+abstract public class NedFigure extends Figure implements IProblemDecorationSupport {
+	// FIXME move it to ImageFactory
 	protected static final Image ICON_ERROR = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_ERROR_TSK); //ImageFactory.getImage(ImageFactory.DECORATOR_IMAGE_ERROR);
 	protected static final Image ICON_WARNING = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_WARN_TSK); //ImageFactory.getImage(ImageFactory.DECORATOR_IMAGE_WARNING);
 	protected static final Image ICON_INFO = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_INFO_TSK); //ImageFactory.getImage(ImageFactory.DECORATOR_IMAGE_INFO);
@@ -32,14 +33,7 @@ abstract public class NedFigure extends Figure {
     protected Label nameFigure = new Label();
     protected TooltipFigure tooltipFigure;
     protected ImageFigure problemMarkerFigure = new ImageFigure(); //FIXME create it ON DEMAND!  --Andras
-    protected TooltipFigure problemMarkerTooltipFigure;
-
-    // the following constants have been copied here from IMarker so that we don't
-    // need to pull in org.eclipse.core.resources for our simulation runtime;
-    // they must be kept in sync with IMarker values.
-    public static final int SEVERITY_ERROR = 2;
-    public static final int SEVERITY_WARNING = 1;
-    public static final int SEVERITY_INFO = 0;
+//    protected TooltipFigure problemMarkerTooltipFigure;
 
     public NedFigure() {
         // left align everything inside the figure
@@ -56,7 +50,8 @@ abstract public class NedFigure extends Figure {
      */
     abstract public void setDisplayString(IDisplayString dps);
 
-	protected static Image getProblemImageFor(int severity) {
+	// FIXME move it to ImageFactory
+    protected static Image getProblemImageFor(int severity) {
 		Image image;
     	switch (severity) {
 	    	case -1: image = null; break;
@@ -81,13 +76,19 @@ abstract public class NedFigure extends Figure {
         }
     }
 
-    /**
-     * Display a "problem" image decoration on the submodule.
-     * @param maxSeverity  any of the IMarker.SEVERITY_xxx constants, or -1 for none
-     * @param textProvider callback to get the text to be displayed as a tooltip on hover event 
-     */
-    public void setProblemDecoration(int maxSeverity, TooltipFigure.ITextProvider textProvider) {
+    
+//    public void setProblemDecoration(int maxSeverity, ITooltipTextProvider textProvider) {
+//        problemMarkerImage = NedFigure.getProblemImageFor(maxSeverity);
+//        problemMarkerTextProvider = textProvider;
+//		calculateBounds();
+//        repaint();
+//    }
+
+    public void setProblemDecoration(int maxSeverity, ITooltipTextProvider textProvider) {
         Image image = NedFigure.getProblemImageFor(maxSeverity);
+        
+        // FIXME if rewritten to native tooltip support the tooltip figure can be removed
+        
         if (image != null)
             problemMarkerFigure.setImage(image);
         problemMarkerFigure.setVisible(image != null);
@@ -95,12 +96,12 @@ abstract public class NedFigure extends Figure {
         // set a tooltip text
         if (textProvider == null) {
             problemMarkerFigure.setToolTip(null);
-            problemMarkerTooltipFigure = null;
+//            problemMarkerTooltipFigure = null;
         }
         else {
-            problemMarkerTooltipFigure = new TooltipFigure();
-            problemMarkerFigure.setToolTip(problemMarkerTooltipFigure);
-            problemMarkerTooltipFigure.setTextProvider(textProvider);
+//            problemMarkerTooltipFigure = new TooltipFigure();
+//            problemMarkerFigure.setToolTip(problemMarkerTooltipFigure);
+//            problemMarkerTooltipFigure.setTextProvider(textProvider);
         }
         invalidate();
     }
