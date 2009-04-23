@@ -13,10 +13,12 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.swt.graphics.Point;
 import org.omnetpp.experimental.simkernel.swig.cDisplayString;
 import org.omnetpp.experimental.simkernel.swig.cModule;
 import org.omnetpp.experimental.simkernel.swig.cModule_SubmoduleIterator;
 import org.omnetpp.experimental.simkernel.swig.cSimulation;
+import org.omnetpp.figures.layout.CompoundModuleLayout;
 import org.omnetpp.runtimeenv.Activator;
 import org.omnetpp.runtimeenv.figures.CompoundModuleFigureEx;
 import org.omnetpp.runtimeenv.figures.SubmoduleFigureEx;
@@ -25,9 +27,10 @@ import org.omnetpp.runtimeenv.figures.SubmoduleFigureEx;
  * 
  * @author Andras
  */
+//XXX remove display string caching (figure does that already)
 public class GraphicalModulePart extends InspectorPart {
-    protected Map<Integer,SubmoduleFigureEx> submodules = new HashMap<Integer,SubmoduleFigureEx>();
-    protected Map<Integer,String> lastSubmoduleDisplayStrings = new HashMap<Integer,String>();
+    protected Map<Integer,SubmoduleFigureEx> submodules = new HashMap<Integer,SubmoduleFigureEx>(); //moduleID-to-figure
+    protected Map<Integer,String> lastSubmoduleDisplayStrings = new HashMap<Integer,String>(); //moduleID-to-displayString
     
     /**
      * Constructor.
@@ -39,15 +42,8 @@ public class GraphicalModulePart extends InspectorPart {
         figure.setInspectorPart(this);
 
         ((CompoundModuleFigureEx)figure).setDisplayString(module.getDisplayString());
-        
-//            //TODO just testing
-//            ConnectionFigure connectionFigure = new ConnectionFigure();
-//            connectionFigure.setArrowHeadEnabled(true);
-//            connectionFigure.setSourceAnchor(new GateAnchor(submoduleFigure));
-//            connectionFigure.setTargetAnchor(new CompoundModuleGateAnchor(moduleFigure));
-//            moduleFigure.getConnectionLayer().add(connectionFigure);
 
-        update();
+//        update();
 
         // mouse handling
         figure.addMouseListener(new MouseListener() {
@@ -74,10 +70,11 @@ public class GraphicalModulePart extends InspectorPart {
 	}
     
     @Override
-	protected void update() {
-    	super.update();
+	public void refresh() {
+		super.refresh();
     	if (!isDisposed()) { 
     		refreshChildren();
+    		refreshConnections();
     		refreshVisuals();
 		}
     }
@@ -120,6 +117,7 @@ public class GraphicalModulePart extends InspectorPart {
             for (int id : toBeAdded) {
                 // create figure
                 SubmoduleFigureEx submoduleFigure = new SubmoduleFigureEx();
+                submoduleFigure.setFont(getContainer().getControl().getFont()); // to speed up figure's getFont()
                 submoduleFigure.setModuleID(id);
                 submoduleFigure.setPinVisible(false);
                 submoduleFigure.setName(sim.getModule(id).getFullName());
@@ -130,6 +128,17 @@ public class GraphicalModulePart extends InspectorPart {
         }
     }
 
+    protected void refreshConnections() {
+//      //TODO just testing
+//      ConnectionFigure connectionFigure = new ConnectionFigure();
+//      connectionFigure.setArrowHeadEnabled(true);
+//      connectionFigure.setSourceAnchor(new GateAnchor(submoduleFigure));
+//      connectionFigure.setTargetAnchor(new CompoundModuleGateAnchor(moduleFigure));
+//      moduleFigure.getConnectionLayer().add(connectionFigure);
+
+    	
+    }
+    
     protected void refreshVisuals() {
     	float scale = 1.0f;  //FIXME from compound module display string
         cSimulation sim = cSimulation.getActiveSimulation();
@@ -213,41 +222,86 @@ public class GraphicalModulePart extends InspectorPart {
     public void populateContextMenu(final MenuManager contextMenuManager, org.eclipse.swt.graphics.Point p) {
 		System.out.println(this + ": populateContextMenu invoked");
         SubmoduleFigureEx submoduleFigure = findSubmoduleAt(p.x, p.y);
-        if (submoduleFigure != null) {
-            int submoduleID = submoduleFigure.getModuleID();
-            final cModule module = cSimulation.getActiveSimulation().getModule(submoduleID);
-
-            //XXX factor out actions
-            contextMenuManager.add(new Action("Go into") {
-                @Override
-                public void run() {
-                    //Close this inspector; open new inspector at these coordinates; also add to navigation history
-                }
-            });
-
-            contextMenuManager.add(new Action("Open in New Canvas") {
-                @Override
-                public void run() {
-                    Activator.openInspector2(module, true);
-                }
-            });
-
-            contextMenuManager.add(new Action("Add to Canvas") {
-                @Override
-                public void run() {
-                    Activator.openInspector2(module, false);
-                }
-            });
-
-            contextMenuManager.add(new Separator());
-
-            contextMenuManager.add(new Action("Close") {
-                @Override
-                public void run() {
-                    getContainer().close(GraphicalModulePart.this);
-                }
-            });
-        }
+        if (submoduleFigure == null)
+        	populateBackgroundContextMenu(contextMenuManager, p);
+        else 
+        	populateSubmoduleContextMenu(contextMenuManager, submoduleFigure, p);
     }
+
+    protected void populateBackgroundContextMenu(MenuManager contextMenuManager, Point p) {
+		//XXX factor out actions
+
+		contextMenuManager.add(new Action("Zoom in") {
+		    @Override
+		    public void run() {
+		        //TODO see ZoomManager.zoomIn(); relies on ScalableFigure.setScale()
+		    }
+		});
+		contextMenuManager.add(new Action("Zoom out") {
+		    @Override
+		    public void run() {
+		        //TODO see ZoomManager.zoomOut(); relies on ScalableFigure.setScale()
+		    }
+		});
+
+		contextMenuManager.add(new Separator());
+
+		contextMenuManager.add(new Action("Re-layout") {
+			@Override
+			public void run() {
+		    	CompoundModuleFigureEx moduleFigure = (CompoundModuleFigureEx)figure;
+				CompoundModuleLayout layouter = (CompoundModuleLayout)moduleFigure.getLayoutManager();
+				layouter.requestFullLayout();
+				layouter.setSeed(layouter.getSeed()+1);
+				layouter.layout(moduleFigure.getSubmoduleLayer());
+				moduleFigure.getSubmoduleLayer().revalidate();
+			}
+		});
+
+		contextMenuManager.add(new Separator());
+		
+		contextMenuManager.add(new Action("Go to parent") {
+		    @Override
+		    public void run() {
+		        //Close this inspector; open new inspector at these coordinates; also add to navigation history
+		    }
+		});
+
+		contextMenuManager.add(new Separator());
+		
+		contextMenuManager.add(new Action("Close") {
+		    @Override
+		    public void run() {
+		        getContainer().close(GraphicalModulePart.this);
+		    }
+		});
+	}
+
+	protected void populateSubmoduleContextMenu(MenuManager contextMenuManager, SubmoduleFigureEx submoduleFigure, Point p) {
+		int submoduleID = submoduleFigure.getModuleID();
+		final cModule module = cSimulation.getActiveSimulation().getModule(submoduleID);
+
+		//XXX factor out actions
+		contextMenuManager.add(new Action("Go into") {
+		    @Override
+		    public void run() {
+		        //Close this inspector; open new inspector at these coordinates; also add to navigation history
+		    }
+		});
+
+		contextMenuManager.add(new Action("Open in New Canvas") {
+		    @Override
+		    public void run() {
+		        Activator.openInspector2(module, true);
+		    }
+		});
+
+		contextMenuManager.add(new Action("Add to Canvas") {
+		    @Override
+		    public void run() {
+		        Activator.openInspector2(module, false);
+		    }
+		});
+	}
 
 }

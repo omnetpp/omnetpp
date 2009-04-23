@@ -23,12 +23,22 @@ public interface IInspectorPart {
 	cObject getObject();
 
 	/**
+	 * Refresh the inspector's contents. Should only be called when the
+	 * inspector is already installed (the figure is on a draw2d canvas,
+	 * and setContainer() was already called). The client is responsible 
+	 * for calling this method frequently enough to keep the inspector's
+	 * content up to date.
+	 */
+	void refresh();
+	
+	/**
 	 * Must be called when the inspector is no longer needed
 	 */
 	void dispose();
 
     /**
-     * Returns the corresponding figure.
+     * Returns the corresponding figure. Clients are responsible
+     * for inserting the figure into a draw2d canvas.
      */
     IInspectorFigure getFigure();
 

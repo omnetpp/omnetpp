@@ -36,8 +36,8 @@ public class ExampleSWTInspectorPart extends AbstractSWTInspectorPart {
 	}
 
 	@Override
-	protected void update() {
-		super.update();
+	public void refresh() {
+		super.refresh();
 		if (!isDisposed()) {
 			((Button)getControl()).setText(object.toString());
 		}

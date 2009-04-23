@@ -31,6 +31,8 @@ import org.omnetpp.common.ui.FigureCanvas;
 import org.omnetpp.common.ui.SelectionProvider;
 import org.omnetpp.experimental.simkernel.swig.cObject;
 import org.omnetpp.figures.misc.FigureUtils;
+import org.omnetpp.runtimeenv.Activator;
+import org.omnetpp.runtimeenv.ISimulationListener;
 
 /**
  * 
@@ -44,6 +46,7 @@ public class ModelCanvas extends EditorPart implements IInspectorContainer {
     protected ScrolledComposite sc;
     protected FigureCanvas canvas;
     protected List<IInspectorPart> inspectors = new ArrayList<IInspectorPart>();
+	protected ISimulationListener simulationListener;
 
     @Override
     public void init(IEditorSite site, IEditorInput input) throws PartInitException {
@@ -55,13 +58,6 @@ public class ModelCanvas extends EditorPart implements IInspectorContainer {
         setPartName(input.getName());
         
         site.setSelectionProvider(new SelectionProvider());
-    }
-
-    @Override
-    public void dispose() {
-    	for (IInspectorPart inspectorPart : inspectors.toArray(new IInspectorPart[]{}))
-    		removeInspectorPart(inspectorPart);
-    	super.dispose();
     }
     
     @Override
@@ -101,11 +97,28 @@ public class ModelCanvas extends EditorPart implements IInspectorContainer {
                 	inspectorPart.populateContextMenu(contextMenuManager, p);
             }
         });
-        
+
         FigureUtils.addTooltipSupport(canvas, canvas.getRootFigure());
+        
+		// update inspectors when something happens in the simulation
+		Activator.getSimulationManager().addSimulationListener(simulationListener = new ISimulationListener() {
+			@Override
+			public void changed() {
+				refreshInspectors();
+			}
+		});
+        
     }
 
-	protected void recalculateCanvasSize() {
+    @Override
+    public void dispose() {
+    	Activator.getSimulationManager().removeSimulationListener(simulationListener);
+    	for (IInspectorPart inspectorPart : inspectors.toArray(new IInspectorPart[inspectors.size()]))
+    		removeInspectorPart(inspectorPart);
+    	super.dispose();
+    }
+
+    protected void recalculateCanvasSize() {
         Dimension size = canvas.getRootFigure().getPreferredSize();
         org.eclipse.swt.graphics.Rectangle clientArea = sc.getClientArea();
         canvas.setSize(Math.max(size.width, clientArea.width), Math.max(size.height, clientArea.height));
@@ -132,6 +145,7 @@ public class ModelCanvas extends EditorPart implements IInspectorContainer {
         // register the inspector
         inspectors.add(inspectorPart);
         inspectorPart.setContainer(this);
+        inspectorPart.refresh();
 
         // add move/resize/selection support
         new InspectorMouseListener(inspectorPart); //XXX
@@ -143,6 +157,11 @@ public class ModelCanvas extends EditorPart implements IInspectorContainer {
     	inspectors.remove(inspectorPart);
     	canvas.getRootFigure().remove(inspectorPart.getFigure());  //XXX maybe do it in the inspector??
     	inspectorPart.dispose();
+    }
+
+    protected void refreshInspectors() {
+    	for (IInspectorPart inspectorPart : inspectors.toArray(new IInspectorPart[inspectors.size()]))
+    		inspectorPart.refresh();
     }
     
     @Override

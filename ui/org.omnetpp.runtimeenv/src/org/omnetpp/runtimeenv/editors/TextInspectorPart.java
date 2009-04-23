@@ -20,7 +20,6 @@ public class TextInspectorPart extends InspectorPart {
 		super(object);
 		figure = new TextInspectorFigure();
 		figure.setInspectorPart(this);
-		update();
 
 		// add mouse selection support
         figure.addMouseListener(new MouseListener.Stub() {
@@ -32,8 +31,8 @@ public class TextInspectorPart extends InspectorPart {
 	}
 
 	@Override
-	protected void update() {
-		super.update();
+	public void refresh() {
+		super.refresh();
 		if (!isDisposed()) { 
 			((TextInspectorFigure)figure).setTexts("(" + object.getClassName() + ") " + object.getFullPath(), object.info());
 		}

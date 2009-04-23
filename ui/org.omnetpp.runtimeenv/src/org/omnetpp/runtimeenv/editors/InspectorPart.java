@@ -5,8 +5,6 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.common.ui.FigureCanvas;
 import org.omnetpp.experimental.simkernel.swig.cObject;
-import org.omnetpp.runtimeenv.Activator;
-import org.omnetpp.runtimeenv.ISimulationListener;
 
 /**
  * Default implementation for IInspectorPart, base class for inspector classes
@@ -15,25 +13,15 @@ public abstract class InspectorPart implements IInspectorPart {
 	protected cObject object;
 	protected IInspectorFigure figure;
 	protected IInspectorContainer inspectorContainer;
-	protected ISimulationListener simulationListener;
 	protected boolean isSelected;
 
 	public InspectorPart(cObject object) {
 		this.object = object;
-
-		// update the inspector when something happens in the simulation
-		Activator.getSimulationManager().addSimulationListener(simulationListener = new ISimulationListener() {
-			@Override
-			public void changed() {
-				update();
-			}
-		});
 	}
 
 	public void dispose() {
 		System.out.println("inspector disposed: " + object);
 		object = null;
-	    Activator.getSimulationManager().removeSimulationListener(simulationListener);
 	}
 
 	public boolean isDisposed() {
@@ -62,7 +50,9 @@ public abstract class InspectorPart implements IInspectorPart {
 	    return isSelected;
 	}
 
-	protected void update() {
+	@Override
+	public void refresh() {
+		Assert.isTrue(figure.getParent()!=null && inspectorContainer!=null, "inspector not yet installed");
 		Assert.isTrue(object != null, "inspector already disposed");
 		
 		// automatically close the inspector when the underlying object gets deleted
