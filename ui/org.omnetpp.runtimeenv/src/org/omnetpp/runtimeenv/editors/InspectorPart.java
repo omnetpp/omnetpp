@@ -18,9 +18,8 @@ public abstract class InspectorPart implements IInspectorPart {
 	protected ISimulationListener simulationListener;
 	protected boolean isSelected;
 
-	public InspectorPart(IInspectorContainer container, cObject object) {
+	public InspectorPart(cObject object) {
 		this.object = object;
-		this.inspectorContainer = container;
 
 		// update the inspector when something happens in the simulation
 		Activator.getSimulationManager().addSimulationListener(simulationListener = new ISimulationListener() {
@@ -73,7 +72,12 @@ public abstract class InspectorPart implements IInspectorPart {
 		}
 	}
     
-    @Override
+	@Override
+	public void setContainer(IInspectorContainer container) {
+		this.inspectorContainer = container;
+	}
+
+	@Override
     public IInspectorContainer getContainer() {
     	return inspectorContainer;
     }

@@ -16,8 +16,8 @@ import org.omnetpp.runtimeenv.figures.TextInspectorFigure;
 //XXX make more options what to display: class+name/fullpath, info, detailedinfo; change color, shape etc
 public class TextInspectorPart extends InspectorPart {
 
-	public TextInspectorPart(IInspectorContainer container, cObject object) {
-		super(container, object);
+	public TextInspectorPart(cObject object) {
+		super(object);
 		figure = new TextInspectorFigure();
 		figure.setInspectorPart(this);
 		update();

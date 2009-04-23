@@ -134,9 +134,6 @@ public class ModelCanvas extends EditorPart implements IInspectorContainer {
 
         // add move/resize/selection support
         new InspectorMouseListener(inspectorPart); //XXX
-        
-        // listen on selection changes
-        inspectorPart.setContainer(this);        
     }
 
     public void removeInspectorPart(IInspectorPart inspectorPart) {

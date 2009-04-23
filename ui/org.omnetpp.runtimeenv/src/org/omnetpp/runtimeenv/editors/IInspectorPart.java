@@ -43,6 +43,11 @@ public interface IInspectorPart {
     boolean isSelected();
 
     /**
+     * Sets the inspector container.
+     */
+	void setContainer(IInspectorContainer container);
+
+    /**
      * Returns container for the inspector. The container handles selection,
      * closing / maximizing / changing Z-order of inspectors, and other tasks.
      */ 

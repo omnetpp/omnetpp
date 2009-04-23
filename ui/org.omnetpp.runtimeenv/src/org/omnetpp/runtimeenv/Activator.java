@@ -16,10 +16,10 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.omnetpp.experimental.simkernel.swig.cModule;
 import org.omnetpp.experimental.simkernel.swig.cObject;
 import org.omnetpp.runtimeenv.editors.BlankCanvasEditorInput;
+import org.omnetpp.runtimeenv.editors.ExampleSWTInspectorPart;
 import org.omnetpp.runtimeenv.editors.GraphicalModulePart;
 import org.omnetpp.runtimeenv.editors.IInspectorPart;
 import org.omnetpp.runtimeenv.editors.ModelCanvas;
-import org.omnetpp.runtimeenv.editors.TextInspectorPart;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -170,7 +170,8 @@ public class Activator extends AbstractUIPlugin {
         if (cModule.cast(object) != null)
             return new GraphicalModulePart(cModule.cast(object));
         if (object != null)
-        	return new TextInspectorPart(object);
+        	//return new TextInspectorPart(object);
+        	return new ExampleSWTInspectorPart(object);
         return null;
 	}
 
