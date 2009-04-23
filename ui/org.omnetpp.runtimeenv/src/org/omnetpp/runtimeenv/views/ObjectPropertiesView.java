@@ -57,6 +57,7 @@ public class ObjectPropertiesView extends PinnableView2 implements ISimulationLi
 
 	protected TreeViewer viewer;
     protected MenuManager contextMenuManager = new MenuManager("#PopupMenu");
+    protected static final Object[] EMPTY_ARRAY = new Object[0];
 
     // we want to display objects displayed as roots in the treeviewer with full path,
     // so we wrap them into RootObj so that we can distinguish them from other cObjects
@@ -181,9 +182,10 @@ public class ObjectPropertiesView extends PinnableView2 implements ISimulationLi
 	    public Object[] getChildren(Object element) {
 	        if (element instanceof Object[])
 	            return (Object[])element;
+
 	        if (element instanceof RootObj)
 	        	element = ((RootObj)element).object;
-	        
+
 	        if (element instanceof cObject) {
 	            cObject object = (cObject)element;
                 cClassDescriptor desc = object.getDescriptor();
@@ -222,14 +224,14 @@ public class ObjectPropertiesView extends PinnableView2 implements ISimulationLi
                 ArrayElementKey key = (ArrayElementKey)element;
                 return getFieldsOfCompoundField(element, key.ptr, key.desc, key.fieldID, key.index);
             }
-	        return new Object[0];
+	        return EMPTY_ARRAY;
 	    }
 
         private Object[] getFieldsOfCompoundField(Object parent, long ptr, cClassDescriptor desc, int fieldID, int index) {
             // return children of this class/struct
             long fieldPtr = desc.getFieldStructPointer(ptr, fieldID, index);
             if (fieldPtr == 0)
-                return new Object[0];
+                return EMPTY_ARRAY;
             boolean isCObject = desc.getFieldIsCPolymorphic(ptr, fieldID);
             if (isCObject) {
                 return getChildren(desc.getFieldAsCObject(ptr, fieldID, index));
@@ -237,7 +239,7 @@ public class ObjectPropertiesView extends PinnableView2 implements ISimulationLi
                 String fieldStructName = desc.getFieldStructName(ptr, fieldID);
                 cClassDescriptor fieldDesc = cClassDescriptor.getDescriptorFor(fieldStructName);
                 if (fieldDesc == null)
-                    return new Object[0]; // nothing known about it
+                    return EMPTY_ARRAY; // nothing known about it
                 return getChildren(new StructKey(parent, fieldPtr, fieldDesc));
             }
         }
@@ -255,7 +257,7 @@ public class ObjectPropertiesView extends PinnableView2 implements ISimulationLi
 	    }
 
 	    public Object getParent(Object element) {
-	        if (element instanceof cObject)
+	        if (element instanceof cObject && !((cObject)element).isZombie())  //otherwise "preservingSelection()" may crash
 	            return ((cObject)element).getOwner();
             if (element instanceof KeyBase)
                 return ((KeyBase)element).parent;
@@ -278,7 +280,7 @@ public class ObjectPropertiesView extends PinnableView2 implements ISimulationLi
 	    protected Object[] getGroupKeys(Object parent, long ptr, cClassDescriptor desc) {
 	        // collect unique group names
 	        int numFields = desc.getFieldCount(ptr);
-	        Object[] groupNames = new Object[0];
+	        Object[] groupNames = EMPTY_ARRAY;
 	        for (int i=0; i<numFields; i++) {
 	            String groupName = desc.getFieldProperty(ptr, i, "group");
 	            if (groupName != null && !ArrayUtils.contains(groupNames, groupName))
@@ -582,6 +584,27 @@ public class ObjectPropertiesView extends PinnableView2 implements ISimulationLi
 
 	@Override
     public void changed() {
+		// throw out deleted objects from the input
+		boolean needsPurge = false;
+        Object[] array = (Object[])viewer.getInput();
+        for (Object o : array)
+        	if (((RootObj)o).object.isZombie())
+        		{needsPurge = true; break;}
+
+        if (needsPurge) {
+            List<Object> list = new ArrayList<Object>();
+            for (Object o : array)
+            	if (!((RootObj)o).object.isZombie())
+            		list.add(o);
+            if (list.isEmpty()) {
+                cModule systemModule = cSimulation.getActiveSimulation().getSystemModule();
+                if (systemModule != null)
+                    list.add(new RootObj(systemModule));
+            }
+            viewer.setInput(list.toArray(new Object[]{}));
+        }
+
+        // refresh viewer
         viewer.refresh();
     }
 
@@ -599,11 +622,14 @@ public class ObjectPropertiesView extends PinnableView2 implements ISimulationLi
             Object[] sel = ((IStructuredSelection)selection).toArray();
             for (Object obj : sel) {
                 if (obj instanceof IInspectorPart) {
-                    IInspectorPart part = (IInspectorPart)obj;
-                    input.add(new RootObj(part.getObject()));
+                    cObject object = ((IInspectorPart)obj).getObject();
+                    if (!object.isZombie())
+                    	input.add(new RootObj(object));
                 }
                 else if (obj instanceof cObject) {
-                	input.add(new RootObj((cObject)obj));
+                    cObject object = (cObject)obj;
+                    if (!object.isZombie())
+                    	input.add(new RootObj(object));
                 }
             }
         }

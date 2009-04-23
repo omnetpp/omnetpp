@@ -40,7 +40,6 @@ import org.omnetpp.runtimeenv.ISimulationListener;
  */
 //XXX snap to grid for the move/resize?
 //FIXME how to evaluate "$PARNAME" references in display strings???
-//XXX inspectors should close on objectDeleted()! should remove dead objects from the selection!!!!
 public class ModelCanvas extends EditorPart implements IInspectorContainer {
     public static final String EDITOR_ID = "org.omnetpp.runtimeenv.editors.ModelCanvas";
     protected ScrolledComposite sc;

@@ -187,14 +187,14 @@ public class ModuleOutputView extends PinnableView2 implements ISimulationListen
         if (selection instanceof IStructuredSelection) {
             Object[] sel = ((IStructuredSelection)selection).toArray();
             for (Object obj : sel) {
-                if (obj instanceof IInspectorPart) {
-                    IInspectorPart part = (IInspectorPart)obj;
-                    int moduleID = cModule.cast(part.getObject()).getId();
-                    input.addModuleTree(moduleID, new IntVector());
-                }
-                else if (obj instanceof cObject && cModule.cast((cObject)obj) != null) {
-                	int moduleID = cModule.cast((cObject)obj).getId();
-                    input.addModuleTree(moduleID, new IntVector());
+            	cObject object = null;
+                if (obj instanceof IInspectorPart)
+                    object = ((IInspectorPart)obj).getObject();
+                else if (obj instanceof cObject)
+                	object = (cObject)obj;
+                if (object != null && !object.isZombie() && cModule.cast(object) != null) {
+                	int moduleID = cModule.cast(object).getId();
+                	input.addModuleTree(moduleID, new IntVector());
                 }
             }
         }

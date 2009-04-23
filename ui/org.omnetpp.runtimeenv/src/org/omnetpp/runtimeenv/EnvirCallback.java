@@ -17,12 +17,6 @@ import org.omnetpp.experimental.simkernel.swig.cObject;
 public class EnvirCallback implements IEnvirCallback {
 	public boolean debug = false;
 
-	public void objectDeleted(cObject object) {
-		Activator.getSimulationManager().fireObjectDeleted(object);
-		if (debug)
-			System.out.println("objectDeleted called");
-	}
-
 	public void simulationEvent(cMessage msg) {
 		if (debug)
 			System.out.println("simulationEvent called");
