@@ -90,8 +90,12 @@ static void opp_JavaThrowException(JNIEnv *jenv, cException& e) {
     }
   */
 
-  public void zap() {  // called from C++ code (WrapperTable) when C++ object gets deleted
+  protected void zap() {  // called from C++ code via JNI (WrapperTable) when C++ object gets deleted - does not need to be public
     swigCPtr = 0;
+  }
+
+  public boolean isDeleted() { // returns true if the underlying C++ object has already been deleted
+    return swigCPtr == 0;
   }
 
   protected long getCPtr() { // used instead of all direct swigCPtr accesses
@@ -135,6 +139,8 @@ static void opp_JavaThrowException(JNIEnv *jenv, cException& e) {
 
   @Override
   public String toString() {
+    if (isZombie())
+        return getClass().getSimpleName() + "<deleted>";
     return "("+getClassName()+")"+getFullPath();
   }
 %}
