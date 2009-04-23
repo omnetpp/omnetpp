@@ -26,6 +26,7 @@ import org.omnetpp.experimental.simkernel.swig.cSimulation;
  * @author Andras
  */
 //XXX flusLastLine() everywhere
+//FIXME remove the whole objectDeletedListener stuff?? likely not needed, and just makes it slooow 
 public class SimulationManager {
 	protected ListenerList simulationListeners = new ListenerList();
 	protected ListenerList objectDeletedlisteners = new ListenerList();

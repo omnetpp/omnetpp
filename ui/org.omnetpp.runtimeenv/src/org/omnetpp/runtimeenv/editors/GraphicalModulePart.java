@@ -11,6 +11,7 @@ import org.eclipse.draw2d.MouseEvent;
 import org.eclipse.draw2d.MouseListener;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.experimental.simkernel.swig.cDisplayString;
 import org.omnetpp.experimental.simkernel.swig.cModule;
@@ -31,8 +32,8 @@ public class GraphicalModulePart extends InspectorPart {
     /**
      * Constructor.
      */
-    public GraphicalModulePart(cModule module) {
-    	super(module);
+    public GraphicalModulePart(IInspectorContainer container, cModule module) {
+    	super(container, module);
 
         figure = new CompoundModuleFigureEx();
         figure.setInspectorPart(this);
@@ -75,8 +76,10 @@ public class GraphicalModulePart extends InspectorPart {
     @Override
 	protected void update() {
     	super.update();
-        refreshChildren();
-        refreshVisuals();
+    	if (!isDisposed()) { 
+    		refreshChildren();
+    		refreshVisuals();
+		}
     }
 
     protected void refreshChildren() {
@@ -128,6 +131,7 @@ public class GraphicalModulePart extends InspectorPart {
     }
 
     protected void refreshVisuals() {
+    	float scale = 1.0f;  //FIXME from compound module display string
         cSimulation sim = cSimulation.getActiveSimulation();
         for (int id : submodules.keySet()) {
             cModule submodule = sim.getModule(id);
@@ -137,7 +141,7 @@ public class GraphicalModulePart extends InspectorPart {
             // update figure if display string changed since last time
             if (!displayStringText.equals(lastSubmoduleDisplayStrings.get(id))) {
                 SubmoduleFigureEx submoduleFigure = submodules.get(id);
-                submoduleFigure.setDisplayString(displayString);
+				submoduleFigure.setDisplayString(scale, displayString);
                 submoduleFigure.setSubmoduleVectorIndex(submodule.getName(), submodule.getVectorSize(), submodule.getIndex());
 
                 // FIXME should also set the scale factor here (from the containing compound module)
@@ -167,17 +171,17 @@ public class GraphicalModulePart extends InspectorPart {
 		System.out.println("clicked submodule: " + submoduleFigure);
 		if (submoduleFigure == null) {
             if ((me.getState()& InputEvent.CONTROL) != 0)
-            	selectionRequestHandler.toggleSelection(getObject());
+            	inspectorContainer.toggleSelection(getObject());
             else
-            	selectionRequestHandler.select(getObject(), true);
+            	inspectorContainer.select(getObject(), true);
 		}
 		else {
 			int submoduleID = submoduleFigure.getModuleID();
             cModule submodule = cSimulation.getActiveSimulation().getModule(submoduleID);
             if ((me.getState()& InputEvent.CONTROL) != 0)
-            	selectionRequestHandler.toggleSelection(submodule);
+            	inspectorContainer.toggleSelection(submodule);
             else
-            	selectionRequestHandler.select(submodule, true);
+            	inspectorContainer.select(submodule, true);
 		}
 		//note: no me.consume()! it would kill the move/resize listener
     }
@@ -232,6 +236,15 @@ public class GraphicalModulePart extends InspectorPart {
                 @Override
                 public void run() {
                     Activator.openInspector2(module, false);
+                }
+            });
+
+            contextMenuManager.add(new Separator());
+
+            contextMenuManager.add(new Action("Close") {
+                @Override
+                public void run() {
+                    getContainer().close(GraphicalModulePart.this);
                 }
             });
         }

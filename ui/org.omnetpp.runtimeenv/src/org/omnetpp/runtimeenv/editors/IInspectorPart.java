@@ -43,19 +43,10 @@ public interface IInspectorPart {
     boolean isSelected();
 
     /**
-     * The selection request handler's methods are typically called by the 
-     * inspector on mouse clicks, and the methods request that 
-     * some objects be added or removed from the canvas selection.
-     * Highlighting the selected objects takes place afterwards,
-     * in the selectionChanged() method being called by the canvas
-     * on all inspectors. 
-     */
-    void setSelectionRequestHandler(ISelectionRequestHandler handler);
-
-    /**
-     * Returns selection request handler
+     * Returns container for the inspector. The container handles selection,
+     * closing / maximizing / changing Z-order of inspectors, and other tasks.
      */ 
-    ISelectionRequestHandler getSelectionRequestHandler();
+    IInspectorContainer getContainer();
     
     /**
      * Called when the canvas selection changes. The inspector part should

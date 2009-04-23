@@ -31,8 +31,6 @@ import org.omnetpp.common.ui.FigureCanvas;
 import org.omnetpp.common.ui.SelectionProvider;
 import org.omnetpp.experimental.simkernel.swig.cObject;
 import org.omnetpp.figures.misc.FigureUtils;
-import org.omnetpp.runtimeenv.Activator;
-import org.omnetpp.runtimeenv.IObjectDeletedListener;
 
 /**
  * 
@@ -41,7 +39,7 @@ import org.omnetpp.runtimeenv.IObjectDeletedListener;
 //XXX snap to grid for the move/resize?
 //FIXME how to evaluate "$PARNAME" references in display strings???
 //XXX inspectors should close on objectDeleted()! should remove dead objects from the selection!!!!
-public class ModelCanvas extends EditorPart implements ISelectionRequestHandler, IObjectDeletedListener {
+public class ModelCanvas extends EditorPart implements IInspectorContainer {
     public static final String EDITOR_ID = "org.omnetpp.runtimeenv.editors.ModelCanvas";
     protected ScrolledComposite sc;
     protected FigureCanvas canvas;
@@ -57,15 +55,12 @@ public class ModelCanvas extends EditorPart implements ISelectionRequestHandler,
         setPartName(input.getName());
         
         site.setSelectionProvider(new SelectionProvider());
-        
-        Activator.getSimulationManager().addObjectDeletedListener(this);
     }
 
     @Override
     public void dispose() {
     	for (IInspectorPart inspectorPart : inspectors.toArray(new IInspectorPart[]{}))
     		removeInspectorPart(inspectorPart);
-        Activator.getSimulationManager().removeObjectDeletedListener(this);
     	super.dispose();
     }
     
@@ -141,17 +136,28 @@ public class ModelCanvas extends EditorPart implements ISelectionRequestHandler,
         new InspectorMouseListener(inspectorPart); //XXX
         
         // listen on selection changes
-        inspectorPart.setSelectionRequestHandler(this);        
+        inspectorPart.setContainer(this);        
     }
 
     public void removeInspectorPart(IInspectorPart inspectorPart) {
-        Assert.isTrue(inspectors.contains(inspectorPart));
-        inspectors.remove(inspectorPart);
-        canvas.getRootFigure().remove(inspectorPart.getFigure());  //XXX maybe do it in the inspector??
-        inspectorPart.dispose();
+    	System.out.println("removeInspectorPart: " + inspectorPart);
+    	Assert.isTrue(inspectors.contains(inspectorPart));
+    	inspectors.remove(inspectorPart);
+    	canvas.getRootFigure().remove(inspectorPart.getFigure());  //XXX maybe do it in the inspector??
+    	inspectorPart.dispose();
     }
     
-    public void reveal(IFigure figure) {
+    @Override
+    public Composite getControl() {
+    	return canvas;
+    }
+
+    @Override
+	public void close(IInspectorPart inspectorPart) {
+		removeInspectorPart(inspectorPart);
+	}
+
+	public void reveal(IFigure figure) {
         Rectangle bounds = figure.getBounds(); //XXX maybe not good if coords are parent-relative
         sc.setOrigin(bounds.x, bounds.y);
     }
@@ -208,22 +214,6 @@ public class ModelCanvas extends EditorPart implements ISelectionRequestHandler,
     	for (IInspectorPart inspector : inspectors)
     		inspector.selectionChanged(selection);
     }
-
-	@Override
-	public void objectDeleted(cObject obj) {
-		// if we have an inspector for it, close the inspector
-    	for (IInspectorPart inspector : inspectors.toArray(new IInspectorPart[]{}))
-    		if (inspector.getObject().equals(obj))
-    			removeInspectorPart(inspector);
-		
-//		// remove dead object from the selection
-//    	IStructuredSelection selection = (IStructuredSelection)getSite().getSelectionProvider().getSelection();
-//    	for (Object o : selection.toList()) {
-//    		if (o.equals(obj) || ...)
-//    			deselectAll(); 
-//    		//&&&%%%$$$####@@@ FIXME not really, just remove
-//    	}
-	}
 
 	@Override
     public void doSave(IProgressMonitor monitor) {

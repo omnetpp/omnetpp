@@ -14,14 +14,13 @@ import org.omnetpp.runtimeenv.ISimulationListener;
 public abstract class InspectorPart implements IInspectorPart {
 	protected cObject object;
 	protected IInspectorFigure figure;
+	protected IInspectorContainer inspectorContainer;
 	protected ISimulationListener simulationListener;
-	protected ISelectionRequestHandler selectionRequestHandler;
 	protected boolean isSelected;
 
-	public InspectorPart(cObject object) {
-		super();
-		
+	public InspectorPart(IInspectorContainer container, cObject object) {
 		this.object = object;
+		this.inspectorContainer = container;
 
 		// update the inspector when something happens in the simulation
 		Activator.getSimulationManager().addSimulationListener(simulationListener = new ISimulationListener() {
@@ -33,10 +32,15 @@ public abstract class InspectorPart implements IInspectorPart {
 	}
 
 	public void dispose() {
+		System.out.println("inspector disposed: " + object);
 		object = null;
 	    Activator.getSimulationManager().removeSimulationListener(simulationListener);
 	}
 
+	public boolean isDisposed() {
+		return object == null;
+	}
+	
     public static IInspectorPart findInspectorPartAt(FigureCanvas canvas, int x, int y) {
         IFigure target = canvas.getRootFigure().findFigureAt(x, y);
         while (target != null && !(target instanceof IInspectorFigure))
@@ -61,20 +65,17 @@ public abstract class InspectorPart implements IInspectorPart {
 
 	protected void update() {
 		Assert.isTrue(object != null, "inspector already disposed");
+		
+		// automatically close the inspector when the underlying object gets deleted
+		if (object.isZombie()) {
+	    	System.out.println("object became zombie - auto-closing inspector: ");
+			getContainer().close(this);
+		}
 	}
     
     @Override
-    public String toString() {
-        return getClass().getSimpleName() + ":(" + object.getClassName() + ")" + object.getFullPath();
-    }
-
-    public void setSelectionRequestHandler(ISelectionRequestHandler handler) {
-    	selectionRequestHandler = handler;
-    }
-
-    @Override
-    public ISelectionRequestHandler getSelectionRequestHandler() {
-    	return selectionRequestHandler;
+    public IInspectorContainer getContainer() {
+    	return inspectorContainer;
     }
     
     @Override
@@ -85,6 +86,13 @@ public abstract class InspectorPart implements IInspectorPart {
     		figure.setSelectionBorder(isSelected);
     }
 
+    @Override
+    public String toString() {
+    	if (object.isZombie())
+    		return getClass().getSimpleName() + ":<deleted-object>";
+    	else
+    		return getClass().getSimpleName() + ":(" + object.getClassName() + ")" + object.getFullPath();
+    }
     
 
 }
