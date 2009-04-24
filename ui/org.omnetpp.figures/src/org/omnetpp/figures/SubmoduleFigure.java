@@ -78,6 +78,7 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 	protected int shapeBorderWidth;
 	protected Image image;
 	protected Image decoratorImage;
+	protected int imageSizePercentage = 100;
 	protected boolean pinVisible;
 	protected boolean nameVisible = true;
 	protected String text;
@@ -343,8 +344,9 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 		int width = shape==SHAPE_NONE ? 0 : shapeWidth;
 		int height = shape==SHAPE_NONE ? 0 : shapeHeight;
 		if (image != null) {
-			width = Math.max(width, image.getBounds().width);
-			height = Math.max(height, image.getBounds().height);
+			org.eclipse.swt.graphics.Rectangle imageBounds = image.getBounds();
+			width = Math.max(width, imageSizePercentage * imageBounds.width / 100);
+			height = Math.max(height, imageSizePercentage * imageBounds.height / 100);
 		}
 		return centerLoc==null ? new Rectangle(0,0,width,height) : new Rectangle(centerLoc.x-width/2, centerLoc.y-height/2, width, height);
 	}
@@ -401,6 +403,10 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 		if (decoratorImage == null)
 			return null;
 		org.eclipse.swt.graphics.Rectangle imageBounds = decoratorImage.getBounds();
+		if (imageSizePercentage != 100) {
+			imageBounds.width = imageSizePercentage * imageBounds.width / 100;
+			imageBounds.height = imageSizePercentage * imageBounds.height / 100;
+		}
 		return new Rectangle(shapeBounds.right()-3*imageBounds.width/4, shapeBounds.y - imageBounds.height/4, imageBounds.width, imageBounds.height);
 	}
 
@@ -461,6 +467,20 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 		return getShapeBounds();
 	}
 
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.draw2d.Figure#containsPoint(int, int)
+	 * We override it to include also the nameBounds, so clicking on submodule name would
+	 * be counted also as a selection event.
+	 */
+	@Override
+	public boolean containsPoint(int x, int y) {
+		if (getShapeBounds().contains(x, y))
+			return true;
+		Rectangle nameBounds = getNameBounds();
+		return nameBounds != null && nameBounds.contains(x, y);
+	}
+
 	public void setName(String text) {
 		if (!StringUtils.equals(this.nameText, text)) {
 			nameText = text;
@@ -489,16 +509,6 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 		return tooltipText;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.draw2d.Figure#containsPoint(int, int)
-	 * We override it to include also the nameBounds, so clicking on submodule name would
-	 * be counted also as a selection event.
-	 */
-	@Override
-	public boolean containsPoint(int x, int y) {
-		return getShapeBounds().contains(x, y) || getNameBounds().contains(x, y);
-	}
-
 	/**
 	 * Whether the figure displays a shape (and not image)
 	 */
@@ -524,8 +534,13 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 	}
 
 	/**
-	 * Hides/shows the name of the module. NOTE that the NameBounds is still calculated correctly
-	 * just the paint method does not paint it.
+	 * Hides/shows the name of the module. NOTE that the name bounds is still 
+	 * calculated correctly and the name label counts in the figure bounds,
+	 * only the paint method does not paint it. This methods is used by the 
+	 * direct edit support in the graphical editor.
+	 * 
+	 * Note: an alternative is setName(null), which will exclude the name label
+	 * from the bounds. 
 	 */
 	public void setNameVisible(boolean visible) {
 		if (nameVisible != visible) {
@@ -540,6 +555,19 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 		return nameVisible;
 	}
 
+	public void setImageSizePercentage(int imageSizePercentage) {
+		if (this.imageSizePercentage != imageSizePercentage) {
+			this.imageSizePercentage = imageSizePercentage;
+			if (centerLoc != null)
+				updateBounds();
+			repaint();
+		}
+	}
+	
+	public int getImageSizePercentage() {
+		return imageSizePercentage;
+	}
+	
 	public Point getCenterLocation() {
 		return centerLoc;
 	}
@@ -650,7 +678,14 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 		// draw image
 		if (image != null) {
 			org.eclipse.swt.graphics.Rectangle imageBounds = image.getBounds();
-			graphics.drawImage(image, centerLoc.x - imageBounds.width/2, centerLoc.y - imageBounds.height/2);
+			if (imageSizePercentage == 100)
+				graphics.drawImage(image, centerLoc.x - imageBounds.width/2, centerLoc.y - imageBounds.height/2);
+			else {
+				int scaledWidth = imageSizePercentage * imageBounds.width / 100;
+				int scaledHeight = imageSizePercentage * imageBounds.height / 100;
+				graphics.drawImage(image, 0, 0, imageBounds.width, imageBounds.height, 
+						centerLoc.x - scaledWidth/2, centerLoc.y - scaledHeight/2, scaledWidth, scaledHeight);
+			}
 		}
 
 		Rectangle shapeBounds = null;  // do it on demand
@@ -659,7 +694,13 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 		if (decoratorImage != null) {
 			if (shapeBounds == null) shapeBounds = getShapeBounds();
 			Rectangle r = getDecorationImageBounds(shapeBounds);
-			graphics.drawImage(decoratorImage, r.x, r.y);
+			if (imageSizePercentage == 100)
+				graphics.drawImage(decoratorImage, r.x, r.y);
+			else {
+				org.eclipse.swt.graphics.Rectangle imageBounds = decoratorImage.getBounds();
+				graphics.drawImage(decoratorImage, 0, 0, imageBounds.width, imageBounds.height, 
+						r.x, r.y, r.width, r.height);
+			}
 		}
 
 		// draw text
