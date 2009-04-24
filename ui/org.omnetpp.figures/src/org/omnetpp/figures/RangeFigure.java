@@ -20,6 +20,7 @@ import org.eclipse.draw2d.geometry.Rectangle;
 public class RangeFigure extends Ellipse {
 	public static final int ALPHA = 64;
 	
+	// FIXME check this if the scaling is less than 1.0 (sides are chopped)
     // TODO: eclipse bug ID 199710
     @Override
     protected void outlineShape(Graphics graphics) {

@@ -59,6 +59,7 @@ public class CompoundModuleFigure extends NedFigure
     protected Color gridColor;
     protected Color moduleBackgroundColor = ERROR_BACKGROUND_COLOR;
     protected Color moduleBorderColor = ERROR_BORDER_COLOR;
+    protected int moduleBorderWidth;
     protected BackgroundLayer backgroundLayer;
     protected Layer backDecorationLayer;
     protected SubmoduleLayer submoduleLayer;
@@ -257,7 +258,7 @@ public class CompoundModuleFigure extends NedFigure
 	protected void setBackground(Image img, String arrange, Color backgroundColor, Color borderColor, int borderWidth) {
 		moduleBackgroundColor = backgroundColor==null ? ERROR_BACKGROUND_COLOR : backgroundColor;
 		moduleBorderColor = borderColor==null ? ERROR_BORDER_COLOR : borderColor;
-
+		this.moduleBorderWidth = borderWidth < 0 ? ERROR_BORDER_WIDTH : borderWidth;
 		// the global background is the same as the border color
 		// XXX do we need to set this?
 		mainContainer.setBackgroundColor(moduleBorderColor);
@@ -298,6 +299,8 @@ public class CompoundModuleFigure extends NedFigure
     public void setDisplayString(IDisplayString dps) {
 		// OPTIMIZATION: do not change anything if the display string has not changed
 		String newDisplayString = dps.toString();
+		System.out.println("cmodule: "+newDisplayString);
+		System.out.println("cmodule (old): "+oldDisplayString);
 		if (newDisplayString.equals(oldDisplayString) )
 			return;
 		
@@ -349,6 +352,7 @@ public class CompoundModuleFigure extends NedFigure
         }
 
         repaint();
+        System.out.println("cmodule setDisplayString finished");
 	}
 
     public Dimension getBackgroundSize() {

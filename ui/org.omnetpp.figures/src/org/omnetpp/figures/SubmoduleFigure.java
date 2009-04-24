@@ -79,6 +79,7 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 	protected Image image;
 	protected Image decoratorImage;
 	protected boolean pinVisible;
+	protected boolean nameVisible = true;
 	protected String text;
 	protected int textPos;
 	protected Color textColor;
@@ -522,6 +523,23 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 		return pinVisible;
 	}
 
+	/**
+	 * Hides/shows the name of the module. NOTE that the NameBounds is still calculated correctly
+	 * just the paint method does not paint it.
+	 */
+	public void setNameVisible(boolean visible) {
+		if (nameVisible != visible) {
+			nameVisible = visible;
+			if (centerLoc != null)
+				updateBounds();
+			repaint();
+		}
+	}
+
+	public boolean isNameVisible() {
+		return nameVisible;
+	}
+
 	public Point getCenterLocation() {
 		return centerLoc;
 	}
@@ -675,7 +693,7 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 		}
 
 		// draw name string
-		if (!StringUtils.isEmpty(nameText)) {
+		if (!StringUtils.isEmpty(nameText) && nameVisible) {
 			if (shapeBounds == null) shapeBounds = getShapeBounds();
 			Rectangle r = getNameBounds(shapeBounds);
 			graphics.setForegroundColor(ColorFactory.BLACK);

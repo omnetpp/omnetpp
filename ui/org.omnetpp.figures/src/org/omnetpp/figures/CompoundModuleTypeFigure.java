@@ -30,6 +30,8 @@ import org.omnetpp.common.image.ImageFactory;
  *
  * @author rhornig
  */
+// TODO border handling must be moved to the  CompoundModuleFigure class
+// TODO CompoundModuleTypeFigure should be a composit? instead of inheriting from CompoundModuleFigure 
 public class CompoundModuleTypeFigure extends CompoundModuleFigure {
     protected IFigure innerTypeContainer;
 
@@ -87,9 +89,10 @@ public class CompoundModuleTypeFigure extends CompoundModuleFigure {
     @Override
 	protected void setBackground(Image img, String arrange,
 			Color backgroundColor, Color borderColor, int borderWidth) {
+    	super.setBackground(img, arrange, backgroundColor, borderColor,borderWidth);
+    	// super has already set the module border color/width. fields so we set it on the border
 		getCompoundModuleBorder().setColor(moduleBorderColor);
-		getCompoundModuleBorder().setWidth(borderWidth < 0 ? ERROR_BORDER_WIDTH : borderWidth);
-		super.setBackground(img, arrange, backgroundColor, borderColor,borderWidth);
+		getCompoundModuleBorder().setWidth(moduleBorderWidth);
 	}
 
 	protected void setDefaultShape(Image img, String shape, int shapeWidth, int shapeHeight, Color shapeFillColor, Color shapeBorderColor, int shapeBorderWidth) {
@@ -100,6 +103,7 @@ public class CompoundModuleTypeFigure extends CompoundModuleFigure {
 
 	@Override
 	public void setDisplayString(IDisplayString dps) {
+		super.setDisplayString(dps);
 		// setup the figure's properties
         // set the icon showing the default representation in the titlebar
         Image img = ImageFactory.getImage(
@@ -115,6 +119,5 @@ public class CompoundModuleTypeFigure extends CompoundModuleFigure {
         		ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.BORDERCOL)),
         		dps.getAsInt(IDisplayString.Prop.BORDERWIDTH, -1));
 
-		super.setDisplayString(dps);
 	}
 }
