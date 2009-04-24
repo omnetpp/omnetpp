@@ -70,7 +70,7 @@ public class CompoundModuleTypeFigure extends CompoundModuleFigure {
         innerTypeContainer.setLayoutManager(typesLayout);
         add(innerTypeContainer,1);
 
-        // add a compound module border / titlebar
+        // add a compound module border / titlebar (FIXME: shoud be rather drawn in CompoundModuleFigure)
         mainContainer.setBorder(new CompoundModuleLineBorder());
     }
 
@@ -119,5 +119,6 @@ public class CompoundModuleTypeFigure extends CompoundModuleFigure {
         		ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.BORDERCOL)),
         		dps.getAsInt(IDisplayString.Prop.BORDERWIDTH, -1));
 
+        repaint();
 	}
 }

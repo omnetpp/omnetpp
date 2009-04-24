@@ -11,11 +11,11 @@ import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.ImageFigure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.PositionConstants;
+import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.omnetpp.common.displaymodel.IDisplayString;
-import org.omnetpp.common.util.StringUtils;
 
 /**
  * It is the common base to all selectable figures in the editor.
@@ -24,16 +24,16 @@ import org.omnetpp.common.util.StringUtils;
  *
  * @author rhornig
  */
-abstract public class NedFigure extends Figure implements IProblemDecorationSupport {
+abstract public class NedFigure extends Figure implements IProblemDecorationSupport, ITooltipTextProvider {
 	// FIXME move it to ImageFactory
 	protected static final Image ICON_ERROR = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_ERROR_TSK); //ImageFactory.getImage(ImageFactory.DECORATOR_IMAGE_ERROR);
 	protected static final Image ICON_WARNING = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_WARN_TSK); //ImageFactory.getImage(ImageFactory.DECORATOR_IMAGE_WARNING);
 	protected static final Image ICON_INFO = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_INFO_TSK); //ImageFactory.getImage(ImageFactory.DECORATOR_IMAGE_INFO);
 
     protected Label nameFigure = new Label();
-    protected TooltipFigure tooltipFigure;
-    protected ImageFigure problemMarkerFigure = new ImageFigure(); //FIXME create it ON DEMAND!  --Andras
-//    protected TooltipFigure problemMarkerTooltipFigure;
+    protected ImageFigure problemMarkerFigure = new ImageFigure(); // FIXME create in on demand
+    protected ITooltipTextProvider problemMarkerTextProvider;
+    protected String tooltipText;
 
     public NedFigure() {
         // left align everything inside the figure
@@ -63,47 +63,33 @@ abstract public class NedFigure extends Figure implements IProblemDecorationSupp
 		return image;
 	}
 
-    protected void setTooltipText(String tttext) {
-        if (StringUtils.isEmpty(tttext)) {
-            setToolTip(null);
-            tooltipFigure = null;
-        }
-        else {
-            tooltipFigure = new TooltipFigure();
-            setToolTip(tooltipFigure);
-            tooltipFigure.setText(tttext);
-            invalidate();
-        }
+    public void setTooltipText(String tttext) {
+    	tooltipText = tttext;
     }
 
+	public String getTooltipText(int x, int y) {
+		// if there is a problem marker and an associated tooltip text provider
+		// and the cursor is over the marker, delegate to the problem marker text provider
+		if (problemMarkerTextProvider != null && problemMarkerFigure != null) {
+			Rectangle markerBounds = problemMarkerFigure.getBounds().getCopy();
+			translateToAbsolute(markerBounds);
+			if (markerBounds.contains(x, y)) {
+				String text = problemMarkerTextProvider.getTooltipText(x, y);
+				if (text != null)
+					return text;
+			}
+		}
+		return tooltipText;
+	}
     
-//    public void setProblemDecoration(int maxSeverity, ITooltipTextProvider textProvider) {
-//        problemMarkerImage = NedFigure.getProblemImageFor(maxSeverity);
-//        problemMarkerTextProvider = textProvider;
-//		calculateBounds();
-//        repaint();
-//    }
-
     public void setProblemDecoration(int maxSeverity, ITooltipTextProvider textProvider) {
         Image image = NedFigure.getProblemImageFor(maxSeverity);
-        
-        // FIXME if rewritten to native tooltip support the tooltip figure can be removed
-        
         if (image != null)
             problemMarkerFigure.setImage(image);
         problemMarkerFigure.setVisible(image != null);
 
-        // set a tooltip text
-        if (textProvider == null) {
-            problemMarkerFigure.setToolTip(null);
-//            problemMarkerTooltipFigure = null;
-        }
-        else {
-//            problemMarkerTooltipFigure = new TooltipFigure();
-//            problemMarkerFigure.setToolTip(problemMarkerTooltipFigure);
-//            problemMarkerTooltipFigure.setTextProvider(textProvider);
-        }
-        invalidate();
+        problemMarkerTextProvider = textProvider;
+        repaint();
     }
 
     public void setName(String text) {

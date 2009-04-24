@@ -42,6 +42,7 @@ import org.omnetpp.figures.routers.CompoundModuleConnectionRouter;
 // property has changed that requires the recalculation (e.g. submodule added/removed submodule size changed)
 
 // FIXME check for invalidate() calls. Maybe we should change it to repaint() ???
+// FIXME module size is not calculated again if we relayout the content
 public class CompoundModuleFigure extends NedFigure
 				implements IAnchorBounds, ISelectionHandleBounds, ILayerSupport {
 
@@ -158,15 +159,13 @@ public class CompoundModuleFigure extends NedFigure
 
         @Override
         public Dimension getPreferredSize(int wHint, int hHint) {
-//        	return new Dimension(800,600); //XXX
 			return layouter.getPreferredSize(this, backgroundSize.width, backgroundSize.height);
 		}
         
         @Override
         public Dimension getMinimumSize(int wHint, int hHint) {
-        	// XXX calculate correctly
-        	return new Dimension(50,50);
-			// return getPreferresdSize(wHint, hHint);
+        	return new Dimension(100,50);
+//			return getPreferredSize(wHint, hHint);
         }
     }
 
@@ -294,13 +293,10 @@ public class CompoundModuleFigure extends NedFigure
 	 * Adjusts the figure properties using a displayString object
 	 * @param dps The display string object containing the properties
 	 */
-	// TODO add display string caching
 	@Override
     public void setDisplayString(IDisplayString dps) {
 		// OPTIMIZATION: do not change anything if the display string has not changed
 		String newDisplayString = dps.toString();
-		System.out.println("cmodule: "+newDisplayString);
-		System.out.println("cmodule (old): "+oldDisplayString);
 		if (newDisplayString.equals(oldDisplayString) )
 			return;
 		
@@ -348,11 +344,11 @@ public class CompoundModuleFigure extends NedFigure
             layouter.requestFullLayout();
             // a full new layout must be executed before any repainting occurs otherwise
             // figures without centerLocation cannot be rendered
+            invalidate();
             layouter.layout(submoduleLayer);  
         }
 
         repaint();
-        System.out.println("cmodule setDisplayString finished");
 	}
 
     public Dimension getBackgroundSize() {
