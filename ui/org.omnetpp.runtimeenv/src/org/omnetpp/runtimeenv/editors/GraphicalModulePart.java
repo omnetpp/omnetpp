@@ -30,7 +30,6 @@ import org.omnetpp.runtimeenv.figures.SubmoduleFigureEx;
 //XXX remove display string caching (figure does that already)
 public class GraphicalModulePart extends InspectorPart {
     protected Map<Integer,SubmoduleFigureEx> submodules = new HashMap<Integer,SubmoduleFigureEx>(); //moduleID-to-figure
-    protected Map<Integer,String> lastSubmoduleDisplayStrings = new HashMap<Integer,String>(); //moduleID-to-displayString
     
     /**
      * Constructor.
@@ -110,7 +109,6 @@ public class GraphicalModulePart extends InspectorPart {
             for (int id : toBeRemoved) {
                 moduleFigure.getSubmoduleLayer().remove(submodules.get(id));
                 submodules.remove(id);
-                lastSubmoduleDisplayStrings.remove(id);
             }
         }
         if (toBeAdded != null) {
@@ -123,7 +121,6 @@ public class GraphicalModulePart extends InspectorPart {
                 submoduleFigure.setName(sim.getModule(id).getFullName());
                 moduleFigure.getSubmoduleLayer().add(submoduleFigure);
                 submodules.put(id, submoduleFigure);
-                lastSubmoduleDisplayStrings.put(id, null);
             }
         }
     }
@@ -141,28 +138,18 @@ public class GraphicalModulePart extends InspectorPart {
     
     protected void refreshVisuals() {
     	float scale = 1.0f;  //FIXME from compound module display string
-        cSimulation sim = cSimulation.getActiveSimulation();
-        for (int id : submodules.keySet()) {
-            cModule submodule = sim.getModule(id);
-			cDisplayString displayString = submodule.getDisplayString();
-            String displayStringText = displayString.toString();
-            
-            // update figure if display string changed since last time
-            if (!displayStringText.equals(lastSubmoduleDisplayStrings.get(id))) {
-                SubmoduleFigureEx submoduleFigure = submodules.get(id);
-				submoduleFigure.setDisplayString(scale, displayString);
-                submoduleFigure.setSubmoduleVectorIndex(submodule.getName(), submodule.getVectorSize(), submodule.getIndex());
-
-                // FIXME should also set the scale factor here (from the containing compound module)
-                // otherwise range, size cannot be correctly displayed
-                
-                lastSubmoduleDisplayStrings.put(id, displayStringText);
-            }
-        }
+    	cSimulation sim = cSimulation.getActiveSimulation();
+    	for (int id : submodules.keySet()) {
+    		cModule submodule = sim.getModule(id);
+    		SubmoduleFigureEx submoduleFigure = submodules.get(id);
+    		cDisplayString displayString = submodule.getDisplayString();
+    		submoduleFigure.setDisplayString(scale, displayString);
+    		submoduleFigure.setSubmoduleVectorIndex(submodule.getName(), submodule.getVectorSize(), submodule.getIndex());
+    	}
         
     	//CompoundModuleFigureEx moduleFigure = (CompoundModuleFigureEx)figure;
-//        Debug.debug = true;
-//        FigureUtils.debugPrintRootFigureHierarchy(figure);
+        //Debug.debug = true;
+        //FigureUtils.debugPrintRootFigureHierarchy(figure);
     }
 
     protected void handleMouseDoubleClick(MouseEvent me) {
