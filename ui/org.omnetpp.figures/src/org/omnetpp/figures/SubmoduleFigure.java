@@ -28,10 +28,7 @@ import org.omnetpp.figures.layout.ISubmoduleConstraint;
 import org.omnetpp.figures.misc.ISelectionHandleBounds;
 
 /**
- * Figure representing a submodule inside a compound module figure. Contains several figures attached
- * to the main figure. They are placed on a different foreground and background layer, so they are
- * not included when the boundary calculation is done. getPreferredLocation can be
- * queried after setDisplaystring is called so an appropriate constraint can be created for a layouter.
+ * Figure representing a submodule inside a compound module figure.
  *
  * @author andras
  */
@@ -96,9 +93,9 @@ public class SubmoduleFigure extends Figure implements ISubmoduleConstraint, IAn
 	 * Adjust the properties using a display string object
 	 */
 	public void setDisplayString(float scale, IDisplayString displayString) {
-		// OPTIMIZATION: do not change anything if the display string has not changed
+		// optimization: do not change anything if the display string has not changed
 		String newDisplayString = displayString.toString();
-		if (this.scale == scale &&  newDisplayString.equals(oldDisplayString) )
+		if (this.scale == scale && newDisplayString.equals(oldDisplayString))
 			return;
 		
 		this.scale = scale;
@@ -184,10 +181,8 @@ public class SubmoduleFigure extends Figure implements ISubmoduleConstraint, IAn
 	}
 	
 	/**
-	 * @param radius
-	 * @param fillColor
-	 * @param borderColor can be null meaning that no outline should be drawn
-	 * @param borderWidth can be null meaning that no background should be drawn
+	 * Store range figure parameters. fillColor and/or borderColor can be null, 
+	 * meaning that no background or outline should be drawn.
 	 */
 	protected void setRange(int radius, Color fillColor, Color borderColor, int borderWidth) {
 		if (radius <= 0) {
@@ -207,9 +202,9 @@ public class SubmoduleFigure extends Figure implements ISubmoduleConstraint, IAn
 			rangeFigure.setForegroundColor(borderColor);
 			rangeFigure.setLineWidth(borderWidth);
 
-			if (centerLoc != null) {
+			if (centerLoc != null)
 				rangeFigure.setBounds(new Rectangle(centerLoc.x, centerLoc.y, 0, 0).expand(radius,radius));
-			} else 
+			else 
 				rangeFigure.setBounds(new Rectangle(0, 0, 0, 0).expand(radius,radius));
 			
 			rangeFigure.repaint(); 
@@ -230,6 +225,7 @@ public class SubmoduleFigure extends Figure implements ISubmoduleConstraint, IAn
 	}
 
 	protected void setInfoText(String text, String pos, Color color) {
+		// only called as part of setDisplayString() -- no invalidate() or repaint() needed here 
 		Assert.isNotNull(color);
 		this.text = text;
 		if (!StringUtils.isEmpty(pos))
@@ -240,6 +236,7 @@ public class SubmoduleFigure extends Figure implements ISubmoduleConstraint, IAn
 
 	protected void setShape(Image image, String shapeName, int shapeWidth, int shapeHeight,
 			Color shapeFillColor, Color shapeBorderColor, int shapeBorderWidth) {
+		// only called as part of setDisplayString() -- no invalidate() or repaint() needed here 
 		Assert.isNotNull(shapeFillColor);
 		Assert.isNotNull(shapeBorderColor);
 
@@ -279,10 +276,10 @@ public class SubmoduleFigure extends Figure implements ISubmoduleConstraint, IAn
 
 		if (image == null && shape == SHAPE_NONE)
 			this.image = ImageFactory.getImage(ImageFactory.DEFAULT_KEY);
-
 	}
 
 	public void setSubmoduleVectorIndex(Object vectorIdentifier, int vectorSize, int vectorIndex) {
+		// clear centerLoc iff something's changed
 		if ((this.vectorIdentifier==null ? vectorIdentifier!=null : !this.vectorIdentifier.equals(vectorIdentifier)) ||
 				this.vectorSize != vectorSize || this.vectorIndex != vectorIndex) {
 			this.vectorIdentifier = vectorIdentifier;
@@ -295,7 +292,7 @@ public class SubmoduleFigure extends Figure implements ISubmoduleConstraint, IAn
 
 	protected void setBaseLocation(Point loc, VectorArrangement vectorArrangement, 
 			int vectorArrangementPar1, int vectorArrangementPar2, int vectorArrangementPar3) {
-		// clear centerLoc if something's changed
+		// clear centerLoc iff something's changed
 		if ((baseLoc==null ? loc!=null : !baseLoc.equals(loc)) || 
 				this.vectorArrangement != vectorArrangement ||
 				this.vectorArrangementPar1 != vectorArrangementPar1 ||
@@ -571,7 +568,7 @@ public class SubmoduleFigure extends Figure implements ISubmoduleConstraint, IAn
 			int top = centerLoc.y - shapeHeight/2;
 			if (shape == SHAPE_OVAL) {
 				if (2*shapeBorderWidth > shapeWidth || 2*shapeBorderWidth > shapeHeight) {
-					// special case if border is wider than the shape itself 
+					// special case: border is wider than the shape itself 
 					graphics.setBackgroundColor(shapeBorderColor);
 					graphics.fillOval(left, top, shapeWidth, shapeHeight);
 				}
@@ -587,7 +584,7 @@ public class SubmoduleFigure extends Figure implements ISubmoduleConstraint, IAn
 			}
 			else if (shape == SHAPE_RECT) {
 				if (2*shapeBorderWidth > shapeWidth || 2*shapeBorderWidth > shapeHeight) {
-					// special case if border is wider than the shape itself 
+					// special case: border is wider than the shape itself 
 					graphics.setBackgroundColor(shapeBorderColor);
 					graphics.fillRectangle(left, top, shapeWidth, shapeHeight);
 				}
