@@ -26,7 +26,8 @@ public class Application implements IApplication {
 		System.out.println("Entering Application.start()");
         ImageFactory.initialize(new String[]{"C:\\home\\omnetpp40\\omnetpp\\images"}); //XXX
         //Simkernel.changeToDir("C:/home/omnetpp40/omnetpp/test/anim/dynamic"); //XXX
-        Simkernel.changeToDir("C:/home/omnetpp40/omnetpp/samples/queuenet"); //XXX
+        //Simkernel.changeToDir("C:/home/omnetpp40/omnetpp/samples/queuenet"); //XXX
+        Simkernel.changeToDir("C:/home/omnetpp40/omnetpp/samples/aloha"); //XXX
         cStaticFlag.set(true); //FIXME also clear it later
 
 		// assemble the command line

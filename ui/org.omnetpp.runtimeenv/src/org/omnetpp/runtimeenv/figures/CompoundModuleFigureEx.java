@@ -7,6 +7,7 @@ import org.eclipse.draw2d.ScrollPane;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.figures.CompoundModuleFigure;
+import org.omnetpp.figures.layout.CompoundModuleLayout;
 import org.omnetpp.runtimeenv.editors.IInspectorFigure;
 import org.omnetpp.runtimeenv.editors.IInspectorPart;
 
@@ -23,6 +24,7 @@ public class CompoundModuleFigureEx extends ScrollPane implements IInspectorFigu
         //setBorder(new LineBorder(2));
 
         // fix crappy scrollbar behavior of ScrollPane
+        //FIXME needed?
         addLayoutListener(new LayoutListener.Stub() {
 			public void postLayout(IFigure container) {
 				setHorizontalScrollBarVisibility(getSize().width >= getContents().getSize().width ? ScrollPane.NEVER : ScrollPane.ALWAYS);
@@ -48,6 +50,14 @@ public class CompoundModuleFigureEx extends ScrollPane implements IInspectorFigu
 		return moduleFigure.getSubmoduleLayer();
 	}
 
+	public Layer getConnectionLayer() {
+		return moduleFigure.getConnectionLayer();
+	}
+
+	public CompoundModuleLayout getSubmoduleLayouter() {
+		return (CompoundModuleLayout)moduleFigure.getSubmoduleLayer().getLayoutManager();
+	}
+	
     public void setDisplayString(IDisplayString dps) {
 		moduleFigure.setDisplayString(dps);
 	}

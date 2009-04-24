@@ -15,21 +15,27 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.graphics.Point;
 import org.omnetpp.experimental.simkernel.swig.cDisplayString;
+import org.omnetpp.experimental.simkernel.swig.cGate;
 import org.omnetpp.experimental.simkernel.swig.cModule;
+import org.omnetpp.experimental.simkernel.swig.cModule_GateIterator;
 import org.omnetpp.experimental.simkernel.swig.cModule_SubmoduleIterator;
 import org.omnetpp.experimental.simkernel.swig.cSimulation;
+import org.omnetpp.figures.ConnectionFigure;
+import org.omnetpp.figures.anchors.CompoundModuleGateAnchor;
+import org.omnetpp.figures.anchors.GateAnchor;
 import org.omnetpp.figures.layout.CompoundModuleLayout;
 import org.omnetpp.runtimeenv.Activator;
 import org.omnetpp.runtimeenv.figures.CompoundModuleFigureEx;
 import org.omnetpp.runtimeenv.figures.SubmoduleFigureEx;
 
 /**
- * 
+ * An inspector that displays a compound module graphically.
  * @author Andras
  */
-//XXX remove display string caching (figure does that already)
+//TODO ConnectionFigure must be fixed too!
 public class GraphicalModulePart extends InspectorPart {
-    protected Map<Integer,SubmoduleFigureEx> submodules = new HashMap<Integer,SubmoduleFigureEx>(); //moduleID-to-figure
+    protected Map<cModule,SubmoduleFigureEx> submodules = new HashMap<cModule,SubmoduleFigureEx>();
+    protected Map<cGate,ConnectionFigure> connections = new HashMap<cGate, ConnectionFigure>();
     
     /**
      * Constructor.
@@ -41,8 +47,6 @@ public class GraphicalModulePart extends InspectorPart {
         figure.setInspectorPart(this);
 
         ((CompoundModuleFigureEx)figure).setDisplayString(module.getDisplayString());
-
-//        update();
 
         // mouse handling
         figure.addMouseListener(new MouseListener() {
@@ -81,74 +85,130 @@ public class GraphicalModulePart extends InspectorPart {
     protected void refreshChildren() {
         //TODO only call this function if there were any moduleCreated/moduleDeleted notifications from the simkernel
     	CompoundModuleFigureEx moduleFigure = (CompoundModuleFigureEx)figure;
-        cSimulation sim = cSimulation.getActiveSimulation();
-        ArrayList<Integer> toBeRemoved = null;
-        ArrayList<Integer> toBeAdded = null;
+        List<cModule> toBeRemoved = null;
+        List<cModule> toBeAdded = null;
         
         // find submodule figures whose module has been deleted
-        for (int id : submodules.keySet()) {
-            if (sim.getModule(id) == null) { //FIXME create & use moduleExists(id) for efficiency
+        for (cModule submodule : submodules.keySet()) {
+            if (submodule.isZombie() || !submodule.getParentModule().equals(object)) {
                 if (toBeRemoved == null)
-                    toBeRemoved = new ArrayList<Integer>();
-                toBeRemoved.add(id);
+                    toBeRemoved = new ArrayList<cModule>();
+                toBeRemoved.add(submodule);
             }
         }
 
         // find submodules that not yet have a figure
         for (cModule_SubmoduleIterator it = new cModule_SubmoduleIterator(cModule.cast(object)); !it.end(); it.next()) {
-            int id = it.get().getId();  //FIXME performance: add getModuleId() to the iterator directly
-            if (!submodules.containsKey(id)) {
+            cModule submodule = it.get();
+            if (!submodules.containsKey(submodule)) {
                 if (toBeAdded == null)
-                    toBeAdded = new ArrayList<Integer>();
-                toBeAdded.add(id);
+                    toBeAdded = new ArrayList<cModule>();
+                toBeAdded.add(submodule);
             }
         }
 
         // do the removals and additions
         if (toBeRemoved != null) {
-            for (int id : toBeRemoved) {
-                moduleFigure.getSubmoduleLayer().remove(submodules.get(id));
-                submodules.remove(id);
+            for (cModule submodule : toBeRemoved) {
+                moduleFigure.getSubmoduleLayer().remove(submodules.get(submodule));
+                submodules.remove(submodule);
             }
         }
         if (toBeAdded != null) {
-            for (int id : toBeAdded) {
+            for (cModule submodule : toBeAdded) {
                 // create figure
                 SubmoduleFigureEx submoduleFigure = new SubmoduleFigureEx();
                 submoduleFigure.setFont(getContainer().getControl().getFont()); // to speed up figure's getFont()
-                submoduleFigure.setModuleID(id);
+                submoduleFigure.setModuleID(submodule.getId());
                 submoduleFigure.setPinVisible(false);
-                submoduleFigure.setName(sim.getModule(id).getFullName());
+                submoduleFigure.setName(submodule.getFullName());
                 moduleFigure.getSubmoduleLayer().add(submoduleFigure);
-                submodules.put(id, submoduleFigure);
+                submodules.put(submodule, submoduleFigure);
             }
         }
     }
 
     protected void refreshConnections() {
-//      //TODO just testing
-//      ConnectionFigure connectionFigure = new ConnectionFigure();
-//      connectionFigure.setArrowHeadEnabled(true);
-//      connectionFigure.setSourceAnchor(new GateAnchor(submoduleFigure));
-//      connectionFigure.setTargetAnchor(new CompoundModuleGateAnchor(moduleFigure));
-//      moduleFigure.getConnectionLayer().add(connectionFigure);
-
+    	CompoundModuleFigureEx moduleFigure = (CompoundModuleFigureEx)figure;
+        ArrayList<cGate> toBeRemoved = null;
+        ArrayList<cGate> toBeAdded = null;
     	
+        // find connection figures whose connection has been deleted
+        for (cGate gate : connections.keySet()) {
+        	if (gate.isZombie() || gate.getNextGate() == null) {
+                if (toBeRemoved == null)
+                    toBeRemoved = new ArrayList<cGate>();
+                toBeRemoved.add(gate);
+            }
+        }
+
+        // find connections that not yet have a figure.
+        // loop through all submodules and enclosing module, and find their connections
+        boolean atParent = false;
+        cModule parentModule = cModule.cast(object);
+		for (cModule_SubmoduleIterator it = new cModule_SubmoduleIterator(parentModule); !atParent; it.next()) {
+			cModule module = !it.end() ? it.get() : parentModule;
+			if (module==parentModule) 
+				atParent = true; 
+            for (cModule_GateIterator gi = new cModule_GateIterator(module); !gi.end(); gi.next()) {
+                cGate gate = gi.get();
+                if (gate.getType()==(atParent ? cGate.Type.INPUT : cGate.Type.OUTPUT) && gate.getNextGate() != null) {
+                    if (!connections.containsKey(gate)) {
+                        if (toBeAdded == null)
+                            toBeAdded = new ArrayList<cGate>();
+                        toBeAdded.add(gate);
+                    }
+                }
+            }
+        }
+
+        // do the removals and additions
+        if (toBeRemoved != null) {
+            for (cGate gate : toBeRemoved) {
+                moduleFigure.getConnectionLayer().remove(connections.get(gate));
+                connections.remove(gate);
+            }
+        }
+        if (toBeAdded != null) {
+            for (cGate gate : toBeAdded) {
+                // create figure
+            	cGate targetGate = gate.getNextGate();
+            	ConnectionFigure connectionFigure = new ConnectionFigure();
+            	connectionFigure.setArrowHeadEnabled(true);
+            	GateAnchor sourceAnchor = (gate.getOwnerModule().equals(parentModule) ? 
+            			new CompoundModuleGateAnchor(moduleFigure) : 
+            				new GateAnchor(submodules.get(gate.getOwnerModule())));
+            	GateAnchor targetAnchor = (targetGate.getOwnerModule().equals(parentModule) ? 
+            			new CompoundModuleGateAnchor(moduleFigure) : 
+            				new GateAnchor(submodules.get(targetGate.getOwnerModule())));
+            	connectionFigure.setSourceAnchor(sourceAnchor);
+            	connectionFigure.setTargetAnchor(targetAnchor);
+            	moduleFigure.getConnectionLayer().add(connectionFigure);
+                connections.put(gate, connectionFigure);
+            }
+        }
     }
     
     protected void refreshVisuals() {
     	float scale = 1.0f;  //FIXME from compound module display string
-    	cSimulation sim = cSimulation.getActiveSimulation();
-    	for (int id : submodules.keySet()) {
-    		cModule submodule = sim.getModule(id);
-    		SubmoduleFigureEx submoduleFigure = submodules.get(id);
+
+    	// refresh submodules
+    	for (cModule submodule : submodules.keySet()) {
+    		SubmoduleFigureEx submoduleFigure = submodules.get(submodule);
     		cDisplayString displayString = submodule.getDisplayString();
     		submoduleFigure.setDisplayString(scale, displayString);
     		submoduleFigure.setSubmoduleVectorIndex(submodule.getName(), submodule.getVectorSize(), submodule.getIndex());
     	}
-        
-    	//CompoundModuleFigureEx moduleFigure = (CompoundModuleFigureEx)figure;
-        //Debug.debug = true;
+
+    	// refresh connections
+    	//FIXME this is very slow!!!! even when there are no display strings at all. ConnectionFigure is not caching the displaystring?
+    	for (cGate gate : connections.keySet()) {
+    		ConnectionFigure connectionFigure = connections.get(gate);
+    		cDisplayString displayString = gate.getDisplayString();
+    		connectionFigure.setDisplayString(displayString);
+    	}
+    	
+    	//Debug.debug = true;
         //FigureUtils.debugPrintRootFigureHierarchy(figure);
     }
 
@@ -237,10 +297,9 @@ public class GraphicalModulePart extends InspectorPart {
 			@Override
 			public void run() {
 		    	CompoundModuleFigureEx moduleFigure = (CompoundModuleFigureEx)figure;
-				CompoundModuleLayout layouter = (CompoundModuleLayout)moduleFigure.getLayoutManager();
+				CompoundModuleLayout layouter = moduleFigure.getSubmoduleLayouter();
 				layouter.requestFullLayout();
-				layouter.setSeed(layouter.getSeed()+1);
-				layouter.layout(moduleFigure.getSubmoduleLayer());
+				//layouter.setSeed(layouter.getSeed()+1);  -- not needed
 				moduleFigure.getSubmoduleLayer().revalidate();
 			}
 		});

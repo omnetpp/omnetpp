@@ -40,13 +40,14 @@ import org.omnetpp.common.ui.SelectionProvider;
  * 
  * @author Andras
  */
-//TODO cursor should be solid while moving (restart timer on any key/mouse/textchange event)
+//TODO cursor should be solid while moving with arrow keys (restart timer on any key/mouse/textchange event)
 //TODO minor glitches with word selection (esp with single-letter words)
 //TODO drag-autoscroll
-//TODO try if it works with proportional font
+//TODO try if it works with proportional font (e.g. narrower font for event banners?)
 //TODO finish horiz scrolling!
 //TODO implement selectionprovider stuff
 //TODO when resizing vertically, content moves strangely (scrolls twice the resize speed, and jumps back every 8 pixels)
+//TODO mouse-to-line mapping does not observe alignTop
 public class TextViewer extends Canvas implements ISelectionProvider {
     protected TextViewerContent content;
     protected TextChangeListener textChangeListener;

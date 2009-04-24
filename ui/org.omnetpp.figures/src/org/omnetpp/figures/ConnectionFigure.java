@@ -30,7 +30,7 @@ public class ConnectionFigure extends PolylineConnection {
     protected Label textFigure = new Label();
     protected ConnectionLabelLocator labelLocator = new ConnectionLabelLocator(this);
     protected TooltipFigure tooltipFigure;
-	private IDisplayString lastDisplayString;
+	private IDisplayString lastDisplayString;  //FIXME this might be problematic... --Andras
 	protected boolean isArrowHeadEnabled;
 
 	@Override
