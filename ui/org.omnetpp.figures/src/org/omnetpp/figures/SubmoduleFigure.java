@@ -35,16 +35,16 @@ import org.omnetpp.figures.misc.ISelectionHandleBounds;
 //FIXME support multiple texts: t/t1/t2/t3/t4
 //FIXME alignment of multi-line text
 public class SubmoduleFigure extends Figure implements ISubmoduleConstraint, IAnchorBounds, 
-					ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
+ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 	// supported shape types
 	protected static final int SHAPE_NONE = 0;
 	protected static final int SHAPE_OVAL = 1;
 	protected static final int SHAPE_RECT = 2;
-//	protected static final int SHAPE_RECT2 = 3;
-//	protected static final int SHAPE_TRI = 4;
-//	protected static final int SHAPE_TRI2 = 5;
-//	protected static final int SHAPE_HEX = 6;
-//	protected static final int SHAPE_HEX2 = 7;
+	//	protected static final int SHAPE_RECT2 = 3;
+	//	protected static final int SHAPE_TRI = 4;
+	//	protected static final int SHAPE_TRI2 = 5;
+	//	protected static final int SHAPE_HEX = 6;
+	//	protected static final int SHAPE_HEX2 = 7;
 
 	protected static final int TEXTPOS_LEFT = 1;
 	protected static final int TEXTPOS_RIGHT = 2;
@@ -97,10 +97,14 @@ public class SubmoduleFigure extends Figure implements ISubmoduleConstraint, IAn
 		String newDisplayString = displayString.toString();
 		if (this.scale == scale && newDisplayString.equals(oldDisplayString))
 			return;
-		
+
+		Assert.isNotNull(getFont()); // font must be set on the figure explicitly, otherwise it'll recursively go up to get it from the canvas every time
+
 		this.scale = scale;
 		this.oldDisplayString = newDisplayString;
+		
 		Rectangle oldShapeBounds = getShapeBounds();  // to compare at the end
+		
 		// range support
 		setRange(
 				displayString.getRange(scale),
@@ -123,7 +127,7 @@ public class SubmoduleFigure extends Figure implements ISubmoduleConstraint, IAn
 				imageSize,
 				ColorFactory.asRGB(displayString.getAsString(IDisplayString.Prop.IMAGECOLOR)),
 				displayString.getAsInt(IDisplayString.Prop.IMAGECOLORPERCENTAGE,0));
-		
+
 		// rectangle ("b" tag)
 		Dimension size = displayString.getSize(scale);  // falls back to size in EMPTY_DEFAULTS
 		boolean widthExist = displayString.containsProperty(IDisplayString.Prop.WIDTH);
@@ -168,18 +172,20 @@ public class SubmoduleFigure extends Figure implements ISubmoduleConstraint, IAn
 				displayString.unit2pixel(displayString.getAsInt(IDisplayString.Prop.LAYOUT_PAR2, Integer.MIN_VALUE), scale),
 				displayString.unit2pixel(displayString.getAsInt(IDisplayString.Prop.LAYOUT_PAR3, Integer.MIN_VALUE), scale)
 		);
-		// recalculate the bounds in case icon size or shape size has changed
-		calculateBounds();  
+
 		// if the shapeBounds has changed, we should trigger the layouting
 		if (!getShapeBounds().equals(oldShapeBounds)) 
 			revalidate();
+		// update the bounds, so that repaint works correctly (nothing gets clipped off)
+		if (centerLoc != null)
+			updateBounds();  // note: re-layouting does not guarantee that updateBounds() gets called!
 		repaint();
 	}
 
 	protected void setTooltipText(String tooltipText) {
 		this.tooltipText = tooltipText;
 	}
-	
+
 	/**
 	 * Store range figure parameters. fillColor and/or borderColor can be null, 
 	 * meaning that no background or outline should be drawn.
@@ -206,22 +212,26 @@ public class SubmoduleFigure extends Figure implements ISubmoduleConstraint, IAn
 				rangeFigure.setBounds(new Rectangle(centerLoc.x, centerLoc.y, 0, 0).expand(radius,radius));
 			else 
 				rangeFigure.setBounds(new Rectangle(0, 0, 0, 0).expand(radius,radius));
-			
+
 			rangeFigure.repaint(); 
 		}
 	}
-	
-    public void setProblemDecoration(int maxSeverity, ITooltipTextProvider textProvider) {
-        problemMarkerImage = NedFigure.getProblemImageFor(maxSeverity);
-        problemMarkerTextProvider = textProvider;
-		calculateBounds();
-        repaint();
-    }
-	
-	public void setQueueText(String qtext) {
-		queueText = qtext;
-		calculateBounds();
+
+	public void setProblemDecoration(int maxSeverity, ITooltipTextProvider textProvider) {
+		problemMarkerImage = NedFigure.getProblemImageFor(maxSeverity);
+		problemMarkerTextProvider = textProvider;
+		if (centerLoc != null)
+			updateBounds();
 		repaint();
+	}
+
+	public void setQueueText(String queueText) {
+		if (!StringUtils.equals(this.queueText, queueText)) {
+			this.queueText = queueText;
+			if (centerLoc != null)
+				updateBounds();
+			repaint();
+		}
 	}
 
 	protected void setInfoText(String text, String pos, Color color) {
@@ -303,14 +313,13 @@ public class SubmoduleFigure extends Figure implements ISubmoduleConstraint, IAn
 			this.vectorArrangementPar1 = vectorArrangementPar1;
 			this.vectorArrangementPar2 = vectorArrangementPar2;
 			this.vectorArrangementPar3 = vectorArrangementPar3;
-			//System.out.println(this+": setBaseLocation(): setting centerLoc=null");
 			centerLoc = null; // force re-layout of this module
 			revalidate();  // invalidate() not enough here 
 		}
 	}
 
-	protected void calculateBounds() {
-		Rectangle shapeBounds = getShapeBounds();
+	protected Rectangle computeBounds(Rectangle shapeBounds) {
+		// calculate name bounds, ASSUMING the given shapeBounds; MUST NOT use centerLoc!
 		Rectangle bounds = shapeBounds.getCopy();
 		Rectangle tmp;
 		if ((tmp = getNameBounds(shapeBounds)) != null)
@@ -325,10 +334,11 @@ public class SubmoduleFigure extends Figure implements ISubmoduleConstraint, IAn
 			bounds.union(tmp);
 		if ((tmp = getDecorationImageBounds(shapeBounds)) != null)
 			bounds.union(tmp);
-		super.setBounds(bounds);
+		return bounds;
 	}
 
 	public Rectangle getShapeBounds() {
+		// when centerLoc==null, assume (0,0)
 		int width = shape==SHAPE_NONE ? 0 : shapeWidth;
 		int height = shape==SHAPE_NONE ? 0 : shapeHeight;
 		if (image != null) {
@@ -346,13 +356,15 @@ public class SubmoduleFigure extends Figure implements ISubmoduleConstraint, IAn
 	}
 
 	protected Rectangle getNameBounds(Rectangle shapeBounds) {
-		if (StringUtils.isEmpty(nameText) || centerLoc == null) 
+		// calculate name bounds, ASSUMING the given shapeBounds; MUST NOT use centerLoc!
+		if (StringUtils.isEmpty(nameText)) 
 			return null;
 		Dimension textSize = TextUtilities.INSTANCE.getTextExtents(nameText, getFont());
-		return new Rectangle(centerLoc.x-textSize.width/2, shapeBounds.bottom(), textSize.width, textSize.height);
+		return new Rectangle(shapeBounds.x + shapeBounds.width/2 - textSize.width/2, shapeBounds.bottom(), textSize.width, textSize.height);
 	}
 
 	protected Rectangle getTextBounds(Rectangle shapeBounds) {
+		// calculate text bounds, ASSUMING the given shapeBounds; MUST NOT use centerLoc!
 		if (StringUtils.isEmpty(text)) 
 			return null;
 		int x, y;
@@ -366,13 +378,14 @@ public class SubmoduleFigure extends Figure implements ISubmoduleConstraint, IAn
 			y = shapeBounds.y; 
 		}
 		else {  // TEXTPOS_TOP
-			x = centerLoc.x - textSize.width/2; 
+			x = shapeBounds.x + shapeBounds.width/2 - textSize.width/2; 
 			y = shapeBounds.y - textSize.height; 
 		}
 		return new Rectangle(x, y, textSize.width, textSize.height);
 	}
 
 	protected Rectangle getQueueTextBounds(Rectangle shapeBounds) {
+		// calculate queue text bounds, ASSUMING the given shapeBounds; MUST NOT use centerLoc!
 		if (StringUtils.isEmpty(queueText)) 
 			return null;
 		int x, y;
@@ -381,8 +394,9 @@ public class SubmoduleFigure extends Figure implements ISubmoduleConstraint, IAn
 		y = shapeBounds.bottom()-textSize.height; 
 		return new Rectangle(x, y, textSize.width, textSize.height);
 	}
-	
+
 	protected Rectangle getDecorationImageBounds(Rectangle shapeBounds) {
+		// calculate icon2 bounds, ASSUMING the given shapeBounds; MUST NOT use centerLoc!
 		if (decoratorImage == null)
 			return null;
 		org.eclipse.swt.graphics.Rectangle imageBounds = decoratorImage.getBounds();
@@ -390,20 +404,22 @@ public class SubmoduleFigure extends Figure implements ISubmoduleConstraint, IAn
 	}
 
 	protected Rectangle getPinImageBounds(Rectangle shapeBounds) {
+		// calculate pin image bounds, ASSUMING the given shapeBounds; MUST NOT use centerLoc!
 		if (!pinVisible)
 			return null;
 		org.eclipse.swt.graphics.Rectangle imageBounds = IMG_PIN.getBounds();
 		return new Rectangle(shapeBounds.right()-imageBounds.width/2, shapeBounds.y - imageBounds.height/2, imageBounds.width, imageBounds.height);
 	}
 
-	
+
 	protected Rectangle getProblemMarkerImageBounds(Rectangle shapeBounds) {
+		// calculate marker image bounds, ASSUMING the given shapeBounds; MUST NOT use centerLoc!
 		if (problemMarkerImage == null)
 			return null;
 		org.eclipse.swt.graphics.Rectangle imageBounds = problemMarkerImage.getBounds();
 		return new Rectangle(shapeBounds.x-4, shapeBounds.y-4, imageBounds.width, imageBounds.height);
 	}
-	
+
 	/**
 	 * Sets the external image decoration ("i2" tag)
 	 */
@@ -440,15 +456,17 @@ public class SubmoduleFigure extends Figure implements ISubmoduleConstraint, IAn
 		return getShapeBounds();
 	}
 
-    public Rectangle getAnchorBounds() {
-    	return getShapeBounds();
-    }
-    
+	public Rectangle getAnchorBounds() {
+		return getShapeBounds();
+	}
+
 	public void setName(String text) {
-		nameText = text;
-		if (centerLoc != null)
-			calculateBounds();
-		repaint();
+		if (!StringUtils.equals(this.nameText, text)) {
+			nameText = text;
+			if (centerLoc != null)
+				updateBounds();
+			repaint();
+		}
 	}
 
 	public String getName() {
@@ -469,7 +487,7 @@ public class SubmoduleFigure extends Figure implements ISubmoduleConstraint, IAn
 		}
 		return tooltipText;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.eclipse.draw2d.Figure#containsPoint(int, int)
 	 * We override it to include also the nameBounds, so clicking on submodule name would
@@ -491,10 +509,13 @@ public class SubmoduleFigure extends Figure implements ISubmoduleConstraint, IAn
 	 * Turns the "pin" icon (which shows whether the submodule has a
 	 * user-specified position) on/off
 	 */
-	public void setPinVisible(boolean enabled) {
-		if (pinVisible != enabled)
+	public void setPinVisible(boolean visible) {
+		if (pinVisible != visible) {
+			pinVisible = visible;
+			if (centerLoc != null)
+				updateBounds();
 			repaint();
-		pinVisible = enabled;
+		}
 	}
 
 	public boolean isPinVisible() {
@@ -506,18 +527,22 @@ public class SubmoduleFigure extends Figure implements ISubmoduleConstraint, IAn
 	}
 
 	public void setCenterLocation(Point loc) {
+		// set the center of the image, and update bounds if changed. 
+		// note: this method may ONLY be called from the layouter! 
 		if (loc == null) {
-			//System.out.println(this+": setCenterLocation(" + loc + ")");
 			centerLoc = null;
 		}
 		else if (!loc.equals(centerLoc)) {
-			//System.out.println(this+": setCenterLocation(" + loc + ")");
 			this.centerLoc = loc;
-			calculateBounds();
+			updateBounds();
 			if (rangeFigure != null) 
 				rangeFigure.setBounds(rangeFigure.getBounds().setLocation(centerLoc.x-rangeFigure.getSize().width/2, 
-						                                      centerLoc.y - rangeFigure.getSize().height/2));
+						centerLoc.y - rangeFigure.getSize().height/2));
 		}
+	}
+
+	protected void updateBounds() {
+		super.setBounds(computeBounds(getShapeBounds()));
 	}
 
 	public Point getBaseLocation() {
@@ -648,7 +673,7 @@ public class SubmoduleFigure extends Figure implements ISubmoduleConstraint, IAn
 			Rectangle r = getProblemMarkerImageBounds(shapeBounds);
 			graphics.drawImage(problemMarkerImage, r.x, r.y);
 		}
-		
+
 		// draw name string
 		if (!StringUtils.isEmpty(nameText)) {
 			if (shapeBounds == null) shapeBounds = getShapeBounds();
@@ -658,8 +683,8 @@ public class SubmoduleFigure extends Figure implements ISubmoduleConstraint, IAn
 		}
 	}
 
-    @Override
-    public String toString() {
-        return getClass().getSimpleName()+" "+nameText;
-    }
+	@Override
+	public String toString() {
+		return getClass().getSimpleName()+" "+nameText;
+	}
 }
