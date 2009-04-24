@@ -68,7 +68,6 @@ JCallback::JCallback(JNIEnv *jenv, jobject jcallbackobj) :
 #define GAT  "L" PKGPREFIX "cGate;"
 #define STR  "Ljava/lang/String;"
 
-    objectDeleted_ID = getMethodID(clazz, "objectDeleted", "(" OBJ ")V");
     simulationEvent_ID = getMethodID(clazz, "simulationEvent", "(" MSG ")V");
 
     messageScheduled_ID = getMethodID(clazz, "messageScheduled", "(" MSG ")V");
@@ -127,13 +126,6 @@ void JCallback::checkExceptions()
         jenv->ExceptionDescribe();
         exit(1);
     }
-}
-
-void JCallback::objectDeleted(cObject *object)
-{
-    TRACE("objectDeleted");
-    jenv->CallVoidMethod(jcallbackobj, objectDeleted_ID, cobjectClass.wrap(object));
-    checkExceptions();
 }
 
 void JCallback::simulationEvent(cMessage *msg)

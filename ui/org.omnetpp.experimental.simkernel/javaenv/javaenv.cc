@@ -62,7 +62,7 @@ void Javaenv::objectDeleted(cObject *object)
 {
     //cEnvirBase::objectDeleted(object);
     wrapperTable.objectDeleted(object);
-    if (jcallback) jcallback->objectDeleted(object);
+    //if (jcallback) jcallback->objectDeleted(object);
 }
 
 /*XXX already in header

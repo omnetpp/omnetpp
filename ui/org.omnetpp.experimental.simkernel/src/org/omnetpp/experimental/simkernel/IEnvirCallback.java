@@ -10,9 +10,7 @@ package org.omnetpp.experimental.simkernel;
 import org.omnetpp.experimental.simkernel.swig.*;
 
 public interface IEnvirCallback {
-    void objectDeleted(cObject object);
     void simulationEvent(cMessage msg);
-    
     void messageScheduled(cMessage msg);
     void messageCancelled(cMessage msg);
     void beginSend(cMessage msg);

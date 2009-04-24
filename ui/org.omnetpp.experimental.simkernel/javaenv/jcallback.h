@@ -27,7 +27,6 @@ class JCallback
         JNIEnv *jenv;
         jobject jcallbackobj;
 
-        jmethodID objectDeleted_ID;
         jmethodID simulationEvent_ID;
 
         jmethodID messageScheduled_ID;
@@ -80,7 +79,6 @@ class JCallback
         JCallback(JNIEnv *jenv, jobject jcallbackobj);
         ~JCallback();
 
-        void objectDeleted(cObject *object);
         void simulationEvent(cMessage *msg);
 
         void messageScheduled(cMessage *msg);
