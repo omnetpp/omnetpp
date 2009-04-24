@@ -290,6 +290,13 @@ public class CompoundModuleFigure extends NedFigure
 	}
 
 	/**
+	 * Returns the scale from the display string.
+	 */
+	public float getScale() {
+		return scale;
+	}
+	
+	/**
 	 * Adjusts the figure properties using a displayString object
 	 * @param dps The display string object containing the properties
 	 */

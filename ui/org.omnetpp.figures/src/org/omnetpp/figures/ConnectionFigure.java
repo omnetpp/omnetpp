@@ -23,6 +23,7 @@ import org.omnetpp.figures.misc.ConnectionLabelLocator;
  *
  * @author rhornig
  */
+//TODO only parse display string if it's changed; ditto for all public setters
 public class ConnectionFigure extends PolylineConnection {
 	protected int localLineStyle = Graphics.LINE_SOLID;
 	protected int localLineWidth = 1;
@@ -51,17 +52,18 @@ public class ConnectionFigure extends PolylineConnection {
 	}
 
 	public void setArrowHeadEnabled(boolean arrowHeadEnabled) {
-	    this.isArrowHeadEnabled = arrowHeadEnabled;
-        if (arrowHeadEnabled) {
-        	if (getTargetDecoration() == null) {
-        		PolygonDecoration arrow = new PolygonDecoration();
-        		arrow.setTemplate(PolygonDecoration.TRIANGLE_TIP);
-        		setTargetDecoration(arrow);
-        	}
-        }
-		if (getTargetDecoration() != null)
-			getTargetDecoration().setVisible(arrowHeadEnabled);
-
+		if (this.isArrowHeadEnabled != arrowHeadEnabled) {
+			this.isArrowHeadEnabled = arrowHeadEnabled;
+			if (arrowHeadEnabled) {
+				if (getTargetDecoration() == null) {
+					PolygonDecoration arrow = new PolygonDecoration();
+					arrow.setTemplate(PolygonDecoration.TRIANGLE_TIP);
+					setTargetDecoration(arrow);
+				}
+			}
+			if (getTargetDecoration() != null)
+				getTargetDecoration().setVisible(arrowHeadEnabled);
+	    }
     }
 
     protected void setStyle(Color color, int width, String style) {

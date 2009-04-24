@@ -46,6 +46,10 @@ public class CompoundModuleFigureEx extends ScrollPane implements IInspectorFigu
     	return FigureUtils.getBorderMoveResizeDragOperation(x, y, getBounds());
     }
     
+    public CompoundModuleFigure getRealModuleFigure() {
+		return moduleFigure;
+	}
+    
 	public Layer getSubmoduleLayer() {
 		return moduleFigure.getSubmoduleLayer();
 	}

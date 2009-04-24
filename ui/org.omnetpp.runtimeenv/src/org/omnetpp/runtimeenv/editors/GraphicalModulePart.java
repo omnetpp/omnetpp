@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.InputEvent;
 import org.eclipse.draw2d.MouseEvent;
@@ -36,6 +37,10 @@ import org.omnetpp.runtimeenv.figures.SubmoduleFigureEx;
 public class GraphicalModulePart extends InspectorPart {
     protected Map<cModule,SubmoduleFigureEx> submodules = new HashMap<cModule,SubmoduleFigureEx>();
     protected Map<cGate,ConnectionFigure> connections = new HashMap<cGate, ConnectionFigure>();
+    protected float canvasScale = 1.0f;  //TODO properly do it
+    protected int imageSizePercentage = 100; // controls submodule icons; 100 means 1:1 
+    protected boolean showNameLabels = true;
+    protected boolean showArrowHeads = true;
     
     /**
      * Constructor.
@@ -71,7 +76,45 @@ public class GraphicalModulePart extends InspectorPart {
 	public boolean isMaximizable() {
 		return false;
 	}
-    
+	
+    public float getCanvasScale() {
+		return canvasScale;
+	}
+
+	public void setCanvasScale(float canvasScale) {
+		Assert.isTrue(canvasScale > 0);
+		this.canvasScale = canvasScale;
+		refresh();
+	}
+
+	public int getImageSizePercentage() {
+		return imageSizePercentage;
+	}
+
+	public void setImageSizePercentage(int imageSizePercentage) {
+		Assert.isTrue(imageSizePercentage > 0);
+		this.imageSizePercentage = imageSizePercentage;
+		refresh();
+	}
+
+	public boolean isShowNameLabels() {
+		return showNameLabels;
+	}
+
+	public void setShowNameLabels(boolean showNameLabels) {
+		this.showNameLabels = showNameLabels;
+		refresh();
+	}
+
+	public boolean isShowArrowHeads() {
+		return showArrowHeads;
+	}
+
+	public void setShowArrowHeads(boolean showArrowHeads) {
+		this.showArrowHeads = showArrowHeads;
+		refresh();
+	}
+
     @Override
 	public void refresh() {
 		super.refresh();
@@ -82,7 +125,7 @@ public class GraphicalModulePart extends InspectorPart {
 		}
     }
 
-    protected void refreshChildren() {
+	protected void refreshChildren() {
         //TODO only call this function if there were any moduleCreated/moduleDeleted notifications from the simkernel
     	CompoundModuleFigureEx moduleFigure = (CompoundModuleFigureEx)figure;
         List<cModule> toBeRemoved = null;
@@ -121,7 +164,6 @@ public class GraphicalModulePart extends InspectorPart {
                 submoduleFigure.setFont(getContainer().getControl().getFont()); // to speed up figure's getFont()
                 submoduleFigure.setModuleID(submodule.getId());
                 submoduleFigure.setPinVisible(false);
-                submoduleFigure.setName(submodule.getFullName());
                 moduleFigure.getSubmoduleLayer().add(submoduleFigure);
                 submodules.put(submodule, submoduleFigure);
             }
@@ -174,7 +216,6 @@ public class GraphicalModulePart extends InspectorPart {
                 // create figure
             	cGate targetGate = gate.getNextGate();
             	ConnectionFigure connectionFigure = new ConnectionFigure();
-            	connectionFigure.setArrowHeadEnabled(true);
             	GateAnchor sourceAnchor = (gate.getOwnerModule().equals(parentModule) ? 
             			new CompoundModuleGateAnchor(moduleFigure) : 
             				new GateAnchor(submodules.get(gate.getOwnerModule())));
@@ -188,16 +229,22 @@ public class GraphicalModulePart extends InspectorPart {
             }
         }
     }
-    
-    protected void refreshVisuals() {
-    	float scale = 1.0f;  //FIXME from compound module display string
 
+    protected void refreshVisuals() {
+    	CompoundModuleFigureEx moduleFigure = (CompoundModuleFigureEx)figure;
+        cModule parentModule = cModule.cast(object);
+        moduleFigure.setDisplayString(parentModule.getDisplayString());
+
+        float scale = canvasScale * moduleFigure.getRealModuleFigure().getScale(); //FIXME the compound module's scale should be set too
+    	
     	// refresh submodules
     	for (cModule submodule : submodules.keySet()) {
     		SubmoduleFigureEx submoduleFigure = submodules.get(submodule);
     		cDisplayString displayString = submodule.getDisplayString();
     		submoduleFigure.setDisplayString(scale, displayString);
+    		submoduleFigure.setName(showNameLabels ? submodule.getFullName() : null);
     		submoduleFigure.setSubmoduleVectorIndex(submodule.getName(), submodule.getVectorSize(), submodule.getIndex());
+    		submoduleFigure.setImageSizePercentage(imageSizePercentage);
     	}
 
     	// refresh connections
@@ -206,6 +253,7 @@ public class GraphicalModulePart extends InspectorPart {
     		ConnectionFigure connectionFigure = connections.get(gate);
     		cDisplayString displayString = gate.getDisplayString();
     		connectionFigure.setDisplayString(displayString);
+        	connectionFigure.setArrowHeadEnabled(showArrowHeads);
     	}
     	
     	//Debug.debug = true;
@@ -278,21 +326,6 @@ public class GraphicalModulePart extends InspectorPart {
     protected void populateBackgroundContextMenu(MenuManager contextMenuManager, Point p) {
 		//XXX factor out actions
 
-		contextMenuManager.add(new Action("Zoom in") {
-		    @Override
-		    public void run() {
-		        //TODO see ZoomManager.zoomIn(); relies on ScalableFigure.setScale()
-		    }
-		});
-		contextMenuManager.add(new Action("Zoom out") {
-		    @Override
-		    public void run() {
-		        //TODO see ZoomManager.zoomOut(); relies on ScalableFigure.setScale()
-		    }
-		});
-
-		contextMenuManager.add(new Separator());
-
 		contextMenuManager.add(new Action("Re-layout") {
 			@Override
 			public void run() {
@@ -306,6 +339,68 @@ public class GraphicalModulePart extends InspectorPart {
 
 		contextMenuManager.add(new Separator());
 		
+		contextMenuManager.add(new Action("Zoom in") {
+		    @Override
+		    public void run() {
+		    	canvasScale *= 1.5;
+		    	if (Math.abs(canvasScale-1.0) < 0.01) 
+		    		canvasScale = 1.0f; // prevent accumulation of rounding errors
+		    	refresh();
+		    }
+		});
+		contextMenuManager.add(new Action("Zoom out") {
+		    @Override
+		    public void run() {
+		    	canvasScale /= 1.5;
+		    	if (Math.abs(canvasScale-1.0) < 0.01) 
+		    		canvasScale = 1.0f; // prevent accumulation of rounding errors
+		    	refresh();
+		    }
+		});
+
+		contextMenuManager.add(new Action("Enlarge icons") {
+		    @Override
+		    public void run() {
+		    	if (imageSizePercentage < 500) {
+		    		imageSizePercentage *= 1.2;
+		    		if (Math.abs(imageSizePercentage-100) < 15) 
+		    			imageSizePercentage = 100; // prevent accumulation of rounding errors
+		    		refresh();
+		    	}
+		    }
+		});
+		contextMenuManager.add(new Action("Reduce icons") {
+		    @Override
+		    public void run() {
+		    	if (imageSizePercentage > 10) {
+		    		imageSizePercentage /= 1.2;
+		    		if (Math.abs(imageSizePercentage-100) < 15) 
+		    			imageSizePercentage = 100; // prevent accumulation of rounding errors
+		    		refresh();
+		    	}
+		    }
+		});
+
+		contextMenuManager.add(new Separator());
+
+		contextMenuManager.add(new Action("Toggle name labels") {
+		    @Override
+		    public void run() {
+		    	showNameLabels = !showNameLabels;
+		    	refresh();
+		    }
+		});
+
+		contextMenuManager.add(new Action("Toggle arrowheads") {
+		    @Override
+		    public void run() {
+		    	showArrowHeads = !showArrowHeads;
+		    	refresh();
+		    }
+		});
+
+		contextMenuManager.add(new Separator());
+
 		contextMenuManager.add(new Action("Go to parent") {
 		    @Override
 		    public void run() {
