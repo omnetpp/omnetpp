@@ -11,16 +11,16 @@ import org.omnetpp.runtimeenv.editors.IInspectorFigure;
 import org.omnetpp.runtimeenv.editors.IInspectorPart;
 
 /**
- * Experimental inspector figure, for TextInspectorPart
+ * Experimental inspector figure, for InfoTextInspectorPart
  * @author Andras
  */
-public class TextInspectorFigure extends RoundedRectangle implements IInspectorFigure {
+public class InfoTextInspectorFigure extends RoundedRectangle implements IInspectorFigure {
 	protected IInspectorPart inspectorPart;
 	protected Label nameLabel;
 	protected Label infoStringLabel;
 	protected Insets insets = new Insets(4, 8, 4, 8);
 
-	public TextInspectorFigure() {
+	public InfoTextInspectorFigure() {
 		setBackgroundColor(ColorFactory.LIGHT_BLUE2);
 		setLayoutManager(new ToolbarLayout());
 

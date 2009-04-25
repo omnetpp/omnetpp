@@ -15,11 +15,13 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.omnetpp.runtime.nativelibs.simkernel.cModule;
 import org.omnetpp.runtime.nativelibs.simkernel.cObject;
+import org.omnetpp.runtime.nativelibs.simkernel.cQueue;
 import org.omnetpp.runtimeenv.editors.BlankCanvasEditorInput;
 import org.omnetpp.runtimeenv.editors.GraphicalModulePart;
 import org.omnetpp.runtimeenv.editors.IInspectorPart;
+import org.omnetpp.runtimeenv.editors.InfoTextInspectorPart;
 import org.omnetpp.runtimeenv.editors.ModelCanvas;
-import org.omnetpp.runtimeenv.editors.TextInspectorPart;
+import org.omnetpp.runtimeenv.editors.QueueInspectorPart;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -169,9 +171,11 @@ public class Activator extends AbstractUIPlugin {
 	    //XXX this function should go into some InspectorFactory class or so
         if (cModule.cast(object) != null)
             return new GraphicalModulePart(cModule.cast(object));
+        if (cQueue.cast(object) != null)
+            return new QueueInspectorPart(cQueue.cast(object));
         if (object != null)
         	//return new ExampleSWTInspectorPart(object);
-        	return new TextInspectorPart(object);
+        	return new InfoTextInspectorPart(object);
         return null;
 	}
 

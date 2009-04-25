@@ -7,18 +7,18 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.swt.graphics.Point;
 import org.omnetpp.runtime.nativelibs.simkernel.cObject;
-import org.omnetpp.runtimeenv.figures.TextInspectorFigure;
+import org.omnetpp.runtime.nativelibs.simkernel.cQueue;
+import org.omnetpp.runtimeenv.figures.QueueInspectorFigure;
 
 /**
- *
+ * Graphical inspector for queues
  * @author Andras
  */
-//XXX make more options what to display: class+name/fullpath, info, detailedinfo; change color, shape etc
-public class TextInspectorPart extends InspectorPart {
+public class QueueInspectorPart extends InspectorPart {
 
-	public TextInspectorPart(cObject object) {
+	public QueueInspectorPart(cObject object) {
 		super(object);
-		figure = new TextInspectorFigure();
+		figure = new QueueInspectorFigure();
 		figure.setInspectorPart(this);
 
 		// add mouse selection support
@@ -34,7 +34,8 @@ public class TextInspectorPart extends InspectorPart {
 	public void refresh() {
 		super.refresh();
 		if (!isDisposed()) {
-			((TextInspectorFigure)figure).setTexts("(" + object.getClassName() + ") " + object.getFullPath(), object.info());
+			cQueue queue = cQueue.cast(object);
+			((QueueInspectorFigure)figure).setQueueContents(queue.getChildObjects());
 		}
 	}
 
@@ -48,13 +49,13 @@ public class TextInspectorPart extends InspectorPart {
         contextMenuManager.add(new Action("Close") {
             @Override
             public void run() {
-                getContainer().close(TextInspectorPart.this);
+                getContainer().close(QueueInspectorPart.this);
             }
         });
 	}
 
 	protected void handleMousePressed(MouseEvent me) {
-		System.out.println("TextInspectorPart: mouse pressed");
+		System.out.println("QueueInspectorPart: mouse pressed");
 		if ((me.getState()& InputEvent.CONTROL) != 0)
 			inspectorContainer.toggleSelection(getObject());
 		else
