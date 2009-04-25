@@ -1,17 +1,17 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
  *--------------------------------------------------------------*/
 
-package org.omnetpp.experimental.simkernel;
+package org.omnetpp.runtime.nativelibs;
 
-import org.omnetpp.experimental.simkernel.swig.cComponent;
-import org.omnetpp.experimental.simkernel.swig.cGate;
-import org.omnetpp.experimental.simkernel.swig.cMessage;
-import org.omnetpp.experimental.simkernel.swig.cModule;
-import org.omnetpp.experimental.simkernel.swig.cObject;
+import org.omnetpp.runtime.nativelibs.simkernel.cComponent;
+import org.omnetpp.runtime.nativelibs.simkernel.cGate;
+import org.omnetpp.runtime.nativelibs.simkernel.cMessage;
+import org.omnetpp.runtime.nativelibs.simkernel.cModule;
+import org.omnetpp.runtime.nativelibs.simkernel.cObject;
 
 public class DummyEnvirCallback implements IEnvirCallback {
 	public boolean debug = false;

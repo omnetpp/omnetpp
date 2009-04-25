@@ -20,7 +20,7 @@
 #include "jcallback.h"
 
 
-#define PKGPREFIX "org/omnetpp/experimental/simkernel/swig/"
+#define PKGPREFIX "org/omnetpp/runtime/nativelibs/simkernel/"
 
 #define SIMTIME_JWRAP(x) (jdouble)SIMTIME_DBL(x)
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>org.omnetpp.experimental.simkernel</name>
+	<name>org.omnetpp.runtime.nativelibs</name>
 	<comment></comment>
 	<projects>
 	</projects>

@@ -44,7 +44,7 @@ OBJS = $O/simkernel_wrap.obj \
        $O/javaenv/wrappertable.obj
 
 
-JAVAPKG = org.omnetpp.experimental.simkernel.swig
+JAVAPKG = org.omnetpp.runtime.nativelibs.simkernel
 JAVADIR = src\$(JAVAPKG:.=\)
 
 SAMPLES_OBJS = \

@@ -1,11 +1,11 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-package org.omnetpp.experimental.simkernel;
+package org.omnetpp.runtime.nativelibs;
 
 import org.eclipse.core.runtime.Plugin;
 import org.osgi.framework.BundleContext;
@@ -17,8 +17,8 @@ public class SimkernelPlugin extends Plugin {
 
 	// The shared instance.
 	private static SimkernelPlugin plugin;
-	
-//	cStaticFlag staticFlag; 
+
+//	cStaticFlag staticFlag;
 
 	/**
 	 * The constructor.
@@ -32,9 +32,9 @@ public class SimkernelPlugin extends Plugin {
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
-		
+
 //		staticFlag = new cStaticFlag(); // needed by sim kernel
-//		
+//
 //		System.out.println("STARTING SIMULATION");
 //		IResource workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
 //		Simkernel.changeToDir(workspaceRoot.getLocation().toOSString()+"\\rxtx");

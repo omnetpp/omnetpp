@@ -1,13 +1,13 @@
 /*--------------------------------------------------------------*
   Copyright (C) 2006-2008 OpenSim Ltd.
-  
+
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-package org.omnetpp.experimental.simkernel;
+package org.omnetpp.runtime.nativelibs;
 
-import org.omnetpp.experimental.simkernel.swig.*;
+import org.omnetpp.runtime.nativelibs.simkernel.*;
 
 public interface IEnvirCallback {
     void simulationEvent(cMessage msg);

@@ -25,7 +25,7 @@ WrapperTable::WrapperTable(JNIEnv *je)
 {
     jenv = je;
     ASSERT(jenv!=NULL);
-    jclass clazz = jenv->FindClass("org/omnetpp/experimental/simkernel/swig/cObject");
+    jclass clazz = jenv->FindClass("org/omnetpp/runtime/nativelibs/simkernel/cObject");
     ASSERT(clazz!=NULL);
     zapMethodID = jenv->GetMethodID(clazz, "zap", "()V");
     ASSERT(zapMethodID!=NULL);

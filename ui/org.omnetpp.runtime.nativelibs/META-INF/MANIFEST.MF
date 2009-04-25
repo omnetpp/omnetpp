@@ -1,13 +1,14 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Simkernel Plug-in
-Bundle-SymbolicName: org.omnetpp.experimental.simkernel
-Bundle-Version: 1.0.0
-Bundle-Activator: org.omnetpp.experimental.simkernel.SimkernelPlugin
+Bundle-Name: OMNeT++ Runtime Environment Native Libraries
+Bundle-SymbolicName: org.omnetpp.runtime.nativelibs
+Bundle-Version: 4.1.0
+Bundle-Activator: org.omnetpp.runtime.nativelibs.SimkernelPlugin
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.draw2d,
  org.omnetpp.common.core;bundle-version="4.0.0"
 Eclipse-LazyStart: true
-Export-Package: org.omnetpp.experimental.simkernel,
- org.omnetpp.experimental.simkernel.swig
+Export-Package: org.omnetpp.runtime.nativelibs,
+ org.omnetpp.runtime.nativelibs.simkernel
+Bundle-Vendor: OpenSim Ltd.

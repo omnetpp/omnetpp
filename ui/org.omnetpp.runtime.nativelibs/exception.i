@@ -3,7 +3,7 @@
 static void opp_JavaThrowException(JNIEnv *jenv, cException& e) {
     // wrap a copy of the C++ exception object into a Java exception, and throw it
     jenv->ExceptionClear();
-    jclass clazz = jenv->FindClass("org/omnetpp/experimental/simkernel/WrappedException");
+    jclass clazz = jenv->FindClass("org/omnetpp/runtime/nativelibs/WrappedException");
     jmethodID ctor = jenv->GetMethodID(clazz, "<init>", "(J)V");
     jobject excep = jenv->NewObject(clazz, ctor, (jlong)(void*)e.dup());
     jenv->Throw((jthrowable&)excep);
