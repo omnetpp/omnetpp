@@ -80,11 +80,11 @@
 
   /* utility functions */
 
-  public Object[] getChildObjects() {
+  public cObject[] getChildObjects() {
     cCollectChildrenVisitor visitor = new cCollectChildrenVisitor(this);
     visitor.process(this);
     int m = visitor.getArraySize();
-    Object[] result2 = new Object[m];
+    cObject[] result2 = new cObject[m];
     for (int i=0; i<m; i++)
       result2[i] = visitor.get(i);
     return result2;
