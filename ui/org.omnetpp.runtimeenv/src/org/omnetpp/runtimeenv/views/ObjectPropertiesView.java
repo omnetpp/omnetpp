@@ -30,9 +30,12 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.runtime.nativelibs.simkernel.IntVector;
 import org.omnetpp.runtime.nativelibs.simkernel.Simkernel;
 import org.omnetpp.runtime.nativelibs.simkernel.cClassDescriptor;
 import org.omnetpp.runtime.nativelibs.simkernel.cEnum;
+import org.omnetpp.runtime.nativelibs.simkernel.cMessage;
+import org.omnetpp.runtime.nativelibs.simkernel.cMessageHeap;
 import org.omnetpp.runtime.nativelibs.simkernel.cModule;
 import org.omnetpp.runtime.nativelibs.simkernel.cObject;
 import org.omnetpp.runtime.nativelibs.simkernel.cSimulation;
@@ -49,12 +52,14 @@ import org.omnetpp.runtimeenv.editors.IInspectorPart;
 //TODO we should support user-supplied images as well
 //TODO re-export our selection...? (who understands StructKey etc?)
 //XXX what's lost, compared to Tcl: bold; field editing; expanding multi-line text
+//XXX performance: for each cClassDescriptor, we should cache the list of groups, and per-group field list
 public class ObjectPropertiesView extends PinnableView2 implements ISimulationListener {
 	public static final String ID = "org.omnetpp.runtimeenv.ObjectPropertiesView";
 
+	protected static final Object[] EMPTY_ARRAY = new Object[0];
 	protected TreeViewer viewer;
     protected MenuManager contextMenuManager = new MenuManager("#PopupMenu");
-    protected static final Object[] EMPTY_ARRAY = new Object[0];
+	protected IntVector fesFilterModuleIds; // show the FES filtered to these module IDs
 
     // we want to display objects displayed as roots in the treeviewer with full path,
     // so we wrap them into RootObj so that we can distinguish them from other cObjects
@@ -180,8 +185,11 @@ public class ObjectPropertiesView extends PinnableView2 implements ISimulationLi
 	        if (element instanceof Object[])
 	            return (Object[])element;
 
-	        if (element instanceof RootObj)
+	        if (element instanceof RootObj) {
 	        	element = ((RootObj)element).object;
+	        	if (fesFilterModuleIds != null && cSimulation.getActiveSimulation().getMessageQueue().equals(element))
+	        		return getFilteredFesContents();
+	        }
 
 	        if (element instanceof cObject) {
 	            cObject object = (cObject)element;
@@ -560,7 +568,7 @@ public class ObjectPropertiesView extends PinnableView2 implements ISimulationLi
         return viewer.getTree();
 	}
 
-    protected void createActions() {
+	protected void createActions() {
         IAction pinAction = getOrCreatePinAction();
 
         contextMenuManager.add(pinAction); //TODO expand context menu: Copy, etc.
@@ -613,20 +621,25 @@ public class ObjectPropertiesView extends PinnableView2 implements ISimulationLi
 
     @Override
     protected void rebuildContent() {
+    	fesFilterModuleIds = null;
         List<Object> input = new ArrayList<Object>();
         ISelection selection = getAssociatedSelection();
         if (selection instanceof IStructuredSelection) {
+        	// collect all cObjects from the selection into "input"
             Object[] sel = ((IStructuredSelection)selection).toArray();
             for (Object obj : sel) {
-                if (obj instanceof IInspectorPart) {
-                    cObject object = ((IInspectorPart)obj).getObject();
-                    if (!object.isZombie())
-                    	input.add(new RootObj(object));
-                }
-                else if (obj instanceof cObject) {
-                    cObject object = (cObject)obj;
-                    if (!object.isZombie())
-                    	input.add(new RootObj(object));
+                cObject object = null;
+                if (obj instanceof IInspectorPart)
+                    object = ((IInspectorPart)obj).getObject();
+                else if (obj instanceof cObject)
+                	object = (cObject)obj;
+                if (object != null && !object.isZombie()) {
+                	input.add(new RootObj(object));
+                	// for modules, we also want to display their messages in the FES, so collect the module IDs
+                	if (cModule.cast(object) != null) {
+                		if (fesFilterModuleIds==null)  fesFilterModuleIds = new IntVector();
+                		fesFilterModuleIds.add(cModule.cast(object).getId());
+                	}
                 }
             }
         }
@@ -636,10 +649,33 @@ public class ObjectPropertiesView extends PinnableView2 implements ISimulationLi
             if (systemModule != null)
                 input.add(new RootObj(systemModule));
         }
-
+        if (fesFilterModuleIds != null) {
+            cMessageHeap fes = cSimulation.getActiveSimulation().getMessageQueue();
+        	input.add(new RootObj(fes));
+        }
         Object[] array = input.toArray();
         Object[] expandedElements = viewer.getExpandedElements();
         viewer.setInput(array);
         viewer.setExpandedElements(expandedElements);
     }
+
+    /**
+     * If the selection contains modules, we want to also show the FES, filtered to
+     * the messages destined to those modules. This method produces the filtered FES 
+     * contents for the tree content provider. 
+     */
+    protected Object[] getFilteredFesContents() {
+    	// XXX this should really be in C++, but do it manually for now...
+    	cMessageHeap fes = cSimulation.getActiveSimulation().getMessageQueue();
+    	List<cMessage> result = new ArrayList<cMessage>();
+    	int[] fesFilterModuleIdsArray = fesFilterModuleIds.toArray();
+    	int n = fes.getLength();
+    	for (int i=0; i<n; i++) {
+    		cMessage msg = fes.peek(i);
+			if (ArrayUtils.contains(fesFilterModuleIdsArray, msg.getArrivalModuleId())) //XXX rather: if arrivalModule is a submodule of any module listed in the array
+				result.add(msg);
+    	}
+		return result.toArray();
+	}
+
 }

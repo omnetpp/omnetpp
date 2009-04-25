@@ -55,8 +55,8 @@ public class ObjectTreeView extends ViewPart implements ISimulationListener {
 	    }
 
 	    public Object getParent(Object element) {
-            if (element instanceof cObject)
-                return ((cObject)element).getOwner();
+	        if (element instanceof cObject && !((cObject)element).isZombie())  //otherwise "preservingSelection()" may crash
+	            return ((cObject)element).getOwner();
             return null;
 	    }
 
