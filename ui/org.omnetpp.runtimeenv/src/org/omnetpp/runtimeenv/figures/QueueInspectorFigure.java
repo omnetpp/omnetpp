@@ -1,10 +1,13 @@
 package org.omnetpp.runtimeenv.figures;
 
-import org.eclipse.draw2d.Ellipse;
+import java.util.List;
+
+import org.eclipse.draw2d.AbstractLayout;
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.Graphics;
+import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.LineBorder;
-import org.eclipse.draw2d.ToolbarLayout;
+import org.eclipse.draw2d.RoundedRectangle;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.omnetpp.common.color.ColorFactory;
@@ -17,18 +20,47 @@ import org.omnetpp.runtimeenv.editors.IInspectorPart;
  * 
  * @author Andras
  */
-//FIXME layouting is completely broken; messages are not clickable or hoverable
+//FIXME messages are not clickable or hoverable
 public class QueueInspectorFigure extends Figure implements IInspectorFigure {
 	protected IInspectorPart inspectorPart;
 
+	class QueueContentsLayout extends AbstractLayout {
+		@Override
+		protected Dimension calculatePreferredSize(IFigure container, int hint, int hint2) {
+			return new Dimension(10,10);  // irrelevant
+		}
+
+		@Override
+		@SuppressWarnings("unchecked")
+		public void layout(IFigure container) {
+			// compute the area where we'll put the message figures
+			Rectangle r = getClientArea().getCopy();
+			int lineWidth = r.height/8;
+			int serverWidth = 2*r.height/3;
+			r.shrink((lineWidth+1)/2, (lineWidth+1)/2);
+			r.x += serverWidth+lineWidth;
+			r.width -= serverWidth+lineWidth;
+			r.y += 3*lineWidth/2;
+			r.height -= 3*lineWidth;
+			
+			Dimension cornerRadii = new Dimension(lineWidth, lineWidth);
+			
+			int x = r.x;
+			for (IFigure child : (List<IFigure>)getChildren()) {
+				child.setBounds(new Rectangle(x, r.y, r.height/2, r.height));
+				x += r.height/2 + lineWidth/2;
+				if (child instanceof RoundedRectangle)
+					((RoundedRectangle)child).setCornerDimensions(cornerRadii);
+					
+			}
+		}
+	}
+
 	public QueueInspectorFigure() {
 		setOpaque(false);
-		ToolbarLayout layout = new ToolbarLayout();
-		layout.setVertical(false);
-		layout.setSpacing(2); //XXX but this should scale too
-		setLayoutManager(layout);
+		setLayoutManager(new QueueContentsLayout());
 		setPreferredSize(200,50);
-		setMinimumSize(new Dimension(16,32));
+		setMinimumSize(new Dimension(32,16));
 
 		setSelectionBorder(false);
 	}
@@ -54,30 +86,14 @@ public class QueueInspectorFigure extends Figure implements IInspectorFigure {
         setBorder(isSelected ? new LineBorder(5) : null); //XXX for now
 	}
 
-	public void setQueueContents(cObject[] msgs) {
-		removeAll();
-
-		if (msgs.length != 0) {
-//			// compute the area where we'll put the message figures
-//			Rectangle r = getClientArea().getCopy();
-//			r.height--; r.width--;
-//			int lineWidth = r.height/8;
-//			int serverWidth = 2*r.height/3;
-//			r.shrink((lineWidth+1)/2, (lineWidth+1)/2);
-//			r.x = serverWidth+lineWidth;
-//			r.width -= serverWidth+lineWidth;
-//			r.y = 2*lineWidth;
-//			r.height -= 4*lineWidth;
-
-			// insert the message figures
-			for (cObject msg : msgs) {
-				Ellipse f = new Ellipse();
-				f.setFill(true);
-				f.setBackgroundColor(ColorFactory.RED3);
-				f.setPreferredSize(20,20);
-				add(f);
-			}
-		}
+	public IFigure createQueueItemFigure() {
+		//Ellipse f = new Ellipse();
+		RoundedRectangle f = new RoundedRectangle();
+		f.setFill(true);
+		f.setBackgroundColor(ColorFactory.RED3);
+		f.setForegroundColor(ColorFactory.RED4);
+		f.setPreferredSize(20,20);
+		return f;
 	}
 	
 	@Override
@@ -89,6 +105,7 @@ public class QueueInspectorFigure extends Figure implements IInspectorFigure {
 		r.height--; r.width--;
 		int lineWidth = r.height/8;
 		r.shrink((lineWidth+1)/2, (lineWidth+1)/2);
+		r.width += (lineWidth+1)/2;
 		
 		// draw the server ("O" on the left)
 		int serverWidth = 2*r.height/3;

@@ -48,6 +48,7 @@ import org.omnetpp.runtimeenv.editors.IInspectorPart;
  *
  * @author Andras
  */
+//TODO implement an "ungroup" option!
 //TODO merge "general" and "fields" groups? make "contents[]" ungrouped?
 //TODO we should support user-supplied images as well
 //TODO re-export our selection...? (who understands StructKey etc?)
