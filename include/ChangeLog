@@ -1,3 +1,8 @@
+2009-04-25  Andras Varga
+
+	* cModule::addGate() to return the gate pointer whenever a single gate
+	is created (for inout gates [~gate pair] and vectors it returns NULL)
+
 2009-03-12  ------ omnetpp-4.0 released ------
 
 2009-03-28  Andras Varga
