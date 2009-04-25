@@ -112,9 +112,9 @@ default: simkernel.dll
 simkernel_wrap.cxx: *.i javaenv/*.h Makefile.vc $(OMNETPP_ROOT)/include/*.h  # and many oher things
 	-del $(JAVADIR)\*.java >nul
 	$(SWIG) -c++ -java -package $(JAVAPKG) -I$(OMNETPP_ROOT)/include -I$(OMNETPP_ROOT)/src/envir -I$(OMNETPP_ROOT) -outdir $(JAVADIR) simkernel.i
-	@: Patch the generated Java files so that they access swigCPtr via getCPtr() that detects null pointers (see WrapperTable!)
-	-@for %%i in ( $(JAVA_COBJECTS) ) do @$(PERL) -i.bak -pe "s!\(swigCPtr, this!(getCPtr(), this!g" $(JAVADIR)\%%i
-	-@for %%i in ( $(JAVA_COBJECTS) ) do @$(PERL) -i.bak -pe "s!0 : obj.swigCPtr;!0 : obj.getCPtr();!g" $(JAVADIR)\%%i
+	@: Patch the generated Java files so that they access swigCPtr via checkZombie() that detects null pointers (see WrapperTable!)
+	-@for %%i in ( $(JAVA_COBJECTS) ) do @$(PERL) -i.bak -pe "s!\(swigCPtr, this!(checkZombie(swigCPtr), this!g" $(JAVADIR)\%%i
+	-@for %%i in ( $(JAVA_COBJECTS) ) do @$(PERL) -i.bak -pe "s!0 : obj.swigCPtr;!0 : obj.checkZombie(obj.swigCPtr);!g" $(JAVADIR)\%%i
 
 simkernel.dll : $(OBJS)
 	$(LINK) /dll /out:"simkernel.dll" $(OBJS) $(LIBS) $(LDFLAGS)

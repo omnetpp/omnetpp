@@ -1,3 +1,36 @@
+//
+// Object management:
+// ==================
+// When a C++ object gets deleted, we want to mark the corresponding
+// Java wrapper object az zombie, so that Java code can throw an
+// exception instead of crashing.
+//
+// We maintain a table of swig wrapper objects in WrapperTable in Javaenv.
+// We use weak references to allow wrappers to be garbage collected.
+// ev.objectDeleted() will cause the zap() method of the cObject Java
+// class to be called, which sets the swigIsZombie flag. The Java code can
+// test a wrapper object using isZombie(). Any method call on a zombie
+// wrapper object will cause an IllegalStateException.
+//
+// NOTE: We must use a separate boolean and cannot just null out swigCPtr,
+// because that would change the hash code of the object! (We use swigCPtr
+// as hash code.) We would not be able to use them in Java HashMaps or sets.
+//
+// Throwing IllegalStateException on zombie object access requires
+// testing swigIsZombie on every swigCPtr access. Unfortunately SWIG does
+// not have a syntax for customizing swigCPtr access, so we use a Perl script
+// to patch the generated Java wrapper classes (see Makefile).
+//
+// One complication is that derived classes contain MANY swigCPtrs:
+// one for each class in the inheritance chain!!! (I.e. not only cobject
+// contains swigCPtr, but all subclasses as well). Their values may differ,
+// especially if multiple inheritance comes in. That's why swig doesn't
+// generate a getCPtr() instance method, only a static one: it needs
+// to know which ancestor class' swigCPtr you want to access!
+//
+// Therefore, swigCPtr MUST ALWAYS BE ACCESSED STATICALLY.
+//
+
 %module Simkernel
 
 %{
@@ -68,6 +101,7 @@ static void opp_JavaThrowException(JNIEnv *jenv, cException& e) {
 %typemap(javabody) cObject %{
   private long swigCPtr;
   protected boolean swigCMemOwn;
+  protected boolean swigIsZombie = false;
 
   /* standard SWIG functions */
 
@@ -80,7 +114,13 @@ static void opp_JavaThrowException(JNIEnv *jenv, cException& e) {
   }
 
   protected static long getCPtr($javaclassname obj) {
-    return (obj == null) ? 0 : obj.swigCPtr;
+    return (obj == null) ? 0 : obj.swigCPtr;  // "obj.swigCPtr" gets replaced with "obj.checkZombie(obj.swigCPtr)" in all classes during the build process
+  }
+
+  /* zombie detection */
+
+  protected void zap() {  // called from C++ code via JNI (WrapperTable) when C++ object gets deleted - does not need to be public
+    swigIsZombie = true; // don't touch swigCPtr -- it would change the object's hash code!
   }
 
   /* optional: override finalize() and add:
@@ -90,18 +130,14 @@ static void opp_JavaThrowException(JNIEnv *jenv, cException& e) {
     }
   */
 
-  protected void zap() {  // called from C++ code via JNI (WrapperTable) when C++ object gets deleted - does not need to be public
-    swigCPtr = 0;
-  }
-
   public boolean isZombie() { // returns true if the underlying C++ object has already been deleted
-    return swigCPtr == 0;
+    return swigIsZombie;
   }
 
-  protected long getCPtr() { // used instead of all direct swigCPtr accesses
-    if (swigCPtr == 0)
+  protected long checkZombie(long cPtr) { // used with all swigCPtr accesses (wrapper classes get patched by the build process: every "swigCPtr" becomes "checkZombie(swigCPtr)")
+    if (isZombie())
       throw new java.lang.IllegalStateException("underlying C++ object already deleted");
-    return swigCPtr;
+    return cPtr; // note: cannot return swigCPtr because there are many of them (one per ancestor class)
   }
 
   public cObject disown() {

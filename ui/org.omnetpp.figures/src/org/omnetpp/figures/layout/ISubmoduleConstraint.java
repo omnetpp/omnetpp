@@ -11,16 +11,16 @@ import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 
 /**
- * @author rhornig
  * Submodule layout is using this interface
+ * @author andras
  */
 public interface ISubmoduleConstraint {
-	enum VectorArrangement {none, exact, row, column, matrix, ring}; // names must match with IDisplayString.Prop.LAYOUT names
+	enum VectorArrangement {none, exact, row, column, matrix, ring}; // names must match IDisplayString.Prop.LAYOUT names
 
 	/**
 	 * Returns the position that occurs in the display string, or null. For non-vector
 	 * submodules this should be set as centerLocation; for submodule vectors, centerLocation
-	 * will be this location plus an offset calculated from vectorArranment, vectorSize,
+	 * will be this location plus an offset calculated from vectorArrangement, vectorSize,
 	 * vectorIndex and vector arrangement parameters. 
 	 */
 	public Point getBaseLocation();

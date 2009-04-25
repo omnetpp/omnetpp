@@ -27,7 +27,7 @@ import org.omnetpp.figures.layout.ISubmoduleConstraint.VectorArrangement;
 /**
  * This layouts submodules inside a compound module.
  *
- * @author rhornig
+ * @author rhornig, andras
  */
 public class CompoundModuleLayout extends AbstractLayout {
     private static boolean debug = false;
@@ -40,8 +40,6 @@ public class CompoundModuleLayout extends AbstractLayout {
 
 	/**
 	 * Constructor.
-	 * @param nodeParent The parent figure of the nodes
-	 * @param connectionParent The parent figure of the connection figures
 	 */
 	public CompoundModuleLayout(CompoundModuleFigure compoundFigure) {
 		super();
@@ -49,21 +47,19 @@ public class CompoundModuleLayout extends AbstractLayout {
  	}
 
 	/**
-	 * Calls the autoLayout algorithm using all currently specified constraints.
-	 * @param nodeParent The Parent figure of the nodes
-	 * @param edgeParent The parent figure of the connections (usually the ConnectionLayer)
+	 * Creates the autoLayout algorithm using all currently specified constraints.
 	 */
 	@SuppressWarnings("unchecked")
 	protected AbstractGraphLayoutAlgorithm createAutoLayouter() {
-	    IFigure nodeParent = compoundFigure.getSubmoduleLayer(); 
-	    IFigure edgeParent = compoundFigure.getConnectionLayer();
 	    BasicSpringEmbedderLayoutAlgorithm autoLayouter = new BasicSpringEmbedderLayoutAlgorithm();
 		autoLayouter.setDefaultEdgeLength(100);
 		autoLayouter.setRepulsiveForce(500.0);
 		autoLayouter.setMaxIterations(500);
+
 		// set the layouting area
 		int width = compoundFigure.getBackgroundSize().width;
 		int height = compoundFigure.getBackgroundSize().height;
+
 		// if the size is not present, use a default size;
 		if (width <= 0) width = DEFAULT_MAX_WIDTH;
 		if (height <= 0) height = DEFAULT_MAX_HEIGHT;
@@ -71,6 +67,7 @@ public class CompoundModuleLayout extends AbstractLayout {
 
 		// iterate over the nodes and add them to the algorithm
 		// all child figures on this layer are considered as node
+		IFigure nodeParent = compoundFigure.getSubmoduleLayer(); 
 		for (IFigure node : (List<IFigure>)nodeParent.getChildren()) {
 			ISubmoduleConstraint constr = (ISubmoduleConstraint)node;
 
@@ -99,6 +96,7 @@ public class CompoundModuleLayout extends AbstractLayout {
 
 		// iterate over the connections and add them to the algorithm
 		// all child figures of type Connection on this layer are considered as edge
+		IFigure edgeParent = compoundFigure.getConnectionLayer();
 		for (IFigure edge : (List<IFigure>)edgeParent.getChildren()) {
 			if (edge instanceof Connection) {
 				Connection conn = (Connection)edge;
@@ -121,7 +119,6 @@ public class CompoundModuleLayout extends AbstractLayout {
 		}
 		return autoLayouter;
 	}
-
 
 	protected Point getArrangementOffset(ISubmoduleConstraint constr, int spacing) {
 		int x, y;
@@ -172,7 +169,7 @@ public class CompoundModuleLayout extends AbstractLayout {
 		return new Point(x, y);
 	}
 
-	private int fallback(int vectorArrangementPar, int fallbackValue) {
+	private static int fallback(int vectorArrangementPar, int fallbackValue) {
 		return vectorArrangementPar == Integer.MIN_VALUE ? fallbackValue : vectorArrangementPar;
 	}
 
@@ -185,24 +182,23 @@ public class CompoundModuleLayout extends AbstractLayout {
     public void layout(IFigure parent) {
 	    long startTime = System.currentTimeMillis();
 	    
-	    // find the place of movable nodes if auto-layout requested
+	    // create and run the layouter
 	    AbstractGraphLayoutAlgorithm alg = createAutoLayouter();
 	    alg.setSeed((int)algSeed);
 	    alg.execute();
+
+	    // store back the new seed - otherwise unpinned modules created one-by-one would pop up at the exact same place
 	    algSeed = alg.getSeed();
 
     	// lay out the children according to the auto-layouter
         for (IFigure f : (List<IFigure>)parent.getChildren()) {
-        	ISubmoduleConstraint constr = (ISubmoduleConstraint)f;
-
-        	// by default use the size and location from the constraint object (must create a copy!)
-
         	// get the computed location from the auto-layout algorithm (if there is an algorithm at all)
-        	Point locFromAlg = alg.getNodePosition(f);
-        	Assert.isNotNull(locFromAlg);
-        	// we write back the calculated locations to the constraint so they can be used next
-        	// time as starting positions for the movable nodes
-        	constr.setCenterLocation(locFromAlg);
+        	ISubmoduleConstraint constr = (ISubmoduleConstraint)f;
+        	Point locationFromAlg = alg.getNodePosition(f);
+        	Assert.isNotNull(locationFromAlg);
+        	
+        	// we write back the calculated locations
+        	constr.setCenterLocation(locationFromAlg);
         }
         if (debug)
             Debug.println("CompoundModuleLayout: " + (System.currentTimeMillis()-startTime) + "ms");
@@ -210,8 +206,7 @@ public class CompoundModuleLayout extends AbstractLayout {
     }
 
 	/**
-	 * Set a new seed for the layouting algorithm. The next layout will use this seed
-	 * @param algSeed
+	 * Set a new seed for the layouting algorithm. The next layout will use this seed.
 	 */
 	public void setSeed(long algSeed) {
 		this.algSeed = algSeed;
@@ -264,7 +259,6 @@ public class CompoundModuleLayout extends AbstractLayout {
 	            // add the label bounds to it
 	            rect.union(((SubmoduleFigure)child).getNameBounds());
 	        }
-	        
 	    }
 	    
 	    // use the default size if no submodule children were present
