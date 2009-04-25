@@ -6,11 +6,11 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 import org.omnetpp.common.image.ImageFactory;
-import org.omnetpp.experimental.simkernel.swig.Javaenv;
-import org.omnetpp.experimental.simkernel.swig.Simkernel;
-import org.omnetpp.experimental.simkernel.swig.StringVector;
-import org.omnetpp.experimental.simkernel.swig.cSimulation;
-import org.omnetpp.experimental.simkernel.swig.cStaticFlag;
+import org.omnetpp.runtime.nativelibs.simkernel.Javaenv;
+import org.omnetpp.runtime.nativelibs.simkernel.Simkernel;
+import org.omnetpp.runtime.nativelibs.simkernel.StringVector;
+import org.omnetpp.runtime.nativelibs.simkernel.cSimulation;
+import org.omnetpp.runtime.nativelibs.simkernel.cStaticFlag;
 
 /**
  * This class controls all aspects of the application's execution
@@ -41,7 +41,7 @@ public class Application implements IApplication {
 		// which runs the application and stores the exit code in the "result" field.
 		System.out.println("Calling setupUserInterface() C++ function in envir lib...");
 		Javaenv.setJavaApplication(null, this); // call back "this" object
-		Simkernel.setupUserInterface(args);  
+		Simkernel.setupUserInterface(args);
 		return result;
 	}
 
@@ -52,10 +52,10 @@ public class Application implements IApplication {
 		Javaenv env = Javaenv.cast(cSimulation.getActiveEnvir());
         env.setJCallback(null, new EnvirCallback());
 
-        result = reallyDoStart();	
+        result = reallyDoStart();
 		System.out.println("Workbench exited");
 	}
-	
+
 	protected Object reallyDoStart() {
 		Display display = PlatformUI.createDisplay();
 		try {

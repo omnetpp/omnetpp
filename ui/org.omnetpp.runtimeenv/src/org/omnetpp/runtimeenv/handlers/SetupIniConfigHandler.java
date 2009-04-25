@@ -13,10 +13,10 @@ import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.dialogs.ISelectionStatusValidator;
 import org.eclipse.ui.dialogs.ListDialog;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.experimental.simkernel.swig.Javaenv;
-import org.omnetpp.experimental.simkernel.swig.cConfigurationEx;
-import org.omnetpp.experimental.simkernel.swig.cModule;
-import org.omnetpp.experimental.simkernel.swig.cSimulation;
+import org.omnetpp.runtime.nativelibs.simkernel.Javaenv;
+import org.omnetpp.runtime.nativelibs.simkernel.cConfigurationEx;
+import org.omnetpp.runtime.nativelibs.simkernel.cModule;
+import org.omnetpp.runtime.nativelibs.simkernel.cSimulation;
 import org.omnetpp.runtimeenv.Activator;
 import org.omnetpp.runtimeenv.SimulationManager;
 
@@ -31,7 +31,7 @@ public class SetupIniConfigHandler extends AbstractHandler {
 	}
 
 	/**
-	 * Dialog for selecting a config name and a run number. 
+	 * Dialog for selecting a config name and a run number.
 	 */
 	public static class RunSelectionDialog extends ElementTreeSelectionDialog {
 		static class ConfigRun {
@@ -64,7 +64,7 @@ public class SetupIniConfigHandler extends AbstractHandler {
 					String desc = cfg.getConfigDescription(configName);
 					if (StringUtils.isEmpty(desc))
 						return configName;
-					else 
+					else
 						return configName + " -- " + desc;
 				}
 				else if (element instanceof ConfigRun) {
@@ -74,7 +74,7 @@ public class SetupIniConfigHandler extends AbstractHandler {
 				return element.toString();
 			}
 		};
-		
+
 		static class ConfigContentProvider implements ITreeContentProvider {
 			@Override
 			public Object[] getChildren(Object element) {
@@ -85,7 +85,7 @@ public class SetupIniConfigHandler extends AbstractHandler {
 					ConfigRun runs[] = new ConfigRun[n];
 					for (int i=0; i<n; i++)
 						runs[i] = new ConfigRun(configName, i);
-					return runs; 
+					return runs;
 				}
 				return new Object[0];
 			}
@@ -124,7 +124,7 @@ public class SetupIniConfigHandler extends AbstractHandler {
 			setMessage("Select configuration and run:");
 			setAllowMultiple(false);
 			setInput("");
-			
+
 			setValidator(new ISelectionStatusValidator() {
 				@Override
 				public IStatus validate(Object[] selection) {
@@ -134,7 +134,7 @@ public class SetupIniConfigHandler extends AbstractHandler {
 				}
 			});
 		}
-		
+
 		public String getConfigName() {
 			Object result = getFirstResult();
 			if (result instanceof String)
@@ -143,7 +143,7 @@ public class SetupIniConfigHandler extends AbstractHandler {
 				return ((ConfigRun)result).configName;
 			return null;
 		}
-		
+
 		public int getRunNumber() {
 			Object result = getFirstResult();
 			if (result instanceof String)
@@ -158,7 +158,7 @@ public class SetupIniConfigHandler extends AbstractHandler {
 		SimulationManager simulationManager = Activator.getSimulationManager();
 		if (simulationManager.checkRunning())
 			return null;
-		
+
 		RunSelectionDialog dialog = new RunSelectionDialog(null); //XXX parent
 		//XXX set old values
 		// set configname [opp_getactiveconfigname]

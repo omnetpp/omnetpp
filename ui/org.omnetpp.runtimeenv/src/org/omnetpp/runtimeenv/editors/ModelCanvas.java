@@ -29,13 +29,13 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
 import org.omnetpp.common.ui.FigureCanvas;
 import org.omnetpp.common.ui.SelectionProvider;
-import org.omnetpp.experimental.simkernel.swig.cObject;
+import org.omnetpp.runtime.nativelibs.simkernel.cObject;
 import org.omnetpp.figures.misc.FigureUtils;
 import org.omnetpp.runtimeenv.Activator;
 import org.omnetpp.runtimeenv.ISimulationListener;
 
 /**
- * 
+ *
  * @author Andras
  */
 //XXX snap to grid for the move/resize?
@@ -51,18 +51,18 @@ public class ModelCanvas extends EditorPart implements IInspectorContainer {
     public void init(IEditorSite site, IEditorInput input) throws PartInitException {
         if (!(input instanceof BlankCanvasEditorInput))
             throw new PartInitException("Invalid input: it must be a module in the simulation");
-        
+
         setSite(site);
         setInput(input);
         setPartName(input.getName());
-        
+
         site.setSelectionProvider(new SelectionProvider());
     }
-    
+
     @Override
     public void createPartControl(Composite parent) {
         sc = new ScrolledComposite(parent, SWT.V_SCROLL | SWT.H_SCROLL);
-        
+
         // create canvas
         canvas = new FigureCanvas(sc, SWT.DOUBLE_BUFFERED);
         sc.setContent(canvas);
@@ -82,7 +82,7 @@ public class ModelCanvas extends EditorPart implements IInspectorContainer {
                 recalculateCanvasSize();
             }
         });
-        
+
         // create context menu
         final MenuManager contextMenuManager = new MenuManager("#popup");
         canvas.setMenu(contextMenuManager.createContextMenu(canvas));
@@ -98,7 +98,7 @@ public class ModelCanvas extends EditorPart implements IInspectorContainer {
         });
 
         FigureUtils.addTooltipSupport(canvas, canvas.getRootFigure());
-        
+
 		// update inspectors when something happens in the simulation
 		Activator.getSimulationManager().addSimulationListener(simulationListener = new ISimulationListener() {
 			@Override
@@ -106,7 +106,7 @@ public class ModelCanvas extends EditorPart implements IInspectorContainer {
 				refreshInspectors();
 			}
 		});
-        
+
     }
 
     @Override
@@ -121,18 +121,18 @@ public class ModelCanvas extends EditorPart implements IInspectorContainer {
         Dimension size = canvas.getRootFigure().getPreferredSize();
         org.eclipse.swt.graphics.Rectangle clientArea = sc.getClientArea();
         canvas.setSize(Math.max(size.width, clientArea.width), Math.max(size.height, clientArea.height));
-    } 
+    }
 
     public void addInspectorPart(IInspectorPart inspectorPart) {
         int lastY = canvas.getRootFigure().getPreferredSize().height;
         addInspectorPart(inspectorPart, 0, lastY+5);
     }
-    
+
     public void addInspectorPart(IInspectorPart inspectorPart, final int x, final int y) {
         final IFigure moduleFigure = inspectorPart.getFigure();
         canvas.getRootFigure().add(moduleFigure);
         canvas.getRootFigure().setConstraint(moduleFigure, new Rectangle(x, y, -1, -1));
-        
+
         // reveal new inspector on canvas (later when layouting already took place)
         Display.getCurrent().asyncExec(new Runnable() {
             @Override
@@ -162,7 +162,7 @@ public class ModelCanvas extends EditorPart implements IInspectorContainer {
     	for (IInspectorPart inspectorPart : inspectors.toArray(new IInspectorPart[inspectors.size()]))
     		inspectorPart.refresh();
     }
-    
+
     @Override
     public Composite getControl() {
     	return canvas;
@@ -177,7 +177,7 @@ public class ModelCanvas extends EditorPart implements IInspectorContainer {
         Rectangle bounds = figure.getBounds(); //XXX maybe not good if coords are parent-relative
         sc.setOrigin(bounds.x, bounds.y);
     }
-    
+
     @Override
     public void setFocus() {
         canvas.setFocus();
@@ -204,7 +204,7 @@ public class ModelCanvas extends EditorPart implements IInspectorContainer {
 		IStructuredSelection selection = (IStructuredSelection)getSite().getSelectionProvider().getSelection();
 		if (selection.toList().contains(object))
 			deselect(object);
-		else 
+		else
 			select(object, false);
 	}
 

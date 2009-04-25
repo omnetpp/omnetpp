@@ -13,8 +13,8 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.omnetpp.experimental.simkernel.swig.cModule;
-import org.omnetpp.experimental.simkernel.swig.cObject;
+import org.omnetpp.runtime.nativelibs.simkernel.cModule;
+import org.omnetpp.runtime.nativelibs.simkernel.cObject;
 import org.omnetpp.runtimeenv.editors.BlankCanvasEditorInput;
 import org.omnetpp.runtimeenv.editors.GraphicalModulePart;
 import org.omnetpp.runtimeenv.editors.IInspectorPart;
@@ -33,9 +33,9 @@ public class Activator extends AbstractUIPlugin {
 
 	// The shared instance
 	private static Activator plugin;
-	
+
 	public static SimulationManager simulationManager;  //FIXME for now, so that Application can set it
-	
+
 	/**
 	 * The constructor
 	 */
@@ -61,7 +61,7 @@ public class Activator extends AbstractUIPlugin {
 			simulationManager.dispose();
 			simulationManager = null;
 		}
-        
+
 		plugin = null;
 		super.stop(context);
 	}
@@ -78,7 +78,7 @@ public class Activator extends AbstractUIPlugin {
     public static void logError(Throwable exception) {
         logError(exception.toString(), exception);
     }
-    
+
     public static void logError(String message, Throwable exception) {
         if (plugin != null) {
             plugin.getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, 0, message, exception));
@@ -88,7 +88,7 @@ public class Activator extends AbstractUIPlugin {
             exception.printStackTrace();
         }
     }
-	
+
     /**
      * Returns an image descriptor for the image file at the given
      * plug-in relative path.
@@ -96,10 +96,10 @@ public class Activator extends AbstractUIPlugin {
     public static ImageDescriptor getImageDescriptor(String path) {
         return imageDescriptorFromPlugin(PLUGIN_ID, path);
     }
-    
+
     /**
-     * Creates an image. IMPORTANT: The image is NOT cached! Callers 
-     * are responsible for disposal of the image. 
+     * Creates an image. IMPORTANT: The image is NOT cached! Callers
+     * are responsible for disposal of the image.
      */
     public static Image getImage(String path) {
         return getImageDescriptor(path).createImage();
@@ -118,12 +118,12 @@ public class Activator extends AbstractUIPlugin {
         }
         return image;
     }
-	
+
 	public static IWorkbenchPage getActiveWorkbenchPage() {
         IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
         return window == null ? null : window.getActivePage();
     }
-	
+
 	public static IEditorPart openEditor(IEditorInput input, String editorId) {
 	    IWorkbenchPage page = getActiveWorkbenchPage();
 	    if (page != null) {
@@ -164,7 +164,7 @@ public class Activator extends AbstractUIPlugin {
         ((ModelCanvas)editor).addInspectorPart(part);
         return part;
     }
-    
+
 	public static IInspectorPart createInspectorFor(cObject object) {
 	    //XXX this function should go into some InspectorFactory class or so
         if (cModule.cast(object) != null)
@@ -175,7 +175,7 @@ public class Activator extends AbstractUIPlugin {
         return null;
 	}
 
-	
+
 	public static SimulationManager getSimulationManager() {
 	    return simulationManager;
 	}

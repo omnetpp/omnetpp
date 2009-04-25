@@ -12,12 +12,12 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.experimental.simkernel.swig.IntVector;
-import org.omnetpp.experimental.simkernel.swig.LogBuffer;
-import org.omnetpp.experimental.simkernel.swig.LogBufferView;
-import org.omnetpp.experimental.simkernel.swig.LogBufferViewInput;
-import org.omnetpp.experimental.simkernel.swig.cModule;
-import org.omnetpp.experimental.simkernel.swig.cObject;
+import org.omnetpp.runtime.nativelibs.simkernel.IntVector;
+import org.omnetpp.runtime.nativelibs.simkernel.LogBuffer;
+import org.omnetpp.runtime.nativelibs.simkernel.LogBufferView;
+import org.omnetpp.runtime.nativelibs.simkernel.LogBufferViewInput;
+import org.omnetpp.runtime.nativelibs.simkernel.cModule;
+import org.omnetpp.runtime.nativelibs.simkernel.cObject;
 import org.omnetpp.runtimeenv.Activator;
 import org.omnetpp.runtimeenv.ISimulationListener;
 import org.omnetpp.runtimeenv.editors.IInspectorPart;
@@ -27,7 +27,7 @@ import org.omnetpp.runtimeenv.widgets.TextViewerContent;
 
 /**
  * Displays log messages from modules.
- * 
+ *
  * @author Andras
  */
 //TODO filtering (excludedmoduleIDs) etc
@@ -41,16 +41,16 @@ public class ModuleOutputView extends PinnableView2 implements ISimulationListen
     protected class LogBufferContent implements TextViewerContent {
         private LogBufferView logBufferView;
         private ListenerList listeners = new ListenerList();
-        
+
         public LogBufferContent(LogBufferView logBufferView) {
-            this.logBufferView = logBufferView;    
+            this.logBufferView = logBufferView;
         }
-        
+
         public void fireTextChanged() {
             for (Object o : listeners.getListeners())
                 ((TextChangeListener)o).textChanged(this);
         }
-        
+
         @Override
         public int getLineCount() {
             return (int)logBufferView.getNumLines();
@@ -106,10 +106,10 @@ public class ModuleOutputView extends PinnableView2 implements ISimulationListen
 
         textViewer = new TextViewer(parent, SWT.DOUBLE_BUFFERED);
         textViewer.setContent(new LogBufferContent(logBufferView));
-	    
+
 	    Activator.getSimulationManager().addSimulationListener(this);
-	    
-	    
+
+
 //	    //XXX PERF TEST
 //	    Display.getDefault().asyncExec(new Runnable() {
 //            @Override
@@ -127,9 +127,9 @@ public class ModuleOutputView extends PinnableView2 implements ISimulationListen
 	    // create context menu
         getViewSite().registerContextMenu(contextMenuManager, textViewer);
         textViewer.setMenu(contextMenuManager.createContextMenu(textViewer));
-	    
+
 	    createActions();
-	    
+
 	    return textViewer;
 	}
 
@@ -137,10 +137,10 @@ public class ModuleOutputView extends PinnableView2 implements ISimulationListen
         IAction pinAction = getOrCreatePinAction();
 
         contextMenuManager.add(pinAction); //TODO expand context menu: Copy, etc.
-        
+
         IToolBarManager toolBarManager = getViewSite().getActionBars().getToolBarManager();
         toolBarManager.add(pinAction);
-    
+
         IMenuManager menuManager = getViewSite().getActionBars().getMenuManager();
         menuManager.add(pinAction);
     }
@@ -151,13 +151,13 @@ public class ModuleOutputView extends PinnableView2 implements ISimulationListen
 	public void setFocus() {
 	    textViewer.setFocus();
 	}
-	
+
 	@Override
 	public void changed() {
 	    textViewer.refresh();
 	    //textViewer.setTopLineIndex(textViewer.getContent().getLineCount()-1);
 	    textViewer.setCaretPosition(textViewer.getContent().getLineCount()-1, 0);
-	    
+
 //	    LogBufferView logBufferView = ((LogBufferContent)styledText.getContent()).logBufferView;
 //        GC gc = new GC(styledText);
 //        gc.setBackground(ColorFactory.WHITE);

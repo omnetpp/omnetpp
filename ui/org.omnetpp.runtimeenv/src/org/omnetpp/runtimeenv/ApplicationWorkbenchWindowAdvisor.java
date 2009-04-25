@@ -22,12 +22,12 @@ import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
 import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
 import org.eclipse.ui.application.WorkbenchWindowAdvisor;
-import org.omnetpp.experimental.simkernel.swig.cMessage;
-import org.omnetpp.experimental.simkernel.swig.cModuleType;
-import org.omnetpp.experimental.simkernel.swig.cSimulation;
+import org.omnetpp.runtime.nativelibs.simkernel.cMessage;
+import org.omnetpp.runtime.nativelibs.simkernel.cModuleType;
+import org.omnetpp.runtime.nativelibs.simkernel.cSimulation;
 
 /**
- * 
+ *
  * @author Andras
  */
 public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
@@ -63,13 +63,13 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
             @Override
             protected Control createControl(Composite parent) {
                 label = new Label(parent, SWT.BORDER | SWT.LEFT);
-                if (tooltip != null) 
+                if (tooltip != null)
                     label.setToolTipText(tooltip);
-                label.setText("                                      "); //XXX 
+                label.setText("                                      "); //XXX
                 return label;
             }
-            public Label getLabel() { 
-                return label; 
+            public Label getLabel() {
+                return label;
             }
         }
 
@@ -94,8 +94,8 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
                 cModuleType networkType = cSimulation.getActiveSimulation().getNetworkType();
                 networkName.getLabel().setText(" "+ (networkType != null ? networkType.getFullName() : "(no network set up)") + " ");
                 messageCounters.getLabel().setText(
-                        " " + cSimulation.getActiveSimulation().getMessageQueue().getLength() + 
-                        " / " + cMessage.getLiveMessageCount() + 
+                        " " + cSimulation.getActiveSimulation().getMessageQueue().getLength() +
+                        " / " + cMessage.getLiveMessageCount() +
                         " / " + cMessage.getTotalMessageCount() + " ");
             }
         });
@@ -112,7 +112,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
                 simtimeItem.setText(text);
             }
         });
-        
+
         // display selection in statusbar
         getWindowConfigurer().getWindow().getSelectionService().addSelectionListener(new ISelectionListener() {
 			@Override
@@ -129,14 +129,14 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 
 				// display text in statusbar
 				IActionBars actionBars = null;
-				if (part instanceof IViewPart) 
+				if (part instanceof IViewPart)
 					actionBars = ((IViewPart)part).getViewSite().getActionBars();
-				if (part instanceof IEditorPart) 
+				if (part instanceof IEditorPart)
 					actionBars = ((IEditorPart)part).getEditorSite().getActionBars();
 				if (actionBars != null)
 					actionBars.getStatusLineManager().setMessage(text);
 			}
         });
-        
+
     }
 }

@@ -30,19 +30,19 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.experimental.simkernel.swig.Simkernel;
-import org.omnetpp.experimental.simkernel.swig.cClassDescriptor;
-import org.omnetpp.experimental.simkernel.swig.cEnum;
-import org.omnetpp.experimental.simkernel.swig.cModule;
-import org.omnetpp.experimental.simkernel.swig.cObject;
-import org.omnetpp.experimental.simkernel.swig.cSimulation;
+import org.omnetpp.runtime.nativelibs.simkernel.Simkernel;
+import org.omnetpp.runtime.nativelibs.simkernel.cClassDescriptor;
+import org.omnetpp.runtime.nativelibs.simkernel.cEnum;
+import org.omnetpp.runtime.nativelibs.simkernel.cModule;
+import org.omnetpp.runtime.nativelibs.simkernel.cObject;
+import org.omnetpp.runtime.nativelibs.simkernel.cSimulation;
 import org.omnetpp.runtimeenv.Activator;
 import org.omnetpp.runtimeenv.ISimulationListener;
 import org.omnetpp.runtimeenv.editors.IInspectorPart;
 
 /**
  * A view to display a C++ cObject's contents, based on its cClassDescriptor.
- * 
+ *
  * @author Andras
  */
 //TODO merge "general" and "fields" groups? make "contents[]" ungrouped?
@@ -58,7 +58,7 @@ public class ObjectPropertiesView extends PinnableView2 implements ISimulationLi
 
     // we want to display objects displayed as roots in the treeviewer with full path,
     // so we wrap them into RootObj so that we can distinguish them from other cObjects
-    class RootObj { 
+    class RootObj {
     	cObject object;
     	public RootObj(cObject object) {
     		this.object = object;
@@ -110,7 +110,7 @@ public class ObjectPropertiesView extends PinnableView2 implements ISimulationLi
             super(parent, ptr, desc);
             this.groupName = groupName;
         }
-        
+
         @Override
         public boolean equals(Object obj) {
             if (this == obj)
@@ -174,7 +174,7 @@ public class ObjectPropertiesView extends PinnableView2 implements ISimulationLi
             return super.hashCode() + 47*fieldID + 113*index;
         }
 	}
-	
+
 	class ViewContentProvider implements ITreeContentProvider {
 	    public Object[] getChildren(Object element) {
 	        if (element instanceof Object[])
@@ -267,7 +267,7 @@ public class ObjectPropertiesView extends PinnableView2 implements ISimulationLi
 	        if (element instanceof RootObj)
 	        	element = ((RootObj)element).object;
 	        if (element instanceof GroupKey)
-	            return true;  // has fields in the group 
+	            return true;  // has fields in the group
 	        else if (element instanceof cObject)
 	            return true; // has fields etc.
 	        else
@@ -289,7 +289,7 @@ public class ObjectPropertiesView extends PinnableView2 implements ISimulationLi
 	        for (int i=0; i<result.length; i++)
 	            result[i] = new GroupKey(parent, ptr, desc, (String)result[i]);
 	        return result;
-	        
+
 	    }
 
 	    protected Object[] getFieldsInGroup(Object parent, long ptr, cClassDescriptor desc, String groupName) {
@@ -303,7 +303,7 @@ public class ObjectPropertiesView extends PinnableView2 implements ISimulationLi
             }
             return ArrayUtils.subarray(fieldKeys, 0, numFieldKeys);
 	    }
-	    
+
 	    public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 	        // Do nothing
 	    }
@@ -352,12 +352,12 @@ public class ObjectPropertiesView extends PinnableView2 implements ISimulationLi
             }
 	        return element.toString();
 	    }
-	    
+
         @Override
 		public Image getImage(Object element) {
 	        if (element instanceof RootObj)
 	            element = ((RootObj)element).object;
-	        
+
             if (element instanceof cObject) {
                 //FIXME cache image by object's classname!
                 cObject object = (cObject)element;
@@ -389,10 +389,10 @@ public class ObjectPropertiesView extends PinnableView2 implements ISimulationLi
                 else
                     return Activator.getCachedImage("icons/obj16/field.png");
             }
-            
+
 			return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_ERROR_TSK);
 		}
-        
+
         public String getFieldText(long object, cClassDescriptor desc, int field, int index) {
             String typeName = desc.getFieldTypeString(object, field);
             boolean isArray = desc.getFieldIsArray(object, field);
@@ -400,30 +400,30 @@ public class ObjectPropertiesView extends PinnableView2 implements ISimulationLi
             boolean isPoly = desc.getFieldIsCPolymorphic(object, field);
             boolean isObject = desc.getFieldIsCObject(object, field);
             boolean isEditable = desc.getFieldIsEditable(object, field);
-        
+
             // field name can be overridden with @label property
             String name = desc.getFieldProperty(object, field, "label");
             if (StringUtils.isEmpty(name))
                 name = desc.getFieldName(object, field);
-        
+
             // if it's an unexpanded array, return "name[size]" immediately
             if (isArray && index == -1) {
                 int size = desc.getArraySize(object, field);
                 return name + "[" + size + "] \f(" + typeName + ")";
             }
-        
+
             // when showing array elements, omit name and just show "[index]" instead
             if (index != -1)
                 name = "[" + index + "]";
-        
+
             // we'll want to print the field type, except for expanded array elements
             // (no need to repeat it, as it's printed in the "name[size]" node already)
             String typeNameText = (index == -1) ? " \f(" + typeName + ")" : "";
-        
+
             // "editable" flag
             if (isEditable)
                 typeNameText = " [...] " + typeNameText;
-        
+
             if (isCompound) {
                 // if it's an object, try to say something about it...
                 if (isPoly) {
@@ -439,7 +439,7 @@ public class ObjectPropertiesView extends PinnableView2 implements ISimulationLi
                     String info = fieldObj.info();
                     String infoText = info.equals("") ? "" : ": " + info;
                     return name + " = " + "(" + className + ") " + fieldObjName + infoText + typeNameText;
-                } 
+                }
                 else {
                     // a value was generated via operator<<
                     String value = desc.getFieldAsString(object, field, index);
@@ -451,7 +451,7 @@ public class ObjectPropertiesView extends PinnableView2 implements ISimulationLi
             } else {
                 // plain field, return "name = value" text
                 String value = desc.getFieldAsString(object, field, index);
-                if (typeName.equals("string")) 
+                if (typeName.equals("string"))
                     value = "'" + value + "'";
 
                 String enumName = desc.getFieldProperty(object, field, "enum");
@@ -462,7 +462,7 @@ public class ObjectPropertiesView extends PinnableView2 implements ISimulationLi
                         try {
                             String symbolicName = enumDef.getStringFor(Integer.parseInt(value));
                             value = StringUtils.defaultIfEmpty(symbolicName, "???") + " (" + value + ")";
-                        } 
+                        }
                         catch (NumberFormatException e) { }
                     }
                 }
@@ -525,13 +525,13 @@ public class ObjectPropertiesView extends PinnableView2 implements ISimulationLi
 		viewer.setLabelProvider(new DecoratingStyledCellLabelProvider(new ViewLabelProvider(), null, null));
 		viewer.setInput(cSimulation.getActiveSimulation());
         Activator.getSimulationManager().addSimulationListener(this);
-        
+
         // create context menu
         getViewSite().registerContextMenu(contextMenuManager, viewer);
         viewer.getTree().setMenu(contextMenuManager.createContextMenu(viewer.getTree()));
-        
+
         createActions();
-        
+
         // add double-click support
         viewer.addDoubleClickListener(new IDoubleClickListener() {
             public void doubleClick(DoubleClickEvent event) {
@@ -551,12 +551,12 @@ public class ObjectPropertiesView extends PinnableView2 implements ISimulationLi
     	        	if (isObject)
     	        		element = key.desc.getFieldAsCObject(key.ptr, key.fieldID, key.index);
     	        }
-    	        
+
     	        if (element instanceof cObject)
                     Activator.openInspector2((cObject)element, false);
             }
         });
-        
+
         return viewer.getTree();
 	}
 
@@ -564,10 +564,10 @@ public class ObjectPropertiesView extends PinnableView2 implements ISimulationLi
         IAction pinAction = getOrCreatePinAction();
 
         contextMenuManager.add(pinAction); //TODO expand context menu: Copy, etc.
-        
+
         IToolBarManager toolBarManager = getViewSite().getActionBars().getToolBarManager();
         toolBarManager.add(pinAction);
-    
+
         IMenuManager menuManager = getViewSite().getActionBars().getMenuManager();
         menuManager.add(pinAction);
     }

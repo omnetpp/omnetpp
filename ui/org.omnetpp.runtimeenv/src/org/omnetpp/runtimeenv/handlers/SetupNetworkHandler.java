@@ -10,11 +10,11 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.ui.dialogs.ListDialog;
-import org.omnetpp.experimental.simkernel.swig.Simkernel;
-import org.omnetpp.experimental.simkernel.swig.cModule;
-import org.omnetpp.experimental.simkernel.swig.cModuleType;
-import org.omnetpp.experimental.simkernel.swig.cRegistrationList;
-import org.omnetpp.experimental.simkernel.swig.cSimulation;
+import org.omnetpp.runtime.nativelibs.simkernel.Simkernel;
+import org.omnetpp.runtime.nativelibs.simkernel.cModule;
+import org.omnetpp.runtime.nativelibs.simkernel.cModuleType;
+import org.omnetpp.runtime.nativelibs.simkernel.cRegistrationList;
+import org.omnetpp.runtime.nativelibs.simkernel.cSimulation;
 import org.omnetpp.runtimeenv.Activator;
 import org.omnetpp.runtimeenv.SimulationManager;
 
@@ -69,7 +69,7 @@ public class SetupNetworkHandler extends AbstractHandler {
 	    return null;
 	}
 
-    //XXX to some util class	
+    //XXX to some util class
 	public static List<cModuleType> getModuleTypes() {
 		List<cModuleType> result = new ArrayList<cModuleType>();
     	cRegistrationList componentTypes = Simkernel.getRegisteredComponentTypes();
@@ -81,7 +81,7 @@ public class SetupNetworkHandler extends AbstractHandler {
 		return result;
 	}
 
-	//XXX to some util class	
+	//XXX to some util class
 	public static List<cModuleType> getNetworkTypes() {
 		List<cModuleType> result = new ArrayList<cModuleType>();
     	cRegistrationList componentTypes = Simkernel.getRegisteredComponentTypes();

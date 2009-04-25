@@ -3,17 +3,17 @@ package org.omnetpp.runtimeenv.editors;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.graphics.Point;
-import org.omnetpp.experimental.simkernel.swig.cObject;
+import org.omnetpp.runtime.nativelibs.simkernel.cObject;
 
 
 /**
- * Represents an inspector. An inspector presents a simulation object in the 
+ * Represents an inspector. An inspector presents a simulation object in the
  * runtime GUI. The visual representation of an inspector is a Draw2D figure
  * that can be placed on a canvas.
- * 
- * The inspector is also a selection provider. When this inspector is selected 
- * (see isSelected()), the selection should include this inspector (or its 
- * inspected object) as well. 
+ *
+ * The inspector is also a selection provider. When this inspector is selected
+ * (see isSelected()), the selection should include this inspector (or its
+ * inspected object) as well.
  */
 public interface IInspectorPart {
 
@@ -25,12 +25,12 @@ public interface IInspectorPart {
 	/**
 	 * Refresh the inspector's contents. Should only be called when the
 	 * inspector is already installed (the figure is on a draw2d canvas,
-	 * and setContainer() was already called). The client is responsible 
+	 * and setContainer() was already called). The client is responsible
 	 * for calling this method frequently enough to keep the inspector's
 	 * content up to date.
 	 */
 	void refresh();
-	
+
 	/**
 	 * Must be called when the inspector is no longer needed
 	 */
@@ -46,7 +46,7 @@ public interface IInspectorPart {
      * Returns whether this inspector can be maximized to fill the canvas.
      */
     boolean isMaximizable();
-    
+
     /**
      * Returns true if this inspector is selected.
      */
@@ -60,9 +60,9 @@ public interface IInspectorPart {
     /**
      * Returns container for the inspector. The container handles selection,
      * closing / maximizing / changing Z-order of inspectors, and other tasks.
-     */ 
+     */
     IInspectorContainer getContainer();
-    
+
     /**
      * Called when the canvas selection changes. The inspector part should
      * look at the objects in the selection, and highlight the relevant ones

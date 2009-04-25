@@ -6,11 +6,11 @@ import org.eclipse.draw2d.MouseListener;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.swt.graphics.Point;
-import org.omnetpp.experimental.simkernel.swig.cObject;
+import org.omnetpp.runtime.nativelibs.simkernel.cObject;
 import org.omnetpp.runtimeenv.figures.TextInspectorFigure;
 
 /**
- * 
+ *
  * @author Andras
  */
 //XXX make more options what to display: class+name/fullpath, info, detailedinfo; change color, shape etc
@@ -33,7 +33,7 @@ public class TextInspectorPart extends InspectorPart {
 	@Override
 	public void refresh() {
 		super.refresh();
-		if (!isDisposed()) { 
+		if (!isDisposed()) {
 			((TextInspectorFigure)figure).setTexts("(" + object.getClassName() + ") " + object.getFullPath(), object.info());
 		}
 	}

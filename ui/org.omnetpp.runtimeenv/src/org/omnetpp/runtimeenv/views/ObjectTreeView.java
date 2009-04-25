@@ -25,15 +25,15 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.ui.SelectionProvider;
-import org.omnetpp.experimental.simkernel.swig.Simkernel;
-import org.omnetpp.experimental.simkernel.swig.cClassDescriptor;
-import org.omnetpp.experimental.simkernel.swig.cObject;
-import org.omnetpp.experimental.simkernel.swig.cSimulation;
+import org.omnetpp.runtime.nativelibs.simkernel.Simkernel;
+import org.omnetpp.runtime.nativelibs.simkernel.cClassDescriptor;
+import org.omnetpp.runtime.nativelibs.simkernel.cObject;
+import org.omnetpp.runtime.nativelibs.simkernel.cSimulation;
 import org.omnetpp.runtimeenv.Activator;
 import org.omnetpp.runtimeenv.ISimulationListener;
 
 /**
- * 
+ *
  * @author Andras
  */
 //TODO we should support user-supplied images as well
@@ -91,7 +91,7 @@ public class ObjectTreeView extends ViewPart implements ISimulationListener {
             }
             return element.toString();
         }
-        
+
         @Override
         public Image getImage(Object element) {
             if (element instanceof cObject) {
@@ -160,7 +160,7 @@ public class ObjectTreeView extends ViewPart implements ISimulationListener {
         getViewSite().registerContextMenu(contextMenuManager, viewer);
         viewer.getTree().setMenu(contextMenuManager.createContextMenu(viewer.getTree()));
         //TODO dynamic menu based on which object is selected
-        
+
         // double-click opens an inspector
         viewer.addDoubleClickListener(new IDoubleClickListener() {
             public void doubleClick(DoubleClickEvent event) {
@@ -169,7 +169,7 @@ public class ObjectTreeView extends ViewPart implements ISimulationListener {
                     Activator.openInspector2((cObject)element, false);
             }
         });
-        
+
         // export our selection to the workbench
 		getViewSite().setSelectionProvider(new SelectionProvider());
         viewer.addSelectionChangedListener(new ISelectionChangedListener() {
@@ -178,7 +178,7 @@ public class ObjectTreeView extends ViewPart implements ISimulationListener {
 				getViewSite().getSelectionProvider().setSelection(event.getSelection());
 			}
         });
-        
+
         // update when something in the simulation changes
 		Activator.getSimulationManager().addSimulationListener(this);
 	}

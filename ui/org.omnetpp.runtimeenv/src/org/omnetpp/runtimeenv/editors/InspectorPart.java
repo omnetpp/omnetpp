@@ -4,7 +4,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.common.ui.FigureCanvas;
-import org.omnetpp.experimental.simkernel.swig.cObject;
+import org.omnetpp.runtime.nativelibs.simkernel.cObject;
 
 /**
  * Default implementation for IInspectorPart, base class for inspector classes
@@ -27,7 +27,7 @@ public abstract class InspectorPart implements IInspectorPart {
 	public boolean isDisposed() {
 		return object == null;
 	}
-	
+
     public static IInspectorPart findInspectorPartAt(FigureCanvas canvas, int x, int y) {
         IFigure target = canvas.getRootFigure().findFigureAt(x, y);
         while (target != null && !(target instanceof IInspectorFigure))
@@ -54,14 +54,14 @@ public abstract class InspectorPart implements IInspectorPart {
 	public void refresh() {
 		Assert.isTrue(figure.getParent()!=null && inspectorContainer!=null, "inspector not yet installed");
 		Assert.isTrue(object != null, "inspector already disposed");
-		
+
 		// automatically close the inspector when the underlying object gets deleted
 		if (object.isZombie()) {
 	    	System.out.println("object became zombie - auto-closing inspector: ");
 			getContainer().close(this);
 		}
 	}
-    
+
 	@Override
 	public void setContainer(IInspectorContainer container) {
 		this.inspectorContainer = container;
@@ -71,7 +71,7 @@ public abstract class InspectorPart implements IInspectorPart {
     public IInspectorContainer getContainer() {
     	return inspectorContainer;
     }
-    
+
     @Override
     public void selectionChanged(IStructuredSelection selection) {
     	boolean oldSelectedState = isSelected;
@@ -87,6 +87,6 @@ public abstract class InspectorPart implements IInspectorPart {
     	else
     		return getClass().getSimpleName() + ":(" + object.getClassName() + ")" + object.getFullPath();
     }
-    
+
 
 }

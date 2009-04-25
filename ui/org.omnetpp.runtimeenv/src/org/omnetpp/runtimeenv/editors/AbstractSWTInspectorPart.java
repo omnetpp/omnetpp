@@ -14,7 +14,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.experimental.simkernel.swig.cObject;
+import org.omnetpp.runtime.nativelibs.simkernel.cObject;
 import org.omnetpp.runtimeenv.figures.FigureUtils;
 
 /**
@@ -24,7 +24,7 @@ import org.omnetpp.runtimeenv.figures.FigureUtils;
 public abstract class AbstractSWTInspectorPart extends InspectorPart {
 	protected static Cursor arrowCursor;
 	protected Control control;
-	
+
 	public class ContainerFigure extends RoundedRectangle implements IInspectorFigure {
 		protected IInspectorPart inspectorPart;
 		protected Insets insets = new Insets(6, 10, 6, 10);
@@ -34,12 +34,12 @@ public abstract class AbstractSWTInspectorPart extends InspectorPart {
 			setLayoutManager(new ToolbarLayout());
 			setSelectionBorder(false);
 		}
-		
+
 		@Override
 		public Insets getInsets() {
 			return insets;
 		}
-		
+
 		@Override
 		public IInspectorPart getInspectorPart() {
 			return inspectorPart;
@@ -73,13 +73,13 @@ public abstract class AbstractSWTInspectorPart extends InspectorPart {
 	@Override
 	public void setContainer(IInspectorContainer container) {
 		super.setContainer(container);
-		
+
 		Assert.isTrue(container.getControl().getLayout()==null); // must NOT have a layouter (we'll place children manually)
 		control = createContents(container.getControl());
 		if (arrowCursor == null) arrowCursor = new Cursor(Display.getCurrent(), SWT.CURSOR_ARROW);
 		control.setCursor(arrowCursor);  // otherwise border's resize cursor will remain in effect
 		adjustControlBounds();
-		
+
 		figure.addFigureListener(new FigureListener() {
 			@Override
 			public void figureMoved(IFigure source) { // actually, moved or resized...
@@ -91,18 +91,18 @@ public abstract class AbstractSWTInspectorPart extends InspectorPart {
 	/**
 	 * Create the SWT control here. Also, set the figure's preferred size to
 	 * the required size, e.g. like this:
-	 * 
+	 *
 	 * <pre>
 	 * Point p = control.computeSize(SWT.DEFAULT, SWT.DEFAULT);
  	 * figure.setPreferredSize(new Dimension(p.x,p.y));
  	 * </pre>
 	 */
 	abstract protected Control createContents(Composite parent);
-	
+
 	public Control getControl() {
 		return control;
 	}
-	
+
 	protected void adjustControlBounds() {
 		Rectangle r = figure.getBounds().getCopy();
 		figure.translateToAbsolute(r);

@@ -9,19 +9,19 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
-import org.omnetpp.experimental.simkernel.WrappedException;
-import org.omnetpp.experimental.simkernel.swig.Javaenv;
-import org.omnetpp.experimental.simkernel.swig.LogBuffer;
-import org.omnetpp.experimental.simkernel.swig.cConfigurationEx;
-import org.omnetpp.experimental.simkernel.swig.cEnvir;
-import org.omnetpp.experimental.simkernel.swig.cException;
-import org.omnetpp.experimental.simkernel.swig.cModule;
-import org.omnetpp.experimental.simkernel.swig.cModuleType;
-import org.omnetpp.experimental.simkernel.swig.cSimpleModule;
-import org.omnetpp.experimental.simkernel.swig.cSimulation;
+import org.omnetpp.runtime.nativelibs.WrappedException;
+import org.omnetpp.runtime.nativelibs.simkernel.Javaenv;
+import org.omnetpp.runtime.nativelibs.simkernel.LogBuffer;
+import org.omnetpp.runtime.nativelibs.simkernel.cConfigurationEx;
+import org.omnetpp.runtime.nativelibs.simkernel.cEnvir;
+import org.omnetpp.runtime.nativelibs.simkernel.cException;
+import org.omnetpp.runtime.nativelibs.simkernel.cModule;
+import org.omnetpp.runtime.nativelibs.simkernel.cModuleType;
+import org.omnetpp.runtime.nativelibs.simkernel.cSimpleModule;
+import org.omnetpp.runtime.nativelibs.simkernel.cSimulation;
 
 /**
- * 
+ *
  * @author Andras
  */
 //XXX flusLastLine() everywhere
@@ -38,7 +38,7 @@ public class SimulationManager {
      * Plus, at any time it may be temporarily BUSY inside in an idle() call.
      */
     public enum SimState {
-        NONET, 
+        NONET,
         NEW,
         READY,
         RUNNING,
@@ -58,9 +58,9 @@ public class SimulationManager {
     	EXPRESS
 	}
 
-	
+
     public SimulationManager() {
-       
+
         Display.getDefault().asyncExec(new Runnable() {
         	@Override
         	public void run() {
@@ -83,7 +83,7 @@ public class SimulationManager {
         	}
         });
     }
-    
+
     public void dispose() {
     	//FIXME do all such stuff in Application?
         // delete the active simulation object
@@ -93,10 +93,10 @@ public class SimulationManager {
         cSimulation.setActiveSimulation(null);
         if (simulation != null)
             simulation.delete();
-*/            
+*/
 //        cStaticFlag.set(false);
     }
-    
+
     public void addSimulationListener(ISimulationListener listener) {
         simulationListeners.add(listener);
     }
@@ -131,24 +131,24 @@ public class SimulationManager {
         cEnvir env = cSimulation.getActiveEnvir();
         return Javaenv.cast(env).getLogBuffer();
     }
-    
+
     public SimState getState() {
     	return state;
     }
-    
+
     public String getLocalPackage() {
     	return "";  //FIXME
     }
-    
+
     public cConfigurationEx getConfig() {
         return Javaenv.cast(cSimulation.getActiveEnvir()).getConfigEx();
     }
-    
+
     public void newNetwork(String networkName) {
 		try {
 			cSimulation simulation = cSimulation.getActiveSimulation();
 	        Javaenv env = Javaenv.cast(cSimulation.getActiveEnvir());
-			
+
 			// finish & cleanup previous run if we haven't done so yet
 			if (state != SimState.NONET)
 			{
@@ -260,7 +260,7 @@ public class SimulationManager {
         	return false;
         if (isSimulationOK())
             return true;
-        if (!MessageDialog.openQuestion(getShell(), "Warning", "Cannot continue this simulation. Rebuild network?")) 
+        if (!MessageDialog.openQuestion(getShell(), "Warning", "Cannot continue this simulation. Rebuild network?"))
         	return false;
         rebuildNetwork();
         return isSimulationOK();
@@ -273,7 +273,7 @@ public class SimulationManager {
     public boolean isRunning() {
     	return state==SimState.RUNNING || state==SimState.BUSY;
     }
-    
+
     public boolean checkRunning() {  //XXX rename to assertNotRunning()
     	if (state==SimState.RUNNING) {
     		MessageDialog.openInformation(getShell(), "Simulation Running", "Sorry, you cannot do this while the simulation is running.");
@@ -286,11 +286,11 @@ public class SimulationManager {
     	return false;
     }
 
-    protected void setupUIForRunMode(RunMode mode, cModule module, boolean until) { 
+    protected void setupUIForRunMode(RunMode mode, cModule module, boolean until) {
     	//XXX currently unused -- but see Tcl code
     }
-    
-    
+
+
 	public void step() {
 	    Assert.isTrue(state==SimState.NEW || state==SimState.READY);
 
@@ -352,7 +352,7 @@ public class SimulationManager {
 	        finishSimulation();
 	    }
 */
-		
+
         cSimulation sim = cSimulation.getActiveSimulation();
         try {
             cSimpleModule mod = sim.selectNextModule();
@@ -412,7 +412,7 @@ public class SimulationManager {
 
                 updateUI();
                 while (Display.getCurrent().readAndDispatch());
-                
+
                 //XXX preliminary speed metering, for debugging purposes
                 numEvents++;
                 if ((numEvents&16) == 0 && System.currentTimeMillis()-tStart > 1000) {
@@ -464,7 +464,7 @@ public class SimulationManager {
     	if (state==SimState.ERROR) {
     		if (!MessageDialog.openQuestion(getShell(), "Warning", "Simulation was stopped with error, calling finish() might produce unexpected results. Proceed anyway?"))
     			return;
-    	} 
+    	}
     	else {
     		if (!MessageDialog.openQuestion(getShell(), "Question", "Do you want to conclude this simulation run and invoke finish() on all modules?"))
     			return;
@@ -503,11 +503,11 @@ public class SimulationManager {
 
 	    updateUI();
 	}
-	
+
 	private Shell getShell() {
 		Shell activeShell = Display.getCurrent().getActiveShell();
 		if (activeShell != null)
-			return activeShell; 
+			return activeShell;
 		return PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 	}
 }

@@ -15,12 +15,12 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.graphics.Point;
-import org.omnetpp.experimental.simkernel.swig.cDisplayString;
-import org.omnetpp.experimental.simkernel.swig.cGate;
-import org.omnetpp.experimental.simkernel.swig.cModule;
-import org.omnetpp.experimental.simkernel.swig.cModule_GateIterator;
-import org.omnetpp.experimental.simkernel.swig.cModule_SubmoduleIterator;
-import org.omnetpp.experimental.simkernel.swig.cSimulation;
+import org.omnetpp.runtime.nativelibs.simkernel.cDisplayString;
+import org.omnetpp.runtime.nativelibs.simkernel.cGate;
+import org.omnetpp.runtime.nativelibs.simkernel.cModule;
+import org.omnetpp.runtime.nativelibs.simkernel.cModule_GateIterator;
+import org.omnetpp.runtime.nativelibs.simkernel.cModule_SubmoduleIterator;
+import org.omnetpp.runtime.nativelibs.simkernel.cSimulation;
 import org.omnetpp.figures.ConnectionFigure;
 import org.omnetpp.figures.anchors.CompoundModuleGateAnchor;
 import org.omnetpp.figures.anchors.GateAnchor;
@@ -38,10 +38,10 @@ public class GraphicalModulePart extends InspectorPart {
     protected Map<cModule,SubmoduleFigureEx> submodules = new HashMap<cModule,SubmoduleFigureEx>();
     protected Map<cGate,ConnectionFigure> connections = new HashMap<cGate, ConnectionFigure>();
     protected float canvasScale = 1.0f;  //TODO properly do it
-    protected int imageSizePercentage = 100; // controls submodule icons; 100 means 1:1 
+    protected int imageSizePercentage = 100; // controls submodule icons; 100 means 1:1
     protected boolean showNameLabels = true;
     protected boolean showArrowHeads = true;
-    
+
     /**
      * Constructor.
      */
@@ -76,7 +76,7 @@ public class GraphicalModulePart extends InspectorPart {
 	public boolean isMaximizable() {
 		return false;
 	}
-	
+
     public float getCanvasScale() {
 		return canvasScale;
 	}
@@ -118,7 +118,7 @@ public class GraphicalModulePart extends InspectorPart {
     @Override
 	public void refresh() {
 		super.refresh();
-    	if (!isDisposed()) { 
+    	if (!isDisposed()) {
     		refreshChildren();
     		refreshConnections();
     		refreshVisuals();
@@ -130,7 +130,7 @@ public class GraphicalModulePart extends InspectorPart {
     	CompoundModuleFigureEx moduleFigure = (CompoundModuleFigureEx)figure;
         List<cModule> toBeRemoved = null;
         List<cModule> toBeAdded = null;
-        
+
         // find submodule figures whose module has been deleted
         for (cModule submodule : submodules.keySet()) {
             if (submodule.isZombie() || !submodule.getParentModule().equals(object)) {
@@ -174,7 +174,7 @@ public class GraphicalModulePart extends InspectorPart {
     	CompoundModuleFigureEx moduleFigure = (CompoundModuleFigureEx)figure;
         ArrayList<cGate> toBeRemoved = null;
         ArrayList<cGate> toBeAdded = null;
-    	
+
         // find connection figures whose connection has been deleted
         for (cGate gate : connections.keySet()) {
         	if (gate.isZombie() || gate.getNextGate() == null) {
@@ -190,8 +190,8 @@ public class GraphicalModulePart extends InspectorPart {
         cModule parentModule = cModule.cast(object);
 		for (cModule_SubmoduleIterator it = new cModule_SubmoduleIterator(parentModule); !atParent; it.next()) {
 			cModule module = !it.end() ? it.get() : parentModule;
-			if (module==parentModule) 
-				atParent = true; 
+			if (module==parentModule)
+				atParent = true;
             for (cModule_GateIterator gi = new cModule_GateIterator(module); !gi.end(); gi.next()) {
                 cGate gate = gi.get();
                 if (gate.getType()==(atParent ? cGate.Type.INPUT : cGate.Type.OUTPUT) && gate.getNextGate() != null) {
@@ -216,11 +216,11 @@ public class GraphicalModulePart extends InspectorPart {
                 // create figure
             	cGate targetGate = gate.getNextGate();
             	ConnectionFigure connectionFigure = new ConnectionFigure();
-            	GateAnchor sourceAnchor = (gate.getOwnerModule().equals(parentModule) ? 
-            			new CompoundModuleGateAnchor(moduleFigure) : 
+            	GateAnchor sourceAnchor = (gate.getOwnerModule().equals(parentModule) ?
+            			new CompoundModuleGateAnchor(moduleFigure) :
             				new GateAnchor(submodules.get(gate.getOwnerModule())));
-            	GateAnchor targetAnchor = (targetGate.getOwnerModule().equals(parentModule) ? 
-            			new CompoundModuleGateAnchor(moduleFigure) : 
+            	GateAnchor targetAnchor = (targetGate.getOwnerModule().equals(parentModule) ?
+            			new CompoundModuleGateAnchor(moduleFigure) :
             				new GateAnchor(submodules.get(targetGate.getOwnerModule())));
             	connectionFigure.setSourceAnchor(sourceAnchor);
             	connectionFigure.setTargetAnchor(targetAnchor);
@@ -236,7 +236,7 @@ public class GraphicalModulePart extends InspectorPart {
         moduleFigure.setDisplayString(parentModule.getDisplayString());
 
         float scale = canvasScale * moduleFigure.getRealModuleFigure().getScale(); //FIXME the compound module's scale should be set too
-    	
+
     	// refresh submodules
     	for (cModule submodule : submodules.keySet()) {
     		SubmoduleFigureEx submoduleFigure = submodules.get(submodule);
@@ -255,7 +255,7 @@ public class GraphicalModulePart extends InspectorPart {
     		connectionFigure.setDisplayString(displayString);
         	connectionFigure.setArrowHeadEnabled(showArrowHeads);
     	}
-    	
+
     	//Debug.debug = true;
         //FigureUtils.debugPrintRootFigureHierarchy(figure);
     }
@@ -299,12 +299,12 @@ public class GraphicalModulePart extends InspectorPart {
             target = target.getParent();
         return (SubmoduleFigureEx)target;
     }
-    
+
     @Override
     @SuppressWarnings("unchecked")
     public void selectionChanged(IStructuredSelection selection) {
     	super.selectionChanged(selection);
-    	
+
     	// update selection border around submodules
     	List list = selection.toList();
     	cSimulation sim = cSimulation.getActiveSimulation();
@@ -319,7 +319,7 @@ public class GraphicalModulePart extends InspectorPart {
         SubmoduleFigureEx submoduleFigure = findSubmoduleAt(p.x, p.y);
         if (submoduleFigure == null)
         	populateBackgroundContextMenu(contextMenuManager, p);
-        else 
+        else
         	populateSubmoduleContextMenu(contextMenuManager, submoduleFigure, p);
     }
 
@@ -338,12 +338,12 @@ public class GraphicalModulePart extends InspectorPart {
 		});
 
 		contextMenuManager.add(new Separator());
-		
+
 		contextMenuManager.add(new Action("Zoom in") {
 		    @Override
 		    public void run() {
 		    	canvasScale *= 1.5;
-		    	if (Math.abs(canvasScale-1.0) < 0.01) 
+		    	if (Math.abs(canvasScale-1.0) < 0.01)
 		    		canvasScale = 1.0f; // prevent accumulation of rounding errors
 		    	refresh();
 		    }
@@ -352,7 +352,7 @@ public class GraphicalModulePart extends InspectorPart {
 		    @Override
 		    public void run() {
 		    	canvasScale /= 1.5;
-		    	if (Math.abs(canvasScale-1.0) < 0.01) 
+		    	if (Math.abs(canvasScale-1.0) < 0.01)
 		    		canvasScale = 1.0f; // prevent accumulation of rounding errors
 		    	refresh();
 		    }
@@ -363,7 +363,7 @@ public class GraphicalModulePart extends InspectorPart {
 		    public void run() {
 		    	if (imageSizePercentage < 500) {
 		    		imageSizePercentage *= 1.2;
-		    		if (Math.abs(imageSizePercentage-100) < 15) 
+		    		if (Math.abs(imageSizePercentage-100) < 15)
 		    			imageSizePercentage = 100; // prevent accumulation of rounding errors
 		    		refresh();
 		    	}
@@ -374,7 +374,7 @@ public class GraphicalModulePart extends InspectorPart {
 		    public void run() {
 		    	if (imageSizePercentage > 10) {
 		    		imageSizePercentage /= 1.2;
-		    		if (Math.abs(imageSizePercentage-100) < 15) 
+		    		if (Math.abs(imageSizePercentage-100) < 15)
 		    			imageSizePercentage = 100; // prevent accumulation of rounding errors
 		    		refresh();
 		    	}
@@ -409,7 +409,7 @@ public class GraphicalModulePart extends InspectorPart {
 		});
 
 		contextMenuManager.add(new Separator());
-		
+
 		contextMenuManager.add(new Action("Close") {
 		    @Override
 		    public void run() {
