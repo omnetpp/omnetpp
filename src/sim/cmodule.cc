@@ -442,13 +442,13 @@ cGate *cModule::gate(int id)
 
 #undef ENSURE
 
-void cModule::addGate(const char *gatename, cGate::Type type, bool isVector)
+cGate *cModule::addGate(const char *gatename, cGate::Type type, bool isVector)
 {
     char suffix;
     if (findGateDesc(gatename, suffix)>=0)
         throw cRuntimeError(this, "addGate(): Gate `%s' already present", gatename);
     if (suffix)
-        throw cRuntimeError(this, "addGate(): Wrong gate name `%s', must be without `$i'/`$o' suffix", gatename);
+        throw cRuntimeError(this, "addGate(): Wrong gate name `%s', must not contain the `$i' or `$o' suffix", gatename);
 
     // create desc for new gate (or gate vector)
     cGate::Desc *desc = addGateDesc(gatename, type, isVector);
@@ -457,19 +457,22 @@ void cModule::addGate(const char *gatename, cGate::Type type, bool isVector)
     // if scalar gate, create gate object(s); gate vectors are created with size 0.
     if (!isVector)
     {
+        cGate *newGate;
         if (type!=cGate::OUTPUT)
         {
-            cGate *newGate = createGateObject(type);
+            newGate = createGateObject(type);
             desc->setInputGate(newGate);
             EVCB.gateCreated(newGate);
         }
         if (type!=cGate::INPUT)
         {
-            cGate *newGate = createGateObject(type);
+            newGate = createGateObject(type);
             desc->setOutputGate(newGate);
             EVCB.gateCreated(newGate);
         }
+        return type==cGate::INOUT ? NULL : newGate;
     }
+    return NULL;
 }
 
 static void reallocGatev(cGate **&v, int oldSize, int newSize)
