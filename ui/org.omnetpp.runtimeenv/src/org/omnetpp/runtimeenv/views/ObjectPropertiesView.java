@@ -45,10 +45,7 @@ import org.omnetpp.runtimeenv.editors.IInspectorPart;
  * 
  * @author Andras
  */
-//TODO cObject fields cannot be double-clicked
 //TODO merge "general" and "fields" groups? make "contents[]" ungrouped?
-//TODO pin to the current *selection* NOT to editor or view?
-//TODO forget a (tree root) object when it gets deleted!
 //TODO we should support user-supplied images as well
 //TODO re-export our selection...? (who understands StructKey etc?)
 //XXX what's lost, compared to Tcl: bold; field editing; expanding multi-line text
@@ -617,7 +614,7 @@ public class ObjectPropertiesView extends PinnableView2 implements ISimulationLi
     @Override
     protected void rebuildContent() {
         List<Object> input = new ArrayList<Object>();
-        ISelection selection = getAssociatedPartSelection();
+        ISelection selection = getAssociatedSelection();
         if (selection instanceof IStructuredSelection) {
             Object[] sel = ((IStructuredSelection)selection).toArray();
             for (Object obj : sel) {

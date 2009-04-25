@@ -183,7 +183,7 @@ public class ModuleOutputView extends PinnableView2 implements ISimulationListen
     protected void rebuildContent() {
         // filter the displayed log to modules in the editor selection
         LogBufferViewInput input = new LogBufferViewInput();
-        ISelection selection = getAssociatedPartSelection();
+        ISelection selection = getAssociatedSelection();
         if (selection instanceof IStructuredSelection) {
             Object[] sel = ((IStructuredSelection)selection).toArray();
             for (Object obj : sel) {
