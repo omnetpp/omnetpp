@@ -15,12 +15,13 @@ void Node::activity()
     cQueue q;
     while (true) 
     {
-         for (GateIterator i(this); !i.end(); i++)
-         {
-             cGate *g = i();
-             if (g->getType() == cGate::OUTPUT && g->isConnected() && g->getPathEndGate()->getOwnerModule()->isSimple())
-                 send(new cMessage("msg"), g);
-         }
+        ev << "sending messages on all gates...\n";
+        for (GateIterator i(this); !i.end(); i++)
+        {
+            cGate *g = i();
+            if (g->getType() == cGate::OUTPUT && g->isConnected() && g->getPathEndGate()->getOwnerModule()->isSimple())
+                send(new cMessage("msg"), g);
+        }
         waitAndEnqueue(0.3, &q);
     }
 }

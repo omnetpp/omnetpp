@@ -10,5 +10,5 @@ network Net2
     submodules:
         controller : Controller2;
         subnet1 : Subnet;
-        subnet2 : Subnet;
+        //subnet2 : Subnet;
 }
