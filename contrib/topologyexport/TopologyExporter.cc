@@ -102,6 +102,7 @@ class TopologyExporter : public cSimpleModule
     virtual void dump(const char *filename);
     virtual void dump(XMLWriter& xml, cModule *mod);
     virtual void dump(XMLWriter& xml, cProperties *properties);
+    virtual std::string quote(const char *propertyValue);
 };
 
 Define_Module(TopologyExporter);
@@ -114,7 +115,7 @@ void TopologyExporter::initialize()
 void TopologyExporter::handleMessage(cMessage *msg)
 {
     delete msg;
-    dump("out.xml");
+    dump(par("filename").stringValue());
 }
 
 void TopologyExporter::dump(const char *filename)
@@ -136,7 +137,6 @@ void TopologyExporter::dump(XMLWriter& xml, cModule *mod)
     const char *tagName = (mod==simulation.getSystemModule()) ? "network" : "module";
     xml.openTag(tagName);
     xml.writeAttr("name", mod->getFullName());
-    xml.writeAttr("id", mod->getId());
     xml.writeAttr("type", mod->getNedTypeName());
 
 
@@ -162,7 +162,8 @@ void TopologyExporter::dump(XMLWriter& xml, cModule *mod)
             xml.openTag("gate");
             xml.writeAttr("name", gate->getFullName());
             xml.writeAttr("type", cGate::getTypeName(gate->getType()));
-            //XXX where the gate is connected
+            //xml.writeAttr("connected-inside", gate->isConnectedInside());
+            //xml.writeAttr("connected-outside", gate->isConnectedOutside());
             dump(xml, gate->getProperties());
             xml.closeTag("gate");
         }
@@ -176,6 +177,10 @@ void TopologyExporter::dump(XMLWriter& xml, cModule *mod)
         xml.closeTag("submodules");
     }
 
+    xml.openTag("connections");
+    //TODO
+    xml.closeTag("connections");
+
     xml.closeTag(tagName);
 }
 
@@ -185,8 +190,26 @@ void TopologyExporter::dump(XMLWriter& xml, cProperties *properties)
         cProperty *prop = properties->get(i);
         xml.openTag("property");
         xml.writeAttr("name", prop->getFullName());
-        //XXX keys, values, etc...
+        std::string value;
+        for (int k = 0; k < (int)prop->getKeys().size(); k++) {
+        	const char *key = prop->getKeys()[k];
+        	if (k!=0)
+        		value += ";";
+        	if (key && key[0])
+        		value += std::string(key) + "=";
+        	for (int v = 0; v < prop->getNumValues(key); v++)
+        		value += std::string(v==0?"":",") + quote(prop->getValue(key, v));
+        }
+        xml.writeAttr("value", value);
         xml.closeTag("property");
     }
 }
+
+std::string TopologyExporter::quote(const char *propertyValue)
+{
+	if (!strchr(propertyValue, ',') && !strchr(propertyValue, ';'))
+		return propertyValue;
+	return std::string("\"") + propertyValue + "\"";
+}
+
 
