@@ -1232,19 +1232,21 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 		if (index < 0 || index > size)
 			return -1;
 		else {
-			Assert.isTrue((first && valueProvider.getValue(index) < value) ||
-				   (!first && valueProvider.getValue(index) > value));
+//FIXME this crashes on startup, when there are no animation primitives loaded (andras)			
+//			Assert.isTrue((first && valueProvider.getValue(index) < value) ||
+//				   (!first && valueProvider.getValue(index) > value));
 			return index;
 		}
 	}
 
 	/**
-	 * Initalizes the simulation and adds the root compound module figure to the canvas.
+	 * Initializes the simulation and adds the root compound module figure to the canvas.
 	 */
 	protected void initializeSimulation(ReplayModule rootModule) {
 		simulation = new ReplaySimulation(rootModule);
 
 		CompoundModuleFigure rootModuleFigure = new CompoundModuleFigure();
+		rootModuleFigure.setDisplayString(new DisplayString(""));
 		rootModuleFigure.setName(rootModule.getFullPath());
 		setFigure(rootModule, rootModuleFigure);
 		canvas.getRootFigure().getLayoutManager().setConstraint(rootModuleFigure, new Rectangle(0, 0, -1, -1));
@@ -1289,6 +1291,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 	 */
 	protected long loadAnimationPrimitivesForPosition(AnimationPosition animationPosition) {
 		try {
+			System.out.println("loading animation primitives for: " + animationPosition);
 			long animationPrimitivesCount = beginOrderedAnimationPrimitives.size();
 			String line = null;
 
@@ -1300,6 +1303,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 
 			while (animationPosition.compareTo(loadAnimationPosition) <= 0 && (line = logFileReader.readLine()) != null)
 			{
+				System.out.println("  processing line: \"" + line + "\"");
 				String[] tokens = splitLine(line);
 
 				if (tokens.length == 0) {
@@ -1423,7 +1427,9 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 			if (line == null)
 				endAnimationPosition = loadAnimationPosition;
 
-			return beginOrderedAnimationPrimitives.size() - animationPrimitivesCount;
+			long numLoaded = beginOrderedAnimationPrimitives.size() - animationPrimitivesCount;
+			System.out.println("  loaded " + numLoaded + " primitives");
+			return numLoaded;
 		}
 		catch (Throwable e) {
 			e.printStackTrace();
