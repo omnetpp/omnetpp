@@ -1,0 +1,10 @@
+Animation
+=========
+
+Features:
+ - ...
+ - jump to beginning/end
+ - play animation forward/backward, pause and stop
+
+Known bugs:
+ - the whole thing is broken now
