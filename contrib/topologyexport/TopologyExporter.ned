@@ -1,7 +1,8 @@
+package xmldump;
 
 //
 // Exports the network topology in XML.
 //
-simple XMLExport 
+simple TopologyExporter
 {
 }
