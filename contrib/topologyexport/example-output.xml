@@ -8,7 +8,7 @@
             <parameters>
                 <property name="display" value="&quot;i=misc/node_vs,gold&quot;"/>
                 <param name="address" type="int" value="0"/>
-                <param name="appType" type="long" value="&quot;App&quot;"/>
+                <param name="appType" type="string" value="&quot;App&quot;"/>
             </parameters>
             <gates>
                 <gate name="port$i[0]" type="input"/>
@@ -23,8 +23,8 @@
                     <parameters>
                         <property name="display" value="&quot;p=140,60;i=block/browser&quot;"/>
                         <param name="address" type="int" value="0"/>
-                        <param name="destAddresses" type="long" value="&quot;1 6 8&quot;"/>
-                        <param name="sendIaTime" type="long" value="exponential(1s)">
+                        <param name="destAddresses" type="string" value="&quot;1 6 8&quot;"/>
+                        <param name="sendIaTime" type="double" value="exponential(1s)">
                             <property name="unit" value="s"/>
                         </param>
                         <param name="packetLength" type="int" value="uniform(128byte, 1024byte)">
@@ -114,7 +114,7 @@
             <parameters>
                 <property name="display" value="&quot;i=misc/node_vs,gold&quot;"/>
                 <param name="address" type="int" value="1"/>
-                <param name="appType" type="long" value="&quot;App&quot;"/>
+                <param name="appType" type="string" value="&quot;App&quot;"/>
             </parameters>
             <gates>
                 <gate name="port$i[0]" type="input"/>
@@ -129,8 +129,8 @@
                     <parameters>
                         <property name="display" value="&quot;p=140,60;i=block/browser&quot;"/>
                         <param name="address" type="int" value="1"/>
-                        <param name="destAddresses" type="long" value="&quot;1 6 8&quot;"/>
-                        <param name="sendIaTime" type="long" value="exponential(1s)">
+                        <param name="destAddresses" type="string" value="&quot;1 6 8&quot;"/>
+                        <param name="sendIaTime" type="double" value="exponential(1s)">
                             <property name="unit" value="s"/>
                         </param>
                         <param name="packetLength" type="int" value="uniform(128byte, 1024byte)">
@@ -220,7 +220,7 @@
             <parameters>
                 <property name="display" value="&quot;i=misc/node_vs,gold&quot;"/>
                 <param name="address" type="int" value="2"/>
-                <param name="appType" type="long" value="&quot;App&quot;"/>
+                <param name="appType" type="string" value="&quot;App&quot;"/>
             </parameters>
             <gates>
                 <gate name="port$i[0]" type="input"/>
@@ -239,8 +239,8 @@
                     <parameters>
                         <property name="display" value="&quot;p=140,60;i=block/browser&quot;"/>
                         <param name="address" type="int" value="2"/>
-                        <param name="destAddresses" type="long" value="&quot;1 6 8&quot;"/>
-                        <param name="sendIaTime" type="long" value="exponential(1s)">
+                        <param name="destAddresses" type="string" value="&quot;1 6 8&quot;"/>
+                        <param name="sendIaTime" type="double" value="exponential(1s)">
                             <property name="unit" value="s"/>
                         </param>
                         <param name="packetLength" type="int" value="uniform(128byte, 1024byte)">
@@ -368,7 +368,7 @@
             <parameters>
                 <property name="display" value="&quot;i=misc/node_vs,gold&quot;"/>
                 <param name="address" type="int" value="3"/>
-                <param name="appType" type="long" value="&quot;App&quot;"/>
+                <param name="appType" type="string" value="&quot;App&quot;"/>
             </parameters>
             <gates>
                 <gate name="port$i[0]" type="input"/>
@@ -383,8 +383,8 @@
                     <parameters>
                         <property name="display" value="&quot;p=140,60;i=block/browser&quot;"/>
                         <param name="address" type="int" value="3"/>
-                        <param name="destAddresses" type="long" value="&quot;1 6 8&quot;"/>
-                        <param name="sendIaTime" type="long" value="exponential(1s)">
+                        <param name="destAddresses" type="string" value="&quot;1 6 8&quot;"/>
+                        <param name="sendIaTime" type="double" value="exponential(1s)">
                             <property name="unit" value="s"/>
                         </param>
                         <param name="packetLength" type="int" value="uniform(128byte, 1024byte)">
@@ -474,7 +474,7 @@
             <parameters>
                 <property name="display" value="&quot;i=misc/node_vs,gold&quot;"/>
                 <param name="address" type="int" value="4"/>
-                <param name="appType" type="long" value="&quot;App&quot;"/>
+                <param name="appType" type="string" value="&quot;App&quot;"/>
             </parameters>
             <gates>
                 <gate name="port$i[0]" type="input"/>
@@ -491,8 +491,8 @@
                     <parameters>
                         <property name="display" value="&quot;p=140,60;i=block/browser&quot;"/>
                         <param name="address" type="int" value="4"/>
-                        <param name="destAddresses" type="long" value="&quot;1 6 8&quot;"/>
-                        <param name="sendIaTime" type="long" value="exponential(1s)">
+                        <param name="destAddresses" type="string" value="&quot;1 6 8&quot;"/>
+                        <param name="sendIaTime" type="double" value="exponential(1s)">
                             <property name="unit" value="s"/>
                         </param>
                         <param name="packetLength" type="int" value="uniform(128byte, 1024byte)">
@@ -601,7 +601,7 @@
             <parameters>
                 <property name="display" value="&quot;i=misc/node_vs,gold&quot;"/>
                 <param name="address" type="int" value="5"/>
-                <param name="appType" type="long" value="&quot;App&quot;"/>
+                <param name="appType" type="string" value="&quot;App&quot;"/>
             </parameters>
             <gates>
                 <gate name="port$i[0]" type="input"/>
@@ -618,8 +618,8 @@
                     <parameters>
                         <property name="display" value="&quot;p=140,60;i=block/browser&quot;"/>
                         <param name="address" type="int" value="5"/>
-                        <param name="destAddresses" type="long" value="&quot;1 6 8&quot;"/>
-                        <param name="sendIaTime" type="long" value="exponential(1s)">
+                        <param name="destAddresses" type="string" value="&quot;1 6 8&quot;"/>
+                        <param name="sendIaTime" type="double" value="exponential(1s)">
                             <property name="unit" value="s"/>
                         </param>
                         <param name="packetLength" type="int" value="uniform(128byte, 1024byte)">
@@ -728,7 +728,7 @@
             <parameters>
                 <property name="display" value="&quot;i=misc/node_vs,gold&quot;"/>
                 <param name="address" type="int" value="6"/>
-                <param name="appType" type="long" value="&quot;App&quot;"/>
+                <param name="appType" type="string" value="&quot;App&quot;"/>
             </parameters>
             <gates>
                 <gate name="port$i[0]" type="input"/>
@@ -747,8 +747,8 @@
                     <parameters>
                         <property name="display" value="&quot;p=140,60;i=block/browser&quot;"/>
                         <param name="address" type="int" value="6"/>
-                        <param name="destAddresses" type="long" value="&quot;1 6 8&quot;"/>
-                        <param name="sendIaTime" type="long" value="exponential(1s)">
+                        <param name="destAddresses" type="string" value="&quot;1 6 8&quot;"/>
+                        <param name="sendIaTime" type="double" value="exponential(1s)">
                             <property name="unit" value="s"/>
                         </param>
                         <param name="packetLength" type="int" value="uniform(128byte, 1024byte)">
@@ -876,7 +876,7 @@
             <parameters>
                 <property name="display" value="&quot;i=misc/node_vs,gold&quot;"/>
                 <param name="address" type="int" value="7"/>
-                <param name="appType" type="long" value="&quot;App&quot;"/>
+                <param name="appType" type="string" value="&quot;App&quot;"/>
             </parameters>
             <gates>
                 <gate name="port$i[0]" type="input"/>
@@ -891,8 +891,8 @@
                     <parameters>
                         <property name="display" value="&quot;p=140,60;i=block/browser&quot;"/>
                         <param name="address" type="int" value="7"/>
-                        <param name="destAddresses" type="long" value="&quot;1 6 8&quot;"/>
-                        <param name="sendIaTime" type="long" value="exponential(1s)">
+                        <param name="destAddresses" type="string" value="&quot;1 6 8&quot;"/>
+                        <param name="sendIaTime" type="double" value="exponential(1s)">
                             <property name="unit" value="s"/>
                         </param>
                         <param name="packetLength" type="int" value="uniform(128byte, 1024byte)">
@@ -982,7 +982,7 @@
             <parameters>
                 <property name="display" value="&quot;i=misc/node_vs,gold&quot;"/>
                 <param name="address" type="int" value="8"/>
-                <param name="appType" type="long" value="&quot;App&quot;"/>
+                <param name="appType" type="string" value="&quot;App&quot;"/>
             </parameters>
             <gates>
                 <gate name="port$i[0]" type="input"/>
@@ -997,8 +997,8 @@
                     <parameters>
                         <property name="display" value="&quot;p=140,60;i=block/browser&quot;"/>
                         <param name="address" type="int" value="8"/>
-                        <param name="destAddresses" type="long" value="&quot;1 6 8&quot;"/>
-                        <param name="sendIaTime" type="long" value="exponential(1s)">
+                        <param name="destAddresses" type="string" value="&quot;1 6 8&quot;"/>
+                        <param name="sendIaTime" type="double" value="exponential(1s)">
                             <property name="unit" value="s"/>
                         </param>
                         <param name="packetLength" type="int" value="uniform(128byte, 1024byte)">
@@ -1088,7 +1088,7 @@
             <parameters>
                 <property name="display" value="&quot;i=misc/node_vs,gold&quot;"/>
                 <param name="address" type="int" value="9"/>
-                <param name="appType" type="long" value="&quot;App&quot;"/>
+                <param name="appType" type="string" value="&quot;App&quot;"/>
             </parameters>
             <gates>
                 <gate name="port$i[0]" type="input"/>
@@ -1103,8 +1103,8 @@
                     <parameters>
                         <property name="display" value="&quot;p=140,60;i=block/browser&quot;"/>
                         <param name="address" type="int" value="9"/>
-                        <param name="destAddresses" type="long" value="&quot;1 6 8&quot;"/>
-                        <param name="sendIaTime" type="long" value="exponential(1s)">
+                        <param name="destAddresses" type="string" value="&quot;1 6 8&quot;"/>
+                        <param name="sendIaTime" type="double" value="exponential(1s)">
                             <property name="unit" value="s"/>
                         </param>
                         <param name="packetLength" type="int" value="uniform(128byte, 1024byte)">
@@ -1192,10 +1192,10 @@
         </module>
         <module name="topologyExporter" type="TopologyExporter">
             <parameters>
-                <param name="t" type="long" value="1">
+                <param name="t" type="double" value="1">
                     <property name="unit" value="s"/>
                 </param>
-                <param name="filename" type="long" value="&quot;out.xml&quot;"/>
+                <param name="filename" type="string" value="&quot;out.xml&quot;"/>
             </parameters>
             <connections/>
         </module>
@@ -1205,15 +1205,15 @@
             <channel name="channel" type="networks.Net10.C">
                 <parameters>
                     <property name="class" value="cDatarateChannel"/>
-                    <param name="disabled" type="long" value="false"/>
-                    <param name="delay" type="long" value="0.00063356">
+                    <param name="disabled" type="bool" value="false"/>
+                    <param name="delay" type="double" value="0.00063356">
                         <property name="unit" value="s"/>
                     </param>
-                    <param name="datarate" type="long" value="1e+006">
+                    <param name="datarate" type="double" value="1e+006">
                         <property name="unit" value="bps"/>
                     </param>
-                    <param name="ber" type="long" value="0"/>
-                    <param name="per" type="long" value="0"/>
+                    <param name="ber" type="double" value="0"/>
+                    <param name="per" type="double" value="0"/>
                 </parameters>
             </channel>
         </connection>
@@ -1221,15 +1221,15 @@
             <channel name="channel" type="networks.Net10.C">
                 <parameters>
                     <property name="class" value="cDatarateChannel"/>
-                    <param name="disabled" type="long" value="false"/>
-                    <param name="delay" type="long" value="0.00074367">
+                    <param name="disabled" type="bool" value="false"/>
+                    <param name="delay" type="double" value="0.00074367">
                         <property name="unit" value="s"/>
                     </param>
-                    <param name="datarate" type="long" value="1e+006">
+                    <param name="datarate" type="double" value="1e+006">
                         <property name="unit" value="bps"/>
                     </param>
-                    <param name="ber" type="long" value="0"/>
-                    <param name="per" type="long" value="0"/>
+                    <param name="ber" type="double" value="0"/>
+                    <param name="per" type="double" value="0"/>
                 </parameters>
             </channel>
         </connection>
@@ -1237,15 +1237,15 @@
             <channel name="channel" type="networks.Net10.C">
                 <parameters>
                     <property name="class" value="cDatarateChannel"/>
-                    <param name="disabled" type="long" value="false"/>
-                    <param name="delay" type="long" value="0.000118197">
+                    <param name="disabled" type="bool" value="false"/>
+                    <param name="delay" type="double" value="0.000118197">
                         <property name="unit" value="s"/>
                     </param>
-                    <param name="datarate" type="long" value="1e+006">
+                    <param name="datarate" type="double" value="1e+006">
                         <property name="unit" value="bps"/>
                     </param>
-                    <param name="ber" type="long" value="0"/>
-                    <param name="per" type="long" value="0"/>
+                    <param name="ber" type="double" value="0"/>
+                    <param name="per" type="double" value="0"/>
                 </parameters>
             </channel>
         </connection>
@@ -1253,15 +1253,15 @@
             <channel name="channel" type="networks.Net10.C">
                 <parameters>
                     <property name="class" value="cDatarateChannel"/>
-                    <param name="disabled" type="long" value="false"/>
-                    <param name="delay" type="long" value="0.000593932">
+                    <param name="disabled" type="bool" value="false"/>
+                    <param name="delay" type="double" value="0.000593932">
                         <property name="unit" value="s"/>
                     </param>
-                    <param name="datarate" type="long" value="1e+006">
+                    <param name="datarate" type="double" value="1e+006">
                         <property name="unit" value="bps"/>
                     </param>
-                    <param name="ber" type="long" value="0"/>
-                    <param name="per" type="long" value="0"/>
+                    <param name="ber" type="double" value="0"/>
+                    <param name="per" type="double" value="0"/>
                 </parameters>
             </channel>
         </connection>
@@ -1269,15 +1269,15 @@
             <channel name="channel" type="networks.Net10.C">
                 <parameters>
                     <property name="class" value="cDatarateChannel"/>
-                    <param name="disabled" type="long" value="false"/>
-                    <param name="delay" type="long" value="0.000345391">
+                    <param name="disabled" type="bool" value="false"/>
+                    <param name="delay" type="double" value="0.000345391">
                         <property name="unit" value="s"/>
                     </param>
-                    <param name="datarate" type="long" value="1e+006">
+                    <param name="datarate" type="double" value="1e+006">
                         <property name="unit" value="bps"/>
                     </param>
-                    <param name="ber" type="long" value="0"/>
-                    <param name="per" type="long" value="0"/>
+                    <param name="ber" type="double" value="0"/>
+                    <param name="per" type="double" value="0"/>
                 </parameters>
             </channel>
         </connection>
@@ -1285,15 +1285,15 @@
             <channel name="channel" type="networks.Net10.C">
                 <parameters>
                     <property name="class" value="cDatarateChannel"/>
-                    <param name="disabled" type="long" value="false"/>
-                    <param name="delay" type="long" value="0.000849358">
+                    <param name="disabled" type="bool" value="false"/>
+                    <param name="delay" type="double" value="0.000849358">
                         <property name="unit" value="s"/>
                     </param>
-                    <param name="datarate" type="long" value="1e+006">
+                    <param name="datarate" type="double" value="1e+006">
                         <property name="unit" value="bps"/>
                     </param>
-                    <param name="ber" type="long" value="0"/>
-                    <param name="per" type="long" value="0"/>
+                    <param name="ber" type="double" value="0"/>
+                    <param name="per" type="double" value="0"/>
                 </parameters>
             </channel>
         </connection>
@@ -1301,15 +1301,15 @@
             <channel name="channel" type="networks.Net10.C">
                 <parameters>
                     <property name="class" value="cDatarateChannel"/>
-                    <param name="disabled" type="long" value="false"/>
-                    <param name="delay" type="long" value="0.000859839">
+                    <param name="disabled" type="bool" value="false"/>
+                    <param name="delay" type="double" value="0.000859839">
                         <property name="unit" value="s"/>
                     </param>
-                    <param name="datarate" type="long" value="1e+006">
+                    <param name="datarate" type="double" value="1e+006">
                         <property name="unit" value="bps"/>
                     </param>
-                    <param name="ber" type="long" value="0"/>
-                    <param name="per" type="long" value="0"/>
+                    <param name="ber" type="double" value="0"/>
+                    <param name="per" type="double" value="0"/>
                 </parameters>
             </channel>
         </connection>
@@ -1317,15 +1317,15 @@
             <channel name="channel" type="networks.Net10.C">
                 <parameters>
                     <property name="class" value="cDatarateChannel"/>
-                    <param name="disabled" type="long" value="false"/>
-                    <param name="delay" type="long" value="0.000642487">
+                    <param name="disabled" type="bool" value="false"/>
+                    <param name="delay" type="double" value="0.000642487">
                         <property name="unit" value="s"/>
                     </param>
-                    <param name="datarate" type="long" value="1e+006">
+                    <param name="datarate" type="double" value="1e+006">
                         <property name="unit" value="bps"/>
                     </param>
-                    <param name="ber" type="long" value="0"/>
-                    <param name="per" type="long" value="0"/>
+                    <param name="ber" type="double" value="0"/>
+                    <param name="per" type="double" value="0"/>
                 </parameters>
             </channel>
         </connection>
@@ -1333,15 +1333,15 @@
             <channel name="channel" type="networks.Net10.C">
                 <parameters>
                     <property name="class" value="cDatarateChannel"/>
-                    <param name="disabled" type="long" value="false"/>
-                    <param name="delay" type="long" value="0.000529899">
+                    <param name="disabled" type="bool" value="false"/>
+                    <param name="delay" type="double" value="0.000529899">
                         <property name="unit" value="s"/>
                     </param>
-                    <param name="datarate" type="long" value="1e+006">
+                    <param name="datarate" type="double" value="1e+006">
                         <property name="unit" value="bps"/>
                     </param>
-                    <param name="ber" type="long" value="0"/>
-                    <param name="per" type="long" value="0"/>
+                    <param name="ber" type="double" value="0"/>
+                    <param name="per" type="double" value="0"/>
                 </parameters>
             </channel>
         </connection>
@@ -1349,15 +1349,15 @@
             <channel name="channel" type="networks.Net10.C">
                 <parameters>
                     <property name="class" value="cDatarateChannel"/>
-                    <param name="disabled" type="long" value="false"/>
-                    <param name="delay" type="long" value="0.000812553">
+                    <param name="disabled" type="bool" value="false"/>
+                    <param name="delay" type="double" value="0.000812553">
                         <property name="unit" value="s"/>
                     </param>
-                    <param name="datarate" type="long" value="1e+006">
+                    <param name="datarate" type="double" value="1e+006">
                         <property name="unit" value="bps"/>
                     </param>
-                    <param name="ber" type="long" value="0"/>
-                    <param name="per" type="long" value="0"/>
+                    <param name="ber" type="double" value="0"/>
+                    <param name="per" type="double" value="0"/>
                 </parameters>
             </channel>
         </connection>
@@ -1365,15 +1365,15 @@
             <channel name="channel" type="networks.Net10.C">
                 <parameters>
                     <property name="class" value="cDatarateChannel"/>
-                    <param name="disabled" type="long" value="false"/>
-                    <param name="delay" type="long" value="0.00096144">
+                    <param name="disabled" type="bool" value="false"/>
+                    <param name="delay" type="double" value="0.00096144">
                         <property name="unit" value="s"/>
                     </param>
-                    <param name="datarate" type="long" value="1e+006">
+                    <param name="datarate" type="double" value="1e+006">
                         <property name="unit" value="bps"/>
                     </param>
-                    <param name="ber" type="long" value="0"/>
-                    <param name="per" type="long" value="0"/>
+                    <param name="ber" type="double" value="0"/>
+                    <param name="per" type="double" value="0"/>
                 </parameters>
             </channel>
         </connection>
@@ -1381,15 +1381,15 @@
             <channel name="channel" type="networks.Net10.C">
                 <parameters>
                     <property name="class" value="cDatarateChannel"/>
-                    <param name="disabled" type="long" value="false"/>
-                    <param name="delay" type="long" value="0.000151042">
+                    <param name="disabled" type="bool" value="false"/>
+                    <param name="delay" type="double" value="0.000151042">
                         <property name="unit" value="s"/>
                     </param>
-                    <param name="datarate" type="long" value="1e+006">
+                    <param name="datarate" type="double" value="1e+006">
                         <property name="unit" value="bps"/>
                     </param>
-                    <param name="ber" type="long" value="0"/>
-                    <param name="per" type="long" value="0"/>
+                    <param name="ber" type="double" value="0"/>
+                    <param name="per" type="double" value="0"/>
                 </parameters>
             </channel>
         </connection>
@@ -1397,15 +1397,15 @@
             <channel name="channel" type="networks.Net10.C">
                 <parameters>
                     <property name="class" value="cDatarateChannel"/>
-                    <param name="disabled" type="long" value="false"/>
-                    <param name="delay" type="long" value="0.000967296">
+                    <param name="disabled" type="bool" value="false"/>
+                    <param name="delay" type="double" value="0.000967296">
                         <property name="unit" value="s"/>
                     </param>
-                    <param name="datarate" type="long" value="1e+006">
+                    <param name="datarate" type="double" value="1e+006">
                         <property name="unit" value="bps"/>
                     </param>
-                    <param name="ber" type="long" value="0"/>
-                    <param name="per" type="long" value="0"/>
+                    <param name="ber" type="double" value="0"/>
+                    <param name="per" type="double" value="0"/>
                 </parameters>
             </channel>
         </connection>
@@ -1413,15 +1413,15 @@
             <channel name="channel" type="networks.Net10.C">
                 <parameters>
                     <property name="class" value="cDatarateChannel"/>
-                    <param name="disabled" type="long" value="false"/>
-                    <param name="delay" type="long" value="0.000445097">
+                    <param name="disabled" type="bool" value="false"/>
+                    <param name="delay" type="double" value="0.000445097">
                         <property name="unit" value="s"/>
                     </param>
-                    <param name="datarate" type="long" value="1e+006">
+                    <param name="datarate" type="double" value="1e+006">
                         <property name="unit" value="bps"/>
                     </param>
-                    <param name="ber" type="long" value="0"/>
-                    <param name="per" type="long" value="0"/>
+                    <param name="ber" type="double" value="0"/>
+                    <param name="per" type="double" value="0"/>
                 </parameters>
             </channel>
         </connection>
@@ -1429,15 +1429,15 @@
             <channel name="channel" type="networks.Net10.C">
                 <parameters>
                     <property name="class" value="cDatarateChannel"/>
-                    <param name="disabled" type="long" value="false"/>
-                    <param name="delay" type="long" value="0.000367781">
+                    <param name="disabled" type="bool" value="false"/>
+                    <param name="delay" type="double" value="0.000367781">
                         <property name="unit" value="s"/>
                     </param>
-                    <param name="datarate" type="long" value="1e+006">
+                    <param name="datarate" type="double" value="1e+006">
                         <property name="unit" value="bps"/>
                     </param>
-                    <param name="ber" type="long" value="0"/>
-                    <param name="per" type="long" value="0"/>
+                    <param name="ber" type="double" value="0"/>
+                    <param name="per" type="double" value="0"/>
                 </parameters>
             </channel>
         </connection>
@@ -1445,15 +1445,15 @@
             <channel name="channel" type="networks.Net10.C">
                 <parameters>
                     <property name="class" value="cDatarateChannel"/>
-                    <param name="disabled" type="long" value="false"/>
-                    <param name="delay" type="long" value="0.000902596">
+                    <param name="disabled" type="bool" value="false"/>
+                    <param name="delay" type="double" value="0.000902596">
                         <property name="unit" value="s"/>
                     </param>
-                    <param name="datarate" type="long" value="1e+006">
+                    <param name="datarate" type="double" value="1e+006">
                         <property name="unit" value="bps"/>
                     </param>
-                    <param name="ber" type="long" value="0"/>
-                    <param name="per" type="long" value="0"/>
+                    <param name="ber" type="double" value="0"/>
+                    <param name="per" type="double" value="0"/>
                 </parameters>
             </channel>
         </connection>
@@ -1461,15 +1461,15 @@
             <channel name="channel" type="networks.Net10.C">
                 <parameters>
                     <property name="class" value="cDatarateChannel"/>
-                    <param name="disabled" type="long" value="false"/>
-                    <param name="delay" type="long" value="0.000830952">
+                    <param name="disabled" type="bool" value="false"/>
+                    <param name="delay" type="double" value="0.000830952">
                         <property name="unit" value="s"/>
                     </param>
-                    <param name="datarate" type="long" value="1e+006">
+                    <param name="datarate" type="double" value="1e+006">
                         <property name="unit" value="bps"/>
                     </param>
-                    <param name="ber" type="long" value="0"/>
-                    <param name="per" type="long" value="0"/>
+                    <param name="ber" type="double" value="0"/>
+                    <param name="per" type="double" value="0"/>
                 </parameters>
             </channel>
         </connection>
@@ -1477,15 +1477,15 @@
             <channel name="channel" type="networks.Net10.C">
                 <parameters>
                     <property name="class" value="cDatarateChannel"/>
-                    <param name="disabled" type="long" value="false"/>
-                    <param name="delay" type="long" value="0.000576005">
+                    <param name="disabled" type="bool" value="false"/>
+                    <param name="delay" type="double" value="0.000576005">
                         <property name="unit" value="s"/>
                     </param>
-                    <param name="datarate" type="long" value="1e+006">
+                    <param name="datarate" type="double" value="1e+006">
                         <property name="unit" value="bps"/>
                     </param>
-                    <param name="ber" type="long" value="0"/>
-                    <param name="per" type="long" value="0"/>
+                    <param name="ber" type="double" value="0"/>
+                    <param name="per" type="double" value="0"/>
                 </parameters>
             </channel>
         </connection>
@@ -1493,15 +1493,15 @@
             <channel name="channel" type="networks.Net10.C">
                 <parameters>
                     <property name="class" value="cDatarateChannel"/>
-                    <param name="disabled" type="long" value="false"/>
-                    <param name="delay" type="long" value="0.000872151">
+                    <param name="disabled" type="bool" value="false"/>
+                    <param name="delay" type="double" value="0.000872151">
                         <property name="unit" value="s"/>
                     </param>
-                    <param name="datarate" type="long" value="1e+006">
+                    <param name="datarate" type="double" value="1e+006">
                         <property name="unit" value="bps"/>
                     </param>
-                    <param name="ber" type="long" value="0"/>
-                    <param name="per" type="long" value="0"/>
+                    <param name="ber" type="double" value="0"/>
+                    <param name="per" type="double" value="0"/>
                 </parameters>
             </channel>
         </connection>
@@ -1509,15 +1509,15 @@
             <channel name="channel" type="networks.Net10.C">
                 <parameters>
                     <property name="class" value="cDatarateChannel"/>
-                    <param name="disabled" type="long" value="false"/>
-                    <param name="delay" type="long" value="0.000590395">
+                    <param name="disabled" type="bool" value="false"/>
+                    <param name="delay" type="double" value="0.000590395">
                         <property name="unit" value="s"/>
                     </param>
-                    <param name="datarate" type="long" value="1e+006">
+                    <param name="datarate" type="double" value="1e+006">
                         <property name="unit" value="bps"/>
                     </param>
-                    <param name="ber" type="long" value="0"/>
-                    <param name="per" type="long" value="0"/>
+                    <param name="ber" type="double" value="0"/>
+                    <param name="per" type="double" value="0"/>
                 </parameters>
             </channel>
         </connection>
@@ -1525,15 +1525,15 @@
             <channel name="channel" type="networks.Net10.C">
                 <parameters>
                     <property name="class" value="cDatarateChannel"/>
-                    <param name="disabled" type="long" value="false"/>
-                    <param name="delay" type="long" value="0.000178416">
+                    <param name="disabled" type="bool" value="false"/>
+                    <param name="delay" type="double" value="0.000178416">
                         <property name="unit" value="s"/>
                     </param>
-                    <param name="datarate" type="long" value="1e+006">
+                    <param name="datarate" type="double" value="1e+006">
                         <property name="unit" value="bps"/>
                     </param>
-                    <param name="ber" type="long" value="0"/>
-                    <param name="per" type="long" value="0"/>
+                    <param name="ber" type="double" value="0"/>
+                    <param name="per" type="double" value="0"/>
                 </parameters>
             </channel>
         </connection>
@@ -1541,15 +1541,15 @@
             <channel name="channel" type="networks.Net10.C">
                 <parameters>
                     <property name="class" value="cDatarateChannel"/>
-                    <param name="disabled" type="long" value="false"/>
-                    <param name="delay" type="long" value="0.000431417">
+                    <param name="disabled" type="bool" value="false"/>
+                    <param name="delay" type="double" value="0.000431417">
                         <property name="unit" value="s"/>
                     </param>
-                    <param name="datarate" type="long" value="1e+006">
+                    <param name="datarate" type="double" value="1e+006">
                         <property name="unit" value="bps"/>
                     </param>
-                    <param name="ber" type="long" value="0"/>
-                    <param name="per" type="long" value="0"/>
+                    <param name="ber" type="double" value="0"/>
+                    <param name="per" type="double" value="0"/>
                 </parameters>
             </channel>
         </connection>
@@ -1557,15 +1557,15 @@
             <channel name="channel" type="networks.Net10.C">
                 <parameters>
                     <property name="class" value="cDatarateChannel"/>
-                    <param name="disabled" type="long" value="false"/>
-                    <param name="delay" type="long" value="0.000531979">
+                    <param name="disabled" type="bool" value="false"/>
+                    <param name="delay" type="double" value="0.000531979">
                         <property name="unit" value="s"/>
                     </param>
-                    <param name="datarate" type="long" value="1e+006">
+                    <param name="datarate" type="double" value="1e+006">
                         <property name="unit" value="bps"/>
                     </param>
-                    <param name="ber" type="long" value="0"/>
-                    <param name="per" type="long" value="0"/>
+                    <param name="ber" type="double" value="0"/>
+                    <param name="per" type="double" value="0"/>
                 </parameters>
             </channel>
         </connection>
@@ -1573,15 +1573,15 @@
             <channel name="channel" type="networks.Net10.C">
                 <parameters>
                     <property name="class" value="cDatarateChannel"/>
-                    <param name="disabled" type="long" value="false"/>
-                    <param name="delay" type="long" value="0.00061124">
+                    <param name="disabled" type="bool" value="false"/>
+                    <param name="delay" type="double" value="0.00061124">
                         <property name="unit" value="s"/>
                     </param>
-                    <param name="datarate" type="long" value="1e+006">
+                    <param name="datarate" type="double" value="1e+006">
                         <property name="unit" value="bps"/>
                     </param>
-                    <param name="ber" type="long" value="0"/>
-                    <param name="per" type="long" value="0"/>
+                    <param name="ber" type="double" value="0"/>
+                    <param name="per" type="double" value="0"/>
                 </parameters>
             </channel>
         </connection>
@@ -1589,15 +1589,15 @@
             <channel name="channel" type="networks.Net10.C">
                 <parameters>
                     <property name="class" value="cDatarateChannel"/>
-                    <param name="disabled" type="long" value="false"/>
-                    <param name="delay" type="long" value="0.000852471">
+                    <param name="disabled" type="bool" value="false"/>
+                    <param name="delay" type="double" value="0.000852471">
                         <property name="unit" value="s"/>
                     </param>
-                    <param name="datarate" type="long" value="1e+006">
+                    <param name="datarate" type="double" value="1e+006">
                         <property name="unit" value="bps"/>
                     </param>
-                    <param name="ber" type="long" value="0"/>
-                    <param name="per" type="long" value="0"/>
+                    <param name="ber" type="double" value="0"/>
+                    <param name="per" type="double" value="0"/>
                 </parameters>
             </channel>
         </connection>
@@ -1605,15 +1605,15 @@
             <channel name="channel" type="networks.Net10.C">
                 <parameters>
                     <property name="class" value="cDatarateChannel"/>
-                    <param name="disabled" type="long" value="false"/>
-                    <param name="delay" type="long" value="0.000163932">
+                    <param name="disabled" type="bool" value="false"/>
+                    <param name="delay" type="double" value="0.000163932">
                         <property name="unit" value="s"/>
                     </param>
-                    <param name="datarate" type="long" value="1e+006">
+                    <param name="datarate" type="double" value="1e+006">
                         <property name="unit" value="bps"/>
                     </param>
-                    <param name="ber" type="long" value="0"/>
-                    <param name="per" type="long" value="0"/>
+                    <param name="ber" type="double" value="0"/>
+                    <param name="per" type="double" value="0"/>
                 </parameters>
             </channel>
         </connection>
@@ -1621,15 +1621,15 @@
             <channel name="channel" type="networks.Net10.C">
                 <parameters>
                     <property name="class" value="cDatarateChannel"/>
-                    <param name="disabled" type="long" value="false"/>
-                    <param name="delay" type="long" value="0.000683355">
+                    <param name="disabled" type="bool" value="false"/>
+                    <param name="delay" type="double" value="0.000683355">
                         <property name="unit" value="s"/>
                     </param>
-                    <param name="datarate" type="long" value="1e+006">
+                    <param name="datarate" type="double" value="1e+006">
                         <property name="unit" value="bps"/>
                     </param>
-                    <param name="ber" type="long" value="0"/>
-                    <param name="per" type="long" value="0"/>
+                    <param name="ber" type="double" value="0"/>
+                    <param name="per" type="double" value="0"/>
                 </parameters>
             </channel>
         </connection>
@@ -1637,15 +1637,15 @@
             <channel name="channel" type="networks.Net10.C">
                 <parameters>
                     <property name="class" value="cDatarateChannel"/>
-                    <param name="disabled" type="long" value="false"/>
-                    <param name="delay" type="long" value="0.000862527">
+                    <param name="disabled" type="bool" value="false"/>
+                    <param name="delay" type="double" value="0.000862527">
                         <property name="unit" value="s"/>
                     </param>
-                    <param name="datarate" type="long" value="1e+006">
+                    <param name="datarate" type="double" value="1e+006">
                         <property name="unit" value="bps"/>
                     </param>
-                    <param name="ber" type="long" value="0"/>
-                    <param name="per" type="long" value="0"/>
+                    <param name="ber" type="double" value="0"/>
+                    <param name="per" type="double" value="0"/>
                 </parameters>
             </channel>
         </connection>
@@ -1653,15 +1653,15 @@
             <channel name="channel" type="networks.Net10.C">
                 <parameters>
                     <property name="class" value="cDatarateChannel"/>
-                    <param name="disabled" type="long" value="false"/>
-                    <param name="delay" type="long" value="0.000481289">
+                    <param name="disabled" type="bool" value="false"/>
+                    <param name="delay" type="double" value="0.000481289">
                         <property name="unit" value="s"/>
                     </param>
-                    <param name="datarate" type="long" value="1e+006">
+                    <param name="datarate" type="double" value="1e+006">
                         <property name="unit" value="bps"/>
                     </param>
-                    <param name="ber" type="long" value="0"/>
-                    <param name="per" type="long" value="0"/>
+                    <param name="ber" type="double" value="0"/>
+                    <param name="per" type="double" value="0"/>
                 </parameters>
             </channel>
         </connection>
@@ -1669,15 +1669,15 @@
             <channel name="channel" type="networks.Net10.C">
                 <parameters>
                     <property name="class" value="cDatarateChannel"/>
-                    <param name="disabled" type="long" value="false"/>
-                    <param name="delay" type="long" value="0.000403657">
+                    <param name="disabled" type="bool" value="false"/>
+                    <param name="delay" type="double" value="0.000403657">
                         <property name="unit" value="s"/>
                     </param>
-                    <param name="datarate" type="long" value="1e+006">
+                    <param name="datarate" type="double" value="1e+006">
                         <property name="unit" value="bps"/>
                     </param>
-                    <param name="ber" type="long" value="0"/>
-                    <param name="per" type="long" value="0"/>
+                    <param name="ber" type="double" value="0"/>
+                    <param name="per" type="double" value="0"/>
                 </parameters>
             </channel>
         </connection>
@@ -1685,15 +1685,15 @@
             <channel name="channel" type="networks.Net10.C">
                 <parameters>
                     <property name="class" value="cDatarateChannel"/>
-                    <param name="disabled" type="long" value="false"/>
-                    <param name="delay" type="long" value="0.000445944">
+                    <param name="disabled" type="bool" value="false"/>
+                    <param name="delay" type="double" value="0.000445944">
                         <property name="unit" value="s"/>
                     </param>
-                    <param name="datarate" type="long" value="1e+006">
+                    <param name="datarate" type="double" value="1e+006">
                         <property name="unit" value="bps"/>
                     </param>
-                    <param name="ber" type="long" value="0"/>
-                    <param name="per" type="long" value="0"/>
+                    <param name="ber" type="double" value="0"/>
+                    <param name="per" type="double" value="0"/>
                 </parameters>
             </channel>
         </connection>
@@ -1701,15 +1701,15 @@
             <channel name="channel" type="networks.Net10.C">
                 <parameters>
                     <property name="class" value="cDatarateChannel"/>
-                    <param name="disabled" type="long" value="false"/>
-                    <param name="delay" type="long" value="0.000493828">
+                    <param name="disabled" type="bool" value="false"/>
+                    <param name="delay" type="double" value="0.000493828">
                         <property name="unit" value="s"/>
                     </param>
-                    <param name="datarate" type="long" value="1e+006">
+                    <param name="datarate" type="double" value="1e+006">
                         <property name="unit" value="bps"/>
                     </param>
-                    <param name="ber" type="long" value="0"/>
-                    <param name="per" type="long" value="0"/>
+                    <param name="ber" type="double" value="0"/>
+                    <param name="per" type="double" value="0"/>
                 </parameters>
             </channel>
         </connection>
@@ -1717,15 +1717,15 @@
             <channel name="channel" type="networks.Net10.C">
                 <parameters>
                     <property name="class" value="cDatarateChannel"/>
-                    <param name="disabled" type="long" value="false"/>
-                    <param name="delay" type="long" value="0.000453506">
+                    <param name="disabled" type="bool" value="false"/>
+                    <param name="delay" type="double" value="0.000453506">
                         <property name="unit" value="s"/>
                     </param>
-                    <param name="datarate" type="long" value="1e+006">
+                    <param name="datarate" type="double" value="1e+006">
                         <property name="unit" value="bps"/>
                     </param>
-                    <param name="ber" type="long" value="0"/>
-                    <param name="per" type="long" value="0"/>
+                    <param name="ber" type="double" value="0"/>
+                    <param name="per" type="double" value="0"/>
                 </parameters>
             </channel>
         </connection>
@@ -1733,15 +1733,15 @@
             <channel name="channel" type="networks.Net10.C">
                 <parameters>
                     <property name="class" value="cDatarateChannel"/>
-                    <param name="disabled" type="long" value="false"/>
-                    <param name="delay" type="long" value="0.000661207">
+                    <param name="disabled" type="bool" value="false"/>
+                    <param name="delay" type="double" value="0.000661207">
                         <property name="unit" value="s"/>
                     </param>
-                    <param name="datarate" type="long" value="1e+006">
+                    <param name="datarate" type="double" value="1e+006">
                         <property name="unit" value="bps"/>
                     </param>
-                    <param name="ber" type="long" value="0"/>
-                    <param name="per" type="long" value="0"/>
+                    <param name="ber" type="double" value="0"/>
+                    <param name="per" type="double" value="0"/>
                 </parameters>
             </channel>
         </connection>
@@ -1749,15 +1749,15 @@
             <channel name="channel" type="networks.Net10.C">
                 <parameters>
                     <property name="class" value="cDatarateChannel"/>
-                    <param name="disabled" type="long" value="false"/>
-                    <param name="delay" type="long" value="0.000681305">
+                    <param name="disabled" type="bool" value="false"/>
+                    <param name="delay" type="double" value="0.000681305">
                         <property name="unit" value="s"/>
                     </param>
-                    <param name="datarate" type="long" value="1e+006">
+                    <param name="datarate" type="double" value="1e+006">
                         <property name="unit" value="bps"/>
                     </param>
-                    <param name="ber" type="long" value="0"/>
-                    <param name="per" type="long" value="0"/>
+                    <param name="ber" type="double" value="0"/>
+                    <param name="per" type="double" value="0"/>
                 </parameters>
             </channel>
         </connection>
@@ -1765,15 +1765,15 @@
             <channel name="channel" type="networks.Net10.C">
                 <parameters>
                     <property name="class" value="cDatarateChannel"/>
-                    <param name="disabled" type="long" value="false"/>
-                    <param name="delay" type="long" value="0.000933037">
+                    <param name="disabled" type="bool" value="false"/>
+                    <param name="delay" type="double" value="0.000933037">
                         <property name="unit" value="s"/>
                     </param>
-                    <param name="datarate" type="long" value="1e+006">
+                    <param name="datarate" type="double" value="1e+006">
                         <property name="unit" value="bps"/>
                     </param>
-                    <param name="ber" type="long" value="0"/>
-                    <param name="per" type="long" value="0"/>
+                    <param name="ber" type="double" value="0"/>
+                    <param name="per" type="double" value="0"/>
                 </parameters>
             </channel>
         </connection>

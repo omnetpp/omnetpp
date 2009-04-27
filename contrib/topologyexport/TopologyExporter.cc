@@ -129,8 +129,8 @@ void TopologyExporter::dump(const char *filename)
     os.close();
 }
 
-inline const char *replace(const char *s, const char *a, const char *b) {
-    return strcmp(s,a)==0 ? b : a;
+inline const char *replace(const char *orig, const char *what, const char *replacement) {
+    return strcmp(orig,what)==0 ? replacement : orig;
 }
 
 void TopologyExporter::dump(XMLWriter& xml, cComponent *component)
