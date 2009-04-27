@@ -1,0 +1,53 @@
+<!--
+**
+** OMNeT++/OMNEST Topology Export
+**
+-->
+
+<!ELEMENT network (parameters?, submodules?, connections?)>
+<!ATTLIST network
+     name               CDATA     #REQUIRED
+     type               NMTOKEN   #REQUIRED>
+
+<!ELEMENT module (parameters?, gates?, submodules?, connections?)>
+<!ATTLIST module
+     name               CDATA     #REQUIRED
+     type               NMTOKEN   #REQUIRED>
+
+<!ELEMENT channel (parameters?)>
+<!ATTLIST channel
+     name               CDATA     #REQUIRED
+     type               NMTOKEN   #REQUIRED>
+
+<!ELEMENT parameters ((property|param|pattern)*)>
+
+<!ELEMENT param (property*)>
+<!ATTLIST param
+     name               CDATA     #REQUIRED
+     type               (double|long|string|bool|xml) #REQUIRED
+     value              CDATA     #REQUIRED>
+
+<!ELEMENT property EMPTY>
+<!ATTLIST property
+     name               CDATA     #REQUIRED
+     value              CDATA     #REQUIRED>
+
+<!ELEMENT gates (gate*)>
+
+<!ELEMENT gate (property*)>
+<!ATTLIST gate
+     name               CDATA     #REQUIRED
+     type               (input|output|inout) #REQUIRED>
+
+<!ELEMENT submodules (module*)>
+
+<!ELEMENT connections (connection*)>
+
+<!ELEMENT connection (channel?)>
+<!ATTLIST connection
+     src-module          CDATA    #IMPLIED
+     src-gate            CDATA    #REQUIRED
+     dest-module         CDATA    #IMPLIED
+     dest-gate           CDATA    #REQUIRED>
+
+
