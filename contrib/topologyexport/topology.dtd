@@ -24,7 +24,7 @@
 <!ELEMENT param (property*)>
 <!ATTLIST param
      name               CDATA     #REQUIRED
-     type               (double|long|string|bool|xml) #REQUIRED
+     type               (double|int|string|bool|xml) #REQUIRED
      value              CDATA     #REQUIRED>
 
 <!ELEMENT property EMPTY>

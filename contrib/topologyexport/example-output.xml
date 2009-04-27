@@ -1,0 +1,1781 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<network name="Net10" type="networks.Net10">
+    <parameters>
+        <property name="isNetwork" value=""/>
+    </parameters>
+    <submodules>
+        <module name="rte[0]" type="node.Node">
+            <parameters>
+                <property name="display" value="&quot;i=misc/node_vs,gold&quot;"/>
+                <param name="address" type="int" value="0"/>
+                <param name="appType" type="long" value="&quot;App&quot;"/>
+            </parameters>
+            <gates>
+                <gate name="port$i[0]" type="input"/>
+                <gate name="port$i[1]" type="input"/>
+                <gate name="port$i[2]" type="input"/>
+                <gate name="port$o[0]" type="output"/>
+                <gate name="port$o[1]" type="output"/>
+                <gate name="port$o[2]" type="output"/>
+            </gates>
+            <submodules>
+                <module name="app" type="node.App">
+                    <parameters>
+                        <property name="display" value="&quot;p=140,60;i=block/browser&quot;"/>
+                        <param name="address" type="int" value="0"/>
+                        <param name="destAddresses" type="long" value="&quot;1 6 8&quot;"/>
+                        <param name="sendIaTime" type="long" value="exponential(1s)">
+                            <property name="unit" value="s"/>
+                        </param>
+                        <param name="packetLength" type="int" value="uniform(128byte, 1024byte)">
+                            <property name="unit" value="byte"/>
+                        </param>
+                    </parameters>
+                    <gates>
+                        <gate name="in" type="input"/>
+                        <gate name="out" type="output"/>
+                    </gates>
+                    <connections/>
+                </module>
+                <module name="routing" type="node.Routing">
+                    <parameters>
+                        <property name="display" value="&quot;p=140,130;i=block/switch&quot;"/>
+                    </parameters>
+                    <gates>
+                        <gate name="in[0]" type="input"/>
+                        <gate name="in[1]" type="input"/>
+                        <gate name="in[2]" type="input"/>
+                        <gate name="out[0]" type="output"/>
+                        <gate name="out[1]" type="output"/>
+                        <gate name="out[2]" type="output"/>
+                        <gate name="localIn" type="input"/>
+                        <gate name="localOut" type="output"/>
+                    </gates>
+                    <connections/>
+                </module>
+                <module name="queue[0]" type="node.L2Queue">
+                    <parameters>
+                        <property name="display" value="&quot;p=80,200,row;i=block/queue;q=queue&quot;"/>
+                        <param name="frameCapacity" type="int" value="0"/>
+                    </parameters>
+                    <gates>
+                        <gate name="in" type="input"/>
+                        <gate name="out" type="output"/>
+                        <gate name="line$i" type="input"/>
+                        <gate name="line$o" type="output"/>
+                    </gates>
+                    <connections/>
+                </module>
+                <module name="queue[1]" type="node.L2Queue">
+                    <parameters>
+                        <property name="display" value="&quot;p=80,200,row;i=block/queue;q=queue&quot;"/>
+                        <param name="frameCapacity" type="int" value="0"/>
+                    </parameters>
+                    <gates>
+                        <gate name="in" type="input"/>
+                        <gate name="out" type="output"/>
+                        <gate name="line$i" type="input"/>
+                        <gate name="line$o" type="output"/>
+                    </gates>
+                    <connections/>
+                </module>
+                <module name="queue[2]" type="node.L2Queue">
+                    <parameters>
+                        <property name="display" value="&quot;p=80,200,row;i=block/queue;q=queue&quot;"/>
+                        <param name="frameCapacity" type="int" value="0"/>
+                    </parameters>
+                    <gates>
+                        <gate name="in" type="input"/>
+                        <gate name="out" type="output"/>
+                        <gate name="line$i" type="input"/>
+                        <gate name="line$o" type="output"/>
+                    </gates>
+                    <connections/>
+                </module>
+            </submodules>
+            <connections>
+                <connection src-module="app" src-gate="out" dest-module="routing" dest-gate="localIn"/>
+                <connection src-module="routing" src-gate="out[0]" dest-module="queue[0]" dest-gate="in"/>
+                <connection src-module="routing" src-gate="out[1]" dest-module="queue[1]" dest-gate="in"/>
+                <connection src-module="routing" src-gate="out[2]" dest-module="queue[2]" dest-gate="in"/>
+                <connection src-module="routing" src-gate="localOut" dest-module="app" dest-gate="in"/>
+                <connection src-module="queue[0]" src-gate="out" dest-module="routing" dest-gate="in[0]"/>
+                <connection src-module="queue[0]" src-gate="line$o" dest-gate="port$o[0]"/>
+                <connection src-module="queue[1]" src-gate="out" dest-module="routing" dest-gate="in[1]"/>
+                <connection src-module="queue[1]" src-gate="line$o" dest-gate="port$o[1]"/>
+                <connection src-module="queue[2]" src-gate="out" dest-module="routing" dest-gate="in[2]"/>
+                <connection src-module="queue[2]" src-gate="line$o" dest-gate="port$o[2]"/>
+                <connection src-gate="port$i[0]" dest-module="queue[0]" dest-gate="line$i"/>
+                <connection src-gate="port$i[1]" dest-module="queue[1]" dest-gate="line$i"/>
+                <connection src-gate="port$i[2]" dest-module="queue[2]" dest-gate="line$i"/>
+            </connections>
+        </module>
+        <module name="rte[1]" type="node.Node">
+            <parameters>
+                <property name="display" value="&quot;i=misc/node_vs,gold&quot;"/>
+                <param name="address" type="int" value="1"/>
+                <param name="appType" type="long" value="&quot;App&quot;"/>
+            </parameters>
+            <gates>
+                <gate name="port$i[0]" type="input"/>
+                <gate name="port$i[1]" type="input"/>
+                <gate name="port$i[2]" type="input"/>
+                <gate name="port$o[0]" type="output"/>
+                <gate name="port$o[1]" type="output"/>
+                <gate name="port$o[2]" type="output"/>
+            </gates>
+            <submodules>
+                <module name="app" type="node.App">
+                    <parameters>
+                        <property name="display" value="&quot;p=140,60;i=block/browser&quot;"/>
+                        <param name="address" type="int" value="1"/>
+                        <param name="destAddresses" type="long" value="&quot;1 6 8&quot;"/>
+                        <param name="sendIaTime" type="long" value="exponential(1s)">
+                            <property name="unit" value="s"/>
+                        </param>
+                        <param name="packetLength" type="int" value="uniform(128byte, 1024byte)">
+                            <property name="unit" value="byte"/>
+                        </param>
+                    </parameters>
+                    <gates>
+                        <gate name="in" type="input"/>
+                        <gate name="out" type="output"/>
+                    </gates>
+                    <connections/>
+                </module>
+                <module name="routing" type="node.Routing">
+                    <parameters>
+                        <property name="display" value="&quot;p=140,130;i=block/switch&quot;"/>
+                    </parameters>
+                    <gates>
+                        <gate name="in[0]" type="input"/>
+                        <gate name="in[1]" type="input"/>
+                        <gate name="in[2]" type="input"/>
+                        <gate name="out[0]" type="output"/>
+                        <gate name="out[1]" type="output"/>
+                        <gate name="out[2]" type="output"/>
+                        <gate name="localIn" type="input"/>
+                        <gate name="localOut" type="output"/>
+                    </gates>
+                    <connections/>
+                </module>
+                <module name="queue[0]" type="node.L2Queue">
+                    <parameters>
+                        <property name="display" value="&quot;p=80,200,row;i=block/queue;q=queue&quot;"/>
+                        <param name="frameCapacity" type="int" value="0"/>
+                    </parameters>
+                    <gates>
+                        <gate name="in" type="input"/>
+                        <gate name="out" type="output"/>
+                        <gate name="line$i" type="input"/>
+                        <gate name="line$o" type="output"/>
+                    </gates>
+                    <connections/>
+                </module>
+                <module name="queue[1]" type="node.L2Queue">
+                    <parameters>
+                        <property name="display" value="&quot;p=80,200,row;i=block/queue;q=queue&quot;"/>
+                        <param name="frameCapacity" type="int" value="0"/>
+                    </parameters>
+                    <gates>
+                        <gate name="in" type="input"/>
+                        <gate name="out" type="output"/>
+                        <gate name="line$i" type="input"/>
+                        <gate name="line$o" type="output"/>
+                    </gates>
+                    <connections/>
+                </module>
+                <module name="queue[2]" type="node.L2Queue">
+                    <parameters>
+                        <property name="display" value="&quot;p=80,200,row;i=block/queue;q=queue&quot;"/>
+                        <param name="frameCapacity" type="int" value="0"/>
+                    </parameters>
+                    <gates>
+                        <gate name="in" type="input"/>
+                        <gate name="out" type="output"/>
+                        <gate name="line$i" type="input"/>
+                        <gate name="line$o" type="output"/>
+                    </gates>
+                    <connections/>
+                </module>
+            </submodules>
+            <connections>
+                <connection src-module="app" src-gate="out" dest-module="routing" dest-gate="localIn"/>
+                <connection src-module="routing" src-gate="out[0]" dest-module="queue[0]" dest-gate="in"/>
+                <connection src-module="routing" src-gate="out[1]" dest-module="queue[1]" dest-gate="in"/>
+                <connection src-module="routing" src-gate="out[2]" dest-module="queue[2]" dest-gate="in"/>
+                <connection src-module="routing" src-gate="localOut" dest-module="app" dest-gate="in"/>
+                <connection src-module="queue[0]" src-gate="out" dest-module="routing" dest-gate="in[0]"/>
+                <connection src-module="queue[0]" src-gate="line$o" dest-gate="port$o[0]"/>
+                <connection src-module="queue[1]" src-gate="out" dest-module="routing" dest-gate="in[1]"/>
+                <connection src-module="queue[1]" src-gate="line$o" dest-gate="port$o[1]"/>
+                <connection src-module="queue[2]" src-gate="out" dest-module="routing" dest-gate="in[2]"/>
+                <connection src-module="queue[2]" src-gate="line$o" dest-gate="port$o[2]"/>
+                <connection src-gate="port$i[0]" dest-module="queue[0]" dest-gate="line$i"/>
+                <connection src-gate="port$i[1]" dest-module="queue[1]" dest-gate="line$i"/>
+                <connection src-gate="port$i[2]" dest-module="queue[2]" dest-gate="line$i"/>
+            </connections>
+        </module>
+        <module name="rte[2]" type="node.Node">
+            <parameters>
+                <property name="display" value="&quot;i=misc/node_vs,gold&quot;"/>
+                <param name="address" type="int" value="2"/>
+                <param name="appType" type="long" value="&quot;App&quot;"/>
+            </parameters>
+            <gates>
+                <gate name="port$i[0]" type="input"/>
+                <gate name="port$i[1]" type="input"/>
+                <gate name="port$i[2]" type="input"/>
+                <gate name="port$i[3]" type="input"/>
+                <gate name="port$i[4]" type="input"/>
+                <gate name="port$o[0]" type="output"/>
+                <gate name="port$o[1]" type="output"/>
+                <gate name="port$o[2]" type="output"/>
+                <gate name="port$o[3]" type="output"/>
+                <gate name="port$o[4]" type="output"/>
+            </gates>
+            <submodules>
+                <module name="app" type="node.App">
+                    <parameters>
+                        <property name="display" value="&quot;p=140,60;i=block/browser&quot;"/>
+                        <param name="address" type="int" value="2"/>
+                        <param name="destAddresses" type="long" value="&quot;1 6 8&quot;"/>
+                        <param name="sendIaTime" type="long" value="exponential(1s)">
+                            <property name="unit" value="s"/>
+                        </param>
+                        <param name="packetLength" type="int" value="uniform(128byte, 1024byte)">
+                            <property name="unit" value="byte"/>
+                        </param>
+                    </parameters>
+                    <gates>
+                        <gate name="in" type="input"/>
+                        <gate name="out" type="output"/>
+                    </gates>
+                    <connections/>
+                </module>
+                <module name="routing" type="node.Routing">
+                    <parameters>
+                        <property name="display" value="&quot;p=140,130;i=block/switch&quot;"/>
+                    </parameters>
+                    <gates>
+                        <gate name="in[0]" type="input"/>
+                        <gate name="in[1]" type="input"/>
+                        <gate name="in[2]" type="input"/>
+                        <gate name="in[3]" type="input"/>
+                        <gate name="in[4]" type="input"/>
+                        <gate name="out[0]" type="output"/>
+                        <gate name="out[1]" type="output"/>
+                        <gate name="out[2]" type="output"/>
+                        <gate name="out[3]" type="output"/>
+                        <gate name="out[4]" type="output"/>
+                        <gate name="localIn" type="input"/>
+                        <gate name="localOut" type="output"/>
+                    </gates>
+                    <connections/>
+                </module>
+                <module name="queue[0]" type="node.L2Queue">
+                    <parameters>
+                        <property name="display" value="&quot;p=80,200,row;i=block/queue;q=queue&quot;"/>
+                        <param name="frameCapacity" type="int" value="0"/>
+                    </parameters>
+                    <gates>
+                        <gate name="in" type="input"/>
+                        <gate name="out" type="output"/>
+                        <gate name="line$i" type="input"/>
+                        <gate name="line$o" type="output"/>
+                    </gates>
+                    <connections/>
+                </module>
+                <module name="queue[1]" type="node.L2Queue">
+                    <parameters>
+                        <property name="display" value="&quot;p=80,200,row;i=block/queue;q=queue&quot;"/>
+                        <param name="frameCapacity" type="int" value="0"/>
+                    </parameters>
+                    <gates>
+                        <gate name="in" type="input"/>
+                        <gate name="out" type="output"/>
+                        <gate name="line$i" type="input"/>
+                        <gate name="line$o" type="output"/>
+                    </gates>
+                    <connections/>
+                </module>
+                <module name="queue[2]" type="node.L2Queue">
+                    <parameters>
+                        <property name="display" value="&quot;p=80,200,row;i=block/queue;q=queue&quot;"/>
+                        <param name="frameCapacity" type="int" value="0"/>
+                    </parameters>
+                    <gates>
+                        <gate name="in" type="input"/>
+                        <gate name="out" type="output"/>
+                        <gate name="line$i" type="input"/>
+                        <gate name="line$o" type="output"/>
+                    </gates>
+                    <connections/>
+                </module>
+                <module name="queue[3]" type="node.L2Queue">
+                    <parameters>
+                        <property name="display" value="&quot;p=80,200,row;i=block/queue;q=queue&quot;"/>
+                        <param name="frameCapacity" type="int" value="0"/>
+                    </parameters>
+                    <gates>
+                        <gate name="in" type="input"/>
+                        <gate name="out" type="output"/>
+                        <gate name="line$i" type="input"/>
+                        <gate name="line$o" type="output"/>
+                    </gates>
+                    <connections/>
+                </module>
+                <module name="queue[4]" type="node.L2Queue">
+                    <parameters>
+                        <property name="display" value="&quot;p=80,200,row;i=block/queue;q=queue&quot;"/>
+                        <param name="frameCapacity" type="int" value="0"/>
+                    </parameters>
+                    <gates>
+                        <gate name="in" type="input"/>
+                        <gate name="out" type="output"/>
+                        <gate name="line$i" type="input"/>
+                        <gate name="line$o" type="output"/>
+                    </gates>
+                    <connections/>
+                </module>
+            </submodules>
+            <connections>
+                <connection src-module="app" src-gate="out" dest-module="routing" dest-gate="localIn"/>
+                <connection src-module="routing" src-gate="out[0]" dest-module="queue[0]" dest-gate="in"/>
+                <connection src-module="routing" src-gate="out[1]" dest-module="queue[1]" dest-gate="in"/>
+                <connection src-module="routing" src-gate="out[2]" dest-module="queue[2]" dest-gate="in"/>
+                <connection src-module="routing" src-gate="out[3]" dest-module="queue[3]" dest-gate="in"/>
+                <connection src-module="routing" src-gate="out[4]" dest-module="queue[4]" dest-gate="in"/>
+                <connection src-module="routing" src-gate="localOut" dest-module="app" dest-gate="in"/>
+                <connection src-module="queue[0]" src-gate="out" dest-module="routing" dest-gate="in[0]"/>
+                <connection src-module="queue[0]" src-gate="line$o" dest-gate="port$o[0]"/>
+                <connection src-module="queue[1]" src-gate="out" dest-module="routing" dest-gate="in[1]"/>
+                <connection src-module="queue[1]" src-gate="line$o" dest-gate="port$o[1]"/>
+                <connection src-module="queue[2]" src-gate="out" dest-module="routing" dest-gate="in[2]"/>
+                <connection src-module="queue[2]" src-gate="line$o" dest-gate="port$o[2]"/>
+                <connection src-module="queue[3]" src-gate="out" dest-module="routing" dest-gate="in[3]"/>
+                <connection src-module="queue[3]" src-gate="line$o" dest-gate="port$o[3]"/>
+                <connection src-module="queue[4]" src-gate="out" dest-module="routing" dest-gate="in[4]"/>
+                <connection src-module="queue[4]" src-gate="line$o" dest-gate="port$o[4]"/>
+                <connection src-gate="port$i[0]" dest-module="queue[0]" dest-gate="line$i"/>
+                <connection src-gate="port$i[1]" dest-module="queue[1]" dest-gate="line$i"/>
+                <connection src-gate="port$i[2]" dest-module="queue[2]" dest-gate="line$i"/>
+                <connection src-gate="port$i[3]" dest-module="queue[3]" dest-gate="line$i"/>
+                <connection src-gate="port$i[4]" dest-module="queue[4]" dest-gate="line$i"/>
+            </connections>
+        </module>
+        <module name="rte[3]" type="node.Node">
+            <parameters>
+                <property name="display" value="&quot;i=misc/node_vs,gold&quot;"/>
+                <param name="address" type="int" value="3"/>
+                <param name="appType" type="long" value="&quot;App&quot;"/>
+            </parameters>
+            <gates>
+                <gate name="port$i[0]" type="input"/>
+                <gate name="port$i[1]" type="input"/>
+                <gate name="port$i[2]" type="input"/>
+                <gate name="port$o[0]" type="output"/>
+                <gate name="port$o[1]" type="output"/>
+                <gate name="port$o[2]" type="output"/>
+            </gates>
+            <submodules>
+                <module name="app" type="node.App">
+                    <parameters>
+                        <property name="display" value="&quot;p=140,60;i=block/browser&quot;"/>
+                        <param name="address" type="int" value="3"/>
+                        <param name="destAddresses" type="long" value="&quot;1 6 8&quot;"/>
+                        <param name="sendIaTime" type="long" value="exponential(1s)">
+                            <property name="unit" value="s"/>
+                        </param>
+                        <param name="packetLength" type="int" value="uniform(128byte, 1024byte)">
+                            <property name="unit" value="byte"/>
+                        </param>
+                    </parameters>
+                    <gates>
+                        <gate name="in" type="input"/>
+                        <gate name="out" type="output"/>
+                    </gates>
+                    <connections/>
+                </module>
+                <module name="routing" type="node.Routing">
+                    <parameters>
+                        <property name="display" value="&quot;p=140,130;i=block/switch&quot;"/>
+                    </parameters>
+                    <gates>
+                        <gate name="in[0]" type="input"/>
+                        <gate name="in[1]" type="input"/>
+                        <gate name="in[2]" type="input"/>
+                        <gate name="out[0]" type="output"/>
+                        <gate name="out[1]" type="output"/>
+                        <gate name="out[2]" type="output"/>
+                        <gate name="localIn" type="input"/>
+                        <gate name="localOut" type="output"/>
+                    </gates>
+                    <connections/>
+                </module>
+                <module name="queue[0]" type="node.L2Queue">
+                    <parameters>
+                        <property name="display" value="&quot;p=80,200,row;i=block/queue;q=queue&quot;"/>
+                        <param name="frameCapacity" type="int" value="0"/>
+                    </parameters>
+                    <gates>
+                        <gate name="in" type="input"/>
+                        <gate name="out" type="output"/>
+                        <gate name="line$i" type="input"/>
+                        <gate name="line$o" type="output"/>
+                    </gates>
+                    <connections/>
+                </module>
+                <module name="queue[1]" type="node.L2Queue">
+                    <parameters>
+                        <property name="display" value="&quot;p=80,200,row;i=block/queue;q=queue&quot;"/>
+                        <param name="frameCapacity" type="int" value="0"/>
+                    </parameters>
+                    <gates>
+                        <gate name="in" type="input"/>
+                        <gate name="out" type="output"/>
+                        <gate name="line$i" type="input"/>
+                        <gate name="line$o" type="output"/>
+                    </gates>
+                    <connections/>
+                </module>
+                <module name="queue[2]" type="node.L2Queue">
+                    <parameters>
+                        <property name="display" value="&quot;p=80,200,row;i=block/queue;q=queue&quot;"/>
+                        <param name="frameCapacity" type="int" value="0"/>
+                    </parameters>
+                    <gates>
+                        <gate name="in" type="input"/>
+                        <gate name="out" type="output"/>
+                        <gate name="line$i" type="input"/>
+                        <gate name="line$o" type="output"/>
+                    </gates>
+                    <connections/>
+                </module>
+            </submodules>
+            <connections>
+                <connection src-module="app" src-gate="out" dest-module="routing" dest-gate="localIn"/>
+                <connection src-module="routing" src-gate="out[0]" dest-module="queue[0]" dest-gate="in"/>
+                <connection src-module="routing" src-gate="out[1]" dest-module="queue[1]" dest-gate="in"/>
+                <connection src-module="routing" src-gate="out[2]" dest-module="queue[2]" dest-gate="in"/>
+                <connection src-module="routing" src-gate="localOut" dest-module="app" dest-gate="in"/>
+                <connection src-module="queue[0]" src-gate="out" dest-module="routing" dest-gate="in[0]"/>
+                <connection src-module="queue[0]" src-gate="line$o" dest-gate="port$o[0]"/>
+                <connection src-module="queue[1]" src-gate="out" dest-module="routing" dest-gate="in[1]"/>
+                <connection src-module="queue[1]" src-gate="line$o" dest-gate="port$o[1]"/>
+                <connection src-module="queue[2]" src-gate="out" dest-module="routing" dest-gate="in[2]"/>
+                <connection src-module="queue[2]" src-gate="line$o" dest-gate="port$o[2]"/>
+                <connection src-gate="port$i[0]" dest-module="queue[0]" dest-gate="line$i"/>
+                <connection src-gate="port$i[1]" dest-module="queue[1]" dest-gate="line$i"/>
+                <connection src-gate="port$i[2]" dest-module="queue[2]" dest-gate="line$i"/>
+            </connections>
+        </module>
+        <module name="rte[4]" type="node.Node">
+            <parameters>
+                <property name="display" value="&quot;i=misc/node_vs,gold&quot;"/>
+                <param name="address" type="int" value="4"/>
+                <param name="appType" type="long" value="&quot;App&quot;"/>
+            </parameters>
+            <gates>
+                <gate name="port$i[0]" type="input"/>
+                <gate name="port$i[1]" type="input"/>
+                <gate name="port$i[2]" type="input"/>
+                <gate name="port$i[3]" type="input"/>
+                <gate name="port$o[0]" type="output"/>
+                <gate name="port$o[1]" type="output"/>
+                <gate name="port$o[2]" type="output"/>
+                <gate name="port$o[3]" type="output"/>
+            </gates>
+            <submodules>
+                <module name="app" type="node.App">
+                    <parameters>
+                        <property name="display" value="&quot;p=140,60;i=block/browser&quot;"/>
+                        <param name="address" type="int" value="4"/>
+                        <param name="destAddresses" type="long" value="&quot;1 6 8&quot;"/>
+                        <param name="sendIaTime" type="long" value="exponential(1s)">
+                            <property name="unit" value="s"/>
+                        </param>
+                        <param name="packetLength" type="int" value="uniform(128byte, 1024byte)">
+                            <property name="unit" value="byte"/>
+                        </param>
+                    </parameters>
+                    <gates>
+                        <gate name="in" type="input"/>
+                        <gate name="out" type="output"/>
+                    </gates>
+                    <connections/>
+                </module>
+                <module name="routing" type="node.Routing">
+                    <parameters>
+                        <property name="display" value="&quot;p=140,130;i=block/switch&quot;"/>
+                    </parameters>
+                    <gates>
+                        <gate name="in[0]" type="input"/>
+                        <gate name="in[1]" type="input"/>
+                        <gate name="in[2]" type="input"/>
+                        <gate name="in[3]" type="input"/>
+                        <gate name="out[0]" type="output"/>
+                        <gate name="out[1]" type="output"/>
+                        <gate name="out[2]" type="output"/>
+                        <gate name="out[3]" type="output"/>
+                        <gate name="localIn" type="input"/>
+                        <gate name="localOut" type="output"/>
+                    </gates>
+                    <connections/>
+                </module>
+                <module name="queue[0]" type="node.L2Queue">
+                    <parameters>
+                        <property name="display" value="&quot;p=80,200,row;i=block/queue;q=queue&quot;"/>
+                        <param name="frameCapacity" type="int" value="0"/>
+                    </parameters>
+                    <gates>
+                        <gate name="in" type="input"/>
+                        <gate name="out" type="output"/>
+                        <gate name="line$i" type="input"/>
+                        <gate name="line$o" type="output"/>
+                    </gates>
+                    <connections/>
+                </module>
+                <module name="queue[1]" type="node.L2Queue">
+                    <parameters>
+                        <property name="display" value="&quot;p=80,200,row;i=block/queue;q=queue&quot;"/>
+                        <param name="frameCapacity" type="int" value="0"/>
+                    </parameters>
+                    <gates>
+                        <gate name="in" type="input"/>
+                        <gate name="out" type="output"/>
+                        <gate name="line$i" type="input"/>
+                        <gate name="line$o" type="output"/>
+                    </gates>
+                    <connections/>
+                </module>
+                <module name="queue[2]" type="node.L2Queue">
+                    <parameters>
+                        <property name="display" value="&quot;p=80,200,row;i=block/queue;q=queue&quot;"/>
+                        <param name="frameCapacity" type="int" value="0"/>
+                    </parameters>
+                    <gates>
+                        <gate name="in" type="input"/>
+                        <gate name="out" type="output"/>
+                        <gate name="line$i" type="input"/>
+                        <gate name="line$o" type="output"/>
+                    </gates>
+                    <connections/>
+                </module>
+                <module name="queue[3]" type="node.L2Queue">
+                    <parameters>
+                        <property name="display" value="&quot;p=80,200,row;i=block/queue;q=queue&quot;"/>
+                        <param name="frameCapacity" type="int" value="0"/>
+                    </parameters>
+                    <gates>
+                        <gate name="in" type="input"/>
+                        <gate name="out" type="output"/>
+                        <gate name="line$i" type="input"/>
+                        <gate name="line$o" type="output"/>
+                    </gates>
+                    <connections/>
+                </module>
+            </submodules>
+            <connections>
+                <connection src-module="app" src-gate="out" dest-module="routing" dest-gate="localIn"/>
+                <connection src-module="routing" src-gate="out[0]" dest-module="queue[0]" dest-gate="in"/>
+                <connection src-module="routing" src-gate="out[1]" dest-module="queue[1]" dest-gate="in"/>
+                <connection src-module="routing" src-gate="out[2]" dest-module="queue[2]" dest-gate="in"/>
+                <connection src-module="routing" src-gate="out[3]" dest-module="queue[3]" dest-gate="in"/>
+                <connection src-module="routing" src-gate="localOut" dest-module="app" dest-gate="in"/>
+                <connection src-module="queue[0]" src-gate="out" dest-module="routing" dest-gate="in[0]"/>
+                <connection src-module="queue[0]" src-gate="line$o" dest-gate="port$o[0]"/>
+                <connection src-module="queue[1]" src-gate="out" dest-module="routing" dest-gate="in[1]"/>
+                <connection src-module="queue[1]" src-gate="line$o" dest-gate="port$o[1]"/>
+                <connection src-module="queue[2]" src-gate="out" dest-module="routing" dest-gate="in[2]"/>
+                <connection src-module="queue[2]" src-gate="line$o" dest-gate="port$o[2]"/>
+                <connection src-module="queue[3]" src-gate="out" dest-module="routing" dest-gate="in[3]"/>
+                <connection src-module="queue[3]" src-gate="line$o" dest-gate="port$o[3]"/>
+                <connection src-gate="port$i[0]" dest-module="queue[0]" dest-gate="line$i"/>
+                <connection src-gate="port$i[1]" dest-module="queue[1]" dest-gate="line$i"/>
+                <connection src-gate="port$i[2]" dest-module="queue[2]" dest-gate="line$i"/>
+                <connection src-gate="port$i[3]" dest-module="queue[3]" dest-gate="line$i"/>
+            </connections>
+        </module>
+        <module name="rte[5]" type="node.Node">
+            <parameters>
+                <property name="display" value="&quot;i=misc/node_vs,gold&quot;"/>
+                <param name="address" type="int" value="5"/>
+                <param name="appType" type="long" value="&quot;App&quot;"/>
+            </parameters>
+            <gates>
+                <gate name="port$i[0]" type="input"/>
+                <gate name="port$i[1]" type="input"/>
+                <gate name="port$i[2]" type="input"/>
+                <gate name="port$i[3]" type="input"/>
+                <gate name="port$o[0]" type="output"/>
+                <gate name="port$o[1]" type="output"/>
+                <gate name="port$o[2]" type="output"/>
+                <gate name="port$o[3]" type="output"/>
+            </gates>
+            <submodules>
+                <module name="app" type="node.App">
+                    <parameters>
+                        <property name="display" value="&quot;p=140,60;i=block/browser&quot;"/>
+                        <param name="address" type="int" value="5"/>
+                        <param name="destAddresses" type="long" value="&quot;1 6 8&quot;"/>
+                        <param name="sendIaTime" type="long" value="exponential(1s)">
+                            <property name="unit" value="s"/>
+                        </param>
+                        <param name="packetLength" type="int" value="uniform(128byte, 1024byte)">
+                            <property name="unit" value="byte"/>
+                        </param>
+                    </parameters>
+                    <gates>
+                        <gate name="in" type="input"/>
+                        <gate name="out" type="output"/>
+                    </gates>
+                    <connections/>
+                </module>
+                <module name="routing" type="node.Routing">
+                    <parameters>
+                        <property name="display" value="&quot;p=140,130;i=block/switch&quot;"/>
+                    </parameters>
+                    <gates>
+                        <gate name="in[0]" type="input"/>
+                        <gate name="in[1]" type="input"/>
+                        <gate name="in[2]" type="input"/>
+                        <gate name="in[3]" type="input"/>
+                        <gate name="out[0]" type="output"/>
+                        <gate name="out[1]" type="output"/>
+                        <gate name="out[2]" type="output"/>
+                        <gate name="out[3]" type="output"/>
+                        <gate name="localIn" type="input"/>
+                        <gate name="localOut" type="output"/>
+                    </gates>
+                    <connections/>
+                </module>
+                <module name="queue[0]" type="node.L2Queue">
+                    <parameters>
+                        <property name="display" value="&quot;p=80,200,row;i=block/queue;q=queue&quot;"/>
+                        <param name="frameCapacity" type="int" value="0"/>
+                    </parameters>
+                    <gates>
+                        <gate name="in" type="input"/>
+                        <gate name="out" type="output"/>
+                        <gate name="line$i" type="input"/>
+                        <gate name="line$o" type="output"/>
+                    </gates>
+                    <connections/>
+                </module>
+                <module name="queue[1]" type="node.L2Queue">
+                    <parameters>
+                        <property name="display" value="&quot;p=80,200,row;i=block/queue;q=queue&quot;"/>
+                        <param name="frameCapacity" type="int" value="0"/>
+                    </parameters>
+                    <gates>
+                        <gate name="in" type="input"/>
+                        <gate name="out" type="output"/>
+                        <gate name="line$i" type="input"/>
+                        <gate name="line$o" type="output"/>
+                    </gates>
+                    <connections/>
+                </module>
+                <module name="queue[2]" type="node.L2Queue">
+                    <parameters>
+                        <property name="display" value="&quot;p=80,200,row;i=block/queue;q=queue&quot;"/>
+                        <param name="frameCapacity" type="int" value="0"/>
+                    </parameters>
+                    <gates>
+                        <gate name="in" type="input"/>
+                        <gate name="out" type="output"/>
+                        <gate name="line$i" type="input"/>
+                        <gate name="line$o" type="output"/>
+                    </gates>
+                    <connections/>
+                </module>
+                <module name="queue[3]" type="node.L2Queue">
+                    <parameters>
+                        <property name="display" value="&quot;p=80,200,row;i=block/queue;q=queue&quot;"/>
+                        <param name="frameCapacity" type="int" value="0"/>
+                    </parameters>
+                    <gates>
+                        <gate name="in" type="input"/>
+                        <gate name="out" type="output"/>
+                        <gate name="line$i" type="input"/>
+                        <gate name="line$o" type="output"/>
+                    </gates>
+                    <connections/>
+                </module>
+            </submodules>
+            <connections>
+                <connection src-module="app" src-gate="out" dest-module="routing" dest-gate="localIn"/>
+                <connection src-module="routing" src-gate="out[0]" dest-module="queue[0]" dest-gate="in"/>
+                <connection src-module="routing" src-gate="out[1]" dest-module="queue[1]" dest-gate="in"/>
+                <connection src-module="routing" src-gate="out[2]" dest-module="queue[2]" dest-gate="in"/>
+                <connection src-module="routing" src-gate="out[3]" dest-module="queue[3]" dest-gate="in"/>
+                <connection src-module="routing" src-gate="localOut" dest-module="app" dest-gate="in"/>
+                <connection src-module="queue[0]" src-gate="out" dest-module="routing" dest-gate="in[0]"/>
+                <connection src-module="queue[0]" src-gate="line$o" dest-gate="port$o[0]"/>
+                <connection src-module="queue[1]" src-gate="out" dest-module="routing" dest-gate="in[1]"/>
+                <connection src-module="queue[1]" src-gate="line$o" dest-gate="port$o[1]"/>
+                <connection src-module="queue[2]" src-gate="out" dest-module="routing" dest-gate="in[2]"/>
+                <connection src-module="queue[2]" src-gate="line$o" dest-gate="port$o[2]"/>
+                <connection src-module="queue[3]" src-gate="out" dest-module="routing" dest-gate="in[3]"/>
+                <connection src-module="queue[3]" src-gate="line$o" dest-gate="port$o[3]"/>
+                <connection src-gate="port$i[0]" dest-module="queue[0]" dest-gate="line$i"/>
+                <connection src-gate="port$i[1]" dest-module="queue[1]" dest-gate="line$i"/>
+                <connection src-gate="port$i[2]" dest-module="queue[2]" dest-gate="line$i"/>
+                <connection src-gate="port$i[3]" dest-module="queue[3]" dest-gate="line$i"/>
+            </connections>
+        </module>
+        <module name="rte[6]" type="node.Node">
+            <parameters>
+                <property name="display" value="&quot;i=misc/node_vs,gold&quot;"/>
+                <param name="address" type="int" value="6"/>
+                <param name="appType" type="long" value="&quot;App&quot;"/>
+            </parameters>
+            <gates>
+                <gate name="port$i[0]" type="input"/>
+                <gate name="port$i[1]" type="input"/>
+                <gate name="port$i[2]" type="input"/>
+                <gate name="port$i[3]" type="input"/>
+                <gate name="port$i[4]" type="input"/>
+                <gate name="port$o[0]" type="output"/>
+                <gate name="port$o[1]" type="output"/>
+                <gate name="port$o[2]" type="output"/>
+                <gate name="port$o[3]" type="output"/>
+                <gate name="port$o[4]" type="output"/>
+            </gates>
+            <submodules>
+                <module name="app" type="node.App">
+                    <parameters>
+                        <property name="display" value="&quot;p=140,60;i=block/browser&quot;"/>
+                        <param name="address" type="int" value="6"/>
+                        <param name="destAddresses" type="long" value="&quot;1 6 8&quot;"/>
+                        <param name="sendIaTime" type="long" value="exponential(1s)">
+                            <property name="unit" value="s"/>
+                        </param>
+                        <param name="packetLength" type="int" value="uniform(128byte, 1024byte)">
+                            <property name="unit" value="byte"/>
+                        </param>
+                    </parameters>
+                    <gates>
+                        <gate name="in" type="input"/>
+                        <gate name="out" type="output"/>
+                    </gates>
+                    <connections/>
+                </module>
+                <module name="routing" type="node.Routing">
+                    <parameters>
+                        <property name="display" value="&quot;p=140,130;i=block/switch&quot;"/>
+                    </parameters>
+                    <gates>
+                        <gate name="in[0]" type="input"/>
+                        <gate name="in[1]" type="input"/>
+                        <gate name="in[2]" type="input"/>
+                        <gate name="in[3]" type="input"/>
+                        <gate name="in[4]" type="input"/>
+                        <gate name="out[0]" type="output"/>
+                        <gate name="out[1]" type="output"/>
+                        <gate name="out[2]" type="output"/>
+                        <gate name="out[3]" type="output"/>
+                        <gate name="out[4]" type="output"/>
+                        <gate name="localIn" type="input"/>
+                        <gate name="localOut" type="output"/>
+                    </gates>
+                    <connections/>
+                </module>
+                <module name="queue[0]" type="node.L2Queue">
+                    <parameters>
+                        <property name="display" value="&quot;p=80,200,row;i=block/queue;q=queue&quot;"/>
+                        <param name="frameCapacity" type="int" value="0"/>
+                    </parameters>
+                    <gates>
+                        <gate name="in" type="input"/>
+                        <gate name="out" type="output"/>
+                        <gate name="line$i" type="input"/>
+                        <gate name="line$o" type="output"/>
+                    </gates>
+                    <connections/>
+                </module>
+                <module name="queue[1]" type="node.L2Queue">
+                    <parameters>
+                        <property name="display" value="&quot;p=80,200,row;i=block/queue;q=queue&quot;"/>
+                        <param name="frameCapacity" type="int" value="0"/>
+                    </parameters>
+                    <gates>
+                        <gate name="in" type="input"/>
+                        <gate name="out" type="output"/>
+                        <gate name="line$i" type="input"/>
+                        <gate name="line$o" type="output"/>
+                    </gates>
+                    <connections/>
+                </module>
+                <module name="queue[2]" type="node.L2Queue">
+                    <parameters>
+                        <property name="display" value="&quot;p=80,200,row;i=block/queue;q=queue&quot;"/>
+                        <param name="frameCapacity" type="int" value="0"/>
+                    </parameters>
+                    <gates>
+                        <gate name="in" type="input"/>
+                        <gate name="out" type="output"/>
+                        <gate name="line$i" type="input"/>
+                        <gate name="line$o" type="output"/>
+                    </gates>
+                    <connections/>
+                </module>
+                <module name="queue[3]" type="node.L2Queue">
+                    <parameters>
+                        <property name="display" value="&quot;p=80,200,row;i=block/queue;q=queue&quot;"/>
+                        <param name="frameCapacity" type="int" value="0"/>
+                    </parameters>
+                    <gates>
+                        <gate name="in" type="input"/>
+                        <gate name="out" type="output"/>
+                        <gate name="line$i" type="input"/>
+                        <gate name="line$o" type="output"/>
+                    </gates>
+                    <connections/>
+                </module>
+                <module name="queue[4]" type="node.L2Queue">
+                    <parameters>
+                        <property name="display" value="&quot;p=80,200,row;i=block/queue;q=queue&quot;"/>
+                        <param name="frameCapacity" type="int" value="0"/>
+                    </parameters>
+                    <gates>
+                        <gate name="in" type="input"/>
+                        <gate name="out" type="output"/>
+                        <gate name="line$i" type="input"/>
+                        <gate name="line$o" type="output"/>
+                    </gates>
+                    <connections/>
+                </module>
+            </submodules>
+            <connections>
+                <connection src-module="app" src-gate="out" dest-module="routing" dest-gate="localIn"/>
+                <connection src-module="routing" src-gate="out[0]" dest-module="queue[0]" dest-gate="in"/>
+                <connection src-module="routing" src-gate="out[1]" dest-module="queue[1]" dest-gate="in"/>
+                <connection src-module="routing" src-gate="out[2]" dest-module="queue[2]" dest-gate="in"/>
+                <connection src-module="routing" src-gate="out[3]" dest-module="queue[3]" dest-gate="in"/>
+                <connection src-module="routing" src-gate="out[4]" dest-module="queue[4]" dest-gate="in"/>
+                <connection src-module="routing" src-gate="localOut" dest-module="app" dest-gate="in"/>
+                <connection src-module="queue[0]" src-gate="out" dest-module="routing" dest-gate="in[0]"/>
+                <connection src-module="queue[0]" src-gate="line$o" dest-gate="port$o[0]"/>
+                <connection src-module="queue[1]" src-gate="out" dest-module="routing" dest-gate="in[1]"/>
+                <connection src-module="queue[1]" src-gate="line$o" dest-gate="port$o[1]"/>
+                <connection src-module="queue[2]" src-gate="out" dest-module="routing" dest-gate="in[2]"/>
+                <connection src-module="queue[2]" src-gate="line$o" dest-gate="port$o[2]"/>
+                <connection src-module="queue[3]" src-gate="out" dest-module="routing" dest-gate="in[3]"/>
+                <connection src-module="queue[3]" src-gate="line$o" dest-gate="port$o[3]"/>
+                <connection src-module="queue[4]" src-gate="out" dest-module="routing" dest-gate="in[4]"/>
+                <connection src-module="queue[4]" src-gate="line$o" dest-gate="port$o[4]"/>
+                <connection src-gate="port$i[0]" dest-module="queue[0]" dest-gate="line$i"/>
+                <connection src-gate="port$i[1]" dest-module="queue[1]" dest-gate="line$i"/>
+                <connection src-gate="port$i[2]" dest-module="queue[2]" dest-gate="line$i"/>
+                <connection src-gate="port$i[3]" dest-module="queue[3]" dest-gate="line$i"/>
+                <connection src-gate="port$i[4]" dest-module="queue[4]" dest-gate="line$i"/>
+            </connections>
+        </module>
+        <module name="rte[7]" type="node.Node">
+            <parameters>
+                <property name="display" value="&quot;i=misc/node_vs,gold&quot;"/>
+                <param name="address" type="int" value="7"/>
+                <param name="appType" type="long" value="&quot;App&quot;"/>
+            </parameters>
+            <gates>
+                <gate name="port$i[0]" type="input"/>
+                <gate name="port$i[1]" type="input"/>
+                <gate name="port$i[2]" type="input"/>
+                <gate name="port$o[0]" type="output"/>
+                <gate name="port$o[1]" type="output"/>
+                <gate name="port$o[2]" type="output"/>
+            </gates>
+            <submodules>
+                <module name="app" type="node.App">
+                    <parameters>
+                        <property name="display" value="&quot;p=140,60;i=block/browser&quot;"/>
+                        <param name="address" type="int" value="7"/>
+                        <param name="destAddresses" type="long" value="&quot;1 6 8&quot;"/>
+                        <param name="sendIaTime" type="long" value="exponential(1s)">
+                            <property name="unit" value="s"/>
+                        </param>
+                        <param name="packetLength" type="int" value="uniform(128byte, 1024byte)">
+                            <property name="unit" value="byte"/>
+                        </param>
+                    </parameters>
+                    <gates>
+                        <gate name="in" type="input"/>
+                        <gate name="out" type="output"/>
+                    </gates>
+                    <connections/>
+                </module>
+                <module name="routing" type="node.Routing">
+                    <parameters>
+                        <property name="display" value="&quot;p=140,130;i=block/switch&quot;"/>
+                    </parameters>
+                    <gates>
+                        <gate name="in[0]" type="input"/>
+                        <gate name="in[1]" type="input"/>
+                        <gate name="in[2]" type="input"/>
+                        <gate name="out[0]" type="output"/>
+                        <gate name="out[1]" type="output"/>
+                        <gate name="out[2]" type="output"/>
+                        <gate name="localIn" type="input"/>
+                        <gate name="localOut" type="output"/>
+                    </gates>
+                    <connections/>
+                </module>
+                <module name="queue[0]" type="node.L2Queue">
+                    <parameters>
+                        <property name="display" value="&quot;p=80,200,row;i=block/queue;q=queue&quot;"/>
+                        <param name="frameCapacity" type="int" value="0"/>
+                    </parameters>
+                    <gates>
+                        <gate name="in" type="input"/>
+                        <gate name="out" type="output"/>
+                        <gate name="line$i" type="input"/>
+                        <gate name="line$o" type="output"/>
+                    </gates>
+                    <connections/>
+                </module>
+                <module name="queue[1]" type="node.L2Queue">
+                    <parameters>
+                        <property name="display" value="&quot;p=80,200,row;i=block/queue;q=queue&quot;"/>
+                        <param name="frameCapacity" type="int" value="0"/>
+                    </parameters>
+                    <gates>
+                        <gate name="in" type="input"/>
+                        <gate name="out" type="output"/>
+                        <gate name="line$i" type="input"/>
+                        <gate name="line$o" type="output"/>
+                    </gates>
+                    <connections/>
+                </module>
+                <module name="queue[2]" type="node.L2Queue">
+                    <parameters>
+                        <property name="display" value="&quot;p=80,200,row;i=block/queue;q=queue&quot;"/>
+                        <param name="frameCapacity" type="int" value="0"/>
+                    </parameters>
+                    <gates>
+                        <gate name="in" type="input"/>
+                        <gate name="out" type="output"/>
+                        <gate name="line$i" type="input"/>
+                        <gate name="line$o" type="output"/>
+                    </gates>
+                    <connections/>
+                </module>
+            </submodules>
+            <connections>
+                <connection src-module="app" src-gate="out" dest-module="routing" dest-gate="localIn"/>
+                <connection src-module="routing" src-gate="out[0]" dest-module="queue[0]" dest-gate="in"/>
+                <connection src-module="routing" src-gate="out[1]" dest-module="queue[1]" dest-gate="in"/>
+                <connection src-module="routing" src-gate="out[2]" dest-module="queue[2]" dest-gate="in"/>
+                <connection src-module="routing" src-gate="localOut" dest-module="app" dest-gate="in"/>
+                <connection src-module="queue[0]" src-gate="out" dest-module="routing" dest-gate="in[0]"/>
+                <connection src-module="queue[0]" src-gate="line$o" dest-gate="port$o[0]"/>
+                <connection src-module="queue[1]" src-gate="out" dest-module="routing" dest-gate="in[1]"/>
+                <connection src-module="queue[1]" src-gate="line$o" dest-gate="port$o[1]"/>
+                <connection src-module="queue[2]" src-gate="out" dest-module="routing" dest-gate="in[2]"/>
+                <connection src-module="queue[2]" src-gate="line$o" dest-gate="port$o[2]"/>
+                <connection src-gate="port$i[0]" dest-module="queue[0]" dest-gate="line$i"/>
+                <connection src-gate="port$i[1]" dest-module="queue[1]" dest-gate="line$i"/>
+                <connection src-gate="port$i[2]" dest-module="queue[2]" dest-gate="line$i"/>
+            </connections>
+        </module>
+        <module name="rte[8]" type="node.Node">
+            <parameters>
+                <property name="display" value="&quot;i=misc/node_vs,gold&quot;"/>
+                <param name="address" type="int" value="8"/>
+                <param name="appType" type="long" value="&quot;App&quot;"/>
+            </parameters>
+            <gates>
+                <gate name="port$i[0]" type="input"/>
+                <gate name="port$i[1]" type="input"/>
+                <gate name="port$i[2]" type="input"/>
+                <gate name="port$o[0]" type="output"/>
+                <gate name="port$o[1]" type="output"/>
+                <gate name="port$o[2]" type="output"/>
+            </gates>
+            <submodules>
+                <module name="app" type="node.App">
+                    <parameters>
+                        <property name="display" value="&quot;p=140,60;i=block/browser&quot;"/>
+                        <param name="address" type="int" value="8"/>
+                        <param name="destAddresses" type="long" value="&quot;1 6 8&quot;"/>
+                        <param name="sendIaTime" type="long" value="exponential(1s)">
+                            <property name="unit" value="s"/>
+                        </param>
+                        <param name="packetLength" type="int" value="uniform(128byte, 1024byte)">
+                            <property name="unit" value="byte"/>
+                        </param>
+                    </parameters>
+                    <gates>
+                        <gate name="in" type="input"/>
+                        <gate name="out" type="output"/>
+                    </gates>
+                    <connections/>
+                </module>
+                <module name="routing" type="node.Routing">
+                    <parameters>
+                        <property name="display" value="&quot;p=140,130;i=block/switch&quot;"/>
+                    </parameters>
+                    <gates>
+                        <gate name="in[0]" type="input"/>
+                        <gate name="in[1]" type="input"/>
+                        <gate name="in[2]" type="input"/>
+                        <gate name="out[0]" type="output"/>
+                        <gate name="out[1]" type="output"/>
+                        <gate name="out[2]" type="output"/>
+                        <gate name="localIn" type="input"/>
+                        <gate name="localOut" type="output"/>
+                    </gates>
+                    <connections/>
+                </module>
+                <module name="queue[0]" type="node.L2Queue">
+                    <parameters>
+                        <property name="display" value="&quot;p=80,200,row;i=block/queue;q=queue&quot;"/>
+                        <param name="frameCapacity" type="int" value="0"/>
+                    </parameters>
+                    <gates>
+                        <gate name="in" type="input"/>
+                        <gate name="out" type="output"/>
+                        <gate name="line$i" type="input"/>
+                        <gate name="line$o" type="output"/>
+                    </gates>
+                    <connections/>
+                </module>
+                <module name="queue[1]" type="node.L2Queue">
+                    <parameters>
+                        <property name="display" value="&quot;p=80,200,row;i=block/queue;q=queue&quot;"/>
+                        <param name="frameCapacity" type="int" value="0"/>
+                    </parameters>
+                    <gates>
+                        <gate name="in" type="input"/>
+                        <gate name="out" type="output"/>
+                        <gate name="line$i" type="input"/>
+                        <gate name="line$o" type="output"/>
+                    </gates>
+                    <connections/>
+                </module>
+                <module name="queue[2]" type="node.L2Queue">
+                    <parameters>
+                        <property name="display" value="&quot;p=80,200,row;i=block/queue;q=queue&quot;"/>
+                        <param name="frameCapacity" type="int" value="0"/>
+                    </parameters>
+                    <gates>
+                        <gate name="in" type="input"/>
+                        <gate name="out" type="output"/>
+                        <gate name="line$i" type="input"/>
+                        <gate name="line$o" type="output"/>
+                    </gates>
+                    <connections/>
+                </module>
+            </submodules>
+            <connections>
+                <connection src-module="app" src-gate="out" dest-module="routing" dest-gate="localIn"/>
+                <connection src-module="routing" src-gate="out[0]" dest-module="queue[0]" dest-gate="in"/>
+                <connection src-module="routing" src-gate="out[1]" dest-module="queue[1]" dest-gate="in"/>
+                <connection src-module="routing" src-gate="out[2]" dest-module="queue[2]" dest-gate="in"/>
+                <connection src-module="routing" src-gate="localOut" dest-module="app" dest-gate="in"/>
+                <connection src-module="queue[0]" src-gate="out" dest-module="routing" dest-gate="in[0]"/>
+                <connection src-module="queue[0]" src-gate="line$o" dest-gate="port$o[0]"/>
+                <connection src-module="queue[1]" src-gate="out" dest-module="routing" dest-gate="in[1]"/>
+                <connection src-module="queue[1]" src-gate="line$o" dest-gate="port$o[1]"/>
+                <connection src-module="queue[2]" src-gate="out" dest-module="routing" dest-gate="in[2]"/>
+                <connection src-module="queue[2]" src-gate="line$o" dest-gate="port$o[2]"/>
+                <connection src-gate="port$i[0]" dest-module="queue[0]" dest-gate="line$i"/>
+                <connection src-gate="port$i[1]" dest-module="queue[1]" dest-gate="line$i"/>
+                <connection src-gate="port$i[2]" dest-module="queue[2]" dest-gate="line$i"/>
+            </connections>
+        </module>
+        <module name="rte[9]" type="node.Node">
+            <parameters>
+                <property name="display" value="&quot;i=misc/node_vs,gold&quot;"/>
+                <param name="address" type="int" value="9"/>
+                <param name="appType" type="long" value="&quot;App&quot;"/>
+            </parameters>
+            <gates>
+                <gate name="port$i[0]" type="input"/>
+                <gate name="port$i[1]" type="input"/>
+                <gate name="port$i[2]" type="input"/>
+                <gate name="port$o[0]" type="output"/>
+                <gate name="port$o[1]" type="output"/>
+                <gate name="port$o[2]" type="output"/>
+            </gates>
+            <submodules>
+                <module name="app" type="node.App">
+                    <parameters>
+                        <property name="display" value="&quot;p=140,60;i=block/browser&quot;"/>
+                        <param name="address" type="int" value="9"/>
+                        <param name="destAddresses" type="long" value="&quot;1 6 8&quot;"/>
+                        <param name="sendIaTime" type="long" value="exponential(1s)">
+                            <property name="unit" value="s"/>
+                        </param>
+                        <param name="packetLength" type="int" value="uniform(128byte, 1024byte)">
+                            <property name="unit" value="byte"/>
+                        </param>
+                    </parameters>
+                    <gates>
+                        <gate name="in" type="input"/>
+                        <gate name="out" type="output"/>
+                    </gates>
+                    <connections/>
+                </module>
+                <module name="routing" type="node.Routing">
+                    <parameters>
+                        <property name="display" value="&quot;p=140,130;i=block/switch&quot;"/>
+                    </parameters>
+                    <gates>
+                        <gate name="in[0]" type="input"/>
+                        <gate name="in[1]" type="input"/>
+                        <gate name="in[2]" type="input"/>
+                        <gate name="out[0]" type="output"/>
+                        <gate name="out[1]" type="output"/>
+                        <gate name="out[2]" type="output"/>
+                        <gate name="localIn" type="input"/>
+                        <gate name="localOut" type="output"/>
+                    </gates>
+                    <connections/>
+                </module>
+                <module name="queue[0]" type="node.L2Queue">
+                    <parameters>
+                        <property name="display" value="&quot;p=80,200,row;i=block/queue;q=queue&quot;"/>
+                        <param name="frameCapacity" type="int" value="0"/>
+                    </parameters>
+                    <gates>
+                        <gate name="in" type="input"/>
+                        <gate name="out" type="output"/>
+                        <gate name="line$i" type="input"/>
+                        <gate name="line$o" type="output"/>
+                    </gates>
+                    <connections/>
+                </module>
+                <module name="queue[1]" type="node.L2Queue">
+                    <parameters>
+                        <property name="display" value="&quot;p=80,200,row;i=block/queue;q=queue&quot;"/>
+                        <param name="frameCapacity" type="int" value="0"/>
+                    </parameters>
+                    <gates>
+                        <gate name="in" type="input"/>
+                        <gate name="out" type="output"/>
+                        <gate name="line$i" type="input"/>
+                        <gate name="line$o" type="output"/>
+                    </gates>
+                    <connections/>
+                </module>
+                <module name="queue[2]" type="node.L2Queue">
+                    <parameters>
+                        <property name="display" value="&quot;p=80,200,row;i=block/queue;q=queue&quot;"/>
+                        <param name="frameCapacity" type="int" value="0"/>
+                    </parameters>
+                    <gates>
+                        <gate name="in" type="input"/>
+                        <gate name="out" type="output"/>
+                        <gate name="line$i" type="input"/>
+                        <gate name="line$o" type="output"/>
+                    </gates>
+                    <connections/>
+                </module>
+            </submodules>
+            <connections>
+                <connection src-module="app" src-gate="out" dest-module="routing" dest-gate="localIn"/>
+                <connection src-module="routing" src-gate="out[0]" dest-module="queue[0]" dest-gate="in"/>
+                <connection src-module="routing" src-gate="out[1]" dest-module="queue[1]" dest-gate="in"/>
+                <connection src-module="routing" src-gate="out[2]" dest-module="queue[2]" dest-gate="in"/>
+                <connection src-module="routing" src-gate="localOut" dest-module="app" dest-gate="in"/>
+                <connection src-module="queue[0]" src-gate="out" dest-module="routing" dest-gate="in[0]"/>
+                <connection src-module="queue[0]" src-gate="line$o" dest-gate="port$o[0]"/>
+                <connection src-module="queue[1]" src-gate="out" dest-module="routing" dest-gate="in[1]"/>
+                <connection src-module="queue[1]" src-gate="line$o" dest-gate="port$o[1]"/>
+                <connection src-module="queue[2]" src-gate="out" dest-module="routing" dest-gate="in[2]"/>
+                <connection src-module="queue[2]" src-gate="line$o" dest-gate="port$o[2]"/>
+                <connection src-gate="port$i[0]" dest-module="queue[0]" dest-gate="line$i"/>
+                <connection src-gate="port$i[1]" dest-module="queue[1]" dest-gate="line$i"/>
+                <connection src-gate="port$i[2]" dest-module="queue[2]" dest-gate="line$i"/>
+            </connections>
+        </module>
+        <module name="topologyExporter" type="TopologyExporter">
+            <parameters>
+                <param name="t" type="long" value="1">
+                    <property name="unit" value="s"/>
+                </param>
+                <param name="filename" type="long" value="&quot;out.xml&quot;"/>
+            </parameters>
+            <connections/>
+        </module>
+    </submodules>
+    <connections>
+        <connection src-module="rte[0]" src-gate="port$o[0]" dest-module="rte[1]" dest-gate="port$i[0]">
+            <channel name="channel" type="networks.Net10.C">
+                <parameters>
+                    <property name="class" value="cDatarateChannel"/>
+                    <param name="disabled" type="long" value="false"/>
+                    <param name="delay" type="long" value="0.00063356">
+                        <property name="unit" value="s"/>
+                    </param>
+                    <param name="datarate" type="long" value="1e+006">
+                        <property name="unit" value="bps"/>
+                    </param>
+                    <param name="ber" type="long" value="0"/>
+                    <param name="per" type="long" value="0"/>
+                </parameters>
+            </channel>
+        </connection>
+        <connection src-module="rte[0]" src-gate="port$o[1]" dest-module="rte[2]" dest-gate="port$i[0]">
+            <channel name="channel" type="networks.Net10.C">
+                <parameters>
+                    <property name="class" value="cDatarateChannel"/>
+                    <param name="disabled" type="long" value="false"/>
+                    <param name="delay" type="long" value="0.00074367">
+                        <property name="unit" value="s"/>
+                    </param>
+                    <param name="datarate" type="long" value="1e+006">
+                        <property name="unit" value="bps"/>
+                    </param>
+                    <param name="ber" type="long" value="0"/>
+                    <param name="per" type="long" value="0"/>
+                </parameters>
+            </channel>
+        </connection>
+        <connection src-module="rte[0]" src-gate="port$o[2]" dest-module="rte[5]" dest-gate="port$i[3]">
+            <channel name="channel" type="networks.Net10.C">
+                <parameters>
+                    <property name="class" value="cDatarateChannel"/>
+                    <param name="disabled" type="long" value="false"/>
+                    <param name="delay" type="long" value="0.000118197">
+                        <property name="unit" value="s"/>
+                    </param>
+                    <param name="datarate" type="long" value="1e+006">
+                        <property name="unit" value="bps"/>
+                    </param>
+                    <param name="ber" type="long" value="0"/>
+                    <param name="per" type="long" value="0"/>
+                </parameters>
+            </channel>
+        </connection>
+        <connection src-module="rte[1]" src-gate="port$o[0]" dest-module="rte[0]" dest-gate="port$i[0]">
+            <channel name="channel" type="networks.Net10.C">
+                <parameters>
+                    <property name="class" value="cDatarateChannel"/>
+                    <param name="disabled" type="long" value="false"/>
+                    <param name="delay" type="long" value="0.000593932">
+                        <property name="unit" value="s"/>
+                    </param>
+                    <param name="datarate" type="long" value="1e+006">
+                        <property name="unit" value="bps"/>
+                    </param>
+                    <param name="ber" type="long" value="0"/>
+                    <param name="per" type="long" value="0"/>
+                </parameters>
+            </channel>
+        </connection>
+        <connection src-module="rte[1]" src-gate="port$o[1]" dest-module="rte[3]" dest-gate="port$i[1]">
+            <channel name="channel" type="networks.Net10.C">
+                <parameters>
+                    <property name="class" value="cDatarateChannel"/>
+                    <param name="disabled" type="long" value="false"/>
+                    <param name="delay" type="long" value="0.000345391">
+                        <property name="unit" value="s"/>
+                    </param>
+                    <param name="datarate" type="long" value="1e+006">
+                        <property name="unit" value="bps"/>
+                    </param>
+                    <param name="ber" type="long" value="0"/>
+                    <param name="per" type="long" value="0"/>
+                </parameters>
+            </channel>
+        </connection>
+        <connection src-module="rte[1]" src-gate="port$o[2]" dest-module="rte[2]" dest-gate="port$i[4]">
+            <channel name="channel" type="networks.Net10.C">
+                <parameters>
+                    <property name="class" value="cDatarateChannel"/>
+                    <param name="disabled" type="long" value="false"/>
+                    <param name="delay" type="long" value="0.000849358">
+                        <property name="unit" value="s"/>
+                    </param>
+                    <param name="datarate" type="long" value="1e+006">
+                        <property name="unit" value="bps"/>
+                    </param>
+                    <param name="ber" type="long" value="0"/>
+                    <param name="per" type="long" value="0"/>
+                </parameters>
+            </channel>
+        </connection>
+        <connection src-module="rte[2]" src-gate="port$o[0]" dest-module="rte[0]" dest-gate="port$i[1]">
+            <channel name="channel" type="networks.Net10.C">
+                <parameters>
+                    <property name="class" value="cDatarateChannel"/>
+                    <param name="disabled" type="long" value="false"/>
+                    <param name="delay" type="long" value="0.000859839">
+                        <property name="unit" value="s"/>
+                    </param>
+                    <param name="datarate" type="long" value="1e+006">
+                        <property name="unit" value="bps"/>
+                    </param>
+                    <param name="ber" type="long" value="0"/>
+                    <param name="per" type="long" value="0"/>
+                </parameters>
+            </channel>
+        </connection>
+        <connection src-module="rte[2]" src-gate="port$o[1]" dest-module="rte[5]" dest-gate="port$i[0]">
+            <channel name="channel" type="networks.Net10.C">
+                <parameters>
+                    <property name="class" value="cDatarateChannel"/>
+                    <param name="disabled" type="long" value="false"/>
+                    <param name="delay" type="long" value="0.000642487">
+                        <property name="unit" value="s"/>
+                    </param>
+                    <param name="datarate" type="long" value="1e+006">
+                        <property name="unit" value="bps"/>
+                    </param>
+                    <param name="ber" type="long" value="0"/>
+                    <param name="per" type="long" value="0"/>
+                </parameters>
+            </channel>
+        </connection>
+        <connection src-module="rte[2]" src-gate="port$o[2]" dest-module="rte[3]" dest-gate="port$i[2]">
+            <channel name="channel" type="networks.Net10.C">
+                <parameters>
+                    <property name="class" value="cDatarateChannel"/>
+                    <param name="disabled" type="long" value="false"/>
+                    <param name="delay" type="long" value="0.000529899">
+                        <property name="unit" value="s"/>
+                    </param>
+                    <param name="datarate" type="long" value="1e+006">
+                        <property name="unit" value="bps"/>
+                    </param>
+                    <param name="ber" type="long" value="0"/>
+                    <param name="per" type="long" value="0"/>
+                </parameters>
+            </channel>
+        </connection>
+        <connection src-module="rte[2]" src-gate="port$o[3]" dest-module="rte[4]" dest-gate="port$i[2]">
+            <channel name="channel" type="networks.Net10.C">
+                <parameters>
+                    <property name="class" value="cDatarateChannel"/>
+                    <param name="disabled" type="long" value="false"/>
+                    <param name="delay" type="long" value="0.000812553">
+                        <property name="unit" value="s"/>
+                    </param>
+                    <param name="datarate" type="long" value="1e+006">
+                        <property name="unit" value="bps"/>
+                    </param>
+                    <param name="ber" type="long" value="0"/>
+                    <param name="per" type="long" value="0"/>
+                </parameters>
+            </channel>
+        </connection>
+        <connection src-module="rte[2]" src-gate="port$o[4]" dest-module="rte[1]" dest-gate="port$i[2]">
+            <channel name="channel" type="networks.Net10.C">
+                <parameters>
+                    <property name="class" value="cDatarateChannel"/>
+                    <param name="disabled" type="long" value="false"/>
+                    <param name="delay" type="long" value="0.00096144">
+                        <property name="unit" value="s"/>
+                    </param>
+                    <param name="datarate" type="long" value="1e+006">
+                        <property name="unit" value="bps"/>
+                    </param>
+                    <param name="ber" type="long" value="0"/>
+                    <param name="per" type="long" value="0"/>
+                </parameters>
+            </channel>
+        </connection>
+        <connection src-module="rte[3]" src-gate="port$o[0]" dest-module="rte[4]" dest-gate="port$i[1]">
+            <channel name="channel" type="networks.Net10.C">
+                <parameters>
+                    <property name="class" value="cDatarateChannel"/>
+                    <param name="disabled" type="long" value="false"/>
+                    <param name="delay" type="long" value="0.000151042">
+                        <property name="unit" value="s"/>
+                    </param>
+                    <param name="datarate" type="long" value="1e+006">
+                        <property name="unit" value="bps"/>
+                    </param>
+                    <param name="ber" type="long" value="0"/>
+                    <param name="per" type="long" value="0"/>
+                </parameters>
+            </channel>
+        </connection>
+        <connection src-module="rte[3]" src-gate="port$o[1]" dest-module="rte[1]" dest-gate="port$i[1]">
+            <channel name="channel" type="networks.Net10.C">
+                <parameters>
+                    <property name="class" value="cDatarateChannel"/>
+                    <param name="disabled" type="long" value="false"/>
+                    <param name="delay" type="long" value="0.000967296">
+                        <property name="unit" value="s"/>
+                    </param>
+                    <param name="datarate" type="long" value="1e+006">
+                        <property name="unit" value="bps"/>
+                    </param>
+                    <param name="ber" type="long" value="0"/>
+                    <param name="per" type="long" value="0"/>
+                </parameters>
+            </channel>
+        </connection>
+        <connection src-module="rte[3]" src-gate="port$o[2]" dest-module="rte[2]" dest-gate="port$i[2]">
+            <channel name="channel" type="networks.Net10.C">
+                <parameters>
+                    <property name="class" value="cDatarateChannel"/>
+                    <param name="disabled" type="long" value="false"/>
+                    <param name="delay" type="long" value="0.000445097">
+                        <property name="unit" value="s"/>
+                    </param>
+                    <param name="datarate" type="long" value="1e+006">
+                        <property name="unit" value="bps"/>
+                    </param>
+                    <param name="ber" type="long" value="0"/>
+                    <param name="per" type="long" value="0"/>
+                </parameters>
+            </channel>
+        </connection>
+        <connection src-module="rte[4]" src-gate="port$o[0]" dest-module="rte[8]" dest-gate="port$i[1]">
+            <channel name="channel" type="networks.Net10.C">
+                <parameters>
+                    <property name="class" value="cDatarateChannel"/>
+                    <param name="disabled" type="long" value="false"/>
+                    <param name="delay" type="long" value="0.000367781">
+                        <property name="unit" value="s"/>
+                    </param>
+                    <param name="datarate" type="long" value="1e+006">
+                        <property name="unit" value="bps"/>
+                    </param>
+                    <param name="ber" type="long" value="0"/>
+                    <param name="per" type="long" value="0"/>
+                </parameters>
+            </channel>
+        </connection>
+        <connection src-module="rte[4]" src-gate="port$o[1]" dest-module="rte[3]" dest-gate="port$i[0]">
+            <channel name="channel" type="networks.Net10.C">
+                <parameters>
+                    <property name="class" value="cDatarateChannel"/>
+                    <param name="disabled" type="long" value="false"/>
+                    <param name="delay" type="long" value="0.000902596">
+                        <property name="unit" value="s"/>
+                    </param>
+                    <param name="datarate" type="long" value="1e+006">
+                        <property name="unit" value="bps"/>
+                    </param>
+                    <param name="ber" type="long" value="0"/>
+                    <param name="per" type="long" value="0"/>
+                </parameters>
+            </channel>
+        </connection>
+        <connection src-module="rte[4]" src-gate="port$o[2]" dest-module="rte[2]" dest-gate="port$i[3]">
+            <channel name="channel" type="networks.Net10.C">
+                <parameters>
+                    <property name="class" value="cDatarateChannel"/>
+                    <param name="disabled" type="long" value="false"/>
+                    <param name="delay" type="long" value="0.000830952">
+                        <property name="unit" value="s"/>
+                    </param>
+                    <param name="datarate" type="long" value="1e+006">
+                        <property name="unit" value="bps"/>
+                    </param>
+                    <param name="ber" type="long" value="0"/>
+                    <param name="per" type="long" value="0"/>
+                </parameters>
+            </channel>
+        </connection>
+        <connection src-module="rte[4]" src-gate="port$o[3]" dest-module="rte[6]" dest-gate="port$i[0]">
+            <channel name="channel" type="networks.Net10.C">
+                <parameters>
+                    <property name="class" value="cDatarateChannel"/>
+                    <param name="disabled" type="long" value="false"/>
+                    <param name="delay" type="long" value="0.000576005">
+                        <property name="unit" value="s"/>
+                    </param>
+                    <param name="datarate" type="long" value="1e+006">
+                        <property name="unit" value="bps"/>
+                    </param>
+                    <param name="ber" type="long" value="0"/>
+                    <param name="per" type="long" value="0"/>
+                </parameters>
+            </channel>
+        </connection>
+        <connection src-module="rte[5]" src-gate="port$o[0]" dest-module="rte[2]" dest-gate="port$i[1]">
+            <channel name="channel" type="networks.Net10.C">
+                <parameters>
+                    <property name="class" value="cDatarateChannel"/>
+                    <param name="disabled" type="long" value="false"/>
+                    <param name="delay" type="long" value="0.000872151">
+                        <property name="unit" value="s"/>
+                    </param>
+                    <param name="datarate" type="long" value="1e+006">
+                        <property name="unit" value="bps"/>
+                    </param>
+                    <param name="ber" type="long" value="0"/>
+                    <param name="per" type="long" value="0"/>
+                </parameters>
+            </channel>
+        </connection>
+        <connection src-module="rte[5]" src-gate="port$o[1]" dest-module="rte[7]" dest-gate="port$i[0]">
+            <channel name="channel" type="networks.Net10.C">
+                <parameters>
+                    <property name="class" value="cDatarateChannel"/>
+                    <param name="disabled" type="long" value="false"/>
+                    <param name="delay" type="long" value="0.000590395">
+                        <property name="unit" value="s"/>
+                    </param>
+                    <param name="datarate" type="long" value="1e+006">
+                        <property name="unit" value="bps"/>
+                    </param>
+                    <param name="ber" type="long" value="0"/>
+                    <param name="per" type="long" value="0"/>
+                </parameters>
+            </channel>
+        </connection>
+        <connection src-module="rte[5]" src-gate="port$o[2]" dest-module="rte[6]" dest-gate="port$i[4]">
+            <channel name="channel" type="networks.Net10.C">
+                <parameters>
+                    <property name="class" value="cDatarateChannel"/>
+                    <param name="disabled" type="long" value="false"/>
+                    <param name="delay" type="long" value="0.000178416">
+                        <property name="unit" value="s"/>
+                    </param>
+                    <param name="datarate" type="long" value="1e+006">
+                        <property name="unit" value="bps"/>
+                    </param>
+                    <param name="ber" type="long" value="0"/>
+                    <param name="per" type="long" value="0"/>
+                </parameters>
+            </channel>
+        </connection>
+        <connection src-module="rte[5]" src-gate="port$o[3]" dest-module="rte[0]" dest-gate="port$i[2]">
+            <channel name="channel" type="networks.Net10.C">
+                <parameters>
+                    <property name="class" value="cDatarateChannel"/>
+                    <param name="disabled" type="long" value="false"/>
+                    <param name="delay" type="long" value="0.000431417">
+                        <property name="unit" value="s"/>
+                    </param>
+                    <param name="datarate" type="long" value="1e+006">
+                        <property name="unit" value="bps"/>
+                    </param>
+                    <param name="ber" type="long" value="0"/>
+                    <param name="per" type="long" value="0"/>
+                </parameters>
+            </channel>
+        </connection>
+        <connection src-module="rte[6]" src-gate="port$o[0]" dest-module="rte[4]" dest-gate="port$i[3]">
+            <channel name="channel" type="networks.Net10.C">
+                <parameters>
+                    <property name="class" value="cDatarateChannel"/>
+                    <param name="disabled" type="long" value="false"/>
+                    <param name="delay" type="long" value="0.000531979">
+                        <property name="unit" value="s"/>
+                    </param>
+                    <param name="datarate" type="long" value="1e+006">
+                        <property name="unit" value="bps"/>
+                    </param>
+                    <param name="ber" type="long" value="0"/>
+                    <param name="per" type="long" value="0"/>
+                </parameters>
+            </channel>
+        </connection>
+        <connection src-module="rte[6]" src-gate="port$o[1]" dest-module="rte[8]" dest-gate="port$i[2]">
+            <channel name="channel" type="networks.Net10.C">
+                <parameters>
+                    <property name="class" value="cDatarateChannel"/>
+                    <param name="disabled" type="long" value="false"/>
+                    <param name="delay" type="long" value="0.00061124">
+                        <property name="unit" value="s"/>
+                    </param>
+                    <param name="datarate" type="long" value="1e+006">
+                        <property name="unit" value="bps"/>
+                    </param>
+                    <param name="ber" type="long" value="0"/>
+                    <param name="per" type="long" value="0"/>
+                </parameters>
+            </channel>
+        </connection>
+        <connection src-module="rte[6]" src-gate="port$o[2]" dest-module="rte[9]" dest-gate="port$i[2]">
+            <channel name="channel" type="networks.Net10.C">
+                <parameters>
+                    <property name="class" value="cDatarateChannel"/>
+                    <param name="disabled" type="long" value="false"/>
+                    <param name="delay" type="long" value="0.000852471">
+                        <property name="unit" value="s"/>
+                    </param>
+                    <param name="datarate" type="long" value="1e+006">
+                        <property name="unit" value="bps"/>
+                    </param>
+                    <param name="ber" type="long" value="0"/>
+                    <param name="per" type="long" value="0"/>
+                </parameters>
+            </channel>
+        </connection>
+        <connection src-module="rte[6]" src-gate="port$o[3]" dest-module="rte[7]" dest-gate="port$i[2]">
+            <channel name="channel" type="networks.Net10.C">
+                <parameters>
+                    <property name="class" value="cDatarateChannel"/>
+                    <param name="disabled" type="long" value="false"/>
+                    <param name="delay" type="long" value="0.000163932">
+                        <property name="unit" value="s"/>
+                    </param>
+                    <param name="datarate" type="long" value="1e+006">
+                        <property name="unit" value="bps"/>
+                    </param>
+                    <param name="ber" type="long" value="0"/>
+                    <param name="per" type="long" value="0"/>
+                </parameters>
+            </channel>
+        </connection>
+        <connection src-module="rte[6]" src-gate="port$o[4]" dest-module="rte[5]" dest-gate="port$i[2]">
+            <channel name="channel" type="networks.Net10.C">
+                <parameters>
+                    <property name="class" value="cDatarateChannel"/>
+                    <param name="disabled" type="long" value="false"/>
+                    <param name="delay" type="long" value="0.000683355">
+                        <property name="unit" value="s"/>
+                    </param>
+                    <param name="datarate" type="long" value="1e+006">
+                        <property name="unit" value="bps"/>
+                    </param>
+                    <param name="ber" type="long" value="0"/>
+                    <param name="per" type="long" value="0"/>
+                </parameters>
+            </channel>
+        </connection>
+        <connection src-module="rte[7]" src-gate="port$o[0]" dest-module="rte[5]" dest-gate="port$i[1]">
+            <channel name="channel" type="networks.Net10.C">
+                <parameters>
+                    <property name="class" value="cDatarateChannel"/>
+                    <param name="disabled" type="long" value="false"/>
+                    <param name="delay" type="long" value="0.000862527">
+                        <property name="unit" value="s"/>
+                    </param>
+                    <param name="datarate" type="long" value="1e+006">
+                        <property name="unit" value="bps"/>
+                    </param>
+                    <param name="ber" type="long" value="0"/>
+                    <param name="per" type="long" value="0"/>
+                </parameters>
+            </channel>
+        </connection>
+        <connection src-module="rte[7]" src-gate="port$o[1]" dest-module="rte[9]" dest-gate="port$i[0]">
+            <channel name="channel" type="networks.Net10.C">
+                <parameters>
+                    <property name="class" value="cDatarateChannel"/>
+                    <param name="disabled" type="long" value="false"/>
+                    <param name="delay" type="long" value="0.000481289">
+                        <property name="unit" value="s"/>
+                    </param>
+                    <param name="datarate" type="long" value="1e+006">
+                        <property name="unit" value="bps"/>
+                    </param>
+                    <param name="ber" type="long" value="0"/>
+                    <param name="per" type="long" value="0"/>
+                </parameters>
+            </channel>
+        </connection>
+        <connection src-module="rte[7]" src-gate="port$o[2]" dest-module="rte[6]" dest-gate="port$i[3]">
+            <channel name="channel" type="networks.Net10.C">
+                <parameters>
+                    <property name="class" value="cDatarateChannel"/>
+                    <param name="disabled" type="long" value="false"/>
+                    <param name="delay" type="long" value="0.000403657">
+                        <property name="unit" value="s"/>
+                    </param>
+                    <param name="datarate" type="long" value="1e+006">
+                        <property name="unit" value="bps"/>
+                    </param>
+                    <param name="ber" type="long" value="0"/>
+                    <param name="per" type="long" value="0"/>
+                </parameters>
+            </channel>
+        </connection>
+        <connection src-module="rte[8]" src-gate="port$o[0]" dest-module="rte[9]" dest-gate="port$i[1]">
+            <channel name="channel" type="networks.Net10.C">
+                <parameters>
+                    <property name="class" value="cDatarateChannel"/>
+                    <param name="disabled" type="long" value="false"/>
+                    <param name="delay" type="long" value="0.000445944">
+                        <property name="unit" value="s"/>
+                    </param>
+                    <param name="datarate" type="long" value="1e+006">
+                        <property name="unit" value="bps"/>
+                    </param>
+                    <param name="ber" type="long" value="0"/>
+                    <param name="per" type="long" value="0"/>
+                </parameters>
+            </channel>
+        </connection>
+        <connection src-module="rte[8]" src-gate="port$o[1]" dest-module="rte[4]" dest-gate="port$i[0]">
+            <channel name="channel" type="networks.Net10.C">
+                <parameters>
+                    <property name="class" value="cDatarateChannel"/>
+                    <param name="disabled" type="long" value="false"/>
+                    <param name="delay" type="long" value="0.000493828">
+                        <property name="unit" value="s"/>
+                    </param>
+                    <param name="datarate" type="long" value="1e+006">
+                        <property name="unit" value="bps"/>
+                    </param>
+                    <param name="ber" type="long" value="0"/>
+                    <param name="per" type="long" value="0"/>
+                </parameters>
+            </channel>
+        </connection>
+        <connection src-module="rte[8]" src-gate="port$o[2]" dest-module="rte[6]" dest-gate="port$i[1]">
+            <channel name="channel" type="networks.Net10.C">
+                <parameters>
+                    <property name="class" value="cDatarateChannel"/>
+                    <param name="disabled" type="long" value="false"/>
+                    <param name="delay" type="long" value="0.000453506">
+                        <property name="unit" value="s"/>
+                    </param>
+                    <param name="datarate" type="long" value="1e+006">
+                        <property name="unit" value="bps"/>
+                    </param>
+                    <param name="ber" type="long" value="0"/>
+                    <param name="per" type="long" value="0"/>
+                </parameters>
+            </channel>
+        </connection>
+        <connection src-module="rte[9]" src-gate="port$o[0]" dest-module="rte[7]" dest-gate="port$i[1]">
+            <channel name="channel" type="networks.Net10.C">
+                <parameters>
+                    <property name="class" value="cDatarateChannel"/>
+                    <param name="disabled" type="long" value="false"/>
+                    <param name="delay" type="long" value="0.000661207">
+                        <property name="unit" value="s"/>
+                    </param>
+                    <param name="datarate" type="long" value="1e+006">
+                        <property name="unit" value="bps"/>
+                    </param>
+                    <param name="ber" type="long" value="0"/>
+                    <param name="per" type="long" value="0"/>
+                </parameters>
+            </channel>
+        </connection>
+        <connection src-module="rte[9]" src-gate="port$o[1]" dest-module="rte[8]" dest-gate="port$i[0]">
+            <channel name="channel" type="networks.Net10.C">
+                <parameters>
+                    <property name="class" value="cDatarateChannel"/>
+                    <param name="disabled" type="long" value="false"/>
+                    <param name="delay" type="long" value="0.000681305">
+                        <property name="unit" value="s"/>
+                    </param>
+                    <param name="datarate" type="long" value="1e+006">
+                        <property name="unit" value="bps"/>
+                    </param>
+                    <param name="ber" type="long" value="0"/>
+                    <param name="per" type="long" value="0"/>
+                </parameters>
+            </channel>
+        </connection>
+        <connection src-module="rte[9]" src-gate="port$o[2]" dest-module="rte[6]" dest-gate="port$i[2]">
+            <channel name="channel" type="networks.Net10.C">
+                <parameters>
+                    <property name="class" value="cDatarateChannel"/>
+                    <param name="disabled" type="long" value="false"/>
+                    <param name="delay" type="long" value="0.000933037">
+                        <property name="unit" value="s"/>
+                    </param>
+                    <param name="datarate" type="long" value="1e+006">
+                        <property name="unit" value="bps"/>
+                    </param>
+                    <param name="ber" type="long" value="0"/>
+                    <param name="per" type="long" value="0"/>
+                </parameters>
+            </channel>
+        </connection>
+    </connections>
+</network>

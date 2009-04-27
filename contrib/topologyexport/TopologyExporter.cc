@@ -129,6 +129,10 @@ void TopologyExporter::dump(const char *filename)
     os.close();
 }
 
+inline const char *replace(const char *s, const char *a, const char *b) {
+    return strcmp(s,a)==0 ? b : a;
+}
+
 void TopologyExporter::dump(XMLWriter& xml, cComponent *component)
 {
     const char *tagName = (component==simulation.getSystemModule()) ? "network" : component->isModule() ? "module" : "channel";
@@ -143,7 +147,7 @@ void TopologyExporter::dump(XMLWriter& xml, cComponent *component)
             cPar& p = component->par(i);
             xml.openTag("param");
             xml.writeAttr("name", p.getFullName());
-            xml.writeAttr("type", cPar::getTypeName(p.getType()));
+            xml.writeAttr("type", replace(cPar::getTypeName(p.getType()), "long", "int"));
             xml.writeAttr("value", p.str());
             dumpProperties(xml, p.getProperties());
             xml.closeTag("param");
