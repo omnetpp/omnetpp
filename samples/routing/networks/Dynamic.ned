@@ -18,7 +18,7 @@ network Dynamic
         builder: NetBuilder {
             nodesFile = "networks/nodes.txt";
             connectionsFile = "networks/connections.txt";
-        };
+        }
 }
 
 
