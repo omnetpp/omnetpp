@@ -94,9 +94,6 @@ public:
 class TopologyExporter : public cSimpleModule
 {
 protected:
-    bool printClassNames;
-
-protected:
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
     virtual void dump(const char *filename);
@@ -109,7 +106,7 @@ Define_Module(TopologyExporter);
 
 void TopologyExporter::initialize()
 {
-    scheduleAt(2, new cMessage());
+    scheduleAt(par("t").doubleValue(), new cMessage());
 }
 
 void TopologyExporter::handleMessage(cMessage *msg)
