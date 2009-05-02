@@ -17,7 +17,16 @@
 #include <omnetpp.h>
 
 /**
- * Helper class to facilitate generating well-formed XML.
+ * Helper class that facilitates writing XML documents.
+ * Example:
+ * <pre>
+ *   xml.openTag("items");
+ *   xml.openTag("item");
+ *   xml.writeAttr("color", "red");
+ *   xml.writeAttr("count", 42);
+ *   xml.closeTag("item");
+ *   xml.closeTag("items");
+ * </pre>
  */
 class XMLWriter
 {
