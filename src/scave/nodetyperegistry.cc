@@ -72,6 +72,7 @@ NodeTypeRegistry::NodeTypeRegistry()
     add(new XYPlotNodeType());
 
     add(new WindowAverageNodeType());
+    add(new TimeWindowAverageNodeType());
     add(new SlidingWindowAverageNodeType());
     add(new MovingAverageNodeType());
     add(new DifferenceQuotientNodeType());

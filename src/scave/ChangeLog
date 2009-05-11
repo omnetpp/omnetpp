@@ -1,3 +1,8 @@
+2009-05-11  Tamas Borbely
+
+        * added 'timewinavg' node. It computes the average of data points
+        in fixed, equal length time intervals.
+
 2009-03-12  ------ omnetpp-4.0 released ------
 
 2009-02-27  ------ omnetpp-4.0rc2 released ------
@@ -12,7 +17,7 @@
 
 	* Renamed 'summary' command of scavetool to 'list'.
 
-2009-02-19 Tamas Borbely
+2009-02-19  Tamas Borbely
 
 	* The new 'scalar' command can apply processing operations too.
 	Currently only the 'scatter' operation accepted, and it creates
@@ -22,7 +27,7 @@
 	  - additional arguments identifies the iso attributes, they are
             module, scalar pairs or names of run attributes
 
-2009-02-19 Tamas Borbely
+2009-02-19  Tamas Borbely
 
 	* 'filter' command of scavetool had been split into 'vector' and
 	'scalar' commands.

@@ -51,6 +51,63 @@ class SCAVE_API WindowAverageNodeType : public FilterNodeType
         virtual void mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const;
 };
 
+/**
+ *
+ */
+class SCAVE_API TimeWindowAverageNode : public FilterNode
+{
+	protected:
+		simultime_t winsize;
+		simultime_t win_end;
+		double sum;
+		long count;
+		void collect(const Datum &d) { sum += d.y; count++; }
+		void outputWindowAverage();
+		bool inCurrentWindow(const Datum &d) const { return (!d.xp.isNil() && d.xp < win_end) || d.x < win_end.dbl(); }
+		void moveWindow(const Datum &d);
+
+	public:
+		TimeWindowAverageNode(simultime_t windowSize);
+		virtual ~TimeWindowAverageNode();
+		virtual bool isFinished() const;
+        virtual bool isReady() const;
+        virtual void process();
+};
+
+inline void TimeWindowAverageNode::outputWindowAverage()
+{
+	if (count > 0)
+	{
+		Datum d;
+		d.x = win_end.dbl();
+		d.xp = win_end;
+		d.y = sum / count;
+		out()->write(&d, 1);
+		sum = 0.0;
+		count = 0;
+	}
+}
+
+inline void TimeWindowAverageNode::moveWindow(const Datum &d)
+{
+	if (d.xp.isNil())
+		win_end = d.x - fmod(d.x, winsize.dbl()) + winsize;
+	else
+		win_end = d.xp - fmod(d.xp, winsize) + winsize;
+}
+
+class SCAVE_API TimeWindowAverageNodeType : public FilterNodeType
+{
+    public:
+        virtual const char *getName() const {return "timewinavg";}
+        virtual const char *getDescription() const;
+        virtual void getAttributes(StringMap& attrs) const;
+        virtual void getAttrDefaults(StringMap& attrs) const;
+        virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
+        virtual void mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const;
+};
+
+
 NAMESPACE_END
 
 

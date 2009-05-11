@@ -17,6 +17,7 @@
 
 #include <stdlib.h>
 #include "channel.h"
+#include "scaveutils.h"
 #include "windowavg.h"
 
 USING_NAMESPACE
@@ -90,6 +91,97 @@ Node *WindowAverageNodeType::create(DataflowManager *mgr, StringMap& attrs) cons
 }
 
 void WindowAverageNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
+{
+    if (attrs["type"] == "enum")
+        warnings.push_back(std::string("Applying '") + getName() + "' to an enum");
+    attrs["type"] = "double";
+}
+
+
+//------------------------------
+
+TimeWindowAverageNode::TimeWindowAverageNode(simultime_t windowSize)
+{
+	winsize = windowSize;
+	win_end = windowSize;
+	sum = 0.0;
+	count = 0;
+}
+
+TimeWindowAverageNode::~TimeWindowAverageNode()
+{
+}
+
+bool TimeWindowAverageNode::isFinished() const
+{
+    return in()->eof() && count == 0;
+}
+
+bool TimeWindowAverageNode::isReady() const
+{
+    return in()->length() > 0 || (in()->eof() && count > 0);
+}
+
+void TimeWindowAverageNode::process()
+{
+    int n = in()->length();
+
+	for (int i=0; i<n; i++)
+	{
+		Datum d;
+		in()->read(&d,1);
+		if (inCurrentWindow(d))
+		{
+			collect(d);
+		}
+		else
+		{
+			outputWindowAverage();
+			moveWindow(d);
+			collect(d);
+		}
+	}
+
+	if (in()->eof())
+		outputWindowAverage();
+}
+
+//-----
+
+const char *TimeWindowAverageNodeType::getDescription() const
+{
+    return "Calculates time average: replaces input values in every `windowSize' interval with their mean.\n"
+           "tout[k] = k * winSize\n"
+           "yout[k] = average of y values in the [(k-1)*winSize, k*winSize) interval";
+}
+
+void TimeWindowAverageNodeType::getAttributes(StringMap& attrs) const
+{
+    attrs["windowSize"] = "size of window in seconds";
+}
+
+void TimeWindowAverageNodeType::getAttrDefaults(StringMap& attrs) const
+{
+	attrs["windowSize"] = "1";
+}
+
+Node *TimeWindowAverageNodeType::create(DataflowManager *mgr, StringMap& attrs) const
+{
+    checkAttrNames(attrs);
+
+    const char *ws = attrs["windowSize"].c_str();
+    simultime_t windowSize;
+    parseSimtime(ws, windowSize);
+    if (windowSize.isNil() || windowSize <= 0)
+    	windowSize = 1;
+
+    Node *node = new TimeWindowAverageNode(windowSize);
+    node->setNodeType(this);
+    mgr->addNode(node);
+    return node;
+}
+
+void TimeWindowAverageNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
 {
     if (attrs["type"] == "enum")
         warnings.push_back(std::string("Applying '") + getName() + "' to an enum");
