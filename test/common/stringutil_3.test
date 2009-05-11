@@ -1,0 +1,52 @@
+%description:
+Tests stringutil.h functions
+
+%includes:
+#include "stringutil.h"
+
+%global:
+
+static int sgn(int i)
+{
+  return (i == 0 ? 0 : (i < 0 ? -1 : 1));
+}
+
+static void compare(const char *s1, const char *s2)
+{
+    ev << '"' << s1 << "\",\"" << s2 << "\":";
+    try {
+        int res = strdictcmp(s1, s2);
+        ev << sgn(res) << endl;
+    } catch (std::exception& e) {
+        ev << "exception\n";  // e.what() << "\n";
+    }
+}
+
+
+%activity:
+compare("0.1", "0.1");
+compare("a", "b");
+compare("a", "B");
+compare("A", "b");
+compare("02", "1");
+compare("0.01", "0.1");
+compare("0.1", "00.1");
+compare("0.1", "0.10");
+compare("0.1b", "0.10a");
+
+ev << ".\n";
+
+%exitcode: 0
+
+%contains: stdout
+"0.1","0.1":0
+"a","b":-1
+"a","B":-1
+"A","b":-1
+"02","1":1
+"0.01","0.1":-1
+"0.1","00.1":-1
+"0.1","0.10":-1
+"0.1b","0.10a":1
+.
+
