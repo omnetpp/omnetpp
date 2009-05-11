@@ -20,6 +20,7 @@
 #include <errno.h>
 #include <math.h>   //HUGE_VAL
 #include <locale.h>
+#include "platmisc.h"
 #include "commonutil.h"
 #include "opp_ctype.h"
 #include "stringutil.h"
@@ -366,18 +367,30 @@ std::string opp_join(const char *separator, const char *s1, const char *s2)
         return std::string(s1) + separator + s2;
 }
 
+// returns 0 iff the two strings are equal by strcmp().
 int strdictcmp(const char *s1, const char *s2)
 {
-    int casediff = 0;
+    int firstdiff = 0;
     char c1, c2;
     while ((c1=*s1)!='\0' && (c2=*s2)!='\0')
     {
         if (opp_isdigit(c1) && opp_isdigit(c2))
         {
-            unsigned long l1 = strtoul(s1, const_cast<char **>(&s1), 10);
-            unsigned long l2 = strtoul(s2, const_cast<char **>(&s2), 10);
-            if (l1!=l2)
-                return l1<l2 ? -1 : 1;
+        	char *s1end, *s2end;
+            double d1 = strtod(s1, &s1end);
+            double d2 = strtod(s2, &s2end);
+            if (d1!=d2)
+                return d1<d2 ? -1 : 1;
+            if (!firstdiff) {
+            	if (s1end-s1 < s2end-s2)
+            		firstdiff = strncasecmp(s1, s2, s1end-s1);
+            	else
+            		firstdiff = strncasecmp(s1, s2, s2end-s2);
+            	if (!firstdiff && (s1end-s1) != (s2end-s2))
+            		firstdiff = (s1end-s1 < s2end-s2) ? -1 : 1;
+            }
+            s1 = s1end;
+            s2 = s2end;
         }
         else if (c1==c2) // very frequent in our case
         {
@@ -390,14 +403,14 @@ int strdictcmp(const char *s1, const char *s2)
             char lc2 = opp_tolower(c2);
             if (lc1!=lc2)
                 return lc1<lc2 ? -1 : 1;
-            if (c1!=c2 && !casediff && opp_isalpha(c1) && opp_isalpha(c2))
-                casediff = opp_isupper(c2) ? -1 : 1;
+            if (c1!=c2 && !firstdiff && opp_isalpha(c1) && opp_isalpha(c2))
+            	firstdiff = opp_isupper(c2) ? -1 : 1;
             s1++;
             s2++;
         }
     }
     if (!*s1 && !*s2)
-        return casediff;
+        return firstdiff;
     return *s2 ? -1 : 1;
 }
 
