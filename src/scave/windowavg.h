@@ -90,10 +90,14 @@ inline void TimeWindowAverageNode::outputWindowAverage()
 
 inline void TimeWindowAverageNode::moveWindow(const Datum &d)
 {
-	if (d.xp.isNil())
-		win_end = d.x - fmod(d.x, winsize.dbl()) + winsize;
+	BigDecimal x = d.xp.isNil() ? BigDecimal(d.x) : d.xp;
+	if (x < win_end + winsize)
+		win_end += winsize;
 	else
-		win_end = d.xp - fmod(d.xp, winsize) + winsize;
+	{
+		BigDecimal k = floor(x / winsize);
+		win_end = (k.dbl() * winsize) + winsize;
+	}
 }
 
 class SCAVE_API TimeWindowAverageNodeType : public FilterNodeType
