@@ -106,8 +106,8 @@ class COMMON_API BigDecimal
 
     /** @name Arithmetic operations */
     //@{
-    const BigDecimal& operator+=(const BigDecimal& x) {*this=BigDecimal(dbl()+x.dbl()); return *this;}
-    const BigDecimal& operator-=(const BigDecimal& x) {*this=BigDecimal(dbl()-x.dbl()); return *this;}
+    const BigDecimal& operator+=(const BigDecimal& x) {*this=*this+x; return *this;}
+    const BigDecimal& operator-=(const BigDecimal& x) {*this=*this-x; return *this;}
     const BigDecimal& operator*=(double d) {*this=BigDecimal(dbl()*d); return *this;}
     const BigDecimal& operator/=(double d) {*this=BigDecimal(dbl()/d); return *this;}
 
