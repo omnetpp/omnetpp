@@ -1,3 +1,11 @@
+2009-05-13  Levente M‚sz ros
+
+	* changed EnvirBase to include hostname and pid by default in output file
+          names when parallel simulation is enabled.
+
+        * bugfix: insert hostname and pid into before default file extension instead
+          of appending it at the end.
+
 2009-03-12  ------ omnetpp-4.0 released ------
 
 2009-02-27  ------ omnetpp-4.0rc2 released ------

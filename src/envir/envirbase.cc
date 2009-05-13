@@ -96,7 +96,7 @@ Register_GlobalConfigOption(CFGID_PARSIM_SYNCHRONIZATION_CLASS, "parsim-synchron
 Register_GlobalConfigOption(CFGID_OUTPUTVECTORMANAGER_CLASS, "outputvectormanager-class", CFG_STRING, "cIndexedFileOutputVectorManager", "Part of the Envir plugin mechanism: selects the output vector manager class to be used to record data from output vectors. The class has to implement the cOutputVectorManager interface.");
 Register_GlobalConfigOption(CFGID_OUTPUTSCALARMANAGER_CLASS, "outputscalarmanager-class", CFG_STRING, "cFileOutputScalarManager", "Part of the Envir plugin mechanism: selects the output scalar manager class to be used to record data passed to recordScalar(). The class has to implement the cOutputScalarManager interface.");
 Register_GlobalConfigOption(CFGID_SNAPSHOTMANAGER_CLASS, "snapshotmanager-class", CFG_STRING, "cFileSnapshotManager", "Part of the Envir plugin mechanism: selects the class to handle streams to which snapshot() writes its output. The class has to implement the cSnapshotManager interface.");
-Register_GlobalConfigOption(CFGID_FNAME_APPEND_HOST, "fname-append-host", CFG_BOOL, "false", "Turning it on will cause the host name and process Id to be appended to the names of output files (e.g. omnetpp.vec, omnetpp.sca). This is especially useful with distributed simulation.");
+Register_GlobalConfigOption(CFGID_FNAME_APPEND_HOST, "fname-append-host", CFG_BOOL, NULL, "Turning it on will cause the host name and process Id to be appended to the names of output files (e.g. omnetpp.vec, omnetpp.sca). This is especially useful with distributed simulation. The default value is true if parallel simulation is enabled, false otherwise.");
 Register_GlobalConfigOption(CFGID_DEBUG_ON_ERRORS, "debug-on-errors", CFG_BOOL, "false", "When set to true, runtime errors will cause the simulation program to break into the C++ debugger (if the simulation is running under one, or just-in-time debugging is activated). Once in the debugger, you can view the stack trace or examine variables.");
 Register_GlobalConfigOption(CFGID_PRINT_UNDISPOSED, "print-undisposed", CFG_BOOL, "true", "Whether to report objects left (that is, not deallocated by simple module destructors) after network cleanup.");
 Register_GlobalConfigOption(CFGID_SIMTIME_SCALE, "simtime-scale", CFG_INT, "-12", "Sets the scale exponent, and thus the resolution of time for the 64-bit fixed-point simulation time representation. Accepted values are -18..0; for example, -6 selects microsecond resolution. -12 means picosecond resolution, with a maximum simtime of ~110 days.");
@@ -1036,10 +1036,17 @@ void EnvirBase::processFileName(opp_string& fname)
 {
     std::string text = fname.c_str();
 
-    // append ".<hostname>.<pid>" if requested
+    // insert ".<hostname>.<pid>" if requested before file extension
     // (note: parsimProcId cannot be appended because of initialization order)
     if (opt_fname_append_host)
     {
+        std::string extension = "";
+        std::string::size_type index = text.rfind('.');
+        if (index != std::string::npos) {
+          extension = std::string(text, index);
+          text.erase(index);
+        }
+
         const char *hostname=getenv("HOST");
         if (!hostname)
             hostname=getenv("HOSTNAME");
@@ -1052,7 +1059,7 @@ void EnvirBase::processFileName(opp_string& fname)
         int pid = getpid();
 
         // append
-        text += opp_stringf(".%s.%d", hostname, pid);
+        text += opp_stringf(".%s.%d%s", hostname, pid, extension.c_str());
     }
     fname = text.c_str();
 }
@@ -1081,7 +1088,7 @@ void EnvirBase::readOptions()
     opt_outputscalarmanager_class = cfg->getAsString(CFGID_OUTPUTSCALARMANAGER_CLASS);
     opt_snapshotmanager_class = cfg->getAsString(CFGID_SNAPSHOTMANAGER_CLASS);
 
-    opt_fname_append_host = cfg->getAsBool(CFGID_FNAME_APPEND_HOST);
+    opt_fname_append_host = cfg->getAsBool(CFGID_FNAME_APPEND_HOST, opt_parsim);
 
     ev.debug_on_errors = cfg->getAsBool(CFGID_DEBUG_ON_ERRORS);
     opt_print_undisposed = cfg->getAsBool(CFGID_PRINT_UNDISPOSED);
