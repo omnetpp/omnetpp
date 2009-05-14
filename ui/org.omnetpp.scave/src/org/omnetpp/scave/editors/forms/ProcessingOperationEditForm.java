@@ -89,7 +89,8 @@ public class ProcessingOperationEditForm implements IScaveObjectEditForm {
 		List<String> filterNames = new ArrayList<String>();
 		for (int i = 0; i < types.size(); ++i) {
 			NodeType nodeType = types.get(i);
-			if ("filter".equals(nodeType.getCategory())) {
+			String category = nodeType.getCategory();
+			if ("filter".equals(category) || "merger".equals(category)) {
 				filterTypes.add(nodeType);
 				filterNames.add(nodeType.getName());
 			}

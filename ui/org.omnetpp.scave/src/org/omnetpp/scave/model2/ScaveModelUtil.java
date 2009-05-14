@@ -39,6 +39,8 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.engine.HistogramResult;
 import org.omnetpp.scave.engine.IDList;
+import org.omnetpp.scave.engine.NodeType;
+import org.omnetpp.scave.engine.NodeTypeRegistry;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.ResultItemField;
@@ -55,6 +57,7 @@ import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.Group;
 import org.omnetpp.scave.model.HistogramChart;
 import org.omnetpp.scave.model.LineChart;
+import org.omnetpp.scave.model.ProcessingOp;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ResultType;
 import org.omnetpp.scave.model.ScatterChart;
@@ -574,5 +577,25 @@ public class ScaveModelUtil {
 			Assert.isTrue(false, "Unknown result item: "+item);
 			return null;
 		}
+	}
+	
+	public static boolean isFilterOperation(ProcessingOp operation) {
+		return hasCategory(operation.getOperation(), "filter");
+	}
+	
+	public static boolean isMergerOperation(ProcessingOp operation) {
+		return hasCategory(operation.getOperation(), "merger");
+	}
+	
+	public static boolean hasCategory(String nodeTypeName, String category) {
+		Assert.isNotNull(nodeTypeName);
+		Assert.isNotNull(category);
+		
+		NodeTypeRegistry registry = NodeTypeRegistry.getInstance();
+		if (registry.exists(nodeTypeName)) {
+			NodeType nodeType = NodeTypeRegistry.getInstance().getNodeType(nodeTypeName);
+			return nodeType.getCategory().equals(category);
+		}
+		return false;
 	}
 }

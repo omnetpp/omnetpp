@@ -131,28 +131,26 @@ public class DatasetManager {
 		}
 
 		public Object caseApply(Apply apply) {
-			if (apply.getOperation() != null) {
-				IDList selected = select(idlist, apply.getFilters(), type);
-				idlist.substract(selected);
-				for (int i = 0; i < selected.size(); ++i) {
-					long id = selected.get(i);
-					if (ResultFileManager.getTypeOf(id) == ResultFileManager.VECTOR)
-						idlist.add(ensureComputedResultItem(apply, id, i, manager, warnings));
-					else
-						idlist.add(id);
-				}
-			}
+			caseProcessingOp(apply, true);
 			return this;
 		}
 
 		public Object caseCompute(Compute compute) {
-			if (compute.getOperation() != null) {
-				IDList selected = select(idlist, compute.getFilters(), type);
-				int size = selected.size();
-				for (int i = 0; i < size; ++i) {
-					long id = selected.get(i);
-					if (ResultFileManager.getTypeOf(id) == ResultFileManager.VECTOR)
-						idlist.add(ensureComputedResultItem(compute, id, i, manager, warnings));
+			caseProcessingOp(compute, false);
+			return this;
+		}
+		
+		private Object caseProcessingOp(ProcessingOp op, boolean removeInputs) {
+			if (op.getOperation() != null) {
+				IDList selectedVectors = select(idlist, op.getFilters(), ResultType.VECTOR_LITERAL);
+				if (!selectedVectors.isEmpty()) {
+					if (removeInputs)
+						idlist.substract(selectedVectors);
+					List<IDList> groups = groupIDs(op, selectedVectors, manager);
+					for (int i = 0; i < groups.size(); ++i) {
+						IDList group = groups.get(i);
+						idlist.add(ensureComputedResultItem(op, group, i, manager, warnings));
+					}
 				}
 			}
 			return this;
@@ -650,22 +648,41 @@ public class DatasetManager {
 	/*
 	 * Computed vectors
 	 */
-	
-	static long ensureComputedResultItem(ProcessingOp operation, long inputID, int vectorId, ResultFileManager manager, /*out*/ List<IStatus> warnings) {
+	static long ensureComputedResultItem(ProcessingOp operation, IDList inputs, int vectorId, ResultFileManager manager, /*out*/ List<IStatus> warnings) {
+		Assert.isTrue(inputs.size() > 0);
 		checkReadLock(manager);
 		long computationID = getFilterNodeID(operation);
-		long id = manager.getComputedID(computationID, inputID);
+		long id = manager.getComputedID(computationID, inputs.get(0)); // XXX
 		if (id == -1) {
 			//Debug.format("Add computed vector: (%x,%x)%n", computationID, inputID);
-			VectorResult vector = manager.getVector(inputID);
-			String name = String.format("%s(%s)", operation.getOperation(), vector.getName());
+			String name = calculateComputedVectorName(operation, inputs, manager);
 			String fileName = ComputedResultFileLocator.instance().getComputedFile(operation);
 			if (fileName == null)
 				throw new RuntimeException("Cannot locate folder for computed file.");
+			VectorResult vector = manager.getVector(inputs.get(0)); // XXX
 			StringMap attributes = mapVectorAttributes(vector, operation, warnings);
-			id = manager.addComputedVector(vectorId, name, fileName, attributes, computationID, inputID, operation);
+			id = manager.addComputedVector(vectorId, name, fileName, attributes, computationID, inputs.get(0), operation);
 		}
 		return id;
+	}
+	
+	private static String calculateComputedVectorName(ProcessingOp operation, IDList input, ResultFileManager manager) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(operation.getOperation()).append("(");
+		for (int i = 0; i < input.size(); ++i) {
+			long id = input.get(i);
+			VectorResult vector = manager.getVector(id);
+			if (i > 0) {
+				sb.append(";");
+				if (i > 10) {
+					sb.append("...");
+					break;
+				}
+			}
+			sb.append(vector.getName());
+		}
+		sb.append(")");
+		return sb.toString();
 	}
 	
 	private static long getFilterNodeID(ProcessingOp operation) {
@@ -718,6 +735,26 @@ public class DatasetManager {
 		if (dataset == null)
 			return null;
 		return getIDListFromDataset(manager, dataset, processingOp, true, ResultType.VECTOR_LITERAL);
+	}
+	
+	/**
+	 * This method is a stub. To be implemented later.
+	 * Now it partition all inputs of 'merger' nodes into one group,
+	 * and every element of inputs of 'filter' nodes into one-element groups. 
+	 */
+	public static List<IDList> groupIDs(ProcessingOp operation, IDList idlist, ResultFileManager manager) {
+		List<IDList> result = new ArrayList<IDList>();
+		if (ScaveModelUtil.isFilterOperation(operation)) {
+			for (int i = 0; i < idlist.size(); ++i) {
+				IDList ids = new IDList();
+				ids.add(idlist.get(i));
+				result.add(ids);
+			}
+		}
+		else if (ScaveModelUtil.isMergerOperation(operation)) {
+			result.add(idlist);
+		}
+		return result;
 	}
 	
 	private static void checkReadLock(ResultFileManager manager) {
