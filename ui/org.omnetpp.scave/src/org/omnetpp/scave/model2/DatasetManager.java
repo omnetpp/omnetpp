@@ -40,6 +40,8 @@ import org.omnetpp.scave.charting.dataset.VectorScatterPlotDataset;
 import org.omnetpp.scave.engine.DataSorter;
 import org.omnetpp.scave.engine.DataflowManager;
 import org.omnetpp.scave.engine.IDList;
+import org.omnetpp.scave.engine.IDVector;
+import org.omnetpp.scave.engine.IDVectorVector;
 import org.omnetpp.scave.engine.Node;
 import org.omnetpp.scave.engine.NodeType;
 import org.omnetpp.scave.engine.NodeTypeRegistry;
@@ -737,11 +739,6 @@ public class DatasetManager {
 		return getIDListFromDataset(manager, dataset, processingOp, true, ResultType.VECTOR_LITERAL);
 	}
 	
-	/**
-	 * This method is a stub. To be implemented later.
-	 * Now it partition all inputs of 'merger' nodes into one group,
-	 * and every element of inputs of 'filter' nodes into one-element groups. 
-	 */
 	public static List<IDList> groupIDs(ProcessingOp operation, IDList idlist, ResultFileManager manager) {
 		List<IDList> result = new ArrayList<IDList>();
 		if (ScaveModelUtil.isFilterOperation(operation)) {
@@ -752,7 +749,17 @@ public class DatasetManager {
 			}
 		}
 		else if (ScaveModelUtil.isMergerOperation(operation)) {
-			result.add(idlist);
+			DataSorter sorter = new DataSorter(manager);
+			ResultItemFields fields = ScaveModelUtil.getGroupByFields(operation);
+			IDVectorVector groups = sorter.groupByFields(idlist, fields);
+			for (int i = 0; i < groups.size(); ++i) {
+				IDVector group = groups.get(i);
+				IDList groupAsIDList = new IDList();
+				for (int j = 0; j < group.size(); ++j) {
+					groupAsIDList.add(group.get(j));
+				}
+				result.add(groupAsIDList);
+			}
 		}
 		return result;
 	}

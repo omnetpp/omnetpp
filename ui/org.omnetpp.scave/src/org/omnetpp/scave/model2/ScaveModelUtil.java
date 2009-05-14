@@ -44,6 +44,7 @@ import org.omnetpp.scave.engine.NodeTypeRegistry;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.ResultItemField;
+import org.omnetpp.scave.engine.ResultItemFields;
 import org.omnetpp.scave.engine.ScalarResult;
 import org.omnetpp.scave.engine.StringVector;
 import org.omnetpp.scave.engine.VectorResult;
@@ -597,5 +598,22 @@ public class ScaveModelUtil {
 			return nodeType.getCategory().equals(category);
 		}
 		return false;
+	}
+	
+	private static final StringVector MODULE_AND_NAME =
+		StringVector.fromArray(new String[] {ResultItemField.MODULE, ResultItemField.NAME});
+	
+	public static ResultItemFields getGroupByFields(ProcessingOp operation) {
+		if (isFilterOperation(operation)) {
+			Assert.isTrue(false, "Should not be called for filters.");
+		}
+		else if (isMergerOperation(operation)) {
+			List<String> groupBy = operation.getGroupBy();
+			StringVector fields = groupBy != null ? StringVector.fromArray(groupBy.toArray(new String[groupBy.size()])): MODULE_AND_NAME;
+			return new ResultItemFields(fields);
+		}
+
+		Assert.isTrue(false, "Unexpected operation: "+operation.getOperation());
+		return null; // not reached
 	}
 }

@@ -237,15 +237,15 @@ public class DataflowNetworkBuilder {
 			
 		}
 		
-		public PortWrapper getInPort() {
-			if (inPorts.isEmpty())
-				addInputPort(new PortWrapper("in"));
-			Assert.isTrue(inPorts.size() == 1);
-			return inPorts.get(0);
-		}
-		
 		public PortWrapper nextInPort() {
-			PortWrapper inPort = new PortWrapper("next-in");
+			PortWrapper inPort;
+			if (ScaveModelUtil.isFilterOperation(operation)) {
+				Assert.isTrue(inPorts.isEmpty());
+				inPort = new PortWrapper("in");
+			}
+			else {
+				inPort = new PortWrapper("next-in");
+			}
 			addInputPort(inPort);
 			return inPort;
 		}
@@ -279,7 +279,7 @@ public class DataflowNetworkBuilder {
 		}
 		
 		public String toString() {
-			return String.format("Apply[%s]", operation.getOperation());
+			return String.format("Apply[%s,%x]", operation.getOperation(), hashCode());
 		}
 	}
 	
@@ -297,17 +297,15 @@ public class DataflowNetworkBuilder {
 			addOutputPort(new PortWrapper("out1"));
 		}
 		
-		public PortWrapper getInPort() {
-			if (inPorts.isEmpty()) {
-				addInputPort(new PortWrapper("in"));
-				addOutputPort(new PortWrapper("out2"));
-			}
-			Assert.isTrue(inPorts.size() == 1);
-			return inPorts.get(0);
-		}
-		
 		public PortWrapper nextInPort() {
-			PortWrapper inPort = new PortWrapper("next-in");
+			PortWrapper inPort;
+			if (ScaveModelUtil.isFilterOperation(operation)) {
+				Assert.isTrue(inPorts.isEmpty());
+				inPort = new PortWrapper("in");
+			}
+			else {
+				inPort = new PortWrapper("next-in");
+			}
 			addInputPort(inPort);
 			addOutputPort(new PortWrapper("out"+(outPorts.size()+1)));
 			return inPort;
@@ -413,7 +411,7 @@ public class DataflowNetworkBuilder {
 		}
 		
 		public String toString() {
-			return String.format("Compute[%s]", operation.getOperation());
+			return String.format("Compute[%s,%x]", operation.getOperation(), hashCode());
 		}
 	}
 	
@@ -694,7 +692,8 @@ public class DataflowNetworkBuilder {
 		public Object caseApply(Apply apply) {
 			if (apply.getOperation() != null) {
 				IDList idlist = select(getIDs(), apply.getFilters(), ResultType.VECTOR_LITERAL);
-				addApplyNodes(idlist, apply);
+				List<IDList> groups = DatasetManager.groupIDs(apply, idlist, manager);
+				addApplyNodes(groups, apply);
 			}
 			return this;
 		}
@@ -702,7 +701,8 @@ public class DataflowNetworkBuilder {
 		public Object caseCompute(Compute compute) {
 			if (compute.getOperation() != null) {
 				IDList idlist = select(getIDs(), compute.getFilters(), ResultType.VECTOR_LITERAL);
-				addComputeNodes(idlist, compute);
+				List<IDList> groups = DatasetManager.groupIDs(compute, idlist, manager);
+				addComputeNodes(groups, compute);
 			}
 			return this;
 		}
@@ -881,23 +881,10 @@ public class DataflowNetworkBuilder {
 		return node;
 	}
 	
-	private void addComputeNodes(IDList idlist, Compute operation) {
-		if (ScaveModelUtil.isFilterOperation(operation)) {
-			for (int i = 0; i < idlist.size(); ++i) {
-				addComputeNode(idlist.get(i), operation, i);
-			}
+	private void addComputeNodes(List<IDList> groups, Compute operation) {
+		for (int i = 0; i < groups.size(); ++i) {
+			addComputeNode(groups.get(i), operation, i);
 		}
-		else if (ScaveModelUtil.isMergerOperation(operation)) {
-			addComputeNode(idlist, operation, 0);
-		}
-		else
-			Assert.isTrue(false, "Unexpected processing operation: " + operation.getOperation());
-	}
-	
-	private ComputeNode addComputeNode(long id, Compute operation, int outVectorId) {
-		ComputeNode computeNode = new ComputeNode(operation, outVectorId);
-		connect(getOutputPort(id), computeNode.getInPort());
-		return computeNode;
 	}
 	
 	private ComputeNode addComputeNode(IDList idlist, Compute operation, int outVectorId) {
@@ -909,24 +896,10 @@ public class DataflowNetworkBuilder {
 		return computeNode;
 	}
 	
-	
-	private void addApplyNodes(IDList idlist, Apply operation) {
-		if (ScaveModelUtil.isFilterOperation(operation)) {
-			for (int i = 0; i < idlist.size(); ++i) {
-				addApplyNode(idlist.get(i), operation, i);
-			}
+	private void addApplyNodes(List<IDList> groups, Apply operation) {
+		for (int i = 0; i < groups.size(); ++i) {
+			addApplyNode(groups.get(i), operation, i);
 		}
-		else if (ScaveModelUtil.isMergerOperation(operation)) {
-			addApplyNode(idlist, operation, 0);
-		}
-		else
-			Assert.isTrue(false, "Unexpected processing operation: " + operation.getOperation());
-	}
-	
-	private ApplyNode addApplyNode(long id, Apply operation, int outVectorId) {
-		ApplyNode applyNode = new ApplyNode(operation, outVectorId);
-		connect(getOutputPort(id), applyNode.getInPort());
-		return applyNode;
 	}
 	
 	private ApplyNode addApplyNode(IDList idlist, Apply operation, int outVectorId) {
