@@ -23,11 +23,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.omnetpp.scave.engine.DataSorter;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItemField;
 import org.omnetpp.scave.engine.ResultItemFields;
-import org.omnetpp.scave.engine.ScalarDataSorter;
 import org.omnetpp.scave.engine.Statistics;
 import org.omnetpp.scave.engine.StringVector;
 import org.omnetpp.scave.engine.XYDataset;
@@ -58,7 +58,7 @@ public class ScalarDataset implements IAveragedScalarDataset {
     public ScalarDataset(IDList idlist, List<String> groupByFields, List<String> barFields,
     						List<String> averagedFields, ResultFileManager manager) {
    		computeFields(groupByFields, barFields, averagedFields, idlist, manager);
-   		ScalarDataSorter sorter = new ScalarDataSorter(manager);
+   		DataSorter sorter = new DataSorter(manager);
     	this.data = sorter.groupAndAggregate(idlist, rowFields, columnFields);
     	this.data.sortRows();
     	this.data.sortColumns();

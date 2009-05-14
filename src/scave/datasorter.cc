@@ -31,7 +31,7 @@ USING_NAMESPACE
 using namespace std;
 
 
-ResultFileManager *ScalarDataSorter::tmpScalarMgr;
+ResultFileManager *DataSorter::tmpResultFileMgr;
 
 /*----------------------------------------
  *              XYDataset
@@ -128,17 +128,17 @@ void XYDataset::sortColumnsAccordingToFirstRowMean()
 /*
  * Grouping functions
  */
-bool ScalarDataSorter::sameGroupFileRunScalar(const ScalarResult& d1, const ScalarResult& d2)
+bool DataSorter::sameGroupFileRunScalar(const ResultItem& d1, const ResultItem& d2)
 {
     return d1.fileRunRef==d2.fileRunRef && d1.nameRef==d2.nameRef;
 }
 
-bool ScalarDataSorter::sameGroupModuleScalar(const ScalarResult& d1, const ScalarResult& d2)
+bool DataSorter::sameGroupModuleScalar(const ResultItem& d1, const ResultItem& d2)
 {
     return d1.moduleNameRef==d2.moduleNameRef && d1.nameRef==d2.nameRef;
 }
 
-bool ScalarDataSorter::sameGroupFileRunModule(const ScalarResult& d1, const ScalarResult& d2)
+bool DataSorter::sameGroupFileRunModule(const ResultItem& d1, const ResultItem& d2)
 {
     return d1.fileRunRef==d2.fileRunRef && d1.moduleNameRef==d2.moduleNameRef;
 }
@@ -146,27 +146,27 @@ bool ScalarDataSorter::sameGroupFileRunModule(const ScalarResult& d1, const Scal
 /*
  * Compare functions
  */
-bool ScalarDataSorter::lessByModuleRef(ID id1, ID id2)
+bool DataSorter::lessByModuleRef(ID id1, ID id2)
 {
     if (id1==-1 || id2==-1) return id2!=-1; // -1 is the smallest
-    const ScalarResult& d1 = tmpScalarMgr->getScalar(id1);
-    const ScalarResult& d2 = tmpScalarMgr->getScalar(id2);
+    const ResultItem& d1 = tmpResultFileMgr->getItem(id1);
+    const ResultItem& d2 = tmpResultFileMgr->getItem(id2);
     return strdictcmp(d1.moduleNameRef->c_str(), d2.moduleNameRef->c_str()) < 0;
 }
 
-bool ScalarDataSorter::equalByModuleRef(ID id1, ID id2)
+bool DataSorter::equalByModuleRef(ID id1, ID id2)
 {
     if (id1==-1 || id2==-1) return id1==id2;
-    const ScalarResult& d1 = tmpScalarMgr->getScalar(id1);
-    const ScalarResult& d2 = tmpScalarMgr->getScalar(id2);
+    const ResultItem& d1 = tmpResultFileMgr->getItem(id1);
+    const ResultItem& d2 = tmpResultFileMgr->getItem(id2);
     return d1.moduleNameRef == d2.moduleNameRef;
 }
 
-bool ScalarDataSorter::lessByFileAndRun(ID id1, ID id2)
+bool DataSorter::lessByFileAndRun(ID id1, ID id2)
 {
     if (id1==-1 || id2==-1) return id2!=-1; // -1 is the smallest
-    const ScalarResult& d1 = tmpScalarMgr->getScalar(id1);
-    const ScalarResult& d2 = tmpScalarMgr->getScalar(id2);
+    const ResultItem& d1 = tmpResultFileMgr->getItem(id1);
+    const ResultItem& d2 = tmpResultFileMgr->getItem(id2);
 
     // compare first by file, then by run
     int cmpFile = strdictcmp(d1.fileRunRef->fileRef->filePath.c_str(), d2.fileRunRef->fileRef->filePath.c_str());
@@ -176,46 +176,46 @@ bool ScalarDataSorter::lessByFileAndRun(ID id1, ID id2)
     return cmpRun < 0;
 }
 
-bool ScalarDataSorter::equalByFileAndRun(ID id1, ID id2)
+bool DataSorter::equalByFileAndRun(ID id1, ID id2)
 {
     if (id1==-1 || id2==-1) return id1==id2;
-    const ScalarResult& d1 = tmpScalarMgr->getScalar(id1);
-    const ScalarResult& d2 = tmpScalarMgr->getScalar(id2);
+    const ResultItem& d1 = tmpResultFileMgr->getItem(id1);
+    const ResultItem& d2 = tmpResultFileMgr->getItem(id2);
     return d1.fileRunRef == d2.fileRunRef;
 }
 
-bool ScalarDataSorter::lessByScalarNameRef(ID id1, ID id2)
+bool DataSorter::lessByName(ID id1, ID id2)
 {
     if (id1==-1 || id2==-1) return id2!=-1; // -1 is the smallest
-    const ScalarResult& d1 = tmpScalarMgr->getScalar(id1);
-    const ScalarResult& d2 = tmpScalarMgr->getScalar(id2);
+    const ResultItem& d1 = tmpResultFileMgr->getItem(id1);
+    const ResultItem& d2 = tmpResultFileMgr->getItem(id2);
     return strdictcmp(d1.nameRef->c_str(), d2.nameRef->c_str()) < 0;
 }
 
-bool ScalarDataSorter::equalByScalarNameRef(ID id1, ID id2)
+bool DataSorter::equalByName(ID id1, ID id2)
 {
     if (id1==-1 || id2==-1) return id1==id2;
-    const ScalarResult& d1 = tmpScalarMgr->getScalar(id1);
-    const ScalarResult& d2 = tmpScalarMgr->getScalar(id2);
+    const ResultItem& d1 = tmpResultFileMgr->getItem(id1);
+    const ResultItem& d2 = tmpResultFileMgr->getItem(id2);
     return d1.nameRef == d2.nameRef;
 }
 
-bool ScalarDataSorter::lessByValue(ID id1, ID id2)
+bool DataSorter::lessByValue(ID id1, ID id2)
 {
     if (id1==-1 || id2==-1) return id2!=-1; // -1 is the smallest
-    const ScalarResult& d1 = tmpScalarMgr->getScalar(id1);
-    const ScalarResult& d2 = tmpScalarMgr->getScalar(id2);
+    const ScalarResult& d1 = tmpResultFileMgr->getScalar(id1);
+    const ScalarResult& d2 = tmpResultFileMgr->getScalar(id2);
     return d1.value < d2.value;
 }
 
 /*----------------------------------------
- *             ScalarDataSorter
+ *             DataSorter
  *----------------------------------------*/
 
 template<class GroupingFn>
-IDVectorVector ScalarDataSorter::doGrouping(const IDList& idlist, GroupingFn sameGroup)
+IDVectorVector DataSorter::doGrouping(const IDList& idlist, GroupingFn sameGroup)
 {
-    tmpScalarMgr = resultFileMgr;
+    tmpResultFileMgr = resultFileMgr;
 
     // parse idlist and do grouping as well, on the fly
     IDVectorVector vv;
@@ -226,12 +226,12 @@ IDVectorVector ScalarDataSorter::doGrouping(const IDList& idlist, GroupingFn sam
 
         // check of this id shares fileRef, runNumber & scalarName with one of the
         // IDVectors already in vv
-        const ScalarResult& d = resultFileMgr->getScalar(id);
+        const ResultItem& d = resultFileMgr->getItem(id);
         IDVectorVector::iterator i;
         for (i=vv.begin(); i!=vv.end(); ++i)
         {
             ID vvid = (*i)[0];  // first element in IDVector selected by i
-            const ScalarResult& vvd = resultFileMgr->getScalar(vvid);
+            const ResultItem& vvd = resultFileMgr->getItem(vvid);
             if (sameGroup(d,vvd))
                 break;
         }
@@ -249,9 +249,9 @@ IDVectorVector ScalarDataSorter::doGrouping(const IDList& idlist, GroupingFn sam
 }
 
 template <class LessFn, class EqualFn>
-void ScalarDataSorter::sortAndAlign(IDVectorVector& vv, LessFn less, EqualFn equal)
+void DataSorter::sortAndAlign(IDVectorVector& vv, LessFn less, EqualFn equal)
 {
-    tmpScalarMgr = resultFileMgr;
+    tmpResultFileMgr = resultFileMgr;
 
     // order each group
     for (IDVectorVector::iterator i=vv.begin(); i!=vv.end(); ++i)
@@ -279,31 +279,13 @@ void ScalarDataSorter::sortAndAlign(IDVectorVector& vv, LessFn less, EqualFn equ
     }
 }
 
-IDVectorVector ScalarDataSorter::groupByRunAndName(const IDList& idlist)
+IDVectorVector DataSorter::groupByFields(const IDList& idlist, ResultItemFields fields)
 {
-    // form groups (IDVectors) by fileRef+runNumber+scalarName
-    IDVectorVector vv = doGrouping(idlist, sameGroupFileRunScalar);
-
-    // order each group by module name, and insert "null" elements (id=-1) so that
-    // every group is of same length, and same indices contain same moduleNameRefs
-    sortAndAlign(vv, lessByModuleRef, equalByModuleRef);
-
-    return vv;
+    return doGrouping(idlist, ResultItemFieldsEqual(fields));
 }
 
-IDVectorVector ScalarDataSorter::groupByModuleAndName(const IDList& idlist)
-{
-    // form groups (IDVectors) by moduleName+scalarName
-    IDVectorVector vv = doGrouping(idlist, sameGroupModuleScalar);
 
-    // order each group by fileRef+runNumber, and insert "null" elements (id=-1) so that
-    // every group is of same length, and same indices contain same fileRef+runNumber
-    sortAndAlign(vv, lessByFileAndRun, equalByFileAndRun);
-
-    return vv;
-}
-
-IDVectorVector ScalarDataSorter::groupByFields(const IDList& idlist, ResultItemFields fields)
+IDVectorVector DataSorter::groupAndAlign(const IDList& idlist, ResultItemFields fields)
 {
     IDVectorVector vv = doGrouping(idlist, ResultItemFieldsEqual(fields));
 
@@ -331,14 +313,16 @@ static bool isMissing(const IDVectorVector &vv, int j)
     return !foundY;
 }
 
-XYDataset ScalarDataSorter::groupAndAggregate(const IDList& idlist, ResultItemFields rowFields, ResultItemFields columnFields)
+XYDataset DataSorter::groupAndAggregate(const IDList& scalars, ResultItemFields rowFields, ResultItemFields columnFields)
 {
+	Assert(scalars.areAllScalars());
+
     XYDataset dataset(rowFields, columnFields);
 
-    int sz = idlist.size();
+    int sz = scalars.size();
     for (int i = 0; i < sz; i++)
     {
-        ID id = idlist.get(i);
+        ID id = scalars.get(i);
         const ScalarResult& d = resultFileMgr->getScalar(id);
         dataset.add(d);
     }
@@ -346,10 +330,12 @@ XYDataset ScalarDataSorter::groupAndAggregate(const IDList& idlist, ResultItemFi
 }
 
 
-IDVectorVector ScalarDataSorter::prepareScatterPlot(const IDList& idlist, const char *moduleName, const char *scalarName)
+IDVectorVector DataSorter::prepareScatterPlot(const IDList& scalars, const char *moduleName, const char *scalarName)
 {
+	Assert(scalars.areAllScalars());
+
     // form groups (IDVectors) by moduleName+scalarName
-    IDVectorVector vv = doGrouping(idlist, sameGroupModuleScalar);
+    IDVectorVector vv = doGrouping(scalars, sameGroupModuleScalar);
     if (vv.size()==0)
         return vv;
 
@@ -421,10 +407,12 @@ IDVectorVector ScalarDataSorter::prepareScatterPlot(const IDList& idlist, const 
     return vv2;
 }
 
-XYDataset ScalarDataSorter::prepareScatterPlot2(const IDList& idlist, const char *moduleName, const char *scalarName,
+XYDataset DataSorter::prepareScatterPlot2(const IDList& scalars, const char *moduleName, const char *scalarName,
             ResultItemFields rowFields, ResultItemFields columnFields)
 {
-    XYDataset dataset = groupAndAggregate(idlist, rowFields, columnFields);
+	Assert(scalars.areAllScalars());
+
+    XYDataset dataset = groupAndAggregate(scalars, rowFields, columnFields);
 
     // find row of x values and move it to row 0
     int row;
@@ -534,13 +522,15 @@ bool IsoGroupingFn::operator()(const ResultItem &d1, const ResultItem &d2) const
     return true;
 }
 
-XYDatasetVector ScalarDataSorter::prepareScatterPlot3(const IDList& idlist, const char *moduleName, const char *scalarName,
+XYDatasetVector DataSorter::prepareScatterPlot3(const IDList& scalars, const char *moduleName, const char *scalarName,
         ResultItemFields rowFields, ResultItemFields columnFields,
         const StringVector &isoModuleNames, const StringVector &isoScalarNames, ResultItemFields isoFields)
 {
+	Assert(scalars.areAllScalars());
+
     // group data according to iso fields
     IsoGroupingFn grouping;
-    IDList nonIsoScalars = grouping.init(idlist, isoModuleNames, isoScalarNames, isoFields, resultFileMgr);
+    IDList nonIsoScalars = grouping.init(scalars, isoModuleNames, isoScalarNames, isoFields, resultFileMgr);
     IDVectorVector groupedScalars = doGrouping(nonIsoScalars, grouping);
 
     XYDatasetVector datasets;
@@ -563,7 +553,7 @@ XYDatasetVector ScalarDataSorter::prepareScatterPlot3(const IDList& idlist, cons
     return datasets;
 }
 
-IDList ScalarDataSorter::getModuleAndNamePairs(const IDList& idlist, int maxcount)
+IDList DataSorter::getModuleAndNamePairs(const IDList& idlist, int maxcount)
 {
     IDList out;
 
@@ -573,12 +563,12 @@ IDList ScalarDataSorter::getModuleAndNamePairs(const IDList& idlist, int maxcoun
         ID id = idlist.get(ii);
 
         // check if module and name of this id is already in out[]
-        const ScalarResult& d = resultFileMgr->getScalar(id);
+        const ResultItem& d = resultFileMgr->getItem(id);
         int i;
         int outSize = out.size();
         for (i=0; i<outSize; i++)
         {
-            const ScalarResult& vd = resultFileMgr->getScalar(out.get(i));
+            const ResultItem& vd = resultFileMgr->getItem(out.get(i));
             if (d.moduleNameRef==vd.moduleNameRef && d.nameRef==vd.nameRef)
                 break;
         }
@@ -595,14 +585,14 @@ IDList ScalarDataSorter::getModuleAndNamePairs(const IDList& idlist, int maxcoun
     return out;
 }
 
-IDVectorVector ScalarDataSorter::prepareCopyToClipboard(const IDList& idlist)
+IDVectorVector DataSorter::prepareCopyToClipboard(const IDList& idlist)
 {
     // form groups (IDVectors) by fileRef+runNumber+moduleNameRef
     IDVectorVector vv = doGrouping(idlist, sameGroupFileRunModule);
 
     // order each group by scalar name, and insert "null" elements (id=-1) so that
     // every group is of same length, and same indices contain same scalarNameRefs
-    sortAndAlign(vv, lessByScalarNameRef, equalByScalarNameRef);
+    sortAndAlign(vv, lessByName, equalByName);
 
     return vv;
 }

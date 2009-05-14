@@ -167,8 +167,8 @@ ScalarDataTable::ScalarDataTable(const std::string name, const std::string descr
             const IDList &idlist, ResultItemFields groupBy, ResultFileManager &manager)
             : DataTable(name, description), manager(manager)
 {
-    ScalarDataSorter sorter(&manager);
-    scalars = sorter.groupByFields(idlist, groupBy);
+    DataSorter sorter(&manager);
+    scalars = sorter.groupAndAlign(idlist, groupBy);
 
     // add a column for each grouping field
     if (groupBy.hasField(ResultItemField::FILE))   header.push_back(Column("File", STRING));
@@ -509,7 +509,7 @@ void ScaveExport::saveScalars(const string &name, const string &description,
 								const std::vector<std::string> &isoModuleNames, const StringVector &isoScalarNames,
 								ResultItemFields isoFields, ResultFileManager &manager)
 {
-	ScalarDataSorter sorter(&manager);
+	DataSorter sorter(&manager);
 	StringVector rowFields;
 	rowFields.push_back(ResultItemField::MODULE);
 	rowFields.push_back(ResultItemField::NAME);

@@ -37,6 +37,7 @@ import org.omnetpp.scave.charting.dataset.ScalarDataset;
 import org.omnetpp.scave.charting.dataset.ScalarScatterPlotDataset;
 import org.omnetpp.scave.charting.dataset.VectorDataset;
 import org.omnetpp.scave.charting.dataset.VectorScatterPlotDataset;
+import org.omnetpp.scave.engine.DataSorter;
 import org.omnetpp.scave.engine.DataflowManager;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.Node;
@@ -46,7 +47,6 @@ import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.ResultItemField;
 import org.omnetpp.scave.engine.ResultItemFields;
-import org.omnetpp.scave.engine.ScalarDataSorter;
 import org.omnetpp.scave.engine.ScalarResult;
 import org.omnetpp.scave.engine.StringMap;
 import org.omnetpp.scave.engine.StringVector;
@@ -306,7 +306,7 @@ public class DatasetManager {
 				StringVector isoAttrNames = new StringVector();
 				collectIsoParameters(isoPatterns, isoModuleNames, isoScalarNames, isoAttrNames);
 				
-				ScalarDataSorter sorter = new ScalarDataSorter(manager);
+				DataSorter sorter = new DataSorter(manager);
 				ResultItemFields rowFields = new ResultItemFields(MODULE, NAME);
 				ResultItemFields columnFields = averageReplications ? new ResultItemFields(EXPERIMENT, MEASUREMENT) :
 					                                              new ResultItemFields(RUN, EXPERIMENT, MEASUREMENT, REPLICATION);

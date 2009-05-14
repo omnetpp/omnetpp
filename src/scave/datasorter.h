@@ -112,26 +112,26 @@ inline Statistics XYDataset::getValue(int row, int column) const
  * Helps to organize scalars in a ResultFileManager into bar charts,
  * scatter plots, etc.
  */
-class SCAVE_API ScalarDataSorter
+class SCAVE_API DataSorter
 {
   private:
     ResultFileManager *resultFileMgr;
-    static ResultFileManager *tmpScalarMgr;
+    static ResultFileManager *tmpResultFileMgr;
 
     typedef bool (*GroupingFunc)(const ScalarResult&, const ScalarResult&);
     typedef bool (*CompareFunc)(ID id1, ID id2);
 
   private:
     // comparison functions for doGrouping() and sortAndAlign()
-    static bool sameGroupFileRunScalar(const ScalarResult& d1, const ScalarResult& d2);
-    static bool sameGroupModuleScalar(const ScalarResult& d1, const ScalarResult& d2);
-    static bool sameGroupFileRunModule(const ScalarResult& d1, const ScalarResult& d2);
+    static bool sameGroupFileRunScalar(const ResultItem& d1, const ResultItem& d2);
+    static bool sameGroupModuleScalar(const ResultItem& d1, const ResultItem& d2);
+    static bool sameGroupFileRunModule(const ResultItem& d1, const ResultItem& d2);
     static bool lessByModuleRef(ID id1, ID id2);
     static bool equalByModuleRef(ID id1, ID id2);
     static bool lessByFileAndRun(ID id1, ID id2);
     static bool equalByFileAndRun(ID id1, ID id2);
-    static bool lessByScalarNameRef(ID id1, ID id2);
-    static bool equalByScalarNameRef(ID id1, ID id2);
+    static bool lessByName(ID id1, ID id2);
+    static bool equalByName(ID id1, ID id2);
     static bool lessByValue(ID id1, ID id2);
 
     /**
@@ -156,22 +156,12 @@ class SCAVE_API ScalarDataSorter
     /**
      * Constructor.
      */
-    ScalarDataSorter(ResultFileManager *sm) {resultFileMgr = sm;}
+    DataSorter(ResultFileManager *sm) {resultFileMgr = sm;}
 
     /**
-     * Form groups (IDVectors) by runRef+scalarName.
-     * Then order each group by module name, and insert "null" elements (id=-1)
-     * so that every group is of same length, and the same indices contain
-     * the same moduleNameRefs.
+     * Form groups (IDVectors) by the specified fields.
      */
-    IDVectorVector groupByRunAndName(const IDList& idlist);
-
-    /**
-     * Form groups (IDVectors) by moduleName+scalarName.
-     * Order each group by runRef, and insert "null" elements (id=-1) so that
-     * every group is of same length, and the same indices contain the same runRef.
-     */
-    IDVectorVector groupByModuleAndName(const IDList& idlist);
+    IDVectorVector groupByFields(const IDList& idlist, ResultItemFields fields);
 
     /**
      * Form groups (IDVectors) by the specified fields.
@@ -179,7 +169,7 @@ class SCAVE_API ScalarDataSorter
      * so that every group is of same length, and the same indices contain
      * the same values of the non-grouping fields.
      */
-    IDVectorVector groupByFields(const IDList& idlist, ResultItemFields fields);
+    IDVectorVector groupAndAlign(const IDList& idlist, ResultItemFields fields);
 
     /**
      * Form rows from data of given idlist by grouping according to rowFields.
