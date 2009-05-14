@@ -275,7 +275,7 @@ public class DatasetItemProvider
 		if (feature instanceof EStructuralFeature && FeatureMapUtil.isFeatureMap((EStructuralFeature)feature)) {
 			FeatureMap.Entry entry = (FeatureMap.Entry)child;
 			feature = entry.getEStructuralFeature();
-			child = entry.getValue();        
+			child = entry.getValue();
 		}
 
 		if (feature instanceof EReference && child instanceof EObject) {

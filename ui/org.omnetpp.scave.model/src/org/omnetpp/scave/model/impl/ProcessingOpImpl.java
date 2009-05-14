@@ -25,6 +25,7 @@ import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 
+import org.eclipse.emf.ecore.util.EDataTypeUniqueEList;
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.InternalEList;
 
@@ -45,6 +46,7 @@ import org.omnetpp.scave.model.SelectDeselectOp;
  *   <li>{@link org.omnetpp.scave.model.impl.ProcessingOpImpl#getParams <em>Params</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.impl.ProcessingOpImpl#getComputedFile <em>Computed File</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.impl.ProcessingOpImpl#getComputationHash <em>Computation Hash</em>}</li>
+ *   <li>{@link org.omnetpp.scave.model.impl.ProcessingOpImpl#getGroupBy <em>Group By</em>}</li>
  * </ul>
  * </p>
  *
@@ -130,6 +132,16 @@ public abstract class ProcessingOpImpl extends DatasetItemImpl implements Proces
 	 * @ordered
 	 */
 	protected long computationHash = COMPUTATION_HASH_EDEFAULT;
+
+	/**
+	 * The cached value of the '{@link #getGroupBy() <em>Group By</em>}' attribute list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getGroupBy()
+	 * @generated
+	 * @ordered
+	 */
+	protected EList<String> groupBy;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -242,6 +254,18 @@ public abstract class ProcessingOpImpl extends DatasetItemImpl implements Proces
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EList<String> getGroupBy() {
+		if (groupBy == null) {
+			groupBy = new EDataTypeUniqueEList<String>(String.class, this, ScaveModelPackage.PROCESSING_OP__GROUP_BY);
+		}
+		return groupBy;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
@@ -271,6 +295,8 @@ public abstract class ProcessingOpImpl extends DatasetItemImpl implements Proces
 				return getComputedFile();
 			case ScaveModelPackage.PROCESSING_OP__COMPUTATION_HASH:
 				return new Long(getComputationHash());
+			case ScaveModelPackage.PROCESSING_OP__GROUP_BY:
+				return getGroupBy();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -301,6 +327,10 @@ public abstract class ProcessingOpImpl extends DatasetItemImpl implements Proces
 			case ScaveModelPackage.PROCESSING_OP__COMPUTATION_HASH:
 				setComputationHash(((Long)newValue).longValue());
 				return;
+			case ScaveModelPackage.PROCESSING_OP__GROUP_BY:
+				getGroupBy().clear();
+				getGroupBy().addAll((Collection<? extends String>)newValue);
+				return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -328,6 +358,9 @@ public abstract class ProcessingOpImpl extends DatasetItemImpl implements Proces
 			case ScaveModelPackage.PROCESSING_OP__COMPUTATION_HASH:
 				setComputationHash(COMPUTATION_HASH_EDEFAULT);
 				return;
+			case ScaveModelPackage.PROCESSING_OP__GROUP_BY:
+				getGroupBy().clear();
+				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -350,6 +383,8 @@ public abstract class ProcessingOpImpl extends DatasetItemImpl implements Proces
 				return COMPUTED_FILE_EDEFAULT == null ? computedFile != null : !COMPUTED_FILE_EDEFAULT.equals(computedFile);
 			case ScaveModelPackage.PROCESSING_OP__COMPUTATION_HASH:
 				return computationHash != COMPUTATION_HASH_EDEFAULT;
+			case ScaveModelPackage.PROCESSING_OP__GROUP_BY:
+				return groupBy != null && !groupBy.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}
@@ -370,6 +405,8 @@ public abstract class ProcessingOpImpl extends DatasetItemImpl implements Proces
 		result.append(computedFile);
 		result.append(", computationHash: ");
 		result.append(computationHash);
+		result.append(", groupBy: ");
+		result.append(groupBy);
 		result.append(')');
 		return result.toString();
 	}

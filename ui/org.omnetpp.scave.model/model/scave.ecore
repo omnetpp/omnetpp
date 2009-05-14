@@ -35,6 +35,8 @@
         transient="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="computationHash" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//ELong"
         transient="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="groupBy" upperBound="-1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Except">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="filterPattern" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>

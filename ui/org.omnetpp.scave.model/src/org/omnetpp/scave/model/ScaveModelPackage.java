@@ -512,13 +512,22 @@ public interface ScaveModelPackage extends EPackage {
 	int PROCESSING_OP__COMPUTATION_HASH = DATASET_ITEM_FEATURE_COUNT + 4;
 
 	/**
+	 * The feature id for the '<em><b>Group By</b></em>' attribute list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int PROCESSING_OP__GROUP_BY = DATASET_ITEM_FEATURE_COUNT + 5;
+
+	/**
 	 * The number of structural features of the '<em>Processing Op</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int PROCESSING_OP_FEATURE_COUNT = DATASET_ITEM_FEATURE_COUNT + 5;
+	int PROCESSING_OP_FEATURE_COUNT = DATASET_ITEM_FEATURE_COUNT + 6;
 
 	/**
 	 * The feature id for the '<em><b>Filter Pattern</b></em>' attribute.
@@ -1053,6 +1062,15 @@ public interface ScaveModelPackage extends EPackage {
 	int APPLY__COMPUTATION_HASH = PROCESSING_OP__COMPUTATION_HASH;
 
 	/**
+	 * The feature id for the '<em><b>Group By</b></em>' attribute list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int APPLY__GROUP_BY = PROCESSING_OP__GROUP_BY;
+
+	/**
 	 * The number of structural features of the '<em>Apply</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1116,6 +1134,15 @@ public interface ScaveModelPackage extends EPackage {
 	 * @ordered
 	 */
 	int COMPUTE__COMPUTATION_HASH = PROCESSING_OP__COMPUTATION_HASH;
+
+	/**
+	 * The feature id for the '<em><b>Group By</b></em>' attribute list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int COMPUTE__GROUP_BY = PROCESSING_OP__GROUP_BY;
 
 	/**
 	 * The number of structural features of the '<em>Compute</em>' class.
@@ -2008,6 +2035,17 @@ public interface ScaveModelPackage extends EPackage {
 	EAttribute getProcessingOp_ComputationHash();
 
 	/**
+	 * Returns the meta object for the attribute list '{@link org.omnetpp.scave.model.ProcessingOp#getGroupBy <em>Group By</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute list '<em>Group By</em>'.
+	 * @see org.omnetpp.scave.model.ProcessingOp#getGroupBy()
+	 * @see #getProcessingOp()
+	 * @generated
+	 */
+	EAttribute getProcessingOp_GroupBy();
+
+	/**
 	 * Returns the meta object for class '{@link org.omnetpp.scave.model.Compute <em>Compute</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -2687,6 +2725,14 @@ public interface ScaveModelPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute PROCESSING_OP__COMPUTATION_HASH = eINSTANCE.getProcessingOp_ComputationHash();
+
+		/**
+		 * The meta object literal for the '<em><b>Group By</b></em>' attribute list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute PROCESSING_OP__GROUP_BY = eINSTANCE.getProcessingOp_GroupBy();
 
 		/**
 		 * The meta object literal for the '{@link org.omnetpp.scave.model.impl.ComputeImpl <em>Compute</em>}' class.

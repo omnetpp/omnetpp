@@ -74,6 +74,7 @@ public class ProcessingOpItemProvider
 			super.getPropertyDescriptors(object);
 
 			addOperationPropertyDescriptor(object);
+			addGroupByPropertyDescriptor(object);
 		}
 		return itemPropertyDescriptors;
 	}
@@ -92,6 +93,28 @@ public class ProcessingOpItemProvider
 				 getString("_UI_ProcessingOp_operation_feature"),
 				 getString("_UI_PropertyDescriptor_description", "_UI_ProcessingOp_operation_feature", "_UI_ProcessingOp_type"),
 				 ScaveModelPackage.Literals.PROCESSING_OP__OPERATION,
+				 true,
+				 false,
+				 false,
+				 ItemPropertyDescriptor.GENERIC_VALUE_IMAGE,
+				 null,
+				 null));
+	}
+
+	/**
+	 * This adds a property descriptor for the Group By feature.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected void addGroupByPropertyDescriptor(Object object) {
+		itemPropertyDescriptors.add
+			(createItemPropertyDescriptor
+				(((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
+				 getResourceLocator(),
+				 getString("_UI_ProcessingOp_groupBy_feature"),
+				 getString("_UI_PropertyDescriptor_description", "_UI_ProcessingOp_groupBy_feature", "_UI_ProcessingOp_type"),
+				 ScaveModelPackage.Literals.PROCESSING_OP__GROUP_BY,
 				 true,
 				 false,
 				 false,
@@ -191,17 +214,6 @@ public class ProcessingOpItemProvider
 			(createChildParameter
 				(ScaveModelPackage.Literals.PROCESSING_OP__FILTERS,
 				 ScaveModelFactory.eINSTANCE.createDeselect()));
-	}
-
-	/**
-	 * Return the resource locator for this item provider's resources.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public ResourceLocator getResourceLocator() {
-		return ScaveEditPlugin.INSTANCE;
 	}
 
 }
