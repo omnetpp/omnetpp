@@ -497,6 +497,21 @@ public class ScaveModelUtil {
 		return result;
 	}
 	
+	public static List<String> getResultItemFields(IDList idlist, ResultFileManager manager) {
+		List<String> fields = new ArrayList<String>();
+		fields.add(ResultItemField.FILE);
+		fields.add(ResultItemField.RUN);
+		fields.add(ResultItemField.MODULE);
+		fields.add(ResultItemField.NAME);
+		fields.addAll(getRunAttributeNames(idlist, manager));
+		return fields;
+	}
+	
+	public static List<String> getRunAttributeNames(IDList idlist, ResultFileManager manager) {
+		StringVector runAttributes = manager.getUniqueRunAttributeNames(manager.getUniqueRuns(idlist)).keys();
+		return Arrays.asList(runAttributes.toArray());
+	}
+	
 
 	/**
 	 * Returns the default chart sheet.
@@ -581,23 +596,50 @@ public class ScaveModelUtil {
 	}
 	
 	public static boolean isFilterOperation(ProcessingOp operation) {
-		return hasCategory(operation.getOperation(), "filter");
+		String op = operation.getOperation();
+		return op != null && isFilterOperation(op);
+	}
+
+	public static boolean isFilterOperation(String operation) {
+		NodeType nodeType = getNodeType(operation);
+		return nodeType != null && isFilterOperation(nodeType);
 	}
 	
+	public static boolean isFilterOperation(NodeType nodeType) {
+		return hasCategory(nodeType, "filter");
+	}
+
 	public static boolean isMergerOperation(ProcessingOp operation) {
-		return hasCategory(operation.getOperation(), "merger");
+		String op = operation.getOperation();
+		return op != null && isMergerOperation(op);
+	}
+	
+	public static boolean isMergerOperation(String operation) {
+		NodeType nodeType = getNodeType(operation);
+		return nodeType != null && isMergerOperation(nodeType);
+	}
+
+	public static boolean isMergerOperation(NodeType nodeType) {
+		return hasCategory(nodeType, "merger");
+	}
+	
+	public static NodeType getNodeType(String name) {
+		Assert.isNotNull(name);
+		NodeTypeRegistry registry = NodeTypeRegistry.getInstance();
+		return registry.exists(name) ? registry.getNodeType(name) : null;
 	}
 	
 	public static boolean hasCategory(String nodeTypeName, String category) {
 		Assert.isNotNull(nodeTypeName);
 		Assert.isNotNull(category);
-		
-		NodeTypeRegistry registry = NodeTypeRegistry.getInstance();
-		if (registry.exists(nodeTypeName)) {
-			NodeType nodeType = NodeTypeRegistry.getInstance().getNodeType(nodeTypeName);
-			return nodeType.getCategory().equals(category);
-		}
-		return false;
+		NodeType nodeType = getNodeType(nodeTypeName);
+		return nodeType != null ? hasCategory(nodeType, category) : null;
+	}
+	
+	public static boolean hasCategory(NodeType nodeType, String category) {
+		Assert.isNotNull(nodeType);
+		Assert.isNotNull(category);
+		return nodeType.getCategory().equals(category);
 	}
 	
 	private static final StringVector MODULE_AND_NAME =

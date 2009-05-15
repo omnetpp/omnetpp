@@ -21,6 +21,7 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
@@ -32,9 +33,12 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.omnetpp.scave.editors.ui.ResultItemFieldsSelectorPanel;
 import org.omnetpp.scave.engine.NodeType;
 import org.omnetpp.scave.engine.NodeTypeRegistry;
 import org.omnetpp.scave.engine.NodeTypeVector;
+import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.engine.ResultItemField;
 import org.omnetpp.scave.engine.StringMap;
 import org.omnetpp.scave.engine.StringVector;
 import org.omnetpp.scave.model.Apply;
@@ -42,6 +46,8 @@ import org.omnetpp.scave.model.Param;
 import org.omnetpp.scave.model.ProcessingOp;
 import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave.model.ScaveModelPackage;
+import org.omnetpp.scave.model2.DatasetManager;
+import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
  * Edit form for processing operations (Apply/Compute).
@@ -53,6 +59,7 @@ public class ProcessingOperationEditForm implements IScaveObjectEditForm {
 
 	protected static final EStructuralFeature[] features = new EStructuralFeature[] {
 		ScaveModelPackage.eINSTANCE.getProcessingOp_Operation(),
+		ScaveModelPackage.eINSTANCE.getProcessingOp_GroupBy(),
 		ScaveModelPackage.eINSTANCE.getProcessingOp_Params()
 	};
 	
@@ -63,10 +70,13 @@ public class ProcessingOperationEditForm implements IScaveObjectEditForm {
 	private NodeType[] operationTypes;
 	// operation names (to fill the combo)
 	private String[] operationNames;
+	// result item fields selectable for groupBy
+	private ResultItemField[] fields;
 	
 	// controls
 	private Combo operationCombo;
 	private Label description;
+	private ResultItemFieldsSelectorPanel groupByFieldsPanel;
 	private Table paramsTable;
 	private TableEditor tableEditor;
 	
@@ -82,7 +92,7 @@ public class ProcessingOperationEditForm implements IScaveObjectEditForm {
 		COLUMN_VALUE = 1,
 		COLUMN_DESC = 2;
 	
-	public ProcessingOperationEditForm(ProcessingOp processingOp, EObject parent) {
+	public ProcessingOperationEditForm(ProcessingOp processingOp, EObject parent, ResultFileManager manager) {
 		this.processingOp = processingOp;
 		NodeTypeVector types = NodeTypeRegistry.getInstance().getNodeTypes();
 		List<NodeType> filterTypes = new ArrayList<NodeType>();
@@ -97,6 +107,8 @@ public class ProcessingOperationEditForm implements IScaveObjectEditForm {
 		}
 		this.operationTypes = filterTypes.toArray(new NodeType[filterTypes.size()]);
 		this.operationNames = filterNames.toArray(new String[filterNames.size()]);
+		// TODO add run attributes too
+		this.fields = DatasetManager.getSelectableGroupByFields(processingOp, manager);
 	}
 	
 	public String getTitle() {
@@ -135,6 +147,15 @@ public class ProcessingOperationEditForm implements IScaveObjectEditForm {
 		description.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		
 		group = new Group(panel, SWT.NONE);
+		group.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		group.setLayout(new GridLayout());
+		group.setText("Input grouping");
+		
+		groupByFieldsPanel = new ResultItemFieldsSelectorPanel(group, SWT.NONE);
+		groupByFieldsPanel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		groupByFieldsPanel.setSelectableResultItemFields(Arrays.asList(fields));
+		
+		group = new Group(panel, SWT.NONE);
 		group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		group.setLayout(new GridLayout());
 		group.setText("Parameters");
@@ -168,6 +189,7 @@ public class ProcessingOperationEditForm implements IScaveObjectEditForm {
 	
 	private void handleOperationTypeChanged() {
 		updateDescription();
+		updateGroupingPanel();
 		updateTable();
 	}
 	
@@ -199,6 +221,34 @@ public class ProcessingOperationEditForm implements IScaveObjectEditForm {
 		NodeType type = index >= 0 ? operationTypes[index] : null;
 		description.setText(type != null ? type.getDescription() : "");
 		description.getParent().getParent().layout();
+	}
+	
+	private void updateGroupingPanel() {
+		int index = operationCombo.getSelectionIndex();
+		if (index >= 0) {
+			NodeType nodeType = operationTypes[index];
+			if (ScaveModelUtil.isMergerOperation(nodeType)) {
+				showGridCell(groupByFieldsPanel.getParent(), true);
+				return;
+			}
+		}
+		showGridCell(groupByFieldsPanel.getParent(), false);
+	}
+	
+	private void showGridCell(Control control, boolean show) {
+		GridData data = (GridData)control.getLayoutData();
+		if (data != null) {
+			if (show) {
+				Point size = control.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+				data.widthHint = size.x;
+				data.heightHint = size.y;
+			}
+			else {
+				data.widthHint = 0;
+				data.heightHint = 0;
+			}
+			control.getParent().layout(true, true);
+		}
 	}
 	
 	private void updateTable() {
@@ -234,6 +284,8 @@ public class ProcessingOperationEditForm implements IScaveObjectEditForm {
 		case ScaveModelPackage.PROCESSING_OP__OPERATION:
 			int index = operationCombo.getSelectionIndex();
 			return index >= 0 ? operationNames[index] : null;
+		case ScaveModelPackage.PROCESSING_OP__GROUP_BY:
+			return groupByFieldsPanel.getSelectedResultItemFieldNames();
 		case ScaveModelPackage.PROCESSING_OP__PARAMS:
 			EList<Param> params = new BasicEList<Param>();
 			for (int i = 0; i < paramsTable.getItemCount(); ++i) {
@@ -254,6 +306,10 @@ public class ProcessingOperationEditForm implements IScaveObjectEditForm {
 		case ScaveModelPackage.PROCESSING_OP__OPERATION:
 			operationCombo.select(Arrays.asList(operationNames).indexOf(value));
 			handleOperationTypeChanged();
+			break;
+		case ScaveModelPackage.PROCESSING_OP__GROUP_BY:
+			List<String> fields = (List<String>)value;
+			groupByFieldsPanel.setSelectedResultItemFieldsByName(fields);
 			break;
 		case ScaveModelPackage.PROCESSING_OP__PARAMS:
 			EList<Param> params = (EList<Param>)value;

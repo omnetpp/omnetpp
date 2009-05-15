@@ -75,7 +75,7 @@ public class ScaveObjectEditFormFactory {
 		else if (object instanceof InputFile)
 			return new InputFileEditForm((InputFile)object, parent);
 		else if (object instanceof ProcessingOp)
-			return new ProcessingOperationEditForm((ProcessingOp)object, parent);
+			return new ProcessingOperationEditForm((ProcessingOp)object, parent, manager);
 		else if (object instanceof SetOperation)
 			return new SetOperationEditForm((SetOperation)object, parent, manager);
 		else if (object instanceof Except)
