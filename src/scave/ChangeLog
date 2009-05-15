@@ -1,3 +1,9 @@
+2009-05-15  Tamas Borbely
+
+        * added 'aggregator' node for computing average/minimum/maximum of 
+        several vectors. It simply aggregates the values at the same simulation
+        time (i.e. ignores interpolation-mode of the vectors).
+
 2009-05-11  Tamas Borbely
 
         * added 'timewinavg' node. It computes the average of data points

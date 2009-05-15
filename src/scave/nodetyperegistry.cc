@@ -69,6 +69,7 @@ NodeTypeRegistry::NodeTypeRegistry()
     add(new IndexedVectorFileReaderNode2Type());
     add(new FileWriterNodeType());
     add(new MergerNodeType());
+    add(new AggregatorNodeType());
     add(new XYPlotNodeType());
 
     add(new WindowAverageNodeType());
