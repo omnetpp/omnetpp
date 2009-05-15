@@ -710,23 +710,25 @@ public class DatasetManager {
 	
 	public static long getComputationHash(ProcessingOp processingOp, ResultFileManager manager) {
 		checkReadLock(manager);
-		long hash = 0;
+		long hash = 1;
 		IDList inputIDs = getComputationInput(processingOp, manager);
 		if (inputIDs != null)
 			for (int i = 0; i < inputIDs.size(); ++i)
 				hash = 31 * hash + inputIDs.get(i);
+		
 		String operation = processingOp.getOperation();
-		if (operation != null)
-			hash = 31 * hash + operation.hashCode();
+		hash = 31 * hash + (operation == null ? 0 : operation.hashCode());
+		
+		List<String> groupByFields = processingOp.getGroupBy();
+		hash = 31 * hash + (groupByFields == null ? 0 : groupByFields.hashCode());
+		
 		List<Param> params = processingOp.getParams();
 		if (params != null)
 			for (Param param : params) {
 				String name = param.getName();
 				String value = param.getValue();
-				if (name != null)
-					hash = 31 * hash + name.hashCode();
-				if (value != null)
-					hash = 31 * hash + value.hashCode();
+				hash = 31 * hash + (name == null ? 0 : name.hashCode());
+				hash = 31 * hash + (value == null ? 0 : value.hashCode());
 			}
 		return hash;
 	}
@@ -762,6 +764,18 @@ public class DatasetManager {
 			}
 		}
 		return result;
+	}
+	
+	public static ResultItemField[] getSelectableGroupByFields(ProcessingOp operation, ResultFileManager manager) {
+		List<ResultItemField> fields = new ArrayList<ResultItemField>();
+		Dataset dataset = ScaveModelUtil.findEnclosingDataset(operation);
+		if (dataset != null) {
+			IDList idlist = getIDListFromDataset(manager, dataset, operation, true, ResultType.VECTOR_LITERAL);
+			List<String> fieldNames = ScaveModelUtil.getResultItemFields(idlist, manager);
+			for (String name : fieldNames)
+				fields.add(new ResultItemField(name));
+		}
+		return fields.toArray(new ResultItemField[fields.size()]);
 	}
 	
 	private static void checkReadLock(ResultFileManager manager) {
