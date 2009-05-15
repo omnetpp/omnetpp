@@ -253,7 +253,7 @@ void EventlogFileManager::componentMethodBegin(cComponent *from, cComponent *to,
 {
     if (isEventLogRecordingEnabled)
     {
-        if (from->isModule() && to->isModule())
+        if (from && from->isModule() && to->isModule())
         {
             const char *methodText = "";  // for the Enter_Method_Silent case
             if (methodFmt)
@@ -274,6 +274,7 @@ void EventlogFileManager::componentMethodEnd()
     if (isEventLogRecordingEnabled)
     {
         //XXX problem when channel method is called: we'll emit an "End" entry but no "Begin"
+        //XXX same problem when the caller is not a module or is NULL
         EventLogWriter::recordModuleMethodEndEntry(feventlog);
     }
 }
