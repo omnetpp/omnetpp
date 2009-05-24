@@ -178,11 +178,11 @@ void Transition::updateGUI()
 {
     if (ev.isGUI()) {
         if (endTransitionEvent->isScheduled())
-            getDisplayString().setTagArg("b", 3, "red");  // firing
+            getDisplayString().setTagArg("b", 3, "yellow");  // firing
         else if (fireEvent->isScheduled())
-            getDisplayString().setTagArg("b", 3, "yellow"); // armed
+            getDisplayString().setTagArg("b", 3, "lightblue"); // armed
         else
-            getDisplayString().setTagArg("b", 3, "black");  // disabled
+            getDisplayString().setTagArg("b", 3, "grey");  // disabled
     }
 }
 

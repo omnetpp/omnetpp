@@ -22,7 +22,7 @@ simple Transition
     parameters:
         int priority = default(0);
         double transitionTime @unit(s) = default(0s);
-        @display("b=10,40,rect,black");
+        @display("b=10,40,rect,grey,,1");
     gates:
         input in[];
         output out[];
