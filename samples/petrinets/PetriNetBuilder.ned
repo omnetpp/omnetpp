@@ -22,5 +22,6 @@ simple PetriNetBuilder
 {
     parameters:
         @display("i=block/cogwheel_s");
-        xml pnmlFile;
+        xml pnmlFile;  // PNML file to read the network from
+        string id = default(""); // id of the network in the file; if empty, the first network will be chosen
 }
