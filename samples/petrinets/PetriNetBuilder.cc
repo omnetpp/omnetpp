@@ -75,11 +75,10 @@ void PetriNetBuilder::buildNetwork(cModule *parent)
     cModuleType *transitionModuleType = cModuleType::find(transitionTypeName);
     if (!transitionModuleType)
         throw cRuntimeError("module type `%s' not found", transitionTypeName);
-    cChannelType *arcChannelType = cModuleType::find(arcTypeName);
+    cChannelType *arcChannelType = cChannelType::find(arcTypeName);
     if (!arcChannelType)
         throw cRuntimeError("channel type `%s' not found", arcTypeName);
 
-    cModule *parent = getParentModule();
     std::map<std::string,cModule*> id2mod;
 
     // create places
@@ -119,9 +118,8 @@ void PetriNetBuilder::buildNetwork(cModule *parent)
         cGate *srcGate = sourceModule->getOrCreateFirstUnconnectedGate("out", 0, false, true);
         cGate *destGate = targetModule->getOrCreateFirstUnconnectedGate("in", 0, false, true);
 
-        cChannel *arcChannel = arcType->create(name, parent);
+        cChannel *arcChannel = arcChannelType->create(name);
         srcGate->connectTo(destGate, arcChannel);
-        arcChannel->finalizeParameters();
     }
 
     std::map<std::string,cModule *>::iterator it;

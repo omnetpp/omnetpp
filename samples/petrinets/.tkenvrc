@@ -1,4 +1,3 @@
 # Partial Tkenv config file -- see $HOME/.tkenvrc as well
-inspector "VendingMachine" "VendingMachine" "2" "565x358+188+257"
 inspector "Counter" "Counter" "2" "565x379+174+125"
 

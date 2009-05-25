@@ -97,3 +97,11 @@ network VendingMachine
         accepted.out++ --> Arc --> dispense.in++;
         dispense.out++ --> Arc --> ready.in++;
 }
+
+network FromPNML
+{
+    submodules:
+        builder: PetriNetBuilder {
+            pnmlFile = xmldoc("x.pnml");
+        }
+}

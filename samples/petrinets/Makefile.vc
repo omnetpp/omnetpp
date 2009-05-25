@@ -28,7 +28,7 @@ PROJECTRELATIVE_PATH =
 O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 
 # Object files for local .cc and .msg files
-OBJS = $O/Place.obj $O/Transition.obj
+OBJS = $O/PetriNetBuilder.obj $O/Place.obj $O/Transition.obj
 
 # Message files
 MSGFILES =
@@ -101,6 +101,7 @@ depend:
 	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile.vc -P^$O/ -- $(MSG_CC_FILES)  ./*.cc
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
+$O/PetriNetBuilder.obj: PetriNetBuilder.cc
 $O/Place.obj: Place.cc \
   ./IPlace.h \
   ./ITransition.h \
