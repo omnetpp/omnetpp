@@ -148,8 +148,6 @@ void Transition::startFire()
         if (inputPlaces[i].multiplicity > 0)
             inputPlaces[i].place->removeTokens(inputPlaces[i].multiplicity);
 
-    //TODO change color while firing
-
     // do or schedule endFire()
     simtime_t transitionTime = transitionTimePar->doubleValue();
     if (transitionTime==0)
