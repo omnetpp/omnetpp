@@ -132,10 +132,14 @@ void PetriNetBuilder::buildNetwork(cModule *parent)
     }
 
     // the following is not entirely OK regarding multi-stage init...
-    for (it=id2mod.begin(); it!=id2mod.end(); ++it)
-    {
-        cModule *mod = it->second;
-        mod->callInitialize();
+    bool more = true;
+    for (int stage=0; more; stage++) {
+        more = false;
+        for (it=id2mod.begin(); it!=id2mod.end(); ++it) {
+            cModule *mod = it->second;
+            if (mod->callInitialize(stage))
+                more = true;
+        }
     }
 }
 
