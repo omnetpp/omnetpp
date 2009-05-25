@@ -9,3 +9,7 @@ TODO: scheduling is currently not fair!! if some transition draws prio=999, it w
 TODO: reader: read x,y positions and initial markings too
 
 TODO: make Eclipse plugin that converts PNML to NED (and back?)
+
+TODO: how to connect it to other modules, e.g. the Queueing lib? E.g.: special Transition that sends a message when fires
+
+TODO: collect statistics!!!
