@@ -66,23 +66,32 @@ void PetriNetBuilder::buildNetwork(cModule *parent)
         error("Petri net description not found in %s", root->getSourceLocation());
 
     // find module types
-    cModuleType *placeModuleType = cModuleType::find("Place"); //XXX parameter
+    const char *placeTypeName = "Place"; //XXX parameter
+    const char *transitionTypeName = "Transition"; //XXX parameter
+    const char *arcTypeName = "Arc"; //XXX parameter
+    cModuleType *placeModuleType = cModuleType::find(placeTypeName);
     if (!placeModuleType)
-        throw cRuntimeError("module type `%s' not found", "Place");//XXX parameter
-    cModuleType *transitionModuleType = cModuleType::find("Transition"); //XXX parameter
+        throw cRuntimeError("module type `%s' not found", placeTypeName);
+    cModuleType *transitionModuleType = cModuleType::find(transitionTypeName);
     if (!transitionModuleType)
-        throw cRuntimeError("module type `%s' not found", "Transition"); //XXX parameter
+        throw cRuntimeError("module type `%s' not found", transitionTypeName);
+    cChannelType *arcChannelType = cModuleType::find(arcTypeName);
+    if (!arcChannelType)
+        throw cRuntimeError("channel type `%s' not found", arcTypeName);
 
     cModule *parent = getParentModule();
+    std::map<std::string,cModule*> id2mod;
 
     // create places
     cXMLElementList places = net->getChildrenByTagName("place");
     for (int i=0; i<(int)places.size(); i++)
     {
         cXMLElement *place = places[i];
-        const char *name = place->getAttribute("id");
+        const char *id = place->getAttribute("id");
+        const char *name = id;
         cModule *placeModule = placeModuleType->create(name, parent);
-        //XXX placeModule->finalizeParameters();
+        placeModule->finalizeParameters();
+        id2mod[id] = placeModule;
     }
 
     // create transitions
@@ -90,9 +99,11 @@ void PetriNetBuilder::buildNetwork(cModule *parent)
     for (int i=0; i<(int)transitions.size(); i++)
     {
         cXMLElement *transition = transitions[i];
-        const char *name = transition->getAttribute("id");
+        const char *id = transition->getAttribute("id");
+        const char *name = id;
         cModule *transitionModule = transitionModuleType->create(name, parent);
-        //XXX transitionModule->finalizeParameters();
+        transitionModule->finalizeParameters();
+        id2mod[id] = transitionModule;
     }
 
     // create arcs
@@ -103,39 +114,31 @@ void PetriNetBuilder::buildNetwork(cModule *parent)
         const char *name = arc->getAttribute("id");
         const char *source = arc->getAttribute("source");
         const char *target = arc->getAttribute("target");
+        cModule *sourceModule = id2mod[source]; //XXX check it exists!
+        cModule *targetModule = id2mod[target]; //XXX check it exists!
+        cGate *srcGate = sourceModule->getOrCreateFirstUnconnectedGate("out", 0, false, true);
+        cGate *destGate = targetModule->getOrCreateFirstUnconnectedGate("in", 0, false, true);
+
         cChannel *arcChannel = arcType->create(name, parent);
-        //XXX arcChannel->finalizeParameters();
+        srcGate->connectTo(destGate, arcChannel);
+        arcChannel->finalizeParameters();
     }
-    std::map<long,cModule *>::iterator it;
+
+    std::map<std::string,cModule *>::iterator it;
 
     // final touches: buildinside, initialize()
-    for (it=nodeid2mod.begin(); it!=nodeid2mod.end(); ++it)
+    for (it=id2mod.begin(); it!=id2mod.end(); ++it)
     {
         cModule *mod = it->second;
         mod->buildInside();
     }
 
     // the following is not entirely OK regarding multi-stage init...
-    for (it=nodeid2mod.begin(); it!=nodeid2mod.end(); ++it)
+    for (it=id2mod.begin(); it!=id2mod.end(); ++it)
     {
         cModule *mod = it->second;
         mod->callInitialize();
     }
 }
 
-void PetriNetBuilder::connect(cGate *src, cGate *dest, double delay, double ber, double datarate)
-{
-    cDatarateChannel *channel = NULL;
-    if (delay>0 || ber>0 || datarate>0)
-    {
-        channel = cDatarateChannel::create("channel");
-        if (delay>0)
-            channel->setDelay(delay);
-        if (ber>0)
-            channel->setBitErrorRate(ber);
-        if (datarate>0)
-            channel->setDatarate(datarate);
-    }
-    src->connectTo(dest, channel);
-}
 
