@@ -25,7 +25,6 @@ class PetriNetBuilder : public cSimpleModule
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
     void buildNetwork(cModule *parent);
-    void setPosition(cModule *module, cXMLElement *placeOrTransition);
 };
 
 Define_Module(PetriNetBuilder);
@@ -48,6 +47,21 @@ void PetriNetBuilder::handleMessage(cMessage *msg)
     buildNetwork(getParentModule());
 }
 
+inline const char *getTextFrom(cXMLElement *node, const char *xpath, const char *defaultValue)
+{
+    cXMLElement *element = node->getElementByPath(xpath);
+    const char *s = element ? element->getNodeValue() : NULL;
+    return s ? s : defaultValue;
+}
+
+inline void setPosition(cModule *module, cXMLElement *placeOrTransition)
+{
+    cXMLElement *position = placeOrTransition->getElementByPath("graphics/position");
+    if (position) {
+        module->getDisplayString().setTagArg("p", 0, position->getAttribute("x"));
+        module->getDisplayString().setTagArg("p", 1, position->getAttribute("y"));
+    }
+}
 
 void PetriNetBuilder::buildNetwork(cModule *parent)
 {
@@ -87,15 +101,13 @@ void PetriNetBuilder::buildNetwork(cModule *parent)
     {
         cXMLElement *place = places[i];
         const char *id = place->getAttribute("id");
-        const char *name = id;
+        const char *name = getTextFrom(place, "name/text", id);
         cModule *placeModule = placeModuleType->create(name, parent);
         placeModule->finalizeParameters();
         setPosition(placeModule, place);
-        cXMLElement *initialMarking = place->getFirstChildWithTag("initialMarking");
-        cXMLElement *initialMarkingText = initialMarking ? initialMarking->getFirstChildWithTag("text") : NULL;
-        const char *initialMarkingString = initialMarkingText ? initialMarkingText->getNodeValue() : NULL;
-        if (initialMarkingString)
-            placeModule->par("numInitialTokens").parse(initialMarkingString);
+        const char *marking = getTextFrom(place, "initialMarking/text", NULL);
+        if (marking)
+            placeModule->par("numInitialTokens").parse(marking);
         id2mod[id] = placeModule;
     }
 
@@ -105,7 +117,7 @@ void PetriNetBuilder::buildNetwork(cModule *parent)
     {
         cXMLElement *transition = transitions[i];
         const char *id = transition->getAttribute("id");
-        const char *name = id;
+        const char *name = getTextFrom(transition, "name/text", id);
         cModule *transitionModule = transitionModuleType->create(name, parent);
         transitionModule->finalizeParameters();
         setPosition(transitionModule, transition);
@@ -150,12 +162,4 @@ void PetriNetBuilder::buildNetwork(cModule *parent)
     }
 }
 
-void PetriNetBuilder::setPosition(cModule *module, cXMLElement *placeOrTransition)
-{
-    cXMLElement *graphics = placeOrTransition->getFirstChildWithTag("graphics");
-    cXMLElement *position = graphics ? graphics->getFirstChildWithTag("position") : NULL;
-    if (position) {
-        module->getDisplayString().setTagArg("p", 0, position->getAttribute("x"));
-        module->getDisplayString().setTagArg("p", 1, position->getAttribute("y"));
-    }
-}
+
