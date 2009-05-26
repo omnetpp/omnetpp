@@ -14,7 +14,7 @@ USERIF_LIBS = $(ALL_ENV_LIBS) # that is, $(TKENV_LIBS) $(CMDENV_LIBS)
 #USERIF_LIBS = $(TKENV_LIBS)
 
 # C++ include paths (with -I)
-INCLUDE_PATH = -I.
+INCLUDE_PATH = -I. -Iexamples -Iimages
 
 # Additional object and library files to link with
 EXTRA_OBJS =
@@ -86,6 +86,14 @@ $O/$(TARGET): $(OBJS)  $(EXTRA_OBJS) Makefile.vc
 	-@md $(O:/=\)\. 2>nul
 	$(CXX) -c $(COPTS) /Fo"$@" -Tp $<
 
+{examples}.cc{$O/examples}.obj:
+	-@md $(O:/=\)\examples 2>nul
+	$(CXX) -c $(COPTS) /Fo"$@" -Tp $<
+
+{images}.cc{$O/images}.obj:
+	-@md $(O:/=\)\images 2>nul
+	$(CXX) -c $(COPTS) /Fo"$@" -Tp $<
+
 msgheaders: $(MSGFILES:.msg=_m.h)
 
 clean:
@@ -93,12 +101,14 @@ clean:
 	-del $(VC_AUX_FILES) 2>nul
 	-del $(TARGET) $(TARGET:.exe=.lib) $(TARGET:.exe=.dll) 2>nul
 	-del .\*_m.cc .\*_m.h 2>nul
+	-del examples\*_m.cc examples\*_m.h 2>nul
+	-del images\*_m.cc images\*_m.h 2>nul
 
 cleanall: clean
 	-rmdir /s /q $(PROJECT_OUTPUT_DIR:/=\) 2>nul
 
 depend:
-	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile.vc -P^$O/ -- $(MSG_CC_FILES)  ./*.cc
+	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile.vc -P^$O/ -- $(MSG_CC_FILES)  ./*.cc examples/*.cc images/*.cc
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/PetriNetBuilder.obj: PetriNetBuilder.cc

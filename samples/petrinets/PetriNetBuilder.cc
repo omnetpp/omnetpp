@@ -54,13 +54,11 @@ inline const char *getTextFrom(cXMLElement *node, const char *xpath, const char 
     return s ? s : defaultValue;
 }
 
-inline void setPosition(cModule *module, cXMLElement *placeOrTransition)
+inline const char *getAttributeFrom(cXMLElement *node, const char *xpath, const char *attrName, const char *defaultValue)
 {
-    cXMLElement *position = placeOrTransition->getElementByPath("graphics/position");
-    if (position) {
-        module->getDisplayString().setTagArg("p", 0, position->getAttribute("x"));
-        module->getDisplayString().setTagArg("p", 1, position->getAttribute("y"));
-    }
+    cXMLElement *element = node->getElementByPath(xpath);
+    const char *s = element ? element->getAttribute(attrName) : NULL;
+    return s ? s : defaultValue;
 }
 
 void PetriNetBuilder::buildNetwork(cModule *parent)
@@ -95,6 +93,9 @@ void PetriNetBuilder::buildNetwork(cModule *parent)
 
     std::map<std::string,cModule*> id2mod;
 
+    ev << "module PetriNet {\n";
+    ev << "    submodules:\n";
+
     // create places
     cXMLElementList places = net->getChildrenByTagName("place");
     for (int i=0; i<(int)places.size(); i++)
@@ -104,11 +105,24 @@ void PetriNetBuilder::buildNetwork(cModule *parent)
         const char *name = getTextFrom(place, "name/text", id);
         cModule *placeModule = placeModuleType->create(name, parent);
         placeModule->finalizeParameters();
-        setPosition(placeModule, place);
+
+        const char *xPos = getAttributeFrom(place, "graphics/text", "x", "");
+        const char *yPos = getAttributeFrom(place, "graphics/text", "y", "");
+        placeModule->getDisplayString().setTagArg("p", 0, xPos);
+        placeModule->getDisplayString().setTagArg("p", 1, yPos);
+
         const char *marking = getTextFrom(place, "initialMarking/text", NULL);
         if (marking)
             placeModule->par("numInitialTokens").parse(marking);
+
         id2mod[id] = placeModule;
+
+        ev << "        " << placeModule->getFullName() << " : " << placeModuleType->getFullName() << " {\n";
+        if (*xPos || *yPos)
+            ev << "            @display(\"p=" << xPos << "," << yPos << "\")\n";
+        if (marking)
+            ev << "            numInitialTokens = " << marking << ";\n";
+        ev << "        }\n";
     }
 
     // create transitions
@@ -120,11 +134,22 @@ void PetriNetBuilder::buildNetwork(cModule *parent)
         const char *name = getTextFrom(transition, "name/text", id);
         cModule *transitionModule = transitionModuleType->create(name, parent);
         transitionModule->finalizeParameters();
-        setPosition(transitionModule, transition);
+
+        const char *xPos = getAttributeFrom(transition, "graphics/text", "x", "");
+        const char *yPos = getAttributeFrom(transition, "graphics/text", "y", "");
+        transitionModule->getDisplayString().setTagArg("p", 0, xPos);
+        transitionModule->getDisplayString().setTagArg("p", 1, yPos);
+
         id2mod[id] = transitionModule;
+
+        ev << "        " << transitionModule->getFullName() << " : " << transitionModuleType->getFullName() << " {\n";
+        if (*xPos || *yPos)
+            ev << "            @display(\"p=" << xPos << "," << yPos << "\")\n";
+        ev << "        }\n";
     }
 
     // create arcs
+    ev << "    connections:\n";
     cXMLElementList arcs = net->getChildrenByTagName("arc");
     for (int i=0; i<(int)arcs.size(); i++)
     {
@@ -132,14 +157,22 @@ void PetriNetBuilder::buildNetwork(cModule *parent)
         const char *name = arc->getAttribute("id");
         const char *source = arc->getAttribute("source");
         const char *target = arc->getAttribute("target");
-        cModule *sourceModule = id2mod[source]; //XXX check it exists!
-        cModule *targetModule = id2mod[target]; //XXX check it exists!
-        cGate *srcGate = sourceModule->getOrCreateFirstUnconnectedGate("out", 0, false, true);
-        cGate *destGate = targetModule->getOrCreateFirstUnconnectedGate("in", 0, false, true);
+
+        ASSERT(id2mod.find(source)!=id2mod.end() && id2mod.find(target)!=id2mod.end());
+        cModule *sourceModule = id2mod[source];
+        cModule *targetModule = id2mod[target];
+        cGate *sourceGate = sourceModule->getOrCreateFirstUnconnectedGate("out", 0, false, true);
+        cGate *targetGate = targetModule->getOrCreateFirstUnconnectedGate("in", 0, false, true);
 
         cChannel *arcChannel = arcChannelType->create(name);
-        srcGate->connectTo(destGate, arcChannel);
+        sourceGate->connectTo(targetGate, arcChannel, true);
+
+        ev << "        " << sourceModule->getFullName() << ".out++"
+           << " --> " << arcChannelType->getName() << " --> "
+           << targetModule->getFullName() << ".in++\n";
     }
+
+    ev << "}\n";
 
     std::map<std::string,cModule *>::iterator it;
 
@@ -152,6 +185,7 @@ void PetriNetBuilder::buildNetwork(cModule *parent)
 
     // multi-stage init
     bool more = true;
+    //TODO initialize channels too!!!
     for (int stage=0; more; stage++) {
         more = false;
         for (it=id2mod.begin(); it!=id2mod.end(); ++it) {
@@ -160,6 +194,7 @@ void PetriNetBuilder::buildNetwork(cModule *parent)
                 more = true;
         }
     }
+
 }
 
 
