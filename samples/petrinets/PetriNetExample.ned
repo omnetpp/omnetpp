@@ -102,6 +102,6 @@ network FromPNML
 {
     submodules:
         builder: PetriNetBuilder {
-            pnmlFile = xmldoc("x.pnml");
+            pnmlFile = xmldoc("examples/Ballgame.pnml");
         }
 }
