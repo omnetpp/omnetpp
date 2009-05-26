@@ -106,8 +106,8 @@ void PetriNetBuilder::buildNetwork(cModule *parent)
         cModule *placeModule = placeModuleType->create(name, parent);
         placeModule->finalizeParameters();
 
-        const char *xPos = getAttributeFrom(place, "graphics/text", "x", "");
-        const char *yPos = getAttributeFrom(place, "graphics/text", "y", "");
+        const char *xPos = getAttributeFrom(place, "graphics/position", "x", "");
+        const char *yPos = getAttributeFrom(place, "graphics/position", "y", "");
         placeModule->getDisplayString().setTagArg("p", 0, xPos);
         placeModule->getDisplayString().setTagArg("p", 1, yPos);
 
@@ -135,8 +135,8 @@ void PetriNetBuilder::buildNetwork(cModule *parent)
         cModule *transitionModule = transitionModuleType->create(name, parent);
         transitionModule->finalizeParameters();
 
-        const char *xPos = getAttributeFrom(transition, "graphics/text", "x", "");
-        const char *yPos = getAttributeFrom(transition, "graphics/text", "y", "");
+        const char *xPos = getAttributeFrom(transition, "graphics/position", "x", "");
+        const char *yPos = getAttributeFrom(transition, "graphics/position", "y", "");
         transitionModule->getDisplayString().setTagArg("p", 0, xPos);
         transitionModule->getDisplayString().setTagArg("p", 1, yPos);
 

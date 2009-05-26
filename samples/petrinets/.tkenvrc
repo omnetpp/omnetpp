@@ -1,4 +1,4 @@
 # Partial Tkenv config file -- see $HOME/.tkenvrc as well
-inspector "FromPNML" "FromPNML" "2" "565x400+33+5"
+inspector "FromPNML" "FromPNML" "2" "565x223+48+62"
 inspector "Counter" "Counter" "2" "565x379+174+125"
 
