@@ -91,6 +91,11 @@ void PetriNetBuilder::buildNetwork(cModule *parent)
         cModule *placeModule = placeModuleType->create(name, parent);
         placeModule->finalizeParameters();
         setPosition(placeModule, place);
+        cXMLElement *initialMarking = place->getFirstChildWithTag("initialMarking");
+        cXMLElement *initialMarkingText = initialMarking ? initialMarking->getFirstChildWithTag("text") : NULL;
+        const char *initialMarkingString = initialMarkingText ? initialMarkingText->getNodeValue() : NULL;
+        if (initialMarkingString)
+            placeModule->par("numInitialTokens").parse(initialMarkingString);
         id2mod[id] = placeModule;
     }
 
