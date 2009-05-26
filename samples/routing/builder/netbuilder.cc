@@ -144,11 +144,15 @@ void NetBuilder::buildNetwork(cModule *parent)
         mod->buildInside();
     }
 
-    // the following is not entirely OK regarding multi-stage init...
-    for (it=nodeid2mod.begin(); it!=nodeid2mod.end(); ++it)
-    {
-        cModule *mod = it->second;
-        mod->callInitialize();
+    // multi-stage init
+    bool more = true;
+    for (int stage=0; more; stage++) {
+        more = false;
+        for (it=nodeid2mod.begin(); it!=nodeid2mod.end(); ++it) {
+            cModule *mod = it->second;
+            if (mod->callInitialize(stage))
+                more = true;
+        }
     }
 }
 
