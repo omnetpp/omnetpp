@@ -22,10 +22,10 @@
 class PetriNetBuilder : public cSimpleModule
 {
   protected:
-    void connect(cGate *src, cGate *dest, double delay, double ber, double datarate);
-    void buildNetwork(cModule *parent);
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
+    void buildNetwork(cModule *parent);
+    void setPosition(cModule *module, cXMLElement *placeOrTransition);
 };
 
 Define_Module(PetriNetBuilder);
@@ -90,6 +90,7 @@ void PetriNetBuilder::buildNetwork(cModule *parent)
         const char *name = id;
         cModule *placeModule = placeModuleType->create(name, parent);
         placeModule->finalizeParameters();
+        setPosition(placeModule, place);
         id2mod[id] = placeModule;
     }
 
@@ -102,6 +103,7 @@ void PetriNetBuilder::buildNetwork(cModule *parent)
         const char *name = id;
         cModule *transitionModule = transitionModuleType->create(name, parent);
         transitionModule->finalizeParameters();
+        setPosition(transitionModule, transition);
         id2mod[id] = transitionModule;
     }
 
@@ -131,7 +133,7 @@ void PetriNetBuilder::buildNetwork(cModule *parent)
         mod->buildInside();
     }
 
-    // the following is not entirely OK regarding multi-stage init...
+    // multi-stage init
     bool more = true;
     for (int stage=0; more; stage++) {
         more = false;
@@ -143,4 +145,12 @@ void PetriNetBuilder::buildNetwork(cModule *parent)
     }
 }
 
-
+void PetriNetBuilder::setPosition(cModule *module, cXMLElement *placeOrTransition)
+{
+    cXMLElement *graphics = placeOrTransition->getFirstChildWithTag("graphics");
+    cXMLElement *position = graphics ? graphics->getFirstChildWithTag("position") : NULL;
+    if (position) {
+        module->getDisplayString().setTagArg("p", 0, position->getAttribute("x"));
+        module->getDisplayString().setTagArg("p", 1, position->getAttribute("y"));
+    }
+}
