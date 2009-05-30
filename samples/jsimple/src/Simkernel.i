@@ -272,13 +272,21 @@
 %ignore cEnvir::getArgVector;
 %ignore cEnvir::idle;
 %ignore cEnvir::getOStream;
+%ignore cEnvir::getConfig;
+%ignore cEnvir::getConfigEx;
 
 %ignore cCoroutine;
 %ignore cRunnableEnvir;
+%ignore cConfiguration;
+%ignore cConfigurationEx;
 
 %ignore cPar::setImpl;
 %ignore cPar::impl;
-%ignore cPar::copyIfShared();
+%ignore cPar::copyIfShared;
+
+%ignore cRNG::initialize;
+%ignore cLCG32;
+%ignore cMersenneTwister;
 
 
 namespace std {
@@ -605,8 +613,8 @@ DERIVEDCLASS(cWeightedStdDev, cObject);
 %include "cmersennetwister.h"
 %include "cclassfactory.h"
 %include "ccommbuffer.h"
-%include "cconfiguration.h"
-%include "cconfigoption.h"
+//%include "cconfiguration.h"
+//%include "cconfigoption.h"
 %include "cdisplaystring.h"
 //%include "cdynamicexpression.h"
 %include "cenum.h"
