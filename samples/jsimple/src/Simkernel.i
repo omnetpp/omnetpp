@@ -223,6 +223,11 @@
 %ignore cXMLElement::getDocumentElementByPath;
 %ignore cXMLElement::getElementByPath;
 
+%ignore cTopology::extractFromNetwork;
+%ignore cTopology::extractByModulePath;
+%ignore cTopology::extractByNedTypeName; // we could use StringVector for this
+
+
 // ignore deprecated methods
 %ignore cChannelType::createIdealChannel;
 %ignore cChannelType::createDelayChannel;
