@@ -63,9 +63,7 @@
       cClassDescriptor *desc = findDescriptor(self);
       AUTOPTR(desc);
       int fieldId = getFieldID(desc, self, fieldName);
-      char buf[200];
-      desc->getFieldAsString(NEWARG(self) fieldId, 0, buf, 200);
-      return buf;
+      return desc->getFieldAsString(NEWARG(self) fieldId, 0);
   }
 
   std::string getArrayField(const char *fieldName, int index)
@@ -73,9 +71,7 @@
       cClassDescriptor *desc = findDescriptor(self);
       AUTOPTR(desc);
       int fieldId = getFieldID(desc, self, fieldName);
-      char buf[200];
-      desc->getFieldAsString(NEWARG(self) fieldId, index, buf, 200); //XXX check out of bounds!!!
-      return buf;
+      return desc->getFieldAsString(NEWARG(self) fieldId, index);
   }
 
   void setField(const char *fieldName, const char *value)

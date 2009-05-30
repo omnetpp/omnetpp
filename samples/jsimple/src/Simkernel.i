@@ -2,6 +2,7 @@
 
 %{
 #include <omnetpp.h>
+#include "innerclasses.h"
 #include "JSimpleModule.h"
 #include "JMessage.h"
 
@@ -37,11 +38,20 @@
 
 %include "Reflection.i"
 
-#pragma SWIG nowarn=516;  // "Overloaded method x ignored. Method y used."
+// hide some macros from swig (copied from nativelibs/common.i)
+#define COMMON_API
+#define ENVIR_API
+#define OPP_DLLEXPORT
+#define OPP_DLLIMPORT
 
-// SWIG doesn't understand nested classes, turn off corresponding warnings
-//%warnfilter(312) cTopology::Node; -- this doesn't seem to work
-//%warnfilter(312) cTopology; -- nor this
+#define NAMESPACE_BEGIN
+#define NAMESPACE_END
+#define USING_NAMESPACE
+#define OPP
+
+#define _OPPDEPRECATED
+
+#pragma SWIG nowarn=516;  // "Overloaded method x ignored. Method y used."
 
 // ignore/rename some operators (some have method equivalents)
 %rename(set) operator=;
@@ -73,22 +83,25 @@
 // ignore methods that are useless from Java
 %ignore netPack;
 %ignore netUnpack;
+%ignore doPacking;
+%ignore doUnpacking;
 %ignore writeTo;
 %ignore writeContents;
 %ignore saveToFile;
 %ignore loadFromFile;
+%ignore createWatch;
+%ignore opp_typename;
 
-// ignore non-inspectable classes
+// ignore non-inspectable classes and those that cause problems
 %ignore eMessageKind;
 %ignore cBag;
 %ignore cLinkedList;
 %ignore cCommBuffer;
 %ignore cContextSwitcher;
 %ignore cContextTypeSwitcher;
-%ignore cConfiguration;
 %ignore cOutputVectorManager;
 %ignore cOutputScalarManager;
-%ignore cOutputSnapshotManager;
+%ignore cSnapshotManager;
 %ignore cScheduler;
 %ignore cRealTimeScheduler;
 %ignore cParsimCommunications;
@@ -98,6 +111,12 @@
 %ignore cTerminationException;
 %ignore cEndModuleException;
 %ignore cStaticFlag;
+
+%ignore cDynamicExpression;
+%ignore cAccuracyDetection;
+%ignore cADByStddev;
+%ignore cTransientDetection;
+%ignore cTDExpandingWindows;
 
 %typemap(javacode) cModule %{
   public static cEnvir ev = Simkernel.getEv();
@@ -123,13 +142,16 @@
 %ignore cMsgPar::setDoubleValue(MathFunc3Args, double, double, double);
 %ignore cMsgPar::setDoubleValue(MathFunc4Args, double, double, double, double);
 %ignore cMsgPar::setPointerValue;
-%ignore cMsgPar::pointerValue;
+%ignore cMsgPar::getPointerValue;
 %ignore cMsgPar::configPointer;
 %ignore cMsgPar::operator=(void *);
 %ignore cMsgPar::operator=(long double);
 %ignore cMsgPar::cmpbyvalue;
 
 %ignore cDefaultList::doGC;
+
+%ignore cComponent::setRNGMap;
+%ignore cComponent::addPar;
 
 %ignore cModule::pause_in_sendmsg;
 %ignore cModule::lastmodulefullpath;
@@ -139,21 +161,15 @@
 %ignore cModule::setRNGMap;
 %ignore cModule::rng;
 
-%ignore cSimpleModule::phase;
 %ignore cSimpleModule::pause;
 %ignore cSimpleModule::receive;
-%ignore cSimpleModule::stackOverflow;
-%ignore cSimpleModule::stackSize;
-%ignore cSimpleModule::stackUsage;
-%ignore cSimpleModule::moduleState;
+%ignore cSimpleModule::hasStackOverflow;
+%ignore cSimpleModule::getStackSize;
+%ignore cSimpleModule::getStackUsage;
 
 %ignore cMessage::setContextPointer;
-%ignore cMessage::contextPointer;
-%ignore cMessage::cmpbydelivtime;
-%ignore cMessage::cmpbypriority;
-%ignore cMessage::insertOrder;
-
-%ignore cGate::setLink;
+%ignore cMessage::getContextPointer;
+%ignore cMessage::getInsertOrder;
 
 %ignore cChannel::cChannel(const char *, cChannelType *);
 %ignore cChannel::channelType;
@@ -165,23 +181,21 @@
 %ignore cOutVector::setCallback;
 
 %ignore cSimulation::msgQueue;
-%ignore cSimulation::messageQueue;
+%ignore cSimulation::getMessageQueue;
 %ignore cSimulation::setScheduler;
-%ignore cSimulation::scheduler;
-%ignore cSimulation::hasher;
+%ignore cSimulation::getScheduler;
+%ignore cSimulation::getHasher;
 %ignore cSimulation::setHasher;
 %ignore cSimulation::setupNetwork;
 %ignore cSimulation::startRun;
 %ignore cSimulation::callFinish;
 %ignore cSimulation::endRun;
 %ignore cSimulation::deleteNetwork;
-%ignore cSimulation::init;
-%ignore cSimulation::shutdown;
 %ignore cSimulation::transferTo;
 %ignore cSimulation::transferToMain;
 %ignore cSimulation::setGlobalContext;
 %ignore cSimulation::setContext;
-%ignore cSimulation::networkType;
+%ignore cSimulation::getNetworkType;
 %ignore cSimulation::registerModule;
 %ignore cSimulation::deregisterModule;
 %ignore cSimulation::setSystemModule;
@@ -199,8 +213,8 @@
 %ignore cStatistic::ra;
 %ignore cStatistic::addTransientDetection;
 %ignore cStatistic::addAccuracyDetection;
-%ignore cStatistic::transientDetectionObject;
-%ignore cStatistic::accuracyDetectionObject;
+%ignore cStatistic::getTransientDetectionObject;
+%ignore cStatistic::getAccuracyDetectionObject;
 
 %ignore cDisplayString::setRoleToConnection;
 %ignore cDisplayString::setRoleToModule;
@@ -209,23 +223,60 @@
 %ignore cXMLElement::getDocumentElementByPath;
 %ignore cXMLElement::getElementByPath;
 
-// for 3.3 compatibility, ignore methods introduced in 3.4
-%ignore cOwnedObject::totalObjectCount;
-%ignore cOwnedObject::liveObjectCount;
-%ignore cOwnedObject::resetObjectCounters;
-%ignore cOwnedObject::resetMessageCounters;
-%ignore cQueue::get;
-%ignore cGate::_setTo;
-%ignore cGate::_setFrom;
-%ignore cMessage::arrivalModule;
-%ignore cOutVector::setEnabled;
-%ignore cOutVector::isEnabled;
-%ignore cOutVector::valuesReceived;
-%ignore cOutVector::valuesStored;
-%ignore cChannel::params;
-%ignore cXMLElement::tostr;
-%ignore cXMLElement::detailedInfo;
-%ignore cXMLElement::debugDump;
+// ignore deprecated methods
+%ignore cChannelType::createIdealChannel;
+%ignore cChannelType::createDelayChannel;
+%ignore cChannelType::createDatarateChannel;
+%ignore cMsgPar::getAsText;
+%ignore cMsgPar::setFromText;
+%ignore cMsgPar::setFromText;
+
+// ignore cEnvir methods that are not for model code
+%ignore cEnvir::disable_tracing;
+%ignore cEnvir::suppress_notifications;
+%ignore cEnvir::debug_on_errors;
+%ignore cEnvir::objectDeleted;
+%ignore cEnvir::simulationEvent;
+%ignore cEnvir::messageSent_OBSOLETE;
+%ignore cEnvir::messageScheduled;
+%ignore cEnvir::messageCancelled;
+%ignore cEnvir::beginSend;
+%ignore cEnvir::messageSendDirect;
+%ignore cEnvir::messageSendHop;
+%ignore cEnvir::endSend;
+%ignore cEnvir::messageDeleted;
+%ignore cEnvir::moduleReparented;
+%ignore cEnvir::componentMethodBegin;
+%ignore cEnvir::componentMethodEnd;
+%ignore cEnvir::moduleCreated;
+%ignore cEnvir::moduleDeleted;
+%ignore cEnvir::gateCreated;
+%ignore cEnvir::gateDeleted;
+%ignore cEnvir::connectionCreated;
+%ignore cEnvir::connectionDeleted;
+%ignore cEnvir::displayStringChanged;
+%ignore cEnvir::undisposedObject;
+%ignore cEnvir::bubble;
+%ignore cEnvir::readParameter;
+%ignore cEnvir::isModuleLocal;
+%ignore cEnvir::getRNGMappingFor;
+%ignore cEnvir::registerOutputVector;
+%ignore cEnvir::deregisterOutputVector;
+%ignore cEnvir::setVectorAttribute;
+%ignore cEnvir::recordInOutputVector;
+%ignore cEnvir::recordScalar;
+%ignore cEnvir::recordStatistic;
+%ignore cEnvir::getStreamForSnapshot;
+%ignore cEnvir::releaseStreamForSnapshot;
+%ignore cEnvir::getArgCount;
+%ignore cEnvir::getArgVector;
+%ignore cEnvir::idle;
+%ignore cEnvir::getOStream;
+
+%ignore cPar::setImpl;
+%ignore cPar::impl;
+%ignore cPar::copyIfShared();
+
 
 namespace std {
    specialize_std_map_on_both(std::string,,,,std::string,,,);
@@ -266,66 +317,121 @@ namespace std {
 cEnvir *getEv();
 %{ inline cEnvir *getEv() {return &ev;} %}
 
-// ignore some defines
-%ignore MAX_CLASSNAME;
-%ignore MAX_OBJECTFULLPATH;
-%ignore MAX_OBJECTINFO;
-%ignore FULLPATHBUF_SIZE;
-%ignore PI;
-%ignore MAX_INTERNAL_NAME;
-%ignore SHORTSTR;
-%ignore sENDED;
-%ignore sREADY;
-%ignore MAXARGS;
+// ignore/rename some operators (some have method equivalents)
+%ignore cPar::operator=;
+%rename(assign) operator=;
+%rename(plusPlus) operator++;
+%ignore operator +=;
+%ignore operator [];
+%ignore operator <<;
+%ignore operator ();
+
+// ignore conversion operators (they all have method equivalents)
+%ignore operator bool;
+%ignore operator const char *;
+%ignore operator char;
+%ignore operator unsigned char;
+%ignore operator int;
+%ignore operator unsigned int;
+%ignore operator long;
+%ignore operator unsigned long;
+%ignore operator double;
+%ignore operator long double;
+%ignore operator void *;
+%ignore operator cObject *;
+%ignore operator cXMLElement *;
+%ignore cSimulation::operator=;
+
+%ignore cEnvir::printf;
+%ignore cGate::setChannel;
+
+// ignore methods that are useless from Java
+%ignore parsimPack;
+%ignore parsimUnpack;
+
+// ignore non-inspectable and deprecated classes
+%ignore cCommBuffer;
+%ignore cContextSwitcher;
+%ignore cContextTypeSwitcher;
+%ignore cOutputVectorManager;
+%ignore cOutputScalarManager;
+%ignore cOutputSnapshotManager;
+%ignore cScheduler;
+%ignore cRealTimeScheduler;
+%ignore cParsimCommunications;
+%ignore ModNameParamResolver;
+%ignore StringMapParamResolver;
+%ignore cSubModIterator;
+%ignore cLinkedList;
+
+// ignore global variables but add accessors for them
+%ignore defaultList;
+%ignore componentTypes;
+%ignore nedFunctions;
+%ignore classes;
+%ignore enums;
+%ignore classDescriptors;
+%ignore configOptions;
+
+%{
+cDefaultList& getDefaultList() {return defaultList;}
+cRegistrationList *getRegisteredComponentTypes() {return componentTypes.getInstance();}
+cRegistrationList *getRegisteredNedFunctions() {return nedFunctions.getInstance();}
+cRegistrationList *getRegisteredClasses() {return classes.getInstance();}
+cRegistrationList *getRegisteredEnums() {return enums.getInstance();}
+cRegistrationList *getRegisteredClassDescriptors() {return classDescriptors.getInstance();}
+cRegistrationList *getRegisteredConfigOptions() {return configOptions.getInstance();}
+%}
+cDefaultList& getDefaultList();
+cRegistrationList *getRegisteredComponentTypes();
+cRegistrationList *getRegisteredNedFunctions();
+cRegistrationList *getRegisteredClasses();
+cRegistrationList *getRegisteredEnums();
+cRegistrationList *getRegisteredClassDescriptors();
+cRegistrationList *getRegisteredConfigOptions();
+
+// ignore macros that confuse swig
+/*
+#define GATEID_LBITS  20
+#define GATEID_HBITS  (8*sizeof(int)-GATEID_LBITS)   // usually 12
+#define GATEID_HMASK  ((~0)<<GATEID_LBITS)           // usually 0xFFF00000
+#define GATEID_LMASK  (~GATEID_HMASK)                // usually 0x000FFFFF
+*/
+%ignore MAX_VECTORGATES;
+%ignore MAX_SCALARGATES;
+%ignore MAX_VECTORGATESIZE;
 
 
-// ignore global vars
-%ignore ::defaultList;
-%ignore ::networks;
-%ignore ::modinterfaces;
-%ignore ::modtypes;
-%ignore ::channeltypes;
-%ignore ::functions;
-%ignore ::classes;
-%ignore ::enums;
-%ignore ::classDescriptors;
+// ignore problematic methods/class
+%ignore cDynamicExpression::evaluate; // returns inner type (swig is not prepared to handle them)
+%ignore cDensityEstBase::getCellInfo; // returns inner type (swig is not prepared to handle them)
+%ignore cKSplit;  // several methods are problematic
+%ignore cPacketQueue;  // Java compile problems (cMessage/cPacket conversion)
 
-// ignore (some) global functions
-//%ignore ::findNetwork;
-//%ignore ::findModuleType;
-%ignore ::findModuleInterface;
-//%ignore ::findChannelType;
-%ignore ::findLink;
-%ignore ::findFunction;
-%ignore ::findEnum;
-%ignore ::findfunctionbyptr;
-%ignore ::connect;
-%ignore ::__contextModuleRNG;
+%ignore critfunc_const;
+%ignore critfunc_depth;
+%ignore divfunc_const;
+%ignore divfunc_babak;
 
-%ignore ::genk_uniform;
-%ignore ::genk_intuniform;
-%ignore ::genk_exponential;
-%ignore ::genk_normal;
-%ignore ::genk_truncnormal;
+%ignore cMsgPar::operator=(void*);
+
+%typemap(javacode) cClassDescriptor %{
+  public static long getCPtr(cObject obj) { // make method public
+    return cObject.getCPtr(obj);
+  }
+%}
+
+%extend cClassDescriptor {
+   cObject *getFieldAsCObject(void *object, int field, int index) {
+       return self->getFieldIsCObject(object,field) ? (cObject *)self->getFieldStructPointer(object,field,index) : NULL;
+   }
+}
 
 // prevent generating setSimulation() method
 %ignore ::simulation;
 cSimulation *getSimulation();
 %{ inline cSimulation *getSimulation() {return &simulation;} %}
 
-//%ignore cNetworkType;
-//%ignore cModuleType;
-%ignore cModuleInterface;
-//%ignore cChannelType;
-%ignore cFunctionType;
-%ignore cLinkType;
-%ignore cClassRegister;
-
-%ignore cModuleType::cModuleType;
-%ignore cNetworkType::cNetworkType;
-%ignore cChannelType::cChannelType;
-
-%ignore cModuleType::moduleInterface;
 
 // JSimpleModule
 %newobject JSimpleModule::retrieveMsgToBeHandled;
@@ -363,7 +469,7 @@ cSimulation *getSimulation();
   protected void finish() {
     // can be overridden by the user
   }
-  
+
   protected SimTime simTime() {
     return Simkernel.simTime();
   }
@@ -416,130 +522,6 @@ cSimulation *getSimulation();
 // would go into infinite mutual recursion between Java clone() and C++ dup()!
 //%rename dup clone;
 
-//
-// Add "get" to getter method names.
-//
-%rename cObject::info getInfo;
-%rename cObject::detailedInfo getDetailedInfo;
-
-%rename cOwnedObject::owner  getOwner;
-
-%rename cDefaultList::defaultOwner getDefaultOwner;
-
-%rename cGate::id getId;
-%rename cGate::index getIndex;
-%rename cGate::size getSize;
-%rename cGate::ownerModule getOwnerModule;
-
-%rename cMessage::kind getKind;
-%rename cMessage::priority getPriority;
-%rename cMessage::length getLength;
-%rename cMessage::byteLength getByteLength;
-%rename cMessage::shareCount getShareCount;
-%rename cMessage::timestamp getTimestamp;
-%rename cMessage::encapsulatedMsg getEncapsulatedMsg;
-
-%rename cMessage::senderModuleId getSenderModuleId;
-%rename cMessage::senderGateId getSenderGateId;
-%rename cMessage::arrivalModuleId getArrivalModuleId;
-%rename cMessage::arrivalGateId getArrivalGateId;
-%rename cMessage::senderModule getSenderModule;
-%rename cMessage::senderGate getSenderGate;
-%rename cMessage::arrivalModule getArrivalModule;
-%rename cMessage::arrivalGate getArrivalGate;
-%rename cMessage::creationTime getCreationTime;
-%rename cMessage::sendingTime getSendingTime;
-%rename cMessage::arrivalTime getArrivalTime;
-%rename cMessage::id getId;
-%rename cMessage::treeId getTreeId;
-%rename cMessage::encapsulationId getEncapsulationId;
-%rename cMessage::encapsulationTreeId getEncapsulationTreeId;
-%rename cMessage::encapsulationTreeId getEncapsulationTreeId;
-%rename cMessage::srcProcId getSrcProcId;
-%rename cMessage::controlInfo  getControlInfo;
-%rename cMessage::parList  getParList;
-%rename cMessage::displayString  getDisplayString;
-%rename cMessage::totalMessageCount  getTotalMessageCount;
-%rename cMessage::liveMessageCount  getLiveMessageCount;
-
-%rename cSimulation::systemModule getSystemModule;
-%rename cSimulation::moduleByPath getModuleByPath;
-%rename cSimulation::module getModuleByID;
-%rename cSimulation::lastModuleId  getLastModuleId;
-%rename cSimulation::runNumber  getRunNumber;
-%rename cSimulation::simTime  getSimTime;
-%rename cSimulation::eventNumber  getEventNumber;
-%rename cSimulation::runningModule  getRunningModule;
-%rename cSimulation::contextModule  getContextModule;
-%rename cSimulation::contextType  getContextType;
-%rename cSimulation::contextSimpleModule  getContextSimpleModule;
-
-%rename cModule::id getId;
-%rename cModule::index getIndex;
-%rename cModule::size getSize;
-%rename cModule::parentModule getParentModule;
-%rename cModule::submodule getSubmodule;
-%rename cModule::gates getNumGates;
-%rename cModule::gate getGate;
-%rename cModule::moduleType  getModuleType;
-%rename cModule::params  getParams;
-%rename cModule::displayString  getDisplayString;
-%rename cModule::backgroundDisplayString  getBackgroundDisplayString;
-
-%rename cQueue::length getLength;
-%rename cQueue::empty isEmpty;
-
-%rename cArray::empty isEmpty;
-
-%rename cChannel::delay getDelay;
-%rename cChannel::error getError;
-%rename cChannel::datarate getDatarate;
-%rename cChannel::disabled getDisabled;
-%rename cChannel::fromGate  getFromGate;
-
-%rename cDatarateChannel::delay getDelay;
-%rename cDatarateChannel::error getError;
-%rename cDatarateChannel::datarate getDatarate;
-%rename cDatarateChannel::disabled getDisabled;
-%rename cDatarateChannel::transmissionFinishes  getTransmissionFinishes;
-
-%rename cGate::delay getDelay;
-%rename cGate::error getError;
-%rename cGate::datarate getDatarate;
-%rename cGate::disabled getDisabled;
-%rename cGate::channel  getChannel;
-%rename cGate::type  getType;
-%rename cGate::fromGate  getFromGate;
-%rename cGate::toGate  getToGate;
-%rename cGate::sourceGate  getSourceGate;
-%rename cGate::destinationGate  getDestinationGate;
-%rename cGate::displayString  getDisplayString;
-
-%rename cMsgPar::type  getType;
-%rename cMsgPar::prompt  getPrompt;
-%rename cPar::ownerModule  getOwnerModule;
-
-%rename cOutVector::valuesReceived  getValuesReceived;
-%rename cOutVector::valuesStored  getValuesStored;
-%rename cOutVector::tuple  getTuple;
-
-// statistics classes
-%rename samples getSamples;
-%rename weights getWeights;
-%rename sum getSum;
-%rename sqrSum getSqrSum;
-%rename min getMin;
-%rename max getMax;
-%rename mean getMean;
-%rename stddev getStddev;
-%rename variance getVariance;
-%rename random getRandom;
-
-%rename cException::errorCode getErrorCode;
-%rename cException::message getMessage;
-%rename cException::moduleClassName getModuleClassName;
-%rename cException::moduleFullPath getModuleFullPath;
-%rename cException::moduleID getModuleID;
 
 // The BASECLASS(), DERIVEDCLASS() macros should come from the memorymgmt_xxx.i file
 BASECLASS(SimTime);
@@ -576,78 +558,104 @@ DERIVEDCLASS(cRuntimeError, cException);
 DERIVEDCLASS(cSimpleModule, cObject);
 DERIVEDCLASS(cSimulation, cObject);
 DERIVEDCLASS(cStatistic, cObject);
-//DERIVEDCLASS(cStdDev, cObject);
-//DERIVEDCLASS(cWeightedStdDev, cObject);
+DERIVEDCLASS(cStdDev, cObject);
+DERIVEDCLASS(cWeightedStdDev, cObject);
 
 %ignore JMessage::JMessage(const JMessage&);
 %ignore JMessage::operator=(const JMessage&);
 
-typedef SimTime simtime_t;
+//typedef SimTime simtime_t;
 
-// now include all header files
-%include "platdep/intxtypes.h"
-%include "platdep/platdefs.h"
+%include "innerclasses.h"
+
 %include "simkerneldefs.h"
-%include "simtime_t.h"
 %include "simtime.h"
-%include "cexception.h"
+%include "simtime_t.h"
+%include "cobject.h"
 %include "cnamedobject.h"
 %include "cownedobject.h"
-%include "cobject.h"
-%include "cvisitor.h"
-//%include "opp_string.h"
-%include "random.h"
-%include "distrib.h"
 %include "cdefaultlist.h"
-%include "csimulation.h"
-%include "cclassfactory.h"
-%include "carray.h"
-%include "cqueue.h"
-//%include "cllist.h"
-%include "globals.h"
-%include "cpar.h"
-%include "cmsgpar.h"
-%include "cgate.h"
-%include "cmessage.h"
-//%include "cpacket.h"
-//%include "cmsgheap.h"
 %include "ccomponent.h"
-%include "ccomponenttype.h"
+%include "cchannel.h"
+%include "cdelaychannel.h"
+%include "cdataratechannel.h"
 %include "cmodule.h"
+%include "ccoroutine.h"
 %include "csimplemodule.h"
 %include "ccompoundmodule.h"
+%include "ccomponenttype.h"
+%include "carray.h"
+//%include "clinkedlist.h"
+%include "cqueue.h"
+%include "cpacketqueue.h"
+%include "cdetect.h"
 %include "cstatistic.h"
-//%include "cdensity.h"
-//%include "chist.h"
-//%include "cvarhist.h"
-//%include "cpsquare.h"
-//%include "cksplit.h"
-%include "coutvector.h"
-//%include "cdetect.h"
-//%include "ctopo.h"
-//%include "cfsm.h"
-//%include "protocol.h"
-//%include "cenum.h"
-//%include "cstruct.h"
-%include "cchannel.h"
-%include "cdataratechannel.h"
+%include "cstddev.h"
+%include "cdensityestbase.h"
+%include "chistogram.h"
+%include "cksplit.h"
+%include "cpsquare.h"
+%include "cvarhist.h"
+%include "ccoroutine.h"
+%include "crng.h"
+%include "clcg32.h"
+%include "cmersennetwister.h"
+%include "cclassfactory.h"
+%include "ccommbuffer.h"
+%include "cconfiguration.h"
+%include "cconfigoption.h"
 %include "cdisplaystring.h"
-%include "cxmlelement.h"
+//%include "cdynamicexpression.h"
+%include "cenum.h"
 %include "cenvir.h"
+%include "cexception.h"
+%include "cexpression.h"
+//%include "chasher.h"
+%include "cfsm.h"
+//%include "cmathfunction.h"
+%include "cgate.h"
+%include "cmessage.h"
+%include "cmsgpar.h"
+%include "cmessageheap.h"
+//%include "cnedfunction.h"
+//%include "cnullenvir.h"
+%include "coutvector.h"
+%include "cpar.h"
+%include "cparsimcomm.h"
+%include "cproperty.h"
+%include "cproperties.h"
+//%include "cscheduler.h"
+%include "csimulation.h"
+//%include "cstringtokenizer.h"
+%include "cclassdescriptor.h"
+%include "ctopology.h"
+%include "cvisitor.h"
+%include "cwatch.h"
+%include "cstlwatch.h"
+%include "cxmlelement.h"
+%include "distrib.h"
+%include "envirext.h"
+%include "errmsg.h"
+%include "globals.h"
+%include "onstartup.h"
+//%include "opp_string.h"
+%include "random.h"
+%include "cregistrationlist.h"
+%include "regmacros.h"
+%include "simutil.h"
+//%include "packing.h"
 
-//%include "util.h" -- no need to wrap
-//%include "macros.h" -- no need to wrap
-//%include "cwatch.h" -- no need to wrap
-//%include "cstlwatch.h" -- no need to wrap
-//%include "onstartup.h" -- no need to wrap
-//%include "envirext.h" -- no need to wrap
-//%include "cconfig.h" -- no need to wrap
-//%include "cstrtokenizer.h" -- no need to wrap
-//%include "cscheduler.h" -- no need to wrap
-//%include "compat.h" -- no need to wrap
-//%include "cparsimcomm.h" -- no need to wrap
-//%include "ccommbuffer.h" -- no need to wrap
-//%include "crng.h" -- no need to wrap
+//%include "index.h"
+//%include "mersennetwister.h"
+//%include "compat.h"
+//%include "cparimpl.h"
+//%include "cboolparimpl.h"
+//%include "cdoubleparimpl.h"
+//%include "clongparimpl.h"
+//%include "cstringparimpl.h"
+//%include "cstringpool.h"
+//%include "cxmlparimpl.h"
+//%include "nedsupport.h"
 
 %include "JSimpleModule.h"
 %include "JMessage.h"
