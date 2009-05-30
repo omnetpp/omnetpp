@@ -273,6 +273,9 @@
 %ignore cEnvir::idle;
 %ignore cEnvir::getOStream;
 
+%ignore cCoroutine;
+%ignore cRunnableEnvir;
+
 %ignore cPar::setImpl;
 %ignore cPar::impl;
 %ignore cPar::copyIfShared();
@@ -630,7 +633,7 @@ DERIVEDCLASS(cWeightedStdDev, cObject);
 %include "cclassdescriptor.h"
 %include "ctopology.h"
 %include "cvisitor.h"
-%include "cwatch.h"
+//%include "cwatch.h"
 %include "cstlwatch.h"
 %include "cxmlelement.h"
 %include "distrib.h"
