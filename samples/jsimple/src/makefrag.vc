@@ -19,23 +19,27 @@ OUTDIR   = ..\out
 JAVAPKG  = org.omnetpp.simkernel
 JAVADIR  = $(OUTDIR)\java\$(JAVAPKG:.=\)
 CLASSDIR = $(OUTDIR)\classes
-DISTDIR  = $(OUTDIR)\distrib
+DISTDIR  = ..\distrib
 
 EXTRA_OBJS = $(OUTDIR)\SimkernelJNI_registerNatives.obj $(OUTDIR)\simkernel_wrap.obj
 
 DIST_SRC_FILES = \
-  JSimpleModule.cc \
-  JSimpleModule.h \
-  JSimpleModule.ned \
-  JMessage.cc \
-  JMessage.h \
-  JUtil.cc \
-  JUtil.h \
-  makefrag.vc \
-  Simkernel.i \
-  Reflection.i \
-  PlainMemoryManagement.i \
-  registernatives.pl \
+    commondefs.i \
+    PlainMemoryManagement.i \
+    Reflection.i \
+    Simkernel.i \
+    registernatives.pl \
+    innerclasses.h \
+    JMessage.cc \
+    JMessage.h \
+    JSimpleModule.cc \
+    JSimpleModule.h \
+    JSimpleModule.ned \
+    JUtil.cc \
+    JUtil.h \
+    makefrag.vc \
+    makefrag.SAMPLE \
+    makefrag.vc.SAMPLE
 
 # the following files are not distributed by default
 EXPERIMENTAL_SRC_FILES = \
@@ -82,4 +86,7 @@ dist: $(TARGET) javafiles
 	del *_m.*
 	copy *.cc $(DISTDIR)
 	copy *.h $(DISTDIR)
+	copy *.SAMPLE $(DISTDIR)
+	copy $(OUTDIR)\*.cc $(DISTDIR)
 	copy JSimpleModule.ned $(DISTDIR)
+	copy ../README*  $(DISTDIR)

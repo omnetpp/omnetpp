@@ -7,8 +7,9 @@ simulations. Integration is not seamless though, there are limitations as
 to what OMNeT++ features are available, as well special coding rules to
 obey in the Java code.
 
-Operation is based on the JSimpleModule class. This is an ordinary C++
-simple module, which receives the name of a Java class in a module parameter.
+Operation is based on the JSimpleModule class. This is an ordinary C++ simple 
+module. You can create a new Java module by subclassing JSimpleModule in NED; 
+JSimpleModule will derive the name of the Java class from the NED type name. 
 During initialize, it loads the Java Virtual Machine (if not already loaded),
 instantiates the given Java class, then simply delegates initialize(),
 handleMessage() and finish() calls to it. The Java class should be subclassed
@@ -53,6 +54,7 @@ the provided .cc files need to be compiled and linked into the executable:
    JSimpleModule.h/cc
    simkernel_wrap.cc
    SimkernelJNI_registerNatives.cc
+   ...
 
 These files need the JNI headers to compile, and the simulation executable
 needs to be linked against the JVM. If you generate the makefile with
@@ -69,18 +71,18 @@ makefrag(.vc), and re-run opp_(n)makemake.
 2. Creating the simulation
 --------------------------
 
-Your Java-based simple modules will be run by JSimpleModule instances,
-which get the Java class name in a parameter. That is, you would write
+Your Java-based simple modules will be run by JSimpleModule instances, which 
+will get the Java class names from the NED type names. That is, you would write
 something like this in the NED file:
 
-   simple Source extends JSimpleModule
+   simple Source extends JSimpleModule  // runs the "Source" Java class
    {
       gates:
          input in[];
          output out[];
    }
 
-   simple Sink extends JSimpleModule
+   simple Sink extends JSimpleModule    // runs the "Sink" Java class
    {
       gates:
          input in[];
@@ -96,7 +98,7 @@ something like this in the NED file:
            source.out++ --> sink.in++;
    }
 
-JSimpleModule has the following NED declaration:
+JSimpleModule is declared in NED simply as:
 
    simple JSimpleModule
    {
@@ -140,9 +142,10 @@ have to be redefined instead of initialize():
 
 THE SIMULATION LIBRARY. The module class can make use of cMessage, cQueue,
 cOutVector and other OMNeT++ classes. The same methods and operations are
-available as in C++; the only difference is that accessor ("getter") method
-names have been prefixed with "get" to follow the Java convention, for
-example, name() is available as getName().
+available as in C++. Some classes and methods that are too C++ specific
+(e.g. expect a C++ function as argument) are not available in Java. Also,
+Java does not have operator overloading, so overloaded C++ operators are
+available via ordinary methods with English names.
 
 
 SIMKERNEL JAVA CLASSES ARE WRAPPERS. The cModule, cMessage, cQueue,
