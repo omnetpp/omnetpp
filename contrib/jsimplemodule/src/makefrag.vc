@@ -15,6 +15,8 @@ SWIG="$(TOOLS_DIR)\swigwin-1.3.31\swig.exe"
 !error SWIG not found as $(SWIG) -- please edit makefrag.vc
 !endif
 
+#OMNETPP_INCL_DIR = D:\tmp\omnetpp-4.0\include
+
 INCLUDE_PATH=$(INCLUDE_PATH) -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/win32
 LIBS=$(LIBS) /libpath:$(JAVA_HOME)/lib jvm.lib
 JAVAC=$(JAVA_HOME)\bin\javac.exe
@@ -26,7 +28,8 @@ JAVADIR  = $(OUTDIR)\java\$(JAVAPKG:.=\)
 CLASSDIR = $(OUTDIR)\classes
 DISTDIR  = ..\jsimple
 
-EXTRA_OBJS = $(OUTDIR)\SimkernelJNI_registerNatives.obj $(OUTDIR)\simkernel_wrap.obj
+GENERATED_FILES = $(OUTDIR)\simkernel_wrap.cc  $(OUTDIR)\SimkernelJNI_registerNatives.cc
+EXTRA_OBJS =      $(OUTDIR)\simkernel_wrap.obj $(OUTDIR)\SimkernelJNI_registerNatives.obj 
 
 DIST_SRC_FILES = \
     commondefs.i \
@@ -52,15 +55,16 @@ EXPERIMENTAL_SRC_FILES = \
   ProxyObjectMap.java.in
 
 all: dist 
-#all: $(TARGET)
 
-$(OUTDIR)\simkernel_wrap.cc $(OUTDIR)\SimkernelJNI_registerNatives.cc : simkernel.i Makefile.vc $(OMNETPP_ROOT)/include/*.h  # and many oher things
+binaries: $(TARGET)
+
+$(GENERATED_FILES) : simkernel.i Makefile.vc $(OMNETPP_ROOT)/include/*.h  # and many oher things
 	-mkdir $(OUTDIR)\java >nul 2>nul
 	-mkdir $(OUTDIR)\java\org >nul 2>nul
 	-mkdir $(OUTDIR)\java\org\omnetpp >nul 2>nul
 	-mkdir $(OUTDIR)\java\org\omnetpp\simkernel >nul 2>nul
 	-del $(JAVADIR)\*.java >nul
-	$(SWIG) -c++ -java -package $(JAVAPKG) -I$(OMNETPP_ROOT)/include -I$(OMNETPP_ROOT)/src/envir -I$(OMNETPP_ROOT) -outdir $(JAVADIR) -o $(OUTDIR)\simkernel_wrap.cc simkernel.i
+	$(SWIG) -c++ -java -package $(JAVAPKG) -I$(OMNETPP_INCL_DIR) -I$(OMNETPP_ROOT)/src/envir -I$(OMNETPP_ROOT) -outdir $(JAVADIR) -o $(OUTDIR)\simkernel_wrap.cc simkernel.i
 	$(PERL) -i.bak -pe "s/JNIEXPORT +//g" $(OUTDIR)\simkernel_wrap.cc
 	$(PERL) -i.bak -pe "s/JNICALL +//g" $(OUTDIR)\simkernel_wrap.cc
 	$(PERL) -i.bak -pe "s/jenv;/jenv; LOG_JNI_CALL();/g" $(OUTDIR)\simkernel_wrap.cc
@@ -82,7 +86,7 @@ javafiles:
 	$(JAVAC) -sourcepath $(OUTDIR)\java -d $(CLASSDIR) @listfile.tmp
 	-del listfile.tmp >nul
 
-dist: $(TARGET) javafiles
+dist: $(GENERATED_FILES) javafiles
 	-mkdir $(DISTDIR) >nul 2>nul
 	$(JAR) cvf $(DISTDIR)/simkernel.jar -C $(CLASSDIR) org
 	$(JAR) cvf $(DISTDIR)/simkernel-src.jar -C $(OUTDIR)\java org
