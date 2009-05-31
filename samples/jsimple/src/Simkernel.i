@@ -111,12 +111,7 @@
 %ignore cTerminationException;
 %ignore cEndModuleException;
 %ignore cStaticFlag;
-
-%ignore cDynamicExpression;
-%ignore cAccuracyDetection;
-%ignore cADByStddev;
-%ignore cTransientDetection;
-%ignore cTDExpandingWindows;
+%ignore ExecuteOnStartup;
 
 %typemap(javacode) cModule %{
   public static cEnvir ev = Simkernel.getEv();
@@ -223,9 +218,7 @@
 %ignore cXMLElement::getDocumentElementByPath;
 %ignore cXMLElement::getElementByPath;
 
-%ignore cTopology::extractFromNetwork;
-%ignore cTopology::extractByModulePath;
-%ignore cTopology::extractByNedTypeName; // we could use StringVector for this
+%ignore cClassFactory::cClassFactory;
 
 
 // ignore deprecated methods
@@ -423,11 +416,21 @@ cRegistrationList *getRegisteredConfigOptions();
 %ignore cDensityEstBase::getCellInfo; // returns inner type (swig is not prepared to handle them)
 %ignore cKSplit;  // several methods are problematic
 %ignore cPacketQueue;  // Java compile problems (cMessage/cPacket conversion)
+%ignore cTopology; // would need to wrap its inner classes too
+%ignore cDynamicExpression;
+%ignore cAccuracyDetection;
+%ignore cADByStddev;
+%ignore cTransientDetection;
+%ignore cTDExpandingWindows;
 
 %ignore critfunc_const;
 %ignore critfunc_depth;
 %ignore divfunc_const;
 %ignore divfunc_babak;
+
+%ignore SimTime::ttoa;
+%ignore SimTime::str(char *buf);
+%ignore SimTime::parse(const char *, const char *&);
 
 %ignore cMsgPar::operator=(void*);
 
@@ -644,7 +647,7 @@ DERIVEDCLASS(cWeightedStdDev, cObject);
 %include "csimulation.h"
 //%include "cstringtokenizer.h"
 %include "cclassdescriptor.h"
-%include "ctopology.h"
+//%include "ctopology.h"
 %include "cvisitor.h"
 //%include "cwatch.h"
 %include "cstlwatch.h"
