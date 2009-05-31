@@ -23,7 +23,7 @@ void JUtil::initJVM()
         opp_error("CLASSPATH environment variable is not set");
     std::string classpathOption = std::string("-Djava.class.path=")+(classpath ? classpath : "");
     options[n++].optionString = (char *)classpathOption.c_str(); /* user classes */
-    options[n++].optionString = "-Djava.library.path=.";   /* set native library path */
+    options[n++].optionString = (char *)"-Djava.library.path=."; /* set native library path */
     //options[n++].optionString = "-Djava.compiler=NONE";    /* disable JIT */
     //options[n++].optionString = "-verbose:jni";            /* print JNI-related messages */
     //options[n++].optionString = "-verbose:class";          /* print class loading messages */
@@ -146,7 +146,7 @@ void JObjectAccess::getMethodOrField(const char *fieldName, const char *methodPr
   { \
       jmethodID methodID; jfieldID fieldID; \
       getMethodOrField(fieldName, "set", "(" CODE ")V", CODE, methodID, fieldID); \
-      methodID ? jenv->Call##Type##Method(javaPeer, methodID, value) : jenv->Set##Type##Field(javaPeer, fieldID, value); \
+      if (methodID) jenv->Call##Type##Method(javaPeer, methodID, value); else jenv->Set##Type##Field(javaPeer, fieldID, value); \
       checkExceptions(); \
   }
 
@@ -174,7 +174,10 @@ void JObjectAccess::setStringJavaField(const char *fieldName, const char *value)
     jmethodID methodID; jfieldID fieldID;
     getMethodOrField(fieldName, "set", "(" JSTRING ")V", JSTRING, methodID, fieldID);
     jstring str = jenv->NewStringUTF(value);
-    methodID ? jenv->CallObjectMethod(javaPeer, methodID, str) : jenv->SetObjectField(javaPeer, fieldID, str);
+    if (methodID)
+        jenv->CallObjectMethod(javaPeer, methodID, str);
+    else
+        jenv->SetObjectField(javaPeer, fieldID, str);
     checkExceptions();
 }
 
