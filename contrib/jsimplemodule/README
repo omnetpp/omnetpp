@@ -1,0 +1,15 @@
+JSimpleModule
+=============
+
+This is an extension that makes it possible to write OMNeT++ simple modules
+in Java. Details are in jsimple/README -- read it before you start programming!
+
+You'll need to install JDT (=Java development support) into the OMNeT++ IDE. 
+The process is described at XXXX.
+
+The jsimple and jsamples directories are Eclipse projects that can be imported
+into the IDE.
+
+Enjoy,
+Andras
+
