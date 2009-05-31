@@ -1,0 +1,3 @@
+# review these settings, and change them according to your setup
+INCLUDE_PATH=$(INCLUDE_PATH) -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/win32
+LIBS=$(LIBS) /libpath:$(JAVA_HOME)/lib jvm.lib
