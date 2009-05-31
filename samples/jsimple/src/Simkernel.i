@@ -584,7 +584,7 @@ DERIVEDCLASS(cWeightedStdDev, cObject);
 %ignore JMessage::JMessage(const JMessage&);
 %ignore JMessage::operator=(const JMessage&);
 
-//typedef SimTime simtime_t;
+typedef SimTime simtime_t;
 
 %include "innerclasses.h"
 
