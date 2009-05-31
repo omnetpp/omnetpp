@@ -303,6 +303,18 @@ namespace std {
    %ignore vector<cXMLElement*>::set;
    %template(cXMLElementVector) vector<cXMLElement*>;
 
+   // std::vector<const char*> is only used as return value --> ignore setters
+   %extend vector<const char *> {
+       const char *get(int i) {return self->at(i);}
+   }
+   %ignore vector<const char *>::vector;
+   %ignore vector<const char *>::resize;
+   %ignore vector<const char *>::reserve;
+   %ignore vector<const char *>::capacity;
+   %ignore vector<const char *>::clear;
+   %ignore vector<const char *>::add;  //XXX this one doesn't work (because it was added later in Java)
+   %ignore vector<const char *>::set;
+   %ignore vector<const char *>::get;
    %template(StringVector) vector<const char *>;
 };
 
