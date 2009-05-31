@@ -34,6 +34,7 @@
 %include "std_map.i"    // cXMLElement
 %include "std_vector.i" // cXMLElement
 
+%include commondefs.i
 %include "PlainMemoryManagement.i"
 
 %include "Reflection.i"
