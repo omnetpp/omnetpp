@@ -302,11 +302,15 @@ namespace std {
    %ignore vector<cXMLElement*>::add;  //XXX this one doesn't work (because it was added later in Java)
    %ignore vector<cXMLElement*>::set;
    %template(cXMLElementVector) vector<cXMLElement*>;
+
+   %template(StringVector) vector<const char *>;
 };
 
 %extend SimTime {
    const SimTime add(const SimTime& x) {return *self + x;}
    const SimTime subtract(const SimTime& x) {return *self - x;}
+   const SimTime add(double x) {return *self + x;}
+   const SimTime subtract(double x) {return *self - x;}
 }
 
 %typemap(javacode) cEnvir %{
@@ -557,29 +561,34 @@ BASECLASS(std::vector<cXMLElement*>);
 BASECLASS(cClassFactory);
 //BASECLASS(std::map<std::string,std::string>);
 DERIVEDCLASS(cArray, cObject);
-DERIVEDCLASS(cDatarateChannel, cObject);
-DERIVEDCLASS(cChannel, cObject);
+DERIVEDCLASS(cComponentType, cObject);
 DERIVEDCLASS(cChannelType, cObject);
+DERIVEDCLASS(cModuleType, cObject);
+DERIVEDCLASS(cComponent, cObject);
+DERIVEDCLASS(cChannel, cObject);
+DERIVEDCLASS(cIdealChannel, cObject);
+DERIVEDCLASS(cDelayChannel, cObject);
+DERIVEDCLASS(cDatarateChannel, cObject);
+DERIVEDCLASS(cModule, cObject);
+DERIVEDCLASS(cSimpleModule, cObject);
 DERIVEDCLASS(cCompoundModule, cObject);
 DERIVEDCLASS(cDefaultList, cObject);
 //DERIVEDCLASS(cDoubleExpression, cExpression);
 DERIVEDCLASS(cGate, cObject);
 DERIVEDCLASS(cMessage, cObject);
-DERIVEDCLASS(cModule, cObject);
+DERIVEDCLASS(cPacket, cObject);
 DERIVEDCLASS(cPar, cObject);
-DERIVEDCLASS(cModuleType, cObject);
-DERIVEDCLASS(cNetworkType, cObject);
 DERIVEDCLASS(cObject, cObject);
 DERIVEDCLASS(cOutVector, cObject);
 DERIVEDCLASS(cMsgPar, cObject);
 DERIVEDCLASS(cObject, cObject);
 DERIVEDCLASS(cQueue, cObject);
 DERIVEDCLASS(cRuntimeError, cException);
-DERIVEDCLASS(cSimpleModule, cObject);
 DERIVEDCLASS(cSimulation, cObject);
 DERIVEDCLASS(cStatistic, cObject);
 DERIVEDCLASS(cStdDev, cObject);
-DERIVEDCLASS(cWeightedStdDev, cObject);
+DERIVEDCLASS(cProperties, cObject);
+DERIVEDCLASS(cProperty, cObject);
 
 %ignore JMessage::JMessage(const JMessage&);
 %ignore JMessage::operator=(const JMessage&);
