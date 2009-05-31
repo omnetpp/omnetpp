@@ -75,7 +75,7 @@ print OUT "};\n\n";
 
 print OUT "static JNINativeMethod ${classname}_methods[] = {\n";
 for ($i=0; $i<$n; $i++) {
-    print OUT "    { \"$mname{$i}\", \"$msig{$i}\", (void *)$mfunc{$i} },\n";
+    print OUT "    { (char *)\"$mname{$i}\", (char *)\"$msig{$i}\", (void *)$mfunc{$i} },\n";
 }
 print OUT "};\n\n";
 print OUT "void ${classname}_registerNatives(JNIEnv *jenv)\n";
