@@ -31,7 +31,7 @@ class cModule_ChannelIterator
     cModule::ChannelIterator it;
   public:
     cModule_ChannelIterator(const cModule *m) : it(m) {}
-    cChannel *get() const {return it();}
+    cChannel *get() const {return const_cast<cModule_ChannelIterator*>(this)->it();}
     bool end() const {return it.end();}
     void next() {it++;}
 };
