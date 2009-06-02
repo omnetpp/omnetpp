@@ -391,6 +391,7 @@ public class OmnetppLaunchUtils {
             return null;
         }
        
+        // FIXME return also exported libraries (JAR files) from the project
         IPath javaOutputLocation = (IPath)ReflectionUtils.invokeMethod(javaNature, "getOutputLocation");
         String result = ResourcesPlugin.getWorkspace().getRoot().getFile(javaOutputLocation).getLocation().toOSString();
 
