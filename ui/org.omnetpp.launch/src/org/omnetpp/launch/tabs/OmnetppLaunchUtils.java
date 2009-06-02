@@ -395,7 +395,7 @@ public class OmnetppLaunchUtils {
         String result = ResourcesPlugin.getWorkspace().getRoot().getFile(javaOutputLocation).getLocation().toOSString();
 
         for (IProject referencedProject : project.getReferencedProjects())
-            result += ";" + getJavaClasspath(referencedProject);
+            result += ";" + getJavaClasspath(referencedProject);  // FIXME use platform dependent path separator
 
         return result;
 	}
