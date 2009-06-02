@@ -1,0 +1,6 @@
+#!/bin/sh
+
+JSIMPLE_DIR=`dirname $0`/../jsimple
+export CLASSPATH=$JSIMPLE_DIR/simkernel.jar:`dirname $0`/bin
+$JSIMPLE_DIR/jsimple -n $JSIMPLE_DIR:`dirname $0`/src $*
+

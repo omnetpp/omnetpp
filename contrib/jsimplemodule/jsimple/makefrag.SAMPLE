@@ -6,5 +6,5 @@ LIBS += -L$(JAVA_HOME)/lib -ljvm
 
 # Linux:
 #INCLUDE_PATH += -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/linux
-#LIBS += -L$(JAVA_HOME)/jre/lib/i386/client -ljvm
+#LIBS += -L$(JAVA_HOME)/jre/lib/i386/client -Wl,-rpath,$(JAVA_HOME)/jre/lib/i386/client -ljvm
 

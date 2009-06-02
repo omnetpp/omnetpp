@@ -67,6 +67,10 @@ If you get a compiler error message that <jni.h> is not found or a linker
 message that the "jvm" library is not found, review the settings in
 makefrag(.vc), and re-run opp_(n)makemake.
 
+To generate the makefiles use:
+
+opp_makemake -f --deep
+make
 
 2. Creating the simulation
 --------------------------
