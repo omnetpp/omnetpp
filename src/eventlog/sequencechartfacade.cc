@@ -491,18 +491,43 @@ double SequenceChartFacade::getTimelineCoordinateForSimulationTimeAndEventInModu
     return getTimelineCoordinateForSimulationTime(simulationTime);
 }
 
-std::vector<ptr_t> *SequenceChartFacade::getIntersectingMessageDependencies(ptr_t startEventPtr, ptr_t endEventPtr)
+std::vector<ptr_t> *SequenceChartFacade::getModuleMethodBeginEntries(ptr_t startEventPtr, ptr_t endEventPtr)
 {
-    std::set<ptr_t> messageDependencies;
     IEvent *startEvent = (IEvent *)startEventPtr;
     IEvent *endEvent = (IEvent *)endEventPtr;
     Assert(startEvent);
     Assert(endEvent);
+    std::vector<ptr_t> *moduleMethodBeginEntries = new std::vector<ptr_t>();
+
+    for (IEvent *event = startEvent;; event = event->getNextEvent()) {
+        eventLog->progress();
+
+        for (int i = 0; i < event->getNumEventLogEntries(); i++) {
+            EventLogEntry *eventLogEntry = event->getEventLogEntry(i);
+
+            if (dynamic_cast<ModuleMethodBeginEntry *>(eventLogEntry))
+                moduleMethodBeginEntries->push_back((ptr_t)eventLogEntry);
+        }
+
+        if (event == endEvent)
+            break;
+    }
+
+    return moduleMethodBeginEntries;
+}
+
+std::vector<ptr_t> *SequenceChartFacade::getIntersectingMessageDependencies(ptr_t startEventPtr, ptr_t endEventPtr)
+{
+    IEvent *startEvent = (IEvent *)startEventPtr;
+    IEvent *endEvent = (IEvent *)endEventPtr;
+    Assert(startEvent);
+    Assert(endEvent);
+    std::set<ptr_t> messageDependencies;
     eventnumber_t startEventNumber = startEvent->getEventNumber();
 
     // TODO: LONG RUNNING OPERATION
     // this might take a while if start and end events are far away from each other
-    // if not, then some dependencies will not be included
+    // if not completed then some dependencies will not be included
     for (IEvent *event = startEvent;; event = event->getNextEvent()) {
         eventLog->progress();
         IMessageDependencyList *causes = event->getCauses();

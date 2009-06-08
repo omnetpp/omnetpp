@@ -28,6 +28,7 @@ NAMESPACE_BEGIN
 #define BEGIN_SEND_ENTRY_PTR(ptr) PTR(ptr) Assert(dynamic_cast<BeginSendEntry *>((BeginSendEntry *)ptr));
 #define END_SEND_ENTRY_PTR(ptr) PTR(ptr) Assert(dynamic_cast<EndSendEntry *>((EndSendEntry *)ptr));
 #define MODULE_CREATED_ENTRY_PTR(ptr) PTR(ptr) Assert(dynamic_cast<ModuleCreatedEntry *>((ModuleCreatedEntry *)ptr));
+#define MODULE_METHOD_BEGIN_ENTRY_PTR(ptr) PTR(ptr) Assert(dynamic_cast<ModuleMethodBeginEntry *>((ModuleMethodBeginEntry *)ptr));
 #define IMESSAGE_DEPENDENCY_PTR(ptr) PTR(ptr) Assert(dynamic_cast<IMessageDependency *>((IMessageDependency *)ptr));
 #define MESSAGE_DEPENDENCY_PTR(ptr) PTR(ptr) Assert(dynamic_cast<MessageDependency *>((MessageDependency *)ptr));
 #define FILTERED_MESSAGE_DEPENDENCY_PTR(ptr) PTR(ptr) Assert(dynamic_cast<FilteredMessageDependency *>((FilteredMessageDependency *)ptr));
@@ -68,6 +69,7 @@ class EVENTLOG_API EventLogFacade
         bool IEvent_isSelfMessageProcessingEvent(ptr_t ptr);
 
         EventLogEntry *EventLogEntry_getEventLogEntry(ptr_t ptr);
+        ptr_t EventLogEntry_getEvent(ptr_t ptr);
         int EventLogEntry_getContextModuleId(ptr_t ptr);
 
         bool BeginSendEntry_isSelfMessage(ptr_t ptr);
@@ -77,6 +79,9 @@ class EVENTLOG_API EventLogFacade
         bool EndSendEntry_isReceptionStart(ptr_t ptr);
 
         const char *ModuleCreatedEntry_getModuleFullPath(ptr_t ptr);
+
+        int ModuleMethodBeginEntry_getFromModuleId(ptr_t ptr);
+        int ModuleMethodBeginEntry_getToModuleId(ptr_t ptr);
 
         IMessageDependency *IMessageDependency_getMessageDependency(ptr_t ptr);
         const char *IMessageDependency_getMessageName(ptr_t ptr);

@@ -141,6 +141,12 @@ EventLogEntry *EventLogFacade::EventLogEntry_getEventLogEntry(ptr_t ptr)
     return (EventLogEntry*)ptr;
 }
 
+ptr_t EventLogFacade::EventLogEntry_getEvent(ptr_t ptr)
+{
+    EVENT_LOG_ENTRY_PTR(ptr);
+    return (ptr_t)((EventLogEntry*)ptr)->getEvent();
+}
+
 int EventLogFacade::EventLogEntry_getContextModuleId(ptr_t ptr)
 {
     EVENT_LOG_ENTRY_PTR(ptr);
@@ -196,6 +202,18 @@ const char *EventLogFacade::ModuleCreatedEntry_getModuleFullPath(ptr_t ptr)
     }
 
     return eventLogStringPool.get(fullPath.c_str());
+}
+
+int EventLogFacade::ModuleMethodBeginEntry_getFromModuleId(ptr_t ptr)
+{
+    MODULE_METHOD_BEGIN_ENTRY_PTR(ptr);
+    return ((ModuleMethodBeginEntry *)ptr)->fromModuleId;
+}
+
+int EventLogFacade::ModuleMethodBeginEntry_getToModuleId(ptr_t ptr)
+{
+    MODULE_METHOD_BEGIN_ENTRY_PTR(ptr);
+    return ((ModuleMethodBeginEntry *)ptr)->toModuleId;
 }
 
 IMessageDependency *EventLogFacade::IMessageDependency_getMessageDependency(ptr_t ptr)
