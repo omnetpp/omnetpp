@@ -341,6 +341,7 @@ import java.lang.reflect.Constructor;
     }
 %}
 
+%newobject SequenceChartFacade::getModuleMethodBeginEntries;
 %newobject SequenceChartFacade::getIntersectingMessageDependencies;
 
 %ignore eventLogStringPool;
