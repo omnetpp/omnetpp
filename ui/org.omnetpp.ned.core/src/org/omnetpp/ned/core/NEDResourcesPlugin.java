@@ -57,7 +57,8 @@ public class NEDResourcesPlugin extends AbstractUIPlugin {
 	 */
 	@Override
     public void stop(BundleContext context) throws Exception {
-	    NEDResources.getInstance().dispose();
+        NEDResources.getInstance().dispose();
+        MsgResources.getInstance().dispose();
 	    
 		plugin = null;
         super.stop(context);
