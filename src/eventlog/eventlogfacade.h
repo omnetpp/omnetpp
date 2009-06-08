@@ -82,6 +82,7 @@ class EVENTLOG_API EventLogFacade
 
         int ModuleMethodBeginEntry_getFromModuleId(ptr_t ptr);
         int ModuleMethodBeginEntry_getToModuleId(ptr_t ptr);
+        const char *ModuleMethodBeginEntry_getMethod(ptr_t ptr);
 
         IMessageDependency *IMessageDependency_getMessageDependency(ptr_t ptr);
         const char *IMessageDependency_getMessageName(ptr_t ptr);

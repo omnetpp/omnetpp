@@ -216,6 +216,12 @@ int EventLogFacade::ModuleMethodBeginEntry_getToModuleId(ptr_t ptr)
     return ((ModuleMethodBeginEntry *)ptr)->toModuleId;
 }
 
+const char *EventLogFacade::ModuleMethodBeginEntry_getMethod(ptr_t ptr)
+{
+    MODULE_METHOD_BEGIN_ENTRY_PTR(ptr);
+    return ((ModuleMethodBeginEntry *)ptr)->method;
+}
+
 IMessageDependency *EventLogFacade::IMessageDependency_getMessageDependency(ptr_t ptr)
 {
     IMESSAGE_DEPENDENCY_PTR(ptr);
