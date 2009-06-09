@@ -142,6 +142,7 @@ double SequenceChartFacade::getTimelineCoordinate(ptr_t ptr, double lowerTimelin
 double SequenceChartFacade::getTimelineCoordinate(IEvent *event, double lowerTimelineCoordinateCalculationLimit, double upperTimelineCoordinateCalculationLimit)
 {
     Assert(event);
+    Assert(event->getEventLog() == eventLog);
     Assert(timelineCoordinateSystemVersion != -1);
     Assert(timelineCoordinateOriginEventNumber != -1);
 
