@@ -71,6 +71,7 @@ class EVENTLOG_API EventLogFacade
         EventLogEntry *EventLogEntry_getEventLogEntry(ptr_t ptr);
         ptr_t EventLogEntry_getEvent(ptr_t ptr);
         int EventLogEntry_getContextModuleId(ptr_t ptr);
+        int EventLogEntry_getEntryIndex(ptr_t ptr);
 
         bool BeginSendEntry_isSelfMessage(ptr_t ptr);
         int BeginSendEntry_getMessageId(ptr_t ptr);

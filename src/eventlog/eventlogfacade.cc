@@ -153,6 +153,12 @@ int EventLogFacade::EventLogEntry_getContextModuleId(ptr_t ptr)
     return ((EventLogEntry*)ptr)->contextModuleId;
 }
 
+int EventLogFacade::EventLogEntry_getEntryIndex(ptr_t ptr)
+{
+    EVENT_LOG_ENTRY_PTR(ptr);
+    return ((EventLogEntry*)ptr)->getEntryIndex();
+}
+
 bool EventLogFacade::BeginSendEntry_isSelfMessage(ptr_t ptr)
 {
     BEGIN_SEND_ENTRY_PTR(ptr);
