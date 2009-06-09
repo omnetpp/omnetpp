@@ -1,3 +1,13 @@
+2009-06-09  Levente M‚sz ros
+
+	* Added sequence chart support to display module method calls as vertical orange arrows.
+	  The arrow's label is the method's name, tooltips are also available.
+        * Some message send arrows were drawn incorrectly from the caller module due to not taking
+	  into consideration module method calls. From now on these kind of arrows might start from
+	  any point on a module's axis, even if there was no event at that simulation time in the
+	  callee module.
+	* Store various show/hide flags in sequence chart eventlog configuration files.
+
 2009-03-12  ------ omnetpp-4.0 released ------
 
 2009-02-27  ------ omnetpp-4.0rc2 released ------

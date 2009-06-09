@@ -182,6 +182,8 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 
     protected SequenceChartAction showTransmissionDurationsAction;
 
+    protected SequenceChartAction showModuleMethodCallsAction;
+
     protected SequenceChartAction increaseSpacingAction;
 
 	protected SequenceChartAction decreaseSpacingAction;
@@ -229,6 +231,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
         this.showAxisLabelsAction = createShowAxisLabelsAction();
         this.showAxesWithoutEventsAction = createShowAxesWithoutEventsAction();
         this.showTransmissionDurationsAction = createShowTransmissionDurationsAction();
+        this.showModuleMethodCallsAction = createShowModuleMethodCallsAction();
 		this.increaseSpacingAction = createIncreaseSpacingAction();
 		this.decreaseSpacingAction = createDecreaseSpacingAction();
         this.defaultZoomAction = createDefaultZoomAction();
@@ -290,7 +293,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 				ArrayList<IEvent> events = new ArrayList<IEvent>();
 				ArrayList<IMessageDependency> msgs = new ArrayList<IMessageDependency>();
 				Point p = sequenceChart.toControl(sequenceChart.getDisplay().getCursorLocation());
-				sequenceChart.collectStuffUnderMouse(p.x, p.y, events, msgs);
+				sequenceChart.collectStuffUnderMouse(p.x, p.y, events, msgs, null);
 
 				// events submenu
 				for (final IEvent event : events) {
@@ -359,6 +362,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                 subMenuManager.add(showAxisLabelsAction);
                 subMenuManager.add(showAxesWithoutEventsAction);
                 subMenuManager.add(showTransmissionDurationsAction);
+                subMenuManager.add(showModuleMethodCallsAction);
 
                 menuManager.add(separatorAction);
 				menuManager.add(increaseSpacingAction);
@@ -1047,6 +1051,21 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
         };
     }
     
+    private SequenceChartAction createShowModuleMethodCallsAction() {
+        return new SequenceChartAction("Show Module Method Calls", Action.AS_CHECK_BOX) {
+            @Override
+            public void run() {
+                sequenceChart.setShowModuleMethodCalls(!sequenceChart.getShowModuleMethodCalls());
+                update();
+            }
+            
+            @Override
+            public void update() {
+                setChecked(sequenceChart.getShowModuleMethodCalls());
+            }
+        };
+    }
+
 	private SequenceChartAction createIncreaseSpacingAction() {
 		return new SequenceChartAction("Increase Spacing", Action.AS_PUSH_BUTTON, SequenceChartPlugin.getImageDescriptor(IMAGE_INCREASE_SPACING)) {
 			@Override

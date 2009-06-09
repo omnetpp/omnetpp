@@ -94,6 +94,7 @@ import org.omnetpp.eventlog.engine.IEventLog;
 import org.omnetpp.eventlog.engine.IMessageDependency;
 import org.omnetpp.eventlog.engine.IMessageDependencyList;
 import org.omnetpp.eventlog.engine.ModuleCreatedEntry;
+import org.omnetpp.eventlog.engine.ModuleMethodBeginEntry;
 import org.omnetpp.eventlog.engine.PtrVector;
 import org.omnetpp.eventlog.engine.SequenceChartFacade;
 import org.omnetpp.scave.engine.FileRun;
@@ -160,6 +161,7 @@ public class SequenceChart
 
 	private static final Color MESSAGE_SEND_COLOR = ColorFactory.BLUE;
 	private static final Color MESSAGE_REUSE_COLOR = ColorFactory.GREEN4;
+    private static final Color MODULE_METHOD_CALL_COLOR = ColorFactory.ORANGE3;
 
 	private static final Color ZERO_SIMULATION_TIME_REGION_COLOR = ColorFactory.GREY90;
 
@@ -210,6 +212,7 @@ public class SequenceChart
     private boolean showAxisLabels = true;
     private boolean showAxesWithoutEvents = false;
     private boolean showTransmissionDurations = true;
+    private boolean showModuleMethodCalls = true;
 
     private AxisOrderingMode axisOrderingMode = AxisOrderingMode.MODULE_ID; // specifies the ordering mode of axes
 
@@ -636,6 +639,21 @@ public class SequenceChart
      */
     public void setShowTransmissionDurations(boolean showTransmissionDurations) {
         this.showTransmissionDurations = showTransmissionDurations;
+        clearCanvasCacheAndRedraw();
+    }
+    
+    /**
+     * Shows/hides module method calls.
+     */
+    public boolean getShowModuleMethodCalls() {
+        return showModuleMethodCalls;
+    }
+
+    /**
+     * Returns whether module method calls are shown on the chart.
+     */
+    public void setShowModuleMethodCalls(boolean showModuleMethodCalls) {
+        this.showModuleMethodCalls = showModuleMethodCalls;
         clearCanvasCacheAndRedraw();
     }
 
@@ -1251,7 +1269,7 @@ public class SequenceChart
                         manualAxisOrder.setAxisOrder(axisOrder);
                     }
 
-                    // restore spacing
+                    // restore options
 					if (sequenceChartState.axisSpacingMode != null)
 					    axisSpacingMode = sequenceChartState.axisSpacingMode;
 					if (sequenceChartState.axisSpacing != -1)
@@ -1262,7 +1280,23 @@ public class SequenceChart
 						setShowEventNumbers(sequenceChartState.showEventNumbers);
 					if (sequenceChartState.showOtherMessageReuses != null)
 						setShowOtherMessageReuses(sequenceChartState.showOtherMessageReuses);
-                    
+					if (sequenceChartState.showSelfMessages != null)
+                        setShowSelfMessages(sequenceChartState.showSelfMessages);
+					if (sequenceChartState.showSelfMessageReuses != null)
+                        setShowSelfMessageReuses(sequenceChartState.showSelfMessageReuses);
+					if (sequenceChartState.showArrowHeads != null)
+                        setShowArrowHeads(sequenceChartState.showArrowHeads);
+					if (sequenceChartState.showZeroSimulationTimeRegions != null)
+                        setShowZeroSimulationTimeRegions(sequenceChartState.showZeroSimulationTimeRegions);
+					if (sequenceChartState.showAxisLabels != null)
+                        setShowAxisLabels(sequenceChartState.showAxisLabels);
+					if (sequenceChartState.showAxesWithoutEvents != null)
+                        setShowAxesWithoutEvents(sequenceChartState.showAxesWithoutEvents);
+					if (sequenceChartState.showTransmissionDurations != null)
+                        setShowTransmissionDurations(sequenceChartState.showTransmissionDurations);
+					if (sequenceChartState.showModuleMethodCalls != null)
+                        setShowModuleMethodCalls(sequenceChartState.showModuleMethodCalls);
+
                     // restore timeline mode
                     if (sequenceChartState.timelineMode != null)
                         setTimelineMode(sequenceChartState.timelineMode);
@@ -1329,13 +1363,21 @@ public class SequenceChart
                 // store timeline mode
 				sequenceChartState.timelineMode = getTimelineMode();
 
-                // store spacing
+                // store options
                 sequenceChartState.axisSpacingMode = getAxisSpacingMode();
                 sequenceChartState.axisSpacing = getAxisSpacing();
                 sequenceChartState.showMessageNames = getShowMessageNames();
                 sequenceChartState.showEventNumbers = getShowEventNumbers();
                 sequenceChartState.showOtherMessageReuses = getShowOtherMessageReuses();
-                
+                sequenceChartState.showSelfMessages = getShowSelfMessages();
+                sequenceChartState.showSelfMessageReuses = getShowSelfMessageReuses();
+                sequenceChartState.showArrowHeads = getShowArrowHeads();
+                sequenceChartState.showZeroSimulationTimeRegions = getShowZeroSimulationTimeRegions();
+                sequenceChartState.showAxisLabels = getShowAxisLabels();
+                sequenceChartState.showAxesWithoutEvents = getShowAxesWithoutEvents();
+                sequenceChartState.showTransmissionDurations = getShowTransmissionDurations();
+                sequenceChartState.showModuleMethodCalls = getShowModuleMethodCalls();
+
 				manager.setProperty(resource, STATE_PROPERTY, sequenceChartState);
 			}
 		}
@@ -1542,11 +1584,10 @@ public class SequenceChart
      * Checks if the current axis modules represent all currently visible modules.
      */
     private boolean validateAxisModules() {
-        for (int moduleId : collectModuleIdsForVisibleModules())
-            if (!getModuleIdToAxisModuleIndexMap().containsKey(moduleId))
-                return false;
+        int numberOfAxisModules = axisModules.size();
+        calculateAxisModules();
         
-        return true;
+        return numberOfAxisModules == axisModules.size();
     }
 
     /**
@@ -1600,8 +1641,8 @@ public class SequenceChart
                 long consequenceEventPtr = sequenceChartFacade.IMessageDependency_getConsequenceEvent(messageDependencyPtr);
                 
                 if (causeEventPtr != 0) {
-    //                if (debug)
-      //                  Debug.println("Collecting axis module for message dependency cause event: #" + sequenceChartFacade.IEvent_getEventNumber(causeEventPtr));
+//                    if (debug)
+//                        Debug.println("Collecting axis module for message dependency cause event: #" + sequenceChartFacade.IEvent_getEventNumber(causeEventPtr));
 
                     if (isInitializationEvent(causeEventPtr))
                         axisModuleIds.add(getInitializationEventContextModuleId(messageDependencyPtr));
@@ -1611,12 +1652,36 @@ public class SequenceChart
    
                 if (consequenceEventPtr != 0) {
 //                    if (debug)
-  //                      Debug.println("Collecting axis module for message dependency consequence event: #" + sequenceChartFacade.IEvent_getEventNumber(consequenceEventPtr));
+//                        Debug.println("Collecting axis module for message dependency consequence event: #" + sequenceChartFacade.IEvent_getEventNumber(consequenceEventPtr));
 
                     axisModuleIds.add(sequenceChartFacade.IEvent_getModuleId(consequenceEventPtr));
                 }
             }
         }
+        
+        // consider visible module method calls
+        extraClipping = getExtraClippingForEvents();
+        eventPtrRange = getFirstLastEventPtrForViewportRange(-extraClipping, getViewportWidth() + extraClipping);
+        startEventPtr = eventPtrRange[0];
+        endEventPtr = eventPtrRange[1];
+
+        if (startEventPtr != 0 && endEventPtr != 0) {
+            if (debug)
+                Debug.println("Collecting axis modules for module method calls using event range: " + sequenceChartFacade.IEvent_getEventNumber(startEventPtr) + " -> " + sequenceChartFacade.IEvent_getEventNumber(endEventPtr));
+
+            PtrVector moduleMethodBeginEntries = sequenceChartFacade.getModuleMethodBeginEntries(startEventPtr, endEventPtr);
+
+            for (int i = 0; i < moduleMethodBeginEntries.size(); i++) {
+                long moduleMethodCallPtr = moduleMethodBeginEntries.get(i);
+                int fromModuleId = sequenceChartFacade.ModuleMethodBeginEntry_getFromModuleId(moduleMethodCallPtr);
+                int toModuleId = sequenceChartFacade.ModuleMethodBeginEntry_getToModuleId(moduleMethodCallPtr);
+                axisModuleIds.add(fromModuleId);
+                axisModuleIds.add(toModuleId);
+            }
+        }
+        
+        if (debug)
+            Debug.println("Module ids that will have axes: " + axisModuleIds);
         
         return axisModuleIds;
     }
@@ -1638,7 +1703,7 @@ public class SequenceChart
                 }
             });
         }
-        else
+        else {
             for (int moduleId : collectModuleIdsForVisibleModules()) {
                 ModuleTreeItem moduleTreeRoot = eventLogInput.getModuleTreeRoot();
                 ModuleTreeItem moduleTreeItem = moduleTreeRoot.findDescendantModule(moduleId);
@@ -1648,6 +1713,7 @@ public class SequenceChart
                     if (axisModule == moduleTreeItem || (axisModule.isCompoundModule() && axisModule.isDescendantModule(moduleTreeItem)))
                         continue;
 
+                // create module tree item on demand
                 if (moduleTreeItem == null) {
                     ModuleCreatedEntry entry = eventLog.getModuleCreatedEntry(moduleId);
 
@@ -1668,6 +1734,7 @@ public class SequenceChart
                     moduleTreeItem = moduleTreeItem.getParentModule();
                 }
             }
+        }
 
         long totalMillis = System.currentTimeMillis() - startMillis;
         if (debug)
@@ -2317,7 +2384,11 @@ public class SequenceChart
 			    drawZeroSimulationTimeRegions(graphics, startEventPtr, endEventPtr);
 			
 			drawAxes(graphics, startEventPtr, endEventPtr);
-	        drawMessageDependencies(graphics);
+
+			if (showModuleMethodCalls)
+			    drawModuleMethodCalls(graphics);
+	        
+			drawMessageDependencies(graphics);
 	        drawEvents(graphics, startEventPtr, endEventPtr);
 
 	        long totalMillis = System.currentTimeMillis() - startMillis;
@@ -2412,8 +2483,74 @@ public class SequenceChart
         axisRenderer.drawAxis(graphics, startEventPtr, endEventPtr);
         graphics.translate(0, -y);
 	}
+	
+	private void drawModuleMethodCalls(Graphics graphics)
+	{
+        int extraClipping = getExtraClippingForEvents();
+        long[] eventPtrRange = getFirstLastEventPtrForViewportRange(-extraClipping, getViewportWidth() + extraClipping);
+        long startEventPtr = eventPtrRange[0];
+        long endEventPtr = eventPtrRange[1];
 
-	/**
+        if (startEventPtr != 0 && endEventPtr != 0) {
+            if (debug)
+                Debug.println("Drawing module method calls in event range: " + sequenceChartFacade.IEvent_getEventNumber(startEventPtr) + " ->: " + sequenceChartFacade.IEvent_getEventNumber(endEventPtr));
+
+            PtrVector moduleMethodBeginEntries = sequenceChartFacade.getModuleMethodBeginEntries(startEventPtr, endEventPtr);
+
+            if (debug)
+                Debug.println("Drawing " + moduleMethodBeginEntries.size() + " module method calls");
+
+            for (int i = 0; i < moduleMethodBeginEntries.size(); i++)
+                drawModuleMethodCall(moduleMethodBeginEntries.get(i), -1, -1, -1, graphics);
+        }
+	}
+
+	private boolean drawModuleMethodCall(long moduleMethodCallPtr, int fitX, int fitY, int tolerance, Graphics graphics) {
+	    int fromModuleId = sequenceChartFacade.ModuleMethodBeginEntry_getFromModuleId(moduleMethodCallPtr);
+	    int toModuleId = sequenceChartFacade.ModuleMethodBeginEntry_getToModuleId(moduleMethodCallPtr);
+
+	    if (getModuleIdToAxisModuleIndexMap().containsKey(fromModuleId) && getModuleIdToAxisModuleIndexMap().containsKey(toModuleId)) {
+	        long eventPtr = sequenceChartFacade.EventLogEntry_getEvent(moduleMethodCallPtr);
+	        long eventNumber = sequenceChartFacade.IEvent_getEventNumber(eventPtr);
+	        // handle the filtered eventlog case
+	        eventPtr = sequenceChartFacade.IEvent_getEventForEventNumber(eventNumber);
+
+	        int fromAxisIndex = getAxisModuleIndexByModuleId(fromModuleId);
+            int toAxisIndex = getAxisModuleIndexByModuleId(toModuleId);
+            int fromY = getModuleYViewportCoordinateByModuleIndex(fromAxisIndex);
+            int toY = getModuleYViewportCoordinateByModuleIndex(toAxisIndex);
+            int x = (int)getEventXViewportCoordinate(eventPtr);
+    
+            if (graphics != null) {
+                graphics.setForegroundColor(MODULE_METHOD_CALL_COLOR);
+                graphics.setLineDash(DOTTED_LINE_PATTERN);
+                graphics.drawLine(x, fromY, x, toY);
+                
+                if (showArrowHeads)
+                    drawArrowHead(graphics, null, x, toY, 0, toY - fromY);
+    
+                if (showMessageNames) {
+                    graphics.setFont(font);
+                    int dy = Math.abs(fromY - toY);
+                    int fontHeight = font.getFontData()[0].getHeight();
+                    int numberOfRows = dy / fontHeight / 2;
+
+                    if (numberOfRows == 0)
+                        dy = 0;
+                    else
+                        dy = fontHeight * ((sequenceChartFacade.EventLogEntry_getEntryIndex(moduleMethodCallPtr) % numberOfRows) - numberOfRows / 2);
+
+                    drawText(graphics, sequenceChartFacade.ModuleMethodBeginEntry_getMethod(moduleMethodCallPtr), x + 7, (fromY + toY) / 2 + dy);
+                }
+            }
+            else
+                return lineContainsPoint(x, fromY, x, toY, fitX, fitY, tolerance);
+	    }
+	    
+	    return false;
+    }
+
+    /**
 	 * Draws all message arrows which have visual representation in the given event range.
 	 */
 	private void drawMessageDependencies(Graphics graphics) {
@@ -2446,6 +2583,7 @@ public class SequenceChart
 
 			HashMap<Integer, Integer> axisYtoLastX = new HashMap<Integer, Integer>();
 
+			// NOTE: navigating through next event takes care about leaving events out which are not in the filter's result
 			for (long eventPtr = startEventPtr;; eventPtr = sequenceChartFacade.IEvent_getNextEvent(eventPtr)) {
                 if (isInitializationEvent(eventPtr))
 			        drawEvent(graphics, eventPtr);
@@ -2577,7 +2715,8 @@ public class SequenceChart
 
 		ArrayList<IEvent> events = new ArrayList<IEvent>();
 		ArrayList<IMessageDependency> messageDependencies = new ArrayList<IMessageDependency>();
-		collectStuffUnderMouse(p.x, p.y, events, messageDependencies);
+        ArrayList<ModuleMethodBeginEntry> moduleMethodCalls = new ArrayList<ModuleMethodBeginEntry>();
+		collectStuffUnderMouse(p.x, p.y, events, messageDependencies, moduleMethodCalls);
 
 		graphics.setLineWidth(2);
 
@@ -2596,6 +2735,10 @@ public class SequenceChart
 
 			for (IMessageDependency messageDependency : messageDependencies)
 				drawOrFitMessageDependency(messageDependency.getCPtr(), -1, -1, -1, graphics, vlineBuffer, startEventPtr, endEventPtr);
+		}
+		else if (moduleMethodCalls.size() >= 1) {
+		    for (ModuleMethodBeginEntry moduleMethodBeginEntry : moduleMethodCalls)
+		        drawModuleMethodCall(moduleMethodBeginEntry.getCPtr(), -1, -1, -1, graphics);
 		}
 		else {
 			// 3) no events or message arrows: highlight axis label
@@ -2814,7 +2957,10 @@ public class SequenceChart
         // calculate pixel coordinates for message arrow endings
         // TODO: what about integer overflow in (int) casts? now that we have converted to long
         int invalid = Integer.MAX_VALUE;
-        int x1 = invalid, y1 = isInitializationEvent(causeEventPtr) ? getInitializationEventYViewportCoordinate(messageDependencyPtr) : getEventYViewportCoordinate(causeEventPtr);
+        int x1 = invalid, y1 = isInitializationEvent(causeEventPtr) ? 
+            y1 = getInitializationEventYViewportCoordinate(messageDependencyPtr) :
+                beginSendEntryPtr != 0 ? getModuleYViewportCoordinateByModuleIndex(getAxisModuleIndexByModuleId(sequenceChartFacade.EventLogEntry_getContextModuleId(beginSendEntryPtr))) :
+                    getEventYViewportCoordinate(causeEventPtr);
         int x2 = invalid, y2 = getEventYViewportCoordinate(consequenceEventPtr);
         int fontHeight = font.getFontData()[0].getHeight();
 
@@ -3711,7 +3857,7 @@ public class SequenceChart
 				if (!eventLogInput.isCanceled()) {
 					ArrayList<IEvent> events = new ArrayList<IEvent>();
 					ArrayList<IMessageDependency> messageDependencies = new ArrayList<IMessageDependency>();
-					collectStuffUnderMouse(me.x, me.y, events, messageDependencies);
+					collectStuffUnderMouse(me.x, me.y, events, messageDependencies, null);
 					
 					if (messageDependencies.size() == 1)
 						zoomToMessageDependency(messageDependencies.get(0));
@@ -3743,7 +3889,7 @@ public class SequenceChart
 								for (Long eventNumber : selectionEventNumbers)
 									events.add(eventLog.getEventForEventNumber(eventNumber));
 
-							collectStuffUnderMouse(me.x, me.y, events, null);
+							collectStuffUnderMouse(me.x, me.y, events, null, null);
 							
 							updateSelectionEvents(events, false);
 						}
@@ -3783,7 +3929,8 @@ public class SequenceChart
 	private String getTooltipText(int x, int y, SizeConstraint outSizeConstraint) {
 		ArrayList<IEvent> events = new ArrayList<IEvent>();
 		ArrayList<IMessageDependency> messageDependencies = new ArrayList<IMessageDependency>();
-		collectStuffUnderMouse(x, y, events, messageDependencies);
+        ArrayList<ModuleMethodBeginEntry> moduleMethodCalls = new ArrayList<ModuleMethodBeginEntry>();
+		collectStuffUnderMouse(x, y, events, messageDependencies, moduleMethodCalls);
 
 		// 1) if there are events under them mouse, show them in the tooltip
 		if (events.size() > 0) {
@@ -3820,7 +3967,7 @@ public class SequenceChart
 		}
 
 		// 2) no events: show message arrows info
-		if (messageDependencies.size() >= 1) {
+		if (messageDependencies.size() > 0) {
 			String res = "";
 			for (IMessageDependency messageDependency : messageDependencies) {
 				if (res.length() != 0)
@@ -3831,8 +3978,21 @@ public class SequenceChart
 
 			return res;
 		}
+		
+		// 3) no message arrows: show module method call info
+		if (moduleMethodCalls.size() > 0) {
+            String res = "";
+            for (ModuleMethodBeginEntry moduleMethodCall : moduleMethodCalls) {
+                if (res.length() != 0)
+                    res += "<br/>";
 
-		// 3) no events or message arrows: show axis info
+                res += getModuleMethodCallText(moduleMethodCall, true, outSizeConstraint);
+            }
+
+            return res;
+		}
+
+		// 4) no events or message arrows or module method calls: show axis info
 		ModuleTreeItem axisModule = findAxisAt(y);
 		if (axisModule != null) {
 			String res = getAxisText(axisModule, true) + "<br/>";
@@ -3938,6 +4098,14 @@ public class SequenceChart
         String boldEnd = formatted ? "</b>" : "";
         return "(" + beginSendEntry.getMessageClassName() + ") " + boldStart + beginSendEntry.getMessageFullName() + boldEnd;
     }
+    
+    private String getModuleMethodCallText(ModuleMethodBeginEntry moduleMethodCall, boolean formatted, SizeConstraint outSizeConstraint) {
+        String itallicStart = formatted ? "<i>" : "";
+        String itallicEnd = formatted ? "</i>" : "";
+        ModuleCreatedEntry fromModuleCreatedEntry = eventLog.getModuleCreatedEntry(moduleMethodCall.getFromModuleId());
+        ModuleCreatedEntry toModuleCreatedEntry = eventLog.getModuleCreatedEntry(moduleMethodCall.getToModuleId());
+        return itallicStart + moduleMethodCall.getMethod() + itallicEnd + " - method call from module " + getModuleText(fromModuleCreatedEntry, formatted) + " to module " + getModuleText(toModuleCreatedEntry, formatted);
+    }
 
     private String getSimulationTimeDeltaText(IMessageDependency messageDependency) {
         BigDecimal causeSimulationTime = messageDependency.getCauseSimulationTime().toBigDecimal();
@@ -3980,17 +4148,12 @@ public class SequenceChart
 		if (formatted)
 		    result += " at t = " + event.getSimulationTime();
 
-		String moduleName = (formatted ? eventLogInput.getEventLogTableFacade().ModuleCreatedEntry_getModuleFullPath(moduleCreatedEntry.getCPtr()) : moduleCreatedEntry.getFullName());
-		String typeName = moduleCreatedEntry.getNedTypeName();
-		if (!formatted && typeName.contains("."))
-		    typeName = StringUtils.substringAfterLast(typeName, ".");
-
         result += " in ";
 
         if (formatted)
-            result += "module";
+            result += "module ";
         
-        result += "(" + typeName + ") " +  boldStart + moduleName + boldEnd + " (id = " + event.getModuleId() + ")";
+        result += getModuleText(moduleCreatedEntry, formatted) + " (id = " + event.getModuleId() + ")";
 
 		IMessageDependency messageDependency = event.getCause();
 		BeginSendEntry beginSendEntry = null;
@@ -4010,6 +4173,18 @@ public class SequenceChart
 		    result += "<br/>Timeline Coordinate: " + sequenceChartFacade.getTimelineCoordinate(event);
 
 		return result;
+	}
+	
+	private String getModuleText(ModuleCreatedEntry moduleCreatedEntry, boolean formatted) {
+        String boldStart = formatted ? "<b>" : "";
+        String boldEnd = formatted ? "</b>" : "";
+        String moduleName = (formatted ? eventLogInput.getEventLogTableFacade().ModuleCreatedEntry_getModuleFullPath(moduleCreatedEntry.getCPtr()) : moduleCreatedEntry.getFullName());
+        String typeName = moduleCreatedEntry.getNedTypeName();
+
+        if (!formatted && typeName.contains("."))
+            typeName = StringUtils.substringAfterLast(typeName, ".");
+        
+        return "(" + typeName + ") " +  boldStart + moduleName + boldEnd;
 	}
 
 	/**
@@ -4039,7 +4214,7 @@ public class SequenceChart
 	 * If you're interested only in messages or only in events, pass null in the
 	 * events or msgs argument. This method does NOT clear the lists before filling them.
 	 */
-	public void collectStuffUnderMouse(final int mouseX, final int mouseY, final List<IEvent> events, final List<IMessageDependency> msgs) {
+	public void collectStuffUnderMouse(final int mouseX, final int mouseY, final List<IEvent> events, final List<IMessageDependency> msgs, final List<ModuleMethodBeginEntry> calls) {
 		if (!eventLogInput.isCanceled() && !eventLogInput.isLongRunningOperationInProgress()) {
 			eventLogInput.runWithProgressMonitor(new Runnable() {
 				public void run() {
@@ -4048,39 +4223,39 @@ public class SequenceChart
 			            if (debug)
 			                Debug.println("collectStuffUnderMouse(): enter");
 
-						// determine start/end event numbers
-						int width = getViewportWidth();
-						long[] eventPtrRange = getFirstLastEventPtrForViewportRange(0, width);
-						long startEventPtr = eventPtrRange[0];
-						long endEventPtr = eventPtrRange[1];
-
 						// check events
-			            if (events != null && startEventPtr != 0 && endEventPtr != 0) {
-			            	for (long eventPtr = startEventPtr;; eventPtr = sequenceChartFacade.IEvent_getNextEvent(eventPtr)) {
-			            	    int x = (int)getEventXViewportCoordinate(eventPtr);
-
-			            	    if (isInitializationEvent(eventPtr)) {
-			                        for (int i = 0; i < sequenceChartFacade.IEvent_getNumConsequences(eventPtr); i++) {
-			                            long consequencePtr = sequenceChartFacade.IEvent_getConsequence(eventPtr, i);
-			                            int y = getInitializationEventYViewportCoordinate(consequencePtr);
-
-			                            if (eventSymbolContainsPoint(mouseX, mouseY - GUTTER_HEIGHT, x, y, MOUSE_TOLERANCE))
-		                                    events.add(sequenceChartFacade.IEvent_getEvent(eventPtr));
-			                        }
-			            	    }
-			            	    else if (eventSymbolContainsPoint(mouseX, mouseY - GUTTER_HEIGHT, x, getEventYViewportCoordinate(eventPtr), MOUSE_TOLERANCE))
-			   						events.add(sequenceChartFacade.IEvent_getEvent(eventPtr));
-
-			   					if (eventPtr == endEventPtr)
-				   					break;
+			            if (events != null) {
+	                        long[] eventPtrRange = getFirstLastEventPtrForViewportRange(0, getViewportWidth());
+	                        long startEventPtr = eventPtrRange[0];
+	                        long endEventPtr = eventPtrRange[1];
+	                        
+	                        if (startEventPtr != 0 && endEventPtr != 0) {
+    			            	for (long eventPtr = startEventPtr;; eventPtr = sequenceChartFacade.IEvent_getNextEvent(eventPtr)) {
+    			            	    int x = (int)getEventXViewportCoordinate(eventPtr);
+    
+    			            	    if (isInitializationEvent(eventPtr)) {
+    			                        for (int i = 0; i < sequenceChartFacade.IEvent_getNumConsequences(eventPtr); i++) {
+    			                            long consequencePtr = sequenceChartFacade.IEvent_getConsequence(eventPtr, i);
+    			                            int y = getInitializationEventYViewportCoordinate(consequencePtr);
+    
+    			                            if (eventSymbolContainsPoint(mouseX, mouseY - GUTTER_HEIGHT, x, y, MOUSE_TOLERANCE))
+    		                                    events.add(sequenceChartFacade.IEvent_getEvent(eventPtr));
+    			                        }
+    			            	    }
+    			            	    else if (eventSymbolContainsPoint(mouseX, mouseY - GUTTER_HEIGHT, x, getEventYViewportCoordinate(eventPtr), MOUSE_TOLERANCE))
+    			   						events.add(sequenceChartFacade.IEvent_getEvent(eventPtr));
+    
+    			   					if (eventPtr == endEventPtr)
+    				   					break;
+    			            	}
 				   			}
 			            }
 
 			            // check message arrows
 			            if (msgs != null) {
-			        		eventPtrRange = getFirstLastEventPtrForMessageDependencies();
-			    			startEventPtr = eventPtrRange[0];
-			    			endEventPtr = eventPtrRange[1];
+			                long[] eventPtrRange = getFirstLastEventPtrForMessageDependencies();
+			    			long startEventPtr = eventPtrRange[0];
+			    			long endEventPtr = eventPtrRange[1];
 
 			    			if (startEventPtr != 0 && endEventPtr != 0) {
 				            	PtrVector messageDependencies = sequenceChartFacade.getIntersectingMessageDependencies(startEventPtr, endEventPtr);
@@ -4096,6 +4271,24 @@ public class SequenceChart
 				        		}
 			    			}
 			            }
+
+			            // check module method calls
+                        if (calls != null) {
+                            long[] eventPtrRange = getFirstLastEventPtrForViewportRange(0, getViewportWidth());
+                            long startEventPtr = eventPtrRange[0];
+                            long endEventPtr = eventPtrRange[1];
+
+                            if (startEventPtr != 0 && endEventPtr != 0) {
+                                PtrVector moduleMethodBeginEntries = sequenceChartFacade.getModuleMethodBeginEntries(startEventPtr, endEventPtr);
+
+                                for (int i = 0; i < moduleMethodBeginEntries.size(); i++) {
+                                    long moduleMethodBeginEntryPtr = moduleMethodBeginEntries.get(i);
+                                    
+                                    if (drawModuleMethodCall(moduleMethodBeginEntryPtr, mouseX, mouseY - GUTTER_HEIGHT, MOUSE_TOLERANCE, null))
+                                        calls.add((ModuleMethodBeginEntry)sequenceChartFacade.EventLogEntry_getEventLogEntry(moduleMethodBeginEntryPtr));
+                                }
+                            }
+                        }
 
 			            long totalMillis = System.currentTimeMillis() - startMillis;
 			            if (debug)
@@ -4452,6 +4645,14 @@ class SequenceChartState implements Serializable {
 	public Boolean showOtherMessageReuses;
 	public Boolean showEventNumbers;
 	public Boolean showMessageNames;
+    public Boolean showSelfMessages;
+    public Boolean showSelfMessageReuses;
+    public Boolean showArrowHeads;
+    public Boolean showZeroSimulationTimeRegions;
+    public Boolean showAxisLabels;
+    public Boolean showAxesWithoutEvents;
+    public Boolean showTransmissionDurations;
+    public Boolean showModuleMethodCalls;
 }
 
 /**
