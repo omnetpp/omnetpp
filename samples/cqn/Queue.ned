@@ -16,6 +16,7 @@
 simple Queue
 {
     parameters:
+        int priority;
         int numInitialJobs;
         volatile double serviceTime @unit(s);
         @display("i=block/queue;q=queue");

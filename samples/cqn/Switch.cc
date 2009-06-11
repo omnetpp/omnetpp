@@ -16,6 +16,7 @@
 class Switch : public cSimpleModule
 {
   private:
+    short int priority;
     int numGates;
 
   protected:
@@ -27,12 +28,14 @@ Define_Module(Switch);
 
 void Switch::initialize()
 {
+    priority = par("priority");
     numGates = gateSize("out");
 }
 
 void Switch::handleMessage(cMessage *msg)
 {
     int gate = intuniform(0,numGates-1);
+    msg->setSchedulingPriority(priority);
     send(msg,"out",gate);
 }
 

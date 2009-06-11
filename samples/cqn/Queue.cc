@@ -18,9 +18,11 @@
 class AbstractQueue : public cSimpleModule
 {
   protected:
+    short int priority;
     cMessage *msgServiced;
     cMessage *endServiceMsg;
     cQueue queue;
+    cOutVector queueLength;
 
   public:
     AbstractQueue();
@@ -49,8 +51,10 @@ AbstractQueue::~AbstractQueue()
 
 void AbstractQueue::initialize()
 {
+    priority = par("priority");
     endServiceMsg = new cMessage("end-service");
     queue.setName("queue");
+    queueLength.setName("queueLength");
 }
 
 void AbstractQueue::handleMessage(cMessage *msg)
@@ -66,7 +70,9 @@ void AbstractQueue::handleMessage(cMessage *msg)
         else
         {
             msgServiced = (cMessage *) queue.pop();
+            queueLength.record(queue.length());
             simtime_t serviceTime = startService( msgServiced );
+            endServiceMsg->setSchedulingPriority(priority);
             scheduleAt( simTime()+serviceTime, endServiceMsg );
         }
     }
@@ -77,12 +83,14 @@ void AbstractQueue::handleMessage(cMessage *msg)
         arrival( msg );
         msgServiced = msg;
         simtime_t serviceTime = startService( msgServiced );
+        endServiceMsg->setSchedulingPriority(priority);
         scheduleAt( simTime()+serviceTime, endServiceMsg );
     }
     else
     {
         arrival( msg );
         queue.insert( msg );
+        queueLength.record(queue.length());
     }
 }
 
@@ -111,11 +119,13 @@ void Queue::initialize()
     {
         cMessage *job = new cMessage("job");
         queue.insert(job);
+        queueLength.record(queue.length());
     }
 
     if (!queue.empty())
     {
         msgServiced = (cMessage *) queue.pop();
+        queueLength.record(queue.length());
         simtime_t serviceTime = startService( msgServiced );
         scheduleAt( simTime()+serviceTime, endServiceMsg );
 
@@ -132,6 +142,7 @@ simtime_t Queue::startService(cMessage *msg)
 void Queue::endService(cMessage *msg)
 {
     EV << "Completed service of " << msg->getName() << endl;
+    msg->setSchedulingPriority(priority);
     send( msg, "out" );
 }
 

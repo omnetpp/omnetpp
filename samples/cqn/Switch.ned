@@ -15,6 +15,7 @@
 simple Switch
 {
     parameters:
+        int priority;
         @display("i=block/switch");
     gates:
         input in;
