@@ -236,7 +236,7 @@ void AggregatorNodeType::validateAttrValues(const StringMap& attrs) const
 	{
 		const std::string& fn = it->second;
 		if (fn != "average" && fn != "count" && fn != "minimum" && fn != "maximum")
-			throw opp_runtime_error("Unknown aggregator function: %s.", fn.c_ptr());
+			throw opp_runtime_error("Unknown aggregator function: %s.", fn.c_str());
 	}
 }
 
