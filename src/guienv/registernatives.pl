@@ -9,12 +9,10 @@
 $verbose = 0;
 
 $javafile = $ARGV[0];
+$cppfile = $ARGV[1];
 die "no Java file specified" if ($javafile eq '');
+die "no output C++ file specified" if ($cppfile eq '');
 
-$cppfile = $javafile;
-$cppfile =~ s|\.java|_registerNatives.cc|;
-$cppfile =~ s|^.*[/\\]||;
-$cppfile = $ARGV[1] . "\\" . $cppfile;
 print $cppfile;
 
 open(INFILE, $javafile) || die "cannot open $javafile";

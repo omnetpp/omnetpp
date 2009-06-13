@@ -15,6 +15,7 @@
 !endif
 
 #XXX should come from configuser.vc
+#TODO: in the released source, don't run swig (except via an explicit target)
 GUIENV_IF_POSSIBLE = guienv
 SWIG = "$(TOOLS_DIR)\SWIGWIN-1.3.38\swig.exe"
 JDK = "$(TOOLS_DIR)\jdk1.5.0"
@@ -23,9 +24,6 @@ JAVA_CFLAGS = -I"$(JDK)\include" -I"$(JDK)\include\win32"
 #
 # Local definitions
 #
-JAVAPKG = org.omnetpp.runtime.nativelibs.simkernel
-JAVADIR = java\$(JAVAPKG:.=\)
-
 LIBNAME=oppguienv$D
 O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/guienv
 L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
@@ -34,13 +32,16 @@ COPTS=$(CFLAGS) -I$(OMNETPP_INCL_DIR) -I$(OMNETPP_INCL_DIR)/platdep -I../common 
 
 IMPLIBS= $O/../sim/oppsim$D.lib $O/../envir/oppenvir$D.lib $O/../layout/opplayout$D.lib $O/../common/oppcommon$D.lib
 
-OBJS = $O/simkernel_wrap.obj \
+OBJS = $O/simkernel_wrap.obj $O/registernatives.obj \
        $O/visitor.obj $O/jutil.obj $O/logbuffer.obj $O/logbufferview.obj \
        $O/jcallback.obj $O/guienv.obj $O/wrappertable.obj
 
 !if "$(LIB_SUFFIX)"==".dll"
 COPTS= $(COPTS) -DGUIENV_EXPORT
 !endif
+
+JAVAPKG = org.omnetpp.runtime.nativelibs.simkernel
+JAVADIR = $(OMNETPP_UI_DIR)/org.omnetpp.runtime.nativelibs/src/$(JAVAPKG:.=\)
 
 JAVA_COBJECTS = \
     cAccuracyDetection.java cADByStddev.java cArray.java cChannel.java \
@@ -91,13 +92,19 @@ $O/$(LIBNAME).dll : $(OBJS) $L
 	copy $(O:/=\)\$(LIBNAME).lib $(L:/=\)
 	-copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 2>nul
 
-simkernel_wrap.cxx: *.i *.h Makefile.vc $(OMNETPP_ROOT)/include/*.h  # and many other things
+simkernel_wrap.cxx registernatives.cc : *.i *.h Makefile.vc $(OMNETPP_ROOT)/include/*.h  # and many other things
+	-rd /s/q $(JAVADIR:/=\)
 	md $(JAVADIR:/=\)
-	-del $(JAVADIR)\*.java >nul
 	$(SWIG) -c++ -java -package $(JAVAPKG) -I$(OMNETPP_ROOT)/include -I$(OMNETPP_ROOT)/src/envir -I$(OMNETPP_ROOT) -outdir $(JAVADIR) simkernel.i
-	@: Patch the generated Java files so that they access swigCPtr via checkZombie() that detects null pointers (see WrapperTable!)
+	@:# Patch the generated Java files so that they access swigCPtr via checkZombie() that detects null pointers (see WrapperTable!)
 	-@for %%i in ( $(JAVA_COBJECTS) ) do @$(PERL) -i.bak -pe "s!\(swigCPtr, this!(checkZombie(swigCPtr), this!g" $(JAVADIR)\%%i
 	-@for %%i in ( $(JAVA_COBJECTS) ) do @$(PERL) -i.bak -pe "s!0 : obj.swigCPtr;!0 : obj.checkZombie(obj.swigCPtr);!g" $(JAVADIR)\%%i
+	-del $(JAVADIR:/=\)\*.bak >nul
+	@:# Patch the generated simkernel_wrap.cc NOT to export the symbols (because we use registernatives.cc)
+	$(PERL) -i.bak -pe "s/SWIGEXPORT +//g" simkernel_wrap.cxx
+	$(PERL) -i.bak -pe "s/JNICALL +//g" simkernel_wrap.cxx
+	$(PERL) registernatives.pl $(JAVADIR)/SimkernelJNI.java registernatives.cc
+	-del simkernel_wrap.cxx.bak
 
 $(OBJS): $O
 
@@ -114,6 +121,10 @@ depend:
 clean:
 	-rmdir /s /q $(O:/=\) 2>nul
 	-del /q $(L:/=\)\$(LIBNAME).* $(OMNETPP_LIB_DIR:/=\)\$(LIBNAME).* 2>nul
+
+veryclean: clean
+	-del /q simkernel_wrap.cxx registernatives.cc
+
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
