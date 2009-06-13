@@ -18,6 +18,7 @@
 #ifndef __UTIL_H
 #define __UTIL_H
 
+#include "guienvdefs.h"
 #include "cobject.h"
 
 NAMESPACE_BEGIN

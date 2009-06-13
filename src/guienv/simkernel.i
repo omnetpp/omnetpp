@@ -2,6 +2,7 @@
 
 %{
 #include "omnetpp.h"
+#include "guienvdefs.h"
 #include "innerclasses.h"
 #include "visitor.h"
 %}

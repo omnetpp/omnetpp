@@ -1,3 +1,4 @@
+#include "guienvdefs.h"
 #include <omnetpp.h>
 
 // swig cannot handle inner classes, so wrap the ones we need in global classes

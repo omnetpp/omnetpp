@@ -18,6 +18,7 @@
 #define __LOGBUFFERVIEW_H
 
 #include <set>
+#include "guienvdefs.h"
 #include "logbuffer.h"
 
 NAMESPACE_BEGIN

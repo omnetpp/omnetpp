@@ -3,12 +3,15 @@
 //                     OMNeT++/OMNEST
 //             Discrete System Simulation in C++
 //
-//  General defines for the GUIEnv library
+//  General defines for the GUIENV library
+//
+//  Author: Andras Varga
 //
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2005 Andras Varga
+  Copyright (C) 1992-2008 Andras Varga
+  Copyright (C) 2006-2008 OpenSim Ltd.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -17,15 +20,17 @@
 #ifndef __GUIENVDEFS_H
 #define __GUIENVDEFS_H
 
-#include "simkerneldefs.h"  // for OPP_DLLIMPORT, OPP_DLLEXPORT
+#include "platdefs.h"
 
-// OPP_DLLIMPORT/EXPORT are empty if non-Windows, non-dll, etc.
-#ifdef BUILDING_GUIENV
-#  define GUIENV_API  OPP_DLLEXPORT
+NAMESPACE_BEGIN
+
+#if defined(GUIENV_EXPORT)
+#  define GUIENV_API OPP_DLLEXPORT
+#elif defined(GUIENV_IMPORT) || defined(OMNETPPLIBS_IMPORT)
+#  define GUIENV_API OPP_DLLIMPORT
 #else
-#  define GUIENV_API  OPP_DLLIMPORT
+#  define GUIENV_API
 #endif
-
 
 //XXX temporary
 class DBGTrace
@@ -39,5 +44,8 @@ class DBGTrace
 
 //#define TRACE(x) DBGTrace _(x)
 #define TRACE(x)
+
+NAMESPACE_END
+
 
 #endif

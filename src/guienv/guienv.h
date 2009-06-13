@@ -20,6 +20,7 @@
 #include <vector>
 #include <list>
 #include <stdio.h>
+#include "guienvdefs.h"
 #include "envirbase.h"
 #include "logbuffer.h"
 #include "jcallback.h"

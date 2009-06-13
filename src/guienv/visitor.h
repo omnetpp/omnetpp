@@ -17,6 +17,7 @@
 #ifndef __VISITOR_H
 #define __VISITOR_H
 
+#include "guienvdefs.h"
 #include "cenvir.h"
 #include "cobject.h"
 #include "cvisitor.h"

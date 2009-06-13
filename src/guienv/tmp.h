@@ -1,7 +1,9 @@
-#include <omnetpp.h>
 
 #ifndef TMP_H
 #define TMP_H
+
+#include <omnetpp.h>
+#include "guienvdefs.h"
 
 #define MAX_OBJECTFULLPATH 1024
 #define MAX_CLASSNAME      100

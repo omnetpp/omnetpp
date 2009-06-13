@@ -64,7 +64,8 @@ open(OUT, ">$cppfile") || die "cannot open $cppfile";
 print OUT "// generated using registernatives.pl\n\n";
 print OUT "#include <stdio.h>\n";
 print OUT "#include <stdlib.h>\n";
-print OUT "#include <jni.h>\n\n";
+print OUT "#include <jni.h>\n";
+print OUT "#include \"guienvdefs.h\"\n\n";
 print OUT "extern \"C\" {\n";
 for ($i=0; $i<$n; $i++) {
     print OUT "void $mfunc{$i}(JNIEnv *jenv, jclass jcls,...);\n";
