@@ -20,6 +20,7 @@
 #include <vector>
 #include <list>
 #include <stdio.h>
+#include <jni.h>
 #include "guienvdefs.h"
 #include "envirbase.h"
 #include "logbuffer.h"
@@ -36,21 +37,27 @@
 class GUIENV_API GUIEnv : public EnvirBase
 {
   private:
+    static JavaVM *jvm;
     static JNIEnv *jenv;
-    static jobject javaApp;
+    static jobject javaApp;  //???
 
     LogBuffer logBuffer;
     JCallback *jcallback;
     WrapperTable wrapperTable;
 
+  protected:
+    void initJVM();
+
   public:
     static void setJavaApplication(JNIEnv *jenv_, jobject javaApp_) {
+        //XXX jvm ptr cannot be initialized -- remove it?
         jenv = jenv_;
         javaApp = jenv->NewGlobalRef(javaApp_);
     }
 
-    GUIEnv() : EnvirBase(), wrapperTable(jenv) {
+    GUIEnv() {
         jcallback = NULL;
+        if (jenv) wrapperTable.init(jenv);
     }
 
     ~GUIEnv() {

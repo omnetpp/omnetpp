@@ -19,7 +19,7 @@
 #include <stdio.h>
 #include "guienvdefs.h"
 #include "omnetpp.h"
-#include "jni.h"
+#include <jni.h>
 
 class JCallback
 {

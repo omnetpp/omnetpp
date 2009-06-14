@@ -15,13 +15,30 @@
 
 *--------------------------------------------------------------*/
 
-#ifndef __UTIL_H
-#define __UTIL_H
+#ifndef __JUTIL_H
+#define __JUTIL_H
 
+#include <jni.h>
 #include "guienvdefs.h"
 #include "cobject.h"
 
 NAMESPACE_BEGIN
+
+/**
+ * Convenience methods for working with JNI.
+ */
+/*XXX
+namespace JUtil
+{
+  extern JavaVM *vm;
+  extern JNIEnv *jenv;
+
+  std::string fromJavaString(jstring stringObject);
+  jmethodID findMethod(jclass clazz, const char *clazzName, const char *methodName, const char *methodSig);
+  void checkExceptions();
+  template<typename T> T checkException(T a)  {checkExceptions(); return a;}
+};
+*/
 
 const char *getObjectShortTypeName(cObject *object);
 const char *getObjectFullTypeName(cObject *object);

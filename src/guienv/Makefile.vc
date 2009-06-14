@@ -20,6 +20,7 @@ GUIENV_IF_POSSIBLE = guienv
 SWIG = "$(TOOLS_DIR)\SWIGWIN-1.3.38\swig.exe"
 JDK = $(TOOLS_DIR)\jdk1.5.0  #no quotes
 JAVA_CFLAGS = -I"$(JDK)\include" -I"$(JDK)\include\win32"
+JAVA_LIBS = /libpath:"$(JDK)/lib" jvm.lib
 
 #
 # Local definitions
@@ -29,7 +30,7 @@ O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/guienv
 L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 
 COPTS=$(CFLAGS) -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" -I../envir -I../nedxml -I../layout -I../eventlog -I../common $(JAVA_CFLAGS) /Fd"$O/$(LIBNAME).pdb"
-IMPLIBS= $O/../sim/oppsim$D.lib $O/../envir/oppenvir$D.lib $O/../layout/opplayout$D.lib $O/../common/oppcommon$D.lib
+IMPLIBS= $O/../sim/oppsim$D.lib $O/../envir/oppenvir$D.lib $O/../layout/opplayout$D.lib $O/../common/oppcommon$D.lib $(JAVA_LIBS)
 
 OBJS = $O/visitor.obj $O/jutil.obj $O/logbuffer.obj $O/logbufferview.obj \
        $O/jcallback.obj $O/guienv.obj $O/wrappertable.obj \

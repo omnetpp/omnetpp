@@ -29,20 +29,120 @@
 //
 Register_OmnetApp("GUIEnv", GUIEnv, 30, "RCP-based graphical user interface");
 
+//
+// The following function can be used to force linking with GUIEnv; specify
+// -u _guienv_lib (gcc) or /include:_guienv_lib (vc++) in the link command.
+//
+extern "C" GUIENV_API void guienv_lib() {}
+// on some compilers (e.g. linux gcc 4.2) the functions are generated without _
+extern "C" GUIENV_API void _guienv_lib() {}
+
+
+JavaVM *GUIEnv::jvm;
 JNIEnv *GUIEnv::jenv;
 jobject GUIEnv::javaApp;
 
+#ifdef _WIN32
+#define PATH_SEP ";"
+#else
+#define PATH_SEP ":"
+#endif
+
+#define DEBUGPRINTF printf
+//#define DEBUGPRINTF (void)
+
+// comes from the generated registernatives.cc file
+void SimkernelJNI_registerNatives(JNIEnv *jenv);
+
+void GUIEnv::initJVM()
+{
+    DEBUGPRINTF("Starting JVM...\n");
+    JavaVMInitArgs vm_args;
+    JavaVMOption options[10];
+
+    int n = 0;
+/*
+    const char *classpath = getenv("CLASSPATH");
+    if (!classpath)
+        opp_error("CLASSPATH environment variable is not set");
+    std::string classpathOption = std::string("-Djava.class.path=")+(classpath ? classpath : "");
+    options[n++].optionString = (char *)classpathOption.c_str(); // user classes
+    options[n++].optionString = (char *)"-Djava.library.path=."; // set native library path
+*/
+
+    options[n++].optionString = "-Dfile.encoding=Cp1252";  //XXX Eclipse did it so, but it this necessary & same on all platforms?
+    options[n++].optionString = "-classpath C:\\eclipse\\plugins\\org.eclipse.equinox.launcher_1.0.100.v20080509-1800.jar"; //XXX hardcoded!!!!
+
+    //XXX for debugging:
+    options[n++].optionString = "-Djava.compiler=NONE";    // disable JIT
+    options[n++].optionString = "-verbose:jni";            // print JNI-related messages
+    options[n++].optionString = "-verbose:class";          // print class loading messages
+
+    vm_args.version = JNI_VERSION_1_2;
+    vm_args.options = options;
+    vm_args.nOptions = n;
+    vm_args.ignoreUnrecognized = true;
+
+    int res = JNI_CreateJavaVM(&jvm, (void **)&jenv, &vm_args);
+    if (res<0)
+        opp_error("Could not create Java VM: JNI_CreateJavaVM returned %d", res); //XXX
+
+    DEBUGPRINTF("Registering native methods...\n");
+    SimkernelJNI_registerNatives(jenv);
+    DEBUGPRINTF("Done.\n");
+}
 
 void GUIEnv::run()
 {
-    jclass clazz = jenv->GetObjectClass(javaApp);
-    jmethodID doStartMethodID = jenv->GetMethodID(clazz, "doStart", "()V");
-    if (doStartMethodID==NULL) {
-        fprintf(stderr, "GUIEnv initialization failed: application object has no method doStart()\n");
-        exit(1);
+    if (!jvm) {
+        // Normal startup: create JVM, and launch RCP application
+        initJVM();
+        wrapperTable.init(jenv);
+        DEBUGPRINTF("Launching the RCP app...\n");
+
+        // look for org.eclipse.equinox.launcher.Main
+        //TODO
+
+        // prepare args array
+        std::vector<std::string> args;
+        args.push_back("-application");
+        args.push_back("org.omnetpp.runtimeenv.application");
+        args.push_back("-data");
+        args.push_back("C:/home/omnetpp40/omnetpp/runtime-org.omnetpp.runtimeenv.application"); //XXX hardcoded!!!
+        args.push_back("-configuration");
+        args.push_back("file:C:/home/omnetpp40/omnetpp/ui/.metadata/.plugins/org.eclipse.pde.core/org.omnetpp.runtimeenv.application/"); //XXX
+        args.push_back("-dev");
+        args.push_back("file:C:/home/omnetpp40/omnetpp/ui/.metadata/.plugins/org.eclipse.pde.core/org.omnetpp.runtimeenv.application/dev.properties"); //XXX
+        args.push_back("-os");
+        args.push_back("win32"); //XXX
+        args.push_back("-ws");
+        args.push_back("win32");
+        args.push_back("-arch");
+        args.push_back("x86");
+        args.push_back("-nl");
+        args.push_back("en_US");
+        //TODO
+
+        // run the app: new Main().run(args)
+        jenv->CallVoidMethod(mainObject, runMethodID);
+        //TODO
+
     }
-    jenv->CallVoidMethod(javaApp, doStartMethodID);  // this goes back Java and runs the appliation. it only returns when the application exits
-    jenv->DeleteGlobalRef(javaApp);
+    else {
+        // Developer mode: program was launched as an RCP project (via the standard
+        // eclipse launcher), and this class was dynamically created from Java code,
+        // org.omnetpp.runtimeenv.Application.start(). We need to call back
+        // Application.doStart().
+        //
+        jclass clazz = jenv->GetObjectClass(javaApp);
+        jmethodID doStartMethodID = jenv->GetMethodID(clazz, "doStart", "()V");
+        if (doStartMethodID==NULL) {
+            fprintf(stderr, "GUIEnv initialization failed: application object has no method doStart()\n");
+            exit(1);
+        }
+        jenv->CallVoidMethod(javaApp, doStartMethodID);  // this goes back Java and runs the appliation. it only returns when the application exits
+        jenv->DeleteGlobalRef(javaApp);
+    }
 }
 
 void GUIEnv::setJCallback(JNIEnv *jenv, jobject jcallbackobj)

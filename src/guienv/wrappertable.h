@@ -18,7 +18,7 @@
 
 #include "guienvdefs.h"
 #include "omnetpp.h"
-#include "jni.h"
+#include <jni.h>
 
 /*------------------
  into cObject:
@@ -73,7 +73,9 @@ class WrapperTable
     jmethodID zapMethodID;
 
   public:
-    WrapperTable(JNIEnv *je);
+    WrapperTable(JNIEnv *je=NULL);
+    // allows delayed initialization
+    void init(JNIEnv *je);
     // add weak reference to table (called from Java cObject ctor)
     void wrapperCreated(cObject *p, jobject wrapper);
     // should be called from finalize(); removes object from the table. Alleviates need for purge().

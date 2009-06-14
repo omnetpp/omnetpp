@@ -23,6 +23,15 @@
 
 WrapperTable::WrapperTable(JNIEnv *je)
 {
+    jenv = NULL;
+    zapMethodID = 0;
+
+    if (je)
+        init(je);
+}
+
+void WrapperTable::init(JNIEnv *je)
+{
     jenv = je;
     ASSERT(jenv!=NULL);
     jclass clazz = jenv->FindClass("org/omnetpp/runtime/nativelibs/simkernel/cObject");
@@ -33,12 +42,14 @@ WrapperTable::WrapperTable(JNIEnv *je)
 
 void WrapperTable::wrapperCreated(cObject *p, jobject wrapper)
 {
+    ASSERT(jenv!=NULL);
     jweak ref = jenv->NewWeakGlobalRef(wrapper);
     wrappers.insert( std::pair<cObject*,jweak>(p,ref) );
 }
 
 void WrapperTable::wrapperFinalized(cObject *p, jobject wrapper)
 {
+    ASSERT(jenv!=NULL);
     std::pair<RefMap::iterator,RefMap::iterator> range = wrappers.equal_range(p);
     for (RefMap::iterator it = range.first; it != range.second; /*nop*/) {
         ASSERT(it->first == p);
@@ -54,6 +65,7 @@ void WrapperTable::wrapperFinalized(cObject *p, jobject wrapper)
 
 void WrapperTable::objectDeleted(cObject *p)
 {
+    ASSERT(jenv!=NULL);
     std::pair<RefMap::iterator,RefMap::iterator> range = wrappers.equal_range(p);
     for (RefMap::iterator it = range.first; it != range.second; /*nop*/) {
         ASSERT(it->first == p);
@@ -69,6 +81,7 @@ void WrapperTable::objectDeleted(cObject *p)
 
 void WrapperTable::purge()
 {
+    ASSERT(jenv!=NULL);
     for (RefMap::iterator it = wrappers.begin(); it != wrappers.end(); /*nop*/) {
         if (jenv->IsSameObject(it->second,NULL)) {
             jenv->DeleteWeakGlobalRef(it->second);
