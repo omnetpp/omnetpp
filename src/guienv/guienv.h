@@ -84,8 +84,8 @@ class GUIENV_API GUIEnv : public EnvirBase
         return wrapperTable.getTableSize();
     }
 
-    void putsmsg(const char *s) {printf("<!> %s\n",s); fflush(stdout);}
-    bool askyesno(const char *s) {printf("%s? NO!\n",s); return false;}
+    void putsmsg(const char *s) {::printf("<!> %s\n",s); fflush(stdout);}
+    bool askyesno(const char *s) {::printf("%s? NO!\n",s); return false;}
     void messageSent_OBSOLETE(cMessage *,cGate *) {}
     size_t getExtraStackForEnvir() const {return 65536;}
     bool isGUI(void) const {return true;}

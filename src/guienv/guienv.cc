@@ -178,7 +178,7 @@ void GUIEnv::setJCallback(JNIEnv *jenv, jobject jcallbackobj)
 void GUIEnv::objectDeleted(cObject *object)
 {
     //cEnvirBase::objectDeleted(object);
-    wrapperTable.objectDeleted(object);
+    if (jenv) wrapperTable.objectDeleted(object);
     //if (jcallback) jcallback->objectDeleted(object);
 }
 
