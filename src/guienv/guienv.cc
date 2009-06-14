@@ -92,6 +92,17 @@ void GUIEnv::initJVM()
     DEBUGPRINTF("Done.\n");
 }
 
+static jobjectArray toJava(JNIEnv *jenv, const std::vector<std::string>& v)
+{
+    jclass stringClazz = jenv->FindClass("java/lang/String");
+    jobjectArray array = jenv->NewObjectArray(v.size(), stringClazz, NULL);
+    for (int i=0; i<(int)v.size(); i++) {
+        jstring string = jenv->NewStringUTF(v[i].c_str());
+        jenv->SetObjectArrayElement(array, i, string);
+    }
+    return array;
+}
+
 void GUIEnv::run()
 {
     if (!jvm) {
@@ -101,7 +112,8 @@ void GUIEnv::run()
         DEBUGPRINTF("Launching the RCP app...\n");
 
         // look for org.eclipse.equinox.launcher.Main
-        //TODO
+        jclass mainClazz = jenv->FindClass("org/eclipse/equinox/launcher/Main");
+        ASSERT(mainClazz!=NULL);
 
         // prepare args array
         std::vector<std::string> args;
@@ -124,9 +136,14 @@ void GUIEnv::run()
         //TODO
 
         // run the app: new Main().run(args)
-        jenv->CallVoidMethod(mainObject, runMethodID);
-        //TODO
-
+        jmethodID ctorMethodId = jenv->GetMethodID(mainClazz, "<init>", "()V");
+        ASSERT(ctorMethodId!=NULL);
+        jobject mainObject = jenv->NewObject(mainClazz, ctorMethodId);
+        ASSERT(mainObject!=NULL);
+        jmethodID runMethodID = jenv->GetMethodID(mainClazz, "run", "([java/lang/String;)I");
+        ASSERT(runMethodID!=NULL);
+        jenv->CallVoidMethod(mainObject, runMethodID, toJava(jenv, args));
+        //XXX check...
     }
     else {
         // Developer mode: program was launched as an RCP project (via the standard
