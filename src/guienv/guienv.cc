@@ -71,7 +71,7 @@ void GUIEnv::initJVM()
 */
 
     options[n++].optionString = "-Dfile.encoding=Cp1252";  //XXX Eclipse did it so, but it this necessary & same on all platforms?
-    options[n++].optionString = "-classpath C:\\eclipse\\plugins\\org.eclipse.equinox.launcher_1.0.100.v20080509-1800.jar"; //XXX hardcoded!!!!
+    options[n++].optionString = "-Djava.class.path=C:\\eclipse\\plugins\\org.eclipse.equinox.launcher_1.0.100.v20080509-1800.jar"; //XXX hardcoded!!!!
 
     //XXX for debugging:
     options[n++].optionString = "-Djava.compiler=NONE";    // disable JIT
@@ -88,7 +88,8 @@ void GUIEnv::initJVM()
         opp_error("Could not create Java VM: JNI_CreateJavaVM returned %d", res); //XXX
 
     DEBUGPRINTF("Registering native methods...\n");
-    SimkernelJNI_registerNatives(jenv);
+//FIXME can only be done when class has been loaded:
+//SimkernelJNI_registerNatives(jenv);
     DEBUGPRINTF("Done.\n");
 }
 
@@ -108,7 +109,8 @@ void GUIEnv::run()
     if (!jvm) {
         // Normal startup: create JVM, and launch RCP application
         initJVM();
-        wrapperTable.init(jenv);
+//FIXME can only be done when Java cObject class has been loaded:
+// wrapperTable.init(jenv);
         DEBUGPRINTF("Launching the RCP app...\n");
 
         // look for org.eclipse.equinox.launcher.Main
@@ -128,19 +130,18 @@ void GUIEnv::run()
         args.push_back("-os");
         args.push_back("win32"); //XXX
         args.push_back("-ws");
-        args.push_back("win32");
+        args.push_back("win32"); //XXX
         args.push_back("-arch");
-        args.push_back("x86");
+        args.push_back("x86"); //XXX
         args.push_back("-nl");
         args.push_back("en_US");
-        //TODO
 
         // run the app: new Main().run(args)
         jmethodID ctorMethodId = jenv->GetMethodID(mainClazz, "<init>", "()V");
         ASSERT(ctorMethodId!=NULL);
         jobject mainObject = jenv->NewObject(mainClazz, ctorMethodId);
         ASSERT(mainObject!=NULL);
-        jmethodID runMethodID = jenv->GetMethodID(mainClazz, "run", "([java/lang/String;)I");
+        jmethodID runMethodID = jenv->GetMethodID(mainClazz, "run", "([Ljava/lang/String;)I");
         ASSERT(runMethodID!=NULL);
         jenv->CallVoidMethod(mainObject, runMethodID, toJava(jenv, args));
         //XXX check...
