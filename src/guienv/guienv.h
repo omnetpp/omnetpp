@@ -33,7 +33,7 @@
 #define LL  INT64_PRINTF_FORMAT
 
 
-class GUIEnv : public EnvirBase
+class GUIENV_API GUIEnv : public EnvirBase
 {
   private:
     static JNIEnv *jenv;

@@ -5,6 +5,12 @@
 #include "guienvdefs.h"
 #include "innerclasses.h"
 #include "visitor.h"
+
+// we use RegisterNatives(), so no need to export generated functions from the DLL
+#undef JNICALL
+#define JNICALL /*nothing*/
+#undef SWIGEXPORT
+#define SWIGEXPORT /*nothing*/
 %}
 
 %include commondefs.i
@@ -13,23 +19,6 @@
 %include displaystring.i
 %include cobject.i
 %include exception.i
-
-//
-// PROBLEMS:
-//
-// Crash scenario:
-// 1. create a new cDisplayString() object in Java
-// 2. pass it to cModule::setDisplayString()
-// 3. when the Java object gets garbage collected, it'll delete the underlying C++ object
-// 4. cModule will crash when it tries to access the display string object
-// Solution: disown typemap or obj.disown() java method
-//
-// Memory leak (reverse scenario of the above):
-// 1. call a C++ method from Java
-// 2. C++ method creates and returns a new object
-// 3. its Java proxy won't be owner, so C++ object will never get deleted
-// Solution: use %newobject
-//
 
 %pragma(java) jniclasscode=%{
   static {
@@ -64,6 +53,7 @@ namespace std {
 // hide some macros from swig (copied from nativelibs/common.i)
 #define COMMON_API
 #define ENVIR_API
+#define GUIENV_API
 #define OPP_DLLEXPORT
 #define OPP_DLLIMPORT
 
