@@ -58,8 +58,15 @@ void SimkernelJNI_registerNatives(JNIEnv *jenv, jclass clazz); // generated meth
 
 void GUIEnv::registerNatives(JNIEnv *jenv, jclass /*guienvHelperClazz*/, jclass simkernelJNIClazz)
 {
-    SimkernelJNI_registerNatives(jenv, simkernelJNIClazz);
-//FIXME when???    wrapperTable.init(jenv);  // can only be done when cObject was already loaded
+    try {
+        SimkernelJNI_registerNatives(jenv, simkernelJNIClazz);
+//FIXME must pass cObject clazz down from Eclipse!!!!
+        wrapperTable.init(jenv);  // can only be done when cObject was already loaded
+    }
+    catch (std::exception& e) {
+        fprintf(stderr, "ERROR DURING REGISTERNATIVES: %s\n", e.what());
+        exit(1);
+    }
 }
 
 void GUIEnv::initJVM()
