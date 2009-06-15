@@ -24,30 +24,40 @@ public class Application implements IApplication {
 	 */
 	public Object start(IApplicationContext context) {
 		System.out.println("Entering Application.start()");
-        ImageFactory.initialize(new String[]{"C:\\home\\omnetpp40\\omnetpp\\images"}); //XXX
-        Simkernel.changeToDir("C:/home/omnetpp40/omnetpp/test/anim/dynamic"); //XXX
-        //Simkernel.changeToDir("C:/home/omnetpp40/omnetpp/samples/queuenet"); //XXX
-        //Simkernel.changeToDir("C:/home/omnetpp40/omnetpp/samples/aloha"); //XXX
-        cStaticFlag.set(true); //FIXME also clear it later
+		boolean launchedFromEclipse = false;
 
-		// assemble the command line
-		//XXX test code...
-		StringVector args = new StringVector();
-		args.add("programname");
-//		args.add("-c");   --XXX not yet observed by SimulationManager...
-//		args.add("Terminal");
+        if (launchedFromEclipse) {
+        	// launched with java.exe from Eclipse via a JDT launch config; we need to set up
+        	// the C++ Envir object, configuration object etc all by hand.
+        	ImageFactory.initialize(new String[]{"C:\\home\\omnetpp40\\omnetpp\\images"}); //XXX
+        	Simkernel.changeToDir("C:/home/omnetpp40/omnetpp/test/anim/dynamic"); //XXX
+        	//Simkernel.changeToDir("C:/home/omnetpp40/omnetpp/samples/queuenet"); //XXX
+        	//Simkernel.changeToDir("C:/home/omnetpp40/omnetpp/samples/aloha"); //XXX
+        	cStaticFlag.set(true); //FIXME also clear it later
 
-		// invoke setupUserInterface() in the C++ code. This will call back our doStart() method
-		// which runs the application and stores the exit code in the "result" field.
-		System.out.println("Calling setupUserInterface() C++ function in envir lib...");
-		GUIEnv.setJavaApplication(null, this); // call back "this" object
-		Simkernel.setupUserInterface(args);
+        	// assemble the command line
+        	//XXX test code...
+        	StringVector args = new StringVector();
+        	args.add("programname");
+        	//args.add("-c");   --XXX not yet observed by SimulationManager...
+        	//args.add("Terminal");
+
+        	// invoke setupUserInterface() in the C++ code. This will call back our doStart() method
+        	// which runs the application and stores the exit code in the "result" field.
+        	System.out.println("Calling setupUserInterface() C++ function in envir lib...");
+        	GUIEnv.setJavaApplication(null, this); // call back "this" object
+        	Simkernel.setupUserInterface(args);
+        }
+        else {
+        	ImageFactory.initialize(new String[]{"C:\\home\\omnetpp40\\omnetpp\\images"}); //XXX
+        	doStart();
+        }
 		return result;
 	}
 
 	protected void doStart() { // this will be called back from C++
-		System.out.println("Application.doStart() called back from C++ Javaapp::run(), starting workbench...");
-		Activator.simulationManager = new SimulationManager(); // needs to be after everything else ws set up in C++
+		System.out.println("Application.doStart() starting workbench...");
+		Activator.simulationManager = new SimulationManager(); // needs to be after everything else was set up in C++
 
 		GUIEnv env = GUIEnv.cast(cSimulation.getActiveEnvir());
         env.setJCallback(null, new EnvirCallback());
