@@ -90,13 +90,16 @@ void GUIEnv::initJVM()
     if (res<0)
         opp_error("Could not create Java VM: JNI_CreateJavaVM returned %d", res); //XXX
 
-    // registers a small helper class that SimkernelJNI can invoke to get
-    // SimkernelJNI_registerNatives() called (it cannot be called before the
-    // SimkernelJNI class gets loaded)
+    // Here, we'd normally just call SimkernelJNI_registerNatives(jenv);
+    // however, that fails because the SimkernelJNI class is not yet loaded
+    // (it will be loaded by equinox when we launch it). So we postpone it
+    // to a static block within the SimkernelJNI class, and we just provide
+    // a way (the GUIEnvHelper class) so that SimkernelJNI can call it from Java.
+    //
     DEBUGPRINTF("Registering native methods...\n");
     jbyte bytes[] = {
         // bytecode for the following Java class (to compile: javac -g:none -source 1.4 -target 1.4 GUIEnvHelper.java):
-        // public class GUIEnvHelper { native void registerNatives(); }
+        // public class GUIEnvHelper { native static void registerNatives(); }
         0xCA, 0xFE, 0xBA, 0xBE, 0x00, 0x00, 0x00, 0x30, 0x00, 0x0B, 0x0A, 0x00, 0x03, 0x00, 0x08, 0x07,
         0x00, 0x09, 0x07, 0x00, 0x0A, 0x01, 0x00, 0x06, 0x3C, 0x69, 0x6E, 0x69, 0x74, 0x3E, 0x01, 0x00,
         0x03, 0x28, 0x29, 0x56, 0x01, 0x00, 0x04, 0x43, 0x6F, 0x64, 0x65, 0x01, 0x00, 0x0F, 0x72, 0x65,
@@ -106,9 +109,10 @@ void GUIEnv::initJVM()
         0x6A, 0x65, 0x63, 0x74, 0x00, 0x21, 0x00, 0x02, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02,
         0x00, 0x01, 0x00, 0x04, 0x00, 0x05, 0x00, 0x01, 0x00, 0x06, 0x00, 0x00, 0x00, 0x11, 0x00, 0x01,
         0x00, 0x01, 0x00, 0x00, 0x00, 0x05, 0x2A, 0xB7, 0x00, 0x01, 0xB1, 0x00, 0x00, 0x00, 0x00, 0x01,
-        0x00, 0x00, 0x07, 0x00, 0x05, 0x00, 0x00, 0x00, 0x00
+        0x08, 0x00, 0x07, 0x00, 0x05, 0x00, 0x00, 0x00, 0x00
     };
-    //jclass someClazz = jenv->FindClass("org/eclipse/equinox/launcher/Main");
+
+/*
     jclass someClazz = jenv->FindClass("java/lang/Object");
     ASSERT(someClazz!=NULL);
     jmethodID getClassMethodId = jenv->GetMethodID(someClazz, "getClass", "()Ljava/lang/Class;");
@@ -121,14 +125,29 @@ void GUIEnv::initJVM()
     jobject loader = jenv->CallObjectMethod(someClazzObj, getClassLoaderMethodId);
     checkExceptions();
     ASSERT(loader!=NULL);
-    jclass helperClazz = jenv->DefineClass("GUIEnvHelper", loader, bytes, sizeof(bytes));
+*/
+
+    // invoke java.net.URLClassLoader.newInstance(new URL[0]) to get a class loader, needed for DefineClass()
+    jclass classLoaderClazz = jenv->FindClass("java/net/URLClassLoader");
+    ASSERT(classLoaderClazz!=NULL);
+    jmethodID newInstanceMethodId = jenv->GetStaticMethodID(classLoaderClazz, "newInstance", "([Ljava/net/URL;)Ljava/net/URLClassLoader;");
+    ASSERT(newInstanceMethodId!=NULL);
+    jclass urlClazz = jenv->FindClass("java/net/URL");
+    ASSERT(urlClazz!=NULL);
+    jobjectArray urlArray = jenv->NewObjectArray(0, urlClazz, NULL);
+    ASSERT(urlArray!=NULL);
+    jobject classLoader = jenv->CallStaticObjectMethod(classLoaderClazz, newInstanceMethodId, urlArray);
+    jclass helperClazz = jenv->DefineClass("GUIEnvHelper", classLoader, bytes, sizeof(bytes));
     checkExceptions();
     ASSERT(helperClazz!=NULL);
-    //TODO register its method to call SimkernelJNI_registerNatives()...
+    JNINativeMethod methods[] = {
+        { (char *)"registerNatives", (char *)"()V", (void *)SimkernelJNI_registerNatives }
+    };
+    int ret = jenv->RegisterNatives(helperClazz, methods, 1);
+    ASSERT(ret==0);
+
     // into SimkernelJNI: static { Class.forName("GUIEnvHelper").newInstance().invokeMethod("registerNatives"); }
 
-//FIXME can only be done when class has been loaded:
-//SimkernelJNI_registerNatives(jenv);
     DEBUGPRINTF("Done.\n");
 }
 
