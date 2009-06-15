@@ -18,7 +18,7 @@ public class SimkernelPlugin extends Plugin {
 	// The shared instance.
 	private static SimkernelPlugin plugin;
 
-//	cStaticFlag staticFlag;
+//XXX	cStaticFlag staticFlag;
 
 	/**
 	 * The constructor.
@@ -33,7 +33,7 @@ public class SimkernelPlugin extends Plugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 
-//		staticFlag = new cStaticFlag(); // needed by sim kernel
+//XXX		staticFlag = new cStaticFlag(); // needed by sim kernel
 //
 //		System.out.println("STARTING SIMULATION");
 //		IResource workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
@@ -58,7 +58,7 @@ public class SimkernelPlugin extends Plugin {
 	public void stop(BundleContext context) throws Exception {
 		super.stop(context);
 
-//		cEnvir ev = Simkernel.getEV();
+//XXX		cEnvir ev = Simkernel.getEV();
 //		ev.shutdown();
 //		staticFlag.delete();
 //		staticFlag = null;
