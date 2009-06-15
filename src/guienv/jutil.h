@@ -19,6 +19,8 @@
 #define __JUTIL_H
 
 #include <jni.h>
+#include <vector>
+#include <string>
 #include "guienvdefs.h"
 #include "cobject.h"
 
@@ -29,10 +31,14 @@ NAMESPACE_BEGIN
  */
 namespace JUtil {
 
-std::string fromJavaString(jstring stringObject);
-jmethodID findMethod(jclass clazz, const char *clazzName, const char *methodName, const char *methodSig);
-void checkExceptions();
-template<typename T> T checkException(T a)  {checkExceptions(); return a;}
+jclass findClass(JNIEnv *jenv, const char *className);
+jobject newObject(JNIEnv *jenv, jclass clazz); // uses argless ctor
+jmethodID getMethodID(JNIEnv *jenv, jclass clazz, const char *methodName, const char *methodSig);
+jmethodID getStaticMethodID(JNIEnv *jenv, jclass clazz, const char *methodName, const char *methodSig);
+void checkExceptions(JNIEnv *jenv);
+std::string fromJavaString(JNIEnv *jenv, jstring stringObject);
+std::string toString(JNIEnv *jenv, jobject object);
+jobjectArray toJavaArray(JNIEnv *jenv, const std::vector<std::string>& v);
 
 };
 

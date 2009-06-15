@@ -54,7 +54,12 @@ jobject GUIEnv::javaApp;
 //#define DEBUGPRINTF (void)
 
 // comes from the generated registernatives.cc file
-void SimkernelJNI_registerNatives(JNIEnv *jenv);
+void SimkernelJNI_registerNatives(JNIEnv *jenv, jclass clazz);
+
+static void GUIEnvHelper_registerNatives(JNIEnv *jenv, jclass /*guienvClazz*/, jclass simkernelJNIClazz)
+{
+    SimkernelJNI_registerNatives(jenv, simkernelJNIClazz);
+}
 
 
 void GUIEnv::initJVM()
@@ -77,7 +82,7 @@ void GUIEnv::initJVM()
     options[n++].optionString = "-Djava.class.path=C:\\eclipse\\plugins\\org.eclipse.equinox.launcher_1.0.100.v20080509-1800.jar"; //XXX hardcoded!!!!
 
     //XXX for debugging:
-    //options[n++].optionString = "-Djava.compiler=NONE";    // disable JIT
+    options[n++].optionString = "-Djava.compiler=NONE";    // disable JIT
     //options[n++].optionString = "-verbose:jni";            // print JNI-related messages
     //options[n++].optionString = "-verbose:class";          // print class loading messages
 
@@ -92,70 +97,43 @@ void GUIEnv::initJVM()
 
     // Here, we'd normally just call SimkernelJNI_registerNatives(jenv);
     // however, that fails because the SimkernelJNI class is not yet loaded
-    // (it will be loaded by equinox when we launch it). So we postpone it
-    // to a static block within the SimkernelJNI class, and we just provide
-    // a way (the GUIEnvHelper class) so that SimkernelJNI can call it from Java.
+    // (it will be loaded by Equinox, with its own classloaded and from the
+    // location determined by Equinox). So we postpone it to a static block
+    // within the SimkernelJNI class, and we just provide a way (the GUIEnvHelper
+    // class) so that SimkernelJNI can call it from Java.
     //
     DEBUGPRINTF("Registering native methods...\n");
     jbyte bytes[] = {
         // bytecode for the following Java class (to compile: javac -g:none -source 1.4 -target 1.4 GUIEnvHelper.java):
-        // public class GUIEnvHelper { native static void registerNatives(); }
-        0xCA, 0xFE, 0xBA, 0xBE, 0x00, 0x00, 0x00, 0x30, 0x00, 0x0B, 0x0A, 0x00, 0x03, 0x00, 0x08, 0x07,
-        0x00, 0x09, 0x07, 0x00, 0x0A, 0x01, 0x00, 0x06, 0x3C, 0x69, 0x6E, 0x69, 0x74, 0x3E, 0x01, 0x00,
+        // public class GUIEnvHelper { native static void registerNatives(Class simkernelJNIClass); }
+        0xCA, 0xFE, 0xBA, 0xBE, 0x00, 0x00, 0x00, 0x30, 0x00, 0x0C, 0x0A, 0x00, 0x03, 0x00, 0x09, 0x07,
+        0x00, 0x0A, 0x07, 0x00, 0x0B, 0x01, 0x00, 0x06, 0x3C, 0x69, 0x6E, 0x69, 0x74, 0x3E, 0x01, 0x00,
         0x03, 0x28, 0x29, 0x56, 0x01, 0x00, 0x04, 0x43, 0x6F, 0x64, 0x65, 0x01, 0x00, 0x0F, 0x72, 0x65,
-        0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x4E, 0x61, 0x74, 0x69, 0x76, 0x65, 0x73, 0x0C, 0x00, 0x04,
-        0x00, 0x05, 0x01, 0x00, 0x0C, 0x47, 0x55, 0x49, 0x45, 0x6E, 0x76, 0x48, 0x65, 0x6C, 0x70, 0x65,
-        0x72, 0x01, 0x00, 0x10, 0x6A, 0x61, 0x76, 0x61, 0x2F, 0x6C, 0x61, 0x6E, 0x67, 0x2F, 0x4F, 0x62,
-        0x6A, 0x65, 0x63, 0x74, 0x00, 0x21, 0x00, 0x02, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02,
-        0x00, 0x01, 0x00, 0x04, 0x00, 0x05, 0x00, 0x01, 0x00, 0x06, 0x00, 0x00, 0x00, 0x11, 0x00, 0x01,
-        0x00, 0x01, 0x00, 0x00, 0x00, 0x05, 0x2A, 0xB7, 0x00, 0x01, 0xB1, 0x00, 0x00, 0x00, 0x00, 0x01,
-        0x08, 0x00, 0x07, 0x00, 0x05, 0x00, 0x00, 0x00, 0x00
+        0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x4E, 0x61, 0x74, 0x69, 0x76, 0x65, 0x73, 0x01, 0x00, 0x14,
+        0x28, 0x4C, 0x6A, 0x61, 0x76, 0x61, 0x2F, 0x6C, 0x61, 0x6E, 0x67, 0x2F, 0x43, 0x6C, 0x61, 0x73,
+        0x73, 0x3B, 0x29, 0x56, 0x0C, 0x00, 0x04, 0x00, 0x05, 0x01, 0x00, 0x0C, 0x47, 0x55, 0x49, 0x45,
+        0x6E, 0x76, 0x48, 0x65, 0x6C, 0x70, 0x65, 0x72, 0x01, 0x00, 0x10, 0x6A, 0x61, 0x76, 0x61, 0x2F,
+        0x6C, 0x61, 0x6E, 0x67, 0x2F, 0x4F, 0x62, 0x6A, 0x65, 0x63, 0x74, 0x00, 0x21, 0x00, 0x02, 0x00,
+        0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x01, 0x00, 0x04, 0x00, 0x05, 0x00, 0x01, 0x00,
+        0x06, 0x00, 0x00, 0x00, 0x11, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00, 0x00, 0x05, 0x2A, 0xB7, 0x00,
+        0x01, 0xB1, 0x00, 0x00, 0x00, 0x00, 0x01, 0x08, 0x00, 0x07, 0x00, 0x08, 0x00, 0x00, 0x00, 0x00
     };
 
-/*
-    jclass someClazz = jenv->FindClass("java/lang/Object");
-    ASSERT(someClazz!=NULL);
-    jmethodID getClassMethodId = jenv->GetMethodID(someClazz, "getClass", "()Ljava/lang/Class;");
-    ASSERT(getClassMethodId!=NULL);
-    jclass someClazzObj = (jclass)jenv->CallObjectMethod(someClazz, getClassMethodId);
-    checkExceptions();
-    ASSERT(someClazzObj!=NULL);
-    jmethodID getClassLoaderMethodId = jenv->GetMethodID(someClazzObj, "getClassLoader", "()Ljava/lang/ClassLoader;");
-    ASSERT(getClassLoaderMethodId!=NULL);
-    jobject loader = jenv->CallObjectMethod(someClazzObj, getClassLoaderMethodId);
-    checkExceptions();
-    ASSERT(loader!=NULL);
-*/
+    // to define GUIEnvHelper, we need a class loader; we use the system class loader
+    jclass classLoaderClazz = findClass(jenv, "java/lang/ClassLoader");
+    jmethodID getSystemClassLoaderMethodId = getStaticMethodID(jenv, classLoaderClazz, "getSystemClassLoader", "()Ljava/lang/ClassLoader;");
+    jobject classLoader = jenv->CallStaticObjectMethod(classLoaderClazz, getSystemClassLoaderMethodId);
+    ASSERT(classLoader!=NULL);
 
-    // invoke java.net.URLClassLoader.newInstance(new URL[0]) to get a class loader, needed for DefineClass()
-    jclass classLoaderClazz = jenv->FindClass("java/net/URLClassLoader");
-    ASSERT(classLoaderClazz!=NULL);
-    jmethodID newInstanceMethodId = jenv->GetStaticMethodID(classLoaderClazz, "newInstance", "([Ljava/net/URL;)Ljava/net/URLClassLoader;");
-    ASSERT(newInstanceMethodId!=NULL);
-    jclass urlClazz = jenv->FindClass("java/net/URL");
-    ASSERT(urlClazz!=NULL);
-    jobjectArray urlArray = jenv->NewObjectArray(0, urlClazz, NULL);
-    ASSERT(urlArray!=NULL);
-    jobject classLoader = jenv->CallStaticObjectMethod(classLoaderClazz, newInstanceMethodId, urlArray);
     jclass helperClazz = jenv->DefineClass("GUIEnvHelper", classLoader, bytes, sizeof(bytes));
-    checkExceptions();
+    checkExceptions(jenv);
     ASSERT(helperClazz!=NULL);
+
     JNINativeMethod methods[] = {
-        { (char *)"registerNatives", (char *)"()V", (void *)SimkernelJNI_registerNatives }
+        { (char *)"registerNatives", (char *)"(Ljava/lang/Class;)V", (void *)GUIEnvHelper_registerNatives }
     };
     int ret = jenv->RegisterNatives(helperClazz, methods, 1);
     ASSERT(ret==0);
-}
-
-static jobjectArray toJava(JNIEnv *jenv, const std::vector<std::string>& v)
-{
-    jclass stringClazz = jenv->FindClass("java/lang/String");
-    jobjectArray array = jenv->NewObjectArray(v.size(), stringClazz, NULL);
-    for (int i=0; i<(int)v.size(); i++) {
-        jstring string = jenv->NewStringUTF(v[i].c_str());
-        jenv->SetObjectArrayElement(array, i, string);
-    }
-    return array;
 }
 
 static std::string join(const char *sep, const std::vector<std::string>& v)
@@ -178,8 +156,7 @@ void GUIEnv::run()
         DEBUGPRINTF("Launching the RCP app...\n");
 
         // look for org.eclipse.equinox.launcher.Main
-        jclass mainClazz = jenv->FindClass("org/eclipse/equinox/launcher/Main");
-        ASSERT(mainClazz!=NULL);
+        jclass mainClazz = findClass(jenv, "org/eclipse/equinox/launcher/Main");
 
         // prepare args array
         std::vector<std::string> args;
@@ -202,14 +179,9 @@ void GUIEnv::run()
         DEBUGPRINTF("Launcher args: %s\n", join(" ", args).c_str());
 
         // run the app: new Main().run(args)
-        jmethodID ctorMethodId = jenv->GetMethodID(mainClazz, "<init>", "()V");
-        ASSERT(ctorMethodId!=NULL);
-        jobject mainObject = jenv->NewObject(mainClazz, ctorMethodId);
-        ASSERT(mainObject!=NULL);
-        jmethodID runMethodID = jenv->GetMethodID(mainClazz, "run", "([Ljava/lang/String;)I");
-        ASSERT(runMethodID!=NULL);
-        jenv->CallIntMethod(mainObject, runMethodID, toJava(jenv, args));
-        //XXX check...
+        jobject mainObject = newObject(jenv, mainClazz);
+        jmethodID runMethodID = getMethodID(jenv, mainClazz, "run", "([Ljava/lang/String;)I");
+        jenv->CallIntMethod(mainObject, runMethodID, toJavaArray(jenv, args));
     }
     else {
         // Developer mode: program was launched as an RCP project (via the standard
@@ -218,11 +190,7 @@ void GUIEnv::run()
         // Application.doStart().
         //
         jclass clazz = jenv->GetObjectClass(javaApp);
-        jmethodID doStartMethodID = jenv->GetMethodID(clazz, "doStart", "()V");
-        if (doStartMethodID==NULL) {
-            fprintf(stderr, "GUIEnv initialization failed: application object has no method doStart()\n");
-            exit(1);
-        }
+        jmethodID doStartMethodID = getMethodID(jenv, clazz, "doStart", "()V");
         jenv->CallVoidMethod(javaApp, doStartMethodID);  // this goes back Java and runs the appliation. it only returns when the application exits
         jenv->DeleteGlobalRef(javaApp);
     }

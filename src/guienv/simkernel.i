@@ -23,7 +23,8 @@
 %pragma(java) jniclasscode=%{
   static {
     try {
-      org.omnetpp.common.util.ReflectionUtils.invokeStaticMethod(Class.forName("GUIEnvHelper"), "registerNatives");
+      Class<?> guienvHelper = Class.forName("GUIEnvHelper", true, ClassLoader.getSystemClassLoader());
+      org.omnetpp.common.util.ReflectionUtils.invokeStaticMethod(guienvHelper, "registerNatives", SimkernelJNI.class);
     }
     catch (Throwable e) {
       System.err.println("FATAL: registration of SimkernelJNI native methods failed: " + e);

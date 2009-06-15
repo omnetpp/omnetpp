@@ -65,7 +65,9 @@ print OUT "// generated using registernatives.pl\n\n";
 print OUT "#include <stdio.h>\n";
 print OUT "#include <stdlib.h>\n";
 print OUT "#include <jni.h>\n";
-print OUT "#include \"guienvdefs.h\"\n\n";
+print OUT "#include \"guienvdefs.h\"\n";
+print OUT "#include \"jutil.h\"\n\n";
+print OUT "using namespace JUtil;\n\n";
 print OUT "extern \"C\" {\n";
 for ($i=0; $i<$n; $i++) {
     print OUT "void $mfunc{$i}(JNIEnv *jenv, jclass jcls,...);\n";
@@ -77,18 +79,12 @@ for ($i=0; $i<$n; $i++) {
     print OUT "    { (char *)\"$mname{$i}\", (char *)\"$msig{$i}\", (void *)$mfunc{$i} },\n";
 }
 print OUT "};\n\n";
-print OUT "void ${classname}_registerNatives(JNIEnv *jenv)\n";
+print OUT "void ${classname}_registerNatives(JNIEnv *jenv, jclass clazz)\n";
 print OUT "{\n";
-print OUT "    jclass clazz = jenv->FindClass(\"$packagenameslash/$classname\");\n";
-print OUT "    if (!clazz) {\n";
-print OUT "        fprintf(stderr, \"ERROR: Cannot find ${classname} class\\n\");\n";
-print OUT "        exit(1);\n";
-print OUT "    }\n";
 print OUT "    int ret = jenv->RegisterNatives(clazz, ${classname}_methods, $n);\n";
-print OUT "    if (ret!=0) {\n";
-print OUT "        fprintf(stderr, \"ERROR: Cannot register native methods for ${classname}: RegisterNatives() returned %d\\n\", ret);\n";
-print OUT "        exit(1);\n";
-print OUT "    }\n";
+print OUT "    checkExceptions(jenv);\n";
+print OUT "    if (ret!=0)\n";
+print OUT "        opp_error(\"Cannot register native methods for ${classname}: RegisterNatives() returned %d\\n\", ret);\n";
 print OUT "}\n\n";
 
 print "$cppfile created.\n";
@@ -109,6 +105,6 @@ sub toJNI()
     return $a."D" if ($t eq "double");
     return $a."Ljava/lang/String;" if ($t eq "String");
     return $a."Ljava/lang/Object;" if ($t eq "Object");
-    return $a."Lorg/omnetpp/simkernel/$t;";
+    return $a."L".$packagenameslash."/".$t.";";
 }
 
