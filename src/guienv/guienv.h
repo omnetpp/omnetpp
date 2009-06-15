@@ -55,6 +55,8 @@ class GUIENV_API GUIEnv : public EnvirBase
         javaApp = jenv->NewGlobalRef(javaApp_);
     }
 
+    static JNIEnv *getJEnv() {return jenv;}
+
     GUIEnv() {
         jcallback = NULL;
         if (jenv) wrapperTable.init(jenv);

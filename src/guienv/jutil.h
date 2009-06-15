@@ -27,18 +27,14 @@ NAMESPACE_BEGIN
 /**
  * Convenience methods for working with JNI.
  */
-/*XXX
-namespace JUtil
-{
-  extern JavaVM *vm;
-  extern JNIEnv *jenv;
+namespace JUtil {
 
-  std::string fromJavaString(jstring stringObject);
-  jmethodID findMethod(jclass clazz, const char *clazzName, const char *methodName, const char *methodSig);
-  void checkExceptions();
-  template<typename T> T checkException(T a)  {checkExceptions(); return a;}
+std::string fromJavaString(jstring stringObject);
+jmethodID findMethod(jclass clazz, const char *clazzName, const char *methodName, const char *methodSig);
+void checkExceptions();
+template<typename T> T checkException(T a)  {checkExceptions(); return a;}
+
 };
-*/
 
 const char *getObjectShortTypeName(cObject *object);
 const char *getObjectFullTypeName(cObject *object);

@@ -22,7 +22,9 @@
 
 #include "appreg.h"
 #include "guienv.h"
+#include "jutil.h"
 
+using namespace JUtil;
 
 //
 // Register the user interface
@@ -53,6 +55,7 @@ jobject GUIEnv::javaApp;
 
 // comes from the generated registernatives.cc file
 void SimkernelJNI_registerNatives(JNIEnv *jenv);
+
 
 void GUIEnv::initJVM()
 {
@@ -92,9 +95,9 @@ void GUIEnv::initJVM()
     // SimkernelJNI class gets loaded)
     DEBUGPRINTF("Registering native methods...\n");
     jbyte bytes[] = {
-        // bytecode for the following Java class (to compile: javac -g:none GUIEnvHelper.java):
+        // bytecode for the following Java class (to compile: javac -g:none -source 1.4 -target 1.4 GUIEnvHelper.java):
         // public class GUIEnvHelper { native void registerNatives(); }
-        0xCA, 0xFE, 0xBA, 0xBE, 0x00, 0x00, 0x00, 0x32, 0x00, 0x0B, 0x0A, 0x00, 0x03, 0x00, 0x08, 0x07,
+        0xCA, 0xFE, 0xBA, 0xBE, 0x00, 0x00, 0x00, 0x30, 0x00, 0x0B, 0x0A, 0x00, 0x03, 0x00, 0x08, 0x07,
         0x00, 0x09, 0x07, 0x00, 0x0A, 0x01, 0x00, 0x06, 0x3C, 0x69, 0x6E, 0x69, 0x74, 0x3E, 0x01, 0x00,
         0x03, 0x28, 0x29, 0x56, 0x01, 0x00, 0x04, 0x43, 0x6F, 0x64, 0x65, 0x01, 0x00, 0x0F, 0x72, 0x65,
         0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x4E, 0x61, 0x74, 0x69, 0x76, 0x65, 0x73, 0x0C, 0x00, 0x04,
@@ -105,13 +108,21 @@ void GUIEnv::initJVM()
         0x00, 0x01, 0x00, 0x00, 0x00, 0x05, 0x2A, 0xB7, 0x00, 0x01, 0xB1, 0x00, 0x00, 0x00, 0x00, 0x01,
         0x00, 0x00, 0x07, 0x00, 0x05, 0x00, 0x00, 0x00, 0x00
     };
+    //jclass someClazz = jenv->FindClass("org/eclipse/equinox/launcher/Main");
     jclass someClazz = jenv->FindClass("java/lang/Object");
     ASSERT(someClazz!=NULL);
-    jmethodID getClassLoaderMethodId = jenv->GetMethodID(someClazz, "getClassLoader", "()Ljava/lang/ClassLoader;");
+    jmethodID getClassMethodId = jenv->GetMethodID(someClazz, "getClass", "()Ljava/lang/Class;");
+    ASSERT(getClassMethodId!=NULL);
+    jclass someClazzObj = (jclass)jenv->CallObjectMethod(someClazz, getClassMethodId);
+    checkExceptions();
+    ASSERT(someClazzObj!=NULL);
+    jmethodID getClassLoaderMethodId = jenv->GetMethodID(someClazzObj, "getClassLoader", "()Ljava/lang/ClassLoader;");
     ASSERT(getClassLoaderMethodId!=NULL);
-    jobject loader = jenv->CallObjectMethod(someClazz, getClassLoaderMethodId);
+    jobject loader = jenv->CallObjectMethod(someClazzObj, getClassLoaderMethodId);
+    checkExceptions();
     ASSERT(loader!=NULL);
     jclass helperClazz = jenv->DefineClass("GUIEnvHelper", loader, bytes, sizeof(bytes));
+    checkExceptions();
     ASSERT(helperClazz!=NULL);
     //TODO register its method to call SimkernelJNI_registerNatives()...
     // into SimkernelJNI: static { Class.forName("GUIEnvHelper").newInstance().invokeMethod("registerNatives"); }
