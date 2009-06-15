@@ -18,8 +18,11 @@
 #include <stdio.h>
 #include <map>
 
-#include "wrappertable.h"
 #include "guienv.h"
+#include "jutil.h"
+#include "wrappertable.h"
+
+using namespace JUtil;
 
 WrapperTable::WrapperTable(JNIEnv *je)
 {
@@ -34,10 +37,8 @@ void WrapperTable::init(JNIEnv *je)
 {
     jenv = je;
     ASSERT(jenv!=NULL);
-    jclass clazz = jenv->FindClass("org/omnetpp/runtime/nativelibs/simkernel/cObject");
-    ASSERT(clazz!=NULL);
-    zapMethodID = jenv->GetMethodID(clazz, "zap", "()V");
-    ASSERT(zapMethodID!=NULL);
+    jclass clazz = findClass(jenv, "org/omnetpp/runtime/nativelibs/simkernel/cObject");
+    zapMethodID = getMethodID(jenv, clazz, "zap", "()V");
 }
 
 void WrapperTable::wrapperCreated(cObject *p, jobject wrapper)

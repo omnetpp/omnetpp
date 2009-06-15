@@ -43,6 +43,7 @@ extern "C" GUIENV_API void _guienv_lib() {}
 JavaVM *GUIEnv::jvm;
 JNIEnv *GUIEnv::jenv;
 jobject GUIEnv::javaApp;
+WrapperTable GUIEnv::wrapperTable;
 
 #ifdef _WIN32
 #define PATH_SEP ";"
@@ -53,14 +54,13 @@ jobject GUIEnv::javaApp;
 #define DEBUGPRINTF ::printf
 //#define DEBUGPRINTF (void)
 
-// comes from the generated registernatives.cc file
-void SimkernelJNI_registerNatives(JNIEnv *jenv, jclass clazz);
+void SimkernelJNI_registerNatives(JNIEnv *jenv, jclass clazz); // generated method in registernatives.cc
 
-static void GUIEnvHelper_registerNatives(JNIEnv *jenv, jclass /*guienvClazz*/, jclass simkernelJNIClazz)
+void GUIEnv::registerNatives(JNIEnv *jenv, jclass /*guienvHelperClazz*/, jclass simkernelJNIClazz)
 {
     SimkernelJNI_registerNatives(jenv, simkernelJNIClazz);
+//FIXME when???    wrapperTable.init(jenv);  // can only be done when cObject was already loaded
 }
-
 
 void GUIEnv::initJVM()
 {
@@ -130,7 +130,7 @@ void GUIEnv::initJVM()
     ASSERT(helperClazz!=NULL);
 
     JNINativeMethod methods[] = {
-        { (char *)"registerNatives", (char *)"(Ljava/lang/Class;)V", (void *)GUIEnvHelper_registerNatives }
+        { (char *)"registerNatives", (char *)"(Ljava/lang/Class;)V", (void *)registerNatives }
     };
     int ret = jenv->RegisterNatives(helperClazz, methods, 1);
     ASSERT(ret==0);
@@ -148,11 +148,14 @@ static std::string join(const char *sep, const std::vector<std::string>& v)
 
 void GUIEnv::run()
 {
+    //FIXME add try-catch blocks!!!
+
     if (!jvm) {
-        // Normal startup: create JVM, and launch RCP application
+        // Normal startup: create JVM, and launch RCP application.
+        // Note: we'd want to call wrapperTable.init(jenv) here as well,
+        // but it has to wait until cObject.class has been loaded
         initJVM();
-//FIXME can only be done when Java cObject class has been loaded:
-// wrapperTable.init(jenv);
+
         DEBUGPRINTF("Launching the RCP app...\n");
 
         // look for org.eclipse.equinox.launcher.Main

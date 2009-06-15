@@ -40,13 +40,14 @@ class GUIENV_API GUIEnv : public EnvirBase
     static JavaVM *jvm;
     static JNIEnv *jenv;
     static jobject javaApp;  //???
+    static WrapperTable wrapperTable; // table of SWIG wrapper objects
 
     LogBuffer logBuffer;
     JCallback *jcallback;
-    WrapperTable wrapperTable;
 
   protected:
     void initJVM();
+    static void registerNatives(JNIEnv *jenv, jclass /*guienvHelperClazz*/, jclass simkernelJNIClazz);
 
   public:
     static void setJavaApplication(JNIEnv *jenv_, jobject javaApp_) {
@@ -66,10 +67,13 @@ class GUIENV_API GUIEnv : public EnvirBase
         delete jcallback;
     }
 
+    // entry point
     void run();
 
+    // methods used at startup:
     void setJCallback(JNIEnv *jenv, jobject jcallbackobj);
 
+    // managing Java wrapper objects (we clear cPtr in them when C++ peer object gets deleted)
     void swigWrapperCreated(cObject *p, jobject wrapper) {
         wrapperTable.wrapperCreated(p, wrapper);
     }
@@ -86,6 +90,7 @@ class GUIENV_API GUIEnv : public EnvirBase
         return wrapperTable.getTableSize();
     }
 
+    // callbacks
     void putsmsg(const char *s) {::printf("<!> %s\n",s); fflush(stdout);}
     bool askyesno(const char *s) {::printf("%s? NO!\n",s); return false;}
     void messageSent_OBSOLETE(cMessage *,cGate *) {}
@@ -190,6 +195,14 @@ class GUIENV_API GUIEnv : public EnvirBase
     bool idle();
 
 };
+
+/**
+ * Utility function
+ */
+inline GUIEnv *getGUIEnv()
+{
+    return (GUIEnv *)(&ev);
+}
 
 #endif
 

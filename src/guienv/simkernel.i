@@ -219,8 +219,12 @@ cRegistrationList *getRegisteredConfigOptions();
 
 %{
 
+//
+// helper methods from launching the app from Eclipse, via java.exe
+//
+
 #include <direct.h>
-inline void changeToDir(const char *dir)  //XXX
+inline void changeToDir(const char *dir)
 {
     printf("changing to: %s\n", dir);
     _chdir(dir);
@@ -243,10 +247,10 @@ inline int setupUserInterface(const std::vector<std::string>& args)
 
 %};
 
-void changeToDir(const char *dir); //XXX
+void changeToDir(const char *dir);
 int setupUserInterface(const std::vector<std::string>& args);
 
-// Cast etc from jsimplemodule
+// Casts etc from jsimplemodule
 %define BASECLASS(CLASS)
 %ignore CLASS::CLASS(const CLASS&);
 %ignore CLASS::operator=(const CLASS&);
