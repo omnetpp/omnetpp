@@ -50,7 +50,7 @@ jobject GUIEnv::javaApp;
 #define PATH_SEP ":"
 #endif
 
-#define DEBUGPRINTF printf
+#define DEBUGPRINTF ::printf
 //#define DEBUGPRINTF (void)
 
 // comes from the generated registernatives.cc file
@@ -77,9 +77,9 @@ void GUIEnv::initJVM()
     options[n++].optionString = "-Djava.class.path=C:\\eclipse\\plugins\\org.eclipse.equinox.launcher_1.0.100.v20080509-1800.jar"; //XXX hardcoded!!!!
 
     //XXX for debugging:
-    options[n++].optionString = "-Djava.compiler=NONE";    // disable JIT
-    options[n++].optionString = "-verbose:jni";            // print JNI-related messages
-    options[n++].optionString = "-verbose:class";          // print class loading messages
+    //options[n++].optionString = "-Djava.compiler=NONE";    // disable JIT
+    //options[n++].optionString = "-verbose:jni";            // print JNI-related messages
+    //options[n++].optionString = "-verbose:class";          // print class loading messages
 
     vm_args.version = JNI_VERSION_1_2;
     vm_args.options = options;
@@ -145,10 +145,6 @@ void GUIEnv::initJVM()
     };
     int ret = jenv->RegisterNatives(helperClazz, methods, 1);
     ASSERT(ret==0);
-
-    // into SimkernelJNI: static { Class.forName("GUIEnvHelper").newInstance().invokeMethod("registerNatives"); }
-
-    DEBUGPRINTF("Done.\n");
 }
 
 static jobjectArray toJava(JNIEnv *jenv, const std::vector<std::string>& v)
@@ -160,6 +156,16 @@ static jobjectArray toJava(JNIEnv *jenv, const std::vector<std::string>& v)
         jenv->SetObjectArrayElement(array, i, string);
     }
     return array;
+}
+
+static std::string join(const char *sep, const std::vector<std::string>& v)
+{
+    std::string result;
+    for (int i=0; i<(int)v.size(); i++) {
+        if (i!=0) result += sep;
+        result += v[i].c_str();
+    }
+    return result;
 }
 
 void GUIEnv::run()
@@ -180,7 +186,7 @@ void GUIEnv::run()
         args.push_back("-application");
         args.push_back("org.omnetpp.runtimeenv.application");
         args.push_back("-data");
-        args.push_back("C:/home/omnetpp40/omnetpp/runtime-org.omnetpp.runtimeenv.application"); //XXX hardcoded!!!
+        args.push_back("C:\\home\\omnetpp40\\omnetpp\\ui/../runtime-org.omnetpp.runtimeenv.application"); //XXX hardcoded!!!
         args.push_back("-configuration");
         args.push_back("file:C:/home/omnetpp40/omnetpp/ui/.metadata/.plugins/org.eclipse.pde.core/org.omnetpp.runtimeenv.application/"); //XXX
         args.push_back("-dev");
@@ -193,6 +199,7 @@ void GUIEnv::run()
         args.push_back("x86"); //XXX
         args.push_back("-nl");
         args.push_back("en_US");
+        DEBUGPRINTF("Launcher args: %s\n", join(" ", args).c_str());
 
         // run the app: new Main().run(args)
         jmethodID ctorMethodId = jenv->GetMethodID(mainClazz, "<init>", "()V");
@@ -201,7 +208,7 @@ void GUIEnv::run()
         ASSERT(mainObject!=NULL);
         jmethodID runMethodID = jenv->GetMethodID(mainClazz, "run", "([Ljava/lang/String;)I");
         ASSERT(runMethodID!=NULL);
-        jenv->CallVoidMethod(mainObject, runMethodID, toJava(jenv, args));
+        jenv->CallIntMethod(mainObject, runMethodID, toJava(jenv, args));
         //XXX check...
     }
     else {
