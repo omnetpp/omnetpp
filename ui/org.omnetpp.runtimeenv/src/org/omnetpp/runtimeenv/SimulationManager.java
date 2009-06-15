@@ -10,7 +10,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.omnetpp.runtime.nativelibs.WrappedException;
-import org.omnetpp.runtime.nativelibs.simkernel.Javaenv;
+import org.omnetpp.runtime.nativelibs.simkernel.GUIEnv;
 import org.omnetpp.runtime.nativelibs.simkernel.LogBuffer;
 import org.omnetpp.runtime.nativelibs.simkernel.cConfigurationEx;
 import org.omnetpp.runtime.nativelibs.simkernel.cEnvir;
@@ -62,7 +62,7 @@ public class SimulationManager {
     public SimulationManager() {
 
         Display.getDefault().asyncExec(new Runnable() {
-        	@Override
+        	//@Override
         	public void run() {
         		// wait until the workbench window appears
         		IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
@@ -119,7 +119,7 @@ public class SimulationManager {
         }
 
         if ((counter++ % 100) == 0) {
-        	Javaenv env = Javaenv.cast(cSimulation.getActiveEnvir());
+        	GUIEnv env = GUIEnv.cast(cSimulation.getActiveEnvir());
         	long oldSize = env.swigTableSize();
         	env.swigPurge();
         	System.out.println("purging: Swig table size before/after purge: " + oldSize + " / " + env.swigTableSize());
@@ -129,7 +129,7 @@ public class SimulationManager {
 
     public LogBuffer getLogBuffer() {
         cEnvir env = cSimulation.getActiveEnvir();
-        return Javaenv.cast(env).getLogBuffer();
+        return GUIEnv.cast(env).getLogBuffer();
     }
 
     public SimState getState() {
@@ -141,13 +141,13 @@ public class SimulationManager {
     }
 
     public cConfigurationEx getConfig() {
-        return Javaenv.cast(cSimulation.getActiveEnvir()).getConfigEx();
+        return GUIEnv.cast(cSimulation.getActiveEnvir()).getConfigEx();
     }
 
     public void newNetwork(String networkName) {
 		try {
 			cSimulation simulation = cSimulation.getActiveSimulation();
-	        Javaenv env = Javaenv.cast(cSimulation.getActiveEnvir());
+	        GUIEnv env = GUIEnv.cast(cSimulation.getActiveEnvir());
 
 			// finish & cleanup previous run if we haven't done so yet
 			if (state != SimState.NONET)
@@ -185,7 +185,7 @@ public class SimulationManager {
 	public void newRun(String configName, int runNumber) {
 	    try {
 			cSimulation simulation = cSimulation.getActiveSimulation();
-	        Javaenv env = Javaenv.cast(cSimulation.getActiveEnvir());
+	        GUIEnv env = GUIEnv.cast(cSimulation.getActiveEnvir());
 
 	        // finish & cleanup previous run if we haven't done so yet
 	        if (state!=SimState.NONET)
@@ -481,7 +481,7 @@ public class SimulationManager {
 
 	    //XXX logBuffer.addInfo("{** Calling finish() methods of modules\n}");
 
-        Javaenv env = Javaenv.cast(cSimulation.getActiveEnvir());
+        GUIEnv env = GUIEnv.cast(cSimulation.getActiveEnvir());
 
 	    // now really call finish()
 	    try {

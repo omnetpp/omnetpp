@@ -13,7 +13,7 @@ import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.dialogs.ISelectionStatusValidator;
 import org.eclipse.ui.dialogs.ListDialog;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.runtime.nativelibs.simkernel.Javaenv;
+import org.omnetpp.runtime.nativelibs.simkernel.GUIEnv;
 import org.omnetpp.runtime.nativelibs.simkernel.cConfigurationEx;
 import org.omnetpp.runtime.nativelibs.simkernel.cModule;
 import org.omnetpp.runtime.nativelibs.simkernel.cSimulation;
@@ -58,7 +58,7 @@ public class SetupIniConfigHandler extends AbstractHandler {
 		static class ConfigLabelProvider extends LabelProvider {
 			@Override
 			public String getText(Object element) {
-				cConfigurationEx cfg = Javaenv.cast(cSimulation.getActiveEnvir()).getConfigEx();
+				cConfigurationEx cfg = GUIEnv.cast(cSimulation.getActiveEnvir()).getConfigEx();
 				if (element instanceof String) {
 					String configName = (String) element;
 					String desc = cfg.getConfigDescription(configName);
@@ -76,10 +76,10 @@ public class SetupIniConfigHandler extends AbstractHandler {
 		};
 
 		static class ConfigContentProvider implements ITreeContentProvider {
-			@Override
+			//@Override
 			public Object[] getChildren(Object element) {
 				if (element instanceof String) {
-					cConfigurationEx cfg = Javaenv.cast(cSimulation.getActiveEnvir()).getConfigEx();
+					cConfigurationEx cfg = GUIEnv.cast(cSimulation.getActiveEnvir()).getConfigEx();
 					String configName = (String) element;
 					int n = cfg.getNumRunsInConfig(configName);
 					ConfigRun runs[] = new ConfigRun[n];
@@ -90,28 +90,28 @@ public class SetupIniConfigHandler extends AbstractHandler {
 				return new Object[0];
 			}
 
-			@Override
+			//@Override
 			public Object getParent(Object element) {
 				return null;
 			}
 
-			@Override
+			//@Override
 			public boolean hasChildren(Object element) {
 				return getChildren(element).length > 0;
 			}
 
-			@Override
+			//@Override
 			public Object[] getElements(Object inputElement) {
-				Javaenv env = Javaenv.cast(cSimulation.getActiveEnvir());
+				GUIEnv env = GUIEnv.cast(cSimulation.getActiveEnvir());
 				String[] configNames = env.getConfigEx().getConfigNames().toArray();
 				return configNames;
 			}
 
-			@Override
+			//@Override
 			public void dispose() {
 			}
 
-			@Override
+			//@Override
 			public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 			}
 		};
@@ -126,7 +126,7 @@ public class SetupIniConfigHandler extends AbstractHandler {
 			setInput("");
 
 			setValidator(new ISelectionStatusValidator() {
-				@Override
+				//@Override
 				public IStatus validate(Object[] selection) {
 					if (selection.length==0)
 						return new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, "Nothing is selected.", null);

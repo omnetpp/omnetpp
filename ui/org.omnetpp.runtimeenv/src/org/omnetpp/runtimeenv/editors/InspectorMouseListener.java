@@ -40,11 +40,11 @@ public class InspectorMouseListener implements MouseListener, MouseMotionListene
         inspectorPart.getFigure().addMouseMotionListener(this);
     }
 
-    @Override
+    //@Override
     public void mouseDoubleClicked(MouseEvent me) { 
     }
 
-    @Override
+    //@Override
     public void mousePressed(MouseEvent me) {
         dragOperation = 0;
 //        if (inspectorPart.isSelected()) {
@@ -56,7 +56,7 @@ public class InspectorMouseListener implements MouseListener, MouseMotionListene
 //        }
     }
 
-    @Override
+    //@Override
     public void mouseReleased(MouseEvent me) {
     	dragOperation = 0;
     	dragStart = null;
@@ -68,7 +68,7 @@ public class InspectorMouseListener implements MouseListener, MouseMotionListene
     	return x;
     }
     
-    @Override
+    //@Override
     public void mouseDragged(MouseEvent me) {
         IFigure figure = inspectorPart.getFigure();
         if (dragOperation != 0 && dragStart != null) {
@@ -101,19 +101,19 @@ public class InspectorMouseListener implements MouseListener, MouseMotionListene
         }
     }
 
-    @Override
+    //@Override
     public void mouseEntered(MouseEvent me) {
     }
 
-    @Override
+    //@Override
     public void mouseExited(MouseEvent me) {
     }
 
-    @Override
+    //@Override
     public void mouseHover(MouseEvent me) {
     }
 
-    @Override
+    //@Override
     public void mouseMoved(MouseEvent me) {
     	IInspectorFigure figure = inspectorPart.getFigure();
     	dragOperation = figure.getDragOperation(me.x, me.y);

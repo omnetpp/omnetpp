@@ -41,7 +41,7 @@ public class CompoundModuleFigureEx extends ScrollPane implements IInspectorFigu
         this.inspectorPart = inspectorPart;
     }
 
-    @Override
+    //@Override
     public int getDragOperation(int x, int y) {
     	return FigureUtils.getBorderMoveResizeDragOperation(x, y, getBounds());
     }
@@ -76,7 +76,7 @@ public class CompoundModuleFigureEx extends ScrollPane implements IInspectorFigu
 		return getContents().getSize();
 	}
 
-	@Override
+	//@Override
     public void setSelectionBorder(boolean isSelected) {
         setBorder(isSelected ? new SelectionBorder() : null); //XXX for now
     }

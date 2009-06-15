@@ -6,7 +6,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 import org.omnetpp.common.image.ImageFactory;
-import org.omnetpp.runtime.nativelibs.simkernel.Javaenv;
+import org.omnetpp.runtime.nativelibs.simkernel.GUIEnv;
 import org.omnetpp.runtime.nativelibs.simkernel.Simkernel;
 import org.omnetpp.runtime.nativelibs.simkernel.StringVector;
 import org.omnetpp.runtime.nativelibs.simkernel.cSimulation;
@@ -40,7 +40,7 @@ public class Application implements IApplication {
 		// invoke setupUserInterface() in the C++ code. This will call back our doStart() method
 		// which runs the application and stores the exit code in the "result" field.
 		System.out.println("Calling setupUserInterface() C++ function in envir lib...");
-		Javaenv.setJavaApplication(null, this); // call back "this" object
+		GUIEnv.setJavaApplication(null, this); // call back "this" object
 		Simkernel.setupUserInterface(args);
 		return result;
 	}
@@ -49,7 +49,7 @@ public class Application implements IApplication {
 		System.out.println("Application.doStart() called back from C++ Javaapp::run(), starting workbench...");
 		Activator.simulationManager = new SimulationManager(); // needs to be after everything else ws set up in C++
 
-		Javaenv env = Javaenv.cast(cSimulation.getActiveEnvir());
+		GUIEnv env = GUIEnv.cast(cSimulation.getActiveEnvir());
         env.setJCallback(null, new EnvirCallback());
 
         result = reallyDoStart();

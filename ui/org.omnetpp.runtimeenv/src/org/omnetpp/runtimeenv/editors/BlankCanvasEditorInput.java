@@ -15,32 +15,32 @@ public class BlankCanvasEditorInput implements IEditorInput {
         this.name = name;
     }
     
-    @Override
+    //@Override
     public boolean exists() {
         return false;
     }
 
-    @Override
+    //@Override
     public ImageDescriptor getImageDescriptor() {
         return null;
     }
 
-    @Override
+    //@Override
     public String getName() {
         return name;
     }
 
-    @Override
+    //@Override
     public IPersistableElement getPersistable() {
         return null;
     }
 
-    @Override
+    //@Override
     public String getToolTipText() {
         return "";
     }
 
-    @Override
+    //@Override
     @SuppressWarnings("unchecked")
     public Object getAdapter(Class adapter) {
         return null;

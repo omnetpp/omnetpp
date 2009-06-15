@@ -87,7 +87,7 @@ public class ModelCanvas extends EditorPart implements IInspectorContainer {
         final MenuManager contextMenuManager = new MenuManager("#popup");
         canvas.setMenu(contextMenuManager.createContextMenu(canvas));
         canvas.addMenuDetectListener(new MenuDetectListener() {
-            @Override
+            //@Override
             public void menuDetected(MenuDetectEvent e) {
                 contextMenuManager.removeAll();
                 Point p = canvas.toControl(e.x, e.y);
@@ -101,7 +101,7 @@ public class ModelCanvas extends EditorPart implements IInspectorContainer {
 
 		// update inspectors when something happens in the simulation
 		Activator.getSimulationManager().addSimulationListener(simulationListener = new ISimulationListener() {
-			@Override
+			//@Override
 			public void changed() {
 				refreshInspectors();
 			}
@@ -135,7 +135,7 @@ public class ModelCanvas extends EditorPart implements IInspectorContainer {
 
         // reveal new inspector on canvas (later when layouting already took place)
         Display.getCurrent().asyncExec(new Runnable() {
-            @Override
+            //@Override
             public void run() {
                 if (!sc.isDisposed())
                     reveal(moduleFigure); //XXX also select it
@@ -163,12 +163,12 @@ public class ModelCanvas extends EditorPart implements IInspectorContainer {
     		inspectorPart.refresh();
     }
 
-    @Override
+    //@Override
     public Composite getControl() {
     	return canvas;
     }
 
-    @Override
+    //@Override
 	public void close(IInspectorPart inspectorPart) {
 		removeInspectorPart(inspectorPart);
 	}
@@ -183,7 +183,7 @@ public class ModelCanvas extends EditorPart implements IInspectorContainer {
         canvas.setFocus();
     }
 
-	@Override
+	//@Override
 	@SuppressWarnings("unchecked")
 	public void select(cObject object, boolean removeOthers) {
 		if (removeOthers) {
@@ -199,7 +199,7 @@ public class ModelCanvas extends EditorPart implements IInspectorContainer {
 		}
 	}
 
-	@Override
+	//@Override
 	public void toggleSelection(cObject object) {
 		IStructuredSelection selection = (IStructuredSelection)getSite().getSelectionProvider().getSelection();
 		if (selection.toList().contains(object))
@@ -208,7 +208,7 @@ public class ModelCanvas extends EditorPart implements IInspectorContainer {
 			select(object, false);
 	}
 
-	@Override
+	//@Override
 	@SuppressWarnings("unchecked")
 	public void deselect(cObject object) {
 		IStructuredSelection selection = (IStructuredSelection)getSite().getSelectionProvider().getSelection();
@@ -219,7 +219,7 @@ public class ModelCanvas extends EditorPart implements IInspectorContainer {
 		}
 	}
 
-	@Override
+	//@Override
 	public void deselectAll() {
 		fireSelectionChange(new StructuredSelection());
 	}

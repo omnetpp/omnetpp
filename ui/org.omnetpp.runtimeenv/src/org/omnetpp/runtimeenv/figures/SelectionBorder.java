@@ -21,22 +21,22 @@ public class SelectionBorder implements Border {
 		this.handleSize = handleSize;
 	}
 
-	@Override
+	//@Override
 	public Insets getInsets(IFigure figure) {
 		return new Insets();
 	}
 
-	@Override
+	//@Override
 	public Dimension getPreferredSize(IFigure figure) {
 		return figure.getPreferredSize();
 	}
 
-	@Override
+	//@Override
 	public boolean isOpaque() {
 		return false;
 	}
 
-	@Override
+	//@Override
 	public void paint(IFigure figure, Graphics graphics, Insets insets) {
 		Rectangle r;
 		if (figure instanceof SubmoduleFigure)

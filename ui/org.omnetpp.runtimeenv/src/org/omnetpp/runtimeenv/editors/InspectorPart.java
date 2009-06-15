@@ -35,22 +35,22 @@ public abstract class InspectorPart implements IInspectorPart {
         return target==null ? null : ((IInspectorFigure)target).getInspectorPart();
     }
 
-	@Override
+	//@Override
 	public cObject getObject() {
 		return object;
 	}
 
-	@Override
+	//@Override
 	public IInspectorFigure getFigure() {
 	    return figure;
 	}
 
-	@Override
+	//@Override
 	public boolean isSelected() {  //XXX needed? canvas holds the selection anyway, this only allows inconsistency!!!
 	    return isSelected;
 	}
 
-	@Override
+	//@Override
 	public void refresh() {
 		Assert.isTrue(figure.getParent()!=null && inspectorContainer!=null, "inspector not yet installed");
 		Assert.isTrue(object != null, "inspector already disposed");
@@ -62,17 +62,17 @@ public abstract class InspectorPart implements IInspectorPart {
 		}
 	}
 
-	@Override
+	//@Override
 	public void setContainer(IInspectorContainer container) {
 		this.inspectorContainer = container;
 	}
 
-	@Override
+	//@Override
     public IInspectorContainer getContainer() {
     	return inspectorContainer;
     }
 
-    @Override
+    //@Override
     public void selectionChanged(IStructuredSelection selection) {
     	boolean oldSelectedState = isSelected;
     	isSelected = selection.toList().contains(object); //XXX or the inspectorPart???
@@ -80,7 +80,7 @@ public abstract class InspectorPart implements IInspectorPart {
     		figure.setSelectionBorder(isSelected);
     }
 
-    @Override
+    //@Override
     public String toString() {
     	if (object.isZombie())
     		return getClass().getSimpleName() + ":<deleted-object>";

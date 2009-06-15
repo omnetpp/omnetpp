@@ -11,5 +11,4 @@ Require-Bundle: org.eclipse.ui,
  org.omnetpp.runtime.nativelibs,
  org.omnetpp.figures,
  org.omnetpp.common.core;bundle-version="4.0.0"
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy

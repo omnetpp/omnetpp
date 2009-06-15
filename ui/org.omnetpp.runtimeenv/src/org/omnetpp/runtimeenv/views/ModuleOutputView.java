@@ -51,22 +51,22 @@ public class ModuleOutputView extends PinnableView2 implements ISimulationListen
                 ((TextChangeListener)o).textChanged(this);
         }
 
-        @Override
+        //@Override
         public int getLineCount() {
             return (int)logBufferView.getNumLines();
         }
 
-        @Override
+        //@Override
         public int getCharCount() {
         	return (int)logBufferView.getNumChars();
         }
 
-        @Override
+        //@Override
         public String getLine(int lineIndex) {
         	return logBufferView.getLine(lineIndex);
         }
 
-        @Override
+        //@Override
         public Color getLineColor(int lineIndex) {
             int lineType = logBufferView.getLineType(lineIndex);
             if (lineType == LogBuffer.LINE_BANNER)
@@ -77,22 +77,22 @@ public class ModuleOutputView extends PinnableView2 implements ISimulationListen
                 return null;
         }
 
-        @Override
+        //@Override
         public int getLineAtOffset(int offset) {
         	return (int)logBufferView.getLineAtOffset(offset);
         }
 
-        @Override
+        //@Override
         public int getOffsetAtLine(int lineIndex) {
         	return (int)logBufferView.getOffsetAtLine(lineIndex);
         }
 
-        @Override
+        //@Override
         public void addTextChangeListener(TextChangeListener listener) {
             listeners.add(listener);
         }
 
-        @Override
+        //@Override
         public void removeTextChangeListener(TextChangeListener listener) {
             listeners.remove(listener);
         }
@@ -152,7 +152,7 @@ public class ModuleOutputView extends PinnableView2 implements ISimulationListen
 	    textViewer.setFocus();
 	}
 
-	@Override
+	//@Override
 	public void changed() {
 	    textViewer.refresh();
 	    //textViewer.setTopLineIndex(textViewer.getContent().getLineCount()-1);

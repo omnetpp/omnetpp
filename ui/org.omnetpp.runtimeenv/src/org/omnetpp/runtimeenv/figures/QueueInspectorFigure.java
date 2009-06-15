@@ -30,7 +30,7 @@ public class QueueInspectorFigure extends Figure implements IInspectorFigure {
 			return new Dimension(10,10);  // irrelevant
 		}
 
-		@Override
+		//@Override
 		@SuppressWarnings("unchecked")
 		public void layout(IFigure container) {
 			// compute the area where we'll put the message figures
@@ -65,22 +65,22 @@ public class QueueInspectorFigure extends Figure implements IInspectorFigure {
 		setSelectionBorder(false);
 	}
 	
-	@Override
+	//@Override
 	public IInspectorPart getInspectorPart() {
 		return inspectorPart;
 	}
 
-	@Override
+	//@Override
 	public void setInspectorPart(IInspectorPart part) {
 		this.inspectorPart = part;
 	}
 
-	@Override
+	//@Override
 	public int getDragOperation(int x, int y) {
     	return FigureUtils.getBorderMoveResizeDragOperation(x, y, getBounds());
 	}
 
-	@Override
+	//@Override
 	public void setSelectionBorder(boolean isSelected) {
         //setBorder(isSelected ? new SelectionBorder() : null); //XXX SelectionBorder crashes the VM !! ????
         setBorder(isSelected ? new LineBorder(5) : null); //XXX for now

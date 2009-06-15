@@ -93,7 +93,7 @@ public class TextViewer extends Canvas implements ISelectionProvider {
         clipboard = new Clipboard(getDisplay());
         
         textChangeListener = new TextChangeListener() {
-            @Override
+            //@Override
             public void textChanged(TextViewerContent textViewer) {
                 contentChanged();
             }
@@ -106,7 +106,7 @@ public class TextViewer extends Canvas implements ISelectionProvider {
         // cursor blinking
         //XXX disable if not focused
         Display.getCurrent().timerExec(500, new Runnable() {
-            @Override
+            //@Override
             public void run() {
                 if (!isDisposed()) {
                     caretShown = !caretShown;
@@ -898,22 +898,22 @@ public class TextViewer extends Canvas implements ISelectionProvider {
         getHorizontalBar().setSelection(horizontalScrollOffset);
     }
 
-    @Override
+    //@Override
     public void addSelectionChangedListener(ISelectionChangedListener listener) {
         selectionProvider.addSelectionChangedListener(listener);
     }
 
-    @Override
+    //@Override
     public void removeSelectionChangedListener(ISelectionChangedListener listener) {
         selectionProvider.removeSelectionChangedListener(listener);
     }
 
-    @Override
+    //@Override
     public void setSelection(ISelection selection) {
         selectionProvider.setSelection(selection);  //FIXME synchronize this with the text selection!!!! (it does nothing as it is!!)
     }
 
-    @Override
+    //@Override
     public ISelection getSelection() {
         return selectionProvider.getSelection();  //FIXME synchronize this with the text selection!!!! (it does nothing as it is!!)
     }

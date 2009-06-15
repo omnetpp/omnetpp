@@ -92,7 +92,7 @@ public class ObjectTreeView extends ViewPart implements ISimulationListener {
             return element.toString();
         }
 
-        @Override
+        //@Override
         public Image getImage(Object element) {
             if (element instanceof cObject) {
                 //FIXME cache image by object's classname!
@@ -106,7 +106,7 @@ public class ObjectTreeView extends ViewPart implements ISimulationListener {
             return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_ERROR_TSK);
         }
 
-        @Override
+        //@Override
         public StyledString getStyledText(Object element) {
             String text = getText(element);
             int blueStartIndex = text.indexOf('\b', 0);
@@ -125,22 +125,22 @@ public class ObjectTreeView extends ViewPart implements ISimulationListener {
             return styledString;
         }
 
-        @Override
+        //@Override
         public boolean isLabelProperty(Object element, String property) {
             return true;
         }
 
-        @Override
+        //@Override
         public void dispose() {
             // nothing
         }
 
-        @Override
+        //@Override
         public void addListener(ILabelProviderListener listener) {
             // nothing
         }
 
-        @Override
+        //@Override
         public void removeListener(ILabelProviderListener listener) {
             // nothing
         }
@@ -173,7 +173,7 @@ public class ObjectTreeView extends ViewPart implements ISimulationListener {
         // export our selection to the workbench
 		getViewSite().setSelectionProvider(new SelectionProvider());
         viewer.addSelectionChangedListener(new ISelectionChangedListener() {
-			@Override
+			//@Override
 			public void selectionChanged(SelectionChangedEvent event) {
 				getViewSite().getSelectionProvider().setSelection(event.getSelection());
 			}
@@ -190,7 +190,7 @@ public class ObjectTreeView extends ViewPart implements ISimulationListener {
 		viewer.getControl().setFocus();
 	}
 
-	@Override
+	//@Override
     public void changed() {
         viewer.refresh();
     }

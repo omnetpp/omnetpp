@@ -40,22 +40,22 @@ public abstract class AbstractSWTInspectorPart extends InspectorPart {
 			return insets;
 		}
 
-		@Override
+		//@Override
 		public IInspectorPart getInspectorPart() {
 			return inspectorPart;
 		}
 
-		@Override
+		//@Override
 		public void setInspectorPart(IInspectorPart part) {
 			this.inspectorPart = part;
 		}
 
-		@Override
+		//@Override
 		public int getDragOperation(int x, int y) {
 	    	return FigureUtils.getBorderMoveResizeDragOperation(x, y, getBounds());
 		}
 
-		@Override
+		//@Override
 		public void setSelectionBorder(boolean isSelected) {
 	        //setBorder(isSelected ? new SelectionBorder() : null); //XXX SelectionBorder crashes the VM !! ????
 	        setBorder(isSelected ? new LineBorder(5) : null); //XXX for now
@@ -81,7 +81,7 @@ public abstract class AbstractSWTInspectorPart extends InspectorPart {
 		adjustControlBounds();
 
 		figure.addFigureListener(new FigureListener() {
-			@Override
+			//@Override
 			public void figureMoved(IFigure source) { // actually, moved or resized...
 				adjustControlBounds();
 			}

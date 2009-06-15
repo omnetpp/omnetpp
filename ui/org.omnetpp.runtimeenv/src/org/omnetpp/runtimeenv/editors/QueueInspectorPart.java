@@ -39,17 +39,17 @@ public class QueueInspectorPart extends InspectorPart {
         // mouse handling
 		//XXX near copy-paste from GraphicalModulePart, factor out!
         figure.addMouseListener(new MouseListener() {
-            @Override
+            //@Override
             public void mouseDoubleClicked(MouseEvent me) {
                 handleMouseDoubleClick(me);
             }
 
-			@Override
+			//@Override
 			public void mousePressed(MouseEvent me) {
                 handleMousePressed(me);
 			}
 
-			@Override
+			//@Override
 			public void mouseReleased(MouseEvent me) {
                 handleMouseReleased(me);
 			}
@@ -89,12 +89,12 @@ public class QueueInspectorPart extends InspectorPart {
     }
 
 	
-	@Override
+	//@Override
 	public boolean isMaximizable() {
 		return false;
 	}
 
-	@Override
+	//@Override
 	public void populateContextMenu(MenuManager contextMenuManager, Point p) {
         contextMenuManager.add(new Action("Close") {
             @Override

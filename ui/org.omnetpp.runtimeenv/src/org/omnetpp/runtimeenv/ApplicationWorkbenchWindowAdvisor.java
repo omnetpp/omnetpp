@@ -87,7 +87,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
         toolBarManager.add(messageCounters);
 
         Activator.getSimulationManager().addSimulationListener(new ISimulationListener() {
-            @Override
+            //@Override
             public void changed() {
                 simTime.getLabel().setText(" T="+cSimulation.getActiveSimulation().getSimTime() + " ");
                 eventNumber.getLabel().setText(" #"+cSimulation.getActiveSimulation().getEventNumber() + " ");
@@ -106,7 +106,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
         statusLineManager.add(simtimeItem);
 
         Activator.getSimulationManager().addSimulationListener(new ISimulationListener() {
-            @Override
+            //@Override
             public void changed() {
                 String text = "T=" + cSimulation.getActiveSimulation().getSimTime();
                 simtimeItem.setText(text);
@@ -115,7 +115,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 
         // display selection in statusbar
         getWindowConfigurer().getWindow().getSelectionService().addSelectionListener(new ISelectionListener() {
-			@Override
+			//@Override
 			public void selectionChanged(IWorkbenchPart part, ISelection selection) {
 				// assemble text
 				String text = "";

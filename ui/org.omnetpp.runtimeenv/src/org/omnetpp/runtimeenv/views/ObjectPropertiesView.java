@@ -362,7 +362,7 @@ public class ObjectPropertiesView extends PinnableView2 implements ISimulationLi
 	        return element.toString();
 	    }
 
-        @Override
+        //@Override
 		public Image getImage(Object element) {
 	        if (element instanceof RootObj)
 	            element = ((RootObj)element).object;
@@ -483,7 +483,7 @@ public class ObjectPropertiesView extends PinnableView2 implements ISimulationLi
             }
         }
 
-        @Override
+        //@Override
         public StyledString getStyledText(Object element) {
             String text = getText(element);
             int blueStartIndex = text.indexOf('\b', 0);
@@ -502,22 +502,22 @@ public class ObjectPropertiesView extends PinnableView2 implements ISimulationLi
             return styledString;
         }
 
-        @Override
+        //@Override
         public boolean isLabelProperty(Object element, String property) {
             return true;
         }
 
-        @Override
+        //@Override
         public void dispose() {
             // nothing
         }
 
-        @Override
+        //@Override
         public void addListener(ILabelProviderListener listener) {
             // nothing
         }
 
-        @Override
+        //@Override
         public void removeListener(ILabelProviderListener listener) {
             // nothing
         }
@@ -588,7 +588,7 @@ public class ObjectPropertiesView extends PinnableView2 implements ISimulationLi
 		viewer.getControl().setFocus();
 	}
 
-	@Override
+	//@Override
     public void changed() {
 		// throw out deleted objects from the input
 		boolean needsPurge = false;

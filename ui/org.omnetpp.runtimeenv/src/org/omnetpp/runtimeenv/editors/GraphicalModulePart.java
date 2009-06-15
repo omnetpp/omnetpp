@@ -55,24 +55,24 @@ public class GraphicalModulePart extends InspectorPart {
 
         // mouse handling
         figure.addMouseListener(new MouseListener() {
-            @Override
+            //@Override
             public void mouseDoubleClicked(MouseEvent me) {
                 handleMouseDoubleClick(me);
             }
 
-			@Override
+			//@Override
 			public void mousePressed(MouseEvent me) {
                 handleMousePressed(me);
 			}
 
-			@Override
+			//@Override
 			public void mouseReleased(MouseEvent me) {
                 handleMouseReleased(me);
 			}
         });
     }
 
-	@Override
+	//@Override
 	public boolean isMaximizable() {
 		return false;
 	}

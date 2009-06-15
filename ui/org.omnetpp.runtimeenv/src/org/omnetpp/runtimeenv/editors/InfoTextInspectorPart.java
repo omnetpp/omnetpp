@@ -38,12 +38,12 @@ public class InfoTextInspectorPart extends InspectorPart {
 		}
 	}
 
-	@Override
+	//@Override
 	public boolean isMaximizable() {
 		return false;
 	}
 
-	@Override
+	//@Override
 	public void populateContextMenu(MenuManager contextMenuManager, Point p) {
         contextMenuManager.add(new Action("Close") {
             @Override

@@ -26,12 +26,12 @@ public class ExampleSWTInspectorPart extends AbstractSWTInspectorPart {
 		return listbox;
 	}
 
-	@Override
+	//@Override
 	public boolean isMaximizable() {
 		return false;
 	}
 
-	@Override
+	//@Override
 	public void populateContextMenu(MenuManager contextMenuManager, Point p) {
 	}
 
