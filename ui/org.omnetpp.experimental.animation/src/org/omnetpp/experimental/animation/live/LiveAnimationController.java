@@ -25,13 +25,14 @@ import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
 import org.omnetpp.experimental.animation.replay.model.ReplayMessage;
 import org.omnetpp.experimental.animation.replay.model.ReplayModule;
 import org.omnetpp.experimental.animation.widgets.AnimationCanvas;
-import org.omnetpp.experimental.simkernel.IEnvirCallback;
-import org.omnetpp.experimental.simkernel.swig.Simkernel;
-import org.omnetpp.experimental.simkernel.swig.cGate;
-import org.omnetpp.experimental.simkernel.swig.cMessage;
-import org.omnetpp.experimental.simkernel.swig.cModule;
-import org.omnetpp.experimental.simkernel.swig.cObject;
-import org.omnetpp.experimental.simkernel.swig.cSimulation;
+import org.omnetpp.runtime.nativelibs.IEnvirCallback;
+import org.omnetpp.runtime.nativelibs.simkernel.Javaenv;
+import org.omnetpp.runtime.nativelibs.simkernel.Simkernel;
+import org.omnetpp.runtime.nativelibs.simkernel.cGate;
+import org.omnetpp.runtime.nativelibs.simkernel.cMessage;
+import org.omnetpp.runtime.nativelibs.simkernel.cModule;
+import org.omnetpp.runtime.nativelibs.simkernel.cObject;
+import org.omnetpp.runtime.nativelibs.simkernel.cSimulation;
 
 public class LiveAnimationController extends ReplayAnimationController implements IEnvirCallback {
 	protected Javaenv jenv;

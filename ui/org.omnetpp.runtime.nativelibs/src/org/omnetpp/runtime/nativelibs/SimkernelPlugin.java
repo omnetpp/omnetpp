@@ -41,7 +41,7 @@ public class SimkernelPlugin extends Plugin {
 //
 //		Simkernel.evSetupDummyCall(); // ev.setup(argc, argv);
 //
-//		//Javaenv jenv = Simkernel.getJavaenv();
+//		//GUIEnv jenv = Simkernel.getGUIEnv();
 //		//jenv.setJCallback(null, new DummyEnvirCallback());
 //
 //		//cEnvir ev = Simkernel.getEV();

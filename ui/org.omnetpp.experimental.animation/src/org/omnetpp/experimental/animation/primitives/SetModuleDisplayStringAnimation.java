@@ -12,7 +12,6 @@ import org.omnetpp.common.simulation.model.IRuntimeModule;
 import org.omnetpp.experimental.animation.controller.AnimationPosition;
 import org.omnetpp.experimental.animation.replay.ReplayAnimationController;
 import org.omnetpp.figures.SubmoduleFigure;
-import org.omnetpp.figures.layout.SubmoduleConstraint;
 
 public class SetModuleDisplayStringAnimation extends AbstractInfiniteAnimation {
 	protected int moduleId;

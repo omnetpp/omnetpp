@@ -35,9 +35,9 @@ import org.omnetpp.experimental.animation.controller.AnimationPosition;
 import org.omnetpp.experimental.animation.controller.ILiveAnimationListener;
 import org.omnetpp.experimental.animation.live.LiveAnimationController;
 import org.omnetpp.experimental.animation.widgets.AnimationCanvas;
-import org.omnetpp.experimental.simkernel.swig.Simkernel;
-import org.omnetpp.experimental.simkernel.swig.cEnvir;
-import org.omnetpp.experimental.simkernel.swig.cStaticFlag;
+import org.omnetpp.runtime.nativelibs.simkernel.Simkernel;
+import org.omnetpp.runtime.nativelibs.simkernel.cEnvir;
+import org.omnetpp.runtime.nativelibs.simkernel.cStaticFlag;
 
 public class LiveAnimationEditor extends ReplayAnimationEditor implements ILiveAnimationListener {
 	private static final String ICONS_FINISH_GIF = "icons/finish.gif";

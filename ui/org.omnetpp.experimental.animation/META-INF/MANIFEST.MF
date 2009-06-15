@@ -15,7 +15,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.draw2d,
  org.omnetpp.common,
  org.omnetpp.figures,
- org.omnetpp.ned.model;bundle-version="4.0.0",
- org.omnetpp.experimental.simkernel,
- org.omnetpp.ide.nativelibs;bundle-version="4.0.0"
+ org.omnetpp.ned.model,
+ org.omnetpp.ide.nativelibs,
+ org.omnetpp.runtime.nativelibs
 Eclipse-LazyStart: true
