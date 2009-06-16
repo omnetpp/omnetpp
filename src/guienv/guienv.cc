@@ -54,6 +54,11 @@ WrapperTable GUIEnv::wrapperTable;
 #define DEBUGPRINTF ::printf
 //#define DEBUGPRINTF (void)
 
+Register_GlobalConfigOptionU(CFGID_GUIENV_EXTRA_STACK, "guienv-extra-stack", "B", "48KB", "Specifies the extra amount of stack that is reserved for each activity() simple module when the simulation is run under GUIEnv.");
+Register_GlobalConfigOption(CFGID_GUIENV_DEFAULT_CONFIG, "guienv-default-config", CFG_STRING, NULL, "Specifies which config Tkenv should set up automatically on startup. The default is to ask the user.");
+Register_GlobalConfigOption(CFGID_GUIENV_DEFAULT_RUN, "guienv-default-run", CFG_INT, "0", "Specifies which run (of the default config, see tkenv-default-config) Tkenv should set up automatically on startup. The default is to ask the user.");
+Register_GlobalConfigOption(CFGID_GUIENV_IMAGE_PATH, "guienv-image-path", CFG_PATH, "", "Specifies the path for loading module icons.");
+
 GUIEnv::GUIEnv()
 {
     jcallback = NULL;
@@ -191,7 +196,8 @@ void GUIEnv::run()
         args.push_back("-application");
         args.push_back("org.omnetpp.runtimeenv.application");
         args.push_back("-data");
-        args.push_back("C:\\home\\omnetpp40\\omnetpp\\ui/../runtime-org.omnetpp.runtimeenv.application"); //XXX hardcoded!!!
+        //args.push_back("C:\\home\\omnetpp40\\omnetpp\\ui/../runtime-org.omnetpp.runtimeenv.application"); //XXX hardcoded!!!
+        args.push_back(".guienv"); //FIXME rather: $HOME/.guienv!
         args.push_back("-configuration");
         args.push_back("file:C:/home/omnetpp40/omnetpp/ui/.metadata/.plugins/org.eclipse.pde.core/org.omnetpp.runtimeenv.application/"); //XXX
         args.push_back("-dev");
