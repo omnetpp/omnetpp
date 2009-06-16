@@ -47,7 +47,7 @@ class GUIENV_API GUIEnv : public EnvirBase
 
   protected:
     void initJVM();
-    static void registerNatives(JNIEnv *jenv, jclass /*guienvHelperClazz*/, jclass simkernelJNIClazz);
+    static void registerNatives(JNIEnv *jenv, jclass /*guienvHelperClazz*/, jclass simkernelJNIClazz, jclass cobjectClazz);
 
   public:
     static void setJavaApplication(JNIEnv *jenv_, jobject javaApp_) {
@@ -58,14 +58,9 @@ class GUIENV_API GUIEnv : public EnvirBase
 
     static JNIEnv *getJEnv() {return jenv;}
 
-    GUIEnv() {
-        jcallback = NULL;
-        if (jenv) wrapperTable.init(jenv);
-    }
+    GUIEnv();
 
-    ~GUIEnv() {
-        delete jcallback;
-    }
+    ~GUIEnv();
 
     // entry point
     void run();

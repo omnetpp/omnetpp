@@ -24,21 +24,26 @@
 
 using namespace JUtil;
 
-WrapperTable::WrapperTable(JNIEnv *je)
+WrapperTable::WrapperTable()
 {
     jenv = NULL;
     zapMethodID = 0;
-
-    if (je)
-        init(je);
 }
 
-void WrapperTable::init(JNIEnv *je)
+WrapperTable::WrapperTable(JNIEnv *je, jclass cobjectClazz)
+{
+    jenv = NULL;
+    zapMethodID = 0;
+    init(je, cobjectClazz);
+}
+
+void WrapperTable::init(JNIEnv *je, jclass cobjectClazz)
 {
     jenv = je;
     ASSERT(jenv!=NULL);
-    jclass clazz = findClass(jenv, "org/omnetpp/runtime/nativelibs/simkernel/cObject");
-    zapMethodID = getMethodID(jenv, clazz, "zap", "()V");
+    // note: we cannot access the cObject class from here (classloader issue),
+    // that's why it's passed as parameter from the Java code
+    zapMethodID = getMethodID(jenv, cobjectClazz, "zap", "()V");
 }
 
 void WrapperTable::wrapperCreated(cObject *p, jobject wrapper)

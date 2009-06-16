@@ -24,7 +24,7 @@
   static {
     try {
       Class<?> guienvHelper = Class.forName("GUIEnvHelper", true, ClassLoader.getSystemClassLoader());
-      org.omnetpp.common.util.ReflectionUtils.invokeStaticMethod(guienvHelper, "registerNatives", SimkernelJNI.class);
+      org.omnetpp.common.util.ReflectionUtils.invokeStaticMethod(guienvHelper, "registerNatives", SimkernelJNI.class, cObject.class);
     }
     catch (Throwable e) {
       System.err.println("FATAL: registration of SimkernelJNI native methods failed: " + e);
