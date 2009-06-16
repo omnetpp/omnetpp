@@ -19,6 +19,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string>
+#include <jni.h>
 
 #include "appreg.h"
 #include "guienv.h"
@@ -40,7 +41,6 @@ extern "C" GUIENV_API void guienv_lib() {}
 extern "C" GUIENV_API void _guienv_lib() {}
 
 
-JavaVM *GUIEnv::jvm;
 JNIEnv *GUIEnv::jenv;
 jobject GUIEnv::javaApp;
 WrapperTable GUIEnv::wrapperTable;
@@ -62,10 +62,6 @@ Register_GlobalConfigOption(CFGID_GUIENV_IMAGE_PATH, "guienv-image-path", CFG_PA
 GUIEnv::GUIEnv()
 {
     jcallback = NULL;
-    if (jenv) {
-        jclass cobjectClazz = findClass(jenv, "org/omnetpp/runtime/nativelibs/simkernel/cObject");
-        wrapperTable.init(jenv, cobjectClazz);
-    }
 }
 
 GUIEnv::~GUIEnv()
@@ -91,6 +87,7 @@ void GUIEnv::initJVM()
 
     options[n++].optionString = "-Dfile.encoding=Cp1252";  //XXX Eclipse did it so, but it this necessary & same on all platforms?
     options[n++].optionString = "-Djava.class.path=C:\\eclipse\\plugins\\org.eclipse.equinox.launcher_1.0.100.v20080509-1800.jar"; //XXX hardcoded!!!!
+    options[n++].optionString = "-Domnetpp.guienv.standalone=1";  // tells RCP app that it runs standalone (i.e. not launched from PDT)
 
     //XXX for debugging:
     options[n++].optionString = "-Djava.compiler=NONE";    // disable JIT
@@ -102,6 +99,7 @@ void GUIEnv::initJVM()
     vm_args.nOptions = n;
     vm_args.ignoreUnrecognized = true;
 
+    JavaVM *jvm;
     int res = JNI_CreateJavaVM(&jvm, (void **)&jenv, &vm_args);
     if (res<0)
         opp_error("Could not create Java VM: JNI_CreateJavaVM returned %d", res); //XXX
@@ -156,6 +154,7 @@ void SimkernelJNI_registerNatives(JNIEnv *jenv, jclass clazz); // generated meth
 void GUIEnv::registerNatives(JNIEnv *jenv, jclass /*guienvHelperClazz*/, jclass simkernelJNIClazz, jclass cobjectClazz)
 {
     try {
+        GUIEnv::jenv = jenv;
         SimkernelJNI_registerNatives(jenv, simkernelJNIClazz);
         wrapperTable.init(jenv, cobjectClazz);  // can only be done when cObject was already loaded
     }
@@ -165,6 +164,15 @@ void GUIEnv::registerNatives(JNIEnv *jenv, jclass /*guienvHelperClazz*/, jclass 
     }
 }
 
+// This method is the native part of LaunchHelper Java class;
+// it is used to bootstrap when program is launched using java.exe
+// from Eclipse.
+extern "C" JNIEXPORT void JNICALL Java_org_omnetpp_runtime_nativelibs_LaunchHelper_registerNatives(JNIEnv *jenv, jclass)
+{
+    GUIEnv::registerNatives(jenv, NULL,
+        findClass(jenv, "org/omnetpp/runtime/nativelibs/simkernel/SimkernelJNI"),
+        findClass(jenv, "org/omnetpp/runtime/nativelibs/simkernel/cObject"));
+}
 
 static std::string join(const char *sep, const std::vector<std::string>& v)
 {
@@ -180,7 +188,7 @@ void GUIEnv::run()
 {
     //FIXME add try-catch blocks!!!
 
-    if (!jvm) {
+    if (!jenv) {
         // Normal startup: create JVM, and launch RCP application.
         // Note: we'd want to call wrapperTable.init(jenv) here as well,
         // but it has to wait until cObject.class has been loaded
@@ -233,10 +241,11 @@ void GUIEnv::run()
     }
 }
 
-void GUIEnv::setJCallback(JNIEnv *jenv, jobject jcallbackobj)
+void GUIEnv::setJCallback(jobject jcallbackobj)
 {
     if (jcallbackobj)
     {
+        ASSERT(jenv!=NULL);
         jcallback = new JCallback(jenv, jcallbackobj);
     }
     else

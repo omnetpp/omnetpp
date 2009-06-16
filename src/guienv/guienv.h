@@ -37,7 +37,6 @@
 class GUIENV_API GUIEnv : public EnvirBase
 {
   private:
-    static JavaVM *jvm;
     static JNIEnv *jenv;
     static jobject javaApp;  //???
     static WrapperTable wrapperTable; // table of SWIG wrapper objects
@@ -47,12 +46,11 @@ class GUIENV_API GUIEnv : public EnvirBase
 
   protected:
     void initJVM();
-    static void registerNatives(JNIEnv *jenv, jclass /*guienvHelperClazz*/, jclass simkernelJNIClazz, jclass cobjectClazz);
 
   public:
-    static void setJavaApplication(JNIEnv *jenv_, jobject javaApp_) {
-        //XXX jvm ptr cannot be initialized -- remove it?
-        jenv = jenv_;
+    static void registerNatives(JNIEnv *jenv, jclass /*guienvHelperClazz*/, jclass simkernelJNIClazz, jclass cobjectClazz);
+
+    static void setRCPApplication(jobject javaApp_) {
         javaApp = jenv->NewGlobalRef(javaApp_);
     }
 
@@ -66,7 +64,7 @@ class GUIENV_API GUIEnv : public EnvirBase
     void run();
 
     // methods used at startup:
-    void setJCallback(JNIEnv *jenv, jobject jcallbackobj);
+    void setJCallback(jobject jcallbackobj);
 
     // managing Java wrapper objects (we clear cPtr in them when C++ peer object gets deleted)
     void swigWrapperCreated(cObject *p, jobject wrapper) {

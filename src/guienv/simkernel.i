@@ -23,12 +23,23 @@
 %pragma(java) jniclasscode=%{
   static {
     try {
-      Class<?> guienvHelper = Class.forName("GUIEnvHelper", true, ClassLoader.getSystemClassLoader());
-      org.omnetpp.common.util.ReflectionUtils.invokeStaticMethod(guienvHelper, "registerNatives", SimkernelJNI.class, cObject.class);
+        boolean standalone = System.getProperty("omnetpp.guienv.standalone")!=null;
+        if (standalone) {
+            // Launched via opp_run or a simulation executable
+            Class<?> guienvHelper = Class.forName("GUIEnvHelper", true, ClassLoader.getSystemClassLoader());
+            org.omnetpp.common.util.ReflectionUtils.invokeStaticMethod(guienvHelper, "registerNatives", SimkernelJNI.class, cObject.class);
+        } else {
+            // Launched with java.exe from an Eclipse PDT launch config (Developer Mode).
+            // We have to load the GUIEnv native code from the shared library manually.
+            // Next line should be added to the VM arguments in the Eclipse launch config:
+            // -Djava.library.path=${workspace_loc}/../bin
+            System.loadLibrary("oppguienvd");
+            org.omnetpp.runtime.nativelibs.LaunchHelper.registerNatives();
+        }
     }
     catch (Throwable e) {
-      System.err.println("FATAL: registration of SimkernelJNI native methods failed: " + e);
-      System.exit(1);
+        System.err.println("FATAL: registration of SimkernelJNI native methods failed: " + e);
+        System.exit(1);
     }
   }
 %}
