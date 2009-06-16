@@ -24,9 +24,14 @@ public class Application implements IApplication {
 	 */
 	public Object start(IApplicationContext context) {
 		System.out.println("Entering Application.start()");
-		boolean launchedFromEclipse = false;
+		boolean standalone = System.getProperty("omnetpp.guienv.standalone")!=null;
 
-        if (launchedFromEclipse) {
+        if (standalone) {
+        	// Launched from opp_run or a simulation executable.
+        	ImageFactory.initialize(new String[]{"C:\\home\\omnetpp40\\omnetpp\\images"}); //XXX
+        	doStart();
+        }
+        else {
         	// launched with java.exe from Eclipse via a JDT launch config; we need to set up
         	// the C++ Envir object, configuration object etc all by hand.
         	ImageFactory.initialize(new String[]{"C:\\home\\omnetpp40\\omnetpp\\images"}); //XXX
@@ -45,12 +50,8 @@ public class Application implements IApplication {
         	// invoke setupUserInterface() in the C++ code. This will call back our doStart() method
         	// which runs the application and stores the exit code in the "result" field.
         	System.out.println("Calling setupUserInterface() C++ function in envir lib...");
-        	GUIEnv.setJavaApplication(null, this); // call back "this" object
+        	GUIEnv.setRCPApplication(this); // call back "this" object
         	Simkernel.setupUserInterface(args);
-        }
-        else {
-        	ImageFactory.initialize(new String[]{"C:\\home\\omnetpp40\\omnetpp\\images"}); //XXX
-        	doStart();
         }
 		return result;
 	}
@@ -60,7 +61,7 @@ public class Application implements IApplication {
 		Activator.simulationManager = new SimulationManager(); // needs to be after everything else was set up in C++
 
 		GUIEnv env = GUIEnv.cast(cSimulation.getActiveEnvir());
-        env.setJCallback(null, new EnvirCallback());
+        env.setJCallback(new EnvirCallback());
 
         result = reallyDoStart();
 		System.out.println("Workbench exited");

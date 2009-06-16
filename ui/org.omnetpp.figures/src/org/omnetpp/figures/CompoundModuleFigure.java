@@ -177,6 +177,7 @@ public class CompoundModuleFigure extends NedFigure
         tb.setSpacing(2);
         tb.setStretchMinorAxis(false);
         setLayoutManager(tb);
+        
         // contains all layers used inside a compound modules submodule area
         mainContainer = new LayeredPane() {
         	@Override
