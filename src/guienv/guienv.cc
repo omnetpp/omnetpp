@@ -202,6 +202,7 @@ void GUIEnv::run()
         args.push_back("file:C:/home/omnetpp40/omnetpp/ui/.metadata/.plugins/org.eclipse.pde.core/org.omnetpp.runtimeenv.application/"); //XXX
         args.push_back("-dev");
         args.push_back("file:C:/home/omnetpp40/omnetpp/ui/.metadata/.plugins/org.eclipse.pde.core/org.omnetpp.runtimeenv.application/dev.properties"); //XXX
+/*XXX apparently not needed:
         args.push_back("-os");
         args.push_back("win32"); //XXX
         args.push_back("-ws");
@@ -210,6 +211,8 @@ void GUIEnv::run()
         args.push_back("x86"); //XXX
         args.push_back("-nl");
         args.push_back("en_US");
+*/
+        //FIXME possibility to add new args via inifile, and to replace these ones
         DEBUGPRINTF("Launcher args: %s\n", join(" ", args).c_str());
 
         // run the app: new Main().run(args)
