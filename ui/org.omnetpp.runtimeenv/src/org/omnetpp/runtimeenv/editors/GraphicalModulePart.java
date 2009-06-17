@@ -217,10 +217,10 @@ public class GraphicalModulePart extends InspectorPart {
             	cGate targetGate = gate.getNextGate();
             	ConnectionFigure connectionFigure = new ConnectionFigure();
             	GateAnchor sourceAnchor = (gate.getOwnerModule().equals(parentModule) ?
-            			new CompoundModuleGateAnchor(moduleFigure) :
+            			new CompoundModuleGateAnchor(moduleFigure.getRealModuleFigure()) :
             				new GateAnchor(submodules.get(gate.getOwnerModule())));
             	GateAnchor targetAnchor = (targetGate.getOwnerModule().equals(parentModule) ?
-            			new CompoundModuleGateAnchor(moduleFigure) :
+            			new CompoundModuleGateAnchor(moduleFigure.getRealModuleFigure()) :
             				new GateAnchor(submodules.get(targetGate.getOwnerModule())));
             	connectionFigure.setSourceAnchor(sourceAnchor);
             	connectionFigure.setTargetAnchor(targetAnchor);

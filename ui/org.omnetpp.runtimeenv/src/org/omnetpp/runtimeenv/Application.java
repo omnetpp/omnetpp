@@ -28,20 +28,20 @@ public class Application implements IApplication {
 
         if (standalone) {
         	// Launched from opp_run or a simulation executable.
-        	ImageFactory.initialize(new String[]{"C:\\home\\omnetpp40\\omnetpp\\images"}); //XXX
         	doStart();
         }
         else {
+        	cStaticFlag.set(true);
+
         	// launched with java.exe from Eclipse via a JDT launch config; we need to set up
         	// the C++ Envir object, configuration object etc all by hand.
-        	ImageFactory.initialize(new String[]{"C:\\home\\omnetpp40\\omnetpp\\images"}); //XXX
-        	Simkernel.changeToDir("C:/home/omnetpp40/omnetpp/test/anim/dynamic"); //XXX
-        	//Simkernel.changeToDir("C:/home/omnetpp40/omnetpp/samples/queuenet"); //XXX
-        	//Simkernel.changeToDir("C:/home/omnetpp40/omnetpp/samples/aloha"); //XXX
-        	cStaticFlag.set(true); //FIXME also clear it later
 
+        	//Simkernel.changeToDir("C:/home/omnetpp40/omnetpp/samples/aloha"); //XXX
+        	//Simkernel.changeToDir("C:/home/omnetpp40/omnetpp/test/anim/dynamic"); //XXX
+        	Simkernel.changeToDir("C:/home/omnetpp40/omnetpp/samples/queuenet"); //XXX
+        	Simkernel.loadExtensionLibrary("C:/home/omnetpp40/omnetpp/samples/queueinglib/out/msvc-debug/queueinglib");
+        	
         	// assemble the command line
-        	//XXX test code...
         	StringVector args = new StringVector();
         	args.add("programname");
         	//args.add("-c");   --XXX not yet observed by SimulationManager...
@@ -51,7 +51,10 @@ public class Application implements IApplication {
         	// which runs the application and stores the exit code in the "result" field.
         	System.out.println("Calling setupUserInterface() C++ function in envir lib...");
         	GUIEnv.setRCPApplication(this); // call back "this" object
-        	Simkernel.setupUserInterface(args);
+
+        	Simkernel.setupUserInterface(args); // calls back doStart()
+        	
+        	cStaticFlag.set(false);
         }
 		return result;
 	}
@@ -62,6 +65,8 @@ public class Application implements IApplication {
 
 		GUIEnv env = GUIEnv.cast(cSimulation.getActiveEnvir());
         env.setJCallback(new EnvirCallback());
+
+    	ImageFactory.initialize(new String[]{"C:\\home\\omnetpp40\\omnetpp\\images"}); //XXX
 
         result = reallyDoStart();
 		System.out.println("Workbench exited");

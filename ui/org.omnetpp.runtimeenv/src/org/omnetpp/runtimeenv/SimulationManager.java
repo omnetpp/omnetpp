@@ -73,7 +73,7 @@ public class SimulationManager {
 
         		// set up the default config/run
         		//newRun("Terminal", 0);
-        		newRun("Net2", 0);
+        		//newRun("Net2", 0);
         		//newRun("PureAloha2", 0);
 
         		// inspect the network
