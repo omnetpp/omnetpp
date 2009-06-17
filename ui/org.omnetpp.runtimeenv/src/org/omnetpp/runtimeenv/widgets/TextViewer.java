@@ -46,8 +46,6 @@ import org.omnetpp.common.ui.SelectionProvider;
 //TODO try if it works with proportional font (e.g. narrower font for event banners?)
 //TODO finish horiz scrolling!
 //TODO implement selectionprovider stuff
-//TODO when resizing vertically, content moves strangely (scrolls twice the resize speed, and jumps back every 8 pixels)
-//TODO mouse-to-line mapping does not observe alignTop
 public class TextViewer extends Canvas implements ISelectionProvider {
     protected TextViewerContent content;
     protected TextChangeListener textChangeListener;
@@ -59,7 +57,7 @@ public class TextViewer extends Canvas implements ISelectionProvider {
     protected int leftMargin = 0;
     protected int lineHeight, averageCharWidth; // measured from font
     protected int topLineIndex;
-    protected boolean alignTop = true; // whether to align the top or the bottom line to window edge
+    protected int topLineY = 0; // Y coordinate of where top edge of line topLineIndex gets painted (range: -(lineHeight-1)..0)
     protected int horizontalScrollOffset; // in pixels
     protected boolean caretShown = true; // during blinking
     protected int caretLineIndex, caretColumn;  // caretColumn may be greater than line length!
@@ -82,7 +80,7 @@ public class TextViewer extends Canvas implements ISelectionProvider {
 
     
     public TextViewer(Composite parent, int style) {
-        super(parent, style | SWT.H_SCROLL | SWT.V_SCROLL | SWT.NO_REDRAW_RESIZE | SWT.DOUBLE_BUFFERED | SWT.NO_BACKGROUND);
+        super(parent, style | SWT.H_SCROLL | SWT.V_SCROLL | SWT.DOUBLE_BUFFERED | SWT.NO_BACKGROUND);
 
         backgroundColor = getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND);
         foregroundColor = getDisplay().getSystemColor(SWT.COLOR_LIST_FOREGROUND);
@@ -362,6 +360,12 @@ public class TextViewer extends Canvas implements ISelectionProvider {
             topLineIndex = caretLineIndex - getNumVisibleLines() + 1;
         topLineIndex = clip(0, Math.max(0, content.getLineCount()-getNumVisibleLines()), topLineIndex);
 
+        // if caret is in the top or bottom line, view that line fully
+        if (caretLineIndex==topLineIndex)
+        	alignTopLine();
+        else if (caretLineIndex==topLineIndex+getNumVisibleLines()-1)
+        	alignBottomLine();
+        
         // TODO with columns too
 //        if (caretColumn < )
 //            topLineIndex = caretLineIndex;
@@ -596,6 +600,7 @@ public class TextViewer extends Canvas implements ISelectionProvider {
                 caretColumn = content.getLine(caretLineIndex).length();
             }
         }
+        revealCaret();        
         redraw();
     }
 
@@ -613,13 +618,29 @@ public class TextViewer extends Canvas implements ISelectionProvider {
     }
 
     protected void handleMouseWheel(Event event) {
-    	// when scrolling down, bottom line should be entirely visible; 
-    	// when scrolling up, the top line should be entirely visible.
+    	// when scrolling down (count<0), bottom line should be entirely visible; 
+    	// when scrolling up (count>0), the top line should be entirely visible.
     	// actual scrolling seems to be taken care of automatically (by ScrolledComposite?) 
-    	alignTop = event.count > 0;
+    	if (event.count > 0 || content.getLineCount() < getNumVisibleLines())
+    		alignTopLine();
+    	else {
+    		alignBottomLine();
+    	}
     }
 
+    protected void alignTopLine() {
+    	topLineY = 0;
+    }
+    
+    protected void alignBottomLine() {
+        Rectangle r = getClientArea();
+        topLineY = r.height % lineHeight;
+        if (topLineY > 0) 
+        	topLineY -= lineHeight;
+    }
+    
     protected void handleResize(Event event) {
+    	System.out.println("event.Y="+event.y);
         configureScrollbars();
         adjustScrollbars();
         redraw();
@@ -770,15 +791,17 @@ public class TextViewer extends Canvas implements ISelectionProvider {
     }
 
     public int getNumVisibleLines() {
+    	// count partially visible lines as well
         return  (getClientArea().height + lineHeight - 1) / lineHeight;
     }
 
     public int getNumVisibleColumns() {
+    	// count partially visible columns as well
         return  (getClientArea().width + averageCharWidth - 1) / averageCharWidth;
     }
 
     public Point getLineColumnAt(int x, int y) {
-        int lineIndex = topLineIndex + y / lineHeight;
+        int lineIndex = topLineIndex + (y-topLineY) / lineHeight;
         int column = (x - leftMargin + horizontalScrollOffset) / averageCharWidth; //XXX this only works for monospace fonts
         lineIndex = clip(0, content.getLineCount()-1, lineIndex);
         column = Math.max(0, column);
@@ -799,18 +822,12 @@ public class TextViewer extends Canvas implements ISelectionProvider {
 
         Assert.isTrue(topLineIndex >= 0 && topLineIndex <= Math.max(0,numLines-numVisibleLines));
         Assert.isTrue(caretLineIndex >= 0 && caretLineIndex < numLines);
-        
-        if (!alignTop && caretLineIndex==topLineIndex)
-            alignTop = true;
-        if (alignTop && caretLineIndex==topLineIndex+numVisibleLines-1)
-            alignTop = false;
-        
-        int startY = r.x + (alignTop ? 0 : -(r.height % lineHeight));
-        
+      
         int x = leftMargin - horizontalScrollOffset;
+        int lineIndex = topLineIndex;
+        int startY = topLineY;
         
         // draw the lines
-        int lineIndex = topLineIndex;
         for (int y = startY; y < r.y+r.height && lineIndex < numLines; y += lineHeight) {
             drawLine(gc, lineIndex++, x, y);
         }
@@ -818,7 +835,7 @@ public class TextViewer extends Canvas implements ISelectionProvider {
 
     protected void drawLine(GC gc, int lineIndex, int x, int y) {
         // draw the line in the specified color
-		String line = "**UNDEF**";
+		String line = "N/A";
     	try { 
     		line = content.getLine(lineIndex);
     	} catch (Exception e) { //XXX only for debugging!!
