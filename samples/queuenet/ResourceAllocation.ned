@@ -15,7 +15,6 @@ import org.omnetpp.queueing.Source;
 
 //
 // This example contains a single Resource (token) and two queues
-// e
 //
 network ResourceAllocation
 {
