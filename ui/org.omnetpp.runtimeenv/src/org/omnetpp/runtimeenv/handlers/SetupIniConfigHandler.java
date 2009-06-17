@@ -8,6 +8,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.dialogs.ISelectionStatusValidator;
@@ -25,8 +26,11 @@ import org.omnetpp.runtimeenv.SimulationManager;
  * Handler for the "Setup Inifile Configuration" action
  * @author Andras
  */
-//TODO icons for the tree (3+ icons: config, config with iter, run)
 public class SetupIniConfigHandler extends AbstractHandler {
+	private static Image IMAGE_CONFIG_EMPTY = Activator.getCachedImage("icons/obj16/config_empty.png");
+	private static Image IMAGE_CONFIG_SINGLE = Activator.getCachedImage("icons/obj16/config_single.png");
+	private static Image IMAGE_CONFIG_REPEAT = Activator.getCachedImage("icons/obj16/config_repeat.png");
+	private static Image IMAGE_RUN = Activator.getCachedImage("icons/obj16/configrun.png");
 
 	public SetupIniConfigHandler() {
 	}
@@ -63,7 +67,7 @@ public class SetupIniConfigHandler extends AbstractHandler {
 				if (element instanceof String) {
 					String configName = (String) element;
 					int n = cfg.getNumRunsInConfig(configName);
-					String numRuns = n==1 ? "" : " (" + n + " runs)";
+					String numRuns = n==0 ? " (0 run)" : n==1 ? "" : " (" + n + " runs)";
 					String desc = cfg.getConfigDescription(configName);
 					if (StringUtils.isEmpty(desc))
 						return configName + numRuns;
@@ -76,6 +80,20 @@ public class SetupIniConfigHandler extends AbstractHandler {
 					return "Run #" + run.runNumber + " (" + vars + ")";
 				}
 				return element.toString();
+			}
+			
+			@Override
+			public Image getImage(Object element) {
+				cConfigurationEx cfg = GUIEnv.cast(cSimulation.getActiveEnvir()).getConfigEx();
+				if (element instanceof String) {
+					String configName = (String) element;
+					int n = cfg.getNumRunsInConfig(configName);
+					return n==0 ? IMAGE_CONFIG_EMPTY : n==1 ? IMAGE_CONFIG_SINGLE : IMAGE_CONFIG_REPEAT;
+				}
+				else if (element instanceof ConfigRun) {
+					return IMAGE_RUN;
+				}
+				return null;
 			}
 		};
 
