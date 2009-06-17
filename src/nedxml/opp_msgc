@@ -940,7 +940,7 @@ sub prepareForCodeGeneration
     foreach $fieldname (@fieldlist)
     {
         if ($fisabstract{$fieldname} && !$gap) {
-            print "$filename: Error: abstract fields need 'customize=true' property in '$msgname'\n"; $ret=1;
+            print "$filename: Error: abstract fields need '@customize(true)' property in '$msgname'\n"; $ret=1;
         }
         if ($fprops{$fieldname}->{"enum"} ne '' && !grep(/^\Q$fprops{$fieldname}->{"enum"}\E$/,@enums)) {
             print "$filename: Error: undeclared enum '$fprops{$fieldname}->{enum}' used in '$msgname'\n"; $ret=1;
