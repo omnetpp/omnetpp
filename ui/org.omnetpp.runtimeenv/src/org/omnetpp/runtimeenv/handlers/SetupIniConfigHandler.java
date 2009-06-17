@@ -25,6 +25,7 @@ import org.omnetpp.runtimeenv.SimulationManager;
  * Handler for the "Setup Inifile Configuration" action
  * @author Andras
  */
+//TODO icons for the tree (3+ icons: config, config with iter, run)
 public class SetupIniConfigHandler extends AbstractHandler {
 
 	public SetupIniConfigHandler() {
@@ -61,15 +62,18 @@ public class SetupIniConfigHandler extends AbstractHandler {
 				cConfigurationEx cfg = GUIEnv.cast(cSimulation.getActiveEnvir()).getConfigEx();
 				if (element instanceof String) {
 					String configName = (String) element;
+					int n = cfg.getNumRunsInConfig(configName);
+					String numRuns = n==1 ? "" : " (" + n + " runs)";
 					String desc = cfg.getConfigDescription(configName);
 					if (StringUtils.isEmpty(desc))
-						return configName;
+						return configName + numRuns;
 					else
-						return configName + " -- " + desc;
+						return configName + numRuns + " -- " + desc;
 				}
 				else if (element instanceof ConfigRun) {
 					ConfigRun run = (ConfigRun)element;
-					return "Run " + run.runNumber;  //TODO display also the iteration variables!!!!
+					String vars = cfg.unrollConfig(run.configName, false).get(run.runNumber);
+					return "Run #" + run.runNumber + " (" + vars + ")";
 				}
 				return element.toString();
 			}
@@ -82,10 +86,12 @@ public class SetupIniConfigHandler extends AbstractHandler {
 					cConfigurationEx cfg = GUIEnv.cast(cSimulation.getActiveEnvir()).getConfigEx();
 					String configName = (String) element;
 					int n = cfg.getNumRunsInConfig(configName);
-					ConfigRun runs[] = new ConfigRun[n];
-					for (int i=0; i<n; i++)
-						runs[i] = new ConfigRun(configName, i);
-					return runs;
+					if (n > 1) {
+						ConfigRun runs[] = new ConfigRun[n];
+						for (int i=0; i<n; i++)
+							runs[i] = new ConfigRun(configName, i);
+						return runs;
+					}
 				}
 				return new Object[0];
 			}
@@ -130,7 +136,9 @@ public class SetupIniConfigHandler extends AbstractHandler {
 				public IStatus validate(Object[] selection) {
 					if (selection.length==0)
 						return new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, "Nothing is selected.", null);
-					return Status.OK_STATUS;
+					if (getRunNumber()==-1)
+						return new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, "Select a run from the configuration.", null);
+					return new Status(IStatus.OK, Activator.PLUGIN_ID, IStatus.OK, "", null); // Status.OK_STATUS would display as "OK"
 				}
 			});
 		}
@@ -146,8 +154,13 @@ public class SetupIniConfigHandler extends AbstractHandler {
 
 		public int getRunNumber() {
 			Object result = getFirstResult();
-			if (result instanceof String)
-				return -1; // config node selected
+			if (result instanceof String) {
+				// config node selected
+				cConfigurationEx cfg = GUIEnv.cast(cSimulation.getActiveEnvir()).getConfigEx();
+				String configName = (String)result;
+				int n = cfg.getNumRunsInConfig(configName);
+				return n==1 ? 0 : -1;  // if config contains multiple runs, answer -1 for "unknown"
+			}
 			if (result instanceof ConfigRun)
 				return ((ConfigRun)result).runNumber;
 			return -1;
