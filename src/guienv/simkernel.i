@@ -389,6 +389,7 @@ DERIVEDCLASS(cTerminationException,std::exception);
 
 %{
 #include "envirbase.h"  //from src/envir
+#include "fsutils.h"  //from src/envir
 #include "visitor.h"
 #include "logbuffer.h"
 #include "logbufferview.h"
@@ -397,6 +398,7 @@ DERIVEDCLASS(cTerminationException,std::exception);
 %}
 
 %include "envirbase.h"  //from src/envir
+%include "fsutils.h"  //from src/envir
 %include "visitor.h"
 %include "logbuffer.h"
 %include "logbufferview.h"
