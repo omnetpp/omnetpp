@@ -47,8 +47,8 @@ import org.omnetpp.common.ui.SelectionProvider;
 //TODO finish horiz scrolling!
 //TODO implement selectionprovider stuff
 public class TextViewer extends Canvas implements ISelectionProvider {
-    protected TextViewerContent content;
-    protected TextChangeListener textChangeListener;
+    protected ITextViewerContent content;
+    protected ITextChangeListener iTextChangeListener;
     protected Font font;
     protected Color backgroundColor;
     protected Color foregroundColor;
@@ -90,9 +90,9 @@ public class TextViewer extends Canvas implements ISelectionProvider {
         setFont(JFaceResources.getTextFont());
         clipboard = new Clipboard(getDisplay());
         
-        textChangeListener = new TextChangeListener() {
+        iTextChangeListener = new ITextChangeListener() {
             //@Override
-            public void textChanged(TextViewerContent textViewer) {
+            public void textChanged(ITextViewerContent textViewer) {
                 contentChanged();
             }
         };
@@ -272,7 +272,7 @@ public class TextViewer extends Canvas implements ISelectionProvider {
         notifyListeners(SWT.Dispose, event);
         event.type = SWT.None;
         if (content != null)
-            content.removeTextChangeListener(textChangeListener);
+            content.removeTextChangeListener(iTextChangeListener);
         clipboard.dispose();
         clipboard = null;
     }
@@ -640,23 +640,22 @@ public class TextViewer extends Canvas implements ISelectionProvider {
     }
     
     protected void handleResize(Event event) {
-    	System.out.println("event.Y="+event.y);
         configureScrollbars();
         adjustScrollbars();
         redraw();
     }
 
-    public void setContent(TextViewerContent content) {
+    public void setContent(ITextViewerContent content) {
         if (this.content != null)
-            this.content.removeTextChangeListener(textChangeListener);
+            this.content.removeTextChangeListener(iTextChangeListener);
         this.content = content;
         if (content != null)
-            content.addTextChangeListener(textChangeListener);
+            content.addTextChangeListener(iTextChangeListener);
 
         contentChanged();
     }
 
-    public TextViewerContent getContent() {
+    public ITextViewerContent getContent() {
         return content;
     }
     

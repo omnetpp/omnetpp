@@ -21,9 +21,9 @@ import org.omnetpp.runtime.nativelibs.simkernel.cObject;
 import org.omnetpp.runtimeenv.Activator;
 import org.omnetpp.runtimeenv.ISimulationListener;
 import org.omnetpp.runtimeenv.editors.IInspectorPart;
-import org.omnetpp.runtimeenv.widgets.TextChangeListener;
+import org.omnetpp.runtimeenv.widgets.ITextChangeListener;
 import org.omnetpp.runtimeenv.widgets.TextViewer;
-import org.omnetpp.runtimeenv.widgets.TextViewerContent;
+import org.omnetpp.runtimeenv.widgets.ITextViewerContent;
 
 /**
  * Displays log messages from modules.
@@ -38,7 +38,7 @@ public class ModuleOutputView extends PinnableView2 implements ISimulationListen
     protected TextViewer textViewer;
     protected MenuManager contextMenuManager = new MenuManager("#PopupMenu");
 
-    protected class LogBufferContent implements TextViewerContent {
+    protected class LogBufferContent implements ITextViewerContent {
         private LogBufferView logBufferView;
         private ListenerList listeners = new ListenerList();
 
@@ -48,7 +48,7 @@ public class ModuleOutputView extends PinnableView2 implements ISimulationListen
 
         public void fireTextChanged() {
             for (Object o : listeners.getListeners())
-                ((TextChangeListener)o).textChanged(this);
+                ((ITextChangeListener)o).textChanged(this);
         }
 
         //@Override
@@ -88,12 +88,12 @@ public class ModuleOutputView extends PinnableView2 implements ISimulationListen
         }
 
         //@Override
-        public void addTextChangeListener(TextChangeListener listener) {
+        public void addTextChangeListener(ITextChangeListener listener) {
             listeners.add(listener);
         }
 
         //@Override
-        public void removeTextChangeListener(TextChangeListener listener) {
+        public void removeTextChangeListener(ITextChangeListener listener) {
             listeners.remove(listener);
         }
 

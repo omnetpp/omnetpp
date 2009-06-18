@@ -7,11 +7,11 @@ package org.omnetpp.runtimeenv.widgets;
  * 
  * @author Andras
  */
-public interface TextChangeListener {
+public interface ITextChangeListener {
     /**
      * Called when the content has changed.
      */
-    public void textChanged(TextViewerContent textViewer);
+    public void textChanged(ITextViewerContent textViewer);
 }
 
 

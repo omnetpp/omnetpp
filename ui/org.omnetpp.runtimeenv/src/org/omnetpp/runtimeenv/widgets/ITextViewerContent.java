@@ -9,7 +9,7 @@ import org.eclipse.swt.graphics.Color;
  * 
  * @author Andras
  */
-public interface TextViewerContent {
+public interface ITextViewerContent {
     /**
      * Return the number of lines.  Should answer 1 when no text is specified.
      * The TextViewer widget relies on this behavior for drawing the cursor.
@@ -91,7 +91,7 @@ public interface TextViewerContent {
      *    <li>ERROR_NULL_ARGUMENT when listener is null</li>
      * </ul>
      */
-    public void addTextChangeListener(TextChangeListener listener);
+    public void addTextChangeListener(ITextChangeListener listener);
 
     /**
      * Remove the specified text changed listener.
@@ -103,5 +103,5 @@ public interface TextViewerContent {
      *    <li>ERROR_NULL_ARGUMENT when listener is null</li>
      * </ul>
      */
-    public void removeTextChangeListener(TextChangeListener listener);
+    public void removeTextChangeListener(ITextChangeListener listener);
 }
