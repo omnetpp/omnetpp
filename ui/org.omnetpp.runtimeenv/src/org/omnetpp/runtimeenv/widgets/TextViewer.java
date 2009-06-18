@@ -42,7 +42,7 @@ import org.omnetpp.common.ui.SelectionProvider;
  */
 //TODO cursor should be solid while moving with arrow keys (restart timer on any key/mouse/textchange event)
 //TODO minor glitches with word selection (esp with single-letter words)
-//TODO drag-autoscroll
+//TODO revealCaret doesn't scroll horizontally
 //TODO finish horiz scrolling!
 //TODO implement selectionprovider stuff
 public class TextViewer extends Canvas implements ISelectionProvider {
@@ -67,10 +67,14 @@ public class TextViewer extends Canvas implements ISelectionProvider {
     protected int clickCount;
     protected Clipboard clipboard;
     protected ISelectionProvider selectionProvider = new SelectionProvider();
+	protected int autoScrollDirection = SWT.NULL;	// the direction of autoscrolling (up, down, right, left)
+	protected int autoScrollDistance = 0; // currently unused
 
     protected static final int MAX_CLIPBOARD_SIZE = 10*1024*1024; //10Meg
+    protected static final int V_SCROLL_RATE = 50;
+    protected static final int H_SCROLL_RATE = 10;
 
-    final static boolean IS_CARBON, IS_GTK, IS_MOTIF;
+    protected final static boolean IS_CARBON, IS_GTK, IS_MOTIF;
     static {
         String platform = SWT.getPlatform();
         IS_CARBON = "carbon".equals(platform);
@@ -610,6 +614,7 @@ public class TextViewer extends Canvas implements ISelectionProvider {
 
     protected void handleMouseUp(Event event) {
         clickCount = 0;
+    	endAutoScroll();
     }
 
     protected void handleMouseMove(Event event) {
@@ -618,6 +623,7 @@ public class TextViewer extends Canvas implements ISelectionProvider {
             caretLineIndex = clip(0, content.getLineCount()-1, lineColumn.y);
             caretColumn = clip(0, content.getLine(caretLineIndex).length(), lineColumn.x);
             redraw();
+            doAutoScroll(event); // start/stop autoscrolling as needed
         }
     }
 
@@ -643,7 +649,65 @@ public class TextViewer extends Canvas implements ISelectionProvider {
         	topLineY -= lineHeight;
     }
     
-    protected void handleResize(Event event) {
+    /** 
+     * A mouse move event has occurred.  See if we should start autoscrolling.  If
+     * the move position is outside of the client area, initiate autoscrolling.  
+     * Otherwise, we've moved back into the widget so end autoscrolling.
+     */
+    protected void doAutoScroll(Event event) {
+    	Rectangle clientArea = getClientArea();
+    	if (event.y > clientArea.height)
+    		startOrRefineAutoScroll(SWT.DOWN, event.y - clientArea.height);
+    	else if (event.y < 0)
+    		startOrRefineAutoScroll(SWT.UP, -event.y);
+    	else if (event.x < 0)
+    		startOrRefineAutoScroll(ST.COLUMN_PREVIOUS, event.x);
+    	else if (event.x > clientArea.width)
+    		startOrRefineAutoScroll(ST.COLUMN_NEXT, event.x - clientArea.width);
+    	else
+    		endAutoScroll();
+    }
+    
+	protected void startOrRefineAutoScroll(final int direction, int distance) {
+		autoScrollDistance = distance;
+
+		if (autoScrollDirection == direction)
+			return; // already autoscrolling in the given direction, do nothing
+
+		// initiate autoscroll. Set a periodic timer that simulates the user hitting up/down etc keys
+		autoScrollDirection = direction;
+		final Display display = getDisplay();
+		final int rate = direction==SWT.UP || direction==SWT.DOWN ? V_SCROLL_RATE : H_SCROLL_RATE; 
+		Runnable timer = new Runnable() {
+			public void run() {
+				//System.out.println("timer instance " + this);
+				if (autoScrollDirection == direction) {  // still scrolling in that direction
+					if (autoScrollDirection == SWT.UP) {
+						invokeAction(ST.SELECT_LINE_UP); 
+					}
+					else if (autoScrollDirection == SWT.DOWN) {
+						invokeAction(ST.SELECT_LINE_DOWN);
+					}
+					else if (autoScrollDirection == ST.COLUMN_NEXT) {
+						if (caretColumn < content.getLine(caretLineIndex).length())
+							invokeAction(ST.SELECT_COLUMN_NEXT);
+					}
+					else if (autoScrollDirection == ST.COLUMN_PREVIOUS) {
+						if (caretColumn > 0)
+							invokeAction(ST.SELECT_COLUMN_PREVIOUS);
+					}
+					display.timerExec(rate, this);
+				}
+			}
+		};
+		display.timerExec(rate, timer);
+	}
+
+    protected void endAutoScroll() {
+    	autoScrollDirection = SWT.NULL;
+	}
+
+	protected void handleResize(Event event) {
         configureScrollbars();
         adjustScrollbars();
         redraw();
