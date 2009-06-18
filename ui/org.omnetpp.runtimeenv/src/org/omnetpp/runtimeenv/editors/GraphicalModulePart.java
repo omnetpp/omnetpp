@@ -15,16 +15,17 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.graphics.Point;
+import org.omnetpp.figures.ConnectionFigure;
+import org.omnetpp.figures.anchors.CompoundModuleGateAnchor;
+import org.omnetpp.figures.anchors.GateAnchor;
+import org.omnetpp.figures.layout.CompoundModuleLayout;
+import org.omnetpp.runtime.nativelibs.simkernel.cComponent;
 import org.omnetpp.runtime.nativelibs.simkernel.cDisplayString;
 import org.omnetpp.runtime.nativelibs.simkernel.cGate;
 import org.omnetpp.runtime.nativelibs.simkernel.cModule;
 import org.omnetpp.runtime.nativelibs.simkernel.cModule_GateIterator;
 import org.omnetpp.runtime.nativelibs.simkernel.cModule_SubmoduleIterator;
 import org.omnetpp.runtime.nativelibs.simkernel.cSimulation;
-import org.omnetpp.figures.ConnectionFigure;
-import org.omnetpp.figures.anchors.CompoundModuleGateAnchor;
-import org.omnetpp.figures.anchors.GateAnchor;
-import org.omnetpp.figures.layout.CompoundModuleLayout;
 import org.omnetpp.runtimeenv.Activator;
 import org.omnetpp.runtimeenv.figures.CompoundModuleFigureEx;
 import org.omnetpp.runtimeenv.figures.SubmoduleFigureEx;
@@ -35,6 +36,8 @@ import org.omnetpp.runtimeenv.figures.SubmoduleFigureEx;
  */
 //TODO ConnectionFigure must be fixed too!
 public class GraphicalModulePart extends InspectorPart {
+	protected static final cDisplayString EMPTY_DISPLAYSTRING = new cDisplayString(""); 
+	
     protected Map<cModule,SubmoduleFigureEx> submodules = new HashMap<cModule,SubmoduleFigureEx>();
     protected Map<cGate,ConnectionFigure> connections = new HashMap<cGate, ConnectionFigure>();
     protected float canvasScale = 1.0f;  //TODO properly do it
@@ -51,7 +54,7 @@ public class GraphicalModulePart extends InspectorPart {
         figure = new CompoundModuleFigureEx();
         figure.setInspectorPart(this);
 
-        ((CompoundModuleFigureEx)figure).setDisplayString(module.getDisplayString());
+        ((CompoundModuleFigureEx)figure).setDisplayString(getDisplayStringFrom(module));
 
         // mouse handling
         figure.addMouseListener(new MouseListener() {
@@ -233,15 +236,14 @@ public class GraphicalModulePart extends InspectorPart {
     protected void refreshVisuals() {
     	CompoundModuleFigureEx moduleFigure = (CompoundModuleFigureEx)figure;
         cModule parentModule = cModule.cast(object);
-        moduleFigure.setDisplayString(parentModule.getDisplayString());
+        moduleFigure.setDisplayString(getDisplayStringFrom(parentModule));
 
         float scale = canvasScale * moduleFigure.getRealModuleFigure().getScale(); //FIXME the compound module's scale should be set too
 
     	// refresh submodules
     	for (cModule submodule : submodules.keySet()) {
     		SubmoduleFigureEx submoduleFigure = submodules.get(submodule);
-    		cDisplayString displayString = submodule.getDisplayString();
-    		submoduleFigure.setDisplayString(scale, displayString);
+    		submoduleFigure.setDisplayString(scale, getDisplayStringFrom(submodule));
     		submoduleFigure.setName(showNameLabels ? submodule.getFullName() : null);
     		submoduleFigure.setSubmoduleVectorIndex(submodule.getName(), submodule.getVectorSize(), submodule.getIndex());
     		submoduleFigure.setImageSizePercentage(imageSizePercentage);
@@ -251,8 +253,7 @@ public class GraphicalModulePart extends InspectorPart {
     	//FIXME this is very slow!!!! even when there are no display strings at all. ConnectionFigure is not caching the displaystring?
     	for (cGate gate : connections.keySet()) {
     		ConnectionFigure connectionFigure = connections.get(gate);
-    		cDisplayString displayString = gate.getDisplayString();
-    		connectionFigure.setDisplayString(displayString);
+    		connectionFigure.setDisplayString(getDisplayStringFrom(gate.getChannel())); // note: gate.getDisplayString() would implicitly create a cIdealChannel!
         	connectionFigure.setArrowHeadEnabled(showArrowHeads);
     	}
 
@@ -260,6 +261,13 @@ public class GraphicalModulePart extends InspectorPart {
         //FigureUtils.debugPrintRootFigureHierarchy(figure);
     }
 
+    protected cDisplayString getDisplayStringFrom(cComponent component) {
+    	if (component!=null && component.hasDisplayString())
+    		return component.getDisplayString();
+    	else
+    		return EMPTY_DISPLAYSTRING;
+    }
+    
     protected void handleMouseDoubleClick(MouseEvent me) {
     	SubmoduleFigureEx submoduleFigure = findSubmoduleAt(me.x,me.y);
 		System.out.println("clicked submodule: " + submoduleFigure);
