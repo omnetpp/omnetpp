@@ -43,12 +43,11 @@ import org.omnetpp.common.ui.SelectionProvider;
 //TODO cursor should be solid while moving with arrow keys (restart timer on any key/mouse/textchange event)
 //TODO minor glitches with word selection (esp with single-letter words)
 //TODO drag-autoscroll
-//TODO try if it works with proportional font (e.g. narrower font for event banners?)
 //TODO finish horiz scrolling!
 //TODO implement selectionprovider stuff
 public class TextViewer extends Canvas implements ISelectionProvider {
     protected ITextViewerContent content;
-    protected ITextChangeListener iTextChangeListener;
+    protected ITextChangeListener textChangeListener;
     protected Font font;
     protected Color backgroundColor;
     protected Color foregroundColor;
@@ -56,6 +55,7 @@ public class TextViewer extends Canvas implements ISelectionProvider {
     protected Color selectionForegroundColor;
     protected int leftMargin = 0;
     protected int lineHeight, averageCharWidth; // measured from font
+    protected boolean isMonospaceFont;
     protected int topLineIndex;
     protected int topLineY = 0; // Y coordinate of where top edge of line topLineIndex gets painted (range: -(lineHeight-1)..0)
     protected int horizontalScrollOffset; // in pixels
@@ -87,10 +87,14 @@ public class TextViewer extends Canvas implements ISelectionProvider {
         selectionBackgroundColor = getDisplay().getSystemColor(SWT.COLOR_LIST_SELECTION);
         selectionForegroundColor = getDisplay().getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT);
 
-        setFont(JFaceResources.getTextFont());
+        //setFont(JFaceResources.getTextFont());
+        //setFont(JFaceResources.getDefaultFont());
+        //setFont(new Font(getDisplay(), "Courier New", 8, SWT.NORMAL));
+        setFont(new Font(getDisplay(), "Arial", 8, SWT.NORMAL));
+        
         clipboard = new Clipboard(getDisplay());
         
-        iTextChangeListener = new ITextChangeListener() {
+        textChangeListener = new ITextChangeListener() {
             //@Override
             public void textChanged(ITextViewerContent textViewer) {
                 contentChanged();
@@ -272,7 +276,7 @@ public class TextViewer extends Canvas implements ISelectionProvider {
         notifyListeners(SWT.Dispose, event);
         event.type = SWT.None;
         if (content != null)
-            content.removeTextChangeListener(iTextChangeListener);
+            content.removeTextChangeListener(textChangeListener);
         clipboard.dispose();
         clipboard = null;
     }
@@ -647,10 +651,10 @@ public class TextViewer extends Canvas implements ISelectionProvider {
 
     public void setContent(ITextViewerContent content) {
         if (this.content != null)
-            this.content.removeTextChangeListener(iTextChangeListener);
+            this.content.removeTextChangeListener(textChangeListener);
         this.content = content;
         if (content != null)
-            content.addTextChangeListener(iTextChangeListener);
+            content.addTextChangeListener(textChangeListener);
 
         contentChanged();
     }
@@ -693,6 +697,12 @@ public class TextViewer extends Canvas implements ISelectionProvider {
         FontMetrics fontMetrics = gc.getFontMetrics();
         lineHeight = fontMetrics.getHeight();
         averageCharWidth = fontMetrics.getAverageCharWidth();
+        
+        final String wideText = "wgh8";
+        final String narrowText = "1l;.";
+        Assert.isTrue(wideText.length() == narrowText.length());
+        isMonospaceFont = gc.textExtent(wideText).x == gc.textExtent(narrowText).x;
+        
         gc.dispose();
         
         redraw();
@@ -801,9 +811,27 @@ public class TextViewer extends Canvas implements ISelectionProvider {
 
     public Point getLineColumnAt(int x, int y) {
         int lineIndex = topLineIndex + (y-topLineY) / lineHeight;
-        int column = (x - leftMargin + horizontalScrollOffset) / averageCharWidth; //XXX this only works for monospace fonts
         lineIndex = clip(0, content.getLineCount()-1, lineIndex);
-        column = Math.max(0, column);
+
+        int column;
+        if (isMonospaceFont) {
+        	column = (x - leftMargin + horizontalScrollOffset) / averageCharWidth;
+        	column = Math.max(0, column);
+        }
+        else {
+        	// linear search is good enough (this method is only called on mouse clicks, and gc.textExtent() is fast)
+            GC gc = new GC(Display.getCurrent());
+            gc.setFont(font);
+            String line = content.getLine(lineIndex);
+            column = line.length(); // in case loop falls through
+            for (int i = 0; i < line.length(); i++) {
+            	if (gc.textExtent(line.substring(0, i+1)).x > x + horizontalScrollOffset + 2) { 
+            		column = i;
+            		break;
+            	}
+            }
+            gc.dispose();
+        }
         return new Point(column, lineIndex);
     }
 
