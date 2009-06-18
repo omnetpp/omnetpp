@@ -40,7 +40,6 @@ import org.omnetpp.common.ui.SelectionProvider;
  * 
  * @author Andras
  */
-//TODO cursor should be solid while moving with arrow keys (restart timer on any key/mouse/textchange event)
 //TODO minor glitches with word selection (esp with single-letter words)
 //TODO revealCaret doesn't scroll horizontally
 //TODO finish horiz scrolling!
@@ -59,7 +58,6 @@ public class TextViewer extends Canvas implements ISelectionProvider {
     protected int topLineIndex;
     protected int topLineY = 0; // Y coordinate of where top edge of line topLineIndex gets painted (range: -(lineHeight-1)..0)
     protected int horizontalScrollOffset; // in pixels
-    protected boolean caretShown = true; // during blinking
     protected int caretLineIndex, caretColumn;  // caretColumn may be greater than line length!
     protected int selectionAnchorLineIndex, selectionAnchorColumn; // selection is between anchor and caret
     protected Map<Integer,Integer> keyActionMap = new HashMap<Integer, Integer>(); // key: keycode, value: ST.xxx constants
@@ -67,10 +65,14 @@ public class TextViewer extends Canvas implements ISelectionProvider {
     protected int clickCount;
     protected Clipboard clipboard;
     protected ISelectionProvider selectionProvider = new SelectionProvider();
+    protected Runnable caretBlinkTimer;
+    protected boolean caretShown = true; // during blinking
 	protected int autoScrollDirection = SWT.NULL;	// the direction of autoscrolling (up, down, right, left)
 	protected int autoScrollDistance = 0; // currently unused
+	protected Runnable autoScrollTimer; //FIXME TODO
 
     protected static final int MAX_CLIPBOARD_SIZE = 10*1024*1024; //10Meg
+    protected static final int CARET_BLINK_DELAY = 500;
     protected static final int V_SCROLL_RATE = 50;
     protected static final int H_SCROLL_RATE = 10;
 
@@ -110,17 +112,16 @@ public class TextViewer extends Canvas implements ISelectionProvider {
         createKeyBindings();
         
         // cursor blinking
-        //XXX disable if not focused
-        Display.getCurrent().timerExec(500, new Runnable() {
-            //@Override
+        caretBlinkTimer = new Runnable() {
             public void run() {
                 if (!isDisposed()) {
                     caretShown = !caretShown;
                     redraw();
-                    Display.getCurrent().timerExec(500, this);
+                    Display.getCurrent().timerExec(CARET_BLINK_DELAY, this);
                 }
             }
-        });
+        };
+        caretShown = false;  // gets shown on a FocusIn event
     }
 
     protected void installListeners() {
@@ -136,6 +137,8 @@ public class TextViewer extends Canvas implements ISelectionProvider {
                     case SWT.MouseWheel: handleMouseWheel(event); break;
                     case SWT.Paint: handlePaint(event); break;
                     case SWT.Resize: handleResize(event); break;
+                    case SWT.FocusIn: handleFocusIn(event); break;
+                    case SWT.FocusOut: handleFocusOut(event); break;
                 }
             }       
         };
@@ -148,6 +151,8 @@ public class TextViewer extends Canvas implements ISelectionProvider {
         addListener(SWT.MouseWheel, listener);
         addListener(SWT.Paint, listener);
         addListener(SWT.Resize, listener);
+        addListener(SWT.FocusIn, listener);
+        addListener(SWT.FocusOut, listener);
 
         ScrollBar verticalBar = getVerticalBar();
         if (verticalBar != null) {
@@ -355,9 +360,10 @@ public class TextViewer extends Canvas implements ISelectionProvider {
         }
         revealCaret();
         adjustScrollbars();
+        restartCaretBlinking();  // make cursor always visible while user holds down arrow keys
         redraw();
     }
-    
+
     /**
      * Scroll the caret into view
      */
@@ -681,7 +687,7 @@ public class TextViewer extends Canvas implements ISelectionProvider {
 		Runnable timer = new Runnable() {
 			public void run() {
 				//System.out.println("timer instance " + this);
-				if (autoScrollDirection == direction) {  // still scrolling in that direction
+				if (!isDisposed() && autoScrollDirection == direction) {  // still scrolling in that direction
 					if (autoScrollDirection == SWT.UP) {
 						invokeAction(ST.SELECT_LINE_UP); 
 					}
@@ -712,6 +718,27 @@ public class TextViewer extends Canvas implements ISelectionProvider {
         adjustScrollbars();
         redraw();
     }
+
+	protected void handleFocusIn(Event event) {
+		restartCaretBlinking();
+	}
+
+	protected void handleFocusOut(Event event) {
+		hideCaret();
+	}
+
+	protected void restartCaretBlinking() {
+		// start or re-start caret blinking
+		caretShown = true;
+        Display.getCurrent().timerExec(-1, caretBlinkTimer); // cancels timer if running
+        Display.getCurrent().timerExec(CARET_BLINK_DELAY, caretBlinkTimer);
+	}
+
+	protected void hideCaret() {
+		caretShown = false;
+        Display.getCurrent().timerExec(-1, caretBlinkTimer); // cancels timer if running
+        redraw();
+	}
 
     public void setContent(ITextViewerContent content) {
         if (this.content != null)
