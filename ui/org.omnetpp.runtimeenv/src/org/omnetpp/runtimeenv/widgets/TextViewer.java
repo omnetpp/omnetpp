@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
@@ -69,7 +68,7 @@ public class TextViewer extends Canvas implements ISelectionProvider {
     protected boolean caretShown = true; // during blinking
 	protected int autoScrollDirection = SWT.NULL;	// the direction of autoscrolling (up, down, right, left)
 	protected int autoScrollDistance = 0; // currently unused
-	protected Runnable autoScrollTimer; //FIXME TODO
+	protected Runnable autoScrollTimer = null;
 
     protected static final int MAX_CLIPBOARD_SIZE = 10*1024*1024; //10Meg
     protected static final int CARET_BLINK_DELAY = 500;
@@ -620,7 +619,7 @@ public class TextViewer extends Canvas implements ISelectionProvider {
 
     protected void handleMouseUp(Event event) {
         clickCount = 0;
-    	endAutoScroll();
+    	stopAutoScroll();
     }
 
     protected void handleMouseMove(Event event) {
@@ -671,7 +670,7 @@ public class TextViewer extends Canvas implements ISelectionProvider {
     	else if (event.x > clientArea.width)
     		startOrRefineAutoScroll(ST.COLUMN_NEXT, event.x - clientArea.width);
     	else
-    		endAutoScroll();
+    		stopAutoScroll();
     }
     
 	protected void startOrRefineAutoScroll(final int direction, int distance) {
@@ -680,37 +679,44 @@ public class TextViewer extends Canvas implements ISelectionProvider {
 		if (autoScrollDirection == direction)
 			return; // already autoscrolling in the given direction, do nothing
 
-		// initiate autoscroll. Set a periodic timer that simulates the user hitting up/down etc keys
-		autoScrollDirection = direction;
-		final Display display = getDisplay();
-		final int rate = direction==SWT.UP || direction==SWT.DOWN ? V_SCROLL_RATE : H_SCROLL_RATE; 
-		Runnable timer = new Runnable() {
-			public void run() {
-				//System.out.println("timer instance " + this);
-				if (!isDisposed() && autoScrollDirection == direction) {  // still scrolling in that direction
-					if (autoScrollDirection == SWT.UP) {
-						invokeAction(ST.SELECT_LINE_UP); 
+		// we use a periodic timer that simulates the user hitting up/down etc keys
+		if (autoScrollTimer == null) {
+			// create timer if not yet exists
+			autoScrollTimer = new Runnable() {
+				public void run() {
+					if (!isDisposed() && autoScrollDirection != SWT.NULL) {
+						// note: we could make use of use autoScrollDistance here
+						if (autoScrollDirection == SWT.UP) {
+							invokeAction(ST.SELECT_LINE_UP); 
+						}
+						else if (autoScrollDirection == SWT.DOWN) {
+							invokeAction(ST.SELECT_LINE_DOWN);
+						}
+						else if (autoScrollDirection == ST.COLUMN_NEXT) {
+							if (caretColumn < content.getLine(caretLineIndex).length())
+								invokeAction(ST.SELECT_COLUMN_NEXT);
+						}
+						else if (autoScrollDirection == ST.COLUMN_PREVIOUS) {
+							if (caretColumn > 0)
+								invokeAction(ST.SELECT_COLUMN_PREVIOUS);
+						}
+						int rate = autoScrollDirection==SWT.UP || autoScrollDirection==SWT.DOWN ? V_SCROLL_RATE : H_SCROLL_RATE; 
+						Display.getCurrent().timerExec(rate, this);
 					}
-					else if (autoScrollDirection == SWT.DOWN) {
-						invokeAction(ST.SELECT_LINE_DOWN);
-					}
-					else if (autoScrollDirection == ST.COLUMN_NEXT) {
-						if (caretColumn < content.getLine(caretLineIndex).length())
-							invokeAction(ST.SELECT_COLUMN_NEXT);
-					}
-					else if (autoScrollDirection == ST.COLUMN_PREVIOUS) {
-						if (caretColumn > 0)
-							invokeAction(ST.SELECT_COLUMN_PREVIOUS);
-					}
-					display.timerExec(rate, this);
 				}
-			}
-		};
-		display.timerExec(rate, timer);
+			};
+		}
+		
+		// restart timer
+		autoScrollDirection = direction;
+		int rate = autoScrollDirection==SWT.UP || autoScrollDirection==SWT.DOWN ? V_SCROLL_RATE : H_SCROLL_RATE; 
+		Display.getCurrent().timerExec(-1, autoScrollTimer);
+		Display.getCurrent().timerExec(rate, autoScrollTimer);
 	}
 
-    protected void endAutoScroll() {
-    	autoScrollDirection = SWT.NULL;
+    protected void stopAutoScroll() {
+    	if (autoScrollTimer != null)
+    		Display.getCurrent().timerExec(-1, autoScrollTimer);
 	}
 
 	protected void handleResize(Event event) {
@@ -725,6 +731,7 @@ public class TextViewer extends Canvas implements ISelectionProvider {
 
 	protected void handleFocusOut(Event event) {
 		hideCaret();
+	    stopAutoScroll(); // in any case
 	}
 
 	protected void restartCaretBlinking() {

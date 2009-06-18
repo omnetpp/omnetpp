@@ -38,6 +38,10 @@ public class ModuleOutputView extends PinnableView2 implements ISimulationListen
     protected TextViewer textViewer;
     protected MenuManager contextMenuManager = new MenuManager("#PopupMenu");
 
+    /**
+     * Provides content of a LogBufferView.
+     * @author Andras
+     */
     protected class LogBufferContent implements ITextViewerContent {
         private LogBufferView logBufferView;
         private ListenerList listeners = new ListenerList();
@@ -61,6 +65,11 @@ public class ModuleOutputView extends PinnableView2 implements ISimulationListen
         	return (int)logBufferView.getNumChars();
         }
 
+        /**
+         * Returns the line at the given line index. CAUTION: the underlying data
+         * structure is iterator-based, and is NOT optimized for random access.
+         * Accessing lines that are far from one another can be very costly.
+         */
         //@Override
         public String getLine(int lineIndex) {
         	return logBufferView.getLine(lineIndex);
