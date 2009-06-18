@@ -206,6 +206,7 @@ void LogBuffer::dump() const
             printf("\tlen=%d >>%s<<\n", (int)entry.getLineLength(i), entry.getLine(i));
         k++;
     }
+    fflush(stdout);
 }
 
 
