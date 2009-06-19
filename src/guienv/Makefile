@@ -29,7 +29,19 @@ LIBNAME=liboppguienv$D
 O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/guienv
 L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 
-COPTS=$(CFLAGS) -I$(OMNETPP_INCL_DIR) -I$(OMNETPP_INCL_DIR)/platdep -I../envir -I../nedxml -I../layout -I../eventlog -I../common $(JAVA_CFLAGS)
+#FIXME needs to be configured:
+OMNETPP_GUIENV_LAUNCHER=C:/eclipse/plugins/org.eclipse.equinox.launcher_1.0.100.v20080509-1800.jar
+
+ifeq ("$(strip $(OMNETPP_GUIENV_CONFIG_DIR))","")
+ifneq ("$(wildcard $(OMNETPP_UI_DIR))","")
+OMNETPP_GUIENV_CONFIG_DIR=$(OMNETPP_UI_DIR)/.metadata/.plugins/org.eclipse.pde.core/guienv
+else
+OMNETPP_GUIENV_CONFIG_DIR=$(OMNETPP_IDE_DIR)/.guienv
+endif
+endif
+
+EXTRADEFS=-DOMNETPP_GUIENV_CONFIG_DIR="\"$(OMNETPP_GUIENV_CONFIG_DIR)\"" -DOMNETPP_GUIENV_LAUNCHER="\"$(OMNETPP_GUIENV_LAUNCHER)\"" -DOMNETPP_IMAGE_PATH="\"$(OMNETPP_IMAGE_PATH)\""
+COPTS=$(CFLAGS) $(EXTRADEFS)-I$(OMNETPP_INCL_DIR) -I$(OMNETPP_INCL_DIR)/platdep -I../envir -I../nedxml -I../layout -I../eventlog -I../common $(JAVA_CFLAGS)
 IMPLIBS= -L$L -loppsim$D -loppenvir$D -lopplayout$D -loppcommon$D $(JAVA_LIBS)
 
 OBJS = $O/visitor.o $O/jutil.o $O/logbuffer.o $O/logbufferview.o \

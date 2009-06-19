@@ -20,10 +20,13 @@
 #include <stdio.h>
 #include <string>
 #include <jni.h>
+#include <locale.h>
+#include <sys/stat.h>
 
 #include "appreg.h"
 #include "guienv.h"
 #include "jutil.h"
+#include "platdep/platmisc.h"
 
 using namespace JUtil;
 
@@ -184,11 +187,16 @@ static std::string join(const char *sep, const std::vector<std::string>& v)
     return result;
 }
 
+inline bool exists(const char *fname)
+{
+    struct opp_stat_t tmp;
+    return opp_stat(fname, &tmp)==0;
+}
+
 void GUIEnv::run()
 {
-    //FIXME add try-catch blocks!!!
-
-    if (!jenv) {
+    if (!jenv)
+    {
         // Normal startup: create JVM, and launch RCP application.
         // Note: we'd want to call wrapperTable.init(jenv) here as well,
         // but it has to wait until cObject.class has been loaded
@@ -199,28 +207,31 @@ void GUIEnv::run()
         // look for org.eclipse.equinox.launcher.Main
         jclass mainClazz = findClass(jenv, "org/eclipse/equinox/launcher/Main");
 
-        // prepare args array
+        // determine the location of our Equinox config.ini
+        const char *equinoxConfigDir = getenv("OMNETPP_GUIENV_CONFIG_DIR");
+        if (!equinoxConfigDir)
+            equinoxConfigDir = OMNETPP_GUIENV_CONFIG_DIR;
+        if (!exists(equinoxConfigDir))
+            throw cRuntimeError("Cannot launch GUIEnv: RCP application configuration not found at %s; "
+                                "please set or adjust OMNETPP_GUIENV_CONFIG_DIR", equinoxConfigDir);
+        std::string devpropertiesFile = std::string(equinoxConfigDir) + "/dev.properties";
+
+        // prepare args array (note: options -os, -ws, -arch, -nl are not needed, as they are usually autodetected)
         std::vector<std::string> args;
         args.push_back("-application");
         args.push_back("org.omnetpp.runtimeenv.application");
         args.push_back("-data");
-        //args.push_back("C:\\home\\omnetpp40\\omnetpp\\ui/../runtime-org.omnetpp.runtimeenv.application"); //XXX hardcoded!!!
         args.push_back(".guienv"); //FIXME rather: $HOME/.guienv!
         args.push_back("-configuration");
-        args.push_back("file:C:/home/omnetpp40/omnetpp/ui/.metadata/.plugins/org.eclipse.pde.core/org.omnetpp.runtimeenv.application/"); //XXX
-        args.push_back("-dev");
-        args.push_back("file:C:/home/omnetpp40/omnetpp/ui/.metadata/.plugins/org.eclipse.pde.core/org.omnetpp.runtimeenv.application/dev.properties"); //XXX
-/*XXX apparently not needed:
-        args.push_back("-os");
-        args.push_back("win32"); //XXX
-        args.push_back("-ws");
-        args.push_back("win32"); //XXX
-        args.push_back("-arch");
-        args.push_back("x86"); //XXX
-        args.push_back("-nl");
-        args.push_back("en_US");
-*/
-        //FIXME possibility to add new args via inifile, and to replace these ones
+        args.push_back(std::string("file:") + equinoxConfigDir);
+        if (exists(devpropertiesFile.c_str()))
+        {
+            args.push_back("-dev");
+            args.push_back(std::string("file:") + devpropertiesFile);
+        }
+
+        //TODO take additional args from command line and/or omnetpp.ini
+
         DEBUGPRINTF("Launcher args: %s\n", join(" ", args).c_str());
 
         // run the app: new Main().run(args)
@@ -228,7 +239,8 @@ void GUIEnv::run()
         jmethodID runMethodID = getMethodID(jenv, mainClazz, "run", "([Ljava/lang/String;)I");
         jenv->CallIntMethod(mainObject, runMethodID, toJavaArray(jenv, args));
     }
-    else {
+    else
+    {
         // Developer mode: program was launched as an RCP project (via the standard
         // eclipse launcher), and this class was dynamically created from Java code,
         // org.omnetpp.runtimeenv.Application.start(). We need to call back
