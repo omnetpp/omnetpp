@@ -20,7 +20,6 @@ endif
 #TODO: in the released source, don't run swig (except via an explicit target)
 GUIENV_IF_POSSIBLE = guienv
 SWIG = swig
-JAVA_LIBS = -L/usr/lib/jvm/java-6-sun/jre/lib/i386/client -ljvm
 
 #
 # Local definitions
@@ -30,7 +29,7 @@ O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/guienv
 L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 
 #FIXME needs to be configured:
-OMNETPP_GUIENV_LAUNCHER=C:/eclipse/plugins/org.eclipse.equinox.launcher_1.0.100.v20080509-1800.jar
+OMNETPP_GUIENV_LAUNCHER=/home/rhornig/eclipse/plugins/org.eclipse.equinox.launcher_1.0.101.R34x_v20080819.jar
 
 ifeq ("$(strip $(OMNETPP_GUIENV_CONFIG_DIR))","")
 ifneq ("$(wildcard $(OMNETPP_UI_DIR))","")
@@ -41,7 +40,7 @@ endif
 endif
 
 EXTRADEFS=-DOMNETPP_GUIENV_CONFIG_DIR="\"$(OMNETPP_GUIENV_CONFIG_DIR)\"" -DOMNETPP_GUIENV_LAUNCHER="\"$(OMNETPP_GUIENV_LAUNCHER)\"" -DOMNETPP_IMAGE_PATH="\"$(OMNETPP_IMAGE_PATH)\""
-COPTS=$(CFLAGS) $(EXTRADEFS)-I$(OMNETPP_INCL_DIR) -I$(OMNETPP_INCL_DIR)/platdep -I../envir -I../nedxml -I../layout -I../eventlog -I../common $(JAVA_CFLAGS)
+COPTS=$(CFLAGS) $(EXTRADEFS) -I$(OMNETPP_INCL_DIR) -I$(OMNETPP_INCL_DIR)/platdep -I../envir -I../nedxml -I../layout -I../eventlog -I../common $(JAVA_CFLAGS)
 IMPLIBS= -L$L -loppsim$D -loppenvir$D -lopplayout$D -loppcommon$D $(JAVA_LIBS)
 
 OBJS = $O/visitor.o $O/jutil.o $O/logbuffer.o $O/logbufferview.o \

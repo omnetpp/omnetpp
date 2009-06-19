@@ -89,7 +89,7 @@ void GUIEnv::initJVM()
 */
 
     options[n++].optionString = "-Dfile.encoding=Cp1252";  //XXX Eclipse did it so, but it this necessary & same on all platforms?
-    options[n++].optionString = "-Djava.class.path=C:\\eclipse\\plugins\\org.eclipse.equinox.launcher_1.0.100.v20080509-1800.jar"; //XXX hardcoded!!!!
+    options[n++].optionString = "-Djava.class.path=" OMNETPP_GUIENV_LAUNCHER;
     options[n++].optionString = "-Domnetpp.guienv.standalone=1";  // tells RCP app that it runs standalone (i.e. not launched from PDT)
 
     //XXX for debugging:
