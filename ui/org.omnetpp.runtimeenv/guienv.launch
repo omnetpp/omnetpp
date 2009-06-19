@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.eclipse.pde.ui.RuntimeWorkbench">
+<booleanAttribute key="append.args" value="true"/>
+<stringAttribute key="application" value="org.omnetpp.runtimeenv.application"/>
+<booleanAttribute key="askclear" value="true"/>
+<booleanAttribute key="automaticAdd" value="false"/>
+<booleanAttribute key="automaticValidate" value="false"/>
+<stringAttribute key="bootstrap" value=""/>
+<stringAttribute key="checked" value="[NONE]"/>
+<booleanAttribute key="clearConfig" value="false"/>
+<booleanAttribute key="clearws" value="false"/>
+<booleanAttribute key="clearwslog" value="false"/>
+<stringAttribute key="configLocation" value="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/org.omnetpp.runtimeenv.application"/>
+<booleanAttribute key="default" value="false"/>
+<booleanAttribute key="includeOptional" value="false"/>
+<stringAttribute key="location" value="${workspace_loc}/.guienv"/>
+<mapAttribute key="org.eclipse.debug.core.environmentVariables">
+<mapEntry key="PATH" value="C:\home\omnetpp40\omnetpp\bin;${env_var:PATH}"/>
+</mapAttribute>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-os ${target.os} -ws ${target.ws} -arch ${target.arch} -nl ${target.nl}"/>
+<stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.pde.ui.workbenchClasspathProvider"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Djava.library.path=${workspace_loc}/../bin"/>
+<booleanAttribute key="pde.generated.config" value="false"/>
+<stringAttribute key="pde.version" value="3.3"/>
+<stringAttribute key="product" value="org.eclipse.platform.ide"/>
+<stringAttribute key="selected_target_plugins" value="org.eclipse.help,org.eclipse.text,org.eclipse.ui.workbench,org.eclipse.swt,org.eclipse.swt.win32.win32.x86,org.eclipse.core.runtime,org.eclipse.jface.text,org.eclipse.equinox.app,org.eclipse.equinox.preferences,org.eclipse.draw2d,org.eclipse.core.jobs,org.eclipse.core.expressions,org.eclipse.equinox.registry,org.eclipse.core.commands,org.eclipse.core.contenttype,com.ibm.icu,org.eclipse.ui,org.eclipse.osgi,org.eclipse.core.variables,org.eclipse.jface.databinding,org.eclipse.core.runtime.compatibility.registry,org.eclipse.core.databinding,org.eclipse.jface,org.eclipse.equinox.common,org.eclipse.core.filesystem.win32.x86,org.eclipse.core.filesystem"/>
+<stringAttribute key="selected_workspace_plugins" value="org.omnetpp.ide.nativelibs,org.omnetpp.figures,org.omnetpp.runtimeenv,org.omnetpp.common.core,org.omnetpp.ide.nativelibs.win32.x86,org.omnetpp.runtime.nativelibs"/>
+<booleanAttribute key="show_selected_only" value="false"/>
+<booleanAttribute key="tracing" value="false"/>
+<booleanAttribute key="useDefaultConfig" value="true"/>
+<booleanAttribute key="useDefaultConfigArea" value="true"/>
+<booleanAttribute key="useProduct" value="false"/>
+<booleanAttribute key="usefeatures" value="false"/>
+</launchConfiguration>
