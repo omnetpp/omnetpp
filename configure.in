@@ -874,6 +874,7 @@ if test "$JAVA_CFLAGS" = ""; then
       AC_MSG_WARN(JAVA_HOME variable not set.)
    else
       JAVA_CFLAGS="-fno-strict-aliasing -I$JAVA_HOME/include -I$JAVA_HOME/include/$jni_platform"
+      JAVA_LIBS="-L$JAVA_HOME/jre/lib/i386/client -ljvm"
    fi
 fi
 
@@ -1125,6 +1126,7 @@ AC_SUBST(WITH_NETBUILDER)
 AC_SUBST(WITH_PARSIM)
 
 AC_SUBST(JAVA_CFLAGS)
+AC_SUBST(JAVA_LIBS)
 AC_SUBST(SWIG)
 AC_SUBST(PLATFORM)
 
