@@ -234,11 +234,10 @@ cRegistrationList *getRegisteredConfigOptions();
 // helper methods from launching the app from Eclipse, via java.exe
 //
 
-#include <direct.h>
 inline void changeToDir(const char *dir)
 {
     printf("changing to: %s\n", dir);
-    _chdir(dir);
+    chdir(dir);
 
     //char buffer[_MAX_PATH];
     //if (_getcwd( buffer, _MAX_PATH)==NULL)

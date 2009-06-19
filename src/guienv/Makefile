@@ -20,9 +20,7 @@ endif
 #TODO: in the released source, don't run swig (except via an explicit target)
 GUIENV_IF_POSSIBLE = guienv
 SWIG = swig
-JDK = $(TOOLS_DIR)\jdk1.5.0  #no quotes
-JAVA_CFLAGS = -I"$(JDK)\include" -I"$(JDK)\include\win32"
-JAVA_LIBS = /libpath:"$(JDK)/lib" jvm.lib
+JAVA_LIBS = -L/usr/lib/jvm/java-6-sun/jre/lib/i386/client -ljvm
 
 #
 # Local definitions
@@ -39,7 +37,7 @@ OBJS = $O/visitor.o $O/jutil.o $O/logbuffer.o $O/logbufferview.o \
        $O/simkernel_wrap.o $O/registernatives.o
 
 JAVAPKG = org.omnetpp.runtime.nativelibs.simkernel
-JAVADIR = $(OMNETPP_UI_DIR)/org.omnetpp.runtime.nativelibs/src/$(JAVAPKG)
+JAVADIR = $(OMNETPP_UI_DIR)/org.omnetpp.runtime.nativelibs/src/$(subst .,/,$(JAVAPKG))
 
 JAVA_COBJECTS = \
     cAccuracyDetection.java cADByStddev.java cArray.java cChannel.java \
@@ -101,21 +99,21 @@ $L/$(LIBNAME)$(DLL_LIB_SUFFIX) : $(OBJS)
 	cp $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OMNETPP_BIN_DIR)
 
 # only run swig in developer mode (when ui/ source tree exists)
-ifeq ("$(wildcard $(OMNETPP_UI_DIR))","")    #FIXME shouldbe this: !if exist($(OMNETPP_UI_DIR))
+ifneq ("$(wildcard $(OMNETPP_UI_DIR))","")
 simkernel_wrap.cxx registernatives.cc : *.i *.h Makefile.vc $(OMNETPP_ROOT)/include/*.h  # and many other things
 	rm -rf $(JAVADIR)
 	mkdir $(JAVADIR)
 	$(SWIG) -c++ -java -package $(JAVAPKG) -I$(OMNETPP_ROOT)/include -I$(OMNETPP_ROOT)/src/envir -I$(OMNETPP_ROOT) -outdir $(JAVADIR) simkernel.i
-	@:# Patch the generated Java files so that they access swigCPtr via checkZombie() that detects null pointers (see WrapperTable!)
-	for i in $(JAVA_COBJECTS); do @$(PERL) -i.bak -pe "s!\(swigCPtr, this!(checkZombie(swigCPtr), this!g" $(JAVADIR)/$i; done
-	for i in $(JAVA_COBJECTS); do @$(PERL) -i.bak -pe "s!0 : obj.swigCPtr;!0 : obj.checkZombie(obj.swigCPtr);!g" $(JAVADIR)/$i; done
+	@# Patch the generated Java files so that they access swigCPtr via checkZombie() that detects null pointers (see WrapperTable!)
+	for i in $(JAVA_COBJECTS); do $(PERL) -i.bak -pe "s!\(swigCPtr, this!(checkZombie(swigCPtr), this!g" $(JAVADIR)/$$i; done
+	for i in $(JAVA_COBJECTS); do $(PERL) -i.bak -pe "s!0 : obj.swigCPtr;!0 : obj.checkZombie(obj.swigCPtr);!g" $(JAVADIR)/$$i; done
 	rm -f $(JAVADIR)/*.bak
 	$(PERL) registernatives.pl $(JAVADIR)/SimkernelJNI.java registernatives.cc
 endif
 
 missing-dependency:
 	@echo '  *** No JDK installation found, skipping GUIEnv.'
-	@echo '  *** Install it, and edit configuser.vc accordingly.'
+	@echo '  *** Install it, and re-run configure.'
 
 depend:
 	$(MAKEDEPEND) -I. -I../envir -I../../include -P\$$O/ -- *.cc *.cxx
