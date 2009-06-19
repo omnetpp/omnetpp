@@ -18,16 +18,54 @@
 
 Define_Module(Transition);
 
-#define SHIFT 1000  /* 32*1000 < 32767 (max of cMessage's schedulingPriority) */
+TransitionRegistry *TransitionRegistry::instance = NULL;
+
+//FIXME: store only armed transitions!! and: armed(t), disarmed(t)!!!
+TransitionRegistry *TransitionRegistry::getInstance()
+{
+    if (!instance)
+        instance = new TransitionRegistry();
+    return instance;
+}
+
+void TransitionRegistry::registerTransition(ITransition *t)
+{
+    transitions.push_back(t);
+}
+
+void TransitionRegistry::deregisterTransition(ITransition *t)
+{
+    std::vector<ITransition*>::iterator it = transitions.find(t);
+    ASSERT(it != transitions.end());
+    transitions.erase(it);
+}
+
+void TransitionRegistry::scheduleNextFiring()
+{
+    // choose one randomly among the ones that can fire
+    std::vector<ITransition*> armedList;
+    int n = transitions.size();
+    for (int i=0; i<n; i++)
+        if (transitions[i]->canFire())
+            armedList.push_back(transitions[i]);
+    if (!armedList.empty()) {
+        int k = intrand(armedList.size());
+        armedList[k]->scheduleFiring();
+    }
+}
+
+//----------
 
 
 Transition::Transition()
 {
     fireEvent = endTransitionEvent = NULL;
+    TransitionRegistry::getInstance()->registerTransition(this);
 }
 
 Transition::~Transition()
 {
+    TransitionRegistry::getInstance()->deregisterTransition(this);
     cancelAndDelete(fireEvent);
     cancelAndDelete(endTransitionEvent);
 }
@@ -93,24 +131,13 @@ void Transition::handleMessage(cMessage *msg)
 
 void Transition::numTokensChanged(IPlace *)
 {
-    Enter_Method_Silent();
-    if (endTransitionEvent->isScheduled()) {
-        // not interested in changes -- we are currently firing
-    }
-    else {
-        if (!fireEvent->isScheduled()) {
-            if (canFire())
-                arm();
-        }
-        else {
-            if (!canFire())
-                disarm();
-        }
-    }
+    //TODO inputsChanged = true;
 }
 
 bool Transition::canFire()
 {
+    //TODO cache state
+
     // check if all inputs have enough tokens
     int n = inputPlaces.size();
     for (int i = 0; i < n; i++)
@@ -119,22 +146,6 @@ bool Transition::canFire()
             inputPlaces[i].place->getNumTokens() > -inputPlaces[i].multiplicity) // inhibitor arc
             return false;
     return evaluateGuardCondition();
-}
-
-void Transition::arm()
-{
-    EV << "We can fire: arming transition\n";
-    // set event prio to ensure that transitions of the same priority fire in random order
-    fireEvent->setSchedulingPriority(priority*SHIFT + intuniform(0,SHIFT-1));
-    scheduleAt(simTime(), fireEvent);
-    updateGUI();
-}
-
-void Transition::disarm()
-{
-    EV << "Disarming transition\n";
-    cancelEvent(fireEvent);
-    updateGUI();
 }
 
 void Transition::startFire()
@@ -152,8 +163,10 @@ void Transition::startFire()
     simtime_t transitionTime = transitionTimePar->doubleValue();
     if (transitionTime==0)
         endFire();
-    else
+    else {
+        TransitionRegistry->getInstance()->scheduleNextFiring();
         scheduleAt(simTime()+transitionTime, endTransitionEvent); // with strongest priority, i.e. zero
+    }
 }
 
 void Transition::endFire()
@@ -170,6 +183,7 @@ void Transition::endFire()
     // during firing we didn't listen to notifications, so we need to check again
     if (canFire())
         arm();
+    TransitionRegistry->getInstance()->scheduleNextFiring();
 }
 
 void Transition::updateGUI()

@@ -19,6 +19,22 @@
 #include <omnetpp.h>
 #include "ITransition.h"
 
+//FIXME to separate file
+class TransitionRegistry
+{
+  protected:
+    static TransitionRegistry *instance;
+    std::vector<ITransition*> transitions;
+  protected:
+    TransitionRegistry() {}
+    ~TransitionRegistry() {}
+  public:
+    TransitionRegistry *getInstance();
+    void registerTransition(ITransition *t);
+    void deregisterTransition(ITransition *t);
+    void scheduleNextFiring();
+}
+
 /**
  * A transition in a Petri net
  */
@@ -29,6 +45,11 @@ class Transition : public cSimpleModule, public ITransition
     cPar *transitionTimePar;
     cMessage *fireEvent;
     cMessage *endTransitionEvent;
+
+/*TODO
+    bool canFireValue;
+    bool canFireIsValid;
+*/
 
     struct Neighbour { IPlace *place; int multiplicity; }; // multiplicity is negative for inhibitor arcs
     std::vector<Neighbour> inputPlaces;
@@ -45,8 +66,6 @@ class Transition : public cSimpleModule, public ITransition
     // utility methods
     virtual bool canFire();
     virtual bool evaluateGuardCondition() {return true;} // override if needed!
-    virtual void arm();
-    virtual void disarm();
     virtual void startFire();
     virtual void endFire();
     virtual void discoverNeighbours();
