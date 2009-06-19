@@ -5048,7 +5048,7 @@ if test -n "$NO_TCL"; then
     TKENV_IF_POSSIBLE=missing-dependency
 
     # and build samples using Cmdenv (TBD)
-    ALL_ENV_LIBS='$(CMDENV_LIBS)'
+    ALL_ENV_LIBS='$(GUIENV) $(CMDENV_LIBS)'
 
 else  #matching "fi" is after BLT testing
 
@@ -6840,7 +6840,7 @@ $as_echo "$as_me: WARNING: Tcl cannot load BLT (wish command \"package require B
     TKENV_IF_POSSIBLE=tkenv
 
     # and build samples using Tkenv
-    ALL_ENV_LIBS='$(TKENV_LIBS) $(CMDENV_LIBS)'
+    ALL_ENV_LIBS='$(TKENV_LIBS) $(GUIENV_LIBS) $(CMDENV_LIBS)'
 
 fi # end of Tcl tests ($NO_TCL=="" branch)
 
@@ -6916,7 +6916,7 @@ if test "$JAVA_CFLAGS" = ""; then
 $as_echo "$as_me: WARNING: JAVA_HOME variable not set." >&2;}
    else
       JAVA_CFLAGS="-fno-strict-aliasing -I$JAVA_HOME/include -I$JAVA_HOME/include/$jni_platform"
-      JAVA_LIBS="-L$JAVA_HOME/jre/lib/i386/client -ljvm"
+      JAVA_LIBS="-L$JAVA_HOME/jre/lib/i386/client -Wl,-rpath,$JAVA_HOME/jre/lib/i386/client:. -ljvm"
    fi
 fi
 
@@ -8005,7 +8005,7 @@ fi
 #----------------------
 # Files to be generated
 #----------------------
-ac_config_files="$ac_config_files Makefile.inc test/core/runtest"
+ac_config_files="$ac_config_files Makefile.inc test/core/runtest"
 
 
 #----------------------
@@ -8718,8 +8718,8 @@ cat >>$CONFIG_STATUS <<\_ACEOF || ac_write_fail=1
 for ac_config_target in $ac_config_targets
 do
   case $ac_config_target in
-    "Makefile.inc") CONFIG_FILES="$CONFIG_FILES Makefile.inc" ;;
-    "test/core/runtest") CONFIG_FILES="$CONFIG_FILES test/core/runtest" ;;
+    "Makefile.inc") CONFIG_FILES="$CONFIG_FILES Makefile.inc" ;;
+    "test/core/runtest") CONFIG_FILES="$CONFIG_FILES test/core/runtest" ;;
 
   *) { { $as_echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5
 $as_echo "$as_me: error: invalid argument: $ac_config_target" >&2;}
@@ -8771,8 +8771,7 @@ $debug ||
 if test -n "$CONFIG_FILES"; then
 
 
-ac_cr='
-'
+ac_cr=''
 ac_cs_awk_cr=`$AWK 'BEGIN { print "a\rb" }' </dev/null 2>/dev/null`
 if test "$ac_cs_awk_cr" = "a${ac_cr}b"; then
   ac_cs_awk_cr='\\r'
