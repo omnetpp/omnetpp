@@ -15,29 +15,12 @@ ifeq ("$(strip $(OMNETPP_LIB_DIR))","")
 $(error OMNETPP_LIB_DIR must be correctly set)
 endif
 
-
-#XXX should come from configuser.vc
-#TODO: in the released source, don't run swig (except via an explicit target)
-GUIENV_IF_POSSIBLE = guienv
-SWIG = swig
-
 #
 # Local definitions
 #
 LIBNAME=liboppguienv$D
 O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/guienv
 L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
-
-#FIXME needs to be configured:
-OMNETPP_GUIENV_LAUNCHER=/home/rhornig/eclipse/plugins/org.eclipse.equinox.launcher_1.0.101.R34x_v20080819.jar
-
-ifeq ("$(strip $(OMNETPP_GUIENV_CONFIG_DIR))","")
-ifneq ("$(wildcard $(OMNETPP_UI_DIR))","")
-OMNETPP_GUIENV_CONFIG_DIR=$(OMNETPP_UI_DIR)/.metadata/.plugins/org.eclipse.pde.core/guienv
-else
-OMNETPP_GUIENV_CONFIG_DIR=$(OMNETPP_IDE_DIR)/.guienv
-endif
-endif
 
 EXTRADEFS=-DOMNETPP_GUIENV_CONFIG_DIR="\"$(OMNETPP_GUIENV_CONFIG_DIR)\"" -DOMNETPP_GUIENV_LAUNCHER="\"$(OMNETPP_GUIENV_LAUNCHER)\"" -DOMNETPP_IMAGE_PATH="\"$(OMNETPP_IMAGE_PATH)\""
 COPTS=$(CFLAGS) $(EXTRADEFS) -I$(OMNETPP_INCL_DIR) -I$(OMNETPP_INCL_DIR)/platdep -I../envir -I../nedxml -I../layout -I../eventlog -I../common $(JAVA_CFLAGS)

@@ -10,7 +10,7 @@ as well.
 
 OLD USERS:
 	If you have simulations written for OMNeT++ 3.x that you want to
-	port to 4.0, see the MIGRATION file, doc/migration.pdf, and the 
+	port to 4.0, see the MIGRATION file, doc/migration.pdf, and the
 	scripts under migrate/!
 
 If you installed the source distribution, the omnetpp directory on your system
@@ -36,9 +36,10 @@ The simulation system itself:
       sim/         simulation kernel
         parsim/    files for distributed execution
         netbuilder/files for dynamically reading NED files
-      envir/       common code for user interfaces
-      cmdenv/      command-line user interface
-      tkenv/       Tcl/Tk-based user interface
+      envir/       common code for runtime user interfaces
+      cmdenv/      command-line runtime user interface
+      tkenv/       Tcl/Tk-based graphical runtime user interface
+      guienv/      graphical runtime user interface
       layout/      graph layouting library
       scave/       library for processing result files
       eventlog/    library for processing event log files

@@ -114,11 +114,14 @@ AKAROA_CFLAGS = @AKAROA_CFLAGS@
 AKAROA_LIBS = @AKAROA_LIBS@
 
 TKENV_IF_POSSIBLE = @TKENV_IF_POSSIBLE@
+GUIENV_IF_POSSIBLE = @GUIENV_IF_POSSIBLE@
 JNILIBS_IF_POSSIBLE = @JNILIBS_IF_POSSIBLE@
 
 EMBED_TCL_CODE = @EMBED_TCL_CODE@
-
 OMNETPP_TKENV_DIR = @OMNETPP_TKENV_DIR@
+
+OMNETPP_GUIENV_LAUNCHER=@OMNETPP_GUIENV_LAUNCHER@
+OMNETPP_GUIENV_CONFIG_DIR=@OMNETPP_GUIENV_CONFIG_DIR@
 
 WITH_NETBUILDER = @WITH_NETBUILDER@
 WITH_PARSIM = @WITH_PARSIM@
@@ -144,6 +147,7 @@ else
   # extra libs we are indirectly depend on. they are needed if we are building statically
   KERNEL_LIBS += $(XML_LIBS) -loppnedxml$D -loppcommon$D
   TKENV_LIBS += $(TK_LIBS) $(BLT_LIBS) $(ZLIB_LIBS)
+  GUIENV_LIBS += $(JAVA_LIBS)
 
   ifeq ($(WITH_PARSIM),yes)
     ifeq ($(HAVE_MPI),yes)
@@ -152,6 +156,7 @@ else
   endif
 
   # add the Carbon framework if we are building statically on MAC OS X as Tct/Tk needs it
+  #FIXME why not in ./configure?
   ifeq ($(PLATFORM),macosx)
     TKENV_LIBS += -framework Carbon
   endif
