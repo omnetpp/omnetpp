@@ -642,8 +642,8 @@ the components's \ffunc{getDisplayString()} method:
 
 \begin{cpp}
 // Setting a module's position, icon and status icon:
-cDisplayString *dispStr = getDisplayString();
-dispStr->parse("p=40,20;i=device/cellphone;i2=status/disconnect");
+cDisplayString& dispStr = getDisplayString();
+dispStr.parse("p=40,20;i=device/cellphone;i2=status/disconnect");
 \end{cpp}
 
 \begin{note}
@@ -653,8 +653,8 @@ can also be accessed via the source gate of the connection.
 
 \begin{cpp}
 // Setting an outgoing connection's color to red:
-cDisplayString *gateDispStr = gate("out")->getDisplayString();
-dispStr->parse("ls=red");
+cDisplayString& connDispStr = gate("out")->getDisplayString();
+connDispStr.parse("ls=red");
 \end{cpp}
 
 \begin{note}
@@ -667,8 +667,8 @@ specific tags, i.e. those starting with \ttt{bg}.
 
 \begin{cpp}
 // Setting module background and grid with background display string tags:
-cDisplayString *parentDispStr = getParentModule()->getDisplayString();
-parentDispStr->parse("bgi=maps/europe;bgg=100,2");
+cDisplayString& parentDispStr = getParentModule()->getDisplayString();
+parentDispStr.parse("bgi=maps/europe;bgg=100,2");
 \end{cpp}
 
 As far as \cclass{cDisplayString} is concerned, a display string
@@ -687,12 +687,12 @@ as data elements separated by semicolons, equal signs and commas.
 An example:
 
 \begin{cpp}
-dispStr->parse("a=1,2;p=alpha,,3");
-dispStr->insertTag("x");
-dispStr->setTagArg("x",0,"joe");
-dispStr->setTagArg("x",2,"jim");
-dispStr->setTagArg("p",0,"beta");
-ev << dispStr->str();  // result: "x=joe,,jim;a=1,2;p=beta,,3"
+dispStr.parse("a=1,2;p=alpha,,3");
+dispStr.insertTag("x");
+dispStr.setTagArg("x",0,"joe");
+dispStr.setTagArg("x",2,"jim");
+dispStr.setTagArg("p",0,"beta");
+ev << dispStr.str();  // result: "x=joe,,jim;a=1,2;p=beta,,3"
 \end{cpp}
 
 \subsection{Bubbles}
