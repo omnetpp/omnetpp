@@ -349,6 +349,9 @@ int binomial(int n, double p, int rng)
 
 int geometric(double p, int rng)
 {
+    if (p<0 || p>=1)
+        throw cRuntimeError("geometric(): parameter p=%g out of range [0,1)", p);
+
     double a = 1.0 / (log(1.0 - p));
     return (int)floor(a * log(genk_dblrand(rng)));
 }

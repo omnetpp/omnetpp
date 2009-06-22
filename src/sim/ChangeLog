@@ -1,3 +1,7 @@
+2009-06-22  Andras Varga
+
+	* geometric(): assert that parameter p is in range [0,1)
+
 2009-03-12  ------ omnetpp-4.0 released ------
 
 2009-03-25  Andras Varga
