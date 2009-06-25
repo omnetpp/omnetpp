@@ -297,3 +297,5 @@ deselecting
 vica
 statusbar
 layouted
+autoscrolling
+autoscroll
