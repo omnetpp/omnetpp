@@ -488,8 +488,13 @@ public class ParametersDialog extends TitleAreaDialog {
                 paramElement.setValue(null);
             }
             else {
-                paramElement.setIsDefault(strippedValue.startsWith(DEFAULT_VALUE_PREFIX) && strippedValue.endsWith(DEFAULT_VALUE_SUFFIX));
-                paramElement.setValue(StringUtils.removeEnd(StringUtils.removeStart(strippedValue, DEFAULT_VALUE_PREFIX), DEFAULT_VALUE_SUFFIX));
+                boolean isDefault = strippedValue.startsWith(DEFAULT_VALUE_PREFIX) && strippedValue.endsWith(DEFAULT_VALUE_SUFFIX);
+                if (isDefault)
+					strippedValue = StringUtils.removeEnd(StringUtils.removeStart(strippedValue, DEFAULT_VALUE_PREFIX), DEFAULT_VALUE_SUFFIX);
+                
+				paramElement.setValue(strippedValue);
+				paramElement.setIsDefault(isDefault);
+				
             }
         }
 
