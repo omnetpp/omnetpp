@@ -1,3 +1,8 @@
+2009-06-25  Andras Varga
+
+	* ccomponenttype.cc, cdynamiccomponenttype.cc: made it possible to use
+	a custom C++ class for compound modules as well (@class() property)
+
 2009-06-22  Andras Varga
 
 	* geometric(): assert that parameter p is in range [0,1)

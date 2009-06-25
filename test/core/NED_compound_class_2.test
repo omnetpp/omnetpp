@@ -1,0 +1,39 @@
+%description:
+Test @class property with C++ namespace.
+
+%file: package.ned
+
+// don't use @namespace
+
+%file: test.ned
+
+module CompoundModule
+{
+    parameters:
+        @class("@TESTNAME@::ClassWithNamespace");
+}
+
+network Test
+{
+    submodules:
+        a: CompoundModule;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+namespace @TESTNAME@ {
+
+class ClassWithNamespace : public cCompoundModule
+{
+  protected:
+    void initialize() {EV << "Hello from " << getClassName() << "\n";}
+};
+
+Define_Module(ClassWithNamespace);
+
+}; //namespace
+
+%contains: stdout
+Hello from @TESTNAME@::ClassWithNamespace

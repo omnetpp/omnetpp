@@ -100,7 +100,7 @@ NEDTypeInfo::NEDTypeInfo(NEDResourceCache *resolver, const char *qname, NEDEleme
     }
 
     // resolve C++ class name
-    if (getType()==SIMPLE_MODULE || getType()==CHANNEL)
+    if (getType()==SIMPLE_MODULE || getType()==COMPOUND_MODULE || getType()==CHANNEL)
     {
         // Note: @class() be used to override inherited implementation class.
         // The @class property itself does NOT get inherited.
@@ -109,6 +109,8 @@ NEDTypeInfo::NEDTypeInfo(NEDResourceCache *resolver, const char *qname, NEDEleme
             implClassName = opp_join("::", getCxxNamespace().c_str(), explicitClassName);
         else if (numExtendsNames()!=0)
             implClassName = opp_nulltoempty(getSuperDecl()->implementationClassName());
+        else if (getType()==COMPOUND_MODULE)
+            implClassName = "cCompoundModule";
         else
             implClassName = opp_join("::", getCxxNamespace().c_str(), getName());
     }

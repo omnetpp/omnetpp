@@ -1,3 +1,9 @@
+2009-06-25  Andras Varga
+
+	* cModuleType: added isSimple()
+
+	* corrected the definition of NULL according to C++ rules
+
 2009-04-25  Andras Varga
 
 	* cModule::addGate() to return the gate pointer whenever a single gate

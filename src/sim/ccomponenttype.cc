@@ -17,6 +17,8 @@
 #include <string.h>
 #include "ccomponenttype.h"
 #include "cmodule.h"
+#include "csimplemodule.h"
+#include "ccompoundmodule.h"
 #include "cchannel.h"
 #include "cenvir.h"
 #include "cparimpl.h"
@@ -116,15 +118,13 @@ cModule *cModuleType::create(const char *modname, cModule *parentmod, int vector
     cOwnedObject::setDefaultOwner(&tmplist);
 
     // create the new module object
-    cModule *mod;
+    bool isLocal = ev.isModuleLocal(parentmod,modname,index);
 #ifdef WITH_PARSIM
-    if (ev.isModuleLocal(parentmod,modname,index))
-        mod = createModuleObject();
-    else
-        mod = new cPlaceholderModule();
+    cModule *mod = isLocal ? createModuleObject() : new cPlaceholderModule();
 #else
-    mod = createModuleObject();
+    cModule *mod = createModuleObject();
 #endif
+
     // set up module: set name, module type, vector size, parent
     mod->setName(modname);
     mod->setComponentType(this);
@@ -133,7 +133,7 @@ cModule *cModuleType::create(const char *modname, cModule *parentmod, int vector
     if (parentmod)
         parentmod->insertSubmodule(mod);
 
-    // set system getModule(must be done before takeAllObjectsFrom(tmplist) because
+    // set system module (must be done before takeAllObjectsFrom(tmplist) because
     // if parentmod==NULL, mod itself is on tmplist)
     if (!parentmod)
          simulation.setSystemModule(mod);
@@ -167,7 +167,25 @@ cModule *cModuleType::instantiateModuleClass(const char *classname)
     cObject *obj = cClassFactory::createOne(classname); // this won't return NULL
     cModule *mod = dynamic_cast<cModule *>(obj);
     if (!mod)
-        throw cRuntimeError("class %s is not a module type", classname); //FIXME better msg
+        throw cRuntimeError("incorrect module class %s: not subclassed from cModule", classname);
+
+    // check module object
+    if (!mod->isModule())
+        throw cRuntimeError("incorrect module class %s: isModule() returns false", classname);
+
+    if (isSimple()) {
+        if (dynamic_cast<cSimpleModule *>(mod)==NULL)
+            throw cRuntimeError("incorrect simple module class %s: not subclassed from cSimpleModule", classname);
+        if (mod->isSimple()==false)
+            throw cRuntimeError("incorrect simple module class %s: isSimple() returns false", classname);
+    }
+    else {
+        if (dynamic_cast<cCompoundModule *>(mod)==NULL)
+            throw cRuntimeError("incorrect compound module class %s: not subclassed from cCompoundModule", classname);
+        if (mod->isSimple()==true)
+            throw cRuntimeError("incorrect compound module class %s: isSimple() returns true", classname);
+    }
+
     return mod;
 }
 

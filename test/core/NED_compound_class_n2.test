@@ -1,0 +1,38 @@
+%description:
+Test that an error is raised when compound module class's isSimple() method is incorrect
+
+
+%file: test.ned
+
+module CompoundModule
+{
+    @class("ModuleClass");
+}
+
+network Test
+{
+    submodules:
+        a: CompoundModule;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+namespace @TESTNAME@ {
+
+class ModuleClass : public cCompoundModule
+{
+  protected:
+    void initialize() {EV << "Hello from " << getClassName() << "\n";}
+    bool isSimple() const  {return true;} // deliberate error
+};
+
+Define_Module(ModuleClass);
+
+}; //namespace @TESTNAME@
+
+%exitcode: 1
+
+%contains: stdout
+isSimple() returns true

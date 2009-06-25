@@ -188,7 +188,8 @@ $O/datasorter.obj: datasorter.cc \
   scavedefs.h \
   ../common/stringutil.h \
   enumtype.h \
-  idlist.h
+  idlist.h \
+  ../common/rwlock.h
 $O/diffquot.obj: diffquot.cc \
   ../common/commondefs.h \
   dataflowmanager.h \
@@ -228,7 +229,8 @@ $O/export.obj: export.cc \
   enumtype.h \
   export.h \
   xyarray.h \
-  idlist.h
+  idlist.h \
+  ../common/rwlock.h
 $O/fields.obj: fields.cc \
   statistics.h \
   ../common/commondefs.h \
@@ -242,7 +244,8 @@ $O/fields.obj: fields.cc \
   scavedefs.h \
   ../common/stringutil.h \
   enumtype.h \
-  idlist.h
+  idlist.h \
+  ../common/rwlock.h
 $O/filewriter.obj: filewriter.cc \
   ../common/commondefs.h \
   dataflowmanager.h \
@@ -283,7 +286,8 @@ $O/idlist.obj: idlist.cc \
   scavedefs.h \
   ../common/stringutil.h \
   enumtype.h \
-  idlist.h
+  idlist.h \
+  ../common/rwlock.h
 $O/indexedvectorfile.obj: indexedvectorfile.cc \
   statistics.h \
   ../common/commondefs.h \
@@ -302,8 +306,9 @@ $O/indexedvectorfile.obj: indexedvectorfile.cc \
   ../common/stringutil.h \
   indexfile.h \
   enumtype.h \
-  nodetype.h \
   idlist.h \
+  nodetype.h \
+  ../common/rwlock.h \
   ../common/linetokenizer.h
 $O/indexedvectorfilereader.obj: indexedvectorfilereader.cc \
   statistics.h \
@@ -327,7 +332,8 @@ $O/indexedvectorfilereader.obj: indexedvectorfilereader.cc \
   nodetype.h \
   idlist.h \
   vectorfilereader.h \
-  ../common/linetokenizer.h
+  ../common/linetokenizer.h \
+  ../common/rwlock.h
 $O/indexedvectorfilereader2.obj: indexedvectorfilereader2.cc \
   statistics.h \
   ../common/commondefs.h \
@@ -350,7 +356,8 @@ $O/indexedvectorfilereader2.obj: indexedvectorfilereader2.cc \
   nodetype.h \
   idlist.h \
   vectorfilereader.h \
-  ../common/linetokenizer.h
+  ../common/linetokenizer.h \
+  ../common/rwlock.h
 $O/indexfile.obj: indexfile.cc \
   statistics.h \
   scaveexception.h \
@@ -369,6 +376,7 @@ $O/mergernodes.obj: mergernodes.cc \
   dataflowmanager.h \
   ../common/exception.h \
   ../common/bigdecimal.h \
+  scaveutils.h \
   ../common/progressmonitor.h \
   ../common/commonutil.h \
   ../common/filereader.h \
@@ -408,6 +416,7 @@ $O/nodetyperegistry.obj: nodetyperegistry.cc \
   diffquot.h \
   vectorfilereader.h \
   ../common/linetokenizer.h \
+  ../common/rwlock.h \
   statistics.h \
   ../common/stringtokenizer.h \
   stddev.h \
@@ -447,6 +456,7 @@ $O/resultfilemanager.obj: resultfilemanager.cc \
   scavedefs.h \
   ../common/stringutil.h \
   idlist.h \
+  ../common/rwlock.h \
   ../common/linetokenizer.h \
   statistics.h \
   scaveexception.h \
@@ -479,6 +489,7 @@ $O/scavetool.obj: scavetool.cc \
   xyarray.h \
   idlist.h \
   vectorfilereader.h \
+  ../common/rwlock.h \
   ../common/linetokenizer.h \
   statistics.h \
   arraybuilder.h \
@@ -558,6 +569,7 @@ $O/vectorfileindexer.obj: vectorfileindexer.cc \
   ../common/stringutil.h \
   vectorfileindexer.h \
   idlist.h \
+  ../common/rwlock.h \
   ../common/linetokenizer.h \
   statistics.h \
   scaveexception.h \
@@ -583,6 +595,7 @@ $O/vectorfilereader.obj: vectorfilereader.cc \
   idlist.h \
   vectorfilereader.h \
   ../common/linetokenizer.h \
+  ../common/rwlock.h \
   statistics.h \
   scaveexception.h \
   ../common/exception.h \
@@ -604,6 +617,7 @@ $O/vectorfilewriter.obj: vectorfilewriter.cc \
   scavedefs.h \
   ../common/stringutil.h \
   idlist.h \
+  ../common/rwlock.h \
   statistics.h \
   ../common/exception.h \
   scaveutils.h \
@@ -621,6 +635,7 @@ $O/windowavg.obj: windowavg.cc \
   ../common/filereader.h \
   scavedefs.h \
   ../common/exception.h \
+  scaveutils.h \
   ../common/progressmonitor.h \
   ../common/commonutil.h \
   commonnodes.h \

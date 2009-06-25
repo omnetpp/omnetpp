@@ -205,9 +205,14 @@ class SIM_API cModuleType : public cComponentType
     /** @name Misc */
     //@{
     /**
-     * Returns true if the module was declared with the "network" keyword.
+     * Returns true if the module type was declared with the "network" keyword.
      */
     virtual bool isNetwork() const = 0;
+
+    /**
+     * Returns true if this object represents a simple module type.
+     */
+    virtual bool isSimple() const = 0;
     //@}
 
     /** @name Module creation */

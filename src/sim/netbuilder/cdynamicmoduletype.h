@@ -74,6 +74,11 @@ class SIM_API cDynamicModuleType : public cModuleType
      * Returns true if the module type was declared with the "network" keyword.
      */
     virtual bool isNetwork() const;
+
+    /**
+     * Returns true if this object represents a simple module type.
+     */
+    virtual bool isSimple() const;
 };
 
 NAMESPACE_END

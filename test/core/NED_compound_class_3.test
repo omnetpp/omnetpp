@@ -1,0 +1,38 @@
+%description:
+Test @class property inheritance; @namespace is implicit from generated package.ned
+
+%file: test.ned
+
+module Base
+{
+    @class(BaseModuleClass);
+}
+
+module Derived extends Base
+{
+}
+
+network Test
+{
+    submodules:
+        a: Derived;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+namespace @TESTNAME@ {
+
+class BaseModuleClass : public cCompoundModule
+{
+  protected:
+    void initialize() {EV << "Hello from " << getClassName() << "\n";}
+};
+
+Define_Module(BaseModuleClass);
+
+}; //namespace
+
+%contains: stdout
+Hello from @TESTNAME@::BaseModuleClass

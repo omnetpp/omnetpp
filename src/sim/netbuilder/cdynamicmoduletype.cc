@@ -57,13 +57,16 @@ bool cDynamicModuleType::isNetwork() const
     return getDecl()->isNetwork();
 }
 
+bool cDynamicModuleType::isSimple() const
+{
+    return getDecl()->getType()==cNEDDeclaration::SIMPLE_MODULE;
+}
+
 cModule *cDynamicModuleType::createModuleObject()
 {
     const char *classname = getDecl()->implementationClassName();
-    if (classname)
-        return instantiateModuleClass(classname);
-    else
-        return new cCompoundModule();
+    ASSERT(classname!=NULL);
+    return instantiateModuleClass(classname);
 }
 
 void cDynamicModuleType::addParametersAndGatesTo(cModule *module)

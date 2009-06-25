@@ -1,0 +1,40 @@
+%description:
+Test @class property overriding; @namespace is implicit from generated package.ned
+
+%file: test.ned
+
+module Base
+{
+    @class(BaseModuleClass);
+}
+
+module Derived extends Base
+{
+    @class(DerivedModuleClass);
+}
+
+network Test
+{
+    submodules:
+        a: Derived;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+namespace @TESTNAME@ {
+
+class DerivedModuleClass : public cCompoundModule
+{
+  protected:
+    void initialize() {EV << "Hello from " << getClassName() << "\n";}
+};
+
+Define_Module(DerivedModuleClass);
+
+}; //namespace
+
+%contains: stdout
+Hello from @TESTNAME@::DerivedModuleClass
+

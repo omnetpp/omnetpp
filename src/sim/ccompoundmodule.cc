@@ -26,10 +26,7 @@
 USING_NAMESPACE
 
 
-//
-// Note: cModule,cSimpleModule,cCompoundModule are left unregistered.
-//   One should never create modules by createOne(cSimpleModule) or the like.
-//
+Register_Class(cCompoundModule);
 
 
 cCompoundModule::cCompoundModule()

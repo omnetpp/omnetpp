@@ -1,0 +1,42 @@
+%description:
+Test that an error is raised when compound module class
+is not subclassed from cCompoundModule
+
+%file: test.ned
+
+module CompoundModule
+{
+    @class("ModuleClass");
+}
+
+network Test
+{
+    submodules:
+        a: CompoundModule;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+namespace @TESTNAME@ {
+
+class ModuleClass : public cModule // and not cCompoundModule
+{
+  protected:
+    void initialize() {EV << "Hello from " << getClassName() << "\n";}
+
+    // provide dummy implementations for abstract methods so that class can be instantiated
+    virtual void arrived(cMessage *msg, cGate *ongate, simtime_t t) {}
+    virtual void scheduleStart(simtime_t t) {};
+};
+
+Define_Module(ModuleClass);
+
+}; //namespace @TESTNAME@
+
+%exitcode: 1
+
+%contains: stdout
+not subclassed from cCompoundModule
+
