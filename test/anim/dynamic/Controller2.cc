@@ -38,12 +38,13 @@ void Controller2::activity()
 {
     cModuleType *type = cModuleType::find("Node");
     std::vector<cModule*> nodes;
+    std::vector<cGate*> connections;
 
     for (int i=1; true; i++)
     {
+        // create a node
         if (intuniform(0,20)==0)
         {
-            // create a node
             cModule *node = type->createScheduleInit(stringf("node%d",i).c_str(), getParentModule());
             nodes.push_back(node);
             ev << "node CREATED as node " << (nodes.size()-1) << "\n";
@@ -53,9 +54,9 @@ void Controller2::activity()
             d.setTagArg("t", 0, "NEW");
         }
 
+        // delete a node
         if (!nodes.empty() && intuniform(0,20)==0)
         {
-            // delete a node
             int k = intuniform(0, nodes.size()-1);
             ev << "node " << nodes[k]->getFullName() << ": DELETED\n";
             nodes[k]->deleteModule();
@@ -72,12 +73,16 @@ void Controller2::activity()
             cGate *gs = nodes[s]->addGate(stringf("gate%do",i).c_str(), cGate::OUTPUT);
             cGate *gt = nodes[t]->addGate(stringf("gate%di",i).c_str(), cGate::INPUT);
             gs->connectTo(gt);
+            connections.push_back(gs);
         }
 
         // delete connection
         if (intuniform(0,5)==0)
         {
-            //TODO
+            int k = intuniform(0, connections.size()-1);
+            ev << "connection " << connections[k]->getFullPath() << ": DELETED\n";
+            connections[k]->disconnect();
+            connections.erase(connections.begin()+k);
         }
 
         // move
