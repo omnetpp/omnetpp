@@ -2,7 +2,8 @@
 
 class Gen : public cSimpleModule
 {
-    Module_Class_Members(Gen,cSimpleModule,16384)
+  public:
+    Gen() : cSimpleModule(16384) {}
 
     virtual void activity();
 
@@ -144,13 +145,13 @@ void Gen::brightness()
 
 void Gen::show()
 {
-    ev << "display string: \"" << getDisplayString().getString() << "\"" << endl;
+    ev << "display string: \"" << getDisplayString().str() << "\"" << endl;
     wait(0);
 }
 
 class Sink : public cSimpleModule
 {
-    Module_Class_Members(Sink,cSimpleModule,0)
+  protected:
     virtual void handleMessage(cMessage *msg);
 };
 
