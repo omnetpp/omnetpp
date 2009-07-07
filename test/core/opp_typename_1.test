@@ -1,22 +1,47 @@
 %description:
 Test opp_typename (which is currently an internal function).
 
+%includes: //hmmm
+
+class Alma {}; // in global namespace!
+
+namespace @TESTNAME@ { class Korte {}; };
+
 %activity:
 
-ev << opp_typename(typeid(cObject)) << endl;
+// for debugging:
+// #define PRINT(T)  {T x; printf("typeid(%s): %s | %s\n", #T, typeid(x).name(), opp_typename(typeid(x)));}
 
-// FIXME the ones below won't work properly...
+#define PRINT(T)  {T x; printf("%s = %s\n", #T, opp_typename(typeid(x)));}
 
-//ev << opp_typename(typeid(cObject&)) << endl;
-//ev << opp_typename(typeid(const cObject&)) << endl;
-//ev << opp_typename(typeid(cObject *)) << endl;
-//ev << opp_typename(typeid(const cObject *)) << endl;
+PRINT(void *)
+PRINT(bool)
+PRINT(short)
+PRINT(unsigned short)
+PRINT(int)
+PRINT(unsigned int)
+PRINT(long)
+PRINT(unsigned long)
+PRINT(float)
+PRINT(double)
+PRINT(char)
+PRINT(signed char)
+PRINT(unsigned char)
+PRINT(char *)
+PRINT(const char *)
 
-//ev << opp_typename(typeid(int)) << endl;
-//ev << opp_typename(typeid(char)) << endl;
-//ev << opp_typename(typeid(double)) << endl;
-//ev << opp_typename(typeid(unsigned int)) << endl;
+PRINT(int*)
+PRINT(int**)
+PRINT(const int*)
+PRINT(const int**)
+
+PRINT(Alma)
+PRINT(Alma*)
+PRINT(const Alma*)
+PRINT(@TESTNAME@::Korte)
+PRINT(@TESTNAME@::Korte*)
+PRINT(const @TESTNAME@::Korte*)
 
 %contains: stdout
-cObject
+XXX
 
