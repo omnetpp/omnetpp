@@ -25,7 +25,7 @@ COPTS=$(CFLAGS)
 #
 # Targets
 #
-all: $O/opp_lcg32_seedtool.exe $O/ln.exe
+all: $O/opp_lcg32_seedtool.exe $O/ln.exe $O/opp_pefileversion.exe
 	echo @echo %~dp0\..\configuser.vc >opp_configfilepath.cmd
 	copy opp_configfilepath.cmd $(OMNETPP_BIN_DIR:/=\)
 	copy opp_nmakemake.cmd $(OMNETPP_BIN_DIR:/=\)
@@ -45,12 +45,16 @@ all: $O/opp_lcg32_seedtool.exe $O/ln.exe
 	copy omnest.cmd $(OMNETPP_BIN_DIR:/=\)
 	copy $(O:/=\)\opp_lcg32_seedtool.exe* $(OMNETPP_BIN_DIR:/=\)
 	copy $(O:/=\)\ln.exe* $(OMNETPP_BIN_DIR:/=\)
+	copy $(O:/=\)\opp_pefileversion.exe* $(OMNETPP_BIN_DIR:/=\)
 
 $O/opp_lcg32_seedtool.exe : $O opp_lcg32_seedtool.cc
 	$(CXX) $(CFLAGS) /Tp opp_lcg32_seedtool.cc /link /out:$(O:/=\)\opp_lcg32_seedtool.exe
 
 $O/ln.exe : $O ln.c
 	$(CXX) $(CFLAGS) ln.c /link /out:$(O:/=\)\ln.exe
+
+$O/opp_pefileversion.exe : $O opp_pefileversion.cc
+	$(CXX) $(CFLAGS) /Tp opp_pefileversion.cc /link version.lib /out:$(O:/=\)\opp_pefileversion.exe
 
 $O:
 	md $(O:/=\)
