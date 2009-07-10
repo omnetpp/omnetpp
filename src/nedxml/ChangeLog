@@ -21,6 +21,10 @@
   	* opp_msgc: generates more efficient code for getFieldTypeString(),
         getFieldName(), and getFieldTypeFlags()
 
+        * opp_msgc: bugfix: namespace was missing from the name string of the 
+        generated descriptor class, so appropriate descriptor could never 
+        be found by name
+
 2009-06-25  Andras Varga
 
 	* NEDTypeInfo: handle @class in compound module types as well

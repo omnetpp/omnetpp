@@ -1625,7 +1625,8 @@ sub generateDescriptorClass
 
     # ctor, dtor
     $fieldcount = $#fieldlist+1;
-    print CC "$msgdescclass\:\:$msgdescclass() : cClassDescriptor(\"$realmsgclass\", \"$msgbaseclass\")\n";
+    my $qualifiedrealmsgclass = join("::", ($namespacename, $realmsgclass));
+    print CC "$msgdescclass\:\:$msgdescclass() : cClassDescriptor(\"$qualifiedrealmsgclass\", \"$msgbaseclass\")\n";
     print CC "{\n";
     print CC "}\n";
     print CC "\n";
