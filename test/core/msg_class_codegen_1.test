@@ -1,0 +1,72 @@
+%description:
+Test @codegen(false) property
+
+%file: test.msg
+
+namespace @TESTNAME@;
+
+cplusplus {{
+#include "test.h"
+}}
+
+class Foo
+{
+    @codegen(false);
+    bool field1;
+    int field2;
+};
+
+struct Point
+{
+    @codegen(false);
+    double x;
+    double y;
+};
+
+%file: test.h
+
+#ifndef TEST_H
+#define TEST_H
+#include <omnetpp.h>
+
+namespace @TESTNAME@ {
+
+class Foo : public cObject
+{
+  private:
+    bool field1;
+    int field2;
+  public:
+    bool getField1() const {return field1;}
+    int  getField2() const {return field2;}
+    void setField1(bool x) {field1 = x;}
+    void setField2(int x)  {field2 = x;}
+};
+
+struct Point
+{
+    double x;
+    double y;
+};
+
+}; // namespace
+
+#endif
+
+
+%includes:
+#include "test.h"
+
+%activity:
+// if the test compiles, that's already half the test passed
+// (i.e. no "duplicate code for class Foo" linker errors)
+
+ev << cClassDescriptor::getDescriptorFor("@TESTNAME@::Foo")->getClassName() << "\n";
+ev << cClassDescriptor::getDescriptorFor("@TESTNAME@::Point")->getClassName() << "\n";
+ev << ".\n";
+
+%contains: stdout
+@TESTNAME@::FooDescriptor
+@TESTNAME@::PointDescriptor
+.
+
