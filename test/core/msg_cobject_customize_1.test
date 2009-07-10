@@ -53,7 +53,7 @@ cOwnedObject
 @TESTNAME@::MyClass: myclass
 x.getB():5
 x.getI():11
-class MyClass {
+class @TESTNAME@::MyClass {
     string fullName = myclass
     string fullPath = Test.myclass
     string info = ""

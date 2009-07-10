@@ -45,11 +45,11 @@ TestMessage msg2("tmp");
 msg2.parsimUnpack(buffer);
 ev << "isBufferEmpty:" << buffer->isBufferEmpty() << endl;
 
-ev << ObjectPrinter("*:declaredOn(TestMessage)",4).printObjectToString(&msg2);
+ev << ObjectPrinter("*:declaredOn(@TESTNAME@::TestMessage)",4).printObjectToString(&msg2);
 
 %contains: stdout
 isBufferEmpty:1
-class TestMessage {
+class @TESTNAME@::TestMessage {
     int i = 23
     double d = 3.140000
     string s = Hello

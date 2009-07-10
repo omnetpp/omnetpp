@@ -41,7 +41,7 @@ ev << ObjectPrinter().printObjectToString(msg);
 delete msg;
 
 %contains: stdout
-class SomePacket {
+class @TESTNAME@::SomePacket {
     string fullName = some
     string fullPath = Test.some
     string info = "(new msg)"
