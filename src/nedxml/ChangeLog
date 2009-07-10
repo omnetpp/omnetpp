@@ -16,6 +16,11 @@
   #FIXME better names! e.g. @generateClass(),@generateDescriptor(),@existingClass()?
   #XXX maybe: @existingClass; @descriptor(false); @editable(false)  <--- YES!!!
 
+  	* opp_msgc: added generation of descriptor method findField()
+
+  	* opp_msgc: generates more efficient code for getFieldTypeString(),
+        getFieldName(), and getFieldTypeFlags()
+
 2009-06-25  Andras Varga
 
 	* NEDTypeInfo: handle @class in compound module types as well

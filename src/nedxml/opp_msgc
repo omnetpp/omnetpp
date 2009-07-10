@@ -1607,6 +1607,7 @@ sub generateDescriptorClass
     print CC "    virtual const char *getProperty(const char *propertyname) const;\n";
     print CC "    virtual int getFieldCount(void *object) const;\n";
     print CC "    virtual const char *getFieldName(void *object, int field) const;\n";
+    print CC "    virtual int findField(void *object, const char *fieldName) const;\n";
     print CC "    virtual unsigned int getFieldTypeFlags(void *object, int field) const;\n";
     print CC "    virtual const char *getFieldTypeString(void *object, int field) const;\n";
     print CC "    virtual const char *getFieldProperty(void *object, int field, const char *propertyname) const;\n";
@@ -1670,25 +1671,29 @@ sub generateDescriptorClass
     print CC "            return basedesc->getFieldTypeFlags(object, field);\n";
     print CC "        field -= basedesc->getFieldCount(object);\n";
     print CC "    }\n";
-    print CC "    switch (field) {\n";
-    for ($i=0; $i<$fieldcount; $i++)
-    {
-        @flags = ();
-        $fieldname = $fieldlist[$i];
-        push(@flags, "FD_ISARRAY") if ($fisarray{$fieldname});
-        push(@flags, "FD_ISCOMPOUND") if ($fkind{$fieldname} eq 'struct');
-        push(@flags, "FD_ISPOINTER") if ($fispointer{$fieldname});
-        push(@flags, "FD_ISCPOLYMORPHIC") if ($classtype{$ftype{$fieldname}} eq 'cobject' || $classtype{$ftype{$fieldname}} eq 'cnamedobject');
-        push(@flags, "FD_ISCPOLYMORPHIC | FD_ISCOBJECT") if ($classtype{$ftype{$fieldname}} eq 'cownedobject');
-        $editableprop = $fprops{$fieldname}->{editable};
-        push(@flags, "FD_ISEDITABLE") if (($editableprop eq 'true' || $editableprop eq '1') ||
-                                          ($generate_setters_in_descriptor && $fkind{$fieldname} eq 'basic'));
-        $flags = join(" | ", @flags);
-        $flags = "0" if (@flags==());
-        print CC "        case $i: return $flags;\n";
+    if ($fieldcount == 0) {
+        print CC "    return 0;\n";
+    } else {
+        print CC "    static unsigned int fieldTypeFlags[] = {\n";
+        for ($i=0; $i<$fieldcount; $i++)
+        {
+            @flags = ();
+            $fieldname = $fieldlist[$i];
+            push(@flags, "FD_ISARRAY") if ($fisarray{$fieldname});
+            push(@flags, "FD_ISCOMPOUND") if ($fkind{$fieldname} eq 'struct');
+            push(@flags, "FD_ISPOINTER") if ($fispointer{$fieldname});
+            push(@flags, "FD_ISCPOLYMORPHIC") if ($classtype{$ftype{$fieldname}} eq 'cobject' || $classtype{$ftype{$fieldname}} eq 'cnamedobject');
+            push(@flags, "FD_ISCPOLYMORPHIC | FD_ISCOBJECT") if ($classtype{$ftype{$fieldname}} eq 'cownedobject');
+            $editableprop = $fprops{$fieldname}->{editable};
+            push(@flags, "FD_ISEDITABLE") if (($editableprop eq 'true' || $editableprop eq '1') ||
+                                              ($generate_setters_in_descriptor && $fkind{$fieldname} eq 'basic'));
+            $flags = join(" | ", @flags);
+            $flags = "0" if (@flags==());
+            print CC "        $flags,\n";
+        }
+        print CC "    };\n";
+        print CC "    return (field>=0 && field<$fieldcount) ? fieldTypeFlags[field] : 0;\n";
     }
-    print CC "        default: return 0;\n";
-    print CC "    }\n";
     print CC "}\n";
     print CC "\n";
 
@@ -1701,13 +1706,33 @@ sub generateDescriptorClass
     print CC "            return basedesc->getFieldName(object, field);\n";
     print CC "        field -= basedesc->getFieldCount(object);\n";
     print CC "    }\n";
-    print CC "    switch (field) {\n";
-    for ($i=0; $i<$fieldcount; $i++)
-    {
-        print CC "        case $i: return \"$fieldlist[$i]\";\n";
+    if ($fieldcount == 0) {
+        print CC "    return NULL;\n";
+    } else {
+        print CC "    static const char *fieldNames[] = {\n";
+        for ($i=0; $i<$fieldcount; $i++)
+        {
+            print CC "        \"$fieldlist[$i]\",\n";
+        }
+        print CC "    };\n";
+        print CC "    return (field>=0 && field<$fieldcount) ? fieldNames[field] : NULL;\n";
     }
-    print CC "        default: return NULL;\n";
-    print CC "    }\n";
+    print CC "}\n";
+    print CC "\n";
+
+    # findField()
+    print CC "int $msgdescclass\:\:findField(void *object, const char *fieldName) const\n";
+    print CC "{\n";
+    print CC "    cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
+    if ($fieldcount > 0) {
+        print CC "    int base = basedesc ? basedesc->getFieldCount(object) : 0;\n";
+        for ($i=0; $i<$fieldcount; $i++)
+        {
+            my $c = substr($fieldlist[$i], 0, 1);
+            print CC "    if (fieldName[0]=='$c' && strcmp(fieldName, \"$fieldlist[$i]\")==0) return base+$i;\n";
+        }
+    }
+    print CC "    return basedesc ? basedesc->findField(object, fieldName) : -1;\n";
     print CC "}\n";
     print CC "\n";
 
@@ -1720,13 +1745,17 @@ sub generateDescriptorClass
     print CC "            return basedesc->getFieldTypeString(object, field);\n";
     print CC "        field -= basedesc->getFieldCount(object);\n";
     print CC "    }\n";
-    print CC "    switch (field) {\n";
-    for ($i=0; $i<$fieldcount; $i++)
-    {
-        print CC "        case $i: return \"$ftype{$fieldlist[$i]}\";\n";
+    if ($fieldcount == 0) {
+        print CC "    return NULL;\n";
+    } else {
+        print CC "    static const char *fieldTypeStrings[] = {\n";
+        for ($i=0; $i<$fieldcount; $i++)
+        {
+            print CC "        \"$ftype{$fieldlist[$i]}\",\n";
+        }
+        print CC "    };\n";
+        print CC "    return (field>=0 && field<$fieldcount) ? fieldTypeStrings[field] : NULL;\n";
     }
-    print CC "        default: return NULL;\n";
-    print CC "    }\n";
     print CC "}\n";
     print CC "\n";
 
