@@ -47,9 +47,9 @@ $checktimestamps = 1;
 $ccsuffix = '_m.cc';
 $hsuffix = '_m.h';
 $exportdef = '';
-$generate_classes = 1;  #TODO these should be available from the msg file itself too, e.g. like @generateClasses(false)
-$generate_descriptions = 1;
-$generate_setters_in_descr = 1;
+$generate_classes = 1;
+$generate_descriptors = 1;
+$generate_setters_in_descriptors = 1;
 $verbose = 0;
 while (@ARGV)
 {
@@ -103,11 +103,11 @@ while (@ARGV)
     }
     elsif ($arg eq "-Xnd")
     {
-        $generate_descriptions = 0;
+        $generate_descriptors = 0;
     }
     elsif ($arg eq "-Xns")
     {
-        $generate_setters_in_descr = 0;
+        $generate_setters_in_descriptors = 0;
     }
     elsif (!($arg =~ /^-/))
     {
@@ -762,14 +762,14 @@ sub processFile()
 
         # now generate code
         prepareForCodeGeneration();
-        if ($generate_classes) {
+        if ($generate_class) {
             if ($classtype eq 'struct') {
                 generateStruct();
             } else {
                 generateClass();
             }
         }
-        if ($generate_descriptions) {
+        if ($generate_descriptor) {
             generateDescriptorClass();
         }
     }
@@ -900,6 +900,9 @@ sub prepareForCodeGeneration
     #
     # produce all sorts of derived names
     #
+    $generate_class = $generate_classes && ($props{"codegen"} ne "false");
+    $generate_descriptor = $generate_descriptors && ($props{"descriptor"} ne "false");
+    $generate_setters_in_descriptor = $generate_setters_in_descriptors && ($props{"descriptor"} ne "readonly");
     if ($props{"customize"} eq "true") {
         $gap = 1;
         $msgclass = $msgname."_Base";
@@ -1679,7 +1682,7 @@ sub generateDescriptorClass
         push(@flags, "FD_ISCPOLYMORPHIC | FD_ISCOBJECT") if ($classtype{$ftype{$fieldname}} eq 'cownedobject');
         $editableprop = $fprops{$fieldname}->{editable};
         push(@flags, "FD_ISEDITABLE") if (($editableprop eq 'true' || $editableprop eq '1') ||
-                                          ($generate_setters_in_descr && $fkind{$fieldname} eq 'basic'));
+                                          ($generate_setters_in_descriptor && $fkind{$fieldname} eq 'basic'));
         $flags = join(" | ", @flags);
         $flags = "0" if (@flags==());
         print CC "        case $i: return $flags;\n";
@@ -1852,7 +1855,7 @@ sub generateDescriptorClass
     {
         $fieldname = $fieldlist[$i];
         $editableprop = $fprops{$fieldname}->{editable};
-        if ($editableprop eq 'true' || $editableprop eq '1' || ($generate_setters_in_descr && $fkind{$fieldname} eq 'basic')) {
+        if ($editableprop eq 'true' || $editableprop eq '1' || ($generate_setters_in_descriptor && $fkind{$fieldname} eq 'basic')) {
             if ($classtype eq 'struct') {
                 if ($fisarray{$fieldname}) {
                     if ($farraysize{$fieldname} ne '') {
