@@ -1852,7 +1852,7 @@ sub generateDescriptorClass
                 if ($fisarray{$fieldlist[$i]}) {
                     print CC "        case $i: {std::stringstream out; out << pp->$var{$fieldlist[$i]}\[i\]; return out.str();}\n";
                 } else {
-                    print CC "        case $i: {std::stringstream out; out << pp->$var{$fieldlist[$i]}; return out.str()}\n";
+                    print CC "        case $i: {std::stringstream out; out << pp->$var{$fieldlist[$i]}; return out.str();}\n";
                 }
             } else {
                 if ($fisarray{$fieldlist[$i]}) {
