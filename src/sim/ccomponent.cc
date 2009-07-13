@@ -33,6 +33,8 @@ USING_NAMESPACE
 
 Register_PerObjectConfigOption(CFGID_PARAM_RECORD_AS_SCALAR, "param-record-as-scalar", CFG_BOOL, "false", "Applicable to module parameters: specifies whether the module parameter should be recorded into the output scalar file. Set it for parameters whose value you'll need for result analysis.");
 
+#include "C:\home\experimental\notification\ccomponent.cc-inc"
+
 
 cComponent::cComponent(const char *name) : cDefaultList(name)
 {
@@ -45,6 +47,9 @@ cComponent::cComponent(const char *name) : cDefaultList(name)
 
     dispstr = NULL;
     setEvEnabled(true);
+
+signalTable=NULL; //XXX notification stuff
+signalHasLocalListeners=signalHasAncestorListeners=0;
 }
 
 cComponent::~cComponent()

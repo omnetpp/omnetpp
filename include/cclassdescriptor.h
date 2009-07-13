@@ -167,6 +167,13 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
     virtual const char *getFieldName(void *object, int field) const = 0;
 
     /**
+     * Returns the index of the field with the given name, or -1 if not found.
+     * cClassDescriptor provides an default implementation, but it is
+     * recommended to replace it in subclasses with a more efficient version.
+     */
+    virtual int findField(void *object, const char *fieldName) const;
+
+    /**
      * Must be redefined in subclasses to return the type flags of a field
      * in the client object. Flags is a binary OR of the following:
      * FD_ISARRAY, FD_ISCOMPOUND, FD_ISPOINTER, FD_ISCOBJECT, FD_ISCPOLYMORPHIC.
@@ -216,6 +223,11 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
      * compiler generates code which calls operator<<.
      */
     virtual std::string getFieldAsString(void *object, int field, int i) const = 0;
+
+    /**
+     * DEPRECATED: Use the getFieldAsString(void*, int, int) instead.
+     */
+    _OPPDEPRECATED virtual bool getFieldAsString(void *object, int field, int i, char *buf, int bufsize) const;
 
     /**
      * Must be redefined in subclasses to set the value of a field
