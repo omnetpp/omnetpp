@@ -24,8 +24,6 @@
 #include "simtime.h"
 #include "cenvir.h"
 
-#include "C:\home\experimental\notification\ccomponent.h-inc1"
-
 NAMESPACE_BEGIN
 
 class cComponentType;
@@ -45,8 +43,6 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     friend class cPar; // needs to call handleParameterChange()
     friend class cChannel; // allow it to access FL_INITIALIZED
     friend class cModule; // allow it to access FL_INITIALIZED
-
-#include "C:\home\experimental\notification\ccomponent.h-inc2"
 
   private:
     enum {
