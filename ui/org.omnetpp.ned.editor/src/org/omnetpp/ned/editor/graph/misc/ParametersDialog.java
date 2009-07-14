@@ -79,6 +79,7 @@ import org.omnetpp.ned.editor.graph.commands.AddNEDElementCommand;
 import org.omnetpp.ned.editor.graph.commands.DeleteCommand;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDElementConstants;
+import org.omnetpp.ned.model.NEDTreeUtil;
 import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
 import org.omnetpp.ned.model.ex.ParamElementEx;
 import org.omnetpp.ned.model.ex.PropertyElementEx;
@@ -488,14 +489,19 @@ public class ParametersDialog extends TitleAreaDialog {
                 paramElement.setValue(null);
             }
             else {
-                boolean isDefault = strippedValue.startsWith(DEFAULT_VALUE_PREFIX) && strippedValue.endsWith(DEFAULT_VALUE_SUFFIX);
-                if (isDefault)
-					strippedValue = StringUtils.removeEnd(StringUtils.removeStart(strippedValue, DEFAULT_VALUE_PREFIX), DEFAULT_VALUE_SUFFIX);
-                
-				paramElement.setValue(strippedValue);
-				paramElement.setIsDefault(isDefault);
+                String canoncialValue = removeDefaultAroundValue(strippedValue);
+
+                paramElement.setValue(canoncialValue);
+				paramElement.setIsDefault(!canoncialValue.equals(strippedValue));
 				
             }
+        }
+        
+        protected String removeDefaultAroundValue(String value) {
+            if (value.startsWith(DEFAULT_VALUE_PREFIX) && value.endsWith(DEFAULT_VALUE_SUFFIX))
+                return StringUtils.removeEnd(StringUtils.removeStart(value, DEFAULT_VALUE_PREFIX), DEFAULT_VALUE_SUFFIX);
+            else
+                return value;
         }
 
         protected String getComment(List<ParamElementEx> inheritanceChain, ParamElementEx firstParamElement) {
@@ -914,7 +920,8 @@ public class ParametersDialog extends TitleAreaDialog {
                         paramLine.setCurrentComment(stringValue);
                     else
                         throw new RuntimeException();
-    
+
+                    validateDialogContent();
                     tableViewer.refresh(); // if performance gets critical: refresh only if changed
                 }
             }
@@ -977,6 +984,30 @@ public class ParametersDialog extends TitleAreaDialog {
         });
         return result;
     }
+    
+    private void validateDialogContent() {
+        StringBuffer errorMessages = new StringBuffer();
+
+        for (ParamLine paramLine : paramLines) {
+            if (ArrayUtils.indexOf(org.omnetpp.common.editor.text.Keywords.NED_RESERVED_WORDS, paramLine.name) != -1)
+                errorMessages.append("The provided parameter name \"" + paramLine.name + "\" is a reserved NED keyword\n");
+            
+            String value = paramLine.removeDefaultAroundValue(paramLine.value);
+            if (!StringUtils.isEmpty(value) && !NEDTreeUtil.isExpressionValid(value))
+                errorMessages.append("The provided parameter value \"" + value + "\" is not a valid expression\n");
+        }
+
+        Button okButton = getButton(IDialogConstants.OK_ID);
+
+        if (errorMessages.length() == 0) {
+            setErrorMessage(null);
+            okButton.setEnabled(true);
+        }
+        else {
+            setErrorMessage(errorMessages.toString());
+            okButton.setEnabled(false);
+        }
+    }
 
     private String[] getUnitValues(String[] unitsWithFullName) {
         String[] units = new String[unitsWithFullName.length];
@@ -989,7 +1020,7 @@ public class ParametersDialog extends TitleAreaDialog {
 
         return units;
     }
-
+    
     private class LocalTableTextCellEditor extends TableTextCellEditor {
         public LocalTableTextCellEditor(ColumnViewer tableViewer, int column) {
             super(tableViewer, column);
@@ -999,6 +1030,7 @@ public class ParametersDialog extends TitleAreaDialog {
         protected void editOccured(ModifyEvent e) {
             cellEdited = true;
             super.editOccured(e);
+            validateDialogContent();
         }
     }
     
@@ -1006,16 +1038,16 @@ public class ParametersDialog extends TitleAreaDialog {
         public LocalEnumCellEditor(Composite parent, String[] names, Object[] values) {
             super(parent, names, values);
         }
-        
+
         @Override
         protected void fireApplyEditorValue() {
             cellEdited = true;
             super.fireApplyEditorValue();
+            validateDialogContent();
         }
     }
     
     private class LocalEditableComboBoxCellEditor extends ComboBoxCellEditor {
-    
         private Object[] values;
 
         public LocalEditableComboBoxCellEditor(Composite parent, String[] names, Object[] values) {
@@ -1023,20 +1055,21 @@ public class ParametersDialog extends TitleAreaDialog {
             this.values = values;
             setStyle(SWT.DROP_DOWN);
         }
-        
+
         @Override
         protected void fireApplyEditorValue() {
             cellEdited = true;
             super.fireApplyEditorValue();
+            validateDialogContent();
         }
-    
+
         @Override
         protected Object doGetValue() {
             Object name = ((CCombo)getControl()).getText();
             int index = ArrayUtils.indexOf(getItems(), name);
             return index == -1 ? name : values[index];
         }
-    
+
         @Override
         protected void doSetValue(Object value) {
             for (int i = 0; i < values.length; ++i) {
