@@ -6,6 +6,9 @@
 $MSGC_VERSION = "4.1";
 $MSGC_VERSION_HEX = "0x0401";
 
+sub processFile($);
+sub quote($);
+
 
 #
 # If no args, print usage
@@ -117,7 +120,7 @@ while (@ARGV)
         }
         # only glob if contains "*" or "?"
         if ($arg =~ /\*/ || $arg =~ /\?/) {
-            foreach $i (glob($arg)) {
+            foreach my $i (glob($arg)) {
                 push(@filenames, $i);
             }
         }
@@ -135,7 +138,7 @@ while (@ARGV)
 }
 
 $ret = 0;
-foreach $ii (@filenames)
+foreach my $ii (@filenames)
 {
     processFile($ii);
 }
@@ -146,7 +149,7 @@ exit $ret;
 # Processes a file. Note: information gets passed to other procs
 # (prepareForCodeGeneration, etc) in global variables
 #
-sub processFile()
+sub processFile($)
 {
     $filename = shift;
     print "processing $filename...\n" if $verbose;
@@ -477,7 +480,7 @@ sub processFile()
         print H " * <pre>\n$source\n * </pre>\n";
         print H " */\n";
         print H "enum $enumname {\n";
-        foreach $fieldname (@fieldlist)
+        foreach my $fieldname (@fieldlist)
         {
             print H "    $fieldname = $fval{$fieldname}";
             print H "," unless ($fieldname eq $fieldlist[$#fieldlist]);
@@ -488,7 +491,7 @@ sub processFile()
         print CC "EXECUTE_ON_STARTUP(\n";
         print CC "    cEnum *e = cEnum::find(\"$enumname\");\n";
         print CC "    if (!e) enums.getInstance()->add(e = new cEnum(\"$enumname\"));\n";
-        foreach $fieldname (@fieldlist)
+        foreach my $fieldname (@fieldlist)
         {
             print CC "    e->insert($fieldname, \"$fieldname\");\n";
         }
@@ -645,7 +648,7 @@ sub processFile()
                     next;
                 }
 
-                # properties, with @propertyname(value) syntax
+                # field properties, with @propertyname(value) syntax
                 %fieldprop = ();
                 $field =~ s|\@([_a-z0-9]+)\((.*?)\)|$fieldprop{$1}=$2;""|gsei;
                 $field =~ s|\@([_a-z0-9]+)|$fieldprop{$1}="true";""|gsei;
@@ -851,7 +854,7 @@ sub processFile()
 #  %maybe_c_str{fieldname}
 #
 
-sub prepareForCodeGeneration
+sub prepareForCodeGeneration()
 {
     # check base class and determine type of object
     if ($msgname eq 'cObject' || $msgname eq 'cNamedObject' || $msgname eq 'cOwnedObject') {
@@ -940,10 +943,10 @@ sub prepareForCodeGeneration
         $omitgetverb = 0;
     }
 
-    foreach $fieldname (@fieldlist)
+    foreach my $fieldname (@fieldlist)
     {
         if ($fisabstract{$fieldname} && !$gap) {
-            print "$filename: Error: abstract fields need '@customize(true)' property in '$msgname'\n"; $ret=1;
+            print "$filename: Error: abstract fields need '\@customize(true)' property in '$msgname'\n"; $ret=1;
         }
         if ($fprops{$fieldname}->{"enum"} ne '' && !grep(/^\Q$fprops{$fieldname}->{"enum"}\E$/,@enums)) {
             print "$filename: Error: undeclared enum '$fprops{$fieldname}->{enum}' used in '$msgname'\n"; $ret=1;
@@ -1136,7 +1139,7 @@ sub generateClass
     }
     print H "{\n";
     print H "  protected:\n";
-    foreach $fieldname (@fieldlist)
+    foreach my $fieldname (@fieldlist)
     {
         if ($fispointer{$fieldname}) {
             print "$filename: Error: pointers not supported yet in '$msgname'\n"; $ret=1; return;
@@ -1190,7 +1193,7 @@ sub generateClass
     print H "    virtual void parsimUnpack(cCommBuffer *b);\n";
     print H "\n";
     print H "    // field getter/setter methods\n";
-    foreach $fieldname (@fieldlist)
+    foreach my $fieldname (@fieldlist)
     {
         if ($fisabstract{$fieldname}) {
             $pure = ' = 0';
@@ -1249,7 +1252,7 @@ sub generateClass
     #print CC "    (void)static_cast<cObject *>(this); //sanity check\n" if ($fieldclasstype eq 'cobject');
     #print CC "    (void)static_cast<cNamedObject *>(this); //sanity check\n" if ($fieldclasstype eq 'cnamedobject');
     #print CC "    (void)static_cast<cOwnedObject *>(this); //sanity check\n" if ($fieldclasstype eq 'cownedobject');
-    foreach $fieldname (@baseclassfieldlist)
+    foreach my $fieldname (@baseclassfieldlist)
     {
         $capfieldname = $fieldname;
         $capfieldname =~ s/(.)(.*)/uc($1).$2/e;
@@ -1257,7 +1260,7 @@ sub generateClass
         print CC "    this->$setter($fval{$fieldname});\n";
     }
     print CC "\n" if (@baseclassfieldlist!=() && @fieldlist!=());
-    foreach $fieldname (@fieldlist)
+    foreach my $fieldname (@fieldlist)
     {
         if (!$fisabstract{$fieldname}) {
             if ($fisarray{$fieldname} && $farraysize{$fieldname} ne '') {
@@ -1292,7 +1295,7 @@ sub generateClass
     if ($classtype eq "cownedobject") {
         print CC "    setName(other.getName());\n";
     }
-    foreach $fieldname (@fieldlist)
+    foreach my $fieldname (@fieldlist)
     {
       if (!$fisabstract{$fieldname}) {
         if ($fisarray{$fieldname} && $farraysize{$fieldname} ne '') {
@@ -1312,7 +1315,7 @@ sub generateClass
     print CC "}\n\n";
     print CC "$msgclass\:\:~$msgclass()\n";
     print CC "{\n";
-    foreach $fieldname (@fieldlist)
+    foreach my $fieldname (@fieldlist)
     {
         if (!$fisabstract{$fieldname}) {
             if ($classtype{$ftype{$fieldname}} eq 'cownedobject') {
@@ -1338,7 +1341,7 @@ sub generateClass
     if ($msgbaseclass ne "") {
         print CC "    $msgbaseclass\:\:operator=(other);\n";
     }
-    foreach $fieldname (@fieldlist)
+    foreach my $fieldname (@fieldlist)
     {
         if (!$fisabstract{$fieldname}) {
             if ($fisarray{$fieldname} && $farraysize{$fieldname} ne '') {
@@ -1387,7 +1390,7 @@ sub generateClass
             print CC "    doPacking(b,($msgbaseclass&)*this);\n"; # this would do for cOwnedObject too, but the other is nicer
         }
     }
-    foreach $fieldname (@fieldlist)
+    foreach my $fieldname (@fieldlist)
     {
         if ($fprops{$fieldname}->{nopack} ne '') {
             # @nopack specified
@@ -1415,7 +1418,7 @@ sub generateClass
             print CC "    doUnpacking(b,($msgbaseclass&)*this);\n"; # this would do for cOwnedObject too, but the other is nicer
         }
     }
-    foreach $fieldname (@fieldlist)
+    foreach my $fieldname (@fieldlist)
     {
         if ($fprops{$fieldname}->{nopack} ne '') {
             # @nopack specified
@@ -1440,7 +1443,7 @@ sub generateClass
     }
     print CC "}\n\n";
 
-    foreach $fieldname (@fieldlist)
+    foreach my $fieldname (@fieldlist)
     {
         if (!$fisabstract{$fieldname}) {
             $isstruct = ($fkind{$fieldname} eq 'struct');
@@ -1523,7 +1526,7 @@ sub generateStruct
     }
     print H "{\n";
     print H "    $msgclass();\n";
-    foreach $fieldname (@fieldlist)
+    foreach my $fieldname (@fieldlist)
     {
         if ($fisarray{$fieldname}) {
             print H "    $datatype{$fieldname} $var{$fieldname}\[$farraysize{$fieldname}\];\n";
@@ -1538,12 +1541,12 @@ sub generateStruct
 
     print CC "$msgclass\:\:$msgclass()\n";
     print CC "{\n";
-    foreach $fieldname (@baseclassfieldlist)
+    foreach my $fieldname (@baseclassfieldlist)
     {
         print CC "    this->$fieldname = $fval{$fieldname};\n";
     }
     print CC "\n" if (@baseclassfieldlist!=() && @fieldlist!=());
-    foreach $fieldname (@fieldlist)
+    foreach my $fieldname (@fieldlist)
     {
         die "abstract field not possible in struct" if ($fisabstract{$fieldname});
         die "cOwnedObject field not possible in struct" if ($classtype{$ftype{$fieldname}} eq 'cownedobject');
@@ -1565,7 +1568,7 @@ sub generateStruct
     if ($msgbaseclass ne "") {
         print CC "    doPacking(b,($msgbaseclass&)a);\n";
     }
-    foreach $fieldname (@fieldlist)
+    foreach my $fieldname (@fieldlist)
     {
         if ($fisarray{$fieldname}) {
             print CC "    doPacking(b,a.$var{$fieldname},$farraysize{$fieldname});\n";
@@ -1580,7 +1583,7 @@ sub generateStruct
     if ($msgbaseclass ne "") {
         print CC "    doUnpacking(b,($msgbaseclass&)a);\n";
     }
-    foreach $fieldname (@fieldlist)
+    foreach my $fieldname (@fieldlist)
     {
         if ($fisarray{$fieldname}) {
             print CC "    doUnpacking(b,a.$var{$fieldname},$farraysize{$fieldname});\n";
@@ -1676,7 +1679,7 @@ sub generateDescriptorClass
         print CC "    return 0;\n";
     } else {
         print CC "    static unsigned int fieldTypeFlags[] = {\n";
-        for ($i=0; $i<$fieldcount; $i++)
+        for (my $i=0; $i<$fieldcount; $i++)
         {
             @flags = ();
             $fieldname = $fieldlist[$i];
@@ -1711,7 +1714,7 @@ sub generateDescriptorClass
         print CC "    return NULL;\n";
     } else {
         print CC "    static const char *fieldNames[] = {\n";
-        for ($i=0; $i<$fieldcount; $i++)
+        for (my $i=0; $i<$fieldcount; $i++)
         {
             print CC "        \"$fieldlist[$i]\",\n";
         }
@@ -1727,7 +1730,7 @@ sub generateDescriptorClass
     print CC "    cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     if ($fieldcount > 0) {
         print CC "    int base = basedesc ? basedesc->getFieldCount(object) : 0;\n";
-        for ($i=0; $i<$fieldcount; $i++)
+        for (my $i=0; $i<$fieldcount; $i++)
         {
             my $c = substr($fieldlist[$i], 0, 1);
             print CC "    if (fieldName[0]=='$c' && strcmp(fieldName, \"$fieldlist[$i]\")==0) return base+$i;\n";
@@ -1750,7 +1753,7 @@ sub generateDescriptorClass
         print CC "    return NULL;\n";
     } else {
         print CC "    static const char *fieldTypeStrings[] = {\n";
-        for ($i=0; $i<$fieldcount; $i++)
+        for (my $i=0; $i<$fieldcount; $i++)
         {
             print CC "        \"$ftype{$fieldlist[$i]}\",\n";
         }
@@ -1770,13 +1773,13 @@ sub generateDescriptorClass
     print CC "        field -= basedesc->getFieldCount(object);\n";
     print CC "    }\n";
     print CC "    switch (field) {\n";
-    for ($i=0; $i<$fieldcount; $i++)
+    for (my $i=0; $i<$fieldcount; $i++)
     {
-        $fieldname = $fieldlist[$i];
-        $ref = $fprops{$fieldname};
+        my $fieldname = $fieldlist[$i];
+        my $ref = $fprops{$fieldname};
         if (keys(%$ref) != ()) {
             print CC "        case $i:\n";
-            for $key (keys %$ref) {
+            for my $key (keys %$ref) {
                 $prop = quote($fprops{$fieldname}->{$key});
                 print CC "            if (!strcmp(propertyname,\"$key\")) return \"$prop\";\n";
             }
@@ -1799,7 +1802,7 @@ sub generateDescriptorClass
     print CC "    }\n";
     print CC "    $msgclass *pp = ($msgclass *)object; (void)pp;\n";
     print CC "    switch (field) {\n";
-    for ($i=0; $i<$fieldcount; $i++) {
+    for (my $i=0; $i<$fieldcount; $i++) {
         if ($fisarray{$fieldlist[$i]}) {
             if ($farraysize{$fieldlist[$i]} ne '') {
                 print CC "        case $i: return $farraysize{$fieldlist[$i]};\n";
@@ -1826,7 +1829,7 @@ sub generateDescriptorClass
     print CC "    }\n";
     print CC "    $msgclass *pp = ($msgclass *)object; (void)pp;\n";
     print CC "    switch (field) {\n";
-    for ($i=0; $i<$fieldcount; $i++)
+    for (my $i=0; $i<$fieldcount; $i++)
     {
         if ($fkind{$fieldlist[$i]} eq 'basic') {
             if ($classtype eq 'struct') {
@@ -1881,7 +1884,7 @@ sub generateDescriptorClass
     print CC "    }\n";
     print CC "    $msgclass *pp = ($msgclass *)object; (void)pp;\n";
     print CC "    switch (field) {\n";
-    for ($i=0; $i<$fieldcount; $i++)
+    for (my $i=0; $i<$fieldcount; $i++)
     {
         $fieldname = $fieldlist[$i];
         $editableprop = $fprops{$fieldname}->{editable};
@@ -1921,7 +1924,7 @@ sub generateDescriptorClass
     print CC "        field -= basedesc->getFieldCount(object);\n";
     print CC "    }\n";
     print CC "    switch (field) {\n";
-    for ($i=0; $i<$fieldcount; $i++)
+    for (my $i=0; $i<$fieldcount; $i++)
     {
         if ($fkind{$fieldlist[$i]} eq 'struct') {
             print CC "        case $i: return \"$ftype{$fieldlist[$i]}\"; break;\n";
@@ -1943,7 +1946,7 @@ sub generateDescriptorClass
     print CC "    }\n";
     print CC "    $msgclass *pp = ($msgclass *)object; (void)pp;\n";
     print CC "    switch (field) {\n";
-    for ($i=0; $i<$fieldcount; $i++)
+    for (my $i=0; $i<$fieldcount; $i++)
     {
         $fieldname = $fieldlist[$i];
 
