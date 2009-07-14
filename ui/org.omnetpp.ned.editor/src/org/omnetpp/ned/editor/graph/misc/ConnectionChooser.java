@@ -15,8 +15,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MenuItem;
 import org.omnetpp.common.util.StringUtils;
@@ -25,13 +27,16 @@ import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.ex.GateElementEx;
 import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
+import org.omnetpp.ned.model.ex.PropertyElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IConnectableElement;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.pojo.ConnectionElement;
 import org.omnetpp.ned.model.pojo.GateElement;
+import org.omnetpp.ned.model.pojo.LiteralElement;
 import org.omnetpp.ned.model.pojo.NEDElementTags;
+import org.omnetpp.ned.model.pojo.PropertyKeyElement;
 
 /**
  * Helper class that allows to choose a connection for a module pair (src, dest) via a Popup menu
@@ -41,12 +46,16 @@ import org.omnetpp.ned.model.pojo.NEDElementTags;
 public class ConnectionChooser {
     private static final String DEFAULT_INDEX = "0";
 
+    public static ConnectionElementEx open(CompoundModuleElementEx compound, ConnectionElementEx conn, boolean chooseSrc, boolean chooseDest) {
+        return open(compound, conn, chooseSrc, chooseDest, true, Display.getDefault().getCursorLocation());
+    }
+
     /**
      * This method asks the user which gates should be connected on the source and
      * destination module during connection creation. Returns a filled in connection element where
      * values can be copied from or NULL if the user has cancelled the selection popup menu.
      */
-    public static ConnectionElementEx open(CompoundModuleElementEx compound, ConnectionElementEx conn, boolean chooseSrc, boolean chooseDest) {
+    public static ConnectionElementEx open(CompoundModuleElementEx compound, ConnectionElementEx conn, boolean chooseSrc, boolean chooseDest, boolean useMoreSubmenu, Point location) {
         Assert.isNotNull(compound);
         Assert.isNotNull(conn);
         
@@ -66,61 +75,82 @@ public class ConnectionChooser {
 
         List<ConnectionElement> unusedList = new ArrayList<ConnectionElement>();
         List<ConnectionElement> usedList = new ArrayList<ConnectionElement>();
-        final Map<ConnectionElement, Integer> connectionRanks = new HashMap<ConnectionElement, Integer>();
+        final Map<ConnectionElement, List<String>> connectionLabelsMap = new HashMap<ConnectionElement, List<String>>();
         Comparator<ConnectionElement> connectionRankComparator = new Comparator<ConnectionElement>() {
             public int compare(ConnectionElement c1, ConnectionElement c2) {
-                return (int)connectionRanks.get(c2) - (int)connectionRanks.get(c1);
+                return connectionLabelsMap.get(c2).size() - connectionLabelsMap.get(c1).size();
             }
         };
 
         // gather unidirectional connections
         for (GateElementEx srcOut : srcOutModuleGates)
             for (GateElementEx destIn : destInModuleGates)
-                accumulateConnection(compound, conn, srcMod, srcOut, chooseSrc, destMod, destIn, chooseDest, unusedList, usedList, connectionRanks);
+                accumulateConnection(compound, conn, srcMod, srcOut, chooseSrc, destMod, destIn, chooseDest, unusedList, usedList, connectionLabelsMap);
 
         // gather bidirectional connections
         for (GateElementEx srcInOut : srcInOutModuleGates)
             for (GateElementEx destInOut : destInOutModuleGates)
-                accumulateConnection(compound, conn, srcMod, srcInOut, chooseSrc, destMod, destInOut, chooseDest, unusedList, usedList, connectionRanks);
+                accumulateConnection(compound, conn, srcMod, srcInOut, chooseSrc, destMod, destInOut, chooseDest, unusedList, usedList, connectionLabelsMap);
 
         unusedList = org.omnetpp.common.util.CollectionUtils.toSorted(unusedList, connectionRankComparator);
         usedList = org.omnetpp.common.util.CollectionUtils.toSorted(usedList, connectionRankComparator);
 
         BlockingMenu menu = new BlockingMenu(Display.getCurrent().getActiveShell(), SWT.NONE);
+        menu.setLocation(location);
 
-        // add the enabled items
-        boolean separatorAdded = unusedList.size() > 0 && (int)connectionRanks.get(unusedList.get(0)) == 0;
-        for (int i = 0; i < unusedList.size(); i++) {
-            ConnectionElement unusedConn = unusedList.get(i);
-
-            if (!separatorAdded && (int)connectionRanks.get(unusedConn) == 0) {
-                createSeparatorMenuItem(menu);
-                separatorAdded = true;
-            }
-
-            createMenuItem(menu, unusedConn);
-        }
-
+        // no gates
         List<String> noGates = new ArrayList<String>();
         if (srcMod.getGateDeclarations().size() == 0)   
             noGates.add(srcMod.getName());
         if (destMod.getGateDeclarations().size() == 0)   
             noGates.add(destMod.getName());
         if (noGates.size() > 0) {
-            MenuItem mi = menu.addMenuItem(SWT.PUSH);
-            mi.setText(StringUtils.join(noGates, " and ")+ (noGates.size() > 1 ? " have no gates" : " has no gates"));
-            mi.setEnabled(false);
+            MenuItem menuItem = menu.addMenuItem(SWT.PUSH);
+            menuItem.setText(StringUtils.join(noGates, " and ")+ (noGates.size() > 1 ? " have no gates" : " has no gates"));
+            menuItem.setEnabled(false);
+        }
+        else {
+            // add menu items for connections with matching gate labels
+            boolean menuItemAdded = false;
+            for (ConnectionElement connection : unusedList)
+                if (!connectionLabelsMap.get(connection).isEmpty()) {
+                    createMenuItem(menu, connection, connectionLabelsMap.get(connection));
+                    menuItemAdded = true;
+                }
+            for (ConnectionElement connection : usedList)
+                if (!connectionLabelsMap.get(connection).isEmpty()) {
+                    MenuItem menuItem = createMenuItem(menu, connection, connectionLabelsMap.get(connection));
+                    menuItem.setEnabled(false);
+                    menuItemAdded = true;
+                }
+            if (!menuItemAdded)
+                createDisabledMenuItem(menu, "No gates with matching labels property");
+          
+            // add menu items for connections without matching gate labels
+            createSeparatorMenuItem(menu);
+            menuItemAdded = false;
+            for (ConnectionElement connection : unusedList)
+                if (connectionLabelsMap.get(connection).isEmpty()) {
+                    if (!useMoreSubmenu)
+                        createMenuItem(menu, connection, connectionLabelsMap.get(connection));
+                    menuItemAdded = true;
+                }
+            for (ConnectionElement connection : usedList)
+                if (connectionLabelsMap.get(connection).isEmpty()) {
+                    if (!useMoreSubmenu) {
+                        MenuItem menuItem = createMenuItem(menu, connection, connectionLabelsMap.get(connection));
+                        menuItem.setEnabled(false);
+                    }
+                    menuItemAdded = true;
+                }
+            if (!menuItemAdded)
+                createDisabledMenuItem(menu, "No gates without matching labels property");
+            else if (useMoreSubmenu) {
+                MenuItem menuItem = menu.addMenuItem(SWT.PUSH);
+                menuItem.setText("More...");
+            }
         }
         
-        // add the used disabled items
-        if (unusedList.size() != 0 && usedList.size() != 0)
-            createSeparatorMenuItem(menu);
-
-        for (ConnectionElement usedConn : usedList) {
-            MenuItem mi = createMenuItem(menu, usedConn);
-            mi.setEnabled(false);
-        }
-
         // Note: the following code was an attempt to move the mouse over the menu right away,
         // but it does not work: it causes the first menu item to get accepted automatically
         //Point loc = Display.getCurrent().getCursorLocation();
@@ -130,12 +160,27 @@ public class ConnectionChooser {
         if (selection == null)
             return null;
 
-        return (ConnectionElementEx)selection.getData();
+        if (selection.getData() == null)
+            return open(compound, conn, chooseSrc, chooseDest, false, location);
+        else
+            return (ConnectionElementEx)selection.getData();
+    }
+    
+    private static ArrayList<String> getLabels(GateElementEx gate) {
+        PropertyElementEx propertyElement = gate.getProperties().get("labels");
+        ArrayList<String> labels = new ArrayList<String>();
+        
+        if (propertyElement != null)
+            for (PropertyKeyElement propertyKey = propertyElement.getFirstPropertyKeyChild(); propertyKey != null; propertyKey = propertyKey.getNextPropertyKeySibling())
+                for (LiteralElement literal = propertyKey.getFirstLiteralChild(); literal != null; literal = literal.getNextLiteralSibling())
+                    labels.add(literal.getValue());
+
+        return labels;
     }
     
     private static void collectGateLabels(GateElementEx gate, Set<String> labels) {
         if (gate != null) {
-            labels.addAll(gate.getLabels());
+            labels.addAll(getLabels(gate));
             INedTypeElement typeElement = gate.getSelfOrEnclosingTypeElement();
     
             if (typeElement != null) {
@@ -163,35 +208,39 @@ public class ConnectionChooser {
         }
     }
     
-    private static int countCommonGateLabels(GateElementEx srcGate, GateElementEx destGate) {
+    @SuppressWarnings("unchecked")
+    private static List<String> collectCommonGateLabels(GateElementEx srcGate, GateElementEx destGate) {
         Set<String> srcLabels = new HashSet<String>();
         Set<String> destLabels = new HashSet<String>();
         collectGateLabels(srcGate, srcLabels);
         collectGateLabels(destGate, destLabels);
-
-        int count = 0;
-        for (String srcLabel : srcLabels)
-            if (destLabels.contains(srcLabel))
-                count++;
-        //Debug.println(srcGate.getName() + ", " + destGate.getName() + ": " + count);
-        return count;
+        return (List<String>)CollectionUtils.intersection(srcLabels, destLabels);
     }
 
     /**
      * Creates a new menu item from the provided connection template, and adds it to the provided menu.
      * For convenience it returns the created item
      */
-    private static MenuItem createMenuItem(BlockingMenu menu, ConnectionElement conn) {
-        MenuItem mi = menu.addMenuItem(SWT.PUSH);
-        // store the connection template in the widget's extra data
-        mi.setData(conn);
-        String label = StringUtils.removeEnd(NEDTreeUtil.generateNedSource(conn, false).trim(), ";");
-        mi.setText(label);
-        return mi;
+    private static MenuItem createMenuItem(BlockingMenu menu, ConnectionElement connection, List<String> labels) {
+        MenuItem menuItem = menu.addMenuItem(SWT.PUSH);
+        menuItem.setData(connection);
+        String text = StringUtils.removeEnd(NEDTreeUtil.generateNedSource(connection, false).trim(), ";");
+        if (!labels.isEmpty())
+            text += " (" + StringUtils.join(labels, ", ", null) + ")";
+        menuItem.setText(text);
+        return menuItem;
     }
     
     private static MenuItem createSeparatorMenuItem(BlockingMenu menu) {
         return menu.addMenuItem(SWT.SEPARATOR);
+    }
+    
+    private static MenuItem createDisabledMenuItem(BlockingMenu menu, String text) {
+        MenuItem menuItem = menu.addMenuItem(SWT.PUSH);
+        menuItem.setText(text);
+        menuItem.setEnabled(false);
+        
+        return menuItem;
     }
 
     /**
@@ -212,7 +261,7 @@ public class ConnectionChooser {
                                              IConnectableElement srcModule, GateElementEx srcGate, boolean chooseSrc, 
                                              IConnectableElement destModule, GateElementEx destGate, boolean chooseDest,
                                              List<ConnectionElement> unusedList, List<ConnectionElement> usedList,
-                                             Map<ConnectionElement, Integer> connectionRanks) {
+                                             Map<ConnectionElement, List<String>> connectionLabelsMap) {
         // add the gate names to the menu item as additional widget data
         ConnectionElementEx templateConn =  createTemplateConnection(srcModule, srcGate, destModule, destGate);
         // we dont want to change src so we should use the current one from the model (connection)
@@ -239,7 +288,7 @@ public class ConnectionChooser {
             else
                 usedList.add(templateConn);
             
-            connectionRanks.put(templateConn, countCommonGateLabels(srcGate, destGate));
+            connectionLabelsMap.put(templateConn, collectCommonGateLabels(srcGate, destGate));
         }
     }
     /**
