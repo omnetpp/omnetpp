@@ -1,0 +1,77 @@
+%description:
+Test using types and enums from other namespaces as base class,
+member, and field enum.
+
+%file: test_globalnamespace.msg
+enum @TESTNAME@_Enum { FIRST=1; SECOND=2; THIRD=3; }
+class @TESTNAME@_Base { int i=9; int e=FIRST @enum(@TESTNAME@_Enum); }
+
+%file: test_othernamespace.msg
+namespace @TESTNAME@_other;
+enum Enum { FIRST=10; SECOND=20; THIRD=30; }
+class Base { int i=90; int e=SECOND @enum(Enum); }
+
+%file: test_samenamespace.msg
+namespace @TESTNAME@;
+enum Enum { FIRST=100; SECOND=200; THIRD=300; }
+class Base { int i=900; int e=THIRD @enum(Enum); }
+
+
+%file: test.msg
+
+cplusplus {{
+#include "test_globalnamespace_m.h"
+#include "test_othernamespace_m.h"
+#include "test_samenamespace_m.h"
+}}
+
+namespace @TESTNAME@;
+
+class ::@TESTNAME@_Base extends cObject;
+enum ::@TESTNAME@_Enum;
+
+class @TESTNAME@_other::Base extends cObject;
+enum @TESTNAME@_other::Enum;
+
+class Base extends cObject;  // same @TESTNAME@::Base
+enum Enum;  // same @TESTNAME@::Enum
+
+// use stuff from other namespace
+class Msg1 extends @TESTNAME@_other::Base {
+    @TESTNAME@_other::Base member;
+    int ee=@TESTNAME@_other::Enum::FIRST @enum(@TESTNAME@_other::Enum);
+};
+
+// use stuff from global namespace
+class Msg2 extends @TESTNAME@_Base {
+    @TESTNAME@_Base member;
+    int ee=@TESTNAME@_Enum::FIRST @enum(@TESTNAME@_Enum);
+};
+
+// use stuff from same namespace
+class Msg3 extends Base {
+    Base member;
+    int ee=Enum::FIRST @enum(Enum);
+};
+
+%includes:
+#include "test_m.h"
+#include "objectprinter.h"   // from src/envir
+
+%activity:
+
+::@TESTNAME@::Msg1 msg1;
+::@TESTNAME@::Msg2 msg2;
+::@TESTNAME@::Msg3 msg3;
+
+ev << ObjectPrinter().printObjectToString(&msg1);
+ev << ObjectPrinter().printObjectToString(&msg2);
+ev << ObjectPrinter().printObjectToString(&msg3);
+ev << ".\n";
+
+%contains: stdout
+@TESTNAME@::bar::Foo
+@TESTNAME@::bar::FooDescriptor
+@TESTNAME@::bar::StructDescriptor
+.
+
