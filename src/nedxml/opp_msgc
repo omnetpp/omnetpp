@@ -8,6 +8,10 @@ $MSGC_VERSION_HEX = "0x0401";
 
 sub processFile($);
 sub quote($);
+sub canonicalizeQName($$);
+sub prefixWithNamespace($$);
+sub lookupExistingClassName($$);
+sub lookupExistingEnumName($$);
 
 
 #
@@ -267,6 +271,8 @@ sub processFile($)
 
     # pre-register some OMNeT++ classes so that one doesn't need to announce them
     #
+    # @classes contains fully qualified names (ie with namespace); keys to the other hashes are fully qualified as well
+    #
     # note: $classtype values:
     #  'cownedobject' ==> subclasses from cOwnedObject
     #  'cnamedobject' ==> subclasses from cNamedObject but NOT from cOwnedObject
@@ -283,17 +289,34 @@ sub processFile($)
 
     @enums = ();
 
-    $reservedwords = 'abstract|allowunconnected|ancestor|anytype|bool|channelinterface|channel|char'
-        . '|class|connections|const|cplusplus|datarate|default|delay|display|double|do|endchannel'
-        . '|endfor|endmodule|endnetwork|endsimple|enum|error|extends|false|fields|for|function'
-        . '|gatesizes|gates|if|import|index|inout|input|interface|int|like|long|message|packet|module'
-        . '|network|nocheck|noncobject|cpolymorphic|numeric|on|output|package|parameters|properties|property'
-        . '|readonly|ref|short|simple|sizeof|string|struct|submodules|this|to|true|typename|types'
-        . '|unsigned|where|withcppclass|xmldoc|xml|float|int8|int16|int32|int64|uint8|uint16|uint32|uint64'
+    # some regex patterns
+    $RESERVED_WORDS = 'abstract|allowunconnected|bool|channelinterface|channel|char'
+        . '|class|connections|const|cplusplus|default|double|enum|extends|false|for'
+        . '|gates|if|import|index|inout|input|interface|int|like|long|message|packet|module'
+        . '|network|nocheck|noncobject|cpolymorphic|output|package|parameters|property'
+        . '|readonly|ref|short|simple|sizeof|string|struct|submodules|this|true|typename|types'
+        . '|unsigned|where|xmldoc|xml|float|int8|int16|int32|int64|uint8|uint16|uint32|uint64'
         . '|int8_t|int16_t|int32_t|int64_t|uint8_t|uint16_t|uint32_t|uint64_t';
 
-    # process embedded C++ blocks
-    while ($msg =~ s/cplusplus\s+{{(.*?)}};?//s)
+    $PRIMITIVE_TYPES = 'bool|float|double|simtime_t|string|((unsigned )?(char|short|int|long))|(u?int(8|16|32|64)(_t)?)';
+
+    $NAME = '([A-Za-z_][A-Za-z0-9_]*)';  # 1 group
+    $QNAME = "((::)?($NAME\:\:)*$NAME)"; # 5 groups
+
+    $CPLUSPLUS_BLOCK = '\bcplusplus\s+{{(.*?)}};?';  # 1 group (contains body)
+    $NAMESPACE_DECL = '\bnamespace\s+([A-Za-z0-9_:]+)\s*;'; # 1 group (contains name)
+
+    # generate cplusplus {{...}} blocks that are above the namespace declaration
+    if ($msg =~ /(.*)$NAMESPACE_DECL(.*)/s ) {
+        $cpp_above_namespace = $1;
+        $cpp_below_namespace = $3;
+    } else {
+        $cpp_above_namespace = $msg;
+        $cpp_below_namespace = '';
+    }
+    $msg =~ s/$CPLUSPLUS_BLOCK//sg; # not needed in $msg any more, remove them
+
+    while ($cpp_above_namespace =~ s/$CPLUSPLUS_BLOCK//s)
     {
         print H "// cplusplus {{ ... }} section:\n";
         print H "$1";
@@ -303,7 +326,7 @@ sub processFile($)
 
     # parse namespace decl
     $namespacename = "";
-    while ($msg =~ s/namespace\s+([A-Za-z0-9_:]+)\s*;//s)
+    while ($msg =~ s/$NAMESPACE_DECL//s)
     {
         if ($namespacename ne "") {
             print "$filename: Error: multiple namespace declarations\n"; $ret=1;
@@ -311,12 +334,14 @@ sub processFile($)
 
         $namespacename = $1;
 
-        if (!($namespacename =~ /^([A-Za-z_][A-Za-z0-9_]*::)*[A-Za-z_][A-Za-z0-9_]*$/)) {
+        if (!($namespacename =~ /^$QNAME$/)) {
             print "$filename: Error: wrong syntax in namespace name '$namespacename'\n"; $ret=1;
         }
+
+        $namespacename =~ s/^:://;
     }
     foreach my $i (split("::", $namespacename)) {
-        if ($i =~ /^($reservedwords)$/) {
+        if ($i =~ /^($RESERVED_WORDS)$/) {
             print "$filename: Error: namespace name '$i' is a reserved word\n"; $ret=1;
         }
         print H "namespace $i {\n";
@@ -325,6 +350,14 @@ sub processFile($)
     print H "\n";
     print CC "\n";
 
+    # cplusplus {{...}} blocks below the namespace declaration
+    while ($cpp_below_namespace =~ s/$CPLUSPLUS_BLOCK//s)
+    {
+        print H "// cplusplus {{ ... }} section:\n";
+        print H "$1";
+        print H "// end cplusplus\n\n";
+    }
+
     # parse imports
     while ($msg =~ s/import\s+(".*?");//s)
     {
@@ -332,11 +365,13 @@ sub processFile($)
     }
 
     # parse type announcements
-    while ($msg =~ s/(struct|class|class\s+noncobject|class\s+cpolymorphic|message|packet)\s+([A-Za-z_][A-Za-z0-9_]*)(\s+extends\s+([A-Za-z_][A-Za-z0-9_]*))?\s*;//s)
+    while ($msg =~ s/(struct|class|class\s+noncobject|class\s+cpolymorphic|message|packet)\s+$QNAME(\s+extends\s+$QNAME)?\s*;//s)
     {
         my $type0 = $1;
         my $class = $2;
-        my $baseclass = $4;
+        my $baseclass = $8;
+
+        my $classqname = canonicalizeQName($namespacename, $class);
 
         if ($type0 eq 'struct') {
             $type = 'struct';
@@ -347,65 +382,74 @@ sub processFile($)
                 $type = 'cownedobject';
             } elsif ($baseclass eq 'void') {
                 $type = 'foreign';
-            } elsif (grep(/^\Q$baseclass\E$/,@classes)) {
-                $type = $classtype{$baseclass};
             } else {
-                print "$filename: Error: '$class': unknown ancestor class '$baseclass'\n"; $ret=1;
-                $type = 'cobject';
+                $baseclassqname = lookupExistingClassName($namespacename, $baseclass);
+                if ($baseclassqname eq '') {
+                    print "$filename: Error: '$class': unknown ancestor class '$baseclass'\n"; $ret=1;
+                    $type = 'cobject';
+                } else {
+                    $type = $classtype{$baseclassqname};
+                }
             }
         } elsif ($type0 =~ /class\s+noncobject/) {
             $type = 'foreign';
-            if ($baseclass) {print "$filename: Error: '$class': the keywords noncobject and extends cannot be used together\n"; $ret=1;}
+            if ($baseclass) {
+                print "$filename: Error: '$class': the keywords noncobject and extends cannot be used together\n"; $ret=1;
+            }
         } elsif ($type0 =~ /class\s+cpolymorphic/) {
             $type = 'cobject';
-            if ($baseclass) {print "$filename: Error: '$class': the keywords cpolymorphic and extends cannot be used together\n"; $ret=1;}
+            if ($baseclass) {
+                 print "$filename: Error: '$class': the keywords cpolymorphic and extends cannot be used together\n"; $ret=1;
+            }
         } else {
             die 'invalid type';
         }
 
-        if ($class =~ /^($reservedwords)$/) {
+        if ($class =~ /^($RESERVED_WORDS)$/) {
             print "$filename: Error: type name '$class' is a reserved word\n"; $ret=1;
         }
-        if (grep(/^\Q$class\E$/,@classes)) {
-            if ($classtype{$class} ne $type) {
+        if (grep(/^\Q$classqname\E$/,@classes)) {
+            if ($classtype{$classqname} ne $type) {
                 print "$filename: Error: different declarations for '$class' are inconsistent\n"; $ret=1;
             }
         } else {
             #print "DBG: classtype{$type0 $class $baseclass} = $type\n";
-            $classtype{$class} = $type;
-            push(@classes, $class);
+            $classtype{$classqname} = $type;
+            push(@classes, $classqname);
         }
     }
 
     # parse enum announcements
-    while ($msg =~ s/enum\s+([A-Za-z_][A-Za-z0-9_]*)\s*;//s)
+    while ($msg =~ s/enum\s+$QNAME\s*;//s)
     {
         $enumname = $1;
+        $enumqname = canonicalizeQName($namespacename, $enumname);
 
-        if ($enumname =~ /^($reservedwords)$/) {
+        if ($enumname =~ /^($RESERVED_WORDS)$/) {
             print "$filename: Error: enum name '$enumname' is a reserved word\n"; $ret=1;
         }
 
-        if (grep(/^\Q$enumname\E$/,@classes)) {
+        if (grep(/^\Q$enumqname\E$/,@classes)) {
             print "$filename: Error: inconsistent declarations for '$enumname'\n"; $ret=1;
         } else {
-            push(@enums, $enumname);
+            push(@enums, $enumqname);
         }
     }
 
     # parse enums
-    while ($msg =~ s/enum\s+([A-Za-z0-9_ \t]+?)\s*{(.*?)};?//s)
+    while ($msg =~ s/enum\s+([A-Za-z0-9_: \t]+?)\s*{(.*?)};?//s)
     {
         $source = $&;
         $enumhdr = $1;
         $fields = $2;
 
-        if ($enumhdr =~ /^([^ \t\n]+?)\s*extends\s*([^ \t\n]+?)$/s)
+        if ($enumhdr =~ /^$NAME\s+extends\s+$QNAME$/s)
         {
-            $enumname = $1;
-            $baseenum = $2;
+            $enumname = "???";
+            $baseenum = '';
+            print "$filename: Error: '$enumhdr': enum inheritance is not supported\n"; $ret=1;
         }
-        elsif ($enumhdr =~ /^([^ \t\n]+?)$/s)
+        elsif ($enumhdr =~ /^$NAME$/s)
         {
             $enumname = $enumhdr;
             $baseenum = '';
@@ -418,7 +462,7 @@ sub processFile($)
             $baseenum = '';
         }
 
-        if ($enumname =~ /^($reservedwords)$/) {
+        if ($enumname =~ /^($RESERVED_WORDS)$/) {
             print "$filename: Error: enum name '$enumname' is a reserved word\n"; $ret=1;
         }
 
@@ -448,7 +492,7 @@ sub processFile($)
                 print "$filename: Error: missing identifier name in enum $enumname\n"; $ret=1;
             }
 
-            if ($fieldname =~ /^($reservedwords)$/) {
+            if ($fieldname =~ /^($RESERVED_WORDS)$/) {
                 print "$filename: Error: enum field name '$fieldname' is a reserved word\n"; $ret=1;
             }
 
@@ -472,7 +516,8 @@ sub processFile($)
         if (grep(/^\Q$enumname\E$/,@enums)) {
             print "$filename: Error: enum '$enumname' already defined\n"; $ret=1;
         }
-        push(@enums, $enumname);
+        $enumqname = prefixWithNamespace($namespacename, $enumname);
+        push(@enums, $enumqname);
 
         print H "/**\n";
         print H " * Enum generated from <tt>$filename</tt> by opp_msgc.\n";
@@ -489,26 +534,15 @@ sub processFile($)
         print H "};\n\n";
 
         print CC "EXECUTE_ON_STARTUP(\n";
-        print CC "    cEnum *e = cEnum::find(\"$enumname\");\n";
-        print CC "    if (!e) enums.getInstance()->add(e = new cEnum(\"$enumname\"));\n";
+        print CC "    cEnum *e = cEnum::find(\"$enumqname\");\n";
+        print CC "    if (!e) enums.getInstance()->add(e = new cEnum(\"$enumqname\"));\n";
+        # enum inheritance: we should add fields from base enum as well, but that could only be done when importing is in place
         foreach my $fieldname (@fieldlist)
         {
             print CC "    e->insert($fieldname, \"$fieldname\");\n";
         }
         print CC ");\n\n";
 
-        if ($baseenum ne '')
-        {
-            # add to base enum, too
-            print CC "EXECUTE_ON_STARTUP(\n";
-            print CC "    cEnum *e = cEnum::find(\"$baseenum\");\n";
-            print CC "    if (!e) enums.getInstance()->add(e = new cEnum(\"$baseenum\"));\n";
-            foreach $fieldname (@fieldlist)
-            {
-                print CC "    e->insert($fieldname, \"$fieldname\");\n";
-            }
-            print CC ");\n\n";
-        }
     }
 
     # parse message/packet/class/struct definitions
@@ -528,12 +562,12 @@ sub processFile($)
         undef %fprops;
         undef %props;
 
-        if ($msghdr =~ /^([^ \t\n]+?)\s*extends\s*([^ \t\n]+?)$/s)
+        if ($msghdr =~ /^$NAME\s+extends\s+$QNAME$/s)
         {
             $msgname = $1;
             $msgbase = $2;
         }
-        elsif ($msghdr =~ /^([^ \t\n]+?)$/s)
+        elsif ($msghdr =~ /^$NAME$/s)
         {
             $msgname = $msghdr;
             $msgbase = '';
@@ -546,7 +580,7 @@ sub processFile($)
             $msgbase = '';
         }
 
-        if ($msgname =~ /^($reservedwords)$/) {
+        if ($msgname =~ /^($RESERVED_WORDS)$/) {
             print "$filename: Error: type name '$msgname' is a reserved word\n"; $ret=1;
         }
 
@@ -596,7 +630,7 @@ sub processFile($)
                 $propvalue = $2;
                 $props{$propname} = $propvalue;
 
-                if ($propname =~ /^($reservedwords)$/) {
+                if ($propname =~ /^($RESERVED_WORDS)$/) {
                     print "$filename: Error: property name '$propname' is a reserved word\n"; $ret=1;
                 }
             }
@@ -628,7 +662,7 @@ sub processFile($)
                     $propvalue = $2;
                     $props{$propname} = $propvalue;
 
-                    if ($propname =~ /^($reservedwords)$/) {
+                    if ($propname =~ /^($RESERVED_WORDS)$/) {
                         print "$filename: Error: property name '$propname' is a reserved word\n"; $ret=1;
                     }
                 }
@@ -700,19 +734,33 @@ sub processFile($)
                 }
 
                 # 'fieldtype fieldname'...
-                if ($field =~ /^\s*([A-Za-z_][A-Za-z0-9_* \t\n]*[* \t\n])([A-Za-z_][A-Za-z0-9_]*)\s*$/s)
+                if ($field =~ /^\s*([A-Za-z_:][A-Za-z0-9_:* \t\n]*[* \t\n])$NAME\s*$/s)
                 {
                     $fieldtype = $1;
                     $fieldname = $2;
                     $fieldtype =~ s/\s*$//sg;
                     $fieldtype =~ s/\s+/ /sg;
 
+                    # pointer?
+                    if ($fieldtype =~ /^(.*?)\s*\*$/) {
+                        $fieldtype = $1;
+                        $fieldispointer = 1;
+                    } else {
+                        $fieldispointer = 0;
+                    }
+
+                    # various checks
+                    if ($fieldname =~ /^($RESERVED_WORDS)$/) {
+                        print "$filename: Error: field name '$fieldname' is a reserved word\n"; $ret=1;
+                    }
                     if ($isabstract && $fieldvalue ne '') {
                         print "$filename: Error: an abstract field cannot be assigned a value in '$msgname'\n"; $ret=1;
                     }
 
+                    # store
                     push(@fieldlist,$fieldname);
                     $ftype{$fieldname} = $fieldtype;
+                    $fispointer{$fieldname} = $fieldispointer;
                     $fval{$fieldname} = $fieldvalue;
                     $fisabstract{$fieldname} = $isabstract;
                     $fisarray{$fieldname} = $isarray;
@@ -724,10 +772,14 @@ sub processFile($)
                     }
                 }
                 # ...or just fieldname
-                elsif ($field =~ /^\s*([A-Za-z_][A-Za-z0-9_]*)\s*$/s)
+                elsif ($field =~ /^\s*$NAME\s*$/s)
                 {
                     $fieldname = $1;
 
+                    # various checks
+                    if ($fieldname =~ /^($RESERVED_WORDS)$/) {
+                        print "$filename: Error: field name '$fieldname' is a reserved word\n"; $ret=1;
+                    }
                     if ($isabstract) {
                         print "$filename: Error: an abstract field needs a type in '$msgname'\n"; $ret=1;
                     }
@@ -735,17 +787,13 @@ sub processFile($)
                         print "$filename: Error: cannot set array field of the base class in '$msgname'\n"; $ret=1;
                     }
                     if ($fieldenum ne '') {
-                        #FIXME double-check this!!!!
                         print "$filename: Error: cannot specify enum for base class field in '$msgname'\n"; $ret=1;
                     }
                     if ($fieldvalue eq '') {
                         print "$filename: Error: missing field type in '$msgname'\n"; $ret=1;
                     }
 
-                    if ($fieldname =~ /^($reservedwords)$/) {
-                        print "$filename: Error: field name '$fieldname' is a reserved word\n"; $ret=1;
-                    }
-
+                    # store
                     push(@baseclassfieldlist,$fieldname);
                     $fval{$fieldname} = $fieldvalue;
                     #print "$msgname baseclassfield=$fieldname value=$fval{$fieldname}\n";
@@ -832,6 +880,7 @@ sub processFile($)
 #  %props
 #
 #  %ftype{fieldname}
+#  %ftypeqname{fieldname}
 #  %fval{fieldname}
 #  %fisabstract{fieldname}
 #  %fispointer{$fieldname}
@@ -856,9 +905,12 @@ sub processFile($)
 
 sub prepareForCodeGeneration()
 {
+    $msgqname = prefixWithNamespace($namespacename, $msgname);
+    $msgbaseqname = lookupExistingClassName($namespacename, $msgbase);
+
     # check base class and determine type of object
-    if ($msgname eq 'cObject' || $msgname eq 'cNamedObject' || $msgname eq 'cOwnedObject') {
-        $classtype = $classtype{$msgname};  # only for sim_std.msg
+    if ($msgqname eq 'cObject' || $msgqname eq 'cNamedObject' || $msgqname eq 'cOwnedObject') {
+        $classtype = $classtype{$msgqname};  # only for sim_std.msg
     }
     elsif ($msgbase eq '') {
         if ($keyword eq 'message' or $keyword eq 'packet') {
@@ -871,8 +923,8 @@ sub prepareForCodeGeneration()
             die 'internal error';
         }
         # if announced earlier as noncpolymorphic, accept that.
-        if (grep(/^\Q$msgname\E$/,@classes)) {
-            if ($classtype{$msgname} eq 'foreign' && $classtype eq 'cobject') {
+        if (grep(/^\Q$msgqname\E$/,@classes)) {
+            if ($classtype{$msgqname} eq 'foreign' && $classtype eq 'cobject') {
                 $classtype = 'foreign';
             }
         }
@@ -880,24 +932,24 @@ sub prepareForCodeGeneration()
     elsif ($msgbase eq 'void') {
         $classtype = 'foreign';
     }
-    elsif (grep(/^\Q$msgbase\E$/,@classes)) {
-        $classtype = $classtype{$msgbase};
+    elsif ($msgbaseqname ne '') {
+        $classtype = $classtype{$msgbaseqname};
     }
     else {
-        print "$filename: Error: unknown base class '$msgbase'\n"; $ret=1;
+        print "$filename: Error: unknown base class '$msgbase' for '$msgname'\n"; $ret=1;
         $classtype = 'cobject';
     }
 
     # check earlier declarations and register this class
-    if (grep(/^\Q$msgname\E$/,@classes)) {
+    if (grep(/^\Q$msgqname\E$/,@classes)) {
         if (0) { # XXX add condition
             print "$filename: Error: attempt to redefine '$msgname'\n"; $ret=1;
-        } elsif ($classtype{$msgname} ne $classtype) {
+        } elsif ($classtype{$msgqname} ne $classtype) {
             print "$filename: Error: definition of '$msgname' inconsistent with earlier declaration(s)\n"; $ret=1;
         }
     } else {
-        push(@classes, $msgname);
-        $classtype{$msgname} = $classtype;
+        push(@classes, $msgqname);
+        $classtype{$msgqname} = $classtype;
     }
 
     #
@@ -906,6 +958,7 @@ sub prepareForCodeGeneration()
     $generate_class = $generate_classes && ($props{"codegen"} ne "false");
     $generate_descriptor = $generate_descriptors && ($props{"descriptor"} ne "false");
     $generate_setters_in_descriptor = $generate_setters_in_descriptors && ($props{"descriptor"} ne "readonly");
+
     if ($props{"customize"} eq "true") {
         $gap = 1;
         $msgclass = $msgname."_Base";
@@ -914,11 +967,11 @@ sub prepareForCodeGeneration()
     } else {
         $gap = 0;
         $msgclass = $msgname;
-        $realmsgclass = $msgclass;
+        $realmsgclass = $msgname;
         $msgdescclass = $msgclass."Descriptor";
     }
     if ($msgbase eq '') {
-        if ($msgname eq 'cObject') {
+        if ($msgqname eq 'cObject') {
             $msgbaseclass = '';
         } elsif ($keyword eq 'message') {
             $msgbaseclass = 'cMessage';
@@ -934,7 +987,7 @@ sub prepareForCodeGeneration()
     } elsif ($msgbase eq 'void') {
         $msgbaseclass = '';
     } else {
-        $msgbaseclass = $msgbase;
+        $msgbaseclass = $msgbaseqname;
     }
 
     if ($props{"omitGetVerb"} eq "true") {
@@ -948,12 +1001,18 @@ sub prepareForCodeGeneration()
         if ($fisabstract{$fieldname} && !$gap) {
             print "$filename: Error: abstract fields need '\@customize(true)' property in '$msgname'\n"; $ret=1;
         }
-        if ($fprops{$fieldname}->{"enum"} ne '' && !grep(/^\Q$fprops{$fieldname}->{"enum"}\E$/,@enums)) {
-            print "$filename: Error: undeclared enum '$fprops{$fieldname}->{enum}' used in '$msgname'\n"; $ret=1;
-        }
+
         if ($classtype{$ftype{$fieldname}} eq 'cownedobject' && ($classtype ne 'cownedobject')) {
             print "$filename: Error: cannot use cOwnedObject field '$ftype{$fieldname} $fieldname' in struct or non-cOwnedObject class '$msgname'\n"; $ret=1;
         }
+
+        # resolve enum namespace
+        my $enumname = $fprops{$fieldname}->{"enum"};
+        my $enumqname = lookupExistingEnumName($namespacename, $enumname);
+        if ($enumname ne '' && $enumqname eq '') {
+            print "$filename: Error: undeclared enum '$enumname' used in '$msgname'\n"; $ret=1;
+        }
+        $fprops{$fieldname}->{"enum"} = $enumqname; # need to modify the property in place
 
         # variable name
         if ($classtype eq 'struct') {
@@ -992,25 +1051,26 @@ sub prepareForCodeGeneration()
             }
         }
 
-        # pointer
-        if ($ftype{$fieldname} =~ /^(.*?)\s*\*$/) {
-            $ftype{$fieldname} = $1;
-            $fispointer{$fieldname} = 1;
-        } else {
-            $fispointer{$fieldname} = 0;
-        }
-
         $ftype = $ftype{$fieldname};
 
-        # data type, argument type, conversion to/from string...
-        if (grep(/^\Q$ftype\E$/,@classes)) {
-            $fkind{$fieldname} = 'struct';
-        } else {
+        # determine field data type
+        if ($ftype =~ /^$PRIMITIVE_TYPES$/) {
             $fkind{$fieldname} = 'basic';
+            $ftypeqname = '';
         }
+        else {
+            $fkind{$fieldname} = 'struct';
+            $ftypeqname = lookupExistingClassName($namespacename, $ftype);
+            if ($ftypeqname eq '') {
+                print "$filename: Error: unknown type $ftype for field '$fieldname' in '$msgname'\n"; $ret=1;
+            }
+        }
+        $ftypeqname{$fieldname} = $ftypeqname;
+
+        # data type, argument type, conversion to/from string...
         $maybe_c_str{$fieldname} = "";
         if ($fkind{$fieldname} eq 'struct') {
-            $datatype{$fieldname} = $ftype;
+            $datatype{$fieldname} = "\:\:$ftypeqname"; # fully qualified absolute namespace, to remove ambiguity of how we understood the type
             $argtype{$fieldname} = "const $ftype&";
             $rettype{$fieldname} = "$ftype&";
             $tostring{$fieldname} = "";
@@ -1069,13 +1129,7 @@ sub prepareForCodeGeneration()
                 $fval{$fieldname} = '""' unless ($fval{$fieldname} ne '');
                 $maybe_c_str{$fieldname} = ".c_str()";
             } else {
-                print "$filename: Error: unknown data type '$ftype' (is it struct?)\n"; $ret=1;
-                $datatype{$fieldname} = $ftype;
-                $argtype{$fieldname} = $ftype;
-                $rettype{$fieldname} = $ftype;
-                $tostring{$fieldname} = "";  # means op<<
-                $fromstring{$fieldname} = "";
-                $fval{$fieldname} = '0' unless ($fval{$fieldname} ne '');
+                die "internal error - unknown primitive data type '$ftype'";
             }
         } else {
             die 'internal error';
@@ -1135,7 +1189,7 @@ sub generateClass
     if ($msgbaseclass eq "") {
         print H "class $exportdef$msgclass\n";
     } else {
-        print H "class $exportdef$msgclass : public $msgbaseclass\n";
+        print H "class $exportdef$msgclass : public \:\:$msgbaseclass\n";  # make namespace explicit and absolute to disambiguate the way opp_msgc understood it
     }
     print H "{\n";
     print H "  protected:\n";
@@ -1628,7 +1682,7 @@ sub generateDescriptorClass
 
     # ctor, dtor
     $fieldcount = $#fieldlist+1;
-    my $qualifiedrealmsgclass = join("::", ($namespacename, $realmsgclass));
+    my $qualifiedrealmsgclass = prefixWithNamespace($namespacename, $realmsgclass);
     print CC "$msgdescclass\:\:$msgdescclass() : cClassDescriptor(\"$qualifiedrealmsgclass\", \"$msgbaseclass\")\n";
     print CC "{\n";
     print CC "}\n";
@@ -1755,7 +1809,7 @@ sub generateDescriptorClass
         print CC "    static const char *fieldTypeStrings[] = {\n";
         for (my $i=0; $i<$fieldcount; $i++)
         {
-            print CC "        \"$ftype{$fieldlist[$i]}\",\n";
+            print CC "        \"$ftype{$fieldlist[$i]}\",\n"; # note: NOT $fieldtypeqname! that's getFieldStructName()
         }
         print CC "    };\n";
         print CC "    return (field>=0 && field<$fieldcount) ? fieldTypeStrings[field] : NULL;\n";
@@ -1923,15 +1977,21 @@ sub generateDescriptorClass
     print CC "            return basedesc->getFieldStructName(object, field);\n";
     print CC "        field -= basedesc->getFieldCount(object);\n";
     print CC "    }\n";
-    print CC "    switch (field) {\n";
-    for (my $i=0; $i<$fieldcount; $i++)
-    {
-        if ($fkind{$fieldlist[$i]} eq 'struct') {
-            print CC "        case $i: return \"$ftype{$fieldlist[$i]}\"; break;\n";
+    if ($fieldcount == 0) {
+        print CC "    return NULL;\n";
+    } else {
+        print CC "    static const char *fieldStructNames[] = {\n";
+        for (my $i=0; $i<$fieldcount; $i++)
+        {
+            if ($fkind{$fieldlist[$i]} eq 'struct') {
+                print CC "        \"$ftypeqname{$fieldlist[$i]}\",\n";
+            } else {
+                print CC "        NULL,\n";
+            }
         }
+        print CC "    };\n";
+        print CC "    return (field>=0 && field<$fieldcount) ? fieldStructNames[field] : NULL;\n";
     }
-    print CC "        default: return NULL;\n";
-    print CC "    }\n";
     print CC "}\n";
     print CC "\n";
 
@@ -1990,4 +2050,106 @@ sub quote($)
     $text =~ s/"/\\"/g;
     return $text;
 }
+
+
+#
+# Prefixes the name with the current namespace
+#
+sub prefixWithNamespace($$)
+{
+    my($namespacename, $name) = @_;
+    if ($namespacename ne '' && $name ne '') {
+        # prefix it with namespace name
+        $name = $namespacename . "::" . $name;
+    }
+    return $name;
+}
+
+
+#
+# Plain names are always understood in the file's namespace;
+# names containing "::" are understood as absolute namespace.
+#
+# Examples:
+#
+# namespace foo;
+# class A;         // --> foo::A
+# class ::A;       // --> ::A  (returned as A)
+# class bar::A;    // --> ::bar::A (returned as bar::A)
+# class ::bar::A;  // --> ::bar::A (returned as bar::A)
+#
+sub canonicalizeQName($$)
+{
+    my($namespacename, $name) = @_;
+    if ($name =~ /::/) {
+        # leave it, just remove reading "::"
+        $name =~ s/^:://;
+    }
+    elsif ($namespacename ne '' && $name ne '') {
+        # prefix it with namespace name
+        $name = $namespacename . "::" . $name;
+    }
+    return $name;
+}
+
+#
+# Look up the given class in @classes, allowing some flexibility with
+# namespaces, and return the name from @classes. Return '' if not found.
+#
+sub lookupExistingClassName($$)
+{
+    my($namespacename, $name) = @_;
+    if ($name eq '') {
+        return $name;
+    }
+    if ($name =~ /::/) {
+        # contains "::" -- user means explicitly qualified name
+        $name =~ s/^:://;  # remove leading "::"
+        if (grep(/^\Q$name\E$/,@classes)) {
+            return $name;
+        } else {
+            return '';  # "not found"
+        }
+    }
+
+    my $qname = prefixWithNamespace($namespacename, $name);
+    if (grep(/^\Q$qname\E$/,@classes)) {
+        return $qname; # found it in our namespace
+    }
+    elsif (grep(/^\Q$name\E$/,@classes)) {
+        return $name; # found it in the global namespace
+    }
+    return '';  # "not found"
+}
+
+#
+# Like lookupExistingClassName(), but use @enums instead of @classes
+#
+sub lookupExistingEnumName($$)
+{
+    my($namespacename, $name) = @_;
+    if ($name eq '') {
+        return $name;
+    }
+    if ($name =~ /::/) {
+        # contains "::" -- user means explicitly qualified name
+        $name =~ s/^:://;  # remove leading "::"
+        if (grep(/^\Q$name\E$/,@enums)) {
+            return $name;
+        } else {
+            return '';  # "not found"
+        }
+    }
+
+    my $qname = prefixWithNamespace($namespacename, $name);
+    if (grep(/^\Q$qname\E$/,@enums)) {
+        return $qname; # found it in our namespace
+    }
+    elsif (grep(/^\Q$name\E$/,@enums)) {
+        return $name; # found it in the global namespace
+    }
+    return '';  # "not found"
+}
+
+
 
