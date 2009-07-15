@@ -5,7 +5,7 @@ Check dynamic array of cOwnedObject-based class as message member
 
 namespace @TESTNAME@;
 
-class cQueue;
+class ::cQueue;
 
 message MyMessage
 {

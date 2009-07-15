@@ -39,19 +39,19 @@ enum Enum;  // same @TESTNAME@::Enum
 // use stuff from other namespace
 class Msg1 extends @TESTNAME@_other::Base {
     @TESTNAME@_other::Base member;
-    int ee=@TESTNAME@_other::Enum::FIRST @enum(@TESTNAME@_other::Enum);
+    int ee=@TESTNAME@_other::FIRST @enum(@TESTNAME@_other::Enum);
 };
 
 // use stuff from global namespace
 class Msg2 extends @TESTNAME@_Base {
     @TESTNAME@_Base member;
-    int ee=@TESTNAME@_Enum::FIRST @enum(@TESTNAME@_Enum);
+    int ee=::FIRST @enum(@TESTNAME@_Enum);
 };
 
 // use stuff from same namespace
 class Msg3 extends Base {
     Base member;
-    int ee=Enum::FIRST @enum(Enum);
+    int ee=@TESTNAME@::FIRST @enum(Enum);
 };
 
 %includes:
@@ -70,8 +70,56 @@ ev << ObjectPrinter().printObjectToString(&msg3);
 ev << ".\n";
 
 %contains: stdout
-@TESTNAME@::bar::Foo
-@TESTNAME@::bar::FooDescriptor
-@TESTNAME@::bar::StructDescriptor
+class @TESTNAME@::Msg1 {
+    string fullName = ""
+    string fullPath = ""
+    string info = ""
+    string detailedInfo = ""
+    int i = 90
+    int e = 20
+    @TESTNAME@_other::Base member = struct @TESTNAME@_other::Base {
+        string fullName = ""
+        string fullPath = ""
+        string info = ""
+        string detailedInfo = ""
+        int i = 90
+        int e = 20
+    }
+    int ee = 10
+}
+class @TESTNAME@::Msg2 {
+    string fullName = ""
+    string fullPath = ""
+    string info = ""
+    string detailedInfo = ""
+    int i = 9
+    int e = 1
+    @TESTNAME@_Base member = struct @TESTNAME@_Base {
+        string fullName = ""
+        string fullPath = ""
+        string info = ""
+        string detailedInfo = ""
+        int i = 9
+        int e = 1
+    }
+    int ee = 1
+}
+class @TESTNAME@::Msg3 {
+    string fullName = ""
+    string fullPath = ""
+    string info = ""
+    string detailedInfo = ""
+    int i = 900
+    int e = 300
+    Base member = struct @TESTNAME@::Base {
+        string fullName = ""
+        string fullPath = ""
+        string info = ""
+        string detailedInfo = ""
+        int i = 900
+        int e = 300
+    }
+    int ee = 100
+}
 .
 

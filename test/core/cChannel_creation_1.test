@@ -1,0 +1,68 @@
+%description:
+test dynamic channel creation: basic positive test
+
+%file: test.ned
+import testlib.*;
+
+simple Creator {
+    gates:
+        output out;
+}
+
+network Test {
+    submodules:
+        creator: Creator;
+        sink: Sink;
+        dump: Dump;
+    connections allowunconnected:
+}
+
+%file: creator.cc
+#include <omnetpp.h>
+namespace @TESTNAME@ {
+
+class Creator : public cSimpleModule {
+  public:
+    Creator() : cSimpleModule(16384) { }
+    void activity();
+};
+
+Define_Module(Creator);
+
+void Creator::activity() {
+    cChannelType *channelType = cChannelType::get("testlib.TestChannel");
+    cChannel *channel = channelType->create("ch");
+
+    cModule *sink = getParentModule()->getSubmodule("sink");
+    gate("out")->connectTo(sink->gate("in"), channel);
+
+    send(new cMessage("hello"), "out");
+}
+
+};
+
+%exitcode: 0
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+    submodules:
+        module Test.creator: Creator {
+            gates:
+                out: --> sink.in, testlib.TestChannel
+        }
+        module Test.sink: testlib.Sink {
+            gates:
+                in: <-- creator.out, testlib.TestChannel
+        }
+}
+
+%contains-regex: stdout
+.*Initializing channel Test.creator.out.ch, stage 0
+.*Initializing TestChannel Test.creator.out.ch
+.*TestChannel delivering msg: hello
+.*Sink received msg hello
+.*TestChannel finishing, msgs: 1
+.*Sink finishing, received msgs: 1
+

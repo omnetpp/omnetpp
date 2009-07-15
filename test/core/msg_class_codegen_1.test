@@ -3,11 +3,11 @@ Test @codegen(false) property
 
 %file: test.msg
 
-namespace @TESTNAME@;
-
 cplusplus {{
 #include "test.h"
 }}
+
+namespace @TESTNAME@;
 
 class Foo
 {

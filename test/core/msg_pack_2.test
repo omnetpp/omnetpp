@@ -47,15 +47,15 @@ ev << ObjectPrinter("*:declaredOn(@TESTNAME@::TestMessage)",4).printObjectToStri
 %contains: stdout
 isBufferEmpty:1
 class @TESTNAME@::TestMessage {
-    @TESTNAME@::Struct s = struct @TESTNAME@::Struct {
+    Struct s = struct @TESTNAME@::Struct {
         int i = 53
         string s = Hello
     }
-    @TESTNAME@::Struct sv[0] = struct @TESTNAME@::Struct {
+    Struct sv[0] = struct @TESTNAME@::Struct {
         int i = 17
         string s = first
     }
-    @TESTNAME@::Struct sv[1] = struct @TESTNAME@::Struct {
+    Struct sv[1] = struct @TESTNAME@::Struct {
         int i = 26
         string s = second
     }

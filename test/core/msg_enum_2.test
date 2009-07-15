@@ -1,17 +1,9 @@
 %description:
-Check "inheritance" with enums
+Check enum without namespace
 
 %file: test.msg
 
-namespace @TESTNAME@;
-
-enum Base
-{
-    CSIGA = 10;
-    BIGE = 12;
-};
-
-enum MyEnum extends Base
+enum @TESTNAME@_MyEnum
 {
     ECC = 1;
     PECC = 2;
@@ -20,21 +12,18 @@ enum MyEnum extends Base
 
 %includes:
 #include "test_m.h"
+#include "../lib/testutil.h"
 
 %activity:
-
 #define PRINT(X) ev << #X << ":" << X << endl
 
-PRINT(CSIGA);
-PRINT(BIGE);
-
+printEnum(opp_typename(typeid(@TESTNAME@_MyEnum)));
 PRINT(ECC);
 PRINT(PECC);
 PRINT(KIMEHECC);
 
 %contains: stdout
-CSIGA:10
-BIGE:12
+@TESTNAME@_MyEnum: ECC=1, KIMEHECC=5, PECC=2
 ECC:1
 PECC:2
 KIMEHECC:5

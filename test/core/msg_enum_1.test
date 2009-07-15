@@ -14,16 +14,18 @@ enum MyEnum
 
 %includes:
 #include "test_m.h"
+#include "../lib/testutil.h"
 
 %activity:
-
 #define PRINT(X) ev << #X << ":" << X << endl
 
+printEnum(opp_typename(typeid(MyEnum)));
 PRINT(ECC);
 PRINT(PECC);
 PRINT(KIMEHECC);
 
 %contains: stdout
+msg_enum_1::MyEnum: ECC=1, KIMEHECC=5, PECC=2
 ECC:1
 PECC:2
 KIMEHECC:5

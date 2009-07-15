@@ -15,7 +15,7 @@ class MyClass
     int bb;
 }
 
-class cQueue;
+class ::cQueue;
 
 message Base
 {

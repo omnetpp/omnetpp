@@ -1,0 +1,16 @@
+%description:
+test dynamic module creation:
+- calling buildInside() twice should cause an error
+
+%activity:
+cModuleType *sinkType = cModuleType::get("testlib.Sink");
+cModule *sink = sinkType->create("sink", this);
+sink->finalizeParameters();
+sink->buildInside();
+sink->buildInside(); // ==> error
+
+%exitcode: 1
+
+%contains: stdout
+buildInside() already called for this module
+
