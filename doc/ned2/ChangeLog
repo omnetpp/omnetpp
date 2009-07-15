@@ -1,0 +1,10 @@
+2009-07-15  Andras Varga
+
+	* ned2.dtd: 
+	- added field properties for msg files
+	- field enum-name eliminated (it is represented as property)
+	- class/struct/message "extends-name" properties changed to CDATA,
+	  so that they can hold namespace prefix
+
+2009-03-12  ------ omnetpp-4.0 released ------
+

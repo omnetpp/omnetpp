@@ -224,32 +224,32 @@
 
 <!ELEMENT struct-decl (comment*)>
 <!ATTLIST struct-decl
-     name                NMTOKEN   #REQUIRED>
+     name                CDATA     #REQUIRED>
 
 <!ELEMENT class-decl (comment*)>
 <!ATTLIST class-decl
-     name                NMTOKEN   #REQUIRED
+     name                CDATA     #REQUIRED
      is-cobject      (true|false)  "false"
-     extends-name        NMTOKEN   #IMPLIED>
+     extends-name        CDATA     #IMPLIED>
 
 <!ELEMENT message-decl (comment*)>
 <!ATTLIST message-decl
-     name                NMTOKEN   #REQUIRED>
+     name                CDATA     #REQUIRED>
 
 <!ELEMENT packet-decl (comment*)>
 <!ATTLIST packet-decl
-     name                NMTOKEN   #REQUIRED>
+     name                CDATA     #REQUIRED>
 
 <!ELEMENT enum-decl (comment*)>
 <!ATTLIST enum-decl
-     name                NMTOKEN   #REQUIRED>
+     name                CDATA     #REQUIRED>
 
 <!-- Enums -->
 
 <!ELEMENT enum (comment*, enum-fields?)>
 <!ATTLIST enum
      name                NMTOKEN   #REQUIRED
-     extends-name        NMTOKEN   #IMPLIED
+     extends-name        CDATA     #IMPLIED
      source-code         CDATA     #IMPLIED>
 
 <!ELEMENT enum-fields (comment*, enum-field*)>
@@ -264,28 +264,28 @@
 <!ELEMENT message (comment*, (property|field)*)>
 <!ATTLIST message
      name                NMTOKEN   #REQUIRED
-     extends-name        NMTOKEN   #IMPLIED
+     extends-name        CDATA     #IMPLIED
      source-code         CDATA     #IMPLIED>
 
 <!ELEMENT packet (comment*, (property|field)*)>
 <!ATTLIST packet
      name                NMTOKEN   #REQUIRED
-     extends-name        NMTOKEN   #IMPLIED
+     extends-name        CDATA     #IMPLIED
      source-code         CDATA     #IMPLIED>
 
 <!ELEMENT class (comment*, (property|field)*)>
 <!ATTLIST class
      name                NMTOKEN   #REQUIRED
-     extends-name        NMTOKEN   #IMPLIED
+     extends-name        CDATA     #IMPLIED
      source-code         CDATA     #IMPLIED>
 
 <!ELEMENT struct (comment*, (property|field)*)>
 <!ATTLIST struct
      name                NMTOKEN   #REQUIRED
-     extends-name        NMTOKEN   #IMPLIED
+     extends-name        CDATA     #IMPLIED
      source-code         CDATA     #IMPLIED>
 
-<!ELEMENT field (comment*)>
+<!ELEMENT field (comment*, property*)>
 <!ATTLIST field
      name                NMTOKEN   #REQUIRED
      data-type           CDATA     #IMPLIED
@@ -293,7 +293,6 @@
      is-readonly     (true|false)  "false"
      is-vector       (true|false)  "false"
      vector-size         CDATA     #IMPLIED
-     enum-name           NMTOKEN   #IMPLIED
      default-value       CDATA     #IMPLIED>
 
 <!--
