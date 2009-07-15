@@ -17,9 +17,18 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.draw2d.FigureCanvas;
+import org.eclipse.draw2d.FocusEvent;
+import org.eclipse.draw2d.FocusListener;
+import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.ImageFigure;
+import org.eclipse.draw2d.Label;
+import org.eclipse.draw2d.MouseEvent;
+import org.eclipse.draw2d.MouseListener;
 import org.eclipse.draw2d.PositionConstants;
+import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
+import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.ConnectionEditPart;
 import org.eclipse.gef.ContextMenuProvider;
 import org.eclipse.gef.DefaultEditDomain;
@@ -36,6 +45,9 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CommandStack;
 import org.eclipse.gef.editparts.ScalableRootEditPart;
 import org.eclipse.gef.editparts.ZoomManager;
+import org.eclipse.gef.internal.ui.palette.editparts.DrawerEditPart;
+import org.eclipse.gef.internal.ui.palette.editparts.DrawerFigure;
+import org.eclipse.gef.palette.PaletteDrawer;
 import org.eclipse.gef.palette.PaletteRoot;
 import org.eclipse.gef.ui.actions.ActionRegistry;
 import org.eclipse.gef.ui.actions.AlignmentAction;
@@ -45,8 +57,10 @@ import org.eclipse.gef.ui.actions.MatchWidthAction;
 import org.eclipse.gef.ui.actions.ZoomInAction;
 import org.eclipse.gef.ui.actions.ZoomOutAction;
 import org.eclipse.gef.ui.palette.PaletteContextMenuProvider;
+import org.eclipse.gef.ui.palette.PaletteEditPartFactory;
 import org.eclipse.gef.ui.palette.PaletteViewer;
 import org.eclipse.gef.ui.palette.PaletteViewerProvider;
+import org.eclipse.gef.ui.palette.editparts.PaletteAnimator;
 import org.eclipse.gef.ui.parts.GraphicalEditorWithFlyoutPalette;
 import org.eclipse.gef.ui.parts.GraphicalViewerKeyHandler;
 import org.eclipse.gef.ui.parts.ScrollingGraphicalViewer;
@@ -58,9 +72,15 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
@@ -77,6 +97,7 @@ import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.IConstants;
 import org.omnetpp.common.editor.ShowViewAction;
+import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.ui.SizeConstraint;
@@ -136,6 +157,7 @@ import org.omnetpp.ned.model.pojo.SubmoduleElement;
  *
  * @author rhornig
  */
+@SuppressWarnings("restriction")
 public class GraphicalNedEditor
 	extends GraphicalEditorWithFlyoutPalette
 	implements INEDChangeListener
@@ -244,6 +266,16 @@ public class GraphicalNedEditor
         return new PaletteViewerProvider(getEditDomain()) {
             @Override
             protected void configurePaletteViewer(PaletteViewer viewer) {
+                viewer.setEditPartFactory(new PaletteEditPartFactory() {
+                    @Override
+                    protected EditPart createDrawerEditPart(EditPart parentEditPart, Object model) {
+                        PaletteDrawer drawer = (PaletteDrawer)model;
+                        if (drawer.getLabel().equals("Submodules"))
+                            return new LocalDrawerEditPart(drawer);
+                        else
+                            return super.createDrawerEditPart(parentEditPart, model);
+                    }
+                });
                 viewer.setContextMenu(new PaletteContextMenuProvider(viewer) {
                     @Override
                     public void buildContextMenu(IMenuManager menu) {
@@ -784,7 +816,138 @@ public class GraphicalNedEditor
     	for (Object child : editPart.getChildren())
     		dumpEditPartHierarchy((EditPart)child, indent+"  ");
     }
-  
+
+    /**
+     * This class provides the submodule type filtering mechanism within the palette.
+     * 
+     * @author levy
+     */
+    private final class LocalDrawerEditPart extends DrawerEditPart {
+        private final class LocalDrawerFigure extends DrawerFigure {
+            private final int ICON_WIDTH = 16;
+            private final int ICON_SPACING = 2;
+            private String oldText;
+            private Text text;
+            // NOTE: this figure is not in the figure hierarchy due to difficulties with the superclass and its layout managers 
+            private IFigure filterFigure;
+
+            private LocalDrawerFigure(Composite control) {
+                super(control);
+
+                text = new Text(control, SWT.BORDER | SWT.SINGLE);
+                text.setVisible(false);
+                text.setToolTipText("Filter submodules (regular expression)");
+                text.addModifyListener(new ModifyListener() {
+                    public void modifyText(ModifyEvent e) {
+                        paletteManager.setSubmodulesFilter(text.getText());
+                        paletteRefreshJob.restartTimer();
+                    }
+                });
+                text.addFocusListener(new org.eclipse.swt.events.FocusAdapter() {
+                    public void focusLost(org.eclipse.swt.events.FocusEvent e) {
+                        text.setVisible(false);
+                    }
+                });
+                text.addKeyListener(new KeyAdapter() {
+                    public void keyPressed(KeyEvent e) {
+                        if (e.keyCode == '\r')
+                            text.setVisible(false);
+                        else if (e.keyCode == SWT.ESC) {
+                            text.setVisible(false);
+                            text.setText(oldText);
+                        }
+                    }
+                });
+
+                filterFigure = new ImageFigure(ImageFactory.getImage("_internal/toolbar/filter"));
+                filterFigure.setToolTip(new Label("Hello"));
+                filterFigure.addMouseListener(new MouseListener() {
+                    public void mouseDoubleClicked(MouseEvent me) {
+                    }
+
+                    public void mousePressed(MouseEvent me) {
+                        toggleEditFilter();
+                    }
+
+                    public void mouseReleased(MouseEvent me) {
+                    }
+                });
+            }
+
+            @Override
+            public IFigure getToolTip() {
+                return createToolTip();
+            }
+
+            @Override
+            public IFigure findMouseEventTargetAt(int x, int y) {
+                // NOTE: work around mouse handling for the filter figure
+                if (filterFigure.containsPoint(x, y))
+                    return filterFigure;
+                else
+                    return super.findMouseEventTargetAt(x, y);
+            }
+
+            @Override
+            public void paint(Graphics graphics) {
+                // NOTE: this way it follows resizing
+                updateTextBounds();
+                updateFilterFigureBounds();
+                super.paint(graphics);
+                filterFigure.paint(graphics);
+            }
+
+            private void toggleEditFilter() {
+                text.setVisible(!text.getVisible());
+
+                if (text.getVisible())
+                    Display.getDefault().asyncExec(new Runnable() {
+                        public void run() {
+                            text.setSelection(0, text.getText().length());
+                            text.setFocus();
+                            oldText = text.getText();
+                        }
+                    });
+            }
+
+            private void updateTextBounds() {
+                Dimension d = getCollapseToggle().getSize();
+                text.setSize(d.width - 3 * (ICON_WIDTH + ICON_SPACING), d.height - 2 * ICON_SPACING);
+                Point location = getBounds().getLocation();
+                translateToAbsolute(location);
+                text.setLocation(location.x + ICON_WIDTH + ICON_SPACING * 2, location.y + ICON_SPACING);
+            }
+
+            private void updateFilterFigureBounds() {
+                Rectangle area = getCollapseToggle().getClientArea();
+                filterFigure.setBounds(new Rectangle(area.x + area.width - ICON_WIDTH * 2, area.y, ICON_WIDTH, area.height));
+            }
+        }
+
+        private LocalDrawerEditPart(PaletteDrawer drawer) {
+            super(drawer);
+        }
+
+        @Override
+        public IFigure createFigure() {
+            DrawerFigure figure = new LocalDrawerFigure((Composite)getViewer().getControl());
+            
+            // the following is copied over from the superclass'es constructor
+            figure.setExpanded(getDrawer().isInitiallyOpen());
+            figure.setPinned(getDrawer().isInitiallyPinned());
+
+            figure.getCollapseToggle().addFocusListener(new FocusListener.Stub() {
+                public void focusGained(FocusEvent fe) {
+                    getViewer().select(LocalDrawerEditPart.this);
+                }
+            });
+            
+            figure.getScrollpane().getContents().addLayoutListener((PaletteAnimator)getViewer().getEditPartRegistry().get(PaletteAnimator.class));
+            
+            return figure;
+        }
+    }
+
     private class LocalCommandStack extends CommandStack {
         boolean insideBeginEnd = false;
         

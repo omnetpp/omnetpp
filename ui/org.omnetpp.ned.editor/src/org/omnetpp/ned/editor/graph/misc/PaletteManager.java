@@ -85,6 +85,7 @@ public class PaletteManager {
     private static ShortNameComparator shortNameComparator = new ShortNameComparator();
     
     // state
+    protected String submodulesFilter;
     protected GraphicalNedEditor hostingEditor;
     protected PaletteRoot nedPalette;
     protected PaletteContainer toolsContainer;
@@ -117,10 +118,30 @@ public class PaletteManager {
         toolsContainer = createTools();
         typesContainer = new PaletteDrawer("Types", ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_FOLDER));
         typesContainer.setInitialState(PaletteDrawer.INITIAL_STATE_PINNED_OPEN);
-        String txtFiltered = excludedPackages.isEmpty() ? "" : NBSP+"(filtered)";
-        defaultContainer = new PaletteDrawer("Submodules"+txtFiltered, ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_FOLDER));
+        defaultContainer = new PaletteDrawer(getSubmodulesDrawerLabel(), ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_FOLDER));
 
         refresh();
+    }
+
+    public String getSubmodulesFilter() {
+        return submodulesFilter;
+    }
+
+    public void setSubmodulesFilter(String text) {
+        if (StringUtils.isEmpty(text))
+            submodulesFilter = null;
+        else
+            submodulesFilter = text;
+        
+        defaultContainer.setLabel(getSubmodulesDrawerLabel());
+    }
+    
+    private boolean matchesSubmodulesFilter(String fullyQualifiedName) {
+        return submodulesFilter == null || fullyQualifiedName.matches(".*?" + submodulesFilter + ".*?");
+    }
+
+    private String getSubmodulesDrawerLabel() {
+        return (StringUtils.isEmpty(submodulesFilter) ? "Submodules" : "Filter: " + submodulesFilter) + (excludedPackages.isEmpty() ? "" : "!");
     }
 
     public PaletteRoot getRootPalette() {
@@ -206,6 +227,7 @@ public class PaletteManager {
 //            container.setChildren(container.getChildren());
        
         nedPalette.setChildren(drawers);
+        defaultContainer.setLabel(getSubmodulesDrawerLabel());
         
 //        long dt = System.currentTimeMillis() - startMillis;
 //        Debug.println("paletteManager refresh(): " + dt + "ms");
@@ -321,7 +343,7 @@ public class PaletteManager {
 
             // add it if package filter matches
             String packageName = typeElement.getContainingNedFileElement().getPackage();
-            if (!excludedPackages.contains(packageName)) {
+            if (!excludedPackages.contains(packageName) && matchesSubmodulesFilter(typeElement.getNEDTypeInfo().getFullyQualifiedName())) {
 
                 // determine which palette group it belongs to or put it into the default
                 PropertyElement property = typeElement.getNEDTypeInfo().getProperties().get(GROUP_PROPERTY);
@@ -509,5 +531,4 @@ public class PaletteManager {
 
         return entries;
     }
-
 }
