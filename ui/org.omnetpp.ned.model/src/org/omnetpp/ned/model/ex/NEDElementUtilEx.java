@@ -7,6 +7,7 @@
 
 package org.omnetpp.ned.model.ex;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -19,6 +20,7 @@ import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.NEDElementConstants;
 import org.omnetpp.ned.model.interfaces.IHasDisplayString;
 import org.omnetpp.ned.model.interfaces.IHasName;
+import org.omnetpp.ned.model.interfaces.IHasProperties;
 import org.omnetpp.ned.model.interfaces.IHasType;
 import org.omnetpp.ned.model.interfaces.IModuleTypeElement;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
@@ -377,4 +379,20 @@ public class NEDElementUtilEx implements NEDElementTags, NEDElementConstants {
 		comment.setContent(content);
 		return comment;
 	}
+
+    public static ArrayList<String> getProperties(IHasProperties element, String name) {
+        PropertyElementEx propertyElement = element.getProperties().get(name);
+        ArrayList<String> properties = new ArrayList<String>();
+        
+        if (propertyElement != null)
+            for (PropertyKeyElement propertyKey = propertyElement.getFirstPropertyKeyChild(); propertyKey != null; propertyKey = propertyKey.getNextPropertyKeySibling())
+                for (LiteralElement literal = propertyKey.getFirstLiteralChild(); literal != null; literal = literal.getNextLiteralSibling())
+                    properties.add(literal.getValue());
+
+        return properties;
+    }
+
+    public static ArrayList<String> getLabels(IHasProperties element) {
+        return getProperties(element, "labels");
+    }
 }

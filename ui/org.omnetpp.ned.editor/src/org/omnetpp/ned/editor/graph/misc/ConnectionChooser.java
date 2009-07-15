@@ -27,16 +27,14 @@ import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.ex.GateElementEx;
 import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
-import org.omnetpp.ned.model.ex.PropertyElementEx;
+import org.omnetpp.ned.model.ex.NEDElementUtilEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IConnectableElement;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.pojo.ConnectionElement;
 import org.omnetpp.ned.model.pojo.GateElement;
-import org.omnetpp.ned.model.pojo.LiteralElement;
 import org.omnetpp.ned.model.pojo.NEDElementTags;
-import org.omnetpp.ned.model.pojo.PropertyKeyElement;
 
 /**
  * Helper class that allows to choose a connection for a module pair (src, dest) via a Popup menu
@@ -165,22 +163,10 @@ public class ConnectionChooser {
         else
             return (ConnectionElementEx)selection.getData();
     }
-    
-    private static ArrayList<String> getLabels(GateElementEx gate) {
-        PropertyElementEx propertyElement = gate.getProperties().get("labels");
-        ArrayList<String> labels = new ArrayList<String>();
-        
-        if (propertyElement != null)
-            for (PropertyKeyElement propertyKey = propertyElement.getFirstPropertyKeyChild(); propertyKey != null; propertyKey = propertyKey.getNextPropertyKeySibling())
-                for (LiteralElement literal = propertyKey.getFirstLiteralChild(); literal != null; literal = literal.getNextLiteralSibling())
-                    labels.add(literal.getValue());
 
-        return labels;
-    }
-    
     private static void collectGateLabels(GateElementEx gate, Set<String> labels) {
         if (gate != null) {
-            labels.addAll(getLabels(gate));
+            labels.addAll(NEDElementUtilEx.getLabels(gate));
             INedTypeElement typeElement = gate.getSelfOrEnclosingTypeElement();
     
             if (typeElement != null) {

@@ -563,7 +563,7 @@ public class GraphicalNedEditor
 		return ((FileEditorInput)getEditorInput()).getFile();
 	}
 
-	protected NedFileElementEx getModel() {
+	public NedFileElementEx getModel() {
 		return NEDResourcesPlugin.getNEDResources().getNedFileElement(getFile());
 	}
 

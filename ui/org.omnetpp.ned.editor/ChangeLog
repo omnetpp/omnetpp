@@ -1,3 +1,8 @@
+2009-07-15  Levente M‚sz ros
+
+	* Palette provides regexp based substring filtering for qualified NED type names and @label properties.
+	* Palette sorts submodules based on what is actually already used, what could be connected and @contains properties.
+
 2009-07-14  Levente M‚sz ros
 
 	* Added support for matching @labels properties of gates in the connection chooser popup menu.

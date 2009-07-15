@@ -19,22 +19,36 @@ import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.gef.palette.*;
+import org.eclipse.gef.palette.CombinedTemplateCreationEntry;
+import org.eclipse.gef.palette.ConnectionCreationToolEntry;
+import org.eclipse.gef.palette.MarqueeToolEntry;
+import org.eclipse.gef.palette.PaletteContainer;
+import org.eclipse.gef.palette.PaletteDrawer;
+import org.eclipse.gef.palette.PaletteEntry;
+import org.eclipse.gef.palette.PaletteGroup;
+import org.eclipse.gef.palette.PaletteRoot;
+import org.eclipse.gef.palette.PaletteSeparator;
+import org.eclipse.gef.palette.PaletteStack;
+import org.eclipse.gef.palette.PanningSelectionToolEntry;
+import org.eclipse.gef.palette.ToolEntry;
 import org.eclipse.gef.requests.CreationFactory;
 import org.eclipse.gef.tools.MarqueeSelectionTool;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
-
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.ned.core.NEDResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
+import org.omnetpp.ned.model.ex.GateElementEx;
 import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
 import org.omnetpp.ned.model.ex.NEDElementUtilEx;
+import org.omnetpp.ned.model.ex.NedFileElementEx;
+import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IChannelKindTypeElement;
 import org.omnetpp.ned.model.interfaces.IHasDisplayString;
 import org.omnetpp.ned.model.interfaces.IHasName;
@@ -83,6 +97,64 @@ public class PaletteManager {
         }
     }
     private static ShortNameComparator shortNameComparator = new ShortNameComparator();
+
+    protected class SubmoduleComparator implements Comparator<INEDTypeInfo> {
+        private int calculatePoints(INEDTypeInfo typeInfo) {
+            if (typeInfo == null)
+                return 0; // for separators
+            else {
+                int point = 0;
+                INedTypeElement element = typeInfo.getNEDElement();
+                HashSet<String> gateLabels = new HashSet<String>();
+                HashSet<String> containsLabels = new HashSet<String>();
+                NedFileElementEx editedElement = hostingEditor.getModel();
+
+                for (INedTypeElement nedTypeElement : editedElement.getTopLevelTypeNodes()) {
+                    List<String> labels = NEDElementUtilEx.getProperties(nedTypeElement, "contains");
+                    
+                    if (nedTypeElement instanceof CompoundModuleElementEx) {
+                        CompoundModuleElementEx compoundModule = (CompoundModuleElementEx)nedTypeElement;
+    
+                        if (labels.isEmpty() && compoundModule.isNetwork())
+                            labels.add("node");
+    
+                        for (SubmoduleElementEx submodule : compoundModule.getSubmodules()) {
+                            if (submodule.getNEDTypeInfo() == element.getNEDTypeInfo())
+                                point += 5; // used as a submodule
+                            
+                            for (GateElementEx gate : submodule.getNEDTypeInfo().getGateDeclarations().values())
+                                gateLabels.addAll(NEDElementUtilEx.getLabels(gate));
+                        }
+                    }
+    
+                    containsLabels.addAll(labels);
+                }
+    
+                for (String label : NEDElementUtilEx.getLabels(element))
+                    if (containsLabels.contains(label))
+                        point += 10; // matching @contains and @labels
+    
+                for (GateElementEx gate : typeInfo.getGateDeclarations().values())
+                    for (String label : NEDElementUtilEx.getLabels(gate))
+                        if (gateLabels.contains(label))
+                            point += 1; // matching gate @labels
+    
+                return point;
+            }
+        }
+        
+        private String getName(INEDTypeInfo typeInfo) {
+            return typeInfo == null ? "" : typeInfo.getName();
+        }
+
+        public int compare(INEDTypeInfo first, INEDTypeInfo second) {
+            int firstPoint = calculatePoints(first);
+            int secondPoint = calculatePoints(second);
+            String firstShortName = getName(first);
+            String secondShortName = getName(second);
+            return secondPoint - firstPoint + StringUtils.dictionaryCompare(firstShortName, secondShortName);
+        }
+    }
     
     // state
     protected String submodulesFilter;
@@ -136,8 +208,19 @@ public class PaletteManager {
         defaultContainer.setLabel(getSubmodulesDrawerLabel());
     }
     
-    private boolean matchesSubmodulesFilter(String fullyQualifiedName) {
-        return submodulesFilter == null || fullyQualifiedName.matches(".*?" + submodulesFilter + ".*?");
+    private boolean matchesSubmodulesFilter(INedTypeElement element) {
+        if (submodulesFilter == null)
+            return true;
+        else {
+            String regexp = ".*?" + submodulesFilter + ".*?";
+            String fullyQualifiedName = element.getNEDTypeInfo().getFullyQualifiedName();
+    
+            for (String label : NEDElementUtilEx.getLabels(element))
+                if (label.matches(regexp))
+                    return true;
+            
+            return fullyQualifiedName.matches(regexp);
+        }
     }
 
     private String getSubmodulesDrawerLabel() {
@@ -168,7 +251,7 @@ public class PaletteManager {
 
         // connection and type creation tools
         result.putAll(createConnectionTools());
-        Map<String, ToolEntry> innerChannelTypes = createInnerTypes(file, false);
+        Map<String, PaletteEntry> innerChannelTypes = createInnerTypes(file, false);
         if (innerChannelTypes.size() > 0) {
             result.putAll(innerChannelTypes);
         }
@@ -181,7 +264,7 @@ public class PaletteManager {
         result.putAll(createTypesEntries());
 
         // submodule creation tools
-        Map<String, ToolEntry> innerModuleTypes = createInnerTypes(file, true);
+        Map<String, PaletteEntry> innerModuleTypes = createInnerTypes(file, true);
         if (innerModuleTypes.size() > 0) {
             result.putAll(innerModuleTypes);
             result.put("separator", new PaletteSeparator());
@@ -301,7 +384,7 @@ public class PaletteManager {
      * Iterates over all top level (module types) types in a NED file and gathers all NEDTypes from all components.
      * Returns a Container containing all types in this file.
      */
-    private static Map<String, ToolEntry> createInnerTypes(IFile file, boolean moduleTypes) {
+    private static Map<String, PaletteEntry> createInnerTypes(IFile file, boolean moduleTypes) {
         List<String> innerTypeNames = new ArrayList<String>();
         
         // add module and module interface *inner* types of NED types in this file
@@ -310,9 +393,10 @@ public class PaletteManager {
             	for (INedTypeElement typeElement : ((INedTypeElement)element).getNEDTypeInfo().getInnerTypes().values())
             		if (typeElement instanceof IModuleKindTypeElement && moduleTypes || typeElement instanceof IChannelKindTypeElement && !moduleTypes)
             		    innerTypeNames.add(typeElement.getNEDTypeInfo().getFullyQualifiedName());
+        // TODO: use SubmoduleComparator to sort the inner types
         Collections.sort(innerTypeNames, shortNameComparator);
             		    
-        Map<String, ToolEntry> entries = new LinkedHashMap<String, ToolEntry>();
+        Map<String, PaletteEntry> entries = new LinkedHashMap<String, PaletteEntry>();
         for(String fqName : innerTypeNames) {
             INEDTypeInfo toplevelOrInnerNedTypeInfo = NEDResourcesPlugin.getNEDResources().getToplevelOrInnerNedType(fqName, file.getProject());
             if (toplevelOrInnerNedTypeInfo != null)
@@ -325,38 +409,44 @@ public class PaletteManager {
      * Creates several submodule drawers using currently parsed types,
      * and using the GROUP property as the drawer name.
      */
-    protected Map<String, ToolEntry> createSubmodules(IProject contextProject) {
-        Map<String, ToolEntry> entries = new LinkedHashMap<String, ToolEntry>();
+    protected Map<String, PaletteEntry> createSubmodules(IProject contextProject) {
+        Map<String, PaletteEntry> entries = new LinkedHashMap<String, PaletteEntry>();
 
         // get all the possible type names in alphabetical order
-        List<String> typeNames = new ArrayList<String>();
-        typeNames.addAll(NEDResourcesPlugin.getNEDResources().getModuleQNames(contextProject));
-        typeNames.addAll(NEDResourcesPlugin.getNEDResources().getModuleInterfaceQNames(contextProject));
-        Collections.sort(typeNames, shortNameComparator);
+        List<INEDTypeInfo> typeInfos = new ArrayList<INEDTypeInfo>();
+        for (INEDTypeInfo typeInfo : NEDResourcesPlugin.getNEDResources().getNedTypes(contextProject))
+            if (NEDResources.MODULE_FILTER.matches(typeInfo) || NEDResources.MODULEINTERFACE_FILTER.matches(typeInfo))
+                typeInfos.add(typeInfo);
+        typeInfos.add(null); // representing the separator
+        Collections.sort(typeInfos, new SubmoduleComparator());
 
-        for (String name : typeNames) {
-            INedTypeElement typeElement = NEDResourcesPlugin.getNEDResources().getToplevelNedType(name, contextProject).getNEDElement();
-
-            // skip this type if it is a network
-            if (typeElement instanceof CompoundModuleElementEx && ((CompoundModuleElementEx)typeElement).isNetwork())
-                continue;
-
-            // add it if package filter matches
-            String packageName = typeElement.getContainingNedFileElement().getPackage();
-            if (!excludedPackages.contains(packageName) && matchesSubmodulesFilter(typeElement.getNEDTypeInfo().getFullyQualifiedName())) {
-
-                // determine which palette group it belongs to or put it into the default
-                PropertyElement property = typeElement.getNEDTypeInfo().getProperties().get(GROUP_PROPERTY);
-                String group = (property == null) ? "" : NEDElementUtilEx.getPropertyValue(property);
-
-                addToolEntry(typeElement, group, entries);
+        for (INEDTypeInfo typeInfo : typeInfos) {
+            if (typeInfo == null)
+                entries.put("separator", new PaletteSeparator());
+            else {
+                INedTypeElement typeElement = typeInfo.getNEDElement();
+    
+                // skip this type if it is a network
+                if (typeElement instanceof CompoundModuleElementEx && ((CompoundModuleElementEx)typeElement).isNetwork())
+                    continue;
+    
+                // add it if package filter matches
+                String packageName = typeElement.getContainingNedFileElement().getPackage();
+                if (!excludedPackages.contains(packageName) && matchesSubmodulesFilter(typeElement)) {
+    
+                    // determine which palette group it belongs to or put it into the default
+                    PropertyElement property = typeElement.getNEDTypeInfo().getProperties().get(GROUP_PROPERTY);
+                    String group = (property == null) ? "" : NEDElementUtilEx.getPropertyValue(property);
+    
+                    addToolEntry(typeElement, group, entries);
+                }
             }
         }
 
         return entries;
     }
 
-    private static void addToolEntry(INedTypeElement typeElement, String group, Map<String, ToolEntry> entries) {
+    private static void addToolEntry(INedTypeElement typeElement, String group, Map<String, PaletteEntry> entries) {
         String fullyQualifiedTypeName = typeElement.getNEDTypeInfo().getFullyQualifiedName();
 
         String key = fullyQualifiedTypeName;
