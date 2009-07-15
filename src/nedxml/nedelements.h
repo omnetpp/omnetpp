@@ -2125,7 +2125,7 @@ class NEDXML_API CplusplusElement : public NEDElement
  * <pre>
  * \<!ELEMENT struct-decl (comment*)\>
  * \<!ATTLIST struct-decl
- *      name                NMTOKEN   \#REQUIRED\>
+ *      name                CDATA     \#REQUIRED\>
  * </pre>
  * 
  * @ingroup Data
@@ -2172,9 +2172,9 @@ class NEDXML_API StructDeclElement : public NEDElement
  * <pre>
  * \<!ELEMENT class-decl (comment*)\>
  * \<!ATTLIST class-decl
- *      name                NMTOKEN   \#REQUIRED
+ *      name                CDATA     \#REQUIRED
  *      is-cobject      (true|false)  "false"
- *      extends-name        NMTOKEN   \#IMPLIED\>
+ *      extends-name        CDATA     \#IMPLIED\>
  * </pre>
  * 
  * @ingroup Data
@@ -2227,7 +2227,7 @@ class NEDXML_API ClassDeclElement : public NEDElement
  * <pre>
  * \<!ELEMENT message-decl (comment*)\>
  * \<!ATTLIST message-decl
- *      name                NMTOKEN   \#REQUIRED\>
+ *      name                CDATA     \#REQUIRED\>
  * </pre>
  * 
  * @ingroup Data
@@ -2274,7 +2274,7 @@ class NEDXML_API MessageDeclElement : public NEDElement
  * <pre>
  * \<!ELEMENT packet-decl (comment*)\>
  * \<!ATTLIST packet-decl
- *      name                NMTOKEN   \#REQUIRED\>
+ *      name                CDATA     \#REQUIRED\>
  * </pre>
  * 
  * @ingroup Data
@@ -2321,7 +2321,7 @@ class NEDXML_API PacketDeclElement : public NEDElement
  * <pre>
  * \<!ELEMENT enum-decl (comment*)\>
  * \<!ATTLIST enum-decl
- *      name                NMTOKEN   \#REQUIRED\>
+ *      name                CDATA     \#REQUIRED\>
  * </pre>
  * 
  * @ingroup Data
@@ -2369,7 +2369,7 @@ class NEDXML_API EnumDeclElement : public NEDElement
  * \<!ELEMENT enum (comment*, enum-fields?)\>
  * \<!ATTLIST enum
  *      name                NMTOKEN   \#REQUIRED
- *      extends-name        NMTOKEN   \#IMPLIED
+ *      extends-name        CDATA     \#IMPLIED
  *      source-code         CDATA     \#IMPLIED\>
  * </pre>
  * 
@@ -2520,7 +2520,7 @@ class NEDXML_API EnumFieldElement : public NEDElement
  * \<!ELEMENT message (comment*, (property|field)*)\>
  * \<!ATTLIST message
  *      name                NMTOKEN   \#REQUIRED
- *      extends-name        NMTOKEN   \#IMPLIED
+ *      extends-name        CDATA     \#IMPLIED
  *      source-code         CDATA     \#IMPLIED\>
  * </pre>
  * 
@@ -2577,7 +2577,7 @@ class NEDXML_API MessageElement : public NEDElement
  * \<!ELEMENT packet (comment*, (property|field)*)\>
  * \<!ATTLIST packet
  *      name                NMTOKEN   \#REQUIRED
- *      extends-name        NMTOKEN   \#IMPLIED
+ *      extends-name        CDATA     \#IMPLIED
  *      source-code         CDATA     \#IMPLIED\>
  * </pre>
  * 
@@ -2634,7 +2634,7 @@ class NEDXML_API PacketElement : public NEDElement
  * \<!ELEMENT class (comment*, (property|field)*)\>
  * \<!ATTLIST class
  *      name                NMTOKEN   \#REQUIRED
- *      extends-name        NMTOKEN   \#IMPLIED
+ *      extends-name        CDATA     \#IMPLIED
  *      source-code         CDATA     \#IMPLIED\>
  * </pre>
  * 
@@ -2691,7 +2691,7 @@ class NEDXML_API ClassElement : public NEDElement
  * \<!ELEMENT struct (comment*, (property|field)*)\>
  * \<!ATTLIST struct
  *      name                NMTOKEN   \#REQUIRED
- *      extends-name        NMTOKEN   \#IMPLIED
+ *      extends-name        CDATA     \#IMPLIED
  *      source-code         CDATA     \#IMPLIED\>
  * </pre>
  * 
@@ -2745,7 +2745,7 @@ class NEDXML_API StructElement : public NEDElement
  * GENERATED CLASS. Represents the \<field\> XML element in memory. DTD declaration:
  * 
  * <pre>
- * \<!ELEMENT field (comment*)\>
+ * \<!ELEMENT field (comment*, property*)\>
  * \<!ATTLIST field
  *      name                NMTOKEN   \#REQUIRED
  *      data-type           CDATA     \#IMPLIED
@@ -2753,7 +2753,6 @@ class NEDXML_API StructElement : public NEDElement
  *      is-readonly     (true|false)  "false"
  *      is-vector       (true|false)  "false"
  *      vector-size         CDATA     \#IMPLIED
- *      enum-name           NMTOKEN   \#IMPLIED
  *      default-value       CDATA     \#IMPLIED\>
  * </pre>
  * 
@@ -2768,7 +2767,6 @@ class NEDXML_API FieldElement : public NEDElement
     bool isReadonly;
     bool isVector;
     std::string vectorSize;
-    std::string enumName;
     std::string defaultValue;
   public:
     /** @name Constructors, destructor */
@@ -2806,13 +2804,12 @@ class NEDXML_API FieldElement : public NEDElement
     void setIsVector(bool val)  {isVector = val;}
     const char * getVectorSize() const  {return vectorSize.c_str();}
     void setVectorSize(const char * val)  {vectorSize = val;}
-    const char * getEnumName() const  {return enumName.c_str();}
-    void setEnumName(const char * val)  {enumName = val;}
     const char * getDefaultValue() const  {return defaultValue.c_str();}
     void setDefaultValue(const char * val)  {defaultValue = val;}
 
     virtual FieldElement *getNextFieldSibling() const;
     virtual CommentElement *getFirstCommentChild() const;
+    virtual PropertyElement *getFirstPropertyChild() const;
     //@}
 };
 

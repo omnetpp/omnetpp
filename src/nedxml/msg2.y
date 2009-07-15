@@ -18,7 +18,7 @@
 %token MESSAGE PACKET CLASS STRUCT ENUM NONCOBJECT
 %token EXTENDS FIELDS PROPERTIES ABSTRACT READONLY
 
-%token NAME
+%token NAME DOUBLECOLON
 %token INTCONSTANT REALCONSTANT STRINGCONSTANT CHARCONSTANT
 %token TRUE_ FALSE_
 %token BOOLTYPE CHARTYPE SHORTTYPE INTTYPE LONGTYPE DOUBLETYPE UNSIGNED_ STRINGTYPE
@@ -43,7 +43,8 @@
 
 %start msgfile
 
-/*FIXME accept namespace prefix in fwd decls, base classes etc!!! */
+/* requires at least bison 1.50 (tested with bison 2.1); otherwise won't parse "class B extends A;" syntax */
+%glr-parser
 
 %{
 
@@ -162,16 +163,21 @@ definition
  * namespace declaration
  */
 namespace_decl
-        : NAMESPACE namespacename ';'
+        : NAMESPACE qname0 ';'
                 {
                   ps.namespacedecl = (NamespaceElement *)createElementWithTag(NED_NAMESPACE, ps.msgfile );
                   ps.namespacedecl->setName(toString(@2));
                   storeBannerAndRightComments(ps.namespacedecl,@1,@2);
                 }
 
-namespacename
-        : namespacename ':' ':' NAME
+qname0
+        : qname0 DOUBLECOLON NAME
         | NAME
+        ;
+
+qname
+        : DOUBLECOLON qname0
+        | qname0
         ;
 
 /*
@@ -190,7 +196,7 @@ cplusplus
  * Forward declarations
  */
 struct_decl
-        : STRUCT NAME ';'
+        : STRUCT qname ';'
                 {
                   ps.structdecl = (StructDeclElement *)createElementWithTag(NED_STRUCT_DECL, ps.msgfile );
                   ps.structdecl->setName(toString(@2));
@@ -199,21 +205,21 @@ struct_decl
         ;
 
 class_decl
-        : CLASS NAME ';'
+        : CLASS qname ';'
                 {
                   ps.classdecl = (ClassDeclElement *)createElementWithTag(NED_CLASS_DECL, ps.msgfile );
                   ps.classdecl->setName(toString(@2));
                   ps.classdecl->setIsCobject(true);
                   storeBannerAndRightComments(ps.classdecl,@1,@2);
                 }
-        | CLASS NONCOBJECT NAME ';'
+        | CLASS NONCOBJECT qname ';'
                 {
                   ps.classdecl = (ClassDeclElement *)createElementWithTag(NED_CLASS_DECL, ps.msgfile );
                   ps.classdecl->setIsCobject(false);
                   ps.classdecl->setName(toString(@3));
                   storeBannerAndRightComments(ps.classdecl,@1,@3);
                 }
-        | CLASS NAME EXTENDS NAME ';'
+        | CLASS qname EXTENDS qname ';'
                 {
                   ps.classdecl = (ClassDeclElement *)createElementWithTag(NED_CLASS_DECL, ps.msgfile );
                   ps.classdecl->setIsCobject(true);
@@ -224,7 +230,7 @@ class_decl
         ;
 
 message_decl
-        : MESSAGE NAME ';'
+        : MESSAGE qname ';'
                 {
                   ps.messagedecl = (MessageDeclElement *)createElementWithTag(NED_MESSAGE_DECL, ps.msgfile );
                   ps.messagedecl->setName(toString(@2));
@@ -233,7 +239,7 @@ message_decl
         ;
 
 packet_decl
-        : PACKET NAME ';'
+        : PACKET qname ';'
                 {
                   ps.packetdecl = (PacketDeclElement *)createElementWithTag(NED_PACKET_DECL, ps.msgfile );
                   ps.packetdecl->setName(toString(@2));
@@ -242,7 +248,7 @@ packet_decl
         ;
 
 enum_decl
-        : ENUM NAME ';'
+        : ENUM qname ';'
                 {
                   ps.enumdecl = (EnumDeclElement *)createElementWithTag(NED_ENUM_DECL, ps.msgfile );
                   ps.enumdecl->setName(toString(@2));
@@ -259,16 +265,6 @@ enum
                   ps.enump = (EnumElement *)createElementWithTag(NED_ENUM, ps.msgfile );
                   ps.enump->setName(toString(@2));
                   storeBannerAndRightComments(ps.enump,@1,@2);
-                  ps.enumfields = (EnumFieldsElement *)createElementWithTag(NED_ENUM_FIELDS, ps.enump);
-                }
-          opt_enumfields '}' opt_semicolon
-                { storeTrailingComment(ps.enump,@$); }
-        | ENUM NAME EXTENDS NAME '{'
-                {
-                  ps.enump = (EnumElement *)createElementWithTag(NED_ENUM, ps.msgfile );
-                  ps.enump->setName(toString(@2));
-                  ps.enump->setExtendsName(toString(@4));
-                  storeBannerAndRightComments(ps.enump,@1,@4);
                   ps.enumfields = (EnumFieldsElement *)createElementWithTag(NED_ENUM_FIELDS, ps.enump);
                 }
           opt_enumfields '}' opt_semicolon
@@ -331,7 +327,7 @@ message_header
                   ps.messagep->setName(toString(@2));
                   storeBannerAndRightComments(ps.messagep,@1,@2);
                 }
-        | MESSAGE NAME EXTENDS NAME '{'
+        | MESSAGE NAME EXTENDS qname '{'
                 {
                   ps.msgclassorstruct = ps.messagep = (MessageElement *)createElementWithTag(NED_MESSAGE, ps.msgfile );
                   ps.messagep->setName(toString(@2));
@@ -347,7 +343,7 @@ packet_header
                   ps.packetp->setName(toString(@2));
                   storeBannerAndRightComments(ps.packetp,@1,@2);
                 }
-        | PACKET NAME EXTENDS NAME '{'
+        | PACKET NAME EXTENDS qname '{'
                 {
                   ps.msgclassorstruct = ps.packetp = (PacketElement *)createElementWithTag(NED_PACKET, ps.msgfile );
                   ps.packetp->setName(toString(@2));
@@ -363,7 +359,7 @@ class_header
                   ps.classp->setName(toString(@2));
                   storeBannerAndRightComments(ps.classp,@1,@2);
                 }
-        | CLASS NAME EXTENDS NAME '{'
+        | CLASS NAME EXTENDS qname '{'
                 {
                   ps.msgclassorstruct = ps.classp = (ClassElement *)createElementWithTag(NED_CLASS, ps.msgfile );
                   ps.classp->setName(toString(@2));
@@ -379,7 +375,7 @@ struct_header
                   ps.structp->setName(toString(@2));
                   storeBannerAndRightComments(ps.structp,@1,@2);
                 }
-        | STRUCT NAME EXTENDS NAME '{'
+        | STRUCT NAME EXTENDS qname '{'
                 {
                   ps.msgclassorstruct = ps.structp = (StructElement *)createElementWithTag(NED_STRUCT, ps.msgfile );
                   ps.structp->setName(toString(@2));
@@ -411,6 +407,20 @@ fields_and_properties
  * Field
  */
 field
+        :  fieldtypename opt_fieldvector opt_inline_properties ';'
+                {
+                  storeBannerAndRightComments(ps.field,@1,@4);
+                  ps.field = NULL; // important! see addProperty() calls
+                }
+        |  fieldtypename opt_fieldvector opt_inline_properties '=' fieldvalue opt_inline_properties ';'
+                {
+                  ps.field->setDefaultValue(toString(@5));
+                  storeBannerAndRightComments(ps.field,@1,@7);
+                  ps.field = NULL; // important! see addProperty() calls
+                }
+        ;
+
+fieldtypename
         : fieldmodifiers fielddatatype NAME
                 {
                   ps.field = (FieldElement *)createElementWithTag(NED_FIELD, ps.msgclassorstruct);
@@ -419,20 +429,12 @@ field
                   ps.field->setIsAbstract(ps.isAbstract);
                   ps.field->setIsReadonly(ps.isReadonly);
                 }
-           opt_fieldvector opt_fieldenum opt_fieldvalue ';'
-                {
-                  storeBannerAndRightComments(ps.field,@1,@7);
-                }
         | fieldmodifiers NAME
                 {
                   ps.field = (FieldElement *)createElementWithTag(NED_FIELD, ps.msgclassorstruct);
                   ps.field->setName(toString(@2));
                   ps.field->setIsAbstract(ps.isAbstract);
                   ps.field->setIsReadonly(ps.isReadonly);
-                }
-           opt_fieldvector opt_fieldenum opt_fieldvalue ';'
-                {
-                  storeBannerAndRightComments(ps.field,@1,@6);
                 }
         ;
 
@@ -450,8 +452,8 @@ fieldmodifiers
         ;
 
 fielddatatype
-        : NAME
-        | NAME '*'
+        : qname
+        | qname '*'
 
         | CHARTYPE
         | SHORTTYPE
@@ -475,7 +477,7 @@ opt_fieldvector
                   ps.field->setIsVector(true);
                   ps.field->setVectorSize(toString(@2));
                 }
-        | '[' NAME ']'
+        | '[' qname ']'
                 {
                   ps.field->setIsVector(true);
                   ps.field->setVectorSize(toString(@2));
@@ -486,23 +488,6 @@ opt_fieldvector
                 }
         |
         ;
-
-opt_fieldenum
-        : ENUM '(' NAME ')'
-                {
-                  ps.field->setEnumName(toString(@3));
-                }
-        |
-        ;
-
-opt_fieldvalue
-        : '=' fieldvalue
-                {
-                  ps.field->setDefaultValue(toString(@2));
-                }
-        |
-        ;
-
 
 fieldvalue   /* some arbitrary C++ expression - validation left to C++ compiler */
         : fieldvalue fieldvalueitem
@@ -517,6 +502,7 @@ fieldvalueitem
         | TRUE_
         | FALSE_
         | NAME
+        | DOUBLECOLON
         | '?' | ':' | AND | OR | XOR | EQ | NE | '>' | GE | '<' | LE
         | BIN_AND | BIN_OR | BIN_XOR | SHIFT_LEFT | SHIFT_RIGHT
         | '+' | '-' | '*' | '/' | '%' | '^' | '&' | UMIN | NOT | BIN_COMPL
@@ -529,11 +515,14 @@ enumvalue
         | NAME
         ;
 
-quantity
-        : quantity INTCONSTANT NAME
-        | quantity REALCONSTANT NAME
-        | INTCONSTANT NAME
-        | REALCONSTANT NAME
+opt_inline_properties
+        : inline_properties
+        |
+        ;
+
+inline_properties
+        : inline_properties property_namevalue
+        | property_namevalue
         ;
 
 /*
@@ -553,17 +542,30 @@ property_namevalue
         ;
 
 property_name
-        : '@' NAME
+        : '@' property_name_token
                 {
-                  ps.property = addProperty(ps.msgclassorstruct, toString(@2));
+                  NEDElement *propertyscope = ps.field ? ps.field : ps.msgclassorstruct;
+                  ps.property = addProperty(propertyscope, toString(@2));
                   ps.propvals.clear(); // just to be safe
                 }
-        | '@' NAME '[' NAME ']'
+        | '@' property_name_token '[' NAME ']'
                 {
-                  ps.property = addProperty(ps.msgclassorstruct, toString(@2));
+                  NEDElement *propertyscope = ps.field ? ps.field : ps.msgclassorstruct;
+                  ps.property = addProperty(propertyscope, toString(@2));
                   ps.property->setIndex(toString(@4));
                   ps.propvals.clear(); // just to be safe
                 }
+        | ENUM /* legacy syntax */
+                {
+                  NEDElement *propertyscope = ps.field ? ps.field : ps.msgclassorstruct;
+                  ps.property = addProperty(propertyscope, toString(@1));
+                  ps.propvals.clear(); // just to be safe
+                }
+        ;
+
+property_name_token
+        : NAME
+        | ENUM  /* unfortunately we have to allow this as property name */
         ;
 
 opt_property_keys
@@ -604,30 +606,29 @@ property_values
         ;
 
 property_value
-        : NAME
-                { $$ = createLiteral(NED_CONST_STRING, @1, @1); /* not a quoted string */ }
-        | '$' NAME
-                { $$ = createLiteral(NED_CONST_STRING, @$, @$); /* not a quoted string */ }
+        : property_value_tokens
+                { $$ = createLiteral(NED_CONST_SPEC, @$, @$); }
         | STRINGCONSTANT
                 { $$ = createStringLiteral(@1); }
-        | TRUE_
-                { $$ = createLiteral(NED_CONST_BOOL, @1, @1); }
-        | FALSE_
-                { $$ = createLiteral(NED_CONST_BOOL, @1, @1); }
-        | INTCONSTANT
-                { $$ = createLiteral(NED_CONST_INT, @1, @1); }
-        | REALCONSTANT
-                { $$ = createLiteral(NED_CONST_DOUBLE, @1, @1); }
-        | quantity
-                { $$ = createQuantityLiteral(@1); }
-        | '-'  /* antivalue ("remove existing value from this position") */
-                { $$ = createLiteral(NED_CONST_SPEC, @1, @1); }
-        |  /* nothing (no value) */
+        |  /*empty*/
                 {
                   LiteralElement *node = (LiteralElement *)createElementWithTag(NED_LITERAL);
                   node->setType(NED_CONST_SPEC); // and leave both value and text at ""
                   $$ = node;
                 }
+        ;
+
+property_value_tokens
+        : property_value_tokens property_value_token
+        | property_value_token
+        ;
+
+property_value_token
+        : NAME | INTCONSTANT | REALCONSTANT | CHARCONSTANT | TRUE_ | FALSE_
+        | '$' | '@' | ':' | '=' | '[' | ']' | '{' | '}' | '.' | '?'
+        | '^' | '+' | '-' | '*' | '/' | '%' | '<' | '>' | EQ | NE | LE | GE
+        | DOUBLECOLON | OR | AND | XOR | NOT
+        | BIN_AND | BIN_OR | BIN_XOR BIN_COMPL | SHIFT_LEFT | SHIFT_RIGHT
         ;
 
 /*

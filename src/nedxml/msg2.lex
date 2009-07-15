@@ -126,8 +126,9 @@ USING_NAMESPACE
 "?"                     { countChars(); return '?'; }
 "@"                     { countChars(); return '@'; }
 
-   /* FIXME are the next ones really needed? */
+   /* XXX are the next ones really needed? */
 
+"::"                    { countChars(); return DOUBLECOLON; }
 "||"                    { countChars(); return OR; }
 "&&"                    { countChars(); return AND; }
 "##"                    { countChars(); return XOR; }

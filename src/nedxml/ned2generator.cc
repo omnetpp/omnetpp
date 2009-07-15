@@ -1114,8 +1114,8 @@ void NED2Generator::doField(FieldElement *node, const char *indent, bool islast,
         OUT << "[" << node->getVectorSize() << "]";
     else if (node->getIsVector())
         OUT << "[]";
-    if (!opp_isempty(node->getEnumName()))
-        OUT << " enum(" << node->getEnumName() << ")";
+    const char *subindent = indent ? increaseIndent(indent) : DEFAULTINDENT;
+    generateChildrenWithType(node, NED_PROPERTY, subindent, " ");
     if (!opp_isempty(node->getDefaultValue()))
         OUT << " = " << node->getDefaultValue();
     OUT << ";" << getRightComment(node);

@@ -426,7 +426,6 @@ void NEDDTDValidator::validateElement(StructDeclElement *node)
     checkSequence(node, tags, mult);
 
     checkRequiredAttribute(node, "name");
-    checkNameAttribute(node, "name");
 }
 
 void NEDDTDValidator::validateElement(ClassDeclElement *node)
@@ -436,10 +435,8 @@ void NEDDTDValidator::validateElement(ClassDeclElement *node)
     checkSequence(node, tags, mult);
 
     checkRequiredAttribute(node, "name");
-    checkNameAttribute(node, "name");
     const char *vals1[] = {"true","false"};
     checkEnumeratedAttribute(node, "is-cobject", vals1, sizeof(vals1)/sizeof(const char *));
-    checkNameAttribute(node, "extends-name");
 }
 
 void NEDDTDValidator::validateElement(MessageDeclElement *node)
@@ -449,7 +446,6 @@ void NEDDTDValidator::validateElement(MessageDeclElement *node)
     checkSequence(node, tags, mult);
 
     checkRequiredAttribute(node, "name");
-    checkNameAttribute(node, "name");
 }
 
 void NEDDTDValidator::validateElement(PacketDeclElement *node)
@@ -459,7 +455,6 @@ void NEDDTDValidator::validateElement(PacketDeclElement *node)
     checkSequence(node, tags, mult);
 
     checkRequiredAttribute(node, "name");
-    checkNameAttribute(node, "name");
 }
 
 void NEDDTDValidator::validateElement(EnumDeclElement *node)
@@ -469,7 +464,6 @@ void NEDDTDValidator::validateElement(EnumDeclElement *node)
     checkSequence(node, tags, mult);
 
     checkRequiredAttribute(node, "name");
-    checkNameAttribute(node, "name");
 }
 
 void NEDDTDValidator::validateElement(EnumElement *node)
@@ -480,7 +474,6 @@ void NEDDTDValidator::validateElement(EnumElement *node)
 
     checkRequiredAttribute(node, "name");
     checkNameAttribute(node, "name");
-    checkNameAttribute(node, "extends-name");
 }
 
 void NEDDTDValidator::validateElement(EnumFieldsElement *node)
@@ -511,7 +504,6 @@ void NEDDTDValidator::validateElement(MessageElement *node)
 
     checkRequiredAttribute(node, "name");
     checkNameAttribute(node, "name");
-    checkNameAttribute(node, "extends-name");
 }
 
 void NEDDTDValidator::validateElement(PacketElement *node)
@@ -524,7 +516,6 @@ void NEDDTDValidator::validateElement(PacketElement *node)
 
     checkRequiredAttribute(node, "name");
     checkNameAttribute(node, "name");
-    checkNameAttribute(node, "extends-name");
 }
 
 void NEDDTDValidator::validateElement(ClassElement *node)
@@ -537,7 +528,6 @@ void NEDDTDValidator::validateElement(ClassElement *node)
 
     checkRequiredAttribute(node, "name");
     checkNameAttribute(node, "name");
-    checkNameAttribute(node, "extends-name");
 }
 
 void NEDDTDValidator::validateElement(StructElement *node)
@@ -550,13 +540,12 @@ void NEDDTDValidator::validateElement(StructElement *node)
 
     checkRequiredAttribute(node, "name");
     checkNameAttribute(node, "name");
-    checkNameAttribute(node, "extends-name");
 }
 
 void NEDDTDValidator::validateElement(FieldElement *node)
 {
-    int tags[] = {NED_COMMENT, NED_NULL};
-    char mult[] = {'*', 0};
+    int tags[] = {NED_COMMENT,NED_PROPERTY, NED_NULL};
+    char mult[] = {'*','*', 0};
     checkSequence(node, tags, mult);
 
     checkRequiredAttribute(node, "name");
@@ -567,7 +556,6 @@ void NEDDTDValidator::validateElement(FieldElement *node)
     checkEnumeratedAttribute(node, "is-readonly", vals3, sizeof(vals3)/sizeof(const char *));
     const char *vals4[] = {"true","false"};
     checkEnumeratedAttribute(node, "is-vector", vals4, sizeof(vals4)/sizeof(const char *));
-    checkNameAttribute(node, "enum-name");
 }
 
 void NEDDTDValidator::validateElement(UnknownElement *node)

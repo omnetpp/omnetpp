@@ -744,8 +744,6 @@ void NEDSyntaxValidator::validateElement(FieldElement *node)
              errors->addError(node, "an abstract field needs a type");
          if (node->getIsVector())
              errors->addError(node, "cannot set array field of the base class");
-         if (!opp_isempty(node->getEnumName()))
-             errors->addError(node, "cannot specify enum for base class field");
          if (opp_isempty(node->getDefaultValue()))
              errors->addError(node, "missing field type");
     }

@@ -4018,7 +4018,7 @@ FieldElement::FieldElement(NEDElement *parent) : NEDElement(parent)
 
 int FieldElement::getNumAttributes() const
 {
-    return 8;
+    return 7;
 }
 
 const char *FieldElement::getAttributeName(int k) const
@@ -4030,8 +4030,7 @@ const char *FieldElement::getAttributeName(int k) const
         case 3: return "is-readonly";
         case 4: return "is-vector";
         case 5: return "vector-size";
-        case 6: return "enum-name";
-        case 7: return "default-value";
+        case 6: return "default-value";
         default: return 0;
     }
 }
@@ -4045,8 +4044,7 @@ const char *FieldElement::getAttribute(int k) const
         case 3: return boolToString(isReadonly);
         case 4: return boolToString(isVector);
         case 5: return vectorSize.c_str();
-        case 6: return enumName.c_str();
-        case 7: return defaultValue.c_str();
+        case 6: return defaultValue.c_str();
         default: return 0;
     }
 }
@@ -4060,8 +4058,7 @@ void FieldElement::setAttribute(int k, const char *val)
         case 3: isReadonly = stringToBool(val); break;
         case 4: isVector = stringToBool(val); break;
         case 5: vectorSize = val; break;
-        case 6: enumName = val; break;
-        case 7: defaultValue = val; break;
+        case 6: defaultValue = val; break;
         default: ;
     }
 }
@@ -4076,7 +4073,6 @@ const char *FieldElement::getAttributeDefault(int k) const
         case 4: return "false";
         case 5: return "";
         case 6: return "";
-        case 7: return "";
         default: return 0;
     }
 }
@@ -4090,7 +4086,6 @@ FieldElement *FieldElement::dup() const
     element->isReadonly = this->isReadonly;
     element->isVector = this->isVector;
     element->vectorSize = this->vectorSize;
-    element->enumName = this->enumName;
     element->defaultValue = this->defaultValue;
     return element;
 }
@@ -4103,6 +4098,11 @@ FieldElement *FieldElement::getNextFieldSibling() const
 CommentElement *FieldElement::getFirstCommentChild() const
 {
     return (CommentElement *)getFirstChildWithTag(NED_COMMENT);
+}
+
+PropertyElement *FieldElement::getFirstPropertyChild() const
+{
+    return (PropertyElement *)getFirstChildWithTag(NED_PROPERTY);
 }
 
 UnknownElement::UnknownElement()
