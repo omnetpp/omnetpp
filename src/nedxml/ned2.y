@@ -657,15 +657,7 @@ paramsitem
 
 param
         : param_typenamevalue
-                {
-                  storePos(ps.param, @$);
-                  storeBannerAndRightComments(ps.param,@$);
-                }
         | pattern_value
-                {
-                  storePos(ps.pattern, @$);
-                  storeBannerAndRightComments(ps.pattern,@$);
-                }
         ; /* no error recovery rule -- see discussion at top */
 
 /*
@@ -712,6 +704,8 @@ pattern_value
                   if (!isEmpty(ps.exprPos))  // note: $5 cannot be checked, as it's always NULL when expression parsing is off
                       addExpression(ps.pattern, "value",ps.exprPos,$5);
                   ps.pattern->setIsDefault(ps.isDefault);
+                  storePos(ps.pattern, @$);
+                  storeBannerAndRightComments(ps.pattern,@$);
                 }
         ;
 

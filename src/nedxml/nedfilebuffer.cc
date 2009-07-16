@@ -435,9 +435,13 @@ void NEDFileBuffer::trimSpaceAndComments(YYLTYPE& pos)
                 break;
             s = getPosition(pos.first_line, pos.first_column);
         }
-        else
+        else if (*s=='\t')
         {
-            // skip space or tab
+            pos.first_column += 8 - (pos.first_column % 8);
+            s++;
+        }
+        else // treat the rest as space
+        {
             pos.first_column++;
             s++;
         }
