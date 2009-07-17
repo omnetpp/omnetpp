@@ -32,6 +32,7 @@ import org.omnetpp.ned.model.pojo.ConnectionGroupElement;
 import org.omnetpp.ned.model.pojo.ExtendsElement;
 import org.omnetpp.ned.model.pojo.ImportElement;
 import org.omnetpp.ned.model.pojo.LiteralElement;
+import org.omnetpp.ned.model.pojo.NEDElementFactory;
 import org.omnetpp.ned.model.pojo.NEDElementTags;
 import org.omnetpp.ned.model.pojo.ParametersElement;
 import org.omnetpp.ned.model.pojo.PropertyElement;
@@ -380,8 +381,8 @@ public class NEDElementUtilEx implements NEDElementTags, NEDElementConstants {
 		return comment;
 	}
 
-    public static ArrayList<String> getProperties(IHasProperties element, String name) {
-        PropertyElementEx propertyElement = element.getProperties().get(name);
+    public static ArrayList<String> getPropertyValues(IHasProperties element, String propertyName) {
+        PropertyElementEx propertyElement = element.getProperties().get(propertyName);
         ArrayList<String> properties = new ArrayList<String>();
         
         if (propertyElement != null)
@@ -392,7 +393,56 @@ public class NEDElementUtilEx implements NEDElementTags, NEDElementConstants {
         return properties;
     }
 
+    public static void setPropertyValues(IHasProperties element, String propertyName, Collection<String> values) {
+        NEDElementFactory factory = NEDElementFactoryEx.getInstance();
+        PropertyElementEx propertyElement = element.getProperties().get(propertyName);
+        
+        if (propertyElement == null) {
+            propertyElement = (PropertyElementEx)factory.createElement(NED_PROPERTY);
+            propertyElement.setName(propertyName);
+            ((INEDElement)element).appendChild(propertyElement);
+        }
+        else
+            propertyElement.removeAllChildren();
+        
+        addPropertyValues(element, propertyName, values);
+    }
+
+    public static void addPropertyValues(IHasProperties element, String propertyName, Collection<String> values) {
+        NEDElementFactory factory = NEDElementFactoryEx.getInstance();
+        PropertyElementEx propertyElement = element.getProperties().get(propertyName);
+        
+        if (propertyElement == null) {
+            propertyElement = (PropertyElementEx)factory.createElement(NED_PROPERTY);
+            propertyElement.setName(propertyName);
+            ((INEDElement)element).appendChild(propertyElement);
+        }
+
+        PropertyKeyElement propertyKey = (PropertyKeyElement)propertyElement.getFirstChildWithAttribute(NED_PROPERTY_KEY, "name", "");
+
+        if (propertyKey == null) {
+            propertyKey = (PropertyKeyElement)factory.createElement(NED_PROPERTY_KEY);
+            propertyElement.appendChild(propertyKey);
+        }
+
+        for (String value : values) {
+            LiteralElement literal = (LiteralElement)factory.createElement(NED_LITERAL);
+            literal.setValue(value);
+            literal.setText(value);
+            literal.setType(NED_CONST_STRING);
+            propertyKey.appendChild(literal);
+        }
+    }
+
     public static ArrayList<String> getLabels(IHasProperties element) {
-        return getProperties(element, "labels");
+        return getPropertyValues(element, "labels");
+    }
+
+    public static void setLabels(IHasProperties element, Collection<String> labels) {
+        setPropertyValues(element, "labels", labels);
+    }
+
+    public static void addLabels(IHasProperties element, Collection<String> labels) {
+        addPropertyValues(element, "labels", labels);
     }
 }

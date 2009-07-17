@@ -52,9 +52,11 @@ import org.omnetpp.ned.editor.NedEditor;
 import org.omnetpp.ned.editor.NedEditorPlugin;
 import org.omnetpp.ned.editor.text.actions.ConvertToNewFormatAction;
 import org.omnetpp.ned.editor.text.actions.CorrectIndentationAction;
+import org.omnetpp.ned.editor.text.actions.DistributeAllGateLabelsAction;
 import org.omnetpp.ned.editor.text.actions.FindTextInNedFilesActionDelegate;
 import org.omnetpp.ned.editor.text.actions.FormatSourceAction;
 import org.omnetpp.ned.editor.text.actions.GotoDeclarationAction;
+import org.omnetpp.ned.editor.text.actions.InferAllGateLabelsAction;
 import org.omnetpp.ned.editor.text.actions.OrganizeImportsAction;
 import org.omnetpp.ned.editor.text.actions.ToggleCommentAction;
 import org.omnetpp.ned.model.INEDElement;
@@ -260,6 +262,12 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener, 
         a = new FindTextInNedFilesActionDelegate();
         setAction(a.getId(), a);
         //markAsSelectionDependentAction(a.getId(), true);
+
+        a = new InferAllGateLabelsAction(this);
+        setAction(a.getId(), a);
+
+        a = new DistributeAllGateLabelsAction(this);
+        setAction(a.getId(), a);
 	}
 
     /*
@@ -274,6 +282,9 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener, 
         addAction(menu, ITextEditorActionConstants.GROUP_EDIT, ConvertToNewFormatAction.ID);
         addAction(menu, ITextEditorActionConstants.GROUP_EDIT, OrganizeImportsAction.ID);
         addAction(menu, ITextEditorActionConstants.GROUP_EDIT, ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS);
+        addAction(menu, ITextEditorActionConstants.GROUP_EDIT, InferAllGateLabelsAction.ID);
+        addAction(menu, ITextEditorActionConstants.GROUP_EDIT, DistributeAllGateLabelsAction.ID);
+
         addAction(menu, ITextEditorActionConstants.GROUP_FIND, GotoDeclarationAction.ID); 
         addAction(menu, ITextEditorActionConstants.GROUP_FIND, FindTextInNedFilesActionDelegate.ID); 
     }
@@ -303,7 +314,7 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener, 
 		return ((IFileEditorInput)getEditorInput()).getFile();
 	}
 
-	protected NedFileElementEx getModel() {
+	public NedFileElementEx getModel() {
 		return NEDResourcesPlugin.getNEDResources().getNedFileElement(getFile());
 	}
 	

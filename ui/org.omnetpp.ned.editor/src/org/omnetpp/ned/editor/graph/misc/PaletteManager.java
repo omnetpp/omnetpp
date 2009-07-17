@@ -99,6 +99,7 @@ public class PaletteManager {
     private static ShortNameComparator shortNameComparator = new ShortNameComparator();
 
     protected class SubmoduleComparator implements Comparator<INEDTypeInfo> {
+        // TODO: this is called all the time during reorder (seems to be a non issue right now, but might be one later)
         private int calculatePoints(INEDTypeInfo typeInfo) {
             if (typeInfo == null)
                 return 0; // for separators
@@ -110,7 +111,7 @@ public class PaletteManager {
                 NedFileElementEx editedElement = hostingEditor.getModel();
 
                 for (INedTypeElement nedTypeElement : editedElement.getTopLevelTypeNodes()) {
-                    List<String> labels = NEDElementUtilEx.getProperties(nedTypeElement, "contains");
+                    List<String> labels = NEDElementUtilEx.getPropertyValues(nedTypeElement, "contains");
                     
                     if (nedTypeElement instanceof CompoundModuleElementEx) {
                         CompoundModuleElementEx compoundModule = (CompoundModuleElementEx)nedTypeElement;
@@ -119,12 +120,19 @@ public class PaletteManager {
                             labels.add("node");
     
                         for (SubmoduleElementEx submodule : compoundModule.getSubmodules()) {
-                            if (submodule.getNEDTypeInfo() == element.getNEDTypeInfo())
-                                point += 5; // used as a submodule
+                            INEDTypeInfo submoduleTypeInfo = submodule.getNEDTypeInfo();
                             
-                            for (GateElementEx gate : submodule.getNEDTypeInfo().getGateDeclarations().values())
-                                gateLabels.addAll(NEDElementUtilEx.getLabels(gate));
+                            if (submoduleTypeInfo != null) {
+                                if (submoduleTypeInfo == element.getNEDTypeInfo())
+                                    point += 10; // used as a submodule
+                                
+                                for (GateElementEx gate : submoduleTypeInfo.getGateDeclarations().values())
+                                    gateLabels.addAll(NEDElementUtilEx.getLabels(gate));
+                            }
                         }
+                        
+                        for (GateElementEx gate : compoundModule.getGateDeclarations().values())
+                            gateLabels.addAll(NEDElementUtilEx.getLabels(gate));
                     }
     
                     containsLabels.addAll(labels);
@@ -132,13 +140,13 @@ public class PaletteManager {
     
                 for (String label : NEDElementUtilEx.getLabels(element))
                     if (containsLabels.contains(label))
-                        point += 10; // matching @contains and @labels
+                        point += 5; // matching @contains and @labels
     
                 for (GateElementEx gate : typeInfo.getGateDeclarations().values())
                     for (String label : NEDElementUtilEx.getLabels(gate))
                         if (gateLabels.contains(label))
                             point += 1; // matching gate @labels
-    
+
                 return point;
             }
         }
@@ -152,7 +160,11 @@ public class PaletteManager {
             int secondPoint = calculatePoints(second);
             String firstShortName = getName(first);
             String secondShortName = getName(second);
-            return secondPoint - firstPoint + StringUtils.dictionaryCompare(firstShortName, secondShortName);
+
+            if (secondPoint == firstPoint)
+                return StringUtils.dictionaryCompare(firstShortName, secondShortName);
+            else
+                return secondPoint - firstPoint;
         }
     }
     

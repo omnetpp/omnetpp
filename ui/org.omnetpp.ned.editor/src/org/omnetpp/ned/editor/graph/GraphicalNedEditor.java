@@ -974,7 +974,6 @@ public class GraphicalNedEditor
                 NEDResourcesPlugin.getNEDResources().fireBeginChangeEvent();
                 insideBeginEnd = true;
             }
-            
         }
         
         @SuppressWarnings("deprecation")

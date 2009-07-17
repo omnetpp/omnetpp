@@ -232,6 +232,11 @@ public interface INEDElement extends Iterable<INEDElement> {
 	 */
 	public INEDElement removeChild(INEDElement node);
 
+    /**
+     * Removes all child elements from the element.
+     */
+    public void removeAllChildren();
+
 	/**
 	 * Returns pointer to the first child element with the given tag code,
 	 * or null if this element has no such children.

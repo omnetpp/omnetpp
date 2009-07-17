@@ -8,17 +8,18 @@
 package org.omnetpp.ned.core.refactoring;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.window.Window;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
@@ -27,9 +28,15 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.core.NEDResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
+import org.omnetpp.ned.model.ex.ConnectionElementEx;
+import org.omnetpp.ned.model.ex.GateElementEx;
 import org.omnetpp.ned.model.ex.NEDElementUtilEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
+import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IHasType;
+import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
+import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.pojo.ChannelSpecElement;
 import org.omnetpp.ned.model.pojo.ConnectionsElement;
 import org.omnetpp.ned.model.pojo.ExtendsElement;
@@ -217,4 +224,114 @@ public class RefactoringTools {
         }
     }
 
+    public static Collection<AddGateLabels> inferAllGateLabels(INedTypeElement element, boolean forward) {
+        Collection<AddGateLabels> result = new HashSet<AddGateLabels>();
+
+        // TODO: why do we need to copy it? some notification seems to cause a recalculation of gate declarations during inference
+        for (GateElementEx gate : new ArrayList<GateElementEx>(element.getNEDTypeInfo().getGateDeclarations().values()))
+            inferGateLabels(gate, forward, result);
+
+        return result;
+    }
+
+    public static void inferGateLabels(GateElementEx gate, boolean forward, Collection<AddGateLabels> result) {
+        INedTypeElement typeElement = gate.getEnclosingTypeElement();
+
+        for (INEDTypeInfo typeInfo : NEDResourcesPlugin.getNEDResources().getNedTypesFromAllProjects()) {
+            INedTypeElement element = typeInfo.getNEDElement();
+
+            if (element instanceof CompoundModuleElementEx) {
+                CompoundModuleElementEx compoundModule = (CompoundModuleElementEx)element;
+
+                for (SubmoduleElementEx submoduleElement : compoundModule.getSubmodules()) {
+                    if (submoduleElement.getEffectiveTypeRef() == typeElement) {
+                        inferLabelsOnConnections(compoundModule.getSrcConnectionsFor(submoduleElement.getName()), gate, forward, result);
+                        inferLabelsOnConnections(compoundModule.getDestConnectionsFor(submoduleElement.getName()), gate, forward, result);
+                    }
+                }
+
+                inferLabelsOnConnections(compoundModule.getSrcConnections(), gate, forward, result);
+                inferLabelsOnConnections(compoundModule.getDestConnections(), gate, forward, result);
+            }
+        }
+    }
+
+    private static void inferLabelsOnConnections(List<ConnectionElementEx> connections, GateElementEx gate1, boolean forward, Collection<AddGateLabels> result) {
+        INEDTypeInfo typeInfo = gate1.getEnclosingTypeElement().getNEDTypeInfo();
+        for (ConnectionElementEx connection : connections) {
+            GateElementEx gate2 = null;
+            INEDTypeInfo srcTypeInfo = connection.getSrcModuleRef().getNEDTypeInfo();
+            INEDTypeInfo destTypeInfo = connection.getDestModuleRef().getNEDTypeInfo();
+
+            if (connection.getDestGate().equals(gate1.getName()) && destTypeInfo == typeInfo)
+                gate2 = srcTypeInfo.getGateDeclarations().get(connection.getSrcGate());
+            else if (connection.getSrcGate().equals(gate1.getName()) && srcTypeInfo == typeInfo)
+                gate2 = destTypeInfo.getGateDeclarations().get(connection.getDestGate());
+
+            if (gate2 != null) {
+                if (forward)
+                    inferGateLabels(gate1, gate2, result);
+                else
+                    inferGateLabels(gate2, gate1, result);
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void inferGateLabels(GateElementEx fromGate, GateElementEx toGate, Collection<AddGateLabels> result) {
+        ArrayList<String> fromLabels = NEDElementUtilEx.getLabels(fromGate);
+        ArrayList<String> toLabels = NEDElementUtilEx.getLabels(toGate);
+        Collection<String> addedLabels = CollectionUtils.subtract(fromLabels, toLabels);
+
+        if (!addedLabels.isEmpty())
+            result.add(new AddGateLabels(toGate, addedLabels));
+    }
+    
+    public static class AddGateLabels implements Runnable {
+        public GateElementEx gate;
+        public Collection<String> labels;
+
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + ((gate == null) ? 0 : gate.hashCode());
+            result = prime * result + ((labels == null) ? 0 : labels.hashCode());
+            return result;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            AddGateLabels other = (AddGateLabels) obj;
+            if (gate == null) {
+                if (other.gate != null)
+                    return false;
+            }
+            else if (!gate.equals(other.gate))
+                return false;
+            if (labels == null) {
+                if (other.labels != null)
+                    return false;
+            }
+            else if (!labels.equals(other.labels))
+                return false;
+            return true;
+        }
+
+        public AddGateLabels(GateElementEx gate, Collection<String> labels) {
+            this.gate = gate;
+            this.labels = labels;
+        }
+
+        public void run() {
+            //Debug.println("*** Adding labels: " + labels + " to gate: " + gate.getEnclosingTypeElement().getName() + "." + gate.getName());
+            NEDElementUtilEx.addLabels(gate, labels);
+        }
+    }
 }

@@ -225,6 +225,7 @@ public class SubmoduleElementEx extends SubmoduleElement
     }
 
     public List<ParamElementEx> getParameterInheritanceChain(String parameterName) {
+        // FIXME: what if there's no type info? 
         List<ParamElementEx> chain = getNEDTypeInfo().getParameterInheritanceChain(parameterName);
         
         for (ParamElementEx param : getOwnParams()) {

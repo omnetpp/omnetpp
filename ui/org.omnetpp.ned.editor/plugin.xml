@@ -219,6 +219,18 @@
             id="org.omnetpp.ned.editor.text.performTextSearchWorkspace"
             name="Search Text in NED Files">
       </command>
+      <command
+            categoryId="org.eclipse.ui.category.textEditor"
+            description="Infer gate labels from connected gates"
+            id="org.omnetpp.ned.editor.text.InferAllGateLabels"
+            name="Infer Gate Labels">
+      </command>
+      <command
+            categoryId="org.eclipse.ui.category.textEditor"
+            description="Distribute gate labels to connected gates"
+            id="org.omnetpp.ned.editor.text.DistributeAllGateLabels"
+            name="Distribute Gate Labels">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.contexts">
