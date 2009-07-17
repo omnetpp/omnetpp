@@ -10,10 +10,8 @@ package org.omnetpp.ned.editor.graph.misc;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.core.runtime.Assert;
@@ -30,8 +28,6 @@ import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
 import org.omnetpp.ned.model.ex.NEDElementUtilEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IConnectableElement;
-import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
-import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.pojo.ConnectionElement;
 import org.omnetpp.ned.model.pojo.GateElement;
 import org.omnetpp.ned.model.pojo.NEDElementTags;
@@ -163,44 +159,10 @@ public class ConnectionChooser {
         else
             return (ConnectionElementEx)selection.getData();
     }
-
-    private static void collectGateLabels(GateElementEx gate, Set<String> labels) {
-        if (gate != null) {
-            labels.addAll(NEDElementUtilEx.getLabels(gate));
-            INedTypeElement typeElement = gate.getSelfOrEnclosingTypeElement();
-    
-            if (typeElement != null) {
-                for (SubmoduleElementEx submodule : typeElement.getNEDTypeInfo().getSubmodules().values()) {
-                    Set<ConnectionElementEx> connections = new HashSet<ConnectionElementEx>(submodule.getSrcConnections());
-                    connections.addAll(submodule.getDestConnections());
-        
-                    for (ConnectionElementEx connection : connections) {
-                        if (gate.getName().equals(connection.getSrcGate()) && typeElement == connection.getSrcModuleRef()) {
-                            INEDTypeInfo destTypeInfo = connection.getDestModuleRef().getNEDTypeInfo();
-
-                            if (destTypeInfo != null)
-                                collectGateLabels(destTypeInfo.getGateDeclarations().get(connection.getDestGate()), labels);
-                        }
-        
-                        if (gate.getName().equals(connection.getDestGate()) && typeElement == connection.getDestModuleRef()) {
-                            INEDTypeInfo srcTypeInfo = connection.getSrcModuleRef().getNEDTypeInfo();
-
-                            if (srcTypeInfo != null)
-                                collectGateLabels(srcTypeInfo.getGateDeclarations().get(connection.getSrcGate()), labels);
-                        }
-                    }
-                }
-            }
-        }
-    }
     
     @SuppressWarnings("unchecked")
     private static List<String> collectCommonGateLabels(GateElementEx srcGate, GateElementEx destGate) {
-        Set<String> srcLabels = new HashSet<String>();
-        Set<String> destLabels = new HashSet<String>();
-        collectGateLabels(srcGate, srcLabels);
-        collectGateLabels(destGate, destLabels);
-        return (List<String>)CollectionUtils.intersection(srcLabels, destLabels);
+        return (List<String>)CollectionUtils.intersection(NEDElementUtilEx.getLabels(srcGate), NEDElementUtilEx.getLabels(destGate));
     }
 
     /**
@@ -212,7 +174,7 @@ public class ConnectionChooser {
         menuItem.setData(connection);
         String text = StringUtils.removeEnd(NEDTreeUtil.generateNedSource(connection, false).trim(), ";");
         if (!labels.isEmpty())
-            text += " (" + StringUtils.join(labels, ", ", null) + ")";
+            text += " (" + StringUtils.join(labels, ", ") + ")";
         menuItem.setText(text);
         return menuItem;
     }

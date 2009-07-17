@@ -21,10 +21,10 @@ import org.omnetpp.ned.model.ex.MsgFileElementEx;
 import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.interfaces.IHasDisplayString;
-import org.omnetpp.ned.model.interfaces.INedModelProvider;
 import org.omnetpp.ned.model.interfaces.IMsgTypeResolver;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
+import org.omnetpp.ned.model.interfaces.INedModelProvider;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
@@ -140,7 +140,23 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
 		throw new RuntimeException("invalid integer value "+b+" for enum attribute");
 	}
 
-	/**
+    public static String gateTypeToString(int gatetype) {
+        return enumToString(gatetype, NEDElementConstants.gatetype_vals, NEDElementConstants.gatetype_nums, NEDElementConstants.gatetype_n);
+    }
+
+    public static String arrowDirToString(int arrowdir) {
+        return enumToString(arrowdir, NEDElementConstants.arrowdir_vals, NEDElementConstants.arrowdir_nums, NEDElementConstants.arrowdir_n);
+    }
+
+    public static String parTypeToString(int partype) {
+        return enumToString(partype, NEDElementConstants.partype_vals, NEDElementConstants.partype_nums, NEDElementConstants.partype_n);
+    }
+
+    public static String subGateTypeToString(int subgate) {
+        return enumToString(subgate, NEDElementConstants.subgate_vals, NEDElementConstants.subgate_nums, NEDElementConstants.subgate_n);
+    }
+
+    /**
 	 * Sets the default NED type resolver. May only be invoked once.
 	 */
 	public static void setDefaultNedTypeResolver(INEDTypeResolver typeResolver) {

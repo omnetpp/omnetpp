@@ -43,6 +43,8 @@ import org.omnetpp.ned.core.NEDResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
 import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.NEDElement;
+import org.omnetpp.ned.model.NEDElementConstants;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.GateElementEx;
 import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
@@ -108,11 +110,15 @@ public class PaletteManager {
                 INedTypeElement element = typeInfo.getNEDElement();
                 HashSet<String> gateLabels = new HashSet<String>();
                 HashSet<String> containsLabels = new HashSet<String>();
+                HashSet<String> submoduleLabels = new HashSet<String>();
                 NedFileElementEx editedElement = hostingEditor.getModel();
 
                 for (INedTypeElement nedTypeElement : editedElement.getTopLevelTypeNodes()) {
                     List<String> labels = NEDElementUtilEx.getPropertyValues(nedTypeElement, "contains");
                     
+                    if (nedTypeElement.getNEDTypeInfo() == typeInfo)
+                        continue;
+
                     if (nedTypeElement instanceof CompoundModuleElementEx) {
                         CompoundModuleElementEx compoundModule = (CompoundModuleElementEx)nedTypeElement;
     
@@ -121,34 +127,58 @@ public class PaletteManager {
     
                         for (SubmoduleElementEx submodule : compoundModule.getSubmodules()) {
                             INEDTypeInfo submoduleTypeInfo = submodule.getNEDTypeInfo();
+                            submoduleLabels.addAll(NEDElementUtilEx.getLabels(submoduleTypeInfo.getNEDElement()));
                             
                             if (submoduleTypeInfo != null) {
                                 if (submoduleTypeInfo == element.getNEDTypeInfo())
-                                    point += 10; // used as a submodule
+                                    point += 10; // already used as a submodule
                                 
                                 for (GateElementEx gate : submoduleTypeInfo.getGateDeclarations().values())
-                                    gateLabels.addAll(NEDElementUtilEx.getLabels(gate));
+                                    gateLabels.addAll(getGateLabels(gate, false));
                             }
                         }
                         
                         for (GateElementEx gate : compoundModule.getGateDeclarations().values())
-                            gateLabels.addAll(NEDElementUtilEx.getLabels(gate));
+                            gateLabels.addAll(getGateLabels(gate, false));
                     }
     
                     containsLabels.addAll(labels);
                 }
     
-                for (String label : NEDElementUtilEx.getLabels(element))
+                for (String label : NEDElementUtilEx.getLabels(element)) {
                     if (containsLabels.contains(label))
                         point += 5; // matching @contains and @labels
+                    
+                    if (submoduleLabels.contains(label))
+                        point += 2; // matching @labels with submodule's type @labels
+                }
     
                 for (GateElementEx gate : typeInfo.getGateDeclarations().values())
-                    for (String label : NEDElementUtilEx.getLabels(gate))
+                    for (String label : getGateLabels(gate, true))
                         if (gateLabels.contains(label))
                             point += 1; // matching gate @labels
 
                 return point;
             }
+        }
+
+        private ArrayList<String> getGateLabels(GateElementEx gate, boolean negate) {
+            ArrayList<String> labels = NEDElementUtilEx.getLabels(gate);
+            
+            for (int i = 0; i < labels.size(); i++) {
+                int type = gate.getType();
+                
+                if (negate) {
+                    if (type == NEDElementConstants.NED_GATETYPE_INPUT)
+                        type = NEDElementConstants.NED_GATETYPE_OUTPUT;
+                    else if (type == NEDElementConstants.NED_GATETYPE_OUTPUT)
+                        type = NEDElementConstants.NED_GATETYPE_INPUT;
+                }
+
+                labels.set(i, labels.get(i) + NEDElement.gateTypeToString(type));
+            }
+            
+            return labels;
         }
         
         private String getName(INEDTypeInfo typeInfo) {
