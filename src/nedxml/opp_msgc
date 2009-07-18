@@ -290,13 +290,14 @@ sub processFile($)
     @enums = ();
 
     # some regex patterns
-    $RESERVED_WORDS = 'abstract|allowunconnected|bool|channelinterface|channel|char'
-        . '|class|connections|const|cplusplus|default|double|enum|extends|false|for'
-        . '|gates|if|import|index|inout|input|interface|int|like|long|message|packet|module'
-        . '|network|nocheck|noncobject|cpolymorphic|output|package|parameters|property'
-        . '|readonly|ref|short|simple|sizeof|string|struct|submodules|this|true|typename|types'
-        . '|unsigned|where|xmldoc|xml|float|int8|int16|int32|int64|uint8|uint16|uint32|uint64'
-        . '|int8_t|int16_t|int32_t|int64_t|uint8_t|uint16_t|uint32_t|uint64_t';
+    $RESERVED_WORDS = 'namespace|cplusplus|struct|message|packet|class|noncobject|'
+        . 'enum|extends|abstract|readonly|properties|fields|bool|char|short|'
+        . 'int|long|double|unsigned|string|true|false'
+        . 'float|int8|int16|int32|int64|uint8|uint16|uint32|uint64'
+        . '|int8_t|int16_t|int32_t|int64_t|uint8_t|uint16_t|uint32_t|uint64_t'
+        . 'for|while|if|else|do|enum|class|struct|typedef|public|private'
+        . '|protected|auto|register|sizeof|void|new|delete|explicit|static'
+        . '|extern|return|try|catch';
 
     $PRIMITIVE_TYPES = 'bool|float|double|simtime_t|string|((unsigned )?(char|short|int|long))|(u?int(8|16|32|64)(_t)?)';
 
@@ -650,42 +651,31 @@ sub processFile($)
         # process $fieldsandproperties
         #
         $scrap = '';
-        while ($fieldsandproperties =~ s/^(.*?);//s)
+        while ($fieldsandproperties =~ s/^\s*(.*?)\s*;//s)
         {
             $fieldorproperty = $1;
-            if ($fieldorproperty =~ /^\s*\@.*/)
-            {
-                $prop = $fieldorproperty;
-                if ($prop =~ /^\s*\@\s*(.*?)\s*\(\s*(.*?)\s*\)\s*$/s)
-                {
-                    $propname = $1;
-                    $propvalue = $2;
-                    $props{$propname} = $propvalue;
 
-                    if ($propname =~ /^($RESERVED_WORDS)$/) {
-                        print "$filename: Error: property name '$propname' is a reserved word\n"; $ret=1;
-                    }
+            # is this a property? try it both as @foo(...) and @foo.
+            # Note: foo() should be same as @foo, i.e. value=""
+            #XXX property values cannot contain parens "(..)", because regex doesn't count parens, just stops at first ")"...
+            if ($fieldorproperty =~ s/^\@$NAME\((.*?)\)$//s || $fieldorproperty =~ s/^\@$NAME$()//s) {
+                # store property
+                $propname = $1;
+                $propvalue = $2;
+                $props{$propname} = $propvalue;
+
+                if ($propname =~ /^($RESERVED_WORDS)$/) {
+                    print "$filename: Error: property name '$propname' is a reserved word\n"; $ret=1;
                 }
-                else {$scrap.=$prop;}
             }
-            else
-            {
+            else {
+                # parse as field
                 $field = $fieldorproperty;
-
-                #XXX property values cannot contain parens "(..)", because regex doesn't count parens, just stops at first ")"...
-
-                # is this a single property, not a field?
-                if ($field =~ s|^\s*\@([_a-z0-9]+)\((.*?)\)\s*$|$props{$1}=$2;""|sei) {
-                    next;
-                }
-                if ($field =~ s|^\s*\@([_a-z0-9]+)\s*$|$props{$1}="true";""|sei) {
-                    next;
-                }
 
                 # field properties, with @propertyname(value) syntax
                 %fieldprop = ();
                 $field =~ s|\@([_a-z0-9]+)\((.*?)\)|$fieldprop{$1}=$2;""|gsei;
-                $field =~ s|\@([_a-z0-9]+)|$fieldprop{$1}="true";""|gsei;
+                $field =~ s|\@([_a-z0-9]+)|$fieldprop{$1}="";""|gsei;  # @props and @props() should be equivalent (value="")
 
                 # abstract
                 if ($field =~ s/^\s*abstract\s+//s) {
@@ -955,11 +945,11 @@ sub prepareForCodeGeneration()
     #
     # produce all sorts of derived names
     #
-    $generate_class = $generate_classes && ($props{"codegen"} ne "false");
+    $generate_class = $generate_classes && !propertyAsBool($props{"existingClass"});
     $generate_descriptor = $generate_descriptors && ($props{"descriptor"} ne "false");
     $generate_setters_in_descriptor = $generate_setters_in_descriptors && ($props{"descriptor"} ne "readonly");
 
-    if ($props{"customize"} eq "true") {
+    if (propertyAsBool($props{"customize"})) {
         $gap = 1;
         $msgclass = $msgname."_Base";
         $realmsgclass = $msgname;
@@ -990,11 +980,7 @@ sub prepareForCodeGeneration()
         $msgbaseclass = $msgbaseqname;
     }
 
-    if ($props{"omitGetVerb"} eq "true") {
-        $omitgetverb = 1;
-    } else {
-        $omitgetverb = 0;
-    }
+    $omitgetverb = propertyAsBool($props{"omitGetVerb"});
 
     foreach my $fieldname (@fieldlist)
     {
@@ -1002,17 +988,21 @@ sub prepareForCodeGeneration()
             print "$filename: Error: abstract fields need '\@customize(true)' property in '$msgname'\n"; $ret=1;
         }
 
-        if ($classtype{$ftype{$fieldname}} eq 'cownedobject' && ($classtype ne 'cownedobject')) {
-            print "$filename: Error: cannot use cOwnedObject field '$ftype{$fieldname} $fieldname' in struct or non-cOwnedObject class '$msgname'\n"; $ret=1;
+        if ($generate_class) {
+           if ($classtype{$ftype{$fieldname}} eq 'cownedobject' && ($classtype ne 'cownedobject')) {
+               print "$filename: Error: cannot use cOwnedObject field '$ftype{$fieldname} $fieldname' in struct or non-cOwnedObject class '$msgname'\n"; $ret=1;
+           }
         }
 
         # resolve enum namespace
         my $enumname = $fprops{$fieldname}->{"enum"};
-        my $enumqname = lookupExistingEnumName($namespacename, $enumname);
-        if ($enumname ne '' && $enumqname eq '') {
-            print "$filename: Error: undeclared enum '$enumname' used in '$msgname'\n"; $ret=1;
+        if (defined($enumname)) {
+            my $enumqname = lookupExistingEnumName($namespacename, $enumname);
+            if ($enumname ne '' && $enumqname eq '') {
+                print "$filename: Error: undeclared enum '$enumname' used in '$msgname'\n"; $ret=1;
+            }
+            $fprops{$fieldname}->{"enum"} = $enumqname; # need to modify the property in place
         }
-        $fprops{$fieldname}->{"enum"} = $enumqname; # need to modify the property in place
 
         # variable name
         if ($classtype eq 'struct') {
@@ -1446,7 +1436,7 @@ sub generateClass
     }
     foreach my $fieldname (@fieldlist)
     {
-        if ($fprops{$fieldname}->{nopack} ne '') {
+        if (propertyAsBool($fprops{$fieldname}->{nopack})) {
             # @nopack specified
         } elsif ($fisabstract{$fieldname}) {
             print CC "    // field $fieldname is abstract -- please do packing in customized class\n";
@@ -1474,7 +1464,7 @@ sub generateClass
     }
     foreach my $fieldname (@fieldlist)
     {
-        if ($fprops{$fieldname}->{nopack} ne '') {
+        if (propertyAsBool($fprops{$fieldname}->{nopack})) {
             # @nopack specified
         } elsif ($fisabstract{$fieldname}) {
             print CC "    // field $fieldname is abstract -- please do unpacking in customized class\n";
@@ -1742,9 +1732,9 @@ sub generateDescriptorClass
             push(@flags, "FD_ISPOINTER") if ($fispointer{$fieldname});
             push(@flags, "FD_ISCPOLYMORPHIC") if ($classtype{$ftype{$fieldname}} eq 'cobject' || $classtype{$ftype{$fieldname}} eq 'cnamedobject');
             push(@flags, "FD_ISCPOLYMORPHIC | FD_ISCOBJECT") if ($classtype{$ftype{$fieldname}} eq 'cownedobject');
-            $editableprop = $fprops{$fieldname}->{editable};
-            push(@flags, "FD_ISEDITABLE") if (($editableprop eq 'true' || $editableprop eq '1') ||
-                                              ($generate_setters_in_descriptor && $fkind{$fieldname} eq 'basic'));
+
+            my $editable = propertyAsBool($fprops{$fieldname}->{editable});
+            push(@flags, "FD_ISEDITABLE") if ($editable || ($generate_setters_in_descriptor && $fkind{$fieldname} eq 'basic'));
             $flags = join(" | ", @flags);
             $flags = "0" if (@flags==());
             print CC "        $flags,\n";
@@ -1941,8 +1931,8 @@ sub generateDescriptorClass
     for (my $i=0; $i<$fieldcount; $i++)
     {
         $fieldname = $fieldlist[$i];
-        $editableprop = $fprops{$fieldname}->{editable};
-        if ($editableprop eq 'true' || $editableprop eq '1' || ($generate_setters_in_descriptor && $fkind{$fieldname} eq 'basic')) {
+        my $editable = propertyAsBool($fprops{$fieldname}->{editable});
+        if ($editable || ($generate_setters_in_descriptor && $fkind{$fieldname} eq 'basic')) {
             if ($classtype eq 'struct') {
                 if ($fisarray{$fieldname}) {
                     if ($farraysize{$fieldname} ne '') {
@@ -2151,5 +2141,13 @@ sub lookupExistingEnumName($$)
     return '';  # "not found"
 }
 
-
+sub propertyAsBool($)
+{
+    my($propval) = @_;
+    if (!defined($propval) || ($propval eq "false")) {
+        return 0;  # false
+    } else {
+        return 1;  # true
+    }
+}
 

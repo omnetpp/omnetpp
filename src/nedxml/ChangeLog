@@ -1,3 +1,7 @@
+2009-07-18  Andras Varga
+
+	* opp_msgc: further refinements related to recent changes
+
 2009-07-16  Andras Varga
 
 	* nedxml: fixes in comment parsing (tabs were handled incorrectly)
@@ -30,10 +34,16 @@
 	      SomeData data;
 	  }
 
-   XXX Names from the global namespace need to be prefixed with
-   XXX rules are:
-   XXX .....
-   XXX e.g.:  class cQueue; is not good, you need: class ::cQueue;
+	If the message file declares a namespace, then unqualified names in 
+	type announcements are understood as from the same namespace; names 
+	from the global namespace need to be explicitly prefixed with "::"
+	to remove ambiguity. Thus, you need write "class ::cQueue;" and not
+	"class cQueue;".
+
+	  namespace foo;
+	  packet MyPacket;  // understood as foo::MyPacket
+	  class cQueue;     // WRONG -- would be understood as foo::cQueue
+	  class ::cQueue;   // correct
 
 	* opp_msgc: improved cplusplus blocks: their contents can be placed 
 	into or outside the namespace {...} block in the generated header file,
@@ -48,18 +58,15 @@
 	* opp_msgc: implemented @codegen and @descriptor properties (msg-file
 	equivalent of -Xnc, -Xnd, -Xns command line options):
 
-	- @codegen(false) in a message/class/struct instructs opp_msgc not to 
-	  generate code for the class (this is useful if the class already 
-	  exists, and one only wants to generate reflection info for it)
+	- @existingClass(true) in a message/class/struct instructs opp_msgc 
+	  not to generate code for the class (this is useful if the class 
+	  already exists, and one only wants to generate reflection info for it)
 
 	- @descriptor(false) instructs opp_msgc not to generate reflection
 	  info (cClassDescriptor) for the class
 
 	- @descriptor(readonly) instructs opp_msgc not to generate field
 	  setters for the reflection info class (cClassDescriptor)
-
-  #FIXME better names! e.g. @generateClass(),@generateDescriptor(),@existingClass()?
-  #XXX maybe: @existingClass; @descriptor(false); @editable(false)  <--- YES!!!
 
   	* opp_msgc: added generation of descriptor method findField()
 
