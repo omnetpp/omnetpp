@@ -1,5 +1,5 @@
 %description:
-Test @codegen(false) property
+Test @existingClass property
 
 %file: test.msg
 
@@ -11,14 +11,14 @@ namespace @TESTNAME@;
 
 class Foo
 {
-    @codegen(false);
+    @existingClass;
     bool field1;
     int field2;
 };
 
 struct Point
 {
-    @codegen(false);
+    @existingClass;
     double x;
     double y;
 };
