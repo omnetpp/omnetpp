@@ -84,8 +84,8 @@ public class PaletteManager {
     private static final String GROUP_DELIMITER = "~";
 
     /**
-     * A comparator that uses dictionary ordering and the short name part of a fully qualified name to order
-     * (the part after the last . char)
+     * A comparator that uses dictionary ordering and the short name part of a 
+     * fully qualified name to order (the part after the last . char)
      */
     private static final class ShortNameComparator implements Comparator<String> {
         public int compare(String first, String second) {
@@ -100,101 +100,38 @@ public class PaletteManager {
     }
     private static ShortNameComparator shortNameComparator = new ShortNameComparator();
 
+    /**
+     * Comparator for ordering items in the Submodules drawer. First order by score,
+     * then by short name. 
+     * 
+     * IMPORTANT: A new instance must be used for every sorting, because we cache 
+     * the scores to avoid excessive calls to calculateScore()!  
+     */
     protected class SubmoduleComparator implements Comparator<INEDTypeInfo> {
-        // TODO: this is called all the time during reorder (seems to be a non issue right now, but might be one later)
-        private int calculatePoints(INEDTypeInfo typeInfo) {
-            if (typeInfo == null)
-                return 0; // for separators
-            else {
-                int point = 0;
-                INedTypeElement element = typeInfo.getNEDElement();
-                HashSet<String> gateLabels = new HashSet<String>();
-                HashSet<String> containsLabels = new HashSet<String>();
-                HashSet<String> submoduleLabels = new HashSet<String>();
-                NedFileElementEx editedElement = hostingEditor.getModel();
-
-                for (INedTypeElement nedTypeElement : editedElement.getTopLevelTypeNodes()) {
-                    List<String> labels = NEDElementUtilEx.getPropertyValues(nedTypeElement, "contains");
-                    
-                    if (nedTypeElement.getNEDTypeInfo() == typeInfo)
-                        continue;
-
-                    if (nedTypeElement instanceof CompoundModuleElementEx) {
-                        CompoundModuleElementEx compoundModule = (CompoundModuleElementEx)nedTypeElement;
-    
-                        if (labels.isEmpty() && compoundModule.isNetwork())
-                            labels.add("node");
-    
-                        for (SubmoduleElementEx submodule : compoundModule.getSubmodules()) {
-                            INEDTypeInfo submoduleTypeInfo = submodule.getNEDTypeInfo();
-                            submoduleLabels.addAll(NEDElementUtilEx.getLabels(submoduleTypeInfo.getNEDElement()));
-                            
-                            if (submoduleTypeInfo != null) {
-                                if (submoduleTypeInfo == element.getNEDTypeInfo())
-                                    point += 10; // already used as a submodule
-                                
-                                for (GateElementEx gate : submoduleTypeInfo.getGateDeclarations().values())
-                                    gateLabels.addAll(getGateLabels(gate, false));
-                            }
-                        }
-                        
-                        for (GateElementEx gate : compoundModule.getGateDeclarations().values())
-                            gateLabels.addAll(getGateLabels(gate, false));
-                    }
-    
-                    containsLabels.addAll(labels);
-                }
-    
-                for (String label : NEDElementUtilEx.getLabels(element)) {
-                    if (containsLabels.contains(label))
-                        point += 5; // matching @contains and @labels
-                    
-                    if (submoduleLabels.contains(label))
-                        point += 2; // matching @labels with submodule's type @labels
-                }
-    
-                for (GateElementEx gate : typeInfo.getGateDeclarations().values())
-                    for (String label : getGateLabels(gate, true))
-                        if (gateLabels.contains(label))
-                            point += 1; // matching gate @labels
-
-                return point;
-            }
-        }
-
-        private ArrayList<String> getGateLabels(GateElementEx gate, boolean negate) {
-            ArrayList<String> labels = NEDElementUtilEx.getLabels(gate);
-            
-            for (int i = 0; i < labels.size(); i++) {
-                int type = gate.getType();
-                
-                if (negate) {
-                    if (type == NEDElementConstants.NED_GATETYPE_INPUT)
-                        type = NEDElementConstants.NED_GATETYPE_OUTPUT;
-                    else if (type == NEDElementConstants.NED_GATETYPE_OUTPUT)
-                        type = NEDElementConstants.NED_GATETYPE_INPUT;
-                }
-
-                labels.set(i, labels.get(i) + NEDElement.gateTypeToString(type));
-            }
-            
-            return labels;
-        }
-        
-        private String getName(INEDTypeInfo typeInfo) {
-            return typeInfo == null ? "" : typeInfo.getName();
-        }
-
+    	private Map<INEDTypeInfo,Integer> cachedScores = new HashMap<INEDTypeInfo, Integer>();
+    	
         public int compare(INEDTypeInfo first, INEDTypeInfo second) {
-            int firstPoint = calculatePoints(first);
-            int secondPoint = calculatePoints(second);
+            int firstScore = getScore(first);
+            int secondScore = getScore(second);
             String firstShortName = getName(first);
             String secondShortName = getName(second);
 
-            if (secondPoint == firstPoint)
+            if (secondScore == firstScore)
                 return StringUtils.dictionaryCompare(firstShortName, secondShortName);
             else
-                return secondPoint - firstPoint;
+                return secondScore - firstScore;
+        }
+
+        private String getName(INEDTypeInfo typeInfo) {
+            return typeInfo == null ? "" : typeInfo.getName();
+        }
+        
+        private int getScore(INEDTypeInfo typeInfo) {
+        	if (!cachedScores.containsKey(typeInfo)) {
+        		int score = calculateScore(typeInfo);
+        		cachedScores.put(typeInfo, score);
+        	}
+            return cachedScores.get(typeInfo);
         }
     }
     
@@ -663,4 +600,97 @@ public class PaletteManager {
 
         return entries;
     }
+
+    /**
+     * In the Submodules drawer, types are ordered by score. There's a separator
+     * after the ones with >0 scores.
+     */
+    private int calculateScore(INEDTypeInfo typeInfo) {
+        if (typeInfo == null)
+            return 0; // for separators
+        else {
+            int score = 0;
+            INedTypeElement element = typeInfo.getNEDElement();
+            HashSet<String> gateLabels = new HashSet<String>();
+            HashSet<String> containsLabels = new HashSet<String>();
+            HashSet<String> submoduleLabels = new HashSet<String>();
+            NedFileElementEx editedElement = hostingEditor.getModel();
+
+            // fill in gateLabels, containsLabels, and submoduleLabels
+            for (INedTypeElement nedTypeElement : editedElement.getTopLevelTypeNodes()) {
+                List<String> labels = NEDElementUtilEx.getPropertyValues(nedTypeElement, "contains");
+                
+                if (nedTypeElement.getNEDTypeInfo() == typeInfo)
+                    continue;
+
+                if (nedTypeElement instanceof CompoundModuleElementEx) {
+                    CompoundModuleElementEx compoundModule = (CompoundModuleElementEx)nedTypeElement;
+
+                    if (labels.isEmpty() && compoundModule.isNetwork())
+                        labels.add("node");
+
+                    for (SubmoduleElementEx submodule : compoundModule.getSubmodules()) {
+                        INEDTypeInfo submoduleTypeInfo = submodule.getNEDTypeInfo();
+                        submoduleLabels.addAll(NEDElementUtilEx.getLabels(submoduleTypeInfo.getNEDElement()));
+                        
+                        if (submoduleTypeInfo != null) {
+                            if (submoduleTypeInfo == element.getNEDTypeInfo())
+                                score += 10; // already used as a submodule
+                            
+                            for (GateElementEx gate : submoduleTypeInfo.getGateDeclarations().values())
+                                gateLabels.addAll(getGateLabels(gate, false));
+                        }
+                    }
+                    
+                    for (GateElementEx gate : compoundModule.getGateDeclarations().values())
+                        gateLabels.addAll(getGateLabels(gate, false));
+                }
+
+                containsLabels.addAll(labels);
+            }
+
+            // honor if it has a @label also in compound module's @contains list,
+            // or a @label with the submodules already in the compound modules
+            for (String label : NEDElementUtilEx.getLabels(element)) {
+                if (containsLabels.contains(label))
+                    score += 5; // matching @contains and @labels
+                
+                if (submoduleLabels.contains(label))
+                    score += 2; // matching @labels with submodule's type @labels
+            }
+
+            // honor if it has a gate that can be connected to an existing submodule or 
+            // to the parent compound module
+            for (GateElementEx gate : typeInfo.getGateDeclarations().values())
+                for (String label : getGateLabels(gate, true))  // negate==true: among 2 submods, an input can be connected to an output, and vica versa
+                    if (gateLabels.contains(label))
+                        score += 1; // matching gate @labels
+
+            //System.out.println(typeInfo.getName() + ": " + score + " points");
+            return score;
+        }
+    }
+
+    /**
+     * Helper for calculateScore(). Returns a collection of label+gateType strings!
+     */
+    private ArrayList<String> getGateLabels(GateElementEx gate, boolean negate) {
+        ArrayList<String> labels = NEDElementUtilEx.getLabels(gate);
+        
+        for (int i = 0; i < labels.size(); i++) {
+            int type = gate.getType();
+            
+            if (negate) {
+                if (type == NEDElementConstants.NED_GATETYPE_INPUT)
+                    type = NEDElementConstants.NED_GATETYPE_OUTPUT;
+                else if (type == NEDElementConstants.NED_GATETYPE_OUTPUT)
+                    type = NEDElementConstants.NED_GATETYPE_INPUT;
+            }
+
+            labels.set(i, labels.get(i) + "/" + NEDElement.gateTypeToString(type));
+        }
+        
+        return labels;
+    }
+
 }
