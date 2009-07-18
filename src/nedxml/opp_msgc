@@ -8,6 +8,7 @@ $MSGC_VERSION_HEX = "0x0401";
 
 sub processFile($);
 sub quote($);
+sub unquote($);
 sub canonicalizeQName($$);
 sub prefixWithNamespace($$);
 sub lookupExistingClassName($$);
@@ -662,7 +663,7 @@ sub processFile($)
                 # store property
                 $propname = $1;
                 $propvalue = $2;
-                $props{$propname} = $propvalue;
+                $props{$propname} = unquote($propvalue);
 
                 if ($propname =~ /^($RESERVED_WORDS)$/) {
                     print "$filename: Error: property name '$propname' is a reserved word\n"; $ret=1;
@@ -674,7 +675,7 @@ sub processFile($)
 
                 # field properties, with @propertyname(value) syntax
                 %fieldprop = ();
-                $field =~ s|\@([_a-z0-9]+)\((.*?)\)|$fieldprop{$1}=$2;""|gsei;
+                $field =~ s|\@([_a-z0-9]+)\((.*?)\)|$fieldprop{$1}=unquote($2);""|gsei;
                 $field =~ s|\@([_a-z0-9]+)|$fieldprop{$1}="";""|gsei;  # @props and @props() should be equivalent (value="")
 
                 # abstract
@@ -2036,8 +2037,23 @@ sub generateDescriptorClass
 sub quote($)
 {
     my($text) = @_;
+    $text =~ s/\\/\\\\/gs;
     $text =~ s/\n/\\n/gs;
     $text =~ s/"/\\"/g;
+    return $text;
+}
+
+#
+# If quoted, unquote it, otherwise return it unchanged
+#
+sub unquote($)
+{
+    my($text) = @_;
+    if ($text =~ s/^"(.*)"$/$1/) {
+        $text =~ s/\\"/"/gs;
+        $text =~ s/\\n/\n/gs;
+        $text =~ s/\\\\/\\/gs;
+    }
     return $text;
 }
 
