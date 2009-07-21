@@ -1,3 +1,8 @@
+2009-07-07  Andras Varga
+
+	* fix: there was no error message if a nonexistent configuration name
+	was given via -c or cmdenv-config-name.
+
 2009-03-12  ------ omnetpp-4.0 released ------
 
 2009-02-27  ------ omnetpp-4.0rc2 released ------
