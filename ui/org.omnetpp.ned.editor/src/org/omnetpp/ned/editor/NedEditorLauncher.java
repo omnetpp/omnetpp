@@ -35,20 +35,38 @@ public class NedEditorLauncher implements IEditorLauncher {
             IFile file = getNedFile(filePath);
             NEDResources res = NEDResourcesPlugin.getNEDResources();
             if (!ProjectUtils.isOpenOmnetppProject(file.getProject())) {
-                IDE.openEditor(page, file, EditorsUI.DEFAULT_TEXT_EDITOR_ID);
-                MessageDialog.openInformation(workbenchWindow.getShell(),
+                boolean addNature = MessageDialog.openQuestion(workbenchWindow.getShell(),
                         "Not an OMNeT++ Project",
-                        "NED Files can be graphically edited only if the Project is" +
-                        " an OMNeT++ Project. Please use the Convert to OMNeT++ Project " +
-                        "Wizard to convert this project.");
+                        "NED files can be graphically edited only if the project is " +
+                        "an OMNeT++ Project. Do you want add OMNeT++ support to the project?\n\n" +
+                        "NOTE: This operation will NOT add C++ development support to the project -- " +
+                        "if you want to be able to edit sources and rebuild binaries, it is recommended " +
+                        "that you delete this project from the workspace, and recreate it with the " +
+                        "New OMNeT++ Project wizard.");
+                if (addNature) {
+                	ProjectUtils.addOmnetppNature(file.getProject(), null);
+                    if (!ProjectUtils.isOpenOmnetppProject(file.getProject())) {
+                        MessageDialog.openInformation(workbenchWindow.getShell(),
+                                "Not an OMNeT++ Project",
+                                "Conversion unsuccessful.");
+                        IDE.openEditor(page, file, EditorsUI.DEFAULT_TEXT_EDITOR_ID);
+                    }
+                    else {
+                    	IDE.openEditor(page, file, NedEditor.ID);
+                    }
+                }
+                else {
+                	// open in text editor
+                	IDE.openEditor(page, file, EditorsUI.DEFAULT_TEXT_EDITOR_ID);
+                }
                 return;
             }
             if (res.getNedSourceFolderFor(file) == null) {
                 IDE.openEditor(page, file, EditorsUI.DEFAULT_TEXT_EDITOR_ID);
                 MessageDialog.openInformation(workbenchWindow.getShell(),
                         "NED file is not in source folder",
-                        "This NED file is not under a NED Source Folder, and" +
-                        " will be opened in a standard text editor. If you want to edit it graphically, " +
+                        "This NED file is not under a NED Source Folder, and " +
+                        "will be opened in a standard text editor. If you want to edit it graphically, " +
                         "please move it into a NED Source Folder. NED Source Folders " +
                         "can be configured in the Project Properties dialog.");
                 return;

@@ -68,11 +68,6 @@ import org.omnetpp.ned.model.pojo.PropertyElement;
  *
  * @author rhornig, andras
  */
-//TODO: palette entries: LRU list + all types 
-// LRU list contains:
-//   - all types from the local package (including inner types)
-//   - all types imported into the current NED type
-// --Andras
 public class PaletteManager {
 	private static final String NBSP = "\u00A0";
     private static final String GROUP_PROPERTY = "group";
@@ -275,7 +270,6 @@ public class PaletteManager {
         }
         currentEntries = newEntries;
 
-        // TODO sort the containers by name
         ArrayList<PaletteContainer> drawers = new ArrayList<PaletteContainer>();
         drawers.add(toolsContainer);
         drawers.add(typesContainer);
@@ -605,7 +599,7 @@ public class PaletteManager {
      * In the Submodules drawer, types are ordered by score. There's a separator
      * after the ones with >0 scores.
      */
-    private int calculateScore(INEDTypeInfo typeInfo) {
+    protected int calculateScore(INEDTypeInfo typeInfo) {
         if (typeInfo == null)
             return 0; // for separators
         else {
@@ -617,6 +611,7 @@ public class PaletteManager {
             NedFileElementEx editedElement = hostingEditor.getModel();
 
             // fill in gateLabels, containsLabels, and submoduleLabels
+            // also: score+=10 to all submodule types already used
             for (INedTypeElement nedTypeElement : editedElement.getTopLevelTypeNodes()) {
                 List<String> labels = NEDElementUtilEx.getPropertyValues(nedTypeElement, "contains");
                 
@@ -631,10 +626,11 @@ public class PaletteManager {
 
                     for (SubmoduleElementEx submodule : compoundModule.getSubmodules()) {
                         INEDTypeInfo submoduleTypeInfo = submodule.getNEDTypeInfo();
-                        submoduleLabels.addAll(NEDElementUtilEx.getLabels(submoduleTypeInfo.getNEDElement()));
-                        
+                       
                         if (submoduleTypeInfo != null) {
-                            if (submoduleTypeInfo == element.getNEDTypeInfo())
+                        	submoduleLabels.addAll(NEDElementUtilEx.getLabels(submoduleTypeInfo.getNEDElement()));
+
+                        	if (submoduleTypeInfo == element.getNEDTypeInfo())
                                 score += 10; // already used as a submodule
                             
                             for (GateElementEx gate : submoduleTypeInfo.getGateDeclarations().values())
@@ -650,7 +646,7 @@ public class PaletteManager {
             }
 
             // honor if it has a @label also in compound module's @contains list,
-            // or a @label with the submodules already in the compound modules
+            // or a @label common with the submodules already in the compound modules
             for (String label : NEDElementUtilEx.getLabels(element)) {
                 if (containsLabels.contains(label))
                     score += 5; // matching @contains and @labels

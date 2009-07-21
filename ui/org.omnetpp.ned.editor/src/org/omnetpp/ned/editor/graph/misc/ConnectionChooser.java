@@ -118,7 +118,7 @@ public class ConnectionChooser {
                     menuItemAdded = true;
                 }
             if (!menuItemAdded)
-                createDisabledMenuItem(menu, "No gates with matching labels property");
+                createDisabledMenuItem(menu, "No gates with matching labels");
           
             // add menu items for connections without matching gate labels
             createSeparatorMenuItem(menu);
@@ -138,7 +138,7 @@ public class ConnectionChooser {
                     menuItemAdded = true;
                 }
             if (!menuItemAdded)
-                createDisabledMenuItem(menu, "No gates without matching labels property");
+                createDisabledMenuItem(menu, "No gates without matching labels");
             else if (useMoreSubmenu) {
                 MenuItem menuItem = menu.addMenuItem(SWT.PUSH);
                 menuItem.setText("More...");
