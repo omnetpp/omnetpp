@@ -16,9 +16,19 @@
 }
 
 /*--------------------------------------------------------------------------
+ * eventnumber_t <--> long mapping
+ *--------------------------------------------------------------------------*/
+%typemap(jni)    eventnumber_t "jlong"
+%typemap(jtype)  eventnumber_t "long"
+%typemap(jstype) eventnumber_t "long"
+%typemap(javain) eventnumber_t "$javainput"
+%typemap(javaout) eventnumber_t {
+    return $jnicall;
+  }
+
+/*--------------------------------------------------------------------------
  * int32 <--> int mapping
  *--------------------------------------------------------------------------*/
-#define int32 int32_t
 %typemap(jni)    int32_t "jint"
 %typemap(jtype)  int32_t "int"
 %typemap(jstype) int32_t "int"
@@ -30,7 +40,6 @@
 /*--------------------------------------------------------------------------
  * int64 <--> long mapping
  *--------------------------------------------------------------------------*/
-#define int64 int64_t
 %typemap(jni)    int64_t "jlong"
 %typemap(jtype)  int64_t "long"
 %typemap(jstype) int64_t "long"
@@ -113,4 +122,4 @@ namespace std {
     return (int)getCPtr(this);
   }
 %}
-%enddef 
+%enddef
