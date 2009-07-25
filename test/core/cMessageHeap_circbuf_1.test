@@ -1,0 +1,153 @@
+%description:
+Test the cMessageHeap optimization using the circular buffer,
+introduced at 20090725.
+
+Note: this test only schedules events for the current simTime()!
+Separate test needed for that.
+
+%file: test.ned
+
+simple Test {
+    @isNetwork(true);
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+namespace @TESTNAME@ {
+
+class Test : public cSimpleModule
+{
+  protected:
+    cMessageHeap& fes;
+    std::vector<cMessage*> shadow;  // t==simTime() events
+    std::vector<cMessage*> future;  // future events
+  public:
+    Test() : fes(simulation.getMessageQueue()) {}
+    virtual void initialize();
+    void verifyFES();
+    void insertMessages(int n);
+    void removeRandomMessages(int n);
+    virtual void handleMessage(cMessage *msg) {}
+};
+
+Define_Module(Test);
+
+void Test::verifyFES()
+{
+    // produce reference event list (expected = shadow + future)
+    int i;
+    std::vector<cMessage*> expected = shadow;
+    for (i=0; i<future.size(); i++)
+        expected.push_back(future[i]);
+    ASSERT(expected.size()==shadow.size()+future.size());
+
+    // verify
+    ASSERT(fes.length()==expected.size());
+    ASSERT(fes.isEmpty()==expected.empty());
+    ASSERT(fes.peekFirst()==(expected.empty() ? NULL : expected[0]));
+
+    for (i=0; i<fes.length(); i++)
+    {
+        ASSERT(fes.peek(i)==expected[i]);
+        ASSERT(expected[i]->getOwner()==&fes);
+    }
+
+    i=0;
+    for (cMessageHeap::Iterator it(fes); !it.end(); i++,it++)
+        ASSERT(it()==expected[i]);
+}
+
+void Test::insertMessages(int n)
+{
+    ev << "len=" << fes.length() << "; adding " << n << " events\n";
+    verifyFES();
+    for (int i=0; i<n; i++)
+    {
+        cMessage *msg = new cMessage();
+        scheduleAt(simTime(), msg);
+        shadow.push_back(msg);
+        verifyFES();
+    }
+}
+
+void Test::removeRandomMessages(int n)
+{
+    ev << "len=" << fes.length() << "; randomly removing max " << n << " events\n";
+    verifyFES();
+    for (int i=0; i<n && !shadow.empty(); i++)
+    {
+        int k = intuniform(0, shadow.size()-1);
+        cMessage *msg = shadow[k];
+        if (k==0 && intuniform(0,1)==0) {
+            cMessage *first = fes.removeFirst();
+            ASSERT(first==msg);
+        } else {
+            fes.remove(msg);
+        }
+        shadow.erase(shadow.begin()+k);
+        delete msg;
+        verifyFES();
+    }
+}
+
+void Test::initialize()
+{
+    // we'll directly exercise the FES (this is something that normal
+    // simulation models are NOT supposed to do...)
+
+    // fill up FES to a varying degree (n=1..20 events), and empty them;
+    // this will exercise the circbuf reallocation code in cMessageHeap
+    for (int n=1; n<20; n++)
+    {
+        for (int rep=0; rep<3; rep++)
+        {
+            insertMessages(n);
+            removeRandomMessages(n);
+        }
+    }
+
+    // add at least 1 future message
+    cMessage *msg = new cMessage();
+    scheduleAt(simTime()+1, msg);
+    future.push_back(msg);
+    verifyFES();
+
+    // randomly add/remove events for the current simtime
+    for (int i=0; i<5000; i++)
+    {
+        insertMessages(intuniform(0,9));
+        removeRandomMessages(intuniform(0,10));
+    }
+
+    ev << "done\n";
+}
+
+}; //namespace
+
+%contains: stdout
+len=0; adding 1 events
+len=1; randomly removing max 1 events
+len=0; adding 1 events
+len=1; randomly removing max 1 events
+len=0; adding 1 events
+len=1; randomly removing max 1 events
+len=0; adding 2 events
+len=2; randomly removing max 2 events
+len=0; adding 2 events
+len=2; randomly removing max 2 events
+len=0; adding 2 events
+len=2; randomly removing max 2 events
+len=0; adding 3 events
+len=3; randomly removing max 3 events
+len=0; adding 3 events
+len=3; randomly removing max 3 events
+len=0; adding 3 events
+len=3; randomly removing max 3 events
+len=0; adding 4 events
+len=4; randomly removing max 4 events
+
+%contains: stdout
+done
+
