@@ -126,7 +126,7 @@ class SIM_API cMessage : public cOwnedObject
     simtime_t sent,delivd;     // time of sending & delivery -- set internally
     simtime_t tstamp;          // time stamp -- user-defined meaning
 
-    int heapindex;             // used by cMessageHeap (-1 if not on heap)
+    int heapindex;             // used by cMessageHeap (-1 if not on heap; all other values, including negative ones, means "on the heap")
     unsigned long insertordr;  // used by cMessageHeap
 
     eventnumber_t prev_event_num; // event number of the sending/scheduling this message

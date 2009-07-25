@@ -52,40 +52,49 @@ class SIM_API cMessageHeap : public cOwnedObject
         /**
          * Constructor.
          */
-        Iterator(const cMessageHeap& mh)  {q=const_cast<cMessageHeap*>(&mh);pos=1;}
+        Iterator(const cMessageHeap& mh)  {q=const_cast<cMessageHeap*>(&mh);pos=0;}
 
         /**
          * Reinitializes the iterator object.
          */
-        void init(const cMessageHeap& mh) {q=const_cast<cMessageHeap*>(&mh);pos=1;}
+        void init(const cMessageHeap& mh) {q=const_cast<cMessageHeap*>(&mh);pos=0;}
 
         /**
          * Returns the current object.
          */
-        cMessage *operator()()      {return q->h[pos];}
+        cMessage *operator()()  {return q->peek(pos);}
 
         /**
          * Returns the current object, then moves the iterator to the next item.
          * If the iterator has reached the end of the list, NULL is returned.
          */
-        cMessage *operator++(int)   {return pos<=q->n ? q->h[++pos] : NULL;}
+        cMessage *operator++(int)  {return end() ? NULL : q->peek(pos++);}
 
         /**
          * Returns true if the iterator has reached the end of the list.
          */
-        bool end() const   {return (bool)(pos>q->n);}
+        bool end() const  {return pos>=q->getLength();}
     };
 
     friend class Iterator;
 
   private:
+    // heap data structure
     cMessage **h;             // pointer to the 'heap'  (h[0] always empty)
     int n;                    // number of elements in the heap
     int size;                 // size of allocated h array
     unsigned long insertcntr; // counts insertions
 
-    // internal
+    // circular buffer for events scheduled for the current simtime (quite frequent)
+    cMessage **cb;            // size of the circular buffer
+    int cbsize;               // always power of 2
+    int cbhead, cbtail;       // cbhead is inclusive, cbtail is exclusive
+
+    // internal: restore heap
     void shiftup(int from=1);
+
+    int cblength() const  {return (cbtail-cbhead) & (cbsize-1);}
+    cMessage *cbget(int k)  {return cb[(cbhead+k) & (cbsize-1)];}
 
   public:
     /** @name Constructors, destructor, assignment */
@@ -185,12 +194,12 @@ class SIM_API cMessageHeap : public cOwnedObject
     /**
      * Returns the number of messages in the heap.
      */
-    int getLength() const {return n;}
+    int getLength() const {return cblength() + n;}
 
     /**
      * Returns true if the heap is empty.
      */
-    bool isEmpty() const {return n==0;}
+    bool isEmpty() const {return cbhead==cbtail && n==0;}
 
     /**
      * Alias for getLength().

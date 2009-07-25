@@ -1,5 +1,29 @@
 2009-07-25  Andras Varga
 
+	* cmessageheap.cc: FES performance improvement. cMessageHeap was
+	changed to more efficiently handle the insertion and removal of events
+	scheduled for the current simulation time. Such events are actually
+	quite common due to plain (zero delay, zero datarate) connections
+	between modules. The idea is to handle these events separately,
+	without touching the normal FES data structure (binary heap).
+
+	  Such messages (i.e. with arrivalTime==simTime() and priority==0)
+	are added at the tail of a circular buffer, an O(1) operation.
+	removeFirst() also checks the circular buffer first: if the buffer is
+	not empty, it removes and returns the head element from it (also O(1));
+	it only goes to the heap if the buffer is empty. This way the O(log n)
+	heap insertion and removal operations are eliminated for these
+	messages and are replaced with a small O(1) cost; the overall
+	performance gain can be quite significant if the FES contains a lot
+	of events (a few thousand or more). The extra overhead for non-matching
+	messages is nominal. The circular buffer is reallocated when it gets
+	full.
+
+	  The observed performance gain was ~5% for a wireless INET model
+	with an average FES length of ~500 events; a higher gain can be
+	expected with larger models where FES handling dominates the runtime.
+	For small models (FES size ~10) the performance gain is about 1%.
+
 	* cmessageheap.cc: minor performance improvement: implemented operator>
 	for cMessage instead of operator<=. This results in some performance
 	gain for debug builds (not in optimized builds though where the compiler
@@ -41,7 +65,7 @@
 
 2009-02-04  Andras Varga
 
-	* nedsupport.cc: fix: NED: a channel type could not refer to local 
+	* nedsupport.cc: fix: NED: a channel type could not refer to local
 	parameters ("this.param" caused an error)
 
 2009-01-10  Andras Varga
