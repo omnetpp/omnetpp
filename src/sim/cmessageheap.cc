@@ -77,7 +77,7 @@ cMessageHeap::cMessageHeap(const char *name, int siz) : cOwnedObject(name, false
     size = siz;
     h = new cMessage *[size+1];    // +1 is necessary because h[0] is not used
 
-    cbsize = 8; // must be power of 2!
+    cbsize = 4; // must be power of 2!
     cb = new cMessage *[cbsize];
     cbhead = cbtail = 0;
 }
@@ -193,7 +193,7 @@ void cMessageHeap::insert(cMessage *event)
         if (cbtail==cbhead)
         {
             // reallocate
-            int newsize = 2*cbsize;
+            int newsize = 2*cbsize; // cbsize MUST be power of 2
             cMessage **newcb = new cMessage*[newsize];
             for (int i=0; i<cbsize; i++)
                 (newcb[i] = cb[(cbhead+i)&(cbsize-1)])->heapindex = CBHEAPINDEX(i);
@@ -301,6 +301,7 @@ cMessage *cMessageHeap::remove(cMessage *event)
         int iminus1 = i; CBINC(i);
         for (/**/; i!=cbtail; iminus1=i, CBINC(i))
             (cb[iminus1] = cb[i])->heapindex = CBHEAPINDEX(iminus1);
+        cbtail = (cbtail-1)&(cbsize-1);
     }
     else
     {
