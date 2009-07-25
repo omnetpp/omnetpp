@@ -327,7 +327,7 @@ class SIM_API cMessage : public cOwnedObject
     /**
      * Returns the message's time stamp.
      */
-    simtime_t getTimestamp() const {return tstamp;}
+    simtime_t_retval getTimestamp() const {return tstamp;}
 
     /**
      * Returns the context pointer.
@@ -564,13 +564,13 @@ class SIM_API cMessage : public cOwnedObject
     /**
      * Returns time when the message was created.
      */
-    simtime_t getCreationTime() const {return created;}
+    simtime_t_retval getCreationTime() const {return created;}
 
     /**
      * Returns time when the message was sent/scheduled or 0 if the message
      * hasn't been sent yet.
      */
-    simtime_t getSendingTime()  const {return sent;}
+    simtime_t_retval getSendingTime()  const {return sent;}
 
     /**
      * Returns time when the message arrived (or will arrive if it
@@ -586,7 +586,7 @@ class SIM_API cMessage : public cOwnedObject
      *
      * @see getDuration()
      */
-    simtime_t getArrivalTime()  const {return delivd;}
+    simtime_t_retval getArrivalTime()  const {return delivd;}
 
     /**
      * Return true if the message arrived through the given gate.
@@ -905,7 +905,7 @@ class SIM_API cPacket : public cMessage
      *
      * @see isReceptionStart(), getArrivalTime(), cDatarateChannel
      */
-    simtime_t getDuration() const {return duration;}
+    simtime_t_retval getDuration() const {return duration;}
 
     /**
      * Tells whether this packet represents the start or the end of the

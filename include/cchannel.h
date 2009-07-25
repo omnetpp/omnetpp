@@ -240,12 +240,12 @@ class SIM_API cIdealChannel : public cChannel //implies noncopyable
     /**
      * Returns zero.
      */
-    virtual simtime_t calculateDuration(cMessage *msg) const {return 0;}
+    virtual simtime_t calculateDuration(cMessage *msg) const {return SIMTIME_ZERO;}
 
     /**
      * Returns zero.
      */
-    virtual simtime_t getTransmissionFinishTime() const {return 0;}
+    virtual simtime_t getTransmissionFinishTime() const {return SIMTIME_ZERO;}
 
     /**
      * Returns false.

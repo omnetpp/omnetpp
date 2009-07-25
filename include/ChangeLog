@@ -1,6 +1,23 @@
+2009-07-25  Andras Varga
+
+	* performance improvement: cMessage::getArrivalTime() was consuming
+	10-20% of CPU time in many configurations, see bug #22,
+	http://dev.omnetpp.org/bugs/view.php?id=22. 
+
+	Solution: change return type of getArrivalTime() and other methods
+	from simtime_t to simtime_t_retval (which is a new typedef that maps to
+	const simtime_t&). Reason: on some platforms and configurations, esp.
+	in debug builds, returning a const reference is more efficient than 
+	returning by value (even though SimTime is only 64 bits and would fit
+	in register(s)). 
+
+	On 64-bit architectures and optimized builds (-O2/-O3) this change may 
+	actually decrease performance; this is to be investigated, and 
+	simtime_t_retval conditionally defined as plain simtime_t.
+
 2009-07-10  Andras Varga
 
-	* cClassDesctiptor: added findField() method
+	* cClassDescriptor: added findField() method
 
 2009-06-25  Andras Varga
 

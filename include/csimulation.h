@@ -355,7 +355,7 @@ class SIM_API cSimulation : public cNoncopyableOwnedObject
      * Returns the current simulation time. (It is also available via the
      * global simTime() function.)
      */
-    simtime_t getSimTime() const  {return sim_time;}
+    simtime_t_retval getSimTime() const  {return sim_time;}
 
     /**
      * Returns the sequence number of current event.
