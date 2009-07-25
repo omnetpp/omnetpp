@@ -33,18 +33,18 @@ USING_NAMESPACE
 Register_Class(cMessageHeap);
 
 
-inline int operator <= (cMessage& a, cMessage& b)
+inline bool operator > (cMessage& a, cMessage& b)
 {
-    return (a.getArrivalTime() < b.getArrivalTime()) ? 1 :
-           (a.getArrivalTime() > b.getArrivalTime()) ? 0 :
-           (a.getSchedulingPriority() < b.getSchedulingPriority()) ? 1 :
-           (a.getSchedulingPriority() > b.getSchedulingPriority()) ? 0 :
-            a.getInsertOrder() <= b.getInsertOrder();
+    return a.getArrivalTime() > b.getArrivalTime() ? true :
+           a.getArrivalTime() < b.getArrivalTime() ? false :
+           (a.getSchedulingPriority() > b.getSchedulingPriority()) ? true :
+           (a.getSchedulingPriority() < b.getSchedulingPriority()) ? false :
+            a.getInsertOrder() > b.getInsertOrder();
 }
 
-inline int operator > (cMessage& a, cMessage& b)
+inline bool operator <= (cMessage& a, cMessage& b)
 {
-    return !(a<=b);
+    return !(a>b);
 }
 
 static int qsort_cmp_msgs(const void *p1, const void *p2)
