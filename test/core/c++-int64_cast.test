@@ -1,0 +1,19 @@
+%description:
+Double to int64 cast. The conversion of the below number to long long type
+returns different result if the program is runniong under valgrind. 
+This is a valgrind issue.
+
+%includes:
+#include <stdio.h>
+
+%activity:
+
+char *x = "\x19\x6d\xb2\x9a\xba\x7e\x15\x40";
+double d = *(double *)x;
+ev.printf("\ndouble: %.20f", d);
+ev.printf("\nlong long:%lld \n", (long long)(d*(1e12)));
+
+%contains: stdout
+double: 5.37375871385599968022
+long long:5373758713855
+
