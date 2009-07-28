@@ -200,6 +200,12 @@ There are several useful configuration options that control how a simulation is 
           generate an error. This feature is very useful if you make some cosmetic changes to your
           source and want to be reasonable sure that your changes did not altered the behaviour
           f the model.
+          \begin{warning}
+          The value of the calculated fingerprint is heavily dependent on the accuracy of the floating
+          point arithmetic. There are differences between the floating point handling of AMD and Intel CPUs.
+          Also running under a processor emulator software like \fconfig{valgrind} may produce 
+          different fingerprint. This is normal.
+          \end{warning}
   \item \fconfig{record-eventlog} -- You can turn on the recording of the simulator events. The
            resulting file can be analyzed later in the IDE with the sequence chart tool.
 \end{itemize}
