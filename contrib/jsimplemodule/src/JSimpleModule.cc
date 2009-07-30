@@ -15,6 +15,8 @@ Define_Module(JSimpleModule);
 
 JSimpleModule::JSimpleModule()
 {
+    // Note: we cannot call createJavaModuleObject() here, because the module 
+    // type object (cModuleType) is not yet set on the module
     javaPeer = 0;
 }
 
