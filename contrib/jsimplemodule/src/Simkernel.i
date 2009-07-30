@@ -476,6 +476,8 @@ cSimulation *getSimulation();
 %ignore JSimpleModule::jenv;
 
 %typemap(javacode) JSimpleModule %{
+  {swigSetJavaPeer(this);}
+
   public JSimpleModule() {
     this(0, false);  // and C++ code will call setCPtr() later
   }
@@ -509,7 +511,14 @@ cSimulation *getSimulation();
   protected SimTime simTime() {
     return Simkernel.simTime();
   }
+
+  public static JSimpleModule cast(cModule object) {
+    return (JSimpleModule) JSimpleModule.swigJavaPeerOf(object);
+  }
 %}
+
+%ignore JSimpleModule::swigJavaPeer;
+
 
 // JMessage
 %javamethodmodifiers JMessage::JMessage "private";
@@ -517,9 +526,7 @@ cSimulation *getSimulation();
 %javamethodmodifiers JMessage::swigJavaPeerOf "protected";
 
 %typemap(javacode) JMessage %{
-  public JMessage() {this(null, 0, 99); swigSetJavaPeer(this); }
-  public JMessage(String name) {this(name, 0, 99); swigSetJavaPeer(this); }
-  public JMessage(String name, int kind) {this(name, kind, 99); swigSetJavaPeer(this); }
+  {swigSetJavaPeer(this);}
 
   public static JMessage cast(cMessage object) {
     return (JMessage) JMessage.swigJavaPeerOf(object);

@@ -15,21 +15,21 @@ Define_Module(JSimpleModule);
 
 JSimpleModule::JSimpleModule()
 {
-    javaObject = 0;
+    javaPeer = 0;
 }
 
 JSimpleModule::~JSimpleModule()
 {
-    if (javaObject && finishMethod)
-        jenv->DeleteGlobalRef(javaObject);
+    if (javaPeer && finishMethod)
+        jenv->DeleteGlobalRef(javaPeer);
 }
 
 int JSimpleModule::numInitStages() const
 {
-    if (javaObject==0)
+    if (javaPeer==0)
         return 1; // at the beginning, we can only say "at least one stage"
 
-    int n = jenv->CallIntMethod(javaObject, numInitStagesMethod);
+    int n = jenv->CallIntMethod(javaPeer, numInitStagesMethod);
     checkExceptions();
     return n;
 }
@@ -40,7 +40,7 @@ void JSimpleModule::initialize(int stage)
         createJavaModuleObject();
 
     DEBUGPRINTF("Invoking initialize(%d) on new instance...\n", stage);
-    jenv->CallVoidMethod(javaObject, initializeStageMethod, stage);
+    jenv->CallVoidMethod(javaPeer, initializeStageMethod, stage);
     checkExceptions();
 }
 
@@ -72,32 +72,44 @@ void JSimpleModule::createJavaModuleObject()
     if (setCPtrMethod)
     {
         jmethodID ctor = findMethod(clazz, clazzName, "<init>", "()V");
-        javaObject = jenv->NewObject(clazz, ctor);
+        javaPeer = jenv->NewObject(clazz, ctor);
         checkExceptions();
-        jenv->CallVoidMethod(javaObject, setCPtrMethod, (jlong)this);
+        jenv->CallVoidMethod(javaPeer, setCPtrMethod, (jlong)this);
     }
     else
     {
         jmethodID ctor = findMethod(clazz, clazzName, "<init>", "(J)V");
-        javaObject = jenv->NewObject(clazz, ctor, (jlong)this);
+        javaPeer = jenv->NewObject(clazz, ctor, (jlong)this);
         checkExceptions();
     }
-    javaObject = jenv->NewGlobalRef(javaObject);
+    javaPeer = jenv->NewGlobalRef(javaPeer);
     checkExceptions();
-    JObjectAccess::setObject(javaObject);
+    JObjectAccess::setObject(javaPeer);
 }
 
 void JSimpleModule::handleMessage(cMessage *msg)
 {
     msgToBeHandled = msg;
-    jenv->CallVoidMethod(javaObject, doHandleMessageMethod);
+    jenv->CallVoidMethod(javaPeer, doHandleMessageMethod);
     checkExceptions();
 }
 
 void JSimpleModule::finish()
 {
-    jenv->CallVoidMethod(javaObject, finishMethod);
+    jenv->CallVoidMethod(javaPeer, finishMethod);
     checkExceptions();
 }
 
+void JSimpleModule::swigSetJavaPeer(jobject moduleObject)
+{
+    ASSERT(javaPeer==0);
+    javaPeer = jenv->NewGlobalRef(moduleObject);
+    JObjectAccess::setObject(javaPeer);
+}
+
+jobject JSimpleModule::swigJavaPeerOf(cSimpleModule *object)
+{
+    JSimpleModule *mod = dynamic_cast<JSimpleModule *>(object);
+    return mod ? mod->swigJavaPeer() : 0;
+}
 

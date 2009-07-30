@@ -22,7 +22,7 @@ class JMessage : public cMessage, public JObjectAccess
     mutable jmethodID cloneMethod;
 
   public:
-    explicit JMessage(const char *name, int kind, int dummy);
+    explicit JMessage(const char *name=NULL, int kind=0);
     JMessage(const JMessage& msg);
     virtual ~JMessage();
 

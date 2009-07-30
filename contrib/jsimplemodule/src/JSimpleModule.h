@@ -19,7 +19,7 @@
 class JSimpleModule : public cSimpleModule, public JObjectAccess
 {
   protected:
-    jobject javaObject;
+    jobject javaPeer;
     jmethodID numInitStagesMethod;
     jmethodID initializeStageMethod;
     jmethodID doHandleMessageMethod;
@@ -33,6 +33,10 @@ class JSimpleModule : public cSimpleModule, public JObjectAccess
     JSimpleModule();
     virtual ~JSimpleModule();
     cMessage *retrieveMsgToBeHandled() {return msgToBeHandled;}  // helper for Java
+
+    void swigSetJavaPeer(jobject moduleObject);
+    jobject swigJavaPeer() {return javaPeer;}
+    static jobject swigJavaPeerOf(cSimpleModule *object);
 
   protected:
     virtual int numInitStages() const;
