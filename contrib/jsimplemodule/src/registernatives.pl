@@ -14,7 +14,7 @@ die "no Java file specified" if ($javafile eq '');
 $cppfile = $javafile;
 $cppfile =~ s|\.java|_registerNatives.cc|;
 $cppfile =~ s|^.*[/\\]||;
-$cppfile = $ARGV[1] . "\\" . $cppfile;
+$cppfile = $ARGV[1] . "/" . $cppfile;
 print $cppfile;
 
 open(INFILE, $javafile) || die "cannot open $javafile";
