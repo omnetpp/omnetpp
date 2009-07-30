@@ -36,7 +36,7 @@ class JSimpleModule : public cSimpleModule, public JObjectAccess
 
     void swigSetJavaPeer(jobject moduleObject);
     jobject swigJavaPeer() {return javaPeer;}
-    static jobject swigJavaPeerOf(cSimpleModule *object);
+    static jobject swigJavaPeerOf(cModule *object);
 
   protected:
     virtual int numInitStages() const;

@@ -107,7 +107,7 @@ void JSimpleModule::swigSetJavaPeer(jobject moduleObject)
     JObjectAccess::setObject(javaPeer);
 }
 
-jobject JSimpleModule::swigJavaPeerOf(cSimpleModule *object)
+jobject JSimpleModule::swigJavaPeerOf(cModule *object)
 {
     JSimpleModule *mod = dynamic_cast<JSimpleModule *>(object);
     return mod ? mod->swigJavaPeer() : 0;

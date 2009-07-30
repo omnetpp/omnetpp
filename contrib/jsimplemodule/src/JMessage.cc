@@ -8,7 +8,7 @@ using namespace JUtil;  // for jenv, checkExceptions(), findMethod(), etc
 #define DEBUGPRINTF (void)
 
 
-JMessage::JMessage(const char *name, int kind, int) : cMessage(name, kind)
+JMessage::JMessage(const char *name, int kind) : cMessage(name, kind)
 {
     javaPeer = 0;
     cloneMethod = 0;
