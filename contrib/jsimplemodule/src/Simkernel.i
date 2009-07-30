@@ -479,7 +479,6 @@ cSimulation *getSimulation();
 %javamethodmodifiers JSimpleModule::swigJavaPeerOf "protected";
 
 %typemap(javacode) JSimpleModule %{
-  {swigSetJavaPeer(this);}
 
   public JSimpleModule() {
     this(0, false);  // and C++ code will call setCPtr() later
@@ -524,11 +523,14 @@ cSimulation *getSimulation();
 
 
 // JMessage
+%javamethodmodifiers JMessage::JMessage "private";
 %javamethodmodifiers JMessage::swigSetJavaPeer "private";
 %javamethodmodifiers JMessage::swigJavaPeerOf "protected";
 
 %typemap(javacode) JMessage %{
-  {swigSetJavaPeer(this);}
+  public JMessage() {this(null, 0, 99); swigSetJavaPeer(this); }
+  public JMessage(String name) {this(name, 0, 99); swigSetJavaPeer(this); }
+  public JMessage(String name, int kind) {this(name, kind, 99); swigSetJavaPeer(this); }
 
   public static JMessage cast(cMessage object) {
     return (JMessage) JMessage.swigJavaPeerOf(object);

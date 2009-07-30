@@ -34,8 +34,10 @@ class JSimpleModule : public cSimpleModule, public JObjectAccess
     virtual ~JSimpleModule();
     cMessage *retrieveMsgToBeHandled() {return msgToBeHandled;}  // helper for Java
 
-    void swigSetJavaPeer(jobject moduleObject);
-    jobject swigJavaPeer() {return javaPeer;}
+    jobject swigJavaPeer() { 
+         if (javaPeer==0) createJavaModuleObject(); 
+         return javaPeer; 
+    }
     static jobject swigJavaPeerOf(cModule *object);
 
   protected:

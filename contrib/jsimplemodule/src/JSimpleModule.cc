@@ -26,8 +26,8 @@ JSimpleModule::~JSimpleModule()
 
 int JSimpleModule::numInitStages() const
 {
-    if (javaPeer==0)
-        return 1; // at the beginning, we can only say "at least one stage"
+    if (javaPeer==0) 
+        const_cast<JSimpleModule *>(this)->createJavaModuleObject();
 
     int n = jenv->CallIntMethod(javaPeer, numInitStagesMethod);
     checkExceptions();
@@ -36,9 +36,8 @@ int JSimpleModule::numInitStages() const
 
 void JSimpleModule::initialize(int stage)
 {
-    if (stage==0)
+    if (javaPeer==0) 
         createJavaModuleObject();
-
     DEBUGPRINTF("Invoking initialize(%d) on new instance...\n", stage);
     jenv->CallVoidMethod(javaPeer, initializeStageMethod, stage);
     checkExceptions();
@@ -98,13 +97,6 @@ void JSimpleModule::finish()
 {
     jenv->CallVoidMethod(javaPeer, finishMethod);
     checkExceptions();
-}
-
-void JSimpleModule::swigSetJavaPeer(jobject moduleObject)
-{
-    ASSERT(javaPeer==0);
-    javaPeer = jenv->NewGlobalRef(moduleObject);
-    JObjectAccess::setObject(javaPeer);
 }
 
 jobject JSimpleModule::swigJavaPeerOf(cModule *object)
