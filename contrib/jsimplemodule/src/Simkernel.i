@@ -475,6 +475,9 @@ cSimulation *getSimulation();
 %ignore JSimpleModule::vm;
 %ignore JSimpleModule::jenv;
 
+%javamethodmodifiers JSimpleModule::swigSetJavaPeer "private";
+%javamethodmodifiers JSimpleModule::swigJavaPeerOf "protected";
+
 %typemap(javacode) JSimpleModule %{
   {swigSetJavaPeer(this);}
 
@@ -521,7 +524,6 @@ cSimulation *getSimulation();
 
 
 // JMessage
-%javamethodmodifiers JMessage::JMessage "private";
 %javamethodmodifiers JMessage::swigSetJavaPeer "private";
 %javamethodmodifiers JMessage::swigJavaPeerOf "protected";
 
