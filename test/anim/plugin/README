@@ -1,0 +1,12 @@
+
+Tests the plugin feature of Tkenv:
+- that .tcl files get loaded from .plugins (should test TKENV_PLUGIN_PATH 
+  env. var too!)
+- registerPlugin <pluginname> function
+- <pluginname>:newNetwork callback
+- that plugins are able to access some Tkenv functionality, such as 
+  accessing/changing parameters, running/stopping the simulation, 
+  hiding the main window, etc. 
+  
+TODO: create a well-defined API plugins to use (otherwise Tkenv changes will
+affect plugins)

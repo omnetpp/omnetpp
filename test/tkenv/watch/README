@@ -1,6 +1,0 @@
-
-Model for testing WATCH() and all its WATCH_xxx() variants.
-
-Also: for testing that the parameterChanged() callback works. Try to change
-parameter values from the GUI, and watch the output in the log window.
-

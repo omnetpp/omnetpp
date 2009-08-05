@@ -1,0 +1,12 @@
+
+Model for testing of display string features.
+
+Does not (yet) test a bunch of features such as:
+- rectangle border and fill; 
+- ovals
+- queue length display (q=), transmission range display (r=)
+- icon coloring
+- bubble()
+
+
+

@@ -1,0 +1,200 @@
+<!--
+**
+** OMNeT++/OMNEST Network Description v2 (NED2)
+**
+**  Characteristics:
+**  - describes NED v2.
+-->
+
+<!ELEMENT files ((ned-file|msg-file)*)>
+
+<!--
+  **  NED-2.
+  -->
+
+<!ELEMENT ned-file ((import|propertydef|property|channel|
+					 channel-interface|simple|module|interface)*)>
+<!ATTLIST ned-file
+     filename           CDATA     #REQUIRED
+     package         	CDATA     #IMPLIED
+>
+
+<!ELEMENT import EMPTY>
+<!ATTLIST import
+     filename           CDATA     #REQUIRED
+>
+
+<!ELEMENT propertydef (key-value*)>
+<!ATTLIST propertydef
+     name				NMTOKEN   #REQUIRED
+>
+
+<!ELEMENT simple (extends?, interface-name*, parameters?, gates?)>
+<!ATTLIST simple
+     name               NMTOKEN   #REQUIRED
+>
+
+<!ELEMENT interface (extends*, parameters?, gates?)>
+<!ATTLIST interface
+     name               NMTOKEN   #REQUIRED
+>
+
+<!ELEMENT module (extends?, interface-name*, parameters?, gates?, 
+				  submodules?, connections?)>
+<!ATTLIST module
+     name               NMTOKEN   #REQUIRED
+ >
+
+<!ELEMENT parameters ((property|param|parameters-block)*)>
+<!ATTLIST parameters
+	is-implicit			(true|false) 	"true"
+>
+<!ELEMENT parameters-block (condition, (property|param)*)>
+
+<!ELEMENT param (expression?)>
+<!ATTLIST param
+     name				NMTOKEN   #REQUIRED
+     type				(double|int|string|bool|xml) #REQUIRED
+     is-function		(true|false)	"false"
+     value               CDATA     #IMPLIED
+ >
+
+<!ELEMENT property (key-value*)>
+<!ATTLIST property
+     name				NMTOKEN   #REQUIRED
+>
+
+<!ELEMENT key-value EMPTY>
+<!ATTLIST key-value
+     key				CDATA   #IMPLIED
+     value				CDATA	#IMPLIED
+>
+
+<!ELEMENT gates ((gate|gate-block)*)>
+
+<!ELEMENT gate-block (condition, gate*)>
+
+<!ELEMENT gate (expression?)>
+<!ATTLIST gate
+     name               NMTOKEN   #REQUIRED
+     type				(input|output|inout) #REQUIRED
+     vector-size        CDATA     #IMPLIED
+>
+
+<!ELEMENT submodules (submodule*)>
+
+<!ELEMENT submodule (expression*, parameters?, gates?)>
+<!ATTLIST submodule
+     name               NMTOKEN   #REQUIRED
+     type	            NMTOKEN   #IMPLIED
+     like-type			NMTOKEN   #IMPLIED
+     like-param			CDATA	  #IMPLIED
+     vector-size        CDATA     #IMPLIED
+>
+
+
+<!ELEMENT connections ((connection|connection-block)*)>
+<!ATTLIST connections
+     check-unconnected (true|false) "true">
+
+<!ELEMENT connection (expression*, parameters?)>
+<!ATTLIST connection
+	 channel-name		 NMTOKEN   #IMPLIED
+     src-module          NMTOKEN   #IMPLIED
+     src-module-index    CDATA     #IMPLIED
+     src-gate            NMTOKEN   #REQUIRED
+     src-gate-plusplus (true|false) "false"
+     src-gate-index      CDATA     #IMPLIED
+     dest-module         NMTOKEN   #IMPLIED
+     dest-module-index   CDATA     #IMPLIED
+     dest-gate           NMTOKEN   #REQUIRED
+     dest-gate-plusplus (true|false) "false"
+     dest-gate-index     CDATA     #IMPLIED
+     is-left-to-right 	(true|false) #REQUIRED
+>
+
+<!ELEMENT channel-interface (extends*, parameters?)>
+<!ATTLIST channel-interface
+     name               NMTOKEN   #REQUIRED
+>
+
+<!ELEMENT channel (extends?, channel-interface-name*, parameters?)>
+<!ATTLIST channel
+     name                NMTOKEN   #REQUIRED
+>
+
+<!ELEMENT connection-block ((loop|condition)*,connection*)>
+
+<!ELEMENT loop (expression*)>
+<!ATTLIST loop
+     param-name          NMTOKEN   #REQUIRED
+     from-value          CDATA     #IMPLIED
+     to-value            CDATA     #IMPLIED>
+
+<!ELEMENT condition (expression?)>
+<!ATTLIST condition
+     condition          CDATA     #IMPLIED
+>
+
+<!--
+  **  Expressions
+  -->
+
+<!ELEMENT expression ((operator|function|param-ref|ident|const))>
+<!ATTLIST expression
+     target              CDATA     #IMPLIED >
+
+<!ELEMENT operator ((operator|function|param-ref|ident|const)+)>
+<!ATTLIST operator
+     name                CDATA     #REQUIRED >
+
+<!ELEMENT function ((operator|function|param-ref|ident|const)*)>
+<!ATTLIST function
+     name                NMTOKEN   #REQUIRED >
+
+<!ELEMENT param-ref (expression*)>
+<!ATTLIST param-ref
+     module              CDATA     #IMPLIED
+     module-index        CDATA     #IMPLIED
+     param-name          NMTOKEN   #REQUIRED
+     param-index         CDATA     #IMPLIED
+     is-ref           (true|false) "false"
+     is-ancestor      (true|false) "false" >
+
+<!-- for loop variables, etc. -->
+<!ELEMENT ident EMPTY>
+<!ATTLIST ident
+     name                NMTOKEN   #REQUIRED >
+
+<!ELEMENT const EMPTY>
+<!-- Note: value is in fact REQUIRED, but empty attr value should
+     also be accepted because that represents the "" string literal
+ -->
+<!ATTLIST const
+     type  (bool|int|real|string|time)  #REQUIRED
+     text                CDATA     #IMPLIED
+     value               CDATA     #IMPLIED>
+
+<!--
+  **  NED-II: message subclassing part
+  -->
+<!--
+<!ELEMENT msg-file ((cplusplus|struct-decl|class-decl|message-decl|enum-decl|
+										 enum|message|class|struct)*)>
+<!ATTLIST msg-file
+     filename            CDATA     #IMPLIED
+     package         	 CDATA     #IMPLIED
+     >
+
+-->
+<!-- temporary empty msg-file to make the validator happy. -->
+<!ELEMENT msg-file EMPTY>
+
+<!--
+  **  'unknown' is used internally to represent elements not in this NED DTD
+  -->
+<!ELEMENT unknown        ANY>
+<!ATTLIST unknown
+     element             NMTOKEN   #REQUIRED>
+
+
