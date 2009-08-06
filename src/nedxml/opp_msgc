@@ -1045,7 +1045,7 @@ sub prepareForCodeGeneration()
         $ftype = $ftype{$fieldname};
 
         # determine field data type
-        if ($ftype =~ /^$PRIMITIVE_TYPES$/) {
+        if ($ftype =~ /^($PRIMITIVE_TYPES)$/) {
             $fkind{$fieldname} = 'basic';
             $ftypeqname = '';
         }

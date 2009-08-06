@@ -183,6 +183,9 @@ inline void JoinedDataTable::addColumn(const Column &column, int tableIndex, int
  */
 class SCAVE_API ScaveExport
 {
+	private:
+		std::set<std::string> identifiers;
+
     protected:
         std::string baseFileName;
         std::string fileName;
@@ -218,6 +221,8 @@ class SCAVE_API ScaveExport
 
         const std::string &getLastFileName() const { return fileName; }
     protected:
+        std::string makeUniqueIdentifier(const std::string &name);
+    	virtual std::string makeIdentifier(const std::string &name) = 0;
         virtual void saveTable(const DataTable &rows, int startIndex, int endIndex) = 0;
 };
 
@@ -226,12 +231,9 @@ class SCAVE_API ScaveExport
  */
 class MatlabStructExport : public ScaveExport
 {
-    private:
-        std::set<std::string> identifiers;
     protected:
         void writeDouble(double value);
-        std::string makeUniqueIdentifier(const std::string &name);
-        static std::string makeIdentifier(const std::string &name);
+        virtual std::string makeIdentifier(const std::string &name);
         static std::string quoteString(const std::string &str);
 };
 
@@ -324,6 +326,7 @@ class SCAVE_API CsvExport : public ScaveExport
                         int startIndex=0, int endIndex=-1);
     protected:
         virtual std::string makeFileName(const std::string name);
+    	virtual std::string makeIdentifier(const std::string &name);
         virtual void saveTable(const DataTable &table, int startRow, int endRow);
     private:
         void writeHeader(const DataTable &table);

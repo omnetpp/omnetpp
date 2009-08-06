@@ -490,7 +490,8 @@ void ScaveExport::saveVectors(const string &name, const string &description,
 	for (int i = 0; i < xyArrays.size(); ++i)
 	{
 		const VectorResult& vector = manager.getVector(vectors.get(i));
-		std::string yColumnName = *vector.moduleNameRef + "/" + *vector.nameRef; // fix column names
+		std::string yColumnName = makeUniqueIdentifier(*vector.moduleNameRef + "/" + *vector.nameRef);
+
 		tables.push_back(new XYDataTable(name, description, "X", yColumnName, xyArrays[i]));
 	}
 	JoinedDataTable table(name, description, tables, 0);
@@ -528,22 +529,7 @@ void ScaveExport::saveScalars(const string &name, const string &description,
 	saveTable(table, 0, table.getNumRows());
 }
 
-
-/*===============================
- *           Matlab
- *===============================*/
-string MatlabStructExport::makeIdentifier(const string &name)
-{
-    string result(name);
-    for (string::iterator it=result.begin(); it!=result.end(); ++it)
-        if (!opp_isalnum(*it))
-            *it = '_';
-    if (result[0] != '_' && !opp_isalpha(result[0]))
-        result.insert(0, "_");
-    return result;
-}
-
-string MatlabStructExport::makeUniqueIdentifier(const string &name)
+string ScaveExport::makeUniqueIdentifier(const string &name)
 {
     string result = makeIdentifier(name);
 
@@ -561,6 +547,20 @@ string MatlabStructExport::makeUniqueIdentifier(const string &name)
     }
 
     identifiers.insert(result);
+    return result;
+}
+
+/*===============================
+ *           Matlab
+ *===============================*/
+string MatlabStructExport::makeIdentifier(const string &name)
+{
+    string result(name);
+    for (string::iterator it=result.begin(); it!=result.end(); ++it)
+        if (!opp_isalnum(*it))
+            *it = '_';
+    if (result[0] != '_' && !opp_isalpha(result[0]))
+        result.insert(0, "_");
     return result;
 }
 
@@ -953,6 +953,12 @@ void CsvExport::writeChar(char ch)
         break;
     }
 }
+
+string CsvExport::makeIdentifier(const string &name)
+{
+	return name;
+}
+
 
 ScaveExport *ExporterFactory::createExporter(const string format)
 {

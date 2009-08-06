@@ -8,11 +8,16 @@
 package org.omnetpp.runtimeenv;
 
 import org.omnetpp.runtime.nativelibs.IEnvirCallback;
+import org.omnetpp.runtime.nativelibs.simkernel.Simkernel;
 import org.omnetpp.runtime.nativelibs.simkernel.cComponent;
 import org.omnetpp.runtime.nativelibs.simkernel.cGate;
 import org.omnetpp.runtime.nativelibs.simkernel.cMessage;
 import org.omnetpp.runtime.nativelibs.simkernel.cModule;
 import org.omnetpp.runtime.nativelibs.simkernel.cObject;
+import org.omnetpp.runtime.nativelibs.simkernel.cSimulation;
+import org.omnetpp.runtimeenv.animation.AnimLogEntry;
+import org.omnetpp.runtimeenv.animation.AnimationLog;
+import org.omnetpp.runtimeenv.animation.SendMessageEntry;
 
 public class EnvirCallback implements IEnvirCallback {
 	public boolean debug = false;
@@ -45,11 +50,23 @@ public class EnvirCallback implements IEnvirCallback {
 	public void messageSendHop(cMessage msg, cGate srcGate) {
 		if (debug)
 			System.out.println("messageSendHop called");
+		SendMessageEntry e = new SendMessageEntry(
+				srcGate.getOwnerModule().getId(), srcGate.getId(),
+				srcGate.getNextGate().getOwnerModule().getId(), srcGate.getNextGate().getId(),
+				Simkernel.simTime(), 0.0, 0.0);
+		e.setStartEventNumber(cSimulation.getActiveSimulation().getEventNumber());
+		AnimationLog.getInstance().addEntry(e);
 	}
 
 	public void messageSendHop(cMessage msg, cGate srcGate, double propagationDelay, double transmissionDelay) {
 		if (debug)
 			System.out.println("messageSendHop called");
+		SendMessageEntry e = new SendMessageEntry(
+				srcGate.getOwnerModule().getId(), srcGate.getId(),
+				srcGate.getNextGate().getOwnerModule().getId(), srcGate.getNextGate().getId(),
+				Simkernel.simTime(), propagationDelay, transmissionDelay);
+		e.setStartEventNumber(cSimulation.getActiveSimulation().getEventNumber());
+		AnimationLog.getInstance().addEntry(e);
 	}
 
 	public void endSend(cMessage msg) {

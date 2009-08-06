@@ -417,11 +417,18 @@ CFLAGS=$(CFLAGS) /DPTW32_STATIC_LIB
 # Absolute path to msvcver.pl can be omitted if the script is already in the bin/
 # directory.
 #
+
 !if exist($(OMNETPP_BIN_DIR)/opp_msvcver.pl)
 CLVER_PROG=perl $(OMNETPP_BIN_DIR)/opp_msvcver.pl $(CXX)
 !else
 CLVER_PROG=perl $(OMNETPP_SRC_DIR)/utils/opp_msvcver.pl $(CXX)
 !endif
+
+# !if exist($(OMNETPP_BIN_DIR)/opp_pefileversion.exe)
+# CLVER_PROG=$(OMNETPP_BIN_DIR)/opp_pefileversion.exe $(CXX)
+# !else
+# CLVER_PROG=$(OMNETPP_SRC_DIR)/utils/opp_pefileversion.exe $(CXX)
+# !endif
 
 !if "$(TOOLCHAIN_NAME)"!=""
 # respect user's setting
