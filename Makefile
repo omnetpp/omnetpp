@@ -124,6 +124,7 @@ tests: base
 check-env:
 	@echo "***** Configuration: MODE=$(MODE), TOOLCHAIN_NAME=$(TOOLCHAIN_NAME), LIB_SUFFIX=$(LIB_SUFFIX) ****"
 	@echo ===== Checking environment =====
+	mkdir -p $(OMNETPP_BIN_DIR)
 	@probefile=__probe__; \
 	if (echo '#!/bin/sh' >$(OMNETPP_BIN_DIR)/$$probefile && \
 	    chmod +x $(OMNETPP_BIN_DIR)/$$probefile) 2>/dev/null; then \

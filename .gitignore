@@ -16,7 +16,7 @@ lex.*yy.cc
 /config.log
 /config.status
 autom4te.cache/
-bin/
+/bin/*
 out/
 /lib/
 /Makefile.inc
