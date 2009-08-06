@@ -230,6 +230,21 @@ void cArray::clear()
     last = -1;
 }
 
+void cArray::setCapacity(int newCapacity)
+{
+    if (newCapacity < size())
+        throw cRuntimeError(this,"setCapacity: new capacity %d cannot be less than current size %d", newCapacity,size());
+
+    cObject **newVect = new cObject *[newCapacity];
+    for (int i=0; i<=last; i++)
+        newVect[i] = vect[i];
+    for (int i=last+1; i<capacity; i++)
+        newVect[i] = NULL;
+    delete [] vect;
+    vect = newVect;
+    capacity = newCapacity;
+}
+
 int cArray::add(cObject *obj)
 {
     if (!obj)
