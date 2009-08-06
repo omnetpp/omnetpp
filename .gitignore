@@ -8,6 +8,10 @@
 *_m.h
 *.tab.hh
 *.tab.cc
+*.bak
+*.pdb
+*.idb
+*.manifest
 lex.*yy.cc
 /config.log
 /config.status
@@ -29,11 +33,14 @@ out/
 /src/guienv/registernatives.cc
 /src/guienv/simkernel_wrap.cxx
 /src/tkenv/tclcode.cc
+/src/utils/opp_configfilepath.cmd
+/ui/.metadata
 /ui/org.omnetpp.runtime.nativelibs/src/org/omnetpp/runtime/nativelibs/simkernel/
 /ui/org.omnetpp.ide.nativelibs/*.cxx
 /ui/org.omnetpp.ide.nativelibs/src/org/omnetpp/*
 /ui/org.omnetpp.ned.model/src/org/omnetpp/ned/model/pojo/*
 /samples/*/Makefile
+/samples/*/Makefile.vc
 /samples/aloha/aloha
 /samples/cqn/cqn
 /samples/dyna/dyna
@@ -43,7 +50,8 @@ out/
 /samples/histograms/histograms
 /samples/hypercube/hypercube
 /samples/neddemo/neddemo
+/samples/queueinglib/queueinglib.lib
 /samples/routing/routing
 /samples/sockets/sockets
 /samples/tictoc/tictoc
-
+/samples/rundemo.bat
