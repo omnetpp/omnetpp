@@ -47,6 +47,8 @@ import org.eclipse.gef.editparts.ScalableRootEditPart;
 import org.eclipse.gef.editparts.ZoomManager;
 import org.eclipse.gef.internal.ui.palette.editparts.DrawerEditPart;
 import org.eclipse.gef.internal.ui.palette.editparts.DrawerFigure;
+import org.eclipse.gef.internal.ui.palette.editparts.GroupEditPart;
+import org.eclipse.gef.palette.PaletteContainer;
 import org.eclipse.gef.palette.PaletteDrawer;
 import org.eclipse.gef.palette.PaletteRoot;
 import org.eclipse.gef.ui.actions.ActionRegistry;
@@ -59,6 +61,7 @@ import org.eclipse.gef.ui.actions.ZoomOutAction;
 import org.eclipse.gef.ui.palette.PaletteContextMenuProvider;
 import org.eclipse.gef.ui.palette.PaletteEditPartFactory;
 import org.eclipse.gef.ui.palette.PaletteViewer;
+import org.eclipse.gef.ui.palette.PaletteViewerPreferences;
 import org.eclipse.gef.ui.palette.PaletteViewerProvider;
 import org.eclipse.gef.ui.palette.editparts.PaletteAnimator;
 import org.eclipse.gef.ui.parts.GraphicalEditorWithFlyoutPalette;
@@ -187,8 +190,11 @@ public class GraphicalNedEditor
         public void run() {
             Display.getDefault().asyncExec(new Runnable() {
                 public void run() {
-                    if (getGraphicalControl() != null && !getGraphicalControl().isDisposed())
+                    if (getGraphicalControl() != null && !getGraphicalControl().isDisposed()) {
                         paletteManager.refresh();
+                        PaletteViewer paletteViewer = getPaletteViewerProvider().getEditDomain().getPaletteViewer();
+                        paletteViewer.reveal((EditPart)paletteViewer.getEditPartRegistry().get(paletteManager.getLastUsedCreationToolEntry()));
+                    }
                 }
             });
         }
@@ -273,7 +279,24 @@ public class GraphicalNedEditor
                         if (drawer.getLabel().equals("Submodules"))
                             return new LocalDrawerEditPart(drawer);
                         else
-                            return super.createDrawerEditPart(parentEditPart, model);
+                            // NOTE: makes the Types palette drawer stick to icons layout to save space for the Submodules palette drawer
+                            return new DrawerEditPart((PaletteDrawer)model) {
+                                @Override
+                                protected int getLayoutSetting() {
+                                    return PaletteViewerPreferences.LAYOUT_ICONS;
+                                }
+                            };
+                    }
+                    
+                    @Override
+                    protected EditPart createGroupEditPart(EditPart parentEditPart, Object model) {
+                        // NOTE: makes the Tools palette group stick to list layout to save space for the Submodules palette drawer
+                        return new GroupEditPart((PaletteContainer)model) {
+                            @Override
+                            protected int getLayoutSetting() {
+                                return PaletteViewerPreferences.LAYOUT_LIST;
+                            }
+                        };
                     }
                 });
                 viewer.setContextMenu(new PaletteContextMenuProvider(viewer) {

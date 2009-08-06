@@ -43,8 +43,7 @@ public class NedConnectionEndpointTracker extends ConnectionEndpointTracker {
 	        CompoundModuleElementEx compoundMod = connPart.getCompoundModulePart().getCompoundModuleModel(); 
 	        // ask the user about which gates should be connected, ask for both source and destination gates
 	        // FIXME we should extract the direction (src/dest) locally and not from the command 
-	        ConnectionElementEx selectedConn = ConnectionChooser.open(compoundMod, connCommand.getTemplateConnection(), 
-	                    !connCommand.isDestReconnect(), connCommand.isDestReconnect());
+	        ConnectionElementEx selectedConn = new ConnectionChooser().open(compoundMod, connCommand.getTemplateConnection(), !connCommand.isDestReconnect(), connCommand.isDestReconnect());
 			
 			eraseSourceFeedback();
 			eraseTargetFeedback();

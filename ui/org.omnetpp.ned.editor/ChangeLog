@@ -1,3 +1,8 @@
+2009-08-03  Levente M‚sz ros
+
+	* Connection chooser brings up channel chooser when using the default connection tool and there are matching labels between the connected gates and an available channel type.
+	* Palette shows NED types in two distinct groups: the first contains those which are related to the current editor ordered by score, the second contains all available types ordered by name
+
 2009-07-17  Levente M‚sz ros
 
 	* Text editor provides new context menu items to infer/distribute gate labels.

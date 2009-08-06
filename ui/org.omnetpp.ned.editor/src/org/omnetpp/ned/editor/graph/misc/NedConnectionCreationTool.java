@@ -64,7 +64,8 @@ public class NedConnectionCreationTool extends ConnectionCreationTool {
         ModuleEditPart destMod = (ModuleEditPart)getTargetEditPart(); 
         CompoundModuleElementEx compoundMod = destMod.getCompoundModulePart().getCompoundModuleModel(); 
     	// ask the user about which gates should be connected, ask for both source and destination gates
-		ConnectionElementEx templateConn = ConnectionChooser.open(compoundMod, endCommand.getConnection(), true, true);
+		ConnectionElementEx connection = endCommand.getConnection();
+        ConnectionElementEx templateConn = new ConnectionChooser().open(compoundMod, connection, true, true);
 
     	eraseSourceFeedback();
     	
@@ -73,7 +74,9 @@ public class NedConnectionCreationTool extends ConnectionCreationTool {
             // revert the connection change (user cancel - do not execute the command)
 			return false;
 
-        ReconnectCommand.copyConn(templateConn, endCommand.getConnection());
+        ReconnectCommand.copyConn(templateConn, connection);
+        if (connection.getType() == null && templateConn.getType() != null)
+            connection.setType(templateConn.getType());
         
         setCurrentCommand(endCommand);
     	executeCurrentCommand();
