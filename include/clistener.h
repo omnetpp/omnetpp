@@ -91,7 +91,7 @@ class SIM_API cIListener
      *
      * This method is also called from cComponent's destructor for all
      * listeners, so at this point it is not safe to cast the component pointer
-     * to any other types. Also, the method may be called several times (i.e.
+     * to any other type. Also, the method may be called several times (i.e.
      * if the listener was subscribed to multiple signals).
      *
      * It is OK for the listener to delete itself in this method (<tt>delete

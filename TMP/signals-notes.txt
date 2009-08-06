@@ -1,0 +1,62 @@
+[General]
+network = Aloha
+#debug-on-errors = true
+#record-eventlog = true
+
+Aloha.numHosts = 20
+Aloha.slotTime = 0    # no slots
+Aloha.txRate = 9.6Kbps
+Aloha.host[*].pkLenBits = 952b
+Aloha.host[*].radioDelay = 10ms
+Aloha.host[*].iaTime = exponential(0.0002s)
+
+# To be supported:
+# - aggregate statistics  --> (1) implicitly collect @signals from submodules?
+#                                  note1: NOT GOOD to statically collect names from ALL NED FILES ==> too many names, most of them unused
+#                                  should produce list of modules that can actually be submodules; dynamically created submods could be predeclared with @dynamicSubmodule()
+#                             (2) support wildcard listeners?
+#                                    void cComponent::subscribe(const char *signalNamePattern, cIListener *listener);
+#                                      ==> maps to N normal subscribe calls, utilizing the global signalNames map (must also be notified when names get added to signalNames)
+#                                 how to do per-signal listener objects? clone listener?
+#       on-all-signals, on-signals-aggregate, on-signals-cumulative, on-signal-from-submodules, on-child-signals
+#
+# - statistics derived from more than one signal
+#     delegating listeners? NO!  but: listener can subscribe itself to another signal! (whose name comes in a listener arg)
+#
+
+Aloha.host[*].txrate.on-signal = RecordVector(interval=0..400), ClassName(args), ClassName(args)
+Aloha.host[*].qq*q.on-signal = RecordVector(interval=0..400), ClassName(args), ClassName(args)
+Aloha.host[*].dropcount.on-signal = RecordVector(interval=0..400), ClassName(args), ClassName(args)
+Aloha.**.dropcount.on-signal = RecordVector(interval=0..400), ClassName(args), ClassName(args)
+Aloha.host[*].*.on-signal = RecordVector(interval=0..400), ClassName(args), ClassName(args)
+
+**.on-signal = default
+
+simple Host {
+  @signal[txrate](....);
+  @signal[rxrate](....);
+  @signal[collision](....);
+}
+
+simple Server {
+  @signal[dropcount](....);
+}
+
+module Host {
+  @dynamicModule(name=udpApp,type=inet.app.udp.Videoconferencing,vectorsize=10);
+}
+
+
+network = WirelessTest
+WirelessTest.**.mac.dropcount.on-signal = RecordVector(...)
+
+WirelessTest.txrate.on-submodule-signal = Count()
+WirelessTest.rxrate.on-submodule-signal = Count()
+WirelessTest.dropcount.on-submodule-signal = Count()
+WirelessTest.bubu.on-submodule-signal = Count()
+
+WirelessTest.subnet*.dropcount.on-submodule-signal = Count()
+
+**.dropcount.on-submodule-signal = Count()
+
+

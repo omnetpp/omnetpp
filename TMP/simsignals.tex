@@ -1,0 +1,138 @@
+
+\section{Signals}
+\label{sec:simple-modules:signals}
+
+This section describes \textit{simulation signals}, or signals for short.
+Signals are a versatile concept that first appeared in {\opp} 4.1.
+
+Simulation signal can be used for:
+
+\begin{itemize}
+  \item{exposing statistical properties of the model, without specifying
+        whether and how to record them}
+  \item{getting notified about simulation model changes at runtime, and
+        acting upon them}
+  \item{implementing a publish-subscribe style communication among modules;
+        this is advantageous when the producer and consumer of the information
+        do not know about each other, and possibly there is many-to-one or
+        many-to-many relationship among them}
+  \item{emitting information for other purposes, for example as input for
+        custom animation effects}
+\end{itemize}
+
+Signals are emitted by components (modules and channels). Signals propagate
+up the module hierarchy up to the root. At any level, one can register
+listeners (callback objects); these listeners will get notified (called back)
+whenever a signal value is emitted. The result of this is that listeners
+registered at a compound module can receive all signals from its subdirectory
+tree. A listener registered at the system module can receive all signals from
+the whole simulation.
+
+Note: a channel's parent is the (compound) module that contains the connection,
+not the start or end module whose gate the channel connects.
+
+The signal value can be long, double, simtime_t, string and object. Anything
+that does not fit into the basic types can be wrapped into an object
+and emitted as an object.
+
+Signals are identified by strings (signal names), but for efficiency reasons
+at runtime we use dynamically assigned numeric identifiers (signal IDs,
+typedef'd as simsignal_t). The mapping of signal names to signal IDs is
+global, so all module and channels asking to resolve a particular signal name
+will get back the same numeric signal ID.
+
+Listeners can be added for signal names. That is, if a module type Queue
+and a module type Buffer both emit a signal named "length", and a listener
+is subscribed for the name "length" at some compound module, it will get
+notifications from both the Queue and Buffer modules it contains.
+
+Note: The listener can still look at the source of the signal (the module or
+channel that emitted it) if it wants to distinguish them, but the
+signals framework itself does not have such a feature.
+
+Because of that, it is advised to choose signal names carefully. Good naming
+facilitates "merging" of signals arriving from different sources but
+meaning the same thing, and avoids signals that accidentally have
+the same name but mean different things.
+
+
+
+\subsection{The signals machinery}
+\label{sec:simple-modules:signals-api}
+
+emitting
+
+subscribing: listeners etc.
+
+what if a listener throws an exception? --> nothing! it's a normal simulation error.
+
+
+
+\subsection{Design considerations and rationale}
+
+1. for the implementation, we assume that subscribe/unsubscribe are quite rare,
+and memory usage and efficiency of notification matter a lot more;
+relatively few (<10) subscribers per module
+
+2. there should be no memory and minimal CPU overhead for signals emitted but not listened on
+
+emitting signals is virtually free if they are unused (i.e. there are
+no listeners). The only memory overhead is the signal handle you need
+to keep, and runtime cost is very small as well, because emit()
+returns immediately if there are no listeners. (This is true for the
+first 64 signals; signals above 64 are slightly less efficient if there
+are no listeners, because it has to check the listeners lists at
+the modules up to the root).
+
+signals 0..63 are more efficient (emit() has near zero runtime cost if there
+are no listeners)
+
+when there are no listeners on the ancestor chain, length of ancestor chain
+does not affect notification performance (for signals 0..63)
+
+
+
+\subsection{Listening for model changes}
+
+motivation (cached cModule* pointer, cGate* pointer cChannel* pointer -- whenever you
+see that in the code, you should be suspicious)
+
+subscribing to model changes
+
+description of individual changes
+
+
+\subsection{Exposing statistics as signals}
+
+motivation: we don't know in advance what, and with what level of detail we want to collect.
+
+- level of detail: record all values as vector; record the mean/stddev/min/max/avg;
+  or record a histogram as well;
+- we you may want to process the results before recording them, i.e. record the sum,
+  the time average, the count, a smoothed value etc).
+- you may want aggregate statistics, e.g. packet drop count for the whole network
+- or derived statistics, e.g. drop percentage (drop count/total pks)
+
+These are all possible with signals.
+
+@namespace(bubu);
+simple Queue {
+    @class(SimpleQueue);
+    @signal[queueLength](type=double;interpolation-mode=...);
+}
+
+**.queue.queueLength.on-signal = vector(name="queue length", interval=0..500s), scalar(name=..,operation=count), listener(class="XXXListener",....)
+**.queue.queueLength*.on-signal = listener(class="SignalJoiner";signals="length,limit,drop";output="")
+
+Queuenet.e.queueLength.on-signal = listener(class="SignalJoiner";signals="length,limit,drop";output="")
+
+**.queue.queueLength*.on-signal = listener:INET::Aggregate(...),
+**.queue.queueLength*.on-signal = listener=INET::Aggregate(...),
+
+
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "usman"
+%%% End:
