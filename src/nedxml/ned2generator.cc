@@ -455,7 +455,7 @@ void NED2Generator::doParam(ParamElement *node, const char *indent, bool islast,
 void NED2Generator::doPattern(PatternElement *node, const char *indent, bool islast, const char *)
 {
     OUT << getBannerComment(node, indent);
-    OUT << indent << "/" << node->getPattern() << "/";
+    OUT << indent << node->getPattern();
     generateChildrenWithType(node, NED_PROPERTY, increaseIndent(indent), " ");
 
     if (hasExpression(node,"value"))

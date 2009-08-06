@@ -85,6 +85,12 @@ static void updateOrRethrowException(std::exception& e, NEDElement *context)
 
 void cNEDNetworkBuilder::addParametersAndGatesTo(cComponent *component, cNEDDeclaration *decl)
 {
+    doAddParametersAndGatesTo(component, decl);
+    assignParametersFromPatterns(component);
+}
+
+void cNEDNetworkBuilder::doAddParametersAndGatesTo(cComponent *component, cNEDDeclaration *decl)
+{
     //TRACE("addParametersAndGatesTo(%s), decl=%s", component->getFullPath().c_str(), decl->getName()); //XXX
 
     //TODO for performance: component->reallocParamv(decl->getParameterDeclarations().size());
@@ -94,7 +100,7 @@ void cNEDNetworkBuilder::addParametersAndGatesTo(cComponent *component, cNEDDecl
     {
         const char *superName = decl->extendsName(0);
         cNEDDeclaration *superDecl = cNEDLoader::getInstance()->getDecl(superName);
-        addParametersAndGatesTo(component, superDecl);
+        doAddParametersAndGatesTo(component, superDecl);
     }
 
     // add this decl parameters / assignments
@@ -229,6 +235,79 @@ void cNEDNetworkBuilder::doGate(cModule *module, GateElement *gateNode, bool isS
     }
     catch (std::exception& e) {
         updateOrRethrowException(e, gateNode); throw;
+    }
+}
+
+void cNEDNetworkBuilder::assignParametersFromPatterns(cComponent *component)
+{
+    // go up the parent chain, and apply the parameter pattern assignments
+    // to matching, still-unset parameters
+    printf("TRYING TO ASSIGN PARAMS OF %s USING PATTERNS\n", component->getFullPath().c_str());
+    std::string prefix = std::string(component->getFullName()) + ".";
+    for (cModule *parent = component->getParentModule(); parent; parent = parent->getParentModule())
+    {
+        printf(" CHECKING PATTERNS ON: %s\n", parent->getFullPath().c_str());
+        const char *nedTypeName = parent->getNedTypeName();
+        cNEDDeclaration *decl = cNEDLoader::getInstance()->getDecl(nedTypeName);
+        const std::vector<cNEDDeclaration::PatternData>& patterns = decl->getPatterns(); // patterns to try, with values
+        int numPatterns = patterns.size();
+
+        for (int i=0; i<numPatterns; i++)
+            printf("    pattern %d: %s  (from \"%s=\" at %s)\n", i, patterns[i].matcher->debugStr().c_str(), patterns[i].patternNode->getPattern(), patterns[i].patternNode->getSourceLocation());
+
+        // loop through all unset params, and try to assign them using the patterns
+        int numParams = component->getNumParams();
+        for (int i=0; i<numParams; i++) {
+            cPar& par = component->par(i);
+            if (!par.isSet()) {
+                // first match
+                std::string paramPath = prefix + par.getFullName();
+                printf("  checking param %s as \"%s\"\n", par.getFullPath().c_str(), paramPath.c_str());
+                for (int j=0; j<numPatterns; j++) {
+                    if (patterns[j].matcher->matches(paramPath.c_str())) {
+                        printf("   ^ %s matches it, assigning!\n", patterns[j].matcher->debugStr().c_str());
+                        assignParameterFromPattern(par, patterns[j].patternNode);
+                        break;
+                    }
+                }
+            }
+        }
+        prefix = std::string(parent->getFullName()) + "." + prefix;
+    }
+}
+
+void cNEDNetworkBuilder::assignParameterFromPattern(cPar& par, PatternElement *patternNode)
+{
+    // note: this code should look similar to relevant part of doParam()
+    try {
+        cParImpl *impl = par.copyIfShared();
+        ExpressionElement *exprNode = patternNode->getFirstExpressionChild();
+        if (exprNode)
+        {
+            //printf("   +++ assigning param %s\n", paramName);
+            ASSERT(impl==par.impl() && !impl->isShared());
+            bool isSubcomponent = false; //FIXME is this OK???
+            cDynamicExpression *dynamicExpr = cExpressionBuilder().process(exprNode, isSubcomponent);
+            cExpressionBuilder::setExpression(impl, dynamicExpr);
+            impl->setIsSet(!patternNode->getIsDefault());
+        }
+        else if (patternNode->getIsDefault())
+        {
+            // Note: this branch ("=default" in NED files) is currently not supported,
+            // because it would be complicated to implement in the Inifile Editor.
+
+            //FIXME is this so??? ^^^
+
+            //printf("   +++ setting param %s to default\n", patternNode);
+            if (!impl->containsValue())
+                throw cRuntimeError(par.getOwner(), "Cannot apply default value to parameter `%s': it has no default value", par.getName());
+            impl->setIsSet(true);
+        }
+        //XXX impl->setIsShared(true);
+        //XXX currentDecl->putSharedParImplFor(patternNode, impl);
+    }
+    catch (std::exception& e) {
+        updateOrRethrowException(e, patternNode); throw;
     }
 }
 

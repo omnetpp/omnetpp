@@ -24,6 +24,7 @@
 #include "cnedloader.h"
 #include "nederror.h"
 #include "stringutil.h"
+#include "patternmatcher.h"
 
 USING_NAMESPACE
 
@@ -31,6 +32,7 @@ USING_NAMESPACE
 cNEDDeclaration::cNEDDeclaration(NEDResourceCache *resolver, const char *qname, NEDElement *tree) : NEDTypeInfo(resolver, qname, tree)
 {
     props = NULL;
+    patternsValid = false;
 }
 
 cNEDDeclaration::~cNEDDeclaration()
@@ -44,6 +46,9 @@ cNEDDeclaration::~cNEDDeclaration()
 
     //XXX printf("%s: %d cached expressions\n", getName(), parimplMap.size());
     clearSharedParImplMap(parimplMap);
+
+    for (int i=0; i<(int)patterns.size(); i++)
+        delete patterns[i].matcher;
 }
 
 void cNEDDeclaration::clearPropsMap(StringPropsMap& propsMap)
@@ -332,4 +337,59 @@ void cNEDDeclaration::putSharedParImplFor(NEDElement *node, cParImpl *value)
         parimplMap[node->getId()] = value;
 }
 
+const std::vector<cNEDDeclaration::PatternData>& cNEDDeclaration::getPatterns()
+{
+    if (!patternsValid)
+    {
+        patterns = collectPatterns();
+        patternsValid = true;
+    }
+    return patterns;
+}
 
+std::vector<cNEDDeclaration::PatternData> cNEDDeclaration::collectPatterns()
+{
+    std::vector<PatternData> result;
+
+    // first: submodule patterns, from all subclasses
+
+    for (cNEDDeclaration *d = this; d; d = d->numExtendsNames()==0 ? NULL : d->getSuperDecl())
+    {
+        SubmodulesElement *submodsNode = d->getSubmodulesElement();
+        if (!submodsNode)
+            continue;
+        for (SubmoduleElement *submod=submodsNode->getFirstSubmoduleChild(); submod; submod = submod->getNextSubmoduleSibling())
+        {
+            ParametersElement *paramsNode = submod->getFirstParametersChild();
+            std::string submodName = submod->getName();
+            bool isVector = submod->getFirstChildWithAttribute(NED_EXPRESSION, "target", "vector-size")!=NULL;
+            if (isVector)
+                submodName += "[*]";
+            collectPatternsFrom(paramsNode, submodName + ".", result);
+        }
+    }
+
+    // then: module patterns, from all subclasses
+    for (cNEDDeclaration *d = this; d; d = d->numExtendsNames()==0 ? NULL : d->getSuperDecl())
+    {
+        ParametersElement *paramsNode = d->getParametersElement();
+        collectPatternsFrom(paramsNode, "", result);
+    }
+
+    return result;
+}
+
+void cNEDDeclaration::collectPatternsFrom(ParametersElement *paramsNode, const std::string& prefix, std::vector<PatternData>& v)
+{
+    if (!paramsNode)
+        return;
+
+    // append pattern elements to v[]
+    for (PatternElement *patternNode=paramsNode->getFirstPatternChild(); patternNode; patternNode=patternNode->getNextPatternSibling())
+    {
+        std::string patternPath = prefix + patternNode->getPattern();
+        v.push_back(PatternData());
+        v.back().matcher = new PatternMatcher(patternPath.c_str(), true, true, true);
+        v.back().patternNode = patternNode;
+    }
+}

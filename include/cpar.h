@@ -184,7 +184,7 @@ class SIM_API cPar : public cObject
     /**
      * Returns true if the parameter is set (see isSet()) or contains a default
      * value, and false otherwise. Parameters of an already initialized module or
-     * channel are guaranteed to assigned, so this method will return true for them.
+     * channel are guaranteed to be assigned, so this method will return true for them.
      */
     bool containsValue() const;
 

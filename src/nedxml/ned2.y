@@ -675,6 +675,12 @@ param_typenamevalue
                   ps.propertyscope.pop();
                   if (!isEmpty(ps.exprPos))  // note: $4 cannot be checked, as it's always NULL when expression parsing is off
                       addExpression(ps.param, "value",ps.exprPos,$4);
+                  else {
+                      // Note: "=default" is currently not accepted in NED files, because
+                      // it would be complicated to support in the Inifile Editor.
+                      if (ps.isDefault)
+                          np->getErrors()->addError(ps.param,"applying the default value (\"=default\" syntax) is not supported in NED files");
+                  }
                   ps.param->setIsDefault(ps.isDefault);
                   storePos(ps.param, @$);
                   storeBannerAndRightComments(ps.param,@$);
@@ -697,12 +703,21 @@ param_typename
         ;
 
 pattern_value
-        : '/' pattern '/' '=' paramvalue
+        : pattern '=' paramvalue ';'
                 {
                   ps.pattern = (PatternElement *)createElementWithTag(NED_PATTERN, ps.parameters);
-                  ps.pattern->setPattern(toString(@2));
-                  if (!isEmpty(ps.exprPos))  // note: $5 cannot be checked, as it's always NULL when expression parsing is off
-                      addExpression(ps.pattern, "value",ps.exprPos,$5);
+                  ps.pattern->setPattern(toString(@1));
+                  const char *patt = ps.pattern->getPattern();
+                  if (strchr(patt,' ') || strchr(patt,'\t') || strchr(patt,'\n'))
+                      np->getErrors()->addError(ps.pattern,"parameter name patterns may not contain whitespace");
+                  if (!isEmpty(ps.exprPos))  // note: $3 cannot be checked, as it's always NULL when expression parsing is off
+                      addExpression(ps.pattern, "value",ps.exprPos,$3);
+                  else {
+                      // Note: "=default" is currently not accepted in NED files, because
+                      // it would be complicated to support in the Inifile Editor.
+                      if (ps.isDefault)
+                          np->getErrors()->addError(ps.pattern,"applying the default value (\"=default\" syntax) is not supported in NED files");
+                  }
                   ps.pattern->setIsDefault(ps.isDefault);
                   storePos(ps.pattern, @$);
                   storeBannerAndRightComments(ps.pattern,@$);
@@ -736,14 +751,11 @@ paramvalue
                 { $$ = $3; ps.exprPos = @3; ps.isDefault = true; }
         | DEFAULT
                 {
-                  // Note: "=default" is currently not accepted in NED files, because
-                  // it would be complicated to support in the Inifile Editor.
-                  np->getErrors()->addError(ps.types,"applying the default value (\"=default\" syntax) is not supported in NED files");
                   $$ = NULL; ps.exprPos = makeEmptyYYLTYPE(); ps.isDefault = true;
                 }
         | ASK
                 {
-                  np->getErrors()->addError(ps.types,"interactive prompting (\"=ask\" syntax) is not supported in NED files");
+                  np->getErrors()->addError(ps.parameters,"interactive prompting (\"=ask\" syntax) is not supported in NED files");
                   $$ = NULL; ps.exprPos = makeEmptyYYLTYPE(); ps.isDefault = false;
                 }
         ;
@@ -758,29 +770,36 @@ inline_properties
         | property_namevalue
         ;
 
-pattern /* this attempts to capture inifile-like patterns */
-        : pattern pattern_elem
+pattern
+        : pattern2 '.' pattern_elem  /* to ensure that pattern contains at least one '.' */
+        ;
+
+pattern2
+        : pattern2 '.' pattern_elem
         | pattern_elem
         ;
 
 pattern_elem
-        : '.'
-        | '*'
-        | '?'
+        : pattern_name
+        | pattern_name '[' pattern_index ']'
+        | pattern_name '[' '*' ']'
         | DOUBLEASTERISK
-        | NAME
-        | INTCONSTANT
-        | TO
-        | '[' pattern ']'
-        | '{' pattern '}'
-        /* allow reserved words in patterns as well */
-        | IMPORT | PACKAGE | PROPERTY
-        | MODULE | SIMPLE | NETWORK | CHANNEL | MODULEINTERFACE | CHANNELINTERFACE
-        | EXTENDS | LIKE
-        | DOUBLETYPE | INTTYPE | STRINGTYPE | BOOLTYPE | XMLTYPE | VOLATILE
-        | INPUT_ | OUTPUT_ | INOUT_ | IF | FOR
-        | TYPES | PARAMETERS | GATES | SUBMODULES | CONNECTIONS | ALLOWUNCONNECTED
-        | TRUE_ | FALSE_ | THIS_ | DEFAULT | CONST_ | SIZEOF | INDEX_ | XMLDOC
+        ;
+
+pattern_name
+        : NAME
+        | '{' pattern_index '}'
+        | '*'
+        | pattern_name NAME
+        | pattern_name '{' pattern_index '}'
+        | pattern_name '*'
+        ;
+
+pattern_index
+        : INTCONSTANT
+        | INTCONSTANT TO INTCONSTANT
+        | TO INTCONSTANT
+        | INTCONSTANT TO
         ;
 
 /*
