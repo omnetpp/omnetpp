@@ -142,7 +142,6 @@ tests: base
 check-env:
 	@echo +++++ Configuration: MODE=$(MODE), TOOLCHAIN_NAME=$(TOOLCHAIN_NAME), LIB_SUFFIX=$(LIB_SUFFIX)
 	@echo ===== Checking environment =====
-	@mkdir $(OMNETPP_BIN_DIR:/=\) 2>nul
 	@if not .%OS%.==.Windows_NT. echo ERROR: This makefile can ONLY be used on NT4.0, Win2K or XP! && exit 1
 	@echo  Checking if $(CXX) works...
 	@$(CXX) /? /nologo <nul > nul || echo ERROR: Could not run $(CXX). Probably PATH does not contain its BIN or DLL directory. && exit 1
@@ -150,6 +149,8 @@ check-env:
 	@cd /d $(OMNETPP_ROOT:/=\) || echo ERROR: The directory defined in configuser.vc as OMNETPP_ROOT does not exist. && exit 1
 	@echo Checking if TCL_LIB/TCL_VER is correctly set...
 	@cd /d $(_TCL_LIBRARY:/=\) || echo ERROR: The directory $(_TCL_LIBRARY) does not exist. TK_DIR or TK_VER defined in configuser.vc might be wrong. && exit 1
+	-@mkdir $(OMNETPP_BIN_DIR:/=\) 2>nul
+	@cd /d $(OMNETPP_BIN_DIR:/=\) || echo ERROR: Cannot create directory $(OMNETPP_BIN_DIR), defined in configuser.vc as OMNETPP_BIN_DIR. && exit 1
 
 ver_h:
 	@cd /d $(OMNETPP_SRC_DIR:/=\)\common && copy ver.h.base ver.h.tmp && echo #define OMNETPP_PRODUCT "$(OMNETPP_PRODUCT)" >>ver.h.tmp && echo #define OMNETPP_RELEASE "$(OMNETPP_RELEASE)" >>ver.h.tmp && echo #define OMNETPP_VERSION_STR "$(OMNETPP_VERSION)" >>ver.h.tmp && echo #define OMNETPP_BUILDID "$(OMNETPP_BUILDID)" >>ver.h.tmp && echo #define OMNETPP_EDITION "$(OMNETPP_EDITION)" >>ver.h.tmp
