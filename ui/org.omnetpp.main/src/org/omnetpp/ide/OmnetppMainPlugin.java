@@ -8,6 +8,7 @@
 package org.omnetpp.ide;
 
 
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
@@ -27,6 +28,8 @@ public class OmnetppMainPlugin extends AbstractUIPlugin {
 
 	// The shared instance
 	private static OmnetppMainPlugin plugin;
+	
+	protected OmnetppDynamicPluginLoader omnetppDynamicPluginLoader;
 
 	/**
 	 * The constructor
@@ -43,6 +46,10 @@ public class OmnetppMainPlugin extends AbstractUIPlugin {
 		super.start(context);
         PLUGIN_ID = getBundle().getSymbolicName();
         getLog().log(new Status(IStatus.INFO, PLUGIN_ID, IStatus.OK, "OMNeT++ IDE "+getVersion()+" started.", null));
+
+        if (omnetppDynamicPluginLoader == null)
+            omnetppDynamicPluginLoader = new OmnetppDynamicPluginLoader(getBundle().getBundleContext());
+        ResourcesPlugin.getWorkspace().addResourceChangeListener(omnetppDynamicPluginLoader);        
 	}
 
     public static String getVersion() {
@@ -56,6 +63,7 @@ public class OmnetppMainPlugin extends AbstractUIPlugin {
 	public void stop(BundleContext context) throws Exception {
 		plugin = null;
 		super.stop(context);
+        ResourcesPlugin.getWorkspace().removeResourceChangeListener(omnetppDynamicPluginLoader);        
 	}
 
 	/**
