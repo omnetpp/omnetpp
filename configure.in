@@ -131,19 +131,6 @@ OMNETPP_LIB_DIR="$OMNETPP_ROOT/lib"
 
 OMNETPP_TKENV_DIR="$OMNETPP_SRC_DIR/tkenv"
 
-if test -d "$OMNETPP_UI_DIR"; then
-    # during development (ui/ tree exists), use "guienv" launch config in the workspace (assuming it's ui/)
-    OMNETPP_GUIENV_CONFIG_DIR="$OMNETPP_UI_DIR/.metadata/.plugins/org.eclipse.pde.core/guienv"
-    # find launcher; note that wildcard will be expanded later
-    ECLIPSE_DIR=${ECLIPSE_DIR:-$HOME/eclipse}
-    OMNETPP_GUIENV_LAUNCHER="$ECLIPSE_DIR/plugins/org.eclipse.equinox.launcher_1.*.jar"
-else
-    # in a deployed installation, config (and launcher) should be under the ide/ tree
-    OMNETPP_GUIENV_CONFIG_DIR="$OMNETPP_IDE_DIR/.guienv"
-    # find launcher; note that wildcard will be expanded later
-    OMNETPP_GUIENV_LAUNCHER="$OMNETPP_IDE_DIR/plugins/org.eclipse.equinox.launcher_1.*.jar"
-fi
-
 if test "$cygwin" = yes; then
     MYPWD="$OMNETPP_SRC_DIR/utils/cygpwd"
 else
@@ -699,7 +686,7 @@ if test -n "$NO_TCL"; then
     TKENV_IF_POSSIBLE=missing-dependency
 
     # and build samples using Cmdenv (TBD)
-    ALL_ENV_LIBS='$(GUIENV) $(CMDENV_LIBS)'
+    ALL_ENV_LIBS='$(CMDENV_LIBS)'
 
 else  #matching "fi" is after BLT testing
 
@@ -855,7 +842,7 @@ else  #matching "fi" is after BLT testing
     TKENV_IF_POSSIBLE=tkenv
 
     # and build samples using Tkenv
-    ALL_ENV_LIBS='$(TKENV_LIBS) $(GUIENV_LIBS) $(CMDENV_LIBS)'
+    ALL_ENV_LIBS='$(TKENV_LIBS) $(CMDENV_LIBS)'
 
 fi # end of Tcl tests ($NO_TCL=="" branch)
 
@@ -897,20 +884,6 @@ if test "$jni_ok" = "no" -o "$SWIG" = "not found"; then
    JNILIBS_IF_POSSIBLE=missing-dependency
 else
    JNILIBS_IF_POSSIBLE=jnilibs
-fi
-
-#----------------------
-# GUIEnv checks
-#----------------------
-GUIENV_IF_POSSIBLE=guienv
-if test "$jni_ok" = "no"; then
-   GUIENV_IF_POSSIBLE=missing-dependency
-   AC_MSG_WARN([JNI missing -- cannot build GUIEnv])
-fi
-OMNETPP_GUIENV_LAUNCHER="`echo $OMNETPP_GUIENV_LAUNCHER`"   # expand wildcard
-if test ! -f "$OMNETPP_GUIENV_LAUNCHER"; then
-   GUIENV_IF_POSSIBLE=missing-dependency
-   AC_MSG_WARN([Skipping GUIEnv because Eclipse launcher plugin was not found (or multiple instances found): OMNETPP_GUIENV_LAUNCHER=$OMNETPP_GUIENV_LAUNCHER])
 fi
 
 #----------------------
@@ -1141,16 +1114,12 @@ AC_SUBST(AKAROA_CFLAGS)
 AC_SUBST(AKAROA_LIBS)
 
 AC_SUBST(TKENV_IF_POSSIBLE)
-AC_SUBST(GUIENV_IF_POSSIBLE)
 AC_SUBST(JNILIBS_IF_POSSIBLE)
 
 AC_SUBST(ALL_ENV_LIBS)
 
 AC_SUBST(EMBED_TCL_CODE)
 AC_SUBST(OMNETPP_TKENV_DIR)
-
-AC_SUBST(OMNETPP_GUIENV_LAUNCHER)
-AC_SUBST(OMNETPP_GUIENV_CONFIG_DIR)
 
 AC_SUBST(WITH_NETBUILDER)
 AC_SUBST(WITH_PARSIM)

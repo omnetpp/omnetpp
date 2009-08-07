@@ -65,7 +65,7 @@ include configuser.vc
 #
 #=====================================================================
 
-BASE=common layout eventlog scave nedxml sim envir cmdenv tkenv guienv utils
+BASE=common layout eventlog scave nedxml sim envir cmdenv tkenv utils
 SAMPLES=aloha cqn dyna embedding embedding2 fifo hypercube histograms neddemo queueinglib queueinglibext routing tictoc sockets
 JNILIBS=org.omnetpp.ned.model org.omnetpp.ide.nativelibs
 
@@ -80,13 +80,13 @@ samples: $(SAMPLES)
 
 # dependencies (because of ver.h, opp_msgc, etc)
 clean depend: makefiles
-common layout eventlog scave nedxml sim envir cmdenv tkenv guienv makefiles: ver_h utils
-layout eventlog scave nedxml sim envir cmdenv tkenv guienv : common
+common layout eventlog scave nedxml sim envir cmdenv tkenv makefiles: ver_h utils
+layout eventlog scave nedxml sim envir cmdenv tkenv : common
 
 !if "$(LIB_SUFFIX)"==".dll"
 envir : sim
-cmdenv tkenv guienv : envir
-tkenv guienv : layout
+cmdenv tkenv : envir
+tkenv : layout
 !endif
 sim : nedxml common
 $(SAMPLES) : makefiles base rundemo
