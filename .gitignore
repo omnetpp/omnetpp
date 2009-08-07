@@ -4,6 +4,7 @@
 *.exe
 *.o
 *.obj
+*.class
 *_m.cc
 *_m.h
 *.tab.hh
@@ -35,10 +36,12 @@ out/
 /src/tkenv/tclcode.cc
 /src/utils/opp_configfilepath.cmd
 /ui/.metadata
+/samples/.metadata
 /ui/org.omnetpp.runtime.nativelibs/src/org/omnetpp/runtime/nativelibs/simkernel/
 /ui/org.omnetpp.ide.nativelibs/*.cxx
 /ui/org.omnetpp.ide.nativelibs/src/org/omnetpp/*
 /ui/org.omnetpp.ned.model/src/org/omnetpp/ned/model/pojo/*
+/ui/*/bin
 /samples/*/Makefile
 /samples/*/Makefile.vc
 /samples/aloha/aloha
