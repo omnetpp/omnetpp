@@ -96,7 +96,7 @@ class NedOutlinePage extends ContentOutlinePage implements INEDChangeListener, I
 
         getViewer().setEditDomain(graphicalNedEditor.getEditDomain());
         getViewer().setEditPartFactory(new NedTreeEditPartFactory());
-        ContextMenuProvider provider = new GNEDContextMenuProvider(getViewer(), graphicalNedEditor.getActionRegistry());
+        ContextMenuProvider provider = new GNEDContextMenuProvider(getViewer(), graphicalNedEditor.getActionRegistry(), getSite());
         getViewer().setContextMenu(provider);
         getViewer().setKeyHandler(this.graphicalNedEditor.getCommonKeyHandler());
         getViewer().addDropTargetListener((TransferDropTargetListener)

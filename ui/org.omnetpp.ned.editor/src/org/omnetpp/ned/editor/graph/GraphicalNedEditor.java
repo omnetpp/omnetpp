@@ -372,7 +372,7 @@ public class GraphicalNedEditor
         viewer.setRootEditPart(root);
 
         viewer.setEditPartFactory(new NedEditPartFactory());
-        ContextMenuProvider provider = new GNEDContextMenuProvider(viewer, getActionRegistry());
+        ContextMenuProvider provider = new GNEDContextMenuProvider(viewer, getActionRegistry(), getSite());
         viewer.setProperty(SnapToGeometry.PROPERTY_SNAP_ENABLED, NedEditorPlugin.getDefault().getPreferenceStore().getBoolean(NedEditorPreferenceInitializer.SNAP_TO_GEOMETRY));
         viewer.setContextMenu(provider);
         // register the menu so we can contribute to it from other plugins BUT do not include the

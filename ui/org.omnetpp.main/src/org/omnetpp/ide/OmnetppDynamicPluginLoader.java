@@ -29,11 +29,23 @@ public class OmnetppDynamicPluginLoader implements IResourceChangeListener {
     public void resourceChanged(IResourceChangeEvent event) {
         if (event.getType() == IResourceChangeEvent.PRE_CLOSE) {
             IProject project = (IProject)event.getResource();
+
             if (ProjectUtils.hasOmnetppNature(project)) {
                 try {
                     for (IResource plugin : getPlugins(project)) {
                         try {
-                            deactivatePlugin(plugin);
+                            if (plugin.isAccessible())
+                                deactivatePlugin(plugin);
+                        }
+                        catch (Exception e) {
+                            OmnetppMainPlugin.logError(e);
+                        }
+                    }
+
+                    // TODO: is this needed? see below at getInstalledBundles
+                    for (Bundle bundle : getInstalledBundles(project)) {
+                        try {
+                            bundle.uninstall();
                         }
                         catch (Exception e) {
                             OmnetppMainPlugin.logError(e);
@@ -52,21 +64,25 @@ public class OmnetppDynamicPluginLoader implements IResourceChangeListener {
             for (int i = 0; i < projectDeltas.length; i++) {
                 try {
                     IResourceDelta resourceDelta = projectDeltas[i];
-                    IProject project = (IProject)resourceDelta.getResource();
+                    final IProject project = (IProject)resourceDelta.getResource();
 
-                    if (ProjectUtils.hasOmnetppNature(project)) {
+                    if (project.isOpen() && ProjectUtils.hasOmnetppNature(project)) {
                         resourceDelta.accept(new IResourceDeltaVisitor() {
                             public boolean visit(IResourceDelta resourceDelta) throws CoreException {
                                 try {
                                     IResource resource = resourceDelta.getResource();
 
-                                    if (resource.getParent().getName().equals(PLUGINS_FOLDER)) {
+                                    if (isPlugin(resource)) {
                                         int kind = resourceDelta.getKind();
-           
-                                        if (kind == IResourceDelta.ADDED)
+
+                                        if (kind == IResourceDelta.ADDED && resource.isAccessible())
                                             activatePlugin(resource);
                                         else if (kind == IResourceDelta.REMOVED)
                                             deactivatePlugin(resource);
+                                        else if (kind == IResourceDelta.CHANGED && resource.isAccessible()) {
+                                            deactivatePlugin(resource);
+                                            activatePlugin(resource);
+                                        }
                                         
                                         return false;
                                     }
@@ -89,12 +105,12 @@ public class OmnetppDynamicPluginLoader implements IResourceChangeListener {
     }
 
     protected void activatePlugin(IResource plugin) throws BundleException {
-        Bundle bundle = bundleContext.installBundle(plugin.getRawLocationURI().toString());
+        Bundle bundle = bundleContext.installBundle(plugin.getLocationURI().toString());
         bundle.start(Bundle.START_TRANSIENT);
     }
 
     protected void deactivatePlugin(IResource plugin) throws BundleException {
-        Bundle bundle = bundleContext.installBundle(plugin.getRawLocationURI().toString());
+        Bundle bundle = bundleContext.installBundle(plugin.getLocationURI().toString());
         bundle.uninstall();
     }
 
@@ -107,6 +123,28 @@ public class OmnetppDynamicPluginLoader implements IResourceChangeListener {
                 if (resource instanceof IFile && ((IFile)resource).getFileExtension().equals("jar"))
                     result.add(resource);
 
+        return result;
+    }
+    
+    protected boolean isPlugin(IResource resource) {
+        IFolder pluginFolder = resource.getProject().getFolder(PLUGINS_FOLDER);
+        return resource.getParent().equals(pluginFolder);
+    }
+
+    // TODO: this is used to workaround some unreliability found in the plugin deactivation 
+    protected List<Bundle> getInstalledBundles(IProject project) {
+        List<Bundle> result = new ArrayList<Bundle>();
+        String projectLocation = project.getLocationURI().toString();
+
+        for (Bundle bundle : bundleContext.getBundles()) {
+            if (bundle != null) {
+                String location = bundle.getLocation();
+
+                if (location != null && location.startsWith(projectLocation))
+                    result.add(bundle);
+            }
+        }
+        
         return result;
     }
 }
