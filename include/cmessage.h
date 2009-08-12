@@ -692,7 +692,7 @@ class SIM_API cPacket : public cMessage
         FL_ISRECEPTIONSTART = 4,
         FL_BITERROR = 8,
     };
-    int64 len;            // length of the packet -- used for bit error and transmissing delay modeling
+    int64 len;            // length of the packet in bits -- used for bit error and transmission delay modeling
     simtime_t duration;   // transmission duration on last channel with datarate
     cPacket *encapmsg;    // ptr to the encapsulated message
     unsigned short sharecount; // num of messages MINUS ONE that have this message encapsulated.
@@ -740,9 +740,10 @@ class SIM_API cPacket : public cMessage
     cPacket(const cPacket& packet);
 
     /**
-     * Constructor.
+     * Constructor. It takes the packet name, message kind value, and the
+     * packet length in bits; all optional.
      */
-    explicit cPacket(const char *name=NULL, short kind=0, int64 length=0);
+    explicit cPacket(const char *name=NULL, short kind=0, int64 bitLength=0);
 
     /**
      * Destructor
@@ -883,7 +884,8 @@ class SIM_API cPacket : public cMessage
      * Decapsulates a packet from the packet object. The length of
      * this packet will be decreased by the length of the encapsulated
      * packet, except if it was zero. If the length would become
-     * negative, cRuntimeError is thrown.
+     * negative, cRuntimeError is thrown. If there is no encapsulated
+     * packet, the method returns NULL.
      */
     cPacket *decapsulate();
 
