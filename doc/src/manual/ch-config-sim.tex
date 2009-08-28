@@ -822,12 +822,12 @@ be referred to during result analysis.
 \end{warning}
 
 Module parameters can also be saved, but this has to be
-requested by the user, by configuring save-as-scalar=true for the
+requested by the user, by configuring param-record-as-scalar=true for the
 parameters in question. The configuration key is a pattern that
-identifies the parameter, plus ".save-as-scalar". An example:
+identifies the parameter, plus ".param-record-as-scalar". An example:
 
 \begin{inifile}
-**.host[*].networkLoad.save-as-scalar = true
+**.host[*].networkLoad.param-record-as-scalar = true
 \end{inifile}
 
 This looks simple enough. However, there are three pitfalls:
@@ -846,7 +846,7 @@ each host.
 
 \begin{inifile}
 **.host[*].startTime = 3
-**.host[*].startTime.save-as-scalar = true  # saves "3" once for each host
+**.host[*].startTime.param-record-as-scalar = true  # saves "3" once for each host
 \end{inifile}
 
 Third, recording a random-valued volatile parameter will just save a
@@ -855,7 +855,7 @@ the simulation kernel will also issue a warning if this happens.
 
 \begin{inifile}
 **.interarrivalTime = exponential(1s)
-**.interarrivalTime.save-as-scalar = true  # wrong: saves random values!
+**.interarrivalTime.param-record-as-scalar = true  # wrong: saves random values!
 \end{inifile}
 
 
@@ -869,7 +869,7 @@ That is, one can rewrite the above example as
 
 and refer to the \ttt{\$mean} iteration variable instead of the
 interarrivalTime module parameter(s) during result analysis.
-save-as-scalar=true is not needed because iteration variables are
+param-record-as-scalar=true is not needed because iteration variables are
 automatically saved into the result files.
 
 
