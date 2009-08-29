@@ -2,7 +2,7 @@
 <feature
       id="org.omnetpp.ide"
       label="OMNeT++ IDE Base Features"
-      version="4.0.0.qualifier"
+      version="4.1.0.qualifier"
       provider-name="OpenSim Ltd."
       os="linux,macosx,win32"
       ws="carbon,gtk,win32"
@@ -12,44 +12,49 @@
       <update label="OMNeT++ IDE Update Site" url="http://www.omnetpp.org/update/omnetpp"/>
    </url>
 
+   <includes
+         id="de.unikassel.imageexport"
+         version="0.11.0"/>
+
    <requires>
-      <import feature="org.eclipse.cdt" version="5.0.0.200806171202" match="compatible"/>
-      <import feature="org.eclipse.emf.common" version="2.4.0.v200806091234" match="compatible"/>
-      <import feature="org.eclipse.emf.common.ui" version="2.4.0.v200806091234" match="compatible"/>
-      <import feature="org.eclipse.emf.ecore" version="2.4.0.v200806091234" match="compatible"/>
-      <import feature="org.eclipse.emf.edit" version="2.4.0.v200806091234" match="compatible"/>
-      <import feature="org.eclipse.emf.edit.ui" version="2.4.0.v200806091234" match="compatible"/>
-      <import feature="org.eclipse.gef" version="3.4.0.v20080115-677-8082A5696H274A" match="compatible"/>
-      <import feature="org.eclipse.platform" version="3.4.0.v20080610-9I96EhtEm-T_5LxIsybz-3MdGZmOA3uwv7Ka_M" match="compatible"/>
-      <import feature="org.eclipse.emf.ecore.edit" version="2.4.0.v200806091234" match="compatible"/>
+      <import feature="org.eclipse.cdt" version="6.0.0.200906161748"/>
+      <import feature="org.eclipse.emf.common" version="2.5.0.v200906151043"/>
+      <import feature="org.eclipse.emf.common.ui" version="2.5.0.v200906151043"/>
+      <import feature="org.eclipse.emf.ecore" version="2.5.0.v200906151043"/>
+      <import feature="org.eclipse.emf.ecore.edit" version="2.5.0.v200906151043"/>
+      <import feature="org.eclipse.emf.edit" version="2.5.0.v200906151043"/>
+      <import feature="org.eclipse.emf.edit.ui" version="2.5.0.v200906151043"/>
+      <import feature="org.eclipse.gef" version="3.5.0.v20090422-2346-7779-8192B6696L3ABD43733"/>
+      <import feature="org.eclipse.platform" version="3.5.0.v20090611a-9gEeG1HFtQcmRThO4O3aR_fqSMvJR2sJ"/>
+      <import feature="de.unikassel.imageexport" version="0.11.0"/>
    </requires>
 
    <plugin
          id="org.omnetpp.common"
          download-size="0"
          install-size="0"
-         version="4.0.0.qualifier"
+         version="4.1.0.qualifier"
          unpack="false"/>
 
    <plugin
          id="org.omnetpp.eventlogtable"
          download-size="0"
          install-size="0"
-         version="4.0.0.qualifier"
+         version="4.1.0.qualifier"
          unpack="false"/>
 
    <plugin
          id="org.omnetpp.figures"
          download-size="0"
          install-size="0"
-         version="4.0.0.qualifier"
+         version="4.1.0.qualifier"
          unpack="false"/>
 
    <plugin
          id="org.omnetpp.ide.nativelibs"
          download-size="0"
          install-size="0"
-         version="4.0.0.qualifier"
+         version="4.1.0.qualifier"
          unpack="false"/>
 
    <plugin
@@ -58,7 +63,7 @@
          arch="x86"
          download-size="0"
          install-size="0"
-         version="4.0.0.qualifier"
+         version="4.1.0.qualifier"
          fragment="true"/>
 
    <plugin
@@ -66,7 +71,7 @@
          os="macosx"
          download-size="0"
          install-size="0"
-         version="4.0.0.qualifier"
+         version="4.1.0.qualifier"
          fragment="true"/>
 
    <plugin
@@ -75,84 +80,84 @@
          arch="x86"
          download-size="0"
          install-size="0"
-         version="4.0.0.qualifier"
+         version="4.1.0.qualifier"
          fragment="true"/>
 
    <plugin
          id="org.omnetpp.inifile.editor"
          download-size="0"
          install-size="0"
-         version="4.0.0.qualifier"
+         version="4.1.0.qualifier"
          unpack="false"/>
 
    <plugin
          id="org.omnetpp.main"
          download-size="0"
          install-size="0"
-         version="4.0.0.qualifier"
+         version="4.1.0.qualifier"
          unpack="false"/>
 
    <plugin
          id="org.omnetpp.ned.core"
          download-size="0"
          install-size="0"
-         version="4.0.0.qualifier"
+         version="4.1.0.qualifier"
          unpack="false"/>
 
    <plugin
          id="org.omnetpp.ned.editor"
          download-size="0"
          install-size="0"
-         version="4.0.0.qualifier"
+         version="4.1.0.qualifier"
          unpack="false"/>
 
    <plugin
          id="org.omnetpp.ned.model"
          download-size="0"
          install-size="0"
-         version="4.0.0.qualifier"
+         version="4.1.0.qualifier"
          unpack="false"/>
 
    <plugin
          id="org.omnetpp.scave"
          download-size="0"
          install-size="0"
-         version="4.0.0.qualifier"
+         version="4.1.0.qualifier"
          unpack="false"/>
 
    <plugin
          id="org.omnetpp.scave.builder"
          download-size="0"
          install-size="0"
-         version="4.0.0.qualifier"
+         version="4.1.0.qualifier"
          unpack="false"/>
 
    <plugin
          id="org.omnetpp.scave.model"
          download-size="0"
          install-size="0"
-         version="4.0.0.qualifier"
+         version="4.1.0.qualifier"
          unpack="false"/>
 
    <plugin
          id="org.omnetpp.sequencechart"
          download-size="0"
          install-size="0"
-         version="4.0.0.qualifier"
+         version="4.1.0.qualifier"
          unpack="false"/>
 
    <plugin
          id="org.omnetpp.launch"
          download-size="0"
          install-size="0"
-         version="4.0.0.qualifier"
+         version="4.1.0.qualifier"
          unpack="false"/>
 
    <plugin
          id="org.omnetpp.msg.editor"
          download-size="0"
          install-size="0"
-         version="4.0.0.qualifier"
+         version="4.1.0.qualifier"
          unpack="false"/>
 
    <plugin
@@ -161,21 +166,21 @@
          arch="x86_64"
          download-size="0"
          install-size="0"
-         version="4.0.0.qualifier"
+         version="4.1.0.qualifier"
          fragment="true"/>
 
    <plugin
          id="org.omnetpp.cdt"
          download-size="0"
          install-size="0"
-         version="4.0.0.qualifier"
+         version="4.1.0.qualifier"
          unpack="false"/>
 
    <plugin
          id="org.omnetpp.doc"
          download-size="0"
          install-size="0"
-         version="4.0.0.qualifier"
+         version="4.1.0.qualifier"
          unpack="false"/>
 
    <plugin
@@ -196,14 +201,14 @@
          id="org.apache.commons.logging"
          download-size="0"
          install-size="0"
-         version="1.0.4.v20080605-1930"
+         version="1.0.4.v200904062259"
          unpack="false"/>
 
    <plugin
          id="org.omnetpp.neddoc"
          download-size="0"
          install-size="0"
-         version="4.0.0.qualifier"
+         version="4.1.0.qualifier"
          unpack="false"/>
 
    <plugin
@@ -211,6 +216,13 @@
          download-size="0"
          install-size="0"
          version="1.0.0.rc3"
+         unpack="false"/>
+
+   <plugin
+         id="org.omnetpp.common.core"
+         download-size="0"
+         install-size="0"
+         version="4.1.0.qualifier"
          unpack="false"/>
 
 </feature>

@@ -11,12 +11,12 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.eclipse.compare.rangedifferencer.IRangeComparator;
+import org.eclipse.compare.rangedifferencer.RangeDifference;
+import org.eclipse.compare.rangedifferencer.RangeDifferencer;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
-import org.eclipse.ui.internal.texteditor.quickdiff.compare.rangedifferencer.IRangeComparator;
-import org.eclipse.ui.internal.texteditor.quickdiff.compare.rangedifferencer.RangeDifference;
-import org.eclipse.ui.internal.texteditor.quickdiff.compare.rangedifferencer.RangeDifferencer;
 import org.omnetpp.common.util.StringUtils;
 
 /**

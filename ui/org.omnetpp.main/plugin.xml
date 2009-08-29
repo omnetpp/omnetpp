@@ -33,7 +33,7 @@
           value=" "/>
     <property
           name="aboutText"
-          value="%aboutText"/>
+          value="OMNeT++ Integrated Development Environment."/>
     <property
           name="aboutImage"
           value="icons/about-image.png"/>
