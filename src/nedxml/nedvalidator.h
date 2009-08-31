@@ -65,7 +65,6 @@ class NEDXML_API NEDValidatorBase
     virtual void validateElement(ChannelElement *node) = 0;
     virtual void validateElement(ParametersElement *node) = 0;
     virtual void validateElement(ParamElement *node) = 0;
-    virtual void validateElement(PatternElement *node) = 0;
     virtual void validateElement(PropertyElement *node) = 0;
     virtual void validateElement(PropertyKeyElement *node) = 0;
     virtual void validateElement(GatesElement *node) = 0;

@@ -229,6 +229,17 @@ void NEDSyntaxValidator::validateElement(ParamElement *node)
             errors->addError(node, "cannot define new parameters within a submodule");
     }
 
+    // check isPattern flag is consistent with 'name' attribute
+    bool containsDot = strchr(node->getName(), '.')!=NULL;
+    if (!node->getIsPattern() && containsDot)
+        errors->addError(node, "parameter names must not contain a dot");
+    if (node->getIsPattern() && !containsDot)
+        errors->addError(node, "parameter name patterns must contain a dot");
+
+    // type+pattern are not compatible
+    if (node->getIsPattern() && node->getType() != NED_PARTYPE_NONE)
+        errors->addError(node, "name must be an identifier when defining a new parameter");
+
     // in module or channel interfaces, one cannot specify parameter values
     if (parent->getTagCode() == NED_MODULE_INTERFACE || parent->getTagCode() == NED_CHANNEL_INTERFACE)
     {
@@ -243,11 +254,6 @@ void NEDSyntaxValidator::validateElement(ParamElement *node)
                 errors->addError(node, "cannot specify parameter values within a module interface or or channel interface");
         }
     }
-}
-
-void NEDSyntaxValidator::validateElement(PatternElement *node)
-{
-    //FIXME revise
 }
 
 void NEDSyntaxValidator::validateElement(PropertyElement *node)

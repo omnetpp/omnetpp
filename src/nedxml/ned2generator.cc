@@ -452,29 +452,6 @@ void NED2Generator::doParam(ParamElement *node, const char *indent, bool islast,
         OUT << ";";
 }
 
-void NED2Generator::doPattern(PatternElement *node, const char *indent, bool islast, const char *)
-{
-    OUT << getBannerComment(node, indent);
-    OUT << indent << node->getPattern();
-    generateChildrenWithType(node, NED_PROPERTY, increaseIndent(indent), " ");
-
-    if (hasExpression(node,"value"))
-    {
-        OUT << " = ";
-        if (node->getIsDefault())
-            OUT << "default(";
-        printExpression(node, "value",indent);
-        if (node->getIsDefault())
-            OUT << ")";
-    }
-    else if (node->getIsDefault())
-    {
-        OUT << " = default";
-    }
-
-    OUT << ";" << getRightComment(node);
-}
-
 void NED2Generator::doProperty(PropertyElement *node, const char *indent, bool islast, const char *sep)
 {
     if (!node->getIsImplicit())
@@ -1162,8 +1139,6 @@ void NED2Generator::generateNedItem(NEDElement *node, const char *indent, bool i
             doParameters((ParametersElement *)node, indent, islast, arg); break;
         case NED_PARAM:
             doParam((ParamElement *)node, indent, islast, arg); break;
-        case NED_PATTERN:
-            doPattern((PatternElement *)node, indent, islast, arg); break;
         case NED_PROPERTY:
             doProperty((PropertyElement *)node, indent, islast, arg); break;
         case NED_PROPERTY_KEY:

@@ -385,11 +385,14 @@ void cNEDDeclaration::collectPatternsFrom(ParametersElement *paramsNode, const s
         return;
 
     // append pattern elements to v[]
-    for (PatternElement *patternNode=paramsNode->getFirstPatternChild(); patternNode; patternNode=patternNode->getNextPatternSibling())
+    for (ParamElement *paramNode=paramsNode->getFirstParamChild(); paramNode; paramNode=paramNode->getNextParamSibling())
     {
-        std::string patternPath = prefix + patternNode->getPattern();
-        v.push_back(PatternData());
-        v.back().matcher = new PatternMatcher(patternPath.c_str(), true, true, true);
-        v.back().patternNode = patternNode;
+        if (paramNode->getIsPattern())
+        {
+            std::string patternPath = prefix + paramNode->getName();
+            v.push_back(PatternData());
+            v.back().matcher = new PatternMatcher(patternPath.c_str(), true, true, true);
+            v.back().patternNode = paramNode;
+        }
     }
 }

@@ -50,7 +50,6 @@ void  NEDValidatorBase::validateElement(NEDElement *node)
             case NED_CHANNEL: validateElement((ChannelElement *) node); break;
             case NED_PARAMETERS: validateElement((ParametersElement *) node); break;
             case NED_PARAM: validateElement((ParamElement *) node); break;
-            case NED_PATTERN: validateElement((PatternElement *) node); break;
             case NED_PROPERTY: validateElement((PropertyElement *) node); break;
             case NED_PROPERTY_KEY: validateElement((PropertyKeyElement *) node); break;
             case NED_GATES: validateElement((GatesElement *) node); break;

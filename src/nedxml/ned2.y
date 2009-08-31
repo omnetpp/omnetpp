@@ -144,7 +144,6 @@ static struct NED2ParserState
     NEDElement *component;  // compound/simple module, module interface, channel or channel interface
     ParametersElement *parameters;
     ParamElement *param;
-    PatternElement *pattern;
     PropertyElement *property;
     PropertyKeyElement *propkey;
     TypesElement *types;
@@ -705,22 +704,22 @@ param_typename
 pattern_value
         : pattern '=' paramvalue ';'
                 {
-                  ps.pattern = (PatternElement *)createElementWithTag(NED_PATTERN, ps.parameters);
-                  ps.pattern->setPattern(toString(@1));
-                  const char *patt = ps.pattern->getPattern();
+                  ps.param = addParameter(ps.parameters, @1);
+                  ps.param->setIsPattern(true);
+                  const char *patt = ps.param->getName();
                   if (strchr(patt,' ') || strchr(patt,'\t') || strchr(patt,'\n'))
-                      np->getErrors()->addError(ps.pattern,"parameter name patterns may not contain whitespace");
+                      np->getErrors()->addError(ps.param,"parameter name patterns may not contain whitespace");
                   if (!isEmpty(ps.exprPos))  // note: $3 cannot be checked, as it's always NULL when expression parsing is off
-                      addExpression(ps.pattern, "value",ps.exprPos,$3);
+                      addExpression(ps.param, "value",ps.exprPos,$3);
                   else {
                       // Note: "=default" is currently not accepted in NED files, because
                       // it would be complicated to support in the Inifile Editor.
                       if (ps.isDefault)
-                          np->getErrors()->addError(ps.pattern,"applying the default value (\"=default\" syntax) is not supported in NED files");
+                          np->getErrors()->addError(ps.param,"applying the default value (\"=default\" syntax) is not supported in NED files");
                   }
-                  ps.pattern->setIsDefault(ps.isDefault);
-                  storePos(ps.pattern, @$);
-                  storeBannerAndRightComments(ps.pattern,@$);
+                  ps.param->setIsDefault(ps.isDefault);
+                  storePos(ps.param, @$);
+                  storeBannerAndRightComments(ps.param,@$);
                 }
         ;
 

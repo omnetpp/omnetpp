@@ -141,12 +141,15 @@ cGate::Type cNEDNetworkBuilder::translateGateType(int t)
 void cNEDNetworkBuilder::doParams(cComponent *component, ParametersElement *paramsNode, bool isSubcomponent)
 {
     ASSERT(paramsNode!=NULL);
-    for (NEDElement *child=paramsNode->getFirstChildWithTag(NED_PARAM); child; child=child->getNextSiblingWithTag(NED_PARAM))
-        doParam(component, (ParamElement *)child, isSubcomponent);
+    for (ParamElement *paramNode=paramsNode->getFirstParamChild(); paramNode; paramNode=paramNode->getNextParamSibling())
+        if (!paramNode->getIsPattern())
+            doParam(component, paramNode, isSubcomponent);
 }
 
 void cNEDNetworkBuilder::doParam(cComponent *component, ParamElement *paramNode, bool isSubcomponent)
 {
+    ASSERT(!paramNode->getIsPattern()); // we only deal with non-pattern assignments
+
     const char *paramName = paramNode->getName();
 
     // isSubComponent==false: we are called from cModuleType::addParametersAndGatesTo();
@@ -253,7 +256,7 @@ void cNEDNetworkBuilder::assignParametersFromPatterns(cComponent *component)
         int numPatterns = patterns.size();
 
         for (int i=0; i<numPatterns; i++)
-            printf("    pattern %d: %s  (from \"%s=\" at %s)\n", i, patterns[i].matcher->debugStr().c_str(), patterns[i].patternNode->getPattern(), patterns[i].patternNode->getSourceLocation());
+            printf("    pattern %d: %s  (from \"%s=\" at %s)\n", i, patterns[i].matcher->debugStr().c_str(), patterns[i].patternNode->getName(), patterns[i].patternNode->getSourceLocation());
 
         // loop through all unset params, and try to assign them using the patterns
         int numParams = component->getNumParams();
@@ -276,10 +279,11 @@ void cNEDNetworkBuilder::assignParametersFromPatterns(cComponent *component)
     }
 }
 
-void cNEDNetworkBuilder::assignParameterFromPattern(cPar& par, PatternElement *patternNode)
+void cNEDNetworkBuilder::assignParameterFromPattern(cPar& par, ParamElement *patternNode)
 {
     // note: this code should look similar to relevant part of doParam()
     try {
+        ASSERT(patternNode->getIsPattern());
         cParImpl *impl = par.copyIfShared();
         ExpressionElement *exprNode = patternNode->getFirstExpressionChild();
         if (exprNode)

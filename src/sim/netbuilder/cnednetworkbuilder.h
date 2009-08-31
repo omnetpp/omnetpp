@@ -80,7 +80,7 @@ class SIM_API cNEDNetworkBuilder
     void addSubmodule(cModule *modp, SubmoduleElement *submod);
     void doAddParametersAndGatesTo(cComponent *component, cNEDDeclaration *decl);
     void assignParametersFromPatterns(cComponent *component);
-    void assignParameterFromPattern(cPar& par, PatternElement *patternNode);
+    void assignParameterFromPattern(cPar& par, ParamElement *patternNode);
     static cPar::Type translateParamType(int t);
     static cGate::Type translateGateType(int t);
     void doParams(cComponent *component, ParametersElement *paramsNode, bool isSubcomponent);

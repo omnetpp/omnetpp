@@ -151,7 +151,7 @@ void NEDDTDValidator::validateElement(ParametersElement *node)
 {
     Choice choices[] = {
         {{NED_COMMENT, NED_NULL}, '*'},
-        {{NED_PROPERTY, NED_PARAM, NED_PATTERN, NED_NULL}, '*'},
+        {{NED_PROPERTY, NED_PARAM, NED_NULL}, '*'},
     };
     checkSeqOfChoices(node, choices, sizeof(choices)/sizeof(Choice));
 
@@ -170,20 +170,10 @@ void NEDDTDValidator::validateElement(ParamElement *node)
     const char *vals1[] = {"true","false"};
     checkEnumeratedAttribute(node, "is-volatile", vals1, sizeof(vals1)/sizeof(const char *));
     checkRequiredAttribute(node, "name");
-    checkNameAttribute(node, "name");
     const char *vals4[] = {"true","false"};
-    checkEnumeratedAttribute(node, "is-default", vals4, sizeof(vals4)/sizeof(const char *));
-}
-
-void NEDDTDValidator::validateElement(PatternElement *node)
-{
-    int tags[] = {NED_COMMENT,NED_EXPRESSION,NED_PROPERTY, NED_NULL};
-    char mult[] = {'*','?','*', 0};
-    checkSequence(node, tags, mult);
-
-    checkRequiredAttribute(node, "pattern");
-    const char *vals2[] = {"true","false"};
-    checkEnumeratedAttribute(node, "is-default", vals2, sizeof(vals2)/sizeof(const char *));
+    checkEnumeratedAttribute(node, "is-pattern", vals4, sizeof(vals4)/sizeof(const char *));
+    const char *vals5[] = {"true","false"};
+    checkEnumeratedAttribute(node, "is-default", vals5, sizeof(vals5)/sizeof(const char *));
 }
 
 void NEDDTDValidator::validateElement(PropertyElement *node)

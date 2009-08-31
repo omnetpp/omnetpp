@@ -69,7 +69,7 @@
 <!ATTLIST channel
      name                NMTOKEN   #REQUIRED>
 
-<!ELEMENT parameters (comment*, (property|param|pattern)*)>
+<!ELEMENT parameters (comment*, (property|param)*)>
 <!ATTLIST parameters
     is-implicit         (true|false)  "false">
 
@@ -77,14 +77,9 @@
 <!ATTLIST param
      type               (double|int|string|bool|xml) #IMPLIED
      is-volatile        (true|false)  "false"
-     name               NMTOKEN   #REQUIRED
+     name               CDATA     #REQUIRED
      value              CDATA     #IMPLIED
-     is-default         (true|false)  "false">
-
-<!ELEMENT pattern (comment*, expression?, property*)>
-<!ATTLIST pattern
-     pattern            CDATA     #REQUIRED
-     value              CDATA     #IMPLIED
+     is-pattern         (true|false)  "false"
      is-default         (true|false)  "false">
 
 <!ELEMENT property (comment*, property-key*)>

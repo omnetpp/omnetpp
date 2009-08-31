@@ -56,7 +56,7 @@ class PatternMatcher;
 class SIM_API cNEDDeclaration : public NEDTypeInfo
 {
   public:
-    struct PatternData {PatternMatcher *matcher; PatternElement *patternNode;};
+    struct PatternData {PatternMatcher *matcher; ParamElement *patternNode;};
   protected:
     // properties
     typedef std::map<std::string, cProperties *> StringPropsMap;
