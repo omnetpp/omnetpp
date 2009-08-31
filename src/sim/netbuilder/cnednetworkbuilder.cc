@@ -259,18 +259,20 @@ void cNEDNetworkBuilder::assignParametersFromPatterns(cComponent *component)
             printf("    pattern %d: %s  (from \"%s=\" at %s)\n", i, patterns[i].matcher->debugStr().c_str(), patterns[i].patternNode->getName(), patterns[i].patternNode->getSourceLocation());
 
         // loop through all unset params, and try to assign them using the patterns
-        int numParams = component->getNumParams();
-        for (int i=0; i<numParams; i++) {
-            cPar& par = component->par(i);
-            if (!par.isSet()) {
-                // first match
-                std::string paramPath = prefix + par.getFullName();
-                printf("  checking param %s as \"%s\"\n", par.getFullPath().c_str(), paramPath.c_str());
-                for (int j=0; j<numPatterns; j++) {
-                    if (patterns[j].matcher->matches(paramPath.c_str())) {
-                        printf("   ^ %s matches it, assigning!\n", patterns[j].matcher->debugStr().c_str());
-                        assignParameterFromPattern(par, patterns[j].patternNode);
-                        break;
+        if (numPatterns != 0) {
+            int numParams = component->getNumParams();
+            for (int i=0; i<numParams; i++) {
+                cPar& par = component->par(i);
+                if (!par.isSet()) {
+                    // first match
+                    std::string paramPath = prefix + par.getFullName();
+                    printf("  checking param %s as \"%s\"\n", par.getFullPath().c_str(), paramPath.c_str());
+                    for (int j=0; j<numPatterns; j++) {
+                        if (patterns[j].matcher->matches(paramPath.c_str())) {
+                            printf("   ^ %s matches it, assigning!\n", patterns[j].matcher->debugStr().c_str());
+                            assignParameterFromPattern(par, patterns[j].patternNode);
+                            break;
+                        }
                     }
                 }
             }
