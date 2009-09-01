@@ -150,6 +150,13 @@ public class InifileUtils {
         }
         return keyMatcher;
     }
+    
+    public static boolean matchesPattern(String pattern, String value) {
+        if (PatternMatcher.containsWildcards(pattern))
+            return getOrCreateKeyMatcher(pattern).matcher.matches(value);
+        else
+            return pattern.equals(value);
+    }
 	
 	/**
 	 * Returns the submodule name. If vector, appends [*].

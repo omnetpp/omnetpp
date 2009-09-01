@@ -5,8 +5,9 @@
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-package org.omnetpp.inifile.editor.model;
+package org.omnetpp.ned.core;
 
+import java.util.ArrayList;
 import java.util.Stack;
 
 import org.eclipse.core.resources.IProject;
@@ -73,7 +74,7 @@ public class NEDTreeTraversal {
 
 		// traverse submodules
 		if (recurse && moduleEffectiveType.getNEDElement() instanceof CompoundModuleElementEx) {
-			for (SubmoduleElementEx submodule : moduleEffectiveType.getSubmodules().values()) {
+			for (SubmoduleElementEx submodule : new ArrayList<SubmoduleElementEx>(moduleEffectiveType.getSubmodules().values())) {
 				// dig out type info (NED declaration)
 				String submoduleTypeName = resolveEffectiveTypeName(submodule);
 				INEDTypeInfo submoduleType = StringUtils.isEmpty(submoduleTypeName) ? null : resolver.lookupNedType(submoduleTypeName, submodule.getCompoundModule());

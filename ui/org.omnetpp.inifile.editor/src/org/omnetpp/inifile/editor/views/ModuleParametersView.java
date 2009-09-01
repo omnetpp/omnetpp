@@ -11,6 +11,7 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 import java.util.WeakHashMap;
 
 import org.apache.commons.lang.ArrayUtils;
@@ -31,6 +32,8 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -57,9 +60,11 @@ import org.omnetpp.inifile.editor.model.InifileHoverUtils;
 import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.inifile.editor.model.ParamResolution;
 import org.omnetpp.inifile.editor.model.SectionKey;
+import org.omnetpp.inifile.editor.model.ParamResolution.ParamResolutionType;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
+import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 
 
@@ -148,7 +153,7 @@ public class ModuleParametersView extends AbstractModuleView {
 						//XXX make sure "res" and inifile editor refer to the same IFile!!!
 						return InifileHoverUtils.getEntryHoverText(res.section, res.key, inifileDocument, inifileAnalyzer);
 					else 
-						return InifileHoverUtils.getParamHoverText(res.pathModules, res.paramDeclNode, res.paramValueNode);
+						return InifileHoverUtils.getParamHoverText(res.submodulePath, res.paramDeclNode, res.paramValueNode);
 				}
 				return null;
 			}
@@ -349,28 +354,29 @@ public class ModuleParametersView extends AbstractModuleView {
             showMessage("No module element selected.");
             return;
         }
-	    
-		//XXX factor out common part of the two "if" branches
+        
+        String text = null;
+
 		//XXX why not unconditionally store analyzer and doc references???
 		if (analyzer==null) {
-			ParamResolution[] pars = null;
-			if (module instanceof SubmoduleElementEx)
-				pars = InifileAnalyzer.collectParameters((SubmoduleElementEx)module).toArray(new ParamResolution[]{});
-			else if (module instanceof INedTypeElement)
-				pars = InifileAnalyzer.collectParameters(((INedTypeElement)module).getNEDTypeInfo()).toArray(new ParamResolution[]{});
-			if (pars == null) {
+			List<ParamResolution> pars = null;
+
+			if (module instanceof SubmoduleElementEx) {
+			    SubmoduleElementEx submodule = (SubmoduleElementEx)module;
+			    text = "Submodule: " + submodule.getName();
+				pars = InifileAnalyzer.collectParameters(submodule);
+			}
+			else if (module instanceof INedTypeElement) {
+			    INEDTypeInfo typeInfo = ((INedTypeElement)module).getNEDTypeInfo();
+			    text = "Module: " + typeInfo.getName();
+				pars = InifileAnalyzer.collectParameters(typeInfo);
+			}
+			else {
 				showMessage("NED element should be a module type or a submodule.");
 				return;
 			}
 
-			tableViewer.setInput(pars);
-
-			// try to preserve selection
-			ISelection oldSelection = selectedElements.get(getAssociatedEditor().getEditorInput());
-			if (oldSelection != null)
-				tableViewer.setSelection(oldSelection, true);
-			
-			//XXX set label
+			tableViewer.setInput(pars.toArray(new ParamResolution[0]));
 		}
 		else {
 			if (section==null)
@@ -383,18 +389,30 @@ public class ModuleParametersView extends AbstractModuleView {
 			ParamResolution[] pars = unassignedOnly ? analyzer.getUnassignedParams(section) : analyzer.getParamResolutions(section);
 			tableViewer.setInput(pars);
 
-			// try to preserve selection
-			ISelection oldSelection = selectedElements.get(getAssociatedEditor().getEditorInput());
-			if (oldSelection != null)
-				tableViewer.setSelection(oldSelection, true);
-
 			// update label
-			String text = "Section ["+section+"]"; 
-			if (getPinnedToEditor() != null)
-				text += " in " + getPinnedToEditor().getEditorInput().getName() + " (pinned)"; 
-			text += ", " + (unassignedOnly ? "unassigned parameters" : "all parameters");
-			setContentDescription(text);
+			text = "Section ["+section+"]"; 
 		}
-	}
 
+        // try to preserve selection
+        ISelection oldSelection = selectedElements.get(getAssociatedEditor().getEditorInput());
+        if (oldSelection != null)
+            tableViewer.setSelection(oldSelection, true);
+
+        // set label
+		if (getPinnedToEditor() != null)
+            text += " in " + getPinnedToEditor().getEditorInput().getName() + " (pinned)"; 
+        text += ", " + (unassignedOnly ? "unassigned parameters" : "all parameters");
+        setContentDescription(text);
+
+        // set up filter
+        if (unassignedOnly)
+            tableViewer.setFilters(new ViewerFilter[] {new ViewerFilter() {
+                @Override
+                public boolean select(Viewer viewer, Object parentElement, Object element) {
+                    return ((ParamResolution)element).type == ParamResolutionType.UNASSIGNED;
+                }
+            }});
+        else
+            tableViewer.resetFilters();
+	}
 }

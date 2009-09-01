@@ -5,7 +5,7 @@
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-package org.omnetpp.inifile.editor.model;
+package org.omnetpp.ned.core;
 
 import java.util.Stack;
 

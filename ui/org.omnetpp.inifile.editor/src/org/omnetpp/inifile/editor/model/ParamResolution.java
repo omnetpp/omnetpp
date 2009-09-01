@@ -7,8 +7,10 @@
 
 package org.omnetpp.inifile.editor.model;
 
+import java.util.Vector;
+
 import org.omnetpp.ned.model.ex.ParamElementEx;
-import org.omnetpp.ned.model.pojo.SubmoduleElement;
+import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 
 /**
  * Value object, stores the result of a parameter resolution.
@@ -28,13 +30,14 @@ public class ParamResolution {
 	
 	// moduleFullPath and param name (from paramDeclNode or paramValueNode) identify the NED parameter. 
 	// For vector submodules, moduleFullPath contains "[*]".
-	// pathModules[] relates moduleFullPath to NEDElements. The network is pathModules[1]'s
+	// submodulePath[] relates moduleFullPath to NEDElements. The network is submodulePath[1]'s
 	// parent CompoundModuleElement, or paramDeclNode's parent Compound/SimpleModuleElement if 
-	// pathModules[] is empty. After that, the type of pathModules[i] is the parent 
+	// submodulePath[] is empty. After that, the type of submodulePath[i] is the parent 
 	// Compound/SimpleModuleElement of the next pathModule (or finally, the paramDeclNode).
-	// pathModules[0] may be null.
+	// submodulePath[0] may be null.
 	public String moduleFullPath;
-	public SubmoduleElement[] pathModules;
+	// FIXME: TODO: should copy, maybe use an array here?!
+	public SubmoduleElementEx[] submodulePath;
 	public ParamElementEx paramDeclNode;  // node where param was declared; not null
 	public ParamElementEx paramValueNode;  // node where param gets assigned (may be a module or submodule param, or may be null)
 
@@ -51,11 +54,11 @@ public class ParamResolution {
 	public String key;
 	
 	// for convenience
-	public ParamResolution(String moduleFullPath, SubmoduleElement[] pathModules, 
+	public ParamResolution(String moduleFullPath, Vector<SubmoduleElementEx> submodulePath, 
 			               ParamElementEx paramDeclNode, ParamElementEx paramValueNode, ParamResolutionType type, 
 			               String activeSection, String section, String key) {
 		this.moduleFullPath = moduleFullPath;
-		this.pathModules = pathModules;
+		this.submodulePath = submodulePath.toArray(new SubmoduleElementEx[0]);
 		this.paramDeclNode = paramDeclNode;
 		this.paramValueNode = paramValueNode;
 		this.type = type;
@@ -121,4 +124,3 @@ public class ParamResolution {
 		return true;
 	}
 }
-

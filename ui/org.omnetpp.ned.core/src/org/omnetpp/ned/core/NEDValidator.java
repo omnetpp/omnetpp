@@ -66,7 +66,6 @@ import org.omnetpp.ned.model.pojo.PacketDeclElement;
 import org.omnetpp.ned.model.pojo.PacketElement;
 import org.omnetpp.ned.model.pojo.ParamElement;
 import org.omnetpp.ned.model.pojo.ParametersElement;
-import org.omnetpp.ned.model.pojo.PatternElement;
 import org.omnetpp.ned.model.pojo.PropertyDeclElement;
 import org.omnetpp.ned.model.pojo.PropertyElement;
 import org.omnetpp.ned.model.pojo.PropertyKeyElement;
@@ -344,17 +343,22 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 		}
 
 		// check assignments: the param must exist already, find definition
-		ParamElement decl = null;
 		if (submoduleNode!=null) {
 			// inside a submodule's definition
 			if (submoduleType==null) {
 				errors.addError(node, "cannot assign parameters of a submodule of unknown type");
 				return;
 			}
-			decl = submoduleType.getParamDeclarations().get(parname);
-			if (decl==null) {
-				errors.addError(node, "'"+parname+"': type '"+submoduleType.getName()+"' has no such parameter");
-				return;
+
+			if (!ParamUtil.hasMatchingParamDeclarationRecursively(submoduleType, parname)) {
+                String message = "'"+parname+"': type '"+submoduleType.getName()+"' has no such parameter";
+
+                if (node.getIsPattern())
+                    errors.addWarning(node, message);
+                else
+                    errors.addError(node, message);
+
+                return;
 			}
 		}
 		else if (channelSpecElement!=null) {
@@ -363,28 +367,28 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 				errors.addError(node, "cannot assign parameters of a channel of unknown type");
 				return;
 			}
-			decl = channelSpecType.getParamDeclarations().get(parname);
-			if (decl==null) {
+
+			if (channelSpecType.getParamDeclarations().get(parname) == null) {
 				errors.addError(node, "'"+parname+"': type '"+channelSpecType.getName()+"' has no such parameter");
 				return;
 			}
 		}
 		else {
 			// global "parameters" section of type
-			if (!members.containsKey(parname)) {
-				errors.addError(node, "'"+parname+"': undefined parameter");
-				return;
+			if (!ParamUtil.hasMatchingParamDeclarationRecursively(componentNode.getNEDTypeInfo(), parname)) {
+			    String message = "'"+parname+"': undefined parameter";
+
+			    if (node.getIsPattern())
+	                errors.addWarning(node, message);
+			    else
+			        errors.addError(node, message);
+
+			    return;
 			}
-			decl = (ParamElement)members.get(parname);
 		}
 
 		//XXX: check expression matches type in the declaration
 
-		validateChildren(node);
-	}
-
-	@Override
-    protected void validateElement(PatternElement node) {
 		validateChildren(node);
 	}
 
