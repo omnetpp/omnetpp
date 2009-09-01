@@ -1,3 +1,8 @@
+2009-09-01  Andras Varga
+
+	* fix: images with file names containing upper-case characters were
+	not loaded by Tkenv
+
 2009-03-12  ------ omnetpp-4.0 released ------
 
 2009-03-08  Andras Varga
