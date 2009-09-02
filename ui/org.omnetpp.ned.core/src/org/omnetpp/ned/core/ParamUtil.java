@@ -32,7 +32,7 @@ public class ParamUtil {
                 return !result[0];
             }
         });
-        
+
         return result[0];
     }
 
