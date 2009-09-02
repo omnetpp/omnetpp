@@ -949,7 +949,7 @@ public class InifileAnalyzer {
     protected static IModuleTreeVisitor createParamCollectingNedTreeVisitor(final List<ParamResolution> list, INEDTypeResolver res, final String[] sectionChain, final IInifileDocument doc) {
         return new ParamUtil.RecursiveParamDeclarationVisitor() {
             protected boolean visitParamDeclaration(String fullPath, Stack<INEDTypeInfo> moduleTypePath, Stack<SubmoduleElementEx> submodulePath, ParamElementEx paramDeclaration) {
-                resolveParameter(list, moduleTypePath, submodulePath, sectionChain, doc, paramDeclaration);
+                resolveParameter(list, fullPath, moduleTypePath, submodulePath, sectionChain, doc, paramDeclaration);
                 return true;
             }
 
@@ -986,19 +986,12 @@ public class InifileAnalyzer {
     }
 
     /**
-     * Resolve parameters of a submodule of a given type.
-     */
-	public static void resolveModuleParameters(List<ParamResolution> resultList, Vector<INEDTypeInfo> moduleTypePath, Vector<SubmoduleElementEx> submodulePath, String[] sectionChain, IInifileDocument doc) {
-		for (ParamElementEx paramDeclaration : moduleTypePath.lastElement().getParamDeclarations().values())
-			resolveParameter(resultList, moduleTypePath, submodulePath, sectionChain, doc, paramDeclaration);
-	}
-
-    /**
      * Resolve parameters of a module type or submodule, based solely on NED information, 
      * without inifile. This is useful for views when a NED editor is active. 
      */
-    public static void resolveModuleParameters(List<ParamResolution> resultList, Vector<INEDTypeInfo> moduleTypePath, Vector<SubmoduleElementEx> submodulePath) {
-        resolveModuleParameters(resultList, moduleTypePath, submodulePath, null, null);
+    public static void resolveModuleParameters(List<ParamResolution> resultList, String fullPath, Vector<INEDTypeInfo> moduleTypePath, Vector<SubmoduleElementEx> submodulePath) {
+        for (ParamElementEx paramDeclaration : moduleTypePath.lastElement().getParamDeclarations().values())
+            resolveParameter(resultList, fullPath, moduleTypePath, submodulePath, null, null, paramDeclaration);
     }
 
 	/**
@@ -1013,81 +1006,29 @@ public class InifileAnalyzer {
      *     Network.node[*].address = valueX
      * then this method will add three ParamResolutions. 
 	 */
-	protected static void resolveParameter(List<ParamResolution> resultList, Vector<INEDTypeInfo> moduleTypePath, Vector<SubmoduleElementEx> submodulePath, String[] sectionChain, IInifileDocument doc, ParamElementEx paramDeclaration)
+	protected static void resolveParameter(List<ParamResolution> resultList, String fullPath, Vector<INEDTypeInfo> moduleTypePath, Vector<SubmoduleElementEx> submodulePath, String[] sectionChain, IInifileDocument doc, ParamElementEx paramDeclaration)
 	{
-	    // determine moduleFullPath based on submodulePath and moduleTypePath
-        String moduleFullPath = null;
-        for (int i = 0; i < submodulePath.size(); i++) {
-            INEDTypeInfo moduleType = moduleTypePath.get(i);
-            SubmoduleElementEx submodule = submodulePath.get(i);
-            String fullName = submodule == null ? moduleType.getName() : InifileUtils.getSubmoduleFullName(submodule);
-
-            if (i == 0)
-                moduleFullPath = fullName;
-            else
-                moduleFullPath = moduleFullPath + "." + fullName;  
-        }
-
-        // lookup the parameter value in the NED files
-        String paramName = paramDeclaration.getName();
-        ParamElementEx paramAssignment = null;
-
-        boolean isNedDefault = false;
-        String nedValue = null;
-        String paramRelativePath = paramName;
         String activeSection = doc == null ? null : sectionChain[0];
+        ParamElementEx paramAssignment = ParamUtil.findParamAssignmentForParamDeclaration(moduleTypePath, submodulePath, paramDeclaration);
 
-        // walk up the submodule path starting from the end
-        for (int i = submodulePath.size() - 1; i >= 0 && paramAssignment == null; i--) {
-            INEDTypeInfo moduleType = moduleTypePath.get(i);
-	        SubmoduleElementEx submodule = submodulePath.get(i);
+        // value in the NED file
+        String nedValue = paramAssignment == null ? null : paramAssignment.getValue();
+        boolean isNedDefault = paramAssignment == null ? false : paramAssignment.getIsDefault();
 
-	        Map<String, ParamElementEx> paramAssignments = submodule == null ?
-                moduleType.getParamAssignments() : submodule.getParamAssignments(moduleType);
-
-            // handle name patterns
-            for (String name : paramAssignments.keySet()) {
-                if (InifileUtils.matchesPattern(name, paramRelativePath)) {
-                    paramAssignment  = paramAssignments.get(name);
-                    break;
-                }
-            }
-
-            if (paramAssignment != null && StringUtils.isEmpty(paramAssignment.getValue()))
-                paramAssignment = null;
-
-            // value in the NED file
-            nedValue = paramAssignment == null ? null : paramAssignment.getValue();
-            if (StringUtils.isEmpty(nedValue)) nedValue = null;
-            isNedDefault = paramAssignment == null ? false : paramAssignment.getIsDefault();
-
-            if (nedValue != null && !isNedDefault) {
-                // value hardcoded in NED (unchangeable from ini files), or there's no inifile
-                ParamResolutionType type = isNedDefault ? ParamResolutionType.IMPLICITDEFAULT : ParamResolutionType.NED;
-                resultList.add(new ParamResolution(moduleFullPath, submodulePath, paramDeclaration, paramAssignment, type, activeSection, null, null));
-                return;
-            }
-
-            // extend paramRelativePath
-            String fullName = submodule == null ? moduleType.getName() : InifileUtils.getSubmoduleFullName(submodule);
-            paramRelativePath = fullName + "." + paramRelativePath;
-	    }
-
-        // if there's no ini file
-        if (doc == null) {
+        if (doc == null || (nedValue != null && !isNedDefault)) {
             ParamResolutionType type = nedValue == null ? ParamResolutionType.UNASSIGNED : isNedDefault ? ParamResolutionType.IMPLICITDEFAULT : ParamResolutionType.NED;
-            resultList.add(new ParamResolution(moduleFullPath, submodulePath, paramDeclaration, paramAssignment, type, activeSection, null, null));
+            resultList.add(new ParamResolution(fullPath, submodulePath, paramDeclaration, paramAssignment, type, activeSection, null, null));
             return;
         }
         
 	    // look up the parameter value in the inifile
-	    String paramFullPath = moduleFullPath + "." + paramDeclaration.getName();
+	    String paramFullPath = fullPath + "." + paramDeclaration.getName();
 	    List<SectionKey> sectionKeys = InifileUtils.lookupParameter(paramFullPath, isNedDefault, sectionChain, doc);
 
 	    if (sectionKeys.isEmpty()) {
 	        // inifile contains nothing useful
 	        ParamResolutionType type = isNedDefault ? ParamResolutionType.IMPLICITDEFAULT : ParamResolutionType.UNASSIGNED;
-	        resultList.add(new ParamResolution(moduleFullPath, submodulePath, paramDeclaration, paramAssignment, type, activeSection, null, null));
+	        resultList.add(new ParamResolution(fullPath, submodulePath, paramDeclaration, paramAssignment, type, activeSection, null, null));
 	        return;
 	    }
 
@@ -1111,7 +1052,7 @@ public class InifileAnalyzer {
 	        else
 	            type = ParamResolutionType.INI_OVERRIDE;
 
-            resultList.add(new ParamResolution(moduleFullPath, submodulePath, paramDeclaration, paramAssignment, type, activeSection, iniSection, iniKey));
+            resultList.add(new ParamResolution(fullPath, submodulePath, paramDeclaration, paramAssignment, type, activeSection, iniSection, iniKey));
 	    }
 	}
 

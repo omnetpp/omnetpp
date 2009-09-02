@@ -363,7 +363,7 @@ public class ModuleParametersView extends AbstractModuleView {
 
 			if (module instanceof SubmoduleElementEx) {
 			    SubmoduleElementEx submodule = (SubmoduleElementEx)module;
-			    text = "Submodule: " + submodule.getName();
+			    text = "Submodule: " + submodule.getName() + " (" + submodule.getNEDTypeInfo().getName() + ")";
 				pars = InifileAnalyzer.collectParameters(submodule);
 			}
 			else if (module instanceof INedTypeElement) {

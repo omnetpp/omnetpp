@@ -483,7 +483,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 	/**
 	 * Adds a node to the tree. The new node describes the module and its parameters.
 	 */
-	private static GenericTreeNode addTreeNode(GenericTreeNode parent, String moduleFullName, String moduleFullPath, Vector<SubmoduleElementEx> submodulePath, Vector<INEDTypeInfo> moduleTypePath, String activeSection, InifileAnalyzer analyzer) {
+	private static GenericTreeNode addTreeNode(GenericTreeNode parent, String moduleFullName, String fullPath, Vector<SubmoduleElementEx> submodulePath, Vector<INEDTypeInfo> moduleTypePath, String activeSection, InifileAnalyzer analyzer) {
 	    INEDTypeInfo moduleType = moduleTypePath.lastElement();
 		String moduleText = moduleFullName+"  ("+moduleType.getName()+")";
 		GenericTreeNode thisNode = new GenericTreeNode(new ModuleNode(moduleText, submodulePath.lastElement(), (IModuleKindTypeElement)moduleType.getNEDElement()));
@@ -492,12 +492,12 @@ public class ModuleHierarchyView extends AbstractModuleView {
 		if (analyzer == null) {
 			// no inifile available, we only have NED info
 		    ArrayList<ParamResolution> list = new ArrayList<ParamResolution>(); 
-			InifileAnalyzer.resolveModuleParameters(list, moduleTypePath, submodulePath);
+			InifileAnalyzer.resolveModuleParameters(list, fullPath, moduleTypePath, submodulePath);
 			for (ParamResolution res : list)
 				thisNode.addChild(new GenericTreeNode(res));
 		}
 		else {
-			ParamResolution[] list = analyzer.getParamResolutionsForModule(moduleFullPath, activeSection);
+			ParamResolution[] list = analyzer.getParamResolutionsForModule(fullPath, activeSection);
 			for (ParamResolution res : list)
 				thisNode.addChild(new GenericTreeNode(res));
 		}

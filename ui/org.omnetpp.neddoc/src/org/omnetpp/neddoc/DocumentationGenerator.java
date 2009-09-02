@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 import java.util.concurrent.CancellationException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -77,6 +78,8 @@ import org.omnetpp.msg.editor.highlight.MsgSyntaxHighlightPartitionScanner;
 import org.omnetpp.ned.core.MsgResources;
 import org.omnetpp.ned.core.NEDResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
+import org.omnetpp.ned.core.ParamUtil;
+import org.omnetpp.ned.core.ParamUtil.RecursiveParamDeclarationVisitor;
 import org.omnetpp.ned.editor.graph.misc.NedFigureProvider;
 import org.omnetpp.ned.editor.graph.parts.CompoundModuleEditPart;
 import org.omnetpp.ned.editor.graph.parts.NedEditPart;
@@ -1356,67 +1359,60 @@ public class DocumentationGenerator {
         }
     }
 
-    protected void generateUnassignedParametersTable(INedTypeElement typeElement) throws IOException {
-        ArrayList<ArrayList<Object>> params = new ArrayList<ArrayList<Object>>();
-        collectUnassignedParameters(null, typeElement.getNEDTypeInfo().getSubmodules(), params);
+    protected void generateUnassignedParametersTable(final INedTypeElement typeElement) throws IOException {
+        final boolean[] first = new boolean[] {true};
 
-        if (params.size() != 0) {
-            out("<h3 class=\"subtitle\">Unassigned submodule parameters:</h3>\r\n" +
-                "<table class=\"paramtable\">\r\n" +
-                "   <tr>\r\n" +
-                "      <th>Name</th>\r\n" +
-                "      <th>Type</th>\r\n" +
-                "      <th>Default value</th>\r\n" +
-                "      <th>Description</th>\r\n" +
-                "   </tr>\r\n");
-            for (ArrayList<Object> tuple : params) {
-                ParamElementEx paramDeclaration = (ParamElementEx)tuple.get(1);
-                ParamElementEx paramAssignment = (ParamElementEx)tuple.get(2);
-
-                out("<tr>\r\n" +
-                        "   <td>" + (String)tuple.get(0) + "</td>\r\n" +
-                        "   <td width=\"100\">\r\n" +
-                        "      <i>" + getParamTypeAsString(paramDeclaration) + "</i>\r\n" +
-                        "   </td>\r\n" +
-                        "   <td width=\"120\">" + (paramAssignment == null ? "" : paramAssignment.getValue()) + "</td>\r\n" +
-                        "   <td>");
-                    generateTableComment(paramDeclaration.getComment());
-                    out("   </td>\r\n" +
-                        "</tr>\r\n");
-            }
-            out("</table>\r\n");
-        }
-    }
-
-    protected void collectUnassignedParameters(String prefix, Map<String, SubmoduleElementEx> typeElementMap, ArrayList<ArrayList<Object>> params) throws IOException {
-        for (SubmoduleElementEx submodule : typeElementMap.values()) {
-            INedTypeElement typeElement = submodule.getEffectiveTypeRef();
-
-            if (typeElement != null) {
-                String newPrefix = (prefix == null ? "" : prefix + ".") + "<a href=\"" + getOutputFileName(typeElement) + "\">" + submodule.getName() + "</a>";
-
-                if (typeElement instanceof CompoundModuleElementEx)
-                    collectUnassignedParameters(newPrefix, typeElement.getNEDTypeInfo().getSubmodules(), params);
-                else {
-                    INEDTypeInfo typeInfo = typeElement.getNEDTypeInfo();
-                    Map<String, ParamElementEx> declarations = typeInfo.getParamDeclarations();
-                    Map<String, ParamElementEx> assigments = submodule.getParamAssignments();
-
-                    for (String name : declarations.keySet()) {
-                        ParamElementEx paramDeclaration = declarations.get(name);
-                        ParamElementEx paramAssignment = assigments.get(name);
-
+        ParamUtil.mapParamDeclarationsRecursively(typeElement.getNEDTypeInfo(), new RecursiveParamDeclarationVisitor() {
+            @Override
+            protected boolean visitParamDeclaration(String fullPath, Stack<INEDTypeInfo> moduleTypePath, Stack<SubmoduleElementEx> submodulePath, ParamElementEx paramDeclaration) {
+                try {
+                    if (moduleTypePath.size() > 1) {
+                        ParamElementEx paramAssignment = ParamUtil.findParamAssignmentForParamDeclaration(moduleTypePath, submodulePath, paramDeclaration);
+    
                         if (paramAssignment == null || paramAssignment.getIsDefault()) {
-                            ArrayList<Object> tuple = new ArrayList<Object>();
-                            tuple.add(newPrefix + "." + name);
-                            tuple.add(paramDeclaration);
-                            tuple.add(paramAssignment);
-                            params.add(tuple);
+                            if (first[0]) {
+                                out("<h3 class=\"subtitle\">Unassigned submodule parameters:</h3>\r\n" +
+                                    "<table class=\"paramtable\">\r\n" +
+                                    "   <tr>\r\n" +
+                                    "      <th>Name</th>\r\n" +
+                                    "      <th>Type</th>\r\n" +
+                                    "      <th>Default value</th>\r\n" +
+                                    "      <th>Description</th>\r\n" +
+                                    "   </tr>\r\n");
+                                first[0] = false;
+                            }
+    
+                            out("<tr>\r\n" +
+                                "   <td>");
+    
+                            String[] elements = fullPath.split("\\.");
+                            for (int i = 1; i < elements.length; i++)
+                                out("<a href=\"" + getOutputFileName(moduleTypePath.get(i).getNEDElement()) + "\">" + elements[i] + "</a>.");
+                                
+                            out(paramDeclaration.getName() + "</td>\r\n" +
+                                "   <td width=\"100\">\r\n" +
+                                "      <i>" + getParamTypeAsString(paramDeclaration) + "</i>\r\n" +
+                                "   </td>\r\n" +
+                                "   <td width=\"120\">" + (paramAssignment == null ? "" : paramAssignment.getValue()) + "</td>\r\n" +
+                                "   <td>");
+    
+                            generateTableComment(paramDeclaration.getComment());
+                            
+                            out("   </td>\r\n" +
+                                "</tr>\r\n");
                         }
                     }
                 }
+                catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
+                return true;
             }
-        }
+        });
+
+        if (!first[0])
+            out("</table>\r\n");
     }
 
     protected void generateGatesTable(INedTypeElement typeElement) throws IOException {
