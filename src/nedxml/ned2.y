@@ -787,6 +787,7 @@ pattern_elem
 
 pattern_name
         : NAME
+        | CHANNEL    /* needed for setting channel parameters */
         | '{' pattern_index '}'
         | '*'
         | pattern_name NAME
