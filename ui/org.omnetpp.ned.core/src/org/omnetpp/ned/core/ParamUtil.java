@@ -61,9 +61,9 @@ public class ParamUtil {
         ParamElementEx paramAssignment = null;
         String paramName = paramDeclaration.getName();
         String paramRelativePath = paramName;
-
+        
         // walk up the submodule path starting from the end
-        for (int i = submodulePath.size() - 1; i >= 0 && paramAssignment == null; i--) {
+        for (int i = submodulePath.size() - 1; i >= 0; i--) {
             INEDTypeInfo moduleType = moduleTypePath.get(i);
             SubmoduleElementEx submodule = submodulePath.get(i);
 
