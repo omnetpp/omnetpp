@@ -44,7 +44,6 @@
 #include "nedsyntaxvalidator.h"
 #include "xmlgenerator.h"  // for debugging
 
-#include "cneddeclaration.h"
 #include "cnednetworkbuilder.h"
 #include "cnedloader.h"
 #include "cexpressionbuilder.h"
@@ -246,42 +245,73 @@ void cNEDNetworkBuilder::assignParametersFromPatterns(cComponent *component)
     // go up the parent chain, and apply the parameter pattern assignments
     // to matching, still-unset parameters
     printf("TRYING TO ASSIGN PARAMS OF %s USING PATTERNS\n", component->getFullPath().c_str());
-    std::string prefix = std::string(component->getFullName()) + ".";
-    for (cModule *parent = component->getParentModule(); parent; parent = parent->getParentModule())
+
+    std::string prefix;
+
+    for (cComponent *child = component; true; child = child->getParentModule())
     {
+        cModule *parent = child->getParentModule();
+        if (!parent)
+            break;
+
         printf(" CHECKING PATTERNS ON: %s\n", parent->getFullPath().c_str());
+
         const char *nedTypeName = parent->getNedTypeName();
         cNEDDeclaration *decl = cNEDLoader::getInstance()->getDecl(nedTypeName);
-        const std::vector<cNEDDeclaration::PatternData>& patterns = decl->getPatterns(); // patterns to try, with values
-        int numPatterns = patterns.size();
 
-        for (int i=0; i<numPatterns; i++)
-            printf("    pattern %d: %s  (from \"%s=\" at %s)\n", i, patterns[i].matcher->debugStr().c_str(), patterns[i].patternNode->getName(), patterns[i].patternNode->getSourceLocation());
-
-        // loop through all unset params, and try to assign them using the patterns
-        if (numPatterns != 0) {
-            int numParams = component->getNumParams();
-            for (int i=0; i<numParams; i++) {
-                cPar& par = component->par(i);
-                if (!par.isSet()) {
-                    // first match
-                    std::string paramPath = prefix + par.getFullName();
-                    printf("  checking param %s as \"%s\"\n", par.getFullPath().c_str(), paramPath.c_str());
-                    for (int j=0; j<numPatterns; j++) {
-                        if (patterns[j].matcher->matches(paramPath.c_str())) {
-                            printf("   ^ %s matches it, assigning!\n", patterns[j].matcher->debugStr().c_str());
-                            assignParameterFromPattern(par, patterns[j].patternNode);
-                            break;
-                        }
-                    }
-                }
-            }
+        // first, check patterns in the "submodules:" section
+        if (!prefix.empty())
+        {
+            const std::vector<PatternData>& submodPatterns = decl->getSubmoduleParamPatterns(child->getName());
+            if (!submodPatterns.empty())
+                doAssignParametersFromPatterns(component, prefix, submodPatterns);
         }
-        prefix = std::string(parent->getFullName()) + "." + prefix;
+
+        // for checking the patterns on the compound module, prefix with submodule name
+        if (child->isModule())
+            prefix = std::string(child->getFullName()) + "." + prefix;
+        else {
+            // channel: its path includes the connection source gate's name
+            cObject *srcGate = child->getOwner();
+            ASSERT(srcGate == ((cChannel*)child)->getSourceGate());
+            prefix = std::string(srcGate->getFullName()) + "."  + child->getFullName() + "." + prefix; // prepend with "<srcgate>.channel."
+            if (srcGate->getOwner() != parent)
+                prefix = std::string(srcGate->getOwner()->getFullName()) + "."  + prefix; // also prepend with "<submod>."
+        }
+
+        // check patterns on the compound module itself
+        const std::vector<PatternData>& patterns = decl->getParamPatterns();
+        if (!patterns.empty())
+            doAssignParametersFromPatterns(component, prefix, patterns);
     }
 }
 
-void cNEDNetworkBuilder::assignParameterFromPattern(cPar& par, ParamElement *patternNode)
+void cNEDNetworkBuilder::doAssignParametersFromPatterns(cComponent *component, const std::string& prefix, const std::vector<PatternData>& patterns)
+{
+    int numPatterns = patterns.size();
+    for (int i=0; i<numPatterns; i++)
+        printf("    pattern %d: %s  (from \"%s=\" at %s)\n", i, patterns[i].matcher->debugStr().c_str(), patterns[i].patternNode->getName(), patterns[i].patternNode->getSourceLocation());
+
+    int numParams = component->getNumParams();
+    for (int i=0; i<numParams; i++) {
+        cPar& par = component->par(i);
+        if (!par.isSet()) {
+            // first match
+            std::string paramPath = prefix + par.getFullName();
+            printf("  checking param %s as \"%s\"\n", par.getFullPath().c_str(), paramPath.c_str());
+            for (int j=0; j<numPatterns; j++) {
+                if (patterns[j].matcher->matches(paramPath.c_str())) {
+                    printf("   ^ %s matches it, assigning!\n", patterns[j].matcher->debugStr().c_str());
+                    doAssignParameterFromPattern(par, patterns[j].patternNode);
+                    if (par.isSet())
+                        break;
+                }
+            }
+        }
+    }
+}
+
+void cNEDNetworkBuilder::doAssignParameterFromPattern(cPar& par, ParamElement *patternNode)
 {
     // note: this code should look similar to relevant part of doParam()
     try {

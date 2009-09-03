@@ -72,8 +72,10 @@ class SIM_API cNEDDeclaration : public NEDTypeInfo
     SharedParImplMap parimplMap;
 
     // wildcard-based parameter assignments
-    std::vector<PatternData> patterns;  // contains patterns defined in the "submodules" section and in super types as well
+    std::vector<PatternData> patterns;  // contains patterns defined in super types as well
     bool patternsValid;  // whether patterns[] was already filled in
+    typedef std::map<std::string, std::vector<PatternData> > StringPatternDataMap;
+    StringPatternDataMap submodulePatterns;  // contains patterns defined in the "submodules" section
 
   protected:
     void putIntoPropsMap(StringPropsMap& propsMap, const std::string& name, cProperties *props) const;
@@ -92,9 +94,7 @@ class SIM_API cNEDDeclaration : public NEDTypeInfo
     cProperties *doGateProperties(const char *gateName) const;
     cProperties *doSubmoduleProperties(const char *submoduleName, const char *submoduleType) const;
     cProperties *doConnectionProperties(int connectionId, const char *channelType) const;
-
-    std::vector<cNEDDeclaration::PatternData> collectPatterns();
-    void collectPatternsFrom(ParametersElement *paramsNode, const std::string& prefix, std::vector<PatternData>& v);
+    void collectPatternsFrom(ParametersElement *paramsNode, std::vector<PatternData>& v);
 
   public:
     /** @name Constructors, destructor, assignment */
@@ -118,9 +118,18 @@ class SIM_API cNEDDeclaration : public NEDTypeInfo
     virtual cNEDDeclaration *getSuperDecl() const;
 
     /**
-     * TODO. contains patterns defined in the "submodules" section and in super types as well.
+     * Returns the pattern-based parameter assignments on the type (i.e. the
+     * compound module) and in super types as well.
      */
-    virtual const std::vector<PatternData>& getPatterns();
+    virtual const std::vector<PatternData>& getParamPatterns();
+
+    /**
+     * Returns the pattern-based parameter assignments on the given submodule;
+     * searches the super types as well (due to inherited submodules).
+     */
+    virtual const std::vector<PatternData>& getSubmoduleParamPatterns(const char *submoduleName);
+
+    // NOTE: connections have no submodules or sub-channels, so they cannot contain pattern-based param assignments either
     //@}
 
     /** @name Properties of this type, its parameters, gates etc. */
