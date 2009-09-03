@@ -257,9 +257,9 @@ class SIM_API cParImpl : public cNamedObject
 
     /**
      * Returns value as const char *. Only for STRING type.
-     * This method may can only be invoked when the parameter's value is a
-     * string constant and not the result of expression evaluation (otherwise
-     * an error is thrown). This practically means this method cannot be used
+     * This method may only be invoked when the parameter's value is a
+     * string constant and not the result of expression evaluation, otherwise
+     * an error is thrown. This practically means this method cannot be used
      * on parameters declared as "volatile string" in NED; they can only be
      * accessed using stdstringValue().
      */
