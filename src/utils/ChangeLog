@@ -1,3 +1,8 @@
+2009-09-03  Andras Varga
+
+	* opp_test: improvement: save the reference outputs (i.e. bodies of 
+	various %contain blocks) in work/testname  [bug 96]
+
 2009-07-07  Andras Varga
 
 	* added opp_pefileversion.cc, for detecting Visual C++ version in a 
