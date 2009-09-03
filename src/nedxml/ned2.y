@@ -787,6 +787,7 @@ pattern_elem
 
 pattern_name
         : NAME
+        | NAME '$' NAME  /* subgate */
         | CHANNEL    /* needed for setting channel parameters */
         | '{' pattern_index '}'
         | '*'
