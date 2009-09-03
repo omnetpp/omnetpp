@@ -6,10 +6,12 @@ import java.util.Vector;
 
 import org.omnetpp.common.engine.PatternMatcher;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
+import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.ex.ParamElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
-import org.omnetpp.ned.model.pojo.SubmoduleElement;
+import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
 
 public class ParamUtil {
     /**
@@ -39,7 +41,7 @@ public class ParamUtil {
         final boolean[] result = new boolean[] {false};
         mapParamDeclarationsRecursively(typeInfo, new RecursiveParamDeclarationVisitor() {
             @Override
-            protected boolean visitParamDeclaration(String fullPath, Stack<INEDTypeInfo> moduleTypePath, Stack<SubmoduleElementEx> submodulePath, ParamElementEx paramDeclaration) {
+            protected boolean visitParamDeclaration(String fullPath, Stack<INEDTypeInfo> typeInfoPath, Stack<ISubmoduleOrConnection> elementPath, ParamElementEx paramDeclaration) {
                 String paramName = paramDeclaration.getName();
 
                 if (matchesPattern(fullPattern, fullPath == null ? paramName : fullPath + "." + paramName))
@@ -57,18 +59,24 @@ public class ParamUtil {
      * Returns the first non default assignment, or the last default assignment, or null if there is no such assignment.
      * The returned assignment is guaranteed to have a non empty value.
      */
-    public static ParamElementEx findParamAssignmentForParamDeclaration(Vector<INEDTypeInfo> moduleTypePath, Vector<SubmoduleElementEx> submodulePath, ParamElementEx paramDeclaration) {
+    public static ParamElementEx findParamAssignmentForParamDeclaration(Vector<INEDTypeInfo> typeInfoPath, Vector<ISubmoduleOrConnection> elementPath, ParamElementEx paramDeclaration) {
         ParamElementEx paramAssignment = null;
         String paramName = paramDeclaration.getName();
         String paramRelativePath = paramName;
-        
-        // walk up the submodule path starting from the end
-        for (int i = submodulePath.size() - 1; i >= 0; i--) {
-            INEDTypeInfo moduleType = moduleTypePath.get(i);
-            SubmoduleElementEx submodule = submodulePath.get(i);
 
-            Map<String, ParamElementEx> paramAssignments = submodule == null ?
-                moduleType.getParamAssignments() : submodule.getParamAssignments(moduleType);
+        // walk up the submodule path starting from the end
+        for (int i = elementPath.size() - 1; i >= 0; i--) {
+            INEDTypeInfo moduleType = typeInfoPath.get(i);
+            ISubmoduleOrConnection element = elementPath.get(i);
+
+            Map<String, ParamElementEx> paramAssignments = null;
+            
+            if (element == null)
+                paramAssignments = moduleType.getParamAssignments();
+            else if (element instanceof SubmoduleElementEx)
+                paramAssignments = ((SubmoduleElementEx)element).getParamAssignments(moduleType);
+            else
+                paramAssignments = element.getParamAssignments();
 
             // handle name patterns
             for (String name : paramAssignments.keySet()) {
@@ -86,21 +94,28 @@ public class ParamUtil {
                 return paramAssignment;
 
             // extend paramRelativePath
-            String fullName = submodule == null ? moduleType.getName() : getSubmoduleFullName(submodule);
+            String fullName = element == null ? moduleType.getName() : getElementName(element);
             paramRelativePath = fullName + "." + paramRelativePath;
         }
         
         return paramAssignment;
     }
 
-    // TODO: move and factor with InifileUtils
-    public static String getSubmoduleFullName(SubmoduleElement submodule) {
-        String submoduleName = submodule.getName();
-
-        if (!StringUtils.isEmpty(submodule.getVectorSize()))
-            submoduleName += "[*]";
-        
-        return submoduleName;
+    public static String getElementName(ISubmoduleOrConnection element) {
+        if (element instanceof ConnectionElementEx) {
+            ConnectionElementEx connection = (ConnectionElementEx)element; 
+            String gateName = connection.getGateNameWithIndex(connection.getSrcGate(), connection.getSrcGateSubg(), connection.getSrcGateIndex(), false);
+            return gateName + ".channel";
+        }
+        else {
+            SubmoduleElementEx submodule = (SubmoduleElementEx)element;
+            String submoduleName = submodule.getName();
+    
+            if (!StringUtils.isEmpty(submodule.getVectorSize()))
+                submoduleName += "[*]";
+            
+            return submoduleName;
+        }
     }
 
     // TODO: move and factor with InifileUtils
@@ -119,14 +134,14 @@ public class ParamUtil {
     }
 
     public static abstract class RecursiveParamDeclarationVisitor implements IModuleTreeVisitor {
-        protected Stack<SubmoduleElementEx> submodulePath = new Stack<SubmoduleElementEx>();
-        protected Stack<INEDTypeInfo> moduleTypePath = new Stack<INEDTypeInfo>();
+        protected Stack<ISubmoduleOrConnection> elementPath = new Stack<ISubmoduleOrConnection>();
+        protected Stack<INEDTypeInfo> typeInfoPath = new Stack<INEDTypeInfo>();
         protected Stack<String> fullPathStack = new Stack<String>();  //XXX performance: use cumulative names, so that StringUtils.join() can be eliminated (like: "Net", "Net.node[*]", "Net.node[*].ip" etc) 
 
         public boolean enter(SubmoduleElementEx submodule, INEDTypeInfo submoduleType) {
-            submodulePath.push(submodule);
-            moduleTypePath.push(submoduleType);
-            fullPathStack.push(submodule == null ? submoduleType.getName() : getSubmoduleFullName(submodule));
+            elementPath.push(submodule);
+            typeInfoPath.push(submoduleType);
+            fullPathStack.push(submodule == null ? submoduleType.getName() : getElementName(submodule));
 
             // skip if this is a zero-size submodule vector
             boolean isZeroSizedVector = false;
@@ -144,12 +159,12 @@ public class ParamUtil {
             }
 
             String fullPath = StringUtils.join(fullPathStack, ".");
-            return !isZeroSizedVector && visitParamDeclarations(fullPath, moduleTypePath, submodulePath);
+            return !isZeroSizedVector && visitParamDeclarations(fullPath, typeInfoPath, elementPath);
         }
 
         public void leave() {
-            submodulePath.pop();
-            moduleTypePath.pop();
+            elementPath.pop();
+            typeInfoPath.pop();
             fullPathStack.pop();
         }
 
@@ -160,17 +175,41 @@ public class ParamUtil {
         }
 
         public String resolveLikeType(SubmoduleElementEx submodule) {
+            // TODO: at least look at the NED param assignments
             return null;
         }
         
-        protected boolean visitParamDeclarations(String fullPath, Stack<INEDTypeInfo> moduleTypePath, Stack<SubmoduleElementEx> submodulePath) {
-            for (ParamElementEx paramDeclaration : moduleTypePath.lastElement().getParamDeclarations().values())
-                if (!visitParamDeclaration(fullPath, moduleTypePath, submodulePath, paramDeclaration))
-                    return false;
-            
+        protected boolean visitParamDeclarations(String fullPath, Stack<INEDTypeInfo> typeInfoPath, Stack<ISubmoduleOrConnection> elementPath) {
+            INEDTypeInfo typeInfo = typeInfoPath.lastElement();
+
+            visitParamDeclarations(fullPath, typeInfoPath, elementPath, typeInfo.getParamDeclarations());
+
+            if (typeInfo.getNEDElement() instanceof CompoundModuleElementEx) {
+                CompoundModuleElementEx compoundModule = (CompoundModuleElementEx)typeInfo.getNEDElement();
+
+                for (ConnectionElementEx connection : compoundModule.getSrcConnections())
+                    visitParamDeclarations(fullPath + "." + getElementName(connection) , typeInfoPath, elementPath, connection.getParamDeclarations());
+                
+                for (SubmoduleElementEx submodule : compoundModule.getSubmodules()) {
+                    String submoduleName = submodule.getName();
+                    String fullPathPrefix = fullPath + "." + submoduleName + ".";
+
+                    for (ConnectionElementEx connection : compoundModule.getSrcConnectionsFor(submoduleName))
+                        visitParamDeclarations(fullPathPrefix + getElementName(connection), typeInfoPath, elementPath, connection.getParamDeclarations());
+                }
+            }
+
             return true;
         }
 
-        protected abstract boolean visitParamDeclaration(String fullPath, Stack<INEDTypeInfo> moduleTypePath, Stack<SubmoduleElementEx> submodulePath, ParamElementEx paramDeclaration);
+        protected boolean visitParamDeclarations(String fullPath, Stack<INEDTypeInfo> typeInfoPath, Stack<ISubmoduleOrConnection> elementPath, Map<String, ParamElementEx> paramDeclarations) {
+            for (ParamElementEx paramDeclaration : paramDeclarations.values())
+                if (!visitParamDeclaration(fullPath, typeInfoPath, elementPath, paramDeclaration))
+                    return false;
+
+            return true;
+        }
+
+        protected abstract boolean visitParamDeclaration(String fullPath, Stack<INEDTypeInfo> typeInfoPath, Stack<ISubmoduleOrConnection> elementPath, ParamElementEx paramDeclaration);
     };
 }

@@ -19,11 +19,11 @@ import org.omnetpp.ned.model.NEDElement;
 import org.omnetpp.ned.model.interfaces.IConnectableElement;
 import org.omnetpp.ned.model.interfaces.IHasGates;
 import org.omnetpp.ned.model.interfaces.IHasIndex;
-import org.omnetpp.ned.model.interfaces.IHasParameters;
-import org.omnetpp.ned.model.interfaces.IHasType;
+import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.IModuleKindTypeElement;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
+import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.pojo.GatesElement;
 import org.omnetpp.ned.model.pojo.ParametersElement;
@@ -35,8 +35,8 @@ import org.omnetpp.ned.model.pojo.SubmoduleElement;
  * @author rhornig, andras
  */
 public class SubmoduleElementEx extends SubmoduleElement
-                            implements IConnectableElement, IHasIndex, IHasType,
-                                       IHasParameters, IHasGates {
+    implements ISubmoduleOrConnection, IConnectableElement, IHasName, IHasIndex, IHasGates
+{
     public static final String DEFAULT_NAME = "unnamed";
 
     protected DisplayString displayString = null;

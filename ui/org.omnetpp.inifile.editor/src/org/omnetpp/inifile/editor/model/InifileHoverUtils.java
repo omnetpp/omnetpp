@@ -24,8 +24,8 @@ import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer.KeyType;
 import org.omnetpp.ned.model.ex.ParamElementEx;
+import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
 import org.omnetpp.ned.model.pojo.ParamElement;
-import org.omnetpp.ned.model.pojo.SubmoduleElement;
 
 /**
  * Produces hover information for various Inifile parts.
@@ -355,9 +355,9 @@ public class InifileHoverUtils {
 	/**
 	 * Generate tooltip for a NED parameter
 	 */
-	public static String getParamHoverText(SubmoduleElement[] pathModules, ParamElement paramDeclNode, ParamElement paramValueNode) {
+	public static String getParamHoverText(ISubmoduleOrConnection[] elementPath, ParamElement paramDeclNode, ParamElement paramValueNode) {
 		String paramName = paramDeclNode.getName();
-		
+
 		String paramType = paramDeclNode.getAttribute(ParamElement.ATT_TYPE);
 		String paramDeclaredOn = paramDeclNode.getSelfOrEnclosingTypeElement().getName();
 		String comment = StringUtils.makeBriefDocu(paramDeclNode.getComment(), 60);

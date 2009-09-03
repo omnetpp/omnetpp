@@ -111,6 +111,7 @@ import org.omnetpp.ned.model.interfaces.IModuleTypeElement;
 import org.omnetpp.ned.model.interfaces.IMsgTypeElement;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
+import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
 import org.omnetpp.ned.model.interfaces.ITypeElement;
 import org.omnetpp.ned.model.pojo.FieldElement;
 import org.omnetpp.ned.model.pojo.PropertyKeyElement;
@@ -1364,10 +1365,10 @@ public class DocumentationGenerator {
 
         ParamUtil.mapParamDeclarationsRecursively(typeElement.getNEDTypeInfo(), new RecursiveParamDeclarationVisitor() {
             @Override
-            protected boolean visitParamDeclaration(String fullPath, Stack<INEDTypeInfo> moduleTypePath, Stack<SubmoduleElementEx> submodulePath, ParamElementEx paramDeclaration) {
+            protected boolean visitParamDeclaration(String fullPath, Stack<INEDTypeInfo> moduleTypePath, Stack<ISubmoduleOrConnection> elementPath, ParamElementEx paramDeclaration) {
                 try {
                     if (moduleTypePath.size() > 1) {
-                        ParamElementEx paramAssignment = ParamUtil.findParamAssignmentForParamDeclaration(moduleTypePath, submodulePath, paramDeclaration);
+                        ParamElementEx paramAssignment = ParamUtil.findParamAssignmentForParamDeclaration(moduleTypePath, elementPath, paramDeclaration);
     
                         if (paramAssignment == null || paramAssignment.getIsDefault()) {
                             if (first[0]) {

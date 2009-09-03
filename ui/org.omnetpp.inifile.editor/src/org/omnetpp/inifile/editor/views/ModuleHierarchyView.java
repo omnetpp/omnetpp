@@ -64,6 +64,7 @@ import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.IModuleKindTypeElement;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
+import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
 import org.omnetpp.ned.model.pojo.ParamElement;
 
 /**
@@ -397,23 +398,23 @@ public class ModuleHierarchyView extends AbstractModuleView {
     	class TreeBuilder implements IModuleTreeVisitor {
     		private GenericTreeNode current = root;
 			private Stack<String> fullPathStack = new Stack<String>();
-			private Stack<SubmoduleElementEx> submodulePath = new Stack<SubmoduleElementEx>();
-			private Stack<INEDTypeInfo> moduleTypePath = new Stack<INEDTypeInfo>();
+			private Stack<ISubmoduleOrConnection> elementPath = new Stack<ISubmoduleOrConnection>();
+			private Stack<INEDTypeInfo> typeInfoPath = new Stack<INEDTypeInfo>();
 
     		public boolean enter(SubmoduleElementEx submodule, INEDTypeInfo submoduleType) {
     			String fullName = submodule==null ? submoduleType.getName() : InifileUtils.getSubmoduleFullName(submodule);
 				fullPathStack.push(fullName);
-				submodulePath.push(submodule);
-				moduleTypePath.push(submoduleType);
+				elementPath.push(submodule);
+				typeInfoPath.push(submoduleType);
 				String fullPath = StringUtils.join(fullPathStack.toArray(), "."); //XXX optimize here if slow
-    			current = addTreeNode(current, fullName, fullPath, submodulePath, moduleTypePath, section, analyzer);
+    			current = addTreeNode(current, fullName, fullPath, elementPath, typeInfoPath, section, analyzer);
     			return true;
     		}
     		public void leave() {
     			current = current.getParent();
 				fullPathStack.pop();
-				submodulePath.pop();
-				moduleTypePath.pop();
+				elementPath.pop();
+				typeInfoPath.pop();
     		}
     		public void unresolvedType(SubmoduleElementEx submodule, String submoduleTypeName) {
     			String fullName = submodule==null ? submoduleTypeName : InifileUtils.getSubmoduleFullName(submodule);
@@ -483,16 +484,16 @@ public class ModuleHierarchyView extends AbstractModuleView {
 	/**
 	 * Adds a node to the tree. The new node describes the module and its parameters.
 	 */
-	private static GenericTreeNode addTreeNode(GenericTreeNode parent, String moduleFullName, String fullPath, Vector<SubmoduleElementEx> submodulePath, Vector<INEDTypeInfo> moduleTypePath, String activeSection, InifileAnalyzer analyzer) {
-	    INEDTypeInfo moduleType = moduleTypePath.lastElement();
-		String moduleText = moduleFullName+"  ("+moduleType.getName()+")";
-		GenericTreeNode thisNode = new GenericTreeNode(new ModuleNode(moduleText, submodulePath.lastElement(), (IModuleKindTypeElement)moduleType.getNEDElement()));
+	private static GenericTreeNode addTreeNode(GenericTreeNode parent, String moduleFullName, String fullPath, Vector<ISubmoduleOrConnection> elementPath, Vector<INEDTypeInfo> typeInfoPath, String activeSection, InifileAnalyzer analyzer) {
+	    INEDTypeInfo typeInfo = typeInfoPath.lastElement();
+		String moduleText = moduleFullName+"  ("+typeInfo.getName()+")";
+		GenericTreeNode thisNode = new GenericTreeNode(new ModuleNode(moduleText, (SubmoduleElementEx)elementPath.lastElement(), (IModuleKindTypeElement)typeInfo.getNEDElement()));
 		parent.addChild(thisNode);
 
 		if (analyzer == null) {
 			// no inifile available, we only have NED info
 		    ArrayList<ParamResolution> list = new ArrayList<ParamResolution>(); 
-			InifileAnalyzer.resolveModuleParameters(list, fullPath, moduleTypePath, submodulePath);
+			InifileAnalyzer.resolveModuleParameters(list, fullPath, typeInfoPath, elementPath);
 			for (ParamResolution res : list)
 				thisNode.addChild(new GenericTreeNode(res));
 		}

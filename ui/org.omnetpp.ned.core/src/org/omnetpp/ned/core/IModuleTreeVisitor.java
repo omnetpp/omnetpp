@@ -30,7 +30,7 @@ public interface IModuleTreeVisitor {
 	 * @return true          go into submodules
 	 */
 	boolean enter(SubmoduleElementEx submodule, INEDTypeInfo submoduleType);
-	
+
 	/**
 	 * Leave the module last entered.
 	 */
@@ -53,7 +53,6 @@ public interface IModuleTreeVisitor {
 	 * resolve it. 
 	 */
 	String resolveLikeType(SubmoduleElementEx submodule);
-	
 	
 	/**
 	 * Example visitor 1: builds a tree
@@ -115,5 +114,4 @@ public interface IModuleTreeVisitor {
 			return null;
 		}
 	}
-	
 }

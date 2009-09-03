@@ -10,7 +10,7 @@ package org.omnetpp.inifile.editor.model;
 import java.util.Vector;
 
 import org.omnetpp.ned.model.ex.ParamElementEx;
-import org.omnetpp.ned.model.ex.SubmoduleElementEx;
+import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
 
 /**
  * Value object, stores the result of a parameter resolution.
@@ -37,7 +37,7 @@ public class ParamResolution {
 	// submodulePath[0] may be null.
 	public String moduleFullPath;
 	// FIXME: TODO: should copy, maybe use an array here?!
-	public SubmoduleElementEx[] submodulePath;
+	public ISubmoduleOrConnection[] submodulePath;
 	public ParamElementEx paramDeclNode;  // node where param was declared; not null
 	public ParamElementEx paramValueNode;  // node where param gets assigned (may be a module or submodule param, or may be null)
 
@@ -54,11 +54,11 @@ public class ParamResolution {
 	public String key;
 	
 	// for convenience
-	public ParamResolution(String moduleFullPath, Vector<SubmoduleElementEx> submodulePath, 
+	public ParamResolution(String moduleFullPath, Vector<ISubmoduleOrConnection> submodulePath, 
 			               ParamElementEx paramDeclNode, ParamElementEx paramValueNode, ParamResolutionType type, 
 			               String activeSection, String section, String key) {
 		this.moduleFullPath = moduleFullPath;
-		this.submodulePath = submodulePath.toArray(new SubmoduleElementEx[0]);
+		this.submodulePath = submodulePath.toArray(new ISubmoduleOrConnection[0]);
 		this.paramDeclNode = paramDeclNode;
 		this.paramValueNode = paramValueNode;
 		this.type = type;
