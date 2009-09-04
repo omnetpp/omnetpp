@@ -337,61 +337,58 @@ void cNEDDeclaration::putSharedParImplFor(NEDElement *node, cParImpl *value)
         parimplMap[node->getId()] = value;
 }
 
-const std::vector<cNEDDeclaration::PatternData>& cNEDDeclaration::getPatterns()
+const std::vector<cNEDDeclaration::PatternData>& cNEDDeclaration::getParamPatterns()
 {
     if (!patternsValid)
     {
-        patterns = collectPatterns();
+        // collected param assignment patterns from all super classes
+        for (cNEDDeclaration *d = this; d; d = d->numExtendsNames()==0 ? NULL : d->getSuperDecl())
+        {
+            ParametersElement *paramsNode = d->getParametersElement();
+            if (paramsNode)
+                collectPatternsFrom(paramsNode, patterns);
+        }
         patternsValid = true;
     }
     return patterns;
 }
 
-std::vector<cNEDDeclaration::PatternData> cNEDDeclaration::collectPatterns()
+const std::vector<cNEDDeclaration::PatternData>& cNEDDeclaration::getSubmoduleParamPatterns(const char *submoduleName)
 {
-    std::vector<PatternData> result;
-
-    // first: submodule patterns, from all subclasses
-
-    for (cNEDDeclaration *d = this; d; d = d->numExtendsNames()==0 ? NULL : d->getSuperDecl())
+    StringPatternDataMap::iterator it = submodulePatterns.find(submoduleName);
+    if (it == submodulePatterns.end())
     {
-        SubmodulesElement *submodsNode = d->getSubmodulesElement();
-        if (!submodsNode)
-            continue;
-        for (SubmoduleElement *submod=submodsNode->getFirstSubmoduleChild(); submod; submod = submod->getNextSubmoduleSibling())
+        // do super classes as well (due to inherited submodules!)
+        std::vector<PatternData>& v = submodulePatterns[submoduleName]; // create
+
+        // collected param assignment patterns from all super classes
+        for (cNEDDeclaration *d = this; d; d = d->numExtendsNames()==0 ? NULL : d->getSuperDecl())
         {
-            ParametersElement *paramsNode = submod->getFirstParametersChild();
-            std::string submodName = submod->getName();
-            bool isVector = submod->getFirstChildWithAttribute(NED_EXPRESSION, "target", "vector-size")!=NULL;
-            if (isVector)
-                submodName += "[*]";
-            collectPatternsFrom(paramsNode, submodName + ".", result);
+            SubmodulesElement *submodsNode = d->getSubmodulesElement();
+            if (!submodsNode)
+                continue;
+            SubmoduleElement *submodNode = (SubmoduleElement *)submodsNode->getFirstChildWithAttribute(NED_SUBMODULE,"name",submoduleName);
+            if (!submodNode)
+                continue;
+            ParametersElement *paramsNode = submodNode->getFirstParametersChild();
+            if (!paramsNode)
+                continue;
+            collectPatternsFrom(paramsNode, v);
         }
+        return v;
     }
-
-    // then: module patterns, from all subclasses
-    for (cNEDDeclaration *d = this; d; d = d->numExtendsNames()==0 ? NULL : d->getSuperDecl())
-    {
-        ParametersElement *paramsNode = d->getParametersElement();
-        collectPatternsFrom(paramsNode, "", result);
-    }
-
-    return result;
+    return it->second;
 }
 
-void cNEDDeclaration::collectPatternsFrom(ParametersElement *paramsNode, const std::string& prefix, std::vector<PatternData>& v)
+void cNEDDeclaration::collectPatternsFrom(ParametersElement *paramsNode, std::vector<PatternData>& v)
 {
-    if (!paramsNode)
-        return;
-
     // append pattern elements to v[]
     for (ParamElement *paramNode=paramsNode->getFirstParamChild(); paramNode; paramNode=paramNode->getNextParamSibling())
     {
         if (paramNode->getIsPattern())
         {
-            std::string patternPath = prefix + paramNode->getName();
             v.push_back(PatternData());
-            v.back().matcher = new PatternMatcher(patternPath.c_str(), true, true, true);
+            v.back().matcher = new PatternMatcher(paramNode->getName(), true, true, true);
             v.back().patternNode = paramNode;
         }
     }
