@@ -1,12 +1,12 @@
 package org.omnetpp.ned.core;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 import java.util.Vector;
 
 import org.omnetpp.common.engine.PatternMatcher;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.ex.ParamElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
@@ -14,6 +14,42 @@ import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
 
 public class ParamUtil {
+    /**
+     * Stores a cached pattern matcher created from an inifile key; used during inifile analysis
+     */
+    public static class KeyMatcher {
+        public String key;
+        public String generalizedKey; // key, with indices ("[0]", "[5..]" etc) replaced with "[*]" 
+        public boolean keyEqualsGeneralizedKey;  // if key.equals(generalizedKey) 
+        public PatternMatcher matcher;  // pattern is generalizedKey
+    }
+    private static Map<String,KeyMatcher> keyMatcherCache = new HashMap<String, KeyMatcher>();
+
+    public static KeyMatcher getOrCreateKeyMatcher(String key) {
+        KeyMatcher keyMatcher = keyMatcherCache.get(key);
+        if (keyMatcher == null) {
+            keyMatcher = new KeyMatcher();
+            keyMatcher.key = key;
+            keyMatcher.generalizedKey = key.replaceAll("\\[[^]]+\\]", "[*]");  // replace "[anything]" with "[*]"
+            keyMatcher.keyEqualsGeneralizedKey = key.equals(keyMatcher.generalizedKey);
+            try {
+                keyMatcher.matcher = new PatternMatcher(keyMatcher.generalizedKey, true, true, true); 
+            } catch (RuntimeException e) {
+                // bogus key (contains unmatched "{" or something); create matcher that does not match anything
+                keyMatcher.matcher = new PatternMatcher("", true, true, true); 
+            }
+            keyMatcherCache.put(key, keyMatcher);
+        }
+        return keyMatcher;
+    }
+    
+    public static boolean matchesPattern(String pattern, String value) {
+        if (PatternMatcher.containsWildcards(pattern) || pattern.indexOf('[') != -1)
+            return getOrCreateKeyMatcher(pattern).matcher.matches(value);
+        else
+            return pattern.equals(value);
+    }
+
     /**
      * Calls visitor for each parameter declaration accessible under the provided type info.
      * Recurses down on submodules.
@@ -59,6 +95,8 @@ public class ParamUtil {
      * Returns the first non default assignment, or the last default assignment, or null if there is no such assignment.
      * The returned assignment is guaranteed to have a non empty value.
      */
+    // TODO: this function must be able to return multiple assignments for a single declaration
+    //       think of a declaration such as int p[100] and assignments such as p[5] = 5; p[10..20] = 6;
     public static ParamElementEx findParamAssignmentForParamDeclaration(Vector<INEDTypeInfo> typeInfoPath, Vector<ISubmoduleOrConnection> elementPath, ParamElementEx paramDeclaration) {
         ParamElementEx paramAssignment = null;
         String paramName = paramDeclaration.getName();
@@ -66,15 +104,17 @@ public class ParamUtil {
 
         // walk up the submodule path starting from the end
         for (int i = elementPath.size() - 1; i >= 0; i--) {
-            INEDTypeInfo moduleType = typeInfoPath.get(i);
+            INEDTypeInfo typeInfo = typeInfoPath.get(i);
             ISubmoduleOrConnection element = elementPath.get(i);
 
             Map<String, ParamElementEx> paramAssignments = null;
             
             if (element == null)
-                paramAssignments = moduleType.getParamAssignments();
+                paramAssignments = typeInfo.getParamAssignments();
             else if (element instanceof SubmoduleElementEx)
-                paramAssignments = ((SubmoduleElementEx)element).getParamAssignments(moduleType);
+                paramAssignments = ((SubmoduleElementEx)element).getParamAssignments(typeInfo);
+            else if (element instanceof ConnectionElementEx)
+                paramAssignments = ((ConnectionElementEx)element).getParamAssignments(typeInfo);
             else
                 paramAssignments = element.getParamAssignments();
 
@@ -94,19 +134,16 @@ public class ParamUtil {
                 return paramAssignment;
 
             // extend paramRelativePath
-            String fullName = element == null ? moduleType.getName() : getElementName(element);
+            String fullName = element == null ? typeInfo.getName() : getParamPathPart(element);
             paramRelativePath = fullName + "." + paramRelativePath;
         }
         
         return paramAssignment;
     }
 
-    public static String getElementName(ISubmoduleOrConnection element) {
-        if (element instanceof ConnectionElementEx) {
-            ConnectionElementEx connection = (ConnectionElementEx)element; 
-            String gateName = connection.getGateNameWithIndex(connection.getSrcGate(), connection.getSrcGateSubg(), connection.getSrcGateIndex(), false);
-            return gateName + ".channel";
-        }
+    public static String getParamPathPart(ISubmoduleOrConnection element) {
+        if (element instanceof ConnectionElementEx)
+            return element.getName();
         else {
             SubmoduleElementEx submodule = (SubmoduleElementEx)element;
             String submoduleName = submodule.getName();
@@ -119,35 +156,35 @@ public class ParamUtil {
     }
 
     // TODO: move and factor with InifileUtils
-    public static boolean matchesPattern(String pattern, String value) {
-        if (PatternMatcher.containsWildcards(pattern)) {
-            try {
-                // TODO: cache matcher (see InifileUtils and factor out)
-                return new PatternMatcher(pattern, true, true, true).matches(value);
-            }
-            catch (RuntimeException e) {
-                return false;
-            }
-        }
-        else
-            return pattern.equals(value);
-    }
+//    public static boolean matchesPattern(String pattern, String value) {
+//        if (PatternMatcher.containsWildcards(pattern)) {
+//            try {
+//                // TODO: cache matcher (see InifileUtils and factor out)
+//                return new PatternMatcher(pattern, true, true, true).matches(value);
+//            }
+//            catch (RuntimeException e) {
+//                return false;
+//            }
+//        }
+//        else
+//            return pattern.equals(value);
+//    }
 
     public static abstract class RecursiveParamDeclarationVisitor implements IModuleTreeVisitor {
         protected Stack<ISubmoduleOrConnection> elementPath = new Stack<ISubmoduleOrConnection>();
         protected Stack<INEDTypeInfo> typeInfoPath = new Stack<INEDTypeInfo>();
         protected Stack<String> fullPathStack = new Stack<String>();  //XXX performance: use cumulative names, so that StringUtils.join() can be eliminated (like: "Net", "Net.node[*]", "Net.node[*].ip" etc) 
 
-        public boolean enter(SubmoduleElementEx submodule, INEDTypeInfo submoduleType) {
-            elementPath.push(submodule);
-            typeInfoPath.push(submoduleType);
-            fullPathStack.push(submodule == null ? submoduleType.getName() : getElementName(submodule));
+        public boolean enter(ISubmoduleOrConnection element, INEDTypeInfo typeInfo) {
+            elementPath.push(element);
+            typeInfoPath.push(typeInfo);
+            fullPathStack.push(element == null ? typeInfo.getName() : getParamPathPart(element));
 
             // skip if this is a zero-size submodule vector
             boolean isZeroSizedVector = false;
 
-            if (submodule != null) {
-                String vectorSize = submodule.getVectorSize();
+            if (element != null && element instanceof SubmoduleElementEx) {
+                String vectorSize = ((SubmoduleElementEx)element).getVectorSize();
 
                 if (!StringUtils.isEmpty(vectorSize)) {
                     if (vectorSize.equals("0"))
@@ -168,38 +205,20 @@ public class ParamUtil {
             fullPathStack.pop();
         }
 
-        public void unresolvedType(SubmoduleElementEx submodule, String submoduleTypeName) {
+        public void unresolvedType(ISubmoduleOrConnection element, String typeName) {
         }
 
-        public void recursiveType(SubmoduleElementEx submodule, INEDTypeInfo submoduleType) {
+        public void recursiveType(ISubmoduleOrConnection element, INEDTypeInfo typeInfo) {
         }
 
-        public String resolveLikeType(SubmoduleElementEx submodule) {
+        public String resolveLikeType(ISubmoduleOrConnection element) {
             // TODO: at least look at the NED param assignments
             return null;
         }
         
         protected boolean visitParamDeclarations(String fullPath, Stack<INEDTypeInfo> typeInfoPath, Stack<ISubmoduleOrConnection> elementPath) {
             INEDTypeInfo typeInfo = typeInfoPath.lastElement();
-
-            visitParamDeclarations(fullPath, typeInfoPath, elementPath, typeInfo.getParamDeclarations());
-
-            if (typeInfo.getNEDElement() instanceof CompoundModuleElementEx) {
-                CompoundModuleElementEx compoundModule = (CompoundModuleElementEx)typeInfo.getNEDElement();
-
-                for (ConnectionElementEx connection : compoundModule.getSrcConnections())
-                    visitParamDeclarations(fullPath + "." + getElementName(connection) , typeInfoPath, elementPath, connection.getParamDeclarations());
-                
-                for (SubmoduleElementEx submodule : compoundModule.getSubmodules()) {
-                    String submoduleName = submodule.getName();
-                    String fullPathPrefix = fullPath + "." + submoduleName + ".";
-
-                    for (ConnectionElementEx connection : compoundModule.getSrcConnectionsFor(submoduleName))
-                        visitParamDeclarations(fullPathPrefix + getElementName(connection), typeInfoPath, elementPath, connection.getParamDeclarations());
-                }
-            }
-
-            return true;
+            return visitParamDeclarations(fullPath, typeInfoPath, elementPath, typeInfo.getParamDeclarations());
         }
 
         protected boolean visitParamDeclarations(String fullPath, Stack<INEDTypeInfo> typeInfoPath, Stack<ISubmoduleOrConnection> elementPath, Map<String, ParamElementEx> paramDeclarations) {

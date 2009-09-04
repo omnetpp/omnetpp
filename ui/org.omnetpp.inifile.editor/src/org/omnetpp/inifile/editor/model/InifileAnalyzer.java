@@ -954,20 +954,20 @@ public class InifileAnalyzer {
                 return true;
             }
 
-            public String resolveLikeType(SubmoduleElementEx submodule) {
+            public String resolveLikeType(ISubmoduleOrConnection element) {
                 // Note: we cannot use InifileUtils.resolveLikeParam(), as that calls
                 // resolveLikeParam() which relies on the data structure we are currently building
 
                 // get like parameter name
-                String likeParamName = submodule.getLikeParam();
-                if (!likeParamName.matches("[A-Za-z_][A-Za-z0-9_]*"))
+                String likeParamName = element.getLikeParam();
+                if (likeParamName != null && !likeParamName.matches("[A-Za-z_][A-Za-z0-9_]*"))
                     return null;  // sorry, we are only prepared to resolve parent module parameters (but not expressions)
 
                 // look up parameter value (note: we cannot use resolveLikeParam() here yet)
                 String moduleFullPath = StringUtils.join(fullPathStack, ".");
                 ParamResolution res = null;
                 for (ParamResolution r : list)
-                    if (r.paramDeclNode.getName().equals(likeParamName) && r.moduleFullPath.equals(moduleFullPath))
+                    if (r.paramDeclNode.getName().equals(likeParamName) && r.fullPath.equals(moduleFullPath))
                         {res = r; break;}
                 if (res == null)
                     return null; // likely no such parameter
@@ -1127,7 +1127,7 @@ public class InifileAnalyzer {
 			// Note: linear search -- can be made more efficient with some lookup table if needed
 			ArrayList<ParamResolution> result = new ArrayList<ParamResolution>();
 			for (ParamResolution par : pars)
-				if (par.moduleFullPath.equals(moduleFullPath))
+				if (par.fullPath.equals(moduleFullPath))
 					result.add(par);
 			return result.toArray(new ParamResolution[]{});
 		}
@@ -1147,7 +1147,7 @@ public class InifileAnalyzer {
 
 			// Note: linear search -- can be made more efficient with some lookup table if needed
 			for (ParamResolution par : pars)
-				if (par.paramDeclNode.getName().equals(paramName) && par.moduleFullPath.equals(moduleFullPath))
+				if (par.paramDeclNode.getName().equals(paramName) && par.fullPath.equals(moduleFullPath))
 					return par;
 			return null;
 		}

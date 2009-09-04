@@ -342,7 +342,7 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
 
 	protected String getKeyFor(ParamResolution res) {
 		String paramName = res.paramDeclNode.getName();
-		String fullPath = res.moduleFullPath;
+		String fullPath = res.fullPath;
 		switch (keyType) {
 			case PARAM_ONLY: return "**."+paramName;
 			case MODULE_AND_PARAM: return fullPath.replaceFirst(".*?(\\.[^.]*)?$", "**$1")+"."+paramName;

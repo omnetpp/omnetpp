@@ -8,14 +8,17 @@
 package org.omnetpp.ned.core;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 import org.eclipse.core.resources.IProject;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
+import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
+import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
 
 
 /**
@@ -67,25 +70,35 @@ public class NEDTreeTraversal {
 			doTraverse(submodule, submoduleType);
 	}
 
-	protected void doTraverse(SubmoduleElementEx module, INEDTypeInfo moduleEffectiveType) {
+	protected void doTraverse(ISubmoduleOrConnection element, INEDTypeInfo effectiveTypeInfo) {
 		// enter module
-		visitedTypes.push(moduleEffectiveType);
-		boolean recurse = visitor.enter(module, moduleEffectiveType);
+		visitedTypes.push(effectiveTypeInfo);
+		boolean recurse = visitor.enter(element, effectiveTypeInfo);
 
 		// traverse submodules
-		if (recurse && moduleEffectiveType.getNEDElement() instanceof CompoundModuleElementEx) {
-			for (SubmoduleElementEx submodule : new ArrayList<SubmoduleElementEx>(moduleEffectiveType.getSubmodules().values())) {
+		if (recurse && effectiveTypeInfo.getNEDElement() instanceof CompoundModuleElementEx) {
+            CompoundModuleElementEx compoundModul = (CompoundModuleElementEx)effectiveTypeInfo.getNEDElement();
+            
+            List<SubmoduleElementEx> submodules = compoundModul.getSubmodules();
+            ArrayList<ISubmoduleOrConnection> elements = new ArrayList<ISubmoduleOrConnection>();
+            elements.addAll(submodules);
+            elements.addAll(compoundModul.getSrcConnections());
+            
+            for (SubmoduleElementEx submodule : submodules)
+                elements.addAll(compoundModul.getSrcConnectionsFor(submodule.getName()));
+
+			for (ISubmoduleOrConnection childElement : elements) {
 				// dig out type info (NED declaration)
-				String submoduleTypeName = resolveEffectiveTypeName(submodule);
-				INEDTypeInfo submoduleType = StringUtils.isEmpty(submoduleTypeName) ? null : resolver.lookupNedType(submoduleTypeName, submodule.getCompoundModule());
+				String typeName = resolveEffectiveTypeName(childElement);
+				INEDTypeInfo typeInfo = StringUtils.isEmpty(typeName) ? null : resolver.lookupNedType(typeName, compoundModul);
 
 				// recursive call
-				if (submoduleType == null)
-					visitor.unresolvedType(submodule, submoduleTypeName);
-				else if (visitedTypes.contains(submoduleType)) // cycle detection
-					visitor.recursiveType(submodule, submoduleType);
+				if (typeInfo == null)
+					visitor.unresolvedType(childElement, typeName);
+				else if (visitedTypes.contains(typeInfo)) // cycle detection
+					visitor.recursiveType(childElement, typeInfo);
 				else
-					doTraverse(submodule, submoduleType);
+					doTraverse(childElement, typeInfo);
 			}
 		}
 
@@ -100,25 +113,33 @@ public class NEDTreeTraversal {
 	 * However, if the module is a "like" submodule, resolving the type to fully
 	 * qualified name needs to be done here.
 	 */
-	protected String resolveEffectiveTypeName(SubmoduleElementEx submodule) {
-		String submoduleTypeName = submodule.getType();
-		if (StringUtils.isEmpty(submoduleTypeName)) {
-		    // resolve "like" submodule
-			submoduleTypeName = visitor.resolveLikeType(submodule);
-			if (submoduleTypeName == null)
-				submoduleTypeName = submodule.getLikeType();
+	protected String resolveEffectiveTypeName(ISubmoduleOrConnection element) {
+		String typeName = element.getType();
+		if (StringUtils.isEmpty(typeName)) {
+		    if (element instanceof ConnectionElementEx)
+		        // TODO: KLUDGE: this is not obviously the correct solution (but might be)
+		        //       connection element's type is null when it is an net.IdealChannel
+		        //       to avoid printing its type name at certain places.
+		        //       This causes that a couple of functions should deal with the type
+		        //       being null instead of always getting a type name.
+		        return "ned.IdealChannel";
+
+		    // resolve "like" type
+			typeName = visitor.resolveLikeType(element);
+			if (typeName == null)
+				typeName = element.getLikeType();
 			else {
 			    // submoduleTypeName is likely an unqualified name -- look it up according to
 			    // the "like" type name resolution rules
-			    INEDTypeInfo interfaceType = resolver.lookupNedType(submodule.getLikeType(), submodule.getEnclosingLookupContext());
+			    INEDTypeInfo interfaceType = resolver.lookupNedType(element.getLikeType(), element.getEnclosingLookupContext());
 			    if (interfaceType != null) {
-	                IProject context = resolver.getNedFile(submodule.getContainingNedFileElement()).getProject();
-	                INEDTypeInfo actualType = resolver.lookupLikeType(submoduleTypeName, interfaceType, context);
+	                IProject context = resolver.getNedFile(element.getContainingNedFileElement()).getProject();
+	                INEDTypeInfo actualType = resolver.lookupLikeType(typeName, interfaceType, context);
 			        if (actualType != null)
-			            submoduleTypeName = actualType.getFullyQualifiedName();
+			            typeName = actualType.getFullyQualifiedName();
 			    }
 			}
 		}
-		return submoduleTypeName;
+		return typeName;
 	}
 }

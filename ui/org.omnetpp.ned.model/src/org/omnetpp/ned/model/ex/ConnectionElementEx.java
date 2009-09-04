@@ -332,4 +332,15 @@ public class ConnectionElementEx extends ConnectionElement
 
         return chain;
     }
+
+    public String getName() {
+        String gateName = getGateNameWithIndex(getSrcGate(), getSrcGateSubg(), getSrcGateIndex(), false);
+        String moduleName = getSrcModule();
+
+        return (moduleName == null || moduleName.length() == 0 ? "" : getSrcModule() + ".") + gateName + ".channel";
+    }
+
+    public void setName(String name) {
+        throw new RuntimeException("Cannot set the name of a connection");
+    }
 }

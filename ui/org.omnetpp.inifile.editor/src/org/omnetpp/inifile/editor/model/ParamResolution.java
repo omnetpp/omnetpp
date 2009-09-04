@@ -35,9 +35,9 @@ public class ParamResolution {
 	// submodulePath[] is empty. After that, the type of submodulePath[i] is the parent 
 	// Compound/SimpleModuleElement of the next pathModule (or finally, the paramDeclNode).
 	// submodulePath[0] may be null.
-	public String moduleFullPath;
+	public String fullPath;
 	// FIXME: TODO: should copy, maybe use an array here?!
-	public ISubmoduleOrConnection[] submodulePath;
+	public ISubmoduleOrConnection[] elementPath;
 	public ParamElementEx paramDeclNode;  // node where param was declared; not null
 	public ParamElementEx paramValueNode;  // node where param gets assigned (may be a module or submodule param, or may be null)
 
@@ -54,11 +54,11 @@ public class ParamResolution {
 	public String key;
 	
 	// for convenience
-	public ParamResolution(String moduleFullPath, Vector<ISubmoduleOrConnection> submodulePath, 
+	public ParamResolution(String moduleFullPath, Vector<ISubmoduleOrConnection> elementPath, 
 			               ParamElementEx paramDeclNode, ParamElementEx paramValueNode, ParamResolutionType type, 
 			               String activeSection, String section, String key) {
-		this.moduleFullPath = moduleFullPath;
-		this.submodulePath = submodulePath.toArray(new ISubmoduleOrConnection[0]);
+		this.fullPath = moduleFullPath;
+		this.elementPath = elementPath.toArray(new ISubmoduleOrConnection[0]);
 		this.paramDeclNode = paramDeclNode;
 		this.paramValueNode = paramValueNode;
 		this.type = type;
@@ -91,11 +91,11 @@ public class ParamResolution {
 		}
 		else if (!key.equals(other.key))
 			return false;
-		if (moduleFullPath == null) {
-			if (other.moduleFullPath != null)
+		if (fullPath == null) {
+			if (other.fullPath != null)
 				return false;
 		}
-		else if (!moduleFullPath.equals(other.moduleFullPath))
+		else if (!fullPath.equals(other.fullPath))
 			return false;
 		if (paramDeclNode == null) {
 			if (other.paramDeclNode != null)

@@ -103,7 +103,7 @@ public class InifileHoverUtils {
 			else {
 				text += "<br>\nThis section does not seem to assign the following NED parameters:\n<ul>";
 				for (ParamResolution res : resList)
-					text += " <li>" + res.moduleFullPath + "." +res.paramDeclNode.getName() + "</li>\n";
+					text += " <li>" + res.fullPath + "." +res.paramDeclNode.getName() + "</li>\n";
 				text += "</ul>";
 			}
 		}
@@ -254,9 +254,9 @@ public class InifileHoverUtils {
                     Map<String,Set<String>> fullpathToSections = new LinkedHashMap<String, Set<String>>();
                     for (ParamResolution res : resList) {
                         if (res.paramDeclNode == paramDeclNode) {
-                            if (!fullpathToSections.containsKey(res.moduleFullPath))
-                                fullpathToSections.put(res.moduleFullPath, new HashSet<String>());
-                            fullpathToSections.get(res.moduleFullPath).add(res.activeSection);
+                            if (!fullpathToSections.containsKey(res.fullPath))
+                                fullpathToSections.put(res.fullPath, new HashSet<String>());
+                            fullpathToSections.get(res.fullPath).add(res.activeSection);
                         }
                     }
 

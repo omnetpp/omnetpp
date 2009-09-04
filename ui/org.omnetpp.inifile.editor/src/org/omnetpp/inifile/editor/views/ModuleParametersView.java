@@ -121,7 +121,7 @@ public class ModuleParametersView extends AbstractModuleView {
 				if (element instanceof ParamResolution) {
 					ParamResolution res = (ParamResolution) element;
 					switch (columnIndex) {
-						case 0: return res.moduleFullPath+"."+res.paramDeclNode.getName();
+						case 0: return res.fullPath+"."+res.paramDeclNode.getName();
 						case 1: return InifileAnalyzer.getParamValue(res, inifileDocument);
 						case 2: return InifileAnalyzer.getParamRemark(res, inifileDocument);
 					}
@@ -153,7 +153,7 @@ public class ModuleParametersView extends AbstractModuleView {
 						//XXX make sure "res" and inifile editor refer to the same IFile!!!
 						return InifileHoverUtils.getEntryHoverText(res.section, res.key, inifileDocument, inifileAnalyzer);
 					else 
-						return InifileHoverUtils.getParamHoverText(res.submodulePath, res.paramDeclNode, res.paramValueNode);
+						return InifileHoverUtils.getParamHoverText(res.elementPath, res.paramDeclNode, res.paramValueNode);
 				}
 				return null;
 			}
