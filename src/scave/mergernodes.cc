@@ -112,7 +112,8 @@ Port *MergerNodeType::getPort(Node *node, const char *portname) const
 AggregatorNode::AggregatorNode(const std::string &function)
 	: out(this)
 {
-	if (function == "average") fn = Average;
+	if (function == "sum") fn = Sum;
+	else if (function == "average") fn = Average;
 	else if (function == "count") fn = Count;
 	else if (function == "minimum") fn = Minimum;
 	else if (function == "maximum") fn = Maximum;
@@ -123,6 +124,7 @@ void AggregatorNode::init()
 {
 	switch (fn)
 	{
+		case Sum: acc = 0.0; break;
 		case Average: acc = 0.0; count = 0; break;
 		case Count:   count = 0; break;
 		case Minimum: acc = dblPositiveInfinity; break;
@@ -134,6 +136,7 @@ void AggregatorNode::collect(double value)
 {
 	switch (fn)
 	{
+		case Sum: acc += value; break;
 		case Average: acc += value; count++; break;
 		case Count:   count++; break;
 		case Minimum: acc = std::min(value, acc); break;
@@ -145,6 +148,7 @@ double AggregatorNode::result()
 {
 	switch (fn)
 	{
+		case Sum: return acc;
 		case Average: return acc/count;
 		case Count:   return count;
 		case Minimum:
@@ -221,7 +225,7 @@ const char *AggregatorNodeType::getDescription() const
 
 void AggregatorNodeType::getAttributes(StringMap& attrs) const
 {
-	attrs["function"] = "the aggregator function; one of average,count,maximum,minimum";
+	attrs["function"] = "the aggregator function; one of sum,average,count,maximum,minimum";
 }
 
 void AggregatorNodeType::getAttrDefaults(StringMap& attrs) const
