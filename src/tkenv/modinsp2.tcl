@@ -630,6 +630,15 @@ proc draw_connection {c gateptr dispstr srcptr destptr src_i src_n dest_i dest_n
 
        regexp -- {^.[^.]*} $c win
 
+       # switch off the connection arrangement if the option is not enabled
+       # all connection are treated as the first one in an array with size 1
+       if {![opp_getsimoption arrangevectorconnections]} {
+           set src_n "1"
+           set dest_n "1"
+           set src_i "0"
+           set dest_i "0"
+       }
+
        set arrow_coords [eval [concat opp_inspectorcommand $win arrowcoords \
                   $src_rect $dest_rect $src_i $src_n $dest_i $dest_n \
                   $mode $src_anch $dest_anch]]
