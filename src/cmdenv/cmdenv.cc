@@ -103,6 +103,9 @@ Cmdenv::Cmdenv()
     // initialize fout to stdout, then we'll replace it if redirection is
     // requested in the ini file
     fout = stdout;
+
+    // init config variables that are used even before readOptions()
+    opt_autoflush = true;
 }
 
 Cmdenv::~Cmdenv()
