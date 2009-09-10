@@ -34,6 +34,39 @@ AC_DEFUN(OPP_CHECK_LIB,[
 ])
 
 dnl
+dnl Same as OPP_CHECK_LIB(), but also tries to run the program (uses
+dnl AC_RUN_IFELSE instead of AC_LINK_IFELSE).
+dnl
+dnl OPP_CHECK_AND_RUN_LIB(      -- macro to check availability of a library
+dnl   $1: LIBRARY-NAME, -- descriptive name (only for printout)
+dnl   $2: HEADER,       -- optional: header file to #include
+dnl   $3: FUNCTION,     -- optional: function WITH ARG LIST, e.g. floor(0.5)
+dnl   $4: CFLAGS,       -- optional: compiler flags
+dnl   $5: LDFLAGS,      -- optional: linker flags
+dnl   $6: RESULT-VAR    -- will contain "yes" or "no"
+dnl   $7: ACTION-IF-FOUND
+dnl   $8: ACTION-IF-NOT-FOUND
+dnl )
+dnl
+AC_DEFUN(OPP_CHECK_AND_RUN_LIB,[
+   save_CXXFLAGS=$CXXFLAGS
+   save_LIBS=$LIBS
+
+   CXXFLAGS="$4"
+   LIBS="$5"
+
+   AC_MSG_CHECKING(for $1 with CFLAGS="$4" LIBS="$5")
+
+   AC_RUN_IFELSE(
+     [AC_LANG_PROGRAM([[#include <$2>]], [[$3;]])],
+     [AC_MSG_RESULT(yes); $6=yes; $7],
+     [AC_MSG_RESULT(no); $6=no; $8])
+
+   CXXFLAGS=$save_CXXFLAGS
+   LIBS=$save_LIBS
+])
+
+dnl
 dnl OPP_CHECK_LIB_NOLINK(      -- macro to check availability of a library
 dnl   $1: LIBRARY-NAME, -- descriptive name (only for printout)
 dnl   $2: HEADER,       -- optional: header file to #include
@@ -960,11 +993,28 @@ fi
 # Check for PCAP.
 #----------------------
 
-if test -n "$PCAP_LIBS"; then
-    OPP_CHECK_LIB(PCAP, pcap.h, pcap_lookupdev("dummydev"), $CFLAGS_RELEASE $PCAP_CFLAGS, $PCAP_LIBS, pcap_ok)
+# Note: on Windows, we need to check beforehand if wpcap.dll exists, because
+# otherwise the test program (that links with pcap.lib) brings up a GUI (!)
+# error dialog complaining that wpcap.dll was missing
+case $host in
+*-*-cygwin* | *-*-mingw32*)
+    OPP_CHECK_AND_RUN_LIB(WinPCAP, windows.h, return LoadLibrary("wpcap.dll")==NULL ? 1 : 0, $CFLAGS_RELEASE, , wpcap_dll)
+    ;;
+*)
+    wpcap_dll=notneeded
+    ;;
+esac
+
+if test $wpcap_dll = "no"; then
+    pcap_ok=no
+    AC_MSG_NOTICE([WinPCAP not found -- if you need packet capture functionality in your models, install it from winpcap.org])
 else
-    PCAP_LIBS="-lpcap"
-    OPP_CHECK_LIB(PCAP, pcap.h, pcap_lookupdev("dummydev"), $CFLAGS_RELEASE $PCAP_CFLAGS, $PCAP_LIBS, pcap_ok)
+    if test -n "$PCAP_LIBS"; then
+        OPP_CHECK_AND_RUN_LIB(PCAP, pcap.h, pcap_lib_version(), $CFLAGS_RELEASE $PCAP_CFLAGS, $PCAP_LIBS, pcap_ok)
+    else
+        PCAP_LIBS="-lpcap"
+        OPP_CHECK_AND_RUN_LIB(PCAP, pcap.h, pcap_lib_version(), $CFLAGS_RELEASE $PCAP_CFLAGS, $PCAP_LIBS, pcap_ok)
+    fi
 fi
 if test $pcap_ok = yes; then
     HAVE_PCAP=yes
@@ -974,6 +1024,7 @@ else
     HAVE_PCAP=no
     PCAP_CFLAGS=""
     PCAP_LIBS=""
+    OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  PCAP (optional)"
 fi
 
 #----------------------
