@@ -893,13 +893,13 @@ proc create_graphicalmodwindow {name geom} {
     $c bind msgname <Double-1> "graphmodwin_dblclick $w"
     $c bind qlen <Double-1> "graphmodwin_qlen_dblclick $w"
 
-    $c bind submod <$B3> "graphmodwin_rightclick $w %X %Y"
-    $c bind conn <$B3> "graphmodwin_rightclick $w %X %Y"
-    $c bind msg <$B3> "graphmodwin_rightclick $w %X %Y"
-    $c bind msgname <$B3> "graphmodwin_rightclick $w %X %Y"
-    $c bind mod <$B3> "graphmodwin_rightclick $w %X %Y"
-    $c bind modname <$B3> "graphmodwin_rightclick $w %X %Y"
-    $c bind qlen <$B3> "graphmodwin_qlen_rightclick $w %X %Y"
+    $c bind submod <$B3> "graphmodwin_rightclick $w %X %Y %x %y"
+    $c bind conn <$B3> "graphmodwin_rightclick $w %X %Y %x %y"
+    $c bind msg <$B3> "graphmodwin_rightclick $w %X %Y %x %y"
+    $c bind msgname <$B3> "graphmodwin_rightclick $w %X %Y %x %y"
+    $c bind mod <$B3> "graphmodwin_rightclick $w %X %Y %x %y"
+    $c bind modname <$B3> "graphmodwin_rightclick $w %X %Y %x %y"
+    $c bind qlen <$B3> "graphmodwin_qlen_rightclick $w %X %Y %x %y"
 
     # keyboard shortcuts
     bind $w <Control-i> "graphmodwin_zoomiconsby $w 1.25"
@@ -993,20 +993,46 @@ proc graphmodwin_dblclick w {
    }
 }
 
-proc graphmodwin_rightclick {w X Y} {
+proc graphmodwin_rightclick {w X Y x y} {
    global inspectordata tmp
    set c $w.c
-   set item [$c find withtag current]
-   set tags [$c gettags $item]
-
-   set ptr ""
-   if {[lsearch $tags "ptr*"] != -1} {
-      regexp "ptr.*" $tags ptr
+   set ptrs {}
+   # convert widget coordinates to canvas coordinates
+   set x [$c canvasx $x]
+   set y [$c canvasy $y]
+   set items [$c find overlapping [expr $x-2] [expr $y-2] [expr $x+2] [expr $y+2]]
+   foreach item $items {
+       set tags [$c gettags $item]
+       foreach tag $tags {
+           if [string match "ptr*" $tag] {
+               lappend ptrs $tag
+           }
+       }
    }
-   set ptr [lindex $ptr 0]
 
-   if [opp_isnotnull $ptr] {
-      set popup [create_inspector_contextmenu $ptr]
+   if {$ptrs != {}} {
+
+      # remove duplicte pointers and reverse the order
+      # so the topmost element will be the first in the list
+      set ptrs2 {}
+      foreach ptr $ptrs {
+          if {[lsearch -exact $ptrs2 $ptr] == -1 } {
+              set ptrs2 [lreplace $ptrs2 0 -1 $ptr]
+          }
+      }
+
+      # get the backgound module's ptr 
+      regexp {\.(ptr.*)-([0-9]+)} $w match bgptr dummy
+
+      # if more than one ptr present delete the background module's pointer
+      if { [llength $ptrs2] > 1 } {
+          set bgindex [lsearch $ptrs2 $bgptr]
+          if { $bgindex >= 0 } {
+              set ptrs2 [lreplace $ptrs2 $bgindex $bgindex]
+          }
+      }
+
+      set popup [create_inspector_contextmenu $ptrs2]
 
       set tmp($c:showlabels) $inspectordata($c:showlabels)
       set tmp($c:showarrowheads) $inspectordata($c:showarrowheads)
