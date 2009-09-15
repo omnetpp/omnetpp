@@ -551,18 +551,20 @@ proc inspect_componenttype {win {type "(default)"}} {
 }
 
 #
-# Called from balloon.tcl, supposed to return tooltip for a widget (or item
+# Called from balloon.tcl, supposed to return tooltip for a widget (or items
 # in a widget). Installed via: set help_tips(helptip_proc) get_help_tip
 #
 # Here we produce help text for canvas items that represent simulation
 # objects.
 #
-proc get_help_tip {w x y item} {
+proc get_help_tip {w x y items} {
    if {![winfo exists $w]} {
        return ""
    }
-   if {[winfo class $w]=="Canvas" && $item!=""} {
-
+   set tip ""
+   if {[winfo class $w]=="Canvas" && $items!=""} {
+     set tip ""
+     foreach item $items {
        # if this is a simulation object, get its pointer
        set ptr ""
        set tags [$w gettags $item]
@@ -587,7 +589,7 @@ proc get_help_tip {w x y item} {
        set ptr [lindex $ptr 0]
 
        if [opp_isnotnull $ptr] {
-          set tip "([opp_getobjectshorttypename $ptr]) [opp_getobjectfullname $ptr]"
+          append tip "([opp_getobjectshorttypename $ptr]) [opp_getobjectfullname $ptr]"
           set info [opp_getobjectinfostring $ptr]
           if {$info!=""} {append tip ", $info"}
           regsub {  +} $tip {  } tip
@@ -602,12 +604,13 @@ proc get_help_tip {w x y item} {
              set tt_tag [opp_displaystring $dispstr getTagArg "bgtt" 0]
           }
           if {$tt_tag!=""} {
-             append tip "\n$tt_tag"
+             append tip "\n  $tt_tag"
           }
-          return $tip
        }
+       append tip "\n"
+     }
    }
-   return ""
+   return [string trim $tip \n]
 }
 
 

@@ -1002,8 +1002,10 @@ proc graphmodwin_dblclick w {
 
 # get the pointers of all objects under the mouse. If more than 1 ptr is returned
 # then bgrptr is removed from the list. x and y must be widget relative coordinate 
-# (of the canvas object)
-proc get_ptrs_under_mouse {c x y {bgptr ""}} {
+# (of the canvas object). The background module pointer is removed automatically 
+# if more that 1 pointer is present. I.e. background is returned ONLY if the mouse
+# is directly over the background module.
+proc get_ptrs_under_mouse {c x y} {
    set ptrs {}
    # convert widget coordinates to canvas coordinates
    set x [$c canvasx $x]
@@ -1028,6 +1030,8 @@ proc get_ptrs_under_mouse {c x y {bgptr ""}} {
           }
       }
 
+      set bgptr ""
+      regexp {\.(ptr.*)-([0-9]+)} $c match bgptr dummy
       # if more than one ptr present delete the background module's pointer
       if { [llength $ptrs2] > 1 && $bgptr != "" } {
           set bgindex [lsearch $ptrs2 $bgptr]
@@ -1042,11 +1046,7 @@ proc get_ptrs_under_mouse {c x y {bgptr ""}} {
 proc graphmodwin_rightclick {w X Y x y} {
    global inspectordata tmp
    set c $w.c
-   # get the backgound module's ptr 
-   set bgptr ""
-   regexp {\.(ptr.*)-([0-9]+)} $w match bgptr dummy
-
-   set ptrs [get_ptrs_under_mouse $c $x $y $bgptr]
+   set ptrs [get_ptrs_under_mouse $c $x $y]
 
    if {$ptrs != {}} {
 
