@@ -161,30 +161,8 @@ proc timeline_dblclick c {
 }
 
 proc timeline_rightclick {c X Y x y} {
-   set ptrs {}
-   # convert widget coordinates to canvas coordinates
-   set x [$c canvasx $x]
-   set y [$c canvasy $y]
-   set items [$c find overlapping [expr $x-2] [expr $y-2] [expr $x+2] [expr $y+2]]
-   foreach item $items {
-       set tags [$c gettags $item]
-       foreach tag $tags {
-           if [string match "ptr*" $tag] {
-               lappend ptrs $tag
-           }
-       }
-   }
-
+   set ptrs [get_ptrs_under_mouse $c $x $y] 
    if {$ptrs != {}} {
-
-      # remove duplicte pointers and reverse the order
-      # so the topmost element will be the first in the list
-      set ptrs2 {}
-      foreach ptr $ptrs {
-          if {[lsearch -exact $ptrs2 $ptr] == -1 } {
-              set ptrs2 [lreplace $ptrs2 0 -1 $ptr]
-          }
-      }
       set popup [create_inspector_contextmenu $ptrs]
       tk_popup $popup $X $Y
    }
