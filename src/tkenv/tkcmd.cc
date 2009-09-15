@@ -99,6 +99,7 @@ int getObjectFullPath_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectShortTypeName_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectFullTypeName_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectInfoString_cmd(ClientData, Tcl_Interp *, int, const char **);
+int getMessageShortInfoString_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectOwner_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectField_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectBaseClass_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -207,6 +208,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_getobjectid",      getObjectId_cmd          }, // args: <pointer>  ret: object ID (if object has one) or ""
    { "opp_getobjectowner",   getObjectOwner_cmd       }, // args: <pointer>  ret: <ownerptr>
    { "opp_getobjectinfostring",getObjectInfoString_cmd}, // args: <pointer>  ret: info()
+   { "opp_getmessageshortinfostring",getMessageShortInfoString_cmd}, // args: <msg_pointer>  ret: a short info string containing only the src and destination of the message
    { "opp_getobjectfield",   getObjectField_cmd       }, // args: <pointer> <field>  ret: value of object field (if supported)
    { "opp_getcomponenttypeobject",getComponentTypeObject_cmd}, // args: <pointer> ret: cComponentType
    { "opp_hassubmodules",    hasSubmodules_cmd        }, // args: <pointer> ret: 0 or 1
@@ -679,6 +681,36 @@ int getObjectInfoString_cmd(ClientData, Tcl_Interp *interp, int argc, const char
    return TCL_OK;
 }
 
+int getMessageShortInfoString_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+    if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
+    cObject *object = strToPtr(argv[1]);
+    if (!object) {Tcl_SetResult(interp, TCLCONST("null or malformed pointer"), TCL_STATIC); return TCL_ERROR;}
+    cMessage *msg = dynamic_cast<cMessage *>(object);
+    if (!msg) {Tcl_SetResult(interp, TCLCONST("not a message pointer"), TCL_STATIC); return TCL_ERROR;}
+
+    cModule *tomodp = msg->getArrivalModule();
+    cModule *frommodp = msg->getSenderModule();
+    std::stringstream out;
+    const char *deletedstr = "<deleted module>";
+
+#define MODNAME(modp) ((modp) ? (modp)->getFullPath().c_str() : deletedstr)
+    if (!tomodp)
+        out << "new msg";
+    else if (msg->getKind()==MK_STARTER)
+        out << "starter for " << MODNAME(tomodp);
+    else if (msg->getKind()==MK_TIMEOUT)
+        out << "timeoutmsg for " << MODNAME(tomodp);
+    else if (frommodp==tomodp)
+        out << "selfmsg for " << MODNAME(tomodp);
+    else
+        out << "msg for " << MODNAME(tomodp);
+#undef MODNAME
+
+    Tcl_SetResult(interp, TCLCONST(out.str().c_str()), TCL_VOLATILE);
+    return TCL_OK;
+}
+
 int getObjectField_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=3) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
@@ -712,6 +744,13 @@ int getObjectField_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
            cChannel *chan = gate->getChannel();
            const char *str = (chan && chan->hasDisplayString()) ? chan->getDisplayString().str() : "";
            Tcl_SetResult(interp, TCLCONST(str), TCL_VOLATILE);
+       } else {
+           Tcl_SetResult(interp, TCLCONST("no such field in this object"), TCL_STATIC); return TCL_ERROR;
+       }
+   } else if (!strcmp(field,"nextGate")) {
+        if (dynamic_cast<cGate *>(object)) {
+           cGate *gate = dynamic_cast<cGate *>(object);
+           Tcl_SetResult(interp, TCLCONST(ptrToStr(gate->getNextGate())), TCL_VOLATILE);
        } else {
            Tcl_SetResult(interp, TCLCONST("no such field in this object"), TCL_STATIC); return TCL_ERROR;
        }

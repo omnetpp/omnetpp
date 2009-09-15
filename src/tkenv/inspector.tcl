@@ -409,14 +409,27 @@ proc create_inspector_contextmenu {ptrs} {
     } else {
         foreach ptr $ptrs {
             set submenu .popup.$ptr
+            catch {destroy $submenu}
             menu $submenu -tearoff 0
             set name [opp_getobjectfullname $ptr]
-            set infostr [opp_getobjectinfostring $ptr]
+            set shorttypename [opp_getobjectshorttypename $ptr]
+            set infostr "$shorttypename, [opp_getobjectinfostring $ptr]"
+            if {[string length $infostr] > 30} {
+                set infostr [string range $infostr 0 29]...
+            }
             set baseclass [opp_getobjectbaseclass $ptr]
             if {$baseclass == "cGate" } {
+                set nextgateptr [opp_getobjectfield $ptr "nextGate"]
+                set nextgatename [opp_getobjectfullname $nextgateptr]
                 set ownerptr [opp_getobjectowner $ptr] 
                 set ownername [opp_getobjectfullname $ownerptr]
-                set label "$ownername.$name $infostr"
+                set nextgateownerptr [opp_getobjectowner $nextgateptr] 
+                set nextgateownername [opp_getobjectfullname $nextgateownerptr]
+
+                set label "$ownername.$name --> $nextgateownername.$nextgatename"
+            } elseif {$baseclass == "cMessage" } {
+                set shortinfo [opp_getmessageshortinfostring $ptr]
+                set label "$name ($shorttypename, $shortinfo)"
             } else {
                 set label "$name ($infostr)"
             }

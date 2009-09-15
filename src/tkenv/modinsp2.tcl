@@ -668,20 +668,11 @@ proc draw_connection {c gateptr dispstr srcptr destptr src_i src_n dest_i dest_n
            set arrow none
        }
 
-       # if we have a two way connection we should draw only in one direction
-       # the other line will be hidden
-       
-       if {[string compare $srcptr $destptr] >0 && $two_way} {
-           set state "hidden"
-       } else {
-           set state "normal"
-       }
-
        $c create line $arrow_coords -arrow $arrow -fill $fill -dash $pattern -width $width -tags "dx tooltip conn $gateptr"
 
        # if we have a two way connection we should draw only in one direction
        # the other line will be hidden (lowered under anything else)
-       if {[string compare $srcptr $destptr] >0 && $two_way} {
+       if {[string compare $srcptr $destptr] >=0 && $two_way} {
            $c lower $gateptr "dx"
        } 
 
