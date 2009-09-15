@@ -601,10 +601,10 @@ proc resizeimage {img sx sy} {
 #
 # This function is invoked from the module inspector C++ code.
 #
-proc draw_connection {c gateptr dispstr srcptr destptr src_i src_n dest_i dest_n} {
+proc draw_connection {c gateptr dispstr srcptr destptr src_i src_n dest_i dest_n two_way} {
     global inspectordata
 
-    # puts "DEBUG: draw_connection $c $gateptr $dispstr $srcptr $destptr $src_i $src_n $dest_i $dest_n"
+    # puts "DEBUG: draw_connection $c $gateptr $dispstr $srcptr $destptr $src_i $src_n $dest_i $dest_n $two_way"
 
     if [catch {
        set src_rect [get_submod_coords $c $srcptr]
@@ -661,13 +661,29 @@ proc draw_connection {c gateptr dispstr srcptr destptr src_i src_n dest_i dest_n
            set pattern ""
        }
 
-       if {$inspectordata($c:showarrowheads)} {
+       set state "normal"
+       if {$inspectordata($c:showarrowheads) && !$two_way} {
            set arrow last
        } else {
            set arrow none
        }
 
+       # if we have a two way connection we should draw only in one direction
+       # the other line will be hidden
+       
+       if {[string compare $srcptr $destptr] >0 && $two_way} {
+           set state "hidden"
+       } else {
+           set state "normal"
+       }
+
        $c create line $arrow_coords -arrow $arrow -fill $fill -dash $pattern -width $width -tags "dx tooltip conn $gateptr"
+
+       # if we have a two way connection we should draw only in one direction
+       # the other line will be hidden (lowered under anything else)
+       if {[string compare $srcptr $destptr] >0 && $two_way} {
+           $c lower $gateptr "dx"
+       } 
 
        if {[info exists tags(t)]} {
            set txt [lindex $tags(t) 0]
