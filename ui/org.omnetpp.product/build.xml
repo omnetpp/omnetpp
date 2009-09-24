@@ -1,4 +1,4 @@
-<project default="omnetpp">
+<project default="package">
 	<property environment="env" />
 	<property file="build.properties" />
 
@@ -29,6 +29,36 @@
 				<include name="org.omnetpp.ide.academic/**" />
 			</fileset>
 		</copy>
+	</target>
+
+	<!-- prepare for a commercial build / replace OMNeT++ strings to OMNEST etc. -->
+	<target name="init-omnest" depends="init">
+		<replace dir="${srcDirectory}" token="OMNeT++" value="OMNEST">
+			<include name="**/*.java" />
+			<include name="**/*.htm" />
+			<include name="**/*.html" />
+			<include name="**/*.xml" />
+			<include name="**/MANIFEST.MF" />
+			<include name="**/*.properties" />
+			<include name="**/*.product" />
+		</replace>
+		<replace dir="${srcDirectory}" token="Academic Edition, not for commercial use" value="Commercial Edition">
+			<include name="**/*.xml" />
+		</replace>
+		<replace dir="${srcDirectory}" token="IS_COMMERCIAL = false;" value="IS_COMMERCIAL = true;">
+			<include name="**/*.java" />
+		</replace>
+		<copy file="${srcDirectory}/plugins/org.omnetpp.product/omnest-ide.product" tofile="${srcDirectory}/plugins/org.omnetpp.product/ide.product" />
+		<move file="${srcDirectory}/plugins/org.omnetpp.main/icons/intro-omnest.png" tofile="${srcDirectory}/plugins/org.omnetpp.main/icons/intro-image.png" />
+	</target>
+
+	<!-- prepare for academic build / throw out commercial features etc. -->
+	<target name="init-omnetpp" depends="init">
+		<replace dir="${srcDirectory}" token="IS_COMMERCIAL = true;" value="IS_COMMERCIAL = false;">
+			<include name="**/*.java" />
+		</replace>
+		<copy file="${srcDirectory}/plugins/org.omnetpp.product/omnetpp-ide.product" tofile="${srcDirectory}/plugins/org.omnetpp.product/ide.product" />
+		<move file="${srcDirectory}/plugins/org.omnetpp.main/icons/intro-omnetpp.png" tofile="${srcDirectory}/plugins/org.omnetpp.main/icons/intro-image.png" />
 	</target>
 
 	<target name="pde-build">
@@ -69,52 +99,54 @@
 			</classpath>
 		</java>
 	</target>
-
-	<!-- prepare for a commercial build / replace OMNeT++ strings to OMNEST etc. -->
-	<target name="init-omnest" depends="init">
-		<replace dir="${srcDirectory}" token="OMNeT++" value="OMNEST">
-			<include name="**/*.java" />
-			<include name="**/*.htm" />
-			<include name="**/*.html" />
-			<include name="**/*.xml" />
-			<include name="**/MANIFEST.MF" />
-			<include name="**/*.properties" />
-			<include name="**/*.product" />
-		</replace>
-		<replace dir="${srcDirectory}" token="Academic Edition, not for commercial use" value="Commercial Edition">
-			<include name="**/*.xml" />
-		</replace>
-		<replace dir="${srcDirectory}" token="IS_COMMERCIAL = false;" value="IS_COMMERCIAL = true;">
-			<include name="**/*.java" />
-		</replace>
-		<copy file="${srcDirectory}/plugins/org.omnetpp.product/omnest-ide.product" tofile="${srcDirectory}/plugins/org.omnetpp.product/ide.product" />
-		<move file="${srcDirectory}/plugins/org.omnetpp.main/icons/intro-omnest.png" tofile="${srcDirectory}/plugins/org.omnetpp.main/icons/intro-image.png" />
+	
+	<!-- Extract / rearange the output for a single configuration 
+		config: platform.windowingsystem.architecture (triplet as specified in "configs" property), 
+		platdir: the directory name for the specific platform launcher and p2 profile dir -->
+	<target name="package-config">
+          <unzip src="${buildDirectory}/${buildLabel}/${archivePrefix}-${config}.zip" 
+                 dest="${buildDirectory}/${buildLabel}">
+            <patternset excludes="${archivePrefix}/plugins/** ${archivePrefix}/features/**"/>
+            <globmapper from="${archivePrefix}/*" to="${archivePrefix}/${platdir}/*"/>
+          </unzip>
+          <unzip src="${buildDirectory}/${buildLabel}/${archivePrefix}-${config}.zip" 
+                 dest="${buildDirectory}/${buildLabel}">
+            <patternset includes="${archivePrefix}/plugins/** ${archivePrefix}/features/**"/>
+          </unzip>
 	</target>
 
-	<!-- prepare for academic build / throw out commercial features etc. -->
-	<target name="init-omnetpp" depends="init">
-		<replace dir="${srcDirectory}" token="IS_COMMERCIAL = true;" value="IS_COMMERCIAL = false;">
-			<include name="**/*.java" />
-		</replace>
-		<copy file="${srcDirectory}/plugins/org.omnetpp.product/omnetpp-ide.product" tofile="${srcDirectory}/plugins/org.omnetpp.product/ide.product" />
-		<move file="${srcDirectory}/plugins/org.omnetpp.main/icons/intro-omnetpp.png" tofile="${srcDirectory}/plugins/org.omnetpp.main/icons/intro-image.png" />
+	<!-- create the final IDE layout by extracting the launcher and p2 profile into 
+             separate platform specifc directory for ALL configurations -->
+	<target name="package">
+          <ant target="package-config">
+            <property name="config" value="win32.win32.x86"/>
+            <property name="platdir" value="win32"/>
+          </ant>
+          <ant target="package-config">
+            <property name="config" value="linux.gtk.x86"/>
+            <property name="platdir" value="linux"/>
+          </ant>
+          <ant target="package-config">
+            <property name="config" value="linux.gtk.x86_64"/>
+            <property name="platdir" value="linux64"/>
+          </ant>
+          <ant target="package-config">
+            <property name="config" value="macosx.carbon.x86"/>
+            <property name="platdir" value="macosx"/>
+          </ant>
 	</target>
 
-	<target name="omnetpp" depends="clean, init-omnetpp, pde-build">
-		<!-- special handling of the 64 bit linux executable -->
-<!--
-		<copy file="${eclipseLocation}/eclipse64" tofile="${buildDirectory}/tmp/${archivePrefix}/omnetpp64" />
-		<chmod file="${buildDirectory}/tmp/${archivePrefix}/omnetpp64" perm="755" />
-		<delete file="${buildDirectory}/tmp/${archivePrefix}/libcairo-swt.so" />
--->		
+<!-- clean, init-omnetpp, pde-build, -->
+	<target name="omnetpp" depends="clean, init-omnetpp, pde-build, package">
+		<chmod file="${buildDirectory}/${buildLabel}/${archivePrefix}/linux/omnetpp" perm="755" />
+		<chmod file="${buildDirectory}/${buildLabel}/${archivePrefix}/linux64/omnetpp" perm="755" />
+		<chmod file="${buildDirectory}/${buildLabel}/${archivePrefix}/macosx/omnetpp.app/Contents/MacOS/omnetpp" perm="755" />
+          
 	</target>
 
-	<target name="omnest" depends="clean, init-omnest, pde-build">
-		<!-- special handling of the 64 bit linux executable -->
-<!--
-		<copy file="${eclipseLocation}/eclipse64" tofile="${buildDirectory}/tmp/${archivePrefix}/omnest64" />
-		<chmod file="${buildDirectory}/tmp/${archivePrefix}/omnest64" perm="755" />
-		<delete file="${buildDirectory}/tmp/${archivePrefix}/libcairo-swt.so" />
--->		
+	<target name="omnest" depends="clean, init-omnetpp, pde-build, package">
+		<chmod file="${buildDirectory}/${buildLabel}/${archivePrefix}/linux/omnest" perm="755" />
+		<chmod file="${buildDirectory}/${buildLabel}/${archivePrefix}/linux64/omnest" perm="755" />
+		<chmod file="${buildDirectory}/${buildLabel}/${archivePrefix}/macosx/omnest.app/Contents/MacOS/omnest" perm="755" />
 	</target>
 </project>
