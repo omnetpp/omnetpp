@@ -430,4 +430,8 @@ public interface IDisplayString {
      */
     public void set(String newValue);
 
+    /**
+     * Compute a hash code based on this display string and all fallback display strings. 
+     */
+    public int cumulativeHashCode();
 }
