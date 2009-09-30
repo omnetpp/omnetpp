@@ -84,9 +84,10 @@
 		<!-- Check that we have a deltapack -->
 		<available property="haveDeltaPack" file="${deltapack}" />
 		<fail unless="haveDeltaPack" message="The deltapack is required to build this product.  Please edit buildProduct.xml or set the &quot;deltapack&quot; property." />
+<!--
 		<available property="haveCdt" file="${cdt}" />
 		<fail unless="haveCdt" message="The CDT master archive is required to build this product.  Please edit build.xml or set the &quot;cdt&quot; path property." />
-
+-->
 		<java classname="org.eclipse.equinox.launcher.Main" fork="true" failonerror="true">
 			<arg value="-application" />
 			<arg value="org.eclipse.ant.core.antRunner" />
@@ -144,7 +145,7 @@
           
 	</target>
 
-	<target name="omnest" depends="clean, init-omnetpp, pde-build, package">
+	<target name="omnest" depends="clean, init-omnest, pde-build, package">
 		<chmod file="${buildDirectory}/${buildLabel}/${archivePrefix}/linux/omnest" perm="755" />
 		<chmod file="${buildDirectory}/${buildLabel}/${archivePrefix}/linux64/omnest" perm="755" />
 		<chmod file="${buildDirectory}/${buildLabel}/${archivePrefix}/macosx/omnest.app/Contents/MacOS/omnest" perm="755" />

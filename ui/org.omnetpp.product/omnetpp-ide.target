@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?pde version="3.5"?>
+
+<target name="omnetpp">
+<locations>
+<location path="${eclipse_home}/target/imageexport" type="Directory"/>
+<location path="${eclipse_home}/target/deltapack" type="Directory"/>
+<location path="${eclipse_home}/target/emf" type="Directory"/>
+<location path="${eclipse_home}/target/gmf" type="Directory"/>
+<location path="${eclipse_home}" type="Profile"/>
+<location path="${eclipse_home}/dropins/cdt" type="Directory"/>
+<location path="${eclipse_home}/dropins/gef" type="Directory"/>
+</locations>
+<environment>
+<nl>en_US</nl>
+</environment>
+<launcherArgs>
+<vmArgs>-Dosgi.requiredJavaVersion=1.5 -XX:MaxPermSize=256m -Xms40m -Xmx512m</vmArgs>
+</launcherArgs>
+</target>
