@@ -1,4 +1,4 @@
-<project default="package">
+<project default="omnetpp">
 	<property environment="env" />
 	<property file="build.properties" />
 
@@ -84,10 +84,11 @@
 		<!-- Check that we have a deltapack -->
 		<available property="haveDeltaPack" file="${deltapack}" />
 		<fail unless="haveDeltaPack" message="The deltapack is required to build this product.  Please edit buildProduct.xml or set the &quot;deltapack&quot; property." />
-<!--
-		<available property="haveCdt" file="${cdt}" />
-		<fail unless="haveCdt" message="The CDT master archive is required to build this product.  Please edit build.xml or set the &quot;cdt&quot; path property." />
--->
+		<available property="haveEmf" file="${emf}" />
+		<fail unless="haveEmf" message="EMF runtime is required in the ${eclipse_home}/target directory." />
+		<available property="haveImageexport" file="${imageexport}" />
+		<fail unless="haveImageexport" message="Image export feature required in the ${eclipse_home}/target directory." />
+
 		<java classname="org.eclipse.equinox.launcher.Main" fork="true" failonerror="true">
 			<arg value="-application" />
 			<arg value="org.eclipse.ant.core.antRunner" />

@@ -3,13 +3,14 @@
 
 <target name="omnetpp">
 <locations>
-<location path="${eclipse_home}/target/imageexport" type="Directory"/>
 <location path="${eclipse_home}/target/deltapack" type="Directory"/>
 <location path="${eclipse_home}/target/emf" type="Directory"/>
-<location path="${eclipse_home}/target/gmf" type="Directory"/>
 <location path="${eclipse_home}" type="Profile"/>
 <location path="${eclipse_home}/dropins/cdt" type="Directory"/>
 <location path="${eclipse_home}/dropins/gef" type="Directory"/>
+<location path="${eclipse_home}/dropins/git" type="Directory"/>
+<location path="${eclipse_home}/dropins/svn" type="Directory"/>
+<location path="${eclipse_home}/target/imageexport" type="Directory"/>
 </locations>
 <environment>
 <nl>en_US</nl>
