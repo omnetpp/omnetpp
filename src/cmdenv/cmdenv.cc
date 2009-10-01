@@ -153,7 +153,7 @@ void Cmdenv::readPerRunOptions()
     opt_perfdisplay = cfg->getAsBool(CFGID_PERFORMANCE_DISPLAY);
 }
 
-void Cmdenv::askParameter(cPar *par)
+void Cmdenv::askParameter(cPar *par, bool unassigned)
 {
     bool success = false;
     while (!success)
@@ -169,7 +169,7 @@ void Cmdenv::askParameter(cPar *par)
         else
             // DO NOT change the "Enter parameter" string. The IDE launcher plugin matches
             // against this string for detecting user input
-            reply = this->gets((std::string("Enter parameter `")+par->getFullPath()+"':").c_str(), par->str().c_str());
+            reply = this->gets((std::string("Enter parameter `")+par->getFullPath()+"' ("+(unassigned?"unassigned":"ask")+"):").c_str(), par->str().c_str());
 
         try
         {
