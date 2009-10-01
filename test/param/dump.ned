@@ -1,0 +1,4 @@
+package param;
+
+simple Dump {
+}

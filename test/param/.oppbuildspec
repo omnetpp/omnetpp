@@ -1,0 +1,3 @@
+<buildspec version="4.0">
+<dir makemake-options="--deep --meta:recurse --meta:auto-include-path --meta:export-library --meta:use-exported-libs" path="." type="makemake"/>
+</buildspec>
