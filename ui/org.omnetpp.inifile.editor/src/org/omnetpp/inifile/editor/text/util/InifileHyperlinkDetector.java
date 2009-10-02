@@ -14,15 +14,12 @@ import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.hyperlink.IHyperlink;
 import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
-import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.editors.InifileEditorData;
 import org.omnetpp.inifile.editor.model.ConfigRegistry;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
-import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.inifile.editor.model.ParamResolution;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer.KeyType;
-import org.omnetpp.ned.core.NEDResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.core.ui.misc.NEDHyperlink;
 import org.omnetpp.ned.model.INEDElement;
@@ -73,7 +70,7 @@ public class InifileHyperlinkDetector implements IHyperlinkDetector {
 
 				// NED element to go to
 				ParamResolution[] resList = analyzer.getParamResolutionsForKey(section, key);
-				INEDElement node = resList.length==0 ? null : resList[0].paramValueNode!=null ? resList[0].paramValueNode : resList[0].paramDeclNode;
+				INEDElement node = resList.length==0 ? null : resList[0].paramAssignment!=null ? resList[0].paramAssignment : resList[0].paramDeclaration;
 				if (node != null) {
 					// add hyperlink on the key
 					IRegion keyRegion = getKeyRegion(textDoc, lineNumber);

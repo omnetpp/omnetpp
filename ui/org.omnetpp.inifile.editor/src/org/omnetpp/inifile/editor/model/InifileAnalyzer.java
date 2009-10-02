@@ -19,12 +19,14 @@ import static org.omnetpp.ned.model.NEDElementConstants.NED_PARTYPE_INT;
 import static org.omnetpp.ned.model.NEDElementConstants.NED_PARTYPE_STRING;
 import static org.omnetpp.ned.model.NEDElementConstants.NED_PARTYPE_XML;
 
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.Stack;
 import java.util.StringTokenizer;
@@ -41,9 +43,12 @@ import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.collections.ProductIterator;
 import org.omnetpp.common.engine.Common;
+import org.omnetpp.common.engine.PatternMatcher;
 import org.omnetpp.common.engine.UnitConversion;
 import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
+import org.omnetpp.common.util.CollectionUtils;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.common.util.StringUtils.DictionaryComparator;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.model.IInifileDocument.LineInfo;
 import org.omnetpp.inifile.editor.model.ParamResolution.ParamResolutionType;
@@ -694,8 +699,8 @@ public class InifileAnalyzer {
 		    int paramType = -1;
 		    for (ParamResolution res : resList) {
 		        if (paramType == -1)
-		            paramType = res.paramDeclNode.getType();
-		        else if (paramType != res.paramDeclNode.getType()) {
+		            paramType = res.paramDeclaration.getType();
+		        else if (paramType != res.paramDeclaration.getType()) {
 		            addError(section, key, "Entry matches parameters of different data types");
 		            return;
 		        }
@@ -704,7 +709,7 @@ public class InifileAnalyzer {
 		    // check units are consistent with each other
 		    String paramUnit = null;
 		    for (ParamResolution res : resList) {
-		        PropertyElementEx unitProperty = res.paramDeclNode.getLocalProperties().get("unit");
+		        PropertyElementEx unitProperty = res.paramDeclaration.getLocalProperties().get("unit");
 		        String unit = unitProperty==null ? "" : StringUtils.nullToEmpty(unitProperty.getSimpleValue());
 		        if (paramUnit == null)
 		            paramUnit = unit;
@@ -739,7 +744,7 @@ public class InifileAnalyzer {
 		        // provided we could figure out the value's data type, check it's the same as parameter's data type
 		        int tmpParamType = paramType==NED_PARTYPE_INT ? NED_PARTYPE_DOUBLE : paramType; // replace "int" with "double"
 		        if (valueType != -1 && valueType != tmpParamType) {
-		            String typeName = resList[0].paramDeclNode.getAttribute(ParamElement.ATT_TYPE);
+		            String typeName = resList[0].paramDeclaration.getAttribute(ParamElement.ATT_TYPE);
 		            addError(section, key, "Wrong data type: "+typeName+" expected");
 		        }
 
@@ -903,7 +908,7 @@ public class InifileAnalyzer {
 		}
 	}
 
-	protected List<ParamResolution> collectParameters(final String activeSection) {
+    protected List<ParamResolution> collectParameters(final String activeSection) {
 	    // resolve section chain and network
 		INEDTypeResolver res = NEDResourcesPlugin.getNEDResources();
 		final String[] sectionChain = InifileUtils.resolveSectionChain(doc, activeSection);
@@ -921,6 +926,63 @@ public class InifileAnalyzer {
 		IProject contextProject = doc.getDocumentFile().getProject();
 		NEDTreeTraversal treeTraversal = new NEDTreeTraversal(res, createParamCollectingNedTreeVisitor(list, res, sectionChain, doc));
 		treeTraversal.traverse(network.getFullyQualifiedName(), contextProject);
+
+		// TODO: FIXME: KLUDGE: HACK: print parameter values based on param resolution
+		// TODO: move this to test/param/?.java, but how do we load it? (copy-paste?)
+        if (false) {
+    		try {
+    		    int index = 0;
+    	        Properties properties = new Properties();
+    	        properties.load(new FileInputStream("C:\\Workspace\\Repository\\omnetpp\\test\\param\\param.out"));
+
+    	        for (Object key : CollectionUtils.toSorted((Set<String>)(Set)properties.keySet(), new DictionaryComparator())) {
+                    String paramName = (String)key;
+                    String runtimeParamValue = properties.getProperty(paramName);
+
+                    for (ParamResolution paramResolution : list) {
+                        String paramPattern = paramResolution.key != null ? paramResolution.key : paramResolution.fullPath + "." + paramResolution.paramDeclaration.getName();
+                        PatternMatcher m = new PatternMatcher(paramPattern, true, true, true);
+
+                        if (m.matches(paramName)) {
+                            String ideParamValue = null;
+
+                            switch (paramResolution.type) {
+                                case UNASSIGNED: 
+                                case INI_ASK:
+                                    ideParamValue = "\"" + index + "\"";
+                                    index++;
+                                    break;
+                                case NED:
+                                case INI_DEFAULT:
+                                case IMPLICITDEFAULT:
+                                    ideParamValue = paramResolution.paramAssignment.getValue();
+                                    break;
+                                case INI:
+                                case INI_OVERRIDE:
+                                case INI_NEDDEFAULT:
+                                    ideParamValue = doc.getValue(paramResolution.section, paramResolution.key);
+                                    break;
+                                default: 
+                                    throw new RuntimeException();
+                            }
+
+                            // System.out.println(paramName + " = " + ideParamValue);
+
+                            if (!runtimeParamValue.equals(ideParamValue))
+                                System.out.println("*** Name: " + paramName + ", runtime value: " + runtimeParamValue + ", ide value: " + ideParamValue);
+                            else
+                                System.out.println("Name: " + paramName + ", value: " + runtimeParamValue);
+
+                            break;
+                        }
+                    }
+                }
+            }
+            catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+		
 		return list;
 	}
 
@@ -947,10 +1009,10 @@ public class InifileAnalyzer {
 		return list;
 	}
 
-    protected static IModuleTreeVisitor createParamCollectingNedTreeVisitor(final List<ParamResolution> list, INEDTypeResolver res, final String[] sectionChain, final IInifileDocument doc) {
+    protected static IModuleTreeVisitor createParamCollectingNedTreeVisitor(final List<ParamResolution> resultList, INEDTypeResolver res, final String[] sectionChain, final IInifileDocument doc) {
         return new ParamUtil.RecursiveParamDeclarationVisitor() {
             protected boolean visitParamDeclaration(String fullPath, Stack<INEDTypeInfo> typeInfoPath, Stack<ISubmoduleOrConnection> elementPath, ParamElementEx paramDeclaration) {
-                resolveParameter(list, fullPath, typeInfoPath, elementPath, sectionChain, doc, paramDeclaration);
+                resolveParameter(resultList, fullPath, typeInfoPath, elementPath, sectionChain, doc, paramDeclaration);
                 return true;
             }
 
@@ -966,8 +1028,8 @@ public class InifileAnalyzer {
                 // look up parameter value (note: we cannot use resolveLikeParam() here yet)
                 String moduleFullPath = StringUtils.join(fullPathStack, ".");
                 ParamResolution res = null;
-                for (ParamResolution r : list)
-                    if (r.paramDeclNode.getName().equals(likeParamName) && r.fullPath.equals(moduleFullPath))
+                for (ParamResolution r : resultList)
+                    if (r.paramDeclaration.getName().equals(likeParamName) && r.fullPath.equals(moduleFullPath))
                         {res = r; break;}
                 if (res == null)
                     return null; // likely no such parameter
@@ -1009,52 +1071,78 @@ public class InifileAnalyzer {
 	 */
 	protected static void resolveParameter(List<ParamResolution> resultList, String fullPath, Vector<INEDTypeInfo> typeInfoPath, Vector<ISubmoduleOrConnection> elementPath, String[] sectionChain, IInifileDocument doc, ParamElementEx paramDeclaration)
 	{
-        String activeSection = doc == null ? null : sectionChain[0];
-        ParamElementEx paramAssignment = ParamUtil.findParamAssignmentForParamDeclaration(typeInfoPath, elementPath, paramDeclaration);
-
-        // value in the NED file
-        String nedValue = paramAssignment == null ? null : paramAssignment.getValue();
-        boolean isNedDefault = paramAssignment == null ? false : paramAssignment.getIsDefault();
-
-        if (doc == null || (nedValue != null && !isNedDefault)) {
-            ParamResolutionType type = nedValue == null ? ParamResolutionType.UNASSIGNED : isNedDefault ? ParamResolutionType.IMPLICITDEFAULT : ParamResolutionType.NED;
-            resultList.add(new ParamResolution(fullPath, elementPath, paramDeclaration, paramAssignment, type, activeSection, null, null));
-            return;
+	    // look up parameter assignments in NED
+        ArrayList<ParamElementEx> paramAssignments = ParamUtil.findParamAssignmentsForParamDeclaration(typeInfoPath, elementPath, paramDeclaration);
+        boolean hasNEDUnassigned = false;
+        boolean hasNEDTotalAssignment = false;
+        boolean hasNEDDefaultAssignment = false;
+        for (ParamElementEx paramAssignment : paramAssignments) {
+            hasNEDUnassigned |= StringUtils.isEmpty(paramAssignment.getValue());
+            hasNEDTotalAssignment |= ParamUtil.isTotalParamAssignment(paramAssignment);
+            hasNEDDefaultAssignment |= paramAssignment.getIsDefault();
         }
-        
-	    // look up the parameter value in the inifile
-	    String paramFullPath = fullPath + "." + paramDeclaration.getName();
-	    List<SectionKey> sectionKeys = InifileUtils.lookupParameter(paramFullPath, isNedDefault, sectionChain, doc);
 
-	    if (sectionKeys.isEmpty()) {
-	        // inifile contains nothing useful
-	        ParamResolutionType type = isNedDefault ? ParamResolutionType.IMPLICITDEFAULT : ParamResolutionType.UNASSIGNED;
-	        resultList.add(new ParamResolution(fullPath, elementPath, paramDeclaration, paramAssignment, type, activeSection, null, null));
-	        return;
-	    }
+        // look up parameter assignments in INI
+        String activeSection = null;
+        List<SectionKey> sectionKeys = null;
+        boolean hasINITotalAssignment = false;
 
-	    // add a ParamResolution for each matching line in the inifile
-	    for (SectionKey sectionKey : sectionKeys) {
-	        String iniSection = sectionKey.section;
-	        String iniKey = sectionKey.key;
-	        String iniValue = doc.getValue(iniSection, iniKey);
-	        Assert.isTrue(iniValue != null); // must exist
+        if (doc != null) {
+            activeSection = sectionChain[0];
+            sectionKeys = InifileUtils.lookupParameter(fullPath + "." + paramDeclaration.getName(), hasNEDDefaultAssignment, sectionChain, doc);
+            for (SectionKey sectionKey : sectionKeys)
+                hasINITotalAssignment |= ParamUtil.isTotalParamAssignment(sectionKey.key);
+        }
 
-	        // so, find out how the parameter's going to be assigned...
-	        ParamResolutionType type;
-            if (iniValue.equals(ConfigRegistry.DEFAULT))
-                type = ParamResolutionType.INI_DEFAULT;
-            else if (iniValue.equals(ConfigRegistry.ASK))
-                type = ParamResolutionType.INI_ASK;
-            else if (nedValue==null)
-	            type = ParamResolutionType.INI;
-	        else if (nedValue.equals(iniValue))
-	            type = ParamResolutionType.INI_NEDDEFAULT;
-	        else
-	            type = ParamResolutionType.INI_OVERRIDE;
+        // process parameter assignments from NED
+        ParamElementEx paramAssignment = null;
+        for (int i = 0; i < paramAssignments.size(); i++) {
+            paramAssignment = paramAssignments.get(i);
 
-            resultList.add(new ParamResolution(fullPath, elementPath, paramDeclaration, paramAssignment, type, activeSection, iniSection, iniKey));
-	    }
+            if (StringUtils.isEmpty(paramAssignment.getValue())) {
+                if (hasINITotalAssignment)
+                    continue;
+                else
+                    resultList.add(new ParamResolution(fullPath, elementPath, paramDeclaration, null, ParamResolutionType.UNASSIGNED, activeSection, null, null));
+            }
+            else if (!paramAssignment.getIsDefault()) {
+                resultList.add(new ParamResolution(fullPath, elementPath, paramDeclaration, paramAssignment, ParamResolutionType.NED, activeSection, null, null));
+
+                if (ParamUtil.isTotalParamAssignment(paramAssignment))
+                    return;
+            }
+            else if (!hasINITotalAssignment)
+                resultList.add(new ParamResolution(fullPath, elementPath, paramDeclaration, paramAssignment, ParamResolutionType.IMPLICITDEFAULT, activeSection, null, null));
+        }
+
+        // process parameter assignments from INI
+        if (doc != null) {
+    	    for (SectionKey sectionKey : sectionKeys) {
+    	        String iniSection = sectionKey.section;
+    	        String iniKey = sectionKey.key;
+    	        String iniValue = doc.getValue(iniSection, iniKey);
+    	        Assert.isTrue(iniValue != null); // must exist
+
+    	        // so, find out how the parameter's going to be assigned...
+    	        ParamResolutionType type;
+                if (iniValue.equals(ConfigRegistry.DEFAULT)) {
+                    if (!hasNEDDefaultAssignment)
+                        continue;
+                    else
+                        type = ParamResolutionType.INI_DEFAULT;
+                }
+                else if (iniValue.equals(ConfigRegistry.ASK))
+                    type = ParamResolutionType.INI_ASK;
+                else if (paramAssignments.size() == 1 && hasNEDUnassigned)
+    	            type = ParamResolutionType.INI;
+    	        else if (paramAssignments.size() == 1 && paramAssignments.get(0).getValue().equals(iniValue))
+    	            type = ParamResolutionType.INI_NEDDEFAULT;
+    	        else
+    	            type = ParamResolutionType.INI_OVERRIDE;
+
+                resultList.add(new ParamResolution(fullPath, elementPath, paramDeclaration, paramAssignment, type, activeSection, iniSection, iniKey));
+    	    }
+        }
 	}
 
 	public boolean containsSectionCycles() {
@@ -1147,7 +1235,7 @@ public class InifileAnalyzer {
 
 			// Note: linear search -- can be made more efficient with some lookup table if needed
 			for (ParamResolution par : pars)
-				if (par.paramDeclNode.getName().equals(paramName) && par.fullPath.equals(moduleFullPath))
+				if (par.paramDeclaration.getName().equals(paramName) && par.fullPath.equals(moduleFullPath))
 					return par;
 			return null;
 		}
@@ -1194,7 +1282,7 @@ public class InifileAnalyzer {
 			case UNASSIGNED: case INI_ASK:
 				return null;
 			case NED: case INI_DEFAULT: case IMPLICITDEFAULT:
-				return res.paramValueNode.getValue();
+				return res.paramAssignment.getValue();
 			case INI: case INI_OVERRIDE: case INI_NEDDEFAULT:
 				return doc.getValue(res.section, res.key);
 			default: throw new IllegalArgumentException("invalid param resolution type: "+res.type);
@@ -1203,20 +1291,22 @@ public class InifileAnalyzer {
 
 	public static String getParamRemark(ParamResolution res, IInifileDocument doc) {
 	    String remark;
-	    String nedDefaultIfPresent = res.paramValueNode != null ? " (NED default: "+res.paramValueNode.getValue()+")" : "";
+	    String nedDefaultIfPresent = res.paramAssignment != null ? " (NED default: " + res.paramAssignment.getValue() + ")" : "";
 		switch (res.type) {
 		    case UNASSIGNED: remark = "unassigned" + nedDefaultIfPresent; break;
 		    case NED: remark = "NED"; break;
 		    case INI: remark = "ini"; break;
 		    case INI_ASK: remark = "ask" + nedDefaultIfPresent; break;
 		    case INI_DEFAULT: remark = "NED default applied"; break;
-		    case INI_OVERRIDE: remark = "ini (overrides NED default: "+res.paramValueNode.getValue()+")"; break;
+		    case INI_OVERRIDE: remark = "ini (overrides NED default: " + res.paramAssignment.getValue() + ")"; break;
 		    case INI_NEDDEFAULT: remark = "ini (sets same value as NED default)"; break;
 		    case IMPLICITDEFAULT: remark = "NED default applied implicitly"; break;
 		    default: throw new IllegalStateException("invalid param resolution type: "+res.type);
 		}
 		if (res.key!=null)
-			remark += "; see ["+res.section+"] / " + res.key + "=" + doc.getValue(res.section, res.key);
+			remark += "; see [" + res.section + "] / " + res.key + "=" + doc.getValue(res.section, res.key);
+		else if (res.paramAssignment != null && res.paramAssignment.getIsPattern())
+		    remark += "; see (" + res.paramAssignment.getEnclosingTypeElement().getName() + ") / " + res.paramAssignment.getNEDSource();
 		return remark;
 	}
 

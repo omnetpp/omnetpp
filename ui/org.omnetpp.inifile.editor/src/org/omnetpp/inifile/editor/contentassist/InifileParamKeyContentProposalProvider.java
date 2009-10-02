@@ -62,7 +62,7 @@ public class InifileParamKeyContentProposalProvider extends ContentProposalProvi
 			Set<String> fullPaths = new HashSet<String>(); 
 			for (ParamResolution res : resList)
 				if (res.type != ParamResolution.ParamResolutionType.NED)
-					fullPaths.add(res.fullPath + "." +res.paramDeclNode.getName());
+					fullPaths.add(res.fullPath + "." +res.paramDeclaration.getName());
 
 			Set<String> moduleProposals = new HashSet<String>();
 			Set<String> paramProposals = new HashSet<String>();

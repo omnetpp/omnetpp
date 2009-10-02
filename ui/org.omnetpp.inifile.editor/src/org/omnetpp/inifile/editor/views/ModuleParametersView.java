@@ -14,7 +14,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.WeakHashMap;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
@@ -52,6 +51,7 @@ import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.ui.TableLabelProvider;
 import org.omnetpp.common.util.ActionExt;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.IGotoInifile;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
@@ -121,7 +121,7 @@ public class ModuleParametersView extends AbstractModuleView {
 				if (element instanceof ParamResolution) {
 					ParamResolution res = (ParamResolution) element;
 					switch (columnIndex) {
-						case 0: return res.fullPath+"."+res.paramDeclNode.getName();
+						case 0: return res.fullPath + "." + res.paramDeclaration.getName();
 						case 1: return InifileAnalyzer.getParamValue(res, inifileDocument);
 						case 2: return InifileAnalyzer.getParamRemark(res, inifileDocument);
 					}
@@ -153,7 +153,7 @@ public class ModuleParametersView extends AbstractModuleView {
 						//XXX make sure "res" and inifile editor refer to the same IFile!!!
 						return InifileHoverUtils.getEntryHoverText(res.section, res.key, inifileDocument, inifileAnalyzer);
 					else 
-						return InifileHoverUtils.getParamHoverText(res.elementPath, res.paramDeclNode, res.paramValueNode);
+						return InifileHoverUtils.getParamHoverText(res.elementPath, res.paramDeclaration, res.paramAssignment);
 				}
 				return null;
 			}
@@ -249,7 +249,7 @@ public class ModuleParametersView extends AbstractModuleView {
 					// experimental: disable "Open NED declaration" if it's the same as "Open NED value"
 					//return gotoDecl ? (res.paramDeclNode==res.paramValueNode ? null : res.paramDeclNode) : res.paramValueNode;
 					// experimental: disable "Open NED Value" if it's the same as the declaration
-					return gotoDecl ? res.paramDeclNode : (res.paramDeclNode==res.paramValueNode ? null : res.paramValueNode);
+					return gotoDecl ? res.paramDeclaration : (res.paramDeclaration == res.paramAssignment ? null : res.paramAssignment);
 				}
 				return null;
 			}
@@ -286,7 +286,7 @@ public class ModuleParametersView extends AbstractModuleView {
 	}
 
 	@SuppressWarnings("unchecked")
-	protected void sortTableInput(TableColumn column, int sortDirection) {
+	protected void sortTableInput(TableColumn column, final int sortDirection) {
 		Object[] input = (Object[]) tableViewer.getInput();
 
 		if (input != null) {
@@ -308,13 +308,9 @@ public class ModuleParametersView extends AbstractModuleView {
 					String label2 = labelProvider.getColumnText(o2, finalColumnNumber);
 					if (label1 == null) label1 = "";
 					if (label2 == null) label2 = "";
-					return label1.compareToIgnoreCase(label2);
+					return (sortDirection == SWT.DOWN ? -1 : 1) * StringUtils.dictionaryCompare(label1, label2);
 				}
 			});
-
-			// for decreasing order, reverse the array
-			if (sortDirection==SWT.DOWN)
-				ArrayUtils.reverse(input);
 
 			tableViewer.refresh();
 		}

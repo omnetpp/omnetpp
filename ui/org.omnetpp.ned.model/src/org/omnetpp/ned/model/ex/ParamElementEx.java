@@ -13,6 +13,7 @@ import java.util.Map;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.interfaces.IHasName;
+import org.omnetpp.ned.model.interfaces.IHasParameters;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.pojo.LiteralElement;
@@ -104,5 +105,9 @@ public class ParamElementEx extends ParamElement implements IHasName {
                     return literal.getValue();
             }
         }
+    }
+
+    public IHasParameters getOwner() {
+        return (IHasParameters)getParent().getParent();
     }
 }

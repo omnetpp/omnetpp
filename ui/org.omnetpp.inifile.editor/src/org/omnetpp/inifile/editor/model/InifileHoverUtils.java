@@ -103,7 +103,7 @@ public class InifileHoverUtils {
 			else {
 				text += "<br>\nThis section does not seem to assign the following NED parameters:\n<ul>";
 				for (ParamResolution res : resList)
-					text += " <li>" + res.fullPath + "." +res.paramDeclNode.getName() + "</li>\n";
+					text += " <li>" + res.fullPath + "." +res.paramDeclaration.getName() + "</li>\n";
 				text += "</ul>";
 			}
 		}
@@ -253,7 +253,7 @@ public class InifileHoverUtils {
                     // and for each moduleFullPath, the list of sections. So we collect it first:
                     Map<String,Set<String>> fullpathToSections = new LinkedHashMap<String, Set<String>>();
                     for (ParamResolution res : resList) {
-                        if (res.paramDeclNode == paramDeclNode) {
+                        if (res.paramDeclaration == paramDeclNode) {
                             if (!fullpathToSections.containsKey(res.fullPath))
                                 fullpathToSections.put(res.fullPath, new HashSet<String>());
                             fullpathToSections.get(res.fullPath).add(res.activeSection);
@@ -297,7 +297,7 @@ public class InifileHoverUtils {
             String sectionName = res.activeSection;
             if (!sectionParamDecls.containsKey(sectionName))
                 sectionParamDecls.put(sectionName, new HashSet<ParamElementEx>());
-            sectionParamDecls.get(sectionName).add(res.paramDeclNode);
+            sectionParamDecls.get(sectionName).add(res.paramDeclaration);
         }
 
         // Now: it is typical that the config key matches the same parameter declarations 
@@ -355,12 +355,12 @@ public class InifileHoverUtils {
 	/**
 	 * Generate tooltip for a NED parameter
 	 */
-	public static String getParamHoverText(ISubmoduleOrConnection[] elementPath, ParamElement paramDeclNode, ParamElement paramValueNode) {
-		String paramName = paramDeclNode.getName();
+	public static String getParamHoverText(ISubmoduleOrConnection[] elementPath, ParamElementEx paramDeclaration, ParamElementEx paramAssignment) {
+		String paramName = paramDeclaration.getName();
 
-		String paramType = paramDeclNode.getAttribute(ParamElement.ATT_TYPE);
-		String paramDeclaredOn = paramDeclNode.getSelfOrEnclosingTypeElement().getName();
-		String comment = StringUtils.makeBriefDocu(paramDeclNode.getComment(), 60);
+		String paramType = paramDeclaration.getAttribute(ParamElement.ATT_TYPE);
+		String paramDeclaredOn = paramDeclaration.getSelfOrEnclosingTypeElement().getName();
+		String comment = StringUtils.makeBriefDocu(paramDeclaration.getComment(), 60);
 		String optComment = comment==null ? "" : (" -- \"" + comment + "\"");
 
 		String text = ""; //TODO

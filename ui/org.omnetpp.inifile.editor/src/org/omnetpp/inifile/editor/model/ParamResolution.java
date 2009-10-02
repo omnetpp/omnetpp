@@ -28,18 +28,17 @@ public class ParamResolution {
 		IMPLICITDEFAULT, // NED default applied because there's no match in the ini file
 	}
 	
-	// moduleFullPath and param name (from paramDeclNode or paramValueNode) identify the NED parameter. 
-	// For vector submodules, moduleFullPath contains "[*]".
-	// submodulePath[] relates moduleFullPath to NEDElements. The network is submodulePath[1]'s
-	// parent CompoundModuleElement, or paramDeclNode's parent Compound/SimpleModuleElement if 
-	// submodulePath[] is empty. After that, the type of submodulePath[i] is the parent 
-	// Compound/SimpleModuleElement of the next pathModule (or finally, the paramDeclNode).
-	// submodulePath[0] may be null.
+	// fullPath and param name (from paramDeclaration or paramAssignment) identify the NED parameter. 
+	// For vector elementPath, fullPath contains "[*]".
+	// elementPath[] relates fullPath to NEDElements. The network is elementPath[1]'s
+	// parent CompoundModuleElement, or paramDeclaration's parent Compound/SimpleModuleElement if 
+	// elementPath[[] is empty. After that, the type of elementPath[[i] is the parent 
+	// Compound/SimpleModuleElement of the next pathModule (or finally, the paramDeclaration).
+	// elementPath[[0] may be null.
 	public String fullPath;
-	// FIXME: TODO: should copy, maybe use an array here?!
 	public ISubmoduleOrConnection[] elementPath;
-	public ParamElementEx paramDeclNode;  // node where param was declared; not null
-	public ParamElementEx paramValueNode;  // node where param gets assigned (may be a module or submodule param, or may be null)
+	public ParamElementEx paramDeclaration;  // node where param was declared; not null
+	public ParamElementEx paramAssignment;  // node where param gets assigned (may be a module or submodule param, or may be null)
 
 	// how the parameter value gets resolved: from NED, from inifile, unassigned, etc
 	public ParamResolutionType type;
@@ -54,13 +53,13 @@ public class ParamResolution {
 	public String key;
 	
 	// for convenience
-	public ParamResolution(String moduleFullPath, Vector<ISubmoduleOrConnection> elementPath, 
-			               ParamElementEx paramDeclNode, ParamElementEx paramValueNode, ParamResolutionType type, 
+	public ParamResolution(String fullPath, Vector<ISubmoduleOrConnection> elementPath, 
+			               ParamElementEx paramDeclaration, ParamElementEx paramAssignment, ParamResolutionType type, 
 			               String activeSection, String section, String key) {
-		this.fullPath = moduleFullPath;
+		this.fullPath = fullPath;
 		this.elementPath = elementPath.toArray(new ISubmoduleOrConnection[0]);
-		this.paramDeclNode = paramDeclNode;
-		this.paramValueNode = paramValueNode;
+		this.paramDeclaration = paramDeclaration;
+		this.paramAssignment = paramAssignment;
 		this.type = type;
 		this.activeSection = activeSection;
 		this.section = section;
@@ -97,17 +96,17 @@ public class ParamResolution {
 		}
 		else if (!fullPath.equals(other.fullPath))
 			return false;
-		if (paramDeclNode == null) {
-			if (other.paramDeclNode != null)
+		if (paramDeclaration == null) {
+			if (other.paramDeclaration != null)
 				return false;
 		}
-		else if (!paramDeclNode.equals(other.paramDeclNode))
+		else if (!paramDeclaration.equals(other.paramDeclaration))
 			return false;
-		if (paramValueNode == null) {
-			if (other.paramValueNode != null)
+		if (paramAssignment == null) {
+			if (other.paramAssignment != null)
 				return false;
 		}
-		else if (!paramValueNode.equals(other.paramValueNode))
+		else if (!paramAssignment.equals(other.paramAssignment))
 			return false;
 		if (section == null) {
 			if (other.section != null)

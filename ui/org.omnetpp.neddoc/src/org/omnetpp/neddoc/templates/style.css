@@ -23,3 +23,7 @@ FIXME.paramtable { border:2px ridge; border-collapse:collapse;}
 .src-comment { font-style:italic; color:#404040 }
 .src-string  { color:#006000 }
 .src-number  { color:#0000c0 }
+.param-value-unassigned { font-style:italic; }
+.param-value-non-default { color: lightgray; }
+.param-fixed { font-weight:bold; }
+.odd { background-color: lightyellow; }

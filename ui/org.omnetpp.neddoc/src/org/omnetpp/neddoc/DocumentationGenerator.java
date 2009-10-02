@@ -106,6 +106,8 @@ import org.omnetpp.ned.model.ex.PropertyElementEx;
 import org.omnetpp.ned.model.ex.SimpleModuleElementEx;
 import org.omnetpp.ned.model.ex.StructElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
+import org.omnetpp.ned.model.interfaces.IHasName;
+import org.omnetpp.ned.model.interfaces.IHasParameters;
 import org.omnetpp.ned.model.interfaces.IInterfaceTypeElement;
 import org.omnetpp.ned.model.interfaces.IModuleTypeElement;
 import org.omnetpp.ned.model.interfaces.IMsgTypeElement;
@@ -1183,7 +1185,7 @@ public class DocumentationGenerator {
                                 generateGatesTable((IModuleTypeElement)nedTypeElement);
 
                             if (typeElement instanceof CompoundModuleElementEx)
-                                generateUnassignedParametersTable((CompoundModuleElementEx)nedTypeElement);
+                                generateAssignableParametersTable((CompoundModuleElementEx)nedTypeElement);
                         }
                         else if (isMsgTypeElement) {
                             IMsgTypeElement msgTypeElement = (IMsgTypeElement)typeElement;
@@ -1360,48 +1362,96 @@ public class DocumentationGenerator {
         }
     }
 
-    protected void generateUnassignedParametersTable(final INedTypeElement typeElement) throws IOException {
+    protected void generateAssignableParametersTable(final INedTypeElement typeElement) throws IOException {
         final boolean[] first = new boolean[] {true};
+        final boolean[] even = new boolean[] {false};
 
         ParamUtil.mapParamDeclarationsRecursively(typeElement.getNEDTypeInfo(), new RecursiveParamDeclarationVisitor() {
             @Override
-            protected boolean visitParamDeclaration(String fullPath, Stack<INEDTypeInfo> moduleTypePath, Stack<ISubmoduleOrConnection> elementPath, ParamElementEx paramDeclaration) {
+            protected boolean visitParamDeclaration(String fullPath, Stack<INEDTypeInfo> typePath, Stack<ISubmoduleOrConnection> elementPath, ParamElementEx paramDeclaration) {
                 try {
-                    if (moduleTypePath.size() > 1) {
-                        ParamElementEx paramAssignment = ParamUtil.findParamAssignmentForParamDeclaration(moduleTypePath, elementPath, paramDeclaration);
-    
-                        if (paramAssignment == null || paramAssignment.getIsDefault()) {
-                            if (first[0]) {
-                                out("<h3 class=\"subtitle\">Unassigned submodule parameters:</h3>\r\n" +
-                                    "<table class=\"paramtable\">\r\n" +
-                                    "   <tr>\r\n" +
-                                    "      <th>Name</th>\r\n" +
-                                    "      <th>Type</th>\r\n" +
-                                    "      <th>Default value</th>\r\n" +
-                                    "      <th>Description</th>\r\n" +
-                                    "   </tr>\r\n");
-                                first[0] = false;
+                    if (typePath.size() > 1) {
+                        ArrayList<ParamElementEx> paramAssignments = ParamUtil.findParamAssignmentsForParamDeclaration(typePath, elementPath, paramDeclaration);
+                        
+                        for (ParamElementEx paramAssignment : paramAssignments)
+                            if (!paramAssignment.getIsDefault() && ParamUtil.isTotalParamAssignment(paramAssignment) && !StringUtils.isEmpty(paramAssignment.getValue()))
+                                return true;
+
+                        if (first[0]) {
+                            out("<h3 class=\"subtitle\">Assignable parameters:</h3>\r\n" +
+                                "<table class=\"paramtable\">\r\n" +
+                                "   <tr>\r\n" +
+                                "      <th>Name</th>\r\n" +
+                                "      <th>Type</th>\r\n" +
+                                "      <th>Default value</th>\r\n" +
+                                "      <th>Description</th>\r\n" +
+                                "   </tr>\r\n");
+                            first[0] = false;
+                        }
+
+                        int rowCount = paramAssignments.size();
+                        if (rowCount > 1)
+                            rowCount++;
+
+                        for (int i = 0; i < rowCount; i++) {
+                            out("<tr class=\"" + (even[0] ? "even" : "odd") + "\">\r\n");
+
+                            if (i == 0) {
+                                out("<td>");
+                                String[] elements = fullPath.split("\\.");
+                                for (int j = 1; j < elements.length; j++)
+                                    out("<a href=\"" + getOutputFileName(typePath.get(j).getNEDElement()) + "\">" + elements[j] + "</a>.");
+                                    
+                                out(paramDeclaration.getName() + "</td>\r\n" +
+                                    "<td width=\"100\">\r\n" +
+                                    "   <i>" + getParamTypeAsString(paramDeclaration) + "</i>\r\n" +
+                                    "</td>\r\n");
                             }
-    
-                            out("<tr>\r\n" +
-                                "   <td>");
-    
-                            String[] elements = fullPath.split("\\.");
-                            for (int i = 1; i < elements.length; i++)
-                                out("<a href=\"" + getOutputFileName(moduleTypePath.get(i).getNEDElement()) + "\">" + elements[i] + "</a>.");
-                                
-                            out(paramDeclaration.getName() + "</td>\r\n" +
-                                "   <td width=\"100\">\r\n" +
-                                "      <i>" + getParamTypeAsString(paramDeclaration) + "</i>\r\n" +
-                                "   </td>\r\n" +
-                                "   <td width=\"120\">" + (paramAssignment == null ? "" : paramAssignment.getValue()) + "</td>\r\n" +
-                                "   <td>");
-    
-                            generateTableComment(paramDeclaration.getComment());
-                            
-                            out("   </td>\r\n" +
+                            else {
+                                out("<td colspan=\"2\">");
+                            }
+
+                            ParamElementEx paramAssignment = rowCount == 1 ? paramAssignments.get(i) : i == 0 ? null : paramAssignments.get(i - 1);
+
+                            if (paramAssignment != null) {
+                            	String value = paramAssignment.getValue();
+                            	String cssClass = StringUtils.isEmpty(value) ? "param-value-unassigned" : paramAssignment.getIsDefault() ? "param-value-default" : "param-value-non-default";
+
+                            	out("<td width=\"120\">");
+                           		out("<span class=\"" + cssClass + "\">" + (StringUtils.isEmpty(value) ? "unassigned" : value) + "</span>");
+                           		out("</td>\r\n");
+                            }
+                            else
+                                out("<td/>");
+
+                            out("<td>");
+
+                            if (i == 0)
+                                generateTableComment(paramDeclaration.getComment());
+                            else {
+                                out("for ");
+
+                                String fullPathWithName = fullPath + "." + paramDeclaration.getName();
+                                String name = paramAssignment.getName();
+                                if (fullPathWithName.endsWith(name))
+                                    out(fullPathWithName.substring(fullPathWithName.indexOf('.') + 1, fullPathWithName.length() - name.length()));
+                                out(name);
+
+                                out(" assigned in ");
+                                if (paramAssignment == paramDeclaration)
+                                    out("declaring ");
+                                IHasParameters owner = paramAssignment.getOwner();
+                                out(owner.getReadableTagName() + " " + ((IHasName)owner).getName());
+
+                                if (!StringUtils.isEmpty(paramAssignment.getValue()) && !paramAssignment.getIsDefault())
+                                    out("<span class=\"param-fixed\"> (fix value)</span>");
+                            }
+
+                            out("</td>\r\n" +
                                 "</tr>\r\n");
                         }
+                        
+                        even[0] = !even[0];
                     }
                 }
                 catch (IOException e) {

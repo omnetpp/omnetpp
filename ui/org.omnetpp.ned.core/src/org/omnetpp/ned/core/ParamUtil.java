@@ -1,5 +1,6 @@
 package org.omnetpp.ned.core;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
@@ -91,18 +92,26 @@ public class ParamUtil {
     }
 
     /**
-     * Finds the parameter assignment for the provided parameter declaration by walking up on the submodule path.
-     * Returns the first non default assignment, or the last default assignment, or null if there is no such assignment.
-     * The returned assignment is guaranteed to have a non empty value.
+     * Finds the parameter assignments for the provided parameter declaration by walking up on the element path.
+     * 
+     * For single parameters this function returns a list with either the first non default assignment, or the last default assignment,
+     * or the declaration if there is no such assignment.
+     * 
+     * For parameters under a submodule vector it returns the list of all matching assignments without considering
+     * the index arguments. The only exception is when a total parameter assignment is used that overrides all previous assignments.
+     * 
+     * The list of returned assignments is guaranteed to have a non empty value.
      */
-    // TODO: this function must be able to return multiple assignments for a single declaration
-    //       think of a declaration such as int p[100] and assignments such as p[5] = 5; p[10..20] = 6;
-    public static ParamElementEx findParamAssignmentForParamDeclaration(Vector<INEDTypeInfo> typeInfoPath, Vector<ISubmoduleOrConnection> elementPath, ParamElementEx paramDeclaration) {
-        ParamElementEx paramAssignment = null;
+    public static ArrayList<ParamElementEx> findParamAssignmentsForParamDeclaration(Vector<INEDTypeInfo> typeInfoPath, Vector<ISubmoduleOrConnection> elementPath, ParamElementEx paramDeclaration) {
+        ArrayList<ParamElementEx> foundParamAssignments = new ArrayList<ParamElementEx>();
         String paramName = paramDeclaration.getName();
         String paramRelativePath = paramName;
 
-        // walk up the submodule path starting from the end
+	    // always add the parameter declaration, it will either be overwritten with a total assignment or extended with partial assignments 
+        if (collectParamAssignments(foundParamAssignments, paramDeclaration, true))
+        	return foundParamAssignments;
+
+        // walk up the submodule path starting from the end (i.e. from the deepest submodule)
         for (int i = elementPath.size() - 1; i >= 0; i--) {
             INEDTypeInfo typeInfo = typeInfoPath.get(i);
             ISubmoduleOrConnection element = elementPath.get(i);
@@ -121,25 +130,40 @@ public class ParamUtil {
             // handle name patterns
             for (String name : paramAssignments.keySet()) {
                 if (matchesPattern(name, paramRelativePath)) {
-                    ParamElementEx value = paramAssignments.get(name);
-                    
-                    if (!StringUtils.isEmpty(value.getValue())) {
-                        paramAssignment = value;
-                        break;
-                    }
+                    ParamElementEx paramAssignment = paramAssignments.get(name);
+
+                    if (collectParamAssignments(foundParamAssignments, paramAssignment, false))
+                    	return foundParamAssignments;
                 }
             }
-
-            if (paramAssignment != null && !paramAssignment.getIsDefault())
-                return paramAssignment;
 
             // extend paramRelativePath
             String fullName = element == null ? typeInfo.getName() : getParamPathPart(element);
             paramRelativePath = fullName + "." + paramRelativePath;
         }
-        
-        return paramAssignment;
+
+        return foundParamAssignments;
     }
+
+	private static boolean collectParamAssignments(ArrayList<ParamElementEx> foundParamAssignments, ParamElementEx paramAssignment, boolean addEmptyValue) {
+	    boolean isEmpty = StringUtils.isEmpty(paramAssignment.getValue());
+
+	    if (addEmptyValue || !isEmpty) {
+    		if (!isTotalParamAssignment(paramAssignment))
+    			foundParamAssignments.add(0, paramAssignment);
+    		else {
+    	    	if (foundParamAssignments.size() != 0)
+    	    		foundParamAssignments.clear();
+    	    	
+    	    	foundParamAssignments.add(paramAssignment);
+    
+    	        if (!paramAssignment.getIsDefault() && !isEmpty)
+    	            return true;
+    		}
+	    }
+
+		return false;
+	}
 
     public static String getParamPathPart(ISubmoduleOrConnection element) {
         if (element instanceof ConnectionElementEx)
@@ -155,20 +179,20 @@ public class ParamUtil {
         }
     }
 
-    // TODO: move and factor with InifileUtils
-//    public static boolean matchesPattern(String pattern, String value) {
-//        if (PatternMatcher.containsWildcards(pattern)) {
-//            try {
-//                // TODO: cache matcher (see InifileUtils and factor out)
-//                return new PatternMatcher(pattern, true, true, true).matches(value);
-//            }
-//            catch (RuntimeException e) {
-//                return false;
-//            }
-//        }
-//        else
-//            return pattern.equals(value);
-//    }
+    public static boolean isTotalParamAssignment(ParamElementEx paramAssignment) {
+        return !paramAssignment.getIsPattern() || isTotalParamAssignment(paramAssignment.getName());
+    }
+
+    public static boolean isTotalParamAssignment(String pattern) {
+		for (int i = 0; i < pattern.length(); i++) {
+			char ch = pattern.charAt(i);
+
+			if (ch == '[' && i + 2 < pattern.length() && (pattern.charAt(i + 1) != '*' || pattern.charAt(i + 2) != ']'))
+				return false;
+		}
+
+		return true;
+    }
 
     public static abstract class RecursiveParamDeclarationVisitor implements IModuleTreeVisitor {
         protected Stack<ISubmoduleOrConnection> elementPath = new Stack<ISubmoduleOrConnection>();

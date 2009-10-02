@@ -254,7 +254,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 						//XXX make sure "res" and inifile editor refer to the same IFile!!!
 						return InifileHoverUtils.getEntryHoverText(res.section, res.key, inifileDocument, inifileAnalyzer);
 					else 
-						return InifileHoverUtils.getParamHoverText(res.elementPath, res.paramDeclNode, res.paramValueNode);
+						return InifileHoverUtils.getParamHoverText(res.elementPath, res.paramDeclaration, res.paramAssignment);
 				}
 				else {
 					//TODO produce some text
@@ -316,7 +316,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 					// experimental: disable "Open NED declaration" if it's the same as "Open NED value"
 					//return gotoDecl ? (res.paramDeclNode==res.paramValueNode ? null : res.paramDeclNode) : res.paramValueNode;
 					// experimental: disable "Open NED Value" if it's the same as the declaration
-					return gotoDecl ? res.paramDeclNode : (res.paramDeclNode==res.paramValueNode ? null : res.paramValueNode);
+					return gotoDecl ? res.paramDeclaration : (res.paramDeclaration==res.paramAssignment ? null : res.paramAssignment);
 				}
 				return null;
 			}
@@ -516,7 +516,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 	protected static String getLabelFor(ParamResolution res, IInifileDocument doc) {
 		String value = InifileAnalyzer.getParamValue(res, doc);
 		String remark = InifileAnalyzer.getParamRemark(res, doc);
-		return res.paramDeclNode.getName() + " = " + (value==null ? "" : value+" ") + "(" + remark + ")";
+		return res.paramDeclaration.getName() + " = " + (value==null ? "" : value+" ") + "(" + remark + ")";
 	}
 
 }

@@ -1,4 +1,4 @@
-# This program generates NED and INI files to test the parameter assignment fallback mechanism in the OMNeT++ IDE.
+# This program generates NED and INI files to test the param assignment fallback mechanism in the OMNeT++ IDE.
 
 open INI, ">omnetpp.ini";
 print INI "[General]\n";
@@ -6,24 +6,20 @@ print INI "network = Network\n";
 print INI "user-interface = Cmdenv\n";
 print INI "cmdenv-interactive = true\n\n";
 
-open NED, ">param.ned";
-print NED "package param;\n\n";
-print NED "module Param {\n";
-print NED "    parameters:\n";
-
-$paramIndex = 0;
+$singleParamIndex = 0;
+$vectorParamIndex = 0;
 
 foreach $submoduleCardinality ("single", "vector") {
-  @patternEnum = ($submoduleCardinality eq "single") ? ("") : ("[*]", "[0]", "[1]");
+  @patternEnum = $submoduleCardinality eq "single" ? ("") : ("[*]", "[0]", "[1]");
 
   foreach $iniKeyPattern (@patternEnum) {
     foreach $nedParamDeclarationValue ("", "default(\"NED declaration\")", "\"NED declaration\"") {
       foreach $nedSubmoduleParamAssignmentValue ("", "default(\"NED submodule\")", "\"NED submodule\"") {
-        foreach $nedModuleParamAssignmentPattern (@patternEnum) {
-          foreach $nedModuleParamAssignmentValue ("", "default(\"NED module\")", "\"NED module\"") {
+        foreach $nedModuleParamAssignmentValue ("", "default(\"NED module\")", "\"NED module\"") {
+          foreach $nedModuleParamAssignmentPattern ($nedModuleParamAssignmentValue eq "" ? ("") : @patternEnum) {
             foreach $iniValue ("", "default", "ask", "\"INI\"") {
 
-  $paramName = "p".$paramIndex++;
+  $paramName = $submoduleCardinality eq "single" ? "s".$singleParamIndex++ : "v".$vectorParamIndex++;
   $paramComment = $submoduleCardinality."_".$nedParamDeclarationValue."_".$nedSubmoduleParamAssignmentValue."_".$nedModuleParamAssignmentValue."_".$iniValue;
 
   # INI file
@@ -32,37 +28,48 @@ foreach $submoduleCardinality ("single", "vector") {
   }
 
   # NED declaration
-  print NED "\n";
-  print NED "        // <pre>\n";
-  print NED "        // submoduleCardinality             = ".$submoduleCardinality."\n";
-  print NED "        // nedParamDeclarationValue         = ".$nedParamDeclarationValue."\n";
-  print NED "        // nedSubmoduleParamAssignmentValue = ".$nedSubmoduleParamAssignmentValue."\n";
-  print NED "        // nedModuleParamAssignmentPattern  = ".$nedModuleParamAssignmentPattern."\n";
-  print NED "        // nedModuleParamAssignmentValue    = ".$nedModuleParamAssignmentValue."\n";
-  print NED "        // iniKeyPattern                    = ".$iniKeyPattern."\n";
-  print NED "        // iniValue                         = ".$iniValue."\n";
-  print NED "        // </pre>\n";
-  print NED "        string ".$paramName;
-  if ($nedParamDeclarationValue ne "") {
-    print NED " = ".$nedParamDeclarationValue;
+  $paramDeclarations = "\n";
+  $paramDeclarations .= "        // <pre>\n";
+  $paramDeclarations .= "        // nedParamDeclarationValue         = ".$nedParamDeclarationValue."\n";
+  $paramDeclarations .= "        // nedSubmoduleParamAssignmentValue = ".$nedSubmoduleParamAssignmentValue."\n";
+
+  if ($submoduleCardinality eq "vector") {
+    $paramDeclarations .= "        // nedModuleParamAssignmentPattern  = ".$nedModuleParamAssignmentPattern."\n";
   }
-  print NED ";\n";
+
+  $paramDeclarations .= "        // nedModuleParamAssignmentValue    = ".$nedModuleParamAssignmentValue."\n";
+  $paramDeclarations .= "        // iniKeyPattern                    = ".$iniKeyPattern."\n";
+  $paramDeclarations .= "        // iniValue                         = ".$iniValue."</pre>\n";
+  $paramDeclarations .= "        string ".$paramName;
+
+  if ($nedParamDeclarationValue ne "") {
+    $paramDeclarations .= " = ".$nedParamDeclarationValue;
+  }
+
+  $paramDeclarations .= ";\n";
+
+  if ($submoduleCardinality eq "single") {
+    $singleParamDeclarations .= $paramDeclarations;
+  }
+  else {
+    $vectorParamDeclarations .= $paramDeclarations;
+  }
 
   # NED submodule
   if ($submoduleCardinality eq "single") {
     if ($nedSubmoduleParamAssignmentValue ne "") {
-      $singleSubmoduleParameterAssignments .= "                ".$paramName." = ".$nedSubmoduleParamAssignmentValue.";\n";
+      $singleSubmoduleParamAssignments .= "                ".$paramName." = ".$nedSubmoduleParamAssignmentValue.";\n";
     }
   }
   else {
     if ($nedSubmoduleParamAssignmentValue ne "") {
-      $vectorSubmoduleParameterAssignments .= "                ".$paramName." = ".$nedSubmoduleParamAssignmentValue.";\n";
+      $vectorSubmoduleParamAssignments .= "                ".$paramName." = ".$nedSubmoduleParamAssignmentValue.";\n";
     }
   }
 
   # NED module
   if ($nedModuleParamAssignmentValue ne "") {
-    $moduleParameterAssignments .= "        ".$submoduleCardinality.$nedModuleParamAssignmentPattern.".".$paramName." = ".$nedModuleParamAssignmentValue.";\n";
+    $moduleParamAssignments .= "        ".$submoduleCardinality.$nedModuleParamAssignmentPattern.".".$paramName." = ".$nedModuleParamAssignmentValue.";\n";
   }
             }
           }
@@ -72,21 +79,30 @@ foreach $submoduleCardinality ("single", "vector") {
   }
 }
 
+close INI;
+
+open NED, ">param.ned";
+print NED "package param;\n\n";
+print NED "module Single {\n";
+print NED "    parameters:\n";
+print NED $singleParamDeclarations;
+print NED "}\n\n";
+print NED "module Vector {\n";
+print NED "    parameters:\n";
+print NED $vectorParamDeclarations;
 print NED "}\n\n";
 print NED "network Network {\n";
 print NED "    parameters:\n";
-print NED $moduleParameterAssignments;
+print NED $moduleParamAssignments;
 print NED "    submodules:\n";
 print NED "        dump: Dump;\n";
-print NED "        single: Param {\n";
+print NED "        single: Single {\n";
 print NED "            parameters:\n";
-print NED $singleSubmoduleParameterAssignments;
+print NED $singleSubmoduleParamAssignments;
 print NED "        }\n";
-print NED "        vector[2]: Param {\n";
+print NED "        vector[2]: Vector {\n";
 print NED "            parameters:\n";
-print NED $vectorSubmoduleParameterAssignments;
+print NED $vectorSubmoduleParamAssignments;
 print NED "        }\n";
 print NED "}\n";
-
-close INI;
 close NED;
