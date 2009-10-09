@@ -30,14 +30,12 @@
 #define getpid _getpid
 #define getcwd _getcwd
 #define chdir  _chdir
-#define usleep(x) _sleep((x)/1000)
 #define mkdir(x,y) _mkdir(x)
 #define gcvt _gcvt
 #else
 
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <unistd.h>  // getpid(), getcwd(), etc
 
 #if HAVE_DLOPEN
 #include <dlfcn.h>
@@ -49,9 +47,12 @@
 #include <stdexcept>
 
 #ifdef _MSC_VER
+#define usleep(x) _sleep((x)/1000)
 #define strcasecmp _stricmp
 #define strncasecmp _strnicmp
 #define unlink _unlink
+#else
+#include <unistd.h>  // getpid(), getcwd(), etc
 #endif
 
 //
