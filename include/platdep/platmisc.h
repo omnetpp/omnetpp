@@ -32,10 +32,19 @@
 #define chdir  _chdir
 #define mkdir(x,y) _mkdir(x)
 #define gcvt _gcvt
+
+// unistd.h contains usleep only on mingw 4.4 or later (minor version 16)
+#if __MINGW32_MINOR_VERSION >= 16
+#include <unistd.h>  // getpid(), getcwd(), etc
+#else
+#define usleep(x) _sleep((x)/1000)
+#endif
+
 #else
 
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <unistd.h>  // getpid(), getcwd(), etc
 
 #if HAVE_DLOPEN
 #include <dlfcn.h>
@@ -47,12 +56,9 @@
 #include <stdexcept>
 
 #ifdef _MSC_VER
-#define usleep(x) _sleep((x)/1000)
 #define strcasecmp _stricmp
 #define strncasecmp _strnicmp
 #define unlink _unlink
-#else
-#include <unistd.h>  // getpid(), getcwd(), etc
 #endif
 
 //
