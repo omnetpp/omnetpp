@@ -1090,10 +1090,12 @@ public class DocumentationGenerator {
                         "      <th>Description</th>\r\n" +
                         "   </tr>\r\n");
                     
+                    int index = 0;
+                    
                     for (ITypeElement typeElement : typeElements)
                         if (typeElement instanceof INedTypeElement)
                             if (packageName.equals(getPackageName((INedTypeElement)typeElement)))
-                                generateTypeReference(typeElement);
+                                generateTypeReference(typeElement, index++);
 
                     out("</table>\r\n");
                 }
@@ -1123,9 +1125,8 @@ public class DocumentationGenerator {
                             typeElements = msgResources.getMsgFileElement(file).getTopLevelTypeNodes();
                         else
                             typeElements = nedResources.getNedFileElement(file).getTopLevelTypeNodes();
-
-                        for (ITypeElement typeElement : typeElements)
-                            generateTypeReference(typeElement);
+                        
+                        generateTypeReferences(typeElements);
 
                         out("</table>\r\n");
                         generateSourceContent(file);
@@ -1224,13 +1225,15 @@ public class DocumentationGenerator {
         		"      <th>Type</th>\r\n" +
         		"      <th>Description</th>\r\n" +
         		"   </tr>\r\n");
+            
+            int index = 0;
 
             for (String name : fields.keySet())
             {
                 FieldElement field = fields.get(name);
                 String trClass = localFields.containsKey(name) ? "local" : "inherited";
 
-                out("<tr class=\"" + trClass + "\">\r\n" +
+                out("<tr class=\"" + trClass + getIndexClass(index++) + "\">\r\n" +
             		"   <td width=\"150\">" + name + "</td>\r\n" +
             		"   <td width=\"100\">\r\n" +
             		"      <i>\r\n");
@@ -1263,11 +1266,13 @@ public class DocumentationGenerator {
         		"      <th>Description</th>\r\n" +
         		"   </tr>\r\n");
 
+            int index = 0;
+
             for (String name : properties.keySet())
             {
                 PropertyElementEx property = properties.get(name);
 
-            	out("<tr>\r\n" +
+            	out("<tr class=\"" + getIndexClass(index++) + "\">\r\n" +
             		"   <td width=\"150\">" + name + "</td>\r\n" +
             		"   <td width=\"100\"><i>");
             	generatePropertyLiteralValues(property);
@@ -1310,17 +1315,23 @@ public class DocumentationGenerator {
             if (compoundModules.size() != 0) {
                 out("<h3 class=\"subtitle\">Used in compound modules:</h3>\r\n" +
             		"<p>If a module type shows up more than once, that means it has been defined in more than one NED file.</p>\r\n" +
-            		"<table>\r\n");
-                for (INedTypeElement userElement : compoundModules)
-                    generateTypeReference(userElement);
+            		"<table>\r\n" +
+            		"   <tr>\r\n" +
+            		"      <th>Name</th>\r\n" +
+            		"      <th>Description</th>\r\n" +
+                    "   </tr>\r\n");
+                generateTypeReferences(compoundModules);
         		out("</table>\r\n");
             }
 
             if (networks.size() != 0) {
-                out("<h3 class=\"subtitle\">Networks:</h3>\r\n" +
-            		"<table>\r\n");
-                for (INedTypeElement userElement : networks)
-                    generateTypeReference(userElement);
+                out("<h3 class=\"subtitle\">Used in networks:</h3>\r\n" +
+            		"<table>\r\n" +
+                    "   <tr>\r\n" +
+                    "      <th>Name</th>\r\n" +
+                    "      <th>Description</th>\r\n" +
+                    "   </tr>\r\n");
+                generateTypeReferences(networks);
         		out("</table>\r\n");
             }
         }
@@ -1340,21 +1351,32 @@ public class DocumentationGenerator {
                 "      <th>Default value</th>\r\n" +
         		"      <th>Description</th>\r\n" +
         		"   </tr>\r\n");
+            
+            int index = 0;
 
             for (String name : paramsDeclarations.keySet()) {
                 ParamElementEx paramDeclaration = paramsDeclarations.get(name);
                 ParamElementEx paramAssignment = paramsAssignments.get(name);
+
+                if (paramAssignment == null)
+                    paramAssignment = paramDeclaration;
+
                 String trClass = localParamsDeclarations.containsKey(name) ? "local" : "inherited";
 
-                out("<tr class=\"" + trClass + "\">\r\n" +
+                out("<tr class=\"" + trClass + getIndexClass(index++) + "\">\r\n" +
             		"   <td width=\"150\">" + name + "</td>\r\n" +
             		"   <td width=\"100\">\r\n" +
             		"      <i>" + getParamTypeAsString(paramDeclaration) + "</i>\r\n" +
-            		"   </td>\r\n" +
-            		"   <td width=\"120\">" + (paramAssignment == null ? "" : paramAssignment.getValue()) + "</td>" +
-                    "   <td>");
+            		"   </td>\r\n");
+
+                generateParamValue(paramAssignment);
+
+                out("   <td>");
+
                 generateTableComment(paramDeclaration.getComment());
-        		out("</td>\r\n" +
+                generateParamFixed(paramAssignment);
+
+                out("</td>\r\n" +
             		"</tr>\r\n");
             }
 
@@ -1364,7 +1386,7 @@ public class DocumentationGenerator {
 
     protected void generateAssignableParametersTable(final INedTypeElement typeElement) throws IOException {
         final boolean[] first = new boolean[] {true};
-        final boolean[] even = new boolean[] {false};
+        final int[] index = new int[] {0};
 
         ParamUtil.mapParamDeclarationsRecursively(typeElement.getNEDTypeInfo(), new RecursiveParamDeclarationVisitor() {
             @Override
@@ -1394,37 +1416,29 @@ public class DocumentationGenerator {
                             rowCount++;
 
                         for (int i = 0; i < rowCount; i++) {
-                            out("<tr class=\"" + (even[0] ? "even" : "odd") + "\">\r\n");
+                            out("<tr class=\"" + getIndexClass(index[0]++) + "\">\r\n");
 
                             if (i == 0) {
                                 out("<td>");
-                                String[] elements = fullPath.split("\\.");
-                                for (int j = 1; j < elements.length; j++)
-                                    out("<a href=\"" + getOutputFileName(typePath.get(j).getNEDElement()) + "\">" + elements[j] + "</a>.");
-                                    
+                                for (int j = 1; j < typePath.size(); j++)
+                                    out("<a href=\"" + getOutputFileName(typePath.get(j).getNEDElement()) + "\">" + ParamUtil.getParamPathPart(elementPath.get(j)) + "</a>.");
+
                                 out(paramDeclaration.getName() + "</td>\r\n" +
                                     "<td width=\"100\">\r\n" +
                                     "   <i>" + getParamTypeAsString(paramDeclaration) + "</i>\r\n" +
                                     "</td>\r\n");
                             }
-                            else {
+                            else
                                 out("<td colspan=\"2\">");
-                            }
 
                             ParamElementEx paramAssignment = rowCount == 1 ? paramAssignments.get(i) : i == 0 ? null : paramAssignments.get(i - 1);
 
-                            if (paramAssignment != null) {
-                            	String value = paramAssignment.getValue();
-                            	String cssClass = StringUtils.isEmpty(value) ? "param-value-unassigned" : paramAssignment.getIsDefault() ? "param-value-default" : "param-value-non-default";
-
-                            	out("<td width=\"120\">");
-                           		out("<span class=\"" + cssClass + "\">" + (StringUtils.isEmpty(value) ? "unassigned" : value) + "</span>");
-                           		out("</td>\r\n");
-                            }
+                            if (paramAssignment != null)
+                                generateParamValue(paramAssignment);
                             else
                                 out("<td/>");
 
-                            out("<td>");
+                            out("   <td>");
 
                             if (i == 0)
                                 generateTableComment(paramDeclaration.getComment());
@@ -1443,15 +1457,12 @@ public class DocumentationGenerator {
                                 IHasParameters owner = paramAssignment.getOwner();
                                 out(owner.getReadableTagName() + " " + ((IHasName)owner).getName());
 
-                                if (!StringUtils.isEmpty(paramAssignment.getValue()) && !paramAssignment.getIsDefault())
-                                    out("<span class=\"param-fixed\"> (fix value)</span>");
+                                generateParamFixed(paramAssignment);
                             }
 
-                            out("</td>\r\n" +
+                            out("   </td>\r\n" +
                                 "</tr>\r\n");
                         }
-                        
-                        even[0] = !even[0];
                     }
                 }
                 catch (IOException e) {
@@ -1466,6 +1477,20 @@ public class DocumentationGenerator {
             out("</table>\r\n");
     }
 
+    protected void generateParamValue(ParamElementEx paramAssignment) throws IOException {
+        String value = paramAssignment.getValue();
+        String cssClass = StringUtils.isEmpty(value) ? "param-value-unassigned" : paramAssignment.getIsDefault() ? "param-value-default" : "param-value-non-default";
+
+        out("<td width=\"120\">");
+        out("<span class=\"" + cssClass + "\">" + (StringUtils.isEmpty(value) ? "unassigned" : value) + "</span>");
+        out("</td>\r\n");
+    }
+    
+    protected void generateParamFixed(ParamElementEx paramAssignment) throws IOException {
+        if (!StringUtils.isEmpty(paramAssignment.getValue()) && !paramAssignment.getIsDefault())
+            out("<span class=\"param-fixed\"> (fix value)</span>");
+    }
+    
     protected void generateGatesTable(INedTypeElement typeElement) throws IOException {
         IModuleTypeElement module = (IModuleTypeElement)typeElement;
 
@@ -1483,12 +1508,14 @@ public class DocumentationGenerator {
                 "      <th>Description</th>\r\n" +
                 "   </tr>\r\n");
 
+            int index = 0;
+
             for (String name : gateDeclarations.keySet()) {
                 GateElementEx gateDeclaration = gateDeclarations.get(name);
                 GateElementEx gateSize = gatesSizes.get(name);
                 String trClass = localGateDeclarations.containsKey(name) ? "local" : "inherited";
 
-                out("<tr class=\"" + trClass + "\">\r\n" +
+                out("<tr class=\"" + trClass + getIndexClass(index++) + "\">\r\n" +
                     "   <td width=\"150\">" + name + (gateDeclaration.getIsVector() ? " [ ]" : "") + "</xsl:if></td>\r\n" +
                     "   <td width=\"100\"><i>" + gateDeclaration.getAttribute(GateElementEx.ATT_TYPE) + "</i></td>\r\n" +
                     "   <td width=\"50\">" + (gateSize != null && gateSize.getIsVector() ? gateSize.getVectorSize() : "") + "</td>" +
@@ -1507,8 +1534,20 @@ public class DocumentationGenerator {
             out(processHTMLContent("comment", comment));
     }
 
+    protected void generateTypeReferences(List<? extends ITypeElement> typeElements) throws IOException {
+        int index = 0;
+        
+        for (ITypeElement typeElement : typeElements)
+            generateTypeReference(typeElement, index++);
+
+    }
+
     protected void generateTypeReference(ITypeElement typeElement) throws IOException {
-        out("<tr>\r\n" +
+        generateTypeReference(typeElement, -1);
+    }
+    
+    protected void generateTypeReference(ITypeElement typeElement, int index) throws IOException {
+        out("<tr class=\"" + getIndexClass(index)+ "\">\r\n" +
             "   <td>\r\n" +
             "      <a href=\"" + getOutputFileName(typeElement) + "\">" + typeElement.getName() + "</a>\r\n" +
             "      <i> (" + typeElement.getReadableTagName().replaceAll(" ", "&nbsp;") + ")</i>\r\n" +
@@ -1557,10 +1596,13 @@ public class DocumentationGenerator {
     protected void generateKnownSubtypesTable(ITypeElement typeElement) throws IOException {
         if (subtypesMap.containsKey(typeElement)) {
             out("<h3 class=\"subtitle\">Known subclasses:</h3>\r\n" +
-        		"<table>\r\n");
+        		"<table>\r\n" +
+                "   <tr>\r\n" +
+                "      <th>Name</th>\r\n" +
+                "      <th>Description</th>\r\n" +
+                "   </tr>\r\n");
 
-            for (ITypeElement subtype : subtypesMap.get(typeElement))
-                generateTypeReference(subtype);
+            generateTypeReferences(subtypesMap.get(typeElement));
 
             out("</table>\r\n");
         }
@@ -1569,7 +1611,11 @@ public class DocumentationGenerator {
     protected void generateExtendsTable(ITypeElement typeElement) throws IOException {
         if (typeElement.getFirstExtends() != null) {
             out("<h3 class=\"subtitle\">Extends:</h3>\r\n" +
-        		"<table>\r\n");
+        		"<table>\r\n" +
+                "   <tr>\r\n" +
+                "      <th>Name</th>\r\n" +
+                "      <th>Description</th>\r\n" +
+                "   </tr>\r\n");
 
             // TODO: more extends for interfaces
             ITypeElement supertype = typeElement.getFirstExtendsRef();
@@ -2135,6 +2181,10 @@ public class DocumentationGenerator {
         String name = typeElement.getName();
         String url = getOutputFileName(typeElement);
         out("<area shape=\"rect\" href=\"" + url + "\" title=\"" + name + "\" alt=\"" + name + "\" coords=\"" + x1 + "," + y1 + "," + x2 + "," + y2 + "\">\r\n");
+    }
+    
+    protected String getIndexClass(int index) {
+        return index == -1 ? "" : index % 2 == 0 ? " even " : " odd ";
     }
 
     protected IPath getOutputFilePath(IFile file) {

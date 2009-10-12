@@ -19,14 +19,12 @@ import static org.omnetpp.ned.model.NEDElementConstants.NED_PARTYPE_INT;
 import static org.omnetpp.ned.model.NEDElementConstants.NED_PARTYPE_STRING;
 import static org.omnetpp.ned.model.NEDElementConstants.NED_PARTYPE_XML;
 
-import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 import java.util.Stack;
 import java.util.StringTokenizer;
@@ -43,12 +41,9 @@ import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.collections.ProductIterator;
 import org.omnetpp.common.engine.Common;
-import org.omnetpp.common.engine.PatternMatcher;
 import org.omnetpp.common.engine.UnitConversion;
 import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
-import org.omnetpp.common.util.CollectionUtils;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.common.util.StringUtils.DictionaryComparator;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.model.IInifileDocument.LineInfo;
 import org.omnetpp.inifile.editor.model.ParamResolution.ParamResolutionType;
@@ -926,62 +921,6 @@ public class InifileAnalyzer {
 		IProject contextProject = doc.getDocumentFile().getProject();
 		NEDTreeTraversal treeTraversal = new NEDTreeTraversal(res, createParamCollectingNedTreeVisitor(list, res, sectionChain, doc));
 		treeTraversal.traverse(network.getFullyQualifiedName(), contextProject);
-
-		// TODO: FIXME: KLUDGE: HACK: print parameter values based on param resolution
-		// TODO: move this to test/param/?.java, but how do we load it? (copy-paste?)
-        if (false) {
-    		try {
-    		    int index = 0;
-    	        Properties properties = new Properties();
-    	        properties.load(new FileInputStream("C:\\Workspace\\Repository\\omnetpp\\test\\param\\param.out"));
-
-    	        for (Object key : CollectionUtils.toSorted((Set<String>)(Set)properties.keySet(), new DictionaryComparator())) {
-                    String paramName = (String)key;
-                    String runtimeParamValue = properties.getProperty(paramName);
-
-                    for (ParamResolution paramResolution : list) {
-                        String paramPattern = paramResolution.key != null ? paramResolution.key : paramResolution.fullPath + "." + paramResolution.paramDeclaration.getName();
-                        PatternMatcher m = new PatternMatcher(paramPattern, true, true, true);
-
-                        if (m.matches(paramName)) {
-                            String ideParamValue = null;
-
-                            switch (paramResolution.type) {
-                                case UNASSIGNED: 
-                                case INI_ASK:
-                                    ideParamValue = "\"" + index + "\"";
-                                    index++;
-                                    break;
-                                case NED:
-                                case INI_DEFAULT:
-                                case IMPLICITDEFAULT:
-                                    ideParamValue = paramResolution.paramAssignment.getValue();
-                                    break;
-                                case INI:
-                                case INI_OVERRIDE:
-                                case INI_NEDDEFAULT:
-                                    ideParamValue = doc.getValue(paramResolution.section, paramResolution.key);
-                                    break;
-                                default: 
-                                    throw new RuntimeException();
-                            }
-
-                            // System.out.println(paramName + " = " + ideParamValue);
-
-                            if (!runtimeParamValue.equals(ideParamValue))
-                                System.out.println("*** Name: " + paramName + ", runtime value: " + runtimeParamValue + ", ide value: " + ideParamValue);
-                            else
-                                System.out.println("Name: " + paramName + ", value: " + runtimeParamValue);
-
-                            break;
-                        }
-                    }
-                }
-            }
-            catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
 		
 		return list;
 	}
@@ -1277,10 +1216,22 @@ public class InifileAnalyzer {
         }
     }
 
-	public static String getParamValue(ParamResolution res, IInifileDocument doc) {
+    public static String getParamValue(ParamResolution res, IInifileDocument doc) {
+        return getParamValue(res, doc, true);
+    }
+
+	public static String getParamValue(ParamResolution res, IInifileDocument doc, boolean allowNull) {
 		switch (res.type) {
-			case UNASSIGNED: case INI_ASK:
-				return null;
+			case UNASSIGNED:
+			    if (allowNull)
+			        return null;
+			    else
+			        return "(unassigned)";
+			case INI_ASK:
+                if (allowNull)
+                    return null;
+                else
+                    return "(ask)";
 			case NED: case INI_DEFAULT: case IMPLICITDEFAULT:
 				return res.paramAssignment.getValue();
 			case INI: case INI_OVERRIDE: case INI_NEDDEFAULT:

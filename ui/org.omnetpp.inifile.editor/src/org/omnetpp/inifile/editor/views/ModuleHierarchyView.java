@@ -8,6 +8,8 @@
 package org.omnetpp.inifile.editor.views;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.Stack;
 import java.util.Vector;
 import java.util.WeakHashMap;
@@ -147,6 +149,18 @@ public class ModuleHierarchyView extends AbstractModuleView {
 				   typeElement == other.typeElement;
 		}
 	}
+	
+	private static class ParamAssignmentGroupNode extends GenericTreeNode {
+	    public ParamAssignmentGroupNode(Object payload) {
+            super(payload);
+        }
+	}
+	
+	private static class ParamAssignmentGroupElementNode extends GenericTreeNode {
+        public ParamAssignmentGroupElementNode(Object payload) {
+            super(payload);
+        }
+	}
 
 	public ModuleHierarchyView() {
 	}
@@ -165,7 +179,10 @@ public class ModuleHierarchyView extends AbstractModuleView {
 		treeViewer.setLabelProvider(new LabelProvider() {
 			@Override
 			public Image getImage(Object element) {
-				if (element instanceof GenericTreeNode)
+			    if (element instanceof ParamAssignmentGroupNode)
+			        // TODO: find/make a better icon
+			        return InifileUtils.ICON_PAR_GROUP;
+			    else if (element instanceof GenericTreeNode)
 					element = ((GenericTreeNode)element).getPayload();
 				if (element instanceof SubmoduleOrConnectionNode) {
 					SubmoduleOrConnectionNode mn = (SubmoduleOrConnectionNode) element;
@@ -189,8 +206,9 @@ public class ModuleHierarchyView extends AbstractModuleView {
 			}
 
 			@Override
-			public String getText(Object element) {
-				if (element instanceof GenericTreeNode)
+			public String getText(Object node) {
+			    Object element = node;
+				if (node instanceof GenericTreeNode)
 					element = ((GenericTreeNode)element).getPayload();
 				if (element instanceof SubmoduleOrConnectionNode) {
 					SubmoduleOrConnectionNode mn = (SubmoduleOrConnectionNode) element;
@@ -210,7 +228,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 		            return label;
 				}
 				else if (element instanceof ParamResolution)
-					return getLabelFor((ParamResolution) element, inifileDocument);
+					return getLabelFor((ParamResolution) element, inifileDocument, !(node instanceof ParamAssignmentGroupElementNode));
 				else
 					return element.toString();
 			}
@@ -492,31 +510,50 @@ public class ModuleHierarchyView extends AbstractModuleView {
 	/**
 	 * Adds a node to the tree. The new node describes the module and its parameters.
 	 */
-	private static GenericTreeNode addTreeNode(GenericTreeNode parent, String moduleFullName, String fullPath, Vector<ISubmoduleOrConnection> elementPath, Vector<INEDTypeInfo> typeInfoPath, String activeSection, InifileAnalyzer analyzer) {
+	private GenericTreeNode addTreeNode(GenericTreeNode parent, String moduleFullName, String fullPath, Vector<ISubmoduleOrConnection> elementPath, Vector<INEDTypeInfo> typeInfoPath, String activeSection, InifileAnalyzer analyzer) {
 	    INEDTypeInfo typeInfo = typeInfoPath.lastElement();
 		String moduleText = moduleFullName+"  ("+typeInfo.getName()+")";
-		GenericTreeNode thisNode = new GenericTreeNode(new SubmoduleOrConnectionNode(moduleText, elementPath.lastElement(), typeInfo.getNEDElement()));
-		parent.addChild(thisNode);
+		GenericTreeNode treeNode = new GenericTreeNode(new SubmoduleOrConnectionNode(moduleText, elementPath.lastElement(), typeInfo.getNEDElement()));
+		parent.addChild(treeNode);
 
 		if (analyzer == null) {
 			// no inifile available, we only have NED info
 		    ArrayList<ParamResolution> list = new ArrayList<ParamResolution>(); 
 			InifileAnalyzer.resolveModuleParameters(list, fullPath, typeInfoPath, elementPath);
-			for (ParamResolution res : list)
-				thisNode.addChild(new GenericTreeNode(res));
+			addParamResolutions(treeNode, list.toArray(new ParamResolution[0]));
 		}
-		else {
-			ParamResolution[] list = analyzer.getParamResolutionsForModule(fullPath, activeSection);
-			for (ParamResolution res : list)
-				thisNode.addChild(new GenericTreeNode(res));
-		}
-		return thisNode;
+		else
+		    addParamResolutions(treeNode, analyzer.getParamResolutionsForModule(fullPath, activeSection));
+
+		return treeNode;
 	}
 
-	protected static String getLabelFor(ParamResolution res, IInifileDocument doc) {
+	protected void addParamResolutions(GenericTreeNode node, ParamResolution[] paramResolutions) {
+        for (int i = 0; i < paramResolutions.length; i++) {
+            ParamResolution paramResolution = paramResolutions[i];
+            ParamAssignmentGroupNode child = new ParamAssignmentGroupNode(paramResolution.paramDeclaration.getName() + " = ");
+            Set<String> values = new LinkedHashSet<String>();
+
+            for (int j = i; j < paramResolutions.length && paramResolutions[j].paramDeclaration == paramResolution.paramDeclaration; j++) {
+                ParamResolution p = paramResolutions[j];
+                child.addChild(new ParamAssignmentGroupElementNode(paramResolutions[j]));
+                values.add(InifileAnalyzer.getParamValue(p, inifileDocument, false));
+                i = j;
+            }
+            
+            if (child.getChildCount() == 1)
+                node.addChild(new GenericTreeNode(paramResolution));
+            else {
+                child.setPayload(child.getPayload() + StringUtils.join(values, ", "));
+                node.addChild(child);
+            }
+        }
+	}
+
+	protected String getLabelFor(ParamResolution res, IInifileDocument doc, boolean includeName) {
 		String value = InifileAnalyzer.getParamValue(res, doc);
 		String remark = InifileAnalyzer.getParamRemark(res, doc);
-		return res.paramDeclaration.getName() + " = " + (value==null ? "" : value+" ") + "(" + remark + ")";
+		return (includeName ? res.paramDeclaration.getName() : "") + " = " + (value==null ? "" : value+" ") + "(" + remark + ")";
 	}
 
 }
