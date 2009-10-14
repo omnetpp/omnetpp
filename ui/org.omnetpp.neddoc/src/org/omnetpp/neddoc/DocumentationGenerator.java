@@ -1400,7 +1400,7 @@ public class DocumentationGenerator {
                                 return true;
 
                         if (first[0]) {
-                            out("<h3 class=\"subtitle\">Assignable parameters:</h3>\r\n" +
+                            out("<h3 class=\"subtitle\">Assignable submodule or channel parameters:</h3>\r\n" +
                                 "<table class=\"paramtable\">\r\n" +
                                 "   <tr>\r\n" +
                                 "      <th>Name</th>\r\n" +
@@ -1416,12 +1416,12 @@ public class DocumentationGenerator {
                             rowCount++;
 
                         for (int i = 0; i < rowCount; i++) {
-                            out("<tr class=\"" + getIndexClass(index[0]++) + "\">\r\n");
+                            out("<tr class=\"" + getIndexClass(index[0]) + "\">\r\n");
 
                             if (i == 0) {
                                 out("<td>");
                                 for (int j = 1; j < typePath.size(); j++)
-                                    out("<a href=\"" + getOutputFileName(typePath.get(j).getNEDElement()) + "\">" + ParamUtil.getParamPathPart(elementPath.get(j)) + "</a>.");
+                                    out("<a href=\"" + getOutputFileName(typePath.get(j).getNEDElement()) + "\">" + ParamUtil.getParamPathElementName(elementPath.get(j)) + "</a>.");
 
                                 out(paramDeclaration.getName() + "</td>\r\n" +
                                     "<td width=\"100\">\r\n" +
@@ -1463,6 +1463,8 @@ public class DocumentationGenerator {
                             out("   </td>\r\n" +
                                 "</tr>\r\n");
                         }
+                        
+                        index[0]++;
                     }
                 }
                 catch (IOException e) {

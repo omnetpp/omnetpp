@@ -1,5 +1,5 @@
 public class param {
-    public static test(String fileNam) {
+    public static void test(String fileName) {
         try {
     	    int index = 0;
     	    Properties properties = new Properties();

@@ -63,6 +63,7 @@ import org.omnetpp.inifile.editor.model.SectionKey;
 import org.omnetpp.inifile.editor.model.ParamResolution.ParamResolutionType;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
@@ -345,9 +346,9 @@ public class ModuleParametersView extends AbstractModuleView {
 	@Override
 	public void buildContent(INEDElement element, InifileAnalyzer analyzer, String section, String key) {
 
-	    INEDElement module = findFirstModuleOrSubmoduleParent(element);
-        if (module == null) {
-            showMessage("No module element selected.");
+	    INEDElement elementWithParameters = findAncestorWithParameters(element);
+        if (elementWithParameters == null) {
+            showMessage("No element with parameters selected.");
             return;
         }
         
@@ -357,18 +358,23 @@ public class ModuleParametersView extends AbstractModuleView {
 		if (analyzer==null) {
 			List<ParamResolution> pars = null;
 
-			if (module instanceof SubmoduleElementEx) {
-			    SubmoduleElementEx submodule = (SubmoduleElementEx)module;
+			if (elementWithParameters instanceof SubmoduleElementEx) {
+			    SubmoduleElementEx submodule = (SubmoduleElementEx)elementWithParameters;
 			    text = "Submodule: " + submodule.getName() + " (" + submodule.getNEDTypeInfo().getName() + ")";
 				pars = InifileAnalyzer.collectParameters(submodule);
 			}
-			else if (module instanceof INedTypeElement) {
-			    INEDTypeInfo typeInfo = ((INedTypeElement)module).getNEDTypeInfo();
-			    text = "Module: " + typeInfo.getName();
+            else if (elementWithParameters instanceof ConnectionElementEx) {
+                INEDTypeInfo typeInfo = ((ConnectionElementEx)elementWithParameters).getNEDTypeInfo();
+                text = "Connection: " + typeInfo.getName();
+                pars = InifileAnalyzer.collectParameters(typeInfo);
+            }
+			else if (elementWithParameters instanceof INedTypeElement) {
+			    INEDTypeInfo typeInfo = ((INedTypeElement)elementWithParameters).getNEDTypeInfo();
+			    text = StringUtils.capitalize(elementWithParameters.getReadableTagName()) + ": " + typeInfo.getName();
 				pars = InifileAnalyzer.collectParameters(typeInfo);
 			}
 			else {
-				showMessage("NED element should be a module type or a submodule.");
+				showMessage("NED element should be a module type, a submodule or a connection.");
 				return;
 			}
 

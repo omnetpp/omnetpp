@@ -26,7 +26,10 @@ import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedModelProvider;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
+import org.omnetpp.ned.model.pojo.ChannelElement;
+import org.omnetpp.ned.model.pojo.ChannelInterfaceElement;
 import org.omnetpp.ned.model.pojo.CompoundModuleElement;
+import org.omnetpp.ned.model.pojo.ConnectionElement;
 import org.omnetpp.ned.model.pojo.ModuleInterfaceElement;
 import org.omnetpp.ned.model.pojo.SimpleModuleElement;
 import org.omnetpp.ned.model.pojo.SubmoduleElement;
@@ -69,14 +72,17 @@ public abstract class AbstractModuleView extends PinnableView implements IShowIn
 
     /**
      * Utility function for subclasses: tries to find a NED element among the parents 
-     * which may have parameters (simple module, compound module, channel, submodule).
+     * which may have parameters (simple module, compound module, channel, submodule, connection).
      * Returns element itself if it already matches. Returns null if not found.
      */
-    protected static INEDElement findFirstModuleOrSubmoduleParent(INEDElement element) {
+    protected static INEDElement findAncestorWithParameters(INEDElement element) {
         while (element != null) {
             if (element instanceof CompoundModuleElement || element instanceof SimpleModuleElement ||
-                    element instanceof SubmoduleElement || element instanceof ModuleInterfaceElement)
+                element instanceof SubmoduleElement || element instanceof ModuleInterfaceElement ||
+                element instanceof ConnectionElement || element instanceof ChannelElement || element instanceof ChannelInterfaceElement)
+            {
                 return element;
+            }
             element = element.getParent();
         }
         return null;

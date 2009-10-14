@@ -62,7 +62,7 @@ public interface IModuleTreeVisitor {
 		private GenericTreeNode current = root;
 		
 		public boolean enter(ISubmoduleOrConnection element, INEDTypeInfo typeInfo) {
-			GenericTreeNode child = new GenericTreeNode("("+typeInfo.getName()+")"+(element==null ? "" : element.getName()));
+			GenericTreeNode child = new GenericTreeNode("("+typeInfo.getName()+")"+(element==null ? "" : ParamUtil.getParamPathElementName(element)));
 			current.addChild(child);
 			current = child;
 			return true;
@@ -95,7 +95,7 @@ public interface IModuleTreeVisitor {
 		
 		public boolean enter(ISubmoduleOrConnection element, INEDTypeInfo typeInfo) {
 			//fullPath.push("("+typeInfo.getName()+")"+(element==null ? "" : element.getName()));
-			fullPath.push(element==null ? typeInfo.getName() : element.getName());
+			fullPath.push(element==null ? typeInfo.getName() : ParamUtil.getParamPathElementName(element));
 			Debug.println(StringUtils.join(fullPath.toArray(), "."));
 			return true;
 		}
