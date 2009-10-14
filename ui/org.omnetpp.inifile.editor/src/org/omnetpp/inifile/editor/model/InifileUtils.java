@@ -60,6 +60,7 @@ public class InifileUtils {
 
 	// for getKeyImage()
     public static final Image ICON_ERROR = InifileEditorPlugin.getCachedImage("icons/full/obj16/Error.png");
+    public static final Image ICON_INFO = InifileEditorPlugin.getCachedImage("icons/full/obj16/info.gif");
     public static final Image ICON_PAR_UNASSIGNED = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_unassigned.png");
     public static final Image ICON_PAR_NED = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_ned.png");
     public static final Image ICON_PAR_INIDEFAULT = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_neddefault.png");
@@ -68,6 +69,7 @@ public class InifileUtils {
     public static final Image ICON_PAR_INIOVERRIDE = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_inioverride.png");
     public static final Image ICON_PAR_ININEDDEFAULT = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_inineddefault.png");
     public static final Image ICON_PAR_IMPLICITDEFAULT = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_implicitdefault.png");
+    public static final Image ICON_PAR_GROUP = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_group.png");
 
     public static final Image ICON_KEY_EQUALS_DEFAULT = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_equals_default.png");
     public static final Image ICON_KEY_EQUALS_ASK = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_equals_ask.png");
@@ -139,7 +141,7 @@ public class InifileUtils {
 			return null;  // sorry, we are only prepared to resolve parent module parameters (but not expressions)
 
 		// look up parameter value
-		ParamResolution res = analyzer.getResolutionForModuleParam(moduleFullPath, likeParamName, activeSection);
+		ParamResolution res = analyzer.getParamResolutionForModuleParam(moduleFullPath, likeParamName, activeSection);
 		if (res == null)
 			return null; // likely no such parameter
 		String value = InifileAnalyzer.getParamValue(res, doc);

@@ -83,7 +83,7 @@ public class NEDTreeTraversal {
             ArrayList<ISubmoduleOrConnection> elements = new ArrayList<ISubmoduleOrConnection>();
             elements.addAll(submodules);
             elements.addAll(compoundModul.getSrcConnections());
-            
+
             for (SubmoduleElementEx submodule : submodules)
                 elements.addAll(compoundModul.getSrcConnectionsFor(submodule.getName()));
 
@@ -118,10 +118,10 @@ public class NEDTreeTraversal {
 		if (StringUtils.isEmpty(typeName)) {
 		    if (element instanceof ConnectionElementEx)
 		        // TODO: KLUDGE: this is not obviously the correct solution (but might be)
-		        //       connection element's type is null when it is an net.IdealChannel
+		        //       connection element's type is null when it is a net.IdealChannel
 		        //       to avoid printing its type name at certain places.
 		        //       This causes that a couple of functions should deal with the type
-		        //       being null instead of always getting a type name.
+		        //       being null instead of always getting a correct type name.
 		        return "ned.IdealChannel";
 
 		    // resolve "like" type

@@ -10,5 +10,5 @@ package org.omnetpp.ned.model.interfaces;
 /**
  * Collects common interfaces.
  */
-public interface ISubmoduleOrConnection extends IHasDisplayString, IHasParameters, IHasType, IHasName {
+public interface ISubmoduleOrConnection extends IHasDisplayString, IHasParameters, IHasType {
 }
