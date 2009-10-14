@@ -14,9 +14,23 @@ foreach $submoduleCardinality ("single", "vector") {
 
   foreach $iniKeyPattern (@patternEnum) {
     foreach $nedParamDeclarationValue ("", "default(\"NED declaration\")", "\"NED declaration\"") {
-      foreach $nedSubmoduleParamAssignmentValue ("", "default(\"NED submodule\")", "\"NED submodule\"") {
-        foreach $nedModuleParamAssignmentValue ("", "default(\"NED module\")", "\"NED module\"") {
-          foreach $nedModuleParamAssignmentPattern ($nedModuleParamAssignmentValue eq "" ? ("") : @patternEnum) {
+      @nedSubmoduleParamAssignmentEnum = ("", "default(\"NED submodule\")");
+
+      if (!($nedParamDeclarationValue eq "\"NED declaration\"")) {
+        push(@nedSubmoduleParamAssignmentEnum, "\"NED submodule\"");
+      }
+
+      foreach $nedSubmoduleParamAssignmentValue (@nedSubmoduleParamAssignmentEnum) {
+        foreach $nedModuleParamAssignmentPattern ($nedModuleParamAssignmentValue eq "" ? ("") : @patternEnum) {
+          @nedModuleParamAssignmentEnum = ("", "default(\"NED module\")");
+
+          if (!($nedModuleParamAssignmentPattern eq "") ||
+              (!($nedParamDeclarationValue eq "\"NED declaration\"") && !($nedSubmoduleParamAssignmentValue eq "\"NED submodule\"")))
+          {
+            push(@nedModuleParamAssignmentEnum, "\"NED module\"");
+          }
+
+          foreach $nedModuleParamAssignmentValue (@nedModuleParamAssignmentEnum) {
             foreach $iniValue ("", "default", "ask", "\"INI\"") {
 
   $paramName = $submoduleCardinality eq "single" ? "s".$singleParamIndex++ : "v".$vectorParamIndex++;
