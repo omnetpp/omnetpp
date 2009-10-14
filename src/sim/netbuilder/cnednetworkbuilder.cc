@@ -149,31 +149,34 @@ void cNEDNetworkBuilder::doParam(cComponent *component, ParamElement *paramNode,
 {
     ASSERT(!paramNode->getIsPattern()); // we only deal with non-pattern assignments
 
-    const char *paramName = paramNode->getName();
-
-    // isSubComponent==false: we are called from cModuleType::addParametersAndGatesTo();
-    // isSubComponent==true: we are called from assignSubcomponentParams().
-    // if type==NONE, this is an inherited parameter (must have been added already)
-    bool isNewParam = !isSubcomponent && paramNode->getType()!=NED_PARTYPE_NONE;
-
-    cParImpl *impl = currentDecl->getSharedParImplFor(paramNode);
-    if (impl)
-    {
-        //printf("   +++ reusing param impl for %s\n", paramName);
-
-        // we've already been at this point in the NED files sometime,
-        // so we can reuse what we produced then
-        ASSERT(impl->isName(paramName));
-        if (isNewParam)
-            component->addPar(impl);
-        else {
-            cPar& par = component->par(paramName); // must exist already
-            par.setImpl(impl);
-        }
-        return;
-    }
-
     try {
+        const char *paramName = paramNode->getName();
+
+        // isSubComponent==false: we are called from cModuleType::addParametersAndGatesTo();
+        // isSubComponent==true: we are called from assignSubcomponentParams().
+        // if type==NONE, this is an inherited parameter (must have been added already)
+        bool isNewParam = !isSubcomponent && paramNode->getType()!=NED_PARTYPE_NONE;
+
+        // try to find an impl object with this value; we'll reuse it to optimize memory consumption
+        cParImpl *impl = currentDecl->getSharedParImplFor(paramNode);
+        if (impl)
+        {
+            //printf("   +++ reusing param impl for %s\n", paramName);
+
+            // we've already been at this point in the NED files sometime,
+            // so we can reuse what we produced then
+            ASSERT(impl->isName(paramName));
+            if (isNewParam)
+                component->addPar(impl);
+            else {
+                cPar& par = component->par(paramName); // must exist already
+                if (par.isSet())
+                    throw cRuntimeError(component, "Cannot overwrite non-default value of parameter `%s'", paramName);
+                par.setImpl(impl);
+            }
+            return;
+        }
+
         ASSERT(impl==NULL);
         if (isNewParam) {
             //printf("   +++ adding param %s\n", paramName);
@@ -190,9 +193,15 @@ void cNEDNetworkBuilder::doParam(cComponent *component, ParamElement *paramNode,
             impl->setUnit(declUnit);
         }
         else {
-            impl = component->par(paramName).copyIfShared();
+            cPar& par = component->par(paramName); // must exist already
+            if (par.isSet())
+                throw cRuntimeError(component, "Cannot overwrite non-default value of parameter `%s'", paramName);
+            impl = par.copyIfShared();
         }
 
+        ASSERT(!impl->isSet());  // we do not overwrite assigned values
+
+        // put new value into impl
         ExpressionElement *exprNode = paramNode->getFirstExpressionChild();
         if (exprNode)
         {
