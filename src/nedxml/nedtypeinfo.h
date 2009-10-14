@@ -75,9 +75,6 @@ class NEDXML_API NEDTypeInfo
     void mergeProperty(PropertyElement *baseprop, const PropertyElement *prop) const;
     void mergePropertyKey(PropertyKeyElement *basekey, const PropertyKeyElement *key) const;
 
-    NEDElement *getSubmoduleElement(const char *submoduleName) const;
-    NEDElement *getConnectionElement(long id) const;
-
     void checkComplianceToInterface(NEDTypeInfo *interfaceDecl);
 
   public:
@@ -189,6 +186,12 @@ class NEDXML_API NEDTypeInfo
     GatesElement *getGatesElement() const;
     SubmodulesElement *getSubmodulesElement() const;
     ConnectionsElement *getConnectionsElement() const;
+
+    /** Returns the submodule element with the given name, or NULL if not found */
+    NEDElement *getSubmoduleElement(const char *submoduleName) const;
+
+    /** Returns the connection element with the given id, or NULL if not found */
+    NEDElement *getConnectionElement(long id) const;
 
     /** Searches local type; NULL if not found */
     ParamElement *findLocalParamDecl(const char *name) const;

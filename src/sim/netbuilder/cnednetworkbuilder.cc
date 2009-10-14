@@ -84,7 +84,26 @@ static void updateOrRethrowException(std::exception& e, NEDElement *context)
 
 void cNEDNetworkBuilder::addParametersAndGatesTo(cComponent *component, cNEDDeclaration *decl)
 {
+    cContextSwitcher __ctx(component); // params need to be evaluated in the module's context FIXME needed???
     doAddParametersAndGatesTo(component, decl);
+
+    // assign submodule/connection parameters using parent module NED declaration as well
+    cModule *parentModule = component->getParentModule();
+    if (parentModule)
+    {
+        const char *parentNedTypeName = parentModule->getNedTypeName();
+        cNEDDeclaration *parentDecl = cNEDLoader::getInstance()->getDecl(parentNedTypeName);
+        if (parentDecl)  // i.e. parent was created via NED-based componentType
+        {
+            const char *name = component->getName();
+            NEDElement *subcomponentNode = component->isModule() ?
+                parentDecl->getSubmoduleElement(component->getName()) :
+                parentDecl->getConnectionElement(((cChannel*)component)->getConnectionId());
+            if (subcomponentNode)
+                assignSubcomponentParams(component, subcomponentNode);
+        }
+    }
+
     assignParametersFromPatterns(component);
 }
 
@@ -267,6 +286,8 @@ void cNEDNetworkBuilder::assignParametersFromPatterns(cComponent *component)
 
         const char *nedTypeName = parent->getNedTypeName();
         cNEDDeclaration *decl = cNEDLoader::getInstance()->getDecl(nedTypeName);
+
+//FIXME will crash if decl is NULL!! (not defined via NED)
 
         // first, check patterns in the "submodules:" section
         if (!prefix.empty())
@@ -660,7 +681,6 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleElement *submod)
         v.push_back(submodp);
 
         cContextSwitcher __ctx(submodp); // params need to be evaluated in the module's context
-        assignSubcomponentParams(submodp, submod);
         submodp->finalizeParameters(); // also sets up gate sizes declared inside the type
         setupSubmoduleGateVectors(submodp, submod);
     }
