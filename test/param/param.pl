@@ -1,4 +1,6 @@
-# This program generates NED and INI files to test the param assignment fallback mechanism in the OMNeT++ IDE.
+# This program generates NED and INI files to test the param assignment fallback mechanism in the OMNeT++ IDE against the OMNeT++ runtime.
+#
+# set $generateBogusParams to 1 if you want to test the error reporting capabilities of the IDE
 
 open INI, ">omnetpp.ini";
 print INI "[General]\n";
@@ -8,26 +10,29 @@ print INI "cmdenv-interactive = true\n\n";
 
 $singleParamIndex = 0;
 $vectorParamIndex = 0;
+$generateBogusParams = 0;
 
 foreach $submoduleCardinality ("single", "vector") {
   @patternEnum = $submoduleCardinality eq "single" ? ("") : ("[*]", "[0]", "[1]");
 
   foreach $iniKeyPattern (@patternEnum) {
     foreach $nedParamDeclarationValue ("", "default(\"NED declaration\")", "\"NED declaration\"") {
-      @nedSubmoduleParamAssignmentEnum = ("", "default(\"NED submodule\")");
+      @nedSubmoduleParamAssignmentEnum = ("");
 
-      if (!($nedParamDeclarationValue eq "\"NED declaration\"")) {
+      if ($generateBogusParams || !($nedParamDeclarationValue eq "\"NED declaration\"")) {
         push(@nedSubmoduleParamAssignmentEnum, "\"NED submodule\"");
+        push(@nedSubmoduleParamAssignmentEnum, "default(\"NED submodule\")");
       }
 
       foreach $nedSubmoduleParamAssignmentValue (@nedSubmoduleParamAssignmentEnum) {
         foreach $nedModuleParamAssignmentPattern ($nedModuleParamAssignmentValue eq "" ? ("") : @patternEnum) {
-          @nedModuleParamAssignmentEnum = ("", "default(\"NED module\")");
+          @nedModuleParamAssignmentEnum = ("");
 
-          if (!($nedModuleParamAssignmentPattern eq "") ||
+          if ($generateBogusParams || !($nedModuleParamAssignmentPattern eq "") ||
               (!($nedParamDeclarationValue eq "\"NED declaration\"") && !($nedSubmoduleParamAssignmentValue eq "\"NED submodule\"")))
           {
             push(@nedModuleParamAssignmentEnum, "\"NED module\"");
+            push(@nedModuleParamAssignmentEnum, "default(\"NED module\")");
           }
 
           foreach $nedModuleParamAssignmentValue (@nedModuleParamAssignmentEnum) {

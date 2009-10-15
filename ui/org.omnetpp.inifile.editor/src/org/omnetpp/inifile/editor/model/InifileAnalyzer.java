@@ -927,7 +927,7 @@ public class InifileAnalyzer {
 		NEDTreeTraversal treeTraversal = new NEDTreeTraversal(res, createParamCollectingNedTreeVisitor(list, res, sectionChain, doc));
 		treeTraversal.traverse(network.getFullyQualifiedName(), contextProject);
 		
-		test("C:\\Workspace\\Repository\\omnetpp\\test\\param\\param.out", list);
+		//test("C:\\Workspace\\Repository\\omnetpp\\test\\param\\param.out", list);
 
 		return list;
 	}

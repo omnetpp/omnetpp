@@ -706,7 +706,6 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleElement *submod)
             v.push_back(submodp);
 
             cContextSwitcher __ctx(submodp); // params need to be evaluated in the module's context
-            assignSubcomponentParams(submodp, submod);
             submodp->finalizeParameters(); // also sets up gate sizes declared inside the type
             setupSubmoduleGateVectors(submodp, submod);
         }
