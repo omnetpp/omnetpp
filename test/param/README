@@ -24,5 +24,4 @@ for the very same 'omnetpp.ini' and 'param.ned' files.
 
 3. Compare runtime parameter assignments with the IDE
 
-The comparison is implemented in 'param.java'. Unfortunately at the
-moment it is not runnable on its own, but must be copied into the IDE.
+The comparison is implemented in 'InifileAnalyzer.testParamAssignments'.

@@ -25,7 +25,7 @@ foreach $submoduleCardinality ("single", "vector") {
       }
 
       foreach $nedSubmoduleParamAssignmentValue (@nedSubmoduleParamAssignmentEnum) {
-        foreach $nedModuleParamAssignmentPattern ($nedModuleParamAssignmentValue eq "" ? ("") : @patternEnum) {
+        foreach $nedModuleParamAssignmentPattern (@patternEnum) {
           @nedModuleParamAssignmentEnum = ("");
 
           if ($generateBogusParams || !($nedModuleParamAssignmentPattern eq "") ||
@@ -36,7 +36,16 @@ foreach $submoduleCardinality ("single", "vector") {
           }
 
           foreach $nedModuleParamAssignmentValue (@nedModuleParamAssignmentEnum) {
+
+            if ($nedModuleParamAssignmentValue eq "" && !($nedModuleParamAssignmentPattern eq "")) {
+              next;
+            }
+
             foreach $iniValue ("", "default", "ask", "\"INI\"") {
+
+              if ($iniValue eq "" && !($iniKeyPattern eq "")) {
+                next;
+              }
 
   $paramName = $submoduleCardinality eq "single" ? "s".$singleParamIndex++ : "v".$vectorParamIndex++;
   $paramComment = $submoduleCardinality."_".$nedParamDeclarationValue."_".$nedSubmoduleParamAssignmentValue."_".$nedModuleParamAssignmentValue."_".$iniValue;

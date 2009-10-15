@@ -926,14 +926,13 @@ public class InifileAnalyzer {
 		IProject contextProject = doc.getDocumentFile().getProject();
 		NEDTreeTraversal treeTraversal = new NEDTreeTraversal(res, createParamCollectingNedTreeVisitor(list, res, sectionChain, doc));
 		treeTraversal.traverse(network.getFullyQualifiedName(), contextProject);
-		
-		//test("C:\\Workspace\\Repository\\omnetpp\\test\\param\\param.out", list);
 
 		return list;
 	}
 
     // TODO: move?
-    public void test(String fileName, ArrayList<ParamResolution> list) {
+    // testParamAssignments("C:\\Workspace\\Repository\\omnetpp\\test\\param\\param.out", list);
+    public void testParamAssignments(String fileName, ArrayList<ParamResolution> list) {
         try {
             int index = 0;
             Properties properties = new Properties();
@@ -942,28 +941,48 @@ public class InifileAnalyzer {
             for (Object key : CollectionUtils.toSorted((Set<String>)(Set)properties.keySet(), new DictionaryComparator())) {
                 String paramName = (String)key;
                 String runtimeParamValue = properties.getProperty(paramName);
+                boolean iniDefault = false;
 
                 for (ParamResolution paramResolution : list) {
-                    String paramPattern = paramResolution.key != null ? paramResolution.key : paramResolution.fullPath + "." + paramResolution.paramDeclaration.getName();
+                    String paramPattern;
+
+                    if (paramResolution.key != null) 
+                        paramPattern = paramResolution.key;
+                    else {
+                        String fullPath = paramResolution.fullPath;
+                        String paramAssignment = paramResolution.paramAssignment != null ? paramResolution.paramAssignment.getName() : paramResolution.paramDeclaration.getName();
+                        
+                        if (paramAssignment.indexOf('.') != -1)
+                            fullPath = fullPath.substring(0, fullPath.lastIndexOf('.'));
+                        
+                        paramPattern = fullPath + "." + paramAssignment;
+                    }
+
                     PatternMatcher m = new PatternMatcher(paramPattern, true, true, true);
 
                     if (m.matches(paramName)) {
                         String ideParamValue = null;
-
+                        
                         switch (paramResolution.type) {
-                            case UNASSIGNED: 
                             case INI_ASK:
+                                if (iniDefault)
+                                    continue;
+                            case UNASSIGNED: 
                                 ideParamValue = "\"" + index + "\"";
                                 index++;
                                 break;
-                            case NED:
                             case INI_DEFAULT:
+                                iniDefault = true;
+                                continue;
+                            case NED:
                             case IMPLICITDEFAULT:
                                 ideParamValue = paramResolution.paramAssignment.getValue();
                                 break;
                             case INI:
                             case INI_OVERRIDE:
                             case INI_NEDDEFAULT:
+                                if (iniDefault)
+                                    continue;
                                 ideParamValue = doc.getValue(paramResolution.section, paramResolution.key);
                                 break;
                             default: 
@@ -971,7 +990,7 @@ public class InifileAnalyzer {
                         }
 
                         if (!runtimeParamValue.equals(ideParamValue))
-                            System.out.println("*** Mismatch *** for name: " + paramName + ", runtime value: " + runtimeParamValue + ", ide value: " + ideParamValue);
+                            System.out.println("*** Mismatch *** for name: " + paramName + ", runtime value: " + runtimeParamValue + ", ide value: " + ideParamValue + ", pattern: " + paramPattern);
                         else
                             System.out.println("Match for name: " + paramName + ", value: " + runtimeParamValue);
 
@@ -1068,6 +1087,11 @@ public class InifileAnalyzer {
      *     Network.node[*].address = valueX
      * then this method will add three ParamResolutions. 
 	 */
+    // TODO: normalize param resolutions in terms of vector indices, that is the resulting param resolutions should be disjunct
+    //       this makes the order of resolutions unimportant, it also helps the user to find the actual value of a particluar parameter
+    //       since indices are always individual constants, or constant ranges, or wildcards,
+    //       and vector lower bound is always 0, while vector upper bound is either constant or unknown
+    //       it is quite doable even if not so simple
 	public static void resolveParameter(List<ParamResolution> resultList, String fullPath, Vector<INEDTypeInfo> typeInfoPath, Vector<ISubmoduleOrConnection> elementPath, String[] sectionChain, IInifileDocument doc, ParamElementEx paramDeclaration)
 	{
 	    // look up parameter assignments in NED
@@ -1088,9 +1112,14 @@ public class InifileAnalyzer {
 
         if (doc != null) {
             activeSection = sectionChain[0];
-            sectionKeys = InifileUtils.lookupParameter(fullPath + "." + paramDeclaration.getName(), hasNEDDefaultAssignment, sectionChain, doc);
+
+            // TODO: avoid calling lookupParameter twice
+            sectionKeys = InifileUtils.lookupParameter(fullPath + "." + paramDeclaration.getName(), false, sectionChain, doc);
+
             for (SectionKey sectionKey : sectionKeys)
                 hasINITotalAssignment |= ParamUtil.isTotalParamAssignment(sectionKey.key);
+
+            sectionKeys = InifileUtils.lookupParameter(fullPath + "." + paramDeclaration.getName(), hasNEDDefaultAssignment, sectionChain, doc);
         }
 
         // process non default parameter assignments from NED
