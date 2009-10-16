@@ -14,6 +14,7 @@ import java.util.Vector;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.Assert;
+import org.omnetpp.common.engine.UnitConversion;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.INEDErrorStore;
@@ -26,6 +27,7 @@ import org.omnetpp.ned.model.ex.ModuleInterfaceElementEx;
 import org.omnetpp.ned.model.ex.NEDElementUtilEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.ex.ParamElementEx;
+import org.omnetpp.ned.model.ex.PropertyElementEx;
 import org.omnetpp.ned.model.ex.SimpleModuleElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IHasGates;
@@ -367,7 +369,7 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 
                 return;
 			}
-			else validateParamAssignment(result, node, paramDeclaration);
+			else validateParamAssignment(result, (ParamElementEx)node, paramDeclaration);
 		}
 		else if (channelSpecElement!=null) {
 			// inside a connection's channel spec
@@ -396,7 +398,7 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 
 			    return;
 			}
-            else validateParamAssignment(result, node, paramDeclaration);
+            else validateParamAssignment(result, (ParamElementEx)node, paramDeclaration);
 		}
 
 		//XXX: check expression matches type in the declaration
@@ -405,8 +407,10 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 	}
 
     @SuppressWarnings("unchecked")
-    private void validateParamAssignment(Object[] result, ParamElement paramAssignment, ParamElementEx paramDeclaration) {
+    protected void validateParamAssignment(Object[] result, ParamElementEx paramAssignment, ParamElementEx paramDeclaration) {
         ArrayList<ParamElementEx> paramAssignments = ParamUtil.findParamAssignmentsForParamDeclaration((Vector<INEDTypeInfo>)result[1], (Vector<ISubmoduleOrConnection>)result[2], paramDeclaration);
+        
+        validateParamValue(paramDeclaration, paramAssignment);
 
         if (paramAssignments.indexOf(paramAssignment) == -1) {
             for (ParamElementEx otherParamAssignment : paramAssignments) {
@@ -418,6 +422,55 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 
             if (paramAssignments.indexOf(paramAssignment) == -1)
                 errors.addError(paramAssignment, "Cannot override already fixed parameter value");
+        }
+    }
+    
+    protected void validateParamValue(ParamElementEx paramDeclaration, ParamElementEx paramAssignment) {
+        // determine assignment's data type
+        int assignmentType = -1;
+        String assignmentUnit = null;
+        String assignmentValue = paramAssignment.getValue();
+
+        if (assignmentValue.equals("true") || assignmentValue.equals("false"))
+            assignmentType = NED_PARTYPE_BOOL;
+        else if (assignmentValue.startsWith("\""))
+            assignmentType = NED_PARTYPE_STRING;
+        else if (assignmentValue.startsWith("xmldoc"))
+            assignmentType = NED_PARTYPE_XML;
+        else {
+            try { 
+                assignmentUnit = UnitConversion.parseQuantityForUnit(assignmentValue); // throws exception if not a quantity
+                Assert.isNotNull(assignmentUnit);
+            } 
+            catch (RuntimeException e) {
+                // void
+            }
+
+            if (assignmentUnit != null)
+                assignmentType = NED_PARTYPE_DOUBLE;
+        }
+
+        // determine declaraion's unit
+        PropertyElementEx unitProperty = paramDeclaration.getLocalProperties().get("unit");
+        String declarationUnit = unitProperty == null ? "" : StringUtils.nullToEmpty(unitProperty.getSimpleValue());
+
+        // provided we could figure out the assignment's data type, check it's the same as declaration's data type
+        int declarationType = paramDeclaration.getType();
+        int tmpType = declarationType == NED_PARTYPE_INT ? NED_PARTYPE_DOUBLE : declarationType; // replace "int" with "double"
+
+        if (assignmentType != -1 && assignmentType != tmpType) {
+            String typeName = paramDeclaration.getAttribute(ParamElement.ATT_TYPE);
+            errors.addError(paramAssignment, "Wrong data type: " + typeName + " expected");
+        }
+
+        // if value is numeric, check units
+        if (assignmentUnit != null) {
+            try {
+                UnitConversion.parseQuantity(assignmentValue, declarationUnit); // throws exception on incompatible units
+            } 
+            catch (RuntimeException e) {
+                errors.addError(paramAssignment, e.getMessage());
+            }
         }
     }
 
