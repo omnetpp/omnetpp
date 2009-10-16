@@ -251,17 +251,17 @@ public class HoverSupport {
             String hoverText = hoverProvider.getHoverTextFor(control, control.toControl(p).x, control.toControl(p).y, preferredSize);
             if (hoverText != null) {
                 // create the control
-                informationControl = getInformationPresenterControlCreator().createInformationControl(control.getShell());
-                configureControl(informationControl, hoverText, p, preferredSize);
-                informationControl.setFocus();
+                final IInformationControl newInformationControl = getInformationPresenterControlCreator().createInformationControl(control.getShell());
+                configureControl(newInformationControl, hoverText, p, preferredSize);
+                newInformationControl.setFocus();
 
                 // it should close on losing the focus
-                informationControl.addDisposeListener(new DisposeListener() {
+                newInformationControl.addDisposeListener(new DisposeListener() {
                     public void widgetDisposed(DisposeEvent e) {
                         informationControl = null;
                     }
                 });
-                informationControl.addFocusListener(new FocusListener() {
+                newInformationControl.addFocusListener(new FocusListener() {
                     public void focusGained(FocusEvent e) {
                     }
                     public void focusLost(FocusEvent e) {
@@ -269,13 +269,13 @@ public class HoverSupport {
                     	// and transferred to the browser (this would close the infoControl on browser creation)
             			Display.getCurrent().asyncExec(new Runnable() {
             				public void run() {
-            					if (informationControl != null && !informationControl.isFocusControl()) {
-            						informationControl.dispose();
-            					}
+            					if (newInformationControl != null && !newInformationControl.isFocusControl())
+            						newInformationControl.dispose();
             				}
             			});
                     }
                 });
+                informationControl = newInformationControl;
             }
 		}
 	}
