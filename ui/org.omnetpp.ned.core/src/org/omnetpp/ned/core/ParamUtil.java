@@ -73,25 +73,46 @@ public class ParamUtil {
     }
 
     /**
-     * Returns true if there is at least one parameter declaration under type info that matches the provided name pattern.
+     * Returns the parameter declaration under type info with the path that matches the provided name pattern.
      * Recurses down on submodules.
      */
-    public static boolean hasMatchingParamDeclarationRecursively(INEDTypeInfo typeInfo, String paramNamePattern) {
-        final String fullPattern = typeInfo.getName() + "." + paramNamePattern;
-        final boolean[] result = new boolean[] {false};
-        mapParamDeclarationsRecursively(typeInfo, new RecursiveParamDeclarationVisitor() {
+    public static Object[] findMatchingParamDeclarationRecursively(INEDTypeInfo typeInfo, String paramNamePattern) {
+        String fullPattern = typeInfo.getName() + "." + paramNamePattern;
+        Object[] result = new Object[] {null, null, null};
+        mapParamDeclarationsRecursively(typeInfo, createFindMatchingParamDeclarationVisitor(fullPattern, result));
+
+        return result;
+    }
+
+    /**
+     * Returns the parameter declaration under type info with the path that matches the provided name pattern.
+     * Recurses down on submodules.
+     */
+    public static Object[] findMatchingParamDeclarationRecursively(SubmoduleElementEx submodule, String paramNamePattern) {
+        String fullPattern = getParamPathElementName(submodule) + "." + paramNamePattern;
+        Object[] result = new Object[] {null, null, null};
+        mapParamDeclarationsRecursively(submodule, createFindMatchingParamDeclarationVisitor(fullPattern, result));
+
+        return result;
+    }
+    
+    private static RecursiveParamDeclarationVisitor createFindMatchingParamDeclarationVisitor(final String fullPattern, final Object[] result) {
+        return new RecursiveParamDeclarationVisitor() {
             @Override
             protected boolean visitParamDeclaration(String fullPath, Stack<INEDTypeInfo> typeInfoPath, Stack<ISubmoduleOrConnection> elementPath, ParamElementEx paramDeclaration) {
                 String paramName = paramDeclaration.getName();
 
-                if (matchesPattern(fullPattern, fullPath == null ? paramName : fullPath + "." + paramName))
-                    result[0] = true;
-                
-                return !result[0];
-            }
-        });
+                if (matchesPattern(fullPattern, fullPath == null ? paramName : fullPath + "." + paramName)) {
+                    result[0] = paramDeclaration;
+                    result[1] = new Vector<INEDTypeInfo>(typeInfoPath);
+                    result[2] = new Vector<ISubmoduleOrConnection>(elementPath);
 
-        return result[0];
+                    return false;
+                }
+                else
+                    return true;
+            }
+        };
     }
 
     /**
@@ -119,9 +140,9 @@ public class ParamUtil {
             outer: for (int i = elementPath.size() - 1; i >= 0; i--) {
                 INEDTypeInfo typeInfo = typeInfoPath.get(i);
                 ISubmoduleOrConnection element = elementPath.get(i);
-    
+
                 Map<String, ParamElementEx> paramAssignments = null;
-                
+
                 if (element == null)
                     paramAssignments = typeInfo.getParamAssignments();
                 else if (element instanceof SubmoduleElementEx)
@@ -130,7 +151,7 @@ public class ParamUtil {
                     paramAssignments = ((ConnectionElementEx)element).getParamAssignments(typeInfo);
                 else
                     paramAssignments = element.getParamAssignments();
-    
+
                 // handle name patterns
                 for (String name : paramAssignments.keySet()) {
                     if (matchesPattern(name, paramRelativePath)) {
@@ -140,7 +161,7 @@ public class ParamUtil {
                         	break outer;
                     }
                 }
-    
+
                 // extend paramRelativePath
                 String fullName = element == null ? typeInfo.getName() : getParamPathElementName(element);
                 paramRelativePath = fullName + "." + paramRelativePath;

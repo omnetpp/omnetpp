@@ -7,7 +7,9 @@
 
 package org.omnetpp.ned.core;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Vector;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -23,6 +25,7 @@ import org.omnetpp.ned.model.ex.GateElementEx;
 import org.omnetpp.ned.model.ex.ModuleInterfaceElementEx;
 import org.omnetpp.ned.model.ex.NEDElementUtilEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
+import org.omnetpp.ned.model.ex.ParamElementEx;
 import org.omnetpp.ned.model.ex.SimpleModuleElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IHasGates;
@@ -30,6 +33,7 @@ import org.omnetpp.ned.model.interfaces.IModuleTypeElement;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
+import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
 import org.omnetpp.ned.model.pojo.ChannelInterfaceElement;
 import org.omnetpp.ned.model.pojo.ChannelSpecElement;
 import org.omnetpp.ned.model.pojo.ClassDeclElement;
@@ -350,7 +354,10 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 				return;
 			}
 
-			if (!ParamUtil.hasMatchingParamDeclarationRecursively(submoduleType, parname)) {
+			Object[] result = ParamUtil.findMatchingParamDeclarationRecursively(submoduleNode, parname);
+			ParamElementEx paramDeclaration = (ParamElementEx)result[0];
+
+			if (paramDeclaration == null) {
                 String message = "'"+parname+"': type '"+submoduleType.getName()+"' has no such parameter";
 
                 if (node.getIsPattern())
@@ -360,6 +367,7 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 
                 return;
 			}
+			else validateParamAssignment(result, node, paramDeclaration);
 		}
 		else if (channelSpecElement!=null) {
 			// inside a connection's channel spec
@@ -374,8 +382,11 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 			}
 		}
 		else {
+            Object[] result = ParamUtil.findMatchingParamDeclarationRecursively(componentNode.getNEDTypeInfo(), parname);
+            ParamElementEx paramDeclaration = (ParamElementEx)result[0];
+
 			// global "parameters" section of type
-			if (!ParamUtil.hasMatchingParamDeclarationRecursively(componentNode.getNEDTypeInfo(), parname)) {
+			if (paramDeclaration == null) {
 			    String message = "'"+parname+"': undefined parameter";
 
 			    if (node.getIsPattern())
@@ -385,12 +396,30 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 
 			    return;
 			}
+            else validateParamAssignment(result, node, paramDeclaration);
 		}
 
 		//XXX: check expression matches type in the declaration
 
 		validateChildren(node);
 	}
+
+    @SuppressWarnings("unchecked")
+    private void validateParamAssignment(Object[] result, ParamElement paramAssignment, ParamElementEx paramDeclaration) {
+        ArrayList<ParamElementEx> paramAssignments = ParamUtil.findParamAssignmentsForParamDeclaration((Vector<INEDTypeInfo>)result[1], (Vector<ISubmoduleOrConnection>)result[2], paramDeclaration);
+
+        if (paramAssignments.indexOf(paramAssignment) == -1) {
+            for (ParamElementEx otherParamAssignment : paramAssignments) {
+                if (otherParamAssignment.getIsDefault()) {
+                    errors.addWarning(paramAssignment, "Unused parameter assignment");
+                    return;
+                }
+            }
+
+            if (paramAssignments.indexOf(paramAssignment) == -1)
+                errors.addError(paramAssignment, "Cannot override already fixed parameter value");
+        }
+    }
 
 	@Override
     protected void validateElement(PropertyElement node) {

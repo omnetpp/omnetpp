@@ -114,7 +114,7 @@ public class ParametersDialog extends TitleAreaDialog {
     private static final String COLUMN_COMMENT = "comment";
     private static final String[] COLUMNS = new String[] {COLUMN_TYPE, COLUMN_NAME, COLUMN_UNIT, COLUMN_VALUE, COLUMN_COMMENT};
     private static final String[] INTERFACE_TYPE_COLUMNS = new String[] {COLUMN_TYPE, COLUMN_NAME, COLUMN_UNIT, COLUMN_COMMENT};
-    private static final String[] TYPES = new String[] {"bool", "int", "double", "string", "xml", "volatile bool", "volatile int", "volatile double", "volatile string", "volatile xml"};
+    private static final String[] TYPES = new String[] {"", "bool", "int", "double", "string", "xml", "volatile bool", "volatile int", "volatile double", "volatile string", "volatile xml"};
 
     private static final String DEFAULT_TYPE = "int";
     private static final String VOLATILE_PARAMETER_PREFIX = "volatile";
