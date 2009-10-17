@@ -35,22 +35,22 @@ public interface ISubmoduleConstraint {
 	 * The size of the module vector. Returns 0 if it is not a module vector.
 	 */
 	public int getVectorSize();
-	
+
 	/**
 	 * The index of the module in a vector (0..getVectorSize()-1)
 	 */
 	public int getVectorIndex();
-	
+
 	/**
 	 * The type of the vector arrangement (exact, column, etc...) 
 	 */
 	public VectorArrangement getVectorArrangement();
-	
+
 	/**
 	 * First argument to the vector arrangement.
 	 */
 	public int getVectorArrangementPar1();
-	
+
 	/**
 	 * Second argument to the vector arrangement.
 	 */
@@ -78,7 +78,7 @@ public interface ISubmoduleConstraint {
 	 * should be executed to place the submodule inside the compound module.
 	 */
 	public Point getCenterLocation();
-	
+
 	/**
 	 * The bounds of the main shape of submodule. This is used during the layouting process. 
 	 * This is NOT the same as the bounds of the figure, because the figure might draw range 
@@ -89,7 +89,7 @@ public interface ISubmoduleConstraint {
 	 * return a rectangle with the correct size even if centerLocation is not set.   
 	 */
 	public Rectangle getShapeBounds();
-	
+
 	/**
 	 * The bounds of the name label of the submodule.  
 	 */

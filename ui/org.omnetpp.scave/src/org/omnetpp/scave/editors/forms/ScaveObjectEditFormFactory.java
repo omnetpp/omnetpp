@@ -35,13 +35,13 @@ import org.omnetpp.scave.model.SetOperation;
 public class ScaveObjectEditFormFactory {
 
 	private static ScaveObjectEditFormFactory instance;
-	
+
 	public static ScaveObjectEditFormFactory instance() {
 		if (instance == null)
 			instance = new ScaveObjectEditFormFactory();
 		return instance;
 	}
-	
+
 	/**
 	 * Creates a form containing all editable features of the object.
 	 * @param object  the edited object
@@ -57,7 +57,7 @@ public class ScaveObjectEditFormFactory {
 	 * @param parent the parent node of the object where it is placed or will be placed 
 	 */
 	public IScaveObjectEditForm createForm(EObject object, EObject parent, Map<String,Object> formParameters, ResultFileManager manager) {
-		
+	
 		if (object instanceof BarChart)
 			return new BarChartEditForm((BarChart)object, parent, formParameters, manager);
 		else if (object instanceof ScatterChart)

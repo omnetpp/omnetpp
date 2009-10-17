@@ -27,11 +27,11 @@ public class AddToDatasetDialog extends DatasetDialog {
 		super(parentShell, "Add to dataset");
 		this.datasets = datasets;
 	}
-	
+
 	public Dataset getSelectedDataset() {
 		return selectedDataset;
 	}
-	
+
 	@Override
 	protected Control createDialogArea(Composite parent) {
 		Composite composite = (Composite)super.createDialogArea(parent);
@@ -52,7 +52,7 @@ public class AddToDatasetDialog extends DatasetDialog {
 		panel.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 2, 1));
 		return composite;
 	}
-	
+
 	private String[] getDatasetNames() {
 		String[] names = new String[datasets.length];
 		for (int i = 0; i < names.length; ++i)

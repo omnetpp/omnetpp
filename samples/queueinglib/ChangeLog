@@ -22,7 +22,7 @@
 2008-09-20  Andras Varga
 
 	* added Allocate, Deallocate
-	
+
 2008-09-19  Rudolf Hornig
 
 	* added ResourcePool, ResourceBasedQueue

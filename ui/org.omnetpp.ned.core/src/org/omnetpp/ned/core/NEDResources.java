@@ -141,7 +141,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
     // cache for the method lookupNedType(String name, INedTypeLookupContext lookupContext)
     private Map<INedTypeLookupContext, Map<String, INEDTypeInfo>> nedTypeLookupCache = new HashMap<INedTypeLookupContext, Map<String,INEDTypeInfo>>();  
-	
+
     // utilities for predicate-based filtering of NED types using getAllNedTypes()
     public static class InstanceofPredicate implements IPredicate {
     	private Class<? extends INedTypeElement> clazz;
@@ -320,7 +320,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 				int elementId = marker.getAttribute(NEDMarkerErrorStore.NEDELEMENT_ID, -1);
 				if (elementId != -1 && node.findElementWithId(elementId) != null)
 					result.add(marker);
-				
+			
 				// skip the remaining after reaching limit
 				if (result.size() >= limit)
 					break;
@@ -483,7 +483,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         }
         return null;
 	}
-	
+
     public synchronized INEDTypeInfo lookupNedType(String name, INedTypeLookupContext lookupContext) {
         // return cached value if exists, otherwise call doLookupNedType()
         Map<String, INEDTypeInfo> map = nedTypeLookupCache.get(lookupContext);
@@ -501,9 +501,9 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     protected INEDTypeInfo doLookupNedType(String name, INedTypeLookupContext lookupContext) {
         rehashIfNeeded();
 		Assert.isTrue(lookupContext!=null, "lookupNedType() cannot be called with context==null");
-		
+	
 		// if (debug) Debug.println("looking up: " + name + " in " + lookupContext.debugString());
-		
+	
 	    // note: this method is to be kept consistent with NEDResourceCache::resolveNedType() in the C++ code
 	    // note2: partially qualified names are not supported: name must be either simple name or fully qualified
 		IProject project = getNedFile(lookupContext.getContainingNedFileElement()).getProject();

@@ -31,7 +31,7 @@ public class MsgEditorMessages {
 			return "!" + key + "!"; 
 		}
 	}
-	
+
 	public static ResourceBundle getResourceBundle() {
 		return fgResourceBundle;
 	}

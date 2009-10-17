@@ -265,7 +265,7 @@ public class NEDValidator extends AbstractNEDValidatorEx {
         
         // then process children
         validateChildren(node);
-		
+	
 	}
 
 	@Override

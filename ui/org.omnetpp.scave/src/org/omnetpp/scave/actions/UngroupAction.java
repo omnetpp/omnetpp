@@ -59,7 +59,7 @@ public class UngroupAction extends AbstractScaveAction {
 		Group group = getSelectedGroup(selection);
 		return group != null && group.eContainer() != null && group.getItems().size() > 0;
 	}
-	
+
 	private static Group getSelectedGroup(IStructuredSelection selection) {
 		if (selection != null && selection.size() == 1 && 
 			selection.getFirstElement() instanceof Group)

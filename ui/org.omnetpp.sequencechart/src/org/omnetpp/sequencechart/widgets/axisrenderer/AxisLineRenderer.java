@@ -21,7 +21,7 @@ public class AxisLineRenderer implements IAxisRenderer {
 	protected SequenceChart sequenceChart;
 
     protected ModuleTreeItem module;
-	
+
 	public AxisLineRenderer(SequenceChart sequenceChart, ModuleTreeItem module) {
 		this.sequenceChart = sequenceChart;
 		this.module = module;
@@ -30,7 +30,7 @@ public class AxisLineRenderer implements IAxisRenderer {
 	public int getHeight() {
 	    return module.isCompoundModule() ? 3 : 1;
 	}
-	
+
 	public void drawAxis(Graphics graphics, long startEventPtr, long endEventPtr)
 	{
 		Rectangle rect = graphics.getClip(Rectangle.SINGLETON);
@@ -38,7 +38,7 @@ public class AxisLineRenderer implements IAxisRenderer {
 
         graphics.setForegroundColor(module.isCompoundModule() ? ColorFactory.DIM_GREY : ColorFactory.BLACK);
         graphics.drawLine(rect.x, 0, rect.right(), 0);
-		
+	
 		if (module.isCompoundModule()) {
             graphics.drawLine(rect.x, 2, rect.right(), 2);
             graphics.setForegroundColor(ColorFactory.WHITE);

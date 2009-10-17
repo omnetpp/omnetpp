@@ -26,9 +26,9 @@ import org.omnetpp.scave.charting.plotter.IChartSymbol;
  * @author tomi
  */
 public class SymbolImageFactory {
-	
+
 	static Map<MultiKey,String> imageFileMap = new HashMap<MultiKey,String>();
-	
+
 	/**
 	 * Returns the file name of the image containing the given symbol
 	 * in the given color.
@@ -42,7 +42,7 @@ public class SymbolImageFactory {
 		}
 		return fileName;
 	}
-	
+
 	private static String createImageFile(Color color, IChartSymbol symbol, boolean drawLine) {
 		Image image = null;
 		try {
@@ -60,7 +60,7 @@ public class SymbolImageFactory {
 				image.dispose();
 		}
 	}
-	
+
 	private static Image createSymbolImage(IChartSymbol symbol, Color color, boolean drawLine) {
 		int size = symbol != null ? symbol.getSizeHint() : 0;
 		Image image = null;

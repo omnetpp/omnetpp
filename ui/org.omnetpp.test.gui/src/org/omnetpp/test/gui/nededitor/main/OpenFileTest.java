@@ -21,7 +21,7 @@ public class OpenFileTest
 		assertBothEditorsAreAccessible();
 		WorkbenchUtils.assertNoErrorMessageInProblemsView();
 	}
-	
+
 	public void testOpenFileWithSyntaxError() throws Throwable  {
 		createFileWithContent("syntax error Test {}");
 		openFileFromProjectExplorerView();

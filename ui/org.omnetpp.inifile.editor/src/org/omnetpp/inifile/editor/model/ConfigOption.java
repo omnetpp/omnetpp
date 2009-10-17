@@ -76,7 +76,7 @@ public class ConfigOption {
 	public String getUnit() {
 		return unit;
 	}
-	
+
 	public boolean containsWildcard() {
 		return name.contains("%") || name.contains("*");
 	}

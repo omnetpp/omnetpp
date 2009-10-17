@@ -16,15 +16,15 @@ import org.omnetpp.common.Debug;
 @SuppressWarnings("unchecked")
 public class ComputedState<T> {
 	private static long currentPulse = 0;
-	
+
 	private long pulse = -1;
-	
+
 	private List<ComputedState> dependsOn = new ArrayList<ComputedState>();
-	
+
 	private IComputation computation;
-	
+
 	private T value;
-	
+
 	public ComputedState() {
 		this(null);
 	}
@@ -32,7 +32,7 @@ public class ComputedState<T> {
 	public ComputedState(IComputation computation) {
 		this.computation = computation;
 	}
-	
+
 	public boolean isValid() {
 		if (pulse == -1)
 			return false;
@@ -42,13 +42,13 @@ public class ComputedState<T> {
 
 		return isValidRecursive(this);
 	}
-	
+
 	private boolean isValidRecursive(ComputedState computedState) {
 		for (Object o : computedState.dependsOn) {
 			ComputedState c = (ComputedState)o;
 			if (!c.isValid())
 				return false;
-			
+		
 			if (c.pulse >= pulse)
 				return false;
 		}
@@ -58,7 +58,7 @@ public class ComputedState<T> {
 
 	public T recomputeIfInvalidAs(IComputation computation) {
 		this.computation = computation;
-		
+	
 		return recomputeIfInvalid();
 	}
 

@@ -33,7 +33,7 @@ public class ImageComboAccess extends ControlAccess
     public boolean isEditable() {
     	return (getControl().getStyle() & SWT.READ_ONLY) == 0;
     }
-	
+
     @UIStep
 	public String[] getComboItems() {
 	    TableItem[] items = getControl().getItems();
@@ -42,7 +42,7 @@ public class ImageComboAccess extends ControlAccess
 	        result[i] = items[i].getText();
         return result;
 	}
-	
+
 	@UIStep
 	public String getTextContent() {
 		return getControl().getText();

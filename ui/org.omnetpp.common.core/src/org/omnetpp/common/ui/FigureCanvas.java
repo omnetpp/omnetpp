@@ -31,7 +31,7 @@ public class FigureCanvas extends Canvas {
 		lws = new LightweightSystem(this);
 		lws.setContents(contents);
 	}
-	
+
 	public IFigure getRootFigure() {
 		return contents;
 	}

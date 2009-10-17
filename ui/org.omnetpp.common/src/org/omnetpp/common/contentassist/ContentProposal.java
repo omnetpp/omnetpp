@@ -33,7 +33,7 @@ public class ContentProposal implements IContentProposal, Comparable {
 	private String content;
 
 	private String label;
-	
+
 	private String description;
     
 	private int cursorPosition; // position of the cursor relative to content after the proposal accepted
@@ -43,7 +43,7 @@ public class ContentProposal implements IContentProposal, Comparable {
 	private int startIndex; // start of the replaced range
     
 	private int endIndex; // end of the replaced range
-	
+
 	public ContentProposal(String content) {
 		this(content, content, content, content.length());
 	}

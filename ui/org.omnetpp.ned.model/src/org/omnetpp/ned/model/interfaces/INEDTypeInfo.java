@@ -46,7 +46,7 @@ public interface INEDTypeInfo extends INEDChangeListener {
 	 * Returns the name prefix, i.e. the fully qualified name minus the simple name.
 	 */
 	public String getNamePrefix();
-	
+
 	/**
 	 * Returns the package of the NED type, or null for the default package.
 	 */

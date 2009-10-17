@@ -37,7 +37,7 @@ public class SendDirectAnimation extends SendMessageAnimation {
 	protected Point getBeginPoint() {
 		return getSubmoduleFigureCenter(sourceModuleId);
 	}
-	
+
 	@Override
 	protected Point getEndPoint() {
 		return getSubmoduleFigureCenter(destinationModuleId);

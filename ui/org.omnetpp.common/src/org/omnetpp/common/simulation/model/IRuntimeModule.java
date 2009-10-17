@@ -10,7 +10,7 @@ package org.omnetpp.common.simulation.model;
 import org.omnetpp.common.displaymodel.IDisplayString;
 
 public interface IRuntimeModule {
-	
+
 	public int getId();
 
 	public String getName();
@@ -20,7 +20,7 @@ public interface IRuntimeModule {
 	public int getVectorSize();
 
 	public boolean isVector();
-	
+
 	public String getFullName();
 
 	public String getFullPath();
@@ -30,9 +30,9 @@ public interface IRuntimeModule {
 	public IDisplayString getDisplayString();
 
 	public IRuntimeModule getParentModule();
-	
+
 	//public List<? extends IRuntimeModule> getSubmodules();
-	
+
     public IRuntimeModule getSubmodule(String name);
 
     public IRuntimeModule getSubmodule(String name, int index);

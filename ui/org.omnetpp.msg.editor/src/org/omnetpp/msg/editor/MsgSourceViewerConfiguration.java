@@ -34,19 +34,19 @@ public class MsgSourceViewerConfiguration extends SourceViewerConfiguration {
 	public String[] getIndentPrefixes(ISourceViewer sourceViewer, String contentType) {
         return new String[] { "    ", "" }; 
     }
-		
+	
 	@Override
 	public IAutoEditStrategy[] getAutoEditStrategies(ISourceViewer sourceViewer, String contentType) {
 		IAutoEditStrategy strategy= (IDocument.DEFAULT_CONTENT_TYPE.equals(contentType) ? new MsgAutoIndentStrategy() : new DefaultIndentLineAutoEditStrategy());
 		return new IAutoEditStrategy[] { strategy };
 	}
-	
-	
+
+
 	@Override
 	public String[] getDefaultPrefixes(ISourceViewer sourceViewer, String contentType) {
 		return new String[] {MsgSyntaxHighlightPartitionScanner.MSG_DOC.equals(contentType) ? "// " : null};
 	}
-	
+
 	@Override
 	public IPresentationReconciler getPresentationReconciler(ISourceViewer sourceViewer) {
 		PresentationReconciler reconciler= new PresentationReconciler();
@@ -70,5 +70,5 @@ public class MsgSourceViewerConfiguration extends SourceViewerConfiguration {
 
 		return reconciler;
 	}
-	
+
 }

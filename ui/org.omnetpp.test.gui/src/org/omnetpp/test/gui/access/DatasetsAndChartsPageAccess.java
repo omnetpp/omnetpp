@@ -30,7 +30,7 @@ import com.simulcraft.test.gui.access.ShellAccess;
 import com.simulcraft.test.gui.access.TreeAccess;
 
 public class DatasetsAndChartsPageAccess extends CompositeAccess {
-	
+
 	public DatasetsAndChartsPageAccess(Composite composite) {
 		super(composite);
 	}
@@ -40,23 +40,23 @@ public class DatasetsAndChartsPageAccess extends CompositeAccess {
 				findDescendantControl(
 						Predicate.hasID(DATASETS_TREE_ID)));
 	}
-	
+
 	public TreeAccess getChartsheetsTree() {
 		return (TreeAccess)createAccess(
 				findDescendantControl(
 						Predicate.hasID(CHARTSHEETS_TREE_ID)));
 	}
-	
+
 	public ModelObjectPaletteAccess getPalette() {
 		return new ModelObjectPaletteAccess(
 						(Composite)findDescendantControl(
 									Predicate.hasID(DATASETS_PAGE_PALETTE_ID)));
 	}
-	
+
 	public void selectDataset(String datasetName) {
 		getDatasetsTree().findTreeItemByContent("dataset.*" + datasetName + ".*").reveal().click();
 	}
-	
+
 	public DatasetsAndChartsPageAccess createDataset(String datasetName) {
 		getPalette().clickButton(DATASET_BUTTON);
 		ShellAccess dialog = Access.findShellWithTitle("New Object");
@@ -64,15 +64,15 @@ public class DatasetsAndChartsPageAccess extends CompositeAccess {
 		dialog.findButtonWithLabel("Finish").selectWithMouseClick();
 		return this;
 	}
-	
+
 	public DatasetsAndChartsPageAccess createAdd(String datasetName, String dataType) {
 		return createAddDiscard(datasetName, ADD_BUTTON, dataType);
 	}
-	
+
 	public DatasetsAndChartsPageAccess createDiscard(String datasetName, String dataType) {
 		return createAddDiscard(datasetName, DISCARD_BUTTON, dataType);
 	}
-	
+
 	public DatasetsAndChartsPageAccess createAddDiscard(String datasetName, String button, String dataType) {
 		selectDataset(datasetName);
 		getPalette().clickButton(button);
@@ -81,11 +81,11 @@ public class DatasetsAndChartsPageAccess extends CompositeAccess {
 		dialog.findButtonWithLabel("Finish").selectWithMouseClick();
 		return this;
 	}
-	
+
 	public DatasetsAndChartsPageAccess createApply(String datasetName, String operation) {
 		return createProcessingOperation(datasetName, APPLY_BUTTON, operation);
 	}
-	
+
 	public DatasetsAndChartsPageAccess createCompute(String datasetName, String operation) {
 		return createProcessingOperation(datasetName, COMPUTE_BUTTON, operation);
 	}
@@ -100,15 +100,15 @@ public class DatasetsAndChartsPageAccess extends CompositeAccess {
 		dialog.findButtonWithLabel("Finish").selectWithMouseClick();
 		return this;
 	}
-	
+
 	public DatasetsAndChartsPageAccess createBarChart(String datasetName, String chartName) {
 		return createChart(datasetName, BAR_CHART_BUTTON, chartName);
 	}
-	
+
 	public DatasetsAndChartsPageAccess createLineChart(String datasetName, String chartName) {
 		return createChart(datasetName, LINE_CHART_BUTTON, chartName);
 	}
-	
+
 	public DatasetsAndChartsPageAccess createHistogramChart(String datasetName, String chartName) {
 		return createChart(datasetName, HISTOGRAM_CHART_BUTTON, chartName);
 	}
@@ -116,7 +116,7 @@ public class DatasetsAndChartsPageAccess extends CompositeAccess {
 	public DatasetsAndChartsPageAccess createScatterChart(String datasetName, String chartName) {
 		return createChart(datasetName, SCATTER_CHART_BUTTON, chartName);
 	}
-	
+
 	public DatasetsAndChartsPageAccess createChart(String datasetName, String chartButton, String chartName) {
 		selectDataset(datasetName);
 		getPalette().clickButton(chartButton);
@@ -125,7 +125,7 @@ public class DatasetsAndChartsPageAccess extends CompositeAccess {
 		dialog.findButtonWithLabel("Finish").selectWithMouseClick();
 		return this;
 	}
-	
+
 	public DatasetsAndChartsPageAccess createChartsheet(String chartsheetName) {
 		getPalette().clickButton(CHARTSHEET_BUTTON);
 		ShellAccess dialog = Access.findShellWithTitle("New Object");
@@ -133,5 +133,5 @@ public class DatasetsAndChartsPageAccess extends CompositeAccess {
 		dialog.findButtonWithLabel("Finish").selectWithMouseClick();
 		return this;
 	}
-	
+
 }

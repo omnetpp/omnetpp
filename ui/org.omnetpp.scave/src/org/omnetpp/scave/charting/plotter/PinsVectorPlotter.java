@@ -21,7 +21,7 @@ import org.omnetpp.scave.charting.dataset.IXYDataset;
 public class PinsVectorPlotter extends VectorPlotter {
 
 	protected double referenceLevel = 0;  // baseline for the pins
-	
+
 	public double getReferenceLevel() {
 		return referenceLevel;
 	}
@@ -56,16 +56,16 @@ public class PinsVectorPlotter extends VectorPlotter {
 		int refY = Double.isInfinite(transformedReferenceLevel) || Double.isNaN(transformedReferenceLevel) ?
 					plot.getPlotRectangle().bottom() :
 					mapping.toCanvasY(referenceLevel);
-		
+	
 		int prevX = -1;
 		int maxY = refY;
 		int minY = refY;
-		
+	
 		// We are drawing solid vertical lines, so antialiasing does not improve
 		// the plot much, but it slows down the plotting by a factor of 2.
 		int origAntialias = gc.getAntialias();
 		gc.setAntialias(SWT.OFF);
-		
+	
 		// draw pins
 		IXYDataset dataset = plot.getDataset();
 		for (int i = first; i <= last; i++) {
@@ -91,7 +91,7 @@ public class PinsVectorPlotter extends VectorPlotter {
 				maxY = y;
 			}
 		}
-		
+	
 		// restore original antialias mode
 		gc.setAntialias(origAntialias);
 

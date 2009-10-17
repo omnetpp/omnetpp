@@ -349,7 +349,7 @@ public class NedEditor
         
         currentPageIndex = newPageIndex;
 	}
-	
+
 	@Override
 	public boolean isDirty() {
         // The default behavior is wrong when undoing changes in both editors.
@@ -368,7 +368,7 @@ public class NedEditor
             textEditor.pullChangesFromNEDResourcesWhenPending();
             graphicalEditor.markSaved();
 		}
-		
+	
 		if (getActivePage() == textPageIndex)
 		    textEditor.pushChangesIntoNEDResources();
     }

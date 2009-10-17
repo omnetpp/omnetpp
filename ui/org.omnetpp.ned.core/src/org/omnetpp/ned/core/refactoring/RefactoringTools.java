@@ -131,7 +131,7 @@ public class RefactoringTools {
 	 */
 	protected static void resolveImport(IProject contextProject, String unqualifiedTypeName, String packagePrefix, List<String> oldImports, List<String> imports) {
 		NEDResources res = NEDResourcesPlugin.getNEDResources();
-		
+	
 		// name is in the same package as this file, no need to add an import
 		if (res.getToplevelNedType(packagePrefix + unqualifiedTypeName, contextProject) != null)
 			return;

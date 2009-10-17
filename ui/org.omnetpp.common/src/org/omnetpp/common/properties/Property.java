@@ -38,7 +38,7 @@ public @interface Property {
 	 * @return
 	 */
 	String displayName() default "";
-	
+
 	/**
 	 * Category of the property (optional).
 	 */
@@ -70,7 +70,7 @@ public @interface Property {
 	 * The returned class must have an (Object id, String displayName) constructor. 
 	 */
 	Class<? extends PropertyDescriptor> descriptorClass() default PropertyDescriptor.class;
-	
+
 	/**
 	 * Specifies that the property value can be <code>null</code>.
 	 * Used only for Enum properties.

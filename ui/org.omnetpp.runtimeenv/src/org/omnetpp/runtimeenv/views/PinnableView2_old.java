@@ -30,7 +30,7 @@ public abstract class PinnableView2_old extends ViewWithMessagePart {
 	private boolean isPinned = false;
 	private IWorkbenchPart associatedPart = null; // where the selection we display comes from
 	private IAction pinAction;
-	
+
 	private ISelectionListener selectionChangedListener;
 	private IPartListener partListener;
 
@@ -138,7 +138,7 @@ public abstract class PinnableView2_old extends ViewWithMessagePart {
 			};
 		} 
 		return pinAction;
-	}	
+	}
 
 	/**
 	 * Returns the associated editor or view (the selection of which we 
@@ -158,7 +158,7 @@ public abstract class PinnableView2_old extends ViewWithMessagePart {
 		ISelectionProvider selectionProvider = associatedPart.getSite().getSelectionProvider();
 		return selectionProvider == null ? null : selectionProvider.getSelection();
 	}
-	
+
 	/**
 	 * Pin the view to the current editor's current selection.
 	 */

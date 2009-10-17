@@ -43,7 +43,7 @@ public class AddWildcardResultFileAction extends AbstractScaveAction {
 			return null;
 		}
 	}
-	
+
 	@Override
 	protected void doRun(ScaveEditor editor, IStructuredSelection selection) {
 		InputValidator inputValidator = new InputValidator();
@@ -52,7 +52,7 @@ public class AddWildcardResultFileAction extends AbstractScaveAction {
 				"*.vec, *.sca", inputValidator);
 		if (dialog.open() == Window.OK) {
 			String text = dialog.getValue();
-			
+		
 			// split up text to multiple patterns, and add each one
 			for (String fileNamePattern : StringUtils.split(text, ",")) {
 				fileNamePattern = fileNamePattern.trim();

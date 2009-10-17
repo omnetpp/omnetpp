@@ -97,7 +97,7 @@ public class ToolButton extends Canvas {
 			public void mouseHover(MouseEvent e) {
 			}
 		});
-		
+	
 		addMouseListener(new MouseListener() {
 			public void mouseDoubleClick(MouseEvent e) {
 			}
@@ -189,7 +189,7 @@ public class ToolButton extends Canvas {
 		textWidth = size.x;
 		textHeight = size.y;
 	}
-	
+
 	public Point computeSize(int wHint, int hHint, boolean changed) {
 		checkWidget();
 		if (textWidth == -1) {

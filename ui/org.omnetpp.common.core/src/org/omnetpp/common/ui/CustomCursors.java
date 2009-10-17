@@ -23,15 +23,15 @@ public class CustomCursors {
 
 	/** Zoom in cursor */
 	public static final Cursor ZOOMIN;
-	
+
 	/** Zoom out cursor */
 	public static final Cursor ZOOMOUT;
-	
+
 	static {
 		ZOOMIN = createCursor(CURSOR_IMAGE_ZOOMIN, 0, 0);
 		ZOOMOUT = createCursor(CURSOR_IMAGE_ZOOMOUT, 0, 0);
 	}
-	
+
 	private static Cursor createCursor(String imageName, int hotspotX, int hotspotY) {
 		Image image = ImageFactory.getImage(imageName);
 		if (image != null) {

@@ -43,23 +43,23 @@ public abstract class ExportWizardPage extends WizardPage {
 	private Button[] groupByCheckboxes;
 	private Combo precisionCombo;
 	FileSelectionPanel fileSelectionPanel;
-	
+
 	private static final String FILENAME_KEY = "filename";
 	private static final String GROUPBY_KEY = "groupBy";
 	private static final String PRECISION_KEY = "precision";
 	private static final String DATA_KEY = "org.omnetpp.scave.wizard.ExportWizardPage"; 
-	
+
 	protected ExportWizardPage(String pageName, String title,
 			ImageDescriptor titleImage) {
 		super(pageName, title, titleImage);
 	}
-	
+
 	protected abstract String[] getFileDialogFilterExtensions();
-	
+
 	protected String getFileName() {
 		return fileSelectionPanel.getFileName();
 	}
-	
+
 	protected void setFileName(String fileName) {
 		fileSelectionPanel.setFileName(fileName);
 	}
@@ -69,10 +69,10 @@ public abstract class ExportWizardPage extends WizardPage {
 		for (Button radio : groupByCheckboxes)
 			if (radio.getSelection())
 				fields.add((String)radio.getData(DATA_KEY));
-				
+			
 		return new ResultItemFields(fields);
 	}
-	
+
 	protected int getPrecision() {
 		String value = precisionCombo.getText();
 		if (value != null && !value.equals(""))
@@ -80,7 +80,7 @@ public abstract class ExportWizardPage extends WizardPage {
 		else
 			return 18;
 	}
-	
+
 	public void createControl(Composite parent) {
 		Composite panel = new Composite(parent, SWT.NONE);
 		panel.setLayout(new GridLayout(1, false));
@@ -88,13 +88,13 @@ public abstract class ExportWizardPage extends WizardPage {
 		updateDescription();
 		restoreDialogSettings();
 	}
-	
+
 	protected void createPanels(Composite parent) {
 		createFileSelectionPanel(parent);
 		createColumnSelectionPanel(parent);
 		createPrecisionPanel(parent);
 	}
-	
+
 	protected void createColumnSelectionPanel(Composite parent) {
 		Group group = new Group(parent, SWT.NONE);
 		group.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
@@ -107,14 +107,14 @@ public abstract class ExportWizardPage extends WizardPage {
 		groupByCheckboxes[i++] = createCheckboxForField(group, "module name", MODULE);
 		groupByCheckboxes[i++] = createCheckboxForField(group, "scalar name", NAME);
 	}
-	
+
 	protected Button createCheckboxForField(Composite parent, String name, String field) {
 		Button checkbox = new Button(parent, SWT.CHECK);
 		checkbox.setText(name);
 		checkbox.setData(DATA_KEY, field);
 		return checkbox;
 	}
-	
+
 	protected void createPrecisionPanel(Composite parent) {
 		Group group = new Group(parent, SWT.NONE);
 		group.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
@@ -127,14 +127,14 @@ public abstract class ExportWizardPage extends WizardPage {
 			precisionCombo.add(String.valueOf(prec));
 		precisionCombo.select(precisionCombo.getItemCount()-1);
 	}
-	
+
 	protected void createFileSelectionPanel(Composite parent) {
 		fileSelectionPanel = 
 			new FileSelectionPanel(parent, SWT.NONE, "To file:", SWT.SAVE, "Save to file",
 					getFileDialogFilterExtensions());
 		fileSelectionPanel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		setControl(fileSelectionPanel);
-		
+	
 		fileSelectionPanel.addPropertyChangeListener(new IPropertyChangeListener() {
 			public void propertyChange(PropertyChangeEvent event) {
 				if (FileSelectionPanel.PROP_FILENAME.equals(event.getProperty()))
@@ -142,7 +142,7 @@ public abstract class ExportWizardPage extends WizardPage {
 			}
 		});
 	}
-	
+
 	protected void updateDescription() {
 		IWizard wizard = getWizard();
 		if (wizard instanceof AbstractExportWizard) {
@@ -154,7 +154,7 @@ public abstract class ExportWizardPage extends WizardPage {
 										scalars, vectors, histograms));
 		}
 	}
-	
+
 	protected void updatePageCompletion() {
 		if (!validFile()) {
 			setErrorMessage("File is not set, or it is a directory.");
@@ -165,12 +165,12 @@ public abstract class ExportWizardPage extends WizardPage {
 			setPageComplete(true);
 		}
 	}
-	
+
 	protected boolean validFile() {
 		File file = new File(getFileName());
 		return file.getPath().length() != 0 && !file.isDirectory();
 	}
-	
+
 	protected void saveDialogSettings() {
 		IDialogSettings settings = getDialogSettings();
 		if (settings != null) {
@@ -182,7 +182,7 @@ public abstract class ExportWizardPage extends WizardPage {
 			}
 		}
 	}
-	
+
 	protected void restoreDialogSettings() {
 		IDialogSettings settings = getDialogSettings();
 		if (settings != null) {

@@ -39,18 +39,18 @@ public abstract class AbstractExportWizard extends Wizard implements IExportWiza
 	protected DatasetItem selectedDatasetItem;
 	protected ResultFileManager manager;
 	protected ExportWizardPage page;
-	
-	
+
+
 	protected AbstractExportWizard() {
 		setWindowTitle("Export");
 	}
-	
+
 	/**
 	 * Sets the IDs of data to be exported and the ResultFileManager that owns them.
 	 */
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
 		// XXX use the selection of the active Scave editor instead passed parameter
-		
+	
 		// selection is IDListSelection
 		if (selection instanceof IDListSelection) {
 			IDListSelection idlistSelection = (IDListSelection)selection;
@@ -75,7 +75,7 @@ public abstract class AbstractExportWizard extends Wizard implements IExportWiza
 			}
 		}
 	}
-	
+
 	@Override
 	public boolean canFinish() {
 		return page != null && manager != null && super.canFinish();
@@ -104,9 +104,9 @@ public abstract class AbstractExportWizard extends Wizard implements IExportWiza
 		}
 		return false;
 	}
-	
+
 	protected abstract ScaveExport createExporter();
-	
+
 	protected void saveDialogSettings() {
 		if (page != null)
 			page.saveDialogSettings();

@@ -70,7 +70,7 @@ public interface IRuntimeMessage {
 	 * hasn't been sent/scheduled yet.
 	 */
 	public double getArrivalTime();
-	
+
     /**
      * Returns a unique message identifier assigned upon message creation.
      */

@@ -43,7 +43,7 @@ public class VectorResultRowRenderer extends LabelProvider implements IVirtualTa
 	protected EnumType enumType;
 	protected ResultItemValueFormatter valueLabelProvider = new ResultItemValueFormatter();
 	protected int fontHeight;
-	
+
 	public void setInput(Object input) {
 		if (input instanceof ResultItemRef) {
 			valueLabelProvider.setResultItem((ResultItemRef)input);

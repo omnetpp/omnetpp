@@ -15,7 +15,7 @@ import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model2.DatasetManager;
 
 public class HistogramDataset implements IHistogramDataset {
-	
+
 	private static class HistogramData {
 		String key;
 		boolean isDiscrete;
@@ -37,9 +37,9 @@ public class HistogramDataset implements IHistogramDataset {
 			this.cellValues = cellValues;
 		}
 	}
-	
+
 	private HistogramData[] histograms;
-	
+
 	public HistogramDataset(IDList idlist, ResultFileManager manager) {
 		Assert.isLegal(idlist.areAllHistograms());
 		String[] keys = DatasetManager.getResultItemNames(idlist, null, manager);
@@ -60,7 +60,7 @@ public class HistogramDataset implements IHistogramDataset {
 									cellBreaks, cellValues);
 		}
 	}
-	
+
 	public String getTitle(String format) {
 		// TODO Auto-generated method stub
 		return null;
@@ -73,7 +73,7 @@ public class HistogramDataset implements IHistogramDataset {
 	public String getSeriesKey(int series) {
 		return histograms[series].key;
 	}
-	
+
 	public boolean isDiscrete(int series) {
 		return histograms[series].isDiscrete;
 	}

@@ -47,7 +47,7 @@ public class InifileConverter {
 	    text = "\n"+text+"\n";
 	    return text.matches("(?s).*\n\\s*\\[("+allObsoleteSections+"|Run ([0-9]+))\\][^\n]*\n.*");
 	}
-	
+
 	/**
 	 * Migrates 3.x ini files to 4.x format. This consists of the following:
 	 * 
@@ -62,7 +62,7 @@ public class InifileConverter {
 	 */
 	public static String convert(String text) {
 		String MULTILINE = "(?m)";  // turns on regex MULTILINE mode (Perl: s///m) 
-		
+	
         // rename Cmdenv keys
 	    String allCmdenvNames = StringUtils.join(CMDENV_NAMES, "|");
 	    text = text.replaceAll(MULTILINE+"^(\\s*[;#]?\\s*)("+allCmdenvNames+")\\b", "$1cmdenv-$2");
@@ -95,7 +95,7 @@ public class InifileConverter {
         // remove -kb from key, add KB to value
         String allKbNames = "total-stack|cmdenv-extra-stack|tkenv-extra-stack";
         text = text.replaceAll(MULTILINE+"^(\\s*[;#]?\\s*)("+allKbNames+")-kb\\s*=\\s*([0-9]+)", "$1$2 = $3KB");
-    	
+    
         // convert yes/no and on/off to true/false
     	text = text.replaceAll(MULTILINE+"=\\s*yes\\b", "= true");
     	text = text.replaceAll(MULTILINE+"=\\s*no\\b",  "= false");

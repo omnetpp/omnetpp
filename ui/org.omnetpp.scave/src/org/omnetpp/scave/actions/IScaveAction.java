@@ -25,7 +25,7 @@ public interface IScaveAction extends IAction {
 	 * this method should be implemented to enable/disable the action accordingly.
 	 */
 	public void selectionChanged(ISelection selection);
-	
+
 	/**
 	 * When set, the action will operate on the selection of the viewer,
 	 * and not on the selection service's selection.

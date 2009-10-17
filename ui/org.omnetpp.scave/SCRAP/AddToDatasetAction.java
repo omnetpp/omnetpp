@@ -46,7 +46,7 @@ public class AddToDatasetAction extends AbstractScaveAction {
 		dialog.setFilterParams(activePanel.getFilterParams());
 		dialog.setFilterHints(activePanel.getFilterHints());
 		dialog.setUseFilter(activePanel.getTable().getSelectionCount() == 0);
-		
+
 		int status = dialog.open();
 		if (status == Window.OK) {
 			Dataset dataset = dialog.getSelectedDataset();
@@ -60,7 +60,7 @@ public class AddToDatasetAction extends AbstractScaveAction {
 					if (item instanceof Chart || item instanceof Group)
 						break;
 				}
-				
+		
 				Command command = dialog.useFilter() ?
 					AddCommand.create(
 							editor.getEditingDomain(),
@@ -85,7 +85,7 @@ public class AddToDatasetAction extends AbstractScaveAction {
 	protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
 		return editor.getBrowseDataPage().getActivePanel() != null && getDatasets(editor) != null;
 	}
-	
+
 	private List getDatasets(ScaveEditor editor) {
 		Analysis analysis = editor.getAnalysis();
 		if (analysis.getDatasets() != null &&

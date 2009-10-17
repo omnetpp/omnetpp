@@ -31,16 +31,16 @@ import org.omnetpp.scave.engineext.ResultFileFormatException;
 public class ResultFileManagerUpdaterJob extends Job {
 
 	private static final boolean debug = true;
-	
+
 	private enum Operation {
 		Load,
 		Unload
 	};
-	
+
 	private static class Task {
 		Operation operation;
 		IFile file;
-		
+	
 		public Task(Operation operation, IFile file) {
 			this.operation = operation;
 			this.file = file;
@@ -49,24 +49,24 @@ public class ResultFileManagerUpdaterJob extends Job {
 
 	private ResultFileManager manager;
 	private Queue<Task> tasks = new ConcurrentLinkedQueue<Task>();
-	
+
 	public ResultFileManagerUpdaterJob(ResultFileManager manager) {
 		super("Loading files");
 		this.manager = manager;
 	}
-	
+
 	public void load(IFile file) {
 		tasks.offer(new Task(Operation.Load, file));
 		if (getState() == NONE)
 			schedule();
 	}
-	
+
 	public void unload(IFile file) {
 		tasks.offer(new Task(Operation.Unload, file));
 		if (getState() == NONE)
 			schedule();
 	}
-	
+
 	@Override
 	protected IStatus run(IProgressMonitor monitor) {
 		try {
@@ -76,7 +76,7 @@ public class ResultFileManagerUpdaterJob extends Job {
 					return Status.CANCEL_STATUS;
 //				if (isInterrupted())
 //					break;
-				
+			
 				task = tasks.poll();
 				IFile file = task.file;
 				ISchedulingRule rule = getSchedulingRuleFor(file);
@@ -87,7 +87,7 @@ public class ResultFileManagerUpdaterJob extends Job {
 					case Load: doLoad(file); break;
 					case Unload: doUnload(file); break;
 					}
-					
+				
 				}
 				catch (Exception e) {
 					Activator.logError(e);
@@ -102,7 +102,7 @@ public class ResultFileManagerUpdaterJob extends Job {
 			monitor.done();
 		}
 	}
-	
+
 	/**
 	 * Loads the specified <code>file</code> into the ResultFileManager.
 	 * If a vector file is loaded, it checks that the index file is up-to-date.
@@ -110,7 +110,7 @@ public class ResultFileManagerUpdaterJob extends Job {
 	 */
 	private void doLoad(final IFile file) {
 		if (debug) Debug.format("  loadFile: %s ", file);
-		
+	
 		if (file.getLocation().toFile().exists()) {
 			Exception exception = null;
 			try {
@@ -137,7 +137,7 @@ public class ResultFileManagerUpdaterJob extends Job {
 			updateMarkers(file, exception);
 		}
 	}
-	
+
 	private void doUnload(final IFile file) {
 		if (debug) Debug.format("  unloadFile: %s%n ", file);
 		ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
@@ -152,7 +152,7 @@ public class ResultFileManagerUpdaterJob extends Job {
 			}
 		});
 	}
-	
+
 	private void generateIndexAndLoad(final IFile file) {
 		if (debug) Debug.format("indexing: %s%n", file);
 		VectorFileIndexerJob indexer = new VectorFileIndexerJob("Indexing "+file, new IFile[] {file});
@@ -177,18 +177,18 @@ public class ResultFileManagerUpdaterJob extends Job {
 		});
 		indexer.schedule();
 	}
-	
+
 	private void loadInternal(IFile file) {
 		final String resourcePath = file.getFullPath().toString();
 		final String osPath = file.getLocation().toOSString();
 		manager.loadFile(resourcePath, osPath, true);
 		if (debug) Debug.println("done");
 	}
-	
+
 	private void updateMarkers(IFile file, Exception e) {
 		if (debug && e != null)
 			Debug.format("exception: %s ", e);
-		
+	
 		if (e == null) {
 			deleteMarkers(file, MARKERTYPE_SCAVEPROBLEM);
 		}
@@ -207,14 +207,14 @@ public class ResultFileManagerUpdaterJob extends Job {
 				int lineNo = fileFormatException.getLineNo();
 				setMarker(file, MARKERTYPE_SCAVEPROBLEM, IMarker.SEVERITY_ERROR, "Wrong file: "+message, lineNo);
 			}
-			
+		
 		}
 		else {
 			ScavePlugin.logError("Could not load file: " + file.getLocation().toOSString(), e);
 			setMarker(file, MARKERTYPE_SCAVEPROBLEM, IMarker.SEVERITY_WARNING, "Could not load file. Reason: "+e.getMessage(), -1);
 		}
 	}
-	
+
 	private ISchedulingRule getSchedulingRuleFor(IFile file) {
 		if (isVectorFile(file))
 			return MultiRule.combine(file, IndexFile.getIndexFileFor(file));

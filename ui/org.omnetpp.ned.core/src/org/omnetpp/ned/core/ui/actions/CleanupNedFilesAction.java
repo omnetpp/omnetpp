@@ -101,7 +101,7 @@ public class CleanupNedFilesAction implements IWorkbenchWindowActionDelegate {
 
     protected void cleanupNedFilesIn(IContainer container, final IProgressMonitor monitor) {
         try {
-        	
+        
         	NEDResourcesPlugin.getNEDResources().setRefactoringInProgress(true);
             NEDResourcesPlugin.getNEDResources().fireBeginChangeEvent();
 

@@ -22,11 +22,11 @@ public class AnimationPlugin extends AbstractUIPlugin {
 
 	// The shared instance
 	private static AnimationPlugin plugin;
-	
+
 	// There can be only one "live" simulation executing -- this 
 	// points to the instance (or null)
 	private LiveAnimationEditor currentLiveAnimation;
-	
+
 	/**
 	 * The constructor
 	 */

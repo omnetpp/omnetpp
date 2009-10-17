@@ -33,7 +33,7 @@ public class StateMachineTool extends BaseTool {
 	private Map setterNames = new HashMap();
 	private Map paramNames = new HashMap();
 	private Map instanceNames = new HashMap();
-	
+
 	public StateMachineTool(StateMachine sm) {
 		this.stateMachine = sm;
 	}
@@ -51,30 +51,30 @@ public class StateMachineTool extends BaseTool {
 		}
 		return (String) setterNames.get(association);
 	}
-	
+
 	public String getParamName(Association association) {
 		if (! paramNames.containsKey(association)) {
 			paramNames.put(association, createIdentifier(
 					association.getSupplierRole().toLowerCase().startsWith("a") ?
 					"an" : "a", association.getSupplierRole(), "", true, false));
 		}
-		return (String) paramNames.get(association);		
+		return (String) paramNames.get(association);	
 	}
-	
+
 	public String getInstanceName(Association association) {
 		if (! instanceNames.containsKey(association)) {
 			instanceNames.put(association, createIdentifier("i", association.getSupplierRole(), "", true, false));
 		}
-		return (String) instanceNames.get(association);		
+		return (String) instanceNames.get(association);	
 	}
-	
+
 	public Collection getCOAssocs() {
 		if (cOAssocs == null) {
 			cOAssocs = getFilteredAssociations(stateMachine, ControlledObjectHandler.class);
 		}
 		return cOAssocs;
 	}
-	
+
 	public Collection getSMAssocs() {
 		if (sMAssocs == null) {
 			sMAssocs = getFilteredAssociations(stateMachine, StateMachine.class);
@@ -127,7 +127,7 @@ public class StateMachineTool extends BaseTool {
 		}
 		return (StateTool) stateTools.get(state);
 	}
-	
+
 	private Collection getFilteredAssociations(StateMachine stateMachine,
 			Class targetClass) {
 		List associations = new ArrayList();

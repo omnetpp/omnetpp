@@ -52,7 +52,7 @@ public class TitlePreferencePanel extends Composite {
 	}
 
 	/**
-	 * This method initializes titleGroup	
+	 * This method initializes titleGroup
 	 *
 	 */
 	private void createTitleGroup() {
@@ -85,7 +85,7 @@ public class TitlePreferencePanel extends Composite {
 	}
 
 	/**
-	 * This method initializes axisGroup	
+	 * This method initializes axisGroup
 	 *
 	 */
 	private void createAxisGroup() {
@@ -129,37 +129,37 @@ public class TitlePreferencePanel extends Composite {
 	}
 
 	/**
-	 * This method initializes rotateLabelCombo	
+	 * This method initializes rotateLabelCombo
 	 *
 	 */
 	private void createRotateLabelCombo() {
 		rotateLabelCombo = new Combo(axisGroup, SWT.READ_ONLY);
 		rotateLabelCombo.setText("0");
 	}
-	
+
 	public String getTitleText() {
 		return titleText.getText();
 	}
-	
+
 	public void setTitleText(String text) {
 		titleText.setText(text);
 	}
-	
+
 	public String getXAxisText() {
 		return xAxisText.getText();
 	}
-	
+
 	public void setXAxisText(String text) {
 		xAxisText.setText(text);
 	}
-	
+
 	public String getYAxisText() {
 		return yAxisText.getText();
 	}
-	
+
 	public void setYAxisText(String text) {
 		yAxisText.setText(text);
 	}
-	
+
 
 }  //  @jve:decl-index=0:visual-constraint="10,2"

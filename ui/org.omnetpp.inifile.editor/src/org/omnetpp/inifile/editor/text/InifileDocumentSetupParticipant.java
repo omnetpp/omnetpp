@@ -19,7 +19,7 @@ import org.omnetpp.inifile.editor.text.highlight.InifileSyntaxHighlightPartition
  */
 //FIXME: trying to use ctrl-H "Search" with NED files open result in "SWTException: Invalid thread access"!
 public class InifileDocumentSetupParticipant implements IDocumentSetupParticipant {
-	
+
 	/**
 	 */
 	public InifileDocumentSetupParticipant() {

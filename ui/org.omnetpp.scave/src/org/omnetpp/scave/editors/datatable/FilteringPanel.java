@@ -83,7 +83,7 @@ public class FilteringPanel extends Composite {
 		setFilterHints(dataCombo, hints.getHints(NAME));
 		advancedFilter.setFilterHints(hints);
 	}
-	
+
 	private void setFilterHints(Combo filterCombo, String[] hints) {
 		String[] items = hints;
 		// prevent gtk halting when the item count ~10000
