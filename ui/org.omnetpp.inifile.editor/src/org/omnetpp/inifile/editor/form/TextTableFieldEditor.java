@@ -76,7 +76,7 @@ public class TextTableFieldEditor extends TableFieldEditor {
 		int numLines = entry.isPerObject() ? 6 : 3;
 		int height = table.getHeaderHeight()+numLines*table.getItemHeight()+2;
         table.setLayoutData(new GridData(365, height));
-		
+	
 		final int objectColumnIndex = entry.isPerObject() ? 1 : -1;
 		final int valueColumnIndex = entry.isPerObject() ? 2 : 1;
 
@@ -114,7 +114,7 @@ public class TextTableFieldEditor extends TableFieldEditor {
 		        new TableTextCellEditor[] {null, new TableTextCellEditor(tableViewer,1), new TableTextCellEditor(tableViewer,2)} :
 		        new TableTextCellEditor[] {null, new TableTextCellEditor(tableViewer,1)};
 		tableViewer.setCellEditors(cellEditors);
-	
+
 		tableViewer.setCellModifier(new ICellModifier() {
 			public boolean canModify(Object element, String property) {
 				return property.equals("value") || property.equals("object");

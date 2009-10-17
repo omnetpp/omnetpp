@@ -22,7 +22,7 @@ public class Activator extends Plugin {
 
 	// The shared instance
 	private static Activator plugin;
-	
+
 	/**
 	 * The constructor
 	 */
@@ -56,11 +56,11 @@ public class Activator extends Plugin {
 	public static Activator getDefault() {
 		return plugin;
 	}
-	
+
 	public static void logError(Throwable exception) {
 		logError(exception.toString(), exception);
 	}
-	
+
 	public static void logError(String message, Throwable exception) {
 		if (plugin != null) {
 			plugin.getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, 0, message, exception));

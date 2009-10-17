@@ -51,7 +51,7 @@ public class InifileContentOutlinePage extends ContentOutlinePage implements IIn
 		super();
 		inifileEditor = editor;
 	}
-	
+
 	/* (non-Javadoc)
 	 * Method declared on ContentOutlinePage
 	 */
@@ -94,10 +94,10 @@ public class InifileContentOutlinePage extends ContentOutlinePage implements IIn
 				return getChildren(inputElement);
 			}
 		});
-		
+	
 		Assert.isTrue(inifileDocument!=null);
 		getTreeViewer().setInput(inifileDocument);
-		
+	
  		// add tooltip support
  		new HoverSupport().adapt(getTreeViewer().getTree(), new IHoverTextProvider() {
 			public String getHoverTextFor(Control control, int x, int y, SizeConstraint outSizeConstraint) {
@@ -106,9 +106,9 @@ public class InifileContentOutlinePage extends ContentOutlinePage implements IIn
 				return section==null ? null : InifileHoverUtils.getSectionHoverText(section, inifileDocument, null, true);
 			}
  		});
-		
-	}
 	
+	}
+
 	/* (non-Javadoc)
 	 * Method declared on ContentOutlinePage; called back from treeviewer.
 	 */
@@ -140,7 +140,7 @@ public class InifileContentOutlinePage extends ContentOutlinePage implements IIn
 			inifileDocument.removeInifileChangeListener(this);
 		super.dispose();
 	}
-	
+
 	/**
 	 * Sets the input of the outline page
 	 * 
@@ -158,7 +158,7 @@ public class InifileContentOutlinePage extends ContentOutlinePage implements IIn
 		if (inifileDocument != null)
 			inifileDocument.addInifileChangeListener(this);
 	}
-	
+
 	/**
 	 * Updates the outline page.
 	 */
@@ -171,7 +171,7 @@ public class InifileContentOutlinePage extends ContentOutlinePage implements IIn
 				        viewer.refresh();
 				}
 			});
-		}		
+		}	
 	}
 
 	/* (non-Javadoc)

@@ -34,7 +34,7 @@ import org.omnetpp.ned.model.pojo.ParametersElement;
  * @author rhornig
  */
 public class ConnectionElementEx extends ConnectionElement implements IHasType, IHasDisplayString, IHasParameters {
-	
+
 	private DisplayString displayString = null;
 
     protected ConnectionElementEx() {

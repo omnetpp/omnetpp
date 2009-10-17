@@ -21,11 +21,11 @@ import org.omnetpp.scave.engine.ScaveExport;
 public class MatlabExportWizard extends AbstractExportWizard {
 
 	public static final String ID = "org.omnetpp.scave.wizard.MatlabExportWizard";
-	
+
 	public MatlabExportWizard() {
 		setDialogSettings(UIUtils.getDialogSettings(ScavePlugin.getDefault(), getClass().getName()));
 	}
-	
+
 	@Override
 	public void addPages() {
 		page = new MatlabExportPage("Matlab export", "Export as matlab script", null);
@@ -36,11 +36,11 @@ public class MatlabExportWizard extends AbstractExportWizard {
 	protected ScaveExport createExporter() {
 		return ExporterFactory.createExporter("matlab");
 	}
-	
+
 	/*---------------------
 	 *        Pages
 	 *---------------------*/
-	
+
 	static class MatlabExportPage extends ExportWizardPage
 	{
 		protected MatlabExportPage(String pageName, String title,

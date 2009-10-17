@@ -18,7 +18,7 @@ public class BarsPreferencePage extends PreferencePage {
 	{
 		super(title);
 	}
-	
+
 	@Override
 	protected Control createContents(Composite parent) {
 		return new BarsPreferencePanel(parent, SWT.NONE);

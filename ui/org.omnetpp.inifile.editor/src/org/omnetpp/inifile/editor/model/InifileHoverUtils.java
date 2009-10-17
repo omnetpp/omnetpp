@@ -76,7 +76,7 @@ public class InifileHoverUtils {
 		}
 
 		String text = getProblemsHoverText(markersDisplayed.toArray(new IMarker[]{}), false) + numErrorsText;
-		
+	
 		// name and description
 		text += "<b>"+section+"</b>";
 		String description = doc.getValue(section, "description");
@@ -191,7 +191,7 @@ public class InifileHoverUtils {
 	    text = text.replace("\n", "<p>");
 	    return text;
 	}
-	
+
 	/**
 	 * Generate tooltip for a param key entry
 	 */
@@ -337,7 +337,7 @@ public class InifileHoverUtils {
     public static String getProblemsHoverText(IMarker[] markers, boolean lineNumbers) {
 		if (markers.length==0) 
 			return "";
-		
+	
 		String text = "";
 		for (IMarker marker : markers) {
 			String severity = "";
@@ -351,13 +351,13 @@ public class InifileHoverUtils {
 		}
 		return text+"<br/>";
 	}
-	
+
 	/**
 	 * Generate tooltip for a NED parameter
 	 */
 	public static String getParamHoverText(SubmoduleElement[] pathModules, ParamElement paramDeclNode, ParamElement paramValueNode) {
 		String paramName = paramDeclNode.getName();
-		
+	
 		String paramType = paramDeclNode.getAttribute(ParamElement.ATT_TYPE);
 		String paramDeclaredOn = paramDeclNode.getSelfOrEnclosingTypeElement().getName();
 		String comment = StringUtils.makeBriefDocu(paramDeclNode.getComment(), 60);
@@ -368,5 +368,5 @@ public class InifileHoverUtils {
 		//XXX more info.....
 		return HoverSupport.addHTMLStyleSheet(text);
 	}
-	
+
 }

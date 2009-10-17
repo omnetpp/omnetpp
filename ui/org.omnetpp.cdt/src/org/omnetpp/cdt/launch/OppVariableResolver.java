@@ -58,7 +58,7 @@ public class OppVariableResolver implements IDynamicVariableResolver {
 		String result = "";
 		try {
 			result = resolveForProject(project, varName);
-			
+		
 			// do the same for the referenced projects
 			for (IProject p : ProjectUtils.getAllReferencedOmnetppProjects(project)) 
 				result += resolveForProject(p, varName);
@@ -74,16 +74,16 @@ public class OppVariableResolver implements IDynamicVariableResolver {
 			String result = "";
 			boolean isLocation = varName.endsWith(LOC_SUFFIX);
 			varName = StringUtils.removeEnd(varName, LOC_SUFFIX);
-			
+		
 			BuildSpecification buildSpec = BuildSpecification.readBuildSpecFile(project);
 			if (buildSpec == null)
 				return ""; // no build spec file
-			
+		
 	        List<IContainer> makemakeFolders = buildSpec.getMakemakeFolders();
 			for (IContainer folder : makemakeFolders) {
 				MakemakeOptions options = buildSpec.getMakemakeOptions(folder);
 				Assert.isTrue(options!=null);
-				
+			
 				if (varName.equals(OPP_SIMPROGS)) {
 				    if (options.type == MakemakeOptions.Type.EXE) { 
 				        String target = options.target != null ? options.target : project.getName();
@@ -125,7 +125,7 @@ public class OppVariableResolver implements IDynamicVariableResolver {
 			return "";
 		}
 	}
-	
+
     protected void abort(String message, Throwable exception) throws CoreException {
         throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 1, message, exception));
     }

@@ -10,10 +10,10 @@ package org.omnetpp.test.gui.scave;
 import org.omnetpp.test.gui.access.DatasetsAndChartsPageAccess;
 
 public class CreateDatasetsAndChartsTest extends ScaveFileTestCase {
-	
-	
+
+
 	DatasetsAndChartsPageAccess datasetsPage;
-	
+
 	@Override
 	protected void setUpInternal() throws Exception {
 		super.setUpInternal();
@@ -21,7 +21,7 @@ public class CreateDatasetsAndChartsTest extends ScaveFileTestCase {
 		editor = ScaveEditorUtils.openAnalysisFile(projectName, fileName);
 		datasetsPage = editor.ensureDatasetsPageActive();
 	}
-	
+
 	@Override
 	protected void tearDownInternal() throws Exception {
 		super.tearDownInternal();
@@ -29,18 +29,18 @@ public class CreateDatasetsAndChartsTest extends ScaveFileTestCase {
 
 	public void testCreateEmptyDataset() {
 		datasetsPage.createDataset("test-dataset");
-		
+	
 		datasetsPage.getDatasetsTree().assertContent(
 				n("dataset test-dataset"));
 	}
-	
+
 	public void testCreateEmptyChartsheet() {
 		datasetsPage.createChartsheet("test-chartsheet");
-		
+	
 		datasetsPage.getChartsheetsTree().assertContent(
 				n("chart sheet test-chartsheet (0 charts)"));
 	}
-	
+
 	public void testCreateDatasetWithContent() {
 		String dataset = "test-dataset";
 		datasetsPage.createDataset(dataset)

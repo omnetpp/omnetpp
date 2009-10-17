@@ -39,7 +39,7 @@ public interface IAnimationPrimitive {
 	 * Returns the animation number when this animation primitive begins.
 	 */
 	public long getAnimationNumber();
-	
+
 	/**
 	 * Returns the animation time when this animation primitive begins and shall become active.
 	 * BeginAnimationTime and EndAnimationTime may be equal.
@@ -70,7 +70,7 @@ public interface IAnimationPrimitive {
 	 * True if the animation primitive is active. This should be remembered by the activate and deactivate calls.
 	 */
 	public boolean isActive();
-	
+
 	/**
 	 * Updates figures according to the given animation position. This method will be called only
 	 * when the animation primitive is active.

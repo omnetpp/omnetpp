@@ -107,7 +107,7 @@ public class InifileCompletionProcessor extends IncrementalCompletionProcessor {
 		IInifileDocument doc = editorData.getInifileDocument(); 
 		InifileAnalyzer analyzer = editorData.getInifileAnalyzer();
 		String section = doc.getSectionForLine(lineNumber);
-		
+	
 		Set<String> proposals = new HashSet<String>();
 
 		ContextType type = lineEndContext(linePrefix);
@@ -176,7 +176,7 @@ public class InifileCompletionProcessor extends IncrementalCompletionProcessor {
 					String value = linePrefix.replaceFirst(".*?=", "").trim();
 					IContentProposalProvider proposalProvider = new InifileValueContentProposalProvider(section, key, doc, analyzer, true);
 					IContentProposal[] valueProposals = proposalProvider.getProposals(value, value.length());
-					
+				
 					// re-wrap IContentProposals as ICompletionProposal
 					addProposals(result, valueProposals, documentOffset);
 				}
@@ -225,7 +225,7 @@ public class InifileCompletionProcessor extends IncrementalCompletionProcessor {
 	protected static ICompletionProposal convertToCompletionProposal(IContentProposal p, int documentOffset) {
 		return new CompletionProposal(p.getContent(), documentOffset, 0, p.getCursorPosition(), null, p.getLabel(), null, p.getDescription());
 	}
-	
+
 	protected void addProposals(ITextViewer viewer, int documentOffset, List<ICompletionProposal> result, Set<String> proposals, String description) {
 		result.addAll(createProposals(viewer, documentOffset, InifileTextEditorHelper.spaceSeparatedWordDetector, "", proposals.toArray(new String[0]), "", description));
 	}

@@ -75,7 +75,7 @@ public abstract class AbstractNEDValidatorEx extends AbstractNEDValidator implem
 	final protected void validateElement(SubmoduleElement node) {
 		validateElement((SubmoduleElementEx)node);
 	}
-	
+
 	@Override
 	final protected void validateElement(ConnectionElement node) {
 		validateElement((ConnectionElementEx)node);

@@ -37,7 +37,7 @@ import org.omnetpp.common.IConstants;
 import org.omnetpp.ide.OmnetppMainPlugin;
 
 public class NewOmnetppCCProjectWizard extends Wizard implements INewWizard {
-	
+
 	NewOmnetppCCProjectWizardPage page;
 
 	public NewOmnetppCCProjectWizard() {
@@ -73,7 +73,7 @@ public class NewOmnetppCCProjectWizard extends Wizard implements INewWizard {
         }
         return project != null;
 	}
-	
+
 //    public void createStandardProject(IProject project)  throws CoreException {
 //        ICProjectDescriptionManager mngr = CoreModel.getDefault().getProjectDescriptionManager();
 //        ICProjectDescription des = mngr.createProjectDescription(project, false, true);
@@ -111,9 +111,9 @@ public class NewOmnetppCCProjectWizard extends Wizard implements INewWizard {
 //        
 //        doPostProcess(project);
 //    }
-	
-	
-	
+
+
+
 	private IProject createNewProject() {
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		String projectName = page.getProjectName();
@@ -129,7 +129,7 @@ public class NewOmnetppCCProjectWizard extends Wizard implements INewWizard {
         // so that builders get properly configured (Project.create() doesn't do it).
         final IProjectDescription description = workspace.newProjectDescription(projectName);
         description.setLocation(newPath);
-		
+	
         // define the operation to create a new project
         WorkspaceModifyOperation op = new WorkspaceModifyOperation() {
             protected void execute(IProgressMonitor monitor) throws CoreException {
@@ -163,7 +163,7 @@ public class NewOmnetppCCProjectWizard extends Wizard implements INewWizard {
 
         return projectHandle;
 	}
-	
+
     private void createProject(IProjectDescription description, IProject projectHandle, IProgressMonitor monitor) throws CoreException, OperationCanceledException {
         try {
             monitor.beginTask("", 2000);

@@ -21,7 +21,7 @@ import com.simulcraft.test.gui.core.InBackgroundThread;
 import com.simulcraft.test.gui.core.UIStep;
 
 public class DatasetViewAccess extends ViewPartAccess {
-	
+
 	// column names
 	public static final String
 		DIRECTORY = "Dir.*",
@@ -44,12 +44,12 @@ public class DatasetViewAccess extends ViewPartAccess {
 	public DatasetViewAccess(IViewPart viewPart) {
 		super(viewPart);
 	}
-	
+
 	@UIStep
 	public CompositeAccess getMainPanel() {
 		return (CompositeAccess)getComposite().findControlWithID(TestSupport.DATASET_VIEW_MAIN_PANEL_ID);
 	}
-	
+
 	@UIStep
 	public CompositeAccess getActivePanel() {
 		CompositeAccess mainPanel = getMainPanel();
@@ -57,22 +57,22 @@ public class DatasetViewAccess extends ViewPartAccess {
 		StackLayout layout = (StackLayout)mainPanel.getControl().getLayout();
 		return (CompositeAccess)createAccess(layout.topControl);
 	}
-	
+
 	@UIStep
 	public CompositeAccess getScalarsPanel() {
 		return (CompositeAccess)getComposite().findControlWithID(TestSupport.DATASET_VIEW_SCALARS_PANEL_ID);
 	}
-	
+
 	@UIStep
 	public CompositeAccess getVectorsPanel() {
 		return (CompositeAccess)getComposite().findControlWithID(TestSupport.DATASET_VIEW_VECTORS_PANEL_ID);
 	}
-	
+
 	@UIStep
 	public boolean isScalarsPanelActivated() {
 		return getActivePanel() != null && getActivePanel().getControl() == getScalarsPanel().getControl();
 	}
-	
+
 	@UIStep
 	public boolean isVectorsPanelActivated() {
 		return getActivePanel() != null && getActivePanel().getControl() == getVectorsPanel().getControl();
@@ -82,44 +82,44 @@ public class DatasetViewAccess extends ViewPartAccess {
 	public void assertScalarsPanelActivated() {
 		Assert.assertTrue("Scalars panel is not active", isScalarsPanelActivated());
 	}
-	
+
 	@UIStep
 	public void assertVectorsPanelActivated() {
 		Assert.assertTrue("Vectors panel is not active", isVectorsPanelActivated());
 	}
-	
+
 	@UIStep
 	public void activateScalarsPanel() {
 		getShowScalarsButton().click();
 	}
-	
+
 	@UIStep
 	public void activateVectorsPanel() {
 		getShowVectorsButton().click();
 	}
-	
+
 	@InBackgroundThread
 	public void ensureScalarsPanelActivated() {
 		if (!isScalarsPanelActivated())
 			activateScalarsPanel();
 	}
-	
+
 	@InBackgroundThread
 	public void ensureVectorsPanelActivated() {
 		if (!isVectorsPanelActivated())
 			activateVectorsPanel();
 	}
-	
+
 	@UIStep
 	public TableAccess getScalarsTable() {
 		return getScalarsPanel().findTable();
 	}
-	
+
 	@UIStep
 	public TableAccess getVectorsTable() {
 		return getVectorsPanel().findTable();
 	}
-	
+
 	@UIStep
 	public TableAccess getActiveTable() {
 		if (isScalarsPanelActivated())
@@ -129,21 +129,21 @@ public class DatasetViewAccess extends ViewPartAccess {
 		else
 			return null;
 	}
-	
+
 	@UIStep
 	protected ToolItemAccess findToolButton(String tooltip) {
 		return getViewToolbar().findToolItemWithTooltip(tooltip);
 	}
-	
+
 	@UIStep
 	public void sortByTableColumn(String columnName, int direction) {
 		getActiveTable().getTableColumn(columnName).sort(direction);
 	}
-	
+
 	public ToolItemAccess getShowScalarsButton() {
 		return findToolButton(".*[sS]calar.*");
 	}
-	
+
 	public ToolItemAccess getShowVectorsButton() {
 		return findToolButton(".*[vV]ector.*");
 	}

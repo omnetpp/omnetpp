@@ -47,11 +47,11 @@ public class BorderedComposite extends Composite {
 			}
 		});
 	}
-	
+
 	public int getBorderSize() {
 		return borderSize;
 	}
-	
+
 	public Control getChild() {
 		return getChildren()[0];
 	}

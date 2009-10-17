@@ -559,7 +559,7 @@ public class OmnetppLaunchUtils {
 		String[] cmdLine = createCommandLine(configuration, additionalArgs);
 
 		// Debug.println("starting with command line: "+StringUtils.join(cmdLine," "));
-		
+	
 		if (requestInfo) {
 			int i = ArrayUtils.indexOf(cmdLine, "-c");
 			if (i >= 0)
@@ -579,13 +579,13 @@ public class OmnetppLaunchUtils {
 			}
 
 			cmdLine = (String[]) ArrayUtils.add(cmdLine, 1, "-g");
-			
+		
 		}
 
 		String wdAttr = getWorkingDirectoryPath(configuration).toString();
 		String expandedWd = StringUtils.substituteVariables(wdAttr);
 		String environment[] = DebugPlugin.getDefault().getLaunchManager().getEnvironment(configuration);
-		
+	
 		// fill in the infoBuffer
 		infoBuffer.append(StringUtils.join(cmdLine,' '));
     	infoBuffer.append("\n\nWorking directory: "+expandedWd+"\n");
@@ -598,7 +598,7 @@ public class OmnetppLaunchUtils {
     				 || env.startsWith("OMNETPP_") || env.startsWith("NEDPATH=")  )
     			infoBuffer.append("\n"+env);
     	}
-		
+	
 		return DebugPlugin.exec(cmdLine, new File(expandedWd), environment);
 	}
 
@@ -650,7 +650,7 @@ public class OmnetppLaunchUtils {
 			proc.waitFor();
 
 			String simInfo = stringBuffer.toString().replace("\r", "");
-			
+		
 			//FIXME parse out errors: they are the lines that start with "<!>" -- e.g. inifile might contain a syntax error etc
 			// --Andras
 			if (proc.exitValue() == 0)
@@ -697,6 +697,6 @@ public class OmnetppLaunchUtils {
 		// we should have a consistent marker char/tag during user input
 		return text.contains("Enter parameter");
 	}
-	
+
     
 }

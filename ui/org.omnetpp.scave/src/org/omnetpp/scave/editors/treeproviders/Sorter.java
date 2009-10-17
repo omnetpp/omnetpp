@@ -45,7 +45,7 @@ public class Sorter {
 			return StringUtils.dictionaryCompare(left.getFilePath(), right.getFilePath());
 		}
 	}
-	
+
 	private static class RunComparator implements Comparator<Run>, Serializable
 	{
 		private static final long serialVersionUID = 1L;

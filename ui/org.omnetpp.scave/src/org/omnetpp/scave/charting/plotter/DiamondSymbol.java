@@ -18,7 +18,7 @@ public class DiamondSymbol extends ChartSymbol {
 	private int size;
 	private int[] poly;
 	private int[] work = new int[8];
-	
+
 	public DiamondSymbol() {
 	}
 
@@ -36,7 +36,7 @@ public class DiamondSymbol extends ChartSymbol {
 		 										//FIXME with ON, it looks asymmetric... HELP!!!
 		//poly = new int[] {-d,0,0,-d,d,0,0,d}; XXX this will be asymmetric too, but WHY? 
 	}
-	
+
 	public void drawSymbol(GC gc, int x, int y) {
 		if (size<=0) {
 			// nothing

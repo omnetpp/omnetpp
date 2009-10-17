@@ -35,7 +35,7 @@ public class DatasetItemProvider extends org.omnetpp.scave.model.provider.Datase
 	@Override
 	protected Command createAddCommand(EditingDomain domain, EObject owner, EStructuralFeature feature, Collection<?> collection, int index) {
 		Command addCommand = super.createAddCommand(domain, owner, feature, collection, index); 
-		
+	
 		Collection<Chart> charts = ScaveModelUtil.collectUnreferencedCharts(collection);
 		if (charts.size() > 0 && owner.eResource() != null) {
 			CompoundCommand command = new CompoundCommand(addCommand.getLabel(), addCommand.getDescription());

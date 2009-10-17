@@ -241,7 +241,7 @@ public class SequenceChart
 
     private boolean invalidAxisModulePositions = true; // requests recalculation
 	private int[] axisModulePositions; // specifies y order of the axis modules (in the same order as axisModules); this is a permutation of the 0 .. axisModule.size() - 1 numbers
-	
+
 	private boolean invalidAxisModuleYs = true; // requests recalculation
 	private int[] axisModuleYs; // top y coordinates of axis bounding boxes
 
@@ -318,7 +318,7 @@ public class SequenceChart
 
 		setupHoverSupport();
         setupRubberbandSupport();
-    	
+    
         setupMouseListener();
         setupKeyListener();
 		setupListeners();
@@ -472,7 +472,7 @@ public class SequenceChart
         sequenceChartContributor.contributeToPopupMenu(menuManager);
         setMenu(menuManager.createContextMenu(this));
     }
-	
+
     /**
 	 * See setFollowSelection().
 	 */
@@ -676,7 +676,7 @@ public class SequenceChart
 	        leftRightSimulationTimes = getViewportSimulationTimeRange();
 
 	    sequenceChartFacade.setTimelineMode(timelineMode.ordinal());
-		
+	
 	    if (!eventLog.isEmpty())
 	        setViewportSimulationTimeRange(leftRightSimulationTimes);
 	}
@@ -878,7 +878,7 @@ public class SequenceChart
 			followEnd = true;
 		}
 	}
-	
+
 	public void scroll(int numberOfEvents) {
 		long[] eventPtrRange = getFirstLastEventPtrForViewportRange(0, getViewportWidth());
 		long startEventPtr = eventPtrRange[0];
@@ -2252,7 +2252,7 @@ public class SequenceChart
         revalidateAxisModules();
 
 		graphics.translate(0, GUTTER_HEIGHT);
-		
+	
 		drawSequenceChart(graphics);
 		drawAxisLabels(graphics);
 
@@ -2382,7 +2382,7 @@ public class SequenceChart
 
             if (showZeroSimulationTimeRegions)
 			    drawZeroSimulationTimeRegions(graphics, startEventPtr, endEventPtr);
-			
+		
 			drawAxes(graphics, startEventPtr, endEventPtr);
 
 			if (showModuleMethodCalls)
@@ -2454,7 +2454,7 @@ public class SequenceChart
 		else
 			graphics.fillRectangle(Rectangle.SINGLETON);
 	}
-	
+
     // KLUDGE: SWG fillRectange overflow bug and cut down big coordinates with clipping
 	private void fillZeroSimulationTimeRegion(Graphics graphics, LargeRect r, LargeRect clip, long x, long width) {
         r.setLocation(x, clip.y);
@@ -2483,7 +2483,7 @@ public class SequenceChart
         axisRenderer.drawAxis(graphics, startEventPtr, endEventPtr);
         graphics.translate(0, -y);
 	}
-	
+
 	private void drawModuleMethodCalls(Graphics graphics)
 	{
         int extraClipping = getExtraClippingForEvents();
@@ -2648,7 +2648,7 @@ public class SequenceChart
 		graphics.fillOval(x - 2, y - 3, 6, 8);
 		graphics.setLineStyle(SWT.LINE_SOLID);
 		graphics.drawOval(x - 2, y - 3, 5, 7);
-		
+	
 		if (showEventNumbers) {
 			graphics.setFont(font);
 			drawText(graphics, "#" + sequenceChartFacade.IEvent_getEventNumber(eventPtr), x + 3, y + 3 + getAxisRenderers()[axisModuleIndex].getHeight() / 2);
@@ -2700,7 +2700,7 @@ public class SequenceChart
 	 */
 	private void drawTickUnderMouse(Graphics graphics, int viewportHeigth) {
 		Point p = toControl(Display.getDefault().getCursorLocation());
-		
+	
 		if (0 <= p.x && p.x < getViewportWidth() && 0 <= p.y && p.y < getViewportHeight() + GUTTER_HEIGHT * 2) {
 			BigDecimal tick = calculateTick(p.x, 1);
 			drawTick(graphics, viewportHeigth, MOUSE_TICK_LINE_COLOR, INFO_BACKGROUND_COLOR, tick, p.x, true);
@@ -2750,7 +2750,7 @@ public class SequenceChart
 	            long endEventPtr = eventPtrRange[1];
 
 	            int i = getAxisModuleIndexByModuleId(axisModule.getModuleId());
-				
+			
 	            drawAxisLabel(graphics, i, axisModule);
 				drawAxis(graphics, startEventPtr, endEventPtr, i, axisModule);
 			}
@@ -2928,7 +2928,7 @@ public class SequenceChart
 
 		if (sequenceChartFacade.IMessageDependency_isReuse(messageDependencyPtr) && !showOtherMessageReuses)
 			return false;
-		
+	
 		if (sequenceChartFacade.IMessageDependency_isSelfMessageReuse(messageDependencyPtr) && !showSelfMessageReuses)
 		    return false;
 
@@ -3158,7 +3158,7 @@ public class SequenceChart
                     else
                         x1 += LONG_MESSAGE_ARROW_WIDTH;
                 }
-				
+			
 				if (graphics != null) {
 					int xm = x2 - LONG_MESSAGE_ARROW_WIDTH;
 
@@ -3615,11 +3615,11 @@ public class SequenceChart
         // NOTE: leave it as a comment: Assert.isTrue(tMax.compareTo(simulationTime) >= 0);
 		if (tMin.compareTo(simulationTime) > 0)
 		    tMin = simulationTime;
-		
+	
 		if (tMax.compareTo(simulationTime) < 0)
 		    tMax = simulationTime;
 		Assert.isTrue(tMin.compareTo(tMax) <= 0);
-	
+
 		// the idea is to round the simulation time to the shortest (in terms of digits) value
 		// as long as it still fits into the range of min and max
 		// first get the number of digits
@@ -3858,7 +3858,7 @@ public class SequenceChart
 					ArrayList<IEvent> events = new ArrayList<IEvent>();
 					ArrayList<IMessageDependency> messageDependencies = new ArrayList<IMessageDependency>();
 					collectStuffUnderMouse(me.x, me.y, events, messageDependencies, null);
-					
+				
 					if (messageDependencies.size() == 1)
 						zoomToMessageDependency(messageDependencies.get(0));
 
@@ -3890,7 +3890,7 @@ public class SequenceChart
 									events.add(eventLog.getEventForEventNumber(eventNumber));
 
 							collectStuffUnderMouse(me.x, me.y, events, null, null);
-							
+						
 							updateSelectionEvents(events, false);
 						}
 					}
@@ -3954,7 +3954,7 @@ public class SequenceChart
 						EventLogMessageEntry eventLogMessageEntry = event.getEventLogMessage(i);
 
 						res += "<br/><span style=\"color:rgb(127, 0, 85)\"> - " + eventLogMessageEntry.getText() + "</span>";
-						
+					
 						if (i == 100) {
 						    res += "<br/><br/>Content stripped after 100 lines. See Eventlog Table for more details.";
 						    break;
@@ -3978,7 +3978,7 @@ public class SequenceChart
 
 			return res;
 		}
-		
+	
 		// 3) no message arrows: show module method call info
 		if (moduleMethodCalls.size() > 0) {
             String res = "";
@@ -4046,7 +4046,7 @@ public class SequenceChart
 			result += getMessageIdText(beginBeginSendEntry, formatted);
 			if (!sameMessage)
 			    result += " -> " + getMessageIdText(endBeginSendEntry, formatted);
-			
+		
             if (formatted) {
                 if (beginBeginSendEntry.getDetail() != null) {
                     if (!sameMessage)
@@ -4174,7 +4174,7 @@ public class SequenceChart
 
 		return result;
 	}
-	
+
 	private String getModuleText(ModuleCreatedEntry moduleCreatedEntry, boolean formatted) {
         String boldStart = formatted ? "<b>" : "";
         String boldEnd = formatted ? "</b>" : "";
@@ -4262,7 +4262,7 @@ public class SequenceChart
 
 				        		for (int i = 0; i < messageDependencies.size(); i++) {
 				        			long messageDependencyPtr = messageDependencies.get(i);
-				        			
+				        		
 				        			// TODO: cast ptr_t as (ptr_t)(unsigned int)
 				        			// TODO: PtrVector should return Java long
 
@@ -4663,7 +4663,7 @@ class AxisState implements Serializable {
     
     // identifies the axis module 
     public String moduleFullPath;
-	
+
 	// identifies the vector
 	public String vectorFileName;
     public String vectorRunName;

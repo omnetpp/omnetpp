@@ -27,7 +27,7 @@ import org.omnetpp.scave.charting.dataset.VectorDataset;
 public class VectorChartSelection implements IChartSelection {
 
 	private final VectorChart vectorChart;
-	
+
 	// the series of the line within the chart's dataset
 	private int series;
 	// the key of the line within the chart
@@ -39,8 +39,8 @@ public class VectorChartSelection implements IChartSelection {
 	private long eventNum;
 	private BigDecimal preciseX;
 	private double x,y;
-	
-	
+
+
 	public VectorChartSelection(VectorChart vectorChart, CrossHair.DataPoint point) {
 		IXYDataset dataset = vectorChart.getDataset();
 		this.vectorChart = vectorChart;
@@ -53,7 +53,7 @@ public class VectorChartSelection implements IChartSelection {
 		this.x = dataset.getX(series, index);
 		this.y = dataset.getY(series, index);
 	}
-	
+
 	public int getSeries() {
 		return series;
 	}

@@ -63,7 +63,7 @@ public class AxesPreferencePanel extends Composite {
 	}
 
 	/**
-	 * This method initializes boundsGroup	
+	 * This method initializes boundsGroup
 	 *
 	 */
 	private void createBoundsGroup() {
@@ -103,7 +103,7 @@ public class AxesPreferencePanel extends Composite {
 	}
 
 	/**
-	 * This method initializes optionsGroup	
+	 * This method initializes optionsGroup
 	 *
 	 */
 	private void createOptionsGroup() {
@@ -128,7 +128,7 @@ public class AxesPreferencePanel extends Composite {
 	}
 
 	/**
-	 * This method initializes gridGroup	
+	 * This method initializes gridGroup
 	 *
 	 */
 	private void createGridGroup() {

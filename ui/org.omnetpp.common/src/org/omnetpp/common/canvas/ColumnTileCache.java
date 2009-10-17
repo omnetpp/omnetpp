@@ -30,7 +30,7 @@ public class ColumnTileCache implements ITileCache {
 	private int memoryUsageLimit = 32*1024*1024; // 32Meg by default
 	private int memoryUsage = 0;
 	private ArrayList<Tile> cache = new ArrayList<Tile>();
-	
+
 	public int getMemoryUsage() {
 		return memoryUsage;
 	}

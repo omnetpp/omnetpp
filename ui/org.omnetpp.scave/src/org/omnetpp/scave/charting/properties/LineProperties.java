@@ -11,15 +11,15 @@ import org.omnetpp.common.properties.ColorPropertyDescriptor;
 import org.omnetpp.common.properties.PropertySource;
 
 public class LineProperties extends PropertySource {
-	
+
 	public static final String
 		PROP_DISPLAY_LINE		= "Line.Display",
 		PROP_SYMBOL_TYPE		= "Symbols.Type",
 		PROP_SYMBOL_SIZE		= "Symbols.Size",
 		PROP_LINE_TYPE			= "Line.Type",
 		PROP_LINE_COLOR			= "Line.Color";
-	
-	
+
+
 	public enum SymbolType {
 		None("None", "none"), //XXX allowed?
 		Cross("Cross", "cross"),
@@ -28,25 +28,25 @@ public class LineProperties extends PropertySource {
 		Plus("Plus", "plus"),
 		Square("Square", "square"),
 		Triangle("Triangle", "triangle");
-	
+
 		private String name;
 		private String imageId;
-	
+
 		private SymbolType(String name, String img) {
 			this.name = name;
 			imageId = "icons/full/obj16/sym_"+img+".png";
 		}
-	
+
 		@Override
 		public String toString() {
 			return name;
 		}
-	
+
 		public String getImageId() {
 			return imageId;
 		}
 	}
-	
+
 	public enum LineType {
 		Linear("Linear", "linear"),
 		Pins("Pins", "pins"), 
@@ -54,20 +54,20 @@ public class LineProperties extends PropertySource {
 		Points("Points", "points"), 
 		SampleHold("Sample-Hold", "samplehold"),
 		BackwardSampleHold("Backward Sample-Hold", "bksamplehold");
-	
+
 		private String name;
 		private String imageId;
-	
+
 		private LineType(String name, String img) {
 			this.name = name;
 			this.imageId = "icons/full/obj16/line_"+img+".png";
 		}
-	
+
 		@Override
 		public String toString() {
 			return name;
 		}
-	
+
 		public String getImageId() {
 			return imageId;
 		}

@@ -17,7 +17,7 @@ import org.eclipse.swt.graphics.Image;
  * @author andras
  */
 public interface ITileCache {
-	
+
 	/**
 	 * Represents a tile. Tiles should only be manipulated by the tile cache
 	 * and not by any other class.
@@ -37,7 +37,7 @@ public interface ITileCache {
 	public int getMemoryUsageLimit();
 
 	public int getMemoryUsage();
-	
+
 	/**
 	 * Receives the rectangle to cover on screen and the dimensions
 	 * of the full "virtual" canvas, and returns a list of tiles
@@ -68,5 +68,5 @@ public interface ITileCache {
 	 * Clears the cache.
 	 */
 	public void clear();
-	
+
 }

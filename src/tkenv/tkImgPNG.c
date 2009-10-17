@@ -173,7 +173,7 @@ typedef struct
 	uLong			mPhaseSz;		/* Number of bytes/line in current phase */
 } PNGImage;
 
-
+
 /*
  *----------------------------------------------------------------------
  *
@@ -204,7 +204,7 @@ voidpf PNGZAlloc(voidpf opaque, uInt items, uInt itemSz)
 	return pBlock;
 }
 
-
+
 /*
  *----------------------------------------------------------------------
  *
@@ -228,7 +228,7 @@ void PNGZFree(voidpf opaque, voidpf ptr)
 	if (ptr) ckfree((char *)ptr);
 }
 
-
+
 /*
  *----------------------------------------------------------------------
  *
@@ -304,7 +304,7 @@ PNGInit(Tcl_Interp* interp, PNGImage* pPNG,
 	return TCL_OK;
 }
 
-
+
 /*
  *----------------------------------------------------------------------
  *
@@ -351,7 +351,7 @@ PNGCleanup(PNGImage* pPNG)
 		ckfree((char *)pPNG -> mpLastLine);
 }
 
-
+
 /*
  *----------------------------------------------------------------------
  *
@@ -401,7 +401,7 @@ static Byte gspFrom64[] =
 	0x83, 0x83, 0x83
 };
 
-
+
 /*
  *----------------------------------------------------------------------
  *
@@ -538,7 +538,7 @@ PNGRead(Tcl_Interp* interp, PNGImage* pPNG,
 	return TCL_OK;
 }
 
-
+
 /*
  *----------------------------------------------------------------------
  *
@@ -572,7 +572,7 @@ PNGReadLong(Tcl_Interp* interp, PNGImage* pPNG, uLong* pResult, uLong* pCRC)
 	return TCL_OK;
 }
 
-
+
 /*
  *----------------------------------------------------------------------
  *
@@ -616,7 +616,7 @@ int CheckCRC(Tcl_Interp* interp, PNGImage* pPNG, uLong calculated)
 	return TCL_OK;
 }
 
-
+
 /*
  *----------------------------------------------------------------------
  *
@@ -665,7 +665,7 @@ SkipChunk(Tcl_Interp* interp, PNGImage* pPNG, uLong chunkSz, uLong crc)
 	return TCL_OK;
 }
 
-
+
 /*
 4.3. Summary of standard chunks
 
@@ -705,7 +705,7 @@ This table summarizes some properties of the standard chunk types.
 	[From the PNG specification.]
 */
 
-
+
 /*
  *----------------------------------------------------------------------
  *
@@ -970,7 +970,7 @@ PNGCheckColor(Tcl_Interp* interp, PNGImage* pPNG)
 	return TCL_OK;
 }
 
-
+
 /*
  *----------------------------------------------------------------------
  *
@@ -1140,7 +1140,7 @@ ReadIHDR(Tcl_Interp* interp, PNGImage* pPNG)
 	return CheckCRC(interp, pPNG, crc);
 }
 
-
+
 /*
  *----------------------------------------------------------------------
  *
@@ -1215,7 +1215,7 @@ ReadPLTE(Tcl_Interp* interp, PNGImage* pPNG, uLong chunkSz,
 	return TCL_OK;
 }
 
-
+
 /*
  *----------------------------------------------------------------------
  *
@@ -1356,7 +1356,7 @@ ReadtRNS(Tcl_Interp* interp, PNGImage* pPNG, uLong chunkSz, uLong crc)
 	return TCL_OK;
 }
 
-
+
 /*
  *----------------------------------------------------------------------
  *
@@ -1747,7 +1747,7 @@ DecodeLine(Tcl_Interp* interp, PNGImage* pPNG)
 	return TCL_OK;
 }
 
-
+
 /*
  *----------------------------------------------------------------------
  *
@@ -1862,7 +1862,7 @@ ReadIDAT(Tcl_Interp* interp, PNGImage* pPNG, uLong chunkSz, uLong crc)
 	return TCL_OK;
 }
 
-
+
 /*
  *----------------------------------------------------------------------
  *
@@ -2171,7 +2171,7 @@ PNGDecode(Tcl_Interp* interp, PNGImage* pPNG, Tcl_Obj* format,
 	return TCL_OK;
 }
 
-
+
 /*
  *----------------------------------------------------------------------
  *
@@ -2221,7 +2221,7 @@ FileMatchPNG(chan, fileName, format, widthPtr, heightPtr, interp)
 	return match;
 }
 
-
+
 /*
  *----------------------------------------------------------------------
  *
@@ -2269,7 +2269,7 @@ FileReadPNG(interp, chan, fileName, format, imageHandle, destX, destY,
 	return result;
 }
 
-
+
 /*
  *----------------------------------------------------------------------
  *
@@ -2318,7 +2318,7 @@ StringMatchPNG(dataObj, format, widthPtr, heightPtr, interp)
 	return match;
 }
 
-
+
 /*
  *----------------------------------------------------------------------
  *

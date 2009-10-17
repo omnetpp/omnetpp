@@ -53,7 +53,7 @@ public class ActionContributionItem2 extends ActionContributionItem {
 		fill(parent);
 		return (Button) getWidget();
 	}
-	
+
 	/**
 	 * Base class doesn't have getWidget(), and the field is private, so we need to 
 	 * get it with reflection here.

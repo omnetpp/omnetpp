@@ -352,7 +352,7 @@ public class CompoundModuleLayoutEditPolicy extends ConstrainedLayoutEditPolicy 
      * Places the feedback rectangle where the User indicated.
      * @see LayoutEditPolicy#showSizeOnDropFeedback(CreateRequest)
      */
-    protected void showSizeOnDropFeedback(CreateRequest request) {	
+    protected void showSizeOnDropFeedback(CreateRequest request) {
     	Point p = new Point(request.getLocation().getCopy());
     	IFigure feedback = getSizeOnDropFeedback(request);
     	feedback.translateToRelative(p);

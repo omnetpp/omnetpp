@@ -107,7 +107,7 @@ public class PaletteManager {
      */
     private class ScoreComparator extends ShortNameComparator {
     	private Map<INEDTypeInfo,Integer> cachedScores = new HashMap<INEDTypeInfo, Integer>();
-    	
+    
         public int compare(INEDTypeInfo first, INEDTypeInfo second) {
             int firstScore = getScore(first);
             int secondScore = getScore(second);

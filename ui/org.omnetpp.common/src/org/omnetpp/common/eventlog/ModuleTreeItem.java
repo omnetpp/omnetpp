@@ -21,15 +21,15 @@ import org.eclipse.core.runtime.Assert;
  */
 public class ModuleTreeItem implements Comparable<ModuleTreeItem> {
 	private int moduleId = -1;
-	
+
 	private boolean isCompoundModule;
 
 	private String moduleName;
-	
+
 	private String moduleClassName;
-	
+
 	private ModuleTreeItem parentModule;
-	
+
 	private ArrayList<ModuleTreeItem> submodules = new ArrayList<ModuleTreeItem>();
 
 	private Map<Integer, ModuleTreeItem> moduleIdToModuleMap;
@@ -56,16 +56,16 @@ public class ModuleTreeItem implements Comparable<ModuleTreeItem> {
 		else
 		    getModuleIdToModuleMap().put(moduleId, this);
 	}
-	
+
 	public boolean isCompoundModule() {
 	    return isCompoundModule;
 	}
-	
+
 	private void addSubmodule(ModuleTreeItem submodule) {
         getRootModule().getModuleIdToModuleMap().put(submodule.getModuleId(), submodule);
 		submodules.add(submodule);
 	}
-	
+
 	public void remove() {
         getRootModule().getModuleIdToModuleMap().remove(moduleId);
         parentModule.submodules.remove(this);
@@ -85,7 +85,7 @@ public class ModuleTreeItem implements Comparable<ModuleTreeItem> {
 	{
 		visitLeaves(visitor, this);
 	}
-	
+
 	private void visitLeaves(IModuleTreeItemVisitor visitor, ModuleTreeItem treeItem)
 	{
 		visitor.visit(treeItem);
@@ -116,7 +116,7 @@ public class ModuleTreeItem implements Comparable<ModuleTreeItem> {
 	    	path = current.getModuleName()+"."+path;
 	    return path;
 	}
-	
+
 	public String getModuleName() {
 		return moduleName;
 	}
@@ -142,20 +142,20 @@ public class ModuleTreeItem implements Comparable<ModuleTreeItem> {
 	public void setModuleClassName(String moduleClassName) {
 		this.moduleClassName = moduleClassName;
 	}
-	
+
 	public ModuleTreeItem getParentModule() {
 		return parentModule;
 	}
 
 	public ModuleTreeItem getRootModule() {
 		ModuleTreeItem ancestorModule = this;
-		
+	
 		while (ancestorModule.parentModule != null)
 			ancestorModule = ancestorModule.parentModule;
-		
+	
 		return ancestorModule;
 	}
-	
+
 	public ModuleTreeItem getAncestorModuleUnder(ModuleTreeItem ancestorParentModule) {
 		if (parentModule == ancestorParentModule)
 			return this;
@@ -179,7 +179,7 @@ public class ModuleTreeItem implements Comparable<ModuleTreeItem> {
 	public int compareTo(ModuleTreeItem item) {
 		return moduleName.compareTo(item.getModuleName());
 	}
-	
+
 	private Map<Integer, ModuleTreeItem> getModuleIdToModuleMap() {
 	    if (moduleIdToModuleMap == null)
 	        moduleIdToModuleMap = new HashMap<Integer, ModuleTreeItem>();
@@ -195,7 +195,7 @@ public class ModuleTreeItem implements Comparable<ModuleTreeItem> {
 	    else
 	        return null;
 	}
-	
+
     public boolean isDescendantModule(ModuleTreeItem descendantModule) {
         while (descendantModule != null)
             if (descendantModule == this)

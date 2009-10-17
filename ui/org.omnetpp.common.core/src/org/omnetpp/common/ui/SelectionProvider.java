@@ -23,10 +23,10 @@ public class SelectionProvider implements ISelectionProvider
 {
 	protected ListenerList listeners = new ListenerList(ListenerList.IDENTITY);
 	protected ISelection selection = new StructuredSelection();
-	
+
 	public SelectionProvider() {
 	}
-	
+
 	public void addSelectionChangedListener(ISelectionChangedListener listener) {
 		listeners.add(listener);
 	}
@@ -34,7 +34,7 @@ public class SelectionProvider implements ISelectionProvider
 	public void removeSelectionChangedListener(ISelectionChangedListener listener) {
 		listeners.remove(listener);
 	}
-	
+
 	private void fireSelectionChanged(SelectionChangedEvent event) {
 		for (Object listener : listeners.getListeners())
 			((ISelectionChangedListener)listener).selectionChanged(event);

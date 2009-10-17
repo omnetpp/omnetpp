@@ -31,13 +31,13 @@ public class TreeColumnAccess extends ClickableWidgetAccess
     public TreeAccess getTree() {
         return (TreeAccess) createAccess(getWidget().getParent());
     }
-	
+
 	@UIStep
 	public TreeColumnAccess reveal() {
 		//TODO horizontally scroll there
 		return this;
 	}
-	
+
 	@Override
 	protected Point getAbsolutePointToClick() {
         // center of the header. Note: header is at NEGATIVE table coordinates! (origin is top-left of data area)
@@ -48,7 +48,7 @@ public class TreeColumnAccess extends ClickableWidgetAccess
         Assert.assertTrue("column has zero width, cannot click", getWidget().getWidth() > 0);
         return point;
 	}
-	
+
 	@Override
 	protected Point toAbsolute(Point point) {
 	    // TODO:

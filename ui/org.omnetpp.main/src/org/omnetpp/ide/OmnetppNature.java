@@ -41,7 +41,7 @@ public class OmnetppNature implements IProjectNature {
         removeBuilder(desc, IConstants.MAKEFILEBUILDER_BUILDER_ID);
         project.setDescription(desc, null);
 	}
-	
+
 	public void addBuilder(IProjectDescription desc, String builderId) throws CoreException {
 	    if (findBuilderIndex(desc.getBuildSpec(), builderId) == -1) {
 	        ICommand command = desc.newCommand();
@@ -49,7 +49,7 @@ public class OmnetppNature implements IProjectNature {
 	        desc.setBuildSpec((ICommand[])ArrayUtils.add(desc.getBuildSpec(), 0, command));
 	    }
 	}
-	
+
 	private void removeBuilder(IProjectDescription desc, String builderId) throws CoreException {
         int index = findBuilderIndex(desc.getBuildSpec(), builderId);
         if (index != -1)
@@ -62,7 +62,7 @@ public class OmnetppNature implements IProjectNature {
                 return i;
         return -1;
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 

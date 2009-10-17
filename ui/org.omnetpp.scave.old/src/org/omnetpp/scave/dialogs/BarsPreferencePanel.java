@@ -47,7 +47,7 @@ public class BarsPreferencePanel extends Composite {
 	}
 
 	/**
-	 * This method initializes combo	
+	 * This method initializes combo
 	 *
 	 */
 	private void createCombo() {

@@ -15,6 +15,6 @@ import java.math.BigDecimal;
  * @author tomi
  */
 public interface ITicks extends Iterable<BigDecimal> {
-	
+
 	boolean isMajorTick(BigDecimal d);
 }

@@ -33,7 +33,7 @@ public class SetFilterAction extends AbstractScaveAction {
 		setText("Set Filter");
 		setToolTipText("Set the filter on the \"Browse data\" page from the current selection.");
 	}
-	
+
 	@Override
 	protected void doRun(ScaveEditor scaveEditor, IStructuredSelection selection) {
 		Object selected = selection.getFirstElement();

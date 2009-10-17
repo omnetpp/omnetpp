@@ -24,7 +24,7 @@ public class StateTool extends BaseTool {
 	public StateTool(State state) {
 		this.state = state;
 	}
-	
+
 	public String getConst() {
 		if (sConst == null) {
 			sConst = createIdentifier("", state.getName(), "", true, true); 
@@ -45,24 +45,24 @@ public class StateTool extends BaseTool {
 		}
 		return events;
 	}
-	
+
 	public Event getAnyEvent() {
 		return Event.ANY;
 	}
-	
+
 	public Collection getTrueTansitions(Event event) {
 		return CollectionsTool.filter(
 				state.getFilteredOutgoingTransitions(event, false), 
 				CollectionsTool.trueTransitionPredicate());
 	}
-	
+
 	public Collection getCondTansitions(Event event) {
 		return CollectionsTool.filter(
 				state.getFilteredOutgoingTransitions(event, false),
 				NotPredicate.getInstance(
 						CollectionsTool.trueTransitionPredicate()));
 	}
-	
+
 	public Collection getElseTansitions(Event event) {
 		return state.getFilteredOutgoingTransitions(event, true);
 	}

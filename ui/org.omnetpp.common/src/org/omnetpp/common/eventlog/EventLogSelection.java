@@ -46,7 +46,7 @@ public class EventLogSelection implements IEventLogSelection, IVirtualTableSelec
 	public Object getInput() {
 		return eventLogInput;
 	}
-	
+
 	public IEventLog getEventLog() {
 		return eventLogInput.getEventLog();
 	}
@@ -74,7 +74,7 @@ public class EventLogSelection implements IEventLogSelection, IVirtualTableSelec
 			list.add(e);
 		return new EventLogSelection(this.eventLogInput, list);
 	}
-	
+
 	@Override
 	public boolean equals(Object o) {
 		if (o == null || !(o instanceof EventLogSelection))

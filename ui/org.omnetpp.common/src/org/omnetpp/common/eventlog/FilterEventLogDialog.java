@@ -77,7 +77,7 @@ public class FilterEventLogDialog
     private EventLogInput eventLogInput;
 
 	private EventLogFilterParameters filterParameters;
-	
+
 	private CheckboxTreeViewer panelCheckboxTree;
 
     private FilterDialogTreeNode enableCollectionLimits;
@@ -99,7 +99,7 @@ public class FilterEventLogDialog
     private FilterDialogTreeNode enableModuleIdFilter;
 
     private FilterDialogTreeNode enableMessageFilter;
-	
+
 	private FilterDialogTreeNode enableMessageExpressionFilter;
 
     private FilterDialogTreeNode enableMessageClassNameFilter;
@@ -119,9 +119,9 @@ public class FilterEventLogDialog
 	private Text lowerEventNumberLimit;
 
 	private Text upperEventNumberLimit;
-	
+
 	private Text lowerSimulationTimeLimit;
-	
+
 	private Text upperSimulationTimeLimit;
 
 	private Text tracedEventNumber;
@@ -133,7 +133,7 @@ public class FilterEventLogDialog
 	private Button traceMessageReuses;
 
 	private Button traceSelfMessages;
-	
+
 	private Text causeEventNumberDelta;
 
 	private Text consequenceEventNumberDelta;
@@ -257,7 +257,7 @@ public class FilterEventLogDialog
     private void unparseBoolean(Button button, boolean value) {
 	    button.setSelection(value);
 	}
-	
+
     private void unparseBoolean(FilterDialogTreeNode treeNode, boolean value) {
         panelCheckboxTree.setChecked(treeNode, value);
         treeNode.checkStateChanged(value);
@@ -267,7 +267,7 @@ public class FilterEventLogDialog
 		if (value != -1)
 			text.setText(String.valueOf(value));
 	}
-	
+
     private void unparseLong(Text text, long value) {
         if (value != -1)
             text.setText(String.valueOf(value));
@@ -277,7 +277,7 @@ public class FilterEventLogDialog
 		if (value != null)
 			text.setText(value.toString());
 	}
-	
+
 	private void unparseString(Text text, String value) {
 		if (value != null)
 			text.setText(value);
@@ -289,7 +289,7 @@ public class FilterEventLogDialog
 
 			for (int i = 0; i < values.length; i++)
 				stringValues[i] = String.valueOf(values[i]);
-			
+		
 			editableList.setItems(stringValues);
 		}
 	}
@@ -345,14 +345,14 @@ public class FilterEventLogDialog
 	private void unparseModuleNameIdArray(ModuleTreeViewer moduleTreeViewer, int[] values) {
 		if (values != null) {
 			ArrayList<ModuleTreeItem> moduleTreeItems = new ArrayList<ModuleTreeItem>();
-	
+
 			for (int i = 0; i < values.length; i++) {
 			    ModuleTreeItem item = eventLogInput.getModuleTreeRoot().findDescendantModule(values[i]);
 			    
 			    if (item != null)
 			        moduleTreeItems.add(item);
 			}
-	
+
 			moduleTreeViewer.setCheckedElements(moduleTreeItems.toArray());
 		}
 	}
@@ -365,7 +365,7 @@ public class FilterEventLogDialog
 	public void parseFilterParameters(EventLogFilterParameters filterParameters) {
 		try {
 			Class<EventLogFilterParameters> clazz = EventLogFilterParameters.class;
-			
+		
 			for (Field parameterField : clazz.getDeclaredFields()) {
 				if ((parameterField.getModifiers() & Modifier.PUBLIC) != 0) {
 					Class<?> parameterFieldType = parameterField.getType();
@@ -431,7 +431,7 @@ public class FilterEventLogDialog
     private boolean parseBoolean(Button button) {
 		return button.getSelection();
 	}
-	
+
     private boolean parseBoolean(FilterDialogTreeNode treeNode) {
         return panelCheckboxTree.getChecked(treeNode);
     }
@@ -442,7 +442,7 @@ public class FilterEventLogDialog
 		else
 			return -1;
 	}
-	
+
     private long parseLong(Text text) {
         if (text.getText().length() != 0)
             return Long.parseLong(text.getText());
@@ -456,11 +456,11 @@ public class FilterEventLogDialog
 		else
 			return null;
 	}
-	
+
 	private String parseString(Text text) {
 		return text.getText();
 	}
-	
+
 	private int[] parseIntArray(AbstractEditableList editableList) {
 		String[] stringValues = editableList.getItems();
 		int[] intValues = new int[stringValues.length];
@@ -470,14 +470,14 @@ public class FilterEventLogDialog
 
 		return intValues;
 	}
-	
+
 	private int[] parseIntArray(CheckboxTableViewer checkBoxTableViewer) {
 		Object[] elements = checkBoxTableViewer.getCheckedElements();
 		int[] values = new int[elements.length];
-		
+	
 		for (int i = 0; i < elements.length; i++)
 			values[i] = (Integer)elements[i];
-		
+	
 		return values;
 	}
 
@@ -517,27 +517,27 @@ public class FilterEventLogDialog
 	private String[] parseStringArray(AbstractEditableList editableList) {
 		return editableList.getItems();
 	}
-	
+
 	private int[] parseModuleNameIdArray(ModuleTreeViewer moduleTreeViewer) {
 		Object[] treeItems = moduleTreeViewer.getCheckedElements();
 		int[] values = new int[treeItems.length];
 
 		for (int i = 0; i < values.length; i++)
 			values[i] = ((ModuleTreeItem)treeItems[i]).getModuleId();
-		
+	
 		return values;
 	}
 
 	private String[] parseModuleNEDTypeNameArray(CheckboxTableViewer checkBoxTableViewer) {
 		Object[] elements = checkBoxTableViewer.getCheckedElements();
 		String[] moduleNEDTypeNames = new String[elements.length];
-		
+	
 		for (int i = 0; i < elements.length; i++)
 			moduleNEDTypeNames[i] = (String)elements[i];
-		
+	
 		return moduleNEDTypeNames;
 	}
-	
+
 	public int open(String initialTreeNodeName) {
 	    this.initialTreeNodeName = initialTreeNodeName;
 	    return super.open();
@@ -692,13 +692,13 @@ public class FilterEventLogDialog
 		newShell.setText("Filter event log");
 		super.configureShell(newShell);
 	}
-	
+
 	@Override
 	protected void okPressed() {
 		parseFilterParameters(filterParameters);
 		super.okPressed();
 	}
-	
+
 	private void addFilterDescriptionListener(Text text) {
         text.addModifyListener(new ModifyListener() {
             public void modifyText(ModifyEvent e) {
@@ -735,7 +735,7 @@ public class FilterEventLogDialog
 
         return enableCollectionLimits;
 	}
-	
+
 	private GenericTreeNode createRangeFilterTreeNode(Composite parent) {
 	    // generic filter
 	    Composite panel0 = createPanel(parent, "Range", "Choose subcategories to limit the eventlog to a range of event numbers or simulation times.", 1);
@@ -767,13 +767,13 @@ public class FilterEventLogDialog
                 upperSimulationTimeLimit.setEnabled(checked);
             }
         });
-		
+	
 		label = createLabel(panel, "Lower simulation time limit in seconds:", "Events occured before this simulation time will be filtered out from the result", 1);
 		lowerSimulationTimeLimit = createText(panel, label.getToolTipText(), 1);
 
 		label = createLabel(panel, "Upper simulation time limit in seconds:", "Events occured after this simulation time will be filtered out from the result", 1);
 		upperSimulationTimeLimit = createText(panel, label.getToolTipText(), 1);
-		
+	
 		return enableRangeFilter;
 	}
 
@@ -857,7 +857,7 @@ public class FilterEventLogDialog
 		moduleIds.setLabelProvider(new LabelProvider() {
 			public String getText(Object element) {
 				ModuleTreeItem moduleTreeItem = eventLogInput.getModuleTreeRoot().findDescendantModule((Integer)element);
-				
+			
 				return "(id = " + moduleTreeItem.getModuleId() + ") " + moduleTreeItem.getModuleFullPath();
 			}
 		});
@@ -869,11 +869,11 @@ public class FilterEventLogDialog
 		ModuleCreatedEntryList moduleCreatedEntries = eventLog.getModuleCreatedEntries();
 		for (int i = 0; i < moduleCreatedEntries.size(); i++) {
 			ModuleCreatedEntry moduleCreatedEntry = moduleCreatedEntries.get(i);
-			
+		
 			if (moduleCreatedEntry != null)
 				moduleIds.add(moduleCreatedEntry.getModuleId());
 		}
-		
+	
 		return enableModuleFilter;
 	}
 
@@ -951,7 +951,7 @@ public class FilterEventLogDialog
 		Object[] values = createPanelWithEditableList(parent, "ID");
 		enableMessageIdFilter = (FilterDialogTreeNode)values[0];
 		messageIds = (AbstractEditableList)values[1];
-		
+	
 		values = createPanelWithEditableList(parent, "tree ID");
 		enableMessageTreeIdFilter = (FilterDialogTreeNode)values[0];
 		messageTreeIds = (AbstractEditableList)values[1];
@@ -959,11 +959,11 @@ public class FilterEventLogDialog
 		values = createPanelWithEditableList(parent, "encapsulation ID");
 		enableMessageEncapsulationIdFilter = (FilterDialogTreeNode)values[0];
 		messageEncapsulationIds = (AbstractEditableList)values[1];
-		
+	
 		values = createPanelWithEditableList(parent, "encapsulation tree ID");
 		enableMessageEncapsulationTreeIdFilter = (FilterDialogTreeNode)values[0];
 		messageEncapsulationTreeIds = (AbstractEditableList)values[1];
-		
+	
 		return enableMessageFilter;
 	}
 
@@ -1052,7 +1052,7 @@ public class FilterEventLogDialog
 
 		label = createLabel(group, "Consequence simulation time delta limit in seconds:", "Consequence events occured after this simulation time delta will be filtered out from the result", 1);
 		consequenceSimulationTimeDelta = createText(group, label.getToolTipText(), 1);
-		
+	
 		return enableTraceFilter;
 	}
 
@@ -1085,7 +1085,7 @@ public class FilterEventLogDialog
         label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, hspan, 1));
         return label;
 	}
-	
+
 	protected Button createCheckbox(Composite parent, String text, String tooltip, int hspan) {
 	    Button checkbox = new Button(parent, SWT.CHECK);
 	    checkbox.setText(text);
@@ -1115,7 +1115,7 @@ public class FilterEventLogDialog
 
 	    return text;
 	}
-	
+
     protected Text createTextWithProposals(Composite parent, String tooltip, int hspan, Class<?> clazz) {
         final Text text = createText(parent, tooltip, hspan);
         ContentAssistCommandAdapter commandAdapter = new ContentAssistCommandAdapter(text, new TextContentAdapter(), new EventLogEntryProposalProvider(clazz),

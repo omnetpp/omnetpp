@@ -17,12 +17,12 @@ public interface IVirtualTableContentProvider<T> extends IContentProvider {
 	 * Returns the first element of the virtual table.
 	 */
 	public T getFirstElement();
-	
+
 	/**
 	 * Returns the last element of the virtual table.
 	 */
 	public T getLastElement();
-	
+
 	/**
 	 * Returns the distance between source and target.
 	 * Limit is a signed value which tells in what direction should the distance be measured.
@@ -30,12 +30,12 @@ public interface IVirtualTableContentProvider<T> extends IContentProvider {
 	 * should stop and return with the absolute value of limit.
 	 */
 	public long getDistanceToElement(T sourceElement, T targetElement, long limit);
-	
+
 	/**
 	 * Same as getDistanceToElement but it measures against the first element.
 	 */
 	public long getDistanceToFirstElement(T element, long limit);
-	
+
 	/**
 	 * Same as getDistanceToElement but it measures against the last element.
 	 */
@@ -51,7 +51,7 @@ public interface IVirtualTableContentProvider<T> extends IContentProvider {
 	 * This is used when the content is filtered and the filter changes.
 	 */
 	public T getClosestElement(T element);
-	
+
 	/**
 	 * Returns an approximation of the number of elements. This value should be precise when
 	 * the number of elements is a reasonably small value.

@@ -58,17 +58,17 @@ public class ProcessingOpPropertySource extends PropertySource {
 		}
 		nodeTypes = filterNodeTypes.toArray(new String[filterNodeTypes.size()]);
 	}
-	
+
 	public ProcessingOpPropertySource(ProcessingOp processingOp) {
 		this.processingOp = processingOp;
 		this.domain = AdapterFactoryEditingDomain.getEditingDomainFor(processingOp);
 	}
-	
+
 	@Property
 	public String getOperation() {
 		return processingOp.getOperation();
 	}
-	
+
 	public void setOperation(String op) {
 		if (domain == null) {
 			processingOp.setOperation(op);
@@ -81,11 +81,11 @@ public class ProcessingOpPropertySource extends PropertySource {
 			domain.getCommandStack().execute(command);
 		}
 	}
-	
+
 	public PropertyDescriptor createOperationDescriptor(Object id, String displayName) {
 		return new EditableComboBoxPropertyDescriptor(id, displayName, nodeTypes);
 	}
-	
+
 	@Property
 	public IPropertySource getParameters() {
 		String op = processingOp.getOperation();
@@ -96,9 +96,9 @@ public class ProcessingOpPropertySource extends PropertySource {
 		}
 		return new BasePropertySource();
 	}
-	
+
 	private class ParamsPropertySource implements IPropertySource2 {
-		
+	
 		List<Param> params;
 		StringMap paramDefs;
 		StringMap defaultValues;
@@ -161,7 +161,7 @@ public class ProcessingOpPropertySource extends PropertySource {
 			Assert.isLegal(id instanceof String);
 			setPropertyValue(id, defaultValues.get((String)id));
 		}
-		
+	
 		public boolean isPropertySet(Object id) {
 			Assert.isLegal(id instanceof String);
 			if (defaultValues.has_key((String)id))

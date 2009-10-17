@@ -18,7 +18,7 @@ public class LegendPreferencePage extends PreferencePage {
 	{
 		super(title);
 	}
-	
+
 	@Override
 	protected Control createContents(Composite parent) {
 		return new LegendPreferencePanel(parent, SWT.NONE);

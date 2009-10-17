@@ -20,7 +20,7 @@ public abstract class AbstractGraphLayoutAlgorithm
 	protected static boolean debug = false;
  
 	protected static boolean firstTime = true;
-	
+
 	protected int defaultEdgeLen;
 
     // params set by setConfineToArea()
@@ -63,7 +63,7 @@ public abstract class AbstractGraphLayoutAlgorithm
     		firstTime = false;
     		rngSelfTest(); 
     	}
-    	
+    
         // go on with constructor
     	rndseed = 1;
         defaultEdgeLen = 40;

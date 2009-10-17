@@ -317,7 +317,7 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener, 
 	public NedFileElementEx getModel() {
 		return NEDResourcesPlugin.getNEDResources().getNedFileElement(getFile());
 	}
-	
+
 	@Override
 	public void setAction(String actionID, IAction action) {
 	    if (!actionID.equals(ITextEditorActionConstants.SAVE))
@@ -462,7 +462,7 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener, 
 		// setting our selection
 		if (isActivePart() || nedSelectionProvider.isNotificationInProgress())
 			return;
-		
+	
 		// Debug.println("*** TextEditor selection changed from: "+part+" selection: "+selection);
 		if (selection instanceof IStructuredSelection) {
 			Object firstElement = ((IStructuredSelection) selection).getFirstElement();

@@ -45,7 +45,7 @@ public interface INEDTypeResolver {
 	 * cached NED data whenever they potentially become stale.
 	 */
     public long getLastChangeSerial();
-	
+
 	/**
 	 * INTERNAL Factory method, to be called from INedTypeElement constructors.
 	 */
@@ -157,7 +157,7 @@ public interface INEDTypeResolver {
      * and its dependent projects.
      */
     public Collection<INEDTypeInfo> getNedTypesThatImplement(INEDTypeInfo interfaceType, IProject context);
-	
+
     /**
      * Returns all toplevel (non-inner) type names in the NED files, excluding
      * duplicate names, from the given project and its dependent projects.

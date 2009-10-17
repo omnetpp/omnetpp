@@ -37,27 +37,27 @@ import org.omnetpp.ide.OmnetppMainPlugin;
 @SuppressWarnings("deprecation")
 public class MSVCEnvironmentVariableSupplier implements IConfigurationEnvironmentVariableSupplier,
 	    IManagedIsToolChainSupported {
-	
+
 	private static class MSVCBuildEnvironmentVariable implements IBuildEnvironmentVariable {
-		
+	
 		private final String name;
 		private final String value;
 		private final int operation;
-		
+	
 		public MSVCBuildEnvironmentVariable(String name, String value, int operation) {
 			this.name = name;
 			this.value = value;
 			this.operation = operation;
 		}
-		
+	
 		public String getDelimiter() {
 			return ";";
 		}
-		
+	
 		public String getName() {
 			return name;
 		}
-		
+	
 		public String getValue() {
 			return value;
 		}
@@ -78,7 +78,7 @@ public class MSVCEnvironmentVariableSupplier implements IConfigurationEnvironmen
         Map<String, IBuildEnvironmentVariable> vars = createVars();
 		return vars.values().toArray(new IBuildEnvironmentVariable[vars.size()]);
 	}
-	
+
     /**
      * Returns the VS dir from the preferences; null if unset.
      */
@@ -120,16 +120,16 @@ public class MSVCEnvironmentVariableSupplier implements IConfigurationEnvironmen
         String vcDir = getVCDir();
 		if (vcDir == null)
 			return vars;
-		
+	
 		// The SDK Location
 		String sdkDir = getSDKDir();
-		
+	
 		// INCLUDE
 		StringBuffer buff = new StringBuffer();
 
 		buff.append(new Path(vcDir).append("INCLUDE").toOSString()+";");
 		buff.append(new Path(vcDir).append("INCLUDE\\SYS").toOSString()+";");  //FIXME needed????
-		
+	
 		if (sdkDir != null) {
 		    buff.append(new Path(sdkDir).append("Include").toOSString()+";");
 		    buff.append(new Path(sdkDir).append("Include\\gl").toOSString()+";");
@@ -142,19 +142,19 @@ public class MSVCEnvironmentVariableSupplier implements IConfigurationEnvironmen
 		if (sdkDir != null)
 		    buff.append(new Path(sdkDir).append("Lib").toOSString()+";");
 		addvar(vars, new MSVCBuildEnvironmentVariable("LIB", buff.toString(), IBuildEnvironmentVariable.ENVVAR_PREPEND));
-		
+	
 		// PATH
 		buff = new StringBuffer();
-		
+	
 		String vsDir = getVSDir();
 		if (vsDir != null)
 			buff.append(new Path(vsDir).append("Common7\\IDE").toOSString()+";");
-		
+	
 		buff.append(new Path(vcDir).append("Bin").toOSString()+";");
         if (sdkDir != null)
             buff.append(new Path(sdkDir).append("Bin").toOSString()+";");
 		addvar(vars, new MSVCBuildEnvironmentVariable("PATH", buff.toString(), IBuildEnvironmentVariable.ENVVAR_PREPEND));
-		
+	
 		return vars;
 	}
 }

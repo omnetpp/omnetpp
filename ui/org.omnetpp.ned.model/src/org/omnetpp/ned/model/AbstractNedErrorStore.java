@@ -17,7 +17,7 @@ import org.eclipse.core.resources.IMarker;
  * @author Andras
  */
 public abstract class AbstractNedErrorStore implements INEDErrorStore {
-	
+
 	public void addError(INEDElement context, String message) {
 		add(IMarker.SEVERITY_ERROR, context, getLineOf(context), message);
 	}

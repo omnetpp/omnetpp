@@ -34,11 +34,11 @@ public class ExportDataAction extends AbstractScaveAction {
 		CSV		= "csv",
 		MATLAB	= "matlab",
 		OCTAVE	= "octave";
-	
+
 	public static final String[] FORMATS = {CSV, MATLAB, OCTAVE };
 
 	String format;
-	
+
 	public ExportDataAction(String format) {
 		this.format = format;
 		if (CSV.equals(format)) {
@@ -80,7 +80,7 @@ public class ExportDataAction extends AbstractScaveAction {
 				 (selection.getFirstElement() instanceof Dataset ||
 				  selection.getFirstElement() instanceof DatasetItem));
 	}
-	
+
 	private AbstractExportWizard createWizard() {
 		if (CSV.equals(format))
 			return new CsvExportWizard();

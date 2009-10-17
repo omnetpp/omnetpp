@@ -17,9 +17,9 @@ public interface IRuntimeGate {
 	public int getVectorSize();
 
 	public boolean isVector();
-	
+
 	public String getFullName();
 
 	public IRuntimeModule getOwnerModule();
-	
+
 }

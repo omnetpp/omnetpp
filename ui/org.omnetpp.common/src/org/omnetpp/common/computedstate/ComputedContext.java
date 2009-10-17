@@ -18,11 +18,11 @@ public class ComputedContext {
 	private static Stack<ComputedContext> computedContextStack = new Stack<ComputedContext>();
 	private ComputedState owner;
 	private List<ComputedState> dependsOn = new ArrayList<ComputedState>();
-	
+
 	public ComputedContext(ComputedState owner) {
 		this.owner = owner;
 	}
-	
+
 	public static boolean isComputedContextStackEmpty() {
 		return computedContextStack.isEmpty();
 	}
@@ -46,17 +46,17 @@ public class ComputedContext {
 	public void addComputedState(ComputedState depdendsOn) {
 		this.dependsOn.add(depdendsOn);
 	}
-	
+
 	public ComputedState getOwner() {
 		return owner;
 	}
-	
+
 	public static boolean hasOwnerOnStack(ComputedState owner) {
 		for (ComputedContext c : computedContextStack) {
 			if (c.owner == owner)
 				return true;
 		}
-		
+	
 		return false;
 	}
 }

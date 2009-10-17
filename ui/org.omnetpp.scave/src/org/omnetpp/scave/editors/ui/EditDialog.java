@@ -37,14 +37,14 @@ import org.omnetpp.scave.engine.ResultFileManager;
  * @author tomi
  */
 public class EditDialog extends TitleAreaDialog {
-	
+
 	private ScaveEditor editor;
 	private EObject object;
 	private EStructuralFeature[] features; //XXX not really used, remove on the long term?
 	private IScaveObjectEditForm form;
 	private Object[] values;
-	
-	
+
+
 	/**
 	 * Creates the dialog. The form in the dialog will be chosen based on the object type.
 	 * The form can be customized via the formParameters, like which page of the 
@@ -58,7 +58,7 @@ public class EditDialog extends TitleAreaDialog {
 	public EditDialog(Shell parentShell, EObject object, ScaveEditor editor, Map<String,Object> formParameters) {
 		this(parentShell, object, null, editor, formParameters);
 	}
-	
+
 	public EditDialog(Shell parentShell, EObject object, EStructuralFeature[] features, ScaveEditor editor, Map<String,Object> formParameters) {
 		super(parentShell);
 		setShellStyle(getShellStyle() | SWT.RESIZE);
@@ -67,16 +67,16 @@ public class EditDialog extends TitleAreaDialog {
 		this.features = features;
 		this.form = createForm(object, features, editor.getResultFileManager(), formParameters);
 	}
-	
+
 	@Override
 	protected IDialogSettings getDialogBoundsSettings() {
 	    return UIUtils.getDialogSettings(ScavePlugin.getDefault(), getClass().getName());
 	}
-	
+
 	public EStructuralFeature[] getFeatures() {
 		return form.getFeatures();
 	}
-	
+
 	public static EStructuralFeature[] getEditableFeatures(EObject object, ScaveEditor editor) {
 		try {
 			IScaveObjectEditForm form = createForm(object, null, editor.getResultFileManager(), null);
@@ -86,11 +86,11 @@ public class EditDialog extends TitleAreaDialog {
 			return new EStructuralFeature[0];
 		}
 	}
-	
+
 	public Object getValue(int index) {
 		return values[index];
 	}
-	
+
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
@@ -115,10 +115,10 @@ public class EditDialog extends TitleAreaDialog {
 	@Override
 	protected Control createDialogArea(Composite parent) {
 		Composite composite = (Composite)super.createDialogArea(parent);
-		
+	
 		Composite panel = new Composite(composite, SWT.NONE);
 		panel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		
+	
 		setTitle(form.getTitle());
 		setMessage(form.getDescription());
 		form.populatePanel(panel);
@@ -129,26 +129,26 @@ public class EditDialog extends TitleAreaDialog {
 		}
 		return composite;
 	}
-	
+
 	@Override
 	protected void okPressed() {
 		applyChanges();
 		super.okPressed();
 	}
-	
+
 	protected void applyPressed() {
 		applyChanges();
 	}
-	
+
 	private void applyChanges() {
 		if (features == null)
 			return;
-		
+	
 		values = new Object[features.length];
 		for (int i = 0; i < values.length; ++i) {
 			values[i] = form.getValue(features[i]);
 		}
-		
+	
 		CompoundCommand command = new CompoundCommand("Edit");
 		for (int i = 0; i < features.length; ++i) {
 			Object oldValue = object.eGet(features[i]);
@@ -165,7 +165,7 @@ public class EditDialog extends TitleAreaDialog {
 		}
 		editor.executeCommand(command);
 	}
-	
+
 	private static IScaveObjectEditForm createForm(EObject object, EStructuralFeature[] features, ResultFileManager manager, Map<String,Object> formParameters) {
 		//XXX remove features[] parameter! 
 		return ScaveObjectEditFormFactory.instance().createForm(object, formParameters, manager);

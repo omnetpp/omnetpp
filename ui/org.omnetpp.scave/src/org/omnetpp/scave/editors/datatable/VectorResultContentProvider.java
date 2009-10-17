@@ -27,7 +27,7 @@ import org.omnetpp.scave.model2.ResultItemRef;
 public class VectorResultContentProvider implements IVirtualTableContentProvider<OutputVectorEntry> {
 
 	private IndexedVectorFileReaderEx reader;
-	
+
 	public OutputVectorEntry getApproximateElementAt(double percentage) {
 		if (reader != null)
 			return reader.getEntryBySerial((int)(percentage * reader.getNumberOfEntries()));
@@ -102,19 +102,19 @@ public class VectorResultContentProvider implements IVirtualTableContentProvider
 	public OutputVectorEntry getClosestElement(OutputVectorEntry element) {
 		return element;
 	}
-	
+
 	public OutputVectorEntry getElementBySerial(int serial) {
 		return reader != null ? reader.getEntryBySerial(serial) : null;
 	}
-	
+
 	public OutputVectorEntry getElementBySimulationTime(BigDecimal time, boolean after) {
 		return reader != null ? reader.getEntryBySimtime(time, after) : null;
 	}
-	
+
 	public OutputVectorEntry getElementByEventNumber(long eventNumber, boolean after) {
 		return reader != null ? reader.getEntryByEventnum(eventNumber, after) : null;
 	}
-	
+
 	public void dispose() {
 		if (reader != null) {
 			reader.delete();
@@ -130,14 +130,14 @@ public class VectorResultContentProvider implements IVirtualTableContentProvider
 			reader.delete();
 			reader = null;
 		}
-		
+	
 		if (newInput instanceof ResultItemRef) {
 			ResultItem item = ((ResultItemRef)newInput).resolve();
 			if (item instanceof VectorResult) {
 				VectorResult vector = (VectorResult)item;
 				int vectorId = vector.getVectorId();
 				String filename = vector.getFileRun().getFile().getFileSystemFilePath();
-					
+				
 				try {
 					reader = new IndexedVectorFileReaderEx(filename, vectorId);
 				}

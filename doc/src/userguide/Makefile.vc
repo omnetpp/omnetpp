@@ -45,7 +45,7 @@ generate-tables: chart-properties processing-operations
 
 catalog:
 	set XML_CATALOG_FILES=../docbook-dtd/catalog.xml
-	
+
 CHART_PROP_DIR = ..\..\..\ui\org.omnetpp.scave\src\org\omnetpp\scave\charting\properties
 
 chart-properties: generate.pl $(CHART_PROP_DIR)\*Properties.java

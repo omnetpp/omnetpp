@@ -13,17 +13,17 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 
 public class InputFilesPanel extends TreeWithButtonsPanel {
-	
+
 	private Button addFileButton;
 	private Button addWildcardButton;
 	private Button removeFileButton;
 	private Button editButton;
-	
+
 	public InputFilesPanel(Composite parent, int style) {
 		super(parent, style);
 		initialize();
 	}
-	
+
 	private void initialize() {
 		Composite buttonPanel = getButtonPanel();
 		FormToolkit toolkit = getFormToolkit();

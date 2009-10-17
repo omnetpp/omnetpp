@@ -29,11 +29,11 @@ import org.omnetpp.scave.model2.SetOperationPropertySource;
  * @author tomi
  */
 public class ScavePropertySourceProvider implements IPropertySourceProvider {
-	
+
 	AdapterFactory adapterFactory;
 	IPropertySourceProvider delegate;
 	ResultFileManager manager;
-	
+
 	public ScavePropertySourceProvider(AdapterFactory adapterFactory, ResultFileManager manager) {
 		this.adapterFactory = adapterFactory;
 		this.delegate = new AdapterFactoryContentProvider(adapterFactory);
@@ -58,7 +58,7 @@ public class ScavePropertySourceProvider implements IPropertySourceProvider {
 			if (properties instanceof VectorChartProperties)
 				return ((VectorChartProperties)properties).getLineProperties(lineID.getKey());
 		}
-	
+
 		return delegate.getPropertySource(object);
 	}
 }

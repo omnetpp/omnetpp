@@ -53,8 +53,8 @@ public interface IDatasetStrategy {
 	public File loadResultFile(String fileName);
 
 	public boolean isCompatible(IDList idList);
-	
+
 	public JFreeChart createEmptyChart();
-	
+
 	public void updateDataset(JFreeChart chart, IDList idlist);
 }

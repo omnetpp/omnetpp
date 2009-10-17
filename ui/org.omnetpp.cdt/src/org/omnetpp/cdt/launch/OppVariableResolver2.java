@@ -45,7 +45,7 @@ public class OppVariableResolver2 implements IDynamicVariableResolver {
             result += (StringUtils.isEmpty(result)? "" : pathSep) + mingwBinDir.toOSString();
 		return result;
 	}
-	
+
     protected void abort(String message, Throwable exception) throws CoreException {
         throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 1, message, exception));
     }

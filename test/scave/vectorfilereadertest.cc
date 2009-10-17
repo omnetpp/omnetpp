@@ -133,7 +133,7 @@ void testReader(const char* readerNodeType, const char *inputFile, int *vectorId
 			strcmp(readerNodeType, "indexedvectorfilereader2") == 0) &&
 			!IndexFile::isIndexFileUpToDate(inputFile))
 		throw exception("Index file is not up to date");
-	
+
     NodeTypeRegistry *registry = NodeTypeRegistry::getInstance();
     NodeType *readerType = registry->getNodeType(readerNodeType);
     NodeType *builderType = registry->getNodeType("arraybuilder");

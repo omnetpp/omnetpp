@@ -101,7 +101,7 @@
 			</classpath>
 		</java>
 	</target>
-	
+
 	<!-- Extract / rearange the output for a single configuration 
 		config: platform.windowingsystem.architecture (triplet as specified in "configs" property), 
 		platdir: the directory name for the specific platform launcher and p2 profile dir -->

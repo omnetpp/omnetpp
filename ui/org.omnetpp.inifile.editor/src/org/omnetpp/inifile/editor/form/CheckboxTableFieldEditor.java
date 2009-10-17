@@ -145,7 +145,7 @@ public class CheckboxTableFieldEditor extends TableFieldEditor {
 		    // content assist for the Object column
 		    //TODO see TextTableFieldEditor and InifileParamKeyContentProposalProvider
 		}
-		
+	
  		return tableViewer;
 	}
 
