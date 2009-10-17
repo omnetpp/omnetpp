@@ -79,7 +79,7 @@ public class ModuleTreeViewer extends CheckboxTreeViewer {
 					text += " (id=" + mod.getModuleId() + ")";
 				return text;
 			}
-        	
+        
         });
 
         setInput(root);

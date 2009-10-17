@@ -30,7 +30,7 @@ import com.evelopers.unimod.core.stateworks.Transition;
 
 public class CollectionsTool {
 	private static Map cache = new HashMap();
-	
+
 	public static Predicate stableStatePredicate() {
 		if (! cache.containsKey("stableStatePredicate")) {
 			cache.put("stableStatePredicate", new Predicate() {
@@ -91,7 +91,7 @@ public class CollectionsTool {
 		}
 		return (Predicate) cache.get("trueTransitionPredicate");
 	}
-	
+
 	public static Comparator stateComparator() {
 		if (! cache.containsKey("stateComparator")) {
 			final Pattern STATE_NUMBER_PATTERN = Pattern.compile("(\\d+)");
@@ -128,7 +128,7 @@ public class CollectionsTool {
 		}
 		return (Comparator) cache.get("eventComparator");
 	}
-	
+
 	public static Transformer transitionToEventTransformer() {
 		if (! cache.containsKey("transitionToEventTransformer")) {
 			cache.put("transitionToEventTransformer", new Transformer() {
@@ -153,14 +153,14 @@ public class CollectionsTool {
 		Collections.sort(l, cmp);
 		return l;
 	}
-	
+
 	public static List filter(Collection c, Transformer t, Predicate p, Comparator cmp) {
 		List l = new LinkedList(c);
 		CollectionUtils.transform(l, t);
 		CollectionUtils.filter(l, p);
 		Collections.sort(l, cmp);
-		return l;		
+		return l;	
 	}
 
-	
+
 }

@@ -16,7 +16,7 @@ import org.apache.commons.lang.ObjectUtils;
  * @author tomi
  */
 public class Pair<T1,T2> {
-	
+
 	public T1 first;
 	public T2 second;
 
@@ -24,7 +24,7 @@ public class Pair<T1,T2> {
 		this.first = first;
 		this.second = second;
 	}
-	
+
 	public static <T1,T2> Pair<T1,T2> pair(T1 first, T2 second) {
 		return new Pair<T1,T2>(first, second);
 	}
@@ -44,7 +44,7 @@ public class Pair<T1,T2> {
 		return ObjectUtils.equals(first, otherPair.first) &&
 				ObjectUtils.equals(second, otherPair.second);
 	}
-	
+
 	@Override
 	public String toString() {
 	    return "(" + first.toString() + ", " + second.toString() + ")";

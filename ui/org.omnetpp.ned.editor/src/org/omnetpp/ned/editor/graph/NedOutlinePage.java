@@ -93,7 +93,7 @@ class NedOutlinePage extends ContentOutlinePage implements INEDChangeListener, I
     	// KLUDGE END
 
     	super.createControl(parent);
-    	
+    
         getViewer().setEditDomain(graphicalNedEditor.getEditDomain());
         getViewer().setEditPartFactory(new NedTreeEditPartFactory());
         ContextMenuProvider provider = new GNEDContextMenuProvider(getViewer(), graphicalNedEditor.getActionRegistry());
@@ -160,9 +160,9 @@ class NedOutlinePage extends ContentOutlinePage implements INEDChangeListener, I
 			}
 		}
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Utility method: Returns the active editor, or null.
 	 */
@@ -171,7 +171,7 @@ class NedOutlinePage extends ContentOutlinePage implements INEDChangeListener, I
 		IWorkbenchPage activePage = site==null ? null : site.getWorkbenchWindow().getActivePage();
 		return activePage==null ? null : activePage.getActiveEditor();
 	}
-	
+
 	/**
 	 * Utility method: Return the active editor's selection, or null.
 	 */
@@ -180,5 +180,5 @@ class NedOutlinePage extends ContentOutlinePage implements INEDChangeListener, I
 		ISelectionProvider selectionProvider = editor==null ? null : editor.getSite().getSelectionProvider();
 		return selectionProvider==null ? null : selectionProvider.getSelection();
 	}
-	
+
 }

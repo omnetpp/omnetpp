@@ -24,24 +24,24 @@ public class IsoLineData implements Comparable<IsoLineData>
 	private String dataName;
 	private String attributeName;
 	private String value;
-	
+
 	public IsoLineData() {
 	}
-	
+
 	public IsoLineData(String moduleName, String dataName) {
 		this.moduleName = moduleName;
 		this.dataName = dataName;
 	}
-	
+
 	public IsoLineData(String attributeName) {
 		this.attributeName = attributeName;
 	}
-	
+
 	public boolean isValid() {
 		return (!StringUtils.isEmpty(moduleName) && !StringUtils.isEmpty(dataName)) ||
 				!StringUtils.isEmpty(attributeName);
 	}
-	
+
 	public String getModuleName() {
 		return moduleName;
 	}
@@ -65,7 +65,7 @@ public class IsoLineData implements Comparable<IsoLineData>
 	public void setAttributeName(String attributeName) {
 		this.attributeName = attributeName;
 	}
-	
+
 	public String getValue() {
 		return value;
 	}
@@ -91,14 +91,14 @@ public class IsoLineData implements Comparable<IsoLineData>
 		}
 		return null;
 	}
-	
+
 	public String asListItem() {
 		if (moduleName != null && dataName != null)
 			return moduleName + "/" + dataName;
 		else
 			return attributeName;
 	}
-	
+
 	public String asFilterPattern() {
 		FilterUtil filter = new FilterUtil();
 		if (moduleName != null && dataName != null) {
@@ -139,7 +139,7 @@ public class IsoLineData implements Comparable<IsoLineData>
 			return -1;
 		if (this.moduleName == null && other.moduleName != null)
 			return 1;
-			
+		
 		int result = StringUtils.dictionaryCompare(this.moduleName, other.moduleName);
 		if (result == 0)
 			result = StringUtils.dictionaryCompare(this.dataName, other.dataName);

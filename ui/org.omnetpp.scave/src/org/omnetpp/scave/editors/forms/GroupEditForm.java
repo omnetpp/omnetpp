@@ -24,26 +24,26 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  * @author andras
  */
 public class GroupEditForm implements IScaveObjectEditForm {
-	
+
 	/**
 	 * Features edited on this panel.
 	 */
 	private static final EStructuralFeature[] features = new EStructuralFeature[] {
 		ScaveModelPackage.eINSTANCE.getGroup_Name(),
 	};
-	
+
 	/**
 	 * The edited group.
 	 */
 	//private Group group;
-	
+
 	// edit controls of the features
 	private Text nameText;
 
 	public GroupEditForm(Group group, EObject parent) {
 		//this.group = group;
 	}
-	
+
 	/**
 	 * Returns the title displayed on the top of the dialog.
 	 */

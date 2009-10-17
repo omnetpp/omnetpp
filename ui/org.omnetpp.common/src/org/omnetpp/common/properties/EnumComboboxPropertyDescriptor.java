@@ -64,11 +64,11 @@ public class EnumComboboxPropertyDescriptor extends PropertyDescriptor {
 			}
 		};
 	}
-	
+
 	@Override
 	public CellEditor createPropertyEditor(Composite parent) {
 		editor = new EditableComboBoxCellEditor(parent, enumSpec.getNames());
-		
+	
 		// customize combobox behavior a bit: when the user chooses something
 		// from the dropdown list, replace it with the standard abbreviation
 		final CCombo combo = ((CCombo)editor.getControl());

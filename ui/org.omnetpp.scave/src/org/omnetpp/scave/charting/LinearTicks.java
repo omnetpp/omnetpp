@@ -18,19 +18,19 @@ import java.util.NoSuchElementException;
  * @author Andras
  */
 public class LinearTicks implements ITicks {
-	
+
 	private BigDecimal start;
 	private BigDecimal end;
 	private BigDecimal majorTickDelta;
 	private BigDecimal delta;
-	
+
 	public LinearTicks(double start, double end, double approxDelta) {
 		int scale = (int)Math.ceil(Math.log10(approxDelta));
 		this.start = new BigDecimal(start).setScale(-scale, RoundingMode.FLOOR);
 		this.end = new BigDecimal(end).setScale(-scale, RoundingMode.CEILING);
 		BigDecimal spacing = BigDecimal.valueOf(approxDelta);
 		BigDecimal delta = new BigDecimal(1).scaleByPowerOfTen(scale);
-		
+	
 		if (delta.divide(BigDecimal.valueOf(5)).compareTo(spacing) > 0) {
 			// use 2, 4, 6, 8, etc. if possible
 			this.majorTickDelta = delta.divide(BigDecimal.valueOf(5));
@@ -50,15 +50,15 @@ public class LinearTicks implements ITicks {
 	public boolean isMajorTick(BigDecimal d) {
 		return d.remainder(majorTickDelta).compareTo(BigDecimal.ZERO) == 0;
 	}
-	
+
 	public Iterator<BigDecimal> iterator() {
 		class TickIterator implements Iterator<BigDecimal> {
 			BigDecimal current;
-			
+		
 			public TickIterator() {
 				current = start;
 			}
-			
+		
 			public boolean hasNext() {
 				return current.compareTo(end) < 0;
 			}
@@ -75,7 +75,7 @@ public class LinearTicks implements ITicks {
 				throw new UnsupportedOperationException();
 			}
 		};
-		
+	
 		return new TickIterator();
 	}
 }

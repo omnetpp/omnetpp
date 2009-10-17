@@ -296,7 +296,7 @@ public class CompoundModuleFigure extends NedFigure
 	public float getScale() {
 		return scale;
 	}
-	
+
 	/**
 	 * Adjusts the figure properties using a displayString object
 	 * @param dps The display string object containing the properties
@@ -307,7 +307,7 @@ public class CompoundModuleFigure extends NedFigure
 		String newDisplayString = dps.toString();
 		if (newDisplayString.equals(oldDisplayString) )
 			return;
-		
+
 		this.oldDisplayString = newDisplayString;
 
 		// background color / image

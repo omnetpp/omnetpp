@@ -38,7 +38,7 @@ import org.omnetpp.scave.charting.dataset.IScalarDataset;
  * Domain axis for bar chart.
  */
 class DomainAxis {
-	
+
 	ScalarChart chart;
 	Rectangle rect; // strip below the plotArea where the axis text etc goes
 	Vector<LineData> lines = new Vector<LineData>();
@@ -48,49 +48,49 @@ class DomainAxis {
 	double rotation = DEFAULT_X_LABELS_ROTATED_BY;
 	boolean wrapLabels = DEFAULT_WRAP_LABELS;
 	int gap = 4;  // between chart and axis 
-	
+
 	static class LabelData {
 		TextLayout textLayout;
 		int row;
 		int centerY;
 		Dimension size;
 		Dimension rotatedSize;
-		
+	
 		public void dispose() {
 			if (textLayout != null)
 				textLayout.dispose();
 		}
 	}
-	
+
 	final static Comparator<LineData> lineDataRightEdgeComparator = new Comparator<LineData>() {
 		public int compare(LineData first, LineData second) {
 			return first.right == second.right ? 0 :
 					first.right < second.right ? -1 : 1;
 		}
 	};
-	
+
 	static class LineData {
 		int height;
 		int right;
 		List<LabelData> labels = new ArrayList<LabelData>();
-		
+	
 		public LineData() {
 			height = 0;
 			right = Integer.MIN_VALUE;
 		}
 	}
-	
+
 	public DomainAxis(ScalarChart chart) {
 		this.chart = chart;
 	}
-	
+
 	public void dispose() {
 		for (LineData line : lines)
 			for (LabelData label : line.labels)
 				if (label != null)
 					label.dispose();
 	}
-	
+
 	/**
 	 * Modifies insets to accomodate room for axis title, ticks, tick labels etc.
 	 * Also returns insets for convenience. 
@@ -166,7 +166,7 @@ class DomainAxis {
 			return insets;
 		}
 	}
-	
+
 	private LabelData layoutGroupLabel(int row, Font font, double rotation , GC gc, Dimension maxSize) {
 		LabelData data = new LabelData();
 		String label = chart.getDataset().getRowKey(row);
@@ -190,7 +190,7 @@ class DomainAxis {
 		graphics.pushState();
 
 		graphics.setClip(rect);
-		
+	
 		graphics.setLineStyle(SWT.LINE_SOLID);
 		graphics.setLineWidth(1);
 		graphics.setForegroundColor(ColorFactory.BLACK);
@@ -203,14 +203,14 @@ class DomainAxis {
 		if (dataset != null) {
 			int cColumns = dataset.getColumnCount();
 			int cRows = dataset.getRowCount();
-			
+		
 			// draw lines
 			for (int row = 0; row < cRows; ++row) {
 				int left = plot.getBarRectangle(row, 0, coordsMapping).x;
 				int right = plot.getBarRectangle(row, cColumns - 1, coordsMapping).right();
 				graphics.drawLine(left, rect.y + gap, right, rect.y + gap);
 			}
-			
+		
 			// draw labels
 			graphics.setFont(labelsFont);
 			graphics.drawText("", 0, 0); // force Graphics push the font setting into GC
@@ -222,7 +222,7 @@ class DomainAxis {
 					int right = plot.getBarRectangle(label.row, cColumns - 1, coordsMapping).right();
 					Dimension size = label.size;
 					Dimension rotatedSize = label.rotatedSize;
-					
+				
 					if (isRectangularAngle(rotation)) // center into the cell
 						graphics.translate((left + right) / 2, rect.y + gap + 1 + label.centerY);
 					else // left at the bottom of the bar
@@ -233,7 +233,7 @@ class DomainAxis {
 			}
 			graphics.popState();
 		}
-		
+	
 		// draw axis title
 		graphics.setFont(titleFont);
 		graphics.drawText("", 0, 0); // force Graphics push the font setting into GC
@@ -244,7 +244,7 @@ class DomainAxis {
 		graphics.dispose();
 		gc.setClipping(oldClip); // graphics.popState() doesn't restore it!
 	}
-	
+
 	private static boolean isRectangularAngle(double degree) {
 		return Math.abs(Math.IEEEremainder(degree, 90.0)) < 10.0;
 	}

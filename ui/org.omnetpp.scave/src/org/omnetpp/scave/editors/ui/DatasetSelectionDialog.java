@@ -66,7 +66,7 @@ public class DatasetSelectionDialog extends ElementListSelectOrCreateDialog {
 			}
 		});
 	}
-	
+
 	@Override
 	protected IDialogSettings getDialogBoundsSettings() {
 	    return UIUtils.getDialogSettings(ScavePlugin.getDefault(), getClass().getName());
@@ -74,11 +74,11 @@ public class DatasetSelectionDialog extends ElementListSelectOrCreateDialog {
 
 	static class DatasetLabelProvider extends LabelProvider {
 		private ILabelProvider imageProvider;
-		
+	
 		public DatasetLabelProvider(ScaveEditor editor) {
 			imageProvider = new AdapterFactoryLabelProvider(editor.getAdapterFactory());
 		}
-		
+	
 		public Image getImage(Object element) {
 			if (element instanceof Dataset) {
 				return imageProvider.getImage(element);

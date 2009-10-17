@@ -22,9 +22,9 @@ public class SendBroadcastAnimation extends AbstractSendMessageAnimation {
 	protected int destinationModuleId;
 
 	protected Ellipse circle;
-	
+
 	protected double hidePropagationTime;
-	
+
 	public SendBroadcastAnimation(ReplayAnimationController animationController,
 								  AnimationPosition animationPosition,
 								  double propagationTime,
@@ -51,7 +51,7 @@ public class SendBroadcastAnimation extends AbstractSendMessageAnimation {
 		circle.setFill(false);
 		circle.setForegroundColor(ColorFactory.getGoodDarkColor(msg == null ? 0 : msg.getEncapsulationId()));
 	}
-	
+
 	@Override
 	public void redo() {
 		if (isDisplayed())
@@ -83,7 +83,7 @@ public class SendBroadcastAnimation extends AbstractSendMessageAnimation {
 	protected Point getBeginPoint() {
 		return getSubmoduleFigureCenter(getAncestorUnderParentModule(sourceModuleId));
 	}
-	
+
 	@Override
 	protected Point getEndPoint() {
 		return getSubmoduleFigureCenter(getAncestorUnderParentModule(destinationModuleId));

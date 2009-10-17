@@ -21,7 +21,7 @@ import org.omnetpp.launch.tabs.OmnetppMainTab;
  * @author rhornig
  */
 public class SimulationLaunchConfigurationTabGroup extends AbstractLaunchConfigurationTabGroup {
-	
+
     public SimulationLaunchConfigurationTabGroup() {
     }
 

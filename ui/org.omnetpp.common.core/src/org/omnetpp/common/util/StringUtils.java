@@ -94,7 +94,7 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
             name = "_" + name;
         return name;
 	}
-	
+
 	/**
 	 * Make the first noOfChars lower-case
 	 */
@@ -782,7 +782,7 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
             return ((String)object).length() != 0;
         else if (object instanceof List)
         	return !((List)object).isEmpty();
-        else	
+        else
             throw new RuntimeException("template error: template parameter '" + key + "' was expected to be a string or boolean, but it is " + object.getClass().toString());
     }
 
@@ -832,7 +832,7 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
 			return defaultVal;
 		}
 	}
-	
+
 	public static List<String> splitPreservingSeparators(String string, Pattern separator) {
 		List<String> result = new ArrayList<String>();
 		Matcher matcher = separator.matcher(string);

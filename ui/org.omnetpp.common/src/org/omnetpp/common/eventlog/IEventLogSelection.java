@@ -29,7 +29,7 @@ public interface IEventLogSelection extends ISelection {
 	 * belong to this EventLog. Never returns null.  
 	 */
 	public IEventLog getEventLog();
-	
+
 	/**
 	 * The list of selected event numbers. The returned list MUST NOT be modified
 	 * by clients. Never returns null. 

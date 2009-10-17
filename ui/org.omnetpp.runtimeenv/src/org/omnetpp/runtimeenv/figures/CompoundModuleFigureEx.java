@@ -19,7 +19,7 @@ public class CompoundModuleFigureEx extends ScrollPane implements IInspectorFigu
     public CompoundModuleFigureEx() {
     	moduleFigure = new CompoundModuleFigure();
     	setContents(moduleFigure);
-    	
+    
         setMinimumSize(new Dimension(20,20));
         //setBorder(new LineBorder(2));
 
@@ -61,7 +61,7 @@ public class CompoundModuleFigureEx extends ScrollPane implements IInspectorFigu
 	public CompoundModuleLayout getSubmoduleLayouter() {
 		return (CompoundModuleLayout)moduleFigure.getSubmoduleLayer().getLayoutManager();
 	}
-	
+
     public void setDisplayString(IDisplayString dps) {
 		moduleFigure.setDisplayString(dps);
 	}

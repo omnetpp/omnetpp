@@ -132,7 +132,7 @@ implements ModifyListener {
 		final ScrolledComposite scollComp = new ScrolledComposite( parent, SWT.V_SCROLL | SWT.H_SCROLL );
 		scollComp.setExpandHorizontal(true);
 		scollComp.setExpandVertical(true);
-		
+	
 
 		final Composite comp = SWTFactory.createComposite(scollComp, 1, 1, GridData.FILL_HORIZONTAL);
         createWorkingDirGroup(comp, 1);
@@ -324,7 +324,7 @@ implements ModifyListener {
         String [] splitProgs  = StringUtils.split(progs, ' ');
         if (splitProgs.length > 0) 
         	return splitProgs[0];
-    	
+    
 		return "";
 	}
 

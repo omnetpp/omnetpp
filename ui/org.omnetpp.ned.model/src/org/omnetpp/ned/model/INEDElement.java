@@ -39,7 +39,7 @@ public interface INEDElement extends Iterable<INEDElement> {
      * Usually derived from getTagName().
      */
     public String getReadableTagName();
-	
+
 	/**
 	 * Returns the numeric code (NED_xxx) of the XML element the class represents.
 	 */

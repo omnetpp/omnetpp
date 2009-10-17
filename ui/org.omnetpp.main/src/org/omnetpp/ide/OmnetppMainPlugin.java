@@ -64,7 +64,7 @@ public class OmnetppMainPlugin extends AbstractUIPlugin {
 	public static OmnetppMainPlugin getDefault() {
 		return plugin;
 	}
-	
+
 	public static void logError(Throwable exception) {
         if (plugin != null) {
         	plugin.getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, 0, exception.toString(), exception));
@@ -91,7 +91,7 @@ public class OmnetppMainPlugin extends AbstractUIPlugin {
 	public static String getOmnetppRootDir() {
 		return CommonPlugin.getConfigurationPreferenceStore().getString(IConstants.PREF_OMNETPP_ROOT);
 	}
-	
+
 	/**
 	 * @return The omnetpp bin directory, or empty string "" if omnetpp root dir is not defined.
 	 */

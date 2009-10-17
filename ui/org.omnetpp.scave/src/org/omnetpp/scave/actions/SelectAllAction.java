@@ -76,7 +76,7 @@ public class SelectAllAction extends AbstractScaveAction {
 			((focusControl != null && hasAncestor(focusControl, activePage)) ||
 					activePage == editor.getBrowseDataPage());
 	}
-	
+
 	private boolean hasAncestor(Control control, Composite composite) {
 		Composite ancestor = control.getParent();
 		while (ancestor != null && ancestor != composite && !(ancestor instanceof Shell))

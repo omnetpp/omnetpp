@@ -19,7 +19,7 @@ import org.omnetpp.scave.editors.ScaveEditor;
  */
 public class RemoveObjectAction extends AbstractScaveAction {
 	private EObject element;
-	
+
 	public RemoveObjectAction(EObject element, String text) {
 		setText(text);
 		setToolTipText("Remove the element");

@@ -21,7 +21,7 @@ public class EventLogProgressManager {
 	private ProgressMonitorDialog progressDialog;
 
 	private IProgressMonitor progressMonitor;
-	
+
 	public IProgressMonitor getProgressMonitor() {
 		return progressMonitor;
 	}

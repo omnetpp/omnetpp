@@ -80,7 +80,7 @@ public class ManualAxisOrder {
         int numberOfAxes = selectedAxisModules.length;
         int[] axisPositions = new int[numberOfAxes];
 	    ArrayList<ModuleTreeItem> currentAxisModuleOrder = getCurrentAxisModuleOrder(selectedAxisModules);
-		
+	
         for (int i = 0; i < selectedAxisModules.length; i++)
             axisPositions[i] = currentAxisModuleOrder.indexOf(selectedAxisModules[i]);
         
@@ -149,22 +149,22 @@ public class ManualAxisOrder {
                 else
                     super.buttonPressed(buttonId);
 			}
-			
+		
 			@Override
 			public boolean isHelpAvailable() {
 			    return false;
 			}
-			
+		
 			@Override
 			protected int getShellStyle() {
 			    return super.getShellStyle() | SWT.RESIZE;
 			}
-			
+		
 			@Override
 			protected int getTableStyle() {
 			    return SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER;
 			}
-			
+		
 			private void move(List<?> selection, int delta) {
 			    ModuleTreeItem[] movedCurrentAxisModuleOrder = new ModuleTreeItem[updatedCurrentAxisModuleOrder.size()];
 
@@ -196,7 +196,7 @@ public class ManualAxisOrder {
 			    else if (delta > 0)
 			        getTableViewer().reveal(selection.get(selection.size() - 1));
 			}
-			
+		
 			private void swap(ModuleTreeItem module1, ModuleTreeItem module2) {
 			    int index1 = updatedCurrentAxisModuleOrder.indexOf(module1);
                 int index2 = updatedCurrentAxisModuleOrder.indexOf(module2);
@@ -220,7 +220,7 @@ public class ManualAxisOrder {
 
 		if (dialog.getReturnCode() == Window.OK)
             updateLastAxisModuleOrder(currentAxisModuleOrder, updatedCurrentAxisModuleOrder);
-		
+	
 		return dialog.getReturnCode();
     }
 }

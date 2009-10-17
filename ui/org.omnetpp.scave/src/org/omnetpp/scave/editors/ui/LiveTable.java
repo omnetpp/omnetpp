@@ -51,13 +51,13 @@ import org.eclipse.swt.widgets.Control;
 public class LiveTable extends Composite  implements ISelectionProvider {
 	private static final Color SELECTBORDER_COLOR = new Color(null,255,0,0);
 	private static final Color INSERTMARK_COLOR = new Color(null,0,0,0);
- 	
+ 
 	private ArrayList<Control> orderedChildren = new ArrayList<Control>();
 	private ArrayList<Control> selection = new ArrayList<Control>();
 	private ListenerList selectionChangedListeners = new ListenerList();
 	private ListenerList childOrderChangedListeners = new ListenerList();
 	private Control insertMark = null;
-	
+
 	/**
 	 * Constructor.
 	 */
@@ -70,7 +70,7 @@ public class LiveTable extends Composite  implements ISelectionProvider {
 			}
 		});
 	}
-	
+
 	/**
 	 * Overridden so that we can reorder the children. 
 	 */
@@ -86,13 +86,13 @@ public class LiveTable extends Composite  implements ISelectionProvider {
 				orderedChildren.add(child);
 		return orderedChildren.toArray(new Control[orderedChildren.size()]);
 	}
-	
+
 	public void setChildOrder(List<? extends Control> childOrder) {
 		// TODO check children
 		orderedChildren.clear();
 		orderedChildren.addAll(childOrder);
 	}
-	
+
 	/**
 	 * Adds the necessary mouse listeners for dragging and selecting children.
 	 */
@@ -206,7 +206,7 @@ public class LiveTable extends Composite  implements ISelectionProvider {
 		Assert.isTrue(atItem.getParent()==this);
 		if (item==atItem)
 			return;
-		
+	
 		moveTo(Collections.singletonList(item), atItem);
 		layout();
 	}
@@ -220,7 +220,7 @@ public class LiveTable extends Composite  implements ISelectionProvider {
 		moveTo(selection, target);
 		layout();
 	}
-	
+
 	protected void moveTo(List<Control> controls, Control target) {
 		int index = orderedChildren.indexOf(target);
 		for (Control control : controls)
@@ -229,10 +229,10 @@ public class LiveTable extends Composite  implements ISelectionProvider {
 			index = orderedChildren.size();
 		for (Control control : controls)
 			orderedChildren.add(index++, control);
-		
+	
 		fireChildOrderChanged();
 	}
-	
+
 	private void addToSelection(Control control) {
 		Assert.isTrue(control == null || control.getParent()==this);
 		if (control!=null && !selection.contains(control))
@@ -257,7 +257,7 @@ public class LiveTable extends Composite  implements ISelectionProvider {
 		redraw();
 		fireSelectionChanged();
 	}
-	
+
 	/**
 	 * Extends the selection with the given controls.
 	 */
@@ -283,7 +283,7 @@ public class LiveTable extends Composite  implements ISelectionProvider {
 		selection.clear();
 		select(controls);
 	}
-	
+
 	/**
 	 * Selects all controls.
 	 */
@@ -328,7 +328,7 @@ public class LiveTable extends Composite  implements ISelectionProvider {
 	public void removeSelectionChangedListener(ISelectionChangedListener listener) {
 		selectionChangedListeners.remove(listener);
 	}
-	
+
 	/**
 	 * Notifies the selection change listeners about a selection change event.
 	 */
@@ -337,20 +337,20 @@ public class LiveTable extends Composite  implements ISelectionProvider {
 		for (Object listener : selectionChangedListeners.getListeners())
 			((ISelectionChangedListener)listener).selectionChanged(event);
 	}
-	
+
 	public void addChildOrderChangedListener(IChildOrderChangedListener listener) {
 		childOrderChangedListeners.add(listener);
 	}
-	
+
 	public void removeChildOrderChangedListener(IChildOrderChangedListener listener) {
 		childOrderChangedListeners.remove(listener);
 	}
-	
+
 	protected void fireChildOrderChanged() {
 		for (Object listener : childOrderChangedListeners.getListeners())
 			((IChildOrderChangedListener)listener).childOrderChanged(this);
 	}
-	
+
 	public static interface IChildOrderChangedListener {
 		void childOrderChanged(LiveTable table);
 	}

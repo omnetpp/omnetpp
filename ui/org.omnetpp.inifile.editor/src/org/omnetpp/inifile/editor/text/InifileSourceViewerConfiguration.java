@@ -44,17 +44,17 @@ public class InifileSourceViewerConfiguration extends SourceViewerConfiguration 
 	public InifileSourceViewerConfiguration(InifileEditorData editorData) {
 		this.editorData = editorData;
 	}
-	
+
 	@Override
 	public IAnnotationHover getAnnotationHover(ISourceViewer sourceViewer) {
 		return new DefaultAnnotationHover();
 	}
-		
+	
 	@Override
 	public IAutoEditStrategy[] getAutoEditStrategies(ISourceViewer sourceViewer, String contentType) {
 		return null;
 	}
-	
+
     @Override
 	public IContentAssistant getContentAssistant(ISourceViewer sourceViewer) {
 
@@ -70,17 +70,17 @@ public class InifileSourceViewerConfiguration extends SourceViewerConfiguration 
 
 		return assistant;
 	}
-	
+
 	@Override
 	public ITextDoubleClickStrategy getDoubleClickStrategy(ISourceViewer sourceViewer, String contentType) {
 		return new DefaultTextDoubleClickStrategy();
 	}
-	
+
 	@Override
 	public String[] getIndentPrefixes(ISourceViewer sourceViewer, String contentType) {
 		return new String[] { "\t", "    " };
 	}
-	
+
 	@Override
 	public IPresentationReconciler getPresentationReconciler(ISourceViewer sourceViewer) {
         
@@ -100,12 +100,12 @@ public class InifileSourceViewerConfiguration extends SourceViewerConfiguration 
         
 		return reconciler;
 	}
-	
+
 	@Override
 	public ITextHover getTextHover(ISourceViewer sourceViewer, String contentType) {
 		return new InifileTextHover(editorData);
 	}
-	
+
 	@Override
 	public IReconciler getReconciler(ISourceViewer sourceViewer) {
 		// Installs background NED parsing.

@@ -30,7 +30,7 @@ import org.omnetpp.inifile.editor.model.InifileHoverUtils;
  */
 public class InifileTextHover implements ITextHover, ITextHoverExtension, IInformationProviderExtension2 {
 	private InifileEditorData editorData;
-	
+
 
 	public InifileTextHover(InifileEditorData editorData) {
 		this.editorData = editorData;

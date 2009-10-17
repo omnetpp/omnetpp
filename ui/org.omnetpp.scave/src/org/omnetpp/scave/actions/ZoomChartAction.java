@@ -18,7 +18,7 @@ import org.omnetpp.scave.editors.ScaveEditor;
  * @author tomi
  */
 public class ZoomChartAction extends AbstractScaveAction {
-	
+
 	private double zoomFactor;
 	private boolean horizontally;
 	private boolean vertically;

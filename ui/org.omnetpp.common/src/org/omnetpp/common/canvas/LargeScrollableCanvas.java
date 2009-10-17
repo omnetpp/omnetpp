@@ -27,7 +27,7 @@ import org.eclipse.swt.widgets.ScrollBar;
  * @author andras
  */
 public abstract class LargeScrollableCanvas extends Canvas {
-	
+
 	public static final String PROP_VIEW_X = "viewX";
 	public static final String PROP_VIEW_Y = "viewY";
 
@@ -35,7 +35,7 @@ public abstract class LargeScrollableCanvas extends Canvas {
 	private long viewX, viewY; // 64-bit coordinates of top-left corner of the viewport
 	private int hShift, vShift; // used for scrollbar mapping 
 	private Rectangle viewportRect; // the scrolled area within the canvas
-	
+
 	private ListenerList listeners = new ListenerList();
 
 	public LargeScrollableCanvas(Composite parent, int style) {
@@ -46,11 +46,11 @@ public abstract class LargeScrollableCanvas extends Canvas {
 	private void init() {
 		getHorizontalBar().setIncrement(10);
 		getVerticalBar().setIncrement(10);
-		
+	
 		// set an initial viewport rectangle to prevent null pointer exceptions;
 		// clients are expected to set a proper viewport rectangle inside Resize events.
 		setViewportRectangle(new Rectangle(0,0,1,1));
-		
+	
 		//
 		// Note: there is no need to reconfigure the scrollbars on Resize events,
 		// because scrollbar state only depends on virtualWidth/Height and viewportRect,
@@ -75,7 +75,7 @@ public abstract class LargeScrollableCanvas extends Canvas {
 	public void setVirtualSize(long width, long height) {
 		width = Math.max(width, 1);
 		height = Math.max(height, 1);
-		
+	
 		this.virtualWidth = width;
 		this.virtualHeight = height;
 		configureScrollBars();
@@ -118,7 +118,7 @@ public abstract class LargeScrollableCanvas extends Canvas {
 	public long getViewportBottom() {
 		return viewY + getViewportHeight();
 	}
-	
+
 	/**
 	 * Scroll horizontally with the given amount of pixels.
 	 */
@@ -154,14 +154,14 @@ public abstract class LargeScrollableCanvas extends Canvas {
 		firePropertyChangeEvent(PROP_VIEW_Y, oldValue, this.viewY);
 		redraw();
 	}
-	
+
 	/**
 	 * Makes the horizontal range visible with as little scrolling as possible.
 	 */
 	public void scrollHorizontalToRange(long x1, long x2) {
 		Assert.isTrue(x2 >= x1);
 		long dx = x2 - x1;
-		
+	
 		if (dx > getViewportWidth())
 			scrollHorizontalTo((x2 + x1 - getViewportWidth()) / 2);
 		else if (x1 < viewX)
@@ -169,14 +169,14 @@ public abstract class LargeScrollableCanvas extends Canvas {
 		else if (x2 > viewX + getViewportWidth())
 			scrollHorizontalTo(x2 - getViewportWidth());
 	}
-	
+
 	/**
 	 * Makes the vertical range visible with as little scrolling as possible.
 	 */
 	public void scrollVerticalToRange(long y1, long y2) {
 		Assert.isTrue(y2 >= y1);
 		long dy = y2 - y1;
-		
+	
 		if (dy > getViewportHeight())
 			scrollVerticalTo((y2 + y1 - getViewportHeight()) / 2);
 		else if (y1 < viewY)
@@ -184,11 +184,11 @@ public abstract class LargeScrollableCanvas extends Canvas {
 		else if (y2 > viewY + getViewportHeight())
 			scrollVerticalTo(y2 - getViewportHeight());
 	}
-	
+
 	protected long clipX(long x) {
 		return clip(x, virtualWidth - getViewportWidth());
 	}
-	
+
 	protected long clipY(long y) {
 		return clip(y, virtualHeight - getViewportHeight());
 	}
@@ -219,7 +219,7 @@ public abstract class LargeScrollableCanvas extends Canvas {
 	public int virtualToCanvasX(long x) {
 		return (int)(x - getViewportLeft() + viewportRect.x);
 	}
-	
+
 	public int virtualToCanvasY(long y) {
 		return (int)(y - getViewportTop() + viewportRect.y);
 	}
@@ -231,7 +231,7 @@ public abstract class LargeScrollableCanvas extends Canvas {
 	public long canvasToVirtualX(int x) {
 		return x + getViewportLeft() - viewportRect.x;
 	}
-	
+
 	public long canvasToVirtualY(int y) {
 		return y + getViewportTop() - viewportRect.y;
 	}
@@ -263,7 +263,7 @@ public abstract class LargeScrollableCanvas extends Canvas {
 		viewY = clipY(((long)getVerticalBar().getSelection()) << vShift);
 		redraw();
 	}
-	
+
 	/**
 	 * Should be called when viewport or virtual size changes.
 	 */
@@ -271,7 +271,7 @@ public abstract class LargeScrollableCanvas extends Canvas {
 		hShift = configureHorizontalScrollBar(getHorizontalBar(), virtualWidth, viewX, getViewportWidth());
 		vShift = configureVerticalScrollBar(getVerticalBar(), virtualHeight, viewY, getViewportHeight());
 	}
-	
+
 	protected int configureHorizontalScrollBar(ScrollBar scrollBar, long virtualSize, long virtualPosition, int widgetSize) {
 		viewX = clipX(virtualPosition);
 		return configureScrollBar(scrollBar, virtualSize, virtualPosition, widgetSize);
@@ -291,7 +291,7 @@ public abstract class LargeScrollableCanvas extends Canvas {
 		else {
 			// show scrollbar
 			scrollBar.setVisible(true);
-			
+		
 			// count how many bits we need to shift to fit into 32 bits
 			int shift = 0;
 			while (virtualSize>>shift > Integer.MAX_VALUE) 
@@ -301,7 +301,7 @@ public abstract class LargeScrollableCanvas extends Canvas {
 			int newThumb = (int)(widgetSize >> shift);
 			int newSel = (int)(virtualPos >> shift);
 			int newPageIncr = (int)((widgetSize>>shift > 0) ? widgetSize>>shift : 1);
-				
+			
 			scrollBar.setMinimum(0);
 			scrollBar.setMaximum(newMax);
 			scrollBar.setThumb(newThumb);
@@ -318,15 +318,15 @@ public abstract class LargeScrollableCanvas extends Canvas {
 	protected void adjustVerticalScrollBar() {
 		getVerticalBar().setSelection((int)(viewY >> vShift));
 	}
-	
+
 	public void addPropertyChangeListener(IPropertyChangeListener listener) {
 		listeners.add(listener);
 	}
-	
+
 	public void removePropertyChangeListener(IPropertyChangeListener listener) {
 		listeners.remove(listener);
 	}
-	
+
 	protected void firePropertyChangeEvent(String property, Object oldValue, Object newValue) {
 		PropertyChangeEvent event = new PropertyChangeEvent(this, property, oldValue, newValue);
 		for (Object listener : listeners.getListeners()) {

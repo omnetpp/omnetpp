@@ -18,7 +18,7 @@ import com.simulcraft.test.gui.core.UIStep;
 import com.simulcraft.test.gui.core.InBackgroundThread;
 
 public class ModelObjectPaletteAccess extends CompositeAccess {
-	
+
 	// button labels
 	public static final String
 		DATASET_BUTTON = "Dataset.*",
@@ -32,12 +32,12 @@ public class ModelObjectPaletteAccess extends CompositeAccess {
 		SCATTER_CHART_BUTTON = "Scatter.*[cC]hart.*",
 		CHARTSHEET_BUTTON = "Chart.*[sS]heet.*";
 
-	
+
 
 	public ModelObjectPaletteAccess(Composite composite) {
 		super(composite);
 	}
-	
+
 	@Override
 	public ScrolledComposite getControl() {
 		return (ScrolledComposite)super.getControl();
@@ -46,7 +46,7 @@ public class ModelObjectPaletteAccess extends CompositeAccess {
 	public CompositeAccess getComposite() {
 		return (CompositeAccess)createAccess(getControl().getContent());
 	}
-	
+
 	@UIStep
 	public CompositeAccess getButton(final String label) {
 		return (CompositeAccess)createAccess(getComposite().findDescendantControl(
@@ -59,19 +59,19 @@ public class ModelObjectPaletteAccess extends CompositeAccess {
 								}
 								return false;
 							}
-							
+						
 						}));
 	}
-	
+
 	public void revealButton(String label) {
 		revealButton(getButton(label));
 	}
-	
+
 	@UIStep
 	public void revealButton(CompositeAccess button) {
 		getControl().setOrigin(button.getControl().getLocation());
 	}
-	
+
 	@InBackgroundThread
 	public void clickButton(String label) {
 		CompositeAccess button = getButton(label);

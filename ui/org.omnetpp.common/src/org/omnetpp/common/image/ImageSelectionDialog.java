@@ -52,7 +52,7 @@ public class ImageSelectionDialog extends Dialog {
 	private static final int HEIGHT = 350;
 	private static final int WIDTH = 500;
 	private static final int RIGHT_MARGIN = 30;
-	
+
 	private static final long TIMEOUT_MILLIS = 500;
 
 	// widgets
@@ -80,7 +80,7 @@ public class ImageSelectionDialog extends Dialog {
 		// "" represents NO IMAGE
 		imageNames.add(0, "");
 	}
-	
+
 	@Override
 	protected IDialogSettings getDialogBoundsSettings() {
 	    return UIUtils.getDialogSettings(CommonPlugin.getDefault(), getClass().getName());
@@ -265,7 +265,7 @@ public class ImageSelectionDialog extends Dialog {
 
 	protected void addImageToCanvas(final String imageName) {
 		Button button = new Button(imageCanvas, SWT.PUSH);
-		
+	
 		if (imageName.equals("")) {
 		    button.setText("NONE");
 		    button.setLayoutData(new RowData(50,50));
@@ -284,7 +284,7 @@ public class ImageSelectionDialog extends Dialog {
 		    button.setImage(image);
 		    button.setToolTipText(tooltip);
 		}
-		
+	
 		button.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				selectImage(imageName);

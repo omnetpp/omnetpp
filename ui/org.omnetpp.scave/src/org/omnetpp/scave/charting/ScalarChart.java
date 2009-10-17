@@ -70,29 +70,29 @@ public class ScalarChart extends ChartCanvas {
 	static class BarProperties {
 		RGB color;
 	}
-	
+
 	static class BarSelection implements IChartSelection {
 		// TODO selection on ScalarCharts
 	}
-	
+
 	public ScalarChart(Composite parent, int style) {
 		super(parent, style);
 		plot = new BarPlot(this);
 		new Tooltip(this);
-		
+	
 		this.addMouseListener(new MouseAdapter() {
 			public void mouseDown(MouseEvent e) {
 				setSelection(new BarSelection());
 			}
 		});
 	}
-	
+
 	@Override
 	public void dispose() {
 		domainAxis.dispose();
 		super.dispose();
 	}
-	
+
 	@Override
 	protected double transformY(double y) {
 		return valueAxis.transform(y);
@@ -107,18 +107,18 @@ public class ScalarChart extends ChartCanvas {
 	public void doSetDataset(IDataset dataset) {
 		if (dataset != null && !(dataset instanceof IScalarDataset))
 			throw new IllegalArgumentException("must be an IScalarDataset");
-		
+	
 		this.dataset = (IScalarDataset)dataset;
 		updateLegends();
 		chartArea = calculatePlotArea();
 		updateArea();
 		chartChanged();
 	}
-	
+
 	public IScalarDataset getDataset() {
 		return dataset;
 	}
-	
+
 	public BarPlot getPlot() {
 		return plot;
 	}
@@ -127,7 +127,7 @@ public class ScalarChart extends ChartCanvas {
 	protected RectangularArea calculatePlotArea() {
 		return plot.calculatePlotArea();
 	}
-	
+
 	private void updateLegends() {
 		updateLegend(legend);
 		updateLegend(legendTooltip);
@@ -142,7 +142,7 @@ public class ScalarChart extends ChartCanvas {
 			}
 		}
 	}
-	
+
 	/*=============================================
 	 *               Properties
 	 *=============================================*/
@@ -160,7 +160,7 @@ public class ScalarChart extends ChartCanvas {
 			setXAxisLabelsRotatedBy(Converter.stringToDouble(value));
 		else if (PROP_WRAP_LABELS.equals(name))
 			setWrapLabels(Converter.stringToBoolean(value));
-		// Bars	
+		// Bars
 		else if (PROP_BAR_BASELINE.equals(name))
 			setBarBaseline(Converter.stringToDouble(value));
 		else if (PROP_BAR_PLACEMENT.equals(name))
@@ -231,7 +231,7 @@ public class ScalarChart extends ChartCanvas {
 		domainAxis.rotation = Math.max(0, Math.min(90, angle));
 		chartChanged();
 	}
-	
+
 	public void setWrapLabels(Boolean value) {
 		if (value == null)
 			value = DEFAULT_WRAP_LABELS;
@@ -282,28 +282,28 @@ public class ScalarChart extends ChartCanvas {
 		valueAxis.setShowGrid(value);
 		chartChanged();
 	}
-	
+
 	public RGB getBarColor(String key) {
 		BarProperties barProps = properties.getProperties(key);
 		if (barProps == null || barProps.color == null)
 			barProps = properties.getDefaultProperties();
 		return barProps != null ? barProps.color : null;
 	}
-	
+
 	public void setBarColor(String key, RGB color) {
 		BarProperties barProps = properties.getOrCreateProperties(key);
 		barProps.color = color;
 		updateLegends();
 		chartChanged();
 	}
-	
+
 	public String getKeyFor(int columnIndex) {
 		if (columnIndex >= 0 && columnIndex < dataset.getColumnCount())
 			return dataset.getColumnKey(columnIndex);
 		else
 			return null;
 	}
-	
+
 	/*=============================================
 	 *               Drawing
 	 *=============================================*/
@@ -320,7 +320,7 @@ public class ScalarChart extends ChartCanvas {
 			Rectangle remaining = legendTooltip.layout(gc, area);
 			remaining = title.layout(gc, area);
 			remaining = legend.layout(gc, remaining, 1);
-	
+
 			mainArea = remaining.getCopy();
 			axesInsets = domainAxis.layout(gc, mainArea, new Insets(), mapping, pass);
 			axesInsets = valueAxis.layout(gc, mainArea, axesInsets, mapping, pass);
@@ -343,14 +343,14 @@ public class ScalarChart extends ChartCanvas {
 		else
 			return null;
 	}
-	
+
 	@Override
 	protected void doPaintCachableLayer(GC gc, ICoordsMapping coordsMapping) {
 		gc.fillRectangle(gc.getClipping());
 		valueAxis.drawGrid(gc, coordsMapping);
 		plot.draw(gc, coordsMapping);
 	}
-	
+
 	@Override
 	protected void doPaintNoncachableLayer(GC gc, ICoordsMapping coordsMapping) {
 		paintInsets(gc);
@@ -363,7 +363,7 @@ public class ScalarChart extends ChartCanvas {
 		legendTooltip.draw(gc);
 		drawStatusText(gc);
 	}
-	
+
 	@Override
 	public void setZoomX(double zoomX) {
 		super.setZoomX(zoomX);

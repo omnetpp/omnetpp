@@ -19,22 +19,22 @@ import org.eclipse.draw2d.geometry.Transform;
  * @author tomi
  */
 public class GeomUtils {
-	
+
 	public static Insets subtract(Rectangle outer, Rectangle inner) {
 		return new Insets(Math.max(inner.y - outer.y, 0),
 				  Math.max(inner.x - outer.x, 0),
 				  Math.max(outer.bottom() - inner.bottom(), 0),
 				  Math.max(outer.right() - inner.right(), 0));
 	}
-	
+
 	public static Rectangle add(Rectangle rect, Insets insets) {
 		return rect.getCopy().expand(insets);
 	}
-	
+
 	public static Rectangle subtract(Rectangle rect, Insets insets) {
 		return rect.getCopy().crop(insets);
 	}
-	
+
 	/**
 	 * Calculates bounding box of a rotated rectangle. Rotation is in *degrees*.
 	 */

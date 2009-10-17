@@ -1232,7 +1232,7 @@ public class ReplayAnimationController implements IAnimationEnvironment {
 		if (index < 0 || index > size)
 			return -1;
 		else {
-//FIXME this crashes on startup, when there are no animation primitives loaded (andras)			
+//FIXME this crashes on startup, when there are no animation primitives loaded (andras)		
 //			Assert.isTrue((first && valueProvider.getValue(index) < value) ||
 //				   (!first && valueProvider.getValue(index) > value));
 			return index;

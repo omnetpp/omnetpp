@@ -32,9 +32,9 @@ public class IDListSAXHandler extends DefaultHandler implements IDListXMLConsts 
 
     // maps run IDs to run references (because in the XML file, items refer to runs by an id)
 	HashMap<String,Run> runIdToRunMap = new HashMap<String,Run>();
-	
+
 	private String skipedElement;
-	
+
 	public IDListSAXHandler(IDList result) {
 		this.result = result;
 	}
@@ -48,7 +48,7 @@ public class IDListSAXHandler extends DefaultHandler implements IDListXMLConsts 
 	public void startElement(String uri, String localName, String qName, Attributes atts) {
 		if (skipedElement != null)
 			return;
-		
+	
 		//System.out.println("<" + qName + ">");
 		if (qName.equals(EL_FILE)) {
 			String fileName = atts.getValue(ATT_FILENAME);

@@ -40,7 +40,7 @@ public class Application implements IApplication {
         	//Simkernel.changeToDir("C:/home/omnetpp40/omnetpp/test/anim/dynamic"); //XXX
         	Simkernel.changeToDir("C:/home/omnetpp40/omnetpp/samples/queuenet"); //XXX
         	Simkernel.loadExtensionLibrary("C:/home/omnetpp40/omnetpp/samples/queueinglib/out/msvc-debug/queueinglib");
-        	
+        
         	// assemble the command line
         	StringVector args = new StringVector();
         	args.add("programname");
@@ -53,7 +53,7 @@ public class Application implements IApplication {
         	GUIEnv.setRCPApplication(this); // call back "this" object
 
         	Simkernel.setupUserInterface(args); // calls back doStart()
-        	
+        
         	cStaticFlag.set(false);
         }
 		return result;

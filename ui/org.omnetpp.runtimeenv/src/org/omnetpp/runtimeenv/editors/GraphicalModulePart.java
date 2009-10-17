@@ -37,7 +37,7 @@ import org.omnetpp.runtimeenv.figures.SubmoduleFigureEx;
 //TODO ConnectionFigure must be fixed too!
 public class GraphicalModulePart extends InspectorPart {
 	protected static final cDisplayString EMPTY_DISPLAYSTRING = new cDisplayString(""); 
-	
+
     protected Map<cModule,SubmoduleFigureEx> submodules = new HashMap<cModule,SubmoduleFigureEx>();
     protected Map<cGate,ConnectionFigure> connections = new HashMap<cGate, ConnectionFigure>();
     protected float canvasScale = 1.0f;  //TODO properly do it

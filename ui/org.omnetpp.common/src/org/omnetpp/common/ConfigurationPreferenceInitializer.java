@@ -34,7 +34,7 @@ public class ConfigurationPreferenceInitializer extends AbstractPreferenceInitia
         store.setDefault(IConstants.PREF_DEFAULT_LICENSE, IConstants.IS_COMMERCIAL ? LicenseUtils.CUSTOM : LicenseUtils.LGPL);
         store.setDefault(IConstants.PREF_CUSTOM_LICENSE_HEADER, LicenseUtils.DEFAULT_CUSTOM_LICENSE_HEADER);
 	}
-	
+
 	private IPath getOmnetppRootDefault() {
 	    String omnetppRootEnv = System.getenv("OMNETPP_ROOT");
 	    if (StringUtils.isNotEmpty(omnetppRootEnv)) {
@@ -50,15 +50,15 @@ public class ConfigurationPreferenceInitializer extends AbstractPreferenceInitia
         // TODO look for the Makefile.inc or configuser.vc in parent directories etc.
         return new Path("");
 	}
-	
+
 	private boolean containsConfigFiles(IPath path) {
 	    return new File(path.append("configuser.vc").toString()).exists() || new File(path.append("Makefile.inc").toString()).exists();  
 	}
-	
+
 	private String getGraphvizDotExecutableDefault() {
         return ProcessUtils.lookupExecutable("dot") != null ? "dot" : "";
 	}
-	
+
 	private String getDoxygenExecutableDefault() {
 	    return ProcessUtils.lookupExecutable("doxygen") != null ? "doxygen" : "";
 	}

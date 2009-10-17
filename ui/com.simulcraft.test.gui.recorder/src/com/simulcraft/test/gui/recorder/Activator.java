@@ -18,13 +18,13 @@ import org.osgi.framework.BundleContext;
 public class Activator extends AbstractUIPlugin {
 
 	public static boolean DEBUG = false;
-	
+
 	// The plug-in ID
 	public static final String PLUGIN_ID = "com.simulcraft.test.gui.recorder";
 
 	// The shared instance
 	private static Activator plugin;
-	
+
 	/**
 	 * The constructor
 	 */
@@ -63,5 +63,5 @@ public class Activator extends AbstractUIPlugin {
     public static void logError(String message, Throwable exception) {
         getDefault().getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, 0, message, exception));
     }
-	
+
 }

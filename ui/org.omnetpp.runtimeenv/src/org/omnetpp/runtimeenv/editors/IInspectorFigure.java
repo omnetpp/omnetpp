@@ -13,7 +13,7 @@ public interface IInspectorFigure extends IFigure {
 	 * Returns the associated inspector part.
 	 */
 	IInspectorPart getInspectorPart();
-	
+
 	/**
 	 * Sets the associated inspector part.
 	 */

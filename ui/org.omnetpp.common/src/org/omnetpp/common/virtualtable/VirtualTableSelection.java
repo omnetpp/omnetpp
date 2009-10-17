@@ -21,11 +21,11 @@ public class VirtualTableSelection<T> implements IVirtualTableSelection<T> {
 		this.input = input;
 		this.elements = elements;
 	}
-	
+
 	public Object getInput() {
 		return input;
 	}
-	
+
 	public List<T> getElements() {
 		return elements;
 	}

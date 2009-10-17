@@ -82,38 +82,38 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
 public class DatasetView extends ViewWithMessagePart implements ISelectionProvider	{
 
 	public static final String ID = "org.omnetpp.scave.DatasetView";
-	
+
 	private Composite panel;
 	private StackLayout layout;
 	private FilteredDataPanel vectorsPanel;
 	private FilteredDataPanel scalarsPanel;
 	private FilteredDataPanel histogramsPanel;
-	
+
 	private boolean viewControlCreated;
-	
+
 	private ScaveEditor activeScaveEditor;
 	private Dataset selectedDataset;
 	private DatasetItem selectedItem;
-	
+
 	private IAction showScalarsAction;
 	private IAction showVectorsAction;
 	private IAction showHistogramsAction;
 	private IAction selectAllAction;
 	private IAction toggleFilterAction;
 	private SetFilterAction2 setFilterAction;
-	
+
 	private ISelectionListener selectionChangedListener;
 	private IPartListener partListener;
 	private IResultFilesChangeListener resultFilesChangeListener;
 	private INotifyChangedListener modelChangeListener;
-	
+
 	private ILabelProvider labelProvider;
-	
+
 	private ISelection selection;
 	private ListenerList selectionChangeListeners = new ListenerList();
-	
+
 	private Runnable scheduledUpdate; 
-	
+
 	@Override
 	public void init(IViewSite site) throws PartInitException {
 		super.init(site);
@@ -146,22 +146,22 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 		vectorsPanel = configurePanel(new FilteredDataPanel(panel, SWT.NONE, ResultType.VECTOR_LITERAL));
 		scalarsPanel = configurePanel(new FilteredDataPanel(panel, SWT.NONE, ResultType.SCALAR_LITERAL));
 		histogramsPanel = configurePanel(new FilteredDataPanel(panel, SWT.NONE, ResultType.HISTOGRAM_LITERAL));
-		
+	
 		setVisibleDataPanel(vectorsPanel);
 		showFilter(false);
 
 		viewControlCreated = true;
-		
+	
 		if (enableGuiTest) {
 			panel.setData(WIDGET_ID, DATASET_VIEW_MAIN_PANEL_ID);
 			scalarsPanel.setData(WIDGET_ID, DATASET_VIEW_SCALARS_PANEL_ID);
 			vectorsPanel.setData(WIDGET_ID, DATASET_VIEW_VECTORS_PANEL_ID);
 			histogramsPanel.setData(WIDGET_ID, DATASET_VIEW_HISTOGRAMS_PANEL_ID);
 		}
-		
+	
 		return panel;
 	}
-	
+
 	private FilteredDataPanel configurePanel(FilteredDataPanel panel) {
 		panel.getTable().addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -176,7 +176,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 		});
 		return panel;
 	}
-	
+
 	private void initActions() {
 		showScalarsAction = new ShowTableAction(ResultType.SCALAR_LITERAL);
 		showVectorsAction = new ShowTableAction(ResultType.VECTOR_LITERAL);
@@ -188,7 +188,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 		IActionBars actionBars = getViewSite().getActionBars();
 		actionBars.setGlobalActionHandler(ActionFactory.SELECT_ALL.getId(), selectAllAction);
 	}
-	
+
 	private void createToolbarButtons() {
 		IToolBarManager manager = getViewSite().getActionBars().getToolBarManager();
 		manager.add(toggleFilterAction);
@@ -196,10 +196,10 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 		manager.add(showScalarsAction);
 		manager.add(showVectorsAction);
 		manager.add(showHistogramsAction);
-		
+	
 		showVectorsAction.setChecked(true);
 	}
-	
+
 	private void createContextMenu(final FilteredDataPanel panel) {
 		DataTable table = panel.getTable();
 		IMenuManager menuManager = table.getContextMenuManager();
@@ -217,7 +217,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 		});
 		// XXX call getSite().registerContexMenu() ?
 	}
-	
+
 	@Override
 	public void dispose() {
 		unhookPageListeners();
@@ -231,7 +231,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 			}
 		};
 		getSite().getPage().addPostSelectionListener(selectionChangedListener);
-	
+
 		partListener = new IPartListener() {
 			public void partActivated(IWorkbenchPart part) {
 				if (part instanceof ScaveEditor)
@@ -250,10 +250,10 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 			public void partOpened(IWorkbenchPart part) {}
 		};
 		getSite().getPage().addPartListener(partListener);
-		
+	
 		activeEditorChanged(getActiveEditor());
 	}
-	
+
 	private void hookEditorListeners(IEditorPart editor) {
 		if (editor instanceof ScaveEditor) {
 			ScaveEditor scaveEditor = (ScaveEditor)editor;
@@ -271,7 +271,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 					}
 				}
 			});
-			
+		
 			IChangeNotifier notifier = (IChangeNotifier)scaveEditor.getAdapterFactory();
 			notifier.addListener(modelChangeListener = new INotifyChangedListener() {
 				public void notifyChanged(Notification notification) {
@@ -284,7 +284,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 			});
 		}
 	}
-	
+
 	private void unhookPageListeners() {
 		IWorkbenchPage page = getSite().getPage();
 		if (selectionChangedListener != null) {
@@ -296,24 +296,24 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 			partListener = null;
 		}
 	}
-	
+
 	private void unhookEditorListeners(IEditorPart editor) {
 		if (editor instanceof ScaveEditor) {
 			ScaveEditor scaveEditor = (ScaveEditor)editor;
 			if (resultFilesChangeListener != null)
 				scaveEditor.getResultFileManager().removeChangeListener(resultFilesChangeListener);
-	
+
 			if (modelChangeListener != null) {
 				IChangeNotifier notifier = (IChangeNotifier)scaveEditor.getAdapterFactory();
 				notifier.removeListener(modelChangeListener);
 			}
 		}
 	}
-	
+
 	private FilteredDataPanel getVisibleDataPanel() {
 		return layout == null ? null : (FilteredDataPanel)layout.topControl;
 	}
-	
+
 	private ResultType getVisibleResultType() {
 		FilteredDataPanel panel = getVisibleDataPanel();
 		return (panel == scalarsPanel ? ResultType.SCALAR_LITERAL :
@@ -321,10 +321,10 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 				panel == histogramsPanel ? ResultType.HISTOGRAM_LITERAL :
 				null);
 	}
-	
+
 	private FilteredDataPanel getFilteredDataPanel(long id) {
 		int type = ResultFileManager.getTypeOf(id);
-		
+	
 		if (type == ResultFileManager.SCALAR)
 			return scalarsPanel;
 		else if (type == ResultFileManager.VECTOR)
@@ -334,7 +334,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 		else
 			return null;
 	}
-	
+
 	private void setVisibleDataPanel(FilteredDataPanel table) {
 		if (layout.topControl != table) {
 			if (setFilterAction != null)
@@ -344,7 +344,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 			updateContentDescription();
 		}
 	}
-	
+
 	private void setSelectedAction(IAction action) {
 		action.setChecked(true);
 		if (action == showScalarsAction) {
@@ -360,15 +360,15 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 			showVectorsAction.setChecked(false);
 		}
 	}
-	
+
 	private void workbechSelectionChanged(ISelection selection) {
 		Dataset dataset = null;
 		DatasetItem item = null;
 		ResultItemRef resultItem = null;
-		
+	
 		if (selection == this.selection)
 			return;
-		
+	
 		if (selection instanceof IStructuredSelection &&
 				((IStructuredSelection)selection).getFirstElement() instanceof EObject) {
 			EObject selected = (EObject)((IStructuredSelection)selection).getFirstElement();
@@ -385,7 +385,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 				resultItem = selectedLine.getResultItemRef();
 			}
 		}
-		
+	
 		if (dataset != null) {
 			setInput(dataset, item);
 			if (resultItem != null && resultItem.getID() != -1L) {
@@ -397,7 +397,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 			showMessage("No dataset item selected.");
 		}
 	}
-	
+
 	private void selectResultItem(ResultItemRef item) {
 		FilteredDataPanel panel = getFilteredDataPanel(item.getID());
 		if (panel != null && !panel.isDisposed()) {
@@ -407,13 +407,13 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 			}
 		}
 	}
-	
+
 	private void activeEditorChanged(IEditorPart editor) {
 		if (editor != activeScaveEditor) {
 			unhookEditorListeners(activeScaveEditor);
 			activeScaveEditor = editor instanceof ScaveEditor ? (ScaveEditor)editor : null;
 			hookEditorListeners(activeScaveEditor);
-			
+		
 			if (activeScaveEditor != null) {
 				ResultFileManager manager = activeScaveEditor.getResultFileManager();
 				scalarsPanel.setResultFileManager(manager);
@@ -431,7 +431,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 			}
 		}
 	}
-	
+
 	/**
 	 * Make the first table containing items visible.
 	 */
@@ -448,9 +448,9 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 			if (action != null)
 				setSelectedAction(action);
 		}
-		
-	}
 	
+	}
+
 	private void setInput(Dataset dataset, DatasetItem item) {
 		if (selectedDataset != dataset || selectedItem != item) {
 			selectedDataset = dataset;
@@ -460,7 +460,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 			updateContentDescription();
 		}
 	}
-	
+
 	private void updateContentDescription() {
 		if (labelProvider != null && selectedDataset != null) {
 			ResultType visibleType = getVisibleResultType();
@@ -486,7 +486,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 		else
 			showMessage("No dataset item selected.");
 	}
-	
+
 	/**
 	 * Prevent calling showMessage until the view fully created.
 	 */
@@ -495,7 +495,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 		if (viewControlCreated)
 			super.showMessage(text);
 	}
-	
+
 	private void updateDataTable() {
 		if (activeScaveEditor == null) {
 			Assert.isTrue(scalarsPanel.getResultFileManager() == null);
@@ -506,7 +506,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 			histogramsPanel.setIDList(IDList.EMPTY);
 			return;
 		}
-		
+	
 		final ResultFileManager manager = activeScaveEditor.getResultFileManager();
 		ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
 			public Object call() {
@@ -525,25 +525,25 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 			}
 		});
 	}
-	
+
 	private void showFilter(boolean show) {
 		vectorsPanel.showFilterPanel(show);
 		scalarsPanel.showFilterPanel(show);
 		histogramsPanel.showFilterPanel(show);
 	}
-	
+
 	private boolean isFilterVisible() {
 		return vectorsPanel.isFilterPanelVisible();
 	}
-	
+
 	/*
 	 * Actions
 	 */
-	
+
 	class ShowTableAction extends Action
 	{
 		FilteredDataPanel table;
-		
+	
 		public ShowTableAction(ResultType type) {
 			super(null, IAction.AS_RADIO_BUTTON);
 
@@ -568,12 +568,12 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 				break;
 			}
 		}
-		
+	
 		public void run() {
 			setVisibleDataPanel(table);
 		}
 	}
-	
+
 	class ToggleFilterAction extends Action
 	{
 		public ToggleFilterAction() {
@@ -589,7 +589,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 			setText(visible ? "Show filter" : "Hide filter");
 		}
 	}
-	
+
 	class SelectAllAction extends Action
 	{
 		@Override
@@ -601,7 +601,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 			}
 		}
 	}
-	
+
 	/*
 	 * ISelectionProvider
 	 */
@@ -613,7 +613,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 	public void removeSelectionChangedListener(ISelectionChangedListener listener) {
 		selectionChangeListeners.remove(listener);
 	}
-	
+
 	protected void fireSelectionChangeEvent(ISelection selection) {
 		SelectionChangedEvent event = new SelectionChangedEvent(this, selection);
 		for (Object listener : selectionChangeListeners.getListeners())

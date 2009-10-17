@@ -16,14 +16,14 @@ import org.eclipse.swt.graphics.GC;
  */
 public class PlusSymbol extends ChartSymbol {
 	private int size;
-	
+
 	public PlusSymbol() {
 	}
 
 	public PlusSymbol(int size) {
 		super(size);
 	}
-	
+
 	@Override
 	public void setSizeHint(int sizeHint) {
 		super.setSizeHint(sizeHint);

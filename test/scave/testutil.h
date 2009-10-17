@@ -21,7 +21,7 @@
 class MeasureTime
 {
 	timeval start, end;
-	
+
 public:
 	MeasureTime() { gettimeofday(&start, NULL); }
 	~MeasureTime()

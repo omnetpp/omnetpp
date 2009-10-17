@@ -17,10 +17,10 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 public class CreateDatasetDialog extends DatasetDialog {
-	
+
 	private String datasetName;
 	private Text datasetNameText;
-	
+
 	public CreateDatasetDialog(Shell parent, String title) {
 		this(parent, SHOW_SELECTION | SHOW_FILTER, title);
 	}
@@ -28,11 +28,11 @@ public class CreateDatasetDialog extends DatasetDialog {
 	public CreateDatasetDialog(Shell parentShell, int style, String dialogTitle) {
 		super(parentShell, style, dialogTitle);
 	}
-	
+
 	public String getDatasetName() {
 		return datasetName;
 	}
-	
+
 
 	@Override
 	protected Control createDialogArea(Composite parent) {

@@ -19,9 +19,9 @@ import org.omnetpp.scave.charting.dataset.IXYDataset;
  * @author Andras
  */
 public class SampleHoldVectorPlotter extends VectorPlotter {
-	
+
 	boolean backward;
-	
+
 	public SampleHoldVectorPlotter(boolean backward) {
 		this.backward = backward;
 	}
@@ -31,7 +31,7 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
 		int n = dataset.getItemCount(series);
 		if (n==0)
 			return;
-		
+	
 		// dataset index range to iterate over 
 		int[] range = indexRange(plot, series, gc, mapping);
 		int first = range[0], last = range[1];
@@ -53,19 +53,19 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
 		// We are drawing vertical/horizontal lines, so turn off antialias (it is slow).
 		int origAntialias = gc.getAntialias();
 		gc.setAntialias(SWT.OFF);
-		
+	
 		int[] dots = new int[] {1,2};
 		gc.setLineDash(dots);
-		
+	
 		if (!prevIsNaN && backward)
 			gc.drawPoint(prevX, prevY);
-		
+	
 		for (int i = first+1; i <= last; i++) {
 			double value = plot.transformY(dataset.getY(series, i));
 
 			// for testing: 
 			//if (i%5==0) value = 0.0/0.0; //NaN
-			
+		
 			boolean isNaN = Double.isNaN(value); // see isNaN handling later
 
 			int x = mapping.toCanvasX(plot.transformX(dataset.getX(series, i)));
@@ -73,7 +73,7 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
 
 			// for testing:
 			//if (i%5==1) x = prevX;
-			
+		
 			if (x != prevX) {
 				if (!isNaN && backward) {
 					gc.setLineStyle(SWT.LINE_SOLID);
@@ -93,7 +93,7 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
 						gc.drawLine(x, prevY, x, y); // vertical
 					}
 				}
-				
+			
 				minY = maxY = y;
 			}
 			else if (!isNaN) {

@@ -40,7 +40,7 @@ public class ProjectFileTestCase
 	public ProjectFileTestCase(String fileName) {
 		setFileName(fileName);
 	}
-	
+
 	public void setFileName(String filePath) {
 	    // I think the following assert does not always hold true, because there might be files 
 	    // checked in without starting with 'test' so that they don't get deleted in cleanup
@@ -54,11 +54,11 @@ public class ProjectFileTestCase
 	protected void createFileWithContent(String content) throws Exception {
 		WorkspaceUtils.createFileWithContent(filePath, content);
 	}
-	
+
 	protected void createEmptyFile() throws Exception {
 	    createFileWithContent("");
 	}
-	
+
 	protected void openFileFromProjectExplorerView() {
 		WorkbenchUtils.findInProjectExplorerView(filePath).reveal().doubleClick();
 	}
@@ -108,7 +108,7 @@ public class ProjectFileTestCase
 		super.setUp();
 		setUpInternal();
 	}
-	
+
 	@Override
     /**
      * These must be advised exactly once.

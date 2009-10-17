@@ -28,7 +28,7 @@ public class InifileFormEditorAccess
 	public InifileFormEditorAccess(InifileFormEditor formEditor) {
 		super(formEditor);
 	}
-	
+
     @Override
 	public InifileFormEditor getControl() {
 	    return (InifileFormEditor)widget;

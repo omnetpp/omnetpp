@@ -42,16 +42,16 @@ public class QueueInspectorFigure extends Figure implements IInspectorFigure {
 			r.width -= serverWidth+lineWidth;
 			r.y += 3*lineWidth/2;
 			r.height -= 3*lineWidth;
-			
+		
 			Dimension cornerRadii = new Dimension(lineWidth, lineWidth);
-			
+		
 			int x = r.x;
 			for (IFigure child : (List<IFigure>)getChildren()) {
 				child.setBounds(new Rectangle(x, r.y, r.height/2, r.height));
 				x += r.height/2 + lineWidth/2;
 				if (child instanceof RoundedRectangle)
 					((RoundedRectangle)child).setCornerDimensions(cornerRadii);
-					
+				
 			}
 		}
 	}
@@ -64,7 +64,7 @@ public class QueueInspectorFigure extends Figure implements IInspectorFigure {
 
 		setSelectionBorder(false);
 	}
-	
+
 	//@Override
 	public IInspectorPart getInspectorPart() {
 		return inspectorPart;
@@ -95,18 +95,18 @@ public class QueueInspectorFigure extends Figure implements IInspectorFigure {
 		f.setPreferredSize(20,20);
 		return f;
 	}
-	
+
 	@Override
 	protected void paintClientArea(Graphics graphics) {
 		super.paintClientArea(graphics);
-		
+	
 		graphics.pushState();
 		Rectangle r = getClientArea().getCopy();
 		r.height--; r.width--;
 		int lineWidth = r.height/8;
 		r.shrink((lineWidth+1)/2, (lineWidth+1)/2);
 		r.width += (lineWidth+1)/2;
-		
+	
 		// draw the server ("O" on the left)
 		int serverWidth = 2*r.height/3;
 		graphics.setLineWidth(lineWidth);

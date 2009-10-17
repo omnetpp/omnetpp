@@ -123,14 +123,14 @@ public abstract class ContentProposalProvider implements IContentProposalProvide
 		Collections.sort((List)proposals);
 		return proposals;
 	}
-	
+
 	/**
 	 * Utility function: Turn strings into proposals.
 	 */
 	protected static List<IContentProposal> toProposals(String[] strings) {
 		return toProposals(strings, null);
 	}
-	
+
 	/**
 	 * Utility function: Turn strings into proposals.
 	 */

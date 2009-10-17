@@ -124,12 +124,12 @@ public class InspectorMouseListener implements MouseListener, MouseMotionListene
     	case SWT.RIGHT: cursor = CURSOR_SIZEE; break;
     	case SWT.TOP: cursor = CURSOR_SIZEN; break;
     	case SWT.BOTTOM: cursor = CURSOR_SIZES; break;
-    	
+    
     	case SWT.LEFT|SWT.TOP: cursor = CURSOR_SIZENW; break;
     	case SWT.RIGHT|SWT.TOP: cursor = CURSOR_SIZENE; break;
     	case SWT.LEFT|SWT.BOTTOM: cursor = CURSOR_SIZESW; break;
     	case SWT.RIGHT|SWT.BOTTOM: cursor = CURSOR_SIZESE; break;
-    	
+    
     	case SWT.LEFT|SWT.RIGHT|SWT.TOP|SWT.BOTTOM: cursor = CURSOR_SIZEALL; break;
     	default: cursor = CURSOR_ARROW;
     	}

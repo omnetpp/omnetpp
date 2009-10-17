@@ -307,7 +307,7 @@ public class HoverSupport {
 		Monitor monitor = findMonitorByPosition(mouse);
 		if (monitor == null)
 			monitor = Display.getCurrent().getPrimaryMonitor();
-		
+	
 		Rectangle screen = monitor.getBounds();
 		Point p = new Point(mouse.x + 5, mouse.y + 20);
 		p.x = Math.min(p.x, screen.x + screen.width - size.x - 5);
@@ -315,7 +315,7 @@ public class HoverSupport {
 			p.y = mouse.y - size.y - 20; // if no room below mouse, show it above
 		return p;
 	}
-	
+
 	private Monitor findMonitorByPosition(Point position) {
 		Monitor[] monitors = Display.getCurrent().getMonitors();
 		for (Monitor monitor : monitors)
@@ -411,7 +411,7 @@ public class HoverSupport {
 				            super.setSize(width + 20, height);
 				        }	    
 					};
-					
+				
 					if (!SWT.getPlatform().equals("win32") && !SWT.getPlatform().equals("wpf")) {
 					    final Shell shell = (Shell)ReflectionUtils.getFieldValue(browserInformationControl,"fShell");
 					    ((GridLayout)shell.getLayout()).marginHeight = 5;
@@ -419,7 +419,7 @@ public class HoverSupport {
 					    shell.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
 					    makeShellResizeable(shell);
 					}
-					
+				
 					return browserInformationControl;
 				} else {
 					DefaultInformationControl defaultInformationControl = new DefaultInformationControl(parent, new HTMLTextPresenter(false));
@@ -468,7 +468,7 @@ public class HoverSupport {
 			public void mouseUp(MouseEvent e) {
                 mouse1Down = false;
             }
-			
+		
 			private void setMouseCursor() {
                 Point cpos = Display.getCurrent().getCursorLocation();
                 Point shellPos = shell.getLocation();
@@ -506,10 +506,10 @@ public class HoverSupport {
                 
                 shell.setCursor(cursorid == SWT.NONE ? null : Display.getCurrent().getSystemCursor(cursorid));
 			}
-			
+		
             public void mouseMove(MouseEvent e) {
             	setMouseCursor();
-            	
+            
                 if (mouse1Down) {
                     Point p = Display.getCurrent().getCursorLocation();
                     Point size = shell.getSize();
@@ -536,12 +536,12 @@ public class HoverSupport {
                 }
             }
 		}
-		
+	
 		MouseListener ls = new MouseListener();
         shell.addMouseListener(ls);
         shell.addMouseMoveListener(ls);
 	}
-	
+
 	/**
 	 * Wraps an HTML formatted string with a stylesheet for hover display
 	 */

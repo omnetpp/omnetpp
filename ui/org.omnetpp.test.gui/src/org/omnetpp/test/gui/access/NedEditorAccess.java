@@ -19,7 +19,7 @@ public class NedEditorAccess
 	public NedEditorAccess(NedEditor multiPageNedEditor) {
 		super(multiPageNedEditor);
 	}
-	
+
     @Override
 	public NedEditor getWorkbenchPart() {
 	    return (NedEditor)workbenchPart;
