@@ -19,7 +19,7 @@ class RandomModuleSelector : public cVisitor
 
 	public:
 		cModule *selectedModule;
-		
+	
 	public:
 		RandomModuleSelector();
 

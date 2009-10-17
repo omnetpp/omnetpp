@@ -32,18 +32,18 @@ public class RunSelectionPanel extends Composite {
 		Filter.FIELD_MEASUREMENT,
 		Filter.FIELD_REPLICATION,
 	};
-	
+
 	private static final String[] runidExact = new String[] {
 		Filter.FIELD_FILENAME, // XXX until no runname generated
 		Filter.FIELD_RUNNAME,
 	};
 
-	
+
 	public RunSelectionPanel(Composite parent, int style) {
 		super(parent, style);
 		initialize();
 	}
-	
+
 	public String[] getRunIdFields() {
 		if (useRunNameRadio.getSelection()) {
 			return runidExact;
@@ -63,7 +63,7 @@ public class RunSelectionPanel extends Composite {
 	}
 
 	/**
-	 * This method initializes composite2	
+	 * This method initializes composite2
 	 *
 	 */
 	private void initialize() {
@@ -74,7 +74,7 @@ public class RunSelectionPanel extends Composite {
 		gridLayout = new GridLayout();
 		gridLayout.numColumns = 1;
 		this.setLayout(gridLayout);
-		
+	
 		gridData = new GridData();
 		gridData.horizontalIndent = 15;
 		useRunNameRadio = new Button(this, SWT.RADIO);
@@ -104,5 +104,5 @@ public class RunSelectionPanel extends Composite {
 			runidFieldCheckboxes[i++] = checkbox;
 		}
 	}
-	
+
 }

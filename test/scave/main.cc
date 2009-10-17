@@ -47,13 +47,13 @@ static void parseIntList(const char *str, int *&result, int &len)
 {
 	result = NULL;
 	len = 0;
-	
+
 	vector<int> ids;
-	
+
 	int start, end;
     int num = 0;
     const char *ptr = str;
-	
+
     while (*ptr)
 	{
         if (!isdigit(*ptr))
@@ -93,7 +93,7 @@ static void parseIntList(const char *str, int *&result, int &len)
         if (*ptr == ',')
             ptr++;
 	}
-	
+
 	result = new int[ids.size()];
 	for (int i = 0; i < ids.size(); ++i)
 		result[i] = ids[i];

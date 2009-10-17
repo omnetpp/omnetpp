@@ -41,7 +41,7 @@ public class ReportBugHandler extends AbstractHandler {
 		} catch (MalformedURLException e) {
 			CommonPlugin.logError(e);
 		}
-		
+	
 		return null;
 	}
 }

@@ -25,7 +25,7 @@ public class ScavePlugin extends AbstractUIPlugin {
 
 	// The shared instance
 	private static ScavePlugin plugin;
-	
+
 	/**
 	 * The constructor
 	 */
@@ -92,15 +92,15 @@ public class ScavePlugin extends AbstractUIPlugin {
 		}
 		return image;
 	}
-	
+
 	public static void logError(Throwable exception) {
 		logError(exception.toString(), exception);
 	}
-	
+
 	public static void logError(String message, Throwable exception) {
 		log(getErrorStatus(0, message, exception));
 	}
-	
+
 	public static void log(IStatus status) {
 		if (status != null) {
 			if (plugin != null) {
@@ -114,23 +114,23 @@ public class ScavePlugin extends AbstractUIPlugin {
 			}
 		}
 	}
-	
+
 	public static IStatus getWarningStatus(String message) {
 		return getWarningStatus(0, message);
 	}
-	
+
 	public static IStatus getWarningStatus(int code, String message) {
 		return getStatus(IStatus.WARNING, code, message, null);
 	}
-	
+
 	public static IStatus getErrorStatus(Throwable exception) {
 		return getErrorStatus(0, exception.getLocalizedMessage(), exception);
 	}
-	
+
 	public static IStatus getErrorStatus(int errorCode, String message, Throwable exception) {
-		return getStatus(IStatus.ERROR, errorCode, message, exception);		
+		return getStatus(IStatus.ERROR, errorCode, message, exception);	
 	}
-	
+
 	public static IStatus getStatus(int severity, int code, String message, Throwable exception) {
 		return new Status(severity, PLUGIN_ID, code, message, exception);
 	}

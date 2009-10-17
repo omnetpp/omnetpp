@@ -25,7 +25,7 @@ public class SequenceChartPlugin extends AbstractUIPlugin {
 
 	// The shared instance
 	private static SequenceChartPlugin plugin;
-	
+
 	/**
 	 * The constructor
 	 */
@@ -55,7 +55,7 @@ public class SequenceChartPlugin extends AbstractUIPlugin {
 	 * Logs an exception into the platform log file.
 	 */
 	public void logException(Throwable ex) {
-		getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.OK, "An exception occurred", ex));					
+		getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.OK, "An exception occurred", ex));				
 	}
 
 	/**
@@ -74,7 +74,7 @@ public class SequenceChartPlugin extends AbstractUIPlugin {
 	public static ImageDescriptor getImageDescriptor(String path) {
 		return imageDescriptorFromPlugin(PLUGIN_ID, path);
 	}
-	
+
 	/**
 	 * Creates an image. IMPORTANT: The image is NOT cached! Callers 
 	 * are responsible for disposal of the image. 

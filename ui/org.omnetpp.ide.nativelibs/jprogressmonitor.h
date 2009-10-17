@@ -30,10 +30,10 @@ class JniProgressMonitor : public IProgressMonitor
 		jobject jProgressMonitor;
 		jmethodID beginTaskID, doneID, isCanceledID,
 					setCanceledID, subTaskID, workedID;
-		
+	
 		JNIEnv *env;
 	public:
-	
+
 	JniProgressMonitor() : env(NULL) {}
 	JniProgressMonitor(jobject jProgressMonitor, JNIEnv *env);
 	virtual ~JniProgressMonitor();

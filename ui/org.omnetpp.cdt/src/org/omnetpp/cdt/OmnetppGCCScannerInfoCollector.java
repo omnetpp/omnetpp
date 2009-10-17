@@ -32,7 +32,7 @@ public class OmnetppGCCScannerInfoCollector extends PerProjectSICollector
 	@Override
 	public IDiscoveredPathInfo createPathInfoObject() {
 		IPerProjectDiscoveredPathInfo pathInfoObject = (IPerProjectDiscoveredPathInfo)super.createPathInfoObject();
-		
+	
 		// add include dirs needed for OMNeT++
 		LinkedHashMap includeMap = pathInfoObject.getIncludeMap();
 		try {

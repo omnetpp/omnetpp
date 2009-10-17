@@ -24,14 +24,14 @@ void testIndexer(const char *inputFile)
 {
 	if (IndexFile::isIndexFileUpToDate(inputFile))
 		throw exception("Already up to date");
-	
+
     VectorFileIndexer indexer;
     
     { 
     	MeasureTime m;
     	indexer.generateIndex(inputFile);
     }
-	
+
 	if (!IndexFile::isIndexFileUpToDate(inputFile))
 		throw exception("Indexing failed");
 }

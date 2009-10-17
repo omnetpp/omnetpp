@@ -118,7 +118,7 @@ void MatchExpression::parsePattern(std::vector<MatchExpression::Elem>& elems, co
                                    bool dottedpath, bool fullstring, bool casesensitive)
 {
 	MatchExpressionLexer *lexer = new MatchExpressionLexer(pattern);
-	
+
     // store options
     MatchExpressionParserState state;
     state.elemsp = &elems;

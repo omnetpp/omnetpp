@@ -27,10 +27,10 @@ public class CommonPlugin extends AbstractUIPlugin {
 
 	// The shared instance
 	private static CommonPlugin plugin;
-	
+
 	// global preference store (per installation)
 	private ScopedPreferenceStore configPreferenceStore;
-	
+
 	/**
 	 * The constructor
 	 */
@@ -77,11 +77,11 @@ public class CommonPlugin extends AbstractUIPlugin {
 	public static ImageDescriptor getImageDescriptor(String path) {
 		return imageDescriptorFromPlugin(PLUGIN_ID, path);
 	}
-	
+
 	public static void logError(Throwable exception) {
 		logError(exception.toString(), exception);
 	}
-	
+
 	public static void logError(String message, Throwable exception) {
 		if (plugin != null) {
 			plugin.getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, 0, message, exception));
@@ -92,7 +92,7 @@ public class CommonPlugin extends AbstractUIPlugin {
 				exception.printStackTrace();
 		}
 	}
-	
+
     public static ScopedPreferenceStore getConfigurationPreferenceStore() {
         // Create the preference store lazily.
         if (getDefault().configPreferenceStore == null) {
@@ -100,5 +100,5 @@ public class CommonPlugin extends AbstractUIPlugin {
         }
         return getDefault().configPreferenceStore;
     }
-	
+
 }

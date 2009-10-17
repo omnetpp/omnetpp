@@ -21,10 +21,10 @@ public class CommonCorePlugin extends AbstractUIPlugin {
 
 	// The shared instance
 	private static CommonCorePlugin plugin;
-	
+
 	// global preference store (per installation)
 	private ScopedPreferenceStore configPreferenceStore;
-	
+
 	/**
 	 * The constructor
 	 */
@@ -38,7 +38,7 @@ public class CommonCorePlugin extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
-		
+	
         ImageFactory.initialize(getConfigurationPreferenceStore().getString(IConstants.PREF_OMNETPP_IMAGE_PATH).split(";"));
 	}
 
@@ -70,7 +70,7 @@ public class CommonCorePlugin extends AbstractUIPlugin {
 	public static ImageDescriptor getImageDescriptor(String path) {
 		return imageDescriptorFromPlugin(PLUGIN_ID, path);
 	}
-	
+
 	/**
 	 * Creates an image. IMPORTANT: The image is NOT cached! Callers 
 	 * are responsible for disposal of the image. 
@@ -92,11 +92,11 @@ public class CommonCorePlugin extends AbstractUIPlugin {
 		}
 		return image;
 	}
-	
+
 	public static void logError(Throwable exception) {
 		logError(exception.toString(), exception);
 	}
-	
+
 	public static void logError(String message, Throwable exception) {
 		if (plugin != null) {
 			plugin.getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, 0, message, exception));
@@ -107,7 +107,7 @@ public class CommonCorePlugin extends AbstractUIPlugin {
 				exception.printStackTrace();
 		}
 	}
-	
+
     public static ScopedPreferenceStore getConfigurationPreferenceStore() {
         // Create the preference store lazily.
         if (getDefault().configPreferenceStore == null) {

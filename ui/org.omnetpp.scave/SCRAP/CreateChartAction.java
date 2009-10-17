@@ -34,12 +34,12 @@ public class CreateChartAction extends AbstractScaveAction {
 		FilteredDataPanel activePanel = editor.getBrowseDataPage().getActivePanel();
 		if (activePanel == null)
 			return;
-		
+	
 		CreateDatasetDialog dialog = new CreateDatasetDialog(editor.getSite().getShell(), "Create chart");
 		dialog.setFilterParams(activePanel.getFilterParams());
 		dialog.setFilterHints(activePanel.getFilterHints());
 		dialog.setUseFilter(activePanel.getTable().getSelectionCount() == 0);
-		
+	
 		int result = dialog.open();
 		if (result == Window.OK) {
 			Dataset dataset = dialog.useFilter() ?
@@ -55,7 +55,7 @@ public class CreateChartAction extends AbstractScaveAction {
 			String chartName = dialog.getDatasetName()=="" ? "chart" : dialog.getDatasetName()+"-chart"; //FIXME generate proper name
 			Chart chart = ScaveModelUtil.createChart(chartName);
 			dataset.getItems().add(chart);
-			
+		
 			editor.executeCommand(AddCommand.create(
 					editor.getEditingDomain(),
 					editor.getAnalysis().getDatasets(),
